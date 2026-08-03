@@ -1,0 +1,12 @@
+# Claude Code local settings
+.claude/settings.local.json
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Python artifacts (in case code is added later)
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
