@@ -150,7 +150,8 @@ in the research file. No new sources were fetched at drafting.
 Cited from the cross-product bibliography `us/_research/regulatory-actuarial.md` (its own
 R1–R34 numbering; prefixed REG- in the whole-life documents to avoid collision with the
 product research file's R# ids). Full annotations live in that file; the shared reference
-library is `us/references/regulatory-and-actuarial-references.md` (same R-numbering).
+library is `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which
+now runs R1–R72: R35–R72 are annuity-specific entries added later and are not cited here).
 Entries cited by the whole-life documents:
 
 - **REG-R1** — NAIC Standard Valuation Law (Model #820), July 2010 print incl. 2009 PBR

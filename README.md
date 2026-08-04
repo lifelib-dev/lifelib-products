@@ -5,9 +5,10 @@ country**, together with the documentation needed to build **reference implement
 of liability cash flow projection models** (lifelib/modelx style), organized by product
 type and country.
 
-**Status:** Draft, 2026-08-03. Current coverage: United States (6 individual life
-product types) and United Kingdom (7 product types, including pension annuities).
-Reference model implementations are a planned follow-on (see Roadmap).
+**Status:** Draft, 2026-08-04. Current coverage: United States (6 individual life and
+6 individual annuity product types) and United Kingdom (7 product types, including
+pension annuities). Reference model implementations are a planned follow-on (see
+Roadmap).
 
 ---
 
@@ -79,20 +80,22 @@ Each country section is built in three passes:
 
 | Country | Products | Status |
 |---|---|---|
-| [United States](us/README.md) | term life, whole life, universal life, indexed UL, variable UL, guaranteed UL | specs + technical notes drafted |
+| [United States](us/README.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted |
 | [United Kingdom](uk/README.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs + technical notes drafted |
 
-Scope note: the U.S. section covers individual life insurance only (individual
-annuities deferred to a future section); the UK section additionally includes pension
-annuities, which are core long-term insurance business for UK life insurers — see
-[uk/README.md](uk/README.md) for the rationale.
+Scope note: both country sections cover individual life insurance and annuities, but
+the annuity coverage differs by market. The U.S. section covers the individual deferred
+and payout annuity families sold at retail; the UK section covers pension annuities,
+which are the dominant UK annuity form and the centrepiece of the Solvency UK matching
+adjustment — see [uk/README.md](uk/README.md). Group insurance and institutional
+business (bulk purchase annuities, pension risk transfer) are out of scope in both.
 
 ## Roadmap
 
 - **Reference implementations**: `<country>/models/<product-type>/` — executable
   liability cash flow projection models built from the technical notes.
-- **Additional countries** and additional product families (individual annuities,
-  group insurance) as separate sections.
+- **Additional countries**, and additional product families (group insurance,
+  institutional/pension risk transfer business) as coverage grows.
 
 ## Disclaimer
 

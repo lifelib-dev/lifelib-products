@@ -131,7 +131,8 @@ Access date for all citations: 2026-08-03.
 
 These are cited from the cross-product bibliography, `us/_research/regulatory-actuarial.md`
 (its own R1–R34 numbering; cited here with the REG- prefix). The shared reference library
-is `us/references/regulatory-and-actuarial-references.md` (same R-numbering); the
+is `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now
+runs R1–R72: R35–R72 are annuity-specific entries added later and are not cited here); the
 bibliography records full annotations and retrieval status.
 Entries cited in the two documents:
 

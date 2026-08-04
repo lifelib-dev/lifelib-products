@@ -125,7 +125,8 @@ These are cited with the [REG-R#] prefix to avoid collision with the product res
 file's own R-numbering. Full annotated entries (titles, publishers, URLs, retrieval
 markers, access date 2026-08-03) live in `us/_research/regulatory-actuarial.md`;
 the shared reference library is
-`us/references/regulatory-and-actuarial-references.md` (same R-numbering).
+`us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
+R1–R72: R35–R72 are annuity-specific entries added later and are not cited here).
 Entries cited by the two documents in this directory:
 
 | Tag | Short title | Retrieval status (per that file) |

@@ -3,11 +3,14 @@
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
 
 This section covers the major **individual life insurance products** sold in the UK
-market, **plus pension annuities**. That is a deliberate scope difference from the
-[U.S. section](../us/README.md): in the UK, annuities are core long-term insurance
-business and the dominant liability of UK life insurers (and the centrepiece of the
-Solvency UK matching adjustment), so a UK library without them would misrepresent the
-market. Group protection and pensions wrappers (drawdown, SIPPs) remain out of scope.
+market, **plus pension annuities**. Annuities are core long-term insurance business and
+the dominant liability of UK life insurers (and the centrepiece of the Solvency UK
+matching adjustment), so a UK library without them would misrepresent the market. The
+annuity coverage differs in kind from the [U.S. section](../us/README.md), which covers
+the U.S. retail deferred and payout families (MYGA, fixed indexed, variable, RILA, SPIA,
+DIA/QLAC): the UK retail deferred-annuity market is negligible, and the pension annuity
+bought with a pension pot is the product that matters. Group protection, pensions
+wrappers (drawdown, SIPPs) and bulk purchase annuities remain out of scope.
 
 ## Product taxonomy
 
