@@ -1,12 +1,13 @@
-# United States — Individual Life Insurance Reference Products
+# United States — Individual Life Insurance and Annuity Reference Products
 
-**Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
+**Status:** Draft. Life products 2026-08-03; annuity products 2026-08-04 (each product's
+sources were accessed on that product's draft date).
 
-This section covers the major **individual life insurance** product types sold in the
-U.S. market. Individual annuities (fixed, indexed, variable) and group insurance are
-out of scope here and are planned as separate sections.
+This section covers the major **individual life insurance** and **individual annuity**
+product types sold in the U.S. market. Group insurance, structured settlements, and
+institutional business (bulk/pension risk transfer) remain out of scope.
 
-## Product taxonomy
+## Life product taxonomy
 
 | Product type | Folder | Representative design (one line) |
 |---|---|---|
@@ -17,60 +18,119 @@ out of scope here and are planned as separate sections.
 | Variable UL | [variable-ul](products/variable-ul/product-spec.md) | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on EDGAR prospectus fee tables |
 | Guaranteed UL (ULSG) | [guaranteed-ul](products/guaranteed-ul/product-spec.md) | UL chassis + shadow-account secondary guarantee (AG 38 §8E Policy Design #1): policy stays in force while the shadow account is positive, funded by a solved level no-lapse premium; lapse-supported economics |
 
+## Annuity product taxonomy
+
+| Product type | Folder | Representative design (one line) |
+|---|---|---|
+| Fixed deferred (MYGA) | [fixed-deferred-annuity](products/fixed-deferred-annuity/product-spec.md) | Single-premium book-value annuity: declared rate guaranteed for a multi-year period, surrender charge plus market value adjustment, Model #805 minimum guaranteed surrender value, death benefit at full account value — the **deferred base chassis** |
+| Fixed indexed (FIA) | [fixed-indexed-annuity](products/fixed-indexed-annuity/product-spec.md) | General-account deferred annuity with index-linked credits at a 0% floor (annual point-to-point with cap), premium bonus with vesting, and a guaranteed lifetime withdrawal benefit whose payments continue after the account value is exhausted |
+| Variable annuity | [variable-annuity](products/variable-annuity/product-spec.md) | Separate-account deferred annuity: subaccount units net of M&E and administrative charges, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base; guarantee cost is inherently stochastic |
+| Registered index-linked (RILA) | [registered-index-linked-annuity](products/registered-index-linked-annuity/product-spec.md) | SEC-registered buffered annuity (the NAIC term is **ILVA**): point-to-point terms with a downside buffer and an upside cap, and an AG 54 interim value built from a fixed-income proxy plus a Black-Scholes-priced derivative proxy |
+| Immediate (SPIA) | [immediate-annuity](products/immediate-annuity/product-spec.md) | Single premium converted immediately into a payment stream: life only, life with period certain, joint and survivor (both reduction triggers), cash refund and installment refund forms, with fixed compound COLA — the **payout chassis** |
+| Deferred income (DIA/QLAC) | [deferred-income-annuity](products/deferred-income-annuity/product-spec.md) | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice at then-current purchase rates, with a return-of-premium deferral death benefit and a QLAC variant meeting the Treasury requirements |
+
 Each folder contains `product-spec.md` (representative specification, variations
 across insurers, regulatory context), `technical-notes.md` (liability cash flow model:
 model points, state variables, assumptions, recursions with processing order, worked
 example, sensitivities), and `sources.md` (numbered source list). Citation conventions
 are defined in the [top-level README](../README.md).
 
-The UL-family documents (indexed, variable, guaranteed) reference the
-[universal-life technical notes](products/universal-life/technical-notes.md) for the
-shared base-chassis recursion, which is anchored on a retrieved specimen policy;
-deviations (e.g., VUL's prospectus-sourced NAAR convention) are explicitly flagged
-where they occur rather than silently restated.
+## Chassis relationships
+
+Products that share machinery point at the file where it is specified rather than
+silently restating it, and each such pointer states what it inherits and where it
+deviates:
+
+- **Life:** the UL-family documents (indexed, variable, guaranteed) reference the
+  [universal-life technical notes](products/universal-life/technical-notes.md) for the
+  shared base-chassis recursion, which is anchored on a retrieved specimen policy;
+  deviations (e.g., VUL's prospectus-sourced NAAR convention) are explicitly flagged.
+- **Annuity, deferred:** the fixed-indexed and variable annuity documents inherit the
+  *structure* of the [fixed-deferred-annuity](products/fixed-deferred-annuity/technical-notes.md)
+  chassis — surrender benefit composition, nonforfeiture floor, death benefit at account
+  value — while carrying their own recursions and parameters.
+- **Annuity, payout:** the deferred-income annuity and the annuitization phase of the
+  RILA reference the [immediate-annuity](products/immediate-annuity/technical-notes.md)
+  payout chassis symbol-for-symbol, stating their deltas.
+- **Across families:** where an annuity document borrows from a life document (index
+  segment bookkeeping from indexed-UL, separate-account mechanics from variable-UL) it
+  states the differences explicitly — an annuity has no cost of insurance, no net amount
+  at risk, and no death benefit corridor.
 
 ## Regulatory and actuarial reference library
 
 [references/regulatory-and-actuarial-references.md](references/regulatory-and-actuarial-references.md)
-is the curated cross-product bibliography (frozen numbering R1–R34, cited from product
-documents as `[REG-R#]`), with a product-relevance matrix. It spans the NAIC statutory
-framework (Standard Valuation Law, Standard Nonforfeiture Law, Valuation Manual /
-VM-20, Models 582/585/787/830, AG 38/48/49/49-A/49-B), federal tax (IRC §§ 7702,
-7702A, 807, 817), mortality tables and experience studies (2017 CSO, 2015 VBT, ILEC
-mortality, SOA persistency and post-level-term studies), AAA practice notes, ASOPs
-(2, 7, 15, 22, 24, 52, 56), and accounting frames (statutory / GAAP LDTI / tax).
+is the curated cross-product bibliography (frozen numbering **R1–R72**, cited from
+product documents as `[REG-R#]`), with separate product-relevance matrices for the life
+and annuity products. R1–R34 are life-origin entries (several of which also bind annuity
+models) and R35–R72 are annuity-specific.
+
+- **Life:** NAIC statutory framework (Standard Valuation Law, Standard Nonforfeiture Law,
+  Valuation Manual / VM-20, Models 582/585/787/830, AG 38/48/49/49-A/49-B), federal tax
+  (IRC §§ 7702, 7702A, 807, 817), mortality tables and experience studies (2017 CSO,
+  2015 VBT, ILEC mortality, SOA persistency and post-level-term studies), AAA practice
+  notes, ASOPs, and accounting frames.
+- **Annuity:** VM-21 (variable annuity PBR) and VM-22 (effective for valuation dates on
+  or after 1 January 2026, with a three-year transition), formulaic CARVM under AG 33 and
+  AG 35, AG 54 for index-linked variable annuity interim values, Model #805 nonforfeiture
+  and Models #245/#250/#275, C-3 Phase II capital, SEC Form N-4 and the 2024 rule bringing
+  RILAs onto it, IRC § 72 and the QLAC regulations as amended by SECURE 2.0, and the
+  2012 IAM/IAR annuity mortality tables with Projection Scale G2.
 
 ## Provenance
 
-`_research/` holds the raw research notes (one file per product plus
-`regulatory-actuarial.md`): the per-source fact extraction that every citation in the
-product documents traces back to, including explicit records of which documents were
-actually retrieved and which fetches failed. Do not renumber their source lists —
-product documents cite against them.
+`_research/` holds the raw research notes (one file per product, plus
+`regulatory-actuarial.md` for R1–R34 and `regulatory-actuarial-annuities.md` for
+R35–R72): the per-source fact extraction that every citation in the product documents
+traces back to, including explicit records of which documents were actually retrieved
+and which fetches failed. Do not renumber their source lists — product documents cite
+against them.
 
 ## Known gaps and caveats
 
-The significant ones, aggregated from the per-product research (each product's
-documents and research file carry the full list):
+The significant ones, aggregated from the per-product research (each product's documents
+and research file carry the full list).
+
+**Life products**
 
 - **Current non-guaranteed scales are not public.** Declared crediting rates, current
   COI scales, and IUL caps/participation rates are either producer-portal-only or
   point-in-time snapshots; the reference specs carry **[std]** values calibrated to
-  observed ranges. Guaranteed elements (CSO-capped COI, minimum interest, maximum
-  loads) are far better sourced.
-- **Full rate/charge tables are largely proprietary.** Complete COI tables per $1,000,
-  per-unit charge scales, and surrender-charge dollar schedules generally live in
-  policy data pages and illustration systems. Exceptions captured here: a complete
-  guaranteed COI table and processing order from a UL specimen policy, a complete
-  guaranteed premium schedule from a term specimen, final-expense WL premium rates per
-  $1,000, and VUL prospectus fee tables.
-- **ULSG shadow-account parameters are unobservable.** No public document discloses
-  shadow-account loads/credits/charges; the guaranteed-ul reference parametrization is
-  wholly **[std]**, calibrated so the solved no-lapse premium resembles observed
-  market premiums.
-- **Era mixing.** Some retrieved specimen documents are 2001-CSO-era while the
-  representative specs are stated on a 2017 CSO basis; the documents disclose this
-  wherever it occurs.
-- **[unverified] items remain.** Claims that could not be confirmed against a
-  retrieved document (e.g., age-121 maturity mechanics for IUL, certain conversion
-  window details, the FASB LDTI primary text) are tagged `[unverified]` wherever used.
+  observed ranges. Guaranteed elements are far better sourced.
+- **Full rate/charge tables are largely proprietary.** Exceptions captured here: a
+  complete guaranteed COI table and processing order from a UL specimen policy, a
+  complete guaranteed premium schedule from a term specimen, final-expense WL premium
+  rates per $1,000, and VUL prospectus fee tables.
+- **ULSG shadow-account parameters are unobservable**, so that parametrization is wholly
+  **[std]**, calibrated so the solved no-lapse premium resembles observed market premiums.
+- **Era mixing.** Some retrieved specimens are 2001-CSO-era while the representative
+  specs are stated on a 2017 CSO basis; disclosed wherever it occurs.
+
+**Annuity products**
+
+- **No public payout factors or purchase rates.** No insurer publishes annuity purchase
+  rate tables or the mortality/interest/expense basis behind them — for SPIAs, DIAs, or
+  the annuitization option of any deferred product. Income figures in these documents are
+  captured illustrations, never derived rates, and no pricing test is possible against
+  public data. The 2012 IAM/IAR numerical tables live at the SOA's mortality table site
+  and must be loaded by an implementation.
+- **Market value adjustment algebra is thinly sourced.** Three distinct MVA families were
+  retrieved (geometric ratio, linear duration-times-rate-change, declared-rate
+  differential) with sharply differing cap treatments, but no retrieved *MYGA* document
+  states its own MVA algebra — the representative formula is inferred from same-family
+  documents and says so.
+- **Commutation and interim-value formulas are unpublished** for fixed SPIAs and DIAs;
+  insurers name an interest-rate adjustment without giving its formula, so any
+  implementation must assume one and flag it. RILA interim values are the exception —
+  AG 54 mandates their structure, and prospectus formulas were retrieved.
+- **AG 33 and AG 35 texts could not be retrieved.** Their authoritative text sits in the
+  paid NAIC AP&P Manual Appendix C, so formulaic CARVM is cited by title and effective
+  date only. This is the largest single hole on the annuity side.
+- **Behavioral assumptions are order-of-magnitude anchors.** Surrender-charge-expiry shock
+  lapse, its suppression when a lifetime-withdrawal rider is in force, and rider
+  utilization are the first-order drivers of annuity liability value, yet the calibrating
+  studies are paywalled; the shipped values are **[std]** with their evidence quality
+  stated.
+- **[unverified] items remain** wherever a claim could not be confirmed against a
+  retrieved document — including the RILA Form N-4 compliance date, whether any successor
+  to the 2012 IAR valuation table exists, and several NAIC guideline mechanics.

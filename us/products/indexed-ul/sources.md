@@ -126,7 +126,8 @@ the research file. No new sources were fetched at drafting.
 Cited as [REG-R#] to avoid collision with the product research file's own R# numbering.
 Full bibliographic entries (publisher, URL, doc type, fetched/not-fetched status, and
 annotations) live in `us/_research/regulatory-actuarial.md`; the shared reference
-library is `us/references/regulatory-and-actuarial-references.md` (same R-numbering).
+library is `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which
+now runs R1–R72: R35–R72 are annuity-specific entries added later and are not cited here).
 Entries cited in the two documents:
 
 | Tag | Short title | Fetched (per bibliography) |

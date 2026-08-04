@@ -130,7 +130,8 @@ Cited as [REG-R#] to avoid collision with the product research file's own R#
 numbering. Full annotated entries (publisher, URL, doc type, fetch status,
 annotation) live in `us/_research/regulatory-actuarial.md` under the corresponding
 R# id; the shared reference library is
-`us/references/regulatory-and-actuarial-references.md` (same R-numbering). Entries
+`us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
+R1–R72: R35–R72 are annuity-specific entries added later and are not cited here). Entries
 cited by the two drafts, with the bibliography's fetch markers:
 
 | Tag | Short name (per bibliography) | Fetched |

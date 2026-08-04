@@ -140,7 +140,8 @@ These use the R# numbering of the cross-product bibliography
 `us/_research/regulatory-actuarial.md` (accessed 2026-08-03), cited here as
 [REG-R#] to avoid collision with the product-file R# ids above. Full annotations
 live in that file; the shared reference library is
-`us/references/regulatory-and-actuarial-references.md` (same R-numbering). Entries
+`us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
+R1–R72: R35–R72 are annuity-specific entries added later and are not cited here). Entries
 cited in the two documents:
 
 - REG-R1. Standard Valuation Law (Model #820) — NAIC.
