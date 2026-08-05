@@ -7,8 +7,9 @@ single insurer's product. [S#] (primary product documents) and [R#] (regulatory/
 numbered per `us/_research/deferred-income-annuity.md`. [REG-R#] resolves against the cross-product library
 `us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R157 as **one** space:
 R1–R34 of life origin (provenance `us/_research/regulatory-actuarial.md`), R35–R72 annuity-specific
-(provenance `us/_research/regulatory-actuarial-annuities.md`) and R73–R142 statutory accounting and capital
-(provenance `us/regulatory/sources.md`), with **R114–R124 and R143–R149 unused by design**.
+(provenance `us/_research/regulatory-actuarial-annuities.md`), R73–R142 statutory accounting and capital and
+**R150–R157 the AP&P Manual appendix and actuarial-guideline prints read on 2026-08-06** (both with provenance
+`us/regulatory/sources.md`), with **R114–R124 and R143–R149 unused by design**.
 **[std]** marks standardizations introduced
 for the reference implementation; every [std] table row carries a footnote giving the rationale and the
 observed range. [unverified] marks claims not confirmed against a retrieved document.
@@ -511,6 +512,28 @@ income annuity interest rates" against the current Valuation Manual is citing th
 **VM-21 does not apply** — it is the variable-annuity standard [REG-R35][REG-R36]. The guideline family
 incorporated by VM-C (AG II, VIII, IX, IX-A/B/C, XIII, XXXIII, XXXV, XL, XLI) is indexed at [REG-R41].
 
+**Formulaic CARVM — Appendix A-820 and Actuarial Guideline XXXIII, now read in the AP&P Manual print.** The NAIC
+*Accounting Practices and Procedures Manual*, which this library had recorded as a paid publication it could not fetch
+[REG-R110 limit], is in fact a **free download**, and both items were read in full from it on 2026-08-06:
+**A-820, "Minimum Life and
+Annuity Reserve Standards"** with A-821 and A-822 [REG-R153], and **AG 33, "Determining CARVM Reserves for Annuity
+Contracts With Elective Benefits"** [REG-R151] — the printed title, not the wording IRS Rev. Rul. 2002-6 uses. A-820
+¶6 makes the minimum standard for an individual annuity contract the triple **method ¶¶14–15, interest ¶¶7–10,
+mortality Appendix A-821**, and ¶14 excludes only employer-plan group annuity business, so an individual DIA is
+squarely inside CARVM [REG-R153 ¶¶6, 14–15]. AG 33 then interprets that CARVM: it applies "to all annuity contracts
+subject to CARVM, where any elective benefits … are available to the contract owner", with **no product list and no
+size or premium threshold**, so the ±5-year income start date adjustment, payment acceleration and (extended case)
+commutation each put the contract inside it — while a cell offering **none** of them, such as a **Life Only QLAC**,
+falls outside AG 33 although CARVM still applies, AG 33's own *Definitions* expressly treating a deferred annuity
+"where no benefit options are available" as non-elective [REG-R151]. Three consequences matter at specification level
+and are worked in `technical-notes.md`, "CARVM under AG 33": the start-date adjustment **changes the valuation
+interest rate**, because the annuitization guarantee duration runs from issue to the assumed commencement date and
+the ±5 years can cross A-820 ¶8.c.i's guarantee-duration bands; a **commutation right bars** AG 33 *Text* 4(B)'s
+annuitization treatment for the payments it can reach; and the guideline's **7% expense-allowance floor has no base**
+here, being expressed on an accumulation fund this product does not have. AG 33 carries **no formulas, tables or
+factors** beyond that 7% cap and its 1998–2000 grade-in percentages, and **never cites SVL §5a by number** — the
+§5a pairing this library uses is its own, made on content [REG-R151].
+
 **Statutory accounting and capital.** Framework and calculations are in `us/regulatory/`; the DIA-specific treatment is
 in this directory's `technical-notes.md`, "Statutory accounting and capital". Product-specific only: a life-contingent
 DIA is a **life contract from issue** although no life-contingent payment falls due for 13 months to 30 years, so its
@@ -528,7 +551,12 @@ the **2024** RBC instructions, a sold NAIC publication whose **2025 edition coul
 table, a generational table combining the 2012 IAM Period Table with Projection Scale G2 [REG-R59]; VM-M
 prints the application formula and the rounding rule [R9][REG-R59], and the Academy/SOA development report
 records the LATF margin of 10% at ages up to and including 100, grading down 1% per year above 100 until an
-ultimate mortality cap of 0.40000 [R14][REG-R60]. Annuitant mortality is a different and lighter basis than
+ultimate mortality cap of 0.40000 [R14][REG-R60]. The AP&P print says the same: **A-821 ¶11** prescribes the 2012 IAR
+table for any individual annuity or pure endowment contract issued on or after January 1, 2015 (¶10, the Annuity 2000
+table for issues from January 1, 2001 through December 31, 2014), and **¶14 prints the no-chaining rounding rule with
+its own counter-example** [REG-R153]. A-821 **prints only** the 2012 IAM Period Table and Scale G2, however — the
+Annuity 2000 table, 1983 Table "a" and the 1994 GAR table are named and not printed, and **no standard is printed for
+individual annuities issued before January 1, 2001** [REG-R153]. Annuitant mortality is a different and lighter basis than
 insured-life mortality — the 2017 CSO and 2015 VBT families must **never** be used for annuitant longevity
 [REG-R59][REG-R61].
 

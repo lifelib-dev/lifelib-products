@@ -10,7 +10,9 @@ cross-product reference library `us/references/regulatory-and-actuarial-referenc
 one shared numbering space now running **R1–R157** with **R114–R124** and **R143–R149**
 unused by design: R1–R34 from `us/_research/regulatory-actuarial.md`,
 R35–R72 from `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three
-statutory accounting and capital research files listed in `us/regulatory/sources.md`) — were extracted from the
+statutory accounting and capital research files listed in `us/regulatory/sources.md`, and
+R150–R157 from the AP&P Manual appendix reading of **2026-08-06**, of which **R151** (AG 33),
+**R152** (AG 35) and **R153** (A-820 with A-821 and A-822) are cited here) — were extracted from the
 cited document. Values marked **[std]** are standardizations introduced for the reference
 implementation; each [std] table row carries a footnote giving the rationale and the
 observed range across insurers. Facts the research file could not verify are flagged
@@ -383,6 +385,18 @@ certain-portion commutation with its surrender charge [S1].
   York), NYL only [S5]; **participating / dividend-paying SPIAs**, mentioned once [S11]
   with no mechanics located.
 
+**How these excluded features would sort under AG 33, if any were added back.** The guideline's
+two-category test turns on whether a benefit is *freely elected*, not on its label
+[REG-R151 *Definitions* 1]. **Elective**, and therefore enough on their own to pull the contract
+into AG 33's scope: **payment acceleration**, the **NYL 30% Cash Withdrawal**, and the
+certain-portion **commutation** already in the composite. **Non-elective**, and therefore not:
+the **nursing-home confinement increase** and the **health-condition payment increases** on
+Mutual of Omaha's impaired-risk designs [S8] — AG 33's non-elective list names "nursing home
+benefits" expressly, and a benefit payable on a contingent event independent of an owner's
+election stays non-elective however large the payment step. This is the correction that matters
+most for reading older library notes, which had placed nursing-home waivers among the elective
+set [REG-R151].
+
 ---
 
 ## Variations across insurers
@@ -437,11 +451,54 @@ certain-portion commutation with its surrender charge [S1].
 
 **Standard Valuation Law (Model #820) and CARVM.** Model #820 is the enabling statute for
 the Commissioners Annuity Reserve Valuation Method and makes the Valuation Manual
-operative for annuity contracts [REG-R1][REG-R3]. CARVM sets the reserve as the greatest
-present value over paths of future guaranteed benefits; TIAA-CREF Life states the
-application directly: "For deferred annuities in the pay out stage, Single Premium
-Immediate Annuities ('SPIA') and supplementary contracts, the path of future guaranteed
-benefits with the highest present value is used to set policy reserves" [S7].
+operative for annuity contracts [REG-R1][REG-R3]. The codified text is **AP&P Appendix
+A-820**, read at first hand on 2026-08-06 [REG-R153] — the manual turned out to be a **free
+download**, not the paid publication the library had recorded [REG-R33], so the CARVM
+construction no longer rests on the Model #820 print alone. Three A-820 paragraphs bear
+directly on this product. **¶15** states CARVM as "the greatest of the respective excesses
+of the present values, at the date of valuation, of the future guaranteed benefits,
+including guaranteed nonforfeiture benefits" at the end of each contract year, less the
+present value of future *valuation considerations* payable before that year end, with the
+guaranteed benefits projected on the **contractual** mortality (if any) and interest basis
+and the valuation basis entering through the discounting [REG-R153 ¶15]. **¶14** is the
+scope gate: ¶15 reaches all annuity and pure endowment contracts **other than** group
+annuity and pure endowment contracts purchased under an employer or employee-organization
+retirement or deferred compensation plan (IRA/§408 plans excepted), which ¶13.b routes to a
+**CRVM-consistent** method instead — an individual retail SPIA is squarely inside ¶15
+[REG-R153 ¶¶13.b, 14]. **¶6** fixes the triple: for individual annuity and pure endowment
+contracts the minimum standard is the **method of ¶¶14–15**, the **valuation interest rates
+of ¶¶7–10**, and **the tables defined in Appendix A-821** [REG-R153 ¶6]. TIAA-CREF Life
+states the application to this product directly: "For deferred annuities in the pay out
+stage, Single Premium Immediate Annuities ('SPIA') and supplementary contracts, the path of
+future guaranteed benefits with the highest present value is used to set policy reserves"
+[S7].
+
+**AG 33 does not reach a no-option SPIA.** Actuarial Guideline XXXIII — printed title
+*"Determining CARVM Reserves for Annuity Contracts With Elective Benefits"* — has now been
+read in full [REG-R151], and the finding for this product is a **negative** one. Its
+applicability sentence reads: "This Actuarial Guideline shall apply to all annuity contracts
+subject to CARVM, **where any elective benefits (as defined below) are available** to the
+contract owner under the terms of the contract"; and its *Definitions* block classes as
+**non-elective** "benefits payable under either a deferred or immediate annuity contract
+(with or without life contingencies), **where no benefit options are available** under the
+terms of the contract" [REG-R151 *Purpose*, *Definitions* 1]. A `life_only`, `cash_refund`
+or `life_certain` contract of the composite design with **no commutation right** — the base
+configuration here, `commutation_enabled = false` — is therefore **inside CARVM and outside
+AG 33**. Add the commutation of the certain portion that MassMutual and NYL offer [S1][S5]
+and the contract is inside both, because commutation is a benefit option "freely elected
+under the terms of the contract"; the mechanics of that case are worked in
+`technical-notes.md`, "Reserve basis". Two corrections to statements the library had carried
+second-hand, recorded here because both were repeated wherever AG 33 was cited by title only.
+**One, the effective date.** The guideline's own printed **Effective Date** block reads "This guideline shall be effective on **December 31, 1998**, affecting all contracts
+issued on or after January 1, 1981", against the **December 31, 1995** date the library
+carries from the Revenue Ruling for a differently-titled instrument — the 1 January 1981
+issue-date reach is common to both, the effective date is not, and the extracted pages carry
+**no amendment history**, so the natural reconciliation (a later revision) is an inference
+this library does not assert. **Two, the elective/non-elective split.** **Nursing home
+benefits are non-elective**, not elective — they are named in the *Definitions* non-elective
+list — so any earlier library note placing nursing-home waivers among the elective set is
+wrong [REG-R151]. AG 33's grade-in ran to 100% by December 31, 2000
+and has **no live effect on any current valuation** [REG-R151 *Effective Date*].
 
 **VM-22 (PBR for non-variable annuities).** Effective for valuation dates on or after
 **January 1, 2026**, VM-22 constitutes CARVM for non-variable annuities, with a three-year
@@ -475,6 +532,20 @@ annuity mortality for impaired lives, structured settlements and SPIAs respectiv
 **supersedes** AG 9-B and the valuation-interest-rate references in AG 9-C
 [R1][REG-R37][REG-R41].
 
+**The formulaic rate A-820 prints, for the issues VM-V §1 does not reach.** For a single
+premium immediate annuity the A-820 dynamic formula is `I = .03 + W(R − .03)` with a **flat
+weighting factor W = .80** — no Plan Type and no guarantee-duration lookup enters, those
+being reserved to "other annuities" — and `R` is the **12-month average** of the Moody's
+composite yield on seasoned corporate bonds ending June 30 of the calendar year **of** issue
+or purchase, the result "rounded to the nearer one-quarter of one percent (1/4 of 1%)"
+[REG-R153 ¶¶7.a.i(b), 8.b, 9.b]. Two limits are recorded rather than papered over: A-820
+**prints no tie-break** for that rounding — the "ties down" convention belongs to VM-20
+§3.C.2.a and must not be read off A-820 [REG-R153 ¶7.a.i][REG-R3] — and the whole ¶7
+machinery is triggered "for policies issued on or after **the effective date of the
+Codification**", a threshold date A-820 never prints [REG-R153 ¶7]. For immediate annuities
+issued after 12/31/2017 this formula is superseded for maximum-rate purposes by **VM-V §1**
+above [R1][REG-R37]; it governs the older in-force layer.
+
 **Valuation mortality (Model #821 and VM-M).** The **2012 Individual Annuity Reserving
 (2012 IAR) Mortality Table** is the minimum valuation standard for individual annuity
 contracts [R4], and it is **generational**:
@@ -485,6 +556,26 @@ decimal places per 1,000… the rounding shall occur according to the formula ab
 incorrect (male 30, `q^2012 = 0.741`; `q^2014 = 0.741 × 0.99² = 0.7262541 → 0.726`, **not**
 `0.734 × 0.99 = 0.727`) [R3][R4][REG-R59]. Structured settlements funding tort,
 workers'-compensation or LTD claims instead use **1983 Table "a" without projection** [R4].
+
+**The effective dates, now read from the codified appendix rather than inferred.** A-820 ¶6
+makes **Appendix A-821** the mortality leg by direct cross-reference, and A-821 prints the
+table-by-issue-date rules the library previously did not carry [REG-R153 ¶6, A-821
+¶¶10–12, 15]: the **Annuity 2000 Mortality Table** for any individual annuity or pure
+endowment contract issued **1 January 2001 through 31 December 2014**; the **2012 IAR
+Mortality Table** for issues **on or after 1 January 2015**; **1983 Table "a" without
+projection** "solely when the contract is based on life contingencies and is issued to fund
+periodic benefits arising from" tort or out-of-court settlements, workers'-compensation-type
+claims, or long-term-disability claims where an annuity replaces continuing disability
+payments; and the **1994 GAR Table** for annuities purchased under a group annuity or pure
+endowment contract, **for which no effective date is printed**. A-821 also **prints the 2012
+IAM Period Table and Projection Scale G2 in full**, both sexes, age nearest birthday, at its
+Appendices I–IV; the male-30 anchor above (`1000·q = 0.741`, `G2 = 0.010`) is confirmed
+against the printed tables [REG-R153]. **Two limits stay open.** A-821 prints **no standard
+for an individual annuity issued before 1 January 2001**, so the valuation table for the
+oldest in-force layer is not sourced here; and the **1994 GAR**, **Annuity 2000** and **1983
+Table "a"** are **named and not printed**, so A-821's 1994 GAR projection formula
+`q_x^(1994+n) = q_x^1994 · (1 − AA_x)^n` is not computable from library sources
+[REG-R153].
 
 **Statutory accounting and capital.** The framework is in
 `us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md`;

@@ -366,7 +366,13 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   Section 10 adds interest-indexed UL requirements: filings describing how the insurer
   addresses the risk of the indexed rate falling, description of assets held for
   interest-indexed policies, and an annual Statement of Actuarial Opinion for
-  interest-indexed UL [R10][REG-R5].
+  interest-indexed UL [R10][REG-R5]. **Do not substitute the AP&P Appendix A print for
+  it.** Appendix item **A-585** has now been read in full and carries the **valuation
+  half only** — definitions and valuation requirements, with no nonforfeiture provisions,
+  no mandatory policy provisions, no annual-report requirements and **no interest-indexed
+  UL section**; it names only the **Standard Valuation Law (#820)** as its relevant model
+  law and does not name Model #585 anywhere, so everything in this bullet stays cited to
+  [R10][REG-R5] [REG-R155].
 - **NAIC Life Illustrations Model Regulation (Model #582) + AG 49-A.** Model 582 defines
   the disciplined current scale, self-support and lapse-support tests, and the
   illustration actuary's annual certification [R2]. AG 49-A (policies sold on/after
@@ -384,7 +390,16 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   VM-20 requires cash-flow modeling of the assets hedging indexed credits under the
   clearly-defined-hedging-strategy (CDHS) framework [R3][REG-R3]; enabling statute Model
   #820 [REG-R1]; NLG (secondary-guarantee) designs interact with AG 38 for pre-PBR
-  cohorts [REG-R7].
+  cohorts [REG-R7]. The **formulaic** leg — pre-2017 issues, and the *All Other* net
+  premium reserve where VM-20 §3.B.6 routes indexed UL with no deterministic or
+  stochastic reserve to VM-A/VM-C — is the **A-585** universal life CRVM adaptation, now
+  read at first hand: a guaranteed-maturity-premium / guaranteed-maturity-fund
+  construction, not the §5.A modified-net-premium one, whose GMP is solved on policy
+  guarantees at issue "excluding guarantees linked to an external referent", i.e. with
+  the index-linked crediting stripped out. That exclusion is the **only** index-specific
+  reserve rule in the item; every rate, table and factor it uses is delegated to **A-820**
+  by year of issue [REG-R155][REG-R153][REG-R110]. Mechanics, the alternative minimum
+  reserve and the A-830 ULSG branch: `technical-notes.md`, "Reserve basis".
 - **Nonguaranteed elements.** Caps, participation rates, declared rates, COI rates, and
   loads are NGEs; determination and revision practice is governed by ASOP No. 2 [REG-R26].
 - **Federal tax.** §7702 definition of life insurance (CVAT or GPT+corridor; floating

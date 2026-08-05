@@ -1,6 +1,8 @@
 # Variable Annuity with Living and Death Benefit Guarantees — Liability Cash Flow Model: Technical Notes (United States)
 
-**Status:** Draft, 2026-08-04 (all cited sources accessed 2026-08-04).
+**Status:** Draft, 2026-08-04; AP&P Manual appendix material added 2026-08-06. All cited
+sources accessed 2026-08-04 **except** [REG-R151] (AG 33), [REG-R153] (A-820), [REG-R156]
+(A-250) and [REG-R157] (A-255), accessed **2026-08-06**.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model for
 the standardized composite product defined in `product-spec.md` (same directory). It is
@@ -10,8 +12,10 @@ cross-product numbering space **R1–R157** curated at
 `us/references/regulatory-and-actuarial-references.md` (R1–R34 from
 `us/_research/regulatory-actuarial.md`, R35–R72 from
 `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three statutory
-accounting and capital research files, with **R114–R124** and **R143–R149** unused by
-design). **[std]** marks a standardization
+accounting and capital research files, and **R151–R157** the AP&P Manual appendix items
+read at first hand on 2026-08-06 — of which four are cited here, **AG 33** [REG-R151],
+**A-820** [REG-R153], **A-250** [REG-R156] and **A-255** [REG-R157] — with **R114–R124**
+and **R143–R149** unused by design). **[std]** marks a standardization
 introduced for the reference implementation; **[unverified]** marks a claim the research
 file could not confirm against a retrieved document. **Every parameter value below is
 identical to the value in `product-spec.md`.** The mechanics anchor is the Jackson
@@ -612,6 +616,51 @@ reaches the product only in part — unitized separate account assets are outsid
 general account assets backing the guarantees are not — and its trigger is company-level, as
 AG 55's is treaty-level [REG-R105][REG-R103].
 
+**What sits under VM-21 in the formulaic layer, now read at first hand — and it is a verified
+negative.** AP&P **Appendix A**, the excerpts of NAIC model laws that the Valuation Manual's
+VM-A indexes, carries exactly one item on this subject: **A-250, Variable Annuities**. It has
+now been read in full and it is **one printed page, three paragraphs, and a pointer rather than
+a reserve method** [REG-R156]. It supplies a scope definition — an individual or group policy or
+contract providing annuity benefits that vary with the investment experience of a separate
+account maintained by the insurer as to the contract (¶1) — a separate-account asset-coverage
+requirement (¶2, in *Product-specific interactions and traps* below), and a delegation of the
+reserve itself to **Appendix A-820**, to be established "in accordance with actuarial
+procedures that recognize the variable nature of the benefits provided and any mortality
+guarantees" (¶3) [REG-R156]. It contains **no formula, no symbol, no factor, no table, no
+CARVM adaptation, no elective-benefit path rule and no interim-value rule; it does not use the
+word CARVM; and it prints no effective date** — its own header names only the **Standard
+Valuation Law (#820)** and **SSAP No. 56**, not Model #250 [REG-R156]. The delegation lands in
+A-820, where ¶15 is the CARVM construction itself [REG-R153]. So "no formulaic escape" above is
+now sourced from the appendix side as well as from VM-21's: **Appendix A carries nothing
+variable-annuity-specific to fall back to.** A-250 is cited here for that negative as much as
+for what it supplies. **One caveat is not closed by reading it:** A-250's three paragraphs say
+nothing about VM-20, VM-A, the Valuation Manual or principle-based reserving, so the routing
+that makes it the formulaic item for this product is asserted by the Valuation Manual and not
+by A-250, and this file does not restate that routing from A-250 [REG-R156].
+
+**AG 33, the precedence clause, and where the inference starts.** AG 33 has also been read in
+full [REG-R151]. It applies "to all annuity contracts subject to CARVM, where any elective
+benefits … are available to the contract owner under the terms of the contract", with **no
+product list, no separate-account exception and no size or premium threshold**, and its own
+examples of elective benefits are "full surrenders, partial withdrawals, and full and partial
+annuitizations" — all three of which this contract has [REG-R151]. On the face of that sentence
+the contract is inside AG 33. What takes it out is the guideline's precedence clause: "in the
+event an actuarial guideline or regulation dealing with reserves is developed for a specific
+annuity product design, the product specific actuarial guideline or regulation will take
+precedence over the Actuarial Guideline" [REG-R151], with AG 43 and VM-21 as that
+product-specific instrument. **The principle is sourced; the pairing is not.** AG 33 **names
+no other guideline anywhere in its eight printed pages — not AG 43, not AG 35 — and never
+mentions separate accounts, variable annuities, the Valuation Manual or PBR at all**
+[REG-R151], so "AG 43/VM-21 displaces AG 33 for this product" is this library's reading of the
+general clause, **[std, derived]**, not AG 33's own statement. One consequence is worth
+carrying into the model even though it changes no number here: under AG 33 elective incidence
+rates "should not be based on tables reflecting past company experience, industry experience or
+other expectations" — they are trial sets **maximised over**, not assumptions — whereas VM-21
+requires prudent-estimate, experience-based, dynamically graded lapse and utilization of exactly
+the kind specified in *Policyholder behavior modeling* above [REG-R151][R1]. **The two
+behavioral frames are opposites and assumptions must never be carried between them**, which is
+the live trap for anyone reusing a formulaic-annuity behavior library on a VA block.
+
 ### What the cash flow model must additionally produce
 
 The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs"; these are
@@ -713,7 +762,16 @@ projected tax reserves at the projection start; its arithmetic and the `f` facto
   the model's `max(0, guarantee − AV)`, and the reason *Known modeling pitfalls* insists on
   projecting `DB(t)` gross and deriving the excess. Relatedly **separate account surplus may
   not become negative**: the general account funds any deficiency, and surplus created by CARVM
-  is reported by the general account as an **unsettled transfer** [REG-R83 ¶¶8–9].
+  is reported by the general account as an **unsettled transfer** [REG-R83 ¶¶8–9]. **The
+  reserve-side counterpart of that rule is now sourced**: A-250 ¶2 requires the company to
+  "maintain in each such separate account assets with a value at least equal to the reserves and
+  other contract liabilities with respect to the account" [REG-R156]. Three things about that
+  test matter for a model — it is **per separate account**, not company-level; its right-hand
+  side is **reserves *and* other contract liabilities**, not the unit ledger; and it is stated as
+  an **asset** requirement, so the correction runs on the asset side. **A-250 prints no remedy of
+  its own**; A-255 ¶5 spells out the corresponding transfer into the separate account for
+  modified guaranteed annuity business, and A-255 ¶7 carries the same asset-coverage floor
+  [REG-R157]. On the accounting side the counterpart is SSAP No. 56 [REG-R83 ¶¶8–9].
 - **Hedging cuts both ways in a statutory frame.** Hedge cash flows under a Clearly Defined
   Hedging Strategy belong inside the VM-21 projection [REG-R35], while the reform's own
   diagnosis was that fully hedging fair value **increased** capital requirements and their
@@ -746,6 +804,15 @@ is **not** repeated in the pointers below:
   [REG-R35]. **AG 43 is not superseded** — through reference in AG 43 those requirements
   also reach contracts issued before January 1, 2017, and the populations may be aggregated
   [R1][REG-R38].
+- **AP&P Appendix A item A-250, and AG 33 — the formulaic layer, cited for what it does *not*
+  contain.** A-250 (variable annuities) has been read in full and carries **no reserve method**: a
+  definition, a per-account asset-coverage floor and a delegation of the reserve to **A-820**,
+  whose ¶15 is CARVM [REG-R156][REG-R153]. AG 33, also read in full, reaches "all annuity
+  contracts subject to CARVM" carrying elective benefits but is displaced here by the
+  product-specific instrument under its own precedence clause — a clause that **names no
+  guideline**, so the AG 43 pairing is **[std, derived]** [REG-R151]. Neither item changes a
+  number in this model; both are in *Reserve basis* above so that the formulaic layer under
+  VM-21 is stated rather than assumed.
 - **C-3 Phase II RBC** — the same projection at **CTE(98)** per LR027, with TAR =
   pre-phase-in VM-21 reserve + C-3 amount, the C-3 amount then grossed up by
   `1 / (1 − enacted maximum federal corporate income tax rate)` [R3]; VM-21 §§4.A–4.E and the
@@ -832,7 +899,20 @@ is **not** repeated in the pointers below:
   Account Options [S1]. If a variant re-enables them, note that **no closed-form MVA factor
   was found in any of the four prospectuses read**: Jackson discloses a rate-differential
   rule with a 0.25% dead band and a Fixed Account Minimum Value floor [S1], so any algebraic
-  MVA formula in a model would be **[unverified]** [S1].
+  MVA formula in a model would be **[unverified]** [S1] — **and that flag stays**, because the
+  contract formula itself was never disclosed in closed form. What has changed is that the
+  absence is now *explained* rather than merely recorded: **A-255**, the AP&P Appendix A item for
+  modified guaranteed annuities, requires the separate account liability to be at least the surrender
+  value produced by **the contract's own market-value-adjustment formula** and **prints neither
+  a formula nor a parameter for one** [REG-R157]. No MVA formula is prescribed in the appendix
+  at all, so a model's MVA algebra can only ever come from the contract. A-255 ¶1's four-element
+  definition — deferred annuity, individual or group; assets in a separate account; values
+  guaranteed if held for specified periods; nonforfeiture values on an MVA formula if held for
+  shorter periods, with the assets in a separate account "during the period or periods when the
+  contract holder can surrender the contract" — is also the test **VM-21 §2.A.2** uses to
+  exclude contracts falling under VM-A item A-255, so such a variant faces a **scope** question
+  before it faces a formula question; **that exclusion is VM-21's text, not A-255's**
+  [REG-R157][REG-R35].
 - **Rate-sheet vintage.** Every current parameter above is dated 2026-04-27 [S3]; historical
   tables show bonus percentages moving 5/6/7% → 4/5/6% → 5/6/7% and the GWB Adjustment
   200% → 105% within six years [S1]. An in-force model must carry the vintage.

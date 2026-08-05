@@ -1,7 +1,9 @@
 # Variable Universal Life Insurance — Liability Cash Flow Model: Technical Notes (United States)
 
-**Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
-Companion to `product-spec.md` in this
+**Status:** Draft, 2026-08-03; cross-product [REG-R#] citations extended 2026-08-06
+with the AP&P Manual appendix items read at first hand. Product sources [S#]/[R#] were
+accessed 2026-08-03; the [REG-R#] entries carry their own access dates per entry in
+`sources.md`. Companion to `product-spec.md` in this
 directory; both use identical parameter values. This is a standardized composite for
 reference modeling, not any single insurer's product. [S#]/[R#] cite
 `us/_research/variable-ul.md`; [REG-R#] cites the cross-product reference library
@@ -347,7 +349,10 @@ surplus against one year of flexible premium while the 14-year surrender charge
 (**[std]**, spec footnote 10) is contingent revenue that never becomes an asset. A
 flexible-premium contract has no scheduled premium due, so the deferred-premium asset,
 the change in loading on it [REG-R79 ¶11] and the VM-20 offset `B` are nil in the
-baseline **[std]**.
+baseline **[std]**. That **[std]** was tested against the AP&P print of the Standard
+Valuation Law and **stands**: A-820 gives terminal reserve constructions only and carries
+**no mean-reserve, mid-terminal or deferred-premium machinery** at all, so it neither
+supports the standardization nor displaces it [REG-R153].
 
 ### Reserve basis
 
@@ -359,11 +364,41 @@ baseline **[std]**.
   pursuant to applicable methods in **VM-A and VM-C** for the basic reserve" [REG-R3
   §3.B.6] — the **formulaic CRVM** construction of `us/regulatory/technical-notes.md`,
   "Formulaic reserves", running inside a PBR-era manual [REG-R110]. Both engines are
-  needed before any DR or SR arises. VM-A also indexes **A-270** (variable life) and
-  **A-820**, and **neither text was retrieved** [REG-R110], so nothing is stated about
-  A-270 mechanics beyond Model #270's requirement that reserves for variable benefits
-  sit in the separate account on a basis consistent with the Standard Valuation Law
-  [R8][REG-R1].
+  needed before any DR or SR arises. **A-820 has since been read at first hand**
+  [REG-R153] and supplies the statutory-layer authority that sentence previously took
+  from VM-20's pointer alone: ¶¶3–4 split the appendix at the **1 January 2017**
+  operative date — ¶¶5–22 govern earlier issues and the principle-based ¶¶23–27
+  "**shall not apply to any such policies and contracts**" — while ¶24.a.i still
+  requires the Valuation Manual to specify CRVM for life contracts, ¶24.d.i lets the
+  standard for non-PBR business simply "**be consistent with the minimum standard of
+  valuation prior to the operative date of the Valuation Manual**", and ¶27 permits a
+  principle-based valuation to "**include a prescribed formulaic reserve component**"
+  [REG-R153]. **A-820 reaches a VUL only through ¶13.a**, which extends CRVM "by a
+  method consistent with the principles of paragraphs 11 and 12" to policies
+  "providing for a varying amount of insurance or requiring the payment of varying
+  premiums", with ¶21 as the catch-all for plans whose minimum reserves "cannot be
+  determined by the methods described above" [REG-R153]. **Those two paragraphs are the
+  whole of A-820's reach here, because A-820 carries no separate account content at
+  all.** Its header lists SSAP No. 56 among the relevant SSAPs, but nothing in ¶¶1–28
+  addresses separate accounts, the general/separate split or variable benefits
+  [REG-R153]. That is a verified negative, not a gap in this file: everything below
+  about the two balance sheets comes from SSAP No. 56 [REG-R83] and VM-20 §2.F
+  [REG-R3], and **the formulaic appendix VM-A points at says nothing about this
+  product's defining feature.**
+  Whether the **A-585** universal life CRVM adaptation — guaranteed maturity premium,
+  guaranteed maturity fund and the funding ratio `r` [REG-R155 ¶8] — reaches a
+  *variable* UL is **not answered by the appendix print**: A-585 carries definitions
+  and valuation requirements only, prints no applicability threshold of any kind, and
+  its ¶7 definition of a universal life insurance policy turns solely on "separately
+  identified interest credits … and mortality and expense charges", saying nothing
+  about a separate account; the carve-out this product relies on is **Model #585's
+  own text** [REG-R5], and Model #585 was not re-read against the appendix print
+  [REG-R155]. Recorded as open, not resolved. **A-270** (variable life) was extracted
+  in the same pass as A-585 but **no reference id was assigned to it**, so nothing is
+  cited from it and the variable-life guaranteed-minimum-death-benefit reserve
+  construction stays outside this library; what this product says about reserves for
+  variable benefits sitting in the separate account on a basis consistent with the
+  Standard Valuation Law continues to rest on **Model #270 itself** [R8][REG-R1].
 - **One exclusion-test route is barred for this product.** **Variable life may not use
   the SET Certification Method** [REG-R3 §6.A], so a VUL group must pass the Stochastic
   Exclusion Ratio Test (`(b − a)/c < 6%`) or the Demonstration Test, or compute the SR
@@ -387,7 +422,23 @@ baseline **[std]**.
   outside the upper bound entirely.
 - **Asset adequacy is part of minimum reserves**: VM-30 covers all in-force business
   and turns any shortfall into an **additional reserve** [REG-R100], which Standard
-  Valuation Law §6.B makes a minimum-reserve component [REG-R1]. Its
+  Valuation Law §6.B makes a minimum-reserve component [REG-R1] — and the AP&P
+  codification of that rule is now sourced rather than assumed. It is **not** in the
+  A-820 print, whose ¶16 carries only the aggregate nonforfeiture-basis floor; it sits
+  in the separate four-paragraph **A-822**, whose ¶3 requires the additional reserve
+  where analysis shows one "should be held in addition to the aggregate reserve held
+  and calculated in accordance with methods set forth in Appendix A-820", and whose ¶4
+  provides that releasing it "would not be deemed an adoption of a lower standard of
+  valuation" [REG-R153]. Read with **A-820 ¶18** — holding additional reserves
+  determined by the appointed actuary is not the adoption of a higher standard — that
+  pair keeps both the establishment and the release of an asset-adequacy reserve
+  **outside** the Exhibit 5A change-in-valuation-basis machinery above, while A-820
+  ¶2.c is the underlying requirement that assumptions be consistent with the preceding
+  year-end "with any exceptions disclosed in the notes to the financial statements"
+  [REG-R153]. **Naming trap:** AP&P Appendix **A-822 is not NAIC Model #822**, the
+  Actuarial Opinion and Memorandum Regulation — same number, different instrument, and
+  A-822 carries no opinion wording, no scenario requirements and no memorandum contents
+  [REG-R153]. VM-30's
   asset-adequacy-tested amounts table carries **separate accounts** rows alongside
   Exhibit 5, and **§3.B.7 forbids cash flow testing that solely projects the
   anticipated long-term average equity return** [REG-R100] — a direct constraint on
@@ -518,9 +569,16 @@ outputs":
   of insurance** on the reinsured net amount at risk [REG-R3 §3.B], and Exhibit 5 needs
   gross and ceded produced separately with **no deduction for modified coinsurance**
   [REG-R89].
-- **Limits carried forward unchanged.** AG XXXVII (variable life GMDB reserves) and
+- **Limits carried forward, less the appendix items that have since been read.**
+  AG XXXVII (variable life GMDB reserves) and
   AG XXIII (separate account investments) are cited through [R7] and their texts were
-  not retrieved; **A-270, A-820 and A-830 were not read** [REG-R110]; the **AVR factor
+  **still** not retrieved. Of the three Appendix A items this list used to disclaim,
+  **A-820 and A-830 have now been read in full** from the free *As of March 2026* AP&P
+  download [REG-R153][REG-R154], and **A-830 turns out never to have been an open item
+  for this product**: ¶3.a.iii and ¶3.a.iv exclude variable life and variable universal
+  life **outright**, so the appendix does not reach a VUL at all [REG-R154 ¶3.a].
+  **A-270 was extracted in the same pass as A-585 but carries no reference id** — read,
+  not citable, and nothing here is stated from it. The **AVR factor
   tables and IMR grouped-amortisation factor tables were deliberately not transcribed**
   and no value for either appears in this library [REG-R89]; annual statement page and
   line references come from the **2025** blank and must be re-verified against the 2026
@@ -541,9 +599,15 @@ over aggregate NPR (less due/deferred premium asset); VUL without secondary
 guarantees is in the "All Other" reserving category (product code 080), with
 secondary guarantees in the ULSG category (code 090); variable life may not use the
 SET certification method [R7]. GMDB reserves per AG XXXVII; separate-account
-investment rules per AG XXIII; Model 270 (A-270) requires reserves for variable
+investment rules per AG XXIII (both texts still unretrieved, cited through [R7]);
+**Model 270** requires reserves for variable
 benefits held in the separate account on a basis consistent with the Standard
-Valuation Law [R7][R8][REG-R1]. Current Valuation Manual edition: Jan. 1, 2026
+Valuation Law [R7][R8][REG-R1] — its AP&P print, **A-270**, has been read but carries
+**no reference id**, so nothing is stated from it. The formulaic appendix items sitting
+under the NPR — **A-820** [REG-R153], the **A-585** UL adaptation whose reach to a
+variable contract is unresolved [REG-R155], and **A-830**, which excludes VUL by its
+own terms [REG-R154] — are treated in "Statutory accounting and capital" above and are
+not restated here. Current Valuation Manual edition: Jan. 1, 2026
 (VM-01/02/20/31, VM-C/M/G/V) [REG-R3]. Practice guidance: ASOP 52 (VM governs in
 conflict) [R9]; AAA VM-20 practice note [R10]; ASOP 7 (cash flow analysis)
 [REG-R27]; ASOP 56 (model governance for this implementation itself) [REG-R32]. Tax

@@ -419,18 +419,95 @@ nearest quarter of 1%, **ties up**; §3.B.5.d uses the unuplifted rate, **ties d
 lapse throughout** [REG-R3].
 
 **Pre-PBR issues and in-force.** Formulaic CRVM reaches current valuations through **VM-A item
-A-830** (Model #830) and **AG 38** via the VM-C index [REG-R110][REG-R41][REG-R6]; deficiency
+A-830** and **AG 38** via the VM-C index [REG-R110][REG-R41][REG-R6]; deficiency
 reserves survive under Actuarial Guideline I in Exhibit 5 **Miscellaneous Reserves**
-[REG-R41][REG-R89]. **Neither A-830 as printed in the AP&P Manual nor the AG I text was
-retrieved** [REG-R110][REG-R41], so nothing formulaic is asserted beyond the Standard Valuation
-Law [REG-R1] and AG 38 [R1]. A real block carries **both** bases in one Exhibit 5 column keyed
+[REG-R41][REG-R89]. **A-830 as printed in the AP&P Manual has now been read in full and is cited
+here at first hand as [REG-R154]** — the manual is a free download, not the paid publication the
+library once recorded [REG-R73] — and so has **A-820** [REG-R153], the appendix A-830 leans on for
+what a basic reserve *is* (¶4 → A-820 ¶¶11–13), for the minimum reserves whose excess is the
+deficiency reserve (¶6 → A-820 ¶¶19–20) and for the maximum valuation interest rates
+(¶8 → A-820 ¶¶7–10). **The AG I text was still not retrieved** [REG-R41], so the deficiency-reserve
+*interpretive* layer stays second-hand even though the construction beneath it no longer is:
+A-820 ¶19 states the deficiency as a **floor on the policy reserve** rather than as an additive
+item, while A-830 defines a **separate** quantity — quantity A, a full re-run of the basic reserve
+with the **guaranteed** gross premium substituted for the net premium duration by duration wherever
+the gross is the smaller — less the basic reserve [REG-R153 ¶19][REG-R154 ¶¶6, 17]. The key is the
+**guaranteed** gross premium, "guaranteed and determined at issue" [REG-R154 ¶7], not premium
+actually collected — for a flexible-premium GUL those are different things. A real block carries
+**both** bases in one Exhibit 5 column keyed
 by year of issue [REG-R89]; moving between them is a **change in valuation basis** — direct to
 surplus at the **beginning of the year**, not graded in, shown in Exhibit 5A [REG-R79][REG-R89].
+
+**What A-830 prescribes for this contract — ¶¶29–32, and a citation correction.** The appendix is
+a **flat sequence of paragraphs ¶¶1–32 plus an unnumbered Attachment, with no Sections at all**,
+and the words "Model #830" and "Regulation XXX" appear **nowhere** in it, so a "Model 830 Section
+7" citation does not resolve against this print; the ULSG material is at **¶¶29–32** [REG-R154].
+Scope first, because A-830 carries a ULSG carve-out this library did not have: a UL policy is
+**outside the appendix entirely** where **all three** limbs of ¶3.a.ii hold — secondary guarantee
+period **five (5) years or less**, specified premium **not less than** the net level reserve
+premium for that period (ultimate 2001 CSO rates from 1/1/2004), and initial surrender charge
+**not less than 100% of the first-year annualized specified premium** [REG-R154 ¶3.a.ii]. The test
+is on the **policy**, so the representative lifetime guarantee fails the first limb outright, and
+so does the observed design layering a 5-year cumulative-premium guarantee *underneath* a lifetime
+shadow-account guarantee [S4] — its policy-level secondary guarantee period is still lifetime. (At
+the worked model point the third limb fails too: the **[std]** initial surrender charge
+$18/$1,000 × $500,000 = $9,000 is below the **[std]** $10,800 annual premium.) A standalone
+short-guarantee UL is the design the carve-out is aimed at, and needs all three limbs tested.
+Inside the appendix [REG-R154 ¶¶29–32]:
+
+- **A secondary guarantee (¶29.a) is wider than the contract clause.** It is a guarantee that the
+  policy stays in force at the original schedule of benefits **subject only to payment of specified
+  premiums**, **or** (from 1/1/2004, on ultimate 2001 CSO rates) a policy whose **minimum premium
+  at any duration is less than the corresponding one-year valuation premium** — the second limb
+  sweeps in policies with no explicit guarantee clause at all.
+- **Premium substitution and segmentation (¶30).** Basic reserves for the secondary guarantee are
+  the **segmented reserves for the secondary guarantee period**, with gross premiums **set equal to
+  the specified premiums, if any, or otherwise to the minimum premiums**, and the segments
+  determined by the ¶5 contract segmentation method run on those substituted premiums. **There is
+  no unitary leg** — ¶30 says "segmented reserves", where ¶21 says `max(segmented, unitary)` for
+  the nonlevel non-UL business.
+- **The two premium definitions the model must be able to produce.** *Specified premiums* are the
+  premiums whose payment guarantees the original benefit schedule but which would otherwise be
+  insufficient to keep the policy in force absent the guarantee **if maximum mortality and expense
+  charges and minimum interest credits were made and any applicable surrender charges were
+  assessed**. The *minimum premium* for a policy year is the premium that, paid into a policy with
+  a **zero account value at the start of the year, produces a zero account value at the end**, on
+  the policy cost factors and crediting rate **guaranteed at issue** [¶29.c–e]. Both are
+  **base-account, guaranteed-basis** quantities: neither is `SG_t`, and neither is the solved `P*`,
+  which is a shadow-account solve on **[std]** parameters.
+- **Deficiency and the floor.** ¶31 runs the ¶22 deficiency construction over the secondary
+  guarantee period on the same substitution; ¶32 makes the minimum reserve during the guarantee
+  period the **greater** of (a) basic plus deficiency for the secondary guarantee and (b) "the
+  minimum reserves required by other appendices governing universal life plans". Limb (b) is an
+  **unnamed cross-reference — A-830 does not say which appendix item it means, and it must not be
+  resolved to A-585 on this text** [REG-R154 ¶32]. That gap stays open here.
+- **More than one guarantee (¶29.b).** The minimum reserve is the **greatest of the respective
+  minimum reserves of each unexpired secondary guarantee, each valued ignoring all the others** —
+  not a combined valuation, which bears directly on the layered design at [S4]. And a guarantee
+  **unilaterally changed by the insurer after issue is deemed to have been made at issue**, forcing
+  recalculation of the ¶30/¶31 reserves **from issue**.
+
+**What A-830 does not say, stated so it is not read into it.** It prints **no calendar effective
+date for itself** — "the effective date of this appendix" is an unresolved placeholder used eleven
+times — so no XXX commencement date may be attributed to [REG-R154]. The only calendar dates it
+prints are the **1 January 2004** cutover to the 2001 CSO Mortality Table for basic reserves (¶16),
+deficiency reserves (¶17) and the tabular cost of insurance (¶23, on **ultimate** rates), with the
+pre-2004 1980-CSO-with-elective-select-factors branch **retained in full** for older issues. And it
+contains **no AG 38 content whatever** — no shadow account, no funding ratio, no
+minimum-gross-premium definition, no 8C/8D/8E analogue — and no mention of the 2017 CSO, the
+Valuation Manual, VM-20 or PBR [REG-R154]. The funding-ratio interpolation this model computes is
+**AG 38's** contribution [R1; REG-R7]; it must not be attributed to A-830.
 
 **Asset adequacy analysis is part of the minimum reserve.** SVL §6.B makes the actuary's
 required amount part of minimum reserves [REG-R1] and VM-30 requires any shortfall to be
 **established as an additional reserve**, reported as "additional actuarial reserves —
-asset/liability analysis" in Exhibit 5 Miscellaneous Reserves [REG-R100][REG-R89]. It bites
+asset/liability analysis" in Exhibit 5 Miscellaneous Reserves [REG-R100][REG-R89]. **Citation
+detail, now that the appendix print has been read:** in the AP&P codification that requirement
+does not sit in A-820 at all — A-820 as printed has **no §6.B analogue**, its ¶16 carrying only
+the aggregate nonforfeiture-basis floor — but in the four-paragraph **A-822 ¶3**, which makes
+the additional reserve mandatory on top of the A-820 aggregate, with ¶4 providing that its
+release "would **not** be deemed an adoption of a lower standard of valuation" [REG-R153]. A
+reader sent to A-820 for §6.B will not find it. It bites
 hardest here — the projection must reach run-off of a lifetime guarantee, and the Academy survey
 found **ULSG the longest-horizon life product, 46% of companies projecting beyond 40 years**
 against 28% for individual traditional life (longer periods still are reported for structured
@@ -448,6 +525,7 @@ ULSG adds:
 |---|---|
 | Exhibit 5, ULSG line, two-line VM-20 split [REG-R89][REG-R90] | NPR seriatim and the excess of max(DR, SR) over Σ NPR, keyed by **year of issue** and **reserving category**, policies past the guarantee expiry still in the ULSG category [REG-R3] |
 | VM-20 §3.B.5 net premium reserve [REG-R3] | **FFSG, ASG, LSG** per policy per period — `SG_t` *is* ASG, FFSG is a backward solve on the same shadow recursion, and the funding ratio `R` drives the §3.B.5.c level lapse |
+| A-830 ¶¶29–32 formulaic ULSG reserve, pre-PBR issues [REG-R154] | **Specified premiums** by policy year, or **minimum premiums** where none are specified (the premium taking a **zero** account value at the start of a policy year to **zero** at the end, on cost factors and crediting rate guaranteed at issue), and the **¶5 segment boundaries derived from those premiums** — base-account, guaranteed-basis quantities, *not* `SG_t` and *not* the solved `P*`. Also the **guaranteed** gross premium series for the quantity-A deficiency run [REG-R154 ¶¶7, 17] |
 | Analysis of Increase in Reserves, ULSG column [REG-R90] | Tabular net premiums, tabular interest at the **NPR valuation rate** (uplifted or not per §3.B.5.c/d), tabular cost, reserves released — **valuation-basis** quantities on prescribed mortality and the prescribed §3.B.5 lapse, not best-estimate decrements |
 | Exhibit of Life Insurance [REG-R89] | Face in force by year, incurred basis, net of elected decreases, withdrawal-driven reductions and ROP surrenders |
 | C-2 net amount at risk [REG-R142] | **Face in force − statutory reserve, net of reinsurance** — a statement quantity, *not* the contractual `NAAR_t` of step 4 (see traps) |
@@ -513,7 +591,10 @@ levels, the trend test and the RBC Plan's five-year projection are at [REG-R125]
 - **The shadow account is not a statutory reserve.** `SG_t` is a notional in-force test input,
   never payable [S2, S3]: not an asset, not a liability, not admitted. It enters statutory
   reporting only as the **ASG** input to the VM-20 §3.B.5 NPR [REG-R3] and the AG 38
-  funding-ratio numerator [R1]. Never book it, and never let it reduce a reserve.
+  funding-ratio numerator [R1]. Never book it, and never let it reduce a reserve. It is also
+  **not** the A-830 premium input: ¶30 substitutes **specified premiums, if any, or otherwise
+  minimum premiums** — base-account, issue-guaranteed quantities — for gross premiums, and runs
+  the ¶5 segmentation on those [REG-R154 ¶¶29.c–e, 30].
 - **Forgone monthly deductions are not a receivable.** `D_t` creates no admitted asset and no
   accrual against future premium — the guarantee cost emerges through the reserve. That
   treatment is **[std]**; no retrieved source addresses it, and an invented accrual would
@@ -525,7 +606,10 @@ levels, the trend test and the RBC Plan's five-year projection are at [REG-R125]
 - **AG 38 and VM-20 coexist in one column** — 8C/8D for pre-PBR in-force, 8E fixing minimum
   gross premiums by policy design and capping guaranteed shadow credits [R1; REG-R7]; VM-20 for
   post-operative-date issues [REG-R3]; two standards, one column, keyed by year of issue
-  [REG-R89]. And the exclusion tests are a **wall here, not a cliff**: deemed DET failure plus
+  [REG-R89]. AG 38 is an *interpretation*, and the text it interprets is **A-830 ¶¶29–32**
+  [REG-R154] — never "Model 830 Section 7": the AP&P print is a flat ¶¶1–32 with no Sections and
+  never uses the names "Model #830" or "Regulation XXX". And the exclusion tests are a **wall
+  here, not a cliff**: deemed DET failure plus
   the SET certification bar leaves no configuration of this contract without a DR
   [REG-R3][REG-R109].
 - **AXXX financing, AG 53 and AG 55.** The Model #787 / AG 48 Required Level of Primary Security
@@ -564,11 +648,21 @@ cash flows**; reserve layers consume those cash flows and are cited, not reprodu
   value FFSG is a backward solve on the same shadow recursion [R2]. See also the
   Academy practice note [R9; REG-R23] and the Valuation Manual itself [REG-R3].
   Material-SG business cannot use the life PBR exemption [R2; R9].
-- **AG 38 / Model 830 (pre-PBR issues and in-force)**: funding-ratio interpolation
-  between basic+deficiency reserves and the net single premium for the guarantee,
-  with prescribed lapse caps and surrender-charge offsets; Section 8E Method I
+- **AG 38 / A-830 (pre-PBR issues and in-force)**: the formulaic layer underneath
+  AG 38 is now sourced at first hand. A-830 **¶¶29–32** — not "Section 7"; the AP&P
+  print is a flat ¶¶1–32 with no Sections — makes the basic reserve the **segmented
+  reserve over the secondary guarantee period** computed on specified (else minimum)
+  premiums with **no unitary leg**, the ¶22 deficiency on the same substitution, and a
+  floor at the greater of that sum and an **unnamed** "other appendices governing
+  universal life plans" limb; several unexpired guarantees are valued **stand-alone and
+  the greatest taken** [REG-R154 ¶¶29–32]. A-830's own basic reserves, deficiency
+  comparator and maximum valuation interest rates are cross-references into **A-820
+  ¶¶11–13, ¶¶19–20 and ¶¶7–10** [REG-R153]. On top of that, AG 38 supplies what A-830
+  contains nothing of: funding-ratio interpolation between basic+deficiency reserves
+  and the net single premium for the guarantee, prescribed lapse caps and
+  surrender-charge offsets; Section 8E Method I
   defines minimum gross premiums off this very shadow recursion [R1; REG-R6;
-  REG-R7].
+  REG-R7]. Detail in "Statutory accounting and capital", "Reserve basis" above.
 - **Reserve financing**: Model 787 / AG 48 Primary Security requirements are
   VM-20-based (greater of DR and NPR; greatest of DR/SR/NPR if the stochastic
   exclusion fails) [R6; REG-R11; REG-R12].

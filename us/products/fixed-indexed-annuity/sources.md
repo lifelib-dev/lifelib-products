@@ -12,9 +12,16 @@ Two cross-product entries — **REG-R8** and **REG-R10** (AG 49 / AG 49-A) — w
 retrievals. A further **30 cross-product entries in the R73–R142 block** were added when the
 statutory accounting and capital material was written; they are carried verbatim from
 `us/regulatory/sources.md` and are likewise **not** new retrievals — see the subsection under
-"Cross-product regulatory references".
+"Cross-product regulatory references". **Four more — REG-R151, REG-R152, REG-R153 and
+REG-R157 — were added on 2026-08-06**, when seven AP&P Manual appendix items were read at first
+hand from the free *As of March 2026* download; those four are the ones this product's documents
+actually cite, and their metadata is again carried verbatim from `us/regulatory/sources.md`. They
+**supersede in fact** — they do not replace — [R11], [REG-R33], [REG-R39], [REG-R40] and the A-820
+half of [REG-R110], all of which are retained unaltered below, because a superseded record is
+evidence rather than clutter.
 
-Access date for all citations: **2026-08-04**.
+Access date for all citations: **2026-08-04**, except the four post-drafting entries
+**REG-R151, REG-R152, REG-R153 and REG-R157**, accessed **2026-08-06**.
 
 Note on the two R-numberings: the **[R#]** ids below are local to
 `us/_research/fixed-indexed-annuity.md` and are unrelated to the **[REG-R#]** ids in the
@@ -234,6 +241,18 @@ declared-rate parameters are stale or absent.
   secondary but authoritative professional source, and is tagged accordingly. The "Type 1" /
   "Type 2" naming is [unverified]. Titles and continued incorporation into the Valuation Manual
   are independently verifiable via [REG-R41]; the authoritative text sits in [REG-R33].
+- **Superseded in fact on 2026-08-06, and this product's documents say so at the point of use.**
+  The AP&P Manual's *As of March 2026* edition is a **free download** and was retrieved in full;
+  **AG 33 was read in full at [REG-R151] and AG 35 at [REG-R152]**, so their mechanics are no
+  longer second-hand and no longer [unverified]. Two specific corrections follow from that reading:
+  **"Type 1" and "Type 2" are the guideline's own printed section headings**, not shorthand, so the
+  [unverified] flag on the naming is closed; and **AG 35 does not free-standingly require asset
+  adequacy testing** — it directs testing "to the extent required by law, regulation, or regulatory
+  requirements", so the claim previously carried on [R1] is corrected rather than confirmed. The
+  entry above is preserved verbatim because it correctly records the state of the research file,
+  which governs. What R11 disclaimed and the reading did **not** supply: **AG IX-B**, named three
+  times by AG 35 as an alternative valuation-rate source, and the **NAIC Interest-Indexed Annuity
+  Contracts Model Regulation** whose Sections 5 and 6 AG 35 supersedes — neither is in this library.
 
 ---
 
@@ -245,8 +264,12 @@ R-numbering. The curated page these resolve to is
 space, now running R1–R157, with R114–R124 and R143–R149 permanently unused by design**: entries
 **R1–R34** originate in `us/_research/regulatory-actuarial.md` (the life bibliography, several
 entries of which also bind annuity models), entries **R35–R72** in
-`us/_research/regulatory-actuarial-annuities.md` (the annuity extension), and entries **R73–R142**
-in the statutory accounting and capital research behind `us/regulatory/`. The gaps are not losses
+`us/_research/regulatory-actuarial-annuities.md` (the annuity extension), entries **R73–R142**
+in the statutory accounting and capital research behind `us/regulatory/`, **R150** in the NAIC
+principle-based-reserving topic page, and entries **R151–R157** in the five AP&P Manual extractions
+read on 2026-08-06 (`us/_research/appp-ag33.md`, `us/_research/appp-ag35.md`,
+`us/_research/appp-a820-a821-a822.md`, `us/_research/appp-a830.md`,
+`us/_research/appp-a585-a250-a255-a270.md`). The gaps are not losses
 and must not be back-filled — the block convention lets a stream finish with spare numbers so a
 later pass can extend it without renumbering anything already cited. Retrieval markers below are
 those recorded in the originating research file.
@@ -291,6 +314,15 @@ those recorded in the originating research file.
 | REG-R68 | AAA — Fixed Indexed Annuities: Product Mechanics and Risk Management (same paper as [R1]) | annuities | yes (local text extraction) |
 | REG-R70 | ASOP No. 54 — Pricing of Life Insurance and Annuity Products | annuities | yes |
 | REG-R71 | ASOP No. 10 — U.S. GAAP for Long-Duration Products (Doc. No. 207) | annuities | yes (local text extraction) |
+
+**Four rows in that table are now superseded in fact, and are kept because they record what the
+originating research files said.** **REG-R33** ("paid publication") is superseded by the free
+retrieval of the *As of March 2026* AP&P Manual; **REG-R39** and **REG-R40** ("no — title verified
+via REG-R41") are superseded by the first-hand reads at **REG-R151** and **REG-R152**; and the
+A-820 half of **REG-R110**'s limit is superseded by **REG-R153**. The retrieval-status column is
+left unaltered in each case: it states the status *per the originating research file*, which is
+still an accurate statement about that file. **Nothing is renumbered, and no frozen entry is
+rewritten.**
 
 ### Statutory accounting and capital entries (R73–R142) cited by the "Statutory accounting and capital" section
 
@@ -543,6 +575,116 @@ it is not cited directly in this product's documents and so is not repeated here
 - **Publisher:** NAIC · **URL:** https://content.naic.org/committees/e/life-risk-based-capital-wg
 - **Accessed:** 2026-08-04 · **Fetched:** yes (web page)
 
+### AP&P Manual appendix items read at first hand (R151–R157), added 2026-08-06
+
+Seven appendix items were read in full from the free *As of March 2026* AP&P Manual download on
+**2026-08-06** and given ids **R151–R157** in the shared numbering — R151 AG 33, R152 AG 35, R153
+A-820 with A-821 and A-822, R154 A-830, R155 A-585, R156 A-250, R157 A-255. **Only the four this
+product's documents cite are reproduced below.** R154 (A-830, life insurance valuation), R155
+(A-585, universal life) and R156 (A-250, variable annuities) are not cited here and are therefore
+not repeated, on the same rule that omits uncited entries elsewhere in this file. **Id, title,
+publisher, URL, access date, fetched marker and every carried-forward limit below are reproduced
+verbatim from `us/regulatory/sources.md`**, which in turn carries them from the extractions in
+`us/_research/appp-ag33.md`, `us/_research/appp-ag35.md`, `us/_research/appp-a820-a821-a822.md` and
+`us/_research/appp-a585-a250-a255-a270.md`. **Ids are never renumbered.** A fifth item read in that
+pass, **A-270** (variable life), was given **no reference id**, so nothing anywhere in this library
+is cited from it.
+
+**Access date for every entry in this subsection: 2026-08-06.**
+
+#### R151. Actuarial Guideline XXXIII — Determining CARVM Reserves for Annuity Contracts With Elective Benefits (AG 33), as printed in the AP&P Manual
+- **Publisher:** NAIC
+- **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  **Appendix C — Actuarial Guidelines**; printed pages **AG33-1 to AG33-8** = **PDF pages
+  1496–1503**; same physical document as R73
+- **Accessed:** 2026-08-06
+- **Fetched:** yes (local text extraction; **all eight printed pages read in full** —
+  *Background Information*, *Purpose*, *Definitions*, *Text* 1–7 and *Effective Date*)
+- **Limits carried forward from `us/_research/appp-ag33.md`:** the running heads confirm
+  Appendix C, but these pages carry **no volume statement** — the **Volume II** placement is
+  R73's record, not theirs. They carry **no amendment history, no adoption note and no
+  revision log**, so the guideline's printed *Effective Date* of **31 December 1998** cannot be
+  reconciled here against the **31 December 1995** date the library carries from IRS
+  Rev. Rul. 2002-6 for a differently-titled instrument; **both are recorded and neither is
+  presented as settled**. AG 33 contains **no formulas, symbols, tables or factors** beyond the
+  7% expense allowance and the 1998–2000 phase-in percentages, and **names no other guideline
+  anywhere** — not AG 35, not AG 43. Cite by block (*Background* / *Definitions* / *Text*),
+  since all three restart at 1. Spurious intra-word spaces at justified-line breaks are text-layer
+  artefacts and were closed up in the research file's quotations.
+- **Supersedes in fact:** **R39** ("guideline text not retrieved") and the AG 33 half of the local
+  **R11** entry, both of which are frozen and preserved unaltered above.
+
+#### R152. Actuarial Guideline XXXV — The Application of the Commissioners Annuity Reserve Method to Equity Indexed Annuities (AG 35), as printed in the AP&P Manual
+- **Publisher:** NAIC
+- **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  **Appendix C — Actuarial Guidelines**; printed pages **AG35-1 to AG35-10** = **PDF pages
+  1505–1514**; same physical document as R73
+- **Accessed:** 2026-08-06
+- **Fetched:** yes (local text extraction; **all ten printed pages read in full**, including
+  Attachment 1 — the four computational methods, Attachment 2 — the "Hedged as Required"
+  criteria, and the Attachment 3 and 4 certification forms)
+- **Limits carried forward from `us/_research/appp-ag35.md`:** the guideline prints **no
+  effective, adoption or operative date, no transition, no phase-in, no grandfathering and no
+  sunset** — the only temporal language in the document is "regardless of the date of issue",
+  so **any date attached to AG 35 elsewhere is an inference from outside this text**. It defines
+  **no term "equity indexed annuity"**, contains **no symbols and no algebraic notation** (every
+  method is prose; the sole printed formula is `SP% = (1 - .03) ^ 5 = 86%`), and prints **no
+  volatility, dividend yield, risk-free curve or option pricing model**. Its supersession clause
+  reaches **Sections 5 and 6 of the NAIC Interest-Indexed Annuity Contracts Model Regulation**,
+  an instrument **not in this library at all** and recorded as a cross-reference only. It names
+  **Actuarial Guideline IX-B** three times as an alternative source of the valuation interest
+  rate; **AG IX-B has not been read** and is held only as a VM-C index entry (REG-R41). Text-layer
+  artefacts noted at the point of use: a lost superscript in the Attachment 2 option-replication
+  `SP%` formula, and irregular intra-word spacing throughout.
+- **Supersedes in fact:** **R40** ("guideline text not retrieved") and the AG 35 half of the local
+  **R11** entry, both frozen and preserved unaltered above.
+
+#### R153. Appendix A-820 — Minimum Life and Annuity Reserve Standards (with Appendix A-821, Annuity Mortality Table for Use in Determining Reserve Liabilities for Annuities, and Appendix A-822, Asset Adequacy Analysis Requirements)
+- **Publisher:** NAIC
+- **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  **Volume I, Appendix A — Excerpts of NAIC Model Laws**; **A-820** printed A820-1 to A820-13 =
+  **PDF pages 1186–1198**, **A-821** printed A821-1 to A821-6 = **PDF pages 1199–1204**,
+  **A-822** printed A822-1 = **PDF page 1205**; same physical document as R73
+- **Accessed:** 2026-08-06
+- **Fetched:** yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full**
+  including the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV,
+  and **A-822's four paragraphs read in full**)
+- **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026"
+  is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those pages print.
+  **A-821 prints only** the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table
+  and its `AA_x` factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not
+  printed**, so A-821 ¶16 is not computable from library sources, and **no standard is printed for
+  individual annuities issued before 1 January 2001**. A-820 **names its life mortality tables
+  without printing them** and the **2017 CSO is nowhere in its text**. Three text-layer repairs are
+  recorded in the research file rather than hidden: the **lost fraction bar at ¶7.a.i(a)** (the term
+  is `(W/2)·(R2 − .09)`), the lost `R1`/`R2` subscripts, and the **¶8.c weighting-factor tables,
+  which were reassembled by column position** from a scrambled layer. Two internal oddities are
+  recorded as printed and **not reconciled**: **¶22's empty window** and **¶7's "effective date of
+  the Codification"**, a threshold whose date A-820 never prints. **Naming trap:** AP&P
+  **Appendix A-822 is not NAIC Model #822** — A-820's own header does not list Model #820 while
+  A-822's does.
+- **Supersedes in fact:** the A-820 half of **REG-R110**'s limit ("A-820 and A-830 as printed in
+  the AP&P Manual were not retrieved"). R110 is frozen and is preserved unaltered above.
+
+#### R157. Appendix A-255 — Modified Guaranteed Annuities
+- **Publisher:** NAIC
+- **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  **Volume I, Appendix A — Excerpts of NAIC Model Laws**; printed page **A255-1** = **PDF page
+  1096**; same physical document as R73
+- **Accessed:** 2026-08-06
+- **Fetched:** yes (local text extraction; **the whole item read in full** — seven paragraphs)
+- **Limit:** like A-250, A-255 delegates the reserve method itself to **Appendix A-820**; what it
+  adds is three operative rules — the separate account liability must be at least the surrender
+  value produced by **the contract's own market-value-adjustment formula**, a shortfall against the
+  market value of the separate account assets must be made good by a transfer into that account,
+  and any additional reserve needed to cover future guaranteed benefits must be established.
+  **No MVA formula and no parameters for one are printed** — the formula is the contract's. Like
+  A-250 it contains **no formula, symbol, factor or table**, does **not mention CARVM**, and prints
+  **no effective date**.
+- **Why this product cites it:** for the **verified negative** that A-255 does not reach a
+  general-account FIA. Its ¶1 definition requires the underlying assets to be held in a separate
+  account throughout the period the holder can surrender; this composite has no separate account.
+
 ---
 
 ## Provenance note
@@ -557,9 +699,17 @@ elements captured only as of the dates stamped on their documents. The cross-pro
 bibliographies `us/_research/regulatory-actuarial.md` (R1–R34),
 `us/_research/regulatory-actuarial-annuities.md` (R35–R72),
 `us/_research/statutory-accounting.md` (R73–R99), `us/_research/statutory-reserves.md` (R100–R113)
-and `us/_research/risk-based-capital.md` (R125–R142) play the same role for [REG-R#] tags,
+`us/_research/risk-based-capital.md` (R125–R142) and the five AP&P Manual extractions
+`us/_research/appp-ag33.md`, `us/_research/appp-ag35.md`, `us/_research/appp-a820-a821-a822.md`,
+`us/_research/appp-a830.md` and `us/_research/appp-a585-a250-a255-a270.md` (R151–R157) play the same
+role for [REG-R#] tags,
 and `us/references/regulatory-and-actuarial-references.md` is the curated page those tags resolve
 to; where this file and a research file disagree, **the research file governs**. Standardizations
 marked **[std]** in `product-spec.md` and `technical-notes.md` are introduced at drafting and are
-not attributable to any source; **[unverified]** flags are carried forward unchanged and none was
-upgraded.
+not attributable to any source. **[unverified]** flags are carried forward unchanged **with one
+documented exception**: the AG 33 and AG 35 mechanics, whose flags were closed on 2026-08-06 by
+reading the primary texts [REG-R151][REG-R152] — the only route by which a flag may be closed. No
+**[std]** marker in this product's documents was a standardization *because* one of the seven
+appendix items was unavailable, so **none was upgraded**; the AP&P print of the 2012 IAM Period
+Table was added at "Age basis" as corroboration [REG-R153] and the **[std]** there, which marks the
+model's choice of a single age basis, stands.

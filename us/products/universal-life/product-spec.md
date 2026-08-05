@@ -22,7 +22,12 @@ policy (form P08VP1, 8/08; specimen cell Male 35 Standard Nonsmoker, $100,000) [
 Universal life is defined by regulation as a life insurance policy "where separately
 identified interest credits ... and mortality and expense charges are made to the
 policy"; flexible-premium UL additionally lets the owner vary the amount and timing of
-premiums and the amount of insurance [R1]. The *current assumption* variant is the
+premiums and the amount of insurance [R1]. Definitions to the same effect are printed
+in the AP&P Manual's own valuation item, Appendix **A-585** ¶¶7 and 3, now read at
+first hand — the two texts were **not** compared line by line [REG-R155]. The
+flexible/fixed distinction is not cosmetic: it is what switches on the funding ratio
+in the statutory reserve (see `technical-notes.md`, "Reserve basis").
+The *current assumption* variant is the
 interest-sensitive, cash-value-oriented chassis: the insurer declares a current
 credited interest rate and current charge scales that may be more favorable than the
 contractual guarantees (minimum interest, maximum charges), and revises them at its
@@ -416,6 +421,21 @@ provisions (guarantees stated in the policy; interest credits not conditional be
 policyowners [R1][REG-R5 same document]. The composite's charge/guarantee structure
 and annual-report-driven disclosure assumptions sit inside this frame.
 
+**AP&P Appendix A-585 — the valuation half, and only that half.** The requirement the
+Valuation Manual actually routes a UL reserve to is the AP&P Manual's Appendix A item
+**A-585**, now read in full [REG-R155]; the GMP/GMF construction above is therefore
+sourced first-hand rather than through the model regulation. Two things the print
+settles. It **does not name Model #585 anywhere** — its "Relevant NAIC Model
+Laws/Regulations" line names only the **Standard Valuation Law (#820)** — so "A-585
+*is* Model 585 Section 5" is unsupported by it, and the two texts were **not compared**
+[REG-R155][REG-R5]. And it carries **definitions and valuation requirements only**: the
+nonforfeiture floor, the mandatory policy provisions and the annual report to
+policyowners listed in the paragraph above, together with Model #585's separate
+interest-indexed UL requirements, are **not** in A-585 and keep citing Model #585
+[R1][REG-R5][REG-R155]. A-585 prints **no effective date and no number of any kind**;
+every rate, table and factor is delegated to Appendix **A-820** by year of issue, so no
+applicability date may be read off A-585 itself [REG-R155][REG-R153].
+
 **IRC 7702 (life insurance definition).** The contract must pass CVAT or the guideline
 premium test plus cash value corridor; the composite elects GPT, so the guideline
 premium limit and the corridor factor table are contractual mechanics [S3][R2]. For
@@ -430,7 +450,13 @@ flow changes — the insurer-side behavior in the composite is refund of MEC-cau
 premiums absent owner election [S3][R3][REG-R14].
 
 **Valuation Manual / VM-20 (PBR).** The Valuation Manual became operative 2017-01-01
-and PBR an accreditation standard from 2020-01-01 [R5]; VM-20 sets principle-based
+and PBR an accreditation standard from 2020-01-01 [R5]; the operative date is printed
+in operative rules by the AP&P codification of the Standard Valuation Law — A-820 ¶3
+applies the principle-based ¶¶23–27 to policies issued on or after "the January 1,
+2017, operative date of the Valuation Manual" and ¶4 keeps earlier issues on ¶¶5–22,
+to which those provisions "shall not apply" [REG-R153 ¶¶3–4]; **the 2020-01-01
+accreditation date has no counterpart in A-820, which contains no elective transition,
+phase-in or company election at all** [REG-R153]. VM-20 sets principle-based
 reserve requirements (net premium reserve plus deterministic/stochastic components
 with exclusion tests) for life products including UL [REG-R3]. This library projects
 gross liability cash flows only; reserve layers are pointed to, not reproduced (see
@@ -450,8 +476,8 @@ With Secondary Guarantees** column, because the 5-year NLG of footnote 17 is not
 ten-year per-unit acquisition-cost recovery of footnote 11 has nothing deferred against
 it and the issue year carries the full strain [REG-R75][REG-R76]. Its VM-20 reserving
 category is **All Other**, whose net premium reserve is the VM-A/VM-C formulaic basic
-reserve — the Model 585 CRVM adaptation above — so principle-based reserving does not
-retire the formulaic engine for this chassis [REG-R3][REG-R110]. For risk-based capital,
+reserve — the **A-585** CRVM adaptation above — so principle-based reserving does not
+retire the formulaic engine for this chassis [REG-R3][REG-R110][REG-R155]. For risk-based capital,
 the C-2 mortality factor turns on a **pricing-flexibility** assessment that the current
 COI, credited-rate and premium-load headroom in the tables above must earn; where the
 assessment is not performed the block defaults to the highest-factor bucket
@@ -478,7 +504,14 @@ publicly illustrated but not guaranteed.
 **Reg XXX / AG 38 (secondary guarantees).** Relevant only if the no-lapse guarantee or
 a shadow-account endorsement is modeled: Model 830 Section 7 and AG 38 govern reserves
 for UL with secondary guarantees on pre-PBR business [REG-R6][REG-R7]. Excluded with
-the NLG (spec footnote 17).
+the NLG (spec footnote 17). A citation caution now that the AP&P print has been read:
+the manual's **A-830** is a flat sequence of paragraphs **with no sections at all**, so
+a "Section 7" cite does not resolve against it — the ULSG construction sits at
+**¶¶29–32** — and the words "Model #830" and "Regulation XXX" appear nowhere in that
+print [REG-R154]. A-830 ¶32.b floors the ULSG reserve by the minimum reserves required
+by "other appendices governing universal life plans" **without naming the item**, and
+that cross-reference must **not** be resolved to A-585 on the A-830 text
+[REG-R154 ¶32].
 
 **IIPRC uniform standards.** Multi-state UL forms (e.g., the "ICC14"-prefixed Symetra
 form [S1]) are filed under the Interstate Compact's uniform standards for individual

@@ -6,7 +6,8 @@ representative values specified there. This is a **standardized composite** for 
 modeling, not any single insurer's product. [S#]/[R#] tags cite the product research notes
 (`us/_research/term-life.md`); [REG-R#] tags cite the cross-product reference library
 (`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md`, same R-numbering); **[std]** marks standardizations introduced for
+`us/_research/regulatory-actuarial.md` for R1–R34 and in `us/_research/appp-a820-a821-a822.md` and
+`us/_research/appp-a830.md` for the AP&P Manual appendix items cited here, same R-numbering); **[std]** marks standardizations introduced for
 the reference implementation; [unverified] flags carry over from the research notes.
 
 ---
@@ -384,12 +385,146 @@ and `us/regulatory/technical-notes.md`; this section states only what is specifi
 ### Reserve basis
 
 - **Two regimes, keyed by year of issue.** Pre-operative-date issues run formulaic **CRVM** under Standard
-  Valuation Law §5 through the VM-A index, whose substantive term item is **A-830 — Model #830, "Regulation
-  XXX"**; deficiency reserves survive as a distinct **Exhibit 5 Miscellaneous Reserves** item via Actuarial
-  Guideline I in the VM-C index and via A-830 [REG-R1][REG-R110][REG-R6][REG-R41][REG-R89]. **A-820 and
-  A-830 as printed in the AP&P Manual were not retrieved** [REG-R110][REG-R33], so the mechanics documented
-  here rest on Model #830 itself [R1][REG-R6]. Issues on and after the Valuation Manual operative date take
-  **VM-20 as the minimum** under SVL §11 [REG-R1] (that date is [unverified] in the print).
+  Valuation Law §5 through the VM-A index, whose substantive term item is **A-830**, printed in the manual
+  under its own title *"Valuation of Life Insurance Policies (Including the Introduction and Use of New
+  Select Mortality Factors)"* — the words "Model #830" and "Regulation XXX" appear **nowhere in the
+  appendix**, which is a flat sequence of **¶¶1–32 plus an unnumbered Attachment with no Sections at all**,
+  so cite it by paragraph [REG-R154]. Deficiency reserves survive as a distinct **Exhibit 5 Miscellaneous
+  Reserves** item via Actuarial Guideline I in the VM-C index and via A-830
+  [REG-R1][REG-R110][REG-R6][REG-R41][REG-R89]; **the AG I text is still unretrieved** [REG-R41].
+  **A-820 and A-830 as printed in the AP&P Manual have now been read in full** — A-820, with A-821 and
+  A-822, is **[REG-R153]** and A-830 is **[REG-R154]**, both from the free *As of March 2026* download that
+  supersedes R33's "paid publication, not fetched" record — so the mechanics below are first-hand rather
+  than second-hand from the separately published Model #830 [R1][REG-R6]. Issues on and after the Valuation
+  Manual operative date take **VM-20 as the minimum** under SVL §11 [REG-R1]; **that date is no longer
+  [unverified]** — A-820 prints it inside operative rules, applying its PBR paragraphs to contracts issued
+  "on or after the January 1, 2017, operative date of the Valuation Manual" and providing that they "shall
+  not apply" to earlier issues [REG-R153 ¶¶3–4].
+- **A-830 *is* CRVM for this product, not an overlay on it.** ¶2: the method for calculating basic reserves
+  defined in the appendix "will constitute the Commissioners' Reserve Valuation Method for policies to which
+  this appendix is applicable" — so a XXX-era term block valued on the SVL §5.A / A-820 ¶11
+  single-uniform-percentage modified-net-premium routine alone is computing a different quantity
+  [REG-R154 ¶2][REG-R153 ¶11]. Printed scope is **all** life insurance policies issued on or after the
+  appendix's effective date, less six exceptions (reentry policies, short-secondary-guarantee UL, variable
+  life, VUL, most group certificates, preneed under A-817); the routing condition that catches this product
+  is ¶3.b — guaranteed **nonlevel** gross premiums or benefits, non-UL, go to **¶¶21–28**. The Jump-to-ART
+  schedule is guaranteed and nonlevel in every year after the level period [S6], so the representative
+  product routes there on its own contract terms. One applicability rule is **inherited, not derived**: the
+  ¶3.a.i reentry carve-out propagates down a reentry chain descending from a pre-effective-date policy, so
+  applicability is a flag set at issue rather than a function of the issue date [REG-R154 ¶3.a].
+- **Basic reserve = max(segmented, unitary), segmented off the premium schedule the policy prints at issue**
+  [REG-R154 ¶¶5, 11, 14, 21]. Segment length is the smallest `t` for which `G(t) > R(t)`, with
+  `G(t) = GP(x+k+t)/GP(x+k+t−1)` on guaranteed gross premium **per thousand of face amount, ignoring policy
+  fees only if the fee is level for the premium paying period**, and `R(t) = q(x+k+t)/q(x+k+t−1)` on the
+  deficiency-reserve valuation mortality — **unmodified** select rates where modified select rates are used
+  for the deficiency reserve itself. `t` **resets to 1 at each segment boundary**; `R(t)` may be moved ±1%
+  **per policy year** at the company's option but never below 1, a tolerance the drafting note explains as
+  existing "to prevent irrational segment lengths due to such things as premium rounding". **Note that ¶5's
+  ratio is fee-*excluded* for this product, and is therefore not the jump ratio `J` used everywhere else in
+  these notes:** the $65 policy fee is a level dollar amount for the whole premium paying period [S6], so
+  ¶5's "ignoring policy fees only if level for the premium paying period" condition is met and the fee comes
+  out. At the anchor cell that makes the level-to-ART boundary ratio `G = 6.99 / 0.75 ≈ 9.32` on the
+  per-$1,000 rates [S6]-derived, against `J = 764/140 ≈ 5.46` fee-included — either way far above any
+  plausible mortality ratio, so the boundary breaks a segment. Whether the ART tail then runs as one segment
+  or as a chain of one-year segments is **not determinable from the anchor schedule**: the year-11-to-12
+  guaranteed rate ratio is 7.65/6.99 ≈ 1.09 [S6]-derived, within about a percent of the valuation mortality
+  ratio at those attained ages, which is precisely the regime the ±1% tolerance was written for. Net
+  premiums are a uniform percentage of guaranteed gross
+  premiums **within each segment**, and the first-segment expense allowance is **segment-scoped** — both the
+  benefit numerator and the annuity denominator stop at the end of the first segment, where the unitary
+  version at ¶14 runs them to mandatory expiration; the 19-pay whole life cap at age **x+1** is printed
+  identically in both, so a shared expense-allowance routine is safe **only if its horizon is a parameter**.
+  Present values include the current segment **and all subsequent segments** (¶11.d) — a valuation inside
+  segment 2 is not a segment-2-only calculation. The interest cap uses a guarantee duration equal to the
+  **sum of the lengths of all segments** (¶11.c). Of the two optional ¶21.b adjustments to the segmented
+  leg, the guaranteed-cash-surrender-value variant is **inert here** — there is no cash value [S3][S6].
+- **Deficiency reserves are a separate quantity under A-830, and the definition is stricter than "net
+  premium over gross".** ¶6 defines them as the excess of the **A-820 ¶¶19–20** minimum reserve over basic
+  reserves, and ¶17 gives the operative construction: **quantity A less the basic reserve**, where A is a
+  **full re-run of the basic reserve with the guaranteed gross premium substituted for the net premium,
+  duration by duration, wherever the gross is the smaller**. The substitution is **one-sided** — where the
+  gross exceeds the net, the net premium stands. The test keys on the **guaranteed** gross premium
+  ("guaranteed and determined at issue", ¶7), not on premium collected, and the ¶22.b comparison net premium
+  is computed on the **minimum** valuation standards of mortality and interest, which need not be the
+  standards used for the basic reserve. The deficiency basis is a slave to the ¶21 outcome — unitary if the
+  basic reserve was unitary, segmented if segmented, **segmented on a tie** — the excess is taken "for the
+  current and all remaining periods", and segment lengths are **not re-derived** on the deficiency mortality
+  basis but taken from the segmented basic reserve [REG-R154 ¶¶6, 7, 17, 22]. Contrast **A-820's own ¶19**,
+  which contains **no separate deficiency quantity at all**: it states the deficiency as a **floor**,
+  `max(reserve on the mortality, interest and method actually used, reserve by the method actually used on
+  the minimum standards with the actual gross premium replacing the valuation net premium in the deficient
+  contract years only)` [REG-R153 ¶19].
+- **X-factor relief is a two-limb test carrying a governance price.** X may vary by policy year, form,
+  underwriting classification, issue age or any other factor expected to affect mortality experience
+  (¶17.c.i), and must satisfy **both** an aggregate present-value limb — the APV of future death benefits on
+  the X-adjusted rates at least the APV on anticipated experience **without recognition of mortality
+  improvement beyond the valuation date**, discounted at the **basic-reserve** valuation interest rate
+  (¶17.c.ii) — **and** a year-by-year floor requiring the X-adjusted rates to be at least anticipated
+  experience **in each of the first five years after the valuation date** (¶17.c.iii). Passing the PV limb
+  alone is insufficient. The appointed actuary **shall increase** X where needed, **may decrease** it, and
+  must specifically take into account the adverse effect on expected mortality and lapsation of any
+  anticipated or actual increase in gross premiums (¶17.c.iv–vi) — which for a Jump-to-ART design is the PLT
+  shock modelled above. **A-830 prescribes no X table, no floor and no cap**; X may be set above 100 as well
+  as below. Any X below 100% at **any duration for any policy** triggers an annual actuarial opinion and
+  memorandum under the **A-822** asset adequacy requirements, disclosure of the interim-period insufficiency
+  in the **Regulatory Asset Adequacy Issues Summary**, and an annual opinion supported by an actuarial
+  report reflecting anticipated future mortality without improvement beyond the valuation date
+  [REG-R154 ¶17.c].
+- **The valuation mortality is date-split — not "1980 CSO" flat — and select factors are confined to the
+  first segment.** **Effective 1 January 2004 the 2001 CSO Mortality Table is the minimum standard** for
+  basic reserves (¶16), deficiency reserves (¶17), the tabular cost of insurance (¶23, on **ultimate**
+  rates) and all four ¶¶25–28 exemption calculations; the complete pre-2004 branch — 1980 CSO with elective
+  select mortality factors, the factors themselves printed in the appendix's Attachment as six tables of
+  issue age × duration percentages — is **retained in full** in the print, so a model valuing pre-2004
+  issues needs that branch too [REG-R154 ¶¶16, 17, 23, Attachment]. **Any set of select mortality factors
+  may be used only for the first segment**, except that where the first segment is under ten years the
+  ten-year select factors referenced in A-820 may run **through the tenth policy year from issue** — the T10
+  cell's exact shape (¶18). The drafting note's reason is this product's own economics: a premium increase
+  large enough to force a new segment brings increased lapsation and mortality deterioration; and where a
+  policy carries a reentry provision, select factors may not be used in segments beginning after reentry
+  **unless a new policy is actually issued** [REG-R154 ¶18]. **Policy fees:** guaranteed gross premiums
+  **without** policy fees may be used wherever a calculation involves the guaranteed gross premium, but
+  **only if the policy fee is a level dollar amount after the first policy year** — satisfied by the $65
+  level fee [S6] — and the asymmetry must be coded explicitly, because for **deficiency** reserves the fee
+  **may** be included in guaranteed gross premiums even where it was excluded from the basic reserve
+  [REG-R154 ¶19].
+- **Floors, and the two unitary exemptions a term block must test rather than assume.** Basic reserves may
+  not be less than the tabular cost of insurance for the balance of the policy year (mean reserves), or of
+  the current modal period or to the paid-to-date if later but not beyond the next anniversary
+  (mid-terminal), on the same table and rates as the segmented reserves except that select factors, if used,
+  must be the **ten-year** ones; and **total** reserves — basic plus deficiency plus reserves for
+  supplemental benefits that would expire on contract termination — may never be less than what the
+  policyowner would receive on termination, **exclusive of any deduction for policy loans**, which is
+  **zero here and so never binds** [S3][S6]. The ¶24 unusual-guaranteed-CSV floor is inert for the same
+  reason [REG-R154 ¶¶23, 24]. **¶27** exempts certain n-year renewable term from the **unitary** leg where
+  **all three** of the following hold: (a) the policy is a series of n-year periods with **n the same for
+  every period** — the final renewal period may be truncated or extended to reach the expiry age only if it
+  is under 10 years and under twice the earlier periods — with premium rates level in each period on
+  **both** the initial current and the guaranteed maximum scale; (b) guaranteed gross premiums in all
+  n-year periods are not less than the corresponding net premiums (pre-2004 on the 1980 CSO Table with or
+  without ten-year select factors, on ultimate 2001 CSO rates from 1/1/2004); and (c) **"there are no cash
+  surrender values in any policy year"**. The
+  representative Jump-to-ART design meets (c) outright [S3][S6] but presents an n-year level period
+  followed by **one-year** renewals, so the equal-n condition is not met on the face of the printed test and
+  the unitary leg is not exempted — a reading of ¶27.a against the specimen schedule [S6], **not** something
+  A-830 says about this design. **¶28**'s juvenile exemption needs issue age ≤ 24, a juvenile period ending
+  at or before age 25, and **level gross premiums for the remainder of the premium paying period**
+  thereafter, which an ART tail is not, so it does not reach this product either. Both remove the *unitary*
+  leg only — within each segment the segmented basic and deficiency requirements still run
+  [REG-R154 ¶¶27, 28].
+- **The formulaic valuation interest rate is A-820's, and this product sits at its long end.** The maximum
+  valuation interest rates A-830 ¶8 points to are the A-820 ¶¶7–10 calendar-year statutory valuation
+  interest rates: for life insurance `I = .03 + W(R1 − .03) + (W/2)(R2 − .09)`, rounded to the nearer
+  quarter percent, `R` being the **lesser of the 36-month and 12-month averages** of Moody's composite yield
+  on seasoned corporate bonds ending 30 June of the year **preceding** issue, with a life-only stability
+  rule holding the rate at the prior year's **actual** rate where the recomputed rate moves by less than
+  ½% [REG-R153 ¶¶7, 9]. The life weighting factor is **.50 / .45 / .35** for guarantee durations of 10 or
+  less / more than 10 but not more than 20 / more than 20, guarantee duration being "the maximum number of
+  years the life insurance can remain in force on a basis guaranteed in the policy" [REG-R153 ¶8.a]. Every
+  premium to expiry at attained age 95 is guaranteed at issue [S6], so the guarantee duration is
+  **95 − issue age** and the factor is **.35** across all but the oldest corner of the issue-age grid — a
+  reading of ¶8.a against the specimen schedule, not a rate this library computes. ¶10 requires the
+  reference series to be a **configurable table keyed by calendar year**, never a hard-coded feed.
 - **Term is one of VM-20's three reserving categories**, so the minimum reserve is the *sum* over
   K ∈ {Term, ULSG, All Other} and a Term excess can never be offset against All Other slack; a DR group
   spanning categories is split with the difference allocated proportionally, and an SR aggregation subgroup
@@ -421,10 +556,10 @@ product specialises or makes trivial.
 |---|---|---|
 | Exhibit of Life Insurance; C-2 exposure base | Face in force and policy counts on an **incurred** basis, in thousands, gross and net of reinsurance | [REG-R89][REG-R142] |
 | C-2 net amount at risk | `NAR = face in force − life reserves`, general **plus separate** account, net of reinsurance — the separate-account leg is identically zero here | [REG-R142] |
-| Exhibit 5 | Reserves keyed by **valuation standard × year of issue**; VM-20 business split NPR and excess; XXX-era deficiency reserve to Miscellaneous Reserves | [REG-R89][REG-R6] |
+| Exhibit 5 | Reserves keyed by **valuation standard × year of issue**; VM-20 business split NPR and excess; XXX-era deficiency reserve to Miscellaneous Reserves, computed as **quantity A less the basic reserve** and therefore an output of the formulaic engine, not a residual | [REG-R89][REG-R6][REG-R154 ¶17] |
 | Analysis of Increase in Reserves | Tabular net premium (zero in NPR year 1), tabular interest, tabular cost, reserves released by death and by other terminations — on the **valuation** basis, not the experience basis of the worked example above | [REG-R90][REG-R3] |
 | Summary of Operations | Change in loading on deferred and uncollected premium as an **expense**; commission and issue expense in the issue period with **no DAC stream** | [REG-R79 ¶11][REG-R75 ¶2] |
-| Exhibit 5 ceded column; VM-20 §8; AG 55 | Gross and ceded **produced separately, never netted**, per treaty; YRT credit as the one-year term mean reserve on the ceded amount, on the *original policy's* mortality and interest basis | [REG-R89][REG-R92 ¶¶37–38][REG-R103] |
+| Exhibit 5 ceded column; VM-20 §8; AG 55 | Gross and ceded **produced separately, never netted**, per treaty; YRT credit as the one-year term mean reserve on the ceded amount, on the *original policy's* mortality and interest basis. On a XXX-era block an **independent second ceiling** applies: where the assuming company elects the A-830 ¶25 YRT exemption, the ceding company's reinsurance reserve credit is **limited to the amount of reserve actually held by the assuming company** — and an agreement counts as YRT for ¶25 "if only the mortality risk is reinsured". It is an additional constraint alongside the SSAP No. 61 rule, not a restatement of it | [REG-R89][REG-R92 ¶¶37–38][REG-R103][REG-R154 ¶25] |
 | Tax | Tax reserve = 92.81% × NAIC-method reserve, floored at net surrender value (**zero** for term), capped at statutory | [REG-R16] |
 | Asset adequacy analysis | Starting assets no greater in statement value than the reserves tested; sign-aware IMR allocation; the **AVR consumed**, reported as an output because it is removed from Total Adjusted Capital | [REG-R29][REG-R100][REG-R128] |
 | VM-31 / VM-G | Which exclusion-test route was taken, and a statement of **readiness to compute the SR** even where it is excluded | [REG-R108][REG-R109] |
@@ -483,9 +618,13 @@ Not needed for this product: separate-account balances and transfers (none exist
    [R2][REG-R3]; §2.I forbids ignoring PLT losses [REG-R3 §2.I]; the NPR shock is prescribed at 25%–80%
    [REG-R3 §3.C.3] against a best-estimate envelope of 27%–96% [R4]. **Three lapse bases on one engine** —
    prescribed NPR, DR-with-PLT-override, prudent estimate — must be switchable, not hard-coded.
-3. **XXX financing reaches back into capital.** Model #830 conservatism on term drove captive reserve
+3. **XXX financing reaches back into capital.** A-830 conservatism on term drove captive reserve
    financing, hence AG 48 and Model #787 [REG-R11][REG-R12]; the capital consequences are the RBC add-on
    outside covariance and the AG 48-qualified opinion that still earns the reduced C-3a factor [REG-R128].
+   Note the direction of travel between the two regimes on X: the **A-830 X-factor** relief lowers the
+   deficiency reserve and is policed by the A-822 opinion package [REG-R154 ¶17.c], while the AG 48
+   Primary Security shortfall is added to required capital [REG-R128][REG-R11] — the same conservatism
+   surfacing on both sides of the balance sheet.
 4. **The gross-of-YRT run is required twice over.** The SERT's YRT relief compares the test gross and net
    of YRT [REG-R3 §6.A.2.c] and AG 55 §6.G accepts documentation of the **pre-reinsurance PBR reserve** for
    a ceded block in lieu of its mandatory cash-flow-testing run [REG-R103]; both instruct the VM-20 engine
@@ -510,12 +649,24 @@ Not needed for this product: separate-account balances and transfers (none exist
    full initial commission "shall be recognized immediately" [REG-R75 ¶¶4–5]. The first-year ordinary loss
    cannot be carried back by an entity taxed as a life insurance company for tax years after 2017, so its
    DTA admittance runs entirely through the RBC-band and DTL-offset components [REG-R97].
-7. **Source limits that bite here.** The RBC factors above come from the **2024** *Life and Fraternal
+7. **Two A-830 mistakes that produce a number rather than an error.** (i) Valuing a XXX-era term block on
+   the SVL §5.A / A-820 ¶11 modified-net-premium routine computes a different quantity from A-830's
+   `max(segmented, unitary)` with its segment-scoped expense allowance — ¶2 makes the appendix's own method
+   *the* CRVM for the policies it reaches [REG-R154 ¶2][REG-R153 ¶11]. (ii) A citation of the form
+   "Model 830 **Section** 7" does not resolve against the manual print, which has no sections at all; use
+   paragraph numbers [REG-R154]. Neither mistake trips a reasonableness check.
+8. **Source limits that bite here.** The RBC factors above come from the **2024** *Life and Fraternal
    Risk-Based Capital Forecasting and Instructions*, a **sold NAIC publication** marked "Not for
    Distribution" read from a state department posting; the **2025 edition could not be parsed**, so **no
    year-end 2025 factor is asserted** [REG-R128][REG-R129]. Exhibit and page/line references come from the
    **2025** reporting-year blank and instructions and should be re-verified against the 2026 blank
-   [REG-R89][REG-R90].
+   [REG-R89][REG-R90]. The AP&P limit this list used to carry is **discharged**: the manual is a free
+   download and its Appendix A items **A-820 and A-830 have now been read in full**
+   [REG-R153][REG-R154]. What is still missing on the reserving side is narrower and named: the
+   **Actuarial Guideline I** text [REG-R41]; A-830's ¶17 X-factor cross-reference, which is **garbled in
+   the print** and is flagged rather than resolved [REG-R154]; and the appendix's six select-factor
+   tables, transcribed from one text layer and **not checked against an independent copy**, so no factor
+   value from them is stated here [REG-R154].
 
 ---
 
@@ -538,9 +689,18 @@ consume those flows but are not reproduced here:
   PLT losses must be reflected [R2]. A projection feeding VM-20 must therefore be able to
   run with (a) prudent-estimate behavior per these notes and (b) the prescribed
   NPR/PLT-override assumption sets, from the same cash flow engine.
-- **Pre-PBR in-force (Regulation XXX)**: segmented vs unitary basic reserves under the
-  contract segmentation method, deficiency reserves with X-factor select mortality on
-  1980 CSO [R1][REG-R6].
+- **Pre-PBR in-force (A-830, the model regulation known outside the manual as "Regulation
+  XXX")**: basic reserves = **max(segmented, unitary)** under the contract segmentation
+  method [REG-R154 ¶21]; deficiency reserves as **quantity A less the basic reserve** [REG-R154 ¶17],
+  with X-factor select mortality confined to the **first segment** [REG-R154 ¶18]. The
+  valuation table is **date-split, not 1980 CSO flat**: 1980 CSO with elective select
+  factors **before 1 January 2004**, and the **2001 CSO Mortality Table from 1 January 2004**
+  for basic reserves, deficiency reserves and the tabular cost of insurance
+  [REG-R154 ¶¶16, 17, 23]. The quantitative substrate A-830 does not restate — what a basic
+  reserve *is* (¶¶11–13), the minimum reserve behind the deficiency definition (¶¶19–20) and
+  the maximum valuation interest rates (¶¶7–10) — is **A-820** [REG-R153]. Full mechanics are
+  in Statutory accounting and capital above, "Reserve basis"; both appendices are now read at
+  first hand and this pointer no longer rests on Model #830 alone [R1][REG-R6].
 - **Asset adequacy / cash flow testing** sits under VM-30/ASOP 22 [REG-R29] with ASOP 7
   governing the cash flow analysis itself [REG-R27] and ASOP 56 governing the model
   [REG-R32]; VM-20 practice detail in the Academy practice note [REG-R23] and assumption
@@ -584,7 +744,14 @@ Known modeling pitfalls:
 - **Jump ratio definition.** Include the policy fee in both numerator and denominator —
   the 2021 SOA study defines the jump including the fee (the 2014 study did not) [R4], and
   VM-20's shock table keys on premium increase per $1,000 including the fee [R2].
-  Fee-in/fee-out inconsistency silently shifts a policy across shock buckets.
+  Fee-in/fee-out inconsistency silently shifts a policy across shock buckets. **The formulaic
+  engine uses the opposite convention, so the two must not be conflated:** A-830 ¶5's
+  segmentation ratio is on guaranteed gross premium *per thousand of face amount*, "ignoring
+  policy fees only if level for the premium paying period" — and the $65 fee is level for the
+  whole period [S6], so the fee comes **out** there [REG-R154 ¶5]. One product, two
+  premium-ratio conventions: **fee-in** for behaviour and the VM-20 NPR shock [R2][R4],
+  **fee-out** for A-830 segmentation. At the anchor cell they differ by nearly a factor of two
+  (≈5.46 against ≈9.32) [S6]-derived.
 - **Deterioration base.** M(d) multiplies the *best-estimate base* mortality, not the
   guaranteed/valuation table; applying it to 2017 CSO (already loaded [R3]) double-counts
   margin.

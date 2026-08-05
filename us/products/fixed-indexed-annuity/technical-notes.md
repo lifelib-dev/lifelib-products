@@ -8,10 +8,15 @@ product defined in `product-spec.md` (same directory); not any single insurer's 
 `us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157**
 with **R114–R124** and **R143–R149** unused by design: R1–R34 originate in
 `us/_research/regulatory-actuarial.md`, R35–R72 in
-`us/_research/regulatory-actuarial-annuities.md`, and R73–R142 in the statutory accounting and
-capital research behind `us/regulatory/`. **[std]** marks standardizations
+`us/_research/regulatory-actuarial-annuities.md`, R73–R142 in the statutory accounting and
+capital research behind `us/regulatory/`, and **R151–R157** are the seven AP&P Manual appendix
+items read at first hand on 2026-08-06 — R151 AG 33, R152 AG 35, R153 A-820 with A-821 and A-822,
+R154 A-830, R155 A-585, R156 A-250, R157 A-255. **[std]** marks standardizations
 introduced for the reference implementation; [unverified] marks claims the research file could not
-confirm. **Parameter values are identical to `product-spec.md`.**
+confirm. **An [unverified] flag leaves that state only when the primary text is read** — which is
+what closed the AG 33 and AG 35 mechanics below [REG-R151][REG-R152]; nothing is upgraded on
+recollection, and every flag not closed that way still stands. **Parameter values are identical to
+`product-spec.md`.**
 
 **Inherited versus new.** The base contract is the fixed deferred annuity chassis in
 `us/_research/fixed-deferred-annuity.md` and `us/products/fixed-deferred-annuity/` — the
@@ -58,7 +63,10 @@ survives account-value exhaustion and pays for life, not a no-lapse guarantee on
   they are taken" [S1].
 - **Age basis: age nearest birthday (ANB)** **[std]** — the statutory annuity tables are published
   on that basis (VM-M / Model #821 print the 2012 IAM Period Table for female and male, age
-  nearest birthday) [REG-R59]. Attained age at anniversary `t` = `issue_age + t`.
+  nearest birthday) [REG-R59], and the AP&P print of the same table at **A-821 Appendices I–IV**
+  independently carries the "Age Nearest Birthday" heading for both sexes [REG-R153]. The **[std]**
+  stands: it marks the model's choice of a single age basis, not the tables' basis. Attained age at
+  anniversary `t` = `issue_age + t`.
 - **Model points.** Single-contract, projected on an expected (probability-weighted) basis;
   survivorship and persistency factors multiply per-contract cash flows. No aggregation logic
   specified.
@@ -564,10 +572,55 @@ contract's** line [REG-R89]. Key the column off contract state, not product code
 
 **Formulaic: CARVM** — Standard Valuation Law §5a, greatest present value over elective paths, on the
 mortality table (if any) and interest rate(s) **specified in the contract for determining guaranteed
-benefits** [REG-R1 §5a.B]. The interpretive layer is **AG 33** (elective benefits) and **AG 35** (how
-the index feature enters); neither was retrieved in primary form [REG-R39][REG-R40], nor was the
-VM-A-indexed annuity standard **A-820** [REG-R110], so all statements about their mechanics are
-secondary and stay [unverified] [R1][R11][REG-R33][REG-R41].
+benefits** [REG-R1 §5a.B], carried identically in the AP&P codification at **A-820 ¶15**, which has
+now been read [REG-R153 ¶15]. **Both interpretive layers have also been read** — **AG 33**
+[REG-R151] and **AG 35** [REG-R152], from the AP&P Manual Appendix C print on 2026-08-06, the manual
+having turned out to be a **free download** rather than the paid publication recorded earlier
+[REG-R33]. Their mechanics are set out once in `us/regulatory/technical-notes.md`, "Formulaic
+reserves", and are **referenced, not restated**; what belongs here is that **both apply to this
+product**, and on what terms.
+
+- **AG 33 applies** because the contract carries elective benefits: the applicability sentence
+  reaches "all annuity contracts subject to CARVM, where any elective benefits … are available to
+  the contract owner", with no product list, no account-value or premium threshold and no size test
+  [REG-R151]. Its named elective benefits are full surrenders, partial withdrawals and full and
+  partial annuitizations, so **GLWB election and each guaranteed lifetime withdrawal are elective**,
+  while the death benefit is non-elective. **Nursing-home and confinement benefits are non-elective**
+  under AG 33's own *Definitions* — any list placing them among elective benefits is wrong — and so
+  are non-elective waiver-of-surrender-charge benefits, which additionally take a hard incidence
+  cut-off at the earlier of the end of the first-premium surrender charge period and cash-value
+  depletion [REG-R151]. Note that Athene's confinement and terminal-illness waivers as modelled here
+  are **excess withdrawals** [S1], a product-design fact, not an AG 33 classification.
+- **AG 35 applies** because the contract is index-linked: "This Actuarial Guideline applies to all
+  equity indexed annuity contracts, regardless of the date of issue, that are subject to CARVM"
+  [REG-R152]. It does **not** perform the maximisation — each of its four methods ends by handing
+  the CARVM calculation back to AG 33 — so the library's long-standing statement that AG 35 layers
+  on AG 33 rather than replacing it is now confirmed by the text [REG-R152]. AG 35 also settles how
+  an indexed contract is classified for the maximum valuation interest rate: **design features
+  unique to equity indexed annuities — equity-enhanced surrender values, vesting schedules,
+  participation rates — may not be used to determine Plan Type**, only the features identified in
+  SVL §4b paragraph C may, and the Plan Type A/B phrase "change in … asset values" "does not include
+  changes in policy values due to changes in the equity index underlying the policy form"
+  [REG-R152]. The declared cap, the participation rate and the stacking credit are therefore
+  **invisible to the Plan Type table** at [REG-R1 §4b.C(1)(c)].
+- **Neither guideline prints a precedence rule for a conflict between them.** AG 33's own precedence
+  clause says a product-specific guideline or regulation takes precedence over it, which supports
+  the general principle, but **AG 33 names no other guideline anywhere** — not AG 35, not AG 43 — so
+  the specific AG 33 / AG 35 pairing stays an inference [REG-R151][REG-R152].
+- **The mapping of AG 33 onto SVL §5a is this library's own**, made on content. AG 33 restates
+  CARVM's definition in its *Background* but **never cites §5a by number**; its only numbered SVL
+  cross-references are "Section 4b of the SVL" and "section 4b.C.(1)(c)(vi)" [REG-R151]. The mapping
+  is sound but must be labelled as the library's wherever it is relied on.
+
+**What is still unread in this chain, and it is not nothing.** **Actuarial Guideline IX-B**, which
+AG 35 names three times as an alternative source of the valuation interest rate for an indexed
+contract, has **not** been read and is held only as a VM-C index entry — an FIA CARVM run has to
+resolve AG IX-B, not just AG 33 [REG-R152][REG-R41]. The **NAIC Interest-Indexed Annuity Contracts
+Model Regulation**, whose Sections 5 and 6 AG 35 supersedes, is **not in this library at all** and is
+recorded as a cross-reference only [REG-R152]. And **AG 35 says nothing about the Valuation Manual,
+VM-22 or principle-based reserving in any form**, so it cannot tell you whether it continues to bind
+an FIA valued under VM-22 [REG-R152]. The Academy FIA paper [R1] remains the only source for
+anything not printed in the two guidelines.
 
 **Principle-based: VM-22**, for valuation dates on or after January 1, 2026 with a three-year
 elective transition [REG-R36]. An FIA sits in the **Accumulation** category, which expressly includes
@@ -590,9 +643,12 @@ duration, as is the **additional reserve** any asset-adequacy shortfall creates 
 (interest, mortality or **method**) is measured at the **beginning of the year**, goes **direct to
 surplus**, is **not graded in** absent a prescribed transition, is **excluded** from the Summary and
 Analysis of Operations, and reports in Exhibit 5A [REG-R79][REG-R80 ¶14][REG-R89]. Whether an
-elective move from CARVM onto VM-22 counts as one is addressed nowhere in `us/regulatory/`, and the
-March 2026 SSAP Nos. 3/51/52 guidance on the **optional implementation period** for the Valuation
-Manual's non-variable-annuity revisions **was not read** [REG-R88]. Do not hard-code a treatment.
+elective move from CARVM onto VM-22 counts as one is addressed nowhere in `us/regulatory/`, and
+**reading AG 33 and AG 35 did not settle it** — neither guideline mentions the Valuation Manual,
+VM-22, VM-21 or principle-based reserving in any form, and AG 33 predates them
+[REG-R151][REG-R152]. The March 2026 SSAP Nos. 3/51/52 guidance on the **optional implementation
+period** for the Valuation Manual's non-variable-annuity revisions **was not read** [REG-R88]. Do
+not hard-code a treatment.
 
 ### What this product's model must additionally produce
 
@@ -601,9 +657,9 @@ Beyond the shared contract in `us/regulatory/technical-notes.md`, "Required mode
 | Statutory item | Additional output required here |
 |---|---|
 | Exhibit 5 key [REG-R89][REG-R37] | reserve by **valuation standard × year of issue** (CARVM before transition, VM-22 after) and, for VM-22 business, the **Jumbo / Non-Jumbo × 50 bp valuation-interest band** key — jumbo = initial consideration ≥ $250 million, so the anchor cell is Non-Jumbo |
-| CARVM path enumeration [REG-R1 §5a.B] | one guaranteed benefit stream per elective path — full surrender at each duration, each annuitization option, **and GLWB exercise at each attained age from 50** [S2][S3][S9]; the rider multiplies the path count, and omitting a path can only understate the reserve |
-| Guaranteed-basis recursion [REG-R1 §5a.B] | the account-value roll on class (a) inputs only — `c_min` = 0.25% [S4], `i_F,min` = 1.00% [S10], `i_nf` = 1.00% **[std]** — not the declared scale (`c` = 5.25%, `i_F` = 2.30% [S2]). How the index feature itself enters is **AG 35's subject and unretrieved** [REG-R39][REG-R40]; expose both bases rather than choosing in code. The same guaranteed values are the C-3a exposure base |
-| Post-depletion stream [REG-R36] | `DEPLETED` as a standalone life-contingent payment stream with `w(t) = 0`, separable from the accumulation-phase reserve |
+| CARVM path enumeration [REG-R1 §5a.B][REG-R151] | one **integrated benefit stream** per elective path — full surrender at each duration, each annuitization option, **and GLWB exercise at each attained age from 50** [S2][S3][S9] — each carrying its **non-elective leg computed on the contract state that elective path leaves behind**, and a **per-payment benefit-component tag** so the right valuation rate attaches. AG 33 requires **blends across benefit types**, not one type at a time, so partial-withdrawal-then-surrender and partial-annuitization paths are in scope; elective incidence **may not** be taken from company or industry experience — it is a decision variable maximised over — and the actuary must "**consider, not necessarily test**" every stream, on a materiality determination per contract-owner option, with analytical elimination or a demonstrated approximation as the sanctioned escape [REG-R151]. Omitting a path can only understate the reserve |
+| Guaranteed-basis recursion [REG-R1 §5a.B][REG-R151] | the account-value roll on class (a) inputs only — `c_min` = 0.25% [S4], `i_F,min` = 1.00% [S10], `i_nf` = 1.00% **[std]** — not the declared scale (`c` = 5.25%, `i_F` = 2.30% [S2]). The construction itself is now primary-sourced: AG 33's mandatory cash-value stream is "any possible blend of future guaranteed partial withdrawals and full surrenders … **accumulated at the guaranteed credited interest rate(s) and discounted at the valuation rate(s) of interest**" [REG-R151]. **How the index feature enters is also now sourced** — AG 35 supplies four constructions (CARVM-UMV, MVRM, the BSPM adaptation of MVRM, EDIM), and the "expose both bases" instruction turns out to be right for the wrong reason: AG 35 does not choose between a guaranteed-basis and a declared-basis roll-forward at all. The choice among the four is a **company election**, gated on hedging for Type 1 and on certification for Type 2, reversible only with domiciliary-commissioner approval, and the model must be able to run **CARVM-UMV or MVRM** in any case because EDIM's initial reserve is defined by reference to one of them [REG-R152]. The same guaranteed values are the C-3a exposure base |
+| Post-depletion stream [REG-R36][REG-R151] | `DEPLETED` as a standalone life-contingent payment stream with `w(t) = 0`, separable from the accumulation-phase reserve — and **the formulaic counterpart to VM-22's coverage of it now exists**. AG 33's worked Guaranteed Lifetime Income Benefit example splits the guaranteed income stream **at the point of account exhaustion** and gives the two portions different Plan Types and guarantee durations: the payments that reduce or deplete the contract's defined values, plus any residual withdrawals after election, take *Text* **4(A)** (Plan Type A, B or C by the contract's withdrawal characteristics); the remainder — "a life annuity without option to take or receive additional amounts", i.e. the `DEPLETED` payments — takes *Text* **4(B)**, Plan Type **A** generally, with **guarantee duration measured from contract issue to commencement of that second portion**, not from the depletion date [REG-R151]. AG 33 states the example for a fixed deferred annuity "whether traditional or **indexed to an external referent such as an equity index**", so it reaches this product on AG 33's own terms, without invoking AG 35 |
 | IMR, both legs [REG-R86][REG-R89] | realised `MVA(t)` split out of the payment with the materiality test (greater than both **0.01% of liabilities** and **$1,000,000**), and all withdrawal and surrender activity split by **whether an MVA applied** — free-withdrawal and GLWB amounts attract none [S9][S10] |
 | Derivative programme [REG-R96] | option fair values **and** the hedged-item measurement, per hedge relationship, at least quarterly |
 | Tax reserve [REG-R16][REG-R97] | `max(net surrender value, 92.81% × CARVM)` capped at statutory — the net-surrender-value leg binds wherever CARVM sits below `CSV` — with the reversal pattern and character of temporary differences, since a life-taxed entity cannot carry back post-2017 ordinary losses |
@@ -669,6 +725,35 @@ so a projected ratio needs a projected annual statement — **[unverified]** in 
   (2010 standalone print, never cross-checked against the March 2026 manual), and the pending
   amortized-cost method for a qualifying derivative program was at exposure in March 2026, documents
   not fetched [REG-R96][REG-R88].
+- **The hedge programme is also a reserve gate, and the gate is quantitative.** Electing AG 35's
+  Type 1 method (EDIM) requires the appointed actuary to certify **quarterly** to one of two "Hedged
+  as Required" criteria sets, filed with each annual and quarterly statement in every state where
+  the insurer does business [REG-R152]. Under the **Basic** set — an insurer hedging with long-dated
+  options — the hedge bought at or near issue must be at least a **Specified Percentage** of the
+  product's account value at issue, and the Specified Percentage varies by the length of the option
+  guarantee, allowing "no more than **3% per year** of elective benefit decrements" unless the
+  Commissioner agrees a higher limit; the guideline's printed example is `SP% = (1 - .03) ^ 5 = 86%`
+  for a five-year point-to-point product [REG-R152]. **For an annual-ratchet design with one-year
+  participation-rate guarantees the guideline is explicit that "the 'term' for this purpose is 1
+  year"** — which is this composite's chassis, one annual segment per indexed account, so its
+  Specified Percentage is a one-year figure, not a multi-year one. Under the **Option Replication**
+  set the same test runs **at the end of each quarter** on the *remaining* option guarantee, with
+  appropriate non-elective decrements such as mortality permitted on top of the elective allowance,
+  and compliance is measured by a **retrospective correlation test performed at least weekly**: with
+  `D` the quarter-to-date change in the hedge portfolio's market value less the change in the market
+  value of the options embedded in the liabilities, and `V` the beginning-of-period market value of
+  those embedded options, the maximum permitted `|D|` is **10% of V**; a **second** occurrence in a
+  quarter of `10% < |D| < 25%`, or **any** weekly observation above **25%**, requires notification of
+  the Commissioner in every state where the insurer is licensed, and `|D| > 35%` **at any point in
+  time** deems the insurer out of compliance [REG-R152]. Over-hedging cannot mask a failure — "the
+  excess hedging instruments are excluded from the measurements". Failure must be **disclosed in the
+  certification**, and if the reason is not corrected within **one quarterly financial reporting**
+  the block must move to a Type 2 method, returning only on domiciliary-commissioner approval plus
+  all-states notification [REG-R152]. Two readings to hold onto: **CARVM-UMV is the reference basis**
+  the escalations quantify surplus impact against, so a Type 1 shop must be able to run it anyway;
+  and the **3%-per-year cap is a hedge-sizing limit, not a reserve assumption** — AG 35 addresses no
+  decrement inside the reserve, handing mortality and decrements to CARVM and AG 33 at Step 4
+  [REG-R152].
 - **The MVA is what puts this product inside the IMR machinery.** A material market value adjustment
   on contracts backed by assets carried at book enters the IMR **liability leg**, amortised
   consistently with the MVA determination [REG-R86]. Negative-IMR admittance must then be
@@ -679,7 +764,15 @@ so a projected ratio needs a projected annual statement — **[unverified]** in 
   reserves as those on contracts surrenderable **without an MVA** at the holder's discretion, naming
   SPDAs expressly [REG-R89] — so the 10-year MVA period, and the free-withdrawal and GLWB amounts
   that escape it [S9][S10], change the classification year by year. The IMR itself has no cash flows
-  [REG-R111].
+  [REG-R111]. **And the VM-A item that governs MVA business does not reach this contract**, which is
+  a verified negative rather than an untested assumption: **A-255** (modified guaranteed annuities)
+  defines its subject as a deferred annuity "the underlying assets of which are held in a separate
+  account", with the assets required to be in that separate account throughout the period the holder
+  can surrender, and its floor — separate account liability at least the surrender value produced by
+  the contract's own MVA formula, with a transfer of assets to make good any shortfall — is a
+  separate-account rule [REG-R157]. This composite has **no separate account** [REG-R83], so A-255
+  does not apply to it, and A-255 in any case prints **no MVA formula and no parameter for one** —
+  the formula is the contract's [REG-R157].
 - **The GLWB is a contingent obligation whose reserve does not vanish when the account value does.**
   Actuarial estimates "meet the definition of liabilities … and are **not** loss contingencies"
   [REG-R91/IP5 ¶¶2–3], and VM-22's Accumulation category expressly covers guaranteed-living-benefit
@@ -691,9 +784,17 @@ so a projected ratio needs a projected annual statement — **[unverified]** in 
   [REG-R128] and the longevity charge probably does not reach it, so the phase carrying almost all
   the economic risk carries the least required capital. Only cash flow testing finds it
   [REG-R100][REG-R29].
-- **Asset adequacy is not optional.** AG 35 is reported to require equity-indexed annuity reserves to
-  be asset-adequacy tested [R1][REG-R39][REG-R40] — [unverified] — and VM-30 covers all in-force
-  business regardless, any shortfall being **established as an additional reserve** [REG-R100]. AG 53
+- **Asset adequacy is not optional — but AG 35 is not what makes it so.** The guideline's asset
+  adequacy provision, read in full, is one conditional sentence: "**To the extent required by law,
+  regulation, or regulatory requirements**, reserves established for equity indexed annuity policies
+  must be tested for adequacy using appropriate methods and assumptions" [REG-R152]. It
+  **presupposes** the obligation and points at it; it does not create one. The modelling conclusion
+  is unchanged — an FIA block cannot rely on the formulaic reserve alone, and the same cash flow
+  model must serve CARVM and ASOP No. 22 — but the authority moves: **SVL §6.B**, codified in the
+  manual as **A-822 ¶3** ("the company **shall establish** the additional reserve", with ¶4
+  permitting release without that being an adoption of a lower standard), and **VM-30**, which covers
+  all in-force business regardless, any shortfall being **established as an additional reserve**
+  [REG-R1][REG-R153][REG-R100][REG-R29]. AG 35 is corroboration, not the source. AG 53
   (complex and high-yielding assets) and AG 55 (reinsurance, from the December 31, 2025 statement)
   overlay that analysis on **company-level and treaty-level** triggers, not product-level ones
   [REG-R105][REG-R106][REG-R103][REG-R104]; reserves stay gross with a ceded deduction on the **same**
@@ -716,14 +817,29 @@ not reproduced. **Statutory accounting, annual-statement reporting and capital f
 in "Statutory accounting and capital" above**, which governs where the two overlap; the pointers
 below identify the valuation layers themselves.
 
-- **Formulaic statutory (CARVM).** **AG 33** constructs and values the integrated benefit streams
+- **Formulaic statutory (CARVM).** **AG 33** — printed title *"Determining CARVM Reserves for
+  Annuity Contracts With Elective Benefits"* — constructs and values the integrated benefit streams
   for annuity contracts with elective benefits; **AG 35** specifies how the index feature enters
-  that greatest-present-value calculation, offering "Type 1" and "Type 2" method families with
-  quarterly certification and change-notification requirements, and **requires equity-indexed
-  annuity reserves to be asset-adequacy tested** [R1][REG-R39][REG-R40]. Neither text was
-  retrieved in primary form (authoritative text: AP&P Manual Appendix C [R11][REG-R33]); titles
-  and continued incorporation are verified only via the VM-C index [REG-R41], so every substantive
-  statement about their mechanics is [unverified]. The reporting and capital consequences —
+  that greatest-present-value calculation, through **four** computational methods with quarterly
+  certification and change-notification requirements, "Type 1" and "Type 2" being **the guideline's
+  own printed section headings, not industry shorthand** [REG-R151][REG-R152]. **Both texts have now
+  been read in full** from the AP&P Manual Appendix C print — a **free download**, not the paid
+  publication recorded earlier [REG-R33] — so their mechanics are no longer [unverified]; titles and
+  continued incorporation remain independently confirmed by the VM-C index [REG-R41]. **AG 33's
+  effective date, recorded on both sides because the two do not reconcile:** its own *Effective Date*
+  block reads "This guideline shall be effective on **December 31, 1998**, affecting all contracts
+  issued on or after January 1, 1981", with a grade-in of 33⅓ / 66⅔ / 100% that completed on
+  December 31, 2000 and therefore has **no live effect on any current valuation** [REG-R151]; the
+  library elsewhere carries **December 31, 1995** for a differently-titled instrument from IRS
+  Rev. Rul. 2002-6. The 1981 issue-date reach is common to both, the extracted pages carry **no
+  amendment history**, and **the reconciliation is unresolved** — that the guideline was later
+  revised is an inference, not something either source states. **AG 35 prints no date at all**; its
+  only temporal language is "regardless of the date of issue" [REG-R152]. Two documents in this
+  chain remain unavailable and are named rather than glossed: **AG IX-B**, which AG 35 points at
+  three times as an alternative source of the valuation interest rate for an indexed contract and
+  which this library holds only as a VM-C index entry [REG-R41][REG-R152], and the **NAIC
+  Interest-Indexed Annuity Contracts Model Regulation**, Sections 5 and 6 of which AG 35 supersedes
+  and which is not in this library at all [REG-R152]. The reporting and capital consequences —
   Exhibit 5 keying, the surrender-value-in-excess-of-reserve item, and what CARVM's path enumeration
   obliges the model to produce — are in "Statutory accounting and capital" above.
 - **Principle-based statutory.** **VM-22**, effective for valuation dates on or after January 1,
@@ -737,10 +853,12 @@ below identify the valuation layers themselves.
   **VM-V Section 1**, not VM-22 [REG-R36][REG-R37]. Enabling statute: Model #820 [REG-R1]; parent
   document [REG-R3]. Transition, governance and Exhibit 5 band-splitting are in "Statutory
   accounting and capital" above.
-- **Asset adequacy.** ASOP No. 22 — the standard AG 35's requirement runs through, meaning the
-  same projection must serve CARVM and cash flow testing [REG-R29][REG-R27]. The operative NAIC
-  requirement is **VM-30**, and any shortfall becomes an additional reserve — see above
-  [REG-R100].
+- **Asset adequacy.** ASOP No. 22, meaning the same projection must serve CARVM and cash flow
+  testing [REG-R29][REG-R27]. **AG 35 does not itself impose the requirement** — it directs that
+  reserves be tested "to the extent required by law, regulation, or regulatory requirements"
+  [REG-R152]. The operative NAIC requirement is **VM-30**, with SVL §6.B, codified as **A-822 ¶3**,
+  behind it, and any shortfall becomes an additional reserve — see above
+  [REG-R100][REG-R1][REG-R153].
 - **Nonforfeiture floor.** Model #805 §4 and Model #806 §7 as implemented in step 6
   [R2][R3][REG-R42].
 - **Tax reserve.** IRC §807: the greater of net surrender value and 92.81% of the NAIC-prescribed
@@ -784,6 +902,23 @@ Dominant assumptions, in rough order of impact on the value of the guarantee:
 
 Known pitfalls:
 
+- **The behavioral assumptions above must not be reused in a CARVM valuation.** Every dynamic lapse,
+  activation, utilization and excess-withdrawal formula in "Policyholder behavior modeling" is an
+  *experience* assumption. AG 33 states that for elective benefits "incidence rates should not be
+  based on tables reflecting past company experience, industry experience or other expectations" —
+  the elective assumption is not an assumption at all but a **decision variable maximised over**,
+  with all rates between 0% and 100% theoretically in scope and the greatest present value typically
+  occurring at 0% or 100% [REG-R151]. Wiring the projection's behavior module into the reserve run is
+  a silent compliance error. The non-elective side is the opposite case: incidence comes from the
+  SVL-prescribed tables where one exists, otherwise from company or industry experience **with
+  margins for conservatism** (unquantified), and the SVL-prescribed **annuity mortality** table
+  discounts every payment in **every** integrated benefit stream for survivorship — the elective
+  surrender and withdrawal streams included, so a cash-value stream is **not** valued on a
+  mortality-free basis [REG-R151].
+- **"Efficient policyholder selection" is not AG 33's language and should not be attributed to it.**
+  The phrase appears nowhere in the guideline; the actual construction is the prohibition, the trial
+  sets, and the direction to **"consider, not necessarily test"** all potential integrated benefit
+  streams [REG-R151].
 - **The 0% floor is on the index credit, not the account value.** Rider charges and strategy fees
   can exceed interest credited, "which would result in loss of premium" [S7]. Flooring the account
   value silently removes the charge drag that produces depletion.
