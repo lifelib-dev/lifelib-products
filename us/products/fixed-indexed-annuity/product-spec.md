@@ -517,13 +517,40 @@ guaranteed at issue [R4] — is the cleanest available definition of a cap, part
 spread or declared rollup rate. Modelling relevance is indirect but real: best-interest
 supervision changes exchange and replacement activity, hence surrender assumptions [REG-R46].
 
-**Statutory valuation — AG 33, AG 35, VM-22.** Reserves run through **AG 33** (CARVM for annuity
-contracts with elective benefits) and **AG 35** (how the index feature enters that
-greatest-present-value calculation, via "Type 1" / "Type 2" method families with certification and
-change-notification requirements, and **requiring asset adequacy testing of equity-indexed annuity
-reserves**) [R1][REG-R39][REG-R40][REG-R29]. Neither text was retrieved in primary form — it lives
-in AP&P Manual Appendix C, a paid publication — so all statements about their mechanics are
-[unverified] [R11][REG-R33][REG-R41]. **VM-22** is the principle-based framework for non-variable
+**Statutory valuation — AG 33, AG 35, VM-22.** Reserves run through **AG 33**, printed as
+*"Determining CARVM Reserves for Annuity Contracts With Elective Benefits"*, and **AG 35**, *"The
+Application of the Commissioners Annuity Reserve Method to Equity Indexed Annuities"*. **Both were
+read in full in AP&P Manual Appendix C on 2026-08-06** [REG-R151][REG-R152] — the manual turned out
+to be a **free download**, not the paid publication this file previously recorded [REG-R33] — so
+their mechanics are no longer [unverified], and titles and continued incorporation remain confirmed
+by the VM-C index [REG-R41]. AG 33 applies "to all annuity contracts subject to CARVM, where any
+elective benefits … are available to the contract owner" — no product list, no threshold, no size
+test — sorts every benefit into elective or non-elective, **prohibits experience-based elective
+incidence** (trial sets are maximised over instead), and determines the SVL §4b parameters at
+**contract** level (issue-year versus change-in-fund basis, cash settlement options, interest
+guaranteed on considerations received beyond 12 months) and at **benefit** level (guarantee
+duration, Plan Type) [REG-R151]. AG 35 applies "to all equity indexed annuity contracts, regardless
+of the date of issue, that are subject to CARVM" and supplies four computational methods — **CARVM
+with Updated Market Values**, the **Market Value Reserve Method**, its **Black-Scholes Projection
+Method** adaptation and the **Enhanced Discounted Intrinsic Method** — each of which ends by handing
+the greatest-present-value calculation back to AG 33; **"Type 1" and "Type 2" are the guideline's
+own printed section headings, not industry shorthand**, Type 1 (EDIM) gated on the "Hedged as
+Required" criteria with quarterly appointed-actuary certification and Type 2 on the Attachment 4
+assumption certification [REG-R152]. **Two corrections the reading forces on what this paragraph
+used to say.** (1) AG 33's *Effective Date* block reads "This guideline shall be effective on
+**December 31, 1998**, affecting all contracts issued on or after January 1, 1981" [REG-R151]; the
+library elsewhere carries **December 31, 1995** from IRS Rev. Rul. 2002-6 under a different title.
+The 1981 issue-date reach is common to both, but the extracted pages carry **no amendment history**,
+so the reconciliation is **unresolved** — "a later revision" would be an inference, not a fact.
+(2) AG 35 does **not** free-standingly require asset adequacy testing. Its provision is one
+conditional sentence — "**To the extent required by law, regulation, or regulatory requirements**,
+reserves established for equity indexed annuity policies must be tested for adequacy using
+appropriate methods and assumptions" [REG-R152] — which presupposes the obligation rather than
+creating it; the binding authority is SVL §6.B and VM-30, with ASOP No. 22 the standard the analysis
+runs under [REG-R1][REG-R100][REG-R29], and AG 35 is corroboration. AG 35 also prints **no
+effective, adoption or operative date, no transition and no sunset**; its only temporal language is
+"regardless of the date of issue", so **no date may be attributed to it** [REG-R152]. **VM-22** is
+the principle-based framework for non-variable
 annuities, effective for valuation dates on or after **January 1, 2026**, with a three-year
 elective transition and mandatory prospective application three years after the effective date
 [REG-R36] (the Academy paper states elective 1/1/2026, required 1/1/2029 [R1]; post-launch

@@ -9,8 +9,11 @@ not any single insurer's product. [S#]/[R#] tags refer to the source list in
 reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
 R-numbering runs R1–R157 with **R114–R124 and R143–R149 unused by design** (provenance:
 `us/_research/regulatory-actuarial.md` for R1–R34,
-`us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the three statutory
-accounting and capital research files for R73–R142; see `us/regulatory/sources.md`).
+`us/_research/regulatory-actuarial-annuities.md` for R35–R72, the three statutory
+accounting and capital research files for R73–R142, and the AP&P Manual appendix
+extractions `us/_research/appp-ag33.md`, `appp-ag35.md`, `appp-a820-a821-a822.md` and
+`appp-a585-a250-a255-a270.md` for R151–R157, all accessed **2026-08-06**; see
+`us/regulatory/sources.md`).
 **[std]** marks
 standardizations introduced for the reference implementation. **Parameter values are
 identical to those in `product-spec.md`.** This is the deferred annuity base chassis:
@@ -633,11 +636,31 @@ attached; **do not hard-code either answer.**
 **Formulaic CARVM, then VM-22.** CARVM is the greatest present value over
 contract-year ends of guaranteed benefits **including guaranteed nonforfeiture
 benefits**, less future valuation considerations payable before that date
-[REG-R1 §5a.B]; a single-premium contract has none of the latter, so `X(k)` collapses
-to the discounted `CSV(k)` — worked in `us/regulatory/technical-notes.md`, "Formulaic
-reserves", Worked example 2, a SPDA on exactly this chassis. **AG 33's text was not
-retrieved** [REG-R39][REG-R41]; **AG 35 is the equity-indexed guideline and does not
-reach a book-value MYGA** [REG-R40]. **VM-22 constitutes CARVM** for in-scope
+[REG-R1 §5a.B][REG-R153 ¶15]; a single-premium contract has none of the latter, so
+`X(k)` collapses to the discounted `CSV(k)` — worked in
+`us/regulatory/technical-notes.md`, "Formulaic reserves", Worked example 2, a SPDA on
+exactly this chassis. **A-820 ¶15 prints that construction word for word**, and its ¶14
+scope gate admits this contract: ¶15 reaches all annuity and pure endowment contracts
+other than qualified-plan group annuity business, which ¶13.b routes instead to a
+CRVM-consistent method [REG-R153 ¶¶13.b, 14, 15]. **AG 33's text has now been read in
+full** as printed in the AP&P Manual Appendix C [REG-R151] (superseding the title-only
+record at [REG-R39][REG-R41]) — see the four bullets below — and with it Worked example
+2's method stops being a library construction: "accumulated at the guaranteed credited
+interest rate(s) and discounted at the valuation rate(s) of interest" is the guideline's
+own description of the mandatory cash value stream [REG-R151 *Text* 2.A]. Its parameter
+values remain **[std]**. **Two seams stay open, and reading AG 33 did not close them.**
+The guideline **never cites SVL §5a by number** — its only numbered SVL cross-references
+are to §4b and §4b.C.(1)(c)(vi) — so the §5a mapping relied on above is **the library's
+own, made on content**, not AG 33's citation; and AG 33's operative *Text* block never
+restates the "end of each respective contract year" indexing or the deduction of future
+valuation considerations, which appear only in a *Background* paraphrase, so **how the
+stream maximisation composes with §5a's per-contract-year-end excess is not stated** and
+is not asserted here [REG-R151][REG-R1 §5a.B][REG-R153 ¶15].
+**AG 35 does not reach a book-value MYGA** — now on primary
+authority rather than inference: its entire Scope reads "This Actuarial Guideline applies
+to all equity indexed annuity contracts, regardless of the date of issue, that are subject
+to CARVM", and this chassis has no index feature [REG-R152] (superseding [REG-R40]).
+**VM-22 constitutes CARVM** for in-scope
 contracts from valuation dates on or after **1 January 2026**, with the three-year
 elective transition [R2 §2.B][REG-R36]; a MYGA sits in the **Accumulation Reserving
 Category** [R2]. Both bases therefore coexist during transition — Exhibit 5 Column 1
@@ -648,6 +671,70 @@ pointers" below.
 - **Path enumeration is the CARVM obligation** and maps one-for-one onto the elective
   paths already modelled — full surrender with `M(t)` and `C(t)`, free withdrawal, the
   30-day exit at full account value, annuitization by option [REG-R1 §5a.B][S8][S10].
+  AG 33 makes three demands the sentence above does not. The mandatory cash value
+  stream is "any possible **blend** of future guaranteed partial withdrawals and full
+  surrenders", not one surrender date per path; the mandatory annuitization stream uses
+  **the guaranteed purchase rates contained in the contract, "excluding any current
+  purchase rates which may be applicable"**, applied to the *accumulation fund*; and a
+  third residual family sweeps in every other guaranteed elective benefit "including
+  blends of more than one type" [REG-R151 *Text* 2.A–C].
+- **Elective incidence is not an assumption in the CARVM run**, and the behavioural
+  assumptions specified earlier in this file must not be reused there. "For elective
+  benefits, incidence rates should not be based on tables reflecting past company
+  experience, industry experience or other expectations" — so the dynamic lapse
+  function, the partial-withdrawal table and the **[std]** 1.0% annuitization take-up
+  are best-estimate cash-flow inputs only; in CARVM the elective rates are a decision
+  variable maximised over, theoretically every rate between 0% and 100%, with the
+  greatest present value "typically … either 0% or 100%" — stated as a typicality, not
+  as permission to restrict the search [REG-R151 *Definitions* 2]. The escape from
+  combinatorial explosion is the guideline's own: **"consider, not necessarily test"**
+  all potential streams, conditioned on a materiality determination per contract-owner
+  option and on demonstrating any approximation used [REG-R151 *Text* 7].
+- **The nursing-home waiver is a NON-elective benefit, and it carries a hard cut-off.**
+  AG 33's *Definitions* place "nursing home benefits" expressly in the **non-elective**
+  list, alongside death, accidental death and disability benefits; and for
+  non-elective **waiver-of-surrender-charge** benefits other than mortality-based ones,
+  incidence rates "greater than zero are not to be applied at any time in the projection
+  after the earlier of: (a) the end of the surrender charge period applicable
+  immediately after the first premium is paid; and (b) when the projected cash value has
+  been depleted" [REG-R151 *Definitions* 1–2]. On this chassis that is `ι(t) = 0` for
+  `t > min(SCP1, T_depletion)` with `SCP1` the **first** 9/8/7/6/5 schedule's end — so
+  under `rollover`, where each renewal restarts a 5/4/3/2/1 schedule, **the renewal
+  schedules do not extend the cut-off**. The terminal-illness waiver is not named in
+  AG 33 and falls to its only stated tie-breaker, "the degree to which contract owner
+  actions would be influenced by the availability of each benefit" [REG-R151
+  *Definitions* 1]. Note separately that the SVL-prescribed **annuity mortality** table
+  discounts every payment in every stream for survivorship, including the purely
+  elective surrender stream: a cash-value stream is **not** valued mortality-free under
+  AG 33 [REG-R151 *Definitions* 2].
+- **Valuation rates vary inside one stream, and not on an elective/non-elective split.**
+  SVL §4b parameters A (issue year vs change in fund), B (cash settlement options
+  present) and C (interest guaranteed on considerations received more than 12 months
+  after issue) are determined at **contract** level; D (guarantee duration) and E (Plan
+  Type) at **benefit** level [REG-R151 *Text* 3]. For this contract's surrender and
+  partial-withdrawal portions the guarantee duration is "the number of years for which
+  interest rates are guaranteed in excess of the calendar year statutory valuation
+  interest rate for life insurance policies with guarantee duration in excess of twenty
+  (20) years" — a comparison against an externally published series recomputed by
+  calendar year of issue, **not** the 5-year guarantee term [REG-R151 *Text* 4.A]; for
+  the annuitization portion it runs from issue to the **assumed** commencement date, so
+  the rate is a function of the candidate election date [REG-R151 *Text* 4.B]. AG 33
+  supplies which row and column; the factors themselves are A-820 ¶8.c — Plan Type
+  A/B/C by guarantee-duration band, the change-in-fund increments **+.15 / +.25 / +.05**
+  and the no-forward-guarantee **+.05** — with the issue-year/change-in-fund election
+  itself a per-contract flag **set at issue and locked**, changeable only with the
+  commissioner's prior written approval [REG-R153 ¶8.c][REG-R151 *Text* 5]. Two
+  verified negatives for this chassis: the *accumulation fund* — "the policy value which
+  is used to purchase an annuity option" — is the surrender value inside the charge
+  period and the account value in the window and after, so it never exceeds the cash
+  value here and one account-value state suffices, unlike designs where it does exceed
+  it [REG-R151 *Background* 2][S1][S2][S5]; and AG 33's **7% expense-allowance floor**,
+  `V(τ) ≥ AF(τ)·(1 − EA)` with `EA ≤ 0.07` on the accumulation fund, does **not** bite on
+  the contract as specified — it has no "better of guaranteed and then-current" purchase
+  rate guarantee (`product-spec.md`, "Minimum guaranteed surrender value") and no
+  annuitization bonus (spec footnote 21). Both triggers are common in the market, so a
+  variant carrying either takes a floor of `AF·0.93` at its lowest; `EA` is a **cap, not
+  a value**, and the guideline gives no rule for setting it below 7% [REG-R151 *Text* 6].
 - **VM-20's exclusion-test bars and deemed failures do not carry over**: VM-20 is CRVM
   for individual *life*, blank for annuities by construction. The analogues are
   VM-22's own **Section 7 exclusion tests and Single Scenario Test**, whose internals
@@ -793,9 +880,18 @@ duplicating them. Reserve layers consume the cash flows and are cited, not repro
   Reserving Category** [R2]. Aggregate reserve = SR (CTE70) + DR for contracts passing the
   Single Scenario Test + formulaic reserves for excluded contracts; the additional
   standard projection amount is **disclosure-only** under VM-31 [R2 §3].
-- **Formulaic CARVM under AG 33** [R7][REG-R39], with the guideline family indexed at VM-C
-  [REG-R41]: NAIC-adopted effective **December 31, 1995 for all contracts issued on or after
-  January 1, 1981** [R7]. Its text was not retrieved; its mechanics are [unverified] here.
+- **Formulaic CARVM — A-820 ¶¶14–15 as interpreted by AG 33** [REG-R153][REG-R151], with the
+  guideline family indexed at VM-C [REG-R41]. AG 33's printed title is **"Determining CARVM
+  Reserves for Annuity Contracts With Elective Benefits"** and its printed *Effective Date*
+  block reads "This guideline shall be effective on **December 31, 1998**, affecting all
+  contracts issued on or after January 1, 1981" [REG-R151 *Effective Date*]. The
+  **December 31, 1995** date and the alternative title this file previously carried come
+  from IRS Rev. Rul. 2002-6, describing a differently-titled instrument [R7][REG-R39].
+  **Both are recorded and the reconciliation is unresolved** — the extracted pages carry no
+  amendment history, so "a later revision" is an inference, not a fact from either source;
+  the 1 January 1981 issue-date reach is common to both, and the 33⅓ / 66⅔ / 100% grade-in
+  ran off by December 31, 2000. The mechanics are **no longer [unverified]**: they are in
+  "Reserve basis" above and in `us/regulatory/technical-notes.md`, "Formulaic reserves".
   **VM-V §1** carries the statutory maximum valuation interest rate on the post-annuitization
   payout stream [REG-R37].
 - **Tax and GAAP.** IRC §807: greater of net surrender value and, post-TCJA, **92.81% of**

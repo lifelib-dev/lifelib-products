@@ -1,6 +1,8 @@
 # Variable Annuity with Living and Death Benefit Guarantees — Representative Product Specification (United States)
 
-**Status:** Draft, 2026-08-04 (all cited sources accessed 2026-08-04).
+**Status:** Draft, 2026-08-04; AP&P Manual appendix material added 2026-08-06. All cited
+sources accessed 2026-08-04 **except** [REG-R151] (AG 33) and [REG-R156] (A-250), accessed
+**2026-08-06**.
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling of a U.S. individual deferred variable annuity (VA) carrying
@@ -12,8 +14,10 @@ references). **[REG-R#]** resolves against the **single shared cross-product num
 space R1–R157** curated at `us/references/regulatory-and-actuarial-references.md`; R1–R34
 originate in `us/_research/regulatory-actuarial.md` (life-origin, several of which also
 bind annuities), R35–R72 in `us/_research/regulatory-actuarial-annuities.md`
-(annuity-specific) and R73–R142 in the three statutory accounting and capital research
-files, with **R114–R124** and **R143–R149** unused by design — one tag prefix, one numbering
+(annuity-specific), R73–R142 in the three statutory accounting and capital research
+files and **R151–R157** in the AP&P Manual appendix extractions read at first hand on
+2026-08-06 (**AG 33** [REG-R151] and **A-250** [REG-R156] are the two cited here), with
+**R114–R124** and **R143–R149** unused by design — one tag prefix, one numbering
 space. **[std]** marks a
 standardization introduced for the reference implementation; every [std] table row carries
 a footnote giving the rationale and the observed range across insurers. **[unverified]**
@@ -419,7 +423,16 @@ cites "NAIC Model 250, Variable Annuity Model Regulation" [REG-R44]. Model #250 
 insurer qualification, separate accounts, filing, required provisions, nonforfeiture and
 reports; its §7.B is the boundary rule — to the extent a VA provides benefits that do not
 vary with separate-account performance before the annuity commencement date, those
-provisions must satisfy Model #805 [REG-R43].
+provisions must satisfy Model #805 [REG-R43]. *Note on the appendix print, which is not a
+substitute:* the AP&P Manual's Appendix A item for this subject, **A-250 (Variable
+Annuities)**, has now been read in full and is **one page of three paragraphs** — the ¶1
+definition of a variable annuity, a ¶2 requirement that each separate account hold assets at
+least equal to the reserves and other contract liabilities of that account, and a ¶3
+delegation of the reserve to Appendix A-820 [REG-R156]. It carries **none** of the
+qualification, filing, required-provisions, nonforfeiture or reports material above, and its
+own header names only the **Standard Valuation Law (#820)** and **SSAP No. 56** — it does not
+name Model #250 anywhere [REG-R156]. Every Model #250 statement in this paragraph therefore
+continues to rest on [REG-R43], not on the appendix.
 
 **Model #805 and the nonforfeiture floor.** *Second correction:* Model #805 **expressly
 excludes variable annuities**, so it does not reach the separate account at all [REG-R42];
@@ -444,6 +457,27 @@ elective 36-month phase-in and a separate economic scenario generator phase-in o
 months beginning January 1, 2026 [R1][REG-R35]. *Third correction:* **AG 43 is not simply
 superseded** — through reference in AG 43 the VM-21 requirements also reach contracts
 issued before January 1, 2017, and the two populations may be aggregated [R1][REG-R38].
+
+**AG 33 and why it is not the reserve standard here.** AG 33 — "Determining CARVM Reserves
+for Annuity Contracts With Elective Benefits" — has been read in full and applies "to all
+annuity contracts subject to CARVM, where any elective benefits … are available to the
+contract owner under the terms of the contract", with no product list and **no
+separate-account exception**; its own examples of elective benefits are full surrenders,
+partial withdrawals and full and partial annuitizations, which this contract has [REG-R151].
+It is displaced by its own precedence clause — "the product specific actuarial guideline or
+regulation will take precedence" — which is why AG 43 and VM-21 govern instead. **The
+principle is sourced, the pairing is not:** AG 33 names **no other guideline anywhere in its
+eight printed pages** and never mentions separate accounts, variable annuities or the
+Valuation Manual, so the AG 43 pairing is this library's inference from the general clause,
+**[std, derived]** [REG-R151]. The guideline's printed effective date is **December 31,
+1998**, "affecting all contracts issued on or after January 1, 1981", with a grade-in that
+reached 100% by December 31, 2000 and so has no live effect on any current valuation
+[REG-R151]; the library elsewhere carries **December 31, 1995** under a different title from
+IRS Rev. Rul. 2002-6, and because the extracted pages contain **no amendment history** the
+reconciliation is **unresolved and neither date is presented as settled**. The mechanics AG 33
+does supply, and the behavioral frame they impose — elective incidence maximised over rather
+than assumed, which is the opposite of VM-21's prudent-estimate approach — are in
+`technical-notes.md`, *Reserve basis*.
 
 **VM-22 and VM-V — where the post-depletion stream lands.** VM-22 is the PBR framework for
 **non-variable** annuities and does not cover VAs, but **fixed income streams from

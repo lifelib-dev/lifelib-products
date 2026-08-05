@@ -11,8 +11,11 @@ numbered per `us/_research/fixed-deferred-annuity.md`, and [REG-R#] (the cross-p
 reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
 R-numbering runs R1–R157 with **R114–R124 and R143–R149 unused by design**; provenance in
 `us/_research/regulatory-actuarial.md` for R1–R34,
-`us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the three statutory
-accounting and capital research files for R73–R142) — were extracted from
+`us/_research/regulatory-actuarial-annuities.md` for R35–R72, the three statutory
+accounting and capital research files for R73–R142, and the AP&P Manual appendix
+extractions `us/_research/appp-ag33.md`, `appp-ag35.md`,
+`appp-a820-a821-a822.md` and `appp-a585-a250-a255-a270.md` for R151–R157, all accessed
+**2026-08-06**) — were extracted from
 the cited document. Values marked **[std]** are standardizations introduced for the
 reference implementation; each [std] table row carries a footnote giving the rationale and
 the observed range across insurers. Facts the research file could not verify are flagged
@@ -531,15 +534,36 @@ Aggregate reserve = stochastic reserve + deterministic reserve for contracts pas
 Single Scenario Test + reserves for excluded contracts valued formulaically; the additional
 standard projection amount is **disclosure-only** under VM-31 [R2 §3].
 
-**Formulaic CARVM — AG 33 and the VM-C guideline family** [R7][REG-R39][REG-R41]. Where
-VM-22 PBR does not apply (transition election, exclusion test), the reserve remains
-formulaic CARVM as interpreted by Actuarial Guideline XXXIII, NAIC-adopted **effective
-December 31, 1995 for all contracts issued on or after January 1, 1981** [R7]. Its full text
-sits in the NAIC AP&P Manual Appendix C and was **not retrieved**; its mechanics are
-[unverified] here [R7][REG-R39]. VM-C is the authoritative index of which guidelines the
-Valuation Manual incorporates, including AG VIII, AG XIII, AG XXXIII and AG XLI [REG-R41].
-For the payout phase VM-V §1 carries the statutory maximum valuation interest rate and
-supersedes the interest guidance in AG IX-B and IX-C [REG-R37].
+**Formulaic CARVM — A-820, AG 33 and the VM-C guideline family**
+[REG-R153][REG-R151][R7][REG-R41]. Where VM-22 PBR does not apply (transition election,
+exclusion test), the reserve remains formulaic CARVM — the greatest-of-excesses
+construction printed at **AP&P Appendix A-820 ¶15**, whose ¶14 scope gate admits this
+contract (¶15 reaches all annuity contracts other than qualified-plan group annuity
+business, which ¶13.b routes to a CRVM-consistent method) [REG-R153 ¶¶13.b, 14, 15] —
+read through **Actuarial Guideline XXXIII**, whose text has now been **read in full** as
+printed in the AP&P Manual Appendix C [REG-R151] (superseding the title-only record at
+[REG-R39]). Its applicability sentence reaches "all annuity contracts subject to CARVM,
+where any elective benefits … are available to the contract owner", so this chassis — full
+surrender, partial withdrawal, annuitization by option — is squarely inside
+[REG-R151 *Purpose*]. **Two records this file previously carried are corrected.** The
+printed title is **"Determining CARVM Reserves for Annuity Contracts With Elective
+Benefits"**, not the Rev. Rul. 2002-6 wording; and the printed *Effective Date* block reads
+"This guideline shall be effective on **December 31, 1998**, affecting all contracts issued
+on or after January 1, 1981" [REG-R151 *Effective Date*], against the **December 31, 1995**
+date carried here from Rev. Rul. 2002-6 for a differently-titled instrument [R7]. **Both
+dates are recorded and the reconciliation is unresolved**: the extracted pages carry no
+amendment history, so the natural reading — that the guideline was later revised — is an
+inference, not a fact from either source. The 1 January 1981 issue-date reach is common to
+both, and the guideline's 33⅓ / 66⅔ / 100% grade-in ran off by December 31, 2000, so it has
+**no live effect on any current valuation** [REG-R151 *Effective Date*]. AG 33 contains **no
+formulas, tables or factors** beyond the 7% expense-allowance cap and those phase-in
+percentages, and it **never cites SVL §5a by number** — the §5a mapping used throughout this
+library is the library's own, made on content [REG-R151][REG-R1 §5a.B]. Mechanics, and what
+they change for this chassis, are in `technical-notes.md`, "Reserve basis". VM-C is the
+authoritative index of which guidelines the Valuation Manual incorporates, including AG
+VIII, AG XIII, AG XXXIII and AG XLI [REG-R41]. For the payout phase VM-V §1 carries the
+statutory maximum valuation interest rate and supersedes the interest guidance in AG IX-B
+and IX-C [REG-R37].
 
 **SEC registration** [S3][S4][REG-R49]. A fixed deferred annuity whose MVA is not adequately
 limited is sold as a registered **modified guaranteed annuity**: both uncapped-MVA contracts
@@ -549,7 +573,19 @@ rulemaking moved registered index-linked and **registered market value adjustmen
 annuities onto **Form N-4** with tailored disclosure of contract adjustments and surrender
 charges and a prescribed Key Information Table; effective September 23, 2024, compliance
 date May 1, 2026 [REG-R49; that entry flags the compliance date [unverified]]. The
-representative contract has a capped MVA and is outside that regime.
+representative contract has a capped MVA and is outside that regime. **That SEC category is
+not the statutory instrument of the same name.** AP&P Appendix A-255, "Modified Guaranteed
+Annuities", defines the term by asset location — "a deferred annuity contract … the
+underlying assets of which are held in a separate account", with "nonforfeiture values that
+are based upon a market-value adjustment formula if held for shorter periods", the assets
+having to be in that separate account "during the period or periods when the contract holder
+can surrender the contract" [REG-R157 ¶1]. This chassis is a general account obligation with
+no separate account, so **A-255 does not reach it**; where it does reach a contract it
+delegates the reserve method itself to A-820 and adds one floor — the separate account
+liability at least equal to the surrender value produced by **the contract's own**
+market-value-adjustment formula, with a transfer of assets to make good any shortfall
+[REG-R157 ¶5]. A-255 prints **no MVA formula, no parameters for one, and does not mention
+CARVM** [REG-R157].
 
 **Federal tax — IRC §72 and §1035** [R6][REG-R55][REG-R56]. Pre-annuitization withdrawals
 are taxed **income-first (LIFO)**: the taxable portion is the excess of "the cash value of

@@ -1,7 +1,9 @@
 # Variable Universal Life Insurance — Representative Product Specification (United States)
 
-**Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
-This document is a standardized composite
+**Status:** Draft, 2026-08-03; cross-product [REG-R#] citations extended 2026-08-06 with
+the AP&P Manual appendix items read at first hand. Product sources [S#]/[R#] were
+accessed 2026-08-03; the [REG-R#] entries carry their own access dates per entry in
+`sources.md`. This document is a standardized composite
 specification for reference liability-model implementation. It does not describe any
 single insurer's product. Tags [S#] and [R#] cite the product research notes
 (`us/_research/variable-ul.md`); [REG-R#] cites the cross-product reference library
@@ -350,19 +352,40 @@ minimums — flexible-premium grace ending not less than 61 days after specified
 notice, with DB during grace equal to the DB in effect), separate-account rules, and
 requires reserves for variable benefits to be held in the separate account on a
 basis consistent with the Standard Valuation Law [R8]; it appears as A-270 among the
-valuation requirements in the Valuation Manual appendices [R7]. The UL Model
+valuation requirements in the Valuation Manual appendices [R7]. That AP&P print,
+**A-270**, has since been read alongside A-585 in the free *As of March 2026* manual,
+but **no reference id was assigned to it**, so nothing in this library is stated or
+cited from its text; everything above rests on Model 270 itself [R8]. The UL Model
 Regulation (Model 585) applies to individual UL *except* variable UL, which is
-carved out to the variable-products rules and federal securities law [REG-R5].
+carved out to the variable-products rules and federal securities law [REG-R5] —
+**but the AP&P appendix print does not carry that carve-out.** A-585 prints
+definitions and valuation requirements only, no scope section and no applicability
+threshold of any kind, and its ¶7 definition of a universal life insurance policy
+turns solely on separately identified interest credits and mortality and expense
+charges, saying nothing about a separate account [REG-R155]. The carve-out is Model
+#585's own text [REG-R5], and Model #585 was not re-read against the appendix print,
+so **whether the A-585 CRVM adaptation reaches a variable contract is open**, not
+settled [REG-R155].
 
 **Statutory reserves (VM-20).** VUL is individual life subject to VM-20
 principle-based reserves for policies issued on/after the Valuation Manual operative
 date: minimum reserve = NPR floor plus the excess of max(DR, SR) over aggregate NPR
 (less due/deferred premium asset), with exclusion tests; variable life cannot use
-the SET certification method [R7]. VUL without secondary guarantees is valued in the
+the SET certification method [R7]. That operative date is **1 January 2017**, now
+carried at first hand by the AP&P print of the SVL: A-820 ¶3 applies the
+principle-based ¶¶23–27 to policies issued on or after it, and ¶4 keeps earlier issues
+on ¶¶5–22, to which the principle-based provisions "shall not apply" [REG-R153]. VUL
+without secondary guarantees is valued in the
 "All Other" category (product code 080); with secondary guarantees, in the ULSG
-category (code 090) [R7]. GMDB reserves for variable life are addressed by AG
-XXXVII, separate-account investments by AG XXIII [R7]. Current edition: Valuation
-Manual, Jan. 1, 2026 [REG-R3]; the SVL is Model 820 [REG-R1].
+category (code 090) [R7] — but that **category is VM-20's own and does not carry the
+XXX secondary-guarantee construction with it**: A-830 excludes variable life and
+variable universal life outright (¶3.a.iii, ¶3.a.iv), so that appendix does not reach
+this product at all [REG-R154]. The formulaic layer under the NPR is **A-820**, which
+reaches a varying-amount, varying-premium contract through its ¶13.a extension of CRVM
+[REG-R153], plus the **A-585** universal life adaptation if it reaches a variable
+contract — an open question, see above [REG-R155]. GMDB reserves for variable life are
+addressed by AG XXXVII, separate-account investments by AG XXIII [R7]. Current edition:
+Valuation Manual, Jan. 1, 2026 [REG-R3]; the SVL is Model 820 [REG-R1].
 
 **Statutory accounting and capital.** The framework — statutory accounting
 principles, the annual statement exhibits, AVR/IMR and risk-based capital — is in

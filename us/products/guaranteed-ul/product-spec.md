@@ -393,10 +393,39 @@ the commissioner require higher cash values where substantially level benefit ch
 develop little or no cash value — directly relevant to thin-AV GUL designs.
 [R3; REG-R5]
 
-**NAIC Model 830 ("Regulation XXX") + Actuarial Guideline 38 ("AXXX").** For policies
-issued before PBR (and in-force blocks), Model 830 Section 7 sets minimum reserves for
-UL with provisions keeping policies in force, and AG 38 interprets it for secondary
-guarantees: the reserve interpolates between basic+deficiency reserves and the net
+**AP&P Appendix A-830 (cited in this library until 2026-08-06 as Model 830, "Regulation XXX")
++ Actuarial Guideline 38 ("AXXX").** For
+policies issued before PBR (and in-force blocks), the appendix sets minimum reserves for UL
+with provisions letting a policyholder keep the policy in force over a secondary guarantee
+period, and AG 38 interprets it for secondary guarantees. **Citation correction, from the AP&P
+print read at first hand on 2026-08-06:** the appendix is a **flat sequence of paragraphs
+¶¶1–32 plus an unnumbered Attachment and has no Sections at all**, and the words "Model #830"
+and "Regulation XXX" appear nowhere in it — the ULSG material is at **¶¶29–32**, so the
+"Model 830 Section 7" citation this specification previously carried does not resolve against
+this text. (It may still resolve against the separately published model regulation [REG-R6];
+that was not re-read against the appendix print, so no view is taken.) [REG-R154]
+
+What ¶¶29–32 prescribe: basic reserves for the secondary guarantee are the **segmented
+reserves over the secondary guarantee period**, computed with gross premiums **set equal to
+the specified premiums, if any, or otherwise to the minimum premiums**, on segments from the
+¶5 contract segmentation method — **no unitary leg**; deficiency reserves run the ¶22
+construction on the same substitution; and the minimum reserve during the guarantee period is
+the greater of that sum and "the minimum reserves required by other appendices governing
+universal life plans", a limb the appendix **does not name** and which must not be resolved to
+A-585. Where more than one secondary guarantee is unexpired, the reserve is the **greatest of
+the stand-alone reserves of each, every one valued ignoring the others**. A **scope test this
+specification did not previously carry**: a UL policy is outside the appendix entirely where
+**all three** of ¶3.a.ii hold — secondary guarantee period **five years or less**, specified
+premium not less than the net level reserve premium for that period, and initial surrender
+charge not less than **100% of the first-year annualized specified premium**. The
+representative lifetime guarantee is inside the appendix on the first limb alone. A-830's own
+basic reserves, deficiency comparator and maximum valuation interest rates are cross-references
+into **A-820** ¶¶11–13, ¶¶19–20 and ¶¶7–10, also now read. [REG-R154 ¶¶3.a.ii, 4, 6, 8, 29–32;
+REG-R153]
+
+AG 38 then supplies what A-830 contains **nothing** of — no shadow account, no funding ratio,
+no minimum-gross-premium definition, no 8C/8D/8E analogue [REG-R154]: the reserve interpolates
+between basic+deficiency reserves and the net
 single premium for the guarantee via a funding ratio measured on the shadow account or
 excess cumulative premiums (with a 7% load allowance), less an adjusted
 surrender-charge offset, under prescribed conservative lapse (2%/1%/0% patterns).

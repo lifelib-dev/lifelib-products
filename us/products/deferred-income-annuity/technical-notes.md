@@ -7,8 +7,9 @@ defined in `product-spec.md` (same directory); not any single insurer's product.
 `us/_research/deferred-income-annuity.md`; [REG-R#] refers to
 `us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R157 as one space
 (R1–R34 of life origin, provenance `us/_research/regulatory-actuarial.md`; R35–R72 annuity-specific,
-provenance `us/_research/regulatory-actuarial-annuities.md`; R73–R142 statutory accounting and capital,
-provenance `us/regulatory/sources.md`, with **R114–R124 and R143–R149 unused by design**).
+provenance `us/_research/regulatory-actuarial-annuities.md`; R73–R142 statutory accounting and capital and
+**R150–R157 the AP&P Manual appendix and actuarial-guideline prints read on 2026-08-06**, both with provenance
+`us/regulatory/sources.md`, with **R114–R124 and R143–R149 unused by design**).
 **[std]** marks standardizations introduced for
 the reference implementation; [unverified] marks claims not confirmed against a retrieved document. Parameter
 values are identical to those in `product-spec.md`.
@@ -55,7 +56,8 @@ values are identical to those in `product-spec.md`.
 - **Decrement set.** Mortality only; `l(t)` never decrements for lapse or surrender [R9].
 - **Rounding.** Full precision internally, cash flows to cents **[std]**. Generational mortality rates follow
   the Valuation Manual rule — three decimal places per 1,000, computed **from the 2012 period rate each time,
-  never by compounding an already-rounded prior-year rate** [R9][REG-R59].
+  never by compounding an already-rounded prior-year rate** [R9][REG-R59]. **A-821 ¶14 prints the same rule and
+  the same worked counter-example**, so this is now sourced twice over rather than once [REG-R153].
 
 ---
 
@@ -175,7 +177,7 @@ only the Compact's stated principle [R13 §3.F(7)] and is [unverified].
 
 | Input | Recommended public basis | Tags |
 |---|---|---|
-| Payout-phase mortality | 2012 IAR / 2012 IAM Basic with Scale G2, generational, ANB, per Model #821 and VM-M §1.J | [R9][R14][REG-R59][REG-R60] |
+| Payout-phase mortality | 2012 IAR / 2012 IAM Basic with Scale G2, generational, ANB, per Model #821 and VM-M §1.J; the appendix print says the same — **A-821 ¶11** prescribes the 2012 IAR table for any individual annuity or pure endowment contract issued on or after January 1, 2015, and A-820 ¶6 makes A-821 the mortality leg of the CARVM triple by direct cross-reference | [R9][R14][REG-R59][REG-R60][REG-R153 ¶6] |
 | Payout-phase A/E | 2020–2024 Individual Payout Annuity Mortality Experience Study — 23 parent groups / 26 companies, >80% of industry sales, 3.1m contract-years, 143,190 deaths, shown against the 2012 IAM table; **the study explicitly includes deferred income annuities** | [R15][REG-R61] |
 | Deferral-phase mortality | **The weakest link.** The only public sources are a 2011–2015 deferred annuity mortality study and a 2006 analysis of mortality during the deferred period, both identified via the SOA index, neither fetched | [REG-R65]; A/E **[std]** = 1.00 |
 | Mortality improvement | Scale G2 only (generational); none additional in the base run | **[std]** |
@@ -558,13 +560,25 @@ those. **The instructions do not say**; both readings stand, neither is asserted
 ### Reserve basis
 
 - **Formulaic — CARVM**: greatest present value over `k` of guaranteed benefits at the end of contract year `k` less
-  valuation considerations payable before then [REG-R1 §5a.B]. The elective paths to enumerate are **timing** elections,
-  not surrender elections — the ±5-year start-date adjustment (11), acceleration (12) and, in the extended case,
-  commutation (14). **AG 33 (CARVM with elective benefits) was not retrieved** [REG-R39] and **VM-A item A-820, the
-  minimum life and annuity reserve standard, was not read** [REG-R110]; no mechanic for those paths is stated here.
+  valuation considerations payable before then [REG-R1 §5a.B][REG-R153 ¶15]. **A-820 ¶15 prints that construction word
+  for word**, and its ¶14 scope gate excludes only employer-plan group annuity and pure endowment business, so an
+  individual DIA is squarely inside it [REG-R153 ¶¶14–15]; ¶6 makes the minimum standard for individual annuity
+  contracts the triple **method ¶¶14–15, interest ¶¶7–10, mortality Appendix A-821** [REG-R153 ¶6]. The elective paths
+  to enumerate are **timing** elections, not surrender elections — the ±5-year start-date adjustment (11),
+  acceleration (12) and, in the extended case, commutation (14) — and all three are **elective benefits** under AG 33's
+  *Definitions* 1, "benefit options that may be freely elected under the terms of the contract", which is what puts
+  this contract inside AG 33 [REG-R151]. **Both documents have now been read in the AP&P Manual print** — AG 33 at
+  [REG-R151], A-820 with A-821 and A-822 at [REG-R153] — so the mechanic this bullet used to withhold is stated below,
+  under "CARVM under AG 33".
 - **Maximum valuation rate — VM-V §1, not VM-22**, scope expressly including "deferred income annuity contracts issued
   after Dec. 31, 2017"; Buckets A–D, **jumbo = initial consideration ≥ $250 million** with same-holder contracts inside
-  90 days combined, jumbo rates daily and non-jumbo quarterly [R9][REG-R37]. Detail in the section below.
+  90 days combined, jumbo rates daily and non-jumbo quarterly [R9][REG-R37]. Detail in the section below. A-820's own
+  ¶¶3–4 confine its ¶¶5–22 machinery — the ¶¶7–10 rate formula and the ¶¶14–15 CARVM alike — to contracts issued
+  **before** the January 1, 2017 Valuation Manual operative date, and ¶23 makes the Valuation Manual the minimum
+  standard from that date onward [REG-R153 ¶¶3–4, 23]. **The two scope lines do not meet:** VM-V §1 reads "issued
+  after Dec. 31, 2017", so a DIA issued during calendar 2017 is handed to the Valuation Manual by A-820 ¶23 while
+  falling outside the VM-V §1 scope line recorded here. Neither text resolves it and no reading is asserted
+  **[unverified]**.
 - **Principle-based — VM-22**, which constitutes CARVM for non-variable annuities and **names DIA contracts explicitly
   in the Payout Annuity Reserving Category**, from valuation dates on or after **January 1, 2026** with the elective
   three-year transition [R9][REG-R36]. Four consequences. (i) **VM-20 and VM-21 are both out of scope** — VM-20 is CRVM
@@ -580,12 +594,161 @@ those. **The instructions do not say**; both readings stand, neither is asserted
 - **Two Exhibit 5 Miscellaneous Reserves lines are structurally zero**: "surrender values in excess of reserves
   otherwise carried" cannot arise, there being no surrender value at any duration [S1][S2][R13], so the SPDA pattern in
   `us/regulatory/technical-notes.md`, Worked example 2, has no analogue here; and the deficiency-reserve line with its
-  Actuarial Guideline I / A-830 apparatus is a life-side item [REG-R89][REG-R41][REG-R110].
+  Actuarial Guideline I / A-830 apparatus is a life-side item — **A-830 has now been read in full and carries no
+  annuity content at all** [REG-R154], a verified negative that settles what the earlier index citation could only
+  assume, while **the AG I text is still unretrieved** and remains held as a VM-C index entry only
+  [REG-R89][REG-R41][REG-R110].
 - **The tax reserve has no floor to bind.** IRC §807 gives max(net surrender value, 92.81% × NAIC-method reserve) capped
   at statutory [REG-R16]; net surrender value is **zero at every duration**, so the tax reserve is 92.81% of the
   CARVM/VM-22 reserve throughout and the wedge is a flat **7.19% of statutory** **[derived]**, growing across the
   deferral and unwinding over the payout phase. Life-taxed entities cannot carry back ordinary losses arising after
   2017, so DTA admittance runs through the RBC-band and DTL-offset components alone [REG-R97].
+
+### CARVM under AG 33 — what the elective paths do to the reserve
+
+AG 33 was read in full from AP&P Appendix C, printed pages AG33-1 to AG33-8, on 2026-08-06 [REG-R151], and A-820 with
+A-821 and A-822 from Volume I, Appendix A the same day [REG-R153]; what follows is the DIA-specific reading of those
+two prints. Three framing points first. The mapping of AG 33's stream maximisation onto **SVL §5a** is **this library's
+own, made on content**: AG 33 never cites §5a by number — its only numbered SVL cross-references are "Section 4b of the
+SVL" and "section 4b.C.(1)(c)(vi)" — and its operative *Text* block never restates the contract-year-end indexing or the
+deduction of future valuation considerations, which appear only in a *Background* paraphrase [REG-R151]. The guideline
+contains **no formulas, tables or factors** beyond the 7% expense-allowance cap and the 1998–2000 grade-in percentages,
+so no number below is AG 33's [REG-R151]. And its blocks each restart at 1, so citations name the block
+(*Background* / *Purpose* / *Definitions* / *Text*).
+
+**Applicability is decided per contract, not per product.** The guideline "shall apply to all annuity contracts subject
+to CARVM, where any elective benefits (as defined below) are available to the contract owner under the terms of the
+contract" — no product list, no premium, account-value or size threshold anywhere in it [REG-R151 *Purpose*]. The
+base-case DIA carries two elective benefits (the start-date adjustment and payment acceleration) and the extended case
+adds a third (commutation), so both are inside. But *Definitions* 1 classes as **non-elective** "benefits
+payable under either a **deferred** or immediate annuity contract (with or without life contingencies), **where no
+benefit options are available** under the terms of the contract", so a cell carrying none of the three is **outside
+AG 33** while CARVM itself still applies [REG-R151][REG-R153 ¶15]. That cell is reachable inside this specification's
+own parameter space: the start-date adjustment is unavailable on Life Only, on Joint Life Only and on Single Life — No
+Death Benefit [S1][S2][S3][S4]; acceleration is nonqualified-only and off on a QLAC [S4]; commutation is absent from
+the base design and prohibited on a QLAC [S1][S2][S3][R1 (q)(1)(iv)]. So a **Life Only QLAC has no elective benefit at
+all** on the option set specified here. Whether the spousal-continuation election on death in deferral [S1][S2][S4] is
+an elective benefit is **not addressed by AG 33**, whose only tie-breaker is its judgement clause — weigh "the degree
+to which contract owner actions would be influenced by the availability of each benefit" — and no classification of it
+is asserted here **[unverified]** [REG-R151].
+
+**The elective take-up assumptions in this file must not enter a CARVM run.** For elective benefits "incidence rates
+should not be based on tables reflecting past company experience, industry experience or other expectations"; instead
+trial sets of elective incidence rates are **maximised over**, theoretically every rate between 0% and 100%, the
+guideline observing that the greatest present value "will typically occur by assuming an incidence rate of either 0% or
+100%" — stated as a typicality, not as permission to restrict the search — tempered only by *Text* 7's requirement that
+the actuary "consider, not necessarily test" all potential integrated benefit streams, judged by materiality
+[REG-R151]. So `h_adj`, `h_acc`, `h_com`, the 60/40 direction split and the `M_def` / `M_adv` / `M_com` rate multipliers
+in "Policyholder behavior modeling" are **cash-flow-projection assumptions only**; their CARVM counterpart is an
+election path and a maximisation over paths. Note also that **"efficient policyholder selection" is not AG 33's
+language and appears nowhere in the guideline** — the construction just stated is what the text actually says
+[REG-R151].
+
+**The non-elective leg is computed conditional on the elective leg.** An integrated benefit stream is one blend of the
+two categories: leg `A` is one candidate elective path, leg `B` is "the stream of all guaranteed non-elective benefits …
+recognizing the guaranteed elective benefit stream under consideration in A above", and **both legs are
+survivorship-discounted on the SVL-prescribed annuity mortality**; there is exactly one `B` per `A` [REG-R151]. Here `B`
+is the deferral ROP death benefit and the refund or certain-period benefits — death benefits are expressly non-elective
+[REG-R151] — and it **moves with the elected start date**, because changing `T` changes `CP(T)`, the derived guarantee
+period `n_g` (5) and the whole payment schedule (11). A model that re-times the income stream but leaves the
+death-benefit leg on its original roll-forward is not building an AG 33 integrated benefit stream.
+
+**Two of the three mandatory stream families are empty here, and that is the finding.** *Text* 2.A cash-value streams
+are mandatory "for a deferred annuity **with cash settlement values**" — this product has none at any duration
+[S1][S2][R13]. *Text* 2.B annuitization streams apply the contract's guaranteed purchase rates, "excluding any current
+purchase rates which may be applicable", **to the accumulation fund**, a term *Background* 2 defines as "the policy
+value which is used to purchase an annuity option under the terms of the contract" — and this product has no policy
+value either [S2][R13 §1.B(1)(a)]. What remains is *Text* 2.C, "all other possible guaranteed elective benefits …
+**including blends of more than one type** of guaranteed elective benefit" [REG-R151]. The blend requirement is stated
+three separate times in the guideline, so enumerating one option at a time is not compliant: the candidate set includes
+a start-date adjustment **followed by** accelerations, and in the extended case an adjustment followed by a commutation,
+subject to the six-month interlocks [S4].
+
+**The ±5-year adjustment is a valuation-rate event, not only a cash-flow event.** SVL §4b parameters A (issue year vs
+change in fund), B (cash settlement options present) and C (interest guaranteed on late considerations) are determined
+at **contract** level; D (guarantee duration) and E (Plan Type) at **benefit** level, "resulting in potentially
+different valuation rates for each benefit type comprising the integrated benefit stream" [REG-R151]. For annuitization
+portions the guarantee duration is "the number of years from the original date of issue or date of purchase, to the date
+the annuitization is **assumed** to commence", "with the valuation interest rate changing as different assumed
+annuitization dates determine guarantee durations which will fall into different guarantee duration bands under the
+SVL" [REG-R151]. A-820 ¶8.c.i prints those bands and their weighting factors [REG-R153 ¶8.c.i] — with one
+retrieval caveat that travels with the numbers: the ¶8.c tables come out of the manual's text layer
+**structurally scrambled**, and the extraction **reassembled them by column position**, so the plan-type column a
+value sits in is a reading to be re-checked against PDF p. 1191 before anything numeric leans on it [REG-R153]:
+
+| Guarantee duration (years) | Plan Type A | Plan Type B | Plan Type C |
+|---|---|---|---|
+| 5 or less | .80 | .60 | .50 |
+| More than 5, but not more than 10 | .75 | .60 | .50 |
+| More than 10, but not more than 20 | .65 | .50 | .45 |
+| More than 20 | .45 | .35 | .35 |
+
+feeding `I = .03 + W(R − .03)`, with `R` the 12-month average of the Moody's composite yield on seasoned corporate bonds
+ending June 30 of the calendar year of issue or purchase — the routing A-820 ¶¶7.a.i and 9.e give an annuity with **no**
+cash settlement options [REG-R153 ¶¶7.a.i, 9.e]. Plan Type is **A**: AG 33 *Text* 4(B) says an assumption that funds may
+be taken only as an immediate life annuity or in instalments of five years or more "will generally result in a Plan Type
+A", and A-820 ¶8.c.v's Plan Type A expressly includes "no withdrawal permitted", which is this contract
+[REG-R151][REG-R153 ¶8.c.v]. On the anchor cell (`T = 240`, a 20-year deferral) the annuitization portion sits at the
+top of the "more than 10, but not more than 20" band at **W = .65**; a five-year deferral to `T′ = 300` crosses into
+"more than 20" at **W = .45**, while a five-year advance to `T′ = 180` stays inside the same band — so one direction of
+the same option re-rates the reserve and the other does not **[derived from REG-R151 and REG-R153 ¶8.c.i; neither print
+works an example]**. **This is the formulaic layer only.** A-820 ¶¶3–4 confine ¶¶5–22 — the ¶¶7–10 rate machinery
+included — to contracts issued before the January 1, 2017 Valuation Manual operative date [REG-R153 ¶¶3–4], so on a
+DIA issued after December 31, 2017 the statutory maximum valuation rate is **VM-V §1**'s and not this formula's
+[REG-R37]; the band-crossing effect above is what the ±5-year adjustment does to the *formulaic* rate on the older
+in-force layer and on transition business. Four attached cautions:
+
+- **Do not reach for `W = .80`.** An implementer arriving from `us/products/immediate-annuity/` will be tempted to:
+  A-820 ¶8.b's .80 is for **single premium immediate annuities** and for life-contingent benefits arising from annuities
+  and GICs **with** cash settlement options, and on the printed routing a DIA is neither [REG-R153 ¶¶7.a.i, 8.b].
+- **The ¶8.c.iii +.05 increment does not apply**, being expressly for issue-year contracts "other than those with no
+  cash settlement options" [REG-R153 ¶8.c.iii].
+- **The issue-year / change-in-fund election does not exist for this product.** Both AG 33 *Text* 5 and A-820 ¶8.c.vi
+  require annuity contracts with no cash settlement options to be valued on an **issue year basis**, so the immutable
+  per-contract basis flag the library carries elsewhere needs no state here [REG-R151][REG-R153 ¶8.c.vi].
+- **Two measurement seams are left open.** AG 33 measures the annuitization guarantee duration to the date commencement
+  is *assumed*, making it path-dependent, while A-820 ¶8.c.iv measures a no-cash-settlement contract's guarantee
+  duration to the date benefits are *scheduled* to commence; on a contract whose start date is movable the two can
+  differ, and neither print reconciles them. And whether "original date of issue **or date of purchase**" measures per
+  contract or per premium slice is not resolved by either print — material here, since on a five-year deferral slice 1
+  of the anchor cell would cross into the ">20" band while slice 2 stayed inside ">10 ≤20". Both **[unverified]**.
+
+**A commutation right bars the annuitization treatment for the payments it reaches.** *Text* 4 closes with an
+anti-rate-shopping rule: where a portion of the stream "is part of an immediate life annuity or a series of installments
+over five (5) years or more, but **can be changed directly or indirectly by exercise of contract owner withdrawal
+options**, then it would be inappropriate to apply paragraph 4(B) to that portion" [REG-R151]. In the **extended case**
+the guaranteed payments in `J_g` are commutable (14), so 4(B) — and with it the Plan Type A annuitization rate above —
+is barred for exactly those payments, which fall instead to 4(A)'s withdrawal rule. **And 4(A) does not compute on this
+product:** its guarantee-duration measure is "the number of years for which interest rates are guaranteed in excess of
+the calendar year statutory valuation interest rate for life insurance policies with guarantee duration in excess of
+twenty (20) years", and this contract guarantees no interest rate at all — it guarantees dollars of income
+[R13 §1.B(1)(a)]. AG 33 states no rule for that case and none is invented here **[unverified]**. The life-contingent
+tail is not commutable [S4] and keeps 4(B). In the base case and on a QLAC the question is moot, commutation being
+absent [S1][S2][S3][R1 (q)(1)(iv)]. Whether **payment acceleration** — a timing shift expressly "not a liquidity
+feature" [S2] — is a "withdrawal option" within the same sentence is **not addressed by AG 33** and is left open rather
+than decided **[unverified]**.
+
+**The 7% expense-allowance floor has no base to attach to.** *Text* 6 requires reserves "not less than the contract's
+accumulation fund value, on the valuation date, reduced by an 'expense allowance' not to exceed 7% of such fund" — 7%
+being a **cap on the allowance, not a value**, with no rule given for setting it lower [REG-R151]. The base is the
+accumulation fund, and **this product has no policy value at any duration** [S2][R13]. Whether the Compact's floor on
+subsequent-premium pricing (income at least what a new contract of the same class would buy [R13 §3.B(1)(c)]), or a
+contract with `guaranteed_future_rates` set [R13 §1.B(1)(h)], engages *Text* 6's "future unknown rates" trigger is a
+live question — but even if it does, **AG 33 prescribes no floor for a contract with no accumulation fund**, and none is
+constructed here **[unverified]**.
+
+**One sanctioned approximation, and one date note.** *Text* 7 names "a CARVM reserve ignoring non-elective benefits,
+plus an 'add-on' reserve for non-elective benefits" as an example of a demonstrable approximation — here, the deferred
+income stream valued alone plus an add-on for the ROP death benefit — but it is an **approximation requiring
+demonstration**, not an alternative method, and substantially consistent alternative methods need **prior regulatory
+approval** [REG-R151]. On dates: the printed *Effective Date* block reads "This guideline shall be effective on
+**December 31, 1998**, affecting all contracts issued on or after January 1, 1981", with a grade-in fully run off by
+December 31, 2000 and therefore of no live effect on any current valuation [REG-R151]. The library carries elsewhere a
+**December 31, 1995** date from IRS Rev. Rul. 2002-6, under a different title; the extracted pages carry **no amendment
+history**, so the reconciliation is **unresolved and is not inferred here**. For this product the conflict is harmless —
+every DIA in scope was issued long after either date, and the January 1, 1981 issue-date reach is common to both. The
+title to cite is the printed one, **"Determining CARVM Reserves for Annuity Contracts With Elective Benefits"**, not the
+Revenue Ruling's wording [REG-R151].
 
 ### What this product's cash flow model must additionally produce
 
@@ -659,7 +822,9 @@ additions to it.
    differ by the worked example's 21.2% of income.
 3. **The reserve during deferral is the present value of the deferred income stream, not a fund balance** — no account
    value to roll forward, no surrender path competing with the income path inside the CARVM maximisation, no
-   account-value floor, no interim value [S1][S2][R13][REG-R1 §5a.B]. An implementer arriving from a fixed deferred
+   account-value floor, no interim value [S1][S2][R13][REG-R1 §5a.B]; AG 33's *Text* 2.A mandatory cash-value stream
+   family is correspondingly **empty** for this product, and its *Text* 2.B annuitization streams have no accumulation
+   fund to apply purchase rates to [REG-R151]. An implementer arriving from a fixed deferred
    annuity will look for an Exhibit 7 fund roll-forward, a surrender-charge column and a "surrender values in excess of
    reserves" line: on a life-contingent DIA the first two do not exist and the third is structurally zero [REG-R89].
 4. **Acquisition cost is expensed on every premium, not just the first** [REG-R75 ¶2], so surplus strain **recurs** at
@@ -676,7 +841,9 @@ additions to it.
    the PBR calculation or in asset adequacy testing under VM-30 §3.B.5 [REG-R87][REG-R100].
 6. **The QLAC overlay changes tax status, not statutory presentation.** Every permitted QLAC income form is
    life-contingent [S2][S4], so a QLAC is always a life contract in Exhibit 5; commutation and acceleration are off
-   [R1 (q)(1)(iv)][S4], removing two CARVM elective paths; and the premium limit, RMD exclusion and failure flags are
+   [R1 (q)(1)(iv)][S4], removing two CARVM elective paths — and on a **Life Only QLAC**, where the start-date
+   adjustment is unavailable as well [S1][S3][S4], the third, which takes the contract outside AG 33's applicability
+   sentence altogether while leaving CARVM itself in place [REG-R151]; and the premium limit, RMD exclusion and failure flags are
    **owner-side tax consequences generating no statutory item** [R1][R4][R5]. Do not build a statutory branch for them.
 
 ---
@@ -707,6 +874,13 @@ reproduced.
   published daily (jumbo) and quarterly (non-jumbo) by the NAIC [R9]. VM-V §1 supersedes the interest-rate
   guidance in AG IX-B and the interest references in AG IX-C [REG-R37]; the incorporated guideline family is
   indexed at [REG-R41]. **VM-21 does not apply** — it is the variable-annuity standard [REG-R35][REG-R36].
+- **Statutory — the formulaic chain itself.** CARVM is A-820 ¶¶14–15 (method), ¶¶7–10 (interest) and
+  Appendix A-821 (mortality) [REG-R153 ¶6], as interpreted for contracts with elective benefits by **AG 33**
+  [REG-R151]. Both were read from the AP&P Manual print on 2026-08-06. The DIA-specific consequences — which
+  mandatory stream families are empty, why the ±5-year adjustment re-rates the annuitization portion, why a
+  commutation right bars *Text* 4(B), and why the 7% expense-allowance floor has no base here — are in
+  "CARVM under AG 33" above; the shared arithmetic is in `us/regulatory/technical-notes.md`,
+  "Formulaic reserves".
 - **Prescribed standard-projection assumptions** reusable directly: mortality
   `q_x^(2012+n) = q_x^(2012) · (1 − G2_x)^n · F_x` on the 2012 IAM Basic table with `F_x` from Table 6.8
   (ANB) [R9]; **lapse: not applicable**; **annuitization: 0% at all projection intervals**; maintenance
@@ -767,7 +941,12 @@ Known pitfalls specific to this product:
 - **Using life-insurance mortality tables.** 2017 CSO and 2015 VBT are for insured lives; annuitant longevity
   must use the 2012 IAM/IAR family and the payout experience studies [REG-R59][REG-R61].
 - **Chaining rounded generational rates.** `q_x^(2012+n)` must be computed from the 2012 period rate each
-  time; the Valuation Manual explicitly flags `q^2014 = q^2013(rounded) × 0.99` as incorrect [R9][REG-R59].
+  time; the Valuation Manual explicitly flags `q^2014 = q^2013(rounded) × 0.99` as incorrect [R9][REG-R59],
+  and **A-821 ¶14 prints the identical prohibition and the identical counter-example** [REG-R153].
+- **Feeding the behavioral take-up rates into a CARVM run.** `h_adj`, `h_acc` and `h_com` are projection
+  assumptions. AG 33 **prohibits** experience-based elective incidence and makes the elective path a decision
+  variable maximised over, so importing them into a formulaic reserve is a defect, not a refinement
+  [REG-R151]; see "CARVM under AG 33".
 - **Single-premium refund bases.** For a flexible-premium DIA the cash-refund and installment-refund bases are
   **cumulative premiums** `CP(T)`, not the initial premium [S2][S4].
 - **Circularity in refund forms.** (5) and (6) put `B` on both sides; failing to iterate leaves a systematic

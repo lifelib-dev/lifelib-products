@@ -1,6 +1,7 @@
 # Registered Index-Linked Annuity (RILA) — Representative Product Specification (United States)
 
-**Status:** Draft, 2026-08-04 (all cited sources accessed 2026-08-04).
+**Status:** Draft, 2026-08-04 (cited sources accessed 2026-08-04, except the AP&P Manual
+appendix items **R151–R157**, accessed 2026-08-06 — see `sources.md`).
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
@@ -526,10 +527,37 @@ reserve = stochastic reserve (CTE70) + additional standard projection amount [RE
 VAGLBs … where there is no other explicit reserve requirement", but **§2.A.3 excludes
 "Separate account contracts that guarantee an index and do not offer GMDBs or VAGLBs"**
 [R3]. So a bare accumulation RILA is **outside** VM-21, while the representative design
-here — carrying a return-of-premium GMDB — is **in** scope [R3][S2]; §2.A.2 further extends
-VM-21 to subaccounts with MVA-like features [R3]. AG 43 is not simply superseded: through
+here — carrying a return-of-premium GMDB — is **in** scope [R3][S2]; §2.A.2 disapplies VM-21
+to contracts falling under VM-A item **A-255** while extending it to subaccounts with
+MVA-like features [R3]. That A-255 limb is no longer a blind cross-reference: A-255 has been
+read, and the test is its ¶1 definition — a deferred annuity, individual or group, whose
+underlying assets are held in a separate account, whose values are guaranteed if held for
+specified periods, whose nonforfeiture values rest on a market-value-adjustment formula if
+held for shorter periods, and whose assets "must be in a separate account during the period
+or periods when the contract holder can surrender the contract" [REG-R157]. **Whether the
+representative design meets that test is not resolved here** — the exclusion is VM-21's text,
+not A-255's [REG-R157][REG-R35][unverified]. AG 43 is not simply superseded: through
 reference in AG 43, VM-21 also reaches pre-2017 contracts outside its own scope, and the
 two populations may be reserved as one aggregated group [REG-R35][REG-R38].
+
+**Valuation — the formulaic CARVM floor, and what now sources it.** A contract outside VM-21
+falls back to formulaic CARVM: SVL §5a, printed word for word at A-820 ¶15
+[REG-R1][REG-R153 ¶15]. Its interpretive layer has been read at first hand. **AG 33 reaches
+this contract** — it applies "to all annuity contracts subject to CARVM, where any elective
+benefits … are available", with no product list, no separate-account exception and no
+threshold, and this chassis offers its three named elective benefits (full surrenders,
+partial withdrawals, full and partial annuitizations) [REG-R151][S1][S2]. **AG 35 was
+retrieved and does not address this design** — it defines no term "equity indexed annuity"
+and says nothing about separate accounts, registered products, buffers, floors or AG 54;
+record it as neither including nor excluding RILA [REG-R152]. **A-250 and A-255, long called
+this product's "closest formulaic items", turn out not to be reserve methods at all** — one
+printed page each, each delegating the reserve to A-820, and between them containing no
+formula, symbol, factor, table, elective-path rule, interim-value rule or the word CARVM
+[REG-R156][REG-R157]. What remains unsourced is narrower than before and still real: **no
+retrieved document says how an Interim Value — a market-consistent derivative price — becomes
+"the future guaranteed benefit" of §5a**, AG 54 governing the *nonforfeiture* value and not
+the reserve [R2][REG-R44]. The mechanics and the residual seams are in the *Statutory
+accounting and capital* section of `technical-notes.md`.
 
 **Capital.** C-3 Phase II sets the Total Asset Requirement at CTE 90 and RBC as the excess
 of TAR over statutory reserves, subject to a Standard Scenario floor [REG-R47]; VM-21

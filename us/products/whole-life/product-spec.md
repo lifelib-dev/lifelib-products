@@ -403,8 +403,32 @@ operative basis [S1][R1][R3].
 
 **Standard Valuation Law (NAIC Model 820) and the Valuation Manual.** Model 820 is the legal
 root of statutory reserving (CRVM, minimum standards, and — post-2009 amendments — the
-principle-based valuation sections that make the Valuation Manual operative) [REG-R1]. For
-ordinary life issued on/after 2020-01-01, VM-20 governs: a seriatim net premium reserve on
+principle-based valuation sections that make the Valuation Manual operative) [REG-R1]. The
+law is codified in the AP&P Manual as **Appendix A-820**, which has now been read in full and
+supplies what this library previously took at one remove [REG-R153]. Its **¶11 prints the CRVM
+this product runs on** — modified net premiums as a uniform percentage of the respective
+contract premiums, an expense allowance capped at the net level annual premium on the
+**nineteen-year premium whole life plan at an age one year higher than the issue age**, and a
+reserve that is "the excess, **if any**" — with no discrepancy against the Model 820 print
+[REG-R153 ¶11]. Its **¶¶7–10 make the valuation interest rate computable** rather than merely
+named: `I = .03 + W(R1 − .03) + (W/2)(R2 − .09)` rounded to the nearer quarter of 1%, on the
+lesser of the 36- and 12-month Moody's seasoned-corporate-bond averages ending June 30 of the
+year *preceding* issue, with `W` from the ¶8.a life table by **guarantee duration** — .50 to
+10 years, .45 over 10 to 20, .35 over 20 — and a life-only half-of-1% stability rule against
+the published prior-year rate [REG-R153 ¶¶7–10]. `W` is a per-model-point lookup, not a product
+constant: RefWL-Par runs to maturity at 121 and always takes .35, while RefWL-FE matures at 100,
+so its issue ages 80–85 fall in the .45 band.
+Its **¶16** is the aggregate nonforfeiture-basis floor, aggregate rather than seriatim and
+excluding disability and accidental death benefits [REG-R153 ¶16]. Two limits stay: **A-820
+never names the 2017 CSO** — ¶5.a prescribes the 2001 CSO for standard-basis ordinary issues
+from 1 January 2004, later tables entering only through its forward reference or through the
+Valuation Manual (¶23), so this product's 2017 CSO basis is sourced to VM-02 [R3], not to
+A-820; and A-820 carves **preneed** policies out to **Appendix A-817**, which was **not
+retrieved** [REG-R153 ¶5][REG-R110]. For ordinary life issued on/after 2020-01-01 — the PBR
+*accreditation* year; the trigger A-820 ¶¶3–4 actually print is issue **on or after 1 January
+2017**, with earlier issues grandfathered onto ¶¶5–22 and the PBR provisions stated not to
+apply to them, and with **no elective transition, phase-in or company election anywhere in
+A-820** [REG-R153 ¶¶3–4] — VM-20 governs: a seriatim net premium reserve on
 2017 CSO, plus deterministic and stochastic reserves unless exclusion tests are passed;
 traditional par WL typically passes the deterministic exclusion test because valuation net
 premiums do not exceed the substantial guaranteed gross premiums, leaving NPR-only blocks
@@ -422,9 +446,23 @@ payments) recognised gross when due rather than credited direct to reserve [REG-
 [REG-R90]. Acquisition cost is expensed as incurred — there is **no statutory DAC** — so the
 90%-of-first-year-premium reference assumption is first-year surplus strain, not an amortisable
 asset [REG-R75 ¶2]. Whole life is VM-20's **All Other** reserving category, whose net premium
-reserve is itself the VM-A/VM-C formulaic (CRVM) calculation [REG-R3][REG-R110], and that reserve is
+reserve is itself the VM-A/VM-C formulaic (CRVM) calculation [REG-R3][REG-R110] — **now sourced on
+the statutory-law side as well**: A-820 ¶24.a.i requires the Valuation Manual to specify the
+commissioners reserve valuation method for life contracts, ¶24.d.i lets the standard for non-PBR
+policies simply "be consistent with the minimum standard of valuation prior to the operative date of
+the Valuation Manual", and ¶27 states that "a principle-based valuation may include a prescribed
+formulaic reserve component" [REG-R153 ¶¶24.a.i, 24.d.i, 27]. That reserve is
 floored by the **cash surrender value** [REG-R3 §3.D] — the guaranteed CV schedule is a reserve
-floor, not only a benefit. For capital, C-2 mortality runs on **net amount at risk** and is bucketed
+floor, not only a benefit. **A-830 — the appendix behind what the market calls Regulation XXX, though
+the words "Model #830" and "Regulation XXX" appear nowhere in its print — has also been read**, and
+its position here is a negative finding worth stating: ¶2 declares its own basic-reserve method to be
+CRVM for the
+policies it reaches and ¶3 reaches "all life insurance policies", but **¶3.b routes only
+nonlevel-premium or nonlevel-benefit non-UL designs and UL with a secondary guarantee to a
+calculation paragraph** — a level-premium, level-benefit whole life has none of its own, so the base
+policy stays on A-820 ¶11. The **term-blend rider** is the component ¶3.b would reach; whether a
+rider is valued as a policy for that purpose is not stated in the appendix — **[unverified]**
+[REG-R154 ¶¶2, 3]. For capital, C-2 mortality runs on **net amount at risk** and is bucketed
 by *pricing flexibility* rather than product code: the instructions place participating whole life
 in the "with" bucket and **non-participating** whole life in the highest-factor "permanent without"
 bucket [REG-R128][REG-R133], so RefWL-Par and RefWL-FE take different factors on the same chassis,

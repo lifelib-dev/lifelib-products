@@ -5,7 +5,8 @@ modeling — it does not reproduce any single insurer's product. Facts tagged [S
 sourced from the product research notes (`us/_research/term-life.md`); facts tagged [REG-R#]
 are sourced from the cross-product reference library
 (`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md`, same R-numbering). Values marked **[std]** are standardizations
+`us/_research/regulatory-actuarial.md` for R1–R34 and in `us/_research/appp-a820-a821-a822.md` and
+`us/_research/appp-a830.md` for the AP&P Manual appendix items cited here, same R-numbering). Values marked **[std]** are standardizations
 introduced for the reference implementation; each **[std]** entry carries a footnote with the
 rationale and the observed range across insurers. Facts the research notes flag as
 [unverified] remain flagged here.
@@ -335,23 +336,60 @@ Listed for completeness; none is modeled in the reference implementation:
 
 ## Regulatory context
 
-- **Standard Valuation Law (NAIC Model #820) [REG-R1].** The legal root of statutory
-  reserving: minimum standards by calendar year of issue, CRVM, deficiency-reserve
-  treatment where valuation net premium exceeds gross premium, and (2009 amendments)
-  Sections 11–14 creating principle-based reserving under the Valuation Manual [REG-R1].
-  The VM operative date of January 1, 2017 is [unverified] in that print [REG-R1].
+- **Standard Valuation Law (NAIC Model #820) [REG-R1], as codified in the AP&P Manual at
+  Appendix A-820 [REG-R153].** The legal root of statutory reserving: minimum standards by
+  calendar year of issue, CRVM (¶11), the deficiency-reserve rule (¶¶19–20), and the
+  principle-based-valuation provisions delegating to the Valuation Manual (¶¶23–28)
+  [REG-R1][REG-R153]. **The appendix print has now been read in full and it settles two things
+  this entry previously left open.** (i) The **VM operative date is no longer [unverified]**:
+  ¶3 applies the PBR paragraphs to all policies and contracts "issued on or after the
+  January 1, 2017, operative date of the Valuation Manual", and ¶4 provides that they "shall
+  not apply" to earlier issues [REG-R153 ¶¶3–4]. (ii) The deficiency-reserve rule is **not an
+  additive quantity but a floor**: where the gross premium charged in any contract year is less
+  than the valuation net premium computed by the method actually used but on the **minimum**
+  standards of mortality and interest, the minimum reserve is the greater of the reserve on the
+  basis actually used and the reserve on the minimum standards with the **actual gross premium
+  substituted for the valuation net premium in the deficient contract years only**
+  [REG-R153 ¶19]. A-830 defines a *separate* deficiency quantity for the policies it reaches —
+  see the next entry. One verified negative worth carrying: **the 2017 CSO is nowhere in
+  A-820's printed text**, which names the 2001 CSO for issues from 1 January 2004 and the 1980
+  CSO before that; the 2017 CSO reaches post-2017 issues through the Valuation Manual under
+  ¶23 [REG-R153 ¶¶5, 23].
 
-- **Valuation of Life Insurance Policies Model Regulation (Model #830, "Regulation XXX")
-  [R1][REG-R6].** The pre-PBR reserve regime for level premium term, still operative for
-  in-force blocks issued before PBR [REG-R6]. Basic reserves for policies with guaranteed
-  nonlevel gross premiums are the greater of segmented and unitary reserves under the
-  contract segmentation method, which segments the projection using ratios of guaranteed
-  gross premium rates per $1,000 [R1]. Deficiency reserves arise where guaranteed gross
-  premiums are less than valuation net premiums, mitigated by X-factor select mortality
-  with actuarial certification; the valuation basis is 1980 CSO with optional select
-  factors [R1]. A level dollar policy fee after year 1 may be excluded from reserve
-  premiums [R1]. The XXX conservatism drove captive reserve financing, hence AG 48
-  [REG-R11] and Model #787 [REG-R12].
+- **Valuation of Life Insurance Policies — AP&P Appendix A-830 [REG-R154], the manual's
+  print of the regulation known outside it as Model #830, "Regulation XXX" [R1][REG-R6].** The
+  pre-PBR reserve regime for level premium term, still operative for in-force blocks issued
+  before PBR [REG-R6][REG-R154]. **Cite it by paragraph:** the appendix is a flat sequence
+  ¶¶1–32 plus an unnumbered Attachment, has **no Sections at all**, and the strings "Model #830"
+  and "Regulation XXX" appear **nowhere in it** [REG-R154]. By its own ¶2 the method it defines
+  **constitutes CRVM** for the policies it reaches, so it replaces rather than supplements the
+  A-820 ¶11 construction [REG-R154 ¶2][REG-R153 ¶11]. Basic reserves for policies with
+  guaranteed nonlevel gross premiums are the **greater of segmented and unitary** reserves under
+  the contract segmentation method (¶21), which segments on the ratio of guaranteed gross
+  premiums **per thousand of face amount, "ignoring policy fees only if level for the premium
+  paying period"**, against the ratio of valuation mortality rates, with a company-elective ±1%
+  tolerance on the mortality ratio, floored at 1 and elected **per policy year** (¶5) — the
+  library's earlier second-hand statement of this construction is confirmed and the
+  "per thousand of face amount" wording is exact [REG-R154 ¶¶5, 21]. Deficiency reserves are
+  **quantity A less the basic reserve**, A being a full recalculation of the basic reserve with
+  the **guaranteed** gross premium substituted for the net premium duration by duration wherever
+  the gross is the smaller — a one-sided substitution, keyed to the guaranteed premium
+  "determined at issue" and not to premium collected — mitigated by X-factor select mortality
+  subject to a **two-limb** test (an aggregate present-value limb *and* a year-by-year floor over
+  the first five years after the valuation date) and, whenever X falls below 100% at any duration
+  for any policy, an annual actuarial opinion and memorandum under the **A-822** asset adequacy
+  requirements [REG-R154 ¶¶7, 17, 22]. **The valuation basis is date-split, not 1980 CSO flat:**
+  1980 CSO with elective select factors applies **before 1 January 2004**, and **from 1 January
+  2004 the 2001 CSO Mortality Table is the minimum standard** for basic reserves, deficiency
+  reserves and the tabular cost of insurance; the complete pre-2004 branch is retained in the
+  print for valuing older issues [REG-R154 ¶¶16, 17, 23]. A level dollar policy fee after year 1
+  may be excluded from the guaranteed gross premium wherever a calculation uses it — confirmed —
+  with the asymmetry that for **deficiency** reserves the fee **may** be put back in even where it
+  was excluded from the basic reserve [REG-R154 ¶19]. **A-830 prints no calendar effective date
+  for itself**: "the effective date of this appendix" is an unresolved placeholder used eleven
+  times, so **no date for when XXX first bit may be attributed to [REG-R154]** — the only calendar
+  dates it prints are the 1 January 2004 cutover above. The XXX conservatism drove captive reserve
+  financing, hence AG 48 [REG-R11] and Model #787 [REG-R12].
 
 - **Valuation Manual / VM-20 [R2][REG-R3].** For new issues, the minimum reserve is the
   seriatim net premium reserve (NPR) plus any excess of the modeled deterministic (DR) and
@@ -370,7 +408,11 @@ Listed for completeness; none is modeled in the reference implementation:
 - **2017 CSO tables [R3][REG-R17].** The statutory valuation and nonforfeiture mortality
   family for new issues: composite, smoker-distinct, and preferred-structure versions,
   loaded/unloaded, ANB/ALB [R3][REG-R17]. The reference model uses the ANB smoker-distinct
-  loaded tables for guaranteed-basis calculations **[std]** (choice among [R3] variants).
+  loaded tables for guaranteed-basis calculations **[std]** (choice among [R3] variants). That
+  **[std]** is **not** upgraded by the appendix prints now read: **neither A-820 nor A-830 names
+  the 2017 CSO anywhere**, and neither prints any mortality table it does name — A-820 reaches
+  the 2017 CSO only through its ¶5.a forward reference to tables "adopted subsequently by the
+  NAIC" and, in practice, through the Valuation Manual under ¶23 [REG-R153 ¶¶5, 23][REG-R154].
 
 - **Standard Nonforfeiture Law (Model #808) [REG-R2].** Sets minimum cash surrender values
   via the adjusted-premium method; relevant to term chiefly as the reason long-duration

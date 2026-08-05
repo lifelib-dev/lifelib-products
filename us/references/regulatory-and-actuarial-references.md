@@ -1018,6 +1018,18 @@ directly; the parent document is cross-referenced, not restated.
   of benefit streams and takes the maximum present value across them — the formulaic reserve
   any pre-VM-22 or VM-22-excluded fixed deferred annuity still requires. AG 35 (R40) layers
   the index feature onto this calculation [R40 context].
+- **Superseded in fact by [R151] (2026-08-06) — appended, nothing above reworded.** The
+  guideline text has since been read in full from the AP&P Manual, which proved to be a free
+  download (see the note on R33), so the "[unverified] … from secondary sources" annotation
+  above is now closed by [R151]. **Two of its substantive claims are wrong against the printed
+  text and must not be relied on:** (a) it lists **nursing-home waivers among the elective
+  benefits** — AG 33's own Definitions place *nursing home benefits* expressly in the
+  **non-elective** enumeration; and (b) **"efficient policyholder selection" is not AG 33's
+  language** and appears nowhere in the guideline — the actual construction prohibits
+  experience-based elective incidence, maximises over trial sets, and directs that elective
+  benefits be *"consider[ed], not necessarily test[ed]"*. Both are corrected in [R151]. The
+  wording above is retained unaltered because R1–R150 are frozen; cite **[R151]** for anything
+  substantive about AG 33.
 
 ### R40. Actuarial Guideline XXXV — The Application of the Commissioners Annuity Reserve Method to Equity Indexed Annuities (AG 35)
 - **Publisher:** NAIC

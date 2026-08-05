@@ -12,6 +12,16 @@ standardizations introduced for the reference implementation. Parameter values a
 identical to those in `product-spec.md`; the implementation anchor for mechanics is
 the Pacific Life Versa-Flex PRO specimen policy [S3].
 
+**Revision note, 2026-08-06.** The reserve material under "Statutory accounting and
+capital" was revised when the AP&P Manual appendix items were read at first hand from
+the free *As of March 2026* download: **A-585** (universal life) [REG-R155], **A-820**
+with A-821 and A-822 [REG-R153] and **A-830** [REG-R154]. The shared reference
+numbering now runs **R1–R157**, with **R114–R124** and **R143–R149** unused by design.
+Nothing outside those paragraphs was re-dated, and **no [std] or [unverified] marker
+elsewhere in this file was upgraded**: every standardization here is a
+product-parameter choice made because insurers do not publish current scales [S3][S5],
+a limit the appendix reading does not touch.
+
 ---
 
 ## Model scope and conventions
@@ -379,19 +389,106 @@ parse** [REG-R128][REG-R129].
 ### Reserve basis
 
 - **Two engines, and PBR does not retire the formulaic one.** Pre-Valuation-Manual
-  issues take the **Model 585 Section 5 CRVM adaptation** — Guaranteed Maturity Premium
-  / Guaranteed Maturity Fund with the `r = min(1, policy value / GMF)` ratio and the
-  alternative minimum reserve test [R1][REG-R5]. From the operative date (2017-01-01,
-  this file's local [R5], now also catalogued as the shared [REG-R150] — note [REG-R5]
-  in the same sentence is a different document, Model #585) the Valuation Manual
-  standard is the minimum and **VM-20 constitutes CRVM**
-  [REG-R1 §11][REG-R3]. But this product's reserving category is **All Other**, whose
-  net premium reserve is determined "pursuant to applicable methods in **VM-A and VM-C**
-  for the basic reserve" [REG-R3 §3.B.6][REG-R41], and VM-A indexes the UL requirement
-  as **A-585** [REG-R110]. **A UL without secondary guarantees therefore runs the Model
-  585 CRVM calculation inside a PBR-era minimum reserve.** VM-A is an index, not a text:
-  the AP&P Appendix A print of A-585 was **not retrieved**, so the mechanics here rest
-  on the model regulation itself [REG-R110][R1].
+  issues take the universal life **CRVM adaptation** — Guaranteed Maturity Premium /
+  Guaranteed Maturity Fund, the funding ratio `r`, and the alternative minimum
+  reserve test. That construction is **no longer second-hand**: the AP&P Appendix A
+  print, **A-585**, has now been read in full [REG-R155], as has **A-820**
+  [REG-R153], both from the free *As of March 2026* AP&P Manual, so the mechanics
+  below rest on the appendix text rather than on the model regulation alone
+  [R1][REG-R5]. From the operative date (2017-01-01, this file's local [R5], now
+  also catalogued as the shared [REG-R150] — note [REG-R5] in the same sentence is a
+  different document, Model #585) the Valuation Manual standard is the minimum and
+  **VM-20 constitutes CRVM** [REG-R1 §11][REG-R3]. **That date is no longer carried
+  by a topic page alone:** A-820 prints it inside operative rules, applying its
+  principle-based ¶¶23–27 to policies issued "on or after the **January 1, 2017**,
+  operative date of the Valuation Manual" and providing that they "**shall not apply
+  to any such policies and contracts**" issued earlier, which stay on ¶¶5–22
+  [REG-R153 ¶¶3–4] — so [REG-R153] is the primary citation and [REG-R150] now
+  corroborates. A-820 states the boundary from the statutory side too: the Valuation
+  Manual **must** specify CRVM for life contracts (¶24.a.i), and "a principle-based
+  valuation may include a prescribed formulaic reserve component" (¶27) [REG-R153]. But this product's reserving
+  category is **All Other**, whose net premium reserve is determined "pursuant to
+  applicable methods in **VM-A and VM-C** for the basic reserve"
+  [REG-R3 §3.B.6][REG-R41], and VM-A indexes the UL requirement as **A-585**
+  [REG-R110]. **A UL without secondary guarantees therefore runs the A-585 CRVM
+  calculation inside a PBR-era minimum reserve.** Three qualifications the print
+  forces, none of them cosmetic. **A-585 does not name Model #585 anywhere** — its
+  "Relevant NAIC Model Laws/Regulations" line names only the **Standard Valuation
+  Law (#820)** — so "A-585 *is* Model 585 Section 5" is unsupported by this print,
+  and Model #585 was **not re-read against it**; whether the two texts differ is
+  untested [REG-R155][REG-R5]. **A-585 carries the valuation half only**: no
+  nonforfeiture provisions, no mandatory policy provisions, no
+  annual-report-to-policyowner requirement and no separate interest-indexed UL
+  section, so everything in this directory about UL nonforfeiture and policy
+  provisions keeps citing Model #585 [R1][REG-R5][REG-R155]. And **A-585 prints no
+  effective date and no number of any kind** — no rate, no table, no factor — so no
+  applicability date may be read off it; its temporal reach comes entirely from
+  A-820's year-of-issue machinery and from VM-20 §3.B.6's routing
+  [REG-R155][REG-R153][REG-R3].
+- **The A-585 engine, and what a flexible-premium current-assumption design does
+  inside it.** The algebra — `V(t) = ((A) − (B))·r − (C) − (D)`, the annuities
+  running to the highest attained age at which a premium may be paid, and the
+  ¶¶12–13 alternative minimum reserve — is set out once in
+  `us/regulatory/technical-notes.md`, "Formulaic reserves", and is not repeated
+  [REG-R155 ¶8]. Four things are specific to this product. **The ratio branch of
+  `r` is live here only because the chassis is flexible premium**: ¶8.d makes `r`
+  equal to one **unless** the policy is a flexible premium policy and the policy
+  value is less than the guaranteed maturity fund, so for a **fixed premium** UL
+  `r ≡ 1` unconditionally and a blanket `r = min(1, policy value / GMF)` is wrong
+  there. This composite is flexible-premium adjustable [S1][S3], so the ratio branch
+  applies and the policy value it takes is `AV(t)` [REG-R155 ¶¶6, 8.d]. **The GMP
+  solve has no maturity date to aim at.** ¶8.c defines the guaranteed maturity
+  premium for a flexible premium policy as the level gross premium payable "over the
+  period during which premiums are allowed to be paid" that matures the policy "on
+  the latest maturity date, if any, permitted under the policy (otherwise at the
+  highest age in the valuation mortality table)"; this contract has **no maturity
+  date** and stops accepting premiums at attained age 121 [S2][S3], so the solve runs
+  to the top of the valuation table while `ä_x` and `ä_{x+t}` stop at the
+  attained-age-121 premium cut-off — the **premium-paying** period, not the coverage
+  period, and premiums are not accepted from that age [S3] — an easy implementation
+  error in a contract that has coverage for life [REG-R155 ¶¶8.b, 8.c]. The maturity
+  amount is the **initial death benefit** under Option A and the
+  **specified amount** under Option B, the corridor ignored in both and then adjusted
+  for separately by the ¶8.c footnotes [REG-R155][S1][S3]; and the GMP "may be less
+  than the premium necessary to pay all charges … especially … in the first year for
+  policies with large first year expense charges" — which is precisely this design's
+  $0.26 per $1,000 per month in years 1–10 [S3] — so a first year that fails to cover
+  charges is expected behaviour, not a failed solve [REG-R155 ¶8.c fn. 2].
+  **A-585's vocabulary already matches this file's.** "Policy value" is the amount to
+  which interest credits and charges are made, i.e. `AV(t)`; "net cash surrender
+  value" is the maximum amount payable on surrender, i.e. `NCSV(t)`; and A-585's
+  "cash surrender value" is that amount **plus loans outstanding**, i.e. this file's
+  `CSV(t) = AV(t) − SC(t)` [REG-R155 ¶¶1, 5, 6][S3]. **Structural changes are a
+  modelled event.** Changes separate from the automatic workings of the policy — face
+  increases and decreases, a change in the latest maturity date, a change in the
+  allowable premium payment period — force recalculation of GMP, GMF and (B) and
+  generate the (D) layers; the sanctioned simplification is to hold **GMP and GMF per
+  $1 of face** and rescale, offered permissively as "perhaps the simplest such
+  method", not prescribed [REG-R155 ¶¶8.g, 8.h, 11]. This product's face-increase
+  layering [S3] therefore has a reserve consequence as well as a charge consequence.
+- **What A-585 still delegates, and one pointer that does not resolve.** The (C)
+  term's `(a) − (b)` — the CRVM expense allowance — is defined by ¶8.f as "described
+  in paragraph 9 of Appendix A-820", and **A-820 ¶9 as printed is the
+  reference-interest-rate paragraph**, not an expense allowance; the quantities
+  labelled a. and b. sit at **A-820 ¶11.a and ¶11.b** — the net level annual premium
+  capped at the 19-pay whole life premium at age **x+1**, less the first-year net
+  one-year term premium. That identification is **structural, not textual**, and is
+  flagged rather than silently repaired [REG-R155 ¶8.f][REG-R153 ¶¶9, 11]. Note also
+  that A-820 ¶11 by its own terms governs "policies providing for a uniform amount of
+  insurance and requiring the payment of uniform premiums"; it is **¶13.a** — varying
+  amount of insurance or varying premiums, valued "by a method consistent with the
+  principles of paragraphs 11 and 12" — that reaches a flexible-premium UL at all
+  [REG-R153 ¶¶11, 13.a]. Mortality and interest are delegated outright: all present
+  values use "an interest rate (or rates) specified by Appendix A-820 for policies
+  issued in the same year" and "the mortality rates specified by Appendix A-820 for
+  policies issued in the same year" (¶8.j, reinforced at ¶10), which lands on A-820
+  ¶5 for mortality and ¶¶7–10 for the calendar-year-of-issue valuation interest rate
+  [REG-R155][REG-R153]. **That delegation is only half a resolution**: A-820 **names
+  its life mortality tables without printing them**, and the **2017 CSO appears
+  nowhere in A-820's text** [REG-R153] — so this file's 2017 CSO statements, the
+  guaranteed-COI cap in the assumption table and the VM-M table mapping in the
+  reserve pointers, stay **[unverified]** on exactly the footing they had before
+  [R4][REG-R17][REG-R3].
 - **The reserving category drives the exclusion tests.** All Other — not Term, not
   ULSG — unless a secondary guarantee is modeled. So the **deterministic exclusion test
   is available** (barred outright only for term, deemed failed for a ULSG whose
@@ -409,7 +506,13 @@ parse** [REG-R128][REG-R129].
   guaranteed maximum COI table, the **9%** guaranteed maximum load and the guaranteed
   per-policy and per-unit charges [S1][S3], over a coverage period with **no maturity
   date** and deductions ceasing at attained age 121 [S2][S3]; `planned_premium_annual`
-  is a billing target and is **not** this quantity. Note which §6.B.5 convention does
+  is a billing target and is **not** this quantity — and neither is the A-585
+  **guaranteed maturity premium**, a different solve for a different purpose: the GMP
+  matures the policy for the maturity amount on the guarantees at issue, excluding
+  guarantees linked to an external referent and adjusted for death benefit corridors,
+  where §6.B.6's premium merely keeps the policy in force over the coverage period
+  [REG-R155 ¶8.c][REG-R3]. Two level guaranteed-basis premiums live in one model, and
+  conflating them misstates both the NPR and the DET. Note which §6.B.5 convention does
   *not* reach the product: 0% lapse at all durations applies where the NPR comes from
   §3.B.4 or §3.B.5 — term and ULSG — not the §3.B.6 basis used here; what does reach it
   is the switch to anticipated experience mortality plus §9.C.6 margins where that
@@ -439,7 +542,7 @@ outputs", and is not repeated. Specific to this chassis:
 
 | Statutory item | This model's output | Cite |
 |---|---|---|
-| Exhibit 5 Column 1, valuation standard by year of issue | reserve keyed to Model 585 / A-585 for pre-operative issues and to **VM-20NPR** plus, where computed, **VM-20 DET/STO on a second line**, for post-operative issues | [REG-R89][REG-R3] |
+| Exhibit 5 Column 1, valuation standard by year of issue | reserve keyed to **A-585** for pre-operative issues and to **VM-20NPR** plus, where computed, **VM-20 DET/STO on a second line**, for post-operative issues | [REG-R89][REG-R3][REG-R155] |
 | Exhibit 5 Miscellaneous Reserves — surrender values in excess of reserves otherwise carried | `max(0, CSV(t) − V(t))` per policy; grows once `SC(t)` reaches zero from policy year 10 | [REG-R89] |
 | Exhibit of Life Insurance | `F(t)` in thousands on an **incurred** in-force roll-forward; whether Option B's account-value component enters "amount in force" is not addressed by the retrieved instructions [unverified] | [REG-R89] |
 | Analysis of Operations column | **Universal Life**; **ULSG** if a secondary guarantee is modeled | [REG-R90][REG-R89] |
@@ -455,7 +558,12 @@ outputs", and is not repeated. Specific to this chassis:
 **One open point, not filled by invention.** The VM-20 combination measures the DR/SR
 excess net of `B`, the due-and-deferred premium asset held [REG-R3 §2.A]; nothing in
 `us/regulatory/` states how `B` behaves for a **flexible-premium** design in which no
-premium is ever contractually due. Treat `B` as an input, not a hard-coded zero.
+premium is ever contractually due. **Reading the appendix items does not close it, and
+that is now a sourced negative:** A-820 gives **terminal reserve constructions only** and
+carries no mean-reserve, mid-terminal or deferred-premium machinery [REG-R153], and
+A-585 ¶8 likewise states a **terminal** reserve [REG-R155]; the library's
+deferred-premium material still rests on SSAP No. 51 [REG-R79]. Treat `B` as an input,
+not a hard-coded zero.
 
 ### Risk-based capital
 
@@ -531,12 +639,19 @@ premium is ever contractually due. Treat `B` as an input, not a hard-coded zero.
 ### Product-specific interactions and traps
 
 1. **The account value is not the reserve, and neither is the cash surrender value.**
-   `AV(t)` is a contract-mechanics balance; the statutory reserve is the Model 585
-   GMP/GMF construction, or the VM-20 minimum built on it. Where the reserve falls below
-   the immediately available surrender value the gap is picked up separately as
-   **surrender values in excess of reserves otherwise carried** in Exhibit 5
-   Miscellaneous Reserves [REG-R89] — not by raising the reserve to `CSV(t)`. Model
-   585's alternative minimum reserve test is the formulaic counterpart [R1].
+   `AV(t)` is a contract-mechanics balance; the statutory reserve is the **A-585**
+   GMP/GMF construction [REG-R155 ¶8], or the VM-20 minimum built on it. Where the
+   reserve falls below the immediately available surrender value the gap is picked up
+   separately as **surrender values in excess of reserves otherwise carried** in
+   Exhibit 5 Miscellaneous Reserves [REG-R89] — not by raising the reserve to `CSV(t)`.
+   **A-585's alternative minimum reserve test is the formulaic counterpart, and it is
+   not a deficiency reserve**: its comparator is the **guaranteed maturity premium**,
+   not the gross premium collected, so where the GMP falls below the valuation net
+   premium in any policy year the minimum becomes the greater of the reserve on the
+   method, table and rate actually used and a re-run on **minimum** mortality and
+   interest with the GMP substituted for the valuation net premium **in each year where
+   the latter is larger** [REG-R155 ¶¶12–13]. The A-820 ¶19 deficiency floor, whose
+   comparator *is* the gross premium, is a separate test again [REG-R153 ¶19].
 2. **Two different net amounts at risk live in one model.**
    `NAAR(t) = DB(t)/(1 + i_gm) − AV'(t)` is the COI base, discounted one month at the
    *guaranteed* rate with AV measured before the deduction [S3]; the **C-2 NAR is face
@@ -552,7 +667,12 @@ premium is ever contractually due. Treat `B` as an input, not a hard-coded zero.
 4. **"All Other" does not mean "no formulaic work".** Passing both exclusion tests
    removes the DR and SR, not the NPR — and this product's NPR *is* the VM-A/VM-C
    formulaic basic reserve [REG-R3 §3.B.6][REG-R110]. A model treating VM-20 as a
-   replacement for the Model 585 engine cannot compute its own net premium reserve.
+   replacement for the **A-585** engine cannot compute its own net premium reserve
+   [REG-R155]. Nor is one CRVM routine enough for a whole book: A-830 declares its own
+   `max(segmented, unitary)` construction to be CRVM for the policies it reaches, and
+   A-585 ¶8 prescribes a different CRVM adaptation again for universal life, with no
+   uniform percentage of contract gross premiums in it at all
+   [REG-R154 ¶2][REG-R155 ¶8].
 5. **The NGE pair is a pricing lever, a C-2 categorisation input and an ASOP
    2-constrained quantity at once.** The credited-rate spread and the 60% COI factor
    this file already names as the dominant sensitivities are the same quantities the RBC
@@ -576,7 +696,11 @@ premium is ever contractually due. Treat `B` as an input, not a hard-coded zero.
    still open — see `us/regulatory/statutory-accounting-and-capital.md`.
 7. **This is the base chassis for three siblings, and each changes the statutory
    answer.** `indexed-ul` keeps the same §3.B.6 VM-A/VM-C NPR where no DR or SR is
-   computed [REG-R3] but takes C-3a factors **on guaranteed values ignoring those
+   computed [REG-R3] — inside which ¶8.c is the only index-specific rule A-585
+   contains: an interest-indexed UL policy is one "where the interest credits are
+   linked to an external referent" (¶4) and the GMP excludes guarantees so linked, so
+   index crediting is **stripped out of the GMP solve entirely** [REG-R155 ¶¶4, 8.c] —
+   but takes C-3a factors **on guaranteed values ignoring those
    related to the index** and is **excluded from C-3 cash flow testing** [REG-R128],
    engages the §6.A.1.b hedging bar once an index hedge program exists, and reports in
    the **ULSG** column if it carries a secondary guarantee [REG-R89]. `variable-ul` adds
@@ -585,7 +709,13 @@ premium is ever contractually due. Treat `B` as an input, not a hard-coded zero.
    not be negative, a fair-value separate account needs **no IMR and no AVR except on
    seed money**, the VM-20 §2.F split floors the general account share at zero, and the
    **stochastic exclusion certification method is unavailable to variable life**
-   [REG-R83][REG-R3]. `guaranteed-ul` moves to the **ULSG** category: NPR under §3.B.5
+   [REG-R83][REG-R3]; and its formulaic item is **not** A-585 and **not** A-830, which
+   excludes variable life and variable universal life by its own terms
+   [REG-R154 ¶3.a], but A-820 together with the variable life appendix item **A-270** —
+   extracted alongside A-585 and given **no reference id**, so nothing in this library
+   is cited from it and that sibling's guaranteed-minimum-death-benefit reserve stays
+   outside the library [REG-R153][REG-R110]. `guaranteed-ul` moves to the **ULSG**
+   category: NPR under §3.B.5
    with its own lapse construction, **deemed failure of the deterministic exclusion
    test** unless the secondary guarantee is non-material, no certification method, the
    **"Permanent without Pricing Flexibility"** C-2 bucket at the highest factors, and
@@ -602,10 +732,15 @@ which applies from when, which exhibit consumes the result, and what the model m
 additionally produce — is "Statutory accounting and capital" above; the list below is
 the pointer set only:
 
-- **Statutory (pre-PBR / formulaic).** Model 585 Section 5 CRVM adaptation for UL:
-  Guaranteed Maturity Premium / Guaranteed Maturity Fund construction with the
-  r = min(1, policy value/GMF) ratio, and the alternative minimum reserve test [R1].
-  Nonforfeiture floor: Model 585 Section 6A retrospective minimum CSV [R1].
+- **Statutory (pre-PBR / formulaic).** The UL CRVM adaptation as printed at AP&P
+  Appendix **A-585**: Guaranteed Maturity Premium / Guaranteed Maturity Fund
+  construction, the funding ratio — `r = min(1, policy value/GMF)` here **only because
+  this chassis is flexible premium**, `r ≡ 1` unconditionally for a fixed premium UL —
+  and the ¶¶12–13 alternative minimum reserve, with every rate, table and factor
+  delegated to A-820 by year of issue [REG-R155 ¶¶8, 12–13][REG-R153]. Nonforfeiture
+  floor: **Model 585 Section 6A** retrospective minimum CSV — A-585 carries no
+  nonforfeiture provisions at all, so that floor stays with the model regulation
+  [R1][REG-R5][REG-R155].
 - **Statutory (PBR).** VM-20 minimum reserve for life products (net premium reserve
   plus deterministic/stochastic excess subject to exclusion tests), per the Valuation
   Manual (operative 2017-01-01; accreditation standard 2020-01-01 — both verbatim at
