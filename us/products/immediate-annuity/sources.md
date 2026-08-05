@@ -209,7 +209,7 @@ independent of the cross-product [REG-R#] space below.
 Cited with the [REG-R#] prefix to avoid collision with the product research file's own
 R-numbering above. The curated library is
 `us/references/regulatory-and-actuarial-references.md`. **[REG-R#] is one shared numbering
-space running R1–R150**, with **R114–R124** and **R143–R149** permanently **unused by
+space running R1–R157**, with **R114–R124** and **R143–R149** permanently **unused by
 design** — block gaps left so three parallel research streams could number independently,
 not losses, and they must not be back-filled. Entries **R1–R34** originate in
 `us/_research/regulatory-actuarial.md` (the life-origin bibliography, several of whose
@@ -250,7 +250,7 @@ two documents in this directory:
 | REG-R71 | R35–R72 | ASOP No. 10 — U.S. GAAP for Long-Duration Life, Annuity and Health Products (Doc. No. 207) | yes (local text extraction) |
 
 Verified at drafting: the curated page `us/references/regulatory-and-actuarial-references.md`
-carries all **132** entries of the R1–R150 numbering (R114–R124 and R143–R149 being unused by
+carries all **139** entries of the R1–R157 numbering (R114–R124 and R143–R149 being unused by
 design), so every [REG-R#] tag above and below resolves there. The "Half" column records which
 research file each entry's annotation originates in, because the halves were compiled
 separately and R1–R34 are frozen against renumbering.

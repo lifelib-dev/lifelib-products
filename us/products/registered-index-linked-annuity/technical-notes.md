@@ -6,7 +6,7 @@
 the standardized composite product defined in `product-spec.md` (same directory). This is
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
 `us/_research/registered-index-linked-annuity.md`; [REG-R#] tags refer to the **shared
-cross-product numbering space, which now runs R1–R150** with **R114–R124** and
+cross-product numbering space, which now runs R1–R157** with **R114–R124** and
 **R143–R149** permanently unused by design, curated at
 `us/references/regulatory-and-actuarial-references.md` (R1–R34 from
 `us/_research/regulatory-actuarial.md`, R35–R72 from
@@ -633,7 +633,7 @@ Trace and checks:
 
 The framework is in `us/regulatory/statutory-accounting-and-capital.md` and the formulas
 and algorithms in `us/regulatory/technical-notes.md`; only what is RILA-specific is stated
-here. [REG-R#] tags resolve against the shared numbering as extended to **R1–R150**
+here. [REG-R#] tags resolve against the shared numbering as extended to **R1–R157**
 (R114–R124 and R143–R149 unused by design). Nothing marked [unverified] is upgraded, and
 **no AVR factor, IMR amortisation factor or RBC factor value is stated that
 `us/regulatory/` does not contain**.

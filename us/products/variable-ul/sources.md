@@ -144,7 +144,7 @@ These use the R# numbering of the cross-product bibliography
 [REG-R#] to avoid collision with the product-file R# ids above. Full annotations
 live in that file; the shared reference library is
 `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
-**R1–R150**, with **R114–R124** and **R143–R149** permanently unused **by design** —
+**R1–R157**, with **R114–R124** and **R143–R149** permanently unused **by design** —
 the gaps are block-assignment spares, not losses, and must not be back-filled).
 R1–R72 are the pre-existing life and annuity entries; R73–R142 are the statutory
 accounting and capital entries, whose provenance is `us/_research/statutory-accounting.md`

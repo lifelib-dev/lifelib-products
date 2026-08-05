@@ -5,7 +5,7 @@
 **Scope note.** A reference liability cash-flow projection model for the standardized composite product
 defined in `product-spec.md` (same directory); not any single insurer's product. [S#]/[R#] refer to
 `us/_research/deferred-income-annuity.md`; [REG-R#] refers to
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R150 as one space
+`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R157 as one space
 (R1–R34 of life origin, provenance `us/_research/regulatory-actuarial.md`; R35–R72 annuity-specific,
 provenance `us/_research/regulatory-actuarial-annuities.md`; R73–R142 statutory accounting and capital,
 provenance `us/regulatory/sources.md`, with **R114–R124 and R143–R149 unused by design**).
@@ -532,7 +532,7 @@ still shows a deferral death benefit and policy year 21 (months 240–251) carri
 
 Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md` and
 `us/regulatory/technical-notes.md`, and are not restated. [REG-R#] runs against the shared U.S. numbering, now
-**R1–R150** (R114–R124 and R143–R149 unused by design). Nothing [unverified] upstream is upgraded, and **no AVR, IMR or
+**R1–R157** (R114–R124 and R143–R149 unused by design). Nothing [unverified] upstream is upgraded, and **no AVR, IMR or
 RBC factor value that `us/regulatory/` does not carry is stated here**.
 
 ### Contract classification and reporting

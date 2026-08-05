@@ -5,7 +5,7 @@
 **Scope note.** A *standardized composite specification* for reference liability cash-flow modeling; not any
 single insurer's product. [S#] (primary product documents) and [R#] (regulatory/actuarial references) are
 numbered per `us/_research/deferred-income-annuity.md`. [REG-R#] resolves against the cross-product library
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R150 as **one** space:
+`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R157 as **one** space:
 R1–R34 of life origin (provenance `us/_research/regulatory-actuarial.md`), R35–R72 annuity-specific
 (provenance `us/_research/regulatory-actuarial-annuities.md`) and R73–R142 statutory accounting and capital
 (provenance `us/regulatory/sources.md`), with **R114–R124 and R143–R149 unused by design**.

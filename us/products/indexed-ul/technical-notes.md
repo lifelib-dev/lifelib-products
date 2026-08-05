@@ -321,7 +321,7 @@ Concepts and the applicability matrix:
 appears here, with that directory's [unverified] flags and retrieval limits
 unchanged; **no AVR factor, IMR amortisation factor or untranscribed RBC
 factor appears anywhere in this library** [REG-R89][REG-R128]. **[REG-R#]**
-cites the shared numbering, now **R1–R150** (R114–R124 and R143–R149 unused by
+cites the shared numbering, now **R1–R157** (R114–R124 and R143–R149 unused by
 design).
 
 ### Contract classification and reporting

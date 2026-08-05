@@ -127,7 +127,7 @@ Cited as [REG-R#] to avoid collision with the product research file's own R# num
 Full bibliographic entries (publisher, URL, doc type, fetched/not-fetched status, and
 annotations) live in `us/_research/regulatory-actuarial.md`; the shared reference
 library is `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which
-**now runs R1–R150**, with **R114–R124** and **R143–R149** permanently **unused by design** —
+**now runs R1–R157**, with **R114–R124** and **R143–R149** permanently **unused by design** —
 block reservations that must not be back-filled or renumbered). R1–R72 are the life and
 annuity entries; R73–R142 are the statutory accounting and capital entries, whose per-entry
 bibliography is `us/regulatory/sources.md`. Entries cited in the two documents:

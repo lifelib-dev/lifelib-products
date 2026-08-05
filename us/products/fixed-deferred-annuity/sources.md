@@ -236,7 +236,7 @@ Study" — Retrieved: **NO**, HTTP 404; nothing asserted from it).
 ## Cross-product regulatory references [REG-R#]
 
 Cited with the [REG-R#] prefix to avoid collision with the product research file's own
-R-numbering. **[REG-R#] resolves against a single shared numbering space running R1–R150**,
+R-numbering. **[REG-R#] resolves against a single shared numbering space running R1–R157**,
 with **R114–R124 and R143–R149 permanently unused by design** (the block convention lets a
 research stream finish with spare numbers so a later pass can extend it without renumbering
 anything product documentation already cites). The numbering is curated in

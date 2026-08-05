@@ -128,7 +128,7 @@ file's own R-numbering. Full annotated entries (titles, publishers, URLs, retrie
 markers, access date 2026-08-03) live in `us/_research/regulatory-actuarial.md`;
 the shared reference library is
 `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
-**R1–R150**, with **R114–R124** and **R143–R149** permanently unused **by design**;
+**R1–R157**, with **R114–R124** and **R143–R149** permanently unused **by design**;
 R1–R72 are the frozen pre-existing life and annuity entries, of which R35–R72 are
 annuity-specific and only R41 is cited here, and R73–R142 are the statutory accounting
 and capital entries, whose per-entry bibliography is `us/regulatory/sources.md`).
