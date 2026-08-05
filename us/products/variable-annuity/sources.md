@@ -185,7 +185,7 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 
 These are cited with the **[REG-R#]** prefix to avoid collision with the product research
 file's own R-numbering. They resolve against a **single shared numbering space running
-R1–R150**, curated at `us/references/regulatory-and-actuarial-references.md`, with
+R1–R157**, curated at `us/references/regulatory-and-actuarial-references.md`, with
 **R114–R124** and **R143–R149** permanently **unused by design** — block reservations that
 let parallel research streams number independently, not losses, and they must never be
 back-filled:

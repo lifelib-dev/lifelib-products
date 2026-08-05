@@ -133,7 +133,7 @@ numbering. Full annotated entries (publisher, URL, doc type, fetch status,
 annotation) live in `us/_research/regulatory-actuarial.md` under the corresponding
 R# id; the shared reference library is
 `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
-**R1–R150**, with **R114–R124** and **R143–R149** permanently unused **by design** —
+**R1–R157**, with **R114–R124** and **R143–R149** permanently unused **by design** —
 block gaps left for parallel research streams, not losses, and never to be back-filled.
 R35–R72 are annuity-specific entries and are not cited here; R73–R142 are the statutory
 accounting and capital entries, whose provenance is `us/_research/statutory-accounting.md`

@@ -7,7 +7,7 @@ liability cash-flow modeling. It does not describe any single insurer's product.
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
 references), both numbered per `us/_research/immediate-annuity.md`, and [REG-R#] (the
 cross-product reference library `us/references/regulatory-and-actuarial-references.md`,
-one shared numbering space now running **R1–R150** with **R114–R124** and **R143–R149**
+one shared numbering space now running **R1–R157** with **R114–R124** and **R143–R149**
 unused by design: R1–R34 from `us/_research/regulatory-actuarial.md`,
 R35–R72 from `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three
 statutory accounting and capital research files listed in `us/regulatory/sources.md`) — were extracted from the

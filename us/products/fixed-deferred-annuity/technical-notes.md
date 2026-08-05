@@ -7,7 +7,7 @@ the standardized composite product defined in `product-spec.md` (same directory)
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
 `us/_research/fixed-deferred-annuity.md`; [REG-R#] tags refer to the cross-product
 reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
-R-numbering runs R1–R150 with **R114–R124 and R143–R149 unused by design** (provenance:
+R-numbering runs R1–R157 with **R114–R124 and R143–R149 unused by design** (provenance:
 `us/_research/regulatory-actuarial.md` for R1–R34,
 `us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the three statutory
 accounting and capital research files for R73–R142; see `us/regulatory/sources.md`).

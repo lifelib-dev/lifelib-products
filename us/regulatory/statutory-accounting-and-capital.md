@@ -10,13 +10,19 @@ duplicated. Product mechanics stay in `us/products/<type>/`.
 
 **Citation conventions** (identical to the rest of the library, non-negotiable). Everything is cited as **[REG-R#]**
 against the shared U.S. numbering in `us/references/regulatory-and-actuarial-references.md`, which after this work runs
-R1–R150 with permanently unused gaps at **R114–R124** and **R143–R149**. R1–R72 are the frozen pre-existing entries;
+R1–R157 with permanently unused gaps at **R114–R124** and **R143–R149**. R1–R72 are the frozen pre-existing entries;
 R73–R142 are the statutory accounting and capital entries added now, with provenance in
 `us/_research/statutory-accounting.md` (R73–R99), `us/_research/statutory-reserves.md` (R100–R113) and
-`us/_research/risk-based-capital.md` (R125–R142). Every quantitative parameter, factor, threshold, formula and effective
+`us/_research/risk-based-capital.md` (R125–R142); **R151–R157 are the seven AP&P Manual appendix items subsequently read
+at first hand** — R151 AG 33, R152 AG 35, R153 A-820 with A-821 and A-822, R154 A-830, R155 A-585, R156 A-250, R157
+A-255 — with provenance in `us/_research/appp-ag33.md`, `us/_research/appp-ag35.md`,
+`us/_research/appp-a820-a821-a822.md`, `us/_research/appp-a830.md` and `us/_research/appp-a585-a250-a255-a270.md`. Every quantitative parameter, factor, threshold, formula and effective
 date carries a [REG-R#] tag, or **[std]** where it is a standardization for the reference implementation, or
-**[unverified]** where the research could not confirm it. **Nothing marked [unverified] is upgraded here** — this is a
-subject on which plausible recollections of factor values and formula structure are easy to get wrong. The per-entry
+**[unverified]** where the research could not confirm it. **Nothing marked [unverified] is upgraded on recollection** —
+this is a subject on which plausible recollections of factor values and formula structure are easy to get wrong. An
+[unverified] item leaves that state **only when the primary text is read**, which is what happened to the AG 33 and
+AG 35 mechanics on 2026-08-06 [REG-R151][REG-R152]; every [unverified] flag not closed that way still stands, and the
+ones that reading **opened** are listed at the end of this file. The per-entry
 bibliography for this directory — every [REG-R#] the two documents actually cite, with publisher, URL, access date and
 fetched/not-fetched marker carried verbatim from the research files — is `us/regulatory/sources.md`.
 
@@ -25,10 +31,16 @@ Instructions is a sold NAIC publication** marked "Not for Distribution"; the 202
 from copies posted by a state insurance department, and the **2025 edition could not be parsed**, so nothing below is
 asserted about year-end 2025 factors [REG-R128][REG-R129][REG-R139]. The **AP&P Manual's status is recorded
 inconsistently across streams**: the *As of March 2026* edition was retrieved free and in full [REG-R73], superseding
-the earlier record of it as a paid publication not fetched [REG-R33] — but the reserves stream worked under the paid
-assumption and **did not read Appendix A items A-820 and A-830, nor Appendix C items AG 33 and AG 35**
-[REG-R110][REG-R39][REG-R40], so formulaic CRVM and CARVM detail rests on the Standard Valuation Law [REG-R1] and Model
-#830 [REG-R6]. The **AVR factor tables and IMR grouped-amortisation factor tables were deliberately not transcribed**
+the earlier record of it as a paid publication not fetched [REG-R33]. The reserves stream originally worked under the
+paid assumption and did not read the appendix items, but **seven of them have since been read in full**: Appendix A
+items **A-820** with A-821 and A-822 [REG-R153], **A-830** [REG-R154], **A-585** [REG-R155], **A-250** [REG-R156] and
+**A-255** [REG-R157], and Appendix C items **AG 33** [REG-R151] and **AG 35** [REG-R152]. Formulaic CRVM and CARVM
+detail therefore no longer rests on the Standard Valuation Law [REG-R1] and Model #830 [REG-R6] alone. **What is still
+unread, and named wherever it is relied on:** **Actuarial Guideline I**, the deficiency-reserve interpretive vehicle
+[REG-R41]; **Appendix A-791** on reinsurance, cited only through SSAP No. 61 [REG-R92]; **A-270** on variable life,
+extracted but with **no reference id assigned**, so nothing is cited from it; and the mortality-table items **A-812,
+A-815, VM-A-814 and A-817** [REG-R110]. The **AVR factor tables and IMR grouped-amortisation factor tables were
+deliberately not transcribed**
 [REG-R89]; this file describes their role and location and **states no factor value for either**.
 
 ---
@@ -174,9 +186,29 @@ optional higher standards (§7); and, for issues on or after the Valuation Manua
 standard as the minimum** (§11) [REG-R1]. §6.B is what makes asset adequacy analysis part of *minimum reserves* rather
 than a disclosure exercise, and is the authority behind VM-30's additional reserve [REG-R1][REG-R100].
 
+**A citation correction on that last floor.** The AP&P codification of the Standard Valuation Law is Appendix **A-820**,
+and **A-820 as printed contains no §6.B analogue** — its ¶16 carries only the aggregate nonforfeiture-basis floor
+[REG-R153 ¶16]. In the manual the asset adequacy requirement sits in a separate four-paragraph appendix, **A-822 ¶3**:
+where analysis shows a reserve is needed in addition to the aggregate reserve computed under A-820, "the company
+**shall establish** the additional reserve", with ¶4 permitting release in later years and providing that the release
+"would **not** be deemed an adoption of a lower standard of valuation" [REG-R153]. Read with A-820 ¶18 — holding
+additional reserves determined by the appointed actuary is not the adoption of a higher standard — that pair keeps both
+the establishment and the release of the asset adequacy reserve **outside the change-in-valuation-basis machinery**.
+**A naming trap the library should carry explicitly:** AP&P **Appendix A-822** is an excerpt of the Standard Valuation
+Law's asset adequacy provisions and is **not** NAIC **Model #822**, the Actuarial Opinion and Memorandum Regulation
+discussed later in this file. Same number, different instrument; A-822 contains no opinion wording, no scenarios, no
+memorandum requirements and no exemption clause [REG-R153][REG-R101][REG-R102].
+
 **Formulaic versus principle-based.** CRVM is a modified-net-premium construction and CARVM a greatest-present-value
 construction; both are contractual-guarantee calculations on prescribed mortality and a calendar-year-of-issue valuation
-interest rate [REG-R1]. The principle-based regime replaces them for post-operative-date business: **VM-20** constitutes
+interest rate [REG-R1][REG-R153 ¶¶11, 15]. **"CRVM" names more than one construction, and the appendix prints say so.**
+A-830 ¶2 declares that *its* basic-reserve method — the greater of segmented and unitary reserves under the contract
+segmentation method — "will constitute the Commissioners' Reserve Valuation Method for policies to which this appendix
+is applicable", which reaches nonlevel-premium and nonlevel-benefit designs and universal life with secondary
+guarantees [REG-R154 ¶2]. A-585 ¶8 prescribes a different CRVM adaptation again for universal life, built on the
+**guaranteed maturity premium**, the **guaranteed maturity fund** and a funding ratio, with no contract-gross-premium
+percentage in it at all [REG-R155 ¶8]. A model that has one CRVM routine has the wrong number of them; the three
+constructions are set out in `us/regulatory/technical-notes.md`, "Formulaic reserves". The principle-based regime replaces them for post-operative-date business: **VM-20** constitutes
 CRVM for individual life subject to a principle-based valuation, with a net premium reserve floor [REG-R3]; **VM-21**
 constitutes CARVM for variable annuities, with AG 43 pulling pre-2017 business onto it [REG-R35][REG-R38]; **VM-22**
 covers non-variable annuities [REG-R36]. SSAP No. 51 ¶15 now expressly contemplates formulaic reserves being
@@ -184,14 +216,18 @@ covers non-variable annuities [REG-R36]. SSAP No. 51 ¶15 now expressly contempl
 
 **When each regime applies — and note the triggers are not all of a kind.** The Standard Valuation Law §11 names no
 date; it says the Valuation Manual standard is the minimum *for issues on or after the Valuation Manual operative date*
-[REG-R1]. That operative date is **1 January 2017**, stated verbatim by the NAIC principle-based-reserving topic page:
-*"Effective Jan. 1, 2017, the Valuation Manual became operative"* [REG-R150]. The Standard Valuation Law print itself
-never gives the date — [REG-R1]'s annotation records it as widely documented but absent from that text — so [REG-R150]
-is the only source in this library that prints it. Life and annuity business then diverge:
+[REG-R1]. That operative date is **1 January 2017**. It is no longer carried by a topic page alone: **A-820, the AP&P
+codification of the Standard Valuation Law, prints the date twice in operative rules** — ¶3 applies the
+principle-based-valuation provisions "to all policies and contracts issued on or after the **January 1, 2017, operative
+date of the Valuation Manual**", and ¶4 grandfathers earlier issues onto ¶¶5–22 in the same words, adding that the
+PBR provisions "**shall not apply to any such policies and contracts**" [REG-R153 ¶¶3–4]. The NAIC
+principle-based-reserving topic page states it in the same terms — *"Effective Jan. 1, 2017, the Valuation Manual became
+operative"* [REG-R150] — and the Standard Valuation Law print itself still never gives the date, but **[REG-R153] is now
+the primary citation for it** and [REG-R150] the corroborating one. Life and annuity business then diverge:
 
 | Business | Trigger | Timeline |
 |---|---|---|
-| **Individual life** (VM-20) | **Year of issue** | Issued before 1/1/2017 → formulaic CRVM remains the minimum standard, fixed by year of issue [REG-R1 §11]; a later voluntary move of such a cohort onto another allowable basis is a **change in valuation basis**, direct to surplus, not an automatic conversion [REG-R79][REG-R89]. **PBR became an accreditation standard on 1/1/2020** — verbatim at [REG-R150], and note that accreditation binds *states*, not an insurer's reserve election. **Two claims commonly attached to this timeline are NOT sourced here and stay [unverified]:** that issues in **2017–2019** fell in an elective transition between the formulaic basis and VM-20, and that **VM-20 became mandatory for new issues on 1/1/2020**. [REG-R150] was fetched and checked for both and states neither; no other retrieved source gives them |
+| **Individual life** (VM-20) | **Year of issue** | Issued before 1/1/2017 → formulaic CRVM remains the minimum standard, fixed by year of issue [REG-R1 §11], now stated verbatim in the appendix print: the PBR provisions "shall not apply to any such policies and contracts" [REG-R153 ¶4]; a later voluntary move of such a cohort onto another allowable basis is a **change in valuation basis**, direct to surplus, not an automatic conversion [REG-R79][REG-R89]. **PBR became an accreditation standard on 1/1/2020** — verbatim at [REG-R150], and note that accreditation binds *states*, not an insurer's reserve election. **Two claims commonly attached to this timeline are NOT sourced here and stay [unverified]:** that issues in **2017–2019** fell in an elective transition between the formulaic basis and VM-20, and that **VM-20 became mandatory for new issues on 1/1/2020**. [REG-R150] was fetched and checked for both and states neither; [REG-R153] was read in full and states neither, and contains **no elective-transition window, no phase-in and no company election** anywhere. That is now positive evidence about *where such an election is not*: A-820 ¶3 applies the Valuation Manual standard to all post-1/1/2017 issues without carve-out, and ¶24.e delegates "**transition rules**" to the Valuation Manual, so if the election exists it lives in VM-20/VM-01, not in the statutory-law layer [REG-R153 ¶¶3, 24.e] |
 | **Variable annuities** (VM-21) | **Valuation date**, with the pre-date block pulled in by AG 43 | VM-21 applies for **valuation dates on or after 1 January 2020**, with an elective 36-month phase-in and a separate economic-scenario-generator phase-in of 36 months from 1 January 2026 [REG-R35]; and **AG 43 carries the VM-21 requirements back to contracts issued before 1/1/2017**, the two populations being aggregable [REG-R35][REG-R38] — so there is no preserved formulaic-only cohort as there is for life, back to AG 43's own scope of contracts issued on or after **1 January 1981** [REG-R38] |
 | **Non-variable annuities** (VM-22) | **Valuation date** | Effective for **valuation dates on or after 1 January 2026**, with an elective three-year transition on VM-A/VM-C/VM-M/VM-V for business issued in the first three years — an irrevocable election once VM-22 PBR is chosen for a block — and mandatory prospective application three years after [REG-R36]. That endpoint is **January 2029**, printed only by [REG-R150] ("a three-year implementation period before becoming mandatory for all new issues in January 2029"); VM-22 itself leaves it to arithmetic. [REG-R150] states it prospectively as of an August 2025 page update, so re-check it against [REG-R36] before relying on it |
 
@@ -201,47 +237,90 @@ be valued for decades. VM-21 and VM-22 are keyed to the valuation date and so re
 does **not** collapse an annuity block to a single basis: through VM-22's three-year transition both bases coexist, and
 the reserve must still be keyed on `(valuation standard, year of issue)` rather than on product, because Exhibit 5
 Column 1 states the standard by years of issue [REG-R36][REG-R89]. Whether an elective move from CARVM onto VM-22 is
-itself a change in valuation basis **is resolved nowhere in this library**, and the March 2026 SSAP Nos. 3/51/52
-guidance on the optional implementation period was not read [REG-R79][REG-R88].
+itself a change in valuation basis **is resolved nowhere in this library** — AG 33 says nothing about VM-22 and predates
+it [REG-R151] — and the March 2026 SSAP Nos. 3/51/52 guidance on the optional implementation period was not read
+[REG-R79][REG-R88].
+
+**One tension the appendix print creates, recorded rather than smoothed over.** A-820 ¶4 says the Valuation Manual
+provisions "shall not apply to **any**" policy or contract issued before 1/1/2017, with no life/annuity distinction
+[REG-R153 ¶4]. Yet AG 43 carries VM-21 requirements back to contracts issued before that date, and VM-21 and VM-22 are
+keyed to the valuation date [REG-R35][REG-R36][REG-R38]. These reconcile only because AG 43 and VM-21 are separate
+instruments — Appendix C and the Valuation Manual — operating alongside A-820, **not** because A-820 or §11 authorises
+the reach-back. A-820/§11 is the authority for the *issue-date* trigger and for nothing else; the library should stop
+implying otherwise [REG-R153 ¶4][REG-R1 §11].
 
 **Which basis applies to which product.** Assembled from the twelve product files; each row's authority and mechanics
 are in that product's own "Statutory accounting and capital" section.
 
 | Product | Formulaic (pre-date issues, and the floor) | Principle-based | What a post-date block actually computes |
 |---|---|---|---|
-| Term life | CRVM; Model #830 (XXX) for the era it governs | VM-20, **Term** category | DR in every case — the deterministic exclusion test is **not available at all** for term [REG-R3 §6.B] |
+| Term life | The **A-830** CRVM — `max(segmented, unitary)` under the contract segmentation method, with deficiency reserves as quantity A less the basic reserve and X-factor relief [REG-R154 ¶¶2, 21, 17] | VM-20, **Term** category | DR in every case — the deterministic exclusion test is **not available at all** for term [REG-R3 §6.B] |
 | Whole life | CRVM | VM-20, **All Other** — but a term-blend rider component sits in **Term**, and the categories are summed, never offset | NPR only where both tests pass — and that NPR *is* the formulaic CRVM via VM-A/VM-C; the deterministic test is unavailable to a term-rider component, so that component still produces a DR |
-| Universal life | Model #585 §5 CRVM adaptation (GMP/GMF) | VM-20, **All Other** | NPR only where both tests pass; NPR routes through VM-A item **A-585**, i.e. the same Model #585 calculation |
-| Indexed UL | Model #585 adaptation | VM-20, category depends on whether a secondary guarantee is material | VM-20 §3.B.6 names indexed UL expressly: where no DR or SR is computed, the NPR follows VM-A/VM-C. But that path is not the expected one — §6.A.1.b's **hedging bar** blocks excluding a group with future hedging strategies from the SR, and §6.B then **deems the DET failed** for any group not excluded from the SR, pulling the DR in with it (**[std, derived]** from the cited rules; no source names indexed UL) [REG-R3] |
-| Variable UL | CRVM | VM-20, **All Other**, moving to **ULSG** where secondary guarantees are present | **Barred from the stochastic exclusion certification method**; the DET stays available |
-| Guaranteed UL (ULSG) | CRVM; AG 38 | VM-20, **ULSG** category | Full machinery — **deemed to fail** the deterministic test where the secondary guarantee is material, and barred from the stochastic certification method |
-| Fixed deferred (MYGA) | CARVM (SVL §5a); AG 33 as the interpretive layer, text not retrieved | VM-22, **Accumulation** category | VM-22 §7 exclusion tests and Single Scenario Test — its own, not VM-20's. The library records AG 35 as **not reaching** a book-value MYGA [REG-R40] |
-| Fixed indexed (FIA) | CARVM; **AG 33** (elective benefits) and **AG 35** (how the index feature enters) — neither retrieved, so their mechanics stay **[unverified]** | VM-22, **Accumulation** category, which expressly covers the post-exhaustion GLB income stream; SR = CTE 70 | VM-22 §7 tests; VM-20's bars and categories **do not transfer**, VM-20 being CRVM for individual *life*, so neither the term bar nor the ULSG deemed failure has an FIA analogue |
+| Universal life | The **A-585** CRVM adaptation — guaranteed maturity premium, guaranteed maturity fund and the funding ratio [REG-R155 ¶8] | VM-20, **All Other** | NPR only where both tests pass; NPR routes through VM-A item **A-585**, and the A-585 print attributes itself to the **Standard Valuation Law (#820)** — it does not name Model #585 anywhere, so "A-585 *is* Model #585 §5" should be softened to "A-585 carries the UL CRVM adaptation" [REG-R155][REG-R5] |
+| Indexed UL | The **A-585** adaptation, with the index stripped out of the guaranteed maturity premium solve: the GMP is computed on policy guarantees at issue "excluding guarantees linked to an external referent" [REG-R155 ¶8.c] | VM-20, category depends on whether a secondary guarantee is material | VM-20 §3.B.6 names indexed UL expressly: where no DR or SR is computed, the NPR follows VM-A/VM-C. But that path is not the expected one — §6.A.1.b's **hedging bar** blocks excluding a group with future hedging strategies from the SR, and §6.B then **deems the DET failed** for any group not excluded from the SR, pulling the DR in with it (**[std, derived]** from the cited rules; no source names indexed UL) [REG-R3] |
+| Variable UL | CRVM. **A-830 is out of scope for VUL by its own terms** — ¶3.a.iii and ¶3.a.iv exclude variable life and variable universal life outright, so the open formulaic item for VUL is A-270 and A-820, not A-830 [REG-R154 ¶3.a] | VM-20, **All Other**, moving to **ULSG** where secondary guarantees are present | **Barred from the stochastic exclusion certification method**; the DET stays available |
+| Guaranteed UL (ULSG) | The **A-830 ¶¶29–32** secondary-guarantee construction — segmented reserves over the secondary guarantee period on specified (else minimum) premiums, with **no unitary leg**, and where several guarantees coexist the **greatest of the stand-alone reserves for each unexpired guarantee, each valued ignoring the others** [REG-R154]; AG 38 on top. A-830 also carries a scope test the library did not have: a UL policy is **outside the appendix entirely** where the secondary guarantee period is **five years or less**, the specified premium is at least the net level reserve premium for that period, and the initial surrender charge is at least **100% of the first-year annualized specified premium** [REG-R154 ¶3.a.ii] | VM-20, **ULSG** category | Full machinery — **deemed to fail** the deterministic test where the secondary guarantee is material, and barred from the stochastic certification method |
+| Fixed deferred (MYGA) | CARVM (SVL §5a / A-820 ¶15); **AG 33** as the interpretive layer, now read in full [REG-R151] — elective benefits are maximised over rather than assumed, the accumulation fund drives annuitization streams, and the **7% expense-allowance floor** bites on any contract guaranteeing better-of-current purchase rates | VM-22, **Accumulation** category | VM-22 §7 exclusion tests and Single Scenario Test — its own, not VM-20's. **AG 35 does not reach a book-value MYGA**, now on primary authority rather than inference: its scope is "all equity indexed annuity contracts … subject to CARVM", and a MYGA is not index-linked [REG-R152] |
+| Fixed indexed (FIA) | CARVM; **AG 33** (elective benefits) and **AG 35** (how the index feature enters), **both now read** [REG-R151][REG-R152]. AG 35 supplies four constructions — CARVM-UMV, MVRM, the Black-Scholes Projection Method adaptation and EDIM — each ending by handing the resulting guaranteed benefit amounts to AG 33 for the greatest-present-value step | VM-22, **Accumulation** category, which expressly covers the post-exhaustion GLB income stream; SR = CTE 70 | VM-22 §7 tests; VM-20's bars and categories **do not transfer**, VM-20 being CRVM for individual *life*, so neither the term bar nor the ULSG deemed failure has an FIA analogue |
 | Variable annuity | CARVM is the standard, but **VM-21 constitutes it** and AG 43 reaches back — no separate formulaic cohort survives | **VM-21** constitutes CARVM | Stochastic in practice: no exclusion test and no formulaic escape. VM-21's **only** relief is the **Alternative Methodology**, available solely for variable deferred contracts with no guaranteed benefits or **only GMDBs** — never a GLWB block, hence "always" for the representative design but **not** for the product as a class [REG-R35] |
 | RILA (ILVA) | CARVM is the floor and never goes away | **VM-21 where VM-21 §2.A reaches the contract**: §2.A.1 covers guarantees similar in nature to GMDBs or VAGLBs, while **§2.A.3 excludes** separate account contracts that guarantee an index and offer no GMDB/VAGLB — so a GMDB-bearing design is in and a bare accumulation RILA falls back to formulaic CARVM. **VM-22 is not the RILA standard**, being the non-variable annuity requirement [REG-R35][REG-R36][REG-R44] | **There is no exclusion test on any route** — VM-20's are life-only, VM-21 has none at all, VM-22 §7's reach only non-variable annuities — so an in-scope contract computes CTE 70 every year [REG-R3][REG-R35][REG-R36]. See the caveat below; the applicability matrix marks RILA `?` on the VM-21/AG 43 and VM-22 rows |
-| Immediate (SPIA) | CARVM; maximum valuation rate under **VM-V §1** | VM-22, **Payout Annuity** category; SR = CTE 70 | VM-22 §7 exclusion tests and the **Single Scenario Test**, plus the small-company **Annuity PBR Exemption** keyed to $1.0bn of exemption reserves ($2.0bn at group level); **VM-20 never applies**, it being CRVM for individual *life* |
-| Deferred income (DIA) | CARVM; maximum valuation rate under **VM-V §1**, not VM-22 | VM-22, which **names DIA contracts explicitly** in the Payout Annuity category | VM-22 §7 exclusion tests and the Single Scenario Test. **VM-20 and VM-21 are both out of scope**, so neither the term bar nor the ULSG deemed failure reaches this product |
+| Immediate (SPIA) | CARVM; maximum valuation rate under **VM-V §1**. **AG 33 does not reach a no-option SPIA**: its applicability sentence requires that "any elective benefits … are available", and its non-elective definition expressly covers "benefits payable under either a deferred or immediate annuity contract (with or without life contingencies), **where no benefit options are available**". A life-only SPIA with no commutation, no acceleration and no elective option is inside CARVM and outside AG 33; add any one of those options and it is inside both [REG-R151] | VM-22, **Payout Annuity** category; SR = CTE 70 | VM-22 §7 exclusion tests and the **Single Scenario Test**, plus the small-company **Annuity PBR Exemption** keyed to $1.0bn of exemption reserves ($2.0bn at group level); **VM-20 never applies**, it being CRVM for individual *life* |
+| Deferred income (DIA) | CARVM; maximum valuation rate under **VM-V §1**, not VM-22. A DIA's start-date adjustment, acceleration and commutation rights are **elective benefits** under AG 33, so the contract is in AG 33's scope: those options are maximised over as trial sets rather than assumed from experience, and because the annuitization portion's guarantee duration runs from issue to the **assumed** commencement date, moving the elected start date moves the contract across valuation-rate bands [REG-R151] | VM-22, which **names DIA contracts explicitly** in the Payout Annuity category | VM-22 §7 exclusion tests and the Single Scenario Test. **VM-20 and VM-21 are both out of scope**, so neither the term bar nor the ULSG deemed failure reaches this product |
 
-Three caveats on that table. **RILA** is genuinely unsettled here: formulaic CARVM is its floor, but AG 33 and AG 35
-were not retrieved and neither were the closest formulaic items **A-250** (variable annuities) and **A-255** (modified
-guaranteed annuities) [REG-R110], so a RILA CARVM run rests on the SVL text alone. **AG 33 and AG 35 generally** are
-unread, so the formulaic annuity half of this table is stated by scope and authority rather than by mechanics. And the
-**exclusion-test outcomes** above describe what a compliant block typically computes, not a guarantee — the tests are
-run per company and per block, and passing them still leaves the VM-31 and VM-G obligations described below.
+Three caveats on that table, one of which has changed shape entirely. **The formulaic annuity half is no longer stated
+by scope and authority alone** — AG 33 and AG 35 have been read, and the mechanics they supply are set out in
+`us/regulatory/technical-notes.md`, "Formulaic reserves". **RILA remains unsettled, but for a better-understood
+reason.** AG 33 applies to *all* annuity contracts subject to CARVM where elective benefits are available, with no
+product list, no separate-account exception and no size or premium threshold [REG-R151] — so a RILA carrying elective
+benefits is inside AG 33 and gets its stream construction, its incidence rules and its benefit-level rate
+determination. AG 35 is a different matter: **it was retrieved and it does not address the design.** It defines no term
+"equity indexed annuity"; it says nothing about separate accounts, registered products, index-linked variable annuities,
+buffers, floors or AG 54; and its Background describes contracts carrying "a minimum guaranteed interest accumulation
+rate on a portion of all premium payments", which a buffer/floor RILA generally does not have. Record it as **neither
+including nor excluding RILA** [REG-R152]. **And the two VM-A items the library called "the closest formulaic items to
+a RILA" turn out not to be reserve methods at all.** **A-250** (variable annuities) is three sentences: a definition, a
+requirement that each separate account hold assets at least equal to the reserves and other contract liabilities of that
+account, and a delegation of the reserve itself to **Appendix A-820** "in accordance with actuarial procedures that
+recognize the variable nature of the benefits provided and any mortality guarantees" [REG-R156]. **A-255** (modified
+guaranteed annuities) is the same delegation plus three operative rules: the separate account liability must be at least
+the surrender value produced by **the contract's own market-value-adjustment formula**, a shortfall against the market
+value of the separate account assets must be made good by a transfer into that account, and "any additional reserve that
+is needed to cover future guaranteed benefits shall be established" [REG-R157]. **Neither item contains a formula, a
+symbol, a factor, a table, an elective-path rule, an interim-value rule, or the word CARVM.** Calling them the closest
+formulaic items is defensible only as *nearest by subject matter*; they add nothing to a RILA formulaic CARVM run beyond
+the MVA floor, so **a RILA CARVM run does still rest on the SVL text as read through AG 33 — reading A-250 and A-255 did
+not change that.** That was an open question and it is now closed, negatively. Finally, the **exclusion-test outcomes**
+above describe what a compliant block typically computes, not a guarantee — the tests are run per company and per block,
+and passing them still leaves the VM-31 and VM-G obligations described below.
 
 **The boundary is not clean, and a model must build both engines.** VM-20's net premium reserve for the *All Other*
 reserving category — and for indexed UL where no deterministic or stochastic reserve is computed — is determined
 "pursuant to applicable methods in **VM-A and VM-C** for the basic reserve" [REG-R3]. VM-A is an *index* of formulaic
-requirements carried in AP&P Appendix A, headed by **A-820** (minimum life and annuity reserve standards) and **A-830**
-(Model #830, "Regulation XXX"), with A-585 universal life, A-250 variable annuities, A-255 modified guaranteed
-annuities, A-270 variable life and A-791 reinsurance among the rest [REG-R110]; VM-C is the parallel index of actuarial
+requirements carried in AP&P Appendix A, headed by **A-820** (minimum life and annuity reserve standards) [REG-R153] and
+**A-830** (valuation of life insurance policies; the appendix prints neither "Model #830" nor "Regulation XXX" anywhere
+in its own text, and is numbered as a flat sequence of paragraphs with **no sections**, so citations must use paragraph
+numbers) [REG-R154], with A-585 universal life [REG-R155], A-250 variable annuities [REG-R156], A-255 modified
+guaranteed annuities [REG-R157], A-270 variable life and A-791 reinsurance among the rest [REG-R110]; VM-C is the parallel index of actuarial
 guidelines [REG-R41]. So whole life, ordinary UL, VUL and un-modelled IUL run the **old CRVM calculation** inside a
-PBR-era manual. Income annuities keep a formulaic track of their own, VM-V §1 setting market-linked maximum valuation
-rates by bucket, jumbo rates published daily and non-jumbo quarterly [REG-R37]. **Deficiency reserves** — valuation net
-premiums in excess of gross — survive as a distinct item under Actuarial Guideline I via VM-C [REG-R41] and Model #830
-via A-830 [REG-R6][REG-R110], reported in Exhibit 5 Miscellaneous Reserves [REG-R89]. **Neither the AG I text nor A-585, A-820
-and A-830 as printed in the manual was retrieved** [REG-R33][REG-R110], and **AG 33 and AG 35 — formulaic CARVM for
-deferred and indexed annuities — remain unread**, so this library cannot quote their mechanics [REG-R39][REG-R40].
+PBR-era manual — and A-820 supplies the statutory-layer authority for that sentence, which previously rested only on
+VM-20 §3.B.6's pointer: the Valuation Manual **must** specify CRVM for life contracts and CARVM for annuity contracts
+(¶24.a.i–ii); for policies not subject to a principle-based valuation the minimum standard may simply "**be consistent
+with the minimum standard of valuation prior to the operative date of the Valuation Manual**" (¶24.d.i); and "**a
+principle-based valuation may include a prescribed formulaic reserve component**" (¶27) [REG-R153]. Income annuities
+keep a formulaic track of their own, VM-V §1 setting market-linked maximum valuation rates by bucket, jumbo rates
+published daily and non-jumbo quarterly [REG-R37]. **Deficiency reserves** survive as a distinct item under Actuarial
+Guideline I via VM-C [REG-R41] and Model #830 via A-830 [REG-R6][REG-R154], reported in Exhibit 5 Miscellaneous Reserves
+[REG-R89] — and the library's shorthand for them, "valuation net premiums in excess of gross", **needs correcting on
+two counts**. A-820 ¶19 expresses the deficiency not as an additive reserve but as a **floor on the policy reserve**,
+the greater of the reserve as actually computed and a re-run on the minimum mortality and interest standards with the
+gross premium substituted for the valuation net premium **only in the deficient contract years** [REG-R153 ¶19]; and
+A-830 keys its test to the **guaranteed** gross premium — "guaranteed and determined at issue" — rather than to premium
+collected, defining the reserve as **quantity A less the basic reserve**, where A is a full recalculation of the basic
+reserve with guaranteed gross premiums substituted for net premiums duration by duration wherever the gross is the
+smaller [REG-R154 ¶¶7, 17]. The arithmetic of both is in `us/regulatory/technical-notes.md`, "Formulaic reserves".
+**Of the items this paragraph used to disclaim, A-585, A-820 and A-830 have now been read** [REG-R155][REG-R153]
+[REG-R154], as have **AG 33 and AG 35** [REG-R151][REG-R152]. **The AG I text was not retrieved** and is still the one
+piece of the deficiency-reserve chain the library cannot quote [REG-R41][REG-R33].
 
 **Two obligations around the calculation are not calculations.** **VM-31** requires a PBR Actuarial Report documented so
 "another actuary qualified in the same practice area [can] evaluate the work", Summaries filed by April 1; a company
@@ -418,7 +497,20 @@ separate account must be at fair value is wrong** — this is the accounting cou
 
 The measurement basis then propagates three ways a model must follow. **The liability basis must follow the asset
 basis**: A-820 valuation interest rates where assets are on a general-account basis, **current market-based rates where
-assets are at fair value** [REG-R83 ¶30]. **Separate account IMR is required where assets are at book value and not
+assets are at fair value** [REG-R83 ¶30][REG-R153]. **The reserve-side counterpart for MVA business is now sourced.**
+A-255 ¶5 requires that the separate account liability be **at least the surrender value produced by the contract's own
+market-value-adjustment formula** — the formula is the contract's, not a prescribed one, and A-255 prints neither a
+formula nor a parameter for one — that any shortfall against the market value of the separate account assets be made
+good by a **transfer into that account**, and that "any additional reserve that is needed to cover future guaranteed
+benefits shall be established", with ¶6 requiring the MVA formula, the interest guarantees and asset/liability cash flow
+matching to be considered and an affirmative company determination of asset adequacy for all guaranteed benefits
+[REG-R157]. A-250 imposes the parallel asset-coverage floor for variable annuity separate accounts and delegates the
+reserve itself to A-820 [REG-R156]. **A-255 ¶1 also carries a definition with load-bearing use elsewhere**: VM-21
+§2.A.2 excludes contracts falling under VM-A item A-255, and the test for that exclusion is A-255's own four-element
+definition — a deferred annuity, individual or group; underlying assets held in a separate account; values guaranteed if
+held for specified periods; nonforfeiture values on an MVA formula if held for shorter periods — plus the requirement
+that the assets be in a separate account "during the period or periods when the contract holder can surrender the
+contract". **The exclusion is VM-21's text, not A-255's; A-255 supplies only the definition** [REG-R157][REG-R35]. **Separate account IMR is required where assets are at book value and not
 where they are at fair value**, applied account by account [¶¶26–27]. **Separate account AVR** is required where the
 reporting entity rather than the policyholder bears default and fair-value loss — so traditional VA and VL separate
 accounts need none except on the **seed money** portion, while book-value separate accounts, modified guaranteed
@@ -636,8 +728,12 @@ RILA = registered-index-linked-annuity, SPIA = immediate-annuity, DIA = deferred
 | Derivatives — SSAP No. 86 [REG-R96] | | (x) | (x) | x | (x) | (x) | (x) | x | x | x | (x) | (x) |
 | Reinsurance credit — SSAP No. 61, Models #785/#786 [REG-R92][REG-R94][REG-R95] | x | x | x | x | x | x | x | x | x | x | x | x |
 | Deferred tax admittance — SSAP No. 101 [REG-R97][REG-R98] | x | x | x | x | x | x | x | x | x | x | x | x |
-| Formulaic CRVM — SVL §5 via VM-A/VM-C [REG-R1][REG-R110][REG-R41] | x | x | x | x | x | x | | | | | (x) | (x) |
-| Formulaic CARVM — SVL §5a, AG 33/AG 35 [REG-R1][REG-R39][REG-R40] | | | | | | | x | x | x | x | x | x |
+| Formulaic CRVM — SVL §5 / A-820 ¶11 via VM-A/VM-C [REG-R1][REG-R153][REG-R110][REG-R41] | x | x | x | x | x | x | | | | | (x) | (x) |
+| — of which the **A-830** segmented/unitary CRVM [REG-R154] | x | | | | — | x | | | | | | |
+| — of which the **A-585** GMP/GMF CRVM adaptation [REG-R155] | | | x | x | | | | | | | | |
+| Formulaic CARVM — SVL §5a / A-820 ¶15 [REG-R1][REG-R153] | | | | | | | x | x | x | x | x | x |
+| — **AG 33** elective-benefit interpretation [REG-R151] | | | | | | | x | x | x | x | (x) | x |
+| — **AG 35** equity-indexed CARVM [REG-R152] | | | | | | | — | x | | ? | | |
 | VM-20 NPR / DR / SR [REG-R3] | x | x | x | x | x | x | | | | | | |
 | VM-20 deterministic exclusion test [REG-R3] | — | x | x | x | x | (x) | | | | | | |
 | VM-21 / AG 43 population [REG-R35][REG-R38] | | | | | | | | | x | ? | (x) | |
@@ -678,6 +774,36 @@ annuities go through Phase II [REG-R128]. The **life columns on that row are bla
 scope is "Certain Annuities" **plus single premium life**, so it reaches a life product only in a single-premium design
 [REG-R128][REG-R135]; the scope statement is set out in `us/regulatory/technical-notes.md`, "Risk-based capital".
 
+**Notes on the four formulaic rows, which are new.** They split what used to be two rows, because "CRVM" and "CARVM"
+each name more than one instrument. **A-830** carries `—` for VUL because ¶3.a.iii and ¶3.a.iv exclude variable life and
+variable universal life **outright**, and blanks for whole life and ordinary UL because nothing in ¶3.b routes a
+level-premium, level-benefit non-UL policy or a UL policy without a secondary guarantee to any calculation paragraph —
+such a policy is inside the ¶3 scope sentence and inside ¶2's declaration but has no printed construction, which is an
+observation about the print and **not** a licence to infer an outcome [REG-R154]. **A-585** carries `x` only for UL and
+IUL; the tempting `(x)` for ULSG is withheld because A-830 ¶32.b floors the ULSG reserve by "the minimum reserves
+required by **other appendices governing universal life plans**" **without naming the item**, and that cross-reference
+must not be resolved to A-585 on the A-830 text [REG-R154 ¶32]. **AG 33** carries `(x)` rather than `x` for SPIA for the
+reason set out in the basis table above — a no-option life-only SPIA is outside its applicability sentence, and any
+elective option puts it inside [REG-R151]. **AG 35** carries `—` for a book-value MYGA, `?` for RILA (retrieved, and it
+neither includes nor excludes the design), and blanks for the payout products only because the library's representative
+SPIA and DIA are not index-linked — **AG 35 does in fact reach equity indexed *immediate* annuities**, its Background
+describing designs with "a minimum guaranteed annuitization rate and an opportunity to receive larger periodic payments
+based on the growth … in an equity index", and its Attachment 4 certification covering "all equity indexed annuity
+products" where Attachment 3 is confined to deferred ones [REG-R152]. An index-linked payout design would take `x`.
+
+**One date the library must stop repeating without qualification.** AG 33's printed *Effective Date* block reads: "This
+guideline shall be effective on **December 31, 1998**, affecting all contracts issued on or after January 1, 1981",
+followed by a grade-in that reached 100% by December 31, 2000 and therefore has **no live effect on any current
+valuation** [REG-R151]. The library elsewhere carries "effective December 31, **1995**" under a different title, sourced
+from IRS Rev. Rul. 2002-6. Both are facts about their own documents; the extracted AG 33 pages carry **no amendment
+history**, so the natural reconciliation — that the guideline was later revised and the manual prints the revised text —
+is an **inference this library does not assert**. The issue-date reach of 1 January 1981 is common to both. AG 35, by
+contrast, prints **no effective date, adoption date, operative date, transition, phase-in or sunset at all**; its only
+temporal language is "regardless of the date of issue", and the `© 1999-2026` footer is a copyright span, not an
+adoption date [REG-R152]. A-830 likewise prints **no calendar effective date for itself** — "the effective date of this
+appendix" appears eleven times as an unresolved placeholder — and A-585, A-250 and A-255 print none either [REG-R154]
+[REG-R155][REG-R156][REG-R157]. **No date may be attributed to any of those five items from these sources.**
+
 **RILA's capital treatment is genuinely unsettled, and the `?` marks say so rather than guessing.** The RBC instructions
 read **never mention registered index-linked annuities, ILVA, or index-linked annuities at all** [REG-R128]. Whether a
 RILA lands in C-3 Phase II depends on whether the contract is valued under AG 43 / VM-21; otherwise it would take
@@ -694,10 +820,20 @@ Instructions is a sold publication** marked "Not for Distribution"; the 2024 and
 insurance department postings, **the 2025 edition could not be parsed**, and the RBC forecasting spreadsheet was never
 obtained — so nothing here is asserted about year-end 2025 factors beyond the public newsletter's change list
 [REG-R128][REG-R129][REG-R139]. The **AP&P Manual** was retrieved free in its *As of March 2026* edition [REG-R73],
-superseding the earlier paid/unfetched record [REG-R33] — but the reserves stream, working under the paid assumption,
-**did not read A-820, A-830, AG 33 or AG 35** [REG-R110][REG-R39][REG-R40], so formulaic CRVM detail rests on the
-Standard Valuation Law and Model #830 [REG-R1][REG-R6] and formulaic CARVM for deferred and indexed annuities on the
-statutory text alone; **Appendix A-791** was likewise cited only through SSAP No. 61 [REG-R92]. The **Annual Statement
+superseding the earlier paid/unfetched record [REG-R33]. The reserves stream originally worked under the paid assumption
+and read none of the appendix items, but **A-820 (with A-821 and A-822), A-830, A-585, A-250, A-255, AG 33 and AG 35
+have since been read in full** [REG-R153][REG-R154][REG-R155][REG-R156][REG-R157][REG-R151][REG-R152], so formulaic CRVM
+and CARVM detail no longer rests on the Standard Valuation Law and Model #830 alone [REG-R1][REG-R6]. **What is still
+unread in that chain:** **Actuarial Guideline I**, so the deficiency-reserve interpretive layer remains second-hand
+[REG-R41]; **Appendix A-791**, cited only through SSAP No. 61 [REG-R92]; **A-270**, extracted alongside A-585 but with
+**no reference id assigned**, so nothing is cited from it and the variable-life guaranteed-minimum-death-benefit reserve
+stays outside this library; **A-812, A-815, VM-A-814 and A-817**, the mortality-table items [REG-R110]; and **AG IX-B**,
+which AG 35 names three times as an alternative source of the valuation interest rate for an indexed contract and which
+this library holds only as a VM-C index entry [REG-R152][REG-R41]. Note also that the appendices **print far fewer
+numbers than their subject matter suggests**: A-820 names its mortality tables without printing them, A-821 prints only
+the 2012 IAM Period Table and Projection Scale G2 (the 1994 GAR, Annuity 2000 and 1983 Table "a" are named and not
+printed), A-585 prints no number at all, and AG 33's only numeric parameters are the 7% expense allowance and the
+run-off phase-in percentages [REG-R153][REG-R155][REG-R151]. The **Annual Statement
 Instructions and Blank were retrieved** free but are the **2025** reporting year editions, so every page and line
 reference should be re-verified against the 2026 blank [REG-R89][REG-R90]; the reserves stream separately failed to
 retrieve the blank and knows the opinion page, Schedule S and the VM-20 Reserves Supplement only through documents
@@ -740,3 +876,20 @@ narrative reflects NAIC intent [REG-R130]; the C-3 alignment field test valuatio
 **RILA's RBC treatment**, which the instructions never address [REG-R128]; and whether permanent statutory IMR guidance
 exists for the 2026 statutory year — a live gap for any model allocating IMR into asset adequacy analysis, since VM-30
 §3.B.5 requires that allocation regardless of what the accounting guidance says [REG-R111][REG-R100].
+
+**New [unverified] items opened by the appendix reading, recorded rather than resolved.** (i) **AG 33's effective date.**
+The manual prints 31 December 1998; IRS Rev. Rul. 2002-6, the library's earlier source, said 31 December 1995 of a
+differently-titled instrument. The extracted pages carry **no amendment history**, so the reconciliation is unsourced and
+neither date may be presented as settled [REG-R151]. (ii) **AG 33's own vintage.** Its guaranteed-lifetime-income-benefit
+material is plainly later in subject matter than a 1998 effective-date line, and nothing in the extracted pages dates it
+[REG-R151]. (iii) **The A-585 → A-820 cross-reference does not resolve.** A-585 ¶8.f sources its CRVM expense allowance
+to "paragraph 9 of Appendix A-820", but **A-820 ¶9 as printed is the reference-interest-rate paragraph**; the quantities
+labelled a. and b. are at ¶11.a and ¶11.b. The identification is structural, not textual, and is flagged as such in
+`us/regulatory/technical-notes.md` rather than silently repaired [REG-R155][REG-R153]. (iv) **A-830 ¶32.b's "other
+appendices governing universal life plans" is unnamed** and must not be resolved to A-585 on that text [REG-R154].
+(v) **A-820 ¶22 posits an empty window** — contracts "issued on or after January 1, 2017, and prior to the operative date
+of the Valuation Manual", where ¶¶3–4 fix that date *at* 1 January 2017 — recorded as printed and not reconciled
+[REG-R153]. (vi) **A-820 ¶7's "effective date of the Codification"** is an applicability threshold expressed by reference
+to an event whose date A-820 never prints; **no date is supplied for it here** [REG-R153]. (vii) **Whether A-585 as
+printed differs from Model #585 §5, and whether A-830 as printed differs from the separately published Model #830**, was
+not tested — neither model law was re-read against the appendix print [REG-R155][REG-R154][REG-R5][REG-R6].

@@ -6,7 +6,7 @@
 modeling; it describes no single insurer's product. Tags: **[S#]** / **[R#]** = primary product
 documents / regulatory-actuarial references numbered per `us/_research/fixed-indexed-annuity.md`;
 **[REG-R#]** = the cross-product library `us/references/regulatory-and-actuarial-references.md`,
-whose shared numbering now runs **R1–R150** with **R114–R124** and **R143–R149** unused by design —
+whose shared numbering now runs **R1–R157** with **R114–R124** and **R143–R149** unused by design —
 R1–R34 from `us/_research/regulatory-actuarial.md`, R35–R72 from
 `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the statutory accounting and capital
 research behind `us/regulatory/`. **[std]** marks standardizations
