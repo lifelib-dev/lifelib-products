@@ -10,7 +10,7 @@ duplicated. Product mechanics stay in `us/products/<type>/`.
 
 **Citation conventions** (identical to the rest of the library, non-negotiable). Everything is cited as **[REG-R#]**
 against the shared U.S. numbering in `us/references/regulatory-and-actuarial-references.md`, which after this work runs
-R1–R142 with permanently unused gaps at **R114–R124** and **R143–R149**. R1–R72 are the frozen pre-existing entries;
+R1–R150 with permanently unused gaps at **R114–R124** and **R143–R149**. R1–R72 are the frozen pre-existing entries;
 R73–R142 are the statutory accounting and capital entries added now, with provenance in
 `us/_research/statutory-accounting.md` (R73–R99), `us/_research/statutory-reserves.md` (R100–R113) and
 `us/_research/risk-based-capital.md` (R125–R142). Every quantitative parameter, factor, threshold, formula and effective
@@ -184,16 +184,16 @@ covers non-variable annuities [REG-R36]. SSAP No. 51 ¶15 now expressly contempl
 
 **When each regime applies — and note the triggers are not all of a kind.** The Standard Valuation Law §11 names no
 date; it says the Valuation Manual standard is the minimum *for issues on or after the Valuation Manual operative date*
-[REG-R1]. That operative date is **1 January 2017**, and it stays **[unverified]** here: [REG-R1]'s own annotation
-records the date as widely documented but **not stated in the Standard Valuation Law print**, and no source in this
-directory's bibliography prints it either — the universal-life file reaches it through a product-local NAIC
-principle-based-reserving topic page, which carries no [REG-R#]. Life and annuity business then diverge:
+[REG-R1]. That operative date is **1 January 2017**, stated verbatim by the NAIC principle-based-reserving topic page:
+*"Effective Jan. 1, 2017, the Valuation Manual became operative"* [REG-R150]. The Standard Valuation Law print itself
+never gives the date — [REG-R1]'s annotation records it as widely documented but absent from that text — so [REG-R150]
+is the only source in this library that prints it. Life and annuity business then diverge:
 
 | Business | Trigger | Timeline |
 |---|---|---|
-| **Individual life** (VM-20) | **Year of issue** | Issued before 1/1/2017 → formulaic CRVM remains the minimum standard, fixed by year of issue [REG-R1 §11]; a later voluntary move of such a cohort onto another allowable basis is a **change in valuation basis**, direct to surplus, not an automatic conversion [REG-R79][REG-R89]. Issued 2017–2019 → elective transition, formulaic or VM-20. Issued on/after **1/1/2020** → VM-20 mandatory, PBR being an accreditation standard from that date [REG-R3]. **The transition window and the 1/1/2020 date carry no [REG-R#]** — like the operative date they come from the product-local NAIC topic page, so both are **[unverified]** here |
+| **Individual life** (VM-20) | **Year of issue** | Issued before 1/1/2017 → formulaic CRVM remains the minimum standard, fixed by year of issue [REG-R1 §11]; a later voluntary move of such a cohort onto another allowable basis is a **change in valuation basis**, direct to surplus, not an automatic conversion [REG-R79][REG-R89]. **PBR became an accreditation standard on 1/1/2020** — verbatim at [REG-R150], and note that accreditation binds *states*, not an insurer's reserve election. **Two claims commonly attached to this timeline are NOT sourced here and stay [unverified]:** that issues in **2017–2019** fell in an elective transition between the formulaic basis and VM-20, and that **VM-20 became mandatory for new issues on 1/1/2020**. [REG-R150] was fetched and checked for both and states neither; no other retrieved source gives them |
 | **Variable annuities** (VM-21) | **Valuation date**, with the pre-date block pulled in by AG 43 | VM-21 applies for **valuation dates on or after 1 January 2020**, with an elective 36-month phase-in and a separate economic-scenario-generator phase-in of 36 months from 1 January 2026 [REG-R35]; and **AG 43 carries the VM-21 requirements back to contracts issued before 1/1/2017**, the two populations being aggregable [REG-R35][REG-R38] — so there is no preserved formulaic-only cohort as there is for life, back to AG 43's own scope of contracts issued on or after **1 January 1981** [REG-R38] |
-| **Non-variable annuities** (VM-22) | **Valuation date** | Effective for **valuation dates on or after 1 January 2026**, with an elective three-year transition on VM-A/VM-C/VM-M/VM-V for business issued in the first three years — an irrevocable election once VM-22 PBR is chosen for a block — and mandatory prospective application three years after [REG-R36] |
+| **Non-variable annuities** (VM-22) | **Valuation date** | Effective for **valuation dates on or after 1 January 2026**, with an elective three-year transition on VM-A/VM-C/VM-M/VM-V for business issued in the first three years — an irrevocable election once VM-22 PBR is chosen for a block — and mandatory prospective application three years after [REG-R36]. That endpoint is **January 2029**, printed only by [REG-R150] ("a three-year implementation period before becoming mandatory for all new issues in January 2029"); VM-22 itself leaves it to arithmetic. [REG-R150] states it prospectively as of an August 2025 page update, so re-check it against [REG-R36] before relying on it |
 
 The consequence is worth stating plainly for anyone sizing a model build. **VM-20 is the only one of the three keyed to
 year of issue**, so it splits a life block into a pre-2017 formulaic cohort and a post-2020 VM-20 cohort that must both

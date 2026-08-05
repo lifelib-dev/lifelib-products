@@ -128,7 +128,7 @@ file's own R-numbering. Full annotated entries (titles, publishers, URLs, retrie
 markers, access date 2026-08-03) live in `us/_research/regulatory-actuarial.md`;
 the shared reference library is
 `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
-**R1–R142**, with **R114–R124** and **R143–R149** permanently unused **by design**;
+**R1–R150**, with **R114–R124** and **R143–R149** permanently unused **by design**;
 R1–R72 are the frozen pre-existing life and annuity entries, of which R35–R72 are
 annuity-specific and only R41 is cited here, and R73–R142 are the statutory accounting
 and capital entries, whose per-entry bibliography is `us/regulatory/sources.md`).
@@ -410,6 +410,17 @@ bibliography for the shared R73–R142 block and reproduces the frozen R1–R72 
   Working Group, Philip Barlow chair)
 - **URL:** https://content.naic.org/sites/default/files/inline-files/2025-01-L%20C-2%20Mortality%20Risk%20(1).pdf
 - **Accessed:** 2026-08-04 · **Fetched:** yes (local text extraction; 3 pages)
+
+### REG-R150. NAIC — Principle-Based Reserving (insurance topic page)
+- **Publisher:** NAIC
+- **URL:** https://content.naic.org/insurance-topics/principle-based-reserving
+- **Accessed:** 2026-08-06 · **Fetched:** yes (page shows "Last Updated: 8/1/2025")
+- **Note:** the shared-library entry for **this file's local [R5]** — the same document,
+  now addressable from the cross-product bibliography. Cited for two verbatim statements:
+  *"Effective Jan. 1, 2017, the Valuation Manual became operative"* and *"PBR which became
+  an accreditation standard Jan. 1, 2020."* Do not confuse with **[REG-R5]**, which is the
+  Universal Life Insurance Model Regulation (Model #585) — a different document that this
+  file also cites.
 
 ---
 

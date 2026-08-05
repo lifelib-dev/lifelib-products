@@ -192,7 +192,7 @@ These are the local R-numbers used inside
 
 ## Cross-product regulatory references [REG-R#]
 
-[REG-R#] tags resolve against the **single shared numbering space, which now runs R1–R142**,
+[REG-R#] tags resolve against the **single shared numbering space, which now runs R1–R150**,
 curated at `us/references/regulatory-and-actuarial-references.md`, with **R114–R124** and
 **R143–R149** permanently **unused by design** — blocks were allocated up front so parallel
 research streams could number independently, and each stream finished with spare numbers.

@@ -134,7 +134,7 @@ table.
 These are cited from the cross-product bibliography, `us/_research/regulatory-actuarial.md`
 (its own R1–R34 numbering; cited here with the REG- prefix). The shared reference library
 is `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now
-runs **R1–R142**, with **R114–R124** and **R143–R149** permanently unused **by design** —
+runs **R1–R150**, with **R114–R124** and **R143–R149** permanently unused **by design** —
 block-allocation gaps that must not be back-filled; R35–R72 are annuity-specific entries and
 are not cited here); the bibliography records full annotations and retrieval status.
 Entries cited in the two documents:

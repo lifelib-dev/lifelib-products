@@ -318,7 +318,7 @@ account recursion per policy in force.
 Framework and arithmetic live in `us/regulatory/`: concepts in
 `statutory-accounting-and-capital.md`, formulas and factor tables in
 `technical-notes.md`, bibliography in `sources.md`. Only what is specific to VUL is
-stated here; the shared [REG-R#] numbering now runs R1–R142 (R114–R124 and R143–R149
+stated here; the shared [REG-R#] numbering now runs R1–R150 (R114–R124 and R143–R149
 unused by design).
 
 ### Contract classification and reporting

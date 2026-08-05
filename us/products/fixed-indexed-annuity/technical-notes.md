@@ -5,7 +5,7 @@
 **Scope note.** A reference liability cash-flow projection model for the standardized composite
 product defined in `product-spec.md` (same directory); not any single insurer's product. **[S#]**
 / **[R#]** tags refer to `us/_research/fixed-indexed-annuity.md`; **[REG-R#]** tags refer to
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R142**
+`us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R150**
 with **R114–R124** and **R143–R149** unused by design: R1–R34 originate in
 `us/_research/regulatory-actuarial.md`, R35–R72 in
 `us/_research/regulatory-actuarial-annuities.md`, and R73–R142 in the statutory accounting and

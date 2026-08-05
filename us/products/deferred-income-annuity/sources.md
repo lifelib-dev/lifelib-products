@@ -269,7 +269,7 @@ Access date for all citations: **2026-08-04**.
 These are cited with the **[REG-R#]** prefix to avoid collision with the product research
 file's own R-numbering. They resolve against the curated page
 `us/references/regulatory-and-actuarial-references.md`, whose **shared numbering space runs
-R1–R142 and is one space, not several**, with **R114–R124 and R143–R149 permanently unused
+R1–R150 and is one space, not several**, with **R114–R124 and R143–R149 permanently unused
 by design** (the block convention that let three research streams number independently —
 the gaps are not losses and must not be back-filled):
 
