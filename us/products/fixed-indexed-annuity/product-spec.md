@@ -6,8 +6,10 @@
 modeling; it describes no single insurer's product. Tags: **[S#]** / **[R#]** = primary product
 documents / regulatory-actuarial references numbered per `us/_research/fixed-indexed-annuity.md`;
 **[REG-R#]** = the cross-product library `us/references/regulatory-and-actuarial-references.md`,
-whose shared **R1–R72** numbering spans `us/_research/regulatory-actuarial.md` (R1–R34) and
-`us/_research/regulatory-actuarial-annuities.md` (R35–R72). **[std]** marks standardizations
+whose shared numbering now runs **R1–R142** with **R114–R124** and **R143–R149** unused by design —
+R1–R34 from `us/_research/regulatory-actuarial.md`, R35–R72 from
+`us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the statutory accounting and capital
+research behind `us/regulatory/`. **[std]** marks standardizations
 introduced for the reference implementation, each with a footnote under its table giving the
 rationale and the observed range; [unverified] marks claims the research file could not confirm
 against a retrieved document.
@@ -532,6 +534,21 @@ stochastic reserve is CTE70 [REG-R36]. **Correction:** in the January 1, 2026 Va
 VM-22 is *entirely* the PBR framework — maximum valuation interest rates for income annuities are
 in **VM-V Section 1**, whose scope also covers guaranteed-living-benefit streams after exhaustion
 [REG-R36][REG-R37]. Enabling statute: Model #820 [REG-R1][REG-R3].
+
+**Statutory accounting and capital.** The framework — acquisition costs expensed with no DAC, the
+Exhibit 5 / Exhibit 7 split, AVR and IMR, the actuarial opinion and risk-based capital — is in
+`us/regulatory/`, and the mechanics for this product are in `technical-notes.md`, "Statutory
+accounting and capital". Product-specifically: the contract is a **life contract** classified at
+inception, and the classification does **not** change when an excess withdrawal terminates the rider
+[REG-R78][REG-R80], so the single premium is premium income and the reserve reports in **Exhibit 5**,
+Individual Annuities *Deferred Indexed* column [REG-R89][REG-R90] — with acquisition cost expensed as
+incurred and no DAC asset [REG-R75]. In risk-based capital there is no C-2 mortality charge, because
+there is no net amount at risk; **C-3a is taken on guaranteed values ignoring the index** and the
+product is **excluded from C-3 cash flow testing** [REG-R128] — a carve-out the NAIC's C-3 alignment
+project would reverse, though that project is not adopted law [REG-R138]. The option programme runs
+through SSAP No. 86 [REG-R96], the MVA through the interest maintenance reserve [REG-R86][REG-R89],
+and the post-depletion income stream is a reserve that survives account exhaustion under VM-22's
+Accumulation category [REG-R36].
 
 **Federal securities law — FIAs are not registered.** Three currently-sold disclosure documents
 state the contract is not a security and is not SEC-registered [S6][S9][S10]. Rule 151A would have

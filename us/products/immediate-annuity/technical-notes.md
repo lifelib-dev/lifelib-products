@@ -7,9 +7,11 @@ the standardized composite product defined in `product-spec.md` (same directory)
 not any single insurer's product. [S#]/[R#] tags refer to the source list in `sources.md`,
 numbering carried verbatim from `us/_research/immediate-annuity.md`; [REG-R#] tags refer
 to the cross-product reference library
-`us/references/regulatory-and-actuarial-references.md`, one shared numbering space R1–R72
-(R1–R34 from `us/_research/regulatory-actuarial.md`, R35–R72 from
-`us/_research/regulatory-actuarial-annuities.md`). **[std]** marks standardizations
+`us/references/regulatory-and-actuarial-references.md`, one shared numbering space now
+running **R1–R142** with **R114–R124** and **R143–R149** unused by design (R1–R34 from
+`us/_research/regulatory-actuarial.md`, R35–R72 from
+`us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three statutory
+accounting and capital research files listed in `us/regulatory/sources.md`). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
 `product-spec.md`; the mechanics anchors are MassMutual RetireEase [S1] and Pacific Income
 Provider [S2][S3].
@@ -481,7 +483,227 @@ B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 ×
 
 ---
 
+## Statutory accounting and capital
+
+Framework and algorithms are in `us/regulatory/statutory-accounting-and-capital.md` and
+`us/regulatory/technical-notes.md`; the shared projection-to-statutory contract is that file's
+**"Required model outputs"** table and is *not* restated here. Only what is specific to a SPIA
+appears below. [REG-R#] tags run against the extended shared numbering **R1–R142**, gaps at
+**R114–R124** and **R143–R149** unused by design; annual statement references are **2025**
+reporting-year and should be re-verified against the 2026 edition [REG-R89][REG-R90].
+
+### Contract classification and reporting
+
+**The fork is decided by `form`, at inception, and never moves.** Mortality risk is present where the
+insurer must make payments contingent on "the continued survival (in the case of annuity contracts)"
+of a named life [REG-R80 ¶2]; a contract assuming none of it and acting exclusively as an investment
+vehicle is a **deposit-type contract** [REG-R78 ¶5]. Of the five payout forms in `product-spec.md`
+the four life-contingent ones are **life contracts** [REG-R78 ¶9], while **`certain_only` is
+deposit-type** under SSAP No. 52 — Exhibit 7 column 3 "Annuities Certain" names "certain immediate
+annuity contracts" expressly [REG-R80 ¶5][REG-R89]. Classification "shall be made at the inception of
+the contract and shall not change" [REG-R78 ¶5]: a flag written at issue, never re-derived, and
+undisturbed by the one post-issue change this product permits (altering the certain period on the
+period-certain-only form after year 1 [S1]).
+
+| | Life-contingent forms | `certain_only` |
+|---|---|---|
+| Classification | life contract [REG-R78 ¶9] | deposit-type [REG-R80 ¶5] |
+| The single premium is | **premium income**, gross when due, single premiums included when received [REG-R79 ¶¶2–5] | **not revenue** — "recorded directly to an appropriate policy reserve account" [REG-R80 ¶6] |
+| Reserve reports in | **Exhibit 5**, tying to Liabilities page Line 1 [REG-R89][REG-R90] | **Exhibit 7**, column *Annuities Certain* [REG-R89] |
+| Reserve basis | CARVM / VM-22 (below) | PV of future guaranteed benefits at the valuation interest rate [REG-R80 ¶9] |
+| The instalment is | an annuity benefit [REG-R90] | **split**: credited interest is an **expense**, return of policyholder balance is not [REG-R80 ¶13] |
+| Reporting column | Individual Annuities — **Life Contingent Payout (Immediate and Annuitizations)** [REG-R90] | deposit-type fund roll-forward; "interest on contract or deposit-type contract funds" [REG-R89][REG-R90] |
+| Commutation shows as | a reduction in the Exhibit 5 reserve | Exhibit 7 **surrender charges** and **net surrender and withdrawal payments** lines [REG-R89] |
+
+**The asymmetry that catches models.** Exhibit 5 footnote (a) keeps a contract that carried mortality
+risk **at issue** in Exhibit 5 after the risk disappears, and its printed example is this product: a
+life-contingent payout with a certain period "is reported in Exhibit 5 **and remains in Exhibit 5
+after the death of the annuitant** as remaining guaranteed payments continue to the beneficiary"
+[REG-R89]. A `life_certain` or `installment_refund` contract in post-death run-off does **not**
+migrate to Exhibit 7, and its residual instalments stay annuity benefits.
+
+**Acquisition costs are expensed as incurred with no DAC asset** [REG-R75 ¶2], levelized commission
+fronted by a third party being a funding agreement that does not escape it [REG-R75 ¶¶4–5]. These
+notes carry **no acquisition expense at all** (assumption note (vi): "single premium, priced in"), so
+a statutory run must add commission and issue expense in the issue period — all of it, plus the whole
+initial reserve, striking surplus in one period against one consideration [REG-R74][REG-R75].
+
+### Reserve basis
+
+**Formulaic — CARVM under Standard Valuation Law §5a** [REG-R1], reached for pre-operative-date and
+transition business through the VM-A/VM-C indexes; VM-A is an index only and **A-820 was not
+retrieved** [REG-R110], while **AG 33 — the guideline for annuity contracts with elective benefits —
+could not be retrieved at all** [REG-R39], so no AG 33 mechanic is quoted. For a SPIA the
+greatest-present-value construction largely degenerates: a single premium means **no future valuation
+considerations**, so `X(k)` collapses to the present value of the guaranteed payment stream, and with
+no cash surrender value there is **no surrender path to enumerate** [REG-R1 §5a.B]. The exception is
+the **commutation right on certain-bearing forms** — an elective benefit, precisely AG 33's unread
+subject [REG-R39]; where a commuted value exceeds the reserve, Exhibit 5's "surrender values in
+excess of reserves otherwise carried" line bites [REG-R89], though whether it does is model-dependent,
+the commutation basis being **[std][unverified]** (assumption note (ii)). Two sibling Miscellaneous
+lines are inert: **no deficiency reserve** can arise, a single-premium contract having no future gross
+premium for a valuation net premium to exceed [REG-R89][REG-R41], and there is no minimum death
+benefit guarantee.
+
+**Principle-based — VM-22** from valuation dates on or after **1/1/2026** (Payout Annuity Reserving
+Category, SR = CTE70, three-year elective transition, $1.0bn/$2.0bn Annuity PBR Exemption
+[R2][REG-R36], detailed in "Valuation and reserve pointers" below). **VM-20 never applies** — it is
+CRVM for individual *life* [REG-R3]. Four consequences:
+
+- **The maximum valuation rate is VM-V §1, and it is also a reporting key**: buckets A–D by reference
+  period and initial age, **jumbo = initial consideration ≥ $250 million** with contracts to the same
+  holder within 90 days combined [REG-R37], and Exhibit 5 splits VM-22 business **Jumbo / Non-Jumbo
+  in 50-basis-point valuation interest bands** [REG-R89].
+- **Exclusion tests are VM-22 §7's**, with the Single Scenario Test [REG-R36]; passing by the
+  **adjusted-scenario-reserve route re-imposes VM-G Sections 2 and 3**, and a company computing no
+  deterministic or stochastic reserve still files a **VM-31 sub-report** and must report **readiness
+  to compute** them [REG-R109][REG-R108].
+- **The reserve is a pure mortality-and-interest object**: prescribed annuitization 0% and the
+  prescribed lapse table "not applicable" for a contract with no account value or surrender benefit
+  [R2][REG-R36], so no VM-20 lapse-margin or shock-lapse machinery transfers.
+- **The VM-22 transition is a change in valuation basis** — measured at the **beginning of the
+  year**, **direct to surplus**, **not** graded in, **excluded** from the Summary and Analysis of
+  Operations, reported in **Exhibit 5A** [REG-R79][REG-R80 ¶14][REG-R89]; on a deposit-type
+  `certain_only` contract a voluntary election between allowable Valuation Manual methodologies
+  requiring commissioner approval is itself a change in basis [REG-R80].
+
+### What this product's model must additionally produce
+
+Additions to the shared contract in `us/regulatory/technical-notes.md`, "Required model outputs".
+
+| Statutory item | Required model output, specific to this product |
+|---|---|
+| Exhibit 5 vs Exhibit 7 routing | immutable per-contract `life_contingent` flag derived from `form` at issue; never re-derived, never flipped on the annuitant's death [REG-R78 ¶5][REG-R89] |
+| Exhibit 5 keys | valuation standard and **year of issue**; for VM-22 business additionally **Jumbo/Non-Jumbo × 50bp valuation-rate band** [REG-R89][REG-R37] |
+| Exhibit 7 roll-forward (`certain_only`) | opening balance, consideration as a **deposit**, interest credited, **surrender charges**, commutation payments, closing balance — each certain instalment decomposed into **credited interest** and **return of balance** [REG-R80 ¶13][REG-R89] |
+| Analysis of Increase in Reserves | tabular considerations, **tabular interest**, tabular less actual reserve released, **tabular cost**, reserves released by death, *annuity payments involving life contingencies* — on the **valuation** basis (2012 IAR generational, VM-V §1 rate), in parallel with the best-estimate basis these notes project [REG-R90][R3][R4][REG-R59] |
+| C-2 longevity exposure | statutory reserve for **life-contingent** annuity benefits, with the post-death certain residual **separable** so it can be excluded [REG-R128] |
+| C-3a exposure, C-4a | reserve split by withdrawal provision (non-commutable life-contingent / commutable certain portion / Exhibit 7 deposit-type); Schedule T annuity considerations by state [REG-R128] |
+| C-3 Phase I | `S(t) = statutory assets − statutory liabilities` at **every calendar year end of every prescribed scenario**, plus the LR049 numerator and denominator [REG-R128][REG-R135] |
+| IMR / AVR / asset adequacy | asset-side disposal detail (no liability model produces either); **the AVR consumed in asset adequacy testing**, an input to Total Adjusted Capital; starting assets whose statement value is **no greater than** that of the reserves tested; sign-aware IMR allocation [REG-R89][REG-R29][REG-R100][REG-R128] |
+| Tax | IRC §807 reserve = max(net surrender value, 92.81% × NAIC-method reserve) capped at statutory; **net surrender value is zero on every form here**, so it is 92.81% of the statutory reserve at the cap, feeding DTA scheduling [REG-R16][REG-R97] |
+| Reinsurance | gross and ceded **separately, never netted**; ceded credit on the same mortality, interest and method [REG-R89][REG-R92 ¶37] |
+
+### Risk-based capital
+
+**C-2 mortality does not bite.** Its exposure base is face amount in force less life reserves, taken
+from the Exhibit of Life Insurance [REG-R142] — a schedule a payout annuity does not populate — so
+the pricing-flexibility categorisation is irrelevant here.
+
+**C-2 longevity is the charge that does, and it is reserve-driven**: **0.0171 / 0.0108 / 0.0095 /
+0.0089** on the first $250 million, next $250 million, next $500 million and over $1,000 million of
+life-contingent annuity reserves [REG-R128]. Payout annuities in pay status are the paradigm in-scope
+contract and **the entire reserve is exposed, including the period-certain portion of a
+certain-and-life contract**; expressly out of scope are non-life-contingent annuities and "a
+certain-and-life annuity reduced to certain payments only after the annuitant's death" [REG-R128].
+Size and mix drive it two ways. The bands are struck on the company's whole life-contingent annuity
+reserve — SPIA, DIA, structured settlements, group and pension risk transfer together — so the
+marginal factor on a SPIA block is set outside the product. And the C-2 combination is the greatest
+of two guardrail terms and `sqrt(life² + longevity² + 2ρ·life·longevity)` with **guardrail factor 0**
+and **ρ = −0.25** [REG-R128]: with no mortality business it collapses to the longevity term and **the
+−25% diversification credit is worth nothing**.
+
+**C-3a — the withdrawal-provision bucket is decided by form** (second figure where the actuarial
+opinion is unqualified and based on asset adequacy testing, a one-third reduction) [REG-R128]:
+
+- life-contingent forms with no commutation right: reserve **not withdrawable** → **Low**,
+  **0.0095 → 0.0063**;
+- `certain_only`: an Exhibit 7 balance, and **Medium** expressly picks up "Exhibit 7 reserves not
+  included elsewhere" → **0.0190 → 0.0127**. **The same payment stream takes roughly double the C-3a
+  factor on the deposit-type side of the classification fork.**
+- the **commutable certain portion of a life-contingent contract is unresolved**: the commuted value
+  carries an interest-rate adjustment, reading as "annuity reserve with fair value adjustment" (Low),
+  and a surrender charge grading **8% → 0%** [S1], reading as "book value less a surrender charge of
+  5% or more" (Medium) while ≥ 5% and drifting toward "book value without adjustment" (High) as it
+  grades away. **The retrieved instructions do not resolve which governs — [unverified], not
+  invented** [REG-R128].
+
+**C-3 Phase I applies by name**, its "Certain Annuities" scope expressly including immediate annuities
+[REG-R128][REG-R135]. Whether testing is *compelled* is the LR049 question: test 1 requires it where
+factor-based C-3a exceeds **40%** of the pre-covariance total, which here is **not** automatic, since
+C-2 longevity at 0.0171 on the first $250 million is larger per dollar than low-bucket C-3a at 0.0063
+— the whole formula must be computed before the answer is known, companies below **$100 million** of
+admitted assets excepted, and the method once elected must be continued absent regulator approval
+[REG-R128]. The procedure reuses the year-end asset adequacy model with the same assumptions and
+as-of date but prescribed scenarios, **initial assets = reserves**, AVR-related assets excluded, IMR
+assets used; the scenario measure is the **most negative present value of `S(t)`** at **105% of the
+after-tax one-year Treasury rate**, and the total may not fall below **half** the all-factor C-3
+[REG-R128][REG-R135]. The illustrative stress the instructions name — "lapses increased by 50%" — is
+**inert here**; the assumptions worth stressing are the longevity level and improvement scale.
+**C-3 Phase II does not reach the composite**, being scoped to contracts valued under AG 43 or VM-21
+[REG-R128]; a *variable* immediate annuity would fall there **and** into C-2 longevity, which names
+variable immediate annuity reserves expressly [REG-R128].
+
+**C-4a is a new-business charge on a single-premium product** — **2.53%** of Schedule T life premiums
+and annuity considerations [REG-R128]: the whole consideration enters the base in the issue year and
+nothing after, so C-4a vanishes on a closed block while C-2 longevity and C-3a run for decades.
+Whether a `certain_only` consideration — **not** premium income [REG-R80 ¶6] — enters that base is not
+resolved by the retrieved instructions; **[unverified]**. In covariance, **C-3a is added to C-1o
+inside one squared term** while **C-2 stands alone** [REG-R128], so the terms that matter for an
+asset-intensive payout block are `(C-1o + C-3a)²` and `(C-2 longevity)²`; C-0, C-1cs, C-3b, C-3c,
+C-4b and the AG 48 add-on are typically zero for a fixed-SPIA-only entity. Total Adjusted Capital
+includes the **AVR, but only the amount not utilized in asset adequacy testing** supporting the
+opinion [REG-R128][REG-R29] — live here, a payout block being a classic cash-flow-testing exposure,
+so the AAT routine must report the AVR it consumed. Model #312 separately requires an RBC Plan
+projecting statutory operating income, net income and capital and surplus for the current year and
+**at least four succeeding years** [REG-R125].
+
+### Product-specific interactions and traps
+
+1. **The classification fork is the most consequential accounting decision in the annuity half, and
+   it is made at inception.** Life-contingent: a life contract, considerations are **premium income**,
+   the reserve is CARVM/VM-22 in **Exhibit 5**, and it stays there even while certain payments run on
+   after the annuitant's death [REG-R79][REG-R89]. **Period-certain-only**: deposit-type under **SSAP
+   No. 52**, considerations **credited directly to reserve rather than recognised as premium income**,
+   the balance rolled forward in **Exhibit 7**, credited interest an expense [REG-R80 ¶¶5–6, 9,
+   13][REG-R89]. Premium income, the income statement, the reserve method and the C-3a factor all move
+   off one enum value, and the flag can never be corrected later [REG-R78 ¶5].
+2. **Accounting and capital diverge after the annuitant's death**: Exhibit 5 keeps the contract
+   [REG-R89] while C-2 longevity **drops** it [REG-R128], so driving longevity exposure off the
+   Exhibit 5 balance overstates C-2 on every certain-bearing contract in run-off. Conversely **a
+   certain period buys no longevity relief while the annuitant lives** [REG-R128].
+3. **VM-22 and VM-V §1 are different instruments and both are reporting-relevant.** VM-22 is the
+   principle-based framework; the **formulaic maximum valuation interest rate for income annuities is
+   VM-V §1**, which supersedes AG 9-B and the interest references in AG 9-C, and whose rates are the
+   maximum interest assumption for CARVM "and for some contracts, CRVM" [REG-R37][REG-R36][REG-R41] —
+   then keying the Exhibit 5 **Jumbo/Non-Jumbo × 50bp band** split [REG-R89].
+4. **The commutation right reaches four regimes at once**: CARVM as an elective benefit under the
+   **unread** AG 33 [REG-R39]; Exhibit 5's "surrender values in excess of reserves" line [REG-R89];
+   the unresolved C-3a bucket above [REG-R128]; and the IMR twice — the **excess-withdrawal
+   exemption** measures withdrawable reserves as those surrenderable **without** a market value
+   adjustment [REG-R89], while the IMR **liability leg** captures material market value adjustments on
+   contracts backed by assets carried at book, material meaning above **both** 0.01% of liabilities
+   and **$1,000,000** [REG-R86]. Here the commuted value moves with the 10-year CMT, which is
+   MVA-like, so a pure SPIA block plausibly has **zero withdrawable reserves** and an inert exemption
+   while engaging the MVA leg — but **no retrieved document classifies a SPIA commutation adjustment
+   as a market value adjustment**, so both readings are **[unverified]** and the commutation basis is
+   itself **[std][unverified]** (assumption note (ii)).
+5. **Reinsurance and the two asset-adequacy overlays bite directly.** Reserves are **gross** with a
+   separately computed ceded deduction on the same mortality, interest and method and **no deduction
+   for modified coinsurance** [REG-R89][REG-R92 ¶37]; reinsuring a block exceeding **5% of general
+   account liabilities**, irrevocably and to a non-affiliate, drives an IMR liability-leg entry
+   [REG-R86][REG-R92 ¶54]. **AG 55** requires a cash-flow-testing run whose starting assets equal the
+   **post-reinsurance** reserve, effective for reserves reported in the **December 31, 2025** annual
+   statement [REG-R103]; **AG 53** applies the complex-asset discipline from the **December 31, 2022**
+   statement [REG-R105]. Both triggers are company- or treaty-level, but a payout block backed by long
+   spread assets is the target. Negative-IMR admittance reaches this product through **VM-30 §3.B.5**,
+   not VM-20 §7.D.7, since VM-20 never applies [REG-R87][REG-R100]; that interim guidance **sunsets
+   December 31, 2026 with automatic nullification January 1, 2027** as written [REG-R87].
+6. **Numbers this library does not contain, and will not invent.** **No AVR factor value and no IMR
+   grouped-amortisation factor value appears anywhere in `us/regulatory/`** — deliberately not
+   transcribed [REG-R89]. The **2025** RBC instructions could not be parsed, so **no year-end 2025
+   factor is asserted**; every RBC factor above is from the **2024** edition, a **sold NAIC
+   publication marked "Not for Distribution"** read from a state insurance department posting
+   [REG-R128][REG-R129]. The **C-3 alignment** project would merge Phase I and Phase II into one
+   methodology — directly relevant, Phase I being this product's regime — but it is a framework
+   presentation, **not adopted law** [REG-R138].
+
+---
 ## Valuation and reserve pointers
+
+Statutory reporting, the reserve's place in the annual statement, and the capital the reserve
+attracts are in **"Statutory accounting and capital"** above; this list is the valuation-basis
+pointer set and does not repeat them.
 
 This library projects **gross liability cash flows**; valuation layers consume them and are
 cited, not reproduced:

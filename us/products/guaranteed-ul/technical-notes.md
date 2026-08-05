@@ -356,10 +356,203 @@ Independent recomputation may differ by cents due to rounding.
 
 ---
 
+## Statutory accounting and capital
+
+Framework — no DAC, the exhibits, AVR/IMR, asset adequacy analysis, RBC — is in
+`us/regulatory/statutory-accounting-and-capital.md` (concepts) and
+`us/regulatory/technical-notes.md` (formulas, factors, algorithms); only ULSG-specific
+material is stated here. [REG-R#] cites the shared U.S. numbering, now R1–R142 with
+R114–R124 and R143–R149 unused by design; [R#]/[S#] stay the product numbering of
+`sources.md`.
+
+### Contract classification and reporting
+
+**Life contract, permanently.** A benefit contingent on death carries mortality risk, so this
+is a **life contract** under the SSAP No. 50 ¶5 test, never deposit-type [REG-R78 ¶¶5, 9], and the
+classification is made at inception and **cannot change** [REG-R78 ¶5] — it survives
+account-value exhaustion, guarantee expiry and the pure guarantee-support regime. **Premiums
+are premium income**, gross when due, flexible premiums when received: `l_t·φ_t·P_t` and
+catch-up premiums `C_t` are the Summary of Operations premium line, not a direct credit to
+reserve, and the change in loading on deferred and uncollected premium is an **expense**, not
+a premium offset [REG-R79 ¶¶2–5, ¶11].
+
+**Where it reports.** Reserves sit in **Exhibit 5**, gross with a separately computed ceded
+deduction, Column 1 stating the valuation standard **by years of issue** — PBR-era business as
+**VM-20NPR** and **VM-20 DET/STO** on **two lines**, the net premium reserve and the excess
+over it [REG-R89][REG-R90]. The Analysis of Operations gives the product its own column,
+**Universal Life With Secondary Guarantees**, with three rules that bite: **indexed UL with
+secondary guarantees reports there, not under Indexed Life**; **expired guarantees still report
+as ULSG**; incidental riders (waiver of monthly deductions, terminal illness acceleration,
+children's term) report on the **base contract's** line [REG-R89]. Face in force feeds the
+**Exhibit of Life Insurance**, thousands, incurred basis [REG-R89]. A waived monthly deduction
+is "not to be considered revenue nor a benefit paid" [REG-R79 ¶14] — an internal transfer as in
+step 5; the observed design waiving deductions but **not** the full no-lapse premium [S4] can
+still let the guarantee fail.
+
+**General account only**, so no SSAP No. 56 split, no separate account AVR or IMR, no C-4a
+separate account liability charge [REG-R83][REG-R128]. **No DAC**: acquisition cost is expensed
+as incurred [REG-R75 ¶2], so the reference 90%-of-first-year-premium + $300 **[std]** assumption
+hits surplus in the issue year against one year of a level no-lapse premium while the closing
+reserve already sits at the VM-20 ULSG minimum — first-year strain is structural here, not an
+artefact [REG-R74][REG-R75].
+
+### Reserve basis
+
+**Post-operative-date issues: VM-20, own reserving category.** VM-20 constitutes CRVM [REG-R3].
+**ULSG is one of the three reserving categories**, keeping directly written policies **beyond
+the end of the contractual secondary guarantee period** and excluding extended term and reduced
+paid-up [REG-R3]; the three category results are **summed**, so an ULSG excess never offsets
+All Other slack [REG-R3 §2.A, §4.C, §5]. Carry two distinct keys per policy — the **reserving
+category** (Valuation Manual definition [REG-R3]) and the **statement column** (which also
+collects indexed UL with secondary guarantees [REG-R89]).
+
+**Both exclusion routes are closed or near-closed.** ULSG that is not a "non-material secondary
+guarantee" is **deemed to fail the deterministic exclusion test** [REG-R3 §6.B], and **variable
+life and ULSG may not use the stochastic exclusion certification method** [REG-R3 §6.A]. The
+representative lifetime guarantee is material on any reading, so the **DR is compulsory** and
+the SR is escapable only via the SERT ratio test or the Demonstration Test — both of which
+**re-impose VM-G Sections 2 and 3**, with a VM-31 sub-report and a report of **readiness to
+compute** DR and/or SR required even where neither is computed [REG-R109][REG-R108]. The full
+VM-20 machinery is therefore not optional for GUL as it is for whole life or ordinary UL. Rate
+detail: §3.B.5.c amounts uplift the calendar-year NPR rate by **1.5%, capped at 125% of it**,
+nearest quarter of 1%, **ties up**; §3.B.5.d uses the unuplifted rate, **ties down**, with **0%
+lapse throughout** [REG-R3].
+
+**Pre-PBR issues and in-force.** Formulaic CRVM reaches current valuations through **VM-A item
+A-830** (Model #830) and **AG 38** via the VM-C index [REG-R110][REG-R41][REG-R6]; deficiency
+reserves survive under Actuarial Guideline I in Exhibit 5 **Miscellaneous Reserves**
+[REG-R41][REG-R89]. **Neither A-830 as printed in the AP&P Manual nor the AG I text was
+retrieved** [REG-R110][REG-R41], so nothing formulaic is asserted beyond the Standard Valuation
+Law [REG-R1] and AG 38 [R1]. A real block carries **both** bases in one Exhibit 5 column keyed
+by year of issue [REG-R89]; moving between them is a **change in valuation basis** — direct to
+surplus at the **beginning of the year**, not graded in, shown in Exhibit 5A [REG-R79][REG-R89].
+
+**Asset adequacy analysis is part of the minimum reserve.** SVL §6.B makes the actuary's
+required amount part of minimum reserves [REG-R1] and VM-30 requires any shortfall to be
+**established as an additional reserve**, reported as "additional actuarial reserves —
+asset/liability analysis" in Exhibit 5 Miscellaneous Reserves [REG-R100][REG-R89]. It bites
+hardest here — the projection must reach run-off of a lifetime guarantee, and the Academy survey
+found **ULSG the longest-horizon life product, 46% of companies projecting beyond 40 years**
+against 28% for individual traditional life (longer periods still are reported for structured
+settlements and long-term care, which are not life products) (**2012 survey, a
+practice indicator, not a benchmark**) [REG-R111]; starting assets are capped at the statement
+value of the reserves tested [REG-R29], and the "New York 7" is a **New York** requirement, not
+an NAIC one [REG-R112].
+
+### What this product's model must additionally produce
+
+Shared contract: `us/regulatory/technical-notes.md`, "Required model outputs", not restated.
+ULSG adds:
+
+| Statutory item | Additional output this model must emit |
+|---|---|
+| Exhibit 5, ULSG line, two-line VM-20 split [REG-R89][REG-R90] | NPR seriatim and the excess of max(DR, SR) over Σ NPR, keyed by **year of issue** and **reserving category**, policies past the guarantee expiry still in the ULSG category [REG-R3] |
+| VM-20 §3.B.5 net premium reserve [REG-R3] | **FFSG, ASG, LSG** per policy per period — `SG_t` *is* ASG, FFSG is a backward solve on the same shadow recursion, and the funding ratio `R` drives the §3.B.5.c level lapse |
+| Analysis of Increase in Reserves, ULSG column [REG-R90] | Tabular net premiums, tabular interest at the **NPR valuation rate** (uplifted or not per §3.B.5.c/d), tabular cost, reserves released — **valuation-basis** quantities on prescribed mortality and the prescribed §3.B.5 lapse, not best-estimate decrements |
+| Exhibit of Life Insurance [REG-R89] | Face in force by year, incurred basis, net of elected decreases, withdrawal-driven reductions and ROP surrenders |
+| C-2 net amount at risk [REG-R142] | **Face in force − statutory reserve, net of reinsurance** — a statement quantity, *not* the contractual `NAAR_t` of step 4 (see traps) |
+| AG 48 Primary Security [REG-R11][REG-R12] | VM-20 components on a **pre-financing** basis per ceded cohort so the shortfall is measurable per cession; gross and ceded never netted, the ceded credit on the **same mortality, interest and method** [REG-R89][REG-R92 ¶37] |
+| Tax reserve [REG-R16]; DTA scheduling [REG-R97] | max(net surrender value, 92.81% × NAIC-method reserve) capped at statutory — the 92.81% leg binds almost everywhere on a thin-AV GUL; the issue-year ordinary loss **cannot be carried back** post-2017, so admittance runs through the RBC-band and DTL-offset components |
+
+### Risk-based capital
+
+**C-2 mortality dominates and ULSG sits in the worst bucket.** Exposure is net amount at risk
+net of reinsurance, now derived from annual statement lines rather than company records
+[REG-R142]. Categories are **pricing-flexibility** categories, not product codes, and the
+instructions name **ULSG and non-participating whole life** as the examples of **Permanent
+without Pricing Flexibility** — the highest-factor bucket, **0.00400 / 0.00175 / 0.00120** per
+dollar of NAR on the first $500M, next $24,500M and over $25,000M [REG-R128][REG-R133];
+calibration used a **20-year risk exposure period for ULSG** against 10 for term and 5 with
+in-force pricing flexibility [REG-R131]. The test asks whether in-force rates can be
+*materially* adjusted within **5 policy years**, present-valued against
+`flexibility factor × NAR` [REG-R128]; here the levers — current COI at 65% of the guaranteed
+maximum, the declared credited rate — reach the **base** account only while the guarantee runs
+on the contractual shadow parameter set, so repricing moves account value and lapse but not the
+guarantee (**[std]** inference, consistent with the instructions' placement of ULSG). Where the
+assessment is not performed the default is the **same** bucket [REG-R128][REG-R133] — a
+defensible baseline, not an assessment. **Size and mix set the marginal rate, not the block**:
+the NAR bands apply to the company's *total* individual and industrial life NAR [REG-R128].
+
+**C-3a is the low bucket, and single-pay is the exception.** Life insurance reserves and single
+premium life take **0.0095** pre-tax, cut by one third to **0.0063** on an unqualified
+asset-adequacy opinion — **or one qualified solely because of AG 48 direction**, exactly the
+qualification an AXXX-financed ULSG writer may carry [REG-R128]. But C-3 Phase I scope is
+"Certain Annuities" **plus single premium life** [REG-R128][REG-R135], so a level-pay GUL is
+outside C-3 cash flow testing while the **single-pay / 1035 "sweet spot" design** [S1, S2] falls
+inside it — a funding-pattern dependency, and `premium_pattern` is already a model point
+attribute. Whether testing is compelled is decided by the LR049 significance and stress tests,
+which need the whole formula computed first [REG-R128].
+
+**What does not apply.** **C-2 longevity** is reserve-based on life-contingent annuity benefits
+and the base contract has none — the out-of-scope income-conversion rider [S1] would enter that
+base if brought in, while a guaranteed installment payout [S4, S7] is a supplementary contract
+**without** life contingencies: Exhibit 7, deposit-type, out of it [REG-R128][REG-R89][REG-R80 ¶5]
+(the shared applicability matrix leaves GUL blank on the deposit-type and Exhibit 7 rows because
+the research did not consider a GUL settlement option, not because one is excluded).
+**C-3 Phase II** (CTE 98) covers only the AG 43 / VM-21 population, **C-1cs** and the separate
+account charges do not apply, and the **50% dividend liability credit** in TAC does not reach a
+non-participating design [REG-R128].
+
+**C-4a, covariance and AG 48.** C-4a is **2.53%** of Schedule T life premiums and annuity
+considerations [REG-R128], so it tracks the funding pattern — single-pay concentrates it in one
+year, level-pay spreads it. **C-2 is a standalone squared term** in the covariance combination
+while C-0 and C-4a sit outside the radical [REG-R128], so for a monoline ULSG writer C-2
+dominates. **AXXX financing hits both sides of the ratio, through two distinct quantities**:
+ULSG (AXXX) and term (XXX) are the only two products AG 48 and Model #787 reach
+[REG-R11][REG-R12]; the **AG 48 Primary Security shortfall is doubled after covariance** then
+halved into Authorized Control Level, landing **dollar for dollar** and applying **even where a
+state has waived AG 48 compliance**, while Total Adjusted Capital is separately reduced by the
+**XXX/AXXX reinsurance RBC shortfall** — a different figure, computed on the captive
+consolidated exhibit rather than as a Primary Security shortfall by cession
+[REG-R128]. TAC includes the AVR only to the extent **not consumed in asset
+adequacy testing** [REG-R128][REG-R29], so the AAT run must report the AVR it used; action
+levels, the trend test and the RBC Plan's five-year projection are at [REG-R125].
+
+### Product-specific interactions and traps
+
+- **The shadow account is not a statutory reserve.** `SG_t` is a notional in-force test input,
+  never payable [S2, S3]: not an asset, not a liability, not admitted. It enters statutory
+  reporting only as the **ASG** input to the VM-20 §3.B.5 NPR [REG-R3] and the AG 38
+  funding-ratio numerator [R1]. Never book it, and never let it reduce a reserve.
+- **Forgone monthly deductions are not a receivable.** `D_t` creates no admitted asset and no
+  accrual against future premium — the guarantee cost emerges through the reserve. That
+  treatment is **[std]**; no retrieved source addresses it, and an invented accrual would
+  understate the guarantee cost.
+- **Two net amounts at risk, and they are not the same number.** `NAAR_t` is a **COI charge
+  base**; the C-2 exposure is **face in force less statutory reserve**, net of reinsurance, off
+  the annual statement [REG-R142]. In the guarantee-support regime `AV = 0` drives the COI NAAR
+  to ≈ DB while the reserve is largest, so they diverge maximally where the block is riskiest.
+- **AG 38 and VM-20 coexist in one column** — 8C/8D for pre-PBR in-force, 8E fixing minimum
+  gross premiums by policy design and capping guaranteed shadow credits [R1; REG-R7]; VM-20 for
+  post-operative-date issues [REG-R3]; two standards, one column, keyed by year of issue
+  [REG-R89]. And the exclusion tests are a **wall here, not a cliff**: deemed DET failure plus
+  the SET certification bar leaves no configuration of this contract without a DR
+  [REG-R3][REG-R109].
+- **AXXX financing, AG 53 and AG 55.** The Model #787 / AG 48 Required Level of Primary Security
+  is VM-20-based — greater of DR and NPR, greatest of DR/SR/NPR where the stochastic exclusion
+  fails — with reserve credit disallowed on non-compliance [R6; REG-R11][REG-R12], so the engine
+  must also run **gross of the financing structure**. AG 53 and AG 55 triggers are
+  **company-level and treaty-level, not product-level** [REG-R105][REG-R103], but a large ULSG
+  block ceded offshore is squarely in AG 55 scope, whose §6.G accepts the **pre-reinsurance PBR
+  reserve** in lieu of the mandatory cash flow testing run — the PBR engine run gross of a
+  specific treaty [REG-R103].
+- **Negative-IMR admittance reaches back into this block's reserve.** The INT 23-01 gates are
+  company-level, but ¶9.e requires admitted negative IMR to be captured in the PBR calculation
+  (VM-20 §7.D.7) or in asset adequacy testing (VM-30 §3.B.5), with a reconciliation
+  [REG-R87][REG-R100]. It sunsets **December 31, 2026 with automatic nullification January 1,
+  2027** as written, and the date may move again [REG-R87].
+- **No AVR or IMR factor value exists anywhere in this library** — those tables were
+  **deliberately not transcribed** [REG-R85][REG-R89]; a model hard-coding remembered values will
+  be wrong. Likewise **RBC reads statement values, not model values** [REG-R128], so a forward
+  capital ratio needs a projected annual statement — carried as **[unverified]** as a stated
+  requirement in `us/regulatory/technical-notes.md`.
+
 ## Valuation and reserve pointers
 
-This library projects **gross liability cash flows**; reserve layers consume those
-cash flows and are cited, not reproduced:
+Statutory classification, the reporting exhibits, which reserve basis applies and the
+capital consequences are in "Statutory accounting and capital" immediately above; this
+section is the product-mechanics pointer list. This library projects **gross liability
+cash flows**; reserve layers consume those cash flows and are cited, not reproduced:
 
 - **VM-20 (PBR, post-2017 issues)**: ULSG is its own reserving category; reserve =
   NPR floor plus excesses of deterministic (DR) and stochastic (SR) reserves. The
