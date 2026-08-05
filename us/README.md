@@ -57,13 +57,42 @@ deviates:
   states the differences explicitly — an annuity has no cost of insurance, no net amount
   at risk, and no death benefit corridor.
 
+## Statutory accounting and capital
+
+[regulatory/](regulatory/statutory-accounting-and-capital.md) holds the framework that
+sits *on top of* the liability cash flow projections: the statutory accounting rules and
+capital requirements a projection has to feed, and how to compute them.
+
+| File | Role |
+|---|---|
+| [statutory-accounting-and-capital.md](regulatory/statutory-accounting-and-capital.md) | What the items are, why they exist, which products they bite, and what the model must produce. Includes a 12-product applicability matrix |
+| [technical-notes.md](regulatory/technical-notes.md) | How to calculate them: formulaic CRVM/CARVM, the VM-20 three-component structure and its exclusion tests, VM-21/VM-22, reserve projection, the statutory income roll-forward, IMR/AVR, and the RBC components with the covariance adjustment. Worked examples throughout |
+| [sources.md](regulatory/sources.md) | The cited entries with their retrieval limits |
+
+The framing throughout is the **model hook** — for each rule, what the projection must
+produce, at what granularity, on what basis, and at what date. Two consequences dominate:
+acquisition costs are expensed as incurred with no deferred acquisition cost asset, so a
+statutory run shows first-year strain and later profit release from the same cash flows
+that a GAAP run smooths; and several items couple back into the reserve model rather than
+consuming its output one-way (admitted negative IMR feeds VM-20 and asset adequacy
+analysis; a variable annuity's reserve and its capital requirement are two order
+statistics from a single stochastic run).
+
+Each product's `technical-notes.md` carries a **Statutory accounting and capital**
+section with its own specifics — contract classification and reporting exhibit, the
+applicable reserve requirement, the RBC components that bite, and the traps peculiar to
+that product — cross-referencing this framework rather than restating it.
+
 ## Regulatory and actuarial reference library
 
 [references/regulatory-and-actuarial-references.md](references/regulatory-and-actuarial-references.md)
-is the curated cross-product bibliography (frozen numbering **R1–R72**, cited from
-product documents as `[REG-R#]`), with separate product-relevance matrices for the life
-and annuity products. R1–R34 are life-origin entries (several of which also bind annuity
-models) and R35–R72 are annuity-specific.
+is the curated cross-product bibliography (frozen numbering **R1–R142**, cited from
+product documents as `[REG-R#]`), with product-relevance matrices for the life products,
+the annuity products, and the statutory/capital entries. R1–R34 are life-origin entries
+(several of which also bind annuity models), R35–R72 are annuity-specific, and R73–R142
+cover statutory accounting and capital. R114–R124 and R143–R149 are unused by design —
+blocks were allocated to parallel research streams that did not fill them. Unused is not
+the same as missing: the invariant is that numbers are never reused or renumbered.
 
 - **Life:** NAIC statutory framework (Standard Valuation Law, Standard Nonforfeiture Law,
   Valuation Manual / VM-20, Models 582/585/787/830, AG 38/48/49/49-A/49-B), federal tax
@@ -134,3 +163,25 @@ and research file carry the full list).
 - **[unverified] items remain** wherever a claim could not be confirmed against a
   retrieved document — including the RILA Form N-4 compliance date, whether any successor
   to the 2012 IAR valuation table exists, and several NAIC guideline mechanics.
+
+**Statutory accounting and capital**
+
+- **RILA capital treatment is genuinely unsettled.** The retrieved RBC instructions never
+  mention registered index-linked annuities, index-linked annuities or ILVA at all, so the
+  treatment must be inferred from whether the contract is valued under VM-21. The
+  documents mark this open rather than inferring a treatment; closing it needs
+  primary-source work.
+- **Negative IMR guidance is time-limited.** The interpretation admitting negative IMR
+  nullifies 1 January 2027 as written, and the revised SSAP that would replace it was
+  still in drafting at the access date. Anything resting on admitted negative IMR should
+  be re-checked before being treated as current.
+- **Some factor tables were deliberately not transcribed.** AVR factors and IMR grouped
+  amortisation factors change annually and live in instructions that are sold rather than
+  published; the documents describe their role and location and state no values. RBC
+  factors that *were* retrievable are cited; the 2025 RBC edition could not be parsed, so
+  no year-end 2025 factor is asserted.
+- **One closable gap.** The AP&P Manual proved to be a free download after all (see the
+  supersession note on R33), which means Appendix C — the actuarial guidelines, including
+  AG 33 and AG 35 — and Appendices A-820/A-830 are obtainable. The caveats carried in the
+  annuity and reserve material still reflect the earlier paywalled assumption; a
+  follow-up pass could close them.

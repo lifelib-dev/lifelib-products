@@ -7,8 +7,10 @@ liability cash-flow modeling. It does not describe any single insurer's product.
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
 references), both numbered per `us/_research/immediate-annuity.md`, and [REG-R#] (the
 cross-product reference library `us/references/regulatory-and-actuarial-references.md`,
-one shared numbering space R1–R72: R1–R34 from `us/_research/regulatory-actuarial.md`,
-R35–R72 from `us/_research/regulatory-actuarial-annuities.md`) — were extracted from the
+one shared numbering space now running **R1–R142** with **R114–R124** and **R143–R149**
+unused by design: R1–R34 from `us/_research/regulatory-actuarial.md`,
+R35–R72 from `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three
+statutory accounting and capital research files listed in `us/regulatory/sources.md`) — were extracted from the
 cited document. Values marked **[std]** are standardizations introduced for the reference
 implementation; each [std] table row carries a footnote giving the rationale and the
 observed range across insurers. Facts the research file could not verify are flagged
@@ -483,6 +485,23 @@ decimal places per 1,000… the rounding shall occur according to the formula ab
 incorrect (male 30, `q^2012 = 0.741`; `q^2014 = 0.741 × 0.99² = 0.7262541 → 0.726`, **not**
 `0.734 × 0.99 = 0.727`) [R3][R4][REG-R59]. Structured settlements funding tort,
 workers'-compensation or LTD claims instead use **1983 Table "a" without projection** [R4].
+
+**Statutory accounting and capital.** The framework is in
+`us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md`;
+the product-level consequences are worked out in `technical-notes.md` (same directory),
+"Statutory accounting and capital". What is specific to this product: the **payout form
+decides the accounting chassis at inception and the choice is irreversible**. The four
+life-contingent forms are **life contracts** whose considerations are premium income and whose
+reserve sits in **Exhibit 5** [REG-R78][REG-R79][REG-R89]; **period certain only** carries no
+mortality risk and is a **deposit-type contract** under SSAP No. 52, its consideration credited
+directly to reserve rather than recognised as premium income and its balance rolled forward in
+**Exhibit 7**, column *Annuities Certain* [REG-R80][REG-R89]. A life-contingent contract
+**stays in Exhibit 5 after the annuitant dies** while certain payments continue [REG-R89]. On
+the capital side the dominant charge is **C-2 longevity**, driven by the statutory reserve for
+life-contingent annuity benefits and including the period-certain portion of a certain-and-life
+contract [REG-R128]; C-2 mortality does not apply, and interest rate risk runs through the
+**C-3 Phase I** cash flow testing regime, whose scope names immediate annuities expressly
+[REG-R128][REG-R135].
 
 **Nonforfeiture — expressly inapplicable.** Model #805 §2.A excludes **immediate
 annuities** (and deferred annuities after payments commence) from the Standard

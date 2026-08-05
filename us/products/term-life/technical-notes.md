@@ -350,16 +350,190 @@ above; l(11) = 0.650814 × (1 − 0.0016) × (1 − 0.80)
 
 ---
 
+## Statutory accounting and capital
+
+Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md`
+and `us/regulatory/technical-notes.md`; this section states only what is specific to level premium term.
+[REG-R#] resolves against the shared numbering used throughout this file, which now runs **R1–R142**
+(R114–R124 and R143–R149 unused by design).
+
+### Contract classification and reporting
+
+- **A life contract in every case, so the classification flag is a constant.** The test is mortality risk —
+  payments contingent on death [REG-R80 ¶2] — and SSAP No. 50 ¶9 lists term among life contracts. This
+  product has nothing *but* mortality risk (no account value, no cash surrender value, no investment
+  element [S3][S6]), so the deposit-type route — a contract that "act[s] exclusively as [an] investment
+  vehicle" — is unreachable at any point in its life; classification is set at inception and **immutable**
+  [REG-R78 ¶¶5, 9][REG-R80].
+- **Considerations are premium income**, recognised **gross, when due**, never a direct credit to reserve
+  [REG-R79 ¶¶2–5]. The gross-to-net difference is loading, and the change in loading on deferred and
+  uncollected premium is an **expense**, not a reduction of premium [REG-R79 ¶11] — live here because the
+  modal factors 0.52 / 0.27 / 0.08333 [S6] mean most policies are not annual-mode.
+- **Reporting targets.** Reserves to **Exhibit 5** and Liabilities page Line 1, never Exhibit 7; Column 1
+  states the valuation standard **by years of issue**, so a XXX-era block and a VM-20 block sit side by
+  side rather than one superseding the other, and VM-20 business reports on **two lines** — the net premium
+  reserve and the excess over it [REG-R89][REG-R90][REG-R1 §11]. Face in force goes to the **Exhibit of
+  Life Insurance** in thousands, and the reporting dimension is the **Term Life** column of the Analysis of
+  Operations and of the Analysis of Increase in Reserves; out-of-scope waiver-of-premium and children's
+  riders would carry SSAP No. 54 A&H reserves on the **base contract's** line, inside Term Life
+  [REG-R89][REG-R90][REG-R82].
+- **Conversion presentation is not addressed by the retrieved instructions** — termination-plus-new-issue
+  versus transfer across the Term Life and permanent columns is not stated in the instructions or blank
+  read [REG-R89][REG-R90], and this library does not fill that hole.
+
+### Reserve basis
+
+- **Two regimes, keyed by year of issue.** Pre-operative-date issues run formulaic **CRVM** under Standard
+  Valuation Law §5 through the VM-A index, whose substantive term item is **A-830 — Model #830, "Regulation
+  XXX"**; deficiency reserves survive as a distinct **Exhibit 5 Miscellaneous Reserves** item via Actuarial
+  Guideline I in the VM-C index and via A-830 [REG-R1][REG-R110][REG-R6][REG-R41][REG-R89]. **A-820 and
+  A-830 as printed in the AP&P Manual were not retrieved** [REG-R110][REG-R33], so the mechanics documented
+  here rest on Model #830 itself [R1][REG-R6]. Issues on and after the Valuation Manual operative date take
+  **VM-20 as the minimum** under SVL §11 [REG-R1] (that date is [unverified] in the print).
+- **Term is one of VM-20's three reserving categories**, so the minimum reserve is the *sum* over
+  K ∈ {Term, ULSG, All Other} and a Term excess can never be offset against All Other slack; a DR group
+  spanning categories is split with the difference allocated proportionally, and an SR aggregation subgroup
+  spanning categories must also produce a stand-alone Term SR [REG-R3 §§2.A, 4.C, 5].
+- **The "neither DR nor SR" path is closed to term.** Reporting Σ NPR alone is permitted only for ULSG with
+  a non-material secondary guarantee passing both tests, or for All Other [REG-R3 §2.A]; with the
+  deterministic exclusion test **not available at all for term insurance policies or term riders**
+  [REG-R3 §6.B], a term block computes a **deterministic reserve in every case** — no configuration of this
+  product lets the VM-20 modelled-reserve engine be skipped.
+- **NPR mechanics that are term's own** [REG-R3 §§3.B.4, 3.C.3, 3.D, 3.E]: prescribed lapses of **10%**
+  during a level premium period under five years, **6%** for five or more, **0%** once the final premium
+  has been payable; the prescribed shock-lapse table of **25%–80%** applied in the final level-period year
+  *after* benefits assumed payable that year and *before* the increased premium takes effect (anchor jump
+  ≈446% including fee [S6]-derived → **80%** [R2]); a valuation interest rate **increased by 1.5% but
+  capped at 125%** of the unuplifted rate, rounded to the nearest quarter with **ties up** — the opposite
+  convention from the base rate; a §3.D floor collapsing to the cost of insurance to the next paid-to-date,
+  the CSV leg being zero [S3][S6]; and **policy minimum NPR = NPR less the §8 ceded reinsurance credit**.
+- **Year one differs and two premium conventions must not mix.** The Term valuation net premium is **zero
+  in policy year 1**, so the due-and-deferred premium asset and the unearned premium reserve are zero that
+  year [REG-R3 §2.A]; the mean reserve method's deferred premium asset applies to formulaic blocks
+  [REG-R81/IP51 ¶21] but **inside a VM-20 projection deferred premiums are zero** [REG-R3 §7.B].
+
+### What this product's model must additionally produce
+
+Shared contract: `us/regulatory/technical-notes.md`, "Required model outputs". Rows below are the ones this
+product specialises or makes trivial.
+
+| Statutory item | Required model output for level premium term | Cite |
+|---|---|---|
+| Exhibit of Life Insurance; C-2 exposure base | Face in force and policy counts on an **incurred** basis, in thousands, gross and net of reinsurance | [REG-R89][REG-R142] |
+| C-2 net amount at risk | `NAR = face in force − life reserves`, general **plus separate** account, net of reinsurance — the separate-account leg is identically zero here | [REG-R142] |
+| Exhibit 5 | Reserves keyed by **valuation standard × year of issue**; VM-20 business split NPR and excess; XXX-era deficiency reserve to Miscellaneous Reserves | [REG-R89][REG-R6] |
+| Analysis of Increase in Reserves | Tabular net premium (zero in NPR year 1), tabular interest, tabular cost, reserves released by death and by other terminations — on the **valuation** basis, not the experience basis of the worked example above | [REG-R90][REG-R3] |
+| Summary of Operations | Change in loading on deferred and uncollected premium as an **expense**; commission and issue expense in the issue period with **no DAC stream** | [REG-R79 ¶11][REG-R75 ¶2] |
+| Exhibit 5 ceded column; VM-20 §8; AG 55 | Gross and ceded **produced separately, never netted**, per treaty; YRT credit as the one-year term mean reserve on the ceded amount, on the *original policy's* mortality and interest basis | [REG-R89][REG-R92 ¶¶37–38][REG-R103] |
+| Tax | Tax reserve = 92.81% × NAIC-method reserve, floored at net surrender value (**zero** for term), capped at statutory | [REG-R16] |
+| Asset adequacy analysis | Starting assets no greater in statement value than the reserves tested; sign-aware IMR allocation; the **AVR consumed**, reported as an output because it is removed from Total Adjusted Capital | [REG-R29][REG-R100][REG-R128] |
+| VM-31 / VM-G | Which exclusion-test route was taken, and a statement of **readiness to compute the SR** even where it is excluded | [REG-R108][REG-R109] |
+
+Not needed for this product: separate-account balances and transfers (none exist [S3][S6]) and a
+**repricing scenario** for the C-2 pricing-flexibility test (below).
+
+### Risk-based capital
+
+- **C-2 mortality dominates and net amount at risk is the whole of it.** With no account value and no cash
+  surrender value [S3][S6] there is nothing to net down: `NAR = face in force − life reserves`, net of
+  reinsurance, so C-2 tracks **face amount** while term reserves stay small relative to face. Note the
+  sign: reserve strengthening *lowers* C-2 while raising the reserve-based C-3a below, and at band-1
+  factors the offset is incomplete **[std, derived]**. The base is now taken from annual statement lines
+  rather than company records [REG-R142], so the model must reproduce those lines, not a policy-level NAR.
+- **The C-2 category is settled by the contract, not by a scenario.** Pricing flexibility is the ability to
+  *materially* adjust rates on in-force contracts within the next **5 policy years**, tested on a
+  present-value basis [REG-R128]; premiums here are fully guaranteed to expiry with no non-guaranteed
+  elements [S3][S6], so no repricing margin exists. The instructions' own example of **"Individual &
+  Industrial Term without Pricing Flexibility"** is level term with guaranteed level premiums, and the
+  default for direct individual term where no assessment is performed is the same bucket
+  [REG-R128][REG-R133]. Pre-tax factors per dollar of NAR: **0.00280** on the first $500M, **0.00120** on
+  the next $24,500M, **0.00085** over $25,000M, banded on the *total* individual and industrial NAR then
+  allocated proportionately [REG-R128][REG-R133]. So the generic "run a repricing scenario" requirement
+  does not bind this product, though it would bind the **graded-PLT** variant that re-rates in-force blocks
+  [R4] (`product-spec.md`, fn 10). Ceded business runs the other way — cessions reduce NAR, **annually
+  repriceable YRT** is an instruction example of "with pricing flexibility", and the default for
+  non-affiliated *ceded* individual business is **With Pricing Flexibility** [REG-R128][REG-R133]. Total
+  C-2 is the greatest of two guardrail terms and `sqrt(life² + longevity² + 2ρ·life·longevity)` with
+  **GF = 0** and **ρ = −0.25** [REG-R128][REG-R134]: with no life-contingent annuity reserve the longevity
+  term is zero, so the −25% diversification credit gives a term writer nothing.
+- **C-3a is small and purely factor-based, and C-3 Phase I never reaches this product.** Life insurance
+  reserves sit in the **Low** withdrawal-provision category at **0.0095** pre-tax, cut by one third to
+  **0.0063** where the company files an unqualified actuarial opinion based on asset adequacy testing **or
+  one qualified solely because of AG 48 direction** — a carve-out written for exactly this product's
+  reserve-financing problem. C-3 Phase I's scope is "Certain Annuities" **plus single premium life**, and
+  level premium term is neither, which is why the shared matrix leaves that row blank rather than marking
+  it excluded [REG-R128][REG-R135].
+- **Two components sit outside the covariance radical, added dollar-for-dollar** [REG-R128]: **C-4a** at
+  **2.53%** of Schedule T life premiums and annuity considerations, proportionally larger for a
+  high-premium/low-reserve product; and the **AG 48** Primary Security shortfall on all AG 48 cessions,
+  added at **2×** then halved into Authorized Control Level so it lands one-for-one, applying even where a
+  state has waived AG 48 compliance [REG-R128][REG-R11][REG-R12]. Inside the radical C-3a is added to C-1o
+  in one squared term; Total Adjusted Capital includes the **AVR** limited to the amount not consumed in
+  asset adequacy testing [REG-R128][REG-R29]; action levels and the trend test are per Model #312
+  [REG-R125][REG-R128].
+
+### Product-specific interactions and traps
+
+1. **Excluding the SR has a governance price.** With the DET barred a DR exists every year and the SERT's
+   route 1 is itself DR-based; passing an exclusion test by the **deterministic-reserve method re-imposes
+   VM-G Sections 2 and 3** on a company that would otherwise be exempt [REG-R3 §6.A.2][REG-R109], with a
+   VM-31 sub-report and a readiness statement still due [REG-R108].
+2. **Post-level term decides the statutory and capital numbers.** The DR must assume 100% lapse at the end
+   of the level term where PLT would otherwise be profitable while PLT losses must be reflected
+   [R2][REG-R3]; §2.I forbids ignoring PLT losses [REG-R3 §2.I]; the NPR shock is prescribed at 25%–80%
+   [REG-R3 §3.C.3] against a best-estimate envelope of 27%–96% [R4]. **Three lapse bases on one engine** —
+   prescribed NPR, DR-with-PLT-override, prudent estimate — must be switchable, not hard-coded.
+3. **XXX financing reaches back into capital.** Model #830 conservatism on term drove captive reserve
+   financing, hence AG 48 and Model #787 [REG-R11][REG-R12]; the capital consequences are the RBC add-on
+   outside covariance and the AG 48-qualified opinion that still earns the reduced C-3a factor [REG-R128].
+4. **The gross-of-YRT run is required twice over.** The SERT's YRT relief compares the test gross and net
+   of YRT [REG-R3 §6.A.2.c] and AG 55 §6.G accepts documentation of the **pre-reinsurance PBR reserve** for
+   a ceded block in lieu of its mandatory cash-flow-testing run [REG-R103]; both instruct the VM-20 engine
+   to run gross of a specific treaty, so build that switch once. AG 53 and AG 55 are otherwise **not
+   product triggers** — their scoping is company-level (complex and high-yielding assets, from the December
+   31, 2022 statement) and treaty-level (reserves reported in the December 31, 2025 annual statement)
+   [REG-R105][REG-R103], which is why the shared matrix marks both `(x)`.
+5. **No separate account, no derivatives, no MVA.** SSAP No. 86 is not engaged by this product's own
+   mechanics [REG-R96] and the IMR's market-value-adjustment liability leg cannot arise [REG-R85][REG-R86];
+   the **block-reinsurance** leg still can, where an irrevocable non-affiliate transfer exceeds **5% of
+   general account liabilities** in the current year [REG-R86][REG-R92 ¶54]. Admitted negative IMR feeds
+   back into the term reserve — it must be captured in the PBR calculation or in asset adequacy testing
+   under VM-20 §7.D.7 and VM-30 §3.B.5 with a reconciliation [REG-R87 ¶9.e][REG-R100 §3.B.5] — and the IMR
+   itself has no cash flows, entering as a sign-aware adjustment to starting assets [REG-R111]. **No AVR
+   factor and no IMR amortisation factor is stated anywhere in this library**; the research deliberately
+   did not transcribe them [REG-R89].
+6. **Acquisition strain is the largest single statutory fact about this product.** Commission and issue
+   expense are **expensed as incurred with no DAC asset** [REG-R75 ¶2][REG-R76 ¶8], so the worked example's
+   year-1 net outflow of −384.80 against a 140 gross premium (80% first-year commission plus $300 issue
+   cost, both **[std]**) hits surplus in full alongside the initial reserve [REG-R74 ¶¶30, 38]. Levelizing
+   does not fix it: a third-party-funded levelized commission is "in fact, [a] funding agreement" and the
+   full initial commission "shall be recognized immediately" [REG-R75 ¶¶4–5]. The first-year ordinary loss
+   cannot be carried back by an entity taxed as a life insurance company for tax years after 2017, so its
+   DTA admittance runs entirely through the RBC-band and DTL-offset components [REG-R97].
+7. **Source limits that bite here.** The RBC factors above come from the **2024** *Life and Fraternal
+   Risk-Based Capital Forecasting and Instructions*, a **sold NAIC publication** marked "Not for
+   Distribution" read from a state department posting; the **2025 edition could not be parsed**, so **no
+   year-end 2025 factor is asserted** [REG-R128][REG-R129]. Exhibit and page/line references come from the
+   **2025** reporting-year blank and instructions and should be re-verified against the 2026 blank
+   [REG-R89][REG-R90].
+
+---
+
 ## Valuation and reserve pointers
 
-This library projects **gross liability cash flows**. Reserve layers consume those flows
-but are not reproduced here:
+This library projects **gross liability cash flows**. Statutory reporting, the annual statement
+exhibits and the RBC components for this product are in **Statutory accounting and capital**
+above; this section stays a pointer list for the reserve bases themselves. Reserve layers
+consume those flows but are not reproduced here:
 
 - **VM-20 minimum reserve** = seriatim NPR + max(0, DR − NPR-aggregate) etc., with term
   NPR on 2017 CSO, prescribed interest, prescribed lapses (6%/10% by level-period length,
   prescribed shock 25%–80%, 0% after final premium) and an NPR floor at the cost of
-  insurance to the next paid-to-date; the deterministic exclusion test no longer applies to
-  term [R2][REG-R3]. The DR for post-2017 issues must assume 100% lapse at the end of the
+  insurance to the next paid-to-date; the deterministic exclusion test is **not available at
+  all** for term policies or term riders, so a deterministic reserve is computed in every case
+  [R2][REG-R3 §6.B] (see Statutory accounting and capital above, "Reserve basis", for the
+  reserving-category and exclusion-test consequences). The DR for post-2017 issues must
+  assume 100% lapse at the end of the
   level term where PLT would otherwise be profitable — PLT profits cannot be capitalized;
   PLT losses must be reflected [R2]. A projection feeding VM-20 must therefore be able to
   run with (a) prudent-estimate behavior per these notes and (b) the prescribed
@@ -376,7 +550,9 @@ but are not reproduced here:
   flows feed the LFPB with annually updated assumptions and single-A discounting through
   OCI [REG-R34] [unverified — source not fetched; corroborated summaries only].
   Reinsurance reserve financing of XXX
-  term: AG 48 / Model #787 [REG-R11][REG-R12].
+  term: AG 48 / Model #787 [REG-R11][REG-R12]; its capital consequence — the Primary Security
+  shortfall added outside the covariance adjustment — is in Statutory accounting and capital
+  above, "Risk-based capital".
 
 ---
 

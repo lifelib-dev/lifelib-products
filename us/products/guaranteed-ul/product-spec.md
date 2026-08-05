@@ -429,6 +429,22 @@ with a 10% additional tax before age 59½; benefit reductions within 7 years for
 retesting [R5; REG-R14; S4]. Accelerated benefit riders are designed to qualify under
 IRC 101(g) [S1, S2].
 
+**Statutory accounting and capital.** The framework — no DAC, the annual statement
+exhibits, AVR/IMR, asset adequacy analysis and risk-based capital — is in `us/regulatory/`
+(`statutory-accounting-and-capital.md` for concepts, `technical-notes.md` for formulas),
+and the ULSG treatment is in this product's technical notes. Product-specific only: GUL is
+a **life contract** classified at inception [REG-R78], reserving in **Exhibit 5** and
+reporting in the statement's own **Universal Life With Secondary Guarantees** column, which
+also collects indexed UL with secondary guarantees and keeps policies whose guarantees have
+expired [REG-R89]. ULSG is its own **VM-20 reserving category**, is **deemed to fail** the
+deterministic exclusion test unless the secondary guarantee is non-material, and **may not
+use the stochastic exclusion certification method** [REG-R3] — the full VM-20 machinery is
+compulsory here. For capital, the RBC instructions name ULSG in the **highest-factor C-2
+mortality bucket** [REG-R128], and AG 48 / Model #787 Primary Security shortfalls on AXXX
+financing enter Authorized Control Level dollar-for-dollar while also reducing Total
+Adjusted Capital [REG-R128; R6; REG-R11; REG-R12]. The shadow account is **not** a
+statutory reserve — only the VM-20 §3.B.5 ASG input and the AG 38 funding ratio [REG-R3; R1].
+
 **Illustrations and NGE governance.** GUL is general-account (not variable) business:
 the Illustrations Model Regulation applies (disciplined current scale, self-support
 and lapse-support certification) [REG-R4; REG-R30], and insurer determination of

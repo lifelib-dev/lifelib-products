@@ -5,9 +5,11 @@
 **Scope note.** A *standardized composite specification* for reference liability cash-flow modeling; not any
 single insurer's product. [S#] (primary product documents) and [R#] (regulatory/actuarial references) are
 numbered per `us/_research/deferred-income-annuity.md`. [REG-R#] resolves against the cross-product library
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R72 as **one** space:
-R1–R34 of life origin (provenance `us/_research/regulatory-actuarial.md`) and R35–R72 annuity-specific
-(provenance `us/_research/regulatory-actuarial-annuities.md`). **[std]** marks standardizations introduced
+`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R142 as **one** space:
+R1–R34 of life origin (provenance `us/_research/regulatory-actuarial.md`), R35–R72 annuity-specific
+(provenance `us/_research/regulatory-actuarial-annuities.md`) and R73–R142 statutory accounting and capital
+(provenance `us/regulatory/sources.md`), with **R114–R124 and R143–R149 unused by design**.
+**[std]** marks standardizations introduced
 for the reference implementation; every [std] table row carries a footnote giving the rationale and the
 observed range. [unverified] marks claims not confirmed against a retrieved document.
 
@@ -508,6 +510,19 @@ the interest-rate guidance in AG IX-B and the interest references in AG IX-C [RE
 income annuity interest rates" against the current Valuation Manual is citing the wrong section [REG-R36].
 **VM-21 does not apply** — it is the variable-annuity standard [REG-R35][REG-R36]. The guideline family
 incorporated by VM-C (AG II, VIII, IX, IX-A/B/C, XIII, XXXIII, XXXV, XL, XLI) is indexed at [REG-R41].
+
+**Statutory accounting and capital.** Framework and calculations are in `us/regulatory/`; the DIA-specific treatment is
+in this directory's `technical-notes.md`, "Statutory accounting and capital". Product-specific only: a life-contingent
+DIA is a **life contract from issue** although no life-contingent payment falls due for 13 months to 30 years, so its
+reserve reports in **Exhibit 5** and its flexible premiums are **premium income, gross when due**, whereas a
+period-certain-only DIA is a **deposit-type contract** in Exhibit 7, "Annuities Certain", its considerations credited
+direct to reserve [REG-R78][REG-R79][REG-R80][REG-R89]. That classification is fixed at inception and cannot change
+[REG-R78] — safe here, the income option being irrevocable [S1][S2][S4] — and Exhibit 5 keeps a contract that was
+life-contingent at issue even after the annuitant dies and only guaranteed payments remain [REG-R89]. On capital, the
+**C-2 longevity** charge names "deferred income annuities that will enter pay status" expressly and is
+**reserve-based**, **C-2 mortality does not apply** (no face amount, so no net amount at risk), and C-3a takes the "not
+withdrawable" bucket, the contract having no surrender value, withdrawal or loan [REG-R128][REG-R142] — all of it off
+the **2024** RBC instructions, a sold NAIC publication whose **2025 edition could not be parsed** [REG-R129].
 
 **Annuity valuation mortality.** Model #821 recognizes the 2012 Individual Annuity Reserving (2012 IAR)
 table, a generational table combining the 2012 IAM Period Table with Projection Scale G2 [REG-R59]; VM-M

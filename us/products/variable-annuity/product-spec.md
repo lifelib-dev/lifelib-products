@@ -9,10 +9,12 @@ benefit (GMDB). It does not describe any single insurer's product. Tag conventio
 **[S#]/[R#]** resolve against the product research file `us/_research/variable-annuity.md`
 (its own local numbering: S1–S8 product documents, R1–R13 regulatory/actuarial
 references). **[REG-R#]** resolves against the **single shared cross-product numbering
-space R1–R72** curated at `us/references/regulatory-and-actuarial-references.md`; R1–R34
+space R1–R142** curated at `us/references/regulatory-and-actuarial-references.md`; R1–R34
 originate in `us/_research/regulatory-actuarial.md` (life-origin, several of which also
-bind annuities) and R35–R72 in `us/_research/regulatory-actuarial-annuities.md`
-(annuity-specific) — one tag prefix, one numbering space. **[std]** marks a
+bind annuities), R35–R72 in `us/_research/regulatory-actuarial-annuities.md`
+(annuity-specific) and R73–R142 in the three statutory accounting and capital research
+files, with **R114–R124** and **R143–R149** unused by design — one tag prefix, one numbering
+space. **[std]** marks a
 standardization introduced for the reference implementation; every [std] table row carries
 a footnote giving the rationale and the observed range across insurers. **[unverified]**
 marks a claim the research file could not confirm against a retrieved document; such flags
@@ -461,6 +463,25 @@ older C-3 Phase II instructions package still prints the pre-reform **CTE 90** T
 Requirement and a 35% tax rate [REG-R47]: cite it for structure, [R3] for the current level.
 The reform's diagnosis — that fully hedging fair value *increased* capital requirements and
 volatility — is in the Oliver Wyman QIS II reports [R2][REG-R48].
+
+**Statutory accounting and capital.** The framework — statutory concepts, the reserve
+hierarchy, AVR/IMR, reinsurance, taxes and the RBC formula — is in `us/regulatory/`, and the
+product-level treatment is in `technical-notes.md`, *Statutory accounting and capital*; only
+what is specific to this product belongs here. A variable annuity is a **life contract**
+under SSAP No. 50, classified **at inception and immutably**, so the flag does not change
+when the account value depletes and the liability becomes a pure life-contingent stream
+[REG-R78 ¶¶5, 9]; considerations are **premium income**, not a direct credit to reserve
+[REG-R79], and the reserve reports in **Exhibit 5** in the Individual Annuities → Deferred →
+**Variable *With* Guarantees** column [REG-R89][REG-R90]. Under SSAP No. 56 the **GMDB and
+living-benefit reserves sit in the general account** while the account value sits in a
+**fair-value separate account that carries no AVR and no IMR except on seed money**, and
+separate account surplus may not go negative [REG-R83]. There is **no DAC and no market risk
+benefit** in statutory accounting — SSAP No. 71 expenses acquisition cost as incurred and
+SSAP No. 56 ¶45 rejects ASU 2018-12 outright [REG-R75][REG-R83]. On capital, C-2 mortality
+does **not** reach this product (its exposure base is life net amount at risk from the
+Exhibit of Life Insurance [REG-R142]) and variable *deferred* reserves are expressly out of
+the C-2 longevity charge even after account exhaustion [REG-R128]; the charge is **C-3 Phase
+II**, CTE 98 of the same Scenario Reserves that give the CTE 70 reserve [REG-R128][REG-R35].
 
 **Federal securities law.** Registration is on Form N-4 [R6][REG-R52], whose Part A order
 (Item 2 Overview, Item 3 Key Information, Item 4 Fee Table, in numerical order at the front)

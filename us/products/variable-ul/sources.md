@@ -3,9 +3,12 @@
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are
 carried over verbatim from `us/_research/variable-ul.md` (sections "Primary
 sources" and "Regulatory and actuarial references"); ids are never renumbered.
-Access date for all citations: 2026-08-03. Only sources actually cited in
-`product-spec.md` or `technical-notes.md` are listed (unused S5/S6 dropped). No new
-sources were fetched at drafting — nothing is marked "added at drafting".
+Access date for all citations: 2026-08-03, **except** the statutory accounting and
+capital entries added to the cross-product section below, whose own access dates
+(2026-08-04, or 2026-08-03 for frozen R1–R72 entries) are reproduced per entry.
+Only sources actually cited in `product-spec.md` or `technical-notes.md` are listed
+(unused S5/S6 dropped). No new sources were fetched at drafting — nothing is marked
+"added at drafting".
 
 ## Primary product sources [S#]
 
@@ -141,8 +144,14 @@ These use the R# numbering of the cross-product bibliography
 [REG-R#] to avoid collision with the product-file R# ids above. Full annotations
 live in that file; the shared reference library is
 `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
-R1–R72: R35–R72 are annuity-specific entries added later and are not cited here). Entries
-cited in the two documents:
+**R1–R142**, with **R114–R124** and **R143–R149** permanently unused **by design** —
+the gaps are block-assignment spares, not losses, and must not be back-filled).
+R1–R72 are the pre-existing life and annuity entries; R73–R142 are the statutory
+accounting and capital entries, whose provenance is `us/_research/statutory-accounting.md`
+(R73–R99), `us/_research/statutory-reserves.md` (R100–R113) and
+`us/_research/risk-based-capital.md` (R125–R142), with the per-entry bibliography at
+`us/regulatory/sources.md`. **Ids are never renumbered.** Entries cited in the two
+documents:
 
 - REG-R1. Standard Valuation Law (Model #820) — NAIC.
   https://content.naic.org/sites/default/files/model-law-820.pdf — Fetched: yes.
@@ -184,6 +193,146 @@ cited in the two documents:
   FASB. https://www.fasb.org (fasb.org blocked automated fetch; no working deep
   link cited) — Fetched: NO (title, scope, and effective dates corroborated across
   secondary sources); cited only with an explicit not-fetched flag.
+
+### Statutory accounting and capital entries
+
+Cited by the "Statutory accounting and capital" section of `technical-notes.md` and
+the corresponding paragraph of `product-spec.md`. Id, title, publisher, URL, access
+date and fetched marker are carried **verbatim** from `us/regulatory/sources.md`;
+nothing is renumbered and no [unverified] flag or retrieval limit is upgraded.
+Several SSAP entries locate themselves "in R73", the NAIC *Accounting Practices and
+Procedures Manual, As of March 2026*, whose own entry is in `us/regulatory/sources.md`;
+it is not repeated here because no document in this directory cites it directly.
+
+- REG-R29. ASOP No. 22 — Statements of Actuarial Opinion Based on Asset Adequacy
+  Analysis for Life Insurance, Annuity, or Health Insurance Reserves and Other
+  Liabilities — Actuarial Standards Board.
+  https://www.actuarialstandardsboard.org/asops/asop-no-22-statements-of-actuarial-opinion-based-on-asset-adequacy-analysis-for-life-insurance-annuity-or-health-insurance-reserves-and-other-liabilities/
+  — Accessed: 2026-08-03 · Fetched: yes (adopted Sept. 2021; effective June 1, 2022).
+  **Re-read in full for the reserves stream** on 2026-08-04 from Doc. No. 203,
+  https://www.actuarialstandardsboard.org/wp-content/uploads/2021/11/asop022_203.pdf (26 pp.).
+- REG-R75. SSAP No. 71 — Policy Acquisition Costs and Commissions (*As of March
+  2026*) — NAIC (in R73, statement pages 71-1 to 71-3).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; ¶¶1–7 read in full).
+- REG-R78. SSAP No. 50 — Classifications of Insurance or Managed Care Contracts
+  (*As of March 2026*) — NAIC (in R73, statement pages 50-1 onward).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; ¶¶1–20 read).
+- REG-R79. SSAP No. 51 — Life Contracts (*As of March 2026*; historically cited as
+  SSAP No. 51R) — NAIC (in R73, statement pages 51-1 to 51-13).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; status block, ¶¶1–16
+  read; section index read). **Limit carried forward:** ¶¶17 onward (mean/mid-terminal
+  reserves, dividends, coupons, accelerated benefits, disclosures) were read through
+  the **section index and the parallel Issue Paper No. 51 text (R81)**, not the SSAP
+  paragraphs; a precise SSAP No. 51 paragraph cite needs R73 at pages 51-5 to 51-12.
+- REG-R80. SSAP No. 52 — Deposit-Type Contracts (*As of March 2026*) — NAIC (in R73,
+  statement pages 52-1 to 52-8).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; ¶¶1–17 read in full).
+- REG-R83. SSAP No. 56 — Separate Accounts (*As of March 2026*) — NAIC (in R73,
+  statement pages 56-1 to 56-14).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; ¶¶1–31 and the glossary
+  read).
+- REG-R85. SSAP No. 7 — Asset Valuation Reserve and Interest Maintenance Reserve
+  (*As of March 2026*) — NAIC (in R73, statement pages 7-1 to 7-2).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; ¶¶1–4 read in full — the
+  statement is two pages).
+- REG-R87. INT 23-01 — Net Negative (Disallowed) Interest Maintenance Reserve
+  (revised print, adopted August 11, 2025) — NAIC Statutory Accounting Principles (E)
+  Working Group (AP&P Appendix B).
+  https://content.naic.org/sites/default/files/inline-files/22-19%20-%20INT%2023-01%20-%20Revised%20April%202025.pdf
+  (original clean adoption print, August 13, 2023:
+  https://content.naic.org/sites/default/files/inline-files/22-19a%20-%20INT%2023-01%20-%20IMR%20clean.pdf
+  — also fetched) — Accessed: 2026-08-04 · Fetched: yes, both (local text extraction;
+  8 pages each; the revised print carries visible tracked-change artefacts, which is how
+  the extension is evidenced).
+- REG-R89. NAIC Annual Statement Instructions — Life, Accident & Health/Fraternal,
+  2025 reporting year — NAIC ("Adopted by the NAIC as of June 2025"; free download
+  from the NAIC Resource Center).
+  https://content.naic.org/sites/default/files/publication-asi-lua-25.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; 1,008 pages; Analysis of
+  Operations pp. 84–96, Exhibits 5 / 5A / 6 / 7 pp. 143–157, Exhibit of Life Insurance
+  p. 383, IMR pp. 390–404, AVR pp. 405–428 read). **Numbers deliberately not
+  transcribed:** the **AVR factor tables** (basic contribution, reserve objective,
+  maximum reserve, by NAIC designation and mortgage category) and the **IMR
+  grouped-amortisation factor tables** — no value for either is stated anywhere in this
+  library. **Reporting-year caution:** this is the **2025** reporting year; every page
+  and line reference should be re-verified against the 2026 blank before being
+  hard-coded.
+- REG-R90. NAIC Annual Statement Blank — Life, Accident & Health/Fraternal, 2025 —
+  NAIC (free download).
+  https://content.naic.org/sites/default/files/publication-asb-life.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; 211 pages; Liabilities
+  page, Summary of Operations p. 13, Cash Flow p. 14, Analysis of Operations by LOB
+  pp. 15–20, Analysis of Increase in Reserves pp. 21–24, Exhibits 5–7 pp. 29–32,
+  Exhibit of Life Insurance pp. 52–53, IMR form p. 55, AVR forms pp. 56–63 read).
+- REG-R92. SSAP No. 61 — Life, Deposit-Type and Accident and Health Reinsurance
+  (*As of March 2026*; historically 61R) — NAIC (in R73, statement pages 61-1 to 61-29
+  plus glossary).
+  https://content.naic.org/sites/default/files/publication-app-manual.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; ¶¶1–20, 36–38, 54–59
+  read; full section index read). **Limit carried forward:** **Appendix A-791** was
+  **not read**, only cited through this entry.
+- REG-R100. VM-30: Actuarial Opinion and Memorandum Requirements (Valuation Manual,
+  Jan. 1, 2026 Edition) — NAIC.
+  https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
+  (pages 30-1 to 30-15 of the 457-page PDF; same document as REG-R3) —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; **Sections 1, 2 and 3
+  read in full**, including the prescribed opinion wording and the Regulatory Asset
+  Adequacy Issues Summary contents).
+- REG-R108. VM-31: PBR Actuarial Report Requirements for Business Subject to a
+  Principle-Based Valuation (Valuation Manual, Jan. 1, 2026 Edition) — NAIC.
+  https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
+  (pages 31-1 to 31-46; same document as REG-R3) — Accessed: 2026-08-04 · Fetched: yes
+  (local text extraction; Sections 1, 2, 3.A, 3.B, 3.C and 3.D.1–3.D.3 read; the full
+  table of contents and section headers of 3.D–3.F reviewed).
+- REG-R109. VM-G: Appendix G — Corporate Governance Guidance for Principle-Based
+  Reserves (Valuation Manual, Jan. 1, 2026 Edition) — NAIC.
+  https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
+  (pages G-1 to G-6; same document as REG-R3) — Accessed: 2026-08-04 · Fetched: yes
+  (local text extraction; **Sections 1–4 read in full**).
+- REG-R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
+  — NAIC.
+  https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
+  (pages A-1 to A-2; same document as REG-R3) — Accessed: 2026-08-04 · Fetched: yes
+  (local text extraction; the complete two-page index read). **Limit carried forward:**
+  VM-A is an **index, not a text**; the requirements it indexes — above all **A-820**
+  (minimum life and annuity reserve standards) and **A-830** (valuation of life
+  insurance policies) — live in AP&P Appendix A and **were not retrieved**.
+- REG-R128. NAIC *Risk-Based Capital Forecasting and Instructions — 2024,
+  Life / Fraternal* — NAIC (© 2019–2024 NAIC; instruction pages dated 10/14/2024).
+  **Paid NAIC publication**; the copy read was posted publicly by the **Indiana
+  Department of Insurance**. https://www.in.gov/idoi/files/RBCL24-INpdf.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; 225 pages; overview,
+  LR002, LR025, LR025-A, LR027, LR029, LR030, LR031, LR033, LR034, LR035, LR049,
+  Appendix 1, Appendix 1a and the corresponding blank pages read). **Paid-publication
+  limit, stated plainly:** this document is *sold* by the NAIC and marked "Not for
+  Distribution" on every page; anyone rebuilding this work should **buy the current
+  edition**. The **2025 edition could not be parsed**, so **no year-end 2025 factor is
+  asserted**, and the RBC forecasting spreadsheet was never obtained.
+- REG-R133. NAIC, *Life RBC—C-2 Mortality Risk: Instruction Supplement for Applying
+  the Newly Adopted Life Insurance C-2 Mortality Instructions* (December 19, 2022) —
+  NAIC.
+  https://content.naic.org/sites/default/files/inline-files/lrbc-C-2-mortality-risk-instruction-supplement-dec2022.pdf
+  — Accessed: 2026-08-04 · Fetched: yes (local text extraction; 14 pages).
+  **[unverified] carried forward:** the **first year** the current pricing-flexibility
+  C-2 structure and the LR025-A longevity page applied.
+- REG-R135. *Phase I Report of the American Academy of Actuaries' C-3 Subgroup of the
+  Life Risk Based Capital Task Force to the NAIC's Risk Based Capital Work Group*
+  (October 1999, Atlanta) — American Academy of Actuaries.
+  https://www.actuary.org/wp-content/uploads/2025/05/c3_oct99.pdf —
+  Accessed: 2026-08-04 · Fetched: yes (local text extraction; 43 pages; executive
+  summary and Appendix I scenario-testing methodology read).
+- REG-R142. NAIC Capital Adequacy (E) Task Force — RBC Proposal Form, Agenda Item
+  2025-01-L (C-2 Mortality Risk / LR025 annual statement sources) — NAIC (proposal
+  dated 02/21/2024, submitted on behalf of the Life RBC (E) Working Group, Philip
+  Barlow chair).
+  https://content.naic.org/sites/default/files/inline-files/2025-01-L%20C-2%20Mortality%20Risk%20(1).pdf
+  — Accessed: 2026-08-04 · Fetched: yes (local text extraction; 3 pages).
 
 ## Provenance note
 

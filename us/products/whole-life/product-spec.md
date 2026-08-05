@@ -412,6 +412,27 @@ premiums do not exceed the substantial guaranteed gross premiums, leaving NPR-on
 VM-A/VM-C (pre-PBR CRVM) [R3]. VM-02 prescribes minimum nonforfeiture mortality/interest
 (2017 CSO mandatory from 2020; preferred-structure tables prohibited for nonforfeiture) [R3].
 
+**Statutory accounting and capital (NAIC SAP; risk-based capital).** The framework — annual
+statement exhibits, AVR/IMR, asset adequacy analysis and the RBC formula — is in
+`us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md`, and its
+whole-life application is in this directory's technical notes. Product-specific: both designs are
+**life contracts**, classified at inception and immutably [REG-R78 ¶5], reporting in **Exhibit 5**
+and in the annual statement's own **Whole Life** column, with premiums (including PUA rider
+payments) recognised gross when due rather than credited direct to reserve [REG-R79][REG-R89]
+[REG-R90]. Acquisition cost is expensed as incurred — there is **no statutory DAC** — so the
+90%-of-first-year-premium reference assumption is first-year surplus strain, not an amortisable
+asset [REG-R75 ¶2]. Whole life is VM-20's **All Other** reserving category, whose net premium
+reserve is itself the VM-A/VM-C formulaic (CRVM) calculation [REG-R3][REG-R110], and that reserve is
+floored by the **cash surrender value** [REG-R3 §3.D] — the guaranteed CV schedule is a reserve
+floor, not only a benefit. For capital, C-2 mortality runs on **net amount at risk** and is bucketed
+by *pricing flexibility* rather than product code: the instructions place participating whole life
+in the "with" bucket and **non-participating** whole life in the highest-factor "permanent without"
+bucket [REG-R128][REG-R133], so RefWL-Par and RefWL-FE take different factors on the same chassis,
+and paid-up additions raise face in force and therefore NAR [REG-R142]. **50% of the apportioned and
+unapportioned dividend liability counts in Total Adjusted Capital** [REG-R128] — a
+participating-specific capital item. Factor values are 2024-edition; the 2025 RBC instructions could
+not be parsed and no year-end 2025 factor is asserted [REG-R128][REG-R129].
+
 **Illustrations (NAIC Model 582; ASOP 24).** Par WL dividend illustrations are constrained by
 the disciplined current scale (based on actual recent experience, certified annually by the
 illustration actuary), the illustrated scale being no more favorable than the lesser of DCS

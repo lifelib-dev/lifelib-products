@@ -7,8 +7,11 @@ the standardized composite product defined in `product-spec.md` (same directory)
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
 `us/_research/fixed-deferred-annuity.md`; [REG-R#] tags refer to the cross-product
 reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
-R-numbering runs R1–R72 (provenance: `us/_research/regulatory-actuarial.md` for R1–R34,
-`us/_research/regulatory-actuarial-annuities.md` for R35–R72). **[std]** marks
+R-numbering runs R1–R142 with **R114–R124 and R143–R149 unused by design** (provenance:
+`us/_research/regulatory-actuarial.md` for R1–R34,
+`us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the three statutory
+accounting and capital research files for R73–R142; see `us/regulatory/sources.md`).
+**[std]** marks
 standardizations introduced for the reference implementation. **Parameter values are
 identical to those in `product-spec.md`.** This is the deferred annuity base chassis:
 the **fixed-indexed annuity** notes reference the surrender-benefit composition order and
@@ -587,10 +590,200 @@ adder, and a second regression target [S4].
 
 ---
 
+## Statutory accounting and capital
+
+The framework — no DAC, the reporting targets, the reserve hierarchy, the AVR/IMR
+pair, the RBC formula — is in `us/regulatory/statutory-accounting-and-capital.md`,
+with formulas in `us/regulatory/technical-notes.md`; neither is repeated here. Every
+parameter below is carried from `us/regulatory/` unchanged, and where that directory
+records an unretrieved document or an unsettled treatment the caveat is reproduced at
+the point of use rather than filled in.
+
+### Contract classification and reporting
+
+**A life contract, not a deposit-type contract.** SSAP No. 50 ¶9 enumerates **annuity
+contracts** among life contracts [REG-R78]; the deposit-type test is the absence of
+any obligation contingent on death, disability "or the continued survival (in the case
+of annuity contracts)" [REG-R80 ¶2][REG-R78 ¶5]. What decides it here is the
+guaranteed **life-contingent income options** electable after contract year 1
+[S1][S2][S10]. Classification is made **at inception and "shall not change"**
+[REG-R78 ¶5] — a per-contract flag, never re-derived. Hence: the purchase payment is
+**premium income recognised gross when received** [REG-R79 ¶¶2–5], not a direct credit
+to a policy reserve account (the deposit-type treatment of [REG-R80 ¶6]); the reserve
+reports in **Exhibit 5**, gross with a separate ceded deduction, Column 1 stating the
+valuation standard **by years of issue**, under Individual Annuities → **Deferred
+Fixed** in the Analysis of Operations [REG-R89][REG-R90]; **Exhibit 7 is reached only
+peripherally**, through income settlement options and annuity-certain balances
+[REG-R80 ¶5][REG-R89]; the change in loading on deferred and uncollected premium is
+identically zero, there being no future modal premium to defer (derived from
+[REG-R79 ¶11]); and acquisition cost is **expensed as incurred with no DAC asset**, so
+the whole 2.00% **[std]** commission hits surplus in the issue period [REG-R75 ¶2].
+
+**Open point, recorded rather than resolved.** A **period-certain-only** income
+election produces a balance shaped like an "annuity certain", a deposit-type candidate
+in Exhibit 7 column 3 [REG-R80 ¶5] — yet the host was a life contract at inception,
+classification "shall not change" [REG-R78 ¶5], and Exhibit 5 footnote (a) keeps a
+contract that carried mortality risk at issue in Exhibit 5 after the risk disappears
+[REG-R89]. That asymmetry is settled for a life-contingent payout with a certain
+period, not for this case. Carry the annuitization transfer with its elected option
+attached; **do not hard-code either answer.**
+
+### Reserve basis
+
+**Formulaic CARVM, then VM-22.** CARVM is the greatest present value over
+contract-year ends of guaranteed benefits **including guaranteed nonforfeiture
+benefits**, less future valuation considerations payable before that date
+[REG-R1 §5a.B]; a single-premium contract has none of the latter, so `X(k)` collapses
+to the discounted `CSV(k)` — worked in `us/regulatory/technical-notes.md`, "Formulaic
+reserves", Worked example 2, a SPDA on exactly this chassis. **AG 33's text was not
+retrieved** [REG-R39][REG-R41]; **AG 35 is the equity-indexed guideline and does not
+reach a book-value MYGA** [REG-R40]. **VM-22 constitutes CARVM** for in-scope
+contracts from valuation dates on or after **1 January 2026**, with the three-year
+elective transition [R2 §2.B][REG-R36]; a MYGA sits in the **Accumulation Reserving
+Category** [R2]. Both bases therefore coexist during transition — Exhibit 5 Column 1
+keys the standard **by years of issue** [REG-R89], so key the reserve on
+`(standard, year of issue)`, not on product. Mechanics stay in "Valuation and reserve
+pointers" below.
+
+- **Path enumeration is the CARVM obligation** and maps one-for-one onto the elective
+  paths already modelled — full surrender with `M(t)` and `C(t)`, free withdrawal, the
+  30-day exit at full account value, annuitization by option [REG-R1 §5a.B][S8][S10].
+- **VM-20's exclusion-test bars and deemed failures do not carry over**: VM-20 is CRVM
+  for individual *life*, blank for annuities by construction. The analogues are
+  VM-22's own **Section 7 exclusion tests and Single Scenario Test**, whose internals
+  `us/regulatory/` deliberately did not re-derive [REG-R36]. The governance
+  consequence does carry — the **adjusted-scenario-reserve** route re-imposes VM-G
+  Sections 2 and 3, and a company computing no deterministic or stochastic reserve
+  still files a **VM-31 sub-report** and reports readiness [REG-R109][REG-R108].
+- **The nonforfeiture floor is not the reserve.** `MGSV(t)` is a benefit floor inside
+  the CARVM benefit set: CARVM can sit **below** the immediately available surrender
+  value (Worked example 2 lands at 9,386.09 against 9,500) and the gap is a
+  **separate** Exhibit 5 Miscellaneous Reserves item, "surrender values in excess of
+  reserves otherwise carried" [REG-R89][REG-R81/IP51 ¶28] — the statutory counterpart,
+  opposite in sign, of this file's rule that a binding `MGSV` is not a cash flow.
+
+### What this chassis must additionally produce
+
+The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs",
+and is not restated. Specialised to this product:
+
+| Statutory item | Additional model output required here |
+|---|---|
+| Exhibit 5 keys [REG-R89] | reserve tagged by **valuation standard (CARVM vs VM-22) and year of issue**, plus the VM-22 **Jumbo / Non-Jumbo × 50 bp valuation-interest band** key |
+| Exhibit 5 Miscellaneous Reserves [REG-R89] | `max(0, SB(t) − V(t))` — surrender value in excess of the reserve otherwise carried — as a separate item |
+| Analysis of Increase in Reserves [REG-R90] | tabular considerations, interest, cost and reserves released on the **valuation** basis, distinct from the `AV`/`MGSV` recursions above |
+| IMR liability leg [REG-R86] | realised **MVA amount `M(t)`** by year with its materiality test (in excess of both **0.01% of liabilities and $1,000,000**) and an amortisation schedule consistent with the MVA determination — so `M(t)`, an internal entry and not a cash flow in the ledger above, becomes a reported quantity |
+| IMR excess-withdrawal exemption [REG-R89] | withdrawable reserves restricted to what is surrenderable **without an MVA**; effective withdrawals computed **without market adjustment**; both net of reinsurance |
+| C-3a bucketing [REG-R128] | per contract per period: `sc(y)`, whether the MVA period is running, whether the contract sits in a 30-day window |
+| C-2 longevity [REG-R128] | annuitization transfers tagged by **elected income option** |
+
+### Risk-based capital
+
+- **C-2 does not bite in accumulation.** The mortality exposure base is Exhibit of
+  Life Insurance face in force less life reserves, net of reinsurance
+  [REG-R128][REG-R142], and that exhibit does not apply to annuities [REG-R89]; a
+  death benefit equal to the account value leaves no net amount at risk, so the
+  **pricing-flexibility** categorisation driving the life factors is irrelevant here.
+  **C-2 longevity** is reserve-based and **expressly excludes deferred annuities where
+  annuitization is a right and not an obligation** [REG-R128], which it is here
+  [S1][S2]; the payout reserve from a life option *is* in scope, **including the
+  period-certain portion of a certain-and-life contract**, and has already left this
+  model — so the **[std]** 1.0%-at-the-window take-up against VM-22's prescribed 0%
+  [R2 §6.B.6] is a capital assumption as well as a cash flow assumption.
+- **C-3a is decisive and its bucket is duration-dependent.** Pre-tax factors, the
+  second figure applying where an **unqualified actuarial opinion based on asset
+  adequacy testing** is filed (a one-third reduction): **Low 0.0095 → 0.0063**,
+  reserve **with a fair value adjustment**; **Medium 0.0190 → 0.0127**, book value
+  **less a surrender charge of 5% or more**; **High 0.0380 → 0.0253**, **book value
+  without adjustment** [REG-R128]. This chassis walks through all three — years 1–5
+  carry an in-force MVA *and* a 9/8/7/6/5 charge [S8][S10]; under `rollover` a renewal
+  term restarts at 5/4/3/2/1, so only renewal year 1 reaches the 5% threshold
+  [S2][S11]; once both periods expire — permanently under `annual_redeclare`, where
+  `sc(·) ≡ 0` and `μ ≡ 0` [S13] — it is book value without adjustment at the **High**
+  factor, four times the Low. **The renewal-architecture switch is a capital decision,
+  not only a lapse decision.** The overlap is unresolved: *both* an MVA and a charge
+  ≥5% satisfies Low and Medium, the symmetric cap [S2] makes the adjustment partial,
+  and the instructions state no tie-breaker [REG-R128]. Make it a disclosed parameter;
+  **do not invent a rule.**
+- **C-3 Phase I applies.** Scope is "Certain Annuities" plus single premium life;
+  equity-indexed products are **excluded** and variable annuities go to Phase II
+  [REG-R128][REG-R135], so the MYGA is one of the few annuity chassis here that runs it — on the
+  **year-end asset adequacy model, same assumptions and as-of date**, with prescribed
+  scenarios and a different measurement. Whether it is compelled is decided by LR049's
+  significance and stress tests, so the whole formula must be computable first. The
+  example stress, **lapses increased by 50%**, is not directly implementable on a
+  shock-lapse year already at the 90% cap of the dynamic formula [R2] — an example,
+  not a prescription [REG-R128].
+- **Size, mix, covariance.** C-4a is **2.53% of Schedule T life premiums and annuity
+  considerations**, so on a single-premium chassis the whole charge lands in the
+  **issue year** and tracks new sales, not the in-force. C-3a carries no size band and
+  C-2 longevity's bite only post-annuitization; the size driver that does bite is the
+  **C-1o bond size factor** on weighted issuer count, a blank count taking the maximum.
+  And the two dominant charges here — **C-1o** on the backing portfolio and **C-3a** on
+  the liability — are added **inside one squared term** before the square root, so
+  there is no diversification credit between the two risks that actually drive the
+  block. **Total Adjusted Capital** includes the AVR only to the extent **not consumed
+  in asset adequacy testing** [REG-R128][REG-R29]. Every RBC figure above is from the
+  **2024** instructions, a **sold NAIC publication** marked "Not for Distribution" read
+  from a state department posting; the **2025 edition could not be parsed and no
+  year-end 2025 factor is asserted** [REG-R128][REG-R129].
+
+### Product-specific interactions and traps
+
+1. **The shock lapse can push interest-related losses out of IMR entirely.** The
+   excess-withdrawal exemption routes gains and losses on investments funding
+   withdrawals above `1.50 × min(wr(y−1), wr(y−2)) × WR(y−1)` **straight to net
+   income**, bypassing IMR [REG-R89]. A `rollover` chassis moves from ~1% base lapse to
+   a 75%-before-multiplier shock at guarantee-period expiry [R2], so the prior-year
+   ratios are tiny and nearly the whole shock-year outflow is "excess" — **derived**
+   from [REG-R89] applied to this chassis's lapse table, not stated by any source. `WR`
+   counts only what is surrenderable **without an MVA** — inside an MVA period the free
+   allowance [S10][S11], the whole account value in the window and after expiry [S1][S8].
+2. **The MVA is where this product meets the IMR.** Material market value adjustments
+   on contracts backed by assets carried at book enter the IMR and amortise
+   consistently with the MVA determination; material means in excess of both **0.01% of
+   liabilities and $1,000,000** [REG-R86]. A book-value MYGA is the paradigm case.
+3. **VM-22 Jumbo / Non-Jumbo × 50 bp bands are an Exhibit 5 granularity requirement**
+   [REG-R89]. The jumbo definition this library carries — initial consideration
+   **≥ $250 million**, contracts to the same holder within **90 days** combined — is
+   VM-V §1's, written for income annuities [REG-R37]; whether it governs the Exhibit 5
+   split for Accumulation-category business was **not established by the documents
+   retrieved**. On a retail block the split is degenerate, but the key and the 90-day
+   aggregation rule must still be produced.
+4. **Asset adequacy analysis is a minimum-reserve input, not a disclosure exercise** —
+   Standard Valuation Law §6.B [REG-R1], VM-30 requiring any shortfall to be
+   **established as an additional reserve** [REG-R100], ASOP 22 capping the tested block
+   at the statement value of the reserves tested [REG-R29], the IMR allocation
+   **sign-aware with no cash flows of its own** [REG-R111]. Two overlays reach this
+   product **directly rather than conditionally**: **AG 53** on complex and
+   high-yielding assets, where the spread funding the declared rate acquires prescribed
+   definitions and sensitivity tests [REG-R105][REG-R106], and **AG 55** on reinsurance,
+   effective for the **31 December 2025** statement with first filings due **1 April
+   2026** and starting assets equal to the **post-reinsurance** reserve [REG-R103].
+5. **Negative IMR admittance is a live, dated gate.** INT 23-01 is optional, capped and
+   RBC-gated, and **sunsets 31 December 2026 with automatic nullification 1 January
+   2027** as currently written; ¶9.e requires the admitted amount to be captured in the
+   PBR calculation or in asset adequacy testing and reconciled there
+   [REG-R87][REG-R100]. The replacement revised SSAP No. 7 **was not located or read**
+   [REG-R88]. Test admittance at every reporting date.
+6. **Tax and capital are coupled, and both need a projection.** IRC §807 gives
+   `max(net surrender value, 92.81% × CARVM)` capped at statutory [REG-R16]; a life
+   entity may **not carry back ordinary losses arising after 2017**, so DTA admittance
+   runs through the RBC-band and DTL-offset components of SSAP No. 101 on the **ExDTA**
+   ratio [REG-R97]. The Model #312 RBC Plan needs projected statutory operating income,
+   net income, capital and surplus for the current year and **at least four succeeding
+   years** [REG-R125]. **C-3 alignment**, which would merge Phase I and Phase II and
+   bring fixed indexed annuities into scope, is **not adopted law** [REG-R138].
+
+---
+
 ## Valuation and reserve pointers
 
-This library projects **gross liability cash flows**. Reserve layers consume them and are
-cited, not reproduced:
+This library projects **gross liability cash flows**. The statutory accounting and
+capital consequences of those cash flows — classification, Exhibit 5 reporting, the IMR
+interaction with the MVA, the C-3a bucketing — are in "Statutory accounting and capital"
+immediately above, which references the reserve-layer pointers below rather than
+duplicating them. Reserve layers consume the cash flows and are cited, not reproduced:
 
 - **VM-22 principle-based reserves for non-variable annuities** [R2][REG-R36]. Constitutes
   CARVM for in-scope contracts [R2 §1.A]; applies for **valuation dates on or after

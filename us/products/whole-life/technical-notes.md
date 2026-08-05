@@ -354,10 +354,195 @@ loan. Policy year `t = 10` (attained age 55 at EOY). All table values are illust
 (For clarity the PUA-block dividend `D^PUA_10` is omitted from this table; in the model it
 adds `(0.02 · PUACV_9) + (0.00096 · (PUAF_9 − PUACV_9))` to the amount in step 9 **[std]**.)
 
+## Statutory accounting and capital
+
+Framework and the shared model-output contract live in
+`us/regulatory/statutory-accounting-and-capital.md` (concepts, product-applicability matrix) and
+`us/regulatory/technical-notes.md` (formulas, algorithms); only what is specific to RefWL-Par and
+RefWL-FE is recorded here. **Source limits, reproduced at the point of use:** every RBC factor below
+is from the **2024** Life/Fraternal RBC instructions, a sold NAIC publication read from a state
+posting — the **2025 edition could not be parsed and no year-end 2025 factor is asserted**
+[REG-R128][REG-R129]; and **no AVR or IMR factor value exists anywhere in this library**, the
+research having deliberately not transcribed them [REG-R89].
+
+### Contract classification and reporting
+
+Both designs are **life contracts** — the SSAP No. 50 ¶5 test is that the entity assumes mortality
+risk, which a death-contingent benefit does, and whole life heads the life-contract list
+[REG-R78 ¶¶5, 9] — classified **at inception, immutably**, ¶5 also being where classification is
+fixed at inception and barred from changing [REG-R78 ¶5]: a per-model-point flag set at issue,
+never re-derived. The reserve reports in **Exhibit 5** (Liabilities page Line 1), the block in the
+annual statement's own **Whole Life** column of the Analysis of Operations and the Analysis of
+Increase in Reserves, and face in force in the **Exhibit of Life Insurance** [REG-R89][REG-R90].
+Considerations are **premium income, gross when due**, not a direct credit to reserve — that is
+the deposit-type treatment this contract never takes [REG-R79 ¶¶2–5][REG-R80 ¶6]; PUA rider
+payments `A_t` are premium on the same basis, and the
+gross-to-net **loading** difference is an *expense*, not a reduction of premium [REG-R79 ¶11]. The
+annual-mode standardization leaves no deferred and uncollected premium asset and no loading change;
+a modal run creates both (mean reserves at [REG-R81/IP51 ¶21]), and in a VM-20 projection deferred
+premiums are zero [REG-R3 §7.B]. Riders report on the **base contract's line**, so both in-scope
+riders and an A&H disability waiver rider reserve report as Whole Life [REG-R82][REG-R89].
+**One balance is genuinely unsettled:** SSAP No. 52 ¶5 names **dividend accumulations** among
+deposit-type candidates and Exhibit 7 carries a dividend accumulations column [REG-R80][REG-R89],
+yet the product-applicability matrix leaves whole life blank on both rows — the sources read do not
+settle where a par WL's `DA_t` reports, and the same question decides its C-3a bucket below.
+
+### Reserve basis
+
+**Formulaic:** CRVM under Standard Valuation Law §5, on the mortality table and valuation interest
+rate fixed by **calendar year of issue** (§4b), with the §6.A aggregate nonforfeiture floor and the
+§6.B floor at the amount the appointed actuary needs to render the opinion [REG-R1]; mean or
+mid-terminal reserve per [REG-R81/IP51 ¶21]. **Principle-based:** VM-20 constitutes CRVM for issues
+on/after 2020-01-01 [R3][REG-R1 §11], and whole life is the **All Other** reserving category, whose
+net premium reserve is itself determined "pursuant to applicable methods in VM-A and VM-C"
+[REG-R3 §3.B.6][REG-R110] — so **the formulaic engine is not legacy code**: it computes the NPR for
+this product inside a PBR-era manual, and it is also what a Life PBR Exemption company uses outright
+[R3]. Consequences specific to this product:
+
+- **The deterministic exclusion test is available and normally passed**: Σ future valuation net
+  premiums against Σ corresponding **guaranteed gross premiums** [REG-R3 §6.B]. The dividend never
+  enters that comparison, so premium-offset behaviour cannot fail it — the substantial guaranteed
+  gross premium is what passes it [R3]; a closed group passing three consecutive years is thereafter
+  tested at least every five [§6.B.4]. But the test is **barred entirely for term riders** [§6.B]:
+  a RefWL-Par carrying the term-blend rider has a component for which it is unavailable, and that
+  component sits in the **Term** reserving category on §3.B.4 prescribed and shock lapses. The
+  minimum reserve is a **sum** across categories, so Term excess cannot offset All Other slack
+  [§2.A, §4.C] — reporting column (Whole Life) and reserving category (Term) are different dimensions
+  needing separate model keys. Whether the *one-year term dividend option* is a "term rider" for
+  §6.B is not addressed by the sources read — **[unverified]**.
+- **The stochastic exclusion certification method is available** to whole life, barred only for
+  variable life and ULSG [REG-R3 §6.A]; the route taken is a governance fact, since passing by the
+  SERT's deterministic-reserve method or the Demonstration Test **re-imposes VM-G Sections 2 and 3**,
+  and a company computing no DR or SR still files a VM-31 sub-report and must report readiness to
+  compute them [REG-R109][REG-R108].
+- **The NPR floor is the cash surrender value** — for non-UL, the greater of the cost of insurance to
+  the next paid-to-date and the CSV [REG-R3 §3.D]. The guaranteed CV schedule *is* a reserve floor,
+  not only a benefit, and the quantity to floor on is `CSV_t = CV_t + PUACV_t + DA_t − L_t`. A
+  formulaic reserve below the immediately available surrender value leaves a gap carried as
+  "surrender values in excess of reserves otherwise carried" in Exhibit 5 Miscellaneous Reserves
+  [REG-R89][REG-R81/IP51 ¶28], alongside deficiency reserves, whose vehicle is Actuarial Guideline I
+  in the VM-C index — **text not retrieved** [REG-R41].
+- **Change in valuation basis** goes direct to surplus at beginning-of-year values, is not graded in
+  and is excluded from the Summary and Analysis of Operations [REG-R79][REG-R89]; a 55-year product
+  carries more years-of-issue cohorts than anything else here, and Exhibit 5 Column 1 states the
+  standard **by years of issue** [REG-R89].
+
+### What this product's model must additionally produce
+
+The shared contract in `us/regulatory/technical-notes.md`, "Required model outputs", applies in full
+and is not restated. What RefWL-Par/RefWL-FE must add or specialise:
+
+| Statutory item | Whole-life-specific model output |
+|---|---|
+| Exhibit 5, standard by years of issue [REG-R89] | reserve keyed by (year of issue, CSO table, `i_v`), base and PUA layers separable |
+| Exhibit 5 Miscellaneous Reserves [REG-R89] | `max(0, CSV_t − V_t)` per policy per duration; a deficiency reserve if the DET is ever failed |
+| Exhibit of Life Insurance [REG-R89] | face in force `= F + PUAF_t` (+ term-blend face), in thousands, on an incurred roll-forward |
+| Analysis of Increase in Reserves [REG-R90] | tabular net premium, tabular interest at `i_v`, tabular cost on **valuation** mortality — a **fourth** basis alongside `q^g/i_g`, `q^{sc}/i_d`, `q^e` — plus line 16 ending CSV and line 17 loan value available on it |
+| Policyholder dividends [REG-R90][REG-R128] | the declared dividend as its **own deduction line** (not a benefit, not an expense), *and* the apportioned / not-yet-apportioned dividend **liability** balances, which Total Adjusted Capital needs |
+| IMR excess-withdrawal test [REG-R89] | withdrawable reserves at BOY **net of policy loans**, and effective withdrawals **including the net increase in policy loans** — ordinary life is expressly in that base |
+| C-2 mortality [REG-R142][REG-R128] | NAR = face in force − life reserves (GA + SA), net of reinsurance — the reference model reports gross flows plus a separate loan account and **no NAR** **[std]**, so add it — plus a **dividend-scale repricing scenario** on a present value basis over five policy years |
+| C-3a bucketing [REG-R128] | reserves split by risk category: base life reserve Low, dividend accumulations Medium |
+| Tax and reinsurance [REG-R16][REG-R97][REG-R92] | §807 reserve seriatim and the statutory-versus-tax difference with its reversal pattern; gross and ceded reserves **separately, never netted**, a YRT credit being the one-year term mean reserve on the ceded amount on the **original policy's** basis [¶¶36–38] |
+| Asset adequacy analysis [REG-R100][REG-R29] | the **AVR consumed**, reported as an output — it is subtracted from the capital numerator |
+
+### Risk-based capital
+
+C-2, C-3a and C-4a bite this product; C-0, C-1cs, C-3b, C-3c and the AG 48 add-on do not arise for
+it on the sources read (no separate account, no subsidiary, no XXX/AXXX cession recorded for whole
+life), and C-1o bites through the assets backing the block, not the liability [REG-R128].
+
+**C-2 mortality is the charge that splits the two reference designs.** The exposure base
+is **net amount at risk, net of reinsurance** — face amount in force less life reserves, general
+plus separate account, now taken from the annual statement [REG-R142]. Bucketing is by **pricing
+flexibility, not product code**: the instructions' own examples place **participating whole life** in
+*With Pricing Flexibility* and **non-participating whole life** in *Permanent without Pricing
+Flexibility*, the highest-factor bucket and the default where no assessment is performed
+[REG-R128][REG-R133]. RefWL-Par and RefWL-FE therefore take different factors on the same chassis,
+and the difference is the dividend. The "with" categorisation must be *earned*: minimum dollar
+margin needed = flexibility factor (the gap between the without and with factors) × NAR, and the
+margin available from repricing over the next five policy years must reach it on a present value
+basis [REG-R128] — for par WL that lever is the dividend scale (`i_d`, `q^{sc}`, `e^m`), so the model
+must run a scale-reduction scenario, not merely a base scenario. Other defaults: direct individual
+permanent → *Permanent without*; non-affiliated **ceded** individual → *With Pricing Flexibility*
+[REG-R133]. Size bands apply to the **company total** individual and industrial NAR, then allocate
+proportionately [REG-R128][REG-R133], so the block's marginal charge is a function of company mix.
+Two product mechanics move the exposure: **each PUA purchase raises face in force and therefore
+NAR** by roughly (PUA face − PUA reserve), converting current earnings into future C-2 exposure; and
+because `CV_t → F` and `PUACV → PUAF` at age 100 [S1][S3], NAR runs off to zero at the endowment
+point **by construction, not by lapse**. For the RefWL-FE graded plan the years 1–2 benefit is 110%
+of premiums paid [S6][S7]; whether the Exhibit of Life Insurance reports `F` or the graded amount
+there is not addressed by the sources read — **[unverified]**.
+
+**C-3a is factor-based, bucketed by withdrawal provision.** Life insurance reserves sit in **Low** at
+**0.0095** pre-tax, **0.0063** where an unqualified actuarial opinion based on asset adequacy testing
+is filed; **dividend accumulations sit in Medium**, **0.0190 → 0.0127** [REG-R128] — the ACCUM option
+is about twice as capital-expensive per dollar as the base reserve, and whether that balance is an
+Exhibit 7 item is the open classification question above. **C-3 Phase I does not reach this product
+as specified:** its life scope is *single premium life*, and RefWL-Par is level-pay or 10-pay
+[REG-R128][REG-R135] — a single-premium design would pull the block into Phase I on the year-end
+asset adequacy model. LR049's significance test measures C-3a against total RBC, so the whole formula
+must be computable before you know whether cash flow testing is compelled [REG-R128].
+
+**C-4a is 2.53% of Schedule T life premiums**, outside the covariance radical, dollar for dollar
+[REG-R128]: a level-premium whole life pays it for the entire premium period, while a paid-up, RPU
+or premium-completed 10-pay block stops generating it. **Total Adjusted Capital carries the
+participating-specific item** — the AVR counts as capital, limited to the amount not consumed in
+asset adequacy testing [REG-R128][REG-R29], **and 50% of dividends apportioned for payment plus 50%
+of dividends not yet apportioned** [REG-R128, LR033 lines (3)–(4)]; a model producing only dividend
+*payments* cannot supply that. The Model #312 RBC Plan requires projected statutory operating income,
+net income, capital and surplus for the current year and **at least four succeeding years**
+[REG-R125] — which is why this product needs a projection run, not only a valuation.
+
+### Product-specific interactions and traps
+
+1. **Dividends carry three statutory meanings at once.** Their own deduction line in the Summary of
+   Operations, neither benefit nor expense [REG-R90]; a **benefit** in the VM-20 SERT's
+   PV-of-benefits denominator, where premium, expense and reinsurance flows are not [REG-R3 §6.A];
+   and the pricing-flexibility lever for C-2 [REG-R128]. Because `D_t` is floored at zero **[std]**,
+   adverse experience does not claw back, so projected statutory *earnings* are asymmetric in the
+   scale even where the reserve is not.
+2. **Guaranteed cash values are a reserve floor.** §3.D floors the NPR at CSV [REG-R3], SVL §6.A
+   floors the aggregate reserve on the nonforfeiture basis [REG-R1], and any residue is a
+   Miscellaneous Reserves line [REG-R89]. A model treating the CV table only as a benefit schedule
+   understates the reserve in exactly the durations where that schedule is richest.
+3. **Policy loans.** No admissibility rule for policy loans is asserted here — SSAP No. 49 was not
+   read, and the only general principle in the retrieved sources is that assets not usable to meet
+   policyholder obligations are non-admitted and charged against surplus [REG-R74 ¶36]. What *is*
+   recorded: loans are **excluded from the AVR asset base** [REG-R85 ¶2]; they enter the VM-20 §4.A
+   deterministic reserve as both a balance and a net flow [REG-R3]; the IMR excess-withdrawal test
+   counts the **net increase in policy loans** as an effective withdrawal and measures withdrawable
+   reserves **net of policy loans** [REG-R89]; and line 17 of the Analysis of Increase in Reserves
+   reports the loan value available on the ending CSV [REG-R90]. Whether RBC charges policy loans on
+   a line of its own **was not established by the instructions read** [REG-R128] — do not code a zero
+   charge on the strength of the AVR exclusion.
+4. **First-year strain is a modelled output.** The 90%-of-first-year-premium plus $250 acquisition
+   assumption **[std]** is expensed as incurred with **no DAC asset**, against a single year's
+   premium and the initial reserve; levelized-commission funding is looked through [REG-R75 ¶¶2, 4–5].
+5. **Tax.** The §807 reserve is `max(net surrender value, 92.81% × NAIC-method reserve)` capped at
+   statutory [REG-R16]; for whole life the NSV leg is a real competitor because the CV schedule is
+   substantial, so which leg binds must be tested **by duration**, not assumed. The difference feeds
+   DTA/DTL scheduling and admittance, which runs on the ExDTA ACL RBC ratio [REG-R97].
+6. **Company- and treaty-level items still land on this statement:** AG 53 by a company-level size
+   test [REG-R105], AG 55 by treaty [REG-R103], negative-IMR admittance as a company balance that
+   must still be captured in the PBR calculation or asset adequacy testing [REG-R87][REG-R100]; and
+   AVR and IMR need **asset-side disposal detail** this liability model does not produce, with AVR
+   movements going direct to surplus [REG-R89][REG-R86].
+7. **Three open items this library will not guess**, all **[unverified]** — record the convention
+   chosen rather than inferring one. (a) Whether a premium paid by the REDUCE_PREM/premium-offset
+   option, or a dividend applied to buy PUAs, is reported **gross** (premium income plus an
+   offsetting policyholder dividend) or netted: premium is recognised gross when due [REG-R79 ¶¶2–5]
+   but the application case is not addressed, and C-4a is 2.53% of premium [REG-R128]. (b) Whether a
+   PUA layer bought in a later calendar year takes the base policy's year-of-issue valuation basis or
+   the purchase year's — SVL §4b keys to calendar year of issue [REG-R1], and the answer moves both
+   `i_v` and the mortality table for the PUA block. (c) How an ETI or RPU block affects the VM-20
+   reserving category, the C-2 pricing-flexibility bucket or the C-4a premium base.
+
 ## Valuation and reserve pointers (brief)
 
 This library projects **gross liability cash flows**; statutory, tax, and GAAP measurement are
-separate layers, cited not reproduced:
+separate layers, cited not reproduced. Statutory measurement is developed at length in the preceding
+section, "Statutory accounting and capital"; the entries below are the entry points it builds on and
+do not restate it:
 
 - **Statutory:** Standard Valuation Law root [REG-R1]; for issues on/after 2020-01-01, VM-20
   minimum reserve = f(net premium reserve, deterministic reserve, stochastic reserve) with

@@ -6,10 +6,12 @@
 the standardized composite product defined in `product-spec.md` (same directory). This is
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
 `us/_research/registered-index-linked-annuity.md`; [REG-R#] tags refer to the **shared
-cross-product numbering space R1–R72** curated at
+cross-product numbering space, which now runs R1–R142** with **R114–R124** and
+**R143–R149** permanently unused by design, curated at
 `us/references/regulatory-and-actuarial-references.md` (R1–R34 from
 `us/_research/regulatory-actuarial.md`, R35–R72 from
-`us/_research/regulatory-actuarial-annuities.md`). **[std]** marks standardizations
+`us/_research/regulatory-actuarial-annuities.md`, R73–R142 the statutory accounting and
+capital entries cited only by *Statutory accounting and capital* below). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
 `product-spec.md`; the mechanics anchor is the Brighthouse Shield Level II prospectus,
 Appendix F [S2].
@@ -627,10 +629,265 @@ Trace and checks:
 
 ---
 
+## Statutory accounting and capital
+
+The framework is in `us/regulatory/statutory-accounting-and-capital.md` and the formulas
+and algorithms in `us/regulatory/technical-notes.md`; only what is RILA-specific is stated
+here. [REG-R#] tags resolve against the shared numbering as extended to **R1–R142**
+(R114–R124 and R143–R149 unused by design). Nothing marked [unverified] is upgraded, and
+**no AVR factor, IMR amortisation factor or RBC factor value is stated that
+`us/regulatory/` does not contain**.
+
+### Contract classification and reporting
+
+**A life contract, fixed at inception.** SSAP No. 50 ¶9 lists annuity contracts among life
+contracts and SSAP No. 52 ¶2's mortality-risk test is met by "the continued survival (in
+the case of annuity contracts)" of the annuitant [REG-R78][REG-R80]; the representative
+design settles it twice over — a return-of-premium GMDB for owners 80 or younger, and
+forced annuitization into life-contingent forms at the Maturity Date [S2]. Classification
+"shall be made at the inception of the contract and shall not change" [REG-R78 ¶5]: a
+per-contract flag the model asserts never moves, even as the GMDB runs out of the money.
+Considerations are therefore **premium income recognised gross when due, including single
+premiums when received** [REG-R79 ¶¶2–5], not a direct credit to reserve, and the reserve
+reports in **Exhibit 5**, keyed by valuation standard and year of issue [REG-R89][REG-R90].
+Single premium [S1][S2] means no deferred and uncollected premium, hence **no loading and
+no change-in-loading expense line** [REG-R79 ¶11]. Exhibit 7 is reached only peripherally,
+through settlement options and supplementary contracts without life contingencies spawned
+at annuitization, hence the matrix mark `(x)` [REG-R80][REG-R89].
+
+**The separate account split dominates the reporting.** Index-linked options sit in a
+**non-unitized separate account**; the Fixed and Holding Accounts are **general account**
+[S1][S2][S4][R2][R6]. Under SSAP No. 56 ¶5 the consideration is general account premium
+income *and simultaneously* a transfer to the separate account statement, while benefits,
+surrenders, net transfers, commissions and premium taxes are general account expenses and
+the separate account's net gain from operations is general account income [REG-R83 ¶5].
+Every amount on the separate accounts transfer line must **also** appear in the premium,
+benefit or withdrawal lines of the Analysis of Operations [REG-R89] — emit gross flows plus
+the transfer, never a net. Which Individual Annuities column receives it (Deferred
+**Indexed**, **Variable With Guarantees**, **Variable Without Guarantees** [REG-R90]) is
+**not settled by the retrieved instructions**: AG 54 makes a compliant ILVA a variable
+annuity [R2][REG-R44], the contract is index-linked, and it carries a GMDB — three columns
+have a claim and none is named for this product [REG-R89][REG-R90][unverified]. Treat the
+reporting dimension as configuration, not a constant.
+
+### Reserve basis
+
+**Formulaic CARVM is the floor and never goes away.** SVL §5a is the minimum standard for
+annuity and pure endowment benefits [REG-R1]; its interpretive layer — **AG 33** (elective
+benefits) and **AG 35** (equity-indexed CARVM) — **was not retrieved by this library and
+its mechanics are quoted nowhere in it** [REG-R39][REG-R40], and the VM-A index's two
+closest formulaic items, **A-250 (variable annuities)** and **A-255 (modified guaranteed
+annuities)**, were likewise **not read** [REG-R110]. A RILA CARVM run is therefore the
+path-enumeration exercise of *Formulaic reserves* in `us/regulatory/technical-notes.md`,
+except that the guaranteed benefit on every elective path is an **interim value** — a
+market-consistent derivative price — precisely the interaction those unread guidelines
+would govern.
+
+**VM-21 is the principle-based requirement, and its scope test is a product-level
+decision.** For issues on or after the Valuation Manual operative date the Manual standard
+*is* the minimum, SVL §11 [REG-R1], and in scope VM-21 constitutes CARVM: reserve =
+**CTE 70** of the Scenario Reserves + Additional Standard Projection Amount [REG-R35]. §2.A.1 reaches contracts with guarantees
+similar in nature to GMDBs or VAGLBs where there is no other explicit reserve requirement,
+**§2.A.3 excludes separate account contracts that guarantee an index and offer no
+GMDB/VAGLB**, and §2.A.2 extends to subaccounts with MVA-like features [R3][REG-R35] — so
+the representative GMDB-bearing design is **in** while a bare accumulation RILA is **out**
+and falls back to formulaic CARVM. AG 43 pulls pre-2017 contracts onto the same
+calculation, and the two populations may be reserved as one aggregated group
+[REG-R38][REG-R35]. **VM-22 is not the RILA standard** — it is the non-variable annuity
+requirement [REG-R36] and a compliant ILVA is a variable annuity [REG-R44]. Recorded rather
+than resolved: the matrix in `us/regulatory/statutory-accounting-and-capital.md` marks RILA
+`?` on the VM-21/AG 43 and VM-22 rows because the *capital* instructions never name the
+product, while the scope reading above comes from VM-21 §2.A itself [R3][REG-R35].
+
+**There are no exclusion tests to code, and that is the consequence.** VM-20's stochastic
+and deterministic exclusion tests are CRVM machinery for individual *life* and do not reach
+an annuity [REG-R3]; VM-21 has none at all, so an in-scope contract computes CTE 70 every
+year [REG-R35]; VM-22's §7 tests are reachable only for a non-variable annuity [REG-R36].
+The "pass the test, skip the engine" route that shapes term and ULSG models is unavailable
+here. **VM-31** still requires a PBR Actuarial Report and **VM-G** still allocates model
+ownership [REG-R108][REG-R109]; there is **no ASOP for principle-based reserves for
+annuities** — ASOP 52 is scoped to VM-20 life products [REG-R31] — leaving the non-binding
+Academy VM-21 practice note supplement [REG-R66]. **VM-30 binds regardless**: no exemption
+clause, any shortfall becomes an **additional reserve** in Exhibit 5 Miscellaneous Reserves
+[REG-R100][REG-R89], and SVL §6.B makes that amount part of *minimum reserves* [REG-R1];
+**AG 53** and **AG 55** (effective for reserves reported in the December 31, 2025 annual
+statement) attach at **company and treaty level, not product level**, hence their `(x)`
+marks [REG-R105][REG-R103].
+
+### What this product's cash flow model must additionally produce
+
+The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs"; the
+rows below are the RILA-specific additions to it, not a restatement of it.
+
+| Statutory item | Required model output |
+|---|---|
+| Exhibit 5 / SSAP No. 56 split [REG-R83][REG-R89] | `V_k(t)` per option flagged **separate account**, `FA(t)` and `HA(t)` flagged **general account** — never one undifferentiated `AV(t)` |
+| Separate account measurement basis [REG-R83 ¶¶17–18][REG-R84] | a per-account **fair value vs ¶18.b book value** flag with the state-approval status that earned it |
+| GMDB reserve, in the general account [REG-R83 ¶7] | the return-of-premium liability, `max(0, ROP(t) − AV(t))`, and the benefit-less-separate-account-value difference at each death |
+| Net transfers to/from separate accounts [REG-R89][REG-R90] | Term-End and Transfer-Period movements between index options and the Fixed/Holding Account, gross on **both** the transfer line and the captioned line |
+| IMR liability leg [REG-R86] | the realised interest-rate portion of the `[(1+C)/(1+D)]^E` factor on each mid-term settlement [S2], net of tax, on the amortisation term implied by the MVA determination |
+| Separate account AVR [REG-R83 ¶¶23–25] | book-value separate account balances by AVR sub-component, **combined with the general account AVR** for reporting |
+| Derivative counterparty exposure [REG-R96][REG-R85 ¶2] | the hedge portfolio's counterparty exposure by NAIC designation — an AVR Default sub-component and a C-1o input, not only a hedge-effectiveness input |
+| VM-21 Scenario Reserves [REG-R35][REG-R128] | the **vector**, retained once and read twice (CTE 70 reserve, CTE 98 capital), with the ASPA computed once |
+| Tax reserve [REG-R16] | `max(net surrender value, 92.81% × CARVM)` capped at statutory, the net surrender value leg being the interim value less the withdrawal charge — re-solved from market data each valuation date |
+
+### Risk-based capital
+
+**C-2 does not bite, and the near-miss is worth stating.** C-2 mortality runs off **net
+amount at risk = face amount in force less life reserves (general plus separate account),
+net of reinsurance**, sourced from the **Exhibit of Life Insurance** [REG-R128][REG-R142] —
+which a deferred annuity does not populate [REG-R89]. The GMDB's own net amount at risk
+`max(0, ROP − AV)` is therefore **not** a C-2 exposure base; it drives the VM-21 reserve
+instead, and the pricing-flexibility categorisation is inapplicable [REG-R128][REG-R133].
+**C-2 longevity** is reserve-based and expressly excludes deferred annuities where
+annuitization is a right not an obligation, and variable deferred reserves under VM-21 even
+after account exhaustion [REG-R128] — the deferral phase is out. After the Maturity Date
+the resulting payout annuity in pay status *is* in scope at **0.0171 / 0.0108 / 0.0095 /
+0.0089** on the first $250m, next $250m, next $500m and over $1,000m [REG-R128],
+**including** the period-certain portion of the Life-with-10-Years form [S2]. Whether the
+contract's **forced** annuitization at the Maturity Date [S2] makes annuitization an
+"obligation" for the deferral-phase exclusion is not addressed [REG-R128][unverified].
+
+**C-4a computes without argument and its shape is single-premium**: 2.53% of Schedule T
+life premiums and annuity considerations plus 0.06% of separate account liabilities
+[REG-R128], so the whole consideration meets the 2.53% factor in the **issue year** and
+never again, leaving a standing 0.06% charge scaling with the index-linked block. (The
+matrix in `us/regulatory/statutory-accounting-and-capital.md` marks C-4a `x` here because
+the charge reads annual-statement quantities that do not turn on product identity, while
+Matrix C in `us/references/regulatory-and-actuarial-references.md` marks the same cells `—`
+because the instructions never name the product. Both stand; this section resolves
+neither.) **C-1o and C-1cs attach to assets, not the liability** — the general account
+block backing the Fixed Account, Holding Account and GMDB reserve, plus the hedge
+portfolio's counterparty exposure, at book/adjusted carrying value × designation factor ×
+bond size factor [REG-R128]; on the ¶18.b **book-value** basis the separate account's
+assets are carried "as if … held in the general account" [REG-R83 ¶18], which is where the
+measurement election starts to move a capital number. The Academy places ILVA RBC as
+"C0–C1: General Account, C3–C4: Separate Account" [R6] — a secondary source, not the
+instructions. **C-3 is the hole; read the next section before coding any of it.**
+
+### Product-specific interactions and traps
+
+**The honest gap: this product has no RBC treatment to code.** The Life and Fraternal RBC
+Forecasting and Instructions read for this library — the **2024** and **2023** editions, a
+**sold NAIC publication** marked "Not for Distribution", read from copies posted by a state
+insurance department, with the **2025 edition unparseable** — **never mention registered
+index-linked annuities, index-linked annuities or ILVA at all** [REG-R128][REG-R129]. The
+capital treatment therefore has to be inferred from whether the contract is valued under
+AG 43 / VM-21: C-3 Phase II's scope statement is *method*-based ("all policies and
+contracts that have been valued following the requirements of AG-43 or VM-21"), and a
+contract outside it would presumably take factor-based C-3 on the equity-indexed convention
+— "the same factors as their non-indexed counterparts, based on guaranteed values ignoring
+those related to the index", excluded from C-3 cash flow testing [REG-R128]. The nearest
+textual hook anywhere is C-3 Phase I's "Certain Annuities" scope, which covers deferred and
+immediate annuities and "guaranteed separate accounts (excluding guaranteed indexed
+separate accounts on a Class II strategy)" while expressly excluding variable annuities
+[REG-R128][REG-R135] — and a compliant ILVA *is* a variable annuity [REG-R44] whose
+separate account guarantees an index. **No reading is sourced; all are [unverified], and
+this library states no C-3 charge for a RILA** [REG-R128]. Two reasons the inference is
+harder than it looks, recorded rather than resolved:
+
+- **The C-3a buckets do not obviously fit.** The Low bucket is "annuity reserve **with fair
+  value adjustment** (excluding unitized separate accounts)" — a RILA separate account is
+  **non-unitized** [S4][R2][R6], so that exclusion does not reach it, but whether an AG 54
+  interim value *is* a fair value adjustment is nowhere stated [REG-R128][unverified]. If
+  it is not, the surrender-charge test applies and the 7-7-6-5-4-3-0 schedule [S1][S2]
+  falls below the instructions' **5%** threshold at the start of **contract year 5**,
+  moving the contract from the Medium bucket to the High bucket and **doubling** the
+  pre-tax factor, 0.0190 → 0.0380 [REG-R128] — a bucket that migrates with duration, which
+  no other product in this library has.
+- **"Guaranteed values ignoring those related to the index" is not well defined here.** For
+  an FIA it means the minimum guaranteed contract value; on a buffered RILA the downside is
+  contractual *and* index-linked by construction (losses beyond *b* pass straight through
+  [S1][S2]), and the only index-free guarantees are the 1% Fixed/Holding Account minimum
+  and the guaranteed minimum cap/step/edge floors [S1][S2]. Applying the equity-indexed
+  convention here is not a mechanical operation [REG-R128][unverified].
+
+**AG 54 makes the nonforfeiture value a market price, and that reaches the statement.**
+Contracts issued on or after **July 1, 2024** must produce Interim Values materially
+consistent with the Hypothetical Portfolio less Trading Costs [R2][REG-R44], and the
+interim value is what every surrender, withdrawal, death benefit and annuitization settles
+at [S1][S2]. So Exhibit 5 Miscellaneous Reserves' **"surrender values in excess of reserves
+otherwise carried"** [REG-R89][REG-R80 ¶16] compares a CARVM or VM-21 reserve against a
+**daily derivative price** and must be re-run from market data at the valuation date, not
+pre-computed from policy state; and because in-force blocks straddle the effective date a
+statutory model carries **two interim-value engines keyed off issue date** [S1][R2], any
+consequent change of *reserve method* being a change in valuation basis — **direct to
+surplus**, measured at the beginning of the year, ungraded, excluded from the Summary and
+Analysis of Operations, reported in Exhibit 5A [REG-R79][REG-R80 ¶14][REG-R89].
+
+**SSAP No. 56 ¶18.b names this product, and the consequence is an AVR and an IMR a VA does
+not have.** The *As of March 2026* manual carries registered index-linked annuity
+contracts, alongside pension risk transfer and BOLI, as expected examples of contracts
+eligible — **with state regulator approval** — for **book value** measurement in a separate
+account, the general account serving as "an overall backstop or … an implied guarantee"
+[REG-R83 ¶¶17–18][REG-R84]. **Any assumption that a RILA separate account must be at fair
+value is wrong.** Three things follow: the **liability basis follows the asset basis** —
+A-820 valuation interest rates on a general-account basis, current market-based rates where
+assets are at fair value [REG-R83 ¶30]; a **separate account IMR is required where assets
+are at book value and not where they are at fair value**, account by account [¶¶26–27]; and
+a **separate account AVR** is required where the entity rather than the policyholder bears
+default and fair-value loss — as a book-value, MVA-bearing or book-value-guarantee contract
+does — **combined with the general account AVR** for reporting [¶¶11, 23–25]. A traditional
+VA separate account needs neither except AVR on seed money; a book-value RILA separate
+account needs both, which is why the matrix marks RILA `x` on the AVR and IMR rows where
+VUL and VA carry `(x)` [REG-R83][REG-R85][REG-R86][REG-R89]. **No AVR factor and no IMR
+amortisation factor value appears anywhere in this library — the research deliberately did
+not transcribe them** [REG-R89]. Term-end transfers ride the same mechanic: value moving
+between the separate account and the Fixed or Holding Account [S1][S2] is an inter-account
+**asset** transfer, a book-value separate account taking the seller's BACV with the
+fair-value difference to IMR in the purchasing account so the two accounts' IMR nets to
+zero [REG-R83 ¶¶19–22], with a March 2026 SAPWG revision on **nonadmittance for
+general-account-basis assets held in the separate account** still live [REG-R88].
+
+**The MVA inside the interim value is an IMR liability leg — conditionally.** Material
+market value adjustments on contracts backed by assets carried at book enter IMR, amortised
+consistently with the MVA determination, **material** being in excess of both **0.01% of
+liabilities and $1,000,000** [REG-R86]. The `[(1+C)/(1+D)]^E` factor in the fixed leg is
+exactly such an adjustment [S2] — but only if the backing assets are at book, which loops
+back to the ¶18.b election. Two [unverified] items sit on top: SSAP No. 86's paragraph
+numbering, including the **¶17 election to route a terminated hedge's gain or loss into
+IMR**, is from a 2010 standalone print never cross-checked against the March 2026 manual
+[REG-R96][unverified]; and whether a RILA's interim value counts as "an MVA" for the
+**excess-withdrawal exemption** — whose withdrawable-reserve base is contracts surrenderable
+**without** an MVA [REG-R89] — is unaddressed, the SEC treating interim value adjustments
+and MVAs as two distinct "contract adjustments" [R1] while AG 54 deliberately left MVA
+requirements to state review [R2], so the vocabulary itself is contested [unverified].
+
+**No DAC, single premium, no fee income line — the strain is structural.** Acquisition
+costs "shall be expensed as incurred" with no DAC asset [REG-R75 ¶2][REG-R74], and the
+[std] 6%-of-premium-plus-$200 load falls against a **single** consideration, so it and the
+whole initial reserve hit surplus in the issue year with nothing to spread them against.
+Nor is there fee income to offset it: no explicit asset-based charge is deducted from
+index-linked value [S2][S3][S4][S6][R6], so the "separate account charges" income the SSAP
+No. 56 ¶5 split expects [REG-R83 ¶5] is **zero on this chassis** and margin appears only as
+investment spread. The GAAP contrast is sharper here than for any other product in this
+library: RILA index credits and annuity guarantees are the paradigm **market risk benefits**
+at fair value through earnings under LDTI [REG-R34][REG-R71], while **SSAP No. 56 ¶45
+expressly rejects ASU 2018-12 and ASU 2022-05** [REG-R83 ¶45] — **a statutory run may not
+reuse the MRB fair value**, however tempting the overlap with the interim-value engine.
+
+**Taxes, the forward projection, and what to re-check.** The IRC §807 tax reserve is
+`max(net surrender value, 92.81% × CARVM)` capped at statutory [REG-R16] — here the net
+surrender value leg is the interim value less the withdrawal charge, so the tax reserve
+inherits the model's market-data dependency. Deferred tax admittance then runs off the
+**ExDTA Authorized Control Level RBC ratio** [REG-R97], and Model #312 requires an RBC Plan
+projecting statutory income and surplus for the current year and **at least four succeeding
+years** [REG-R125], so the C-3 hole is not confined to the valuation date. Two
+live projects: **C-3 alignment** would merge Phase I and Phase II and bring fixed indexed
+annuities into scope, field test specifications re-exposed July 30, 2026 [REG-R138] — the
+most likely vehicle for a RILA treatment to appear; and **INT 23-01**'s negative-IMR
+admittance sunsets December 31, 2026 with automatic nullification January 1, 2027 as
+currently written, its replacement **revised SSAP No. 7 not located or read**
+[REG-R87][REG-R88].
+
+---
+
 ## Valuation and reserve pointers
 
 This library projects **gross liability cash flows**. Reserve and capital layers consume
-them and are cited, not reproduced:
+them and are cited, not reproduced. The statutory accounting and capital layer — contract
+classification, the annual statement exhibits, AVR/IMR, and what is and is not sourced for
+RBC — is in *Statutory accounting and capital* above and is not repeated in this list:
 
 - **Nonforfeiture.** AG 54 is the governing standard and is unusual in that the
   nonforfeiture value *is* the model's interim value: contracts issued on or after
@@ -648,10 +905,17 @@ them and are cited, not reproduced:
   representative return-of-premium GMDB design is in [R3][S2]. AG 43 remains the scoping
   shell that pulls pre-2017 business onto the VM-21 calculation [REG-R35][REG-R38];
   implementation guidance in the Academy's VM-21 practice note supplement [REG-R66].
-- **Capital.** C-3 Phase II: TAR at **CTE 90**, RBC = TAR − statutory reserves, subject to
-  the Standard Scenario floor [REG-R47]; VM-21 §§4.A–4.E and the RBC requirements are
-  identical apart from the elective tax treatment, so one projection serves both
-  [REG-R35]. Reform background in [REG-R48].
+- **Capital.** See *Statutory accounting and capital* above, which governs where this
+  bullet and it differ. C-3 Phase II historically set TAR at **CTE 90**, RBC = TAR −
+  statutory reserves, subject to the Standard Scenario floor [REG-R47] — that is the
+  **pre-reform** package and is **superseded in its parameters** by the current
+  instructions, which use **CTE 98** of the same Scenario Reserves plus the **Additional
+  Standard Projection Amount** [REG-R128]; never read a CTE level, a scalar or a tax rate
+  off [REG-R47]. VM-21 §§4.A–4.E and the RBC requirements remain identical apart from the
+  elective tax treatment, so one projection serves both [REG-R35]. Reform background in
+  [REG-R48]. **Whether any of this reaches a RILA is unsourced** — the retrieved RBC
+  instructions never mention RILA, ILVA or index-linked annuities
+  [REG-R128][REG-R129][unverified].
 - **Tax.** IRC §807: greater of net surrender value and 92.81% of the NAIC-prescribed
   method (CARVM), capped at statutory [REG-R16]; distribution taxation under §72
   [REG-R55]; §817(h) diversification [REG-R15].

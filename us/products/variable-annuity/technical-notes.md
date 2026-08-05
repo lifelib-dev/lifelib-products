@@ -6,10 +6,12 @@
 the standardized composite product defined in `product-spec.md` (same directory). It is
 not any single insurer's product. **[S#]/[R#]** tags resolve against
 `us/_research/variable-annuity.md`; **[REG-R#]** tags resolve against the single shared
-cross-product numbering space **R1–R72** curated at
+cross-product numbering space **R1–R142** curated at
 `us/references/regulatory-and-actuarial-references.md` (R1–R34 from
 `us/_research/regulatory-actuarial.md`, R35–R72 from
-`us/_research/regulatory-actuarial-annuities.md`). **[std]** marks a standardization
+`us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three statutory
+accounting and capital research files, with **R114–R124** and **R143–R149** unused by
+design). **[std]** marks a standardization
 introduced for the reference implementation; **[unverified]** marks a claim the research
 file could not confirm against a retrieved document. **Every parameter value below is
 identical to the value in `product-spec.md`.** The mechanics anchor is the Jackson
@@ -548,10 +550,193 @@ declines.
 
 ---
 
+## Statutory accounting and capital
+
+**Framework cited, not restated.** Concepts are in
+`us/regulatory/statutory-accounting-and-capital.md`, algorithms and the shared **Required
+model outputs** contract in `us/regulatory/technical-notes.md`; only what is specific to this
+product is below, and the **[REG-R#]** space now runs **R1–R142** (R114–R124 and R143–R149
+unused by design). Every RBC figure here comes from the **2024** *Life and Fraternal
+Risk-Based Capital Forecasting and Instructions*, a **sold NAIC publication** marked "Not for
+Distribution" read from a state department posting; the **2025 edition could not be parsed**,
+so nothing below is a year-end 2025 factor [REG-R128][REG-R129][REG-R139].
+
+### Contract classification and reporting
+
+- **A life contract, permanently.** Annuity contracts are enumerated as life contracts
+  [REG-R78 ¶9], and this one carries survival risk on both legs — a GMDB on death and a For
+  Life Guarantee payable while the Designated Life survives after depletion [S1].
+  Classification is made **at inception and cannot change** [REG-R78 ¶5]: a flag set at issue
+  that does **not** flip when `depleted_flag` turns true and the liability becomes a pure
+  life-contingent stream. Considerations are therefore **premium income**, gross when due,
+  not a direct credit to reserve [REG-R79 ¶¶2–5][REG-R80 ¶6]; settlement options,
+  supplementary contracts without life contingencies and dividend accumulations spawn
+  **deposit-type** balances alongside, rolling forward in Exhibit 7 [REG-R80][REG-R89].
+- **Exhibit 5**, gross with a separately computed ceded deduction, Column 1 stating the
+  valuation standard **by years of issue** [REG-R89][REG-R90]. The research transcribed the
+  Column 1 abbreviations **VM-20NPR**, **VM-20 DET/STO** and **VM-22** and no VM-21 code
+  [REG-R89]; read the current instruction rather than inventing one. Reporting column:
+  Individual Annuities → Deferred → **Variable *With* Guarantees**, distinct from the
+  Variable Without Guarantees column [REG-R90] — a reporting dimension of "variable annuity"
+  is one column short.
+- **Separate account presentation, SSAP No. 56 ¶¶4–5.** Considerations are income in the
+  **general account** summary of operations and simultaneously a **transfer** to the separate
+  account statement; base contract and rider charges and the separate account's net gain from
+  operations are general account income; benefits, surrenders, net transfers, commissions and
+  premium taxes are general account expenses [REG-R83]. Every amount on the separate accounts
+  transfer line must **also** appear in the premium, benefit or withdrawal captioned lines of
+  the Analysis of Operations [REG-R89].
+- **No DAC and no MRB.** Acquisition cost is expensed as incurred [REG-R75 ¶2] and SSAP
+  No. 56 ¶45 rejects ASU 2018-12 and SOP 03-1 outright [REG-R83], so the risk-neutral market
+  risk benefit measurement cited below may not be reused for a statutory number. The base run
+  **omits acquisition expense** **[std]**; a statutory run cannot, since a single-premium
+  contract books its whole commission in the issue period against one consideration.
+
+### Reserve basis
+
+**VM-21 constitutes CARVM for this product**, and AG 43 carries the same requirements back to
+contracts issued before January 1, 2017, the two populations being aggregable
+[R1][REG-R35][REG-R38]. **There is no exclusion test and no formulaic escape**: VM-20's
+exclusion tests are life-only, VM-20 being CRVM for individual *life* [REG-R3], and VM-22's
+Section 7 tests are for **non-variable** annuities [REG-R36]; VM-21's only relief is the
+**Alternative Methodology**, available for variable deferred contracts with no guaranteed
+benefits or **only GMDBs**, never for a GLWB block [R1]. So the reserve is unavoidably
+stochastic and is an **aggregate** amount over the run, not a seriatim sum — CTE 70 of the
+Scenario Reserves plus the **Additional Standard Projection Amount**, both pre- and
+post-reinsurance-ceded [R1][REG-R35] — and **VM-31 and VM-G bind unconditionally**: AG 43
+contracts are documented as VM-21 business, and where AG 43 and VM-21 populations are
+aggregated VM-G applies to the **combined** valuation [REG-R108][REG-R109]. Asset adequacy
+analysis is **not** displaced by PBR: VM-30 has no exemption clause and a shortfall becomes an
+**additional reserve** [REG-R100] carried in Exhibit 5 Miscellaneous Reserves [REG-R89]. AG 53
+reaches the product only in part — unitized separate account assets are outside its scope, the
+general account assets backing the guarantees are not — and its trigger is company-level, as
+AG 55's is treaty-level [REG-R105][REG-R103].
+
+### What the cash flow model must additionally produce
+
+The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs"; these are
+the rows specific to this product or absent from the projection specified above.
+
+| Statutory item | Required model output |
+|---|---|
+| VM-21 reserve **and** C-3 Phase II capital | the **Scenario Reserve vector retained in full**, one value per scenario from the §4 accumulated-deficiency run — not merely its CTE 70 [REG-R128][REG-R35] |
+| Additional Standard Projection Amount | one amount computed **once** on the VM-21 §6 prescribed assumptions (see *Prescribed-assumption anchor*), used in both the reserve and the capital number [R1][REG-R128] |
+| Exhibit 5 and Analysis of Operations | reserve keyed by valuation standard (VM-21 vs AG 43) **and year of issue**, gross and ceded separately, in the Deferred *Variable With Guarantees* column; plus commission and issue cost **in the period incurred**, which the base run omits **[std]** [REG-R89][REG-R90][REG-R75] |
+| SSAP No. 56 split | separate account balance from the unit ledger `AV = Σ_i U_i V_i`, the general account guarantee reserve, signed **net transfers to/from separate accounts**, and the four charge bases as general account income [REG-R83][REG-R90] |
+| General account guarantee strain | gross death benefit `DB(t)` **and** the general account excess `max(0, guarantee − AV)` separately, plus insurer-funded post-depletion GLWB payments [REG-R83 ¶7] |
+| Analysis of Increase in Reserves | tabular considerations, tabular interest, tabular cost and reserves released on the **valuation** basis, plus the net separate account transfer line [REG-R90] |
+| Reinsurance | gross and ceded pair, never netted, ceded on the same method and assumptions; VM-21 wants the reserve both pre- and post-ceded [R1][REG-R89][REG-R92 ¶37] |
+| Tax | IRC §807 reserve seriatim = max(net surrender value, 92.81% × VM-21), capped at statutory, for the C-3 Phase II tax step and DTA scheduling [REG-R16][REG-R97] |
+| AVR / IMR | seed-money portion of the separate account and the general account assets backing the guarantees; the fair-value separate account carries neither [REG-R83 ¶¶23–27][REG-R89] |
+
+### Risk-based capital
+
+**C-2 does not bite this product the way intuition suggests.** *Mortality:* the exposure base
+is individual and industrial **life** net amount at risk, derived from the Exhibit of Life
+Insurance face amount in force less life reserves [REG-R142] — a deferred variable annuity has
+no line there, so the GMDB net amount at risk, a real mortality exposure, is **not** the C-2
+base and is capitalised through C-3 Phase II instead. *Longevity:* variable **deferred**
+reserves under VM-21 are expressly excluded "including contracts whose account value has
+reached zero but a lifetime benefit remains payable" — the post-depletion phase this model
+projects — while variable **immediate** reserves are in scope, so an annuitizing contract
+crosses the boundary and a depleted GLWB does not [REG-R128].
+
+**C-3 Phase II carries the capital**, and variable annuities are **expressly excluded from C-3
+Phase I cash flow testing, including guaranteed fixed options within them** [REG-R128] — the
+representative contract has no fixed account at all, since electing the Roll-up GMDB removes
+the Fixed Account Options [S1], so the withdrawal-provision factor bucketing never engages.
+The seven steps are set out in `us/regulatory/technical-notes.md`, "Risk-based capital"; what
+matters structurally here is that **C-3 is built as 25% of (CTE 98 + Additional Standard
+Projection Amount − Statutory Reserve)** — with the tax terms of whichever of the two
+permitted tax methods applies, set out below — floored at $0, that **Total Asset Requirement = pre-phase-in
+VM-21 reserve + C-3**, and that the grossed-up amount is **split into an interest rate
+component (→ C-3a, line 35) and a market risk component (→ C-3c, line 37)**, neither negative
+[REG-R128].
+
+That split is not cosmetic: in the covariance combination **C-3c is added to C-1cs** while
+C-3a is added to C-1o, so this product's market-risk capital diversifies against equity asset
+risk rather than against bond default and interest rate risk [REG-R128]. **Size and mix are
+driven by the separate account and the moneyness of the guarantees, not by a face amount** —
+the Scenario Reserve tail moves with the equity return distribution, dynamic lapse and GLWB
+utilization, the three assumptions ranked first under *Key sensitivities*. Elsewhere the
+product touches C-4a's **0.06% of separate account liabilities** factor alongside the 2.53%
+factor on annuity considerations, and C-1cs through separate account seed money [REG-R128];
+Total Adjusted Capital includes the AVR only to the extent **not consumed in asset adequacy
+testing** [REG-R128][REG-R29]; and Model #312 requires an RBC Plan projecting statutory
+operating income, net income and capital and surplus for the current year and at least four
+succeeding years [REG-R125]. Two parameter warnings: [REG-R47] is the **pre-reform** package
+— cite it for the shape of the projection requirement and the working-reserve device, never
+for a CTE level, a scalar or a tax rate [REG-R47][REG-R128] — and the C-3 alignment project
+that would merge Phase I and Phase II into one methodology is **not in force** [REG-R138].
+
+**The tax step, and a published ambiguity reproduced rather than resolved.** VM-21 §§4.A–4.E
+and the RBC requirements are identical apart from the **elective federal income tax
+treatment** [REG-R35]. Under the **Macro Tax Adjustment** the cash flows ignore federal income
+tax, so each Scenario Reserve is numerically the same object as the reserve calculation's and
+tax enters only through the formula — **reproduced exactly as printed** [REG-R128]:
+
+> `25% x ((CTE (98) + Additional Standard Projection Amount – Statutory Reserve) x (1 – Federal Income Tax Rate) – (Statutory Reserve – Tax Reserve) x Federal Income Tax Rate`
+
+**The parentheses are unbalanced in the source, so the bracketing of the second term is
+[unverified]** [REG-R128]. The instruction's own gloss — that the statutory-less-tax-reserve
+product "may not exceed the portion of the company's non-admitted deferred tax assets
+attributable to the same portfolio of contracts to which VM-21 is applied" — supports reading
+it as a separately capped deduction, but that is a reading, not the text [REG-R128]; confirm
+against the RBC software or a current Academy practice note before coding [R4][REG-R66]. The
+alternative, **Specific Tax Recognition**, projects tax inside the Accumulated Deficiencies
+with after-tax discounting and applies a tax adjustment where actual tax reserves exceed
+projected tax reserves at the projection start; its arithmetic and the `f` factor are in
+`us/regulatory/technical-notes.md`, "Risk-based capital" [REG-R128].
+
+### Product-specific interactions and traps
+
+- **One stochastic run, two order statistics — the most valuable efficiency point in this
+  library.** Reserve = CTE 70 and capital = CTE 98 of the *same* Scenario Reserve vector with
+  the *same* Additional Standard Projection Amount, grouping, sampling, scenario count and
+  simplification "identical to those used in calculating the company's statutory reserves
+  following VM-21" [REG-R128][REG-R35]. Compute the vector once, retain it, read both
+  statistics off it and assert `CTE 70 ≤ CTE 98 ≤ max(ScenRes)`; rerunning the projection for
+  capital is slower **and** can produce a CTE 70 > CTE 98 inconsistency invisible without the
+  shared vector. Scenario count is bound by the **capital** statistic — CTE 98 averages 20
+  paths out of 1,000 where CTE 70 averages 300 [REG-R128][R1].
+- **The separate account carries no AVR and no IMR.** It is at fair value, and SSAP No. 56
+  requires a separate account IMR only where assets are at **book value** and an AVR only where
+  the insurer rather than the policyholder bears default and fair-value loss — leaving only the
+  **seed money** portion [REG-R83 ¶¶11, 23–27]. The general account backing the guarantees
+  needs both. Do not reach for ¶18.b book-value measurement: it names pension risk transfer,
+  bank-owned life insurance and registered index-linked annuities, **not** a traditional
+  variable annuity [REG-R83 ¶18].
+- **The guarantee reserves are general account liabilities** even though the assets that fail
+  to support them sit in the separate account: a GMDB reserve on a variable annuity is held in
+  the general account and any difference between the benefit paid and the separate account
+  value is charged or credited to **general account** net gain from operations [REG-R83 ¶7] —
+  the model's `max(0, guarantee − AV)`, and the reason *Known modeling pitfalls* insists on
+  projecting `DB(t)` gross and deriving the excess. Relatedly **separate account surplus may
+  not become negative**: the general account funds any deficiency, and surplus created by CARVM
+  is reported by the general account as an **unsettled transfer** [REG-R83 ¶¶8–9].
+- **Hedging cuts both ways in a statutory frame.** Hedge cash flows under a Clearly Defined
+  Hedging Strategy belong inside the VM-21 projection [REG-R35], while the reform's own
+  diagnosis was that fully hedging fair value **increased** capital requirements and their
+  volatility, because the reserve is a **book-value statutory** measure [R2][REG-R48].
+  Statutory derivative accounting is SSAP No. 86, whose hedge-termination election routes
+  derivative gain or loss into IMR — cited at ¶17 from the **2010 standalone print**, never
+  cross-checked against the March 2026 manual, so **[unverified]** [REG-R96].
+- **Admitted negative IMR feeds back into the reserve.** INT 23-01 ¶9.e requires admitted net
+  negative IMR to be captured in the PBR calculation or in asset adequacy testing and
+  reconciled to the IMR reflected there — an accounting admittance decision changing a VM-21
+  input. It runs to **December 31, 2026 with automatic nullification January 1, 2027** after
+  the August 11, 2025 extension, and the replacement revised SSAP No. 7 **was not located or
+  read** [REG-R87][REG-R88].
+
+---
+
 ## Valuation and reserve pointers
 
 This library projects **gross liability cash flows**. Reserve and capital layers consume
-them and are cited, not reproduced:
+them and are cited, not reproduced. Their statutory accounting and capital treatment —
+contract classification, the annual statement exhibits, the RBC components and the
+one-run/two-statistics rule — is in *Statutory accounting and capital* immediately above and
+is **not** repeated in the pointers below:
 
 - **VM-21** — the statutory standard and, in its scope, **CARVM itself**: aggregate reserve
   = Stochastic Reserve (CTE70 of scenario reserves) + additional standard projection amount
