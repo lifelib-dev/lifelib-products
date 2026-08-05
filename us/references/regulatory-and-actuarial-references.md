@@ -24,7 +24,7 @@ statutory accounting and capital entries, and section 22 records that half's gap
 failures, and unverified points.
 
 Product folders cite entries on this page as **[REG-R#]** (e.g., `[REG-R16]`); the
-R1–R142 numbering below is **frozen** — do not renumber or reuse numbers, as product
+R1–R150 numbering below is **frozen** — do not renumber or reuse numbers, as product
 documentation already cites against it. Within this page, plain `[R#]` refers to the same
 entries. Facts drawn from a document that was actually retrieved carry its number; claims
 from general knowledge or secondary sources are tagged **[unverified]**; failed or
@@ -2480,6 +2480,30 @@ VM-21/VM-22/VM-V were, because a model cites them as separate deliverables.
   building a **CRVM formulaic engine driven by A-820 and A-830**. **A-820 and A-830 as printed in
   the AP&P Manual were not retrieved** for this library; the formulaic CRVM detail here comes from
   the Standard Valuation Law itself (R1) and Model #830 (R6) — see section 22.
+
+### R150. NAIC — Principle-Based Reserving (insurance topic page)
+- **Publisher:** National Association of Insurance Commissioners
+- **URL:** https://content.naic.org/insurance-topics/principle-based-reserving
+- **Accessed:** 2026-08-06
+- **Fetched:** yes (HTML topic page; the page itself shows "Last Updated: 8/1/2025")
+- **Annotation:** The only source in this library that **prints the PBR timeline dates**, which the
+  Standard Valuation Law (R1) and the Valuation Manual (R3) do not. Two statements are verbatim and
+  are what this entry is cited for: **"Effective Jan. 1, 2017, the *Valuation Manual* became
+  operative."** and **"PBR which became an accreditation standard Jan. 1, 2020."** It also states of
+  VM-22 that the amendment "was adopted by LATF and is expected to be effective January 2026 with a
+  **three-year implementation period before becoming mandatory for all new issues in January 2029**"
+  — the only retrieved source giving the 2029 endpoint, which VM-22 itself (R36) leaves to
+  arithmetic. **Two things this page does NOT support, checked explicitly on fetch:** it says
+  nothing about a **2017–2019 elective transition** during which a company could choose between the
+  formulaic basis and VM-20, and it does **not** state when **VM-20 became mandatory for new
+  issues** — the Jan. 1, 2020 date it gives is the *accreditation* standard, a requirement on
+  states, which is not the same claim. Both remain **[unverified]** in this library. Note also the
+  page's vintage: the VM-22 sentence is forward-looking ("is expected to be") as of an August 2025
+  update, so its 2026 and 2029 dates should be re-checked against the Valuation Manual (R36) before
+  being relied on.
+- **Numbering note:** R143–R149 were left unused when the R125–R149 capital block was allocated;
+  this entry takes **R150** rather than back-filling a gap, keeping the never-reuse invariant
+  visually obvious.
 
 ---
 

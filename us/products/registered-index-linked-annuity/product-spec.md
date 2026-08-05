@@ -7,7 +7,7 @@ liability cash-flow modeling. It does not describe any single insurer's product.
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
 references), both numbered per `us/_research/registered-index-linked-annuity.md` — were
 extracted from the cited document. [REG-R#] tags resolve against the **shared
-cross-product numbering space, which now runs R1–R142** with **R114–R124** and
+cross-product numbering space, which now runs R1–R150** with **R114–R124** and
 **R143–R149** permanently unused by design, curated at
 `us/references/regulatory-and-actuarial-references.md`: R1–R34 are the life-origin
 entries (research provenance `us/_research/regulatory-actuarial.md`), R35–R72 the

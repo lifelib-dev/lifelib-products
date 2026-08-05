@@ -86,7 +86,7 @@ that product — cross-referencing this framework rather than restating it.
 ## Regulatory and actuarial reference library
 
 [references/regulatory-and-actuarial-references.md](references/regulatory-and-actuarial-references.md)
-is the curated cross-product bibliography (frozen numbering **R1–R142**, cited from
+is the curated cross-product bibliography (frozen numbering **R1–R150**, cited from
 product documents as `[REG-R#]`), with product-relevance matrices for the life products,
 the annuity products, and the statutory/capital entries. R1–R34 are life-origin entries
 (several of which also bind annuity models), R35–R72 are annuity-specific, and R73–R142

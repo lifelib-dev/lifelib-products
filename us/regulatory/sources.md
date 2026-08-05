@@ -19,7 +19,7 @@ last section.
 
 The two documents in this directory cite **[REG-R#]** against the single U.S. reference
 numbering in `us/references/regulatory-and-actuarial-references.md`, which after this work
-runs **R1–R142**, with **R114–R124** and **R143–R149** permanently unused **by design**.
+runs **R1–R150**, with **R114–R124** and **R143–R149** permanently unused **by design**.
 The blocks were assigned before drafting so three parallel research streams could number
 independently without collision:
 

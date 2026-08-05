@@ -361,7 +361,7 @@ Independent recomputation may differ by cents due to rounding.
 Framework — no DAC, the exhibits, AVR/IMR, asset adequacy analysis, RBC — is in
 `us/regulatory/statutory-accounting-and-capital.md` (concepts) and
 `us/regulatory/technical-notes.md` (formulas, factors, algorithms); only ULSG-specific
-material is stated here. [REG-R#] cites the shared U.S. numbering, now R1–R142 with
+material is stated here. [REG-R#] cites the shared U.S. numbering, now R1–R150 with
 R114–R124 and R143–R149 unused by design; [R#]/[S#] stay the product numbering of
 `sources.md`.
 

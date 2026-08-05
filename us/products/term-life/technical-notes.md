@@ -354,7 +354,7 @@ above; l(11) = 0.650814 × (1 − 0.0016) × (1 − 0.80)
 
 Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md`
 and `us/regulatory/technical-notes.md`; this section states only what is specific to level premium term.
-[REG-R#] resolves against the shared numbering used throughout this file, which now runs **R1–R142**
+[REG-R#] resolves against the shared numbering used throughout this file, which now runs **R1–R150**
 (R114–R124 and R143–R149 unused by design).
 
 ### Contract classification and reporting

@@ -6,7 +6,7 @@
 the standardized composite product defined in `product-spec.md` (same directory). It is
 not any single insurer's product. **[S#]/[R#]** tags resolve against
 `us/_research/variable-annuity.md`; **[REG-R#]** tags resolve against the single shared
-cross-product numbering space **R1–R142** curated at
+cross-product numbering space **R1–R150** curated at
 `us/references/regulatory-and-actuarial-references.md` (R1–R34 from
 `us/_research/regulatory-actuarial.md`, R35–R72 from
 `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three statutory
@@ -555,7 +555,7 @@ declines.
 **Framework cited, not restated.** Concepts are in
 `us/regulatory/statutory-accounting-and-capital.md`, algorithms and the shared **Required
 model outputs** contract in `us/regulatory/technical-notes.md`; only what is specific to this
-product is below, and the **[REG-R#]** space now runs **R1–R142** (R114–R124 and R143–R149
+product is below, and the **[REG-R#]** space now runs **R1–R150** (R114–R124 and R143–R149
 unused by design). Every RBC figure here comes from the **2024** *Life and Fraternal
 Risk-Based Capital Forecasting and Instructions*, a **sold NAIC publication** marked "Not for
 Distribution" read from a state department posting; the **2025 edition could not be parsed**,

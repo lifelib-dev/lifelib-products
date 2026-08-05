@@ -8,7 +8,7 @@ not any single insurer's product. [S#]/[R#] tags refer to the source list in `so
 numbering carried verbatim from `us/_research/immediate-annuity.md`; [REG-R#] tags refer
 to the cross-product reference library
 `us/references/regulatory-and-actuarial-references.md`, one shared numbering space now
-running **R1–R142** with **R114–R124** and **R143–R149** unused by design (R1–R34 from
+running **R1–R150** with **R114–R124** and **R143–R149** unused by design (R1–R34 from
 `us/_research/regulatory-actuarial.md`, R35–R72 from
 `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three statutory
 accounting and capital research files listed in `us/regulatory/sources.md`). **[std]** marks standardizations
@@ -488,7 +488,7 @@ B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 ×
 Framework and algorithms are in `us/regulatory/statutory-accounting-and-capital.md` and
 `us/regulatory/technical-notes.md`; the shared projection-to-statutory contract is that file's
 **"Required model outputs"** table and is *not* restated here. Only what is specific to a SPIA
-appears below. [REG-R#] tags run against the extended shared numbering **R1–R142**, gaps at
+appears below. [REG-R#] tags run against the extended shared numbering **R1–R150**, gaps at
 **R114–R124** and **R143–R149** unused by design; annual statement references are **2025**
 reporting-year and should be re-verified against the 2026 edition [REG-R89][REG-R90].
 

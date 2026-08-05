@@ -152,7 +152,7 @@ fetched at drafting.
 Cited against the shared U.S. reference numbering in
 `us/references/regulatory-and-actuarial-references.md` (prefixed REG- in the whole-life
 documents to avoid collision with the product research file's R# ids). That numbering **now
-runs R1–R142**, with **R114–R124** and **R143–R149** permanently **unused by design** — block
+runs R1–R150**, with **R114–R124** and **R143–R149** permanently **unused by design** — block
 gaps left so a research stream can be extended later without renumbering anything product
 documentation already cites. **Ids are never renumbered.** R1–R72 are the frozen pre-existing
 life and annuity entries, annotated in `us/_research/regulatory-actuarial.md`; R73–R142 are the

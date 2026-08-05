@@ -9,7 +9,7 @@ benefit (GMDB). It does not describe any single insurer's product. Tag conventio
 **[S#]/[R#]** resolve against the product research file `us/_research/variable-annuity.md`
 (its own local numbering: S1–S8 product documents, R1–R13 regulatory/actuarial
 references). **[REG-R#]** resolves against the **single shared cross-product numbering
-space R1–R142** curated at `us/references/regulatory-and-actuarial-references.md`; R1–R34
+space R1–R150** curated at `us/references/regulatory-and-actuarial-references.md`; R1–R34
 originate in `us/_research/regulatory-actuarial.md` (life-origin, several of which also
 bind annuities), R35–R72 in `us/_research/regulatory-actuarial-annuities.md`
 (annuity-specific) and R73–R142 in the three statutory accounting and capital research

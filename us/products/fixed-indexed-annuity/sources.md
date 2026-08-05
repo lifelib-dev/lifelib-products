@@ -242,7 +242,7 @@ declared-rate parameters are stale or absent.
 Cited with the **[REG-R#]** prefix to avoid collision with the product research file's own
 R-numbering. The curated page these resolve to is
 `us/references/regulatory-and-actuarial-references.md`. That page carries **one shared numbering
-space, now running R1–R142, with R114–R124 and R143–R149 permanently unused by design**: entries
+space, now running R1–R150, with R114–R124 and R143–R149 permanently unused by design**: entries
 **R1–R34** originate in `us/_research/regulatory-actuarial.md` (the life bibliography, several
 entries of which also bind annuity models), entries **R35–R72** in
 `us/_research/regulatory-actuarial-annuities.md` (the annuity extension), and entries **R73–R142**

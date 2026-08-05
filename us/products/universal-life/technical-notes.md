@@ -381,8 +381,10 @@ parse** [REG-R128][REG-R129].
 - **Two engines, and PBR does not retire the formulaic one.** Pre-Valuation-Manual
   issues take the **Model 585 Section 5 CRVM adaptation** — Guaranteed Maturity Premium
   / Guaranteed Maturity Fund with the `r = min(1, policy value / GMF)` ratio and the
-  alternative minimum reserve test [R1][REG-R5]. From the operative date (2017-01-01
-  [R5]) the Valuation Manual standard is the minimum and **VM-20 constitutes CRVM**
+  alternative minimum reserve test [R1][REG-R5]. From the operative date (2017-01-01,
+  this file's local [R5], now also catalogued as the shared [REG-R150] — note [REG-R5]
+  in the same sentence is a different document, Model #585) the Valuation Manual
+  standard is the minimum and **VM-20 constitutes CRVM**
   [REG-R1 §11][REG-R3]. But this product's reserving category is **All Other**, whose
   net premium reserve is determined "pursuant to applicable methods in **VM-A and VM-C**
   for the basic reserve" [REG-R3 §3.B.6][REG-R41], and VM-A indexes the UL requirement
@@ -606,7 +608,8 @@ the pointer set only:
   Nonforfeiture floor: Model 585 Section 6A retrospective minimum CSV [R1].
 - **Statutory (PBR).** VM-20 minimum reserve for life products (net premium reserve
   plus deterministic/stochastic excess subject to exclusion tests), per the Valuation
-  Manual (operative 2017-01-01; accreditation standard 2020-01-01) [R5][REG-R3];
+  Manual (operative 2017-01-01; accreditation standard 2020-01-01 — both verbatim at
+  [R5], now also the shared [REG-R150]) [REG-R3];
   implementation guidance in the AAA VM-20 practice note [REG-R23]. Prescribed NPR
   mortality: 2017 CSO family via VM-M [REG-R3][REG-R17; exact table mapping
   [unverified]].
