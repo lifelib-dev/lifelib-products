@@ -362,3 +362,20 @@ policy is written to remain a qualifying policy compatible with para 19(3) Sched
 ICTA 1988 and "cannot be issued or assigned into a trust" [S1]; other insurers' plans
 are commonly placed in trust [unverified]. FSCS protects 100% of claim value, with
 continuity of cover preferred [S1].
+
+**Reporting, capital and the other two ledgers.** The framework — the Solvency UK regulatory
+balance sheet, the IR./IRR. reporting templates, the standard formula SCR, own funds and the
+MCR, the statutory accounts under FRS 102 + FRS 103 or UK-adopted IFRS 17, and the tax
+computation built on those accounts — is in
+`uk/regulatory/statutory-accounting-and-capital.md` and `uk/regulatory/technical-notes.md`;
+the product-specific consequences and the model-output contract are in `technical-notes.md`,
+"Statutory accounting and capital". What is specific to this product: **PRA product codes
+444 / 454** (accelerated, guaranteed / reviewable premiums) and **464 / 474** (standalone),
+so the premium guarantee is a reporting key [REG-R89]; a reviewable-premium contract boundary
+that **still runs to the end of the term** under the TPFR 3.3(3) contract-level carve-out for
+individually-underwritten business [REG-R41]; a best estimate **routinely negative with no
+floor**, against accounts that floor the provision at zero [REG-R41][REG-R115][REG-R100]; and
+acquisition costs **deferred** in the accounts (SI 2008/410 Sch 3 para 13; FRS 103 ¶3.7), so
+the U.S. first-year-strain story does not transfer [REG-R105][REG-R99]. Whether a CI contract
+is a **life or a health obligation** for the SCR is a derivation this library records and does
+**not** resolve [REG-R62][REG-R73].

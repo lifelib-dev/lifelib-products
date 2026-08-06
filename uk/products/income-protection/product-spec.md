@@ -428,3 +428,18 @@ trade-basis tax flag rather than a policyholder tax engine [REG-R17].
 experience analysis is subject to FRC TAS 100 (general) and TAS 200 (insurance)
 [R10, fetched_ok=false in the product research pass; verified via
 [REG-R33][REG-R34]].
+
+**Regulatory reporting, accounting and capital.** The framework — the Solvency UK
+regulatory balance sheet (technical provisions, SCR, own funds, MCR), the statutory
+accounts under FRS 102 + FRS 103 or UK-adopted IFRS 17, and the tax computation built on
+those accounts — is in `uk/regulatory/statutory-accounting-and-capital.md` and
+`uk/regulatory/technical-notes.md`; the product-specific consequences and the
+model-output contract are in `technical-notes.md`, "Statutory accounting and capital".
+What is specific to this product: it is a **health** insurance obligation, so the SCR
+**health** module applies and the life module does not reach it at all [REG-R62]; a
+reviewable-premium IP contract's boundary runs to the end of the term, not to the review
+date, under the TPFR 3.3(3) contract-level carve-out for individually underwritten
+long-term business [REG-R41]; active cells report under PRA product code **494** and
+claims in payment under **524** [REG-R89]; and acquisition costs are **deferred** in the
+accounts (SI 2008/410 Sch 3 para 13; FRS 103 ¶3.7) — the reverse of the U.S. no-DAC,
+first-year-strain pattern [REG-R105][REG-R99].

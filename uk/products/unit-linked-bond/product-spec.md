@@ -412,3 +412,23 @@ minus expenses, with the policyholder slice taxed at the basic rate and a minimu
 profits test protecting the shareholder slice [R6][REG-R17]. This is the source of
 the basic-rate credit on policyholder gains [R6][S4][S5] and of the fund-level tax
 drag the composite standardizes at 20% of gross return **[std]** (footnote 11).
+
+**Regulatory reporting, accounting and capital [REG-R39][REG-R62][REG-R89][REG-R105].** The UK
+framework — the Solvency UK regulatory balance sheet under the PRA Rulebook, the statutory
+accounts under FRS 102 + FRS 103 or UK-adopted IFRS 17, and the tax computation built on the
+accounts with the FA 2012 overlay — is in `uk/regulatory/statutory-accounting-and-capital.md`,
+with the calculations in `uk/regulatory/technical-notes.md`; the product-specific consequences
+and the model-output contract are in `technical-notes.md` in this directory, "Statutory accounting
+and capital". What is specific to this product: it is an RAO class III linked long-term contract
+[REG-R14] in Annex 1 **line of business 31** [REG-R41], reporting under **PRA product code 112**,
+single premium bond UL — not a whole-of-life code, which the instructions exclude for single
+premium bonds "which are technically whole of life" [REG-R89]. The **non-unit ("sterling") best
+estimate is routinely negative and Solvency UK does not floor it** (the Solvency I unit-reserve
+floor was expressly not carried over [REG-R115]), while FRS 103 IG2.41/IG2.47 do floor the
+accounts [REG-R100]. **Lapse is the dominant SCR sub-module and the stress direction is up**, with
+mass lapse at **40%** rather than 70% — the class III reference published in PS15/24 was declared
+an error and deleted effective 31 December 2024 [REG-R64][REG-R62]. Operational risk is charged as
+**0.25 × unit-linked expenses**, uncapped and independent of fund size [REG-R62]. Acquisition
+costs are **deferred, not expensed** [REG-R105][REG-R99], so there is no U.S.-style first-year
+strain; and the bond may fall outside FRS 103 altogether as an **investment contract**
+[REG-R18 LAM01100], with the variable fee approach expected under IFRS 17 [REG-R106].

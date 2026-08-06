@@ -397,6 +397,24 @@ insurer level, post-2012 protection business is excluded from BLAGAB and taxed o
 trade profits under Finance Act 2012 Part 2 — a per-product tax-basis flag, not a
 cash-flow driver, in this library [REG-R17].
 
+**Regulatory reporting, accounts and capital.** The framework — the Solvency UK
+regulatory balance sheet, the statutory accounts (FRS 102 + FRS 103, or UK-adopted
+IFRS 17), and tax computed *from the accounts* with the FA 2012 overlay — is in
+`uk/regulatory/statutory-accounting-and-capital.md` and
+`uk/regulatory/technical-notes.md`; the product-specific reading is in
+`technical-notes.md` (same directory), "Statutory accounting and capital". What is
+specific to this product: it reports in Solvency UK line of business **32** under PRA
+product codes **404** (level) and **424** (decreasing), with **no code in the retrieved
+appendix for family income benefit** [REG-R41][REG-R89]; the best estimate is routinely
+**negative** and nothing in the PRA rules floors it, while FRS 103 implementation
+guidance IG2.41 floors the same business in the accounts [REG-R41][REG-R100];
+acquisition costs are **deferred**, not expensed as incurred (SI 2008/410 Schedule 3
+para 13; FRS 103 ¶3.7), so there is **no U.S.-style first-year strain in the UK
+accounts** [REG-R105][REG-R99]; the SCR runs through life mortality, life catastrophe,
+expense and lapse, the lapse **direction** being decided by a per-policy filter rather
+than by the product name [REG-R62]; and post-2012 protection is taxed as **non-BLAGAB
+trade profit**, with no I-E computation [REG-R17][REG-R18].
+
 **Professional standards.** Technical actuarial work on UK term assurance (pricing,
 reserving, technical provisions) falls under FRC TAS 100 v2.0 (effective 1 July 2023)
 [R15] and TAS 200: Insurance v2.0 (effective 1 January 2025) [R16].
