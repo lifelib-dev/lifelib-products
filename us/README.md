@@ -11,7 +11,7 @@ institutional business (bulk/pension risk transfer) remain out of scope.
 
 | Product type | Folder | Representative design (one line) |
 |---|---|---|
-| Level premium term | [term-life](products/term-life/product-spec.md) | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible to permanent until min(end of level period, age 70); no cash value |
+| Level premium term | [term-life](products/term-life/product-spec.md) — **[executable model](models/term-life/README.md)** | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible to permanent until min(end of level period, age 70); no cash value |
 | Whole life | [whole-life](products/whole-life/product-spec.md) | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis with three-factor contribution dividends and paid-up-additions default; limited-pay variants; plus a non-par simplified-issue final-expense variant |
 | Universal life | [universal-life](products/universal-life/product-spec.md) | Flexible-premium current-assumption UL: monthly deductions (per-policy + per-unit + COI on NAAR), declared portfolio crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three products below |
 | Indexed UL | [indexed-ul](products/indexed-ul/product-spec.md) | UL chassis + S&P 500 (price return) annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark-index-account design |
@@ -34,6 +34,20 @@ across insurers, regulatory context), `technical-notes.md` (liability cash flow 
 model points, state variables, assumptions, recursions with processing order, worked
 example, sensitivities), and `sources.md` (numbered source list). Citation conventions
 are defined in the [top-level README](../README.md).
+
+## Executable models
+
+`models/<product-type>/` holds reference implementations built from the technical notes —
+modelx model folders, CSV inputs, a `run.py`, and a README mapping every cells back to the
+notes section it implements.
+
+| Product | Model | Verified against |
+|---|---|---|
+| term-life | [`models/term-life`](models/term-life/README.md) — `TermLifeUS` | the notes' 12-row worked example, asserted to the cent |
+
+The remaining products are not yet implemented. Run the suite with
+`python -m pytest tests -q` from the repository root; see
+[requirements.txt](../requirements.txt) for the modelx version floor.
 
 ## Chassis relationships
 

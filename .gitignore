@@ -6,7 +6,17 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
-# Python artifacts (in case code is added later)
+# Python artifacts
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+.pytest_cache/
+
+# modelx build output
+# write_model(backup=True) drops <Model>_BAK<n>/ beside the model folder; regenerable.
+*_BAK[0-9]*/
+# mx.export_model output and anything modelx-cython compiles from it.
+*_nomx/
+*_nomx_cy/
+*.pyd
+*.mx

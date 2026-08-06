@@ -22,6 +22,8 @@ model implementations are a planned follow-on (see Roadmap).
       product-spec.md                representative product specification
       technical-notes.md             liability cash flow model: design, assumptions, recursions
       sources.md                     numbered source list for this product's documents
+  models/                            executable models built from the technical notes
+    <product-type>/                  README.md, run.py, and the modelx model folder
   regulatory/                        the accounting and capital framework the projections feed
     statutory-accounting-and-capital.md   what the items are, which products they bite
     technical-notes.md               how to calculate them
@@ -104,7 +106,10 @@ business (bulk purchase annuities, pension risk transfer) are out of scope in bo
 ## Roadmap
 
 - **Reference implementations**: `<country>/models/<product-type>/` — executable
-  liability cash flow projection models built from the technical notes.
+  liability cash flow projection models built from the technical notes. **First one
+  shipped:** [`us/models/term-life`](us/models/term-life/README.md) (modelx; its worked
+  example is asserted to the cent by `tests/`). The remaining eighteen products follow
+  the same pattern.
 - **Additional countries**, and additional product families (group insurance,
   institutional/pension risk transfer business) as coverage grows.
 

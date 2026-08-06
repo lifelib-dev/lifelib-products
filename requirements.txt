@@ -1,0 +1,17 @@
+# Runtime requirements for the reference models under <country>/models/.
+#
+# The models are serialized with modelx serializer v8, which postdates the 0.31.1
+# release: PyPI modelx 0.31.1 cannot read them. Until 0.32 ships, use a checkout of
+# github.com/fumitoh/modelx at or after commit e15414f.
+modelx>=0.32
+
+pandas>=2.2
+numpy>=1.26
+
+# Tests only.
+pytest>=8
+
+# Deliberately absent:
+#   lifelib  - the models are plain modelx and do not import it.
+#   openpyxl - all model inputs are CSV, so no Excel reader is needed.
+#   scipy    - no model here needs anything beyond the standard library's math.
