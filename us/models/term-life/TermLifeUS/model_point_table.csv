@@ -1,4 +1,4 @@
-point_id,policy_id,issue_age,sex,rate_class,plan,face_amount,premium_mode,policy_count,duration_inforce,m1_override
+point_id,policy_id,age_at_entry,sex,rate_class,plan,sum_assured,premium_mode,pols_if_init,duration_inforce,plt_mort_factor_override
 1,TL-000001,35,M,StdNT,T10,100000.0,A,1.0,0,3.5
 2,TL-000002,35,M,StdNT,T10,100000.0,A,1.0,0,
 3,TL-000003,45,F,PNT,T20,500000.0,A,1.0,0,

@@ -14,12 +14,13 @@ model = mx.read_model(Path(__file__).parent / "TermLifeUS")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
-print("model point {}: {} - {}{} {} {} face {:,.0f}".format(
-    point_id, proj.mp()["policy_id"], proj.sex(), proj.issue_age(),
-    proj.rate_class(), proj.plan(), proj.face_amount()))
-print("jump ratio J = {:.4f}   shock lapse = {:.0%}   M(1) = {}   "
+print("model point {}: {} - {}{} {} {} sum assured {:,.0f}".format(
+    point_id, proj.model_point()["policy_id"], proj.sex(), proj.age_at_entry(),
+    proj.rate_class(), proj.plan(), proj.sum_assured()))
+print("jump ratio = {:.4f}   shock lapse = {:.0%}   M(1) = {}   "
       "expiry = attained age 95 (policy year {})".format(
-          proj.J(), proj.shock_lapse(), proj.M1(), proj.max_t()))
+          proj.jump_ratio(), proj.shock_lapse_rate(),
+          proj.plt_mort_factor_init(), proj.proj_len()))
 print()
 print(proj.result_cf().head(12).round(2).to_string())
 
