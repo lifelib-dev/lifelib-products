@@ -16,7 +16,7 @@ from conftest import MODELS, REPO
 CENT = 0.005          # money displayed to 2 d.p.
 INFORCE = 5e-7        # in-force displayed to 6 d.p.
 
-# t: (l(t), G, DC, K, E, X, NetCF, l(t+1))
+# t: (pols_if, premiums, claims, commissions, expenses, premium_taxes, net_cf, pols_if next)
 WORKED_EXAMPLE = {
     1:  (1.000000, 140.00,  80.00, 112.00, 330.00, 2.80, -384.80, 0.939248),
     2:  (0.939248, 131.49,  79.84,   6.57,  28.74, 2.63,   13.71, 0.891527),
@@ -36,86 +36,89 @@ WORKED_EXAMPLE = {
 @pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE))
 def test_worked_example_row(anchor, t):
     """Every cell of the notes' 12-row table, to the displayed precision."""
-    l_t, g, dc, k, e, x, net, l_next = WORKED_EXAMPLE[t]
-    assert anchor.l(t) == pytest.approx(l_t, abs=INFORCE)
-    assert anchor.G(t) == pytest.approx(g, abs=CENT)
-    assert anchor.DC(t) == pytest.approx(dc, abs=CENT)
-    assert anchor.K(t) == pytest.approx(k, abs=CENT)
-    assert anchor.E(t) == pytest.approx(e, abs=CENT)
-    assert anchor.X_tax(t) == pytest.approx(x, abs=CENT)
-    assert anchor.NetCF(t) == pytest.approx(net, abs=CENT)
-    assert anchor.l(t + 1) == pytest.approx(l_next, abs=INFORCE)
+    pols, prem, clm, comm, exp, tax, net, pols_next = WORKED_EXAMPLE[t]
+    assert anchor.pols_if(t) == pytest.approx(pols, abs=INFORCE)
+    assert anchor.premiums(t) == pytest.approx(prem, abs=CENT)
+    assert anchor.claims(t) == pytest.approx(clm, abs=CENT)
+    assert anchor.commissions(t) == pytest.approx(comm, abs=CENT)
+    assert anchor.expenses(t) == pytest.approx(exp, abs=CENT)
+    assert anchor.premium_taxes(t) == pytest.approx(tax, abs=CENT)
+    assert anchor.net_cf(t) == pytest.approx(net, abs=CENT)
+    assert anchor.pols_if(t + 1) == pytest.approx(pols_next, abs=INFORCE)
 
 
 def test_shock_lapse_collapse(anchor):
     """The notes' headline check: l(11) = l(10)(1-0.0016)(1-0.80) = 0.129955."""
-    assert anchor.l(10) * (1 - 0.0016) * (1 - 0.80) == pytest.approx(0.129955, abs=INFORCE)
-    assert anchor.l(11) == pytest.approx(0.129955, abs=INFORCE)
-    assert anchor.shock_lapse() == 0.80
-    assert anchor.w(10) == 0.80
+    assert anchor.pols_if(10) * (1 - 0.0016) * (1 - 0.80) == pytest.approx(
+        0.129955, abs=INFORCE)
+    assert anchor.pols_if(11) == pytest.approx(0.129955, abs=INFORCE)
+    assert anchor.shock_lapse_rate() == 0.80
+    assert anchor.lapse_rate(10) == 0.80
 
 
 def test_jump_ratio(anchor):
-    """J = AP(11)/AP(10) = 764/140, fee included in both."""
-    assert anchor.AP(10) == 140.0
-    assert anchor.AP(11) == 764.0
-    assert anchor.J() == pytest.approx(764.0 / 140.0, rel=1e-12)
+    """J = premium_pp(11)/premium_pp(10) = 764/140, fee included in both."""
+    assert anchor.premium_pp(10) == 140.0
+    assert anchor.premium_pp(11) == 764.0
+    assert anchor.jump_ratio() == pytest.approx(764.0 / 140.0, rel=1e-12)
 
 
-def test_m1_formula_diverges_from_the_pinned_fixture(term_life):
+def test_plt_factor_formula_diverges_from_the_pinned_fixture(term_life):
     """Documented divergence: the rule gives 3.4514, the worked example pins 3.50.
 
-    Point 1 carries m1_override = 3.50 so the golden table reproduces; point 2 is
-    otherwise identical and leaves the override blank, taking the formula.  Neither is
-    "correct" - both are standardizations, and the test exists so the gap cannot be
-    closed silently in either direction.
+    Point 1 carries plt_mort_factor_override = 3.50 so the golden table reproduces;
+    point 2 is otherwise identical and leaves the override blank, taking the formula.
+    Neither is "correct" - both are standardizations, and the test exists so the gap
+    cannot be closed silently in either direction.
     """
     p1, p2 = term_life.Projection[1], term_life.Projection[2]
-    assert p1.M1_formula() == pytest.approx(3.4514, abs=5e-5)
-    assert p1.M1() == 3.50                      # the pin the worked example uses
-    assert p2.M1() == pytest.approx(3.4514, abs=5e-5)   # the formula path
-    assert p1.M1() != pytest.approx(p2.M1(), abs=1e-3)
+    assert p1.plt_mort_factor_init_formula() == pytest.approx(3.4514, abs=5e-5)
+    assert p1.plt_mort_factor_init() == 3.50            # the pin the worked example uses
+    assert p2.plt_mort_factor_init() == pytest.approx(3.4514, abs=5e-5)   # formula path
+    assert p1.plt_mort_factor_init() != pytest.approx(
+        p2.plt_mort_factor_init(), abs=1e-3)
 
 
-def test_plt_multiplier_grades_to_two(anchor):
+def test_plt_factor_grades_to_two(anchor):
     """M(d) = max(2.0, M(1) - 0.15(d-1)); reaches the 2.00 floor at d = 11."""
-    assert anchor.M_plt(1) == 3.50
-    assert anchor.M_plt(2) == pytest.approx(3.35)
-    assert anchor.M_plt(11) == pytest.approx(2.00)
-    assert anchor.M_plt(12) == 2.00             # level thereafter
-    assert anchor.M_plt(30) == 2.00
+    assert anchor.plt_mort_factor(1) == 3.50
+    assert anchor.plt_mort_factor(2) == pytest.approx(3.35)
+    assert anchor.plt_mort_factor(11) == pytest.approx(2.00)
+    assert anchor.plt_mort_factor(12) == 2.00           # level thereafter
+    assert anchor.plt_mort_factor(30) == 2.00
 
 
-def test_decrement_identity(anchor):
-    """The roll-forward closes: l(t) - l(t+1) = deaths + lapses + conversions + expiry.
+def test_inforce_rollforward_closes(anchor):
+    """pols_if(t) - pols_if(t+1) = deaths + lapses + conversions + maturities.
 
-    `expiry` is non-zero only in the final policy year, where coverage ends at attained
-    age 95.  That is not a decrement - the contract runs out - but without it in the
-    identity the last year appears to lose lives with no cause.
+    `pols_maturity` is non-zero only in the final policy year, where coverage ends at
+    attained age 95.  That is not a decrement - the contract runs out - but without it
+    in the identity the last year appears to lose lives with no cause.
     """
-    for t in range(1, anchor.max_t() + 1):
-        out = anchor.d_death(t) + anchor.x(t) + anchor.c(t) + anchor.expiry(t)
-        assert anchor.l(t) - anchor.l(t + 1) == pytest.approx(out, abs=1e-12)
+    for t in range(1, anchor.proj_len() + 1):
+        out = (anchor.pols_death(t) + anchor.pols_lapse(t)
+               + anchor.pols_conv(t) + anchor.pols_maturity(t))
+        assert anchor.pols_if(t) - anchor.pols_if(t + 1) == pytest.approx(out, abs=1e-12)
 
 
-def test_expiry_is_confined_to_the_final_year(anchor):
-    for t in range(1, anchor.max_t()):
-        assert anchor.expiry(t) == 0.0
-    assert anchor.expiry(anchor.max_t()) > 0.0
+def test_maturity_is_confined_to_the_final_year(anchor):
+    for t in range(1, anchor.proj_len()):
+        assert anchor.pols_maturity(t) == 0.0
+    assert anchor.pols_maturity(anchor.proj_len()) > 0.0
 
 
 def test_inforce_is_a_decreasing_probability(anchor):
-    for t in range(1, anchor.max_t() + 2):
-        assert 0.0 <= anchor.l(t) <= 1.0
-        assert anchor.l(t + 1) <= anchor.l(t) + 1e-15
+    for t in range(1, anchor.proj_len() + 2):
+        assert 0.0 <= anchor.pols_if(t) <= 1.0
+        assert anchor.pols_if(t + 1) <= anchor.pols_if(t) + 1e-15
 
 
 def test_expiry_at_attained_age_95(anchor):
     """Policy year 60 is the last for issue age 35; nothing survives past it."""
-    assert anchor.max_t() == 60
-    assert anchor.attained_age(60) == 94        # age at the start of the final year
-    assert anchor.l(60) > 0.0
-    assert anchor.l(61) == 0.0
+    assert anchor.proj_len() == 60
+    assert anchor.age(60) == 94                 # age at the start of the final year
+    assert anchor.pols_if(60) > 0.0
+    assert anchor.pols_if(61) == 0.0
     assert anchor.phase(61) == "EXPIRED"
 
 
@@ -126,20 +129,43 @@ def test_phase_switches_at_the_level_period_end(anchor):
 
 def test_conversion_is_off_in_the_base_run(anchor):
     """The worked example sets cv = 0; the eligibility window is still modelled."""
-    assert anchor.cv(5) == 0.0
-    assert all(anchor.CV(t) == 0.0 for t in range(1, 13))
-    assert anchor.conv_elig(10) is True         # within level period, age 44 < 70
-    assert anchor.conv_elig(11) is False        # level period over
+    assert anchor.conv_rate(5) == 0.0
+    assert all(anchor.conv_credits(t) == 0.0 for t in range(1, 13))
+    assert anchor.conv_elig(10) is True          # within level period, age 44 < 70
+    assert anchor.conv_elig(11) is False         # level period over
 
 
 def test_result_cf_shape(anchor):
     df = anchor.result_cf()
-    assert list(df.index) == list(range(1, anchor.max_t() + 1))
+    assert list(df.index) == list(range(1, anchor.proj_len() + 1))
     assert set(df.columns) == {
-        "l", "premium_G", "claims_DC", "commission_K", "expense_E",
-        "premium_tax_X", "conv_credit_CV", "net_cf",
+        "pols_if", "premiums", "claims", "commissions", "expenses",
+        "premium_taxes", "conv_credits", "net_cf",
     }
     assert df.loc[1, "net_cf"] == pytest.approx(-384.80, abs=CENT)
+
+
+def test_model_and_space_are_documented(term_life):
+    """Both docstrings are part of the deliverable, so assert they survive a round trip."""
+    assert "level premium term life insurance" in term_life.doc
+    assert "mechanics demonstration" in term_life.doc
+    doc = term_life.Projection.doc
+    assert "Notes symbol" in doc                 # the symbol-to-cells mapping table
+    for cells in ("pols_if", "pols_maturity", "plt_mort_factor", "premium_pp"):
+        assert cells in doc
+
+
+def test_cells_names_follow_basicterm_s(term_life):
+    """Names shared with lifelib's basiclife/BasicTerm_S must not drift apart."""
+    shared = {
+        "model_point", "age_at_entry", "sex", "sum_assured", "policy_term",
+        "proj_len", "age", "pols_if", "pols_if_init", "pols_death", "pols_lapse",
+        "pols_maturity", "mort_rate", "lapse_rate", "premiums", "claims",
+        "commissions", "expenses", "expense_acq", "expense_maint",
+        "inflation_rate", "inflation_factor", "net_cf", "result_cf",
+    }
+    names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
+    assert shared <= names, f"missing: {sorted(shared - names)}"
 
 
 def test_no_pickled_inputs():
@@ -155,7 +181,7 @@ def test_round_trip_is_stable(tmp_path):
     model = mx.read_model(src)
     try:
         dest = tmp_path / "TermLifeUS"
-        mx.write_model(model, str(dest))
+        mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
 
@@ -163,8 +189,9 @@ def test_round_trip_is_stable(tmp_path):
     try:
         anchor = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
-            assert anchor.l(t) == pytest.approx(row[0], abs=INFORCE)
-            assert anchor.NetCF(t) == pytest.approx(row[6], abs=CENT)
+            assert anchor.pols_if(t) == pytest.approx(row[0], abs=INFORCE)
+            assert anchor.net_cf(t) == pytest.approx(row[6], abs=CENT)
+        assert "Notes symbol" in reread.Projection.doc
     finally:
         reread.close()
 
