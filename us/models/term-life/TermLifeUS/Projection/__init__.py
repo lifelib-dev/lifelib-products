@@ -11,6 +11,38 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the anchor cell
     >>> Projection.point_id = 2            # or switch the default
 
+.. rubric:: Input data
+
+Inputs are **external files**: plain CSVs living in the model folder's parent
+directory, ``us/models/term-life/``, read at run time rather than stored inside the
+model. The model folder therefore holds nothing but formulas — no ``_data/``, no
+IOSpec, no embedded values — so a diff of the model shows logic changes only, and an
+input can be edited or swapped without rewriting the model. This follows
+``annuallife.TradLife_A``; contrast ``basiclife.BasicTerm_S``, which keeps its inputs
+*inside* the model through modelx's IOSpec machinery.
+
+The consequence worth knowing: **the model is not portable on its own.** Copying the
+``TermLifeUS`` folder without its parent's CSVs produces a model that reads and then
+fails on first evaluation. A test asserts this by round-tripping the model together
+with its inputs.
+
+:func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so
+the model works wherever the repository is checked out. Each table has a filename
+Reference and a reader Cells:
+
+======================  ==========================  ==============================
+Reference               Cells                       File
+======================  ==========================  ==============================
+model_point_file        model_point_table()         model_point_table.csv
+premium_rates_file      premium_rates()             premium_rates.csv
+mort_table_file         mort_table()                mort_table.csv
+class_factor_file       class_factor_table()        class_factor_table.csv
+shock_lapse_file        shock_lapse_table()         shock_lapse_table.csv
+======================  ==========================  ==============================
+
+To swap in a licensed mortality basis, replace ``mort_table.csv`` with a same-schema
+file, or point ``mort_table_file`` at a different name. No formula changes.
+
 .. rubric:: Naming
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` wherever that model has an
@@ -88,9 +120,46 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
+def input_dir():
+    """The directory holding the input CSVs: the model folder's parent.
+
+    Inputs are *external* files, not data stored inside the model, so the model
+    folder is pure formulas.  The path is resolved at run time from where the model
+    was read, following ``annuallife.TradLife_A``.
+    """
+    return _model.path.parent                                        # noqa: F821
+
+
+def model_point_table():
+    """The model point table, read from *model_point_table.csv*."""
+    return pd.read_csv(input_dir() / model_point_file, index_col="point_id")  # noqa: F821
+
+
+def premium_rates():
+    """The guaranteed premium schedule, read from *premium_rates.csv*."""
+    return pd.read_csv(                                              # noqa: F821
+        input_dir() / premium_rates_file,                            # noqa: F821
+        index_col=["plan", "sex", "rate_class", "band", "policy_year"])
+
+
+def mort_table():
+    """The base mortality table by age, read from *mort_table.csv*."""
+    return pd.read_csv(input_dir() / mort_table_file, index_col="age")  # noqa: F821
+
+
+def class_factor_table():
+    """The underwriting-class factors, read from *class_factor_table.csv*."""
+    return pd.read_csv(input_dir() / class_factor_file, index_col="rate_class")  # noqa: F821
+
+
+def shock_lapse_table():
+    """The shock-lapse buckets by jump ratio, read from *shock_lapse_table.csv*."""
+    return pd.read_csv(input_dir() / shock_lapse_file)               # noqa: F821
+
+
 def model_point():
     """The selected model point as a Series."""
-    return model_point_table.loc[point_id]                          # noqa: F821
+    return model_point_table().loc[point_id]                          # noqa: F821
 
 
 def age_at_entry():
@@ -147,7 +216,7 @@ def age(t):
 def premium_pp(t):
     """Guaranteed annual gross premium per policy in year t, policy fee included."""
     key = (plan(), sex(), rate_class(), band(), t)
-    return float(premium_rates.loc[key, "premium_pp"])               # noqa: F821
+    return float(premium_rates().loc[key, "premium_pp"])               # noqa: F821
 
 
 def jump_ratio():
@@ -177,12 +246,12 @@ def plt_mort_factor(d):
 
 def class_factor():
     """Underwriting-class multiplier on the base mortality table **[std]**."""
-    return float(class_factor_table.loc[rate_class(), "factor"])      # noqa: F821
+    return float(class_factor_table().loc[rate_class(), "factor"])      # noqa: F821
 
 
 def mort_rate_base(t):
     """Base-table mortality rate at the attained age in policy year t."""
-    return float(mort_table.loc[age(t), "mort_rate"])                 # noqa: F821
+    return float(mort_table().loc[age(t), "mort_rate"])                 # noqa: F821
 
 
 def mort_rate(t):
@@ -194,10 +263,10 @@ def mort_rate(t):
 def shock_lapse_rate():
     """Shock lapse at the end of the level period, by jump-ratio bucket **[std]**."""
     j = jump_ratio()
-    for _, r in shock_lapse_table.iterrows():                        # noqa: F821
+    for _, r in shock_lapse_table().iterrows():                        # noqa: F821
         if r["jump_lo"] < j <= r["jump_hi"]:
             return float(r["shock_lapse_rate"])
-    return float(shock_lapse_table.iloc[-1]["shock_lapse_rate"])     # noqa: F821
+    return float(shock_lapse_table().iloc[-1]["shock_lapse_rate"])     # noqa: F821
 
 
 def lapse_rate(t):
@@ -350,15 +419,15 @@ def result_cf():
 # ---------------------------------------------------------------------------
 # References
 
-model_point_table = ("IOSpec", 1)  # PandasData path='model_point_table.csv' file_type='csv'
+model_point_file = "model_point_table.csv"
 
-premium_rates = ("IOSpec", 2)  # PandasData path='premium_rates.csv' file_type='csv'
+premium_rates_file = "premium_rates.csv"
 
-mort_table = ("IOSpec", 3)  # PandasData path='mort_table.csv' file_type='csv'
+mort_table_file = "mort_table.csv"
 
-class_factor_table = ("IOSpec", 4)  # PandasData path='class_factor_table.csv' file_type='csv'
+class_factor_file = "class_factor_table.csv"
 
-shock_lapse_table = ("IOSpec", 5)  # PandasData path='shock_lapse_table.csv' file_type='csv'
+shock_lapse_file = "shock_lapse_table.csv"
 
 point_id = 1
 

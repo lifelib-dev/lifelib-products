@@ -13,7 +13,9 @@ unchanged face amount to expiry at attained age 95, convertible to permanent cov
 before ``min(end of level period, attained age 70)``, with no cash value.
 
 The model contains one Space, :mod:`~TermLifeUS.Projection`, which holds all the
-formulas and data.
+formulas. Input data is **external**: CSVs in the model folder's parent directory,
+read at run time. The model folder itself holds no data, so the model and its
+inputs must travel together.
 
 **Projection basis.** Annual steps. Policy year ``t`` runs 1, 2, ..., ``proj_len()``,
 where ``proj_len() = 95 - age_at_entry()``. Premiums, commission, premium tax and

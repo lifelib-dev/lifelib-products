@@ -168,15 +168,69 @@ def test_cells_names_follow_basicterm_s(term_life):
     assert shared <= names, f"missing: {sorted(shared - names)}"
 
 
-def test_no_pickled_inputs():
-    """Inputs are CSV-only; _data/ may contain iospecs.py and nothing else."""
+def test_model_folder_holds_formulas_only():
+    """Inputs are external: the model folder carries no data of any kind.
+
+    No IOSpec (`_data/`), no embedded CSVs, no pickles - only the serialized
+    formulas.  This is the annuallife/TradLife_A layout, as opposed to
+    basiclife/BasicTerm_S, which stores its inputs inside the model.
+    """
     folder = REPO / MODELS["TermLifeUS"][0]
+    assert not (folder / "_data").exists()
     assert not list(folder.rglob("*.pickle"))
-    assert sorted(p.name for p in (folder / "_data").iterdir()) == ["iospecs.py"]
+    assert not list(folder.rglob("*.csv"))
+    assert not list(folder.rglob("*.xlsx"))
+    assert {p.name for p in folder.iterdir() if p.is_file()} == {
+        "__init__.py", "_system.json"}
+
+
+def test_inputs_live_beside_the_model():
+    """The five input CSVs sit in the model folder's parent directory."""
+    parent = (REPO / MODELS["TermLifeUS"][0]).parent
+    expected = {
+        "model_point_table.csv", "premium_rates.csv", "mort_table.csv",
+        "class_factor_table.csv", "shock_lapse_table.csv",
+    }
+    assert expected <= {p.name for p in parent.iterdir() if p.is_file()}
+
+
+def test_input_dir_resolves_to_the_parent(anchor):
+    """input_dir() is derived from where the model was read, not hard-coded."""
+    assert anchor.input_dir() == (REPO / MODELS["TermLifeUS"][0]).parent
+
+
+def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
+    """Point a filename Reference at a different file and the projection follows.
+
+    This is the property the external-file layout buys: a licensed mortality basis
+    drops in as a same-schema CSV with no formula change.
+    """
+    import pandas as pd
+
+    src = (REPO / MODELS["TermLifeUS"][0]).parent / "mort_table.csv"
+    doubled = pd.read_csv(src, index_col="age")
+    doubled["mort_rate"] = doubled["mort_rate"] * 2
+
+    model = mx.read_model(REPO / MODELS["TermLifeUS"][0], name="TermLifeUS_swap")
+    try:
+        # Write the alternative table where this model instance will look for it.
+        alt_name = "mort_table_doubled.csv"
+        doubled.to_csv(model.Projection.input_dir() / alt_name)
+        try:
+            base = model.Projection[1].claims(1)
+            model.Projection.mort_table_file = alt_name
+            model.Projection.clear_all()
+            assert model.Projection[1].claims(1) == pytest.approx(2 * base, rel=1e-12)
+        finally:
+            (model.Projection.input_dir() / alt_name).unlink(missing_ok=True)
+    finally:
+        model.close()
 
 
 def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
+    import shutil
+
     src = REPO / MODELS["TermLifeUS"][0]
     model = mx.read_model(src)
     try:
@@ -184,6 +238,12 @@ def test_round_trip_is_stable(tmp_path):
         mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
+
+    # Inputs are external, so they must travel with the model: copy the CSVs to the
+    # new parent directory before re-reading.  Without this the re-read model loads
+    # but fails on first evaluation - which is the trade-off this layout makes.
+    for csv in src.parent.glob("*.csv"):
+        shutil.copy(csv, tmp_path / csv.name)
 
     reread = mx.read_model(dest, name="TermLifeUS_rt")
     try:
