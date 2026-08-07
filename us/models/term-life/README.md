@@ -43,10 +43,48 @@ monthiversary processing. The technical notes describe an optional monthly mode;
 not implemented, and the `premium_mode` column in the model point table is currently
 inert.
 
-## Inputs
+## Inputs are external files
 
-All inputs are CSVs inside the model folder, so every value is visible in a diff. There
-are no pickled values — `_data/` contains only `iospecs.py`.
+The five input CSVs live **in this directory**, beside `run.py` — not inside the model
+folder. `TermLifeUS/` holds nothing but formulas:
+
+```
+us/models/term-life/
+  model_point_table.csv        <- inputs live here
+  premium_rates.csv
+  mort_table.csv
+  class_factor_table.csv
+  shock_lapse_table.csv
+  run.py
+  README.md
+  TermLifeUS/                  <- formulas only
+    __init__.py                   (model docstring)
+    _system.json
+    Projection/__init__.py        (Space docstring + all cells)
+```
+
+This follows lifelib's `annuallife/TradLife_A`, which keeps `input.xlsx` beside the
+model and reads it at run time. It is the opposite of `basiclife/BasicTerm_S`, which
+stores its inputs *inside* the model through modelx's IOSpec machinery — hence no
+`_data/` directory and no embedded values here at all.
+
+`input_dir()` resolves the location from `_model.path.parent` when the model is read, so
+it works wherever the repository is checked out. Each table has a filename Reference and
+a reader Cells:
+
+| Reference | Cells | File |
+|---|---|---|
+| `model_point_file` | `model_point_table()` | `model_point_table.csv` |
+| `premium_rates_file` | `premium_rates()` | `premium_rates.csv` |
+| `mort_table_file` | `mort_table()` | `mort_table.csv` |
+| `class_factor_file` | `class_factor_table()` | `class_factor_table.csv` |
+| `shock_lapse_file` | `shock_lapse_table()` | `shock_lapse_table.csv` |
+
+**The trade-off:** the model is not portable on its own. Copy `TermLifeUS/` without the
+CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
+of the model shows logic changes only, and an input can be edited or swapped in place —
+point `mort_table_file` at another same-schema file and the projection follows, with no
+formula change. Tests cover both halves of that bargain.
 
 | File | Contents | Provenance |
 |---|---|---|
@@ -55,9 +93,6 @@ are no pickled values — `_data/` contains only `iospecs.py`.
 | `mort_table.csv` | Base mortality by age, with a `provenance` column | ages 35–46 are the worked example's illustrative vector; ages 47+ are a geometric extension **[std]**, *not* a published table |
 | `class_factor_table.csv` | Rate-class factors 0.80 / 0.90 / 1.00 / 1.75 | **[std]**, technical notes footnote A |
 | `shock_lapse_table.csv` | Shock lapse by jump-ratio bucket | **[std]**, technical notes |
-
-To swap in a licensed mortality basis, replace `mort_table.csv` with a same-schema file
-— no formula changes.
 
 ## Naming
 
@@ -121,8 +156,10 @@ which sets it aside to keep one decrement narrative.
 
 `tests/test_term_life_us.py` asserts the full 12-row worked example to the cent, the
 in-force column to six decimals, the roll-forward identity, expiry behaviour, the M(1)
-divergence, the BasicTerm_S name set, that both docstrings survive serialization, and a
-read → write → re-read round trip.
+divergence, the BasicTerm_S name set, that both docstrings survive serialization, that
+the model folder contains no data of any kind, that an input can be swapped by
+repointing a Reference, and a read → write → re-read round trip carrying the inputs
+along.
 
 ```bash
 python -m pytest tests -q
