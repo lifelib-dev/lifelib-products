@@ -145,14 +145,39 @@ def test_result_cf_shape(anchor):
     assert df.loc[1, "net_cf"] == pytest.approx(-384.80, abs=CENT)
 
 
-def test_model_and_space_are_documented(term_life):
-    """Both docstrings are part of the deliverable, so assert they survive a round trip."""
-    assert "level premium term life insurance" in term_life.doc
-    assert "mechanics demonstration" in term_life.doc
-    doc = term_life.Projection.doc
-    assert "Notes symbol" in doc                 # the symbol-to-cells mapping table
+def test_every_space_is_documented(term_life):
+    """Each Space carries a docstring, and the model docstring names every one of them.
+
+    This is the guard against the docstrings describing a structure the model no longer
+    has: adding or removing a Space without saying so in the model docstring fails here.
+    """
+    assert term_life.doc
+    for name in term_life.spaces:
+        assert term_life.spaces[name].doc, f"{name} has no docstring"
+        assert name in term_life.doc, f"model docstring does not mention Space {name}"
+
+
+def test_model_docstring_describes_the_current_structure(term_life):
+    """Specifics a reader would rely on, asserted so they cannot go stale silently."""
+    doc = term_life.doc
+    assert "level premium term life insurance" in doc
+    assert "mechanics demonstration" in doc
+    assert "external" in doc                     # inputs are not stored in the model
+    assert "once per model" in doc               # why Data exists
+    # The model had one Space before Data was split out; make sure that claim is gone.
+    assert "contains one Space" not in doc
+
+
+def test_space_docstrings_carry_their_reference_material(term_life):
+    """Projection holds the symbol mapping; Data explains the input arrangement."""
+    proj = term_life.Projection.doc
+    assert "Notes symbol" in proj                # the symbol-to-cells mapping table
     for cells in ("pols_if", "pols_maturity", "plt_mort_factor", "premium_pp"):
-        assert cells in doc
+        assert cells in proj
+    data = term_life.Data.doc
+    assert "TradLife_A" in data                  # the pattern it follows
+    for cells in ("input_dir", "mort_table", "model_point_table"):
+        assert cells in data
 
 
 def test_cells_names_follow_basicterm_s(term_life):
