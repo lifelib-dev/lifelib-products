@@ -33,11 +33,11 @@ Reference and a reader Cells:
 ======================  ==========================  ==============================
 Reference               Cells                       File
 ======================  ==========================  ==============================
-model_point_file        model_point_table()         model_point_table.csv
-premium_rates_file      premium_rates()             premium_rates.csv
-mort_table_file         mort_table()                mort_table.csv
-class_factor_file       class_factor_table()        class_factor_table.csv
-shock_lapse_file        shock_lapse_table()         shock_lapse_table.csv
+model_point_file        data.model_point_table()         model_point_table.csv
+premium_rates_file      data.premium_rates()             premium_rates.csv
+mort_table_file         data.mort_table()                mort_table.csv
+class_factor_file       data.class_factor_table()        class_factor_table.csv
+shock_lapse_file        data.shock_lapse_table()         shock_lapse_table.csv
 ======================  ==========================  ==============================
 
 To swap in a licensed mortality basis, replace ``mort_table.csv`` with a same-schema
@@ -120,46 +120,9 @@ _spaces = []
 # ---------------------------------------------------------------------------
 # Cells
 
-def input_dir():
-    """The directory holding the input CSVs: the model folder's parent.
-
-    Inputs are *external* files, not data stored inside the model, so the model
-    folder is pure formulas.  The path is resolved at run time from where the model
-    was read, following ``annuallife.TradLife_A``.
-    """
-    return _model.path.parent                                        # noqa: F821
-
-
-def model_point_table():
-    """The model point table, read from *model_point_table.csv*."""
-    return pd.read_csv(input_dir() / model_point_file, index_col="point_id")  # noqa: F821
-
-
-def premium_rates():
-    """The guaranteed premium schedule, read from *premium_rates.csv*."""
-    return pd.read_csv(                                              # noqa: F821
-        input_dir() / premium_rates_file,                            # noqa: F821
-        index_col=["plan", "sex", "rate_class", "band", "policy_year"])
-
-
-def mort_table():
-    """The base mortality table by age, read from *mort_table.csv*."""
-    return pd.read_csv(input_dir() / mort_table_file, index_col="age")  # noqa: F821
-
-
-def class_factor_table():
-    """The underwriting-class factors, read from *class_factor_table.csv*."""
-    return pd.read_csv(input_dir() / class_factor_file, index_col="rate_class")  # noqa: F821
-
-
-def shock_lapse_table():
-    """The shock-lapse buckets by jump ratio, read from *shock_lapse_table.csv*."""
-    return pd.read_csv(input_dir() / shock_lapse_file)               # noqa: F821
-
-
 def model_point():
     """The selected model point as a Series."""
-    return model_point_table().loc[point_id]                          # noqa: F821
+    return data.model_point_table().loc[point_id]                          # noqa: F821
 
 
 def age_at_entry():
@@ -216,7 +179,7 @@ def age(t):
 def premium_pp(t):
     """Guaranteed annual gross premium per policy in year t, policy fee included."""
     key = (plan(), sex(), rate_class(), band(), t)
-    return float(premium_rates().loc[key, "premium_pp"])               # noqa: F821
+    return float(data.premium_rates().loc[key, "premium_pp"])               # noqa: F821
 
 
 def jump_ratio():
@@ -246,12 +209,12 @@ def plt_mort_factor(d):
 
 def class_factor():
     """Underwriting-class multiplier on the base mortality table **[std]**."""
-    return float(class_factor_table().loc[rate_class(), "factor"])      # noqa: F821
+    return float(data.class_factor_table().loc[rate_class(), "factor"])      # noqa: F821
 
 
 def mort_rate_base(t):
     """Base-table mortality rate at the attained age in policy year t."""
-    return float(mort_table().loc[age(t), "mort_rate"])                 # noqa: F821
+    return float(data.mort_table().loc[age(t), "mort_rate"])                 # noqa: F821
 
 
 def mort_rate(t):
@@ -263,10 +226,10 @@ def mort_rate(t):
 def shock_lapse_rate():
     """Shock lapse at the end of the level period, by jump-ratio bucket **[std]**."""
     j = jump_ratio()
-    for _, r in shock_lapse_table().iterrows():                        # noqa: F821
+    for _, r in data.shock_lapse_table().iterrows():                        # noqa: F821
         if r["jump_lo"] < j <= r["jump_hi"]:
             return float(r["shock_lapse_rate"])
-    return float(shock_lapse_table().iloc[-1]["shock_lapse_rate"])     # noqa: F821
+    return float(data.shock_lapse_table().iloc[-1]["shock_lapse_rate"])     # noqa: F821
 
 
 def lapse_rate(t):
@@ -419,15 +382,7 @@ def result_cf():
 # ---------------------------------------------------------------------------
 # References
 
-model_point_file = "model_point_table.csv"
-
-premium_rates_file = "premium_rates.csv"
-
-mort_table_file = "mort_table.csv"
-
-class_factor_file = "class_factor_table.csv"
-
-shock_lapse_file = "shock_lapse_table.csv"
+data = ("Interface", ("..", "Data"), "auto")
 
 point_id = 1
 

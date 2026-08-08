@@ -60,7 +60,8 @@ us/models/term-life/
   TermLifeUS/                  <- formulas only
     __init__.py                   (model docstring)
     _system.json
-    Projection/__init__.py        (Space docstring + all cells)
+    Data/__init__.py              (reads the CSVs, once per model)
+    Projection/__init__.py        (the by-policy projection)
 ```
 
 This follows lifelib's `annuallife/TradLife_A`, which keeps `input.xlsx` beside the
@@ -68,9 +69,18 @@ model and reads it at run time. It is the opposite of `basiclife/BasicTerm_S`, w
 stores its inputs *inside* the model through modelx's IOSpec machinery — hence no
 `_data/` directory and no embedded values here at all.
 
-`input_dir()` resolves the location from `_model.path.parent` when the model is read, so
-it works wherever the repository is checked out. Each table has a filename Reference and
-a reader Cells:
+### Read once, in `Data`
+
+`Projection` is parameterized by `point_id`, so every `Projection[N]` is a separate
+ItemSpace with its own cells cache. Readers placed there would re-read every file for
+every policy. They live instead in an unparameterized **`Data`** Space, which
+`Projection` references as `data` — so each file is read once per model no matter how
+many policies are projected, and `Projection[1].data is Projection[2].data`. A test
+counts the reads.
+
+`Data.input_dir()` resolves the location from `_model.path.parent` when the model is
+read, so it works wherever the repository is checked out. Each table has a filename
+Reference and a reader Cells, both on `Data`:
 
 | Reference | Cells | File |
 |---|---|---|
@@ -83,13 +93,13 @@ a reader Cells:
 **The trade-off:** the model is not portable on its own. Copy `TermLifeUS/` without the
 CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
 of the model shows logic changes only, and an input can be edited or swapped in place —
-point `mort_table_file` at another same-schema file and the projection follows, with no
-formula change. Tests cover both halves of that bargain.
+point `Data.mort_table_file` at another same-schema file and the projection follows,
+with no formula change. Tests cover both halves of that bargain.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Model points. **Point 1 is the worked-example anchor cell** (M35 / StdNT / $100k / T10 / annual). Points 2 and 3 exercise the formula path and a different plan | anchor cell from the specimen [S6] |
-| `premium_rates.csv` | Guaranteed premium schedule by policy year, with a `provenance` column marking each row | sourced anchors [S6]; intermediate ART years geometrically interpolated **[std]** |
+| `model_point_table.csv` | Two model points, both on the anchor configuration. **Point 1 is the worked-example anchor cell** (M35 / StdNT / $100k / T10 / annual); point 2 is identical but leaves the M(1) override blank, exercising the formula path | anchor cell from the specimen [S6] |
+| `premium_rates.csv` | Guaranteed premium schedule by policy year, with a `provenance` column marking each row. **Covers the anchor configuration T10 / M / StdNT / band 1 only** — a model point on any other plan, sex, class or band needs this table extended first, and a test enforces that every model point is projectable | sourced anchors [S6]; intermediate ART years geometrically interpolated **[std]** |
 | `mort_table.csv` | Base mortality by age, with a `provenance` column | ages 35–46 are the worked example's illustrative vector; ages 47+ are a geometric extension **[std]**, *not* a published table |
 | `class_factor_table.csv` | Rate-class factors 0.80 / 0.90 / 1.00 / 1.75 | **[std]**, technical notes footnote A |
 | `shock_lapse_table.csv` | Shock lapse by jump-ratio bucket | **[std]**, technical notes |
