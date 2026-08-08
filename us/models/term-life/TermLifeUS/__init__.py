@@ -53,6 +53,7 @@ _name = "TermLifeUS"
 _allow_none = False
 
 _spaces = [
+    "Data",
     "Projection"
 ]
 
