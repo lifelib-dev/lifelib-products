@@ -389,8 +389,7 @@ Valuation Manual, Jan. 1, 2026 [REG-R3]; the SVL is Model 820 [REG-R1].
 
 **Statutory accounting and capital.** The framework — statutory accounting
 principles, the annual statement exhibits, AVR/IMR and risk-based capital — is in
-`us/regulatory/statutory-accounting-and-capital.md` and
-`us/regulatory/technical-notes.md`; what is specific to VUL is in
+`us/regulatory/statutory-accounting-and-capital.md`; what is specific to VUL is in
 `technical-notes.md`, "Statutory accounting and capital". In outline: VUL is a
 **life contract**, classified at inception and immutably [REG-R78], so premiums
 are premium income rather than a direct credit to reserve and reserves report in

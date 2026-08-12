@@ -632,15 +632,14 @@ Trace and checks:
 
 ## Statutory accounting and capital
 
-The framework is in `us/regulatory/statutory-accounting-and-capital.md` and the formulas
-and algorithms in `us/regulatory/technical-notes.md`; only what is RILA-specific is stated
+The framework, formulas and algorithms are in
+`us/regulatory/statutory-accounting-and-capital.md`; only what is RILA-specific is stated
 here. [REG-R#] tags resolve against the shared numbering as extended to **R1–R157**
 (R114–R124 and R143–R149 unused by design). **Nothing marked [unverified] is upgraded on
 recollection** — the AG 33, AG 35, A-820, A-250 and A-255 statements in *Reserve basis*
 below changed only because those primary texts were read at first hand on 2026-08-06
-[REG-R151][REG-R152][REG-R153][REG-R156][REG-R157] — and
-**no AVR factor, IMR amortisation factor or RBC factor value is stated that
-`us/regulatory/` does not contain**.
+[REG-R151][REG-R152][REG-R153][REG-R156][REG-R157] — and **no AVR factor, IMR amortisation
+factor or RBC factor value is stated that `us/regulatory/` does not contain**.
 
 ### Contract classification and reporting
 
@@ -693,20 +692,21 @@ indexed to an external referent such as an equity index**", so the guideline con
 index-linked contracts on its own terms without invoking AG 35 [REG-R151]. Full surrenders,
 partial withdrawals and full and partial annuitizations are its named elective benefits and
 this chassis offers all three [S1][S2], so a RILA is **inside** AG 33 and takes the whole
-apparatus set out in `us/regulatory/technical-notes.md`, *Formulaic reserves*: every benefit
-sorted once into elective or non-elective — the return-of-premium GMDB is a death benefit
-and therefore **non-elective** [S2]; **experience-based elective incidence prohibited**,
-"incidence rates should not be based on tables reflecting past company experience, industry
-experience or other expectations", trial sets maximised over instead with all rates between
-0% and 100% theoretically in scope; exactly **one non-elective leg per elective path**,
-computed on the contract state that path leaves behind; **survivorship discounting on the
-SVL-prescribed annuity mortality of even the pure surrender stream**; and guarantee duration
-and Plan Type determined **per benefit**, so the valuation rate varies inside a single
-integrated benefit stream and, for the annuitization portion, moves with the assumed
-election date. The consequence for this model is blunt: the behavioral surrender and
-withdrawal assumptions of *Policyholder behavior modeling* above are pricing and PBR inputs
-and are **not available to the formulaic run** — the same engine must expose elective
-decrements as a *decision variable* maximised over, not as an assumption [REG-R151].
+apparatus set out in `us/regulatory/statutory-accounting-and-capital.md`, *Formulaic
+reserves*: every benefit sorted once into elective or non-elective — the return-of-premium
+GMDB is a death benefit and therefore **non-elective** [S2]; **experience-based elective
+incidence prohibited**, "incidence rates should not be based on tables reflecting past
+company experience, industry experience or other expectations", trial sets maximised over
+instead with all rates between 0% and 100% theoretically in scope; exactly **one
+non-elective leg per elective path**, computed on the contract state that path leaves
+behind; **survivorship discounting on the SVL-prescribed annuity mortality of even the pure
+surrender stream**; and guarantee duration and Plan Type determined **per benefit**, so the
+valuation rate varies inside a single integrated benefit stream and, for the annuitization
+portion, moves with the assumed election date. The consequence for this model is blunt: the
+behavioral surrender and withdrawal assumptions of *Policyholder behavior modeling* above
+are pricing and PBR inputs and are **not available to the formulaic run** — the same engine
+must expose elective decrements as a *decision variable* maximised over, not as an
+assumption [REG-R151].
 
 **Two AG 33 mechanics bite on this chassis specifically** [REG-R151]:
 
@@ -765,26 +765,26 @@ negatively.
 
 **What remains unsourced, stated as narrowly as the reading now permits.** A RILA CARVM run
 is still the path-enumeration exercise of *Formulaic reserves* in
-`us/regulatory/technical-notes.md`, except that the guaranteed benefit on every elective path
-is an **Interim Value** — a market-consistent derivative price, re-solved from market data at
-the valuation date. **No retrieved document says how such a value becomes "the future
-guaranteed benefit" of SVL §5a.** AG 33 supplies the stream construction, the incidence rules
-and the rate determination and is silent on index credits, separate accounts and
-market-consistent benefit amounts [REG-R151]; AG 35 supplies four such conversions and does
-not address this design [REG-R152]; A-250 and A-255 supply none [REG-R156][REG-R157]; AG 54
-governs the *nonforfeiture* value, not the reserve [R2][REG-R44]. Three seams stay open on
-the primary text's own terms. **AG 33 never cites SVL §5a by number** — it restates CARVM's
-definition instead, so the mapping to §5a is **this library's own, made on content**
-[REG-R151][REG-R1 §5a.B][REG-R153 ¶15]. Its operative *Text* block never restates the "end of
-each respective contract year" indexing or the deduction of future valuation considerations,
-so **how the stream maximisation composes with §5a's per-contract-year-end excess is stated
-nowhere**, and this file does not assert a composition [REG-R151]. And its precedence clause
-settles direction without naming an instrument — "in the event an actuarial guideline or
-regulation dealing with reserves is developed for a specific annuity product design, the
-product specific actuarial guideline or regulation will take precedence" — while **AG 33
-names no other guideline anywhere**, so reading VM-21 / AG 43 as *the* product-specific
-instrument for an in-scope RILA is the library's inference, not AG 33's text
-[REG-R151][unverified].
+`us/regulatory/statutory-accounting-and-capital.md`, except that the guaranteed benefit on
+every elective path is an **Interim Value** — a market-consistent derivative price,
+re-solved from market data at the valuation date. **No retrieved document says how such a
+value becomes "the future guaranteed benefit" of SVL §5a.** AG 33 supplies the stream
+construction, the incidence rules and the rate determination and is silent on index
+credits, separate accounts and market-consistent benefit amounts [REG-R151]; AG 35 supplies
+four such conversions and does not address this design [REG-R152]; A-250 and A-255 supply
+none [REG-R156][REG-R157]; AG 54 governs the *nonforfeiture* value, not the reserve
+[R2][REG-R44]. Three seams stay open on the primary text's own terms. **AG 33 never cites
+SVL §5a by number** — it restates CARVM's definition instead, so the mapping to §5a is
+**this library's own, made on content** [REG-R151][REG-R1 §5a.B][REG-R153 ¶15]. Its
+operative *Text* block never restates the "end of each respective contract year" indexing
+or the deduction of future valuation considerations, so **how the stream maximisation
+composes with §5a's per-contract-year-end excess is stated nowhere**, and this file does
+not assert a composition [REG-R151]. And its precedence clause settles direction without
+naming an instrument — "in the event an actuarial guideline or regulation dealing with
+reserves is developed for a specific annuity product design, the product specific actuarial
+guideline or regulation will take precedence" — while **AG 33 names no other guideline
+anywhere**, so reading VM-21 / AG 43 as *the* product-specific instrument for an in-scope
+RILA is the library's inference, not AG 33's text [REG-R151][unverified].
 
 **One date not to repeat unqualified.** AG 33's printed *Effective Date* block reads: "This
 guideline shall be effective on **December 31, 1998**, affecting all contracts issued on or
@@ -847,8 +847,8 @@ marks [REG-R105][REG-R103].
 
 ### What this product's cash flow model must additionally produce
 
-The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs"; the
-rows below are the RILA-specific additions to it, not a restatement of it.
+The shared contract is `us/regulatory/statutory-accounting-and-capital.md`, "Required model
+outputs"; the rows below are the RILA-specific additions to it, not a restatement of it.
 
 | Statutory item | Required model output |
 |---|---|
@@ -953,9 +953,9 @@ eligible — **with state regulator approval** — for **book value** measuremen
 account, the general account serving as "an overall backstop or … an implied guarantee"
 [REG-R83 ¶¶17–18][REG-R84]. **Any assumption that a RILA separate account must be at fair
 value is wrong.** Three things follow: the **liability basis follows the asset basis** —
-A-820 valuation interest rates on a general-account basis (that appendix is no longer a blind
-pointer: its valuation-rate machinery is ¶¶7–10 [REG-R153], carried in
-`us/regulatory/technical-notes.md`), current market-based rates where
+A-820 valuation interest rates on a general-account basis (that appendix is no longer a
+blind pointer: its valuation-rate machinery is ¶¶7–10 [REG-R153], carried in
+`us/regulatory/statutory-accounting-and-capital.md`), current market-based rates where
 assets are at fair value [REG-R83 ¶30]; a **separate account IMR is required where assets
 are at book value and not where they are at fair value**, account by account [¶¶26–27]; and
 a **separate account AVR** is required where the entity rather than the policyholder bears

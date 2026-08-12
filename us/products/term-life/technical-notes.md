@@ -353,10 +353,10 @@ above; l(11) = 0.650814 × (1 − 0.0016) × (1 − 0.80)
 
 ## Statutory accounting and capital
 
-Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md`
-and `us/regulatory/technical-notes.md`; this section states only what is specific to level premium term.
-[REG-R#] resolves against the shared numbering used throughout this file, which now runs **R1–R157**
-(R114–R124 and R143–R149 unused by design).
+Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md`;
+this section states only what is specific to level premium term. [REG-R#] resolves against the shared
+numbering used throughout this file, which now runs **R1–R157** (R114–R124 and R143–R149 unused by
+design).
 
 ### Contract classification and reporting
 
@@ -549,8 +549,8 @@ and `us/regulatory/technical-notes.md`; this section states only what is specifi
 
 ### What this product's model must additionally produce
 
-Shared contract: `us/regulatory/technical-notes.md`, "Required model outputs". Rows below are the ones this
-product specialises or makes trivial.
+Shared contract: `us/regulatory/statutory-accounting-and-capital.md`, "Required model outputs". Rows below
+are the ones this product specialises or makes trivial.
 
 | Statutory item | Required model output for level premium term | Cite |
 |---|---|---|

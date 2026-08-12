@@ -597,7 +597,7 @@ adder, and a second regression target [S4].
 
 The framework — no DAC, the reporting targets, the reserve hierarchy, the AVR/IMR
 pair, the RBC formula — is in `us/regulatory/statutory-accounting-and-capital.md`,
-with formulas in `us/regulatory/technical-notes.md`; neither is repeated here. Every
+which carries the formulas alongside the concepts; it is not repeated here. Every
 parameter below is carried from `us/regulatory/` unchanged, and where that directory
 records an unretrieved document or an unsettled treatment the caveat is reproduced at
 the point of use rather than filled in.
@@ -633,38 +633,36 @@ attached; **do not hard-code either answer.**
 
 ### Reserve basis
 
-**Formulaic CARVM, then VM-22.** CARVM is the greatest present value over
-contract-year ends of guaranteed benefits **including guaranteed nonforfeiture
-benefits**, less future valuation considerations payable before that date
-[REG-R1 §5a.B][REG-R153 ¶15]; a single-premium contract has none of the latter, so
-`X(k)` collapses to the discounted `CSV(k)` — worked in
-`us/regulatory/technical-notes.md`, "Formulaic reserves", Worked example 2, a SPDA on
-exactly this chassis. **A-820 ¶15 prints that construction word for word**, and its ¶14
-scope gate admits this contract: ¶15 reaches all annuity and pure endowment contracts
-other than qualified-plan group annuity business, which ¶13.b routes instead to a
-CRVM-consistent method [REG-R153 ¶¶13.b, 14, 15]. **AG 33's text has now been read in
-full** as printed in the AP&P Manual Appendix C [REG-R151] (superseding the title-only
-record at [REG-R39][REG-R41]) — see the four bullets below — and with it Worked example
-2's method stops being a library construction: "accumulated at the guaranteed credited
-interest rate(s) and discounted at the valuation rate(s) of interest" is the guideline's
-own description of the mandatory cash value stream [REG-R151 *Text* 2.A]. Its parameter
-values remain **[std]**. **Two seams stay open, and reading AG 33 did not close them.**
-The guideline **never cites SVL §5a by number** — its only numbered SVL cross-references
-are to §4b and §4b.C.(1)(c)(vi) — so the §5a mapping relied on above is **the library's
-own, made on content**, not AG 33's citation; and AG 33's operative *Text* block never
-restates the "end of each respective contract year" indexing or the deduction of future
-valuation considerations, which appear only in a *Background* paraphrase, so **how the
-stream maximisation composes with §5a's per-contract-year-end excess is not stated** and
-is not asserted here [REG-R151][REG-R1 §5a.B][REG-R153 ¶15].
-**AG 35 does not reach a book-value MYGA** — now on primary
-authority rather than inference: its entire Scope reads "This Actuarial Guideline applies
-to all equity indexed annuity contracts, regardless of the date of issue, that are subject
-to CARVM", and this chassis has no index feature [REG-R152] (superseding [REG-R40]).
-**VM-22 constitutes CARVM** for in-scope
-contracts from valuation dates on or after **1 January 2026**, with the three-year
-elective transition [R2 §2.B][REG-R36]; a MYGA sits in the **Accumulation Reserving
-Category** [R2]. Both bases therefore coexist during transition — Exhibit 5 Column 1
-keys the standard **by years of issue** [REG-R89], so key the reserve on
+**Formulaic CARVM, then VM-22.** CARVM is the greatest present value over contract-year
+ends of guaranteed benefits **including guaranteed nonforfeiture benefits**, less future
+valuation considerations payable before that date [REG-R1 §5a.B][REG-R153 ¶15]; a
+single-premium contract has none of the latter, so `X(k)` collapses to the discounted
+`CSV(k)` — worked in `us/regulatory/statutory-accounting-and-capital.md`, "Formulaic
+reserves", Worked example 2, a SPDA on exactly this chassis. **A-820 ¶15 prints that
+construction word for word**, and its ¶14 scope gate admits this contract: ¶15 reaches all
+annuity and pure endowment contracts other than qualified-plan group annuity business,
+which ¶13.b routes instead to a CRVM-consistent method [REG-R153 ¶¶13.b, 14, 15]. **AG
+33's text has now been read in full** as printed in the AP&P Manual Appendix C [REG-R151]
+(superseding the title-only record at [REG-R39][REG-R41]) — see the four bullets below —
+and with it Worked example 2's method stops being a library construction: "accumulated at
+the guaranteed credited interest rate(s) and discounted at the valuation rate(s) of
+interest" is the guideline's own description of the mandatory cash value stream [REG-R151
+*Text* 2.A]. Its parameter values remain **[std]**. **Two seams stay open, and reading AG
+33 did not close them.** The guideline **never cites SVL §5a by number** — its only
+numbered SVL cross-references are to §4b and §4b.C.(1)(c)(vi) — so the §5a mapping relied
+on above is **the library's own, made on content**, not AG 33's citation; and AG 33's
+operative *Text* block never restates the "end of each respective contract year" indexing
+or the deduction of future valuation considerations, which appear only in a *Background*
+paraphrase, so **how the stream maximisation composes with §5a's per-contract-year-end
+excess is not stated** and is not asserted here [REG-R151][REG-R1 §5a.B][REG-R153 ¶15].
+**AG 35 does not reach a book-value MYGA** — now on primary authority rather than
+inference: its entire Scope reads "This Actuarial Guideline applies to all equity indexed
+annuity contracts, regardless of the date of issue, that are subject to CARVM", and this
+chassis has no index feature [REG-R152] (superseding [REG-R40]). **VM-22 constitutes
+CARVM** for in-scope contracts from valuation dates on or after **1 January 2026**, with
+the three-year elective transition [R2 §2.B][REG-R36]; a MYGA sits in the **Accumulation
+Reserving Category** [R2]. Both bases therefore coexist during transition — Exhibit 5
+Column 1 keys the standard **by years of issue** [REG-R89], so key the reserve on
 `(standard, year of issue)`, not on product. Mechanics stay in "Valuation and reserve
 pointers" below.
 
@@ -751,8 +749,8 @@ pointers" below.
 
 ### What this chassis must additionally produce
 
-The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs",
-and is not restated. Specialised to this product:
+The shared contract is `us/regulatory/statutory-accounting-and-capital.md`, "Required
+model outputs", and is not restated. Specialised to this product:
 
 | Statutory item | Additional model output required here |
 |---|---|
@@ -880,20 +878,21 @@ duplicating them. Reserve layers consume the cash flows and are cited, not repro
   Reserving Category** [R2]. Aggregate reserve = SR (CTE70) + DR for contracts passing the
   Single Scenario Test + formulaic reserves for excluded contracts; the additional
   standard projection amount is **disclosure-only** under VM-31 [R2 §3].
-- **Formulaic CARVM — A-820 ¶¶14–15 as interpreted by AG 33** [REG-R153][REG-R151], with the
-  guideline family indexed at VM-C [REG-R41]. AG 33's printed title is **"Determining CARVM
-  Reserves for Annuity Contracts With Elective Benefits"** and its printed *Effective Date*
-  block reads "This guideline shall be effective on **December 31, 1998**, affecting all
-  contracts issued on or after January 1, 1981" [REG-R151 *Effective Date*]. The
-  **December 31, 1995** date and the alternative title this file previously carried come
-  from IRS Rev. Rul. 2002-6, describing a differently-titled instrument [R7][REG-R39].
-  **Both are recorded and the reconciliation is unresolved** — the extracted pages carry no
-  amendment history, so "a later revision" is an inference, not a fact from either source;
-  the 1 January 1981 issue-date reach is common to both, and the 33⅓ / 66⅔ / 100% grade-in
-  ran off by December 31, 2000. The mechanics are **no longer [unverified]**: they are in
-  "Reserve basis" above and in `us/regulatory/technical-notes.md`, "Formulaic reserves".
-  **VM-V §1** carries the statutory maximum valuation interest rate on the post-annuitization
-  payout stream [REG-R37].
+- **Formulaic CARVM — A-820 ¶¶14–15 as interpreted by AG 33** [REG-R153][REG-R151], with
+  the guideline family indexed at VM-C [REG-R41]. AG 33's printed title is **"Determining
+  CARVM Reserves for Annuity Contracts With Elective Benefits"** and its printed
+  *Effective Date* block reads "This guideline shall be effective on **December 31,
+  1998**, affecting all contracts issued on or after January 1, 1981" [REG-R151 *Effective
+  Date*]. The **December 31, 1995** date and the alternative title this file previously
+  carried come from IRS Rev. Rul. 2002-6, describing a differently-titled instrument
+  [R7][REG-R39]. **Both are recorded and the reconciliation is unresolved** — the
+  extracted pages carry no amendment history, so "a later revision" is an inference, not a
+  fact from either source; the 1 January 1981 issue-date reach is common to both, and the
+  33⅓ / 66⅔ / 100% grade-in ran off by December 31, 2000. The mechanics are **no longer
+  [unverified]**: they are in "Reserve basis" above and in
+  `us/regulatory/statutory-accounting-and-capital.md`, "Formulaic reserves". **VM-V §1**
+  carries the statutory maximum valuation interest rate on the post-annuitization payout
+  stream [REG-R37].
 - **Tax and GAAP.** IRC §807: greater of net surrender value and, post-TCJA, **92.81% of**
   the NAIC-prescribed method reserve (CARVM), capped at statutory [R7][REG-R16]. LDTI
   (ASU 2018-12) with ASOP No. 10 on the U.S. GAAP basis [REG-R34][REG-R71].

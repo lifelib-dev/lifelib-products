@@ -333,15 +333,14 @@ followed by one month's interest.
 
 ## Statutory accounting and capital
 
-Framework and the twelve-product applicability matrix are in
-`us/regulatory/statutory-accounting-and-capital.md`; formulas, factor tables and
-algorithms are in `us/regulatory/technical-notes.md`. This section states only what is
-specific to current-assumption fixed UL. Two source limits from those files bite here:
-the **AVR and IMR factor tables were deliberately not transcribed**, and no value for
-either is stated anywhere in this library [REG-R89]; and every RBC figure below comes
-from the **2024** *Life and Fraternal Risk-Based Capital Forecasting and Instructions*,
-a sold NAIC publication read from a state posting, the **2025 edition having failed to
-parse** [REG-R128][REG-R129].
+Framework, the twelve-product applicability matrix, formulas, factor tables and
+algorithms are all in `us/regulatory/statutory-accounting-and-capital.md`. This
+section states only what is specific to current-assumption fixed UL. Two source limits
+from that file bite here: the **AVR and IMR factor tables were deliberately not
+transcribed**, and no value for either is stated anywhere in this library [REG-R89];
+and every RBC figure below comes from the **2024** *Life and Fraternal Risk-Based
+Capital Forecasting and Instructions*, a sold NAIC publication read from a state
+posting, the **2025 edition having failed to parse** [REG-R128][REG-R129].
 
 ### Contract classification and reporting
 
@@ -426,46 +425,46 @@ parse** [REG-R128][REG-R129].
   A-820's year-of-issue machinery and from VM-20 §3.B.6's routing
   [REG-R155][REG-R153][REG-R3].
 - **The A-585 engine, and what a flexible-premium current-assumption design does
-  inside it.** The algebra — `V(t) = ((A) − (B))·r − (C) − (D)`, the annuities
-  running to the highest attained age at which a premium may be paid, and the
-  ¶¶12–13 alternative minimum reserve — is set out once in
-  `us/regulatory/technical-notes.md`, "Formulaic reserves", and is not repeated
-  [REG-R155 ¶8]. Four things are specific to this product. **The ratio branch of
-  `r` is live here only because the chassis is flexible premium**: ¶8.d makes `r`
-  equal to one **unless** the policy is a flexible premium policy and the policy
-  value is less than the guaranteed maturity fund, so for a **fixed premium** UL
-  `r ≡ 1` unconditionally and a blanket `r = min(1, policy value / GMF)` is wrong
+  inside it.** The algebra — `V(t) = ((A) − (B))·r − (C) − (D)`, the annuities running
+  to the highest attained age at which a premium may be paid, and the ¶¶12–13
+  alternative minimum reserve — is set out once in
+  `us/regulatory/statutory-accounting-and-capital.md`, "Formulaic reserves", and is
+  not repeated [REG-R155 ¶8]. Four things are specific to this product. **The ratio
+  branch of `r` is live here only because the chassis is flexible premium**: ¶8.d
+  makes `r` equal to one **unless** the policy is a flexible premium policy and the
+  policy value is less than the guaranteed maturity fund, so for a **fixed premium**
+  UL `r ≡ 1` unconditionally and a blanket `r = min(1, policy value / GMF)` is wrong
   there. This composite is flexible-premium adjustable [S1][S3], so the ratio branch
   applies and the policy value it takes is `AV(t)` [REG-R155 ¶¶6, 8.d]. **The GMP
-  solve has no maturity date to aim at.** ¶8.c defines the guaranteed maturity
-  premium for a flexible premium policy as the level gross premium payable "over the
-  period during which premiums are allowed to be paid" that matures the policy "on
-  the latest maturity date, if any, permitted under the policy (otherwise at the
-  highest age in the valuation mortality table)"; this contract has **no maturity
-  date** and stops accepting premiums at attained age 121 [S2][S3], so the solve runs
-  to the top of the valuation table while `ä_x` and `ä_{x+t}` stop at the
-  attained-age-121 premium cut-off — the **premium-paying** period, not the coverage
-  period, and premiums are not accepted from that age [S3] — an easy implementation
-  error in a contract that has coverage for life [REG-R155 ¶¶8.b, 8.c]. The maturity
-  amount is the **initial death benefit** under Option A and the
-  **specified amount** under Option B, the corridor ignored in both and then adjusted
-  for separately by the ¶8.c footnotes [REG-R155][S1][S3]; and the GMP "may be less
-  than the premium necessary to pay all charges … especially … in the first year for
-  policies with large first year expense charges" — which is precisely this design's
-  $0.26 per $1,000 per month in years 1–10 [S3] — so a first year that fails to cover
-  charges is expected behaviour, not a failed solve [REG-R155 ¶8.c fn. 2].
-  **A-585's vocabulary already matches this file's.** "Policy value" is the amount to
-  which interest credits and charges are made, i.e. `AV(t)`; "net cash surrender
-  value" is the maximum amount payable on surrender, i.e. `NCSV(t)`; and A-585's
-  "cash surrender value" is that amount **plus loans outstanding**, i.e. this file's
-  `CSV(t) = AV(t) − SC(t)` [REG-R155 ¶¶1, 5, 6][S3]. **Structural changes are a
-  modelled event.** Changes separate from the automatic workings of the policy — face
-  increases and decreases, a change in the latest maturity date, a change in the
-  allowable premium payment period — force recalculation of GMP, GMF and (B) and
-  generate the (D) layers; the sanctioned simplification is to hold **GMP and GMF per
-  $1 of face** and rescale, offered permissively as "perhaps the simplest such
-  method", not prescribed [REG-R155 ¶¶8.g, 8.h, 11]. This product's face-increase
-  layering [S3] therefore has a reserve consequence as well as a charge consequence.
+  solve has no maturity date to aim at.** ¶8.c defines the guaranteed maturity premium
+  for a flexible premium policy as the level gross premium payable "over the period
+  during which premiums are allowed to be paid" that matures the policy "on the latest
+  maturity date, if any, permitted under the policy (otherwise at the highest age in
+  the valuation mortality table)"; this contract has **no maturity date** and stops
+  accepting premiums at attained age 121 [S2][S3], so the solve runs to the top of the
+  valuation table while `ä_x` and `ä_{x+t}` stop at the attained-age-121 premium
+  cut-off — the **premium-paying** period, not the coverage period, and premiums are
+  not accepted from that age [S3] — an easy implementation error in a contract that
+  has coverage for life [REG-R155 ¶¶8.b, 8.c]. The maturity amount is the **initial
+  death benefit** under Option A and the **specified amount** under Option B, the
+  corridor ignored in both and then adjusted for separately by the ¶8.c footnotes
+  [REG-R155][S1][S3]; and the GMP "may be less than the premium necessary to pay all
+  charges … especially … in the first year for policies with large first year expense
+  charges" — which is precisely this design's $0.26 per $1,000 per month in years 1–10
+  [S3] — so a first year that fails to cover charges is expected behaviour, not a
+  failed solve [REG-R155 ¶8.c fn. 2]. **A-585's vocabulary already matches this
+  file's.** "Policy value" is the amount to which interest credits and charges are
+  made, i.e. `AV(t)`; "net cash surrender value" is the maximum amount payable on
+  surrender, i.e. `NCSV(t)`; and A-585's "cash surrender value" is that amount **plus
+  loans outstanding**, i.e. this file's `CSV(t) = AV(t) − SC(t)` [REG-R155 ¶¶1, 5,
+  6][S3]. **Structural changes are a modelled event.** Changes separate from the
+  automatic workings of the policy — face increases and decreases, a change in the
+  latest maturity date, a change in the allowable premium payment period — force
+  recalculation of GMP, GMF and (B) and generate the (D) layers; the sanctioned
+  simplification is to hold **GMP and GMF per $1 of face** and rescale, offered
+  permissively as "perhaps the simplest such method", not prescribed [REG-R155 ¶¶8.g,
+  8.h, 11]. This product's face-increase layering [S3] therefore has a reserve
+  consequence as well as a charge consequence.
 - **What A-585 still delegates, and one pointer that does not resolve.** The (C)
   term's `(a) − (b)` — the CRVM expense allowance — is defined by ¶8.f as "described
   in paragraph 9 of Appendix A-820", and **A-820 ¶9 as printed is the
@@ -537,8 +536,8 @@ parse** [REG-R128][REG-R129].
 
 ### What this product's model must additionally produce
 
-The shared output contract is `us/regulatory/technical-notes.md`, "Required model
-outputs", and is not repeated. Specific to this chassis:
+The shared output contract is `us/regulatory/statutory-accounting-and-capital.md`,
+"Required model outputs", and is not repeated. Specific to this chassis:
 
 | Statutory item | This model's output | Cite |
 |---|---|---|
@@ -681,19 +680,19 @@ not a hard-coded zero.
    ASOP 2-admissible produces a C-2 categorisation the company could not defend.
 6. **AVR and IMR: no factor values here, and the legs that bite are specific.** Both
    apply to the general account backing this block [REG-R85][REG-R86], and **no AVR
-   factor and no IMR amortisation factor is stated anywhere in this library** [REG-R89].
-   This product has **no market value adjustment**, so the MVA leg of the IMR does not
-   arise; the liability leg that can is **block reinsurance**, entering IMR only where
-   the portion reinsured exceeds **5% of general account liabilities**, irrevocably and
-   to a non-affiliate [REG-R86][REG-R92 ¶54]. The **excess-withdrawal exemption** does
-   reach the product directly: withdrawable reserves include ordinary life surrenderable
-   without an MVA, and effective withdrawals include unscheduled withdrawals and
-   surrenders **plus the net increase in policy loans** [REG-R89] — so `W(t)` and
-   `ΔL(t)` are statutory inputs, not only behaviour. Negative-IMR admittance must be
-   tested **at every reporting date** on a **10%** cap and a **300% of Authorized
-   Control Level** gate, and is currently written to sunset **December 31, 2026 with
-   automatic nullification January 1, 2027** [REG-R87]; the replacement guidance is
-   still open — see `us/regulatory/statutory-accounting-and-capital.md`.
+   factor and no IMR amortisation factor is stated anywhere in this library**
+   [REG-R89]. This product has **no market value adjustment**, so the MVA leg of the
+   IMR does not arise; the liability leg that can is **block reinsurance**, entering
+   IMR only where the portion reinsured exceeds **5% of general account liabilities**,
+   irrevocably and to a non-affiliate [REG-R86][REG-R92 ¶54]. The **excess-withdrawal
+   exemption** does reach the product directly: withdrawable reserves include ordinary
+   life surrenderable without an MVA, and effective withdrawals include unscheduled
+   withdrawals and surrenders **plus the net increase in policy loans** [REG-R89] — so
+   `W(t)` and `ΔL(t)` are statutory inputs, not only behaviour. Negative-IMR
+   admittance must be tested **at every reporting date** on a **10%** cap and a **300%
+   of Authorized Control Level** gate, and is currently written to sunset **December
+   31, 2026 with automatic nullification January 1, 2027** [REG-R87]; the replacement
+   guidance is still open — see `us/regulatory/statutory-accounting-and-capital.md`.
 7. **This is the base chassis for three siblings, and each changes the statutory
    answer.** `indexed-ul` keeps the same §3.B.6 VM-A/VM-C NPR where no DR or SR is
    computed [REG-R3] — inside which ¶8.c is the only index-specific rule A-585

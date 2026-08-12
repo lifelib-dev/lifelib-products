@@ -2861,9 +2861,9 @@ carried in its front matter and recorded at R73.
   mortality and interest with the **GMP substituted for the valuation net premium in each policy year
   where the latter is larger**.
 - **Caveats.** A-585 prints **no effective date, operative date, transition or grandfathering
-  language** and **no numbers at all** — every mortality table and interest rate is delegated to A-820
-  "for policies issued in the same year" (¶¶8.j, 10) — so its temporal reach comes entirely from
-  outside the item and must not be inferred from it. It also **does not cite Model #585**: its
+  language** and **no numbers at all** — every mortality table and interest rate is delegated to
+  A-820 "for policies issued in the same year" (¶¶8.j, 10) — so its temporal reach comes entirely
+  from outside the item and must not be inferred from it. It also **does not cite Model #585**: its
   "Relevant NAIC Model Laws/Regulations" header names only the Standard Valuation Law (#820), so
   statements of the form "A-585 *is* Model #585 §5" should be softened, and **UL nonforfeiture, the
   mandatory policy provisions and the interest-indexed UL filing requirements are not in this
@@ -2871,12 +2871,13 @@ carried in its front matter and recorded at R73.
   routing that makes it matter to a post-operative-date net premium reserve is asserted by VM-20
   §3.B.6 and VM-A (R3)(R110), not here. **The ¶8.f pointer to "paragraph 9 of Appendix A-820" does
   not resolve against the A-820 print read at R153**, where ¶9 is the reference-interest-rate
-  paragraph; the quantities labelled a. and b. sit at **A-820 ¶11.a and ¶11.b**. That identification
-  is **structural, not textual** — it is what (a) − (b) must be for the A-585 reserve to be a CRVM
-  reserve — and it is recorded as an unresolved pointer in `us/regulatory/technical-notes.md`,
-  "Formulaic reserves", rather than silently repaired. One extraction artefact to respect: the PDF
-  text layer loses fraction bars, so the placement of `r` inside (C) is read from layout rather than
-  from a bar character — re-open PDF p. 1103 before hard-coding it.
+  paragraph; the quantities labelled a. and b. sit at **A-820 ¶11.a and ¶11.b**. That
+  identification is **structural, not textual** — it is what (a) − (b) must be for the A-585
+  reserve to be a CRVM reserve — and it is recorded as an unresolved pointer in
+  `us/regulatory/statutory-accounting-and-capital.md`, "Formulaic reserves", rather than silently
+  repaired. One extraction artefact to respect: the PDF text layer loses fraction bars, so the
+  placement of `r` inside (C) is read from layout rather than from a bar character — re-open PDF p.
+  1103 before hard-coding it.
 
 ### R156. Appendix A-250 — Variable Annuities
 - **Publisher:** NAIC
@@ -2927,12 +2928,13 @@ carried in its front matter and recorded at R73.
   the holder can surrender. Like A-250, it prints **no formula, symbol, factor or table and never
   mentions CARVM**.
 - **What R156 and R157 together close.** The open question recorded in
-  `us/regulatory/statutory-accounting-and-capital.md` and in the RILA technical notes — whether A-250
-  and A-255, described there as "the VM-A index's two closest formulaic items", would change a RILA
-  formulaic run once read — is now answered: **they would not.** A RILA CARVM run still rests on the
-  Standard Valuation Law text (R1) and, where elective benefits are present, on AG 33 (R151); A-255's
-  MVA-surrender-value floor and the two asset-coverage floors are the only additions. Calling them
-  "the closest formulaic items" is defensible only as *nearest by subject matter*.
+  `us/regulatory/statutory-accounting-and-capital.md` and in the RILA technical notes — whether
+  A-250 and A-255, described there as "the VM-A index's two closest formulaic items", would change
+  a RILA formulaic run once read — is now answered: **they would not.** A RILA CARVM run still
+  rests on the Standard Valuation Law text (R1) and, where elective benefits are present, on AG 33
+  (R151); A-255's MVA-surrender-value floor and the two asset-coverage floors are the only
+  additions. Calling them "the closest formulaic items" is defensible only as *nearest by subject
+  matter*.
 - **Related item read but not numbered.** **A-270 (variable life insurance, printed A270-1 to A270-3 =
   PDF pages 1097–1099)** was read in the same extraction and carries the one genuine reserve mechanic
   in this group — the ¶16 guaranteed-minimum-death-benefit reserve, a maximum of a one-year term-cost

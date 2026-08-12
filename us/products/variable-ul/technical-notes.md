@@ -317,11 +317,10 @@ account recursion per policy in force.
 
 ## Statutory accounting and capital
 
-Framework and arithmetic live in `us/regulatory/`: concepts in
-`statutory-accounting-and-capital.md`, formulas and factor tables in
-`technical-notes.md`, bibliography in `sources.md`. Only what is specific to VUL is
-stated here; the shared [REG-R#] numbering now runs R1–R157 (R114–R124 and R143–R149
-unused by design).
+Framework and arithmetic live in `us/regulatory/`: concepts, formulas and factor
+tables in `statutory-accounting-and-capital.md`, bibliography in `sources.md`. Only
+what is specific to VUL is stated here; the shared [REG-R#] numbering now runs
+R1–R157 (R114–R124 and R143–R149 unused by design).
 
 ### Contract classification and reporting
 
@@ -357,42 +356,42 @@ supports the standardization nor displaces it [REG-R153].
 ### Reserve basis
 
 - **VM-20 constitutes CRVM** for VUL issued on or after the Valuation Manual operative
-  date [REG-R1 §11][REG-R3]: minimum reserve = `Σ NPR` plus the excess of
-  `max(DR, SR)` over `Σ NPR` less the due-and-deferred premium asset, per reserving
-  category [REG-R3 §2.A]. VUL without secondary guarantees is **All Other** (code 080);
-  with them it moves to **ULSG** (code 090) [R7]. In All Other the NPR is "determined
+  date [REG-R1 §11][REG-R3]: minimum reserve = `Σ NPR` plus the excess of `max(DR,
+  SR)` over `Σ NPR` less the due-and-deferred premium asset, per reserving category
+  [REG-R3 §2.A]. VUL without secondary guarantees is **All Other** (code 080); with
+  them it moves to **ULSG** (code 090) [R7]. In All Other the NPR is "determined
   pursuant to applicable methods in **VM-A and VM-C** for the basic reserve" [REG-R3
-  §3.B.6] — the **formulaic CRVM** construction of `us/regulatory/technical-notes.md`,
-  "Formulaic reserves", running inside a PBR-era manual [REG-R110]. Both engines are
-  needed before any DR or SR arises. **A-820 has since been read at first hand**
-  [REG-R153] and supplies the statutory-layer authority that sentence previously took
-  from VM-20's pointer alone: ¶¶3–4 split the appendix at the **1 January 2017**
-  operative date — ¶¶5–22 govern earlier issues and the principle-based ¶¶23–27
-  "**shall not apply to any such policies and contracts**" — while ¶24.a.i still
-  requires the Valuation Manual to specify CRVM for life contracts, ¶24.d.i lets the
-  standard for non-PBR business simply "**be consistent with the minimum standard of
-  valuation prior to the operative date of the Valuation Manual**", and ¶27 permits a
-  principle-based valuation to "**include a prescribed formulaic reserve component**"
-  [REG-R153]. **A-820 reaches a VUL only through ¶13.a**, which extends CRVM "by a
-  method consistent with the principles of paragraphs 11 and 12" to policies
-  "providing for a varying amount of insurance or requiring the payment of varying
-  premiums", with ¶21 as the catch-all for plans whose minimum reserves "cannot be
-  determined by the methods described above" [REG-R153]. **Those two paragraphs are the
-  whole of A-820's reach here, because A-820 carries no separate account content at
-  all.** Its header lists SSAP No. 56 among the relevant SSAPs, but nothing in ¶¶1–28
-  addresses separate accounts, the general/separate split or variable benefits
-  [REG-R153]. That is a verified negative, not a gap in this file: everything below
-  about the two balance sheets comes from SSAP No. 56 [REG-R83] and VM-20 §2.F
-  [REG-R3], and **the formulaic appendix VM-A points at says nothing about this
-  product's defining feature.**
+  §3.B.6] — the **formulaic CRVM** construction of
+  `us/regulatory/statutory-accounting-and-capital.md`, "Formulaic reserves", running
+  inside a PBR-era manual [REG-R110]. Both engines are needed before any DR or SR
+  arises. **A-820 has since been read at first hand** [REG-R153] and supplies the
+  statutory-layer authority that sentence previously took from VM-20's pointer alone:
+  ¶¶3–4 split the appendix at the **1 January 2017** operative date — ¶¶5–22 govern
+  earlier issues and the principle-based ¶¶23–27 "**shall not apply to any such
+  policies and contracts**" — while ¶24.a.i still requires the Valuation Manual to
+  specify CRVM for life contracts, ¶24.d.i lets the standard for non-PBR business
+  simply "**be consistent with the minimum standard of valuation prior to the
+  operative date of the Valuation Manual**", and ¶27 permits a principle-based
+  valuation to "**include a prescribed formulaic reserve component**" [REG-R153].
+  **A-820 reaches a VUL only through ¶13.a**, which extends CRVM "by a method
+  consistent with the principles of paragraphs 11 and 12" to policies "providing for a
+  varying amount of insurance or requiring the payment of varying premiums", with ¶21
+  as the catch-all for plans whose minimum reserves "cannot be determined by the
+  methods described above" [REG-R153]. **Those two paragraphs are the whole of A-820's
+  reach here, because A-820 carries no separate account content at all.** Its header
+  lists SSAP No. 56 among the relevant SSAPs, but nothing in ¶¶1–28 addresses separate
+  accounts, the general/separate split or variable benefits [REG-R153]. That is a
+  verified negative, not a gap in this file: everything below about the two balance
+  sheets comes from SSAP No. 56 [REG-R83] and VM-20 §2.F [REG-R3], and **the formulaic
+  appendix VM-A points at says nothing about this product's defining feature.**
   Whether the **A-585** universal life CRVM adaptation — guaranteed maturity premium,
   guaranteed maturity fund and the funding ratio `r` [REG-R155 ¶8] — reaches a
   *variable* UL is **not answered by the appendix print**: A-585 carries definitions
   and valuation requirements only, prints no applicability threshold of any kind, and
   its ¶7 definition of a universal life insurance policy turns solely on "separately
   identified interest credits … and mortality and expense charges", saying nothing
-  about a separate account; the carve-out this product relies on is **Model #585's
-  own text** [REG-R5], and Model #585 was not re-read against the appendix print
+  about a separate account; the carve-out this product relies on is **Model #585's own
+  text** [REG-R5], and Model #585 was not re-read against the appendix print
   [REG-R155]. Recorded as open, not resolved. **A-270** (variable life) was extracted
   in the same pass as A-585 but **no reference id was assigned to it**, so nothing is
   cited from it and the variable-life guaranteed-minimum-death-benefit reserve
@@ -447,8 +446,8 @@ supports the standardization nor displaces it [REG-R153].
 
 ### What this product's model must additionally produce
 
-Beyond the shared contract in `us/regulatory/technical-notes.md`, "Required model
-outputs":
+Beyond the shared contract in `us/regulatory/statutory-accounting-and-capital.md`,
+"Required model outputs":
 
 | Statutory item | VUL model output |
 |---|---|
@@ -472,21 +471,21 @@ outputs":
   value, and starts from statement face in force, not `DB_t`. Produce both and
   reconcile; how an Option B death benefit (`F_t + AV_t`) maps to the Exhibit of Life
   Insurance in-force column is **not addressed by the sources read**.
-- **The pricing-flexibility bucket must be earned.** The instructions name **UL without
-  secondary guarantees** as a "with pricing flexibility" example and **ULSG** in the
-  highest-factor "Permanent without" bucket [REG-R128]. Baseline VUL has the former
-  shape, but the test is quantitative — the present value of margin actually available
-  from repricing in force over the next **5 policy years** must be at least
+- **The pricing-flexibility bucket must be earned.** The instructions name **UL
+  without secondary guarantees** as a "with pricing flexibility" example and **ULSG**
+  in the highest-factor "Permanent without" bucket [REG-R128]. Baseline VUL has the
+  former shape, but the test is quantitative — the present value of margin actually
+  available from repricing in force over the next **5 policy years** must be at least
   `flexibility factor × NAR` [REG-R128]. That margin is exactly the
   non-guaranteed-element headroom: current COI against the 2017 CSO guaranteed maxima
   [S2][S4][R12], 4.0% load against the 6.0% ceiling [S2], 0.45% M&E against 0.60%
   **[std]** — bounded by ASOP No. 2, which requires scales by class and forbids
-  recouping past losses [R11], so headroom is not automatically available margin. **The
-  default where no assessment is performed is direct individual permanent → Permanent
-  without Pricing Flexibility**, the highest-factor category [REG-R128][REG-R133]; the
-  NLG variation lands there anyway. Factors and bands are in
-  `us/regulatory/technical-notes.md`, "Risk-based capital"; a **repricing scenario**,
-  not merely a base scenario, is a model requirement.
+  recouping past losses [R11], so headroom is not automatically available margin.
+  **The default where no assessment is performed is direct individual permanent →
+  Permanent without Pricing Flexibility**, the highest-factor category
+  [REG-R128][REG-R133]; the NLG variation lands there anyway. Factors and bands are in
+  `us/regulatory/statutory-accounting-and-capital.md`, "Risk-based capital"; a
+  **repricing scenario**, not merely a base scenario, is a model requirement.
 - **C-3a attaches to the general account leg only, and no C-3 cash flow testing
   applies.** Life insurance reserves fall in the **low** withdrawal-provision category,
   one third lower where the actuarial opinion is unqualified and based on asset

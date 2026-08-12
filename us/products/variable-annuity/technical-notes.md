@@ -556,14 +556,13 @@ declines.
 
 ## Statutory accounting and capital
 
-**Framework cited, not restated.** Concepts are in
-`us/regulatory/statutory-accounting-and-capital.md`, algorithms and the shared **Required
-model outputs** contract in `us/regulatory/technical-notes.md`; only what is specific to this
-product is below, and the **[REG-R#]** space now runs **R1–R157** (R114–R124 and R143–R149
-unused by design). Every RBC figure here comes from the **2024** *Life and Fraternal
-Risk-Based Capital Forecasting and Instructions*, a **sold NAIC publication** marked "Not for
-Distribution" read from a state department posting; the **2025 edition could not be parsed**,
-so nothing below is a year-end 2025 factor [REG-R128][REG-R129][REG-R139].
+**Framework cited, not restated.** Concepts, algorithms and the shared **Required model
+outputs** contract are in `us/regulatory/statutory-accounting-and-capital.md`; only what is
+specific to this product is below, and the **[REG-R#]** space now runs **R1–R157** (R114–R124
+and R143–R149 unused by design). Every RBC figure here comes from the **2024** *Life and
+Fraternal Risk-Based Capital Forecasting and Instructions*, a **sold NAIC publication**
+marked "Not for Distribution" read from a state department posting; the **2025 edition could
+not be parsed**, so nothing below is a year-end 2025 factor [REG-R128][REG-R129][REG-R139].
 
 ### Contract classification and reporting
 
@@ -663,8 +662,9 @@ the live trap for anyone reusing a formulaic-annuity behavior library on a VA bl
 
 ### What the cash flow model must additionally produce
 
-The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs"; these are
-the rows specific to this product or absent from the projection specified above.
+The shared contract is `us/regulatory/statutory-accounting-and-capital.md`, "Required model
+outputs"; these are the rows specific to this product or absent from the projection specified
+above.
 
 | Statutory item | Required model output |
 |---|---|
@@ -690,17 +690,17 @@ reached zero but a lifetime benefit remains payable" — the post-depletion phas
 projects — while variable **immediate** reserves are in scope, so an annuitizing contract
 crosses the boundary and a depleted GLWB does not [REG-R128].
 
-**C-3 Phase II carries the capital**, and variable annuities are **expressly excluded from C-3
-Phase I cash flow testing, including guaranteed fixed options within them** [REG-R128] — the
-representative contract has no fixed account at all, since electing the Roll-up GMDB removes
-the Fixed Account Options [S1], so the withdrawal-provision factor bucketing never engages.
-The seven steps are set out in `us/regulatory/technical-notes.md`, "Risk-based capital"; what
-matters structurally here is that **C-3 is built as 25% of (CTE 98 + Additional Standard
-Projection Amount − Statutory Reserve)** — with the tax terms of whichever of the two
-permitted tax methods applies, set out below — floored at $0, that **Total Asset Requirement = pre-phase-in
-VM-21 reserve + C-3**, and that the grossed-up amount is **split into an interest rate
-component (→ C-3a, line 35) and a market risk component (→ C-3c, line 37)**, neither negative
-[REG-R128].
+**C-3 Phase II carries the capital**, and variable annuities are **expressly excluded from
+C-3 Phase I cash flow testing, including guaranteed fixed options within them** [REG-R128] —
+the representative contract has no fixed account at all, since electing the Roll-up GMDB
+removes the Fixed Account Options [S1], so the withdrawal-provision factor bucketing never
+engages. The seven steps are set out in `us/regulatory/statutory-accounting-and-capital.md`,
+"Risk-based capital"; what matters structurally here is that **C-3 is built as 25% of (CTE 98 +
+Additional Standard Projection Amount − Statutory Reserve)** — with the tax terms of
+whichever of the two permitted tax methods applies, set out below — floored at $0, that
+**Total Asset Requirement = pre-phase-in VM-21 reserve + C-3**, and that the grossed-up
+amount is **split into an interest rate component (→ C-3a, line 35) and a market risk
+component (→ C-3c, line 37)**, neither negative [REG-R128].
 
 That split is not cosmetic: in the covariance combination **C-3c is added to C-1cs** while
 C-3a is added to C-1o, so this product's market-risk capital diversifies against equity asset
@@ -735,7 +735,7 @@ against the RBC software or a current Academy practice note before coding [R4][R
 alternative, **Specific Tax Recognition**, projects tax inside the Accumulated Deficiencies
 with after-tax discounting and applies a tax adjustment where actual tax reserves exceed
 projected tax reserves at the projection start; its arithmetic and the `f` factor are in
-`us/regulatory/technical-notes.md`, "Risk-based capital" [REG-R128].
+`us/regulatory/statutory-accounting-and-capital.md`, "Risk-based capital" [REG-R128].
 
 ### Product-specific interactions and traps
 

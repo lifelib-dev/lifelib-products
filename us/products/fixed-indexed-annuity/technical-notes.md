@@ -537,9 +537,9 @@ benefit and no possibility of lapse [S1][S3][S9][R1]. That stream is the guarant
 ## Statutory accounting and capital
 
 Framework, formulas and the shared "Required model outputs" contract are in
-`us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md` —
+`us/regulatory/statutory-accounting-and-capital.md` —
 **referenced, not restated**. Only what is specific to this product is below, and **no AVR factor,
-IMR amortisation factor or RBC factor value those files do not contain is stated**: several were
+IMR amortisation factor or RBC factor value that file does not contain is stated**: several were
 deliberately not transcribed [REG-R89], and the RBC instructions are a paid publication whose 2025
 edition could not be parsed [REG-R128].
 
@@ -570,15 +570,15 @@ contract's** line [REG-R89]. Key the column off contract state, not product code
 
 ### Reserve basis
 
-**Formulaic: CARVM** — Standard Valuation Law §5a, greatest present value over elective paths, on the
-mortality table (if any) and interest rate(s) **specified in the contract for determining guaranteed
-benefits** [REG-R1 §5a.B], carried identically in the AP&P codification at **A-820 ¶15**, which has
-now been read [REG-R153 ¶15]. **Both interpretive layers have also been read** — **AG 33**
+**Formulaic: CARVM** — Standard Valuation Law §5a, greatest present value over elective paths, on
+the mortality table (if any) and interest rate(s) **specified in the contract for determining
+guaranteed benefits** [REG-R1 §5a.B], carried identically in the AP&P codification at **A-820 ¶15**,
+which has now been read [REG-R153 ¶15]. **Both interpretive layers have also been read** — **AG 33**
 [REG-R151] and **AG 35** [REG-R152], from the AP&P Manual Appendix C print on 2026-08-06, the manual
 having turned out to be a **free download** rather than the paid publication recorded earlier
-[REG-R33]. Their mechanics are set out once in `us/regulatory/technical-notes.md`, "Formulaic
-reserves", and are **referenced, not restated**; what belongs here is that **both apply to this
-product**, and on what terms.
+[REG-R33]. Their mechanics are set out once in `us/regulatory/statutory-accounting-and-capital.md`,
+"Formulaic reserves", and are **referenced, not restated**; what belongs here is that **both apply
+to this product**, and on what terms.
 
 - **AG 33 applies** because the contract carries elective benefits: the applicability sentence
   reaches "all annuity contracts subject to CARVM, where any elective benefits … are available to
@@ -652,7 +652,8 @@ not hard-code a treatment.
 
 ### What this product's model must additionally produce
 
-Beyond the shared contract in `us/regulatory/technical-notes.md`, "Required model outputs".
+Beyond the shared contract in `us/regulatory/statutory-accounting-and-capital.md`, "Required model
+outputs".
 
 | Statutory item | Additional output required here |
 |---|---|

@@ -532,10 +532,10 @@ still shows a deferral death benefit and policy year 21 (months 240–251) carri
 
 ## Statutory accounting and capital
 
-Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md` and
-`us/regulatory/technical-notes.md`, and are not restated. [REG-R#] runs against the shared U.S. numbering, now
-**R1–R157** (R114–R124 and R143–R149 unused by design). Nothing [unverified] upstream is upgraded, and **no AVR, IMR or
-RBC factor value that `us/regulatory/` does not carry is stated here**.
+Framework and the shared model-output contract are in `us/regulatory/statutory-accounting-and-capital.md`, and are not
+restated. [REG-R#] runs against the shared U.S.
+numbering, now **R1–R157** (R114–R124 and R143–R149 unused by design). Nothing [unverified] upstream is upgraded, and
+**no AVR, IMR or RBC factor value that `us/regulatory/` does not carry is stated here**.
 
 ### Contract classification and reporting
 
@@ -592,12 +592,12 @@ those. **The instructions do not say**; both readings stand, neither is asserted
   portfolios with the same ALM strategy [R9]. (iv) **Exhibit 5** keys the reserve by valuation standard and year of
   issue and splits VM-22 business **Jumbo / Non-Jumbo in 50-basis-point valuation interest bands** [REG-R89].
 - **Two Exhibit 5 Miscellaneous Reserves lines are structurally zero**: "surrender values in excess of reserves
-  otherwise carried" cannot arise, there being no surrender value at any duration [S1][S2][R13], so the SPDA pattern in
-  `us/regulatory/technical-notes.md`, Worked example 2, has no analogue here; and the deficiency-reserve line with its
-  Actuarial Guideline I / A-830 apparatus is a life-side item — **A-830 has now been read in full and carries no
-  annuity content at all** [REG-R154], a verified negative that settles what the earlier index citation could only
-  assume, while **the AG I text is still unretrieved** and remains held as a VM-C index entry only
-  [REG-R89][REG-R41][REG-R110].
+  otherwise carried" cannot arise, there being no surrender value at any duration [S1][S2][R13], so the SPDA pattern
+  in `us/regulatory/statutory-accounting-and-capital.md`, Worked example 2, has no analogue here; and the
+  deficiency-reserve line with its Actuarial Guideline I / A-830 apparatus is a life-side item — **A-830 has now been
+  read in full and carries no annuity content at all** [REG-R154], a verified negative that settles what the earlier
+  index citation could only assume, while **the AG I text is still unretrieved** and remains held as a VM-C index
+  entry only [REG-R89][REG-R41][REG-R110].
 - **The tax reserve has no floor to bind.** IRC §807 gives max(net surrender value, 92.81% × NAIC-method reserve) capped
   at statutory [REG-R16]; net surrender value is **zero at every duration**, so the tax reserve is 92.81% of the
   CARVM/VM-22 reserve throughout and the wedge is a flat **7.19% of statutory** **[derived]**, growing across the
@@ -752,8 +752,8 @@ Revenue Ruling's wording [REG-R151].
 
 ### What this product's cash flow model must additionally produce
 
-The shared contract is `us/regulatory/technical-notes.md`, "Required model outputs"; below are only the DIA-specific
-additions to it.
+The shared contract is `us/regulatory/statutory-accounting-and-capital.md`, "Required model outputs"; below are only
+the DIA-specific additions to it.
 
 | Statutory item | Required model output | Cite |
 |---|---|---|
@@ -763,7 +763,7 @@ additions to it.
 | C-2 longevity exposure base | statutory reserve for life-contingent annuity benefits, **including the DIA in deferral and the certain-period portion of a certain-and-life form**; excluding the residual reserve once a contract is reduced to certain payments after the annuitant's death | [REG-R128] |
 | C-3a base; C-3 Phase I | reserve bucketed by **withdrawal provision** ("not withdrawable" here); and `S(t) = statutory assets − statutory liabilities` at every calendar year end of every prescribed scenario, off the year-end asset adequacy model | [REG-R128][REG-R135] |
 | C-4a base; C-2 mortality | **annuity considerations** per Schedule T — a *flow*, tracking `premium_schedule`, not the reserve; and for C-2 mortality **nothing**: no face amount, no Exhibit of Life Insurance entry, hence no **net amount at risk** and no pricing-flexibility categorisation | [REG-R128][REG-R142][REG-R89] |
-| IMR / AVR | asset-side disposal detail per `us/regulatory/technical-notes.md`; **no MVA leg in the base case**, the product having no market value adjustment [S1][S2] — whether the extended case's commutation interest-rate adjustment (13) is an MVA for IMR purposes is addressed by no retrieved source **[unverified]** — but the **block-reinsurance leg** applies where the portion reinsured exceeds 5% of general account liabilities, irrevocably and to a non-affiliate | [REG-R85][REG-R86][REG-R92 ¶54] |
+| IMR / AVR | asset-side disposal detail per `us/regulatory/statutory-accounting-and-capital.md`; **no MVA leg in the base case**, the product having no market value adjustment [S1][S2] — whether the extended case's commutation interest-rate adjustment (13) is an MVA for IMR purposes is addressed by no retrieved source **[unverified]** — but the **block-reinsurance leg** applies where the portion reinsured exceeds 5% of general account liabilities, irrevocably and to a non-affiliate | [REG-R85][REG-R86][REG-R92 ¶54] |
 | Tax | statutory reserve and tax reserve = 92.81% × statutory, seriatim, same valuation date | [REG-R16][REG-R97] |
 
 ### Risk-based capital
@@ -879,7 +879,7 @@ reproduced.
   [REG-R151]. Both were read from the AP&P Manual print on 2026-08-06. The DIA-specific consequences — which
   mandatory stream families are empty, why the ±5-year adjustment re-rates the annuitization portion, why a
   commutation right bars *Text* 4(B), and why the 7% expense-allowance floor has no base here — are in
-  "CARVM under AG 33" above; the shared arithmetic is in `us/regulatory/technical-notes.md`,
+  "CARVM under AG 33" above; the shared arithmetic is in `us/regulatory/statutory-accounting-and-capital.md`,
   "Formulaic reserves".
 - **Prescribed standard-projection assumptions** reusable directly: mortality
   `q_x^(2012+n) = q_x^(2012) · (1 − G2_x)^n · F_x` on the 2012 IAM Basic table with `F_x` from Table 6.8

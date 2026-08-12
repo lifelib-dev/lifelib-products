@@ -315,9 +315,8 @@ Under the guaranteed-cap-only scenario (class (a)), the Scenario A credit would 
 
 ## Statutory accounting and capital
 
-Concepts and the applicability matrix:
-`us/regulatory/statutory-accounting-and-capital.md`; formulas and algorithms:
-`us/regulatory/technical-notes.md`. Only what is specific to indexed UL
+Concepts, the applicability matrix, formulas and algorithms:
+`us/regulatory/statutory-accounting-and-capital.md`. Only what is specific to indexed UL
 appears here, with that directory's [unverified] flags and retrieval limits
 unchanged; **no AVR factor, IMR amortisation factor or untranscribed RBC
 factor appears anywhere in this library** [REG-R89][REG-R128]. **[REG-R#]**
@@ -534,11 +533,11 @@ Operations [REG-R79][REG-R89].
 
 ### What this product's model must additionally produce
 
-The generic contract is `us/regulatory/technical-notes.md`, "Required model
-outputs", and is not restated; these are the indexed-UL-specific additions to
-it. All annual statement page and line references reached through them are
-**2025** reporting-year and must be re-verified against the 2026 blank before
-being hard-coded [REG-R89][REG-R90].
+The generic contract is `us/regulatory/statutory-accounting-and-capital.md`, "Required
+model outputs", and is not restated; these are the indexed-UL-specific additions to it.
+All annual statement page and line references reached through them are **2025**
+reporting-year and must be re-verified against the 2026 blank before being hard-coded
+[REG-R89][REG-R90].
 
 | Statutory / capital item | Indexed-UL-specific model output |
 |---|---|

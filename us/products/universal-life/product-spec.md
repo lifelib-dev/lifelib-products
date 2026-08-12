@@ -463,25 +463,25 @@ gross liability cash flows only; reserve layers are pointed to, not reproduced (
 technical notes).
 
 **Statutory accounting and capital.** The framework — SSAP classification, the annual
-statement exhibits, AVR/IMR, asset adequacy analysis and RBC — is in
-`us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md`;
+statement exhibits, AVR/IMR, asset adequacy analysis and RBC, with the formulas
+alongside the concepts — is in `us/regulatory/statutory-accounting-and-capital.md`;
 the product-specific consequences are in `technical-notes.md` (same directory),
 "Statutory accounting and capital". What is specific to this product: it is a **life
 contract**, SSAP No. 50 naming universal life type expressly, classified at inception
 and never reclassified, so flexible premiums are **premium income** and the reserve
-reports in **Exhibit 5**, never Exhibit 7 [REG-R78][REG-R79][REG-R89]. It reports in the
-**Universal Life** column of the Analysis of Operations rather than the **Universal Life
-With Secondary Guarantees** column, because the 5-year NLG of footnote 17 is not modeled
-[REG-R90]. Acquisition costs are **expensed as incurred with no DAC asset**, so the
-ten-year per-unit acquisition-cost recovery of footnote 11 has nothing deferred against
-it and the issue year carries the full strain [REG-R75][REG-R76]. Its VM-20 reserving
-category is **All Other**, whose net premium reserve is the VM-A/VM-C formulaic basic
-reserve — the **A-585** CRVM adaptation above — so principle-based reserving does not
-retire the formulaic engine for this chassis [REG-R3][REG-R110][REG-R155]. For risk-based capital,
-the C-2 mortality factor turns on a **pricing-flexibility** assessment that the current
-COI, credited-rate and premium-load headroom in the tables above must earn; where the
-assessment is not performed the block defaults to the highest-factor bucket
-[REG-R128][REG-R133].
+reports in **Exhibit 5**, never Exhibit 7 [REG-R78][REG-R79][REG-R89]. It reports in
+the **Universal Life** column of the Analysis of Operations rather than the
+**Universal Life With Secondary Guarantees** column, because the 5-year NLG of
+footnote 17 is not modeled [REG-R90]. Acquisition costs are **expensed as incurred
+with no DAC asset**, so the ten-year per-unit acquisition-cost recovery of footnote 11
+has nothing deferred against it and the issue year carries the full strain
+[REG-R75][REG-R76]. Its VM-20 reserving category is **All Other**, whose net premium
+reserve is the VM-A/VM-C formulaic basic reserve — the **A-585** CRVM adaptation above
+— so principle-based reserving does not retire the formulaic engine for this chassis
+[REG-R3][REG-R110][REG-R155]. For risk-based capital, the C-2 mortality factor turns
+on a **pricing-flexibility** assessment that the current COI, credited-rate and
+premium-load headroom in the tables above must earn; where the assessment is not
+performed the block defaults to the highest-factor bucket [REG-R128][REG-R133].
 
 **2017 CSO.** The current statutory valuation/nonforfeiture mortality family
 (composite and smoker-distinct, loaded/unloaded, preferred structure, ANB/ALB

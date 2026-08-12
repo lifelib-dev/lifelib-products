@@ -357,8 +357,8 @@ adds `(0.02 · PUACV_9) + (0.00096 · (PUAF_9 − PUACV_9))` to the amount in st
 ## Statutory accounting and capital
 
 Framework and the shared model-output contract live in
-`us/regulatory/statutory-accounting-and-capital.md` (concepts, product-applicability matrix) and
-`us/regulatory/technical-notes.md` (formulas, algorithms); only what is specific to RefWL-Par and
+`us/regulatory/statutory-accounting-and-capital.md` (concepts, formulas, algorithms and the
+product-applicability matrix); only what is specific to RefWL-Par and
 RefWL-FE is recorded here. **Source limits, reproduced at the point of use:** every RBC factor below
 is from the **2024** Life/Fraternal RBC instructions, a sold NAIC publication read from a state
 posting — the **2025 edition could not be parsed and no year-end 2025 factor is asserted**
@@ -564,8 +564,8 @@ outright [R3]. Consequences specific to this product:
 
 ### What this product's model must additionally produce
 
-The shared contract in `us/regulatory/technical-notes.md`, "Required model outputs", applies in full
-and is not restated. What RefWL-Par/RefWL-FE must add or specialise:
+The shared contract in `us/regulatory/statutory-accounting-and-capital.md`, "Required model
+outputs", applies in full and is not restated. What RefWL-Par/RefWL-FE must add or specialise:
 
 | Statutory item | Whole-life-specific model output |
 |---|---|

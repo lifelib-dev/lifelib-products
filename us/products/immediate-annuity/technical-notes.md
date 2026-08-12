@@ -511,12 +511,12 @@ B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 ×
 
 ## Statutory accounting and capital
 
-Framework and algorithms are in `us/regulatory/statutory-accounting-and-capital.md` and
-`us/regulatory/technical-notes.md`; the shared projection-to-statutory contract is that file's
-**"Required model outputs"** table and is *not* restated here. Only what is specific to a SPIA
-appears below. [REG-R#] tags run against the extended shared numbering **R1–R157**, gaps at
-**R114–R124** and **R143–R149** unused by design; annual statement references are **2025**
-reporting-year and should be re-verified against the 2026 edition [REG-R89][REG-R90].
+Framework and algorithms are in `us/regulatory/statutory-accounting-and-capital.md`; the shared
+projection-to-statutory contract is that file's **"Required model outputs"** table and is *not*
+restated here. Only what is specific to a SPIA appears below. [REG-R#] tags run against the extended
+shared numbering **R1–R157**, gaps at **R114–R124** and **R143–R149** unused by design; annual
+statement references are **2025** reporting-year and should be re-verified against the 2026 edition
+[REG-R89][REG-R90].
 
 ### Contract classification and reporting
 
@@ -710,7 +710,8 @@ CRVM for individual *life* [REG-R3]. Four consequences:
 
 ### What this product's model must additionally produce
 
-Additions to the shared contract in `us/regulatory/technical-notes.md`, "Required model outputs".
+Additions to the shared contract in `us/regulatory/statutory-accounting-and-capital.md`, "Required
+model outputs".
 
 | Statutory item | Required model output, specific to this product |
 |---|---|

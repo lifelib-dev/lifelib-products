@@ -79,8 +79,7 @@ capital requirements a projection has to feed, and how to compute them.
 
 | File | Role |
 |---|---|
-| [statutory-accounting-and-capital.md](regulatory/statutory-accounting-and-capital.md) | What the items are, why they exist, which products they bite, and what the model must produce. Includes a 12-product applicability matrix, and — under *The reserve hierarchy* — the effective-date timeline and a per-product **formulaic vs principle-based** summary |
-| [technical-notes.md](regulatory/technical-notes.md) | How to calculate them: formulaic CRVM/CARVM, the VM-20 three-component structure and its exclusion tests, VM-21/VM-22, reserve projection, the statutory income roll-forward, IMR/AVR, and the RBC components with the covariance adjustment. Worked examples throughout |
+| [statutory-accounting-and-capital.md](regulatory/statutory-accounting-and-capital.md) | What the items are, why they exist, which products they bite, what the model must produce — **and how to compute each of them**, concept and calculation in the same section. Formulaic CRVM/CARVM, the VM-20 three-component structure and its exclusion tests, VM-21/VM-22, reserve projection, the statutory income roll-forward, IMR/AVR, and the RBC components with the covariance adjustment; a 12-product applicability matrix; and — under *The reserve hierarchy* — the effective-date timeline and a per-product **formulaic vs principle-based** summary. Worked examples throughout |
 | [sources.md](regulatory/sources.md) | The cited entries with their retrieval limits |
 
 The framing throughout is the **model hook** — for each rule, what the projection must

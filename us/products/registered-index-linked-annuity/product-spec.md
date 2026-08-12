@@ -568,23 +568,22 @@ ILVA RBC as "C0–C1: General Account, C3–C4: Separate Account" [R6].
 
 **Statutory accounting and capital.** The framework — contract classification, the annual
 statement exhibits, AVR and IMR, and the RBC formula — is in
-`us/regulatory/statutory-accounting-and-capital.md` with the calculations in
-`us/regulatory/technical-notes.md`; the product-specific reading is the *Statutory
-accounting and capital* section of `technical-notes.md` in this directory. Three things are
-peculiar to this product. **SSAP No. 56 ¶18.b expressly names registered index-linked
-annuity contracts** as expected to qualify, with state regulator approval, for **book
-value** measurement in a separate account, so a RILA separate account may carry its own
-**AVR and IMR**, which a fair-value variable annuity separate account does not
-[REG-R83][REG-R84]. Acquisition costs are **expensed as incurred with no DAC asset**
-[REG-R75] and SSAP No. 56 ¶45 **rejects ASU 2018-12** [REG-R83], so the LDTI market risk
-benefit measurement noted below may not be reused on a statutory basis. And the **capital
-treatment is genuinely unsettled**: the retrieved Life/Fraternal RBC instructions (2024 and
-2023 editions; the 2025 edition could not be parsed) **never mention RILA, ILVA or
-index-linked annuities at all** [REG-R128][REG-R129], so the C-3 Phase II parameters in the
-preceding paragraph — themselves the **pre-reform** [REG-R47] package, superseded by CTE 98
-plus the Additional Standard Projection Amount [REG-R128] — cannot be assumed to reach this
-product. This library states **no C-3 charge for a RILA** and carries the treatment
-[unverified].
+`us/regulatory/statutory-accounting-and-capital.md`, which carries the calculations
+alongside them; the product-specific reading is the *Statutory accounting and capital*
+section of `technical-notes.md` in this directory. Three things are peculiar to this
+product. **SSAP No. 56 ¶18.b expressly names registered index-linked annuity contracts** as
+expected to qualify, with state regulator approval, for **book value** measurement in a
+separate account, so a RILA separate account may carry its own **AVR and IMR**, which a
+fair-value variable annuity separate account does not [REG-R83][REG-R84]. Acquisition costs
+are **expensed as incurred with no DAC asset** [REG-R75] and SSAP No. 56 ¶45 **rejects ASU
+2018-12** [REG-R83], so the LDTI market risk benefit measurement noted below may not be
+reused on a statutory basis. And the **capital treatment is genuinely unsettled**: the
+retrieved Life/Fraternal RBC instructions (2024 and 2023 editions; the 2025 edition could
+not be parsed) **never mention RILA, ILVA or index-linked annuities at all**
+[REG-R128][REG-R129], so the C-3 Phase II parameters in the preceding paragraph —
+themselves the **pre-reform** [REG-R47] package, superseded by CTE 98 plus the Additional
+Standard Projection Amount [REG-R128] — cannot be assumed to reach this product. This
+library states **no C-3 charge for a RILA** and carries the treatment [unverified].
 
 **Non-guaranteed elements.** Cap, Step, Edge and Participation Rates reset at each Term
 Start Date are NGEs under ASOP No. 2, which lists "index parameters used to determine

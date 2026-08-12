@@ -578,21 +578,21 @@ Table "a"** are **named and not printed**, so A-821's 1994 GAR projection formul
 [REG-R153].
 
 **Statutory accounting and capital.** The framework is in
-`us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md`;
-the product-level consequences are worked out in `technical-notes.md` (same directory),
-"Statutory accounting and capital". What is specific to this product: the **payout form
-decides the accounting chassis at inception and the choice is irreversible**. The four
-life-contingent forms are **life contracts** whose considerations are premium income and whose
-reserve sits in **Exhibit 5** [REG-R78][REG-R79][REG-R89]; **period certain only** carries no
-mortality risk and is a **deposit-type contract** under SSAP No. 52, its consideration credited
-directly to reserve rather than recognised as premium income and its balance rolled forward in
-**Exhibit 7**, column *Annuities Certain* [REG-R80][REG-R89]. A life-contingent contract
-**stays in Exhibit 5 after the annuitant dies** while certain payments continue [REG-R89]. On
-the capital side the dominant charge is **C-2 longevity**, driven by the statutory reserve for
-life-contingent annuity benefits and including the period-certain portion of a certain-and-life
-contract [REG-R128]; C-2 mortality does not apply, and interest rate risk runs through the
-**C-3 Phase I** cash flow testing regime, whose scope names immediate annuities expressly
-[REG-R128][REG-R135].
+`us/regulatory/statutory-accounting-and-capital.md`; the product-level consequences are
+worked out in `technical-notes.md` (same directory), "Statutory accounting and capital".
+What is specific to this product: the **payout form decides the accounting chassis at
+inception and the choice is irreversible**. The four life-contingent forms are **life
+contracts** whose considerations are premium income and whose reserve sits in **Exhibit 5**
+[REG-R78][REG-R79][REG-R89]; **period certain only** carries no mortality risk and is a
+**deposit-type contract** under SSAP No. 52, its consideration credited directly to reserve
+rather than recognised as premium income and its balance rolled forward in **Exhibit 7**,
+column *Annuities Certain* [REG-R80][REG-R89]. A life-contingent contract **stays in Exhibit
+5 after the annuitant dies** while certain payments continue [REG-R89]. On the capital side
+the dominant charge is **C-2 longevity**, driven by the statutory reserve for
+life-contingent annuity benefits and including the period-certain portion of a
+certain-and-life contract [REG-R128]; C-2 mortality does not apply, and interest rate risk
+runs through the **C-3 Phase I** cash flow testing regime, whose scope names immediate
+annuities expressly [REG-R128][REG-R135].
 
 **Nonforfeiture — expressly inapplicable.** Model #805 §2.A excludes **immediate
 annuities** (and deferred annuities after payments commence) from the Standard

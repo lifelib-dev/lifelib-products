@@ -359,8 +359,8 @@ Independent recomputation may differ by cents due to rounding.
 ## Statutory accounting and capital
 
 Framework — no DAC, the exhibits, AVR/IMR, asset adequacy analysis, RBC — is in
-`us/regulatory/statutory-accounting-and-capital.md` (concepts) and
-`us/regulatory/technical-notes.md` (formulas, factors, algorithms); only ULSG-specific
+`us/regulatory/statutory-accounting-and-capital.md`, which carries concepts,
+formulas, factors and algorithms in one document; only ULSG-specific
 material is stated here. [REG-R#] cites the shared U.S. numbering, now R1–R157 with
 R114–R124 and R143–R149 unused by design; [R#]/[S#] stay the product numbering of
 `sources.md`.
@@ -518,8 +518,8 @@ an NAIC one [REG-R112].
 
 ### What this product's model must additionally produce
 
-Shared contract: `us/regulatory/technical-notes.md`, "Required model outputs", not restated.
-ULSG adds:
+Shared contract: `us/regulatory/statutory-accounting-and-capital.md`, "Required model outputs",
+not restated. ULSG adds:
 
 | Statutory item | Additional output this model must emit |
 |---|---|
@@ -626,10 +626,10 @@ levels, the trend test and the RBC Plan's five-year projection are at [REG-R125]
   [REG-R87][REG-R100]. It sunsets **December 31, 2026 with automatic nullification January 1,
   2027** as written, and the date may move again [REG-R87].
 - **No AVR or IMR factor value exists anywhere in this library** — those tables were
-  **deliberately not transcribed** [REG-R85][REG-R89]; a model hard-coding remembered values will
-  be wrong. Likewise **RBC reads statement values, not model values** [REG-R128], so a forward
-  capital ratio needs a projected annual statement — carried as **[unverified]** as a stated
-  requirement in `us/regulatory/technical-notes.md`.
+  **deliberately not transcribed** [REG-R85][REG-R89]; a model hard-coding remembered values
+  will be wrong. Likewise **RBC reads statement values, not model values** [REG-R128], so a
+  forward capital ratio needs a projected annual statement — carried as **[unverified]** as a
+  stated requirement in `us/regulatory/statutory-accounting-and-capital.md`.
 
 ## Valuation and reserve pointers
 
