@@ -1,4 +1,4 @@
-# WholeLifeUS — reference liability cash flow model
+# WholeLife_US_A — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/whole-life/technical-notes.md`](../../products/whole-life/technical-notes.md);
@@ -31,7 +31,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/whole-life/WholeLifeUS")
+model = mx.read_model("us/models/whole-life/WholeLife_US_A")
 model.Projection[1].result_cf()
 ```
 
@@ -75,7 +75,7 @@ including the dividend just credited.
 ## Inputs are external files
 
 The six input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `WholeLifeUS/` holds nothing but formulas:
+folder. `WholeLife_US_A/` holds nothing but formulas:
 
 ```
 us/models/whole-life/
@@ -87,7 +87,7 @@ us/models/whole-life/
   premium_rates.csv
   run.py
   README.md
-  WholeLifeUS/                 <- formulas only
+  WholeLife_US_A/                 <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -121,7 +121,7 @@ Reference and a reader Cells, both on `Data`:
 | `mort_table_file` | `mort_table()` | `mort_table.csv` |
 | `premium_rates_file` | `premium_rates()` | `premium_rates.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `WholeLifeUS/` without the
+**The trade-off:** the model is not portable on its own. Copy `WholeLife_US_A/` without the
 CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
 of the model shows logic changes only, and an input can be edited or swapped in place —
 point `Data.mort_table_file` at another same-schema file and the projection follows,
@@ -158,7 +158,7 @@ The technical notes use compact actuarial symbols instead; the full mapping live
 | `l_{t−1}` vs `l_t` | `pols_if(t)` / `pols_if_at(t, "AFT_DECR")` | `pols_if` is the **start**-of-year count library-wide, and it is the weight on its own `result_cf()` row. The notes' end-of-year `l_t` keeps a name of its own — [below](#pols_if-is-the-start-of-year-count) |
 | `NetCF_t` | `liability_cf(t)` / `net_cf(t)` | The notes are outgo-positive and the library is income-positive, so the stream is published under both names — [below](#the-net-flow-is-published-under-both-signs-liability_cf-and-net_cf) |
 
-`risk_class` follows this product's notes; `TermLifeUS` calls the same concept
+`risk_class` follows this product's notes; `Term_US_A` calls the same concept
 `rate_class`.
 
 ## The worked example sets the PUA-block dividend aside
@@ -170,7 +170,7 @@ PUACV_9))` to the amount in step 9."*
 
 Rather than reproduce four of the fifteen steps and quietly miss the rest, the
 Reference `pua_div_on` ships **`False`**, so the base deterministic run reproduces the
-worked example exactly — the same device `TermLifeUS` uses when it ships
+worked example exactly — the same device `Term_US_A` uses when it ships
 `conv_rate_base = 0` because its worked example sets conversion aside.
 
 It is a reproduction switch, not a claim about the product. Paid-up additions **are**
@@ -221,7 +221,7 @@ NetCF_t = −G^net·l − A·l + E·l + q^e·l·DB + w·l(1−q^e)·CSV + D^cash
 
 with the sign convention stated inline: **outgo positive**. The other eleven reference
 models in `us/models/` all define `net_cf` the other way round, income less outgo — the
-sign `TermLifeUS` sets. One name cannot carry both without `result_cf()["net_cf"]`
+sign `Term_US_A` sets. One name cannot carry both without `result_cf()["net_cf"]`
 becoming uncomparable and unsummable across the library.
 
 So the model publishes the stream twice, under two names, and both are `result_cf()`
@@ -233,8 +233,8 @@ columns:
 | `net_cf(t)` | **income positive** | money arriving at the insurer | anything that crosses models — summing, comparing, aggregating |
 
 `net_cf(t) = −liability_cf(t)` exactly, and a test asserts it year by year on two model
-points and on the `result_cf()` frame. This is the pattern `ImmediateAnnuityUS` and
-`DeferredIncomeAnnuityUS` already use for the same clash. Nothing about the whole-life
+points and on the `result_cf()` frame. This is the pattern `SPIA_US_S` and
+`DIA_US_S` already use for the same clash. Nothing about the whole-life
 notes' own convention is denied — it is kept under a name that does not collide with the
 library-wide one, because a sign error in a 55-year liability projection is invisible in
 any summary statistic.
@@ -353,7 +353,7 @@ count, and the printed table stops reconciling: 1,800 of premium beside 0.98 pol
 
 `pols_if(t)` is therefore the number in force at the **start** of policy year `t` — the
 notes' `l_{t−1}` — which is both the weight on that same `result_cf()` row and what
-`pols_if` means in every other model in this library (`TermLifeUS.pols_if(1)` is
+`pols_if` means in every other model in this library (`Term_US_A.pols_if(1)` is
 `pols_if_init()`; lifelib's `CashValue_SE.pols_if(t)` is `pols_if_at(t, "BEF_MAT")`).
 `premiums(t) / premium_net_pp(t) == pols_if(t)` is now an identity, and a test asserts it.
 

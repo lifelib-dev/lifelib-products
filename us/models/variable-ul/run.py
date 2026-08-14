@@ -1,4 +1,4 @@
-"""Run the VariableULUS reference model and print its account value roll-forward.
+"""Run the VUL_US_S reference model and print its account value roll-forward.
 
     python us/models/variable-ul/run.py            # anchor cell (point_id = 1)
     python us/models/variable-ul/run.py 3          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "VariableULUS")
+model = mx.read_model(Path(__file__).parent / "VUL_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

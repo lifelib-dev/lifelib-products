@@ -46,22 +46,31 @@ worked example, asserted cell by cell to the precision the notes display.
 
 | Product | Model | Grid | Verified against |
 |---|---|---|---|
-| term-life | [`models/term-life`](models/term-life/README.md) — `TermLifeUS` | annual | the notes' 12-row worked example, to the cent |
-| whole-life | [`models/whole-life`](models/whole-life/README.md) — `WholeLifeUS` | annual | all 15 steps of the dividend/PUA worked example, to the cent |
-| universal-life | [`models/universal-life`](models/universal-life/README.md) — `UniversalLifeUS` | monthly | all 3 monthiversary rows plus the month-1 trace at full precision |
-| indexed-ul | [`models/indexed-ul`](models/indexed-ul/README.md) — `IndexedULUS` | monthly | both index scenarios and both variant credit bases |
-| variable-ul | [`models/variable-ul`](models/variable-ul/README.md) — `VariableULUS` | monthly | the full worked example incl. the 60/40 net premium split and pro-rata deduction |
-| guaranteed-ul | [`models/guaranteed-ul`](models/guaranteed-ul/README.md) — `GuaranteedULUS` | monthly | all 5 rows across both accounts, plus the forgone-deduction regime |
-| fixed-deferred-annuity | [`models/fixed-deferred-annuity`](models/fixed-deferred-annuity/README.md) — `FixedDeferredAnnuityUS` | monthly | the 7-month table, both surrender traces, and the Nationwide geometric-MVA factors |
-| fixed-indexed-annuity | [`models/fixed-indexed-annuity`](models/fixed-indexed-annuity/README.md) — `FixedIndexedAnnuityUS` | monthly | all 16 rows, the surrender trace, and the GLWB depletion arithmetic |
-| variable-annuity | [`models/variable-annuity`](models/variable-annuity/README.md) — `VariableAnnuityUS` | monthly | both subaccounts at all 6 steps, plus all three memo lines |
-| registered-index-linked-annuity | [`models/registered-index-linked-annuity`](models/registered-index-linked-annuity/README.md) — `RegisteredIndexLinkedAnnuityUS` | monthly | all 6 rows × 13 columns of the AG 54 interim-value table, plus its trace |
-| immediate-annuity | [`models/immediate-annuity`](models/immediate-annuity/README.md) — `ImmediateAnnuityUS` | monthly | both survivor-reduction trigger columns at 7 payment dates, plus all 5 traces |
-| deferred-income-annuity | [`models/deferred-income-annuity`](models/deferred-income-annuity/README.md) — `DeferredIncomeAnnuityUS` | monthly | both premium slices, the derived guarantee period, and all 9 projection rows |
+| term-life | [`models/term-life`](models/term-life/README.md) — `Term_US_A` | annual | the notes' 12-row worked example, to the cent |
+| whole-life | [`models/whole-life`](models/whole-life/README.md) — `WholeLife_US_A` | annual | all 15 steps of the dividend/PUA worked example, to the cent |
+| universal-life | [`models/universal-life`](models/universal-life/README.md) — `UL_US_S` | monthly | all 3 monthiversary rows plus the month-1 trace at full precision |
+| indexed-ul | [`models/indexed-ul`](models/indexed-ul/README.md) — `IUL_US_S` | monthly | both index scenarios and both variant credit bases |
+| variable-ul | [`models/variable-ul`](models/variable-ul/README.md) — `VUL_US_S` | monthly | the full worked example incl. the 60/40 net premium split and pro-rata deduction |
+| guaranteed-ul | [`models/guaranteed-ul`](models/guaranteed-ul/README.md) — `ULSG_US_S` | monthly | all 5 rows across both accounts, plus the forgone-deduction regime |
+| fixed-deferred-annuity | [`models/fixed-deferred-annuity`](models/fixed-deferred-annuity/README.md) — `MYGA_US_S` | monthly | the 7-month table, both surrender traces, and the Nationwide geometric-MVA factors |
+| fixed-indexed-annuity | [`models/fixed-indexed-annuity`](models/fixed-indexed-annuity/README.md) — `FIA_US_S` | monthly | all 16 rows, the surrender trace, and the GLWB depletion arithmetic |
+| variable-annuity | [`models/variable-annuity`](models/variable-annuity/README.md) — `VA_US_S` | monthly | both subaccounts at all 6 steps, plus all three memo lines |
+| registered-index-linked-annuity | [`models/registered-index-linked-annuity`](models/registered-index-linked-annuity/README.md) — `RILA_US_S` | monthly | all 6 rows × 13 columns of the AG 54 interim-value table, plus its trace |
+| immediate-annuity | [`models/immediate-annuity`](models/immediate-annuity/README.md) — `SPIA_US_S` | monthly | both survivor-reduction trigger columns at 7 payment dates, plus all 5 traces |
+| deferred-income-annuity | [`models/deferred-income-annuity`](models/deferred-income-annuity/README.md) — `DIA_US_S` | monthly | both premium slices, the derived guarantee period, and all 9 projection rows |
 
-Model names are CamelCase of the product folder slug plus `US` (`indexed-ul` →
-`IndexedULUS`); `tests/test_model_conventions.py` asserts the rule, so the table above
-cannot drift away from the directories on disk.
+Model names are `<product>_<country>_<grid>`: the short name the product is actually
+known by — the same one the taxonomy tables above use, so `MYGA`, `FIA`, `RILA`, `SPIA`,
+`DIA`, `ULSG` — then `US`, then `_A` for an annual step or `_S` for a monthly one. The grid
+letters follow lifelib, where `annuallife/TradLife_A` is the annual-step model and
+`basiclife/BasicTerm_S` and `savings/CashValue_SE` are the monthly ones; all twelve models
+here are scalar single-model-point projections, which is lifelib's other sense of `S`.
+
+The pairing of name to folder is deliberately *not* derivable from the folder slug —
+`registered-index-linked-annuity` spelled out is unusable, and the industry says RILA — so
+it is registered once in [`tests/conftest.py`](../tests/conftest.py), and
+`tests/test_model_conventions.py` asserts that the registry, the directory on disk and the
+model's own `_name` all agree, along with the country and grid tags.
 
 Every model follows the same shape, and that shape is enforced rather than merely
 described: two Spaces (`Data` reads the input CSVs once per model, `Projection` is

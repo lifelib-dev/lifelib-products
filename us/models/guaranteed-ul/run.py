@@ -1,4 +1,4 @@
-"""Run the GuaranteedULUS reference model and print its account roll-forward.
+"""Run the ULSG_US_S reference model and print its account roll-forward.
 
     python us/models/guaranteed-ul/run.py            # anchor cell (point_id = 1)
     python us/models/guaranteed-ul/run.py 2          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "GuaranteedULUS")
+model = mx.read_model(Path(__file__).parent / "ULSG_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

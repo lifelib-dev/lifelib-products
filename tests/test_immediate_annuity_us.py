@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for ImmediateAnnuityUS.
+"""Golden and product-specific tests for SPIA_US_S.
 
 The golden values are the worked example in
 us/products/immediate-annuity/technical-notes.md ("Worked example"), which projects the
@@ -22,7 +22,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/immediate-annuity/ImmediateAnnuityUS"
+MODEL_PATH = REPO / "us/models/immediate-annuity/SPIA_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 FACTOR = 5e-5         # payment factors quoted to 4 d.p. in the notes' trace
@@ -45,7 +45,7 @@ INCOME_LEVELS = {1: 6000.00, 2: 6180.00, 3: 6365.40}
 
 @pytest.fixture(scope="module")
 def immediate_annuity():
-    """The ImmediateAnnuityUS model, closed after the module finishes."""
+    """The SPIA_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -363,7 +363,7 @@ def test_pitfall_commutation_touches_only_the_certain_slice(tmp_path):
     turns ``commute_util_base`` up to 10% on model point 9 (life with 10-year certain,
     commutation enabled).
     """
-    model = mx.read_model(MODEL_PATH, name="ImmediateAnnuityUS_commute")
+    model = mx.read_model(MODEL_PATH, name="SPIA_US_S_commute")
     try:
         base = model.Projection[9]
         assert base.commute_util_base == 0.0
@@ -524,7 +524,7 @@ def test_the_roll_forward_check_is_not_vacuous():
         "        return 1.0\n"
         "    return lives_if(t - 1, life) * (1.0 - mort_rate_mth(t - 1, life))\n"
     )
-    model = mx.read_model(MODEL_PATH, name="ImmediateAnnuityUS_rollfwd")
+    model = mx.read_model(MODEL_PATH, name="SPIA_US_S_rollfwd")
     try:
         assert model.Projection[8].check_lives_roll_fwd_resid(60) == pytest.approx(
             0.0, abs=1e-13)

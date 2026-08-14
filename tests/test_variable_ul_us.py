@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for VariableULUS.
+"""Golden and product-specific tests for VUL_US_S.
 
 The golden values are the worked example in us/products/variable-ul/technical-notes.md
 ("Worked example - one month, two subaccounts"), which traces one monthiversary of the
@@ -23,7 +23,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/variable-ul/VariableULUS"
+MODEL_PATH = REPO / "us/models/variable-ul/VUL_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 FACTOR = 5e-7         # growth factors displayed to 6 d.p.
@@ -60,7 +60,7 @@ WE = {
 
 @pytest.fixture(scope="module")
 def variable_ul():
-    """The VariableULUS model, closed after the module finishes."""
+    """The VUL_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -264,7 +264,7 @@ def test_naar_carries_no_one_month_discount(anchor):
 
 
 def test_the_chassis_differences_the_docstring_claims_are_real(anchor):
-    """The model docstring lists the differences from UniversalLifeUS; pin them all.
+    """The model docstring lists the differences from UL_US_S; pin them all.
 
     The list is meant to be complete - the README tabulates the same set - so each
     entry, including the four names the chassis has and this model deliberately does
@@ -751,7 +751,7 @@ def test_pols_if_is_the_start_of_month_weight(anchor):
 def test_dynamic_behavior_module_is_off_by_default(anchor):
     """rho = 1 and lambda = 1, so the base run pays the planned premium in full.
 
-    This is what makes the worked example's "$500/month paid" reproduce; TermLifeUS
+    This is what makes the worked example's "$500/month paid" reproduce; Term_US_A
     switches conversion off for the same reason.
     """
     assert anchor.dyn_behavior_on is False
@@ -781,7 +781,7 @@ def test_dynamic_behavior_module_can_be_switched_on():
 
     Read in a separate model instance so the shared fixture is not polluted.
     """
-    model = mx.read_model(MODEL_PATH, name="VariableULUS_dyn")
+    model = mx.read_model(MODEL_PATH, name="VUL_US_S_dyn")
     try:
         model.Projection.dyn_behavior_on = True
         p = model.Projection[3]                        # new business
@@ -831,7 +831,7 @@ def test_round_trip_is_stable(tmp_path):
 
     model = mx.read_model(MODEL_PATH)
     try:
-        dest = tmp_path / "VariableULUS"
+        dest = tmp_path / "VUL_US_S"
         mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
@@ -840,7 +840,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in MODEL_PATH.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="VariableULUS_rt")
+    reread = mx.read_model(dest, name="VUL_US_S_rt")
     try:
         p = reread.Projection[1]
         assert p.sa_pp(1, 1) == pytest.approx(WE["sa1_eom"], abs=CENT)

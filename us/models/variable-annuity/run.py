@@ -1,4 +1,4 @@
-"""Run the VariableAnnuityUS reference model and print its cash flow statement.
+"""Run the VA_US_S reference model and print its cash flow statement.
 
     python us/models/variable-annuity/run.py            # anchor cell (point_id = 1)
     python us/models/variable-annuity/run.py 2          # the in-force worked-example cell
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "VariableAnnuityUS")
+model = mx.read_model(Path(__file__).parent / "VA_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

@@ -1,4 +1,4 @@
-"""Run the RegisteredIndexLinkedAnnuityUS reference model and print its cash flows.
+"""Run the RILA_US_S reference model and print its cash flows.
 
     python us/models/registered-index-linked-annuity/run.py       # anchor cell (point_id = 1)
     python us/models/registered-index-linked-annuity/run.py 2     # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "RegisteredIndexLinkedAnnuityUS")
+model = mx.read_model(Path(__file__).parent / "RILA_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

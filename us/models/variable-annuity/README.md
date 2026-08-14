@@ -1,4 +1,4 @@
-# VariableAnnuityUS — reference liability cash flow model
+# VA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/variable-annuity/technical-notes.md`](../../products/variable-annuity/technical-notes.md);
@@ -17,7 +17,7 @@ the product it implements is specified in
 > the recursion, not the value of the guarantees.
 
 This product sits on the deferred annuity chassis of the library,
-[`FixedDeferredAnnuityUS`](../fixed-deferred-annuity/README.md), for **structure** —
+[`MYGA_US_S`](../fixed-deferred-annuity/README.md), for **structure** —
 the `Data`/`Projection` split, the naming, the timing-argument vocabulary, the result
 tables and the roll-forward checks. It deliberately does **not** inherit its mechanics;
 see *The chassis' Model #805 floor and MVA are absent by design* below.
@@ -34,7 +34,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/variable-annuity/VariableAnnuityUS")
+model = mx.read_model("us/models/variable-annuity/VA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -57,7 +57,7 @@ never on `t`**. `policy_year(t) = ceil(duration_mth(t)/12)`, so Contract Anniver
 fall at the end of policy months 12, 24, … and Contract Quarterly Anniversaries at the
 end of policy months 3, 6, 9, …
 
-**Note the contrast with `TermLifeUS`, where `t` counts years.** Monthly is forced here
+**Note the contrast with `Term_US_A`, where `t` counts years.** Monthly is forced here
 by the notes' own last pitfall, *discretization drift*: the base contract charge accrues
 **daily** on separate-account value and is applied at one-twelfth of the annual rate at
 each month end **[std]**; the two rider charges are assessed **quarterly** on benefit
@@ -81,7 +81,7 @@ Within a month the processing order is the notes':
 ## Inputs are external files
 
 The eight input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `VariableAnnuityUS/` holds nothing but formulas:
+folder. `VA_US_S/` holds nothing but formulas:
 
 ```
 us/models/variable-annuity/
@@ -95,7 +95,7 @@ us/models/variable-annuity/
   transaction_table.csv
   run.py
   README.md
-  VariableAnnuityUS/           <- formulas only
+  VA_US_S/           <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -129,7 +129,7 @@ so it works wherever the repository is checked out.
 | `cdsc_file` | `cdsc_table()` | `cdsc_table.csv` |
 | `transaction_file` | `transaction_table()` | `transaction_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `VariableAnnuityUS/` without
+**The trade-off:** the model is not portable on its own. Copy `VA_US_S/` without
 the CSVs and it will read fine, then fail on first evaluation. What you gain is that a
 diff of the model shows logic changes only, and an input can be edited or swapped in place
 — point `Data.mort_table_file` at another same-schema file and the projection follows,
@@ -154,7 +154,7 @@ no branch of the notes' parameter set is dead code.
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` and `savings/CashValue_SE`, and
-`FixedDeferredAnnuityUS` wherever the two products share a concept: `pols_*` for policy
+`MYGA_US_S` wherever the two products share a concept: `pols_*` for policy
 counts, `av_*` for account values, plural nouns for cash flows, `*_rate` for rates,
 `*_pp` for per-contract amounts, `*_at(t, timing)` for a quantity read at a point inside
 the month, plus `model_point`, `age_at_entry`, `sex`, `policy_term`, `proj_len`,
@@ -182,9 +182,9 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 
 | Notes | Cells | Why |
 |---|---|---|
-| `E(t)` — the **guarantee** excess | `wd_excess_pp` | In `FixedDeferredAnnuityUS` the same name means the **charge** base. Here those are two different quantities and both exist; the charge base is `wd_chargeable_pp`. This is the easiest mistake to make in this library |
-| `E(t)` in `TermLifeUS` | `expenses` | Expenses there, a withdrawal split here |
-| `c(t)` — the CDSC | `wd_charge_pp` | `c(t)` is the Model #805 contract charge on the chassis and conversions in `TermLifeUS` |
+| `E(t)` — the **guarantee** excess | `wd_excess_pp` | In `MYGA_US_S` the same name means the **charge** base. Here those are two different quantities and both exist; the charge base is `wd_chargeable_pp`. This is the easiest mistake to make in this library |
+| `E(t)` in `Term_US_A` | `expenses` | Expenses there, a withdrawal split here |
+| `c(t)` — the CDSC | `wd_charge_pp` | `c(t)` is the Model #805 contract charge on the chassis and conversions in `Term_US_A` |
 | `M` — moneyness | `moneyness_glwb` / `moneyness_gmdb` | `M(t)` is the market value adjustment on the chassis. A VA separate account has no MVA at all, so the collision is only in the reader's memory |
 | `g` — the GAWA% | `gawa_pct_at_age` | `g` is the monthly nonforfeiture factor on the chassis |
 | `b` — the bonus percentage | `bonus_pct` | `b` is the MVA distribution yield on the chassis |
@@ -255,7 +255,7 @@ month. A test asserts both halves.
 
 ## The chassis' Model #805 floor and MVA are absent by design
 
-`FixedDeferredAnnuityUS` is built around `SB(t) = max(AV + M − C, MGSV)`. None of that
+`MYGA_US_S` is built around `SB(t) = max(AV + M − C, MGSV)`. None of that
 survives the crossing. NAIC Model #805 **expressly excludes variable annuities**
 [REG-R42] and reaches a VA only through its *fixed* account under Model #250 §7.B
 [REG-R43] — and electing the Roll-up GMDB removes the Fixed Account Options altogether
@@ -398,7 +398,7 @@ closes for every `t`. The identity is written on the start-of-month counts `pols
 carries: `pols_if(proj_len() + 1)` is zero, every survivor of the horizon month having
 left as `pols_maturity`. This is bookkeeping determined by the horizon, not an added
 assumption; the name and the construction follow `BasicTerm_S.pols_maturity`,
-`TermLifeUS` and `FixedDeferredAnnuityUS`.
+`Term_US_A` and `MYGA_US_S`.
 
 Worth knowing: **the base run depletes.** On the anchor cell the account reaches zero at
 policy month 229, attained age 79 — 5.75% of a benefit base that keeps ratcheting, plus

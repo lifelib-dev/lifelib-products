@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for WholeLifeUS.
+"""Golden and product-specific tests for WholeLife_US_A.
 
 The golden values are the worked example in us/products/whole-life/technical-notes.md
 ("Worked example"), a single-year walk-through of the core recursion: RefWL-Par, male
@@ -22,7 +22,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/whole-life/WholeLifeUS"
+MODEL_PATH = REPO / "us/models/whole-life/WholeLife_US_A"
 
 CENT = 0.005          # money displayed to 2 d.p.
 PROB = 5e-6           # probabilities displayed to 5 d.p.
@@ -99,7 +99,7 @@ def _worked_example_values(a):
 
 @pytest.fixture(scope="module")
 def whole_life():
-    """The WholeLifeUS model, closed after the module finishes."""
+    """The WholeLife_US_A model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -123,7 +123,7 @@ def fresh():
     opened = []
 
     def _make(**refs):
-        model = mx.read_model(MODEL_PATH, name="WholeLifeUS_%d" % next(_counter))
+        model = mx.read_model(MODEL_PATH, name="WholeLife_US_A_%d" % next(_counter))
         for name, value in refs.items():
             setattr(model.Projection, name, value)
         opened.append(model)

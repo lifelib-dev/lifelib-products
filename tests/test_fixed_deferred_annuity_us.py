@@ -1,4 +1,4 @@
-"""Golden and product tests for FixedDeferredAnnuityUS.
+"""Golden and product tests for MYGA_US_S.
 
 The golden values are the worked example in
 us/products/fixed-deferred-annuity/technical-notes.md ("Worked example"), which projects
@@ -22,7 +22,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/fixed-deferred-annuity/FixedDeferredAnnuityUS"
+MODEL_PATH = REPO / "us/models/fixed-deferred-annuity/MYGA_US_S"
 
 # Half a cent, plus a hair.  The notes round half-up for display and AV(24) =
 # 104,920.025 sits exactly on the boundary (shown as 104,920.03), so a strict 0.005 would
@@ -84,7 +84,7 @@ SURRENDER_6 = {
 
 @pytest.fixture(scope="module")
 def fixed_deferred_annuity():
-    """The FixedDeferredAnnuityUS model, closed after the module finishes."""
+    """The MYGA_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -592,7 +592,7 @@ def test_account_value_rollforward_closes(anchor):
 def test_pols_if_is_the_start_of_month_count_and_weights_its_own_row(anchor):
     """pols_if(t) opens month t and is the weight on that same row's cash flows.
 
-    The library-wide convention, matching ``TermLifeUS.pols_if(1) == pols_if_init()``.
+    The library-wide convention, matching ``Term_US_A.pols_if(1) == pols_if_init()``.
     The notes' end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")`` and is unchanged.
     """
     assert anchor.pols_if(1) == anchor.pols_if_init()
@@ -957,12 +957,12 @@ def test_symbol_table_covers_the_gmir_floor_level_and_the_scalar_spreads(
 
 
 def test_readme_contrasts_t_zero_with_term_life_only():
-    """The t = 0 index is contrasted with TermLifeUS, not claimed across the library.
+    """The t = 0 index is contrasted with Term_US_A, not claimed across the library.
 
     Sibling models in ``us/models/`` also index their result tables from 0, so the
     library-wide claim this README used to make was false.
     """
     readme = _flat((MODEL_PATH.parent / "README.md").read_text(encoding="utf-8"))
     assert "Every other model in the library starts its result table at 1" not in readme
-    assert ("contrast with `TermLifeUS`, the model this one takes its structure from, "
+    assert ("contrast with `Term_US_A`, the model this one takes its structure from, "
             "whose result table starts at `t = 1`") in readme

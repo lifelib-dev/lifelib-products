@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for UniversalLifeUS.
+"""Golden and product-specific tests for UL_US_S.
 
 The golden values are the worked example in
 us/products/universal-life/technical-notes.md ("Worked example"), which projects the
@@ -29,7 +29,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/universal-life/UniversalLifeUS"
+MODEL_PATH = REPO / "us/models/universal-life/UL_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p. in the notes
 
@@ -81,7 +81,7 @@ def _premium_far_above_the_seven_pay_limit():
 
 @pytest.fixture(scope="module")
 def universal_life():
-    """The UniversalLifeUS model, closed after the module finishes."""
+    """The UL_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -112,7 +112,7 @@ def withdrawing():
     A separate model instance because overriding a formula mutates the Space for every
     ItemSpace under it; the shared ``universal_life`` fixture must stay as shipped.
     """
-    model = mx.read_model(MODEL_PATH, name="UniversalLifeUS_wd")
+    model = mx.read_model(MODEL_PATH, name="UL_US_S_wd")
     model.Projection.wd_pp.formula = _wd_ten_percent_monthly
     yield model.Projection[1]
     model.close()
@@ -121,7 +121,7 @@ def withdrawing():
 @pytest.fixture(scope="module")
 def over_funded():
     """The anchor cell in a separate model, paying $24,000 a year instead of $1,800."""
-    model = mx.read_model(MODEL_PATH, name="UniversalLifeUS_mec")
+    model = mx.read_model(MODEL_PATH, name="UL_US_S_mec")
     model.Projection.premium_pp_ann.formula = _premium_far_above_the_seven_pay_limit
     yield model.Projection[1]
     model.close()

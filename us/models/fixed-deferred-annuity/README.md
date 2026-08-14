@@ -1,4 +1,4 @@
-# FixedDeferredAnnuityUS — reference liability cash flow model
+# MYGA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/fixed-deferred-annuity/technical-notes.md`](../../products/fixed-deferred-annuity/technical-notes.md);
@@ -30,7 +30,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/fixed-deferred-annuity/FixedDeferredAnnuityUS")
+model = mx.read_model("us/models/fixed-deferred-annuity/MYGA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -48,7 +48,7 @@ notes' symbols and the cells names, and `model.Data.doc` the input arrangement.
 
 `t` counts **policy months**, 1-based, and `policy_year(t) = ceil(t/12)`, so anniversaries
 fall at `t = 12, 24, …` and the five-year guarantee period ends at `t = 60`. **Note the
-contrast with `TermLifeUS`, where `t` counts years.** The contract credits interest daily
+contrast with `Term_US_A`, where `t` counts years.** The contract credits interest daily
 against a quoted *annual effective* rate, while surrender charges and the MVA step on
 contract-year boundaries; monthly is the coarsest grid that resolves both. It hits every
 anniversary exactly and puts the guarantee-period-end window and the shock-lapse boundary
@@ -69,7 +69,7 @@ decrement benefit valued on the post-crediting account value.
 ## Inputs are external files
 
 The seven input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `FixedDeferredAnnuityUS/` holds nothing but formulas:
+folder. `MYGA_US_S/` holds nothing but formulas:
 
 ```
 us/models/fixed-deferred-annuity/
@@ -82,7 +82,7 @@ us/models/fixed-deferred-annuity/
   mva_factor_table.csv
   run.py
   README.md
-  FixedDeferredAnnuityUS/      <- formulas only
+  MYGA_US_S/      <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -116,7 +116,7 @@ a reader Cells, both on `Data`:
 | `withdrawal_file` | `withdrawal_table()` | `withdrawal_table.csv` |
 | `mva_factor_file` | `mva_factor_table()` | `mva_factor_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `FixedDeferredAnnuityUS/`
+**The trade-off:** the model is not portable on its own. Copy `MYGA_US_S/`
 without the CSVs and it will read fine, then fail on first evaluation. What you gain is
 that a diff of the model shows logic changes only, and an input can be edited or swapped in
 place — point `Data.mort_table_file` at another same-schema file and the projection follows,
@@ -153,10 +153,10 @@ notes themselves carry:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `d(t)` — the floor deduction | `mgsv_wd_deduct_pp` | `d(t)` is deaths in `TermLifeUS`; here it is the withdrawal deducted from the Model #805 floor in step 7 |
-| `c(t)` — the contract charge | `mgsv_charge_pp` | `c(t)` is conversions in `TermLifeUS` |
-| `E(t)` — two different bases | `wd_excess_pp` / `surr_excess_pp` | The excess of a *withdrawal* over the allowance and the excess of the whole *account value* over it are both written `E(t)`; `E(t)` is also expenses in `TermLifeUS`, here `expenses` |
-| `X` — the lapse exponent | `lapse_dyn_exponent` | `X(t)` is premium tax in `TermLifeUS`, here `premium_taxes` |
+| `d(t)` — the floor deduction | `mgsv_wd_deduct_pp` | `d(t)` is deaths in `Term_US_A`; here it is the withdrawal deducted from the Model #805 floor in step 7 |
+| `c(t)` — the contract charge | `mgsv_charge_pp` | `c(t)` is conversions in `Term_US_A` |
+| `E(t)` — two different bases | `wd_excess_pp` / `surr_excess_pp` | The excess of a *withdrawal* over the allowance and the excess of the whole *account value* over it are both written `E(t)`; `E(t)` is also expenses in `Term_US_A`, here `expenses` |
+| `X` — the lapse exponent | `lapse_dyn_exponent` | `X(t)` is premium tax in `Term_US_A`, here `premium_taxes` |
 | `T(t)` — the MVA duration | `mva_term` | `T` is in years while `t` is the policy month |
 | `MGSV` / `GMSV` / `MGV` | `mgsv_pp` | One concept, three labels across the sources; MGSV is the library's term |
 
@@ -166,7 +166,7 @@ than being dropped:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `l(t)` — end-of-month in-force | `pols_if(t)` is the **start**-of-month count; the notes' `l(t)` is `pols_if_at(t, "AFT_DECR")` | `pols_if(t)` is the weight applied to month `t`'s cash flows, so the `pols_if` column of `result_cf()` reconciles with the row it sits on — `withdrawals(t) / wd_payment_pp(t)` and `expenses(t) / ((expense_maint/12) × inflation_factor(t))` both return it. This matches `TermLifeUS` (`pols_if(1) == pols_if_init()`) and `CashValue_SE`. `pols_if(t+1) == pols_if_at(t, "AFT_DECR")` in every month but the last |
+| `l(t)` — end-of-month in-force | `pols_if(t)` is the **start**-of-month count; the notes' `l(t)` is `pols_if_at(t, "AFT_DECR")` | `pols_if(t)` is the weight applied to month `t`'s cash flows, so the `pols_if` column of `result_cf()` reconciles with the row it sits on — `withdrawals(t) / wd_payment_pp(t)` and `expenses(t) / ((expense_maint/12) × inflation_factor(t))` both return it. This matches `Term_US_A` (`pols_if(1) == pols_if_init()`) and `CashValue_SE`. `pols_if(t+1) == pols_if_at(t, "AFT_DECR")` in every month but the last |
 | `w(t)` monthly, `w_annual(t)` annual | `lapse_rate_mth` / `lapse_rate` | `lapse_rate` is the **annual** rate everywhere in the library, pairing with `lapse_rate_mth` exactly as `mort_rate` pairs with `mort_rate_mth`. The notes already carry both quantities; only the suffixes move |
 
 The roll-forward self-checks follow `CashValue_SE`: `check_av_roll_fwd()` and
@@ -199,7 +199,7 @@ closes for every `t` — `pols_if(t)` is the start-of-month count, so it opens t
 four exits are taken during the month, and the next month opens on what is left. Including
 the last month, where the block would otherwise appear to lose
 lives with no cause. This is bookkeeping determined by the horizon, not a new assumption; the
-name and the construction follow `BasicTerm_S.pols_maturity` and `TermLifeUS`. It matters
+name and the construction follow `BasicTerm_S.pols_maturity` and `Term_US_A`. It matters
 little in practice: with a 90% shock lapse every five years, in-force falls by roughly a
 factor of ten per cycle — end of month 60 `pols_if_at(60, "AFT_DECR")` = 0.9077, end of
 month 120 = 0.0808, end of month 240 = 5.6e-4 — so what enters the horizon month,
@@ -213,7 +213,7 @@ The notes' cash flow ledger indexes the single premium, the acquisition commissi
 premium tax at `t = 0`, and `AV(0)`, `MGSV(0)` and `l(0)` are the initial branches of the
 three recursions. Putting those three flows in month 1 instead would double-count them
 against a month that also credits interest. So `result_cf()` runs `t = 0 … proj_len()` and
-`net_cf(0) = +98,000` on the anchor cell. Note the contrast with `TermLifeUS`, the model
+`net_cf(0) = +98,000` on the anchor cell. Note the contrast with `Term_US_A`, the model
 this one takes its structure from, whose result table starts at `t = 1`: the index here is
 the notes' own, not a house convention, so read `t = 0` before comparing the two ledgers.
 

@@ -16,7 +16,7 @@ What the house style is, and why, is written up in ``us/models/term-life/README.
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``TermLifeUS`` also asserts several of these for itself, in more specific form (it names
+``Term_US_A`` also asserts several of these for itself, in more specific form (it names
 its five input files, its exact read count, its own docstring phrases). That overlap is
 deliberate: the checks here are the general contract, the ones there are that model's
 particulars.
@@ -42,16 +42,10 @@ SHARED_CELLS = {
 }
 
 
-# Slug words that are initialisms and stay fully capitalized: indexed-ul -> IndexedUL.
-INITIALISMS = {"ul"}
-
-
-def _camel(slug):
-    """product-folder-slug -> CamelCase, the model-naming rule."""
-    return "".join(
-        part.upper() if part in INITIALISMS else part[:1].upper() + part[1:]
-        for part in slug.split("-")
-    )
+# The grid suffix each model must carry, from the metadata registered in conftest.MODELS.
+# lifelib's own libraries use these letters the same way: annuallife/TradLife_A is the
+# annual-step model, basiclife/BasicTerm_S and savings/CashValue_SE the monthly ones.
+GRID_SUFFIX = {"annual": "_A", "monthly": "_S"}
 
 
 def _flat(doc):
@@ -82,16 +76,34 @@ def model(name):
 # Layout — the model folder holds formulas, the parent holds data
 
 
-def test_model_name_follows_the_folder_slug(name):
-    """Model name is CamelCase of the product folder slug plus ``US``.
+def test_the_model_name_matches_its_folder(name, model):
+    """The registry name, the folder on disk and the model's own ``_name`` agree.
 
-    ``term-life`` -> ``TermLifeUS``. The rule is mechanical so a reader can go from
-    either name to the other without a lookup table, and so the model tables in
-    ``us/README.md`` cannot drift away from the directories on disk.
+    The name is the product's market short name, a country tag and a grid tag —
+    ``MYGA_US_S``, ``Term_US_A`` — rather than anything derivable from the folder slug,
+    because ``registered-index-linked-annuity`` spelled out is unusable and the industry
+    already calls it a RILA. So the pairing lives in :data:`conftest.MODELS` and is
+    asserted here instead of being recomputed.
     """
-    folder = model_path(name)
-    assert folder.name == name
-    assert name == _camel(folder.parent.name) + "US"
+    assert model_path(name).name == name
+    assert model.name.removesuffix("_conv") == name
+
+
+def test_the_name_carries_the_right_grid_suffix(name):
+    """``_A`` for an annual step, ``_S`` for a monthly one, per conftest's metadata.
+
+    The letters follow lifelib: ``annuallife/TradLife_A`` is annual-step, while
+    ``basiclife/BasicTerm_S`` and ``savings/CashValue_SE`` are monthly. All twelve models
+    here are scalar single-model-point projections, which is the other thing lifelib's
+    ``S`` denotes.
+    """
+    grid = MODELS[name][1]["grid"]
+    assert name.endswith(GRID_SUFFIX[grid]), f"{name} is a {grid}-step model"
+
+
+def test_the_name_carries_the_country_tag(name):
+    """Every model in this section is U.S. and says so, ahead of the grid tag."""
+    assert "_US_" in name, f"{name} does not carry the _US country tag"
 
 
 def test_model_folder_holds_formulas_only(name):
@@ -288,7 +300,7 @@ RETIRED_NAMES = {
     "lapse_rate_ann": "lapse_rate (annual), with lapse_rate_mth for the monthly rate",
     "free_wd_used_pp": "wd_free_pp, the fixed-deferred-annuity chassis name",
     "free_wd_taken_pp": "wd_free_pp",
-    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLifeUS.premium_net_pp)",
+    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_A.premium_net_pp)",
     "mort_a_e_factor": "mort_ae_factor",
     "ae_factor": "mort_ae_factor",
     "omega": "omega_age",

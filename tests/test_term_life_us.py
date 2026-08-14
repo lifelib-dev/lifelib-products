@@ -1,4 +1,4 @@
-"""Golden and structural tests for TermLifeUS.
+"""Golden and structural tests for Term_US_A.
 
 The golden values are the worked example in us/products/term-life/technical-notes.md
 ("Worked example"), which projects the specimen anchor cell M35 / StdNT / $100,000 /
@@ -200,7 +200,7 @@ def test_model_folder_holds_formulas_only():
     formulas.  This is the annuallife/TradLife_A layout, as opposed to
     basiclife/BasicTerm_S, which stores its inputs inside the model.
     """
-    folder = REPO / MODELS["TermLifeUS"][0]
+    folder = REPO / MODELS["Term_US_A"][0]
     assert not (folder / "_data").exists()
     assert not list(folder.rglob("*.pickle"))
     assert not list(folder.rglob("*.csv"))
@@ -211,7 +211,7 @@ def test_model_folder_holds_formulas_only():
 
 def test_inputs_live_beside_the_model():
     """The five input CSVs sit in the model folder's parent directory."""
-    parent = (REPO / MODELS["TermLifeUS"][0]).parent
+    parent = (REPO / MODELS["Term_US_A"][0]).parent
     expected = {
         "model_point_table.csv", "premium_rates.csv", "mort_table.csv",
         "class_factor_table.csv", "shock_lapse_table.csv",
@@ -221,7 +221,7 @@ def test_inputs_live_beside_the_model():
 
 def test_input_dir_resolves_to_the_parent(term_life):
     """input_dir() is derived from where the model was read, not hard-coded."""
-    assert term_life.Data.input_dir() == (REPO / MODELS["TermLifeUS"][0]).parent
+    assert term_life.Data.input_dir() == (REPO / MODELS["Term_US_A"][0]).parent
 
 
 def test_inputs_are_read_once_not_once_per_model_point(term_life):
@@ -234,7 +234,7 @@ def test_inputs_are_read_once_not_once_per_model_point(term_life):
     import pandas as pd
     from collections import Counter
 
-    model = mx.read_model(REPO / MODELS["TermLifeUS"][0], name="TermLifeUS_reads")
+    model = mx.read_model(REPO / MODELS["Term_US_A"][0], name="Term_US_A_reads")
     reads = []
     original = pd.read_csv
 
@@ -293,11 +293,11 @@ def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
     """
     import pandas as pd
 
-    src = (REPO / MODELS["TermLifeUS"][0]).parent / "mort_table.csv"
+    src = (REPO / MODELS["Term_US_A"][0]).parent / "mort_table.csv"
     doubled = pd.read_csv(src, index_col="age")
     doubled["mort_rate"] = doubled["mort_rate"] * 2
 
-    model = mx.read_model(REPO / MODELS["TermLifeUS"][0], name="TermLifeUS_swap")
+    model = mx.read_model(REPO / MODELS["Term_US_A"][0], name="Term_US_A_swap")
     try:
         # Write the alternative table where this model instance will look for it.
         alt_name = "mort_table_doubled.csv"
@@ -318,10 +318,10 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    src = REPO / MODELS["TermLifeUS"][0]
+    src = REPO / MODELS["Term_US_A"][0]
     model = mx.read_model(src)
     try:
-        dest = tmp_path / "TermLifeUS"
+        dest = tmp_path / "Term_US_A"
         mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
@@ -332,7 +332,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in src.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="TermLifeUS_rt")
+    reread = mx.read_model(dest, name="Term_US_A_rt")
     try:
         anchor = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

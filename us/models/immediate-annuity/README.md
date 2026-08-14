@@ -1,4 +1,4 @@
-# ImmediateAnnuityUS — reference liability cash flow model
+# SPIA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/immediate-annuity/technical-notes.md`](../../products/immediate-annuity/technical-notes.md);
@@ -29,7 +29,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/immediate-annuity/ImmediateAnnuityUS")
+model = mx.read_model("us/models/immediate-annuity/SPIA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -76,7 +76,7 @@ claim cannot quietly become false again.
 ## Inputs are external files
 
 The four input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `ImmediateAnnuityUS/` holds nothing but formulas:
+folder. `SPIA_US_S/` holds nothing but formulas:
 
 ```
 us/models/immediate-annuity/
@@ -86,7 +86,7 @@ us/models/immediate-annuity/
   surr_charge_table.csv
   run.py
   README.md
-  ImmediateAnnuityUS/          <- formulas only
+  SPIA_US_S/          <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -117,7 +117,7 @@ Reference and a reader Cells, both on `Data`:
 | `improvement_scale_file` | `improvement_scale()` | `improvement_scale.csv` |
 | `surr_charge_file` | `surr_charge_table()` | `surr_charge_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `ImmediateAnnuityUS/`
+**The trade-off:** the model is not portable on its own. Copy `SPIA_US_S/`
 without the CSVs and it will read fine, then fail on first evaluation. What you gain is
 that a diff of the model shows logic changes only, and an input can be swapped in place —
 point `Data.mort_table_file` at another same-schema file and the projection follows, with
@@ -213,7 +213,7 @@ monthly expense is added. The column is the annuity instalment alone.
 This is not resolvable from the notes, so the model names both and the tests assert both.
 `annuity_payments(t)` is `E[ANN(t)]` and is what the worked-example rows are asserted
 against; `liability_cf(t)` is the notes' `CF(t)`, outgo positive, and is asserted at
-505.00. `net_cf(t) = −liability_cf(t)` keeps `TermLifeUS`'s sign convention (income less
+505.00. `net_cf(t) = −liability_cf(t)` keeps `Term_US_A`'s sign convention (income less
 outgo) so the two models' cash flow statements read the same way, even though this product
 has no projected income at all. **Both are columns of `result_cf()`** — the notes' stream
 survives verbatim under the name the notes give it, and the library-wide income-positive

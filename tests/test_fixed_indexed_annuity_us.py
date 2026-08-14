@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for FixedIndexedAnnuityUS.
+"""Golden and product-specific tests for FIA_US_S.
 
 The golden values are the worked example in
 us/products/fixed-indexed-annuity/technical-notes.md ("Worked example"), which projects
@@ -21,7 +21,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/fixed-indexed-annuity/FixedIndexedAnnuityUS"
+MODEL_PATH = REPO / "us/models/fixed-indexed-annuity/FIA_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 RATE = 5e-7           # rates displayed as a percentage to 4 d.p.
@@ -44,7 +44,7 @@ def raises_value_error(call, message):
 
 @pytest.fixture(scope="module")
 def fixed_indexed_annuity():
-    """The FixedIndexedAnnuityUS model, closed after the module finishes."""
+    """The FIA_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -1167,7 +1167,7 @@ def test_every_model_point_projects(fixed_indexed_annuity):
 
 
 def test_the_model_name_matches_the_product_folder(fixed_indexed_annuity):
-    assert fixed_indexed_annuity.name == "FixedIndexedAnnuityUS"
+    assert fixed_indexed_annuity.name == "FIA_US_S"
     assert MODEL_PATH.parent.name == "fixed-indexed-annuity"
 
 

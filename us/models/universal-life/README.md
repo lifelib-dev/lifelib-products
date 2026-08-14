@@ -1,4 +1,4 @@
-# UniversalLifeUS — reference liability cash flow model
+# UL_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/universal-life/technical-notes.md`](../../products/universal-life/technical-notes.md);
@@ -27,7 +27,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/universal-life/UniversalLifeUS")
+model = mx.read_model("us/models/universal-life/UL_US_S")
 model.Projection[1].result_av()
 ```
 
@@ -51,7 +51,7 @@ new-business model point; for an in-force point it is the first projected month,
 sitting `duration_mth_init()` completed months after issue. This is the grid the
 technical notes specify, and it is not a stylistic choice: universal life is defined by
 a monthiversary deduction and a monthly interest credit, and the order of those two
-inside the month changes the answer. Compare `TermLifeUS`, where `t` counts **years**,
+inside the month changes the answer. Compare `Term_US_A`, where `t` counts **years**,
 because every decrement in that product is on an annual cycle and there is no account
 value requiring monthiversary processing.
 
@@ -80,7 +80,7 @@ a separate layer that consumes these flows.
 ## Inputs are external files
 
 The eight input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `UniversalLifeUS/` holds nothing but formulas:
+folder. `UL_US_S/` holds nothing but formulas:
 
 ```
 us/models/universal-life/
@@ -94,7 +94,7 @@ us/models/universal-life/
   surr_charge_table.csv
   run.py
   README.md
-  UniversalLifeUS/             <- formulas only
+  UL_US_S/             <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -129,7 +129,7 @@ Reference and a reader Cells, both on `Data`:
 | `prem_persistency_file` | `prem_persistency_table()` | `prem_persistency.csv` |
 | `surr_charge_file` | `surr_charge_table()` | `surr_charge_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `UniversalLifeUS/`
+**The trade-off:** the model is not portable on its own. Copy `UL_US_S/`
 without the CSVs and it will read fine, then fail on first evaluation. What you gain is
 that a diff of the model shows logic changes only, and an input can be edited or swapped
 in place — point `Data.mort_table_file` at another same-schema file and the projection
@@ -141,7 +141,7 @@ follows, with no formula change.
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 NAAR, policy years 1–87, with a `provenance` column marking each row. **Covers the specimen anchor cell M / StdNT / issue age 35 only** — a model point on any other cell needs this table extended first, and a test enforces that every model point is projectable | printed anchor years sourced [S3]; intermediate years log-linearly interpolated **[std]** |
 | `corridor_factors.csv` | GPT corridor factors by attained age, 250% to age 40 grading to 101% above 93 | specimen table [S3][R2] |
 | `mort_table.csv` | Best-estimate annual mortality by age 18–120, `q(120) = 1.0` | **illustrative [std]**, a Gompertz–Makeham curve — *not* a published table. The notes recommend 2015 VBT; that family is licensed and may not be reproduced here |
-| `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `TermLifeUS` where the classes overlap |
+| `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `Term_US_A` where the classes overlap |
 | `lapse_table.csv` | Base annual lapse 6% / 5% / 4% / 3% by policy year | **[std]**; shape informed qualitatively by [R7][REG-R20], whose tables are behind a paid package |
 | `prem_persistency.csv` | Paid/planned factors, 100% falling 2pp a year to a 70% floor | **[std]**; shape from [R7] |
 | `surr_charge_table.csv` | The surrender charge schedule as `(initial per $1,000, runoff years)` | 9-year runoff and monthly amortization sourced [S1][S2][S3]; the $9.00 level **[std]** |
@@ -167,7 +167,7 @@ optional NGE revision rule would need). Eight cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `risk_class` | `rate_class` | The name comes from `TermLifeUS`/`BasicTerm_S`, which this library follows ahead of the notes where the two collide; it also avoids reading as Python's `class`. The six classes themselves are the product spec's, unchanged |
+| `risk_class` | `rate_class` | The name comes from `Term_US_A`/`BasicTerm_S`, which this library follows ahead of the notes where the two collide; it also avoids reading as Python's `class`. The six classes themselves are the product spec's, unchanged |
 | `l(t)` | `pols_if(t)` | The notes' `l(t)` is in force at the **end** of month `t`; `BasicTerm_S`'s `pols_if(t)` is in force at the **start**. So `pols_if(t) = l(t−1)`, and the notes' own "weight premiums by `l(t−1)`" becomes "weight by `pols_if(t)`" |
 | `MD(t)` | `mth_deduction_pp` / `maint_fee_pp` | `CashValue_SE` calls the non-COI part of an account-value deduction `maint_fee`; that name is kept, and `mth_deduction_pp` is the notes' `MD(t)` in full |
 | *(none)* | `maint_fee` vs `expenses` | See below — they are opposite signs and easy to confuse |

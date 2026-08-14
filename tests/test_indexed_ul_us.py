@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for IndexedULUS.
+"""Golden and product-specific tests for IUL_US_S.
 
 The golden values are the worked example in us/products/indexed-ul/technical-notes.md
 ("Worked example"), which prices one segment year at cap 10.00%, participation 100% and
@@ -24,7 +24,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/indexed-ul/IndexedULUS"
+MODEL_PATH = REPO / "us/models/indexed-ul/IUL_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 RATE = 5e-7           # rates displayed as percentages to 2 d.p.
@@ -60,7 +60,7 @@ ANCHOR = {
 
 @pytest.fixture(scope="module")
 def indexed_ul():
-    """The IndexedULUS model, closed after the module finishes."""
+    """The IUL_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -760,7 +760,7 @@ def test_guaranteed_basis_diverges_dramatically():
     it.  The notes say the two projections diverge dramatically; this asserts they do,
     and in the right direction.
     """
-    model = mx.read_model(MODEL_PATH, name="IndexedULUS_guar")
+    model = mx.read_model(MODEL_PATH, name="IUL_US_S_guar")
     try:
         curr = model.Projection[1]
         curr.result_cf()
@@ -784,7 +784,7 @@ def test_guaranteed_basis_diverges_dramatically():
 
 
 def test_basis_rejects_an_unknown_value():
-    model = mx.read_model(MODEL_PATH, name="IndexedULUS_badbasis")
+    model = mx.read_model(MODEL_PATH, name="IUL_US_S_badbasis")
     try:
         model.Projection.basis = "BEST_ESTIMATE"
         with pytest.raises(Exception):
@@ -994,9 +994,9 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    model = mx.read_model(MODEL_PATH, name="IndexedULUS_rt_src")
+    model = mx.read_model(MODEL_PATH, name="IUL_US_S_rt_src")
     try:
-        dest = tmp_path / "IndexedULUS"
+        dest = tmp_path / "IUL_US_S"
         mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
@@ -1005,7 +1005,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in MODEL_PATH.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="IndexedULUS_rt")
+    reread = mx.read_model(dest, name="IUL_US_S_rt")
     try:
         proj = reread.Projection[1]
         proj.result_cf()

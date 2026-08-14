@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for GuaranteedULUS.
+"""Golden and product-specific tests for ULSG_US_S.
 
 The golden values are the worked example in us/products/guaranteed-ul/technical-notes.md
 ("Worked example"), which projects the anchor cell male 60 ANB / NT Standard /
@@ -29,7 +29,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/guaranteed-ul/GuaranteedULUS"
+MODEL_PATH = REPO / "us/models/guaranteed-ul/ULSG_US_S"
 
 NOTES_ROUNDING = 0.06     # see the module docstring
 CENT = 0.005
@@ -85,7 +85,7 @@ NOTES_MODEL_POINT_SYMBOLS = [
 
 @pytest.fixture(scope="module")
 def guaranteed_ul():
-    """The GuaranteedULUS model, closed after the module finishes."""
+    """The ULSG_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()

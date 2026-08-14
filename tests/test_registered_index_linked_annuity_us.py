@@ -1,4 +1,4 @@
-"""Golden and product tests for RegisteredIndexLinkedAnnuityUS.
+"""Golden and product tests for RILA_US_S.
 
 The golden values are the worked example in
 us/products/registered-index-linked-annuity/technical-notes.md ("Worked example"), which
@@ -29,7 +29,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/registered-index-linked-annuity/RegisteredIndexLinkedAnnuityUS"
+MODEL_PATH = REPO / "us/models/registered-index-linked-annuity/RILA_US_S"
 
 # Half a cent, plus a hair, for money the notes display to 2 d.p.
 CENT = 0.006
@@ -103,7 +103,7 @@ def _flat(text):
 
 @pytest.fixture(scope="module")
 def rila():
-    """The RegisteredIndexLinkedAnnuityUS model, closed after the module finishes."""
+    """The RILA_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -787,7 +787,7 @@ def test_inforce_rollforward_closes(anchor):
 def test_pols_if_is_the_start_of_period_count_and_weights_its_own_row(anchor):
     """The library-wide convention: ``pols_if(t)`` opens month t and weights its cash flows.
 
-    ``pols_if(1) == pols_if_init()``, exactly as in ``TermLifeUS``, and the notes' own
+    ``pols_if(1) == pols_if_init()``, exactly as in ``Term_US_A``, and the notes' own
     end-of-month ``l(t)`` survives as ``pols_if_at(t, "AFT_DECR")``.  The reconciliation
     this buys is that the ``pols_if`` column of ``result_cf()`` divides the cash flows on
     the same row: before the ruling the printed in-force was ``l(t)`` while the row was

@@ -1,4 +1,4 @@
-"""Run the WholeLifeUS reference model and print its cash flow statement.
+"""Run the WholeLife_US_A reference model and print its cash flow statement.
 
     python us/models/whole-life/run.py            # anchor cell (point_id = 1)
     python us/models/whole-life/run.py 2          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "WholeLifeUS")
+model = mx.read_model(Path(__file__).parent / "WholeLife_US_A")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

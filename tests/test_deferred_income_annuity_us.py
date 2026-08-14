@@ -1,4 +1,4 @@
-"""Golden and product-specific tests for DeferredIncomeAnnuityUS.
+"""Golden and product-specific tests for DIA_US_S.
 
 The golden values are the worked example in
 us/products/deferred-income-annuity/technical-notes.md ("Worked example"), which
@@ -20,7 +20,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/deferred-income-annuity/DeferredIncomeAnnuityUS"
+MODEL_PATH = REPO / "us/models/deferred-income-annuity/DIA_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 SURV = 5e-7           # survival displayed to 6 d.p.
@@ -55,7 +55,7 @@ GUARANTEE_YRS = 3.3891        # n_g = 150,000 / 44,259.65
 
 @pytest.fixture(scope="module")
 def deferred_income_annuity():
-    """The DeferredIncomeAnnuityUS model, closed after the module finishes."""
+    """The DIA_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()

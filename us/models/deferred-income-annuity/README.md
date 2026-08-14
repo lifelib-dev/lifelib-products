@@ -1,4 +1,4 @@
-# DeferredIncomeAnnuityUS — reference liability cash flow model
+# DIA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/deferred-income-annuity/technical-notes.md`](../../products/deferred-income-annuity/technical-notes.md);
@@ -6,7 +6,7 @@ the product it implements is specified in
 [`product-spec.md`](../../products/deferred-income-annuity/product-spec.md). The income
 phase is the payout chassis of
 [`us/products/immediate-annuity/technical-notes.md`](../../products/immediate-annuity/technical-notes.md),
-implemented in [`ImmediateAnnuityUS`](../immediate-annuity/) — this model carries that
+implemented in [`SPIA_US_S`](../immediate-annuity/) — this model carries that
 model's names for every shared concept.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
@@ -34,7 +34,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/deferred-income-annuity/DeferredIncomeAnnuityUS")
+model = mx.read_model("us/models/deferred-income-annuity/DIA_US_S")
 model.Projection[1].result_annual()
 ```
 
@@ -56,8 +56,8 @@ what the notes set ("Projection frequency. Monthly, indexed `t = 0, 1, 2, …` f
 issue") and what the product forces: the modal payment frequency is monthly, and both
 the 13-month minimum deferral and the 13-month premium cut-off are expressed in months.
 
-**The 0-based index is a deliberate departure from `TermLifeUS` and
-`ImmediateAnnuityUS`, which are 1-based.** The reason is that in these notes `T` is a
+**The 0-based index is a deliberate departure from `Term_US_A` and
+`SPIA_US_S`, which are 1-based.** The reason is that in these notes `T` is a
 month *index*, not a count: the anchor cell's income start month is `T = 240` and its
 premiums fall at months 0 and 60. Renumber to a 1-based grid and `T = 240` silently
 becomes the 241st month, moving every option window, premium date and payment date by
@@ -67,7 +67,7 @@ case.
 
 Two consequences worth holding on to:
 
-| | `ImmediateAnnuityUS` (1-based) | `DeferredIncomeAnnuityUS` (0-based) |
+| | `SPIA_US_S` (1-based) | `DIA_US_S` (0-based) |
 |---|---|---|
 | `lives_if(t, life)` | survival over `t` elapsed months | **the same** — survival over `t` elapsed months, i.e. alive at the *start* of month `t` |
 | `lives_death(t, life)` | `l(t−1) − l(t)` | `l(t) − l(t+1)` |
@@ -82,7 +82,7 @@ guarantee period if that is later.
 ## Inputs are external files
 
 The six input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `DeferredIncomeAnnuityUS/` holds nothing but formulas:
+folder. `DIA_US_S/` holds nothing but formulas:
 
 ```
 us/models/deferred-income-annuity/
@@ -94,7 +94,7 @@ us/models/deferred-income-annuity/
   rop_factor_table.csv
   run.py
   README.md
-  DeferredIncomeAnnuityUS/     <- formulas only
+  DIA_US_S/     <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -126,7 +126,7 @@ checked out.
 | `rop_factor_file` | `rop_factor_table()` | `rop_factor_table.csv` |
 
 **The trade-off:** the model is not portable on its own. Copy
-`DeferredIncomeAnnuityUS/` without the CSVs and it will read fine, then fail on first
+`DIA_US_S/` without the CSVs and it will read fine, then fail on first
 evaluation. What you gain is that a diff of the model shows logic changes only, and an
 input can be edited or swapped in place — point `Data.mort_table_file` at another
 same-schema file and the projection follows, with no formula change.
@@ -155,7 +155,7 @@ notes mean by calling their factors "mutually consistent"; a test pins it.
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` and `savings/CashValue_SE` where those
-have an analogue, and — for the whole income phase — they follow `ImmediateAnnuityUS`
+have an analogue, and — for the whole income phase — they follow `SPIA_US_S`
 exactly, because a DIA in payment *is* a SPIA. `payment_factor`, `payment_factor_life`,
 `certain_floor`, `certain_mths_eff`, `certain_mths_refund`, `annuity_pp_sched`,
 `annuity_pp`, `annuity_pp_paid`, `cum_annuity_pp`, `lives_if`, `lives_death`,
@@ -189,7 +189,7 @@ is no `check_av_roll_fwd()` here, because there is no account value to roll forw
 
 ## `surv_to_payout` and `commute_weight` — the chassis formulas that do not carry across
 
-`ImmediateAnnuityUS` writes the payment factor as `Φ(t) = max(C(t), L(t))` with `C(t)` a
+`SPIA_US_S` writes the payment factor as `Φ(t) = max(C(t), L(t))` with `C(t)` a
 bare 0/1 indicator, and the DIA notes inherit that wording without adjusting: "`L_pay(t)`
 is the form-specific payment-survivorship weight defined in the immediate-annuity notes:
 `l(t)` for a life-only payment, **certain inside a guarantee period**, …".
@@ -288,7 +288,7 @@ Installment refund is the form that really does pay a certain stream, and there
 41 months on this cell, because 40 instalments fall short of the 150,000 of cumulative
 premiums and 41 overshoot it. **[std]** — the monthly grid rounds the guarantee *up* to a whole
 instalment rather than trimming the last one, which is what the notes' "exactly a
-certain-and-life annuity with `n_g = CP(T)/B`" framing implies. `ImmediateAnnuityUS`
+certain-and-life annuity with `n_g = CP(T)/B`" framing implies. `SPIA_US_S`
 trims instead; that is a divergence between the two notes files, not a bug in either
 model.
 

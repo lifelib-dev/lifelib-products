@@ -1,4 +1,4 @@
-"""Golden and product tests for VariableAnnuityUS.
+"""Golden and product tests for VA_US_S.
 
 The golden values are the worked example in
 us/products/variable-annuity/technical-notes.md ("Worked example -- one month, two
@@ -28,7 +28,7 @@ import pytest
 
 from conftest import REPO
 
-MODEL_PATH = REPO / "us/models/variable-annuity/VariableAnnuityUS"
+MODEL_PATH = REPO / "us/models/variable-annuity/VA_US_S"
 
 CENT = 0.005            # money displayed to 2 d.p.
 WEIGHT = 5e-7           # value weights displayed to 6 d.p.
@@ -100,7 +100,7 @@ CARRIED_STATE = {
 
 @pytest.fixture(scope="module")
 def variable_annuity():
-    """The VariableAnnuityUS model, closed after the module finishes."""
+    """The VA_US_S model, closed after the module finishes."""
     model = mx.read_model(MODEL_PATH)
     yield model
     model.close()
@@ -983,7 +983,7 @@ def test_the_checks_take_no_argument_and_return_a_bool(anchor):
 def test_pols_if_is_the_start_of_period_count_and_the_row_weight(anchor):
     """pols_if(t) opens month t, and is the weight on that same row's cash flows.
 
-    The library-wide convention (``TermLifeUS``, ``savings.CashValue_SE``): the printed
+    The library-wide convention (``Term_US_A``, ``savings.CashValue_SE``): the printed
     in-force column reconciles with the cash flows printed beside it.  The notes' own
     end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")`` and is one row further down.
     """
@@ -1015,7 +1015,7 @@ def test_pols_if_is_the_start_of_period_count_and_the_row_weight(anchor):
 def test_wd_free_pp_is_the_free_allowance_portion(excess):
     """`wd_free_pp` is the free-allowance portion; `wd_exempt_pp` the whole exempt part.
 
-    The chassis (`FixedDeferredAnnuityUS`) uses `wd_free_pp` for the allowance-covered
+    The chassis (`MYGA_US_S`) uses `wd_free_pp` for the allowance-covered
     portion of a withdrawal, and so does this model.  On this product a second exemption
     stacks on it -- no CDSC within `L` -- so the portion bearing no charge at all is the
     wider `wd_exempt_pp`, and it is that, not `wd_free_pp`, that complements

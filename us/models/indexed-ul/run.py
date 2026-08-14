@@ -1,4 +1,4 @@
-"""Run the IndexedULUS reference model and print its account value roll-forward.
+"""Run the IUL_US_S reference model and print its account value roll-forward.
 
     python us/models/indexed-ul/run.py            # baseline cell (point_id = 1)
     python us/models/indexed-ul/run.py 3          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "IndexedULUS")
+model = mx.read_model(Path(__file__).parent / "IUL_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

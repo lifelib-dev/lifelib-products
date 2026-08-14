@@ -1,4 +1,4 @@
-# GuaranteedULUS — reference liability cash flow model
+# ULSG_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/guaranteed-ul/technical-notes.md`](../../products/guaranteed-ul/technical-notes.md);
@@ -29,7 +29,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/guaranteed-ul/GuaranteedULUS")
+model = mx.read_model("us/models/guaranteed-ul/ULSG_US_S")
 model.Projection[1].result_av()
 ```
 
@@ -65,7 +65,7 @@ State variables the notes define at `t = 0` — `AV_0`, `SG_0`, `L_0`, `CumPrem_
 ## Inputs are external files
 
 The eight input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `GuaranteedULUS/` holds nothing but formulas:
+folder. `ULSG_US_S/` holds nothing but formulas:
 
 ```
 us/models/guaranteed-ul/
@@ -79,7 +79,7 @@ us/models/guaranteed-ul/
   rop_table.csv
   run.py
   README.md
-  GuaranteedULUS/              <- formulas only
+  ULSG_US_S/              <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -114,7 +114,7 @@ Reference and a reader Cells, both on `Data`:
 | `surr_charge_file` | `surr_charge_table()` | `surr_charge_table.csv` |
 | `rop_file` | `rop_table()` | `rop_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `GuaranteedULUS/` without
+**The trade-off:** the model is not portable on its own. Copy `ULSG_US_S/` without
 the CSVs and it will read fine, then fail on first evaluation. What you gain is that a
 diff of the model shows logic changes only, and an input can be edited or swapped in
 place — point `Data.mort_table_file` at another same-schema file and the projection
@@ -138,7 +138,7 @@ swappable by repointing their Reference.
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` and `savings/CashValue_SE` wherever those
-models have an analogue, and this library's own `UniversalLifeUS` — the chassis this
+models have an analogue, and this library's own `UL_US_S` — the chassis this
 product is built on — everywhere else: `pols_*` for policy counts, `av_*` for account
 values, plural nouns for cash flows, `*_rate` for rates, `*_pp` for per-policy amounts,
 `timing` and `kind` string arguments, `result_cf` / `result_pols` / `result_av`,
@@ -160,7 +160,7 @@ needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `risk_class` | `rate_class` | The name `TermLifeUS` and `UniversalLifeUS` both use for the underwriting class, and the one the model point table column carries. The only model point attribute renamed on cross-model grounds rather than for a reason internal to this product |
+| `risk_class` | `rate_class` | The name `Term_US_A` and `UL_US_S` both use for the underwriting class, and the one the model point table column carries. The only model point attribute renamed on cross-model grounds rather than for a reason internal to this product |
 | `l_t` | `pols_if(t)`, no offset | These notes define `l_t` at the **beginning** of month `t`; the universal life notes define theirs at the **end**, so the chassis has `pols_if(t) = l(t−1)` and this model does not |
 | `AV'(t)` | `av_pp_at(t, "BEF_COI")` | Measured **after the expense charges**, one step later than the chassis' `"BEF_FEE"` — a deviation the notes flag deliberately |
 | `CSV_t` | `ncsv_pp(t)` | The notes' `CSV_t` already nets indebtedness, so it is the chassis' *net* cash surrender value, not its `csv_pp` |

@@ -1,4 +1,4 @@
-# VariableULUS — reference liability cash flow model
+# VUL_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/variable-ul/technical-notes.md`](../../products/variable-ul/technical-notes.md);
@@ -6,7 +6,7 @@ the product it implements is specified in
 [`product-spec.md`](../../products/variable-ul/product-spec.md). Those notes build on the
 universal-life chassis in
 [`us/products/universal-life/technical-notes.md`](../../products/universal-life/technical-notes.md),
-and this model is the counterpart of [`UniversalLifeUS`](../universal-life/README.md) on
+and this model is the counterpart of [`UL_US_S`](../universal-life/README.md) on
 the same chassis.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
@@ -33,7 +33,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/variable-ul/VariableULUS")
+model = mx.read_model("us/models/variable-ul/VUL_US_S")
 model.Projection[1].result_av()
 ```
 
@@ -76,13 +76,13 @@ and net amount at risk → decrements, **death before lapse**.
 
 ## Where this model leaves the universal-life chassis
 
-`UniversalLifeUS` is the same chassis, and this model follows it name for name. Where
+`UL_US_S` is the same chassis, and this model follows it name for name. Where
 the two differ, the difference is the variable-UL notes' own instruction — the chassis
 file warns against carrying its recursions across unexamined, and each of these is a
 place where doing so would be wrong. The table is the complete list of differences, and
 the model docstring carries the same list in prose:
 
-| | `UniversalLifeUS` | `VariableULUS` | Source of the difference |
+| | `UL_US_S` | `VUL_US_S` | Source of the difference |
 |---|---|---|---|
 | Net amount at risk | `DB / (1 + i_gm) − AV'`, one month discounted at the guaranteed rate | `max(0, DB − AV')`, **no discount** | The VUL prospectuses define NAAR as death benefit − account value [S2]. **Sourced.** |
 | Investment return | one declared credited rate `i_cr` | per-subaccount `(1 + r)(1 − e_i/12)(1 − m/12)` on exogenous gross returns, plus a declared rate on the fixed option only | The account value is a separate-account vector |
@@ -101,7 +101,7 @@ gone for the same reason — there is no discount to hold.
 ## Inputs are external files
 
 The ten input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `VariableULUS/` holds nothing but formulas:
+folder. `VUL_US_S/` holds nothing but formulas:
 
 ```
 us/models/variable-ul/
@@ -117,7 +117,7 @@ us/models/variable-ul/
   surr_charge_table.csv
   run.py
   README.md
-  VariableULUS/                <- formulas only
+  VUL_US_S/                <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -152,7 +152,7 @@ checked out.
 | `prem_persistency_file` | `prem_persistency_table()` | `prem_persistency.csv` |
 | `surr_charge_file` | `surr_charge_table()` | `surr_charge_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `VariableULUS/` without
+**The trade-off:** the model is not portable on its own. Copy `VUL_US_S/` without
 the CSVs and it will read fine, then fail on first evaluation. What you gain is that a
 diff of the model shows logic changes only, and an input can be edited or swapped in
 place — point `Data.mort_table_file` at another same-schema file and the projection
@@ -173,7 +173,7 @@ follows, with no formula change.
 
 ## Naming
 
-Cells follow `UniversalLifeUS` — and through it lifelib's `basiclife/BasicTerm_S` and
+Cells follow `UL_US_S` — and through it lifelib's `basiclife/BasicTerm_S` and
 `savings/CashValue_SE` — wherever the concept is shared: `pols_*` for policy counts,
 `av_*` for account values, plural nouns for cash flows, `*_rate` for rates, `*_pp` for
 per-policy amounts, `timing` and `kind` string arguments that `raise ValueError` on
@@ -192,7 +192,7 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 | `AV_{t+1}`, `D_{t+1}` | `av_pp(t)`, `loan_bal_pp(t)` | The notes index end-of-month balances with `t+1`. Their death claim `DB_t^EOM − D_{t+1}` is two quantities of the *same* month |
 | `CSV_t = AV − SC − D` | `ncsv_pp(t)` | The chassis calls the debt-net figure `ncsv_pp`; `csv_pp` is the `AV − SC` intermediate |
 | `m` (M&E rate) and `m` (policy month) | `me_rate_ann` and the pricing path's `m` argument | The notes reuse the letter |
-| `l_t` | `pols_if(t)` | Both are start-of-month, so they coincide — unlike `UniversalLifeUS`, whose notes put `l(t)` at end of month |
+| `l_t` | `pols_if(t)` | Both are start-of-month, so they coincide — unlike `UL_US_S`, whose notes put `l(t)` at end of month |
 | `c_t` per $1,000 NAAR/month | `coi_rate(t)` | Not comparable with `CashValue_SE.coi_rate`, a rate per unit of account value |
 | `U` | `units()` — **no `t`** | Charges are on `F₀`, not the current face |
 | `MD_t` non-COI part | `maint_fee_pp(t)` | Income. `expenses(t)` is the insurer's own outgo, and the two must never be confused |
@@ -228,7 +228,7 @@ Because the pin lifts at month 2, point 1's output *steps* between months 1 and 
 value is "right"; the rule is a standardization and so is the pin, and
 `test_the_two_age_lookups_are_shipped_both_ways` holds the gap open in both directions.
 
-This is the pattern `TermLifeUS` uses for its `M(1)` divergence.
+This is the pattern `Term_US_A` uses for its `M(1)` divergence.
 
 A second, smaller gap sits in the same worked example and is pinned the same way. The
 notes' table totals the two subaccounts by adding the **displayed** figures: 30,482.82 +
@@ -360,7 +360,7 @@ no loans, starting from zero.
 It is switched **off** by `Projection.dyn_behavior_on = False`, which makes `φ = 1`,
 `λ = 1` and `ρ = 1`. That is what lets the base deterministic run pay the planned
 premium in full, which is what the worked example does ("planned premium $500/month
-paid"). `TermLifeUS` switches conversion off for exactly the same reason. Switch it on
+paid"). `Term_US_A` switches conversion off for exactly the same reason. Switch it on
 with one assignment:
 
 ```python

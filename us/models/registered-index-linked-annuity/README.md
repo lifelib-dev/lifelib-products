@@ -1,4 +1,4 @@
-# RegisteredIndexLinkedAnnuityUS — reference liability cash flow model
+# RILA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/registered-index-linked-annuity/technical-notes.md`](../../products/registered-index-linked-annuity/technical-notes.md);
@@ -18,7 +18,7 @@ the product it implements is specified in
 > before drawing any conclusion from the numbers.
 
 This model is built on the **deferred annuity base chassis**,
-[`FixedDeferredAnnuityUS`](../fixed-deferred-annuity/README.md), and shares its cells
+[`MYGA_US_S`](../fixed-deferred-annuity/README.md), and shares its cells
 names for every concept the two have in common. Where the RILA notes restate a recursion
 with product-specific parameters, this model follows the RILA notes rather than the
 chassis — and in three places that means the chassis mechanic is **absent**, not merely
@@ -35,7 +35,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/registered-index-linked-annuity/RegisteredIndexLinkedAnnuityUS")
+model = mx.read_model("us/models/registered-index-linked-annuity/RILA_US_S")
 model.Projection[1].result_iv()
 ```
 
@@ -85,7 +85,7 @@ resets annually. A daily sub-grid is needed only for a path-dependent Performanc
 election module, which is not implemented.
 
 **`duration(t) = t // 12`, not `ceil(t/12) - 1`.** That is the notes' own `cy(t) =
-floor(t/12)`, and it differs by one step from `FixedDeferredAnnuityUS`. The reason is the
+floor(t/12)`, and it differs by one step from `MYGA_US_S`. The reason is the
 timing convention: the MYGA chassis takes elective transactions at the *beginning* of the
 month, so month 12 belongs to the contract year that is opening; here `t` is a month
 *end*, so month 12 **is** the first anniversary and one complete contract year has
@@ -106,7 +106,7 @@ rate `q_m(t) = 1 - (1 - q_x)^(1/12)` is an exposure rate for the whole interval
 the contract year that interval lies inside, which is `ceil(t/12)`. So `age(t)` and
 `inflation_factor(t)` are keyed on a second cells, **`duration_bom(t) = ceil(t/12) - 1`**
 — the complete contract years at the *start* of month `t`, and the same reading
-`FixedDeferredAnnuityUS` uses for its own `duration(t)`.
+`MYGA_US_S` uses for its own `duration(t)`.
 
 The difference is one month and it appears only in anniversary months, but it is not
 cosmetic: on `duration(t)` the attained age would step at month 12, leaving eleven months
@@ -123,7 +123,7 @@ anniversary after the oldest owner's 90th birthday and ten years from issue [S2]
 ## Inputs are external files
 
 The seven input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `RegisteredIndexLinkedAnnuityUS/` holds nothing but formulas:
+folder. `RILA_US_S/` holds nothing but formulas:
 
 ```
 us/models/registered-index-linked-annuity/
@@ -136,7 +136,7 @@ us/models/registered-index-linked-annuity/
   withdrawal_table.csv
   run.py
   README.md
-  RegisteredIndexLinkedAnnuityUS/    <- formulas only
+  RILA_US_S/    <- formulas only
     __init__.py                         (model docstring)
     _system.json
     Data/__init__.py                    (reads the CSVs, once per model)
@@ -171,7 +171,7 @@ a reader Cells, both on `Data`:
 | `withdrawal_file` | `withdrawal_table()` | `withdrawal_table.csv` |
 
 **The trade-off:** the model is not portable on its own. Copy
-`RegisteredIndexLinkedAnnuityUS/` without the CSVs and it will read fine, then fail on
+`RILA_US_S/` without the CSVs and it will read fine, then fail on
 first evaluation. What you gain is that a diff of the model shows logic changes only, and
 an input can be edited or swapped in place — point `Data.mort_table_file` at another
 same-schema file and the projection follows, with no formula change.
@@ -195,7 +195,7 @@ parameter set is dead code.
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` and `savings/CashValue_SE`, and this
-library's `FixedDeferredAnnuityUS`, wherever those have an analogue: `pols_*` for policy
+library's `MYGA_US_S`, wherever those have an analogue: `pols_*` for policy
 counts, `av_*` for account values, plural nouns for cash flows, `*_rate` for rates, `*_pp`
 for per-contract amounts, `*_at(t, timing)` for a quantity read at a point inside the
 month, plus `model_point`, `age_at_entry`, `sex`, `policy_term`, `proj_len`,
@@ -208,7 +208,7 @@ model once spelled its own way:
   that same row's cash flows — so `premiums(t) / premium_pp()`,
   `withdrawals(t) / wd_payment_pp(t)` and `expenses(t)` over the per-contract maintenance
   charge all return the `pols_if` column of `result_cf()`. `pols_if(1) = pols_if_init()`,
-  exactly as in `TermLifeUS`. The notes' own **end**-of-month `l(t)` is not lost: it is
+  exactly as in `Term_US_A`. The notes' own **end**-of-month `l(t)` is not lost: it is
   `pols_if_at(t, "AFT_DECR")`, the last point of the decrement chain, and it is what
   `result_pols()` prints as `pols_if_aft_decr`.
 - **`lapse_rate(t)` is annual and `lapse_rate_mth(t)` is monthly**, matching the
@@ -237,7 +237,7 @@ Black-Scholes, and the deferred annuity chassis):
 | `M_sc`, `M_iv` vs `M(t)` | `lapse_rate_sc_mult`, `lapse_iv_mult` / *(absent)* | On the chassis `M(t)` is a **contract** market value adjustment; here the `M`s are lapse multipliers and there is no contract MVA at all |
 
 One shared name takes a different argument from the chassis, deliberately.
-`FixedDeferredAnnuityUS` keys `free_wd_base(y)` and `free_wd_allow(y)` on the contract
+`MYGA_US_S` keys `free_wd_base(y)` and `free_wd_allow(y)` on the contract
 **year**; here they take the policy **month**, because the free-withdrawal base is
 snapshotted from the Account Value at the most recent anniversary *before* that month's
 transaction — `av_pp_at(12 * duration(t), "BEF_WD")` — and keying on `t` keeps one index
@@ -304,7 +304,7 @@ at the term midpoint, with the illustrative $8,000 as the only withdrawal. Both 
 hold: 2% taken at months 12 and 24 would leave less than $100,000 of notional at month 36,
 and the whole worked example is built on that figure.
 
-Rather than pick one, the model ships both, the way `TermLifeUS` ships its `M(1)`
+Rather than pick one, the model ships both, the way `Term_US_A` ships its `M(1)`
 divergence. `wd_rate_ann` is a **model point column**, not a Reference: points 1 and 2 set
 it to 0 and reproduce the worked example to the cent; point 3 is otherwise identical to
 point 1 and runs the behavioural rule at 2%. A test pins the gap open in both directions.
@@ -344,7 +344,7 @@ The model computes the factor and reproduces the dollars; the test asserts
 The notes' cash flow ledger indexes the single premium and the acquisition expense at
 `t = 0`, and `inv_amt_pp(0)`, `rop_pp(0)` and `pols_if(0)` are the initial branches of the
 recursions. So `result_cf()` runs `t = 0 … proj_len()` and `net_cf(0) = +93,800` on the
-anchor cell. This matches `FixedDeferredAnnuityUS` and differs from `TermLifeUS`, which
+anchor cell. This matches `MYGA_US_S` and differs from `Term_US_A`, which
 starts at 1 because its premium falls at the beginning of policy year 1.
 
 ## There is no `commissions` cells
@@ -371,7 +371,7 @@ pols_if(t) − pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 closes for every `t`, including the last — `pols_if(t)` opens month `t` and `pols_if(t+1)`
 opens the next, which at the Maturity Date is zero. Without it the block would appear to lose
 lives with no cause. The name follows `BasicTerm_S.pols_maturity` and the construction
-follows `TermLifeUS`. The payout stream bought at that date is **not** derived here: it is
+follows `Term_US_A`. The payout stream bought at that date is **not** derived here: it is
 the immediate-annuity chassis, restricted to the two forms this contract offers, and with
 no refund forms at all [S2].
 

@@ -1,4 +1,4 @@
-# FixedIndexedAnnuityUS — reference liability cash flow model
+# FIA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/fixed-indexed-annuity/technical-notes.md`](../../products/fixed-indexed-annuity/technical-notes.md);
@@ -25,7 +25,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/fixed-indexed-annuity/FixedIndexedAnnuityUS")
+model = mx.read_model("us/models/fixed-indexed-annuity/FIA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -58,7 +58,7 @@ govern:**
 > the rider charge at the end of each contract year, the annual benefit base update, and
 > the annual lifetime withdrawal. A monthly grid is needed only for excluded variants.
 
-Contrast [`FixedDeferredAnnuityUS`](../fixed-deferred-annuity/README.md), whose `t` counts
+Contrast [`MYGA_US_S`](../fixed-deferred-annuity/README.md), whose `t` counts
 **months**: that chassis credits interest daily and needs a grid fine enough to resolve a
 30-day guarantee-period-end window. Here a monthly grid would buy nothing but the variants
 the notes exclude — monthly-sum crediting, Athene's monthly charge deduction, daily interim
@@ -72,7 +72,7 @@ Mortality over contract year `t` consequently reads the table one year lower, at
 ## Inputs are external files
 
 The seven input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `FixedIndexedAnnuityUS/` holds nothing but formulas:
+folder. `FIA_US_S/` holds nothing but formulas:
 
 ```
 us/models/fixed-indexed-annuity/
@@ -85,7 +85,7 @@ us/models/fixed-indexed-annuity/
   withdrawal_table.csv
   run.py
   README.md
-  FixedIndexedAnnuityUS/       <- formulas only
+  FIA_US_S/       <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -119,7 +119,7 @@ a reader Cells, both on `Data`:
 | `rate_scenario_file` | `rate_scenario()` | `rate_scenario.csv` |
 | `withdrawal_file` | `withdrawal_table()` | `withdrawal_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `FixedIndexedAnnuityUS/`
+**The trade-off:** the model is not portable on its own. Copy `FIA_US_S/`
 without the CSVs and it will read fine, then fail on first evaluation. What you gain is that
 a diff of the model shows logic changes only, and an input can be edited or swapped in place
 — point `Data.mort_table_file` at another same-schema file and the projection follows, with
@@ -144,7 +144,7 @@ real basis in by repointing `Data.mort_table_file`.
 
 ## Naming
 
-Cells follow [`FixedDeferredAnnuityUS`](../fixed-deferred-annuity/README.md) — the deferred
+Cells follow [`MYGA_US_S`](../fixed-deferred-annuity/README.md) — the deferred
 annuity chassis this product sits on — and through it lifelib's `basiclife/BasicTerm_S` and
 `savings/CashValue_SE`: `pols_*` for policy counts, `av_*` for account values, plural nouns
 for cash flows, `*_rate` for rates, `*_pp` for per-contract amounts, `*_at(t, timing)` for a
@@ -159,9 +159,9 @@ Six cases needed care:
 | `MGV(t)` | `mgsv_pp` | The chassis calls the same Model #805 floor `MGSV`. Both source files say in terms it is **one quantity under two labels**; the chassis name wins so the two annuity models share it. See below — the *recursion* is not shared |
 | `E(t)` | `wd_excess_pp` | On the chassis `E(t)` is the charge base. Here it is the **excess withdrawal**, the part above the guaranteed amount. See below |
 | `X(t)` | `wd_charge_base_pp` / `surr_charge_base_pp` | The chassis's `wd_excess_pp` / `surr_excess_pp`, renamed because `wd_excess_pp` is taken |
-| `x + t` | `age(t)` | The age **at** the anniversary, not at the start of the period as in `TermLifeUS` and the chassis |
+| `x + t` | `age(t)` | The age **at** the anniversary, not at the start of the period as in `Term_US_A` and the chassis |
 | `M_shock(t)` | *(absorbed)* | The notes state the shock as three absolute rates, not as a multiplier; see below |
-| `d`, `c` | `trigger_rate`, `cap_rate` | `d` is deaths in `TermLifeUS` and the floor's withdrawal deduction on the chassis; `c` is the floor's contract charge there |
+| `d`, `c` | `trigger_rate`, `cap_rate` | `d` is deaths in `Term_US_A` and the floor's withdrawal deduction on the chassis; `c` is the floor's contract charge there |
 
 Three shared names are spelled the library's way rather than the notes': the
 free-allowance portion of a withdrawal is `wd_free_pp`, the chassis name; the mortality
@@ -179,7 +179,7 @@ name is kept rather than split.
 
 The technical notes define `l(t)` as the in-force probability at the **end** of contract
 year `t`. Across this library `pols_if(t)` means the other thing: the number in force at the
-**start** of period `t` — `TermLifeUS` has `pols_if(1) == pols_if_init()`, and lifelib's
+**start** of period `t` — `Term_US_A` has `pols_if(1) == pols_if_init()`, and lifelib's
 `savings/CashValue_SE` has `pols_if(t)` equal to `pols_if_at(t, "BEF_MAT")`. Both quantities
 are needed and neither is discarded, so they are kept under different names:
 
@@ -303,7 +303,7 @@ w_shock = 0.05   GLWB activated (phase = INCOME)
 Carrying `M_shock` as a separate factor would require inventing a denominator, so
 `lapse_rate_base(t)` returns `shock_lapse_rate(t)` in the year the surrender charge expires
 and `lapse_rate(t)` multiplies only by `lapse_moneyness_factor(t)`. The name
-`shock_lapse_rate` follows `TermLifeUS`. Model points 1, 9 and 6 exercise the three rates
+`shock_lapse_rate` follows `Term_US_A`. Model points 1, 9 and 6 exercise the three rates
 respectively, and the notes call this "the single most important behavioral fact in the
 product".
 

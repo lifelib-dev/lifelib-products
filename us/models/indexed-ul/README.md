@@ -1,4 +1,4 @@
-# IndexedULUS — reference liability cash flow model
+# IUL_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
 [`us/products/indexed-ul/technical-notes.md`](../../products/indexed-ul/technical-notes.md);
@@ -6,7 +6,7 @@ the product it implements is specified in
 [`product-spec.md`](../../products/indexed-ul/product-spec.md). The shared universal
 life mechanics those notes defer to are in
 [`us/products/universal-life/technical-notes.md`](../../products/universal-life/technical-notes.md),
-and their executable form is [`UniversalLifeUS`](../universal-life/).
+and their executable form is [`UL_US_S`](../universal-life/).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 10.00% cap and 2.00% guaranteed cap, 100% participation
@@ -29,7 +29,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/indexed-ul/IndexedULUS")
+model = mx.read_model("us/models/indexed-ul/IUL_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -59,7 +59,7 @@ horizon therefore truncates the run rather than terminating the contract, and
 ## Inputs are external files
 
 The seven input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `IndexedULUS/` holds nothing but formulas:
+folder. `IUL_US_S/` holds nothing but formulas:
 
 ```
 us/models/indexed-ul/
@@ -72,7 +72,7 @@ us/models/indexed-ul/
   surr_charge_table.csv
   run.py
   README.md
-  IndexedULUS/                 <- formulas only
+  IUL_US_S/                 <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -106,7 +106,7 @@ Reference and a reader Cells, both on `Data`:
 | `lapse_table_file` | `lapse_table()` | `lapse_table.csv` |
 | `surr_charge_file` | `surr_charge_table()` | `surr_charge_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `IndexedULUS/` without the
+**The trade-off:** the model is not portable on its own. Copy `IUL_US_S/` without the
 CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
 of the model shows logic changes only, and an input can be edited or swapped in place —
 point `Data.mort_table_file` at another same-schema file and the projection follows,
@@ -127,7 +127,7 @@ these notes give them in closed form instead:
 | `model_point_table.csv` | Five model points, all on the notes' anchor configuration M45 / NT / $250,000 / Option A / GPT / $10,000 planned annual premium | anchor cell from the notes' model point attribute table; the **[std]** example premium |
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 of net amount at risk, policy years 1–76 for M / NT / 45 | **illustrative [std]** — the notes set the guaranteed basis at 2017 CSO ANB ultimate [REG-R17], which is licensed and is *not* reproduced here |
 | `corridor_factors.csv` | IRC 7702(d)(2) applicable percentages, attained ages 0–121 | sourced [R4] |
-| `mort_table.csv` | Best-estimate annual mortality by age | **illustrative [std]**, *not* the 2015 VBT the notes recommend [REG-R18]; the same table `UniversalLifeUS` ships, so the chassis and this model share a basis |
+| `mort_table.csv` | Best-estimate annual mortality by age | **illustrative [std]**, *not* the 2015 VBT the notes recommend [REG-R18]; the same table `UL_US_S` ships, so the chassis and this model share a basis |
 | `class_factor_table.csv` | Rate-class factors for the spec's seven classes | **[std]** |
 | `lapse_table.csv` | Base annual lapse 6% years 1–10, 4% after | **[std]** placeholders; calibrate to [REG-R20][REG-R21] |
 | `surr_charge_table.csv` | $25.00 per $1,000 of initial face, 10-year linear run-off | period sourced [S1][S5][S7]; the dollar scale is **[std]** (spec F17) |

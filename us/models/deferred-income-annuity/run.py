@@ -1,4 +1,4 @@
-"""Run the DeferredIncomeAnnuityUS reference model and print its cash flow statement.
+"""Run the DIA_US_S reference model and print its cash flow statement.
 
     python us/models/deferred-income-annuity/run.py       # anchor cell (point_id = 1)
     python us/models/deferred-income-annuity/run.py 5     # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "DeferredIncomeAnnuityUS")
+model = mx.read_model(Path(__file__).parent / "DIA_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

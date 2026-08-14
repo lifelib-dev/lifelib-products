@@ -1,4 +1,4 @@
-"""Run the ImmediateAnnuityUS reference model and print its cash flow statement.
+"""Run the SPIA_US_S reference model and print its cash flow statement.
 
     python us/models/immediate-annuity/run.py            # anchor cell (point_id = 1)
     python us/models/immediate-annuity/run.py 8          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "ImmediateAnnuityUS")
+model = mx.read_model(Path(__file__).parent / "SPIA_US_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
