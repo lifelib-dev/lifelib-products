@@ -41,12 +41,60 @@ are defined in the [top-level README](../README.md).
 modelx model folders, CSV inputs, a `run.py`, and a README mapping every cells back to the
 notes section it implements.
 
-| Product | Model | Verified against |
-|---|---|---|
-| term-life | [`models/term-life`](models/term-life/README.md) — `TermLifeUS` | the notes' 12-row worked example, asserted to the cent |
+All twelve products are implemented. Every model reproduces its own technical notes'
+worked example, asserted cell by cell to the precision the notes display.
 
-The remaining products are not yet implemented. Run the suite with
-`python -m pytest tests -q` from the repository root; see
+| Product | Model | Grid | Verified against |
+|---|---|---|---|
+| term-life | [`models/term-life`](models/term-life/README.md) — `TermLifeUS` | annual | the notes' 12-row worked example, to the cent |
+| whole-life | [`models/whole-life`](models/whole-life/README.md) — `WholeLifeUS` | annual | all 15 steps of the dividend/PUA worked example, to the cent |
+| universal-life | [`models/universal-life`](models/universal-life/README.md) — `UniversalLifeUS` | monthly | all 3 monthiversary rows plus the month-1 trace at full precision |
+| indexed-ul | [`models/indexed-ul`](models/indexed-ul/README.md) — `IndexedULUS` | monthly | both index scenarios and both variant credit bases |
+| variable-ul | [`models/variable-ul`](models/variable-ul/README.md) — `VariableULUS` | monthly | the full worked example incl. the 60/40 net premium split and pro-rata deduction |
+| guaranteed-ul | [`models/guaranteed-ul`](models/guaranteed-ul/README.md) — `GuaranteedULUS` | monthly | all 5 rows across both accounts, plus the forgone-deduction regime |
+| fixed-deferred-annuity | [`models/fixed-deferred-annuity`](models/fixed-deferred-annuity/README.md) — `FixedDeferredAnnuityUS` | monthly | the 7-month table, both surrender traces, and the Nationwide geometric-MVA factors |
+| fixed-indexed-annuity | [`models/fixed-indexed-annuity`](models/fixed-indexed-annuity/README.md) — `FixedIndexedAnnuityUS` | monthly | all 16 rows, the surrender trace, and the GLWB depletion arithmetic |
+| variable-annuity | [`models/variable-annuity`](models/variable-annuity/README.md) — `VariableAnnuityUS` | monthly | both subaccounts at all 6 steps, plus all three memo lines |
+| registered-index-linked-annuity | [`models/registered-index-linked-annuity`](models/registered-index-linked-annuity/README.md) — `RegisteredIndexLinkedAnnuityUS` | monthly | all 6 rows × 13 columns of the AG 54 interim-value table, plus its trace |
+| immediate-annuity | [`models/immediate-annuity`](models/immediate-annuity/README.md) — `ImmediateAnnuityUS` | monthly | both survivor-reduction trigger columns at 7 payment dates, plus all 5 traces |
+| deferred-income-annuity | [`models/deferred-income-annuity`](models/deferred-income-annuity/README.md) — `DeferredIncomeAnnuityUS` | monthly | both premium slices, the derived guarantee period, and all 9 projection rows |
+
+Model names are CamelCase of the product folder slug plus `US` (`indexed-ul` →
+`IndexedULUS`); `tests/test_model_conventions.py` asserts the rule, so the table above
+cannot drift away from the directories on disk.
+
+Every model follows the same shape, and that shape is enforced rather than merely
+described: two Spaces (`Data` reads the input CSVs once per model, `Projection` is
+parameterized by `point_id`), inputs as **external** CSVs beside `run.py` so the model
+folder holds nothing but formulas, and a `Projection` docstring carrying the mapping from
+the technical notes' actuarial symbols to the cells names.
+[`tests/test_model_conventions.py`](../tests/test_model_conventions.py) applies that
+contract to every model in the registry; each model additionally has its own test module
+for its worked example and its product-specific invariants — the notes' "Known modeling
+pitfalls" sections are written up there as tests.
+
+### Shared vocabulary
+
+Cells names come from lifelib — `basiclife/BasicTerm_S` first, then `savings/CashValue_SE`
+— so that a name means the same thing in every model here and the same thing it means in
+lifelib. Where a cross-model review found one concept under two names, the conflict was
+settled once and the ruling is now asserted, not merely documented:
+
+| Convention | Settled as |
+|---|---|
+| In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` |
+| Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly |
+| Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` |
+| Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` |
+| Account value | `av_pp_at(t, timing)` / `av_at(t, timing)` with the `CashValue_SE` timing strings; `prem_to_av_pp` is the premium credited to it |
+| Withdrawals | `withdrawals(t)`, in a `withdrawals` column — an owner election, not a claim |
+| Benefit columns | `claims_death`, `claims_lapse`, `claims_maturity`, … named for the `kind` argument that produces them |
+
+Absences are product facts, not gaps: a SPIA has no `premiums` and no lapse decrement, the
+payout annuities model `lives_if` (annuitant survival) alongside `pols_if` (contracts with
+an obligation open), and whole life has a cash value `cv_pp`, not an account value.
+
+Run the suite with `python -m pytest tests -q` from the repository root; see
 [requirements.txt](../requirements.txt) for the modelx version floor.
 
 ## Chassis relationships

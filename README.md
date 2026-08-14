@@ -5,10 +5,10 @@ country**, together with the documentation needed to build **reference implement
 of liability cash flow projection models** (lifelib/modelx style), organized by product
 type and country.
 
-**Status:** Draft, 2026-08-08. Current coverage: United States (6 individual life and
+**Status:** Draft, 2026-08-14. Current coverage: United States (6 individual life and
 6 individual annuity product types) and United Kingdom (7 product types, including
-pension annuities). The first executable reference model, `us/models/term-life`, is
-shipped; the rest are a planned follow-on (see Roadmap).
+pension annuities). **All twelve U.S. products now ship an executable reference model**
+under `us/models/`; the UK models are a planned follow-on (see Roadmap).
 
 ---
 
@@ -95,10 +95,11 @@ business (bulk purchase annuities, pension risk transfer) are out of scope in bo
 ## Roadmap
 
 - **Reference implementations**: `<country>/models/<product-type>/` — executable
-  liability cash flow projection models built from the technical notes. **First one
-  shipped:** [`us/models/term-life`](us/models/term-life/README.md) (modelx; its worked
-  example is asserted to the cent by `tests/`). The remaining eighteen products follow
-  the same pattern.
+  liability cash flow projection models built from the technical notes. **All twelve U.S.
+  products are shipped** (modelx; each one's worked example is asserted cell by cell by
+  `tests/`, and a shared conventions suite enforces the house style across the set — see
+  [us/README.md](us/README.md#executable-models)). The seven UK products follow the same
+  pattern.
 - **Additional countries**, and additional product families (group insurance,
   institutional/pension risk transfer business) as coverage grows.
 
