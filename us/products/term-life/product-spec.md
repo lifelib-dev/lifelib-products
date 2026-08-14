@@ -437,25 +437,6 @@ Listed for completeness; none is modeled in the reference implementation:
   [REG-R16]. For term (no surrender value) this is 92.81% of the CRVM/VM-20 quantity capped
   at statutory — a scalar wrapper on the statutory engine [REG-R16].
 
-- **Statutory accounting and capital [REG-R78][REG-R89][REG-R128].** The framework — the SSAP
-  hierarchy, the annual statement exhibits, AVR/IMR, asset adequacy analysis and the RBC
-  formula — is in `us/regulatory/statutory-accounting-and-capital.md` and
-  `us/regulatory/technical-notes.md`; the product-specific consequences and the model-output
-  contract are in `technical-notes.md`, "Statutory accounting and capital". What is specific to
-  this product: term is a **life contract** in every case — nothing but mortality risk, no
-  investment element — so considerations are **premium income** and the reserve reports in
-  **Exhibit 5** and in the **Term Life** column of the Analysis of Operations, never Exhibit 7
-  [REG-R78][REG-R79][REG-R89][REG-R90]. Acquisition costs are **expensed as incurred with no
-  DAC asset**, which is why a term block shows first-year surplus strain [REG-R74][REG-R75].
-  Under VM-20 term is its own **reserving category** and the **deterministic exclusion test is
-  not available** for term policies or term riders, so a deterministic reserve is computed in
-  every case [REG-R3]. In RBC, **C-2 mortality** dominates and is driven by net amount at risk —
-  face in force less reserves, net of reinsurance — with level term on guaranteed premiums
-  falling in the **"term without pricing flexibility"** bucket that the instructions name by
-  example [REG-R128][REG-R133][REG-R142]; the AG 48 Primary Security shortfall is added outside
-  the covariance adjustment and raises Authorized Control Level dollar-for-dollar
-  [REG-R128][REG-R11].
-
 - **Interstate compact.** The specimen contract is issued under IIPRC (Interstate Insurance
   Product Regulation Commission) standards [S6]; state variations (policy forms, suicide
   periods, NY entities such as William Penn and US Life) apply to essentially all

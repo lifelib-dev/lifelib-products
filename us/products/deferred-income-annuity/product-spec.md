@@ -5,11 +5,11 @@
 **Scope note.** A *standardized composite specification* for reference liability cash-flow modeling; not any
 single insurer's product. [S#] (primary product documents) and [R#] (regulatory/actuarial references) are
 numbered per `us/_research/deferred-income-annuity.md`. [REG-R#] resolves against the cross-product library
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering runs R1–R157 as **one** space:
-R1–R34 of life origin (provenance `us/_research/regulatory-actuarial.md`), R35–R72 annuity-specific
-(provenance `us/_research/regulatory-actuarial-annuities.md`), R73–R142 statutory accounting and capital and
-**R150–R157 the AP&P Manual appendix and actuarial-guideline prints read on 2026-08-06** (both with provenance
-`us/regulatory/sources.md`), with **R114–R124 and R143–R149 unused by design**.
+`us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157** as **one**
+space, with most of the **R73–R149** block unused: R1–R34 of life origin (provenance
+`us/_research/regulatory-actuarial.md`), R35–R72 annuity-specific (provenance
+`us/_research/regulatory-actuarial-annuities.md`), and
+**R150–R157 the AP&P Manual appendix and actuarial-guideline prints read on 2026-08-06**.
 **[std]** marks standardizations introduced
 for the reference implementation; every [std] table row carries a footnote giving the rationale and the
 observed range. [unverified] marks claims not confirmed against a retrieved document.
@@ -525,27 +525,14 @@ subject to CARVM, where any elective benefits … are available to the contract 
 size or premium threshold**, so the ±5-year income start date adjustment, payment acceleration and (extended case)
 commutation each put the contract inside it — while a cell offering **none** of them, such as a **Life Only QLAC**,
 falls outside AG 33 although CARVM still applies, AG 33's own *Definitions* expressly treating a deferred annuity
-"where no benefit options are available" as non-elective [REG-R151]. Three consequences matter at specification level
-and are worked in `technical-notes.md`, "CARVM under AG 33": the start-date adjustment **changes the valuation
+"where no benefit options are available" as non-elective [REG-R151]. Three consequences matter at specification
+level: the start-date adjustment **changes the valuation
 interest rate**, because the annuitization guarantee duration runs from issue to the assumed commencement date and
 the ±5 years can cross A-820 ¶8.c.i's guarantee-duration bands; a **commutation right bars** AG 33 *Text* 4(B)'s
 annuitization treatment for the payments it can reach; and the guideline's **7% expense-allowance floor has no base**
 here, being expressed on an accumulation fund this product does not have. AG 33 carries **no formulas, tables or
 factors** beyond that 7% cap and its 1998–2000 grade-in percentages, and **never cites SVL §5a by number** — the
 §5a pairing this library uses is its own, made on content [REG-R151].
-
-**Statutory accounting and capital.** Framework and calculations are in `us/regulatory/`; the DIA-specific treatment is
-in this directory's `technical-notes.md`, "Statutory accounting and capital". Product-specific only: a life-contingent
-DIA is a **life contract from issue** although no life-contingent payment falls due for 13 months to 30 years, so its
-reserve reports in **Exhibit 5** and its flexible premiums are **premium income, gross when due**, whereas a
-period-certain-only DIA is a **deposit-type contract** in Exhibit 7, "Annuities Certain", its considerations credited
-direct to reserve [REG-R78][REG-R79][REG-R80][REG-R89]. That classification is fixed at inception and cannot change
-[REG-R78] — safe here, the income option being irrevocable [S1][S2][S4] — and Exhibit 5 keeps a contract that was
-life-contingent at issue even after the annuitant dies and only guaranteed payments remain [REG-R89]. On capital, the
-**C-2 longevity** charge names "deferred income annuities that will enter pay status" expressly and is
-**reserve-based**, **C-2 mortality does not apply** (no face amount, so no net amount at risk), and C-3a takes the "not
-withdrawable" bucket, the contract having no surrender value, withdrawal or loan [REG-R128][REG-R142] — all of it off
-the **2024** RBC instructions, a sold NAIC publication whose **2025 edition could not be parsed** [REG-R129].
 
 **Annuity valuation mortality.** Model #821 recognizes the 2012 Individual Annuity Reserving (2012 IAR)
 table, a generational table combining the 2012 IAM Period Table with Projection Scale G2 [REG-R59]; VM-M

@@ -5,10 +5,10 @@ country**, together with the documentation needed to build **reference implement
 of liability cash flow projection models** (lifelib/modelx style), organized by product
 type and country.
 
-**Status:** Draft, 2026-08-06. Current coverage: United States (6 individual life and
+**Status:** Draft, 2026-08-08. Current coverage: United States (6 individual life and
 6 individual annuity product types) and United Kingdom (7 product types, including
-pension annuities), each with the country's accounting and capital framework. Reference
-model implementations are a planned follow-on (see Roadmap).
+pension annuities). The first executable reference model, `us/models/term-life`, is
+shipped; the rest are a planned follow-on (see Roadmap).
 
 ---
 
@@ -24,10 +24,6 @@ model implementations are a planned follow-on (see Roadmap).
       sources.md                     numbered source list for this product's documents
   models/                            executable models built from the technical notes
     <product-type>/                  README.md, run.py, and the modelx model folder
-  regulatory/                        the accounting and capital framework the projections feed
-    statutory-accounting-and-capital.md   what the items are, which products they bite
-    technical-notes.md               how to calculate them
-    sources.md
   references/
     regulatory-and-actuarial-references.md
                                      curated cross-product bibliography (NAIC, IRC, SOA, AAA, ASB)
@@ -44,13 +40,6 @@ model implementations are a planned follow-on (see Roadmap).
   example, valuation pointers, and key sensitivities.
 - **`sources.md`** lists every source cited by that product's documents, with URLs,
   access dates, and whether the document was actually retrieved.
-- **`regulatory/`** specifies the accounting and capital framework that sits on top of
-  the projections — what a supervisor requires, and what the model must therefore
-  produce. The file names are shared across countries; what they hold is not. The U.S.
-  files cover statutory accounting and RBC; the UK, which has no statutory accounting in
-  that sense, covers the Solvency UK prudential balance sheet, the FRS 102/103-or-IFRS 17
-  statutory accounts, and tax. Each product's `technical-notes.md` carries its own
-  per-product section cross-referencing it.
 - **`_research/`** holds the underlying research notes. Every sourced fact in the
   product documents traces back to a source entry in these files. They are provenance:
   keep them, do not renumber their source lists.
@@ -93,8 +82,8 @@ Each country section is built in three passes:
 
 | Country | Products | Status |
 |---|---|---|
-| [United States](us/README.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted; `regulatory/` covers statutory accounting and RBC |
-| [United Kingdom](uk/README.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs + technical notes drafted; `regulatory/` covers Solvency UK, the statutory accounts and tax |
+| [United States](us/README.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted |
+| [United Kingdom](uk/README.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs + technical notes drafted |
 
 Scope note: both country sections cover individual life insurance and annuities, but
 the annuity coverage differs by market. The U.S. section covers the individual deferred

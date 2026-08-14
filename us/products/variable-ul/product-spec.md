@@ -387,27 +387,6 @@ contract — an open question, see above [REG-R155]. GMDB reserves for variable 
 addressed by AG XXXVII, separate-account investments by AG XXIII [R7]. Current edition:
 Valuation Manual, Jan. 1, 2026 [REG-R3]; the SVL is Model 820 [REG-R1].
 
-**Statutory accounting and capital.** The framework — statutory accounting
-principles, the annual statement exhibits, AVR/IMR and risk-based capital — is in
-`us/regulatory/statutory-accounting-and-capital.md` and
-`us/regulatory/technical-notes.md`; what is specific to VUL is in
-`technical-notes.md`, "Statutory accounting and capital". In outline: VUL is a
-**life contract**, classified at inception and immutably [REG-R78], so premiums
-are premium income rather than a direct credit to reserve and reserves report in
-**Exhibit 5**, with a **Variable Universal Life** column in the Analysis of
-Operations [REG-R89][REG-R90]. SSAP No. 56 splits the contract across two balance
-sheets: subaccount assets are separate account and at **fair value**, while
-premiums, benefits, commissions, the charges collected and any **minimum death
-benefit guarantee reserve** are **general account**, and separate account surplus
-may not become negative [REG-R83]. A fair-value separate account needs **no IMR
-and no AVR except on seed money** [REG-R83]; the fixed option and loan account
-keep a general-account AVR/IMR leg [S1][S3][REG-R85]. Acquisition costs are
-**expensed as incurred — there is no statutory DAC** [REG-R75]. For capital, C-2
-mortality runs on net amount at risk as defined by the **annual statement**, under
-a **pricing-flexibility** categorisation that must be demonstrated rather than
-assumed [REG-R128][REG-R133][REG-R142], and C-4a charges **separate account
-liabilities** instead of variable premiums [REG-R128].
-
 **Illustrations.** The Life Insurance Illustrations Model Regulation (Model 582)
 explicitly excludes variable life [REG-R4]; VUL sales illustrations are instead
 governed by the securities disclosure regime (N-6/498A) [R1][R2] and FINRA

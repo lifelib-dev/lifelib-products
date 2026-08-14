@@ -421,22 +421,3 @@ qualifying-policy rules]. The policyholder chargeable-event-gains regime (ITTOIA
 Chapter 9, with HMRC's IPTM as the working interpretation) bites surrender-value-bearing
 designs — here only the legacy unit-linked variation [S15] — not the modern protection-only
 cells, which have no surrender value to generate gains [REG-R15][REG-R16].
-
-**Regulatory reporting, accounting and capital.** The framework — the Solvency UK regulatory
-balance sheet under the PRA Rulebook, the statutory accounts under FRS 102 + FRS 103 or
-UK-adopted IFRS 17, and the tax computation built on the accounts with the FA 2012 overlay —
-is in `uk/regulatory/statutory-accounting-and-capital.md` and
-`uk/regulatory/technical-notes.md`; the product-specific consequences and the model-output
-contract are in `technical-notes.md`, "Statutory accounting and capital". What is specific to
-this product: both cells report under **PRA product code 104** (whole of life OB NP) in Annex 1
-**line of business 32** [REG-R89][REG-R41]; the boundary runs to death because no repricing
-right exists [REG-R41]; the O50 cell is the library's paradigm **lapse-supported** cell, and
-its best estimate is normally negative early on — unfloored on the Solvency UK ledger, but
-floored in the accounts by FRS 103 IG2.41 [REG-R1][REG-R115][REG-R100]; the binding `3B6`
-lapse limb is **not a product constant** but the output of the `3B6.2` / `3B6.3` per-policy
-filter on whether discontinuance would *increase* or *decrease* technical provisions without
-the risk margin, which — because there is no surrender value at any duration
-[S1][S4][S5][S7][S9][S10] — reduces to the sign of those provisions and flips as the policy
-matures. See `technical-notes.md`, "SCR — the modules that bite" [REG-R62]; and acquisition
-costs are **deferred, not expensed** — there is no
-U.S.-style first-year surplus strain in the UK accounts [REG-R105][REG-R99].

@@ -454,19 +454,3 @@ withdrawal behavior [REG-R15][REG-R16]. With-profits ISA wrappers carry the £20
 annual subscription limit [S12]. Classification: conventional with-profits assurances
 and annuities are Class I long-term business under the RAO; unitised/linked structures
 typically involve Class III [R9; per-product allocation unverified].
-
-**Where to read the framework, and what is specific to this product
-[REG-R39][REG-R45][REG-R62][REG-R89][REG-R99].** There is no "statutory accounting" in the
-U.S. sense in the UK: a with-profits writer runs the **Solvency UK regulatory balance sheet**
-(PRA Rulebook), the **statutory accounts** (FRS 102 + FRS 103, or UK-adopted IFRS 17) and a
-**tax** computation built on the accounts with the FA 2012 overlay. The framework for all
-three — technical provisions, discounting, the risk margin, the standard-formula SCR, own
-funds, ring-fenced funds, the MCR and reporting — is in
-`uk/regulatory/statutory-accounting-and-capital.md` and `uk/regulatory/technical-notes.md`.
-The product-specific consequences are in `technical-notes.md` (this directory), "Statutory
-accounting and capital": the PRA three-digit product codes (**111** for the unitised bond,
-**120 / 121** for the endowment), the IR.12.05 / IR.12.06 with-profits templates that exist
-for no other product, the estate's simultaneous status as a technical-provisions carve-out and
-as restricted Tier 1 own funds, and the fact that with-profits is the one product that forces
-a two-run (gross and net of future discretionary benefits) SCR and a separate notional SCR per
-with-profits fund.

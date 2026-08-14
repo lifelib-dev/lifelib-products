@@ -7,12 +7,11 @@ liability cash-flow modeling. It does not describe any single insurer's product.
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
 references), both numbered per `us/_research/immediate-annuity.md`, and [REG-R#] (the
 cross-product reference library `us/references/regulatory-and-actuarial-references.md`,
-one shared numbering space now running **R1–R157** with **R114–R124** and **R143–R149**
-unused by design: R1–R34 from `us/_research/regulatory-actuarial.md`,
-R35–R72 from `us/_research/regulatory-actuarial-annuities.md`, R73–R142 from the three
-statutory accounting and capital research files listed in `us/regulatory/sources.md`, and
-R150–R157 from the AP&P Manual appendix reading of **2026-08-06**, of which **R151** (AG 33),
-**R152** (AG 35) and **R153** (A-820 with A-821 and A-822) are cited here) — were extracted from the
+one shared numbering space now running **R1–R157** with most of the **R73–R149** block
+unused: R1–R34 from `us/_research/regulatory-actuarial.md`,
+R35–R72 from `us/_research/regulatory-actuarial-annuities.md`, and
+R150–R157 from the AP&P Manual appendix reading of **2026-08-06**, of which **R151** (AG 33)
+and **R153** (A-820 with A-821 and A-822) are cited here) — were extracted from the
 cited document. Values marked **[std]** are standardizations introduced for the reference
 implementation; each [std] table row carries a footnote giving the rationale and the
 observed range across insurers. Facts the research file could not verify are flagged
@@ -576,23 +575,6 @@ oldest in-force layer is not sourced here; and the **1994 GAR**, **Annuity 2000*
 Table "a"** are **named and not printed**, so A-821's 1994 GAR projection formula
 `q_x^(1994+n) = q_x^1994 · (1 − AA_x)^n` is not computable from library sources
 [REG-R153].
-
-**Statutory accounting and capital.** The framework is in
-`us/regulatory/statutory-accounting-and-capital.md` and `us/regulatory/technical-notes.md`;
-the product-level consequences are worked out in `technical-notes.md` (same directory),
-"Statutory accounting and capital". What is specific to this product: the **payout form
-decides the accounting chassis at inception and the choice is irreversible**. The four
-life-contingent forms are **life contracts** whose considerations are premium income and whose
-reserve sits in **Exhibit 5** [REG-R78][REG-R79][REG-R89]; **period certain only** carries no
-mortality risk and is a **deposit-type contract** under SSAP No. 52, its consideration credited
-directly to reserve rather than recognised as premium income and its balance rolled forward in
-**Exhibit 7**, column *Annuities Certain* [REG-R80][REG-R89]. A life-contingent contract
-**stays in Exhibit 5 after the annuitant dies** while certain payments continue [REG-R89]. On
-the capital side the dominant charge is **C-2 longevity**, driven by the statutory reserve for
-life-contingent annuity benefits and including the period-certain portion of a certain-and-life
-contract [REG-R128]; C-2 mortality does not apply, and interest rate risk runs through the
-**C-3 Phase I** cash flow testing regime, whose scope names immediate annuities expressly
-[REG-R128][REG-R135].
 
 **Nonforfeiture — expressly inapplicable.** Model #805 §2.A excludes **immediate
 annuities** (and deferred annuities after payments commence) from the Standard
