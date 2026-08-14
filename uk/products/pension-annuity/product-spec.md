@@ -434,15 +434,3 @@ tax-free within the LSDBA £1,073,100; post-75 at the recipient's marginal rate)
 [S1 p11][S4][S6], and the announced IHT inclusion of guarantee-balance and VP death
 benefits from 6 April 2027 is not yet enacted [S1 p11][S4]. Protection of last resort
 is FSCS at 100% with no upper limit [S1 p15][S4][S6][S9].
-
-**Reporting, accounting and capital.** The UK has no "statutory accounting" in the
-U.S. sense: what sits on top of these cash flows is the Solvency UK regulatory
-balance sheet, the statutory accounts (FRS 102 + FRS 103, or UK-adopted IFRS 17) and
-a tax computation built on the accounts [REG-R39][REG-R99][REG-R106][REG-R17]. That
-framework is explained in `uk/regulatory/statutory-accounting-and-capital.md` and
-computed in `uk/regulatory/technical-notes.md`; what is specific to this product —
-PRA product code 724 (734 enhanced), the whole-contract matching-adjustment route and
-its 5% mortality test, a longevity-led SCR carrying **no lapse charge at all**, a risk
-margin struck without the MA, and the non-BLAGAB trade-profit tax basis — is in
-`technical-notes.md`, "Statutory accounting and capital"
-[REG-R89][REG-R2][REG-R62][REG-R1][REG-R18].
