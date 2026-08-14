@@ -11,7 +11,7 @@ on the research files.
 Access date for all citations: 2026-08-03, except the two **AP&P Manual appendix entries
 R153 and R154**, accessed **2026-08-06** and listed in their own sub-table. Those two were
 fetched after drafting, by the stream that read seven AP&P Manual appendix items at first
-hand; their metadata is carried **verbatim** from
+hand; their metadata is carried from
 `us/references/regulatory-and-actuarial-references.md`.
 
 ---
@@ -165,7 +165,7 @@ Entries cited in the two documents:
 
 ### AP&P Manual appendix entries read at first hand (added 2026-08-06)
 
-Ids, titles, publishers, URLs, access dates and fetched markers below are carried **verbatim**
+Ids, titles, publishers, URLs, access dates and fetched markers below are carried
 from `us/references/regulatory-and-actuarial-references.md`, which itself carries them from
 `us/_research/appp-a820-a821-a822.md` (R153) and `us/_research/appp-a830.md` (R154). **Nothing is
 renumbered.** Both are appendix items of the **same physical document already catalogued as R73**
@@ -215,8 +215,8 @@ paragraph**, quoting only short anchors.
   transcribed factor tables were not checked against an independent copy** and are not reproduced
   in this directory.
 
-**Retrieval limits carried forward verbatim**, reproduced here because they are cited at the
-point of use in `technical-notes.md`:
+**Retrieval limits carried forward verbatim**, reproduced here because their discharge is
+stated at the point of use in `technical-notes.md`:
 
 - **[REG-R33] / [REG-R110].** The AP&P Manual's *As of March 2026* edition is in fact a free
   download and was retrieved in full as R73, superseding R33's "paid, not fetched" record. The

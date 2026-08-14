@@ -13,7 +13,7 @@ research file itself). **No new sources were fetched at drafting; nothing is mar
 (A-820 with A-821 and A-822) and **REG-R154** (A-830) were added after the NAIC *Accounting
 Practices and Procedures Manual, As of March 2026* was found to be a **free download** rather
 than the paid publication this library had recorded, and were read in full from it. Their
-metadata is carried **verbatim** from `us/references/regulatory-and-actuarial-references.md`,
+metadata is carried from `us/references/regulatory-and-actuarial-references.md`,
 the citation ground truth for R150–R157. **Nothing is renumbered:** the frozen **REG-R39** ("AG 33 text not retrieved")
 and **REG-R110** ("A-820 and A-830 were not retrieved") entries below are preserved exactly as
 written and carry **appended** supersession notes rather than edits. **REG-R39 is now cited by
@@ -346,7 +346,7 @@ they carry no [REG-R#] row in the table above.)
 
 The two entries below are preserved exactly as written and carry **appended** supersession
 notes rather than edits; ids, titles, publishers, URLs, access dates and fetched markers are
-carried **verbatim** from `us/references/regulatory-and-actuarial-references.md`. **Nothing is
+carried from `us/references/regulatory-and-actuarial-references.md`. **Nothing is
 renumbered and nothing is re-worded.** Read every heading as a cross-product id, i.e. `[REG-R#]`
 in this directory, never the product-local `[R#]` of the section above.
 
@@ -361,8 +361,8 @@ in this directory, never the product-local `[R#]` of the section above.
 - **Superseded in fact by R151** (below), the guideline as printed in the AP&P Manual and read
   in full on 2026-08-06. The three lines above are preserved verbatim as the record of what was
   true when they were written; the statement that neither document quotes AG 33 mechanics
-  **no longer holds** — `technical-notes.md`, "CARVM under AG 33", now does, and
-  `product-spec.md` summarises it. R39 is frozen and is not edited.
+  **no longer holds** — `product-spec.md`'s *Formulaic CARVM — Appendix A-820 and Actuarial
+  Guideline XXXIII* paragraph now does. R39 is frozen and is not edited.
 
 ### REG-R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
 - **Publisher:** NAIC
@@ -385,7 +385,7 @@ in this directory, never the product-local `[R#]` of the section above.
 ### Entries added 2026-08-06 from the AP&P Manual appendix and guideline prints
 
 Ids, titles, publishers, URLs, access dates, fetched markers and carried-forward limits below are
-reproduced **verbatim** from `us/references/regulatory-and-actuarial-references.md`, including the
+reproduced from `us/references/regulatory-and-actuarial-references.md`, including the
 internal cross-references they make to ids not listed in this directory (R1, R5, R6, R33, R39,
 R41, R73, R101, R102, R110), which resolve against that shared reference page. **Nothing is
 renumbered and nothing is re-worded.** Read every heading as a cross-product id, i.e. `[REG-R#]`

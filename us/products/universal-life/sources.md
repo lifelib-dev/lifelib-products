@@ -160,7 +160,7 @@ Two entries are kept below in full annotated form rather than as table rows.
 **REG-R110** is a superseded-but-kept record — the supersession notes of **REG-R153**
 and **REG-R154** preserve it unaltered; **REG-R150** is a post-drafting entry from the
 2026-08-06 pass. Id, title, publisher, URL, access date and fetched marker are carried
-**verbatim** from `us/references/regulatory-and-actuarial-references.md`.
+from `us/references/regulatory-and-actuarial-references.md`.
 **Ids are never renumbered.**
 
 ### REG-R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
@@ -196,7 +196,7 @@ and **REG-R154** preserve it unaltered; **REG-R150** is a post-drafting entry fr
 
 Newly cited by the "Valuation and reserve pointers" section of `technical-notes.md`
 and by the "Regulatory context" section of `product-spec.md`. Id, title, publisher,
-URL, access date, fetched marker and limits are carried **verbatim** from
+URL, access date, fetched marker and limits are carried from
 `us/references/regulatory-and-actuarial-references.md`. **Ids are never renumbered.**
 
 **One physical document behind them.** R153, R154 and R155 are appendix items of the NAIC

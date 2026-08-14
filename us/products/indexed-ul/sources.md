@@ -161,7 +161,7 @@ Entries cited in the two documents:
 reserve leg. The library retains superseded records deliberately: the entry below is
 **frozen**, preserved with its internal phrasing and pointers unaltered, and R153 and R154
 record what has since superseded parts of its limit. Id, title, publisher, URL, access date,
-fetched marker and limits are carried verbatim from
+fetched marker and limits are carried from
 `us/references/regulatory-and-actuarial-references.md`.
 
 #### REG-R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
@@ -192,7 +192,7 @@ R152 (AG 35), R156 (A-250) and R157 (A-255) are annuity items this product's doc
 cite and are not reproduced here; their full records are in
 `us/references/regulatory-and-actuarial-references.md`.
 **Ids, titles, publishers, URLs, access dates, fetched markers and carried limits below are
-carried verbatim from `us/references/regulatory-and-actuarial-references.md`.** Nothing was
+carried from `us/references/regulatory-and-actuarial-references.md`.** Nothing was
 newly fetched here and no id is renumbered.
 
 **One physical document behind R151–R157.** All seven are appendix items of the NAIC

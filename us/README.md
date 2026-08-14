@@ -143,9 +143,13 @@ and research file carry the full list).
   insurers name an interest-rate adjustment without giving its formula, so any
   implementation must assume one and flag it. RILA interim values are the exception —
   AG 54 mandates their structure, and prospectus formulas were retrieved.
-- **AG 33 and AG 35 texts could not be retrieved.** Their authoritative text sits in the
-  paid NAIC AP&P Manual Appendix C, so formulaic CARVM is cited by title and effective
-  date only. This is the largest single hole on the annuity side.
+- **AG 33 and AG 35 have been read at first hand.** Earlier passes carried them as
+  unobtainable behind the paid AP&P Manual; the manual's *As of March 2026* edition turned
+  out to be a free download, and both guidelines — with A-820 (and A-821/A-822), A-830,
+  A-585, A-250 and A-255 — were read in full on 2026-08-06 as entries **R151–R157**, with
+  extractions in `_research/appp-*.md`. The residual holes are the documents those texts
+  point at but which remain unread: AG IX-B, Actuarial Guideline I, and the
+  Interest-Indexed Annuity Contracts Model Regulation.
 - **Behavioral assumptions are order-of-magnitude anchors.** Surrender-charge-expiry shock
   lapse, its suppression when a lifetime-withdrawal rider is in force, and rider
   utilization are the first-order drivers of annuity liability value, yet the calibrating

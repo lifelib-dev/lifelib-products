@@ -159,7 +159,7 @@ extractions `us/_research/appp-ag33.md` (R151), `us/_research/appp-ag35.md` (R15
 `us/_research/appp-a585-a250-a255-a270.md` (R155–R157, and A-270 with **no id assigned**, so
 not citable). Of those the whole-life documents cite **REG-R153** (A-820, with A-821 and
 A-822) and **REG-R154** (A-830). Id, title, publisher, URL,
-access date and fetched marker for the entries added below are carried **verbatim** from
+access date and fetched marker for the entries added below are carried from
 `us/references/regulatory-and-actuarial-references.md`, together with the retrieval limits and
 [unverified] flags, because the whole-life documents rely on them at the point of use. Entries
 cited by the whole-life documents:

@@ -399,7 +399,8 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   the index-linked crediting stripped out. That exclusion is the **only** index-specific
   reserve rule in the item; every rate, table and factor it uses is delegated to **A-820**
   by year of issue [REG-R155][REG-R153][REG-R110]. Mechanics, the alternative minimum
-  reserve and the A-830 ULSG branch: `technical-notes.md`, "Reserve basis".
+  reserve and the A-830 ULSG branch are read at first hand in
+  `us/_research/appp-a585-a250-a255-a270.md` and `us/_research/appp-a830.md`.
 - **Nonguaranteed elements.** Caps, participation rates, declared rates, COI rates, and
   loads are NGEs; determination and revision practice is governed by ASOP No. 2 [REG-R26].
 - **Federal tax.** §7702 definition of life insurance (CVAT or GPT+corridor; floating

@@ -200,7 +200,7 @@ of the **R73–R149** block **unused**:
   `us/_research/appp-a830.md` (R154) and `us/_research/appp-a585-a250-a255-a270.md` (R155,
   R156, R157). **R150** is the NAIC principle-based reserving topic page and is not cited
   here. Four of the seven are cited in this directory — **R151, R153, R156 and R157** — and
-  their entries are reproduced below verbatim from
+  their entries are reproduced below from
   `us/references/regulatory-and-actuarial-references.md`.
 
 Entries cited by the two documents in this directory:
@@ -255,7 +255,7 @@ file, the [R#] tag is used; where the fact comes from the cross-product annotati
 Added on **2026-08-06**, when AG 33 and the Appendix A items were read at first hand and the
 findings written into `technical-notes.md` (*Known modeling pitfalls*, *Valuation and reserve
 pointers*) and `product-spec.md` (*Regulatory context*). Ids, titles, publishers, URLs, access
-dates, fetched markers and every carried-forward limit are reproduced **verbatim** from
+dates, fetched markers and every carried-forward limit are reproduced from
 `us/references/regulatory-and-actuarial-references.md`; **nothing is renumbered and no flag is
 upgraded**. Only the four items this directory actually cites are reproduced — R152 (AG 35),
 R154 (A-830) and R155 (A-585) are not cited here and are not carried over. Cross-references

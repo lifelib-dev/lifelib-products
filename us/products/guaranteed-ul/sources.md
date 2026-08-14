@@ -170,7 +170,7 @@ only). Entries cited by the two drafts, with the bibliography's fetch markers:
 
 Cited by `product-spec.md`'s "Regulatory context" and by `technical-notes.md`'s "Valuation
 and reserve pointers". **Ids, titles, publishers, URLs, access dates, fetched markers and
-carried limits below are reproduced verbatim from
+carried limits below are reproduced from
 `us/references/regulatory-and-actuarial-references.md`**, which itself carries them from the
 AP&P extractions. Ids are never renumbered. Seven appendix items were read in that pass
 (R151–R157); **this product cites two of them**, and the other five resolve in the shared

@@ -8,8 +8,8 @@ R10 — see the note at the end of the [R#] section). **No new sources were fetc
 drafting; nothing is marked "added at drafting".**
 
 Access date for all citations: **2026-08-04**, except the frozen [REG-R#] entries reproduced
-in full at the end of this file, whose own access dates (2026-08-03 or 2026-08-04) are carried
-verbatim from `us/references/regulatory-and-actuarial-references.md`, and the four AP&P Manual
+in full at the end of this file, whose own access dates (2026-08-03 or 2026-08-04) are
+carried from `us/references/regulatory-and-actuarial-references.md`, and the four AP&P Manual
 appendix entries **REG-R151, REG-R152, REG-R153 and REG-R157**, accessed **2026-08-06** and
 added after drafting. Those four are the only post-drafting additions; nothing else in this
 file changed source or status.
@@ -303,7 +303,7 @@ annuity entries (R35–R72) merged in. Research provenance remains split between
 shared space in every file and is never renumbered.
 
 Id, title, publisher, URL, access date and fetched marker of the frozen entries reproduced
-below are carried **verbatim** from `us/references/regulatory-and-actuarial-references.md`.
+below are carried from `us/references/regulatory-and-actuarial-references.md`.
 **No new sources were fetched at drafting.** Two formatting notes, neither of which changes
 any id: headings carry the **`REG-`** prefix used throughout this section, because the shared
 numbering collides with the product research file's own `R#` numbering above (this file's
@@ -331,7 +331,7 @@ numbering collides with the product research file's own `R#` numbering above (th
 
 **AP&P Manual appendix entries (R151–R157) cited here — added after drafting.** Id, title,
 publisher, URL, access date, fetched marker and carried-forward limits below are reproduced
-**verbatim** from `us/references/regulatory-and-actuarial-references.md`. Three facts stated
+from `us/references/regulatory-and-actuarial-references.md`. Three facts stated
 there apply to all of them and are carried with the entries. (a) **One physical document:** all seven
 R151–R157 items are appendix items of the NAIC *Accounting Practices and Procedures Manual,
 As of March 2026* — the **same 2,117-page consolidated PDF already catalogued as R73**, a

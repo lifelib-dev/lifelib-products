@@ -12,7 +12,7 @@ Two cross-product entries — **REG-R8** and **REG-R10** (AG 49 / AG 49-A) — w
 retrievals. **Four more — REG-R151, REG-R152, REG-R153 and
 REG-R157 — were added on 2026-08-06**, when seven AP&P Manual appendix items were read at first
 hand from the free *As of March 2026* download; those four are the ones this product's documents
-actually cite, and their metadata is carried verbatim from
+actually cite, and their metadata is carried from
 `us/references/regulatory-and-actuarial-references.md`. They
 **supersede in fact** — they do not replace — [R11], [REG-R33], [REG-R39], [REG-R40] and the A-820
 half of [REG-R110], all of which are retained unaltered below, because a superseded record is
@@ -339,7 +339,7 @@ product's documents cite are reproduced below.** R154 (A-830, life insurance val
 (A-585, universal life) and R156 (A-250, variable annuities) are not cited here and are therefore
 not repeated, on the same rule that omits uncited entries elsewhere in this file. **Id, title,
 publisher, URL, access date, fetched marker and every carried-forward limit below are reproduced
-verbatim from `us/references/regulatory-and-actuarial-references.md`**, which in turn carries them
+from `us/references/regulatory-and-actuarial-references.md`**, which in turn carries them
 from the extractions in
 `us/_research/appp-ag33.md`, `us/_research/appp-ag35.md`, `us/_research/appp-a820-a821-a822.md` and
 `us/_research/appp-a585-a250-a255-a270.md`. **Ids are never renumbered.** A fifth item read in that

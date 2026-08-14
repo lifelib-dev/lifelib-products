@@ -5,10 +5,10 @@ country**, together with the documentation needed to build **reference implement
 of liability cash flow projection models** (lifelib/modelx style), organized by product
 type and country.
 
-**Status:** Draft, 2026-08-04. Current coverage: United States (6 individual life and
+**Status:** Draft, 2026-08-08. Current coverage: United States (6 individual life and
 6 individual annuity product types) and United Kingdom (7 product types, including
-pension annuities). Reference model implementations are a planned follow-on (see
-Roadmap).
+pension annuities). The first executable reference model, `us/models/term-life`, is
+shipped; the rest are a planned follow-on (see Roadmap).
 
 ---
 

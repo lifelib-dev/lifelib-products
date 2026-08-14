@@ -203,7 +203,7 @@ documents:
 Added after drafting, when the NAIC *Accounting Practices and Procedures Manual* proved
 to be a **free download** rather than the paid publication the library had recorded.
 Id, title, publisher, URL, access date, fetched marker and carried-forward limits are
-reproduced **verbatim** from `us/references/regulatory-and-actuarial-references.md`;
+reproduced from `us/references/regulatory-and-actuarial-references.md`;
 nothing is renumbered and no [unverified] flag or retrieval limit is upgraded. All
 three are the same physical document as the AP&P Manual entry (R73) held in
 `us/references/regulatory-and-actuarial-references.md`.

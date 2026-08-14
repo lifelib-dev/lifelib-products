@@ -256,7 +256,7 @@ Entries cited by the two documents in this directory:
 
 ### Frozen entries not previously cited here
 
-Id, title, publisher, URL, access date and fetched marker are carried **verbatim** from
+Id, title, publisher, URL, access date and fetched marker are carried from
 `us/references/regulatory-and-actuarial-references.md`, together with the retrieval limits
 and [unverified] flags that bear on how the entry may be used. **Ids are never renumbered.**
 No new source was fetched at drafting.
@@ -309,7 +309,7 @@ https://content.naic.org/sites/default/files/publication-app-manual.pdf). They t
 appendix-level ids rather than being folded into R73 so a document can cite **A-820 ¶15** or
 **AG 33 *Text* 4** instead of a 2,117-page manual. Each was read by **local text extraction**
 from that download. Id, title, publisher, URL, access date, fetched marker and every
-retrieval limit below are carried **verbatim** from
+retrieval limit below are carried from
 `us/references/regulatory-and-actuarial-references.md`.
 **Ids are never renumbered.** Only the five cited by the two documents in this directory are
 listed: **R154** (A-830, valuation of life insurance policies) and **R155** (A-585, universal

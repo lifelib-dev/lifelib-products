@@ -254,7 +254,7 @@ renumbering.
 
 ### Superseded entries retained as records
 
-Id, title, publisher, URL, access date and fetched marker are carried **verbatim** from
+Id, title, publisher, URL, access date and fetched marker are carried from
 `us/references/regulatory-and-actuarial-references.md`. **Ids are never renumbered.** One
 frozen R1–R72 entry — **R39** — appears here because it had not previously been cited by this
 directory; after the 2026-08-06 AP&P appendix pass **neither document cites R39 any longer**,
@@ -298,8 +298,8 @@ Cited by the `## Regulatory context` and `## Riders and options` sections of
 `## Assumption inputs`, `## Policyholder behavior modeling` and `## Valuation and reserve
 pointers` sections of `technical-notes.md` (**REG-R151** and **REG-R153**).
 Id, title, publisher,
-URL, access date, fetched marker and every carried-forward limit are reproduced **verbatim**
-from `us/references/regulatory-and-actuarial-references.md` (which carries them verbatim from
+URL, access date, fetched marker and every carried-forward limit are reproduced
+from `us/references/regulatory-and-actuarial-references.md` (which carries them from
 the extraction files `us/_research/appp-ag33.md`, `us/_research/appp-ag35.md` and
 `us/_research/appp-a820-a821-a822.md`). **Ids are never renumbered.** Access date for every
 entry below: **2026-08-06**.
