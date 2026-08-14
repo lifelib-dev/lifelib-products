@@ -9,10 +9,9 @@ adjustment. It does not describe any single insurer's product. Facts carrying a 
 tag — [S#] (primary product documents) and [R#] (regulatory/actuarial references), both
 numbered per `us/_research/fixed-deferred-annuity.md`, and [REG-R#] (the cross-product
 reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
-R-numbering runs R1–R157 with **R114–R124 and R143–R149 unused by design**; provenance in
+R-numbering now runs **R1–R157** with most of the **R73–R149** block unused; provenance in
 `us/_research/regulatory-actuarial.md` for R1–R34,
-`us/_research/regulatory-actuarial-annuities.md` for R35–R72, the three statutory
-accounting and capital research files for R73–R142, and the AP&P Manual appendix
+`us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the AP&P Manual appendix
 extractions `us/_research/appp-ag33.md`, `appp-ag35.md`,
 `appp-a820-a821-a822.md` and `appp-a585-a250-a255-a270.md` for R151–R157, all accessed
 **2026-08-06**) — were extracted from
@@ -558,8 +557,9 @@ both, and the guideline's 33⅓ / 66⅔ / 100% grade-in ran off by December 31, 
 **no live effect on any current valuation** [REG-R151 *Effective Date*]. AG 33 contains **no
 formulas, tables or factors** beyond the 7% expense-allowance cap and those phase-in
 percentages, and it **never cites SVL §5a by number** — the §5a mapping used throughout this
-library is the library's own, made on content [REG-R151][REG-R1 §5a.B]. Mechanics, and what
-they change for this chassis, are in `technical-notes.md`, "Reserve basis". VM-C is the
+library is the library's own, made on content [REG-R151][REG-R1 §5a.B]. Mechanics are in the
+primary-text extractions `us/_research/appp-a820-a821-a822.md` and `us/_research/appp-ag33.md`.
+VM-C is the
 authoritative index of which guidelines the Valuation Manual incorporates, including AG
 VIII, AG XIII, AG XXXIII and AG XLI [REG-R41]. For the payout phase VM-V §1 carries the
 statutory maximum valuation interest rate and supersedes the interest guidance in AG IX-B
@@ -601,25 +601,6 @@ tax-free annuity-to-annuity exchange but **not** annuity-to-life [REG-R56] — t
 behind most shock-lapse outflow. Under IRC §807 the tax reserve is the greater of the net
 surrender value and, post-TCJA, **92.81% of** the NAIC-prescribed method reserve (CARVM),
 capped at the statutory reserve [R7][REG-R16], so one projection feeds both engines.
-
-**Statutory accounting and capital.** The framework is in `us/regulatory/`; the
-product-specific consequences are in `technical-notes.md`, "Statutory accounting and
-capital". Four things are specific to this chassis. A MYGA is a **life contract**, not a
-deposit-type contract — SSAP No. 50 ¶9 enumerates annuity contracts as life contracts
-[REG-R78] and this one carries life-contingent income options from inception
-[S1][S2][S10] — so the purchase payment is **premium income recognised gross when
-received** [REG-R79] and the reserve reports in **Exhibit 5**, not Exhibit 7, under
-Individual Annuities → Deferred Fixed [REG-R89][REG-R90], VM-22 business being split
-**Jumbo / Non-Jumbo in 50-basis-point valuation interest bands** [REG-R89]. The **market
-value adjustment** is where this product meets the **interest maintenance reserve**: a
-material MVA on contracts backed by book-value assets enters the IMR, material meaning in
-excess of both 0.01% of liabilities and $1,000,000 [REG-R86]. For risk-based capital the
-**C-3a withdrawal-provision bucket is decisive and duration-dependent** — the surrender
-charge and the MVA decide whether the reserve takes the low, medium or high factor
-[REG-R128] — so the renewal architecture of footnote 7 is a capital decision as well as a
-lapse decision. And the **nonforfeiture floor is not the reserve**: CARVM can sit below the
-immediately available surrender value, the gap being a separate Exhibit 5 Miscellaneous
-Reserves item [REG-R89].
 
 **Actuarial standards.** ASOP No. 2 governs redetermination of the declared renewal rate as
 a non-guaranteed element, its scope expressly covering fixed deferred annuities [REG-R26];

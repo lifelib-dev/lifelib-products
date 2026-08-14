@@ -24,10 +24,6 @@ Roadmap).
       sources.md                     numbered source list for this product's documents
   models/                            executable models built from the technical notes
     <product-type>/                  README.md, run.py, and the modelx model folder
-  regulatory/                        statutory accounting and capital framework (U.S. so far)
-    statutory-accounting-and-capital.md   what the items are, which products they bite
-    technical-notes.md               how to calculate them
-    sources.md
   references/
     regulatory-and-actuarial-references.md
                                      curated cross-product bibliography (NAIC, IRC, SOA, AAA, ASB)
@@ -44,10 +40,6 @@ Roadmap).
   example, valuation pointers, and key sensitivities.
 - **`sources.md`** lists every source cited by that product's documents, with URLs,
   access dates, and whether the document was actually retrieved.
-- **`regulatory/`** specifies the accounting and capital framework that sits on top of
-  the projections — what a supervisor requires, and what the model must therefore
-  produce. Each product's `technical-notes.md` carries its own per-product section
-  cross-referencing it.
 - **`_research/`** holds the underlying research notes. Every sourced fact in the
   product documents traces back to a source entry in these files. They are provenance:
   keep them, do not renumber their source lists.

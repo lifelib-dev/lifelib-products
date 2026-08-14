@@ -407,19 +407,3 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   7-pay test with §72 taxation of MEC distributions [R5]; tax reserves per IRC §807
   (greater of net surrender value and 92.81% of the NAIC-method reserve, capped at
   statutory) [REG-R16].
-- **Statutory accounting and capital.** Framework — SSAPs, AVR/IMR, annual statement
-  exhibits, VM-30 asset adequacy and risk-based capital — in `us/regulatory/`; product
-  mechanics in `technical-notes.md`, "Statutory accounting and capital".
-  Product-specific: IUL is a **life contract** (universal life type) classified at
-  inception and unchangeable, so considerations are **premium income** and the reserve
-  sits in **Exhibit 5**, never Exhibit 7 [REG-R78][REG-R79][REG-R89]; and it is a
-  **general account** product — the indexed account is no separate account, so SSAP
-  No. 56 does not apply [REG-R83]. The statement carries a distinct **Indexed Life**
-  column, but indexed UL **with** secondary guarantees reports as **ULSG** and stays
-  there after the guarantee expires [REG-R89] — so whether the no-lapse guarantee
-  (Table 1, F6) is a *material* secondary guarantee decides the reporting column, the
-  VM-20 reserving category and the C-2 capital bucket together [REG-R3][REG-R128].
-  Hedging the index credit brings **SSAP No. 86** derivative accounting into projected
-  statutory earnings, with a pending SSAP on amortized cost for a qualifying derivative
-  program at exposure and **not read** [REG-R96][REG-R88]. **AG 49-A limits
-  illustrations, not reserves** [R1].

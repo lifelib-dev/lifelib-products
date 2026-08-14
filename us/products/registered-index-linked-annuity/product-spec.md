@@ -8,13 +8,12 @@ liability cash-flow modeling. It does not describe any single insurer's product.
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
 references), both numbered per `us/_research/registered-index-linked-annuity.md` — were
 extracted from the cited document. [REG-R#] tags resolve against the **shared
-cross-product numbering space, which now runs R1–R157** with **R114–R124** and
-**R143–R149** permanently unused by design, curated at
+cross-product numbering space, which now runs R1–R157** with most of the
+**R73–R149** block unused, curated at
 `us/references/regulatory-and-actuarial-references.md`: R1–R34 are the life-origin
 entries (research provenance `us/_research/regulatory-actuarial.md`), R35–R72 the
-annuity-specific entries (`us/_research/regulatory-actuarial-annuities.md`), and R73–R142
-the statutory accounting and capital entries. It is one
-numbering space, not three. Values marked **[std]** are standardizations introduced for
+annuity-specific entries (`us/_research/regulatory-actuarial-annuities.md`). It is one
+numbering space, not two. Values marked **[std]** are standardizations introduced for
 the reference implementation; each [std] table row carries a footnote giving the
 rationale and the observed range across insurers. Facts the research file could not
 verify are flagged [unverified].
@@ -556,8 +555,7 @@ formula, symbol, factor, table, elective-path rule, interim-value rule or the wo
 [REG-R156][REG-R157]. What remains unsourced is narrower than before and still real: **no
 retrieved document says how an Interim Value — a market-consistent derivative price — becomes
 "the future guaranteed benefit" of §5a**, AG 54 governing the *nonforfeiture* value and not
-the reserve [R2][REG-R44]. The mechanics and the residual seams are in the *Statutory
-accounting and capital* section of `technical-notes.md`.
+the reserve [R2][REG-R44].
 
 **Capital.** C-3 Phase II sets the Total Asset Requirement at CTE 90 and RBC as the excess
 of TAR over statutory reserves, subject to a Standard Scenario floor [REG-R47]; VM-21
@@ -565,26 +563,6 @@ of TAR over statutory reserves, subject to a Standard Scenario floor [REG-R47]; 
 [REG-R35], so one projection serves both. Reform background (hedging penalties, Standard
 Scenario misalignment) is in the Oliver Wyman QIS II reports [REG-R48]. The Academy places
 ILVA RBC as "C0–C1: General Account, C3–C4: Separate Account" [R6].
-
-**Statutory accounting and capital.** The framework — contract classification, the annual
-statement exhibits, AVR and IMR, and the RBC formula — is in
-`us/regulatory/statutory-accounting-and-capital.md` with the calculations in
-`us/regulatory/technical-notes.md`; the product-specific reading is the *Statutory
-accounting and capital* section of `technical-notes.md` in this directory. Three things are
-peculiar to this product. **SSAP No. 56 ¶18.b expressly names registered index-linked
-annuity contracts** as expected to qualify, with state regulator approval, for **book
-value** measurement in a separate account, so a RILA separate account may carry its own
-**AVR and IMR**, which a fair-value variable annuity separate account does not
-[REG-R83][REG-R84]. Acquisition costs are **expensed as incurred with no DAC asset**
-[REG-R75] and SSAP No. 56 ¶45 **rejects ASU 2018-12** [REG-R83], so the LDTI market risk
-benefit measurement noted below may not be reused on a statutory basis. And the **capital
-treatment is genuinely unsettled**: the retrieved Life/Fraternal RBC instructions (2024 and
-2023 editions; the 2025 edition could not be parsed) **never mention RILA, ILVA or
-index-linked annuities at all** [REG-R128][REG-R129], so the C-3 Phase II parameters in the
-preceding paragraph — themselves the **pre-reform** [REG-R47] package, superseded by CTE 98
-plus the Additional Standard Projection Amount [REG-R128] — cannot be assumed to reach this
-product. This library states **no C-3 charge for a RILA** and carries the treatment
-[unverified].
 
 **Non-guaranteed elements.** Cap, Step, Edge and Participation Rates reset at each Term
 Start Date are NGEs under ASOP No. 2, which lists "index parameters used to determine
