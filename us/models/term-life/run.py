@@ -1,4 +1,4 @@
-"""Run the TermLifeUS reference model and print its cash flow statement.
+"""Run the Term_US_A reference model and print its cash flow statement.
 
     python us/models/term-life/run.py            # anchor cell (point_id = 1)
     python us/models/term-life/run.py 3          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "TermLifeUS")
+model = mx.read_model(Path(__file__).parent / "Term_US_A")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

@@ -1,4 +1,4 @@
-# TermLifeUS — reference liability cash flow model
+# Term_US_A — reference liability cash flow model
 
 **Status:** Draft, 2026-08-06. Built from
 [`us/products/term-life/technical-notes.md`](../../products/term-life/technical-notes.md);
@@ -22,7 +22,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/term-life/TermLifeUS")
+model = mx.read_model("us/models/term-life/Term_US_A")
 model.Projection[1].result_cf()
 ```
 
@@ -46,7 +46,7 @@ inert.
 ## Inputs are external files
 
 The five input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `TermLifeUS/` holds nothing but formulas:
+folder. `Term_US_A/` holds nothing but formulas:
 
 ```
 us/models/term-life/
@@ -57,7 +57,7 @@ us/models/term-life/
   shock_lapse_table.csv
   run.py
   README.md
-  TermLifeUS/                  <- formulas only
+  Term_US_A/                  <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -90,7 +90,7 @@ Reference and a reader Cells, both on `Data`:
 | `class_factor_file` | `class_factor_table()` | `class_factor_table.csv` |
 | `shock_lapse_file` | `shock_lapse_table()` | `shock_lapse_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `TermLifeUS/` without the
+**The trade-off:** the model is not portable on its own. Copy `Term_US_A/` without the
 CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
 of the model shows logic changes only, and an input can be edited or swapped in place —
 point `Data.mort_table_file` at another same-schema file and the projection follows,
