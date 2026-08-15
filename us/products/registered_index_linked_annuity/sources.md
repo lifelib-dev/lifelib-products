@@ -1,7 +1,7 @@
 # Sources — Registered Index-Linked Annuity (RILA) (United States)
 
 Source ids, titles, publishers, URLs, access dates, and fetched/not-fetched markers are
-carried over **verbatim** from `us/_research/registered-index-linked-annuity.md` (the
+carried over **verbatim** from `_research/registered-index-linked-annuity.md` (the
 citation ground truth for [S#]/[R#] tags). Ids are never renumbered. Sources from the
 research file that are not cited in `product-spec.md` or `technical-notes.md` are omitted
 — **none were dropped**: all of S1–S6 and R1–R6 are cited. **No new source was fetched at
@@ -128,7 +128,7 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
 These are the local R-numbers used inside
-`us/_research/registered-index-linked-annuity.md`. They are **independent of** the shared
+`_research/registered-index-linked-annuity.md`. They are **independent of** the shared
 [REG-R#] space; several documents appear in both (noted per entry).
 
 ### R1. U.S. Securities and Exchange Commission — Final rule, "Registration for Index-Linked Annuities and Registered Market Value Adjustment Annuities; Amendments to Form N-4 …; Other Technical Amendments"
@@ -196,20 +196,20 @@ These are the local R-numbers used inside
 ## Cross-product regulatory references [REG-R#]
 
 [REG-R#] tags resolve against the **single shared numbering space, which now runs R1–R157**,
-curated at `us/references/regulatory-and-actuarial-references.md`, with most of the
+curated at `references/regulatory-and-actuarial-references.md`, with most of the
 **R73–R149** block unused. The gaps are not losses and must not be back-filled. Ids are
 never renumbered. It is one space in three blocks:
 
 - **R1–R34** — life-origin entries, several of which also bind annuity models. Research
-  provenance: `us/_research/regulatory-actuarial.md`. Access date **2026-08-03**.
+  provenance: `_research/regulatory-actuarial.md`. Access date **2026-08-03**.
 - **R35–R72** — annuity-specific entries. Research provenance:
-  `us/_research/regulatory-actuarial-annuities.md`, which also carries the table of which
+  `_research/regulatory-actuarial-annuities.md`, which also carries the table of which
   R1–R34 entries bind annuity models. Access date **2026-08-04**.
 - **R151–R157** — the seven AP&P Manual appendix items read at first hand on **2026-08-06**,
-  after this directory was drafted. Research provenance: `us/_research/appp-ag33.md`,
-  `us/_research/appp-ag35.md`, `us/_research/appp-a820-a821-a822.md`,
-  `us/_research/appp-a830.md` and `us/_research/appp-a585-a250-a255-a270.md`; the per-entry
-  bibliography is `us/references/regulatory-and-actuarial-references.md`. Five of the seven
+  after this directory was drafted. Research provenance: `_research/appp-ag33.md`,
+  `_research/appp-ag35.md`, `_research/appp-a820-a821-a822.md`,
+  `_research/appp-a830.md` and `_research/appp-a585-a250-a255-a270.md`; the per-entry
+  bibliography is `references/regulatory-and-actuarial-references.md`. Five of the seven
   are cited here and are listed in their own block below. Access date **2026-08-06**.
 
 Entries cited by the two documents in this directory:
@@ -257,7 +257,7 @@ Entries cited by the two documents in this directory:
 ### Frozen entries not previously cited here
 
 Id, title, publisher, URL, access date and fetched marker are carried from
-`us/references/regulatory-and-actuarial-references.md`, together with the retrieval limits
+`references/regulatory-and-actuarial-references.md`, together with the retrieval limits
 and [unverified] flags that bear on how the entry may be used. **Ids are never renumbered.**
 No new source was fetched at drafting.
 
@@ -310,7 +310,7 @@ appendix-level ids rather than being folded into R73 so a document can cite **A-
 **AG 33 *Text* 4** instead of a 2,117-page manual. Each was read by **local text extraction**
 from that download. Id, title, publisher, URL, access date, fetched marker and every
 retrieval limit below are carried from
-`us/references/regulatory-and-actuarial-references.md`.
+`references/regulatory-and-actuarial-references.md`.
 **Ids are never renumbered.** Only the five cited by the two documents in this directory are
 listed: **R154** (A-830, valuation of life insurance policies) and **R155** (A-585, universal
 life) are life-side items neither document cites.
@@ -338,7 +338,7 @@ Actuarial Guidelines**; printed pages **AG33-1 to AG33-8** = **PDF pages 1496–
 physical document as R73 · Accessed: 2026-08-06 · Fetched: yes (local text extraction; **all
 eight printed pages read in full** — *Background Information*, *Purpose*, *Definitions*,
 *Text* 1–7 and *Effective Date*). **Limits carried forward from
-`us/_research/appp-ag33.md`:** the running heads confirm Appendix C, but these pages carry
+`_research/appp-ag33.md`:** the running heads confirm Appendix C, but these pages carry
 **no volume statement** — the **Volume II** placement is R73's record, not theirs. They carry
 **no amendment history, no adoption note and no revision log**, so the guideline's printed
 *Effective Date* of **31 December 1998** cannot be reconciled here against the **31 December
@@ -360,7 +360,7 @@ Method to Equity Indexed Annuities (AG 35), as printed in the AP&P Manual** — 
 physical document as R73 · Accessed: 2026-08-06 · Fetched: yes (local text extraction; **all
 ten printed pages read in full**, including Attachment 1 — the four computational methods,
 Attachment 2 — the "Hedged as Required" criteria, and the Attachment 3 and 4 certification
-forms). **Limits carried forward from `us/_research/appp-ag35.md`:** the guideline prints
+forms). **Limits carried forward from `_research/appp-ag35.md`:** the guideline prints
 **no effective, adoption or operative date, no transition, no phase-in, no grandfathering and
 no sunset** — the only temporal language in the document is "regardless of the date of
 issue", so **any date attached to AG 35 elsewhere is an inference from outside this text**. It
@@ -386,7 +386,7 @@ A822-1 = **PDF page 1205**; same physical document as R73 · Accessed: 2026-08-0
 yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full** including
 the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV, and
 **A-822's four paragraphs read in full**). **Limits carried forward from
-`us/_research/appp-a820-a821-a822.md`:** **"As of March 2026" is not printed on PDF
+`_research/appp-a820-a821-a822.md`:** **"As of March 2026" is not printed on PDF
 pp. 1186–1205** — cite the copyright footer for what those pages print. **A-821 prints only**
 the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table and its `AA_x`
 factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not printed**, so
@@ -452,7 +452,7 @@ Corrections carried forward from the research files and made explicit in
    requirements reach pre-2017 contracts outside VM-21's own scope [REG-R35][REG-R38].
 6. **VM-22 is not the RILA reserve standard** and, in the Jan. 1, 2026 edition, no longer
    holds the income-annuity maximum valuation interest rates (those are in VM-V §1) — see
-   the VM-22 and VM-V entries in `us/_research/regulatory-actuarial-annuities.md`. Noted
+   the VM-22 and VM-V entries in `_research/regulatory-actuarial-annuities.md`. Noted
    here only to prevent mis-application; neither entry is cited by the documents in this
    directory and neither is listed in the table above.
 7. **"A RILA CARVM run rests on the SVL text alone, and A-250/A-255 are the closest
@@ -487,7 +487,7 @@ Corrections carried forward from the research files and made explicit in
 
 ## Provenance note
 
-Extraction details live in `us/_research/registered-index-linked-annuity.md`: that file
+Extraction details live in `_research/registered-index-linked-annuity.md`: that file
 records which facts came from which source, the [unverified] flags, the per-insurer
 interim-value algebra, the failed/blocked retrievals listed above, and the twelve
 documented gaps — most consequentially that **no current declared rate sheet was
@@ -495,11 +495,11 @@ retrievable** (gap 1), that **annuity purchase rate tables were not found** (gap
 **Trading Costs are required by AG 54 but quantified nowhere** (gap 8), and that **no
 specimen contract or policy form was located for any of these products** (gap 7), so all
 product facts come from prospectuses rather than from the contracts themselves. The
-cross-product bibliographies `us/_research/regulatory-actuarial.md` (R1–R34) and
-`us/_research/regulatory-actuarial-annuities.md` (R35–R72) play the same role for
-[REG-R#] tags, as do `us/_research/appp-ag33.md` (R151), `us/_research/appp-ag35.md` (R152),
-`us/_research/appp-a820-a821-a822.md` (R153) and
-`us/_research/appp-a585-a250-a255-a270.md` (R156, R157 — and A-270, which carries **no
+cross-product bibliographies `_research/regulatory-actuarial.md` (R1–R34) and
+`_research/regulatory-actuarial-annuities.md` (R35–R72) play the same role for
+[REG-R#] tags, as do `_research/appp-ag33.md` (R151), `_research/appp-ag35.md` (R152),
+`_research/appp-a820-a821-a822.md` (R153) and
+`_research/appp-a585-a250-a255-a270.md` (R156, R157 — and A-270, which carries **no
 reference id** and must not be given one) for the AP&P Manual appendix items — those files
 govern where they and any document in this directory disagree. Standardizations marked
 **[std]** in `product-spec.md` and

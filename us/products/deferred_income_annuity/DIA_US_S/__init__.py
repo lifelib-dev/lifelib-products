@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. deferred income annuities and QLACs.
 
-:mod:`~DIA_US_S` is the executable counterpart of
-``us/products/deferred-income-annuity/technical-notes.md`` in the lifelib-products
+:mod:`~.DIA_US_S` is the executable counterpart of
+``products/deferred_income_annuity/technical-notes.md`` in the lifelib-products
 library. It projects gross liability cash flows for a single flexible-premium deferred
 income annuity: premiums in, each one buying a fully guaranteed paid-up income slice at
 the then-current purchase rate; a return-of-premium death benefit during the deferral;
@@ -20,19 +20,19 @@ section "not applicable" to contracts with no account value or surrender benefit
 prescribes annuitization at 0% [R9]. Mortality is the only decrement. And the income
 phase **is** the immediate-annuity payout chassis: the payment factor, the certain
 floor, the survivor-reduction triggers and the COLA rule are the same objects as in
-:mod:`SPIA_US_S`, carrying the same cells names. The DIA-specific change is the
+:mod:`.SPIA_US_S`, carrying the same cells names. The DIA-specific change is the
 base of the guarantee — **cumulative** premiums ``CP(T)``, not a single premium.
 
 **Spaces.** The model contains two:
 
-:mod:`~DIA_US_S.Data`
+:mod:`~.DIA_US_S.Data`
     Reads the six input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~DIA_US_S.Projection`
+:mod:`~.DIA_US_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~DIA_US_S.Data` Space.
+    Reference, which resolves to the single :mod:`~.DIA_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -46,12 +46,12 @@ model and its inputs must travel together.
 **Projection basis.** Monthly steps. ``t`` counts **policy months from issue and is
 0-based** — ``t = 0, 1, 2, …, proj_len()`` — exactly as the technical notes index it
 ("Projection frequency. Monthly, indexed ``t = 0, 1, 2, …`` from issue"). This is a
-deliberate departure from the 1-based ``t`` of :mod:`Term_US_A` and
-:mod:`SPIA_US_S`: the notes' income start month ``T = 240`` and premium months
+deliberate departure from the 1-based ``t`` of :mod:`.Term_US_A` and
+:mod:`.SPIA_US_S`: the notes' income start month ``T = 240`` and premium months
 0 and 60 are month *indices* in the 0-based scheme, and renumbering would silently make
 ``T = 240`` mean the 241st month. ``l(t)`` is the survival probability at the **start**
 of month ``t`` with ``l(0) = 1``, so ``lives_if(t)`` still means "has survived ``t``
-elapsed months" and carries the same meaning as in :mod:`SPIA_US_S`; what does
+elapsed months" and carries the same meaning as in :mod:`.SPIA_US_S`; what does
 shift is the death density, ``lives_death(t) = lives_if(t) - lives_if(t + 1)``, because
 month ``t`` spans elapsed ``[t, t+1)`` here and ``[t-1, t)`` there.
 
@@ -123,7 +123,7 @@ choosing between them.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/deferred-income-annuity/DIA_US_S")
+    >>> model = mx.read_model("products/deferred_income_annuity/DIA_US_S")
     >>> model.Projection[1].result_annual()
 """
 

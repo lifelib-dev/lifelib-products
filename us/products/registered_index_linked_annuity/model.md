@@ -1,9 +1,9 @@
 # RILA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/registered-index-linked-annuity/technical-notes.md`](../../products/registered-index-linked-annuity/technical-notes.md);
+[`products/registered_index_linked_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/registered-index-linked-annuity/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 10% buffer, the 1/3/6 year term menu, the guaranteed minimum
@@ -18,7 +18,7 @@ the product it implements is specified in
 > before drawing any conclusion from the numbers.
 
 This model is built on the **deferred annuity base chassis**,
-[`MYGA_US_S`](../fixed-deferred-annuity/README.md), and shares its cells
+[`MYGA_US_S`](../fixed_deferred_annuity/model.md), and shares its cells
 names for every concept the two have in common. Where the RILA notes restate a recursion
 with product-specific parameters, this model follows the RILA notes rather than the
 chassis — and in three places that means the chassis mechanic is **absent**, not merely
@@ -27,15 +27,15 @@ different. See *What this model does not inherit from the chassis* below.
 ## Run it
 
 ```bash
-python us/models/registered-index-linked-annuity/run.py
-python us/models/registered-index-linked-annuity/run.py 2      # Scenario B, with the withdrawal
+python products/registered_index_linked_annuity/run.py
+python products/registered_index_linked_annuity/run.py 2      # Scenario B, with the withdrawal
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/registered-index-linked-annuity/RILA_US_S")
+model = mx.read_model("products/registered_index_linked_annuity/RILA_US_S")
 model.Projection[1].result_iv()
 ```
 
@@ -126,7 +126,7 @@ The seven input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `RILA_US_S/` holds nothing but formulas:
 
 ```
-us/models/registered-index-linked-annuity/
+products/registered_index_linked_annuity/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   market_scenario.csv

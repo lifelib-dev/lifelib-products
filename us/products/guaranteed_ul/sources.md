@@ -1,7 +1,7 @@
 # Sources — Guaranteed Universal Life (UL with Secondary Guarantees)
 
 Source ids, titles, publishers, URLs, access dates and retrieval markers are carried
-over verbatim from `us/_research/guaranteed-ul.md` (the citation ground truth for
+over verbatim from `_research/guaranteed-ul.md` (the citation ground truth for
 [S#]/[R#] tags). Ids are never renumbered. Sources from the research file not cited in
 `product-spec.md` or `technical-notes.md` are omitted (omitted here: product-file
 R11–R13, which were not fetched and are superseded in the drafts by fetched [REG-R#]
@@ -130,14 +130,14 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 
 Cited as [REG-R#] to avoid collision with the product research file's own R#
 numbering. Full annotated entries (publisher, URL, doc type, fetch status,
-annotation) live in `us/_research/regulatory-actuarial.md` under the corresponding
+annotation) live in `_research/regulatory-actuarial.md` under the corresponding
 R# id; the shared reference library is
-`us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
+`references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
 **R1–R157**, with most of the **R73–R149** block unused. R1–R34 originate in
-`us/_research/regulatory-actuarial.md`; R35–R72, annuity-specific entries not cited here,
-in `us/_research/regulatory-actuarial-annuities.md`; and **R150–R157 were read after drafting**,
+`_research/regulatory-actuarial.md`; R35–R72, annuity-specific entries not cited here,
+in `_research/regulatory-actuarial-annuities.md`; and **R150–R157 were read after drafting**,
 R151–R157 being the seven AP&P Manual appendix items whose provenance is
-`us/_research/appp-ag33.md`, `appp-ag35.md`, `appp-a820-a821-a822.md`, `appp-a830.md` and
+`_research/appp-ag33.md`, `appp-ag35.md`, `appp-a820-a821-a822.md`, `appp-a830.md` and
 `appp-a585-a250-a255-a270.md`. Of those seven this product cites **R153** and **R154**
 only). Entries cited by the two drafts, with the bibliography's fetch markers:
 
@@ -171,7 +171,7 @@ only). Entries cited by the two drafts, with the bibliography's fetch markers:
 Cited by `product-spec.md`'s "Regulatory context" and by `technical-notes.md`'s "Valuation
 and reserve pointers". **Ids, titles, publishers, URLs, access dates, fetched markers and
 carried limits below are reproduced from
-`us/references/regulatory-and-actuarial-references.md`**, which itself carries them from the
+`references/regulatory-and-actuarial-references.md`**, which itself carries them from the
 AP&P extractions. Ids are never renumbered. Seven appendix items were read in that pass
 (R151–R157); **this product cites two of them**, and the other five resolve in the shared
 reference library.
@@ -203,7 +203,7 @@ drafts therefore **paraphrase the mechanics and cite the paragraph**, quoting on
 - **Fetched:** yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full**
   including the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV,
   and **A-822's four paragraphs read in full**)
-- **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026"
+- **Limits carried forward from `_research/appp-a820-a821-a822.md`:** **"As of March 2026"
   is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those pages print.
   A-820 **names its life mortality tables without printing them** and the **2017 CSO is nowhere
   in its text**. Three text-layer repairs are recorded in the research file rather than hidden:
@@ -228,7 +228,7 @@ drafts therefore **paraphrase the mechanics and cite the paragraph**, quoting on
 - **Fetched:** yes (local text extraction; **¶¶1–32 and the Attachment read in full**; the six
   factor tables transcribed programmatically, each parsing to 71 issue-age rows × 20 duration
   columns)
-- **Limits carried forward from `us/_research/appp-a830.md`:** the appendix is a **flat sequence
+- **Limits carried forward from `_research/appp-a830.md`:** the appendix is a **flat sequence
   of paragraphs ¶¶1–32 plus an unnumbered Attachment and has no Sections at all**, so a
   "Model 830 Section 7" citation **does not resolve** against this print — the ULSG material is at
   **¶¶29–32** — and the words **"Model #830" and "Regulation XXX" appear nowhere** in it. It prints
@@ -247,15 +247,15 @@ drafts therefore **paraphrase the mechanics and cite the paragraph**, quoting on
 
 ## Provenance note
 
-Extraction details live in `us/_research/guaranteed-ul.md`: that file records which
+Extraction details live in `_research/guaranteed-ul.md`: that file records which
 facts came from which source (fact-by-fact under each S#/R# entry, plus the
 "Extracted specifications", "Variations across insurers" and "Gaps and caveats"
 sections), including the failed/not-retrieved fetch attempts and the [unverified]
 flags carried into the drafts. The cross-product [REG-R#] entries at R1–R34 are
 documented, with their own fetch log and annotations, in
-`us/_research/regulatory-actuarial.md`; **R153 and R154 are documented in
-`us/_research/appp-a820-a821-a822.md` and `us/_research/appp-a830.md`** respectively. All of
-these are reproduced in `us/references/regulatory-and-actuarial-references.md` —
+`_research/regulatory-actuarial.md`; **R153 and R154 are documented in
+`_research/appp-a820-a821-a822.md` and `_research/appp-a830.md`** respectively. All of
+these are reproduced in `references/regulatory-and-actuarial-references.md` —
 **where those research files and this one disagree, the research files govern**. All URLs
 in the product [S#]/[R#] sections were accessed 2026-08-03. No source was newly fetched at
 drafting; **R153 and R154 were fetched and read afterwards, on 2026-08-06**, and are the only

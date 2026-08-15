@@ -1,9 +1,9 @@
 # SPIA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/immediate-annuity/technical-notes.md`](../../products/immediate-annuity/technical-notes.md);
+[`products/immediate_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/immediate-annuity/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the five payout forms, the two survivor-reduction triggers, the
@@ -21,15 +21,15 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python us/models/immediate-annuity/run.py
-python us/models/immediate-annuity/run.py 8      # the same cell, probability-weighted
+python products/immediate_annuity/run.py
+python products/immediate_annuity/run.py 8      # the same cell, probability-weighted
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/immediate-annuity/SPIA_US_S")
+model = mx.read_model("products/immediate_annuity/SPIA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -79,7 +79,7 @@ The four input CSVs live **in this directory**, beside `run.py` — not inside t
 folder. `SPIA_US_S/` holds nothing but formulas:
 
 ```
-us/models/immediate-annuity/
+products/immediate_annuity/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   improvement_scale.csv

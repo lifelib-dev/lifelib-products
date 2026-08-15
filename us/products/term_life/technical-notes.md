@@ -4,10 +4,10 @@
 contractual parameters used here (premiums, fee, modal factors, windows) are the same
 representative values specified there. This is a **standardized composite** for reference
 modeling, not any single insurer's product. [S#]/[R#] tags cite the product research notes
-(`us/_research/term-life.md`); [REG-R#] tags cite the cross-product reference library
-(`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md` for R1–R34 and in `us/_research/appp-a820-a821-a822.md` and
-`us/_research/appp-a830.md` for the AP&P Manual appendix items cited here, same R-numbering); **[std]** marks standardizations introduced for
+(`_research/term-life.md`); [REG-R#] tags cite the cross-product reference library
+(`references/regulatory-and-actuarial-references.md`; research provenance in
+`_research/regulatory-actuarial.md` for R1–R34 and in `_research/appp-a820-a821-a822.md` and
+`_research/appp-a830.md` for the AP&P Manual appendix items cited here, same R-numbering); **[std]** marks standardizations introduced for
 the reference implementation; [unverified] flags carry over from the research notes.
 
 ---

@@ -11,23 +11,23 @@ institutional business (bulk/pension risk transfer) remain out of scope.
 
 | Product type | Folder | Representative design (one line) |
 |---|---|---|
-| Level premium term | [term-life](products/term-life/product-spec.md) — **[executable model](models/term-life/README.md)** | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible to permanent until min(end of level period, age 70); no cash value |
-| Whole life | [whole-life](products/whole-life/product-spec.md) | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis with three-factor contribution dividends and paid-up-additions default; limited-pay variants; plus a non-par simplified-issue final-expense variant |
-| Universal life | [universal-life](products/universal-life/product-spec.md) | Flexible-premium current-assumption UL: monthly deductions (per-policy + per-unit + COI on NAAR), declared portfolio crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three products below |
-| Indexed UL | [indexed-ul](products/indexed-ul/product-spec.md) | UL chassis + S&P 500 (price return) annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark-index-account design |
-| Variable UL | [variable-ul](products/variable-ul/product-spec.md) | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on EDGAR prospectus fee tables |
-| Guaranteed UL (ULSG) | [guaranteed-ul](products/guaranteed-ul/product-spec.md) | UL chassis + shadow-account secondary guarantee (AG 38 §8E Policy Design #1): policy stays in force while the shadow account is positive, funded by a solved level no-lapse premium; lapse-supported economics |
+| Level premium term | [term-life](products/term_life/product-spec.md) — **[executable model](products/term_life/model.md)** | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible to permanent until min(end of level period, age 70); no cash value |
+| Whole life | [whole-life](products/whole_life/product-spec.md) | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis with three-factor contribution dividends and paid-up-additions default; limited-pay variants; plus a non-par simplified-issue final-expense variant |
+| Universal life | [universal-life](products/universal_life/product-spec.md) | Flexible-premium current-assumption UL: monthly deductions (per-policy + per-unit + COI on NAAR), declared portfolio crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three products below |
+| Indexed UL | [indexed-ul](products/indexed_ul/product-spec.md) | UL chassis + S&P 500 (price return) annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark-index-account design |
+| Variable UL | [variable-ul](products/variable_ul/product-spec.md) | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on EDGAR prospectus fee tables |
+| Guaranteed UL (ULSG) | [guaranteed-ul](products/guaranteed_ul/product-spec.md) | UL chassis + shadow-account secondary guarantee (AG 38 §8E Policy Design #1): policy stays in force while the shadow account is positive, funded by a solved level no-lapse premium; lapse-supported economics |
 
 ## Annuity product taxonomy
 
 | Product type | Folder | Representative design (one line) |
 |---|---|---|
-| Fixed deferred (MYGA) | [fixed-deferred-annuity](products/fixed-deferred-annuity/product-spec.md) | Single-premium book-value annuity: declared rate guaranteed for a multi-year period, surrender charge plus market value adjustment, Model #805 minimum guaranteed surrender value, death benefit at full account value — the **deferred base chassis** |
-| Fixed indexed (FIA) | [fixed-indexed-annuity](products/fixed-indexed-annuity/product-spec.md) | General-account deferred annuity with index-linked credits at a 0% floor (annual point-to-point with cap), premium bonus with vesting, and a guaranteed lifetime withdrawal benefit whose payments continue after the account value is exhausted |
-| Variable annuity | [variable-annuity](products/variable-annuity/product-spec.md) | Separate-account deferred annuity: subaccount units net of M&E and administrative charges, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base; guarantee cost is inherently stochastic |
-| Registered index-linked (RILA) | [registered-index-linked-annuity](products/registered-index-linked-annuity/product-spec.md) | SEC-registered buffered annuity (the NAIC term is **ILVA**): point-to-point terms with a downside buffer and an upside cap, and an AG 54 interim value built from a fixed-income proxy plus a Black-Scholes-priced derivative proxy |
-| Immediate (SPIA) | [immediate-annuity](products/immediate-annuity/product-spec.md) | Single premium converted immediately into a payment stream: life only, life with period certain, joint and survivor (both reduction triggers), cash refund and installment refund forms, with fixed compound COLA — the **payout chassis** |
-| Deferred income (DIA/QLAC) | [deferred-income-annuity](products/deferred-income-annuity/product-spec.md) | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice at then-current purchase rates, with a return-of-premium deferral death benefit and a QLAC variant meeting the Treasury requirements |
+| Fixed deferred (MYGA) | [fixed-deferred-annuity](products/fixed_deferred_annuity/product-spec.md) | Single-premium book-value annuity: declared rate guaranteed for a multi-year period, surrender charge plus market value adjustment, Model #805 minimum guaranteed surrender value, death benefit at full account value — the **deferred base chassis** |
+| Fixed indexed (FIA) | [fixed-indexed-annuity](products/fixed_indexed_annuity/product-spec.md) | General-account deferred annuity with index-linked credits at a 0% floor (annual point-to-point with cap), premium bonus with vesting, and a guaranteed lifetime withdrawal benefit whose payments continue after the account value is exhausted |
+| Variable annuity | [variable-annuity](products/variable_annuity/product-spec.md) | Separate-account deferred annuity: subaccount units net of M&E and administrative charges, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base; guarantee cost is inherently stochastic |
+| Registered index-linked (RILA) | [registered-index-linked-annuity](products/registered_index_linked_annuity/product-spec.md) | SEC-registered buffered annuity (the NAIC term is **ILVA**): point-to-point terms with a downside buffer and an upside cap, and an AG 54 interim value built from a fixed-income proxy plus a Black-Scholes-priced derivative proxy |
+| Immediate (SPIA) | [immediate-annuity](products/immediate_annuity/product-spec.md) | Single premium converted immediately into a payment stream: life only, life with period certain, joint and survivor (both reduction triggers), cash refund and installment refund forms, with fixed compound COLA — the **payout chassis** |
+| Deferred income (DIA/QLAC) | [deferred-income-annuity](products/deferred_income_annuity/product-spec.md) | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice at then-current purchase rates, with a return-of-premium deferral death benefit and a QLAC variant meeting the Treasury requirements |
 
 Each folder contains `product-spec.md` (representative specification, variations
 across insurers, regulatory context), `technical-notes.md` (liability cash flow model:
@@ -46,18 +46,18 @@ worked example, asserted cell by cell to the precision the notes display.
 
 | Product | Model | Grid | Verified against |
 |---|---|---|---|
-| term-life | [`models/term-life`](models/term-life/README.md) — `Term_US_A` | annual | the notes' 12-row worked example, to the cent |
-| whole-life | [`models/whole-life`](models/whole-life/README.md) — `WholeLife_US_A` | annual | all 15 steps of the dividend/PUA worked example, to the cent |
-| universal-life | [`models/universal-life`](models/universal-life/README.md) — `UL_US_S` | monthly | all 3 monthiversary rows plus the month-1 trace at full precision |
-| indexed-ul | [`models/indexed-ul`](models/indexed-ul/README.md) — `IUL_US_S` | monthly | both index scenarios and both variant credit bases |
-| variable-ul | [`models/variable-ul`](models/variable-ul/README.md) — `VUL_US_S` | monthly | the full worked example incl. the 60/40 net premium split and pro-rata deduction |
-| guaranteed-ul | [`models/guaranteed-ul`](models/guaranteed-ul/README.md) — `ULSG_US_S` | monthly | all 5 rows across both accounts, plus the forgone-deduction regime |
-| fixed-deferred-annuity | [`models/fixed-deferred-annuity`](models/fixed-deferred-annuity/README.md) — `MYGA_US_S` | monthly | the 7-month table, both surrender traces, and the Nationwide geometric-MVA factors |
-| fixed-indexed-annuity | [`models/fixed-indexed-annuity`](models/fixed-indexed-annuity/README.md) — `FIA_US_S` | monthly | all 16 rows, the surrender trace, and the GLWB depletion arithmetic |
-| variable-annuity | [`models/variable-annuity`](models/variable-annuity/README.md) — `VA_US_S` | monthly | both subaccounts at all 6 steps, plus all three memo lines |
-| registered-index-linked-annuity | [`models/registered-index-linked-annuity`](models/registered-index-linked-annuity/README.md) — `RILA_US_S` | monthly | all 6 rows × 13 columns of the AG 54 interim-value table, plus its trace |
-| immediate-annuity | [`models/immediate-annuity`](models/immediate-annuity/README.md) — `SPIA_US_S` | monthly | both survivor-reduction trigger columns at 7 payment dates, plus all 5 traces |
-| deferred-income-annuity | [`models/deferred-income-annuity`](models/deferred-income-annuity/README.md) — `DIA_US_S` | monthly | both premium slices, the derived guarantee period, and all 9 projection rows |
+| term-life | [`models/term-life`](products/term_life/model.md) — `Term_US_A` | annual | the notes' 12-row worked example, to the cent |
+| whole-life | [`models/whole-life`](products/whole_life/model.md) — `WholeLife_US_A` | annual | all 15 steps of the dividend/PUA worked example, to the cent |
+| universal-life | [`models/universal-life`](products/universal_life/model.md) — `UL_US_S` | monthly | all 3 monthiversary rows plus the month-1 trace at full precision |
+| indexed-ul | [`models/indexed-ul`](products/indexed_ul/model.md) — `IUL_US_S` | monthly | both index scenarios and both variant credit bases |
+| variable-ul | [`models/variable-ul`](products/variable_ul/model.md) — `VUL_US_S` | monthly | the full worked example incl. the 60/40 net premium split and pro-rata deduction |
+| guaranteed-ul | [`models/guaranteed-ul`](products/guaranteed_ul/model.md) — `ULSG_US_S` | monthly | all 5 rows across both accounts, plus the forgone-deduction regime |
+| fixed-deferred-annuity | [`models/fixed-deferred-annuity`](products/fixed_deferred_annuity/model.md) — `MYGA_US_S` | monthly | the 7-month table, both surrender traces, and the Nationwide geometric-MVA factors |
+| fixed-indexed-annuity | [`models/fixed-indexed-annuity`](products/fixed_indexed_annuity/model.md) — `FIA_US_S` | monthly | all 16 rows, the surrender trace, and the GLWB depletion arithmetic |
+| variable-annuity | [`models/variable-annuity`](products/variable_annuity/model.md) — `VA_US_S` | monthly | both subaccounts at all 6 steps, plus all three memo lines |
+| registered-index-linked-annuity | [`models/registered-index-linked-annuity`](products/registered_index_linked_annuity/model.md) — `RILA_US_S` | monthly | all 6 rows × 13 columns of the AG 54 interim-value table, plus its trace |
+| immediate-annuity | [`models/immediate-annuity`](products/immediate_annuity/model.md) — `SPIA_US_S` | monthly | both survivor-reduction trigger columns at 7 payment dates, plus all 5 traces |
+| deferred-income-annuity | [`models/deferred-income-annuity`](products/deferred_income_annuity/model.md) — `DIA_US_S` | monthly | both premium slices, the derived guarantee period, and all 9 projection rows |
 
 Model names are `<product>_<country>_<grid>`: the short name the product is actually
 known by — the same one the taxonomy tables above use, so `MYGA`, `FIA`, `RILA`, `SPIA`,
@@ -68,7 +68,7 @@ here are scalar single-model-point projections, which is lifelib's other sense o
 
 The pairing of name to folder is deliberately *not* derivable from the folder slug —
 `registered-index-linked-annuity` spelled out is unusable, and the industry says RILA — so
-it is registered once in [`tests/conftest.py`](../tests/conftest.py), and
+it is registered once in [`tests/conftest.py`](tests/conftest.py), and
 `tests/test_model_conventions.py` asserts that the registry, the directory on disk and the
 model's own `_name` all agree, along with the country and grid tags.
 
@@ -77,7 +77,7 @@ described: two Spaces (`Data` reads the input CSVs once per model, `Projection` 
 parameterized by `point_id`), inputs as **external** CSVs beside `run.py` so the model
 folder holds nothing but formulas, and a `Projection` docstring carrying the mapping from
 the technical notes' actuarial symbols to the cells names.
-[`tests/test_model_conventions.py`](../tests/test_model_conventions.py) applies that
+[`tests/test_model_conventions.py`](tests/test_model_conventions.py) applies that
 contract to every model in the registry; each model additionally has its own test module
 for its worked example and its product-specific invariants — the notes' "Known modeling
 pitfalls" sections are written up there as tests.
@@ -113,15 +113,15 @@ silently restating it, and each such pointer states what it inherits and where i
 deviates:
 
 - **Life:** the UL-family documents (indexed, variable, guaranteed) reference the
-  [universal-life technical notes](products/universal-life/technical-notes.md) for the
+  [universal-life technical notes](products/universal_life/technical-notes.md) for the
   shared base-chassis recursion, which is anchored on a retrieved specimen policy;
   deviations (e.g., VUL's prospectus-sourced NAAR convention) are explicitly flagged.
 - **Annuity, deferred:** the fixed-indexed and variable annuity documents inherit the
-  *structure* of the [fixed-deferred-annuity](products/fixed-deferred-annuity/technical-notes.md)
+  *structure* of the [fixed-deferred-annuity](products/fixed_deferred_annuity/technical-notes.md)
   chassis — surrender benefit composition, nonforfeiture floor, death benefit at account
   value — while carrying their own recursions and parameters.
 - **Annuity, payout:** the deferred-income annuity and the annuitization phase of the
-  RILA reference the [immediate-annuity](products/immediate-annuity/technical-notes.md)
+  RILA reference the [immediate-annuity](products/immediate_annuity/technical-notes.md)
   payout chassis symbol-for-symbol, stating their deltas.
 - **Across families:** where an annuity document borrows from a life document (index
   segment bookkeeping from indexed-UL, separate-account mechanics from variable-UL) it

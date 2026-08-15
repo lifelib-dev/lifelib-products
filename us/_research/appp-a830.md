@@ -37,7 +37,7 @@ record), and it discharges the "A-830 was not retrieved" caveat carried at
 `us/regulatory/statutory-accounting-and-capital.md`, `us/regulatory/technical-notes.md` and in five product directories.
 
 **Reference id.** This document is **R154** in the shared U.S. numbering
-(`us/references/regulatory-and-actuarial-references.md`). Cite as **[REG-R154 ¶N]** using the appendix's own paragraph numbers,
+(`references/regulatory-and-actuarial-references.md`). Cite as **[REG-R154 ¶N]** using the appendix's own paragraph numbers,
 and add the PDF page where a reader would need it.
 
 **Structural point that affects every citation to this text.** The appendix is numbered as a **flat sequence of paragraphs 1–32**
@@ -1120,13 +1120,13 @@ and fall back on the separately published model regulation [REG-R6] and the Stan
   the reserve-hierarchy paragraph ("Neither the AG I text nor A-585, A-820 and A-830 as printed in the manual was retrieved").
 - `us/regulatory/technical-notes.md`, "Formulaic reserves" — "the substantive current standard for term and ULSG is Model #830
   through VM-A item A-830 … **neither text was retrieved**".
-- `us/products/term-life/technical-notes.md` — "**A-820 and A-830 as printed in the AP&P Manual were not retrieved**".
-- `us/products/guaranteed-ul/technical-notes.md` — "**Neither A-830 as printed in the AP&P Manual nor the AG I text was**"
+- `products/term_life/technical-notes.md` — "**A-820 and A-830 as printed in the AP&P Manual were not retrieved**".
+- `products/guaranteed_ul/technical-notes.md` — "**Neither A-830 as printed in the AP&P Manual nor the AG I text was**"
   retrieved.
-- `us/products/indexed-ul/technical-notes.md` — "**A-585, A-820 and A-830 were not retrieved**".
-- `us/products/variable-ul/technical-notes.md` — "**A-270, A-820 and A-830 were not read**".
-- `us/products/whole-life/sources.md`, `us/products/universal-life/sources.md`,
-  `us/products/fixed-indexed-annuity/sources.md`, `us/products/registered-index-linked-annuity/sources.md` — the same standing
+- `products/indexed_ul/technical-notes.md` — "**A-585, A-820 and A-830 were not retrieved**".
+- `products/variable_ul/technical-notes.md` — "**A-270, A-820 and A-830 were not read**".
+- `products/whole_life/sources.md`, `products/universal_life/sources.md`,
+  `products/fixed_indexed_annuity/sources.md`, `products/registered_index_linked_annuity/sources.md` — the same standing
   note.
 
 A-830 is now first-hand as **R154**. **A-820 and A-585 remain unread** and every one of those notes must be rewritten to say so
@@ -1135,20 +1135,20 @@ depends on an unnamed universal-life appendix item.
 
 **2. Confirmed, with the source now behind it.**
 
-- `us/products/term-life/product-spec.md`: "Basic reserves for policies with guaranteed nonlevel gross premiums are the greater
+- `products/term_life/product-spec.md`: "Basic reserves for policies with guaranteed nonlevel gross premiums are the greater
   of segmented and unitary reserves under the contract segmentation method, which segments the projection using ratios of
   guaranteed gross premium rates per $1,000" — confirmed by ¶21 and ¶5, and the "per thousand of face amount" wording is exact.
 - Same file: "A level dollar policy fee after year 1 may be excluded from reserve premiums" — confirmed by ¶19, which adds the
   asymmetry that policy fees **may** be put back into guaranteed gross premiums for deficiency reserves even when excluded from
   the basic reserve.
-- Same file and `us/products/term-life/technical-notes.md`: deficiency reserves "mitigated by X-factor select mortality with
+- Same file and `products/term_life/technical-notes.md`: deficiency reserves "mitigated by X-factor select mortality with
   actuarial certification" — confirmed by ¶17.c, and the certification is now specific: annual opinion and memorandum under
   **A-822** asset adequacy requirements, disclosure in the **Regulatory Asset Adequacy Issues Summary**, and an annual opinion
   supported by an actuarial report, all triggered by X < 100% "at any duration for any policy".
 - `us/regulatory/technical-notes.md`, "Formulaic reserves": the CRVM expense-allowance cap "P19(x+1) = net level annual premium
   on the NINETEEN-year premium whole life plan, same amount, at age x+1" — A-830 prints the identical cap twice, at ¶11.a.iv.(a)
   and ¶14.a.ii.(a), so the note's "traps" paragraph is corroborated by a second independent source.
-- `us/products/term-life/technical-notes.md`: "Pre-PBR in-force (Regulation XXX): segmented vs unitary basic reserves under the
+- `products/term_life/technical-notes.md`: "Pre-PBR in-force (Regulation XXX): segmented vs unitary basic reserves under the
   contract segmentation method, deficiency reserves with X-factor select mortality" — confirmed, with the correction below on
   the mortality table.
 
@@ -1162,8 +1162,8 @@ depends on an unnamed universal-life appendix item.
   recalculation of the basic reserve with guaranteed gross premiums substituted for net premiums duration by duration wherever
   the gross is the smaller (¶17). The trigger test at ¶22.b further specifies that the comparison net premium is computed on the
   **minimum valuation standards of mortality and interest**, which need not be the standards used for the basic reserve.
-- **1980 CSO is a pre-2004 statement.** `us/products/term-life/product-spec.md` states flatly "the valuation basis is 1980 CSO
-  with optional select factors", and `us/products/term-life/technical-notes.md` says "deficiency reserves with X-factor select
+- **1980 CSO is a pre-2004 statement.** `products/term_life/product-spec.md` states flatly "the valuation basis is 1980 CSO
+  with optional select factors", and `products/term_life/technical-notes.md` says "deficiency reserves with X-factor select
   mortality on 1980 CSO". A-830 as printed makes that the **pre-1/1/2004** branch and prints the 2001 CSO Mortality Table as the
   minimum standard for basic reserves (¶16), deficiency reserves (¶17), tabular cost of insurance (¶23) and all four exemption
   calculations (¶¶25–28) from 1/1/2004. Both statements should be date-qualified.
@@ -1173,21 +1173,21 @@ depends on an unnamed universal-life appendix item.
   expense allowance in the segmented leg (¶11.a.iv restricts both the benefit numerator and the annuity denominator to the first
   segment, where ¶14.a.ii runs them to mandatory expiration). A term or ULSG block valued with the §5.A routine alone is not
   computing A-830 CRVM. The "Formulaic reserves" section should carry the segmented/unitary construction alongside the §5.A one.
-- **"Model 830 Section 7" does not resolve against this print.** `us/products/guaranteed-ul/product-spec.md` ("Model 830 Section
+- **"Model 830 Section 7" does not resolve against this print.** `products/guaranteed_ul/product-spec.md` ("Model 830 Section
   7 sets minimum reserves for UL with provisions keeping policies in force") and
-  `us/products/universal-life/product-spec.md` ("Model 830 Section 7 and AG 38 govern reserves") both cite a Section 7. The
+  `products/universal_life/product-spec.md` ("Model 830 Section 7 and AG 38 govern reserves") both cite a Section 7. The
   appendix has no sections; the material is at **¶¶29–32**, under the heading quoted above. This says nothing about whether the
   separately published Model #830 has a Section 7 — it may — but a citation aimed at the manual must use paragraph numbers.
   Recommended form: `[REG-R154 ¶¶29–32]`.
 - **A-830 does not apply to variable life or VUL at all.** ¶3.a.iii and ¶3.a.iv exclude both outright.
-  `us/products/variable-ul/technical-notes.md` currently lists A-830 among items "not read" as if it were potentially relevant;
+  `products/variable_ul/technical-notes.md` currently lists A-830 among items "not read" as if it were potentially relevant;
   the correct statement is that A-830 is **out of scope for VUL by its own terms**, so the open item for VUL is A-270 and A-820,
   not A-830. The drafting note at ¶29 reinforces this for VUL with secondary guarantees meeting ¶3.a.ii.
 - **The ULSG safe harbour is a concrete, citable threshold the library does not yet carry.** ¶3.a.ii takes a UL policy out of
   A-830 entirely on three simultaneous conditions — secondary guarantee period ≤ 5 years, specified premium ≥ the net level
   reserve premium for that period, and initial surrender charge ≥ 100% of the first-year annualized specified premium. This
-  belongs in `us/products/guaranteed-ul/` as a scope test.
-- **The ULSG construction is now stateable.** `us/products/guaranteed-ul/product-spec.md` describes the AG 38 interpolation but
+  belongs in `products/guaranteed_ul/` as a scope test.
+- **The ULSG construction is now stateable.** `products/guaranteed_ul/product-spec.md` describes the AG 38 interpolation but
   says nothing concrete about the underlying A-830 mechanics. They are: segmented reserves over the secondary guarantee period
   with gross premiums replaced by specified (else minimum) premiums and segments from ¶5 (¶30); deficiency reserves on the same
   substitution via ¶22 (¶31); floor = max(basic + deficiency for the guarantee, the minimum reserve under other UL appendices)

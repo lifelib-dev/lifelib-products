@@ -1,7 +1,7 @@
 # Sources — Single Premium Immediate Annuity (SPIA) (United States)
 
 Source ids, titles, publishers, doc types, URLs, access dates and retrieval markers are
-carried over **verbatim** from `us/_research/immediate-annuity.md` (the citation ground truth
+carried over **verbatim** from `_research/immediate-annuity.md` (the citation ground truth
 for [S#]/[R#] tags). Ids are never renumbered. Sources in the research file that are not
 cited in `product-spec.md` or `technical-notes.md` are omitted — **none were dropped: every
 S1–S11 and R1–R11 entry is cited.** No new sources were fetched at drafting; nothing is
@@ -132,7 +132,7 @@ below.
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
-These [R#] ids are **product-local** to `us/_research/immediate-annuity.md` and are
+These [R#] ids are **product-local** to `_research/immediate-annuity.md` and are
 independent of the cross-product [REG-R#] space below.
 
 ### R1. NAIC — *Valuation Manual*, Jan. 1, 2026 Edition, **VM-V: Statutory Maximum Valuation Interest Rates for Formulaic Reserves**, Section 1 "Income Annuities"
@@ -210,11 +210,11 @@ independent of the cross-product [REG-R#] space below.
 
 Cited with the [REG-R#] prefix to avoid collision with the product research file's own
 R-numbering above. The curated library is
-`us/references/regulatory-and-actuarial-references.md`. **[REG-R#] is one shared numbering
+`references/regulatory-and-actuarial-references.md`. **[REG-R#] is one shared numbering
 space running R1–R157**, with most of the **R73–R149** block **unused**: entries **R1–R34**
-originate in `us/_research/regulatory-actuarial.md` (the life-origin bibliography, several
+originate in `_research/regulatory-actuarial.md` (the life-origin bibliography, several
 of whose entries also bind annuity models) and entries **R35–R72** in
-`us/_research/regulatory-actuarial-annuities.md` (the annuity-specific continuation, which
+`_research/regulatory-actuarial-annuities.md` (the annuity-specific continuation, which
 opens at R35 and explicitly freezes R1–R34). Entries cited by the two documents in this
 directory:
 
@@ -246,7 +246,7 @@ directory:
 | REG-R70 | R35–R72 | ASOP No. 54 — Pricing of Life Insurance and Annuity Products | yes |
 | REG-R71 | R35–R72 | ASOP No. 10 — U.S. GAAP for Long-Duration Life, Annuity and Health Products (Doc. No. 207) | yes (local text extraction) |
 
-Verified at drafting: the curated page `us/references/regulatory-and-actuarial-references.md`
+Verified at drafting: the curated page `references/regulatory-and-actuarial-references.md`
 carries every entry of the R1–R157 numbering still in use, so every [REG-R#] tag above and
 below resolves there. The "Half" column records which research file each entry's annotation
 originates in, because the halves were compiled separately and R1–R34 are frozen against
@@ -255,7 +255,7 @@ renumbering.
 ### Superseded entries retained as records
 
 Id, title, publisher, URL, access date and fetched marker are carried from
-`us/references/regulatory-and-actuarial-references.md`. **Ids are never renumbered.** One
+`references/regulatory-and-actuarial-references.md`. **Ids are never renumbered.** One
 frozen R1–R72 entry — **R39** — appears here because it had not previously been cited by this
 directory; after the 2026-08-06 AP&P appendix pass **neither document cites R39 any longer**,
 and it is retained rather than deleted because a superseded record is evidence (see the
@@ -299,9 +299,9 @@ Cited by the `## Regulatory context` and `## Riders and options` sections of
 pointers` sections of `technical-notes.md` (**REG-R151** and **REG-R153**).
 Id, title, publisher,
 URL, access date, fetched marker and every carried-forward limit are reproduced
-from `us/references/regulatory-and-actuarial-references.md` (which carries them from
-the extraction files `us/_research/appp-ag33.md`, `us/_research/appp-ag35.md` and
-`us/_research/appp-a820-a821-a822.md`). **Ids are never renumbered.** Access date for every
+from `references/regulatory-and-actuarial-references.md` (which carries them from
+the extraction files `_research/appp-ag33.md`, `_research/appp-ag35.md` and
+`_research/appp-a820-a821-a822.md`). **Ids are never renumbered.** Access date for every
 entry below: **2026-08-06**.
 
 **One physical document behind R151–R157.** All seven are appendix items of the NAIC
@@ -338,7 +338,7 @@ it no reference id**. It is not cited anywhere in this directory and is **not ci
 - **Accessed:** 2026-08-06
 - **Fetched:** yes (local text extraction; **all eight printed pages read in full** —
   *Background Information*, *Purpose*, *Definitions*, *Text* 1–7 and *Effective Date*)
-- **Limits carried forward from `us/_research/appp-ag33.md`:** the running heads confirm
+- **Limits carried forward from `_research/appp-ag33.md`:** the running heads confirm
   Appendix C, but these pages carry **no volume statement** — the **Volume II** placement is
   R73's record, not theirs. They carry **no amendment history, no adoption note and no
   revision log**, so the guideline's printed *Effective Date* of **31 December 1998** cannot be
@@ -365,7 +365,7 @@ it no reference id**. It is not cited anywhere in this directory and is **not ci
 - **Fetched:** yes (local text extraction; **all ten printed pages read in full**, including
   Attachment 1 — the four computational methods, Attachment 2 — the "Hedged as Required"
   criteria, and the Attachment 3 and 4 certification forms)
-- **Limits carried forward from `us/_research/appp-ag35.md`:** the guideline prints **no
+- **Limits carried forward from `_research/appp-ag35.md`:** the guideline prints **no
   effective, adoption or operative date, no transition, no phase-in, no grandfathering and no
   sunset** — the only temporal language in the document is "regardless of the date of issue",
   so **any date attached to AG 35 elsewhere is an inference from outside this text**. It defines
@@ -391,7 +391,7 @@ it no reference id**. It is not cited anywhere in this directory and is **not ci
 - **Fetched:** yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full**
   including the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV,
   and **A-822's four paragraphs read in full**)
-- **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026"
+- **Limits carried forward from `_research/appp-a820-a821-a822.md`:** **"As of March 2026"
   is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those pages print.
   **A-821 prints only** the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table
   and its `AA_x` factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not
@@ -419,7 +419,7 @@ it no reference id**. It is not cited anywhere in this directory and is **not ci
 
 ## Provenance note
 
-Extraction details live in `us/_research/immediate-annuity.md`: that file records which facts
+Extraction details live in `_research/immediate-annuity.md`: that file records which facts
 came from which source, including every [unverified] flag, the failed/partial fetches (S10 and
 the block above), the low-reliability marking on S9, the vintage caveats on S6/S7/S8, and the
 research gaps this specification inherits — no specimen contract retrieved; **no published
@@ -429,16 +429,16 @@ Basic and Scale G2 numerical tables not retrieved (they live in Appendices 1–4
 Appendix A-821); NAIC-published VM-V rate inputs (Weight Tables 1–4, Table X spreads, VM-20
 Table A) not retrieved; the paywalled detail of the SOA payout annuity study; and unresearched
 state premium tax rates. The cross-product bibliographies
-`us/_research/regulatory-actuarial.md` (R1–R34) and
-`us/_research/regulatory-actuarial-annuities.md` (R35–R72) play the same role for
+`_research/regulatory-actuarial.md` (R1–R34) and
+`_research/regulatory-actuarial-annuities.md` (R35–R72) play the same role for
 [REG-R#] tags; where one of them and a document in this directory disagree, **the research
 file governs**. Standardizations marked **[std]** in `product-spec.md` and
 `technical-notes.md` are introduced at drafting and are not attributable to any source.
 
 **Correction to this note, 2026-08-06 (AP&P appendix pass).** Two of the research gaps listed
 above have moved, and the pass's own bibliographies are
-`us/_research/appp-ag33.md`, `us/_research/appp-ag35.md` and
-`us/_research/appp-a820-a821-a822.md`, which govern R151–R153 the same way.
+`_research/appp-ag33.md`, `_research/appp-ag35.md` and
+`_research/appp-a820-a821-a822.md`, which govern R151–R153 the same way.
 
 - **Closed.** The **2012 IAM Period Table and Projection Scale G2** *have* now been retrieved —
   A-821 prints both in full at its Appendices I–IV and they are transcribed in the research

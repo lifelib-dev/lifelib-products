@@ -1,7 +1,7 @@
 """Run the SPIA_US_S reference model and print its cash flow statement.
 
-    python us/models/immediate-annuity/run.py            # anchor cell (point_id = 1)
-    python us/models/immediate-annuity/run.py 8          # another model point
+    python products/immediate_annuity/run.py            # anchor cell (point_id = 1)
+    python products/immediate_annuity/run.py 8          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

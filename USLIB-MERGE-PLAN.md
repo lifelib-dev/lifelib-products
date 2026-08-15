@@ -407,6 +407,24 @@ order the notes derive them.
 The other **823** `:func:`/`:attr:` roles are fine: they are same-Space and resolve relative
 to the current module at any depth.
 
+**Two things implementation added to this picture.**
+
+*Sixty-six of the 163 module roles are cross-model* — the variable annuity naming the MYGA
+deferred chassis, the DIA naming the SPIA payout chassis, FIA and VA both naming
+`Term_US_A`. They are the chassis relationships the documents describe, restated in the
+docstrings, and they break in exactly the same way. The leading dot fixes them the same way
+too: refspecific search matches any module whose path ends that way, so a sibling reference
+resolves without either model knowing where the other sits. A fixer that only knew its own
+model's name would have silently left a third of the work undone.
+
+*Importing a model leaves `__pycache__` inside its folder*, and `test_round_trip_is_stable`
+compares the source and written file sets with `rglob("*")`. Under D9 the models are
+imported as a matter of course — that is what autodoc does — so the test failed for anyone
+who had built the docs. The comparison now ignores `__pycache__`, through a shared
+`model_files()` helper in each of the four modules that makes it. This is the first place
+where documenting the models changed what the tests must assert, and it is a consequence of
+D9 rather than incidental tidying.
+
 **The fix is one character.** Prefix the failing roles with a dot — `:mod:`.Term_US_A``,
 `:func:`.input_dir``. The leading dot makes the lookup *refspecific*, matching any module
 whose path ends that way. Verified: it resolves to
@@ -457,27 +475,47 @@ apply to every file; the adjacency check applies only to *rendered* documents, s
 - Nothing builds or passes at the end of this phase except `git status`; P2 is its
   other half and the two may be squashed if you prefer a single reviewable move.
 
-**P2 — Path rewrites** *(mechanical, scripted)*
+**P2 — Path rewrites** *(mechanical, scripted)* — **done**
+
+**The suite moved into the library first.** `tests/` is now `us/tests/`, not a repo-root
+directory moved at merge time as P7 item 6 originally said. This is the same D7 decision
+executed earlier, and it earns two things: `us/` is now the complete library, so the merge
+is a single directory move with nothing left behind; and `conftest.py` can already carry its
+final form — `LIB = Path(__file__).resolve().parents[1]` with `MODELS` entries reading
+`products/<slug>/<Model>`. Zero merge-time edits, and the relative locator D7 requires is
+correct from today rather than promised.
+
+**Paths became library-root-relative, not `uslib/`-prefixed.** `us/_research/term-life.md`
+is now `_research/term-life.md`. A path relative to the library root is correct in this
+repository *and* after the move into `lifelib/libraries/uslib/`, and it is the same string
+uklib wants — so it survives both moves untouched, which the `uslib/` prefix this plan first
+proposed would not. `tools/rewrite_paths.py`, 641 replacements across 118 files:
 
 | Where | What | Count |
 |---|---|---|
-| model `*.py` docstrings | `us/models/<hyphen>` and `us/products/<hyphen>` → `uslib/products/<underscore>` | 82 |
-| `tests/*.py` | model paths in the `MODELS` registry and per-model tests | 40 |
-| `*.md` prose | backticked `` `us/…​.md` `` paths | 478 |
-| `*.md` prose | backticked `` `tests/…` `` paths | 16 |
-| `*.md` | `python us/models/<p>/run.py` invocations | 20 |
-| `*.md` | relative `.md` links — slug rename, plus `../../products/x/` → `../x/` now that models sit inside `products/` | 63 |
-| model `*.py` docstrings | **D9:** leading dot on `:mod:`<Model>`` and `:mod:`<Model>.<Space>`` roles | 163 |
-| model `*.py` docstrings | **D9:** leading dot on cross-Space `:func:` roles | 2 |
-| model `*.py` docstrings | **D9:** widen the malformed RST simple table(s) — start with `Term_US_A.Projection`, where `plt_mort_factor_init_formula` overflows its column rule | ≥1 of ~54 |
+| model `*.py` and `*.md` | `us/models/<hyphen>` and `us/products/<hyphen>` → `products/<underscore>` | 641 across all rules |
+| `*.md` | relative link targets — resolved against the filesystem, repaired, then normalised to the shortest path that reaches the file (`tools/fix_relative_links.py`) | 69, of which 66 were broken |
+| model `*.py` docstrings | **D9:** leading dot on `:mod:` roles — 97 own-model, 66 cross-model | 163 |
+| model `*.py` docstrings | **D9:** leading dot on cross-Space `:func:`/`:attr:` roles | 2 |
+| `us/tests/*.py` | `REPO` → `LIB`, registry paths, and two contract assertions (below) | — |
 
-The 478 backticked paths are prose references to sibling documents. Per the third goal they
-should become **links**, not merely corrected strings — do that here, while the paths are
-being touched anyway.
+`us/regulatory/*` references are deliberately **not** rewritten. All 39 sit in `_research/`
+and name a statutory-framework stream removed from the library in 832247f; there is nothing
+to point them at, and editing them would falsify a provenance record.
 
-The D9 rows land here because they are the same files and the same kind of edit as the path
-rewrites, and because they depend on the final module depth that P1 fixes. They cannot be
-*verified* until P6 builds the API pages under `-n`, so treat them as staged, not done.
+The link repair resolves every relative target against the filesystem rather than
+pattern-matching the breakage, so an unfixable link is reported instead of mangled. It
+reports **0 unresolved**, and a second run is a no-op.
+
+Two test contracts changed, both because the world they assert about changed:
+`test_the_model_ships_with_its_inputs_and_a_runner` now expects `model.md` rather than
+`README.md`, and the round-trip file-set comparison ignores `__pycache__` (see D9).
+One hardcoded hyphenated slug — `assert MODEL_PATH.parent.name == "fixed-indexed-annuity"` —
+was caught by the suite exactly as D7 predicted, being the one thing a path rewriter cannot
+see because it is a bare directory name rather than a path.
+
+*Not done here:* the malformed docstring tables. They are only observable through the
+autodoc build, so they are handled in P6 where that build lives.
 
 **P3 — Citation anchors** *(targets only; no citation links yet)*
 Insert `(uslib-<product>-s<n>)=` / `(uslib-<product>-r<n>)=` above each of the **237** source
@@ -561,8 +599,10 @@ A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for 
 4. `doc/source/libraries/index.rst` — one table row and one toctree entry, `uslib/index.md`.
 5. `.gitignore` — `doc/source/libraries/uslib/`, one line per library (D8: this one cannot
    be globbed, because hand-written library doc dirs live in the same parent).
-6. Move `tests/` → `lifelib/libraries/uslib/tests/` (D7) — inside the library, following
-   `ifrs17a`. No CI or `tox.ini` change is needed.
+6. ~~Move `tests/` → `lifelib/libraries/uslib/tests/`~~ — **already done in P2.** The suite
+   is at `us/tests/` and travels with the directory, so the merge has nothing to do here.
+   No CI or `tox.ini` change is needed either: both run bare `pytest` from the repository
+   root, which already collects `ifrs17a`'s in-library tests.
 7. `doc/source/conf.py` — nothing further for D9: `autodoc`, `autosummary` and `napoleon`
    are already loaded, `autodoc_member_order = 'bysource'` is already set, and
    `lifelib/libraries` is already on `sys.path`. The twelve `model-api.md` arrive through

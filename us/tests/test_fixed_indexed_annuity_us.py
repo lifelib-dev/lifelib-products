@@ -1,7 +1,7 @@
 """Golden and product-specific tests for FIA_US_S.
 
 The golden values are the worked example in
-us/products/fixed-indexed-annuity/technical-notes.md ("Worked example"), which projects
+products/fixed_indexed_annuity/technical-notes.md ("Worked example"), which projects
 the anchor cell Male 62 ANB / single life / P = $100,000 / b = 7% / GLWB elected at issue
 / first lifetime withdrawal at anniversary 8 (attained age 70).  They are hard-coded here
 rather than pickled so that a reviewer can compare them against the notes by eye.
@@ -19,9 +19,9 @@ decimals of a percentage, the MVA factor to the eight decimals it is printed at.
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/fixed-indexed-annuity/FIA_US_S"
+MODEL_PATH = LIB / "products/fixed_indexed_annuity/FIA_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 RATE = 5e-7           # rates displayed as a percentage to 4 d.p.
@@ -1168,7 +1168,7 @@ def test_every_model_point_projects(fixed_indexed_annuity):
 
 def test_the_model_name_matches_the_product_folder(fixed_indexed_annuity):
     assert fixed_indexed_annuity.name == "FIA_US_S"
-    assert MODEL_PATH.parent.name == "fixed-indexed-annuity"
+    assert MODEL_PATH.parent.name == "fixed_indexed_annuity"
 
 
 def test_the_grid_is_annual_as_the_notes_state(fixed_indexed_annuity, anchor):

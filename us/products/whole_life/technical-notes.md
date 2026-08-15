@@ -6,9 +6,9 @@ Scope note: these notes specify a reference liability cash flow projection model
 (lifelib/modelx style) for the standardized composite products defined in `product-spec.md`
 ("RefWL-Par" participating whole life; "RefWL-FE" non-par final-expense whole life). They do
 not describe any single insurer's model. [S#]/[R#] tags cite the product research file
-(`us/_research/whole-life.md`); [REG-R#] tags cite the cross-product reference library
-(`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md`, same R-numbering). **[std]** marks standardizations introduced for the
+(`_research/whole-life.md`); [REG-R#] tags cite the cross-product reference library
+(`references/regulatory-and-actuarial-references.md`; research provenance in
+`_research/regulatory-actuarial.md`, same R-numbering). **[std]** marks standardizations introduced for the
 reference implementation. Parameter values are identical to those in `product-spec.md`.
 
 ---
@@ -162,7 +162,7 @@ on 2017 CSO / 4% [S1][R1][R3]. Properties to verify: `CV_{100−x}^min = F` (sin
 
 Practical treatment **[std]**: the reference implementation reads `CV_t` (per $1,000 of face)
 from a table input, because contractual CV tables are policy-form documents not publicly
-available for the surveyed carriers (research gap noted in `us/_research/whole-life.md`). The
+available for the surveyed carriers (research gap noted in `_research/whole-life.md`). The
 shipped table is generated from the formula above; an implementer replacing it with a carrier
 table changes no other logic. Contractual `CV_t ≥ CV_t^min` always [R1].
 

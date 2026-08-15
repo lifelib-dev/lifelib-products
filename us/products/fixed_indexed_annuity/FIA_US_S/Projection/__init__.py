@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of :mod:`~FIA_US_S`.
+"""The by-contract projection of :mod:`~.FIA_US_S`.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -14,7 +14,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent directory,
-``us/models/fixed-indexed-annuity/``, read at run time rather than stored inside the
+``products/fixed_indexed_annuity/``, read at run time rather than stored inside the
 model. The model folder therefore holds nothing but formulas — no ``_data/``, no IOSpec,
 no embedded values — so a diff of the model shows logic changes only, and an input can be
 edited or swapped without rewriting the model. This follows ``annuallife.TradLife_A``;
@@ -26,7 +26,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 and then fails on first evaluation.
 
 The readers and the filename References live on the sibling
-:mod:`~FIA_US_S.Data` Space, reached here through the ``data`` Reference, so
+:mod:`~.FIA_US_S.Data` Space, reached here through the ``data`` Reference, so
 each file is read once per model rather than once per model point:
 
 =========================  ==================================  ==========================
@@ -47,7 +47,7 @@ withdrawal_file            data.withdrawal_table()             withdrawal_table.
 ends contract year ``t``, because the technical notes make the anniversary the single
 event date: "All transactions occur **at** the anniversary and are processed as the last
 events of the contract year ending there" **[std]**. Contrast
-:mod:`MYGA_US_S`, whose ``t`` counts months. The library's product
+:mod:`.MYGA_US_S`, whose ``t`` counts months. The library's product
 assignment table records this product as monthly; **its own technical notes state annual
 and the notes govern**, because every mechanic in the composite is annual and a monthly
 grid would resolve only the variants the notes exclude.
@@ -55,7 +55,7 @@ grid would resolve only the variants the notes exclude.
 ``age(t) = age_at_entry() + t`` is the attained age **at anniversary** ``t``, which is
 the notes' own definition and the age that reads the lifetime-withdrawal percentage
 table. Mortality over contract year ``t`` therefore reads the table one year lower, at
-``age(t - 1)``. This differs from :mod:`Term_US_A` and :mod:`MYGA_US_S`,
+``age(t - 1)``. This differs from :mod:`.Term_US_A` and :mod:`.MYGA_US_S`,
 where ``age(t)`` is the age at the *start* of the period; see the Naming rubric.
 
 ``t = 0`` is the issue instant on a new-issue model point and carries the single premium,
@@ -82,7 +82,7 @@ Steps 1--3 are skipped in ``DEPLETED``, steps 1--7 in ``TERMINATED``.
 
 .. rubric:: Naming
 
-Cells names follow :mod:`MYGA_US_S` — the deferred annuity chassis this
+Cells names follow :mod:`.MYGA_US_S` — the deferred annuity chassis this
 product sits on — and through it lifelib's ``basiclife.BasicTerm_S`` and
 ``savings.CashValue_SE``: ``pols_*`` for policy counts, ``av_*`` for account values,
 plural nouns for cash flows, ``*_rate`` for rates, ``*_pp`` for per-contract amounts,
@@ -224,7 +224,7 @@ Six names needed care.
 
 **pols_if(t) is the start of the year; the notes' l(t) is the end of it.** Across this
 library ``pols_if(t)`` is the number in force at the **start** of period ``t`` and is the
-weight carried by that same row's cash flows — :mod:`Term_US_A` has
+weight carried by that same row's cash flows — :mod:`.Term_US_A` has
 ``pols_if(1) == pols_if_init()`` and ``savings.CashValue_SE`` has ``pols_if(t)`` equal to
 ``pols_if_at(t, "BEF_MAT")``. These notes define ``l(t)`` the other way round, as the
 in-force probability at the *end* of contract year ``t``. Both are kept and neither is
@@ -236,7 +236,7 @@ divisor of the cash flows on its own row — ``result_cf()["wd_guar"][t] / wd_gu
 is ``pols_if(t)`` — which was not true when the column carried the closing count.
 
 **MGV is MGSV.** The Model #805 floor is called ``MGV`` in these notes, after [S10], and
-``MGSV`` in ``us/products/fixed-deferred-annuity/``, after its own specimen. Both source
+``MGSV`` in ``products/fixed_deferred_annuity/``, after its own specimen. Both source
 files say in terms that this is **one quantity under two labels** and must not be modeled
 as two. The chassis name :func:`mgsv_pp` is used here, so the two annuity models share it.
 The *recursion*, however, is **not** the chassis's: this product accretes and then deducts,
@@ -257,7 +257,7 @@ surrender path. Reading a chassis formula across without renaming would silently
 surrender charge on the wrong base.
 
 **age(t) is the age at the anniversary,** ``age_at_entry() + t``, not at the start of the
-period as in :mod:`Term_US_A` and :mod:`MYGA_US_S`. The notes define it that
+period as in :mod:`.Term_US_A` and :mod:`.MYGA_US_S`. The notes define it that
 way and the payout percentage depends on it: the anchor cell's first lifetime withdrawal at
 ``t = 8`` reads ``pi(70, single) = 5.20%`` with an issue age of 62. Mortality over contract
 year ``t`` consequently reads ``age(t - 1)``, and :func:`mort_rate` says so.
@@ -268,10 +268,10 @@ year ``t`` consequently reads ``age(t - 1)``, and :func:`mort_rate` says so.
 ``M_shock`` as a separate factor would require inventing a denominator, so
 :func:`lapse_rate_base` returns :func:`shock_lapse_rate` in the shock year and
 :func:`lapse_rate` multiplies only by :func:`lapse_moneyness_factor`. The name
-``shock_lapse_rate`` follows :mod:`Term_US_A`.
+``shock_lapse_rate`` follows :mod:`.Term_US_A`.
 
 **d and c collide across the library.** ``d`` is the performance-trigger rate in these
-notes, deaths in :mod:`Term_US_A` and the floor's withdrawal deduction on the chassis;
+notes, deaths in :mod:`.Term_US_A` and the floor's withdrawal deduction on the chassis;
 ``c`` is the declared cap here and the floor's contract charge on the chassis. The names
 :func:`trigger_rate`, :func:`pols_death`, :func:`mgsv_charge_pp` and :func:`cap_rate`
 keep the four apart.
@@ -351,7 +351,7 @@ holds for every ``t``, including the last, where ``pols_if(proj_len() + 1)`` is 
 at age 120, so the projection closes itself and the term is numerically zero; it is kept
 because a substituted table with no terminal age would make it bite, and because without
 it the last year would appear to lose lives with no cause. The name follows
-``BasicTerm_S.pols_maturity`` and the construction follows :mod:`Term_US_A`.
+``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_A`.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -642,7 +642,7 @@ def age(t):
 
     This is the age that reads the lifetime withdrawal percentage table, so the anchor
     cell's exercise at t = 8 from issue age 62 reads the 70-79 band.  Note the contrast
-    with :mod:`Term_US_A` and :mod:`MYGA_US_S`, where ``age(t)`` is the age
+    with :mod:`.Term_US_A` and :mod:`.MYGA_US_S`, where ``age(t)`` is the age
     at the *start* of the period; :func:`mort_rate` therefore reads ``age(t - 1)``.
     """
     return age_at_entry() + t
@@ -1745,7 +1745,7 @@ def mort_rate(t):
 
     ``age(t)`` is the attained age **at** anniversary t, so the rate for the year ending
     there is the one entering it.  The shipped table is the same illustrative Makeham
-    annuitant curve as ``us/models/fixed-deferred-annuity`` **[std]**, *not* a published
+    annuitant curve as ``products/fixed_deferred_annuity`` **[std]**, *not* a published
     basis.  The prescribed basis is the 2012 IAM Basic / 2012 IAR generational family
     with Projection Scale G2, ``q_x^(2012+n) = q_x^(2012) x (1 - G2_x)^n``, rounding
     applied from the 2012 period rate each time and never by compounding an already
@@ -1845,7 +1845,7 @@ def lapse_rate(t):
 def pols_if(t):
     """The in-force probability at the **start** of contract year t: the notes' l(t-1).
 
-    The library convention, set by :mod:`Term_US_A` and ``savings.CashValue_SE``: this is
+    The library convention, set by :mod:`.Term_US_A` and ``savings.CashValue_SE``: this is
     the count entering the anniversary, before any of its eight processing steps, and it
     is the weight carried by every cash flow reported on the same row of :func:`result_cf`.
     The notes' own ``l(t)`` — the probability at the *end* of contract year t — is the

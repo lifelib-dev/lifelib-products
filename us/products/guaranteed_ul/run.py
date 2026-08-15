@@ -1,7 +1,7 @@
 """Run the ULSG_US_S reference model and print its account roll-forward.
 
-    python us/models/guaranteed-ul/run.py            # anchor cell (point_id = 1)
-    python us/models/guaranteed-ul/run.py 2          # another model point
+    python products/guaranteed_ul/run.py            # anchor cell (point_id = 1)
+    python products/guaranteed_ul/run.py 2          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

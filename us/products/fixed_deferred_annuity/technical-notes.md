@@ -5,12 +5,12 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model for
 the standardized composite product defined in `product-spec.md` (same directory). This is
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
-`us/_research/fixed-deferred-annuity.md`; [REG-R#] tags refer to the cross-product
-reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
+`_research/fixed-deferred-annuity.md`; [REG-R#] tags refer to the cross-product
+reference library `references/regulatory-and-actuarial-references.md`, whose shared
 R-numbering now runs **R1–R157** with most of the **R73–R149** block unused (provenance:
-`us/_research/regulatory-actuarial.md` for R1–R34,
-`us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the AP&P Manual appendix
-extractions `us/_research/appp-ag33.md`, `appp-ag35.md`, `appp-a820-a821-a822.md` and
+`_research/regulatory-actuarial.md` for R1–R34,
+`_research/regulatory-actuarial-annuities.md` for R35–R72, and the AP&P Manual appendix
+extractions `_research/appp-ag33.md`, `appp-ag35.md`, `appp-a820-a821-a822.md` and
 `appp-a585-a250-a255-a270.md` for R151–R157, all accessed **2026-08-06**).
 **[std]** marks
 standardizations introduced for the reference implementation. **Parameter values are
@@ -215,7 +215,7 @@ contracts the company does **not** administer [R2 §6.B.3]; the $50 maintenance 
 | `AV'(t)` | account value after the BOM transaction, before crediting |
 | `SV(t)` | gross surrender value before the nonforfeiture floor |
 | `SB(t)` | surrender benefit actually paid |
-| `MGSV(t)` | minimum guaranteed surrender value (Model #805 floor); the specimen [S11] calls it the "GMSV", `us/products/fixed-indexed-annuity/` the "guaranteed minimum value (`MGV`)" — one concept |
+| `MGSV(t)` | minimum guaranteed surrender value (Model #805 floor); the specimen [S11] calls it the "GMSV", `products/fixed_indexed_annuity/` the "guaranteed minimum value (`MGV`)" — one concept |
 | `q(t)`, `w(t)` | monthly mortality and monthly total surrender rates |
 | `a(t)` | monthly annuitization election rate |
 | `l(t)` | in-force probability at end of month `t` |
@@ -615,8 +615,8 @@ cited, not reproduced:
   amendment history, so "a later revision" is an inference, not a fact from either source;
   the 1 January 1981 issue-date reach is common to both, and the 33⅓ / 66⅔ / 100% grade-in
   ran off by December 31, 2000. The mechanics are **no longer [unverified]**: they are in
-  the primary-text extractions `us/_research/appp-a820-a821-a822.md` and
-  `us/_research/appp-ag33.md`.
+  the primary-text extractions `_research/appp-a820-a821-a822.md` and
+  `_research/appp-ag33.md`.
   **VM-V §1** carries the statutory maximum valuation interest rate on the post-annuitization
   payout stream [REG-R37].
 - **Tax and GAAP.** IRC §807: greater of net surrender value and, post-TCJA, **92.81% of**

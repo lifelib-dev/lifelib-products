@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. single premium immediate annuities.
 
-:mod:`~SPIA_US_S` is the executable counterpart of
-``us/products/immediate-annuity/technical-notes.md`` in the lifelib-products library.
+:mod:`~.SPIA_US_S` is the executable counterpart of
+``products/immediate_annuity/technical-notes.md`` in the lifelib-products library.
 It projects gross liability cash flows for a single SPIA already in payment: scheduled
 instalments to the annuitant and, on a joint contract, to the surviving annuitant at a
 survivor percentage; a certain-period or refund guarantee; a cash-refund lump sum on
@@ -22,14 +22,14 @@ Payout Annuity Reserving Category [R2].
 
 **Spaces.** The model contains two:
 
-:mod:`~SPIA_US_S.Data`
+:mod:`~.SPIA_US_S.Data`
     Reads the four input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~SPIA_US_S.Projection`
+:mod:`~.SPIA_US_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~SPIA_US_S.Data`
+    ``data`` Reference, which resolves to the single :mod:`~.SPIA_US_S.Data`
     Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
@@ -101,7 +101,7 @@ open a case the notes leave under-specified and would otherwise go untested: poi
 and their own advance payment schedule disagree, and point 15 is the **certain_only**
 form, where the notes' expense formula ``IF(t) = max(C, l_alive)`` outlives the contract
 that their own prose ends at ``n_eff``. Both divergences are resolved in
-:mod:`~SPIA_US_S.Projection`'s docstring and pinned by tests. A test asserts
+:mod:`~.SPIA_US_S.Projection`'s docstring and pinned by tests. A test asserts
 every model point projects.
 
 **Verification.** ``tests/test_immediate_annuity_us.py`` asserts every row and column of
@@ -115,7 +115,7 @@ months.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/immediate-annuity/SPIA_US_S")
+    >>> model = mx.read_model("products/immediate_annuity/SPIA_US_S")
     >>> model.Projection[1].result_cf()
 """
 

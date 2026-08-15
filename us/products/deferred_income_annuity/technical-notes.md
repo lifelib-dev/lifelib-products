@@ -4,11 +4,11 @@
 
 **Scope note.** A reference liability cash-flow projection model for the standardized composite product
 defined in `product-spec.md` (same directory); not any single insurer's product. [S#]/[R#] refer to
-`us/_research/deferred-income-annuity.md`; [REG-R#] refers to
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157** as one
+`_research/deferred-income-annuity.md`; [REG-R#] refers to
+`references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157** as one
 space, with most of the **R73–R149** block unused (R1–R34 of life origin, provenance
-`us/_research/regulatory-actuarial.md`; R35–R72 annuity-specific, provenance
-`us/_research/regulatory-actuarial-annuities.md`;
+`_research/regulatory-actuarial.md`; R35–R72 annuity-specific, provenance
+`_research/regulatory-actuarial-annuities.md`;
 **R150–R157 the AP&P Manual appendix and actuarial-guideline prints read on 2026-08-06**).
 **[std]** marks standardizations introduced for
 the reference implementation; [unverified] marks claims not confirmed against a retrieved document. Parameter
@@ -24,7 +24,7 @@ values are identical to those in `product-spec.md`.
    that do not exist for this product". Do not synthesize any of them.
 2. **The income phase is the immediate-annuity payout chassis.** Payout forms, refund and certain-period
    guarantees, survivor reduction and its interaction with a guarantee period, COLA escalation and
-   payment-survivorship weighting are specified in `us/products/immediate-annuity/technical-notes.md` and are
+   payment-survivorship weighting are specified in `products/immediate_annuity/technical-notes.md` and are
    **not restated** here. These notes cover the **deferral phase**, the **transition**, the **in-force
    options** and the **QLAC overlay**, and define only the payout-phase quantities the DIA changes — chiefly
    the refund base, which is cumulative premiums rather than a single premium.
@@ -40,7 +40,7 @@ values are identical to those in `product-spec.md`.
   because the modal payment frequency is monthly [S1][S2][S3][S4] and because the 13-month minimum deferral
   and the 13-month premium cut-off are expressed in months [S2][S4][R9].
 - **Timing conventions [std].** Premiums are received at the **start** of month `t`. Income is paid in
-  **arrears** at the **end** of each payment period, matching `us/products/immediate-annuity/product-spec.md`;
+  **arrears** at the **end** of each payment period, matching `products/immediate_annuity/product-spec.md`;
   the model exposes `pay_timing ∈ {advance, arrears}` because no retrieved DIA document states the
   convention. Deferral death benefits are paid at the **end of the month of death**. `T` is a month index and
   the income start date is the **start of month `T`** (exactly `T/12` years after issue); under arrears the
@@ -232,7 +232,7 @@ years; `A_rop` and `L` are dimensionless (per $1 of premium). Hence `pr = (dimen
     a_def(x, d, f; i)  =  v^d  ·  _d p_x  ·  a^{(m)}_{x+d}(f; i)                                       (1)
 
 `a^{(m)}_y(f; i)` is the APV of the payout form, built from the payment factor `Φ(t) = max(C(t), L(t))`
-defined in `us/products/immediate-annuity/technical-notes.md` (certain floor `C`, life-contingent factor `L`,
+defined in `products/immediate_annuity/technical-notes.md` (certain floor `C`, life-contingent factor `L`,
 survivor percentage and reduction trigger included); for a certain-and-life form with guarantee period `n_g`,
 
     a^{(m)}_y(f; i)  =  Σ_{j=1..m·n_g} (1/m)·v^{j/m}  +  Σ_{j>m·n_g} (1/m)·v^{j/m}·_{j/m} p_y          (2)

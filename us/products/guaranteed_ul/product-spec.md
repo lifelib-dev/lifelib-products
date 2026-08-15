@@ -5,9 +5,9 @@
 Scope note: this is a standardized composite specification assembled for reference
 liability-modeling purposes. It does not describe any single insurer's product.
 Facts carrying a source tag ([S#] = product source, [R#] = regulatory/actuarial source,
-both per `us/_research/guaranteed-ul.md`; [REG-R#] = cross-product reference library
-`us/references/regulatory-and-actuarial-references.md`, research provenance in
-`us/_research/regulatory-actuarial.md`, same R-numbering) were extracted from retrieved
+both per `_research/guaranteed-ul.md`; [REG-R#] = cross-product reference library
+`references/regulatory-and-actuarial-references.md`, research provenance in
+`_research/regulatory-actuarial.md`, same R-numbering) were extracted from retrieved
 documents. Items marked **[std]** are standardizations introduced for the reference
 implementation; each **[std]** table row carries a footnote with the rationale and the
 observed range across insurers. Items marked [unverified] were recorded in the research

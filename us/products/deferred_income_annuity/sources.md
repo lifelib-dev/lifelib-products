@@ -1,7 +1,7 @@
 # Sources — Deferred Income Annuity (DIA) and Qualified Longevity Annuity Contract (QLAC) (United States)
 
 Source ids, titles, publishers, URLs, access dates and retrieval markers are carried over
-verbatim from `us/_research/deferred-income-annuity.md` (the citation ground truth for
+verbatim from `_research/deferred-income-annuity.md` (the citation ground truth for
 [S#]/[R#] tags). **Ids are never renumbered.** Sources in the research file that are not
 cited in `product-spec.md` or `technical-notes.md` are omitted (dropped here: **S7**, NYL
 official fact sheet, failed fetch; **S10**, Brighthouse QLAC brochure, failed fetch;
@@ -13,13 +13,13 @@ research file itself). **No new sources were fetched at drafting; nothing is mar
 (A-820 with A-821 and A-822) and **REG-R154** (A-830) were added after the NAIC *Accounting
 Practices and Procedures Manual, As of March 2026* was found to be a **free download** rather
 than the paid publication this library had recorded, and were read in full from it. Their
-metadata is carried from `us/references/regulatory-and-actuarial-references.md`,
+metadata is carried from `references/regulatory-and-actuarial-references.md`,
 the citation ground truth for R150–R157. **Nothing is renumbered:** the frozen **REG-R39** ("AG 33 text not retrieved")
 and **REG-R110** ("A-820 and A-830 were not retrieved") entries below are preserved exactly as
 written and carry **appended** supersession notes rather than edits. **REG-R39 is now cited by
 neither document in this directory and is retained anyway**, on the principle that a superseded
 record is evidence, not clutter — the same treatment
-`us/references/regulatory-and-actuarial-references.md` gives it.
+`references/regulatory-and-actuarial-references.md` gives it.
 
 Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153** and
 **REG-R154**, accessed **2026-08-06**.
@@ -281,21 +281,21 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 
 These are cited with the **[REG-R#]** prefix to avoid collision with the product research
 file's own R-numbering. They resolve against the curated page
-`us/references/regulatory-and-actuarial-references.md`, whose **shared numbering space runs
+`references/regulatory-and-actuarial-references.md`, whose **shared numbering space runs
 R1–R157 and is one space, not several**, with **most of the R73–R149 block unused** (the
 gaps are not losses and must not be back-filled):
 
-- **R1–R34** are of life origin; research provenance `us/_research/regulatory-actuarial.md`.
+- **R1–R34** are of life origin; research provenance `_research/regulatory-actuarial.md`.
   Several of them also bind annuity models and are listed as such in the annuity
   bibliography's "Existing entries (R1–R34) that also bind annuity models" table.
 - **R35–R72** are annuity-specific; research provenance
-  `us/_research/regulatory-actuarial-annuities.md`, which opens the continuation of the
+  `_research/regulatory-actuarial-annuities.md`, which opens the continuation of the
   same numbering space at R35.
 - **R150–R157** are the AP&P Manual appendix and actuarial-guideline prints read on
   2026-08-06; per-entry bibliography at
-  `us/references/regulatory-and-actuarial-references.md`, research provenance
-  `us/_research/appp-ag33.md` (R151), `us/_research/appp-a820-a821-a822.md` (R153) and
-  `us/_research/appp-a830.md` (R154). Cited here by `technical-notes.md` and by the
+  `references/regulatory-and-actuarial-references.md`, research provenance
+  `_research/appp-ag33.md` (R151), `_research/appp-a820-a821-a822.md` (R153) and
+  `_research/appp-a830.md` (R154). Cited here by `technical-notes.md` and by the
   "Regulatory context" paragraphs of `product-spec.md`; the three entries are reproduced
   below.
 
@@ -338,7 +338,7 @@ Cross-product note carried over from the annuity bibliography — **the numbers 
 cross-product numbers, i.e. [REG-R#] in this directory, not the product-local [R#] above**:
 for the deferred-income-annuity product the binding new entries are **R36, R37, R41, R59,
 R60, R61, R55, R56, R57, R58, R70, R71**, plus the existing entries **R1, R3, R16, R27,
-R29, R32, R33, R34** [`us/_research/regulatory-actuarial-annuities.md`, cross-reference
+R29, R32, R33, R34** [`_research/regulatory-actuarial-annuities.md`, cross-reference
 table]. (Cross-product R1, R3, R33 are cited by neither document in this directory, so
 they carry no [REG-R#] row in the table above.)
 
@@ -346,7 +346,7 @@ they carry no [REG-R#] row in the table above.)
 
 The two entries below are preserved exactly as written and carry **appended** supersession
 notes rather than edits; ids, titles, publishers, URLs, access dates and fetched markers are
-carried from `us/references/regulatory-and-actuarial-references.md`. **Nothing is
+carried from `references/regulatory-and-actuarial-references.md`. **Nothing is
 renumbered and nothing is re-worded.** Read every heading as a cross-product id, i.e. `[REG-R#]`
 in this directory, never the product-local `[R#]` of the section above.
 
@@ -385,7 +385,7 @@ in this directory, never the product-local `[R#]` of the section above.
 ### Entries added 2026-08-06 from the AP&P Manual appendix and guideline prints
 
 Ids, titles, publishers, URLs, access dates, fetched markers and carried-forward limits below are
-reproduced from `us/references/regulatory-and-actuarial-references.md`, including the
+reproduced from `references/regulatory-and-actuarial-references.md`, including the
 internal cross-references they make to ids not listed in this directory (R1, R5, R6, R33, R39,
 R41, R73, R101, R102, R110), which resolve against that shared reference page. **Nothing is
 renumbered and nothing is re-worded.** Read every heading as a cross-product id, i.e. `[REG-R#]`
@@ -424,7 +424,7 @@ referred to descriptively where it comes up at all and is **never cited as a [RE
 - **Accessed:** 2026-08-06
 - **Fetched:** yes (local text extraction; **all eight printed pages read in full** —
   *Background Information*, *Purpose*, *Definitions*, *Text* 1–7 and *Effective Date*)
-- **Limits carried forward from `us/_research/appp-ag33.md`:** the running heads confirm
+- **Limits carried forward from `_research/appp-ag33.md`:** the running heads confirm
   Appendix C, but these pages carry **no volume statement** — the **Volume II** placement is
   R73's record, not theirs. They carry **no amendment history, no adoption note and no
   revision log**, so the guideline's printed *Effective Date* of **31 December 1998** cannot be
@@ -448,7 +448,7 @@ referred to descriptively where it comes up at all and is **never cited as a [RE
 - **Fetched:** yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full**
   including the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV,
   and **A-822's four paragraphs read in full**)
-- **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026"
+- **Limits carried forward from `_research/appp-a820-a821-a822.md`:** **"As of March 2026"
   is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those pages print.
   **A-821 prints only** the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table
   and its `AA_x` factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not
@@ -477,7 +477,7 @@ referred to descriptively where it comes up at all and is **never cited as a [RE
 - **Fetched:** yes (local text extraction; **¶¶1–32 and the Attachment read in full**; the six
   factor tables transcribed programmatically, each parsing to 71 issue-age rows × 20 duration
   columns)
-- **Limits carried forward from `us/_research/appp-a830.md`:** the appendix is a **flat sequence
+- **Limits carried forward from `_research/appp-a830.md`:** the appendix is a **flat sequence
   of paragraphs ¶¶1–32 plus an unnumbered Attachment and has no Sections at all**, so a
   "Model 830 Section 7" citation **does not resolve** against this print — the ULSG material is at
   **¶¶29–32** — and the words **"Model #830" and "Regulation XXX" appear nowhere** in it. It prints
@@ -499,7 +499,7 @@ referred to descriptively where it comes up at all and is **never cited as a [RE
 
 ## Provenance note
 
-Extraction details live in `us/_research/deferred-income-annuity.md`: that file records
+Extraction details live in `_research/deferred-income-annuity.md`: that file records
 which facts came from which source, the [unverified] flags, the failed fetches (S7–S11),
 the source-vintage caveats (MassMutual 2019 [S2][S8], Guardian January 2018 [S3][S9][S11],
 with NYL June 2026 [S1] and Pacific Life February 2026 [S4] the current-vintage primary
@@ -529,13 +529,13 @@ follows rather than repeating the common misconceptions:
    benefits are non-elective** under AG 33's *Definitions* 1, and **"efficient policyholder
    selection" is not AG 33's language** and appears nowhere in the guideline [REG-R151].
 
-The cross-product bibliographies `us/_research/regulatory-actuarial.md` (R1–R34) and
-`us/_research/regulatory-actuarial-annuities.md` (R35–R72) play the same role for
+The cross-product bibliographies `_research/regulatory-actuarial.md` (R1–R34) and
+`_research/regulatory-actuarial-annuities.md` (R35–R72) play the same role for
 [REG-R#] tags; for **REG-R151, REG-R153 and REG-R154** the research provenance is
-`us/_research/appp-ag33.md`, `us/_research/appp-a820-a821-a822.md` and
-`us/_research/appp-a830.md` respectively, and where one of those files and a document in
+`_research/appp-ag33.md`, `_research/appp-a820-a821-a822.md` and
+`_research/appp-a830.md` respectively, and where one of those files and a document in
 this directory disagree, **the research file governs**. Income-phase mechanics are specified in
-`us/products/immediate-annuity/`, whose research provenance is
-`us/_research/immediate-annuity.md`. Standardizations marked **[std]** in
+`products/immediate_annuity/`, whose research provenance is
+`_research/immediate-annuity.md`. Standardizations marked **[std]** in
 `product-spec.md` and `technical-notes.md` are introduced at drafting and are not
 attributable to any source.

@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of :mod:`~RILA_US_S`.
+"""The by-contract projection of :mod:`~.RILA_US_S`.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -15,7 +15,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent directory,
-``us/models/registered-index-linked-annuity/``, read at run time rather than stored inside
+``products/registered_index_linked_annuity/``, read at run time rather than stored inside
 the model. The model folder therefore holds nothing but formulas — no ``_data/``, no
 IOSpec, no embedded values — so a diff of the model shows logic changes only, and an input
 can be edited or swapped without rewriting the model. This follows
@@ -27,7 +27,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 reads and then fails on first evaluation.
 
 The readers and the filename References live on the sibling
-:mod:`~RILA_US_S.Data` Space, reached here through the ``data``
+:mod:`~.RILA_US_S.Data` Space, reached here through the ``data``
 Reference, so each file is read once per model rather than once per model point:
 
 =========================  ==================================  ==========================
@@ -53,7 +53,7 @@ withdrawal-charge schedule, not a valuation overlay.
 ``t = 0`` the Issue Date. Complete contract years are ``duration(t) = t // 12`` — the
 notes' ``cy(t) = floor(t/12)`` — so the anniversary month itself already counts as a
 completed year, and ``policy_year(t) = duration(t) + 1``. This differs by one step from
-:mod:`MYGA_US_S`, whose beginning-of-month transaction convention puts the
+:mod:`.MYGA_US_S`, whose beginning-of-month transaction convention puts the
 anniversary month in the year that is opening rather than the one that has just closed;
 each convention is the right one for its own timing basis, and the divergence is visible
 only in the anniversary month.
@@ -93,7 +93,7 @@ collapses to intrinsic value and reproduces the crediting rate exactly.
 .. rubric:: Naming
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``, and
-this library's deferred annuity chassis :mod:`MYGA_US_S`, wherever those have
+this library's deferred annuity chassis :mod:`.MYGA_US_S`, wherever those have
 an analogue — ``pols_*`` for policy counts, ``av_*`` for account values, plural nouns for
 cash flows, ``*_rate`` for rates, ``*_pp`` for per-contract amounts, ``*_at(t, timing)``
 for a quantity read at a point inside the month. The technical notes use compact
@@ -320,7 +320,7 @@ Value, and :func:`pols_maturity` carries the survivors out so that
 closes for every ``t``, including the last — ``pols_if(t)`` opening month ``t`` and
 ``pols_if(t+1)`` opening the next, which at the Maturity Date is zero. The name follows
 ``BasicTerm_S.pols_maturity``
-and the construction follows :mod:`Term_US_A` and :mod:`MYGA_US_S`. The
+and the construction follows :mod:`.Term_US_A` and :mod:`.MYGA_US_S`. The
 payout stream bought at that date is not derived here: it is the immediate-annuity
 chassis, restricted to the two forms this contract offers [S2].
 """
@@ -546,7 +546,7 @@ def duration_bom(t):
     on this - the attained age behind ``q_m(t)`` (:func:`age`) and the expense inflation
     step (:func:`inflation_factor`) - because a monthly rate charged over ``(t-1, t]``
     belongs to the contract year that interval sits in. This is the reading
-    :mod:`MYGA_US_S` uses for its own ``duration(t)``.
+    :mod:`.MYGA_US_S` uses for its own ``duration(t)``.
     """
     return max(0, (t + 11) // 12 - 1)
 
@@ -1667,7 +1667,7 @@ def lapse_shock_year():
 
     The first contract year with a zero withdrawal charge, derived from
     *surr_charge_table.csv* rather than hard-coded, so a different schedule moves the
-    shock with it - the construction :mod:`UL_US_S` uses. On the 7-7-6-5-4-3-0
+    shock with it - the construction :mod:`.UL_US_S` uses. On the 7-7-6-5-4-3-0
     schedule that is contract year 7, which on this 6-year chassis is also the first year
     following a Term End Date [S1][S2].
     """
@@ -1770,7 +1770,7 @@ def pols_if_at(t, timing):
 def pols_if(t):
     """l(t-1): the in-force probability at the **start** of policy month t.
 
-    The library-wide convention, following :mod:`Term_US_A` and ``CashValue_SE``:
+    The library-wide convention, following :mod:`.Term_US_A` and ``CashValue_SE``:
     ``pols_if(t)`` counts the contracts entering period ``t`` and is the weight applied
     to that same period's cash flows, so the ``pols_if`` column of :func:`result_cf`
     reconciles against the row it sits on - ``premiums(t) / premium_pp()``,

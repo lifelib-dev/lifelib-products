@@ -1,9 +1,9 @@
 # UL_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/universal-life/technical-notes.md`](../../products/universal-life/technical-notes.md);
+[`products/universal_life/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/universal-life/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics — the guaranteed maximum COI scale, the $7.50 per-policy and
@@ -20,14 +20,14 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python us/models/universal-life/run.py
+python products/universal_life/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/universal-life/UL_US_S")
+model = mx.read_model("products/universal_life/UL_US_S")
 model.Projection[1].result_av()
 ```
 
@@ -83,7 +83,7 @@ The eight input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `UL_US_S/` holds nothing but formulas:
 
 ```
-us/models/universal-life/
+products/universal_life/
   model_point_table.csv        <- inputs live here
   coi_rates.csv
   corridor_factors.csv

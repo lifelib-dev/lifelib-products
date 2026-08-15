@@ -5,11 +5,11 @@
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
-references), both numbered per `us/_research/immediate-annuity.md`, and [REG-R#] (the
-cross-product reference library `us/references/regulatory-and-actuarial-references.md`,
+references), both numbered per `_research/immediate-annuity.md`, and [REG-R#] (the
+cross-product reference library `references/regulatory-and-actuarial-references.md`,
 one shared numbering space now running **R1–R157** with most of the **R73–R149** block
-unused: R1–R34 from `us/_research/regulatory-actuarial.md`,
-R35–R72 from `us/_research/regulatory-actuarial-annuities.md`, and
+unused: R1–R34 from `_research/regulatory-actuarial.md`,
+R35–R72 from `_research/regulatory-actuarial-annuities.md`, and
 R150–R157 from the AP&P Manual appendix reading of **2026-08-06**, of which **R151** (AG 33)
 and **R153** (A-820 with A-821 and A-822) are cited here) — were extracted from the
 cited document. Values marked **[std]** are standardizations introduced for the reference

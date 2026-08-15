@@ -6,7 +6,7 @@ the things that are the *same* for all of them, parametrized over
 :data:`conftest.MODELS`, so that the house style is enforced once rather than
 re-litigated per model. A model registered in ``MODELS`` either conforms or fails here.
 
-What the house style is, and why, is written up in ``us/models/term-life/README.md``:
+What the house style is, and why, is written up in ``products/term_life/model.md``:
 
 * inputs are **external** CSVs beside ``run.py`` — the ``annuallife/TradLife_A`` layout,
   not ``basiclife/BasicTerm_S``'s embedded IOSpec — so the model folder holds nothing but
@@ -27,6 +27,18 @@ import modelx as mx
 import pytest
 
 from conftest import MODELS, model_path
+
+def model_files(folder):
+    """The model's own file names, ignoring interpreter caches.
+
+    ``__pycache__`` appears inside a model folder as soon as anything *imports* it, which
+    is now routine: the autodoc API pages read the cells docstrings by importing
+    ``Projection`` and ``Data`` (USLIB-MERGE-PLAN.md D9).  Those caches are not part of the
+    model and must not make a round-trip comparison fail for anyone who has built the docs.
+    """
+    return {p.name for p in folder.rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts}
+
 
 ALL = sorted(MODELS)
 
@@ -122,12 +134,12 @@ def test_model_folder_holds_formulas_only(name):
 
 
 def test_the_model_ships_with_its_inputs_and_a_runner(name):
-    """Every model directory carries its CSVs, a run.py and a README beside the model."""
+    """Every model directory carries its CSVs, a run.py and a model.md beside the model."""
     parent = model_path(name).parent
     csvs = {p.name for p in parent.iterdir() if p.suffix == ".csv"}
     assert "model_point_table.csv" in csvs, f"{name}: no model point table"
     assert (parent / "run.py").is_file()
-    assert (parent / "README.md").is_file()
+    assert (parent / "model.md").is_file()
 
 
 def test_input_dir_resolves_to_the_parent(name, model):
@@ -428,5 +440,4 @@ def test_round_trip_is_stable(name, tmp_path):
     finally:
         reread.close()
 
-    assert {p.name for p in dest.rglob("*") if p.is_file()} == {
-        p.name for p in src.rglob("*") if p.is_file()}
+    assert model_files(dest) == model_files(src)

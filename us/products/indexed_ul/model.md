@@ -1,12 +1,12 @@
 # IUL_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/indexed-ul/technical-notes.md`](../../products/indexed-ul/technical-notes.md);
+[`products/indexed_ul/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/indexed-ul/product-spec.md). The shared universal
+[`product-spec.md`](product-spec.md). The shared universal
 life mechanics those notes defer to are in
-[`us/products/universal-life/technical-notes.md`](../../products/universal-life/technical-notes.md),
-and their executable form is [`UL_US_S`](../universal-life/).
+[`products/universal_life/technical-notes.md`](../universal_life/technical-notes.md),
+and their executable form is [`UL_US_S`](../universal_life).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 10.00% cap and 2.00% guaranteed cap, 100% participation
@@ -22,14 +22,14 @@ and their executable form is [`UL_US_S`](../universal-life/).
 ## Run it
 
 ```bash
-python us/models/indexed-ul/run.py
+python products/indexed_ul/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/indexed-ul/IUL_US_S")
+model = mx.read_model("products/indexed_ul/IUL_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -62,7 +62,7 @@ The seven input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `IUL_US_S/` holds nothing but formulas:
 
 ```
-us/models/indexed-ul/
+products/indexed_ul/
   model_point_table.csv        <- inputs live here
   coi_rates.csv
   corridor_factors.csv

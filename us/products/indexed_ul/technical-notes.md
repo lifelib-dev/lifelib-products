@@ -2,9 +2,9 @@
 
 **Status:** Draft, 2026-08-03.
 **Scope note:** Standardized composite for reference modeling, not any insurer's product.
-[S#]/[R#] cite `sources.md` (provenance: `us/_research/indexed-ul.md`); [REG-R#] cites
-the cross-product reference library `us/references/regulatory-and-actuarial-references.md`
-(research provenance: `us/_research/regulatory-actuarial.md`, same R-numbering).
+[S#]/[R#] cite `sources.md` (provenance: `_research/indexed-ul.md`); [REG-R#] cites
+the cross-product reference library `references/regulatory-and-actuarial-references.md`
+(research provenance: `_research/regulatory-actuarial.md`, same R-numbering).
 **[std]** marks standardizations introduced for
 the reference implementation. Parameter values here are identical to those in
 `product-spec.md`; [unverified] flags carry over.
@@ -20,7 +20,7 @@ the reference implementation. Parameter values here are identical to those in
 - **Base chassis:** the UL-pattern monthly mechanics — monthiversary processing order,
   NAAR convention (DB discounted one month at the guaranteed rate, AV measured before
   the monthly deduction), deduction-before-interest recursion — follow the
-  universal-life reference notes (`us/products/universal-life/technical-notes.md`);
+  universal-life reference notes (`products/universal_life/technical-notes.md`);
   these notes specify only what the indexed crediting engine adds or changes **[std]**.
 - **Projection frequency:** monthly. All policy processing occurs on the monthiversary
   ("monthly policy date"), consistent with segment creation on monthly policy dates
@@ -137,7 +137,7 @@ public bases):
 | q^d_t, q^w_t | monthly death / lapse rates (class (c) assumptions) |
 | v_g = (1+i_g)^(−1/12) | one-month discount at guaranteed rate **[std]** |
 
-### Monthly processing order (monthiversary t) **[std]** (carrier ordering conventions vary; this order is fixed for the reference model and matches the universal-life base-chassis order — premium, withdrawal, DB/NAAR, deduction, interest, decrements — per `us/products/universal-life/technical-notes.md`; the segment steps are the IUL additions)
+### Monthly processing order (monthiversary t) **[std]** (carrier ordering conventions vary; this order is fixed for the reference model and matches the universal-life base-chassis order — premium, withdrawal, DB/NAAR, deduction, interest, decrements — per `products/universal_life/technical-notes.md`; the segment steps are the IUL additions)
 
 1. **Anniversary resets** (if t ≡ 0 mod 12): attained age +1; re-declare NGEs if the
    re-declaration model is on; update corridor factor κ_x [R4]; annual premium P_t

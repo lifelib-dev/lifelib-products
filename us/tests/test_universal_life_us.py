@@ -1,7 +1,7 @@
 """Golden and product-specific tests for UL_US_S.
 
 The golden values are the worked example in
-us/products/universal-life/technical-notes.md ("Worked example"), which projects the
+products/universal_life/technical-notes.md ("Worked example"), which projects the
 specimen anchor cell Male 35 Standard NT / $100,000 / Option A / GPT, $150 a month of
 planned premium, on the monthly grid.  They are hard-coded here rather than pickled so
 that a reviewer can compare them against the notes by eye.
@@ -27,9 +27,9 @@ import math
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/universal-life/UL_US_S"
+MODEL_PATH = LIB / "products/universal_life/UL_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p. in the notes
 

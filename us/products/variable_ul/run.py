@@ -1,7 +1,7 @@
 """Run the VUL_US_S reference model and print its account value roll-forward.
 
-    python us/models/variable-ul/run.py            # anchor cell (point_id = 1)
-    python us/models/variable-ul/run.py 3          # another model point
+    python products/variable_ul/run.py            # anchor cell (point_id = 1)
+    python products/variable_ul/run.py 3          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

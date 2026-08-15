@@ -1,7 +1,7 @@
 """Run the Term_US_A reference model and print its cash flow statement.
 
-    python us/models/term-life/run.py            # anchor cell (point_id = 1)
-    python us/models/term-life/run.py 3          # another model point
+    python products/term_life/run.py            # anchor cell (point_id = 1)
+    python products/term_life/run.py 3          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

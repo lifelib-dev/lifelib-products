@@ -1,9 +1,9 @@
 # VA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/variable-annuity/technical-notes.md`](../../products/variable-annuity/technical-notes.md);
+[`products/variable_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/variable-annuity/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 1.30% base contract asset charge, the $35 contract fee, the
@@ -17,7 +17,7 @@ the product it implements is specified in
 > the recursion, not the value of the guarantees.
 
 This product sits on the deferred annuity chassis of the library,
-[`MYGA_US_S`](../fixed-deferred-annuity/README.md), for **structure** —
+[`MYGA_US_S`](../fixed_deferred_annuity/model.md), for **structure** —
 the `Data`/`Projection` split, the naming, the timing-argument vocabulary, the result
 tables and the roll-forward checks. It deliberately does **not** inherit its mechanics;
 see *The chassis' Model #805 floor and MVA are absent by design* below.
@@ -25,16 +25,16 @@ see *The chassis' Model #805 floor and MVA are absent by design* below.
 ## Run it
 
 ```bash
-python us/models/variable-annuity/run.py
-python us/models/variable-annuity/run.py 2      # the in-force worked-example cell
-python us/models/variable-annuity/run.py 3      # the decline scenario, to depletion
+python products/variable_annuity/run.py
+python products/variable_annuity/run.py 2      # the in-force worked-example cell
+python products/variable_annuity/run.py 3      # the decline scenario, to depletion
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/variable-annuity/VA_US_S")
+model = mx.read_model("products/variable_annuity/VA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -84,7 +84,7 @@ The eight input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `VA_US_S/` holds nothing but formulas:
 
 ```
-us/models/variable-annuity/
+products/variable_annuity/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   fund_table.csv

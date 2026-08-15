@@ -1,9 +1,9 @@
 # Term_US_A — reference liability cash flow model
 
 **Status:** Draft, 2026-08-06. Built from
-[`us/products/term-life/technical-notes.md`](../../products/term-life/technical-notes.md);
+[`products/term_life/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/term-life/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the guaranteed premium schedule, the policy fee, expiry at
@@ -15,14 +15,14 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python us/models/term-life/run.py
+python products/term_life/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/term-life/Term_US_A")
+model = mx.read_model("products/term_life/Term_US_A")
 model.Projection[1].result_cf()
 ```
 
@@ -49,7 +49,7 @@ The five input CSVs live **in this directory**, beside `run.py` — not inside t
 folder. `Term_US_A/` holds nothing but formulas:
 
 ```
-us/models/term-life/
+products/term_life/
   model_point_table.csv        <- inputs live here
   premium_rates.csv
   mort_table.csv

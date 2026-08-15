@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. fixed deferred annuities (MYGA).
 
-:mod:`~MYGA_US_S` is the executable counterpart of
-``us/products/fixed-deferred-annuity/technical-notes.md`` in the lifelib-products
+:mod:`~.MYGA_US_S` is the executable counterpart of
+``products/fixed_deferred_annuity/technical-notes.md`` in the lifelib-products
 library. It projects gross liability cash flows for a single-contract model point of a
 single-premium, book-value multi-year guaranteed annuity: one purchase payment credited
 in full, an insurer-declared effective annual rate guaranteed for a five-year period, a
@@ -20,14 +20,14 @@ benefit composition order and the Model #805 floor construction specified here.
 
 **Spaces.** The model contains two:
 
-:mod:`~MYGA_US_S.Data`
+:mod:`~.MYGA_US_S.Data`
     Reads the seven input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~MYGA_US_S.Projection`
+:mod:`~.MYGA_US_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~MYGA_US_S.Data` Space.
+    Reference, which resolves to the single :mod:`~.MYGA_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -40,7 +40,7 @@ model and its inputs must travel together.
 
 **Projection basis.** Monthly steps. ``t`` counts **policy months**, ``t = 1, 2, ...,
 proj_len()``, and the contract year is ``policy_year(t) = ceil(t / 12)``, so
-anniversaries fall at ``t = 12, 24, ...``. Note the contrast with :mod:`Term_US_A`,
+anniversaries fall at ``t = 12, 24, ...``. Note the contrast with :mod:`.Term_US_A`,
 where ``t`` counts **years**: monthly is the coarsest grid that hits every contract
 anniversary exactly while still resolving the guarantee-period-end window and the
 shock-lapse boundary to within one step **[std]**.
@@ -63,7 +63,7 @@ premium tax all fall there, as they do in the notes' cash flow ledger, and ``av_
 ``result_cf()`` therefore starts at ``t = 0``, not at ``t = 1``.
 
 ``pols_if(t)`` is the count in force at the **start** of month ``t``, the library-wide
-convention (``pols_if(1) == pols_if_init()``, as in :mod:`Term_US_A`), and it is the
+convention (``pols_if(1) == pols_if_init()``, as in :mod:`.Term_US_A`), and it is the
 weight applied to that same month's cash flows, so the ``pols_if`` column of
 ``result_cf()`` reconciles with the row it sits on. The technical notes' end-of-month
 ``l(t)`` is unchanged and is read as ``pols_if_at(t, "AFT_DECR")``. Likewise
@@ -143,7 +143,7 @@ roll-forwards, and one test per entry in the notes' Known modeling pitfalls list
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/fixed-deferred-annuity/MYGA_US_S")
+    >>> model = mx.read_model("products/fixed_deferred_annuity/MYGA_US_S")
     >>> model.Projection[1].result_cf()
 """
 

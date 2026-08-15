@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of the :mod:`~DIA_US_S` model.
+"""The by-contract projection of the :mod:`~.DIA_US_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -17,7 +17,7 @@ projecting model point 1::
 technical notes index them. ``t = 0`` is the issue month and a real projected month, not
 a recursion base case: the first premium is received at its start, deaths occur during
 it, and the maintenance expense accrues in it. This is a deliberate departure from the
-1-based ``t`` of :mod:`Term_US_A` and :mod:`SPIA_US_S`, and the reason is that
+1-based ``t`` of :mod:`.Term_US_A` and :mod:`.SPIA_US_S`, and the reason is that
 the notes' ``T`` is a **month index** in the 0-based scheme — the anchor cell's income
 start month is ``T = 240`` and its premiums fall at months 0 and 60. Renumbering to a
 1-based grid would make ``T = 240`` mean the 241st month and quietly move every option
@@ -36,7 +36,7 @@ Two consequences to hold on to:
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent directory,
-``us/models/deferred-income-annuity/``, read at run time rather than stored inside the
+``products/deferred_income_annuity/``, read at run time rather than stored inside the
 model. The model folder therefore holds nothing but formulas — no ``_data/``, no IOSpec,
 no embedded values — so a diff of the model shows logic changes only, and an input can
 be edited or swapped without rewriting the model. This follows ``annuallife.TradLife_A``;
@@ -48,7 +48,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 and then fails on first evaluation.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~DIA_US_S.Data`:
+:mod:`~.DIA_US_S.Data`:
 
 ========================  ==================================  ======================
 Reference                 Cells                               File
@@ -65,7 +65,7 @@ rop_factor_file           data.rop_factor_table()             rop_factor_table.c
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue, and — for everything in the income phase — they
-follow :mod:`SPIA_US_S` **exactly**, because the payout phase of a DIA *is* a
+follow :mod:`.SPIA_US_S` **exactly**, because the payout phase of a DIA *is* a
 single premium immediate annuity. The technical notes use compact actuarial symbols
 instead. The mapping is:
 
@@ -178,13 +178,13 @@ Seven names in that table needed care.
 
 ``l`` and ``L`` differ in the notes only by case — the survival probability versus the
 life-contingent payment factor — so they become ``lives_if`` and
-``payment_factor_life``, exactly as in :mod:`SPIA_US_S`. ``L`` is *also* the
+``payment_factor_life``, exactly as in :mod:`.SPIA_US_S`. ``L`` is *also* the
 expense and profit load in equation (4); that one is the Reference ``expense_load``.
 
 ``B`` is the guaranteed **annual** income and ``B(t)/m`` is one instalment; the notes
 never name the instalment, so it takes the chassis name ``annuity_pp_sched``. Note that
 ``annual_income(t)`` is indexed by **month**, not by policy year as in
-:mod:`SPIA_US_S`, because a DIA's income level changes when a *premium* is paid
+:mod:`.SPIA_US_S`, because a DIA's income level changes when a *premium* is paid
 and premiums fall on months.
 
 ``n_g`` is two different quantities in the notes and they must not be conflated.
@@ -426,7 +426,7 @@ def payment_timing():
     """Whether instalments fall in *arrears* (the **[std]** default) or in *advance*.
 
     No retrieved DIA document states the convention; arrears matches
-    ``us/products/immediate-annuity/product-spec.md`` so that one payout chassis serves
+    ``products/immediate_annuity/product-spec.md`` so that one payout chassis serves
     both products.
     """
     v = model_point()["timing"]
@@ -1621,7 +1621,7 @@ def liability_cf(t):
 
     The distinction that matters here: the notes' purpose statement projects "premiums in;
     deferral death benefits, income..." , so premium income belongs in the net stream.
-    That makes this product differ from the :mod:`~SPIA_US_S` payout chassis it
+    That makes this product differ from the :mod:`~.SPIA_US_S` payout chassis it
     otherwise follows, where the single premium is a pricing input and never a projected
     cash flow, so there gross outgo and the net stream coincide.  The gross outgo alone is
     :func:`liability_outgo`.

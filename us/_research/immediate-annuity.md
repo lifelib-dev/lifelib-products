@@ -11,7 +11,7 @@ extracted from ([S#] primary product documents, [R#] regulatory/actuarial
 references). Facts stated from general knowledge and not verified against a
 retrieved document are tagged [unverified]. The [R#] numbers in this file are
 **product-local** and are independent of the cross-product numbering used in
-`us/_research/regulatory-actuarial.md`.
+`_research/regulatory-actuarial.md`.
 
 ---
 

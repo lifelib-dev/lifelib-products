@@ -1,6 +1,6 @@
 """Golden and product-specific tests for WholeLife_US_A.
 
-The golden values are the worked example in us/products/whole-life/technical-notes.md
+The golden values are the worked example in products/whole_life/technical-notes.md
 ("Worked example"), a single-year walk-through of the core recursion: RefWL-Par, male
 Standard NT, issue age 45, face 100,000, gross premium 1,800, paid-up-additions
 dividend option, no rider, no loan, policy year 10 (attained age 55 at the anniversary).
@@ -20,9 +20,9 @@ import itertools
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/whole-life/WholeLife_US_A"
+MODEL_PATH = LIB / "products/whole_life/WholeLife_US_A"
 
 CENT = 0.005          # money displayed to 2 d.p.
 PROB = 5e-6           # probabilities displayed to 5 d.p.

@@ -762,9 +762,9 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
 
 ### Contradicted — claims the library must change
 
-7. **The effective date is wrong.** `us/products/fixed-deferred-annuity/product-spec.md` (~line 534),
-   `us/_research/fixed-deferred-annuity.md` (R7 entry, §15 and Gaps item 1) and
-   `us/products/fixed-deferred-annuity/sources.md` (R7) all state AG 33 is "effective **December 31,
+7. **The effective date is wrong.** `products/fixed_deferred_annuity/product-spec.md` (~line 534),
+   `_research/fixed-deferred-annuity.md` (R7 entry, §15 and Gaps item 1) and
+   `products/fixed_deferred_annuity/sources.md` (R7) all state AG 33 is "effective **December 31,
    1995** for all contracts issued on or after January 1, 1981", sourced from IRS Rev. Rul. 2002-6.
    **The manual as of March 2026 prints "December 31, 1998"**, with the same 1/1/1981 issue-date
    reach. The issue-date reach is confirmed; the effective date is not. Do not silently swap the date
@@ -775,7 +775,7 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
    Individual Annuity Contracts" is the Rev. Rul. 2002-6 title. The manual prints **"Determining CARVM
    Reserves for Annuity Contracts With Elective Benefits"**. Same correction sites as item 7.
 9. **Nursing home benefits are NON-elective, not elective.** R39's annotation in
-   `us/references/regulatory-and-actuarial-references.md` (~line 999) lists the elective set as "full
+   `references/regulatory-and-actuarial-references.md` (~line 999) lists the elective set as "full
    surrenders, partial withdrawals, annuitization at guaranteed purchase rates, **nursing-home
    waivers**", contrasted with "non-elective (death, and other non-mortality incidence)". AG 33's
    *Definitions* 1 places **"nursing home benefits"** expressly in the **non-elective** list, and
@@ -789,22 +789,22 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
     incidence rate of either 0% or 100%"; and the actuary must **consider, not necessarily test**, all
     streams. Replace the gloss with the guideline's own construction.
 11. **"AG 33 text not retrieved" caveats are now obsolete** and must be replaced with citations to
-    R151 wherever they appear. The full list found: `us/README.md` (lines ~103, ~155, ~185);
+    R151 wherever they appear. The full list found: `README.md` (lines ~103, ~155, ~185);
     `us/regulatory/statutory-accounting-and-capital.md` (lines ~29, ~218, ~219, ~225–228, ~243–244,
     ~640 matrix row, ~698); `us/regulatory/technical-notes.md` (lines ~9, ~80, ~453);
     `us/regulatory/sources.md` (~line 664, and the R39 entry at ~708–714);
-    `us/references/regulatory-and-actuarial-references.md` (R39 entry ~986–1007, gaps at ~1741 and
+    `references/regulatory-and-actuarial-references.md` (R39 entry ~986–1007, gaps at ~1741 and
     ~3243, and the "single largest hole" statement in section 14);
-    `us/products/fixed-deferred-annuity/{product-spec.md, sources.md, technical-notes.md}`;
-    `us/products/fixed-indexed-annuity/{product-spec.md, technical-notes.md, sources.md}`;
-    `us/products/deferred-income-annuity/{sources.md, technical-notes.md}`;
-    `us/products/registered-index-linked-annuity/technical-notes.md` (~lines 675–680);
-    `us/_research/{fixed-deferred-annuity.md, fixed-indexed-annuity.md, statutory-reserves.md,
+    `products/fixed_deferred_annuity/{product-spec.md, sources.md, technical-notes.md}`;
+    `products/fixed_indexed_annuity/{product-spec.md, technical-notes.md, sources.md}`;
+    `products/deferred_income_annuity/{sources.md, technical-notes.md}`;
+    `products/registered_index_linked_annuity/technical-notes.md` (~lines 675–680);
+    `_research/{fixed-deferred-annuity.md, fixed-indexed-annuity.md, statutory-reserves.md,
     statutory-accounting.md, regulatory-actuarial-annuities.md, risk-based-capital.md}`.
     **AG 35 remains unretrieved** — every AG 35 caveat stands.
 12. **"A RILA CARVM run rests on the SVL text alone" is no longer true.**
     `us/regulatory/statutory-accounting-and-capital.md` (~lines 225–227) and
-    `us/products/registered-index-linked-annuity/technical-notes.md` (~lines 675–680) both say this.
+    `products/registered_index_linked_annuity/technical-notes.md` (~lines 675–680) both say this.
     AG 33 applies to **all** annuity contracts subject to CARVM with elective benefits, with no
     product carve-out and no separate-account exception, so a RILA with elective benefits is inside AG
     33 and gets its stream construction, its incidence rules, its benefit-level rate determination and
@@ -827,7 +827,7 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
 
 ### Opened up / newly answerable — questions the library flagged that this text now reaches
 
-15. **The DIA elective paths.** `us/products/deferred-income-annuity/technical-notes.md` (~line 563)
+15. **The DIA elective paths.** `products/deferred_income_annuity/technical-notes.md` (~line 563)
     says "**AG 33 ... was not retrieved** ... no mechanic for those paths is stated here" for the
     ±5-year start-date adjustment, acceleration and commutation. Those are **elective benefits** under
     *Definitions* 1 (options freely elected under the contract), so: the DIA is in AG 33's scope; the
@@ -844,9 +844,9 @@ that jumps at annuitization is exhibiting a documented feature, not necessarily 
     pre-exhaustion payments take 4(A) (Plan Type A/B/C by withdrawal characteristics) and the
     post-exhaustion life annuity takes 4(B) (Plan Type A generally, guarantee duration from **contract
     issue** to commencement of the post-exhaustion payments). This is directly usable in
-    `us/products/fixed-indexed-annuity/technical-notes.md`.
+    `products/fixed_indexed_annuity/technical-notes.md`.
 17. **Whether valuation rates differ by benefit within one CARVM reserve.**
-    `us/_research/fixed-deferred-annuity.md` Gaps item 1 lists "separate valuation interest rates for
+    `_research/fixed-deferred-annuity.md` Gaps item 1 lists "separate valuation interest rates for
     elective vs non-elective benefits" as unverified. **Answered, with a correction to the framing:**
     the split is not elective/non-elective, it is **contract-level parameters (A, B, C) versus
     benefit-level parameters (D guarantee duration, E Plan Type)**, producing "potentially different

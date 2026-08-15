@@ -6,9 +6,9 @@ accessed 2026-08-03; the [REG-R#] entries carry their own access dates per entry
 `sources.md`. This document is a standardized composite
 specification for reference liability-model implementation. It does not describe any
 single insurer's product. Tags [S#] and [R#] cite the product research notes
-(`us/_research/variable-ul.md`); [REG-R#] cites the cross-product reference library
-(`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md`, same R-numbering). **[std]** marks a
+(`_research/variable-ul.md`); [REG-R#] cites the cross-product reference library
+(`references/regulatory-and-actuarial-references.md`; research provenance in
+`_research/regulatory-actuarial.md`, same R-numbering). **[std]** marks a
 standardization introduced for the reference implementation (not a sourced fact);
 every **[std]** table row carries a footnote with rationale and the observed range.
 Facts the research notes flag as [unverified] remain flagged here.
@@ -286,8 +286,8 @@ In scope (specified; excluded from the baseline projection **[std]**):
   NAAR monthly, rep $0.05) tracked via a shadow fund with notional 5.50% no-lapse
   premium load and 10% excess premium load, funds floored at zero [S4]. For
   shadow-account mechanics see the guaranteed-UL technical notes
-  (`us/products/guaranteed-ul/technical-notes.md`; research provenance
-  `us/_research/guaranteed-ul.md`); statutory note: VUL with secondary guarantees is
+  (`products/guaranteed_ul/technical-notes.md`; research provenance
+  `_research/guaranteed-ul.md`); statutory note: VUL with secondary guarantees is
   a distinct valuation category (code 090) in the ULSG reserving category under
   VM-20 [R7].
 - **Overloan protection rider** — prevents lapse from excess debt; one-time exercise

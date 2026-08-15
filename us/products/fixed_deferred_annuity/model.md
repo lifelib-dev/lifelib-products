@@ -1,9 +1,9 @@
 # MYGA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/fixed-deferred-annuity/technical-notes.md`](../../products/fixed-deferred-annuity/technical-notes.md);
+[`products/fixed_deferred_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/fixed-deferred-annuity/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 4.45% declared rate, the 0.25% GMIR, the 2.80% GMSV rate,
@@ -22,15 +22,15 @@ than restating them.
 ## Run it
 
 ```bash
-python us/models/fixed-deferred-annuity/run.py
-python us/models/fixed-deferred-annuity/run.py 2      # the stress model point
+python products/fixed_deferred_annuity/run.py
+python products/fixed_deferred_annuity/run.py 2      # the stress model point
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/fixed-deferred-annuity/MYGA_US_S")
+model = mx.read_model("products/fixed_deferred_annuity/MYGA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -72,7 +72,7 @@ The seven input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `MYGA_US_S/` holds nothing but formulas:
 
 ```
-us/models/fixed-deferred-annuity/
+products/fixed_deferred_annuity/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   surr_charge_table.csv

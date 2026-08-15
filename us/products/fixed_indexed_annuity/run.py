@@ -1,7 +1,7 @@
 """Run the FIA_US_S reference model and print its cash flow statement.
 
-    python us/models/fixed-indexed-annuity/run.py            # anchor cell (point_id = 1)
-    python us/models/fixed-indexed-annuity/run.py 2          # another model point
+    python products/fixed_indexed_annuity/run.py            # anchor cell (point_id = 1)
+    python products/fixed_indexed_annuity/run.py 2          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

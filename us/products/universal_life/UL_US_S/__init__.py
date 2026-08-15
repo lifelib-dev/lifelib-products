@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. current-assumption universal life.
 
-:mod:`~UL_US_S` is the executable counterpart of
-``us/products/universal-life/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.UL_US_S` is the executable counterpart of
+``products/universal_life/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-life, flexible-premium adjustable
 (universal) life policy on the current-assumption chassis: a declared credited rate
 above a contractual minimum, a monthly deduction of per-policy, per-unit and cost-of-
@@ -16,14 +16,14 @@ attained age 121 and coverage continues for life.
 
 **Spaces.** The model contains two:
 
-:mod:`~UL_US_S.Data`
+:mod:`~.UL_US_S.Data`
     Reads the eight input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~UL_US_S.Projection`
+:mod:`~.UL_US_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~UL_US_S.Data`
+    ``data`` Reference, which resolves to the single :mod:`~.UL_US_S.Data`
     Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
@@ -146,7 +146,7 @@ to the cent, together with the notes' month-1 trace at full precision.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/universal-life/UL_US_S")
+    >>> model = mx.read_model("products/universal_life/UL_US_S")
     >>> model.Projection[1].result_cf()
 """
 

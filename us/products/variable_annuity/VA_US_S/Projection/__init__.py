@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of :mod:`~VA_US_S`.
+"""The by-contract projection of :mod:`~.VA_US_S`.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -14,7 +14,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent directory,
-``us/models/variable-annuity/``, read at run time rather than stored inside the model.
+``products/variable_annuity/``, read at run time rather than stored inside the model.
 The model folder therefore holds nothing but formulas — no ``_data/``, no IOSpec, no
 embedded values — so a diff of the model shows logic changes only, and an input can be
 edited or swapped without rewriting the model. This follows ``annuallife.TradLife_A``;
@@ -26,7 +26,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 then fails on first evaluation.
 
 The readers and the filename References live on the sibling
-:mod:`~VA_US_S.Data` Space, reached here through the ``data`` Reference, so
+:mod:`~.VA_US_S.Data` Space, reached here through the ``data`` Reference, so
 each file is read once per model rather than once per model point:
 
 =========================  ==============================  ==========================
@@ -82,7 +82,7 @@ reproducing any of them.
 .. rubric:: Naming
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
-wherever those models have an analogue, and :mod:`MYGA_US_S` — the deferred
+wherever those models have an analogue, and :mod:`.MYGA_US_S` — the deferred
 annuity chassis of this library — wherever the two products share a concept:
 ``pols_*`` for policy counts, ``av_*`` for account values, plural nouns for cash flows,
 ``*_rate`` for rates, ``*_pp`` for per-contract amounts, ``*_at(t, timing)`` for a
@@ -245,7 +245,7 @@ Nine names needed care.
 ``l(t-1)`` — and is the weight applied to that same row's cash flows, so
 ``premiums(t) / premium_pp(t)`` is exactly ``pols_if(t)`` and the printed in-force column
 reconciles with the row it sits on. That is the library-wide convention, set by
-:mod:`Term_US_A` and by ``savings.CashValue_SE``. The notes' own end-of-month ``l(t)``
+:mod:`.Term_US_A` and by ``savings.CashValue_SE``. The notes' own end-of-month ``l(t)``
 has not gone anywhere: it is :func:`pols_if_at` ``(t, "AFT_DECR")``, and the roll-forward
 is written across it.
 
@@ -256,7 +256,7 @@ read the suffix.
 
 ``wd_free_pp(t)`` is the portion of a withdrawal covered by the **free-withdrawal
 allowance**, which is what the same name means on the deferred annuity chassis
-(:mod:`MYGA_US_S`, ``min(W, FW)``). On this product a second exemption
+(:mod:`.MYGA_US_S`, ``min(W, FW)``). On this product a second exemption
 stacks on top of it — no CDSC applies to cumulative withdrawals within ``L`` [S1] — and
 the union of the two is :func:`wd_exempt_pp`, the portion of ``W(t)`` bearing no charge
 at all. The two differ by exactly :func:`wd_nonexcess_pp`, and it is
@@ -266,17 +266,17 @@ at all. The two differ by exactly :func:`wd_nonexcess_pp`, and it is
 
 ``E(t)`` is the **guarantee** excess here — the portion of a withdrawal above the GLWB
 annual limit — and :func:`wd_excess_pp` carries that meaning. In
-:mod:`MYGA_US_S` the same cells name means the portion of a withdrawal above
+:mod:`.MYGA_US_S` the same cells name means the portion of a withdrawal above
 the free allowance, i.e. the *charge* base. On this product those are two different
 quantities and both exist: the charge base is :func:`wd_chargeable_pp`. Reading
 ``wd_excess_pp`` across the two models without checking is the single easiest mistake to
 make in this library.
 
-``E(t)`` in :mod:`Term_US_A` is expenses, which here is :func:`expenses` as usual. ``M``
+``E(t)`` in :mod:`.Term_US_A` is expenses, which here is :func:`expenses` as usual. ``M``
 is the in-the-moneyness ratio here and the market value adjustment in
-:mod:`MYGA_US_S`; a VA separate account has no MVA at all, so there is no
+:mod:`.MYGA_US_S`; a VA separate account has no MVA at all, so there is no
 collision in the model, only in the reader's memory. ``c(t)`` is the CDSC here and the
-Model #805 contract charge in :mod:`MYGA_US_S`; it becomes
+Model #805 contract charge in :mod:`.MYGA_US_S`; it becomes
 :func:`wd_charge_pp`. ``g`` is the GAWA% here and the monthly nonforfeiture factor there;
 it becomes :func:`gawa_pct_at_age`. And ``b`` is the GLWB bonus percentage here and the
 MVA distribution yield there.
@@ -365,8 +365,8 @@ holds for every ``t``, including the last, where the block would otherwise appea
 lives with no cause. The identity is written on start-of-month counts because that is
 what :func:`pols_if` carries; ``pols_if(proj_len() + 1)`` is zero, every survivor of the
 horizon month having left as :func:`pols_maturity`. The name follows
-``BasicTerm_S.pols_maturity`` and the construction follows :mod:`Term_US_A` and
-:mod:`MYGA_US_S`. It is bookkeeping determined by the horizon, not an added
+``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_A` and
+:mod:`.MYGA_US_S`. It is bookkeeping determined by the horizon, not an added
 assumption.
 
 The contract's own Latest Income Date — the Contract Anniversary at owner age 95 [S2] —
@@ -1026,7 +1026,7 @@ def wd_excess_pp(t):
     """E(t) = min(W, SumW_y - L) if SumW_y > L else 0: the excess withdrawal [S1].
 
     This is the **guarantee** excess, not the charge base — see the Space docstring's
-    note on the divergence from :mod:`MYGA_US_S`.
+    note on the divergence from :mod:`.MYGA_US_S`.
     """
     if wd_pp(t) <= 0.0:
         return 0.0
@@ -1080,7 +1080,7 @@ def free_wd_avail(t):
 def wd_free_pp(t):
     """The free-allowance portion of month t's withdrawal: ``min(FW, E(t))``.
 
-    The chassis name for the same thing — :mod:`MYGA_US_S` has
+    The chassis name for the same thing — :mod:`.MYGA_US_S` has
     ``min(W, FW)`` — differing only in that here the allowance is applied to the
     *guarantee excess* rather than to the whole withdrawal, because the non-excess
     portion is already exempt from the CDSC under the within-``L`` rule [S1]. The
@@ -1174,7 +1174,7 @@ def surr_benefit_pp(t):
     There is **no nonforfeiture floor** under this value. NAIC Model #805 expressly
     excludes variable annuities and reaches a VA only through its fixed account under
     Model #250 §7.B [REG-R42][REG-R43], and electing the Roll-up GMDB removes the Fixed
-    Account Options [S1]. Contrast :mod:`MYGA_US_S`, where
+    Account Options [S1]. Contrast :mod:`.MYGA_US_S`, where
     ``max(SV, MGSV)`` is the whole point.
     """
     return av_pp(t) - surr_charge_pp(t)
@@ -1962,7 +1962,7 @@ def pols_if(t):
     The notes' ``l(t-1)``, and the weight applied to month ``t``'s cash flows, so that
     the ``pols_if`` column of :func:`result_cf` reconciles with the row it sits on:
     ``premiums(t) / premium_pp(t)`` is exactly ``pols_if(t)``. This is the library-wide
-    convention, set by :mod:`Term_US_A` and by ``savings.CashValue_SE``.
+    convention, set by :mod:`.Term_US_A` and by ``savings.CashValue_SE``.
 
     The notes' own end-of-month ``l(t)`` is :func:`pols_if_at` ``(t, "AFT_DECR")``. The
     two coincide — ``pols_if(t + 1) == pols_if_at(t, "AFT_DECR")`` — everywhere but the

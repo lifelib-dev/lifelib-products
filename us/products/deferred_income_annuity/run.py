@@ -1,7 +1,7 @@
 """Run the DIA_US_S reference model and print its cash flow statement.
 
-    python us/models/deferred-income-annuity/run.py       # anchor cell (point_id = 1)
-    python us/models/deferred-income-annuity/run.py 5     # another model point
+    python products/deferred_income_annuity/run.py       # anchor cell (point_id = 1)
+    python products/deferred_income_annuity/run.py 5     # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

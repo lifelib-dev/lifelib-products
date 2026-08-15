@@ -6,14 +6,14 @@
 """Input data shared by every by-contract projection.
 
 The four input CSVs are read here, **once per model**, and referenced from
-:mod:`~SPIA_US_S.Projection` as ``data``. :mod:`~SPIA_US_S.Projection`
+:mod:`~.SPIA_US_S.Projection` as ``data``. :mod:`~.SPIA_US_S.Projection`
 is parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
 its own cells cache; if the readers lived there, every model point would re-read every
 file. Holding them in an unparameterized Space reads each file once no matter how many
 contracts are projected.
 
 Inputs are **external files**: plain CSVs in the model folder's parent directory,
-``us/models/immediate-annuity/``, rather than data stored inside the model. The model
+``products/immediate_annuity/``, rather than data stored inside the model. The model
 folder therefore holds nothing but formulas — no ``_data/``, no IOSpec, no embedded
 values — so a diff of the model shows logic changes only. This follows
 ``annuallife.TradLife_A``; contrast ``basiclife.BasicTerm_S``, which keeps its inputs

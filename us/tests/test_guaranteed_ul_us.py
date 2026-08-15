@@ -1,6 +1,6 @@
 """Golden and product-specific tests for ULSG_US_S.
 
-The golden values are the worked example in us/products/guaranteed-ul/technical-notes.md
+The golden values are the worked example in products/guaranteed_ul/technical-notes.md
 ("Worked example"), which projects the anchor cell male 60 ANB / NT Standard /
 $500,000 / lifetime guarantee / level P* = $10,800, over the notes' policy months
 301-305.  They are hard-coded here rather than pickled so that a reviewer can compare
@@ -27,9 +27,9 @@ import re
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/guaranteed-ul/ULSG_US_S"
+MODEL_PATH = LIB / "products/guaranteed_ul/ULSG_US_S"
 
 NOTES_ROUNDING = 0.06     # see the module docstring
 CENT = 0.005

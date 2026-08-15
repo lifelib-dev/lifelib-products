@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. guaranteed universal life (ULSG).
 
-:mod:`~ULSG_US_S` is the executable counterpart of
-``us/products/guaranteed-ul/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.ULSG_US_S` is the executable counterpart of
+``products/guaranteed_ul/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-life, flexible-premium universal life
 policy with a **single shadow-account secondary guarantee** (AG 38 8E Policy Design #1
 [R1]; VM-01 shadow-account definition [R2]): level death benefit only, a notional
@@ -17,7 +17,7 @@ surrender charge, and no maturity date -- charges and premiums cease at attained
 121 and coverage continues [S7].
 
 The product is built on the universal life chassis. Its technical notes say so
-explicitly, and this model follows :mod:`UL_US_S` in structure, naming and
+explicitly, and this model follows :mod:`.UL_US_S` in structure, naming and
 processing order, deviating only where the guaranteed-UL notes restate a recursion with
 their own parameters. The two documented deviations are that the account value for the
 net amount at risk is measured **after the expense charges and before the cost of
@@ -27,14 +27,14 @@ the guaranteed-UL notes' ``CSV_t`` already nets policy debt, which is the chassi
 
 **Spaces.** The model contains two:
 
-:mod:`~ULSG_US_S.Data`
+:mod:`~.ULSG_US_S.Data`
     Reads the eight input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~ULSG_US_S.Projection`
+:mod:`~.ULSG_US_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~ULSG_US_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.ULSG_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -170,7 +170,7 @@ in month 304 and the guarantee carrying the contract from month 305.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/guaranteed-ul/ULSG_US_S")
+    >>> model = mx.read_model("products/guaranteed_ul/ULSG_US_S")
     >>> model.Projection[1].result_av()
 """
 

@@ -1,12 +1,12 @@
 # VUL_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/variable-ul/technical-notes.md`](../../products/variable-ul/technical-notes.md);
+[`products/variable_ul/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/variable-ul/product-spec.md). Those notes build on the
+[`product-spec.md`](product-spec.md). Those notes build on the
 universal-life chassis in
-[`us/products/universal-life/technical-notes.md`](../../products/universal-life/technical-notes.md),
-and this model is the counterpart of [`UL_US_S`](../universal-life/README.md) on
+[`products/universal_life/technical-notes.md`](../universal_life/technical-notes.md),
+and this model is the counterpart of [`UL_US_S`](../universal_life/model.md) on
 the same chassis.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
@@ -25,15 +25,15 @@ the same chassis.
 ## Run it
 
 ```bash
-python us/models/variable-ul/run.py          # the worked-example anchor, point 1
-python us/models/variable-ul/run.py 4        # the in-force cell with a loan
+python products/variable_ul/run.py          # the worked-example anchor, point 1
+python products/variable_ul/run.py 4        # the in-force cell with a loan
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/variable-ul/VUL_US_S")
+model = mx.read_model("products/variable_ul/VUL_US_S")
 model.Projection[1].result_av()
 ```
 
@@ -104,7 +104,7 @@ The ten input CSVs live **in this directory**, beside `run.py` — not inside th
 folder. `VUL_US_S/` holds nothing but formulas:
 
 ```
-us/models/variable-ul/
+products/variable_ul/
   model_point_table.csv        <- inputs live here
   subaccount_table.csv
   scenario_table.csv

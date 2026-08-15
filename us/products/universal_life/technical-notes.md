@@ -5,9 +5,9 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model
 for the standardized composite product defined in `product-spec.md` (same directory).
 This is not any single insurer's product. [S#]/[R#] tags refer to the source list in
-`us/_research/universal-life.md`; [REG-R#] tags refer to the cross-product reference
-library `us/references/regulatory-and-actuarial-references.md` (its own R-numbering;
-research provenance in `us/_research/regulatory-actuarial.md`). **[std]** marks
+`_research/universal-life.md`; [REG-R#] tags refer to the cross-product reference
+library `references/regulatory-and-actuarial-references.md` (its own R-numbering;
+research provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation. Parameter values are
 identical to those in `product-spec.md`; the implementation anchor for mechanics is
 the Pacific Life Versa-Flex PRO specimen policy [S3].

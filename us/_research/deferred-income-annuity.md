@@ -11,7 +11,7 @@ extracted from ([S#] primary product documents, [R#] regulatory/actuarial
 references). Facts stated from general knowledge and not verified against a
 retrieved document are tagged [unverified]. The S#/R# numbering here is
 **product-local** and independent of the cross-product library numbering used in
-`us/_research/regulatory-actuarial.md`.
+`_research/regulatory-actuarial.md`.
 
 Scope note: a DIA is a **paid-up deferred annuity**. Each premium immediately and
 irrevocably purchases a fixed dollar income benefit commencing on a stated future

@@ -1,7 +1,7 @@
 """Golden and product tests for VA_US_S.
 
 The golden values are the worked example in
-us/products/variable-annuity/technical-notes.md ("Worked example -- one month, two
+products/variable_annuity/technical-notes.md ("Worked example -- one month, two
 subaccounts, charge stack, GMDB claim test"), which projects the anchor cell M60 ANB /
 single Designated Life / non-qualified / $100,000 single premium / 60-40 allocation /
 Flex GMWB Single Core (phi_G 1.25%, b 6.00%, annual CV step-up, s 105%) / Roll-up GMDB
@@ -26,9 +26,9 @@ per entry below.
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/variable-annuity/VA_US_S"
+MODEL_PATH = LIB / "products/variable_annuity/VA_US_S"
 
 CENT = 0.005            # money displayed to 2 d.p.
 WEIGHT = 5e-7           # value weights displayed to 6 d.p.

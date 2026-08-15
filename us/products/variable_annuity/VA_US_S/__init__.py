@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. variable annuities with guarantees.
 
-:mod:`~VA_US_S` is the executable counterpart of
-``us/products/variable-annuity/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.VA_US_S` is the executable counterpart of
+``products/variable_annuity/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-contract model point of an individual
 deferred variable annuity carrying two written options: a **guaranteed lifetime
 withdrawal benefit** (GLWB) tracked on a Guaranteed Withdrawal Balance that grows by a
@@ -16,7 +16,7 @@ performance with no insurer guarantee; both benefit bases are shadow accounts th
 fall with the market.
 
 **Relation to the chassis.** The deferred annuity chassis of this library is
-:mod:`MYGA_US_S`, and the naming, the Data/Projection split and the
+:mod:`.MYGA_US_S`, and the naming, the Data/Projection split and the
 timing-argument vocabulary follow it. Its *mechanics* deliberately do not carry across,
 and the chassis notes say so in terms: a VA's separate account is outside NAIC Model
 #805, which reaches a VA only through its fixed account under Model #250 §7.B
@@ -27,14 +27,14 @@ unit ledger, a four-base charge stack and two path-dependent guarantees.
 
 **Spaces.** The model contains two:
 
-:mod:`~VA_US_S.Data`
+:mod:`~.VA_US_S.Data`
     Reads the eight input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~VA_US_S.Projection`
+:mod:`~.VA_US_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~VA_US_S.Data` Space.
+    Reference, which resolves to the single :mod:`~.VA_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -52,7 +52,7 @@ initial branch of every recursion. The *policy* month is
 differ for an in-force cell, and every calendar test is written on ``duration_mth``.
 ``policy_year(t) = ceil(duration_mth(t)/12)``, so Contract Anniversaries fall at the end
 of policy months 12, 24, ... and Contract Quarterly Anniversaries at the end of policy
-months 3, 6, 9, ... **[std]**. Note the contrast with :mod:`Term_US_A`, where ``t``
+months 3, 6, 9, ... **[std]**. Note the contrast with :mod:`.Term_US_A`, where ``t``
 counts years: monthly is required here because the base contract charge accrues daily on
 separate-account value, the rider charges are assessed quarterly on benefit bases, and
 the roll-up and bonus are credited annually — three different clocks, and changing any
@@ -187,7 +187,7 @@ notes' "Known modeling pitfalls" list.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/variable-annuity/VA_US_S")
+    >>> model = mx.read_model("products/variable_annuity/VA_US_S")
     >>> model.Projection[1].result_cf()
 """
 

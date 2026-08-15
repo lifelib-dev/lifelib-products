@@ -2,11 +2,11 @@
 
 **Status:** Draft, 2026-08-03. This is a **standardized composite specification** for reference
 modeling — it does not reproduce any single insurer's product. Facts tagged [S#] and [R#] are
-sourced from the product research notes (`us/_research/term-life.md`); facts tagged [REG-R#]
+sourced from the product research notes (`_research/term-life.md`); facts tagged [REG-R#]
 are sourced from the cross-product reference library
-(`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md` for R1–R34 and in `us/_research/appp-a820-a821-a822.md` and
-`us/_research/appp-a830.md` for the AP&P Manual appendix items cited here, same R-numbering). Values marked **[std]** are standardizations
+(`references/regulatory-and-actuarial-references.md`; research provenance in
+`_research/regulatory-actuarial.md` for R1–R34 and in `_research/appp-a820-a821-a822.md` and
+`_research/appp-a830.md` for the AP&P Manual appendix items cited here, same R-numbering). Values marked **[std]** are standardizations
 introduced for the reference implementation; each **[std]** entry carries a footnote with the
 rationale and the observed range across insurers. Facts the research notes flag as
 [unverified] remain flagged here.

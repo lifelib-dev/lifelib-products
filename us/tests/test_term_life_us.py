@@ -1,6 +1,6 @@
 """Golden and structural tests for Term_US_A.
 
-The golden values are the worked example in us/products/term-life/technical-notes.md
+The golden values are the worked example in products/term_life/technical-notes.md
 ("Worked example"), which projects the specimen anchor cell M35 / StdNT / $100,000 /
 10-year plan / annual mode.  They are hard-coded here rather than pickled so that a
 reviewer can compare them against the notes by eye.
@@ -11,7 +11,19 @@ decimals.
 import modelx as mx
 import pytest
 
-from conftest import MODELS, REPO
+from conftest import MODELS, LIB
+
+def model_files(folder):
+    """The model's own file names, ignoring interpreter caches.
+
+    ``__pycache__`` appears inside a model folder as soon as anything *imports* it, which
+    is now routine: the autodoc API pages read the cells docstrings by importing
+    ``Projection`` and ``Data`` (USLIB-MERGE-PLAN.md D9).  Those caches are not part of the
+    model and must not make a round-trip comparison fail for anyone who has built the docs.
+    """
+    return {p.name for p in folder.rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts}
+
 
 CENT = 0.005          # money displayed to 2 d.p.
 INFORCE = 5e-7        # in-force displayed to 6 d.p.
@@ -200,7 +212,7 @@ def test_model_folder_holds_formulas_only():
     formulas.  This is the annuallife/TradLife_A layout, as opposed to
     basiclife/BasicTerm_S, which stores its inputs inside the model.
     """
-    folder = REPO / MODELS["Term_US_A"][0]
+    folder = LIB / MODELS["Term_US_A"][0]
     assert not (folder / "_data").exists()
     assert not list(folder.rglob("*.pickle"))
     assert not list(folder.rglob("*.csv"))
@@ -211,7 +223,7 @@ def test_model_folder_holds_formulas_only():
 
 def test_inputs_live_beside_the_model():
     """The five input CSVs sit in the model folder's parent directory."""
-    parent = (REPO / MODELS["Term_US_A"][0]).parent
+    parent = (LIB / MODELS["Term_US_A"][0]).parent
     expected = {
         "model_point_table.csv", "premium_rates.csv", "mort_table.csv",
         "class_factor_table.csv", "shock_lapse_table.csv",
@@ -221,7 +233,7 @@ def test_inputs_live_beside_the_model():
 
 def test_input_dir_resolves_to_the_parent(term_life):
     """input_dir() is derived from where the model was read, not hard-coded."""
-    assert term_life.Data.input_dir() == (REPO / MODELS["Term_US_A"][0]).parent
+    assert term_life.Data.input_dir() == (LIB / MODELS["Term_US_A"][0]).parent
 
 
 def test_inputs_are_read_once_not_once_per_model_point(term_life):
@@ -234,7 +246,7 @@ def test_inputs_are_read_once_not_once_per_model_point(term_life):
     import pandas as pd
     from collections import Counter
 
-    model = mx.read_model(REPO / MODELS["Term_US_A"][0], name="Term_US_A_reads")
+    model = mx.read_model(LIB / MODELS["Term_US_A"][0], name="Term_US_A_reads")
     reads = []
     original = pd.read_csv
 
@@ -293,11 +305,11 @@ def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
     """
     import pandas as pd
 
-    src = (REPO / MODELS["Term_US_A"][0]).parent / "mort_table.csv"
+    src = (LIB / MODELS["Term_US_A"][0]).parent / "mort_table.csv"
     doubled = pd.read_csv(src, index_col="age")
     doubled["mort_rate"] = doubled["mort_rate"] * 2
 
-    model = mx.read_model(REPO / MODELS["Term_US_A"][0], name="Term_US_A_swap")
+    model = mx.read_model(LIB / MODELS["Term_US_A"][0], name="Term_US_A_swap")
     try:
         # Write the alternative table where this model instance will look for it.
         alt_name = "mort_table_doubled.csv"
@@ -318,7 +330,7 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    src = REPO / MODELS["Term_US_A"][0]
+    src = LIB / MODELS["Term_US_A"][0]
     model = mx.read_model(src)
     try:
         dest = tmp_path / "Term_US_A"
@@ -342,6 +354,6 @@ def test_round_trip_is_stable(tmp_path):
     finally:
         reread.close()
 
-    written = {p.name for p in dest.rglob("*") if p.is_file()}
-    committed = {p.name for p in src.rglob("*") if p.is_file()}
+    written = model_files(dest)
+    committed = model_files(src)
     assert written == committed

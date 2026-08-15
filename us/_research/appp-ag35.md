@@ -484,10 +484,10 @@ the extraction's single most consequential correction.
 - **The exact title at [REG-R40].** "Actuarial Guideline XXXV — The Application of the Commissioners Annuity
   Reserve Method to Equity Indexed Annuities" matches the print. The VM-C-index verification recorded at
   [REG-R41] was correct. No change needed to the title string anywhere.
-- **AG 35 layers on AG 33 rather than replacing it** — `us/references/regulatory-and-actuarial-references.md`
-  R39/R40 annotations, `us/products/fixed-indexed-annuity/product-spec.md` §"Statutory valuation", and
+- **AG 35 layers on AG 33 rather than replacing it** — `references/regulatory-and-actuarial-references.md`
+  R39/R40 annotations, `products/fixed_indexed_annuity/product-spec.md` §"Statutory valuation", and
   `us/regulatory/statutory-accounting-and-capital.md` line 219. Confirmed by Step 4 of all four methods.
-- **AG 35 does not reach a book-value MYGA** — `us/products/fixed-deferred-annuity/technical-notes.md` line
+- **AG 35 does not reach a book-value MYGA** — `products/fixed_deferred_annuity/technical-notes.md` line
   639. Confirmed on primary authority: Scope is limited to "equity indexed annuity contracts … subject to
   CARVM", and a MYGA is not index-linked. The claim can drop from inference to text.
 - **Certification and notification requirements attach to method choice and method change** — R40 annotation.
@@ -503,17 +503,17 @@ the extraction's single most consequential correction.
 1. **"Type 1" / "Type 2" are not industry shorthand.** [REG-R40]'s annotation says AG 35 offers "alternative
    method families (industry shorthand 'Type 1' / 'Type 2')". They are **the guideline's own section headings
    and defined terms**. Delete "industry shorthand" and the surrounding hedging. Same for
-   `us/_research/fixed-indexed-annuity.md` line 973.
+   `_research/fixed-indexed-annuity.md` line 973.
 
 2. **The asset adequacy requirement is conditional, and the library states it unconditionally.** Three places
    assert that AG 35 *requires* equity-indexed annuity reserves to be asset-adequacy tested:
-   - `us/references/regulatory-and-actuarial-references.md` line 194 — "binding in part because AG 35
+   - `references/regulatory-and-actuarial-references.md` line 194 — "binding in part because AG 35
      expressly requires equity-indexed annuity reserves to be asset-adequacy tested";
    - the [REG-R40] annotation — "**requiring that equity-indexed annuity reserves be asset-adequacy tested**
      [unverified — from a practitioner presentation, not the guideline text]";
-   - `us/products/fixed-indexed-annuity/technical-notes.md` line 694 — "AG 35 is reported to require
+   - `products/fixed_indexed_annuity/technical-notes.md` line 694 — "AG 35 is reported to require
      equity-indexed annuity reserves to be asset-adequacy tested … [unverified]";
-   - and `us/_research/regulatory-actuarial-annuities.md` line 64 in the same terms.
+   - and `_research/regulatory-actuarial-annuities.md` line 64 in the same terms.
 
    The text is **"To the extent required by law, regulation, or regulatory requirements, reserves … must be
    tested for adequacy using appropriate methods and assumptions."** AG 35 **presupposes** the obligation and
@@ -525,33 +525,33 @@ the extraction's single most consequential correction.
 
 3. **AG 35 covers immediate as well as deferred equity indexed annuities.** Every library mention treats AG 35
    as an FIA (deferred accumulation) item. The Background devotes a paragraph to equity indexed *immediate*
-   annuity products with a minimum guaranteed annuitization rate. The `us/products/immediate-annuity/` and
-   `us/products/deferred-income-annuity/` files should at minimum record that AG 35 reaches an index-linked
+   annuity products with a minimum guaranteed annuitization rate. The `products/immediate_annuity/` and
+   `products/deferred_income_annuity/` files should at minimum record that AG 35 reaches an index-linked
    payout design, even though the library's representative SPIA and DIA are not index-linked.
 
 4. **The retrievability caveats are now wrong for AG 35.** All of the following state or imply that the AG 35
    text could not be obtained and must be cited second-hand, and all should be revised to cite **[REG-R152]**:
-   - `us/README.md` lines 104, 155, 185;
-   - `us/references/regulatory-and-actuarial-references.md` lines 833–834, 1009–1024 (the R40 entry), 1741,
+   - `README.md` lines 104, 155, 185;
+   - `references/regulatory-and-actuarial-references.md` lines 833–834, 1009–1024 (the R40 entry), 1741,
      3243;
    - `us/regulatory/statutory-accounting-and-capital.md` lines 29, 218–219, 225–228, 243–244, 640, 698;
    - `us/regulatory/technical-notes.md` lines 80 and 453 ("AG 33 and AG 35 are the interpretive layers and
      **their texts were not retrieved**" / "the interpretive guidance — AG 33 and AG 35 — was **not
      retrievable**");
    - `us/regulatory/sources.md` lines 664, 717 ff.;
-   - `us/products/fixed-indexed-annuity/technical-notes.md` lines 567–570, 605, 694, 720, 740;
-   - `us/products/fixed-indexed-annuity/product-spec.md` lines 520–521 and `sources.md` lines 230–233, 266,
+   - `products/fixed_indexed_annuity/technical-notes.md` lines 567–570, 605, 694, 720, 740;
+   - `products/fixed_indexed_annuity/product-spec.md` lines 520–521 and `sources.md` lines 230–233, 266,
      271;
-   - `us/products/registered-index-linked-annuity/technical-notes.md` line 677 and `sources.md` lines 293–294;
-   - `us/products/fixed-deferred-annuity/technical-notes.md` line 639 and `sources.md` line 313;
-   - `us/_research/fixed-indexed-annuity.md` lines 972–975, 1321–1327, 1811, 1989.
+   - `products/registered_index_linked_annuity/technical-notes.md` line 677 and `sources.md` lines 293–294;
+   - `products/fixed_deferred_annuity/technical-notes.md` line 639 and `sources.md` line 313;
+   - `_research/fixed-indexed-annuity.md` lines 972–975, 1321–1327, 1811, 1989.
 
    **AG 33 is a separate document and this extraction says nothing about it** — every joint "AG 33 and AG 35
    were not retrieved" sentence must be split, not deleted.
 
 ### Now answerable where the library previously had a hole
 
-- **`us/products/fixed-indexed-annuity/technical-notes.md` line 605** — "How the index feature itself enters
+- **`products/fixed_indexed_annuity/technical-notes.md` line 605** — "How the index feature itself enters
   is **AG 35's subject and unretrieved** … expose both bases rather than choosing in code." The answer is now
   available and the "expose both bases" instruction turns out to be *right for the wrong reason*: AG 35 does
   not choose between a guaranteed-basis and a declared-basis roll-forward. It supplies **four** distinct
@@ -571,7 +571,7 @@ the extraction's single most consequential correction.
 
 ### Left open — do not resolve from this text
 
-- **RILA / ILVA.** `us/products/registered-index-linked-annuity/technical-notes.md` line 677 calls AG 35
+- **RILA / ILVA.** `products/registered_index_linked_annuity/technical-notes.md` line 677 calls AG 35
   "equity-indexed CARVM" and says the RILA interim-value interaction is "precisely the interaction those
   unread guidelines would govern". **AG 35 does not settle this.** It defines no term "equity indexed
   annuity"; its Background describes designs carrying "a minimum guaranteed interest accumulation rate on a

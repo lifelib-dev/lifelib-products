@@ -6,12 +6,12 @@ appendix items **R151–R157**, accessed 2026-08-06 — see `sources.md`).
 **Scope note.** These notes specify a reference liability cash-flow projection model for
 the standardized composite product defined in `product-spec.md` (same directory). This is
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
-`us/_research/registered-index-linked-annuity.md`; [REG-R#] tags refer to the **shared
+`_research/registered-index-linked-annuity.md`; [REG-R#] tags refer to the **shared
 cross-product numbering space, which now runs R1–R157** with most of the
 **R73–R149** block unused, curated at
-`us/references/regulatory-and-actuarial-references.md` (R1–R34 from
-`us/_research/regulatory-actuarial.md`, R35–R72 from
-`us/_research/regulatory-actuarial-annuities.md`). **[std]** marks standardizations
+`references/regulatory-and-actuarial-references.md` (R1–R34 from
+`_research/regulatory-actuarial.md`, R35–R72 from
+`_research/regulatory-actuarial-annuities.md`). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
 `product-spec.md`; the mechanics anchor is the Brighthouse Shield Level II prospectus,
 Appendix F [S2].
@@ -179,7 +179,7 @@ built in at construction — 10% at all ages up to and including 100, grading do
 year above it [REG-R60] — so a 100% A/E applied to the Period Table sets deferral-phase
 mortality roughly 10% below the unloaded basis before any experience adjustment. The
 experience study reports against the **Basic** table, which is why the base row above is
-the Basic table. The payout chassis in `us/products/immediate-annuity/technical-notes.md`
+the Basic table. The payout chassis in `products/immediate_annuity/technical-notes.md`
 calibrates the same study to **108.4%** of 2012 IAM Basic projected with G2; that factor is
 *payout-annuitant-select* and is deliberately **not** imported here, because the RILA
 deferral-phase population is not annuitant-select and public deferred-period annuitant
@@ -501,7 +501,7 @@ At each month end `t`:
 Note on annuitization: this file specifies the **deferral phase only**. The payout stream
 bought at the Maturity Date is not re-derived here — survivorship weighting, period-certain
 floors and joint-life continuance are the payout chassis in
-`us/products/immediate-annuity/technical-notes.md`, applied to the **two** forms this
+`products/immediate_annuity/technical-notes.md`, applied to the **two** forms this
 contract offers (Life with 10 Years of Annuity Payments Guaranteed; Joint and Last Survivor
 with 10 Years Guaranteed) [S2]. Two deltas against that chassis: this contract offers **no
 refund forms** (neither cash refund nor installment refund) [S2], so that branch is unused;

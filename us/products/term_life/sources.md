@@ -1,8 +1,8 @@
 # Sources — Level Premium Term Life Insurance
 
 Source identifiers, titles, publishers, URLs, access dates, and retrieval status are
-carried over verbatim from `us/_research/term-life.md` (product sources [S#]/[R#]) and
-`us/_research/regulatory-actuarial.md` (cross-product references, cited as [REG-R#] to
+carried over verbatim from `_research/term-life.md` (product sources [S#]/[R#]) and
+`_research/regulatory-actuarial.md` (cross-product references, cited as [REG-R#] to
 avoid collision with the product file's R# numbering). Only sources actually cited in
 `product-spec.md` or `technical-notes.md` are listed; numbering is never reused or
 renumbered. **No new sources were fetched at drafting** — the two documents rest entirely
@@ -12,7 +12,7 @@ Access date for all citations: 2026-08-03, except the two **AP&P Manual appendix
 R153 and R154**, accessed **2026-08-06** and listed in their own sub-table. Those two were
 fetched after drafting, by the stream that read seven AP&P Manual appendix items at first
 hand; their metadata is carried from
-`us/references/regulatory-and-actuarial-references.md`.
+`references/regulatory-and-actuarial-references.md`.
 
 ---
 
@@ -133,11 +133,11 @@ hand; their metadata is carried from
 
 ## Cross-product regulatory references ([REG-R#])
 
-These are cited from the cross-product bibliography, `us/_research/regulatory-actuarial.md`
+These are cited from the cross-product bibliography, `_research/regulatory-actuarial.md`
 (its own R1–R34 numbering; cited here with the REG- prefix). The shared reference library
-is `us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now
+is `references/regulatory-and-actuarial-references.md` (same R-numbering, which now
 runs **R1–R157**, with most of the **R73–R149** block unused; R35–R72 are annuity-specific
-entries from `us/_research/regulatory-actuarial-annuities.md` and are not cited here); the
+entries from `_research/regulatory-actuarial-annuities.md` and are not cited here); the
 bibliography records full annotations and retrieval status.
 Entries cited in the two documents:
 
@@ -166,8 +166,8 @@ Entries cited in the two documents:
 ### AP&P Manual appendix entries read at first hand (added 2026-08-06)
 
 Ids, titles, publishers, URLs, access dates and fetched markers below are carried
-from `us/references/regulatory-and-actuarial-references.md`, which itself carries them from
-`us/_research/appp-a820-a821-a822.md` (R153) and `us/_research/appp-a830.md` (R154). **Nothing is
+from `references/regulatory-and-actuarial-references.md`, which itself carries them from
+`_research/appp-a820-a821-a822.md` (R153) and `_research/appp-a830.md` (R154). **Nothing is
 renumbered.** Both are appendix items of the **same physical document already catalogued as R73**
 — the NAIC *Accounting Practices and Procedures Manual, As of March 2026*, a **free download**
 from `content.naic.org` — and take appendix-level ids so that a document can cite **A-820 ¶15** or
@@ -235,14 +235,14 @@ stated at the point of use in `technical-notes.md`:
 
 ## Provenance note
 
-Extraction details live in `us/_research/term-life.md`: that file records which facts came
+Extraction details live in `_research/term-life.md`: that file records which facts came
 from which source (per-source key-facts lists and the "Extracted specifications" section),
 including which claims are [unverified] because the underlying document could not be
 fetched. The cross-product regulatory annotations live in
-`us/_research/regulatory-actuarial.md`, whose retrieval-status table governs the "Fetched"
+`_research/regulatory-actuarial.md`, whose retrieval-status table governs the "Fetched"
 column above; the two AP&P Manual appendix items added on 2026-08-06 have their own
-extraction files, `us/_research/appp-a820-a821-a822.md` (R153) and `us/_research/appp-a830.md`
-(R154), and `us/references/regulatory-and-actuarial-references.md` is the metadata of
+extraction files, `_research/appp-a820-a821-a822.md` (R153) and `_research/appp-a830.md`
+(R154), and `references/regulatory-and-actuarial-references.md` is the metadata of
 record for both.
 `product-spec.md` and `technical-notes.md` in this directory cite only what those files
 record; standardizations introduced at drafting are marked **[std]** in

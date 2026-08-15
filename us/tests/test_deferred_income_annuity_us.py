@@ -1,7 +1,7 @@
 """Golden and product-specific tests for DIA_US_S.
 
 The golden values are the worked example in
-us/products/deferred-income-annuity/technical-notes.md ("Worked example"), which
+products/deferred_income_annuity/technical-notes.md ("Worked example"), which
 projects the anchor cell: Female 60 ANB, nonqualified, Life with Cash Refund, monthly
 in arrears, return-of-premium death benefit in deferral, no COLA, $100,000 at issue plus
 $50,000 at the start of policy year 6, income start at attained age 80 (T = 240 months).
@@ -18,9 +18,9 @@ cell's premiums fall at months 0 and 60 and its income start month is T = 240.
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/deferred-income-annuity/DIA_US_S"
+MODEL_PATH = LIB / "products/deferred_income_annuity/DIA_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 SURV = 5e-7           # survival displayed to 6 d.p.

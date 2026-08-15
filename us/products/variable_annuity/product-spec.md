@@ -8,12 +8,12 @@ sources accessed 2026-08-04 **except** [REG-R151] (AG 33) and [REG-R156] (A-250)
 liability cash-flow modeling of a U.S. individual deferred variable annuity (VA) carrying
 a guaranteed lifetime withdrawal benefit (GLWB/GMWB) and a guaranteed minimum death
 benefit (GMDB). It does not describe any single insurer's product. Tag conventions:
-**[S#]/[R#]** resolve against the product research file `us/_research/variable-annuity.md`
+**[S#]/[R#]** resolve against the product research file `_research/variable-annuity.md`
 (its own local numbering: S1–S8 product documents, R1–R13 regulatory/actuarial
 references). **[REG-R#]** resolves against the **single shared cross-product numbering
-space R1–R157** curated at `us/references/regulatory-and-actuarial-references.md`; R1–R34
-originate in `us/_research/regulatory-actuarial.md` (life-origin, several of which also
-bind annuities), R35–R72 in `us/_research/regulatory-actuarial-annuities.md`
+space R1–R157** curated at `references/regulatory-and-actuarial-references.md`; R1–R34
+originate in `_research/regulatory-actuarial.md` (life-origin, several of which also
+bind annuities), R35–R72 in `_research/regulatory-actuarial-annuities.md`
 (annuity-specific) and **R151–R157** in the AP&P Manual appendix extractions read at
 first hand on 2026-08-06 (**AG 33** [REG-R151] and **A-250** [REG-R156] are the two cited
 here), with most of the **R73–R149** block unused — one tag prefix, one numbering
@@ -211,7 +211,7 @@ Investment Divisions** [S2]. Charges assessed per contract rather than per unit 
 the annual contract maintenance charge [S2] and the two rider charges [S1][S3] — are
 collected by **cancelling units**, leaving unit value undisturbed. The generic
 separate-account charge-accrual convention is specified once in
-`us/products/variable-ul/technical-notes.md` and reused here, with two differences that
+`products/variable_ul/technical-notes.md` and reused here, with two differences that
 follow from that being a **life** file: it works at the subaccount-value level and carries
 no unit count, so the unit ledger above is stated here rather than inherited; and a VA has
 **no cost of insurance and no IRC §7702 corridor**, its guarantees being GMDB and GLWB

@@ -7,12 +7,12 @@ liability cash-flow modeling of a U.S. individual **multi-year guaranteed annuit
 (MYGA)** — a single-premium, book-value fixed deferred annuity with a market value
 adjustment. It does not describe any single insurer's product. Facts carrying a source
 tag — [S#] (primary product documents) and [R#] (regulatory/actuarial references), both
-numbered per `us/_research/fixed-deferred-annuity.md`, and [REG-R#] (the cross-product
-reference library `us/references/regulatory-and-actuarial-references.md`, whose shared
+numbered per `_research/fixed-deferred-annuity.md`, and [REG-R#] (the cross-product
+reference library `references/regulatory-and-actuarial-references.md`, whose shared
 R-numbering now runs **R1–R157** with most of the **R73–R149** block unused; provenance in
-`us/_research/regulatory-actuarial.md` for R1–R34,
-`us/_research/regulatory-actuarial-annuities.md` for R35–R72, and the AP&P Manual appendix
-extractions `us/_research/appp-ag33.md`, `appp-ag35.md`,
+`_research/regulatory-actuarial.md` for R1–R34,
+`_research/regulatory-actuarial-annuities.md` for R35–R72, and the AP&P Manual appendix
+extractions `_research/appp-ag33.md`, `appp-ag35.md`,
 `appp-a820-a821-a822.md` and `appp-a585-a250-a255-a270.md` for R151–R157, all accessed
 **2026-08-06**) — were extracted from
 the cited document. Values marked **[std]** are standardizations introduced for the
@@ -29,7 +29,7 @@ an FIA's account-value roll-forward is index-credit driven, and its lapse archit
 **not** this chassis's renewal/shock-lapse architecture (an FIA's shock lapse is suppressed
 by an in-force GLWB rider, roughly 10%/33% with and without a rider, against the 52%–56%
 reported for fixed-rate deferred annuities — see
-`us/products/fixed-indexed-annuity/technical-notes.md`). That file also restates, rather
+`products/fixed_indexed_annuity/technical-notes.md`). That file also restates, rather
 than inherits, the MVA family and the death benefit; both differences are itemized there.
 The **variable annuity** documents deliberately do **not**: a VA
 is a separate-account contract that Model #805 expressly excludes, and the nonforfeiture
@@ -301,7 +301,7 @@ adjustment; `μ(t)` MVA rate; `M(t)` MVA amount (signed); `C(t)` surrender charg
 labels: **`MGSV` is this library's term across the annuity family** for the Model #805
 nonforfeiture floor; the specimen contract [S11] calls the same quantity the "GMSV" and
 its accumulation rate the "GMSV rate", and that wording is preserved wherever [S11] is
-quoted below. `us/products/fixed-indexed-annuity/` calls the same floor the **guaranteed
+quoted below. `products/fixed_indexed_annuity/` calls the same floor the **guaranteed
 minimum value (`MGV`)**, following its own source [S10] — one concept, three labels.
 
 **Account value.** 100% of premium at issue, accreting at the declared effective annual
@@ -558,7 +558,7 @@ both, and the guideline's 33⅓ / 66⅔ / 100% grade-in ran off by December 31, 
 formulas, tables or factors** beyond the 7% expense-allowance cap and those phase-in
 percentages, and it **never cites SVL §5a by number** — the §5a mapping used throughout this
 library is the library's own, made on content [REG-R151][REG-R1 §5a.B]. Mechanics are in the
-primary-text extractions `us/_research/appp-a820-a821-a822.md` and `us/_research/appp-ag33.md`.
+primary-text extractions `_research/appp-a820-a821-a822.md` and `_research/appp-ag33.md`.
 VM-C is the
 authoritative index of which guidelines the Valuation Manual incorporates, including AG
 VIII, AG XIII, AG XXXIII and AG XLI [REG-R41]. For the payout phase VM-V §1 carries the

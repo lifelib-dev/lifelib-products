@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. variable universal life.
 
-:mod:`~VUL_US_S` is the executable counterpart of
-``us/products/variable-ul/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.VUL_US_S` is the executable counterpart of
+``products/variable_ul/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-life, flexible-premium variable
 universal life policy: account value allocated between two separate-account
 subaccounts and a general-account fixed option, a front-end premium load, a monthly
@@ -17,8 +17,8 @@ policy loans through a general-account loan account, and no maturity date -- pre
 and monthly deductions cease at attained age 121 while the asset charges continue.
 
 The product is built on the universal-life chassis of
-``us/products/universal-life/technical-notes.md``, and :mod:`~VUL_US_S` follows
-:mod:`UL_US_S` name for name wherever the two products share a concept. Where
+``products/universal_life/technical-notes.md``, and :mod:`~.VUL_US_S` follows
+:mod:`.UL_US_S` name for name wherever the two products share a concept. Where
 the two models differ, the difference is the variable-UL notes' own instruction rather
 than an implementation choice. Every one of those differences is listed below, and the
 model README tabulates the same set against the chassis:
@@ -55,14 +55,14 @@ model README tabulates the same set against the chassis:
 
 **Spaces.** The model contains two:
 
-:mod:`~VUL_US_S.Data`
+:mod:`~.VUL_US_S.Data`
     Reads the ten input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~VUL_US_S.Projection`
+:mod:`~.VUL_US_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~VUL_US_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.VUL_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -223,7 +223,7 @@ neither may be closed silently.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/variable-ul/VUL_US_S")
+    >>> model = mx.read_model("products/variable_ul/VUL_US_S")
     >>> model.Projection[1].result_av()
 """
 

@@ -6,14 +6,14 @@
 """Input data shared by every by-contract projection.
 
 The seven input CSVs are read here, **once per model**, and referenced from
-:mod:`~FIA_US_S.Projection` as ``data``.
-:mod:`~FIA_US_S.Projection` is parameterized by ``point_id``, so each
+:mod:`~.FIA_US_S.Projection` as ``data``.
+:mod:`~.FIA_US_S.Projection` is parameterized by ``point_id``, so each
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; if the readers lived
 there, every model point would re-read every file. Holding them in an unparameterized
 Space reads each file once no matter how many contracts are projected.
 
 Inputs are **external files**: plain CSVs in the model folder's parent directory,
-``us/models/fixed-indexed-annuity/``, rather than data stored inside the model. The
+``products/fixed_indexed_annuity/``, rather than data stored inside the model. The
 model folder therefore holds nothing but formulas — no ``_data/``, no IOSpec, no embedded
 values — so a diff of the model shows logic changes only. This follows
 ``annuallife.TradLife_A``; contrast ``basiclife.BasicTerm_S``, which keeps its inputs
@@ -60,7 +60,7 @@ To swap in the prescribed annuitant mortality — the 2012 IAM/IAR family with P
 Scale G2 [REG-R59][REG-R60], which may not be redistributed here — replace
 ``mort_table.csv`` with a same-schema file, or point ``mort_table_file`` at a different
 name, then clear the cache. No formula changes. The shipped table is the same
-illustrative Makeham annuitant curve as ``us/models/fixed-deferred-annuity``, so the two
+illustrative Makeham annuitant curve as ``products/fixed_deferred_annuity``, so the two
 annuity models sit on one mortality basis.
 """
 

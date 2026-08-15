@@ -5,9 +5,9 @@
 Scope note: these notes standardize a liability cash flow projection model for the
 representative GUL product defined in `product-spec.md` (same directory). They use the
 same representative parameter values as the specification. Tags: [S#]/[R#] cite
-`us/_research/guaranteed-ul.md`; [REG-R#] cites the cross-product reference library
-`us/references/regulatory-and-actuarial-references.md` (research provenance:
-`us/_research/regulatory-actuarial.md`, same R-numbering); **[std]** marks standardizations introduced
+`_research/guaranteed-ul.md`; [REG-R#] cites the cross-product reference library
+`references/regulatory-and-actuarial-references.md` (research provenance:
+`_research/regulatory-actuarial.md`, same R-numbering); **[std]** marks standardizations introduced
 for the reference implementation; [unverified] flags facts the research file could not
 verify from a retrieved document.
 
@@ -22,7 +22,7 @@ verify from a retrieved document.
 - **Base chassis**: the monthiversary processing order and the NAAR discount
   convention (DB discounted one month at the guaranteed rate, floored at zero)
   follow the universal-life reference notes
-  (`us/products/universal-life/technical-notes.md`); the shadow account runs the
+  (`products/universal_life/technical-notes.md`); the shadow account runs the
   same recursion with its own parameter set. Documented deviation **[std]**: these
   notes measure the account value for the NAAR after the expense charges but before
   COI (the UL base measures AV before the entire monthly deduction) — immaterial at

@@ -4,9 +4,9 @@
 **Scope note:** This is a standardized *composite* specification assembled for reference
 liability-model implementation. It does not describe any single insurer's product. Facts
 carry source tags: [S#]/[R#] refer to the sources catalogued in `sources.md` (extraction
-provenance in `us/_research/indexed-ul.md`); [REG-R#] refers to the cross-product
-reference library (`us/references/regulatory-and-actuarial-references.md`; research
-provenance in `us/_research/regulatory-actuarial.md`, same R-numbering). **[std]** marks a
+provenance in `_research/indexed-ul.md`); [REG-R#] refers to the cross-product
+reference library (`references/regulatory-and-actuarial-references.md`; research
+provenance in `_research/regulatory-actuarial.md`, same R-numbering). **[std]** marks a
 standardization introduced for the reference implementation (choice among observed carrier
 practices, or a placeholder where carrier values are not public); every **[std]** table row
 has a footnote giving the rationale and the observed range. Items the research notes flag
@@ -25,7 +25,7 @@ the interest credits are linked to an external reference" [R3]. Some carriers br
 identical design "fixed index universal life" (FIUL) [S8]. Mechanically, IUL is
 current-assumption UL plus one or more indexed accounts: all premium, charge, death
 benefit, loan, and lapse provisions follow the UL pattern (base chassis:
-`us/products/universal-life/product-spec.md` and the technical notes in that
+`products/universal_life/product-spec.md` and the technical notes in that
 directory); only the interest-crediting engine differs.
 
 IUL is sold primarily for cash-value accumulation and distribution (policy loans in
@@ -400,7 +400,7 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   reserve rule in the item; every rate, table and factor it uses is delegated to **A-820**
   by year of issue [REG-R155][REG-R153][REG-R110]. Mechanics, the alternative minimum
   reserve and the A-830 ULSG branch are read at first hand in
-  `us/_research/appp-a585-a250-a255-a270.md` and `us/_research/appp-a830.md`.
+  `_research/appp-a585-a250-a255-a270.md` and `_research/appp-a830.md`.
 - **Nonguaranteed elements.** Caps, participation rates, declared rates, COI rates, and
   loads are NGEs; determination and revision practice is governed by ASOP No. 2 [REG-R26].
 - **Federal tax.** §7702 definition of life insurance (CVAT or GPT+corridor; floating

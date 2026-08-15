@@ -6,13 +6,13 @@ appendix items **R151–R157**, accessed 2026-08-06 — see `sources.md`).
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
-references), both numbered per `us/_research/registered-index-linked-annuity.md` — were
+references), both numbered per `_research/registered-index-linked-annuity.md` — were
 extracted from the cited document. [REG-R#] tags resolve against the **shared
 cross-product numbering space, which now runs R1–R157** with most of the
 **R73–R149** block unused, curated at
-`us/references/regulatory-and-actuarial-references.md`: R1–R34 are the life-origin
-entries (research provenance `us/_research/regulatory-actuarial.md`), R35–R72 the
-annuity-specific entries (`us/_research/regulatory-actuarial-annuities.md`). It is one
+`references/regulatory-and-actuarial-references.md`: R1–R34 are the life-origin
+entries (research provenance `_research/regulatory-actuarial.md`), R35–R72 the
+annuity-specific entries (`_research/regulatory-actuarial-annuities.md`). It is one
 numbering space, not two. Values marked **[std]** are standardizations introduced for
 the reference implementation; each [std] table row carries a footnote giving the
 rationale and the observed range across insurers. Facts the research file could not
@@ -216,8 +216,8 @@ genuinely in the money in equity stress — it is not a nominal guarantee.
     Scale G2 per Model #821 / VM-M [REG-R59] at a **[std]** 2.50% assumed interest rate,
     and assumes **100% last-survivor continuance [std] [unverified]**. The payout-phase
     mechanics themselves are not restated here: they are the chassis in
-    `us/products/immediate-annuity/product-spec.md` and
-    `us/products/immediate-annuity/technical-notes.md`, restricted to the two forms above —
+    `products/immediate_annuity/product-spec.md` and
+    `products/immediate_annuity/technical-notes.md`, restricted to the two forms above —
     this contract offers no cash-refund or installment-refund form [S2], so those branches
     of that chassis are unused.
 

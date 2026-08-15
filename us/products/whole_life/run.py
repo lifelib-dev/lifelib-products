@@ -1,7 +1,7 @@
 """Run the WholeLife_US_A reference model and print its cash flow statement.
 
-    python us/models/whole-life/run.py            # anchor cell (point_id = 1)
-    python us/models/whole-life/run.py 2          # another model point
+    python products/whole_life/run.py            # anchor cell (point_id = 1)
+    python products/whole_life/run.py 2          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

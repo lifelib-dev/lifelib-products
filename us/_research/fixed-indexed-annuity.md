@@ -13,7 +13,7 @@ extracted from ([S#] primary product documents, [R#] regulatory/actuarial
 references). Facts stated from general knowledge and not verified against a
 retrieved document are tagged [unverified]. The S#/R# numbering in this file is
 **local to this product** and independent of the cross-product library numbering used
-in `us/_research/regulatory-actuarial.md`.
+in `_research/regulatory-actuarial.md`.
 
 Note on retrieval method: several publishers serve product PDFs that the fetch tool
 could not render to text. Those PDFs were downloaded and text-extracted locally with

@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy monthly projection of the :mod:`~IUL_US_S` model.
+"""The by-policy monthly projection of the :mod:`~.IUL_US_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -15,7 +15,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent
-directory, ``us/models/indexed-ul/``, read at run time rather than stored inside the
+directory, ``products/indexed_ul/``, read at run time rather than stored inside the
 model. The model folder therefore holds nothing but formulas -- no ``_data/``, no
 IOSpec, no embedded values -- so a diff of the model shows logic changes only, and an
 input can be edited or swapped without rewriting the model. This follows
@@ -26,7 +26,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 ``IUL_US_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
-The readers live in the unparameterized :mod:`~IUL_US_S.Data` Space, reached here
+The readers live in the unparameterized :mod:`~.IUL_US_S.Data` Space, reached here
 through the ``data`` Reference, so each file is read once per model rather than once
 per model point:
 
@@ -94,7 +94,7 @@ is not a decrement.
 
 .. rubric:: Naming
 
-Cells names follow :mod:`~UL_US_S` -- the chassis these notes defer to -- and
+Cells names follow :mod:`~.UL_US_S` -- the chassis these notes defer to -- and
 through it lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``: ``pols_*``
 for policy counts, ``av_*`` for account values, plural nouns for cash flows, ``*_rate``
 for rates, ``*_pp`` for per-policy amounts, ``timing`` and ``kind`` string arguments.

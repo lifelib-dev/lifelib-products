@@ -1,7 +1,7 @@
 """Run the RILA_US_S reference model and print its cash flows.
 
-    python us/models/registered-index-linked-annuity/run.py       # anchor cell (point_id = 1)
-    python us/models/registered-index-linked-annuity/run.py 2     # another model point
+    python products/registered_index_linked_annuity/run.py       # anchor cell (point_id = 1)
+    python products/registered_index_linked_annuity/run.py 2     # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

@@ -1,7 +1,7 @@
 """Run the VA_US_S reference model and print its cash flow statement.
 
-    python us/models/variable-annuity/run.py            # anchor cell (point_id = 1)
-    python us/models/variable-annuity/run.py 2          # the in-force worked-example cell
+    python products/variable_annuity/run.py            # anchor cell (point_id = 1)
+    python products/variable_annuity/run.py 2          # the in-force worked-example cell
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

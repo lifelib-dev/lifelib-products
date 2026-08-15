@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. participating whole life insurance.
 
-:mod:`~WholeLife_US_A` is the executable counterpart of
-``us/products/whole-life/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.WholeLife_US_A` is the executable counterpart of
+``products/whole_life/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for the two standardized composite designs those
 notes specify: ``RefWL-Par``, a participating level-premium whole life policy with a
 guaranteed cash value schedule that endows at attained age 100, an annual
@@ -16,14 +16,14 @@ plan, a return-of-premium death benefit in policy years 1-2.
 
 **Spaces.** The model contains two:
 
-:mod:`~WholeLife_US_A.Data`
+:mod:`~.WholeLife_US_A.Data`
     Reads the six input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~WholeLife_US_A.Projection`
+:mod:`~.WholeLife_US_A.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~WholeLife_US_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.WholeLife_US_A.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -65,7 +65,7 @@ with outgo positive while the rest of the library is income-positive.
 ``liability_cf(t)`` carries the notes' formula verbatim — premium income with a minus
 sign, so a positive value is money leaving the insurer — and
 ``net_cf(t) = -liability_cf(t)`` carries the income-positive convention every model in
-``us/models/`` shares, so the column can be summed or compared across products. Both are
+``products/`` shares, so the column can be summed or compared across products. Both are
 columns of ``result_cf()``. Nothing is silently flipped and nothing is lost.
 
 **What is sourced and what is not.** Very little of this product is public. The
@@ -129,7 +129,7 @@ of the four dividend options.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/whole-life/WholeLife_US_A")
+    >>> model = mx.read_model("products/whole_life/WholeLife_US_A")
     >>> model.Projection[1].result_cf()
 """
 

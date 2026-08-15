@@ -4,11 +4,11 @@
 
 **Scope note.** A *standardized composite specification* for reference liability cash-flow modeling; not any
 single insurer's product. [S#] (primary product documents) and [R#] (regulatory/actuarial references) are
-numbered per `us/_research/deferred-income-annuity.md`. [REG-R#] resolves against the cross-product library
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157** as **one**
+numbered per `_research/deferred-income-annuity.md`. [REG-R#] resolves against the cross-product library
+`references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157** as **one**
 space, with most of the **R73–R149** block unused: R1–R34 of life origin (provenance
-`us/_research/regulatory-actuarial.md`), R35–R72 annuity-specific (provenance
-`us/_research/regulatory-actuarial-annuities.md`), and
+`_research/regulatory-actuarial.md`), R35–R72 annuity-specific (provenance
+`_research/regulatory-actuarial-annuities.md`), and
 **R150–R157 the AP&P Manual appendix and actuarial-guideline prints read on 2026-08-06**.
 **[std]** marks standardizations introduced
 for the reference implementation; every [std] table row carries a footnote giving the rationale and the
@@ -26,8 +26,8 @@ M&E or rider charge, no surrender charge, no free-withdrawal corridor, no market
 base, no interim value. See "Parameters that do not exist for this product"; do not carry empty parameter
 tables for them. **Income-phase mechanics are not restated here:** once income begins a DIA *is* a
 single-premium immediate annuity, and payout forms, refund mechanics, survivor reduction, COLA escalation and
-survivorship weighting are specified in `us/products/immediate-annuity/product-spec.md` and
-`us/products/immediate-annuity/technical-notes.md`. This document specifies the **deferral phase**, the
+survivorship weighting are specified in `products/immediate_annuity/product-spec.md` and
+`products/immediate_annuity/technical-notes.md`. This document specifies the **deferral phase**, the
 **transition to income** and the **QLAC overlay**.
 
 ---
@@ -153,7 +153,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
     it cannot change even on an annuity-date adjustment [S2] — but changeable at Guardian [S3]. The
     fixed-at-issue convention is adopted.
 13. No retrieved DIA document states advance versus arrears. Arrears matches
-    `us/products/immediate-annuity/product-spec.md` so one payout chassis serves both products; the model
+    `products/immediate_annuity/product-spec.md` so one payout chassis serves both products; the model
     exposes `pay_timing ∈ {advance, arrears}`.
 
 ### Income start date adjustment (the principal in-force option)
@@ -196,7 +196,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
     period-certain-only contract [R13 §3.H(3)]. 10–30 is taken with the archetype; period-certain-only is out
     of base scope.
 16. Observed: 100/66⅔/50% [S1]; ½, ⅔, ¾ [S2]; 50/67/75% [S4]. The union {50, 66⅔, 75, 100} is adopted, which
-    is exactly the set carried in `us/products/immediate-annuity/product-spec.md` so the two payout chassis
+    is exactly the set carried in `products/immediate_annuity/product-spec.md` so the two payout chassis
     share one menu; 100% must be retained because it is the *only* continuance NYL permits on a joint Cash
     Refund form [S1] — the joint counterpart of the anchor cell's payout form.
 17. Non-convertible is the simpler pricing equation and the default at three of four insurers. MassMutual
@@ -334,7 +334,7 @@ equivalence **or** contain a table of alternative income benefits [R13 §§3.M, 
 
 **Transition to income.** On the income start date the slices are paid as one stream in the form elected at
 issue [S1][S2][S3][S4] and the contract becomes a SPIA — mechanics in
-`us/products/immediate-annuity/product-spec.md`. Two DIA-specific carry-overs: the **refund base is
+`products/immediate_annuity/product-spec.md`. Two DIA-specific carry-overs: the **refund base is
 cumulative premiums paid**, not a single premium [S2][S4]; and the Compact treats income payments made before
 a return-of-premium death benefit as **period certain income** [R13 definitions], which is what lets a
 cash-refund or installment-refund DIA be valued as a life annuity with a derived certain period.

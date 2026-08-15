@@ -7,11 +7,11 @@ sources accessed 2026-08-04 **except** [REG-R151] (AG 33), [REG-R153] (A-820), [
 **Scope note.** These notes specify a reference liability cash-flow projection model for
 the standardized composite product defined in `product-spec.md` (same directory). It is
 not any single insurer's product. **[S#]/[R#]** tags resolve against
-`us/_research/variable-annuity.md`; **[REG-R#]** tags resolve against the single shared
+`_research/variable-annuity.md`; **[REG-R#]** tags resolve against the single shared
 cross-product numbering space **R1–R157** curated at
-`us/references/regulatory-and-actuarial-references.md` (R1–R34 from
-`us/_research/regulatory-actuarial.md`, R35–R72 from
-`us/_research/regulatory-actuarial-annuities.md`, and **R151–R157** the AP&P Manual
+`references/regulatory-and-actuarial-references.md` (R1–R34 from
+`_research/regulatory-actuarial.md`, R35–R72 from
+`_research/regulatory-actuarial-annuities.md`, and **R151–R157** the AP&P Manual
 appendix items read at first hand on 2026-08-06 — of which four are cited here, **AG 33**
 [REG-R151], **A-820** [REG-R153], **A-250** [REG-R156] and **A-255** [REG-R157] — with
 most of the **R73–R149** block unused). **[std]** marks a standardization
@@ -22,7 +22,7 @@ Perspective II chassis [S1][S2][S3].
 
 **Relationship to sibling documents.** The *separate-account charge-accrual convention* — a
 monthly discretization of daily fund-expense and asset-charge accrual, `(1 + r)(1 − e/12)(1 −
-m/12)` — is specified once in `us/products/variable-ul/technical-notes.md` and reused here. Two
+m/12)` — is specified once in `products/variable_ul/technical-notes.md` and reused here. Two
 qualifications, because that file is a **life** file: it applies the convention to *subaccount
 values* directly and never carries a unit count, whereas the unit ledger `AV = Σ U_i V_i` used
 below is written out here in full; and its charge stack includes a **cost of insurance on a net
@@ -30,7 +30,7 @@ amount at risk** and an **IRC §7702 corridor**, neither of which exists in a VA
 guarantees are instead a **GMDB benefit base** and a **GLWB benefit base**, shadow accounts that
 never fall with the market. Nothing on the life side's NAAR/corridor path may be carried
 across. *Generic GLWB machinery*
-is shared with `us/products/fixed-indexed-annuity/technical-notes.md` (sibling deliverable in
+is shared with `products/fixed_indexed_annuity/technical-notes.md` (sibling deliverable in
 this library) and **referenced rather than restated** where the two products agree — namely
 **activation timing** (that file's RMD-clustered activation hazard), **RMD relief**, and the
 **post-depletion phase**. Two items on that list are *not* shared and are written out below:
@@ -362,7 +362,7 @@ first-order sensitivity, not a rounding issue.
 strain**. Both are needed and they are not interchangeable — projecting only the guarantee
 excess as the claim understates gross benefit outgo and breaks reconciliation with
 statutory exhibits, while projecting both double counts. The full argument is set out once
-in `us/products/variable-ul/technical-notes.md`; its logic carries over, but that file states
+in `products/variable_ul/technical-notes.md`; its logic carries over, but that file states
 it for a life contract, where the gross outflow is the **death benefit less policy debt** and
 the net strain is the **net amount at risk**. A VA has neither policy debt nor a NAAR: the gross
 outflow here is `DB(t)` and the net strain is `max(0, guarantee − AV)`, as set out above.
@@ -480,7 +480,7 @@ charge expires, surrender was roughly **10% with a GLWB rider versus 33% without
 ### GLWB utilization
 
 The **activation-timing** machinery — an RMD-clustered activation hazard — is documented in
-`us/products/fixed-indexed-annuity/technical-notes.md` and reused here. The **cohort**
+`products/fixed_indexed_annuity/technical-notes.md` and reused here. The **cohort**
 construction below is VM-21's [R1], not that file's: it carries no cohort machinery.
 Parameterized here by:
 
@@ -635,7 +635,7 @@ them and are cited, not reproduced:
 
 - **Gross vs net death claim.** Project `DB(t)` as the outflow and derive
   `max(0, guarantee − AV)` as the general-account strain — never the reverse, never both
-  (see `us/products/variable-ul/technical-notes.md`).
+  (see `products/variable_ul/technical-notes.md`).
 - **The fee stops at AV = 0** [S4]. Accruing rider income after depletion systematically
   flatters the CTE70 tail.
 - **Withdrawals are measured gross of charges** for every guarantee calculation [S1]; using

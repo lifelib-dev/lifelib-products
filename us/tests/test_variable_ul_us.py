@@ -1,6 +1,6 @@
 """Golden and product-specific tests for VUL_US_S.
 
-The golden values are the worked example in us/products/variable-ul/technical-notes.md
+The golden values are the worked example in products/variable_ul/technical-notes.md
 ("Worked example - one month, two subaccounts"), which traces one monthiversary of the
 anchor cell: male 45 standard nonsmoker, F_0 = 500,000, Option A, GPT, policy year 3
 (surrender charge factor 12/14), planned premium $500/month paid, allocation 60/40, no
@@ -21,15 +21,27 @@ import math
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/variable-ul/VUL_US_S"
+def model_files(folder):
+    """The model's own file names, ignoring interpreter caches.
+
+    ``__pycache__`` appears inside a model folder as soon as anything *imports* it, which
+    is now routine: the autodoc API pages read the cells docstrings by importing
+    ``Projection`` and ``Data`` (USLIB-MERGE-PLAN.md D9).  Those caches are not part of the
+    model and must not make a round-trip comparison fail for anyone who has built the docs.
+    """
+    return {p.name for p in folder.rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts}
+
+
+MODEL_PATH = LIB / "products/variable_ul/VUL_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 FACTOR = 5e-7         # growth factors displayed to 6 d.p.
 RATE = 5e-7           # rates displayed to 6 d.p.
 
-# us/products/variable-ul/technical-notes.md, "Worked example - one month, two
+# products/variable_ul/technical-notes.md, "Worked example - one month, two
 # subaccounts".  Keys are the notes' step numbers.
 WE = {
     # step 0  BOM balances
@@ -853,6 +865,6 @@ def test_round_trip_is_stable(tmp_path):
     finally:
         reread.close()
 
-    written = {p.name for p in dest.rglob("*") if p.is_file()}
-    committed = {p.name for p in MODEL_PATH.rglob("*") if p.is_file()}
+    written = model_files(dest)
+    committed = model_files(MODEL_PATH)
     assert written == committed

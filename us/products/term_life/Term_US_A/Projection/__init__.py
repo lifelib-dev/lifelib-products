@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The only Space in the :mod:`~Term_US_A` model; holds all formulas and data.
+"""The only Space in the :mod:`~.Term_US_A` model; holds all formulas and data.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -14,7 +14,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent
-directory, ``us/models/term-life/``, read at run time rather than stored inside the
+directory, ``products/term_life/``, read at run time rather than stored inside the
 model. The model folder therefore holds nothing but formulas — no ``_data/``, no
 IOSpec, no embedded values — so a diff of the model shows logic changes only, and an
 input can be edited or swapped without rewriting the model. This follows
@@ -26,7 +26,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 fails on first evaluation. A test asserts this by round-tripping the model together
 with its inputs.
 
-:func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so
+:func:`.input_dir` resolves the directory from ``_model.path.parent`` at run time, so
 the model works wherever the repository is checked out. Each table has a filename
 Reference and a reader Cells:
 

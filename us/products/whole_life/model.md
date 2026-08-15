@@ -1,9 +1,9 @@
 # WholeLife_US_A — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/whole-life/technical-notes.md`](../../products/whole-life/technical-notes.md);
+[`products/whole_life/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/whole-life/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** Very little
 > of this product is public. The contractual skeleton is sourced — the 4.00% guarantee
@@ -23,15 +23,15 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python us/models/whole-life/run.py
-python us/models/whole-life/run.py 12      # the final-expense graded plan
+python products/whole_life/run.py
+python products/whole_life/run.py 12      # the final-expense graded plan
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/whole-life/WholeLife_US_A")
+model = mx.read_model("products/whole_life/WholeLife_US_A")
 model.Projection[1].result_cf()
 ```
 
@@ -78,7 +78,7 @@ The six input CSVs live **in this directory**, beside `run.py` — not inside th
 folder. `WholeLife_US_A/` holds nothing but formulas:
 
 ```
-us/models/whole-life/
+products/whole_life/
   model_point_table.csv        <- inputs live here
   cv_table.csv
   nsp_table.csv
@@ -220,7 +220,7 @@ NetCF_t = −G^net·l − A·l + E·l + q^e·l·DB + w·l(1−q^e)·CSV + D^cash
 ```
 
 with the sign convention stated inline: **outgo positive**. The other eleven reference
-models in `us/models/` all define `net_cf` the other way round, income less outgo — the
+models in `products/` all define `net_cf` the other way round, income less outgo — the
 sign `Term_US_A` sets. One name cannot carry both without `result_cf()["net_cf"]`
 becoming uncomparable and unsummable across the library.
 

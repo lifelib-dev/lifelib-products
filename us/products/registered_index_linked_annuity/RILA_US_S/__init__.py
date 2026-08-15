@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. registered index-linked annuities (RILA).
 
-:mod:`~RILA_US_S` is the executable counterpart of
-``us/products/registered-index-linked-annuity/technical-notes.md`` in the
+:mod:`~.RILA_US_S` is the executable counterpart of
+``products/registered_index_linked_annuity/technical-notes.md`` in the
 lifelib-products library. It projects gross liability cash flows for a single-contract
 model point of a single-premium buffered index-linked deferred annuity: one purchase
 payment allocated to one index-linked option, a 10% buffer, Cap / Step / Edge crediting
@@ -24,10 +24,10 @@ without a derivatives pricer. The three components the notes separate — the cr
 engine, the interim-value engine and the market-data provider — are separate here too:
 :func:`~RILA_US_S.Projection.credit_rate_term` credits,
 :func:`~RILA_US_S.Projection.iv_factor` prices, and
-:mod:`~RILA_US_S.Data` supplies the market state.
+:mod:`~.RILA_US_S.Data` supplies the market state.
 
 This model is built on the **deferred annuity base chassis**,
-:mod:`MYGA_US_S`, and shares its cells names for every concept the two have
+:mod:`.MYGA_US_S`, and shares its cells names for every concept the two have
 in common — ``av_pp``, ``av_pp_at``, ``free_wd_allow``, ``surr_charge_rate``,
 ``surr_value_pp``, ``pols_if_at``, ``claim_pp``, ``check_av_roll_fwd``. Where the RILA
 notes restate a recursion with product-specific parameters, this model follows the RILA
@@ -37,15 +37,15 @@ notes, not the chassis: there is **no market value adjustment on the contract**,
 
 **Spaces.** The model contains two:
 
-:mod:`~RILA_US_S.Data`
+:mod:`~.RILA_US_S.Data`
     Reads the seven input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~RILA_US_S.Projection`
+:mod:`~.RILA_US_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
     Reference, which resolves to the single
-    :mod:`~RILA_US_S.Data` Space.
+    :mod:`~.RILA_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -60,8 +60,8 @@ and its inputs must travel together.
 notes ``t`` denotes **month ends**, with ``t = 0`` the Issue Date. Complete contract years
 are ``duration(t) = t // 12`` — the notes' ``cy(t) = floor(t/12)`` — so an anniversary
 month ``t = 12, 24, ...`` already counts as a completed year, and ``policy_year(t) =
-duration(t) + 1``. Note the contrast with :mod:`Term_US_A`, where ``t`` counts **years**,
-and the smaller contrast with :mod:`MYGA_US_S`, whose beginning-of-month
+duration(t) + 1``. Note the contrast with :mod:`.Term_US_A`, where ``t`` counts **years**,
+and the smaller contrast with :mod:`.MYGA_US_S`, whose beginning-of-month
 transaction convention makes its ``duration(t)`` ``ceil(t/12) - 1``: on a month-end
 convention the anniversary belongs to the year that just closed. That month-end reading is
 right for what is read *at* the instant ``t`` — the withdrawal charge a transaction
@@ -103,7 +103,7 @@ as they do in the notes' cash flow ledger, and ``inv_amt_pp(0)``, ``rop_pp(0)`` 
 
 In-force counts follow the library-wide convention: ``pols_if(t)`` is the number in force
 at the **start** of month ``t`` and is the weight applied to that same month's cash flows,
-so ``pols_if(1) = pols_if_init()`` as in :mod:`Term_US_A` and the ``pols_if`` column of
+so ``pols_if(1) = pols_if_init()`` as in :mod:`.Term_US_A` and the ``pols_if`` column of
 ``result_cf()`` reconciles against the row it sits on rather than the next one. The notes'
 own **end**-of-month ``l(t)`` is not lost: it is ``pols_if_at(t, "AFT_DECR")``, the last
 point of the decrement chain. Surrender rates follow the ``mort_rate`` / ``mort_rate_mth``
@@ -210,7 +210,7 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model(
-    ...     "us/models/registered-index-linked-annuity/RILA_US_S")
+    ...     "products/registered_index_linked_annuity/RILA_US_S")
     >>> model.Projection[1].result_cf()
 """
 

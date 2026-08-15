@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of :mod:`~MYGA_US_S`.
+"""The by-contract projection of :mod:`~.MYGA_US_S`.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -14,7 +14,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent directory,
-``us/models/fixed-deferred-annuity/``, read at run time rather than stored inside the
+``products/fixed_deferred_annuity/``, read at run time rather than stored inside the
 model. The model folder therefore holds nothing but formulas — no ``_data/``, no IOSpec,
 no embedded values — so a diff of the model shows logic changes only, and an input can be
 edited or swapped without rewriting the model. This follows ``annuallife.TradLife_A``;
@@ -26,7 +26,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 and then fails on first evaluation.
 
 The readers and the filename References live on the sibling
-:mod:`~MYGA_US_S.Data` Space, reached here through the ``data`` Reference, so
+:mod:`~.MYGA_US_S.Data` Space, reached here through the ``data`` Reference, so
 each file is read once per model rather than once per model point:
 
 =========================  ==================================  ==========================
@@ -161,14 +161,14 @@ NetCF(t)                     net_cf(t)                       Net cash flow
 Six names needed care, and all six are collisions the notes themselves carry.
 
 ``d(t)`` in these notes is the **withdrawal deducted from the Model #805 floor** in
-processing step 7, *not* deaths as in :mod:`Term_US_A`; it becomes
+processing step 7, *not* deaths as in :mod:`.Term_US_A`; it becomes
 :func:`mgsv_wd_deduct_pp`, leaving :func:`pols_death` unambiguous. ``c(t)`` is the monthly
 slice of the annual contract charge, not conversions, and becomes
 :func:`mgsv_charge_pp`. ``E(t)`` names two different currency bases — the excess of a
 *withdrawal* over the free allowance and the excess of the whole *account value* over it
 at a full surrender — which :func:`wd_excess_pp` and :func:`surr_excess_pp` separate; the
-same symbol is expenses in :mod:`Term_US_A`, which here is :func:`expenses`. ``X`` is
-the dynamic-lapse exponent here and the premium tax in :mod:`Term_US_A`, split into
+same symbol is expenses in :mod:`.Term_US_A`, which here is :func:`expenses`. ``X`` is
+the dynamic-lapse exponent here and the premium tax in :mod:`.Term_US_A`, split into
 :func:`lapse_dyn_exponent` and :func:`premium_taxes`. ``T(t)`` is the MVA duration in
 *years* while ``t`` is the policy *month*, so it becomes :func:`mva_term`. And the floor
 itself carries three labels in the sources — MGSV in this library, "GMSV" in the specimen
@@ -180,7 +180,7 @@ indexing, and in both cases the notes' quantity survives under a second name rat
 being dropped.
 
 :func:`pols_if` is the count in force at the **start** of month ``t``, matching
-:mod:`Term_US_A` (``pols_if(1) == pols_if_init()``) and ``savings.CashValue_SE``, and it
+:mod:`.Term_US_A` (``pols_if(1) == pols_if_init()``) and ``savings.CashValue_SE``, and it
 is the weight applied to that same month's cash flows — :func:`withdrawals`,
 :func:`expenses` and the ``pols_if`` column of :func:`result_cf` now reconcile row by row,
 which they did not while ``pols_if`` was the closing count. The notes' end-of-month
@@ -257,7 +257,7 @@ holds for every ``t`` — the start-of-month count opens the row, the four exits
 during it and the next month opens on what is left. Including the last month, where the
 block would otherwise appear to
 lose lives with no cause. The name follows ``BasicTerm_S.pols_maturity`` and the
-construction follows :mod:`Term_US_A`.
+construction follows :mod:`.Term_US_A`.
 """
 
 from modelx.serialize.jsonvalues import *

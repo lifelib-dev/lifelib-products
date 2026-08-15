@@ -1,7 +1,7 @@
 # Sources — Variable Annuity with Living and Death Benefit Guarantees (United States)
 
 Source ids, titles, publishers, URLs, access dates and fetched/not-fetched markers are
-carried over **verbatim** from `us/_research/variable-annuity.md`, the citation ground
+carried over **verbatim** from `_research/variable-annuity.md`, the citation ground
 truth for the [S#]/[R#] tags used in `product-spec.md` and `technical-notes.md`. **Ids are
 never renumbered.** Sources present in the research file but not cited in either document
 are dropped; **none were dropped here — all of S1–S8 and R1–R13 are cited.** No new
@@ -185,23 +185,23 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 
 These are cited with the **[REG-R#]** prefix to avoid collision with the product research
 file's own R-numbering. They resolve against a **single shared numbering space running
-R1–R157**, curated at `us/references/regulatory-and-actuarial-references.md`, with most
+R1–R157**, curated at `references/regulatory-and-actuarial-references.md`, with most
 of the **R73–R149** block **unused**:
 
-- **R1–R34** — research provenance `us/_research/regulatory-actuarial.md` (the original
+- **R1–R34** — research provenance `_research/regulatory-actuarial.md` (the original
   life bibliography; several entries also bind annuity models, and that file's companion
   table records how each one applies).
-- **R35–R72** — research provenance `us/_research/regulatory-actuarial-annuities.md` (the
+- **R35–R72** — research provenance `_research/regulatory-actuarial-annuities.md` (the
   annuity continuation of the same space; it opens at R35 precisely because R1–R34 are
   frozen and must not be renumbered).
 - **R151–R157** — the seven NAIC *Accounting Practices and Procedures Manual* appendix items
-  read at first hand on **2026-08-06**: `us/_research/appp-ag33.md` (R151),
-  `us/_research/appp-ag35.md` (R152), `us/_research/appp-a820-a821-a822.md` (R153),
-  `us/_research/appp-a830.md` (R154) and `us/_research/appp-a585-a250-a255-a270.md` (R155,
+  read at first hand on **2026-08-06**: `_research/appp-ag33.md` (R151),
+  `_research/appp-ag35.md` (R152), `_research/appp-a820-a821-a822.md` (R153),
+  `_research/appp-a830.md` (R154) and `_research/appp-a585-a250-a255-a270.md` (R155,
   R156, R157). **R150** is the NAIC principle-based reserving topic page and is not cited
   here. Four of the seven are cited in this directory — **R151, R153, R156 and R157** — and
   their entries are reproduced below from
-  `us/references/regulatory-and-actuarial-references.md`.
+  `references/regulatory-and-actuarial-references.md`.
 
 Entries cited by the two documents in this directory:
 
@@ -256,12 +256,12 @@ Added on **2026-08-06**, when AG 33 and the Appendix A items were read at first 
 findings written into `technical-notes.md` (*Known modeling pitfalls*, *Valuation and reserve
 pointers*) and `product-spec.md` (*Regulatory context*). Ids, titles, publishers, URLs, access
 dates, fetched markers and every carried-forward limit are reproduced from
-`us/references/regulatory-and-actuarial-references.md`; **nothing is renumbered and no flag is
+`references/regulatory-and-actuarial-references.md`; **nothing is renumbered and no flag is
 upgraded**. Only the four items this directory actually cites are reproduced — R152 (AG 35),
 R154 (A-830) and R155 (A-585) are not cited here and are not carried over. Cross-references
 *inside* these entries to ids not reproduced here — **R73** (the AP&P Manual *As of March
 2026*), **R33**, **R39**, **R110**, **R101/R102**, **R1** and **R6** — resolve in
-`us/references/regulatory-and-actuarial-references.md`.
+`references/regulatory-and-actuarial-references.md`.
 
 **One physical document behind R151–R157.** All seven are appendix items of the NAIC
 *Accounting Practices and Procedures Manual, As of March 2026* — the **same 2,117-page
@@ -272,7 +272,7 @@ appendix-level ids rather than being folded into R73 so a document can cite **A-
 **AG 33 *Text* 4** instead of a 2,117-page manual. Each was read by **local text extraction**
 from that download. **This supersedes, for these items, the library's earlier record of the
 manual as a paid publication that could not be fetched** [REG-R33 — frozen and preserved
-unaltered in `us/references/regulatory-and-actuarial-references.md`].
+unaltered in `references/regulatory-and-actuarial-references.md`].
 
 **Edition line, stated once for all seven.** None of these items prints "As of March 2026" on
 its own pages. Every extracted page carries only the footer **"© 1999-2026 National
@@ -297,7 +297,7 @@ construction is therefore outside the library.
 - **Accessed:** 2026-08-06
 - **Fetched:** yes (local text extraction; **all eight printed pages read in full** —
   *Background Information*, *Purpose*, *Definitions*, *Text* 1–7 and *Effective Date*)
-- **Limits carried forward from `us/_research/appp-ag33.md`:** the running heads confirm
+- **Limits carried forward from `_research/appp-ag33.md`:** the running heads confirm
   Appendix C, but these pages carry **no volume statement** — the **Volume II** placement is
   R73's record, not theirs. They carry **no amendment history, no adoption note and no
   revision log**, so the guideline's printed *Effective Date* of **31 December 1998** cannot be
@@ -309,7 +309,7 @@ construction is therefore outside the library.
   since all three restart at 1. Spurious intra-word spaces at justified-line breaks are text-layer
   artefacts and were closed up in the research file's quotations.
 - **Supersedes in fact:** **R39** ("guideline text not retrieved"), which is frozen and is
-  preserved unaltered in `us/references/regulatory-and-actuarial-references.md`.
+  preserved unaltered in `references/regulatory-and-actuarial-references.md`.
 - **Note for this directory:** cited for scope, the precedence clause, the elective/non-elective
   classification and the prohibition on experience-based elective incidence — **not** for any
   parameter of this model. AG 33 **never mentions separate accounts, variable annuities, the
@@ -326,7 +326,7 @@ construction is therefore outside the library.
 - **Fetched:** yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full**
   including the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV,
   and **A-822's four paragraphs read in full**)
-- **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026"
+- **Limits carried forward from `_research/appp-a820-a821-a822.md`:** **"As of March 2026"
   is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those pages print.
   **A-821 prints only** the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table
   and its `AA_x` factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not
@@ -393,7 +393,7 @@ construction is therefore outside the library.
 
 ## Provenance note
 
-Extraction details live in `us/_research/variable-annuity.md`: that file records which fact
+Extraction details live in `_research/variable-annuity.md`: that file records which fact
 came from which source, its [unverified] flags, and its "Gaps and caveats" section — in
 particular that **no closed-form MVA factor** was found in any of the four prospectuses
 read; that **guaranteed annuity purchase rate tables** were not obtained; that the SOA/LIMRA
@@ -403,17 +403,17 @@ are volatile by design**; that fund expense ranges carry lagging as-of dates; an
 **GMAB mechanics, RILA buffer/floor structures and New York Regulation 213** are outside
 its scope.
 
-`us/_research/regulatory-actuarial-annuities.md` plays the same role for the R35–R72 half of
+`_research/regulatory-actuarial-annuities.md` plays the same role for the R35–R72 half of
 the [REG-R#] space, including its own verified corrections carried into these documents:
 Model **#245** (not #250) is the Annuity Disclosure Model Regulation; the Model #805 indexed
 nonforfeiture rate floor is **15 basis points**, not 1%; VM-22 in the 2026 edition is
 entirely the PBR framework with income-annuity valuation rates in VM-V §1; AG 43 is **not**
 simply superseded by VM-21; and **there is no ASOP for principle-based reserves for
-annuities**. `us/_research/regulatory-actuarial.md` plays that role for R1–R34.
+annuities**. `_research/regulatory-actuarial.md` plays that role for R1–R34.
 
-`us/_research/appp-ag33.md` (R151) and `us/_research/appp-a585-a250-a255-a270.md` (R155–R157,
+`_research/appp-ag33.md` (R151) and `_research/appp-a585-a250-a255-a270.md` (R155–R157,
 plus the unnumbered A-270) are the ground truth for the AP&P Manual appendix material added on
-2026-08-06, and `us/_research/appp-a820-a821-a822.md` for R153. Their two findings that bear on
+2026-08-06, and `_research/appp-a820-a821-a822.md` for R153. Their two findings that bear on
 this product are both **negatives, and are cited as such**: **A-250 supplies no reserve method
 for a variable annuity**, only a definition, a per-account asset-coverage floor and a delegation
 to A-820; and **A-255 prints no market-value-adjustment formula**, the formula being the

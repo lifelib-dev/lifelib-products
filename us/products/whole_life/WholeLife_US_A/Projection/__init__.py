@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~WholeLife_US_A` model.
+"""The by-policy projection of the :mod:`~.WholeLife_US_A` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -14,7 +14,7 @@ projecting model point 1::
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent
-directory, ``us/models/whole-life/``, read at run time rather than stored inside the
+directory, ``products/whole_life/``, read at run time rather than stored inside the
 model. The model folder therefore holds nothing but formulas — no ``_data/``, no
 IOSpec, no embedded values — so a diff of the model shows logic changes only, and an
 input can be edited or swapped without rewriting the model. This follows
@@ -228,7 +228,7 @@ arithmetic.
 .. rubric:: Sign convention — two names, one stream
 
 The whole-life notes print ``NetCF_t`` with **outgo positive**, which is the opposite of
-the sign the other eleven reference models in ``us/models/`` carry. Rather than pick one
+the sign the other eleven reference models in ``products/`` carry. Rather than pick one
 and lose the other, the model publishes both and names them apart:
 
 ``liability_cf(t)``
@@ -239,7 +239,7 @@ and lose the other, the model publishes both and names them apart:
 
 ``net_cf(t)``
     ``-liability_cf(t)``: **income positive**, the sign convention every model in
-    ``us/models/`` carries, so that ``result_cf()["net_cf"]`` can be summed or compared
+    ``products/`` carries, so that ``result_cf()["net_cf"]`` can be summed or compared
     across products. A positive ``net_cf`` is money arriving at the insurer.
 
 Both are columns of ``result_cf()``. The pattern is ``SPIA_US_S`` and
@@ -1022,7 +1022,7 @@ def liability_cf(t):
 def net_cf(t):
     """The net cash flow in policy year t, **income positive**: -liability_cf(t).
 
-    Income less outgo, the sign every model in ``us/models/`` carries, so that a
+    Income less outgo, the sign every model in ``products/`` carries, so that a
     ``result_cf()["net_cf"]`` column can be summed or compared across products. A
     positive value is money arriving at the insurer. liability_cf(t) is the same stream
     under the technical notes' own outgo-positive sign; both are result_cf() columns

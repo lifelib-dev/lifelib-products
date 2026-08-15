@@ -1,7 +1,7 @@
 # Sources — Whole Life Insurance
 
 Source ids, titles, publishers, URLs, and fetched/not-fetched markers are carried over
-verbatim from `us/_research/whole-life.md` (research/access date for all citations:
+verbatim from `_research/whole-life.md` (research/access date for all citations:
 2026-08-03). Ids are never renumbered. Sources from the research file that are not cited in
 `product-spec.md` or `technical-notes.md` (R10, R11) are dropped from this list; they remain
 in the research file. No new sources were fetched at drafting.
@@ -148,19 +148,19 @@ in the research file. No new sources were fetched at drafting.
 ## Cross-product regulatory references ([REG-R#])
 
 Cited against the shared U.S. reference numbering in
-`us/references/regulatory-and-actuarial-references.md` (prefixed REG- in the whole-life
+`references/regulatory-and-actuarial-references.md` (prefixed REG- in the whole-life
 documents to avoid collision with the product research file's R# ids). That numbering **now
 runs R1–R157**, with most of the **R73–R149** block unused. **Ids are never renumbered.**
-R1–R34 originate in `us/_research/regulatory-actuarial.md` and R35–R72 in
-`us/_research/regulatory-actuarial-annuities.md`; **R150–R157 are the
+R1–R34 originate in `_research/regulatory-actuarial.md` and R35–R72 in
+`_research/regulatory-actuarial-annuities.md`; **R150–R157 are the
 post-drafting entries, all accessed 2026-08-06**, with provenance in the AP&P Manual appendix
-extractions `us/_research/appp-ag33.md` (R151), `us/_research/appp-ag35.md` (R152),
-`us/_research/appp-a820-a821-a822.md` (R153), `us/_research/appp-a830.md` (R154) and
-`us/_research/appp-a585-a250-a255-a270.md` (R155–R157, and A-270 with **no id assigned**, so
+extractions `_research/appp-ag33.md` (R151), `_research/appp-ag35.md` (R152),
+`_research/appp-a820-a821-a822.md` (R153), `_research/appp-a830.md` (R154) and
+`_research/appp-a585-a250-a255-a270.md` (R155–R157, and A-270 with **no id assigned**, so
 not citable). Of those the whole-life documents cite **REG-R153** (A-820, with A-821 and
 A-822) and **REG-R154** (A-830). Id, title, publisher, URL,
 access date and fetched marker for the entries added below are carried from
-`us/references/regulatory-and-actuarial-references.md`, together with the retrieval limits and
+`references/regulatory-and-actuarial-references.md`, together with the retrieval limits and
 [unverified] flags, because the whole-life documents rely on them at the point of use. Entries
 cited by the whole-life documents:
 
@@ -233,7 +233,7 @@ integration "into any software or other publication" requires written NAIC permi
 whole-life documents **paraphrase the mechanics and cite the paragraph**, quoting only short
 anchors. This supersedes in fact the library's earlier record of the manual as a paid
 publication that could not be fetched — the R33 entry in
-`us/references/regulatory-and-actuarial-references.md`, which is frozen and preserved there and
+`references/regulatory-and-actuarial-references.md`, which is frozen and preserved there and
 is not cited by the whole-life documents.
 
 - **REG-R153** — Appendix A-820 — Minimum Life and Annuity Reserve Standards (with Appendix
@@ -246,7 +246,7 @@ is not cited by the whole-life documents.
   yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full** including the
   2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV, and **A-822's
   four paragraphs read in full**). **Limits carried forward from
-  `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026" is not printed on PDF
+  `_research/appp-a820-a821-a822.md`:** **"As of March 2026" is not printed on PDF
   pp. 1186–1205** — cite the copyright footer for what those pages print. **A-821 prints only**
   the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table and its `AA_x`
   factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not printed**, so
@@ -259,7 +259,7 @@ is not cited by the whole-life documents.
   oddities are recorded as printed and **not reconciled**: **¶22's empty window** and **¶7's
   "effective date of the Codification"**, a threshold whose date A-820 never prints. **Naming
   trap:** AP&P **Appendix A-822 is not NAIC Model #822**, the Actuarial Opinion and Memorandum
-  Regulation (catalogued in `us/references/regulatory-and-actuarial-references.md` at R101/R102
+  Regulation (catalogued in `references/regulatory-and-actuarial-references.md` at R101/R102
   and not cited by the whole-life documents) — A-820's own header does not list Model #820 while
   A-822's does.
   **Supersedes in fact:** the A-820 half of
@@ -275,7 +275,7 @@ is not cited by the whole-life documents.
   to A830-27 (PDF 1221–1232); same physical document as REG-R73 — accessed 2026-08-06; fetched:
   yes (local text extraction; **¶¶1–32 and the Attachment read in full**; the six factor tables
   transcribed programmatically, each parsing to 71 issue-age rows × 20 duration columns).
-  **Limits carried forward from `us/_research/appp-a830.md`:** the appendix is a **flat sequence
+  **Limits carried forward from `_research/appp-a830.md`:** the appendix is a **flat sequence
   of paragraphs ¶¶1–32 plus an unnumbered Attachment and has no Sections at all**, so a
   "Model 830 Section 7" citation **does not resolve** against this print — the ULSG material is
   at **¶¶29–32** — and the words **"Model #830" and "Regulation XXX" appear nowhere** in it. It
@@ -297,16 +297,16 @@ above.
 
 ## Provenance note
 
-Extraction details live in `us/_research/whole-life.md`: that file records which facts came
+Extraction details live in `_research/whole-life.md`: that file records which facts came
 from which source (per-source fact lists under each S#/R# entry), the research access date
 (2026-08-03), retrieval methods, and the gaps/caveats register (notably: par carriers'
 specimen CV tables and current rate books are not public; Living Promise participation status
 is unverified; S14 is a secondary aggregator whose Northwestern Mutual figures are
 corroborated by S4/S5). The cross-product regulatory annotations live in
-`us/_research/regulatory-actuarial.md` (REG-R1–R34) and
-`us/_research/regulatory-actuarial-annuities.md` (REG-R35–R72); for the AP&P
+`_research/regulatory-actuarial.md` (REG-R1–R34) and
+`_research/regulatory-actuarial-annuities.md` (REG-R35–R72); for the AP&P
 Manual appendix entries cited here (REG-R153, REG-R154) they live in
-`us/_research/appp-a820-a821-a822.md` and `us/_research/appp-a830.md`. Where those
+`_research/appp-a820-a821-a822.md` and `_research/appp-a830.md`. Where those
 research files and the documents in this directory disagree, **the research files govern**. The
 two documents in this directory cite only facts recorded in those research files; **[std]** items
 are standardizations introduced at drafting and are attributed to no source.

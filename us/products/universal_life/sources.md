@@ -1,7 +1,7 @@
 # Sources — Universal Life Insurance (current assumption)
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried
-over verbatim from `us/_research/universal-life.md` (the citation ground truth for
+over verbatim from `_research/universal-life.md` (the citation ground truth for
 [S#]/[R#] tags). Ids are never renumbered. Sources from the research file that are not
 cited in `product-spec.md` or `technical-notes.md` are omitted (dropped here: R9).
 No new sources were fetched at drafting; nothing is marked "added at drafting".
@@ -125,12 +125,12 @@ cited instead from the fetched cross-product entry [REG-R3] below).
 
 These are cited with the [REG-R#] prefix to avoid collision with the product research
 file's own R-numbering. Full annotated entries (titles, publishers, URLs, retrieval
-markers, access date 2026-08-03) live in `us/_research/regulatory-actuarial.md`;
+markers, access date 2026-08-03) live in `_research/regulatory-actuarial.md`;
 the shared reference library is
-`us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
+`references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
 **R1–R157**, with most of the **R73–R149** block unused; R1–R34 originate in
-`us/_research/regulatory-actuarial.md` and R35–R72 — annuity-specific entries not
-cited here — in `us/_research/regulatory-actuarial-annuities.md`; R150–R157 are the
+`_research/regulatory-actuarial.md` and R35–R72 — annuity-specific entries not
+cited here — in `_research/regulatory-actuarial-annuities.md`; R150–R157 are the
 post-drafting entries — the NAIC PBR topic page and the seven AP&P Manual appendix
 items read at first hand on 2026-08-06, of which this directory cites **R153 (A-820,
 with A-821 and A-822)**, **R154 (A-830)** and **R155 (A-585)**).
@@ -160,7 +160,7 @@ Two entries are kept below in full annotated form rather than as table rows.
 **REG-R110** is a superseded-but-kept record — the supersession notes of **REG-R153**
 and **REG-R154** preserve it unaltered; **REG-R150** is a post-drafting entry from the
 2026-08-06 pass. Id, title, publisher, URL, access date and fetched marker are carried
-from `us/references/regulatory-and-actuarial-references.md`.
+from `references/regulatory-and-actuarial-references.md`.
 **Ids are never renumbered.**
 
 ### REG-R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
@@ -197,12 +197,12 @@ from `us/references/regulatory-and-actuarial-references.md`.
 Newly cited by the "Valuation and reserve pointers" section of `technical-notes.md`
 and by the "Regulatory context" section of `product-spec.md`. Id, title, publisher,
 URL, access date, fetched marker and limits are carried from
-`us/references/regulatory-and-actuarial-references.md`. **Ids are never renumbered.**
+`references/regulatory-and-actuarial-references.md`. **Ids are never renumbered.**
 
 **One physical document behind them.** R153, R154 and R155 are appendix items of the NAIC
 *Accounting Practices and Procedures Manual, As of March 2026* — the same 2,117-page
 consolidated PDF catalogued as **R73** (the manual itself; its entry lives in
-`us/references/regulatory-and-actuarial-references.md` and is not reproduced here), a
+`references/regulatory-and-actuarial-references.md` and is not reproduced here), a
 **free download** from `content.naic.org`. They take
 appendix-level ids so a document can cite **A-585 ¶8.c** or **A-820 ¶11** instead of a
 2,117-page manual. **Edition line:** none of these items prints "As of March 2026" on its own
@@ -225,7 +225,7 @@ descriptively where the variable-UL sibling is discussed and **nothing is cited 
 - **Fetched:** yes (local text extraction; **A-820 ¶¶1–28 read in full**, **A-821 read in full**
   including the 2012 IAM Period Table and Projection Scale G2 printed at its Appendices I–IV,
   and **A-822's four paragraphs read in full**)
-- **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March 2026"
+- **Limits carried forward from `_research/appp-a820-a821-a822.md`:** **"As of March 2026"
   is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those pages print.
   **A-821 prints only** the 2012 IAM Period Table and Projection Scale G2; the **1994 GAR** table
   and its `AA_x` factors, the **Annuity 2000** table and **1983 Table "a"** are named and **not
@@ -254,7 +254,7 @@ descriptively where the variable-UL sibling is discussed and **nothing is cited 
 - **Fetched:** yes (local text extraction; **¶¶1–32 and the Attachment read in full**; the six
   factor tables transcribed programmatically, each parsing to 71 issue-age rows × 20 duration
   columns)
-- **Limits carried forward from `us/_research/appp-a830.md`:** the appendix is a **flat sequence
+- **Limits carried forward from `_research/appp-a830.md`:** the appendix is a **flat sequence
   of paragraphs ¶¶1–32 plus an unnumbered Attachment and has no Sections at all**, so a
   "Model 830 Section 7" citation **does not resolve** against this print — the ULSG material is at
   **¶¶29–32** — and the words **"Model #830" and "Regulation XXX" appear nowhere** in it. It prints
@@ -275,7 +275,7 @@ descriptively where the variable-UL sibling is discussed and **nothing is cited 
   **PDF pages 1102–1105**; same physical document as R73
 - **Accessed:** 2026-08-06
 - **Fetched:** yes (local text extraction; **¶¶1–13 and all three footnotes read in full**)
-- **Limits carried forward from `us/_research/appp-a585-a250-a255-a270.md`:** the item's own
+- **Limits carried forward from `_research/appp-a585-a250-a255-a270.md`:** the item's own
   "Relevant NAIC Model Laws/Regulations" line names only the **Standard Valuation Law (#820)** —
   **it does not name Model #585 anywhere**, so "A-585 *is* Model #585 §5" is unsupported by this
   print, and **Model #585 (R5) was not re-read against it**. A-585 carries the **valuation half
@@ -291,15 +291,15 @@ descriptively where the variable-UL sibling is discussed and **nothing is cited 
 
 ## Provenance note
 
-Extraction details live in `us/_research/universal-life.md`: that file records which
+Extraction details live in `_research/universal-life.md`: that file records which
 facts came from which source, including the [unverified] flags, the failed/partial
 fetches (S5, R10), the mirror-hosting caveat for S1/S2/S4 (fetched from
 authorized-distributor mirrors carrying the insurers' own form numbers), and the
 vintage caveat that parameter levels are era-representative while mechanics are
-stable. The cross-product bibliography `us/_research/regulatory-actuarial.md` plays
+stable. The cross-product bibliography `_research/regulatory-actuarial.md` plays
 the same role for [REG-R#] tags — except for the AP&P appendix entries, whose provenance
-files are `us/_research/appp-a820-a821-a822.md` (R153), `us/_research/appp-a830.md` (R154)
-and `us/_research/appp-a585-a250-a255-a270.md` (R155, and A-270 unnumbered). Those files
+files are `_research/appp-a820-a821-a822.md` (R153), `_research/appp-a830.md` (R154)
+and `_research/appp-a585-a250-a255-a270.md` (R155, and A-270 unnumbered). Those files
 record every text-layer artefact repaired and every reading **inferred from layout rather
 than read**; where one of them and a document in this directory disagree, **the research
 file governs**. Standardizations marked **[std]** in

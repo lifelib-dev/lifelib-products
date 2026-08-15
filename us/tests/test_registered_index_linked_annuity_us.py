@@ -1,7 +1,7 @@
 """Golden and product tests for RILA_US_S.
 
 The golden values are the worked example in
-us/products/registered-index-linked-annuity/technical-notes.md ("Worked example"), which
+products/registered_index_linked_annuity/technical-notes.md ("Worked example"), which
 prices the anchor cell M60 / $100,000 single premium / one 6-year option / S&P 500 price
 return / 10% buffer / Cap crediting at a declared 100% cap, on flat market inputs of
 r = 4.00%, q = 2.00%, sigma = 20.00% and an index normalized to I_s = 100.  They are
@@ -27,9 +27,9 @@ import re
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/registered-index-linked-annuity/RILA_US_S"
+MODEL_PATH = LIB / "products/registered_index_linked_annuity/RILA_US_S"
 
 # Half a cent, plus a hair, for money the notes display to 2 d.p.
 CENT = 0.006
@@ -92,7 +92,7 @@ S2_CHARGE = {
     "cash_value": 77840.00,
 }
 
-README = (REPO / "us/models/registered-index-linked-annuity/README.md").read_text(
+README = (LIB / "products/registered_index_linked_annuity/model.md").read_text(
     encoding="utf-8")
 
 

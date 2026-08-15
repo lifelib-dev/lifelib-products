@@ -1,9 +1,9 @@
 # FIA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/fixed-indexed-annuity/technical-notes.md`](../../products/fixed-indexed-annuity/technical-notes.md);
+[`products/fixed_indexed_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/fixed-indexed-annuity/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 0% index credit floor, the surrender charge and bonus vesting
@@ -18,14 +18,14 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python us/models/fixed-indexed-annuity/run.py
+python products/fixed_indexed_annuity/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/fixed-indexed-annuity/FIA_US_S")
+model = mx.read_model("products/fixed_indexed_annuity/FIA_US_S")
 model.Projection[1].result_cf()
 ```
 
@@ -58,7 +58,7 @@ govern:**
 > the rider charge at the end of each contract year, the annual benefit base update, and
 > the annual lifetime withdrawal. A monthly grid is needed only for excluded variants.
 
-Contrast [`MYGA_US_S`](../fixed-deferred-annuity/README.md), whose `t` counts
+Contrast [`MYGA_US_S`](../fixed_deferred_annuity/model.md), whose `t` counts
 **months**: that chassis credits interest daily and needs a grid fine enough to resolve a
 30-day guarantee-period-end window. Here a monthly grid would buy nothing but the variants
 the notes exclude — monthly-sum crediting, Athene's monthly charge deduction, daily interim
@@ -75,7 +75,7 @@ The seven input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `FIA_US_S/` holds nothing but formulas:
 
 ```
-us/models/fixed-indexed-annuity/
+products/fixed_indexed_annuity/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   surr_charge_table.csv
@@ -128,7 +128,7 @@ no formula change.
 | File | Contents | Provenance |
 |---|---|---|
 | `model_point_table.csv` | Nine contracts on the anchor configuration M62 / NQ / $100,000 / GLWB at issue. **Point 1 is the worked-example anchor**, entered in force at anniversary 7 | anchor cell **[std]**; contract parameters [S2][S5][S9][S10] |
-| `mort_table.csv` | Annual mortality by attained age and sex, ages 40–120 | **[std]** illustrative Makeham annuitant curve, *not* a published table; shared with `us/models/fixed-deferred-annuity` so the two annuity models sit on one basis |
+| `mort_table.csv` | Annual mortality by attained age and sex, ages 40–120 | **[std]** illustrative Makeham annuitant curve, *not* a published table; shared with `products/fixed_deferred_annuity` so the two annuity models sit on one basis |
 | `surr_charge_table.csv` | The surrender charge percentage 9.1% → 0% and the bonus vesting percentage 0% → 100%, both by contract year | sourced [S5] |
 | `rollup_table.csv` | Three guaranteed simple rollup schedules: blended 5.00%/2.00%/0%, Nassau 3.00% flat, and none | sourced [S2] / [S9]; the `none` row is the pure-stacking configuration **[std]** |
 | `payout_rate_table.csv` | Lifetime withdrawal percentages by attained-age band, single and joint | sourced [S3]; the 80+ band extends [S3]'s single "80" row **[std]**, supported by [S4] |
@@ -144,7 +144,7 @@ real basis in by repointing `Data.mort_table_file`.
 
 ## Naming
 
-Cells follow [`MYGA_US_S`](../fixed-deferred-annuity/README.md) — the deferred
+Cells follow [`MYGA_US_S`](../fixed_deferred_annuity/model.md) — the deferred
 annuity chassis this product sits on — and through it lifelib's `basiclife/BasicTerm_S` and
 `savings/CashValue_SE`: `pols_*` for policy counts, `av_*` for account values, plural nouns
 for cash flows, `*_rate` for rates, `*_pp` for per-contract amounts, `*_at(t, timing)` for a
@@ -202,7 +202,7 @@ each row opens and closes on the page.
 
 ## `MGV` is `MGSV`, but the recursion is not the chassis's
 
-Both `us/products/fixed-indexed-annuity/product-spec.md` and the chassis notes say the same
+Both `products/fixed_indexed_annuity/product-spec.md` and the chassis notes say the same
 thing from opposite directions: the Model #805 floor is called **`MGV`** here after [S10]
 and **`MGSV`** on the chassis after its own specimen, and it must not be modeled as two
 quantities. The model therefore uses `mgsv_pp` throughout, and a test asserts the

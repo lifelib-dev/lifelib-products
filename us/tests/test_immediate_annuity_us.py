@@ -1,7 +1,7 @@
 """Golden and product-specific tests for SPIA_US_S.
 
 The golden values are the worked example in
-us/products/immediate-annuity/technical-notes.md ("Worked example"), which projects the
+products/immediate_annuity/technical-notes.md ("Worked example"), which projects the
 anchor cell: P = $100,000, B(1) = $6,000 p.a. (inst = $500.00/month), joint form with
 primary male ANB 65 and joint annuitant female ANB 62, monthly (m = 12) in arrears,
 3% compound COLA, survivor percentage 2/3, no certain period, and the scenario "the
@@ -20,9 +20,9 @@ test below per pitfall that can be asserted against the shipped model points.
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/immediate-annuity/SPIA_US_S"
+MODEL_PATH = LIB / "products/immediate_annuity/SPIA_US_S"
 
 CENT = 0.005          # money displayed to 2 d.p.
 FACTOR = 5e-5         # payment factors quoted to 4 d.p. in the notes' trace
@@ -633,7 +633,7 @@ def test_the_cross_model_convention_names_are_used(immediate_annuity, anchor):
     """Names settled library-wide, not this product's own shorthand.
 
     The mortality A/E deviation factor is ``mort_ae_factor`` and the limiting age is
-    ``omega_age`` in every model in ``us/models/``; a ``check_*`` cells takes **no
+    ``omega_age`` in every model in ``products/``; a ``check_*`` cells takes **no
     argument and returns a bool** over every projected month, with the signed per-month
     residual kept under ``<same>_resid(t)``.  Pinned here because a rename that only
     half-lands is exactly what the cross-model review found.

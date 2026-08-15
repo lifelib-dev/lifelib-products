@@ -5,12 +5,12 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model for
 the standardized composite product defined in `product-spec.md` (same directory). This is
 not any single insurer's product. [S#]/[R#] tags refer to the source list in `sources.md`,
-numbering carried verbatim from `us/_research/immediate-annuity.md`; [REG-R#] tags refer
+numbering carried verbatim from `_research/immediate-annuity.md`; [REG-R#] tags refer
 to the cross-product reference library
-`us/references/regulatory-and-actuarial-references.md`, one shared numbering space now
+`references/regulatory-and-actuarial-references.md`, one shared numbering space now
 running **R1–R157** with most of the **R73–R149** block unused (R1–R34 from
-`us/_research/regulatory-actuarial.md`, R35–R72 from
-`us/_research/regulatory-actuarial-annuities.md`, and R150–R157
+`_research/regulatory-actuarial.md`, R35–R72 from
+`_research/regulatory-actuarial-annuities.md`, and R150–R157
 from the AP&P Manual appendix reading of **2026-08-06** — of which **R151** (AG 33)
 and **R153** (A-820 with A-821 and A-822) are cited here). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
@@ -233,7 +233,7 @@ cost is out of scope (single premium, priced in).
 states.** The **2012 IAM Period Table and Projection Scale G2 have been retrieved**: the
 AP&P Manual is a free download, not the paid publication recorded at [REG-R33], and A-821
 prints both tables in full, both sexes, age nearest birthday, at its Appendices I–IV
-[REG-R153]. They are transcribed in `us/_research/appp-a820-a821-a822.md`, so the *valuation*
+[REG-R153]. They are transcribed in `_research/appp-a820-a821-a822.md`, so the *valuation*
 basis (2012 IAR = 2012 IAM Period × Scale G2, generational) is sourceable end to end, and
 the rounding worked example is now cross-checked against the printed tables rather than
 standing alone: male age 30, `1000·q^2012 = 0.741`, `G2₃₀ = 0.010` [R3][R4][REG-R153]. The

@@ -1,7 +1,7 @@
 # Sources — Variable Universal Life Insurance
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are
-carried over verbatim from `us/_research/variable-ul.md` (sections "Primary
+carried over verbatim from `_research/variable-ul.md` (sections "Primary
 sources" and "Regulatory and actuarial references"); ids are never renumbered.
 Access date for all citations: 2026-08-03, **except** the **AP&P Manual appendix
 entries REG-R153, REG-R154 and REG-R155**, all accessed **2026-08-06**.
@@ -61,7 +61,7 @@ subsection below.
   rider (5.5%/10% notional loads), overloan protection, age-121 rule.
 
 ## Product-file regulatory and actuarial references [R#]
-(numbering of `us/_research/variable-ul.md`)
+(numbering of `_research/variable-ul.md`)
 
 ### R1. SEC — Form N-6 (registration form for variable life insurance separate accounts)
 - Publisher: U.S. Securities and Exchange Commission.
@@ -141,19 +141,19 @@ subsection below.
 ## Cross-product regulatory references [REG-R#]
 
 These use the R# numbering of the cross-product bibliography
-`us/_research/regulatory-actuarial.md` (accessed 2026-08-03), cited here as
+`_research/regulatory-actuarial.md` (accessed 2026-08-03), cited here as
 [REG-R#] to avoid collision with the product-file R# ids above. Full annotations
 live in that file; the shared reference library is
-`us/references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
+`references/regulatory-and-actuarial-references.md` (same R-numbering, which now runs
 **R1–R157**, with most of the **R73–R149** block unused; R1–R34 originate in
-`us/_research/regulatory-actuarial.md`, and R35–R72 — annuity-specific entries added
-later and not cited here — in `us/_research/regulatory-actuarial-annuities.md`).
+`_research/regulatory-actuarial.md`, and R35–R72 — annuity-specific entries added
+later and not cited here — in `_research/regulatory-actuarial-annuities.md`).
 **R151–R157 are the seven AP&P Manual appendix items read
 at first hand on 2026-08-06** — R151 AG 33, R152 AG 35, R153 A-820 with A-821 and
 A-822, R154 A-830, R155 A-585, R156 A-250, R157 A-255 — with provenance in
-`us/_research/appp-ag33.md`, `us/_research/appp-ag35.md`,
-`us/_research/appp-a820-a821-a822.md`, `us/_research/appp-a830.md` and
-`us/_research/appp-a585-a250-a255-a270.md`; this directory cites **R153, R154 and
+`_research/appp-ag33.md`, `_research/appp-ag35.md`,
+`_research/appp-a820-a821-a822.md`, `_research/appp-a830.md` and
+`_research/appp-a585-a250-a255-a270.md`; this directory cites **R153, R154 and
 R155**. **Ids are never renumbered.** Entries cited in the two
 documents:
 
@@ -203,10 +203,10 @@ documents:
 Added after drafting, when the NAIC *Accounting Practices and Procedures Manual* proved
 to be a **free download** rather than the paid publication the library had recorded.
 Id, title, publisher, URL, access date, fetched marker and carried-forward limits are
-reproduced from `us/references/regulatory-and-actuarial-references.md`;
+reproduced from `references/regulatory-and-actuarial-references.md`;
 nothing is renumbered and no [unverified] flag or retrieval limit is upgraded. All
 three are the same physical document as the AP&P Manual entry (R73) held in
-`us/references/regulatory-and-actuarial-references.md`.
+`references/regulatory-and-actuarial-references.md`.
 
 - REG-R153. Appendix A-820 — Minimum Life and Annuity Reserve Standards (with Appendix
   A-821, Annuity Mortality Table for Use in Determining Reserve Liabilities for
@@ -218,7 +218,7 @@ three are the same physical document as the AP&P Manual entry (R73) held in
   R73 — Accessed: 2026-08-06 · Fetched: yes (local text extraction; **A-820 ¶¶1–28 read
   in full**, **A-821 read in full** including the 2012 IAM Period Table and Projection
   Scale G2 printed at its Appendices I–IV, and **A-822's four paragraphs read in full**).
-  **Limits carried forward from `us/_research/appp-a820-a821-a822.md`:** **"As of March
+  **Limits carried forward from `_research/appp-a820-a821-a822.md`:** **"As of March
   2026" is not printed on PDF pp. 1186–1205** — cite the copyright footer for what those
   pages print. **A-821 prints only** the 2012 IAM Period Table and Projection Scale G2;
   the **1994 GAR** table and its `AA_x` factors, the **Annuity 2000** table and **1983
@@ -234,7 +234,7 @@ three are the same physical document as the AP&P Manual entry (R73) held in
   A-820 never prints. **Naming trap:** AP&P **Appendix A-822 is not NAIC Model #822** —
   A-820's own header does not list Model #820 while A-822's does.
   **Supersedes in fact:** the A-820 half of **REG-R110**'s limit, which is frozen and
-  preserved unaltered in `us/references/regulatory-and-actuarial-references.md`.
+  preserved unaltered in `references/regulatory-and-actuarial-references.md`.
 - REG-R154. Appendix A-830 — Valuation of Life Insurance Policies (Including the
   Introduction and Use of New Select Mortality Factors) — NAIC.
   https://content.naic.org/sites/default/files/publication-app-manual.pdf —
@@ -245,7 +245,7 @@ three are the same physical document as the AP&P Manual entry (R73) held in
   document as R73 — Accessed: 2026-08-06 · Fetched: yes (local text extraction; **¶¶1–32
   and the Attachment read in full**; the six factor tables transcribed programmatically,
   each parsing to 71 issue-age rows × 20 duration columns).
-  **Limits carried forward from `us/_research/appp-a830.md`:** the appendix is a **flat
+  **Limits carried forward from `_research/appp-a830.md`:** the appendix is a **flat
   sequence of paragraphs ¶¶1–32 plus an unnumbered Attachment and has no Sections at
   all**, so a "Model 830 Section 7" citation **does not resolve** against this print —
   the ULSG material is at **¶¶29–32** — and the words **"Model #830" and "Regulation
@@ -265,7 +265,7 @@ three are the same physical document as the AP&P Manual entry (R73) held in
   A585-4** = **PDF pages 1102–1105**; same physical document as R73 —
   Accessed: 2026-08-06 · Fetched: yes (local text extraction; **¶¶1–13 and all three
   footnotes read in full**).
-  **Limits carried forward from `us/_research/appp-a585-a250-a255-a270.md`:** the item's
+  **Limits carried forward from `_research/appp-a585-a250-a255-a270.md`:** the item's
   own "Relevant NAIC Model Laws/Regulations" line names only the **Standard Valuation
   Law (#820)** — **it does not name Model #585 anywhere**, so "A-585 *is* Model #585 §5"
   is unsupported by this print, and **Model #585 (REG-R5) was not re-read against it**.
@@ -287,7 +287,7 @@ three are the same physical document as the AP&P Manual entry (R73) held in
 - **A-270 — Variable Life Insurance, read but deliberately unnumbered.** The AP&P print
   of Model #270 (PDF pp. 1097–1099, printed A270-1 to A270-3) was extracted in the same
   2026-08-06 pass as A-585 and is transcribed in
-  `us/_research/appp-a585-a250-a255-a270.md`, but **no reference id was assigned to it**.
+  `_research/appp-a585-a250-a255-a270.md`, but **no reference id was assigned to it**.
   It is therefore **not citable**, no [REG-R#] tag exists for it, and no statement in
   `product-spec.md` or `technical-notes.md` rests on its text — the variable-life
   guaranteed-minimum-death-benefit reserve construction it carries stays outside this
@@ -295,13 +295,13 @@ three are the same physical document as the AP&P Manual entry (R73) held in
 
 ## Provenance note
 
-Extraction details live in `us/_research/variable-ul.md`: that file records which
+Extraction details live in `_research/variable-ul.md`: that file records which
 facts came from which source, the retrieval status of every document, and the gaps
 and caveats (non-public COI scales and surrender-charge schedules, current declared
 rates, unretrieved AG texts — AG XXXVII and AG XXIII are still among them — and the
 [unverified] items) that the drafted documents
 inherit. The cross-product regulatory annotations live in
-`us/_research/regulatory-actuarial.md`; the verbatim AP&P Manual appendix extractions
+`_research/regulatory-actuarial.md`; the verbatim AP&P Manual appendix extractions
 behind REG-R153, REG-R154, REG-R155 and the unnumbered A-270 live in
-`us/_research/appp-a820-a821-a822.md`, `us/_research/appp-a830.md` and
-`us/_research/appp-a585-a250-a255-a270.md`.
+`_research/appp-a820-a821-a822.md`, `_research/appp-a830.md` and
+`_research/appp-a585-a250-a255-a270.md`.

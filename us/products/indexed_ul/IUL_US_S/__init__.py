@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. indexed universal life.
 
-:mod:`~IUL_US_S` is the executable counterpart of
-``us/products/indexed-ul/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.IUL_US_S` is the executable counterpart of
+``products/indexed_ul/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-life, flexible-premium indexed
 universal life policy: the universal life chassis -- monthiversary processing, a
 monthly deduction of per-policy, per-unit and cost-of-insurance charges, Guideline
@@ -18,20 +18,20 @@ Account: a fixed (holding) account credited at 4.50% [S2] and a ladder of monthl
 
 The indexed crediting engine is the only thing that differs from the chassis. The
 technical notes say so explicitly and defer the shared mechanics to
-``us/products/universal-life/technical-notes.md``; this model therefore uses the same
-cells names as :mod:`~UL_US_S` for every shared concept, and adds names only
+``products/universal_life/technical-notes.md``; this model therefore uses the same
+cells names as :mod:`~.UL_US_S` for every shared concept, and adds names only
 for the fixed account, the segment ladder and the crediting formula.
 
 **Spaces.** The model contains two:
 
-:mod:`~IUL_US_S.Data`
+:mod:`~.IUL_US_S.Data`
     Reads the seven input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~IUL_US_S.Projection`
+:mod:`~.IUL_US_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~IUL_US_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.IUL_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -205,7 +205,7 @@ tests of their own, so neither can be closed or widened silently.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/indexed-ul/IUL_US_S")
+    >>> model = mx.read_model("products/indexed_ul/IUL_US_S")
     >>> model.Projection[1].result_cf()
 """
 

@@ -4,33 +4,33 @@
 
 **Scope note.** A *standardized composite specification* for reference liability cash-flow
 modeling; it describes no single insurer's product. Tags: **[S#]** / **[R#]** = primary product
-documents / regulatory-actuarial references numbered per `us/_research/fixed-indexed-annuity.md`;
-**[REG-R#]** = the cross-product library `us/references/regulatory-and-actuarial-references.md`,
+documents / regulatory-actuarial references numbered per `_research/fixed-indexed-annuity.md`;
+**[REG-R#]** = the cross-product library `references/regulatory-and-actuarial-references.md`,
 whose shared numbering now runs **R1–R157** with most of the **R73–R149** block unused —
-R1–R34 originating in `us/_research/regulatory-actuarial.md` and R35–R72 in
-`us/_research/regulatory-actuarial-annuities.md`. **[std]** marks standardizations
+R1–R34 originating in `_research/regulatory-actuarial.md` and R35–R72 in
+`_research/regulatory-actuarial-annuities.md`. **[std]** marks standardizations
 introduced for the reference implementation, each with a footnote under its table giving the
 rationale and the observed range; [unverified] marks claims the research file could not confirm
 against a retrieved document.
 
 **Chassis.** The base contract is a single-premium deferred annuity on the fixed-deferred chassis
 — surrender charge mechanics and the Model #805 nonforfeiture floor — documented in
-`us/_research/fixed-deferred-annuity.md` and `us/products/fixed-deferred-annuity/`, whose
+`_research/fixed-deferred-annuity.md` and `products/fixed_deferred_annuity/`, whose
 *structure* is **referenced, not restated** (the parameters below are this composite's own, and
 the schedules, rates and the account-value roll-forward are stated here in full). **Terminology
 bridge:** the Model #805 floor is called the **guaranteed minimum value (`MGV`)** here, after
-[S10]; `us/products/fixed-deferred-annuity/` calls the identical quantity the **minimum
+[S10]; `products/fixed_deferred_annuity/` calls the identical quantity the **minimum
 guaranteed surrender value (`MGSV`)**, after its own specimen. Same concept, different source
 labels — do not model them as two quantities. Two base-contract items are **restated rather than
 inherited**,
 because the FIA composite selects differently from the fixed-deferred composite: the **MVA family**
 (ratio-of-yield-factors [S10] here, against the linear `(i₀ − iₜ) × T` form with a symmetric
-surrender-charge cap adopted in `us/products/fixed-deferred-annuity/product-spec.md`) and the
+surrender-charge cap adopted in `products/fixed_deferred_annuity/product-spec.md`) and the
 **death benefit** (`max(account value, guaranteed minimum value)` [S1][S2][S5][S10] here, against
 full account value floored at the cash surrender benefit there — numerically the same whenever the
 MVA cannot lift the surrender value above the account value, but stated differently). The new
 material is index crediting, the premium bonus with vesting and clawback, and the GLWB rider. Index
-segment vocabulary is shared with `us/products/indexed-ul/technical-notes.md`, but an FIA has **no
+segment vocabulary is shared with `products/indexed_ul/technical-notes.md`, but an FIA has **no
 cost of insurance, no net amount at risk and no death benefit corridor**, and its rider is a
 **guaranteed lifetime withdrawal benefit, not a no-lapse guarantee**.
 
@@ -252,7 +252,7 @@ Basis: [S3] for the 50–80 bands and both columns; the 80+ band extends [S3]'s 
 ## Contractual mechanics
 
 Only deltas from the fixed-deferred chassis; surrender charge assessment and the Model #805 floor
-follow `us/_research/fixed-deferred-annuity.md`. The MVA family and the death benefit are
+follow `_research/fixed-deferred-annuity.md`. The MVA family and the death benefit are
 specified in the table above rather than inherited (see **Chassis**), because the fixed-deferred
 composite adopts the linear MVA form and a full-account-value death benefit.
 

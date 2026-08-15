@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. fixed indexed annuities with a GLWB.
 
-:mod:`~FIA_US_S` is the executable counterpart of
-``us/products/fixed-indexed-annuity/technical-notes.md`` in the lifelib-products
+:mod:`~.FIA_US_S` is the executable counterpart of
+``products/fixed_indexed_annuity/technical-notes.md`` in the lifelib-products
 library. It projects gross liability cash flows for a single-contract model point of a
 single-premium fixed indexed annuity carrying a guaranteed lifetime withdrawal benefit:
 a 7% premium bonus vesting over ten years, one annual point-to-point indexed account
@@ -17,7 +17,7 @@ the economic centre of the product — a guaranteed income stream that survives
 account-value exhaustion and pays for life.
 
 The base contract is the deferred annuity chassis of
-:mod:`MYGA_US_S`: the surrender-benefit composition order and the NAIC
+:mod:`.MYGA_US_S`: the surrender-benefit composition order and the NAIC
 Model #805 floor construction are the chassis's. **Everything else here is restated by
 the FIA notes with its own parameters and must not be carried across from the chassis** —
 the account-value roll-forward is index-credit driven rather than interest-accretion
@@ -30,14 +30,14 @@ throughout.
 
 **Spaces.** The model contains two:
 
-:mod:`~FIA_US_S.Data`
+:mod:`~.FIA_US_S.Data`
     Reads the seven input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~FIA_US_S.Projection`
+:mod:`~.FIA_US_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~FIA_US_S.Data` Space.
+    Reference, which resolves to the single :mod:`~.FIA_US_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -53,7 +53,7 @@ also the anniversary that ends contract year ``t``, because the notes make the
 anniversary the single event date: every mechanic in the composite is annual — annual
 point-to-point crediting [S2][S4][S10], the rider charge at the end of each contract
 year [S9], the annual benefit base update [S9] and the annual lifetime withdrawal. Note
-the contrast with :mod:`MYGA_US_S`, whose ``t`` counts **months**: that
+the contrast with :mod:`.MYGA_US_S`, whose ``t`` counts **months**: that
 chassis credits daily and needs a grid fine enough to resolve a 30-day window, whereas
 here a monthly grid would buy nothing but the excluded variants (monthly-sum crediting,
 Athene's monthly charge deduction, daily interim values, mid-year withdrawal crediting).
@@ -78,7 +78,7 @@ inside it is exposed through a ``timing`` argument rather than being buried:
 8. decrements --- ``pols_if_at(t, "AFT_DECR")``
 
 ``pols_if(t)`` is the in-force count at the **start** of contract year ``t``, the
-library-wide convention set by :mod:`Term_US_A` and ``savings.CashValue_SE``, and it is
+library-wide convention set by :mod:`.Term_US_A` and ``savings.CashValue_SE``, and it is
 the weight carried by every cash flow reported on the same row of ``result_cf()``. The
 technical notes define ``l(t)`` the other way round, as the probability at the *end* of
 the year; that quantity is kept as ``pols_if_at(t, "AFT_DECR")``, which is also
@@ -155,7 +155,7 @@ option rather than interpolations [S10][S11]; the cap re-declaration rule, becau
 notes state the *target* (set the cap so the one-year call-spread cost equals the option
 budget) but give no option-pricing function, so the base projection holds the snapshot
 scale level [R1][R6]; stochastic GLWB activation on the ``h(a)`` incidence table, which
-cannot be applied to a single deterministic cell — :func:`activation_rate` reports the
+cannot be applied to a single deterministic cell — :func:`.activation_rate` reports the
 table and the base run activates at the model point's ``income_start_age`` instead;
 generational mortality projection with Scale G2, because the 2012 IAM/IAR family and the
 G2 scale may not be redistributed here [REG-R59][REG-R60]; joint-life survivorship, the
@@ -212,7 +212,7 @@ reproduces exactly.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/fixed-indexed-annuity/FIA_US_S")
+    >>> model = mx.read_model("products/fixed_indexed_annuity/FIA_US_S")
     >>> model.Projection[1].result_cf()
 """
 

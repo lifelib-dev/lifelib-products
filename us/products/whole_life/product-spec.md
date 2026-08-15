@@ -4,11 +4,11 @@
 
 Scope note: this is a **standardized composite specification for reference modeling** — it does
 not describe any single insurer's product. It is assembled from the primary and regulatory
-sources catalogued in `sources.md` and extracted in `us/_research/whole-life.md`. Tags
+sources catalogued in `sources.md` and extracted in `_research/whole-life.md`. Tags
 [S#] (primary product documents) and [R#] (regulatory/actuarial references from the product
 research file) and [REG-R#] (cross-product reference library,
-`us/references/regulatory-and-actuarial-references.md`; research provenance in
-`us/_research/regulatory-actuarial.md`, same R-numbering) mark sourced facts. **[std]** marks standardizations
+`references/regulatory-and-actuarial-references.md`; research provenance in
+`_research/regulatory-actuarial.md`, same R-numbering) mark sourced facts. **[std]** marks standardizations
 introduced for the reference implementation; every **[std]** table row is footnoted with its
 rationale and the observed range across insurers. Facts the research file could not verify are
 flagged [unverified].

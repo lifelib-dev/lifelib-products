@@ -1,12 +1,12 @@
 # ULSG_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/guaranteed-ul/technical-notes.md`](../../products/guaranteed-ul/technical-notes.md);
+[`products/guaranteed_ul/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/guaranteed-ul/product-spec.md). Those notes build on
+[`product-spec.md`](product-spec.md). Those notes build on
 the universal life chassis, and so does this model — see
-[`us/models/universal-life/`](../universal-life/) and its
-[technical notes](../../products/universal-life/technical-notes.md).
+[`products/universal_life/`](../universal_life) and its
+[technical notes](../universal_life/technical-notes.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 25% premium load and the $5.50 monthly per-policy charge,
@@ -22,14 +22,14 @@ the universal life chassis, and so does this model — see
 ## Run it
 
 ```bash
-python us/models/guaranteed-ul/run.py
+python products/guaranteed_ul/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/guaranteed-ul/ULSG_US_S")
+model = mx.read_model("products/guaranteed_ul/ULSG_US_S")
 model.Projection[1].result_av()
 ```
 
@@ -68,7 +68,7 @@ The eight input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `ULSG_US_S/` holds nothing but formulas:
 
 ```
-us/models/guaranteed-ul/
+products/guaranteed_ul/
   model_point_table.csv        <- inputs live here
   coi_rates.csv
   corridor_factors.csv
@@ -172,7 +172,7 @@ needed care:
 
 ## The forgone deduction is the product
 
-`us/products/universal-life/technical-notes.md` warns against carrying its recursions
+`products/universal_life/technical-notes.md` warns against carrying its recursions
 across unexamined, and the account-value recursion is exactly where guaranteed UL parts
 company with it. On the universal life chassis a monthly deduction the account cannot
 carry triggers a grace period and, in short order, a lapse. Here it usually does not:

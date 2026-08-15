@@ -1,7 +1,7 @@
 """Golden and product tests for MYGA_US_S.
 
 The golden values are the worked example in
-us/products/fixed-deferred-annuity/technical-notes.md ("Worked example"), which projects
+products/fixed_deferred_annuity/technical-notes.md ("Worked example"), which projects
 the anchor cell M60 ANB / non-qualified / $100,000 single premium / 5-year guarantee
 period / 4.45% declared / 2.80% GMSV rate / 9-8-7-6-5 surrender charge / 10% free
 withdrawal.  They are hard-coded here rather than pickled so that a reviewer can compare
@@ -20,9 +20,9 @@ test per entry below.
 import modelx as mx
 import pytest
 
-from conftest import REPO
+from conftest import LIB
 
-MODEL_PATH = REPO / "us/models/fixed-deferred-annuity/MYGA_US_S"
+MODEL_PATH = LIB / "products/fixed_deferred_annuity/MYGA_US_S"
 
 # Half a cent, plus a hair.  The notes round half-up for display and AV(24) =
 # 104,920.025 sits exactly on the boundary (shown as 104,920.03), so a strict 0.005 would
@@ -924,7 +924,7 @@ def test_horizon_is_the_last_age_in_the_sourced_cap_band(fixed_deferred_annuity,
     assert anchor.maturity_age == int(cap.index.max())
     assert anchor.proj_len() == 12 * (100 - anchor.age_at_entry())
 
-    readme = (MODEL_PATH.parent / "README.md").read_text(encoding="utf-8")
+    readme = (MODEL_PATH.parent / "model.md").read_text(encoding="utf-8")
     for doc in (_flat(fixed_deferred_annuity.doc),
                 _flat(fixed_deferred_annuity.Projection.doc),
                 _flat(readme)):
@@ -959,10 +959,10 @@ def test_symbol_table_covers_the_gmir_floor_level_and_the_scalar_spreads(
 def test_readme_contrasts_t_zero_with_term_life_only():
     """The t = 0 index is contrasted with Term_US_A, not claimed across the library.
 
-    Sibling models in ``us/models/`` also index their result tables from 0, so the
+    Sibling models in ``products/`` also index their result tables from 0, so the
     library-wide claim this README used to make was false.
     """
-    readme = _flat((MODEL_PATH.parent / "README.md").read_text(encoding="utf-8"))
+    readme = _flat((MODEL_PATH.parent / "model.md").read_text(encoding="utf-8"))
     assert "Every other model in the library starts its result table at 1" not in readme
     assert ("contrast with `Term_US_A`, the model this one takes its structure from, "
             "whose result table starts at `t = 1`") in readme

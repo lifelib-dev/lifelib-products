@@ -6,9 +6,9 @@ accessed 2026-08-03; the [REG-R#] entries carry their own access dates per entry
 `sources.md`. Companion to `product-spec.md` in this
 directory; both use identical parameter values. This is a standardized composite for
 reference modeling, not any single insurer's product. [S#]/[R#] cite
-`us/_research/variable-ul.md`; [REG-R#] cites the cross-product reference library
-`us/references/regulatory-and-actuarial-references.md` (research provenance:
-`us/_research/regulatory-actuarial.md`, same R-numbering); **[std]** marks standardizations introduced
+`_research/variable-ul.md`; [REG-R#] cites the cross-product reference library
+`references/regulatory-and-actuarial-references.md` (research provenance:
+`_research/regulatory-actuarial.md`, same R-numbering); **[std]** marks standardizations introduced
 for the reference implementation. Facts flagged [unverified] in the research notes
 stay flagged here.
 
@@ -21,7 +21,7 @@ stay flagged here.
 - **Base chassis.** The monthiversary processing order (premium → withdrawal/loan →
   DB and NAAR → monthly deduction → growth → EOM decrements, deaths before lapses)
   follows the universal-life reference notes
-  (`us/products/universal-life/technical-notes.md`). One sourced deviation from that
+  (`products/universal_life/technical-notes.md`). One sourced deviation from that
   base chassis: the VUL prospectuses define the NAAR as death benefit − account
   value with no one-month discount [S2], so this model omits the one-month
   guaranteed-rate discount used in the fixed-UL base recursion.
@@ -376,5 +376,5 @@ Known modeling pitfalls:
   short-horizon liquidity studies.
 - The NLG variation changes the risk profile qualitatively (lapse floor under poor
   performance → higher NAAR persistence); see
-  `us/products/guaranteed-ul/technical-notes.md` for shadow-account mechanics and
+  `products/guaranteed_ul/technical-notes.md` for shadow-account mechanics and
   [S4] for the rider's notional-load design.

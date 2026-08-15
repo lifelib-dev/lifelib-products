@@ -1,7 +1,7 @@
 """Run the UL_US_S reference model and print its account value roll-forward.
 
-    python us/models/universal-life/run.py            # anchor cell (point_id = 1)
-    python us/models/universal-life/run.py 3          # another model point
+    python products/universal_life/run.py            # anchor cell (point_id = 1)
+    python products/universal_life/run.py 3          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

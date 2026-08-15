@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for U.S. level premium term life insurance.
 
-:mod:`~Term_US_A` is the executable counterpart of
-``us/products/term-life/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.Term_US_A` is the executable counterpart of
+``products/term_life/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-life, fully underwritten level
 premium term policy: level premiums for the level period, then Jump-to-ART renewal at
 unchanged face amount to expiry at attained age 95, convertible to permanent cover
@@ -14,14 +14,14 @@ before ``min(end of level period, attained age 70)``, with no cash value.
 
 **Spaces.** The model contains two:
 
-:mod:`~Term_US_A.Data`
+:mod:`~.Term_US_A.Data`
     Reads the five input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~Term_US_A.Projection`
+:mod:`~.Term_US_A.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~Term_US_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.Term_US_A.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -65,7 +65,7 @@ money to the cent, in-force to six decimals.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("us/models/term-life/Term_US_A")
+    >>> model = mx.read_model("products/term_life/Term_US_A")
     >>> model.Projection[1].result_cf()
 """
 

@@ -4,11 +4,11 @@
 
 **Scope note.** A reference liability cash-flow projection model for the standardized composite
 product defined in `product-spec.md` (same directory); not any single insurer's product. **[S#]**
-/ **[R#]** tags refer to `us/_research/fixed-indexed-annuity.md`; **[REG-R#]** tags refer to
-`us/references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157**
+/ **[R#]** tags refer to `_research/fixed-indexed-annuity.md`; **[REG-R#]** tags refer to
+`references/regulatory-and-actuarial-references.md`, whose shared numbering now runs **R1–R157**
 with most of the **R73–R149** block unused: R1–R34 originate in
-`us/_research/regulatory-actuarial.md`, R35–R72 in
-`us/_research/regulatory-actuarial-annuities.md`, and **R151–R157** are the seven AP&P Manual
+`_research/regulatory-actuarial.md`, R35–R72 in
+`_research/regulatory-actuarial-annuities.md`, and **R151–R157** are the seven AP&P Manual
 appendix items read at first hand on 2026-08-06 — R151 AG 33, R152 AG 35, R153 A-820 with A-821 and
 A-822, R154 A-830, R155 A-585, R156 A-250, R157 A-255. **[std]** marks standardizations
 introduced for the reference implementation; [unverified] marks claims the research file could not
@@ -18,7 +18,7 @@ recollection, and every flag not closed that way still stands. **Parameter value
 `product-spec.md`.**
 
 **Inherited versus new.** The base contract is the fixed deferred annuity chassis in
-`us/_research/fixed-deferred-annuity.md` and `us/products/fixed-deferred-annuity/` — the
+`_research/fixed-deferred-annuity.md` and `products/fixed_deferred_annuity/` — the
 surrender-benefit composition order and the Model #805 floor construction — whose *structure* is
 **referenced, not restated**; the schedules, rates and recursions below are this composite's own
 and are **not** that file's. In particular the account-value roll-forward here is index-credit
@@ -33,7 +33,7 @@ floored at the cash surrender benefit). New here: the index crediting engine, th
 with vesting and clawback, and the GLWB rider (benefit base, rider charge, lifetime withdrawal,
 excess-withdrawal adjustment, post-depletion phase).
 
-**Difference from the indexed UL segment engine** (`us/products/indexed-ul/technical-notes.md`):
+**Difference from the indexed UL segment engine** (`products/indexed_ul/technical-notes.md`):
 the FIA shares the vocabulary of segments, caps, participation rates, floors and credit bases, but
 has **no cost of insurance, no net amount at risk and no death benefit corridor**, hence no
 COI/NAAR/corridor circularity. There is no premium load, no per-unit charge and no face amount.

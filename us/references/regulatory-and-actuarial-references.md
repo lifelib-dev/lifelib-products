@@ -1687,7 +1687,7 @@ directly; the parent document is cross-referenced, not restated.
 
 Entries **R73–R142** carried a statutory accounting and capital research stream whose
 framework documents have been removed from the library. The ten entries below are
-retained because the AP&P Manual extraction files (`us/_research/appp-*.md`) and the
+retained because the AP&P Manual extraction files (`_research/appp-*.md`) and the
 product documents still cite them; every other number in **R73–R149** is permanently
 retired — never reuse or renumber. Retired numbers still named inside the annotations
 below (e.g. R89/R90, R103/R105, R112, or spans such as R74–R97 and R100–R113) are

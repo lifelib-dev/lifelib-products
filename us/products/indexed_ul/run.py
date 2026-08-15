@@ -1,7 +1,7 @@
 """Run the IUL_US_S reference model and print its account value roll-forward.
 
-    python us/models/indexed-ul/run.py            # baseline cell (point_id = 1)
-    python us/models/indexed-ul/run.py 3          # another model point
+    python products/indexed_ul/run.py            # baseline cell (point_id = 1)
+    python products/indexed_ul/run.py 3          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

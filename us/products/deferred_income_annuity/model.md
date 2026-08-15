@@ -1,12 +1,12 @@
 # DIA_US_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-14. Built from
-[`us/products/deferred-income-annuity/technical-notes.md`](../../products/deferred-income-annuity/technical-notes.md);
+[`products/deferred_income_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/deferred-income-annuity/product-spec.md). The income
+[`product-spec.md`](product-spec.md). The income
 phase is the payout chassis of
-[`us/products/immediate-annuity/technical-notes.md`](../../products/immediate-annuity/technical-notes.md),
-implemented in [`SPIA_US_S`](../immediate-annuity/) — this model carries that
+[`products/immediate_annuity/technical-notes.md`](../immediate_annuity/technical-notes.md),
+implemented in [`SPIA_US_S`](../immediate_annuity) — this model carries that
 model's names for every shared concept.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
@@ -26,15 +26,15 @@ model's names for every shared concept.
 ## Run it
 
 ```bash
-python us/models/deferred-income-annuity/run.py
-python us/models/deferred-income-annuity/run.py 5      # life with installment refund
+python products/deferred_income_annuity/run.py
+python products/deferred_income_annuity/run.py 5      # life with installment refund
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("us/models/deferred-income-annuity/DIA_US_S")
+model = mx.read_model("products/deferred_income_annuity/DIA_US_S")
 model.Projection[1].result_annual()
 ```
 
@@ -85,7 +85,7 @@ The six input CSVs live **in this directory**, beside `run.py` — not inside th
 folder. `DIA_US_S/` holds nothing but formulas:
 
 ```
-us/models/deferred-income-annuity/
+products/deferred_income_annuity/
   model_point_table.csv        <- inputs live here
   premium_schedule.csv
   mort_table.csv
