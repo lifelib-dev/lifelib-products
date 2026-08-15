@@ -233,33 +233,49 @@ and point at them as repository paths rather than doc links.
 modules and `test_model_conventions.py` — with `MODELS` in
 [tests/conftest.py](tests/conftest.py) repointed at `us/products/<product_slug>/<Model>`.
 
-**On the lifelib side the suite lands at `lifelib/libraries/uslib/tests/`** — inside the
-library, not under `lifelib/tests/`.
+**On the lifelib side the suite lands at `lifelib/tests/libraries/uslib/`** — under the
+central test tree, *not* inside the library.
 
-lifelib has two test conventions, and this picks the second:
+lifelib has two test conventions:
 
 | Convention | Used by | Shape |
 |---|---|---|
 | central, flat | fastlife, nestedlife, simplelife, solvency2, tradlife_a | `lifelib/tests/libraries/test_<lib>.py`, locating models via `Path(__file__).parents[2] / "libraries"` |
 | in-library | ifrs17a | `lifelib/libraries/ifrs17a/tests/` with its own `conftest.py` and `expected/` |
 
-The in-library shape is the right one here because:
+**The decision is the central tree, in a `uslib/` subdirectory.** The reason is the user a
+copy is made for: `lifelib.create()` is a bare `shutil.copytree` of the whole library
+directory with no ignore filter, so anything in the library reaches every copy. The
+audience for these models is actuaries, not programmers, and a 14-file test suite in their
+copy is clutter they did not ask for and cannot act on.
 
-- it is the same colocation argument as D2 — for a library whose point is that each
-  reference model reproduces its own documented worked example, the assertion belongs
-  beside the model and the notes it checks;
-- `lifelib.create("uslib", …)` copies the library directory, so a user's copy arrives with
-  the tests and can be re-run against their own edits. `.py` is already in
-  `get_package_data`, so this needs no packaging change beyond C5;
-- it keeps `lifelib/tests/libraries/` from going from 6 files to 19, with
-  `test_term_life_us.py` interleaved among `test_simplelife.py` and friends;
-- CI needs no change: `.github/workflows/tests.yml` runs bare `pytest -v` from the
-  repository root and `tox.ini` does the same, so root-level collection already picks up
-  `lifelib/libraries/ifrs17a/tests/` and will pick these up identically. Verified.
+Accepted trade-offs, with their mitigations:
 
-`conftest.py` then resolves models from `Path(__file__).resolve().parents[1]`, with `MODELS`
-entries reading `products/<slug>/<Model>` — shorter than today's repo-relative form, and
-independent of where the library is checked out or copied to.
+- **The worked-example guarantee has no artifact in the copy.** The claim that every model
+  reproduces its notes' worked example cell by cell is checkable in a lifelib checkout but
+  not in what the user receives. *Each `model.md` must therefore say where its test lives
+  and how to run it from a checkout* — this is a required edit, not an optional one.
+- **No local safety net when a user customizes a model**, which is the lifelib use case.
+  Same mitigation.
+- **A per-product change touches two trees** — `libraries/uslib/products/<slug>/` for the
+  notes and the model, `tests/libraries/uslib/` for the assertion.
+- **`lifelib/tests/libraries/` is flat today**, so the subdirectory is a mild extension of
+  the convention — though `lifelib/tests/` already has `commands/`, `data/`, `filecomp/`
+  and `projects/`, so subdirectories are not foreign to the tree.
+- **The subdirectory needs its own `__init__.py`**, since `lifelib/tests/libraries/` is a
+  package. Without one, pytest ends the package walk there and puts the directory on
+  `sys.path` instead.
+
+Unaffected either way: CI (`tests.yml` and `tox.ini` both run bare `pytest` from the
+repository root, which collects either location — verified), and packaging (`lifelib/tests`
+has an `__init__.py`, so `find_packages()` ships it regardless; the tests reach an installed
+lifelib, just not a `create()` copy — which is the intended split).
+
+`conftest.py` should locate the library through **`lifelib._dirs.TEMPLATES["uslib"]`**, the
+canonical locator `create()` itself uses, rather than climbing
+`parents[3] / "libraries" / "uslib"`. That is immune to any future reshuffle of the test
+tree, and is an improvement on `test_tradlife_a.py`, which hand-rolls
+`parents[2] / "libraries"`. `MODELS` entries then read `products/<slug>/<Model>`.
 
 `test_model_conventions.py` asserts that the registry name, the directory on disk and the
 model's `_name` agree — that assertion is what will catch a missed rename in D1, so it
@@ -335,6 +351,10 @@ Optionally (D5) split comma lists and linkify pinpoint cites.
 - `us/README.md` → `us/index.md` with a MyST toctree.
 - New `us/products/index.md` (the two taxonomy tables from the README, plus a toctree).
 - New `us/products/<p>/index.md` × 12.
+- **Each of the twelve `model.md`: a "Verification" note** saying which test module asserts
+  that model's worked example, where it lives (`lifelib/tests/libraries/uslib/`) and how to
+  run it. Required by D7 — the tests do not travel with a `create()` copy, so this note is
+  the only thing connecting the copy to the guarantee the documents make about it.
 - A `doc-check` harness: a throwaway `conf.py` mirroring lifelib's MyST settings, so the
   whole set can be built **here** with `-W --keep-going` and land in lifelib warning-clean.
   This is the acceptance test for the whole plan.
@@ -349,8 +369,8 @@ A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for 
    `exclude_patterns += ['libraries/uslib/_research/*']` (D6).
 4. `doc/source/libraries/index.rst` — one table row and one toctree entry, `uslib/index.md`.
 5. `.gitignore` — `doc/source/libraries/uslib/`.
-6. Move `tests/` → `lifelib/libraries/uslib/tests/` (D7) — inside the library, following
-   `ifrs17a`. No CI or `tox.ini` change is needed.
+6. Move `tests/` → `lifelib/tests/libraries/uslib/` (D7), adding `__init__.py`. No CI or
+   `tox.ini` change is needed.
 7. Decide whether the twelve models also get lifelib-style autodoc pages
    (`.. automodule:: uslib.products.term_life.Term_US_A.Projection`). D1 keeps the door
    open; nothing else in this plan depends on it.
@@ -402,9 +422,16 @@ Measured across the 69 markdown files under `us/`, with fenced code blocks exclu
    splitting `[S3, S7]` (93 sites) is the difference between "most cross-references are
    links" and "all of them are". It is also the only part of the plan that alters the
    *visible* text of a citation. Include, or leave as plain text?
-2. **D6 — `_research/`.** Ship-but-don't-render is my recommendation. The alternative is to
-   render all 19 files as an orphaned "Provenance" section, which roughly doubles the page
-   count and exposes a second, deliberately independent `[S#]` numbering to readers.
+2. **D6 — `_research/`.** Ship-but-don't-render is my recommendation for the *docs*. But
+   note that it interacts with the D7 reasoning: `lifelib.create()` is an unfiltered
+   `copytree`, so `_research/` — 19 files, 1.6 MB, carrying its own deliberately
+   independent `[S#]` numbering — lands in every user copy. If the test suite is being kept
+   out of the copy on the grounds that actuaries will not know what to do with it, the same
+   argument applies here with more force, since this is the larger pile and the numbering
+   collision is actively misleading. Three options: ship it (current plan), keep it in the
+   lifelib repo outside the library directory, or teach `create()` an ignore list.
+   Rendering it as an orphaned "Provenance" section is a separate question, and I would not
+   — it roughly doubles the page count.
 3. **`[std]` / `[unverified]` as links.** 1,532 occurrences would become links to the
    conventions section. Consistent, and one definition line per file — but noisy. Link
    them, or keep them as plain markers and link only true citations?
