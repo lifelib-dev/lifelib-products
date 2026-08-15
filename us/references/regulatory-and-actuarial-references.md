@@ -1680,6 +1680,7 @@ directly; the parent document is cross-referenced, not restated.
   2011–2015 deferred annuity mortality study and a 2006 analysis — both identified via the SOA
   index (R65) but neither fetched. This assumption is materially under-evidenced relative to
   payout mortality.
+
 ---
 
 ## 15. Retained statutory-basis entries (from the retired R73–R142 block)

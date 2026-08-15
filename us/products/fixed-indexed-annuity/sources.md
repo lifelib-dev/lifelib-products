@@ -321,7 +321,7 @@ left unaltered in each case: it states the status *per the originating research 
 still an accurate statement about that file. **Nothing is renumbered, and no frozen entry is
 rewritten.**
 
-#### R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
+### R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
   (pages A-1 to A-2; same document as REG-R3)

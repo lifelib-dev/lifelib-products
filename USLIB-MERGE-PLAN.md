@@ -429,15 +429,24 @@ merely warnings-as-errors. Verified both ways.
 Each phase is a commit on `uslib-merge-prep`, with `python -m pytest tests -q` green at the
 end of every one.
 
-**P0 — Structural markdown fixes** *(3 files)*
+**P0 — Structural markdown fixes** *(2 files)* — **done**
 Independent of everything else; fixes latent rendering bugs that exist today.
 - `us/references/regulatory-and-actuarial-references.md:1683` — a `---` line directly
   follows `payout mortality.` with no blank line, so MyST renders that sentence as an
-  **H2 heading**. Insert a blank line.
+  **H2 heading**. Blank line inserted.
 - `us/products/fixed-indexed-annuity/sources.md:324` — H2 → H4 jump
-  (`myst.header` warning). Insert the missing level or demote.
-- `us/README.md` — `<product-type>`, `<product>`, `<country>`, `<grid>` appear bare in
-  prose and parse as raw HTML tags. Wrap in backticks.
+  (`myst.header` warning). `#### R110.` demoted to `### R110.`: it is the one entry in that
+  section not part of the AP&P group below it, so giving it its own H3 is the minimal fix
+  and invents no editorial content.
+- ~~`us/README.md` — bare `<product-type>`, `<product>`, `<country>`, `<grid>`~~ —
+  **withdrawn, false positive.** All four are already inside backticks. The scan that
+  flagged them blanked fenced code blocks but not inline code spans. Rechecked with spans
+  stripped: **zero** bare angle-bracket tokens in `us/`.
+
+Adds `tools/md_lint.py`, which is what re-checks this and gates P4: it reports setext
+rules, heading-level jumps, missing/duplicate H1, and bracket adjacencies. Structural checks
+apply to every file; the adjacency check applies only to *rendered* documents, since
+`_research/` never receives the definitions that make an adjacency dangerous.
 
 **P1 — Directory restructure** *(pure `git mv`, no content edits)*
 - Rename the 12 product slugs to underscores (D1) in `us/products/`.
@@ -491,10 +500,20 @@ the check that it did.
 **Idempotent and inert** — nothing links to these targets yet, so this phase cannot change
 any rendering.
 
-**P4 — De-adjacency** *(2,157 scripted sites + 3 manual)*
+**P4 — De-adjacency** *(2,244 separators in rendered documents)*
 Per D4. Still inert — with no definitions in place, `[S2] [S3]` renders as literal text just
 as `[S2][S3]` does. This phase is deliberately separate so its diff can be reviewed on its
 own; it is the one that would silently corrupt meaning if it were incomplete.
+
+**Scope: rendered documents only.** `_research/` is left alone — 650 further adjacencies
+that stay literal because D6 keeps those files out of the build and P5 gives them no
+definitions. The hazard is created by the definitions, not by the adjacency, so touching
+2,700 lines of provenance for no rendering benefit would be churn. `tools/md_lint.py`
+enforces exactly this scope, and 2,244 → 0 is the phase's completion test.
+
+*(The 2,157 in an earlier draft counted non-overlapping tag **pairs**; 2,244 counts every
+`][` **separator to insert**, which is what the edit actually does — a run of three tags is
+one pair-match short of two separators.)*
 
 **P5 — Citation link definitions** *(the phase that turns citations into links)*
 Add `tools/gen_citation_links.py --library us`, run it over the 36 product documents and the
