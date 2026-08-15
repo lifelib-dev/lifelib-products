@@ -49,8 +49,9 @@ def anchor_lines(text, name_for):
             section = m.group(1)
         entry = ENTRY.match(line)
         if entry and not CROSS_PRODUCT.search(section):
-            already = out and TARGET.match(out[-1].strip() or "x")
-            if not already:
+            # Look back past the blank line this inserts, or a re-run doubles every target.
+            previous = next((ln for ln in reversed(out) if ln.strip()), "")
+            if not TARGET.match(previous.strip()):
                 target = name_for(entry.group(2), entry.group(3), entry.group(4))
                 out.append(f"({target})=")
                 out.append("")

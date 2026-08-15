@@ -17,6 +17,8 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
 
 ## Primary product sources [S#]
 
+(uslib-registered_index_linked_annuity-s1)=
+
 ### S1. Brighthouse Life Insurance Company of NY — "Brighthouse Shield Level Select 6-Year Annuity", Form S-3 registration statement
 - Publisher: Brighthouse Life Insurance Company of NY ("BLNY"), CIK 0001167609
 - Doc type: Securities Act registration statement / statutory prospectus (Form S-3, the
@@ -33,6 +35,8 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
   return-of-premium death benefit, the Transfer Period, and the Cap/Step crediting
   worked examples.
 
+(uslib-registered_index_linked_annuity-s2)=
+
 ### S2. Brighthouse Life Insurance Company — "Brighthouse Shield Level II 6-Year Annuity", Rule 424(b)(3) prospectus
 - Publisher: Brighthouse Life Insurance Company ("BLIC"), CIK 0000733076
 - Doc type: statutory prospectus filed under Rule 424(b)(3), filed 2024-07-26, accession
@@ -45,6 +49,8 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
   Options" carries the complete Fixed Income Asset Proxy / Derivative Asset Proxy algebra,
   the per-crediting-type replicating option portfolios, and the worked proportional
   Investment Amount reduction on withdrawal.
+
+(uslib-registered_index_linked_annuity-s3)=
 
 ### S3. Pruco Life Insurance Company — "PRUDENTIAL FlexGuard — Flexible Premium Deferred Index-Linked and Variable Annuity ('B Series')", prospectus supplement
 - Publisher: Pruco Life Insurance Company (Prudential)
@@ -59,6 +65,8 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
   as of that document; **do not treat as current pricing.** FlexGuard has since been
   re-registered on Form N-4 under the 2024 rule [R1], so strategy menus, buffers and rates
   will have changed.
+
+(uslib-registered_index_linked_annuity-s4)=
 
 ### S4. Equitable Financial Life Insurance Company — "Structured Capital Strategies PLUS 26", Form N-4 registration statement
 - Publisher: Equitable Financial Life Insurance Company, CIK 0002039145 (a parallel,
@@ -77,6 +85,8 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
   description including the Cap Calculation Factor and the implied-volatility
   interpolation procedure.
 
+(uslib-registered_index_linked_annuity-s5)=
+
 ### S5. Allianz Life Insurance Company of North America / Allianz Life Variable Account B — "Allianz Index Advantage+ Select Income Annuity", Form N-4 initial registration statement
 - Publisher: Allianz Life Insurance Company of North America (CIK 0000072499) / Allianz
   Life Variable Account B (CIK 0000836346)
@@ -94,6 +104,8 @@ own access date of 2026-08-03, and the AP&P appendix entries **R151–R157** car
   "[To be updated by amendment]" and the prospectus date is "[December XX, 2025]". **Fee
   figures from this document are preliminary** and should be re-verified against the
   effective prospectus.
+
+(uslib-registered_index_linked_annuity-s6)=
 
 ### S6. Lincoln Life & Annuity Company of New York — "Lincoln Level Advantage 2 B-Share Index-Linked Annuity", Form N-4/A
 - Publisher: Lincoln Life & Annuity Company of New York, CIK 0001022095
@@ -131,6 +143,8 @@ These are the local R-numbers used inside
 `_research/registered-index-linked-annuity.md`. They are **independent of** the shared
 [REG-R#] space; several documents appear in both (noted per entry).
 
+(uslib-registered_index_linked_annuity-r1)=
+
 ### R1. U.S. Securities and Exchange Commission — Final rule, "Registration for Index-Linked Annuities and Registered Market Value Adjustment Annuities; Amendments to Form N-4 …; Other Technical Amendments"
 - Publisher: SEC
 - Release Nos. 33-11294; 34-100450; IC-35273; File No. S7-16-23; RIN 3235-AN30. 17 CFR
@@ -143,6 +157,8 @@ These are the local R-numbers used inside
   flags the **May 1, 2026 compliance date as [unverified]** (section II.J not read).
   Both documents in this directory carry that [unverified] flag.
 
+(uslib-registered_index_linked_annuity-r2)=
+
 ### R2. NAIC — Actuarial Guideline LIV, "Nonforfeiture Requirements for Index-Linked Variable Annuity Products" (AG 54)
 - Publisher: National Association of Insurance Commissioners
 - Doc type: adopted actuarial guideline plus project history (6 pages)
@@ -154,12 +170,16 @@ These are the local R-numbers used inside
   retrieved document. The July 1, 2024 effective date **is** stated in the retrieved text.
 - Cross-reference: the same guideline is **[REG-R44]**.
 
+(uslib-registered_index_linked_annuity-r3)=
+
 ### R3. NAIC — Valuation Manual, Jan. 1, 2026 edition, VM-21 "Requirements for Principle-Based Reserves for Variable Annuities"
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
 - Retrieved: YES (457 pages; VM-21 Sections 1 and 2 read in detail)
 - Cross-reference: **[REG-R35]** (VM-21 as a section) and **[REG-R3]** (the parent
   Valuation Manual).
+
+(uslib-registered_index_linked_annuity-r4)=
 
 ### R4. NAIC — Model #250, "Variable Annuity Model Regulation"
 - Publisher: NAIC (October 2007 edition of the NAIC Model Laws compilation)
@@ -169,6 +189,8 @@ These are the local R-numbers used inside
   `product-spec.md`: **#250 is the Variable Annuity Model Regulation; the Annuity
   Disclosure Model Regulation is #245** ([REG-R45]).
 
+(uslib-registered_index_linked_annuity-r5)=
+
 ### R5. Actuarial Standards Board — ASOP No. 2, "Nonguaranteed Elements for Life Insurance and Annuity Products" (Doc. No. 204)
 - Publisher: Actuarial Standards Board
 - URL fetched: http://www.actuarialstandardsboard.org/wp-content/uploads/2021/12/asop002_204-2.pdf
@@ -176,6 +198,8 @@ These are the local R-numbers used inside
 - Note carried over: the title has changed from the older "Nonguaranteed Charges or
   Benefits for Life Insurance Policies and Annuity Contracts".
 - Cross-reference: **[REG-R26]**.
+
+(uslib-registered_index_linked_annuity-r6)=
 
 ### R6. American Academy of Actuaries — "Index-Linked Variable Annuity (ILVA) / Registered Index-Linked Annuity (RILA)" policy paper
 - Publisher: American Academy of Actuaries, Life Practice Council

@@ -28,6 +28,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 
 ## Primary product sources [S#]
 
+(uslib-deferred_income_annuity-s1)=
+
 ### S1. New York Life Insurance and Annuity Corporation (NYLIAC) — "New York Life Guaranteed Future Income Annuity II — Product Overview"
 - Publisher: NYLIAC (a Delaware corporation), subsidiary of New York Life Insurance
   Company, 51 Madison Avenue, New York, NY 10010. Document distributed by Fidelity
@@ -39,6 +41,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Retrieved: **YES** (full 4-page PDF text extracted)
 - Policy form: `ICC11–P101` in most jurisdictions; `211-P101` in some states; state
   variations apply.
+
+(uslib-deferred_income_annuity-s2)=
 
 ### S2. Massachusetts Mutual Life Insurance Company — "MassMutual RetireEase Choice — A Flexible Premium Deferred Income Annuity" (client guide)
 - Publisher: Massachusetts Mutual Life Insurance Company, Springfield, MA. Document code
@@ -56,6 +60,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   — see [R1][R2][R3]. Its *product mechanics* remain the most detailed DIA description
   retrieved and are cited as such. This is the **archetype** for the representative design.
 
+(uslib-deferred_income_annuity-s3)=
+
 ### S3. The Guardian Insurance & Annuity Company, Inc. (GIAC) — "Guardian SecureFuture Income Annuity® — A flexible premium deferred income annuity"
 - Publisher: The Guardian Insurance & Annuity Company, Inc. (GIAC), a Delaware
   corporation, 7 Hanover Square, New York, NY 10004; wholly owned subsidiary of The
@@ -70,6 +76,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   distribution (RMD) age of **70½**" throughout — superseded by SECURE 1.0/2.0. Product
   mechanics still cited; age references flagged.
 
+(uslib-deferred_income_annuity-s4)=
+
 ### S4. Pacific Life Insurance Company / Pacific Life & Annuity Company — "PACIFIC SECURE INCOME® — A Fixed, Deferred Income Annuity" (fact sheet)
 - Publisher: Pacific Life Insurance Company (all states except New York) and Pacific Life
   & Annuity Company (all states). Document codes `24-299C`, `FAC0560-01`, `2/26 E1127`.
@@ -83,6 +91,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   Payments Death Benefit" option) and the independent corroboration of the 2026 QLAC
   premium limit.
 
+(uslib-deferred_income_annuity-s5)=
+
 ### S5. Pacific Life — "Pacific Secure Income — Client Guide"
 - Publisher: Pacific Life. Document codes `24-300A`, `FAC0555-2401`, `11/24 E1127`.
 - Doc type: client guide (16 pages).
@@ -91,6 +101,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Note carried over: the guide does **not** disclose the interest-rate-adjustment charge
   formula used for withdrawals — the basis for the [std]/[unverified] commutation
   construction in `technical-notes.md`.
+
+(uslib-deferred_income_annuity-s6)=
 
 ### S6. Fidelity Investments — "Compare Deferred Income Annuities" (cross-insurer comparison table)
 - Publisher: Fidelity Brokerage Services / Fidelity Insurance Agency (distributor
@@ -103,11 +115,15 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   insurer's own document, the insurer document governs; where it is the only source (USAA
   Life, Western & Southern), rows are flagged as lower-confidence.
 
+(uslib-deferred_income_annuity-s8)=
+
 ### S8. MassMutual — official RetireEase Choice guide on compass.massmutual.com (FAILED FETCH)
 - URL attempted: https://compass.massmutual.com/api/public/assets/file/bltd738363f5d003651
 - Retrieved: **NO** — request timed out (60s). A current-vintage MassMutual DIA guide was
   therefore **not** obtained; [S2] is the 2019 edition. Cited only as the reason for the
   vintage caveat on the archetype.
+
+(uslib-deferred_income_annuity-s9)=
 
 ### S9. Fidelity communications-hosted insurer fact sheets (PARTIAL FAILURE)
 - URLs attempted: https://communications.fidelity.com/fili/docs/guardian-dia-factsheet.pdf
@@ -117,6 +133,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   primary document was retrieved** (USAA parameters come only from [S6]). Cited only as
   the reason the Guardian minimum-deferral conflict could not be resolved.
 
+(uslib-deferred_income_annuity-s11)=
+
 ### S11. Guardian brochure on immediateannuities.com (FAILED FETCH)
 - URL attempted: https://www.immediateannuities.com/annuity-brochures/guardian-securefuture-income-annuity.pdf
 - Retrieved: **NO** — HTTP 403 Forbidden. Cited only as the second failed route to a
@@ -125,6 +143,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 ---
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
+
+(uslib-deferred_income_annuity-r1)=
 
 ### R1. 26 CFR § 1.401(a)(9)-6(q) — Qualifying longevity annuity contract (current text)
 - Publisher: U.S. Government (eCFR, current edition), Treasury/IRS.
@@ -138,6 +158,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   QLAC rules were **restructured from the old "A-17" Q&A format into paragraph (q)** by
   the July 2024 final regulations [R6].
 
+(uslib-deferred_income_annuity-r2)=
+
 ### R2. SECURE 2.0 Act of 2022, § 202 ("Qualifying Longevity Annuity Contracts") — Division T of Pub. L. 117-328
 - Publisher: U.S. Government Publishing Office (govinfo), enrolled text of Public Law
   117-328 (Consolidated Appropriations Act, 2023), Division T = SECURE 2.0 Act of 2022.
@@ -150,6 +172,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   base-period quarter (July 1, 2022) *is* confirmed directly by the codified regulation
   [R1 (q)(4)(ii)(A)(1)].
 
+(uslib-deferred_income_annuity-r3)=
+
 ### R3. IRS Notice 2025-67 — "2026 Amounts Relating to Retirement Plans and IRAs, as Adjusted for Changes in Cost-of-Living"
 - Publisher: Internal Revenue Service (irs.gov); published in Internal Revenue Bulletin
   2025-49.
@@ -159,12 +183,16 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Fact carried over verbatim: "The limitation on premiums paid for a qualifying longevity
   annuity contract under § 1.401(a)(9)-6(q)(2)(ii) remains $210,000."
 
+(uslib-deferred_income_annuity-r4)=
+
 ### R4. 26 CFR § 1.401(a)(9)-5(b)(4) — Exclusion of QLAC value from the account balance
 - Publisher: eCFR (current edition), Treasury/IRS.
 - URL fetched: https://www.ecfr.gov/api/renderer/v1/content/enhanced/current/title-26?chapter=I&subchapter=A&part=1&section=1.401(a)(9)-5
 - Retrieved: **YES**
 - Credit line: `[… T.D. 9673, 79 FR 37639, July 2, 2014; T.D. 9930, 85 FR 72477, Nov. 12,
   2020; T.D. 10001, 89 FR 58907, July 19, 2024]`.
+
+(uslib-deferred_income_annuity-r5)=
 
 ### R5. 26 CFR § 1.408-8(h) — QLACs in the IRA context
 - Publisher: eCFR (current edition), Treasury/IRS.
@@ -173,6 +201,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Credit line: `[… T.D. 9673, 79 FR 37642, July 2, 2014; T.D. 10001, 89 FR 58948,
   July 19, 2024]`. Applicability: for RMDs for calendar years beginning on or after
   January 1, 2025.
+
+(uslib-deferred_income_annuity-r6)=
 
 ### R6. T.D. 10001 — "Required Minimum Distributions", final regulations (Federal Register)
 - Publisher: Treasury Department / Internal Revenue Service.
@@ -184,6 +214,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   unsupported). Document number **2024-14542**; citation **89 FR 58886**; published
   **July 19, 2024**; **effective September 17, 2024**.
 
+(uslib-deferred_income_annuity-r7)=
+
 ### R7. T.D. 9673 — "Longevity Annuity Contracts", final regulations (the original 2014 QLAC rule)
 - Publisher: Treasury Department / Internal Revenue Service.
 - URL fetched (metadata via Federal Register API):
@@ -191,10 +223,14 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Retrieved: **YES** (metadata). Document number **2014-15524**; citation **79 FR 37633**;
   published **July 2, 2014**.
 
+(uslib-deferred_income_annuity-r8)=
+
 ### R8. Internal Revenue Code § 72 — Annuities; certain proceeds of endowment and life insurance contracts
 - Publisher: Cornell Legal Information Institute (LII) rendering of 26 U.S.C. § 72.
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/72
 - Retrieved: **YES** (key subsections read; full section is long)
+
+(uslib-deferred_income_annuity-r9)=
 
 ### R9. NAIC — Valuation Manual, January 1, 2026 edition
 - Publisher: National Association of Insurance Commissioners.
@@ -209,6 +245,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   **seven-basis-point expense provision was truncated at a page break**, so the exact
   present-value base for contracts without an account value is not quoted.
 
+(uslib-deferred_income_annuity-r10)=
+
 ### R10. NAIC — Standard Nonforfeiture Law for Individual Deferred Annuities (Model #805), Fall 2020 edition
 - Publisher: National Association of Insurance Commissioners.
 - URL fetched: https://content.naic.org/sites/default/files/model-law-805.pdf
@@ -219,6 +257,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   file**. The cross-product entry [REG-R42] read Sections 1–8 in full and settles the
   floor at **15 basis points**, which is the figure used in `product-spec.md`.
 
+(uslib-deferred_income_annuity-r11)=
+
 ### R11. NAIC — Annuity Disclosure Model Regulation (Model #245)
 - Publisher: National Association of Insurance Commissioners (© 2015 edition of the model
   text within the Fall compendium).
@@ -228,6 +268,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   non-guaranteed elements and is therefore exempt) is a direct reading of the retrieved
   text; **whether individual states apply it the same way to DIAs was not verified**.
 
+(uslib-deferred_income_annuity-r12)=
+
 ### R12. NAIC — Variable Annuity Model Regulation (Model #250)
 - Publisher: National Association of Insurance Commissioners (October 2007 edition).
 - URL fetched: https://content.naic.org/sites/default/files/model-law-250.pdf
@@ -235,6 +277,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Role: identifies the mis-numbering — **Model #250 is the Variable Annuity Model
   Regulation**, not an annuity disclosure regulation, and does not apply to a
   general-account DIA. The disclosure model is **#245** [R11].
+
+(uslib-deferred_income_annuity-r13)=
 
 ### R13. IIPRC — "Individual Deferred Paid-Up Non-Variable Annuity Contract Standards (Commonly Marketed as Deferred Income Annuities or Longevity Annuities)", IIPRC-A02-I-LONG
 - Publisher: Interstate Insurance Product Regulation Commission (Insurance Compact).
@@ -248,11 +292,15 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   originally adopted October 17, 2010; amendments apply only to new filings received after
   the effective date.
 
+(uslib-deferred_income_annuity-r14)=
+
 ### R14. American Academy of Actuaries / SOA Payout Annuity Table Team — "Payout Annuity Report" (September 28, 2011)
 - Publisher: American Academy of Actuaries (report prepared by the Joint Academy/SOA
   Payout Annuity Table Team at the request of the NAIC Life Actuarial (A) Task Force).
 - URL fetched: https://www.actuary.org/wp-content/uploads/2017/11/Payout_Annuity_Report_09-28-11.pdf
 - Retrieved: **YES** (36 pages)
+
+(uslib-deferred_income_annuity-r15)=
 
 ### R15. SOA Research Institute & LIMRA — "2020-24 Payout Annuity Experience Study" (Study Highlights), © 2026
 - Publisher: Society of Actuaries Research Institute (with LIMRA).
@@ -264,6 +312,8 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   insurance and annuity death claims."
 - Caveat carried over: **no A/E ratios or DIA-specific mortality results are quoted** —
   only the highlights were retrieved.
+
+(uslib-deferred_income_annuity-r16)=
 
 ### R16. SOA — "2012 Individual Annuity Reserving Report & Table" (resource page)
 - Publisher: Society of Actuaries.

@@ -15,11 +15,15 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 
 ## Product sources [S#]
 
+(uslib-guaranteed_ul-s1)=
+
 ### S1 — Corebridge Financial (American General Life), "Secure Lifetime GUL 3 — Guaranteed Universal Life Insurance" consumer guide
 - Publisher: American General Life Insurance Company (AGL) / The United States Life Insurance Company in the City of New York (US Life); marketing name Corebridge Financial
 - Doc type: consumer brochure, AGLC109163 REV0824, 6 pages
 - URL fetched: https://www.fmiagent.com/wp-content/uploads/2024-11-06_American_General_Secure_Lifetime_GUL_3_Consumer_Guide_AGLC109163_8-24.pdf (BGA-hosted mirror of the official piece)
 - Retrieved: YES (PDF fetched, full text extracted)
+
+(uslib-guaranteed_ul-s2)=
 
 ### S2 — Pacific Life, "PL PROMISE GUL — Product Facts" (producer piece)
 - Publisher: Pacific Life Insurance Company (Omaha, NE home office; not licensed in New York)
@@ -27,11 +31,15 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 - URL fetched: https://life.pacificlife.com/content/dam/paclife-lid/public/plexpress/products/pl-promise-gul/LFP3476.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
 
+(uslib-guaranteed_ul-s3)=
+
 ### S3 — Protective, "Protective Advantage Choice UL — Product Guide" (consumer)
 - Publisher: Protective Life Insurance Company (PLICO), Nashville, TN
 - Doc type: product guide / consumer brochure, PLC.560869 (06.24), policy form UL-20, 8 pages
 - URL fetched: https://finpro.protective.com/-/media/project/pli/finpro/download-assets/assets/560000-560999/plc/plc-560869-06-24-acul-product-guide-8-22-24-digital.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+
+(uslib-guaranteed_ul-s4)=
 
 ### S4 — Nationwide, "Nationwide No-Lapse Guarantee UL II — Product Highlights" (producer)
 - Publisher: Nationwide Life Insurance Company / Nationwide Life and Annuity Insurance Company, Columbus, OH
@@ -39,11 +47,15 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 - URL fetched: https://cdn2.hubspot.net/hubfs/1748227/NLG%20II%20PRODUCT%20HIGHLIGHTS%20FLM_1166AO_1_NLG_Product_Highlights_Final1.pdf (marketing-hub mirror of the official piece)
 - Retrieved: YES (PDF fetched, full text extracted)
 
+(uslib-guaranteed_ul-s5)=
+
 ### S5 — Penn Mutual, "Protection Guard Universal Life" client brochure
 - Publisher: The Penn Mutual Life Insurance Company, Philadelphia, PA
 - Doc type: consumer brochure, PM6240 03/16, 16 pages; policy forms ICC-13 FL and FL-13
 - URL fetched: https://www.pennmutual.com/static-assets/v1/item/6f12a3f0-9cf7-06ca-e1d5-2157666c9ce0/attachments/PGUL_Client_Brochure_PM6240.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
+
+(uslib-guaranteed_ul-s6)=
 
 ### S6 — Financial Markets Inc. (BGA) carrier page, "Secure Lifetime GUL 3"
 - Publisher: FMI (fmiagent.com), distributor page for Corebridge Financial
@@ -52,17 +64,23 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 - Retrieved: YES (HTML)
 - (Caveat carried from research file: distributor-hosted page, not a Corebridge-controlled domain; consistent with S1 but treat numbers as secondary confirmation.)
 
+(uslib-guaranteed_ul-s7)=
+
 ### S7 — Protective, "Protective Lifetime Assurance UL — Producer Guide"
 - Publisher: Protective Life Insurance Company, Omaha, NE (successor GUL to Advantage Choice UL)
 - Doc type: producer guide, PLAG.1387452 (10.25), policy form UL-22, 8 pages, "For financial professional use only"
 - URL fetched: https://finpro.protective.com/-/media/project/pli/finpro/download-assets/assets/1387000-1387999/plag/plag-1387452-10-25-laul-producerguide-10-13-25-digital.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
 
+(uslib-guaranteed_ul-s8)=
+
 ### S8 — WinFlex (Ebix) "Protective Life product changes" page
 - Publisher: winflexweb.com (industry illustration platform), Protective product-change log
 - Doc type: illustration-platform product change notes (third-party but sourced from carrier releases)
 - URL fetched: https://www.winflexweb.com/ifx/Help/whatsnew/PROTnew.htm
 - Retrieved: YES (HTML)
+
+(uslib-guaranteed_ul-s9)=
 
 ### S9 — Pacific Life, "PL PROMISE GUL — Client Guide"
 - Publisher: Pacific Life Insurance Company
@@ -74,50 +92,70 @@ added afterwards — **R153 (A-820, A-821, A-822)** and **R154 (A-830)**, both a
 
 ## Regulatory and actuarial sources [R#] (product research file numbering)
 
+(uslib-guaranteed_ul-r1)=
+
 ### R1 — NAIC Actuarial Guideline XXXVIII (AG 38), "The Application of the Valuation of Life Insurance Policies Model Regulation" (full text, as revised 2012)
 - Publisher: National Association of Insurance Commissioners (NAIC)
 - URL fetched: https://content.naic.org/sites/default/files/inline-files/cipr_ag38_121212.pdf
 - Retrieved: YES (13-page PDF, full text extracted)
+
+(uslib-guaranteed_ul-r2)=
 
 ### R2 — NAIC Valuation Manual, Jan. 1, 2026 edition (VM-01 definitions; VM-20 Requirements for Principle-Based Reserves for Life Products)
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf (457 pages)
 - Retrieved: YES (PDF fetched; ULSG-relevant sections extracted)
 
+(uslib-guaranteed_ul-r3)=
+
 ### R3 — NAIC Model 585, "Universal Life Insurance Model Regulation" (full text, 2001 reprint)
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/model-law-585.pdf (14 pages)
 - Retrieved: YES (PDF fetched, full text extracted)
+
+(uslib-guaranteed_ul-r4)=
 
 ### R4 — IRC section 7702 (Definition of life insurance contract), Cornell LII
 - Publisher: Legal Information Institute, Cornell Law School (26 U.S.C. 7702)
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/7702
 - Retrieved: YES (HTML; summarized via fetch)
 
+(uslib-guaranteed_ul-r5)=
+
 ### R5 — IRC section 7702A (Modified endowment contract defined), Cornell LII
 - Publisher: Legal Information Institute, Cornell Law School (26 U.S.C. 7702A)
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/7702A
 - Retrieved: YES (HTML; summarized via fetch)
+
+(uslib-guaranteed_ul-r6)=
 
 ### R6 — NAIC Model 787, "Term and Universal Life Insurance Reserve Financing Model Regulation" (full text)
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/model-law-787.pdf
 - Retrieved: YES (PDF fetched, full text extracted)
 
+(uslib-guaranteed_ul-r7)=
+
 ### R7 — SOA Research Institute & LIMRA, "2015–2021 Universal Life Insurance Lapse Rate Experience Study" (highlights report, November 2023)
 - Publisher: Society of Actuaries Research Institute and LIMRA
 - URL fetched: https://content.naic.org/sites/default/files/call_materials/SOA-LIMRA%20Research%20-%202015-2021%20UL%20Lapse%20Study%20(1).pdf (NAIC-hosted copy of the SOA/LIMRA highlights)
 - Retrieved: YES (5-page PDF, full text extracted)
+
+(uslib-guaranteed_ul-r8)=
 
 ### R8 — SOA "2017 Universal Life with Secondary Guarantees Survey" (Policyholder Behavior in the Tail working group; author Jeff Hartman, July 2017)
 - Publisher: Society of Actuaries
 - URL fetched: https://content.naic.org/sites/default/files/inline-files/cipr_topic_universal_life_2017_universal_life_with_sec_guarantees_surv.pdf (NAIC-hosted copy)
 - Retrieved: YES (39-page PDF, text extracted)
 
+(uslib-guaranteed_ul-r9)=
+
 ### R9 — American Academy of Actuaries, "Life Principle-Based Reserves (PBR) Under VM-20" practice note (2020 update)
 - Publisher: American Academy of Actuaries
 - URL fetched: https://actuary.org/wp-content/uploads/2020/04/VM-20_PN_2020_Version_0.pdf
 - Retrieved: YES (PDF fetched, text extracted)
+
+(uslib-guaranteed_ul-r10)=
 
 ### R10 — Actuarial Standards Board, ASOP No. 52, "Principle-Based Reserves for Life Products under the NAIC Valuation Manual"
 - Publisher: Actuarial Standards Board

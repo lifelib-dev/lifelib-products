@@ -18,11 +18,15 @@ hand; their metadata is carried from
 
 ## Primary product sources (S#)
 
+(uslib-term_life-s1)=
+
 ### S1 — Protective Life: "Protective Classic Choice Term — Life Insurance Product Guide"
 - Publisher: Protective Life Insurance Company (PLICO), Omaha, NE
 - Doc type: consumer product guide (PDF, 8 pp., form PLC.665207 (08.25))
 - URL: https://finpro.protective.com/-/media/project/pli/finpro/download-assets/assets/665000-665999/plc/plc-665207-08-25-protectiveclassicchoiceterm-productguide-09-16-25-digital.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+
+(uslib-term_life-s2)=
 
 ### S2 — Banner Life / Legal & General America: "OPTerm Level Premium Plans — Product Information"
 - Publisher: Banner Life Insurance Company, Urbana, MD / William Penn Life Insurance Company of New York (Legal & General America)
@@ -30,11 +34,15 @@ hand; their metadata is carried from
 - URL: https://www.bannerlife.com/docs/default-source/advisor/term/opterm-product-specs-consumer.pdf?sfvrsn=3dafa9b9_14
 - Retrieved: YES (PDF downloaded and text-extracted)
 
+(uslib-term_life-s3)=
+
 ### S3 — Lincoln Financial: "Lincoln TermAccel Level Term — Product Reference Guide"
 - Publisher: The Lincoln National Life Insurance Company, Fort Wayne, IN
 - Doc type: producer/agent product reference guide (PDF, 11 pp., LCN 1895883-091317, revised 09/2018)
 - URL: https://www.lincolnfinancial.com/public/microsite/pdf/TermAccel-Product-Reference-Guide-09.2018.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+
+(uslib-term_life-s4)=
 
 ### S4 — Pacific Life: "PL Promise Term Life Insurance — Compare Rates" (19-227E / 15-48861-11 9/23)
 - Publisher: Pacific Life Insurance Company, Newport Beach, CA
@@ -42,11 +50,15 @@ hand; their metadata is carried from
 - URL: https://life.pacificlife.com/content/dam/paclife-lid/public/plexpress/products/pl-promise-term/15-48861.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
 
+(uslib-term_life-s5)=
+
 ### S5 — Corebridge Financial: "Select-a-Term on the new SimpliNow Choice platform" (AGLC201669 REV0923)
 - Publisher: American General Life Insurance Company (AGL), Houston, TX / The United States Life Insurance Company in the City of New York (US Life) — Corebridge Financial
 - Doc type: producer guide / product highlights (PDF, 8 pp.)
 - URL: https://www.gbslife.com/media/29890/aglc201669.pdf (broker-dealer mirror of official Corebridge piece)
 - Retrieved: YES (PDF downloaded and text-extracted)
+
+(uslib-term_life-s6)=
 
 ### S6 — Pacific Life: Specimen policy "ICC12 P12TRF — Level Premium Term Life Insurance" (sample policy)
 - Publisher: Pacific Life Insurance Company
@@ -56,6 +68,8 @@ hand; their metadata is carried from
 - Note at drafting: form P12TRF predates the current P16LYT series; contract mechanics are
   representative but parameters such as the sample 5-year conversion period are
   plan-specific (research file, Gaps and caveats).
+
+(uslib-term_life-s7)=
 
 ### S7 — Protective Life: "Protective Classic Choice" product page (finpro)
 - Publisher: Protective Life
@@ -75,11 +89,15 @@ hand; their metadata is carried from
 
 ## Regulatory and actuarial references from the product research file (R#)
 
+(uslib-term_life-r1)=
+
 ### R1 — NAIC Model 830: "Valuation of Life Insurance Policies Model Regulation" (Regulation XXX)
 - Publisher: National Association of Insurance Commissioners
 - Doc type: model regulation (PDF, 35 pp. as extracted)
 - URL: https://content.naic.org/sites/default/files/model-law-830.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+
+(uslib-term_life-r2)=
 
 ### R2 — NAIC: "Valuation Manual" (Jan. 1 current edition; incl. VM-20 Requirements for Principle-Based Reserves for Life Products)
 - Publisher: National Association of Insurance Commissioners (copyright 2025)
@@ -87,17 +105,23 @@ hand; their metadata is carried from
 - URL: https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
 
+(uslib-term_life-r3)=
+
 ### R3 — SOA: "2017 CSO Tables" resource page
 - Publisher: Society of Actuaries
 - Doc type: valuation mortality table resource page (HTML with 13 Excel files)
 - URL: https://www.soa.org/resources/experience-studies/2015/2017-cso-tables/
 - Retrieved: YES
 
+(uslib-term_life-r4)=
+
 ### R4 — SOA: "U.S. Post-Level Term Lapse & Mortality Experience" report (May 2021)
 - Publisher: Society of Actuaries
 - Doc type: experience study report (PDF, 155 pp.)
 - URL: https://www.soa.org/globalassets/assets/files/resources/research-report/2021/us-post-level-term-lapse-mort-report.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+
+(uslib-term_life-r5)=
 
 ### R5 — IRC Section 7702, "Life insurance contract defined" (26 U.S.C. 7702)
 - Publisher: Legal Information Institute, Cornell Law School (statute text)
@@ -108,11 +132,15 @@ hand; their metadata is carried from
   not normally implicated) is an analytical note flagged [unverified] in the research file
   and remains so flagged where used.
 
+(uslib-term_life-r6)=
+
 ### R6 — SOA/LIMRA: "2015-2022 Term and Whole Life Insurance Policy Surrender/Lapse Experience Study Report" (Study Highlights, December 2024)
 - Publisher: Society of Actuaries Research Institute and LIMRA
 - Doc type: experience study highlights report (PDF, 5 pp.)
 - URL: https://www.soa.org/globalassets/assets/files/resources/experience-studies/2024/15-22-twlls.pdf
 - Retrieved: YES (PDF downloaded and text-extracted)
+
+(uslib-term_life-r7)=
 
 ### R7 — SOA: "Report on the Conversion Experience Study for Level Premium Term Plans" (2016)
 - Publisher: Society of Actuaries (research by RGA: Meisinger, Ma, Megregian, Proebsting)
@@ -121,6 +149,8 @@ hand; their metadata is carried from
 - Retrieved: YES (landing page only)
 - Note: the in-progress SOA/LIMRA 2009-2023 successor study and the 2000-2014 coverage of
   the 2016 report are [unverified] (from search snippets, not the fetched page).
+
+(uslib-term_life-r8)=
 
 ### R8 — SOA ILEC: "2019 Individual Life Insurance Mortality Experience Report" (October 2024)
 - Publisher: Society of Actuaries Research Institute, Individual Life Experience Committee

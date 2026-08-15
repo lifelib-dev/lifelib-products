@@ -20,6 +20,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 
 ## Primary product sources [S#]
 
+(uslib-variable_annuity-s1)=
+
 ### S1. Jackson National Life Insurance Company — Perspective II® Flexible Premium Variable and Fixed Deferred Annuity — statutory prospectus dated April 28, 2025
 - Publisher: Jackson National Life Insurance Company, through Jackson National
   Separate Account – I (CIK 0000927730)
@@ -32,6 +34,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
   charge-increase/opt-out mechanic, the contract-value-zero regime, and Appendices F–J of
   historical rate tables.
 
+(uslib-variable_annuity-s2)=
+
 ### S2. Jackson National Life Insurance Company — Perspective II® Initial Summary Prospectus (Summary Prospectus for New Investors), April 28, 2025
 - Publisher: same as S1; filed as exhibit EX-99.(o)(1) to the S1 registration statement
 - Doc type: Rule 498A Initial Summary Prospectus (~16 pages)
@@ -39,6 +43,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 - Retrieved: YES (full text read)
 - Role in this library: the base contract charge stack, withdrawal charge schedule,
   contract maintenance charge, fund expense range and premium limits.
+
+(uslib-variable_annuity-s3)=
 
 ### S3. Jackson National Life Insurance Company — Rate Sheet Prospectus Supplement dated April 27, 2026 (Perspective II)
 - Publisher: same as S1; SEC Form 497 (accession 0000927730-26-000157)
@@ -50,6 +56,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 - Role in this library: the **dated current parameter set** (rate-sheet date 2026-04-27) for
   the representative GLWB and GMDB elections.
 
+(uslib-variable_annuity-s4)=
+
 ### S4. American General Life Insurance Company (Corebridge Financial) — Polaris Advisory Variable Annuity — prospectus dated May 1, 2026
 - Publisher: American General Life Insurance Company, Variable Separate Account
   (CIK 0000729522); SEC Form 485BPOS, accession 0001193125-26-186414
@@ -60,12 +68,16 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
   Secure Value Account investment requirement, the daily-step-up design, and the cited fact
   that the rider fee stops when contract value falls to zero.
 
+(uslib-variable_annuity-s5)=
+
 ### S5. American General Life Insurance Company (Corebridge) — Rate Sheet Prospectus Supplement dated May 1, 2026 (Polaris Advisory)
 - Doc type: SEC Form 497, accession 0001193125-26-164551 (3 pages)
 - URL fetched: https://www.sec.gov/Archives/edgar/data/729522/000119312526164551/d113668d497.htm
 - Retrieved: YES (full text read)
 - Role in this library: cited for the rate-sheet mechanism (current withdrawal and income
   percentages reset by Form 497 filing with a 10-day advance-filing commitment).
+
+(uslib-variable_annuity-s6)=
 
 ### S6. American General Life Insurance Company (Corebridge) — Polaris Choice IV — prospectus dated May 1, 2026
 - Doc type: SEC Form 485BPOS, accession 0001193125-26-173379
@@ -76,6 +88,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
   contract Owners." [S6] — it is a recently-sold, currently-in-force design.
 - Role in this library: the commission-share charge/withdrawal-charge trade-off, the
   ±0.25%-per-quarter VIX fee band for the commission class, and the GLWB RMD relief rule.
+
+(uslib-variable_annuity-s7)=
 
 ### S7. Equitable Financial Life Insurance Company / Equitable Financial Life Insurance Company of America — Retirement Cornerstone® Series — prospectus dated May 1, 2026
 - Publisher: Separate Account No. 70 (CIK 0001537470) and Equitable America
@@ -88,6 +102,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
   **Treasury-formula roll-up rate** variant (10-year CMT + 1.00%, floored 4%, capped 8%),
   the bifurcated account architecture, and the annual (not quarterly) rider charge
   frequency exception.
+
+(uslib-variable_annuity-s8)=
 
 ### S8. The Lincoln National Life Insurance Company — Lincoln ChoicePlus℠ product suite / Lincoln ChoicePlus Assurance℠ — Form N-4 post-effective amendment filed April 23, 2026 (prospectuses and rate sheets dated May 1, 2026)
 - Publisher: Lincoln Life Variable Annuity Account N (CIK 0001048606); SEC Form
@@ -110,16 +126,22 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uslib-variable_annuity-r1)=
+
 ### R1. NAIC — Valuation Manual, Jan. 1, 2026 Edition — **VM-21: Requirements for Principle-Based Reserves for Variable Annuities**
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
 - Retrieved: YES (457-page PDF downloaded; VM-21 occupies PDF pages 142–226,
   manual pages 21-1 through 21-76; Sections 1, 2, 3, 4, 6, 7, 10 read)
 
+(uslib-variable_annuity-r2)=
+
 ### R2. NAIC / Oliver Wyman — "Variable Annuity Statutory Reserve and Capital Reform — QIS II Executive Summary", February 12, 2018
 - Publisher: NAIC Variable Annuities Issues (E) Working Group (report by Oliver Wyman)
 - URL fetched: https://content.naic.org/sites/default/files/committee_related_documents/cmte_e_va_issues_wg_related_qis_ii_executive_summary.pdf
 - Retrieved: YES (13-page PDF; background and QIS I/QIS II overview read)
+
+(uslib-variable_annuity-r3)=
 
 ### R3. NAIC — Life Risk-Based Capital instructions, **LR027 Interest Rate Risk and Market Risk** (C-3 Phase II for VAs)
 - Publisher: NAIC Capital Adequacy (E) Task Force
@@ -127,11 +149,15 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 - Retrieved: YES (5-page PDF; full 7-step process, CTE(98) definition, RBC formula,
   phase-in and smoothing read)
 
+(uslib-variable_annuity-r4)=
+
 ### R4. American Academy of Actuaries — "Implementation of Requirements for Principle-Based Reserves for Variable Annuities – 2022 Edition of VM-21" (Practice Note Supplement), February 2022
 - Publisher: Variable Annuity Reserves & Capital Work Group, Life Practice Council, AAA
 - URL fetched: https://actuary.org/wp-content/uploads/2022/02/VA_PN_Supplement_Final.pdf
 - Retrieved: YES (34-page PDF; introduction, acronym list, background, C-3 Phase 2
   Q&A and disclosures Q&A read)
+
+(uslib-variable_annuity-r5)=
 
 ### R5. American Academy of Actuaries — "Utilization Assumptions of Guaranteed Living Benefits for Deferred Annuities: A Resource and Discussion Guide", May 2024
 - Publisher: Life Experience Committee, AAA (Donna Claire, chair)
@@ -142,6 +168,8 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 - Carried-over caveat: the sample utilization tables are built for a **non-qualified FIA**,
   not a VA, and must be applied with care.
 
+(uslib-variable_annuity-r6)=
+
 ### R6. U.S. Securities and Exchange Commission — **Form N-4** (reference copy, version effective September 23, 2024)
 - URL fetched: https://www.sec.gov/files/formn-4.pdf
 - Retrieved: YES (65-page PDF; general instructions and item index read)
@@ -149,21 +177,31 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
   User-Agent; the cross-product entry [REG-R52] records a **failed** fetch of the same URL
   (HTTP 403). Prefer [R6] for first-hand Form N-4 facts.
 
+(uslib-variable_annuity-r7)=
+
 ### R7. SEC Rule 498A, 17 CFR 230.498A — summary prospectuses for variable annuity and variable life contracts
 - URL fetched: https://www.law.cornell.edu/cfr/text/17/230.498A
 - Retrieved: YES
+
+(uslib-variable_annuity-r8)=
 
 ### R8. FINRA Rule 2330 — Members' Responsibilities Regarding Deferred Variable Annuities
 - URL fetched: https://www.finra.org/rules-guidance/rulebooks/finra-rules/2330
 - Retrieved: YES
 
+(uslib-variable_annuity-r9)=
+
 ### R9. Internal Revenue Code § 72 — Annuities; certain proceeds of endowment and life insurance contracts
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/72
 - Retrieved: YES
 
+(uslib-variable_annuity-r10)=
+
 ### R10. Treas. Reg. § 1.817-5 — Diversification requirements for variable annuity, endowment, and life insurance contracts
 - URL fetched: https://www.law.cornell.edu/cfr/text/26/1.817-5
 - Retrieved: YES
+
+(uslib-variable_annuity-r11)=
 
 ### R11. Actuarial Standards Board — ASOP No. 52, "Principle-Based Reserves for Life Products under the NAIC Valuation Manual"
 - URL fetched: http://www.actuarialstandardsboard.org/asops/principle-based-reserves-life-products-naic-valuation-manual/
@@ -171,9 +209,13 @@ Every document marked "Retrieved: YES" was actually downloaded and read.
 - Carried-over caveat: the retrieved text scopes ASOP 52 to policies "subject to **VM-20**
   requirements". Treat any claim that "ASOP 52 governs VM-21" as [unverified].
 
+(uslib-variable_annuity-r12)=
+
 ### R12. Actuarial Standards Board — Standards of Practice index (titles and effective dates for ASOP Nos. 22, 52, 56)
 - URL fetched: http://www.actuarialstandardsboard.org/standards-of-practice/
 - Retrieved: YES
+
+(uslib-variable_annuity-r13)=
 
 ### R13. Society of Actuaries Research Institute & LIMRA — "2022–2024 Variable Annuity Guaranteed Living Benefit / Contract Holder Behavior Study"
 - URL fetched: https://www.soa.org/resources/experience-studies/2025/2022-24-va-livingbenefit/

@@ -13,6 +13,8 @@ subsection below.
 
 ## Primary product sources [S#]
 
+(uslib-variable_ul-s1)=
+
 ### S1. Pruco Life Insurance Company (Prudential) — "VUL Protector (2015)" statutory prospectus (Form N-6 / 485BPOS)
 - Publisher: Pruco Life Insurance Company (Arizona stock company, subsidiary of
   The Prudential Insurance Company of America); registrant is the Pruco Life
@@ -26,6 +28,8 @@ subsection below.
   Type A/B death benefits, fixed option 1% floor, loan mechanics, grace/default,
   age-121 provisions, riders, credits, transfer limits.
 
+(uslib-variable_ul-s2)=
+
 ### S2. Equitable Financial Life Insurance Company — "VUL Optimizer (Series 166)" statutory prospectus (Form N-6 / 485BPOS)
 - Publisher: Equitable Financial Life Insurance Company; registrant Separate
   Account FP (CIK 0000771726).
@@ -37,6 +41,8 @@ subsection below.
   charge, 10-year surrender charge, GPT corridor factors and CVAT description, NAAR
   definition, GIO floor, loan mechanics, reinstatement, riders.
 
+(uslib-variable_ul-s3)=
+
 ### S3. The Lincoln National Life Insurance Company — "Lincoln LifeGoals" VUL statutory prospectus (Form N-6 / 485BPOS)
 - Publisher: The Lincoln National Life Insurance Company; registrant Lincoln
   Life Flexible Premium Variable Life Account M (CIK 0001048607, 1940 Act
@@ -47,6 +53,8 @@ subsection below.
 - Retrieved: YES (full ~1.7 MB HTML downloaded and text-extracted).
 - Used for: the low-load/no-load variation, COI min/max, 0.6% M&E cap, loan-account
   collateral mechanics, DB-during-grace debt offset, Option 2→1 design.
+
+(uslib-variable_ul-s4)=
 
 ### S4. Pacific Life Insurance Company — "Pacific Select VUL 2" statutory prospectus (Form N-6 / 485BPOS)
 - Publisher: Pacific Life Insurance Company; registrant Pacific Select Exec
@@ -63,11 +71,15 @@ subsection below.
 ## Product-file regulatory and actuarial references [R#]
 (numbering of `_research/variable-ul.md`)
 
+(uslib-variable_ul-r1)=
+
 ### R1. SEC — Form N-6 (registration form for variable life insurance separate accounts)
 - Publisher: U.S. Securities and Exchange Commission.
 - URL fetched: https://www.sec.gov/files/formn-6.pdf (47-page reference copy,
   SEC 2567, 1/22 version)
 - Retrieved: YES (PDF downloaded, full text extracted).
+
+(uslib-variable_ul-r2)=
 
 ### R2. SEC — Release 33-10765: "Updated Disclosure Requirements and Summary Prospectus for Variable Annuity and Variable Life Insurance Contracts" (rule 498A)
 - Publisher: U.S. Securities and Exchange Commission.
@@ -77,31 +89,43 @@ subsection below.
   2020-05526 (both blocked to the fetch tool; not retrieved).
 - Retrieved: YES (press release page).
 
+(uslib-variable_ul-r3)=
+
 ### R3. IRC §7702 — Definition of life insurance contract
 - Publisher: Legal Information Institute (Cornell), U.S. Code.
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/7702
 - Retrieved: YES.
+
+(uslib-variable_ul-r4)=
 
 ### R4. IRC §7702A — Modified endowment contract (MEC)
 - Publisher: Legal Information Institute (Cornell), U.S. Code.
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/7702A
 - Retrieved: YES.
 
+(uslib-variable_ul-r5)=
+
 ### R5. IRC §817(h) — Diversification requirements for variable contracts
 - Publisher: Legal Information Institute (Cornell), U.S. Code.
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/817
 - Retrieved: YES.
+
+(uslib-variable_ul-r6)=
 
 ### R6. Treas. Reg. §1.817-5 — Diversification requirements
 - Publisher: Legal Information Institute (Cornell), 26 CFR.
 - URL fetched: https://www.law.cornell.edu/cfr/text/26/1.817-5
 - Retrieved: YES.
 
+(uslib-variable_ul-r7)=
+
 ### R7. NAIC — Valuation Manual, Jan. 1, 2025 edition (incl. VM-01, VM-20, VM-A/VM-C appendices)
 - Publisher: National Association of Insurance Commissioners.
 - URL fetched: https://content.naic.org/sites/default/files/pbr-data-valuation-manual-2025-edition.pdf
   (356-page PDF downloaded, text extracted).
 - Retrieved: YES.
+
+(uslib-variable_ul-r8)=
 
 ### R8. NAIC — Variable Life Insurance Model Regulation (Model #270)
 - Publisher: National Association of Insurance Commissioners (January 1996
@@ -110,11 +134,15 @@ subsection below.
   (66-page PDF downloaded, text extracted).
 - Retrieved: YES.
 
+(uslib-variable_ul-r9)=
+
 ### R9. ASB — ASOP No. 52, "Principle-Based Reserves for Life Products under the NAIC Valuation Manual"
 - Publisher: Actuarial Standards Board.
 - URL fetched: http://actuarialstandardsboard.org/wp-content/uploads/2017/10/asop052_189.pdf
   (39-page PDF downloaded, text extracted).
 - Retrieved: YES.
+
+(uslib-variable_ul-r10)=
 
 ### R10. American Academy of Actuaries — practice note "Life Principle-Based Reserves (PBR) Under VM-20" (April 2020)
 - Publisher: American Academy of Actuaries, Life Valuation Committee work group.
@@ -123,15 +151,21 @@ subsection below.
   reference).
 - Retrieved: YES.
 
+(uslib-variable_ul-r11)=
+
 ### R11. ASB — ASOP No. 2, "Nonguaranteed Elements for Life Insurance and Annuity Products"
 - Publisher: Actuarial Standards Board.
 - URL fetched: https://www.actuarialstandardsboard.org/asops/asop-no-2-nonguaranteed-elements-for-life-insurance-and-annuity-products/
 - Retrieved: YES (standard's landing page/summary).
 
+(uslib-variable_ul-r12)=
+
 ### R12. Society of Actuaries — 2017 Commissioners Standard Ordinary (CSO) Tables
 - Publisher: Society of Actuaries.
 - URL fetched: https://www.soa.org/resources/experience-studies/2015/2017-cso-tables/
 - Retrieved: YES.
+
+(uslib-variable_ul-r13)=
 
 ### R13. FINRA — "Insurance" investor product page (variable life / VUL)
 - Publisher: FINRA.

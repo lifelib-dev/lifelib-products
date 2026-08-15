@@ -30,6 +30,8 @@ the NAIC Valuation Manual.
 
 ## Primary product sources [S#]
 
+(uslib-fixed_indexed_annuity-s1)=
+
 ### S1. Athene Annuity and Life Company — "Athene Ascent<sup>SM</sup> Pro 10 — For income that lasts as long as your retirement." (consumer brochure, form 65178 (04/26/24))
 - Publisher: Athene Annuity and Life Company, West Des Moines, IA (insurer's own consumer
   brochure; PDF mirrored by an authorized distributor site)
@@ -40,6 +42,8 @@ the NAIC Valuation Manual.
   income-phase definitions, the Extended Income Guarantee (post-depletion) rule, and the
   income-doubler trigger.
 
+(uslib-fixed_indexed_annuity-s2)=
+
 ### S2. Athene Annuity and Life Company — "Athene Ascent<sup>SM</sup> Pro 10 Bonus — Product Guide, Rates effective July 1, 2022" (form 65220 (07/01/22))
 - Publisher: Athene Annuity and Life Company (insurer product guide / rate-and-spec sheet; PDF
   mirrored by a distributor site)
@@ -49,6 +53,8 @@ the NAIC Valuation Manual.
 - Caveat carried over: declared rates are as of 07/01/2022 and are non-guaranteed; Athene's
   current rate sheets could not be fetched (see S-f1).
 
+(uslib-fixed_indexed_annuity-s3)=
+
 ### S3. Allianz Life Insurance Company of North America — "Allianz Benefit Control® — Fixed Index Annuity" (consumer brochure, ABC-001 (R-11/2025))
 - Publisher: Allianz Life Insurance Company of North America (official allianzlife.com URL)
 - Doc type: consumer product brochure (16 pages)
@@ -56,6 +62,8 @@ the NAIC Valuation Manual.
 - Retrieved: YES (full PDF text-extracted locally)
 - Role in this library: source of the representative lifetime-withdrawal age-band table, and the
   reference case for the benefit-base-only bonus and pure-stacking benefit-base design.
+
+(uslib-fixed_indexed_annuity-s4)=
 
 ### S4. Allianz Life Insurance Company of North America — "Allianz 222® Annuity — Guide to current rates as of 8/4/2026" (form M-7246 (R-8/2026))
 - Publisher: Allianz Life Insurance Company of North America (official allianzlife.com URL)
@@ -65,6 +73,8 @@ the NAIC Valuation Manual.
 - Role in this library: the guaranteed minimum index parameters (minimum annual cap, minimum
   monthly cap, minimum participation rate, minimum fixed rate) that bound the non-guaranteed
   scale.
+
+(uslib-fixed_indexed_annuity-s5)=
 
 ### S5. American Equity Investment Life Insurance Company — "IncomeShield 10 with Optional Lifetime Income Benefit Rider" (consumer brochure, 01SB1164-10 10.16.19)
 - Publisher: American Equity Investment Life Insurance Company (insurer brochure; the official
@@ -78,6 +88,8 @@ the NAIC Valuation Manual.
 - Caveat carried over: 2019 brochure; current IAV rates, the rider fee percentage and its base,
   and the Minimum Guaranteed IAV Rate are undocumented.
 
+(uslib-fixed_indexed_annuity-s6)=
+
 ### S6. Midland National Life Insurance Company — "IndexMax ADV® 5 Fixed index annuity — Annuity disclosure statement" (form 32908Y-1, 8-24)
 - Publisher: Midland National Life Insurance Company (Sammons Financial) — official
   midlandnational.com document library URL
@@ -89,6 +101,8 @@ the NAIC Valuation Manual.
   Interest Credit Basis definition, the linear MVA form and collar, and the 87.5% minimum
   surrender value.
 
+(uslib-fixed_indexed_annuity-s7)=
+
 ### S7. Midland National Life Insurance Company — "Midland National Capital Income® fixed index annuity — Understanding the market value adjustment" (form 32340Y-CA, REV 10-24, for use in California only)
 - Publisher: Midland National Life Insurance Company — official midlandnational.com URL
 - Doc type: contract-feature explanatory disclosure (2 pages)
@@ -98,6 +112,8 @@ the NAIC Valuation Manual.
   strategy charges can exceed interest credited — i.e. that the 0% floor applies to the index
   credit and not to the account value.
 
+(uslib-fixed_indexed_annuity-s8)=
+
 ### S8. Midland National Life Insurance Company — "MNL IncomeVantage® fixed index annuity — quick reference guide" (form 25665Y REV 1-20)
 - Publisher: Midland National Life Insurance Company — official midlandnational.com URL
 - Doc type: producer quick reference guide (1 page; "FOR FINANCIAL PROFESSIONAL ONLY")
@@ -106,6 +122,8 @@ the NAIC Valuation Manual.
 - Role in this library: the 150% stacking factor, the index-margin (spread) crediting method, and
   the disclosure that a built-in GLWB is funded through lower caps, participation rates and
   higher index margins rather than an explicit charge.
+
+(uslib-fixed_indexed_annuity-s9)=
 
 ### S9. Nassau Life and Annuity Company — "Indexed Annuity Rider Disclosure Document — Amplified Income Plus" (form OL5370B, 8/25; rider forms 19GLWB3, ICC19GLWB3.1) — SAMPLE
 - Publisher: Nassau Life and Annuity Company (Nassau Financial Group) — official assets.nfg.com
@@ -118,6 +136,8 @@ the NAIC Valuation Manual.
   base, the 150% Echo stacking credit, the 0.95%-of-benefit-base rider fee and its 1.50% cap, the
   verbatim excess-withdrawal reduction formula, and the cause-dependent post-depletion rule.
 
+(uslib-fixed_indexed_annuity-s10)=
+
 ### S10. Nassau Life and Annuity Company — "Indexed Annuity Disclosure Document — Nassau Athos Annuity<sup>SM</sup>, Single Premium Fixed Indexed Annuity (Bonus)" (form OL5719, 6/26; contract form 25FIA-XT) — SAMPLE
 - Publisher: Nassau Life and Annuity Company — official assets.nfg.com document
 - Doc type: **signed base-contract disclosure document (specimen)**, 34 pages
@@ -127,6 +147,8 @@ the NAIC Valuation Manual.
   recovery formula `(1 − A) × [B/(1+B)] × C`, the ratio-form MVA and its limit, the surrender
   charge base, and the Total Guaranteed Value at 87.5% of premium excluding the bonus accumulated
   at 0.15%–3%.
+
+(uslib-fixed_indexed_annuity-s11)=
 
 ### S11. Nationwide Life and Annuity Insurance Company — "Nationwide New Heights® fixed indexed annuities — Index and Strategy Growth Opportunities" (form FAM-0475AO.2 (1/17))
 - Publisher: Nationwide Life and Annuity Insurance Company (Nationwide-operated marketing asset
@@ -154,6 +176,8 @@ declared-rate parameters are stale or absent.
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uslib-fixed_indexed_annuity-r1)=
+
 ### R1. American Academy of Actuaries, Life Experience Committee — "Fixed Indexed Annuities—Product Mechanics and Risk Management" (February 2026)
 - Publisher: American Academy of Actuaries
 - URL fetched: https://actuary.org/wp-content/uploads/2026/02/life-FIA-policypaper.pdf
@@ -162,11 +186,15 @@ declared-rate parameters are stale or absent.
   resources."
 - Same document as [REG-R68] in the cross-product library.
 
+(uslib-fixed_indexed_annuity-r2)=
+
 ### R2. NAIC — "Standard Nonforfeiture Law for Individual Deferred Annuities" (Model #805), NAIC Model Laws, Regulations, Guidelines and Other Resources — Fall 2020
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/sites/default/files/model-law-805.pdf
 - Retrieved: YES (5-page PDF text-extracted locally)
 - Same document as [REG-R42].
+
+(uslib-fixed_indexed_annuity-r3)=
 
 ### R3. NAIC — "Annuity Nonforfeiture Model Regulation" (Model #806), October 2007 edition
 - Publisher: National Association of Insurance Commissioners
@@ -175,11 +203,15 @@ declared-rate parameters are stale or absent.
 - No counterpart entry exists in the cross-product library; cite [R3] for the §7 substantive-
   participation option-cost test.
 
+(uslib-fixed_indexed_annuity-r4)=
+
 ### R4. NAIC — "Suitability in Annuity Transactions Model Regulation" (Model #275), Spring 2020 edition
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/sites/default/files/model-law-275.pdf
 - Retrieved: YES (20-page PDF; sections 1–5 text-extracted locally)
 - Same document as [REG-R46].
+
+(uslib-fixed_indexed_annuity-r5)=
 
 ### R5. NAIC — "Variable Annuity Model Regulation" (Model #250), October 2007 edition
 - Publisher: National Association of Insurance Commissioners
@@ -189,16 +221,22 @@ declared-rate parameters are stale or absent.
   Regulation and does not reach general-account FIAs; the Annuity Disclosure Model Regulation is
   **#245**. Same document as [REG-R43].
 
+(uslib-fixed_indexed_annuity-r6)=
+
 ### R6. Actuarial Standards Board — ASOP No. 2, "Nonguaranteed Elements for Life Insurance and Annuity Products" (Doc. No. 204)
 - Publisher: Actuarial Standards Board
 - URL fetched: http://www.actuarialstandardsboard.org/wp-content/uploads/2021/12/asop002_204-2.pdf
 - Retrieved: YES (33-page PDF; front matter and sections 1–3.4 text-extracted locally)
 - Same standard as [REG-R26].
 
+(uslib-fixed_indexed_annuity-r7)=
+
 ### R7. NAIC — Valuation Manual (VM)-22 (A) Subgroup
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/committees/a/valuation-manual-22-sg
 - Retrieved: YES (HTML page)
+
+(uslib-fixed_indexed_annuity-r8)=
 
 ### R8. Society of Actuaries Research Institute / LIMRA — "2019-20 Fixed Indexed Annuity Contract Owner Behavior Study" (announcement page)
 - Publisher: Society of Actuaries Research Institute (joint with LIMRA)
@@ -211,6 +249,8 @@ declared-rate parameters are stale or absent.
   Related landing pages are catalogued as [REG-R62], where the same shock-lapse figures are
   tagged [unverified].
 
+(uslib-fixed_indexed_annuity-r9)=
+
 ### R9. Society of Actuaries Research Institute / LIMRA — "2023 Fixed Indexed Annuity Contract Owner Behavior Experience Study" (study landing page, 2025)
 - Publisher: Society of Actuaries Research Institute
 - URL fetched: https://www.soa.org/resources/experience-studies/2025/2023-fixed-index-annuity/
@@ -219,6 +259,8 @@ declared-rate parameters are stale or absent.
   https://www.soa.org/globalassets/assets/files/research/exp-study/2025/2023-fixed-indexed-anuity-study.pdf
   (not fetched).
 - Cited for study scope only.
+
+(uslib-fixed_indexed_annuity-r10)=
 
 ### R10. SEC — Final Rule, "Indexed Annuities," Release No. 33-9152 (removal of Rule 151A)
 - Publisher: U.S. Securities and Exchange Commission
@@ -231,6 +273,8 @@ declared-rate parameters are stale or absent.
   Insurance Co. v. SEC* vacatur and the specific conditions of Dodd-Frank §989J. What **is**
   verified is Model #275's own drafting note [R4] and the not-a-security statements in
   [S6][S9][S10].
+
+(uslib-fixed_indexed_annuity-r11)=
 
 ### R11. NAIC Actuarial Guidelines XXXIII and XXXV (AG 33, AG 35)
 - Retrieved: **NO** — the guidelines live in the NAIC Accounting Practices & Procedures Manual,

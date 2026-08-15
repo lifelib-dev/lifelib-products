@@ -14,6 +14,8 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 
 ## Primary product sources [S#]
 
+(uslib-universal_life-s1)=
+
 ### S1. Symetra Life Insurance Company — "Symetra CAUL Universal Life Insurance — Fact Sheet" (LIM-1286 10/23)
 - Publisher: Symetra Life Insurance Company (document distributed via Financial
   Markets Inc., an authorized distributor; PDF is the insurer's own fact sheet)
@@ -21,12 +23,16 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 - URL fetched: https://www.fmiagent.com/wp-content/uploads/2024-05-22_Symetra_CAUL_Product_Highlights_LIM-1286_10-23.pdf
 - Retrieved: YES (full PDF read)
 
+(uslib-universal_life-s2)=
+
 ### S2. Protective Life Insurance Company — "Protective Advantage Choice UL — Producer Guide" (PLAG.3459 (01.15))
 - Publisher: Protective Life Insurance Company (distributed via MRW Financial,
   an authorized distributor; PDF is the insurer's producer guide)
 - Doc type: producer/agent guide (8 pages)
 - URL fetched: https://www.mrwfinancial.com/wp-content/uploads/Advantage-Choice-UL.pdf
 - Retrieved: YES (full PDF read)
+
+(uslib-universal_life-s3)=
 
 ### S3. Pacific Life Insurance Company — Sample (specimen) policy "Versa-Flex PRO" — FLEXIBLE PREMIUM ADJUSTABLE LIFE INSURANCE, policy form P08VP1 (8/08)
 - Publisher: Pacific Life Insurance Company (official sample policy on
@@ -40,6 +46,8 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
   GPT corridor table, guaranteed maximum COI table, surrender charge amortization,
   loan/withdrawal/grace/reinstatement provisions.
 
+(uslib-universal_life-s4)=
+
 ### S4. Nationwide Life and Annuity Insurance Company — "Nationwide No-Lapse Guarantee UL II" producer presentation (FLM-1167AO.3 (06/22))
 - Publisher: Nationwide (distributed via Krause Agency portal mirror)
 - Doc type: producer marketing deck / product highlights (19 slides)
@@ -47,6 +55,8 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 - Retrieved: YES (full PDF read)
 - Role in this library: contrast case (guaranteed UL) for the current-assumption
   design; cited for market-role and out-of-scope rider/guarantee context.
+
+(uslib-universal_life-s5)=
 
 ### S5. Symetra — CAUL product page, symetra.com (FAILED FETCH)
 - URL attempted: https://www.symetra.com/IndividualsFamilies/Products/LifeInsurance/PermanentLifeInsurance/SymetraCAULUniversalLife/
@@ -59,10 +69,14 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uslib-universal_life-r1)=
+
 ### R1. NAIC — Universal Life Insurance Model Regulation (Model 585), January 2001 reprint
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/sites/default/files/model-law-585.pdf
 - Retrieved: YES (full PDF read, 14 pages)
+
+(uslib-universal_life-r2)=
 
 ### R2. IRC §7702 — Life insurance contract defined
 - Publisher: Legal Information Institute, Cornell Law School (U.S. Code)
@@ -71,10 +85,14 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 - Caveat carried over: the fetch was summarized by an automated reader; exact
   subsection text should be re-verified before quoting in a formal document.
 
+(uslib-universal_life-r3)=
+
 ### R3. IRC §7702A — Modified endowment contract defined
 - Publisher: Legal Information Institute, Cornell Law School (U.S. Code)
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/7702A
 - Retrieved: YES (fetched and summarized)
+
+(uslib-universal_life-r4)=
 
 ### R4. Society of Actuaries — 2017 Commissioners Standard Ordinary (CSO) Tables (resource page)
 - Publisher: Society of Actuaries
@@ -84,15 +102,21 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
   2020-01-01; UL guaranteed COI cap; terminal age 121) come from search-result
   context, not a fetched primary document, and remain [unverified].
 
+(uslib-universal_life-r5)=
+
 ### R5. NAIC — Principle-Based Reserving (insurance topic page; gateway to Valuation Manual / VM-20)
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/insurance-topics/principle-based-reserving
 - Retrieved: YES
 
+(uslib-universal_life-r6)=
+
 ### R6. American Academy of Actuaries — Life Illustrations Practice Note (September 2021 update)
 - Publisher: American Academy of Actuaries, Life Illustrations Work Group
 - URL fetched: https://actuary.org/wp-content/uploads/2021/09/Life_Illustrations_Practice_Note_Update.pdf
 - Retrieved: YES (fetched and summarized)
+
+(uslib-universal_life-r7)=
 
 ### R7. SOA Research Institute & LIMRA — "2015-2021 Universal Life Premium Persistency and Lapse Rate Experience Study" (July 2024, revised December 2024) — Study Highlights
 - Publisher: Society of Actuaries Research Institute and LIMRA
@@ -101,10 +125,14 @@ Access date for all citations: 2026-08-03 — except the superseded-but-kept
 - Note carried over: detailed tables are behind the paid Experience Studies Pro
   package (not retrieved).
 
+(uslib-universal_life-r8)=
+
 ### R8. Actuarial Standards Board — ASOP No. 2 (Revised Edition, Doc. No. 204): "Nonguaranteed Elements for Life Insurance and Annuity Products" (adopted September 2021)
 - Publisher: Actuarial Standards Board
 - URL fetched: https://www.actuarialstandardsboard.org/wp-content/uploads/2021/12/asop002_204-2.pdf
 - Retrieved: YES (full PDF read)
+
+(uslib-universal_life-r10)=
 
 ### R10. IIPRC (Interstate Insurance Product Regulation Commission) — Standards for Individual Flexible Premium Adjustable Life Insurance Policies (5-year review revision, 2014)
 - Publisher: Interstate Insurance Product Regulation Commission

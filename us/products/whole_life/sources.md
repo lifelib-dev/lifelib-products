@@ -10,11 +10,15 @@ in the research file. No new sources were fetched at drafting.
 
 ## Primary product sources ([S#])
 
+(uslib-whole_life-s1)=
+
 ### S1 — Guardian: Core Whole Life and Limited Pay Whole Life (2019 Series) Product Guide
 - Publisher: The Guardian Life Insurance Company of America (doc 2019-85695; "For Internal and Producer Use Only")
 - Doc type: producer guide (PDF, 23 pp.)
 - URL: https://centurionagencyltd.com/guardian_whole_life_product_agent_guide_12-2019.pdf (agency file share hosting a genuine Guardian document)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+
+(uslib-whole_life-s2)=
 
 ### S2 — Guardian: Dividend Manual, Whole Life (2017 edition)
 - Publisher: The Guardian Life Insurance Company of America (doc 2019-81397; producer use only)
@@ -22,11 +26,15 @@ in the research file. No new sources were fetched at drafting.
 - URL: https://www.centurionagencyltd.com/guardian_life_dividend_options_12-2019.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
 
+(uslib-whole_life-s3)=
+
 ### S3 — MassMutual: Whole Life Series Product Reference Guide
 - Publisher: Massachusetts Mutual Life Insurance Company (LI10804e-mmsd 522; "For financial professionals")
 - Doc type: producer product reference guide (PDF, 8 sections)
 - URL: https://www.aimcorfileshare.com/download.php?idFile=4417 (distributor file share hosting a genuine MassMutual document)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+
+(uslib-whole_life-s4)=
 
 ### S4 — Northwestern Mutual: "Dividend paying whole life insurance" (product/dividend page)
 - Publisher: The Northwestern Mutual Life Insurance Company
@@ -34,11 +42,15 @@ in the research file. No new sources were fetched at drafting.
 - URL: https://www.northwesternmutual.com/life-insurance/whole-life-insurance/dividend-paying-whole-life-insurance/
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
 
+(uslib-whole_life-s5)=
+
 ### S5 — Northwestern Mutual: 2026 dividend announcement (press release, Oct 28, 2025)
 - Publisher: Northwestern Mutual (newsroom)
 - Doc type: press release (HTML)
 - URL: https://news.northwesternmutual.com/2025-10-28-Northwestern-Mutual-Announces-Historic-9-2-Billion-Dividend-Payout-in-2026-A-Powerful-Demonstration-of-Companys-Enduring-Commitment-to-Policyowners
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
+
+(uslib-whole_life-s6)=
 
 ### S6 — Mutual of Omaha (United of Omaha): Living Promise Whole Life — consumer brochure (128136_0323)
 - Publisher: United of Omaha Life Insurance Company (Mutual of Omaha company)
@@ -46,11 +58,15 @@ in the research file. No new sources were fetched at drafting.
 - URL: https://choicemutual.com/wp-content/uploads/2023/08/2023MutualofOmahabrochure.pdf (agency hosting of genuine brochure)
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
 
+(uslib-whole_life-s7)=
+
 ### S7 — United of Omaha: Living Promise Product and Underwriting Guide (California)
 - Publisher: United of Omaha Life Insurance Company (form 142658, producer use only)
 - Doc type: producer product & underwriting guide with rate tables (PDF)
 - URL: https://www.datocms-assets.com/13639/1563367329-moo-livingpromise-uw-guide.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+
+(uslib-whole_life-s8)=
 
 ### S8 — Mutual of Omaha: Living Promise plan highlights sheet (615060)
 - Publisher: United of Omaha Life Insurance Company
@@ -58,11 +74,15 @@ in the research file. No new sources were fetched at drafting.
 - URL: https://producer.mutualofomaha.com/enterprise/wcm/connect/producer.mutualofomaha.com-9968/efbe83e0-01d4-4275-b956-7d393e577666/45107_living-promise-client-highlight-sheet.pdf?MOD=AJPERES&CVID=nz81aeV
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
 
+(uslib-whole_life-s9)=
+
 ### S9 — New York Life: Secure Wealth Plus product page
 - Publisher: New York Life Insurance Company
 - Doc type: consumer product page with FAQ (HTML)
 - URL: https://www.newyorklife.com/products/insurance/life-insurance/accumulation-focused-life/secure-wealth-plus
 - Accessed: 2026-08-03. Retrieved: YES (direct HTTP download; WebFetch was blocked with 403)
+
+(uslib-whole_life-s10)=
 
 ### S10 — New York Life: "New York Life Launches Wealth Plus" press release (Sept 26, 2022)
 - Publisher: New York Life Insurance Company
@@ -70,11 +90,15 @@ in the research file. No new sources were fetched at drafting.
 - URL: https://www.newyorklife.com/newsroom/2022/new-york-life-launches-wealth-plus
 - Accessed: 2026-08-03. Retrieved: YES (direct HTTP download)
 
+(uslib-whole_life-s11)=
+
 ### S11 — Penn Mutual: Guaranteed Whole Life II — Features and Options (Coverage Riders), T4522
 - Publisher: The Penn Mutual Life Insurance Company
 - Doc type: consumer rider/feature supplement to the product brochure (PDF, 9 pp.)
 - URL: https://gateway.pennmutual.com/static-assets/files/products/riders/t4522.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+
+(uslib-whole_life-s12)=
 
 ### S12 — Penn Mutual: Protection Whole Life II brochure (PM9135)
 - Publisher: The Penn Mutual Life Insurance Company
@@ -82,11 +106,15 @@ in the research file. No new sources were fetched at drafting.
 - URL: https://www.pennmutual.com/static-assets/v1/item/4bdcd58e-0743-a0e0-35cc-332143082ed9/attachments/Protection%20Whole%20Life%20II.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
 
+(uslib-whole_life-s13)=
+
 ### S13 — Penn Mutual: "New Accumulation Whole Life" press release (Sept 2024)
 - Publisher: The Penn Mutual Life Insurance Company
 - Doc type: press release (HTML)
 - URL: https://www.pennmutual.com/about-us/news/press-releases/2024/09/new-accumulation-whole-life
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
+
+(uslib-whole_life-s14)=
 
 ### S14 — IULvsWholeLife.com: "2026 Whole Life Dividend Rates: Five Mutual Carriers Verified"
 - Publisher: IULvsWholeLife.com (independent aggregator — SECONDARY source; use with care)
@@ -98,45 +126,63 @@ in the research file. No new sources were fetched at drafting.
 
 ## Regulatory and actuarial references from the product research file ([R#])
 
+(uslib-whole_life-r1)=
+
 ### R1 — NAIC Model 808: Standard Nonforfeiture Law for Life Insurance
 - Publisher: National Association of Insurance Commissioners (Jan 2014 printing)
 - URL: https://content.naic.org/sites/default/files/model-law-808.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
+
+(uslib-whole_life-r2)=
 
 ### R2 — NAIC Model 582: Life Insurance Illustrations Model Regulation
 - Publisher: NAIC (April 2001 printing)
 - URL: https://content.naic.org/sites/default/files/model-law-582.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
 
+(uslib-whole_life-r3)=
+
 ### R3 — NAIC Valuation Manual, 2025 edition (VM-02, VM-20, VM-M and framework sections)
 - Publisher: NAIC
 - URL: https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
 - Accessed: 2026-08-03. Retrieved: YES (4.4 MB PDF downloaded; 457 pp.; full text extracted)
+
+(uslib-whole_life-r4)=
 
 ### R4 — IRC §7702 (Cornell LII text)
 - Publisher: Legal Information Institute, Cornell Law School (26 U.S.C. §7702)
 - URL: https://www.law.cornell.edu/uscode/text/26/7702
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
 
+(uslib-whole_life-r5)=
+
 ### R5 — IRC §7702A (Cornell LII text)
 - Publisher: Legal Information Institute, Cornell Law School (26 U.S.C. §7702A)
 - URL: https://www.law.cornell.edu/uscode/text/26/7702A
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
+
+(uslib-whole_life-r6)=
 
 ### R6 — ASOP No. 15: Dividends for Individual Participating Life Insurance, Annuities, and Disability Insurance
 - Publisher: Actuarial Standards Board (revised edition adopted March 2006; deviation language updated May 2011; Doc. No. 134)
 - URL: https://www.actuarialstandardsboard.org/wp-content/uploads/2014/06/asop015_134.pdf
 - Accessed: 2026-08-03. Retrieved: YES (PDF downloaded, full text extracted)
 
+(uslib-whole_life-r7)=
+
 ### R7 — ASOP No. 2: Nonguaranteed Elements for Life Insurance and Annuity Products (ASB standard page)
 - Publisher: Actuarial Standards Board
 - URL: https://www.actuarialstandardsboard.org/asops/asop-no-2-nonguaranteed-elements-for-life-insurance-and-annuity-products/
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
 
+(uslib-whole_life-r8)=
+
 ### R8 — SOA: 2017 CSO Tables (table repository page)
 - Publisher: Society of Actuaries
 - URL: https://www.soa.org/resources/experience-studies/2015/2017-cso-tables/
 - Accessed: 2026-08-03. Retrieved: YES (WebFetch)
+
+(uslib-whole_life-r9)=
 
 ### R9 — SOA/ILEC: 2019 Individual Life Insurance Mortality Experience Report (2012–2019)
 - Publisher: Society of Actuaries Research Institute, Individual Life Experience Committee (Oct 2024)

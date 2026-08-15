@@ -215,6 +215,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
 
 ## 1. NAIC statutory framework — valuation, nonforfeiture, illustrations, actuarial guidelines
 
+(uslib-reg-r1)=
+
 ### R1. Standard Valuation Law (Model #820)
 - **Publisher:** National Association of Insurance Commissioners (NAIC)
 - **URL:** https://content.naic.org/sites/default/files/model-law-820.pdf
@@ -229,6 +231,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   legal root of every statutory reserve a projection model must reproduce, for all six
   products. The Valuation Manual operative date was January 1, 2017 [unverified —
   widely documented but not stated in this print].
+
+(uslib-reg-r2)=
 
 ### R2. Standard Nonforfeiture Law for Life Insurance (Model #808)
 - **Publisher:** NAIC
@@ -245,6 +249,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   adaptation (R5). This 2014 print ties its definitions to the Valuation Manual
   operative date [R2]; minimum nonforfeiture mortality/interest for new issues now
   comes through VM-02 (R3).
+
+(uslib-reg-r3)=
 
 ### R3. Valuation Manual, Jan. 1, 2026 Edition (VM-01, VM-02, VM-20, VM-31, VM-M, VM-G, VM-C, VM-V, …)
 - **Publisher:** NAIC
@@ -263,6 +269,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   2016) did reproduce the SVL as VM-05 [unverified] — use Model #820 (R1) directly for
   the statute.
 
+(uslib-reg-r4)=
+
 ### R4. Life Insurance Illustrations Model Regulation (Model #582)
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/model-law-582.pdf
@@ -275,6 +283,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   illustration actuary (the tests are defined in the regulation's standards and in
   ASOP 24, R30) [R4][unverified as to section numbering detail]. IUL-specific rate
   limits are layered on top by the AG 49 family (R8–R10).
+
+(uslib-reg-r5)=
 
 ### R5. Universal Life Insurance Model Regulation (Model #585)
 - **Publisher:** NAIC
@@ -291,6 +301,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   [R5 per NAIC search summary; scope section read]; VUL is carved out into
   variable-products rules and federal securities law.
 
+(uslib-reg-r6)=
+
 ### R6. Valuation of Life Insurance Policies Model Regulation (Model #830, "Regulation XXX")
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/model-law-830.pdf
@@ -304,6 +316,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   ("AXXX" reserves) [R6]. Basic reserves under this regulation constitute CRVM for the
   policies in scope [R6]. Its conservatism drove captive reserve financing — hence
   AG 48 (R11) and Model #787 (R12).
+
+(uslib-reg-r7)=
 
 ### R7. Actuarial Guideline XXXVIII — The Application of the Valuation of Life Insurance Policies Model Regulation (AG 38)
 - **Publisher:** NAIC (PDF circulated with the NAIC CIPR newsletter, December 2012)
@@ -319,6 +333,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   from secondary sources]. The official current text lives in the NAIC AP&P Manual
   Appendix C / VM-C [R3][unverified as to AP&P pagination]. Fetch note: the NAIC CIPR
   topic page for AG 38 returned HTTP 403 to automated fetch.
+
+(uslib-reg-r8)=
 
 ### R8. Actuarial Guideline XLIX (AG 49, original 2015; amended 2016)
 - **Publisher:** NAIC
@@ -336,6 +352,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   by AG 49-A for policies sold on/after Dec. 14, 2020 (R10). Still needed for in-force
   illustrations of pre-2021 IUL sales.
 
+(uslib-reg-r9)=
+
 ### R9. "Actuarial Guideline XLIX (AG49): Past, Present and Future" (SOA Product Matters!, June 2023)
 - **Publisher:** Society of Actuaries, Product Development Section newsletter
 - **URL:** https://www.soa.org/sections/product-dev/product-dev-newsletter/2023/june/pm-2023-06-hoffer/
@@ -349,6 +367,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   volatility-controlled-index hedge-cost savings from funding bonuses that
   out-illustrate the benchmark [R9]. Explains why an IUL illustrated-scale module must
   be version-dependent by sale date.
+
+(uslib-reg-r10)=
 
 ### R10. Actuarial Guideline XLIX-A — The Application of the Life Illustrations Model Regulation to Policies with Index-Based Interest Sold On or After December 14, 2020 (as revised; the "AG 49-B" changes)
 - **Publisher:** NAIC (adopted by LATF 12/11/2022; adopted by Life Insurance and Annuities (A) Committee 2/24/2023)
@@ -364,6 +384,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   AG 49-A rather than a separately numbered guideline; treat "AG 49-B" as a colloquial
   label [R9][R10].
 
+(uslib-reg-r11)=
+
 ### R11. Actuarial Guideline XLVIII — Actuarial Opinion and Memorandum Requirements for the Reinsurance of Policies Required to be Valued under Sections 6 and 7 of the NAIC Valuation of Life Insurance Policies Model Regulation (AG 48)
 - **Publisher:** NAIC (LATF adoption 12/1/2016 revision print)
 - **URL:** https://content.naic.org/sites/default/files/inline-files/committees_ex_pbr_implementation_tf_related_actuarial_guideline_ag48.pdf
@@ -377,6 +399,8 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   operationally into Model #787 (R12) as states adopt it [unverified]. Relevant to a
   model's reinsurance/collateral module for reserve-financed term and ULSG blocks, not
   to base cash flows.
+
+(uslib-reg-r12)=
 
 ### R12. Term and Universal Life Insurance Reserve Financing Model Regulation (Model #787)
 - **Publisher:** NAIC
@@ -400,6 +424,8 @@ Historical note [unverified, brief]: the definitional regime arrived in stages �
 added IRC 7702A's MEC/7-pay regime to curb single-premium tax shelters. The 2021
 Consolidated Appropriations Act change is verified at [R13].
 
+(uslib-reg-r13)=
+
 ### R13. 26 U.S.C. § 7702 — Life insurance contract defined
 - **Publisher:** Legal Information Institute, Cornell Law School (U.S. Code)
 - **URL:** https://www.law.cornell.edu/uscode/text/26/7702
@@ -414,6 +440,8 @@ Consolidated Appropriations Act change is verified at [R13].
   rate, with a 2% transition rate for 2021 issues [R13]. A product model needs CVAT/GPT
   logic to police premium limits, corridor death benefits, and funding patterns; for
   term, definitional compliance is trivial without cash value [unverified].
+
+(uslib-reg-r14)=
 
 ### R14. 26 U.S.C. § 7702A — Modified endowment contract defined
 - **Publisher:** Legal Information Institute, Cornell Law School
@@ -430,6 +458,8 @@ Consolidated Appropriations Act change is verified at [R13].
   in-force systems must test it continuously against funding patterns (WL paid-up
   additions riders; UL/IUL/VUL premium flexibility).
 
+(uslib-reg-r15)=
+
 ### R15. 26 U.S.C. § 817 — Treatment of variable contracts (esp. § 817(h) diversification)
 - **Publisher:** Legal Information Institute, Cornell Law School
 - **URL:** https://www.law.cornell.edu/uscode/text/26/817
@@ -441,6 +471,8 @@ Consolidated Appropriations Act change is verified at [R13].
   55% in one issuer or group of related issuers, with look-through rules for
   insurance-dedicated funds and a Treasury-securities special rule [R15]. For a VUL
   model this is background (fund eligibility), not cash-flow mechanics.
+
+(uslib-reg-r16)=
 
 ### R16. 26 U.S.C. § 807 — Rules for certain reserves (tax reserves)
 - **Publisher:** Legal Information Institute, Cornell Law School
@@ -459,6 +491,8 @@ Consolidated Appropriations Act change is verified at [R13].
 
 ## 3. Mortality tables and experience studies
 
+(uslib-reg-r17)=
+
 ### R17. 2017 Commissioners Standard Ordinary (CSO) Tables
 - **Publisher:** Society of Actuaries (developed jointly with the American Academy of Actuaries for NAIC adoption [unverified])
 - **URL:** https://www.soa.org/resources/experience-studies/2015/2017-cso-tables/
@@ -474,6 +508,8 @@ Consolidated Appropriations Act change is verified at [R13].
   experience showing significant mortality improvement over the 2001 CSO basis and
   adding a preferred structure [search summary; development detail in the linked
   report].
+
+(uslib-reg-r18)=
 
 ### R18. 2015 Valuation Basic Table (VBT) — Report and Tables
 - **Publisher:** Society of Actuaries
@@ -491,6 +527,8 @@ Consolidated Appropriations Act change is verified at [R13].
   current VM-prescribed VBT vintage]. The anchor for best-estimate/prudent-estimate
   mortality in PBR and pricing models.
 
+(uslib-reg-r19)=
+
 ### R19. 2019 Individual Life Insurance Mortality Experience Report (ILEC, observation years 2012–2019)
 - **Publisher:** Society of Actuaries Research Institute — Individual Life Experience Committee (ILEC)
 - **URL:** https://www.soa.org/resources/research-reports/2024/ilec-mort-2012-19
@@ -507,6 +545,8 @@ Consolidated Appropriations Act change is verified at [R13].
   not the landing page]. The source for mortality assumption setting and VM-20
   experience justification.
 
+(uslib-reg-r20)=
+
 ### R20. U.S. Individual Life Insurance Persistency Update (LIMRA/SOA, observation years 2009–2013)
 - **Publisher:** LIMRA and Society of Actuaries (joint study)
 - **URL:** https://www.soa.org/resources/research-reports/2019/2009-13-us-ind-life-persistency-update/
@@ -518,6 +558,8 @@ Consolidated Appropriations Act change is verified at [R13].
   standard public source for base lapse assumptions by product, duration, premium mode,
   and size band [R20][unverified as to full factor list]. The successor UL-focused
   study is R21; older editions (2003–04 through 2007–09) remain on soa.org.
+
+(uslib-reg-r21)=
 
 ### R21. 2015–2021 Universal Life Premium Persistency and Lapse/Surrender Experience Study
 - **Publisher:** LIMRA and SOA Research Institute (joint)
@@ -531,6 +573,8 @@ Consolidated Appropriations Act change is verified at [R13].
   modeling flexible-premium payment behavior — the assumption unique to UL-type
   products — and modern surrender bases; VUL by analogy. The landing page does not
   break out IUL/VUL separately [R21].
+
+(uslib-reg-r22)=
 
 ### R22. U.S. Post-Level Term Lapse and Mortality Experience Report (2021)
 - **Publisher:** Society of Actuaries (research by SCOR: Bradfield, Covington, Reppert, Tomas)
@@ -549,6 +593,8 @@ Consolidated Appropriations Act change is verified at [R13].
 
 ## 4. American Academy of Actuaries — practice notes
 
+(uslib-reg-r23)=
+
 ### R23. Life Principle-Based Reserves (PBR) Under VM-20 — Practice Note (April 2020)
 - **Publisher:** American Academy of Actuaries, Life Principle-Based Approach Practice Note Work Group (Life Valuation Committee)
 - **URL:** https://www.actuary.org/sites/default/files/2020-04/VM-20_PN_2020_Version_0.pdf (301-redirects to http://actuary.org/…; same path)
@@ -563,6 +609,8 @@ Consolidated Appropriations Act change is verified at [R13].
   ASOP 52 (R31); updates the 2017 edition for VM changes since the 12/31/2019
   valuation [search summary].
 
+(uslib-reg-r24)=
+
 ### R24. Life Insurance Illustrations: Application of the NAIC Life Insurance Illustrations Model Regulation and ASOP No. 24 — Practice Note (September 2021)
 - **Publisher:** American Academy of Actuaries, Life Illustrations Work Group
 - **URL:** https://actuary.org/wp-content/uploads/2021/09/Life_Illustrations_Practice_Note_Update.pdf
@@ -574,6 +622,8 @@ Consolidated Appropriations Act change is verified at [R13].
   family [R24 title/front matter; detailed topic list partly [unverified]]. The
   companion to R4/R30 for building illustration logic into product models. Not
   applicable to VUL (outside Model #582 scope [R4]).
+
+(uslib-reg-r25)=
 
 ### R25. Life Principle-Based Reserves (PBR) Assumptions Resource Manual (January 2019)
 - **Publisher:** American Academy of Actuaries, PBR Assumptions Resource Manual Work Group (Life Practice Council)
@@ -597,6 +647,8 @@ Consolidated Appropriations Act change is verified at [R13].
 
 Current numbers/titles verified against the ASB standards list (fetched 2026-08-03).
 
+(uslib-reg-r26)=
+
 ### R26. ASOP No. 2 — Nonguaranteed Elements for Life Insurance and Annuity Products
 - **Publisher:** Actuarial Standards Board
 - **URL:** https://www.actuarialstandardsboard.org/asops/asop-no-2-nonguaranteed-elements-for-life-insurance-and-annuity-products/
@@ -608,6 +660,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   and indeterminate-premium life [R26]. Excludes dividends (ASOP 15, R28) and
   illustrations under ASOP 24 (R30) [R26]. Defines the determination-policy/framework
   discipline a model's NGE re-rating logic should reflect.
+
+(uslib-reg-r27)=
 
 ### R27. ASOP No. 7 — Life or Health Cash Flow Analysis
 - **Publisher:** Actuarial Standards Board
@@ -621,6 +675,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   reference model performs [R27]. Pairs with ASOP 22 (R29) for opinions and ASOP 56
   (R32) for model governance.
 
+(uslib-reg-r28)=
+
 ### R28. ASOP No. 15 — Dividends for Individual Participating Life Insurance, Annuities, and Disability Insurance
 - **Publisher:** Actuarial Standards Board
 - **URL:** https://www.actuarialstandardsboard.org/asops/dividends-individual-participating-life-insurance-annuities-disability-insurance/
@@ -632,6 +688,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   aggregate determination and ASOP-24 illustration compliance [R28]. The
   contribution-principle mechanics behind a par whole life model's dividend module (and
   par riders on other products).
+
+(uslib-reg-r29)=
 
 ### R29. ASOP No. 22 — Statements of Actuarial Opinion Based on Asset Adequacy Analysis for Life Insurance, Annuity, or Health Insurance Reserves and Other Liabilities
 - **Publisher:** Actuarial Standards Board
@@ -646,6 +704,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   level for all products (ULSG and long-duration guarantees are typical stress points
   [unverified]).
 
+(uslib-reg-r30)=
+
 ### R30. ASOP No. 24 — NAIC Life Insurance Illustrations Model Regulation
 - **Publisher:** Actuarial Standards Board
 - **URL:** https://www.actuarialstandardsboard.org/asops/asop-24-naic-life-insurance-illustrations-model-regulation-024-217/
@@ -659,6 +719,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   [R30]. The revision adopted September 2024 (effective December 1, 2024) is the
   current edition — it postdates and reflects the indexed-product guidelines [R30].
 
+(uslib-reg-r31)=
+
 ### R31. ASOP No. 52 — Principle-Based Reserves for Life Products under the NAIC Valuation Manual
 - **Publisher:** Actuarial Standards Board
 - **URL:** https://www.actuarialstandardsboard.org/asops/principle-based-reserves-life-products-naic-valuation-manual/
@@ -670,6 +732,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   provisions of the Valuation Manual shall govern" [R31]. Sets expectations on
   assumptions, margins, model granularity, and documentation that flow into VM-31
   reporting for all VM-20 products.
+
+(uslib-reg-r32)=
 
 ### R32. ASOP No. 56 — Modeling
 - **Publisher:** Actuarial Standards Board
@@ -686,6 +750,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
 ---
 
 ## 6. Accounting frameworks — why one cash flow model serves several bases
+
+(uslib-reg-r33)=
 
 ### R33. NAIC Accounting Practices and Procedures Manual (statutory basis)
 - **Publisher:** NAIC
@@ -711,6 +777,8 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
   accounting is the conservative, solvency-oriented frame in which Models 820/830, the
   Valuation Manual, and the AGs operate; a liability model's statutory outputs
   (reserves, nonforfeiture floors) plug into this basis.
+
+(uslib-reg-r34)=
 
 ### R34. FASB ASU No. 2018-12 — Financial Services—Insurance (Topic 944): Targeted Improvements to the Accounting for Long-Duration Contracts (LDTI)
 - **Publisher:** Financial Accounting Standards Board
@@ -752,6 +820,8 @@ document is a *section of* a document already catalogued (VM-21 and VM-22 inside
 Valuation Manual, R3), a separate entry is created because annuity models cite the section
 directly; the parent document is cross-referenced, not restated.
 
+(uslib-reg-r35)=
+
 ### R35. VM-21: Requirements for Principle-Based Reserves for Variable Annuities (Valuation Manual, Jan. 1, 2026 Edition)
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf (pages 21-1 to 21-79 of the 457-page PDF; same document as R3)
@@ -776,6 +846,8 @@ directly; the parent document is cross-referenced, not restated.
   anticipated to be used for RBC and that VM-21 §§4.A–4.E and the RBC requirements are
   **identical** except for the elective federal-income-tax treatment [R35] — one projection,
   two outputs (see R47).
+
+(uslib-reg-r36)=
 
 ### R36. VM-22: Requirements for Principle-Based Reserves for Non-Variable Annuities (Valuation Manual, Jan. 1, 2026 Edition)
 - **Publisher:** NAIC
@@ -808,6 +880,8 @@ directly; the parent document is cross-referenced, not restated.
   "VM-22 income annuity interest rates" against a current Valuation Manual is citing the
   wrong section [R36][R37].
 
+(uslib-reg-r37)=
+
 ### R37. VM-V: Statutory Maximum Valuation Interest Rates for Formulaic Reserves, Section 1 — Income Annuities
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf (pages V-1 to V-3+; same document as R3)
@@ -828,6 +902,8 @@ directly; the parent document is cross-referenced, not restated.
   life-contingent payment [R37]. Critically, VM-V §1 **supersedes** the interest-rate guidance
   in VM-A and VM-C, expressly including **AG IX-B** and the interest references in **AG IX-C**
   [R37].
+
+(uslib-reg-r38)=
 
 ### R38. Actuarial Guideline XLIII — CARVM for Variable Annuities (AG 43)
 - **Publisher:** NAIC (this print is the VAIWG redlined working copy dated 2016-09-26, showing the 2009 text with the reform-era edits; the official text lives in the AP&P Manual Appendix C, R33)
@@ -852,6 +928,8 @@ directly; the parent document is cross-referenced, not restated.
   not otherwise be encompassed by the scope of VM-21" — so AG 43 is the scoping shell that
   pulls pre-2017 VA business onto the VM-21 calculation, and if the two are aggregated VM-G
   corporate governance applies to the combined valuation [R35].
+
+(uslib-reg-r39)=
 
 ### R39. Actuarial Guideline XXXIII — Determining CARVM Reserves for Annuity Contracts With Elective Benefits (AG 33)
 - **Publisher:** NAIC
@@ -888,6 +966,8 @@ directly; the parent document is cross-referenced, not restated.
   wording above is retained unaltered because R1–R150 are frozen; cite **[R151]** for anything
   substantive about AG 33.
 
+(uslib-reg-r40)=
+
 ### R40. Actuarial Guideline XXXV — The Application of the Commissioners Annuity Reserve Method to Equity Indexed Annuities (AG 35)
 - **Publisher:** NAIC
 - **URL:** none — **no free official standalone text was located**. Exact title verified from
@@ -904,6 +984,8 @@ directly; the parent document is cross-referenced, not restated.
   presentation, not the guideline text]. The asset-adequacy requirement is the modelling
   consequence that matters most: an FIA block cannot rely on the formulaic reserve alone, so
   the same cash flow model must serve CARVM and ASOP 22 cash flow testing (R29).
+
+(uslib-reg-r41)=
 
 ### R41. VM-C: Appendix C — Actuarial Guidelines (index of guidelines incorporated into the Valuation Manual)
 - **Publisher:** NAIC
@@ -932,6 +1014,8 @@ directly; the parent document is cross-referenced, not restated.
 ---
 
 ## 8. NAIC nonforfeiture and market conduct for annuities
+
+(uslib-reg-r42)=
 
 ### R42. Standard Nonforfeiture Law for Individual Deferred Annuities (Model #805)
 - **Publisher:** NAIC (print: "NAIC Model Laws, Regulations, Guidelines and Other Resources—Fall 2020")
@@ -964,6 +1048,8 @@ directly; the parent document is cross-referenced, not restated.
   out-of-state deliveries — and Sections 3–8 do not apply to **contingent deferred annuities**,
   for which the commissioner may prescribe nonforfeiture by regulation [R42].
 
+(uslib-reg-r43)=
+
 ### R43. Variable Annuity Model Regulation (Model #250)
 - **Publisher:** NAIC (print: "NAIC Model Laws… — October 2007")
 - **URL:** https://content.naic.org/sites/default/files/model-law-250.pdf
@@ -987,6 +1073,8 @@ directly; the parent document is cross-referenced, not restated.
   lump-sum surrender provisions where offered [R43]. AG 54 (R44) exists precisely because
   Model #250 defines variable annuities by reference to separate-account investment experience
   and non-unitized ILVA accounts do not automatically satisfy it [R44].
+
+(uslib-reg-r44)=
 
 ### R44. Actuarial Guideline LIV — Nonforfeiture Requirements for Index-Linked Variable Annuity Products (AG 54)
 - **Publisher:** NAIC (adopted by Life Actuarial (A) Task Force 12/11/2022; adopted by Life Insurance and Annuities (A) Committee 2/24/2023)
@@ -1020,6 +1108,8 @@ directly; the parent document is cross-referenced, not restated.
   equity principle; and an ILVA that fails this guideline is not a variable annuity and falls
   under Model #805 (R42) [R44].
 
+(uslib-reg-r45)=
+
 ### R45. Annuity Disclosure Model Regulation (Model #245)
 - **Publisher:** NAIC (print: "NAIC Model Laws… — Summer 2021")
 - **URL:** https://content.naic.org/sites/default/files/model-law-245.pdf
@@ -1043,6 +1133,8 @@ directly; the parent document is cross-referenced, not restated.
   indexed-*annuity* illustration limits run through this regulation, and they are constructed
   differently from the IUL guidelines. A drafting note flags NSMIA preemption risk over the
   §3.D(1) sunset language [R45].
+
+(uslib-reg-r46)=
 
 ### R46. Suitability in Annuity Transactions Model Regulation (Model #275)
 - **Publisher:** NAIC (print: "NAIC Model Laws… — Spring 2020"; this print **is** the 2020 best-interest revision)
@@ -1071,6 +1163,8 @@ directly; the parent document is cross-referenced, not restated.
 
 ## 9. Capital — C-3 Phase II and the variable annuity framework reform
 
+(uslib-reg-r47)=
+
 ### R47. C-3 RBC Instructions and Appendices (incorporating the Academy's C3 Phase II Report for variable annuities)
 - **Publisher:** NAIC RBC instructions, transmitted with a memo from the American Academy of Actuaries C3 Life and Annuity Capital Work Group to the NAIC Life RBC Working Group dated November 24, 2009
 - **URL:** https://content.naic.org/sites/default/files/inline-files/committees_e_capad_lrbc_C3_RBC_instructions_package.pdf
@@ -1096,6 +1190,8 @@ directly; the parent document is cross-referenced, not restated.
   implementers:** this print states a **35% federal income tax rate** and predates both TCJA and
   the 2018–2020 VA framework reform [R47]; use it for structure, and R48 plus the current VM-21
   (R35) and Life RBC instructions for parameters.
+
+(uslib-reg-r48)=
 
 ### R48. Variable Annuity Statutory Reserve and Capital Reform — QIS II Public Report and Executive Summary
 - **Publisher:** Oliver Wyman, for the NAIC Variable Annuity Issues (E) Working Group (VAIWG)
@@ -1127,6 +1223,8 @@ directly; the parent document is cross-referenced, not restated.
 
 ## 10. Federal securities regulation — registered annuity products
 
+(uslib-reg-r49)=
+
 ### R49. Registration for Index-Linked Annuities and Registered Market Value Adjustment Annuities; Amendments to Form N-4 for Index-Linked Annuities, Registered Market Value Adjustment Annuities, and Variable Annuities; Other Technical Amendments
 - **Publisher:** U.S. Securities and Exchange Commission
 - **URL:** https://www.govinfo.gov/content/pkg/FR-2024-07-24/html/2024-14925.htm (89 Fed. Reg. 59978, July 24, 2024). **The SEC's own PDF, https://www.sec.gov/files/rules/final/2024/33-11294.pdf, returned HTTP 403 and was not fetched.**
@@ -1148,6 +1246,8 @@ directly; the parent document is cross-referenced, not restated.
   [unverified as to the mechanics — the date is consistently reported across filing-agent and
   law-firm summaries; the release's section II.J was not read in full].
 
+(uslib-reg-r50)=
+
 ### R50. Updated Disclosure Requirements and Summary Prospectus for Variable Annuity and Variable Life Insurance Contracts (Rule 498A adopting release)
 - **Publisher:** U.S. Securities and Exchange Commission
 - **URL:** https://www.govinfo.gov/content/pkg/FR-2020-05-01/html/2020-05526.htm (**the SEC's own PDF at https://www.sec.gov/files/rules/final/2020/33-10765.pdf returned HTTP 403 and was not fetched**)
@@ -1166,6 +1266,8 @@ directly; the parent document is cross-referenced, not restated.
   tagging of specified prospectus disclosures [R50]. The Commission's stated rationale was that
   bundled variable contract prospectuses frequently exceed 100 pages [R50].
 
+(uslib-reg-r51)=
+
 ### R51. 17 C.F.R. § 230.498A — Summary prospectuses for separate accounts offering variable annuity and variable life insurance contracts and for offering registered non-variable annuity contracts
 - **Publisher:** U.S. Government (Code of Federal Regulations), via Legal Information Institute, Cornell Law School
 - **URL:** https://www.law.cornell.edu/cfr/text/17/230.498A
@@ -1181,6 +1283,8 @@ directly; the parent document is cross-referenced, not restated.
   least 90 days; and paper copies are furnished on request within three business days [R51].
   Applies to registrants on **Forms N-3, N-4 and N-6** [R51].
 
+(uslib-reg-r52)=
+
 ### R52. SEC Form N-4 — Registration statement for separate accounts organized as unit investment trusts (as amended for RILAs and registered MVA annuities)
 - **Publisher:** U.S. Securities and Exchange Commission
 - **URL:** https://www.sec.gov/files/formn-4.pdf
@@ -1195,6 +1299,8 @@ directly; the parent document is cross-referenced, not restated.
   fee table and Key Information Table define the charge taxonomy — mortality and expense risk
   charge, administrative charge, contract maintenance fee, optional benefit rider charges,
   surrender charges — that a VA/RILA cash flow model must expose as parameters.
+
+(uslib-reg-r53)=
 
 ### R53. SEC Rule 151A and Annuities: Issues and Legislation (CRS Report R40656)
 - **Publisher:** Congressional Research Service (secondary, but authoritative on legislative history)
@@ -1216,6 +1322,8 @@ directly; the parent document is cross-referenced, not restated.
   state-regulated non-registered products governed by Model #805 (R42), Model #245 (R45) and
   AG 33/35 (R39/R40); RILAs, which expose the contract holder to index losses, are registered
   and governed additionally by R49–R52 and AG 54 (R44).
+
+(uslib-reg-r54)=
 
 ### R54. FINRA Rule 2330 — Members' Responsibilities Regarding Deferred Variable Annuities
 - **Publisher:** Financial Industry Regulatory Authority
@@ -1242,6 +1350,8 @@ directly; the parent document is cross-referenced, not restated.
 
 ## 11. Federal tax — annuities
 
+(uslib-reg-r55)=
+
 ### R55. 26 U.S.C. § 72 — Annuities; certain proceeds of endowment and life insurance contracts
 - **Publisher:** Legal Information Institute, Cornell Law School (U.S. Code)
 - **URL:** https://www.law.cornell.edu/uscode/text/26/72
@@ -1266,6 +1376,8 @@ directly; the parent document is cross-referenced, not restated.
   modelling — and **§72(u)** strips deferral from contracts held by non-natural persons,
   treating the **primary annuitant** as the holder [R55].
 
+(uslib-reg-r56)=
+
 ### R56. 26 U.S.C. § 1035 — Certain exchanges of insurance policies
 - **Publisher:** Legal Information Institute, Cornell Law School
 - **URL:** https://www.law.cornell.edu/uscode/text/26/1035
@@ -1282,6 +1394,8 @@ directly; the parent document is cross-referenced, not restated.
   annuity→life prohibition constrains which replacement flows a model should even contemplate.
   Read with FINRA Rule 2330 (R54) and Model #275 (R46), which together throttle exchange
   velocity in the registered and best-interest channels.
+
+(uslib-reg-r57)=
 
 ### R57. 26 C.F.R. § 1.401(a)(9)-6 — Required minimum distributions for defined benefit plans and annuity contracts (QLAC rules)
 - **Publisher:** Legal Information Institute, Cornell Law School (CFR)
@@ -1302,6 +1416,8 @@ directly; the parent document is cross-referenced, not restated.
   forbids most increasing-payment DIA designs in qualified money — with actuarial increases
   required for employees retiring after age 70½, from April 1 following that birthday until
   commencement, using reasonable actuarial assumptions [R57].
+
+(uslib-reg-r58)=
 
 ### R58. Required Minimum Distributions — Final Regulations (T.D. 10001)
 - **Publisher:** Internal Revenue Service / U.S. Treasury (Federal Register, July 19, 2024)
@@ -1328,6 +1444,8 @@ directly; the parent document is cross-referenced, not restated.
 
 ## 12. Annuitant mortality and annuity experience studies
 
+(uslib-reg-r59)=
+
 ### R59. NAIC Model Rule (Regulation) for Recognizing a New Annuity Mortality Table for Use in Determining Reserve Liabilities for Annuities (Model #821), with the corresponding VM-M definitions
 - **Publisher:** NAIC (model print: "NAIC Model Laws… — January 2013"), plus the Valuation Manual appendix
 - **URL (model):** https://content.naic.org/sites/default/files/model-law-821.pdf
@@ -1353,6 +1471,8 @@ directly; the parent document is cross-referenced, not restated.
   an exclusion that matters when the modelled block includes those. The 2012 IAM/Scale G2 tables
   themselves live in **AP&P Manual Appendix A-821** [R59][R33].
 
+(uslib-reg-r60)=
+
 ### R60. 2012 Individual Annuity Reserving Table — Report of the joint American Academy of Actuaries / Society of Actuaries Payout Annuity Table Team
 - **Publisher:** American Academy of Actuaries and Society of Actuaries (joint subgroup of the Life Experience Subcommittee), presented to the NAIC Life Actuarial Task Force; September 2011 (chair: Mary Bahna-Nolan)
 - **URL:** http://actuary.org/wp-content/uploads/2017/11/Payout_Annuity_Report_09-28-11.pdf (https:// redirects to http:// on the same path)
@@ -1372,6 +1492,8 @@ directly; the parent document is cross-referenced, not restated.
   analysis against the unloaded 2012 IAM adjusted to January 1, 2007 (the midpoint of the
   underlying experience), and tabulated reserve-impact comparisons against the a2000 Table [R60].
 
+(uslib-reg-r61)=
+
 ### R61. 2020–2024 Individual Payout Annuity Mortality Experience Study
 - **Publisher:** LIMRA and the Society of Actuaries Research Institute (joint)
 - **URL:** https://www.soa.org/resources/experience-studies/2026/2020-24-individual-payout/
@@ -1387,6 +1509,8 @@ directly; the parent document is cross-referenced, not restated.
   dashboards; the predecessor is the **2014–2019 Individual Payout Annuity Mortality Experience
   Study** (December 2022; 25 companies, ~80% of market, ~4.3 million contract-years, ~236,000
   deaths) [R61][R65].
+
+(uslib-reg-r62)=
 
 ### R62. Fixed Indexed Annuity Policyholder Behavior Experience Studies (2021–2022, with 2019–2020 predecessor)
 - **Publisher:** LIMRA and the Society of Actuaries Research Institute (joint)
@@ -1408,6 +1532,8 @@ directly; the parent document is cross-referenced, not restated.
   That is the difference between a shock-lapse assumption and a rider-suppressed one, and it is
   product-design-dependent, not a single industry number.
 
+(uslib-reg-r63)=
+
 ### R63. Fixed Rate Deferred Surrender Experience Studies (2023–24, with 2015–2022 predecessor)
 - **Publisher:** LIMRA and the Society of Actuaries Research Institute (joint)
 - **URL (2023–24):** https://www.soa.org/resources/experience-studies/2025/2023-24-fixed-rate-deferred/
@@ -1421,6 +1547,8 @@ directly; the parent document is cross-referenced, not restated.
   trade-press coverage of the 2015–2022 study, not read in the report]. Compare with the ~10%/~33%
   FIA figures at R62: the same event, three very different assumptions, driven by rider presence
   and rate-differential dynamics.
+
+(uslib-reg-r64)=
 
 ### R64. Variable Annuity Contract Holder Behavior and Guaranteed Living Benefit Utilization Studies (2022–2024, with the 2019–2021 and the 2013–2018 GLB utilization series)
 - **Publisher:** LIMRA and the Society of Actuaries Research Institute (joint)
@@ -1442,6 +1570,8 @@ directly; the parent document is cross-referenced, not restated.
   come from SOA/LIMRA summaries of the 2013/2015-experience utilization studies, not read in the
   report PDFs]. The RMD clustering is the reason R58 is a *behavioral* input to a GLWB model, not
   merely a tax one.
+
+(uslib-reg-r65)=
 
 ### R65. SOA Individual Annuity Experience Studies — index
 - **Publisher:** Society of Actuaries Research Institute
@@ -1465,6 +1595,8 @@ directly; the parent document is cross-referenced, not restated.
 
 ## 13. Professional standards and practice notes — annuities
 
+(uslib-reg-r66)=
+
 ### R66. Implementation of Requirements for Principle-Based Reserves for Variable Annuities — 2022 Edition of VM-21 (Practice Note Supplement)
 - **Publisher:** American Academy of Actuaries, Variable Annuity Reserves & Capital Work Group of the Life Practice Council (chair: Connie Tang); February 2022, 34 pages
 - **URL:** https://actuary.org/wp-content/uploads/2022/02/VA_PN_Supplement_Final.pdf
@@ -1484,6 +1616,8 @@ directly; the parent document is cross-referenced, not restated.
   is a living document; and the note **does not cover state variations such as New York
   Regulation 213** [R66].
 
+(uslib-reg-r67)=
+
 ### R67. Utilization Assumptions of Guaranteed Living Benefits for Deferred Annuities — A Resource and Discussion Guide
 - **Publisher:** American Academy of Actuaries, Life Experience Committee (chair: Donna Claire); May 2024
 - **URL:** https://actuary.org/wp-content/uploads/2024/05/life-paper-GLBs.pdf
@@ -1499,6 +1633,8 @@ directly; the parent document is cross-referenced, not restated.
   distribution channel, systematic withdrawal plan enrolment, rider type — to test a utilization
   assumption against, and as the bridge from the experience data in R64 to a prudent-estimate
   assumption that will satisfy VM-21 §10 (R35) or VM-22 §10 (R36).
+
+(uslib-reg-r68)=
 
 ### R68. Fixed Indexed Annuities — Product Mechanics and Risk Management
 - **Publisher:** American Academy of Actuaries, Life Experience and Assumptions Committee (chair: Kyle Wan); February 2026
@@ -1517,6 +1653,8 @@ directly; the parent document is cross-referenced, not restated.
   **option budget** framing — the insurer allocates a portion of premium to derivatives to hedge
   the index-linked credits — and links crediting design back to **nonforfeiture limits and the
   nonforfeiture rate** [R68], i.e., to R42.
+
+(uslib-reg-r69)=
 
 ### R69. Index-Linked Variable Annuity (ILVA) / Registered Index-Linked Annuity (RILA) Policy Paper
 - **Publisher:** American Academy of Actuaries, Index-Linked Variable Annuity Subcommittee (chair: Elizabeth Keith); December 2025
@@ -1537,6 +1675,8 @@ directly; the parent document is cross-referenced, not restated.
   valuation issues such as hedge-cost inference and bid/mid/ask spread treatment in Trading Costs
   [R69].
 
+(uslib-reg-r70)=
+
 ### R70. ASOP No. 54 — Pricing of Life Insurance and Annuity Products
 - **Publisher:** Actuarial Standards Board
 - **URL:** https://www.actuarialstandardsboard.org/asops/pricing-of-life-insurance-and-annuity-products/
@@ -1556,6 +1696,8 @@ directly; the parent document is cross-referenced, not restated.
   risk evaluation; and implement governance controls including model validation and independent
   review [R70]. For an annuity reference model this is the standard that justifies a pricing-mode
   output (profit metrics, dynamic lapse, hedge cost) alongside the valuation outputs.
+
+(uslib-reg-r71)=
 
 ### R71. ASOP No. 10 — U.S. GAAP for Long-Duration Life, Annuity, and Health Products (Revised Edition)
 - **Publisher:** Actuarial Standards Board (Revised Edition, adopted by the ASB December 2022, Doc. No. 207)
@@ -1579,6 +1721,8 @@ directly; the parent document is cross-referenced, not restated.
   is clearly labelled an exposure draft, not adopted [R71b:
   https://www.actuarialstandardsboard.org/asops/asop-no-10-ssun-u-s-gaap-for-long-duration-life-annuity-and-health-products/]);
   cite the Doc. No. 207 PDF above, which states adoption on its title page.
+
+(uslib-reg-r72)=
 
 ### R72. IRC Section 807 LB&I Directive Related to Principle-Based Reserves for Variable Annuity Contracts (AG 43/VM-21) and Life Insurance Contracts (VM-20)
 - **Publisher:** Internal Revenue Service, Large Business & International Division
@@ -1694,6 +1838,8 @@ below (e.g. R89/R90, R103/R105, R112, or spans such as R74–R97 and R100–R113
 historical record from when the block was whole; they no longer resolve to entries on
 this page.
 
+(uslib-reg-r73)=
+
 ### R73. NAIC Accounting Practices and Procedures Manual, *As of March 2026* (Volumes I and II)
 - **Publisher:** National Association of Insurance Commissioners
 - **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf (catalogue
@@ -1736,6 +1882,8 @@ this page.
   keep the "R" form only when quoting pre-2024 material. The edition in which the suffix was
   removed was not located [unverified].
 
+(uslib-reg-r78)=
+
 ### R78. SSAP No. 50 — Classifications of Insurance or Managed Care Contracts (*As of March 2026*)
 - **Publisher:** NAIC (in R73, statement pages 50-1 onward)
 - **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf
@@ -1752,6 +1900,8 @@ this page.
   ¶8 as PV(future benefits) − PV(future net premiums) on the valuation interest and mortality
   basis. ¶¶10–20 carry the statutory product definitions that the annual statement's
   line-of-business columns key off [R78].
+
+(uslib-reg-r79)=
 
 ### R79. SSAP No. 51 — Life Contracts (*As of March 2026*; historically cited as SSAP No. 51R)
 - **Publisher:** NAIC (in R73, statement pages 51-1 to 51-13)
@@ -1772,6 +1922,8 @@ this page.
   mean-reserve and mid-terminal methods, the deferred-premium asset, advance premiums, dividend
   liability, change in valuation basis, accelerated benefits and the disclosure set — read for
   this library through Issue Paper No. 51 (R81), whose paragraph numbers differ.
+
+(uslib-reg-r81)=
 
 ### R81. Statutory Issue Papers Nos. 50, 51, 52 and 110 — the codification record behind SSAP Nos. 50/51/52/56
 - **Publisher:** NAIC (AP&P Appendix E; IP 50 finalized June 23, 1998; IP 51 and IP 52 finalized
@@ -1799,6 +1951,8 @@ this page.
   adjustment, sub-split by settlement form) [R81]. **IP 110** records the amendments pulling
   Appendices A-200, A-695 and A-830 into SSAP Nos. 51, 52 and 56, effective January 1, 2001 with
   pre-2001 contracts on domiciliary-state law [R81/IP110 ¶10].
+
+(uslib-reg-r83)=
 
 ### R83. SSAP No. 56 — Separate Accounts (*As of March 2026*)
 - **Publisher:** NAIC (in R73, statement pages 56-1 to 56-14)
@@ -1832,6 +1986,8 @@ this page.
   **current market-based rates where assets are at fair value** — and ¶45 **rejects** ASU 2018-12,
   ASU 2022-05 and SOP 03-1 [R83].
 
+(uslib-reg-r92)=
+
 ### R92. SSAP No. 61 — Life, Deposit-Type and Accident and Health Reinsurance (*As of March 2026*; historically 61R)
 - **Publisher:** NAIC (in R73, statement pages 61-1 to 61-29 plus glossary)
 - **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf
@@ -1854,6 +2010,8 @@ this page.
   reinsurance **losses immediately** with initial-year gains on in-force blocks following A-791 ¶3,
   and ¶58 unwinds recaptures and commutations through the original accounts with the required IMR
   adjustment [R92]. Note: **A-791 itself was not read** (section 22); it is in R73 Appendix A.
+
+(uslib-reg-r100)=
 
 ### R100. VM-30: Actuarial Opinion and Memorandum Requirements (Valuation Manual, Jan. 1, 2026 Edition)
 - **Publisher:** NAIC
@@ -1882,6 +2040,8 @@ this page.
   inside a VM-20 §6 guidance note [R100][R3]. It expressly makes **AG 48** (R11) and **AG 51**
   applicable for VM-30 purposes [R100].
 
+(uslib-reg-r101)=
+
 ### R101. Actuarial Opinion and Memorandum Regulation (Model #822)
 - **Publisher:** NAIC (print: "NAIC Model Laws, Regulations, Guidelines and Other Resources—April
   2010"; © 2010)
@@ -1909,6 +2069,8 @@ this page.
   allocation rules, the equity-return-volatility requirement and seven-year retention, none of
   which #822 contains; #822's memorandum-review mechanism survives in VM-30 §3.B.3.
 
+(uslib-reg-r102)=
+
 ### R102. NAIC Model #822 State Page — Actuarial Opinion and Memorandum Regulation
 - **Publisher:** NAIC Legal Division (print: "NAIC Model Laws, Regulations, Guidelines and Other
   Resources—Fall 2024"; © 2024; pages ST-822-1 to ST-822-7)
@@ -1925,6 +2087,8 @@ this page.
   on top of VM-30, not a Valuation Manual requirement (R112). The chart carries an explicit
   disclaimer that it "does not reflect a determination as to whether a state meets any applicable
   accreditation standards" [R102].
+
+(uslib-reg-r110)=
 
 ### R110. VM-A: Appendix A — Requirements (Valuation Manual, Jan. 1, 2026 Edition)
 - **Publisher:** NAIC
@@ -1954,6 +2118,8 @@ this page.
 ---
 
 ## 16. The PBR topic page and the AP&P Manual formulaic texts (R150–R157)
+
+(uslib-reg-r150)=
 
 ### R150. NAIC — Principle-Based Reserving (insurance topic page)
 - **Publisher:** National Association of Insurance Commissioners
@@ -2006,6 +2172,8 @@ pages. Every extracted page carries only the footer "© 1999-2026 National Assoc
 Commissioners", which is a **copyright span, not an adoption, effective or revision date** for any of
 these instruments — do not cite it as one. The "As of March 2026" designation is the manual's own,
 carried in its front matter and recorded at R73.
+
+(uslib-reg-r151)=
 
 ### R151. Actuarial Guideline XXXIII — Determining CARVM Reserves for Annuity Contracts With Elective Benefits (AG 33), as printed in AP&P Manual Appendix C
 - **Publisher:** NAIC
@@ -2060,6 +2228,8 @@ carried in its front matter and recorded at R73.
   latter reproduced nowhere); no restatement of the "end of each respective contract year" indexing or
   of the deduction of future valuation considerations, both of which stay with the statute (R1) and
   A-820 ¶15 (R153); and no mention of the Valuation Manual, VM-21 or VM-22.
+
+(uslib-reg-r152)=
 
 ### R152. Actuarial Guideline XXXV — The Application of the Commissioners Annuity Reserve Method to Equity Indexed Annuities (AG 35), as printed in AP&P Manual Appendix C
 - **Publisher:** NAIC
@@ -2118,6 +2288,8 @@ carried in its front matter and recorded at R73.
   it points the valuation interest rate at "**Actuarial Guideline XXXIII or Actuarial Guideline
   IX-B**" three times: **AG IX-B has not been read** and is indexed only through VM-C (R41), so an FIA
   CARVM run has an unresolved cross-reference.
+
+(uslib-reg-r153)=
 
 ### R153. Appendix A-820 — Minimum Life and Annuity Reserve Standards (with Appendix A-821, Annuity Mortality Table for Use in Determining Reserve Liabilities for Annuities, and Appendix A-822, Asset Adequacy Analysis Requirements)
 - **Publisher:** NAIC
@@ -2195,6 +2367,8 @@ carried in its front matter and recorded at R73.
   prior to the operative date of the Valuation Manual" while ¶¶3–4 fix that operative date *at*
   January 1, 2017, leaving the window empty.
 
+(uslib-reg-r154)=
+
 ### R154. Appendix A-830 — Valuation of Life Insurance Policies (Including the Introduction and Use of New Select Mortality Factors)
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf — **Volume I,
@@ -2255,6 +2429,8 @@ carried in its front matter and recorded at R73.
   unilaterally after issue take a **triple maximum** — ignoring the guarantee, assuming it was made at
   issue, and assuming the policy was issued on the date of the guarantee (¶20).
 
+(uslib-reg-r155)=
+
 ### R155. Appendix A-585 — Universal Life Insurance
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf — **Volume I,
@@ -2305,6 +2481,8 @@ carried in its front matter and recorded at R73.
   text layer loses fraction bars, so the placement of `r` inside (C) is read from layout rather than
   from a bar character — re-open PDF p. 1103 before hard-coding it.
 
+(uslib-reg-r156)=
+
 ### R156. Appendix A-250 — Variable Annuities
 - **Publisher:** NAIC
 - **URL:** https://content.naic.org/sites/default/files/publication-app-manual.pdf — **Volume I,
@@ -2326,6 +2504,8 @@ carried in its front matter and recorded at R73.
   nothing in it changes a variable-annuity or RILA formulaic run beyond the separate-account
   asset-coverage floor. (All three paragraphs sit under the heading "Definitions"; unlike A-255 and
   A-270 the item has no "Valuation Requirements" heading, which does not change ¶3's effect.)
+
+(uslib-reg-r157)=
 
 ### R157. Appendix A-255 — Modified Guaranteed Annuities
 - **Publisher:** NAIC

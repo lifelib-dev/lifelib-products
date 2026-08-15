@@ -18,6 +18,8 @@ file changed source or status.
 
 ## Primary product sources [S#]
 
+(uslib-fixed_deferred_annuity-s1)=
+
 ### S1. Athene Annuity & Life Assurance Company — "ATHENE MaxRate® Multi-Year Guarantee Annuity (MYGA) CA Version", producer fact sheet AN1007-CA (10/14)
 - Publisher: Athene Annuity & Life Assurance Company (Wilmington, DE; main administrative
   office Greenville, SC). PDF hosted on iPipeline's forms repository, which distributes
@@ -27,6 +29,8 @@ file changed source or status.
 - Retrieved: YES (full text extracted)
 - Note carried over: this CA version has **no** market value adjustment provision.
 
+(uslib-fixed_deferred_annuity-s2)=
+
 ### S2. Athene Annuity & Life Assurance Company of New York — "ATHENE MaxRate® Multi-Year Guarantee Annuity (MYG)", producer fact sheet AN1007-NY (06/16)
 - Publisher: Athene Annuity & Life Assurance Company of New York (Nyack, NY)
 - Doc type: producer product fact sheet (4 pages), New York only
@@ -35,6 +39,8 @@ file changed source or status.
 - Role in this library: source of the **symmetrically capped** MVA (adjustment, positive or
   negative, not greater than the withdrawal charge) and of the renewal 5/4/3/2/1 schedule.
 
+(uslib-fixed_deferred_annuity-s3)=
+
 ### S3. Voya Retirement Insurance and Annuity Company — "Voya Multi-Rate Annuity (Voya MRA)" prospectus, Form 424B3, dated May 1, 2021
 - Publisher: Voya Retirement Insurance and Annuity Company (Windsor, CT), filed with the SEC
 - Doc type: statutory prospectus for a single purchase payment, modified guaranteed deferred
@@ -42,6 +48,8 @@ file changed source or status.
 - URL fetched: https://www.sec.gov/Archives/edgar/data/837010/000010300521000017/definitivemultirateannuity.pdf
 - Retrieved: YES (full text extracted, pages 1–17 and 37–39)
 - Role: uncapped geometric Treasury-based MVA; the gross-up example for a net check.
+
+(uslib-fixed_deferred_annuity-s4)=
 
 ### S4. Nationwide Life Insurance Company — "BOA Platinum Edge", Form S-1 registration statement / prospectus dated May 1, 2023, "Flexible Purchase Payment Modified Guaranteed Annuity Contracts Supporting Guaranteed Periods"
 - Publisher: Nationwide Life Insurance Company (Columbus, OH), filed with the SEC
@@ -53,6 +61,8 @@ file changed source or status.
 - Role in this library: **arithmetic unit-test anchor** for the geometric MVA branch — the
   only retrieved source with fully worked MVA numbers.
 
+(uslib-fixed_deferred_annuity-s5)=
+
 ### S5. Midland National Life Insurance Company — "Oak ADVantage® multi-year guarantee annuity", consumer brochure 34158Y REV 6-26
 - Publisher: Midland National Life Insurance Company (West Des Moines, IA), a Sammons
   Financial Group member. Official insurer domain.
@@ -62,10 +72,14 @@ file changed source or status.
 - Note carried over: features flagged as offered "by current company practice" are
   explicitly **not** contractual guarantees and can be withdrawn at any time.
 
+(uslib-fixed_deferred_annuity-s6)=
+
 ### S6. Midland National Life Insurance Company — "Oak ADVantage℠ multi-year guarantee annuity" highlight sheet 34199Y REV 11-24
 - URL fetched: https://www.midlandnational.com/documents/35453/65313/34199Y+-+Oak+ADVantage+highlight+sheet.pdf/efeb0d27-884d-e0f2-535d-6430a37a58ac?t=1635796256861
 - Doc type: 2-page product highlight sheet
 - Retrieved: YES
+
+(uslib-fixed_deferred_annuity-s7)=
 
 ### S7. Midland National Life Insurance Company — "Oak ADVantage® and Oak ADVantage® Care" rate sheet 32400Y REV 7-23-26 (interest rates effective July 23, 2026)
 - URL fetched: https://www.midlandnational.com/documents/35453/349595419/32400Y+-+Oak+ADVantage+rate+sheet.pdf/fa83c185-49b5-ef49-afc7-fdf4da62b245?t=1726160212636
@@ -76,6 +90,8 @@ file changed source or status.
   3 / 5 / 7-year mapping is **[unverified]**. (No rate from S7 is used in the product
   documents; S7 is cited only for the $50,000 minimum premium and the Care variant.)
 
+(uslib-fixed_deferred_annuity-s8)=
+
 ### S8. Midland National Life Insurance Company — "Understanding the market value adjustment", 32340Y-2 REV 7-25 (Midland National Capital Income® fixed index annuity)
 - URL fetched: https://www.midlandnational.com/documents/35453/9032621/32340Y+-+Understanding+the+MVA/7446bfd5-4e75-8e71-db85-e055f63ea9de
 - Doc type: 2-page consumer MVA explainer
@@ -85,6 +101,8 @@ file changed source or status.
   explicitly, and Oak ADVantage uses the same MVA family [S5][S6]; **the numeric example
   must not be attributed to a MYGA** and is labelled as such wherever used.
 
+(uslib-fixed_deferred_annuity-s9)=
+
 ### S9. Midland National Life Insurance Company — "Midland National Capital Income® Fixed index annuity — Annuity disclosure statement", 32372Y-5 (8-24)
 - URL fetched: https://www.midlandnational.com/documents/35453/9032621/32372Y+-+Capital+Income+disclosure+for+most+states/f334edb5-4545-608e-3e7b-f8558ed021b8
 - Doc type: signed annuity disclosure statement (12 pages)
@@ -92,6 +110,8 @@ file changed source or status.
 - **Caveat carried over:** FIA, not a MYGA. Cited for (a) contractually-precise MVA wording,
   (b) the nonforfeiture-floor wording and its **net-of-charges** withdrawal convention, and
   (c) the disclosure-statement structure that Model #245 [R4] drives.
+
+(uslib-fixed_deferred_annuity-s10)=
 
 ### S10. MassMutual Ascend Life Insurance Company — "SecureGain 5 Annuity — A fixed annuity with a market value adjustment", consumer brochure B1088822NW 4/23
 - Publisher: MassMutual Ascend Life Insurance Company (Cincinnati, OH), a wholly owned
@@ -102,6 +122,8 @@ file changed source or status.
 - Role: the charge/liquidity anchor — 9/8/7/6/5 early withdrawal charge, 10% free
   withdrawal, extended-care and terminal-illness waivers.
 
+(uslib-fixed_deferred_annuity-s11)=
+
 ### S11. MassMutual Ascend Life Insurance Company — "SecureGain 5" client rate flier F1089525NW-1 (rates effective 09/22/25)
 - URL fetched: https://mybusiness.massmutualascend.com/docs/default-source/default-document-library/forms/marketing-materials/f1089525nw-1.pdf?sfvrsn=7b719de_1
 - Doc type: 2-page rate flier with disclosure footnotes
@@ -110,6 +132,8 @@ file changed source or status.
   real product** — the GMSV definition, its 2.80% rate, the 0.25% minimum interest rate and
   the express tie to NAIC Model #805.
 
+(uslib-fixed_deferred_annuity-s12)=
+
 ### S12. MassMutual Ascend Life Insurance Company — "How a market value adjustment works", S6075424NW 8/24
 - URL fetched: https://mybusiness.massmutualascend.com/docs/default-source/default-document-library/forms/marketing-materials/s6075424nw.pdf?sfvrsn=d91920de_2
 - Doc type: 2-page consumer MVA explainer
@@ -117,6 +141,8 @@ file changed source or status.
 - Role: the **asymmetric** cap design (positive capped at the early withdrawal charge,
   negative floored by the standard nonforfeiture law minimum) and the blended
   Treasury/corporate reference indices.
+
+(uslib-fixed_deferred_annuity-s13)=
 
 ### S13. New York Life Insurance and Annuity Corporation (NYLIAC) — "Secure Term MVA Fixed Annuity II — Just the facts", client fact sheet ML25-007661 / SMRU5821693 (Exp. 03.20.2028)
 - Publisher: New York Life Insurance and Annuity Corporation (a Delaware corporation),
@@ -130,6 +156,8 @@ file changed source or status.
   charge) and the GMIR-floored MVA. Gap carried over: the exact MVA algebra is not in the
   fact sheet — it points to a separate "Examples and Explanation" flyer, not retrieved.
 
+(uslib-fixed_deferred_annuity-s14)=
+
 ### S14. Symetra Life Insurance Company — "Form of Section 457 Contract Data Page", Exhibit 99.4(i) to Form 485BPOS for Symetra Separate Account C (filed 2009)
 - Publisher: Symetra Life Insurance Company (Bellevue, WA), filed with the SEC
 - Doc type: **specimen contract data page** (bracketed values), for the Spinnaker Advisor
@@ -141,6 +169,8 @@ file changed source or status.
   Option — the classic **declared-rate-differential** `W × (Ic − In) × Fs` design with its
   contractual duration-factor table.
 
+(uslib-fixed_deferred_annuity-s15)=
+
 ### S15. Forethought Life Insurance Company (Global Atlantic) — "SecureFore II Fixed Annuities" product page
 - Publisher: Global Atlantic / Forethought Life Insurance Company (Indianapolis, IN)
 - Doc type: insurer web page (not a disclosure document)
@@ -148,6 +178,8 @@ file changed source or status.
 - Retrieved: YES (web page)
 - Note carried over: withdrawal charge percentages, issue ages, premium minima, death
   benefit and annuitization details were **not** stated on the page.
+
+(uslib-fixed_deferred_annuity-s16)=
 
 ### S16. Oceanview Life and Annuity Company — "Harbourview Multi-Year Guaranteed Annuity — Product Disclosure", OVLAC-MYGA-DISC Rev. 01/20
 - Publisher: Oceanview Life and Annuity Company. A smaller MYGA specialist, not a "major"
@@ -167,6 +199,8 @@ any of them anywhere in this library.
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uslib-fixed_deferred_annuity-r1)=
+
 ### R1. NAIC — Model #805, "Standard Nonforfeiture Law for Individual Deferred Annuities" (NAIC Model Laws, Regulations, Guidelines and Other Resources — Fall 2020)
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/sites/default/files/model-law-805.pdf
@@ -176,6 +210,8 @@ any of them anywhere in this library.
   `0.15% ≤ i ≤ 3.00%` with `i = round(5-yr CMT, 1/20 of 1%) − 1.25%`. The commonly cited 1%
   floor reflects the 2003 amendment as originally adopted and is **[unverified]**.
 - Same document as [REG-R42].
+
+(uslib-fixed_deferred_annuity-r2)=
 
 ### R2. NAIC — Valuation Manual, Jan. 1, 2026 edition; VM-22: Requirements for Principle-Based Reserves For Non-Variable Annuities
 - Publisher: NAIC (© 2025 NAIC). 457-page PDF; VM-22 begins at PDF page 227 (manual page 22-1)
@@ -187,6 +223,8 @@ any of them anywhere in this library.
   so 2029 is arithmetic and carries **[unverified]**.
 - Same document as [REG-R36] (and the parent Valuation Manual as [REG-R3]).
 
+(uslib-fixed_deferred_annuity-r4)=
+
 ### R4. NAIC — Model #245, "Annuity Disclosure Model Regulation" (NAIC Model Laws — Summer 2021)
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/model-law-245.pdf
@@ -195,16 +233,22 @@ any of them anywhere in this library.
   not #250. (#250 is the Variable Annuity Model Regulation — see [REG-R43].)
 - Same document as [REG-R45].
 
+(uslib-fixed_deferred_annuity-r5)=
+
 ### R5. NAIC — Model #275, "Suitability in Annuity Transactions Model Regulation" (NAIC Model Laws — Spring 2020; the best-interest revision)
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/model-law-275.pdf
 - Retrieved: YES (20 pages; §§1–6 read)
 - Same document as [REG-R46].
 
+(uslib-fixed_deferred_annuity-r6)=
+
 ### R6. 26 U.S. Code § 72 — "Annuities; certain proceeds of endowment and life insurance contracts" (Cornell Legal Information Institute)
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/72
 - Retrieved: YES (full section text)
 - Same statute as [REG-R55].
+
+(uslib-fixed_deferred_annuity-r7)=
 
 ### R7. IRS — Rev. Rul. 2002-6, 2002-1 C.B. (Section 807 — Rules for Certain Reserves), used to establish AG 33's identity and effective date
 - URL fetched: https://www.irs.gov/pub/irs-drop/rr-02-6.pdf
@@ -227,6 +271,8 @@ any of them anywhere in this library.
   the current guideline's title, date or mechanics.
 - See also [REG-R39] (the frozen title-only record, superseded in fact by [REG-R151]).
 
+(uslib-fixed_deferred_annuity-r8)=
+
 ### R8. Society of Actuaries Research Institute & LIMRA — "2023-2024 Fixed-Rate Deferred Annuity Surrender Study" (public report), February 2026
 - URL fetched: https://www.soa.org/globalassets/assets/files/resources/research-report/2026/2023-24-frda-public-report.pdf
 - Retrieved: YES (7 pages — the public highlights report)
@@ -234,6 +280,8 @@ any of them anywhere in this library.
   were **not** retrieved; only the qualitative behavioural findings and the exposure
   statistics are cited.
 - Related landing page catalogued cross-product as [REG-R63].
+
+(uslib-fixed_deferred_annuity-r9)=
 
 ### R9. Society of Actuaries — 2012 Individual Annuity Reserving Report & Table; and the 2012 IAM Basic Table on mort.soa.org
 - URLs fetched: https://www.soa.org/resources/experience-studies/2011/2012-ind-annuity-reserving-rpt/

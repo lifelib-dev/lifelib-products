@@ -10,12 +10,16 @@ the research file. No new sources were fetched at drafting.
 
 ## Primary product sources [S#]
 
+(uslib-indexed_ul-s1)=
+
 ### S1. Pacific Life — "Pacific Horizon IUL 2 — Client Guide" (LFC3384-2401 4/24, 24-VER-25A)
 - Publisher: Pacific Life Insurance Company (Omaha, NE)
 - Doc type: consumer brochure / client guide
 - URL: https://www.pacificlife.com/content/dam/paclife/lid/public/brochures/indexed-universal-life-/LFC3384_HorizonIUL2.pdf
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 4 pp.)
+
+(uslib-indexed_ul-s2)=
 
 ### S2. Pacific Life — "Pacific Horizon IUL 2 — Your Account Choices" (IUC3996-1124 11/24, 24-VER-80A)
 - Publisher: Pacific Life Insurance Company
@@ -24,12 +28,16 @@ the research file. No new sources were fetched at drafting.
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 6 pp.)
 
+(uslib-indexed_ul-s3)=
+
 ### S3. Transamerica — "Navigating the Features of the Transamerica Financial Foundation IUL" (agent guide, 23448_FFIULAG1017)
 - Publisher: Transamerica Life Insurance Company
 - Doc type: producer/agent guide (36 pp., incl. rate tables)
 - URL: https://s3-us-west-2.amazonaws.com/prod-orbital-resources/harpercole/Carriers/Transamerica/Products/IUL+Plans/23448_FFIULAG1017_Agent_Guide_Brochure_FINAL_Digital.pdf (distributor mirror of the Transamerica document; official Transamerica form number 23448_FFIULAG1017)
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 36 pp.)
+
+(uslib-indexed_ul-s4)=
 
 ### S4. Transamerica — "A Guide to the Transamerica Financial Foundation IUL Life Insurance Policy" (consumer brochure 258820R5, 09/22)
 - Publisher: Transamerica Life Insurance Company
@@ -38,12 +46,16 @@ the research file. No new sources were fetched at drafting.
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 20 pp.)
 
+(uslib-indexed_ul-s5)=
+
 ### S5. Nationwide — "Nationwide IUL Accumulator II 2020 — Product overview" (FLM-1490AO.14, 03/26)
 - Publisher: Nationwide Life and Annuity Insurance Company (Columbus, OH)
 - Doc type: producer-facing product overview / fee & rate disclosure
 - URL: https://financial.nationwide.com/media/pdf/FLM-1490AO.pdf (the same path on nationwidefinancial.com returned HTTP 403; financial.nationwide.com succeeded)
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 4 pp.)
+
+(uslib-indexed_ul-s6)=
 
 ### S6. Securian Financial — "Eclipse Accumulator II IUL — A top choice for accumulation IUL" (F108140-16, 3-2026)
 - Publisher: Minnesota Life Insurance Company / Securian Financial
@@ -52,12 +64,16 @@ the research file. No new sources were fetched at drafting.
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 6 pp.)
 
+(uslib-indexed_ul-s7)=
+
 ### S7. Securian Financial — Eclipse Accumulator IUL product page (financial professionals)
 - Publisher: Securian Financial (Minnesota Life)
 - Doc type: producer product-specification web page (HTML)
 - URL: https://www.securian.com/financial-professionals/products/individual-life-insurance/indexed-universal-life/eclipse-accumulator.html
 - Accessed: 2026-08-03
 - Retrieved: YES (HTML fetched; specifications extracted via WebFetch summarization — see caveat in the research file's "Gaps": individual numbers should be re-verified before hard-coding)
+
+(uslib-indexed_ul-s8)=
 
 ### S8. Allianz Life — "The benefits of diversifying your fixed index universal life insurance policy — Allianz Life Pro+ Elite" (CSI-486)
 - Publisher: Allianz Life Insurance Company of North America (Minneapolis, MN)
@@ -70,6 +86,8 @@ the research file. No new sources were fetched at drafting.
 
 ## Regulatory and actuarial references from the product research file [R#]
 
+(uslib-indexed_ul-r1)=
+
 ### R1. NAIC Actuarial Guideline XLIX-A (AG 49-A), incl. the 2023 revisions (commonly called "AG 49-B")
 - Publisher: National Association of Insurance Commissioners
 - Title: "Actuarial Guideline XLIX-A — The Application of the Life Illustrations Model Regulation to Policies with Index-Based Interest Sold (On or After December 14, 2020)"; adopted by Life Actuarial (A) Task Force 12/11/2022 and Life Insurance and Annuities (A) Committee 2/24/2023; includes project history of the 2023 revisions
@@ -77,11 +95,15 @@ the research file. No new sources were fetched at drafting.
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 6 pp.)
 
+(uslib-indexed_ul-r2)=
+
 ### R2. NAIC Life Insurance Illustrations Model Regulation (Model #582)
 - Publisher: NAIC (Model Laws, Regulations, Guidelines — April 2001 printing)
 - URL: https://content.naic.org/sites/default/files/model-law-582.pdf
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 14 pp.)
+
+(uslib-indexed_ul-r3)=
 
 ### R3. NAIC Valuation Manual — Jan. 1, 2026 Edition (incl. VM-01, VM-20)
 - Publisher: NAIC
@@ -89,11 +111,15 @@ the research file. No new sources were fetched at drafting.
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched, full text extracted, 457 pp.)
 
+(uslib-indexed_ul-r4)=
+
 ### R4. IRC §7702 — Life insurance contract defined
 - Publisher: Legal Information Institute, Cornell Law School (U.S. Code)
 - URL: https://www.law.cornell.edu/uscode/text/26/7702
 - Accessed: 2026-08-03
 - Retrieved: YES (HTML fetched and summarized)
+
+(uslib-indexed_ul-r5)=
 
 ### R5. IRC §7702A — Modified endowment contract defined
 - Publisher: Legal Information Institute, Cornell Law School
@@ -101,17 +127,23 @@ the research file. No new sources were fetched at drafting.
 - Accessed: 2026-08-03
 - Retrieved: YES (HTML fetched and summarized)
 
+(uslib-indexed_ul-r6)=
+
 ### R6. SOA Product Matters! (June 2023) — B. Hoffer, "Actuarial Guideline XLIX (AG49): Past, Present and Future"
 - Publisher: Society of Actuaries, Product Development Section
 - URL: https://www.soa.org/sections/product-dev/product-dev-newsletter/2023/june/pm-2023-06-hoffer/
 - Accessed: 2026-08-03
 - Retrieved: YES (HTML fetched and summarized)
 
+(uslib-indexed_ul-r8)=
+
 ### R8. American Academy of Actuaries — Life Illustrations Practice Note (September 2021 update)
 - Publisher: American Academy of Actuaries, Life Illustrations Work Group
 - URL: https://actuary.org/wp-content/uploads/2021/09/Life_Illustrations_Practice_Note_Update.pdf
 - Accessed: 2026-08-03
 - Retrieved: YES (PDF fetched and summarized)
+
+(uslib-indexed_ul-r10)=
 
 ### R10. NAIC Universal Life Insurance Model Regulation (Model #585)
 - Publisher: NAIC (Model Laws — January 2001 printing)

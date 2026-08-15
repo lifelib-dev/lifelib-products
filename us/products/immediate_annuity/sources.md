@@ -15,6 +15,8 @@ below.
 
 ## Primary product sources [S#]
 
+(uslib-immediate_annuity-s1)=
+
 ### S1. Massachusetts Mutual Life Insurance Company — "MassMutual RetireEase — A Single Premium Immediate Annuity" (AN1500 526 / MM202905-316012)
 - Publisher: Massachusetts Mutual Life Insurance Company (official document served from
   MassMutual's own `compass.massmutual.com` asset service)
@@ -28,6 +30,8 @@ below.
   joint-life option inventory with both reduction triggers, the 1–4% Inflation Protector
   COLA, and the **only published SPIA surrender-charge schedule** located in this research.
 
+(uslib-immediate_annuity-s2)=
+
 ### S2. Pacific Life Insurance Company — "Pacific Income Provider — A Single-Premium, Immediate Fixed Annuity" fact sheet (FAC0719-00 11/25, item 25-555)
 - Publisher: Pacific Life Insurance Company (official; `annuities.pacificlife.com`)
 - Doc type: product fact sheet / spec sheet (4 pages)
@@ -36,6 +40,8 @@ below.
 - Product: **Pacific Income Provider**, contract form series **ICC10:30-1181, 30-1181OR**
 - Role in this library: design anchor — the cleanest published statement of the
   reduce-on-either-death versus reduce-on-primary-death distinction.
+
+(uslib-immediate_annuity-s3)=
 
 ### S3. Pacific Life Insurance Company — "Pacific Income Provider — A Single-Premium, Immediate Fixed Annuity" client guide (FAC0718-0224)
 - Publisher: Pacific Life Insurance Company (official; `pacificlife.com`)
@@ -46,6 +52,8 @@ below.
   definition; and the only insurer hypothetical income illustrations located (explicitly
   "For illustrative purposes only").
 
+(uslib-immediate_annuity-s4)=
+
 ### S4. Integrity Life Insurance Company / National Integrity Life Insurance Company (Western & Southern Financial Group) — "IncomeSource® Series Product Summary" (CF-51-0075-2406)
 - Publisher: Western & Southern Financial Group (official; `westernsouthern.com`)
 - Doc type: distributor/producer product summary (2 pages)
@@ -54,6 +62,8 @@ below.
 - Product: **IncomeSource** SPIA, contract series **ICC16 ENT-01 1701** / **ENT-01 1701 NY**;
   Deceased Commutation Rider **ICC09 ER.02 0901**; Living Commutation Rider **ICC09 ER.01
   0901**
+
+(uslib-immediate_annuity-s5)=
 
 ### S5. New York Life Insurance and Annuity Corporation (NYLIAC) — "Just the facts about the New York Life Guaranteed Lifetime Income Annuity II" (1222A.1125 / ML25-006013 / SMRU5817113, exp. 06.27.2028)
 - Publisher: New York Life (official; `nylannuities.com`)
@@ -65,6 +75,8 @@ below.
 - Product: **New York Life Guaranteed Lifetime Income Annuity II**, policy form
   **ICC11-P103** (may be **211-P103**)
 
+(uslib-immediate_annuity-s6)=
+
 ### S6. Nationwide Life Insurance Company — "INCOME Promise® — A Single-premium Immediate Fixed Annuity" (NFS-0133-C (05/04))
 - Publisher: Nationwide Life Insurance Company (PDF hosted on Nationwide's
   retirement-plans site `nrsforu.com`)
@@ -73,6 +85,8 @@ below.
 - Retrieved: YES (full PDF read). **Caveat carried over: this is a 2004-vintage document**
   (contracts APO-4834, APO-4834-37, APO-4834-43; Oklahoma APO-4834-36) — retained because it
   documents an older but very typical SPIA option set and terminology.
+
+(uslib-immediate_annuity-s7)=
 
 ### S7. TIAA-CREF Life Insurance Company — "Single Premium Immediate Annuities" prospectus (Rule 497(c) filing, Registration No. 333-46414, dated May 1, 2008)
 - Publisher: TIAA-CREF Life Insurance Company, filed with the SEC
@@ -83,6 +97,8 @@ below.
   spec; and these are single premium immediate **variable** annuity contracts with a
   fixed-account option, **not a pure fixed SPIA**.
 
+(uslib-immediate_annuity-s8)=
+
 ### S8. Mutual of Omaha / United of Omaha Life Insurance Company — producer product overview (form 135880, updated 9-17)
 - Publisher: Mutual of Omaha Insurance Company (official producer site)
 - Doc type: producer portfolio overview (16 pages); **for producer use only**
@@ -90,6 +106,8 @@ below.
 - Retrieved: YES (full PDF read). **Caveat carried over: dated 9-2017**; the current
   Ultra-Income brochure 404s and the product page host does not resolve, so the 6% COLA and
   "age rating" facts should be re-verified before being relied on.
+
+(uslib-immediate_annuity-s9)=
 
 ### S9. LifeAnnuities.us — "Best SPIA Rates — July 2026: Top Payouts by Age"
 - Publisher: LifeAnnuities.us (**commercial annuity-quote / lead-generation site — NOT an
@@ -102,6 +120,8 @@ below.
   Numbers are indicative order-of-magnitude only and **must not be used as authoritative
   pricing**.
 
+(uslib-immediate_annuity-s10)=
+
 ### S10. New York Life — "Annuity rates" page (weekly payout-rate publication)
 - Publisher: New York Life (official; `nylannuities.com`)
 - Doc type: rates web page
@@ -109,6 +129,8 @@ below.
 - Retrieved: **PARTIAL** — page HTML retrieved successfully, but the rate tables are loaded
   client-side via JavaScript and rendered as "Loading…" in the static HTML, so **no numeric
   rates could be extracted**. Only the methodology text is cited.
+
+(uslib-immediate_annuity-s11)=
 
 ### S11. The Guardian Life Insurance Company of America — "Single Premium Immediate Annuity (SPIA)" educational page (last updated January 29, 2026)
 - Publisher: Guardian Life (official; `guardianlife.com`)
@@ -135,6 +157,8 @@ below.
 These [R#] ids are **product-local** to `_research/immediate-annuity.md` and are
 independent of the cross-product [REG-R#] space below.
 
+(uslib-immediate_annuity-r1)=
+
 ### R1. NAIC — *Valuation Manual*, Jan. 1, 2026 Edition, **VM-V: Statutory Maximum Valuation Interest Rates for Formulaic Reserves**, Section 1 "Income Annuities"
 - Publisher: National Association of Insurance Commissioners
 - URL fetched: https://content.naic.org/sites/default/files/pbr_data_valuation_manual_current_edition.pdf
@@ -143,6 +167,8 @@ independent of the cross-product [REG-R#] space below.
   historically labelled VM-22 now sits in **VM-V**; VM-22 has been redefined as the
   principle-based reserve framework for non-variable annuities (R2).
 
+(uslib-immediate_annuity-r2)=
+
 ### R2. NAIC — *Valuation Manual*, Jan. 1, 2026 Edition, **VM-22: Requirements for Principle-Based Reserves for Non-Variable Annuities**, and Section II "Reserve Requirements" Subsection 2
 - Publisher: NAIC. Same URL as R1 (PDF pages 5, 16–21, 227–318)
 - Retrieved: YES
@@ -150,16 +176,22 @@ independent of the cross-product [REG-R#] space below.
   Projection mortality formula and **Table 6.8** (payout-annuity `F_x` factors, reproduced in
   full in the research file), and the age-basis conversion formula.
 
+(uslib-immediate_annuity-r3)=
+
 ### R3. NAIC — *Valuation Manual*, Jan. 1, 2026 Edition, **VM-M Appendix M — Mortality Tables**, §1.J (2012 IAR) and §2.C (2012 IAM Basic)
 - Publisher: NAIC. Same URL as R1 (PDF pages 445–446)
 - Retrieved: YES
 - Source of the generational application formula, the three-decimals-per-1,000 rounding rule
   and its worked example, and the definition of the 2012 IAM Basic table.
 
+(uslib-immediate_annuity-r4)=
+
 ### R4. NAIC — **Model #821**, *Model Rule (Regulation) for Recognizing a New Annuity Mortality Table for Use in Determining Reserve Liabilities for Annuities* (January 2013 publication; recommended effective date 1/1/2014)
 - Publisher: NAIC
 - URL fetched: https://content.naic.org/sites/default/files/model-law-821.pdf
 - Retrieved: YES (5 pages)
+
+(uslib-immediate_annuity-r5)=
 
 ### R5. NAIC — **Model #805**, *Standard Nonforfeiture Law for Individual Deferred Annuities* (Fall 2020 publication)
 - Publisher: NAIC
@@ -167,10 +199,14 @@ independent of the cross-product [REG-R#] space below.
 - Retrieved: YES (5 pages)
 - Carries the **verified** §2.A finding that immediate annuities are exempt.
 
+(uslib-immediate_annuity-r6)=
+
 ### R6. **26 U.S.C. § 72** — Annuities; certain proceeds of endowment and life insurance contracts
 - Publisher: Legal Information Institute, Cornell Law School (mirror of the U.S. Code)
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/72
 - Retrieved: YES (via WebFetch)
+
+(uslib-immediate_annuity-r7)=
 
 ### R7. IRS — **Publication 939, *General Rule for Pensions and Annuities*** (Rev. 12-2025)
 - Publisher: Internal Revenue Service
@@ -179,10 +215,14 @@ independent of the cross-product [REG-R#] space below.
 - Source of the exclusion-ratio computation steps, the age-nearest convention, the
   expected-return rules by payout form, and the refund-feature adjustment worked example.
 
+(uslib-immediate_annuity-r8)=
+
 ### R8. **Treas. Reg. § 1.401(a)(9)-6** — Required minimum distributions for defined benefit plans and annuity contracts
 - Publisher: Legal Information Institute, Cornell Law School (mirror of 26 CFR)
 - URL fetched: https://www.law.cornell.edu/cfr/text/26/1.401%28a%29%289%29-6
 - Retrieved: YES (via WebFetch)
+
+(uslib-immediate_annuity-r9)=
 
 ### R9. SOA Research Institute & LIMRA — **2020-2024 Individual Payout Annuity Mortality Experience Study** (study highlights, © 2026)
 - Publisher: Society of Actuaries Research Institute (Individual Annuity Experience
@@ -191,12 +231,16 @@ independent of the cross-product [REG-R#] space below.
 - Retrieved: YES (5-page public "Study Highlights"; the detailed report and dashboards are
   behind the paid Experience Studies Pro package — **not retrieved**)
 
+(uslib-immediate_annuity-r10)=
+
 ### R10. **26 U.S.C. § 130** — Certain personal injury liability assignments (structured settlements)
 - Publisher: Legal Information Institute, Cornell Law School
 - URL fetched: https://www.law.cornell.edu/uscode/text/26/130
 - Retrieved: YES (via WebFetch)
 - Cited only to distinguish structured settlements (no commutation permissible at all) from
   the retail SPIA in scope here.
+
+(uslib-immediate_annuity-r11)=
 
 ### R11. Wisconsin Office of the Commissioner of Insurance — **PI-214, *Consumer's Guide to Understanding Annuities*** (R 09/2025)
 - Publisher: State of Wisconsin OCI
