@@ -6,6 +6,9 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+# IDE settings
+.idea/
+
 # Python artifacts
 __pycache__/
 *.py[cod]
