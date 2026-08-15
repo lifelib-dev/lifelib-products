@@ -419,7 +419,7 @@ surrenders, must also be included [R1].
 **Risk-neutral scenarios — for hedging and fair value.** A separate, market-consistent set
 is required for hedge valuation under a Clearly Defined Hedging Strategy (VM-21 §9)
 [REG-R35] and for the fair value of the GLWB/GMDB as **market risk benefits** under LDTI
-[REG-R34 — **[unverified]**, source not fetched (fasb.org 403); summary-based] [REG-R71].
+[REG-R34 — **[unverified]**, source not fetched (fasb.org 403); summary-based](#uslib-reg-r34) [REG-R71].
 The two sets are not interchangeable; the model exposes the scenario basis as an input,
 never as a hard-coded assumption.
 
@@ -475,7 +475,7 @@ surrender charge period — an 84% suppression [R1]. Compose them as here, or re
 multiplier with a direct table lookup; do not apply both gradings at once. The economic
 anchor for the size of the effect is the FIA experience split: in the year the surrender
 charge expires, surrender was roughly **10% with a GLWB rider versus 33% without**
-[REG-R62 — **[unverified]**, from press coverage of the 2019–20 study].
+[REG-R62 — **[unverified]**, from press coverage of the 2019–20 study](#uslib-reg-r62).
 
 ### GLWB utilization
 
@@ -485,7 +485,7 @@ construction below is VM-21's [R1], not that file's: it carries no cohort machin
 Parameterized here by:
 
 - **First-withdrawal age.** Base run **[std]**: age 70, on the finding that activation
-  clusters at the RMD age [REG-R64 — **[unverified]**] [REG-R57] [REG-R58]. The prescribed
+  clusters at the RMD age [REG-R64 — **[unverified]**](#uslib-reg-r64) [REG-R57] [REG-R58]. The prescribed
   alternative is VM-21's Withdrawal Delay Cohort Method, which splits the contract into
   cohorts weighted by differences in a revised GAPV across candidate initial withdrawal
   ages, discarding cohorts below the attained age and rescaling [R1].
@@ -591,7 +591,7 @@ them and are cited, not reproduced:
   examination directive on AG 43/VM-21 tax reserves is [unverified] (irs.gov 404) [REG-R72].
 - **U.S. GAAP** — the GLWB and GMDB are the paradigm **market risk benefits** at fair value
   through earnings under LDTI [REG-R34 — **[unverified]**, ASU 2018-12 not fetched
-  (fasb.org 403); summary-based], with ASOP No. 10 as the professional counterpart, which
+  (fasb.org 403); summary-based](#uslib-reg-r34), with ASOP No. 10 as the professional counterpart, which
   *was* retrieved and supplies the MRB definition and classification test [REG-R71].
 - **Standards for the modeling work** — ASOP Nos. 7 [REG-R27], 22 [REG-R29], 56 [REG-R32],
   2 (non-guaranteed elements, expressly covering variable deferred annuities, so governing
@@ -681,3 +681,48 @@ them and are cited, not reproduced:
 - **Discretization drift.** Monthly unit-value compounding of a daily charge [S2], annual
   crediting of roll-up and bonus [S1] and quarterly fee assessment [S1] are three different
   clocks; changing any one changes the answer. Document all three.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-variable_annuity-r1
+[R11]: #uslib-variable_annuity-r11
+[R12]: #uslib-variable_annuity-r12
+[R13]: #uslib-variable_annuity-r13
+[R3]: #uslib-variable_annuity-r3
+[R4]: #uslib-variable_annuity-r4
+[R5]: #uslib-variable_annuity-r5
+[REG-R151]: #uslib-reg-r151
+[REG-R153]: #uslib-reg-r153
+[REG-R156]: #uslib-reg-r156
+[REG-R157]: #uslib-reg-r157
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[REG-R35]: #uslib-reg-r35
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R38]: #uslib-reg-r38
+[REG-R47]: #uslib-reg-r47
+[REG-R57]: #uslib-reg-r57
+[REG-R58]: #uslib-reg-r58
+[REG-R59]: #uslib-reg-r59
+[REG-R61]: #uslib-reg-r61
+[REG-R64]: #uslib-reg-r64
+[REG-R66]: #uslib-reg-r66
+[REG-R67]: #uslib-reg-r67
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[REG-R72]: #uslib-reg-r72
+[S1]: #uslib-variable_annuity-s1
+[S2]: #uslib-variable_annuity-s2
+[S3]: #uslib-variable_annuity-s3
+[S4]: #uslib-variable_annuity-s4
+[S5]: #uslib-variable_annuity-s5
+[S6]: #uslib-variable_annuity-s6
+[S7]: #uslib-variable_annuity-s7
+[S8]: #uslib-variable_annuity-s8
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

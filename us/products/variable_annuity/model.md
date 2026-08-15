@@ -520,3 +520,17 @@ as one.
 ```bash
 python -m pytest tests/test_variable_annuity_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-variable_annuity-r1
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R59]: #uslib-reg-r59
+[S1]: #uslib-variable_annuity-s1
+[S2]: #uslib-variable_annuity-s2
+[S3]: #uslib-variable_annuity-s3
+[S4]: #uslib-variable_annuity-s4
+[S7]: #uslib-variable_annuity-s7
+[S8]: #uslib-variable_annuity-s8
+[std]: #uslib-std
+<!-- END generated citation links -->

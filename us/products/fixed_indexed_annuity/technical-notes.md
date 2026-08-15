@@ -142,7 +142,7 @@ view of experience. They must not be mixed in the code.
 | Minimum age for lifetime withdrawals | 50 | [S2] [S3] [S9] |
 | Rider charge maximum | 1.50%, changeable only after contract year 15 | [S9] |
 | Post-depletion guarantee | income continues if depletion is caused by guaranteed withdrawals or rider charges; terminates if caused by excess withdrawals, surrender charges or MVA | [S1] [S9] |
-| Death benefit ≥ cash surrender benefit | statutory constraint | [R2 §6] |
+| Death benefit ≥ cash surrender benefit | statutory constraint | [R2 §6](#uslib-fixed_indexed_annuity-r2) |
 
 ### (b) Insurer-declared current elements (snapshot; revisable NGEs [R6] [REG-R26])
 
@@ -441,7 +441,7 @@ versus 33% without** [R8]:
 The third row extrapolates **[std]** from the qualitative finding that "contracts with GLWBs lapse
 less than those without" and "activated GLWBs lapse least," with the lowest rates where the
 withdrawal is 95%–105% of the maximum [R1]. Applying a plain fixed-deferred shock lapse — reported
-at roughly 52%–56% for fixed-rate deferred annuities [REG-R63, [unverified]] — to an FIA with an
+at roughly 52%–56% for fixed-rate deferred annuities [REG-R63, [unverified]](#uslib-reg-r63) — to an FIA with an
 in-force rider will materially understate the tail this product is sold for.
 
 **Rider moneyness multiplier [std].** Surrender is further suppressed when the guarantee is in the
@@ -454,7 +454,7 @@ Rational surrender destroys a guarantee worth `BB − AV` in benefit-base terms;
 direction is documented [R1] [R8], the functional form is not.
 
 **GLWB activation (utilization timing) [std].** Activation clusters at the
-required-minimum-distribution age [R1] [REG-R64 [unverified]], which makes the RMD regulations a
+required-minimum-distribution age [R1] [REG-R64 [unverified]](#uslib-reg-r64), which makes the RMD regulations a
 behavioral input, not merely a tax one [REG-R57] [REG-R58]:
 
     h(a) = 0.00  for a < 60      h(a) = 0.05  for 60 ≤ a < rmd_age
@@ -675,3 +675,55 @@ Known pitfalls:
   date [S4]; Athene's rate sheets [S-f1], American Equity's official host [S-f3] and the current
   Nationwide brochure [S-f4] could not be fetched. State variation in surrender charges, vesting,
   MVA availability and waiver terms is extensive and deliberately not modeled [S2] [S3] [S6] [S7].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_indexed_annuity-r1
+[R2]: #uslib-fixed_indexed_annuity-r2
+[R3]: #uslib-fixed_indexed_annuity-r3
+[R6]: #uslib-fixed_indexed_annuity-r6
+[R7]: #uslib-fixed_indexed_annuity-r7
+[R8]: #uslib-fixed_indexed_annuity-r8
+[R9]: #uslib-fixed_indexed_annuity-r9
+[REG-R1]: #uslib-reg-r1
+[REG-R100]: #uslib-reg-r100
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R153]: #uslib-reg-r153
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R3]: #uslib-reg-r3
+[REG-R32]: #uslib-reg-r32
+[REG-R33]: #uslib-reg-r33
+[REG-R34]: #uslib-reg-r34
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R57]: #uslib-reg-r57
+[REG-R58]: #uslib-reg-r58
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R61]: #uslib-reg-r61
+[REG-R62]: #uslib-reg-r62
+[REG-R64]: #uslib-reg-r64
+[REG-R65]: #uslib-reg-r65
+[REG-R67]: #uslib-reg-r67
+[REG-R68]: #uslib-reg-r68
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-fixed_indexed_annuity-s1
+[S10]: #uslib-fixed_indexed_annuity-s10
+[S11]: #uslib-fixed_indexed_annuity-s11
+[S2]: #uslib-fixed_indexed_annuity-s2
+[S3]: #uslib-fixed_indexed_annuity-s3
+[S4]: #uslib-fixed_indexed_annuity-s4
+[S5]: #uslib-fixed_indexed_annuity-s5
+[S6]: #uslib-fixed_indexed_annuity-s6
+[S7]: #uslib-fixed_indexed_annuity-s7
+[S8]: #uslib-fixed_indexed_annuity-s8
+[S9]: #uslib-fixed_indexed_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

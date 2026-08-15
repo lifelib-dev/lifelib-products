@@ -42,11 +42,17 @@ TAG = r'(?:S|R|REG-R)\d+[a-z]?'
 ANCHOR = re.compile(r'^\(([\w.-]+)\)=\s*$', re.M)
 FENCE = re.compile(r'^\s*(```|~~~)', re.M)
 INLINE_CODE = re.compile(r'`[^`\n]*`')
-INLINE_LINK = re.compile(r'\[[^\[\]]*\]\([^()]*\)')
+# Link text may itself contain a bracketed marker -- [REG-R17; exact table mapping
+# [unverified]](#...) -- so one level of nesting has to be allowed here, or a second run
+# fails to recognise its own output as a link and wraps it again.
+INLINE_LINK = re.compile(r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]\([^()]*\)')
 
 BARE = re.compile(rf'\[({TAG}|std|unverified)\]')
 COMMA_LIST = re.compile(rf'\[({TAG}(?:\s*,\s*{TAG})+)\]')
-PINPOINT = re.compile(rf'\[({TAG})(\s+[^\[\]]+)\]')
+# The separator between a tag and its pinpoint is not always whitespace -- semicolons and
+# dashes both occur -- and the pinpoint text may itself contain a bracketed marker, as in
+# ``[REG-R17; exact table mapping [unverified]]``.
+PINPOINT = re.compile(rf'\[({TAG})([\s,;:—–][^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*)\]')
 
 
 def prose_spans(text):
@@ -83,14 +89,38 @@ def anchors_in(path):
     return set(ANCHOR.findall(path.read_text(encoding="utf-8")))
 
 
-def target_for(tag, product, lib):
-    if tag.startswith("REG-R"):
-        return f"{lib}-reg-r{tag[5:].lower()}"
+def targets_for(tag, product, lib):
+    """Candidate anchors for a tag, best first.
+
+    Two fallbacks, both drawn from how the corpus actually cites:
+
+    * A bare ``[R41]`` in a product document means that product's R41 -- unless the product
+      has no R41, in which case it means the cross-product library's, as in the deferred
+      income annuity's ``verified from the Valuation Manual's VM-C index [R41]``.  Numbering
+      is per product, so the product's own entry always wins when it exists.
+    * A letter-suffixed tag like ``[R49b]`` is not a separate entry.  It marks a corroborating
+      source *within* entry R49 -- the GAO rule report behind the SEC release -- so it lands
+      on R49, where that corroboration is described.
+    """
     if tag in ("std", "unverified"):
-        return f"{lib}-{tag}"
-    if product is None:
-        return f"{lib}-reg-{tag.lower()}"
-    return f"{lib}-{product}-{tag.lower()}"
+        return [f"{lib}-{tag}"]
+
+    bare = tag[4:] if tag.startswith("REG-") else tag
+    stem = bare.rstrip("abcdefghijklmnopqrstuvwxyz")
+
+    out = []
+    if not tag.startswith("REG-") and product is not None:
+        out += [f"{lib}-{product}-{bare.lower()}", f"{lib}-{product}-{stem.lower()}"]
+    out += [f"{lib}-reg-{bare.lower()}", f"{lib}-reg-{stem.lower()}"]
+    return list(dict.fromkeys(out))
+
+
+def target_for(tag, product, lib, available):
+    """The first candidate anchor that exists, or None."""
+    for candidate in targets_for(tag, product, lib):
+        if candidate in available:
+            return candidate
+    return None
 
 
 def split_comma_lists(text):
@@ -113,8 +143,8 @@ def linkify_pinpoints(text, product, lib, available):
         mask = masked(chunk)
         edits = []
         for m in PINPOINT.finditer(mask):
-            target = target_for(m.group(1), product, lib)
-            if target in available:
+            target = target_for(m.group(1), product, lib, available)
+            if target:
                 edits.append((m.start(), m.end(), target))
         for start, end, target in reversed(edits):
             body = chunk[start:end]
@@ -166,8 +196,8 @@ def main(argv):
 
         definitions = []
         for tag in sorted(used_tags(text), key=lambda t: (t[0].isalpha() and t[0].islower(), t)):
-            target = target_for(tag, product, lib)
-            if target in available:
+            target = target_for(tag, product, lib, available)
+            if target:
                 definitions.append(f"[{tag}]: #{target}")
             else:
                 missing[f"{path.parent.name}/{path.name}: [{tag}]"] += 1

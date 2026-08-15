@@ -210,7 +210,7 @@ Reserve (Section 4) and a Stochastic Reserve (Section 5), with economic scenario
 addressed in its Appendix 1 [R7]; GAAP
 long-duration (LDTI) measurement consumes the same projected cash flows with
 different assumption-update and discounting overlays [REG-R34 — source not fetched;
-summary-based, flagged]. Declared fixed-option rates would in practice vary with
+summary-based, flagged](#uslib-reg-r34). Declared fixed-option rates would in practice vary with
 general-account yields; the baseline holds i_fix at the 1.0% floor **[std]**.
 
 ### Separate-account vs general-account cash flow split
@@ -336,7 +336,7 @@ conflict) [R9]; AAA VM-20 practice note [R10]; ASOP 7 (cash flow analysis)
 [REG-R27]; ASOP 56 (model governance for this implementation itself) [REG-R32]. Tax
 reserves: greater of net surrender value and 92.81% of the NAIC-method reserve,
 capped at statutory [REG-R16]. GAAP: LDTI (ASU 2018-12) overlays measurement on the
-same projected cash flows [REG-R34 — not fetched; summary-based, flagged].
+same projected cash flows [REG-R34 — not fetched; summary-based, flagged](#uslib-reg-r34).
 
 ## Key sensitivities and model risks
 
@@ -378,3 +378,32 @@ Known modeling pitfalls:
   performance → higher NAAR persistence); see
   `products/guaranteed_ul/technical-notes.md` for shadow-account mechanics and
   [S4] for the rider's notional-load design.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #uslib-variable_ul-r10
+[R11]: #uslib-variable_ul-r11
+[R12]: #uslib-variable_ul-r12
+[R3]: #uslib-variable_ul-r3
+[R4]: #uslib-variable_ul-r4
+[R7]: #uslib-variable_ul-r7
+[R8]: #uslib-variable_ul-r8
+[R9]: #uslib-variable_ul-r9
+[REG-R1]: #uslib-reg-r1
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R155]: #uslib-reg-r155
+[REG-R16]: #uslib-reg-r16
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R20]: #uslib-reg-r20
+[REG-R21]: #uslib-reg-r21
+[REG-R27]: #uslib-reg-r27
+[REG-R3]: #uslib-reg-r3
+[REG-R32]: #uslib-reg-r32
+[S1]: #uslib-variable_ul-s1
+[S2]: #uslib-variable_ul-s2
+[S3]: #uslib-variable_ul-s3
+[S4]: #uslib-variable_ul-s4
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

@@ -420,3 +420,13 @@ weighting its own row, that a withdrawal is `withdrawals(t)` and `claims(t,
 ```bash
 python -m pytest tests/test_guaranteed_ul_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R4]: #uslib-guaranteed_ul-r4
+[R7]: #uslib-guaranteed_ul-r7
+[REG-R20]: #uslib-reg-r20
+[REG-R21]: #uslib-reg-r21
+[S1]: #uslib-guaranteed_ul-s1
+[S4]: #uslib-guaranteed_ul-s4
+[std]: #uslib-std
+<!-- END generated citation links -->

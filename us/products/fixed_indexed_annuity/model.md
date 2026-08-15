@@ -448,3 +448,15 @@ remaining nine each have their own test.
 ```bash
 python -m pytest tests/test_fixed_indexed_annuity_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_indexed_annuity-r1
+[S10]: #uslib-fixed_indexed_annuity-s10
+[S2]: #uslib-fixed_indexed_annuity-s2
+[S3]: #uslib-fixed_indexed_annuity-s3
+[S4]: #uslib-fixed_indexed_annuity-s4
+[S5]: #uslib-fixed_indexed_annuity-s5
+[S8]: #uslib-fixed_indexed_annuity-s8
+[S9]: #uslib-fixed_indexed_annuity-s9
+[std]: #uslib-std
+<!-- END generated citation links -->

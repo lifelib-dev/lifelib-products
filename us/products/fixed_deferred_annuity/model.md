@@ -125,7 +125,7 @@ with no formula change.
 | File | Contents | Provenance |
 |---|---|---|
 | `model_point_table.csv` | Seven contracts, all on the anchor cell M60 ANB / NQ / $100,000 / 5-year period, differing only in the switches the notes make first-class parameters. **Point 1 is the worked-example anchor**; point 2 is the same contract on the 10% stress reference yield; points 3–7 carry Camp B, the registered-contract conventions, the Midland conventions, the asymmetric cap and the declared-differential MVA | contract terms sourced [S10] [S11]; behavioural switches **[std]** |
-| `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative Makeham annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with Projection Scale G2 and the VM-22 Table 6.7 factors [R2 §6.B.8] [R9], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
+| `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative Makeham annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with Projection Scale G2 and the VM-22 Table 6.7 factors [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2) [R9], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
 | `surr_charge_table.csv` | The initial and renewal schedules, keyed by `(schedule, contract_year)` | initial 9/8/7/6/5 sourced [S10]; renewal 5/4/3/2/1 sourced [S2], adoption **[std]** |
 | `surr_charge_age_cap.csv` | The attained-age cap on the renewal charge, 4% at 94 down to 0% at 98–100 | sourced [S1] [S2] |
 | `rate_scenario.csv` | Three deterministic scenarios keyed by `(scenario_id, t)`, read as step functions: `base` (it = 6.50%, MR = CR = 4.45%), `stress` (it = 10.00%) and `differential` (MR = 6.00%) | **[std]**; the index is a state-filed variable [S8] [S12], so the model takes a scalar series rather than hard-coding one |
@@ -280,7 +280,7 @@ difference; that is a discretization consequence, not a modelling choice.
 The notes list `av_initial`, `mgsv_initial` and `tax_basis_initial` as model point
 attributes. Two of the three are fixed by rules the notes also state: 100% of premium is
 credited with no front-end load [S5] [S10] [S16], and the Model #805 floor starts at 87.5% of
-gross consideration [R1 §4.A(2)]. Shipping them as data would let a model point silently
+gross consideration [R1 §4.A(2)](#uslib-fixed_deferred_annuity-r1). Shipping them as data would let a model point silently
 violate the statute. They are computed instead, from the References `load_prem_rate` (0.0)
 and `net_consideration_ratio` (0.875). Only `tax_basis_initial` stays a column, because it
 genuinely varies with tax status.
@@ -360,3 +360,22 @@ else in the traces agrees to well under a cent.
 ```bash
 python -m pytest tests/test_fixed_deferred_annuity_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_deferred_annuity-r1
+[R9]: #uslib-fixed_deferred_annuity-r9
+[S1]: #uslib-fixed_deferred_annuity-s1
+[S10]: #uslib-fixed_deferred_annuity-s10
+[S11]: #uslib-fixed_deferred_annuity-s11
+[S12]: #uslib-fixed_deferred_annuity-s12
+[S14]: #uslib-fixed_deferred_annuity-s14
+[S15]: #uslib-fixed_deferred_annuity-s15
+[S16]: #uslib-fixed_deferred_annuity-s16
+[S2]: #uslib-fixed_deferred_annuity-s2
+[S3]: #uslib-fixed_deferred_annuity-s3
+[S4]: #uslib-fixed_deferred_annuity-s4
+[S5]: #uslib-fixed_deferred_annuity-s5
+[S8]: #uslib-fixed_deferred_annuity-s8
+[S9]: #uslib-fixed_deferred_annuity-s9
+[std]: #uslib-std
+<!-- END generated citation links -->

@@ -517,9 +517,9 @@ Reg. §1.817-5 no more than 55% of the account's total assets may be in any one 
 70% in any two, 80% in any three, 90% in any four, tested quarterly with a 30-day cure
 window and a look-through to underlying RIC assets [R10] [REG-R15]. RMD timing under the
 2024 final regulations is a *behavioral* input, not merely a tax one, because GLWB
-activation clusters at the RMD age [REG-R57] [REG-R58] [REG-R64 — unverified]. Tax reserves
+activation clusters at the RMD age [REG-R57] [REG-R58] [REG-R64 — unverified](#uslib-reg-r64). Tax reserves
 under §807 are the greater of net surrender value and 92.81% of the NAIC-prescribed method
-(CARVM, i.e. VM-21), capped at statutory [REG-R16] [REG-R72 — unverified].
+(CARVM, i.e. VM-21), capped at statutory [REG-R16] [REG-R72 — unverified](#uslib-reg-r72).
 
 **Disclosure, suitability, accounting and professional standards.** Model #245 largely
 exempts registered products complying with SEC and FINRA rules under its §3.D, **but the
@@ -528,8 +528,8 @@ best-interest standard changes exchange and replacement behavior and therefore s
 assumptions [REG-R46]. Under LDTI the GLWB and GMDB are the paradigm **market risk
 benefits**, at fair value through earnings [REG-R34 — **[unverified]**: fasb.org returned
 403, so ASU 2018-12 itself was never retrieved and its substance rests on secondary
-summaries] [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
-retrieved] — a second consumer of the same cash flows on a risk-neutral basis.
+summaries](#uslib-reg-r34) [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
+retrieved](#uslib-reg-r71) — a second consumer of the same cash flows on a risk-neutral basis.
 *Fifth correction:* **there is no ASOP for principle-based reserves for annuities** —
 ASOP No. 52 is scoped to VM-20 life products, so
 any claim that it governs VM-21 is [unverified] and, on the retrieved ASB text, wrong
@@ -537,3 +537,58 @@ any claim that it governs VM-21 is [unverified] and, on the retrieved ASB text, 
 [REG-R32], 2 (non-guaranteed elements, expressly covering variable deferred annuities and
 so governing the rider-charge reset) [REG-R26], 54 [REG-R70] and 10 [REG-R71]; the nearest
 VM-21-specific guidance is the non-binding Academy practice note supplement [R4] [REG-R66].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-variable_annuity-r1
+[R10]: #uslib-variable_annuity-r10
+[R11]: #uslib-variable_annuity-r11
+[R12]: #uslib-variable_annuity-r12
+[R2]: #uslib-variable_annuity-r2
+[R3]: #uslib-variable_annuity-r3
+[R4]: #uslib-variable_annuity-r4
+[R6]: #uslib-variable_annuity-r6
+[R7]: #uslib-variable_annuity-r7
+[R8]: #uslib-variable_annuity-r8
+[R9]: #uslib-variable_annuity-r9
+[REG-R15]: #uslib-reg-r15
+[REG-R151]: #uslib-reg-r151
+[REG-R156]: #uslib-reg-r156
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[REG-R35]: #uslib-reg-r35
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R38]: #uslib-reg-r38
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R44]: #uslib-reg-r44
+[REG-R45]: #uslib-reg-r45
+[REG-R46]: #uslib-reg-r46
+[REG-R47]: #uslib-reg-r47
+[REG-R48]: #uslib-reg-r48
+[REG-R50]: #uslib-reg-r50
+[REG-R51]: #uslib-reg-r51
+[REG-R52]: #uslib-reg-r52
+[REG-R54]: #uslib-reg-r54
+[REG-R55]: #uslib-reg-r55
+[REG-R56]: #uslib-reg-r56
+[REG-R57]: #uslib-reg-r57
+[REG-R58]: #uslib-reg-r58
+[REG-R66]: #uslib-reg-r66
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-variable_annuity-s1
+[S2]: #uslib-variable_annuity-s2
+[S3]: #uslib-variable_annuity-s3
+[S4]: #uslib-variable_annuity-s4
+[S5]: #uslib-variable_annuity-s5
+[S6]: #uslib-variable_annuity-s6
+[S7]: #uslib-variable_annuity-s7
+[S8]: #uslib-variable_annuity-s8
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

@@ -404,3 +404,30 @@ life-insurance treatment [R5] [R6].
 are NGEs governed by ASOP No. 2: determination policy, policy classes reflecting
 anticipated experience, and scales based on reasonable expectations of future
 experience, not recouping past losses or distributing past gains [R11].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-variable_ul-r1
+[R11]: #uslib-variable_ul-r11
+[R12]: #uslib-variable_ul-r12
+[R13]: #uslib-variable_ul-r13
+[R2]: #uslib-variable_ul-r2
+[R3]: #uslib-variable_ul-r3
+[R4]: #uslib-variable_ul-r4
+[R5]: #uslib-variable_ul-r5
+[R6]: #uslib-variable_ul-r6
+[R7]: #uslib-variable_ul-r7
+[R8]: #uslib-variable_ul-r8
+[REG-R1]: #uslib-reg-r1
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R155]: #uslib-reg-r155
+[REG-R3]: #uslib-reg-r3
+[REG-R4]: #uslib-reg-r4
+[REG-R5]: #uslib-reg-r5
+[S1]: #uslib-variable_ul-s1
+[S2]: #uslib-variable_ul-s2
+[S3]: #uslib-variable_ul-s3
+[S4]: #uslib-variable_ul-s4
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

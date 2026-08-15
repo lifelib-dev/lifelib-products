@@ -735,3 +735,47 @@ Known modeling pitfalls:
   single fully decomposed case [S2]; and the Academy a six-year path with all
   Black-Scholes inputs disclosed plus an Excel Lambda library reproducing the calculation
   [R6]. These are the only public conformance tests available.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uslib-registered_index_linked_annuity-r2
+[R3]: #uslib-registered_index_linked_annuity-r3
+[R5]: #uslib-registered_index_linked_annuity-r5
+[R6]: #uslib-registered_index_linked_annuity-r6
+[REG-R15]: #uslib-reg-r15
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[REG-R34]: #uslib-reg-r34
+[REG-R35]: #uslib-reg-r35
+[REG-R38]: #uslib-reg-r38
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R44]: #uslib-reg-r44
+[REG-R47]: #uslib-reg-r47
+[REG-R48]: #uslib-reg-r48
+[REG-R55]: #uslib-reg-r55
+[REG-R58]: #uslib-reg-r58
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R61]: #uslib-reg-r61
+[REG-R62]: #uslib-reg-r62
+[REG-R63]: #uslib-reg-r63
+[REG-R64]: #uslib-reg-r64
+[REG-R65]: #uslib-reg-r65
+[REG-R66]: #uslib-reg-r66
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-registered_index_linked_annuity-s1
+[S2]: #uslib-registered_index_linked_annuity-s2
+[S3]: #uslib-registered_index_linked_annuity-s3
+[S4]: #uslib-registered_index_linked_annuity-s4
+[S5]: #uslib-registered_index_linked_annuity-s5
+[S6]: #uslib-registered_index_linked_annuity-s6
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

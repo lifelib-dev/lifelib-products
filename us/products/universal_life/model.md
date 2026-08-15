@@ -445,3 +445,14 @@ Four more tests exist because a review found the model wrong:
 ```bash
 python -m pytest tests/test_universal_life_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uslib-universal_life-r2
+[R7]: #uslib-universal_life-r7
+[REG-R20]: #uslib-reg-r20
+[S1]: #uslib-universal_life-s1
+[S2]: #uslib-universal_life-s2
+[S3]: #uslib-universal_life-s3
+[S5]: #uslib-universal_life-s5
+[std]: #uslib-std
+<!-- END generated citation links -->

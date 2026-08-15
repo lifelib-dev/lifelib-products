@@ -416,3 +416,14 @@ columns netting to `net_cf`, the start-of-month `pols_if` weighting, and a read 
 ```bash
 python -m pytest tests/test_variable_ul_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R3]: #uslib-variable_ul-r3
+[REG-R20]: #uslib-reg-r20
+[REG-R21]: #uslib-reg-r21
+[S1]: #uslib-variable_ul-s1
+[S2]: #uslib-variable_ul-s2
+[S3]: #uslib-variable_ul-s3
+[S4]: #uslib-variable_ul-s4
+[std]: #uslib-std
+<!-- END generated citation links -->

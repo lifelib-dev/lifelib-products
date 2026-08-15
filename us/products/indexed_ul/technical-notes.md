@@ -311,7 +311,7 @@ maturity) **[std]**; under the Transamerica variant the credit base would add ba
 the 180.00 of deductions, giving credit 10.00% × (12,000.00 − 90.00) = 1,191.00 in
 Scenario A (before netting the in-segment guaranteed interest that design credits) [S3].
 Under the guaranteed-cap-only scenario (class (a)), the Scenario A credit would be
-2.00% × 11,820.00 = 236.40 [S2 guaranteed cap].
+2.00% × 11,820.00 = 236.40 [S2 guaranteed cap](#uslib-indexed_ul-s2).
 
 ## Valuation and reserve pointers
 
@@ -388,11 +388,48 @@ Known modeling pitfalls:
   instruction to run the SVL §5.A / A-820 ¶11 modified-net-premium routine. An indexed UL
   policy takes the **A-585 guaranteed-maturity-premium** adaptation, and one A-830 reaches
   through a secondary guarantee takes the ¶¶29–32 segmented construction instead. Both
-  substitutions are silent — they produce a number [REG-R155 ¶8] [REG-R154 ¶¶2, 30].
+  substitutions are silent — they produce a number [REG-R155 ¶8](#uslib-reg-r155) [REG-R154 ¶¶2, 30](#uslib-reg-r154).
 - **Index credits inside the guaranteed maturity premium**: the GMP solve is on guarantees
   at issue "excluding guarantees linked to an external referent", so the current cap
   (10.00% [S2]) — a nonguaranteed element in any case — is doubly out of it, and the
   index-linked crediting is out with it. Feeding a credited-rate assumption into the GMP
   changes both the GMP solve and the GMF path, and so both legs of the reserve at once.
   What the rule leaves open for the guaranteed cap and floor is a modeling decision to
-  be documented — **[std, derived]**, not sourced [REG-R155 ¶¶4, 8.c].
+  be documented — **[std, derived]**, not sourced [REG-R155 ¶¶4, 8.c](#uslib-reg-r155).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-indexed_ul-r1
+[R10]: #uslib-indexed_ul-r10
+[R2]: #uslib-indexed_ul-r2
+[R3]: #uslib-indexed_ul-r3
+[R4]: #uslib-indexed_ul-r4
+[R5]: #uslib-indexed_ul-r5
+[R6]: #uslib-indexed_ul-r6
+[R8]: #uslib-indexed_ul-r8
+[REG-R1]: #uslib-reg-r1
+[REG-R155]: #uslib-reg-r155
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R20]: #uslib-reg-r20
+[REG-R21]: #uslib-reg-r21
+[REG-R23]: #uslib-reg-r23
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R3]: #uslib-reg-r3
+[REG-R30]: #uslib-reg-r30
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[REG-R5]: #uslib-reg-r5
+[S1]: #uslib-indexed_ul-s1
+[S2]: #uslib-indexed_ul-s2
+[S3]: #uslib-indexed_ul-s3
+[S4]: #uslib-indexed_ul-s4
+[S5]: #uslib-indexed_ul-s5
+[S6]: #uslib-indexed_ul-s6
+[S7]: #uslib-indexed_ul-s7
+[S8]: #uslib-indexed_ul-s8
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

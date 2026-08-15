@@ -51,7 +51,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
   (2012 IAM Basic with Scale G2 and the Table 6.7 factors) is stated ANB, and the Valuation
   Manual supplies the ALB conversion
   `q(x)_ALB = [q(x)_ANB + (1 − q(x)_ANB) × q(x+1)_ANB] / (2 − q(x)_ANB)` rather than a native
-  ALB table [R2 §6.B.8] [R9]; the SOA/LIMRA fixed-rate deferred surrender study is also ANB,
+  ALB table [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2) [R9]; the SOA/LIMRA fixed-rate deferred surrender study is also ANB,
   with a Balducci exposure adjustment [R8].
 - **Model points.** Single-contract model points on an expected (probability-weighted) basis:
   an in-force factor `l(t)` multiplies per-contract cash flows. Grouping is a caller concern.
@@ -69,7 +69,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `issue_age` | int (ANB) | 60 |
 | `sex` | enum {M, F} | M |
 | `tax_status` | enum {NQ, IRA, Roth, inherited} | NQ **[std]** |
-| `premium` | currency | 100,000 [S11 rate band ≥$100,000] |
+| `premium` | currency | 100,000 [S11 rate band ≥$100,000](#uslib-fixed_deferred_annuity-s11) |
 | `issue_date` | date | contract month 0 |
 | `guarantee_period_years` | int | 5 [S10] [S11] |
 | `declared_rate_initial` | rate p.a. | 0.0445 [S11] |
@@ -125,10 +125,10 @@ Three classes are distinguished explicitly and must never be blended in a parame
 | MVA excluded from | death benefit, 30-day window, annuitization, RMDs, waiver withdrawals | [S2] [S4] [S5] [S8] [S13] [S16] |
 | GMIR (floor on any declared rate) | 0.25% | [S11] |
 | GMSV rate `i_nf` | 2.80% | [S11] |
-| Model #805 net consideration ratio | 87.5% of gross considerations | [R1 §4.A(2)] [REG-R42] |
-| Model #805 indexed-rate corridor | `min(3.00%, round(5-yr CMT, 1/20%) − 1.25%)`, floor **0.15%** | [R1 §4.B] [REG-R42] |
-| Model #805 annual contract charge (max) | $50 p.a., accumulated at `i_nf` | [R1 §4.A] [REG-R42] |
-| Death benefit | full account value; no charge, no MVA; never below the cash surrender benefit | [S1] [S2] [S13] [R1 §6] |
+| Model #805 net consideration ratio | 87.5% of gross considerations | [R1 §4.A(2)](#uslib-fixed_deferred_annuity-r1) [REG-R42] |
+| Model #805 indexed-rate corridor | `min(3.00%, round(5-yr CMT, 1/20%) − 1.25%)`, floor **0.15%** | [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42] |
+| Model #805 annual contract charge (max) | $50 p.a., accumulated at `i_nf` | [R1 §4.A](#uslib-fixed_deferred_annuity-r1) [REG-R42] |
+| Death benefit | full account value; no charge, no MVA; never below the cash surrender benefit | [S1] [S2] [S13] [R1 §6](#uslib-fixed_deferred_annuity-r1) |
 | 30-day guarantee-period-end window | full account value, no charge, no MVA | [S1] [S2] [S5] [S6] |
 | Contract fees | none | [S5] [S10] [S13] [S16] |
 
@@ -160,15 +160,15 @@ elements: ASOP 2's scope expressly covers fixed deferred annuities [REG-R26].
 
 | Input | Recommended public basis | Basis tags |
 |---|---|---|
-| Mortality | `q_x^(2012+n) = q_x^(2012) × (1 − G2_x)^n × F_x` — 2012 IAM **Basic** Table (VM-M §2.C) with Projection Scale G2 (VM-M §1.J.1.c) and the VM-22 Table 6.7 factors `F_x` | [R2 §6.B.8] [R9] [REG-R59] |
-| `F_x`, male, no guaranteed living benefit (selected) | ≤52 120.0%; 60 101.0%; 65 101.0%; 70 106.8%; 75 108.0%; 80 108.0%; 85 109.2%; 87+ 110.0% | [R2 Table 6.7] |
+| Mortality | `q_x^(2012+n) = q_x^(2012) × (1 − G2_x)^n × F_x` — 2012 IAM **Basic** Table (VM-M §2.C) with Projection Scale G2 (VM-M §1.J.1.c) and the VM-22 Table 6.7 factors `F_x` | [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2) [R9] [REG-R59] |
+| `F_x`, male, no guaranteed living benefit (selected) | ≤52 120.0%; 60 101.0%; 65 101.0%; 70 106.8%; 75 108.0%; 80 108.0%; 85 109.2%; 87+ 110.0% | [R2 Table 6.7](#uslib-fixed_deferred_annuity-r2) |
 | Base lapse | VM-22 Table 6.5 (fixed annuities, no GLB), mapped to the 5-year architecture below | [R2] [REG-R36] |
 | Base-lapse experience corroboration | SOA/LIMRA 2023–2024 Fixed-Rate Deferred Annuity Surrender Study — 24 companies, ~65% of industry new sales, ~4.8m contracts and $612bn of surrender exposure, >567,000 surrenders | [R8] [REG-R63] |
 | Dynamic lapse | VM-22 §6.B.5 functional form, re-parameterized for best estimate | [R2]; parameters **[std]** |
 | Partial withdrawal | 0% in the base run **[std]**; variant = VM-22 Table 6.2 (Accumulation, **Qualified**): ≤59 1.65%, 60–64 2.10%, 65–69 2.35%, 70–74 3.95%, 75–79 4.80% | [R2]; see model-risk note (b) |
 | Annuitization take-up | 1.0% of in-force at each guarantee-period-end window; 0% otherwise **[std]** | rationale (c) |
 | Acquisition commission | 2.00% of premium, paid at issue **[std]** | (d) |
-| Maintenance expense | $50 per contract per year, 1/12 monthly, inflating 2.5% p.a. **[std]** | anchored on [R2 §6.B.3] |
+| Maintenance expense | $50 per contract per year, 1/12 monthly, inflating 2.5% p.a. **[std]** | anchored on [R2 §6.B.3](#uslib-fixed_deferred_annuity-r2) |
 | Premium tax | 0% **[std]** | spec footnote 3 [S3] [S16] |
 
 (b) The research file recorded VM-22 Table 6.2 only for the **Qualified** column, and the
@@ -180,14 +180,14 @@ table as a non-qualified assumption without re-reading VM-22.
 individual annuity experience index catalogues payout mortality, FIA behavior, fixed-rate
 deferred surrender and VA behavior studies, but no annuitization-election series
 [REG-R65]. VM-22 prescribes **0% annuitization at all projection intervals** for the
-standard projection [R2 §6.B.6] — a deliberate statutory simplification, not an
+standard projection [R2 §6.B.6](#uslib-fixed_deferred_annuity-r2) — a deliberate statutory simplification, not an
 experience estimate. The **[std]** 1.0%-at-the-window assumption reflects that income
 options are only offered after contract year 1 and are elected at the guarantee-period
 window [S1] [S2] [S5]. No annuitization bonus exists on this chassis (spec footnote 21).
 
 (d) No retrieved document discloses MYGA commission. 2.00% of premium is a pure modeling
 assumption. VM-22 prescribes `$35 × 1.025^(valuation-year offset)` per contract for
-contracts the company does **not** administer [R2 §6.B.3]; the $50 maintenance figure is a
+contracts the company does **not** administer [R2 §6.B.3](#uslib-fixed_deferred_annuity-r2); the $50 maintenance figure is a
 [std] uplift of that anchor to a self-administered block.
 
 ---
@@ -245,7 +245,7 @@ At month `t` (BOM steps 1–5, EOM steps 6–8):
    [S1] [S2]).
 5. **Update the tax basis** for IRC §72 reporting: withdrawals are income-first, taxable to
    the extent `AV` (gross of surrender charge) exceeds `basis`; `basis` is reduced only by
-   the non-taxable remainder [R6 §72(e)(3)(A)] [REG-R55]. This is a reported quantity, not a
+   the non-taxable remainder [R6 §72(e)(3)(A)](#uslib-fixed_deferred_annuity-r6) [REG-R55]. This is a reported quantity, not a
    liability cash flow.
 6. **Credit interest.** `AV(t) = AV'(t) × f(t)`.
 7. **Roll the nonforfeiture floor.**
@@ -261,7 +261,7 @@ With no withdrawals, steps 3–8 collapse to the core recursion:
     AV(t) = AV(t−1) × (1 + i_cr(t))^(1/12)                                [S4] [S5] [S16]
     MGSV(t) = MGSV(t−1) × (1 + i_nf)^(1/12)                               [R1] [S11]
 
-with `AV(0) = P` [S5] [S10] [S16] and `MGSV(0) = 0.875 × P` [R1 §4.A(2)] [S11].
+with `AV(0) = P` [S5] [S10] [S16] and `MGSV(0) = 0.875 × P` [R1 §4.A(2)](#uslib-fixed_deferred_annuity-r1) [S11].
 
 ### Surrender benefit — the exact composition order
 
@@ -355,7 +355,7 @@ window [S2]; the MVA period has expired [S8] [S13] [S16]; the benefit is a death
 with `i_nf` the contract GMSV rate (**2.80%** [S11]). The statute *defines* the indexed
 nonforfeiture rate — it is not a band the contract rate sits inside:
 
-    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B] [REG-R42]
+    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42]
 
 and the contract rate must satisfy `i_nf ≥ i_stat`; crediting the floor at more than the
 statutory rate is permitted and simply produces a higher floor, which is exactly what
@@ -364,21 +364,21 @@ state"). **Do not implement the reverse inequality** — capping `i_nf` at
 `round(CMT5) − 1.25%` would make the representative 2.80% illegal at any CMT5 below
 4.05% and is not what §4.B says. CMT5 is the five-year Constant Maturity Treasury rate
 reported by the Federal Reserve as of a date, or averaged over a period, specified in the
-contract and no longer than **15 months** before issue or redetermination [R1 §4.B].
+contract and no longer than **15 months** before issue or redetermination [R1 §4.B](#uslib-fixed_deferred_annuity-r1).
 
 **Do not implement a 1% floor.** The retrieved Model #805 print floors the indexed
-nonforfeiture rate at **15 basis points** [R1 §4.B] [REG-R42]; the widely repeated 1%
+nonforfeiture rate at **15 basis points** [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42]; the widely repeated 1%
 figure is [unverified] against any retrieved document. `d(t)` is the withdrawal deduction
 (`gross` [S11] or `net_of_charges` [S9]); `c(t)` is the monthly slice of the annual
-contract charge, $0 representative and $50 statutory maximum [R1 §4.A] [S11]. Premium tax
+contract charge, $0 representative and $50 statutory maximum [R1 §4.A](#uslib-fixed_deferred_annuity-r1) [S11]. Premium tax
 actually paid and indebtedness are additional permitted deductions, both accumulated at
-`i_nf`, and are zero here [R1 §4.A]. The equity-index carve-out of §4.C (an additional
-reduction of up to 100 bp) does not apply to a book-value MYGA [R1 §4.C].
+`i_nf`, and are zero here [R1 §4.A](#uslib-fixed_deferred_annuity-r1). The equity-index carve-out of §4.C (an additional
+reduction of up to 100 bp) does not apply to a book-value MYGA [R1 §4.C](#uslib-fixed_deferred_annuity-r1).
 
 ### Death benefit and annuitization
 
 - **Death benefit** = `AV(t)`, with no surrender charge and no MVA [S1] [S2] [S13], floored
-  at the cash surrender benefit and hence at `MGSV(t)` [R1 §6]. On the base run
+  at the cash surrender benefit and hence at `MGSV(t)` [R1 §6](#uslib-fixed_deferred_annuity-r1). On the base run
   `AV(t) > MGSV(t)` at every duration **because the 4.45% credited rate exceeds the 2.80%
   GMSV rate** — not unconditionally: the floor accretes at 2.80% while a renewal rate may
   fall to the 0.25% GMIR, and at the GMIR the floor overtakes the account value after
@@ -422,7 +422,7 @@ quantity and generates no insurer cash flow [R6] [REG-R55].
 ## Policyholder behavior modeling
 
 All dynamic formulas are **[std]** reference constructions built on the VM-22 prescribed
-functional form [R2 §6.B.5], which is the only publicly specified dynamic-lapse formula
+functional form [R2 §6.B.5](#uslib-fixed_deferred_annuity-r2), which is the only publicly specified dynamic-lapse formula
 for this product and is therefore the natural skeleton even for a best-estimate run.
 
 ### Base lapse by renewal architecture
@@ -472,7 +472,7 @@ that were not necessarily impacted or driven by market interest rate sensitivity
                 = 0                             if MR > CR ≥ MR − BF
                 = +1.25 × (MR − BF − CR)^X      if CR < MR − BF
 
-with, per the prescribed parameterization [R2 §6.B.5]:
+with, per the prescribed parameterization [R2 §6.B.5](#uslib-fixed_deferred_annuity-r2):
 
 - `G` = GMIR Factor. Fixed annuities: **1.25** if GMIR ≤ 1.0%; 1.00 if 1.0% < GMIR ≤ 2.5%;
   0.70 if GMIR > 2.5%. Representative GMIR 0.25% [S11] → **G = 1.25**.
@@ -511,7 +511,7 @@ Contract years 1–5 therefore run at 1.25% and contract year 6 at **90%** (75% 
   modeled as a withdrawal with `E(t) = 0`.
 - **Annuitization.** `a(t) = 1.0%` in each 30-day guarantee-period-end window after
   contract year 1, 0% elsewhere **[std]** (assumption note (c)). Statutory alternative:
-  `a(t) ≡ 0` [R2 §6.B.6].
+  `a(t) ≡ 0` [R2 §6.B.6](#uslib-fixed_deferred_annuity-r2).
 - **Free-withdrawal utilization.** Base run 0; a utilization variant takes `u × FW(y)` each
   contract year with `u` a **[std]** input. Note the interaction: taking the free amount
   each year both lowers `AV` and lowers the future free base, and — under the `gross`
@@ -597,18 +597,18 @@ This library projects **gross liability cash flows**. Reserve layers consume the
 cited, not reproduced:
 
 - **VM-22 principle-based reserves for non-variable annuities** [R2] [REG-R36]. Constitutes
-  CARVM for in-scope contracts [R2 §1.A]; applies for **valuation dates on or after
-  January 1, 2026** [R2 §2.B]; three-year elective transition on VM-A/VM-C/VM-M/VM-V for
-  business issued in the first three years, mandatory prospectively thereafter [R2 §2.B]
+  CARVM for in-scope contracts [R2 §1.A](#uslib-fixed_deferred_annuity-r2); applies for **valuation dates on or after
+  January 1, 2026** [R2 §2.B](#uslib-fixed_deferred_annuity-r2); three-year elective transition on VM-A/VM-C/VM-M/VM-V for
+  business issued in the first three years, mandatory prospectively thereafter [R2 §2.B](#uslib-fixed_deferred_annuity-r2)
   (2029 is arithmetic, not quotation [unverified]). A MYGA is in the **Accumulation
   Reserving Category** [R2]. Aggregate reserve = SR (CTE70) + DR for contracts passing the
   Single Scenario Test + formulaic reserves for excluded contracts; the additional
-  standard projection amount is **disclosure-only** under VM-31 [R2 §3].
+  standard projection amount is **disclosure-only** under VM-31 [R2 §3](#uslib-fixed_deferred_annuity-r2).
 - **Formulaic CARVM — A-820 ¶¶14–15 as interpreted by AG 33** [REG-R153] [REG-R151], with the
   guideline family indexed at VM-C [REG-R41]. AG 33's printed title is **"Determining CARVM
   Reserves for Annuity Contracts With Elective Benefits"** and its printed *Effective Date*
   block reads "This guideline shall be effective on **December 31, 1998**, affecting all
-  contracts issued on or after January 1, 1981" [REG-R151 *Effective Date*]. The
+  contracts issued on or after January 1, 1981" [REG-R151 *Effective Date*](#uslib-reg-r151). The
   **December 31, 1995** date and the alternative title this file previously carried come
   from IRS Rev. Rul. 2002-6, describing a differently-titled instrument [R7] [REG-R39].
   **Both are recorded and the reconciliation is unresolved** — the extracted pages carry no
@@ -669,12 +669,12 @@ Known modeling pitfalls:
   both live and give different floors; the difference then compounds at `i_nf` for the rest
   of the contract.
 - **The 15 bp floor.** Implementing the folklore 1% floor overstates the Model #805 minimum
-  in low-rate environments — the retrieved statute says 15 bp [R1 §4.B] [REG-R42].
+  in low-rate environments — the retrieved statute says 15 bp [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42].
 - **Surrender-charge clock on renewal.** Under `rollover` the clock resets [S1] [S2] [S11];
   Voya and Nationwide run it from the original purchase payment date so it never restarts
   [S3] [S4]. Getting this wrong relocates the shock lapse by years.
 - **Mortality table plumbing.** The prescribed formula uses the 2012 IAM **Basic** table
-  (VM-M §2.C) with Scale G2 and the VM-22 `F_x` factors [R2 §6.B.8], not the 2012 IAM
+  (VM-M §2.C) with Scale G2 and the VM-22 `F_x` factors [R2 §6.B.8](#uslib-fixed_deferred_annuity-r2), not the 2012 IAM
   Period/IAR valuation table. Where the IAR generational table *is* used, the Valuation
   Manual's rounding trap applies: round from the 2012 period rate each time, never compound
   an already-rounded prior-year rate [REG-R59]. Do not substitute life bases — annuitant
@@ -688,3 +688,53 @@ Known modeling pitfalls:
   [S11] are a September 2025 snapshot of one product; the same insurer's 2023 brochure
   stated the GMIR "will be 1% or higher" [S10]. Levels are era-representative; mechanics are
   stable.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_deferred_annuity-r1
+[R2]: #uslib-fixed_deferred_annuity-r2
+[R4]: #uslib-fixed_deferred_annuity-r4
+[R6]: #uslib-fixed_deferred_annuity-r6
+[R7]: #uslib-fixed_deferred_annuity-r7
+[R8]: #uslib-fixed_deferred_annuity-r8
+[R9]: #uslib-fixed_deferred_annuity-r9
+[REG-R151]: #uslib-reg-r151
+[REG-R153]: #uslib-reg-r153
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R32]: #uslib-reg-r32
+[REG-R34]: #uslib-reg-r34
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R39]: #uslib-reg-r39
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R45]: #uslib-reg-r45
+[REG-R55]: #uslib-reg-r55
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R61]: #uslib-reg-r61
+[REG-R63]: #uslib-reg-r63
+[REG-R65]: #uslib-reg-r65
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-fixed_deferred_annuity-s1
+[S10]: #uslib-fixed_deferred_annuity-s10
+[S11]: #uslib-fixed_deferred_annuity-s11
+[S12]: #uslib-fixed_deferred_annuity-s12
+[S13]: #uslib-fixed_deferred_annuity-s13
+[S14]: #uslib-fixed_deferred_annuity-s14
+[S15]: #uslib-fixed_deferred_annuity-s15
+[S16]: #uslib-fixed_deferred_annuity-s16
+[S2]: #uslib-fixed_deferred_annuity-s2
+[S3]: #uslib-fixed_deferred_annuity-s3
+[S4]: #uslib-fixed_deferred_annuity-s4
+[S5]: #uslib-fixed_deferred_annuity-s5
+[S6]: #uslib-fixed_deferred_annuity-s6
+[S8]: #uslib-fixed_deferred_annuity-s8
+[S9]: #uslib-fixed_deferred_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

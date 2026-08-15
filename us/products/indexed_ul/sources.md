@@ -344,3 +344,26 @@ and surrender-charge tables; cap-snapshot volatility; [unverified] maturity-age
 inference). All "current" rates cited in the drafted documents are non-guaranteed carrier
 declarations as of each document's print date (2017–2026) and should be treated as
 calibration snapshots, not fixed parameters.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-indexed_ul-r1
+[R10]: #uslib-indexed_ul-r10
+[R2]: #uslib-indexed_ul-r2
+[R3]: #uslib-indexed_ul-r3
+[R4]: #uslib-indexed_ul-r4
+[R5]: #uslib-indexed_ul-r5
+[R6]: #uslib-indexed_ul-r6
+[R8]: #uslib-indexed_ul-r8
+[REG-R10]: #uslib-reg-r10
+[REG-R110]: #uslib-reg-r110
+[REG-R13]: #uslib-reg-r13
+[REG-R14]: #uslib-reg-r14
+[REG-R153]: #uslib-reg-r153
+[REG-R155]: #uslib-reg-r155
+[REG-R24]: #uslib-reg-r24
+[REG-R3]: #uslib-reg-r3
+[REG-R4]: #uslib-reg-r4
+[REG-R5]: #uslib-reg-r5
+[REG-R9]: #uslib-reg-r9
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

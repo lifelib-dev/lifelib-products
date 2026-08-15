@@ -133,7 +133,7 @@ Footnotes:
 Footnotes:
 - (i) **[std]** 6.00% DIR: 2026 declared DIRs observed — Northwestern Mutual 5.75% [S4];
   MassMutual 6.60%, New York Life 6.40%, Guardian 6.25%, Penn Mutual 6.00% [S14, secondary
-  aggregator]. 6.00% sits centrally in the 5.75%–6.60% range and gives a clean 2.00% spread
+  aggregator](#uslib-whole_life-s14). 6.00% sits centrally in the 5.75%–6.60% range and gives a clean 2.00% spread
   over the 4.00% guarantee. The DIR is a scale input, not a policy yield: mortality and expense
   experience also drive the dividend [S14].
 - (j) **[std]** no year-1 dividend: a real cross-insurer design split — Guardian pays no
@@ -166,7 +166,7 @@ Footnotes:
 | Nonforfeiture options | Cash surrender; reduced paid-up (RPU); extended term insurance (ETI) | [S3] [R1] |
 | Automatic nonforfeiture option | Extended term insurance | **[std]** (o) |
 | Reinstatement | Within 5 years of default, evidence of insurability, arrears with 6% compound interest | [S1] [S3] |
-| Suicide/contestability | Standard 2-year provisions | [S7 for the FE forms]; par contract wording not captured — **[std]** (p) |
+| Suicide/contestability | Standard 2-year provisions | [S7 for the FE forms](#uslib-whole_life-s7); par contract wording not captured — **[std]** (p) |
 | Free look | 10 days (state variations) | [S1] |
 
 Footnotes:
@@ -410,25 +410,25 @@ this product runs on** — modified net premiums as a uniform percentage of the 
 contract premiums, an expense allowance capped at the net level annual premium on the
 **nineteen-year premium whole life plan at an age one year higher than the issue age**, and a
 reserve that is "the excess, **if any**" — with no discrepancy against the Model 820 print
-[REG-R153 ¶11]. Its **¶¶7–10 make the valuation interest rate computable** rather than merely
+[REG-R153 ¶11](#uslib-reg-r153). Its **¶¶7–10 make the valuation interest rate computable** rather than merely
 named: `I = .03 + W(R1 − .03) + (W/2)(R2 − .09)` rounded to the nearer quarter of 1%, on the
 lesser of the 36- and 12-month Moody's seasoned-corporate-bond averages ending June 30 of the
 year *preceding* issue, with `W` from the ¶8.a life table by **guarantee duration** — .50 to
 10 years, .45 over 10 to 20, .35 over 20 — and a life-only half-of-1% stability rule against
-the published prior-year rate [REG-R153 ¶¶7–10]. `W` is a per-model-point lookup, not a product
+the published prior-year rate [REG-R153 ¶¶7–10](#uslib-reg-r153). `W` is a per-model-point lookup, not a product
 constant: RefWL-Par runs to maturity at 121 and always takes .35, while RefWL-FE matures at 100,
 so its issue ages 80–85 fall in the .45 band.
 Its **¶16** is the aggregate nonforfeiture-basis floor, aggregate rather than seriatim and
-excluding disability and accidental death benefits [REG-R153 ¶16]. Two limits stay: **A-820
+excluding disability and accidental death benefits [REG-R153 ¶16](#uslib-reg-r153). Two limits stay: **A-820
 never names the 2017 CSO** — ¶5.a prescribes the 2001 CSO for standard-basis ordinary issues
 from 1 January 2004, later tables entering only through its forward reference or through the
 Valuation Manual (¶23), so this product's 2017 CSO basis is sourced to VM-02 [R3], not to
 A-820; and A-820 carves **preneed** policies out to **Appendix A-817**, which was **not
-retrieved** [REG-R153 ¶5] [REG-R110]. For ordinary life issued on/after 2020-01-01 — the PBR
+retrieved** [REG-R153 ¶5](#uslib-reg-r153) [REG-R110]. For ordinary life issued on/after 2020-01-01 — the PBR
 *accreditation* year; the trigger A-820 ¶¶3–4 actually print is issue **on or after 1 January
 2017**, with earlier issues grandfathered onto ¶¶5–22 and the PBR provisions stated not to
 apply to them, and with **no elective transition, phase-in or company election anywhere in
-A-820** [REG-R153 ¶¶3–4] — VM-20 governs: a seriatim net premium reserve on
+A-820** [REG-R153 ¶¶3–4](#uslib-reg-r153) — VM-20 governs: a seriatim net premium reserve on
 2017 CSO, plus deterministic and stochastic reserves unless exclusion tests are passed;
 traditional par WL typically passes the deterministic exclusion test because valuation net
 premiums do not exceed the substantial guaranteed gross premiums, leaving NPR-only blocks
@@ -463,3 +463,37 @@ as the greater of net surrender value and 92.81% of the CRVM/VM reserve, capped 
 published by the SOA in composite/smoker-distinct/preferred-structure, ANB/ALB variants [R8];
 the 2015 VBT and ILEC studies provide the experience bases for best-estimate assumptions
 [REG-R18] [R9] (see technical notes).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-whole_life-r1
+[R2]: #uslib-whole_life-r2
+[R3]: #uslib-whole_life-r3
+[R4]: #uslib-whole_life-r4
+[R5]: #uslib-whole_life-r5
+[R6]: #uslib-whole_life-r6
+[R7]: #uslib-whole_life-r7
+[R8]: #uslib-whole_life-r8
+[R9]: #uslib-whole_life-r9
+[REG-R1]: #uslib-reg-r1
+[REG-R110]: #uslib-reg-r110
+[REG-R153]: #uslib-reg-r153
+[REG-R16]: #uslib-reg-r16
+[REG-R18]: #uslib-reg-r18
+[REG-R30]: #uslib-reg-r30
+[S1]: #uslib-whole_life-s1
+[S10]: #uslib-whole_life-s10
+[S11]: #uslib-whole_life-s11
+[S12]: #uslib-whole_life-s12
+[S13]: #uslib-whole_life-s13
+[S14]: #uslib-whole_life-s14
+[S2]: #uslib-whole_life-s2
+[S3]: #uslib-whole_life-s3
+[S4]: #uslib-whole_life-s4
+[S5]: #uslib-whole_life-s5
+[S6]: #uslib-whole_life-s6
+[S7]: #uslib-whole_life-s7
+[S8]: #uslib-whole_life-s8
+[S9]: #uslib-whole_life-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

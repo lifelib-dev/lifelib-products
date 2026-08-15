@@ -71,9 +71,9 @@ a limit the appendix reading does not touch.
 | `av_initial` | currency (0 at issue; >0 for in-force cells) | 0 |
 | `loan_balance_initial` | currency | 0 |
 | `sc_layer_table` | schedule per $1,000 | $9.00 initial, 9-yr **[std]** |
-| `guideline_single_premium` | currency (compliance input) | 34,138.15 [S3, incl. riders] |
-| `guideline_level_premium` | currency (compliance input) | 2,825.52 [S3, incl. riders] |
-| `seven_pay_premium` | currency (compliance input) | 6,702.10 [S3, incl. riders] |
+| `guideline_single_premium` | currency (compliance input) | 34,138.15 [S3, incl. riders](#uslib-universal_life-s3) |
+| `guideline_level_premium` | currency (compliance input) | 2,825.52 [S3, incl. riders](#uslib-universal_life-s3) |
+| `seven_pay_premium` | currency (compliance input) | 6,702.10 [S3, incl. riders](#uslib-universal_life-s3) |
 
 ---
 
@@ -271,7 +271,7 @@ max(GSP, cumulative GLP)) and the 7-pay MEC test are tracked as compliance
 side-calculations that cap or refuse premiums [S3] [R2] [R3] [REG-R13] [REG-R14]; they
 generate no cash flow of their own — a refused premium simply never enters the model,
 and MEC status changes policyholder taxation, not insurer liability cash flows [R3
-consequence detail [unverified] beyond the statutory cross-reference]. The base model
+consequence detail [unverified] beyond the statutory cross-reference](#uslib-universal_life-r3). The base model
 verifies `CumPrem(t) <= max(GSP, GLP x years elapsed)` and flags (does not project)
 7-pay failures.
 
@@ -341,7 +341,7 @@ NOT reproduced here:
   construction, the funding ratio — `r = min(1, policy value/GMF)` here **only because
   this chassis is flexible premium**, `r ≡ 1` unconditionally for a fixed premium UL —
   and the ¶¶12–13 alternative minimum reserve, with every rate, table and factor
-  delegated to A-820 by year of issue [REG-R155 ¶¶8, 12–13] [REG-R153]. Nonforfeiture
+  delegated to A-820 by year of issue [REG-R155 ¶¶8, 12–13](#uslib-reg-r155) [REG-R153]. Nonforfeiture
   floor: **Model 585 Section 6A** retrospective minimum CSV — A-585 carries no
   nonforfeiture provisions at all, so that floor stays with the model regulation
   [R1] [REG-R5] [REG-R155].
@@ -351,7 +351,7 @@ NOT reproduced here:
   [R5], now also the shared [REG-R150]) [REG-R3];
   implementation guidance in the AAA VM-20 practice note [REG-R23]. Prescribed NPR
   mortality: 2017 CSO family via VM-M [REG-R3] [REG-R17; exact table mapping
-  [unverified]].
+  [unverified]](#uslib-reg-r17).
 - **Tax.** IRC 807: greater of net surrender value and 92.81% of the NAIC-method
   reserve, capped at statutory [REG-R16].
 - **Standards for the modeling work itself.** ASOP 7 (life cash flow analysis)
@@ -404,3 +404,37 @@ Known modeling pitfalls:
   due-and-unpaid deduction accrual understates death claims in grace [S3].
 - **MEC/GPT are not cash flows.** Modeling them as charges or refunds distorts
   premium income; they are caps/flags only [S3] [R2] [R3].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-universal_life-r1
+[R2]: #uslib-universal_life-r2
+[R3]: #uslib-universal_life-r3
+[R4]: #uslib-universal_life-r4
+[R5]: #uslib-universal_life-r5
+[R7]: #uslib-universal_life-r7
+[R8]: #uslib-universal_life-r8
+[REG-R13]: #uslib-reg-r13
+[REG-R14]: #uslib-reg-r14
+[REG-R150]: #uslib-reg-r150
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R155]: #uslib-reg-r155
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R20]: #uslib-reg-r20
+[REG-R21]: #uslib-reg-r21
+[REG-R23]: #uslib-reg-r23
+[REG-R27]: #uslib-reg-r27
+[REG-R3]: #uslib-reg-r3
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[REG-R5]: #uslib-reg-r5
+[S1]: #uslib-universal_life-s1
+[S2]: #uslib-universal_life-s2
+[S3]: #uslib-universal_life-s3
+[S5]: #uslib-universal_life-s5
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

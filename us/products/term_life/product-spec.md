@@ -344,17 +344,17 @@ Listed for completeness; none is modeled in the reference implementation:
   this entry previously left open.** (i) The **VM operative date is no longer [unverified]**:
   ¶3 applies the PBR paragraphs to all policies and contracts "issued on or after the
   January 1, 2017, operative date of the Valuation Manual", and ¶4 provides that they "shall
-  not apply" to earlier issues [REG-R153 ¶¶3–4]. (ii) The deficiency-reserve rule is **not an
+  not apply" to earlier issues [REG-R153 ¶¶3–4](#uslib-reg-r153). (ii) The deficiency-reserve rule is **not an
   additive quantity but a floor**: where the gross premium charged in any contract year is less
   than the valuation net premium computed by the method actually used but on the **minimum**
   standards of mortality and interest, the minimum reserve is the greater of the reserve on the
   basis actually used and the reserve on the minimum standards with the **actual gross premium
   substituted for the valuation net premium in the deficient contract years only**
-  [REG-R153 ¶19]. A-830 defines a *separate* deficiency quantity for the policies it reaches —
+  [REG-R153 ¶19](#uslib-reg-r153). A-830 defines a *separate* deficiency quantity for the policies it reaches —
   see the next entry. One verified negative worth carrying: **the 2017 CSO is nowhere in
   A-820's printed text**, which names the 2001 CSO for issues from 1 January 2004 and the 1980
   CSO before that; the 2017 CSO reaches post-2017 issues through the Valuation Manual under
-  ¶23 [REG-R153 ¶¶5, 23].
+  ¶23 [REG-R153 ¶¶5, 23](#uslib-reg-r153).
 
 - **Valuation of Life Insurance Policies — AP&P Appendix A-830 [REG-R154], the manual's
   print of the regulation known outside it as Model #830, "Regulation XXX" [R1] [REG-R6].** The
@@ -363,14 +363,14 @@ Listed for completeness; none is modeled in the reference implementation:
   ¶¶1–32 plus an unnumbered Attachment, has **no Sections at all**, and the strings "Model #830"
   and "Regulation XXX" appear **nowhere in it** [REG-R154]. By its own ¶2 the method it defines
   **constitutes CRVM** for the policies it reaches, so it replaces rather than supplements the
-  A-820 ¶11 construction [REG-R154 ¶2] [REG-R153 ¶11]. Basic reserves for policies with
+  A-820 ¶11 construction [REG-R154 ¶2](#uslib-reg-r154) [REG-R153 ¶11](#uslib-reg-r153). Basic reserves for policies with
   guaranteed nonlevel gross premiums are the **greater of segmented and unitary** reserves under
   the contract segmentation method (¶21), which segments on the ratio of guaranteed gross
   premiums **per thousand of face amount, "ignoring policy fees only if level for the premium
   paying period"**, against the ratio of valuation mortality rates, with a company-elective ±1%
   tolerance on the mortality ratio, floored at 1 and elected **per policy year** (¶5) — the
   library's earlier second-hand statement of this construction is confirmed and the
-  "per thousand of face amount" wording is exact [REG-R154 ¶¶5, 21]. Deficiency reserves are
+  "per thousand of face amount" wording is exact [REG-R154 ¶¶5, 21](#uslib-reg-r154). Deficiency reserves are
   **quantity A less the basic reserve**, A being a full recalculation of the basic reserve with
   the **guaranteed** gross premium substituted for the net premium duration by duration wherever
   the gross is the smaller — a one-sided substitution, keyed to the guaranteed premium
@@ -378,14 +378,14 @@ Listed for completeness; none is modeled in the reference implementation:
   subject to a **two-limb** test (an aggregate present-value limb *and* a year-by-year floor over
   the first five years after the valuation date) and, whenever X falls below 100% at any duration
   for any policy, an annual actuarial opinion and memorandum under the **A-822** asset adequacy
-  requirements [REG-R154 ¶¶7, 17, 22]. **The valuation basis is date-split, not 1980 CSO flat:**
+  requirements [REG-R154 ¶¶7, 17, 22](#uslib-reg-r154). **The valuation basis is date-split, not 1980 CSO flat:**
   1980 CSO with elective select factors applies **before 1 January 2004**, and **from 1 January
   2004 the 2001 CSO Mortality Table is the minimum standard** for basic reserves, deficiency
   reserves and the tabular cost of insurance; the complete pre-2004 branch is retained in the
-  print for valuing older issues [REG-R154 ¶¶16, 17, 23]. A level dollar policy fee after year 1
+  print for valuing older issues [REG-R154 ¶¶16, 17, 23](#uslib-reg-r154). A level dollar policy fee after year 1
   may be excluded from the guaranteed gross premium wherever a calculation uses it — confirmed —
   with the asymmetry that for **deficiency** reserves the fee **may** be put back in even where it
-  was excluded from the basic reserve [REG-R154 ¶19]. **A-830 prints no calendar effective date
+  was excluded from the basic reserve [REG-R154 ¶19](#uslib-reg-r154). **A-830 prints no calendar effective date
   for itself**: "the effective date of this appendix" is an unresolved placeholder used eleven
   times, so **no date for when XXX first bit may be attributed to [REG-R154]** — the only calendar
   dates it prints are the 1 January 2004 cutover above. The XXX conservatism drove captive reserve
@@ -412,7 +412,7 @@ Listed for completeness; none is modeled in the reference implementation:
   **[std]** is **not** upgraded by the appendix prints now read: **neither A-820 nor A-830 names
   the 2017 CSO anywhere**, and neither prints any mortality table it does name — A-820 reaches
   the 2017 CSO only through its ¶5.a forward reference to tables "adopted subsequently by the
-  NAIC" and, in practice, through the Valuation Manual under ¶23 [REG-R153 ¶¶5, 23] [REG-R154].
+  NAIC" and, in practice, through the Valuation Manual under ¶23 [REG-R153 ¶¶5, 23](#uslib-reg-r153) [REG-R154].
 
 - **Standard Nonforfeiture Law (Model #808) [REG-R2].** Sets minimum cash surrender values
   via the adjusted-premium method; relevant to term chiefly as the reason long-duration
@@ -429,7 +429,7 @@ Listed for completeness; none is modeled in the reference implementation:
   premium test plus cash value corridor with applicable percentages 250% at ages 0–40
   grading to 100% at 90–95) [R5]. Level premium term with no cash value satisfies these
   tests trivially, and §7702A MEC status is not normally implicated [R5 — analytical note
-  flagged [unverified] in the research]. No §7702 testing machinery is needed in the term
+  flagged [unverified] in the research](#uslib-term_life-r5). No §7702 testing machinery is needed in the term
   reference model.
 
 - **IRC §807 tax reserves [REG-R16].** Post-TCJA, the tax reserve is the greater of net
@@ -445,3 +445,33 @@ Listed for completeness; none is modeled in the reference implementation:
 ---
 
 *Companion documents: `technical-notes.md` (model mechanics), `sources.md` (citations).*
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-term_life-r1
+[R2]: #uslib-term_life-r2
+[R3]: #uslib-term_life-r3
+[R4]: #uslib-term_life-r4
+[R5]: #uslib-term_life-r5
+[R6]: #uslib-term_life-r6
+[REG-R1]: #uslib-reg-r1
+[REG-R11]: #uslib-reg-r11
+[REG-R12]: #uslib-reg-r12
+[REG-R13]: #uslib-reg-r13
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R2]: #uslib-reg-r2
+[REG-R3]: #uslib-reg-r3
+[REG-R6]: #uslib-reg-r6
+[S1]: #uslib-term_life-s1
+[S2]: #uslib-term_life-s2
+[S3]: #uslib-term_life-s3
+[S4]: #uslib-term_life-s4
+[S5]: #uslib-term_life-s5
+[S6]: #uslib-term_life-s6
+[S7]: #uslib-term_life-s7
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

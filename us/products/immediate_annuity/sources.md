@@ -502,3 +502,19 @@ above have moved, and the pass's own bibliographies are
   one: the manual prints 31 December 1998, the library carried 31 December 1995 from IRS
   Rev. Rul. 2002-6 under a different title, and the extracted pages carry no amendment history
   to reconcile them [REG-R151].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R3]: #uslib-immediate_annuity-r3
+[R4]: #uslib-immediate_annuity-r4
+[R5]: #uslib-immediate_annuity-r5
+[R6]: #uslib-immediate_annuity-r6
+[R8]: #uslib-immediate_annuity-r8
+[R9]: #uslib-immediate_annuity-r9
+[REG-R151]: #uslib-reg-r151
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R3]: #uslib-reg-r3
+[REG-R41]: #uslib-reg-r41
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

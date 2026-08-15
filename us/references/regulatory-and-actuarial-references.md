@@ -298,7 +298,7 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   [R5]. This is where the UL-pattern mechanics a model must honor — account value
   roll-forward disclosure, maturity/nonforfeiture treatment — get their regulatory
   definition. Drafting notes state it applies to individual UL except variable UL
-  [R5 per NAIC search summary; scope section read]; VUL is carved out into
+  [R5 per NAIC search summary; scope section read](#uslib-reg-r5); VUL is carved out into
   variable-products rules and federal securities law.
 
 (uslib-reg-r6)=
@@ -348,7 +348,7 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   #582: a Benchmark Index Account (BIA) whose lookback average caps the illustrated
   scale, plus limits on illustrated policy-loan leverage and disciplined-current-scale
   earned-rate limits [R9] [R10]. Adopted 2015, applying to policies sold on/after
-  Sept. 1, 2015 [R9 per SOA article; date detail unverified]; superseded for new sales
+  Sept. 1, 2015 [R9 per SOA article; date detail unverified](#uslib-reg-r9); superseded for new sales
   by AG 49-A for policies sold on/after Dec. 14, 2020 (R10). Still needed for in-force
   illustrations of pre-2021 IUL sales.
 
@@ -604,7 +604,7 @@ Consolidated Appropriations Act change is verified at [R13].
   premium reserve, deterministic and stochastic reserves, prudent-estimate assumption
   setting (mortality credibility, lapse, premium persistency), asset modeling and
   reinvestment, exclusion tests, and the reporting interplay with VM-31 [R23 front
-  matter; topic list partly [unverified] — not every chapter was read]. Explicitly not
+  matter; topic list partly [unverified] — not every chapter was read](#uslib-reg-r23). Explicitly not
   an ASB promulgation and not binding [R23]. The implementation companion to R3 and
   ASOP 52 (R31); updates the 2017 edition for VM changes since the 12/31/2019
   valuation [search summary].
@@ -619,7 +619,7 @@ Consolidated Appropriations Act change is verified at [R13].
 - **Annotation:** Practitioner Q&A on illustration-actuary work under Model #582 and
   ASOP 24: disciplined current scale development, self-support and lapse-support
   testing, certification practice, and application to indexed products under the AG 49
-  family [R24 title/front matter; detailed topic list partly [unverified]]. The
+  family [R24 title/front matter; detailed topic list partly [unverified]](#uslib-reg-r24). The
   companion to R4/R30 for building illustration logic into product models. Not
   applicable to VUL (outside Model #582 scope [R4]).
 
@@ -742,7 +742,7 @@ Current numbers/titles verified against the ASB standards list (fetched 2026-08-
 - **Fetched:** yes (adopted Dec. 2019; effective Oct. 1, 2020)
 - **Annotation:** Cross-practice standard for designing, developing, selecting,
   modifying, using, reviewing, or evaluating models where reliance on model output has
-  a material effect [R32 scope; component list partly [unverified]]. The governing
+  a material effect [R32 scope; component list partly [unverified]](#uslib-reg-r32). The governing
   standard for the reference implementation itself: intended purpose, model-risk
   mitigation, validation/testing, reliance on others' models and data, and
   documentation [R32].
@@ -952,7 +952,7 @@ directly; the parent document is cross-referenced, not restated.
   this is the guideline that turns a deferred-annuity account-value roll-forward into a *set*
   of benefit streams and takes the maximum present value across them — the formulaic reserve
   any pre-VM-22 or VM-22-excluded fixed deferred annuity still requires. AG 35 (R40) layers
-  the index feature onto this calculation [R40 context].
+  the index feature onto this calculation [R40 context](#uslib-reg-r40).
 - **Superseded in fact by [R151] (2026-08-06) — appended, nothing above reworded.** The
   guideline text has since been read in full from the AP&P Manual, which proved to be a free
   download (see the note on R33), so the "[unverified] … from secondary sources" annotation
@@ -1719,7 +1719,7 @@ directly; the parent document is cross-referenced, not restated.
   decision that determines whether a GLWB is an MRB or an insurance liability. **Caution:** two
   ASB pages carry ASOP 10 exposure drafts (an April 2022 proposed-revision page was fetched and
   is clearly labelled an exposure draft, not adopted [R71b:
-  https://www.actuarialstandardsboard.org/asops/asop-no-10-ssun-u-s-gaap-for-long-duration-life-annuity-and-health-products/]);
+  https://www.actuarialstandardsboard.org/asops/asop-no-10-ssun-u-s-gaap-for-long-duration-life-annuity-and-health-products/](#uslib-reg-r71));
   cite the Doc. No. 207 PDF above, which states adoption on its title page.
 
 (uslib-reg-r72)=
@@ -1894,7 +1894,7 @@ this page.
   contract in which the entity "does not assume any mortality, morbidity, health benefit costs
   incurred, or casualty risk and which act[s] exclusively as [an] investment vehicle" is
   deposit-type, and critically "**[s]uch classification shall be made at the inception of the
-  contract and shall not change**" [R78 ¶5]. Life contracts are enumerated to include whole life,
+  contract and shall not change**" [R78 ¶5](#uslib-reg-r78). Life contracts are enumerated to include whole life,
   endowment, term, supplementary contracts, group life, **universal life type**, **variable
   life**, limited payment, credit life and **annuity contracts** [¶9], with the generic reserve at
   ¶8 as PV(future benefits) − PV(future net premiums) on the valuation interest and mortality
@@ -1910,7 +1910,7 @@ this page.
 - **Fetched:** yes (local text extraction; status block and ¶¶1–16 read; section index read)
 - **Annotation:** Income recognition and policy reserves for everything SSAP No. 50 classifies as
   a life contract, except credit contracts (SSAP No. 59) and separate account products (SSAP
-  No. 56, R83) [R79 ¶1]; conceptually revised June 9, 2016 with the revisions effective
+  No. 56, R83) [R79 ¶1](#uslib-reg-r79); conceptually revised June 9, 2016 with the revisions effective
   **January 1, 2017**, i.e. aligned to the Valuation Manual operative date [R79]. The mechanics a
   projection must honour: premium recognised **gross, when due**, with single and flexible
   premiums when received [¶5]; dividends applied to buy paid-up additions are premium income [¶6];
@@ -1974,14 +1974,14 @@ this page.
   approval, insulated or non-insulated contracts similar to general account contracts that do not
   pass all investment experience through, where the general account "may serve as an overall
   backstop or may provide an implied guarantee", naming pension risk transfer, bank-owned life
-  insurance and *registered index-linked annuity* contracts as expected examples** [R83 ¶18.b].
+  insurance and *registered index-linked annuity* contracts as expected examples** [R83 ¶18.b](#uslib-reg-r83).
   ¶¶19–22 govern inter-account asset transfers (book-value separate accounts take the seller's
   BACV with the fair-value difference to IMR in the purchasing account, so the two accounts' IMR
   nets to zero); ¶¶23–28 are the separate account **AVR/IMR** rules — an IMR is required only where
   assets are at **book value**, applied account by account, and an AVR is required where the
   reporting entity rather than the policyholder bears default or fair-value loss, so traditional VA
   and VL separate accounts need neither except AVR on seed money, while book-value, modified
-  guaranteed, MVA and book-value-guarantee contracts do [R83 ¶¶23–27]. ¶30 requires the **liability
+  guaranteed, MVA and book-value-guarantee contracts do [R83 ¶¶23–27](#uslib-reg-r83). ¶30 requires the **liability
   basis to follow the asset basis** — A-820 valuation interest rates on a general-account basis,
   **current market-based rates where assets are at fair value** — and ¶45 **rejects** ASU 2018-12,
   ASU 2022-05 and SOP 03-1 [R83].
@@ -2550,3 +2550,84 @@ carried in its front matter and recorded at R73.
 
 ---
 
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-reg-r1
+[R10]: #uslib-reg-r10
+[R100]: #uslib-reg-r100
+[R101]: #uslib-reg-r101
+[R102]: #uslib-reg-r102
+[R11]: #uslib-reg-r11
+[R110]: #uslib-reg-r110
+[R12]: #uslib-reg-r12
+[R13]: #uslib-reg-r13
+[R14]: #uslib-reg-r14
+[R15]: #uslib-reg-r15
+[R151]: #uslib-reg-r151
+[R152]: #uslib-reg-r152
+[R16]: #uslib-reg-r16
+[R17]: #uslib-reg-r17
+[R18]: #uslib-reg-r18
+[R19]: #uslib-reg-r19
+[R2]: #uslib-reg-r2
+[R20]: #uslib-reg-r20
+[R21]: #uslib-reg-r21
+[R22]: #uslib-reg-r22
+[R23]: #uslib-reg-r23
+[R25]: #uslib-reg-r25
+[R26]: #uslib-reg-r26
+[R27]: #uslib-reg-r27
+[R28]: #uslib-reg-r28
+[R29]: #uslib-reg-r29
+[R3]: #uslib-reg-r3
+[R30]: #uslib-reg-r30
+[R31]: #uslib-reg-r31
+[R32]: #uslib-reg-r32
+[R33]: #uslib-reg-r33
+[R35]: #uslib-reg-r35
+[R36]: #uslib-reg-r36
+[R37]: #uslib-reg-r37
+[R38]: #uslib-reg-r38
+[R4]: #uslib-reg-r4
+[R40]: #uslib-reg-r40
+[R41]: #uslib-reg-r41
+[R42]: #uslib-reg-r42
+[R43]: #uslib-reg-r43
+[R44]: #uslib-reg-r44
+[R45]: #uslib-reg-r45
+[R46]: #uslib-reg-r46
+[R47]: #uslib-reg-r47
+[R48]: #uslib-reg-r48
+[R49]: #uslib-reg-r49
+[R49b]: #uslib-reg-r49
+[R5]: #uslib-reg-r5
+[R50]: #uslib-reg-r50
+[R51]: #uslib-reg-r51
+[R53]: #uslib-reg-r53
+[R54]: #uslib-reg-r54
+[R55]: #uslib-reg-r55
+[R56]: #uslib-reg-r56
+[R57]: #uslib-reg-r57
+[R58]: #uslib-reg-r58
+[R59]: #uslib-reg-r59
+[R6]: #uslib-reg-r6
+[R60]: #uslib-reg-r60
+[R61]: #uslib-reg-r61
+[R62]: #uslib-reg-r62
+[R64]: #uslib-reg-r64
+[R65]: #uslib-reg-r65
+[R66]: #uslib-reg-r66
+[R67]: #uslib-reg-r67
+[R68]: #uslib-reg-r68
+[R69]: #uslib-reg-r69
+[R7]: #uslib-reg-r7
+[R70]: #uslib-reg-r70
+[R71]: #uslib-reg-r71
+[R73]: #uslib-reg-r73
+[R78]: #uslib-reg-r78
+[R79]: #uslib-reg-r79
+[R81]: #uslib-reg-r81
+[R83]: #uslib-reg-r83
+[R9]: #uslib-reg-r9
+[R92]: #uslib-reg-r92
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

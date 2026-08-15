@@ -299,3 +299,7 @@ in the product [S#]/[R#] sections were accessed 2026-08-03. No source was newly 
 drafting; **R153 and R154 were fetched and read afterwards, on 2026-08-06**, and are the only
 entries below that post-date the drafts. Every tag in `product-spec.md` and `technical-notes.md`
 resolves to an entry above.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

@@ -174,3 +174,8 @@ along.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[S6]: #uslib-term_life-s6
+[std]: #uslib-std
+<!-- END generated citation links -->

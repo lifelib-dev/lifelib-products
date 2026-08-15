@@ -349,7 +349,7 @@ was noted as unsettled in the specimen [S3].
 **In scope (described, charged at 0 in the base model [std]):** none are projected in
 the base reference model; the monthly-deduction formula carries a rider-charge term as
 a placeholder so that rider modules can be added without changing the recursion [S3
-formula structure].
+formula structure](#uslib-universal_life-s3).
 
 Commonly attached riders on this chassis, for context:
 
@@ -418,7 +418,7 @@ UL-specific nonforfeiture (retrospective minimum CSV with expense-allowance
 amortization; surrender charges permissible above that floor), mandatory policy
 provisions (guarantees stated in the policy; interest credits not conditional beyond
 24 months; grace of at least 30 days with notice), and the prescribed annual report to
-policyowners [R1] [REG-R5 same document]. The composite's charge/guarantee structure
+policyowners [R1] [REG-R5 same document](#uslib-reg-r5). The composite's charge/guarantee structure
 and annual-report-driven disclosure assumptions sit inside this frame.
 
 **AP&P Appendix A-585 — the valuation half, and only that half.** The requirement the
@@ -454,7 +454,7 @@ and PBR an accreditation standard from 2020-01-01 [R5]; the operative date is pr
 in operative rules by the AP&P codification of the Standard Valuation Law — A-820 ¶3
 applies the principle-based ¶¶23–27 to policies issued on or after "the January 1,
 2017, operative date of the Valuation Manual" and ¶4 keeps earlier issues on ¶¶5–22,
-to which those provisions "shall not apply" [REG-R153 ¶¶3–4]; **the 2020-01-01
+to which those provisions "shall not apply" [REG-R153 ¶¶3–4](#uslib-reg-r153); **the 2020-01-01
 accreditation date has no counterpart in A-820, which contains no elective transition,
 phase-in or company election at all** [REG-R153]. VM-20 sets principle-based
 reserve requirements (net premium reserve plus deterministic/stochastic components
@@ -472,7 +472,7 @@ specimen's nonforfeiture basis is the earlier 2001 CSO ANB [S3].
 **ASOP No. 2 (non-guaranteed elements).** Current credited rate, current COI, and
 current loads are NGEs: scales must be based on reasonable expectations of future
 experience, revised only when anticipated experience factors change, and not set to
-recoup past losses [R8] [REG-R26 same standard]. This constrains how the model's NGE
+recoup past losses [R8] [REG-R26 same standard](#uslib-reg-r26). This constrains how the model's NGE
 re-rating logic may behave.
 
 **Illustrations (Model 582 / ASOP 24).** Sales illustrations for this product operate
@@ -490,12 +490,41 @@ a "Section 7" cite does not resolve against it — the ULSG construction sits at
 print [REG-R154]. A-830 ¶32.b floors the ULSG reserve by the minimum reserves required
 by "other appendices governing universal life plans" **without naming the item**, and
 that cross-reference must **not** be resolved to A-585 on the A-830 text
-[REG-R154 ¶32].
+[REG-R154 ¶32](#uslib-reg-r154).
 
 **IIPRC uniform standards.** Multi-state UL forms (e.g., the "ICC14"-prefixed Symetra
 form [S1]) are filed under the Interstate Compact's uniform standards for individual
-flexible premium adjustable life [R10 — located but not read; no facts cited from it].
+flexible premium adjustable life [R10 — located but not read; no facts cited from it](#uslib-universal_life-r10).
 
 **Tax reserves.** IRC 807 defines life insurance tax reserves off the NAIC-prescribed
 method (greater of net surrender value and 92.81% of the CRVM/VM reserve, capped at
 statutory) [REG-R16] — a downstream consumer of the same projected cash flows.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-universal_life-r1
+[R2]: #uslib-universal_life-r2
+[R3]: #uslib-universal_life-r3
+[R4]: #uslib-universal_life-r4
+[R5]: #uslib-universal_life-r5
+[R6]: #uslib-universal_life-r6
+[R7]: #uslib-universal_life-r7
+[R8]: #uslib-universal_life-r8
+[REG-R13]: #uslib-reg-r13
+[REG-R14]: #uslib-reg-r14
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R155]: #uslib-reg-r155
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R3]: #uslib-reg-r3
+[REG-R5]: #uslib-reg-r5
+[REG-R6]: #uslib-reg-r6
+[REG-R7]: #uslib-reg-r7
+[S1]: #uslib-universal_life-s1
+[S2]: #uslib-universal_life-s2
+[S3]: #uslib-universal_life-s3
+[S4]: #uslib-universal_life-s4
+[S5]: #uslib-universal_life-s5
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

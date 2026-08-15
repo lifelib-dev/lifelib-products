@@ -170,7 +170,7 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
 - Caveat carried over: SECURE 2.0's **enactment date (December 29, 2022) is [unverified]**
   — the statutory text says only "the date of the enactment of this Act". The derived
   base-period quarter (July 1, 2022) *is* confirmed directly by the codified regulation
-  [R1 (q)(4)(ii)(A)(1)].
+  [R1 (q)(4)(ii)(A)(1)](#uslib-deferred_income_annuity-r1).
 
 (uslib-deferred_income_annuity-r3)=
 
@@ -589,3 +589,32 @@ this directory disagree, **the research file governs**. Income-phase mechanics a
 `_research/immediate-annuity.md`. Standardizations marked **[std]** in
 `product-spec.md` and `technical-notes.md` are introduced at drafting and are not
 attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-deferred_income_annuity-r1
+[R10]: #uslib-deferred_income_annuity-r10
+[R11]: #uslib-deferred_income_annuity-r11
+[R12]: #uslib-deferred_income_annuity-r12
+[R14]: #uslib-deferred_income_annuity-r14
+[R15]: #uslib-deferred_income_annuity-r15
+[R2]: #uslib-deferred_income_annuity-r2
+[R3]: #uslib-deferred_income_annuity-r3
+[R41]: #uslib-reg-r41
+[R6]: #uslib-deferred_income_annuity-r6
+[R8]: #uslib-deferred_income_annuity-r8
+[REG-R151]: #uslib-reg-r151
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R45]: #uslib-reg-r45
+[REG-R58]: #uslib-reg-r58
+[S1]: #uslib-deferred_income_annuity-s1
+[S11]: #uslib-deferred_income_annuity-s11
+[S2]: #uslib-deferred_income_annuity-s2
+[S3]: #uslib-deferred_income_annuity-s3
+[S4]: #uslib-deferred_income_annuity-s4
+[S6]: #uslib-deferred_income_annuity-s6
+[S8]: #uslib-deferred_income_annuity-s8
+[S9]: #uslib-deferred_income_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

@@ -375,10 +375,10 @@ separate layers, cited not reproduced:
   capped at statutory [REG-R16]; the statutory engine plus a haircut/cap wrapper.
 - **GAAP:** LDTI (ASU 2018-12) rewrites long-duration GAAP (annually updated cash flow
   assumptions, single-A discounting through OCI) [REG-R34 — not fetched; characterization
-  corroborated only by secondary summaries]. Same projected cash flows, different measurement
+  corroborated only by secondary summaries](#uslib-reg-r34). Same projected cash flows, different measurement
   overlay — the reason projection and measurement are separated in this library.
 - **Model governance:** ASOP 56 (modeling) [REG-R32] and, for cash-flow analysis engagements,
-  ASOP 7 [REG-R27 — listed in the regulatory bibliography] frame validation/documentation
+  ASOP 7 [REG-R27 — listed in the regulatory bibliography](#uslib-reg-r27) frame validation/documentation
   expectations for the implementation itself.
 
 ## Key sensitivities and model risks
@@ -419,3 +419,38 @@ Known modeling pitfalls:
   mortality-timing-sensitive measures beyond age 100 [S1].
 - **State variations** (FL maturity 120, WA face minimums, ND suicide, MT unisex)
   [S6] [S7] [S8] [S1] are not modeled; the reference is a generic-state contract **[std]**.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-whole_life-r1
+[R2]: #uslib-whole_life-r2
+[R3]: #uslib-whole_life-r3
+[R4]: #uslib-whole_life-r4
+[R5]: #uslib-whole_life-r5
+[R6]: #uslib-whole_life-r6
+[R8]: #uslib-whole_life-r8
+[R9]: #uslib-whole_life-r9
+[REG-R1]: #uslib-reg-r1
+[REG-R110]: #uslib-reg-r110
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R16]: #uslib-reg-r16
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R20]: #uslib-reg-r20
+[REG-R25]: #uslib-reg-r25
+[REG-R30]: #uslib-reg-r30
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[S1]: #uslib-whole_life-s1
+[S11]: #uslib-whole_life-s11
+[S14]: #uslib-whole_life-s14
+[S2]: #uslib-whole_life-s2
+[S3]: #uslib-whole_life-s3
+[S4]: #uslib-whole_life-s4
+[S6]: #uslib-whole_life-s6
+[S7]: #uslib-whole_life-s7
+[S8]: #uslib-whole_life-s8
+[S9]: #uslib-whole_life-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

@@ -333,3 +333,18 @@ than read**; where one of them and a document in this directory disagree, **the 
 file governs**. Standardizations marked **[std]** in
 `product-spec.md` and `technical-notes.md` are introduced at drafting and are not
 attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-universal_life-r1
+[R2]: #uslib-universal_life-r2
+[R3]: #uslib-universal_life-r3
+[R4]: #uslib-universal_life-r4
+[R5]: #uslib-universal_life-r5
+[R7]: #uslib-universal_life-r7
+[R8]: #uslib-universal_life-r8
+[REG-R3]: #uslib-reg-r3
+[REG-R5]: #uslib-reg-r5
+[S1]: #uslib-universal_life-s1
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

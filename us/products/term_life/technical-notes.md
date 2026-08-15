@@ -118,7 +118,7 @@ intentionally empty so the input schema matches sibling products (UL etc.).
 | Level-period lapse | SOA/LIMRA 2015–2022 Term & WL lapse study [R6]; older full-factor study [REG-R20] | Duration vector, fn B **[std]** |
 | Shock lapse & PLT lapse | SOA U.S. Post-Level Term study (2021) [R4] [REG-R22] | Jump-ratio-keyed table, see Policyholder behavior **[std]** |
 | PLT mortality deterioration | Same study [R4] [REG-R22] | Multiplier grading 3.50 → 2.00, see Policyholder behavior **[std]** |
-| Conversion rate | SOA 2016 conversion experience study [R7] (2009–2023 SOA/LIMRA update in progress [R7, partly unverified]) | 1%/yr while eligible; 2% in final eligible year **[std]** (fn C) |
+| Conversion rate | SOA 2016 conversion experience study [R7] (2009–2023 SOA/LIMRA update in progress [R7, partly unverified](#uslib-term_life-r7)) | 1%/yr while eligible; 2% in final eligible year **[std]** (fn C) |
 | Maintenance expense | — (no public basis in research set) | $30/policy/yr inflating 2%/yr **[std]** (fn D) |
 | Acquisition expense | — | $300/policy at issue **[std]** (fn D) |
 | Commission | — | 80% of premium year 1; 5% years 2–n; 2% PLT **[std]** (fn D) |
@@ -166,7 +166,7 @@ intentionally empty so the input schema matches sibling products (UL etc.).
 | G(t) | Premium income in year t; K(t) commission; E(t) expenses; X(t) premium tax |
 | DC(t) | Death claims incurred in year t; CV(t) conversion credit outflow |
 | M(d) | PLT mortality multiplier at PLT duration d = t − n |
-| J | Initial premium jump ratio = AP(n+1)/AP(n), fee included [R4] [R2 convention] |
+| J | Initial premium jump ratio = AP(n+1)/AP(n), fee included [R4] [R2 convention](#uslib-term_life-r2) |
 
 ### Decrement order and recursion (annual model)
 
@@ -303,7 +303,7 @@ lapse rates begin to rise one to two policy years before the end of the level pe
 cv(t) = 1% while `conv_elig`, 2% in the final eligible year (option value is highest just
 before the window closes) **[std]**; zero otherwise. Anti-selective conversion interacts
 with PLT deterioration — converters are disproportionately impaired lives [R7 scope;
-magnitude not recorded] — so implementations linking term and permanent blocks should not
+magnitude not recorded](#uslib-term_life-r7) — so implementations linking term and permanent blocks should not
 apply both a conversion cost load and full PLT deterioration to the same lives (see
 Conversion treatment above).
 
@@ -367,12 +367,12 @@ but are not reproduced here:
   NPR/PLT-override assumption sets, from the same cash flow engine.
 - **Pre-PBR in-force (A-830, the model regulation known outside the manual as "Regulation
   XXX")**: basic reserves = **max(segmented, unitary)** under the contract segmentation
-  method [REG-R154 ¶21]; deficiency reserves as **quantity A less the basic reserve** [REG-R154 ¶17],
-  with X-factor select mortality confined to the **first segment** [REG-R154 ¶18]. The
+  method [REG-R154 ¶21](#uslib-reg-r154); deficiency reserves as **quantity A less the basic reserve** [REG-R154 ¶17](#uslib-reg-r154),
+  with X-factor select mortality confined to the **first segment** [REG-R154 ¶18](#uslib-reg-r154). The
   valuation table is **date-split, not 1980 CSO flat**: 1980 CSO with elective select
   factors **before 1 January 2004**, and the **2001 CSO Mortality Table from 1 January 2004**
   for basic reserves, deficiency reserves and the tabular cost of insurance
-  [REG-R154 ¶¶16, 17, 23]. The quantitative substrate A-830 does not restate — what a basic
+  [REG-R154 ¶¶16, 17, 23](#uslib-reg-r154). The quantitative substrate A-830 does not restate — what a basic
   reserve *is* (¶¶11–13), the minimum reserve behind the deficiency definition (¶¶19–20) and
   the maximum valuation interest rates (¶¶7–10) — is **A-820** [REG-R153]. Both appendices are
   now read at first hand and this pointer no longer rests on Model #830 alone [R1] [REG-R6].
@@ -421,7 +421,7 @@ Known modeling pitfalls:
   engine uses the opposite convention, so the two must not be conflated:** A-830 ¶5's
   segmentation ratio is on guaranteed gross premium *per thousand of face amount*, "ignoring
   policy fees only if level for the premium paying period" — and the $65 fee is level for the
-  whole period [S6], so the fee comes **out** there [REG-R154 ¶5]. One product, two
+  whole period [S6], so the fee comes **out** there [REG-R154 ¶5](#uslib-reg-r154). One product, two
   premium-ratio conventions: **fee-in** for behaviour and the VM-20 NPR shock [R2] [R4],
   **fee-out** for A-830 segmentation. At the anchor cell they differ by nearly a factor of two
   (≈5.46 against ≈9.32) [S6]-derived.
@@ -441,3 +441,37 @@ Known modeling pitfalls:
 ---
 
 *Companion documents: `product-spec.md` (contract terms), `sources.md` (citations).*
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-term_life-r1
+[R2]: #uslib-term_life-r2
+[R3]: #uslib-term_life-r3
+[R4]: #uslib-term_life-r4
+[R6]: #uslib-term_life-r6
+[R7]: #uslib-term_life-r7
+[R8]: #uslib-term_life-r8
+[REG-R11]: #uslib-reg-r11
+[REG-R12]: #uslib-reg-r12
+[REG-R153]: #uslib-reg-r153
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R20]: #uslib-reg-r20
+[REG-R22]: #uslib-reg-r22
+[REG-R23]: #uslib-reg-r23
+[REG-R25]: #uslib-reg-r25
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R3]: #uslib-reg-r3
+[REG-R32]: #uslib-reg-r32
+[REG-R34]: #uslib-reg-r34
+[REG-R6]: #uslib-reg-r6
+[S2]: #uslib-term_life-s2
+[S3]: #uslib-term_life-s3
+[S5]: #uslib-term_life-s5
+[S6]: #uslib-term_life-s6
+[S7]: #uslib-term_life-s7
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

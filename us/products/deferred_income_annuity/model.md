@@ -17,7 +17,7 @@ model's names for every shared concept.
 > limit, the $50 maintenance expense escalated at 2.5%, and the absence of any lapse or
 > annuitization decrement — are sourced. **The entire pricing kernel is not.** No
 > purchase-rate table exists: the Insurance Compact expressly relieves the insurer of
-> disclosing the deferral-period mortality and interest basis [R13 §1.B(1)(a)], so the
+> disclosing the deferral-period mortality and interest basis [R13 §1.B(1)(a)](#uslib-deferred_income_annuity-r13), so the
 > 4.75% pricing rate, the 6.0% expense and profit load, the mortality table, the
 > illustrative payout and return-of-premium factors, the 100 bp repricing spread and the
 > 50 bp commutation margin are all **[std]** constructions. Replace them with company
@@ -401,7 +401,7 @@ the 50 bp commutation margin (also **[unverified]**); six accelerated payments; 
 maintenance expense weighted by `l(t)` rather than by the chassis' `max(C, l_alive)`;
 rounding the installment-refund guarantee up to a whole instalment; and the anchor cell
 itself. Sourced, by contrast: the income-slice mechanic and its purchase-rate rule
-[R13 §3.B(1)(b)] [S3], the 100% return-of-premium deferral death benefit [R13 §3.I(1)(a)],
+[R13 §3.B(1)(b)](#uslib-deferred_income_annuity-r13) [S3], the 100% return-of-premium deferral death benefit [R13 §3.I(1)(a)](#uslib-deferred_income_annuity-r13),
 the ±5-year adjustment and its disclosed repricing inputs [S1] [S2], the six-month
 acceleration [S1] [S4], commutation with the tail preserved [S4] [S5], the whole QLAC
 restriction set [R1] [R2] [R3], the $50 maintenance expense escalated at 2.5% [R9], and the
@@ -431,3 +431,18 @@ are the library's canonical ones, and that every model point projects.
 ```bash
 python -m pytest tests/test_deferred_income_annuity_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-deferred_income_annuity-r1
+[R2]: #uslib-deferred_income_annuity-r2
+[R3]: #uslib-deferred_income_annuity-r3
+[R9]: #uslib-deferred_income_annuity-r9
+[REG-R153]: #uslib-reg-r153
+[S1]: #uslib-deferred_income_annuity-s1
+[S2]: #uslib-deferred_income_annuity-s2
+[S3]: #uslib-deferred_income_annuity-s3
+[S4]: #uslib-deferred_income_annuity-s4
+[S5]: #uslib-deferred_income_annuity-s5
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

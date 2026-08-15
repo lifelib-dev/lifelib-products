@@ -511,3 +511,34 @@ reading the primary texts [REG-R151] [REG-R152] — the only route by which a fl
 appendix items was unavailable, so **none was upgraded**; the AP&P print of the 2012 IAM Period
 Table was added at "Age basis" as corroboration [REG-R153] and the **[std]** there, which marks the
 model's choice of a single age basis, stands.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_indexed_annuity-r1
+[R10]: #uslib-fixed_indexed_annuity-r10
+[R11]: #uslib-fixed_indexed_annuity-r11
+[R2]: #uslib-fixed_indexed_annuity-r2
+[R3]: #uslib-fixed_indexed_annuity-r3
+[R4]: #uslib-fixed_indexed_annuity-r4
+[R5]: #uslib-fixed_indexed_annuity-r5
+[R6]: #uslib-fixed_indexed_annuity-r6
+[REG-R110]: #uslib-reg-r110
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R153]: #uslib-reg-r153
+[REG-R26]: #uslib-reg-r26
+[REG-R3]: #uslib-reg-r3
+[REG-R33]: #uslib-reg-r33
+[REG-R39]: #uslib-reg-r39
+[REG-R40]: #uslib-reg-r40
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R46]: #uslib-reg-r46
+[REG-R62]: #uslib-reg-r62
+[REG-R68]: #uslib-reg-r68
+[S10]: #uslib-fixed_indexed_annuity-s10
+[S6]: #uslib-fixed_indexed_annuity-s6
+[S9]: #uslib-fixed_indexed_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

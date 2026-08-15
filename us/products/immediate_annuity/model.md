@@ -370,3 +370,11 @@ model instance and asserting the residual moves off zero and the no-argument
 ```bash
 python -m pytest tests/test_immediate_annuity_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[REG-R151]: #uslib-reg-r151
+[S1]: #uslib-immediate_annuity-s1
+[S5]: #uslib-immediate_annuity-s5
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

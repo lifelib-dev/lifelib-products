@@ -45,7 +45,7 @@ indexed annuities, which returned to state regulation after Rule 151A was vacate
 Dodd-Frank §989J enacted [REG-R53]. The SEC recorded RILA sales of **$47.4 billion in
 2023**, 15% above the prior year and more than five times the 2017 level ($9.2 billion),
 with Q4 2023 the first quarter in which RILA sales surpassed variable annuity sales
-[R1, citing LIMRA].
+[R1, citing LIMRA](#uslib-registered_index_linked_annuity-r1).
 
 The distinguishing modeling fact: between term start and term end the contract has **no
 account value in the ordinary sense**. Every transaction — withdrawal, surrender, death
@@ -541,7 +541,7 @@ two populations may be reserved as one aggregated group [REG-R35] [REG-R38].
 
 **Valuation — the formulaic CARVM floor, and what now sources it.** A contract outside VM-21
 falls back to formulaic CARVM: SVL §5a, printed word for word at A-820 ¶15
-[REG-R1] [REG-R153 ¶15]. Its interpretive layer has been read at first hand. **AG 33 reaches
+[REG-R1] [REG-R153 ¶15](#uslib-reg-r153). Its interpretive layer has been read at first hand. **AG 33 reaches
 this contract** — it applies "to all annuity contracts subject to CARVM, where any elective
 benefits … are available", with no product list, no separate-account exception and no
 threshold, and this chassis offers its three named elective benefits (full surrenders,
@@ -600,3 +600,48 @@ Academy paper; the Compact standard was not retrieved [R6] [unverified].
 risk benefits** at fair value through earnings under LDTI [REG-R34], with ASOP No. 10 (Doc.
 No. 207) the professional-standards counterpart; the MRB-versus-insurance-liability
 classification determines the measurement model [REG-R71].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-registered_index_linked_annuity-r1
+[R2]: #uslib-registered_index_linked_annuity-r2
+[R3]: #uslib-registered_index_linked_annuity-r3
+[R4]: #uslib-registered_index_linked_annuity-r4
+[R5]: #uslib-registered_index_linked_annuity-r5
+[R6]: #uslib-registered_index_linked_annuity-r6
+[REG-R1]: #uslib-reg-r1
+[REG-R15]: #uslib-reg-r15
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R156]: #uslib-reg-r156
+[REG-R157]: #uslib-reg-r157
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R34]: #uslib-reg-r34
+[REG-R35]: #uslib-reg-r35
+[REG-R38]: #uslib-reg-r38
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R44]: #uslib-reg-r44
+[REG-R45]: #uslib-reg-r45
+[REG-R46]: #uslib-reg-r46
+[REG-R47]: #uslib-reg-r47
+[REG-R48]: #uslib-reg-r48
+[REG-R49]: #uslib-reg-r49
+[REG-R49b]: #uslib-reg-r49
+[REG-R51]: #uslib-reg-r51
+[REG-R52]: #uslib-reg-r52
+[REG-R53]: #uslib-reg-r53
+[REG-R54]: #uslib-reg-r54
+[REG-R55]: #uslib-reg-r55
+[REG-R56]: #uslib-reg-r56
+[REG-R59]: #uslib-reg-r59
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-registered_index_linked_annuity-s1
+[S2]: #uslib-registered_index_linked_annuity-s2
+[S3]: #uslib-registered_index_linked_annuity-s3
+[S4]: #uslib-registered_index_linked_annuity-s4
+[S5]: #uslib-registered_index_linked_annuity-s5
+[S6]: #uslib-registered_index_linked_annuity-s6
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

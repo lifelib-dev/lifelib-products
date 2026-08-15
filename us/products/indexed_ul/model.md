@@ -440,3 +440,20 @@ replaced or the claim it corrects:
 ```bash
 python -m pytest tests/test_indexed_ul_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-indexed_ul-r1
+[R4]: #uslib-indexed_ul-r4
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R20]: #uslib-reg-r20
+[REG-R21]: #uslib-reg-r21
+[S1]: #uslib-indexed_ul-s1
+[S2]: #uslib-indexed_ul-s2
+[S3]: #uslib-indexed_ul-s3
+[S4]: #uslib-indexed_ul-s4
+[S5]: #uslib-indexed_ul-s5
+[S7]: #uslib-indexed_ul-s7
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

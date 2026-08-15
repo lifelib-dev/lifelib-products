@@ -386,7 +386,7 @@ certain-portion commutation with its surrender charge [S1].
 
 **How these excluded features would sort under AG 33, if any were added back.** The guideline's
 two-category test turns on whether a benefit is *freely elected*, not on its label
-[REG-R151 *Definitions* 1]. **Elective**, and therefore enough on their own to pull the contract
+[REG-R151 *Definitions* 1](#uslib-reg-r151). **Elective**, and therefore enough on their own to pull the contract
 into AG 33's scope: **payment acceleration**, the **NYL 30% Cash Withdrawal**, and the
 certain-portion **commutation** already in the composite. **Non-elective**, and therefore not:
 the **nursing-home confinement increase** and the **health-condition payment increases** on
@@ -459,14 +459,14 @@ of the present values, at the date of valuation, of the future guaranteed benefi
 including guaranteed nonforfeiture benefits" at the end of each contract year, less the
 present value of future *valuation considerations* payable before that year end, with the
 guaranteed benefits projected on the **contractual** mortality (if any) and interest basis
-and the valuation basis entering through the discounting [REG-R153 ¶15]. **¶14** is the
+and the valuation basis entering through the discounting [REG-R153 ¶15](#uslib-reg-r153). **¶14** is the
 scope gate: ¶15 reaches all annuity and pure endowment contracts **other than** group
 annuity and pure endowment contracts purchased under an employer or employee-organization
 retirement or deferred compensation plan (IRA/§408 plans excepted), which ¶13.b routes to a
 **CRVM-consistent** method instead — an individual retail SPIA is squarely inside ¶15
-[REG-R153 ¶¶13.b, 14]. **¶6** fixes the triple: for individual annuity and pure endowment
+[REG-R153 ¶¶13.b, 14](#uslib-reg-r153). **¶6** fixes the triple: for individual annuity and pure endowment
 contracts the minimum standard is the **method of ¶¶14–15**, the **valuation interest rates
-of ¶¶7–10**, and **the tables defined in Appendix A-821** [REG-R153 ¶6]. TIAA-CREF Life
+of ¶¶7–10**, and **the tables defined in Appendix A-821** [REG-R153 ¶6](#uslib-reg-r153). TIAA-CREF Life
 states the application to this product directly: "For deferred annuities in the pay out
 stage, Single Premium Immediate Annuities ('SPIA') and supplementary contracts, the path of
 future guaranteed benefits with the highest present value is used to set policy reserves"
@@ -480,7 +480,7 @@ subject to CARVM, **where any elective benefits (as defined below) are available
 contract owner under the terms of the contract"; and its *Definitions* block classes as
 **non-elective** "benefits payable under either a deferred or immediate annuity contract
 (with or without life contingencies), **where no benefit options are available** under the
-terms of the contract" [REG-R151 *Purpose*, *Definitions* 1]. A `life_only`, `cash_refund`
+terms of the contract" [REG-R151 *Purpose*, *Definitions* 1](#uslib-reg-r151). A `life_only`, `cash_refund`
 or `life_certain` contract of the composite design with **no commutation right** — the base
 configuration here, `commutation_enabled = false` — is therefore **inside CARVM and outside
 AG 33**. Add the commutation of the certain portion that MassMutual and NYL offer [S1] [S5]
@@ -497,7 +497,7 @@ this library does not assert. **Two, the elective/non-elective split.** **Nursin
 benefits are non-elective**, not elective — they are named in the *Definitions* non-elective
 list — so any earlier library note placing nursing-home waivers among the elective set is
 wrong [REG-R151]. AG 33's grade-in ran to 100% by December 31, 2000
-and has **no live effect on any current valuation** [REG-R151 *Effective Date*].
+and has **no live effect on any current valuation** [REG-R151 *Effective Date*](#uslib-reg-r151).
 
 **VM-22 (PBR for non-variable annuities).** Effective for valuation dates on or after
 **January 1, 2026**, VM-22 constitutes CARVM for non-variable annuities, with a three-year
@@ -537,11 +537,11 @@ weighting factor W = .80** — no Plan Type and no guarantee-duration lookup ent
 being reserved to "other annuities" — and `R` is the **12-month average** of the Moody's
 composite yield on seasoned corporate bonds ending June 30 of the calendar year **of** issue
 or purchase, the result "rounded to the nearer one-quarter of one percent (1/4 of 1%)"
-[REG-R153 ¶¶7.a.i(b), 8.b, 9.b]. Two limits are recorded rather than papered over: A-820
+[REG-R153 ¶¶7.a.i(b), 8.b, 9.b](#uslib-reg-r153). Two limits are recorded rather than papered over: A-820
 **prints no tie-break** for that rounding — the "ties down" convention belongs to VM-20
-§3.C.2.a and must not be read off A-820 [REG-R153 ¶7.a.i] [REG-R3] — and the whole ¶7
+§3.C.2.a and must not be read off A-820 [REG-R153 ¶7.a.i](#uslib-reg-r153) [REG-R3] — and the whole ¶7
 machinery is triggered "for policies issued on or after **the effective date of the
-Codification**", a threshold date A-820 never prints [REG-R153 ¶7]. For immediate annuities
+Codification**", a threshold date A-820 never prints [REG-R153 ¶7](#uslib-reg-r153). For immediate annuities
 issued after 12/31/2017 this formula is superseded for maximum-rate purposes by **VM-V §1**
 above [R1] [REG-R37]; it governs the older in-force layer.
 
@@ -559,7 +559,7 @@ workers'-compensation or LTD claims instead use **1983 Table "a" without project
 **The effective dates, now read from the codified appendix rather than inferred.** A-820 ¶6
 makes **Appendix A-821** the mortality leg by direct cross-reference, and A-821 prints the
 table-by-issue-date rules the library previously did not carry [REG-R153 ¶6, A-821
-¶¶10–12, 15]: the **Annuity 2000 Mortality Table** for any individual annuity or pure
+¶¶10–12, 15](#uslib-reg-r153): the **Annuity 2000 Mortality Table** for any individual annuity or pure
 endowment contract issued **1 January 2001 through 31 December 2014**; the **2012 IAR
 Mortality Table** for issues **on or after 1 January 2015**; **1983 Table "a" without
 projection** "solely when the contract is based on life contingencies and is issued to fund
@@ -631,3 +631,46 @@ survivor percentages are capped by the MDIB table, 52% at a 40+ year age gap up 
 ≤ 10 years; a spouse may always take 100% [R8]. The 2024 RMD final regulations (T.D. 10001,
 applicable for calendar years beginning January 1, 2025) finalize this framework and add
 the QLAC and partial-annuitization rules that matter to the DIA chassis [REG-R58].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-immediate_annuity-r1
+[R10]: #uslib-immediate_annuity-r10
+[R11]: #uslib-immediate_annuity-r11
+[R2]: #uslib-immediate_annuity-r2
+[R3]: #uslib-immediate_annuity-r3
+[R4]: #uslib-immediate_annuity-r4
+[R5]: #uslib-immediate_annuity-r5
+[R6]: #uslib-immediate_annuity-r6
+[R7]: #uslib-immediate_annuity-r7
+[R8]: #uslib-immediate_annuity-r8
+[REG-R1]: #uslib-reg-r1
+[REG-R151]: #uslib-reg-r151
+[REG-R153]: #uslib-reg-r153
+[REG-R3]: #uslib-reg-r3
+[REG-R33]: #uslib-reg-r33
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R45]: #uslib-reg-r45
+[REG-R46]: #uslib-reg-r46
+[REG-R55]: #uslib-reg-r55
+[REG-R56]: #uslib-reg-r56
+[REG-R57]: #uslib-reg-r57
+[REG-R58]: #uslib-reg-r58
+[REG-R59]: #uslib-reg-r59
+[S1]: #uslib-immediate_annuity-s1
+[S10]: #uslib-immediate_annuity-s10
+[S11]: #uslib-immediate_annuity-s11
+[S2]: #uslib-immediate_annuity-s2
+[S3]: #uslib-immediate_annuity-s3
+[S4]: #uslib-immediate_annuity-s4
+[S5]: #uslib-immediate_annuity-s5
+[S6]: #uslib-immediate_annuity-s6
+[S7]: #uslib-immediate_annuity-s7
+[S8]: #uslib-immediate_annuity-s8
+[S9]: #uslib-immediate_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

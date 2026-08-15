@@ -530,3 +530,28 @@ govern where they and any document in this directory disagree. Standardizations 
 `technical-notes.md` — including the entire declared-rate snapshot, the trading-cost
 factor, the market-data assumptions used in the worked example, and every behavioral
 assumption — are introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-registered_index_linked_annuity-r1
+[R2]: #uslib-registered_index_linked_annuity-r2
+[R3]: #uslib-registered_index_linked_annuity-r3
+[R4]: #uslib-registered_index_linked_annuity-r4
+[R5]: #uslib-registered_index_linked_annuity-r5
+[R6]: #uslib-registered_index_linked_annuity-r6
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R156]: #uslib-reg-r156
+[REG-R157]: #uslib-reg-r157
+[REG-R26]: #uslib-reg-r26
+[REG-R3]: #uslib-reg-r3
+[REG-R35]: #uslib-reg-r35
+[REG-R38]: #uslib-reg-r38
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R44]: #uslib-reg-r44
+[REG-R45]: #uslib-reg-r45
+[REG-R49]: #uslib-reg-r49
+[REG-R69]: #uslib-reg-r69
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

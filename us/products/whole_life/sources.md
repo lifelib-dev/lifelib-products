@@ -356,3 +356,8 @@ Manual appendix entries cited here (REG-R153, REG-R154) they live in
 research files and the documents in this directory disagree, **the research files govern**. The
 two documents in this directory cite only facts recorded in those research files; **[std]** items
 are standardizations introduced at drafting and are attributed to no source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

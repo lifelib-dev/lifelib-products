@@ -521,3 +521,32 @@ extractions `_research/appp-ag33.md` (R151), `appp-ag35.md` (R152),
 role for [REG-R#] tags.
 Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md` are
 introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_deferred_annuity-r1
+[R2]: #uslib-fixed_deferred_annuity-r2
+[R4]: #uslib-fixed_deferred_annuity-r4
+[R41]: #uslib-reg-r41
+[R5]: #uslib-fixed_deferred_annuity-r5
+[R6]: #uslib-fixed_deferred_annuity-r6
+[R7]: #uslib-fixed_deferred_annuity-r7
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R153]: #uslib-reg-r153
+[REG-R3]: #uslib-reg-r3
+[REG-R36]: #uslib-reg-r36
+[REG-R39]: #uslib-reg-r39
+[REG-R40]: #uslib-reg-r40
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R45]: #uslib-reg-r45
+[REG-R46]: #uslib-reg-r46
+[REG-R55]: #uslib-reg-r55
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R63]: #uslib-reg-r63
+[S5]: #uslib-fixed_deferred_annuity-s5
+[S6]: #uslib-fixed_deferred_annuity-s6
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

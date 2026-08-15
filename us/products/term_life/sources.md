@@ -279,3 +279,32 @@ record; standardizations introduced at drafting are marked **[std]** in
 both documents and are not attributed to any source. **The two appendix reads closed a
 retrieval limit, not a standardization** — no **[std]** in either document was upgraded on
 this pass, because neither A-820 nor A-830 supplies a value that any of them stands in for.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[REG-R1]: #uslib-reg-r1
+[REG-R11]: #uslib-reg-r11
+[REG-R110]: #uslib-reg-r110
+[REG-R12]: #uslib-reg-r12
+[REG-R13]: #uslib-reg-r13
+[REG-R153]: #uslib-reg-r153
+[REG-R154]: #uslib-reg-r154
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R2]: #uslib-reg-r2
+[REG-R20]: #uslib-reg-r20
+[REG-R22]: #uslib-reg-r22
+[REG-R23]: #uslib-reg-r23
+[REG-R25]: #uslib-reg-r25
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R3]: #uslib-reg-r3
+[REG-R32]: #uslib-reg-r32
+[REG-R33]: #uslib-reg-r33
+[REG-R34]: #uslib-reg-r34
+[REG-R41]: #uslib-reg-r41
+[REG-R6]: #uslib-reg-r6
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

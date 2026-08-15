@@ -503,3 +503,21 @@ model docstring and this README's list above.
 ```bash
 python -m pytest tests/test_registered_index_linked_annuity_us.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uslib-registered_index_linked_annuity-r2
+[R6]: #uslib-registered_index_linked_annuity-r6
+[REG-R42]: #uslib-reg-r42
+[REG-R44]: #uslib-reg-r44
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R64]: #uslib-reg-r64
+[REG-R65]: #uslib-reg-r65
+[S1]: #uslib-registered_index_linked_annuity-s1
+[S2]: #uslib-registered_index_linked_annuity-s2
+[S4]: #uslib-registered_index_linked_annuity-s4
+[S5]: #uslib-registered_index_linked_annuity-s5
+[S6]: #uslib-registered_index_linked_annuity-s6
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

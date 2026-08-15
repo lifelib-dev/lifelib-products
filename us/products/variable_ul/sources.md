@@ -339,3 +339,8 @@ inherit. The cross-product regulatory annotations live in
 behind REG-R153, REG-R154, REG-R155 and the unnumbered A-270 live in
 `_research/appp-a820-a821-a822.md`, `_research/appp-a830.md` and
 `_research/appp-a585-a250-a255-a270.md`.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[REG-R5]: #uslib-reg-r5
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

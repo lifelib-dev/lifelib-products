@@ -110,7 +110,7 @@ with a GLWB rider versus 33% without** [R8].
    indexed account keeps the reference recursion to a single annual segment; the rest are
    variations.
 5. Declared caps observed: **5.25%** on the S&P 500 1-year point-to-point [S2, effective
-   07/01/2022] and **4.50%** [S4]; guaranteed minimum annual caps **0.25%** [S4] and **0.50%**
+   07/01/2022](#uslib-fixed_indexed_annuity-s2) and **4.50%** [S4]; guaranteed minimum annual caps **0.25%** [S4] and **0.50%**
    [S10]. The higher declared cap with the lower guaranteed minimum maximises the
    guaranteed-versus-current gap the model must exercise; all are NGEs revisable under ASOP No. 2
    [R6].
@@ -598,3 +598,61 @@ binding: ASOP No. 7 (cash flow analysis) [REG-R27]; ASOP No. 22 (asset adequacy 
 [REG-R32]; ASOP No. 10 and FASB ASU 2018-12 (LDTI), under which the **index feature is an embedded
 derivative** and the **GLWB is a market risk benefit** at fair value [R1] [REG-R34] [REG-R71]; and
 IRC §807, which makes the statutory annuity engine the tax-reserve engine [REG-R16].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-fixed_indexed_annuity-r1
+[R10]: #uslib-fixed_indexed_annuity-r10
+[R2]: #uslib-fixed_indexed_annuity-r2
+[R3]: #uslib-fixed_indexed_annuity-r3
+[R4]: #uslib-fixed_indexed_annuity-r4
+[R5]: #uslib-fixed_indexed_annuity-r5
+[R6]: #uslib-fixed_indexed_annuity-r6
+[R7]: #uslib-fixed_indexed_annuity-r7
+[R8]: #uslib-fixed_indexed_annuity-r8
+[R9]: #uslib-fixed_indexed_annuity-r9
+[REG-R1]: #uslib-reg-r1
+[REG-R10]: #uslib-reg-r10
+[REG-R100]: #uslib-reg-r100
+[REG-R151]: #uslib-reg-r151
+[REG-R152]: #uslib-reg-r152
+[REG-R16]: #uslib-reg-r16
+[REG-R2]: #uslib-reg-r2
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R3]: #uslib-reg-r3
+[REG-R32]: #uslib-reg-r32
+[REG-R33]: #uslib-reg-r33
+[REG-R34]: #uslib-reg-r34
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R45]: #uslib-reg-r45
+[REG-R46]: #uslib-reg-r46
+[REG-R49]: #uslib-reg-r49
+[REG-R53]: #uslib-reg-r53
+[REG-R55]: #uslib-reg-r55
+[REG-R56]: #uslib-reg-r56
+[REG-R57]: #uslib-reg-r57
+[REG-R58]: #uslib-reg-r58
+[REG-R64]: #uslib-reg-r64
+[REG-R68]: #uslib-reg-r68
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[REG-R8]: #uslib-reg-r8
+[S1]: #uslib-fixed_indexed_annuity-s1
+[S10]: #uslib-fixed_indexed_annuity-s10
+[S11]: #uslib-fixed_indexed_annuity-s11
+[S2]: #uslib-fixed_indexed_annuity-s2
+[S3]: #uslib-fixed_indexed_annuity-s3
+[S4]: #uslib-fixed_indexed_annuity-s4
+[S5]: #uslib-fixed_indexed_annuity-s5
+[S6]: #uslib-fixed_indexed_annuity-s6
+[S7]: #uslib-fixed_indexed_annuity-s7
+[S8]: #uslib-fixed_indexed_annuity-s8
+[S9]: #uslib-fixed_indexed_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

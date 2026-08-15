@@ -389,7 +389,7 @@ payment staying at or above $100 [S1]:
 
     surrender charge = sc(y) × W                                        [S1]
     E[COMM(t)]       = W × (1 − sc(y))            (paid to the owner)
-    θ_cum(t⁺)        = θ_cum(t) + (1 − θ_cum(t)) × W / CV(t)            [S5 pro-rata rule]
+    θ_cum(t⁺)        = θ_cum(t) + (1 − θ_cum(t)) × W / CV(t)            [S5 pro-rata rule](#uslib-immediate_annuity-s5)
 
 The pro-rata reduction implements NYL's rule that future income payments through the end of
 the guaranteed period are reduced "by the withdrawal percentage elected", with full payments
@@ -440,7 +440,7 @@ withdrawal amount [S5] and Pacific Life confirms an interest-rate adjustment app
 is an *elective benefit* under AG 33, and for elective benefits "incidence rates should not be
 based on tables reflecting past company experience, industry experience or other expectations"
 — the guideline substitutes trial sets **maximised over**, theoretically all rates 0% to 100%,
-with 0% or 100% the typical optimum [REG-R151 *Definitions* 2]. A `u(y)` or `u(y, t)` vector
+with 0% or 100% the typical optimum [REG-R151 *Definitions* 2](#uslib-reg-r151). A `u(y)` or `u(y, t)` vector
 fed into a reserve calculation is therefore not a conservative approximation of CARVM; it is a
 different quantity. (Note also that AG 33 reaches this product **only** because the commutation
 right exists — see "Valuation and reserve pointers" below.)
@@ -518,7 +518,7 @@ cited, not reproduced:
   to set policy reserves" [S7]; enabling statute Model #820 [REG-R1], codified at **AP&P
   Appendix A-820 ¶15**, with the scope gate at ¶14 (qualified-plan group annuity business
   excepted and routed to a CRVM-consistent method by ¶13.b) and the method/interest/mortality
-  triple at ¶6 [REG-R153 ¶¶6, 13.b, 14, 15]. **AG 33 does not reach the base composite** — its
+  triple at ¶6 [REG-R153 ¶¶6, 13.b, 14, 15](#uslib-reg-r153). **AG 33 does not reach the base composite** — its
   applicability requires that elective benefits be available, and its non-elective definition
   expressly covers immediate annuity benefits "where no benefit options are available"; a
   commutation right puts the contract inside it [REG-R151].
@@ -544,10 +544,10 @@ cited, not reproduced:
   guarantee-duration lookup — and `R` the **12-month** average of the Moody's composite yield
   on seasoned corporate bonds ending June 30 of the calendar year **of** issue or purchase,
   rounded "to the nearer one-quarter of one percent (1/4 of 1%)" [REG-R153 ¶¶7.a.i(b), 8.b,
-  9.b]. **A-820 prints no tie-break** for that rounding (the "ties down" convention is VM-20
+  9.b](#uslib-reg-r153). **A-820 prints no tie-break** for that rounding (the "ties down" convention is VM-20
   §3.C.2.a's, not A-820's), and its ¶7 trigger — "the effective date of the Codification" —
   is a date A-820 never prints; both stay unresolved in the primary text
-  [REG-R153 ¶7] [REG-R3].
+  [REG-R153 ¶7](#uslib-reg-r153) [REG-R3].
 - **Valuation mortality.** **2012 IAR** generational table:
   `q_x^(2012+k) = q_x^{2012 IAM Period}·(1 − G2_x)^k`, **rounded to three decimal places per
   1,000, with the rounding applied to the value computed from the 2012 period rate each time
@@ -560,7 +560,7 @@ cited, not reproduced:
   without projection** for the structured-settlement carve-out (tort and out-of-court
   settlements, workers'-compensation-type claims, LTD claims where an annuity replaces
   continuing payments), and **1994 GAR** for group-purchased annuities, **with no effective
-  date printed for the group rule** [REG-R153 ¶6, A-821 ¶¶10–12, 15]. **Still open:** A-821
+  date printed for the group rule** [REG-R153 ¶6, A-821 ¶¶10–12, 15](#uslib-reg-r153). **Still open:** A-821
   prints **no standard for an individual annuity issued before 1/1/2001**, and the 1994 GAR,
   Annuity 2000 and 1983 Table "a" are **named and not printed**, so A-821's 1994 GAR formula
   `q_x^(1994+n) = q_x^1994·(1 − AA_x)^n` is not computable from library sources [REG-R153].
@@ -630,7 +630,7 @@ Known modeling pitfalls:
   construction silently doubles the guarantee.
 - **Rounding the valuation table by compounding.** `q^(2012+k)` must be rounded from the 2012
   period rate every time; chaining rounded rates gives 0.727 where the manual requires 0.726
-  [R3] [R4] [REG-R59] [REG-R153 A-821 ¶14].
+  [R3] [R4] [REG-R59] [REG-R153 A-821 ¶14](#uslib-reg-r153).
 - **Applying the A/E factor to the wrong base.** 1.084 belongs on 2012 IAM Basic **projected
   with G2**; on the unprojected table the study's own answer is 99.6% [R9].
 - **Period versus generational.** The 2012 IAM Period Table is one calendar year's rates; the
@@ -659,3 +659,49 @@ Known modeling pitfalls:
   transition and a pending LATF directive targeted at the 1/1/2027 manual [R2]; VM-V weight
   tables, Table X spreads and the published quarterly rates live on the NAIC Industry tab and
   were not retrieved [R1]. Re-check both each January.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-immediate_annuity-r1
+[R2]: #uslib-immediate_annuity-r2
+[R3]: #uslib-immediate_annuity-r3
+[R4]: #uslib-immediate_annuity-r4
+[R5]: #uslib-immediate_annuity-r5
+[R6]: #uslib-immediate_annuity-r6
+[R7]: #uslib-immediate_annuity-r7
+[R8]: #uslib-immediate_annuity-r8
+[R9]: #uslib-immediate_annuity-r9
+[REG-R1]: #uslib-reg-r1
+[REG-R151]: #uslib-reg-r151
+[REG-R153]: #uslib-reg-r153
+[REG-R16]: #uslib-reg-r16
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R3]: #uslib-reg-r3
+[REG-R31]: #uslib-reg-r31
+[REG-R32]: #uslib-reg-r32
+[REG-R33]: #uslib-reg-r33
+[REG-R34]: #uslib-reg-r34
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R55]: #uslib-reg-r55
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R61]: #uslib-reg-r61
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-immediate_annuity-s1
+[S10]: #uslib-immediate_annuity-s10
+[S11]: #uslib-immediate_annuity-s11
+[S2]: #uslib-immediate_annuity-s2
+[S3]: #uslib-immediate_annuity-s3
+[S4]: #uslib-immediate_annuity-s4
+[S5]: #uslib-immediate_annuity-s5
+[S6]: #uslib-immediate_annuity-s6
+[S7]: #uslib-immediate_annuity-s7
+[S8]: #uslib-immediate_annuity-s8
+[S9]: #uslib-immediate_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

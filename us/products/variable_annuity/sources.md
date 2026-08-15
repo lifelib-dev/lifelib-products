@@ -314,7 +314,7 @@ appendix-level ids rather than being folded into R73 so a document can cite **A-
 **AG 33 *Text* 4** instead of a 2,117-page manual. Each was read by **local text extraction**
 from that download. **This supersedes, for these items, the library's earlier record of the
 manual as a paid publication that could not be fetched** [REG-R33 — frozen and preserved
-unaltered in `references/regulatory-and-actuarial-references.md`].
+unaltered in `references/regulatory-and-actuarial-references.md`](#uslib-reg-r33).
 
 **Edition line, stated once for all seven.** None of these items prints "As of March 2026" on
 its own pages. Every extracted page carries only the footer **"© 1999-2026 National
@@ -465,3 +465,27 @@ id**.
 
 Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md` are
 introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-variable_annuity-r1
+[R11]: #uslib-variable_annuity-r11
+[R13]: #uslib-variable_annuity-r13
+[R4]: #uslib-variable_annuity-r4
+[R5]: #uslib-variable_annuity-r5
+[R6]: #uslib-variable_annuity-r6
+[R8]: #uslib-variable_annuity-r8
+[R9]: #uslib-variable_annuity-r9
+[REG-R31]: #uslib-reg-r31
+[REG-R35]: #uslib-reg-r35
+[REG-R43]: #uslib-reg-r43
+[REG-R52]: #uslib-reg-r52
+[REG-R54]: #uslib-reg-r54
+[REG-R55]: #uslib-reg-r55
+[REG-R64]: #uslib-reg-r64
+[REG-R66]: #uslib-reg-r66
+[REG-R67]: #uslib-reg-r67
+[S1]: #uslib-variable_annuity-s1
+[S6]: #uslib-variable_annuity-s6
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

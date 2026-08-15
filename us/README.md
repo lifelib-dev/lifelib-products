@@ -244,3 +244,8 @@ and research file carry the full list).
 - **[unverified] items remain** wherever a claim could not be confirmed against a
   retrieved document — including the RILA Form N-4 compliance date, whether any successor
   to the 2012 IAR valuation table exists, and several NAIC guideline mechanics.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

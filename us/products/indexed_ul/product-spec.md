@@ -111,7 +111,7 @@ Footnotes:
   consistent snapshot.
 - **F8:** Current caps observed for 1-yr S&P 500 PTP accounts: 10.00% [S2], 10.25% [S5],
   10.50% [S7], 12.00%–13.75% (same product, two print dates — caps fell between prints)
-  [S3] [S4]. Guaranteed minimum caps observed 0.25% [S8] to 4.00% [S2 High Cap account];
+  [S3] [S4]. Guaranteed minimum caps observed 0.25% [S8] to 4.00% [S2 High Cap account](#uslib-indexed_ul-s2);
   Transamerica instead guarantees the cap never below its current Basic Interest Account
   rate [S3] [S4]. Treat any current cap as a calibration snapshot, not a fixed parameter.
 - **F9:** Floor-design variation: Transamerica credits a guaranteed 0.75% *during* the
@@ -408,3 +408,39 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   7-pay test with §72 taxation of MEC distributions [R5]; tax reserves per IRC §807
   (greater of net surrender value and 92.81% of the NAIC-method reserve, capped at
   statutory) [REG-R16].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-indexed_ul-r1
+[R10]: #uslib-indexed_ul-r10
+[R2]: #uslib-indexed_ul-r2
+[R3]: #uslib-indexed_ul-r3
+[R4]: #uslib-indexed_ul-r4
+[R5]: #uslib-indexed_ul-r5
+[R6]: #uslib-indexed_ul-r6
+[R8]: #uslib-indexed_ul-r8
+[REG-R1]: #uslib-reg-r1
+[REG-R10]: #uslib-reg-r10
+[REG-R110]: #uslib-reg-r110
+[REG-R153]: #uslib-reg-r153
+[REG-R155]: #uslib-reg-r155
+[REG-R16]: #uslib-reg-r16
+[REG-R17]: #uslib-reg-r17
+[REG-R18]: #uslib-reg-r18
+[REG-R19]: #uslib-reg-r19
+[REG-R26]: #uslib-reg-r26
+[REG-R3]: #uslib-reg-r3
+[REG-R30]: #uslib-reg-r30
+[REG-R5]: #uslib-reg-r5
+[REG-R7]: #uslib-reg-r7
+[REG-R9]: #uslib-reg-r9
+[S1]: #uslib-indexed_ul-s1
+[S2]: #uslib-indexed_ul-s2
+[S3]: #uslib-indexed_ul-s3
+[S4]: #uslib-indexed_ul-s4
+[S5]: #uslib-indexed_ul-s5
+[S6]: #uslib-indexed_ul-s6
+[S7]: #uslib-indexed_ul-s7
+[S8]: #uslib-indexed_ul-s8
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

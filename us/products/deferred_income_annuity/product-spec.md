@@ -44,7 +44,7 @@ account [R13].
 
 The fact that drives every modeling decision: **each premium immediately and irrevocably buys a fully
 guaranteed paid-up annuity** — "All income benefits, based on the specified income commencement date and
-specified income option associated with each premium paid, shall be guaranteed" [R13 §3.H(1)] — and the
+specified income option associated with each premium paid, shall be guaranteed" [R13 §3.H(1)](#uslib-deferred_income_annuity-r13) — and the
 slices are combined into one payment stream at the income start date [S1] [S2] [S3] [S4]. Guardian states it
 plainly: "Each payment purchases a specific amount of guaranteed lifetime income, based on annuity purchase
 rates that are in effect at the time each purchase payment is made" [S3].
@@ -52,7 +52,7 @@ rates that are in effect at the time each purchase payment is made" [S3].
 The contract states **dollars of income, not rates**, and the Compact expressly relieves the insurer of
 disclosure: "Since the premium and income benefit are fully defined in the contract, the mortality table and
 interest rate used in the deferral period and for determining the contractually specified income payable do
-not need to be disclosed in the contract or the Actuarial Memorandum" [R13 §1.B(1)(a)]. No purchase-rate
+not need to be disclosed in the contract or the Actuarial Memorandum" [R13 §1.B(1)(a)](#uslib-deferred_income_annuity-r13). No purchase-rate
 table or income-per-$100,000 figure was obtained from any source, so the purchase-rate function in
 `technical-notes.md` is an explicit **[std]** construction. The product is sold as pure longevity insurance
 with no fees and no market performance to track, to a client "between the ages of 50 and 65 and ready to
@@ -69,7 +69,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 |---|---|---|
 | Design type | Flexible-premium deferred paid-up non-variable annuity; general account only; irrevocable | [R13] [S2] [S3] |
 | Participation | Non-participating (no dividends) | **[std]** (1) |
-| Contract nature | No cash surrender value, no withdrawals, no loans before the income start date | [S1] [S2] [R13 §3.P] |
+| Contract nature | No cash surrender value, no withdrawals, no loans before the income start date | [S1] [S2] [R13 §3.P](#uslib-deferred_income_annuity-r13) |
 | Market types | Nonqualified; Traditional / Roth / SEP / Custodial IRA; QLAC IRA and Custodial QLAC IRA | [S2] [S4] |
 | Market type — base model | Nonqualified, with QLAC as an overlay switch | scope **[std]** (2) |
 | Age basis | Age nearest birthday ("74 years, six months and one day old ⇒ contract issue age 75") | [S2] |
@@ -82,7 +82,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Anchor model cell | Female 60 ANB, nonqualified, $100,000 at issue + $50,000 at policy year 6, income start age 80, Life with Cash Refund, monthly | **[std]** (6) |
 
 1. No retrieved product is participating. The Compact contemplates one, pricing dividend-purchased income
-   either on "current annuity purchase rates" or on the rates used for the related premium [R13 §3.T]; a
+   either on "current annuity purchase rates" or on the rates used for the related premium [R13 §3.T](#uslib-deferred_income_annuity-r13); a
    participating form would also lose the Model #245 §3.A exemption (Regulatory context) [R11].
 2. All four insurers issue both [S1] [S2] [S3] [S4]. The nonqualified form carries the fullest feature set
    (acceleration and commutation are nonqualified-only [S1] [S2] [S4]), so QLAC is modeled as a restriction set.
@@ -91,13 +91,13 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
    It is not the binding constraint: the 13-month minimum deferral (footnote 9) together with the age-85
    income-start cap (footnote 11) makes the **effective** maximum issue age **83 ANB** — the same ceiling the
    QLAC band carries (footnote 5) — so the 85 row never binds on its own.
-4. Observed: 68 [S3, 2018], 69 [S2, 2019] — both pre-SECURE-vintage documents keyed to an RMD age of 70½ and
+4. Observed: 68 [S3, 2018](#uslib-deferred_income_annuity-s3), 69 [S2, 2019](#uslib-deferred_income_annuity-s2) — both pre-SECURE-vintage documents keyed to an RMD age of 70½ and
    superseded by the current applicable RMD ages of 73/75 [S1] [S4] — 71 [S4], 73 [S1] [S6]. 73 is
    the post-SECURE representative; the mechanism behind it is NYL's rule that issue age is "no later than
    2 years before the client's RMD age" [S1].
 5. Observed minima 31 [S3], 35 [S1], 41 [S2]; maxima 80 [S1], 82 [S3] [S4], 83 [S2] [S6]. The archetype's band
    is adopted. The minimum is purely a product rule — the regulation sets only the age-85 outside date
-   [R1 (q)(1)(ii)].
+   [R1 (q)(1)(ii)](#uslib-deferred_income_annuity-r1).
 6. Pure modeling choice, carried identically into `technical-notes.md`. Age 60 with a 20-year deferral sits
    inside the stated target market [S2]; two premiums exercise the slice mechanic; Cash Refund is permitted on
    both nonqualified contracts and QLACs [S2].
@@ -112,10 +112,10 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Maximum cumulative premium without home-office approval | $1,500,000 | **[std]** (8) |
 | Cut-off for subsequent premiums | None accepted within **13 months** of the income start date | [S2] [S4] |
 | Cut-off for 1035 exchanges / transfers | 16 months before the income start date | [S4] |
-| Pricing of each premium | Company's then-current annuity purchase rates, by attained age, income start date and income option | [R13 §3.B(1)(b)] [S3] |
-| Floor on current purchase rates | Income purchased must be not less than that in a new contract of the same class, attained age and commencement date | [R13 §3.B(1)(c)] |
-| Confirmation of each subsequent premium | Premium, additional income purchased, option and start date, within **30 days** | [R13 §3.B(1)(d)] |
-| Free look on each subsequent premium | Cancel by returning the confirmation within **10 calendar days**; premium refunded | [S2] [S3] [R13 §3.B(1)(d)] |
+| Pricing of each premium | Company's then-current annuity purchase rates, by attained age, income start date and income option | [R13 §3.B(1)(b)](#uslib-deferred_income_annuity-r13) [S3] |
+| Floor on current purchase rates | Income purchased must be not less than that in a new contract of the same class, attained age and commencement date | [R13 §3.B(1)(c)](#uslib-deferred_income_annuity-r13) |
+| Confirmation of each subsequent premium | Premium, additional income purchased, option and start date, within **30 days** | [R13 §3.B(1)(d)](#uslib-deferred_income_annuity-r13) |
+| Free look on each subsequent premium | Cancel by returning the confirmation within **10 calendar days**; premium refunded | [S2] [S3] [R13 §3.B(1)(d)](#uslib-deferred_income_annuity-r13) |
 | Minimum monthly income payment | $100 | [S2] |
 | QLAC aggregate premium limit — 2026 | $210,000 | [R3] [S4] |
 | Aggregation of cumulative-premium limits | Across all DIAs of the insurer group with the same owner or annuitant | [S2] |
@@ -133,7 +133,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Maximum deferral | **30 years** from contract issue | **[std]** (10) |
 | Maximum income start age — nonqualified and Roth | **85** | **[std]** (11) |
 | Maximum income start — traditional IRA | April 1 of the year following the year the owner attains the applicable RMD age (73, or 75 for owners born in 1960 or later) | [S1] [S4] |
-| Income start ceiling — QLAC | Annuity starting date no later than the first day of the month next following the 85th anniversary of the owner's birth | [R1 (q)(1)(ii)] [S1] [S2] [S3] [S4] [REG-R57] |
+| Income start ceiling — QLAC | Annuity starting date no later than the first day of the month next following the 85th anniversary of the owner's birth | [R1 (q)(1)(ii)](#uslib-deferred_income_annuity-r1) [S1] [S2] [S3] [S4] [REG-R57] |
 | Income start floor — QLAC | After the required beginning date. This is a **product** rule, not a QLAC rule — the regulation sets no earliest commencement date | [S1] [S2] |
 | Income start day of month | Any day between the 1st and the 28th | [S2] |
 | Payment frequency menu | Monthly, quarterly, semiannual, annual | [S1] [S2] [S3] [S4] |
@@ -148,7 +148,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 10. Observed: 30 years [S2] [S4], 40 years [S1] [S3], both across five insurers [S6]. 30 is taken with the
     archetype; in practice the maximum income-start age binds first.
 11. Observed: 85 [S1] [S3] [S6], 90 [S2] [S4]. 85 is modal, matches the regulation-fixed QLAC ceiling
-    [R1 (q)(1)(ii)] and keeps one age cap across market types (footnote 3).
+    [R1 (q)(1)(ii)](#uslib-deferred_income_annuity-r1) and keeps one age cap across market types (footnote 3).
 12. All four insurers offer all four frequencies [S1] [S2] [S3] [S4]. Fixed at issue at NYL [S1] and MassMutual —
     it cannot change even on an annuity-date adjustment [S2] — but changeable at Guardian [S3]. The
     fixed-at-issue convention is adopted.
@@ -169,7 +169,7 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Excluded forms | Life Only and Joint Life Only; Pacific Life additionally excludes Joint and Survivor Life Only and Period Certain | [S1] [S3] [S4] |
 | Repricing basis | Originally scheduled payment; new annuity date; **Moody's Seasoned Baa Corporate Bond Yield** at the request date; **Annuity 2012 Mortality Table**; plus an **interest rate change adjustment set forth in the contract** | [S2] (NYL states the same construction against the **A2000** tables [S1]) |
 | Direction of income impact | Advancing the date **reduces** the payment; deferring **increases** it | [S4] [S5] |
-| Explicit charge for the change | None disclosed; any charge must be disclosed | [S1] [S2] [S3] [S4] [R13 §§3.M, 1.B(1)(d)] |
+| Explicit charge for the change | None disclosed; any charge must be disclosed | [S1] [S2] [S3] [S4] [R13 §§3.M, 1.B(1)(d)](#uslib-deferred_income_annuity-r13) |
 
 14. One-time at all four insurers [S1] [S2] [S3] [S4]; Guardian adds a one-time right to accelerate back after a
     deferral [S3]; **Western & Southern allows two changes**, the only multi-change design identified [S6].
@@ -189,11 +189,11 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Convertible joint | Switch; convertible options guarantee **two** payouts — joint, and the corresponding single-life payout on conversion — so the joint payout is **lower** | [S2]; base = non-convertible **[std]** (17) |
 | Convertible joint — period certain limit | 10 years | [S2] |
 | Refund mechanics | Cash Refund: lump-sum shortfall of premiums over payments made. Installment Refund: payments continue in the same amount and frequency until they equal the premiums. Period Certain: payments continue to the end of the certain period. Beneficiary may elect the present value instead under Installment Refund and Period Certain | [S1] [S2] [S3] |
-| Compact framing of refunds | Income payments made before a return-of-premium death benefit "shall be considered period certain income" | [R13 definitions] |
+| Compact framing of refunds | Income payments made before a return-of-premium death benefit "shall be considered period certain income" | [R13 definitions](#uslib-deferred_income_annuity-r13) |
 
-15. Observed: 5–30 years [S1 period-certain-only, S3], 10–30 years [S1 life-with-guarantee, S2], up to 30
+15. Observed: 5–30 years [S1 period-certain-only, S3](#uslib-deferred_income_annuity-s1), 10–30 years [S1 life-with-guarantee, S2](#uslib-deferred_income_annuity-s1), up to 30
     years [S4]. The Compact floor is five years minimum with a twenty-year maximum deferral for a
-    period-certain-only contract [R13 §3.H(3)]. 10–30 is taken with the archetype; period-certain-only is out
+    period-certain-only contract [R13 §3.H(3)](#uslib-deferred_income_annuity-r13). 10–30 is taken with the archetype; period-certain-only is out
     of base scope.
 16. Observed: 100/66⅔/50% [S1]; ½, ⅔, ¾ [S2]; 50/67/75% [S4]. The union {50, 66⅔, 75, 100} is adopted, which
     is exactly the set carried in `products/immediate_annuity/product-spec.md` so the two payout chassis
@@ -207,24 +207,24 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Base form | **100% return of premiums paid, no interest**, lump sum | [S1] [S2] [S3] [S4] [R13 §3.I(1)(a)] |
+| Base form | **100% return of premiums paid, no interest**, lump sum | [S1] [S2] [S3] [S4] [R13 §3.I(1)(a)](#uslib-deferred_income_annuity-r13) |
 | Applies to | All income options **except** Life Only and Joint Life Only | [S1] [S3] [S4] |
 | No-death-benefit form | Single Life — No Death Benefit: no death benefit before or after the income start date | [S2] |
 | No-death-benefit form — conditions | Deferral period of **10 years or longer**; income start date **cannot be changed**; state restrictions apply | [S2] (18) |
 | Trigger | Death of the owner (or of the annuitant where the owner is a non-natural person) | [S1] [S3] [S4] |
-| Permitted calculation methods | (a) percentage of premiums paid; (b) percentage of premiums paid plus interest; (c) flat dollar amount; (d) any combination | [R13 §3.I(1)] |
-| Application to subsequent premiums | Must be provided for both the initial premium and any additional premiums | [R13 §3.I(2)] |
-| Charges used in determining the death benefit | None disclosed in any retrieved source; any such charge must appear on the specifications page | [S1] [S2] [S3] [S4] [R13 §2.B(2)] |
+| Permitted calculation methods | (a) percentage of premiums paid; (b) percentage of premiums paid plus interest; (c) flat dollar amount; (d) any combination | [R13 §3.I(1)](#uslib-deferred_income_annuity-r13) |
+| Application to subsequent premiums | Must be provided for both the initial premium and any additional premiums | [R13 §3.I(2)](#uslib-deferred_income_annuity-r13) |
+| Charges used in determining the death benefit | None disclosed in any retrieved source; any such charge must appear on the specifications page | [S1] [S2] [S3] [S4] [R13 §2.B(2)](#uslib-deferred_income_annuity-r13) |
 | Spousal continuation | Where the surviving spouse is joint annuitant and sole primary beneficiary the contract may continue instead of paying the benefit; on non-convertible continuation **no further premiums are allowed** | [S1] [S2] [S4] |
 | Terminal-illness acceleration | Death benefit payable on diagnosis with life expectancy of 12 months or fewer (except Life Only forms) | [S4]; out of base scope |
-| Cover-page disclosure — no death benefit | "The contract does not provide access to funds prior to the income commencement date. No death benefit is available to a beneficiary if the annuitant dies prior to the income commencement date." | [R13 §2.A(8)] [R10 §9] |
-| Cover-page disclosure — with death benefit | "The contract does not provide access to funds prior to the income commencement date other than payment of the death benefit." | [R13 §2.A(9)] |
+| Cover-page disclosure — no death benefit | "The contract does not provide access to funds prior to the income commencement date. No death benefit is available to a beneficiary if the annuitant dies prior to the income commencement date." | [R13 §2.A(8)](#uslib-deferred_income_annuity-r13) [R10 §9](#uslib-deferred_income_annuity-r10) |
+| Cover-page disclosure — with death benefit | "The contract does not provide access to funds prior to the income commencement date other than payment of the death benefit." | [R13 §2.A(9)](#uslib-deferred_income_annuity-r13) |
 
 18. The research file records an unresolved internal inconsistency: the option is said to be unavailable in
     "Connecticut or New York" in the body of the MassMutual guide and in "Connecticut or Florida" in its
     footnotes and product highlights [S2]. Both stand; neither is asserted. Separately, **no source offered a
     "percentage of premiums plus interest" deferral death benefit**, though the Compact permits it
-    [R13 §3.I(1)(b)].
+    [R13 §3.I(1)(b)](#uslib-deferred_income_annuity-r13).
 
 ### Annual increase (COLA)
 
@@ -240,11 +240,11 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Availability on other qualified contracts | May be limited or unavailable because of RMD rules | [S2] [S3] [S4] |
 | Index linkage | None — every observed option is a fixed compound escalator, not CPI-linked | [S1] [S2] [S3] [S4] |
 
-19. Observed: 1–3% [S1, and USAA per S6], 1–4% [S2], 2/3/4% [S4], 1–5% [Guardian and Western & Southern per
+19. Observed: 1–3% [S1, and USAA per S6](#uslib-deferred_income_annuity-s1), 1–4% [S2], 2/3/4% [S4], 1–5% [Guardian and Western & Southern per
     S6]. The archetype's 1–4% is adopted; the base model runs at 0% so the payout stream is level, and
     exposes `cola_rate`.
 20. **Correction worth stating:** a QLAC "does not fail" the not-variable/not-indexed requirement "merely
-    because it provides for a cost-of-living adjustment as described in paragraph (o)(2)" [R1 (q)(4)(iv)].
+    because it provides for a cost-of-living adjustment as described in paragraph (o)(2)" [R1 (q)(4)(iv)](#uslib-deferred_income_annuity-r1).
     The market is more restrictive than the regulation — NYL, Guardian and Pacific Life all exclude COLA from
     their QLAC offering [S1] [S3] [S4] and MassMutual limits it on qualified contracts [S2].
 
@@ -252,9 +252,9 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Cash surrender value | **None**, at any time before the income start date | [S1] [S2] [R13 scope] |
+| Cash surrender value | **None**, at any time before the income start date | [S1] [S2] [R13 scope](#uslib-deferred_income_annuity-r13) |
 | Withdrawals before income start | **None** | [S1] [S2] |
-| Loans | **Prohibited** by the uniform standard | [R13 §3.P] |
+| Loans | **Prohibited** by the uniform standard | [R13 §3.P](#uslib-deferred_income_annuity-r13) |
 | Payment acceleration — amount | Next scheduled monthly payment plus five subsequent payments = **six months of income in one sum**; no payments for the following five months | [S1]; three-or-six variant [S2] [S4] |
 | Payment acceleration — uses | **2** over the life of the contract | **[std]** (21) |
 | Payment acceleration — conditions | Owner at least 59½; monthly frequency; nonqualified only; at least one regular payment between uses | [S1] [S2] [S4] |
@@ -262,8 +262,8 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 | Payment acceleration on QLAC | Not available | [S4] |
 | Commutation — base model | Not offered | [S1] [S2] [S3] |
 | Commutation — extended model | Up to **100% of the present value of remaining guaranteed income payments**; nonqualified only; 59½ or older; **an interest-rate adjustment charge applies**; no limit on the number of withdrawals; life-contingent tail preserved (payments resume at the end of the would-be guaranteed period if the annuitant is living) | [S4] [S5] |
-| Commutation — regulatory frame | Lump sum only; non-commuted benefits unaffected; must be an actuarial present value; the interest rate "can be adjusted for changes in interest rates … between the issue date and the commutation date", intended "to reduce interest risk in the event of rising interest rate after issue" | [R13 §§3.F(1)–(7)] |
-| Commutation on QLAC | Prohibited after the required beginning date, other than a rescission right not exceeding 90 days from purchase | [R1 (q)(1)(iv)] [R2 §202(a)(4)] [REG-R57] |
+| Commutation — regulatory frame | Lump sum only; non-commuted benefits unaffected; must be an actuarial present value; the interest rate "can be adjusted for changes in interest rates … between the issue date and the commutation date", intended "to reduce interest risk in the event of rising interest rate after issue" | [R13 §§3.F(1)–(7)](#uslib-deferred_income_annuity-r13) |
+| Commutation on QLAC | Prohibited after the required beginning date, other than a rescission right not exceeding 90 days from purchase | [R1 (q)(1)(iv)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(4)](#uslib-deferred_income_annuity-r2) [REG-R57] |
 | Feature interlocks | Six-month waiting periods interlock acceleration, commutation and the start-date adjustment in both directions | [S4] |
 
 21. Observed: 1 use [S3], 2 uses [S1] [S4], 5 uses [S2]. Two is modal and is adopted; the count is a parameter.
@@ -275,25 +275,25 @@ variant, the QLAC, additionally removes the contract's value from the RMD accoun
 
 An implementer arriving from a fixed, indexed or variable deferred annuity chassis will look for the
 following and must not find them. Their absence is a structural feature confirmed at contract level, not a
-research gap [S1 fn.1] [S2 product highlights] [S4] [R13].
+research gap [S1 fn.1](#uslib-deferred_income_annuity-s1) [S2 product highlights](#uslib-deferred_income_annuity-s2) [S4] [R13].
 
 | Parameter class | Status |
 |---|---|
 | Account value / accumulation value | **Does not exist.** "There is also no accumulation or cash value with RetireEase Choice and, therefore, no liquidity" [S2] |
-| Credited or declared interest rate; guaranteed minimum crediting rate | **Do not exist.** The contract states dollars of income, and the deferral-period interest and mortality basis need not be disclosed at all [R13 §1.B(1)(a)] |
-| Index crediting parameters — caps, participation rates, spreads, buffers, floors, index terms | **Do not exist.** The product is non-variable and non-indexed; a QLAC is additionally *required* not to be indexed [R1 (q)(1)(vii)] |
-| M&E charge, administrative charge, contract fee, rider charges | **Do not exist.** No retrieved document discloses any explicit charge — "There are no fees" [S2]. Pricing margin is embedded in the purchase rate [R13 §1.B(1)(a)] |
+| Credited or declared interest rate; guaranteed minimum crediting rate | **Do not exist.** The contract states dollars of income, and the deferral-period interest and mortality basis need not be disclosed at all [R13 §1.B(1)(a)](#uslib-deferred_income_annuity-r13) |
+| Index crediting parameters — caps, participation rates, spreads, buffers, floors, index terms | **Do not exist.** The product is non-variable and non-indexed; a QLAC is additionally *required* not to be indexed [R1 (q)(1)(vii)](#uslib-deferred_income_annuity-r1) |
+| M&E charge, administrative charge, contract fee, rider charges | **Do not exist.** No retrieved document discloses any explicit charge — "There are no fees" [S2]. Pricing margin is embedded in the purchase rate [R13 §1.B(1)(a)](#uslib-deferred_income_annuity-r13) |
 | Surrender charge schedule; free-withdrawal corridor | **Do not exist.** There is nothing to surrender [S1] [S2] [R13] |
-| Market value adjustment | **Does not exist.** The nearest analogue is the interest-rate adjustment on commutation in the extended case [S4] [R13 §3.F(7)] |
+| Market value adjustment | **Does not exist.** The nearest analogue is the interest-rate adjustment on commutation in the extended case [S4] [R13 §3.F(7)](#uslib-deferred_income_annuity-r13) |
 | Benefit base, roll-up, step-ups, withdrawal percentages by attained-age band | **Do not exist.** There is no living-benefit rider layer; the income guarantee *is* the contract |
 | Interim value | **Does not exist** (an AG 54 concept for index-linked variable annuities [REG-R44]) |
 | Lapse / surrender assumption | **Not applicable.** For contracts with "no account value or surrender benefit, such as some contracts within the Payout Annuity Reserving Category …, this section is not applicable" [R9] |
 | Annuitization rate assumption | **Prescribed at 0%** at all projection intervals [R9]; the contract annuitizes by construction at the income start date |
-| Policy loan parameters | **Prohibited** [R13 §3.P] |
+| Policy loan parameters | **Prohibited** [R13 §3.P](#uslib-deferred_income_annuity-r13) |
 | Premium / persistency bonus | Not offered by any retrieved product [S1] [S2] [S3] [S4] |
 
 The only non-guaranteed quantity in the product is the **current annuity purchase rate applied to a future
-premium** [R13 §3.B(1)(b)–(c)], and even that is floored at the rate a new contract of the same class
+premium** [R13 §3.B(1)(b)–(c)](#uslib-deferred_income_annuity-r13), and even that is floored at the rate a new contract of the same class
 receives.
 
 ---
@@ -302,7 +302,7 @@ receives.
 
 **Premium and the income-slice mechanic.** Each premium *k* paid at time *t\_k* generates a paid-up annuity
 priced on "the attained age of the annuitant, the specified income commencement date and specified income
-option, and the company's then current annuity purchase rates" [R13 §3.B(1)(a)–(b)], so the guaranteed annual
+option, and the company's then current annuity purchase rates" [R13 §3.B(1)(a)–(b)](#uslib-deferred_income_annuity-r13), so the guaranteed annual
 income at the income start date is
 
     B  =  sum over k of  P_k  x  pr( x + t_k , T - t_k , f )
@@ -321,7 +321,7 @@ payable on every option except Life Only and Joint Life Only, which carry **no d
 after** the income start date [S1] [S3] [S4]. Economics of the fork: with ROP, deferral mortality is close to
 neutral (the premium comes back); without it, deferral deaths release the entire reserve as mortality gain —
 which is why the no-death-benefit form buys materially more income for the same premium and why it is
-conditioned on a deferral of ten years or longer [S2; derived from S1–S4, R13].
+conditioned on a deferral of ten years or longer [S2; derived from S1–S4, R13](#uslib-deferred_income_annuity-s2).
 
 **Income start date adjustment.** Payments are recalculated on actuarial-equivalence inputs MassMutual
 discloses in full: "Your originally scheduled annuity payment; the new annuity date; Moody's Seasoned Baa
@@ -330,13 +330,13 @@ Table; an interest rate change adjustment set forth in the contract" [S2]; NYL s
 against the A2000 tables [S1]. Advancing reduces the payment, deferring increases it [S4] [S5]. Where a change
 right is granted the contract must disclose the alternatives, the timing and frequency limits and any
 explicit charge, and must **either** state the mortality and interest assumption used for actuarial
-equivalence **or** contain a table of alternative income benefits [R13 §§3.M, 3.H(1)].
+equivalence **or** contain a table of alternative income benefits [R13 §§3.M, 3.H(1)](#uslib-deferred_income_annuity-r13).
 
 **Transition to income.** On the income start date the slices are paid as one stream in the form elected at
 issue [S1] [S2] [S3] [S4] and the contract becomes a SPIA — mechanics in
 `products/immediate_annuity/product-spec.md`. Two DIA-specific carry-overs: the **refund base is
 cumulative premiums paid**, not a single premium [S2] [S4]; and the Compact treats income payments made before
-a return-of-premium death benefit as **period certain income** [R13 definitions], which is what lets a
+a return-of-premium death benefit as **period certain income** [R13 definitions](#uslib-deferred_income_annuity-r13), which is what lets a
 cash-refund or installment-refund DIA be valued as a life annuity with a derived certain period.
 
 **Payment acceleration and commutation.** Acceleration is a timing shift, not a withdrawal — expressly "not a
@@ -346,7 +346,7 @@ payments received before 59½ [S1]. Commutation exists only in the extended case
 for the Period Certain option, if you are still living at the end of the period when your guaranteed income
 payments would have stopped, Pacific Life will resume income payments until your death" — the life-contingent
 tail survives commutation [S4]. **The interest-rate adjustment formula is not published in any retrieved
-document** [S4] [S5]; the Compact supplies only the principle [R13 §3.F(7)], so the construction in
+document** [S4] [S5]; the Compact supplies only the principle [R13 §3.F(7)](#uslib-deferred_income_annuity-r13), so the construction in
 `technical-notes.md` is **[std]**/[unverified].
 
 **QLAC overlay.** The same contract in qualified money under the seven conditions of §1.401(a)(9)-6(q)(1):
@@ -359,32 +359,32 @@ days from purchase); no death benefits other than those in (q)(3); a statement t
 
 - **Premium limit** $200,000 as enacted, indexed (base period the calendar quarter beginning **July 1, 2022**,
   increments rounded to the **next lowest multiple of $10,000**); **$210,000 for 2026**, unchanged from 2025
-  [R1 (q)(2)(ii), (q)(4)(ii)(A)] [R2 §202(a)(2)] [R3], independently confirmed by Pacific Life [S4]. The limit
+  [R1 (q)(2)(ii), (q)(4)(ii)(A)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(2)](#uslib-deferred_income_annuity-r2) [R3], independently confirmed by Pacific Life [S4]. The limit
   is reduced by premiums paid to this contract and to any other contract intended to be a QLAC under any
-  401(a), 403(a), 403(b), 408 or governmental 457(b) arrangement [R1 (q)(2)(ii)(B)]; the issuer may rely on
-  the owner's written representation [R5 (h)(2)]. **The percentage-of-account-balance limit is gone** —
+  401(a), 403(a), 403(b), 408 or governmental 457(b) arrangement [R1 (q)(2)(ii)(B)](#uslib-deferred_income_annuity-r1); the issuer may rely on
+  the owner's written representation [R5 (h)(2)](#uslib-deferred_income_annuity-r5). **The percentage-of-account-balance limit is gone** —
   SECURE 2.0 § 202(a)(1) directed Treasury to eliminate the 25% requirement and the codified text now
   contains only a dollar limitation [R1] [R2], so pre-2023 documents stating 25% and $130,000 are superseded
   [S2].
-- **Permitted death benefits** are exhaustive [R1 (q)(3)]: a life annuity to a sole-beneficiary surviving
+- **Permitted death benefits** are exhaustive [R1 (q)(3)](#uslib-deferred_income_annuity-r1): a life annuity to a sole-beneficiary surviving
   spouse not exceeding 100% of the employee's payment; a life annuity to another beneficiary not exceeding
   the applicable percentage; or, in lieu of a life annuity, a **return of premiums** "up to the amount by
   which the premium payments made with respect to the QLAC exceed the payments already made under the QLAC",
   payable by the end of the calendar year following the year of death and treated as an RMD (not
-  rollover-eligible) where death is after the required beginning date [R1 (q)(3)(v)]. **The applicable
-  percentage is 0 where the contract provides a return of premium** [R1 (q)(3)(iii)(C)] — so a QLAC carries a
+  rollover-eligible) where death is after the required beginning date [R1 (q)(3)(v)](#uslib-deferred_income_annuity-r1). **The applicable
+  percentage is 0 where the contract provides a return of premium** [R1 (q)(3)(iii)(C)](#uslib-deferred_income_annuity-r1) — so a QLAC carries a
   ROP death benefit **or** a beneficiary life annuity, never both. The contract's value is excluded from the
-  RMD account balance [R4], a rule that applies to IRAs but **not to a Roth IRA** [R5] [R5 (h)(4)].
+  RMD account balance [R4], a rule that applies to IRAs but **not to a Roth IRA** [R5] [R5 (h)(4)](#uslib-deferred_income_annuity-r5).
 - **Market implementation and failure modes.** MassMutual permits only Single Life — No Refund, Cash Refund
   and No Death Benefit plus Joint and Survivor — Cash Refund, excluding Installment Refund and Period Certain
   [S2]; Pacific Life likewise excludes Period Certain and Installment Refund [S4]; Guardian excludes
   guarantee periods and subsequent premiums [S3]; commutation, acceleration and inflation protection are all
   off [S4]. An excess premium ends QLAC status **on the date paid** unless returned to the non-QLAC portion of
   the account by the end of the following calendar year (returning it is not a prohibited commutation)
-  [R1 (q)(4)(i)(B)]; any other failure voids status **retroactively to the date of purchase**
-  [R1 (q)(4)(iii)(A)]. A joint-and-survivor QLAC survives a post-purchase, pre-commencement divorce under
-  QDRO conditions [R1 (q)(3)(vii)] [R2 §202(a)(3)], retroactive to contracts purchased on or after July 2,
-  2014 [R2 §202(c)(1)(B)]; MassMutual's pre-SECURE-2.0 guide shows the old, harsher treatment and illustrates
+  [R1 (q)(4)(i)(B)](#uslib-deferred_income_annuity-r1); any other failure voids status **retroactively to the date of purchase**
+  [R1 (q)(4)(iii)(A)](#uslib-deferred_income_annuity-r1). A joint-and-survivor QLAC survives a post-purchase, pre-commencement divorce under
+  QDRO conditions [R1 (q)(3)(vii)](#uslib-deferred_income_annuity-r1) [R2 §202(a)(3)](#uslib-deferred_income_annuity-r2), retroactive to contracts purchased on or after July 2,
+  2014 [R2 §202(c)(1)(B)](#uslib-deferred_income_annuity-r2); MassMutual's pre-SECURE-2.0 guide shows the old, harsher treatment and illustrates
   what changed [S2].
 
 ---
@@ -396,17 +396,17 @@ compound on each income-start anniversary, elected at issue and irrevocable [S1]
 annuity date adjustment rider / income start date adjustment option, one-time ±5 years with repricing
 [S1] [S2] [S3] [S4]; payment acceleration [S1] [S2] [S3] [S4]; commutation / withdrawal of guaranteed income
 payments, extended case only [S4] [S5]; the QLAC endorsement — the statement of intent required by
-[R1 (q)(1)(vi)] plus the restriction set above [S2] [S4]; and the deferral-phase death benefit switch (ROP vs
+[R1 (q)(1)(vi)](#uslib-deferred_income_annuity-r1) plus the restriction set above [S2] [S4]; and the deferral-phase death benefit switch (ROP vs
 none), which is the product's central pricing fork rather than a rider proper [S1] [S2] [S3] [S4].
 
 **Out of scope (described, not modeled):** terminal-illness acceleration of the death benefit [S4]; spousal
 continuation and beneficiary-IRA continuation, including the QLAC rules that spousal continuances are not
 allowed and that a spouse keeping the contract holds it as a spousal beneficiary IRA with no new premiums
 [S2]; custodial QLAC IRA forms where payee and beneficiary must be the custodian [S2]; participating /
-dividend forms [R13 §3.T]; misstatement of age or sex adjustments, corrected at interest "not exceeding 6%"
-[R13 §3.R]; up to ten payees per contract [S2]; evidence-of-survival requirements [R13 §3.L]; the
+dividend forms [R13 §3.T](#uslib-deferred_income_annuity-r13); misstatement of age or sex adjustments, corrected at interest "not exceeding 6%"
+[R13 §3.R](#uslib-deferred_income_annuity-r13); up to ten payees per contract [S2]; evidence-of-survival requirements [R13 §3.L](#uslib-deferred_income_annuity-r13); the
 beneficiary's election of the present value of remaining payments [S1] [S2] [S3]; the ten-day free look on each
-subsequent premium, carried as a cancellation flag only [S2] [S3] [R13 §3.B(1)(d)]; and state overrides
+subsequent premium, carried as a cancellation flag only [S2] [S3] [R13 §3.B(1)(d)](#uslib-deferred_income_annuity-r13); and state overrides
 (Florida's mandate that the **annuity date** be advanceable on all options — including the No-Refund options —
 to as early as 13 months after issue, which is a start-date-adjustment override and not the payment
 acceleration feature [S2];
@@ -435,7 +435,7 @@ its commutation unavailable in MO [S4]).
    accelerate-back right [S3] and Western & Southern's two changes [S6] as exceptions; Florida forces
    acceleration on all options [S2] and Pacific Life cannot offer it in CT or NY [S4]. **Chosen: one-time
    ±5 years on the MassMutual repricing recipe**, the only fully disclosed one [S1] [S2].
-6. **COLA range — 1% to 5% across the market.** 1–3% [S1]; 1–4% [S2]; 1–5% [S3 per S6]; 2/3/4% [S4]; all
+6. **COLA range — 1% to 5% across the market.** 1–3% [S1]; 1–4% [S2]; 1–5% [S3 per S6](#uslib-deferred_income_annuity-s3); 2/3/4% [S4]; all
    fixed compound escalators elected at issue, none CPI-linked. **Chosen: 1–4%**, base model 0%.
 7. **Post-income liquidity.** Acceleration everywhere but with different limits — 2 uses / 6 months [S1];
    5 / 3 or 6 [S2]; 1 use and only with a guarantee or refund period with ≥6 months left [S3]; 2 / 3 or 6
@@ -464,45 +464,45 @@ its commutation unavailable in MO [S4]).
 deferral — the Section 2 exclusions cover immediate annuities and "any deferred annuity contract after
 annuity payments have commenced", and a DIA before the income commencement date is in none of them [R10]. The
 cash-surrender requirement is conditional, biting only "if a contract provides for a lump sum settlement at
-maturity, or at any other time" [R10 §3.A(2)], so a contract that never offers a lump sum never triggers it;
-what *is* triggered is the paid-up annuity benefit [R10 §3.A(1)], satisfied by construction [R13 §3.H(1)],
+maturity, or at any other time" [R10 §3.A(2)](#uslib-deferred_income_annuity-r10), so a contract that never offers a lump sum never triggers it;
+what *is* triggered is the paid-up annuity benefit [R10 §3.A(1)](#uslib-deferred_income_annuity-r10), satisfied by construction [R13 §3.H(1)](#uslib-deferred_income_annuity-r13),
 with Section 7 governing its valuation and Section 9 forcing the prominent disclosure realized as the
-Compact's cover-page language [R10] [R13 §§2.A(8)–(9)]. **Correction to a common misstatement:** the Model
+Compact's cover-page language [R10] [R13 §§2.A(8)–(9)](#uslib-deferred_income_annuity-r13). **Correction to a common misstatement:** the Model
 #805 indexed nonforfeiture interest rate is the lesser of 3% and the five-year Constant Maturity Treasury
 rate (rounded to the nearest 1/20th of one percent) **reduced by 125 basis points, subject to a floor of 15
 basis points (0.15%)** — **not** a 1% floor [REG-R42]. The research file left "floored at 1%" [unverified]
 because its own extract did not capture Section 4.B [R10]; the fully fetched text settles it at 15 bp
 [REG-R42]. Largely academic here — a DIA has no cash value and the minimum nonforfeiture amount (net
 considerations of 87.5% of gross, less a $50 annual contract charge and other stated items
-[REG-R42] [R10 §4.A(1)]) never binds — but the number should not be propagated wrongly.
+[REG-R42] [R10 §4.A(1)](#uslib-deferred_income_annuity-r10)) never binds — but the number should not be propagated wrongly.
 
 **IIPRC uniform standard IIPRC-A02-I-LONG.** The Compact's "Individual Deferred Paid-Up Non-Variable Annuity
 Contract Standards (Commonly Marketed as Deferred Income Annuities or Longevity Annuities)", adopted
 August 5, 2017 and effective November 20, 2017, is the contractual-language authority throughout this
 document and the closest substitute for a specimen contract, none having been located [R13]. It supplies the
-scope definition, the closed list of permitted death benefit formulas [R13 §3.I(1)], the purchase-rate rule
-for subsequent premiums [R13 §3.B], the commutation rules [R13 §3.F], the loan prohibition [R13 §3.P], and
+scope definition, the closed list of permitted death benefit formulas [R13 §3.I(1)](#uslib-deferred_income_annuity-r13), the purchase-rate rule
+for subsequent premiums [R13 §3.B](#uslib-deferred_income_annuity-r13), the commutation rules [R13 §3.F](#uslib-deferred_income_annuity-r13), the loan prohibition [R13 §3.P](#uslib-deferred_income_annuity-r13), and
 the filing accommodation that matters most — a **comparative-adequacy certification** in lieu of a
 nonforfeiture demonstration, certifying "that the income benefit provided under this contract is greater than
 that guaranteed at issue for the same premium under any non-variable deferred annuity contract offered by the
 company that provides cash surrender values during the deferral period or on the income commencement date"
-[R13 §1.B(1)(g)]. Its `ICCxx` prefix is why DIA forms appear as `ICC11–P101` [S1] and `ICC12-FPDIA12` [S2]
-[R13 §2.A(6)].
+[R13 §1.B(1)(g)](#uslib-deferred_income_annuity-r13). Its `ICCxx` prefix is why DIA forms appear as `ICC11–P101` [S1] and `ICC12-FPDIA12` [S2]
+[R13 §2.A(6)](#uslib-deferred_income_annuity-r13).
 
 **NAIC Annuity Disclosure Model Regulation (Model #245) — with a numbering correction.** The annuity
 disclosure model is **#245**; **#250 is the Variable Annuity Model Regulation**, which defines a variable
 annuity by reference to separate-account investment experience and does not reach a general-account DIA
 [R11] [R12] [REG-R43] [REG-R45]. Model #245 probably does not apply to a plain DIA either: Section 3.A exempts
 "immediate and deferred annuities that contain no non-guaranteed elements" [R11] and every income benefit in
-a non-participating DIA is guaranteed [R13 §3.H(1)] — a direct reading of the retrieved text, though
+a non-participating DIA is guaranteed [R13 §3.H(1)](#uslib-deferred_income_annuity-r13) — a direct reading of the retrieved text, though
 **whether individual states apply the exemption to DIAs was not verified** [unverified]. A participating DIA
-would not be exempt on that ground [R11] [R13 §3.T]. Separately, the Suitability in Annuity Transactions Model
+would not be exempt on that ground [R11] [R13 §3.T](#uslib-deferred_income_annuity-r13). Separately, the Suitability in Annuity Transactions Model
 Regulation (**Model #275**, 2020 best-interest revision) binds at the distribution layer — new-business mix
 and the 1035-exchange flows that feed a DIA as an exchange destination [REG-R46] [REG-R56].
 
 **Valuation Manual — VM-01, VM-22 and VM-V.** VM-01 supplies the statutory definition [R9]. **VM-22, "PBR for
 Non-Variable Annuities", names Deferred Income Annuity contracts explicitly in the Payout Annuity Reserving
-Category** [R9 §3.F.1.a] [REG-R36] and constitutes CARVM for contracts in scope, applying for valuation dates
+Category** [R9 §3.F.1.a](#uslib-deferred_income_annuity-r9) [REG-R36] and constitutes CARVM for contracts in scope, applying for valuation dates
 on or after January 1, 2026 with an elective three-year transition on VM-A/VM-C/VM-M/VM-V for newly issued
 business [R9] [REG-R36]. For contracts not passing the Stochastic Exclusion Test, **VM-V Section 1 "Income
 Annuities" — not VM-22 — carries the statutory maximum valuation interest rate**, its scope expressly
@@ -514,13 +514,13 @@ incorporated by VM-C (AG II, VIII, IX, IX-A/B/C, XIII, XXXIII, XXXV, XL, XLI) is
 
 **Formulaic CARVM — Appendix A-820 and Actuarial Guideline XXXIII, now read in the AP&P Manual print.** The NAIC
 *Accounting Practices and Procedures Manual*, which this library had recorded as a paid publication it could not fetch
-[REG-R110 limit], is in fact a **free download**, and both items were read in full from it on 2026-08-06:
+[REG-R110 limit](#uslib-reg-r110), is in fact a **free download**, and both items were read in full from it on 2026-08-06:
 **A-820, "Minimum Life and
 Annuity Reserve Standards"** with A-821 and A-822 [REG-R153], and **AG 33, "Determining CARVM Reserves for Annuity
 Contracts With Elective Benefits"** [REG-R151] — the printed title, not the wording IRS Rev. Rul. 2002-6 uses. A-820
 ¶6 makes the minimum standard for an individual annuity contract the triple **method ¶¶14–15, interest ¶¶7–10,
 mortality Appendix A-821**, and ¶14 excludes only employer-plan group annuity business, so an individual DIA is
-squarely inside CARVM [REG-R153 ¶¶6, 14–15]. AG 33 then interprets that CARVM: it applies "to all annuity contracts
+squarely inside CARVM [REG-R153 ¶¶6, 14–15](#uslib-reg-r153). AG 33 then interprets that CARVM: it applies "to all annuity contracts
 subject to CARVM, where any elective benefits … are available to the contract owner", with **no product list and no
 size or premium threshold**, so the ±5-year income start date adjustment, payment acceleration and (extended case)
 commutation each put the contract inside it — while a cell offering **none** of them, such as a **Life Only QLAC**,
@@ -557,15 +557,15 @@ and variable annuity chassis in this library [REG-R49] [REG-R52].
 **IRC § 72 (nonqualified taxation).** The excludable portion of each payment is the exclusion ratio —
 investment in the contract over expected return — capped at the unrecovered investment, with any unrecovered
 investment remaining at death allowed as a deduction for the annuitant's last taxable year
-[R8 §72(b)] [REG-R55]. Investment in the contract is aggregate premiums less amounts previously received
-excludably [R8 §72(c)] — for a flexible-premium DIA, the sum of all purchase payments. The 10% additional tax
+[R8 §72(b)](#uslib-deferred_income_annuity-r8) [REG-R55]. Investment in the contract is aggregate premiums less amounts previously received
+excludably [R8 §72(c)](#uslib-deferred_income_annuity-r8) — for a flexible-premium DIA, the sum of all purchase payments. The 10% additional tax
 on premature distributions, with its 59½, death, disability and substantially-equal-periodic-payments
-exceptions [R8 §72(q)], is why every acceleration and commutation feature is gated at 59½ [S1] [S3] [S4].
+exceptions [R8 §72(q)](#uslib-deferred_income_annuity-r8), is why every acceleration and commutation feature is gated at 59½ [S1] [S3] [S4].
 Section 72(s) governs required distributions on the holder's death [R8].
 
 **IRC § 401(a)(9) and the QLAC.** The current rules live in **paragraph (q)**, not the old "A-17" Q&A format:
 T.D. 10001 (89 FR 58886, July 19, 2024, effective September 17, 2024) restructured them and implemented
-SECURE 2.0 § 202 [R1 credit line] [R6] [REG-R58]; the original rule was T.D. 9673, "Longevity Annuity
+SECURE 2.0 § 202 [R1 credit line](#uslib-deferred_income_annuity-r1) [R6] [REG-R58]; the original rule was T.D. 9673, "Longevity Annuity
 Contracts", 79 FR 37633 (July 2, 2014) [R7]. Cite **§ 1.401(a)(9)-6(q)** for current law [R1] [REG-R57] and
 **SECURE 2.0 Act of 2022 § 202** (Division T of Pub. L. 117-328) for the statutory command that raised the
 dollar limit from $125,000 to $200,000, eliminated the 25%-of-account-balance limit, preserved
@@ -581,4 +581,60 @@ MRB to attach to [REG-R34] [REG-R71]. The tax reserve is the greater of net surr
 opinions by ASOP 22 [REG-R29]. ASOP 2's scope covers non-guaranteed elements for annuity products [REG-R26];
 whether a DIA's current purchase rate for a future premium falls within it was not verified [unverified] —
 the operative constraint on that rate is the Compact's "current annuity purchase rates" floor
-[R13 §3.B(1)(c)].
+[R13 §3.B(1)(c)](#uslib-deferred_income_annuity-r13).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uslib-deferred_income_annuity-r1
+[R10]: #uslib-deferred_income_annuity-r10
+[R11]: #uslib-deferred_income_annuity-r11
+[R12]: #uslib-deferred_income_annuity-r12
+[R13]: #uslib-deferred_income_annuity-r13
+[R14]: #uslib-deferred_income_annuity-r14
+[R2]: #uslib-deferred_income_annuity-r2
+[R3]: #uslib-deferred_income_annuity-r3
+[R4]: #uslib-deferred_income_annuity-r4
+[R5]: #uslib-deferred_income_annuity-r5
+[R6]: #uslib-deferred_income_annuity-r6
+[R7]: #uslib-deferred_income_annuity-r7
+[R8]: #uslib-deferred_income_annuity-r8
+[R9]: #uslib-deferred_income_annuity-r9
+[REG-R151]: #uslib-reg-r151
+[REG-R153]: #uslib-reg-r153
+[REG-R16]: #uslib-reg-r16
+[REG-R26]: #uslib-reg-r26
+[REG-R27]: #uslib-reg-r27
+[REG-R29]: #uslib-reg-r29
+[REG-R32]: #uslib-reg-r32
+[REG-R34]: #uslib-reg-r34
+[REG-R35]: #uslib-reg-r35
+[REG-R36]: #uslib-reg-r36
+[REG-R37]: #uslib-reg-r37
+[REG-R41]: #uslib-reg-r41
+[REG-R42]: #uslib-reg-r42
+[REG-R43]: #uslib-reg-r43
+[REG-R44]: #uslib-reg-r44
+[REG-R45]: #uslib-reg-r45
+[REG-R46]: #uslib-reg-r46
+[REG-R49]: #uslib-reg-r49
+[REG-R52]: #uslib-reg-r52
+[REG-R55]: #uslib-reg-r55
+[REG-R56]: #uslib-reg-r56
+[REG-R57]: #uslib-reg-r57
+[REG-R58]: #uslib-reg-r58
+[REG-R59]: #uslib-reg-r59
+[REG-R60]: #uslib-reg-r60
+[REG-R61]: #uslib-reg-r61
+[REG-R70]: #uslib-reg-r70
+[REG-R71]: #uslib-reg-r71
+[S1]: #uslib-deferred_income_annuity-s1
+[S11]: #uslib-deferred_income_annuity-s11
+[S2]: #uslib-deferred_income_annuity-s2
+[S3]: #uslib-deferred_income_annuity-s3
+[S4]: #uslib-deferred_income_annuity-s4
+[S5]: #uslib-deferred_income_annuity-s5
+[S6]: #uslib-deferred_income_annuity-s6
+[S8]: #uslib-deferred_income_annuity-s8
+[S9]: #uslib-deferred_income_annuity-s9
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->
