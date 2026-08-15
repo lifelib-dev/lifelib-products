@@ -1,4 +1,4 @@
-# Sources — Deferred Income Annuity (DIA) and Qualified Longevity Annuity Contract (QLAC) (United States)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates and retrieval markers are carried over
 verbatim from `_research/deferred-income-annuity.md` (the citation ground truth for

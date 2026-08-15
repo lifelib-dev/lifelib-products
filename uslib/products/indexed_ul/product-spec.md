@@ -1,4 +1,4 @@
-# Indexed Universal Life Insurance — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-03.
 **Scope note:** This is a standardized *composite* specification assembled for reference

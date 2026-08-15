@@ -1,4 +1,10 @@
-# Level Premium Term Life Insurance
+# Level Premium Term Life
+
+[Product Specification](product-spec.md) defines the representative product and
+[Technical Notes](technical-notes.md) derive its liability cash flow model.
+[Implementation Notes](model.md) explain how `Term_US_A` implements those notes and what was
+standardized to do so; the cells reference generated from the model's own docstrings
+follows it. Every source any of them cites is in [Sources](sources.md).
 
 ```{toctree}
 :maxdepth: 1
@@ -6,13 +12,6 @@
 product-spec
 technical-notes
 model
-model-api
+Term_US_A
 sources
 ```
-
-The representative specification is in [product-spec.md](product-spec.md) and the liability
-cash flow model it implies is in [technical-notes.md](technical-notes.md).
-[model.md](model.md) explains how `Term_US_A` implements those notes and what was
-standardised to do so; [model-api.md](model-api.md) is the cells reference generated from
-the model's own docstrings. Every source cited by any of them is listed in
-[sources.md](sources.md).

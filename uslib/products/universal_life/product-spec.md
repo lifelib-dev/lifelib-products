@@ -1,4 +1,4 @@
-# Universal Life Insurance (current assumption) — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
 

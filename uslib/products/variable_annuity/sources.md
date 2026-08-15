@@ -1,4 +1,4 @@
-# Sources — Variable Annuity with Living and Death Benefit Guarantees (United States)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates and fetched/not-fetched markers are
 carried over **verbatim** from `_research/variable-annuity.md`, the citation ground

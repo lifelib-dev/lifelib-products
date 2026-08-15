@@ -1,113 +1,72 @@
-"""Generate the Sphinx scaffolding that lives inside the library.
+"""Generate the per-product index pages, and the Sphinx page tree that renders them.
 
-Three kinds of page, all authored in the library tree so D3's ``*.md`` mirror carries them
-into the doc build with no extra mechanism:
+Two kinds of output, in two places, and the split is the point.
 
-``products/<slug>/index.md``
-    the per-product toctree: spec, notes, model narrative, cells reference, sources.
+**In the library** — ``products/<slug>/index.md``, the product landing page.  It belongs to
+the library because it is content: the one-line orientation and the order the four documents
+are meant to be read in.
 
-``products/<slug>/model-api.md``
-    the autodoc cells reference (D9).  MyST prose framing an ``{eval-rst}`` block, which is
-    what lets a markdown page host ``automodule`` -- verified before this was chosen.
+**In the doc tree** — ``doc/source/libraries/<lib>/…``, one page per document:
 
-``products/index.md``
-    the taxonomy landing page.
+``*.md``
+    a one-line ``{include}`` of the library file.  The stub tree *mirrors* the library tree,
+    which is what keeps the authored relative links working: ``[sources](sources.md)`` in
+    ``technical-notes.md`` resolves against the stub's own location, and the sibling stub is
+    there.  Citation links survive too -- a document's link reference definitions and the
+    tags that use them are in the same included file, so they resolve together.
 
-and a **Verifying this copy** section appended to each ``model.md``, which D7 requires: the
-suite ships inside the library, so a reader who edits an assumption can find out whether
-they broke the documented example -- but only if the documents say so.
+``<Model>.rst`` and ``<Space>.rst``
+    the autodoc pages, following ``annuallife/TradLife_A.rst``: the model page carries the
+    model docstring and a hidden toctree of its Spaces, and each Space page carries the
+    Space docstring followed by one ``autofunction`` per cells.
 
-Existing generated blocks are replaced, so this is safe to re-run.
+The autodoc pages are RST and live **only** in the doc tree.  They are Sphinx plumbing, not
+library content -- a reader of a ``lifelib.create()`` copy wants the model, not a file whose
+whole purpose is to tell Sphinx how to render the model.
 
 Usage::
 
     python tools/gen_scaffolding.py uslib --dry-run
     python tools/gen_scaffolding.py uslib
 """
-import re
+import ast
+import os
+import shutil
 import sys
 import pathlib
 
 
-BEGIN = "<!-- BEGIN generated: tools/gen_scaffolding.py -->"
-END = "<!-- END generated -->"
-BLOCK = re.compile(re.escape(BEGIN) + r".*?" + re.escape(END) + r"\n*", re.S)
+# The product's display name.  This is editorial and not derivable from the folder --
+# "registered_index_linked_annuity" is unusable and the industry says RILA -- so it is
+# written down once, exactly as the model-name registry is written down in conftest.py.
+TITLES = {
+    "term_life": "Level Premium Term Life",
+    "whole_life": "Whole Life",
+    "universal_life": "Universal Life (current assumption)",
+    "indexed_ul": "Indexed Universal Life (IUL)",
+    "variable_ul": "Variable Universal Life (VUL)",
+    "guaranteed_ul": "Guaranteed Universal Life (ULSG)",
+    "fixed_deferred_annuity": "Fixed Deferred Annuity (MYGA)",
+    "fixed_indexed_annuity":
+        "Fixed Indexed Annuity (FIA) with Guaranteed Lifetime Withdrawal Benefit",
+    "variable_annuity": "Variable Annuity with Living and Death Benefit Guarantees",
+    "registered_index_linked_annuity": "Registered Index-Linked Annuity (RILA)",
+    "immediate_annuity": "Single Premium Immediate Annuity (SPIA)",
+    "deferred_income_annuity":
+        "Deferred Income Annuity (DIA) and Qualified Longevity Annuity Contract (QLAC)",
+}
+
+
+DOC_ROOT = pathlib.Path("doc") / "source" / "libraries"
+
+# The documents each product page lists, in reading order.  `_MODEL_` stands in for the
+# model's own name, which is only known per product.
+PRODUCT_PAGES = ["product-spec", "technical-notes", "model", "_MODEL_", "sources"]
 
 PRODUCT_INDEX = """\
 # {title}
 
-```{{toctree}}
-:maxdepth: 1
-
-product-spec
-technical-notes
-model
-model-api
-sources
-```
-
-The representative specification is in [product-spec.md](product-spec.md) and the liability
-cash flow model it implies is in [technical-notes.md](technical-notes.md).
-[model.md](model.md) explains how `{model}` implements those notes and what was
-standardised to do so; [model-api.md](model-api.md) is the cells reference generated from
-the model's own docstrings. Every source cited by any of them is listed in
-[sources.md](sources.md).
-"""
-
-MODEL_API = """\
-# `{model}` — cells reference
-
-Generated from the model's own docstrings. The narrative companion — why the model is
-shaped this way, which parameters are **[std]**, and what the tests cover — is
-[model.md](model.md).
-
-The `Projection` docstring below carries the mapping from the technical notes' actuarial
-symbols to these cells names, which is the table to read first if you arrived from
-[technical-notes.md](technical-notes.md).
-
-## The model
-
-```{{eval-rst}}
-.. automodule:: {lib}.products.{slug}.{model}
-```
-
-## `Projection`
-
-```{{eval-rst}}
-.. automodule:: {lib}.products.{slug}.{model}.Projection
-   :members:
-```
-
-## `Data`
-
-```{{eval-rst}}
-.. automodule:: {lib}.products.{slug}.{model}.Data
-   :members:
-```
-"""
-
-VERIFY = """\
-## Verifying this copy
-
-`{test}` asserts this model against the worked example in
-[technical-notes.md](technical-notes.md), and it ships **inside this library** — so it runs
-against the copy you are holding, including any changes you have made to it:
-
-```bash
-python -m pytest tests/{test_name} -q
-```
-
-The whole suite, all twelve models and the shared conventions, is `python -m pytest tests -q`.
-If you change an assumption and a test goes red, the worked example in the notes and the
-model have parted company — which is the question this library exists to let you ask.
-"""
-
-PRODUCTS_INDEX = """\
-# Products
-
-Each product directory holds the representative specification, the liability cash flow
-model derived from it, the executable model itself, and the source list every citation in
-those documents resolves against.
+{blurb}
 
 ```{{toctree}}
 :maxdepth: 1
@@ -116,57 +75,132 @@ those documents resolves against.
 ```
 """
 
+BLURB = """\
+[Product Specification](product-spec.md) defines the representative product and
+[Technical Notes](technical-notes.md) derive its liability cash flow model.
+[Implementation Notes](model.md) explain how `{model}` implements those notes and what was
+standardized to do so; the cells reference generated from the model's own docstrings
+follows it. Every source any of them cites is in [Sources](sources.md)."""
 
-def title_of(spec):
-    """The product's name, without the '— Representative Product Specification' tail."""
-    head = spec.read_text(encoding="utf-8").splitlines()[0].lstrip("# ").strip()
-    return re.split(r'\s+[—–-]\s+', head)[0].strip()
+STUB = "```{{include}} {relpath}\n```\n"
+
+MODEL_PAGE = """\
+The **{model}** Model
+{underline}
+
+.. automodule:: {dotted}
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+
+{spaces}
+"""
+
+SPACE_PAGE = """\
+The **{space}** Space
+{underline}
+
+.. automodule:: {dotted}
+
+Cells Descriptions
+------------------
+
+{cells}
+"""
 
 
-def write(path, text, dry, made):
-    if dry or (path.exists() and path.read_text(encoding="utf-8") == text):
-        made.append(f"{'would write' if dry else 'unchanged  '} {path}")
+def cells_of(space_dir):
+    """Cells names in definition order -- `autodoc_member_order` is 'bysource'."""
+    tree = ast.parse((space_dir / "__init__.py").read_text(encoding="utf-8"))
+    return [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
+
+
+def relative(target, start):
+    """``target`` as a POSIX path relative to ``start``.
+
+    The stubs sit six directories deep and the library is at the repository root, so this
+    is counted by the filesystem rather than by hand.
+    """
+    return pathlib.PurePath(os.path.relpath(target, start)).as_posix()
+
+
+def spaces_of(model_dir):
+    return [d for d in sorted(model_dir.iterdir())
+            if d.is_dir() and (d / "__init__.py").exists()]
+
+
+def write(path, text, dry, log):
+    if path.exists() and path.read_text(encoding="utf-8") == text:
         return
-    path.write_text(text, encoding="utf-8")
-    made.append(f"wrote      {path}")
+    log.append(("would write" if dry else "wrote", path))
+    if not dry:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
 
 
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
     library = pathlib.Path(args[0] if args else "uslib")
-    # The directory *is* the library: uslib/ here, lifelib/libraries/uslib/ after the
-    # merge, and uklib/ when the UK section follows.  Deriving the name any other way
-    # would make the anchors and module paths disagree with where the files actually are.
     lib = library.name
-    made = []
+    docs = DOC_ROOT / lib
+    log = []
 
-    slugs = sorted(d.name for d in (library / "products").iterdir() if d.is_dir())
-    for slug in slugs:
-        product = library / "products" / slug
-        model = next(d.name for d in product.iterdir()
-                     if d.is_dir() and (d / "_system.json").exists())
-        title = title_of(product / "product-spec.md")
+    if not dry:
+        # Regenerated wholesale; nothing here is hand-edited.  Removal must not be fatal:
+        # a previous doc build leaves files Windows can still be holding.
+        for _ in range(3):
+            shutil.rmtree(docs, ignore_errors=True)
+            if not docs.exists():
+                break
 
+    products = sorted(d for d in (library / "products").iterdir() if d.is_dir())
+
+    for product in products:
+        model_dir = next(d for d in product.iterdir()
+                         if d.is_dir() and (d / "_system.json").exists())
+        model = model_dir.name
+        spaces = spaces_of(model_dir)
+
+        entries = "\n".join(model if page == "_MODEL_" else page
+                            for page in PRODUCT_PAGES)
         write(product / "index.md",
-              PRODUCT_INDEX.format(title=title, model=model), dry, made)
-        write(product / "model-api.md",
-              MODEL_API.format(lib=lib, slug=slug, model=model), dry, made)
+              PRODUCT_INDEX.format(title=TITLES[product.name],
+                                   blurb=BLURB.format(model=model),
+                                   entries=entries),
+              dry, log)
 
-        test_name = f"test_{slug}_us.py"
-        section = VERIFY.format(test=f"tests/{test_name}", test_name=test_name)
-        model_md = product / "model.md"
-        text = BLOCK.sub("", model_md.read_text(encoding="utf-8")).rstrip()
-        text = f"{text}\n\n{BEGIN}\n{section}{END}\n"
-        write(model_md, text, dry, made)
+        page_dir = docs / "products" / product.name
+        for name in ("index", "product-spec", "technical-notes", "model", "sources"):
+            write(page_dir / f"{name}.md",
+                  STUB.format(relpath=relative(
+                      product / f"{name}.md", page_dir)), dry, log)
 
-    entries = "\n".join(f"{s}/index" for s in slugs)
-    write(library / "products" / "index.md",
-          PRODUCTS_INDEX.format(entries=entries), dry, made)
+        dotted = f"{lib}.products.{product.name}.{model}"
+        write(page_dir / f"{model}.rst",
+              MODEL_PAGE.format(model=model, underline="=" * (len(model) + 14),
+                                dotted=dotted,
+                                spaces="\n".join(f"   {s.name}" for s in spaces)),
+              dry, log)
+        for space in spaces:
+            cells = "\n\n".join(f".. autofunction:: {c}" for c in cells_of(space))
+            write(page_dir / f"{space.name}.rst",
+                  SPACE_PAGE.format(space=space.name,
+                                    underline="=" * (len(space.name) + 14),
+                                    dotted=f"{dotted}.{space.name}", cells=cells),
+                  dry, log)
 
-    for line in made:
-        print(f"  {line}")
-    print(f"\n{len(made)} files{' (dry run)' if dry else ''}")
+    # The library index and the reference bibliography sit at the library root.
+    write(docs / "index.md",
+          STUB.format(relpath=relative(library / "index.md", docs)), dry, log)
+    refs = pathlib.PurePosixPath("references/regulatory-and-actuarial-references.md")
+    write(docs / refs,
+          STUB.format(relpath=relative(library / refs, (docs / refs).parent)), dry, log)
+
+    for action, path in log:
+        print(f"  {action:11} {path}")
+    print(f"\n{len(log)} files{' (dry run)' if dry else ''}")
     return 0
 
 

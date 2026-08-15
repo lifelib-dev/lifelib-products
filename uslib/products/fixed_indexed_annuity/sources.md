@@ -1,4 +1,4 @@
-# Sources — Fixed Indexed Annuity (FIA) with Guaranteed Lifetime Withdrawal Benefit (United States)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates and retrieval markers are carried over
 verbatim from `_research/fixed-indexed-annuity.md` (the citation ground truth for [S#]/[R#]

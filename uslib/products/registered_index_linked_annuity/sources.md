@@ -1,4 +1,4 @@
-# Sources — Registered Index-Linked Annuity (RILA) (United States)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates, and fetched/not-fetched markers are
 carried over **verbatim** from `_research/registered-index-linked-annuity.md` (the

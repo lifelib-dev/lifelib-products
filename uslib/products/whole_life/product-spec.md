@@ -1,4 +1,4 @@
-# Whole Life Insurance — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-03 (underlying research accessed 2026-08-03).
 

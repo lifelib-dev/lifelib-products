@@ -1,4 +1,4 @@
-# Single Premium Immediate Annuity (SPIA) — Liability Cash Flow Model: Technical Notes (United States)
+# Technical Notes
 
 **Status:** Draft, 2026-08-04 (all cited sources accessed 2026-08-04).
 

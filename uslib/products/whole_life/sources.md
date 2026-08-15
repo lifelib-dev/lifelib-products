@@ -1,4 +1,4 @@
-# Sources — Whole Life Insurance
+# Sources
 
 Source ids, titles, publishers, URLs, and fetched/not-fetched markers are carried over
 verbatim from `_research/whole-life.md` (research/access date for all citations:

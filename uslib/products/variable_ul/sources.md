@@ -1,4 +1,4 @@
-# Sources — Variable Universal Life Insurance
+# Sources
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are
 carried over verbatim from `_research/variable-ul.md` (sections "Primary

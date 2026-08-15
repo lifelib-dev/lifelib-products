@@ -1,4 +1,4 @@
-# RILA_US_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-14. Built from
 [`products/registered_index_linked_annuity/technical-notes.md`](technical-notes.md);

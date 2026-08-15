@@ -1,4 +1,4 @@
-# Term_US_A — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-06. Built from
 [`products/term_life/technical-notes.md`](technical-notes.md);

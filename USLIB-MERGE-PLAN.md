@@ -30,14 +30,12 @@ stays in this repository.
 lifelib/libraries/uslib/
   index.md                          <- was the section README; carries the toctree
   products/
-    index.md                        <- new: taxonomy landing page + toctree
     term_life/
       index.md                      <- new: per-product landing page + toctree
       product-spec.md
       technical-notes.md
       sources.md
       model.md                      <- was models/term-life/README.md
-      model-api.md                  <- new: autodoc cells reference (D9)
       run.py
       model_point_table.csv  premium_rates.csv  mort_table.csv
       class_factor_table.csv  shock_lapse_table.csv
@@ -57,7 +55,12 @@ and on the lifelib documentation side:
 ```
 lifelib/doc/source/libraries/
   index.rst                         <- one new table row + one new toctree entry
-  uslib/                            <- GENERATED at build time (gitignored), *.md only
+  uslib/                            <- the page tree: one {include} stub per document,
+    index.md                           mirroring the library, plus the autodoc pages,
+    products/<slug>/                   which live only here (D3, D9)
+      index.md  product-spec.md  technical-notes.md  model.md  sources.md
+      <Model>.rst  Projection.rst  Data.rst
+    references/regulatory-and-actuarial-references.md
 ```
 
 The twelve `models/<product>/` directories are gone; their contents merged into the
@@ -86,7 +89,7 @@ project with the installed toolchain (Sphinx 8.2.3, myst-parser 5.1.0, markdown-
 | C6 | lifelib pins `install_requires=['modelx>=0.31.0']`; these models are serializer v8 and need `modelx>=0.32` (see [requirements.txt](requirements.txt)). | lifelib's floor must be raised as part of the merge. |
 | C7 | In CommonMark, `[S1][S2]` is a **full reference link**: text `S1`, target `S2`. Verified — it renders as a single anchor labelled "S1" pointing at S2's target, and the S1 citation vanishes. | The single biggest hazard. There are **2,064** such adjacencies. See D4. |
 | C8 | A shortcut reference (`[S1]` with a matching `[S1]: …` definition in the same file) resolves correctly; an *undefined* one is left as literal text. | Safe, incremental migration: files not yet converted render exactly as they do today. |
-| C9 | Link reference definitions **do not** propagate through a MyST `{include}`. Verified: `[S1]` stayed literal when its definition came from an included file. | Definitions must be written into each document. No shared-definitions shortcut exists. |
+| C9 | Link reference definitions do not propagate **from** an included file **to** its parent. Verified: `[S1]` stayed literal when its definition came from an included file. But a file whose definitions *and* usages are both inside it resolves fine when that whole file is included — retested when D3 changed. | Definitions must be written into each document; there is no shared-definitions shortcut. It does **not** prevent including a finished document, which is what D3 now does. |
 | C10 | Explicit MyST targets (`(name)=`) resolve from any document with no warning. Links to *auto-generated heading anchors* resolved but emitted `myst.xref_missing` warnings, because resolution depends on document read order. | Use explicit targets, not `myst_heading_anchors`. |
 | C11 | Duplicate explicit targets across documents produce `WARNING: duplicate label`. `S1` means a different source in each of the 12 products. | Target names must be namespaced per product. |
 | C12 | lifelib's MyST config has `enable_extensions=set()` — `dollarmath` is **off**. | Currency (`$100,000`) is safe as written. Do not enable `dollarmath` for this doc set without escaping ~all currency first. |
@@ -123,46 +126,34 @@ by reading `Data/__init__.py`.
 Each product directory gains a small `index.md` whose toctree orders the four documents:
 product spec → technical notes → model → sources.
 
-### D3 — Docs reach Sphinx by a build-time copy, driven from `conf.py`
+### D3 — Docs reach Sphinx through an `{include}` page tree
 
-Add to lifelib's `doc/source/conf.py`:
+**Superseded.** This decision originally called for a `builder-inited` hook that copied
+`<lib>/**/*.md` into the doc tree. It was built, it worked, and it has been replaced by a
+committed page tree: each page under `doc/source/libraries/<lib>/` is a one-line
+`{include}` of the corresponding library document, and the tree mirrors the library tree.
 
-```python
-def _sync_uslib_docs(app):
-    """Mirror uslib's *.md into the doc tree; Sphinx has only one srcdir."""
-    src_root = Path(here).parents[1] / "lifelib" / "libraries" / "uslib"
-    dst_root = Path(here) / "libraries" / "uslib"
-    for src in src_root.rglob("*.md"):
-        dst = dst_root / src.relative_to(src_root)
-        if not dst.exists() or src.stat().st_mtime > dst.stat().st_mtime:
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src, dst)
-    for dst in dst_root.rglob("*.md"):            # prune deletions
-        if not (src_root / dst.relative_to(dst_root)).exists():
-            dst.unlink()
+Sphinx still has one source directory and the documents still live in the library; what
+changed is which end reaches across. Three things the copy could not do:
 
-def setup(app):
-    app.add_css_file("custom-style.css")
-    app.connect("builder-inited", _sync_uslib_docs)
-```
+- **The doc tree can hold pages the library should not.** The autodoc pages — `<Model>.rst`
+  and one `<Space>.rst` per Space (D9) — are Sphinx plumbing. Under the copy they had to sit
+  in the library to be copied out of it, so a `lifelib.create()` copy carried files whose
+  only purpose was to tell Sphinx how to render the model.
+- **Nothing is generated at build time**, so a document has exactly one home and a stale
+  copy cannot exist. The mtime guard and the prune step both go away.
+- **No configuration to add on the lifelib side at all** — the page tree is just pages.
 
-Only `*.md` is copied — never the CSVs, `run.py`, or the model folders. The mtime guard
-keeps Sphinx's incremental rebuild working; a blind `rmtree`+`copytree` would force a full
-rebuild of ~50 pages every run. `doc/source/libraries/uslib/` goes in `.gitignore`.
+What made it safe is the thing that had to be tested first: **a document's link reference
+definitions and the tags that use them are inside the same included file, so they resolve
+together.** C9 said definitions do not survive an `{include}`, and that is true but narrower
+than it sounds — it fails when the definitions are in a *different* file from the usage,
+which was the shape of the original spike. Verified before adopting this: citations render
+as links through the include, and a relative `[…](sources.md)` resolves against the *stub's*
+location, which is why the stub tree must mirror the library tree.
 
-**Why not the alternatives:**
-
-- ***`{include}` stubs*** — one stub per document, mirroring the tree. Single source of
-  truth and no generated files, but it needs 50+ hand-maintained stubs, source line numbers
-  in warnings point at the stub, and per C9 anything document-scoped (the link definitions
-  this plan depends on) does not survive the include. Rejected on C9.
-- ***Symlink*** `doc/source/libraries/uslib` → the library dir. Cleanest in principle;
-  needs Developer Mode or elevation on Windows, and `core.symlinks` cooperation from every
-  clone. Rejected as hostile to the primary development platform.
-
-Because the copy preserves the directory structure verbatim, **every relative link between
-documents resolves in the built docs exactly as it does on GitHub**. That is the property
-that makes decision D4 workable.
+`_research/` is excluded by simply having no pages (D6), so `exclude_patterns` loses its
+entry too.
 
 ### D4 — Citations become links via per-file link reference definitions
 

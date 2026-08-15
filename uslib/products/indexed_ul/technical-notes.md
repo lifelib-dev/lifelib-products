@@ -1,4 +1,4 @@
-# Indexed Universal Life Insurance — Liability Cash Flow Model: Technical Notes (United States)
+# Technical Notes
 
 **Status:** Draft, 2026-08-03.
 **Scope note:** Standardized composite for reference modeling, not any insurer's product.

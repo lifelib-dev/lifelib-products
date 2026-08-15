@@ -1,4 +1,4 @@
-# Sources — Level Premium Term Life Insurance
+# Sources
 
 Source identifiers, titles, publishers, URLs, access dates, and retrieval status are
 carried over verbatim from `_research/term-life.md` (product sources [S#]/[R#]) and

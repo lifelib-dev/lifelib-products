@@ -1,4 +1,4 @@
-# Level Premium Term Life Insurance — Liability Cash Flow Model: Technical Notes (United States)
+# Technical Notes
 
 **Status:** Draft, 2026-08-03. Companion to `product-spec.md` in this directory — all
 contractual parameters used here (premiums, fee, modal factors, windows) are the same

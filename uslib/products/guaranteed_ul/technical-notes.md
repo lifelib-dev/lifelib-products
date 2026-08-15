@@ -1,4 +1,4 @@
-# Guaranteed Universal Life (UL with Secondary Guarantees) — Liability Cash Flow Model: Technical Notes (United States)
+# Technical Notes
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
 

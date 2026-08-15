@@ -1,4 +1,4 @@
-# Variable Annuity with Living and Death Benefit Guarantees — Liability Cash Flow Model: Technical Notes (United States)
+# Technical Notes
 
 **Status:** Draft, 2026-08-04; AP&P Manual appendix material added 2026-08-06. All cited
 sources accessed 2026-08-04 **except** [REG-R151] (AG 33), [REG-R153] (A-820), [REG-R156]

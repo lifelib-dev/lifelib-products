@@ -1,4 +1,4 @@
-# Variable Annuity with Living and Death Benefit Guarantees — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-04; AP&P Manual appendix material added 2026-08-06. All cited
 sources accessed 2026-08-04 **except** [REG-R151] (AG 33) and [REG-R156] (A-250), accessed

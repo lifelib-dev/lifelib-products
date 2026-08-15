@@ -1,4 +1,4 @@
-# Sources — Fixed Deferred Annuity (MYGA) (United States)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates and retrieval markers are carried over
 **verbatim** from `_research/fixed-deferred-annuity.md` (the citation ground truth for

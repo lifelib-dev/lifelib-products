@@ -1,4 +1,4 @@
-# Variable Universal Life Insurance — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-03; cross-product [REG-R#] citations extended 2026-08-06 with
 the AP&P Manual appendix items read at first hand. Product sources [S#]/[R#] were

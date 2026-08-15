@@ -1,4 +1,4 @@
-# Sources — Universal Life Insurance (current assumption)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried
 over verbatim from `_research/universal-life.md` (the citation ground truth for

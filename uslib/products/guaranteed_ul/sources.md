@@ -1,4 +1,4 @@
-# Sources — Guaranteed Universal Life (UL with Secondary Guarantees)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates and retrieval markers are carried
 over verbatim from `_research/guaranteed-ul.md` (the citation ground truth for

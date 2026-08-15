@@ -1,4 +1,4 @@
-# Level Premium Term Life Insurance — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-03. This is a **standardized composite specification** for reference
 modeling — it does not reproduce any single insurer's product. Facts tagged [S#] and [R#] are

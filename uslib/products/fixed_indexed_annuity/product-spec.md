@@ -1,4 +1,4 @@
-# Fixed Indexed Annuity (FIA) with Guaranteed Lifetime Withdrawal Benefit — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-04 (all cited sources accessed 2026-08-04).
 

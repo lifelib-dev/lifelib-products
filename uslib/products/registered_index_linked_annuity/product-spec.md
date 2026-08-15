@@ -1,4 +1,4 @@
-# Registered Index-Linked Annuity (RILA) — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-04 (cited sources accessed 2026-08-04, except the AP&P Manual
 appendix items **R151–R157**, accessed 2026-08-06 — see `sources.md`).

@@ -1,4 +1,4 @@
-# Single Premium Immediate Annuity (SPIA) — Representative Product Specification (United States)
+# Product Specification
 
 **Status:** Draft, 2026-08-04 (all cited sources accessed 2026-08-04).
 

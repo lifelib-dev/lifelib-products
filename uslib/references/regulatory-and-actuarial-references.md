@@ -1,4 +1,4 @@
-# Regulatory and Actuarial References — U.S. Individual Life Insurance and Annuities
+# Regulatory and Actuarial References
 
 **Status:** Draft, 2026-08-03; extended to cover individual annuities 2026-08-04; extended
 with the AP&P Manual's formulaic appendices and actuarial guidelines 2026-08-06.

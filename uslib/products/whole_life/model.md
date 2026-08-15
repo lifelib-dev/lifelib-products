@@ -1,4 +1,4 @@
-# WholeLife_US_A — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-14. Built from
 [`products/whole_life/technical-notes.md`](technical-notes.md);

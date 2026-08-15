@@ -1,4 +1,4 @@
-# Sources — Single Premium Immediate Annuity (SPIA) (United States)
+# Sources
 
 Source ids, titles, publishers, doc types, URLs, access dates and retrieval markers are
 carried over **verbatim** from `_research/immediate-annuity.md` (the citation ground truth

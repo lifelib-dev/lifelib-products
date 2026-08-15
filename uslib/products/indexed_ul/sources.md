@@ -1,4 +1,4 @@
-# Sources — Indexed Universal Life Insurance
+# Sources
 
 Source ids ([S#]/[R#]) are carried over verbatim from
 `_research/indexed-ul.md` (research/access date for all citations: 2026-08-03) and are
