@@ -467,13 +467,13 @@ Corrections carried forward from the research files and made explicit in
    percent) reduced by 125 basis points, subject to that 15 bp floor [REG-R42].
 2. **The Annuity Disclosure Model Regulation is #245, not #250** — #250 is the Variable
    Annuity Model Regulation, verified from both model-law prints and from AG 54's own
-   citation [REG-R43][REG-R44][REG-R45].
+   citation [REG-R43] [REG-R44] [REG-R45].
 3. **Model #805 does not apply to a RILA if and only if AG 54 is satisfied**
-   [REG-R42][REG-R44].
+   [REG-R42] [REG-R44].
 4. **VM-21 does not automatically apply to a RILA**: §2.A.3 excludes separate-account
-   contracts that guarantee an index and offer no GMDB/VAGLB [R3][REG-R35].
+   contracts that guarantee an index and offer no GMDB/VAGLB [R3] [REG-R35].
 5. **AG 43 is not simply superseded by VM-21** — through reference in AG 43, VM-21's
-   requirements reach pre-2017 contracts outside VM-21's own scope [REG-R35][REG-R38].
+   requirements reach pre-2017 contracts outside VM-21's own scope [REG-R35] [REG-R38].
 6. **VM-22 is not the RILA reserve standard** and, in the Jan. 1, 2026 edition, no longer
    holds the income-annuity maximum valuation interest rates (those are in VM-V §1) — see
    the VM-22 and VM-V entries in `_research/regulatory-actuarial-annuities.md`. Noted
@@ -488,7 +488,7 @@ Corrections carried forward from the research files and made explicit in
    it as neither including nor excluding RILA [REG-R152]. **A-250 and A-255 are not reserve
    methods at all** — one printed page each, each delegating the reserve to A-820, and between
    them containing no formula, symbol, factor, table, elective-path rule, interim-value rule
-   or the word CARVM [REG-R156][REG-R157]. Calling them "the closest formulaic items" is
+   or the word CARVM [REG-R156] [REG-R157]. Calling them "the closest formulaic items" is
    defensible only as *nearest by subject matter*. **A verified negative is a result**; what
    stays open is narrower — no retrieved document says how an Interim Value becomes "the
    future guaranteed benefit" of §5a.

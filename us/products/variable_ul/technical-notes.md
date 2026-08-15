@@ -34,14 +34,14 @@ stay flagged here.
   claim/surrender payments occur at end of month (EOM), deaths before lapses
   **[std]**.
 - **Age basis.** Age nearest birthday (ANB) **[std]**, consistent with the 2017 CSO
-  ultimate ANB tables cited for guaranteed COI maxima [S2][S4]. Attained age
+  ultimate ANB tables cited for guaranteed COI maxima [S2] [S4]. Attained age
   advances on policy anniversaries.
 - **Model points.** One policy per model point; decrements applied as probabilities
   (in-force measure l_t), not stochastic lives **[std]**. Cash flows are
   probability-weighted per unit policy in force at issue (or at the projection start
   for in-force points).
-- **Compliance mechanics.** The corridor is enforced in the DB formula [S2][R3].
-  Guideline premium limits and 7-pay/MEC testing [R3][R4] are not enforced in the
+- **Compliance mechanics.** The corridor is enforced in the DB formula [S2] [R3].
+  Guideline premium limits and 7-pay/MEC testing [R3] [R4] are not enforced in the
   baseline; premiums are assumed within limits **[std]**.
 
 ## Model point attributes
@@ -78,8 +78,8 @@ ranges 0.29%–1.18% [S1], 0.55%–2.88% gross [S2], 0.46%–2.54% [S3], 0.08%�
 | FA_t | fixed-option value (general account) |
 | LA_t | loan-account (collateral) value (general account) [S3] |
 | D_t | outstanding policy debt (principal + capitalized interest) |
-| AV_t | total account value = Σ_i SA_{i,t} + FA_t + LA_t [S1][S2][S3][S4] |
-| F_t | face amount (reduced by Option A withdrawals [S1][S2]) |
+| AV_t | total account value = Σ_i SA_{i,t} + FA_t + LA_t [S1] [S2] [S3] [S4] |
+| F_t | face amount (reduced by Option A withdrawals [S1] [S2]) |
 | DB_t | death benefit per option and corridor |
 | NAAR_t | net amount at risk = max(0, DB_t − AV_t) [S2] (floor **[std]**) |
 | SC_t | surrender charge (per schedule, **[std]** scale) |
@@ -97,16 +97,16 @@ in separate input structures.
 | Item | Value | Basis |
 |---|---|---|
 | Premium load ceiling | 6.0% of each premium | [S2] |
-| COI guaranteed maxima | 2017 CSO sex-distinct S/NS ultimate ANB, monthly per $1,000 NAAR; cap $83.34 (observed $83.33–$83.34) | [S2][S4][R12]; cap [S1][S2][S3][S4] |
-| Per-policy charge | $10.00/month | [S2][S4] |
+| COI guaranteed maxima | 2017 CSO sex-distinct S/NS ultimate ANB, monthly per $1,000 NAAR; cap $83.34 (observed $83.33–$83.34) | [S2] [S4] [R12]; cap [S1] [S2] [S3] [S4] |
+| Per-policy charge | $10.00/month | [S2] [S4] |
 | Per-$1,000 face charge | $0.20 per $1,000 of F_0 per month (current = guaranteed **[std]**) | [S2] |
 | M&E guaranteed max | 0.60% p.a. | **[std]** (spec footnote 8) |
 | Fixed-option floor | 1.0% effective annual | [S1] |
 | Loan charged/credited rates | 2.0%/1.0% years 1–9; 1.05%/1.0% from year 10 | [S1] |
 | Surrender charge | $18.00 per $1,000 initial, linear to 0 over 14 years | **[std]** (spec footnote 10) |
-| Corridor factors κ | 250% (≤40), 215% (45), 185% (50), 150% (55), 130% (60), to 100% at 90–95; linear interpolation | [S2][R3]; interpolation **[std]** |
-| Grace / default | default when AV − SC − D ≤ 0; 61-day grace | [S1][R8] |
-| Age-121 rule | no premiums or monthly deductions after attained age 121; asset charges continue | [S1][S2][S4] |
+| Corridor factors κ | 250% (≤40), 215% (45), 185% (50), 150% (55), 130% (60), to 100% at 90–95; linear interpolation | [S2] [R3]; interpolation **[std]** |
+| Grace / default | default when AV − SC − D ≤ 0; 61-day grace | [S1] [R8] |
+| Age-121 rule | no premiums or monthly deductions after attained age 121; asset charges continue | [S1] [S2] [S4] |
 
 ### (b) Current non-guaranteed scales (insurer-declared; snapshot)
 
@@ -118,14 +118,14 @@ Governed as NGEs under ASOP No. 2 (by class; no recouping of past losses) [R11].
 | COI — current scale | input vector c_t; default placeholder 50% of guaranteed 2017 CSO; disclosed anchor male 45 std NS year 1: current $0.04 (gtd $0.22) | **[std]** (spec footnote 5); anchor [S4] |
 | M&E — current | 0.45% p.a. | [S1] |
 | Declared fixed rate | 1.0% (= floor; declared rates not public) | **[std]** (spec footnote 13) |
-| Credits (persistency credit, expense reductions) | none in baseline | **[std]**; variations [S1][S2] |
+| Credits (persistency credit, expense reductions) | none in baseline | **[std]**; variations [S1] [S2] |
 
 ### (c) Behavioral / experience assumptions
 
 | Item | Recommended public basis | Basis |
 |---|---|---|
-| Best-estimate mortality | 2015 VBT (sex/smoker-distinct, RR tables for preferred fit), calibrated with ILEC 2012–2019 A/E experience | [REG-R18][REG-R19] |
-| Base lapse/surrender | LIMRA/SOA U.S. Individual Life Persistency (2009–2013, includes VUL plans); 2015–2021 UL lapse/surrender study for modern levels (VUL not broken out separately — applied to VUL by analogy, flagged) | [REG-R20][REG-R21] |
+| Best-estimate mortality | 2015 VBT (sex/smoker-distinct, RR tables for preferred fit), calibrated with ILEC 2012–2019 A/E experience | [REG-R18] [REG-R19] |
+| Base lapse/surrender | LIMRA/SOA U.S. Individual Life Persistency (2009–2013, includes VUL plans); 2015–2021 UL lapse/surrender study for modern levels (VUL not broken out separately — applied to VUL by analogy, flagged) | [REG-R20] [REG-R21] |
 | Premium persistency | 2015–2021 UL premium persistency study (flexible-premium payment behavior); VUL by analogy | [REG-R21] |
 | Dynamic behavior | fund-performance-sensitive multipliers, see "Policyholder behavior modeling" | **[std]** |
 | Insurer expenses | $75/policy/year maintenance + 2% of premium collection expense (placeholders; internal expense assumptions are not public) | **[std]** |
@@ -157,11 +157,11 @@ placeholders below.
 
 1. Advance to monthiversary t; on an anniversary, advance x_t and the policy-year
    dependent parameters (loan tier, SC_t, corridor κ_t). If x_t ≥ 121: skip steps
-   2–4 and 6 (no premiums, no monthly deduction) [S1][S2][S4].
+   2–4 and 6 (no premiums, no monthly deduction) [S1] [S2] [S4].
 2. **Premium.** P_t = ρ_t × planned modal premium. Load: γ·P_t to insurer. Net
    premium allocation: SA_{i,t} += α_i·(1−γ)·P_t; FA_t += α_F·(1−γ)·P_t.
 3. **Withdrawal** (if modeled): reduce accounts by withdrawal + $25 fee; Option A
-   reduces F_t proportionately [S1][S2]. Baseline: none **[std]**.
+   reduces F_t proportionately [S1] [S2]. Baseline: none **[std]**.
 4. **Loan activity** (if modeled): new loans/repayments move value between
    investment options and LA_t [S3]; D_t accrues at i_L, LA_t at i_C, monthly
    compounding (1+i)^{1/12} **[std]** (contractually interest is due/capitalized
@@ -172,7 +172,7 @@ placeholders below.
    - NAAR_t = max(0, DB_t − AV_t)
 6. **Monthly deduction.**
    - COI_t = c_t · NAAR_t / 1000, with c_t ≤ min(2017 CSO max, 83.34)
-     [S2][S4][R12]
+     [S2] [S4] [R12]
    - MD_t = COI_t + e_pol + e_face·F_0/1000
    - Allocated pro rata across unloaned accounts **[std]**: each unloaned account j
      pays MD_t · V_j / Σ_unloaned V (loan account LA is excluded).
@@ -181,14 +181,14 @@ placeholders below.
      (1 − e_i/12) · (1 − m/12), where SA' is the post-deduction value. In the
      contract, fund expenses and (for S1) M&E accrue daily in the unit value
      [S1]; the monthly product form is a **[std]** approximation. Insurers deducting
-     M&E monthly [S2][S3][S4] are captured by the same factor.
+     M&E monthly [S2] [S3] [S4] are captured by the same factor.
    - Fixed option: FA_{t+1} = FA'_t · (1 + i_fix)^{1/12}, i_fix ≥ 1.0% [S1].
    - Loan account: LA_{t+1} = LA_t · (1 + i_C)^{1/12}; debt D_{t+1} = D_t ·
      (1 + i_L)^{1/12} **[std]** monthly accrual.
 8. **EOM decrements and payments** (deaths before lapses **[std]**; balances here
    are EOM values after step 7, so outstanding debt is D_{t+1}):
    - Death: probability l_t·q^d_t; claim outflow = DB_t^{EOM} − D_{t+1} (debt
-     repaid internally) [S1][S3], where DB_t^{EOM} recomputes the option/corridor
+     repaid internally) [S1] [S3], where DB_t^{EOM} recomputes the option/corridor
      formula on EOM account values **[std]**.
    - Surrender/lapse: probability l_t·(1 − q^d_t)·q^w_t; outflow = CSV_t^{EOM} =
      AV_{t+1} − SC_t − D_{t+1} [S1].
@@ -197,8 +197,8 @@ placeholders below.
    - Survivorship: l_{t+1} = l_t · (1 − q^d_t) · (1 − q^w_t).
 9. **Status checks.** If CSV_t ≤ 0 (and no NLG): default → grace; the baseline
    model lapses the policy at the next monthiversary if not cured, collapsing the
-   61-day grace and notice mechanics [S1][R8] into a one-month lag **[std]**. At
-   x_t = 121, switch to the age-121 regime [S1][S2][S4].
+   61-day grace and notice mechanics [S1] [R8] into a one-month lag **[std]**. At
+   x_t = 121, switch to the age-121 regime [S1] [S2] [S4].
 
 ### Scenario requirement
 
@@ -216,7 +216,7 @@ general-account yields; the baseline holds i_fix at the 1.0% floor **[std]**.
 ### Separate-account vs general-account cash flow split
 
 Account location: SA_{i,t} are separate-account assets; FA_t and LA_t are
-general-account liabilities/assets [S1][S3]. The model reports two views:
+general-account liabilities/assets [S1] [S3]. The model reports two views:
 
 - **Gross (policyholder) view — the reference model's primary projection [std].**
   - Inflow: premiums l_t·P_t (full premium; the net premium is a pass-through into
@@ -326,7 +326,7 @@ SET certification method [R7]. GMDB reserves per AG XXXVII; separate-account
 investment rules per AG XXIII (both texts still unretrieved, cited through [R7]);
 **Model 270** requires reserves for variable
 benefits held in the separate account on a basis consistent with the Standard
-Valuation Law [R7][R8][REG-R1] — its AP&P print, **A-270**, has been read but carries
+Valuation Law [R7] [R8] [REG-R1] — its AP&P print, **A-270**, has been read but carries
 **no reference id**, so nothing is stated from it. The formulaic appendix items sitting
 under the NPR are **A-820** [REG-R153], the **A-585** UL adaptation whose reach to a
 variable contract is unresolved [REG-R155], and **A-830**, which excludes VUL by its
@@ -352,8 +352,8 @@ Dominant assumptions (roughly in order):
    the widest behavioral range [REG-R21]; funding level feeds back into lapse and
    default.
 4. **Lapse and dynamic lapse (λ_t)**: level from dated/analogous studies
-   [REG-R20][REG-R21] with the dynamic form unsourced **[std]** [unverified].
-5. **Best-estimate mortality** vs 2015 VBT/ILEC [REG-R18][REG-R19]; NAAR-weighted,
+   [REG-R20] [REG-R21] with the dynamic form unsourced **[std]** [unverified].
+5. **Best-estimate mortality** vs 2015 VBT/ILEC [REG-R18] [REG-R19]; NAAR-weighted,
    so it interacts with the return scenario.
 
 Known modeling pitfalls:
@@ -368,11 +368,11 @@ Known modeling pitfalls:
 - Pro-rata deduction allocation breaking on zero unloaned balances (guard the
   denominator; deduction shortfall triggers the default test).
 - Ignoring the loan account: loaned value earns i_C, not fund returns; debt
-  compounds at i_L; DB and CSV are debt-reduced [S1][S3].
+  compounds at i_L; DB and CSV are debt-reduced [S1] [S3].
 - Missing the age-121 regime switch (charges stop; asset drags continue)
-  [S1][S2][S4].
+  [S1] [S2] [S4].
 - Grace-period collapse **[std]** accelerates lapses by up to two months versus the
-  contractual 61-day mechanics [S1][R8] — immaterial for most uses, material for
+  contractual 61-day mechanics [S1] [R8] — immaterial for most uses, material for
   short-horizon liquidity studies.
 - The NLG variation changes the risk profile qualitatively (lapse floor under poor
   performance → higher NAAR persistence); see

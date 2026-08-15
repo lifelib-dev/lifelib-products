@@ -272,7 +272,7 @@ declared-rate parameters are stale or absent.
 - Everything cited to [R10] is tagged [unverified]: the *American Equity Investment Life
   Insurance Co. v. SEC* vacatur and the specific conditions of Dodd-Frank §989J. What **is**
   verified is Model #275's own drafting note [R4] and the not-a-security statements in
-  [S6][S9][S10].
+  [S6] [S9] [S10].
 
 (uslib-fixed_indexed_annuity-r11)=
 
@@ -506,7 +506,7 @@ to; where this file and a research file disagree, **the research file governs**.
 marked **[std]** in `product-spec.md` and `technical-notes.md` are introduced at drafting and are
 not attributable to any source. **[unverified]** flags are carried forward unchanged **with one
 documented exception**: the AG 33 and AG 35 mechanics, whose flags were closed on 2026-08-06 by
-reading the primary texts [REG-R151][REG-R152] — the only route by which a flag may be closed. No
+reading the primary texts [REG-R151] [REG-R152] — the only route by which a flag may be closed. No
 **[std]** marker in this product's documents was a standardization *because* one of the seven
 appendix items was unavailable, so **none was upgraded**; the AP&P print of the 2012 IAM Period
 Table was added at "Age basis" as corroboration [REG-R153] and the **[std]** there, which marks the

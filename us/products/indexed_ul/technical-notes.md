@@ -15,7 +15,7 @@ the reference implementation. Parameter values here are identical to those in
 
 - **Product:** the representative baseline of `product-spec.md`: flexible-premium UL
   chassis + one AG 49-A Benchmark-Index-Account-style indexed account (1-yr S&P 500 PTP,
-  cap 10.00% current [S2], 100% par [S2], 0% floor [S2][R1]) + fixed account (4.50%
+  cap 10.00% current [S2], 100% par [S2], 0% floor [S2] [R1]) + fixed account (4.50%
   current / 1.00% guaranteed [S2]). Standard loans only **[std]**.
 - **Base chassis:** the UL-pattern monthly mechanics — monthiversary processing order,
   NAAR convention (DB discounted one month at the guaranteed rate, AV measured before
@@ -72,7 +72,7 @@ the reference implementation. Parameter values here are identical to those in
 | CumP_t / CumMNLP_t | Cumulative premiums less withdrawals & loans / cumulative MNLP | 0 / 0 |
 | DB_t | Current death benefit (post-corridor) | — |
 | l_t | In-force probability (survivorship of death & lapse) | 1.0 |
-| 7-pay / GPT accumulators | §7702/§7702A test state [R4][R5] | per issue |
+| 7-pay / GPT accumulators | §7702/§7702A test state [R4] [R5] | per issue |
 
 ## Assumption inputs
 
@@ -80,7 +80,7 @@ The model distinguishes three assumption classes explicitly:
 
 **(a) Contractual / guaranteed elements** (from `product-spec.md`, all cited there):
 guaranteed minimum fixed rate 1.00% [S2]; guaranteed minimum cap 2.00% [S2]; guaranteed
-participation 100% [S2]; floor 0% [S2][R1]; guaranteed maximum charges (premium load 8%
+participation 100% [S2]; floor 0% [S2] [R1]; guaranteed maximum charges (premium load 8%
 **[std]**, policy fee $15 **[std]**, per-unit $0.40 all years **[std]**, COI at 2017 CSO
 ANB ultimate **[std]**/[REG-R17]); surrender charge schedule **[std]**; loan charged rate
 3.00% **[std]**; corridor factors [R4]; MNLP rates [S3]. Guaranteed-basis projections use
@@ -88,9 +88,9 @@ only this class.
 
 **(b) Current non-guaranteed scales** (insurer-declared; snapshots, re-declarable —
 NGE discipline per ASOP 2 [REG-R26]): fixed account 4.50% [S2]; cap 10.00% [S2]
-(snapshot — observed 10.00–13.75% across carriers/dates [S2][S3][S4][S5][S7], and the cap
-is re-set at each segment start [S3][S4]); premium load 5% **[std]**; policy fee $10
-[S3][S5]; per-unit $0.30 years 1–10 **[std]**; current COI = 65% of guaranteed **[std]**;
+(snapshot — observed 10.00–13.75% across carriers/dates [S2] [S3] [S4] [S5] [S7], and the cap
+is re-set at each segment start [S3] [S4]); premium load 5% **[std]**; policy fee $10
+[S3] [S5]; per-unit $0.30 years 1–10 **[std]**; current COI = 65% of guaranteed **[std]**;
 loan credited rate 2%/3% **[std]**. In projection, current scales are held level unless a
 cap-re-declaration model (option-budget-driven, below) is switched on **[std]**.
 
@@ -99,7 +99,7 @@ public bases):
 - Best-estimate mortality: 2015 VBT (sex/smoker-distinct, ANB, RR table fit to class)
   [REG-R18], validated/adjusted with ILEC 2012–2019 A/E experience [REG-R19]; guaranteed
   elements use 2017 CSO [REG-R17]. VM-20 prudent estimates credibility-blend company
-  experience toward the industry (VBT) tables [REG-R3][REG-R23].
+  experience toward the industry (VBT) tables [REG-R3] [REG-R23].
 - Base lapse and surrender: LIMRA/SOA U.S. individual life persistency study (2009–2013
   observations) [REG-R20] and the 2015–2021 UL premium persistency and lapse/surrender
   study (24 companies, ~80% of market for lapse; 14 companies for premium persistency)
@@ -128,7 +128,7 @@ public bases):
 | MD_t | total monthly deduction |
 | i_fix, i_g | fixed-account current rate 4.50% [S2]; guaranteed 1.00% [S2] |
 | c, p, f | cap 10.00% [S2]; participation 100% [S2]; floor 0% [S2] |
-| I(t) | index level at monthiversary t (S&P 500 price return) [S2][S3] |
+| I(t) | index level at monthiversary t (S&P 500 price return) [S2] [S3] |
 | S_{k,t} | balance of segment k created at m_k, maturing at m_k + 12 |
 | W_t | partial withdrawal (gross of $25 fee [S3]) |
 | B_t | new standard loan taken at t |
@@ -155,7 +155,7 @@ public bases):
    active segments **[std]** (convention; Transamerica instead half-weights in-segment
    deductions in its credit base [S3] — see variation note below). Shortfall test: if
    CSV_t cannot cover MD_t and the no-lapse test fails (CumP_t < CumMNLP_t during the
-   no-lapse period [S3][S4]) → grace/lapse processing (61 days [S3]; modeled as lapse
+   no-lapse period [S3] [S4]) → grace/lapse processing (61 days [S3]; modeled as lapse
    at t+2 months if unfunded **[std]**).
 6. **Sweep:** transfer w_ix × FA balance (after 1–5) into a new segment created at t
    **[std]** (monthiversary sweep; spec F10).
@@ -174,8 +174,8 @@ Fixed (holding) account:
 Segment k (created at m_k with S_{k,m_k} = Sweep_{m_k} share; term 12 months):
 
     S_{k,t+1} = S_{k,t} − MD^seg_{k,t} − W^seg_{k,t} − B^seg_{k,t}      (no interim interest)
-    r_k       = I(m_k+12) / I(m_k) − 1                                  [S2][S3]
-    cr_k      = max(f, min(c, p × r_k))                                 [S2][S3][R1]
+    r_k       = I(m_k+12) / I(m_k) − 1                                  [S2] [S3]
+    cr_k      = max(f, min(c, p × r_k))                                 [S2] [S3] [R1]
     Credit_k  = cr_k × S_{k, m_k+12}                                    **[std]** credit base
     matured value = S_{k,m_k+12} × (1 + cr_k)  → new segment (or FA per instructions)
 
@@ -214,9 +214,9 @@ The AG 49-A "Hedge Budget" is "the total annualized amount assumed to be used to
 the Indexed Credits of the account, expressed as a percent of the account value," required
 to be consistent with the insurer's actual hedging program [R1]. Economically: the
 general-account net investment earnings rate (NIER) funds the purchase of index options;
-the cap is what that budget buys [R1][R6]. For the baseline account (100% par, 0% floor),
+the cap is what that budget buys [R1] [R6]. For the baseline account (100% par, 0% floor),
 the embedded position per $1 of segment value is a one-year call spread, and the cap c
-satisfies approximately **[std]** formulation of the sourced concept [R1][R6]:
+satisfies approximately **[std]** formulation of the sourced concept [R1] [R6]:
 
     HB ≈ [ C(K = I_0) − C(K = I_0(1+c)) ] / I_0        HB ≈ NIER − target spread
 
@@ -258,23 +258,23 @@ average upon death or termination" [S7]; Transamerica's in-segment 0.75% (with a
 declared-account minimum) [S3]. Modeling: carry a shadow account accumulating premiums
 less deductions/withdrawals at the guarantee rate; on death/surrender pay
 max(actual value, shadow value) **[std]** implementation convention. The baseline (0%
-annual floor [S2][R1]) needs no shadow account.
+annual floor [S2] [R1]) needs no shadow account.
 
 ## Policyholder behavior modeling
 
 All dynamic formulas are **[std]** (no retrieved source prescribes them); levels are
-placeholders to be calibrated to [REG-R20][REG-R21] data and company experience.
+placeholders to be calibrated to [REG-R20] [REG-R21] data and company experience.
 
 - **Base lapse** (annual, converted monthly): 6% durations 1–10, 4% thereafter **[std]**;
   a surrender-charge-expiry spike multiplier 2.0 applied in policy year 11 **[std]**
-  (rationale: the 10-year surrender charge period [S1][S5][S7] creates a cliff in
+  (rationale: the 10-year surrender charge period [S1] [S5] [S7] creates a cliff in
   surrender economics; UL lapse/surrender experience by duration is available in
   [REG-R21] for calibration).
 - **Dynamic lapse** **[std]**: multiply base lapse by
   min(2.0, max(0.5, 1 + 3.0 × (r_alt − r_cred,t))) where r_cred,t is the policy's
   trailing credited rate and r_alt a competitor/market alternative rate. Rationale: caps
   and declared rates are NGEs; uncompetitive re-declarations (caps fell 13.75% → 12.00%
-  between two print dates of one product [S3][S4]) plausibly drive excess lapse.
+  between two print dates of one product [S3] [S4]) plausibly drive excess lapse.
 - **Premium persistency** **[std]**: planned premium paid with 98% annual persistency,
   plus a funding-stop state (probability 1%/yr **[std]**) after which the policy runs
   charge-only. Rationale: premium persistency is the UL-specific behavior dimension; the
@@ -322,13 +322,13 @@ reproduced:
   applicable; IUL is reserved as a UL (life) product under VM-20; projections must include
   cash flows of assets hedging indexed credits, under the clearly-defined-hedging-strategy
   (CDHS) framework, with margins increased where hedging documentation is incomplete
-  [R3][REG-R3]. Implementation guidance: AAA VM-20 practice note [REG-R23]; governing
+  [R3] [REG-R3]. Implementation guidance: AAA VM-20 practice note [REG-R23]; governing
   standard ASOP 52 [REG-R31]; enabling statute Model #820 [REG-R1]. A quantified analogue
   for hedge inefficiency exists on the annuity side (VM-21/VM-22 index credit hedge
   margin: reduce hedge payoffs by ≥1.5% multiplicatively, or ≥20% absent credible
   experience) — stated for annuities, not VM-20 life business [R3].
 - Interest-indexed UL filings/opinion: Model #585 Section 10 (assets held, falling-rate
-  risk, annual actuarial opinion) [R10][REG-R5]. **Cite this to Model #585 only.** The
+  risk, annual actuarial opinion) [R10] [REG-R5]. **Cite this to Model #585 only.** The
   AP&P Appendix A print of the same regulation, item **A-585**, was read in full and
   carries the **valuation half only** — definitions and valuation requirements, with no
   nonforfeiture provisions, no mandatory policy provisions, no annual-report-to-policyowner
@@ -348,7 +348,7 @@ Dominant assumptions (in rough order for an accumulation-funded model point):
 
 1. **Credited-rate level and dynamics** — cap re-declaration is the insurer's primary
    lever; caps on the same product fell from 13.75% to 12.00% between print dates
-   [S3][S4]; guaranteed minima (2.00% cap [S2]) are far below current levels, so the
+   [S3] [S4]; guaranteed minima (2.00% cap [S2]) are far below current levels, so the
    guaranteed-basis projection diverges dramatically.
 2. **Deterministic vs stochastic crediting** — using the illustrated rate (6.40% [S2],
    market range 5.61%–7.38% [S6]) as a level credit overstates mean credits vs a
@@ -357,17 +357,17 @@ Dominant assumptions (in rough order for an accumulation-funded model point):
 3. **Premium persistency** — flexible premiums mean the funding pattern is behavior, not
    contract; it drives account growth, NLG status, MEC/GPT headroom, and lapse [REG-R21].
 4. **Lapse (level + dynamic + SC-expiry spike)** — high sensitivity of both cash flows and
-   any illustration lapse-support test [R2][REG-R21].
+   any illustration lapse-support test [R2] [REG-R21].
 5. **COI margin vs mortality** — current-vs-guaranteed COI spread is a major profit and
-   re-rating lever [S3][REG-R26]; best-estimate mortality from 2015 VBT/ILEC
-   [REG-R18][REG-R19].
+   re-rating lever [S3] [REG-R26]; best-estimate mortality from 2015 VBT/ILEC
+   [REG-R18] [REG-R19].
 6. **Loan design and utilization** — participating loans embed an index-vs-5%-charge
-   spread bet [S5][S7]; heavy late-life loans plus a 0%-credit sequence can force lapse
+   spread bet [S5] [S7]; heavy late-life loans plus a 0%-credit sequence can force lapse
    absent overloan protection [S3].
 
 Known modeling pitfalls:
 
-- **Segment bookkeeping**: monthly segment ladders (up to 12 concurrent [S3][S4]) must
+- **Segment bookkeeping**: monthly segment ladders (up to 12 concurrent [S3] [S4]) must
   track per-segment index start levels; collapsing to a single annual segment mis-times
   credits and distorts mid-segment surrender values [S3].
 - **Deduction sourcing vs credit base**: conventions differ by carrier (pro-rata remaining
@@ -377,7 +377,7 @@ Known modeling pitfalls:
   in-segment 0.75% credit [S3] or a 2% retrospective cumulative test [S7]; mixing them
   double-counts guarantees.
 - **Illustrated-rate anchoring**: AG 49-A bounds what may be *illustrated*, not what will
-  be *credited* [R1][R6]; a projection model should treat the illustrated rate as a
+  be *credited* [R1] [R6]; a projection model should treat the illustrated rate as a
   disclosure constraint, not a best-estimate assumption.
 - **Corridor/MEC interplay**: high funding triggers corridor DB increases (raising NAAR
   and COI) [R4] and 7-pay/MEC status [R5]; omitting these overstates late-duration
@@ -388,7 +388,7 @@ Known modeling pitfalls:
   instruction to run the SVL §5.A / A-820 ¶11 modified-net-premium routine. An indexed UL
   policy takes the **A-585 guaranteed-maturity-premium** adaptation, and one A-830 reaches
   through a secondary guarantee takes the ¶¶29–32 segmented construction instead. Both
-  substitutions are silent — they produce a number [REG-R155 ¶8][REG-R154 ¶¶2, 30].
+  substitutions are silent — they produce a number [REG-R155 ¶8] [REG-R154 ¶¶2, 30].
 - **Index credits inside the guaranteed maturity premium**: the GMP solve is on guarantees
   at issue "excluding guarantees linked to an external referent", so the current cap
   (10.00% [S2]) — a nonguaranteed element in any case — is doubly out of it, and the

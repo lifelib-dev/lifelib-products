@@ -27,7 +27,7 @@ interim value algebra and the worked proportional-withdrawal example [S2].
 ## Product overview and market role
 
 A RILA (the NAIC prefers **ILVA**, "index-linked variable annuity", precisely to signal
-that a compliant design is a variable annuity first [R2][REG-R44]) is a deferred annuity under
+that a compliant design is a variable annuity first [R2] [REG-R44]) is a deferred annuity under
 which purchase payments are allocated to index-linked options whose returns "(both gains
 and losses) are based at least in part on the performance of an index or other benchmark
 … over a set period of time ('crediting period')" [R1]. Upside is limited by **cap rates**
@@ -36,7 +36,7 @@ and/or **participation rates** ("limits on gains"); downside by **buffers** or *
 and passes the excess through to the contract holder; a floor caps the holder's loss at
 *f* and leaves the insurer with the tail [R1].
 
-The index-linked options sit in a **non-unitized separate account** [S4][R2]. Of the ILVA
+The index-linked options sit in a **non-unitized separate account** [S4] [R2]. Of the ILVA
 separate accounts the American Academy of Actuaries surveyed, none are SEC-registered, all
 are non-unitized, and they may be insulated or non-insulated; statutory accounting is
 separate account, U.S. GAAP is general account, and RBC splits C0–C1 general account /
@@ -51,7 +51,7 @@ The distinguishing modeling fact: between term start and term end the contract h
 account value in the ordinary sense**. Every transaction — withdrawal, surrender, death
 claim, annuitization, transfer, fee deduction — settles at an **Interim Value**, a daily
 mark of a hypothetical replicating portfolio priced with an option-pricing model
-[R2][S2][S4][S6]. That is contractual, not a modeling refinement (see
+[R2] [S2] [S4] [S6]. That is contractual, not a modeling refinement (see
 `technical-notes.md`).
 
 ---
@@ -62,17 +62,17 @@ mark of a hypothetical replicating portfolio priced with an option-pricing model
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Individual single-premium deferred index-linked separate account annuity | [S1][S2] |
+| Design type | Individual single-premium deferred index-linked separate account annuity | [S1] [S2] |
 | Chassis | Brighthouse Shield Level II 6-Year design | [S2]; selection **[std]** (1) |
-| Account structure | Non-unitized separate account for index-linked options; general account for Fixed Account and Holding Account | [S2][S4][R2][R6] |
-| Premium structure | Single premium; no subsequent purchase payments | [S1][S2]; scope **[std]** (2) |
-| Owner / annuitant issue ages | 0–85 | [S1][S2] |
-| Minimum purchase payment | $25,000 (prior approval below $25,000 or at/above $1,000,000) | [S1][S2] |
-| Minimum account value | $2,000 (below this a withdrawal request is treated as a full withdrawal) | [S1][S2] |
+| Account structure | Non-unitized separate account for index-linked options; general account for Fixed Account and Holding Account | [S2] [S4] [R2] [R6] |
+| Premium structure | Single premium; no subsequent purchase payments | [S1] [S2]; scope **[std]** (2) |
+| Owner / annuitant issue ages | 0–85 | [S1] [S2] |
+| Minimum purchase payment | $25,000 (prior approval below $25,000 or at/above $1,000,000) | [S1] [S2] |
+| Minimum account value | $2,000 (below this a withdrawal request is treated as a full withdrawal) | [S1] [S2] |
 | Minimum allocation to one index-linked option | $500 | [S1] |
 | Minimum partial withdrawal | $500 | [S1] |
 | Maturity Date (forced annuitization) | Contract anniversary after the oldest Owner's 90th birthday, or 10 years from issue, whichever is later | [S2] |
-| Free look | 10 days after receipt (longer in some states) | [S1][S2] |
+| Free look | 10 days after receipt (longer in some states) | [S1] [S2] |
 | Anchor model point | Male 60, single premium $100,000, 100% allocated to one 6-year option, S&P 500 price return, 10% buffer, Cap crediting | **[std]** (3) |
 
 Footnotes to [std] rows:
@@ -83,32 +83,32 @@ Footnotes to [std] rows:
    return-of-premium GMDB, no explicit asset charge and an AG 54 interim value —
    "essentially the Brighthouse Shield Level II design" [S2], matching AG 54's literal
    definitions [R2] and the Academy's worked example structure [R6].
-2. Observed: single premium [S1][S2]; flexible premium with a contribution cut-off at owner
+2. Observed: single premium [S1] [S2]; flexible premium with a contribution cut-off at owner
    age 86 and $500/$50 minimum additional contributions [S4]; flexible-premium combination
    contract with variable subaccounts [S3]. Single premium removes premium-persistency
    modeling from a product whose difficulty lies entirely in the interim value.
 3. Pure modeling choice. Age 60 sits inside the band receiving the return-of-premium death
-   benefit (owners 80 or younger [S2]) and inside the standard issue-age range [S1][S2].
+   benefit (owners 80 or younger [S2]) and inside the standard issue-age range [S1] [S2].
    S&P 500 price return appears in the index menu of every source product whose menu was
-   captured in the research file [S1][S2][S3][S4].
+   captured in the research file [S1] [S2] [S3] [S4].
 
 ### Index-linked option menu
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Term lengths offered | 1, 3, 6 years (point-to-point) | [S1][S2][S3][S4][S5]; 2-year dropped **[std]** (4) |
-| Buffers ("Shield Rates") offered | 10%, 15%, 25% | [S1][S2] |
-| Representative buffer | 10% | universal across insurers [S1]–[S6][R1]; pick **[std]** (5) |
+| Term lengths offered | 1, 3, 6 years (point-to-point) | [S1] [S2] [S3] [S4] [S5]; 2-year dropped **[std]** (4) |
+| Buffers ("Shield Rates") offered | 10%, 15%, 25% | [S1] [S2] |
+| Representative buffer | 10% | universal across insurers [S1]–[S6] [R1]; pick **[std]** (5) |
 | Indices | S&P 500, Russell 2000, MSCI EAFE, Nasdaq-100 — all **price return** | [S2] |
 | Rate crediting types | Cap Rate; Step Rate; Step Rate Edge | [S2] |
-| Floor strategies | Not offered on this chassis (documented as a variation) | [S1][S2]; contrast [S5] |
-| Reallocation | Only during the Transfer Period — the 5 calendar days following the Contract Anniversary coinciding with a Term End Date | [S1][S2] |
-| Default at Term End | Automatic renewal into the same option at the new declared rate unless the owner elects otherwise; 30 days' advance notice | [S1][S2] |
+| Floor strategies | Not offered on this chassis (documented as a variation) | [S1] [S2]; contrast [S5] |
+| Reallocation | Only during the Transfer Period — the 5 calendar days following the Contract Anniversary coinciding with a Term End Date | [S1] [S2] |
+| Default at Term End | Automatic renewal into the same option at the new declared rate unless the owner elects otherwise; 30 days' advance notice | [S1] [S2] |
 
-4. Observed term menus: 1/3/6 [S1][S3][S4][S5]; **1/2/3/6** [S2]; **1 and 6 only** [S6];
+4. Observed term menus: 1/3/6 [S1] [S3] [S4] [S5]; **1/2/3/6** [S2]; **1 and 6 only** [S6];
    the Academy survey reports one, two, three or six years [R6]. The 2-year term is unique
    to [S2] among the retrieved sources and is dropped to hold the menu at the industry mode.
-5. Observed buffer menus: 10/15/25 [S1][S2]; 5/10/15/20/**100** [S3]; 10/15/20/40 [S4];
+5. Observed buffer menus: 10/15/25 [S1] [S2]; 5/10/15/20/**100** [S3]; 10/15/20/40 [S4];
    10/20/30 plus a −10% floor [S5]; protection levels 10/15/20/25 [S6]. **The 10% buffer is
    the one value present in every menu**, and Equitable commits that "we will always offer a
    Segment Option with a Segment Buffer that protects the first 10% of loss" [S4].
@@ -139,33 +139,33 @@ Footnotes to [std] rows:
    rate. Participation Rate 100% is what Equitable guarantees for the life of every current
    segment type [S4].
 8. No declared fixed-account rate appears in any retrieved document; only the 1% contractual
-   minimum is public [S1][S2]. 3.00% is a snapshot consistent with the **[std]** 4.00%
+   minimum is public [S1] [S2]. 3.00% is a snapshot consistent with the **[std]** 4.00%
    risk-free assumption in `technical-notes.md`.
 
 ### Guaranteed minimum crediting parameters (contractual floors on the declared rates)
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Minimum guaranteed Cap Rate | 2% (1-year), 6% (3-year), 8% (6-year) | [S1][S2] |
+| Minimum guaranteed Cap Rate | 2% (1-year), 6% (3-year), 8% (6-year) | [S1] [S2] |
 | Minimum guaranteed Step Rate | 2% | [S2] |
 | Minimum guaranteed Edge Rate | 2% | [S2] |
-| Minimum guaranteed interest rate, Fixed Account and Holding Account | 1% | [S1][S2] |
-| Buffer (Shield Rate) | Guaranteed for the life of each term; not redeterminable mid-term | [S1][S2] |
+| Minimum guaranteed interest rate, Fixed Account and Holding Account | 1% | [S1] [S2] |
+| Buffer (Shield Rate) | Guaranteed for the life of each term; not redeterminable mid-term | [S1] [S2] |
 
 These are **guaranteed elements** in ASOP No. 2 terms — it lists "minimum index parameters"
 as a guaranteed element and "index parameters used to determine credited interest" as a
-non-guaranteed element [R5][REG-R26]. A projection model must floor every renewal-rate
+non-guaranteed element [R5] [REG-R26]. A projection model must floor every renewal-rate
 assumption at this table.
 
 ### Charges
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Explicit asset-based charge (M&E, administration) on index-linked value | **None** | [S2][S3][S4][S6][R6] |
+| Explicit asset-based charge (M&E, administration) on index-linked value | **None** | [S2] [S3] [S4] [S6] [R6] |
 | Contract maintenance fee | None | [S2] |
-| Withdrawal charge (% of the amount withdrawn in excess of the free amount) | 7%, 7%, 6%, 5%, 4%, 3%, 0% by complete contract years since the Issue Date | [S1][S2] |
-| Withdrawal charge gross-up | None — the charge is deducted from the amount withdrawn, not added to it | [S1][S2]; contrast [S4] |
-| Free withdrawal amount | Zero in contract year 1; thereafter 10% of Account Value as of the prior Contract Anniversary, less amounts already withdrawn in the current contract year; non-cumulative | [S1][S2] |
+| Withdrawal charge (% of the amount withdrawn in excess of the free amount) | 7%, 7%, 6%, 5%, 4%, 3%, 0% by complete contract years since the Issue Date | [S1] [S2] |
+| Withdrawal charge gross-up | None — the charge is deducted from the amount withdrawn, not added to it | [S1] [S2]; contrast [S4] |
+| Free withdrawal amount | Zero in contract year 1; thereafter 10% of Account Value as of the prior Contract Anniversary, less amounts already withdrawn in the current contract year; non-cumulative | [S1] [S2] |
 | Premium tax | 0% (state pass-through, modeled as zero) | [S2]; value **[std]** (9) |
 | Trading cost provision inside the interim value | 0.10% of the sum of the absolute market values of the replicating options | **[std]** (10) |
 
@@ -190,8 +190,8 @@ assumption at this table.
 |---|---|---|
 | Standard death benefit, owners 80 or younger at issue | **Return of Premium**: greater of Account Value and Purchase Payment | [S2] |
 | Standard death benefit, owners 81+ at issue | Account Value | [S2] |
-| Adjustment for withdrawals | The Purchase Payment component is reduced *proportionately* by the percentage reduction in Account Value for each partial withdrawal, including any applicable withdrawal charge | [S1][S2] |
-| Value used mid-term | **Interim Value** of each open index-linked option | [S1][S2][S4][S6] |
+| Adjustment for withdrawals | The Purchase Payment component is reduced *proportionately* by the percentage reduction in Account Value for each partial withdrawal, including any applicable withdrawal charge | [S1] [S2] |
+| Value used mid-term | **Interim Value** of each open index-linked option | [S1] [S2] [S4] [S6] |
 | Determination date | End of the business day on which due proof of death and an acceptable payment election are received | [S1] |
 | Optional GMDB riders | Out of scope | scope **[std]** (see Riders) |
 
@@ -208,7 +208,7 @@ genuinely in the money in equity stress — it is not a nominal guarantee.
 | Value applied | Interim Value if annuitized before a Term End Date | [S1] |
 | Annuity purchase rates | Not located in any retrieved document — modeled from a public basis | research gap; **[std]** (11) |
 
-11. Option *names* are documented [S1][S2] but the mortality basis, assumed interest rate,
+11. Option *names* are documented [S1] [S2] but the mortality basis, assumed interest rate,
     factor tables and the **survivor continuance percentage** on the joint form are not;
     they live in the contract specimen or SAI, neither of which was located (research
     gap 2). The reference model computes payout factors from the 2012 IAM Period Table —
@@ -225,19 +225,19 @@ genuinely in the money in equity stress — it is not a nominal guarantee.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Methodology | AG 54 Hypothetical Portfolio = Fixed Income Asset Proxy + Derivative Asset Proxy, less Trading Costs | [R2][S2] |
+| Methodology | AG 54 Hypothetical Portfolio = Fixed Income Asset Proxy + Derivative Asset Proxy, less Trading Costs | [R2] [S2] |
 | Algebraic family | `(A − B) x [(1+C)/(1+D)]^E` for the fixed leg, plus the current market value of the replicating options | [S2]; selection **[std]** (12) |
 | Option-budget amortization | Straight-line to the end of the term | [S2]; selection **[std]** (13) |
 | Discount rate ("Market Value Rate") | Constant Maturity Treasury yield at the term's maturity, linearly interpolated between adjacent CMT maturities | [S2] |
-| Option pricing model | Black-Scholes, European options | [S2][R2] |
-| Transactions settled at interim value | Partial withdrawal, surrender, death benefit, annuitization, transfer, deduction of any fee, free-look cancellation | [S1][S2][S4][S6] |
+| Option pricing model | Black-Scholes, European options | [S2] [R2] |
+| Transactions settled at interim value | Partial withdrawal, surrender, death benefit, annuitization, transfer, deduction of any fee, free-look cancellation | [S1] [S2] [S4] [S6] |
 | Value during the Transfer Period | Interim Value equals the Investment Amount at the Term End Date (no option adjustment) | [S2] |
 
 12. Three algebraic families appear across the retrieved prospectuses (see *Variations*).
     Family (a) — fixed leg net of the initial option budget with an explicit
     interest-rate adjustment factor — is chosen because it is the closest literal
     implementation of AG 54's Fixed Income Asset Proxy definition [R2] and is used by two
-    of the five insurers [S2][S3].
+    of the five insurers [S2] [S3].
 13. Observed: straight-line amortization nationally [S2]; **updated time to expiry**
     nationally but straight-line **in Pennsylvania** [S3]; linear amortization of the
     beginning proxy value [S5]. Straight-line is chosen with the alternative retained as
@@ -250,7 +250,7 @@ genuinely in the money in equity stress — it is not a nominal guarantee.
 Notation: `R` = index performance over the term = `I(T)/I(0) − 1`; `b` buffer (positive,
 e.g. 0.10); `c` cap; `s` step; `e` edge; `PR` participation; `f` floor (positive).
 
-### Term-end crediting [S1][S2]
+### Term-end crediting [S1] [S2]
 
     Buffer + Cap    g = min(R, c)   if R >= 0 ;   g = min(0, R + b)   if R <  0
     Buffer + Step   g = s           if R >= 0 ;   g = min(0, R + b)   if R <  0
@@ -263,7 +263,7 @@ greater than zero if the Index Performance is negative" [S1]. Cap-versus-Step co
 from [S1]: at +15% index performance a 10% Cap pays 10% and an 8% Step pays 8%; at 0%
 index performance the Cap pays 0% and the Step pays 8%. The Edge design moves the trigger
 threshold from 0 to −*b* — it pays "the rate credited at the Term End Date if the Index
-Performance is equal to or greater than the Shield Rate" [S2]. Roll-forward [S1][S2]
+Performance is equal to or greater than the Shield Rate" [S2]. Roll-forward [S1] [S2]
 (worked in [S1] as $50,000 + $4,000 = $54,000):
 
     InvestmentAmount(term end) = InvestmentAmount(term start, adjusted for withdrawals) x (1 + g)
@@ -303,7 +303,7 @@ Market Value Rate 3%): $49,452.40 + $4,062.37 = **$53,514.77**.
 ### Withdrawals — the proportional rule
 
 A mid-term withdrawal reduces the index-linked notional **in the same proportion that the
-withdrawal reduced the Interim Value**, not dollar-for-dollar [S2][S3][S4][S6]:
+withdrawal reduced the Interim Value**, not dollar-for-dollar [S2] [S3] [S4] [S6]:
 
     InvestmentAmount_after = InvestmentAmount_before x ( 1 - GrossWithdrawal / InterimValue )
 
@@ -319,22 +319,22 @@ receives** — numeric illustration in `technical-notes.md`.
 ### Withdrawal charge and surrender
 
 The charge is a percentage of the amount withdrawn **in excess of the Free Withdrawal
-Amount**, by complete contract years since the Issue Date, and is not grossed up [S1][S2].
+Amount**, by complete contract years since the Issue Date, and is not grossed up [S1] [S2].
 Worked in [S2]: $100,000 purchase payment, $80,000 Account Value at the start of contract
 year 6, full withdrawal → free amount $8,000 (10%), charge 3% x $72,000 = $2,160, cash
 value $77,840. The Free Withdrawal Amount is zero in contract year 1, thereafter 10% of
 the Account Value at the prior Contract Anniversary, reduced by amounts already withdrawn
-in the same contract year, with no carry-over [S1][S2].
+in the same contract year, with no carry-over [S1] [S2].
 
 ### Fixed Account, Holding Account, transfers, renewal, Performance Lock
 
 A **Fixed Account** (general account) is available with a term of not less than one year
-and a minimum guaranteed interest rate not less than 1% [S1][S2]; a **Holding Account**
+and a minimum guaranteed interest rate not less than 1% [S1] [S2]; a **Holding Account**
 (also general account, minimum 1%) receives maturing amounts when both the same option and
 the Fixed Account are unavailable and holds them to the next Contract Anniversary [S2].
 Transfers among index-linked options are permitted only during the Transfer Period — the
 five calendar days following the Contract Anniversary coinciding with the Term End Date —
-and partial transfers outside it are not permitted [S1][S2]. There is **no separate
+and partial transfers outside it are not permitted [S1] [S2]. There is **no separate
 fixed-account MVA formula** in the prospectus; the only MVA language in it is the
 `[(1+C)/(1+D)]^E` factor inside the interim value appendix [S2]. Once per term the owner
 may **lock** an option's Interim Value; the lock is irrevocable for the rest of the term,
@@ -349,8 +349,8 @@ leg vanishes and the bucket becomes a fixed accrual to term end.
 **In scope (modeled).** The built-in **return-of-premium GMDB** (no explicit charge, owners
 80 or younger at issue, proportional reduction for withdrawals) [S2]; the **Fixed Account**
 and **Holding Account** as general-account destinations at term end and for unallocated
-amounts [S1][S2]; **automatic renewal** into the same option at the new declared rate at
-each Term End Date with a Transfer Period election window [S1][S2]; and **Performance
+amounts [S1] [S2]; **automatic renewal** into the same option at the new declared rate at
+each Term End Date with a Transfer Period election window [S1] [S2]; and **Performance
 Lock** as an optional module [S2].
 
 **Out of scope (listed, not modeled):**
@@ -367,7 +367,7 @@ Lock** as an optional module [S2].
   full-protection strategies [S3].
 - **Annual Lock** segments, which compound yearly Standard-rule rates and whose interim
   value needs "a single extended exotic option that periodically settles and resets in
-  strike price" [S4][S6]; **tiered participation rate** strategies [S3]; **Optimal Mix /
+  strike price" [S4] [S6]; **tiered participation rate** strategies [S3]; **Optimal Mix /
   rainbow** segments blending 3 or 4 component indices [S4].
 - **Secure Lock+** (a lock that also *resets* the Performance Cap, minimum Reset Rate
   3.50%) [S6]; variable investment subaccounts on a combination chassis [S3]; dollar cap
@@ -380,7 +380,7 @@ Lock** as an optional module [S2].
 
 1. **Interim value algebra — three families.** (a) *Fixed leg net of the option budget,
    with an explicit interest-rate adjustment factor*: `(A − B) x [(1+C)/(1+D)]^E`
-   [S2][S3]. (b) *Full notional discounted at a single current rate plus a separate,
+   [S2] [S3]. (b) *Full notional discounted at a single current rate plus a separate,
    always-positive expense rebate*: Equitable's `SegmentInvestment / (1 + rate)^(time to
    maturity)` plus a **Cap Calculation Factor** [S4]; Lincoln's
    `C x [1/(1+E)^D x (1+E)^D/(1+F)^D]`, which collapses algebraically to `C / (1+F)^D`
@@ -410,7 +410,7 @@ Lock** as an optional module [S2].
    both species exist [R6] and the SEC treats buffers and floors as the two kinds of
    "limits on losses" [R1]. **Chosen: buffer only**, with the floor payoff and its
    replicating portfolio in `technical-notes.md` so the module can be switched on.
-5. **Buffer depth and term length.** Buffers 10/15/25 [S1][S2]; 5/10/15/20/100 [S3];
+5. **Buffer depth and term length.** Buffers 10/15/25 [S1] [S2]; 5/10/15/20/100 [S3];
    10/15/20/40 [S4]; 10/20/30 [S5]; 10/15/20/25 [S6] — **10% is universal** and Equitable
    commits to always offering it [S4]. Terms 1/3/6 are near-universal, [S2] adds 2 years,
    [S6] offers only 1 and 6, and the Academy reports one/two/three/six [R6]. **Chosen: 10%
@@ -424,8 +424,8 @@ Lock** as an optional module [S2].
    the whole portfolio.
 7. **Withdrawal accounting is uniform** and is the single most important behavioral rule:
    all insurers reduce the notional proportionally to the reduction in interim value
-   [S2][S3][S4][S6], and all warn the proportional reduction can exceed the dollar
-   withdrawal when the interim value is below the notional [S2][S3][S6]. The one exception
+   [S2] [S3] [S4] [S6], and all warn the proportional reduction can exceed the dollar
+   withdrawal when the interim value is below the notional [S2] [S3] [S6]. The one exception
    is a **locked** bucket, reduced dollar-for-dollar [S2]. **Chosen: proportional**, with
    the locked-bucket exception in the Performance Lock module.
 8. **Charge structure.** [S1]–[S4] and [S6] carry **no explicit asset-based charge** on
@@ -441,7 +441,7 @@ Lock** as an optional module [S2].
    withdrawal charge over 6 years), Select (no charge, lower caps) and Advisory (no charge)
    [S4]; B-Share and Advisory [S6]. A model must parameterize the withdrawal-charge
    schedule and the cap level **jointly**, since they trade off. **Chosen: the
-   commission-paying B-equivalent** (7-7-6-5-4-3-0 [S1][S2]).
+   commission-paying B-equivalent** (7-7-6-5-4-3-0 [S1] [S2]).
 10. **Pre- versus post-AG 54 interim value.** The older Shield Level Select design used no
     option pricing at all — a **time-prorated accrual** in which the Shield, Cap and Step
     Rates each accrue linearly over the term and the term-end rules are applied to the
@@ -459,7 +459,7 @@ Lock** as an optional module [S2].
 **Actuarial Guideline LIV (AG 54) — definitional.** AG 54 specifies "the conditions under
 which an Index-Linked Variable Annuity (ILVA) is consistent with the definition of a
 variable annuity and exempt from Model 805 and specify nonforfeiture requirements
-consistent with variable annuities" [R2][REG-R44]. Because an ILVA account is not
+consistent with variable annuities" [R2] [REG-R44]. Because an ILVA account is not
 unitized, it requires **Interim Values materially consistent with a Hypothetical Portfolio
 = Fixed Income Asset Proxy + Derivative Asset Proxy, less a provision for Trading Costs**;
 the Index Strategy Base must equal the Strategy Value at term start; the fixed proxy is a
@@ -480,16 +480,16 @@ Insurance and Annuities (A) Committee (2/24/2023); NAIC Executive/Plenary adopti
 
 **NAIC Model #250 and the model-number correction.** AG 54 requires ILVA nonforfeiture
 benefits to comply with **Section 7 of Model #250, *not including* Section 7.B**, with net
-investment return consistent with the interim value requirements [R2][REG-R43] — §7.B being
+investment return consistent with the interim value requirements [R2] [REG-R43] — §7.B being
 the provision that would otherwise push non-varying benefits back to the deferred-annuity
 nonforfeiture law [R4]. **Correction carried from the research:** #250 is the **Variable
 Annuity** Model Regulation; the **Annuity Disclosure Model Regulation is #245**, not #250
-[REG-R43][REG-R45], as AG 54's own citation confirms [REG-R44]. RILAs are largely exempt
+[REG-R43] [REG-R45], as AG 54's own citation confirms [REG-R44]. RILAs are largely exempt
 from #245 via its §3.D registered-product carve-out but still owe the Buyer's Guide
 [REG-R45].
 
 **NAIC Model #805 and the 15-basis-point correction.** Model #805 **does not apply to a
-RILA if and only if AG 54 is satisfied** [R2][REG-R42][REG-R44]. Where a model must
+RILA if and only if AG 54 is satisfied** [R2] [REG-R42] [REG-R44]. Where a model must
 nevertheless evaluate the #805 floor (a non-compliant design, or a fixed account tested
 under Model #250 §7.B), the indexed nonforfeiture rate is the lesser of 3% and the
 five-year CMT rate (rounded to the nearest 1/20 of one percent, from a date no more than 15
@@ -503,11 +503,11 @@ IC-35273; File No. S7-16-23; RIN 3235-AN30 amended 17 CFR Parts 230, 232, 239 an
 require RILAs and registered MVA annuities to register on **Form N-4** rather than Forms
 S-1/S-3, driven by the **Registration for Index-Linked Annuities Act**, Division AA, Title I
 of the Consolidated Appropriations Act, 2023, Pub. L. 117-328; 136 Stat. 4459 (Dec. 29,
-2022) [R1][REG-R49]. **Effective September 23, 2024** (verified twice [REG-R49][REG-R49b]);
+2022) [R1] [REG-R49]. **Effective September 23, 2024** (verified twice [REG-R49] [REG-R49b]);
 **compliance date May 1, 2026**, by which RILA issuers must file a Rule 485(a)
 post-effective amendment on final Form N-4 [R1] — that date carries **[unverified]** in the
 cross-product bibliography, which reports it from filing-agent and law-firm summaries
-without reading section II.J of the release [REG-R49][unverified]. The rule requires
+without reading section II.J of the release [REG-R49] [unverified]. The rule requires
 tailored disclosure of cap rates, participation rates, buffers and floors, contract
 adjustments and surrender charges; a prescribed **Key Information Table**; optional summary
 prospectuses under Rule 498A, whose title now expressly extends to "registered non-variable
@@ -526,7 +526,7 @@ reserve = stochastic reserve (CTE70) + additional standard projection amount [RE
 VAGLBs … where there is no other explicit reserve requirement", but **§2.A.3 excludes
 "Separate account contracts that guarantee an index and do not offer GMDBs or VAGLBs"**
 [R3]. So a bare accumulation RILA is **outside** VM-21, while the representative design
-here — carrying a return-of-premium GMDB — is **in** scope [R3][S2]; §2.A.2 disapplies VM-21
+here — carrying a return-of-premium GMDB — is **in** scope [R3] [S2]; §2.A.2 disapplies VM-21
 to contracts falling under VM-A item **A-255** while extending it to subaccounts with
 MVA-like features [R3]. That A-255 limb is no longer a blind cross-reference: A-255 has been
 read, and the test is its ¶1 definition — a deferred annuity, individual or group, whose
@@ -535,27 +535,27 @@ specified periods, whose nonforfeiture values rest on a market-value-adjustment 
 held for shorter periods, and whose assets "must be in a separate account during the period
 or periods when the contract holder can surrender the contract" [REG-R157]. **Whether the
 representative design meets that test is not resolved here** — the exclusion is VM-21's text,
-not A-255's [REG-R157][REG-R35][unverified]. AG 43 is not simply superseded: through
+not A-255's [REG-R157] [REG-R35] [unverified]. AG 43 is not simply superseded: through
 reference in AG 43, VM-21 also reaches pre-2017 contracts outside its own scope, and the
-two populations may be reserved as one aggregated group [REG-R35][REG-R38].
+two populations may be reserved as one aggregated group [REG-R35] [REG-R38].
 
 **Valuation — the formulaic CARVM floor, and what now sources it.** A contract outside VM-21
 falls back to formulaic CARVM: SVL §5a, printed word for word at A-820 ¶15
-[REG-R1][REG-R153 ¶15]. Its interpretive layer has been read at first hand. **AG 33 reaches
+[REG-R1] [REG-R153 ¶15]. Its interpretive layer has been read at first hand. **AG 33 reaches
 this contract** — it applies "to all annuity contracts subject to CARVM, where any elective
 benefits … are available", with no product list, no separate-account exception and no
 threshold, and this chassis offers its three named elective benefits (full surrenders,
-partial withdrawals, full and partial annuitizations) [REG-R151][S1][S2]. **AG 35 was
+partial withdrawals, full and partial annuitizations) [REG-R151] [S1] [S2]. **AG 35 was
 retrieved and does not address this design** — it defines no term "equity indexed annuity"
 and says nothing about separate accounts, registered products, buffers, floors or AG 54;
 record it as neither including nor excluding RILA [REG-R152]. **A-250 and A-255, long called
 this product's "closest formulaic items", turn out not to be reserve methods at all** — one
 printed page each, each delegating the reserve to A-820, and between them containing no
 formula, symbol, factor, table, elective-path rule, interim-value rule or the word CARVM
-[REG-R156][REG-R157]. What remains unsourced is narrower than before and still real: **no
+[REG-R156] [REG-R157]. What remains unsourced is narrower than before and still real: **no
 retrieved document says how an Interim Value — a market-consistent derivative price — becomes
 "the future guaranteed benefit" of §5a**, AG 54 governing the *nonforfeiture* value and not
-the reserve [R2][REG-R44].
+the reserve [R2] [REG-R44].
 
 **Capital.** C-3 Phase II sets the Total Asset Requirement at CTE 90 and RBC as the excess
 of TAR over statutory reserves, subject to a Standard Scenario floor [REG-R47]; VM-21
@@ -567,7 +567,7 @@ ILVA RBC as "C0–C1: General Account, C3–C4: Separate Account" [R6].
 **Non-guaranteed elements.** Cap, Step, Edge and Participation Rates reset at each Term
 Start Date are NGEs under ASOP No. 2, which lists "index parameters used to determine
 credited interest" as an NGE and "minimum index parameters" as guaranteed elements, and
-whose scope covers fixed, variable and **indexed** deferred annuities [R5][REG-R26]. It
+whose scope covers fixed, variable and **indexed** deferred annuities [R5] [REG-R26]. It
 requires a determination policy, an NGE framework, NGE scales, policy classes and periodic
 review of in-force NGEs [R5]. The prospectuses confirm the discretion: "Trigger Rates,
 Caps, and Participation Rates may be adjusted on the next Term Start Date and may vary
@@ -594,7 +594,7 @@ indirectly, through exchange velocity and hence surrender assumptions.
 **Interstate Insurance Compact.** The Compact's ILVA standard (IIPRC-03-I-ILVA) is
 **narrower than AG 54**: it "requires the use of the Hypothetical Portfolio methodology and
 does not allow for materially consistent approaches" [R6]. Quoted second-hand through the
-Academy paper; the Compact standard was not retrieved [R6][unverified].
+Academy paper; the Compact standard was not retrieved [R6] [unverified].
 
 **U.S. GAAP.** RILA index credits and annuity guarantee riders are the paradigm **market
 risk benefits** at fair value through earnings under LDTI [REG-R34], with ASOP No. 10 (Doc.

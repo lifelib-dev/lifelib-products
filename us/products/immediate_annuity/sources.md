@@ -284,7 +284,7 @@ directory:
 | REG-R56 | R35–R72 | 26 U.S.C. §1035 — exchanges | yes |
 | REG-R57 | R35–R72 | 26 C.F.R. §1.401(a)(9)-6 (same regulation as [R8] above) | yes |
 | REG-R58 | R35–R72 | RMD Final Regulations (T.D. 10001) | yes (govinfo) |
-| REG-R59 | R35–R72 | Model #821 + VM-M annuity mortality definitions (same documents as [R3][R4] above) | yes (local text extraction, both) |
+| REG-R59 | R35–R72 | Model #821 + VM-M annuity mortality definitions (same documents as [R3] [R4] above) | yes (local text extraction, both) |
 | REG-R60 | R35–R72 | 2012 IAR development report (AAA/SOA Payout Annuity Table Team, Sept 2011) | yes (local text extraction) |
 | REG-R61 | R35–R72 | 2020–2024 Individual Payout Annuity Mortality Experience Study (landing page; the highlights PDF is [R9] above) | yes (landing page) |
 | REG-R70 | R35–R72 | ASOP No. 54 — Pricing of Life Insurance and Annuity Products | yes |

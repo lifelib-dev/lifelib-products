@@ -28,7 +28,7 @@ prospectus dated April 28, 2025 [S1], initial summary prospectus [S2], rate shee
 supplement dated April 27, 2026 [S3] — because it is the most contractually explicit
 disclosure in the set and exercises every mechanic a general VA model needs [S1]. Two
 documented variants ride alongside: the **Corebridge VIX-linked non-discretionary rider
-fee formula** [S4][S6] and the **Equitable formula-linked roll-up rate** (10-year CMT +
+fee formula** [S4] [S6] and the **Equitable formula-linked roll-up rate** (10-year CMT +
 1.00%, floored 4%, capped 8%) [S7].
 
 ---
@@ -37,9 +37,9 @@ fee formula** [S4][S6] and the **Equitable formula-linked roll-up rate** (10-yea
 
 A deferred VA has two phases: accumulation and income. Once annuitized, withdrawals and
 surrender cease and — with rider-specific exceptions — death and living benefits terminate
-[S2][S4][S6][S7][S8]. During accumulation, premium net of any premium tax buys units in
+[S2] [S4] [S6] [S7] [S8]. During accumulation, premium net of any premium tax buys units in
 subaccounts of a registered separate account, each investing in one underlying fund
-("Investment Divisions" [S1][S2]; "Variable Portfolios" [S4][S6]; "variable investment
+("Investment Divisions" [S1] [S2]; "Variable Portfolios" [S4] [S6]; "variable investment
 options" [S7]; "Subaccounts" [S8]). Contract value follows fund performance with no
 insurer guarantee; the guarantees are sold as *riders* tracked on shadow **benefit bases**
 that do not follow the market down. The economic content is therefore an investment
@@ -47,13 +47,13 @@ wrapper plus two written options: a GLWB (a lifetime payment stream funded by th
 once the account is exhausted) and a GMDB (a floor under the death benefit). Both are
 path-dependent guarantees on a separate-account balance — which is why their cost cannot
 be established deterministically and why the statutory reserve for the whole contract is a
-stochastic CTE70 measure under VM-21 [R1][REG-R35].
+stochastic CTE70 measure under VM-21 [R1] [REG-R35].
 
-VAs are federally registered securities sold on **SEC Form N-4** [R6][REG-R52], with
+VAs are federally registered securities sold on **SEC Form N-4** [R6] [REG-R52], with
 layered disclosure under **Rule 498A** (Initial and Updating Summary Prospectuses and a
-mandatory Key Information Table) [R7][REG-R50][REG-R51]. Modern writers reset GLWB payout
+mandatory Key Information Table) [R7] [REG-R50] [REG-R51]. Modern writers reset GLWB payout
 percentages, bonus percentages and rider charges through **rate sheet prospectus
-supplements filed on Form 497** rather than by amending the prospectus [S3][S5] — a
+supplements filed on Form 497** rather than by amending the prospectus [S3] [S5] — a
 structural fact any model of this product must accommodate, because the parameter set is
 versioned by rate-sheet date, not by product name.
 
@@ -65,7 +65,7 @@ versioned by rate-sheet date, not by product name.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Individual flexible-premium deferred variable annuity, non-participating | [S1][S2] |
+| Design type | Individual flexible-premium deferred variable annuity, non-participating | [S1] [S2] |
 | Funding | Separate account only; general-account Fixed Account Options **not available** with the elected Roll-up GMDB | [S1] |
 | Subaccounts modeled | 2 (one diversified equity, one fixed income) | **[std]** (1) |
 | Allocation | 60% equity / 40% fixed income, no rebalancing | **[std]** (1) |
@@ -89,13 +89,13 @@ Footnotes to [std] rows:
    10% (Daily Flex) general-account Secure Value Account plus mandatory quarterly
    rebalancing [S4]; Equitable walls guarantees into a separate Protection account [S7].
 2. Non-qualified keeps the RMD interaction in the GLWB withdrawal rules *disclosed but
-   inactive*; RMD relief is a cited mechanic [S1][S6] and belongs in the model as a switch.
+   inactive*; RMD relief is a cited mechanic [S1] [S6] and belongs in the model as a switch.
 3. Issue age 60 sits inside the GMWB eligible band (35–80 [S1]) and the add-on GMDB band
    (79 or younger at issue [S1]), above the 59½ threshold at which the For Life Guarantee
    is effective from issue [S1], and at or below 69 so the higher 6.00% GMDB roll-up
    percentage applies [S3].
 4. Single premium keeps the base recursion minimal. The chassis is flexible-premium
-   [S1][S2]; premium receipt increases the GWB, GAWA and Bonus Base [S1] and is retained
+   [S1] [S2]; premium receipt increases the GWB, GAWA and Bonus Base [S1] and is retained
    in the recursion as an active term.
 5. Set to zero so GWB(0) equals gross premium and the worked example is checkable; premium
    tax is contractually deducted from the amounts that initialize the guarantee bases [S1].
@@ -145,7 +145,7 @@ Footnotes to [std] rows:
 | Benefit base name | Guaranteed Withdrawal Balance (GWB) | [S1] |
 | GWB at issue | Premium net of premium tax = $100,000 | [S1] |
 | Rider charge — current | 1.25% p.a. of the GWB | [S3] |
-| Rider charge — assessment | Quarterly, at rate/4 applied to the GWB on the Contract Quarterly Anniversary | frequency [S1]; base [S1][S3] |
+| Rider charge — assessment | Quarterly, at rate/4 applied to the GWB on the Contract Quarterly Anniversary | frequency [S1]; base [S1] [S3] |
 | Rider charge — deduction | Cancelled from subaccounts pro rata to their values | **[std]** (8) |
 | Rider charge — guaranteed maximum | 3.00% p.a. | **[std]** (9) |
 | Rider charge — maximum single increase | +0.25% per increase (Core-tier options) | [S1] |
@@ -185,18 +185,18 @@ Footnotes to [std] rows:
 | Benefit form | Greatest of contract value, total Net Premiums, and the roll-up GMDB Benefit Base | [S1] |
 | Roll-up percentage | 6.00% p.a. compounded (age 69 or younger at election); 5.00% if age 70 or older | [S3] |
 | Roll-up accrual window | From the Issue Date until the Contract Anniversary immediately preceding the oldest Covered Life's **81st** birthday | [S1] |
-| Rider charge — current | 0.90% p.a. of the GMDB Benefit Base | [S2][S3] |
+| Rider charge — current | 0.90% p.a. of the GMDB Benefit Base | [S2] [S3] |
 | Rider charge — guaranteed maximum | 1.80% p.a. | [S2] |
 | Rider charge — assessment | Quarterly at rate/4 on the GMDB Benefit Base, deducted pro rata | frequency **[std]** (11); base [S3] |
 | Withdrawal adjustment | Dollar-for-dollar up to `roll-up% × Benefit Base at the previous anniversary`; **proportional** to the contract-value reduction above that; applied at the **end of the Contract Year** | [S1] |
 | Eligibility | Owner age 79 or younger at issue | [S1] |
 | Interaction | Fixed Account Options are **unavailable** when this GMDB is elected | [S1] |
-| Included basic death benefit (no charge) | Greater of contract value and total premiums reduced for prior withdrawals **in the same proportion the contract value was reduced** — a *proportional* return-of-premium, not dollar-for-dollar | [S1][S2] |
+| Included basic death benefit (no charge) | Greater of contract value and total premiums reduced for prior withdrawals **in the same proportion the contract value was reduced** — a *proportional* return-of-premium, not dollar-for-dollar | [S1] [S2] |
 
 11. The research file records charge frequency **quarterly** for the GMWB family [S1] but
     does not state the frequency for the add-on GMDB charge; the [std] choice aligns the
     two so a single quarterly charge routine serves both. The charge *base* (GMDB Benefit
-    Base) and rate (0.90% current / 1.80% maximum) are cited [S2][S3].
+    Base) and rate (0.90% current / 1.80% maximum) are cited [S2] [S3].
 
 ---
 
@@ -208,7 +208,7 @@ Contract value is the sum over subaccounts of units held times unit value. Unit 
 evolves with the fund's gross return less the fund's own expenses less the base contract
 asset charge, assessed **daily as a percentage of the average daily account value of the
 Investment Divisions** [S2]. Charges assessed per contract rather than per unit of value —
-the annual contract maintenance charge [S2] and the two rider charges [S1][S3] — are
+the annual contract maintenance charge [S2] and the two rider charges [S1] [S3] — are
 collected by **cancelling units**, leaving unit value undisturbed. The generic
 separate-account charge-accrual convention is specified once in
 `products/variable_ul/technical-notes.md` and reused here, with two differences that
@@ -224,7 +224,7 @@ advisory-fee withdrawals, partial 1035 exchanges and free withdrawals; for guara
 purposes a withdrawal is the **total amount withdrawn including withdrawal charges, asset
 allocation fees, market value adjustments and other charges and adjustments** [S1].
 Withdrawals under IRC §72(t)/§72(q) are **not** treated as RMDs for guarantee-preservation
-purposes [S1][R9]. Let `W` be the current partial withdrawal, `ΣW` cumulative withdrawals
+purposes [S1] [R9]. Let `W` be the current partial withdrawal, `ΣW` cumulative withdrawals
 in the Contract Year including `W`, and `L = max(GAWA, RMD)` for a qualified contract
 (`L = GAWA` otherwise) [S1]:
 
@@ -238,7 +238,7 @@ in the Contract Year including `W`, and `L = max(GAWA, RMD)` for a qualified con
 where `CV_pre_excess` is the contract value after the non-excess portion has been
 deducted. This is **dollar-for-dollar for the guaranteed portion, then pro rata to the
 contract-value reduction caused by the excess** [S1] — a treatment that is essentially
-universal across the set [S1][S4][S7][S8]. If the For Life Guarantee is not in effect and
+universal across the set [S1] [S4] [S7] [S8]. If the For Life Guarantee is not in effect and
 GWB < GAWA at the end of a Contract Year, GAWA is set equal to GWB [S1].
 
 **Bonus.** `GWB += Bonus% × Bonus Base` at the end of each Contract Year in the Bonus
@@ -283,7 +283,7 @@ contract value`; at an earlier Income Date the endorsement terminates with no be
    single increase (+0.25% Core-tier, +0.15% Value-tier) and an absolute maximum rate. The
    owner may opt out, but doing so forfeits the GWB bonus, the automatic step-up, the GWB
    Adjustment and any other increases to GWB/GAWA; blocks all future premiums; and fixes
-   the GAWA% with no future recalculation. The election is irrevocable [S1][S3].
+   the GAWA% with no future recalculation. The election is irrevocable [S1] [S3].
 2. **Step-up-triggered reset with a reversing opt-out.** The fee rate may increase on every
    Account Value Step-up, and after the tenth Benefit Year on every Enhancement if the
    Enhancement Period has renewed. Opting out within 30 days of the Benefit Year
@@ -297,7 +297,7 @@ contract value`; at an earlier Income Date the endorsement terminates with no be
 
    clipped to a movement band against the prior quarter's rate (±0.40% annualized advisory
    class, ±0.25% commission class) and to an absolute corridor of [0.60%, 2.50%]; the
-   quarterly deduction is the annual rate ÷ 4 [S4][S6]. Disclosed examples: initial rate
+   quarterly deduction is the annual rate ÷ 4 [S4] [S6]. Disclosed examples: initial rate
    1.45% with quarterly average VIX² of 204.42 gives 1.45% + 0.05% × (−3.81) = **1.26%**
    (quarterly 0.3150%); a VIX² average of 602.30 gives an unclipped 1.86%, but against a
    prior rate of 1.42% the +0.40% band caps it at **1.82%** [S4].
@@ -314,8 +314,8 @@ and terminates permanently on the first withdrawal from the Protection account [
 ## Riders and options
 
 **In scope (modeled).** Flex GMWB Single Core and the Roll-up GMDB, both parameterized in
-the tables above [S1][S3]; the included Basic Death Benefit (no charge, proportional return
-of premium) [S1][S2]; the CDSC and free-withdrawal allowance [S1][S2].
+the tables above [S1] [S3]; the included Basic Death Benefit (no charge, proportional return
+of premium) [S1] [S2]; the CDSC and free-withdrawal allowance [S1] [S2].
 
 **Described but not modeled.** Terminal Illness / Extended Care Benefit (free with all
 contracts) [S2]; the rider-created annuitization options — Life Income of GAWA, Specified
@@ -350,10 +350,10 @@ registrations read** — a research gap, not an omission [S1].
    mainstream withdrawal-phase design — the one a general VA model must handle, and the
    one with published algebra [S1].
 2. **How the benefit base grows.** Four mechanics: a bonus on a separate Bonus Base with a
-   10-year window that restarts on step-up (Jackson, 5%/6%/7% by option) [S1][S3]; a 7.00%
+   10-year window that restarts on step-up (Jackson, 5%/6%/7% by option) [S1] [S3]; a 7.00%
    Income Credit on an Income Credit Base that ratchets to Higher Anniversary Values but is
    *not* increased by the credits themselves, making the roll-up simple rather than
-   compound (Corebridge Income Max) [S4][S5]; a formula rate of 10-year CMT + 1.00% floored
+   compound (Corebridge Income Max) [S4] [S5]; a formula rate of 10-year CMT + 1.00% floored
    4% capped 8% (Equitable) [S7]; and a flat 6% Enhancement over a 10-year period that does
    **not** reset for current elections (Lincoln) [S8]. **Chosen:** the Jackson
    bonus-with-restarting-window — the restart-on-step-up interaction is the hardest of the
@@ -362,7 +362,7 @@ registrations read** — a research gap, not an omission [S1].
    Value/Core, Lincoln, Corebridge Income Max), highest-of-four-quarters applied annually
    (Jackson Plus), and **daily** (Corebridge Daily Flex, where "on any day that the
    contract value is greater than the Income Base on that day, the Income Base is stepped
-   up to that value") [S1][S3][S4][S8]. **Chosen:** annual, with the highest-quarterly
+   up to that value") [S1] [S3] [S4] [S8]. **Chosen:** annual, with the highest-quarterly
    variant as an election so the model can price the granularity difference.
 4. **Rider fee base and frequency.** The base is consistently the *benefit base*, never
    account value: GWB [S3], Income Base [S4], GIB benefit base [S7], Protected Income Base
@@ -401,10 +401,10 @@ registrations read** — a research gap, not an omission [S1].
    while contract value > 0, and a materially lower Table B once it reaches zero, at which
    point the payment is recalculated as `Protected Income Base × Table B rate` (Select Max
    ages 70–74: 8.75% single falling to 3.50%) [S8]. Jackson, Corebridge and Equitable
-   continue at the same percentage [S1][S4][S7]. **Chosen:** single-table continuation,
+   continue at the same percentage [S1] [S4] [S7]. **Chosen:** single-table continuation,
    with the two-table design noted as a first-order pricing variant.
 10. **Rate-sheet volatility.** Every current-rate table carries a "can be superseded at any
-    time" clause with a 10-day advance-filing commitment [S3][S5][S8], so the parameter set
+    time" clause with a 10-day advance-filing commitment [S3] [S5] [S8], so the parameter set
     is versioned: **Jackson rate sheet dated April 27, 2026** [S3]. The historical tables
     show the de-risking cycle plainly — Flex GMWB bonus options were 5%/6%/7% for issues
     2019-06-24 → 2020-08-09, cut to 4%/5%/6% for 2020-08-10 → 2022-07-31, restored to
@@ -417,7 +417,7 @@ registrations read** — a research gap, not an omission [S1].
 
 **NAIC Model #250 (Variable Annuity Model Regulation).** *Correction, per the research
 file:* **#250 is the Variable Annuity Model Regulation, not the Annuity Disclosure Model
-Regulation — that is #245** [REG-R43][REG-R45], confirmed independently by AG 54, which
+Regulation — that is #245** [REG-R43] [REG-R45], confirmed independently by AG 54, which
 cites "NAIC Model 250, Variable Annuity Model Regulation" [REG-R44]. Model #250 governs
 insurer qualification, separate accounts, filing, required provisions, nonforfeiture and
 reports; its §7.B is the boundary rule — to the extent a VA provides benefits that do not
@@ -446,16 +446,16 @@ Options unavailable [S1].
 
 **VM-21 — the statutory reserve standard.** VM-21 covers variable deferred and immediate
 annuities with or without GMDB/VAGLB and **constitutes CARVM** for contracts in scope
-[R1][REG-R35]. Aggregate reserve = Stochastic Reserve + additional standard projection
+[R1] [REG-R35]. Aggregate reserve = Stochastic Reserve + additional standard projection
 amount + any Alternative Methodology reserve, with the SR being **CTE70** of the scenario
 reserves, each contributing the greatest present value of accumulated deficiency
-[R1][REG-R35]. The Alternative Methodology is available only for contracts with no
+[R1] [REG-R35]. The Alternative Methodology is available only for contracts with no
 guaranteed benefits or **only** GMDBs — never a GLWB block [R1] — so this product is
 unavoidably stochastic. Effective for valuation dates on or after January 1, 2020, with an
 elective 36-month phase-in and a separate economic scenario generator phase-in of 36
-months beginning January 1, 2026 [R1][REG-R35]. *Third correction:* **AG 43 is not simply
+months beginning January 1, 2026 [R1] [REG-R35]. *Third correction:* **AG 43 is not simply
 superseded** — through reference in AG 43 the VM-21 requirements also reach contracts
-issued before January 1, 2017, and the two populations may be aggregated [R1][REG-R38].
+issued before January 1, 2017, and the two populations may be aggregated [R1] [REG-R38].
 
 **AG 33 and why it is not the reserve standard here.** AG 33 — "Determining CARVM Reserves
 for Annuity Contracts With Elective Benefits" — has been read in full and applies "to all
@@ -481,9 +481,9 @@ never be carried between the two frames.
 **VM-22 and VM-V — where the post-depletion stream lands.** VM-22 is the PBR framework for
 **non-variable** annuities and does not cover VAs, but **fixed income streams from
 guaranteed living benefits after account exhaustion** are named in its Reserving Categories
-and in VM-V §1's scope [REG-R36][REG-R37]. *Fourth correction:* in the January 1, 2026
+and in VM-V §1's scope [REG-R36] [REG-R37]. *Fourth correction:* in the January 1, 2026
 Valuation Manual VM-22 is **entirely** the PBR framework, and maximum valuation interest
-rates for income annuities live in **VM-V Section 1**, not VM-22 [REG-R36][REG-R37].
+rates for income annuities live in **VM-V Section 1**, not VM-22 [REG-R36] [REG-R37].
 
 **C-3 Phase II risk-based capital.** One projection, two outputs: VM-21 §§4.A–4.E and the
 RBC requirements are **identical** apart from the elective federal income tax treatment
@@ -495,31 +495,31 @@ revisions moved the stochastic measure to 25% of CTE 98 from CTE 90 [R4] — whi
 older C-3 Phase II instructions package still prints the pre-reform **CTE 90** Total Asset
 Requirement and a 35% tax rate [REG-R47]: cite it for structure, [R3] for the current level.
 The reform's diagnosis — that fully hedging fair value *increased* capital requirements and
-volatility — is in the Oliver Wyman QIS II reports [R2][REG-R48].
+volatility — is in the Oliver Wyman QIS II reports [R2] [REG-R48].
 
-**Federal securities law.** Registration is on Form N-4 [R6][REG-R52], whose Part A order
+**Federal securities law.** Registration is on Form N-4 [R6] [REG-R52], whose Part A order
 (Item 2 Overview, Item 3 Key Information, Item 4 Fee Table, in numerical order at the front)
 produces the structure every prospectus in the set follows, with Inline XBRL tagging of
 specified items [R6] — first-hand from the retrieved form; the cross-product entry
 [REG-R52] records a failed fetch and describes the form only through the adopting releases.
 Rule 498A authorizes the Initial and Updating Summary Prospectuses and the Key Information
-Table [R7][REG-R50][REG-R51]. FINRA Rule 2330 governs
+Table [R7] [REG-R50] [REG-R51]. FINRA Rule 2330 governs
 recommended purchases, exchanges and **initial subaccount allocations** (not later
 reallocations), requires principal review within seven business days and surveillance of
 exchanges within the preceding 36 months — the proximate brake on 1035 exchange velocity
-and therefore on replacement-driven surrender assumptions [R8][REG-R54][REG-R56].
+and therefore on replacement-driven surrender assumptions [R8] [REG-R54] [REG-R56].
 
 **Federal tax.** IRC §72 supplies the exclusion ratio, the income-first (LIFO) rule for
 pre-annuitization distributions, the 10% additional tax under §72(q), and the §72(s)
 required-distribution-at-death rules that shape death benefit payout modeling
-[R9][REG-R55]. §817(h) diversification is a *product qualification* condition: under Treas.
+[R9] [REG-R55]. §817(h) diversification is a *product qualification* condition: under Treas.
 Reg. §1.817-5 no more than 55% of the account's total assets may be in any one investment,
 70% in any two, 80% in any three, 90% in any four, tested quarterly with a 30-day cure
-window and a look-through to underlying RIC assets [R10][REG-R15]. RMD timing under the
+window and a look-through to underlying RIC assets [R10] [REG-R15]. RMD timing under the
 2024 final regulations is a *behavioral* input, not merely a tax one, because GLWB
-activation clusters at the RMD age [REG-R57][REG-R58][REG-R64 — unverified]. Tax reserves
+activation clusters at the RMD age [REG-R57] [REG-R58] [REG-R64 — unverified]. Tax reserves
 under §807 are the greater of net surrender value and 92.81% of the NAIC-prescribed method
-(CARVM, i.e. VM-21), capped at statutory [REG-R16][REG-R72 — unverified].
+(CARVM, i.e. VM-21), capped at statutory [REG-R16] [REG-R72 — unverified].
 
 **Disclosure, suitability, accounting and professional standards.** Model #245 largely
 exempts registered products complying with SEC and FINRA rules under its §3.D, **but the
@@ -528,12 +528,12 @@ best-interest standard changes exchange and replacement behavior and therefore s
 assumptions [REG-R46]. Under LDTI the GLWB and GMDB are the paradigm **market risk
 benefits**, at fair value through earnings [REG-R34 — **[unverified]**: fasb.org returned
 403, so ASU 2018-12 itself was never retrieved and its substance rests on secondary
-summaries][REG-R71 for the MRB-vs-insurance-liability classification, which *was*
+summaries] [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
 retrieved] — a second consumer of the same cash flows on a risk-neutral basis.
 *Fifth correction:* **there is no ASOP for principle-based reserves for annuities** —
 ASOP No. 52 is scoped to VM-20 life products, so
 any claim that it governs VM-21 is [unverified] and, on the retrieved ASB text, wrong
-[R11][R12][REG-R31]. The applicable standards are ASOP Nos. 7 [REG-R27], 22 [REG-R29], 56
+[R11] [R12] [REG-R31]. The applicable standards are ASOP Nos. 7 [REG-R27], 22 [REG-R29], 56
 [REG-R32], 2 (non-guaranteed elements, expressly covering variable deferred annuities and
 so governing the rider-charge reset) [REG-R26], 54 [REG-R70] and 10 [REG-R71]; the nearest
-VM-21-specific guidance is the non-binding Academy practice note supplement [R4][REG-R66].
+VM-21-specific guidance is the non-binding Academy practice note supplement [R4] [REG-R66].

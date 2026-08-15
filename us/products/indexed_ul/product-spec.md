@@ -11,7 +11,7 @@ standardization introduced for the reference implementation (choice among observ
 practices, or a placeholder where carrier values are not public); every **[std]** table row
 has a footnote giving the rationale and the observed range. Items the research notes flag
 as [unverified] remain flagged here. All "current" (non-guaranteed) rates are snapshots as
-of each source document's print date and change frequently [S3][S4].
+of each source document's print date and change frequently [S3] [S4].
 
 ---
 
@@ -39,7 +39,7 @@ proposition — EDGAR was not searched for product documents) [see research note
 The representative baseline below is deliberately the **AG 49-A Benchmark Index Account
 (BIA) design** — 1-year S&P 500 point-to-point, annual cap, 0% floor, 100% participation,
 no multipliers/bonuses/enhancements [R1] — because it is the one account design every
-researched carrier offers [S2][S3][S5][S6] and the regulatory canonical form [R1].
+researched carrier offers [S2] [S3] [S5] [S6] and the regulatory canonical form [R1].
 
 ---
 
@@ -49,12 +49,12 @@ researched carrier offers [S2][S3][S5][S6] and the regulatory canonical form [R1
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Policy type | Flexible-premium indexed universal life | [S1][S3][R3] |
+| Policy type | Flexible-premium indexed universal life | [S1] [S3] [R3] |
 | Issue ages | 0–85 | [S3] |
 | Age basis | Age nearest birthday (ANB) | **[std]** (F1) |
-| Minimum face amount | $100,000 | [S5][S7] (F2) |
+| Minimum face amount | $100,000 | [S5] [S7] (F2) |
 | Underwriting classes | Preferred Elite / Preferred Plus / Preferred / Non-Tobacco / Preferred Tobacco / Tobacco / Juvenile (0–17) | [S3] |
-| Death benefit options | A (level), B (increasing = face + account value) | [S3][S5][S7] (F3) |
+| Death benefit options | A (level), B (increasing = face + account value) | [S3] [S5] [S7] (F3) |
 | DB option changes | Allowed after policy year 3, once per year, not after age 95 | [S3] |
 | Tax qualification test | Guideline Premium Test + cash value corridor (§7702) | **[std]** (F4) |
 | Corridor factors | 250% at attained ages 0–40 grading to 100% at ages 90–95 | [R4] |
@@ -68,9 +68,9 @@ researched carrier offers [S2][S3][S5][S6] and the regulatory canonical form [R1
 Footnotes:
 - **F1 [std]:** Observed both ways — Transamerica uses age last birthday [S3], Securian age
   nearest birthday [S7]. ANB chosen because the 2017 CSO / 2015 VBT table families publish
-  ANB variants directly usable for guaranteed and best-estimate mortality [REG-R17][REG-R18].
+  ANB variants directly usable for guaranteed and best-estimate mortality [REG-R17] [REG-R18].
 - **F2:** Observed range $25,000 (Transamerica band 1) [S3] to $100,000 (Nationwide,
-  Securian) [S5][S7]. $100,000 chosen as the modal modern accumulation-IUL minimum; also
+  Securian) [S5] [S7]. $100,000 chosen as the modal modern accumulation-IUL minimum; also
   the threshold for preferred classes at Transamerica [S3].
 - **F3:** A Graded option (increasing to 70, grading level at 95) [S3] and a Return of
   Premium option [S5] exist; excluded from baseline as minority designs.
@@ -83,7 +83,7 @@ Footnotes:
   relying on it.
 - **F6:** Structure and periods from Transamerica's Minimum Monthly No-Lapse Premium
   (MNLP) design: no lapse during the no-lapse period while cumulative premiums less
-  loans/withdrawals ≥ cumulative MNLP [S3][S4]. Comparators: Nationwide 20 yrs (issue ages
+  loans/withdrawals ≥ cumulative MNLP [S3] [S4]. Comparators: Nationwide 20 yrs (issue ages
   0–55) / (75 − issue age) yrs (56–69) / 5 yrs (70+) [S5]; Pacific Life age-90 NLG rider
   plus optional lifetime-duration rider [S1].
 
@@ -93,31 +93,31 @@ Footnotes:
 |---|---|---|
 | Fixed account, current rate | 4.50% (first-year rate locked) | [S2] (F7) |
 | Fixed account, guaranteed minimum | 1.00% | [S2] (F7) |
-| Indexed account: index | S&P 500 price return (dividends excluded) | [S2][S3][S5][R1] |
-| Crediting method | Annual point-to-point (1-year segment term) | [S2][S3][S5][R1] |
-| Participation rate | 100%, guaranteed | [S2][R1] |
+| Indexed account: index | S&P 500 price return (dividends excluded) | [S2] [S3] [S5] [R1] |
+| Crediting method | Annual point-to-point (1-year segment term) | [S2] [S3] [S5] [R1] |
+| Participation rate | 100%, guaranteed | [S2] [R1] |
 | Current cap | 10.00% (snapshot, 11/2024 print; caps are redeclared at each segment start and highly variable) | [S2] (F8) |
 | Guaranteed minimum cap | 2.00% | [S2] (F8) |
-| Floor | 0% annual, guaranteed | [S2][S5][S6][S8][R1] (F9) |
+| Floor | 0% annual, guaranteed | [S2] [S5] [S6] [S8] [R1] (F9) |
 | Segment starts (sweep dates) | Monthly, on the policy monthiversary | **[std]** (F10) |
-| Segment term / max segments | 12 months; up to 12 concurrent segments per account | [S3][S4] |
+| Segment term / max segments | 12 months; up to 12 concurrent segments per account | [S3] [S4] |
 | Holding (interim) account | Net premium held in the fixed account and credited at fixed-account rates until the next sweep date | [S1] **[std]** (F10) |
 | Matured segment value | Rolls into a new segment per standing allocation instructions | [S3] **[std]** (F11) |
 | Mid-segment values | Death benefit/CSV reflect segment balance without unrealized index credit; amounts leaving a segment mid-term receive no index credit | [S3] (F9) |
 
 Footnotes:
-- **F7:** Fixed-account guarantees observed 1.00% [S2][S5] to 2.00% [S3][S4]; currents
+- **F7:** Fixed-account guarantees observed 1.00% [S2] [S5] to 2.00% [S3] [S4]; currents
   4.25% [S5] to 4.50% [S2]. The [S2] pair (4.50%/1.00%) is used as the internally
   consistent snapshot.
 - **F8:** Current caps observed for 1-yr S&P 500 PTP accounts: 10.00% [S2], 10.25% [S5],
   10.50% [S7], 12.00%–13.75% (same product, two print dates — caps fell between prints)
-  [S3][S4]. Guaranteed minimum caps observed 0.25% [S8] to 4.00% [S2 High Cap account];
+  [S3] [S4]. Guaranteed minimum caps observed 0.25% [S8] to 4.00% [S2 High Cap account];
   Transamerica instead guarantees the cap never below its current Basic Interest Account
-  rate [S3][S4]. Treat any current cap as a calibration snapshot, not a fixed parameter.
+  rate [S3] [S4]. Treat any current cap as a calibration snapshot, not a fixed parameter.
 - **F9:** Floor-design variation: Transamerica credits a guaranteed 0.75% *during* the
   segment and nets it out of excess index interest [S3]; Securian expresses its guarantee
   as a 2% cumulative average tested at death or termination [S7]. The 0% annual floor is
-  the dominant design [S2][S5][S6][S8] and the BIA definition [R1]; the retrospective
+  the dominant design [S2] [S5] [S6] [S8] and the BIA definition [R1]; the retrospective
   cumulative guarantee is documented under Variations.
 - **F10 [std]:** Carrier practice varies: Pacific Life sweeps on the 15th of each month
   [S1]; Transamerica creates segments on monthly policy dates, transfers into index
@@ -134,11 +134,11 @@ Footnotes:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium load | 5.00% of each premium, all years, current; 8.00% guaranteed maximum | **[std]** (F12) |
-| Monthly policy fee | $10.00/month current; $15.00 guaranteed maximum | [S3][S5] / **[std]** (F13) |
-| Per-unit (per-$1,000) charge | $0.30 per $1,000 of face per month, policy years 1–10 current (re-starts on face increases); guaranteed maximum $0.40 payable all years | structure [S3][S5]; amounts **[std]** (F14) |
+| Monthly policy fee | $10.00/month current; $15.00 guaranteed maximum | [S3] [S5] / **[std]** (F13) |
+| Per-unit (per-$1,000) charge | $0.30 per $1,000 of face per month, policy years 1–10 current (re-starts on face increases); guaranteed maximum $0.40 payable all years | structure [S3] [S5]; amounts **[std]** (F14) |
 | Cost of insurance (COI) | Monthly rate × net amount at risk / 1,000; varies by age, sex, class, duration, band; guaranteed maximum = 2017 CSO ANB smoker-distinct ultimate; current = 65% of guaranteed | structure [S3]; guaranteed basis **[std]**/[REG-R17]; current ratio **[std]** (F15) |
 | Indexed-account asset charge | None in baseline (BIA has no charge-funded enhancement) | [R1] (F16) |
-| Surrender charge | Per $1,000 of initial face (and of each increase layer), 10-year period; initial $25.00 per $1,000 declining linearly to 0 at year 11 | period [S1][S5][S7]; scale **[std]** (F17) |
+| Surrender charge | Per $1,000 of initial face (and of each increase layer), 10-year period; initial $25.00 per $1,000 declining linearly to 0 at year 11 | period [S1] [S5] [S7]; scale **[std]** (F17) |
 | Withdrawal fee | $25 per withdrawal; minimum withdrawal $500; CSV may not fall below $500 | [S3] |
 
 Footnotes:
@@ -146,10 +146,10 @@ Footnotes:
   Rico) [S3]; Nationwide 8% year 1, 6% years 2+ current / 10% guaranteed [S5]; Pacific
   Life deducts a load, amount not public [S1]. A level 5% current / 8% guaranteed is a
   mid-range standardization avoiding year-shape complexity.
-- **F13:** $10/month current is common to [S3][S5]. Guaranteed maxima observed $12 [S3]
+- **F13:** $10/month current is common to [S3] [S5]. Guaranteed maxima observed $12 [S3]
   and $20 [S5]; $15 **[std]** is a rounded mid-range value.
 - **F14 [std]:** Structure (currently charged years 1–10, guaranteed for all years,
-  varying by issue age/sex/band/tobacco, re-start on face increases) is sourced [S3][S5];
+  varying by issue age/sex/band/tobacco, re-start on face increases) is sourced [S3] [S5];
   the dollar scales live in policy data pages and are not public (research notes, Gaps),
   so the level is a modeling placeholder chosen to be a realistic secondary expense
   charge; calibrate to pricing targets in use.
@@ -160,13 +160,13 @@ Footnotes:
   valuation/nonforfeiture basis for new issues [REG-R17]) is the conventional guaranteed
   ceiling **[std]**; the 65% current-to-guaranteed ratio is a placeholder **[std]** —
   replace with a scale calibrated to 2015 VBT / ILEC experience plus margin
-  [REG-R18][REG-R19].
+  [REG-R18] [REG-R19].
 - **F16:** Charge-funded high-cap/multiplier accounts exist across carriers — ongoing
   asset charges of 0.72%/yr [S3] or 0.80%/yr [S2], or up-front strategy charges of
   0.65%–1.0% at segment creation [S5] — and fund a Supplemental Hedge Budget under
   AG 49-A [R1]. Excluded from baseline; see Variations.
-- **F17 [std]:** Period: 10 years is modal [S1][S5][S7] (15 years at Transamerica [S3]);
-  re-starts on face increases [S3][S7]. Dollar scales are not public (research notes,
+- **F17 [std]:** Period: 10 years is modal [S1] [S5] [S7] (15 years at Transamerica [S3]);
+  re-starts on face increases [S3] [S7]. Dollar scales are not public (research notes,
   Gaps); the $25/$1,000 linear-decline scale is a placeholder of realistic magnitude.
 
 ### Table 4 — Loans and withdrawals
@@ -175,7 +175,7 @@ Footnotes:
 |---|---|---|
 | Standard (declared-rate) loan — charged | 3.00% effective annual, in arrears, all years | **[std]** (F18) |
 | Standard loan — credited on collateral | 2.00% years 1–10; 3.00% (wash) years 11+ | **[std]** (F18) |
-| Participating (indexed) loan — charged | 5.00% current; 8.00% guaranteed maximum | [S5][S7] (F19) |
+| Participating (indexed) loan — charged | 5.00% current; 8.00% guaranteed maximum | [S5] [S7] (F19) |
 | Participating loan — credited | Loaned value remains credited at indexed-account rates | [S5] (F19) |
 | Loan sourcing | Fixed account first, then pro rata across index accounts/segments | [S3] |
 | Minimum loan | $500 | [S3] |
@@ -185,7 +185,7 @@ Footnotes:
 Footnotes:
 - **F18 [std]:** Observed declared-rate designs: Transamerica charged 2.75% current / 3%
   guaranteed, credited 2%, preferred loans years 11+ charged 2% current / 2.25% max on
-  gains [S3][S4]; Nationwide charged 3.90% years 1–10, 3.00% years 11+ (0% net from year
+  gains [S3] [S4]; Nationwide charged 3.90% years 1–10, 3.00% years 11+ (0% net from year
   11), credited 3.00% current / 1.00% guaranteed [S5]; Securian charged 4%, credited 3%
   years 1–10 / 4% years 11+ [S7]. The standardization keeps the universal pattern (net
   loan spread ~1% early, →0% "wash" after year 10) with round numbers. The baseline
@@ -213,16 +213,16 @@ taxation [R5].
 
 ### Death benefit provisions
 - Option A: DB = max(Face, corridor factor × account value). Option B: DB = Face + account
-  value, similarly corridor-tested [S3][R4].
+  value, similarly corridor-tested [S3] [R4].
 - Corridor factors per §7702(d): 250% at attained ages 0–40 grading to 100% at 90–95 [R4].
 - Death proceeds are reduced by outstanding loan balance and any unpaid monthly deductions
-  **[std]** (universal UL practice; loan-netting implicit in loan design [S3][S5]).
+  **[std]** (universal UL practice; loan-netting implicit in loan design [S3] [S5]).
 - During a segment, the death benefit reflects the segment balance without unrealized
   index credit [S3] (0%-floor baseline: segments simply carry no interim interest, F9).
 
 ### Account value mechanics
 Account value = fixed account + sum of active segment balances + loan collateral account
-**[std]** (decomposition; components per [S1][S2][S3][S5]). On each monthiversary, in the
+**[std]** (decomposition; components per [S1] [S2] [S3] [S5]). On each monthiversary, in the
 processing order specified in `technical-notes.md`: premiums are received net of load;
 monthly deductions (policy fee + per-unit charge + COI + rider charges) are taken from the
 fixed account first, then pro rata from active segments **[std]** (sourcing convention;
@@ -233,8 +233,8 @@ swept into a new 12-month segment [S3] **[std]**.
 ### Index crediting
 For a segment created at time m with index level I(m):
 
-    index change  r = I(m+12) / I(m) − 1        (price return, dividends excluded) [S2][S3]
-    credited rate = max(floor, min(cap, par × r)) = max(0%, min(10.00%, 100% × r)) [S2][S3]
+    index change  r = I(m+12) / I(m) − 1        (price return, dividends excluded) [S2] [S3]
+    credited rate = max(floor, min(cap, par × r)) = max(0%, min(10.00%, 100% × r)) [S2] [S3]
     index credit  = credited rate × segment balance at maturity (after all deductions)  **[std]**
 
 The credit-base convention is standardized: the credit applies to the actual remaining
@@ -248,14 +248,14 @@ taken during the segment [S3] — documented as a variation because it presumes
 an in-segment guaranteed rate (0.75% [S3]) the baseline does not have.
 
 Caps (and, on other designs, participation rates and spreads) are non-guaranteed elements
-declared at each segment start [S3][S4][S8], subject to contractual guaranteed minima
+declared at each segment start [S3] [S4] [S8], subject to contractual guaranteed minima
 (Table 2), and economically set by the option budget — see `technical-notes.md`,
-option-budget section [R1][R6].
+option-budget section [R1] [R6].
 
 ### Charges and credits
 Monthly deduction = policy fee + per-unit charge + COI on net amount at risk + rider
 charges (+ indexed-account asset charges on enhanced accounts, not in baseline)
-[S1][S3][S5]. COI rates may be re-rated up to guaranteed maximums based on expectations of
+[S1] [S3] [S5]. COI rates may be re-rated up to guaranteed maximums based on expectations of
 future mortality, interest, persistency, expense, reinsurance, and tax experience [S3];
 ASOP 2 governs the re-determination discipline [REG-R26]. The fixed account is credited
 monthly at the declared rate (guaranteed minimum 1.00% [S2]); segments receive their index
@@ -263,9 +263,9 @@ credit only at maturity [S3].
 
 ### Loans
 Standard loans move loaned value into a loan collateral account credited at a fixed rate
-while the loan accrues at the charged rate (Table 4) **[std]**/[S3][S5]; the net cost
-grades to ~0% ("wash") after year 10 [S3][S5][S7]. Participating loans leave loaned value
-exposed to indexed crediting while charging a fixed rate [S5][S7] — positive expected
+while the loan accrues at the charged rate (Table 4) **[std]**/[S3] [S5]; the net cost
+grades to ~0% ("wash") after year 10 [S3] [S5] [S7]. Participating loans leave loaned value
+exposed to indexed crediting while charging a fixed rate [S5] [S7] — positive expected
 spread, negative in 0%-floor years; baseline models standard loans only **[std]** (F18).
 Loans reduce the death benefit and, if unpaid, accrue against the account; an Overloan
 Protection Rider can convert the policy to paid-up status to prevent loan-induced lapse
@@ -283,7 +283,7 @@ years associated with benefit reductions can be taxable under §7702(f)(7)(B) [S
 If cash surrender value cannot cover the monthly deduction and the no-lapse test fails,
 a 61-day grace period begins [S3]; the policy lapses if the required premium is unpaid at
 grace end. No-lapse test: cumulative premiums less loans/withdrawals ≥ cumulative minimum
-monthly no-lapse premium during the no-lapse period [S3][S4] (representative MNLP rate:
+monthly no-lapse premium during the no-lapse period [S3] [S4] (representative MNLP rate:
 male non-tobacco issue age 45, band 1: $20.80 per $1,000 face annually [S3]).
 Reinstatement within 3 years with evidence of insurability [S3].
 
@@ -298,7 +298,7 @@ account monthly charge runs to age 120 [S3]) and coverage continues.
 
 **In scope for the reference model:**
 - **No-lapse guarantee** (integral or rider): age-banded no-lapse period with cumulative
-  premium test [S3][S5]; Pacific Life implements as automatically issued Age 90 NLG rider
+  premium test [S3] [S5]; Pacific Life implements as automatically issued Age 90 NLG rider
   (issue ages ≤79, DB options A/B) plus optional Flexible Duration NLG to lifetime [S1].
   Modeled: the baseline MNLP test (Table 1, F6).
 - **Overloan Protection Rider:** on GPT non-MEC policies; converts to paid-up on exercise,
@@ -309,21 +309,21 @@ account monthly charge runs to age 120 [S3]) and coverage continues.
 or additional insureds [S3]; children's benefit [S3]; guaranteed insurability [S3]; waiver
 of monthly deductions / waiver of premium [S3]; accidental death benefit [S3]; accelerated
 death benefits for terminal/critical/chronic illness [S3]; long-term care riders
-[S1][S3][S5]; enhanced performance factor (multiplier) riders [S1]; surrender value
+[S1] [S3] [S5]; enhanced performance factor (multiplier) riders [S1]; surrender value
 enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
 
 ---
 
 ## Variations across insurers
 
-1. **Floor design.** 0% annual floor is dominant [S2][S5][S6][S8]; Transamerica credits a
+1. **Floor design.** 0% annual floor is dominant [S2] [S5] [S6] [S8]; Transamerica credits a
    guaranteed 0.75% during the segment, netted out of excess index interest (its declared
    account guarantees 2%) [S3]; Securian guarantees a 2% cumulative average tested
    retrospectively at death or termination [S7]. *Choice:* 0% annual floor — dominant
    practice and the AG 49-A BIA definition [R1]; the retrospective cumulative guarantee is
    a documented variation requiring a shadow accumulation in the model.
 2. **Index menu.** Every carrier offers 1-yr S&P 500 PTP with cap and 100% participation
-   [S2][S3][S5][S6]. Beyond it: multi-index best-performer blends (Transamerica Global
+   [S2] [S3] [S5] [S6]. Beyond it: multi-index best-performer blends (Transamerica Global
    50/30/20 [S3]; Nationwide Multi-Index Monthly Average 50/30/20 [S5]; Securian Hindsight
    [S7]); uncapped S&P 500 with spread (5.75% spread, Nationwide [S5]) or declared
    participation (Pacific Life Dynamic Par, illustrations at 50% par [S2]); multi-year
@@ -331,7 +331,7 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
    proprietary indexes at high participation (200% [S2], up to 320% [S5], 215% [S7], 160%
    [S8]). *Choice:* BIA-style S&P 500 account only — canonical [R1], universal, and the
    post-2023 illustration regime caps other accounts' illustrated leverage at the BIA's
-   anyway [R1][R6].
+   anyway [R1] [R6].
 3. **Charge-funded enhancements.** Ongoing asset charge (0.80%/yr buys cap 12.0% vs 10.0%,
    Pacific Life [S2]; 0.72%/yr on all index accounts, Transamerica [S3]) vs up-front
    segment charge (0.65%–1.0% buys cap 25.00%/13.25% vs 14.00%/10.25%, Nationwide [S5]);
@@ -341,15 +341,15 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
    explicitly has no multipliers/bonuses/enhancements [R1], and post-AG 49-A these designs
    cannot illustrate net benefit anyway [R6].
 4. **Guaranteed crediting minima.** Guaranteed minimum caps 0.25% [S8] – 4.00% [S2];
-   guaranteed participation 5% [S2][S8] – 105% [S2]; cap floored at declared-account rate
+   guaranteed participation 5% [S2] [S8] – 105% [S2]; cap floored at declared-account rate
    [S3]. *Choice:* 2.00% guaranteed cap, 100% guaranteed par [S2] — from the same source
    as the baseline current cap.
 5. **Premium loads.** Level (4%/6% gtd [S3]) vs front-loaded (8%/6%, 10% gtd [S5]).
    *Choice:* level 5%/8% **[std]** (F12).
-6. **Surrender charge period.** 10 years [S1][S5][S7] vs 15 years [S3]; all re-start on
-   face increases [S3][S7]. *Choice:* 10 years (modal).
+6. **Surrender charge period.** 10 years [S1] [S5] [S7] vs 15 years [S3]; all re-start on
+   face increases [S3] [S7]. *Choice:* 10 years (modal).
 7. **Loan design.** All carriers: declared-rate loan trending to ~0% net cost after ~year
-   10 plus an indexed/participating loan charged ~5% [S3][S4][S5][S7]; Pacific Life
+   10 plus an indexed/participating loan charged ~5% [S3] [S4] [S5] [S7]; Pacific Life
    dedicates a lower-par VC account to loaned value [S2]; Securian imposes a 12-month
    fixed→indexed lockout after fixed loans [S6]. *Choice:* both described; standard loan
    modeled in baseline **[std]** — it decouples loan modeling from index scenarios.
@@ -366,13 +366,13 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   Section 10 adds interest-indexed UL requirements: filings describing how the insurer
   addresses the risk of the indexed rate falling, description of assets held for
   interest-indexed policies, and an annual Statement of Actuarial Opinion for
-  interest-indexed UL [R10][REG-R5]. **Do not substitute the AP&P Appendix A print for
+  interest-indexed UL [R10] [REG-R5]. **Do not substitute the AP&P Appendix A print for
   it.** Appendix item **A-585** has now been read in full and carries the **valuation
   half only** — definitions and valuation requirements, with no nonforfeiture provisions,
   no mandatory policy provisions, no annual-report requirements and **no interest-indexed
   UL section**; it names only the **Standard Valuation Law (#820)** as its relevant model
   law and does not name Model #585 anywhere, so everything in this bullet stays cited to
-  [R10][REG-R5] [REG-R155].
+  [R10] [REG-R5] [REG-R155].
 - **NAIC Life Illustrations Model Regulation (Model #582) + AG 49-A.** Model 582 defines
   the disciplined current scale, self-support and lapse-support tests, and the
   illustration actuary's annual certification [R2]. AG 49-A (policies sold on/after
@@ -380,15 +380,15 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   Benchmark Index Account definition, the maximum illustrated rate (25-year lookback mean
   capped at 145% of the Annual Net Investment Earnings Rate), illustrated option-leverage
   of other accounts capped at the BIA's, the 50 bp loan-spread limit, and alternate-scale
-  disclosure [R1][REG-R10]. History and design intent per the SOA lineage article
-  [R6][REG-R9]; practice guidance in the AAA Life Illustrations Practice Note and ASOP
-  No. 24 (current revision Dec. 2024) [R8][REG-R30].
+  disclosure [R1] [REG-R10]. History and design intent per the SOA lineage article
+  [R6] [REG-R9]; practice guidance in the AAA Life Illustrations Practice Note and ASOP
+  No. 24 (current revision Dec. 2024) [R8] [REG-R30].
 - **Valuation: Standard Valuation Law + VM-20.** Statutory reserves for IUL follow the
   Valuation Manual as a life product under VM-20 (net premium reserve plus deterministic/
   stochastic reserves as applicable); VM-01 defines "index credit" broadly (any credit,
   multiplier, bonus, or charge reduction linked to an index; may be positive or negative);
   VM-20 requires cash-flow modeling of the assets hedging indexed credits under the
-  clearly-defined-hedging-strategy (CDHS) framework [R3][REG-R3]; enabling statute Model
+  clearly-defined-hedging-strategy (CDHS) framework [R3] [REG-R3]; enabling statute Model
   #820 [REG-R1]; NLG (secondary-guarantee) designs interact with AG 38 for pre-PBR
   cohorts [REG-R7]. The **formulaic** leg — pre-2017 issues, and the *All Other* net
   premium reserve where VM-20 §3.B.6 routes indexed UL with no deterministic or
@@ -398,7 +398,7 @@ enhancement [S5]; change of insured [S5]; income settlement endorsements [S3].
   guarantees at issue "excluding guarantees linked to an external referent", i.e. with
   the index-linked crediting stripped out. That exclusion is the **only** index-specific
   reserve rule in the item; every rate, table and factor it uses is delegated to **A-820**
-  by year of issue [REG-R155][REG-R153][REG-R110]. Mechanics, the alternative minimum
+  by year of issue [REG-R155] [REG-R153] [REG-R110]. Mechanics, the alternative minimum
   reserve and the A-830 ULSG branch are read at first hand in
   `_research/appp-a585-a250-a255-a270.md` and `_research/appp-a830.md`.
 - **Nonguaranteed elements.** Caps, participation rates, declared rates, COI rates, and

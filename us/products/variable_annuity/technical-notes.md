@@ -18,7 +18,7 @@ most of the **R73–R149** block unused). **[std]** marks a standardization
 introduced for the reference implementation; **[unverified]** marks a claim the research
 file could not confirm against a retrieved document. **Every parameter value below is
 identical to the value in `product-spec.md`.** The mechanics anchor is the Jackson
-Perspective II chassis [S1][S2][S3].
+Perspective II chassis [S1] [S2] [S3].
 
 **Relationship to sibling documents.** The *separate-account charge-accrual convention* — a
 monthly discretization of daily fund-expense and asset-charge accrual, `(1 + r)(1 − e/12)(1 −
@@ -68,7 +68,7 @@ deterministic run.
   **Basic** Table (improved to Dec. 31, 2017 on Scale G2) for standard-projection mortality
   [R1], and the 2012 IAM **Period** Table it underlies is printed **age nearest birthday**
   [REG-R59]; and the GAWA%, GMDB roll-up and step-up eligibility bands are all attained-age
-  lookups [S1][S3].
+  lookups [S1] [S3].
 - **Model points.** Single-contract model points projected on an expected
   (probability-weighted) basis; survivorship factors multiply per-contract cash flows. No
   aggregation, no cohort splitting except the utilization cohorts described below.
@@ -155,7 +155,7 @@ discipline for non-guaranteed elements, which expressly covers variable deferred
 
 Snapshot dated **2026-04-27**, the Jackson rate sheet date [S3]. Rate sheets carry an
 explicit "can be superseded at any time" clause with a 10-day advance-filing commitment
-[S3][S5][S8], so the rate-sheet date is a first-class model input, not metadata.
+[S3] [S5] [S8], so the rate-sheet date is a first-class model input, not metadata.
 
 | Input | Value | Basis |
 |---|---|---|
@@ -163,7 +163,7 @@ explicit "can be superseded at any time" clause with a 10-day advance-filing com
 | — M&E component `m` | 1.00% p.a. | **[std]** decomposition (see spec footnote 6) |
 | — administrative component `α` | 0.30% p.a. | [S7] component; split **[std]** |
 | Current GLWB charge `phi_G` | 1.25% p.a. of GWB | [S3] |
-| Current GMDB charge `phi_D` | 0.90% p.a. of RB | [S2][S3] |
+| Current GMDB charge `phi_D` | 0.90% p.a. of RB | [S2] [S3] |
 | Bonus percentage `b` | 6.00% of Bonus Base | [S3] |
 | GMDB roll-up percentage `ρ` | 6.00% (age ≤ 69 at election); 5.00% (age ≥ 70) | [S3] |
 | GWB Adjustment percentage `s` | 105% | [S3] |
@@ -172,7 +172,7 @@ explicit "can be superseded at any time" clause with a 10-day advance-filing com
 
 *Optional variant modules, each fully parameterized by cited values.* (i) **VIX-linked fee
 reset**: `phi(k) = phi_0 + 0.05% × [avg(VIX²)/33 − 10]`, clipped to ±0.40% p.a. per quarter
-and to [0.60%, 2.50%], quarterly deduction = annual ÷ 4 [S4][S6]. (ii) **Treasury-linked
+and to [0.60%, 2.50%], quarterly deduction = annual ÷ 4 [S4] [S6]. (ii) **Treasury-linked
 roll-up rate**: 20-day average 10-year CMT ending the 15th of the last month of the prior
 quarter, **+1.00%** (or **+1.50%** before the first withdrawal), rounded to 0.10%, floored
 **4%**, capped **8%** [S7]. (iii) **Two-table post-depletion payout**, Table A while
@@ -182,7 +182,7 @@ AV > 0 and a lower Table B once AV = 0 [S8].
 
 | Input | Recommended public basis | Basis tags |
 |---|---|---|
-| Best-estimate mortality | **2012 IAM Basic Table with Projection Scale G2**, generational, × 100% A/E **[std]**; monitor against the 2020–2024 Individual Payout Annuity Mortality Experience Study (23 parent groups, 3.1m contract-years, 143,190 deaths, results shown against the 2012 IAM basis) | [REG-R59][REG-R61]; VM-21 prescribes percentages of the 2012 IAM Basic with G2 [R1][REG-R35] |
+| Best-estimate mortality | **2012 IAM Basic Table with Projection Scale G2**, generational, × 100% A/E **[std]**; monitor against the 2020–2024 Individual Payout Annuity Mortality Experience Study (23 parent groups, 3.1m contract-years, 143,190 deaths, results shown against the 2012 IAM basis) | [REG-R59] [REG-R61]; VM-21 prescribes percentages of the 2012 IAM Basic with G2 [R1] [REG-R35] |
 | Prescribed-projection mortality | 2012 IAM Basic improved to Dec 31, 2017 using Scale G2, **no further improvement** in the projection | [R1] |
 | Mortality basis warning | Do **not** use CSO/VBT life tables — annuitant mortality is a different and generally lighter basis | [REG-R59] |
 | Base surrender | VM-21 Table 6.3 "under 50% ITM" column as the base level **[std]**: 4.0% p.a. in the surrender-charge period, 25.0% in the first year after it, 15.0% thereafter | [R1] |
@@ -190,15 +190,15 @@ AV > 0 and a lower Table B once AV = 0 [S8].
 | Withdrawal-year factor | × 60% in any contract year with a projected withdrawal, for GMWB contracts | [R1] |
 | Surrender at AV = 0 | 0% for a GMWB contract | [R1] |
 | GLWB utilization | Withdrawal Delay Cohort Method with a "never withdraw" cohort weight of **0.20** (non-qualified GMWB) or **0.05** (tax-qualified GMWB); once exercised, withdraw **90%** of the guaranteed maximum each year. The **base run** instead activates at age 70 and withdraws **100%** of GAWA **[std]**, matching the §6.C.3 GAPV construction — see *GLWB utilization* | [R1]; base run **[std]** |
-| Utilization caution | The Academy warns a material "never utilize" cohort may understate reserves and suggests shifting it into very-late cohorts (policy year 25/30 or age 95); it cites SOA evidence that fewer than 5% of FIA contract holders age 80+ never utilized | [R5][REG-R67] |
-| Utilization empirical anchor | ~79% of owners taking withdrawals withdrew at or near the maximum (up to 110%), ~55% between 90% and 110%; activation clusters at the RMD age | [REG-R64][R13] — **[unverified]**, from study summaries, not the paid report |
+| Utilization caution | The Academy warns a material "never utilize" cohort may understate reserves and suggests shifting it into very-late cohorts (policy year 25/30 or age 95); it cites SOA evidence that fewer than 5% of FIA contract holders age 80+ never utilized | [R5] [REG-R67] |
+| Utilization empirical anchor | ~79% of owners taking withdrawals withdrew at or near the maximum (up to 110%), ~55% between 90% and 110%; activation clusters at the RMD age | [REG-R64] [R13] — **[unverified]**, from study summaries, not the paid report |
 | Maintenance expense | VM-21 §6.C.2 prescribed: `$100 × 1.025^(valuation year − 2015)` per contract in year 1, inflating 2.5% p.a., **plus 7 bps of projected account value** each year (company-administered) | [R1] |
 | Acquisition expense | Not modeled in the base run **[std]** | — |
 
 Two cautions the research file records and this model inherits. First, the detailed SOA/LIMRA
 2022–2024 VA behavior study (17 companies, 11.5m contracts, $1.5tn contract value, 625,000+
 surrenders, 4m withdrawals totalling $56.7bn) is a **paid data package**; only its landing
-page was retrieved [R13][REG-R64]. Second, the Academy's sample utilization tables are built
+page was retrieved [R13] [REG-R64]. Second, the Academy's sample utilization tables are built
 for a **non-qualified FIA**, not a VA, and must be applied with care [R5].
 
 ---
@@ -259,8 +259,8 @@ proportionally" [S2]; extending it to the rider charges is **[std]** (spec footn
 | M&E risk charge | 1.00% p.a. **[std]** | average daily separate-account value | daily → monthly **[std]** | inside unit value |
 | Administrative asset charge | 0.30% p.a. [S7] | average daily separate-account value | daily → monthly **[std]** | inside unit value |
 | Annual contract fee | $35, waived at AV ≥ $50,000 [S2] | per contract | Contract Anniversary [S2] | unit cancellation, pro rata [S2] |
-| GLWB rider charge | 1.25% p.a. [S3] | **GWB (benefit base), not account value** [S1][S3] | quarterly at rate/4 [S1] | unit cancellation, pro rata **[std]** |
-| GMDB rider charge | 0.90% p.a. [S2][S3] | **GMDB Benefit Base** [S3] | quarterly at rate/4 **[std]** | unit cancellation, pro rata **[std]** |
+| GLWB rider charge | 1.25% p.a. [S3] | **GWB (benefit base), not account value** [S1] [S3] | quarterly at rate/4 [S1] | unit cancellation, pro rata **[std]** |
+| GMDB rider charge | 0.90% p.a. [S2] [S3] | **GMDB Benefit Base** [S3] | quarterly at rate/4 **[std]** | unit cancellation, pro rata **[std]** |
 | CDSC | 8.5%→0.0% by completed years since premium receipt [S2] | Remaining Premium withdrawn [S2] | on withdrawal | netted from withdrawal proceeds |
 | Premium tax | 0.0% base **[std]**, 0.0–3.5% range [S2] | premium | at premium / annuitization [S2] | deducted from premium |
 
@@ -310,7 +310,7 @@ At BOM of month t:
      **end of the Contract Year** [S1].
 4. **Unit value growth** over month t per the formula above.
 5. **EOM quarterly charges** (t ≡ 0 mod 3): `Fee_G = (phi_G/4)·GWB`,
-   `Fee_D = (phi_D/4)·RB`; cancel units pro rata [S1][S3].
+   `Fee_D = (phi_D/4)·RB`; cancel units pro rata [S1] [S3].
 6. **EOM annual contract fee** (t ≡ 0 mod 12): `f_c` if `AV < 50,000`, cancelled pro rata
    [S2].
 7. **EOM anniversary guarantee events** (t ≡ 0 mod 12), in this order **[std]**:
@@ -371,9 +371,9 @@ The three GMDB guarantee forms and their recursions **[std] naming; mechanics ci
 
 | Form | Recursion | Withdrawal treatment | Source |
 |---|---|---|---|
-| Return of premium (proportional) | `G(t) = G(t−1) + P(1−τ)` | `G ← G · (1 − W/AV_pre)` — proportional, **not** dollar-for-dollar | [S1][S2]; same design at [S4][S7] |
+| Return of premium (proportional) | `G(t) = G(t−1) + P(1−τ)` | `G ← G · (1 − W/AV_pre)` — proportional, **not** dollar-for-dollar | [S1] [S2]; same design at [S4] [S7] |
 | Annual ratchet / highest anniversary value | `G(t) = max(G(t−1), AV(t))` at each anniversary (quarterly anniversaries in the HQAV variant), growth ceasing at the age cutoff | proportional | [S1] (HQAV, quarterly, to age 81); [S4] (Maximum Anniversary Value); [S7] (to age 85) |
-| Fixed roll-up (representative) | `RB(t) = RB(t−1) · (1 + ρ)` at each anniversary until the cutoff | d-f-d up to `ρ · RB(prior anniv.)`, pro rata above, applied at year end | [S1][S3] |
+| Fixed roll-up (representative) | `RB(t) = RB(t−1) · (1 + ρ)` at each anniversary until the cutoff | d-f-d up to `ρ · RB(prior anniv.)`, pro rata above, applied at year end | [S1] [S3] |
 | Combination | `max(roll-up component, ratchet component)`, each as above | as above | [S1] |
 
 ### Cash flow outputs (per contract, month t, before survivorship weighting)
@@ -419,12 +419,12 @@ surrenders, must also be included [R1].
 **Risk-neutral scenarios — for hedging and fair value.** A separate, market-consistent set
 is required for hedge valuation under a Clearly Defined Hedging Strategy (VM-21 §9)
 [REG-R35] and for the fair value of the GLWB/GMDB as **market risk benefits** under LDTI
-[REG-R34 — **[unverified]**, source not fetched (fasb.org 403); summary-based][REG-R71].
+[REG-R34 — **[unverified]**, source not fetched (fasb.org 403); summary-based] [REG-R71].
 The two sets are not interchangeable; the model exposes the scenario basis as an input,
 never as a hard-coded assumption.
 
 **Reserve layer, cited not reproduced.** CTE70 for the reserve, CTE(98) for capital, on the
-same projection [R1][R3][REG-R35]; see *Valuation and reserve pointers*.
+same projection [R1] [R3] [REG-R35]; see *Valuation and reserve pointers*.
 
 **Prescribed-assumption anchor.** VM-21 §6.C's Guarantee Actuarial Present Value is the
 regulator's own moneyness construction and the most useful public calibration anchor
@@ -485,13 +485,13 @@ construction below is VM-21's [R1], not that file's: it carries no cohort machin
 Parameterized here by:
 
 - **First-withdrawal age.** Base run **[std]**: age 70, on the finding that activation
-  clusters at the RMD age [REG-R64 — **[unverified]**][REG-R57][REG-R58]. The prescribed
+  clusters at the RMD age [REG-R64 — **[unverified]**] [REG-R57] [REG-R58]. The prescribed
   alternative is VM-21's Withdrawal Delay Cohort Method, which splits the contract into
   cohorts weighted by differences in a revised GAPV across candidate initial withdrawal
   ages, discarding cohorts below the attained age and rescaling [R1].
 - **Never-withdraw cohort.** VM-21 prescribes 0.20 non-qualified and 0.05 tax-qualified for
   GMWB contracts [R1]; the Academy cautions that a material never-utilize cohort may
-  understate reserves and suggests reassigning it to very-late cohorts [R5][REG-R67].
+  understate reserves and suggests reassigning it to very-late cohorts [R5] [REG-R67].
 - **Withdrawal intensity.** Base run **[std]**: 100% of GAWA once activated, matching the
   GAPV construction [R1]; the prescribed partial-withdrawal assumption is **90%** of the
   guaranteed annual amount for lifetime GMWBs and **70%** for non-lifetime GMWBs [R1].
@@ -528,7 +528,7 @@ Quarterly Anniversary). The guarantee bases follow from the anniversary events:
 illustrative**, below GWB, so no step-up) → +6,000 bonus at anniversary 2 = 112,000, then
 stepped up to the anniversary contract value of **112,500** **[std illustrative]**, which
 sets `BB` = 112,500 and restarts the Bonus Period [S1]. `RB` = 100,000 × 1.06² = **112,360**
-[S1][S3]. `NP` = `RP` = 100,000. Scenario month: `r_1` = +1.20%, `r_2` = −0.30% **[std]**.
+[S1] [S3]. `NP` = `RP` = 100,000. Scenario month: `r_1` = +1.20%, `r_2` = −0.30% **[std]**.
 
 | Step | Item | SA₁ (equity) | SA₂ (bond) | Total AV |
 |---|---|---|---|---|
@@ -561,15 +561,15 @@ them and are cited, not reproduced:
 - **VM-21** — the statutory standard and, in its scope, **CARVM itself**: aggregate reserve
   = Stochastic Reserve (CTE70 of scenario reserves) + additional standard projection amount
   + any Alternative Methodology reserve, determined both pre- and post-reinsurance-ceded
-  [R1][REG-R35]. Sections 9–12 carry hedging under a Clearly Defined Hedging Strategy,
+  [R1] [REG-R35]. Sections 9–12 carry hedging under a Clearly Defined Hedging Strategy,
   contract holder behavior, prudent-estimate mortality and contract-level allocation
   [REG-R35]. **AG 43 is not superseded** — through reference in AG 43 those requirements
   also reach contracts issued before January 1, 2017, and the populations may be aggregated
-  [R1][REG-R38].
+  [R1] [REG-R38].
 - **AP&P Appendix A item A-250, and AG 33 — the formulaic layer, cited for what it does *not*
   contain.** A-250 (variable annuities) has been read in full and carries **no reserve method**: a
   definition, a per-account asset-coverage floor and a delegation of the reserve to **A-820**,
-  whose ¶15 is CARVM [REG-R156][REG-R153]. AG 33, also read in full, reaches "all annuity
+  whose ¶15 is CARVM [REG-R156] [REG-R153]. AG 33, also read in full, reaches "all annuity
   contracts subject to CARVM" carrying elective benefits but is displaced here by the
   product-specific instrument under its own precedence clause — a clause that **names no
   guideline**, so the AG 43 pairing is **[std, derived]** [REG-R151]. Neither item changes a
@@ -581,10 +581,10 @@ them and are cited, not reproduced:
   RBC requirements are identical apart from the elective federal income tax treatment
   [REG-R35], so one projection serves both. The older C-3 Phase II instructions package still
   prints the **pre-reform CTE 90 TAR** and a 35% tax rate [REG-R47] — structure only; the
-  current level is CTE(98) [R3][R4].
+  current level is CTE(98) [R3] [R4].
 - **VM-22 / VM-V §1** — where the **post-depletion GLWB payment stream** lands: fixed income
   streams from guaranteed living benefits after account exhaustion are named in VM-22's
-  Reserving Categories and VM-V §1's scope [REG-R36][REG-R37]. VM-22 does not cover the
+  Reserving Categories and VM-V §1's scope [REG-R36] [REG-R37]. VM-22 does not cover the
   variable contract itself.
 - **Tax reserve** — IRC §807: the greater of net surrender value and 92.81% of the
   NAIC-prescribed method (CARVM, i.e. VM-21), capped at statutory [REG-R16]; the LB&I
@@ -597,11 +597,11 @@ them and are cited, not reproduced:
   2 (non-guaranteed elements, expressly covering variable deferred annuities, so governing
   the rider-charge reset) [REG-R26] and 54 [REG-R70]. **There is no ASOP for VM-21**: ASOP
   No. 52 is scoped to VM-20 life products, so any claim that it governs VM-21 is
-  [unverified] and, on the retrieved ASB text, wrong [R11][R12][REG-R31]. The nearest
+  [unverified] and, on the retrieved ASB text, wrong [R11] [R12] [REG-R31]. The nearest
   guidance is the Academy's non-binding VM-21 practice note supplement, whose eight sections
   (Transition, Standard Projection, Asset Modeling & Discount Rates, Scenarios, Hedging, C-3
   Phase 2 RBC, Disclosures, Miscellaneous) map onto the decisions this model must make
-  [R4][REG-R66].
+  [R4] [REG-R66].
 
 ---
 
@@ -629,7 +629,7 @@ them and are cited, not reproduced:
    [S4].
 6. **Post-depletion longevity.** Once the account is exhausted the liability is a pure
    life-contingent annuity at GAWA [S1]; the 2012 IAM Basic/Scale G2 basis and its A/E
-   deviation [REG-R59][REG-R61] become the whole story.
+   deviation [REG-R59] [REG-R61] become the whole story.
 
 **Known modeling pitfalls.**
 
@@ -674,7 +674,7 @@ them and are cited, not reproduced:
   contract holder can surrender the contract" — is also the test **VM-21 §2.A.2** uses to
   exclude contracts falling under VM-A item A-255, so such a variant faces a **scope** question
   before it faces a formula question; **that exclusion is VM-21's text, not A-255's**
-  [REG-R157][REG-R35].
+  [REG-R157] [REG-R35].
 - **Rate-sheet vintage.** Every current parameter above is dated 2026-04-27 [S3]; historical
   tables show bonus percentages moving 5/6/7% → 4/5/6% → 5/6/7% and the GWB Adjustment
   200% → 105% within six years [S1]. An in-force model must carry the vintage.

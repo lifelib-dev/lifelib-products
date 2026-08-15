@@ -19,9 +19,9 @@ Variable universal life (VUL) is a flexible-premium individual life insurance
 contract whose account value is allocated by the policyholder between (a) variable
 investment options — subaccounts of a registered separate account, each investing in
 a corresponding registered fund — and (b) one or more general-account fixed options
-[S1][S2][S3][S4]. Death benefits and account values reflect investment experience;
+[S1] [S2] [S3] [S4]. Death benefits and account values reflect investment experience;
 guarantees are backed by the insurer's general-account claims-paying ability
-[S1][S4]. For statutory purposes, variable life is life insurance whose amount or
+[S1] [S4]. For statutory purposes, variable life is life insurance whose amount or
 duration varies with separate-account investment experience [R7].
 
 VUL is a security: the separate account registers as a unit investment trust and the
@@ -29,7 +29,7 @@ contract registers on SEC Form N-6 [R1]; cash value is invested in
 policyholder-selected portfolios, investment return is not guaranteed, and FINRA
 regulates the selling firms and professionals [R13]. Prospectuses follow the N-6 item
 structure (Key Information, standardized fee tables, Standard Death Benefits, Loans,
-Lapse) [R1][S1][S2][S3][S4], with summary-prospectus delivery permitted under rule
+Lapse) [R1] [S1] [S2] [S3] [S4], with summary-prospectus delivery permitted under rule
 498A since July 1, 2020 [R2].
 
 The representative design below is the mainstream retail archetype (Prudential VUL
@@ -38,7 +38,7 @@ multi-year per-$1,000 surrender charge, monthly deductions (COI on net amount at
 risk, per-policy fee, per-$1,000 face charge), an asset-based M&E risk charge on
 separate-account assets, death benefit options A/B with the §7702 corridor, a
 general-account fixed option with an interest floor, spread loans, and monthly
-deductions ceasing at age 121 [S1][S2][S4]; low-load designs exist as a variation
+deductions ceasing at age 121 [S1] [S2] [S4]; low-load designs exist as a variation
 [S3] (see "Variations across insurers").
 
 ## Representative specification
@@ -47,11 +47,11 @@ deductions ceasing at age 121 [S1][S2][S4]; low-load designs exist as a variatio
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Policy form | Flexible-premium variable universal life; account value in separate-account subaccounts plus a fixed option | [S1][S2][S3][S4] |
+| Policy form | Flexible-premium variable universal life; account value in separate-account subaccounts plus a fixed option | [S1] [S2] [S3] [S4] |
 | Issue ages | 0–85 | [S2] |
 | Minimum face amount | $100,000 | **[std]** (1) |
 | Underwriting classes | Preferred best through standard, smoker-distinct; substandard via flat extras | [S1] |
-| Maturity | None; on the policy anniversary at insured attained age 121, premiums are no longer accepted and monthly deductions cease; the policy continues to death or surrender (asset-based M&E and fund expenses continue) | [S1][S2][S4] |
+| Maturity | None; on the policy anniversary at insured attained age 121, premiums are no longer accepted and monthly deductions cease; the policy continues to death or surrender (asset-based M&E and fund expenses continue) | [S1] [S2] [S4] |
 | Renewal / conversion | Not applicable (permanent coverage; no renewal or conversion mechanism) | **[std]** (2) |
 
 Footnotes:
@@ -60,7 +60,7 @@ Footnotes:
    footnotes [S2]. $100,000 chosen as a single round figure inside the observed band
    for retail protection/accumulation VUL.
 2. **[std]** Statement of absence. The retrieved filings describe no renewal or
-   conversion features for the base policy [S1][S2][S3][S4]; recorded here as an
+   conversion features for the base policy [S1] [S2] [S3] [S4]; recorded here as an
    explicit modeling boundary.
 
 ### Premiums and premium loads
@@ -68,7 +68,7 @@ Footnotes:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium flexibility | Flexible amount/timing after required initial premium; minimum subsequent premium $25 | [S1] |
-| Premium refusal rights | Insurer may refuse premium that would increase death benefit under §7702 by more than it increases the fund, or that exceeds the Guideline Premium Limit; premium creating MEC status must be removed timely | [S1][R3][R4] |
+| Premium refusal rights | Insurer may refuse premium that would increase death benefit under §7702 by more than it increases the fund, or that exceeds the Guideline Premium Limit; premium creating MEC status must be removed timely | [S1] [R3] [R4] |
 | Premium load — guaranteed maximum | 6.0% of each premium | [S2] |
 | Premium load — current | 4.0% of each premium, all years | **[std]** (3) |
 
@@ -85,11 +85,11 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Cost of insurance (COI) | Monthly rate per $1,000 of net amount at risk (NAAR = death benefit − account value, floored at zero); rates vary by sex, class, attained age, band, duration | [S1][S2][S4] (floor: **[std]** (4)) |
-| COI guaranteed maximum basis | 2017 CSO, sex-distinct smoker/nonsmoker ultimate ANB tables | [S2][S4][R12] |
-| COI rate cap | $83.34 per $1,000 per month (observed $83.33–$83.34 across filings; ≈ 1/12 of $1,000 — the monthly rate that fully consumes the NAAR near attained age 120/121; interpretation [unverified]) | [S1][S2][S3][S4] |
+| Cost of insurance (COI) | Monthly rate per $1,000 of net amount at risk (NAAR = death benefit − account value, floored at zero); rates vary by sex, class, attained age, band, duration | [S1] [S2] [S4] (floor: **[std]** (4)) |
+| COI guaranteed maximum basis | 2017 CSO, sex-distinct smoker/nonsmoker ultimate ANB tables | [S2] [S4] [R12] |
+| COI rate cap | $83.34 per $1,000 per month (observed $83.33–$83.34 across filings; ≈ 1/12 of $1,000 — the monthly rate that fully consumes the NAAR near attained age 120/121; interpretation [unverified]) | [S1] [S2] [S3] [S4] |
 | COI current scale | Input scale; default placeholder = 50% of guaranteed 2017 CSO maxima; representative disclosed anchor: male 45 standard nonsmoker year 1 — guaranteed $0.22, current $0.04 per $1,000 | **[std]** (5); anchor [S4] |
-| Per-policy administrative charge | $10.00 per month, all years | [S2][S4] |
+| Per-policy administrative charge | $10.00 per month, all years | [S2] [S4] |
 | Per-$1,000 face charge | $0.20 per $1,000 of initial face amount per month, all years; current = guaranteed | [S2] (level), duration/current basis **[std]** (6) |
 
 Footnotes:
@@ -123,7 +123,7 @@ Footnotes:
 
 Footnotes:
 7. **[std]** Deduction frequency. S1 deducts daily via unit values; S2/S3/S4 deduct
-   monthly [S2][S3][S4]. The reference model applies the asset charge in the monthly
+   monthly [S2] [S3] [S4]. The reference model applies the asset charge in the monthly
    unit-value factor (see technical notes) — a monthly approximation of daily accrual.
 8. **[std]** Guaranteed M&E ceiling. Observed: 0.45% (S1, level not split
    current/guaranteed in the fee-table extract) [S1]; 1.00% years 1–10 / 0.50%
@@ -139,10 +139,10 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Surrender charge period | First 14 policy years; applies on lapse, full surrender, or face decrease (pro rata on decreases) | [S1][S2] |
+| Surrender charge period | First 14 policy years; applies on lapse, full surrender, or face decrease (pro rata on decreases) | [S1] [S2] |
 | Surrender charge level | Initial $18.00 per $1,000 of face, declining linearly to zero at the end of policy year 14 | **[std]** (10) |
 | Withdrawal fee | $25 per withdrawal; minimum withdrawal $500 | [S1] |
-| Transfer fee | 12 free transfers per year; $25 each thereafter | [S1][S4] |
+| Transfer fee | 12 free transfers per year; $25 each thereafter | [S1] [S4] |
 
 Footnotes:
 10. **[std]** Surrender charge scale. Complete per-$1,000 schedules by issue
@@ -157,13 +157,13 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Option A (Type A / Option 1) | DB = face amount (level); NAAR shrinks as fund grows | [S1][S2][S4] |
-| Option B (Type B / Option 2) | DB = face amount + account value | [S1][S2][S3][S4] |
+| Option A (Type A / Option 1) | DB = face amount (level); NAAR shrinks as fund grows | [S1] [S2] [S4] |
+| Option B (Type B / Option 2) | DB = face amount + account value | [S1] [S2] [S3] [S4] |
 | Corridor minimum | DB ≥ corridor factor × account value; representative GPT factors 250% (ages ≤40), 215% (45), 185% (50), 150% (55), 130% (60), grading to 100% at ages 90–95 | [S2] (factors); [R3] (statute); interpolation **[std]** (11) |
 | §7702 test | Guideline Premium Test (GPT) for the baseline model point; CVAT/GPT elected at issue in practice | Election [S1]; baseline choice **[std]** (12) |
 | DB option changes | Permitted subject to approval; face adjusted so total DB is unchanged at the change date | [S1] |
-| Automatic DB increase | Insurer may increase DB to preserve §7702 qualification and refuse premium breaching guideline limits | [S1][S2] |
-| DB offsets | Death benefit payable reduced by outstanding policy debt and, during grace, amounts needed to keep the policy in force | [S1][S3] |
+| Automatic DB increase | Insurer may increase DB to preserve §7702 qualification and refuse premium breaching guideline limits | [S1] [S2] |
+| DB offsets | Death benefit payable reduced by outstanding policy debt and, during grace, amounts needed to keep the policy in force | [S1] [S3] |
 
 Footnotes:
 11. **[std]** Corridor interpolation. S2 quotes quinquennial representative factors;
@@ -172,7 +172,7 @@ Footnotes:
     grades to 100% at 95.
 12. **[std]** Test election. Both tests are observed; GPT chosen for the baseline
     because the corridor-factor mechanics are fully specified by the sourced factor
-    table [S2][R3]. CVAT variation: alternate DB = account value × reciprocal of the
+    table [S2] [R3]. CVAT variation: alternate DB = account value × reciprocal of the
     net single premium at 2% interest and 2017 CSO mortality (101% above age 99)
     [S2]; the 2% rate traces to the post-2020 §7702(f)(11) "insurance interest rate"
     with its 2021 transition rate [R3].
@@ -202,7 +202,7 @@ Footnotes:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Default test | Policy in default when fund less surrender charge less debt ≤ 0 (or debt ≥ fund less surrender charge), unless a no-lapse guarantee applies | [S1] |
-| Grace period | 61 days from notice; notice premium ≈ 3 months of deductions; death benefit during grace equals the death benefit in effect (net of amounts due) | [S1][R8] |
+| Grace period | 61 days from notice; notice premium ≈ 3 months of deductions; death benefit during grace equals the death benefit in effect (net of amounts due) | [S1] [R8] |
 | Reinstatement | Within 3 years of termination with evidence of insurability and payment covering ≈3 months of deductions plus premium charge | [S2] |
 
 ## Contractual mechanics
@@ -217,10 +217,10 @@ premium P·(1−γ) is allocated to subaccounts and the fixed option per the
 policyholder's allocation percentages (whole-percentage allocations; a model-point
 attribute). The insurer may refuse premiums that would breach §7702 guideline limits
 or force a death-benefit increase, and MEC-creating premium must be removed timely
-[S1][R3][R4].
+[S1] [R3] [R4].
 
 **Account value.** Account value AV = Σᵢ subaccount values + fixed-option value +
-loan-account value [S1][S2][S3][S4]. Subaccount values evolve with unit values driven
+loan-account value [S1] [S2] [S3] [S4]. Subaccount values evolve with unit values driven
 by gross fund performance less fund operating expenses less the asset-based M&E
 charge (daily in the contract [S1]; monthly approximation in the model **[std]**).
 The fixed option accrues daily interest at the declared rate, floor 1.0% [S1].
@@ -230,17 +230,17 @@ The fixed option accrues daily interest at the declared rate, floor 1.0% [S1].
     MD_t = COI_t + e_pol + e_face · F_0/1000
     COI_t = c_t · NAAR_t / 1000,  NAAR_t = max(0, DB_t − AV_t)
 
-with e_pol = $10.00 [S2][S4], e_face = $0.20 per $1,000 of initial face F_0 [S2],
+with e_pol = $10.00 [S2] [S4], e_face = $0.20 per $1,000 of initial face F_0 [S2],
 and c_t the current monthly COI rate per $1,000, bounded by the 2017 CSO guaranteed
-maximum [S2][S4][R12] and capped at $83.34 [S1][S2][S4]. The deduction is taken from
+maximum [S2] [S4] [R12] and capped at $83.34 [S1] [S2] [S4]. The deduction is taken from
 unloaned accounts pro rata **[std]**. Current charges are nonguaranteed elements: the
 insurer may raise them up to guaranteed maxima, by class, and cannot recoup prior
-losses or distribute prior gains [S1][R11].
+losses or distribute prior gains [S1] [R11].
 
 **Death benefit.** Option A: DB_t = max(F_t, κ_t·AV_t). Option B:
 DB_t = max(F_t + AV_t, κ_t·AV_t). κ_t is the GPT corridor factor at attained age
-[S2][R3]. The amount payable at death is DB_t minus outstanding policy debt and any
-amounts required during grace [S1][S3].
+[S2] [R3]. The amount payable at death is DB_t minus outstanding policy debt and any
+amounts required during grace [S1] [S3].
 
 **Charges and credits.** The asset-based M&E charge (current 0.45% p.a. [S1],
 guaranteed max 0.60% **[std]**) and fund expense ratios reduce unit values; all other
@@ -271,7 +271,7 @@ requires evidence of insurability and ≈3 months of deductions plus premium cha
 
 **Age 121.** From the anniversary at attained age 121: no further premiums accepted,
 no monthly deductions; asset-based charges and fund expenses continue; the policy
-continues to death or surrender; lapse only from excess debt [S1][S2][S4].
+continues to death or surrender; lapse only from excess debt [S1] [S2] [S4].
 
 ## Riders
 
@@ -299,8 +299,8 @@ Out of scope (listed only; observed charges recorded in the research notes):
 accelerated death benefit / chronic & terminal illness riders (BenefitAccess, Living
 Needs [S1]; Living Benefits, LTC Services [S2]; Premier LTC, Terminal Illness [S4]);
 layered term riders (ART/Scheduled ART/SVER [S4]); disability waiver riders
-[S1][S2]; children's term [S1][S2]; accidental death [S1]; guaranteed insurability
-[S2]; enhanced early cash value riders [S1][S2]; charitable legacy [S2]; index-linked
+[S1] [S2]; children's term [S1] [S2]; accidental death [S1]; guaranteed insurability
+[S2]; enhanced early cash value riders [S1] [S2]; charitable legacy [S2]; index-linked
 account options on the VUL chassis (Equitable MSO II [S2]; Pacific Life Indexed Fixed
 Options [S4]).
 
@@ -308,7 +308,7 @@ Options [S4]).
 
 1. **Load structure.** Two archetypes: (a) front-loaded + back-loaded traditional
    VUL — premium loads 6%–7.5% max (current 3%–4%) plus 10–15 year surrender charge
-   [S1][S2][S4]; (b) low-load/no-load — no premium load, no surrender charge,
+   [S1] [S2] [S4]; (b) low-load/no-load — no premium load, no surrender charge,
    compensated through asset-based and per-$1,000 charges [S3]. The baseline follows
    (a) because it remains the dominant retail pattern.
 2. **M&E / asset charge.** 0.20% current/0.36% max monthly [S4]; 0.45% daily [S1];
@@ -316,26 +316,26 @@ Options [S4]).
    0.45% current under a 0.60% ceiling — mid-range, avoids duration tiering.
 3. **COI basis.** All quote per-$1,000-NAAR monthly rates capped near $83.33–$83.34;
    guaranteed maxima moved from 2001 CSO (older generations, e.g., S1) to 2017 CSO
-   [S2][S4]; two-tier COI structures and face-amount banding exist [S1];
+   [S2] [S4]; two-tier COI structures and face-amount banding exist [S1];
    gender-neutral policies use an 80% male/20% female blended 2017 CSO table [S2].
    Baseline: 2017 CSO sex-distinct, no banding — the current-generation norm.
-4. **Death benefit options.** A and B universal [S1][S2][S3][S4]; return-of-premium
+4. **Death benefit options.** A and B universal [S1] [S2] [S3] [S4]; return-of-premium
    Option C (DB = face + premiums − withdrawals, subject to a limit) only at Pacific
    Life among the four [S4]; Lincoln pivots on a Target Age with an expected
    Option 2 → Option 1 switch [S3]. Baseline: A and B only.
-5. **Secondary guarantees.** From short built-in guarantees [S1][S3], age-graded
+5. **Secondary guarantees.** From short built-in guarantees [S1] [S3], age-graded
    15→5-year riders [S2], to priced flexible-duration shadow-fund riders [S4].
    Baseline excludes the NLG (see Riders) so that base-contract lapse mechanics stay
    clean; the guarantee is a documented variation.
 6. **Fixed/indexed options.** Floors 1% [S1], 1.5% [S2], 2% [S4]; indexed accounts
-   bolted onto the VUL chassis [S2][S4]. Baseline: single fixed option, 1% floor —
+   bolted onto the VUL chassis [S2] [S4]. Baseline: single fixed option, 1% floor —
    S1's fixed option, whose transfer-out and loan mechanics the baseline already
    adopts; indexed options are separately-prospectused add-ons out of scope.
 7. **Loans.** Net spreads 0.05%–1.0% duration-dependent [S1]; Moody's-linked charged
-   rate, spread 1% → 0% from year 11 [S2]; flat 0.25% [S3][S4]. Baseline: S1's fixed
+   rate, spread 1% → 0% from year 11 [S2]; flat 0.25% [S3] [S4]. Baseline: S1's fixed
    2.0%/1.0% then 1.05%/1.0% — fully specified numerically in the source.
 8. **Credits.** Persistency credit 0.40% from year 9 [S1]; unit-value expense
-   reductions [S2]; duration step-downs of loads/M&E [S1][S2]. Excluded from the
+   reductions [S2]; duration step-downs of loads/M&E [S1] [S2]. Excluded from the
    baseline for parsimony; material for calibration to any specific insurer.
 
 ## Regulatory context
@@ -389,7 +389,7 @@ Valuation Manual, Jan. 1, 2026 [REG-R3]; the SVL is Model 820 [REG-R1].
 
 **Illustrations.** The Life Insurance Illustrations Model Regulation (Model 582)
 explicitly excludes variable life [REG-R4]; VUL sales illustrations are instead
-governed by the securities disclosure regime (N-6/498A) [R1][R2] and FINRA
+governed by the securities disclosure regime (N-6/498A) [R1] [R2] and FINRA
 communications rules (Rule 2211 identified but not fetched) [R13].
 
 **Federal tax — product qualification.** §7702 requires CVAT or GPT-plus-corridor
@@ -398,7 +398,7 @@ for 2021 issues) [R3]; §7702A applies the 7-pay test, with MEC status triggerin
 less-favorable distribution taxation and material changes restarting the test [R4].
 Separate-account diversification under §817(h) and Treas. Reg. §1.817-5 (55/70/80/90
 quarterly tests, look-through for insurance-dedicated funds) is a condition of
-life-insurance treatment [R5][R6].
+life-insurance treatment [R5] [R6].
 
 **Nonguaranteed elements.** Current COI scales, loads, declared rates, and credits
 are NGEs governed by ASOP No. 2: determination policy, policy classes reflecting

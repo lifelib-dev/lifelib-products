@@ -57,7 +57,7 @@ Access date for all citations: **2026-08-04**, except **REG-R151**, **REG-R153**
   Carolina).
 - **VINTAGE CAVEAT carried over:** this guide is from 2019 and predates SECURE 1.0/2.0.
   Its QLAC figures ($130,000 limit, 25%-of-balance limit, RMD age 70½) are **superseded**
-  — see [R1][R2][R3]. Its *product mechanics* remain the most detailed DIA description
+  — see [R1] [R2] [R3]. Its *product mechanics* remain the most detailed DIA description
   retrieved and are cited as such. This is the **archetype** for the representative design.
 
 (uslib-deferred_income_annuity-s3)=
@@ -551,7 +551,7 @@ referred to descriptively where it comes up at all and is **never cited as a [RE
 
 Extraction details live in `_research/deferred-income-annuity.md`: that file records
 which facts came from which source, the [unverified] flags, the failed fetches (S7–S11),
-the source-vintage caveats (MassMutual 2019 [S2][S8], Guardian January 2018 [S3][S9][S11],
+the source-vintage caveats (MassMutual 2019 [S2] [S8], Guardian January 2018 [S3] [S9] [S11],
 with NYL June 2026 [S1] and Pacific Life February 2026 [S4] the current-vintage primary
 sources — the research file's own S4 header calls it "the most up-to-date primary source
 retrieved", which its S1 header (June 2026 revision code) does not support), the distributor-mirror
@@ -559,12 +559,12 @@ hosting caveat for [S1] and [S3], and the four **regulatory corrections** this l
 follows rather than repeating the common misconceptions:
 
 1. **Model #250 is the Variable Annuity Model Regulation, not the Annuity Disclosure Model
-   Regulation** — the disclosure model is **#245** [R11][R12][REG-R43][REG-R45].
+   Regulation** — the disclosure model is **#245** [R11] [R12] [REG-R43] [REG-R45].
 2. **The QLAC rules live in Treas. Reg. § 1.401(a)(9)-6(q), not in "A-17"** — T.D. 10001
-   restructured them out of the Q&A format on July 19, 2024 [R1][R6][REG-R58].
+   restructured them out of the Q&A format on July 19, 2024 [R1] [R6] [REG-R58].
 3. **The 25%-of-account-balance QLAC premium limit no longer exists** — SECURE 2.0 § 202
    directed its elimination and the codified text has only a dollar limitation
-   [R1][R2][REG-R58].
+   [R1] [R2] [REG-R58].
 4. **The Model #805 indexed nonforfeiture rate floor is 15 basis points, not 1%** — the DIA
    research file's own extract did not capture Section 4.B and therefore left the "floored
    at 1%" formulation [unverified] [R10]; the fully fetched text in the cross-product

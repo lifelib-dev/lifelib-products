@@ -22,7 +22,7 @@ as a refinement but as a precondition. Actuarial Guideline LIV makes the Interim
 the value at which *every* mid-term withdrawal, surrender, death benefit, annuitization,
 transfer and fee deduction settles — the market value of a hypothetical replicating
 portfolio of European options plus a fixed income proxy [R2], and the source prospectuses
-implement exactly that with Black-Scholes [S2][S6] or an equivalent market-standard
+implement exactly that with Black-Scholes [S2] [S6] or an equivalent market-standard
 European model [S4]. No other product in this library has a contractual value that cannot
 be computed without a derivatives pricer. Architecturally the crediting engine, the
 interim-value engine and the market-data provider are three separate components, and the
@@ -36,9 +36,9 @@ interim-value engine is called at every projection step for every open option.
   payments, death claims, annuitization outgo, expenses) for a single-contract model
   point. Reserves are not computed (see *Valuation and reserve pointers*).
 - **Projection frequency.** **Monthly** **[std]**. The contractual interim value is a
-  *daily* quantity [S2][S4][S5][S6]; the model evaluates it at each month end. Terms are
+  *daily* quantity [S2] [S4] [S5] [S6]; the model evaluates it at each month end. Terms are
   integer years, the withdrawal-charge schedule runs by complete contract years and
-  free-withdrawal limits reset annually [S1][S2], so a monthly grid captures every
+  free-withdrawal limits reset annually [S1] [S2], so a monthly grid captures every
   contractual boundary. A daily sub-grid is needed only for a path-dependent Performance
   Lock election module [S2].
 - **Timing convention.** Month index `t = 0, 1, 2, …` denotes **month ends**, `t = 0` being
@@ -48,14 +48,14 @@ interim-value engine is called at every projection step for every open option.
 - **Age basis.** **Age nearest birthday (ANB)** **[std]** — the 2012 IAM Period Table
   printed in Model #821 and VM-M is stated age nearest birthday [REG-R59], and VM-21
   prescribes percentages of the 2012 IAM Basic Table with Scale G2 for prudent-estimate
-  mortality on contracts with **VAGLBs and roll-up GMDBs** [REG-R35][REG-R59] — a class
+  mortality on contracts with **VAGLBs and roll-up GMDBs** [REG-R35] [REG-R59] — a class
   that does *not* include the return-of-premium GMDB modeled here, so the prudent-estimate
   basis is a scope reference, not a prescription for this design.
 - **Model points.** Single-contract model points on an expected (probability-weighted)
   basis: in-force factors multiply per-contract cash flows. A model point is one contract
   holding one index-linked option; multi-option contracts are a vector of options sharing
   one contract-level decrement and one contract-level guarantee base.
-- **Index basis.** All representative indices are **price return** [S1][S2], so the dividend
+- **Index basis.** All representative indices are **price return** [S1] [S2], so the dividend
   yield is a live pricing input — omitting it overprices every call in the portfolio.
 - **Rounding.** Full precision internally; cash flows reported to cents **[std]**.
 
@@ -85,7 +85,7 @@ interim-value engine is called at every projection step for every open option.
 | `fixed_account_value` | currency | 0 |
 | `holding_account_value` | currency | 0 |
 | `rop_base` | currency (GMDB return-of-premium base) | 100,000 |
-| `wc_schedule` | vector by complete contract year | (0.07, 0.07, 0.06, 0.05, 0.04, 0.03, 0.00) [S1][S2] |
+| `wc_schedule` | vector by complete contract year | (0.07, 0.07, 0.06, 0.05, 0.04, 0.03, 0.00) [S1] [S2] |
 | `lock_flag` | bool (Performance Lock exercised this term) | false |
 | `lock_value` | currency (valid when `lock_flag`) | — |
 
@@ -104,7 +104,7 @@ interim-value engine is called at every projection step for every open option.
 | `AV(t)` | Account Value = sum of V_k(t) + FA(t) + HA(t) | monthly |
 | `ROP(t)` | Return-of-premium GMDB base | proportional reduction on withdrawal |
 | `FW_used(y)` | Free withdrawal amount consumed in contract year y | on withdrawal; resets annually |
-| `AV_anniv(y)` | Account Value at the prior Contract Anniversary (free-withdrawal base) | annually [S1][S2] |
+| `AV_anniv(y)` | Account Value at the prior Contract Anniversary (free-withdrawal base) | annually [S1] [S2] |
 | `cy(t)` | Complete contract years since issue = floor(t/12) | monthly |
 | `tau_k(t)` | Years remaining in option k's term = (days remaining)/365 [S2] | monthly |
 | `l(t)` | In-force probability at end of month t; `l(0) = 1` | monthly decrements |
@@ -121,20 +121,20 @@ product: the contractual formula itself consumes market data.
 
 | Input | Value | Basis |
 |---|---|---|
-| Buffer `b` (guaranteed for the term) | 0.10 | [S1][S2] |
-| Term length `T` | 6 years (menu 1/3/6) | [S1][S2]; menu **[std]** |
-| Minimum guaranteed Cap Rate | 2% / 6% / 8% for T = 1 / 3 / 6 | [S1][S2] |
+| Buffer `b` (guaranteed for the term) | 0.10 | [S1] [S2] |
+| Term length `T` | 6 years (menu 1/3/6) | [S1] [S2]; menu **[std]** |
+| Minimum guaranteed Cap Rate | 2% / 6% / 8% for T = 1 / 3 / 6 | [S1] [S2] |
 | Minimum guaranteed Step Rate, Edge Rate | 2%, 2% | [S2] |
-| Minimum guaranteed interest rate (Fixed / Holding Account) | 1% | [S1][S2] |
-| Withdrawal charge schedule `wc(cy)` | 7, 7, 6, 5, 4, 3, 0 % | [S1][S2] |
-| Free Withdrawal Amount | 0 in contract year 1; thereafter 10% of `AV_anniv`, non-cumulative | [S1][S2] |
+| Minimum guaranteed interest rate (Fixed / Holding Account) | 1% | [S1] [S2] |
+| Withdrawal charge schedule `wc(cy)` | 7, 7, 6, 5, 4, 3, 0 % | [S1] [S2] |
+| Free Withdrawal Amount | 0 in contract year 1; thereafter 10% of `AV_anniv`, non-cumulative | [S1] [S2] |
 | Death benefit | max(Account Value, ROP base) for issue ages ≤ 80 | [S2] |
-| Value used for every mid-term transaction | Interim Value | [S1][S2][S4][S6] |
+| Value used for every mid-term transaction | Interim Value | [S1] [S2] [S4] [S6] |
 | Interim value formula | family (a), straight-line budget amortization, CMT discount | [S2]; selection **[std]** |
-| Transfer Period | 5 calendar days after the Contract Anniversary coinciding with a Term End Date; `V = IA` during it | [S1][S2] |
+| Transfer Period | 5 calendar days after the Contract Anniversary coinciding with a Term End Date; `V = IA` during it | [S1] [S2] |
 | Maturity Date | later of (anniversary after oldest owner's age 90) and 10 years | [S2] |
 
-### (b) Insurer-declared current elements (NGEs, revisable under ASOP No. 2 [R5][REG-R26])
+### (b) Insurer-declared current elements (NGEs, revisable under ASOP No. 2 [R5] [REG-R26])
 
 | Input | Snapshot value | Basis |
 |---|---|---|
@@ -142,7 +142,7 @@ product: the contractual formula itself consumes market data.
 | Declared Step Rate (1 yr) | 8% | **[std]**; observed illustrative 8% [S1], 5% with 90% participation [S3], 12.5% trigger [S6] |
 | Declared Edge Rate (1 yr) | 6% | **[std]** — no Edge value appears in any retrieved document; set below the Step Rate because the Edge design pays down to −b |
 | Participation Rate | 100% | [S4] |
-| Declared Fixed / Holding Account rate | 3.00% | **[std]** — only the 1% contractual minimum is public [S1][S2] |
+| Declared Fixed / Holding Account rate | 3.00% | **[std]** — only the 1% contractual minimum is public [S1] [S2] |
 | Trading cost factor `kappa` | 0.10% of the sum of absolute option market values | **[std]** — AG 54 requires a Trading Cost provision [R2] but no prospectus quantifies it (research gap 8); the Academy example implies costs of order 0.1% of option value [R6] |
 
 **NGE redetermination rule [std].** At each Term Start Date the declared cap is the
@@ -165,9 +165,9 @@ periodic review of in-force NGEs [R5]. Base projection holds the snapshot scale 
 | Base mortality (deferral period) | **2012 IAM Basic Table** (ANB) — the *unloaded* table underlying the Period Table, VM-M §2.C — with generational Projection Scale G2, `q_x^{2012+n} = q_x^{2012,Basic} x (1 − G2_x)^n` | [REG-R59] |
 | Valuation / guaranteed-purchase-rate basis | 2012 IAM **Period** Table with Scale G2 (i.e. the 2012 IAR), `q` rounded to three decimals per 1,000 **from the 2012 period rate each time — never by compounding an already-rounded prior-year rate** | [REG-R59] |
 | Mortality A/E | 2020–2024 Individual Payout Annuity Mortality Experience Study (23 parent groups, >80% of sales, 3.1m contract-years, 143,190 deaths), reported against the 2012 IAM **Basic** basis | [REG-R61]; A/E factor **[std]** 100% |
-| Deferred-period annuitant mortality | Materially under-evidenced publicly — only a 2011–2015 deferred annuity mortality study and a 2006 analysis are indexed, neither fetched | [REG-R65][unverified] |
+| Deferred-period annuitant mortality | Materially under-evidenced publicly — only a 2011–2015 deferred annuity mortality study and a 2006 analysis are indexed, neither fetched | [REG-R65] [unverified] |
 | Base surrender | VA / RILA contract-holder behavior study 2022–2024 (17 companies, ~48% of new premium **for VAs and RILAs**, 11.5m contracts, $1.5tn, >625,000 surrender events) — detailed tables are behind a paid data package | [REG-R64]; reference table **[std]** |
-| Charge-expiry shock lapse | Order-of-magnitude anchors only: ~10% (with GLWB) vs ~33% (without) for FIA, ~52%/~56% for fixed-rate deferred | [REG-R62][REG-R63][unverified] |
+| Charge-expiry shock lapse | Order-of-magnitude anchors only: ~10% (with GLWB) vs ~33% (without) for FIA, ~52%/~56% for fixed-rate deferred | [REG-R62] [REG-R63] [unverified] |
 | Withdrawal / partial-surrender utilization | Same VA/RILA study (4m withdrawal transactions, $56.7bn withdrawn) | [REG-R64]; reference rule **[std]** |
 | Maintenance expense | $60 per contract per year, inflating 2.5% p.a. | **[std]** |
 | Acquisition expense | 6% of premium plus $200 per contract | **[std]** |
@@ -183,7 +183,7 @@ the Basic table. The payout chassis in `products/immediate_annuity/technical-not
 calibrates the same study to **108.4%** of 2012 IAM Basic projected with G2; that factor is
 *payout-annuitant-select* and is deliberately **not** imported here, because the RILA
 deferral-phase population is not annuitant-select and public deferred-period annuitant
-mortality is thin [REG-R65][unverified]. Hence the **[std]** 100% A/E, which is a
+mortality is thin [REG-R65] [unverified]. Hence the **[std]** 100% A/E, which is a
 placeholder, not a measurement.
 
 Reference base annual surrender table **[std]** (shape only; calibration is the user's).
@@ -201,7 +201,7 @@ giving a reference year-7 rate of **6.0%** before the moneyness multiplier. Note
 table exhibits no post-shock reversion; it is a shape placeholder and a calibrated run
 should separate the two.
 
-Contract year 7 is the first year in which the withdrawal charge is zero [S1][S2] **and**
+Contract year 7 is the first year in which the withdrawal charge is zero [S1] [S2] **and**
 the first year following a 6-year Term End Date — the two events coincide on this
 chassis, which is why the shock is applied there.
 
@@ -268,13 +268,13 @@ are per annum.
 Let `R` be the index performance over the completed term. Piecewise crediting rate `g`:
 
     BUFFER + CAP      g = min(R, c)                if R >= 0
-                      g = min(0, R + b)            if R <  0                    [S1][S2]
+                      g = min(0, R + b)            if R <  0                    [S1] [S2]
 
     BUFFER + CAP + PR g = min(PR * R, c)           if R >= 0
                       g = min(0, R + b)            if R <  0                    [S4]
 
     BUFFER + STEP     g = s                        if R >= 0
-                      g = min(0, R + b)            if R <  0                    [S1][S2]
+                      g = min(0, R + b)            if R <  0                    [S1] [S2]
 
     BUFFER + EDGE     g = e                        if R >= -b
                       g = R + b                    if R <  -b                   [S2]
@@ -287,17 +287,17 @@ discontinuities the source documents flag — a Step design pays the full step a
 `R = 0.00%` and zero at `R = −0.01%` [S4], and a dual/absolute-return design flips sign at
 the buffer edge [S4]. They are contractual, not artifacts; do not smooth them.
 
-Roll-forward [S1][S2]:
+Roll-forward [S1] [S2]:
 
     IA_k(term end) = IA_k(term start, adjusted for withdrawals) * (1 + g)
 
 ### Replicating portfolios (per unit of notional; each option has notional equal to `IA` [S4])
 
-    CAP:        Pi = [ C(I, I_s, tau) − C(I, I_s(1+c), tau) − P(I, I_s(1−b), tau) ] / I_s     [S2][S3][S5][S6]
+    CAP:        Pi = [ C(I, I_s, tau) − C(I, I_s(1+c), tau) − P(I, I_s(1−b), tau) ] / I_s     [S2] [S3] [S5] [S6]
     CAP + PR:   Pi = PR * [ C(I, I_s, tau) − C(I, I_s(1+c/PR), tau) ] / I_s
                      − P(I, I_s(1−b), tau) / I_s                                              [S4]
-    STEP:       Pi = s * BC(I, I_s, tau) − P(I, I_s(1−b), tau) / I_s                          [S2][S5]
-    EDGE:       Pi = e * BC(I, I_s(1−b), tau) − P(I, I_s(1−b), tau) / I_s                     [S2][S5]
+    STEP:       Pi = s * BC(I, I_s, tau) − P(I, I_s(1−b), tau) / I_s                          [S2] [S5]
+    EDGE:       Pi = e * BC(I, I_s(1−b), tau) − P(I, I_s(1−b), tau) / I_s                     [S2] [S5]
     FLOOR:      Pi = [ C(I, I_s, tau) − C(I, I_s(1+c), tau)
                        − P(I, I_s, tau) + P(I, I_s(1−f), tau) ] / I_s                         [S5]
     TIERED PR:  Pi = [ C(I, I_s, tau) + (PR2 − PR1) * C(I, I_s(1+L), tau)
@@ -308,7 +308,7 @@ call spread, sell an ATM put, and buy back an OTM put struck at the floor so the
 exposure stops there; Allianz states that "the out-of-the-money put will almost always
 reduce, and never exceed, the negative impact of the at-the-money put for the Index Guard
 Strategy" [S5]. For the Edge/dual-precision design the binary call is *in the money*
-because it pays when the index ratio is at or above `1 − b` [S2][S5]. If a Cap option is
+because it pays when the index ratio is at or above `1 − b` [S2] [S5]. If a Cap option is
 uncapped, the out-of-the-money call is valued at zero [S2].
 
 **Verification identity (implement as a unit test).** At `tau = 0`, every `Pi` above
@@ -317,7 +317,7 @@ collapses to the corresponding `g`. For CAP with `I/I_s = 1 + R`:
 does not reproduce `IA * (1 + g)` exactly, the strike set or the notional convention is
 wrong.
 
-### Interim value — the [std] baseline (family (a), the AG 54-literal form [S2][R2])
+### Interim value — the [std] baseline (family (a), the AG 54-literal form [S2] [R2])
 
     B_k(t)  = beta * IA_k(t) * tau(t) / T                                (straight-line amortization [S2])
     F_k(t)  = [ IA_k(t) − B_k(t) ] * [ (1 + r_0) / (1 + r(t)) ] ^ tau(t)
@@ -351,7 +351,7 @@ Values [R6].
 ### Interim value — the two alternative families (implement as switchable strategies)
 
 **(b) Full notional discounted at a current rate, plus an always-positive expense
-rebate** [S4][S6]:
+rebate** [S4] [S6]:
 
     V_k(t) = IA_k(t) / (1 + rate(t)) ^ tau(t)  +  D_k(t)  +  CCF_k(t)
     CCF_k(t) = E_0 * tau(t) / T          (Cap Calculation Factor; always positive, declines)
@@ -404,7 +404,7 @@ material-consistency demonstration.
 ### The universal proportional rule for withdrawals
 
 Every insurer in the sample reduces the index-linked notional **in proportion to the
-reduction in interim value**, not dollar-for-dollar [S2][S3][S4][S6]. For a gross
+reduction in interim value**, not dollar-for-dollar [S2] [S3] [S4] [S6]. For a gross
 withdrawal `G_k` taken from option k at time t:
 
     IA_k(t+) = IA_k(t−) * ( 1 − G_k / V_k(t−) )
@@ -430,13 +430,13 @@ Exception: after a **Performance Lock**, the locked value is reduced **dollar-fo
 ### Withdrawal charge, free amount, and allocation
 
     FW(t)        = 0                                            if cy(t) = 0
-                 = 0.10 * AV_anniv(y) − FW_used(y)              otherwise            [S1][S2]
+                 = 0.10 * AV_anniv(y) − FW_used(y)              otherwise            [S1] [S2]
     chargeable   = max( 0, G_total − FW(t) )
-    WC(t)        = wc( cy(t) ) * chargeable                                          [S1][S2]
+    WC(t)        = wc( cy(t) ) * chargeable                                          [S1] [S2]
     net proceeds = G_total − WC(t)
 
 The charge is deducted from the amount withdrawn and is **not grossed up** on this chassis
-[S1][S2] (contrast [S4], where "any amount deducted to pay withdrawal charges is also
+[S1] [S2] (contrast [S4], where "any amount deducted to pay withdrawal charges is also
 subject to that same withdrawal charge percentage"). Verification against the prospectus
 example [S2]: $100,000 payment, $80,000 Account Value at the start of contract year 6,
 full withdrawal → `FW = $8,000`, chargeable `$72,000`, `wc(5) = 3%`, charge `$2,160`, cash
@@ -446,18 +446,18 @@ value `$77,840`. `G_total` is allocated across open options **pro rata to interi
 ### Contract-level values and benefits
 
     AV(t)   = sum_k V_k(t) + FA(t) + HA(t)
-    CSV(t)  = AV(t) − wc(cy(t)) * max(0, AV(t) − FW(t))                 (full surrender)  [S1][S2]
-    ROP(t+) = ROP(t−) * ( 1 − G_total / AV(t−) )                        (proportional)    [S1][S2]
+    CSV(t)  = AV(t) − wc(cy(t)) * max(0, AV(t) − FW(t))                 (full surrender)  [S1] [S2]
+    ROP(t+) = ROP(t−) * ( 1 − G_total / AV(t−) )                        (proportional)    [S1] [S2]
     DB(t)   = max( AV(t), ROP(t) )        for issue ages <= 80;  = AV(t) for 81+          [S2]
     Annuitization value = AV(t), with each open option contributing V_k(t)                [S1]
 
 Note the GMDB's interaction with the interim value: `AV(t)` is depressed exactly when the
 option leg is deep out of the money, so the return-of-premium guarantee bites in equity
-stress [S1][S2]. The reduction ratio applied to `ROP` uses the **gross** amount removed
+stress [S1] [S2]. The reduction ratio applied to `ROP` uses the **gross** amount removed
 from the contract, i.e. including any withdrawal charge [S1].
 
 Fixed and Holding Accounts accrue monthly at the declared rate, floored at the 1%
-guaranteed minimum [S1][S2]:
+guaranteed minimum [S1] [S2]:
 `FA(t) = FA(t−1) * (1 + max(i_declared, 0.01))^(1/12)`.
 
 ### Monthly processing order [std]
@@ -515,7 +515,7 @@ Note on the option budget: on this chassis the cap *is* the fee — "While no fe
 charges are deducted from the amounts held in the Index Strategies, the available Cap
 Rates, Participation Rates, Tier Levels, and Step Rates reflect the expenses related to
 the Index Strategies" [S3]; Equitable and Lincoln call the cap an "implicit ongoing fee"
-[S4][S6]. A gross-liability projection must therefore **not** deduct a charge from the
+[S4] [S6]. A gross-liability projection must therefore **not** deduct a charge from the
 index-linked value; the margin appears as the spread between the earned rate and the
 option budget implied by the declared cap.
 
@@ -534,10 +534,10 @@ aggregate counts only; the detailed tables sit behind a paid data package).
   `w_m = 1 − (1 − w_annual)^(1/12)`.
 - **Charge-expiry shock [std].** Multiplier `M_sc(7) = 3.0`, unity elsewhere (table above) —
   contract year 7 being the first year with a
-  zero withdrawal charge [S1][S2], which on the 6-year chassis coincides with the first
+  zero withdrawal charge [S1] [S2], which on the 6-year chassis coincides with the first
   Term End Date. Order-of-magnitude anchors from adjacent products: ~33% shock without a
   living-benefit rider and ~10% with one for FIA, ~52%/~56% for fixed-rate deferred
-  [REG-R62][REG-R63][unverified]. The representative RILA carries no living-benefit rider,
+  [REG-R62] [REG-R63] [unverified]. The representative RILA carries no living-benefit rider,
   which argues for the un-suppressed end; the offsetting force is the term structure
   (below), which is why the [std] shock is set well below the FIA "without rider" anchor.
 - **Interim-value moneyness suppression [std] — the RILA-specific effect.** Surrendering
@@ -566,10 +566,10 @@ aggregate counts only; the detailed tables sit behind a paid data package).
   [S2], which mechanically raises the option budget and compresses the spread — the
   reason the guaranteed-minimum table is a genuine tail exposure, not decoration.
 - **Partial withdrawals [std].** Base rule: 0% in contract year 1 (the free amount is zero
-  [S1][S2]); thereafter 2% of Account Value per year, taken at contract anniversaries and
+  [S1] [S2]); thereafter 2% of Account Value per year, taken at contract anniversaries and
   capped at the Free Withdrawal Amount so no withdrawal charge is incurred in the base
   run. RMD-driven withdrawals for qualified cells begin at the applicable age; RMD timing
-  is a *behavioral* input, not merely a tax one [REG-R58][REG-R64].
+  is a *behavioral* input, not merely a tax one [REG-R58] [REG-R64].
 - **Performance Lock [std, optional module].** Election rule: lock when
   `V_k(t) / IA_k(t) >= 1 + theta` with `theta = 0.15`, once per term [S2]. After a lock the
   option leg is removed, the bucket accrues to term end, and withdrawals reduce the locked
@@ -621,7 +621,7 @@ Trace and checks:
   **$8,000** of cash — an excess of **$1,433.62**, exactly `G (IA/V − 1)`. Every component
   of the interim value scales by the same 0.905664 factor, so the interim value falls by
   exactly the $8,000 withdrawn: `84,803.11 − 8,000 = 76,803.11`. The `ROP` GMDB base falls
-  in the same proportion as the Account Value [S1][S2].
+  in the same proportion as the Account Value [S1] [S2].
 - **Rows A2/B3.** At `tau = 0` the replicating portfolio reproduces the crediting formula
   exactly: `+40%` capped at 100% gives `Pi = 0.40`; `−25%` with a 10% buffer gives
   `Pi = −0.15 = min(0, R + b)`. Scenario B's term-end Investment Amount is
@@ -638,17 +638,17 @@ them and are cited, not reproduced:
   nonforfeiture value *is* the model's interim value: contracts issued on or after
   July 1, 2024 must produce Interim Values materially consistent with the Hypothetical
   Portfolio less Trading Costs, with an actuarial memorandum and certifications filed with
-  each product [R2][REG-R44]. Nonforfeiture benefits follow **Model #250 Section 7,
-  excluding §7.B** [R2][REG-R43]. **Model #805 does not apply if and only if AG 54 is
-  satisfied** [REG-R42][REG-R44]; if it did apply, note the indexed nonforfeiture rate is
+  each product [R2] [REG-R44]. Nonforfeiture benefits follow **Model #250 Section 7,
+  excluding §7.B** [R2] [REG-R43]. **Model #805 does not apply if and only if AG 54 is
+  satisfied** [REG-R42] [REG-R44]; if it did apply, note the indexed nonforfeiture rate is
   floored at **15 basis points**, not 1% [REG-R42].
 - **Statutory reserve.** VM-21 constitutes CARVM for in-scope contracts; aggregate reserve
   = stochastic reserve (**CTE70**) + additional standard projection amount, with
   contract-holder behavior in §10 and prudent-estimate mortality in §11 [REG-R35]. **Scope
   test:** VM-21 §2.A.3 excludes separate-account contracts that guarantee an index and
   offer no GMDB/VAGLB, so a bare accumulation RILA is out of scope, while the
-  representative return-of-premium GMDB design is in [R3][S2]. AG 43 remains the scoping
-  shell that pulls pre-2017 business onto the VM-21 calculation [REG-R35][REG-R38];
+  representative return-of-premium GMDB design is in [R3] [S2]. AG 43 remains the scoping
+  shell that pulls pre-2017 business onto the VM-21 calculation [REG-R35] [REG-R38];
   implementation guidance in the Academy's VM-21 practice note supplement [REG-R66]. **An
   out-of-scope contract falls back to formulaic CARVM, and that fallback is no longer
   unsourced** — AG 33 has been read and reaches any annuity contract subject to CARVM with
@@ -667,7 +667,7 @@ them and are cited, not reproduced:
 - **Standards for the modeling work itself.** ASOP No. 7 (life cash flow analysis)
   [REG-R27]; ASOP No. 22 (asset adequacy) [REG-R29]; ASOP No. 54 (pricing) [REG-R70];
   ASOP No. 56 (modeling, validation, model risk) [REG-R32]; ASOP No. 2 for the NGE
-  determination process [R5][REG-R26]. There is **no ASOP for principle-based reserves for
+  determination process [R5] [REG-R26]. There is **no ASOP for principle-based reserves for
   annuities** — ASOP 52 is scoped to VM-20 life products [REG-R31], and the nearest
   guidance is the non-binding Academy practice note [REG-R66].
 
@@ -688,7 +688,7 @@ Dominant assumptions, in rough order:
    [S5], so the choice of interim-value family is itself a rate-sensitivity assumption.
 3. **The NGE renewal rule for caps.** It sets every future option budget and hence future
    interim values, surrender behavior and margin. Floored at the guaranteed minimum
-   [S1][S2], which converts a low-rate environment into a direct margin compression.
+   [S1] [S2], which converts a low-rate environment into a direct margin compression.
 4. **Surrender timing relative to term boundaries.** Because the interim value equals the
    Investment Amount during the Transfer Period [S2], surrenders concentrate there; a
    model that spreads surrenders uniformly across the term systematically over-collects
@@ -697,12 +697,12 @@ Dominant assumptions, in rough order:
    reductions of the notional overstates remaining notional in down markets by
    `G (IA/V − 1)` per withdrawal and compounds through the rest of the term.
 6. **GMDB moneyness correlation.** The return-of-premium guarantee is most in the money
-   exactly when interim values are depressed [S1][S2] — the guarantee and the account are
+   exactly when interim values are depressed [S1] [S2] — the guarantee and the account are
    not independent, so a deterministic run understates its cost.
 
 Known modeling pitfalls:
 
-- **Price return vs total return.** All representative indices are price return [S1][S2];
+- **Price return vs total return.** All representative indices are price return [S1] [S2];
   omitting the dividend yield overprices every call and inflates interim values throughout.
 - **Applying the cap annually on a multi-year term.** "We do not apply the Cap and any
   Participation Rate annually on a 3-year or 6-year Term Index Option" [S5] — the cap
@@ -722,13 +722,13 @@ Known modeling pitfalls:
   even if the Index Value has increased at the time of the calculation" [S2]; flooring the
   interim value at zero, or at the notional, is not implementing the contract.
 - **Smoothing the crediting discontinuities.** Step and Edge designs are genuinely
-  discontinuous at `R = 0` and `R = −b` [S2][S4]; the binary options are what make the
+  discontinuous at `R = 0` and `R = −b` [S2] [S4]; the binary options are what make the
   interim value track that, and smooth approximations break the term-end identity.
 - **Era mixing.** The pre-AG 54 pro-rata design [S1] and the hypothetical-portfolio design
   [S2] are both live in in-force blocks (AG 54 applies to issues on or after July 1, 2024
   [R2]); an in-force model must carry both engines and key them off issue date.
 - **Trading costs are a free parameter.** No retrieved prospectus quantifies them
-  [S2][S4][S6]; the [std] 0.10% matches only the order of magnitude implied by [R6].
+  [S2] [S4] [S6]; the [std] 0.10% matches only the order of magnitude implied by [R6].
 - **Regression vectors exist — use them.** Lincoln publishes interim-value grids across
   index moves of −30%/−10%/+20%/+40% for 1- and 6-year terms and for cap, trigger and
   dual-trigger accounts [S6]; Prudential a three-strategy grid at ±20% [S3]; Brighthouse a

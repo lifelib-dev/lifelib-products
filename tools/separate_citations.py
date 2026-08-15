@@ -30,13 +30,45 @@ import collections
 
 
 TAG = r'(?:S|R|REG-R)\d+[a-z]?'
-BRACKET = re.compile(r'\[([^\[\]]*)\]')
 FENCE = re.compile(r'^\s*(```|~~~)', re.M)
 
 # A citation-ish bracket: a bare tag, a tag carrying a pinpoint or a comma list, or one of
-# the two convention markers with or without a qualifier.
-CITATION = re.compile(rf'^(?:{TAG}(?:[\s,][^\[\]]*)?|std(?:\s[^\[\]]*)?'
-                      rf'|unverified(?:[\s,][^\[\]]*)?)$', re.S)
+# the two convention markers with or without a qualifier.  The tail is deliberately
+# permissive about brackets, because a pinpoint often carries a nested marker --
+# ``[REG-R64 — **[unverified]**]`` and ``[REG-R34 — ..., summary-based]`` both occur.
+# The separator after the tag is likewise not just whitespace: ``[REG-R17; exact table
+# mapping [unverified]]`` uses a semicolon, and a stricter pattern leaves it behind.
+SEP = r'[\s,;:—–]'
+CITATION = re.compile(
+    rf'^(?:{TAG}(?:{SEP}.*)?|std(?:{SEP}.*)?|unverified(?:{SEP}.*)?)$', re.S)
+
+
+class Span:
+    """A top-level bracketed run, with the text between its brackets."""
+
+    __slots__ = ("start", "end", "body")
+
+    def __init__(self, start, end, body):
+        self.start, self.end, self.body = start, end, body
+
+
+def brackets(text):
+    """Top-level ``[...]`` spans, tracking nesting.
+
+    A regex cannot do this: ``[REG-R64 — **[unverified]**]`` is one citation containing
+    another marker, and a non-nesting scan sees only the inner one -- so the adjacency that
+    follows the *outer* bracket goes unnoticed.  Those are the ones that survived the first
+    pass and had to be found by hand.
+    """
+    spans, stack = [], []
+    for i, ch in enumerate(text):
+        if ch == "[":
+            stack.append(i)
+        elif ch == "]" and stack:
+            start = stack.pop()
+            if not stack:
+                spans.append(Span(start, i + 1, text[start + 1:i]))
+    return spans
 
 
 def prose_spans(text):
@@ -53,7 +85,7 @@ def prose_spans(text):
 
 def separate(text):
     """Return (new_text, separated, list of unclassified adjacencies)."""
-    keep, unknown = [], []
+    unknown = []
     result = []
     cursor = 0
     separated = 0
@@ -61,16 +93,16 @@ def separate(text):
     for start, end in prose_spans(text):
         result.append(text[cursor:start])
         chunk = text[start:end]
-        tokens = list(BRACKET.finditer(chunk))
+        tokens = brackets(chunk)
         insert_at = set()
         for a, b in zip(tokens, tokens[1:]):
-            if a.end() != b.start():
+            if a.end != b.start:
                 continue
-            if CITATION.match(a.group(1)) and CITATION.match(b.group(1)):
-                insert_at.add(a.end())
+            if CITATION.match(a.body) and CITATION.match(b.body):
+                insert_at.add(a.end)
                 separated += 1
             else:
-                unknown.append(f"[{a.group(1)}][{b.group(1)}]".replace("\n", " "))
+                unknown.append(f"[{a.body}][{b.body}]".replace("\n", " "))
         out, last = [], 0
         for pos in sorted(insert_at):
             out.append(chunk[last:pos])

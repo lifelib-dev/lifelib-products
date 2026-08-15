@@ -20,9 +20,9 @@ flagged [unverified].
 Whole life (WL) insurance is permanent life insurance with level guaranteed premiums, a level
 guaranteed face amount, and a schedule of guaranteed cash values that reaches the face amount
 at age 100 (the endowment-at-100 design), with coverage in current policy forms continuing to a
-contractual maturity at age 121 [S1][S3]. The mainstream U.S. product is **participating**
+contractual maturity at age 121 [S1] [S3]. The mainstream U.S. product is **participating**
 (par) WL sold predominantly by mutual insurers: policies share in divisible surplus through
-annual Board-declared dividends that are not guaranteed [S1][S3][S4]. The surveyed mutuals have
+annual Board-declared dividends that are not guaranteed [S1] [S3] [S4]. The surveyed mutuals have
 paid dividends without interruption for well over a century — Guardian since 1868 [S2],
 Penn Mutual since 1847 [S12], New York Life since 1854 [S9], Northwestern Mutual since 1872
 [S4]; Northwestern Mutual alone expects a $9.2 billion dividend payout for 2026, of which
@@ -37,13 +37,13 @@ periods from 5 years to age 100 [S13]).
 A structurally distinct sub-market is **non-participating simplified-issue final-expense (FE)
 WL**: small faces ($2,000–$50,000), issue ages 45+, health-question underwriting without exams,
 level or graded death benefits, and an explicit policy fee (United of Omaha Living Promise)
-[S6][S7][S8]. This library models both: a primary par design ("RefWL-Par") and a secondary FE
+[S6] [S7] [S8]. This library models both: a primary par design ("RefWL-Par") and a secondary FE
 variant ("RefWL-FE").
 
 For liability modeling, WL's economics are dominated by the guaranteed cash value schedule, the
 dividend scale (interest, mortality, and expense margins under the contribution principle
-[S4][R6]), paid-up additions (PUA) compounding [S14], policy loans with direct recognition
-[S1][S3], and low, level lapse behavior on mature par blocks (see technical notes).
+[S4] [R6]), paid-up additions (PUA) compounding [S14], policy loans with direct recognition
+[S1] [S3], and low, level lapse behavior on mature par blocks (see technical notes).
 
 ---
 
@@ -55,15 +55,15 @@ dividend scale (interest, mortality, and expense margins under the contribution 
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Product type | Participating whole life; level guaranteed premium; level guaranteed face | [S1][S3] |
+| Product type | Participating whole life; level guaranteed premium; level guaranteed face | [S1] [S3] |
 | Nonforfeiture/guarantee mortality | 2017 CSO, composite, sex-distinct | [S1]; mandatory for issues on/after 2020-01-01 [R3] |
 | Age basis | Age nearest birthday (ANB) | **[std]** (a) |
 | Guaranteed interest (CV schedule) | 4.00% per year | [S1]; equals the Model 808 nonforfeiture floor rate [R1] |
-| Endowment point | Guaranteed CV = face amount at age 100 | [S1][S3] |
+| Endowment point | Guaranteed CV = face amount at age 100 | [S1] [S3] |
 | Contractual maturity | Anniversary nearest attained age 121; death benefit guaranteed to 121 | [S1] |
 | Premium period (base variant) | Level premiums payable to age 100 | **[std]** (b) |
-| Limited-pay variants (parameter choices) | 10-pay; 20-pay; paid-up-at-65 | [S1][S3] |
-| Sex-distinct pricing | Yes (unisex in Montana and for tax-qualified business) | [S1][S3] |
+| Limited-pay variants (parameter choices) | 10-pay; 20-pay; paid-up-at-65 | [S1] [S3] |
+| Sex-distinct pricing | Yes (unisex in Montana and for tax-qualified business) | [S1] [S3] |
 
 Footnotes:
 - (a) **[std]** ANB: the 2017 CSO set is published in both ANB and ALB forms [R8]; the surveyed
@@ -80,16 +80,16 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Gross premium rates | Input rate table per $1,000 by issue age, sex, class (level, guaranteed) | [S1][S3]; carrier rate books are non-public — the shipped illustrative table is **[std]** (c) |
+| Gross premium rates | Input rate table per $1,000 by issue age, sex, class (level, guaranteed) | [S1] [S3]; carrier rate books are non-public — the shipped illustrative table is **[std]** (c) |
 | Policy fee | $0 (rates fully banded) | **[std]** (d) |
 | Modal factors (× annual premium) | Semi-annual 0.515; quarterly 0.26265; monthly 0.085833 | [S1] (e) |
 | Premium mode modeled | Annual | **[std]** (f) |
 | Issue ages | Level pay 0–80; 10-pay 0–75; 20-pay 0–70; paid-up-at-65 0–45 | [S1] (MassMutual issues 10/12/15/20-pay to 0–75 [S3]) |
-| Minimum face amount | $25,000 | [S1][S3] |
+| Minimum face amount | $25,000 | [S1] [S3] |
 | Representative model-point face | $100,000 | **[std]** (g) |
 | Underwriting classes | 3 classes: Preferred Non-tobacco, Standard Non-tobacco, Tobacco | **[std]** (h) |
-| Substandard | Out of scope (table extras up to class 16 / table P exist in market) | [S1][S3] |
-| Face banding | Out of scope (premium/dividend rates band by face in market) | [S1][S3] |
+| Substandard | Out of scope (table extras up to class 16 / table P exist in market) | [S1] [S3] |
+| Face banding | Out of scope (premium/dividend rates band by face in market) | [S1] [S3] |
 
 Footnotes:
 - (c) **[std]** premium table: par WL gross premium rate books are producer-portal-only for the
@@ -107,7 +107,7 @@ Footnotes:
 - (f) **[std]** annual mode: the reference projection is annual (see technical notes); modal
   loadings are a premium-income refinement that does not change the mechanics.
 - (g) **[std]** $100,000 model point: inside all observed minimum-face rules ($25,000 general
-  minimum [S1][S3]; $100,000 preferred-class minimum at Guardian [S1]) and used consistently in
+  minimum [S1] [S3]; $100,000 preferred-class minimum at Guardian [S1]) and used consistently in
   the worked example of the technical notes.
 - (h) **[std]** 3 classes: observed structures have 5–6 classes (Guardian: Preferred Plus NT,
   Preferred NT, Non-smoker, Standard Smoker, Rated NT, Rated Smoker [S1]; MassMutual: Ultra
@@ -119,12 +119,12 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Participation | Annual dividend, declared by the Board, not guaranteed | [S1][S3][S4] |
-| Dividend determination | Contribution principle; three-factor formula (interest + mortality + expense margins vs. the guaranteed basis) | [S4][R6] |
+| Participation | Annual dividend, declared by the Board, not guaranteed | [S1] [S3] [S4] |
+| Dividend determination | Contribution principle; three-factor formula (interest + mortality + expense margins vs. the guaranteed basis) | [S4] [R6] |
 | Dividend interest rate (DIR), 2026 snapshot | 6.00% | **[std]** (i) |
 | First dividend | None in policy year 1; first dividend credited at the end of policy year 2 | **[std]** (j) |
-| Dividend options modeled | Cash; premium reduction; accumulation at interest; paid-up additions (PUA) | [S2][S3][S4] |
-| Default dividend option | Paid-up additions | [S1][S2]; most policyowners elect it at Northwestern Mutual [S4][S5] |
+| Dividend options modeled | Cash; premium reduction; accumulation at interest; paid-up additions (PUA) | [S2] [S3] [S4] |
+| Default dividend option | Paid-up additions | [S1] [S2]; most policyowners elect it at Northwestern Mutual [S4] [S5] |
 | PUA purchase basis (dividend purchases) | Net single premium at attained age on 2017 CSO / 4.00% (guarantee basis), no purchase load | **[std]** (k) |
 | PUAs participate in dividends | Yes | [S14]; CV of PUAs = PUA face at age 100 [S1] |
 | Dividend accumulation interest | Credited at the declared DIR (rate declared annually with the scale) | [S2]; modeled at the DIR **[std]** (l) |
@@ -155,17 +155,17 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Policy loan rate | Fixed 6.0% per year in arrears (equivalently 5.66038% payable in advance) | [S1][S3]; Guardian's contractual 6%→4% late-duration step-down [S1] is not modeled **[std]** |
-| Direct recognition | Yes — dividends on loaned values reflect the loan rate | [S1][S3] |
+| Policy loan rate | Fixed 6.0% per year in arrears (equivalently 5.66038% payable in advance) | [S1] [S3]; Guardian's contractual 6%→4% late-duration step-down [S1] is not modeled **[std]** |
+| Direct recognition | Yes — dividends on loaned values reflect the loan rate | [S1] [S3] |
 | Maximum loan | Cash value of base + additions, less existing loans and loan interest to the next anniversary | [S1] |
 | Loan interest capitalization | Unpaid interest added to loan principal on the policy anniversary | [S1] |
-| Variable-loan-rate alternative | Out of scope (VLR/adjustable-rate regimes without direct recognition exist market-wide) | [S1][S3][S9] |
+| Variable-loan-rate alternative | Out of scope (VLR/adjustable-rate regimes without direct recognition exist market-wide) | [S1] [S3] [S9] |
 | Withdrawals / partial surrender | Surrender of paid-up additions (no base-policy partial withdrawal) | [S9]; mechanics **[std]** (n) |
-| Grace period | 31 days | [S1][S3] |
+| Grace period | 31 days | [S1] [S3] |
 | Automatic premium loan (APL) | Available; loans premium due if CV sufficient | [S1] |
-| Nonforfeiture options | Cash surrender; reduced paid-up (RPU); extended term insurance (ETI) | [S3][R1] |
+| Nonforfeiture options | Cash surrender; reduced paid-up (RPU); extended term insurance (ETI) | [S3] [R1] |
 | Automatic nonforfeiture option | Extended term insurance | **[std]** (o) |
-| Reinstatement | Within 5 years of default, evidence of insurability, arrears with 6% compound interest | [S1][S3] |
+| Reinstatement | Within 5 years of default, evidence of insurability, arrears with 6% compound interest | [S1] [S3] |
 | Suicide/contestability | Standard 2-year provisions | [S7 for the FE forms]; par contract wording not captured — **[std]** (p) |
 | Free look | 10 days (state variations) | [S1] |
 
@@ -190,10 +190,10 @@ Parameterized from United of Omaha's Living Promise (level and graded benefit pl
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Participation | Non-participating | [unverified] — no retrieved Living Promise document mentions dividends; modeled non-par (q) |
-| Underwriting | Simplified issue: health questions, Rx/MIB checks, tele-interview; no exams | [S6][S7] |
-| Level plan | Issue ages 45–85; face $2,000–$50,000 ($5,000 min in WA; $2,000–$40,000 in CA) | [S6][S7][S8] |
-| Graded plan | Issue ages 45–80; face $2,000–$20,000 | [S6][S7] |
-| Graded death benefit | Natural-cause death in policy years 1–2 pays 110% of premiums paid; accidental death pays full face from day 1 | [S6][S7] |
+| Underwriting | Simplified issue: health questions, Rx/MIB checks, tele-interview; no exams | [S6] [S7] |
+| Level plan | Issue ages 45–85; face $2,000–$50,000 ($5,000 min in WA; $2,000–$40,000 in CA) | [S6] [S7] [S8] |
+| Graded plan | Issue ages 45–80; face $2,000–$20,000 | [S6] [S7] |
+| Graded death benefit | Natural-cause death in policy years 1–2 pays 110% of premiums paid; accidental death pays full face from day 1 | [S6] [S7] |
 | Classes | Level: Standard Tobacco / Non-tobacco; Graded: single Standard class | [S7] |
 | Sample annual premium rates per $1,000 | Level male NT: age 45 $24.99, age 65 $59.05, age 85 $202.19; Level female NT age 65 $42.48; Graded male age 65 $103.00, female age 65 $69.50 | [S7] (California edition) |
 | Policy fee | $36 per year, added to all premiums | [S7] |
@@ -210,7 +210,7 @@ Footnotes:
   documents. The reference implementation reuses the RefWL-Par nonforfeiture machinery
   (2017 CSO / 4%, endow at 100) for the FE variant's CV schedule as a standardization.
 - (s) **[std]** model point: age-65 male NT at $15,000 sits centrally in the issue-age and
-  face ranges [S6][S7]; the premium is computed from the sourced CA rate table [S7].
+  face ranges [S6] [S7]; the premium is computed from the sourced CA rate table [S7].
 
 ---
 
@@ -223,7 +223,7 @@ dividend `D_t`, PUA face `PUAF_t`, PUA cash value `PUACV_t`, loan balance `L_t`.
 ### Premium provisions
 
 Premiums are level and guaranteed for the premium period (to age 100 in the base variant; 10
-or 20 years, or to age 65, in the limited-pay variants) **[std choice of menu]** [S1][S3].
+or 20 years, or to age 65, in the limited-pay variants) **[std choice of menu]** [S1] [S3].
 Modal premiums equal the annual premium times the modal factor (Table 2) [S1]. Nonpayment
 within the 31-day grace period lapses the policy into the nonforfeiture provision [S1]; if APL
 is elected and loan value is sufficient, the premium is loaned instead [S1].
@@ -260,14 +260,14 @@ nonforfeiture basis for current issues is 2017 CSO mortality [R3] at the Valuati
 nonforfeiture interest rate (historically 125% of the statutory valuation rate, floored at
 4.00% [R1]); the representative contract uses 4.00% [S1].
 
-Contractually: `CV_t` grows on the guarantee basis and equals `F` at age 100 [S1][S3];
+Contractually: `CV_t` grows on the guarantee basis and equals `F` at age 100 [S1] [S3];
 `PUACV_t` equals `PUAF_t` at age 100 [S1]. The reference model reads `CV_t` from a table input
 generated on the 2017 CSO / 4% basis (technical notes give both the conceptual formula and the
 practical treatment).
 
 ### Dividends and credits
 
-Dividends are declared annually by the Board and are not guaranteed [S1][S3][S4]. The
+Dividends are declared annually by the Board and are not guaranteed [S1] [S3] [S4]. The
 determination follows the contribution principle: divisible surplus is allocated to policies in
 proportion to their contribution to it [R6]. The published Northwestern Mutual mechanics are
 the model's anchor: the annual dividend equals the excess of an experience-based accumulated
@@ -276,13 +276,13 @@ actual company results, accumulated at the dividend interest rate — over the e
 value [S4]. Equivalently, a three-factor formula with interest, mortality, and expense margins
 against the guaranteed basis; the exact carrier parametrizations are proprietary, so the
 reference parametrization is **[std]** (technical notes). Dividend scales vary in practice by
-sex, class, band, issue age, duration, and loan status under direct recognition [S3][S1].
+sex, class, band, issue age, duration, and loan status under direct recognition [S3] [S1].
 
-Dividend options (union across carriers, [S2][S3]): cash; reduce premium (excess to cash or to
-PUAs); accumulate at interest (rate declared annually); paid-up additions (default [S1][S2]);
+Dividend options (union across carriers, [S2] [S3]): cash; reduce premium (excess to cash or to
+PUAs); accumulate at interest (rate declared annually); paid-up additions (default [S1] [S2]);
 one-year term variants (OYT up to cash value, up to 2× face, or to a target face with PUA
 balance — Guardian options F/G/L/P/Q/R [S2]; MassMutual OYT = guaranteed CV via the YTP rider
-[S3]); premium offset [S2][S3]; loan/loan-interest repayment [S2][S3]. The reference model
+[S3]); premium offset [S2] [S3]; loan/loan-interest repayment [S2] [S3]. The reference model
 implements cash, premium reduction, accumulation, and PUA (Table 3).
 
 Each dollar of dividend under the PUA option buys `1 / NSP_{x+t}` of paid-up face, where
@@ -295,9 +295,9 @@ dollar of face, and are surrenderable at their cash value [S9]**/[std]**.
 Loans are available at any time (including policy year 1) up to the cash value of base plus
 additions less loans and loan interest to the next anniversary [S1]. The representative loan
 rate is fixed 6% in arrears (5.66038% in advance) with **direct recognition**: dividends on
-loaned values reflect loan-rate interest rather than the portfolio DIR [S1][S3]. Unpaid loan
+loaned values reflect loan-rate interest rather than the portfolio DIR [S1] [S3]. Unpaid loan
 interest capitalizes on the anniversary [S1]. Loans and accrued interest reduce death proceeds
-and surrender values [S1][S3][S9]. Market alternatives — Guardian's electable variable loan
+and surrender values [S1] [S3] [S9]. Market alternatives — Guardian's electable variable loan
 rate (Moody's-linked, 4.5% floor, no direct recognition) [S1] and MassMutual's default
 adjustable loan rate (no direct recognition) [S3] — are out of scope. Sustained heavy loan
 utilization can trigger overloan protection mechanics (Penn Mutual rider: forced RPU when the
@@ -305,13 +305,13 @@ loan exceeds 99% of CV, insured ≥ 75, duration ≥ 15) [S11]; not modeled.
 
 ### Grace, lapse, and reinstatement
 
-31-day grace [S1][S3]. On default, the elected (or automatic **[std]**) nonforfeiture option
+31-day grace [S1] [S3]. On default, the elected (or automatic **[std]**) nonforfeiture option
 applies: cash surrender (`CV_t + PUACV_t + dividend accumulations − L_t`), reduced paid-up
 (face = surrender value divided by the attained-age NSP), or extended term insurance (level
 term of face `DB_t − L_t` for the duration purchasable by the surrender value at the
-attained age) [S3][R1]; the paid-up benefit must be at least actuarially equivalent to the cash
+attained age) [S3] [R1]; the paid-up benefit must be at least actuarially equivalent to the cash
 surrender value [R1]. Reinstatement within 5 years with evidence of insurability and payment of
-arrears with 6% compound interest [S1][S3].
+arrears with 6% compound interest [S1] [S3].
 
 ### Maturity, conversion, and exchanges
 
@@ -319,7 +319,7 @@ The contract matures on the anniversary nearest age 121 [S1]; the guaranteed CV 
 age 100 and the PUA CV equals PUA face there [S1], so from age 100 the policy is economically
 an endowment riding at face. The reference model pays `F + PUAF` as a maturity benefit at age
 100 and terminates **[std]** (technical notes). Term-to-WL conversions are permitted market
-practice [S1] and enter the model only through model-point provenance; 1035 exchanges [S1][S3]
+practice [S1] and enter the model only through model-point provenance; 1035 exchanges [S1] [S3]
 are out of scope.
 
 ---
@@ -350,11 +350,11 @@ are out of scope.
 ### Out of scope (present in market, listed for completeness)
 
 Waiver of premium on disability (6-month wait, own-occ definitions, terminates ~65)
-[S1][S3][S11]; accidental death benefit [S6][S11]; guaranteed insurability / purchase options
-[S3][S11]; children's term [S11]; accelerated death benefit for terminal illness (near-
-universal, 12-month prognosis) [S6][S11][S12]; chronic illness / LTC acceleration and LTC
-riders with lien mechanics [S3][S11][S12]; index participation features [S1]; overloan
-protection [S11]; exchange-of-insured and other business riders [S1][S3][S11]; FE accidental
+[S1] [S3] [S11]; accidental death benefit [S6] [S11]; guaranteed insurability / purchase options
+[S3] [S11]; children's term [S11]; accelerated death benefit for terminal illness (near-
+universal, 12-month prognosis) [S6] [S11] [S12]; chronic illness / LTC acceleration and LTC
+riders with lien mechanics [S3] [S11] [S12]; index participation features [S1]; overloan
+protection [S11]; exchange-of-insured and other business riders [S1] [S3] [S11]; FE accidental
 death rider (additional DB = face) [S6].
 
 ---
@@ -362,31 +362,31 @@ death rider (additional DB = face) [S6].
 ## Variations across insurers
 
 1. **Premium period menus** differ but converge on level-pay-to-~100/121 plus {10, 12/15,
-   20}-pay plus paid-up-at-65; every surveyed carrier offers a 10-pay [S1][S3][S10][S13].
+   20}-pay plus paid-up-at-65; every surveyed carrier offers a 10-pay [S1] [S3] [S10] [S13].
    Representative choice: pay-to-100 base + 10/20/65 variants — the intersection of the menus.
 2. **Guaranteed CV interest**: one rate for all products at Guardian (4%) vs. product-specific
-   2%–3.75% at MassMutual (with 0% after age 100) [S1][S3]. The guarantee rate must therefore
+   2%–3.75% at MassMutual (with 0% after age 100) [S1] [S3]. The guarantee rate must therefore
    be a per-product model parameter. 4.00% chosen: it is the Guardian contractual basis and the
-   Model 808 floor [S1][R1].
+   Model 808 floor [S1] [R1].
 3. **First-year dividend**: paid by MassMutual [S3], not paid by Guardian [S1]. Chosen: none in
    year 1 (Table 3 note (j)).
 4. **Loan regimes**: fixed-with-direct-recognition vs. variable/adjustable-without-direct-
    recognition; Guardian defaults to fixed 6% with DR (VLR electable at year 10) [S1],
    MassMutual defaults to ALR without DR (fixed 6% + DR electable at issue) [S3], NYL Secure
    Wealth Plus is variable [S9]. Direct recognition is always paired with the fixed rate
-   [S1][S3]. Chosen: fixed 6% with DR — it is the regime that interacts with the dividend
+   [S1] [S3]. Chosen: fixed 6% with DR — it is the regime that interacts with the dividend
    scale and therefore the one worth modeling explicitly.
 5. **Dividend banding** by face exists at Guardian (level-pay, $1M+) and MassMutual (all
-   products, multiple bands) [S1][S3]. Not modeled: a single-band reference policy avoids
+   products, multiple bands) [S1] [S3]. Not modeled: a single-band reference policy avoids
    carrying band schedules.
 6. **Term-blend mechanisms** are universal but carrier-named (Guardian Q/R; MassMutual LISR;
-   Penn Mutual FPR) [S2][S3][S11]; a single generic blend rider represents them.
-7. **Policy fee**: $0 / $50 / $36 observed [S1][S3][S7] — see Table 2 note (d).
-8. **Accumulation-oriented WL** (short-pay, early-CV designs: NYL Secure Wealth Plus [S9][S10],
+   Penn Mutual FPR) [S2] [S3] [S11]; a single generic blend rider represents them.
+7. **Policy fee**: $0 / $50 / $36 observed [S1] [S3] [S7] — see Table 2 note (d).
+8. **Accumulation-oriented WL** (short-pay, early-CV designs: NYL Secure Wealth Plus [S9] [S10],
    Penn Mutual Accumulation WL [S13], MassMutual HECV [S3]) is represented only through the
    10-pay variant; early-CV enhancement mechanics are not separately modeled.
 9. **FE WL** differs structurally (tiny faces, 45+ issue, simplified issue, graded DB tier,
-   explicit fee, endow at 100, no dividends mentioned) [S6][S7][S8] — hence the separate
+   explicit fee, endow at 100, no dividends mentioned) [S6] [S7] [S8] — hence the separate
    RefWL-FE variant rather than parameter overrides on RefWL-Par.
 
 ---
@@ -399,7 +399,7 @@ method with the 1%-of-amount + 125%-of-NNLP expense allowance, actuarial equival
 paid-up options, smooth progression of CV schedules, and the nonforfeiture interest rule
 (historically 125% of the valuation rate, min 4.00%; Valuation-Manual-prescribed for current
 issues) [R1]. The representative 4%/2017 CSO guarantee basis is exactly this law's current
-operative basis [S1][R1][R3].
+operative basis [S1] [R1] [R3].
 
 **Standard Valuation Law (NAIC Model 820) and the Valuation Manual.** Model 820 is the legal
 root of statutory reserving (CRVM, minimum standards, and — post-2009 amendments — the
@@ -424,7 +424,7 @@ never names the 2017 CSO** — ¶5.a prescribes the 2001 CSO for standard-basis 
 from 1 January 2004, later tables entering only through its forward reference or through the
 Valuation Manual (¶23), so this product's 2017 CSO basis is sourced to VM-02 [R3], not to
 A-820; and A-820 carves **preneed** policies out to **Appendix A-817**, which was **not
-retrieved** [REG-R153 ¶5][REG-R110]. For ordinary life issued on/after 2020-01-01 — the PBR
+retrieved** [REG-R153 ¶5] [REG-R110]. For ordinary life issued on/after 2020-01-01 — the PBR
 *accreditation* year; the trigger A-820 ¶¶3–4 actually print is issue **on or after 1 January
 2017**, with earlier issues grandfathered onto ¶¶5–22 and the PBR provisions stated not to
 apply to them, and with **no elective transition, phase-in or company election anywhere in
@@ -455,11 +455,11 @@ compliance; for contracts issued after 2020 the fixed 4%/6% test rates are repla
 lower "insurance interest rate" (2% transitional for 2021), which raised permissible WL
 funding levels [R4]. §7702A's 7-pay test makes limited-pay WL and PUA-rider funding the main
 MEC risk: 10-pay premiums sit near 7-pay limits and face decreases can retroactively create
-MECs [R5][S3]; carriers administer 7-pay premiums on 2017 CSO [S1]. §807 defines tax reserves
+MECs [R5] [S3]; carriers administer 7-pay premiums on 2017 CSO [S1]. §807 defines tax reserves
 as the greater of net surrender value and 92.81% of the CRVM/VM reserve, capped at statutory
 [REG-R16] — one reason the statutory projection engine also feeds the tax basis.
 
 **Experience/table infrastructure.** The 2017 CSO set (valuation and nonforfeiture) is
 published by the SOA in composite/smoker-distinct/preferred-structure, ANB/ALB variants [R8];
 the 2015 VBT and ILEC studies provide the experience bases for best-estimate assumptions
-[REG-R18][R9] (see technical notes).
+[REG-R18] [R9] (see technical notes).

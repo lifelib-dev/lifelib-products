@@ -401,10 +401,10 @@ the 50 bp commutation margin (also **[unverified]**); six accelerated payments; 
 maintenance expense weighted by `l(t)` rather than by the chassis' `max(C, l_alive)`;
 rounding the installment-refund guarantee up to a whole instalment; and the anchor cell
 itself. Sourced, by contrast: the income-slice mechanic and its purchase-rate rule
-[R13 §3.B(1)(b)][S3], the 100% return-of-premium deferral death benefit [R13 §3.I(1)(a)],
-the ±5-year adjustment and its disclosed repricing inputs [S1][S2], the six-month
-acceleration [S1][S4], commutation with the tail preserved [S4][S5], the whole QLAC
-restriction set [R1][R2][R3], the $50 maintenance expense escalated at 2.5% [R9], and the
+[R13 §3.B(1)(b)] [S3], the 100% return-of-premium deferral death benefit [R13 §3.I(1)(a)],
+the ±5-year adjustment and its disclosed repricing inputs [S1] [S2], the six-month
+acceleration [S1] [S4], commutation with the tail preserved [S4] [S5], the whole QLAC
+restriction set [R1] [R2] [R3], the $50 maintenance expense escalated at 2.5% [R9], and the
 absence of lapse and annuitization decrements [R9].
 
 **There is no lapse decrement, and adding one is a defect.** "Not conservatism — there is

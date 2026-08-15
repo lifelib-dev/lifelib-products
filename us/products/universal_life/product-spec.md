@@ -31,7 +31,7 @@ The *current assumption* variant is the
 interest-sensitive, cash-value-oriented chassis: the insurer declares a current
 credited interest rate and current charge scales that may be more favorable than the
 contractual guarantees (minimum interest, maximum charges), and revises them at its
-discretion subject to actuarial standards on non-guaranteed elements [R1][R8].
+discretion subject to actuarial standards on non-guaranteed elements [R1] [R8].
 
 In the SOA/LIMRA 2015–2021 flexible-premium UL experience study, Current Assumption was
 one of three main product focuses, at 27% of known exposure (Cash Accumulation 33%,
@@ -54,15 +54,15 @@ consistent with EDGAR searches recorded in the research file].
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Flexible-premium adjustable (universal) life, current assumption, fixed interest | [S1][S3][R1] |
+| Design type | Flexible-premium adjustable (universal) life, current assumption, fixed interest | [S1] [S3] [R1] |
 | Policy form style | Individual, non-participating | [S3] |
-| Interest crediting style | Portfolio: current rate declared periodically by insurer | [S2][S3]; choice **[std]** (1) |
-| Death benefit qualification test | Guideline Premium Test (GPT), elected at issue, irrevocable | [S3][R2]; choice **[std]** (2) |
-| Death benefit options | Option A (level) and Option B (face + AV); Option C out of scope | [S1][S3]; scope **[std]** (3) |
-| Issue ages | 18–85 | [S1][S2]; band choice **[std]** (4) |
-| Rate classes | 6 classes: Preferred Plus NT, Preferred NT, Standard Plus NT, Standard NT, Preferred Tobacco, Standard Tobacco | [S1][S2][S4]; 6-class structure **[std]** (5) |
+| Interest crediting style | Portfolio: current rate declared periodically by insurer | [S2] [S3]; choice **[std]** (1) |
+| Death benefit qualification test | Guideline Premium Test (GPT), elected at issue, irrevocable | [S3] [R2]; choice **[std]** (2) |
+| Death benefit options | Option A (level) and Option B (face + AV); Option C out of scope | [S1] [S3]; scope **[std]** (3) |
+| Issue ages | 18–85 | [S1] [S2]; band choice **[std]** (4) |
+| Rate classes | 6 classes: Preferred Plus NT, Preferred NT, Standard Plus NT, Standard NT, Preferred Tobacco, Standard Tobacco | [S1] [S2] [S4]; 6-class structure **[std]** (5) |
 | Minimum face amount | $100,000 | [S1]; choice **[std]** (6) |
-| Maturity | None — no maturity date; charges and premiums cease at attained age 121, coverage continues for life | [S2][S3] |
+| Maturity | None — no maturity date; charges and premiums cease at attained age 121, coverage continues for life | [S2] [S3] |
 | Anchor model cell | Male 35, Standard Nonsmoker, $100,000 face, Option A, GPT | [S3] |
 
 Footnotes to [std] rows:
@@ -70,7 +70,7 @@ Footnotes to [std] rows:
 1. Portfolio crediting chosen over new-money. Observed: Symetra CAUL uses new-money
    (each net premium earns its declared rate locked for 12 months from receipt) [S1];
    Protective and the Pacific Life specimen use periodically declared portfolio rates
-   [S2][S3]. Portfolio-style is the more common design and the simpler modeling default
+   [S2] [S3]. Portfolio-style is the more common design and the simpler modeling default
    [unverified as to market share].
 2. GPT chosen per the task's representative design and because the specimen cell itself
    elects GPT [S3]; CVAT (minimum DB floor 101% of AV in the specimen implementation
@@ -90,16 +90,16 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Guaranteed minimum annual effective interest rate | 2.00% | range 2%–3% [S1][S2][S3]; pick **[std]** (7) |
+| Guaranteed minimum annual effective interest rate | 2.00% | range 2%–3% [S1] [S2] [S3]; pick **[std]** (7) |
 | Current declared annual effective rate (snapshot) | 4.00% | **[std]** (8) |
 | Crediting frequency (contract) | Daily, 365-day year, at no less than the guaranteed rate; excess interest discretionary, uniform by class | [S3] |
-| Rate on loaned AV | Guaranteed rate (2.00%) | design [S2][S3]; value **[std]** (7)(15) |
+| Rate on loaned AV | Guaranteed rate (2.00%) | design [S2] [S3]; value **[std]** (7)(15) |
 
 7. Observed guaranteed minimums: 2% (Symetra, 2014-era form still sold in 2023) [S1];
    2.5% (Protective, 2015-era form) [S2]; 3% policy years 2+ (Pacific Life 2008-era
    form) [S3]. Guaranteed minimums correlate with issue era; new issues cluster at 2%
    or below following the 2021 IRC 7702 rate change (transition insurance interest
-   rate 2%) [R2][unverified for the market generally]. 2.00% chosen as representative
+   rate 2%) [R2] [unverified for the market generally]. 2.00% chosen as representative
    of current new issues.
 8. Current declared crediting rates are not published in the fetched public documents,
    and the Symetra current-rates page returned HTTP 403 [S5]. 4.00% is a pure modeling
@@ -139,7 +139,7 @@ Footnotes to [std] rows:
     (non-guaranteed) COI scales are not published in public documents — only
     guaranteed maxima appear in the specimen [S3]. All three current-assumption source
     products charge COI monthly per $1,000 of net amount at risk with current scales
-    at or below guaranteed maxima [S1][S2][S3]; charging less than maximums must be
+    at or below guaranteed maxima [S1] [S2] [S3]; charging less than maximums must be
     uniform by class [S3].
 
 ### Surrender, withdrawal, loan
@@ -147,11 +147,11 @@ Footnotes to [std] rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Surrender charge — initial amount | $9.00 per $1,000 initial face | **[std]** (13) |
-| Surrender charge — runoff | Declines linearly by $1.00 per $1,000 per year, amortized monthly (1/12 per month); zero from the start of policy year 10 | 9-year pattern [S1][S2]; monthly amortization mechanics [S3]; amount **[std]** (13) |
+| Surrender charge — runoff | Declines linearly by $1.00 per $1,000 per year, amortized monthly (1/12 per month); zero from the start of policy year 10 | 9-year pattern [S1] [S2]; monthly amortization mechanics [S3]; amount **[std]** (13) |
 | Surrender charge — layers | Each face-increase layer carries its own schedule; face decreases do not reduce the surrender charge | [S3] |
-| Cash surrender value (CSV) | AV − surrender charge | [S3][R1] |
+| Cash surrender value (CSV) | AV − surrender charge | [S3] [R1] |
 | Net cash surrender value (NCSV) | CSV − policy debt | [S3] |
-| Partial withdrawal | From first policy anniversary; minimum $200; fee $25; no surrender charge assessed on withdrawal | [S2][S3] |
+| Partial withdrawal | From first policy anniversary; minimum $200; fee $25; no surrender charge assessed on withdrawal | [S2] [S3] |
 | Free partial withdrawal amount | 10% of AV per policy year, first withdrawal each year | 10%-of-value carve-out [S3]; simplification **[std]** (14) |
 | Policy loan — charged rate | 2.75% annual, accrued daily, capitalized if unpaid at policy year end | design [S3]; value **[std]** (15) |
 | Policy loan — credited rate on loaned AV | 2.00% (guaranteed rate) — 0.75% guaranteed spread | spread [S3]; level **[std]** (15) |
@@ -180,11 +180,11 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Premium flexibility | Amount and timing at owner's discretion; planned premium is a billing target only, no guarantee of coverage | [S3][R1] |
+| Premium flexibility | Amount and timing at owner's discretion; planned premium is a billing target only, no guarantee of coverage | [S3] [R1] |
 | Minimum premium remittance | $50 | [S3] |
 | Representative planned premium (anchor cell) | $150/month ($1,800/year) | **[std]** (16) |
 | Guideline premiums (anchor cell, incl. specimen riders) | GSP $34,138.15; GLP $2,825.52; 7-pay premium $6,702.10 | [S3] (specimen cell includes riders) |
-| Grace period | 61 days; triggered when AV less policy debt on a monthly payment date cannot cover the current monthly deduction | [S2][S3] |
+| Grace period | 61 days; triggered when AV less policy debt on a monthly payment date cannot cover the current monthly deduction | [S2] [S3] |
 | Required grace payment | At least 3 x the monthly deduction due, plus premium load | [S3] |
 | Death during grace | DB proceeds reduced by overdue charges | [S3] |
 | Lapse | At end of grace without required payment, policy terminates with no value | [S3] |
@@ -199,7 +199,7 @@ Footnotes to [std] rows:
     (Protective Lapse Protection Endorsement with catch-up provision [S2]). Lifetime
     secondary guarantees belong to dedicated GUL products [S4]. The base model excludes
     all secondary guarantees; modeling them changes the reserve regime (AG 38 / VM-20
-    ULSG treatment [REG-R6][REG-R7]).
+    ULSG treatment [REG-R6] [REG-R7]).
 
 ---
 
@@ -208,26 +208,26 @@ Footnotes to [std] rows:
 ### Premium provisions
 
 Premiums are flexible in amount and timing; the planned premium is only a billing
-target [S3][R1]. Each premium is processed as: (1) deduct the premium expense load;
+target [S3] [R1]. Each premium is processed as: (1) deduct the premium expense load;
 (2) credit the net premium to the account value (AV; the specimen's "accumulated value") [S3]:
 
     net premium = gross premium x (1 - premium load rate)
 
 The current load rate (6%) may be less than the guaranteed maximum (9%); lesser
-charges apply uniformly by class [S1][S3]. Minimum remittance $50 [S3]. Premiums that
+charges apply uniformly by class [S1] [S3]. Minimum remittance $50 [S3]. Premiums that
 would cause cumulative premiums (less a portion of withdrawals) to exceed the GPT
 guideline limit — the greater of the guideline single premium and the sum of guideline
 level premiums — are refused/refunded; the insurer may force distributions to maintain
-IRC 7702 status [S3][R2]. Premiums that would fail the 7-pay test are refunded unless
-the owner elects MEC status in writing [S3][R3].
+IRC 7702 status [S3] [R2]. Premiums that would fail the 7-pay test are refunded unless
+the owner elects MEC status in writing [S3] [R3].
 
 ### Death benefit provisions
 
 - Option A (level): DB = total face amount F. Option B (increasing): DB = F + AV
-  [S1][S3].
+  [S1] [S3].
 - The DB payable is the greater of the option amount and the minimum DB under the
   elected qualification test [S3]. Under GPT the minimum DB is AV x the corridor
-  factor at attained age [S3][R2]:
+  factor at attained age [S3] [R2]:
 
   | Attained age | Corridor % | Attained age | Corridor % |
   |---|---|---|---|
@@ -254,7 +254,7 @@ the owner elects MEC status in writing [S3][R3].
   | 60 | 130 | | |
 
   (Specimen GPT corridor table; it implements the IRC 7702 cash value corridor
-  [S3][R2].)
+  [S3] [R2].)
 - Option changes: to A or B only, at most once per policy year; total face is adjusted
   so the DB is unchanged at the change date; a change is rejected if it would create a
   MEC unless requested [S3].
@@ -263,7 +263,7 @@ the owner elects MEC status in writing [S3][R3].
 - Face increases require evidence of insurability (specimen: insured no older than 90,
   minimum increase $25,000) and create a new coverage layer with its own COI rates,
   coverage charge, and surrender charge; decreases are limited to one per year, none
-  in year 1, and reduce layers LIFO [S3][S2].
+  in year 1, and reduce layers LIFO [S3] [S2].
 
 ### Account value mechanics
 
@@ -299,7 +299,7 @@ rates grade to 1000/12 per month at attained ages 112–120 (a single month's ch
 equals the full NAAR) and to zero at 121+ [S3]. The insurer may charge current rates
 below the guaranteed maxima, uniformly by class [S3]; guaranteed maxima are capped by
 CSO valuation mortality — 2001 CSO on the 2008-era specimen form [S3]; 2017 CSO for
-new issues on/after 2020-01-01 [R4][unverified — from search-result context, not a
+new issues on/after 2020-01-01 [R4] [unverified — from search-result context, not a
 fetched primary document].
 
 ### Loans
@@ -309,7 +309,7 @@ $200) [S3]. Maximum loan = AV − 3x most recent monthly deduction − surrender
 existing policy debt [S3]. Interest accrues daily at the charged rate (composite 2.75%
 **[std]**, footnote 15), is due at policy year end, and is capitalized if unpaid [S3].
 The loaned portion of AV is credited at the guaranteed rate (a design feature in both
-fetched fixed-loan products) [S2][S3]. Payments
+fetched fixed-loan products) [S2] [S3]. Payments
 while debt is outstanding repay the loan unless designated as premium [S3].
 
 ### Withdrawals (partial surrenders)
@@ -324,9 +324,9 @@ reduce AV only [S3].
 ### Grace, lapse, reinstatement
 
 Grace is triggered if AV less policy debt on a monthly payment date cannot cover the
-current monthly deduction [S2][S3]; the Model 585 default definition is lapse when
+current monthly deduction [S2] [S3]; the Model 585 default definition is lapse when
 NCSV first equals zero, with grace of at least 30 days and 30-day advance written
-notice [R1]. Composite: 61-day grace [S2][S3]; required payment >= 3x the monthly
+notice [R1]. Composite: 61-day grace [S2] [S3]; required payment >= 3x the monthly
 deduction due plus premium load [S3]; if the insured dies in grace, proceeds are
 reduced by overdue charges; on expiry of grace unpaid, the policy terminates with no
 value [S3]. Reinstatement within 5 years with evidence of insurability and the
@@ -361,12 +361,12 @@ Commonly attached riders on this chassis, for context:
   the IRS per diem x 30 [S1]; ExtendCare chronic illness rider [S2]; LTC rider, cash
   indemnity 2%/3%/4% monthly up to 2x the HIPAA per diem [S4].
 
-**Out of scope:** accidental death benefit [S1][S2]; children's term [S2]; disability
+**Out of scope:** accidental death benefit [S1] [S2]; children's term [S2]; disability
 benefit crediting a monthly amount to the policy [S2]; additional/annual renewable
-term riders including additional-insured term [S1][S3]; surrender value enhancement
+term riders including additional-insured term [S1] [S3]; surrender value enhancement
 rider [S3]; charitable giving benefit (+1% of face) [S1]; return-of-premium windows on
 GUL [S4]; income provider option (installment DB payout) [S2]; no-lapse
-guarantee/shadow-account endorsements [S1][S2][S4] (see footnote 17).
+guarantee/shadow-account endorsements [S1] [S2] [S4] (see footnote 17).
 
 ---
 
@@ -380,22 +380,22 @@ guarantee/shadow-account endorsements [S1][S2][S4] (see footnote 17).
    era (3% on the 2008 form [S3]; 2.5% on the 2015 form [S2]; 2% on the 2014/2023 form
    [S1]). Chosen: 2.00%, representative of the post-2021 IRC 7702 rate environment
    [R2] **[std]**.
-3. **Premium loads.** 6%–10% [S1][S2][S3]; some insurers keep a current-vs-guaranteed
+3. **Premium loads.** 6%–10% [S1] [S2] [S3]; some insurers keep a current-vs-guaranteed
    gap (6%/9% [S1]) making the load itself an NGE; others state a single rate
-   [S2][S3]. Chosen: 6%/9% to exercise the NGE machinery.
+   [S2] [S3]. Chosen: 6%/9% to exercise the NGE machinery.
 4. **Per-policy and per-unit charges.** Per-policy $5–$10/month current, $30/month
-   guaranteed max observed [S1][S2][S3]. Per-unit charge bases differ: initial face
+   guaranteed max observed [S1] [S2] [S3]. Per-unit charge bases differ: initial face
    [S2] vs coverage-layer face with a step-down after year 10 [S3] vs
    duration-varying [S1]. Chosen: specimen values with the year-10 step-down, because
    the specimen is the mechanics anchor.
 5. **Surrender charges.** 9–10 year runoff is standard; expressed as rate per $1,000
-   by sex/class/age [S1][S2] or fixed dollar amount with linear monthly amortization
+   by sex/class/age [S1] [S2] or fixed dollar amount with linear monthly amortization
    [S3]. Chosen: 9-year, dollar-per-$1,000, monthly amortization.
 6. **COI structure.** All fetched products: monthly rate per $1,000 NAAR, guaranteed
    maxima (CSO-capped), lower current scales, rates varying by issue
-   age/sex/class/duration [S1][S2][S3]. Chosen: specimen guaranteed table + flat 60%
+   age/sex/class/duration [S1] [S2] [S3]. Chosen: specimen guaranteed table + flat 60%
    current factor **[std]** (current scales are not public — see spec footnote 12).
-7. **DB options.** A and B universal; C (return of premium) offered by some [S1][S3].
+7. **DB options.** A and B universal; C (return of premium) offered by some [S1] [S3].
    Chosen: A and B only.
 8. **Loans.** Fixed-rate with guaranteed spread (0.75% [S3]; 2.5% [S2]) vs variable
    Moody's-indexed with 3% floor [S1]. Chosen: fixed with 0.75% spread.
@@ -418,7 +418,7 @@ UL-specific nonforfeiture (retrospective minimum CSV with expense-allowance
 amortization; surrender charges permissible above that floor), mandatory policy
 provisions (guarantees stated in the policy; interest credits not conditional beyond
 24 months; grace of at least 30 days with notice), and the prescribed annual report to
-policyowners [R1][REG-R5 same document]. The composite's charge/guarantee structure
+policyowners [R1] [REG-R5 same document]. The composite's charge/guarantee structure
 and annual-report-driven disclosure assumptions sit inside this frame.
 
 **AP&P Appendix A-585 — the valuation half, and only that half.** The requirement the
@@ -428,26 +428,26 @@ sourced first-hand rather than through the model regulation. Two things the prin
 settles. It **does not name Model #585 anywhere** — its "Relevant NAIC Model
 Laws/Regulations" line names only the **Standard Valuation Law (#820)** — so "A-585
 *is* Model 585 Section 5" is unsupported by it, and the two texts were **not compared**
-[REG-R155][REG-R5]. And it carries **definitions and valuation requirements only**: the
+[REG-R155] [REG-R5]. And it carries **definitions and valuation requirements only**: the
 nonforfeiture floor, the mandatory policy provisions and the annual report to
 policyowners listed in the paragraph above, together with Model #585's separate
 interest-indexed UL requirements, are **not** in A-585 and keep citing Model #585
-[R1][REG-R5][REG-R155]. A-585 prints **no effective date and no number of any kind**;
+[R1] [REG-R5] [REG-R155]. A-585 prints **no effective date and no number of any kind**;
 every rate, table and factor is delegated to Appendix **A-820** by year of issue, so no
-applicability date may be read off A-585 itself [REG-R155][REG-R153].
+applicability date may be read off A-585 itself [REG-R155] [REG-R153].
 
 **IRC 7702 (life insurance definition).** The contract must pass CVAT or the guideline
 premium test plus cash value corridor; the composite elects GPT, so the guideline
-premium limit and the corridor factor table are contractual mechanics [S3][R2]. For
+premium limit and the corridor factor table are contractual mechanics [S3] [R2]. For
 contracts issued after 2020-12-31 the fixed statutory rates were replaced by the
-dynamic insurance interest rate (2% during the 2021 transition) [R2][REG-R13]. Exact
+dynamic insurance interest rate (2% during the 2021 transition) [R2] [REG-R13]. Exact
 statutory wording should be re-verified before hard-coding (research file caveat on
 the automated summary) [R2].
 
 **IRC 7702A (MEC).** The 7-pay test with material-change and retroactive-reduction
 rules determines MEC status; consequences are distribution taxation changes, not cash
 flow changes — the insurer-side behavior in the composite is refund of MEC-causing
-premiums absent owner election [S3][R3][REG-R14].
+premiums absent owner election [S3] [R3] [REG-R14].
 
 **Valuation Manual / VM-20 (PBR).** The Valuation Manual became operative 2017-01-01
 and PBR an accreditation standard from 2020-01-01 [R5]; the operative date is printed
@@ -464,7 +464,7 @@ technical notes).
 
 **2017 CSO.** The current statutory valuation/nonforfeiture mortality family
 (composite and smoker-distinct, loaded/unloaded, preferred structure, ANB/ALB
-variants) [R4][REG-R17]; mandatory for new issues from 2020-01-01, used for reserves,
+variants) [R4] [REG-R17]; mandatory for new issues from 2020-01-01, used for reserves,
 nonforfeiture, 7702/7702A, and as the cap for UL guaranteed COI rates, terminal age
 121 [unverified — from search-result context, not a fetched primary document]. The
 specimen's nonforfeiture basis is the earlier 2001 CSO ANB [S3].
@@ -472,7 +472,7 @@ specimen's nonforfeiture basis is the earlier 2001 CSO ANB [S3].
 **ASOP No. 2 (non-guaranteed elements).** Current credited rate, current COI, and
 current loads are NGEs: scales must be based on reasonable expectations of future
 experience, revised only when anticipated experience factors change, and not set to
-recoup past losses [R8][REG-R26 same standard]. This constrains how the model's NGE
+recoup past losses [R8] [REG-R26 same standard]. This constrains how the model's NGE
 re-rating logic may behave.
 
 **Illustrations (Model 582 / ASOP 24).** Sales illustrations for this product operate
@@ -482,7 +482,7 @@ publicly illustrated but not guaranteed.
 
 **Reg XXX / AG 38 (secondary guarantees).** Relevant only if the no-lapse guarantee or
 a shadow-account endorsement is modeled: Model 830 Section 7 and AG 38 govern reserves
-for UL with secondary guarantees on pre-PBR business [REG-R6][REG-R7]. Excluded with
+for UL with secondary guarantees on pre-PBR business [REG-R6] [REG-R7]. Excluded with
 the NLG (spec footnote 17). A citation caution now that the AP&P print has been read:
 the manual's **A-830** is a flat sequence of paragraphs **with no sections at all**, so
 a "Section 7" cite does not resolve against it — the ULSG construction sits at

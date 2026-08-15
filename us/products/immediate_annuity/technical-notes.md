@@ -15,7 +15,7 @@ from the AP&P Manual appendix reading of **2026-08-06** — of which **R151** (A
 and **R153** (A-820 with A-821 and A-822) are cited here). **[std]** marks standardizations
 introduced for the reference implementation. Parameter values are identical to those in
 `product-spec.md`; the mechanics anchors are MassMutual RetireEase [S1] and Pacific Income
-Provider [S2][S3].
+Provider [S2] [S3].
 
 ---
 
@@ -26,11 +26,11 @@ Provider [S2][S3].
   lump sums; commutation payments; maintenance expenses) for a single SPIA in payment.
   Discounting and reserves are not computed (see Valuation and reserve pointers).
 - **Mortality is the model.** No premium after outset, no account value, no cash surrender
-  value, no policyholder option other than certain-portion commutation [S1][S4][S5]. The only
+  value, no policyholder option other than certain-portion commutation [S1] [S4] [S5]. The only
   decrement is death; the only stochastic driver is longevity. There is **no lapse
   decrement** — a point VM-22 makes prescriptively for this reserving category: the prescribed
   lapse table "is not applicable" for contracts with no account value or surrender benefit,
-  and the prescribed annuitization rate is 0% [R2][REG-R36].
+  and the prescribed annuitization rate is 0% [R2] [REG-R36].
 - **Projection frequency.** Monthly grid, `t = 1, 2, …` months from the annuity date
   **[std]**. Payment dates fall on the grid per the frequency `m`; day-count and business-day
   conventions are not modeled **[std]**.
@@ -46,7 +46,7 @@ Provider [S2][S3].
   follow from evaluating `L(t)` at end-of-month survival, `lᵢ(t)`, and both must be applied
   the same way or the two decrements disagree by one payment period.
 - **Age basis.** **Age nearest birthday (ANB)** **[std]**: MassMutual defines contract age as
-  age nearest birthday [S1]; the 2012 IAM/IAR family is tabulated ANB [R2][R9]; IRS
+  age nearest birthday [S1]; the 2012 IAM/IAR family is tabulated ANB [R2] [R9]; IRS
   Publication 939 uses "the age at the birthday nearest to the annuity starting date" [R7].
   One place prescribes a **different** basis: VM-V's "initial age" for valuation-rate bucket
   selection is the annuitant's **age last birthday** at the premium determination date (the
@@ -59,7 +59,7 @@ Provider [S2][S3].
   valuation basis [REG-R153]. The printed rates also confirm the ultimate cap the 2012 IAR
   development report describes — **400.000 per 1,000 = 0.40000** — and expose a
   terminal-age asymmetry a shared array will hide: **female** rates reach 400.000 at age
-  **108**, **male** rates are 380.000 at **105** and 400.000 from **106** [REG-R153][REG-R60].
+  **108**, **male** rates are 380.000 at **105** and 400.000 from **106** [REG-R153] [REG-R60].
   (The development report's account of how that cap arises — the 10% margin holds to age 100,
   then grades down 1% a year until the cap is invoked, where the margin is zero [REG-R60] —
   is a construction property, not a terminal age.) The **[std]** extrapolation rule stays for
@@ -79,13 +79,13 @@ structural:
 
 | Dimension | UK pension annuity | U.S. SPIA |
 |---|---|---|
-| Best-estimate mortality | CMI-restricted SAPS/PMA-PFA tables, proxied by an ONS population table × α **[std]** | **2012 IAM Basic × Projection Scale G2**, generational, × an A/E factor from a public experience study [R3][R9][REG-R59][REG-R61] |
-| Valuation mortality | Solvency UK best estimate + risk margin (no prescribed table) | **2012 IAR** generational table with an explicit no-compound-rounding rule [R3][R4][REG-R59] |
-| Escalation | RPI 0-floor with catch-up ratchet, LPI-5, fixed | **Fixed compound only** (1–4%); no RPI/LPI analogue and **no CPI-linked option in any retrieved U.S. document** [S1][S2][S4][S5][S6][S8] |
-| Death benefit on a refund basis | Value protection (v × P − payments) | **Cash refund** (P − payments) and **installment refund** (payments continue until P is recovered) [S1][S3][S5] |
+| Best-estimate mortality | CMI-restricted SAPS/PMA-PFA tables, proxied by an ONS population table × α **[std]** | **2012 IAM Basic × Projection Scale G2**, generational, × an A/E factor from a public experience study [R3] [R9] [REG-R59] [REG-R61] |
+| Valuation mortality | Solvency UK best estimate + risk margin (no prescribed table) | **2012 IAR** generational table with an explicit no-compound-rounding rule [R3] [R4] [REG-R59] |
+| Escalation | RPI 0-floor with catch-up ratchet, LPI-5, fixed | **Fixed compound only** (1–4%); no RPI/LPI analogue and **no CPI-linked option in any retrieved U.S. document** [S1] [S2] [S4] [S5] [S6] [S8] |
+| Death benefit on a refund basis | Value protection (v × P − payments) | **Cash refund** (P − payments) and **installment refund** (payments continue until P is recovered) [S1] [S3] [S5] |
 | Guaranteed term | Guarantee period | **Period certain** (5–30 yrs), plus a *derived* certain period on refund forms = premium ÷ annualized income [S5] |
-| Survivor reduction | Dependant percentage δ on the annuitant's death; the dependant's pension is an **additive second stream** that may run alongside the guarantee | δ on **either** the primary's death or **any** annuitant's death — a switch, not a parameter [S1][S2][S3][S7]; the reduction **rescales the single stream** and is suspended by the certain floor [S5] |
-| Taxation | Income taxed in full as pension income | **Exclusion ratio** under IRC §72 / IRS Pub. 939 [R6][R7][REG-R55] |
+| Survivor reduction | Dependant percentage δ on the annuitant's death; the dependant's pension is an **additive second stream** that may run alongside the guarantee | δ on **either** the primary's death or **any** annuitant's death — a switch, not a parameter [S1] [S2] [S3] [S7]; the reduction **rescales the single stream** and is suspended by the certain floor [S5] |
+| Taxation | Income taxed in full as pension income | **Exclusion ratio** under IRC §72 / IRS Pub. 939 [R6] [R7] [REG-R55] |
 | Liquidity | None after cancellation window | Commutation of the **certain portion only**, net of a declining surrender charge [S1] |
 
 ---
@@ -95,20 +95,20 @@ structural:
 | Attribute | Type | Example (anchor cell) |
 |---|---|---|
 | `premium` P | currency | 100,000 **[std]** |
-| `premium_tax_rate` τ | float | 0.00 **[std]** (mechanism [S6][S7][S11]) |
+| `premium_tax_rate` τ | float | 0.00 **[std]** (mechanism [S6] [S7] [S11]) |
 | `annual_income` B(1) | currency p.a. | 6,000 **[std]** (spec footnote 8) |
-| `form` | enum {life_only, life_certain, cash_refund, installment_refund, certain_only} — the five forms of [S1][S2][S4][S5] | life_only (joint) **[std]** |
+| `form` | enum {life_only, life_certain, cash_refund, installment_refund, certain_only} — the five forms of [S1] [S2] [S4] [S5] | life_only (joint) **[std]** |
 | `joint` | bool | true **[std]** |
 | `primary_age` x₁ / `primary_sex` | int (ANB [S1]) / enum {M, F} | 65 / M **[std]** (spec footnote 2) |
 | `joint_age` x₂ / `joint_sex` | int (ANB [S1]) / enum {M, F} | 62 / F **[std]** (spec footnote 2) |
-| `survivor_pct` δ | float ∈ {0.50, 2/3, 0.75, 1.00} [S1][S2][S5][S6][S7] | 2/3 **[std]** (spec footnote 10) |
-| `reduction_trigger` | enum {either, primary} [S1][S2][S3][S7] | switch — both runs shown |
-| `certain_months` n | int, 0 or 60–360 [S1][S2][S4][S5] | 0 (120 when `life_certain`) **[std]** |
-| `frequency` m | enum {12, 4, 2, 1} [S1][S2] | 12 **[std]** |
+| `survivor_pct` δ | float ∈ {0.50, 2/3, 0.75, 1.00} [S1] [S2] [S5] [S6] [S7] | 2/3 **[std]** (spec footnote 10) |
+| `reduction_trigger` | enum {either, primary} [S1] [S2] [S3] [S7] | switch — both runs shown |
+| `certain_months` n | int, 0 or 60–360 [S1] [S2] [S4] [S5] | 0 (120 when `life_certain`) **[std]** |
+| `frequency` m | enum {12, 4, 2, 1} [S1] [S2] | 12 **[std]** |
 | `timing` | enum {advance, arrears} | arrears **[std]** |
-| `cola_rate` g | float ∈ {0, .01, .02, .03, .04} [S1][S5] | 0.03 **[std]** |
+| `cola_rate` g | float ∈ {0, .01, .02, .03, .04} [S1] [S5] | 0.03 **[std]** |
 | `commutation_enabled` | bool (certain-bearing forms only [S1]) | false in base **[std]** |
-| `issue_state_excludes_withdrawal` | bool (Oregon [S1][S2]; NY for [S4] riders) | false |
+| `issue_state_excludes_withdrawal` | bool (Oregon [S1] [S2]; NY for [S4] riders) | false |
 | `qualified` | bool | false **[std]** (spec footnote 1) |
 
 `B(1)` is a *pricing* input, not a modeled output: no insurer publishes payout factors or
@@ -142,19 +142,19 @@ follow the deterministic escalation path, so the refund balance needs no path si
 
 | Input | Value | Basis |
 |---|---|---|
-| Instalment | B(y)/m at each payment date | [S1][S2] |
-| COLA rule | B(y) = B(y−1)(1+g) on each anniversary of the annuity date; compound; irrevocable | [S1][S4][S6] |
+| Instalment | B(y)/m at each payment date | [S1] [S2] |
+| COLA rule | B(y) = B(y−1)(1+g) on each anniversary of the annuity date; compound; irrevocable | [S1] [S4] [S6] |
 | Survivor benefit | δ × the **current** income payment | [S2] |
-| Reduction trigger | death of either annuitant, or of the primary annuitant only | [S1][S2][S3][S7] |
-| Certain period | n months of instalments payable regardless of survival | [S1][S2][S4][S5] |
-| Cash refund | lump sum at death = max(0, P − G(death)) | [S1][S3][S5] |
-| Installment refund | instalments continue until cumulative payments equal P | [S1][S4][S5][S6] |
+| Reduction trigger | death of either annuitant, or of the primary annuitant only | [S1] [S2] [S3] [S7] |
+| Certain period | n months of instalments payable regardless of survival | [S1] [S2] [S4] [S5] |
+| Cash refund | lump sum at death = max(0, P − G(death)) | [S1] [S3] [S5] |
+| Installment refund | instalments continue until cumulative payments equal P | [S1] [S4] [S5] [S6] |
 | Refund-implied guaranteed period | premium ÷ annualized income benefit amount | [S5] |
 | Withdrawal cap / minimum / residual floor | PV of remaining certain payments less surrender charges / $5,000 / $100 per remaining payment | [S1] |
 | Surrender charge sc(y) | yr 2: 8%; 3: 7%; 4: 6%; 5: 5%; 6: 4%; 7: 3%; 8: 2%; 9: 1%; 10+: 0% (no withdrawal in yr 1) | [S1] |
-| Effect of a withdrawal on post-certain lifetime payments | none | [S1][S2][S5] |
-| Cash surrender value | none, at any time | [S1][S4][S5] |
-| Nonforfeiture floor | none — immediate annuities excluded from Model #805 §2.A | [R5][REG-R42] |
+| Effect of a withdrawal on post-certain lifetime payments | none | [S1] [S2] [S5] |
+| Cash surrender value | none, at any time | [S1] [S4] [S5] |
+| Nonforfeiture floor | none — immediate annuities excluded from Model #805 §2.A | [R5] [REG-R42] |
 | Charges to the policyholder | none ("zero fees") | [S1] |
 
 ### (b) Insurer-declared current elements (snapshot)
@@ -167,7 +167,7 @@ rate, no declared rider terms. Two quantities remain, and neither is published.
 | Initial annual income per unit premium (the payout factor) | 6.00% of premium p.a. (= $6,000 on $100,000) | **[std]**, spec footnote 8 (i) |
 | Commutation discount rate `j(t)` | 4.00% + (10-yr CMT(t) − 10-yr CMT(0)), compound | **[std]** [unverified], spec footnote 14 (ii) |
 | Commutation discount convention | `compound` (default **[std]**) or `simple` (per [S7]) | (ii) |
-| State premium tax τ | 0.00% | mechanism [S6][S7][S11]; rate **[std]** (iii) |
+| State premium tax τ | 0.00% | mechanism [S6] [S7] [S11]; rate **[std]** (iii) |
 
 (i) **No insurer publishes payout factors, guaranteed annuity purchase rates or the
 pricing basis** for a fixed SPIA (research gap). The only insurer-sourced anchors are
@@ -191,18 +191,18 @@ calculation to the date each payment would have been made" (simple interest), wi
 variable accounts [S7]. The reference implementation therefore **assumes** a basis and
 flags it **[std]** and **[unverified]**; any implementation must carry the same flag.
 
-(iii) Premium tax is deducted before income is determined [S6][S7][S11], but no source
+(iii) Premium tax is deducted before income is determined [S6] [S7] [S11], but no source
 quantifies a rate and state rates were not researched (research gap).
 
 ### (c) Behavioral / experience assumptions (modeler's view)
 
 | Input | Recommended public basis | Basis tags |
 |---|---|---|
-| Base annuitant mortality | **2012 IAM Basic Table** (unloaded table underlying the 2012 IAM Period Table, developed from the 2002 experience table projected to 2012) with **Projection Scale G2**, applied generationally | [R3][R2][REG-R59] |
-| A/E adjustment to best estimate | × **1.084** **[std]**, from the 2020–2024 SOA/LIMRA payout study: amount-basis A/E versus 2012 IAM Basic projected with G2 is **108.4%** overall (107.5% F, 109.4% M) | [R9][REG-R61]; adoption **[std]** (iv) |
-| Mortality improvement | Scale G2 only, applied generationally; no additional improvement in the base run **[std]** | [R3][R4]; see (iv) |
+| Base annuitant mortality | **2012 IAM Basic Table** (unloaded table underlying the 2012 IAM Period Table, developed from the 2002 experience table projected to 2012) with **Projection Scale G2**, applied generationally | [R3] [R2] [REG-R59] |
+| A/E adjustment to best estimate | × **1.084** **[std]**, from the 2020–2024 SOA/LIMRA payout study: amount-basis A/E versus 2012 IAM Basic projected with G2 is **108.4%** overall (107.5% F, 109.4% M) | [R9] [REG-R61]; adoption **[std]** (iv) |
+| Mortality improvement | Scale G2 only, applied generationally; no additional improvement in the base run **[std]** | [R3] [R4]; see (iv) |
 | Substandard / rated lives | `q_rated = min(1, θ·q_be)`, θ ≥ 1 (equivalently a rated-age offset); θ = 1 in base | existence [S8]; VM-V "rated age" [R1]; overlay **[std]** |
-| Lapse / surrender | **None** — no cash value, no surrender right | [S1][S4][S5][R5]; VM-22 declares the lapse table inapplicable here [R2] |
+| Lapse / surrender | **None** — no cash value, no surrender right | [S1] [S4] [S5] [R5]; VM-22 declares the lapse table inapplicable here [R2] |
 | Annuitization | Not applicable (already in payout); VM-22 prescribes 0% | [R2] |
 | Commutation utilization | 0% in the base run **[std]** | (v) |
 | Maintenance expense | $60 per contract p.a., paid monthly while any payment obligation remains, inflating 2.5% p.a. | **[std]** (vi) |
@@ -210,7 +210,7 @@ quantifies a rate and state rates were not researched (research gap).
 (iv) The study measured **99.6%** A/E against 2012 IAM Basic *unprojected* and **108.4%**
 against 2012 IAM Basic *projected with Scale G2* over 2020–2024, on 3,109,309
 contract-years and 143,190 deaths from 23 parent company groups representing just over 80% of
-industry sales [R9][REG-R61]. The reading: **G2 has over-projected improvement** — actual
+industry sales [R9] [REG-R61]. The reading: **G2 has over-projected improvement** — actual
 mortality is running about 8% heavier than the fully projected basis. A flat 1.084 on the
 projected basis reproduces the study average and is the least-assumption starting point, but
 it is **[std]**, because the study documents gradients the flat factor ignores: by attained
@@ -221,7 +221,7 @@ socio-economic gradient, directly relevant to any block segmented by policy size
 production basis must reflect both. VM-22 additionally *requires*, for a "longevity segment"
 (which a SPIA block is), that the industry and credibility-adjusted tables be brought forward
 for improvement to the valuation date and that future improvement be reflected if it
-increases the reserve [R2][REG-R36].
+increases the reserve [R2] [REG-R36].
 
 (v) No public data on SPIA commutation take-up was located; the base run holds utilization at
 zero so the payment engine is exercised in isolation. (vi) No insurer publishes expense
@@ -236,7 +236,7 @@ prints both tables in full, both sexes, age nearest birthday, at its Appendices 
 [REG-R153]. They are transcribed in `_research/appp-a820-a821-a822.md`, so the *valuation*
 basis (2012 IAR = 2012 IAM Period × Scale G2, generational) is sourceable end to end, and
 the rounding worked example is now cross-checked against the printed tables rather than
-standing alone: male age 30, `1000·q^2012 = 0.741`, `G2₃₀ = 0.010` [R3][R4][REG-R153]. The
+standing alone: male age 30, `1000·q^2012 = 0.741`, `G2₃₀ = 0.010` [R3] [R4] [REG-R153]. The
 **2012 IAM Basic table — the unloaded table this model's best estimate runs on — is still
 not retrieved**: A-821 prints the *loaded* Period Table only, and the Basic table is defined
 in VM-M §2.C [R3]. Machine-readable versions of either are conventionally obtained from the
@@ -257,9 +257,9 @@ best-estimate one.
 | m | payments per year (12/4/2/1); payment months T = {12k/m : k = 1, 2, …} (arrears); on advance the k-th instalment falls one full payment period earlier, at the start of month 12(k−1)/m + 1 |
 | P, τ | single premium; premium tax rate. P_net = P(1 − τ) |
 | B(y) | unreduced annualized income in policy year y; `inst(t) = B(y(t))/m` for t ∈ T |
-| g | fixed compound COLA rate (0.03 **[std]**, ∈ {1%…4%} [S1][S5]) |
+| g | fixed compound COLA rate (0.03 **[std]**, ∈ {1%…4%} [S1] [S5]) |
 | δ | survivor percentage (2/3 **[std]**, ∈ {50%, 66⅔%, 75%, 100%}) |
-| trig | reduction trigger ∈ {either, primary} [S1][S2][S3] |
+| trig | reduction trigger ∈ {either, primary} [S1] [S2] [S3] |
 | n, n_R, n_eff | elected certain months; derived installment-refund months; effective certain months by form |
 | x₁, x₂ | issue ages (ANB) of primary and joint annuitant |
 | l₁(t), l₂(t) | survival probabilities; dᵢ(t) = lᵢ(t−1) − lᵢ(t) |
@@ -273,7 +273,7 @@ Dimensional check: `B` is currency per annum; `inst = B/m` currency per payment;
 `CV` and refund lump sums currency; `Φ`, `L`, `C`, `δ`, `θ`, `l`, `d` dimensionless; `n`,
 `n_eff`, `n_R` months; `g`, `π`, `j`, `sc` rates. Every cash flow below is currency/month.
 
-### COLA update (start of month 12(y−1)+1, y ≥ 2) [S1][S4]
+### COLA update (start of month 12(y−1)+1, y ≥ 2) [S1] [S4]
 
     B(y) = B(y−1) × (1 + g)
 
@@ -295,18 +295,18 @@ t − 1 when m = 12 **[std]**):
     period certain only:    L(t) ≡ 0
 
 The `either` form pays the full instalment while **both** are alive and δ × instalment
-while **exactly one** is alive [S2][S3] — the second bracket is exactly
+while **exactly one** is alive [S2] [S3] — the second bracket is exactly
 `P(at least one alive) − P(both alive)`. The `primary` form pays the full instalment while
 the **primary** is alive irrespective of the joint annuitant's status, and δ × instalment
-only when the primary is dead and the joint annuitant alive [S2][S3]; this is also the
+only when the primary is dead and the joint annuitant alive [S2] [S3]; this is also the
 mandatory structure for qualified contracts with a non-spouse joint annuitant, where "if
 the secondary annuitant dies first, 100% of payments continue while the primary lives" [S5].
 
 **Certain floor `C(t) = 1{t ≤ n_eff}`**, with
 
-    n_eff = n     for life_certain and certain_only, single or joint  [S1][S2][S4][S5]
-    n_eff = n_R   for installment_refund                              [S1][S5]
-    n_eff = 0     for life_only and cash_refund                       [S1][S2]
+    n_eff = n     for life_certain and certain_only, single or joint  [S1] [S2] [S4] [S5]
+    n_eff = n_R   for installment_refund                              [S1] [S5]
+    n_eff = 0     for life_only and cash_refund                       [S1] [S2]
 
 **Master payment factor and annuity outgo** (t ∈ T):
 
@@ -315,17 +315,17 @@ the secondary annuitant dies first, 100% of payments continue while the primary 
 
 The `max` makes the certain period an **annuity-certain floor** rather than an additional
 stream: during the certain period the full instalment is paid regardless of survival, and
-`max` prevents paying `1 + L` [S1][S2][S5]. Two consequences:
+`max` prevents paying `1 + L` [S1] [S2] [S5]. Two consequences:
 
 - Because the floor pays the **full, unreduced** instalment, the construction automatically
   reproduces NYL's rule that a survivor reduction "will not be reduced until the end of
   that period" when the first death falls inside a certain period [S5] — no separate flag
   is needed (spec footnote 11).
 - The `(1 − θ_cum·C)` term applies a prior commutation to certain-period instalments only;
-  life-contingent payments after the certain period are untouched [S1][S2][S5].
+  life-contingent payments after the certain period are untouched [S1] [S2] [S5].
 
 **Derived installment-refund period.** Payments continue until cumulative payments equal
-the premium [S1][S4][S5][S6]:
+the premium [S1] [S4] [S5] [S6]:
 
     n_R = min{ t ∈ T : G(t) ≥ P }
     final instalment at n_R is trimmed to  P − G(n_R − 12/m)          **[std]**
@@ -338,7 +338,7 @@ amount" [S5] rounded up to a payment date. Anchor check:
 
 **Cash refund lump sum** (at the death that terminates the income stream):
 
-    E[CR(t)] = d_term(t) × max( 0, P − G(t−1) )                        [S1][S3][S5]
+    E[CR(t)] = d_term(t) × max( 0, P − G(t−1) )                        [S1] [S3] [S5]
     d_term = d₁       single-life contract
     d_term = d_last   joint contract (offered only with δ = 100% [S5])
 
@@ -357,11 +357,11 @@ overstated by one instalment.
     CF(t) = E[ANN(t)] + E[CR(t)] + E[COMM(t)] + E[EXP(t)]
 
 There is no premium income in the projection (the single premium at t = 0 is a pricing
-input) and no surrender outgo [S1][S4][S5].
+input) and no surrender outgo [S1] [S4] [S5].
 
 ### Mortality construction
 
-    q_base(x, 2012+k) = q_x^{2012 IAM Basic} × (1 − G2_x)^k               [R3][R2]
+    q_base(x, 2012+k) = q_x^{2012 IAM Basic} × (1 − G2_x)^k               [R3] [R2]
     q_be(x, cal)      = min( 1, AE × q_base ),  AE = 1.084                **[std]** from [R9]
     q_rated(x, cal)   = min( 1, θ × q_be ),     θ = 1 in base             **[std]**
     q_m(t)            = 1 − (1 − q_rated)^(1/12)                          **[std]**
@@ -418,15 +418,15 @@ states the same resumption rule for every form except pure Period Certain [S2]. 
 
 **There is almost none, and that is a cited product property rather than an omission.** The
 contract is irrevocable, the income option and frequency cannot be changed after issue,
-there is no account value and no surrender right [S1][S2][S3][S4][S5]. The model therefore
+there is no account value and no surrender right [S1] [S2] [S3] [S4] [S5]. The model therefore
 carries **no lapse decrement and no dynamic lapse formula** — the position VM-22 prescribes
-for this reserving category [R2][REG-R36].
+for this reserving category [R2] [REG-R36].
 
 The one live option is **commutation of the certain portion**, and no public utilization data
 exists. Reference constructions, both **[std]**: a **deterministic** per-contract-year
 utilization vector `u(y)`, zero in the base (shape anchors only — the feature requires the
-owner to be 59½ or older [S2][S5], is capped at the PV of remaining certain payments [S1] and
-is barred in Oregon [S1][S2]); or a **rate-driven dynamic** take-up, since commutation is
+owner to be 59½ or older [S2] [S5], is capped at the PV of remaining certain payments [S1] and
+is barred in Oregon [S1] [S2]); or a **rate-driven dynamic** take-up, since commutation is
 worth more when rates have fallen since issue (the interest-rate adjustment raises the
 payout):
 
@@ -445,13 +445,13 @@ fed into a reserve calculation is therefore not a conservative approximation of 
 different quantity. (Note also that AG 33 reaches this product **only** because the commutation
 right exists — see "Valuation and reserve pointers" below.)
 
-Excluded by scope: payment acceleration (borrowing forward with no PV discount) [S2][S3][S5];
+Excluded by scope: payment acceleration (borrowing forward with no PV discount) [S2] [S3] [S5];
 NYL's 30% Cash Withdrawal, which commutes against **life expectancy** on a life-only contract
 and permanently cuts all future income by 30% [S5] — the only retrieved feature that commutes
 a life-contingent stream. Anti-selection enters at **outset**, not through in-force behavior:
 voluntary annuitants self-select for longevity, and impaired lives are diverted to age-rated
 contracts [S8] whose valuation is governed by AG 9-C and VM-V's "rated age" definition
-[R1][REG-R41]. The reference model carries this through θ, not through behavior dynamics.
+[R1] [REG-R41]. The reference model carries this through θ, not through behavior dynamics.
 
 ---
 
@@ -489,12 +489,12 @@ B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 ×
   end of the month of death is already the first scheduled payment date after the death.)
 - t = 14, `trig = primary`, same values: `L = l₁ + δ(1 − l₁)l₂ = 1 + 0 = 1`, so
   `CF = 515.00`. ✔ The joint annuitant's death is invisible to the payment stream while
-  the primary lives [S2][S3][S5].
+  the primary lives [S2] [S3] [S5].
 - **Reverse the death** (primary dies in month 14, joint annuitant survives; l₁ = 0,
   l₂ = 1): `L_either = 0 + (2/3)(0 + 1 − 0) = 2/3` and `L_primary = 0 + (2/3)(1)(1) = 2/3`.
   Both conventions pay 343.33 from t = 14. **The two triggers coincide on the primary's
   death and differ only on the secondary's** — which is precisely why the trigger must be a
-  model switch, not a footnote [S1][S2][S3][S7].
+  model switch, not a footnote [S1] [S2] [S3] [S7].
 - **COLA continues after the reduction**, because δ applies to the *current* income payment
   [S2]: 343.33 becomes 353.63 at t = 25, not a frozen 343.33.
 - **With a 10-year certain period** (n = 120): `C(t) = 1` for t ≤ 120, so
@@ -502,7 +502,7 @@ B = 6,000 × 1.03 = 6,180.00 ⇒ 515.00/month; year 3 (from t = 25) B = 6,180 ×
   515.00 / 530.45 / …, with the reduction to δ beginning only at t = 121 — reproducing
   NYL's deferral rule with no extra logic [S5].
 - **Single-life with cash refund**, death in month 14: lump sum =
-  `max(0, 100,000 − G(13)) = 100,000 − (12 × 500.00 + 515.00) = 93,485.00` [S1][S3][S5]. On
+  `max(0, 100,000 − G(13)) = 100,000 − (12 × 500.00 + 515.00) = 93,485.00` [S1] [S3] [S5]. On
   **installment refund** (level path, no COLA [S1]) the derived certain period is
   `12 × 100,000/6,000 = 200 months` [S5].
 
@@ -526,19 +526,19 @@ cited, not reproduced:
   Reserving Category**; aggregate reserve = SR + DR for contracts passing the Single
   Scenario Test + reserves for contracts valued under VM-A/VM-C/VM-M/VM-V; **SR = CTE70**;
   the additional standard projection amount is **disclosure-only** under VM-31; a three-year
-  transition election and a $1.0bn/$2.0bn Annuity PBR Exemption apply [R2][REG-R36].
+  transition election and a $1.0bn/$2.0bn Annuity PBR Exemption apply [R2] [REG-R36].
 - **Prescribed mortality for the VM-22 Standard Projection Amount** (also the "little or no
   data" floor): `q_x^(2012+k) = q_x^{2012 IAM Basic}·(1 − G2_x)^k·F_x`, with `F_x` from
   **Table 6.8** (payout-annuity factors, age nearest birthday, reproduced in full at [R2])
-  [R2][REG-R36]. Note this is the **same base table and projection scale** as the
+  [R2] [REG-R36]. Note this is the **same base table and projection scale** as the
   best-estimate construction above, with a prescribed `F_x` overlay in place of the
   experience A/E factor.
 - **Maximum valuation interest rate.** **VM-V §1**, not VM-22, for immediate annuities issued
   after 12/31/2017: `Iq = R + S − D − E` with `E = 0.25%`, bucketed A–D by reference period
   and initial age (age **last** birthday, younger annuitant on a joint contract), rounded to
   the nearest ¼% quarterly for non-jumbo contracts and to 1/100 of 1% daily for jumbo
-  contracts (initial consideration ≥ $250 million) [R1][REG-R37]. VM-V §1 supersedes AG 9-B
-  and the interest references in AG 9-C [R1][REG-R37][REG-R41]. For the **older in-force
+  contracts (initial consideration ≥ $250 million) [R1] [REG-R37]. VM-V §1 supersedes AG 9-B
+  and the interest references in AG 9-C [R1] [REG-R37] [REG-R41]. For the **older in-force
   layer** VM-V §1 does not reach, the A-820 formulaic rate is `I = .03 + W(R − .03)` with a
   **flat W = .80** for single premium immediate annuities — no Plan Type and no
   guarantee-duration lookup — and `R` the **12-month** average of the Moody's composite yield
@@ -547,11 +547,11 @@ cited, not reproduced:
   9.b]. **A-820 prints no tie-break** for that rounding (the "ties down" convention is VM-20
   §3.C.2.a's, not A-820's), and its ¶7 trigger — "the effective date of the Codification" —
   is a date A-820 never prints; both stay unresolved in the primary text
-  [REG-R153 ¶7][REG-R3].
+  [REG-R153 ¶7] [REG-R3].
 - **Valuation mortality.** **2012 IAR** generational table:
   `q_x^(2012+k) = q_x^{2012 IAM Period}·(1 − G2_x)^k`, **rounded to three decimal places per
   1,000, with the rounding applied to the value computed from the 2012 period rate each time
-  — never by compounding an already-rounded prior-year rate** [R3][R4][REG-R59]. Verified
+  — never by compounding an already-rounded prior-year rate** [R3] [R4] [REG-R59]. Verified
   example: male 30, `q^2012 = 0.741` ⇒ `q^2014 = 0.741 × 0.99² = 0.7262541 → 0.726`, **not**
   `0.734 × 0.99 = 0.727`. Chaining rounded rates is wrong in a way a single-year unit test
   will not catch. **The table-by-issue-date rules are now sourced** from the codified
@@ -579,7 +579,7 @@ cited, not reproduced:
 
 **Policyholder taxation is not an insurer cash flow.** Under IRC §72 each payment splits at
 **exclusion ratio = investment in the contract ÷ expected return**, capped at the unrecovered
-investment [R6][REG-R55], with expected return from the IRS actuarial tables by payout form
+investment [R6] [REG-R55], with expected return from the IRS actuarial tables by payout form
 and a **refund feature adjustment** reducing the investment in the contract by
 `Table III/VII percentage × min(net cost, total guaranteed return)` [R7]. Worked IRS example:
 at age 65, $21,053 buying $100/month for life with a full refund feature gives years
@@ -611,7 +611,7 @@ Dominant assumptions, in order:
    the anchor cell the `primary` trigger pays 100% for the primary's whole lifetime whenever
    the joint annuitant dies first, while `either` drops to δ. Over a joint 65/62 cell this is
    a first-order liability movement, and it is invisible if the trigger is buried as a
-   footnote rather than modeled as a switch [S1][S2][S3][S7].
+   footnote rather than modeled as a switch [S1] [S2] [S3] [S7].
 4. **Initial income level `B(1)`.** The largest source of model error is not an assumption at
    all: **no insurer publishes payout factors or the pricing basis**, so `B(1)` is exogenous
    and unverifiable (spec footnote 8; assumption note (i)). Every result is conditional on
@@ -620,7 +620,7 @@ Dominant assumptions, in order:
    liability duration and longevity sensitivity both rise with `g`. The menu is bounded at
    4% for qualified-eligible designs by the sub-5% constant-percentage rule [R8].
 6. **Commutation basis.** Both the discount rate and its functional form are invented
-   **[std][unverified]** (assumption note (ii)). Latent while utilization is zero, but any
+   **[std] [unverified]** (assumption note (ii)). Latent while utilization is zero, but any
    run with `commutation_enabled` inherits an unsupported assumption — flag it in output.
 
 Known modeling pitfalls:
@@ -630,14 +630,14 @@ Known modeling pitfalls:
   construction silently doubles the guarantee.
 - **Rounding the valuation table by compounding.** `q^(2012+k)` must be rounded from the 2012
   period rate every time; chaining rounded rates gives 0.727 where the manual requires 0.726
-  [R3][R4][REG-R59][REG-R153 A-821 ¶14].
+  [R3] [R4] [REG-R59] [REG-R153 A-821 ¶14].
 - **Applying the A/E factor to the wrong base.** 1.084 belongs on 2012 IAM Basic **projected
   with G2**; on the unprojected table the study's own answer is 99.6% [R9].
 - **Period versus generational.** The 2012 IAM Period Table is one calendar year's rates; the
-  2012 IAR is that table plus Scale G2 applied generationally [R3][R4]. Using the Period
+  2012 IAR is that table plus Scale G2 applied generationally [R3] [R4]. Using the Period
   Table without projection understates longevity throughout.
 - **Age-basis mismatch.** The tables are ANB; VM-V's initial age for rate bucketing is ALB
-  [R1][R2]. Mixing them shifts every lookup by up to a year (conversion in Model scope).
+  [R1] [R2]. Mixing them shifts every lookup by up to a year (conversion in Model scope).
 - **Survival-measurement timing.** Arrears instalments require survival at the payment date,
   advance instalments at the period start. Using end-of-period survival for advance payments
   understates the liability by about one period's mortality per payment — material at high
@@ -652,7 +652,7 @@ Known modeling pitfalls:
   recognition to a living secondary annuitant [R9].
 - **Commutation applied to the wrong slice.** A withdrawal reduces certain-period instalments
   only; applying `θ_cum` to the life-contingent tail contradicts every retrieved contract
-  [S1][S2][S5].
+  [S1] [S2] [S5].
 - **Treating exclusion-ratio tax as a cash flow.** It is a policyholder computation and
   generates no insurer flow; modeling it as an outgo distorts the liability.
 - **Vintage and scope drift.** VM-22 is in its first year of effectiveness with a three-year

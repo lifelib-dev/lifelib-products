@@ -164,12 +164,12 @@ follows, with no formula change.
 | `subaccount_table.csv` | Two subaccounts, equity 0.75% and bond 0.55% fund expense | **[std]** collapse of observed menus; ranges 0.29%–1.18% [S1], 0.55%–2.88% [S2], 0.46%–2.54% [S3], 0.08%–1.93% [S4] |
 | `scenario_table.csv` | Monthly **gross** subaccount returns by `scenario_id`. `WE` is the worked example's month (+1.00% / −0.50%) then a level 6% a year path; `LEVEL6` is that path throughout | **[std]**; the worked example's month is the notes' own |
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 NAAR, M / StdNT / 45, policy years 1–77 | year 1 = $0.22 is the disclosed anchor [S4]; the rest is an **illustrative [std]** stand-in for the licensed 2017 CSO table, capped at $83.34 |
-| `corridor_factors.csv` | GPT corridor factors, attained ages 18–121, grading to 100% at 95 | quoted ages and 100% from 95 sourced [S2][R3]; ages 41–94 are **linear interpolation [std]** — see below |
+| `corridor_factors.csv` | GPT corridor factors, attained ages 18–121, grading to 100% at 95 | quoted ages and 100% from 95 sourced [S2] [R3]; ages 41–94 are **linear interpolation [std]** — see below |
 | `mort_table.csv` | Best-estimate annual mortality by age, 18–121 | **illustrative [std]**, *not* the 2015 VBT the notes recommend — that family is licensed. Deliberately well below the COI basis |
 | `class_factor_table.csv` | Rate-class factors 0.80 – 1.75 | **[std]** |
-| `lapse_table.csv` | Base annual lapse by policy year: 6% / 5% / 4% / 3% | **[std]**, from the UL persistency studies [REG-R20][REG-R21] applied to VUL by analogy — VUL is not broken out separately, which the notes flag |
+| `lapse_table.csv` | Base annual lapse by policy year: 6% / 5% / 4% / 3% | **[std]**, from the UL persistency studies [REG-R20] [REG-R21] applied to VUL by analogy — VUL is not broken out separately, which the notes flag |
 | `prem_persistency.csv` | 1.00 in year 1 grading to 0.85 in year 5 and 0.80 after | **[std]** placeholder grading, base levels [REG-R21] |
-| `surr_charge_table.csv` | `VUL14`: $18.00 per $1,000, linear to zero over 14 policy years | amount and shape **[std]** (spec footnote 10); 14-year period [S1][S2] |
+| `surr_charge_table.csv` | `VUL14`: $18.00 per $1,000, linear to zero over 14 policy years | amount and shape **[std]** (spec footnote 10); 14-year period [S1] [S2] |
 
 ## Naming
 
@@ -266,7 +266,7 @@ consequence together, so the tail cannot be quietly regraded back.
 
 No sourced number moves either way. The two readings differ only over attained ages
 61–94, and not one of those is a quoted age: 250% (≤40), 215% (45), 185% (50), 150%
-(55) and 130% (60) are [S2][R3] and identical under both, and so is 100% from age 95
+(55) and 130% (60) are [S2] [R3] and identical under both, and so is 100% from age 95
 on. What is at stake is which **[std]** line is drawn between the last quoted factor
 and that 100%.
 

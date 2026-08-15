@@ -19,7 +19,7 @@ with A-821 and A-822 [REG-R153] and **A-830** [REG-R154]. The shared reference
 numbering now runs **R1–R157**, with most of the **R73–R149** block unused.
 Nothing outside those paragraphs was re-dated, and **no [std] or [unverified] marker
 elsewhere in this file was upgraded**: every standardization here is a
-product-parameter choice made because insurers do not publish current scales [S3][S5],
+product-parameter choice made because insurers do not publish current scales [S3] [S5],
 a limit the appendix reading does not touch.
 
 ---
@@ -42,7 +42,7 @@ a limit the appendix reading does not touch.
   deduction at the start of month t covers month t).
 - **Age basis.** Age nearest birthday (ANB) **[std]**. Rationale: the specimen's
   nonforfeiture basis is 2001 CSO ANB [S3], the SOA/LIMRA UL study methodology is ANB
-  [R7], and the 2017 CSO/2015 VBT families provide ANB variants [R4][REG-R18].
+  [R7], and the 2017 CSO/2015 VBT families provide ANB variants [R4] [REG-R18].
 - **Model points.** Single-policy model points, projected on an expected
   (probability-weighted) basis: survivorship factors multiply per-policy cash flows.
   No aggregation logic is specified here.
@@ -104,16 +104,16 @@ ASOP 2 [R8]); class (c) is the modeler's view of policyholder/insurer experience
 
 | Input | Value | Basis |
 |---|---|---|
-| Guaranteed minimum annual interest `i_guar` | 2.00% | pick from 2%–3% range [S1][S2][S3]; **[std]** |
+| Guaranteed minimum annual interest `i_guar` | 2.00% | pick from 2%–3% range [S1] [S2] [S3]; **[std]** |
 | Guaranteed max COI rates `q_coi_guar(s)` per $1,000/month | specimen table by policy year s (spec, charges table) | [S3]; interpolation **[std]** |
 | Guaranteed max premium load | 9% | [S1]; composite **[std]** |
 | Per-policy charge (guaranteed = current) | $7.50/month to age 121 | [S3]; composite **[std]** |
 | Per-unit charge | $0.26/$1,000/mo yrs 1–10; $0.156 to age 121 | [S3]; composite **[std]** |
-| Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from year 10 | pattern [S1][S2], mechanics [S3], amount **[std]** |
-| Corridor factors (GPT) | specimen table 250% (ages 0–40) → 101% (94+) | [S3][R2] |
+| Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from year 10 | pattern [S1] [S2], mechanics [S3], amount **[std]** |
+| Corridor factors (GPT) | specimen table 250% (ages 0–40) → 101% (94+) | [S3] [R2] |
 | Loan spread (charged − credited on loaned AV) | 0.75% | [S3]; level **[std]** |
-| Grace | 61 days; required payment 3xMD + load | [S2][S3] |
-| Charges cease / premiums stop | attained age 121 | [S2][S3] |
+| Grace | 61 days; required payment 3xMD + load | [S2] [S3] |
+| Charges cease / premiums stop | attained age 121 | [S2] [S3] |
 
 ### (b) Current non-guaranteed scales (snapshot; revisable NGEs [R8])
 
@@ -134,16 +134,16 @@ the base projection holds the snapshot scales level.
 
 | Input | Recommended public basis | Basis tags |
 |---|---|---|
-| Best-estimate mortality | 2015 VBT (sex/smoker-distinct, ANB) x 100% A/E **[std]** factor; monitor against ILEC 2012–2019 A/E experience | [REG-R18][REG-R19]; factor **[std]** |
+| Best-estimate mortality | 2015 VBT (sex/smoker-distinct, ANB) x 100% A/E **[std]** factor; monitor against ILEC 2012–2019 A/E experience | [REG-R18] [REG-R19]; factor **[std]** |
 | Mortality improvement | None in base **[std]** | — |
-| Guaranteed-element mortality reference | 2017 CSO (cap for guaranteed COI; valuation/nonforfeiture basis for new issues) | [R4][REG-R17]; COI-cap role [unverified — search-result context] |
-| Base lapse/surrender | SOA/LIMRA UL studies (2015–2021 UL persistency & lapse; 2009–2013 all-product persistency); detailed tables are behind the paid package, so the reference table below is **[std]** | [R7][REG-R21][REG-R20] |
+| Guaranteed-element mortality reference | 2017 CSO (cap for guaranteed COI; valuation/nonforfeiture basis for new issues) | [R4] [REG-R17]; COI-cap role [unverified — search-result context] |
+| Base lapse/surrender | SOA/LIMRA UL studies (2015–2021 UL persistency & lapse; 2009–2013 all-product persistency); detailed tables are behind the paid package, so the reference table below is **[std]** | [R7] [REG-R21] [REG-R20] |
 | Premium persistency | SOA/LIMRA 2015–2021 UL study: premium persistency (paid/planned) highest in year 1 (dump-ins); current-assumption products highest ongoing persistency | [R7]; reference factors **[std]** |
 | Maintenance expense | $75/policy/year, inflating 2.5%/year | **[std]** |
 | Premium tax / percent-of-premium expense | 2.5% of premium | **[std]** |
 
 Reference base lapse table **[std]** (annual rates, all calibration to be replaced by
-the user's experience; shape informed qualitatively by [R7][REG-R20]):
+the user's experience; shape informed qualitatively by [R7] [REG-R20]):
 
 | Policy year | 1 | 2 | 3–9 | 10 | 11+ |
 |---|---|---|---|---|---|
@@ -176,7 +176,7 @@ year to a 70% floor (year 2: 98%, year 3: 96%, ..., floor from year 16).
 | `i_cr` | current credited annual effective rate (0.04) |
 | `i_m` | monthly credited rate = (1 + i_cr)^(1/12) − 1 = 0.0032737 (derived) |
 | `i_gm` | monthly guaranteed rate = (1 + i_guar)^(1/12) − 1 = 0.0016516 (derived) |
-| `cf(a)` | GPT corridor factor at attained age a (spec table) [S3][R2] |
+| `cf(a)` | GPT corridor factor at attained age a (spec table) [S3] [R2] |
 | `AV'(t)` | AV after premium and withdrawal, before monthly deduction |
 | `MD(t)` | monthly deduction |
 | `NAAR(t)` | net amount at risk |
@@ -192,7 +192,7 @@ is in currency; `e_unit x U` is currency; all MD components are currency/month.
 ### Monthly processing order (monthiversary, per the specimen [S3]; discretization [std])
 
 At BOM of month t (skip steps 2–7 from attained age 121: charges cease, premiums not
-accepted [S2][S3]):
+accepted [S2] [S3]):
 
 1. Set policy year y, attained age a. Amortize surrender charge:
    `SC(t) = max(0, (9.00 − t/12) x U)` (per-layer if face increases are modeled)
@@ -207,7 +207,7 @@ accepted [S2][S3]):
    After steps 2–3: `AV'(t) = AV(t−1) + NP(t) − W(t) − wf x 1{W>0}`.
 4. Death benefit and corridor:
    `DB(t) = max(optionDB(t), cf(a) x AV'(t))` where `optionDB = F` (Option A) or
-   `F + AV'(t)` (Option B) [S1][S3]; corridor per GPT [S3][R2].
+   `F + AV'(t)` (Option B) [S1] [S3]; corridor per GPT [S3] [R2].
 5. NAAR (specimen discounting convention — DB discounted one month at the guaranteed
    rate; AV measured before the deduction [S3]):
    `NAAR(t) = DB(t) / (1 + i_gm) − AV'(t)`, floored at 0.
@@ -216,7 +216,7 @@ accepted [S2][S3]):
    1.02^(1/12) = 1.0016516, derived.)
 6. Monthly deduction:
    `MD(t) = e_pol + e_unit(y) x U + rc(t) + q_coi(y)/1000 x NAAR(t)` [S3].
-7. Shortfall test: if `AV'(t) − L(t−1) < MD(t)`, enter grace [S2][S3] (see grace
+7. Shortfall test: if `AV'(t) − L(t−1) < MD(t)`, enter grace [S2] [S3] (see grace
    logic); otherwise deduct: AV after deduction = `AV'(t) − MD(t)`.
 8. Interest (EOM): credit one month at the current rate on unloaned AV and at the
    guaranteed rate on the loaned portion; accrue loan interest at r_L **[std
@@ -237,7 +237,7 @@ policy-date AV equals net premium minus the first monthly deduction [S3].
 
 ### Grace and lapse-for-insufficiency logic
 
-- Trigger (month t): `AV'(t) − L(t−1) < MD(t)` on a monthiversary [S2][S3]. (Model 585
+- Trigger (month t): `AV'(t) − L(t−1) < MD(t)` on a monthiversary [S2] [S3]. (Model 585
   default defines lapse at NCSV = 0 with >= 30-day grace [R1]; the composite follows
   the specimen trigger.)
 - During grace (61 days ≈ 2 policy months **[std]**): coverage continues; deductions
@@ -268,7 +268,7 @@ l(t−1) x (1 − q_m(t)) x w_m(t) **[std timing]**.
 
 The GPT limit (cumulative premiums less a portion of withdrawals may not exceed
 max(GSP, cumulative GLP)) and the 7-pay MEC test are tracked as compliance
-side-calculations that cap or refuse premiums [S3][R2][R3][REG-R13][REG-R14]; they
+side-calculations that cap or refuse premiums [S3] [R2] [R3] [REG-R13] [REG-R14]; they
 generate no cash flow of their own — a refused premium simply never enters the model,
 and MEC status changes policyholder taxation, not insurer liability cash flows [R3
 consequence detail [unverified] beyond the statutory cross-reference]. The base model
@@ -341,16 +341,16 @@ NOT reproduced here:
   construction, the funding ratio — `r = min(1, policy value/GMF)` here **only because
   this chassis is flexible premium**, `r ≡ 1` unconditionally for a fixed premium UL —
   and the ¶¶12–13 alternative minimum reserve, with every rate, table and factor
-  delegated to A-820 by year of issue [REG-R155 ¶¶8, 12–13][REG-R153]. Nonforfeiture
+  delegated to A-820 by year of issue [REG-R155 ¶¶8, 12–13] [REG-R153]. Nonforfeiture
   floor: **Model 585 Section 6A** retrospective minimum CSV — A-585 carries no
   nonforfeiture provisions at all, so that floor stays with the model regulation
-  [R1][REG-R5][REG-R155].
+  [R1] [REG-R5] [REG-R155].
 - **Statutory (PBR).** VM-20 minimum reserve for life products (net premium reserve
   plus deterministic/stochastic excess subject to exclusion tests), per the Valuation
   Manual (operative 2017-01-01; accreditation standard 2020-01-01 — both verbatim at
   [R5], now also the shared [REG-R150]) [REG-R3];
   implementation guidance in the AAA VM-20 practice note [REG-R23]. Prescribed NPR
-  mortality: 2017 CSO family via VM-M [REG-R3][REG-R17; exact table mapping
+  mortality: 2017 CSO family via VM-M [REG-R3] [REG-R17; exact table mapping
   [unverified]].
 - **Tax.** IRC 807: greater of net surrender value and 92.81% of the NAIC-method
   reserve, capped at statutory [REG-R16].
@@ -367,7 +367,7 @@ Dominant assumptions (in rough order for a cash-value-oriented block):
 1. **Credited-rate spread and current COI scale (the NGE pair).** They set the AV
    growth net of charges and hence funding adequacy, surrender values, and the
    grace/lapse cascade. Both are [std] snapshots here because insurers do not publish
-   them [S3][S5]; sensitivity-test the 60% COI factor and the 4.00% credited rate
+   them [S3] [S5]; sensitivity-test the 60% COI factor and the 4.00% credited rate
    first.
 2. **Premium persistency.** UL cash flows are premium-behavior-driven; paid/planned
    ratios vary by product focus and duration [R7]. Underfunding accelerates
@@ -395,12 +395,12 @@ Known modeling pitfalls:
   monthly discretization is a [std] approximation — do not also compound daily, and
   document the convention when reconciling to admin-system values.
 - **ANB vs ALB mismatch.** Mortality/corridor lookups must match the [std] ANB basis;
-  the 2017 CSO/2015 VBT families ship both variants [R4][REG-R18].
+  the 2017 CSO/2015 VBT families ship both variants [R4] [REG-R18].
 - **Era mixing.** The guaranteed COI table is a 2001 CSO-era specimen table [S3]
   paired here with a 2%-guarantee-era interest assumption **[std]**; a production
   model for post-2020 issues should substitute a 2017 CSO-capped guaranteed table
-  (not publicly obtained — research gap) [R4][unverified].
+  (not publicly obtained — research gap) [R4] [unverified].
 - **Grace-period timing.** The 61-day grace spans two monthiversaries; skipping the
   due-and-unpaid deduction accrual understates death claims in grace [S3].
 - **MEC/GPT are not cash flows.** Modeling them as charges or refunds distorts
-  premium income; they are caps/flags only [S3][R2][R3].
+  premium income; they are caps/flags only [S3] [R2] [R3].

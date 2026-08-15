@@ -58,7 +58,7 @@ interface**. Actuarial Guideline LIV makes the Interim Value — the value at wh
 mid-term withdrawal, surrender, death benefit, annuitization, transfer and fee deduction
 settles — the market value of a hypothetical replicating portfolio of European options
 plus a fixed income proxy [R2], and the source prospectuses implement exactly that with
-Black-Scholes [S2][S6]. No other product in this library has a contractual value that
+Black-Scholes [S2] [S6]. No other product in this library has a contractual value that
 cannot be computed without a derivatives pricer.
 
 The three components the notes insist on separating are separate here too:
@@ -178,11 +178,11 @@ same-schema file and the projection follows, with no formula change.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Fifteen contracts. **Points 1 and 2 are the worked example's anchor cell** — M60 / $100,000 / one 6-year Cap option / 10% buffer / 100% cap — on Scenario A and Scenario B, point 2 carrying the illustrative $8,000 withdrawal. Point 3 runs the notes' base *behavioural* withdrawal rule. Points 4–14 carry Step, Edge and Floor crediting, interim value families (b) and (c), the pre-AG 54 engine, the updated-time-to-expiry amortization, a 110% participation rate on a 20% buffer, an uncapped option at issue age 81, the NGE cap-solve, and a charged excess withdrawal. **Point 15 is the notes' second labelled verification**, the [S2] withdrawal-charge example — see below | contract terms sourced [S1][S2][S4][S5]; declared rates and every behavioural switch **[std]** |
+| `model_point_table.csv` | Fifteen contracts. **Points 1 and 2 are the worked example's anchor cell** — M60 / $100,000 / one 6-year Cap option / 10% buffer / 100% cap — on Scenario A and Scenario B, point 2 carrying the illustrative $8,000 withdrawal. Point 3 runs the notes' base *behavioural* withdrawal rule. Points 4–14 carry Step, Edge and Floor crediting, interim value families (b) and (c), the pre-AG 54 engine, the updated-time-to-expiry amortization, a 110% participation rate on a 20% buffer, an uncapped option at issue age 81, the NGE cap-solve, and a charged excess withdrawal. **Point 15 is the notes' second labelled verification**, the [S2] withdrawal-charge example — see below | contract terms sourced [S1] [S2] [S4] [S5]; declared rates and every behavioural switch **[std]** |
 | `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with generational Projection Scale G2 [REG-R59], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
 | `market_scenario.csv` | Four deterministic scenarios keyed by `(scenario_id, t)`, read as step functions: `up` (index 100 → 120 at month 36 → 140 at month 72, the Market Value Rate rising 100 bp at the term midpoint), `down` (100 → 80 → 75, same rate rise), `legacy` (500 → 600 at month 6, the pre-AG 54 source example) and `charge_ex` (100 → 71.66666667 at month 60, the level that lands the Account Value on exactly $80,000 for the [S2] withdrawal-charge example). The index path is therefore piecewise constant between the notes' own anchor months, and flat after the last of them | worked example [std]; the flat 4.00% / 2.00% / 20.00% market state is **[std]** |
-| `surr_charge_table.csv` | The withdrawal charge by **complete** contract year: 7, 7, 6, 5, 4, 3, 0 per cent | sourced [S1][S2] |
-| `guar_min_rate_table.csv` | Guaranteed minimum Cap / Step / Edge rates by term: 2% / 6% / 8% Cap at 1 / 3 / 6 years, 2% Step and Edge | sourced [S1][S2] |
+| `surr_charge_table.csv` | The withdrawal charge by **complete** contract year: 7, 7, 6, 5, 4, 3, 0 per cent | sourced [S1] [S2] |
+| `guar_min_rate_table.csv` | Guaranteed minimum Cap / Step / Edge rates by term: 2% / 6% / 8% Cap at 1 / 3 / 6 years, 2% Step and Edge | sourced [S1] [S2] |
 | `lapse_table.csv` | The un-shocked annual surrender rate by contract year. The charge-expiry shock is **not** in this file: its size is the `lapse_shock_mult` Reference and the year it lands in is derived from `surr_charge_table.csv` by `lapse_shock_year()`, so the shock cannot drift away from the charge whose expiry causes it | **[std]** reference shape; the RILA-specific tables in [REG-R64] sit behind a paid data package |
 | `withdrawal_table.csv` | Three scheduled programmes keyed by `(wd_schedule_id, t)`: none, the worked example's $8,000 at month 36, and a charged $20,000 at month 24 | worked example [S2]; the variant **[std]** |
 
@@ -256,7 +256,7 @@ statement:
   carriers diverge here: specific MVA requirements were deliberately removed from the
   guideline because consensus was unreachable [R2].
 - **No Model #805 minimum guaranteed surrender value.** AG 54 displaces Model #805 outright
-  when it is satisfied [R2][REG-R42][REG-R44], and the nonforfeiture value **is** the
+  when it is satisfied [R2] [REG-R42] [REG-R44], and the nonforfeiture value **is** the
   interim value. There is no `mgsv_pp`. (Were #805 to apply, note that the indexed
   nonforfeiture rate is floored at **15 basis points**, not 1% [REG-R42] — the same trap
   the chassis documents.)
@@ -419,7 +419,7 @@ same list.
   yield are read from a deterministic scenario table. The Academy's regression grid [R6] and
   the Lincoln and Prudential interim-value grids would be run by supplying more scenarios.
 - **The contractual minimum-account-value rule.** A request that would leave less than
-  $2,000 is treated as a full withdrawal [S1][S2]; `wd_pp` merely caps the request at the
+  $2,000 is treated as a full withdrawal [S1] [S2]; `wd_pp` merely caps the request at the
   Account Value **[std]**.
 - **`check_margin()`.** On this chassis the cap *is* the fee — no charge is deducted from
   index-linked value, and the margin appears as the spread between the earned rate and the
@@ -455,7 +455,7 @@ The **[std]** 100% mortality A/E deserves a specific warning, because the notes 
 it is a placeholder, not a measurement. The payout chassis calibrates the same experience
 study to 108.4% of 2012 IAM Basic, but that factor is payout-annuitant-select and is
 deliberately **not** imported here; public deferred-period annuitant mortality is thin
-[REG-R65][unverified]. And do not run best-estimate mortality off the 2012 IAM *Period*
+[REG-R65] [unverified]. And do not run best-estimate mortality off the 2012 IAM *Period*
 table: it carries the valuation margin built in at construction [REG-R60].
 
 ## Tests

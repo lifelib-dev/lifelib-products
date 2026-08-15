@@ -98,7 +98,7 @@ file changed source or status.
 - Retrieved: YES
 - **Caveat carried over:** written for the Capital Income *fixed index* annuity, not for a
   MYGA. Cited here because it states the Sammons/Midland MVA formula, base and caps
-  explicitly, and Oak ADVantage uses the same MVA family [S5][S6]; **the numeric example
+  explicitly, and Oak ADVantage uses the same MVA family [S5] [S6]; **the numeric example
   must not be attributed to a MYGA** and is labelled as such wherever used.
 
 (uslib-fixed_deferred_annuity-s9)=
@@ -386,7 +386,7 @@ As of March 2026* — the **same 2,117-page consolidated PDF already catalogued 
 **free download** from `content.naic.org`. They take appendix-level ids so a document can
 cite **A-820 ¶15** or **AG 33 *Text* 4** instead of a 2,117-page manual. This supersedes in
 fact the library's earlier record of the manual as a paid publication that could not be
-fetched, which is what caused AG 33 and AG 35 to be cited by title only [REG-R39][REG-R40].
+fetched, which is what caused AG 33 and AG 35 to be cited by title only [REG-R39] [REG-R40].
 (b) **Edition line:** none of these items prints "As of March 2026" on its own pages; every
 extracted page carries only the footer "© 1999-2026 National Association of Insurance
 Commissioners", which is a **copyright span, not an adoption, effective or revision date**

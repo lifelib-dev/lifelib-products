@@ -281,7 +281,7 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   benefits of $10,000 or less [R4]. The modeling-relevant machinery is the disciplined
   current scale and the self-support and lapse-support tests certified annually by an
   illustration actuary (the tests are defined in the regulation's standards and in
-  ASOP 24, R30) [R4][unverified as to section numbering detail]. IUL-specific rate
+  ASOP 24, R30) [R4] [unverified as to section numbering detail]. IUL-specific rate
   limits are layered on top by the AG 49 family (R8–R10).
 
 (uslib-reg-r5)=
@@ -331,7 +331,7 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   pre-2013 in-force ULSG versus post-2013 issues [R7]. Original guideline created 2003,
   revised 2005 and 2012 [unverified — consistent with the 2012 text but history stated
   from secondary sources]. The official current text lives in the NAIC AP&P Manual
-  Appendix C / VM-C [R3][unverified as to AP&P pagination]. Fetch note: the NAIC CIPR
+  Appendix C / VM-C [R3] [unverified as to AP&P pagination]. Fetch note: the NAIC CIPR
   topic page for AG 38 returned HTTP 403 to automated fetch.
 
 (uslib-reg-r8)=
@@ -347,7 +347,7 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
 - **Annotation:** First uniform limits on illustrated IUL crediting rates under Model
   #582: a Benchmark Index Account (BIA) whose lookback average caps the illustrated
   scale, plus limits on illustrated policy-loan leverage and disciplined-current-scale
-  earned-rate limits [R9][R10]. Adopted 2015, applying to policies sold on/after
+  earned-rate limits [R9] [R10]. Adopted 2015, applying to policies sold on/after
   Sept. 1, 2015 [R9 per SOA article; date detail unverified]; superseded for new sales
   by AG 49-A for policies sold on/after Dec. 14, 2020 (R10). Still needed for in-force
   illustrations of pre-2021 IUL sales.
@@ -382,7 +382,7 @@ indicated by the source"). Row-level qualifications are keyed by R# in the notes
   non-BIA index accounts for policies sold on/after May 1, 2023 (the change the
   industry calls "AG 49-B") [R10]. The NAIC formally adopted these as revisions to
   AG 49-A rather than a separately numbered guideline; treat "AG 49-B" as a colloquial
-  label [R9][R10].
+  label [R9] [R10].
 
 (uslib-reg-r11)=
 
@@ -504,7 +504,7 @@ Consolidated Appropriations Act change is verified at [R13].
   loaded and unloaded composite, smoker-distinct, and preferred-structure tables, plus
   gender-blended and ultimate variants, each in ANB/ALB forms [R17]. Prescribed via
   VM-20/VM-M for the net premium reserve and used in nonforfeiture calculations for
-  post-2017 issues [R3][unverified as to exact VM-M table numbers]. Developed from ILEC
+  post-2017 issues [R3] [unverified as to exact VM-M table numbers]. Developed from ILEC
   experience showing significant mortality improvement over the 2001 CSO basis and
   adding a preferred structure [search summary; development detail in the linked
   report].
@@ -523,7 +523,7 @@ Consolidated Appropriations Act change is verified at [R13].
   and 4 smoker Relative Risk (RR) tables for preferred-class fit, with preferred
   wear-off and mortality-improvement factors in appendices, built on 2009–2013 ILEC
   individual life experience [R18]. In VM-20, company prudent-estimate mortality is
-  credibility-blended toward industry tables of this family [R3][unverified as to
+  credibility-blended toward industry tables of this family [R3] [unverified as to
   current VM-prescribed VBT vintage]. The anchor for best-estimate/prudent-estimate
   mortality in PBR and pricing models.
 
@@ -556,7 +556,7 @@ Consolidated Appropriations Act change is verified at [R13].
   1918–2012, from 16 companies, with analysis by major policy/product factors,
   joint-life plans, and a detailed look at UL with secondary guarantees [R20]. The
   standard public source for base lapse assumptions by product, duration, premium mode,
-  and size band [R20][unverified as to full factor list]. The successor UL-focused
+  and size band [R20] [unverified as to full factor list]. The successor UL-focused
   study is R21; older editions (2003–04 through 2007–09) remain on soa.org.
 
 (uslib-reg-r21)=
@@ -586,7 +586,7 @@ Consolidated Appropriations Act change is verified at [R13].
   anti-selection that dominates late-duration term cash flows [R22]. Updates the 2010
   and 2014 PLT studies; a predictive-modeling companion report exists, and an
   ILEC/LIMRA update covering 2009–2024 experience is in progress (data request issued
-  2025) [R22][search summaries]. Essential for term models with post-level premium
+  2025) [R22] [search summaries]. Essential for term models with post-level premium
   structures (jump-to-ART, graded).
 
 ---
@@ -878,7 +878,7 @@ directly; the parent document is cross-referenced, not restated.
   historically the home of maximum valuation interest rates for income annuities; in this
   edition that content is **not** in VM-22 — it is in VM-V Section 1 (R37), so a model citing
   "VM-22 income annuity interest rates" against a current Valuation Manual is citing the
-  wrong section [R36][R37].
+  wrong section [R36] [R37].
 
 (uslib-reg-r37)=
 
@@ -1058,7 +1058,7 @@ directly; the parent document is cross-referenced, not restated.
 - **Annotation:** **#250 is the Variable Annuity Model Regulation, not the Annuity Disclosure
   Model Regulation** — that is **#245** (R45) — verified from both model-law prints and
   independently from AG 54, which cites "NAIC Model 250, Variable Annuity Model Regulation"
-  [R43][R44][R45]. It covers insurer qualification to issue variable annuities, separate
+  [R43] [R44] [R45]. It covers insurer qualification to issue variable annuities, separate
   accounts, contract filing, required contract provisions, nonforfeiture benefits, required
   reports, and agent qualification, with **Section 7 the load-bearing part for modelling**:
   §7.A excludes the same categories as Model #805 (reinsurance, qualifying group retirement
@@ -1232,7 +1232,7 @@ directly; the parent document is cross-referenced, not restated.
 - **Fetched:** yes, via govinfo.gov [R49]; publication metadata independently corroborated by GAO's rule report, https://www.gao.gov/products/b-336553 (fetched) [R49b]
 - **Annotation:** **Release Nos. 33-11294; 34-100450; IC-35273; File No. S7-16-23; RIN
   3235-AN30**, published at **89 Fed. Reg. 59978 (July 24, 2024)** and **effective September 23,
-  2024** [R49][R49b]. The statutory driver is the **Registration for Index-Linked Annuities
+  2024** [R49] [R49b]. The statutory driver is the **Registration for Index-Linked Annuities
   Act**, enacted as Division AA, Title I of the **Consolidated Appropriations Act, 2023**, which
   directed the Commission to adopt a new RILA registration form within 18 months [R49]. **What
   it requires:** RILA and registered MVA issuers must register on **Form N-4** rather than
@@ -1295,7 +1295,7 @@ directly; the parent document is cross-referenced, not restated.
   adopting releases that created and amended them — **R50** for the post-2020 structure
   (condensed summary, optional benefits, Key Information Table, Inline XBRL) and **R49** for the
   RILA/MVA extension (cap rates, participation rates, buffers, floors, contract adjustments,
-  surrender charges) [R49][R50]. For a modelling library the value is mainly in *reverse*: the
+  surrender charges) [R49] [R50]. For a modelling library the value is mainly in *reverse*: the
   fee table and Key Information Table define the charge taxonomy — mortality and expense risk
   charge, administrative charge, contract maintenance fee, optional benefit rider charges,
   surrender charges — that a VA/RILA cash flow model must expose as parameters.
@@ -1469,7 +1469,7 @@ directly; the parent document is cross-referenced, not restated.
   annuities, annuitizations and life settlement options from **16 companies**, **excluding
   substandard annuities, structured settlement annuities and variable payout annuities** [R59] —
   an exclusion that matters when the modelled block includes those. The 2012 IAM/Scale G2 tables
-  themselves live in **AP&P Manual Appendix A-821** [R59][R33].
+  themselves live in **AP&P Manual Appendix A-821** [R59] [R33].
 
 (uslib-reg-r60)=
 
@@ -1508,7 +1508,7 @@ directly; the parent document is cross-referenced, not restated.
   purchasable Standard Data Package with executive summary, in-depth analysis and interactive
   dashboards; the predecessor is the **2014–2019 Individual Payout Annuity Mortality Experience
   Study** (December 2022; 25 companies, ~80% of market, ~4.3 million contract-years, ~236,000
-  deaths) [R61][R65].
+  deaths) [R61] [R65].
 
 (uslib-reg-r62)=
 
@@ -1746,13 +1746,13 @@ directly; the parent document is cross-referenced, not restated.
 
 1. **Model numbers.** **#245 is the Annuity Disclosure Model Regulation (R45)** and **#250 is
    the Variable Annuity Model Regulation (R43)** — verified against both model-law prints and
-   AG 54's own citation [R43][R44][R45].
+   AG 54's own citation [R43] [R44] [R45].
 2. **VM-22's scope in the current edition.** In the Jan. 1, 2026 edition **VM-22 is entirely the
    principle-based framework for non-variable annuities**; the maximum valuation interest rates
-   for income annuities are **in VM-V Section 1 (R37)**, not VM-22 [R36][R37].
+   for income annuities are **in VM-V Section 1 (R37)**, not VM-22 [R36] [R37].
 3. **AG 54 exists and is a *nonforfeiture* guideline.** Actuarial Guideline LIV, effective for
    contracts issued on or after July 1, 2024, and it does **not** appear in the VM-C index
-   [R41][R44].
+   [R41] [R44].
 4. **AG 43 is not simply superseded by VM-21.** Through reference in AG 43, VM-21's requirements
    also apply to pre-2017 contracts outside VM-21's own scope, and the two populations may be
    reserved as a single aggregated group [R35] — any statement that AG 43 is "replaced" is wrong
@@ -1793,7 +1793,7 @@ directly; the parent document is cross-referenced, not restated.
   are described only through the adopting releases.
 - **The RILA compliance date of May 1, 2026** is consistently reported by filing agents and law
   firms, but section II.J of Release 33-11294 was not read, so the date carries [unverified] in
-  R49 even though the effective date (September 23, 2024) is verified twice [R49][R49b].
+  R49 even though the effective date (September 23, 2024) is verified twice [R49] [R49b].
 - **federalregister.gov and ecfr.gov** both 302-redirect to a bot-block page; govinfo.gov and
   law.cornell.edu were substituted throughout.
 - **IRS LB&I directives (R72).** **irs.gov returned HTTP 404** on both directive URLs surfaced by
@@ -2037,7 +2037,7 @@ this page.
   requirement and **seven-year documentation retention** [R100]. **Verified negative finding: VM-30
   contains no exemption clause and no prescribed interest scenarios** — the word "exempt" does not
   appear in it at all, and the New York seven appear in the Valuation Manual only as an *example*
-  inside a VM-20 §6 guidance note [R100][R3]. It expressly makes **AG 48** (R11) and **AG 51**
+  inside a VM-20 §6 guidance note [R100] [R3]. It expressly makes **AG 48** (R11) and **AG 51**
   applicable for VM-30 purposes [R100].
 
 (uslib-reg-r101)=
@@ -2062,7 +2062,7 @@ this page.
   what a company actually complies with where the Valuation Manual is not operative. The **latest
   NAIC print located is April 2010**, consistent with the model having been frozen once VM-30 took
   over.
-- **Differences from VM-30 that matter to an implementer** [R100][R101]: RAAIS due **March 15**
+- **Differences from VM-30 that matter to an implementer** [R100] [R101]: RAAIS due **March 15**
   under #822 versus **April 1** under VM-30; #822 uses "recommended language" while VM-30 uses
   **prescribed wording plus a table of key indicators**; #822 has no formal taxonomy of opinion
   outcomes while VM-30 defines adverse / qualified / inconclusive; VM-30 adds the IMR/AVR
@@ -2271,7 +2271,7 @@ carried in its front matter and recorded at R73.
   required by law, regulation, or regulatory requirements, reserves established for equity indexed
   annuity policies must be tested for adequacy using appropriate methods and assumptions" — it
   **presupposes** the obligation rather than creating it, so the binding authority for FIA asset
-  adequacy testing is the Standard Valuation Law and VM-30 [R1][R100], with AG 35 as corroboration.
+  adequacy testing is the Standard Valuation Law and VM-30 [R1] [R100], with AG 35 as corroboration.
   The *modelling* conclusion R40 draws from it — that an FIA block cannot rely on the formulaic
   reserve alone and one cash flow model must serve CARVM and ASOP 22 (R29) — survives intact; only its
   authority moves. (iii) AG 35 prints **no effective, adoption or operative date**, no transition, no

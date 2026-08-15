@@ -139,12 +139,12 @@ follows, with no formula change.
 |---|---|---|
 | `model_point_table.csv` | Three model points, all on the anchor configuration M35 / StdNT / $100,000. **Point 1 is the worked-example anchor cell** (Option A, GPT, $1,800 planned annual premium, no opening account value, no loan); point 2 switches to Option B, and is also the point that runs into permanent shortfall from policy year 57 (see below); point 3 is an in-force cell at 120 completed months with $15,000 of account value and a $2,000 loan | anchor cell from the specimen [S3]; the planned premium, and points 2 and 3, **[std]** |
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 NAAR, policy years 1–87, with a `provenance` column marking each row. **Covers the specimen anchor cell M / StdNT / issue age 35 only** — a model point on any other cell needs this table extended first, and a test enforces that every model point is projectable | printed anchor years sourced [S3]; intermediate years log-linearly interpolated **[std]** |
-| `corridor_factors.csv` | GPT corridor factors by attained age, 250% to age 40 grading to 101% above 93 | specimen table [S3][R2] |
+| `corridor_factors.csv` | GPT corridor factors by attained age, 250% to age 40 grading to 101% above 93 | specimen table [S3] [R2] |
 | `mort_table.csv` | Best-estimate annual mortality by age 18–120, `q(120) = 1.0` | **illustrative [std]**, a Gompertz–Makeham curve — *not* a published table. The notes recommend 2015 VBT; that family is licensed and may not be reproduced here |
 | `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `Term_US_A` where the classes overlap |
-| `lapse_table.csv` | Base annual lapse 6% / 5% / 4% / 3% by policy year | **[std]**; shape informed qualitatively by [R7][REG-R20], whose tables are behind a paid package |
+| `lapse_table.csv` | Base annual lapse 6% / 5% / 4% / 3% by policy year | **[std]**; shape informed qualitatively by [R7] [REG-R20], whose tables are behind a paid package |
 | `prem_persistency.csv` | Paid/planned factors, 100% falling 2pp a year to a 70% floor | **[std]**; shape from [R7] |
-| `surr_charge_table.csv` | The surrender charge schedule as `(initial per $1,000, runoff years)` | 9-year runoff and monthly amortization sourced [S1][S2][S3]; the $9.00 level **[std]** |
+| `surr_charge_table.csv` | The surrender charge schedule as `(initial per $1,000, runoff years)` | 9-year runoff and monthly amortization sourced [S1] [S2] [S3]; the $9.00 level **[std]** |
 
 The surrender charge is stored as two parameters rather than a 108-row rate vector so
 that the run-off length is a *number the model can read*: `lapse_shock_year()` derives
@@ -356,7 +356,7 @@ deduction/interest order is reversed.
 ## Where the projection stops when the contract never matures
 
 Universal life has no maturity date. At attained age 121 monthly deductions cease,
-premiums are no longer accepted, and coverage continues for life [S2][S3]. So there is
+premiums are no longer accepted, and coverage continues for life [S2] [S3]. So there is
 no contractual event to project to, and `pols_maturity(t)` is identically zero — the
 cells is kept only so the in-force roll-forward has the same shape as in the term and
 annuity models of this library, where it is not zero.

@@ -124,12 +124,12 @@ with no formula change.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Seven contracts, all on the anchor cell M60 ANB / NQ / $100,000 / 5-year period, differing only in the switches the notes make first-class parameters. **Point 1 is the worked-example anchor**; point 2 is the same contract on the 10% stress reference yield; points 3–7 carry Camp B, the registered-contract conventions, the Midland conventions, the asymmetric cap and the declared-differential MVA | contract terms sourced [S10][S11]; behavioural switches **[std]** |
-| `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative Makeham annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with Projection Scale G2 and the VM-22 Table 6.7 factors [R2 §6.B.8][R9], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
+| `model_point_table.csv` | Seven contracts, all on the anchor cell M60 ANB / NQ / $100,000 / 5-year period, differing only in the switches the notes make first-class parameters. **Point 1 is the worked-example anchor**; point 2 is the same contract on the 10% stress reference yield; points 3–7 carry Camp B, the registered-contract conventions, the Midland conventions, the asymmetric cap and the declared-differential MVA | contract terms sourced [S10] [S11]; behavioural switches **[std]** |
+| `mort_table.csv` | Annual mortality by attained age 40–120 and sex, with a `provenance` column | **[std]** illustrative Makeham annuitant curve. **Not a published table.** The prescribed basis is 2012 IAM **Basic** with Projection Scale G2 and the VM-22 Table 6.7 factors [R2 §6.B.8] [R9], which may not be redistributed here — swap it in by repointing `Data.mort_table_file` |
 | `surr_charge_table.csv` | The initial and renewal schedules, keyed by `(schedule, contract_year)` | initial 9/8/7/6/5 sourced [S10]; renewal 5/4/3/2/1 sourced [S2], adoption **[std]** |
-| `surr_charge_age_cap.csv` | The attained-age cap on the renewal charge, 4% at 94 down to 0% at 98–100 | sourced [S1][S2] |
-| `rate_scenario.csv` | Three deterministic scenarios keyed by `(scenario_id, t)`, read as step functions: `base` (it = 6.50%, MR = CR = 4.45%), `stress` (it = 10.00%) and `differential` (MR = 6.00%) | **[std]**; the index is a state-filed variable [S8][S12], so the model takes a scalar series rather than hard-coding one |
-| `withdrawal_table.csv` | Three withdrawal programmes keyed by `(wd_schedule_id, t)`: the worked example's $4,000 at month 13, an empty one, and one charged excess withdrawal | worked example [S10][S11]; the variant **[std]** |
+| `surr_charge_age_cap.csv` | The attained-age cap on the renewal charge, 4% at 94 down to 0% at 98–100 | sourced [S1] [S2] |
+| `rate_scenario.csv` | Three deterministic scenarios keyed by `(scenario_id, t)`, read as step functions: `base` (it = 6.50%, MR = CR = 4.45%), `stress` (it = 10.00%) and `differential` (MR = 6.00%) | **[std]**; the index is a state-filed variable [S8] [S12], so the model takes a scalar series rather than hard-coding one |
+| `withdrawal_table.csv` | Three withdrawal programmes keyed by `(wd_schedule_id, t)`: the worked example's $4,000 at month 13, an empty one, and one charged excess withdrawal | worked example [S10] [S11]; the variant **[std]** |
 | `mva_factor_table.csv` | The declared-differential duration factors `F_s` by whole years remaining, both rate columns | specimen table [S14] |
 
 Every model point projects to completion, and a test asserts it. Between them they exercise
@@ -185,7 +185,7 @@ notes write the base-lapse pattern as a repeating five-year cycle with no termin
 The model runs to the contract anniversary at attained age **100 [std]** —
 `proj_len() = 12 × (maturity_age − age_at_entry())`, 480 months on the anchor cell. Age 100
 is not arbitrary: it is the last attained age in the *sourced* cap band on the renewal
-surrender charge — 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 [S1][S2]. The cap
+surrender charge — 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 [S1] [S2]. The cap
 *reaches* zero at 98; 100 is where the sourced band stops, so past it the model would be
 extrapolating a schedule no source states. It is also well past the Model #805 §8 deemed
 maturity date [R1]. The survivors at that anniversary are annuitized out through
@@ -279,7 +279,7 @@ difference; that is a discretization consequence, not a modelling choice.
 
 The notes list `av_initial`, `mgsv_initial` and `tax_basis_initial` as model point
 attributes. Two of the three are fixed by rules the notes also state: 100% of premium is
-credited with no front-end load [S5][S10][S16], and the Model #805 floor starts at 87.5% of
+credited with no front-end load [S5] [S10] [S16], and the Model #805 floor starts at 87.5% of
 gross consideration [R1 §4.A(2)]. Shipping them as data would let a model point silently
 violate the statute. They are computed instead, from the References `load_prem_rate` (0.0)
 and `net_consideration_ratio` (0.875). Only `tax_basis_initial` stays a column, because it
@@ -288,7 +288,7 @@ genuinely varies with tax status.
 ## `free_wd_mva_exempt = False` moves the surrender charge too
 
 In the market the flag is about the **MVA**: Voya and Nationwide apply the adjustment to
-free-amount withdrawals, the retail MYGAs do not [S2][S3][S4][S9][S10][S15][S16]. The
+free-amount withdrawals, the retail MYGAs do not [S2] [S3] [S4] [S9] [S10] [S15] [S16]. The
 technical notes are explicit that setting it False gives `E(t) = AV(t)` and collapses the
 surrender benefit to `max(AV(t) × (1 + μ(t) − sc(y)), MGSV(t))` — the multiplicative form —
 which moves the surrender *charge* onto the whole account value as well.

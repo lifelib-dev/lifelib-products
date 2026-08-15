@@ -129,8 +129,8 @@ these notes give them in closed form instead:
 | `corridor_factors.csv` | IRC 7702(d)(2) applicable percentages, attained ages 0–121 | sourced [R4] |
 | `mort_table.csv` | Best-estimate annual mortality by age | **illustrative [std]**, *not* the 2015 VBT the notes recommend [REG-R18]; the same table `UL_US_S` ships, so the chassis and this model share a basis |
 | `class_factor_table.csv` | Rate-class factors for the spec's seven classes | **[std]** |
-| `lapse_table.csv` | Base annual lapse 6% years 1–10, 4% after | **[std]** placeholders; calibrate to [REG-R20][REG-R21] |
-| `surr_charge_table.csv` | $25.00 per $1,000 of initial face, 10-year linear run-off | period sourced [S1][S5][S7]; the dollar scale is **[std]** (spec F17) |
+| `lapse_table.csv` | Base annual lapse 6% years 1–10, 4% after | **[std]** placeholders; calibrate to [REG-R20] [REG-R21] |
+| `surr_charge_table.csv` | $25.00 per $1,000 of initial face, 10-year linear run-off | period sourced [S1] [S5] [S7]; the dollar scale is **[std]** (spec F17) |
 
 The model points and what each is for:
 
@@ -224,7 +224,7 @@ twelve deductions are taken — only eleven of them are inside the credit base.
 
 The notes' baseline pays **annually**, at BOM of policy month 1 of each policy year, and
 sweeps **100%** of the fixed account. Nothing therefore arrives in the fixed account in
-months 2–12, nothing is swept, and the "up to 12 concurrent segments" of [S3][S4] collapses
+months 2–12, nothing is swept, and the "up to 12 concurrent segments" of [S3] [S4] collapses
 to one segment a year. That is a correct consequence of the baseline, not a modelling
 shortcut — but it would leave the ladder machinery, and the notes' first pitfall about it,
 untested.
@@ -286,7 +286,7 @@ the pool was $265.29, the step-3 draw took $200.00, and the step-6 deduction was
 allowed $177.38 — $377.38 out of $265.29. The segment born at month 373 went to −$112.09,
 and twelve months later it paid an index credit of `0.0640 × (−112.0873) = −$7.17`: a
 *negative* index credit, on an account whose floor is contractually 0%
-(`cr_k = max(f, min(c, p × r))`, floor 0% [S2][R1]).
+(`cr_k = max(f, min(c, p × r))`, floor 0% [S2] [R1]).
 
 Nothing caught it. The accounting identity in `check_seg_ladder()` still closed, because a
 negative balance accounts for its creation amount as faithfully as a positive one, and

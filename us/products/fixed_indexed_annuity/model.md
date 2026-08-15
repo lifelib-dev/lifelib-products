@@ -127,7 +127,7 @@ no formula change.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Nine contracts on the anchor configuration M62 / NQ / $100,000 / GLWB at issue. **Point 1 is the worked-example anchor**, entered in force at anniversary 7 | anchor cell **[std]**; contract parameters [S2][S5][S9][S10] |
+| `model_point_table.csv` | Nine contracts on the anchor configuration M62 / NQ / $100,000 / GLWB at issue. **Point 1 is the worked-example anchor**, entered in force at anniversary 7 | anchor cell **[std]**; contract parameters [S2] [S5] [S9] [S10] |
 | `mort_table.csv` | Annual mortality by attained age and sex, ages 40–120 | **[std]** illustrative Makeham annuitant curve, *not* a published table; shared with `products/fixed_deferred_annuity` so the two annuity models sit on one basis |
 | `surr_charge_table.csv` | The surrender charge percentage 9.1% → 0% and the bonus vesting percentage 0% → 100%, both by contract year | sourced [S5] |
 | `rollup_table.csv` | Three guaranteed simple rollup schedules: blended 5.00%/2.00%/0%, Nassau 3.00% flat, and none | sourced [S2] / [S9]; the `none` row is the pure-stacking configuration **[std]** |
@@ -391,7 +391,7 @@ $80 per contract per year maintenance expense inflating at 2.5%; the 0% premium 
 illustrative mortality table with an A/E factor of 100%; and the attained age 120 horizon.
 
 Two crediting parameters belong here rather than on the sourced list. The notes print the
-index-margin and performance-trigger *forms* — `max(f, p × R − s)` [S8][R1] and
+index-margin and performance-trigger *forms* — `max(f, p × R − s)` [S8] [R1] and
 `d × 1{R ≥ 0}` [R1] — but declare no level for either, in neither `technical-notes.md` nor
 `product-spec.md`. So `spread_rate = 2.00%` **[std]** and `trigger_rate = 4.50%` **[std]**
 are illustrative levels that exist only to exercise those branches, and must not be read as

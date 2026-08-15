@@ -22,7 +22,7 @@ family, the death benefit and the lapse architecture; do not carry this file's r
 or rates into an FIA model unexamined. The **variable annuity** notes do not, and must
 not — a VA's separate account is
 outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
-[REG-R42][REG-R43].
+[REG-R42] [REG-R43].
 
 ---
 
@@ -33,8 +33,8 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
   expenses out) for a single-contract model point of a 5-year MYGA with a market value
   adjustment. Reserves are **not** computed (see Valuation and reserve pointers).
 - **Projection frequency: monthly **[std]**.** The contract credits interest **daily**,
-  quoted as an annual effective rate [S4][S5][S16], and surrender charges/MVA step on
-  **contract-year** boundaries [S8][S10]. Monthly is the coarsest grid resolving both: it
+  quoted as an annual effective rate [S4] [S5] [S16], and surrender charges/MVA step on
+  **contract-year** boundaries [S8] [S10]. Monthly is the coarsest grid resolving both: it
   hits every contract anniversary exactly, and it resolves the 30-day guarantee-period-end
   window and the shock-lapse boundary to within one step. Finer grids buy nothing on a
   book-value chassis with no daily-valued index.
@@ -51,7 +51,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
   (2012 IAM Basic with Scale G2 and the Table 6.7 factors) is stated ANB, and the Valuation
   Manual supplies the ALB conversion
   `q(x)_ALB = [q(x)_ANB + (1 − q(x)_ANB) × q(x+1)_ANB] / (2 − q(x)_ANB)` rather than a native
-  ALB table [R2 §6.B.8][R9]; the SOA/LIMRA fixed-rate deferred surrender study is also ANB,
+  ALB table [R2 §6.B.8] [R9]; the SOA/LIMRA fixed-rate deferred surrender study is also ANB,
   with a Balducci exposure adjustment [R8].
 - **Model points.** Single-contract model points on an expected (probability-weighted) basis:
   an in-force factor `l(t)` multiplies per-contract cash flows. Grouping is a caller concern.
@@ -71,7 +71,7 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `tax_status` | enum {NQ, IRA, Roth, inherited} | NQ **[std]** |
 | `premium` | currency | 100,000 [S11 rate band ≥$100,000] |
 | `issue_date` | date | contract month 0 |
-| `guarantee_period_years` | int | 5 [S10][S11] |
+| `guarantee_period_years` | int | 5 [S10] [S11] |
 | `declared_rate_initial` | rate p.a. | 0.0445 [S11] |
 | `gmir` | rate p.a. | 0.0025 [S11] |
 | `gmsv_rate` (`i_nf`) | rate p.a. | 0.0280 [S11] |
@@ -79,11 +79,11 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `sc_schedule_renewal` | vector by contract year | (0.05, 0.04, 0.03, 0.02, 0.01) [S2] |
 | `renewal_architecture` | enum {`rollover`, `annual_redeclare`} | `rollover` (Camp A) **[std]** |
 | `free_wd_rule` | enum {`pct_av`, `interest_only`, `greatest_of`} | `pct_av` at 10% [S10] |
-| `free_wd_mva_exempt` | bool | True **[std]** (False = Voya/Nationwide convention [S3][S4]) |
-| `mva_family` | enum {`geometric`, `linear_duration`, `declared_differential`} | `linear_duration` [S8][S9] |
+| `free_wd_mva_exempt` | bool | True **[std]** (False = Voya/Nationwide convention [S3] [S4]) |
+| `mva_family` | enum {`geometric`, `linear_duration`, `declared_differential`} | `linear_duration` [S8] [S9] |
 | `mva_cap_rule` | enum {`sym_sc`, `min_sc_interest`, `asym_sc_snfl`, `gmir_floor`, `none`} | `sym_sc` [S2] |
 | `mva_ref_yield_at_issue` (`i0`) | rate p.a. | 0.0500 **[std]** |
-| `mva_period_years` | int | 5 (= surrender charge period) [S8][S11] |
+| `mva_period_years` | int | 5 (= surrender charge period) [S8] [S11] |
 | `mgsv_withdrawal_convention` | enum {`gross`, `net_of_charges`} | `gross` [S11] |
 | `mgsv_annual_charge` | currency p.a. | 0.00 [S11]; statutory max 50.00 [R1] |
 | `premium_tax_rate` | rate | 0.00 **[std]** |
@@ -117,41 +117,41 @@ Three classes are distinguished explicitly and must never be blended in a parame
 | Input | Value | Basis |
 |---|---|---|
 | Surrender charge schedule, initial term | 9%, 8%, 7%, 6%, 5%; 0% from year 6 | [S10] |
-| Surrender charge base | amount in excess of the free allowance | [S8][S9] |
+| Surrender charge base | amount in excess of the free allowance | [S8] [S9] |
 | Free-withdrawal allowance | 10% of premium (year 1); 10% of AV at the last anniversary (years 2+) | [S10] |
-| Free amount exempt from charge **and** MVA, incl. at full surrender | yes | [S8][S11] |
-| MVA formula | `μ = (i0 − it) × T` | [S8][S9] |
+| Free amount exempt from charge **and** MVA, incl. at full surrender | yes | [S8] [S11] |
+| MVA formula | `μ = (i0 − it) × T` | [S8] [S9] |
 | MVA cap | symmetric at the surrender charge amount | [S2] |
-| MVA excluded from | death benefit, 30-day window, annuitization, RMDs, waiver withdrawals | [S2][S4][S5][S8][S13][S16] |
+| MVA excluded from | death benefit, 30-day window, annuitization, RMDs, waiver withdrawals | [S2] [S4] [S5] [S8] [S13] [S16] |
 | GMIR (floor on any declared rate) | 0.25% | [S11] |
 | GMSV rate `i_nf` | 2.80% | [S11] |
-| Model #805 net consideration ratio | 87.5% of gross considerations | [R1 §4.A(2)][REG-R42] |
-| Model #805 indexed-rate corridor | `min(3.00%, round(5-yr CMT, 1/20%) − 1.25%)`, floor **0.15%** | [R1 §4.B][REG-R42] |
-| Model #805 annual contract charge (max) | $50 p.a., accumulated at `i_nf` | [R1 §4.A][REG-R42] |
-| Death benefit | full account value; no charge, no MVA; never below the cash surrender benefit | [S1][S2][S13][R1 §6] |
-| 30-day guarantee-period-end window | full account value, no charge, no MVA | [S1][S2][S5][S6] |
-| Contract fees | none | [S5][S10][S13][S16] |
+| Model #805 net consideration ratio | 87.5% of gross considerations | [R1 §4.A(2)] [REG-R42] |
+| Model #805 indexed-rate corridor | `min(3.00%, round(5-yr CMT, 1/20%) − 1.25%)`, floor **0.15%** | [R1 §4.B] [REG-R42] |
+| Model #805 annual contract charge (max) | $50 p.a., accumulated at `i_nf` | [R1 §4.A] [REG-R42] |
+| Death benefit | full account value; no charge, no MVA; never below the cash surrender benefit | [S1] [S2] [S13] [R1 §6] |
+| 30-day guarantee-period-end window | full account value, no charge, no MVA | [S1] [S2] [S5] [S6] |
+| Contract fees | none | [S5] [S10] [S13] [S16] |
 
 ### (b) Insurer-declared current elements (snapshot; non-guaranteed under ASOP 2 [REG-R26])
 
 | Input | Value | Basis |
 |---|---|---|
 | Initial declared rate `i_cr`, months 1–60 | **4.45%** effective annual | [S11] (eff. 09/22/25, payments ≥$100,000; 4.10% under $100,000) |
-| Renewal declared rate | `i_cr^ren(t) = max(GMIR, MR(t) − s_ren)` | rule **[std]**; discretion + GMIR floor [S1][S2][S11][S16] |
+| Renewal declared rate | `i_cr^ren(t) = max(GMIR, MR(t) − s_ren)` | rule **[std]**; discretion + GMIR floor [S1] [S2] [S11] [S16] |
 | Renewal spread `s_ren` | 0.00% base run; 1.00% scenario | **[std]** (a) |
 | Renewal surrender charge schedule | 5%, 4%, 3%, 2%, 1% | [S2]; adoption **[std]** |
-| Attained-age cap on renewal charge | 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 | [S1][S2] |
-| MVA reference yield path `it` | exogenous scalar input series | **[std]**; index choice is state-filed [S8][S12] |
+| Attained-age cap on renewal charge | 4% at 94, 3% at 95, 2% at 96, 1% at 97, 0% at 98–100 | [S1] [S2] |
+| MVA reference yield path `it` | exogenous scalar input series | **[std]**; index choice is state-filed [S8] [S12] |
 
 The renewal surrender charge schedule and its attained-age cap are printed as **contract
-terms** in [S1][S2], not as declared elements; they are listed in (b) only because they
+terms** in [S1] [S2], not as declared elements; they are listed in (b) only because they
 attach at a renewal the insurer also re-rates. Load them from the guaranteed-element file
 and treat only the renewal *rate* as non-guaranteed.
 
 (a) There is no public evidence on renewal-rate setting: Voya "observes no specific
 formula" [S3] and Nationwide "observes no specific method", both citing fixed-income
 yields, competitive considerations, administrative costs and general economic trends
-[S3][S4]. The base run sets `s_ren = 0` so the credited rate equals the competitor rate
+[S3] [S4]. The base run sets `s_ren = 0` so the credited rate equals the competitor rate
 and the dynamic-lapse term is exactly zero — the same discipline the UL notes use. The
 1.00% scenario exercises the dynamic term. Renewal declarations are non-guaranteed
 elements: ASOP 2's scope expressly covers fixed deferred annuities [REG-R26].
@@ -160,16 +160,16 @@ elements: ASOP 2's scope expressly covers fixed deferred annuities [REG-R26].
 
 | Input | Recommended public basis | Basis tags |
 |---|---|---|
-| Mortality | `q_x^(2012+n) = q_x^(2012) × (1 − G2_x)^n × F_x` — 2012 IAM **Basic** Table (VM-M §2.C) with Projection Scale G2 (VM-M §1.J.1.c) and the VM-22 Table 6.7 factors `F_x` | [R2 §6.B.8][R9][REG-R59] |
+| Mortality | `q_x^(2012+n) = q_x^(2012) × (1 − G2_x)^n × F_x` — 2012 IAM **Basic** Table (VM-M §2.C) with Projection Scale G2 (VM-M §1.J.1.c) and the VM-22 Table 6.7 factors `F_x` | [R2 §6.B.8] [R9] [REG-R59] |
 | `F_x`, male, no guaranteed living benefit (selected) | ≤52 120.0%; 60 101.0%; 65 101.0%; 70 106.8%; 75 108.0%; 80 108.0%; 85 109.2%; 87+ 110.0% | [R2 Table 6.7] |
-| Base lapse | VM-22 Table 6.5 (fixed annuities, no GLB), mapped to the 5-year architecture below | [R2][REG-R36] |
-| Base-lapse experience corroboration | SOA/LIMRA 2023–2024 Fixed-Rate Deferred Annuity Surrender Study — 24 companies, ~65% of industry new sales, ~4.8m contracts and $612bn of surrender exposure, >567,000 surrenders | [R8][REG-R63] |
+| Base lapse | VM-22 Table 6.5 (fixed annuities, no GLB), mapped to the 5-year architecture below | [R2] [REG-R36] |
+| Base-lapse experience corroboration | SOA/LIMRA 2023–2024 Fixed-Rate Deferred Annuity Surrender Study — 24 companies, ~65% of industry new sales, ~4.8m contracts and $612bn of surrender exposure, >567,000 surrenders | [R8] [REG-R63] |
 | Dynamic lapse | VM-22 §6.B.5 functional form, re-parameterized for best estimate | [R2]; parameters **[std]** |
 | Partial withdrawal | 0% in the base run **[std]**; variant = VM-22 Table 6.2 (Accumulation, **Qualified**): ≤59 1.65%, 60–64 2.10%, 65–69 2.35%, 70–74 3.95%, 75–79 4.80% | [R2]; see model-risk note (b) |
 | Annuitization take-up | 1.0% of in-force at each guarantee-period-end window; 0% otherwise **[std]** | rationale (c) |
 | Acquisition commission | 2.00% of premium, paid at issue **[std]** | (d) |
 | Maintenance expense | $50 per contract per year, 1/12 monthly, inflating 2.5% p.a. **[std]** | anchored on [R2 §6.B.3] |
-| Premium tax | 0% **[std]** | spec footnote 3 [S3][S16] |
+| Premium tax | 0% **[std]** | spec footnote 3 [S3] [S16] |
 
 (b) The research file recorded VM-22 Table 6.2 only for the **Qualified** column, and the
 80-and-over row was truncated in text extraction [R2]. The anchor cell is non-qualified,
@@ -183,7 +183,7 @@ deferred surrender and VA behavior studies, but no annuitization-election series
 standard projection [R2 §6.B.6] — a deliberate statutory simplification, not an
 experience estimate. The **[std]** 1.0%-at-the-window assumption reflects that income
 options are only offered after contract year 1 and are elected at the guarantee-period
-window [S1][S2][S5]. No annuitization bonus exists on this chassis (spec footnote 21).
+window [S1] [S2] [S5]. No annuitization bonus exists on this chassis (spec footnote 21).
 
 (d) No retrieved document discloses MYGA commission. 2.00% of premium is a pure modeling
 assumption. VM-22 prescribes `$35 × 1.025^(valuation-year offset)` per contract for
@@ -234,34 +234,34 @@ At month `t` (BOM steps 1–5, EOM steps 6–8):
    passed), reset `FWB(y)` and `FW = 0.10 × FWB(y)` [S10].
 2. **Guarantee-period boundary.** If the previous month ended a guarantee period
    (`t − 1 ≡ 0 mod 12n`): apply the 30-day window (full account value available, no charge,
-   no MVA [S1][S2]); redeclare `i_cr`; under `rollover`, reset `sc_clock` and start the
+   no MVA [S1] [S2]); redeclare `i_cr`; under `rollover`, reset `sc_clock` and start the
    renewal surrender charge and MVA schedule, and re-lock `i0` at the current reference
-   yield [S2][S11]; under `annual_redeclare`, set `sc(·) ≡ 0` and `μ ≡ 0` permanently and
+   yield [S2] [S11]; under `annual_redeclare`, set `sc(·) ≡ 0` and `μ ≡ 0` permanently and
    redeclare the rate each anniversary thereafter [S13].
 3. **Elective withdrawal.** Compute `E(t)`, `C(t)`, `M(t)` (below); reduce `FW` by
    `min(W(t), FW)`; set `AV'(t) = AV(t−1) − W(t)`; emit the cash flow `W(t) + M(t) − C(t)`.
 4. **Annuitization election** (only in a 30-day window, `t > 12`): a fraction `a(t)` of
    in-force transfers `AV'(t)` to the payout model (full account value in the window
-   [S1][S2]).
+   [S1] [S2]).
 5. **Update the tax basis** for IRC §72 reporting: withdrawals are income-first, taxable to
    the extent `AV` (gross of surrender charge) exceeds `basis`; `basis` is reduced only by
-   the non-taxable remainder [R6 §72(e)(3)(A)][REG-R55]. This is a reported quantity, not a
+   the non-taxable remainder [R6 §72(e)(3)(A)] [REG-R55]. This is a reported quantity, not a
    liability cash flow.
 6. **Credit interest.** `AV(t) = AV'(t) × f(t)`.
 7. **Roll the nonforfeiture floor.**
    `MGSV(t) = [ MGSV(t−1) − d(t) − c(t) ] × g`
    with `d(t) = W(t)` under the `gross` convention [S11] or `W(t) + M(t) − C(t)` under
    `net_of_charges` [S9], and `c(t)` the monthly slice of the annual contract charge
-   ($0 representative, $50 p.a. statutory maximum [R1][S11]).
+   ($0 representative, $50 p.a. statutory maximum [R1] [S11]).
 8. **Decrements.** Deaths at `q(t)`, then surrenders at `w(t)` on survivors **[std order]**:
    `l(t) = l(t−1) × (1 − a(t)) × (1 − q(t)) × (1 − w(t))`.
 
 With no withdrawals, steps 3–8 collapse to the core recursion:
 
-    AV(t) = AV(t−1) × (1 + i_cr(t))^(1/12)                                [S4][S5][S16]
-    MGSV(t) = MGSV(t−1) × (1 + i_nf)^(1/12)                               [R1][S11]
+    AV(t) = AV(t−1) × (1 + i_cr(t))^(1/12)                                [S4] [S5] [S16]
+    MGSV(t) = MGSV(t−1) × (1 + i_nf)^(1/12)                               [R1] [S11]
 
-with `AV(0) = P` [S5][S10][S16] and `MGSV(0) = 0.875 × P` [R1 §4.A(2)][S11].
+with `AV(0) = P` [S5] [S10] [S16] and `MGSV(0) = 0.875 × P` [R1 §4.A(2)] [S11].
 
 ### Surrender benefit — the exact composition order
 
@@ -269,11 +269,11 @@ The order is **account value → MVA → surrender charge → nonforfeiture floo
 not interchangeable: both `M` and `C` are computed on `E(t)` *before* either is deducted
 [S8]. For a full surrender at end of month `t`:
 
-    E(t)  = AV(t) − FW(t)                                                 [S8][S11]
-    C(t)  = sc(y) × E(t)                                                  [S8][S10]
-    M(t)  = cap( μ(t) × E(t) )                                            [S8][S2]
+    E(t)  = AV(t) − FW(t)                                                 [S8] [S11]
+    C(t)  = sc(y) × E(t)                                                  [S8] [S10]
+    M(t)  = cap( μ(t) × E(t) )                                            [S8] [S2]
     SV(t) = AV(t) + M(t) − C(t)                                           [S8]
-    SB(t) = max( SV(t), MGSV(t) )                                         [S8][S9][S12]
+    SB(t) = max( SV(t), MGSV(t) )                                         [S8] [S9] [S12]
 
 For a partial withdrawal of gross `W(t)`, replace `AV(t)` by `W(t)` in the first and
 fourth lines; the amount paid is `W(t) + M(t) − C(t)` and the account value falls by
@@ -281,9 +281,9 @@ fourth lines; the amount paid is `W(t) + M(t) − C(t)` and the account value fa
 
 **MVA inside the free amount — the [std] convention.** The representative model sets
 `free_wd_mva_exempt = True`: the free allowance is exempt from *both* the surrender charge
-and the MVA, including at full surrender [S8][S11]. **The market is genuinely split.** Voya
+and the MVA, including at full surrender [S8] [S11]. **The market is genuinely split.** Voya
 [S3] and Nationwide [S4] both state that the MVA applies to free-amount withdrawals taken
-before maturity; the retail MYGAs do not [S2][S9][S10][S15][S16]. Setting the flag to
+before maturity; the retail MYGAs do not [S2] [S9] [S10] [S15] [S16]. Setting the flag to
 `False` gives `E(t) = AV(t)` and the composition collapses to the multiplicative form:
 
     SB(t) = max( AV(t) × (1 + μ(t) − sc(y)),  MGSV(t) )
@@ -308,11 +308,11 @@ contract, explicitly covering the cost of liquidating fixed-income investments a
 structurally biasing the adjustment against the owner [S4]; `τ` = days to maturity ÷
 **365.25** [S4]. Voya's variant has `s_adm = 0`, uses Treasury notes maturing in the last
 three months of the term, and `τ = x/365` measured from the Wednesday of the week of
-withdrawal [S3]. Neither states any cap or collar [S3][S4].
+withdrawal [S3]. Neither states any cap or collar [S3] [S4].
 
 **(ii) `linear_duration` — the representative form.**
 
-    μ(t) = (i0 − it) × T(t)                                               [S8][S9]
+    μ(t) = (i0 − it) × T(t)                                               [S8] [S9]
     T(t) = (days from the surrender date to the end of the current contract year ÷ 365)
            + whole years remaining in the MVA period                       [S8]
 
@@ -330,22 +330,22 @@ interpolated. Specimen table (`Ic < 6%` / `Ic ≥ 6%`): s=0 0.00/0.00; 1 0.90/0.
 2 1.80/1.75; 3 2.60/2.50; 4 3.40/3.15; 5 4.10/3.80; 6 4.80/4.35; 7 5.40/4.85; 8 6.00/5.35;
 9 6.50/5.75; 10 7.00/6.15 [S14]. These are modified-duration factors, which is why the
 higher-rate column is uniformly lower. Model #245 §4.I recognizes this branch alongside the
-external-index branch [R4][REG-R45].
+external-index branch [R4] [REG-R45].
 
 **Cap variants (`mva_cap_rule`).**
 
 | Value | Rule | Source design |
 |---|---|---|
 | `sym_sc` **[std]** | `M = clamp(M_raw, −C, +C)` | Athene NY [S2] |
-| `min_sc_interest` | `M = clamp(M_raw, −K, +K)` with `K = min(C, interest credited to date)` | Midland [S8][S9] |
+| `min_sc_interest` | `M = clamp(M_raw, −K, +K)` with `K = min(C, interest credited to date)` | Midland [S8] [S9] |
 | `asym_sc_snfl` | `M ≤ +C`; on the downside no cap — only `SB ≥ MGSV` binds | MassMutual Ascend [S12] |
 | `gmir_floor` | `AV + M ≥ P_accum@GMIR` (premiums less prior withdrawals accumulated at the GMIR); the surrender charge may still breach that level | New York Life [S13] |
 | `none` | uncapped, fully two-sided | Voya [S3], Nationwide [S4] |
 
 `μ(t) = 0`, unconditionally, when: the surrender is in the 30-day guarantee-period-end
-window [S2]; the MVA period has expired [S8][S13][S16]; the benefit is a death benefit
-[S2][S4][S8][S13][S16]; the withdrawal is an RMD or a waiver-rider withdrawal
-[S2][S5][S13]; or the contract is being annuitized [S16][std].
+window [S2]; the MVA period has expired [S8] [S13] [S16]; the benefit is a death benefit
+[S2] [S4] [S8] [S13] [S16]; the withdrawal is an RMD or a waiver-rider withdrawal
+[S2] [S5] [S13]; or the contract is being annuitized [S16] [std].
 
 ### Minimum guaranteed surrender value (Model #805)
 
@@ -355,7 +355,7 @@ window [S2]; the MVA period has expired [S8][S13][S16]; the benefit is a death b
 with `i_nf` the contract GMSV rate (**2.80%** [S11]). The statute *defines* the indexed
 nonforfeiture rate — it is not a band the contract rate sits inside:
 
-    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B][REG-R42]
+    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B] [REG-R42]
 
 and the contract rate must satisfy `i_nf ≥ i_stat`; crediting the floor at more than the
 statutory rate is permitted and simply produces a higher floor, which is exactly what
@@ -367,30 +367,30 @@ reported by the Federal Reserve as of a date, or averaged over a period, specifi
 contract and no longer than **15 months** before issue or redetermination [R1 §4.B].
 
 **Do not implement a 1% floor.** The retrieved Model #805 print floors the indexed
-nonforfeiture rate at **15 basis points** [R1 §4.B][REG-R42]; the widely repeated 1%
+nonforfeiture rate at **15 basis points** [R1 §4.B] [REG-R42]; the widely repeated 1%
 figure is [unverified] against any retrieved document. `d(t)` is the withdrawal deduction
 (`gross` [S11] or `net_of_charges` [S9]); `c(t)` is the monthly slice of the annual
-contract charge, $0 representative and $50 statutory maximum [R1 §4.A][S11]. Premium tax
+contract charge, $0 representative and $50 statutory maximum [R1 §4.A] [S11]. Premium tax
 actually paid and indebtedness are additional permitted deductions, both accumulated at
 `i_nf`, and are zero here [R1 §4.A]. The equity-index carve-out of §4.C (an additional
 reduction of up to 100 bp) does not apply to a book-value MYGA [R1 §4.C].
 
 ### Death benefit and annuitization
 
-- **Death benefit** = `AV(t)`, with no surrender charge and no MVA [S1][S2][S13], floored
+- **Death benefit** = `AV(t)`, with no surrender charge and no MVA [S1] [S2] [S13], floored
   at the cash surrender benefit and hence at `MGSV(t)` [R1 §6]. On the base run
   `AV(t) > MGSV(t)` at every duration **because the 4.45% credited rate exceeds the 2.80%
   GMSV rate** — not unconditionally: the floor accretes at 2.80% while a renewal rate may
   fall to the 0.25% GMIR, and at the GMIR the floor overtakes the account value after
   roughly 8.5 further years (≈ contract year 13–14 on the anchor cell). Test the floor on
   death at every duration **[std]**; the alternative "greater of accumulation value and
-  minimum surrender value" design [S5][S6] makes it live in the base run too.
+  minimum surrender value" design [S5] [S6] makes it live in the base run too.
 - **Annuitization** transfers `AV'(t)` (in the window) or `SV(t)` (during the surrender
-  charge period) out of the accumulation block [S1][S2][S5]. Payout factors are **not**
+  charge period) out of the accumulation block [S1] [S2] [S5]. Payout factors are **not**
   specified here — no retrieved product document contains an annuity rate table [S4]. The
   accumulation model emits the transfer as an outgo and hands the amount to the payout
   model; the statutory maximum valuation rate for the resulting income stream is VM-V §1
-  [REG-R37] and the mortality basis the 2012 IAM/IAR family [R9][REG-R59][REG-R60].
+  [REG-R37] and the mortality basis the 2012 IAM/IAR family [R9] [REG-R59] [REG-R60].
 
 ### Cash flow ledger
 
@@ -415,7 +415,7 @@ gross-liability convention of the library **[std]**. Two corollaries worth stati
 they are common implementation errors: (1) a binding nonforfeiture floor is **not** a
 separate "top-up" cash flow — it raises `SB(t)`, and the difference `MGSV(t) − SV(t)` is a
 reconciliation quantity only; (2) the IRC §72 taxable-income split is a *reported*
-quantity and generates no insurer cash flow [R6][REG-R55].
+quantity and generates no insurer cash flow [R6] [REG-R55].
 
 ---
 
@@ -446,7 +446,7 @@ representative 5-year IGP / 5-year surrender charge period gives, as a **[std] e
 
 | `renewal_architecture` | Contract-year base lapse |
 |---|---|
-| `rollover` (Camp A: new 5-year IGP + new SC schedule) [S1][S2][S5][S11] | 1%, 1%, 1%, 1%, 1%, **75%**, 1%, 1%, 1%, 1%, **75%**, … (period 5) |
+| `rollover` (Camp A: new 5-year IGP + new SC schedule) [S1] [S2] [S5] [S11] | 1%, 1%, 1%, 1%, 1%, **75%**, 1%, 1%, 1%, 1%, **75%**, … (period 5) |
 | `annual_redeclare` (Camp B: annual rates, no SC) [S13] | 1%, 1%, 1%, 1%, 1%, **75%**, 10%, 7.5%, 3%, 3%, 3%, … |
 
 These are the two patterns the guideline's Examples 1 and 2 generate for a 3-year contract
@@ -462,7 +462,7 @@ and increasing with the excess of market over credited rate — that relationshi
 defined in the years after surrender charge expiry" but muted during the charge period — and
 that "in the year the surrender charge expired, high 'shock' surrender rates were observed
 that were not necessarily impacted or driven by market interest rate sensitivity"
-[R8][REG-R63]. Detailed tables sit behind the paid package and were not retrieved.
+[R8] [REG-R63]. Detailed tables sit behind the paid package and were not retrieved.
 
 ### Dynamic (interest-sensitive) lapse **[std]**
 
@@ -507,7 +507,7 @@ Contract years 1–5 therefore run at 1.25% and contract year 6 at **90%** (75% 
 
 - **Partial withdrawals.** 0% in the base run **[std]**; the VM-22 Table 6.2 age-banded
   rates are the variant (see assumption note (b)). Where an RMD module is switched on, RMD
-  amounts are free of charge and MVA even above the free allowance [S15][std], and are
+  amounts are free of charge and MVA even above the free allowance [S15] [std], and are
   modeled as a withdrawal with `E(t) = 0`.
 - **Annuitization.** `a(t) = 1.0%` in each 30-day guarantee-period-end window after
   contract year 1, 0% elsewhere **[std]** (assumption note (c)). Statutory alternative:
@@ -526,7 +526,7 @@ Anchor cell: Male 60 ANB, non-qualified, `P` = $100,000, 5-year guarantee period
 withdrawal 10% [S10]. Monthly factors: `f = 1.0445^(1/12) = 1.0036348`,
 `g = 1.028^(1/12) = 1.0023039` (both derived). A free withdrawal of $4,000 is taken at BOM
 of month 13 (contract year 2 allowance = 10% × AV(12) = $10,445.00, so the whole amount is
-free of charge and MVA [S10][S11]). Full surrender at end of month 30. All figures in
+free of charge and MVA [S10] [S11]). Full surrender at end of month 30. All figures in
 dollars; full precision carried, displayed to cents.
 
 | `t` | Event | `AV(t−1)` | `W(t)` | `AV'(t)` | `AV(t)` | `MGSV(t)` |
@@ -551,11 +551,11 @@ from the cent-rounded values shown, so they reproduce by hand.
 `i0` = 5.00% at issue, `it` = 6.50% at surrender, both **[std]**):
 
 - Free allowance for contract year 3: `FW = 0.10 × AV(24) = 10,492.00` [S10], unused.
-- `E = 107,229.09 − 10,492.00 = 96,737.09` [S8][S11].
-- `C = 0.07 × 96,737.09 = 6,771.60` [S8][S10].
+- `E = 107,229.09 − 10,492.00 = 96,737.09` [S8] [S11].
+- `C = 0.07 × 96,737.09 = 6,771.60` [S8] [S10].
 - `T = 0.5 + 2 = 2.5` years (six months to the end of contract year 3, plus contract years
   4 and 5 remaining in the 5-year MVA period) [S8].
-- `μ = (0.0500 − 0.0650) × 2.5 = −0.037500` [S8][S9]; `M_raw = −3,627.64`.
+- `μ = (0.0500 − 0.0650) × 2.5 = −0.037500` [S8] [S9]; `M_raw = −3,627.64`.
 - Symmetric cap: `|M| ≤ C = 6,771.60` [S2] — **not binding**, so `M = −3,627.64`.
 - `SV = 107,229.09 − 3,627.64 − 6,771.60 = 96,829.85`.
 - `MGSV(30) = 88,356.60 × 1.028^(1/2) = 89,585.05` — **floor not binding**.
@@ -596,7 +596,7 @@ adder, and a second regression target [S4].
 This library projects **gross liability cash flows**. Reserve layers consume them and are
 cited, not reproduced:
 
-- **VM-22 principle-based reserves for non-variable annuities** [R2][REG-R36]. Constitutes
+- **VM-22 principle-based reserves for non-variable annuities** [R2] [REG-R36]. Constitutes
   CARVM for in-scope contracts [R2 §1.A]; applies for **valuation dates on or after
   January 1, 2026** [R2 §2.B]; three-year elective transition on VM-A/VM-C/VM-M/VM-V for
   business issued in the first three years, mandatory prospectively thereafter [R2 §2.B]
@@ -604,13 +604,13 @@ cited, not reproduced:
   Reserving Category** [R2]. Aggregate reserve = SR (CTE70) + DR for contracts passing the
   Single Scenario Test + formulaic reserves for excluded contracts; the additional
   standard projection amount is **disclosure-only** under VM-31 [R2 §3].
-- **Formulaic CARVM — A-820 ¶¶14–15 as interpreted by AG 33** [REG-R153][REG-R151], with the
+- **Formulaic CARVM — A-820 ¶¶14–15 as interpreted by AG 33** [REG-R153] [REG-R151], with the
   guideline family indexed at VM-C [REG-R41]. AG 33's printed title is **"Determining CARVM
   Reserves for Annuity Contracts With Elective Benefits"** and its printed *Effective Date*
   block reads "This guideline shall be effective on **December 31, 1998**, affecting all
   contracts issued on or after January 1, 1981" [REG-R151 *Effective Date*]. The
   **December 31, 1995** date and the alternative title this file previously carried come
-  from IRS Rev. Rul. 2002-6, describing a differently-titled instrument [R7][REG-R39].
+  from IRS Rev. Rul. 2002-6, describing a differently-titled instrument [R7] [REG-R39].
   **Both are recorded and the reconciliation is unresolved** — the extracted pages carry no
   amendment history, so "a later revision" is an inference, not a fact from either source;
   the 1 January 1981 issue-date reach is common to both, and the 33⅓ / 66⅔ / 100% grade-in
@@ -620,8 +620,8 @@ cited, not reproduced:
   **VM-V §1** carries the statutory maximum valuation interest rate on the post-annuitization
   payout stream [REG-R37].
 - **Tax and GAAP.** IRC §807: greater of net surrender value and, post-TCJA, **92.81% of**
-  the NAIC-prescribed method reserve (CARVM), capped at statutory [R7][REG-R16]. LDTI
-  (ASU 2018-12) with ASOP No. 10 on the U.S. GAAP basis [REG-R34][REG-R71].
+  the NAIC-prescribed method reserve (CARVM), capped at statutory [R7] [REG-R16]. LDTI
+  (ASU 2018-12) with ASOP No. 10 on the U.S. GAAP basis [REG-R34] [REG-R71].
 - **Standards for the modeling work itself.** ASOP 7 (life/health cash flow analysis — the
   standard for exactly this disintermediation/reinvestment/MVA work) [REG-R27]; ASOP 22 (asset adequacy) [REG-R29]; ASOP 56
   (modeling) [REG-R32]; ASOP 2 (non-guaranteed elements — the declared renewal rate)
@@ -636,7 +636,7 @@ Dominant assumptions, in rough order of impact on a MYGA block:
 1. **The shock lapse at surrender-charge / guarantee-period expiry, and the renewal
    architecture switch that positions it.** Base lapse moves from 1% to 75% in a single
    contract year under the prescribed table [R2], and Camp A repeats that every five years
-   while Camp B does it once [S11][S13]. Nothing else in the model moves the liability
+   while Camp B does it once [S11] [S13]. Nothing else in the model moves the liability
    duration as much. Run both architectures before quoting a duration.
 2. **The renewal declared rate `s_ren`, jointly with dynamic lapse.** The credited-minus-
    competitor spread drives both the interest margin and the surrender rate, in opposite
@@ -647,7 +647,7 @@ Dominant assumptions, in rough order of impact on a MYGA block:
    vanishes during the surrender charge period.
 4. **The MVA cap rule.** Symmetric-at-charge, min(charge, interest credited),
    asymmetric-with-nonforfeiture-floor, GMIR-floored, and uncapped produce materially
-   different tail surrender values on the same rate path [S2][S3][S4][S8][S9][S12][S13].
+   different tail surrender values on the same rate path [S2] [S3] [S4] [S8] [S9] [S12] [S13].
    The cap, not the formula family, is where the money is.
 5. **The Model #805 floor at short durations.** As the worked example shows, the floor
    binds early (high charge, large negative MVA) and not later; a model that tests the
@@ -660,7 +660,7 @@ Known modeling pitfalls:
   understates the adjustment by `sc × |M|`; applying the floor before the MVA silently
   removes the downside protection.
 - **The free-amount / MVA interaction.** `free_wd_mva_exempt` is a real product difference
-  [S2][S3][S4][S9][S10] and changes both the surrender value and the `1 − CSV/AV` haircut
+  [S2] [S3] [S4] [S9] [S10] and changes both the surrender value and the `1 − CSV/AV` haircut
   that gates dynamic lapse. Do not hard-code it.
 - **Gross vs net withdrawals.** `W(t)` is the **gross** amount removed from the account
   value; contracts promising a stated net check need a gross-up solve — Voya's prospectus
@@ -669,21 +669,21 @@ Known modeling pitfalls:
   both live and give different floors; the difference then compounds at `i_nf` for the rest
   of the contract.
 - **The 15 bp floor.** Implementing the folklore 1% floor overstates the Model #805 minimum
-  in low-rate environments — the retrieved statute says 15 bp [R1 §4.B][REG-R42].
-- **Surrender-charge clock on renewal.** Under `rollover` the clock resets [S1][S2][S11];
+  in low-rate environments — the retrieved statute says 15 bp [R1 §4.B] [REG-R42].
+- **Surrender-charge clock on renewal.** Under `rollover` the clock resets [S1] [S2] [S11];
   Voya and Nationwide run it from the original purchase payment date so it never restarts
-  [S3][S4]. Getting this wrong relocates the shock lapse by years.
+  [S3] [S4]. Getting this wrong relocates the shock lapse by years.
 - **Mortality table plumbing.** The prescribed formula uses the 2012 IAM **Basic** table
   (VM-M §2.C) with Scale G2 and the VM-22 `F_x` factors [R2 §6.B.8], not the 2012 IAM
   Period/IAR valuation table. Where the IAR generational table *is* used, the Valuation
   Manual's rounding trap applies: round from the 2012 period rate each time, never compound
   an already-rounded prior-year rate [REG-R59]. Do not substitute life bases — annuitant
   mortality is a different and lighter basis than the 2017 CSO / 2015 VBT / ILEC families
-  [REG-R59][REG-R60][REG-R61], and annuity surrender behavior is structurally unlike life
+  [REG-R59] [REG-R60] [REG-R61], and annuity surrender behavior is structurally unlike life
   lapse [REG-R63]. Deferred-*period* annuitant mortality is under-evidenced: only a
   2011–2015 study and a 2006 analysis were identified, neither retrieved [REG-R65].
   Fortunately mortality is second-order here — death pays full account value with no charge
-  and no MVA [S1][S2][S13].
+  and no MVA [S1] [S2] [S13].
 - **Era and snapshot caveats.** The 4.45% declared rate, 2.80% GMSV rate and 0.25% GMIR
   [S11] are a September 2025 snapshot of one product; the same insurer's 2023 brochure
   stated the GMIR "will be 1% or higher" [S10]. Levels are era-representative; mechanics are

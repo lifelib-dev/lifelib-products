@@ -29,7 +29,7 @@ reference implementation. Parameter values are identical to those in `product-sp
   2017 CSO set provides ANB tables [R8]. Attained age at anniversary t is `x + t`.
 - **Projection horizon:** to the anniversary at attained age 100, where the model pays a
   maturity benefit and terminates **[std]**. The contract itself matures at 121 [S1], but the
-  guaranteed CV equals face at 100 and PUA CV equals PUA face at 100 [S1][S3], so from age 100
+  guaranteed CV equals face at 100 and PUA CV equals PUA face at 100 [S1] [S3], so from age 100
   the policy is economically an endowment at face; truncating at 100 changes only the timing
   of the terminal payment between ages 100–121 (mortality vs. maturity), not its amount per
   survivor.
@@ -38,7 +38,7 @@ reference implementation. Parameter values are identical to those in `product-sp
   probabilities are per policy year.
 - **Decrement model:** annual rates; deaths before surrenders at EOY; dividends credited to
   policies in force at EOY before surrender processing **[std]** (order list below).
-- **Sex-distinct** rates throughout (unisex only as a variant) [S1][S3].
+- **Sex-distinct** rates throughout (unisex only as a variant) [S1] [S3].
 
 ## Model point attributes
 
@@ -46,13 +46,13 @@ reference implementation. Parameter values are identical to those in `product-sp
 |---|---|---|
 | `policy_id` | str | "WLPAR-000001" |
 | `product` | enum {WL_PAR, WL_FE_LEVEL, WL_FE_GRADED} | WL_PAR |
-| `premium_period` | enum {TO_100, PAY_10, PAY_20, TO_65} | TO_100 **[std]** (product-spec Table 1 note (b); menu [S1][S3]) |
+| `premium_period` | enum {TO_100, PAY_10, PAY_20, TO_65} | TO_100 **[std]** (product-spec Table 1 note (b); menu [S1] [S3]) |
 | `issue_age` (x) | int | 45 |
 | `sex` | enum {M, F} | M |
 | `risk_class` | enum {PREF_NT, STD_NT, TOB} **[std]** | STD_NT |
 | `face_amount` (F) | float | 100,000 **[std]** |
 | `annual_premium` (G) | float | 1,800.00 **[std illustrative]** (product-spec Table 2 note (c)) |
-| `dividend_option` | enum {CASH, REDUCE_PREM, ACCUM, PUA} | PUA (default [S1][S2]) |
+| `dividend_option` | enum {CASH, REDUCE_PREM, ACCUM, PUA} | PUA (default [S1] [S2]) |
 | `pua_rider_premium` (A_t) | float per year | 0.00 |
 | `term_blend_target` | float (0 = off) | 0.00 (variant: 2 × F **[std]**) |
 | `loan_utilization` | float in [0,1] | 0.00 (variant: 0.20 **[std]**) |
@@ -65,7 +65,7 @@ reference implementation. Parameter values are identical to those in `product-sp
 | Variable | Meaning | Initialization |
 |---|---|---|
 | `l_t` | Probability in force at anniversary t (per issued policy) | `l_0 = 1` |
-| `CV_t` | Guaranteed cash value per policy (base), EOY t | table input; `CV_{100−x} = F` [S1][S3] |
+| `CV_t` | Guaranteed cash value per policy (base), EOY t | table input; `CV_{100−x} = F` [S1] [S3] |
 | `PUAF_t` | Paid-up additions face in force, EOY t | `PUAF_0 = puaf_inforce` |
 | `PUACV_t` | PUA cash value, EOY t | `PUAF_t · NSP_{x+t}` **[std]** |
 | `DA_t` | Dividend accumulation balance (ACCUM option only) | 0 |
@@ -84,20 +84,20 @@ annually, (c) is the modeler's experience basis.
 | Input | Value | Basis |
 |---|---|---|
 | Guarantee interest `i_g` | 4.00% | [S1]; Model 808 floor [R1] |
-| Guarantee mortality `q^g_{x+t}` | 2017 CSO composite, sex-distinct, ANB | [S1][R3][R8]; ANB **[std]** |
-| Guaranteed CV schedule `CV_t` | Table input per model point (generated on the above basis) | [S1][R1]; see below |
-| Gross premium `G` | Model point input (level, guaranteed) | [S1][S3] |
+| Guarantee mortality `q^g_{x+t}` | 2017 CSO composite, sex-distinct, ANB | [S1] [R3] [R8]; ANB **[std]** |
+| Guaranteed CV schedule `CV_t` | Table input per model point (generated on the above basis) | [S1] [R1]; see below |
+| Gross premium `G` | Model point input (level, guaranteed) | [S1] [S3] |
 | Loan rate `i_L` | 6.00% fixed, in arrears | [S1] |
-| Endowment/maturity | `CV = F` at age 100; model maturity at 100 | [S1][S3]; truncation **[std]** |
+| Endowment/maturity | `CV = F` at age 100; model maturity at 100 | [S1] [S3]; truncation **[std]** |
 | FE premium rates | Per $1,000 rate table + $36 fee | [S7] |
-| FE graded DB | 110% of premiums paid, natural death in years 1–2 | [S6][S7] |
+| FE graded DB | 110% of premiums paid, natural death in years 1–2 | [S6] [S7] |
 
 ### (b) Current non-guaranteed scale (insurer-declared; snapshot)
 
 | Input | Value | Basis |
 |---|---|---|
-| Dividend interest rate `i_d` | 6.00% (2026-scale snapshot) | **[std]**, within observed 5.75%–6.60% [S4][S14] |
-| Experience mortality in scale `q^{sc}_{x+t}` | `AE^{sc} · q^{2015VBT}_{x+t}` with `AE^{sc} = 0.70` of 2017 CSO in the worked example | **[std illustrative]**; structure per [S4][R6], tables [REG-R18] |
+| Dividend interest rate `i_d` | 6.00% (2026-scale snapshot) | **[std]**, within observed 5.75%–6.60% [S4] [S14] |
+| Experience mortality in scale `q^{sc}_{x+t}` | `AE^{sc} · q^{2015VBT}_{x+t}` with `AE^{sc} = 0.70` of 2017 CSO in the worked example | **[std illustrative]**; structure per [S4] [R6], tables [REG-R18] |
 | Expense margin in scale `e^{m}_t` | $25 per policy per year | **[std]** |
 | Dividend floor | `D_t ≥ 0` | **[std]** (dividends are non-negative distributions of surplus [R6]) |
 | PUA purchase basis | `NSP_{x+t}` on 2017 CSO / 4%, unloaded (dividend purchases); 10% load on rider payments | **[std]** / [S3] (product-spec Table 3 note (k), Riders) |
@@ -115,7 +115,7 @@ of future scale changes.
 | Best-estimate mortality `q^e_{x+t}` | 2015 VBT (sex/smoker-distinct, ANB) × company A/E; industry A/E from the ILEC 2012–2019 study | tables [REG-R18], experience [R9]/[REG-R19]; A/E factor 0.70 × 2017 CSO in the worked example **[std illustrative]** |
 | Base lapse `w_t` | LIMRA/SOA U.S. Individual Life Persistency study (WL by duration/size/mode) | [REG-R20] for the study; rates below **[std]** (study figures not recorded in the research file) |
 | Lapse schedule **[std]** | 5.0% year 1, grading linearly to 2.0% at year 10, level 2.0% thereafter; 0 within 1 year of maturity | **[std]** — "low and level" pattern consistent with mature par WL persistency; source study [REG-R20] |
-| Premium persistency | 1 (premiums are fixed and guaranteed; premium cessation = lapse/RPU) | [S1][S3]; convention **[std]** |
+| Premium persistency | 1 (premiums are fixed and guaranteed; premium cessation = lapse/RPU) | [S1] [S3]; convention **[std]** |
 | Maintenance expense | $60 per policy per year, inflating 2.0%/yr | **[std]** |
 | Acquisition expense | 90% of first-year premium + $250 per policy | **[std]** |
 | Premium tax | 2.0% of premium | **[std]** |
@@ -157,7 +157,7 @@ P_adj     such that  P_adj · ä_{x:m|} = F · NSP_x + EA       (m = premium per
 CV_t^min  = F · NSP_{x+t} − P_adj · ä_{x+t:(m−t)|}           (t < m; second term 0 for t ≥ m)
 ```
 
-on 2017 CSO / 4% [S1][R1][R3]. Properties to verify: `CV_{100−x}^min = F` (since
+on 2017 CSO / 4% [S1] [R1] [R3]. Properties to verify: `CV_{100−x}^min = F` (since
 `NSP_100 = 1`), and smooth progression by duration [R1].
 
 Practical treatment **[std]**: the reference implementation reads `CV_t` (per $1,000 of face)
@@ -192,7 +192,7 @@ with `NP_g = NNLP` (the nonforfeiture net level premium, so the interest margin 
 guaranteed fund including the year's net premium) **[std]**, `q^{sc}` the scale's experience
 mortality (class (b)), and `e^m_t` the per-policy expense margin (class (b)). Dimensions: every
 term is dollars per policy per year. Refinements observed in practice — interest on the
-mortality margin, premium-timing adjustments, banded factors [S1][S3] — are absorbed into the
+mortality margin, premium-timing adjustments, banded factors [S1] [S3] — are absorbed into the
 calibration of `q^{sc}` and `e^m_t` **[std]**.
 
 Dividends on the PUA block (PUAs are dividend-eligible [S14]) **[std]**:
@@ -204,7 +204,7 @@ D^PUA_t = (i_d − i_g) · PUACV_{t−1} + (q^g_{x+t−1} − q^{sc}_{x+t−1}) 
 No dividend is credited for policy year 1 (`D_1 = D^PUA_1 = 0`) **[std]** (product-spec Table
 3 note (j); Guardian pays none [S1], MassMutual pays a first-year dividend [S3]).
 
-Direct recognition (loaned values) **[std]** parametrization of [S1][S3]: replace `i_d` with
+Direct recognition (loaned values) **[std]** parametrization of [S1] [S3]: replace `i_d` with
 `i_L` on the loaned portion:
 
 ```
@@ -216,7 +216,7 @@ coincidence of the snapshot, not a model property.
 
 ### Dividend application (by option)
 
-- **PUA (default [S1][S2]):** `ΔPUAF_t = (D_t + D^PUA_t) / NSP_{x+t}`; `PUAF_t = PUAF_{t−1} +
+- **PUA (default [S1] [S2]):** `ΔPUAF_t = (D_t + D^PUA_t) / NSP_{x+t}`; `PUAF_t = PUAF_{t−1} +
   ΔPUAF_t`; `PUACV_t = PUAF_t · NSP_{x+t}` **[std]** (valuing all PUA face at the attained-age
   NSP on the guarantee basis; exact at issue of each layer and at age 100, approximate between
   **[std]**). At age 100, `NSP_100 = 1` so `PUACV = PUAF` [S1].
@@ -224,11 +224,11 @@ coincidence of the snapshot, not a model property.
 - **REDUCE_PREM:** offsets next year's BOY premium: `G^{net}_{t+1} = max(G − D_t, 0)`, excess
   to PUAs **[std]** (excess-to-PUA per MassMutual RPD [S3]).
 - **ACCUM:** `DA_t = DA_{t−1} · (1 + i_d) + D_t`; balance adds to death and surrender
-  proceeds [S1][S2].
+  proceeds [S1] [S2].
 
 ### PUA rider (in-scope rider)
 
-Rider payment `A_t` (BOY, within limits set at issue [S3][S11]):
+Rider payment `A_t` (BOY, within limits set at issue [S3] [S11]):
 `ΔPUAF^rider_t = A_t · (1 − 0.10) / NSP_{x+t−1}` — 10% load **[std]** from the observed
 7.5%–10% range [S3]. Rider PUAs merge into `PUAF_t`.
 
@@ -237,7 +237,7 @@ Rider payment `A_t` (BOY, within limits set at issue [S3][S11]):
 Target face `TF = 2 F` **[std]** (within observed caps: ≤ 9× base [S2], ≤ 300% of base [S3]).
 Each year, OYT face `= max(TF − F − PUAF_t, 0)`; the dividend first pays the OYT cost
 `q^{sc}_{x+t} · OYT_t · v_g` **[std]**, remainder buys PUAs; crossover when `PUAF_t ≥ TF − F`,
-after which the rider is pure PUA [S2][S3][S11]. Death benefit while blended: `TF + excess
+after which the rider is pure PUA [S2] [S3] [S11]. Death benefit while blended: `TF + excess
 PUAs − L_t`.
 
 ### Benefit amounts
@@ -287,8 +287,8 @@ view: see next.
 
 Base run: `loan_utilization = 0`. Variant **[std]**: `L_t = 0.20 · CV_t` maintained by
 borrowing/repaying at EOY; borrowed amounts are policyholder cash outflows from the insurer,
-loan interest received is an inflow, and `DB`/`CSV`/`MAT` are net of `L_t` [S1][S3][S9]. Under
-direct recognition the dividend adjustment above applies [S1][S3]. Economically the loan is an
+loan interest received is an inflow, and `DB`/`CSV`/`MAT` are net of `L_t` [S1] [S3] [S9]. Under
+direct recognition the dividend adjustment above applies [S1] [S3]. Economically the loan is an
 offsetting asset; the reference model reports gross liability flows plus a separate loan
 account rather than netting into a "net amount at risk" presentation **[std]**.
 
@@ -297,7 +297,7 @@ account rather than netting into a "net amount at risk" presentation **[std]**.
 - Premium: `G = (F/1000) · rate(x, sex, tobacco) + 36` [S7]; no dividends (non-par
   [unverified]; modeled non-par).
 - Graded plan: for natural-cause deaths in years 1–2, `DB_t = 1.10 · (cumulative premiums
-  paid)`; accidental deaths pay `F` from day 1 [S6][S7]. Accidental split requires an
+  paid)`; accidental deaths pay `F` from day 1 [S6] [S7]. Accidental split requires an
   accidental-death fraction of `q^e` **[std]** (reference value 3% of deaths **[std]**).
 - Maturity at age 100 (120 in FL — not modeled **[std]**) pays `F − L_T` [S8].
 - CV schedule: reuse of the par nonforfeiture machinery **[std]** (product-spec Table 5 note (r)).
@@ -320,7 +320,7 @@ Base behavior is static (schedules in class (c)). Dynamic overlays, all **[std]*
   real product feature: Guardian option S [S2]; MassMutual APO [S3]). This shifts premium
   income to internal dividend application in later durations.
 - **Loan utilization:** static 0%/20% variants only **[std]**; no dynamic loan take-up (the
-  6%-fixed direct-recognition design largely neutralizes loan arbitrage [S1][S3]).
+  6%-fixed direct-recognition design largely neutralizes loan arbitrage [S1] [S3]).
 - **No dynamic mortality (anti-selection) on lapse** for the base par product **[std]**;
   selective-lapse mortality loading is documented mainly for term post-level-period designs
   (see the SOA persistency/PLT study family around [REG-R20]), not level-premium par WL.
@@ -388,7 +388,7 @@ Dominant assumptions (in typical order of impact on par WL liability value):
 1. **Dividend scale vs. guarantee spread** (`i_d − i_g`, mortality margin, expense margin):
    drives dividends, hence PUA growth, hence death benefit and surrender value trajectories —
    compounding because PUAs themselves earn dividends [S14]. The DIR snapshot is a declared,
-   changeable rate (observed 5.75%–6.60% for 2026 alone [S4][S14]); scale-change dynamics are
+   changeable rate (observed 5.75%–6.60% for 2026 alone [S4] [S14]); scale-change dynamics are
    a scenario input, not a model constant.
 2. **Best-estimate mortality** (level and improvement vs. 2015 VBT [REG-R18], A/E per ILEC
    [R9]): sets both claim outgo and the mortality margin of the dividend; note the same table
@@ -397,7 +397,7 @@ Dominant assumptions (in typical order of impact on par WL liability value):
    illustration regulation exists precisely because lapse-supported scales misstate value
    [R2]. Verify the model is not inadvertently lapse-supported when testing dividend scales.
 4. **Expense inflation** on per-policy maintenance for a product with 55+-year horizons.
-5. **Loan utilization** under direct recognition [S1][S3]: shifts dividend composition and
+5. **Loan utilization** under direct recognition [S1] [S3]: shifts dividend composition and
    net cash flow timing; the fixed-6%/DIR-6% snapshot coincidence (zero adjustment) will not
    survive a scale change.
 
@@ -405,17 +405,17 @@ Known modeling pitfalls:
 
 - **CV-table vs. first-principles mismatch:** if the CV table input and the `NSP`/annuity
   functions come from different bases, `PUACV ≠ PUAF` at age 100 and the dividend recursion
-  leaks. Regenerate all guarantee-basis quantities from one 2017 CSO / 4% source [S1][R1][R8].
+  leaks. Regenerate all guarantee-basis quantities from one 2017 CSO / 4% source [S1] [R1] [R8].
 - **Dividend floor and negative margins:** with `D_t` floored at 0 **[std]**, adverse
   experience does not claw back — asymmetry matters in stochastic runs.
 - **First-dividend timing** (year 1 vs 2) shifts early-duration PUA compounding; it is a real
-  cross-carrier difference [S1][S3], keep it a parameter.
+  cross-carrier difference [S1] [S3], keep it a parameter.
 - **MEC administration on limited-pay variants:** 10-pay premiums approach 7-pay limits; face
   decreases can retroactively create MECs and PUA-rider payments consume 7-pay room
-  [R5][S3][S1]. The reference model does not police §7702/§7702A limits [R4][R5] — flag
+  [R5] [S3] [S1]. The reference model does not police §7702/§7702A limits [R4] [R5] — flag
   model points that would fail rather than silently projecting them **[std]**.
 - **Truncation at age 100** **[std]** is exact for surrender/maturity amounts but reallocates
   age-100–121 payments from death to maturity; do not use the truncated model for
   mortality-timing-sensitive measures beyond age 100 [S1].
 - **State variations** (FL maturity 120, WA face minimums, ND suicide, MT unisex)
-  [S6][S7][S8][S1] are not modeled; the reference is a generic-state contract **[std]**.
+  [S6] [S7] [S8] [S1] are not modeled; the reference is a generic-state contract **[std]**.
