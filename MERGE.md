@@ -1,4 +1,4 @@
-# Merging `us/` into lifelib as `uslib`
+# Merging `uslib/` into lifelib
 
 Everything in this repository is ready. This file is the lifelib-side half: the steps that
 cannot be done here because they touch lifelib's own files.
@@ -6,15 +6,15 @@ cannot be done here because they touch lifelib's own files.
 The design decisions behind each step are in [USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md);
 this is the checklist, not the argument.
 
-**Status of the prep:** `us/` builds to 75 Sphinx pages with **0 warnings** under
+**Status of the prep:** `uslib/` builds to 75 Sphinx pages with **0 warnings** under
 `-n -W --keep-going`, and its 1,010 tests pass. Both are reproducible here:
 
 ```bash
-python tools/doccheck.py us
+python tools/doccheck.py uslib
 ```
 
 ```bash
-python -m pytest us/tests -q
+python -m pytest uslib/tests -q
 ```
 
 ---
@@ -22,13 +22,14 @@ python -m pytest us/tests -q
 ## 1. Move the directory
 
 ```bash
-git mv us lifelib/libraries/uslib
+git mv uslib lifelib/libraries/uslib
 ```
 
-That is the whole move. `us/` is already self-contained: the twelve models sit beside the
-documents that specify them, the test suite is inside at `us/tests/`, and every internal
-path reference is either relative or library-root-relative, so nothing in it names `us` or
-its location.
+That is the whole move. `uslib/` is already self-contained: the twelve models sit beside the
+documents that specify them, the test suite is inside at `uslib/tests/`, and every internal
+path reference is either relative or library-root-relative, so nothing inside it names its
+own location. The directory is already called `uslib`, so this is a move and not a rename:
+the anchors, the `automodule` paths and the package name all say `uslib` today.
 
 `uk/` stays in lifelib-products until it is given the same treatment (see §7).
 

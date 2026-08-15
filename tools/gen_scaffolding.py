@@ -21,8 +21,8 @@ Existing generated blocks are replaced, so this is safe to re-run.
 
 Usage::
 
-    python tools/gen_scaffolding.py us --dry-run
-    python tools/gen_scaffolding.py us
+    python tools/gen_scaffolding.py uslib --dry-run
+    python tools/gen_scaffolding.py uslib
 """
 import re
 import sys
@@ -134,8 +134,11 @@ def write(path, text, dry, made):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "us")
-    lib = f"{library.name}lib"
+    library = pathlib.Path(args[0] if args else "uslib")
+    # The directory *is* the library: uslib/ here, lifelib/libraries/uslib/ after the
+    # merge, and uklib/ when the UK section follows.  Deriving the name any other way
+    # would make the anchors and module paths disagree with where the files actually are.
+    lib = library.name
     made = []
 
     slugs = sorted(d.name for d in (library / "products").iterdir() if d.is_dir())

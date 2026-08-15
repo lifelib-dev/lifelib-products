@@ -20,8 +20,8 @@ dot, and they are found by looking, not guessed.
 
 Usage::
 
-    python tools/fix_doc_roles.py us --dry-run
-    python tools/fix_doc_roles.py us
+    python tools/fix_doc_roles.py uslib --dry-run
+    python tools/fix_doc_roles.py uslib
 """
 import ast
 import re
@@ -91,7 +91,7 @@ def fix_text(text, models, this_model, own_cells, other_cells, other_space):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "us")
+    library = pathlib.Path(args[0] if args else "uslib")
 
     model_dirs = {}
     for product in sorted((library / "products").iterdir()):

@@ -1,4 +1,4 @@
-# Runtime requirements for the reference models under <country>/models/.
+# Runtime requirements for the reference models under <library>/products/<product>/.
 #
 # The models are serialized with modelx serializer v8, which postdates the 0.31.1
 # release: PyPI modelx 0.31.1 cannot read them. Until 0.32 ships, use a checkout of

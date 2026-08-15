@@ -8,27 +8,36 @@ type and country.
 **Status:** Draft, 2026-08-14. Current coverage: United States (6 individual life and
 6 individual annuity product types) and United Kingdom (7 product types, including
 pension annuities). **All twelve U.S. products now ship an executable reference model**
-under `us/models/`; the UK models are a planned follow-on (see Roadmap).
+in `uslib/products/<product>/`, beside the documents that specify it; the UK models are
+a planned follow-on (see Roadmap).
 
 ---
 
 ## Organization
 
 ```
-<country>/
-  README.md                          country overview and product taxonomy
+<library>/                           uslib/ — a country library, named for the lifelib library it becomes
+  index.md                           country overview, product taxonomy, citation conventions
   products/
-    <product-type>/
+    index.md
+    <product>/                       each product's documents and its executable model, together
       product-spec.md                representative product specification
       technical-notes.md             liability cash flow model: design, assumptions, recursions
+      model.md                       how the model implements the notes, and what is [std]
+      model-api.md                   cells reference, generated from the model's docstrings
       sources.md                     numbered source list for this product's documents
-  models/                            executable models built from the technical notes
-    <product-type>/                  README.md, run.py, and the modelx model folder
+      run.py  *.csv  <Model>/        the modelx model and its inputs
   references/
     regulatory-and-actuarial-references.md
                                      curated cross-product bibliography (NAIC, IRC, SOA, AAA, ASB)
+  tests/                             one module per model, plus the shared conventions suite
   _research/                         raw research notes — citation ground truth / provenance
 ```
+
+`uslib/` is in this shape and ready to merge into lifelib — see
+[USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md) and [MERGE.md](MERGE.md). `uk/` is still a country
+section in the older layout (`products/<product-type>/` with hyphenated slugs, no models) and
+becomes `uklib/` on the same pattern.
 
 - **`product-spec.md`** defines a *representative* product: a standardized composite
   built from publicly available documentation of real products, not any single
@@ -82,7 +91,7 @@ Each country section is built in three passes:
 
 | Country | Products | Status |
 |---|---|---|
-| [United States](us/README.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted |
+| [United States](uslib/index.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted |
 | [United Kingdom](uk/README.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs + technical notes drafted |
 
 Scope note: both country sections cover individual life insurance and annuities, but
@@ -94,12 +103,12 @@ business (bulk purchase annuities, pension risk transfer) are out of scope in bo
 
 ## Roadmap
 
-- **Reference implementations**: `<country>/models/<product-type>/` — executable
-  liability cash flow projection models built from the technical notes. **All twelve U.S.
-  products are shipped** (modelx; each one's worked example is asserted cell by cell by
-  `tests/`, and a shared conventions suite enforces the house style across the set — see
-  [us/README.md](us/README.md#executable-models)). The seven UK products follow the same
-  pattern.
+- **Reference implementations**: `<library>/products/<product>/` — executable liability
+  cash flow projection models built from the technical notes. **All twelve U.S. products
+  are shipped** (modelx; each one's worked example is asserted cell by cell by the
+  library's own `tests/`, and a shared conventions suite enforces the house style across
+  the set — see [uslib/index.md](uslib/index.md#executable-models)). The seven UK products
+  follow the same pattern.
 - **Additional countries**, and additional product families (group insurance,
   institutional/pension risk transfer business) as coverage grows.
 

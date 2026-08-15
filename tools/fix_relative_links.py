@@ -20,8 +20,8 @@ The candidate repairs, in order:
 
 Usage::
 
-    python tools/fix_relative_links.py us --dry-run
-    python tools/fix_relative_links.py us
+    python tools/fix_relative_links.py uslib --dry-run
+    python tools/fix_relative_links.py uslib
 """
 import re
 import sys
@@ -95,7 +95,7 @@ def candidates(target, source_dir, library):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "us")
+    library = pathlib.Path(args[0] if args else "uslib")
 
     stats = collections.Counter()
     unresolved = []

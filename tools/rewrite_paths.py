@@ -16,8 +16,8 @@ is nothing to point them at, and rewriting them would falsify a provenance recor
 
 Usage::
 
-    python tools/rewrite_paths.py us --dry-run
-    python tools/rewrite_paths.py us
+    python tools/rewrite_paths.py uslib --dry-run
+    python tools/rewrite_paths.py uslib
 """
 import re
 import sys
@@ -67,7 +67,7 @@ UNHANDLED = re.compile(START + r'(?!regulatory\b)[A-Za-z0-9_.-]*')
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "us")
+    library = pathlib.Path(args[0] if args else "uslib")
 
     compiled = rules(slug_map(library))
     counts = collections.Counter()

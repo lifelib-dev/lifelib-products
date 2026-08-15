@@ -1,10 +1,14 @@
-# Merge plan — `us/` → lifelib as the **uslib** library
+# Merge plan — `uslib/` → lifelib
 
-**Status:** Plan, 2026-08-15. Branch `uslib-merge-prep`. Nothing in this plan has been
-executed; this document is the specification for the prep work, to be reviewed before any
-file moves.
+**Status:** Implemented, 2026-08-15, on branch `uslib-merge-prep` in phases P0–P7 — one
+commit each. This document is both the specification and the record: each decision states
+what was decided and why, and each phase states what it actually did, including where
+implementation contradicted the plan.
 
-**Goal.** Move this repository's `us/` section into
+The library directory is `uslib/`; the merge into lifelib is `git mv uslib
+lifelib/libraries/uslib` (D10). See [MERGE.md](MERGE.md) for the lifelib-side steps.
+
+**Goal.** Move this repository's `uslib/` section into
 [lifelib](https://github.com/lifelib-dev/lifelib) as a library named **uslib**, such that:
 
 1. each product's **model lives in the same directory as its documents**, under
@@ -24,7 +28,7 @@ stays in this repository.
 
 ```
 lifelib/libraries/uslib/
-  index.md                          <- from us/README.md; carries the toctree
+  index.md                          <- was the section README; carries the toctree
   products/
     index.md                        <- new: taxonomy landing page + toctree
     term_life/
@@ -32,7 +36,7 @@ lifelib/libraries/uslib/
       product-spec.md
       technical-notes.md
       sources.md
-      model.md                      <- from us/models/term-life/README.md
+      model.md                      <- was models/term-life/README.md
       model-api.md                  <- new: autodoc cells reference (D9)
       run.py
       model_point_table.csv  premium_rates.csv  mort_table.csv
@@ -56,8 +60,8 @@ lifelib/doc/source/libraries/
   uslib/                            <- GENERATED at build time (gitignored), *.md only
 ```
 
-Twelve `us/models/<product>/` directories disappear; their contents merge into the
-corresponding `us/products/<product>/`.
+The twelve `models/<product>/` directories are gone; their contents merged into the
+corresponding `products/<product>/`.
 
 This shape is the **house layout for a country library**, not a uslib one — `uk/` follows it
 as `uklib` (D8), with seven products, no `models/` yet, and therefore product directories
@@ -108,7 +112,7 @@ no `__init__.py` needed, matching `basiclife`, which has none.
 
 ### D2 — Model and documents colocate under `products/<product>/`
 
-The twelve `us/models/<product>/` directories merge into `us/products/<product>/`. The
+The twelve `models/<product>/` directories merge into `products/<product>/`. The
 model's `README.md` becomes `model.md` — a directory cannot hold two `README.md`, and
 `README` is a poor Sphinx document name.
 
@@ -225,13 +229,13 @@ These are the only edits in the plan that change the **visible text** of a citat
 comma list becomes two bracketed tags with a comma between them. The pinpoint form is
 untouched on the page; only its target changes from nothing to a link.
 
-Note the asymmetry — pinpoint cites are twice as common in `uk/` as in `us/`, so this is
+Note the asymmetry — pinpoint cites are twice as common in `uk/` as in `uslib/`, so this is
 the part of the pipeline that most needs to be right before it is re-run for `uklib`
 (D8).
 
 ### D5a — `[std]` and `[unverified]` are links as well
 
-All 1,257 `[std]` and 275 `[unverified]` occurrences in `us/` (684 and 143 in `uk/`) get a
+All 1,257 `[std]` and 275 `[unverified]` occurrences in `uslib/` (684 and 143 in `uk/`) get a
 definition pointing at that library's citation-conventions section, exactly like a
 citation tag. They are defined terms with a precise meaning that a reader has to know to
 read a parameter table correctly, and one definition line per file is a cheap way to keep
@@ -265,7 +269,7 @@ them by repository path rather than by doc link.
 
 `tests/` stays a repo-root suite here — 14 files, `conftest.py` plus twelve per-product
 modules and `test_model_conventions.py` — with `MODELS` in
-[tests/conftest.py](tests/conftest.py) repointed at `us/products/<product_slug>/<Model>`.
+[tests/conftest.py](tests/conftest.py) repointed at `uslib/products/<product_slug>/<Model>`.
 
 **On the lifelib side the suite lands at `lifelib/libraries/uslib/tests/`** — inside the
 library, following `ifrs17a`.
@@ -348,7 +352,7 @@ in uslib and uklib, exactly as it already does across products.
 
 **The one substantive new item is the shared conventions text.** The citation conventions —
 `[S#]`, `[R#]`, `[REG-R#]`, `[std]`, `[unverified]` — are defined **once**, in this
-repository's root `README.md`, which both `us/README.md` and `uk/README.md` point at. That
+repository's root `README.md`, which both `uslib/index.md` and `uk/README.md` point at. That
 shared parent does not survive the split into two independent lifelib libraries. Combined
 with D5a, which turns `[std]` and `[unverified]` into links, **each library needs its own
 copy of the conventions section, carrying its own anchors** (`uslib-std` / `uklib-std`).
@@ -440,6 +444,33 @@ nothing about 163 dead module references; the same build with `-n` reports them 
 **So the P6 doc-check harness must run `sphinx-build -n -W --keep-going`.** Nitpicky, not
 merely warnings-as-errors. Verified both ways.
 
+### D10 — The directory is the library name
+
+The section directory is **`uslib/`**, not `us/`, so the merge is `git mv uslib
+lifelib/libraries/uslib` — a move with no rename.
+
+This was missed in the first pass and corrected after the phases were complete. The library
+had already been calling itself `uslib` everywhere it mattered: every citation anchor is
+`uslib-<product>-s<n>`, every `model-api.md` says
+`.. automodule:: uslib.products.<slug>.<Model>`, and D8 fixed `<lib>-` as the house prefix.
+Only the directory disagreed — which meant the autodoc module paths were *wrong in this
+repository* and right only after the merge, and `tools/doccheck.py` needed a copy-and-rename
+step to make them resolve.
+
+Naming the directory for the library removes that. `uslib.products.term_life.Term_US_A` is
+importable here, the harness copies rather than renames, and there is one less thing that is
+true only on the far side of a move. It is the same reasoning as P2's choice of
+library-root-relative paths: prefer the form that is correct in both places.
+
+It also fixes the library-name derivation in the tooling, which was
+`f"{library.name}lib"` — correct for `us` and wrong for anything already named as a library.
+It is now simply `library.name`, so **the directory must be named for its library**. `uk/`
+therefore becomes `uklib/` as the first step of its own migration, not the last.
+
+*Consequence for `uk/`:* this repository now holds `uslib/` and `uk/`, which reads as
+inconsistent but is accurate — `uslib` is library-shaped and finished, `uk` is still a
+country section awaiting the same treatment.
+
 ---
 
 ## 4. Prep phases, in this repository
@@ -449,17 +480,17 @@ end of every one.
 
 **P0 — Structural markdown fixes** *(2 files)* — **done**
 Independent of everything else; fixes latent rendering bugs that exist today.
-- `us/references/regulatory-and-actuarial-references.md:1683` — a `---` line directly
+- `uslib/references/regulatory-and-actuarial-references.md:1683` — a `---` line directly
   follows `payout mortality.` with no blank line, so MyST renders that sentence as an
   **H2 heading**. Blank line inserted.
-- `us/products/fixed-indexed-annuity/sources.md:324` — H2 → H4 jump
+- `uslib/products/fixed-indexed-annuity/sources.md:324` — H2 → H4 jump
   (`myst.header` warning). `#### R110.` demoted to `### R110.`: it is the one entry in that
   section not part of the AP&P group below it, so giving it its own H3 is the minimal fix
   and invents no editorial content.
-- ~~`us/README.md` — bare `<product-type>`, `<product>`, `<country>`, `<grid>`~~ —
+- ~~`uslib/index.md` — bare `<product-type>`, `<product>`, `<country>`, `<grid>`~~ —
   **withdrawn, false positive.** All four are already inside backticks. The scan that
   flagged them blanked fenced code blocks but not inline code spans. Rechecked with spans
-  stripped: **zero** bare angle-bracket tokens in `us/`.
+  stripped: **zero** bare angle-bracket tokens in `uslib/`.
 
 Adds `tools/md_lint.py`, which is what re-checks this and gates P4: it reports setext
 rules, heading-level jumps, missing/duplicate H1, and bracket adjacencies. Structural checks
@@ -467,9 +498,9 @@ apply to every file; the adjacency check applies only to *rendered* documents, s
 `_research/` never receives the definitions that make an adjacency dangerous.
 
 **P1 — Directory restructure** *(pure `git mv`, no content edits)*
-- Rename the 12 product slugs to underscores (D1) in `us/products/`.
-- Move each `us/models/<p>/` into `us/products/<p_>/`; `README.md` → `model.md`.
-- Delete the now-empty `us/models/`, and the stray empty `us/regulatory/` (an untracked
+- Rename the 12 product slugs to underscores (D1) in `uslib/products/`.
+- Move each `uslib/models/<p>/` into `uslib/products/<p_>/`; `README.md` → `model.md`.
+- Delete the now-empty `uslib/models/`, and the stray empty `uslib/regulatory/` (an untracked
   leftover of the framework revert in 832247f — `uk/regulatory/` is the same and can go
   with it).
 - Nothing builds or passes at the end of this phase except `git status`; P2 is its
@@ -477,15 +508,15 @@ apply to every file; the adjacency check applies only to *rendered* documents, s
 
 **P2 — Path rewrites** *(mechanical, scripted)* — **done**
 
-**The suite moved into the library first.** `tests/` is now `us/tests/`, not a repo-root
+**The suite moved into the library first.** `tests/` is now `uslib/tests/`, not a repo-root
 directory moved at merge time as P7 item 6 originally said. This is the same D7 decision
-executed earlier, and it earns two things: `us/` is now the complete library, so the merge
+executed earlier, and it earns two things: `uslib/` is now the complete library, so the merge
 is a single directory move with nothing left behind; and `conftest.py` can already carry its
 final form — `LIB = Path(__file__).resolve().parents[1]` with `MODELS` entries reading
 `products/<slug>/<Model>`. Zero merge-time edits, and the relative locator D7 requires is
 correct from today rather than promised.
 
-**Paths became library-root-relative, not `uslib/`-prefixed.** `us/_research/term-life.md`
+**Paths became library-root-relative, not `uslib/`-prefixed.** `uslib/_research/term-life.md`
 is now `_research/term-life.md`. A path relative to the library root is correct in this
 repository *and* after the move into `lifelib/libraries/uslib/`, and it is the same string
 uklib wants — so it survives both moves untouched, which the `uslib/` prefix this plan first
@@ -493,13 +524,13 @@ proposed would not. `tools/rewrite_paths.py`, 641 replacements across 118 files:
 
 | Where | What | Count |
 |---|---|---|
-| model `*.py` and `*.md` | `us/models/<hyphen>` and `us/products/<hyphen>` → `products/<underscore>` | 641 across all rules |
+| model `*.py` and `*.md` | `uslib/models/<hyphen>` and `uslib/products/<hyphen>` → `products/<underscore>` | 641 across all rules |
 | `*.md` | relative link targets — resolved against the filesystem, repaired, then normalised to the shortest path that reaches the file (`tools/fix_relative_links.py`) | 69, of which 66 were broken |
 | model `*.py` docstrings | **D9:** leading dot on `:mod:` roles — 97 own-model, 66 cross-model | 163 |
 | model `*.py` docstrings | **D9:** leading dot on cross-Space `:func:`/`:attr:` roles | 2 |
-| `us/tests/*.py` | `REPO` → `LIB`, registry paths, and two contract assertions (below) | — |
+| `uslib/tests/*.py` | `REPO` → `LIB`, registry paths, and two contract assertions (below) | — |
 
-`us/regulatory/*` references are deliberately **not** rewritten. All 39 sit in `_research/`
+`uslib/regulatory/*` references are deliberately **not** rewritten. All 39 sit in `_research/`
 and name a statutory-framework stream removed from the library in 832247f; there is nothing
 to point them at, and editing them would falsify a provenance record.
 
@@ -524,10 +555,10 @@ in `references/regulatory-and-actuarial-references.md` (numbering runs to R157, 
 retired R73–R149 block leaves only 90 live entries — the frozen numbers are what the targets
 must carry, not the ordinal position).
 
-**Then the conventions section.** `us/README.md` currently *points at* the repository root
+**Then the conventions section.** `uslib/index.md` currently *points at* the repository root
 `README.md` for the citation conventions; per D8 that shared parent does not survive the
 split, and per D5a `[std]` and `[unverified]` now need anchors. So copy the conventions
-table into `us/README.md` and give it the `(uslib-std)=` / `(uslib-unverified)=` targets.
+table into `uslib/index.md` and give it the `(uslib-std)=` / `(uslib-unverified)=` targets.
 This must happen here, before P5 generates definitions that point at them.
 
 Watch for this: the entry headings use **two conventions** —
@@ -568,15 +599,15 @@ carries a definition block. Dry-run the whole pipeline against `uk/` (D8) and ch
 output against the §6 uk column.
 
 **P6 — Sphinx scaffolding, authored in the library tree**
-- `us/README.md` → `us/index.md` with a MyST toctree.
-- New `us/products/index.md` (the two taxonomy tables from the README, plus a toctree).
-- New `us/products/<p>/index.md` × 12.
+- `uslib/index.md` → `uslib/index.md` with a MyST toctree.
+- New `uslib/products/index.md` (the two taxonomy tables from the README, plus a toctree).
+- New `uslib/products/<p>/index.md` × 12.
 - **Each of the twelve `model.md`: a "Verification" note** saying which module in `tests/`
   asserts that model's worked example, what it covers, and the one command that runs it
   against *this* copy. Required by D7: the suite ships with the library, so a reader who
   edits an assumption has a way to find out whether they broke the documented example —
   but only if the documents tell them it exists.
-- **New `us/products/<p>/model-api.md` × 12** (D9) — MyST prose framing an `{eval-rst}`
+- **New `uslib/products/<p>/model-api.md` × 12** (D9) — MyST prose framing an `{eval-rst}`
   block with `.. automodule:: uslib.products.<slug>.<Model>.Projection :members:` and the
   same for `Data`. Short and near-identical across the twelve, so generate them from a
   template rather than hand-writing.
@@ -627,7 +658,7 @@ The lifelib-side edits, none of which are in scope for this repo:
 5. `.gitignore` — `doc/source/libraries/uslib/`, one line per library (D8: this one cannot
    be globbed, because hand-written library doc dirs live in the same parent).
 6. ~~Move `tests/` → `lifelib/libraries/uslib/tests/`~~ — **already done in P2.** The suite
-   is at `us/tests/` and travels with the directory, so the merge has nothing to do here.
+   is at `uslib/tests/` and travels with the directory, so the merge has nothing to do here.
    No CI or `tox.ini` change is needed either: both run bare `pytest` from the repository
    root, which already collects `ifrs17a`'s in-library tests.
 7. `doc/source/conf.py` — nothing further for D9: `autodoc`, `autosummary` and `napoleon`
@@ -662,10 +693,10 @@ against the label text rather than the rendered id would have reported a false f
 a subtler normalisation mismatch would have produced 12,576 links that all looked right and
 went nowhere.
 
-**The exception to criterion 5:** `us/tests/conftest.py` needs
+**The exception to criterion 5:** `uslib/tests/conftest.py` needs
 `git log --follow -M20%` to trace its history, because P2 moved and substantially rewrote it
 in the same commit and the default 50% similarity threshold does not recognise the rename.
-The rename *is* recorded — `git show --stat` prints `{tests => us/tests}/conftest.py` — so
+The rename *is* recorded — `git show --stat` prints `{tests => uslib/tests}/conftest.py` — so
 nothing is lost, but the move and the rewrite should have been separate commits. Every other
 moved file follows at the default threshold.
 
@@ -677,7 +708,7 @@ Measured with fenced code blocks excluded. The `uk/` column is not scope for thi
 it is the **expected output of the same tooling** when D8's dry-run is performed, and the
 check that no script has hardcoded "us".
 
-| Quantity | `us/` | `uk/` |
+| Quantity | `uslib/` | `uk/` |
 |---|---|---|
 | markdown files | 69 | 31 |
 | — of which product docs | 36 (12 × 3) | 21 (7 × 3) |
@@ -703,7 +734,7 @@ check that no script has hardcoded "us".
 | path strings in model `*.py` | 82 | 0 |
 | path strings in `tests/*.py` | 40 | 0 |
 
-Two asymmetries matter. `uk/` has **twice the pinpoint cites** of `us/` despite being half
+Two asymmetries matter. `uk/` has **twice the pinpoint cites** of `uslib/` despite being half
 the size, so D5 is the part of the pipeline most likely to be under-tested by the uslib run
 alone. And `uk/` has three times the proportion of adjacencies needing manual review (9
 versus 3) — small in absolute terms, but it means the manual-review bucket is a real step in

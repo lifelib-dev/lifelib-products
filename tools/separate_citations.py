@@ -20,8 +20,8 @@ today and are left alone.
 
 Usage::
 
-    python tools/separate_citations.py us --dry-run
-    python tools/separate_citations.py us
+    python tools/separate_citations.py uslib --dry-run
+    python tools/separate_citations.py uslib
 """
 import re
 import sys
@@ -119,7 +119,7 @@ def separate(text):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "us")
+    library = pathlib.Path(args[0] if args else "uslib")
 
     total, unknown_all = 0, collections.Counter()
     files = 0

@@ -11,8 +11,8 @@ failing the build:
 
 Run over a country directory::
 
-    python tools/md_lint.py us
-    python tools/md_lint.py us uk        # both
+    python tools/md_lint.py uslib
+    python tools/md_lint.py uslib uk        # both
 
 Exits non-zero if anything is reported, so it can gate a commit.
 """

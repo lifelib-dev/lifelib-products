@@ -15,8 +15,8 @@ succeeded (D9).
 
 Usage::
 
-    python tools/doccheck.py us
-    python tools/doccheck.py us --keep      # leave the build tree for inspection
+    python tools/doccheck.py uslib
+    python tools/doccheck.py uslib --keep      # leave the build tree for inspection
 """
 import os
 import shutil
@@ -76,8 +76,11 @@ def mirror(library, dest):
 
 def main(argv):
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "us")
-    lib = f"{library.name}lib"
+    library = pathlib.Path(args[0] if args else "uslib")
+    # The directory *is* the library: uslib/ here, lifelib/libraries/uslib/ after the
+    # merge, and uklib/ when the UK section follows.  Deriving the name any other way
+    # would make the anchors and module paths disagree with where the files actually are.
+    lib = library.name
 
     build = pathlib.Path(".doccheck")
     # autodoc imports the models, which leaves __pycache__ behind; on Windows those can
@@ -89,8 +92,9 @@ def main(argv):
     src = build / "src"
     src.mkdir(parents=True, exist_ok=True)
 
-    # autodoc imports the models, so the library must be importable under its final
-    # package name: <pkg>/<lib>/products/<slug>/<Model>.
+    # autodoc imports the models, and importing writes __pycache__ into the model
+    # folders, so it works on a copy rather than the source tree.  The directory name
+    # is already the package name, so this is a copy and not a rename.
     pkg = build / "pkg" / lib
     pkg.parent.mkdir(parents=True, exist_ok=True)
     if pkg.exists():
