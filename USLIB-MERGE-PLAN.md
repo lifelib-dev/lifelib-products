@@ -33,6 +33,7 @@ lifelib/libraries/uslib/
       technical-notes.md
       sources.md
       model.md                      <- from us/models/term-life/README.md
+      model-api.md                  <- new: autodoc cells reference (D9)
       run.py
       model_point_table.csv  premium_rates.csv  mort_table.csv
       class_factor_table.csv  shock_lapse_table.csv
@@ -361,6 +362,66 @@ from the outset and **dry-run it against `uk/`** at the end of P3, P4 and P5. Th
 above and in §6 are the expected output; a script that cannot reproduce them is not general
 enough, and finding that out on the uklib run instead is the expensive way.
 
+### D9 — The twelve models get autodoc API pages
+
+Settled: yes. The raw material is unusually good — **1,581 cells, 100% of them carrying a
+docstring**, and all 24 Spaces documented too. That is a complete API reference already
+written; it is currently just unreachable.
+
+Each product directory gains a `model-api.md` beside its `model.md`: MyST prose framing an
+`{eval-rst}` block that hosts the autodoc directives. `model.md` stays the narrative — why
+the model is shaped as it is, what is **[std]**, what the tests cover — and `model-api.md`
+is the generated cells reference, in the spirit of lifelib's `BasicTerm_S.rst` but without
+hand-listing 150 `.. autofunction::` entries per model:
+
+````markdown
+```{eval-rst}
+.. automodule:: uslib.products.term_life.Term_US_A.Projection
+   :members:
+```
+````
+
+with `autodoc_member_order = 'bysource'`, which lifelib already sets, so cells appear in the
+order the notes derive them.
+
+**Verified by spike, in this order:**
+
+1. The model folders **import cleanly at the target depth** as implicit namespace packages —
+   `uslib.products.term_life.Term_US_A.Projection` imports and carries its docstring. The
+   serialized files say they are importable; they are.
+2. A **MyST page can host `automodule`**. The docstrings are RST — roles and simple tables —
+   and they render correctly inside `{eval-rst}`: cells emitted, tables as real `<table>`,
+   py links resolving, and ordinary MyST links in the same page still working. **So the API
+   page is a `.md` in the library tree and D3's existing `*.md` sync carries it. No new
+   mechanism.**
+
+**What breaks, and must be fixed first:**
+
+| Issue | Count | Cause |
+|---|---|---|
+| `:mod:`<Model>`` — bare model name | 91 | role resolution is relative to the current module, which becomes `uslib.products.<slug>.<Model>`; a bare `Term_US_A` names nothing |
+| `:mod:`<Model>.<Space>`` | 72 | same |
+| cross-Space `:func:` (e.g. `input_dir`, in `Data`, cited from `Projection`) | 2 | resolves only within the current module |
+| malformed RST simple table in a docstring | ≥1 of ~54 | in `Term_US_A.Projection`, `plt_mort_factor_init_formula` is 28 characters and overflows its 26-character column rule |
+
+The other **823** `:func:`/`:attr:` roles are fine: they are same-Space and resolve relative
+to the current module at any depth.
+
+**The fix is one character.** Prefix the failing roles with a dot — `:mod:`.Term_US_A``,
+`:func:`.input_dir``. The leading dot makes the lookup *refspecific*, matching any module
+whose path ends that way. Verified: it resolves to
+`#module-uslib.products.term_life.Term_US_A`, and the dot is stripped from the rendered
+text, so the page reads exactly as before. It is also **library-agnostic**, which
+`.. currentmodule::` would have been too — except that it does not work: tested, and
+`:mod:` roles stay unresolved under it. 165 mechanical edits, no docstring rewritten.
+
+**This is the phase's real hazard: the failures are silent.** Sphinx's Python domain does
+not warn on an unresolved `:func:`/`:mod:` by default — it drops the role and renders plain
+text. Building the *broken* state reports **1 warning** (the malformed table) and says
+nothing about 163 dead module references; the same build with `-n` reports them all.
+**So the P6 doc-check harness must run `sphinx-build -n -W --keep-going`.** Nitpicky, not
+merely warnings-as-errors. Verified both ways.
+
 ---
 
 ## 4. Prep phases, in this repository
@@ -397,10 +458,17 @@ Independent of everything else; fixes latent rendering bugs that exist today.
 | `*.md` prose | backticked `` `tests/…` `` paths | 16 |
 | `*.md` | `python us/models/<p>/run.py` invocations | 20 |
 | `*.md` | relative `.md` links — slug rename, plus `../../products/x/` → `../x/` now that models sit inside `products/` | 63 |
+| model `*.py` docstrings | **D9:** leading dot on `:mod:`<Model>`` and `:mod:`<Model>.<Space>`` roles | 163 |
+| model `*.py` docstrings | **D9:** leading dot on cross-Space `:func:` roles | 2 |
+| model `*.py` docstrings | **D9:** widen the malformed RST simple table(s) — start with `Term_US_A.Projection`, where `plt_mort_factor_init_formula` overflows its column rule | ≥1 of ~54 |
 
 The 478 backticked paths are prose references to sibling documents. Per the third goal they
 should become **links**, not merely corrected strings — do that here, while the paths are
 being touched anyway.
+
+The D9 rows land here because they are the same files and the same kind of edit as the path
+rewrites, and because they depend on the final module depth that P1 fixes. They cannot be
+*verified* until P6 builds the API pages under `-n`, so treat them as staged, not done.
 
 **P3 — Citation anchors** *(targets only; no citation links yet)*
 Insert `(uslib-<product>-s<n>)=` / `(uslib-<product>-r<n>)=` above each of the **237** source
@@ -451,9 +519,16 @@ output against the §6 uk column.
   against *this* copy. Required by D7: the suite ships with the library, so a reader who
   edits an assumption has a way to find out whether they broke the documented example —
   but only if the documents tell them it exists.
-- A `doc-check` harness: a throwaway `conf.py` mirroring lifelib's MyST settings, so the
-  whole set can be built **here** with `-W --keep-going` and land in lifelib warning-clean.
-  This is the acceptance test for the whole plan.
+- **New `us/products/<p>/model-api.md` × 12** (D9) — MyST prose framing an `{eval-rst}`
+  block with `.. automodule:: uslib.products.<slug>.<Model>.Projection :members:` and the
+  same for `Data`. Short and near-identical across the twelve, so generate them from a
+  template rather than hand-writing.
+- A `doc-check` harness: a throwaway `conf.py` mirroring lifelib's MyST settings **plus
+  `autodoc`, `napoleon` and `libraries/` on `sys.path`**, so the whole set can be built
+  **here** with **`-n -W --keep-going`** and land in lifelib clean. This is the acceptance
+  test for the whole plan. The `-n` is not optional: per D9, unresolved Python roles are
+  silent without it, and the entire point of the exercise is that cross-references are
+  links.
 
 **P7 — Merge dossier**
 A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for this repo:
@@ -469,12 +544,13 @@ A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for 
    be globbed, because hand-written library doc dirs live in the same parent).
 6. Move `tests/` → `lifelib/libraries/uslib/tests/` (D7) — inside the library, following
    `ifrs17a`. No CI or `tox.ini` change is needed.
-7. Decide whether the twelve models also get lifelib-style autodoc pages
-   (`.. automodule:: uslib.products.term_life.Term_US_A.Projection`). D1 keeps the door
-   open; nothing else in this plan depends on it.
+7. `doc/source/conf.py` — nothing further for D9: `autodoc`, `autosummary` and `napoleon`
+   are already loaded, `autodoc_member_order = 'bysource'` is already set, and
+   `lifelib/libraries` is already on `sys.path`. The twelve `model-api.md` arrive through
+   the same `*.md` sync as every other document.
 
 Items 1–3 are **one-time, library-agnostic** work: once done, uklib needs only items 4 and 5
-plus its own content.
+plus its own content — and, when its models are written, nothing at all for D9.
 
 ---
 
@@ -482,13 +558,16 @@ plus its own content.
 
 The acceptance criteria for the prep branch, in order of how much they would hurt if wrong:
 
-1. `sphinx-build -W --keep-going` over the uslib tree is clean (P6).
+1. **`sphinx-build -n -W --keep-going`** over the uslib tree is clean (P6). The `-n` is
+   what makes criteria 3 and 6 enforceable rather than aspirational.
 2. `python -m pytest tests -q` is green — all twelve worked examples still reproduce.
 3. Every `[S#]`/`[R#]`/`[REG-R#]` in a rendered page is a link, and it lands on the entry
    with that number **in that product's** `sources.md`. Spot-check across products, since
    C11 is where a namespacing slip would show up as a plausible-looking wrong link.
 4. No `][` adjacency survives in any document that carries a definition block.
 5. `git log --follow` still works on the moved documents (use `git mv`, keep P1 rename-only).
+6. All twelve `model-api.md` render, and every `:mod:`/`:func:` role in the 1,581 cells
+   docstrings resolves. Under `-n` this is simply criterion 1; without it, it is unobservable.
 
 ---
 
@@ -576,13 +655,11 @@ All questions raised in the first draft are now settled:
 | Is `uk/` destined for `uklib`? | Yes — so every convention here is a house convention and every script is parameterized | D8 |
 | Where do the tests live? | Inside the library, `libraries/uslib/tests/` | D7 |
 | Does `_research/` ship? | Yes, in the library; not rendered | D6 |
+| Do the models get autodoc API pages? | Yes — a `model-api.md` per product | D9 |
 
-Nothing is blocking. Two items are deliberately deferred rather than open:
+Nothing is blocking. One item is deliberately deferred rather than open:
 
-1. **Autodoc pages for the twelve models** (P7 item 7). D1 keeps the option alive by making
-   every path component importable; nothing else depends on it, and it is better judged
-   once the hand-written `model.md` pages have been seen rendered.
-2. **The uklib migration itself.** Out of scope for this branch. D8 fixes the conventions
+1. **The uklib migration itself.** Out of scope for this branch. D8 fixes the conventions
    and requires the tooling to be general, and §6 gives the numbers its dry-run must
    reproduce — so the uklib run should be a re-invocation, not a redesign. The one piece of
    genuinely new authoring it will need is its own copy of the citation-conventions section,
