@@ -229,12 +229,40 @@ and point at them as repository paths rather than doc links.
 
 ### D7 — Tests keep their current shape, with rewritten paths
 
-`tests/` stays a repo-root suite here, with `MODELS` in
-[tests/conftest.py](tests/conftest.py) repointed at
-`us/products/<product_slug>/<Model>`. On the lifelib side it lands at
-`lifelib/tests/libraries/uslib/`, alongside `test_tradlife_a.py` and friends.
-`tests/test_model_conventions.py` asserts that the registry name, the directory on disk and
-the model's `_name` agree — that assertion is what will catch a missed rename in D1, so it
+`tests/` stays a repo-root suite here — 14 files, `conftest.py` plus twelve per-product
+modules and `test_model_conventions.py` — with `MODELS` in
+[tests/conftest.py](tests/conftest.py) repointed at `us/products/<product_slug>/<Model>`.
+
+**On the lifelib side the suite lands at `lifelib/libraries/uslib/tests/`** — inside the
+library, not under `lifelib/tests/`.
+
+lifelib has two test conventions, and this picks the second:
+
+| Convention | Used by | Shape |
+|---|---|---|
+| central, flat | fastlife, nestedlife, simplelife, solvency2, tradlife_a | `lifelib/tests/libraries/test_<lib>.py`, locating models via `Path(__file__).parents[2] / "libraries"` |
+| in-library | ifrs17a | `lifelib/libraries/ifrs17a/tests/` with its own `conftest.py` and `expected/` |
+
+The in-library shape is the right one here because:
+
+- it is the same colocation argument as D2 — for a library whose point is that each
+  reference model reproduces its own documented worked example, the assertion belongs
+  beside the model and the notes it checks;
+- `lifelib.create("uslib", …)` copies the library directory, so a user's copy arrives with
+  the tests and can be re-run against their own edits. `.py` is already in
+  `get_package_data`, so this needs no packaging change beyond C5;
+- it keeps `lifelib/tests/libraries/` from going from 6 files to 19, with
+  `test_term_life_us.py` interleaved among `test_simplelife.py` and friends;
+- CI needs no change: `.github/workflows/tests.yml` runs bare `pytest -v` from the
+  repository root and `tox.ini` does the same, so root-level collection already picks up
+  `lifelib/libraries/ifrs17a/tests/` and will pick these up identically. Verified.
+
+`conftest.py` then resolves models from `Path(__file__).resolve().parents[1]`, with `MODELS`
+entries reading `products/<slug>/<Model>` — shorter than today's repo-relative form, and
+independent of where the library is checked out or copied to.
+
+`test_model_conventions.py` asserts that the registry name, the directory on disk and the
+model's `_name` agree — that assertion is what will catch a missed rename in D1, so it
 should be run first after the rename, not last.
 
 ---
@@ -321,7 +349,8 @@ A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for 
    `exclude_patterns += ['libraries/uslib/_research/*']` (D6).
 4. `doc/source/libraries/index.rst` — one table row and one toctree entry, `uslib/index.md`.
 5. `.gitignore` — `doc/source/libraries/uslib/`.
-6. Move `tests/` → `lifelib/tests/libraries/uslib/` (D7).
+6. Move `tests/` → `lifelib/libraries/uslib/tests/` (D7) — inside the library, following
+   `ifrs17a`. No CI or `tox.ini` change is needed.
 7. Decide whether the twelve models also get lifelib-style autodoc pages
    (`.. automodule:: uslib.products.term_life.Term_US_A.Projection`). D1 keeps the door
    open; nothing else in this plan depends on it.
