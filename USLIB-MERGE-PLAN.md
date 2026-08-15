@@ -58,6 +58,10 @@ lifelib/doc/source/libraries/
 Twelve `us/models/<product>/` directories disappear; their contents merge into the
 corresponding `us/products/<product>/`.
 
+This shape is the **house layout for a country library**, not a uslib one — `uk/` follows it
+as `uklib` (D8), with seven products, no `models/` yet, and therefore product directories
+that carry documents but no model. Read `uslib` below as `<lib>` throughout.
+
 ---
 
 ## 2. Established constraints
@@ -206,18 +210,40 @@ moment definitions exist. Every adjacency must be separated by a single space
 
 This edit **must land in the same commit as the definition blocks**, never later.
 
-### D5 — Two citation forms need an explicit ruling
+### D5 — Pinpoint cites and comma lists become links too
 
-Neither becomes a link under D4, because their bracket text is not a bare label:
+Neither form becomes a link under D4 alone, because its bracket text is not a bare label.
+**Both are in scope** — the goal is *all* cross-references, not most of them.
 
-- **Pinpoint cites** — `[R1 §4.B]`, `[R13 §3.B(1)(b)]`: 381 occurrences, 234 distinct.
-- **Comma lists** — `[S3, S7]`, `[S3, S5, S7]`: 93 occurrences, 44 distinct.
+| Form | Example | us | uk | Treatment |
+|---|---|---|---|---|
+| Pinpoint cite | `[R1 §4.B]`, `[R13 §3.B(1)(b)]` | 381 | 768 | explicit inline link, scripted from the leading tag: `[R1 §4.B](#uslib-term_life-r1)` |
+| Comma list | `[S3, S7]`, `[S3, S5, S7]` | 91 | 1 | split into separate shortcut refs: `[S3], [S7]` — they then link for free under D4 |
 
-Recommendation: split the comma lists (`[S3], [S7]` — 93 sites, mechanical, they become
-links for free) and convert the pinpoint cites to explicit inline links
-(`[R1 §4.B](#uslib-term_life-r1)` — 381 sites, scripted from the leading tag). Both are in
-scope for "all cross-references are links"; both are also the most defensible place to
-descope if the diff proves too large. **Flagged for your call — see §7.**
+These are the only edits in the plan that change the **visible text** of a citation: a
+comma list becomes two bracketed tags with a comma between them. The pinpoint form is
+untouched on the page; only its target changes from nothing to a link.
+
+Note the asymmetry — pinpoint cites are twice as common in `uk/` as in `us/`, so this is
+the part of the pipeline that most needs to be right before it is re-run for `uklib`
+(D8).
+
+### D5a — `[std]` and `[unverified]` are links as well
+
+All 1,257 `[std]` and 275 `[unverified]` occurrences in `us/` (684 and 143 in `uk/`) get a
+definition pointing at that library's citation-conventions section, exactly like a
+citation tag. They are defined terms with a precise meaning that a reader has to know to
+read a parameter table correctly, and one definition line per file is a cheap way to keep
+that meaning one click away.
+
+Two consequences worth stating, neither blocking:
+
+- `**[std]**` renders as a **bold link**, and `[unverified]` appears inside at least one
+  heading, so it will render as a link in a heading. Both are acceptable.
+- Variant forms — `[std illustrative]`, `[unverified as to market share]`, 43 occurrences
+  across 29 distinct spellings — are *not* bare labels and so do not link. Leave them.
+  Normalizing them into `[std]` plus prose would change the author's meaning, which is out
+  of scope for a mechanical pass.
 
 ### D6 — `_research/` ships but is not rendered
 
@@ -297,6 +323,44 @@ in-library tests are already collected this way), and packaging (`py` is already
 model's `_name` agree — that assertion is what will catch a missed rename in D1, so it
 should be run first after the rename, not last.
 
+### D8 — These are house conventions, parameterized by library
+
+`uk/` is destined to become **uklib** on the same pattern, so nothing below may hardcode
+"us". The uk section is the same shape, verified: 31 markdown files, 7 products, the same
+tag vocabulary including `[REG-R#]`, the same two entry-heading conventions, 151 source
+entries, 38 reference-library entries, 1,947 bracket adjacencies. It has **no `models/`
+directory** — UK models are a roadmap item — so D2's merge is a no-op there and a product
+directory with documents but no model must be legal.
+
+| Item | uslib-only form | House form |
+|---|---|---|
+| Target names | `uslib-term_life-s1` | `<lib>-<product>-s<n>`, `<lib>-reg-r<n>`, `<lib>-std` |
+| conf.py sync hook | hardcoded `uslib` | discover every `libraries/*/index.md` and sync that tree — adding uklib then needs no `conf.py` edit at all |
+| `exclude_patterns` | `libraries/uslib/_research/*` | `libraries/*/_research/*` |
+| `.gitignore` | `doc/source/libraries/uslib/` | one line per library, listed explicitly — `doc/source/libraries/` also holds hand-written dirs, so it cannot be globbed |
+| P3/P4/P5 and D5 tooling | — | every script takes `--library` and derives its product list from disk; no slug is hardcoded |
+| Model names | `<Product>_US_<grid>` | `<Product>_<CC>_<grid>` — the country tag already separates `Term_US_A` from a future `Term_UK_A` |
+
+Product slugs convert cleanly under D1 in both (`term-assurance` → `term_assurance`, …),
+and the per-library link definitions of D4 mean `[S1]` can safely mean a different source
+in uslib and uklib, exactly as it already does across products.
+
+**The one substantive new item is the shared conventions text.** The citation conventions —
+`[S#]`, `[R#]`, `[REG-R#]`, `[std]`, `[unverified]` — are defined **once**, in this
+repository's root `README.md`, which both `us/README.md` and `uk/README.md` point at. That
+shared parent does not survive the split into two independent lifelib libraries. Combined
+with D5a, which turns `[std]` and `[unverified]` into links, **each library needs its own
+copy of the conventions section, carrying its own anchors** (`uslib-std` / `uklib-std`).
+
+Duplicating it rather than hosting it once under `doc/source/` is the consistent answer
+under D6/D7: a `create()` copy must be self-contained, and a page in the doc tree is not in
+the copy.
+
+**Sequencing.** Do uslib first as the pathfinder, but write every script with `--library`
+from the outset and **dry-run it against `uk/`** at the end of P3, P4 and P5. The uk counts
+above and in §6 are the expected output; a script that cannot reproduce them is not general
+enough, and finding that out on the uklib run instead is the expensive way.
+
 ---
 
 ## 4. Prep phases, in this repository
@@ -343,11 +407,18 @@ Insert `(uslib-<product>-s<n>)=` / `(uslib-<product>-r<n>)=` above each of the *
 entries in the twelve `sources.md`, and `(uslib-reg-r<n>)=` above each of the **90** entries
 in `references/regulatory-and-actuarial-references.md` (numbering runs to R157, but the
 retired R73–R149 block leaves only 90 live entries — the frozen numbers are what the targets
-must carry, not the ordinal position). Add the conventions targets to `us/README.md`.
+must carry, not the ordinal position).
+
+**Then the conventions section.** `us/README.md` currently *points at* the repository root
+`README.md` for the citation conventions; per D8 that shared parent does not survive the
+split, and per D5a `[std]` and `[unverified]` now need anchors. So copy the conventions
+table into `us/README.md` and give it the `(uslib-std)=` / `(uslib-unverified)=` targets.
+This must happen here, before P5 generates definitions that point at them.
 
 Watch for this: the entry headings use **two conventions** —
-`### S1 — Title` in `term-life`, `### S1. Title` in the other eleven. The insertion script
-must match both, and the count above is the check that it did.
+`### S1 — Title` in `term-life` and `whole-life`, `### S1. Title` in the other ten (and the
+same split exists in `uk/`). The insertion script must match both, and the count above is
+the check that it did.
 
 **Idempotent and inert** — nothing links to these targets yet, so this phase cannot change
 any rendering.
@@ -358,10 +429,18 @@ as `[S2][S3]` does. This phase is deliberately separate so its diff can be revie
 own; it is the one that would silently corrupt meaning if it were incomplete.
 
 **P5 — Citation link definitions** *(the phase that turns citations into links)*
-Add `tools/gen_citation_links.py`, run it over the 36 product documents and the 12
-`model.md`, and commit the generated blocks. Add a test asserting round-trip integrity:
-every tag used has a definition, every definition has a target, no target is defined twice.
-Optionally (D5) split comma lists and linkify pinpoint cites.
+Add `tools/gen_citation_links.py --library us`, run it over the 36 product documents and the
+12 `model.md`, and commit the generated blocks — including the `[std]` and `[unverified]`
+definitions of D5a. Then the two D5 forms, in this order:
+
+1. split comma lists (91 sites) — they become links for free once split;
+2. linkify pinpoint cites (381 sites) as explicit inline links, scripted from the leading
+   tag.
+
+Add a test asserting round-trip integrity: every tag used has a definition, every definition
+has a target, no target is defined twice, and no `][` adjacency survives in a file that
+carries a definition block. Dry-run the whole pipeline against `uk/` (D8) and check the
+output against the §6 uk column.
 
 **P6 — Sphinx scaffolding, authored in the library tree**
 - `us/README.md` → `us/index.md` with a MyST toctree.
@@ -382,15 +461,20 @@ A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for 
 1. `setup.py` — add `'md'` to `get_package_data`'s extension list (C5). Without this the
    docs never reach an installed copy.
 2. `setup.py` — raise `install_requires` to `modelx>=0.32` (C6).
-3. `doc/source/conf.py` — the `_sync_uslib_docs` hook (D3) and
-   `exclude_patterns += ['libraries/uslib/_research/*']` (D6).
+3. `doc/source/conf.py` — the doc-sync hook (D3), written to discover **every**
+   `libraries/*/index.md` rather than naming `uslib` (D8), plus
+   `exclude_patterns += ['libraries/*/_research/*']` (D6).
 4. `doc/source/libraries/index.rst` — one table row and one toctree entry, `uslib/index.md`.
-5. `.gitignore` — `doc/source/libraries/uslib/`.
+5. `.gitignore` — `doc/source/libraries/uslib/`, one line per library (D8: this one cannot
+   be globbed, because hand-written library doc dirs live in the same parent).
 6. Move `tests/` → `lifelib/libraries/uslib/tests/` (D7) — inside the library, following
    `ifrs17a`. No CI or `tox.ini` change is needed.
 7. Decide whether the twelve models also get lifelib-style autodoc pages
    (`.. automodule:: uslib.products.term_life.Term_US_A.Projection`). D1 keeps the door
    open; nothing else in this plan depends on it.
+
+Items 1–3 are **one-time, library-agnostic** work: once done, uklib needs only items 4 and 5
+plus its own content.
 
 ---
 
@@ -410,26 +494,41 @@ The acceptance criteria for the prep branch, in order of how much they would hur
 
 ## 6. Inventory
 
-Measured across the 69 markdown files under `us/`, with fenced code blocks excluded.
+Measured with fenced code blocks excluded. The `uk/` column is not scope for this branch —
+it is the **expected output of the same tooling** when D8's dry-run is performed, and the
+check that no script has hardcoded "us".
 
-| Quantity | Count |
-|---|---|
-| markdown files | 69 (36 product docs, 12 model READMEs, 19 `_research`, `us/README.md`, references) |
-| modelx models | 12 |
-| `[S#]` | 7,587 |
-| `[R#]` | 2,089 |
-| `[REG-R#]` | 1,008 |
-| `[std]` | 1,257 |
-| `[unverified]` | 275 |
-| source entries needing a target (12 × `sources.md`) | 237 |
-| reference-library entries needing a target | 90 (numbered within R1–R157) |
-| distinct bracket tokens (all kinds) | 683 |
-| bracket adjacencies `][` | 2,894 in 52 files |
-| existing relative `.md` links | 63 |
-| existing link reference definitions | **0** — no collision risk |
-| backticked `us/….md` paths in prose | 478 |
-| path strings in model `*.py` | 82 |
-| path strings in `tests/*.py` | 40 |
+| Quantity | `us/` | `uk/` |
+|---|---|---|
+| markdown files | 69 | 31 |
+| — of which product docs | 36 (12 × 3) | 21 (7 × 3) |
+| — model READMEs | 12 | 0 |
+| — `_research` | 19 | 8 |
+| modelx models | 12 | 0 (roadmap) |
+| `[S#]` | 7,587 | 3,700 |
+| `[R#]` | 2,089 | 619 |
+| `[REG-R#]` | 1,008 | 159 |
+| `[std]` | 1,257 | 684 |
+| `[unverified]` | 275 | 143 |
+| source entries needing a target | 237 | 151 |
+| reference-library entries needing a target | 90 (within a frozen R1–R157) | 38 |
+| bracket adjacencies `][` | 2,894 in 52 files | 1,947 |
+| — plain tag ` ][ ` plain tag (scripted) | 2,064 | 1,109 |
+| — cite-ish (scripted) | 93 | 275 |
+| — needing manual review | 3 | 9 |
+| pinpoint cites to linkify (D5) | 381 | 768 |
+| comma lists to split (D5) | 91 | 1 |
+| existing relative `.md` links | 63 | 12 |
+| existing link reference definitions | **0** | **0** — no collision risk either side |
+| backticked `…/….md` paths in prose | 478 | — |
+| path strings in model `*.py` | 82 | 0 |
+| path strings in `tests/*.py` | 40 | 0 |
+
+Two asymmetries matter. `uk/` has **twice the pinpoint cites** of `us/` despite being half
+the size, so D5 is the part of the pipeline most likely to be under-tested by the uslib run
+alone. And `uk/` has three times the proportion of adjacencies needing manual review (9
+versus 3) — small in absolute terms, but it means the manual-review bucket is a real step in
+the process, not a rounding error to be scripted away.
 
 ---
 
@@ -466,19 +565,26 @@ other ten.
 
 ---
 
-## 8. Open questions
+## 8. Decisions taken, and what is left
 
-1. **D5 — pinpoint cites and comma lists.** Linkifying `[R1 §4.B]` (381 sites) and
-   splitting `[S3, S7]` (93 sites) is the difference between "most cross-references are
-   links" and "all of them are". It is also the only part of the plan that alters the
-   *visible* text of a citation. Include, or leave as plain text?
-2. **`[std]` / `[unverified]` as links.** 1,532 occurrences would become links to the
-   conventions section. Consistent, and one definition line per file — but noisy. Link
-   them, or keep them as plain markers and link only true citations?
-3. **`uk/`.** Out of scope here. Worth deciding now whether it is destined to become
-   `uklib` on the same pattern, because if so, the `uslib-` target prefix and the
-   `products/<product>/` shape should be chosen as a house convention rather than a
-   one-off.
+All questions raised in the first draft are now settled:
 
-*Settled since the first draft:* tests and `_research/` both stay inside the library, so a
-`create()` copy is self-contained — see D6 and D7.
+| Question | Ruling | Where |
+|---|---|---|
+| Do pinpoint cites and comma lists become links? | Yes, both | D5 |
+| Do `[std]` / `[unverified]` become links? | Yes | D5a |
+| Is `uk/` destined for `uklib`? | Yes — so every convention here is a house convention and every script is parameterized | D8 |
+| Where do the tests live? | Inside the library, `libraries/uslib/tests/` | D7 |
+| Does `_research/` ship? | Yes, in the library; not rendered | D6 |
+
+Nothing is blocking. Two items are deliberately deferred rather than open:
+
+1. **Autodoc pages for the twelve models** (P7 item 7). D1 keeps the option alive by making
+   every path component importable; nothing else depends on it, and it is better judged
+   once the hand-written `model.md` pages have been seen rendered.
+2. **The uklib migration itself.** Out of scope for this branch. D8 fixes the conventions
+   and requires the tooling to be general, and §6 gives the numbers its dry-run must
+   reproduce — so the uklib run should be a re-invocation, not a redesign. The one piece of
+   genuinely new authoring it will need is its own copy of the citation-conventions section,
+   for the same reason uslib needs one: the shared root `README.md` that currently defines
+   them for both does not survive the split.
