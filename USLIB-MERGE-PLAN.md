@@ -607,8 +607,15 @@ The 38 double dots are the lesson worth keeping: a non-idempotent fixer plus a s
 failure mode meant that running the tool *twice* was worse than not running it at all, and
 nothing but `-n` would have said so.
 
-**P7 — Merge dossier**
-A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for this repo:
+**P7 — Merge dossier** — **done**, as [MERGE.md](MERGE.md), with the code for each step.
+
+The D8 dry-run against `uk/` ran at the end of this phase and is the evidence that the
+conventions generalize: `add_citation_anchors.py uk` reports **151 product entries + 38
+reference-library entries**, matching §6's prediction exactly, and `separate_citations.py uk`
+handles **1,472** adjacencies with nothing left for manual review — the nesting-aware scanner
+and the widened separator set, both of which the uslib run forced, cover uk's cases too.
+
+The lifelib-side edits, none of which are in scope for this repo:
 
 1. `setup.py` — add `'md'` to `get_package_data`'s extension list (C5). Without this the
    docs never reach an installed copy.
@@ -635,18 +642,32 @@ plus its own content — and, when its models are written, nothing at all for D9
 
 ## 5. What this is worth checking against
 
-The acceptance criteria for the prep branch, in order of how much they would hurt if wrong:
+The acceptance criteria for the prep branch, in order of how much they would hurt if wrong,
+with what each returned:
 
-1. **`sphinx-build -n -W --keep-going`** over the uslib tree is clean (P6). The `-n` is
-   what makes criteria 3 and 6 enforceable rather than aspirational.
-2. `python -m pytest tests -q` is green — all twelve worked examples still reproduce.
-3. Every `[S#]`/`[R#]`/`[REG-R#]` in a rendered page is a link, and it lands on the entry
-   with that number **in that product's** `sources.md`. Spot-check across products, since
-   C11 is where a namespacing slip would show up as a plausible-looking wrong link.
-4. No `][` adjacency survives in any document that carries a definition block.
-5. `git log --follow` still works on the moved documents (use `git mv`, keep P1 rename-only).
-6. All twelve `model-api.md` render, and every `:mod:`/`:func:` role in the 1,581 cells
-   docstrings resolves. Under `-n` this is simply criterion 1; without it, it is unobservable.
+| # | Criterion | Result |
+|---|---|---|
+| 1 | `sphinx-build -n -W --keep-going` over the uslib tree is clean (P6) — the `-n` is what makes 3 and 6 enforceable rather than aspirational | **75 documents, 0 warnings** |
+| 2 | `pytest` is green — all twelve worked examples still reproduce | **1,010 passed, 14 skipped** |
+| 3 | Every `[S#]`/`[R#]`/`[REG-R#]` in a rendered page is a link landing on that number **in that product's** `sources.md` — C11 is where a namespacing slip shows up as a plausible-looking *wrong* link | **12,576 internal anchor links resolve, 0 broken**, checked by walking the built HTML end to end rather than spot-checking |
+| 4 | No `][` adjacency survives in any document carrying a definition block | **0**, per `tools/md_lint.py` |
+| 5 | `git log --follow` still works on the moved documents | Pass, with one exception — below |
+| 6 | All twelve `model-api.md` render and every `:mod:`/`:func:` role in the 1,581 cells docstrings resolves | Pass; under `-n` this is criterion 1 |
+
+Criterion 3 is worth a note on method. Spot-checking would have confirmed that the links
+*exist*; walking every `href="…#anchor"` in the built HTML against the ids actually present
+on the target page confirms they **arrive**. Sphinx normalises label underscores to hyphens
+when it emits ids — `uslib-term_life-s6` becomes `uslib-term-life-s6` — so a check written
+against the label text rather than the rendered id would have reported a false failure, and
+a subtler normalisation mismatch would have produced 12,576 links that all looked right and
+went nowhere.
+
+**The exception to criterion 5:** `us/tests/conftest.py` needs
+`git log --follow -M20%` to trace its history, because P2 moved and substantially rewrote it
+in the same commit and the default 50% similarity threshold does not recognise the rename.
+The rename *is* recorded — `git show --stat` prints `{tests => us/tests}/conftest.py` — so
+nothing is lost, but the move and the rewrite should have been separate commits. Every other
+moved file follows at the default threshold.
 
 ---
 
