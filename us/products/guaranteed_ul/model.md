@@ -5,7 +5,7 @@
 the product it implements is specified in
 [`product-spec.md`](product-spec.md). Those notes build on
 the universal life chassis, and so does this model — see
-[`products/universal_life/`](../universal_life) and its
+[`products/universal_life/`](../universal_life/index.md) and its
 [technical notes](../universal_life/technical-notes.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
@@ -430,3 +430,19 @@ python -m pytest tests/test_guaranteed_ul_us.py -q
 [S4]: #uslib-guaranteed_ul-s4
 [std]: #uslib-std
 <!-- END generated citation links -->
+
+<!-- BEGIN generated: tools/gen_scaffolding.py -->
+## Verifying this copy
+
+`tests/test_guaranteed_ul_us.py` asserts this model against the worked example in
+[technical-notes.md](technical-notes.md), and it ships **inside this library** — so it runs
+against the copy you are holding, including any changes you have made to it:
+
+```bash
+python -m pytest tests/test_guaranteed_ul_us.py -q
+```
+
+The whole suite, all twelve models and the shared conventions, is `python -m pytest tests -q`.
+If you change an assumption and a test goes red, the worked example in the notes and the
+model have parted company — which is the question this library exists to let you ask.
+<!-- END generated -->

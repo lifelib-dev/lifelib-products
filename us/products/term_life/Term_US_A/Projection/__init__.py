@@ -26,7 +26,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 fails on first evaluation. A test asserts this by round-tripping the model together
 with its inputs.
 
-:func:`.input_dir` resolves the directory from ``_model.path.parent`` at run time, so
+:func:`~.Term_US_A.Data.input_dir` resolves the directory from ``_model.path.parent`` at run time, so
 the model works wherever the repository is checked out. Each table has a filename
 Reference and a reader Cells:
 
@@ -50,42 +50,42 @@ analogue — ``pols_*`` for policy counts, plural nouns for cash flows, ``*_rate
 rates, ``*_pp`` for per-policy amounts. The technical notes use compact actuarial
 symbols instead. The mapping is:
 
-=========================  ==========================  ==========================
-Notes symbol               Cells                       Meaning
-=========================  ==========================  ==========================
-x                          age_at_entry                Issue age (ANB)
-x + t - 1                  age(t)                      Attained age in policy year t
-n                          policy_term                 Level period in years
-F                          sum_assured                 Face amount
-t = 1..95-x                proj_len                    Last policy year
-l(t)                       pols_if(t)                  In-force at start of year t
-(l(1))                     pols_if_init                In-force at issue
-d(t)                       pols_death(t)               Deaths in year t
-s(t)                       pols_surv(t)                Survivors to end of year t
-x(t)                       pols_lapse(t)               Lapses at end of year t
-c(t)                       pols_conv(t)                Conversions at end of year t
-(none)                     pols_maturity(t)            Expiries at attained age 95
-q(t)                       mort_rate(t)                Mortality, all factors applied
-(q_base)                   mort_rate_base(t)           Base table rate before factors
-w(t)                       lapse_rate(t)               Lapse rate, incl. the shock
-w(n)                       shock_lapse_rate            Shock lapse at level-period end
-cv(t)                      conv_rate(t)                Conversion rate
-M(d)                       plt_mort_factor(d)          PLT mortality deterioration
-M(1)                       plt_mort_factor_init        M(1) actually used
-(M(1) rule)                plt_mort_factor_init_formula The notes' formula for M(1)
-J                          jump_ratio                  AP(n+1)/AP(n), fee included
-AP(t)                      premium_pp(t)               Guaranteed annual premium
-G(t)                       premiums(t)                 Premium income
-K(t)                       commissions(t)              Commission
-k(t)                       comm_rate(t)                Commission rate
-X(t)                       premium_taxes(t)            Premium tax
-E(t)                       expenses(t)                 Acquisition + maintenance
-DC(t)                      claims(t)                   Death claims
-CV(t)                      conv_credits(t)             Conversion credit outflow
-NetCF(t)                   net_cf(t)                   Net cash flow
-phase(t)                   phase(t)                    LEVEL / PLT / EXPIRED
-conv_elig(t)               conv_elig(t)                Conversion eligibility
-=========================  ==========================  ==========================
+============  ========================================================  ===============================
+Notes symbol  Cells                                                     Meaning
+============  ========================================================  ===============================
+x             age_at_entry                                              Issue age (ANB)
+x + t - 1     age(t)                                                    Attained age in policy year t
+n             policy_term                                               Level period in years
+F             sum_assured                                               Face amount
+t = 1..95-x   proj_len                                                  Last policy year
+l(t)          pols_if(t)                                                In-force at start of year t
+(l(1))        pols_if_init                                              In-force at issue
+d(t)          pols_death(t)                                             Deaths in year t
+s(t)          pols_surv(t)                                              Survivors to end of year t
+x(t)          pols_lapse(t)                                             Lapses at end of year t
+c(t)          pols_conv(t)                                              Conversions at end of year t
+(none)        pols_maturity(t)                                          Expiries at attained age 95
+q(t)          mort_rate(t)                                              Mortality, all factors applied
+(q_base)      mort_rate_base(t)                                         Base table rate before factors
+w(t)          lapse_rate(t)                                             Lapse rate, incl. the shock
+w(n)          shock_lapse_rate                                          Shock lapse at level-period end
+cv(t)         conv_rate(t)                                              Conversion rate
+M(d)          plt_mort_factor(d)                                        PLT mortality deterioration
+M(1)          plt_mort_factor_init                                      M(1) actually used
+(M(1) rule)   plt_mort_factor_init_formula The notes' formula for M(1)
+J             jump_ratio                                                AP(n+1)/AP(n), fee included
+AP(t)         premium_pp(t)                                             Guaranteed annual premium
+G(t)          premiums(t)                                               Premium income
+K(t)          commissions(t)                                            Commission
+k(t)          comm_rate(t)                                              Commission rate
+X(t)          premium_taxes(t)                                          Premium tax
+E(t)          expenses(t)                                               Acquisition + maintenance
+DC(t)         claims(t)                                                 Death claims
+CV(t)         conv_credits(t)                                           Conversion credit outflow
+NetCF(t)      net_cf(t)                                                 Net cash flow
+phase(t)      phase(t)                                                  LEVEL / PLT / EXPIRED
+conv_elig(t)  conv_elig(t)                                              Conversion eligibility
+============  ========================================================  ===============================
 
 Three notes on the mapping. The notes write deaths as ``d(t)`` while also using ``d``
 as the post-level-term duration index in ``M(d)``; the ``pols_death`` / ``plt_mort_factor``

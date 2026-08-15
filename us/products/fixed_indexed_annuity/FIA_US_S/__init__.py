@@ -25,7 +25,7 @@ driven, the MVA is the ratio form ``[(1+i0)/(1+it)]^(n/12) - 1`` rather than the
 ``(i0 - it) x T``, the death benefit is ``max(AV, MGV)``, and the lapse architecture is
 rider-suppressed rather than a plain shock at surrender-charge expiry. The chassis's
 ``MGSV`` and these notes' ``MGV`` are **one quantity under two source labels**; this
-model uses the chassis name :func:`~FIA_US_S.Projection.mgsv_pp`
+model uses the chassis name :func:`~.FIA_US_S.Projection.mgsv_pp`
 throughout.
 
 **Spaces.** The model contains two:
@@ -155,7 +155,7 @@ option rather than interpolations [S10][S11]; the cap re-declaration rule, becau
 notes state the *target* (set the cap so the one-year call-spread cost equals the option
 budget) but give no option-pricing function, so the base projection holds the snapshot
 scale level [R1][R6]; stochastic GLWB activation on the ``h(a)`` incidence table, which
-cannot be applied to a single deterministic cell — :func:`.activation_rate` reports the
+cannot be applied to a single deterministic cell — :func:`~.FIA_US_S.Projection.activation_rate` reports the
 table and the base run activates at the model point's ``income_start_age`` instead;
 generational mortality projection with Scale G2, because the 2012 IAM/IAR family and the
 G2 scale may not be redistributed here [REG-R59][REG-R60]; joint-life survivorship, the

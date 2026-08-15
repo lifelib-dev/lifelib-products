@@ -80,16 +80,22 @@ def main(argv):
     lib = f"{library.name}lib"
 
     build = pathlib.Path(".doccheck")
-    if build.exists():
-        shutil.rmtree(build)
+    # autodoc imports the models, which leaves __pycache__ behind; on Windows those can
+    # still be held when the next run starts, so removal must not be fatal.
+    for _ in range(3):
+        shutil.rmtree(build, ignore_errors=True)
+        if not build.exists():
+            break
     src = build / "src"
-    src.mkdir(parents=True)
+    src.mkdir(parents=True, exist_ok=True)
 
     # autodoc imports the models, so the library must be importable under its final
     # package name: <pkg>/<lib>/products/<slug>/<Model>.
     pkg = build / "pkg" / lib
     pkg.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(library, pkg,
+    if pkg.exists():
+        shutil.rmtree(pkg, ignore_errors=True)
+    shutil.copytree(library, pkg, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns("__pycache__", "_research", "tests"))
 
     copied = mirror(library, src)

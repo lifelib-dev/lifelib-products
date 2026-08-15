@@ -67,96 +67,96 @@ account values, plural nouns for cash flows, ``*_rate`` for rates, ``*_pp`` for
 per-contract amounts, ``*_at(t, timing)`` for a quantity read at a point inside the
 month. The technical notes use compact actuarial symbols instead. The mapping is:
 
-===========================  ==============================  ==============================
-Notes symbol                 Cells                           Meaning
-===========================  ==============================  ==============================
-t                            duration_mth(t)                 Elapsed policy months
-y = ceil(t/12)               policy_year(t)                  Contract year containing month t
-y - 1                        duration(t)                     Completed contract years
-x                            age_at_entry                    Issue age (ANB)
-x + y - 1                    age(t)                          Attained age in month t
-n                            guar_period                     Guarantee period in years
-(none)                       policy_term                     Years from issue to maturity_age
-(none)                       proj_len                        Last projection month
-P                            premium_pp                      Single purchase payment
-i_cr(t)                      credit_rate(t)                  Declared credited rate, eff. annual
-f(t) - 1                     credit_rate_mth(t)              Monthly credited rate
-s_ren                        renewal_spread                  Renewal declaration spread (Reference)
-i_nf                         mgsv_rate                       GMSV accumulation rate (2.80%)
-g - 1                        mgsv_rate_mth                   Monthly GMSV rate
-i_stat                       mgsv_rate_statutory(cmt5)       Model #805 indexed rate
-GMIR                         gmir                            Guaranteed minimum interest rate
-MR(t)                        market_rate(t)                  Market competitor rate
-AV(t)                        av_pp(t)                        Account value at end of month t
-AV(t-1), AV'(t), AV(t)       av_pp_at(t, timing)             BEF_WD / BEF_INV / EOM
-l(t) x AV(t)                 av_at(t, timing)                In-force weighted account value
-(interest credited)          inv_income_pp(t)                Interest credited in month t
-(cumulative interest)        interest_credited_pp(t)         Interest credited to date
-MGSV(t)                      mgsv_pp(t)                      Model #805 floor at end of month t
-c(t)                         mgsv_charge_pp(t)               Monthly slice of the contract charge
-d(t)                         mgsv_wd_deduct_pp(t)            Withdrawal deducted from the floor
-FWB(y)                       free_wd_base(y)                 Free-withdrawal base at the anniversary
-0.10 x FWB(y)                free_wd_allow(y)                Allowance for contract year y
-FW(t)                        free_wd_avail(t)                Unused allowance at BOM of month t
-(FW after W(t))              free_wd_remain(t)               Unused allowance after the withdrawal
-W(t)                         wd_pp(t)                        Gross amount removed from the AV
-(free part of W)             wd_free_pp(t)                   Free portion of W(t)
-E(t) on a withdrawal         wd_excess_pp(t)                 Withdrawal exposed to charge and MVA
-E(t) on a surrender          surr_excess_pp(t)               Surrender exposed to charge and MVA
-sc(y)                        surr_charge_rate(t)             Surrender charge rate in force
-sc_clock(t)                  surr_charge_year(t)             Year within the current schedule
-(schedule key)               surr_charge_id(t)               initial / renewal / none
-C(t)                         surr_charge_pp(t)               Charge on a full surrender
-C(t) on a withdrawal         wd_charge_pp(t)                 Charge on a partial withdrawal
-mu(t)                        mva_rate(t)                     MVA rate, signed
-M(t)                         mva_pp(t)                       Capped MVA on a full surrender
-M(t) on a withdrawal         wd_mva_pp(t)                    Capped MVA on a partial withdrawal
-cap(.)                       mva_pp_on(t, base)              The capped MVA on any currency base
-T(t)                         mva_term(t)                     MVA duration in years
-i0                           mva_ref_yield_locked(t)         Reference yield locked at period start
-it                           mva_ref_yield(t)                Reference yield at month t
-Phi(t)                       mva_factor_geometric(a, b, tau) Geometric MVA factor
-F_s                          mva_duration_factor(t)          Declared-differential duration factor
-P_accum@GMIR                 prem_accum_gmir_pp(t)           Premium less prior withdrawals at the GMIR
-s_adm                        mva_admin_spread                Geometric MVA expense adder (Reference)
-SV(t)                        surr_value_pp(t)                Gross surrender value before the floor
-SB(t)                        surr_benefit_pp(t)              Surrender benefit paid
-gp_end(t)                    gp_end(t)                       Months left in the guarantee period
-(the 30-day window)          in_gp_window(t)                 True in the guarantee-period-end window
-basis(t)                     tax_basis_pp(t)                 IRC 72 investment in the contract
-(taxable part of W)          taxable_wd_pp(t)                Income-first taxable amount
-l(t-1)                       pols_if(t)                      In-force at the start of month t
-l(0)                         pols_if_init                    In-force at issue
-l(t)                         pols_if_at(t, "AFT_DECR")       In-force at the end of month t
-(intra-month l)              pols_if_at(t, timing)           BEF_DECR / BEF_MORT / BEF_LAPSE / AFT_DECR
-q(t)                         mort_rate_mth(t)                Monthly mortality rate
-(annual q_x)                 mort_rate(t)                    Annual mortality at the attained age
-w(t)                         lapse_rate_mth(t)               Monthly total surrender rate
-w_annual(t)                  lapse_rate(t)                   Annual total surrender rate
-Base(y)                      lapse_rate_base(t)              Prescribed base lapse by contract year
-G                            gmir_factor                     VM-22 GMIR factor
-Market(t)                    lapse_dyn_market(t)             Dynamic-lapse market term
-Rate(t)                      lapse_dyn_rate(t)               Dynamic-lapse rate term
-Phi_MVA(t)                   mva_lapse_factor_at(t)          MVA factor gating the dynamic term
-BF                           lapse_buffer                    Dynamic-lapse buffer factor (Reference)
-X                            lapse_dyn_exponent(t)           Dynamic-lapse exponent
-a(t)                         annuitization_rate(t)           Monthly annuitization election rate
-l a                          pols_annuitization(t)           Annuitization elections
-l (1-a) q                    pols_death(t)                   Deaths
-l (1-a)(1-q) w               pols_lapse(t)                   Full surrenders
-(none)                       pols_maturity(t)                Deemed-maturity annuitizations
-P at t = 0                   premiums(t)                     Premium income
-(premium credited)           prem_to_av_pp(t)                Premium credited to the account value
-W + M - C                    withdrawals(t)                  Withdrawal payments
-(ledger benefit lines)       claims(t, kind)                 Benefit outgo by kind
-                             claim_pp(t, kind)               Benefit per contract by kind
-                             claims_from_av(t, kind)         Account value released by a claim
-                             claims_over_av(t, kind)         Benefit paid above the account value
-0.02 x P                     commissions(t)                  Acquisition commission
-(50/12) x 1.025^(y-1)        expenses(t)                     Maintenance expense
-premium tax                  premium_taxes(t)                Premium tax
-NetCF(t)                     net_cf(t)                       Net cash flow
-===========================  ==============================  ==============================
+======================  ====================================================  ==========================================
+Notes symbol            Cells                                                 Meaning
+======================  ====================================================  ==========================================
+t                       duration_mth(t)                                       Elapsed policy months
+y = ceil(t/12)          policy_year(t)                                        Contract year containing month t
+y - 1                   duration(t)                                           Completed contract years
+x                       age_at_entry                                          Issue age (ANB)
+x + y - 1               age(t)                                                Attained age in month t
+n                       guar_period                                           Guarantee period in years
+(none)                  policy_term                                           Years from issue to maturity_age
+(none)                  proj_len                                              Last projection month
+P                       premium_pp                                            Single purchase payment
+i_cr(t)                 credit_rate(t)                                        Declared credited rate, eff. annual
+f(t) - 1                credit_rate_mth(t)                                    Monthly credited rate
+s_ren                   renewal_spread                                        Renewal declaration spread (Reference)
+i_nf                    mgsv_rate                                             GMSV accumulation rate (2.80%)
+g - 1                   mgsv_rate_mth                                         Monthly GMSV rate
+i_stat                  mgsv_rate_statutory(cmt5)                             Model #805 indexed rate
+GMIR                    gmir                                                  Guaranteed minimum interest rate
+MR(t)                   market_rate(t)                                        Market competitor rate
+AV(t)                   av_pp(t)                                              Account value at end of month t
+AV(t-1), AV'(t), AV(t)  av_pp_at(t, timing)                                   BEF_WD / BEF_INV / EOM
+l(t) x AV(t)            av_at(t, timing)                                      In-force weighted account value
+(interest credited)     inv_income_pp(t)                                      Interest credited in month t
+(cumulative interest)   interest_credited_pp(t)                               Interest credited to date
+MGSV(t)                 mgsv_pp(t)                                            Model #805 floor at end of month t
+c(t)                    mgsv_charge_pp(t)                                     Monthly slice of the contract charge
+d(t)                    mgsv_wd_deduct_pp(t)                                  Withdrawal deducted from the floor
+FWB(y)                  free_wd_base(y)                                       Free-withdrawal base at the anniversary
+0.10 x FWB(y)           free_wd_allow(y)                                      Allowance for contract year y
+FW(t)                   free_wd_avail(t)                                      Unused allowance at BOM of month t
+(FW after W(t))         free_wd_remain(t)                                     Unused allowance after the withdrawal
+W(t)                    wd_pp(t)                                              Gross amount removed from the AV
+(free part of W)        wd_free_pp(t)                                         Free portion of W(t)
+E(t) on a withdrawal    wd_excess_pp(t)                                       Withdrawal exposed to charge and MVA
+E(t) on a surrender     surr_excess_pp(t)                                     Surrender exposed to charge and MVA
+sc(y)                   surr_charge_rate(t)                                   Surrender charge rate in force
+sc_clock(t)             surr_charge_year(t)                                   Year within the current schedule
+(schedule key)          surr_charge_id(t)                                     initial / renewal / none
+C(t)                    surr_charge_pp(t)                                     Charge on a full surrender
+C(t) on a withdrawal    wd_charge_pp(t)                                       Charge on a partial withdrawal
+mu(t)                   mva_rate(t)                                           MVA rate, signed
+M(t)                    mva_pp(t)                                             Capped MVA on a full surrender
+M(t) on a withdrawal    wd_mva_pp(t)                                          Capped MVA on a partial withdrawal
+cap(.)                  mva_pp_on(t, base)                                    The capped MVA on any currency base
+T(t)                    mva_term(t)                                           MVA duration in years
+i0                      mva_ref_yield_locked(t)                               Reference yield locked at period start
+it                      mva_ref_yield(t)                                      Reference yield at month t
+Phi(t)                  mva_factor_geometric(a, b, tau) Geometric MVA factor
+F_s                     mva_duration_factor(t)                                Declared-differential duration factor
+P_accum@GMIR            prem_accum_gmir_pp(t)                                 Premium less prior withdrawals at the GMIR
+s_adm                   mva_admin_spread                                      Geometric MVA expense adder (Reference)
+SV(t)                   surr_value_pp(t)                                      Gross surrender value before the floor
+SB(t)                   surr_benefit_pp(t)                                    Surrender benefit paid
+gp_end(t)               gp_end(t)                                             Months left in the guarantee period
+(the 30-day window)     in_gp_window(t)                                       True in the guarantee-period-end window
+basis(t)                tax_basis_pp(t)                                       IRC 72 investment in the contract
+(taxable part of W)     taxable_wd_pp(t)                                      Income-first taxable amount
+l(t-1)                  pols_if(t)                                            In-force at the start of month t
+l(0)                    pols_if_init                                          In-force at issue
+l(t)                    pols_if_at(t, "AFT_DECR")                             In-force at the end of month t
+(intra-month l)         pols_if_at(t, timing)                                 BEF_DECR / BEF_MORT / BEF_LAPSE / AFT_DECR
+q(t)                    mort_rate_mth(t)                                      Monthly mortality rate
+(annual q_x)            mort_rate(t)                                          Annual mortality at the attained age
+w(t)                    lapse_rate_mth(t)                                     Monthly total surrender rate
+w_annual(t)             lapse_rate(t)                                         Annual total surrender rate
+Base(y)                 lapse_rate_base(t)                                    Prescribed base lapse by contract year
+G                       gmir_factor                                           VM-22 GMIR factor
+Market(t)               lapse_dyn_market(t)                                   Dynamic-lapse market term
+Rate(t)                 lapse_dyn_rate(t)                                     Dynamic-lapse rate term
+Phi_MVA(t)              mva_lapse_factor_at(t)                                MVA factor gating the dynamic term
+BF                      lapse_buffer                                          Dynamic-lapse buffer factor (Reference)
+X                       lapse_dyn_exponent(t)                                 Dynamic-lapse exponent
+a(t)                    annuitization_rate(t)                                 Monthly annuitization election rate
+l a                     pols_annuitization(t)                                 Annuitization elections
+l (1-a) q               pols_death(t)                                         Deaths
+l (1-a)(1-q) w          pols_lapse(t)                                         Full surrenders
+(none)                  pols_maturity(t)                                      Deemed-maturity annuitizations
+P at t = 0              premiums(t)                                           Premium income
+(premium credited)      prem_to_av_pp(t)                                      Premium credited to the account value
+W + M - C               withdrawals(t)                                        Withdrawal payments
+(ledger benefit lines)  claims(t, kind)                                       Benefit outgo by kind
+                        claim_pp(t, kind)                                     Benefit per contract by kind
+                        claims_from_av(t, kind)                               Account value released by a claim
+                        claims_over_av(t, kind)                               Benefit paid above the account value
+0.02 x P                commissions(t)                                        Acquisition commission
+(50/12) x 1.025^(y-1)   expenses(t)                                           Maintenance expense
+premium tax             premium_taxes(t)                                      Premium tax
+NetCF(t)                net_cf(t)                                             Net cash flow
+======================  ====================================================  ==========================================
 
 Six names needed care, and all six are collisions the notes themselves carry.
 
@@ -928,7 +928,7 @@ def mva_pp_on(t, base):
     ``asym_sc_snfl``
         ``M <= +C`` with no downside cap; only ``SB >= MGSV`` binds below [S12].
     ``gmir_floor``
-        ``AV + M >= `` premium less prior withdrawals accumulated at the GMIR [S13]. The
+        ``AV + M >=`` premium less prior withdrawals accumulated at the GMIR [S13]. The
         floor is stated for a full surrender; applying it to a partial withdrawal base is
         an extension of the source.
     ``none``

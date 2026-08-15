@@ -17,7 +17,7 @@ the product it implements is specified in
 > the 2017 CSO / 4% tables the notes name — those are licensed and cannot be shipped
 > here. They are not even one basis between them, because the worked example's own
 > anchors rule that out; the arithmetic is
-> [below](#the-four-guarantee-basis-tables-are-not-one-construction-and-cannot-be).
+> [below](#uslib-whole_life-guarantee-basis-tables).
 > Replace them with company data before drawing any conclusion from the numbers.
 
 ## Run it
@@ -64,7 +64,7 @@ anniversary that ends policy year `t`**, and the notes' `t = 0` initializations
 
 The **policy count** is the deliberate exception: `pols_if(t)` is the number in force at
 the **start** of policy year `t` — the notes' `l_{t−1}`, `l_0 = 1` at issue. See
-[below](#pols_if-is-the-start-of-year-count).
+[below](#uslib-whole_life-pols-if-start-of-year).
 
 Within the year the order is the notes': premium, rider premium, premium tax and
 expenses at the beginning; then deaths, loan-interest capitalization, the dividend
@@ -155,8 +155,8 @@ The technical notes use compact actuarial symbols instead; the full mapping live
 | `w_t` "surrenders" | `pols_lapse`, `kind="LAPSE"` | The notes say surrenders; lifelib says lapse, and the `kind` vocabulary has to stay intact |
 | `CSV_t` | `claim_pp(t, "LAPSE")` | The cash surrender value, not a file; reached through the shared `kind` vocabulary |
 | `x+t−1` vs `x+t` | `age(t)` / `age_anniv(t)` | Mortality is indexed at the age entering the year, paid-up additions bought at its end at the age one higher. Swapping them shifts every dividend purchase by a year |
-| `l_{t−1}` vs `l_t` | `pols_if(t)` / `pols_if_at(t, "AFT_DECR")` | `pols_if` is the **start**-of-year count library-wide, and it is the weight on its own `result_cf()` row. The notes' end-of-year `l_t` keeps a name of its own — [below](#pols_if-is-the-start-of-year-count) |
-| `NetCF_t` | `liability_cf(t)` / `net_cf(t)` | The notes are outgo-positive and the library is income-positive, so the stream is published under both names — [below](#the-net-flow-is-published-under-both-signs-liability_cf-and-net_cf) |
+| `l_{t−1}` vs `l_t` | `pols_if(t)` / `pols_if_at(t, "AFT_DECR")` | `pols_if` is the **start**-of-year count library-wide, and it is the weight on its own `result_cf()` row. The notes' end-of-year `l_t` keeps a name of its own — [below](#uslib-whole_life-pols-if-start-of-year) |
+| `NetCF_t` | `liability_cf(t)` / `net_cf(t)` | The notes are outgo-positive and the library is income-positive, so the stream is published under both names — [below](#uslib-whole_life-net-flow-both-signs) |
 
 `risk_class` follows this product's notes; `Term_US_A` calls the same concept
 `rate_class`.
@@ -211,6 +211,8 @@ business and runs the full 55 years.
 The alternative — tuning the shipped tables until a new-business projection happened to
 produce 4,100 at duration 9 — would have been fitting the model to the answer.
 
+(uslib-whole_life-net-flow-both-signs)=
+
 ## The net flow is published under both signs: `liability_cf` and `net_cf`
 
 The whole-life notes print
@@ -238,6 +240,8 @@ points and on the `result_cf()` frame. This is the pattern `SPIA_US_S` and
 notes' own convention is denied — it is kept under a name that does not collide with the
 library-wide one, because a sign error in a 55-year liability projection is invisible in
 any summary statistic.
+
+(uslib-whole_life-guarantee-basis-tables)=
 
 ## The four guarantee-basis tables are *not* one construction, and cannot be
 
@@ -344,6 +348,8 @@ where a dollar of paid-up face costs a dollar. `test_every_credited_dividend_is_
 asserts the closing identity — total credited equals total delivered — for all four
 dividend options, so no option can silently leak a dividend again.
 
+(uslib-whole_life-pols-if-start-of-year)=
+
 ## `pols_if` is the start-of-year count
 
 The notes keep their in-force probability at end of year — `l_t = l_{t−1}(1 − q^e)(1 − w_t)`
@@ -445,3 +451,19 @@ python -m pytest tests/test_whole_life_us.py -q
 [S7]: #uslib-whole_life-s7
 [std]: #uslib-std
 <!-- END generated citation links -->
+
+<!-- BEGIN generated: tools/gen_scaffolding.py -->
+## Verifying this copy
+
+`tests/test_whole_life_us.py` asserts this model against the worked example in
+[technical-notes.md](technical-notes.md), and it ships **inside this library** — so it runs
+against the copy you are holding, including any changes you have made to it:
+
+```bash
+python -m pytest tests/test_whole_life_us.py -q
+```
+
+The whole suite, all twelve models and the shared conventions, is `python -m pytest tests -q`.
+If you change an assumption and a test goes red, the worked example in the notes and the
+model have parted company — which is the question this library exists to let you ask.
+<!-- END generated -->

@@ -587,6 +587,26 @@ output against the §6 uk column.
   silent without it, and the entire point of the exercise is that cross-references are
   links.
 
+**Result: 75 documents, 0 warnings.** The first build reported 61 problems, every one of
+which was real and invisible without `-n`. What they were, since the mix is the useful part:
+
+| Found | Count | What it actually was |
+|---|---|---|
+| Unresolved `:func:` roles | 38 | Roles written as a path through a model, `Term_US_A.Projection.pols_if`. The P2 fixer only knew bare `:mod:` names. |
+| Double-dotted roles | 38 | **Self-inflicted.** The P2 fixer was not idempotent — it re-dotted its own `~.` output — and I ran it twice. `~..X` resolves to nothing, silently. |
+| Malformed RST tables | 4 | Cells names outgrew their column rules. Docutils rejects the *whole* table, so each one lost the notes-symbol-to-cells mapping that is the most useful thing on the page. |
+| Aligned two-column blocks | 6 | `` ``"IN FORCE"``  the account value… `` reads as a paragraph plus a block quote. Converted to RST definition lists, which is the construct for it. |
+| Links to non-documents | 3 | `tests/conftest.py`, `requirements.txt` — real files, not Sphinx pages. Now inline code. |
+| Directory links | 3 | `../universal_life` is not a document; MyST needs the page. |
+| Heading-anchor links | 4 | Slug links in `whole_life/model.md`. Replaced with explicit targets — a slug dies silently when its heading is reworded. |
+| `:func:` on a Reference | 1 | `trigger_rate` is a module-level assignment, not a cells; the corpus spells References as inline literals. |
+| `\|legs\|` | 1 | Read by RST as a substitution reference. |
+| Inline literal | 1 | `` ``AV + M >= `` `` — a literal may not have whitespace before its closing backticks. |
+
+The 38 double dots are the lesson worth keeping: a non-idempotent fixer plus a silent
+failure mode meant that running the tool *twice* was worse than not running it at all, and
+nothing but `-n` would have said so.
+
 **P7 — Merge dossier**
 A short `MERGE.md` recording the lifelib-side edits that are *not* in scope for this repo:
 

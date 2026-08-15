@@ -23,3 +23,7 @@ __pycache__/
 *_nomx_cy/
 *.pyd
 *.mx
+
+# doc-check build tree (tools/doccheck.py)
+.doccheck/
+.doccheck.log

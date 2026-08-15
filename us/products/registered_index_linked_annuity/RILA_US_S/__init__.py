@@ -22,8 +22,8 @@ and transfer [R2], and the source prospectuses implement exactly that with Black
 [S2][S6]. No other product in this library has a contractual value that cannot be computed
 without a derivatives pricer. The three components the notes separate — the crediting
 engine, the interim-value engine and the market-data provider — are separate here too:
-:func:`~RILA_US_S.Projection.credit_rate_term` credits,
-:func:`~RILA_US_S.Projection.iv_factor` prices, and
+:func:`~.RILA_US_S.Projection.credit_rate_term` credits,
+:func:`~.RILA_US_S.Projection.iv_factor` prices, and
 :mod:`~.RILA_US_S.Data` supplies the market state.
 
 This model is built on the **deferred annuity base chassis**,
@@ -79,7 +79,7 @@ resets annually [S1][S2].
 ``proj_len()`` is ``12 * policy_term()`` months, and ``policy_term()`` is the Maturity
 Date rule: the later of the anniversary after the oldest owner's age 90 and ten years
 [S2] — 360 months on the anchor cell. The survivors there are force-annuitized through
-:func:`~RILA_US_S.Projection.pols_maturity`.
+:func:`~.RILA_US_S.Projection.pols_maturity`.
 
 The month's processing order follows the notes' step list exactly. **Market state** (the
 index level, the Market Value Rate, the implied volatility and the dividend yield are
@@ -166,8 +166,8 @@ by supplying more scenarios, not by changing formulas. *A volatility surface*: t
 call the flat-surface approximation the single largest simplification in the model, and it
 is one this implementation makes. *check_margin()*: on this chassis the cap *is* the fee —
 no charge is deducted from index-linked value — so there is no charge-versus-cost
-decomposition to check; :func:`~RILA_US_S.Projection.check_av_roll_fwd`
-and :func:`~RILA_US_S.Projection.check_pols_roll_fwd` are implemented
+decomposition to check; :func:`~.RILA_US_S.Projection.check_av_roll_fwd`
+and :func:`~.RILA_US_S.Projection.check_pols_roll_fwd` are implemented
 and both close to floating point. Each ``check_*`` takes **no argument and returns a
 bool** over every projected month, as ``CashValue_SE`` does, with the signed per-month
 residual available as ``check_*_resid(t)`` for a debugging session.

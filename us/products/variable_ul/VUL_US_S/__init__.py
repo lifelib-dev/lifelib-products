@@ -37,7 +37,7 @@ model README tabulates the same set against the chassis:
   account are tracked separately because their growth rules differ, and the monthly
   deduction is allocated across the *unloaned* accounts pro rata.
 * **Charges are quoted on the initial face amount.** The per-$1,000 monthly charge and
-  the surrender charge both scale with ``F_0``, so :func:`~VUL_US_S.Projection.units`
+  the surrender charge both scale with ``F_0``, so :func:`~.VUL_US_S.Projection.units`
   takes no ``t``.
 * **The surrender charge steps by policy year, not by month.**
   ``sc_init x (runoff + 1 - y) / runoff`` is level within a policy year, where the
@@ -104,8 +104,8 @@ Cash flows are **undiscounted**: this library projects gross liability cash flow
 leaves reserving and discounting to a separate layer.
 
 A partial withdrawal is a payment on the owner's election, not a claim, so it is
-:func:`~VUL_US_S.Projection.withdrawals` in its own ``withdrawals`` column of
-``result_cf()``; :func:`~VUL_US_S.Projection.claims` covers deaths and surrenders
+:func:`~.VUL_US_S.Projection.withdrawals` in its own ``withdrawals`` column of
+``result_cf()``; :func:`~.VUL_US_S.Projection.claims` covers deaths and surrenders
 only, and its surrender column is ``claims_lapse``, named for the ``"LAPSE"`` kind that
 produces it.
 
@@ -113,9 +113,9 @@ The claim cash flow is the **full death benefit less policy debt**, not the net 
 at risk. The notes carry an explicit warning about this ("a common specification
 error"): projecting ``DB - AV`` as the claim understates gross benefit outgo, and
 projecting the full death benefit *and* separately expensing the net amount at risk
-double counts. The model projects the gross view in :func:`~VUL_US_S.Projection.claims`
+double counts. The model projects the gross view in :func:`~.VUL_US_S.Projection.claims`
 and derives the general-account view arithmetically from the same run in
-:func:`~VUL_US_S.Projection.result_net`; ``check_net_view()`` pins the two together.
+:func:`~.VUL_US_S.Projection.result_net`; ``check_net_view()`` pins the two together.
 
 **What is sourced and what is not.** The contractual elements come from the four
 registered prospectuses behind the composite: the 6% guaranteed premium load ceiling
@@ -149,21 +149,21 @@ enough to project, all named here and in the README so their absence is not mist
 for an oversight:
 
 * The grace and default cascade. The trigger is a complete formula and is implemented
-  as :func:`~VUL_US_S.Projection.is_default`, but the notes lapse the policy "at the
+  as :func:`~.VUL_US_S.Projection.is_default`, but the notes lapse the policy "at the
   next monthiversary **if not cured**" without defining the cure test, the in-grace
   deduction accrual or the death benefit during grace, so no policy is terminated for
   insufficiency and no in-grace state is carried. Read literally the notes' test fires
   from issue on any front-loaded design, because the scheduled surrender charge exceeds
-  a first premium; :func:`~VUL_US_S.Projection.is_shortfall` and
-  :func:`~VUL_US_S.Projection.first_shortfall_month` are the companion diagnostics
+  a first premium; :func:`~.VUL_US_S.Projection.is_shortfall` and
+  :func:`~.VUL_US_S.Projection.first_shortfall_month` are the companion diagnostics
   that mark where the account genuinely stops being able to carry the contract, and
   months after that are arithmetic, not a description of a live contract.
 * No-lapse guarantee and overloan protection riders -- documented variations, excluded
   from the baseline by the notes themselves.
 * New policy loans, repayments and the loan value limit. Loan *interest accrual* on an
   opening balance is implemented (the notes give the formula); no utilization pattern
-  is given, so :func:`~VUL_US_S.Projection.loan_bal_pp` only rolls the model point's
-  opening debt forward and :func:`~VUL_US_S.Projection.la_pp` only rolls its
+  is given, so :func:`~.VUL_US_S.Projection.loan_bal_pp` only rolls the model point's
+  opening debt forward and :func:`~.VUL_US_S.Projection.la_pp` only rolls its
   collateral forward.
 * Guideline premium and 7-pay/MEC testing. The notes state these are not enforced in
   the baseline and that premiums are assumed within limits.
@@ -172,7 +172,7 @@ for an oversight:
 * Stochastic return sets. The scenario interface is a table of monthly gross returns
   per subaccount, so a stochastic set is a data change, not a formula change; the
   shipped scenarios are deterministic.
-* Riders generally. :func:`~VUL_US_S.Projection.rider_charge_pp` is the notes'
+* Riders generally. :func:`~.VUL_US_S.Projection.rider_charge_pp` is the notes'
   placeholder term, zero in the base model.
 
 The **dynamic behavior module** -- the funding ratio, dynamic lapse and premium

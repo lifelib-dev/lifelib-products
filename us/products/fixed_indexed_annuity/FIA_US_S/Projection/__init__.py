@@ -89,136 +89,136 @@ plural nouns for cash flows, ``*_rate`` for rates, ``*_pp`` for per-contract amo
 ``*_at(t, timing)`` for a quantity read at a point inside the anniversary. The technical
 notes use compact actuarial symbols instead. The mapping is:
 
-===========================  ==============================  ==============================
-Notes symbol                 Cells                           Meaning
-===========================  ==============================  ==============================
-t                            (the projection index)          Contract year and its anniversary
-(contract year)              policy_year(t)                  Contract year containing t; = t
-x                            age_at_entry                    Issue age (ANB)
-x + t                        age(t)                          Attained age **at** anniversary t
-(younger covered life)       covered_age(t)                  Age driving the payout percentage
-(none)                       policy_term                     Years from issue to maturity_age
-(none)                       proj_len                        Last projection anniversary
-(in-force cell entry)        entry_year                      Anniversary the model point starts at
-av_initial                   av_pp_init                      AV at entry, else P x (1 + b)
-bb_initial                   benefit_base_pp_init            BB at entry, else P
-mgv_initial                  mgsv_pp_init                    MGV at entry, else 0.875 x P
-(RB at entry)                rollup_base_pp_init             RB at entry, else P
-(LW at entry)                lw_pp_init                      LW at entry, 0 before exercise
-(pi at entry)                payout_rate_init                Payout percentage locked at entry
-(phase at entry)             phase_init                      Phase at entry
-P                            premium_pp                      Single premium
-b                            bonus_rate                      Premium bonus rate (7% [S5])
-b/(1+b)                      bonus_factor                    Clawback factor -- **not** b [S10]
-v(t)                         vest_rate(t)                    Vested bonus percentage [S5]
-alloc_indexed/alloc_fixed    alloc_indexed / alloc_fixed     Account allocation at issue
-I(t)                         index_level(t)                  Index level at anniversary t
-R(t)                         index_return(t)                 I(t)/I(t-1) - 1, dividends excluded
-c                            cap_rate                        Declared annual cap (5.25% [S2])
-c_min                        cap_rate_min                    Guaranteed minimum cap (0.25% [S4])
-c(t)                         cap_rate_in_force()             Cap actually applied
-f                            floor_rate                      Index credit floor (0%)
-p, s, d                      par_rate, spread_rate,          Participation rate [R1]; spread
-                             trigger_rate                    and trigger, levels **[std]**
-cr(t)                        credit_rate(t)                  Credit rate for the year
-(cr on a return)             credit_rate_on(r, method)       The crediting engine itself
-IC(t)                        index_credit_pp(t)              Index credit amount
-FI(t)                        fixed_interest_pp(t)            Fixed account interest
-i_F, i_F,min                 fixed_rate, fixed_rate_min      Declared / guaranteed fixed rate
-kappa                        av_int_factor                   Share of IC reaching the AV [S3]
-(IC x kappa + FI)            inv_income_pp(t)                Interest credited to the AV
-A(t)                         av_indexed_pp(t)                Indexed account balance
-F(t)                         av_fixed_pp(t)                  Fixed account balance
-AV(t)                        av_pp(t)                        Account value after all processing
-AV(t-1), AV(1), AV(2), AV(t) av_pp_at(t, timing)             BEF_INV / BEF_FEE / BEF_WD / EOY
-l(t) x AV(t)                 av_at(t, timing)                In-force weighted account value
-(shortfall at exhaustion)    av_depletion_pp(t)              Withdrawal the AV could not fund
-phi                          rider_charge_rate               Rider charge rate (0.95% [S9])
-Phi(t)                       rider_charge_pp(t)              Rider charge amount
-BB(t)                        benefit_base_pp(t)              GLWB benefit base, closing
-BB(3), BB(4)                 benefit_base_pp_at(t, timing)   BEF_ROLLUP/BEF_STEP_UP/BEF_WD/EOY
-RB(t)                        rollup_base_pp(t)               Rollup base
-g(t)                         rollup_rate(t)                  Guaranteed simple rollup rate [S2]
-rollup(t)                    rollup_pp(t)                    Rollup dollar increment
-m                            stack_factor                    Stacking factor (1.50 [S8][S9])
-stack(t)                     stack_pp(t)                     Stacking credit
-T_g                          in_growth_period(t)             Benefit base still growing
-(the step-up)                step_up_applies(t)              Whether the ratchet is tested
-LW(t)                        lw_pp(t)                        Lifetime withdrawal amount, closing
-LW before/after step 5       lw_pp_at(t, timing)             BEF_WD / EOY
-pi(a, basis)                 payout_rate(a, basis)           Payout percentage by age band [S3]
-(pi locked at exercise)      payout_rate_locked(t)           The percentage actually in force
-h(a)                         activation_rate(a)              Activation incidence, reported only
-G(t)                         wd_pp(t)                        Gross withdrawal requested
-min(G, LW)                   wd_guar_pp(t)                   Guaranteed portion
-E(t)                         wd_excess_pp(t)                 Excess above the guaranteed amount
-(unpayable withdrawal)       wd_unfunded_pp(t)               Requested but neither funded nor
-                                                             guaranteed, on TERMINATED
-(guaranteed portion paid)    wd_guar_paid_pp(t)              min(G, LW) less its share of it
-(excess portion paid)        wd_excess_paid_pp(t)            E(t) less its share of it
-FW(t)                        free_wd_allow(t)                Free withdrawal amount
-0.10 x AV(t-1)               free_wd_base(t)                 Base of the free amount
-(FW consumed)                wd_free_pp(t)                   Free-allowance portion of the
-                                                             withdrawal
-(FW remaining)               free_wd_remain(t)               Free amount left for the excess
-X(t) on a withdrawal         wd_charge_base_pp(t)            Amount exposed to charge and MVA
-X(t) on a surrender          surr_charge_base_pp(t)          Same, at a full surrender
-sc(t)                        surr_charge_rate(t)             Surrender charge percentage [S5]
-SC(t) on a withdrawal        wd_charge_pp(t)                 Surrender charge on the excess
-SC(t) on a surrender         surr_charge_pp(t)               Surrender charge on a surrender
-CB(t) on a withdrawal        wd_clawback_pp(t)               Non-vested bonus recovery
-CB(t) on a surrender         surr_clawback_pp(t)             Same, at a full surrender
-(the clawback formula)       bonus_clawback_on(...)          (1-A) x [B/(1+B)] x C [S10]
-MVA(t) on a withdrawal       wd_mva_pp(t)                    Collared MVA on the excess
-MVA(t) on a surrender        mva_pp(t)                       Collared MVA on a surrender
-(the MVA collar)             mva_pp_on(t, base, gross)       The collared MVA on any base
-(the MVA rate)               mva_rate(t)                     [(1+i0)/(1+it)]^(n/12) - 1 [S10]
-i0                           mva_ref_yield_at_issue          Reference index at issue
-it                           mva_ref_yield(t)                Reference index at anniversary t
-n/12                         mva_term(t)                     Years left in the MVA period
-(MVA applies at all)         mva_in_force(t)                 Inside the MVA period
-rho(t)                       wd_reduction_rate(t)            Proportional reduction factor
-(rho's formula)              wd_reduction_rate_on(...)       The [S9] worked construction
-Wcum(t)                      wd_cum_pp(t)                    Cumulative gross withdrawals
-G - SC - CB + MVA            wd_payment_pp(t)                Cash paid on the withdrawal
-(pre-floor surrender value)  surr_value_pp(t)                AV - SC - CB + MVA
-CSV(t)                       surr_benefit_pp(t)              Surrender benefit paid
-MGV(t)                       mgsv_pp(t)                      Model #805 guaranteed minimum
-i_nf                         mgsv_rate                       Nonforfeiture accumulation rate
-(the $50 charge)             mgsv_charge_pp(t)               Annual contract charge, 0 **[std]**
-(statutory i_nf)             mgsv_rate_statutory(...)        Model #805 4B/4C indexed rate
-phase(t)                     phase(t)                        Closing ACCUM/INCOME/DEPLETED/TERMINATED
-(phase during the year)      phase_open(t)                   Phase steps 1-7 are processed under
-(first exercise)             is_exercise(t)                  The first lifetime withdrawal
-rider_in_force(t)            rider_in_force(t)               Rider still alive [S9]
-depletion_cause(t)           depletion_cause(t)              Excess / charge / negative MVA flag
-q(t)                         mort_rate(t)                    Annual mortality, at age(t-1)
-(A/E deviation)              mort_ae_factor                  Mortality A/E factor, 100% **[std]**
-w(t)                         lapse_rate(t)                   Annual surrender rate
-w_base(t)                    lapse_rate_base(t)              Base surrender table
-w_shock                      shock_lapse_rate(t)             33% / 10% / 5% by rider state [R8]
-M_money(t)                   lapse_moneyness_factor(t)       Moneyness suppression **[std]**
-l(t-1)                       pols_if(t)                      In-force at the **start** of year t
-l(t)                         pols_if_at(t, "AFT_DECR")       In-force at the end of year t
-l(0)                         pols_if_init                    In-force at entry
-l(t-1), ...                  pols_if_at(t, timing)           BEF_DECR/BEF_MORT/BEF_LAPSE/AFT_DECR
-l q                          pols_death(t)                   Deaths
-l (1-q) w                    pols_lapse(t)                   Full surrenders
-(none)                       pols_maturity(t)                Survivors at the horizon
-P at t = 0                   premiums(t)                     Premium income
-min(G, LW) x l(t-1)          wd_guar(t)                      Guaranteed withdrawal outgo, paid
-(E - SC - CB + MVA) l(t-1)   wd_excess(t)                    Excess withdrawal outgo, paid
-LW while DEPLETED            income_payments(t)              Post-depletion income outgo
-(all three together)         withdrawals(t)                  Total withdrawal outgo
-(ledger benefit lines)       claims(t, kind)                 Benefit outgo by kind
-                             claim_pp(t, kind)               Benefit per contract by kind
-                             claims_from_av(t, kind)         Account value released by a claim
-                             claims_over_av(t, kind)         Benefit paid above the account value
-(no separate commission)     commissions(t)                  Acquisition commission, 0 **[std]**
-0.06 P; 80 x 1.025^(t-1)     expenses(t)                     Acquisition and maintenance
-premium tax                  premium_taxes(t)                Premium tax, 0% **[std]**
-NetCF(t)                     net_cf(t)                       Net cash flow
-===========================  ==============================  ==============================
+================================================  ================================  ========================================
+Notes symbol                                      Cells                             Meaning
+================================================  ================================  ========================================
+t                                                 (the projection index)            Contract year and its anniversary
+(contract year)                                   policy_year(t)                    Contract year containing t; = t
+x                                                 age_at_entry                      Issue age (ANB)
+x + t                                             age(t)                            Attained age **at** anniversary t
+(younger covered life)                            covered_age(t)                    Age driving the payout percentage
+(none)                                            policy_term                       Years from issue to maturity_age
+(none)                                            proj_len                          Last projection anniversary
+(in-force cell entry)                             entry_year                        Anniversary the model point starts at
+av_initial                                        av_pp_init                        AV at entry, else P x (1 + b)
+bb_initial                                        benefit_base_pp_init              BB at entry, else P
+mgv_initial                                       mgsv_pp_init                      MGV at entry, else 0.875 x P
+(RB at entry)                                     rollup_base_pp_init               RB at entry, else P
+(LW at entry)                                     lw_pp_init                        LW at entry, 0 before exercise
+(pi at entry)                                     payout_rate_init                  Payout percentage locked at entry
+(phase at entry)                                  phase_init                        Phase at entry
+P                                                 premium_pp                        Single premium
+b                                                 bonus_rate                        Premium bonus rate (7% [S5])
+b/(1+b)                                           bonus_factor                      Clawback factor -- **not** b [S10]
+v(t)                                              vest_rate(t)                      Vested bonus percentage [S5]
+alloc_indexed/alloc_fixed                         alloc_indexed / alloc_fixed       Account allocation at issue
+I(t)                                              index_level(t)                    Index level at anniversary t
+R(t)                                              index_return(t)                   I(t)/I(t-1) - 1, dividends excluded
+c                                                 cap_rate                          Declared annual cap (5.25% [S2])
+c_min                                             cap_rate_min                      Guaranteed minimum cap (0.25% [S4])
+c(t)                                              cap_rate_in_force()               Cap actually applied
+f                                                 floor_rate                        Index credit floor (0%)
+p, s, d                                           par_rate, spread_rate,            Participation rate [R1]; spread
+                                                  trigger_rate                      and trigger, levels **[std]**
+cr(t)                                             credit_rate(t)                    Credit rate for the year
+(cr on a return)                                  credit_rate_on(r, method)         The crediting engine itself
+IC(t)                                             index_credit_pp(t)                Index credit amount
+FI(t)                                             fixed_interest_pp(t)              Fixed account interest
+i_F, i_F,min                                      fixed_rate, fixed_rate_min        Declared / guaranteed fixed rate
+kappa                                             av_int_factor                     Share of IC reaching the AV [S3]
+(IC x kappa + FI)                                 inv_income_pp(t)                  Interest credited to the AV
+A(t)                                              av_indexed_pp(t)                  Indexed account balance
+F(t)                                              av_fixed_pp(t)                    Fixed account balance
+AV(t)                                             av_pp(t)                          Account value after all processing
+AV(t-1), AV(1), AV(2), AV(t) av_pp_at(t, timing)  BEF_INV / BEF_FEE / BEF_WD / EOY
+l(t) x AV(t)                                      av_at(t, timing)                  In-force weighted account value
+(shortfall at exhaustion)                         av_depletion_pp(t)                Withdrawal the AV could not fund
+phi                                               rider_charge_rate                 Rider charge rate (0.95% [S9])
+Phi(t)                                            rider_charge_pp(t)                Rider charge amount
+BB(t)                                             benefit_base_pp(t)                GLWB benefit base, closing
+BB(3), BB(4)                                      benefit_base_pp_at(t, timing)     BEF_ROLLUP/BEF_STEP_UP/BEF_WD/EOY
+RB(t)                                             rollup_base_pp(t)                 Rollup base
+g(t)                                              rollup_rate(t)                    Guaranteed simple rollup rate [S2]
+rollup(t)                                         rollup_pp(t)                      Rollup dollar increment
+m                                                 stack_factor                      Stacking factor (1.50 [S8][S9])
+stack(t)                                          stack_pp(t)                       Stacking credit
+T_g                                               in_growth_period(t)               Benefit base still growing
+(the step-up)                                     step_up_applies(t)                Whether the ratchet is tested
+LW(t)                                             lw_pp(t)                          Lifetime withdrawal amount, closing
+LW before/after step 5                            lw_pp_at(t, timing)               BEF_WD / EOY
+pi(a, basis)                                      payout_rate(a, basis)             Payout percentage by age band [S3]
+(pi locked at exercise)                           payout_rate_locked(t)             The percentage actually in force
+h(a)                                              activation_rate(a)                Activation incidence, reported only
+G(t)                                              wd_pp(t)                          Gross withdrawal requested
+min(G, LW)                                        wd_guar_pp(t)                     Guaranteed portion
+E(t)                                              wd_excess_pp(t)                   Excess above the guaranteed amount
+(unpayable withdrawal)                            wd_unfunded_pp(t)                 Requested but neither funded nor
+                                                                                    guaranteed, on TERMINATED
+(guaranteed portion paid)                         wd_guar_paid_pp(t)                min(G, LW) less its share of it
+(excess portion paid)                             wd_excess_paid_pp(t)              E(t) less its share of it
+FW(t)                                             free_wd_allow(t)                  Free withdrawal amount
+0.10 x AV(t-1)                                    free_wd_base(t)                   Base of the free amount
+(FW consumed)                                     wd_free_pp(t)                     Free-allowance portion of the
+                                                                                    withdrawal
+(FW remaining)                                    free_wd_remain(t)                 Free amount left for the excess
+X(t) on a withdrawal                              wd_charge_base_pp(t)              Amount exposed to charge and MVA
+X(t) on a surrender                               surr_charge_base_pp(t)            Same, at a full surrender
+sc(t)                                             surr_charge_rate(t)               Surrender charge percentage [S5]
+SC(t) on a withdrawal                             wd_charge_pp(t)                   Surrender charge on the excess
+SC(t) on a surrender                              surr_charge_pp(t)                 Surrender charge on a surrender
+CB(t) on a withdrawal                             wd_clawback_pp(t)                 Non-vested bonus recovery
+CB(t) on a surrender                              surr_clawback_pp(t)               Same, at a full surrender
+(the clawback formula)                            bonus_clawback_on(...)            (1-A) x [B/(1+B)] x C [S10]
+MVA(t) on a withdrawal                            wd_mva_pp(t)                      Collared MVA on the excess
+MVA(t) on a surrender                             mva_pp(t)                         Collared MVA on a surrender
+(the MVA collar)                                  mva_pp_on(t, base, gross)         The collared MVA on any base
+(the MVA rate)                                    mva_rate(t)                       [(1+i0)/(1+it)]^(n/12) - 1 [S10]
+i0                                                mva_ref_yield_at_issue            Reference index at issue
+it                                                mva_ref_yield(t)                  Reference index at anniversary t
+n/12                                              mva_term(t)                       Years left in the MVA period
+(MVA applies at all)                              mva_in_force(t)                   Inside the MVA period
+rho(t)                                            wd_reduction_rate(t)              Proportional reduction factor
+(rho's formula)                                   wd_reduction_rate_on(...)         The [S9] worked construction
+Wcum(t)                                           wd_cum_pp(t)                      Cumulative gross withdrawals
+G - SC - CB + MVA                                 wd_payment_pp(t)                  Cash paid on the withdrawal
+(pre-floor surrender value)                       surr_value_pp(t)                  AV - SC - CB + MVA
+CSV(t)                                            surr_benefit_pp(t)                Surrender benefit paid
+MGV(t)                                            mgsv_pp(t)                        Model #805 guaranteed minimum
+i_nf                                              mgsv_rate                         Nonforfeiture accumulation rate
+(the $50 charge)                                  mgsv_charge_pp(t)                 Annual contract charge, 0 **[std]**
+(statutory i_nf)                                  mgsv_rate_statutory(...)          Model #805 4B/4C indexed rate
+phase(t)                                          phase(t)                          Closing ACCUM/INCOME/DEPLETED/TERMINATED
+(phase during the year)                           phase_open(t)                     Phase steps 1-7 are processed under
+(first exercise)                                  is_exercise(t)                    The first lifetime withdrawal
+rider_in_force(t)                                 rider_in_force(t)                 Rider still alive [S9]
+depletion_cause(t)                                depletion_cause(t)                Excess / charge / negative MVA flag
+q(t)                                              mort_rate(t)                      Annual mortality, at age(t-1)
+(A/E deviation)                                   mort_ae_factor                    Mortality A/E factor, 100% **[std]**
+w(t)                                              lapse_rate(t)                     Annual surrender rate
+w_base(t)                                         lapse_rate_base(t)                Base surrender table
+w_shock                                           shock_lapse_rate(t)               33% / 10% / 5% by rider state [R8]
+M_money(t)                                        lapse_moneyness_factor(t)         Moneyness suppression **[std]**
+l(t-1)                                            pols_if(t)                        In-force at the **start** of year t
+l(t)                                              pols_if_at(t, "AFT_DECR")         In-force at the end of year t
+l(0)                                              pols_if_init                      In-force at entry
+l(t-1), ...                                       pols_if_at(t, timing)             BEF_DECR/BEF_MORT/BEF_LAPSE/AFT_DECR
+l q                                               pols_death(t)                     Deaths
+l (1-q) w                                         pols_lapse(t)                     Full surrenders
+(none)                                            pols_maturity(t)                  Survivors at the horizon
+P at t = 0                                        premiums(t)                       Premium income
+min(G, LW) x l(t-1)                               wd_guar(t)                        Guaranteed withdrawal outgo, paid
+(E - SC - CB + MVA) l(t-1)                        wd_excess(t)                      Excess withdrawal outgo, paid
+LW while DEPLETED                                 income_payments(t)                Post-depletion income outgo
+(all three together)                              withdrawals(t)                    Total withdrawal outgo
+(ledger benefit lines)                            claims(t, kind)                   Benefit outgo by kind
+                                                  claim_pp(t, kind)                 Benefit per contract by kind
+                                                  claims_from_av(t, kind)           Account value released by a claim
+                                                  claims_over_av(t, kind)           Benefit paid above the account value
+(no separate commission)                          commissions(t)                    Acquisition commission, 0 **[std]**
+0.06 P; 80 x 1.025^(t-1)                          expenses(t)                       Acquisition and maintenance
+premium tax                                       premium_taxes(t)                  Premium tax, 0% **[std]**
+NetCF(t)                                          net_cf(t)                         Net cash flow
+================================================  ================================  ========================================
 
 Six names needed care.
 
@@ -273,7 +273,7 @@ year ``t`` consequently reads ``age(t - 1)``, and :func:`mort_rate` says so.
 **d and c collide across the library.** ``d`` is the performance-trigger rate in these
 notes, deaths in :mod:`.Term_US_A` and the floor's withdrawal deduction on the chassis;
 ``c`` is the declared cap here and the floor's contract charge on the chassis. The names
-:func:`trigger_rate`, :func:`pols_death`, :func:`mgsv_charge_pp` and :func:`cap_rate`
+``trigger_rate``, :func:`pols_death`, :func:`mgsv_charge_pp` and :func:`cap_rate`
 keep the four apart.
 
 One name is reused deliberately and reads across cleanly. :func:`credit_rate` is the

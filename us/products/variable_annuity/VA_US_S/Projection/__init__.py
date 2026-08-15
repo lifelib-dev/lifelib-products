@@ -89,149 +89,149 @@ annuity chassis of this library — wherever the two products share a concept:
 quantity read at a point inside the month. The technical notes use compact actuarial
 symbols instead. The mapping is:
 
-===========================  ==============================  ==============================
-Notes symbol                 Cells                           Meaning
-===========================  ==============================  ==============================
-t                            duration_mth(t)                 Elapsed policy months
-(months elapsed at entry)    duration_mth_init()             0 at issue; the in-force cell's own
-y = ceil(t/12)               policy_year(t)                  Contract year containing month t
-y - 1                        duration(t)                     Completed contract years
-k = ceil(t/3)                contract_quarter(t)             Contract quarter containing month t
-x, issue_age                 age_at_entry                    Issue age (ANB)
-a(t) = x + y - 1             age(t)                          Attained age during month t
-(a at the anniversary)       age_at_anniv(t)                 Attained age just after the anniversary
-(none)                       policy_term                     Years from issue to omega_age
-(none)                       proj_len                        Last projection month
-av_initial                   av_pp_init()                    AV carried into t = 0 (in-force cell)
-gwb_initial                  gwb_pp_init()                   GWB carried into t = 0
-bb_initial                   bb_pp_init()                    Bonus Base carried into t = 0
-rb_initial                   rb_pp_init()                    GMDB Benefit Base carried into t = 0
-(none)                       gawa_pp_init()                  GAWA carried into t = 0
-(none)                       gawa_pct_init()                 GAWA% already locked at t = 0
-(none)                       np_pp_init()                    Cumulative Net Premiums at t = 0
-(none)                       rp_pp_init()                    Remaining Premium at t = 0
-(none)                       adj_pp_init()                   GWB Adjustment at t = 0
-(none)                       bonus_end_init()                Contract year the Bonus Period ends, at t = 0
-glwb_stepup_basis            stepup_basis()                  annual_CV or highest_quarterly_CV
-i                            sub_ids                         Subaccount indices
-alloc[i]                     alloc(i)                        Allocation of net premium to subaccount i
-e_i                          fund_expense_rate(i)            Annual fund expense ratio
-r_i(t)                       inv_return_mth(t, i)            Gross monthly fund return (scenario input)
-m, alpha                     asset_charge_me, asset_charge_admin  M&E and administrative asset charge
-(the growth factor)          unit_growth(t, i)               (1+r_i)(1-e_i/12)(1-(m+a)/12)
-V_i(t)                       (inside unit_growth)            Unit value; see the note below
-U_i(t)                       (implicit)                      Units; see the note below
-SA_i(t)                      sa_pp(t, i)                     Subaccount value at end of month t
-SA_i at a point in the month sa_pp_at(t, i, timing)          BEF_PREM / BEF_WD / BEF_INV / BEF_FEE / EOM
-AV(t)                        av_pp(t)                        Contract value at end of month t
-AV at a point in the month   av_pp_at(t, timing)             Same timings, summed over subaccounts
-l x AV(t)                    av_at(t, timing)                In-force weighted contract value
-w_i(t)                       sa_weight(t, i)                 Value weight, the pro-rata deduction key
-(gross fund return)          gross_inv_income_pp(t)          Return before any charge
-(fund's own expense)         fund_expense_pp(t)              Paid to the funds, not insurer revenue
-(M&E + admin)                asset_charge_pp(t)              Collected inside the unit value
-(net of both)                inv_income_pp(t)                Change in AV from investment over month t
-P(t)                         premium_pp(t)                   Gross premium at BOM of month t
-P(t)(1 - tau)                prem_to_av_pp(t)                Net premium buying units
-tau                          premium_tax_rate                Premium tax rate
-W(t)                         wd_pp(t)                        Gross withdrawal, inclusive of charges
-(W before the AV cap)        wd_pp_due(t)                    Withdrawal requested before capping at AV
-(scheduled part of W)        wd_scheduled_pp(t)              Withdrawal from transaction_table.csv
-(utilization part of W)      wd_glwb_pp(t)                   wd_intensity x L(t) once activated
-L(t)                         wd_limit_pp(t)                  Annual withdrawal limit max(GAWA, RMD)
-SumW_y                       sum_wd_pp(t)                    Withdrawals to date in the contract year
-E(t)                         wd_excess_pp(t)                 Excess portion of W(t)
-N(t)                         wd_nonexcess_pp(t)              Non-excess portion of W(t)
-CV_pre                       cv_pre_excess_pp(t)             AV after N has been deducted
-(1 - E/CV_pre)               excess_factor(t)                The pro-rata factor for the excess
-(charge-free amount)         free_wd_allow(t)                max(earnings, 10% of RP)
-(unused allowance)           free_wd_avail(t)                Allowance left in the contract year
-(allowance consumed)         wd_free_pp(t)                   Allowance used by month t's withdrawal
-(allowance used to date)     free_wd_used_cum_pp(t)          Allowance used in the contract year so far
-(exempt part of W)           wd_exempt_pp(t)                 Portion of W bearing no charge
-(chargeable part of W)       wd_chargeable_pp(t)             Portion of W bearing the CDSC
-c(t)                         wd_charge_pp(t)                 CDSC on the withdrawal
-W(t) - c(t)                  wd_payment_pp(t)                Cash paid on the withdrawal
-CDSC scale                   surr_charge_rate(t)             CDSC % by completed years since receipt
-(surrender chargeable base)  surr_chargeable_pp(t)           Remaining Premium withdrawn on surrender
-(CDSC on surrender)          surr_charge_pp(t)               Charge on a full surrender
-AV(t) - CDSC                 surr_benefit_pp(t)              Surrender proceeds
-RP(t)                        rp_pp(t)                        Remaining Premium, the CDSC basis
-(premium portion withdrawn)  rp_reduction_pp(t)              Reduction of RP by a withdrawal
-NP(t)                        np_pp(t)                        Cumulative Net Premiums
-GWB(t)                       gwb_pp(t)                       Guaranteed Withdrawal Balance
-GWB at a point in the month  gwb_pp_at(t, timing)            BEF_PREM / BEF_WD / BEF_ANNIV
-(GWB after the bonus)        gwb_pp_aft_bonus(t)             Anniversary sub-step 3
-(GWB after the step-up)      gwb_pp_aft_stepup(t)            Anniversary sub-step 4
-b x BB                       bonus_pp(t)                     GLWB bonus credited at the anniversary
-BB(t)                        bb_pp(t)                        Bonus Base
-BB before the anniversary    bb_pp_bef_anniv(t)              Bonus Base the bonus is computed on
-bonus_end(t)                 bonus_end(t)                    Contract year the Bonus Period ends
-(the step-up basis)          stepup_base_pp(t)               Annual CV or highest quarterly CV
-(step-up occurred)           is_stepup(t)                    True at a step-up anniversary
-GAWA(t)                      gawa_pp(t)                      Guaranteed Annual Withdrawal Amount
-GAWA in the month            gawa_pp_at(t, timing)           BEF_PREM / BEF_WD / BEF_ANNIV
-g(a)                         gawa_pct_at_age(a)              GAWA% at attained age a
-gawa_pct_fixed               gawa_pct_fixed(t)               GAWA% locked at the first withdrawal
-ADJ(t)                       adj_pp(t)                       GWB Adjustment amount
-s                            gwb_adj_pct                     GWB Adjustment percentage, 105%
-(the Adjustment Date)        is_gwb_adj_date(t)              Later of anniv on/after 70 and the 12th
-RB(t)                        rb_pp(t)                        GMDB Benefit Base
-RB in the month              rb_pp_at(t, timing)             BEF_PREM / BEF_WD / BEF_ANNIV
-rho                          rollup_rate(t)                  GMDB roll-up percentage in force
-(the year's d-f-d allowance) gmdb_allow_pp(t)                rho x RB at the prior anniversary
-(d-f-d part of a withdrawal) gmdb_wd_dfd_pp(t)               Dollar-for-dollar portion
-(excess part)                gmdb_wd_excess_pp(t)            Portion above the allowance
-(accrued d-f-d)              gmdb_dfd_acc_pp(t)              Accrued to the end of the contract year
-(accrued pro-rata factor)    gmdb_factor_acc(t)              Accrued to the end of the contract year
-DB(t)                        db_pp(t)                        Gross death benefit max(AV, NP, RB)
-max(NP, RB)                  gmdb_guarantee_pp(t)            The floor under DB; ``basic`` elects RB alone
-GuaranteeClaim               gmdb_claim_pp(t)                Net general-account strain on death
-phi_G                        phi_glwb(t)                     GLWB charge rate in force
-phi_D                        phi_gmdb(t)                     GMDB charge rate in force
-Fee_G                        fee_glwb_pp(t)                  Quarterly GLWB fee, on the GWB
-Fee_D                        fee_gmdb_pp(t)                  Quarterly GMDB fee, on the RB
-f_c                          maint_fee_pp(t)                 Annual contract fee, $35 waived at $50k
-(total unit cancellation)    charge_pp(t)                    Fee_G + Fee_D + f_c actually collected
-(fee reset formula)          fee_rate_vix_raw(phi0, vix2)    The VIX-squared fee formula [S4][S6]
-(fee reset clipping)         fee_rate_vix_clip(prior, raw)   Band and corridor clipping [S4]
-forlife_flag                 forlife_flag()                  For Life Guarantee in effect
-depleted_flag(t)             depleted_flag(t)                AV has reached zero with the GLWB alive
-(post-depletion payment)     glwb_payment_pp(t)              Insurer-funded GAWA payment
-phase(t)                     phase(t)                        ACCUM / DEPLETED / EXPIRED
-M_G(t)                       moneyness_glwb(t)               GWB / AV
-M_D(t)                       moneyness_gmdb(t)               max(NP, RB) / AV
-lambda(M)                    lapse_itm_mult(m)               The VM-21 7.B.1 multiplier
-lambda*(t)                   lapse_dyn_mult(t)               min of the two, per VM-21 6.C.6
-kappa(t)                     lapse_wd_factor(t)              0.60 in a withdrawal year
-q^w_base(y)                  lapse_rate_base(t)              VM-21 Table 6.3 under-50%-ITM column
-q^w_annual(t)                lapse_rate(t)                   Annual total surrender rate
-q^w(t)                       lapse_rate_mth(t)               Monthly total surrender rate
-q^d(t)                       mort_rate_mth(t)                Monthly mortality rate
-(annual q_x)                 mort_rate(t)                    Annual mortality at the attained age
-l(t-1)                       pols_if(t)                      In-force at the START of month t
-l(t)                         pols_if_at(t, "AFT_DECR")       In-force at the end of month t
-l(0)                         pols_if_init                    In-force at entry
-l(t-1), ...                  pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
-l(t-1) q^d                   pols_death(t)                   Deaths
-l(t-1)(1-q^d) q^w            pols_lapse(t)                   Full surrenders
-(none)                       pols_maturity(t)                Survivors at the projection horizon
-Premium income               premiums(t)                     Premium cash flow
-Charge income - M&E/admin    asset_charges(t)                Asset charge cash flow
-Charge income - rider fees   fees_glwb(t), fees_gmdb(t)      Rider fee cash flow
-Charge income - contract fee maint_fees(t)                   Contract fee cash flow
-Charge income - CDSC         wd_charges(t)                   CDSC on withdrawals (memo; see below)
-Withdrawal proceeds          withdrawals(t)                  W(t) - c(t), weighted
-Post-depletion GLWB payments glwb_payments(t)                GAWA paid after depletion
-Death benefit (gross)        claims(t, "DEATH")              DB(t) x deaths
-Death benefit (net strain)   gmdb_claims(t)                  GuaranteeClaim x deaths (memo)
-Surrender proceeds           claims(t, "LAPSE")              surr_benefit_pp(t) x surrenders
-(horizon benefit)            claims(t, "MATURITY")           Survivors at proj_len()
-Maintenance expense          expenses(t)                     VM-21 6.C.2 prescribed expense
-(acquisition)                commissions(t)                  0 in the base run [std]
-(none)                       net_cf(t)                       The notes' ledger, summed
-(none)                       net_cf_ga(t)                    General-account view (memo)
-===========================  ==============================  ==============================
+===================================================  ===========================================  =============================================
+Notes symbol                                         Cells                                        Meaning
+===================================================  ===========================================  =============================================
+t                                                    duration_mth(t)                              Elapsed policy months
+(months elapsed at entry)                            duration_mth_init()                          0 at issue; the in-force cell's own
+y = ceil(t/12)                                       policy_year(t)                               Contract year containing month t
+y - 1                                                duration(t)                                  Completed contract years
+k = ceil(t/3)                                        contract_quarter(t)                          Contract quarter containing month t
+x, issue_age                                         age_at_entry                                 Issue age (ANB)
+a(t) = x + y - 1                                     age(t)                                       Attained age during month t
+(a at the anniversary)                               age_at_anniv(t)                              Attained age just after the anniversary
+(none)                                               policy_term                                  Years from issue to omega_age
+(none)                                               proj_len                                     Last projection month
+av_initial                                           av_pp_init()                                 AV carried into t = 0 (in-force cell)
+gwb_initial                                          gwb_pp_init()                                GWB carried into t = 0
+bb_initial                                           bb_pp_init()                                 Bonus Base carried into t = 0
+rb_initial                                           rb_pp_init()                                 GMDB Benefit Base carried into t = 0
+(none)                                               gawa_pp_init()                               GAWA carried into t = 0
+(none)                                               gawa_pct_init()                              GAWA% already locked at t = 0
+(none)                                               np_pp_init()                                 Cumulative Net Premiums at t = 0
+(none)                                               rp_pp_init()                                 Remaining Premium at t = 0
+(none)                                               adj_pp_init()                                GWB Adjustment at t = 0
+(none)                                               bonus_end_init()                             Contract year the Bonus Period ends, at t = 0
+glwb_stepup_basis                                    stepup_basis()                               annual_CV or highest_quarterly_CV
+i                                                    sub_ids                                      Subaccount indices
+alloc[i]                                             alloc(i)                                     Allocation of net premium to subaccount i
+e_i                                                  fund_expense_rate(i)                         Annual fund expense ratio
+r_i(t)                                               inv_return_mth(t, i)                         Gross monthly fund return (scenario input)
+m, alpha                                             asset_charge_me, asset_charge_admin          M&E and administrative asset charge
+(the growth factor)                                  unit_growth(t, i)                            (1+r_i)(1-e_i/12)(1-(m+a)/12)
+V_i(t)                                               (inside unit_growth)                         Unit value; see the note below
+U_i(t)                                               (implicit)                                   Units; see the note below
+SA_i(t)                                              sa_pp(t, i)                                  Subaccount value at end of month t
+SA_i at a point in the month sa_pp_at(t, i, timing)  BEF_PREM / BEF_WD / BEF_INV / BEF_FEE / EOM
+AV(t)                                                av_pp(t)                                     Contract value at end of month t
+AV at a point in the month                           av_pp_at(t, timing)                          Same timings, summed over subaccounts
+l x AV(t)                                            av_at(t, timing)                             In-force weighted contract value
+w_i(t)                                               sa_weight(t, i)                              Value weight, the pro-rata deduction key
+(gross fund return)                                  gross_inv_income_pp(t)                       Return before any charge
+(fund's own expense)                                 fund_expense_pp(t)                           Paid to the funds, not insurer revenue
+(M&E + admin)                                        asset_charge_pp(t)                           Collected inside the unit value
+(net of both)                                        inv_income_pp(t)                             Change in AV from investment over month t
+P(t)                                                 premium_pp(t)                                Gross premium at BOM of month t
+P(t)(1 - tau)                                        prem_to_av_pp(t)                             Net premium buying units
+tau                                                  premium_tax_rate                             Premium tax rate
+W(t)                                                 wd_pp(t)                                     Gross withdrawal, inclusive of charges
+(W before the AV cap)                                wd_pp_due(t)                                 Withdrawal requested before capping at AV
+(scheduled part of W)                                wd_scheduled_pp(t)                           Withdrawal from transaction_table.csv
+(utilization part of W)                              wd_glwb_pp(t)                                wd_intensity x L(t) once activated
+L(t)                                                 wd_limit_pp(t)                               Annual withdrawal limit max(GAWA, RMD)
+SumW_y                                               sum_wd_pp(t)                                 Withdrawals to date in the contract year
+E(t)                                                 wd_excess_pp(t)                              Excess portion of W(t)
+N(t)                                                 wd_nonexcess_pp(t)                           Non-excess portion of W(t)
+CV_pre                                               cv_pre_excess_pp(t)                          AV after N has been deducted
+(1 - E/CV_pre)                                       excess_factor(t)                             The pro-rata factor for the excess
+(charge-free amount)                                 free_wd_allow(t)                             max(earnings, 10% of RP)
+(unused allowance)                                   free_wd_avail(t)                             Allowance left in the contract year
+(allowance consumed)                                 wd_free_pp(t)                                Allowance used by month t's withdrawal
+(allowance used to date)                             free_wd_used_cum_pp(t)                       Allowance used in the contract year so far
+(exempt part of W)                                   wd_exempt_pp(t)                              Portion of W bearing no charge
+(chargeable part of W)                               wd_chargeable_pp(t)                          Portion of W bearing the CDSC
+c(t)                                                 wd_charge_pp(t)                              CDSC on the withdrawal
+W(t) - c(t)                                          wd_payment_pp(t)                             Cash paid on the withdrawal
+CDSC scale                                           surr_charge_rate(t)                          CDSC % by completed years since receipt
+(surrender chargeable base)                          surr_chargeable_pp(t)                        Remaining Premium withdrawn on surrender
+(CDSC on surrender)                                  surr_charge_pp(t)                            Charge on a full surrender
+AV(t) - CDSC                                         surr_benefit_pp(t)                           Surrender proceeds
+RP(t)                                                rp_pp(t)                                     Remaining Premium, the CDSC basis
+(premium portion withdrawn)                          rp_reduction_pp(t)                           Reduction of RP by a withdrawal
+NP(t)                                                np_pp(t)                                     Cumulative Net Premiums
+GWB(t)                                               gwb_pp(t)                                    Guaranteed Withdrawal Balance
+GWB at a point in the month                          gwb_pp_at(t, timing)                         BEF_PREM / BEF_WD / BEF_ANNIV
+(GWB after the bonus)                                gwb_pp_aft_bonus(t)                          Anniversary sub-step 3
+(GWB after the step-up)                              gwb_pp_aft_stepup(t)                         Anniversary sub-step 4
+b x BB                                               bonus_pp(t)                                  GLWB bonus credited at the anniversary
+BB(t)                                                bb_pp(t)                                     Bonus Base
+BB before the anniversary                            bb_pp_bef_anniv(t)                           Bonus Base the bonus is computed on
+bonus_end(t)                                         bonus_end(t)                                 Contract year the Bonus Period ends
+(the step-up basis)                                  stepup_base_pp(t)                            Annual CV or highest quarterly CV
+(step-up occurred)                                   is_stepup(t)                                 True at a step-up anniversary
+GAWA(t)                                              gawa_pp(t)                                   Guaranteed Annual Withdrawal Amount
+GAWA in the month                                    gawa_pp_at(t, timing)                        BEF_PREM / BEF_WD / BEF_ANNIV
+g(a)                                                 gawa_pct_at_age(a)                           GAWA% at attained age a
+gawa_pct_fixed                                       gawa_pct_fixed(t)                            GAWA% locked at the first withdrawal
+ADJ(t)                                               adj_pp(t)                                    GWB Adjustment amount
+s                                                    gwb_adj_pct                                  GWB Adjustment percentage, 105%
+(the Adjustment Date)                                is_gwb_adj_date(t)                           Later of anniv on/after 70 and the 12th
+RB(t)                                                rb_pp(t)                                     GMDB Benefit Base
+RB in the month                                      rb_pp_at(t, timing)                          BEF_PREM / BEF_WD / BEF_ANNIV
+rho                                                  rollup_rate(t)                               GMDB roll-up percentage in force
+(the year's d-f-d allowance) gmdb_allow_pp(t)        rho x RB at the prior anniversary
+(d-f-d part of a withdrawal) gmdb_wd_dfd_pp(t)       Dollar-for-dollar portion
+(excess part)                                        gmdb_wd_excess_pp(t)                         Portion above the allowance
+(accrued d-f-d)                                      gmdb_dfd_acc_pp(t)                           Accrued to the end of the contract year
+(accrued pro-rata factor)                            gmdb_factor_acc(t)                           Accrued to the end of the contract year
+DB(t)                                                db_pp(t)                                     Gross death benefit max(AV, NP, RB)
+max(NP, RB)                                          gmdb_guarantee_pp(t)                         The floor under DB; ``basic`` elects RB alone
+GuaranteeClaim                                       gmdb_claim_pp(t)                             Net general-account strain on death
+phi_G                                                phi_glwb(t)                                  GLWB charge rate in force
+phi_D                                                phi_gmdb(t)                                  GMDB charge rate in force
+Fee_G                                                fee_glwb_pp(t)                               Quarterly GLWB fee, on the GWB
+Fee_D                                                fee_gmdb_pp(t)                               Quarterly GMDB fee, on the RB
+f_c                                                  maint_fee_pp(t)                              Annual contract fee, $35 waived at $50k
+(total unit cancellation)                            charge_pp(t)                                 Fee_G + Fee_D + f_c actually collected
+(fee reset formula)                                  fee_rate_vix_raw(phi0, vix2)                 The VIX-squared fee formula [S4][S6]
+(fee reset clipping)                                 fee_rate_vix_clip(prior, raw)                Band and corridor clipping [S4]
+forlife_flag                                         forlife_flag()                               For Life Guarantee in effect
+depleted_flag(t)                                     depleted_flag(t)                             AV has reached zero with the GLWB alive
+(post-depletion payment)                             glwb_payment_pp(t)                           Insurer-funded GAWA payment
+phase(t)                                             phase(t)                                     ACCUM / DEPLETED / EXPIRED
+M_G(t)                                               moneyness_glwb(t)                            GWB / AV
+M_D(t)                                               moneyness_gmdb(t)                            max(NP, RB) / AV
+lambda(M)                                            lapse_itm_mult(m)                            The VM-21 7.B.1 multiplier
+lambda*(t)                                           lapse_dyn_mult(t)                            min of the two, per VM-21 6.C.6
+kappa(t)                                             lapse_wd_factor(t)                           0.60 in a withdrawal year
+q^w_base(y)                                          lapse_rate_base(t)                           VM-21 Table 6.3 under-50%-ITM column
+q^w_annual(t)                                        lapse_rate(t)                                Annual total surrender rate
+q^w(t)                                               lapse_rate_mth(t)                            Monthly total surrender rate
+q^d(t)                                               mort_rate_mth(t)                             Monthly mortality rate
+(annual q_x)                                         mort_rate(t)                                 Annual mortality at the attained age
+l(t-1)                                               pols_if(t)                                   In-force at the START of month t
+l(t)                                                 pols_if_at(t, "AFT_DECR")                    In-force at the end of month t
+l(0)                                                 pols_if_init                                 In-force at entry
+l(t-1), ...                                          pols_if_at(t, timing)                        BEF_DECR / BEF_LAPSE / AFT_DECR
+l(t-1) q^d                                           pols_death(t)                                Deaths
+l(t-1)(1-q^d) q^w                                    pols_lapse(t)                                Full surrenders
+(none)                                               pols_maturity(t)                             Survivors at the projection horizon
+Premium income                                       premiums(t)                                  Premium cash flow
+Charge income - M&E/admin                            asset_charges(t)                             Asset charge cash flow
+Charge income - rider fees                           fees_glwb(t), fees_gmdb(t)                   Rider fee cash flow
+Charge income - contract fee maint_fees(t)           Contract fee cash flow
+Charge income - CDSC                                 wd_charges(t)                                CDSC on withdrawals (memo; see below)
+Withdrawal proceeds                                  withdrawals(t)                               W(t) - c(t), weighted
+Post-depletion GLWB payments glwb_payments(t)        GAWA paid after depletion
+Death benefit (gross)                                claims(t, "DEATH")                           DB(t) x deaths
+Death benefit (net strain)                           gmdb_claims(t)                               GuaranteeClaim x deaths (memo)
+Surrender proceeds                                   claims(t, "LAPSE")                           surr_benefit_pp(t) x surrenders
+(horizon benefit)                                    claims(t, "MATURITY")                        Survivors at proj_len()
+Maintenance expense                                  expenses(t)                                  VM-21 6.C.2 prescribed expense
+(acquisition)                                        commissions(t)                               0 in the base run [std]
+(none)                                               net_cf(t)                                    The notes' ledger, summed
+(none)                                               net_cf_ga(t)                                 General-account view (memo)
+===================================================  ===========================================  =============================================
 
 Model point attributes the notes and the model name identically — ``sex``,
 ``designated_lives``, ``tax_status``, ``premium_single``, ``premium_tax_rate``,

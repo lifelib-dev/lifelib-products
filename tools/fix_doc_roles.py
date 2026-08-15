@@ -42,7 +42,7 @@ def spaces(model_dir):
     return found
 
 
-def fix_text(text, models, this_model, own_cells, other_cells):
+def fix_text(text, models, this_model, own_cells, other_cells, other_space):
     """Return (new_text, counts) for one module's source.
 
     ``models`` is every model name in the library, not just this file's own.  A third of
@@ -61,15 +61,30 @@ def fix_text(text, models, this_model, own_cells, other_cells):
 
     text = re.sub(rf':mod:`(~?)((?:{alternatives})(?:\.\w+)*)`', mod_sub, text)
 
-    # :func:/:attr: naming a cells that lives in the other Space of this model.
+    # :func:/:attr: written as a path through a model -- Term_US_A.Projection.pols_if.
+    # Same breakage as the module roles and the same one-character fix.
+    def dotted_sub(m):
+        # The prefix is "", "~", "." or "~." -- test for the dot anywhere in it, not at the
+        # front, or a second run re-dots the "~." form the cross-Space rule below produces.
+        if "." in m.group(2):
+            return m.group(0)
+        counts["dotted path"] += 1
+        return f":{m.group(1)}:`{m.group(2)}.{m.group(3)}`"
+
+    text = re.sub(rf':(func|attr):`(~?\.?)((?:{alternatives})\.[\w.]+)`', dotted_sub, text)
+
+    # :func:/:attr: naming a cells that lives in the *other* Space of this model.  These
+    # must be spelled out in full: every model has a Data.input_dir, so a bare `.input_dir`
+    # is refspecific enough to find twelve of them and Sphinx reports the ambiguity.  The
+    # ~ keeps the rendered text as the plain cells name.
     def ref_sub(m):
         role, tilde, name = m.group(1), m.group(2), m.group(3)
         if name in own_cells or name not in other_cells:
             return m.group(0)
         counts["cross-Space"] += 1
-        return f":{role}:`{tilde}.{name}`"
+        return f":{role}:`~.{this_model}.{other_space[name]}.{name}`"
 
-    text = re.sub(r':(func|attr):`(~?)(\w+)`', ref_sub, text)
+    text = re.sub(r':(func|attr):`(~?\.?)(\w+)`', ref_sub, text)
     return text, counts
 
 
@@ -97,13 +112,16 @@ def main(argv):
         for path in targets:
             own = by_space.get(path.parent.name, set())
             original = path.read_text(encoding="utf-8")
+            other_space = {name: space
+                           for space, cells in by_space.items() if space != path.parent.name
+                           for name in cells}
             text, counts = fix_text(original, models, model_dir.name,
-                                    own, all_cells - own)
+                                    own, all_cells - own, other_space)
             totals.update(counts)
             if text != original and not dry:
                 path.write_text(text, encoding="utf-8")
 
-    for key in ("own model", "sibling model", "cross-Space"):
+    for key in ("own model", "sibling model", "dotted path", "cross-Space"):
         print(f"  {totals[key]:4}  {key} references given a leading dot")
     print(f"\n{sum(totals.values())} roles fixed{' (dry run)' if dry else ''}")
     return 0

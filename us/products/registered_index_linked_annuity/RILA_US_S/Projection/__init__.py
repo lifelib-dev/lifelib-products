@@ -140,7 +140,7 @@ guar_min_cap(T)               guar_min_rate(kind)               Contractual mini
 (one option leg)              opt_component(t, leg, ...)        Signed per-unit leg value
 (the leg set)                 opt_legs()                        Legs of the replicating set
 Pi(I, tau)                    opt_portfolio(t, spot, tau, mkt)  Per-unit portfolio value
-(sum of |legs|)               opt_portfolio_abs(...)            Trading-cost assessment base
+(sum of \|legs\|)               opt_portfolio_abs(...)            Trading-cost assessment base
 beta                          opt_budget(t)                     Initial option budget
 y_e, spread                   earned_rate, nge_spread           Earned rate; target margin [std]
 beta_target(T)                opt_budget_target()               NGE cap-solve target

@@ -90,8 +90,8 @@ mistaken for an oversight:
 
 * The grace and lapse-for-insufficiency cascade. The trigger and the required cure
   payment are complete formulas and are implemented as the diagnostics
-  :func:`~UL_US_S.Projection.is_shortfall` and
-  :func:`~UL_US_S.Projection.cure_premium_pp`, but the notes leave the
+  :func:`~.UL_US_S.Projection.is_shortfall` and
+  :func:`~.UL_US_S.Projection.cure_premium_pp`, but the notes leave the
   in-grace account value treatment (deductions accrue "due and unpaid") and the cash
   flow of a cure payment undetermined, so no policy is terminated for insufficiency
   and no in-grace state is carried -- the notes' ``grace_flag(t)`` has no cells.
@@ -100,7 +100,7 @@ mistaken for an oversight:
   taken from an account value that is already empty, which ends about $1.84m
   overdrawn. Cash flows past the trigger month of a model point in shortfall are not
   meaningful. What the model does *not* do is let that negative balance reach the
-  death benefit: :func:`~UL_US_S.Projection.av_pp_db_basis` floors it at zero
+  death benefit: :func:`~.UL_US_S.Projection.av_pp_db_basis` floors it at zero
   **[std]**, so an Option B death benefit is never below the face amount and no death
   claim is ever negative.
 * Reinstatement -- a contractual provision only, out of scope in the notes.
@@ -116,7 +116,7 @@ mistaken for an oversight:
 * Riders. ``rider_charge_pp(t)`` is the notes' placeholder term, zero in the base
   model.
 * MEC status has no cash flow consequence for the insurer, so
-  :func:`~UL_US_S.Projection.is_mec` flags and does not project. The flag does
+  :func:`~.UL_US_S.Projection.is_mec` flags and does not project. The flag does
   **latch**, though: 7702A status is permanent once the 7-pay test fails, so once true
   it stays true for the rest of the projection.
 * Withdrawal *utilization*. The mechanics are complete -- the fee, the notes' annual

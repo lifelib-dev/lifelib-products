@@ -1358,11 +1358,15 @@ def is_lapsed(t):
 def status(t):
     """The worked example's Status column, in ASCII.
 
-    ``"IN FORCE"``              the account value is carrying the policy;
-    ``"IN FORCE - GUARANTEE"``  the account value is exhausted and the guarantee is
-                                carrying it -- the notes' "in force - guarantee";
-    ``"GRACE"``                 the deduction failed with no guarantee behind it;
-    ``"LAPSED"``                the grace expired uncured.
+    ``"IN FORCE"``
+        the account value is carrying the policy;
+    ``"IN FORCE - GUARANTEE"``
+        the account value is exhausted and the guarantee is
+        carrying it -- the notes' "in force - guarantee";
+    ``"GRACE"``
+        the deduction failed with no guarantee behind it;
+    ``"LAPSED"``
+        the grace expired uncured.
     """
     if is_lapsed(t):
         return "LAPSED"
@@ -1525,13 +1529,16 @@ def lapse_rate_pattern_mult():
 def lapse_rate_dyn_mult(t):
     """Psi_t: the funding-status dynamic lapse factor **[std]**.
 
-    ``1.0``  guarantee active and the account value still positive;
-    ``0.6``  guarantee active and the account value exhausted -- the policy is deep in
-             the money to the policyholder, the regime [R8]'s tail scenarios keep 40%
-             of policies in after 31 years;
-    ``2.0``  the guarantee has terminated and the policy is surviving on its account
-             value alone -- a shock.  Where the account value has gone too the policy
-             is already in grace and about to lapse, so the rate is academic there.
+    ``1.0``
+        guarantee active and the account value still positive;
+    ``0.6``
+        guarantee active and the account value exhausted -- the policy is deep in
+        the money to the policyholder, the regime [R8]'s tail scenarios keep 40%
+        of policies in after 31 years;
+    ``2.0``
+        the guarantee has terminated and the policy is surviving on its account
+        value alone -- a shock.  Where the account value has gone too the policy
+        is already in grace and about to lapse, so the rate is academic there.
 
     Dynamic lapse is used by 63% of surveyed ULSG writers, and lapse and tail
     investment returns are rated the most critical ULSG assumptions [R8]; the formula

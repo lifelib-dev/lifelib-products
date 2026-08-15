@@ -120,11 +120,11 @@ README so their absence is not mistaken for an oversight:
   give no required-premium schedule, so there is nothing to project.
 * **Catch-up premium payment.** The catch-up requirement ``C_t`` is a complete formula
   and is implemented as the diagnostic
-  :func:`~ULSG_US_S.Projection.catch_up_prem_pp`; the notes state expressly that
+  :func:`~.ULSG_US_S.Projection.catch_up_prem_pp`; the notes state expressly that
   catch-up behaviour is not modelled in the base run, so no catch-up premium is ever
   paid and no guarantee is ever restored.
 * **Grace cure.** The required cure payment is implemented as
-  :func:`~ULSG_US_S.Projection.cure_premium_pp`, but the notes give no cure
+  :func:`~.ULSG_US_S.Projection.cure_premium_pp`, but the notes give no cure
   probability, so a policy that enters grace always lapses when the 61 days expire.
 * **New policy loans, repayments and withdrawal utilisation.** The mechanics are
   implemented -- loan interest accrual, the loaned/unloaned interest split, the
@@ -141,8 +141,8 @@ README so their absence is not mistaken for an oversight:
   flows; VM-20 ULSG, AG 38 and A-830 consume them and are cited, not reproduced.
 
 The **funding-premium solve** *is* implemented, because the notes give the complete
-algorithm: :func:`~ULSG_US_S.Projection.no_lapse_premium` bisects
-:func:`~ULSG_US_S.Projection.guar_min_sg` over the level annual premium with
+algorithm: :func:`~.ULSG_US_S.Projection.no_lapse_premium` bisects
+:func:`~.ULSG_US_S.Projection.guar_min_sg` over the level annual premium with
 decrements off, on the notes' own domain. It is a side calculation; nothing in the
 projection depends on it.
 

@@ -115,7 +115,7 @@ for an oversight:
 * Stochastic index scenarios. The notes give the lognormal parameters (mu = 6.0%,
   sigma = 16% **[std]** placeholders) but a path-by-path simulation is a driver around
   this model, not a cells inside it; the base run is the deterministic one the notes
-  prescribe. :func:`~IUL_US_S.Projection.index_level` is the single point of
+  prescribe. :func:`~.IUL_US_S.Projection.index_level` is the single point of
   substitution.
 * Cap re-declaration from an option budget. The notes give the economics
   (``HB ~ [C(I_0) - C(I_0(1+c))] / I_0``, ``HB ~ NIER - target spread``) but no option
@@ -123,11 +123,11 @@ for an oversight:
   notes prescribe for the base run.
 * The grace and lapse-for-insufficiency cascade. The trigger and the no-lapse test are
   complete and are implemented as the diagnostics
-  :func:`~IUL_US_S.Projection.is_shortfall`,
-  :func:`~IUL_US_S.Projection.nlg_test_ok` and
-  :func:`~IUL_US_S.Projection.nlg_in_effect`, and the notes' lapse suppression while
+  :func:`~.IUL_US_S.Projection.is_shortfall`,
+  :func:`~.IUL_US_S.Projection.nlg_test_ok` and
+  :func:`~.IUL_US_S.Projection.nlg_in_effect`, and the notes' lapse suppression while
   the no-lapse guarantee is in effect *is* implemented in
-  :func:`~IUL_US_S.Projection.lapse_rate`; but the notes leave the in-grace account
+  :func:`~.IUL_US_S.Projection.lapse_rate`; but the notes leave the in-grace account
   value treatment and the cash flow of a cure payment undetermined, so no policy is
   terminated for insufficiency and no in-grace state is carried.
 
@@ -137,7 +137,7 @@ for an oversight:
   and because ``NAAR_t = max(0, DB_t x v_g - AV'_t)`` rises one for one as ``AV'_t``
   falls, the cost of insurance then compounds on itself and the account value runs
   away. Model point 5 is the only shipped point that gets there:
-  :func:`~IUL_US_S.Projection.av_pp` first turns negative at policy month **605**
+  :func:`~.IUL_US_S.Projection.av_pp` first turns negative at policy month **605**
   (policy year 51) and reaches roughly -1.3e10 at the horizon, so ``result_av()`` --
   ``av_pp``, ``net_amt_at_risk``, ``coi_pp``, ``mth_deduction_pp`` -- **is not a
   meaningful number for model point 5 from month 605 onward**. The cash flow columns of
@@ -154,7 +154,7 @@ for an oversight:
   withdrawal is whatever the model point's ``wd_pp`` column says, and model point 5
   deliberately takes $200 a month, below the sourced minimum, because a compliant $500 a
   month against a $6,000 annual premium empties the policy before the loan module it is
-  there to exercise ever starts; :func:`~IUL_US_S.Projection.ncsv_pp` floors at zero
+  there to exercise ever starts; :func:`~.IUL_US_S.Projection.ncsv_pp` floors at zero
   rather than at $500. Both are limits on what a policyholder may *request*, and the
   notes give no behaviour for a refused request, so the mechanics are implemented and
   the limits are left to the data.
@@ -169,7 +169,7 @@ for an oversight:
   changes, reinstatement, and riders -- all excluded from the baseline by the product
   spec.
 * MEC status has no cash flow consequence for the insurer, so
-  :func:`~IUL_US_S.Projection.is_mec` flags and does not project.
+  :func:`~.IUL_US_S.Projection.is_mec` flags and does not project.
 
 **Model points.** ``model_point_table.csv`` carries five points, all on the notes' own
 anchor configuration M45 / Non-Tobacco / $250,000 / Option A / GPT, because the shipped

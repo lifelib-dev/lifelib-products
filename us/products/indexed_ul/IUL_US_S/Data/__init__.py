@@ -52,9 +52,9 @@ a basis.
 There is deliberately **no premium persistency table**. The universal life chassis reads
 one, because its notes give a 16-row schedule; these notes instead give a closed form --
 ``expected premium_y = planned x 0.98^(y-1)`` -- which is implemented as
-:func:`~IUL_US_S.Projection.prem_persistency` with the rate in a Reference. Nor is
+:func:`~.IUL_US_S.Projection.prem_persistency` with the rate in a Reference. Nor is
 there an index scenario file: the base deterministic run generates
-:func:`~IUL_US_S.Projection.index_level` from a level annual return, and a stochastic
+:func:`~.IUL_US_S.Projection.index_level` from a level annual return, and a stochastic
 or historical path is substituted by overriding that one cells.
 
 To swap in a licensed mortality basis, replace ``mort_table.csv`` with a same-schema

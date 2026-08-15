@@ -110,9 +110,14 @@ def main(argv):
                     continue
                 here = path.parent
                 resolved = None
-                if (here / target).exists():
+                if (here / target).is_dir():
+                    # A directory is not a document.  MyST needs the page, and every
+                    # directory in this library has one.
+                    if (here / target / "index.md").exists():
+                        resolved = here / target / "index.md"
+                elif (here / target).exists():
                     resolved = here / target
-                else:
+                if resolved is None:
                     for candidate in candidates(target, here, library):
                         if candidate and (here / candidate).exists():
                             resolved = here / candidate

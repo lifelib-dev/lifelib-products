@@ -49,7 +49,7 @@ sensitivities, and both are standardizations.
 subaccount returns keyed by ``scenario_id``, ``subaccount_id`` and policy month ``t``,
 with the last month of a scenario repeating for the rest of the projection. Fund
 expenses and the M&E charge are applied on top of these in
-:func:`~VUL_US_S.Projection.inv_return_mth`, so the table holds gross returns only.
+:func:`~.VUL_US_S.Projection.inv_return_mth`, so the table holds gross returns only.
 A stochastic set is a data change -- more ``scenario_id`` values -- not a formula
 change. The shipped scenarios are deterministic: ``WE`` is the worked example's month
 (+1.00% equity, -0.50% bond) followed by a level 6% a year gross path, and ``LEVEL6``

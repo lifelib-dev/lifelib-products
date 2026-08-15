@@ -43,7 +43,7 @@ rop_factor_file           rop_factor_table()              rop_factor_table.csv
 own paid-up income slice at the purchase rate then in force. A fixed set of premium
 columns on the model point table would cap that number, so the schedule is a long table
 keyed by ``point_id`` with one row per slice, and
-:func:`~DIA_US_S.Projection.premium_by_mth` collapses it to a
+:func:`~.DIA_US_S.Projection.premium_by_mth` collapses it to a
 month-to-amount mapping once per contract.
 
 **The two factor tables are the pricing kernel's data, and both are [std].** No

@@ -868,17 +868,21 @@ def claim_pp(t, kind):
 def pols_if_at(t, timing):
     """The number of policies in force at a point inside policy year t.
 
-    ``"BEF_DECR"``  l_{t-1}, the start of year t, before any decrement; the same number
-                    as pols_if(t), and the weight on that year's cash flows.
-    ``"BEF_SURR"``  after deaths, before surrenders — the population the dividend is
-                    credited to and the one surrenders are taken from.
-    ``"BEF_MAT"``   after surrenders, before maturity; the survivors of the year.
-    ``"AFT_DECR"``  l_t, the notes' end-of-year state variable: what is left once the
-                    year's deaths, surrenders and — in the final policy year — the
-                    maturities have all been taken, so it is zero from T on. Equals
-                    pols_if(t + 1). The string is added to CashValue_SE's set because
-                    that model has no name for the point past the last decrement, which
-                    is where these notes keep their in-force probability.
+    ``"BEF_DECR"``
+        l_{t-1}, the start of year t, before any decrement; the same number
+        as pols_if(t), and the weight on that year's cash flows.
+    ``"BEF_SURR"``
+        after deaths, before surrenders — the population the dividend is
+        credited to and the one surrenders are taken from.
+    ``"BEF_MAT"``
+        after surrenders, before maturity; the survivors of the year.
+    ``"AFT_DECR"``
+        l_t, the notes' end-of-year state variable: what is left once the
+        year's deaths, surrenders and — in the final policy year — the
+        maturities have all been taken, so it is zero from T on. Equals
+        pols_if(t + 1). The string is added to CashValue_SE's set because
+        that model has no name for the point past the last decrement, which
+        is where these notes keep their in-force probability.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
