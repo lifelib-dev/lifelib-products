@@ -27,3 +27,7 @@ __pycache__/
 # doc-check build tree (tools/doccheck.py)
 .doccheck/
 .doccheck.log
+
+# Sphinx build output and the mirrored library documents (doc/source/conf.py)
+doc/build/
+doc/source/libraries/

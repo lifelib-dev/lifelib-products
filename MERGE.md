@@ -10,7 +10,7 @@ this is the checklist, not the argument.
 `-n -W --keep-going`, and its 1,010 tests pass. Both are reproducible here:
 
 ```bash
-python tools/doccheck.py uslib
+python tools/doccheck.py
 ```
 
 ```bash
@@ -59,8 +59,13 @@ not a preference.
 ## 4. `doc/source/conf.py` — mirror the library's markdown into the doc tree
 
 Sphinx has one source directory and these documents live in the library, so the build has to
-bring them in. Written to discover libraries rather than name `uslib`, so a second country
-library needs no further edit:
+bring them in. **This repository's `doc/source/conf.py` is the working version of everything
+in this section** — it builds all 80 pages here, warning-clean under `-n -W`, so the code
+below is transcribed from something that runs rather than sketched.
+
+The hook discovers libraries rather than naming `uslib`, so a second country library needs
+no further edit. The single difference from this repository's copy is where the libraries
+live: top-level directories here, `lifelib/libraries/` there — one path:
 
 ```python
 import shutil
@@ -147,8 +152,8 @@ CI needs no change: `.github/workflows/tests.yml` and `tox.ini` both run bare `p
 the repository root, which already collects `ifrs17a`'s in-library tests and will collect
 these the same way.
 
-Then build the docs and confirm the uslib pages are clean. The equivalent of this
-repository's `tools/doccheck.py` is `sphinx-build -n -W --keep-going`; **the `-n` matters**.
+Then build the docs and confirm the uslib pages are clean, with
+`sphinx-build -n -W --keep-going -E`; **the `-n` matters**.
 Sphinx does not warn about an unresolved `:func:`/`:mod:` role by default — it drops the
 role and renders plain text — so a build without nitpicky mode cannot tell you whether the
 cross-references survived. During the prep it was the only thing that revealed 38 silently

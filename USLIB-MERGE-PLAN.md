@@ -454,12 +454,13 @@ had already been calling itself `uslib` everywhere it mattered: every citation a
 `uslib-<product>-s<n>`, every `model-api.md` says
 `.. automodule:: uslib.products.<slug>.<Model>`, and D8 fixed `<lib>-` as the house prefix.
 Only the directory disagreed — which meant the autodoc module paths were *wrong in this
-repository* and right only after the merge, and `tools/doccheck.py` needed a copy-and-rename
-step to make them resolve.
+repository* and right only after the merge, and the doc build needed a copy-and-rename step
+to make them resolve at all.
 
 Naming the directory for the library removes that. `uslib.products.term_life.Term_US_A` is
-importable here, the harness copies rather than renames, and there is one less thing that is
-true only on the far side of a move. It is the same reasoning as P2's choice of
+importable here — `doc/source/conf.py` puts the repository root on `sys.path` and autodoc
+finds it, exactly as lifelib puts `lifelib/libraries` on `sys.path` and finds `basiclife` —
+so there is one less thing that is true only on the far side of a move. It is the same reasoning as P2's choice of
 library-root-relative paths: prefer the form that is correct in both places.
 
 It also fixes the library-name derivation in the tooling, which was
@@ -611,9 +612,11 @@ output against the §6 uk column.
   block with `.. automodule:: uslib.products.<slug>.<Model>.Projection :members:` and the
   same for `Data`. Short and near-identical across the twelve, so generate them from a
   template rather than hand-writing.
-- A `doc-check` harness: a throwaway `conf.py` mirroring lifelib's MyST settings **plus
-  `autodoc`, `napoleon` and `libraries/` on `sys.path`**, so the whole set can be built
-  **here** with **`-n -W --keep-going`** and land in lifelib clean. This is the acceptance
+- A **real Sphinx setup at `doc/`**, not a throwaway harness: `doc/source/conf.py` carries
+  the D3 mirror hook, lifelib's MyST settings, autodoc, and the repo root on `sys.path`.
+  It is the version that goes to lifelib, so `tools/doccheck.py` runs *it* with
+  **`-n -W --keep-going -E`** rather than duplicating its settings — one configuration,
+  no second place to drift. This is the acceptance
   test for the whole plan. The `-n` is not optional: per D9, unresolved Python roles are
   silent without it, and the entire point of the exercise is that cross-references are
   links.

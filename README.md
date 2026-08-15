@@ -39,6 +39,30 @@ a planned follow-on (see Roadmap).
 section in the older layout (`products/<product-type>/` with hyphenated slugs, no models) and
 becomes `uklib/` on the same pattern.
 
+## Building the documentation
+
+The documents live beside the models they describe rather than under `doc/`, and are
+mirrored into the doc tree at build time by a hook in `doc/source/conf.py` — the same
+arrangement they will have inside lifelib. Any library with an `index.md` is picked up.
+
+```bash
+cd doc && make html
+```
+
+To hold the documents to the standard they have to meet — every warning an error, and
+**nitpicky**, without which an unresolved `:func:`/`:mod:` role is dropped silently rather
+than reported:
+
+```bash
+python tools/doccheck.py
+```
+
+That is 80 pages, and it should report zero. Run the model suite with:
+
+```bash
+python -m pytest uslib/tests -q
+```
+
 - **`product-spec.md`** defines a *representative* product: a standardized composite
   built from publicly available documentation of real products, not any single
   insurer's contract. It records contractual mechanics, a full parameter set, observed
