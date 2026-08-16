@@ -80,6 +80,16 @@ def main(argv):
 
     if "--keep" not in argv:
         shutil.rmtree(BUILD, ignore_errors=True)
+    # A gate that cannot run must not report success.  With no Sphinx installed the
+    # build emits no warnings and writes no pages, and the count above reads
+    # "0 pages, 0 warnings" -- the exact silent pass this script exists to prevent
+    # elsewhere.  Sphinx is a documentation dependency and is deliberately absent from
+    # requirements.txt, which covers the models, so this is a normal thing to hit.
+    if not pages:
+        print("\nnothing was built, so nothing was checked -- this is not a pass.")
+        print(result.stderr.strip()[-500:] or result.stdout.strip()[-500:])
+        print("\npip install sphinx myst-parser sphinx-design pydata-sphinx-theme")
+        return 2
     return 1 if lines else 0
 
 
