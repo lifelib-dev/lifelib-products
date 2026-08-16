@@ -36,9 +36,9 @@ Illness Cover", Royal London [S8]; joint-life cover on a first-event basis [S11]
 on a defined critical illness [S11]; Aviva Critical Illness+ is a standalone CI
 contract [S4]). Legal & General sells CIC "alongside" its Life Insurance as a
 contractually separate policy distributed with life cover [S1]. The policy ends when
-the full (main) CI benefit is paid [S1][S4][S11]; lower-severity "additional payment"
+the full (main) CI benefit is paid [S1] [S4] [S11]; lower-severity "additional payment"
 conditions and children's claims pay capped partial amounts *without* reducing the sum
-assured or ending the policy [S1][S3][S4][S8][S11].
+assured or ending the policy [S1] [S3] [S4] [S8] [S11].
 
 The right to call a product "Critical Illness Cover" is governed by the ABI's *Guide to
 Minimum Standards for Critical Illness Cover*, which "sets out the minimum standards
@@ -46,11 +46,11 @@ that insurers must meet to call their product Critical Illness Cover" [R2]; the
 2021/22 review (guide dated 16 September 2022 [unverified — R1 not fetched], with
 April 2023 clarifications) changed
 the Alzheimer's, cancer and heart-attack model definitions, with insurer compliance
-required for new policies by 31 January 2024 [R2][R3]. Insurer wordings visibly
-implement these model definitions [S1][S11]. Market context: "On average, critical
+required for new policies by 31 January 2024 [R2] [R3]. Insurer wordings visibly
+implement these model definitions [S1] [S11]. Market context: "On average, critical
 illness insurance policies only cover 75 conditions (Defaqto, 2026)" [S9]; most
 insurers now sell a core product plus an enhanced tier (L&G CIC vs CIC Extra [S3];
-Aviva standard vs upgraded [S4][S5]; Vitality 1X/2X/3X [S9]).
+Aviva standard vs upgraded [S4] [S5]; Vitality 1X/2X/3X [S9]).
 
 The structural outlier is Vitality's **Serious Illness Cover**: instead of a
 full-payment conditions list, each condition is severity-graded and pays a percentage
@@ -61,7 +61,7 @@ depletable "plan account" unless a Protected Cover option reinstates cover [S10]
 design is documented under *Variations across insurers* and excluded from the baseline.
 
 These are pure protection contracts: the fetched policy documents describe cancellation
-with no payment other than the cooling-off refund [S1][S4][S5]; no surrender value or
+with no payment other than the cooling-off refund [S1] [S4] [S5]; no surrender value or
 paid-up value exists [unverified as an explicit statement; consistent with all fetched
 terms]. There is no asset share, bonus, or MVR mechanics anywhere in this product.
 
@@ -73,14 +73,14 @@ terms]. There is no asset share, bonus, or MVR mechanics anywhere in this produc
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Accelerated CI: level term assurance + CI, sum assured paid on first event (death / terminal illness / critical illness), policy then ends | [S1][S8][S11]; composite **[std]** (1) |
-| Standalone variant | Same chassis minus the death benefit (see Contractual mechanics) | [S4][S11] |
-| Benefit shape | Level lump sum (decreasing and family-income shapes out of scope) | [S4][S7]; scope **[std]** (2) |
+| Design type | Accelerated CI: level term assurance + CI, sum assured paid on first event (death / terminal illness / critical illness), policy then ends | [S1] [S8] [S11]; composite **[std]** (1) |
+| Standalone variant | Same chassis minus the death benefit (see Contractual mechanics) | [S4] [S11] |
+| Benefit shape | Level lump sum (decreasing and family-income shapes out of scope) | [S4] [S7]; scope **[std]** (2) |
 | Life basis | Single life (joint life first event as a variant) | [S11]; scope **[std]** (3) |
 | Premium type | Guaranteed, level | [S1]; choice **[std]** (4) |
-| Entry ages | 18–64 | 18 [S2][S5][S11]; 64 [S5]; composite **[std]** (5) |
-| Maximum age at policy end | 75th birthday | [S2][S5]; composite **[std]** (6) |
-| Policy term | 5–50 years | [S2][S5]; composite **[std]** (7) |
+| Entry ages | 18–64 | 18 [S2] [S5] [S11]; 64 [S5]; composite **[std]** (5) |
+| Maximum age at policy end | 75th birthday | [S2] [S5]; composite **[std]** (6) |
+| Policy term | 5–50 years | [S2] [S5]; composite **[std]** (7) |
 | Sum assured | No contractual minimum (minimum-premium driven); anchor cell £100,000 | no-minimum [S2]; anchor **[std]** (8) |
 | Residency at application | UK resident, ≥183 days in the last tax year | [S1] |
 | Anchor model cell | Male 40, non-smoker, £100,000 sum assured, 25-year term, accelerated, level guaranteed premium | **[std]** (8) |
@@ -89,28 +89,28 @@ Footnotes to [std] rows:
 
 1. The dominant market design (L&G, Aviva, Zurich, Royal London): one full payment on a
    defined-conditions list which ends the policy, plus non-depleting additional
-   payments [S1][S4][S11][S6]. Chosen over the Vitality severity-graded account
-   [S9][S10], which is the documented alternative.
+   payments [S1] [S4] [S11] [S6]. Chosen over the Vitality severity-graded account
+   [S9] [S10], which is the documented alternative.
 2. Aviva also offers "family income cover" paying equal monthly instalments to the end
    of term [S4]; Royal London offers lump sum or regular payments (decreasing cover
    lump-sum only) [S7]. Level lump sum is the simplest common denominator.
 3. Joint-life policies pay on a first-event basis [S11] and carry separation options
-   ([S1][S4][S11], see Riders). Single life keeps the reference decrement model
+   ([S1] [S4] [S11], see Riders). Single life keeps the reference decrement model
    one-life.
 4. Retail CIC premiums are now typically guaranteed [S1]; reviewable variants persist
    (Aviva both, 5-yearly reviews with "no limits on how much your premium can change"
-   [S4][S5]; Royal London both [S7][S8]; L&G intermediary QGI14162 reviewable with
+   [S4] [S5]; Royal London both [S7] [S8]; L&G intermediary QGI14162 reviewable with
    5-yearly reviews and ±5% tolerance [S3]). Guaranteed premiums are the modeling
    default; the reviewable variant is a module (see technical notes).
-5. Observed minimum entry age 18 across L&G/Aviva/Zurich [S2][S5][S11]. Observed
-   maximum entry: 64 (Aviva; L&G non-level options) [S5][S2], 67 (L&G life+CIC level)
+5. Observed minimum entry age 18 across L&G/Aviva/Zurich [S2] [S5] [S11]. Observed
+   maximum entry: 64 (Aviva; L&G non-level options) [S5] [S2], 67 (L&G life+CIC level)
    [S2], 69 (Zurich) [S11]. 64 is the modal value.
 6. Observed maximum age at policy end: 74 (Zurich) [S11], 75 (L&G; Aviva guaranteed
-   premiums) [S2][S5], 90 (Aviva reviewable premiums) [S5]. 75 matches the
+   premiums) [S2] [S5], 90 (Aviva reviewable premiums) [S5]. 75 matches the
    guaranteed-premium mainstream.
 7. Observed terms: min 5 years (Aviva guaranteed, Zurich; 6 reviewable at Aviva; L&G 2
-   years for life-level-with-CIC, 5 otherwise) [S5][S11][S2]; max 50 years (L&G,
-   Aviva) [S2][S5], 40 (Zurich) [S11].
+   years for life-level-with-CIC, 5 otherwise) [S5] [S11] [S2]; max 50 years (L&G,
+   Aviva) [S2] [S5], 40 (Zurich) [S11].
 8. No insurer publishes CI rate cards (research-file gap), and explicit sum assured
    caps appear only as adviser-page maxima (L&G £2m–£3m depending on TPD basis [S2]).
    £100,000 / male 40 / 25 years is a pure modeling anchor; the level guaranteed
@@ -121,55 +121,55 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Main benefit | Sum assured, once, on the first of: death, terminal illness, or diagnosis of a listed critical illness (with survival period); policy ends on payment | [S1][S4][S8][S11] |
+| Main benefit | Sum assured, once, on the first of: death, terminal illness, or diagnosis of a listed critical illness (with survival period); policy ends on payment | [S1] [S4] [S8] [S11] |
 | Survival period | 14 days from diagnosis; payable even if survival completes after the policy end date | [S1]; pick **[std]** (9) |
 | Full-payment conditions | ~40 ABI-aligned definitions including TPD; concrete reference list = the L&G retail list (~37 definitions) | list [S1]; count **[std]** (10) |
 | TPD definition | Own occupation before 70th birthday, or Specified Work Tasks (unable ever again to do 3 of 6 tasks); TPD cover drops off at age 70 with a premium reduction | [S1]; Aviva mirrors [S4] |
-| Additional-payment conditions | 2 conditions (carcinoma in situ of the breast treated by surgery; low-grade prostate cancer), each paying the lower of 25% of sum assured and £25,000; does not reduce the sum assured or end the policy; one claim per condition per life [S11] | [S1][S4][S5][S11]; calibration **[std]** (11) |
+| Additional-payment conditions | 2 conditions (carcinoma in situ of the breast treated by surgery; low-grade prostate cancer), each paying the lower of 25% of sum assured and £25,000; does not reduce the sum assured or end the policy; one claim per condition per life [S11] | [S1] [S4] [S5] [S11]; calibration **[std]** (11) |
 | Children's cover | Automatic; lower of 50% of sum assured and £25,000 per child; max 2 children's claims per policy; child aged 30 days to 18th birthday (21 if in full-time education) | [S1]; calibration **[std]** (12) |
-| Child funeral benefit | £4,000 (max 2 children) | [S1]; range £4,000–£10,000 [S4][S6][S8][S11] |
-| Diagnosis standard | Diagnosis by a (UK) consultant of appropriate specialism | [S1][S4] |
-| Claim-validity residence | Claims payable while the life insured resides in EU, Australia, Canada, Channel Islands, Isle of Man, New Zealand, UK, USA (insurer discretion elsewhere) | [S1][S3] |
+| Child funeral benefit | £4,000 (max 2 children) | [S1]; range £4,000–£10,000 [S4] [S6] [S8] [S11] |
+| Diagnosis standard | Diagnosis by a (UK) consultant of appropriate specialism | [S1] [S4] |
+| Claim-validity residence | Claims payable while the life insured resides in EU, Australia, Canada, Channel Islands, Isle of Man, New Zealand, UK, USA (insurer discretion elsewhere) | [S1] [S3] |
 
 9. Observed survival periods: 14 days (L&G retail, including children; Vitality)
-   [S1][S10]; 10 days (Aviva — main, additional and children's benefits; Royal London
-   additional/children's; L&G intermediary children's) [S4][S5][S8][S3]. The
+   [S1] [S10]; 10 days (Aviva — main, additional and children's benefits; Royal London
+   additional/children's; L&G intermediary children's) [S4] [S5] [S8] [S3]. The
    ABI-typical survival period is 14 days [unverified — R1 not fetched]. 14 days
    chosen as the L&G-retail/Vitality value and the [unverified] ABI-typical figure.
 10. Observed full-payment counts: 33 (Aviva standard, incl. terminal illness) [S5], ~37
     (L&G retail, incl. TPD) [S1], 39 (Zurich, incl. terminal illness) [S11], 46 (Royal
-    London) [S6]; enhanced tiers add ~15–20 more [S3][S4][S5]. "~40 incl. TPD" is the
+    London) [S6]; enhanced tiers add ~15–20 more [S3] [S4] [S5]. "~40 incl. TPD" is the
     composite; the model treats the list as a single aggregate incidence basis, so the
     count is documentation, not a parameter.
 11. Observed additional-payment calibrations: 2 conditions at lower of 25%/£25,000
-    (L&G retail [S1]; Aviva standard [S4][S5]; Zurich, one claim per condition per
+    (L&G retail [S1]; Aviva standard [S4] [S5]; Zurich, one claim per condition per
     life [S11]) → ~22 conditions at lower of 50%/£30,000 (L&G CIC Extra [S3]) → 32
-    conditions at 50% up to £35,000 (Royal London [S6][S8]) → 26 conditions at lower
-    of 100%/£30,000 (Aviva upgraded [S4][S5]). The core-tier calibration (2 conditions,
+    conditions at 50% up to £35,000 (Royal London [S6] [S8]) → 26 conditions at lower
+    of 100%/£30,000 (Aviva upgraded [S4] [S5]). The core-tier calibration (2 conditions,
     25%/£25,000) is adopted.
 12. Observed children's cover: lower of 50%/£25,000, max 2 children, ages 30 days–18
     (21 FTE), £50,000 max per child across policies (L&G) [S1]; lower of £25,000/50%
     standard or flat £25,000 upgraded, to 18 (21 FTE) or birth–22 upgraded (Aviva)
-    [S4]; 50% capped £30,000–£50,000 to age 22/23 (Royal London) [S6][S8]; optional,
+    [S4]; 50% capped £30,000–£50,000 to age 22/23 (Royal London) [S6] [S8]; optional,
     lower of £25,000/50% to 22nd birthday (Zurich) [S11]. Automatic inclusion is the
-    L&G/Aviva/Royal London pattern [S1][S4][S7]; the L&G calibration is adopted.
+    L&G/Aviva/Royal London pattern [S1] [S4] [S7]; the L&G calibration is adopted.
 
 ### Premiums and policy administration
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium guarantee | Guaranteed: rates fixed at outset for the full term | [S1]; choice **[std]** (see footnote 4) |
-| Premium frequency | Monthly or annual | [S1][S4] |
-| Grace period | 60 days; then cancellation without refund | [S1][S4]; pick **[std]** (13) |
-| Cooling-off | 30 days with full premium refund; thereafter no refund on monthly premiums | [S1][S4][S5] |
+| Premium frequency | Monthly or annual | [S1] [S4] |
+| Grace period | 60 days; then cancellation without refund | [S1] [S4]; pick **[std]** (13) |
+| Cooling-off | 30 days with full premium refund; thereafter no refund on monthly premiums | [S1] [S4] [S5] |
 | Indexation (increasing cover option) | Per term chassis composite: sum assured up by RPI (no increase if RPI ≤ 0%, capped 10% p.a.); premium up by RPI x 1.5 capped 15% p.a.; declining 3 years in a row removes the option (L&G's own wording floors increases at RPI < 1% [S1]) | term-assurance chassis composite; [S1]; Aviva similar (RPI or fixed 3%/5%) [S4] |
-| Guaranteed insurability (life events) | Per term chassis: increase on marriage/mortgage/birth etc., capped at the lower of 100% of original cover and £200,000; eldest life under 55 | [S1][S4]; Zurich ≤54, same cap [S11] |
+| Guaranteed insurability (life events) | Per term chassis: increase on marriage/mortgage/birth etc., capped at the lower of 100% of original cover and £200,000; eldest life under 55 | [S1] [S4]; Zurich ≤54, same cap [S11] |
 | Waiver of premium | Optional rider, out of model scope: premiums waived after a 26-week deferred period of incapacity | [S1]; Aviva: deferred period, stops at 71 [S4] |
-| Surrender / paid-up value | None; lapse yields no payment | [S1][S4][S5]; absence of surrender value [unverified as explicit statement] |
+| Surrender / paid-up value | None; lapse yields no payment | [S1] [S4] [S5]; absence of surrender value [unverified as explicit statement] |
 | Misrepresentation remedy | Proportionate reduction: new cover = premium charged x original cover / higher premium | [S1] |
 | FSCS protection | 100% of claim value, continuity preferred | [S1] |
 
-13. Observed grace: 60 days (L&G retail, Aviva) [S1][S4]; 30 days (L&G intermediary)
+13. Observed grace: 60 days (L&G retail, Aviva) [S1] [S4]; 30 days (L&G intermediary)
     [S3]. 60 days adopted as the retail mainstream.
 
 ---
@@ -186,7 +186,7 @@ first of: (i) death of the life assured; (ii) terminal illness (per the term cha
 provided the life assured survives 14 days from diagnosis [S1]. The 14-day survival
 condition is satisfied even if the 14th day falls after the policy end date, so long as
 diagnosis occurred in-term [S1]. Payment of the main benefit terminates the policy
-[S1][S4][S11]. Because death within the survival period itself triggers the death
+[S1] [S4] [S11]. Because death within the survival period itself triggers the death
 benefit for the same `SA`, the survival period is cash-flow-neutral in the accelerated
 design (it only reclassifies the claim); it is economically binding only in the
 standalone variant.
@@ -197,7 +197,7 @@ conditions, one claim per condition per life:
     B_AP = min(0.25 x SA, GBP 25,000)                    [S1][S4][S11]
 
 Payment of `B_AP` does not reduce `SA`, does not end the policy, and does not change
-the premium [S1][S3][S4][S8][S11].
+the premium [S1] [S3] [S4] [S8] [S11].
 
 **Children's cover (non-depleting).** Each eligible child (30 days to 18th birthday, 21
 if in full-time education) is covered for the listed full-payment conditions on the
@@ -206,30 +206,30 @@ same definitions, with a 14-day child survival period [S1]:
     B_child = min(0.50 x SA, GBP 25,000)   (max 2 children's claims per policy)  [S1]
 
 plus a child funeral benefit of £4,000 on death of a child (max 2 children) [S1].
-Children's claims do not reduce `SA` or end the policy [S1][S4][S8][S11]. Exclusions:
+Children's claims do not reduce `SA` or end the policy [S1] [S4] [S8] [S11]. Exclusions:
 conditions present at birth; symptoms before cover start; death within the survival
 period; TPD [S1].
 
 **Standalone variant.** Identical chassis minus the death and terminal-illness
 benefits: the sum assured pays only on a defined critical illness (plus survival
-period) [S11][S4]. Death of the life assured within the survival period, or death
-without a prior CI diagnosis, ends the policy with no payment [S4][S11] (a
-premium-refund-on-death feature exists in some designs [S4][S11 — recorded jointly in
+period) [S11] [S4]. Death of the life assured within the survival period, or death
+without a prior CI diagnosis, ends the policy with no payment [S4] [S11] (a
+premium-refund-on-death feature exists in some designs [S4] [S11 — recorded jointly in
 the research file] and is excluded from the composite **[std]**); the survival period
 is therefore a real benefit-reducing decrement in this variant (see technical notes). All other provisions (additional payments, children's cover,
-premiums, options) are unchanged [S4][S11].
+premiums, options) are unchanged [S4] [S11].
 
 **Premiums, grace and lapse.** Premiums are level and guaranteed for the term [S1]. If
 a premium is unpaid, cover continues for a 60-day grace period; if still unpaid the
-policy is cancelled without refund and without value [S1][S4]. There is no surrender
-value at any time [S1][S4][S5][unverified as explicit statement]; cancellation inside
-the 30-day cooling-off period refunds premiums in full [S1][S4][S5].
+policy is cancelled without refund and without value [S1] [S4]. There is no surrender
+value at any time [S1] [S4] [S5] [unverified as explicit statement]; cancellation inside
+the 30-day cooling-off period refunds premiums in full [S1] [S4] [S5].
 
 **Exclusions.** CI policies carry few blanket exclusions; exclusions are embedded per
 definition (e.g., cancers below staging thresholds; myocardial injury without
-infarction; TIA) [S1][S3]. Case-specific exclusions appear in the policy schedule
+infarction; TIA) [S1] [S3]. Case-specific exclusions appear in the policy schedule
 [S1]. The first-year suicide/self-inflicted-death clause applies to the life insurance
-element (term chassis) [S1][S3].
+element (term chassis) [S1] [S3].
 
 **Misrepresentation.** Claims can be declined for misrepresentation; the proportionate
 remedy reduces cover to
@@ -240,14 +240,14 @@ consistent with the CIDRA 2012 graduated-remedy regime for careless consumer
 misrepresentation [REG-R20].
 
 **Headline definitions (ABI-aligned).** The composite adopts the 2022/23 ABI
-minimum-standard parameters as implemented in the L&G wording [S1][R2][R3]: cancer
+minimum-standard parameters as implemented in the L&G wording [S1] [R2] [R3]: cancer
 requires positive histological diagnosis of a malignant tumour with invasion, with
 staging floors (prostate Gleason ≥7 or ≥ cT2bN0M0; urothelial ≥ T1N0M0; thyroid ≥
 T2N0M0; NETs WHO Grade ≥2; GIST AFIP/Miettinen-Lasota moderate/high risk or UICC/TNM8
-stage ≥II) [S1][R3]; heart attack requires new ECG/imaging changes plus characteristic
-troponin rise, excluding myocardial injury without infarction [S1][R2]; stroke requires
+stage ≥II) [S1] [R3]; heart attack requires new ECG/imaging changes plus characteristic
+troponin rise, excluding myocardial injury without infarction [S1] [R2]; stroke requires
 death of brain tissue with deficit lasting ≥24 hours, excluding TIA [S1]; dementia
-(including Alzheimer's) of specified severity with MCI excluded [S1][R2].
+(including Alzheimer's) of specified severity with MCI excluded [S1] [R2].
 
 ---
 
@@ -259,23 +259,23 @@ death of brain tissue with deficit lasting ≥24 hours, excluding TIA [S1]; deme
   Specified Work Tasks 3-of-6); drops off at age 70 with a premium reduction [S1].
   In the model it is part of the aggregate CI incidence basis, not a separate decrement.
 - **Additional-payment conditions** — modeled as a non-terminating frequency loading
-  (see technical notes) [S1][S4][S11].
+  (see technical notes) [S1] [S4] [S11].
 - **Children's cover** — automatic; modeled as a non-terminating frequency loading
-  [S1][S4].
+  [S1] [S4].
 - **Indexation (increasing cover)** and **guaranteed insurability option** — contract
-  features per the term chassis [S1][S4][S11]; described, but the base model point is
+  features per the term chassis [S1] [S4] [S11]; described, but the base model point is
   level cover with no exercises **[std]**.
 
-**Out of scope (listed for completeness):** waiver of premium [S1][S4]; family income
-benefit shape [S4][S7]; Aviva extra care cover (cover amount + £50,000 on CI with
+**Out of scope (listed for completeness):** waiver of premium [S1] [S4]; family income
+benefit shape [S4] [S7]; Aviva extra care cover (cover amount + £50,000 on CI with
 severe permanent disability / ADL failure) [S4]; fracture cover (£2,000–£6,000
-schedule) [S4][S11]; global treatment (overseas treatment, 3-year renewals) [S4][S5];
+schedule) [S4] [S11]; global treatment (overseas treatment, 3-year renewals) [S4] [S5];
 hospital benefit (£100/night from 8th night) [S4]; joint-life separation options and
-replacement cover after a joint-life claim [S1][S4][S11]; enhanced condition tiers
-(L&G CIC Extra [S3]; Aviva upgraded [S4][S5]); Royal London advanced-surgery benefit
+replacement cover after a joint-life claim [S1] [S4] [S11]; enhanced condition tiers
+(L&G CIC Extra [S3]; Aviva upgraded [S4] [S5]); Royal London advanced-surgery benefit
 (payment on joining an NHS waiting list) [S6]; Vitality Serious Illness Cover severity
 mechanics, Booster, Cancer Relapse Benefit, Dementia and FrailCare Cover, and child
-SIC [S9][S10].
+SIC [S9] [S10].
 
 ---
 
@@ -283,35 +283,35 @@ SIC [S9][S10].
 
 1. **Payment architecture.** Dominant design (L&G, Aviva, Zurich, Royal London): one
    full payment on a 33–46-condition list ending the policy, plus capped non-depleting
-   additional payments [S1][S4][S11][S6]. Vitality replaces this with a severity scale
+   additional payments [S1] [S4] [S11] [S6]. Vitality replaces this with a severity scale
    (historically A–G, 100% down to 5%; currently 25%–100% standard) and multiple claims
-   against a depletable or protected plan account [S9][S10]. Representative choice:
+   against a depletable or protected plan account [S9] [S10]. Representative choice:
    the dominant design — it is what four of five fetched insurers sell, and it keeps
    the reference model single-decrement for the main benefit.
 2. **Additional-payment calibration.** 25% capped £25,000 (L&G retail, Aviva standard,
    Zurich) → 50% capped £30,000–£35,000 (L&G CIC Extra, Royal London) → 100% capped
-   £30,000 (Aviva upgraded) [S1][S3][S4][S8][S11]. Chosen: 25%/£25,000 — the core-tier
+   £30,000 (Aviva upgraded) [S1] [S3] [S4] [S8] [S11]. Chosen: 25%/£25,000 — the core-tier
    calibration common to three insurers.
 3. **Two-tier menus.** Core + enhanced tier is now standard (L&G CIC vs CIC Extra
-   [S3]; Aviva standard vs upgraded [S4][S5]; Zurich "three levels" per its 2024
+   [S3]; Aviva standard vs upgraded [S4] [S5]; Zurich "three levels" per its 2024
    relaunch [unverified — media page not fetched]; Vitality 1X/2X/3X [S9]). Enhanced
-   tiers add ~15–20 full-payment conditions and expand partial payments [S3][S4][S5].
+   tiers add ~15–20 full-payment conditions and expand partial payments [S3] [S4] [S5].
    Chosen: core tier only; enhanced tiers change the incidence basis, not the
    mechanics.
 4. **Survival period.** 14 days (L&G retail, Vitality) vs 10 days (Aviva, Royal
-   London, L&G intermediary children's) [S1][S4][S8][S10][S3]. Chosen: 14 days
+   London, L&G intermediary children's) [S1] [S4] [S8] [S10] [S3]. Chosen: 14 days
    (footnote 9).
 5. **Children's cover.** Always a capped percentage (50%) with per-child and
    per-policy limits; caps £25,000–£50,000; enhanced tiers add congenital-onset
-   conditions, pregnancy complications and conversion options [S1][S3][S4][S6][S8][S11].
+   conditions, pregnancy complications and conversion options [S1] [S3] [S4] [S6] [S8] [S11].
    Zurich makes it optional; L&G/Aviva/Royal London include it automatically
-   [S11][S1][S4][S7]. Chosen: automatic, 50%/£25,000, 2-claim limit (L&G calibration).
+   [S11] [S1] [S4] [S7]. Chosen: automatic, 50%/£25,000, 2-claim limit (L&G calibration).
 6. **Premium guarantee.** Retail CIC premiums typically guaranteed; reviewable
    variants persist with 5-yearly reviews — unlimited changes at Aviva, ±5% tolerance
-   in the L&G intermediary variant [S1][S3][S4][S5][S7]. Chosen: guaranteed, with the
+   in the L&G intermediary variant [S1] [S3] [S4] [S5] [S7]. Chosen: guaranteed, with the
    reviewable design documented as a technical-notes module.
 7. **Accelerated vs standalone.** Both are sold; the accelerated form is packaged with
-   life cover as the mainstream retail proposition [S1][S8][S11], and Aviva's flagship
+   life cover as the mainstream retail proposition [S1] [S8] [S11], and Aviva's flagship
    CI+ is standalone [S4]. Chosen: accelerated as base (it exercises the combined
    decrement), standalone as the documented variant with a one-line model delta.
 
@@ -324,18 +324,18 @@ Technical Provisions Part: technical provisions = best estimate + risk margin (r
 2.4), where the best estimate is the probability-weighted average of future cash flows
 discounted on the relevant risk-free term structure, gross of reinsurance, including
 all cash in- and out-flows required to settle the obligations (rules 3.1–3.2)
-[R7][REG-R1]. The reformed risk margin (rules effective 31/12/2024) uses the
+[R7] [REG-R1]. The reformed risk margin (rules effective 31/12/2024) uses the
 cost-of-capital method with CoC = 4% and a risk-tapering factor λ = 0.9 (floor 0.25)
-for long-term business [R7][REG-R4]. Lapse/surrender assumptions must be realistic and
+for long-term business [R7] [REG-R4]. Lapse/surrender assumptions must be realistic and
 reflect dependence on future conditions, and obligations are segmented into homogeneous
 risk groups (9.1–9.2, 10.1) [R7]. The matching adjustment now sits in its own Rulebook
 Part [R7] and is in practice irrelevant to CI term business [unverified].
 
 **Conduct — FCA.** CIC is a non-investment insurance contract, so conduct rules sit in
 ICOBS, which applies to distribution and to effecting and carrying out such contracts
-(ICOBS 1.1.1R) [R5][REG-R11]; the "pure protection contract" glossary mapping is
+(ICOBS 1.1.1R) [R5] [REG-R11]; the "pure protection contract" glossary mapping is
 [unverified]. The Consumer Duty (PRIN 2A) requires firms to deliver good outcomes,
-including fair value, on retail protection business [R6][REG-R12]; in-force dates 31
+including fair value, on retail protection business [R6] [REG-R12]; in-force dates 31
 July 2023 (open) / 31 July 2024 (closed) [unverified]. Consumer misrepresentation
 remedies follow CIDRA 2012's graduated regime (deliberate/reckless vs careless)
 [REG-R20], which the contractual proportionate-remedy formula implements [S1].
@@ -344,15 +344,15 @@ remedies follow CIDRA 2012's graduated regime (deliberate/reckless vs careless)
 2023 clarifications) sets the minimum condition definitions required to use the CIC
 label; the 2021/22 review broadened Alzheimer's to all dementia (with MCI exclusion),
 clarified cancer exclusions and excluded myocardial injury from heart attack, with
-compliance required for new policies by 31 January 2024 [R2][R3]. The Guide itself
+compliance required for new policies by 31 January 2024 [R2] [R3]. The Guide itself
 could not be fetched (Cloudflare challenge) [R1]; its content is triangulated from
-[R2][R3] and implementing wordings [S1][S11].
+[R2] [R3] and implementing wordings [S1] [S11].
 
 **Authorisation classes.** Accelerated CI written with life cover falls in long-term
 Class I (life and annuity); standalone CI is typically written as long-term Class IV
 (permanent health: defined benefits for incapacity from accident or sickness, of
 indefinite duration or running to retirement age, with restricted insurer cancellation
-rights) or general classes 1–2 for short-term forms [R4][REG-R14 for the class
+rights) or general classes 1–2 for short-term forms [R4] [REG-R14 for the class
 definitions; the mapping of CI products to classes is [unverified]].
 
 **Tax.** Under FA 2012 Part 2, protection business written post-2012 is non-BLAGAB

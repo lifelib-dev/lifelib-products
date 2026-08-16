@@ -33,6 +33,8 @@ import sys
 import pathlib
 import collections
 
+from mdspans import prose_spans
+
 
 BEGIN = "<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->"
 END = "<!-- END generated citation links -->"
@@ -40,7 +42,6 @@ BLOCK = re.compile(re.escape(BEGIN) + r".*?" + re.escape(END) + r"\n*", re.S)
 
 TAG = r'(?:S|R|REG-R)\d+[a-z]?'
 ANCHOR = re.compile(r'^\(([\w.-]+)\)=\s*$', re.M)
-FENCE = re.compile(r'^\s*(```|~~~)', re.M)
 INLINE_CODE = re.compile(r'`[^`\n]*`')
 # Link text may itself contain a bracketed marker -- [REG-R17; exact table mapping
 # [unverified]](#...) -- so one level of nesting has to be allowed here, or a second run
@@ -55,18 +56,8 @@ COMMA_LIST = re.compile(rf'\[({TAG}(?:\s*,\s*{TAG})+)\]')
 PINPOINT = re.compile(rf'\[({TAG})([\s,;:—–][^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*)\]')
 
 
-def prose_spans(text):
-    """(start, end) of the regions outside fenced code blocks."""
-    edges, = [[0]]
-    for m in FENCE.finditer(text):
-        edges.append(m.start())
-    edges.append(len(text))
-    for i in range(0, len(edges) - 1, 2):
-        yield edges[i], edges[i + 1]
-
-
 def map_prose(text, fn):
-    """Apply ``fn`` to the prose regions of ``text``, leaving fenced code alone."""
+    """Apply ``fn`` to the prose regions of ``text``, leaving code blocks alone."""
     out, cursor = [], 0
     for start, end in prose_spans(text):
         out.append(text[cursor:start])

@@ -11,7 +11,7 @@ the product it implements is specified in
 > accruing daily through the unit price, segmentation into 100 identical policies. Every
 > **rate** is a **[std]** standardization: per-fund charge rate cards are not published
 > (research gap), the CMI's assured-lives tables are restricted to Authorised Users
-> [R8][REG-R30], and no public UK bond persistency study was retrieved — so the charge
+> [R8] [REG-R30], and no public UK bond persistency study was retrieved — so the charge
 > levels, the mortality basis and the whole surrender table are placeholders.
 
 ## Run it
@@ -132,7 +132,7 @@ no withdrawals) runs the full 660 months to the limiting age instead.
 ## The 5% allowance is policyholder tax machinery, not a product feature
 
 `allowance_cum_pp()` and `excess_gain_pp()` track the cumulative 5% tax-deferred
-allowance and the excess-event gain it produces when exceeded [R1][R2]. **Neither
+allowance and the excess-event gain it produces when exceeded [R1] [R2]. **Neither
 generates an insurer cash flow.** Two things follow, and both are listed pitfalls:
 
 - the allowance never caps what can be withdrawn — the **product** cap is the rolling

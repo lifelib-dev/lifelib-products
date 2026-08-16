@@ -11,7 +11,7 @@ the product it implements is specified in
 > non-depleting, the 14-day survival period, the absence of any surrender value, the
 > 5-yearly review cycle. Every **rate** is a **[std]** standardization: the CMI's
 > accelerated-CI diagnosis tables (AC04, the "16" Series) are restricted to subscribers
-> [REG-R22][REG-R26], and the £55 monthly premium is a placeholder — no UK insurer
+> [REG-R22] [REG-R26], and the £55 monthly premium is a placeholder — no UK insurer
 > publishes CI rate cards. **Profitability conclusions drawn from the worked example are
 > meaningless.**
 
@@ -67,7 +67,7 @@ q_claim(a) = i_ci(a)·(1 + τ)^(y−1) + q_d(a)·(1 − k)          [std]
 
 where `k` is the proportion of deaths preceded by a claimable diagnosis. `k = 0.10` flat
 is a standardization — the cause-of-claim splits that would calibrate it live in CMI
-working papers whose datasets are subscriber-restricted [R8][R9] — and it is a Reference
+working papers whose datasets are subscriber-restricted [R8] [R9] — and it is a Reference
 rather than a literal because the notes rate it the third-largest lever on the
 liability. `k = 0` maximally double-counts; `k = 0.25` may understate.
 
@@ -190,7 +190,7 @@ file, and the `provenance` column marks which cells came from the notes.
 ## The reviewable variant
 
 `premium_guarantee = reviewable` turns on a 5-yearly review from the fifth anniversary
-[S3][S4] — so the first bites in month 61. Premiums are constant between reviews and
+[S3] [S4] — so the first bites in month 61. Premiums are constant between reviews and
 multiplied by `1 + ρ_review` at each one; the snapshot is `ρ_review = 0`, so model point
 3 runs identically to point 1 until the Reference moves. Two behavioural responses hang
 off the same switch, both **[std]**:

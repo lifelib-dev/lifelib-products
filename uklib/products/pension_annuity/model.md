@@ -11,7 +11,7 @@ the product it implements is specified in
 > guarantee period as an annuity-certain floor, value protection and its exclusivity
 > with the guarantee, the `v + δ ≤ 1` bound, the absence of any surrender value. Every
 > **rate** is a **[std]** standardization: the SAPS S3/S4 and PMA16/PFA16 annuitant
-> tables are restricted to CMI Authorised Users [R10][R11][REG-R22][REG-R27] and the CMI
+> tables are restricted to CMI Authorised Users [R10] [R11] [REG-R22] [REG-R27] and the CMI
 > projections model software with them, so the mortality basis here is an ONS-shaped
 > population proxy with a flat adjustment and a deterministic improvement scale. No
 > insurer publishes an annuity rate card, so the starting income is a model point input.
@@ -34,7 +34,7 @@ model.Projection[1].result_cf()
 ## Mortality is the model
 
 After outset the contract has **no premiums, no surrender value, no account value and no
-policyholder options at all** [S1 p4][S2 §1.1, §12][S5 cl.14.7]. The only decrements are
+policyholder options at all** [S1 p4] [S2 §1.1, §12] [S5 cl.14.7]. The only decrements are
 deaths; the only stochastic drivers are longevity and, on the indexed options, inflation.
 
 That is not an omission — it is the design property that makes the liability eligible for
@@ -91,7 +91,7 @@ payment_factor(t) = max(certain_floor(t), payment_factor_life(t))
 
 is the notes' first-listed pitfall written as one line. During the guarantee period the
 full instalment is payable regardless of survival, escalating as if the annuitant were
-alive [S2 §§6.5–6.6][S7 §4.2]; an additive construction would pay `1 + l_a` and silently
+alive [S2 §§6.5–6.6] [S7 §4.2]; an additive construction would pay `1 + l_a` and silently
 double the guarantee. `check_payment_factor()` asserts it every month.
 
 The guarantee and value protection **never coexist** in the representative design
@@ -140,7 +140,7 @@ reach the `t = 12` arrears instalment, which accrued in year 1 [S2 §3.3].
 ## Value protection, and where the balance is measured
 
 `VP(t) = d(t) × max(0, v·P − G(t−1))` — the death benefit measured against instalments
-**already paid** [S1 p11][S2 §7]. Two timing rules matter and both are the notes'
+**already paid** [S1 p11] [S2 §7]. Two timing rules matter and both are the notes'
 pitfalls:
 
 - on **arrears** timing the balance is `G(t−1)`, because the instalment due at the end of

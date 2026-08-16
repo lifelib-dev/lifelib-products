@@ -11,7 +11,7 @@ refer to the cross-product reference library
 provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation. Parameter values are
 identical to those in `product-spec.md`; the mechanics anchor is the L&G Pension
-Annuity [S1][S2].
+Annuity [S1] [S2].
 
 ---
 
@@ -23,7 +23,7 @@ Annuity [S1][S2].
   matching adjustment and reserves are not computed (see Valuation and reserve
   pointers).
 - **Mortality is the model.** The contract has no premiums after outset [S2 §1.1], no
-  surrender value [S2 §12][S5 cl.14.7], no account value and no policyholder options
+  surrender value [S2 §12] [S5 cl.14.7], no account value and no policyholder options
   after the cancellation window [S1 p4]. The only decrements are deaths; the only
   stochastic drivers are longevity and (for indexed options) inflation. This is the
   design property that makes the liability MA-eligible [R1].
@@ -109,13 +109,13 @@ Three classes are distinguished explicitly.
 
 | Input | Value | Basis |
 |---|---|---|
-| Instalment amount | A(y)/m at each payment date | [S1 p8][S2 §2.2] |
+| Instalment amount | A(y)/m at each payment date | [S1 p8] [S2 §2.2] |
 | Escalation rule | per `escalation_type`: fixed g ≤ 10%; RPI 0-floor with catch-up (12 months ending six months before the anniversary); LPI = RPI capped 5%, floor 0, September year | [S2 §3.2, §3.3, defs]; LPI floor harmonization **[std]** (spec footnote 5) |
 | Dependant's income | δ × income, same escalation basis; % of the higher of income at death and at guarantee end | [S2 §§5.12–5.13] |
 | Overlap rule | with: dependant stream runs during remaining guarantee; without: starts at guarantee end | [S2 §§5.9–5.11] |
-| Guarantee period | n months of instalments certain, escalation continuing as if alive | [S2 §§6.5–6.6][S7 §4.2] |
-| Value protection | max(0, v × P − G(death)) on the chosen basis; v + δ ≤ 1 (first-death) | [S1 p11][S2 §7, §7.3] |
-| Surrender value | none, at any time | [S1 p4][S2 §12][S5 cl.14.7] |
+| Guarantee period | n months of instalments certain, escalation continuing as if alive | [S2 §§6.5–6.6] [S7 §4.2] |
+| Value protection | max(0, v × P − G(death)) on the chosen basis; v + δ ≤ 1 (first-death) | [S1 p11] [S2 §7, §7.3] |
+| Surrender value | none, at any time | [S1 p4] [S2 §12] [S5 cl.14.7] |
 | Charges to policyholder | none (priced into the rate) | [S1 p6] |
 
 ### (b) Insurer-discretionary current elements
@@ -131,10 +131,10 @@ day-to-day rate setting is not publicly documented [unverified].
 
 | Input | Recommended basis | Basis tags |
 |---|---|---|
-| Base annuitant mortality | Proper bases: SAPS S3/S4 pensioner tables (S4 released February 2024, graduated on 2014–2019 data) [R10][R11] or the insured-annuitant PMA16/PFA16 family [REG-R27]. Both are restricted to CMI Authorised Users [R11][REG-R22], so the reference basis is a **[std]** proxy: latest ONS UK national life table qx by age/sex [R13] × annuitant adjustment α = 0.80 | [R10][R11][R13][REG-R22][REG-R27]; α **[std]** (i) |
-| Mortality improvements | CMI Mortality Projections Model, cited by name/version: CMI_2024 (WP201, June 2025, calibrated to E&W data to 31 Dec 2024) [R12]; current version CMI_2025 (WP211, March 2026) [REG-R30]. Model software restricted; reference fallback is a **[std]** deterministic scale: 1.25% p.a. reduction in qx for ages ≤ 90, tapering linearly to 0% at age 110, applied from the base table's data mid-year | [R12][REG-R30]; scale **[std]** (ii) |
-| Enhanced/impaired rating | Overlay on qx: q_rated = min(1, θ_a × q_base), θ_a ≥ 1 (equivalently a rated-age offset); standard life θ = 1.0 | existence [S1 p5][S4][S6][S9]; overlay **[std]** (iii) |
-| Lapse / surrender | None — no surrender value exists | [S1 p4][S2 §12][S5 cl.14.7][R1] |
+| Base annuitant mortality | Proper bases: SAPS S3/S4 pensioner tables (S4 released February 2024, graduated on 2014–2019 data) [R10] [R11] or the insured-annuitant PMA16/PFA16 family [REG-R27]. Both are restricted to CMI Authorised Users [R11] [REG-R22], so the reference basis is a **[std]** proxy: latest ONS UK national life table qx by age/sex [R13] × annuitant adjustment α = 0.80 | [R10] [R11] [R13] [REG-R22] [REG-R27]; α **[std]** (i) |
+| Mortality improvements | CMI Mortality Projections Model, cited by name/version: CMI_2024 (WP201, June 2025, calibrated to E&W data to 31 Dec 2024) [R12]; current version CMI_2025 (WP211, March 2026) [REG-R30]. Model software restricted; reference fallback is a **[std]** deterministic scale: 1.25% p.a. reduction in qx for ages ≤ 90, tapering linearly to 0% at age 110, applied from the base table's data mid-year | [R12] [REG-R30]; scale **[std]** (ii) |
+| Enhanced/impaired rating | Overlay on qx: q_rated = min(1, θ_a × q_base), θ_a ≥ 1 (equivalently a rated-age offset); standard life θ = 1.0 | existence [S1 p5] [S4] [S6] [S9]; overlay **[std]** (iii) |
+| Lapse / surrender | None — no surrender value exists | [S1 p4] [S2 §12] [S5 cl.14.7] [R1] |
 | Maintenance expense | £30 per policy per annum, payable monthly while any payment obligation remains, inflating at the RPI assumption | **[std]** (iv) |
 | RPI inflation (for indexed options) | 3.0% p.a. deterministic | **[std]** (v) |
 
@@ -144,13 +144,13 @@ mortality, freely downloadable and updated annually (latest release dated 10 Dec
 2025 per the fetched dataset page) [R13]; population mortality is heavier than
 annuitant experience, hence the α < 1 adjustment. α = 0.80 is a shape-level
 placeholder, not calibrated to any published annuitant-vs-population comparison — a
-production basis must license CMI tables [R11][REG-R22].
+production basis must license CMI tables [R11] [REG-R22].
 (ii) CMI_2025 projects improvements converging to a user-chosen long-term rate with
 no default recommendation [REG-R30 detail marked unverified in the reference
 library]; the [std] flat-then-taper scale exists only so the reference implementation
 is runnable without CMI access, and materially understates the age–period–cohort
 structure of the real model [R12].
-(iii) Insurers' rating structures (postcode, condition-specific factors [S1 p5][S9])
+(iii) Insurers' rating structures (postcode, condition-specific factors [S1 p5] [S9])
 are not public; the multiplier form is the simplest overlay that reprices longevity
 without touching contract mechanics.
 (iv) No insurer publishes expense assumptions (charges are priced into the rate
@@ -229,7 +229,7 @@ for t ∈ T (arrears; for advance replace l(t) with l(t−1) **[std]**):
               + inst(t) × δ × (1 − l_a(t)) × l_d(t) × w(t)     — dependant stream [S2 §5]
 
 The first term pays the full instalment regardless of survival while the guarantee
-runs (annuity-certain floor [S2 §§6.5–6.6][S7 §4.2]) and l_a(t) × inst(t) thereafter.
+runs (annuity-certain floor [S2 §§6.5–6.6] [S7 §4.2]) and l_a(t) × inst(t) thereafter.
 The second term pays the dependant when the annuitant is dead and the dependant
 alive, gated by w(t): with overlap both streams run during the remaining guarantee;
 without overlap the dependant stream starts at guarantee end [S2 §§5.9–5.11].
@@ -253,7 +253,7 @@ G accumulates gross instalments scheduled while the annuitant is alive; measurin
 the balance at t−1 implements "instalments already paid" for a mid-month death
 **[std discretization]**. On the last-survivor basis, replace d_a(t) with the density
 of the last death, d_last(t) = d(l_a + l_d − l_a l_d)(t), and let G accumulate the
-dependant's instalments too [S2 §7.3][S5 §8.4]. (The Canada Life variant additionally
+dependant's instalments too [S2 §7.3] [S5 §8.4]. (The Canada Life variant additionally
 nets guarantee payments due, excluding future RPI/LPI increases [S7 §4.3] —
 implementable by extending G with guarantee outflows.)
 
@@ -298,8 +298,8 @@ not projected [S2 §1.1]) and no surrender outgo [S2 §12].
 
 There is none to model, and this is a cited product feature, not an omission: after
 the 30-day cancellation window the policyholder holds no options — no surrender or
-transfer [S1 p4][S2 §12][S5 cl.14.7][S7 §7.5][S9 §3.9], no alteration of options
-[S1 p4][S4][S6][S9], and no premium flexibility [S2 §1.1]. Consequently the model has
+transfer [S1 p4] [S2 §12] [S5 cl.14.7] [S7 §7.5] [S9 §3.9], no alteration of options
+[S1 p4] [S4] [S6] [S9], and no premium flexibility [S2 §1.1]. Consequently the model has
 **no lapse decrement and no dynamic behavior formulas**; the MA eligibility conditions
 effectively require this shape (no policyholder options beyond a bounded surrender
 option) [R1].
@@ -313,7 +313,7 @@ Behavior enters only at outset, outside the projection, as basis-selection effec
 - **Enhanced-annuity selection.** Whole-market enhanced quoting is mandated at the
   point of sale [R5]; lives remaining on standard terms are healthier on average.
   The reference model carries this through θ, not through behavior dynamics.
-- **Cancellation window.** The 30-day cooling-off [S1 p7][S2 §13] is ignored
+- **Cancellation window.** The 30-day cooling-off [S1 p7] [S2 §13] is ignored
   (projection starts from a completed purchase) **[std]**.
 
 ---
@@ -329,7 +329,7 @@ no guarantee period (XOR rule [S2 §§6.7, 7.6]). Starting income A(1) = £5,400
 **[std]** — an illustrative quote level (no public rate card exists; the cited anchor,
 £6,657 p.a., is for a 50%-VP basis whose escalation/frequency basis is not recorded
 [S1 p11], and an escalating joint-life basis starts lower than a level one for the
-same premium [S1 p8][S4][S6]). Scenario: the annuitant dies in month 17; the
+same premium [S1 p8] [S4] [S6]). Scenario: the annuitant dies in month 17; the
 dependant survives throughout. All amounts in GBP.
 
 Instalments: year 1: 5,400/4 = 1,350.00 per quarter; year 2 (from t = 13):
@@ -351,7 +351,7 @@ scheduled payment date after death (t = 18) **[std convention]**.
 | 24 | Q8 instalment (dependant) | — | 695.25 | — | 8,876.25 |
 
 Checks. VP balance at death uses instalments paid before death: G(16) = 6,790.50, so
-the lump sum is 50,000 − 6,790.50 = 43,209.50 [S1 p11][S2 §7]. Had "with proportion"
+the lump sum is 50,000 − 6,790.50 = 43,209.50 [S1 p11] [S2 §7]. Had "with proportion"
 been chosen, a stub of ≈ (1 + 0.5)/3 × 1,390.50 = 695.25 would be paid for the
 accrued month-and-a-half since t = 15 (**[std]** half-month accrual; Just would net
 this stub off the VP fund-value formula [S5 §8.3]). The dependant's 695.25 continues
@@ -382,8 +382,8 @@ consume them and are NOT reproduced here:
 - **Matching adjustment.** These cash flows feed MA discounting (risk-free + MA) for
   eligible portfolios: MA permission required; eligibility conditions include no
   future premiums, restricted underwriting risks, the ≤ 5% BEL mortality-stress
-  test, and no policyholder options [R1][REG-R2]. Reform context: CP19/23 → PS10/24,
-  effective 30 June 2024 [R2][REG-R5]; supervisory expectations and matching tests
+  test, and no policyholder options [R1] [REG-R2]. Reform context: CP19/23 → PS10/24,
+  effective 30 June 2024 [R2] [REG-R5]; supervisory expectations and matching tests
   in SS7/18 (October 2025 version) [REG-R8]. The MA calculation itself is
   cited-not-specified.
 - **Risk margin.** Cost-of-capital method at 4% with life-business tapering λ = 0.9
@@ -399,7 +399,7 @@ consume them and are NOT reproduced here:
   the expected-cash-flow engine is identical, with regime-specific discounting and
   margins layered on.
 - **Tax.** Pension annuities are pension business — non-BLAGAB, trade-profit basis
-  [REG-R17][S5 §14.11]; no policyholder fund tax enters the projection.
+  [REG-R17] [S5 §14.11]; no policyholder fund tax enters the projection.
 - **Professional standards.** Technical actuarial work using this model in the UK
   falls under FRC TAS 100 v2.0 [REG-R33] and TAS 200 v2.0 (effective 1 January 2025)
   [R14]. Proxy models fitted on top of heavy annuity cash-flow models — and the
@@ -416,7 +416,7 @@ Dominant assumptions, in order:
    payment stream with no offsetting decrements; a lower mortality level lengthens
    every annuity stream. The [std] α = 0.80 population-proxy adjustment is the
    weakest link in the reference basis — production work must substitute licensed
-   SAPS S4 / PMA16-era tables [R10][R11][REG-R27][REG-R22].
+   SAPS S4 / PMA16-era tables [R10] [R11] [REG-R27] [REG-R22].
 2. **Longevity trend (improvements).** The [std] deterministic scale stands in for
    CMI_2025 [REG-R30]; the choice of long-term improvement rate is the single most
    sensitive judgment in UK annuity valuation, and the CMI model's user-set long-term
@@ -472,6 +472,6 @@ Known modeling pitfalls:
   not VPbal(t−1)) or the lump sum is overstated by one instalment.
 - **Population-proxy basis risk.** The [std] ONS × α basis has the wrong shape as
   well as level versus annuitant tables (socio-economic mix, amounts weighting
-  [R10][R11 detail unverified]); treat all reference-basis results as mechanics
+  [R10] [R11 detail unverified]); treat all reference-basis results as mechanics
   demonstrations, not valuations — and note the CMI restriction honestly rather
   than shipping approximated "SAPS-like" rates [REG-R22].
