@@ -47,6 +47,7 @@ MODELS = {
     "WOL_UK_S": ("products/whole_of_life/WOL_UK_S", MONTHLY),
     # Savings
     "ULB_UK_S": ("products/unit_linked_bond/ULB_UK_S", MONTHLY),
+    "WP_UK_A": ("products/with_profits/WP_UK_A", ANNUAL),
     # Annuity
     "PA_UK_S": ("products/pension_annuity/PA_UK_S", MONTHLY),
 }
@@ -125,6 +126,26 @@ def unit_linked_bond():
 def uk_bond_anchor(unit_linked_bond):
     """Model point 1 — the unit-linked bond worked-example anchor cell."""
     return unit_linked_bond.Projection[1]
+
+
+@pytest.fixture(scope="module")
+def with_profits():
+    """The WP_UK_A model, closed after the module finishes."""
+    model = mx.read_model(model_path("WP_UK_A"))
+    yield model
+    model.close()
+
+
+@pytest.fixture(scope="module")
+def uk_wp_up(with_profits):
+    """Model point 1 — the worked example's scenario A, the up market."""
+    return with_profits.Projection[1]
+
+
+@pytest.fixture(scope="module")
+def uk_wp_down(with_profits):
+    """Model point 2 — the worked example's scenario B, the down market."""
+    return with_profits.Projection[2]
 
 
 @pytest.fixture(scope="module")
