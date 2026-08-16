@@ -16,6 +16,8 @@ working session.)
 
 ## Primary product sources [S#]
 
+(uklib-income_protection-s1)=
+
 ### S1. Aviva — "Income Protection+ Policy Conditions" (AL52002 10/2024)
 - Publisher: Aviva Life & Pensions UK Limited (FRN 185896)
 - Doc type: policy conditions, 29 pp. Internal code AV1113426_AL52002_1024
@@ -23,17 +25,23 @@ working session.)
 - Retrieved: YES (server returns HTTP 403 to plain fetch; PDF downloaded via curl
   with browser user-agent, full text extracted and read)
 
+(uklib-income_protection-s2)=
+
 ### S2. Aviva — "Policy Summary of Income Protection+" (AL52001 10/2024)
 - Publisher: Aviva Life & Pensions UK Limited
 - Doc type: policy summary, 24 pp. Internal code AV1129714_AL52001_1024
 - URL: https://static.aviva.io/content/dam/document-library/adviser/individualprotection/al52001c.pdf
 - Retrieved: YES (curl, full text extracted)
 
+(uklib-income_protection-s3)=
+
 ### S3. LV= — "Income Protection — Guaranteed Premiums — Policy Conditions" (MIMIIP16G, 34552-2021 01/24)
 - Publisher: Liverpool Victoria Financial Services Limited (register no. 110035)
 - Doc type: policy conditions, 32 pp. Edition 01/24
 - URL: https://www.lvadviser.com/lifeassets/assets/documents/income-protection-policy-conditions-guaranteed-premiums.pdf
 - Retrieved: YES (curl; full text extracted)
+
+(uklib-income_protection-s4)=
 
 ### S4. LV= — "Income Protection and Budget Income Protection — Key features of the Flexible Protection Plan" (27746-2019 05/19)
 - Publisher: LV= (document names Liverpool Victoria Friendly Society Limited as
@@ -44,17 +52,23 @@ working session.)
   returns 403)
 - Retrieved: YES (curl, full text extracted)
 
+(uklib-income_protection-s5)=
+
 ### S5. Royal London — "Personal Menu Plan — Income Protection — Plan details" (July 2026, PCP8P10012/13)
 - Publisher: The Royal London Mutual Insurance Society Limited
 - Doc type: policy conditions booklet ("plan details" = full terms and conditions), 56 pp.
 - URL: https://adviser.royallondon.com/globalassets/docs/protection/pcp8p10012-plan-details-for-the-personal-menu-plan-income-protection.pdf
 - Retrieved: YES (curl; full text extracted). July 2026 edition
 
+(uklib-income_protection-s6)=
+
 ### S6. Royal London — "Personal Menu Plan — Our covers and options at a glance" (GP8P10007)
 - Publisher: The Royal London Mutual Insurance Society Limited
 - Doc type: adviser product-options table, 2-page PDF (4 extracted pages)
 - URL: https://adviser.royallondon.com/globalassets/docs/protection/GP8P10007.personal-menu-plan-our-covers-and-options-at-a-glance.pdf
 - Retrieved: YES (curl; full text extracted)
+
+(uklib-income_protection-s7)=
 
 ### S7. The Exeter — "Income First — Policy Document" (MKTG585, March 2026)
 - Publisher: Exeter Friendly Society Limited (trading as The Exeter; register no.
@@ -63,11 +77,15 @@ working session.)
 - URL: https://dyn.the-exeter.com/download/brochure?code=IF-PD
 - Retrieved: YES (curl; full text extracted). March 2026 edition
 
+(uklib-income_protection-s8)=
+
 ### S8. The Exeter — "Income First — Policy Summary" (MKTG577, March 2026)
 - Publisher: Exeter Friendly Society Limited
 - Doc type: policy summary, 8 pp.
 - URL: https://dyn.the-exeter.com/download/brochure?code=IF-PS
 - Retrieved: YES (curl; full text extracted)
+
+(uklib-income_protection-s9)=
 
 ### S9. The Exeter — "Guide to Income Protection — Pure Protection Plus / Income One Plus" (040219/866, Feb 2019)
 - Publisher: Exeter Friendly Society Limited
@@ -77,6 +95,8 @@ working session.)
   (intermediary-hosted mirror; document is The Exeter's own adviser guide)
 - Retrieved: YES (curl; full text extracted)
 
+(uklib-income_protection-s10)=
+
 ### S10. Vitality — "Personal Protection Plan Provisions" (VLTD174857WF_J3779_02/2025)
 - Publisher: Vitality Life Limited
 - Doc type: plan provisions (full T&Cs for the Personal Protection Plan menu — Life,
@@ -85,12 +105,16 @@ working session.)
 - Retrieved: YES (curl; full text extracted; IP sections B4.1–B4.11 and premium
   provisions D2/D3/E2 read in full)
 
+(uklib-income_protection-s11)=
+
 ### S11. Cirencester Friendly — "Income Assured Enhanced — Key Features Document" (V7, May 2026)
 - Publisher: Cirencester Friendly Society Limited (register no. 109987; Friendly
   Societies Act 1992 reg. 149F)
 - Doc type: Key Features Document, 28 pp.
 - URL: https://cirencester-friendly.co.uk/documents/Adviser/004_Income_Assured_Enhanced/Key-Features.pdf
 - Retrieved: YES (curl; full text extracted). V7 (MAY 2026)
+
+(uklib-income_protection-s12)=
 
 ### S12. Cirencester Friendly — "Schedule 5 — Rules of the Income Assured Enhanced Contract" (V3a, July 2024)
 - Publisher: Cirencester Friendly Society Limited
@@ -103,6 +127,8 @@ working session.)
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uklib-income_protection-r1)=
+
 ### R1. CMI — "'IP11' Series claim inception and termination rates — Briefing note" (September 2020, note added April 2021)
 - Publisher: Continuous Mortality Investigation Limited (wholly owned by the IFoA)
 - Doc type: public briefing note, 5 pp.
@@ -110,16 +136,22 @@ working session.)
 - Retrieved: YES (curl; full text extracted and read). Explicitly public — not
   subject to CMI subscriber terms
 
+(uklib-income_protection-r2)=
+
 ### R2. IFoA/CMI — "Income protection investigation" (web page)
 - Publisher: Institute and Faculty of Actuaries (actuaries.org.uk)
 - URL: https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-investigations/income-protection-investigation
 - Retrieved: YES (fetched and read)
+
+(uklib-income_protection-r3)=
 
 ### R3. CMI Working Paper 136 — "Final 'IP11' claim inception and termination rates for individual income protection experience" (landing page)
 - Publisher: Institute and Faculty of Actuaries
 - URL: https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-working-papers/income-protection/cmi-working-paper-136
 - Retrieved: YES (landing page fetched and read; the working paper itself is
   restricted to CMI Authorised Users — not retrieved)
+
+(uklib-income_protection-r4)=
 
 ### R4. CMI Working Papers 5, 6, 7, 46, 47 and 48 — IPM 1991-98 graduations (landing page)
 - Publisher: Institute and Faculty of Actuaries
@@ -128,15 +160,21 @@ working session.)
   search-result summaries only [unverified]; Manchester Unity / inception-annuity
   history [unverified — textbook general knowledge]
 
+(uklib-income_protection-r5)=
+
 ### R5. IFoA/CMI — "CMI Income Protection Rate Table Tool" (web page)
 - Publisher: Institute and Faculty of Actuaries
 - URL: https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-investigations/income-protection-investigation/cmi-income-protection-rate-table-tool
 - Retrieved: YES (fetched and read). Tool itself is subscriber-access
 
+(uklib-income_protection-r6)=
+
 ### R6. FSMA 2000 (Regulated Activities) Order 2001 (SI 2001/544), Schedule 1 Part II
 - Publisher: legislation.gov.uk
 - URL: https://www.legislation.gov.uk/uksi/2001/544/schedule/1
 - Retrieved: YES (fetched and read)
+
+(uklib-income_protection-r7)=
 
 ### R7. PRA Rulebook — Technical Provisions Part
 - Publisher: Prudential Regulation Authority (prarulebook.co.uk)
@@ -144,11 +182,15 @@ working session.)
 - Retrieved: YES (page payload downloaded via curl; rule text read from the embedded
   content — the site blocks plain fetches)
 
+(uklib-income_protection-r8)=
+
 ### R8. PRA Rulebook — Matching Adjustment Part (definition of "eligible element")
 - Publisher: Prudential Regulation Authority (prarulebook.co.uk)
 - URL: https://www.prarulebook.co.uk/pra-rules/matching-adjustment
 - Retrieved: YES (page payload downloaded via curl; definitions text read from the
   embedded content)
+
+(uklib-income_protection-r9)=
 
 ### R9. FCA Handbook, ICOBS — Insurance: Conduct of Business sourcebook
 - Publisher: Financial Conduct Authority (handbook.fca.org.uk)
@@ -157,6 +199,8 @@ working session.)
   JavaScript-rendered; direct fetch and PDF-export URLs returned navigation shells
   only). fetched_ok = false here; ICOBS 1.1 was read via browser in the same session
   in the shared library — facts are cited via [REG-R11]
+
+(uklib-income_protection-r10)=
 
 ### R10. FRC — Technical Actuarial Standards TAS 100 (v2.0) and TAS 200: Insurance (v2.0)
 - Publisher: Financial Reporting Council (frc.org.uk)

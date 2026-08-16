@@ -81,6 +81,8 @@ unit-linked-bond, PA = pension-annuity.
 
 ## 1. Prudential — PRA / Solvency UK
 
+(uklib-reg-r1)=
+
 ### R1. PRA Rulebook — Technical Provisions Part
 - **Publisher:** Prudential Regulation Authority (Bank of England)
 - **URL:** https://www.prarulebook.co.uk/pra-rules/technical-provisions
@@ -98,6 +100,8 @@ unit-linked-bond, PA = pension-annuity.
   used in the risk margin [R1]. The single most load-bearing prudential source for
   all seven products: it defines exactly what a "best estimate liability" projection
   must produce.
+
+(uklib-reg-r2)=
 
 ### R2. PRA Rulebook — Matching Adjustment Part
 - **Publisher:** Prudential Regulation Authority (Bank of England)
@@ -117,6 +121,8 @@ unit-linked-bond, PA = pension-annuity.
   pension-annuity model this Part governs which liabilities may be discounted at
   risk-free + MA.
 
+(uklib-reg-r3)=
+
 ### R3. PRA Rulebook — Transitional Measure on Technical Provisions Part
 - **Publisher:** Prudential Regulation Authority (Bank of England)
 - **URL:** https://www.prarulebook.co.uk/pra-rules/transitional-measure-on-technical-provisions/31-12-2024
@@ -132,6 +138,8 @@ unit-linked-bond, PA = pension-annuity.
   implement it. TMTP runs off fully by 2032 [unverified — per search summaries of
   PS2/24, R7].
 
+(uklib-reg-r4)=
+
 ### R4. The Insurance and Reinsurance Undertakings (Prudential Requirements) (Risk Margin) Regulations 2023 (SI 2023/1346)
 - **Publisher:** legislation.gov.uk (HM Treasury statutory instrument)
 - **URL:** https://www.legislation.gov.uk/uksi/2023/1346/made
@@ -146,6 +154,8 @@ unit-linked-bond, PA = pension-annuity.
   life business. Applies to all products, with the largest proportional effect on
   long-duration business (PA, WOL, IP); the risk-margin projection itself requires an
   SCR runoff — cited-not-specified in this library.
+
+(uklib-reg-r5)=
 
 ### R5. PS10/24 — Review of Solvency II: Reform of the Matching Adjustment
 - **Publisher:** Prudential Regulation Authority (Bank of England)
@@ -164,6 +174,8 @@ unit-linked-bond, PA = pension-annuity.
   [unverified — per search summaries]. PA-dominant; WP and IP at the margins via
   liability eligibility.
 
+(uklib-reg-r6)=
+
 ### R6. PS15/24 — Review of Solvency II: Restatement of assimilated law
 - **Publisher:** Prudential Regulation Authority (Bank of England)
 - **URL:** https://www.bankofengland.co.uk/prudential-regulation/publication/2024/november/review-of-solvency-ii-restatement-of-assimilated-law-policy-statement
@@ -181,6 +193,8 @@ unit-linked-bond, PA = pension-annuity.
   Rulebook, not EU delegated regulation [the specific location of contract-boundary
   rules within the restated Parts: unverified].
 
+(uklib-reg-r7)=
+
 ### R7. PS2/24 — Review of Solvency II: Adapting to the UK insurance market
 - **Publisher:** Prudential Regulation Authority (Bank of England)
 - **URL:** https://www.bankofengland.co.uk/prudential-regulation/publication/2024/february/review-of-solvency-ii-adapting-to-the-uk-insurance-market-policy-statement
@@ -193,6 +207,8 @@ unit-linked-bond, PA = pension-annuity.
   interest rates" effective 31 December 2024 [unverified]. Cited here as the
   provenance of the R3 regime — the operative rules themselves are in R3. Relevant
   to legacy back-books (WOL, WP, PA).
+
+(uklib-reg-r8)=
 
 ### R8. SS7/18 — Solvency II: Matching adjustment (supervisory statement)
 - **Publisher:** Prudential Regulation Authority (Bank of England)
@@ -214,6 +230,8 @@ unit-linked-bond, PA = pension-annuity.
 
 ## 2. Conduct — FCA
 
+(uklib-reg-r9)=
+
 ### R9. FCA Handbook COBS 20 — With-profits
 - **Publisher:** Financial Conduct Authority
 - **URL:** https://handbook.fca.org.uk/handbook/COBS/20/3.html (PPFM section; chapter at /handbook/COBS/20/)
@@ -230,6 +248,8 @@ unit-linked-bond, PA = pension-annuity.
   parameterized the way a PPFM describes these mechanisms. COBS 20.5 covers
   with-profits governance (WP committees) [unverified — section seen only in search
   results].
+
+(uklib-reg-r10)=
 
 ### R10. FCA Handbook COBS 21.3 — Further rules for firms engaged in linked long-term insurance business (permitted links)
 - **Publisher:** Financial Conduct Authority
@@ -248,6 +268,8 @@ unit-linked-bond, PA = pension-annuity.
   regime for illiquid assets [unverified — from search results;
   https://www.fca.org.uk/publication/policy/ps20-04.pdf].
 
+(uklib-reg-r11)=
+
 ### R11. FCA Handbook ICOBS — Insurance: Conduct of Business sourcebook
 - **Publisher:** Financial Conduct Authority
 - **URL:** https://handbook.fca.org.uk/handbook/ICOBS/1/1.html
@@ -261,6 +283,8 @@ unit-linked-bond, PA = pension-annuity.
   protection contract" and the firm option to apply COBS to protection sales are
   [unverified] details. Modeling impact is indirect (disclosure/cancellation conduct
   rather than cash flows), so one entry suffices.
+
+(uklib-reg-r12)=
 
 ### R12. FCA Handbook PRIN 2A — The Consumer Duty
 - **Publisher:** Financial Conduct Authority
@@ -280,6 +304,8 @@ unit-linked-bond, PA = pension-annuity.
 
 ## 3. Legislation and tax
 
+(uklib-reg-r13)=
+
 ### R13. Financial Services and Markets Act 2000 (c. 8)
 - **Publisher:** legislation.gov.uk
 - **URL:** https://www.legislation.gov.uk/ukpga/2000/8/contents
@@ -291,6 +317,8 @@ unit-linked-bond, PA = pension-annuity.
   the statutory hook for every Handbook and Rulebook entry above, including the
   s.138BA permissions used for MA/VA (seen in R1/R2 definitions) [R13]. Cite-only
   for modeling purposes.
+
+(uklib-reg-r14)=
 
 ### R14. FSMA 2000 (Regulated Activities) Order 2001 (SI 2001/544), Schedule 1 Part II
 - **Publisher:** legislation.gov.uk
@@ -305,6 +333,8 @@ unit-linked-bond, PA = pension-annuity.
   Class III, IP (and long-duration CI riders) → Class IV, PA → Class I annuities.
   Useful for scoping which contracts are "long-term insurance business" for both
   regulatory permissions and tax.
+
+(uklib-reg-r15)=
 
 ### R15. Income Tax (Trading and Other Income) Act 2005, Part 4 Chapter 9 — Gains from contracts for life insurance etc.
 - **Publisher:** legislation.gov.uk
@@ -324,6 +354,8 @@ unit-linked-bond, PA = pension-annuity.
   not qualifying protection policies): the 5% withdrawal pattern is a standard
   policyholder-behavior assumption for UK bonds.
 
+(uklib-reg-r16)=
+
 ### R16. HMRC Insurance Policyholder Taxation Manual (IPTM)
 - **Publisher:** HM Revenue & Customs (GOV.UK)
 - **URL:** https://www.gov.uk/hmrc-internal-manuals/insurance-policyholder-taxation-manual
@@ -334,6 +366,8 @@ unit-linked-bond, PA = pension-annuity.
   allowance arithmetic, insurance years, and top-slicing worked examples [specific
   subsection numbers, e.g. IPTM3500s for part surrenders: unverified]. Secondary
   source — use for mechanics, cite R15 for law.
+
+(uklib-reg-r17)=
 
 ### R17. Finance Act 2012, Part 2 — Insurance companies carrying on long-term business
 - **Publisher:** legislation.gov.uk
@@ -353,6 +387,8 @@ unit-linked-bond, PA = pension-annuity.
   ULB/WP/WOL → BLAGAB (I-E); PA and pensions → non-BLAGAB; TA/CI/IP written
   post-2012 → protection business, trade basis.
 
+(uklib-reg-r18)=
+
 ### R18. HMRC Life Assurance Manual (LAM)
 - **Publisher:** HM Revenue & Customs (GOV.UK)
 - **URL:** https://www.gov.uk/hmrc-internal-manuals/life-assurance
@@ -363,6 +399,8 @@ unit-linked-bond, PA = pension-annuity.
   cover reinsurance, cross-border and friendly societies; the I-E basis as enacted
   applies from 1 January 2013 [R18]. Secondary source — use for how HMRC applies
   BLAGAB/I-E, cite R17 for law. Product relevance as R17.
+
+(uklib-reg-r19)=
 
 ### R19. Insurance Act 2015 (c. 4)
 - **Publisher:** legislation.gov.uk
@@ -378,6 +416,8 @@ unit-linked-bond, PA = pension-annuity.
   reduction affects claim-severity assumptions on group protection (TA/CI/IP group
   schemes) and non-consumer business — background, not a cash flow driver.
 
+(uklib-reg-r20)=
+
 ### R20. Consumer Insurance (Disclosure and Representations) Act 2012 (c. 6)
 - **Publisher:** legislation.gov.uk
 - **URL:** https://www.legislation.gov.uk/ukpga/2012/6/contents
@@ -389,6 +429,8 @@ unit-linked-bond, PA = pension-annuity.
   careless), with specific provisions for group policies and life insurance [R20].
   Underpins underwriting/claims assumptions for consumer protection products
   (declinature and avoidance rates) — TA, CI, IP, and WOL consumer sales.
+
+(uklib-reg-r21)=
 
 ### R21. Taxation of Pensions Act 2014 (c. 30)
 - **Publisher:** legislation.gov.uk
@@ -407,6 +449,8 @@ unit-linked-bond, PA = pension-annuity.
 
 ## 4. Mortality and morbidity — CMI and ONS
 
+(uklib-reg-r22)=
+
 ### R22. Continuous Mortality Investigation — main page (role and access model)
 - **Publisher:** Institute and Faculty of Actuaries / CMI Ltd
 - **URL:** https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation
@@ -424,6 +468,8 @@ unit-linked-bond, PA = pension-annuity.
   redistribute current qx values — model mortality bases should be [std]
   placeholders shaped like the named tables.
 
+(uklib-reg-r23)=
+
 ### R23. CMI Guide for Authorised Users (2026)
 - **Publisher:** Institute and Faculty of Actuaries / CMI Ltd
 - **URL:** https://www.actuaries.org.uk/system/files/field/document/CMI%20Guide%20for%20Authorised%20Users%202026_0.pdf
@@ -432,6 +478,8 @@ unit-linked-bond, PA = pension-annuity.
 - **Annotation:** The CMI's own guide to who counts as an Authorised User and how
   outputs are accessed [unverified beyond title/existence]. Cited as the canonical
   statement of the access regime summarized in R22.
+
+(uklib-reg-r24)=
 
 ### R24. CMI "92" Series tables (AM92/AF92 family)
 - **Publisher:** Institute and Faculty of Actuaries / CMI
@@ -447,6 +495,8 @@ unit-linked-bond, PA = pension-annuity.
   modern pricing uses the "16" Series (R26); the annuitant tables are historical
   context for PA.
 
+(uklib-reg-r25)=
+
 ### R25. CMI "00" Series tables
 - **Publisher:** Institute and Faculty of Actuaries / CMI
 - **URL:** https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-mortality-and-morbidity-tables/00-series-tables
@@ -461,6 +511,8 @@ unit-linked-bond, PA = pension-annuity.
   [unverified]. Shows the naming grammar (product/sex/smoker/select) a UK model's
   mortality-basis interface should mirror; the smoker/non-smoker split first matters
   here for protection pricing.
+
+(uklib-reg-r26)=
 
 ### R26. CMI "16" Series term assurance mortality and accelerated critical illness tables (IFoA blog announcement)
 - **Publisher:** Institute and Faculty of Actuaries (blog; tables by CMI Assurances Committee)
@@ -478,6 +530,8 @@ unit-linked-bond, PA = pension-annuity.
   16 Series and use [std] placeholder rates in its shape (smoker status, select
   period); WOL indirectly.
 
+(uklib-reg-r27)=
+
 ### R27. CMI briefing note — final "16" Series pension annuity in payment mortality tables
 - **Publisher:** Institute and Faculty of Actuaries / CMI Annuities Committee
 - **URL:** https://www.actuaries.org.uk/documents/final-16-series-pension-annuitant-mortality-tables-briefing-note-v01-2020-07-10
@@ -489,6 +543,8 @@ unit-linked-bond, PA = pension-annuity.
   [the "08" Series interim datasets (e.g. WP101, 2011–2014 data): unverified, from
   search summaries]. A pension-annuity model's base mortality should be expressed
   as a percentage of a named PMA/PFA-style table with a projection overlay (R30).
+
+(uklib-reg-r28)=
 
 ### R28. CMI Self-Administered Pension Schemes (SAPS) mortality investigation
 - **Publisher:** Institute and Faculty of Actuaries / CMI
@@ -505,6 +561,8 @@ unit-linked-bond, PA = pension-annuity.
   include amounts-based and socio-economic variants [unverified]; most relevant to
   bulk purchase annuities / buy-ins.
 
+(uklib-reg-r29)=
+
 ### R29. CMI Working Paper 185 — final "S4" Series mortality tables
 - **Publisher:** Institute and Faculty of Actuaries / CMI SAPS Committee
 - **URL:** https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-working-papers/self-administered-pension-scheme-mortality/cmi-working-paper-185
@@ -514,6 +572,8 @@ unit-linked-bond, PA = pension-annuity.
   together with consultation WP181 [unverified beyond existence/dates from R28 and
   search results]. Cited as the primary anchor for S4; the tables themselves are
   Authorised-User-restricted (R22).
+
+(uklib-reg-r30)=
 
 ### R30. CMI Mortality Projections Model CMI_2025 (announcement, with Working Paper 211)
 - **Publisher:** Institute and Faculty of Actuaries / CMI
@@ -532,6 +592,8 @@ unit-linked-bond, PA = pension-annuity.
   library should be expressed as "CMI_20xx with long-term rate p% [std]" — PA
   dominant, also WOL/WP and TA/CI/IP improvement bases.
 
+(uklib-reg-r31)=
+
 ### R31. CMI Income Protection investigation
 - **Publisher:** Institute and Faculty of Actuaries / CMI
 - **URL:** https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-investigations/income-protection-investigation
@@ -545,6 +607,8 @@ unit-linked-bond, PA = pension-annuity.
   critical-illness counterpart lives in the assurances investigation (R26). Historic
   standard bases (e.g. CMIR12 sickness rates) remain the public teaching reference
   [unverified].
+
+(uklib-reg-r32)=
 
 ### R32. ONS National life tables (UK series)
 - **Publisher:** Office for National Statistics
@@ -566,6 +630,8 @@ unit-linked-bond, PA = pension-annuity.
 
 ## 5. Professional standards
 
+(uklib-reg-r33)=
+
 ### R33. FRC Technical Actuarial Standard TAS 100: General Actuarial Standards, v2.0
 - **Publisher:** Financial Reporting Council
 - **URL:** https://www.frc.org.uk/library/standards-codes-policy/actuarial/tas-100/
@@ -579,6 +645,8 @@ unit-linked-bond, PA = pension-annuity.
   stated, models fit for purpose and communicated with their limitations
   [principle-level detail beyond Principle 5: unverified].
 
+(uklib-reg-r34)=
+
 ### R34. FRC Technical Actuarial Standard TAS 200: Insurance, v2.0
 - **Publisher:** Financial Reporting Council
 - **URL:** https://www.frc.org.uk/library/standards-codes-policy/actuarial/tas-200/
@@ -590,6 +658,8 @@ unit-linked-bond, PA = pension-annuity.
   audit and assumption-setting, and removes provisions now covered by TAS 100
   [unverified — from FRC/IFoA announcement summaries]. Directly in scope for anyone
   using these reference models for actual reserving or capital work in the UK.
+
+(uklib-reg-r35)=
 
 ### R35. IFoA APS L1: Duties and Responsibilities of Life Assurance Actuaries, v4.0
 - **Publisher:** Institute and Faculty of Actuaries
@@ -604,6 +674,8 @@ unit-linked-bond, PA = pension-annuity.
   generally accepted actuarial practice [R35]. Explains *who* professionally owns
   the with-profits discretion (R9) and the actuarial-function outputs a cash flow
   model feeds — all products, WP especially.
+
+(uklib-reg-r36)=
 
 ### R36. Proxy Modelling Working Party — "Consideration of the proxy modelling validation framework"
 - **Publisher:** British Actuarial Journal (Cambridge University Press), Vol. 29, 2024
@@ -620,6 +692,8 @@ unit-linked-bond, PA = pension-annuity.
   specifies) and the proxy layer built on top of it — and thus what outputs the
   heavy model must expose.
 
+(uklib-reg-r37)=
+
 ### R37. Model Risk Working Party — "Model risk: illuminating the black box"
 - **Publisher:** British Actuarial Journal (Cambridge University Press), Vol. 23, 2017/18
 - **URL:** https://www.cambridge.org/core/journals/british-actuarial-journal/article/model-risk-illuminating-the-black-box/FD2FD9F9DD86CCB611B4ECEF1421A7AA
@@ -635,6 +709,8 @@ unit-linked-bond, PA = pension-annuity.
 ---
 
 ## 6. Accounting frames — why one cash flow model serves several bases
+
+(uklib-reg-r38)=
 
 ### R38. UK Endorsement Board — IFRS 17 Insurance Contracts (UK adoption)
 - **Publisher:** UK Endorsement Board

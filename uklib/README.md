@@ -28,7 +28,7 @@ Each folder contains `product-spec.md` (representative specification, variations
 across insurers, regulatory context), `technical-notes.md` (liability cash flow model:
 model points, state variables, assumptions, recursions with processing order, worked
 example, sensitivities), and `sources.md` (numbered source list). Citation conventions
-are defined in the [top-level README](../README.md).
+are defined in [Citation conventions](#uklib-citation-conventions) below.
 
 Chassis relationships: critical-illness states only its deltas against the
 [term-assurance](products/term_assurance/technical-notes.md) chassis; the
@@ -76,6 +76,8 @@ the cells names. Cells names come from lifelib — `basiclife/BasicTerm_S` first
 `savings/CashValue_SE` — and the shared vocabulary table in
 [uslib/index.md](../uslib/index.md#shared-vocabulary) is the settled ruling for both.
 
+(uklib-uk-specific)=
+
 ### What is UK-specific about these models
 
 Three things recur across the set and are worth knowing before reading any one of them.
@@ -109,6 +111,39 @@ overstates outgo and understates nothing.
 
 Run the suite with `python -m pytest uklib/tests -q` from the repository root; see
 [requirements.txt](../requirements.txt) for the modelx version floor.
+
+(uklib-citation-conventions)=
+
+## Citation conventions
+
+Every citation tag is a link. `[S6]` in a product document lands on entry S6 in **that
+product's** `sources.md`, and `[REG-R18]` lands on entry R18 of the shared
+[reference library](references/regulatory-and-actuarial-references.md). Numbering is per
+product — S1 is a different source in each — so tags resolve against the document's own
+product rather than one global list.
+
+| Tag | Meaning |
+|---|---|
+| `[S#]` | Fact taken from a primary product document (key features document, policy conditions, terms and conditions, PPFM, fund guide) listed in the product's `sources.md` |
+| `[R#]` | Fact taken from a product-specific regulatory/actuarial reference in the product's `sources.md` |
+| `[REG-R#]` | Fact taken from the cross-product reference library (frozen R-numbering) |
+
+(uklib-std)=
+
+**[std]** — a *standardization introduced for the reference implementation*: a parameter or
+convention chosen where sources vary, are proprietary, or are silent. Each carries a
+rationale and, where available, the observed range across insurers.
+
+(uklib-unverified)=
+
+**[unverified]** — a claim from general knowledge or a secondary snippet that could **not**
+be confirmed against a retrieved document. Treat it as a to-verify item, not an established
+fact.
+
+The hard rule throughout: **every quantitative parameter is either source-tagged or marked
+[std]**. In this library that rule does most of its work on the decrement bases, which are
+**[std]** proxies throughout because the CMI tables cannot be redistributed — see
+[What is UK-specific about these models](#uklib-uk-specific).
 
 ## Regulatory and actuarial reference library
 
