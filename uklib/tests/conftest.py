@@ -44,6 +44,7 @@ MODELS = {
     "Term_UK_A": ("products/term_assurance/Term_UK_A", ANNUAL),
     "CI_UK_S": ("products/critical_illness/CI_UK_S", MONTHLY),
     "IP_UK_S": ("products/income_protection/IP_UK_S", MONTHLY),
+    "WOL_UK_S": ("products/whole_of_life/WOL_UK_S", MONTHLY),
 }
 
 
@@ -92,3 +93,17 @@ def income_protection():
 def uk_ip_claim(income_protection):
     """Model point 2 — the claims-in-payment cell the worked example computes."""
     return income_protection.Projection[2]
+
+
+@pytest.fixture(scope="module")
+def whole_of_life():
+    """The WOL_UK_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("WOL_UK_S"))
+    yield model
+    model.close()
+
+
+@pytest.fixture(scope="module")
+def uk_o50_anchor(whole_of_life):
+    """Model point 1 — the over-50s worked-example anchor cell."""
+    return whole_of_life.Projection[1]
