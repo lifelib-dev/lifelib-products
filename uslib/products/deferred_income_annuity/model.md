@@ -6,7 +6,7 @@ the product it implements is specified in
 [`product-spec.md`](product-spec.md). The income
 phase is the payout chassis of
 [`products/immediate_annuity/technical-notes.md`](../immediate_annuity/technical-notes.md),
-implemented in [`SPIA_US_S`](../immediate_annuity/index.md) — this model carries that
+implemented in [`SPIA_US_S`](../immediate_annuity/model.md) — this model carries that
 model's names for every shared concept.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The

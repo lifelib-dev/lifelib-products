@@ -18,6 +18,10 @@ The candidate repairs, in order:
 3. ``README.md`` -> ``index.md``, for the library root page P6 renames;
 4. a bare directory -> that directory's ``index.md``.
 
+A target that exists only under ``doc/source/libraries/`` is accepted as-is: the product
+landing pages and the autodoc pages are Sphinx scaffolding and are deliberately not shipped
+with the library, so a link to one is right even though nothing is there on disk.
+
 Usage::
 
     python tools/fix_relative_links.py uslib --dry-run
@@ -41,6 +45,14 @@ def prose_spans(text):
     edges.append(len(text))
     for i in range(0, len(edges) - 1, 2):
         yield edges[i], edges[i + 1]
+
+
+DOC_ROOT = pathlib.Path("doc") / "source" / "libraries"
+
+
+def doc_here(path, library):
+    """Where ``path``'s Sphinx page sits, for links whose target lives only there."""
+    return DOC_ROOT / library.name / path.parent.relative_to(library)
 
 
 def relative(absolute, source_dir):
@@ -110,13 +122,16 @@ def main(argv):
                     continue
                 here = path.parent
                 resolved = None
-                if (here / target).is_dir():
-                    # A directory is not a document.  MyST needs the page, and every
-                    # directory in this library has one.
-                    if (here / target / "index.md").exists():
-                        resolved = here / target / "index.md"
-                elif (here / target).exists():
+                if (here / target).exists() and not (here / target).is_dir():
                     resolved = here / target
+                elif (doc_here(path, library) / target).exists():
+                    # Some pages exist only in the doc tree -- the product landing pages
+                    # and the autodoc pages are Sphinx scaffolding, deliberately not
+                    # shipped with the library.  A link to one resolves when the document
+                    # is included into its page, which is the only place it is read as a
+                    # document, so it is correct even though nothing is there on disk.
+                    stats["resolve in the doc tree only"] += 1
+                    continue
                 if resolved is None:
                     for candidate in candidates(target, here, library):
                         if candidate and (here / candidate).exists():
@@ -141,7 +156,8 @@ def main(argv):
         if text != original and not dry:
             path.write_text(text, encoding="utf-8")
 
-    for key in ("already resolve", "repaired", "unresolved"):
+    for key in ("already resolve", "resolve in the doc tree only", "repaired",
+                "unresolved"):
         print(f"  {stats[key]:5}  {key}")
     for line in unresolved[:30]:
         print(f"     ! {line}")

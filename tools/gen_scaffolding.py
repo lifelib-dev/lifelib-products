@@ -1,28 +1,29 @@
-"""Generate the per-product index pages, and the Sphinx page tree that renders them.
+"""Generate the Sphinx page tree for a country library.
 
-Two kinds of output, in two places, and the split is the point.
+Everything this writes lives under ``doc/source/libraries/<lib>/`` and **nothing goes into
+the library**.  The library holds documents; this holds the pages that render them, and the
+scaffolding that only Sphinx cares about:
 
-**In the library** — ``products/<slug>/index.md``, the product landing page.  It belongs to
-the library because it is content: the one-line orientation and the order the four documents
-are meant to be read in.
-
-**In the doc tree** — ``doc/source/libraries/<lib>/…``, one page per document:
-
-``*.md``
+``product-spec.md``, ``technical-notes.md``, ``model.md``, ``sources.md``
     a one-line ``{include}`` of the library file.  The stub tree *mirrors* the library tree,
     which is what keeps the authored relative links working: ``[sources](sources.md)`` in
     ``technical-notes.md`` resolves against the stub's own location, and the sibling stub is
     there.  Citation links survive too -- a document's link reference definitions and the
     tags that use them are in the same included file, so they resolve together.
 
+``products/<slug>/index.md``
+    the product landing page, written **in place** rather than included.  It is a title, a
+    sentence of orientation and a toctree -- Sphinx scaffolding with nothing in it a reader
+    of a ``lifelib.create()`` copy would want.
+
 ``<Model>.rst`` and ``<Space>.rst``
     the autodoc pages, following ``annuallife/TradLife_A.rst``: the model page carries the
     model docstring and a hidden toctree of its Spaces, and each Space page carries the
     Space docstring followed by one ``autofunction`` per cells.
 
-The autodoc pages are RST and live **only** in the doc tree.  They are Sphinx plumbing, not
-library content -- a reader of a ``lifelib.create()`` copy wants the model, not a file whose
-whole purpose is to tell Sphinx how to render the model.
+The autodoc pages are RST for the same reason the landing pages are written in place: they
+are Sphinx plumbing, not library content -- a reader wants the model, not a file whose whole
+purpose is to tell Sphinx how to render it.
 
 Usage::
 
@@ -163,16 +164,18 @@ def main(argv):
         model = model_dir.name
         spaces = spaces_of(model_dir)
 
+        page_dir = docs / "products" / product.name
         entries = "\n".join(model if page == "_MODEL_" else page
                             for page in PRODUCT_PAGES)
-        write(product / "index.md",
+        # Written in place, not included: the landing page is scaffolding, and the library
+        # is better off without it.
+        write(page_dir / "index.md",
               PRODUCT_INDEX.format(title=TITLES[product.name],
                                    blurb=BLURB.format(model=model),
                                    entries=entries),
               dry, log)
 
-        page_dir = docs / "products" / product.name
-        for name in ("index", "product-spec", "technical-notes", "model", "sources"):
+        for name in ("product-spec", "technical-notes", "model", "sources"):
             write(page_dir / f"{name}.md",
                   STUB.format(relpath=relative(
                       product / f"{name}.md", page_dir)), dry, log)

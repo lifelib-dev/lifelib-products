@@ -6,7 +6,7 @@ the product it implements is specified in
 [`product-spec.md`](product-spec.md). The shared universal
 life mechanics those notes defer to are in
 [`products/universal_life/technical-notes.md`](../universal_life/technical-notes.md),
-and their executable form is [`UL_US_S`](../universal_life/index.md).
+and their executable form is [`UL_US_S`](../universal_life/model.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual elements — the 10.00% cap and 2.00% guaranteed cap, 100% participation
