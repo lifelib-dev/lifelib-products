@@ -1,4 +1,4 @@
-# Term Assurance — Liability Cash Flow Model: Technical Notes (United Kingdom)
+# Technical Notes
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
 
@@ -26,7 +26,7 @@ those in `product-spec.md`.
   margin and capital layers are out of scope (see Valuation and reserve pointers).
 - **Projection frequency.** Annual grid **[std]**, with a monthly option. The only
   intra-year contractual structure is the monthly step-down of the decreasing-shape
-  benefit and the monthly FIB instalments [S6][S8]; the annual grid handles both with
+  benefit and the monthly FIB instalments [S6] [S8]; the annual grid handles both with
   mid-year approximations (below), and the monthly grid removes the approximation.
 - **Timing conventions [std].** Premiums received at the start of each policy year
   (annualized, in advance); maintenance expenses at the start of each year; death/TI
@@ -45,7 +45,7 @@ those in `product-spec.md`.
   No aggregation logic is specified here.
 - **Termination.** All states terminate at the end of the term: cover expires with no
   maturity value, no renewal, and no conversion — there is no US-style post-level-term
-  ART tail [S1][S2][S6][S8][R8]. The projection horizon is exactly `n` years.
+  ART tail [S1] [S2] [S6] [S8] [R8]. The projection horizon is exactly `n` years.
 - **Contract boundary.** Premiums are guaranteed, so the insurer has no unilateral
   repricing right and the Solvency UK contract boundary is the full term [R3]: all
   `n` years of premiums and benefits are inside the boundary. (Reviewable-premium
@@ -95,7 +95,7 @@ reference premium basis is constructed, not observed **[std]**.
 
 The FIB in-payment ledger is **not** decremented by mortality after the claim: the
 instalments are an annuity-certain to the end of the term regardless of any life
-[S6][S8].
+[S6] [S8].
 
 ---
 
@@ -107,16 +107,16 @@ Three classes are distinguished explicitly.
 
 | Input | Value | Basis |
 |---|---|---|
-| Premium `P_m` | Level, guaranteed for the full term | guarantee [S2][S6][S9]; level **[std]** |
-| Level benefit | `SA0` constant | [S1][S6] |
-| Decreasing benefit schedule | `B(k)` amortization formula at rate `j` (below) | mechanics [S1][S6][S8]; `j` = 6% **[std]** |
-| FIB benefit | `I`/month, in arrears, death to end of term; annuity-certain | [S2][S6][S8] |
-| Terminal illness | 100% acceleration, two-limb 12-month definition, terms ≥ 2 years | [S1][S6][S8][R8][S2][S4] |
-| Suicide exclusion | 12 months, year-one only | [S1][S6][S8] |
-| Grace | 60 days from due date; then lapse without value | [S1][S6] |
-| Surrender/paid-up value | None | [S1][S6][S8][R8] |
-| Indexation option terms | cover +min(max(RPI,0),10%); premium ×(1 + 1.5×increase), cap 15%; removed after 3 declines | [S1][S2][S6][S7]; composite **[std]** |
-| Expiry | Cover ceases at end of term; no renewal/conversion | [S1][S2][S6][S8][R8] |
+| Premium `P_m` | Level, guaranteed for the full term | guarantee [S2] [S6] [S9]; level **[std]** |
+| Level benefit | `SA0` constant | [S1] [S6] |
+| Decreasing benefit schedule | `B(k)` amortization formula at rate `j` (below) | mechanics [S1] [S6] [S8]; `j` = 6% **[std]** |
+| FIB benefit | `I`/month, in arrears, death to end of term; annuity-certain | [S2] [S6] [S8] |
+| Terminal illness | 100% acceleration, two-limb 12-month definition, terms ≥ 2 years | [S1] [S6] [S8] [R8] [S2] [S4] |
+| Suicide exclusion | 12 months, year-one only | [S1] [S6] [S8] |
+| Grace | 60 days from due date; then lapse without value | [S1] [S6] |
+| Surrender/paid-up value | None | [S1] [S6] [S8] [R8] |
+| Indexation option terms | cover +min(max(RPI,0),10%); premium ×(1 + 1.5×increase), cap 15%; removed after 3 declines | [S1] [S2] [S6] [S7]; composite **[std]** |
+| Expiry | Cover ceases at end of term; no renewal/conversion | [S1] [S2] [S6] [S8] [R8] |
 
 ### (b) Insurer-discretionary current elements
 
@@ -127,12 +127,12 @@ residual discretionary items:
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| FIB commutation basis | Commuted value = PV of remaining instalments at `r_c` = 3.0% p.a. **[std]** snapshot; base model take-up 0% | discretion ("fairly and reasonably") [S6][S8]; rate **[std]** (no insurer publishes the basis) |
-| Underwriting exclusions / rated terms | None on the composite cell (standard rates) | case-by-case schedule exclusions exist [S1][S3]; scope **[std]** |
+| FIB commutation basis | Commuted value = PV of remaining instalments at `r_c` = 3.0% p.a. **[std]** snapshot; base model take-up 0% | discretion ("fairly and reasonably") [S6] [S8]; rate **[std]** (no insurer publishes the basis) |
+| Underwriting exclusions / rated terms | None on the composite cell (standard rates) | case-by-case schedule exclusions exist [S1] [S3]; scope **[std]** |
 
 Reviewable-premium mechanics (5-yearly reviews on claims experience, reinsurance
 cost, lapses, expenses, etc.) exist on CI-type covers at Aviva and Royal London
-[S6][S8] and are documented there as a modeling template, but are out of scope here.
+[S6] [S8] and are documented there as a modeling template, but are out of scope here.
 
 ### (c) Behavioral / experience assumptions (modeler's view)
 
@@ -147,11 +147,11 @@ implementation. The reference basis is therefore a **[std] proxy**, stated hones
 
 | Input | Recommended public basis | Basis tags |
 |---|---|---|
-| Best-estimate mortality (incl. TI) | Shape of the public "00" Series temporary assurance tables — TMN00/TMS00 (male non-smoker/smoker), TFN00/TFS00 (female), 1999–2002 experience — scaled by a **[std]** adjustment factor (suggested 75%) to proxy improvement to the 16-Series era; AM92 (2-year select, prior Formulae and Tables basis) is the teaching-table alternative | tables [R13][R11]; AM92 role [R12]; factor **[std]** |
-| Mortality improvement | None in base **[std]**. The CMI Mortality Projections Model is the market-standard overlay — CMI_2024 (June 2025, WP201) [R14], superseded by CMI_2025 (March 2026, WP211) [REG-R30] — but the model is subscriber-restricted; a production basis would be "x% of TMNL16/TFNL16 with CMI_2025 improvements at a chosen long-term rate", all subscriber inputs | [R14][REG-R30][R11] |
+| Best-estimate mortality (incl. TI) | Shape of the public "00" Series temporary assurance tables — TMN00/TMS00 (male non-smoker/smoker), TFN00/TFS00 (female), 1999–2002 experience — scaled by a **[std]** adjustment factor (suggested 75%) to proxy improvement to the 16-Series era; AM92 (2-year select, prior Formulae and Tables basis) is the teaching-table alternative | tables [R13] [R11]; AM92 role [R12]; factor **[std]** |
+| Mortality improvement | None in base **[std]**. The CMI Mortality Projections Model is the market-standard overlay — CMI_2024 (June 2025, WP201) [R14], superseded by CMI_2025 (March 2026, WP211) [REG-R30] — but the model is subscriber-restricted; a production basis would be "x% of TMNL16/TFNL16 with CMI_2025 improvements at a chosen long-term rate", all subscriber inputs | [R14] [REG-R30] [R11] |
 | Population fallback | ONS national life tables (single-age qx, freely redistributable under OGL) — heavier than insured experience; use only as a last-resort open base | [REG-R32] |
-| TI acceleration timing | None modeled: death and TI are one decrement, one benefit; acceleration shifts payment earlier by less than 12 months, immaterial on an annual grid **[std]** | definition [S1][S6][S8]; 16-Series mortality includes TI [R10] |
-| Suicide-exclusion offset | Year-one claims not reduced for excluded suicides **[std]** (immaterial; no incidence data in fetched sources) | clause [S1][S6][S8] |
+| TI acceleration timing | None modeled: death and TI are one decrement, one benefit; acceleration shifts payment earlier by less than 12 months, immaterial on an annual grid **[std]** | definition [S1] [S6] [S8]; 16-Series mortality includes TI [R10] |
+| Suicide-exclusion offset | Year-one claims not reduced for excluded suicides **[std]** (immaterial; no incidence data in fetched sources) | clause [S1] [S6] [S8] |
 
 **Lapse.** FCA evidence (2024, pure protection in force): average lapse rate 5% p.a.;
 highest observed early lapse 23% in policy year 1 (non-advised intermediated sales
@@ -214,7 +214,7 @@ components are GBP per year.
 
 **Level:** `DB(t) = SA0 × idx(t)`.
 
-**Decreasing** [S1][S6][S8]:
+**Decreasing** [S1] [S6] [S8]:
 
     B(k) = SA0 × [(1+j_m)^N − (1+j_m)^k] / [(1+j_m)^N − 1],   B(0) = SA0, B(N) = 0
 
@@ -229,7 +229,7 @@ Numeric anchor (SA0 = 150,000, j = 6%, n = 25): `B(60) = 150,000 × (1.06^25 −
 benefit after 5 years. Indexation and the decreasing shape are not combined
 **[std scope]** (no fetched insurer offers indexed decreasing cover).
 
-**Family income benefit** [S2][S6][S8]: a death in month k triggers `N − k` monthly
+**Family income benefit** [S2] [S6] [S8]: a death in month k triggers `N − k` monthly
 instalments of `I`, in arrears, ending at month N — an annuity-certain independent of
 survival. On the annual grid, with deaths at mid-year **[std]**, a death in year s
 generates expected instalment outgo:
@@ -245,7 +245,7 @@ Optional commutation module **[std]**: replace the instalment stream at death wi
 lump sum `CV(k) = I × a(N−k)` where `a(m) = [1 − (1+r_c)^(−m/12)] / [(1+r_c)^(1/12) − 1]`
 is the m-month annuity-certain factor at the snapshot commutation rate `r_c` = 3%
 **[std]** (contractually the insurer reduces the sum of remaining instalments
-"fairly and reasonably" [S6][S8]). Base model: no commutation.
+"fairly and reasonably" [S6] [S8]). Base model: no commutation.
 
 ### In-force recursion and processing order
 
@@ -259,16 +259,16 @@ Annual processing for year t = 1..n **[std]**:
 3. **End of year — claims:** expected death/TI outgo `DB(t) × D(t)` (level/
    decreasing) or the FIB formula above; claim expense `ec × D(t)`.
 4. **End of year — lapses:** applied to survivors of mortality **[std order: death
-   before lapse]**; lapse pays nothing (no surrender value [S6][R8]).
+   before lapse]**; lapse pays nothing (no surrender value [S6] [R8]).
 5. **Update:**
 
        l(t+1) = l(t) × (1 − q(t)) × (1 − w(t))
 
 6. **Anniversary (if indexation elected):** with acceptance (behavior section),
    `idx(t+1) = idx(t) × (1 + min(max(RPI, 0), 0.10))` and
-   `idx_p(t+1) = idx_p(t) × (1 + min(1.5 × increase, 0.15))` [S1][S2][S6].
+   `idx_p(t+1) = idx_p(t) × (1 + min(1.5 × increase, 0.15))` [S1] [S2] [S6].
 
-At t = n the projection ends: no maturity payment, no tail states [S1][S6][S8][R8].
+At t = n the projection ends: no maturity payment, no tail states [S1] [S6] [S8] [R8].
 
 ### Net cash flow
 
@@ -329,11 +329,11 @@ cited where it exists.
   P_inforce`, so M_reb = 1.
 - **Indexation take-up [std].** If `indexation = true`: each anniversary the increase
   is accepted with probability 80% **[std]**; after 3 consecutive declines the option
-  is removed [S1][S6] (RL: 2 [S8]). Deterministic base run: always accept, RPI
+  is removed [S1] [S6] (RL: 2 [S8]). Deterministic base run: always accept, RPI
   scenario input flat 3% **[std]**, giving `idx(t+1) = idx(t) × 1.03` and
-  `idx_p(t+1) = idx_p(t) × 1.045` (premium factor 1.5 [S1][S2][S6]).
+  `idx_p(t+1) = idx_p(t) × 1.045` (premium factor 1.5 [S1] [S2] [S6]).
 - **GIO exercise.** Not modeled: exercises create *new* policies at then-current
-  rates [S1][S6][S8], so they add model points rather than changing this one
+  rates [S1] [S6] [S8], so they add model points rather than changing this one
   **[std scope]**.
 
 ---
@@ -408,10 +408,10 @@ consume them and are cited, not reproduced:
 Dominant assumptions, in rough order for a protection block:
 
 1. **Mortality basis risk.** The reference basis is a [std] proxy (scaled "00"
-   Series) because the current 16-Series tables are subscriber-only [R11][R13];
+   Series) because the current 16-Series tables are subscriber-only [R11] [R13];
    the proxy scaling factor (75% [std]) is the single largest lever on claims.
-   Production users should substitute subscriber tables (TMNL16/TFNL16 [R12][R10])
-   and a CMI projections overlay [R14][REG-R30].
+   Production users should substitute subscriber tables (TMNL16/TFNL16 [R12] [R10])
+   and a CMI projections overlay [R14] [REG-R30].
 2. **Early-duration lapse.** With ~96% of commission upfront and 2–4 year clawback
    [R9], year-1–4 lapse rates drive new-business strain recovery; the clawback
    module changes the sign of the sensitivity inside the clawback window.
@@ -426,7 +426,7 @@ Dominant assumptions, in rough order for a protection block:
    amortization or the monthly convention); FIB: the annuity-certain run-off means
    claim outgo persists up to `n − 1` years after death — omitting the in-payment
    ledger understates liabilities.
-6. **Indexation take-up.** The ×1.5 premium factor [S1][S2][S6] makes accepted
+6. **Indexation take-up.** The ×1.5 premium factor [S1] [S2] [S6] makes accepted
    increases premium-margin-accretive if mortality is proportional to cover;
    selective acceptance (impaired lives accept, healthy decline) reverses the sign
    **[std]** concern; no public take-up data exists in the fetched sources.
@@ -434,10 +434,10 @@ Dominant assumptions, in rough order for a protection block:
 Known modeling pitfalls:
 
 - **TI is not an extra benefit.** Death and terminal illness are one decrement and
-  one payment [S1][S6][S8]; adding a separate TI decrement double-counts claims.
+  one payment [S1] [S6] [S8]; adding a separate TI decrement double-counts claims.
   The 16-Series mortality tables already include terminal illness [R10].
 - **FIB instalments are certain, not contingent.** Do not decrement the in-payment
-  income by mortality or lapse; only *new* claims depend on `l(t)` [S6][S8].
+  income by mortality or lapse; only *new* claims depend on `l(t)` [S6] [S8].
 - **Decreasing-schedule conventions.** `j_m = (1+j)^(1/12) − 1` **[std]** vs a
   nominal `j/12` convention changes `B(k)` slightly; state the convention and use
   the `B(60) = £134,588` anchor to validate implementations.
@@ -445,16 +445,48 @@ Known modeling pitfalls:
   annual-in-advance premiums are offsetting small biases; the monthly grid is the
   arbiter. Do not apply both the mid-year claim timing and a separate half-year
   premium adjustment — pick one convention.
-- **Lapse pays nothing.** There is no surrender value [S6][R8]; a lapse row in the
+- **Lapse pays nothing.** There is no surrender value [S6] [R8]; a lapse row in the
   cash-flow output must be zero-valued (it affects only `l(t)`), unlike US models
   with CSV outflows.
 - **No tail states.** Terminate everything at month N: no renewal, no conversion,
-  no extended coverage [S1][S2][S6][S8][R8]. Importing a US-style post-level-term
+  no extended coverage [S1] [S2] [S6] [S8] [R8]. Importing a US-style post-level-term
   tail materially misstates UK term liabilities.
 - **Joint life first death.** Model as a single joint decrement
   `q_joint = 1 − (1−q_1)(1−q_2)` on one policy **[std]**; the policy pays once and
-  ends [S1][S6]. Separation/replacement options create new policies and are out of
+  ends [S1] [S6]. Separation/replacement options create new policies and are out of
   scope.
 - **Boundary discipline.** All guaranteed premiums are inside the contract boundary
   [R3]; truncating premium income at an assumed "repricing" point (a Solvency II
   habit from reviewable business) is wrong for this product.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-term_assurance-r1
+[R10]: #uklib-term_assurance-r10
+[R11]: #uklib-term_assurance-r11
+[R12]: #uklib-term_assurance-r12
+[R13]: #uklib-term_assurance-r13
+[R14]: #uklib-term_assurance-r14
+[R15]: #uklib-term_assurance-r15
+[R16]: #uklib-term_assurance-r16
+[R2]: #uklib-term_assurance-r2
+[R3]: #uklib-term_assurance-r3
+[R5]: #uklib-term_assurance-r5
+[R8]: #uklib-term_assurance-r8
+[R9]: #uklib-term_assurance-r9
+[REG-R1]: #uklib-reg-r1
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-term_assurance-s1
+[S2]: #uklib-term_assurance-s2
+[S3]: #uklib-term_assurance-s3
+[S4]: #uklib-term_assurance-s4
+[S5]: #uklib-term_assurance-s5
+[S6]: #uklib-term_assurance-s6
+[S7]: #uklib-term_assurance-s7
+[S8]: #uklib-term_assurance-s8
+[S9]: #uklib-term_assurance-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

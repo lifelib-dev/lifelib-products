@@ -1,4 +1,4 @@
-# Sources — Whole of Life Assurance (United Kingdom)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried over
 verbatim from `_research/whole-of-life.md` (the citation ground truth for [S#]/[R#] tags).
@@ -16,11 +16,15 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 
 ## Primary product sources [S#]
 
+(uklib-whole_of_life-s1)=
+
 ### S1. SunLife, "Guaranteed Over 50 Plan — Terms and Conditions including the Policy Summary" (PDF)
 - Publisher: SunLife (distributor SunLife Limited); insurer Phoenix Life Limited trading as SunLife
 - Doc type: policy conditions + policy summary (combined booklet), doc code S-G050T12.25.V3 (Nov 2025 version)
 - URL: https://www.sunlife.co.uk/siteassets/documents/2025-11-guaranteed-over-50-plan-terms-and-conditions.pdf
 - Fetched: YES (full 8-page text extracted)
+
+(uklib-whole_of_life-s2)=
 
 ### S2. SunLife, "Over 50s Life Insurance" product page
 - Publisher: SunLife
@@ -28,11 +32,15 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 - URL: https://www.sunlife.co.uk/over-50-life-insurance/
 - Fetched: YES
 
+(uklib-whole_of_life-s3)=
+
 ### S3. SunLife, "Funeral Benefit Option" page
 - Publisher: SunLife
 - Doc type: product page (option description)
 - URL: https://www.sunlife.co.uk/over-50-life-insurance/funeral-benefit-option/
 - Fetched: YES
+
+(uklib-whole_of_life-s4)=
 
 ### S4. Legal & General, "Over 50's Life Insurance — Policy Terms and Conditions" (PDF)
 - Publisher: Legal & General Assurance Society Limited
@@ -40,17 +48,23 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 - URL: https://www.legalandgeneral.com/landg-assets/personal/life-cover/_resources/over-50s/documents/terms-and-conditions.pdf
 - Fetched: YES (full 6-page text extracted)
 
+(uklib-whole_of_life-s5)=
+
 ### S5. Legal & General, "Over 50s Fixed Life Insurance — Policy Summary" (PDF)
 - Publisher: Legal & General Assurance Society Limited
 - Doc type: policy summary (IPID-style), doc code QGI12836 11/2025
 - URL: https://www.legalandgeneral.com/landg-assets/personal/life-cover/_resources/over-50s/documents/fixed-policy-summary.pdf
 - Fetched: YES (full 4-page text extracted)
 
+(uklib-whole_of_life-s6)=
+
 ### S6. Legal & General, "Over 50s Life Insurance" product page
 - Publisher: Legal & General
 - Doc type: product page
 - URL: https://www.legalandgeneral.com/insurance/over-50-life-insurance/
 - Fetched: YES
+
+(uklib-whole_of_life-s7)=
 
 ### S7. Aviva, "Guaranteed Lifelong Protection — Plan Conditions" (PDF)
 - Publisher: Aviva Life & Pensions UK Limited
@@ -61,17 +75,23 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
   11/2016 — the versions Aviva currently publishes at the product URLs; a newer edition may
   exist behind the quote journey.
 
+(uklib-whole_of_life-s8)=
+
 ### S8. Aviva, "Key Features of Guaranteed Lifelong Protection" (PDF)
 - Publisher: Aviva Life & Pensions UK Limited
 - Doc type: key features document, doc code LD06001 11/2016
 - URL: https://static.aviva.io/content/dam/aviva-public/gb/pdfs/personal/insurance/life/over-50s/insurance-life-over-50s-guaranteed-lifelong-protection-key-features.pdf
 - Fetched: YES (via direct download; full 5-page text extracted)
 
+(uklib-whole_of_life-s9)=
+
 ### S9. Royal London, "Terms & Conditions — Over 50 Life Insurance" (PDF)
 - Publisher: The Royal London Mutual Insurance Society Limited
 - Doc type: policy conditions, doc code D2COFTC
 - URL: https://www.royallondon.com/siteassets/site-docs/insurance/life-insurance/over-50s-direct-terms-conditions.pdf
 - Fetched: YES (full 9-page text extracted)
+
+(uklib-whole_of_life-s10)=
 
 ### S10. Zurich, "Zurich Whole of Life — Terms and conditions" (PDF)
 - Publisher: Zurich Assurance Ltd
@@ -82,11 +102,15 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
   benefit/terminal illness wording, suicide clause, escalation and milestone-benefit
   mechanics, waiver of premium, lapse terms.
 
+(uklib-whole_of_life-s11)=
+
 ### S11. Zurich, "Zurich Whole of Life — Key features" (PDF)
 - Publisher: Zurich Assurance Ltd
 - Doc type: key features document, doc code PW720505007 (02/25)
 - URL: https://www.zurichintermediary.co.uk/-/media/zurich-intermediary/documents/key-features/720505.pdf
 - Fetched: YES (via direct download; full 12-page text extracted)
+
+(uklib-whole_of_life-s12)=
 
 ### S12. Zurich for advisers, "Whole of Life" product page
 - Publisher: Zurich (zurichintermediary.co.uk)
@@ -94,11 +118,15 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 - URL: https://www.zurichintermediary.co.uk/whole-of-life
 - Fetched: YES
 
+(uklib-whole_of_life-s13)=
+
 ### S13. Royal London for advisers, "Life Cover — Product details" page (Personal Menu Plan)
 - Publisher: Royal London (adviser.royallondon.com)
 - Doc type: adviser product specification page
 - URL: https://adviser.royallondon.com/protection/personal-protection/life-or-critical-illness-cover/detail/ (life cover detail page: https://adviser.royallondon.com/protection/personal-protection/life-cover/detail/)
 - Fetched: YES (life cover detail page)
+
+(uklib-whole_of_life-s14)=
 
 ### S14. Royal London, "Personal Menu Plan — Life Cover — Plan details" (PDF, December 2024)
 - Publisher: The Royal London Mutual Insurance Society Limited
@@ -107,6 +135,8 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 - Fetched: YES (44 pages downloaded; introductory sections and structure read; clause-level
   extraction not performed — WoL parameters cited from S13 instead; carried caveat)
 
+(uklib-whole_of_life-s15)=
+
 ### S15. ReAssure, "Keeping your reviewable whole-of-life policy on track" (PDF factsheet)
 - Publisher: ReAssure Ltd (closed-book consolidator; FRN 110495)
 - Doc type: customer factsheet on legacy unit-linked reviewable whole of life
@@ -114,6 +144,8 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 - Fetched: YES (full 4-page text extracted)
 - Role in this library: sole source for the legacy unit-linked reviewable variation
   (maximum vs standard/balanced cover, review cycle, unit-fund surrender value).
+
+(uklib-whole_of_life-s16)=
 
 ### S16. Vitality, "Whole of life insurance" product page
 - Publisher: Vitality (VitalityLife)
@@ -127,10 +159,14 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uklib-whole_of_life-r1)=
+
 ### R1. FCA, "MS24/1: Pure Protection Market Study" (study landing page)
 - Publisher: Financial Conduct Authority
 - URL: https://www.fca.org.uk/publications/market-studies/ms24-1-1-market-distribution-pure-protection
 - Fetched: YES
+
+(uklib-whole_of_life-r2)=
 
 ### R2. FCA, "MS24/1 Annex 2: Value of pure protection products" (PDF)
 - Publisher: Financial Conduct Authority
@@ -140,31 +176,43 @@ were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
   example (£30/month, £5,000, 13 years 11 months), premium age caps, per-£1,000 price
   comparison (£71.73 vs £8.10), lapse-supported economics, Consumer Duty fair value framing.
 
+(uklib-whole_of_life-r3)=
+
 ### R3. PRA Rulebook, "Technical Provisions" Part (Solvency UK)
 - Publisher: Prudential Regulation Authority (prarulebook.co.uk)
 - URL: https://www.prarulebook.co.uk/pra-rules/technical-provisions
 - Fetched: YES (via direct download; WebFetch returned 403; rule text extracted; site viewed
   "in the present on 03/08/2026")
 
+(uklib-whole_of_life-r4)=
+
 ### R4. PRA, "PS15/24 – Review of Solvency II: Restatement of assimilated law"
 - Publisher: Bank of England / PRA
 - URL: https://www.bankofengland.co.uk/prudential-regulation/publication/2024/november/review-of-solvency-ii-restatement-of-assimilated-law-policy-statement
 - Fetched: YES (via direct download; WebFetch returned 403)
+
+(uklib-whole_of_life-r5)=
 
 ### R5. Financial Services and Markets Act 2000 (Regulated Activities) Order 2001 (SI 2001/544), Schedule 1
 - Publisher: legislation.gov.uk
 - URL: https://www.legislation.gov.uk/uksi/2001/544/schedule/1
 - Fetched: YES
 
+(uklib-whole_of_life-r6)=
+
 ### R6. CMI / IFoA, "'00' series tables" page
 - Publisher: Institute and Faculty of Actuaries (Continuous Mortality Investigation)
 - URL: https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-mortality-and-morbidity-tables/00-series-tables
 - Fetched: YES
 
+(uklib-whole_of_life-r7)=
+
 ### R7. IFoA blog, "CMI: New '16' Series term assurance mortality and accelerated critical illness tables"
 - Publisher: Institute and Faculty of Actuaries (blog.actuaries.org.uk)
 - URL: https://blog.actuaries.org.uk/cmi-new-16-series-term-assurance-mortality-and-accelerated-critical-illness-tables/
 - Fetched: YES
+
+(uklib-whole_of_life-r8)=
 
 ### R8. FRC, "General Technical Actuarial Standards (TAS 100)" page
 - Publisher: Financial Reporting Council
@@ -220,3 +268,12 @@ present on 03/08/2026") is consistent with that date.
 The cross-product bibliography `_research/regulatory-actuarial.md` (accessed 2026-08-03)
 plays the same role for [REG-R#] tags. Standardizations marked **[std]** in `product-spec.md`
 and `technical-notes.md` are introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uklib-whole_of_life-r2
+[R3]: #uklib-whole_of_life-r3
+[R7]: #uklib-whole_of_life-r7
+[REG-R22]: #uklib-reg-r22
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

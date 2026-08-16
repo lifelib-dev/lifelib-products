@@ -1,4 +1,4 @@
-# Sources — Unit-Linked Investment Bond (United Kingdom)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried
 over verbatim from `_research/unit-linked-bond.md` (the citation ground truth for
@@ -17,6 +17,8 @@ Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
 
 ## Primary product sources [S#]
 
+(uklib-unit_linked_bond-s1)=
+
 ### S1. Prudential (M&G plc) — "Key Features of the Prudential Investment Plan"
 - Publisher: The Prudential Assurance Company Limited ("Pru, part of M&G plc"),
   reg. no. 15454, FCA ref 139793
@@ -25,6 +27,8 @@ Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
 - Retrieved: YES (full PDF read, 16 pp)
 - Role in this library: implementation anchor (with S2) — currently marketed
   single-premium onshore investment bond.
+
+(uklib-unit_linked_bond-s2)=
 
 ### S2. Prudential (M&G plc) — "Policy Provisions — Prudential Investment Plan"
 - Publisher: The Prudential Assurance Company Limited
@@ -35,6 +39,8 @@ Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
   mechanics)
 - Role in this library: implementation anchor (with S1) for unit pricing, charge,
   withdrawal, adviser-charging, death-benefit and GMDB mechanics.
+
+(uklib-unit_linked_bond-s3)=
 
 ### S3. Aviva — "Investment and Trustee Bond Plan Booklet — The details of your Investment Bond"
 - Publisher: Aviva Life & Pensions UK Limited, reg. no. 3253947, FCA firm ref 185896
@@ -47,6 +53,8 @@ Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
   Cash-in Charges, Establishment Charge), with-profits/MVR variation, 100-segment
   structure, Accidental Death Benefit.
 
+(uklib-unit_linked_bond-s4)=
+
 ### S4. Aviva — "Onshore Bond Key Features" (Aviva Wealth platform)
 - Publisher: Aviva Life & Pensions UK Limited
 - Doc type: Key Features Document. Doc code LF20017 06/2026 (companion T&Cs are
@@ -57,6 +65,8 @@ Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
   open-architecture design; explicit charge in respect of tax; 101% death benefit
   variant.
 
+(uklib-unit_linked_bond-s5)=
+
 ### S5. Quilter — "Key Features of the Collective Investment Bond"
 - Publisher: Quilter Life & Pensions Limited, reg. no. 04163431, PRA/FCA ref 207977
 - Doc type: Key Features Document. Doc code QIP 18193/205/14009, approved May 2026
@@ -65,6 +75,8 @@ Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
 - Role in this library: current platform onshore bond (open architecture, ~3,000
   funds); explicit life-fund tax pass-through; Capital Protected Death Benefit
   rider; chargeable-event statements.
+
+(uklib-unit_linked_bond-s7)=
 
 ### S7. Canada Life — "Canada Life announces closure of onshore bond and personal pension to focus investment on offshore bonds"
 - Publisher: Canada Life UK (canadalife.co.uk)
@@ -83,6 +95,8 @@ read).
 
 ## Regulatory and actuarial references [R#] (product research file numbering)
 
+(uklib-unit_linked_bond-r1)=
+
 ### R1. ITTOIA 2005, Part 4 Chapter 9 — "Gains from contracts for life insurance etc."
 - Publisher: legislation.gov.uk (UK statute)
 - URL: https://www.legislation.gov.uk/ukpga/2005/5/part/4/chapter/9
@@ -93,6 +107,8 @@ read).
 - Caveat carried over: top-slicing and deficiency-relief mechanics were not
   extracted beyond section references — [unverified] where used.
 
+(uklib-unit_linked_bond-r2)=
+
 ### R2. HMRC Insurance Policyholder Taxation Manual IPTM3560
 - Publisher: GOV.UK (HMRC internal manual)
 - Title: "IPTM3560 — Calculating gains: part surrenders and part assignments:
@@ -101,6 +117,8 @@ read).
 - Retrieved: YES (allowable element = premium × y/20, y capped at 20 — the 5% p.a.
   cumulative tax-deferred allowance machinery)
 
+(uklib-unit_linked_bond-r3)=
+
 ### R3. FCA Handbook COBS 21.3 — "Further rules for firms engaged in linked long-term insurance business"
 - Publisher: FCA (handbook.fca.org.uk)
 - URL: https://www.handbook.fca.org.uk/handbook/COBS/21/3.html
@@ -108,11 +126,15 @@ read).
   asset list, approved indices, economic-substance classification, conditional
   permitted links.
 
+(uklib-unit_linked_bond-r4)=
+
 ### R4. FSMA 2000 (Regulated Activities) Order 2001 (SI 2001/544), Schedule 1 Part II
 - Publisher: legislation.gov.uk
 - URL: https://www.legislation.gov.uk/uksi/2001/544/schedule/1
 - Retrieved: YES (long-term insurance classes; Class III "Linked long-term"
   definition)
+
+(uklib-unit_linked_bond-r5)=
 
 ### R5. PRA Rulebook (Solvency II firms) — Technical Provisions Part
 - Publisher: Bank of England / PRA (prarulebook.co.uk)
@@ -121,6 +143,8 @@ read).
   — TP 2.1–2.5, TP 3.1–3.2 best estimate, TP 4A.1 reformed risk margin (CoC 4%,
   λ = 0.9, floor 0.25).
 
+(uklib-unit_linked_bond-r6)=
+
 ### R6. HMRC Life Assurance Manual LAM01160 (I-E / BLAGAB)
 - Publisher: GOV.UK (HMRC internal manual)
 - Title: "LAM01160 — ... key concepts: simplified example of the I-E calculation"
@@ -128,11 +152,15 @@ read).
 - Retrieved: YES (I-E base, policyholder rate = basic rate 20% in the example,
   minimum profits test, basic-rate credit rationale)
 
+(uklib-unit_linked_bond-r7)=
+
 ### R7. FRC — TAS 100 "General Technical Actuarial Standards"
 - Publisher: Financial Reporting Council (frc.org.uk)
 - URL: https://www.frc.org.uk/library/standards-codes-policy/actuarial/tas-100/
 - Retrieved: YES (v2.0, published 3 March 2023, effective 1 July 2023; Principle 5
   Models)
+
+(uklib-unit_linked_bond-r8)=
 
 ### R8. IFoA — Continuous Mortality Investigation page
 - Publisher: Institute and Faculty of Actuaries (actuaries.org.uk)
@@ -140,6 +168,8 @@ read).
 - Retrieved: YES (CMI role and subscription/Authorised User access model; specific
   assured-lives table series names not stated on the fetched page — [unverified]
   where referenced)
+
+(uklib-unit_linked_bond-r9)=
 
 ### R9. IFoA historical sessional papers on unit-linked reserving
 - Publisher: Institute and Faculty of Actuaries (actuaries.org.uk document archive)
@@ -190,3 +220,14 @@ segment-level terms). The cross-product bibliography
 `_research/regulatory-actuarial.md` plays the same role for [REG-R#] tags.
 Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md` are
 introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R3]: #uklib-unit_linked_bond-r3
+[R4]: #uklib-unit_linked_bond-r4
+[R5]: #uklib-unit_linked_bond-r5
+[R7]: #uklib-unit_linked_bond-r7
+[R8]: #uklib-unit_linked_bond-r8
+[R9]: #uklib-unit_linked_bond-r9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

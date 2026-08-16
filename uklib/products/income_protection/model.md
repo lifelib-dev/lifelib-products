@@ -1,4 +1,4 @@
-# IP_UK_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/income_protection/technical-notes.md`](technical-notes.md);
@@ -10,7 +10,7 @@ the product it implements is specified in
 > maximum-benefit formula, escalation capped at 10% with a ×1.5 premium multiplier
 > continuing in claim, waiver of premium from benefit start, linked claims within 52
 > weeks, expiry without value. Every **rate** is a **[std]** standardization: the CMI
-> IP11 Series is restricted to CMI Authorised Users [R1][R2][R5][REG-R22], so the
+> IP11 Series is restricted to CMI Authorised Users [R1] [R2] [R5] [REG-R22], so the
 > inception, recovery and in-claim mortality rates shipped here are proxies **shaped
 > like** IP11 that carry no CMI authority, and the premium is a placeholder. Replace
 > them with a licensed basis first.
@@ -116,7 +116,7 @@ months; it is not implemented, and the notes name the same gap.
 ## Premiums come from H alone
 
 `premiums(t)` is carried on `pols_active(t)` and **never** on `pols_if(t)`. Premiums are
-waived from the start of benefit payment [S5][S7][S10][S11], so projecting income from
+waived from the start of benefit payment [S5] [S7] [S10] [S11], so projecting income from
 lives in claim overstates it by the whole in-claim population — the notes' second-listed
 pitfall. `result_cf()` publishes `pols_active` beside `pols_if` for exactly this reason:
 the difference between the two columns is the population whose premiums are waived.
@@ -177,8 +177,8 @@ reserve is quoted as.
 They are a **companion**, not part of the projection: no line of `result_cf()` is
 discounted, and `disc_rate` is the worked example's flat 3% **[std]**, not a valuation
 basis. A Solvency UK best estimate discounts these same cash flows on the PRA risk-free
-term structure [R7][REG-R1]; the claims-in-payment element is matching-adjustment
-eligible where it is organised and managed separately [R8][REG-R2], which is precisely
+term structure [R7] [REG-R1]; the claims-in-payment element is matching-adjustment
+eligible where it is organised and managed separately [R8] [REG-R2], which is precisely
 the `exit`-basis disabled-life annuity above.
 
 ## Inputs are external files
@@ -275,3 +275,19 @@ maximum, and that death and lapse pay nothing.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-income_protection-r1
+[R2]: #uklib-income_protection-r2
+[R5]: #uklib-income_protection-r5
+[R7]: #uklib-income_protection-r7
+[R8]: #uklib-income_protection-r8
+[REG-R1]: #uklib-reg-r1
+[REG-R2]: #uklib-reg-r2
+[REG-R22]: #uklib-reg-r22
+[S10]: #uklib-income_protection-s10
+[S11]: #uklib-income_protection-s11
+[S5]: #uklib-income_protection-s5
+[S7]: #uklib-income_protection-s7
+[std]: #uklib-std
+<!-- END generated citation links -->

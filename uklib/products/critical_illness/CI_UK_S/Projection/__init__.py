@@ -173,7 +173,7 @@ inconsistent at second order. :func:`claim_rate_paid_mth` follows the notes lite
 and :func:`claim_rate_exit_mth` is defined as the **residual** ``q_m - q_pay_m``, so the
 split is exact by construction and the run-off is the notes'.
 :func:`check_claim_split` bounds the artefact: it asserts the residual really is the
-independently converted ``q_exit`` to within :data:`claim_split_tol`, which on the
+independently converted ``q_exit`` to within ``claim_split_tol``, which on the
 shipped points it is by four decimal places or better.
 
 .. rubric:: The non-terminating benefits
@@ -762,13 +762,18 @@ def pols_if(t):
 def pols_if_at(t, timing):
     """The number of policies in force at a point inside policy month t.
 
-    ``"BEF_DECR"``   the start of the month, before any decrement; the same number as
-                     :func:`pols_if` and the weight on that month's cash flows.
-    ``"BEF_LAPSE"``  after main-benefit claims, before lapses - the notes' processing
-                     order is **claim before lapse** **[std order]**, so this is the
-                     population lapses are taken from.
-    ``"AFT_DECR"``   the notes' ``l(t)``, the end-of-month state, and zero from the last
-                     month on because the cover expires there.
+    ``"BEF_DECR"``
+        the start of the month, before any decrement; the same number as
+        :func:`pols_if` and the weight on that month's cash flows.
+
+    ``"BEF_LAPSE"``
+        after main-benefit claims, before lapses - the notes' processing
+        order is **claim before lapse** **[std order]**, so this is the
+        population lapses are taken from.
+
+    ``"AFT_DECR"``
+        the notes' ``l(t)``, the end-of-month state, and zero from the last
+        month on because the cover expires there.
 
     The additional-payment and children's-cover claims appear at none of these points.
     They are non-terminating: only the main benefit ends the policy.
@@ -818,13 +823,18 @@ def pols_maturity(t):
 def benefit_pp(t, kind):
     """The benefit amount per policy in month t, by kind.
 
-    ``"MAIN"``   SA(t), the sum assured, indexed if the option is elected.
-    ``"AP"``     the additional-payment benefit ``min(25% of SA(t), £25,000)``
-                 [S1][S4][S11] - £25,000 at the anchor cell, and **non-depleting**: it
-                 does not reduce the main benefit.
-    ``"CHILD"``  children's cover ``min(50% of SA(t), £25,000)`` [S1], also
-                 non-depleting, and zero if the cover is not active.  The £4,000 child
-                 funeral benefit is excluded as de minimis **[std]**.
+    ``"MAIN"``
+        SA(t), the sum assured, indexed if the option is elected.
+
+    ``"AP"``
+        the additional-payment benefit ``min(25% of SA(t), £25,000)``
+        [S1][S4][S11] - £25,000 at the anchor cell, and **non-depleting**: it
+        does not reduce the main benefit.
+
+    ``"CHILD"``
+        children's cover ``min(50% of SA(t), £25,000)`` [S1], also
+        non-depleting, and zero if the cover is not active.  The £4,000 child
+        funeral benefit is excluded as de minimis **[std]**.
 
     Both caps are struck against the **indexed** sum assured **[std]**: the notes state
     them against ``SA`` without saying which, and holding them to a frozen outset value
@@ -845,13 +855,20 @@ def benefit_pp(t, kind):
 def claims(t, kind=None):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
-    ``"MAIN"``   ``SA(t) x q_pay_m(t) x l``, the terminating benefit.  On the
-                 accelerated contract every claim pays; on the standalone one only
-                 diagnoses surviving the 14-day period do.
-    ``"AP"``     ``B_AP x a_m(t) x l``, non-terminating and non-depleting.
-    ``"CHILD"``  ``B_ch x lambda_m x l``, likewise.
-    ``"LAPSE"``  zero, always.  There is no surrender or paid-up value [S1][S4][S5];
-                 the kind exists so that the zero is stated rather than inferred.
+    ``"MAIN"``
+        ``SA(t) x q_pay_m(t) x l``, the terminating benefit.  On the
+        accelerated contract every claim pays; on the standalone one only
+        diagnoses surviving the 14-day period do.
+
+    ``"AP"``
+        ``B_AP x a_m(t) x l``, non-terminating and non-depleting.
+
+    ``"CHILD"``
+        ``B_ch x lambda_m x l``, likewise.
+
+    ``"LAPSE"``
+        zero, always.  There is no surrender or paid-up value [S1][S4][S5];
+        the kind exists so that the zero is stated rather than inferred.
     """
     if kind is None:
         return sum(claims(t, k) for k in ("MAIN", "AP", "CHILD", "LAPSE"))
@@ -956,7 +973,7 @@ def check_claim_split_resid(t):
 
 
 def check_claim_split():
-    """True when the paying/non-paying split stays inside :data:`claim_split_tol`.
+    """True when the paying/non-paying split stays inside ``claim_split_tol``.
 
     No argument, one bool over all t, the library-wide shape of a ``check_*`` cells.
     Unlike a roll-forward check this one is not an identity that must hold exactly - it

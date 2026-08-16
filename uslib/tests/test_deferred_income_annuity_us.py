@@ -18,7 +18,7 @@ cell's premiums fall at months 0 and 60 and its income start month is T = 240.
 import modelx as mx
 import pytest
 
-from conftest import LIB
+from us_registry import LIB
 
 MODEL_PATH = LIB / "products/deferred_income_annuity/DIA_US_S"
 

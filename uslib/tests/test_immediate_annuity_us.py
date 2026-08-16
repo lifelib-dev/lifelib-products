@@ -20,7 +20,7 @@ test below per pitfall that can be asserted against the shipped model points.
 import modelx as mx
 import pytest
 
-from conftest import LIB
+from us_registry import LIB
 
 MODEL_PATH = LIB / "products/immediate_annuity/SPIA_US_S"
 

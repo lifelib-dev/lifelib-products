@@ -1,4 +1,4 @@
-# WP_UK_A — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/with_profits/technical-notes.md`](technical-notes.md);
@@ -323,3 +323,7 @@ lifetime cap, the out-of-scope chassis, and all six invariant checks on every mo
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+<!-- END generated citation links -->

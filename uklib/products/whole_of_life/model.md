@@ -1,4 +1,4 @@
-# WOL_UK_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/whole_of_life/technical-notes.md`](technical-notes.md);
@@ -11,7 +11,7 @@ the product it implements is specified in
 > cover continuing, the absence of any surrender value, the suicide clause, the
 > escalation ratios, the Payout Promise formula. Every **rate** is a **[std]**
 > standardization: the CMI's current tables are restricted to Authorised Users
-> [REG-R22][R7], so both mortality bases are proxies **shaped like** the tables the notes
+> [REG-R22] [R7], so both mortality bases are proxies **shaped like** the tables the notes
 > name, and no insurer publishes whole of life premium rate tables, so the premium is a
 > model point input.
 
@@ -89,7 +89,7 @@ moratorium only.
 
 ## Lapse pays nothing, which is the whole economics
 
-There is no surrender value at any duration on either cell [S1][S4][S5][S7][S9][S10], so
+There is no surrender value at any duration on either cell [S1] [S4] [S5] [S7] [S9] [S10], so
 a lapse produces no cash flow at all: its entire effect is through `pols_if`. Every lapse
 therefore extinguishes a liability for nothing, the best estimate falls **monotonically**
 as assumed lapses rise, and the FCA records that without the continuing-payer
@@ -261,3 +261,16 @@ bases against each other, and that the truncation residual is negligible.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uklib-whole_of_life-r2
+[R7]: #uklib-whole_of_life-r7
+[REG-R22]: #uklib-reg-r22
+[S1]: #uklib-whole_of_life-s1
+[S10]: #uklib-whole_of_life-s10
+[S4]: #uklib-whole_of_life-s4
+[S5]: #uklib-whole_of_life-s5
+[S7]: #uklib-whole_of_life-s7
+[S9]: #uklib-whole_of_life-s9
+[std]: #uklib-std
+<!-- END generated citation links -->

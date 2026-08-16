@@ -1,4 +1,4 @@
-# Critical Illness Cover — Liability Cash Flow Model: Technical Notes (United Kingdom)
+# Technical Notes
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
 
@@ -40,7 +40,7 @@ those in `product-spec.md`. The model mirrors the term assurance reference model
   (probability-weighted) basis: survivorship factors multiply per-policy cash flows.
   Joint life first event is a variant (two-life survivorship product) **[std scope:
   not in base]**.
-- **Survival period.** 14 days [S1][std pick, see product-spec footnote 9]. In the
+- **Survival period.** 14 days [S1] [std pick, see product-spec footnote 9]. In the
   accelerated base model it is cash-flow-neutral (death within 14 days of diagnosis
   pays the same `SA` as a death claim [S1]) and is ignored as a timing refinement
   **[std]**. In the standalone variant it reduces payable claims (below).
@@ -57,7 +57,7 @@ those in `product-spec.md`. The model mirrors the term assurance reference model
 | `sex` | enum {M, F} | M |
 | `smoker` | enum {NS, S} | NS |
 | `sum_assured` | currency (SA) | 100,000 **[std]** |
-| `term_years` | int (5–50 [S2][S5]) | 25 **[std]** |
+| `term_years` | int (5–50 [S2] [S5]) | 25 **[std]** |
 | `cover_basis` | enum {level} (decreasing/FIB out of scope) | level |
 | `life_basis` | enum {single, joint_first_event} | single **[std]** |
 | `premium_guarantee` | enum {guaranteed, reviewable} | guaranteed [S1] |
@@ -77,12 +77,12 @@ those in `product-spec.md`. The model mirrors the term assurance reference model
 | `t` / `y` / `a` | Policy month; policy year = ceil(t/12); attained age = issue_age + y − 1 (ANB) | monthly |
 | `P(t)` | Premium rate in force (constant under guaranteed premiums; reset at reviews in the reviewable module) | at reviews only |
 | `SA(t)` | Sum assured (constant at SA for level cover; indexation module updates annually) | on events |
-| `grace_flag(t)` | In-grace indicator (60-day grace [S1][S4]) — deterministic base model does not enter grace | monthly |
+| `grace_flag(t)` | In-grace indicator (60-day grace [S1] [S4]) — deterministic base model does not enter grace | monthly |
 | `n_AP_used` | Additional-payment claims used per condition (contract cap: 1 per condition [S11]) — not tracked in the frequency-loading approximation **[std]** | — |
 | `n_child_used` | Children's claims used (cap 2 [S1]) — not tracked in the frequency-loading approximation **[std]** | — |
 
 There is no account value, asset share, surrender value, bonus, or MVR state in this
-product: lapse pays nothing [S1][S4][S5][unverified as explicit statement].
+product: lapse pays nothing [S1] [S4] [S5] [unverified as explicit statement].
 
 ---
 
@@ -94,13 +94,13 @@ Three classes are distinguished explicitly.
 
 | Input | Value | Basis |
 |---|---|---|
-| Main benefit | SA on first of death / TI / CI diagnosis + survival (accelerated); CI only (standalone) | [S1][S4][S8][S11] |
-| Additional-payment benefit `B_AP` | min(0.25 x SA, 25,000) = 25,000 at the anchor cell; non-depleting | [S1][S4][S11] |
+| Main benefit | SA on first of death / TI / CI diagnosis + survival (accelerated); CI only (standalone) | [S1] [S4] [S8] [S11] |
+| Additional-payment benefit `B_AP` | min(0.25 x SA, 25,000) = 25,000 at the anchor cell; non-depleting | [S1] [S4] [S11] |
 | Children's benefit `B_ch` | min(0.50 x SA, 25,000) = 25,000 at the anchor cell; non-depleting; 2-claim policy cap | [S1] |
 | Child funeral benefit | 4,000 — excluded from the base model (de minimis) | [S1]; exclusion **[std]** |
 | Survival period | 14 days | [S1]; pick **[std]** |
-| Premium | Level, guaranteed for the term; 60-day grace, no surrender value | [S1][S4] |
-| Term / expiry | 5–50 years; policy ends by 75th birthday | [S2][S5] |
+| Premium | Level, guaranteed for the term; 60-day grace, no surrender value | [S1] [S4] |
+| Term / expiry | 5–50 years; policy ends by 75th birthday | [S2] [S5] |
 
 ### (b) Insurer-discretionary current elements (snapshot)
 
@@ -109,27 +109,27 @@ rates, no asset shares, no MVRs. Two snapshot elements exist:
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| Reviewable-premium reviews (variant module only) | Reviews every 5 years from the 5th anniversary; changes driven by claims/industry experience, medical advances, law; Aviva: "no limits" on changes, <2% or 50p ignored; L&G intermediary: ±5% tolerance, individual health not a factor. Snapshot: premiums unchanged at each review **[std]** | [S3][S4][S5] |
-| Indexation basis (if `indexation = true`) | RPI snapshot 3.0% p.a. **[std]** → cover +3.0%, premium +4.5% (x1.5 factor), within caps 10%/15% | mechanics [S1][S4]; RPI level **[std]** |
+| Reviewable-premium reviews (variant module only) | Reviews every 5 years from the 5th anniversary; changes driven by claims/industry experience, medical advances, law; Aviva: "no limits" on changes, <2% or 50p ignored; L&G intermediary: ±5% tolerance, individual health not a factor. Snapshot: premiums unchanged at each review **[std]** | [S3] [S4] [S5] |
+| Indexation basis (if `indexation = true`) | RPI snapshot 3.0% p.a. **[std]** → cover +3.0%, premium +4.5% (x1.5 factor), within caps 10%/15% | mechanics [S1] [S4]; RPI level **[std]** |
 
 ### (c) Behavioral / experience assumptions (modeler's view)
 
 The CMI's critical illness investigation covers standalone and full accelerated
 (death + CI) business, on a diagnosis-rate approach: AC04 insured-lives accelerated-CI
 diagnosis-rate tables (WP50, 2003–2006 experience), cause-specific rates (WP52, updated
-WP151), and CIBT93 as the population-based comparison table [R8][R9]. The current
+WP151), and CIBT93 as the population-based comparison table [R8] [R9]. The current
 protection base-table generation is the "16" Series (term assurance mortality and
 accelerated CI, 2015–2018 experience, finalized with WP154) [REG-R26]; the latest
 public experience output is WP167 (accelerated CI by cause, 2017–2020) [R9]. **Honest
 flagging:** CMI working papers are public, but current CMI tables and datasets are
-restricted to Authorised Users (subscribers) [REG-R22][R9 — access limits
-[unverified]]; AC04/16-Series rate values were not obtained. The reference basis below
+restricted to Authorised Users (subscribers) [REG-R22] [R9 — access limits
+[unverified]](#uklib-critical_illness-r9); AC04/16-Series rate values were not obtained. The reference basis below
 is therefore a **[std] proxy** shaped like the named tables, to be replaced by a
 licensed basis in any real application.
 
 | Input | Reference basis | Basis tags |
 |---|---|---|
-| CI diagnosis rates `i_ci(x)` | [std] proxy table below, shaped like an insured-lives accelerated-CI diagnosis-rate table (AC04/16-Series structure: sex/smoker-distinct, age-increasing) | structure [R8][REG-R26]; values **[std]** |
+| CI diagnosis rates `i_ci(x)` | [std] proxy table below, shaped like an insured-lives accelerated-CI diagnosis-rate table (AC04/16-Series structure: sex/smoker-distinct, age-increasing) | structure [R8] [REG-R26]; values **[std]** |
 | Mortality `q_d(x)` | [std] proxy table below, shaped like ~0.70 x ONS National Life Tables qx (population mortality is heavier than insured experience; scalar and pivot values are rounded placeholders, not derived ONS data) | ONS tables redistributable [REG-R32]; values **[std]** |
 | Overlap factor `k` | 0.10 flat (see combined decrement below) | **[std]** |
 | Standalone survival-period slippage `δ` | 0.03 (fraction of diagnoses dying within 14 days) | **[std]** |
@@ -186,7 +186,7 @@ GBP/month per policy in force at the relevant weighting.
 
 The insured event is *death or first CI diagnosis, whichever first* — the CMI's
 accelerated investigation measures exactly this combined claim incidence with
-cause-of-claim splits [R8][R9]. Adding `q_d` and `i_ci` naively double-counts lives
+cause-of-claim splits [R8] [R9]. Adding `q_d` and `i_ci` naively double-counts lives
 that are both diagnosed and die in the same period: once the CI claim has been paid
 (diagnosis + 14-day survival), the subsequent death of that life is not a second
 claim; and a death within the survival period converts the CI claim into a death claim
@@ -199,7 +199,7 @@ formulation is diagnosis rates plus mortality net of the overlap
 where `k` is the proportion of deaths preceded by a claimable CI diagnosis (deaths
 "already counted" in `i_ci`). **[std] simplification:** `k = 0.10`, flat across ages,
 in the absence of public cause-of-death-linked CI data (the cause-specific splits in
-WP52/WP151/WP167 [R8][R9] are the right calibration source for subscribers).
+WP52/WP151/WP167 [R8] [R9] are the right calibration source for subscribers).
 Sensitivity range 0–0.25 (see Key sensitivities). The 14-day survival period needs no
 further adjustment in the accelerated design: whichever way the overlap resolves, `SA`
 is paid once [S1].
@@ -216,9 +216,9 @@ non-paying parts **[std]**:
 
 Total decrement `q_claim = q_pay + q_exit` (same in-force runoff as the accelerated
 model at these parameters); only the *paid* part generates claim outgo. Death within
-the survival period pays nothing on the composite standalone variant [S4][S11]; a
-premium-refund-on-death feature exists in some designs [S4][S11 — recorded jointly in
-the research file] and is excluded **[std]**.
+the survival period pays nothing on the composite standalone variant [S4] [S11]; a
+premium-refund-on-death feature exists in some designs [S4] [S11 — recorded jointly in
+the research file](#uklib-critical_illness-s11) and is excluded **[std]**.
 
 ### Monthly processing order [std]
 
@@ -239,7 +239,7 @@ At EOM of month t:
 6. Lapse applied to non-claiming survivors; update in-force:
    `l(t) = l(t−1) x (1 − q_m(t)) x (1 − w_m(t))` **[std order: claim before lapse]**.
 7. At t = 12n (term end): policy expires; no maturity or surrender value
-   [S1][S4][S5].
+   [S1] [S4] [S5].
 
 The frequency-loading treatment of steps 4–5 deliberately ignores the contractual
 claim-count caps (1 per additional-payment condition [S11]; 2 children's claims [S1])
@@ -258,9 +258,9 @@ state variables (`n_AP_used`, `n_child_used`).
 | Claim expenses | `E_cl x q_m(t) x l(t−1)` | − | EOM |
 | Additional-payment claims | `B_AP x a_m(t) x l(t−1)` | − | EOM |
 | Children's-cover claims | `B_ch x λ_m x l(t−1)` | − | EOM |
-| Surrender outgo | 0 (no surrender value [S1][S4][S5]) | — | — |
+| Surrender outgo | 0 (no surrender value [S1] [S4] [S5]) | — | — |
 
-Grace (60 days [S1][S4]) is not separately modeled in the deterministic base: lapse
+Grace (60 days [S1] [S4]) is not separately modeled in the deterministic base: lapse
 rates are assumed to already reflect grace-period cures **[std]**. Death during grace
 pays the death benefit less unpaid premiums [term chassis]; immaterial at monthly
 resolution **[std]**.
@@ -268,10 +268,10 @@ resolution **[std]**.
 ### Reviewable-premium module (variant)
 
 For `premium_guarantee = reviewable`: `P(t)` is constant between reviews; at each
-5-yearly review from the 5th anniversary [S3][S4], `P ← P x (1 + ρ_review)` where
+5-yearly review from the 5th anniversary [S3] [S4], `P ← P x (1 + ρ_review)` where
 `ρ_review` is a scenario input (snapshot 0 **[std]**). Contractual constraints:
 Aviva-style — no limits, changes under 2% or 50p ignored, policyholder may instead
-reduce cover [S4][S5]; L&G-intermediary-style — ±5% tolerance per review, individual
+reduce cover [S4] [S5]; L&G-intermediary-style — ±5% tolerance per review, individual
 health not a factor [S3]. A review-driven lapse response belongs in behavior modeling
 (below). Premium rates for in-force reviewable business are insurer-discretionary
 current elements — class (b) snapshots, not guarantees.
@@ -300,10 +300,10 @@ for calibration.
   Rationale: healthier lives lapse first when premiums rise; magnitude is a
   placeholder.
 - **Indexation take-up (if indexed) [std].** Declining an increase 3 years in a row
-  removes the option [S1][S4]; base model assumes full take-up while active.
+  removes the option [S1] [S4]; base model assumes full take-up while active.
 - **GIO / life-change option exercises.** Excluded from the base model point **[std]**;
   exercise creates a new policy/increase at current rates without underwriting
-  [S1][S4][S11] — an anti-selection cost that a production model should load for.
+  [S1] [S4] [S11] — an anti-selection cost that a production model should load for.
 
 ---
 
@@ -332,7 +332,7 @@ children's 25,000 x 0.0000333 = 0.83; maintenance 2.50. Net = 55.00 − 23.12 = 
 (31.88 − 200 initial expense = −168.12 in total month-1 cash flow).
 l(1) = 1 x (1 − 0.00019270) x (1 − 0.0087416) = 0.991067. Note the additional-payment
 and children's rows do not enter l(t): they are non-terminating loadings
-[S1][S3][S4][S8][S11].
+[S1] [S3] [S4] [S8] [S11].
 
 ---
 
@@ -344,16 +344,16 @@ consume them and are cited, not reproduced:
 - **Solvency UK.** Technical provisions = best estimate + risk margin (Technical
   Provisions 2.4); best estimate = probability-weighted cash flows discounted on the
   risk-free term structure, gross of reinsurance, realistic assumptions, homogeneous
-  risk groups (3.1–3.2, 9.1–9.2, 10.1) [R7][REG-R1]. Risk margin: cost-of-capital
+  risk groups (3.1–3.2, 9.1–9.2, 10.1) [R7] [REG-R1]. Risk margin: cost-of-capital
   method, CoC 4%, λ = 0.9 taper with floor 0.25, effective 31/12/2024
-  [R7][REG-R4]. The matching adjustment is in its own Rulebook Part [R7] and is in
+  [R7] [REG-R4]. The matching adjustment is in its own Rulebook Part [R7] and is in
   practice irrelevant to CI term business [unverified].
 - **IFRS 17.** UK-adopted IFRS 17 (effective 1 January 2023) [REG-R38] measures these
   contracts as fulfilment cash flows plus CSM [mechanics summary: unverified — the
   standard text was not fetched]; the expected-cash-flow engine is the same
   projection, with regime-specific discounting, risk adjustment and aggregation.
 - **Professional standards.** TAS 100 v2.0 applies to all technical actuarial work
-  from 1 July 2023 [R10][REG-R33]; TAS 200 v2.0 (insurance) applies from 1 January
+  from 1 July 2023 [R10] [REG-R33]; TAS 200 v2.0 (insurance) applies from 1 January
   2025 [REG-R34].
 
 ---
@@ -367,18 +367,18 @@ Dominant assumptions, in order:
    diagnosis), and the covered event itself moves when the ABI revises model
    definitions — the 2021/22 review broadened Alzheimer's to all dementia, tightened
    cancer staging exclusions, and excluded myocardial injury from heart attack, with
-   compliance by 31 January 2024 [R2][R3]; prior reviews 2011, 2014, 2018 [R3].
+   compliance by 31 January 2024 [R2] [R3]; prior reviews 2011, 2014, 2018 [R3].
    Definition changes produce *step* changes in `i_ci` that no trend parameter
    anticipates; sensitivity-test `τ` at ±2% p.a. **[std]** and re-map the incidence
    basis at each definition-review generation.
 2. **Level and shape of the diagnosis-rate proxy.** `i_ci` here is a [std] placeholder
-   because AC04/16-Series values are subscriber-restricted [REG-R22][REG-R26];
+   because AC04/16-Series values are subscriber-restricted [REG-R22] [REG-R26];
    miscalibration scales claims one-for-one. WP167 also flags COVID-affected 2020
    experience [R9].
 3. **Overlap factor `k`.** Bounds: assuming `k = 0` maximally double-counts
    (overstates combined incidence by the true overlap x `q_d` per year); `k = 0.25`
    may understate. Calibrate
-   from cause-of-claim data (WP52/WP151/WP167 lineage) where licensed [R8][R9].
+   from cause-of-claim data (WP52/WP151/WP167 lineage) where licensed [R8] [R9].
 4. **Lapse.** With level guaranteed premiums against steeply age-increasing `i_ci`,
    early durations pre-fund later ones: higher-than-assumed late-duration lapses
    release liability, lower ones extend exposure to the steep part of the incidence
@@ -390,7 +390,7 @@ Dominant assumptions, in order:
    morbidity deterioration cannot be repriced, so items (1)–(3) fall entirely on the
    insurer. The reviewable module transfers trend risk to policyholders at the cost of
    review-shock lapse and selective lapsation (anti-selection multiplier `η`)
-   [S3][S4][S5].
+   [S3] [S4] [S5].
 
 Known modeling pitfalls:
 
@@ -399,20 +399,48 @@ Known modeling pitfalls:
   *paid* decrement (instead of to the non-paying death exit) understates claims.
 - **Survival-period misapplication.** Applying the 14-day survival reduction `δ` to
   the accelerated main benefit is wrong — death within the survival period still pays
-  `SA` as a death claim [S1]; `δ` bites only in the standalone variant [S4][S11].
+  `SA` as a death claim [S1]; `δ` bites only in the standalone variant [S4] [S11].
 - **Depleting the sum assured for partial claims.** Additional-payment and children's
-  claims must not reduce `SA` or decrement `l(t)` [S1][S3][S4][S8][S11]; modeling
+  claims must not reduce `SA` or decrement `l(t)` [S1] [S3] [S4] [S8] [S11]; modeling
   them as accelerations (Vitality-style plan-account depletion [S10]) is a different
   product.
 - **Terminating on additional-payment claims.** Same error, opposite sign: only the
-  main benefit ends the policy [S1][S4][S11].
+  main benefit ends the policy [S1] [S4] [S11].
 - **Age-basis mismatch.** `i_ci`, `q_d` and attained-age indexing must share the ANB
   **[std]** basis.
 - **Proxy-basis leakage.** The [std] proxy rates in these notes are placeholders and
   must not be presented as CMI or ONS values; production work replaces them with a
   licensed basis and documents the substitution (TAS 100 data/assumption
-  requirements [R10][REG-R33]).
+  requirements [R10] [REG-R33]).
 - **Premium placeholder.** £55/month is not a market rate (no insurer publishes CI
   rate cards — research-file gap); profitability conclusions from the worked example
   are meaningless. Aviva's reviewable reviews have "no limits" [S4] — do not model
   reviewable business with the guaranteed-premium constraint.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #uklib-critical_illness-r10
+[R2]: #uklib-critical_illness-r2
+[R3]: #uklib-critical_illness-r3
+[R7]: #uklib-critical_illness-r7
+[R8]: #uklib-critical_illness-r8
+[R9]: #uklib-critical_illness-r9
+[REG-R1]: #uklib-reg-r1
+[REG-R22]: #uklib-reg-r22
+[REG-R26]: #uklib-reg-r26
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R33]: #uklib-reg-r33
+[REG-R34]: #uklib-reg-r34
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-critical_illness-s1
+[S10]: #uklib-critical_illness-s10
+[S11]: #uklib-critical_illness-s11
+[S2]: #uklib-critical_illness-s2
+[S3]: #uklib-critical_illness-s3
+[S4]: #uklib-critical_illness-s4
+[S5]: #uklib-critical_illness-s5
+[S8]: #uklib-critical_illness-s8
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

@@ -84,6 +84,8 @@ the letter.
 | [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
 | [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
 
+(uslib-one-shape)=
+
 ### One shape, enforced
 
 Every model has the same two Spaces — `Data` reads the input CSVs once per model, and
@@ -98,8 +100,10 @@ modeling pitfalls" sections are written up there as tests.
 
 The pairing of model name to folder is deliberately *not* derivable from the folder name —
 `registered_index_linked_annuity` spelled out is unusable and the industry says RILA — so it
-is registered once in `tests/conftest.py`, and the conventions suite asserts that the
+is registered once in `tests/us_registry.py`, and the conventions suite asserts that the
 registry, the directory on disk and the model's own `_name` all agree.
+
+(uslib-shared-vocabulary)=
 
 ### Shared vocabulary
 
@@ -205,7 +209,7 @@ python -m pytest tests -q
 * - `references/`
   - The cross-product regulatory and actuarial bibliography, cited as `[REG-R#]`.
 * - `tests/`
-  - One module per model for its worked example and invariants, plus `test_model_conventions.py` for the house style, and `conftest.py` carrying the model registry.
+  - One module per model for its worked example and invariants, plus `test_model_conventions.py` for the house style, and `us_registry.py` carrying the model registry.
 * - `_research/`
   - The raw research notes every citation traces back to. Provenance, not documentation — shipped but not rendered.
 ```
@@ -321,3 +325,8 @@ products/deferred_income_annuity/index
 
 references/regulatory-and-actuarial-references
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uslib-std
+[unverified]: #uslib-unverified
+<!-- END generated citation links -->

@@ -1,4 +1,4 @@
-# Sources — Pension Annuity (United Kingdom)
+# Sources
 
 Source ids [S#]/[R#] are carried **verbatim** from `_research/pension-annuity.md`
 (the citation ground truth; ids frozen — never renumber). Only sources actually cited
@@ -12,6 +12,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 
 ## Primary product sources
 
+(uklib-pension_annuity-s1)=
+
 ### S1 — Legal & General, "Key Features of the Pension Annuity" (W12325 07/26)
 - Publisher: Legal and General Assurance Society Limited (FS Register no. 117659)
 - Doc type: Key Features Document (KFD), 16 pp.
@@ -19,6 +21,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Retrieved: YES (PDF downloaded, full text extracted). Document code W12325 07/26 "PA IFA KFD".
 - Used for: eligibility, minimum purchase, income options, death benefit options,
   no-cash-in, charges, tax, FSCS; the £100,000/age-65/£6,657 p.a./50% VP anchor (p11).
+
+(uklib-pension_annuity-s2)=
 
 ### S2 — Legal & General, "Terms and Conditions of the Pension Annuity" (DA2440 04/26)
 - Publisher: Legal and General Assurance Society Limited
@@ -29,6 +33,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
   floor/catch-up and LPI definitions), proportionate payment, dependant's annuity and
   overlap, guarantee period, value protection, no assignment/cash-in, GMP restrictions.
 
+(uklib-pension_annuity-s4)=
+
 ### S4 — Just (Just Retirement Limited), "Key features — Pension Annuity" (JM 00317.34, 06/2026)
 - Publisher: Just Retirement Limited (trading as Just; FS Register no. 232595)
 - Doc type: Key Features Document, 8 pp.
@@ -36,6 +42,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Retrieved: YES (PDF downloaded, full text extracted). Code JM 00317.34, dated 06/2026.
 - Used for: eligibility variations (age 57 from 2028, £2,000 retention), taxable lump
   sum at outset, guarantee XOR VP, VP%+dependant% ≤ 100 rule, IHT-from-2027 summary.
+
+(uklib-pension_annuity-s5)=
 
 ### S5 — Just (Just Retirement Limited), "Terms of the Pension Annuity" (doc 729)
 - Publisher: Just Retirement Limited
@@ -46,6 +54,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
   stubs, lump-sum guarantee basis, VP fund-value formula, no surrender value
   (cl. 14.7), business classification (§14.11).
 
+(uklib-pension_annuity-s6)=
+
 ### S6 — Canada Life, "Key Features of the Lifetime Annuity and Scheme Pension" (ID6733 – 0726RC)
 - Publisher: Canada Life Limited (FS Register no. 110394)
 - Doc type: Key Features Document, 12 pp. (covers Lifetime Annuity, Enhanced Lifetime Annuity, Scheme Pension, and beneficiary/dependant versions)
@@ -53,6 +63,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Retrieved: YES (PDF downloaded, full text extracted). Code ID6733 – 0726RC; tax content "as at February 2026".
 - Used for: parameter-bound variations (fixed 0.1%–10%, guarantee from one month,
   second annuitant 35+/50+), beneficiary annuities, enhanced-annuity conditions.
+
+(uklib-pension_annuity-s7)=
 
 ### S7 — Canada Life, "Lifetime Annuity / Beneficiary's Annuity (including Enhanced Annuity) — Policy Provisions" (8259 – 0626RC)
 - Publisher: Canada Life Limited
@@ -62,6 +74,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Used for: non-participating statement (§7.9), guarantee continuing "as if alive"
   (§4.2), VP netting of guarantee and second-annuitant instalments (§4.3),
   second-annuitant rules and age-gap reduction, no-exchange clause (§7.5).
+
+(uklib-pension_annuity-s9)=
 
 ### S9 — Aviva, "Key Features of the Pension Annuity (including the Enhanced Pension Annuity)" (AN15036 10/2019) bound with "Pension Annuity (including the Enhanced Pension Annuity) Terms and Conditions" (AN15037 02/2020)
 - Publisher: Aviva Life & Pensions UK Limited (FRN 185896); PDF mirrored by Pension Access
@@ -73,6 +87,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Used for: maximum issue age 90, RPI catch-up (same rule as L&G), 90-day automatic
   VP, discounted guarantee commutation (0.75%), DB-sourced 10-year guarantee cap.
 
+(uklib-pension_annuity-s10)=
+
 ### S10 — Aviva, "Key features of the Pension Annuity (including the Enhanced Pension Annuity)" (current edition, AN15036c)
 - Publisher: Aviva Life & Pensions UK Limited
 - Doc type: Key Features Document
@@ -80,6 +96,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Retrieved: NO — HTTP 403 Forbidden (host blocks automated fetch). Kept as a known
   reference only; no content from this edition is cited. (Cited in the Variations
   vintage caveat only.)
+
+(uklib-pension_annuity-s11)=
 
 ### S11 — Aviva, "Pension Annuity (including the Enhanced Pension Annuity) Terms and conditions" (current edition, AN15037c)
 - Publisher: Aviva Life & Pensions UK Limited
@@ -93,6 +111,8 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 
 ## Regulatory and actuarial references (product research numbering)
 
+(uklib-pension_annuity-r1)=
+
 ### R1 — PRA Rulebook, Matching Adjustment Part, Chapter 2 "Eligibility to Apply a Matching Adjustment"
 - Publisher: Prudential Regulation Authority (prarulebook.co.uk)
 - URL: https://www.prarulebook.co.uk/pra-rules/matching-adjustment/2-eligibility-to-apply-a-matching-adjustment/07-02-2025?p=1
@@ -101,12 +121,16 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
   restricted underwriting risks, ≤5% BEL mortality-stress test, no policyholder
   options), linking the no-surrender contract design to MA eligibility.
 
+(uklib-pension_annuity-r2)=
+
 ### R2 — PRA CP19/23, "Review of Solvency II: Reform of the Matching Adjustment" (28 September 2023)
 - Publisher: Prudential Regulation Authority / Bank of England
 - URL: https://www.bankofengland.co.uk/prudential-regulation/publication/2023/september/review-of-solvency-ii-reform-of-the-matching-adjustment
 - Retrieved: YES (full consultation page text).
 - Used for: the Solvency UK MA reform content (HP assets, liability eligibility,
   attestation, MALIR).
+
+(uklib-pension_annuity-r5)=
 
 ### R5 — FCA Handbook, COBS 19.9 "Pension annuity comparison information"
 - Publisher: Financial Conduct Authority (handbook.fca.org.uk)
@@ -115,12 +139,16 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Used for: the annuity information prompt (market-leading quote, enhanced-annuity
   questions, prescribed comparator information).
 
+(uklib-pension_annuity-r6)=
+
 ### R6 — Taxation of Pensions Act 2014 (c. 30)
 - Publisher: legislation.gov.uk
 - URL: https://www.legislation.gov.uk/ukpga/2014/30/contents/enacted
 - Retrieved: YES (contents and structure).
 - Used for: pension freedoms context (optional annuitization, relaxed annuity design,
   MPAA), enabling 30-year guarantee periods.
+
+(uklib-pension_annuity-r7)=
 
 ### R7 — Finance Act 2004, Schedule 28 (pension rules: scheme pension, lifetime annuity, dependants' annuity)
 - Publisher: legislation.gov.uk
@@ -129,11 +157,15 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Used for: the statutory "lifetime annuity" definition (para 3) and the pre/post-2015
   term-certain and non-decrease rules.
 
+(uklib-pension_annuity-r8)=
+
 ### R8 — FSMA 2000 (Regulated Activities) Order 2001 (SI 2001/544), Schedule 1 Part II
 - Publisher: legislation.gov.uk
 - URL: https://www.legislation.gov.uk/uksi/2001/544/schedule/1
 - Retrieved: YES.
 - Used for: Class I (life and annuity) long-term business classification.
+
+(uklib-pension_annuity-r10)=
 
 ### R10 — IFoA/CMI, Self-administered pension scheme (SAPS) mortality investigation (web page)
 - Publisher: Institute and Faculty of Actuaries / Continuous Mortality Investigation
@@ -142,12 +174,16 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Used for: SAPS series history (S1 2008, S2 2014, S3 2018, S4 February 2024); the
   S3PMA/S3PFA-style naming convention is [unverified] per the research file.
 
+(uklib-pension_annuity-r11)=
+
 ### R11 — CMI Working Paper 185, "The S4 Series SAPS mortality tables" (February 2024)
 - Publisher: IFoA / CMI
 - URL: https://www.actuaries.org.uk/learn-and-develop/continuous-mortality-investigation/cmi-working-papers/self-administered-pension-scheme-mortality/cmi-working-paper-185
 - Retrieved: YES (abstract page; full paper and rate spreadsheets restricted).
 - Used for: S4 series facts (2014–2019 data, effective 1 January 2017) and the
   Authorised-User restriction on actual qx values.
+
+(uklib-pension_annuity-r12)=
 
 ### R12 — CMI Working Paper 201 / CMI_2024 Mortality Projections Model (June 2025)
 - Publisher: IFoA / CMI
@@ -156,12 +192,16 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 - Used for: the CMI projections model by name/version (CMI_2024, APCOI structure,
   user-chosen long-term rate; software restricted).
 
+(uklib-pension_annuity-r13)=
+
 ### R13 — ONS, National life tables: UK (reference tables dataset)
 - Publisher: Office for National Statistics
 - URL: https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/nationallifetablesunitedkingdomreferencetables
 - Retrieved: YES (dataset landing page).
 - Used for: the public [std] mortality proxy (period qx by single year of age and
   sex, three-year averages; latest release dated 10 December 2025 per the fetched page).
+
+(uklib-pension_annuity-r14)=
 
 ### R14 — FRC, Technical Actuarial Standard TAS 200: Insurance (v2.0)
 - Publisher: Financial Reporting Council
@@ -204,3 +244,8 @@ documents, CMI data restrictions, absence of public rate cards, unstated paramet
 bounds) — live in `_research/pension-annuity.md`. The cross-product regulatory
 bibliography with its own annotations lives in `_research/regulatory-actuarial.md`
 (published form: `references/regulatory-and-actuarial-references.md`).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

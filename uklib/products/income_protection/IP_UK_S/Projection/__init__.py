@@ -245,8 +245,8 @@ stops dead at ``proj_len()``.
 
 Offsets against other income, the minimum benefit guarantee and proportionate benefits
 on a partial return to work all move the amount actually paid away from the benefit the
-policyholder chose. The base run sets ``AP = B`` through :data:`ap_ratio` and the
-severity factor :data:`claim_severity` to 1 **[std]**, which **overstates** outgo
+policyholder chose. The base run sets ``AP = B`` through ``ap_ratio`` and the
+severity factor ``claim_severity`` to 1 **[std]**, which **overstates** outgo
 wherever the maximum-benefit formula bites and understates nothing, since ``AP <= B``
 always. A portfolio calibration sets one or both below 1 from claims experience.
 :func:`benefit_max_pp` implements the contractual two-band maximum so that
@@ -260,7 +260,7 @@ and leaves discounting to the layer that consumes them. This one carries
 notes' worked example is a present value and because the disabled-life annuity is the
 object a claims-in-payment reserve is quoted as. They are a **companion**, not part of
 the cash flow projection: no line of :func:`result_cf` is discounted, and
-:data:`disc_rate` is the worked example's flat 3% **[std]**, not a valuation basis. A
+``disc_rate`` is the worked example's flat 3% **[std]**, not a valuation basis. A
 Solvency UK best estimate discounts these same cash flows on the PRA risk-free term
 structure, and the claims-in-payment element is matching-adjustment eligible where it is
 organised and managed separately.
@@ -387,12 +387,15 @@ def status():
 def recovery_basis():
     """Where recovered lives go: back to H, or out of the model.
 
-    ``return_to_h``   the notes' processing order step 5 - recovered lives re-enter H,
-                      resume paying premiums and are again exposed to inception.  The
-                      **active-lives** basis.
-    ``exit``          recovered lives leave the model, which is the **disabled-life
-                      annuity** the claims-in-payment valuation uses, and the basis the
-                      notes' worked example is computed on.
+    ``return_to_h``
+        the notes' processing order step 5 - recovered lives re-enter H,
+        resume paying premiums and are again exposed to inception.  The
+        **active-lives** basis.
+
+    ``exit``
+        recovered lives leave the model, which is the **disabled-life
+        annuity** the claims-in-payment valuation uses, and the basis the
+        notes' worked example is computed on.
 
     A column rather than something derived from :func:`status`, because it is a
     valuation question: a claims-in-payment reserve is the disabled-life annuity, but a
@@ -478,7 +481,7 @@ def inception_rate(t):
 
     Read from ``inception_table.csv`` at the policy's sex, occupation class and deferred
     period, **linearly** interpolated between pivot ages and linearly extrapolated
-    beyond them, then multiplied by the economic-cycle overlay :data:`cycle_factor`.
+    beyond them, then multiplied by the economic-cycle overlay ``cycle_factor``.
     Floored at zero, since linear extrapolation below the first pivot can go negative.
 
     The rate is a *claim payment* inception rate specific to the deferred period, which
@@ -514,7 +517,7 @@ def mort_rate(t):
     """q_H_a(a): the **active-life** annual mortality rate.
 
     A minor decrement in income protection, and a **[std]** proxy shaped like the ONS
-    national life tables scaled by :data:`mort_active_factor`.  Claimant mortality is a
+    national life tables scaled by ``mort_active_factor``.  Claimant mortality is a
     different rate on a different clock - see :func:`mort_rate_sick`.
     """
     return float(data.mort_table().loc[                              # noqa: F821
@@ -644,11 +647,11 @@ def benefit_max_pp():
 def amount_payable_pp(t):
     """AP(y): the amount actually payable per month of full incapacity.
 
-    ``ap_ratio x B(y)`` with :data:`ap_ratio` at 1 **[std]**.  Offsets against other
+    ``ap_ratio x B(y)`` with ``ap_ratio`` at 1 **[std]**.  Offsets against other
     income, the minimum benefit guarantee and proportionate benefits on a partial return
     to work all push the amount paid below the chosen benefit, so ``AP <= B`` always and
     the base run **overstates** outgo wherever the maximum-benefit formula bites.  A
-    portfolio calibration sets ``ap_ratio`` or :data:`claim_severity` below 1 from claims
+    portfolio calibration sets ``ap_ratio`` or ``claim_severity`` below 1 from claims
     experience.
     """
     return ap_ratio * benefit_pp(t)                                  # noqa: F821
@@ -847,12 +850,15 @@ def pols_if(t):
 def pols_if_at(t, timing):
     """The number of policies in force at a point inside month t.
 
-    ``"BEF_DECR"``   the start of the month, before any transition; the same number as
-                     :func:`pols_if`.
-    ``"AFT_DECR"``   the end of the month, once deaths, lapses, recoveries leaving the
-                     model and - in the last month - the expiry have been taken.  Equal
-                     to ``pols_if(t + 1)`` everywhere but the last month, where it is
-                     zero.
+    ``"BEF_DECR"``
+        the start of the month, before any transition; the same number as
+        :func:`pols_if`.
+
+    ``"AFT_DECR"``
+        the end of the month, once deaths, lapses, recoveries leaving the
+        model and - in the last month - the expiry have been taken.  Equal
+        to ``pols_if(t + 1)`` everywhere but the last month, where it is
+        zero.
 
     The intermediate points of the other models have no single-population meaning here,
     because two states are moving at once; :func:`pols_active` and :func:`pols_sick`
@@ -930,14 +936,19 @@ def premiums(t):
 def claims(t, kind=None):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
-    ``"BENEFIT"``  ``k x AP(y) x`` :func:`pols_sick_surv`, the monthly income benefit,
-                   paid in arrears at the end of the month to lives in claim throughout
-                   it.  New inceptions are excluded: a claim incepting at the end of
-                   month t is not paid until the end of month ``t + 1``.
-    ``"DEATH"``    zero.  This composite carries no death benefit; the £5,000-£10,000
-                   death benefits two sampled insurers offer are out of scope, and would
-                   add a ``deaths x DB`` term here.
-    ``"LAPSE"``    zero.  There is no cash-in value at any time [S4][S5][S7].
+    ``"BENEFIT"``
+        ``k x AP(y) x`` :func:`pols_sick_surv`, the monthly income benefit,
+        paid in arrears at the end of the month to lives in claim throughout
+        it.  New inceptions are excluded: a claim incepting at the end of
+        month t is not paid until the end of month ``t + 1``.
+
+    ``"DEATH"``
+        zero.  This composite carries no death benefit; the £5,000-£10,000
+        death benefits two sampled insurers offer are out of scope, and would
+        add a ``deaths x DB`` term here.
+
+    ``"LAPSE"``
+        zero.  There is no cash-in value at any time [S4][S5][S7].
 
     The two zero kinds are published rather than omitted so that the product facts are
     stated instead of inferred from a missing column.
@@ -989,7 +1000,7 @@ def disc_factor(t):
 
 
 def pv_benefits():
-    """The present value of benefit outgo over the whole projection, at :data:`disc_rate`.
+    """The present value of benefit outgo over the whole projection, at ``disc_rate``.
 
     On an ``in_claim`` cell run on the ``exit`` recovery basis this is the
     claims-in-payment liability the notes value.  See :func:`disc_factor` for why

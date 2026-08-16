@@ -213,7 +213,7 @@ column:
 
 ``mort_basis = "select"``
     the same table is read as an **ultimate** basis and multiplied by
-    :func:`select_factor` and by :data:`mort_scale`, the notes' **[std]** 75% proxy
+    :func:`select_factor` and by ``mort_scale``, the notes' **[std]** 75% proxy
     for improvement from the public "00" Series era to the 16-Series era. Model point
     7. This is the shape a production run takes once licensed tables are dropped in —
     replacing the two CSVs changes the basis with no formula change.
@@ -233,12 +233,12 @@ base run reproduces the worked example while the machinery stays visible and tes
   ``lambda = 0``. Healthier lives lapse, so persisters are progressively impaired; the
   notes rate it the third-largest lever on a long-term block.
 - **Rebroking**, ``M_reb = min(2, max(1, P_inforce / P_market))`` on the lapse rate,
-  with :data:`premium_market_ratio` at 1. Guaranteed premiums rule out premium-shock
+  with ``premium_market_ratio`` at 1. Guaranteed premiums rule out premium-shock
   lapse, so falling market rates for the attained age are the economic driver instead.
   The Reference is a flat scalar, so the multiplier is level in ``t``; a market premium
   path would be another input table.
 - **Commission clawback** on lapse inside the clawback window, linear in months in
-  force, with :data:`clawback_mths` at 0. Set it to 48 for the notes' four-year rule.
+  force, with ``clawback_mths`` at 0. Set it to 48 for the notes' four-year rule.
 - **Waiver of premium**, a two-state incidence/recovery chain on the premium-paying
   population, with ``wop`` false on every model point but 7. Both its incidence basis
   and its extra premium are **[std]** placeholders: no public UK incidence basis for
@@ -409,7 +409,7 @@ def mort_basis():
 
     *applied* **[std]** takes ``mort_table.csv`` as the rate actually applied, which is
     how the notes quote their illustrative worked-example vector; *select* multiplies
-    it by :func:`select_factor` and by :data:`mort_scale`, the notes' proxy for the
+    it by :func:`select_factor` and by ``mort_scale``, the notes' proxy for the
     unavailable subscriber tables.  See the Space docstring for why both are shipped.
     """
     v = model_point()["mort_basis"]
@@ -433,7 +433,7 @@ def fib_commute_rate():
 
     The insurer may replace the remaining instalments with a lump sum determined
     "fairly and reasonably" [S6][S8]; no insurer publishes the basis, so both the
-    take-up and the discount rate :data:`fib_commute_disc_rate` are standardizations.
+    take-up and the discount rate ``fib_commute_disc_rate`` are standardizations.
     """
     return float(model_point()["fib_commute_rate"])
 
@@ -480,7 +480,7 @@ def select_factor(t):
     """The select-duration factor applying in policy year t **[std]**.
 
     A 5-year select period, the structure of TMNL16/TFNL16 [R12], with the factor
-    grading from 0.55 at duration 0 to 1.00 at and beyond :data:`select_period`.  Read
+    grading from 0.55 at duration 0 to 1.00 at and beyond ``select_period``.  Read
     only on the *select* mortality basis; the *applied* basis takes the table as it
     stands.  The values are a standardization - the real tables are subscriber-only
     [R11] - and a licensed basis drops in by replacing the CSV.
@@ -571,7 +571,7 @@ def rebroke_factor(t):
     ``min(rebroke_cap, max(1, P_inforce / P_market))``.  Premiums are guaranteed, so
     there is no premium-shock lapse to model; the economic driver is rebroking when
     market premiums for the attained age fall below the in-force premium.
-    :data:`premium_market_ratio` is a flat scalar, so the multiplier is level in ``t`` -
+    ``premium_market_ratio`` is a flat scalar, so the multiplier is level in ``t`` -
     a market premium path would be another input table.
     """
     return min(rebroke_cap, max(1.0, premium_market_ratio))          # noqa: F821
@@ -604,14 +604,19 @@ def pols_if(t):
 def pols_if_at(t, timing):
     """The number of policies in force at a point inside policy year t.
 
-    ``"BEF_DECR"``   l(t), the start of the year, before any decrement; the same number
-                     as :func:`pols_if` and the weight on that year's cash flows.
-    ``"BEF_LAPSE"``  after deaths, before lapses - the notes' processing order is
-                     **death before lapse** **[std order]**, so this is the population
-                     lapses are taken from.
-    ``"AFT_DECR"``   l(t+1), the end-of-year state: what is left once the year's deaths
-                     and lapses are taken, and zero from ``proj_len()`` on because the
-                     cover expires there.
+    ``"BEF_DECR"``
+        l(t), the start of the year, before any decrement; the same number
+        as :func:`pols_if` and the weight on that year's cash flows.
+
+    ``"BEF_LAPSE"``
+        after deaths, before lapses - the notes' processing order is
+        **death before lapse** **[std order]**, so this is the population
+        lapses are taken from.
+
+    ``"AFT_DECR"``
+        l(t+1), the end-of-year state: what is left once the year's deaths
+        and lapses are taken, and zero from ``proj_len()`` on because the
+        cover expires there.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -685,7 +690,7 @@ def pols_payer(t):
 def idx_increase():
     """The cover increase offered at each anniversary under the indexation option.
 
-    ``min(max(RPI, 0), 10%)`` [S1][S2][S6][S7], times :data:`idx_accept_rate`.  The
+    ``min(max(RPI, 0), 10%)`` [S1][S2][S6][S7], times ``idx_accept_rate``.  The
     notes' base run is deterministic and always accepts, which is what the shipped
     ``idx_accept_rate = 1`` means; their 80% take-up **[std]** would be a mixture of
     paths, and scaling the increase instead is a deterministic approximation to it.
@@ -726,7 +731,7 @@ def premium_pp(t):
     """P_a idx_p(t): the annualized gross premium per policy in policy year t.
 
     ``12 P_m``, indexed if the option is elected, and loaded by
-    :data:`wop_prem_loading` where the waiver rider is in force - a **[std]**
+    ``wop_prem_loading`` where the waiver rider is in force - a **[std]**
     placeholder, since the rider's extra premium is not published either.
     """
     p = 12.0 * premium_mth_pp() * idx_prem_factor(t)
@@ -827,16 +832,21 @@ def fib_cum(t):
 def claims(t, kind=None):
     """Benefit outgo in policy year t, by kind; the total when kind is omitted.
 
-    ``"DEATH"``  the lump sum paid at the end of the year of death: ``DB(t) D(t)`` on
-                 the level and decreasing shapes, and on the ``fib`` shape only the
-                 commuted proportion of the streams.
-    ``"FIB"``    the family income benefit instalments falling in year t,
-                 ``I [6 D(t) + 12 FIBcum(t)]`` net of the commuted proportion - six
-                 instalments in the year of a mid-year death, twelve in each later
-                 year.  Zero on the other two shapes.
-    ``"LAPSE"``  zero, always.  There is no surrender or paid-up value at any duration
-                 [S1][S6][S8][R8]; the kind exists so that the zero is stated rather
-                 than left to inference.  See the Space docstring.
+    ``"DEATH"``
+        the lump sum paid at the end of the year of death: ``DB(t) D(t)`` on
+        the level and decreasing shapes, and on the ``fib`` shape only the
+        commuted proportion of the streams.
+
+    ``"FIB"``
+        the family income benefit instalments falling in year t,
+        ``I [6 D(t) + 12 FIBcum(t)]`` net of the commuted proportion - six
+        instalments in the year of a mid-year death, twelve in each later
+        year.  Zero on the other two shapes.
+
+    ``"LAPSE"``
+        zero, always.  There is no surrender or paid-up value at any duration
+        [S1][S6][S8][R8]; the kind exists so that the zero is stated rather
+        than left to inference.  See the Space docstring.
     """
     if kind is None:
         return sum(claims(t, k) for k in ("DEATH", "FIB", "LAPSE"))
@@ -895,7 +905,7 @@ def comm_clawback(t):
     """Initial commission recovered on lapses inside the clawback window **[std]**.
 
     ``c0 (clawback_mths - 12t)/clawback_mths`` per lapsed policy, linear in months in
-    force.  Off in the base run (:data:`clawback_mths` is 0); set it to 48 for the
+    force.  Off in the base run (``clawback_mths`` is 0); set it to 48 for the
     notes' four-year rule.  Clawback periods of two to four years are evidenced [R9];
     the linear formula is a standardization.  Inside the window it reverses the sign of
     the early-lapse sensitivity, which is the point of carrying it.

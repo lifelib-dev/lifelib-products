@@ -18,7 +18,7 @@ inflation. That is not an omission — it is the design property that makes the 
 eligible for the Solvency UK matching adjustment, whose conditions effectively require
 this shape.
 
-The U.S. counterpart in the same library is :mod:`SPIA_US_S`, and the two share the
+The U.S. counterpart in the same library is :mod:`.SPIA_US_S`, and the two share the
 payout chassis: a life-contingent instalment stream, a certain-period **floor** rather
 than a second stream, a refund-style death benefit measured against instalments already
 paid, and survival measured at the payment point rather than at the end of the month.

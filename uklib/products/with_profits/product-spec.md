@@ -1,4 +1,4 @@
-# With-Profits Business — Representative Product Specification (United Kingdom)
+# Product Specification
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03).
 
@@ -15,7 +15,7 @@ carries a footnote giving the rationale and the observed range across insurers.
 Facts the research file could not confirm against a retrieved document are flagged
 [unverified]. The mechanics anchors are the Prudential Assurance PPFM [S1], the Phoenix
 Life PPFM [S4] and the Aviva PPFM [S5]; the modern smoothed-fund variation is anchored
-to the PruFund PPFM, customer guide and policy provisions [S2][S9][S11].
+to the PruFund PPFM, customer guide and policy provisions [S2] [S9] [S11].
 
 ---
 
@@ -28,32 +28,32 @@ increase guaranteed benefits and become a contractual right only once added, and
 **final** (terminal) bonus payable at claim [S1]. The fairness benchmark for payouts is
 the **asset share** — a retrospective accumulation, per policy or specimen policy, of
 premiums and investment return less expenses, tax, risk and guarantee charges and
-shareholder transfers [S1][S4][R8]. The exercise of discretion is governed by each
+shareholder transfers [S1] [S4] [R8]. The exercise of discretion is governed by each
 firm's published Principles and Practices of Financial Management (PPFM) [R2], with
 FCA conduct rules setting target-range, smoothing and market value reduction (MVR)
 constraints [R1] and a With-Profits Committee and With-Profits Actuary overseeing the
-discretion [R4][R5].
+discretion [R4] [R5].
 
-Three liability chassis coexist in the UK market [S1][S4]: (a) **conventional**
+Three liability chassis coexist in the UK market [S1] [S4]: (a) **conventional**
 (traditional) with-profits — a basic sum assured (the minimum maturity amount) to which
 declared bonuses are added [S1]; (b) **unitised** (accumulating) with-profits — premiums
 buy units whose price rises with declared regular bonuses, with a final bonus at
-encashment and MVR machinery on non-guaranteed exits [S1][S4]; and (c) **smoothed
+encashment and MVR machinery on non-guaranteed exits [S1] [S4]; and (c) **smoothed
 funds** (PruFund-style) — no bonus declarations; the unit price grows daily at a
 published Expected Growth Rate with rule-based adjustments toward the unsmoothed net
-asset value [S2][S9][S11]. Under the Regulated Activities Order, conventional
+asset value [S2] [S9] [S11]. Under the Regulated Activities Order, conventional
 with-profits assurances and annuities fall in Class I (life and annuity), with
 unitised/linked structures typically involving Class III [R9; per-product allocation
-unverified].
+unverified](#uklib-with_profits-r9).
 
 Most conventional and unitised with-profits funds are legacy books: Phoenix Life alone
 runs 18 internally segregated funds consolidating many acquired offices [S4], and most
 UK conventional funds are closed to new business [unverified as a market-wide
 statement]. Documented open with-profits business today comprises smoothed funds (Prudential
-PruFund range, currently marketed [S10][S13]), mutuals (NFU Mutual's open fund [S7];
+PruFund range, currently marketed [S10] [S13]), mutuals (NFU Mutual's open fund [S7];
 Royal London's ProfitShare distribution [S6]), friendly societies (with-profits ISAs
 [S12]) and new niche forms (Prudential's Credit Matched With-Profits, added 2026
-[S1][S3]).
+[S1] [S3]).
 
 This specification standardizes a single composite: a **proprietary 90:10 with-profits
 fund** carrying two product chassis — a **unitised with-profits bond** (primary cell,
@@ -69,12 +69,12 @@ mutual ProfitShare model described as variations.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Fund type | Proprietary with-profits sub-fund within a long-term fund; ring-fenced | [S1][R6]; choice **[std]** (1) |
-| Profit sharing basis | 90:10 — at least 90% of divisible profit distributed to policyholders, balance to shareholders | [S1][S8] |
-| Shareholder transfer | 10% of each distribution = one-ninth of the cost of bonus declared/paid; charged to asset shares | equivalence and charging **[std]** (2); components [S1][S5][S8][R1] |
+| Fund type | Proprietary with-profits sub-fund within a long-term fund; ring-fenced | [S1] [R6]; choice **[std]** (1) |
+| Profit sharing basis | 90:10 — at least 90% of divisible profit distributed to policyholders, balance to shareholders | [S1] [S8] |
+| Shareholder transfer | 10% of each distribution = one-ninth of the cost of bonus declared/paid; charged to asset shares | equivalence and charging **[std]** (2); components [S1] [S5] [S8] [R1] |
 | Distribution floor | Policyholder share not less than the "required percentage"; shareholder transfers reduced proportionately if adjustments (MVRs, bonus cuts) reduce policyholder distributions below the required percentage | [R1] |
 | Estate (inherited estate) | Residual working capital of the fund; supports smoothing, guarantees and investment freedom; no distribution expectation in the base model | [S1]; base-model treatment **[std]** (3) |
-| New business status of composite | Conventional cell closed; unitised and smoothed cells open | [S4][S10][S13]; composite **[std]** (4) |
+| New business status of composite | Conventional cell closed; unitised and smoothed cells open | [S4] [S10] [S13]; composite **[std]** (4) |
 
 Footnotes to [std] rows:
 
@@ -82,9 +82,9 @@ Footnotes to [std] rows:
    least 90% of divisible profit to policyholders [S1]; Aviva shareholders currently
    receive 10% of distributed surplus [S5]; the consumer statement is "up to 10%" to
    shareholders [S8]. Variants observed: 100:0 classes and defined-charge (DCPSF)
-   structures at PAC [S1][S2]; mutuals with no shareholder (Royal London [S6], NFU
+   structures at PAC [S1] [S2]; mutuals with no shareholder (Royal London [S6], NFU
    Mutual [S7]). That 90:10 is the typical proprietary basis generally is [unverified];
-   the COBS 20.2.17R "required percentage" floor was not separately captured [R1 note].
+   the COBS 20.2.17R "required percentage" floor was not separately captured [R1 note](#uklib-with_profits-r1).
 2. One-ninth is the arithmetic restatement of 90:10 — if policyholders receive a bonus
    cost of 90 units, shareholders receive 10 = 90/9. Charging the transfer to asset
    shares follows Aviva practice [S5] and the PRA retrospective asset-share item list
@@ -93,30 +93,30 @@ Footnotes to [std] rows:
    `technical-notes.md` as **[std]**.
 3. Observed estate behavior ranges from no-distribution working capital (PAC [S1]) to
    active distribution (Aviva reattribution special bonuses [S5]; Royal London annual
-   ProfitShare [S6]; PAC excess-surplus unit price enhancements [S1][S2]) and
+   ProfitShare [S6]; PAC excess-surplus unit price enhancements [S1] [S2]) and
    estate-floor triggers (Phoenix Scottish Mutual fund estate ≥0.5% of aggregate asset
    shares [S4]). The base model holds the estate as a residual with no scheduled
    distribution; COBS 20.2.21R requires at least annual excess-surplus determination
    [R1].
-4. Mirrors the market split: consolidated closed conventional books [S4][S5] against
-   currently marketed unitised/smoothed business [S10][S12][S13].
+4. Mirrors the market split: consolidated closed conventional books [S4] [S5] against
+   currently marketed unitised/smoothed business [S10] [S12] [S13].
 
 ### Chassis A — unitised with-profits bond (primary cell)
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Product form | Single-premium, whole-of-life unitised with-profits investment bond | [S4][S10]; choice **[std]** (5) |
+| Product form | Single-premium, whole-of-life unitised with-profits investment bond | [S4] [S10]; choice **[std]** (5) |
 | Issue ages (lives assured) | 3 months to 85 (age next birthday) at outset | [S10]; adoption **[std]** (6) |
 | Minimum premium | £10,000 single premium; top-ups permitted (minimum £10,000) | [S10]; adoption **[std]** (6) |
 | Premium allocation rate | 100% of premium buys units | proportion-less-charges design [S4]; 100% **[std]** (7) |
-| Regular bonus delivery | Unit price increases daily at the equivalent of the declared annual rate; unit price never falls (declared bonus ≥ 0) | [S1][S4] |
+| Regular bonus delivery | Unit price increases daily at the equivalent of the declared annual rate; unit price never falls (declared bonus ≥ 0) | [S1] [S4] |
 | Snapshot regular bonus rate | 2.00% p.a. | **[std]** (8) |
 | Annual management charge (AMC) | 1.00% p.a. of asset share, deducted from credited return | percentage-of-asset-share application [S5]; rate **[std]** (9) |
 | Guarantee/smoothing charge | 0.10% p.a. of asset share, deducted from credited return; lifetime cumulative deduction capped at 2% of asset shares | cap [S1]; annual rate **[std]** (10) |
 | Death benefit | 101% of (unit face value plus any final bonus); MVR never applies on death | 101% **[std]** (11); no-MVR-on-death [S5] |
 | MVR-free guarantee date | 10th policy anniversary (full encashment free of MVR) | [S4]; single-date choice **[std]** (12) |
 | MVR-free regular withdrawals | Up to 5% p.a. of the original premium | **[std]** (13) |
-| Surrender benefit | Unit face value + final bonus − MVR (see Contractual mechanics) | [S1][S4][S5][R1] |
+| Surrender benefit | Unit face value + final bonus − MVR (see Contractual mechanics) | [S1] [S4] [S5] [R1] |
 | Anchor model cell | £25,000 single premium, male, age 55 at entry, units purchased at £1.0000 | **[std]** (14) |
 
 5. Single-premium whole-of-life bonds with guarantee dates are the documented unitised
@@ -129,7 +129,7 @@ Footnotes to [std] rows:
    bond limits retrieved; closed-book originals are unpublished (research gap 4).
 7. PPFMs state that "a proportion of each premium less charges" buys units [S4] without
    publishing allocation rates; 100% allocation with explicit AMC is the cleanest
-   composite and matches modern single-premium practice [S10 charges structure].
+   composite and matches modern single-premium practice [S10 charges structure](#uklib-with_profits-s10).
 8. Current declared bonus rates are not collected in the research file (they live in
    annual bonus declarations, not PPFMs — research gap 3). 2.00% is a pure modeling
    snapshot chosen below the composite fund-return assumption (5.0% p.a., technical
@@ -147,7 +147,7 @@ Footnotes to [std] rows:
     [S4]; Royal London charge via deduction or reduced credited return [S6]. A level
     0.10% p.a. against the [S1] 2% lifetime cap is the composite.
 11. Observed death benefits: 100.1% of bid value of units (Prudential Investment Plan)
-    [S10][S11]; 101% guarantee on net money paid in (Shepherds Friendly ISA) [S12].
+    [S10] [S11]; 101% guarantee on net money paid in (Shepherds Friendly ISA) [S12].
     101% of unit face value is adopted as the round composite.
 12. Observed MVR-free points: contractual guarantee dates varying by tranche, with no
     (or limited) MVR at the 10th policy anniversary for with-profits bonds in the
@@ -156,7 +156,7 @@ Footnotes to [std] rows:
     single 10th-anniversary guarantee date is the minimal composite.
 13. Anchored to Phoenix ("some policies allow small regular encashments MVR-free" [S4])
     and sized to the familiar 5% p.a. tax-deferred withdrawal allowance for UK bonds
-    [S10][REG-R15]. The 5% MVR-free level itself is a standardization.
+    [S10] [REG-R15]. The 5% MVR-free level itself is a standardization.
 14. Pure modeling choice; used in the technical-notes worked example (year-6 state:
     asset share £30,000, unit price £1.104081 after five 2.00% declarations).
 
@@ -164,18 +164,18 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Product form | Regular-premium with-profits endowment assurance, closed to new business | [S1][S4][S8]; anchor **[std]** (15) |
+| Product form | Regular-premium with-profits endowment assurance, closed to new business | [S1] [S4] [S8]; anchor **[std]** (15) |
 | Term / anchor cell | 25 years; male, age 35 at entry | **[std]** (15) |
 | Basic sum assured (SA) | £20,000 — the minimum maturity amount before bonuses | role [S1]; amount **[std]** (15) |
 | Premium | £60 per month, level, payable throughout the term | **[std]** (15) |
 | Reversionary bonus form | Compound: declared rate applied to SA + attaching bonuses | form [unverified] convention; choice **[std]** (16) |
 | Snapshot reversionary bonus rate | 1.50% p.a. compound | **[std]** (16) |
-| Bonus hardening | A regular bonus becomes a contractual right only once added; guaranteed at maturity and death only | [S1][S8] |
-| Interim bonus | Claims between declarations accrue interim bonus at the last declared rate | practice [S1][S7]; rate equality **[std]** (17) |
-| Death benefit | SA + attaching reversionary bonuses + interim bonus + any final bonus | [S4][S8] |
-| Maturity benefit | SA + attaching reversionary bonuses + terminal bonus | [S1][S4][S8] |
-| Terminal bonus | max(0, smoothed target payout − guaranteed benefit) at claim | principle [S1][S4]; formalization **[std]** (18) |
-| Surrender value | Formula-based on SA + bonuses, parameters reviewed annually to target asset shares | [S1][S5]; parametrization **[std]** (19) |
+| Bonus hardening | A regular bonus becomes a contractual right only once added; guaranteed at maturity and death only | [S1] [S8] |
+| Interim bonus | Claims between declarations accrue interim bonus at the last declared rate | practice [S1] [S7]; rate equality **[std]** (17) |
+| Death benefit | SA + attaching reversionary bonuses + interim bonus + any final bonus | [S4] [S8] |
+| Maturity benefit | SA + attaching reversionary bonuses + terminal bonus | [S1] [S4] [S8] |
+| Terminal bonus | max(0, smoothed target payout − guaranteed benefit) at claim | principle [S1] [S4]; formalization **[std]** (18) |
+| Surrender value | Formula-based on SA + bonuses, parameters reviewed annually to target asset shares | [S1] [S5]; parametrization **[std]** (19) |
 
 15. Original conventional policy conditions (issue-age ranges, premium tables) are not
     republished for closed books — a recorded research gap (gap 4). The 25-year
@@ -205,7 +205,7 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Declaration frequency | Annual, for the forthcoming bonus year; final bonus scales normally reviewed yearly, ad hoc reviews after large market moves | [S1][S4][S5] |
+| Declaration frequency | Annual, for the forthcoming bonus year; final bonus scales normally reviewed yearly, ad hoc reviews after large market moves | [S1] [S4] [S5] |
 | Regular bonus change discipline | Changes not expected to exceed ±1.00% p.a. in normal circumstances; zero declaration permitted; no limit where policyholder protection requires | [S1]; cross-firm adoption **[std]** (20) |
 | Bonus philosophy | Keep a substantial proportion of payout in non-guaranteed (final bonus) form; reference guarantee-fill target θ = 80% of projected asset share | philosophy [S1]; θ **[std]** (21) |
 | Final bonus scale scope | Same scale applies at maturity, death and surrender | [S1] |
@@ -222,13 +222,13 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Payout target | 100% of unsmoothed asset share on average | [S5][S7][S8]; range must include 100% [R1] |
+| Payout target | 100% of unsmoothed asset share on average | [S5] [S7] [S8]; range must include 100% [R1] |
 | Target range | 80%–120% of asset share, with the aim that ≥90% of policies pay within the range | [S1]; ≥90% test structure [R1]; adoption **[std]** (22) |
 | Year-on-year smoothing cap | Payouts for the same class and duration normally change by no more than ±10% y/y | [S1]; adoption **[std]** (23) |
-| Smoothing cost | Tracked in a smoothing account within the estate; intended broadly neutral over time | [S1][S2][S5][S6]; PPFM expected to state neutrality intent (COBS 20.3.8G guidance) [R2] |
-| MVR trigger | Exit outside MVR-free events while unit face value (incl. attached bonuses) exceeds the asset share | [S1][S4][S5][S6] |
-| MVR bound | MVR no greater than necessary to reflect the excess of unit value over the underlying asset value | [R1 COBS 20.2.16R]; post-MVR payouts target 100% of asset share [S5] |
-| Final bonus / MVR interaction | Never applied simultaneously to the same policy | [S4 Phoenix WPF]; adoption **[std]** (24) |
+| Smoothing cost | Tracked in a smoothing account within the estate; intended broadly neutral over time | [S1] [S2] [S5] [S6]; PPFM expected to state neutrality intent (COBS 20.3.8G guidance) [R2] |
+| MVR trigger | Exit outside MVR-free events while unit face value (incl. attached bonuses) exceeds the asset share | [S1] [S4] [S5] [S6] |
+| MVR bound | MVR no greater than necessary to reflect the excess of unit value over the underlying asset value | [R1 COBS 20.2.16R](#uklib-with_profits-r1); post-MVR payouts target 100% of asset share [S5] |
+| Final bonus / MVR interaction | Never applied simultaneously to the same policy | [S4 Phoenix WPF](#uklib-with_profits-s4); adoption **[std]** (24) |
 
 22. Observed maturity target ranges: 80–120% (PAC, aim ≥90% of policies within [S1];
     Phoenix typical funds, before smoothing [S4]; Aviva group payouts [S5]); 80–130%
@@ -237,7 +237,7 @@ Footnotes to [std] rows:
     matches the COBS structure (range must include 100% of unsmoothed asset share;
     payments may fall outside if ≥90% of the group is within) [R1].
 23. Observed smoothing formulations: PAC ±10% y/y in normal circumstances, smoothed vs
-    unsmoothed value rarely >20% apart [S1][S8]; Aviva stepped 5%/7.5% limits with a
+    unsmoothed value rarely >20% apart [S1] [S8]; Aviva stepped 5%/7.5% limits with a
     15% annual maximum and a smoothing account recycled at year-end (maximum deduction
     2.5% of asset shares p.a.) [S5]; NFU Mutual ≤15% y/y with hard floor/cap at the range edges [S7]; Royal London
     formulaic pull-to-asset-share with no fixed maximum [S6]. The ±10% cap plus a
@@ -250,15 +250,15 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Bonus mechanism | None. Unit price grows daily at the Expected Growth Rate (EGR), an annualised rate (can be negative) set quarterly by the Board from expected long-term returns | [S2][S11] |
+| Bonus mechanism | None. Unit price grows daily at the Expected Growth Rate (EGR), an annualised rate (can be negative) set quarterly by the Board from expected long-term returns | [S2] [S11] |
 | Snapshot EGR | 5.0% p.a. | **[std]** (25) |
-| Daily smoothing rule | If spot NAV/unit AND the 5-working-day rolling average NAV/unit differ from the smoothed price by ≥ the Daily Smoothing Limit, the price is immediately adjusted to within the Gap After Adjustment | [S2][S9][S11] |
-| Quarterly smoothing rule | On each quarter date, while the gap between NAV per unit and the price is ≥ the Quarterly Smoothing Limit, the price is moved by half the difference, repeatedly | [S2][S9][S11] |
+| Daily smoothing rule | If spot NAV/unit AND the 5-working-day rolling average NAV/unit differ from the smoothed price by ≥ the Daily Smoothing Limit, the price is immediately adjusted to within the Gap After Adjustment | [S2] [S9] [S11] |
+| Quarterly smoothing rule | On each quarter date, while the gap between NAV per unit and the price is ≥ the Quarterly Smoothing Limit, the price is moved by half the difference, repeatedly | [S2] [S9] [S11] |
 | Smoothing limits (growth funds) | Daily 5.0% / Quarterly 10.0% / Gap After Adjustment 2.5% of unsmoothed price | [S9] |
 | Smoothing limits (cautious and Risk Managed 1–2 funds) | 4.0% / 8.0% / 2.0% | [S9] |
-| Protective machinery | Unit Price Reset to NAV; suspension of smoothing (price tracks NAV); unit cancellations on switches/transfers/withdrawals may be deferred up to 28 days (day-28 price applies) | [S2][S10][S11] |
-| Charges | Tiered AMC 0.30%–0.575% by fund size; guarantee/smoothing charge typically within the AMC | [S10][S2] |
-| Death benefit | 100.1% of the bid value of units | [S10][S11] |
+| Protective machinery | Unit Price Reset to NAV; suspension of smoothing (price tracks NAV); unit cancellations on switches/transfers/withdrawals may be deferred up to 28 days (day-28 price applies) | [S2] [S10] [S11] |
+| Charges | Tiered AMC 0.30%–0.575% by fund size; guarantee/smoothing charge typically within the AMC | [S10] [S2] |
+| Death benefit | 100.1% of the bid value of units | [S10] [S11] |
 | Optional guarantees | Minimum fund value at chosen guarantee dates for an annual charge taken by unit cancellation | [S10] |
 
 25. EGRs are set quarterly and published per fund [S2]; current EGR values were not
@@ -270,7 +270,7 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Shareholder transfer | None (mutual) | [S6][S7] |
+| Shareholder transfer | None (mutual) | [S6] [S7] |
 | Distribution mechanism | Annual discretionary "ProfitShare" from the Estate (may be zero): extra regular bonus plus asset-share enhancement for conventional/unitised WP; bonus units for unit-linked WP | [S6] |
 | Relative rate | CWP/UWP ProfitShare rate = 8× the unit-linked WP rate for pre-2022 policies; multiple variable (independent actuarial advice required below 6 or above 10) | [S6] |
 | Estate protection | ProfitShare may be reduced to zero and asset-share charges introduced if the Estate becomes too low | [S6] |
@@ -285,10 +285,10 @@ replaces the shareholder-transfer deduction with an optional ProfitShare additio
 **Unitised account and bonus hardening.** The policy account is `FV(t) = U(t) · Q(t)`,
 where `U(t)` is units held and `Q(t)` the with-profits unit price. The declared regular
 bonus `b(t) ≥ 0` is delivered through unit-price growth, `Q(t) = Q(t−1) · (1 + b(t))`
-[S1][S4]. The unit price never falls; once added, bonus (unit-price growth) cannot be
+[S1] [S4]. The unit price never falls; once added, bonus (unit-price growth) cannot be
 removed — but the *face value* is payable in full only at guarantee events. Guarantees
 bite at death, at maturity (where a term applies) and at contractual MVR-free guarantee
-dates [S1][S4][S5].
+dates [S1] [S4] [S5].
 
 **Unitised claim values.** At a guarantee event the payout is
 `FV(t) + FB(t)` with final bonus `FB(t) = max(0, S(t) − FV(t))`, where `S(t)` is the
@@ -296,7 +296,7 @@ smoothed target payout derived from the asset share (technical notes). On surren
 outside guarantee events the payout is `FV(t) + FB(t) − MVR(t)` with
 `MVR(t) = min( max(0, FV(t) − S(t)), max(0, FV(t) − AS(t)) )`: the MVR recovers the
 shortfall of the smoothed payout below face value but may never exceed the excess of
-unit value over the underlying asset share [R1 COBS 20.2.16R], and post-MVR payouts
+unit value over the underlying asset share [R1 COBS 20.2.16R](#uklib-with_profits-r1), and post-MVR payouts
 target 100% of asset share [S5]. This one-sided pair reproduces the observed practice
 that the MVR reduces final bonus first, then unit face value [S5], and that final bonus
 and MVR do not apply simultaneously [S4]. On partial withdrawal, the asset share is
@@ -305,10 +305,10 @@ reduced pro rata to the pre-MVR policy value [S1].
 **Conventional guaranteed benefit stack.** With compound reversionary bonuses at rate
 `b_rev(t)`, the guaranteed benefit `G(t) = SA + attaching bonuses` evolves as
 `G(t) = G(t−1) · (1 + b_rev(t))`, `G(0) = SA` **[std]** (16). `G(t)` is payable at
-death or maturity only [S1][S8]; surrender values are not guaranteed. The maturity
+death or maturity only [S1] [S8]; surrender values are not guaranteed. The maturity
 payout is `G(n) + TB(n)` with terminal bonus `TB(n) = max(0, S(n) − G(n))` (18); the
 death payout during the term is `G(t)` plus interim bonus accrual at the last declared
-rate plus final bonus per the same scale [S1][S4][S8].
+rate plus final bonus per the same scale [S1] [S4] [S8].
 
 **Conventional surrender value.** Formula-based, targeting asset shares over the long
 term with parameters reviewed at least annually [S1]: the reference form is
@@ -316,7 +316,7 @@ term with parameters reviewed at least annually [S1]: the reference form is
 `PV_g(t) = G(t) · (1 + i_sv)^−(n−t)` is the discounted guaranteed benefit at the
 surrender-basis rate `i_sv = 4.0%` **[std]** (19). Surrender payouts progress into
 maturity values near the term end [S1]; no formal smoothing applies to surrenders
-[S5][S6].
+[S5] [S6].
 
 **Deferred annuity note.** Conventional with-profits deferred annuities carry a basic
 annuity p.a. plus bonuses; cash claims reflect the current cost of the deferred annuity
@@ -327,9 +327,9 @@ Expected Growth Rate, Daily Smoothing Limit, Quarterly Smoothing Limit and Gap A
 Adjustment as contractual terms [S11]. Daily: if both the spot NAV per unit and the
 5-working-day average breach the Daily Smoothing Limit relative to the smoothed price,
 the price is adjusted to the Gap After Adjustment; quarterly: while the gap is ≥ the
-Quarterly Smoothing Limit the price moves by half the difference, repeatedly [S9][S11].
+Quarterly Smoothing Limit the price moves by half the difference, repeatedly [S9] [S11].
 The insurer may reset the unit price to NAV or suspend smoothing to protect the fund
-[S2][S11]. Pay-out value = units held × unit price, less policy-condition deductions,
+[S2] [S11]. Pay-out value = units held × unit price, less policy-condition deductions,
 at the transaction date [S2].
 
 ---
@@ -352,7 +352,7 @@ at the transaction date [S2].
 
 **Out of scope for the composite:** with-profits annuities and Income Choice Annuity
 (smoothing caps 11–12% on income rises [S1]); Credit Matched With-Profits (guaranteed
-benefit at outset, prospective asset shares [S1][S3]); cash accumulation business
+benefit at outset, prospective asset shares [S1] [S3]); cash accumulation business
 (bonuses added to contributions; regular bonus guaranteed to the next revision date
 [S1]); unit-linked with-profits (bonus units, no asset shares or smoothing [S6]);
 deposit administration [S6]; Industrial Branch business [S1]; return-of-premium death
@@ -364,11 +364,11 @@ original conventional policy conditions are unpublished (research gap 4).
 ## Variations across insurers
 
 1. **Chassis split.** Conventional (sum assured + declared bonus stack, formulaic
-   surrender values [S1][S4][S8]), unitised (unit account, bonus-driven price growth or
-   bonus units, MVR machinery [S4][S5][S6][S7]) and smoothed funds (EGR + rule-based
-   price adjustment, no declarations [S2][S9][S11]). The composite models (a) and (b)
+   surrender values [S1] [S4] [S8]), unitised (unit account, bonus-driven price growth or
+   bonus units, MVR machinery [S4] [S5] [S6] [S7]) and smoothed funds (EGR + rule-based
+   price adjustment, no declarations [S2] [S9] [S11]). The composite models (a) and (b)
    as core chassis and (c) as the open-business variation because that is where the
-   respective blocks of UK liability sit [S4][S10][S13].
+   respective blocks of UK liability sit [S4] [S10] [S13].
 2. **Target ranges.** All firms target 100% of asset share on average, but ranges
    differ: 80–120% (PAC [S1], Phoenix [S4], Aviva [S5]); 80–130%/75–125% (Royal London
    [S6]); 75–125%, 85–111%, 80–120% by product (NFU Mutual [S7]). 80–120% with the
@@ -377,7 +377,7 @@ original conventional policy conditions are unpublished (research gap 4).
 3. **Smoothing formulation** varies more than any other feature: y/y payout caps (PAC
    10% [S1]; NFU Mutual 15% [S7]; Aviva stepped 5%/7.5% with 15% annual max [S5]),
    explicit smoothing accounts recycled to asset shares (Aviva, maximum deduction
-   2.5% p.a. [S5]; PAC bonus smoothing accounts within the Estate [S1][S2]), or pure formulaic
+   2.5% p.a. [S5]; PAC bonus smoothing accounts within the Estate [S1] [S2]), or pure formulaic
    pull-to-asset-share with no stated cap (Royal London [S6]). Chosen: ±10% cap plus a
    neutral smoothing account — the most transferable abstraction.
 4. **MVR triggers.** Shortfall-based (PAC [S1], Aviva [S5], Phoenix [S4] — all capped
@@ -385,7 +385,7 @@ original conventional policy conditions are unpublished (research gap 4).
    trigger/taper (NFU Mutual: MVR when asset share <90% of unit value, linear
    smoothing-in between 85% and 90%, taper to zero over 3 years to retirement [S7]).
    MVR-free events are universal: death [S5], contractual guarantee dates
-   [S1][S4][S5], frequently the 10th anniversary for bonds [S4]. Chosen: the
+   [S1] [S4] [S5], frequently the 10th anniversary for bonds [S4]. Chosen: the
    shortfall-capped form — it is the regulatory bound itself.
 5. **Ownership/distribution.** Proprietary 90:10 (PAC [S1]; Aviva, transfer charged to
    asset shares [S5]) vs mutual (Royal London ProfitShare, 8× multiple [S6]; NFU
@@ -415,11 +415,11 @@ distribution strategy for discretionary benefits must be affordable and sustaina
 include all expected payments to policyholders "whether or not ... contractually
 guaranteed" — the basis for including future discretionary benefits (FDB) in the BEL —
 with a carve-out for surplus funds (the estate, which counts as own funds rather than
-insurance obligations) [R7][R8]. Financial guarantees and options must be valued with
+insurance obligations) [R7] [R8]. Financial guarantees and options must be valued with
 realistic, dynamic policyholder-behavior assumptions [R7]. The PRA Surplus Funds Part
 codifies the retrospective asset-share item list used throughout this specification
 [R8]. The post-2023/24 "Solvency UK" risk margin uses a 4% cost-of-capital rate with a
-0.9 risk-tapering factor for long-term business [R7][REG-R4].
+0.9 risk-tapering factor for long-term business [R7] [REG-R4].
 
 **Conduct — FCA.** COBS 20.2 requires maturity-payment target ranges expressed as
 percentages of unsmoothed asset share that include 100%, a ≥90%-within-range test,
@@ -447,10 +447,45 @@ work on with-profits reserving falls under FRC TAS 100 (v2.0, effective 1 July 2
 **Tax.** With-profits life business is BLAGAB under Finance Act 2012 Part 2, taxed on
 the I-E basis — policyholder-level tax is effectively borne inside the fund, and asset
 shares are charged tax accordingly (pensions business is credited gross returns)
-[S1][S2][REG-R17][REG-R18]. Policyholder taxation of with-profits bonds follows the
+[S1] [S2] [REG-R17] [REG-R18]. Policyholder taxation of with-profits bonds follows the
 chargeable event gains regime (ITTOIA 2005 Part 4 Chapter 9): part surrenders within
 the cumulative 5%-of-premium annual allowance are not immediately taxable, shaping
-withdrawal behavior [REG-R15][REG-R16]. With-profits ISA wrappers carry the £20,000
+withdrawal behavior [REG-R15] [REG-R16]. With-profits ISA wrappers carry the £20,000
 annual subscription limit [S12]. Classification: conventional with-profits assurances
 and annuities are Class I long-term business under the RAO; unitised/linked structures
-typically involve Class III [R9; per-product allocation unverified].
+typically involve Class III [R9; per-product allocation unverified](#uklib-with_profits-r9).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-with_profits-r1
+[R11]: #uklib-with_profits-r11
+[R12]: #uklib-with_profits-r12
+[R2]: #uklib-with_profits-r2
+[R3]: #uklib-with_profits-r3
+[R4]: #uklib-with_profits-r4
+[R5]: #uklib-with_profits-r5
+[R6]: #uklib-with_profits-r6
+[R7]: #uklib-with_profits-r7
+[R8]: #uklib-with_profits-r8
+[REG-R12]: #uklib-reg-r12
+[REG-R15]: #uklib-reg-r15
+[REG-R16]: #uklib-reg-r16
+[REG-R17]: #uklib-reg-r17
+[REG-R18]: #uklib-reg-r18
+[REG-R33]: #uklib-reg-r33
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-with_profits-s1
+[S10]: #uklib-with_profits-s10
+[S11]: #uklib-with_profits-s11
+[S12]: #uklib-with_profits-s12
+[S13]: #uklib-with_profits-s13
+[S2]: #uklib-with_profits-s2
+[S3]: #uklib-with_profits-s3
+[S4]: #uklib-with_profits-s4
+[S5]: #uklib-with_profits-s5
+[S6]: #uklib-with_profits-s6
+[S7]: #uklib-with_profits-s7
+[S8]: #uklib-with_profits-s8
+[S9]: #uklib-with_profits-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

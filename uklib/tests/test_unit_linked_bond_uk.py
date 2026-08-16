@@ -22,7 +22,7 @@ import modelx as mx
 import pytest
 from modelx.core.errors import FormulaError
 
-from conftest import MODELS, LIB
+from uk_registry import MODELS, LIB
 
 
 def model_files(folder):

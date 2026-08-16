@@ -1,4 +1,4 @@
-# Term_UK_A — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/term_assurance/technical-notes.md`](technical-notes.md);
@@ -41,7 +41,7 @@ between the technical notes' symbols and the cells names.
 
 Policy year `t` runs 1 … `proj_len()` = `policy_term()`, and **there is nothing after
 it**. Cover ceases at the end of the term with no maturity value, no renewal and no
-conversion [S1][S2][S6][S8][R8].
+conversion [S1] [S2] [S6] [S8] [R8].
 
 That is the one difference from this library's U.S. term model that changes the shape
 of the liability rather than a parameter. `Term_US_A` runs a *post-level-term* phase:
@@ -159,7 +159,7 @@ the two CSVs with licensed tables and uses the `select` basis; no formula change
 
 A death in month `k` on the `fib` shape triggers `N − k` monthly instalments of `I`, in
 arrears, ending at month `N`. Those instalments are an **annuity-certain**: once the
-claim is admitted they run to the end of the term regardless of any life [S6][S8]. So
+claim is admitted they run to the end of the term regardless of any life [S6] [S8]. So
 the in-payment stream is decremented by neither mortality nor lapse — only *new* claims
 carry `l(t)`.
 
@@ -179,14 +179,14 @@ paying only the year-of-death instalments fails there.
 The optional commutation module replaces a proportion of the streams with a lump sum,
 the present value of the remaining instalments at the **[std]** snapshot rate
 `r_c = 3%`. Contractually the insurer reduces the remaining instalments "fairly and
-reasonably" [S6][S8] and no insurer publishes the basis. Base take-up is zero; model
+reasonably" [S6] [S8] and no insurer publishes the basis. Base take-up is zero; model
 point 4 exercises the other extreme, and its total outgo is materially lower than point
 3's because commuting at 3% is worth less than paying the instalments out undiscounted.
 
 ## Terminal illness is not an extra benefit
 
 Terminal illness is a 100% **acceleration** of the death benefit under a two-limb
-12-month definition [S1][S6][S8]: one decrement, one payment. There is no `ti_rate`
+12-month definition [S1] [S6] [S8]: one decrement, one payment. There is no `ti_rate`
 anywhere in the model, and `mort_rate(t)` is the combined death-and-terminal-illness
 rate — the 16-Series tables the shipped table proxies are graduated on that basis
 [R10]. Adding a separate terminal-illness decrement double-counts claims, which is the
@@ -194,7 +194,7 @@ notes' first-listed pitfall.
 
 ## `claims_lapse` is a column of zeros, deliberately
 
-There is no surrender value and no paid-up value at any duration [S1][S6][S8][R8], so a
+There is no surrender value and no paid-up value at any duration [S1] [S6] [S8] [R8], so a
 lapse is a pure decrement: it moves `pols_if` and pays nothing. `claims(t, "LAPSE")`
 exists, returns zero, and appears in `result_cf()` as a zero column, because the notes
 list a non-zero lapse row as a pitfall imported from US models with cash surrender
@@ -237,8 +237,8 @@ fraction of the in-force rather than as its own decrement.
 The indexation option is a model point flag rather than a module switch. Its base run is
 deterministic and always accepts, as the notes specify, with a flat 3% RPI scenario
 **[std]** — so cover grows at 3% a year and premium at 4.5%, the ×1.5 factor
-[S1][S2][S6]. One consequence: with acceptance certain, the rule removing the option
-after three consecutive declines [S1][S6] (two at one insurer [S8]) is never reached and
+[S1] [S2] [S6]. One consequence: with acceptance certain, the rule removing the option
+after three consecutive declines [S1] [S6] (two at one insurer [S8]) is never reached and
 is not implemented. Indexation is restricted to the level shape **[std scope]**, since
 no fetched insurer offers indexed decreasing cover.
 
@@ -290,3 +290,17 @@ default modules in both positions, and that a lapse pays nothing.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #uklib-term_assurance-r10
+[R11]: #uklib-term_assurance-r11
+[R12]: #uklib-term_assurance-r12
+[R8]: #uklib-term_assurance-r8
+[R9]: #uklib-term_assurance-r9
+[S1]: #uklib-term_assurance-s1
+[S2]: #uklib-term_assurance-s2
+[S5]: #uklib-term_assurance-s5
+[S6]: #uklib-term_assurance-s6
+[S8]: #uklib-term_assurance-s8
+[std]: #uklib-std
+<!-- END generated citation links -->

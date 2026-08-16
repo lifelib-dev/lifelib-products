@@ -16,7 +16,8 @@ rather than guessed at.
 
 Scope is rendered documents only.  ``_research/`` is out of the Sphinx build under D6 and
 never receives link definitions, so its adjacencies stay literal exactly as they read
-today and are left alone.
+today and are left alone.  Code blocks are left alone for the same reason and are found
+the same way the renderer finds them -- see :mod:`mdspans`.
 
 Usage::
 
@@ -28,9 +29,10 @@ import sys
 import pathlib
 import collections
 
+from mdspans import prose_spans
+
 
 TAG = r'(?:S|R|REG-R)\d+[a-z]?'
-FENCE = re.compile(r'^\s*(```|~~~)', re.M)
 
 # A citation-ish bracket: a bare tag, a tag carrying a pinpoint or a comma list, or one of
 # the two convention markers with or without a qualifier.  The tail is deliberately
@@ -69,18 +71,6 @@ def brackets(text):
             if not stack:
                 spans.append(Span(start, i + 1, text[start + 1:i]))
     return spans
-
-
-def prose_spans(text):
-    """Yield (start, end) of the regions outside fenced code blocks."""
-    edges, fenced = [0], False
-    for m in FENCE.finditer(text):
-        edges.append(m.start())
-        fenced = not fenced
-    edges.append(len(text))
-    for i in range(len(edges) - 1):
-        if i % 2 == 0:
-            yield edges[i], edges[i + 1]
 
 
 def separate(text):

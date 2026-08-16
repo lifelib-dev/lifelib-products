@@ -1,4 +1,4 @@
-# Whole of Life Assurance — Representative Product Specification (United Kingdom)
+# Product Specification
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03; see `sources.md`).
 
@@ -18,7 +18,7 @@ Two product cells are specified, mirroring the two-cell structure of the US whol
 - **RefWOL-UW** — underwritten guaranteed whole of life (the research file's "Cell B";
   Zurich Whole of Life [S10] is the representative chassis).
 - **RefWOL-O50** — over-50s guaranteed acceptance whole of life (the research file's "Cell A";
-  L&G Over 50s Fixed [S4][S5] / SunLife Guaranteed Over 50 Plan [S1] are the representative
+  L&G Over 50s Fixed [S4] [S5] / SunLife Guaranteed Over 50 Plan [S1] are the representative
   chassis).
 
 A legacy unit-linked reviewable whole of life design [S15] is documented as a closed-book
@@ -33,20 +33,20 @@ Class I ("Life and annuity") long-term insurance business under RAO Schedule 1 P
 unit-linked variants fall in Class III ("Linked long term") [R5]. Both cells here are pure
 protection products within the scope of the FCA's MS24/1 Pure Protection Market Study
 (terms of reference announced August 2024; interim report January 2026; final report expected
-Q3 2026) [R1][R2].
+Q3 2026) [R1] [R2].
 
 **The underwritten cell** is adviser-distributed, fully medically underwritten cover with
 premiums and sum assured guaranteed for life, sold for family protection, legacy and
-inheritance-tax planning (typically written in trust) [S10][S11][S16]. Verified current
-sellers include Zurich (Zurich Whole of Life) [S10][S11][S12], Royal London (Life Cover with
-no end date under the Personal Menu Plan) [S13][S14], and Vitality [S16]. The FCA treats
+inheritance-tax planning (typically written in trust) [S10] [S11] [S16]. Verified current
+sellers include Zurich (Zurich Whole of Life) [S10] [S11] [S12], Royal London (Life Cover with
+no end date under the Personal Menu Plan) [S13] [S14], and Vitality [S16]. The FCA treats
 underwritten whole of life as a live category with a distinct target market and notes one
 insurer restricts new underwritten policies at age 77 [R2].
 
 **The over-50s cell** is direct-distributed guaranteed-acceptance cover: no medical questions,
 fixed cash sum, level premiums that cease at an age cap while cover continues, a first-year
 return-of-premium moratorium for non-accidental death, and no cash-in value at any time
-[S1][S4][S7][S9]. It is the UK analog of the US final-expense sub-market. The FCA's MS24/1
+[S1] [S4] [S7] [S9]. It is the UK analog of the US final-expense sub-market. The FCA's MS24/1
 Annex 2 devotes a chapter to this cohort: guaranteed-acceptance over-50s customers pay on
 average £71.73 in premiums per £1,000 sum assured versus £8.10 for underwritten whole of life,
 reflecting anti-selection, older entry ages and shorter durations [R2].
@@ -54,7 +54,7 @@ reflecting anti-selection, older entry ages and shorter durations [R2].
 **Contrast with US cash-value whole life.** Unlike the US participating whole life chassis
 (guaranteed cash value schedule endowing at age 100, dividends, policy loans), both modern UK
 cells are protection-only: there is **no cash-in value at any time** in any of the five
-modern products fetched (six documents) [S1][S4][S5][S7][S9][S10], no policyholder dividend
+modern products fetched (six documents) [S1] [S4] [S5] [S7] [S9] [S10], no policyholder dividend
 mechanism, and no policy
 loan facility. The liability is a pure-decrement death benefit stream. Positive surrender
 value appears only in the legacy unit-linked reviewable design, where it equals the value of
@@ -72,13 +72,13 @@ investment units [S15].
 |---|---|---|
 | Product type | Individual non-profit whole of life; guaranteed level premiums; guaranteed sum assured; no cash-in value at any time | [S10] |
 | Lives assured | Single life (joint life first event / second event exist; out of scope) | [S10]; scope **[std]** (a) |
-| Entry ages | 18–83 (age x = before (x+1)th birthday, i.e. age last birthday) | [S10][S11] |
-| Cover end age | None — whole of life, no maximum cover age | [S10][S12] |
-| Residency / underwriting | UK resident, registered with a UK doctor for 6 months before applying; full medical underwriting (health, occupation, lifestyle, family history) | [S10][S11][R2] |
+| Entry ages | 18–83 (age x = before (x+1)th birthday, i.e. age last birthday) | [S10] [S11] |
+| Cover end age | None — whole of life, no maximum cover age | [S10] [S12] |
+| Residency / underwriting | UK resident, registered with a UK doctor for 6 months before applying; full medical underwriting (health, occupation, lifestyle, family history) | [S10] [S11] [R2] |
 | Rate factors | Age, health, occupation, nicotine use, amount/type of cover, optional benefits | [S11] |
 | Smoker definition | Non-smoker: no tobacco/nicotine products for > 5 years; previous smoker: 12 months–5 years; smoker: < 12 months | [S10] |
-| Sum assured limits | No stated maximum for level cover (escalation stops if sum assured would exceed £40m); £5m cap when increasing cover selected at Royal London | [S10][S13] |
-| Minimum premium | £8/month or £80/year (as at 1 Jan 2025) | [S10][S12] |
+| Sum assured limits | No stated maximum for level cover (escalation stops if sum assured would exceed £40m); £5m cap when increasing cover selected at Royal London | [S10] [S13] |
+| Minimum premium | £8/month or £80/year (as at 1 Jan 2025) | [S10] [S12] |
 | Anchor model point | Male, entry age 40, non-smoker, £150,000 sum assured, level cover, monthly premium £101.25 | ages/limits within [S10]; cell and premium **[std]** (b) |
 
 Footnotes:
@@ -99,21 +99,21 @@ Footnotes:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Death benefit | Sum assured paid once, on death, then policy ends | [S10] |
-| Terminal illness benefit | Sum assured accelerated on diagnosis of terminal illness: definite diagnosis, no known cure or beyond cure, death expected within 12 months, confirmed by the attending consultant; pays once then policy ends | [S10][S12]; RL includes terminal illness [S13] |
-| Exclusions | Suicide or intentional self-inflicted injury within 12 months of start (or of a requested/milestone increase) → refund of premiums for that cover; no other stated exclusion on the core benefit | [S10][S11] |
-| Premium guarantee | Premiums guaranteed for life; change only on customer-initiated cover changes, Increasing Cover escalation, or disclosure corrections | [S10][S11] |
+| Terminal illness benefit | Sum assured accelerated on diagnosis of terminal illness: definite diagnosis, no known cure or beyond cure, death expected within 12 months, confirmed by the attending consultant; pays once then policy ends | [S10] [S12]; RL includes terminal illness [S13] |
+| Exclusions | Suicide or intentional self-inflicted injury within 12 months of start (or of a requested/milestone increase) → refund of premiums for that cover; no other stated exclusion on the core benefit | [S10] [S11] |
+| Premium guarantee | Premiums guaranteed for life; change only on customer-initiated cover changes, Increasing Cover escalation, or disclosure corrections | [S10] [S11] |
 | Non-payment | Cover ends if premiums unpaid 2 months after due date; no reinstatement (new application required) | [S10] |
 | Surrender | No cash-in value at any time; lapse forfeits all value | [S10] |
-| Cooling-off | 30 days with premium refund | [S11][S14] |
+| Cooling-off | 30 days with premium refund | [S11] [S14] |
 
 #### Table 3 — Options (elected at outset)
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Increasing Cover (escalation) | Sum assured +3%, +5% or +RPI (capped 10%) each policy year; premium rises 2% for each 1% of cover increase; declining 3 increases removes the option permanently; increases stop if sum assured would exceed £40m | [S10][S11] |
+| Increasing Cover (escalation) | Sum assured +3%, +5% or +RPI (capped 10%) each policy year; premium rises 2% for each 1% of cover increase; declining 3 increases removes the option permanently; increases stop if sum assured would exceed £40m | [S10] [S11] |
 | Escalation modeled | Level cover in the base cell; 5% escalation variant (premium +10%/year) as the modeled alternative | choice **[std]** (c) |
-| Milestone benefit (guaranteed insurability) | Sum assured increase without further underwriting within 90 days of life events (mortgage increase/house move, marriage/civil partnership, divorce/dissolution/separation, birth/adoption, ≥10% salary rise on promotion/job change, increase in IHT liability); cap = lower of original sum assured or £200,000 across all Zurich policies; to age 54 (69 for IHT events); premium for the increase on original underwriting at current age | [S10][S12] |
-| Waiver of Premium rider | Optional at extra cost, outset only; 6-month deferred period; own-occupation definition; entry 18–54; terminates at 70; monthly premiums required | [S10][S11] |
+| Milestone benefit (guaranteed insurability) | Sum assured increase without further underwriting within 90 days of life events (mortgage increase/house move, marriage/civil partnership, divorce/dissolution/separation, birth/adoption, ≥10% salary rise on promotion/job change, increase in IHT liability); cap = lower of original sum assured or £200,000 across all Zurich policies; to age 54 (69 for IHT events); premium for the increase on original underwriting at current age | [S10] [S12] |
+| Waiver of Premium rider | Optional at extra cost, outset only; 6-month deferred period; own-occupation definition; entry 18–54; terminates at 70; monthly premiums required | [S10] [S11] |
 | Cover reduction | Any time, floor at minimum premium | [S10] |
 | Smoker-status review | Premium review possible after ≥ 12 months nicotine-free | [S10] |
 
@@ -130,15 +130,15 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Product type | Individual whole of life paying a fixed cash sum on death after year 1; guaranteed acceptance, no medical questions; no cash-in value at any time | [S1][S4][S7][S9] |
-| Lives assured | Single life only | [S2][S8] |
-| Entry ages | 50–80 | [S4][S8][S9]; band choice **[std]** (d) |
-| Residency | UK resident (L&G: ≥183 days in UK in the last tax year; SunLife excludes Channel Islands / Isle of Man) | [S1][S4] |
-| Rate factors | Age at outset and smoker status only (plus chosen cash sum / premium) | [S1][S4]; market-wide smoker differential [R2] |
+| Product type | Individual whole of life paying a fixed cash sum on death after year 1; guaranteed acceptance, no medical questions; no cash-in value at any time | [S1] [S4] [S7] [S9] |
+| Lives assured | Single life only | [S2] [S8] |
+| Entry ages | 50–80 | [S4] [S8] [S9]; band choice **[std]** (d) |
+| Residency | UK resident (L&G: ≥183 days in UK in the last tax year; SunLife excludes Channel Islands / Isle of Man) | [S1] [S4] |
+| Rate factors | Age at outset and smoker status only (plus chosen cash sum / premium) | [S1] [S4]; market-wide smoker differential [R2] |
 | Smoker definition | Non-smoker: no tobacco, e-cigarettes or nicotine replacement in the last 12 months | [S4] |
-| Cash sum limits | Minimum £500; aggregation cap £10,000 across same-insurer policies | min [S1]; cap [S4][S5][S9]; cap choice **[std]** (e) |
-| Premium range | £5–£75/month per policy; £100/month aggregate cap across same-insurer policies | [S6]; caps [S1][S7][S9]; range choice **[std]** (f) |
-| Payment method | Monthly Direct Debit only | [S1][S4][S7][S9] |
+| Cash sum limits | Minimum £500; aggregation cap £10,000 across same-insurer policies | min [S1]; cap [S4] [S5] [S9]; cap choice **[std]** (e) |
+| Premium range | £5–£75/month per policy; £100/month aggregate cap across same-insurer policies | [S6]; caps [S1] [S7] [S9]; range choice **[std]** (f) |
+| Payment method | Monthly Direct Debit only | [S1] [S4] [S7] [S9] |
 | Anchor model point | Entry age 70, non-smoker, £30/month premium, £5,000 cash sum | [R2] stylised pair; cell **[std]** (g) |
 
 Footnotes:
@@ -146,7 +146,7 @@ Footnotes:
   Aviva [S8], Royal London [S9]). 50–80 is the modal window; the FCA notes entrants at 79–80
   are the cohort most likely to receive less than premiums paid [R2].
 - (e) **[std]** £10,000 cap: observed aggregation caps are £18,000 total cover plus £100/month
-  premiums (SunLife/Phoenix [S1]), £10,000 cash sum (L&G [S4][S5]; Royal London, plus
+  premiums (SunLife/Phoenix [S1]), £10,000 cash sum (L&G [S4] [S5]; Royal London, plus
   £100/month [S9]), and a premium-cap-driven limit (£100/month, Aviva [S7]). £10,000 is the
   modal cash-sum cap. Aggregation caps are immaterial to a per-policy model.
 - (f) **[std]** premium range: observed per-plan ranges are £4–£100/month (SunLife [S2]),
@@ -165,32 +165,32 @@ Footnotes:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Death after year 1 | Fixed cash sum, any cause | [S1][S4][S8][S9] |
-| Non-accidental death in year 1 | Return of all premiums paid; no interest or uplift stated in any fetched document | [S1][S4][S7][S9] |
-| Accidental death (from day 1) | Full cash sum | [S1][S4][S7][S9] |
-| Accident definition | Death within 90 days of accidental bodily injury; injury by "external, violent and visible means", not sickness/disease | [S1][S4]; Aviva's "fatal accident" wording similar [S7]; RL: unpredicted, unintentional event causing physical injury [S9] |
+| Death after year 1 | Fixed cash sum, any cause | [S1] [S4] [S8] [S9] |
+| Non-accidental death in year 1 | Return of all premiums paid; no interest or uplift stated in any fetched document | [S1] [S4] [S7] [S9] |
+| Accidental death (from day 1) | Full cash sum | [S1] [S4] [S7] [S9] |
+| Accident definition | Death within 90 days of accidental bodily injury; injury by "external, violent and visible means", not sickness/disease | [S1] [S4]; Aviva's "fatal accident" wording similar [S7]; RL: unpredicted, unintentional event causing physical injury [S9] |
 | Suicide in year 1 | Explicitly non-accidental → refund of payments | [S9]; treated as non-accidental at L&G [S4] |
-| Accidental-death exclusions | Criminal act; flying other than fare-paying passenger; hazardous pursuits; self-inflicted injury; war/riot/civil commotion; alcohol/drug abuse; natural causes/illness | [S1][S4][S7] |
-| Terminal illness | None in this cell | [S1][S4][S7][S9] (absence per the research variations table) |
-| Claims interest | Interest from death to payment at Bank of England Base Rate − 0.5%, floor 0.5% p.a. (RL: where payment delayed > 2 months) | [S1][S9] |
+| Accidental-death exclusions | Criminal act; flying other than fare-paying passenger; hazardous pursuits; self-inflicted injury; war/riot/civil commotion; alcohol/drug abuse; natural causes/illness | [S1] [S4] [S7] |
+| Terminal illness | None in this cell | [S1] [S4] [S7] [S9] (absence per the research variations table) |
+| Claims interest | Interest from death to payment at Bank of England Base Rate − 0.5%, floor 0.5% p.a. (RL: where payment delayed > 2 months) | [S1] [S9] |
 
 #### Table 6 — Premiums, cessation, lapse, options
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Premiums | Level, fixed at outset, guaranteed never to increase | [S1][S4][S7][S9] |
-| Premium cessation | Policy anniversary on/after the 90th birthday; cover continues for life | [S4][S5][S9]; choice **[std]** (h) |
-| Surrender value | None at any time; cancellation after the 30-day cooling-off returns nothing | [S1][S4][S5][S7][S9] |
-| Arrears / lapse | 60 days to make good a missed payment; death within the window → claim reduced by unpaid amounts; then cancellation with nothing back | [S4][S9]; choice **[std]** (i) |
-| Paid-up value | None in the base design (Royal London's Payout Promise is the modeled variation — see Variations) | [S1][S4][S7]; RL exception [S9] |
-| Premium reduction | Once per policy, irreversible, floor at minimum premium; cash sum reduces (SunLife/L&G [S1][S4]; RL: reducible to a £3.95/month floor, once-only limit not stated [S9]) | [S1][S4][S9] |
-| Cooling-off | 30 days with premium refund | [S1][S4][S8][S9] |
-| Funeral Benefit Option | Free to add; cash sum paid directly to the funeral provider and put towards the funeral (SunLife: Co-op Funeralcare, 10% discount on eligible services) | [S3][S9]; out of model scope (payee redirection only) |
-| Consumer warning (documented) | Depending on how long you live, total premiums paid may be greater than the cash sum paid out (wording varies by insurer); inflation erodes the fixed cash sum | [S1][S2][S4][S5][S8][S9] |
+| Premiums | Level, fixed at outset, guaranteed never to increase | [S1] [S4] [S7] [S9] |
+| Premium cessation | Policy anniversary on/after the 90th birthday; cover continues for life | [S4] [S5] [S9]; choice **[std]** (h) |
+| Surrender value | None at any time; cancellation after the 30-day cooling-off returns nothing | [S1] [S4] [S5] [S7] [S9] |
+| Arrears / lapse | 60 days to make good a missed payment; death within the window → claim reduced by unpaid amounts; then cancellation with nothing back | [S4] [S9]; choice **[std]** (i) |
+| Paid-up value | None in the base design (Royal London's Payout Promise is the modeled variation — see Variations) | [S1] [S4] [S7]; RL exception [S9] |
+| Premium reduction | Once per policy, irreversible, floor at minimum premium; cash sum reduces (SunLife/L&G [S1] [S4]; RL: reducible to a £3.95/month floor, once-only limit not stated [S9]) | [S1] [S4] [S9] |
+| Cooling-off | 30 days with premium refund | [S1] [S4] [S8] [S9] |
+| Funeral Benefit Option | Free to add; cash sum paid directly to the funeral provider and put towards the funeral (SunLife: Co-op Funeralcare, 10% discount on eligible services) | [S3] [S9]; out of model scope (payee redirection only) |
+| Consumer warning (documented) | Depending on how long you live, total premiums paid may be greater than the cash sum paid out (wording varies by insurer); inflation erodes the fixed cash sum | [S1] [S2] [S4] [S5] [S8] [S9] |
 
 Footnotes:
 - (h) **[std]** cessation at 90: observed cessation rules are the anniversary on/after the
-  95th birthday (SunLife [S1]), up to and including the 90th birthday (L&G [S4][S5]), 30 years
+  95th birthday (SunLife [S1]), up to and including the 90th birthday (L&G [S4] [S5]), 30 years
   or the anniversary after the 90th birthday, whichever first (Aviva [S8]), and the
   anniversary on/after the 90th birthday (Royal London [S9]). The FCA: caps apply "typically
   ... from age 90, although we see some insurers applying this from age 95", with one insurer
@@ -214,10 +214,10 @@ cessation date.
 
 - **Benefit.** The sum assured is paid once, on death or on earlier diagnosis of terminal
   illness (life expectancy under 12 months, consultant-confirmed), and the policy then ends
-  [S10][S12]. There is no maturity, no renewal, no conversion and no surrender value [S10].
+  [S10] [S12]. There is no maturity, no renewal, no conversion and no surrender value [S10].
 - **Suicide clause.** Death by suicide or intentional self-inflicted injury within 12 months
   of the start date (or of an increase, for the increased portion) pays a return of premiums
-  for that cover instead of the sum assured [S10][S11]:
+  for that cover instead of the sum assured [S10] [S11]:
 
       DeathBenefit(t) = CumPrem(t)   if suicide/self-inflicted and t <= 12
                       = SA           otherwise
@@ -238,7 +238,7 @@ cessation date.
   assured would exceed £40m [S10].
 - **Milestone benefit.** An option (not an obligation) to increase SA without underwriting on
   listed life events, capped at the lower of the original sum assured and £200,000 aggregate,
-  exercisable to age 54 (69 for IHT events) [S10][S12]. The base model carries it as an
+  exercisable to age 54 (69 for IHT events) [S10] [S12]. The base model carries it as an
   out-of-scope option (see Riders).
 
 ### RefWOL-O50 mechanics
@@ -246,7 +246,7 @@ cessation date.
 - **Death benefit with 12-month moratorium.** From day 1, accidental death (per the Table 5
   definition and exclusions) pays the full cash sum; non-accidental death in months 1–12 pays
   a return of premiums paid (the fetched documents state no interest or uplift on the
-  refund); any death from month 13 pays the cash sum [S1][S4][S7][S9]:
+  refund); any death from month 13 pays the cash sum [S1] [S4] [S7] [S9]:
 
       DeathBenefit(t) = SA                     if accidental (any t)
                       = CumPrem(t)             if non-accidental and t <= 12
@@ -254,7 +254,7 @@ cessation date.
 
 - **Premiums and cessation.** Level premiums by monthly Direct Debit from the start date
   until the policy anniversary on/after the 90th birthday **[std]** (h); cover then continues
-  for life without premiums [S4][S5][S9]:
+  for life without premiums [S4] [S5] [S9]:
 
       CumPrem(t) = P x min(t, T_cess)
 
@@ -270,12 +270,12 @@ cessation date.
   13 years 11 months) [R2]. A crossover exists whenever SA < P x T_cess. Firms model this
   ex ante by cohort (age, smoker status) within Consumer Duty fair value assessments [R2].
 - **No surrender value; lapse.** Stopping premiums (after the 60-day arrears window **[std]**
-  (i)) cancels the plan with nothing back [S1][S4][S7][S9]. Death within the arrears window
+  (i)) cancels the plan with nothing back [S1] [S4] [S7] [S9]. Death within the arrears window
   pays the claim reduced by unpaid amounts [S9]. The Royal London Payout Promise variation
   replaces forfeiture with a pro-rata paid-up cash sum once at least half the expected
   payments have been made (see Variations) [S9].
 - **Claims interest.** Interest is added from the date of death (RL: where payment is delayed
-  more than 2 months) to payment at BoE Base Rate − 0.5%, floor 0.5% p.a. [S1][S9]. The
+  more than 2 months) to payment at BoE Base Rate − 0.5%, floor 0.5% p.a. [S1] [S9]. The
   reference model treats settlement as immediate and excludes claims interest **[std]**
   (technical notes, conventions).
 
@@ -286,17 +286,17 @@ cessation date.
 **In scope (modeled):**
 
 - *RefWOL-UW:* terminal illness acceleration (an integral benefit, not a rider — it
-  accelerates the same sum assured) [S10][S12][S13]; Increasing Cover escalation (5% variant
+  accelerates the same sum assured) [S10] [S12] [S13]; Increasing Cover escalation (5% variant
   **[std]** (c)) [S10].
-- *RefWOL-O50:* the first-year accidental/non-accidental benefit split [S1][S4][S7][S9]; the
+- *RefWOL-O50:* the first-year accidental/non-accidental benefit split [S1] [S4] [S7] [S9]; the
   Royal London Payout Promise paid-up variation [S9]; the L&G RPI-increasing variant and the
-  Aviva 2x accidental multiplier as documented alternatives (see Variations) [S4][S7].
+  Aviva 2x accidental multiplier as documented alternatives (see Variations) [S4] [S7].
 
 **Described, out of model scope:**
 
 - Waiver of Premium (RefWOL-UW): 6-month deferred period, own occupation, entry 18–54, ends
-  at 70, extra cost [S10][S11] — a disability decrement outside the base pure-death model.
-- Milestone benefit / guaranteed insurability (RefWOL-UW) [S10][S12] — an anti-selective
+  at 70, extra cost [S10] [S11] — a disability decrement outside the base pure-death model.
+- Milestone benefit / guaranteed insurability (RefWOL-UW) [S10] [S12] — an anti-selective
   option on sum assured increases; flagged as a model risk, not projected.
 - Free life cover during underwriting, up to £1,500,000 (RefWOL-UW) [S12].
 - Funeral Benefit Option (RefWOL-O50): redirects the cash sum to a funeral provider (SunLife:
@@ -305,12 +305,12 @@ cessation date.
   instead, removal irreversible, incompatible with trust or assignment, and the option itself
   is "not regulated by the Financial Conduct Authority" [S9]) — payee redirection with no
   cash flow amount effect.
-- Premium reduction options (both cells) [S1][S4][S9][S10] and Royal London payment holidays
+- Premium reduction options (both cells) [S1] [S4] [S9] [S10] and Royal London payment holidays
   (up to 2 holidays of up to 6 months, ≥ 12 months apart, after year 1; missed amounts repaid
   or netted off the payout) [S9].
 - Payout-as-income option (Royal London menu; not on joint life second death) [S13].
-- Joint-life structures (both cells' providers) [S10][S13]; jointless in the O50 cell anyway
-  [S2][S8].
+- Joint-life structures (both cells' providers) [S10] [S13]; jointless in the O50 cell anyway
+  [S2] [S8].
 - Vitality Programme premium adjustments (healthy-living discounts/rewards) [S16] —
   non-standard mechanics; the Vitality plan provisions were not fetched (research gap).
 
@@ -319,7 +319,7 @@ cessation date.
 ## Variations across insurers
 
 1. **Entry windows (O50).** 49–85 (SunLife [S1]) vs 50–80 (L&G, Aviva, Royal London
-   [S4][S8][S9]). Chosen: 50–80 (modal) **[std]** (d).
+   [S4] [S8] [S9]). Chosen: 50–80 (modal) **[std]** (d).
 2. **Premium cessation (O50).** Anniversary on/after 95th birthday (SunLife [S1]); to and
    including the 90th birthday (L&G [S4]); min(30 years, anniversary after 90th) (Aviva [S8]
    — the design the FCA singles out as limiting over-payment [R2]); anniversary on/after 90th
@@ -327,14 +327,14 @@ cessation date.
    cap [R2].
 3. **Accidental death enhancement.** Aviva pays 2 x the Life Insurance Amount on death by
    fatal accident on/after the first anniversary (1x other causes), with the enhancement void
-   if death occurs while living outside Europe/USA/Canada/Australia/NZ [S7][S8]. The other
-   three plans pay 1x for accidental death at all durations [S1][S4][S9]. The 2x multiplier
+   if death occurs while living outside Europe/USA/Canada/Australia/NZ [S7] [S8]. The other
+   three plans pay 1x for accidental death at all durations [S1] [S4] [S9]. The 2x multiplier
    is carried as a variation flag in the model.
 4. **Indexation (O50).** Only L&G offers an increasing variant: cash sum reviewed annually in
    line with RPI (floor 0%, cap 10% p.a.), premiums increase by RPI x 1.5 (cap 15% p.a.);
    declining one increase freezes cash sum and premium permanently; cash-sum indexation
    continues after premiums cease at 90 [S4]. SunLife, Aviva and Royal London are
-   fixed-sum-only [S1][S8][S9]. Carried as a variation with the premium-escalates-faster
+   fixed-sum-only [S1] [S8] [S9]. Carried as a variation with the premium-escalates-faster
    feature mirroring the UW cell's 2-for-1 step.
 5. **Paid-up value (O50).** Royal London's Payout Promise: if at least half of the expected
    payments (start to Final Payment Date) have been made and payments stop, the policy stays
@@ -342,7 +342,7 @@ cessation date.
    180 of 240 payments on a £3,500 payout → 0.75 x £3,500 = £2,625 [S9]. If less than half
    are paid the policy cancels with nothing. This materially changes lapse economics: late
    lapse creates a paid-up liability instead of a forfeiture profit (see technical notes).
-   The other three plans forfeit everything on lapse [S1][S4][S7].
+   The other three plans forfeit everything on lapse [S1] [S4] [S7].
 6. **Arrears handling (O50).** 30 + 14 days then cancellation, reinstatable within 6 months
    (SunLife [S1]); 60-day cancellation right (L&G [S4]); 30 days' grace (Aviva [S7]); 60 days
    with claim offset (Royal London [S9]). Chosen: 60 days with claim offset **[std]** (i).
@@ -385,7 +385,7 @@ cessation date.
 
 **Prudential — PRA / Solvency UK.** Both cells are Class I long-term insurance business [R5]
 written by PRA-authorised insurers (the fetched providers' FCA/PRA registration numbers are
-recorded in the research file [S1][S4][S7][S9][S10]). Liabilities are valued under the PRA
+recorded in the research file [S1] [S4] [S7] [S9] [S10]). Liabilities are valued under the PRA
 Rulebook Technical Provisions Part: technical provisions for all insurance obligations, at
 the amount payable to transfer them immediately to another UK Solvency II firm,
 market-consistent, with value = best estimate + risk margin; the risk-margin cost-of-capital
@@ -393,7 +393,7 @@ rate is 4% as fixed by the IRPR Regulations [R3], which also introduced a life-b
 risk-tapering factor lambda of 0.9 (floor 0.25) [REG-R4]. Solvency II assimilated law was
 revoked on 31 December 2024 and restated into PRA rules ("Solvency UK") effective the same
 date [R4]. FSCS protection is 100% of the claim, with continuity of cover the first objective
-for life policies [S1][S8][S10].
+for life policies [S1] [S8] [S10].
 
 **Conduct — FCA.** ICOBS applies to the distribution, effecting and carrying out of
 non-investment insurance contracts [REG-R11]; the classification of these plans as pure
@@ -410,9 +410,9 @@ misrepresentation — the structure visible in the L&G conditions [S4]) [REG-R20
 
 **Tax.** The cash sum / sum assured is normally free of income tax and CGT but forms part of
 the deceased's estate for inheritance tax unless the policy is written in trust
-[S1][S4][S8][S9]; the underwritten cell is actively marketed for IHT planning (in trust,
+[S1] [S4] [S8] [S9]; the underwritten cell is actively marketed for IHT planning (in trust,
 covering the IHT liability itself), with trust registration (TRS) requirements at claim
-[S10][S11][S16]. At company level, FA 2012 Part 2 taxes BLAGAB on the I-E basis while
+[S10] [S11] [S16]. At company level, FA 2012 Part 2 taxes BLAGAB on the I-E basis while
 protection business is excluded from BLAGAB and taxed on trade profits — a reference model
 needs a per-product tax-basis flag rather than a tax engine [REG-R17]; whether a given
 over-50s or whole of life contract falls in "protection business" as defined turns on
@@ -420,4 +420,37 @@ issue-date and definition details not researched here [unverified — research f
 qualifying-policy rules]. The policyholder chargeable-event-gains regime (ITTOIA 2005 Part 4
 Chapter 9, with HMRC's IPTM as the working interpretation) bites surrender-value-bearing
 designs — here only the legacy unit-linked variation [S15] — not the modern protection-only
-cells, which have no surrender value to generate gains [REG-R15][REG-R16].
+cells, which have no surrender value to generate gains [REG-R15] [REG-R16].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-whole_of_life-r1
+[R2]: #uklib-whole_of_life-r2
+[R3]: #uklib-whole_of_life-r3
+[R4]: #uklib-whole_of_life-r4
+[R5]: #uklib-whole_of_life-r5
+[REG-R11]: #uklib-reg-r11
+[REG-R12]: #uklib-reg-r12
+[REG-R15]: #uklib-reg-r15
+[REG-R16]: #uklib-reg-r16
+[REG-R17]: #uklib-reg-r17
+[REG-R20]: #uklib-reg-r20
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-whole_of_life-s1
+[S10]: #uklib-whole_of_life-s10
+[S11]: #uklib-whole_of_life-s11
+[S12]: #uklib-whole_of_life-s12
+[S13]: #uklib-whole_of_life-s13
+[S14]: #uklib-whole_of_life-s14
+[S15]: #uklib-whole_of_life-s15
+[S16]: #uklib-whole_of_life-s16
+[S2]: #uklib-whole_of_life-s2
+[S3]: #uklib-whole_of_life-s3
+[S4]: #uklib-whole_of_life-s4
+[S5]: #uklib-whole_of_life-s5
+[S6]: #uklib-whole_of_life-s6
+[S7]: #uklib-whole_of_life-s7
+[S8]: #uklib-whole_of_life-s8
+[S9]: #uklib-whole_of_life-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

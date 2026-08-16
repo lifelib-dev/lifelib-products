@@ -20,6 +20,8 @@ import re
 import sys
 import pathlib
 
+from mdspans import code_lines
+
 
 FENCE = re.compile(r'^\s*(```|~~~)')
 HEADING = re.compile(r'^(#{1,6}) +(\S.*)$')
@@ -54,7 +56,12 @@ def is_rendered(path):
 
 def check(path):
     """Yield ``(line_number, message)`` for one file."""
-    lines = prose_lines(path.read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8")
+    lines = prose_lines(text)
+    # The structural checks read the fence-blanked lines above.  The adjacency check
+    # needs the *indented* code blocks out too: an adjacency there is displayed, never
+    # resolved, so P5 cannot turn it into a link and there is nothing to separate.
+    code = code_lines(text)
 
     headings = [(n, len(m.group(1)))
                 for n, line in enumerate(lines, 1)
@@ -81,6 +88,8 @@ def check(path):
 
     if is_rendered(path):
         for n, line in enumerate(lines, 1):
+            if n - 1 in code:
+                continue
             stripped = INLINE_CODE.sub("`c`", INLINE_LINK.sub("LINK", line))
             for _ in ADJACENCY.finditer(stripped):
                 yield n, "bracket adjacency '][' -- becomes one reference link once P5 lands"

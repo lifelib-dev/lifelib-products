@@ -121,7 +121,7 @@ That is not a departure from the library convention but the consequence of the p
 every benefit is funded by cancelling the policyholder's own units, so a gross
 presentation adds the same money to both sides. The gross flows are still published —
 ``claims_death``, ``claims_surrender``, ``withdrawals`` and ``unit_releases`` are
-``result_cf`` columns — and :func:`check_unit_roll_fwd` asserts that they net exactly
+``result_cf`` columns — and :func:`check_unit_funding` asserts that they net exactly
 against the fund.
 
 ``pols_maturity`` is borrowed from the term models and, as in ``WOL_UK_S``, means
@@ -207,7 +207,7 @@ sit on the base table, both **[std]** and both inert in the deterministic base r
 
 - :func:`perf_factor`, ``min(2, 1 + 2 max(0, g_ref - R_12m))``, raising surrender after
   poor performance. The base run has ``R_12m = g_ref`` by construction, so it is 1;
-  :data:`return_shock` moves the trailing return without disturbing the fund path, which
+  ``return_shock`` moves the trailing return without disturbing the fund path, which
   is what makes the multiplier testable in isolation.
 - :func:`allow_factor`, a step to 1.5 from policy year 21, when the tax allowance is
   spent.
@@ -459,7 +459,7 @@ def further_costs_rate_mth():
 def mort_rate(t):
     """q_a: the annual best-estimate mortality rate at the attained age **[std]**.
 
-    The shipped table rate times :data:`mort_be_factor`, a crude allowance for
+    The shipped table rate times ``mort_be_factor``, a crude allowance for
     population mortality being heavier than insured-lives experience.  Nearly irrelevant
     to this product unless the guaranteed minimum death benefit rider is enabled.
     """
@@ -488,7 +488,7 @@ def return_12m(t):
 
     ``fund_return + return_shock`` **[std]**.  The base run leaves the shock at zero, so
     the trailing return equals the reference and the multiplier is 1.  Keeping the shock
-    separate from :data:`fund_return` is deliberate: it moves the *behavioural* driver
+    separate from ``fund_return`` is deliberate: it moves the *behavioural* driver
     without disturbing the fund path, which is what makes the multiplier testable in
     isolation.  A stochastic or scenario projection would replace this with a path.
     """
@@ -548,15 +548,22 @@ def av_pp(t):
 def av_pp_at(t, timing):
     """The unit fund per policy at a point inside policy month t.
 
-    ``"BEF_GROWTH"``  UF(t-1), the start of the month; the same as :func:`av_pp`.
-    ``"AFT_GROWTH"``  UF_g(t), after the gross return and the tax provision taken in
-                      price.
-    ``"AFT_CHARGE"``  UF'(t), after the annual management charge and the further costs.
-                      **This is the base the AMC is levied on**, not ``UF(t-1)`` and not
-                      the post-withdrawal fund: the charge accrues daily through the
-                      unit price, so it sits on the post-growth, pre-cancellation fund.
-    ``"AFT_WD"``      UF(t), after the end-of-month unit cancellations - withdrawal,
-                      adviser charge and rider charge.  Equals ``av_pp(t + 1)``.
+    ``"BEF_GROWTH"``
+        UF(t-1), the start of the month; the same as :func:`av_pp`.
+
+    ``"AFT_GROWTH"``
+        UF_g(t), after the gross return and the tax provision taken in
+        price.
+
+    ``"AFT_CHARGE"``
+        UF'(t), after the annual management charge and the further costs.
+        **This is the base the AMC is levied on**, not ``UF(t-1)`` and not
+        the post-withdrawal fund: the charge accrues daily through the
+        unit price, so it sits on the post-growth, pre-cancellation fund.
+
+    ``"AFT_WD"``
+        UF(t), after the end-of-month unit cancellations - withdrawal,
+        adviser charge and rider charge.  Equals ``av_pp(t + 1)``.
 
     All four points are exposed so that the charge ordering is inspectable rather than
     buried in one expression; charging on the wrong one moves the margin by about half a
@@ -749,11 +756,16 @@ def pols_if(t):
 def pols_if_at(t, timing):
     """The number of policies in force at a point inside policy month t.
 
-    ``"BEF_DECR"``  the start of the month, before any decrement; :func:`pols_if`.
-    ``"BEF_SURR"``  after deaths, before surrenders - the processing order is **death
-                    before surrender** **[std]**.
-    ``"AFT_DECR"``  the notes' ``l(t)``, the end-of-month count, and zero in the last
-                    projected month.
+    ``"BEF_DECR"``
+        the start of the month, before any decrement; :func:`pols_if`.
+
+    ``"BEF_SURR"``
+        after deaths, before surrenders - the processing order is **death
+        before surrender** **[std]**.
+
+    ``"AFT_DECR"``
+        the notes' ``l(t)``, the end-of-month count, and zero in the last
+        projected month.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -791,11 +803,14 @@ def pols_maturity(t):
 def claims(t, kind=None):
     """Gross benefit outgo in policy month t, by kind; the total when kind is omitted.
 
-    ``"DEATH"``      ``u x UF(t)`` per death - the full sum assured, of which all but
-                     the uplift is funded by cancelling the policyholder's own units -
-                     or the guaranteed amount where the rider is elected and in the
-                     money, ``max(u x UF(t), G(t))``.
-    ``"SURRENDER"``  ``UF(t)`` per surrender: the bid value of units, with no penalty.
+    ``"DEATH"``
+        ``u x UF(t)`` per death - the full sum assured, of which all but
+        the uplift is funded by cancelling the policyholder's own units -
+        or the guaranteed amount where the rider is elected and in the
+        money, ``max(u x UF(t), G(t))``.
+
+    ``"SURRENDER"``
+        ``UF(t)`` per surrender: the bid value of units, with no penalty.
 
     These are **gross** flows.  They are published so the reader can see the whole
     picture, but they are not in :func:`net_cf`, because :func:`unit_releases` cancels

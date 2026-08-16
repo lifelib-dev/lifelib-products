@@ -42,7 +42,7 @@ mort_table_file         data.mort_table()               mort_table.csv
 .. rubric:: Naming
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
-wherever those models have an analogue, and follow :mod:`SPIA_US_S` — this library's
+wherever those models have an analogue, and follow :mod:`.SPIA_US_S` — this library's
 U.S. payout chassis — wherever the two products share machinery, so that the same
 concept has the same name on both sides of the Atlantic. The technical notes use
 compact actuarial symbols instead. The mapping is:
@@ -144,7 +144,7 @@ The notes' worked example is not a probability-weighted run. It is a **scenario*
 annuitant dies in month 17; the dependant survives throughout", evaluated at
 ``l_a = 0`` from month 17 and ``l_d = 1`` throughout. The rest of the notes projects on
 an expected basis. Both readings are shipped, and which one applies is a model point
-column — the same device :mod:`SPIA_US_S` uses for the same reason:
+column — the same device :mod:`.SPIA_US_S` uses for the same reason:
 
 ``mort_basis = "table"``
     ``lives_if`` runs the generational recursion off the shipped mortality table and
@@ -797,14 +797,17 @@ def dependant_factor(t):
 def cum_annuity_pp(t, kind):
     """G(t): cumulative scheduled instalments per contract through month t.
 
-    ``"ANNUITANT"``  the **deterministic as-if-alive** annuitant schedule.  This is what
-                     the first-death value-protection balance nets against, and it needs
-                     no path simulation precisely because it ignores survival.
-    ``"ALL"``        the same plus the expected dependant instalments, which is the
-                     column the notes' worked-example table prints and the balance the
-                     last-survivor basis nets against.  On a probability-weighted run it
-                     is an *expected* cumulative payment rather than a path-specific one;
-                     in a scenario run the two coincide.
+    ``"ANNUITANT"``
+        the **deterministic as-if-alive** annuitant schedule.  This is what
+        the first-death value-protection balance nets against, and it needs
+        no path simulation precisely because it ignores survival.
+
+    ``"ALL"``
+        the same plus the expected dependant instalments, which is the
+        column the notes' worked-example table prints and the balance the
+        last-survivor basis nets against.  On a probability-weighted run it
+        is an *expected* cumulative payment rather than a path-specific one;
+        in a scenario run the two coincide.
     """
     if t <= 0:
         return 0.0
@@ -842,19 +845,22 @@ def annuity_payments(t):
 def claims(t, kind=None):
     """Expected lump-sum outgo in month t, by kind; the total when kind is omitted.
 
-    ``"VP"``    the value-protection lump sum, ``d(t) x VPbal``.  The trigger is the
-                annuitant's death on the ``first_death`` basis and the last death on
-                ``last_survivor``.  The balance is measured at ``t - 1`` on arrears
-                timing, because the instalment due at the end of the death month is
-                never paid; in an **advance** payment month it is measured at ``t``,
-                because an instalment paid at the start of the death month has been paid
-                and netting it is what keeps the lump sum from being overstated by one
-                instalment.
-    ``"PROP"``  the proportionate final payment on an arrears contract that elects it:
-                ``d_a(t) x (h(t) + 0.5)/(12/m) x inst(next(t))``, a **[std]** half-month
-                accrual for the part-period between the last payment date and the death.
-                Zero on the representative default, where nothing is paid for the final
-                partial period.
+    ``"VP"``
+        the value-protection lump sum, ``d(t) x VPbal``.  The trigger is the
+        annuitant's death on the ``first_death`` basis and the last death on
+        ``last_survivor``.  The balance is measured at ``t - 1`` on arrears
+        timing, because the instalment due at the end of the death month is
+        never paid; in an **advance** payment month it is measured at ``t``,
+        because an instalment paid at the start of the death month has been paid
+        and netting it is what keeps the lump sum from being overstated by one
+        instalment.
+
+    ``"PROP"``
+        the proportionate final payment on an arrears contract that elects it:
+        ``d_a(t) x (h(t) + 0.5)/(12/m) x inst(next(t))``, a **[std]** half-month
+        accrual for the part-period between the last payment date and the death.
+        Zero on the representative default, where nothing is paid for the final
+        partial period.
     """
     if kind is None:
         return sum(claims(t, k) for k in ("VP", "PROP"))

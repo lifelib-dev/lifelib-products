@@ -11,7 +11,7 @@ decimals.
 import modelx as mx
 import pytest
 
-from conftest import MODELS, LIB
+from us_registry import MODELS, LIB
 
 def model_files(folder):
     """The model's own file names, ignoring interpreter caches.

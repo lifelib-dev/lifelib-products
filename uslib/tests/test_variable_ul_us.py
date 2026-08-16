@@ -21,7 +21,7 @@ import math
 import modelx as mx
 import pytest
 
-from conftest import LIB
+from us_registry import LIB
 
 def model_files(folder):
     """The model's own file names, ignoring interpreter caches.

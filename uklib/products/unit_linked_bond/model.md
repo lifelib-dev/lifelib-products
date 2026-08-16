@@ -1,4 +1,4 @@
-# ULB_UK_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/unit_linked_bond/technical-notes.md`](technical-notes.md);
@@ -11,7 +11,7 @@ the product it implements is specified in
 > accruing daily through the unit price, segmentation into 100 identical policies. Every
 > **rate** is a **[std]** standardization: per-fund charge rate cards are not published
 > (research gap), the CMI's assured-lives tables are restricted to Authorised Users
-> [R8][REG-R30], and no public UK bond persistency study was retrieved — so the charge
+> [R8] [REG-R30], and no public UK bond persistency study was retrieved — so the charge
 > levels, the mortality basis and the whole surrender table are placeholders.
 
 ## Run it
@@ -132,12 +132,12 @@ no withdrawals) runs the full 660 months to the limiting age instead.
 ## The 5% allowance is policyholder tax machinery, not a product feature
 
 `allowance_cum_pp()` and `excess_gain_pp()` track the cumulative 5% tax-deferred
-allowance and the excess-event gain it produces when exceeded [R1][R2]. **Neither
+allowance and the excess-event gain it produces when exceeded [R1] [R2]. **Neither
 generates an insurer cash flow.** Two things follow, and both are listed pitfalls:
 
 - the allowance never caps what can be withdrawn — the **product** cap is the rolling
-  7.5% of `wd_cap_pp()` [S2 §7.1], which is a different and larger number; and
-- adviser charges consume the same allowance [S2 §12.1.1], which is why `wd_cum_pp()`
+  7.5% of `wd_cap_pp()` [S2 §7.1](#uklib-unit_linked_bond-s2), which is a different and larger number; and
+- adviser charges consume the same allowance [S2 §12.1.1](#uklib-unit_linked_bond-s2), which is why `wd_cum_pp()`
   adds them in.
 
 It is carried because it drives *behaviour*: `allow_factor()` steps surrender up by half
@@ -217,7 +217,7 @@ point 1's only by the (zero) rider charge.
 That is the honest outcome of the base assumptions rather than a defect, and the tests
 demonstrate the machinery by driving `fund_return` negative, where the guarantee moves
 firmly into the money and the death strain becomes market-contingent. The rider's real
-charge scale is unpublished [S2 §5.2], so the cost-of-insurance form used here has the
+charge scale is unpublished [S2 §5.2](#uklib-unit_linked_bond-s2), so the cost-of-insurance form used here has the
 right shape and no authority — enable it only with its own sensitivity set.
 
 One implementation note. `gmdb_guarantee_pp(t)` is measured **before** the current
@@ -270,3 +270,11 @@ under a falling fund.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-unit_linked_bond-r1
+[R2]: #uklib-unit_linked_bond-r2
+[R8]: #uklib-unit_linked_bond-r8
+[REG-R30]: #uklib-reg-r30
+[std]: #uklib-std
+<!-- END generated citation links -->
