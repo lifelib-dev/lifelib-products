@@ -290,3 +290,17 @@ default modules in both positions, and that a lapse pays nothing.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #uklib-term_assurance-r10
+[R11]: #uklib-term_assurance-r11
+[R12]: #uklib-term_assurance-r12
+[R8]: #uklib-term_assurance-r8
+[R9]: #uklib-term_assurance-r9
+[S1]: #uklib-term_assurance-s1
+[S2]: #uklib-term_assurance-s2
+[S5]: #uklib-term_assurance-s5
+[S6]: #uklib-term_assurance-s6
+[S8]: #uklib-term_assurance-s8
+[std]: #uklib-std
+<!-- END generated citation links -->

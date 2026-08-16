@@ -421,3 +421,36 @@ qualifying-policy rules]. The policyholder chargeable-event-gains regime (ITTOIA
 Chapter 9, with HMRC's IPTM as the working interpretation) bites surrender-value-bearing
 designs — here only the legacy unit-linked variation [S15] — not the modern protection-only
 cells, which have no surrender value to generate gains [REG-R15] [REG-R16].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-whole_of_life-r1
+[R2]: #uklib-whole_of_life-r2
+[R3]: #uklib-whole_of_life-r3
+[R4]: #uklib-whole_of_life-r4
+[R5]: #uklib-whole_of_life-r5
+[REG-R11]: #uklib-reg-r11
+[REG-R12]: #uklib-reg-r12
+[REG-R15]: #uklib-reg-r15
+[REG-R16]: #uklib-reg-r16
+[REG-R17]: #uklib-reg-r17
+[REG-R20]: #uklib-reg-r20
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-whole_of_life-s1
+[S10]: #uklib-whole_of_life-s10
+[S11]: #uklib-whole_of_life-s11
+[S12]: #uklib-whole_of_life-s12
+[S13]: #uklib-whole_of_life-s13
+[S14]: #uklib-whole_of_life-s14
+[S15]: #uklib-whole_of_life-s15
+[S16]: #uklib-whole_of_life-s16
+[S2]: #uklib-whole_of_life-s2
+[S3]: #uklib-whole_of_life-s3
+[S4]: #uklib-whole_of_life-s4
+[S5]: #uklib-whole_of_life-s5
+[S6]: #uklib-whole_of_life-s6
+[S7]: #uklib-whole_of_life-s7
+[S8]: #uklib-whole_of_life-s8
+[S9]: #uklib-whole_of_life-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

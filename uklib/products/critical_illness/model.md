@@ -277,3 +277,15 @@ indexation, the joint decrement, and that a lapse pays nothing.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R8]: #uklib-critical_illness-r8
+[R9]: #uklib-critical_illness-r9
+[REG-R22]: #uklib-reg-r22
+[REG-R26]: #uklib-reg-r26
+[S1]: #uklib-critical_illness-s1
+[S11]: #uklib-critical_illness-s11
+[S3]: #uklib-critical_illness-s3
+[S4]: #uklib-critical_illness-s4
+[std]: #uklib-std
+<!-- END generated citation links -->

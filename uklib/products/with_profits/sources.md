@@ -267,3 +267,8 @@ collected (snapshot rates are [std]); original conventional policy conditions fo
 closed books are unpublished (Chassis B anchors are [std]); Scottish Widows/Clerical
 Medical PPFMs could not be retrieved (S15, not cited); simple vs compound bonus
 classification is [unverified] convention; CMI qx tables are subscriber-restricted.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

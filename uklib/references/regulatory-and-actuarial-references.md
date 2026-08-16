@@ -749,3 +749,40 @@ behavior. A tax projection is therefore a *consumer* of the same cash flow model
 output (income, gains, expenses by fund/business line) rather than a separate
 model — which is why the reference implementations keep product cash flows
 basis-agnostic and apply basis layers (discounting, margins, tax) as configuration.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-reg-r1
+[R10]: #uklib-reg-r10
+[R11]: #uklib-reg-r11
+[R12]: #uklib-reg-r12
+[R13]: #uklib-reg-r13
+[R14]: #uklib-reg-r14
+[R15]: #uklib-reg-r15
+[R17]: #uklib-reg-r17
+[R18]: #uklib-reg-r18
+[R19]: #uklib-reg-r19
+[R2]: #uklib-reg-r2
+[R20]: #uklib-reg-r20
+[R21]: #uklib-reg-r21
+[R22]: #uklib-reg-r22
+[R24]: #uklib-reg-r24
+[R25]: #uklib-reg-r25
+[R26]: #uklib-reg-r26
+[R28]: #uklib-reg-r28
+[R3]: #uklib-reg-r3
+[R30]: #uklib-reg-r30
+[R32]: #uklib-reg-r32
+[R33]: #uklib-reg-r33
+[R34]: #uklib-reg-r34
+[R35]: #uklib-reg-r35
+[R36]: #uklib-reg-r36
+[R37]: #uklib-reg-r37
+[R38]: #uklib-reg-r38
+[R4]: #uklib-reg-r4
+[R5]: #uklib-reg-r5
+[R6]: #uklib-reg-r6
+[R8]: #uklib-reg-r8
+[R9]: #uklib-reg-r9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

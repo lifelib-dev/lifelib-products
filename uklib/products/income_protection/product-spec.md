@@ -48,9 +48,9 @@ premium during claim is standard, with mechanics varying by insurer
 income are currently free of income tax ([S4]; no tax or NI deducted [S7]; benefit
 "currently free from tax", which motivates the ~60% replacement ceiling [S11]).
 
-Distribution and conduct fall under FCA ICOBS as pure protection business [R9,
-fetched_ok=false in the product research pass — verified via the shared library
-[REG-R11]]; prudential valuation is under Solvency UK technical provisions [R7], and
+Distribution and conduct fall under FCA ICOBS as pure protection business [R9]
+(fetched_ok=false in the product research pass — verified via the shared library
+[REG-R11]); prudential valuation is under Solvency UK technical provisions [R7], and
 the in-payment claims element is Matching Adjustment-eligible [R8].
 
 The representative design specified below is a **full-term, guaranteed-premium,
@@ -409,8 +409,8 @@ design itself is constrained by RAO Class IV: at least five years or to normal
 retirement age, non-cancellable by the insurer [R6] [REG-R14].
 
 **Conduct (FCA).** IP is a pure protection contract conducted under ICOBS rather
-than COBS, even though it is long-term (Class IV) business prudentially [R9,
-fetched_ok=false in the product research pass; verified via [REG-R11]]. The Consumer
+than COBS, even though it is long-term (Class IV) business prudentially [R9]
+(fetched_ok=false in the product research pass; verified via [REG-R11]). The Consumer
 Duty applies to this retail business; its price-and-value outcome drives the
 product-level value assessments that cash flow models increasingly support
 [REG-R12]. Consumer disclosure duties at underwriting are governed by CIDRA 2012
@@ -428,3 +428,36 @@ trade-basis tax flag rather than a policyholder tax engine [REG-R17].
 experience analysis is subject to FRC TAS 100 (general) and TAS 200 (insurance)
 [R10] (fetched_ok=false in the product research pass; verified via
 [REG-R33] [REG-R34]).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-income_protection-r1
+[R10]: #uklib-income_protection-r10
+[R6]: #uklib-income_protection-r6
+[R7]: #uklib-income_protection-r7
+[R8]: #uklib-income_protection-r8
+[R9]: #uklib-income_protection-r9
+[REG-R1]: #uklib-reg-r1
+[REG-R11]: #uklib-reg-r11
+[REG-R12]: #uklib-reg-r12
+[REG-R14]: #uklib-reg-r14
+[REG-R17]: #uklib-reg-r17
+[REG-R2]: #uklib-reg-r2
+[REG-R20]: #uklib-reg-r20
+[REG-R33]: #uklib-reg-r33
+[REG-R34]: #uklib-reg-r34
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-income_protection-s1
+[S10]: #uklib-income_protection-s10
+[S11]: #uklib-income_protection-s11
+[S12]: #uklib-income_protection-s12
+[S2]: #uklib-income_protection-s2
+[S3]: #uklib-income_protection-s3
+[S4]: #uklib-income_protection-s4
+[S5]: #uklib-income_protection-s5
+[S6]: #uklib-income_protection-s6
+[S7]: #uklib-income_protection-s7
+[S8]: #uklib-income_protection-s8
+[S9]: #uklib-income_protection-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

@@ -244,3 +244,8 @@ documents, CMI data restrictions, absence of public rate cards, unstated paramet
 bounds) — live in `_research/pension-annuity.md`. The cross-product regulatory
 bibliography with its own annotations lives in `_research/regulatory-actuarial.md`
 (published form: `references/regulatory-and-actuarial-references.md`).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

@@ -244,3 +244,9 @@ not obtained; Royal London underwriting limits; Zurich full terms). The cross-pr
 bibliography `_research/regulatory-actuarial.md` plays the same role for [REG-R#]
 tags. Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md`
 are introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #uklib-critical_illness-r10
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

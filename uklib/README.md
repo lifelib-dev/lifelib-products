@@ -190,3 +190,8 @@ Aggregated from the per-product research (each product's documents carry the ful
 - **[unverified] items remain** wherever a claim could not be confirmed against a
   retrieved document (e.g., ICOBS chapter mapping for pure protection, market-share
   claims, the L&G funeral benefit partner option).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

@@ -400,3 +400,32 @@ cash-flow driver, in this library [REG-R17].
 **Professional standards.** Technical actuarial work on UK term assurance (pricing,
 reserving, technical provisions) falls under FRC TAS 100 v2.0 (effective 1 July 2023)
 [R15] and TAS 200: Insurance v2.0 (effective 1 January 2025) [R16].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-term_assurance-r1
+[R15]: #uklib-term_assurance-r15
+[R16]: #uklib-term_assurance-r16
+[R2]: #uklib-term_assurance-r2
+[R3]: #uklib-term_assurance-r3
+[R5]: #uklib-term_assurance-r5
+[R6]: #uklib-term_assurance-r6
+[R8]: #uklib-term_assurance-r8
+[R9]: #uklib-term_assurance-r9
+[REG-R1]: #uklib-reg-r1
+[REG-R11]: #uklib-reg-r11
+[REG-R12]: #uklib-reg-r12
+[REG-R17]: #uklib-reg-r17
+[REG-R20]: #uklib-reg-r20
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-term_assurance-s1
+[S2]: #uklib-term_assurance-s2
+[S3]: #uklib-term_assurance-s3
+[S4]: #uklib-term_assurance-s4
+[S5]: #uklib-term_assurance-s5
+[S6]: #uklib-term_assurance-s6
+[S7]: #uklib-term_assurance-s7
+[S8]: #uklib-term_assurance-s8
+[S9]: #uklib-term_assurance-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

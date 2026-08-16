@@ -323,3 +323,7 @@ lifetime cap, the out-of-scope chassis, and all six invariant checks on every mo
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+<!-- END generated citation links -->

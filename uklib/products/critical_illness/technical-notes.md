@@ -123,7 +123,7 @@ accelerated CI, 2015–2018 experience, finalized with WP154) [REG-R26]; the lat
 public experience output is WP167 (accelerated CI by cause, 2017–2020) [R9]. **Honest
 flagging:** CMI working papers are public, but current CMI tables and datasets are
 restricted to Authorised Users (subscribers) [REG-R22] [R9 — access limits
-[unverified]]; AC04/16-Series rate values were not obtained. The reference basis below
+[unverified]](#uklib-critical_illness-r9); AC04/16-Series rate values were not obtained. The reference basis below
 is therefore a **[std] proxy** shaped like the named tables, to be replaced by a
 licensed basis in any real application.
 
@@ -218,7 +218,7 @@ Total decrement `q_claim = q_pay + q_exit` (same in-force runoff as the accelera
 model at these parameters); only the *paid* part generates claim outgo. Death within
 the survival period pays nothing on the composite standalone variant [S4] [S11]; a
 premium-refund-on-death feature exists in some designs [S4] [S11 — recorded jointly in
-the research file] and is excluded **[std]**.
+the research file](#uklib-critical_illness-s11) and is excluded **[std]**.
 
 ### Monthly processing order [std]
 
@@ -416,3 +416,31 @@ Known modeling pitfalls:
   rate cards — research-file gap); profitability conclusions from the worked example
   are meaningless. Aviva's reviewable reviews have "no limits" [S4] — do not model
   reviewable business with the guaranteed-premium constraint.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #uklib-critical_illness-r10
+[R2]: #uklib-critical_illness-r2
+[R3]: #uklib-critical_illness-r3
+[R7]: #uklib-critical_illness-r7
+[R8]: #uklib-critical_illness-r8
+[R9]: #uklib-critical_illness-r9
+[REG-R1]: #uklib-reg-r1
+[REG-R22]: #uklib-reg-r22
+[REG-R26]: #uklib-reg-r26
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R33]: #uklib-reg-r33
+[REG-R34]: #uklib-reg-r34
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-critical_illness-s1
+[S10]: #uklib-critical_illness-s10
+[S11]: #uklib-critical_illness-s11
+[S2]: #uklib-critical_illness-s2
+[S3]: #uklib-critical_illness-s3
+[S4]: #uklib-critical_illness-s4
+[S5]: #uklib-critical_illness-s5
+[S8]: #uklib-critical_illness-s8
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

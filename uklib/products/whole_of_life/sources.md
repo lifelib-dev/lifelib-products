@@ -268,3 +268,12 @@ present on 03/08/2026") is consistent with that date.
 The cross-product bibliography `_research/regulatory-actuarial.md` (accessed 2026-08-03)
 plays the same role for [REG-R#] tags. Standardizations marked **[std]** in `product-spec.md`
 and `technical-notes.md` are introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uklib-whole_of_life-r2
+[R3]: #uklib-whole_of_life-r3
+[R7]: #uklib-whole_of_life-r7
+[REG-R22]: #uklib-reg-r22
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

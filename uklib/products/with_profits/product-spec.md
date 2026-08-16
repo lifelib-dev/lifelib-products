@@ -44,7 +44,7 @@ published Expected Growth Rate with rule-based adjustments toward the unsmoothed
 asset value [S2] [S9] [S11]. Under the Regulated Activities Order, conventional
 with-profits assurances and annuities fall in Class I (life and annuity), with
 unitised/linked structures typically involving Class III [R9; per-product allocation
-unverified].
+unverified](#uklib-with_profits-r9).
 
 Most conventional and unitised with-profits funds are legacy books: Phoenix Life alone
 runs 18 internally segregated funds consolidating many acquired offices [S4], and most
@@ -84,7 +84,7 @@ Footnotes to [std] rows:
    shareholders [S8]. Variants observed: 100:0 classes and defined-charge (DCPSF)
    structures at PAC [S1] [S2]; mutuals with no shareholder (Royal London [S6], NFU
    Mutual [S7]). That 90:10 is the typical proprietary basis generally is [unverified];
-   the COBS 20.2.17R "required percentage" floor was not separately captured [R1 note].
+   the COBS 20.2.17R "required percentage" floor was not separately captured [R1 note](#uklib-with_profits-r1).
 2. One-ninth is the arithmetic restatement of 90:10 — if policyholders receive a bonus
    cost of 90 units, shareholders receive 10 = 90/9. Charging the transfer to asset
    shares follows Aviva practice [S5] and the PRA retrospective asset-share item list
@@ -129,7 +129,7 @@ Footnotes to [std] rows:
    bond limits retrieved; closed-book originals are unpublished (research gap 4).
 7. PPFMs state that "a proportion of each premium less charges" buys units [S4] without
    publishing allocation rates; 100% allocation with explicit AMC is the cleanest
-   composite and matches modern single-premium practice [S10 charges structure].
+   composite and matches modern single-premium practice [S10 charges structure](#uklib-with_profits-s10).
 8. Current declared bonus rates are not collected in the research file (they live in
    annual bonus declarations, not PPFMs — research gap 3). 2.00% is a pure modeling
    snapshot chosen below the composite fund-return assumption (5.0% p.a., technical
@@ -227,8 +227,8 @@ Footnotes to [std] rows:
 | Year-on-year smoothing cap | Payouts for the same class and duration normally change by no more than ±10% y/y | [S1]; adoption **[std]** (23) |
 | Smoothing cost | Tracked in a smoothing account within the estate; intended broadly neutral over time | [S1] [S2] [S5] [S6]; PPFM expected to state neutrality intent (COBS 20.3.8G guidance) [R2] |
 | MVR trigger | Exit outside MVR-free events while unit face value (incl. attached bonuses) exceeds the asset share | [S1] [S4] [S5] [S6] |
-| MVR bound | MVR no greater than necessary to reflect the excess of unit value over the underlying asset value | [R1 COBS 20.2.16R]; post-MVR payouts target 100% of asset share [S5] |
-| Final bonus / MVR interaction | Never applied simultaneously to the same policy | [S4 Phoenix WPF]; adoption **[std]** (24) |
+| MVR bound | MVR no greater than necessary to reflect the excess of unit value over the underlying asset value | [R1 COBS 20.2.16R](#uklib-with_profits-r1); post-MVR payouts target 100% of asset share [S5] |
+| Final bonus / MVR interaction | Never applied simultaneously to the same policy | [S4 Phoenix WPF](#uklib-with_profits-s4); adoption **[std]** (24) |
 
 22. Observed maturity target ranges: 80–120% (PAC, aim ≥90% of policies within [S1];
     Phoenix typical funds, before smoothing [S4]; Aviva group payouts [S5]); 80–130%
@@ -296,7 +296,7 @@ smoothed target payout derived from the asset share (technical notes). On surren
 outside guarantee events the payout is `FV(t) + FB(t) − MVR(t)` with
 `MVR(t) = min( max(0, FV(t) − S(t)), max(0, FV(t) − AS(t)) )`: the MVR recovers the
 shortfall of the smoothed payout below face value but may never exceed the excess of
-unit value over the underlying asset share [R1 COBS 20.2.16R], and post-MVR payouts
+unit value over the underlying asset share [R1 COBS 20.2.16R](#uklib-with_profits-r1), and post-MVR payouts
 target 100% of asset share [S5]. This one-sided pair reproduces the observed practice
 that the MVR reduces final bonus first, then unit face value [S5], and that final bonus
 and MVR do not apply simultaneously [S4]. On partial withdrawal, the asset share is
@@ -453,4 +453,39 @@ the cumulative 5%-of-premium annual allowance are not immediately taxable, shapi
 withdrawal behavior [REG-R15] [REG-R16]. With-profits ISA wrappers carry the £20,000
 annual subscription limit [S12]. Classification: conventional with-profits assurances
 and annuities are Class I long-term business under the RAO; unitised/linked structures
-typically involve Class III [R9; per-product allocation unverified].
+typically involve Class III [R9; per-product allocation unverified](#uklib-with_profits-r9).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-with_profits-r1
+[R11]: #uklib-with_profits-r11
+[R12]: #uklib-with_profits-r12
+[R2]: #uklib-with_profits-r2
+[R3]: #uklib-with_profits-r3
+[R4]: #uklib-with_profits-r4
+[R5]: #uklib-with_profits-r5
+[R6]: #uklib-with_profits-r6
+[R7]: #uklib-with_profits-r7
+[R8]: #uklib-with_profits-r8
+[REG-R12]: #uklib-reg-r12
+[REG-R15]: #uklib-reg-r15
+[REG-R16]: #uklib-reg-r16
+[REG-R17]: #uklib-reg-r17
+[REG-R18]: #uklib-reg-r18
+[REG-R33]: #uklib-reg-r33
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-with_profits-s1
+[S10]: #uklib-with_profits-s10
+[S11]: #uklib-with_profits-s11
+[S12]: #uklib-with_profits-s12
+[S13]: #uklib-with_profits-s13
+[S2]: #uklib-with_profits-s2
+[S3]: #uklib-with_profits-s3
+[S4]: #uklib-with_profits-s4
+[S5]: #uklib-with_profits-s5
+[S6]: #uklib-with_profits-s6
+[S7]: #uklib-with_profits-s7
+[S8]: #uklib-with_profits-s8
+[S9]: #uklib-with_profits-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

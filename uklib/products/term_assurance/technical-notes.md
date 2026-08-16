@@ -458,3 +458,35 @@ Known modeling pitfalls:
 - **Boundary discipline.** All guaranteed premiums are inside the contract boundary
   [R3]; truncating premium income at an assumed "repricing" point (a Solvency II
   habit from reviewable business) is wrong for this product.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-term_assurance-r1
+[R10]: #uklib-term_assurance-r10
+[R11]: #uklib-term_assurance-r11
+[R12]: #uklib-term_assurance-r12
+[R13]: #uklib-term_assurance-r13
+[R14]: #uklib-term_assurance-r14
+[R15]: #uklib-term_assurance-r15
+[R16]: #uklib-term_assurance-r16
+[R2]: #uklib-term_assurance-r2
+[R3]: #uklib-term_assurance-r3
+[R5]: #uklib-term_assurance-r5
+[R8]: #uklib-term_assurance-r8
+[R9]: #uklib-term_assurance-r9
+[REG-R1]: #uklib-reg-r1
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-term_assurance-s1
+[S2]: #uklib-term_assurance-s2
+[S3]: #uklib-term_assurance-s3
+[S4]: #uklib-term_assurance-s4
+[S5]: #uklib-term_assurance-s5
+[S6]: #uklib-term_assurance-s6
+[S7]: #uklib-term_assurance-s7
+[S8]: #uklib-term_assurance-s8
+[S9]: #uklib-term_assurance-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

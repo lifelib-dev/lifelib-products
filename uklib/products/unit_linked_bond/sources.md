@@ -220,3 +220,14 @@ segment-level terms). The cross-product bibliography
 `_research/regulatory-actuarial.md` plays the same role for [REG-R#] tags.
 Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md` are
 introduced at drafting and are not attributable to any source.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R3]: #uklib-unit_linked_bond-r3
+[R4]: #uklib-unit_linked_bond-r4
+[R5]: #uklib-unit_linked_bond-r5
+[R7]: #uklib-unit_linked_bond-r7
+[R8]: #uklib-unit_linked_bond-r8
+[R9]: #uklib-unit_linked_bond-r9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

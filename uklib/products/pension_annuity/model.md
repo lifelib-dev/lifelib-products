@@ -34,7 +34,7 @@ model.Projection[1].result_cf()
 ## Mortality is the model
 
 After outset the contract has **no premiums, no surrender value, no account value and no
-policyholder options at all** [S1 p4] [S2 §1.1, §12] [S5 cl.14.7]. The only decrements are
+policyholder options at all** [S1 p4](#uklib-pension_annuity-s1) [S2 §1.1, §12](#uklib-pension_annuity-s2) [S5 cl.14.7](#uklib-pension_annuity-s5). The only decrements are
 deaths; the only stochastic drivers are longevity and, on the indexed options, inflation.
 
 That is not an omission — it is the design property that makes the liability eligible for
@@ -91,19 +91,19 @@ payment_factor(t) = max(certain_floor(t), payment_factor_life(t))
 
 is the notes' first-listed pitfall written as one line. During the guarantee period the
 full instalment is payable regardless of survival, escalating as if the annuitant were
-alive [S2 §§6.5–6.6] [S7 §4.2]; an additive construction would pay `1 + l_a` and silently
+alive [S2 §§6.5–6.6](#uklib-pension_annuity-s2) [S7 §4.2](#uklib-pension_annuity-s7); an additive construction would pay `1 + l_a` and silently
 double the guarantee. `check_payment_factor()` asserts it every month.
 
 The guarantee and value protection **never coexist** in the representative design
-[S2 §§6.7, 7.6] — `check_guarantee_xor()` asserts no model point carries both. An engine
+[S2 §§6.7, 7.6](#uklib-pension_annuity-s2) — `check_guarantee_xor()` asserts no model point carries both. An engine
 supporting the combinable variant would have to net guarantee payments off the
-value-protection balance [S7 §4.3], or the death benefit is paid twice.
+value-protection balance [S7 §4.3](#uklib-pension_annuity-s7), or the death benefit is paid twice.
 
 ## The overlap gate
 
 `overlap = False` is the representative default and means the dependant's stream starts
 only at the **end of the guarantee period**, not at the annuitant's death
-[S2 §§5.9–5.11]. Applying δ from the death date silently converts every without-overlap
+[S2 §§5.9–5.11](#uklib-pension_annuity-s2). Applying δ from the death date silently converts every without-overlap
 policy into the more expensive with-overlap form.
 
 Model points 3 and 4 are the same 10-year-guarantee contract on either side of that
@@ -117,9 +117,9 @@ one.
 | Basis | Rule |
 |---|---|
 | `level` | `A(y) = A(1)` |
-| `fixed` | `A(y) = A(y−1)(1 + g)`, `g ≤ 10%` [S2 §3.2] |
+| `fixed` | `A(y) = A(y−1)(1 + g)`, `g ≤ 10%` [S2 §3.2](#uklib-pension_annuity-s2) |
 | `lpi5` | `A(y) = A(y−1)(1 + min(5%, max(0, RPI)))` |
-| `rpi_catchup` | income indexed to the **running peak** of the RPI reference index [S2 defs] |
+| `rpi_catchup` | income indexed to the **running peak** of the RPI reference index [S2 defs](#uklib-pension_annuity-s2) |
 
 The catch-up is a **ratchet**: a fall in the index freezes income rather than reducing
 it, and later rises bite only once the index passes its previous peak. `rpi_peak(k)`
@@ -135,12 +135,12 @@ and the cap never pays off. A market-consistent value needs stochastic inflation
 tests assert the degeneracy so that the limitation is visible rather than implied.
 
 Escalation applies on the **anniversary**, not on payment dates: the year-2 rate does not
-reach the `t = 12` arrears instalment, which accrued in year 1 [S2 §3.3].
+reach the `t = 12` arrears instalment, which accrued in year 1 [S2 §3.3](#uklib-pension_annuity-s2).
 
 ## Value protection, and where the balance is measured
 
 `VP(t) = d(t) × max(0, v·P − G(t−1))` — the death benefit measured against instalments
-**already paid** [S1 p11] [S2 §7]. Two timing rules matter and both are the notes'
+**already paid** [S1 p11](#uklib-pension_annuity-s1) [S2 §7](#uklib-pension_annuity-s2). Two timing rules matter and both are the notes'
 pitfalls:
 
 - on **arrears** timing the balance is `G(t−1)`, because the instalment due at the end of
@@ -167,13 +167,13 @@ rather than a path-specific one, so the last-survivor balance is an approximatio
 stated rather than hidden: it is exact in a scenario run, which is the basis the shipped
 `last_survivor` model point (10) uses.
 
-The contractual bound `v + δ ≤ 1` on the first-death basis [S2 §7.3] is asserted by
+The contractual bound `v + δ ≤ 1` on the first-death basis [S2 §7.3](#uklib-pension_annuity-s2) is asserted by
 `check_vp_bound()`; the worked configuration sits **exactly** on it, at 50% + 50%.
 
 ## The proportionate final payment
 
 Arrears contracts may elect a proportionate final payment for the accrued part-period
-[S2 §4]; the representative default does not, and nothing is paid for the final partial
+[S2 §4](#uklib-pension_annuity-s2); the representative default does not, and nothing is paid for the final partial
 period. With it,
 
 ```
@@ -304,3 +304,16 @@ guarantee/VP exclusivity, and that no lapse machinery exists anywhere in the mod
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-pension_annuity-r1
+[R10]: #uklib-pension_annuity-r10
+[R11]: #uklib-pension_annuity-r11
+[R12]: #uklib-pension_annuity-r12
+[R5]: #uklib-pension_annuity-r5
+[R6]: #uklib-pension_annuity-r6
+[REG-R22]: #uklib-reg-r22
+[REG-R27]: #uklib-reg-r27
+[REG-R30]: #uklib-reg-r30
+[std]: #uklib-std
+<!-- END generated citation links -->

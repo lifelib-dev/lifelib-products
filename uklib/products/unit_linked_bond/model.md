@@ -136,8 +136,8 @@ allowance and the excess-event gain it produces when exceeded [R1] [R2]. **Neith
 generates an insurer cash flow.** Two things follow, and both are listed pitfalls:
 
 - the allowance never caps what can be withdrawn — the **product** cap is the rolling
-  7.5% of `wd_cap_pp()` [S2 §7.1], which is a different and larger number; and
-- adviser charges consume the same allowance [S2 §12.1.1], which is why `wd_cum_pp()`
+  7.5% of `wd_cap_pp()` [S2 §7.1](#uklib-unit_linked_bond-s2), which is a different and larger number; and
+- adviser charges consume the same allowance [S2 §12.1.1](#uklib-unit_linked_bond-s2), which is why `wd_cum_pp()`
   adds them in.
 
 It is carried because it drives *behaviour*: `allow_factor()` steps surrender up by half
@@ -217,7 +217,7 @@ point 1's only by the (zero) rider charge.
 That is the honest outcome of the base assumptions rather than a defect, and the tests
 demonstrate the machinery by driving `fund_return` negative, where the guarantee moves
 firmly into the money and the death strain becomes market-contingent. The rider's real
-charge scale is unpublished [S2 §5.2], so the cost-of-insurance form used here has the
+charge scale is unpublished [S2 §5.2](#uklib-unit_linked_bond-s2), so the cost-of-insurance form used here has the
 right shape and no authority — enable it only with its own sensitivity set.
 
 One implementation note. `gmdb_guarantee_pp(t)` is measured **before** the current
@@ -270,3 +270,11 @@ under a falling fund.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-unit_linked_bond-r1
+[R2]: #uklib-unit_linked_bond-r2
+[R8]: #uklib-unit_linked_bond-r8
+[REG-R30]: #uklib-reg-r30
+[std]: #uklib-std
+<!-- END generated citation links -->

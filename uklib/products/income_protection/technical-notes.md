@@ -459,3 +459,36 @@ Known modeling pitfalls:
   **[std]**; some contracts escalate in-claim amounts on claim anniversaries with
   index-lag rules (e.g. RPI five months prior, post-claim catch-up [S10]) — align
   with the contract being modeled.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-income_protection-r1
+[R10]: #uklib-income_protection-r10
+[R2]: #uklib-income_protection-r2
+[R3]: #uklib-income_protection-r3
+[R4]: #uklib-income_protection-r4
+[R5]: #uklib-income_protection-r5
+[R7]: #uklib-income_protection-r7
+[R8]: #uklib-income_protection-r8
+[REG-R1]: #uklib-reg-r1
+[REG-R2]: #uklib-reg-r2
+[REG-R22]: #uklib-reg-r22
+[REG-R24]: #uklib-reg-r24
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R33]: #uklib-reg-r33
+[REG-R34]: #uklib-reg-r34
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-income_protection-s1
+[S10]: #uklib-income_protection-s10
+[S11]: #uklib-income_protection-s11
+[S12]: #uklib-income_protection-s12
+[S2]: #uklib-income_protection-s2
+[S3]: #uklib-income_protection-s3
+[S4]: #uklib-income_protection-s4
+[S5]: #uklib-income_protection-s5
+[S6]: #uklib-income_protection-s6
+[S7]: #uklib-income_protection-s7
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

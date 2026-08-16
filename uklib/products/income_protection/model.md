@@ -275,3 +275,19 @@ maximum, and that death and lapse pay nothing.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-income_protection-r1
+[R2]: #uklib-income_protection-r2
+[R5]: #uklib-income_protection-r5
+[R7]: #uklib-income_protection-r7
+[R8]: #uklib-income_protection-r8
+[REG-R1]: #uklib-reg-r1
+[REG-R2]: #uklib-reg-r2
+[REG-R22]: #uklib-reg-r22
+[S10]: #uklib-income_protection-s10
+[S11]: #uklib-income_protection-s11
+[S5]: #uklib-income_protection-s5
+[S7]: #uklib-income_protection-s7
+[std]: #uklib-std
+<!-- END generated citation links -->

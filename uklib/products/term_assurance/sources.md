@@ -242,3 +242,7 @@ value, subscriber-only CMI "16" Series tables, unfetched ICOBS handbook text,
 renewable/convertible term status, reinsurance cession rates) — live in
 `_research/term-assurance.md`. That file is the citation ground truth for the S#
 and R# numbering used here.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[REG-R30]: #uklib-reg-r30
+<!-- END generated citation links -->

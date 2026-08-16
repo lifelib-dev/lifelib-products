@@ -256,3 +256,15 @@ introduced at drafting and are not attributable to any source; the [std] morbidi
 proxy tables in `technical-notes.md` are placeholders shaped like the CMI IP11
 structure and are NOT CMI values (actual IP11 rates are restricted to CMI
 Authorised Users).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R6]: #uklib-income_protection-r6
+[R7]: #uklib-income_protection-r7
+[R8]: #uklib-income_protection-r8
+[R9]: #uklib-income_protection-r9
+[REG-R11]: #uklib-reg-r11
+[REG-R33]: #uklib-reg-r33
+[REG-R34]: #uklib-reg-r34
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

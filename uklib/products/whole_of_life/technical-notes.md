@@ -450,3 +450,34 @@ Known modeling pitfalls:
   scale of the error).
 - **Claims interest.** Excluded [std]; if added, it is a settlement-lag uplift at BoE − 0.5%
   (floor 0.5%) on death claims [S1] [S9], not a discounting change.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uklib-whole_of_life-r2
+[R3]: #uklib-whole_of_life-r3
+[R4]: #uklib-whole_of_life-r4
+[R6]: #uklib-whole_of_life-r6
+[R7]: #uklib-whole_of_life-r7
+[R8]: #uklib-whole_of_life-r8
+[REG-R1]: #uklib-reg-r1
+[REG-R22]: #uklib-reg-r22
+[REG-R24]: #uklib-reg-r24
+[REG-R3]: #uklib-reg-r3
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R34]: #uklib-reg-r34
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-whole_of_life-s1
+[S10]: #uklib-whole_of_life-s10
+[S11]: #uklib-whole_of_life-s11
+[S12]: #uklib-whole_of_life-s12
+[S15]: #uklib-whole_of_life-s15
+[S2]: #uklib-whole_of_life-s2
+[S4]: #uklib-whole_of_life-s4
+[S5]: #uklib-whole_of_life-s5
+[S6]: #uklib-whole_of_life-s6
+[S7]: #uklib-whole_of_life-s7
+[S9]: #uklib-whole_of_life-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

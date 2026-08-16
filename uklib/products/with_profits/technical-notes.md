@@ -47,7 +47,7 @@ resources page [R13].
 - **Currency.** GBP. Single-policy model points, projected on an expected
   (probability-weighted) basis: survivorship factors multiply per-policy cash flows.
 - **Specimen-policy convention.** Firms compute asset shares for specimen policies or
-  groups, not necessarily per policy [S1] [S4] [S5] [R1 COBS 20.2.5R(2)]; the reference
+  groups, not necessarily per policy [S1] [S4] [S5] [R1 COBS 20.2.5R(2)](#uklib-with_profits-r1); the reference
   model computes a per-model-point asset share and treats it as the specimen.
 - **Rounding.** Intermediate values at full precision; cash flows reported to pence
   **[std]**.
@@ -116,7 +116,7 @@ experience.
 | Guarantee events (UWP) | death; contractual guarantee dates (10th anniversary); face value + FB payable without MVR | [S4] [S5]; date choice **[std]**, product-spec (12) |
 | Death benefit factor (UWP) | `g_db = 101%` of (FV + FB); MVR never on death | 101% **[std]**, product-spec (11); no-MVR [S5] |
 | MVR-free withdrawals | ≤ 5% p.a. of original premium | **[std]**, product-spec (13) |
-| MVR contractual bound | MVR ≤ excess of unit value over underlying asset value | [R1 COBS 20.2.16R] |
+| MVR contractual bound | MVR ≤ excess of unit value over underlying asset value | [R1 COBS 20.2.16R](#uklib-with_profits-r1) |
 | PruFund smoothing limits (variation) | daily 5.0% / quarterly 10.0% / gap 2.5% (growth funds); contractual defined terms | [S9] [S11] |
 
 ### (b) Insurer-discretionary current elements (snapshot; revisable under PPFM discipline [R2] [R5])
@@ -197,7 +197,7 @@ stochastic valuation (see Cash flow components, cost-of-guarantees note).
    allowance); asset share reduced pro rata to the pre-MVR policy value [S1].
 3. Fund return `r(t)` accrues on the asset share balance.
 4. **EOY**: proportional charges: multiply by `(1 − c_amc − c_g)`; accumulate
-   `CumGC`; set `c_g = 0` once `CumGC ≥ 2% × AS(t)` [S1 cap; mechanics **[std]**].
+   `CumGC`; set `c_g = 0` once `CumGC ≥ 2% × AS(t)` [S1 cap; mechanics **[std]**](#uklib-with_profits-s1).
 5. **EOY**: regular bonus `b(t)` declared per the setting rule below;
    `Q(t) = Q(t−1)(1+b(t))` (UWP) or `G(t) = G(t−1)(1+b_rev(t))` (CWP);
    cost of bonus `CB(t)` computed on pre-declaration values; shareholder transfer
@@ -205,7 +205,7 @@ stochastic valuation (see Cash flow components, cost-of-guarantees note).
 6. **EOY**: mortality charge `MC(t) = q(x+t−1) · max(0, DB_g(t) − AS_pre(t))`
    deducted, where `DB_g` is the guaranteed death benefit (`g_db·FV(t)` UWP; `G(t)`
    CWP) and `AS_pre` the balance after step 5 [S1 formula: mortality rate × (death
-   benefit − policy value); guaranteed-only DB in the sum at risk **[std]**].
+   benefit − policy value); guaranteed-only DB in the sum at risk **[std]**](#uklib-with_profits-s1).
 7. **EOY**: smoothed payout `S(t)` computed (cap, then corridor); `FB`/`TB`/`MVR`
    derived.
 8. **EOY**: claims paid — deaths at `q`, surrenders at `w`, maturity at `t = n`;
@@ -279,7 +279,7 @@ level; the ≥90%-of-policies test [S1] [R1] is a portfolio property, out of sco
 single-policy model **[std]**.
 
 - UWP final bonus: `FB(t) = max(0, S(t) − FV(t))`; guarantee-event payout
-  `FV(t) + FB(t)`; death payout `g_db · (FV(t) + FB(t))` [S5: no MVR on death].
+  `FV(t) + FB(t)`; death payout `g_db · (FV(t) + FB(t))` [S5: no MVR on death](#uklib-with_profits-s5).
 - CWP terminal bonus: `TB(t) = max(0, S(t) − G(t))`; maturity payout `G(n) + TB(n)`;
   death payout `G(t) + interim accrual + FB per the same scale` [S1] [S4] [S8].
 - When the guarantee bites (`S(t) < FV(t)` or `S(t) < G(t)`), the excess of the
@@ -374,7 +374,7 @@ dynamic option-exercise modeling is a regulatory expectation for the BEL [R7].
 - **Base surrender**: UWP bond 5% p.a. flat; CWP 5%/4%/3%/2%+ (class (c) table).
 - **MVR deterrent**: `w(t) = w_base(t) · 0.6` while `MVR(t) > 0` **[std]** — an
   active MVR penalizes exit, and firms may consider exit volumes in setting MVRs
-  within the COBS bound [R1 COBS 20.2.16AR].
+  within the COBS bound [R1 COBS 20.2.16AR](#uklib-with_profits-r1).
 - **Guarantee-date spike**: `w(t) = w_base(t) · 2.5` in a guarantee-date year
   **[std]** — MVR-free encashment is rationally exercised when `FV(t) > AS(t)`
   (guarantee in the money); apply the multiplier only in that state.
@@ -506,3 +506,37 @@ cited, not reproduced.
     placeholders by design (declarations are not in PPFMs — research gap); a
     calibration pass against current bonus declarations is required before any
     quantitative use.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-with_profits-r1
+[R10]: #uklib-with_profits-r10
+[R13]: #uklib-with_profits-r13
+[R2]: #uklib-with_profits-r2
+[R5]: #uklib-with_profits-r5
+[R6]: #uklib-with_profits-r6
+[R7]: #uklib-with_profits-r7
+[R8]: #uklib-with_profits-r8
+[REG-R1]: #uklib-reg-r1
+[REG-R15]: #uklib-reg-r15
+[REG-R17]: #uklib-reg-r17
+[REG-R2]: #uklib-reg-r2
+[REG-R22]: #uklib-reg-r22
+[REG-R24]: #uklib-reg-r24
+[REG-R3]: #uklib-reg-r3
+[REG-R30]: #uklib-reg-r30
+[REG-R32]: #uklib-reg-r32
+[REG-R38]: #uklib-reg-r38
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-with_profits-s1
+[S10]: #uklib-with_profits-s10
+[S11]: #uklib-with_profits-s11
+[S2]: #uklib-with_profits-s2
+[S4]: #uklib-with_profits-s4
+[S5]: #uklib-with_profits-s5
+[S6]: #uklib-with_profits-s6
+[S7]: #uklib-with_profits-s7
+[S8]: #uklib-with_profits-s8
+[S9]: #uklib-with_profits-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->

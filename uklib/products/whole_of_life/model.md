@@ -261,3 +261,16 @@ bases against each other, and that the truncation residual is negligible.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R2]: #uklib-whole_of_life-r2
+[R7]: #uklib-whole_of_life-r7
+[REG-R22]: #uklib-reg-r22
+[S1]: #uklib-whole_of_life-s1
+[S10]: #uklib-whole_of_life-s10
+[S4]: #uklib-whole_of_life-s4
+[S5]: #uklib-whole_of_life-s5
+[S7]: #uklib-whole_of_life-s7
+[S9]: #uklib-whole_of_life-s9
+[std]: #uklib-std
+<!-- END generated citation links -->

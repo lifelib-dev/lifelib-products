@@ -215,7 +215,7 @@ benefits: the sum assured pays only on a defined critical illness (plus survival
 period) [S11] [S4]. Death of the life assured within the survival period, or death
 without a prior CI diagnosis, ends the policy with no payment [S4] [S11] (a
 premium-refund-on-death feature exists in some designs [S4] [S11 — recorded jointly in
-the research file] and is excluded from the composite **[std]**); the survival period
+the research file](#uklib-critical_illness-s11) and is excluded from the composite **[std]**); the survival period
 is therefore a real benefit-reducing decrement in this variant (see technical notes). All other provisions (additional payments, children's cover,
 premiums, options) are unchanged [S4] [S11].
 
@@ -353,7 +353,7 @@ Class I (life and annuity); standalone CI is typically written as long-term Clas
 (permanent health: defined benefits for incapacity from accident or sickness, of
 indefinite duration or running to retirement age, with restricted insurer cancellation
 rights) or general classes 1–2 for short-term forms [R4] [REG-R14 for the class
-definitions; the mapping of CI products to classes is [unverified]].
+definitions; the mapping of CI products to classes is [unverified]](#uklib-reg-r14).
 
 **Tax.** Under FA 2012 Part 2, protection business written post-2012 is non-BLAGAB
 long-term business taxed on trade profits (BLAGAB I-E applies to investment life
@@ -362,3 +362,32 @@ policy is written to remain a qualifying policy compatible with para 19(3) Sched
 ICTA 1988 and "cannot be issued or assigned into a trust" [S1]; other insurers' plans
 are commonly placed in trust [unverified]. FSCS protects 100% of claim value, with
 continuity of cover preferred [S1].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #uklib-critical_illness-r1
+[R2]: #uklib-critical_illness-r2
+[R3]: #uklib-critical_illness-r3
+[R4]: #uklib-critical_illness-r4
+[R5]: #uklib-critical_illness-r5
+[R6]: #uklib-critical_illness-r6
+[R7]: #uklib-critical_illness-r7
+[REG-R1]: #uklib-reg-r1
+[REG-R11]: #uklib-reg-r11
+[REG-R12]: #uklib-reg-r12
+[REG-R17]: #uklib-reg-r17
+[REG-R20]: #uklib-reg-r20
+[REG-R4]: #uklib-reg-r4
+[S1]: #uklib-critical_illness-s1
+[S10]: #uklib-critical_illness-s10
+[S11]: #uklib-critical_illness-s11
+[S2]: #uklib-critical_illness-s2
+[S3]: #uklib-critical_illness-s3
+[S4]: #uklib-critical_illness-s4
+[S5]: #uklib-critical_illness-s5
+[S6]: #uklib-critical_illness-s6
+[S7]: #uklib-critical_illness-s7
+[S8]: #uklib-critical_illness-s8
+[S9]: #uklib-critical_illness-s9
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->
