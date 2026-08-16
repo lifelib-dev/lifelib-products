@@ -1,9 +1,9 @@
 # Term_UK_A — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/term-assurance/technical-notes.md`](../../products/term-assurance/technical-notes.md);
+[`products/term_assurance/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/term-assurance/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the decreasing-shape amortization, the family
@@ -18,14 +18,14 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/term-assurance/run.py
+python products/term_assurance/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/term-assurance/Term_UK_A")
+model = mx.read_model("products/term_assurance/Term_UK_A")
 model.Projection[1].result_cf()
 ```
 
@@ -75,13 +75,16 @@ The four input CSVs live **in this directory**, beside `run.py` — not inside t
 folder. `Term_UK_A/` holds nothing but formulas:
 
 ```
-uk/models/term-assurance/
+products/term_assurance/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   select_factor_table.csv
   lapse_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   Term_UK_A/                  <- formulas only
     __init__.py                   (model docstring)
     _system.json

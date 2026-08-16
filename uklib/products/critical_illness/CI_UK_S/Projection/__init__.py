@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~CI_UK_S` model.
+"""The by-policy projection of the :mod:`~.CI_UK_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -22,7 +22,7 @@ the convention every model in this library shares.
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent
-directory, ``uk/models/critical-illness/``, read at run time rather than stored inside
+directory, ``products/critical_illness/``, read at run time rather than stored inside
 the model. The model folder therefore holds nothing but formulas — no ``_data/``, no
 IOSpec, no embedded values — so a diff of the model shows logic changes only, and an
 input can be edited or swapped without rewriting the model. This follows
@@ -33,7 +33,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 ``CI_UK_S`` folder without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
-Each table has a filename Reference and a reader Cells, both on :mod:`~CI_UK_S.Data`,
+Each table has a filename Reference and a reader Cells, both on :mod:`~.CI_UK_S.Data`,
 reached here through the ``data`` Reference:
 
 ======================  ==============================  ==========================
@@ -53,67 +53,67 @@ for per-policy amounts, ``claims(t, kind)`` and ``benefit_pp(t, kind)`` with an
 uppercase ``kind`` string, ``pols_if_at(t, timing)`` for the within-month in-force
 reads. The technical notes use compact actuarial symbols instead. The mapping is:
 
-=========================  ==============================  ==========================
-Notes symbol               Cells                           Meaning
-=========================  ==============================  ==========================
-contract_type              contract_type()                 accelerated or standalone
-issue_age                  age_at_entry(life)              Issue age (ANB), life 1 or 2
-a                          age(t, life)                    Attained age (ANB) in month t
-y = ceil(t/12)             policy_year(t)                  Policy year containing month t
-(none)                     duration(t)                     Completed policy years, y - 1
-(none)                     duration_mth(t)                 Months elapsed at end of month t
-n                          policy_term()                   Term in years
-12n                        proj_len()                      Last projected month
-SA                         sum_assured()                   Sum assured at outset
-SA(t)                      benefit_pp(t, "MAIN")           Sum assured in month t, indexed
-B_AP                       benefit_pp(t, "AP")             Additional-payment benefit
-B_ch                       benefit_pp(t, "CHILD")          Children's-cover benefit
-P                          premium_mth_pp()                Monthly premium at outset
-P(t)                       premium_pp(t)                   Monthly premium in month t
-(pivot table)              pivot_interp(x, sex, smoker, c)  Log-linear pivot lookup
-i_ci(a)                    ci_rate_base(t, life)           Table CI diagnosis rate
-(1 + tau)^(y-1)            ci_trend_factor(t)              CI trend factor
-eta                        sel_lapse_ci_loading            Anti-selection loading on i_ci
-(none)                     ci_sel_factor(t)                Anti-selection factor applied
-i_ci x trend x sel         ci_rate(t, life)                CI diagnosis rate applied
-q_d(a)                     mort_rate(t, life)              Best-estimate mortality rate
-k                          overlap_k                       Death/CI overlap factor, 0.10
-(per life)                 claim_rate_life(t, life)        q_d(1-k) + i_ci, one life
-q_claim(a)                 claim_rate(t)                   Combined claim decrement
-q_pay(a)                   claim_rate_paid(t)              The part that pays a benefit
-delta                      survival_slip                   Standalone slippage, 0.03
-q_m(t)                     claim_rate_mth(t)               Monthly combined decrement
-q_pay_m(t)                 claim_rate_paid_mth(t)          Monthly paying decrement
-q_exit_m(t)                claim_rate_exit_mth(t)          Monthly non-paying decrement
-a(x)                       ap_rate(t)                      Additional-payment frequency
-a_m(t)                     ap_rate_mth(t)                  The same, monthly
-lambda_ch                  child_freq                      Children's claim frequency p.a.
-lambda_m                   child_rate_mth()                The same, monthly
-w(y)                       lapse_rate(t)                   Annual lapse rate in month t
-(table)                    lapse_rate_base(t)              Table lapse rate before shock
-w_shock                    lapse_rate(t) at a review        Post-review shock lapse
-w_m(t)                     lapse_rate_mth(t)               Monthly lapse rate
-rho_review                 review_prem_shock               Premium change at a review
-(none)                     reviews_passed(t)               Reviews already applied
-(none)                     review_shock_active(t)          In the post-review window
-l(t-1)                     pols_if(t)                      In force at the start of month t
-l(t)                       pols_if_at(t, "AFT_DECR")       In force at the end of month t
-(none)                     pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
-(none)                     pols_claim(t)                   Main-benefit claims in month t
-(none)                     pols_lapse(t)                   Lapses at the end of month t
-(none)                     pols_maturity(t)                Expiries at the end of the term
-idx(t)                     idx_factor(t)                   Cover indexation factor
-idx_p(t)                   idx_prem_factor(t)              Premium indexation factor
-P x l                      premiums(t)                     Premium income
-SA x q_m x l               claims(t, "MAIN")               Main-benefit outgo
-B_AP x a_m x l             claims(t, "AP")                 Additional-payment outgo
-B_ch x lambda_m x l        claims(t, "CHILD")              Children's-cover outgo
-0                          claims(t, "LAPSE")              Surrender outgo; always zero
-E_cl x q_m x l             claim_expenses(t)               Claim handling expense
-E0, E_m(y)                 expenses(t)                     Initial + maintenance expense
-(none)                     inflation_factor(t)             Expense inflation factor
-CF(t)                      net_cf(t)                       Net cash flow, income positive
-=========================  ==============================  ==========================
+===================  ===============================  ================================
+Notes symbol         Cells                            Meaning
+===================  ===============================  ================================
+contract_type        contract_type()                  accelerated or standalone
+issue_age            age_at_entry(life)               Issue age (ANB), life 1 or 2
+a                    age(t, life)                     Attained age (ANB) in month t
+y = ceil(t/12)       policy_year(t)                   Policy year containing month t
+(none)               duration(t)                      Completed policy years, y - 1
+(none)               duration_mth(t)                  Months elapsed at end of month t
+n                    policy_term()                    Term in years
+12n                  proj_len()                       Last projected month
+SA                   sum_assured()                    Sum assured at outset
+SA(t)                benefit_pp(t, "MAIN")            Sum assured in month t, indexed
+B_AP                 benefit_pp(t, "AP")              Additional-payment benefit
+B_ch                 benefit_pp(t, "CHILD")           Children's-cover benefit
+P                    premium_mth_pp()                 Monthly premium at outset
+P(t)                 premium_pp(t)                    Monthly premium in month t
+(pivot table)        pivot_interp(x, sex, smoker, c)  Log-linear pivot lookup
+i_ci(a)              ci_rate_base(t, life)            Table CI diagnosis rate
+(1 + tau)^(y-1)      ci_trend_factor(t)               CI trend factor
+eta                  sel_lapse_ci_loading             Anti-selection loading on i_ci
+(none)               ci_sel_factor(t)                 Anti-selection factor applied
+i_ci x trend x sel   ci_rate(t, life)                 CI diagnosis rate applied
+q_d(a)               mort_rate(t, life)               Best-estimate mortality rate
+k                    overlap_k                        Death/CI overlap factor, 0.10
+(per life)           claim_rate_life(t, life)         q_d(1-k) + i_ci, one life
+q_claim(a)           claim_rate(t)                    Combined claim decrement
+q_pay(a)             claim_rate_paid(t)               The part that pays a benefit
+delta                survival_slip                    Standalone slippage, 0.03
+q_m(t)               claim_rate_mth(t)                Monthly combined decrement
+q_pay_m(t)           claim_rate_paid_mth(t)           Monthly paying decrement
+q_exit_m(t)          claim_rate_exit_mth(t)           Monthly non-paying decrement
+a(x)                 ap_rate(t)                       Additional-payment frequency
+a_m(t)               ap_rate_mth(t)                   The same, monthly
+lambda_ch            child_freq                       Children's claim frequency p.a.
+lambda_m             child_rate_mth()                 The same, monthly
+w(y)                 lapse_rate(t)                    Annual lapse rate in month t
+(table)              lapse_rate_base(t)               Table lapse rate before shock
+w_shock              lapse_rate(t) at a review        Post-review shock lapse
+w_m(t)               lapse_rate_mth(t)                Monthly lapse rate
+rho_review           review_prem_shock                Premium change at a review
+(none)               reviews_passed(t)                Reviews already applied
+(none)               review_shock_active(t)           In the post-review window
+l(t-1)               pols_if(t)                       In force at the start of month t
+l(t)                 pols_if_at(t, "AFT_DECR")        In force at the end of month t
+(none)               pols_if_at(t, timing)            BEF_DECR / BEF_LAPSE / AFT_DECR
+(none)               pols_claim(t)                    Main-benefit claims in month t
+(none)               pols_lapse(t)                    Lapses at the end of month t
+(none)               pols_maturity(t)                 Expiries at the end of the term
+idx(t)               idx_factor(t)                    Cover indexation factor
+idx_p(t)             idx_prem_factor(t)               Premium indexation factor
+P x l                premiums(t)                      Premium income
+SA x q_m x l         claims(t, "MAIN")                Main-benefit outgo
+B_AP x a_m x l       claims(t, "AP")                  Additional-payment outgo
+B_ch x lambda_m x l  claims(t, "CHILD")               Children's-cover outgo
+0                    claims(t, "LAPSE")               Surrender outgo; always zero
+E_cl x q_m x l       claim_expenses(t)                Claim handling expense
+E0, E_m(y)           expenses(t)                      Initial + maintenance expense
+(none)               inflation_factor(t)              Expense inflation factor
+CF(t)                net_cf(t)                        Net cash flow, income positive
+===================  ===============================  ================================
 
 Three names needed care.
 

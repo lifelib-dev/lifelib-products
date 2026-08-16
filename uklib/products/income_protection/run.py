@@ -1,7 +1,7 @@
 """Run the IP_UK_S reference model and print its cash flow statement.
 
-    python uk/models/income-protection/run.py            # active-lives anchor cell
-    python uk/models/income-protection/run.py 2          # the claims-in-payment example
+    python products/income_protection/run.py            # active-lives anchor cell
+    python products/income_protection/run.py 2          # the claims-in-payment example
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

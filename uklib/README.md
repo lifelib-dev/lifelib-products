@@ -6,7 +6,7 @@ This section covers the major **individual life insurance products** sold in the
 market, **plus pension annuities**. Annuities are core long-term insurance business and
 the dominant liability of UK life insurers (and the centrepiece of the Solvency UK
 matching adjustment), so a UK library without them would misrepresent the market. The
-annuity coverage differs in kind from the [U.S. section](../us/README.md), which covers
+annuity coverage differs in kind from the [U.S. section](../uslib/index.md), which covers
 the U.S. retail deferred and payout families (MYGA, fixed indexed, variable, RILA, SPIA,
 DIA/QLAC): the UK retail deferred-annuity market is negligible, and the pension annuity
 bought with a pension pot is the product that matters. Group protection, pensions
@@ -16,13 +16,13 @@ wrappers (drawdown, SIPPs) and bulk purchase annuities remain out of scope.
 
 | Product type | Folder | Representative design (one line) |
 |---|---|---|
-| Term assurance | [term-assurance](products/term-assurance/product-spec.md) | Guaranteed-premium term with three benefit shapes (level / decreasing at a client-selected mortgage rate / family income benefit), terminal illness benefit included, optional RPI indexation; expires at end of term — no U.S.-style post-level-term tail |
-| Critical illness cover | [critical-illness](products/critical-illness/product-spec.md) | Accelerated life-or-CI level term on the term-assurance chassis: ~40 ABI-aligned full-payment conditions incl. TPD, 25%/£25k additional-payment conditions, 50%/£25k children's cover, 14-day survival period; standalone variant minus the death benefit |
-| Income protection | [income-protection](products/income-protection/product-spec.md) | Full-term guaranteed-premium own-occupation IP: two-band earnings cap (65% to £60k, 50% above), deferred periods 4–52 weeks (26 as base cell), RPI escalation in claim, proportionate benefit on partial return to work; three-state (healthy/sick/dead) reference model |
-| Whole of life | [whole-of-life](products/whole-of-life/product-spec.md) | Two cells: underwritten guaranteed WOL (protection-only, no cash value — unlike U.S. whole life), and over-50s guaranteed acceptance (fixed cash sum, 12-month moratorium, premiums cease at 90, lapse-supported) |
-| With-profits | [with-profits](products/with-profits/product-spec.md) | 90:10 proprietary fund with retrospective asset shares, 80–120% payout target range, smoothing caps, MVR bounded by asset-share shortfall; unitised WP as primary cell, conventional WP endowment as legacy cell, PruFund smoothed funds as the modern variant |
-| Unit-linked investment bond | [unit-linked-bond](products/unit-linked-bond/product-spec.md) | Modern clean-charge onshore single-premium bond: 100.1% death uplift, segmented mini-policies, AMC-based charges, 5% p.a. tax-deferred withdrawal machinery; modeled via the classic UK unit vs non-unit cash-flow decomposition |
-| Pension annuity | [pension-annuity](products/pension-annuity/product-spec.md) | Immediate lifetime annuity (L&G-pattern chassis): single/joint life, escalation nil/fixed/RPI-floored/LPI, guarantee period XOR value protection, enhanced terms as a mortality-rating overlay; longevity is the model |
+| Term assurance | [term_assurance](products/term_assurance/product-spec.md) | Guaranteed-premium term with three benefit shapes (level / decreasing at a client-selected mortgage rate / family income benefit), terminal illness benefit included, optional RPI indexation; expires at end of term — no U.S.-style post-level-term tail |
+| Critical illness cover | [critical_illness](products/critical_illness/product-spec.md) | Accelerated life-or-CI level term on the term-assurance chassis: ~40 ABI-aligned full-payment conditions incl. TPD, 25%/£25k additional-payment conditions, 50%/£25k children's cover, 14-day survival period; standalone variant minus the death benefit |
+| Income protection | [income_protection](products/income_protection/product-spec.md) | Full-term guaranteed-premium own-occupation IP: two-band earnings cap (65% to £60k, 50% above), deferred periods 4–52 weeks (26 as base cell), RPI escalation in claim, proportionate benefit on partial return to work; three-state (healthy/sick/dead) reference model |
+| Whole of life | [whole_of_life](products/whole_of_life/product-spec.md) | Two cells: underwritten guaranteed WOL (protection-only, no cash value — unlike U.S. whole life), and over-50s guaranteed acceptance (fixed cash sum, 12-month moratorium, premiums cease at 90, lapse-supported) |
+| With-profits | [with_profits](products/with_profits/product-spec.md) | 90:10 proprietary fund with retrospective asset shares, 80–120% payout target range, smoothing caps, MVR bounded by asset-share shortfall; unitised WP as primary cell, conventional WP endowment as legacy cell, PruFund smoothed funds as the modern variant |
+| Unit-linked investment bond | [unit_linked_bond](products/unit_linked_bond/product-spec.md) | Modern clean-charge onshore single-premium bond: 100.1% death uplift, segmented mini-policies, AMC-based charges, 5% p.a. tax-deferred withdrawal machinery; modeled via the classic UK unit vs non-unit cash-flow decomposition |
+| Pension annuity | [pension_annuity](products/pension_annuity/product-spec.md) | Immediate lifetime annuity (L&G-pattern chassis): single/joint life, escalation nil/fixed/RPI-floored/LPI, guarantee period XOR value protection, enhanced terms as a mortality-rating overlay; longevity is the model |
 
 Each folder contains `product-spec.md` (representative specification, variations
 across insurers, regulatory context), `technical-notes.md` (liability cash flow model:
@@ -31,9 +31,9 @@ example, sensitivities), and `sources.md` (numbered source list). Citation conve
 are defined in the [top-level README](../README.md).
 
 Chassis relationships: critical-illness states only its deltas against the
-[term-assurance](products/term-assurance/technical-notes.md) chassis; the
+[term-assurance](products/term_assurance/technical-notes.md) chassis; the
 unit-linked-bond's smoothed-fund (PruFund) variation cross-references the
-[with-profits](products/with-profits/technical-notes.md) mechanics.
+[with-profits](products/with_profits/technical-notes.md) mechanics.
 
 ## Regulatory and actuarial reference library
 

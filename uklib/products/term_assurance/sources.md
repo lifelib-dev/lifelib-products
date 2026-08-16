@@ -1,6 +1,6 @@
 # Sources — Term Assurance (United Kingdom)
 
-Source ids [S#]/[R#] are carried verbatim from `uk/_research/term-assurance.md` (the
+Source ids [S#]/[R#] are carried verbatim from `_research/term-assurance.md` (the
 citation ground truth for this product) and are **frozen — never renumber**. Unused
 sources are omitted, so the R-numbering has gaps (R4 and R7 are not cited by the
 product documents). Access date for all sources: 2026-08-03. No sources were newly
@@ -163,8 +163,8 @@ end.
 ## Cross-product references ([REG-R#])
 
 [REG-R#] tags resolve against the cross-product UK reference library
-`uk/references/regulatory-and-actuarial-references.md` (its own R-numbering,
-R1–R38, frozen; research provenance in `uk/_research/regulatory-actuarial.md`).
+`references/regulatory-and-actuarial-references.md` (its own R-numbering,
+R1–R38, frozen; research provenance in `_research/regulatory-actuarial.md`).
 Entries cited by the term assurance documents:
 
 - **REG-R1** — PRA Rulebook, Technical Provisions Part (TP = best estimate + risk
@@ -194,5 +194,5 @@ Extraction details — which facts were read from which source, section-level no
 and the gaps/caveats register (unpublished premium rates, the Aviva decreasing-rate
 value, subscriber-only CMI "16" Series tables, unfetched ICOBS handbook text,
 renewable/convertible term status, reinsurance cession rates) — live in
-`uk/_research/term-assurance.md`. That file is the citation ground truth for the S#
+`_research/term-assurance.md`. That file is the citation ground truth for the S#
 and R# numbering used here.

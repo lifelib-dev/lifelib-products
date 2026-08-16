@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for UK critical illness cover.
 
-:mod:`~CI_UK_S` is the executable counterpart of
-``uk/products/critical-illness/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.CI_UK_S` is the executable counterpart of
+``products/critical_illness/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for a single-policy model point of UK
 critical illness cover: an **accelerated** life-or-CI contract paying the sum assured on
 the first of death, terminal illness or diagnosis of a listed condition, with
@@ -14,7 +14,7 @@ non-terminating **additional-payment** and **children's-cover** benefits alongsi
 and a **standalone** variant on which death pays nothing.
 
 The product sits on the term assurance chassis specified in
-``uk/products/term-assurance/`` and implemented as :mod:`Term_UK_A`, and its notes state
+``products/term_assurance/`` and implemented as :mod:`.Term_UK_A`, and its notes state
 only the CI-specific deltas. Two of those deltas change the model rather than a
 parameter, and both are the notes' own first-listed pitfalls:
 
@@ -25,14 +25,14 @@ parameter, and both are the notes' own first-listed pitfalls:
 
 **Spaces.** The model contains two:
 
-:mod:`~CI_UK_S.Data`
+:mod:`~.CI_UK_S.Data`
     Reads the three input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~CI_UK_S.Projection`
+:mod:`~.CI_UK_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~CI_UK_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.CI_UK_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -43,7 +43,7 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps, unlike the annual :mod:`Term_UK_A` it inherits
+**Projection basis.** Monthly steps, unlike the annual :mod:`.Term_UK_A` it inherits
 from. The contract has no accumulation account and nothing in it needs monthiversary
 processing; the notes choose monthly for parity with the rest of the library, and it is
 what makes the 14-day survival period and the 5-yearly premium reviews expressible.
@@ -78,7 +78,7 @@ assured nor decrement the in-force.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("uk/models/critical-illness/CI_UK_S")
+    >>> model = mx.read_model("products/critical_illness/CI_UK_S")
     >>> model.Projection[1].result_cf()
 """
 

@@ -1,9 +1,9 @@
 # IP_UK_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/income-protection/technical-notes.md`](../../products/income-protection/technical-notes.md);
+[`products/income_protection/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/income-protection/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the deferred period menu, the two-band
@@ -18,15 +18,15 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/income-protection/run.py       # the active-lives anchor cell
-python uk/models/income-protection/run.py 2     # the claims-in-payment worked example
+python products/income_protection/run.py       # the active-lives anchor cell
+python products/income_protection/run.py 2     # the claims-in-payment worked example
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/income-protection/IP_UK_S")
+model = mx.read_model("products/income_protection/IP_UK_S")
 model.Projection[1].result_cf()
 ```
 
@@ -187,14 +187,17 @@ The five input CSVs live **in this directory**, beside `run.py` — not inside t
 folder. `IP_UK_S/` holds nothing but formulas:
 
 ```
-uk/models/income-protection/
+products/income_protection/
   model_point_table.csv        <- inputs live here
   inception_table.csv
   termination_table.csv
   mort_table.csv
   lapse_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   IP_UK_S/                    <- formulas only
     __init__.py                   (model docstring)
     _system.json

@@ -1,9 +1,9 @@
 # CI_UK_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/critical-illness/technical-notes.md`](../../products/critical-illness/technical-notes.md);
+[`products/critical_illness/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/critical-illness/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The benefit
 > structure is sourced — the accelerated design, the additional-payment benefit at
@@ -18,14 +18,14 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/critical-illness/run.py
+python products/critical_illness/run.py
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/critical-illness/CI_UK_S")
+model = mx.read_model("products/critical_illness/CI_UK_S")
 model.Projection[1].result_cf()
 ```
 
@@ -35,7 +35,7 @@ cash flow line.
 
 ## Monthly, on an annual chassis
 
-This product sits on the [term assurance](../term-assurance/README.md) chassis, which is
+This product sits on the [term assurance](../term_assurance/model.md) chassis, which is
 an **annual** model — but these notes specify a **monthly** grid, so `CI_UK_S` carries
 the `_S` tag and `Term_UK_A` the `_A`. Nothing in the contract needs monthiversary
 processing; the notes choose monthly for parity with the rest of the library, and it is
@@ -132,12 +132,15 @@ The three input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `CI_UK_S/` holds nothing but formulas:
 
 ```
-uk/models/critical-illness/
+products/critical_illness/
   model_point_table.csv        <- inputs live here
   ci_rate_table.csv
   lapse_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   CI_UK_S/                    <- formulas only
     __init__.py                   (model docstring)
     _system.json

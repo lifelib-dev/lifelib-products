@@ -5,10 +5,10 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model for
 the standardized composite product defined in `product-spec.md` (same directory). This is
 not any single insurer's product. [S#]/[R#] tags refer to the source list in
-`uk/_research/unit-linked-bond.md` (carried into `sources.md` here); [REG-R#] tags refer
+`_research/unit-linked-bond.md` (carried into `sources.md` here); [REG-R#] tags refer
 to the cross-product reference library
-`uk/references/regulatory-and-actuarial-references.md` (its own R-numbering; research
-provenance in `uk/_research/regulatory-actuarial.md`). **[std]** marks standardizations
+`references/regulatory-and-actuarial-references.md` (its own R-numbering; research
+provenance in `_research/regulatory-actuarial.md`). **[std]** marks standardizations
 introduced for the reference implementation; [unverified] marks claims not confirmed
 against a retrieved document. Parameter values are identical to those in
 `product-spec.md`; the implementation anchor for mechanics is the Prudential Investment
@@ -121,7 +121,7 @@ booklet [S3 Part D]); the model holds the snapshot level:
 | Fund-size discount | Off (level net AMC assumed) | tiers [S1][S2 §5.1.4]; scope **[std]** |
 | Life-fund tax pass-through `t_pf` | 20% of gross fund return, in-price, neutral to insurer | mechanism [S2 §3.2.1][S4][S5 Q15]; rate proxy **[std]** of the policyholder rate [R6] |
 | GMDB mortality-factor scale | = monthly mortality rate from the class-(c) basis at attained age (cost-of-insurance style), applied to max(0, G − u×UF) | design [S2 §5.2, §10]; scale **[std]** — factors not published |
-| MVR / bonus rates | Not applicable — with-profits and PruFund funds out of scope; see `uk/products/with-profits/` | [S2 §3.3][S3] |
+| MVR / bonus rates | Not applicable — with-profits and PruFund funds out of scope; see `products/with_profits/` | [S2 §3.3][S3] |
 
 The `t_pf` proxy deliberately ignores I-E timing detail: actual pass-through
 distinguishes income (as received), realised gains (next charge date), an annual
@@ -416,6 +416,6 @@ Known modeling pitfalls:
 - **Smoothed funds must not be bolted on.** PruFund EGR/smoothing-limit mechanics
   [S2 §3.3.7–3.3.10] and MVR-bearing with-profits funds [S3] change the unit-price
   dynamics and add guarantee costs; they belong to the with-profits reference
-  product (`uk/products/with-profits/`), not this recursion.
+  product (`products/with_profits/`), not this recursion.
 - **Uplift factor slip.** 100.1% vs 101% [spec footnote 6] is a ×10 difference in
   death strain; keep `u` a parameter, never a hard-coded 1.001.

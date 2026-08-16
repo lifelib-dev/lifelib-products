@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~Term_UK_A` model.
+"""The by-policy projection of the :mod:`~.Term_UK_A` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -18,7 +18,7 @@ at the end of the term with no maturity value, no renewal and no conversion.
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent
-directory, ``uk/models/term-assurance/``, read at run time rather than stored inside
+directory, ``products/term_assurance/``, read at run time rather than stored inside
 the model. The model folder therefore holds nothing but formulas — no ``_data/``, no
 IOSpec, no embedded values — so a diff of the model shows logic changes only, and an
 input can be edited or swapped without rewriting the model. This follows
@@ -30,7 +30,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 fails on first evaluation.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~Term_UK_A.Data`, reached here through the ``data`` Reference:
+:mod:`~.Term_UK_A.Data`, reached here through the ``data`` Reference:
 
 ======================  ==============================  ==========================
 Reference               Cells                           File

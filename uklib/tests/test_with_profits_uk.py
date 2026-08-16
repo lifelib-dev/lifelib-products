@@ -1,7 +1,7 @@
 """Golden and structural tests for WP_UK_A.
 
 The golden values are the worked example in
-uk/products/with-profits/technical-notes.md ("Worked example"), which projects a
+products/with_profits/technical-notes.md ("Worked example"), which projects a
 unitised with-profits bond in force at duration 5 — asset share GBP 30,000, face value
 GBP 27,602.02, smoothed payout GBP 29,500, unit price 1.104081 on 25,000 units, AMC 1%,
 guarantee charge 0.10%, q(60) = 0.5%, death uplift 1.01, smoothing cap 10% — through

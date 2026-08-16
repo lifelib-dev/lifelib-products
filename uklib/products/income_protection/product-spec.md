@@ -5,11 +5,11 @@
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
-references), both numbered per `uk/_research/income-protection.md` — resolve against
+references), both numbered per `_research/income-protection.md` — resolve against
 `sources.md` in this directory (numbering carried over verbatim; never renumbered).
 [REG-R#] tags resolve against the cross-product reference library
-`uk/references/regulatory-and-actuarial-references.md` (its own R-numbering; research
-provenance in `uk/_research/regulatory-actuarial.md`). Values marked **[std]** are
+`references/regulatory-and-actuarial-references.md` (its own R-numbering; research
+provenance in `_research/regulatory-actuarial.md`). Values marked **[std]** are
 standardizations introduced for the reference implementation; each [std] table row
 carries a footnote giving the rationale and the observed range across insurers. Facts
 the research file could not verify are flagged [unverified].

@@ -5,10 +5,10 @@
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
-references), both numbered per `uk/_research/unit-linked-bond.md` — resolve against
+references), both numbered per `_research/unit-linked-bond.md` — resolve against
 `sources.md` in this directory; [REG-R#] resolves against the cross-product reference
-library `uk/references/regulatory-and-actuarial-references.md` (its own R-numbering;
-research provenance in `uk/_research/regulatory-actuarial.md`). Values marked **[std]**
+library `references/regulatory-and-actuarial-references.md` (its own R-numbering;
+research provenance in `_research/regulatory-actuarial.md`). Values marked **[std]**
 are standardizations introduced for the reference implementation; each [std] table row
 carries a footnote giving the rationale and the observed range across insurers.
 Facts the research file could not verify are flagged [unverified]. The implementation
@@ -134,7 +134,7 @@ Footnotes to [std] rows:
 | Dilution levy | Reserved power, collected through unit pricing; not modeled | [S2 §3.2.6]; scope **[std]** |
 
 8. Actual AMC percentages are per-fund and live in fund guides that were not fetched
-   (research gap 5 in `uk/_research/unit-linked-bond.md`); only the Prudential
+   (research gap 5 in `_research/unit-linked-bond.md`); only the Prudential
    fund-size *discount* tier table is public [S1]. 1.00% p.a. is a round
    representative level for a managed fund net of any discount. The AMC is
    insurer-reviewable — increase provisions tied to cost/tax/regulatory changes are
@@ -306,7 +306,7 @@ S1–S5].
   (legacy Aviva; war/self-inflicted/aviation exclusions) [S3].
 - PruFund smoothed funds inside the wrapper — Expected Growth Rate accrual, quarterly
   and daily smoothing limits, 28-day waits, quarter dates [S2 §3.3.7–3.3.10]; see the
-  with-profits folder (`uk/products/with-profits/`) for smoothing mechanics; the
+  with-profits folder (`products/with_profits/`) for smoothing mechanics; the
   smoothing parameters themselves are published separately and change over time
   [S2 §3.3.10].
 - PruFund Protected Fund guarantee (Guaranteed Minimum Fund Value at a chosen

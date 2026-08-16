@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for UK pension annuities.
 
-:mod:`~PA_UK_S` is the executable counterpart of
-``uk/products/pension-annuity/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.PA_UK_S` is the executable counterpart of
+``products/pension_annuity/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for a single UK pension annuity in
 payment: instalments to the annuitant and to a dependant, guarantee-period payments,
 value-protection lump sums and maintenance expense.
@@ -30,14 +30,14 @@ annuity has no surrender value at any time.
 
 **Spaces.** The model contains two:
 
-:mod:`~PA_UK_S.Data`
+:mod:`~.PA_UK_S.Data`
     Reads the two input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~PA_UK_S.Projection`
+:mod:`~.PA_UK_S.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~PA_UK_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.PA_UK_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -76,7 +76,7 @@ the month-17 death and the dependant's stream starting at the next payment date.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("uk/models/pension-annuity/PA_UK_S")
+    >>> model = mx.read_model("products/pension_annuity/PA_UK_S")
     >>> model.Projection[1].result_cf()
 """
 

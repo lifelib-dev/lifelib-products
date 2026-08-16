@@ -1,6 +1,6 @@
 # Sources — Pension Annuity (United Kingdom)
 
-Source ids [S#]/[R#] are carried **verbatim** from `uk/_research/pension-annuity.md`
+Source ids [S#]/[R#] are carried **verbatim** from `_research/pension-annuity.md`
 (the citation ground truth; ids frozen — never renumber). Only sources actually cited
 in `product-spec.md` / `technical-notes.md` (same directory) are listed; unused ids
 (S3, S8, R3, R4, R9) are omitted without renumbering. No new sources were fetched at
@@ -174,9 +174,9 @@ Cross-product [REG-R#] tags are listed in their own section at the end.
 
 ## Cross-product references ([REG-R#])
 
-[REG-R#] tags resolve against `uk/references/regulatory-and-actuarial-references.md`
+[REG-R#] tags resolve against `references/regulatory-and-actuarial-references.md`
 (that library's own R-numbering, R1–R38 frozen; distinct from the product research
-R-numbering above). Research provenance: `uk/_research/regulatory-actuarial.md`
+R-numbering above). Research provenance: `_research/regulatory-actuarial.md`
 (compiled 2026-08-03; all access dates 2026-08-03). Entries cited by the pension
 annuity documents:
 
@@ -201,6 +201,6 @@ annuity documents:
 Extraction details — which facts were taken from which source, fetch
 successes/failures, and the gaps-and-caveats register (Aviva vintage, PRA bot-blocked
 documents, CMI data restrictions, absence of public rate cards, unstated parameter
-bounds) — live in `uk/_research/pension-annuity.md`. The cross-product regulatory
-bibliography with its own annotations lives in `uk/_research/regulatory-actuarial.md`
-(published form: `uk/references/regulatory-and-actuarial-references.md`).
+bounds) — live in `_research/pension-annuity.md`. The cross-product regulatory
+bibliography with its own annotations lives in `_research/regulatory-actuarial.md`
+(published form: `references/regulatory-and-actuarial-references.md`).

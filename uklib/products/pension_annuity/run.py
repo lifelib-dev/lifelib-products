@@ -1,7 +1,7 @@
 """Run the PA_UK_S reference model and print its cash flow statement.
 
-    python uk/models/pension-annuity/run.py            # the worked-example scenario
-    python uk/models/pension-annuity/run.py 2          # the same contract, expected basis
+    python products/pension_annuity/run.py            # the worked-example scenario
+    python products/pension_annuity/run.py 2          # the same contract, expected basis
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

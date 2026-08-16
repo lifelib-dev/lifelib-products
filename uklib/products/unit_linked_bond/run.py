@@ -1,7 +1,7 @@
 """Run the ULB_UK_S reference model and print its unit fund and cash flow statements.
 
-    python uk/models/unit-linked-bond/run.py            # anchor cell (point_id = 1)
-    python uk/models/unit-linked-bond/run.py 2          # the accumulation cell
+    python products/unit_linked_bond/run.py            # anchor cell (point_id = 1)
+    python products/unit_linked_bond/run.py 2          # the accumulation cell
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

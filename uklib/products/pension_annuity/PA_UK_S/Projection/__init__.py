@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of the :mod:`~PA_UK_S` model.
+"""The by-contract projection of the :mod:`~.PA_UK_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -18,7 +18,7 @@ recursion (``lives_if(0, life) = 1``, ``cum_annuity_pp(0, kind) = 0``).
 .. rubric:: Input data
 
 Inputs are **external files**: plain CSVs living in the model folder's parent
-directory, ``uk/models/pension-annuity/``, read at run time rather than stored inside
+directory, ``products/pension_annuity/``, read at run time rather than stored inside
 the model. The model folder therefore holds nothing but formulas — no ``_data/``, no
 IOSpec, no embedded values — so a diff of the model shows logic changes only, and an
 input can be edited or swapped without rewriting the model. This follows
@@ -29,7 +29,7 @@ The consequence worth knowing: **the model is not portable on its own.** Copying
 ``PA_UK_S`` folder without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
-Each table has a filename Reference and a reader Cells, both on :mod:`~PA_UK_S.Data`,
+Each table has a filename Reference and a reader Cells, both on :mod:`~.PA_UK_S.Data`,
 reached here through the ``data`` Reference:
 
 ======================  ==============================  ==========================

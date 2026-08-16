@@ -1,7 +1,7 @@
 # Sources — Critical Illness Cover (United Kingdom)
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried
-over verbatim from `uk/_research/critical-illness.md` (the citation ground truth for
+over verbatim from `_research/critical-illness.md` (the citation ground truth for
 [S#]/[R#] tags). Ids are never renumbered. Sources from the research file that are not
 cited in `product-spec.md` or `technical-notes.md` are omitted (dropped here: R11).
 No new sources were fetched at drafting; nothing is marked "added at drafting".
@@ -167,9 +167,9 @@ reformed rule state is evidenced directly from the Rulebook text in R7 instead).
 
 These are cited with the [REG-R#] prefix to avoid collision with the product research
 file's own R-numbering. Full annotated entries (titles, publishers, URLs, retrieval
-markers, access date 2026-08-03) live in `uk/_research/regulatory-actuarial.md`
+markers, access date 2026-08-03) live in `_research/regulatory-actuarial.md`
 (provenance); the shared reference library is
-`uk/references/regulatory-and-actuarial-references.md` (same R-numbering, R1–R38
+`references/regulatory-and-actuarial-references.md` (same R-numbering, R1–R38
 frozen). Entries cited by the two documents in this directory:
 
 | Tag | Short title | Retrieval status (per that file) |
@@ -193,12 +193,12 @@ frozen). Entries cited by the two documents in this directory:
 
 ## Provenance note
 
-Extraction details live in `uk/_research/critical-illness.md`: that file records which
+Extraction details live in `_research/critical-illness.md`: that file records which
 facts came from which source, including the [unverified] flags, the failed fetch of
 the ABI Guide (R1), the Vitality access limitations and the S10 mirror caution, the
 fetch-tool-summary caveat on S2, the L&G retail-vs-intermediary variant split
 (S1 vs S3), and the gaps (no public CI premium rate cards; AC04/16-Series table values
 not obtained; Royal London underwriting limits; Zurich full terms). The cross-product
-bibliography `uk/_research/regulatory-actuarial.md` plays the same role for [REG-R#]
+bibliography `_research/regulatory-actuarial.md` plays the same role for [REG-R#]
 tags. Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md`
 are introduced at drafting and are not attributable to any source.

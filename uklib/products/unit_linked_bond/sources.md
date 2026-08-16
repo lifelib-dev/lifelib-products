@@ -1,7 +1,7 @@
 # Sources — Unit-Linked Investment Bond (United Kingdom)
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried
-over verbatim from `uk/_research/unit-linked-bond.md` (the citation ground truth for
+over verbatim from `_research/unit-linked-bond.md` (the citation ground truth for
 [S#]/[R#] tags). Ids are never renumbered. Sources from the research file that are not
 cited in `product-spec.md` or `technical-notes.md` are omitted (dropped here: S6, S8).
 No new sources were fetched at drafting; nothing is marked "added at drafting".
@@ -11,7 +11,7 @@ recorded as "undefined" and has since been corrected; its retrieval notes date t
 to 03/08/2026 — see the [R5] entry, "viewed as at 03/08/2026". The drafting date of the two
 documents in this directory is 2026-08-03.)
 Cross-product [REG-R#] entries carry their own access date, 2026-08-03, per
-`uk/_research/regulatory-actuarial.md`.
+`_research/regulatory-actuarial.md`.
 
 ---
 
@@ -157,8 +157,8 @@ read).
 
 These are cited with the [REG-R#] prefix to avoid collision with the product research
 file's own R-numbering. Full annotated entries (titles, publishers, URLs, retrieval
-markers, access date 2026-08-03) live in `uk/_research/regulatory-actuarial.md`; the
-shared reference library is `uk/references/regulatory-and-actuarial-references.md`
+markers, access date 2026-08-03) live in `_research/regulatory-actuarial.md`; the
+shared reference library is `references/regulatory-and-actuarial-references.md`
 (same R-numbering, R1–R38 frozen). Entries cited by the two documents in this
 directory:
 
@@ -180,13 +180,13 @@ directory:
 
 ## Provenance note
 
-Extraction details live in `uk/_research/unit-linked-bond.md`: that file records
+Extraction details live in `_research/unit-linked-bond.md`: that file records
 which facts came from which source, the [unverified] flags (including the unit vs
 non-unit "sterling" reserve terminology [R9], the CMI assured-lives table names [R8],
 and legacy allocation-rate/initial-unit mechanics), the not-parsed downloads (S6,
 S8), the browser-user-agent workaround for static.aviva.io (S3), and the research
 gaps (per-fund AMC rate cards, PruFund smoothing parameter values, Quilter
 segment-level terms). The cross-product bibliography
-`uk/_research/regulatory-actuarial.md` plays the same role for [REG-R#] tags.
+`_research/regulatory-actuarial.md` plays the same role for [REG-R#] tags.
 Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md` are
 introduced at drafting and are not attributable to any source.

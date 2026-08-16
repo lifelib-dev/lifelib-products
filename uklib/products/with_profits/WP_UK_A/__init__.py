@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for UK with-profits business.
 
-:mod:`~WP_UK_A` is the executable counterpart of
-``uk/products/with-profits/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.WP_UK_A` is the executable counterpart of
+``products/with_profits/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for single-policy model points on the
 two composite chassis those notes specify — a **unitised with-profits bond** and a
 **conventional with-profits endowment** — through the machinery that makes with-profits
@@ -30,14 +30,14 @@ lives.
 
 **Spaces.** The model contains two:
 
-:mod:`~WP_UK_A.Data`
+:mod:`~.WP_UK_A.Data`
     Reads the three input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~WP_UK_A.Projection`
+:mod:`~.WP_UK_A.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~WP_UK_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.WP_UK_A.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -79,7 +79,7 @@ the final bonus, the MVR and its regulatory bound, and all three payout bases.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("uk/models/with-profits/WP_UK_A")
+    >>> model = mx.read_model("products/with_profits/WP_UK_A")
     >>> model.Projection[1].result_cf()
 """
 

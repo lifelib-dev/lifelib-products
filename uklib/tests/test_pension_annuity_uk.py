@@ -1,7 +1,7 @@
 """Golden and structural tests for PA_UK_S.
 
 The golden values are the worked example in
-uk/products/pension-annuity/technical-notes.md ("Worked example"), which is a
+products/pension_annuity/technical-notes.md ("Worked example"), which is a
 **scenario**: GBP 100,000 buying GBP 5,400 a year for a male 65 with a female 62
 dependant at 50%, quarterly in arrears, fixed 3% escalation, value protection at 50% on
 the annuitant's death, no guarantee period -- and the annuitant dies in month 17 while

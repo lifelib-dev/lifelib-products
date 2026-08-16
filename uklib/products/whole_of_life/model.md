@@ -1,9 +1,9 @@
 # WOL_UK_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/whole-of-life/technical-notes.md`](../../products/whole-of-life/technical-notes.md);
+[`products/whole_of_life/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/whole-of-life/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the moratorium and its return-of-premiums benefit,
@@ -18,15 +18,15 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/whole-of-life/run.py         # the O50 anchor cell
-python uk/models/whole-of-life/run.py 5       # the underwritten cell
+python products/whole_of_life/run.py         # the O50 anchor cell
+python products/whole_of_life/run.py 5       # the underwritten cell
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/whole-of-life/WOL_UK_S")
+model = mx.read_model("products/whole_of_life/WOL_UK_S")
 model.Projection[1].result_cf()
 ```
 
@@ -44,7 +44,7 @@ model.Projection[1].result_cf()
 **Neither cell has an account value, a unit fund or a surrender value.** Both are pure
 decrement protection models: premiums in, death benefits and expenses out, weighted by
 survivorship. That is the deliberate contrast with
-[`WholeLife_US_A`](../../../us/models/whole-life/README.md), the U.S. whole life model in
+[`WholeLife_US_A`](../../../uslib/products/whole_life/model.md), the U.S. whole life model in
 the same library, which is built around a guaranteed cash value schedule, three-factor
 dividends, paid-up additions, a dividend accumulation balance and policy loans. None of
 that machinery exists here — no `cv_pp`, no `div_*`, no `pua_*`, no `loan_bal` — and a
@@ -164,12 +164,15 @@ The three input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `WOL_UK_S/` holds nothing but formulas:
 
 ```
-uk/models/whole-of-life/
+products/whole_of_life/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   lapse_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   WOL_UK_S/                   <- formulas only
     __init__.py                   (model docstring)
     _system.json

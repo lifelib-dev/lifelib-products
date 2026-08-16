@@ -6,14 +6,14 @@
 """Input data shared by every by-policy projection.
 
 The three input CSVs are read here, **once per model**, and referenced from
-:mod:`~ULB_UK_S.Projection` as ``data``. :mod:`~ULB_UK_S.Projection` is parameterized by
+:mod:`~.ULB_UK_S.Projection` as ``data``. :mod:`~.ULB_UK_S.Projection` is parameterized by
 ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its own cells
 cache; if the readers lived there, every model point would re-read every file. Holding
 them in an unparameterized Space reads each file once no matter how many policies are
 projected.
 
 Inputs are **external files**: plain CSVs in the model folder's parent directory,
-``uk/models/unit-linked-bond/``, rather than data stored inside the model. The model
+``products/unit_linked_bond/``, rather than data stored inside the model. The model
 folder therefore holds nothing but formulas — no ``_data/``, no IOSpec, no embedded
 values — so a diff of the model shows logic changes only. This follows
 ``annuallife.TradLife_A``; contrast ``basiclife.BasicTerm_S``, which keeps its inputs

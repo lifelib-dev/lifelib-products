@@ -1,7 +1,7 @@
 # Sources — Whole of Life Assurance (United Kingdom)
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried over
-verbatim from `uk/_research/whole-of-life.md` (the citation ground truth for [S#]/[R#] tags).
+verbatim from `_research/whole-of-life.md` (the citation ground truth for [S#]/[R#] tags).
 Ids are never renumbered. Sources from the research file that are not cited in
 `product-spec.md` or `technical-notes.md` are omitted (dropped here: R9 — CMI Limited
 website, fetched_ok: no; R10 — FCA MS24/1 Terms of Reference, not fetched; CMI-restriction
@@ -10,7 +10,7 @@ No new sources were fetched at drafting; nothing is marked "added at drafting".
 
 Access date: 2026-08-03. (The research file's access-date field, originally recorded as
 "undefined", has been corrected to 2026-08-03; see the Provenance note.) [REG-R#] sources
-were accessed 2026-08-03 per `uk/_research/regulatory-actuarial.md`.
+were accessed 2026-08-03 per `_research/regulatory-actuarial.md`.
 
 ---
 
@@ -182,8 +182,8 @@ premise is cited from [R2] instead).
 
 These are cited with the [REG-R#] prefix to avoid collision with the product research file's
 own R-numbering. Full annotated entries (titles, publishers, URLs, retrieval markers, access
-date 2026-08-03) live in `uk/_research/regulatory-actuarial.md` (the research provenance);
-the shared reference library is `uk/references/regulatory-and-actuarial-references.md` (same
+date 2026-08-03) live in `_research/regulatory-actuarial.md` (the research provenance);
+the shared reference library is `references/regulatory-and-actuarial-references.md` (same
 R-numbering, R1–R38 frozen). Entries cited by the two documents in this directory:
 
 | Tag | Short title | Retrieval status (per that file) |
@@ -208,7 +208,7 @@ R-numbering, R1–R38 frozen). Entries cited by the two documents in this direct
 
 ## Provenance note
 
-Extraction details live in `uk/_research/whole-of-life.md`: that file records which facts
+Extraction details live in `_research/whole-of-life.md`: that file records which facts
 came from which source, including the [unverified] flags (L&G/Dignity funeral option,
 ICOBS-vs-COBS classification at glossary level, market-share claims, qualifying-policy tax
 rules), the failed fetches (R9 — connection reset; R10 — not attempted), the Aviva document
@@ -217,6 +217,6 @@ no public insurer disclosure of a guaranteed-acceptance pricing mortality basis 
 The research file's access date, originally recorded as "undefined", has been corrected to
 2026-08-03; its internal evidence (document codes up to 11/2025–06/26; R3 viewed "in the
 present on 03/08/2026") is consistent with that date.
-The cross-product bibliography `uk/_research/regulatory-actuarial.md` (accessed 2026-08-03)
+The cross-product bibliography `_research/regulatory-actuarial.md` (accessed 2026-08-03)
 plays the same role for [REG-R#] tags. Standardizations marked **[std]** in `product-spec.md`
 and `technical-notes.md` are introduced at drafting and are not attributable to any source.

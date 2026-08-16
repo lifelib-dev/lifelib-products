@@ -1,7 +1,7 @@
 """Golden and structural tests for CI_UK_S.
 
 The golden values are the worked example in
-uk/products/critical-illness/technical-notes.md ("Worked example"), which projects the
+products/critical_illness/technical-notes.md ("Worked example"), which projects the
 anchor cell M40 / non-smoker / accelerated / 25-year term / GBP 100,000 sum assured /
 GBP 55.00 per month.  They are hard-coded here rather than pickled so that a reviewer
 can compare them against the notes by eye.

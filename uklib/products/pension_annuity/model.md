@@ -1,9 +1,9 @@
 # PA_UK_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/pension-annuity/technical-notes.md`](../../products/pension-annuity/technical-notes.md);
+[`products/pension_annuity/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/pension-annuity/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the instalment formula, the four escalation bases
@@ -19,15 +19,15 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/pension-annuity/run.py         # the worked-example scenario
-python uk/models/pension-annuity/run.py 2       # the same contract, expected basis
+python products/pension_annuity/run.py         # the worked-example scenario
+python products/pension_annuity/run.py 2       # the same contract, expected basis
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/pension-annuity/PA_UK_S")
+model = mx.read_model("products/pension_annuity/PA_UK_S")
 model.Projection[1].result_cf()
 ```
 
@@ -48,7 +48,7 @@ which is carried through `rating_factor()` rather than through any dynamic.
 
 ## Shared chassis with `SPIA_US_S`, and where the two part
 
-The U.S. counterpart is [`SPIA_US_S`](../../../us/models/immediate-annuity/README.md),
+The U.S. counterpart is [`SPIA_US_S`](../../../uslib/products/immediate_annuity/model.md),
 and the payout chassis is deliberately the same: a life-contingent instalment stream, a
 certain-period **floor** rather than a second stream, a refund-style death benefit
 measured against instalments already paid, and survival measured at the *payment point*
@@ -192,11 +192,14 @@ table, no charge scale, no bonus rates, no surrender-value schedule. They live *
 directory**, beside `run.py` — not inside the model folder:
 
 ```
-uk/models/pension-annuity/
+products/pension_annuity/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   PA_UK_S/                    <- formulas only
     __init__.py                   (model docstring)
     _system.json

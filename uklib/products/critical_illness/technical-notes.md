@@ -5,14 +5,14 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model
 for the standardized composite product defined in `product-spec.md` (same directory).
 This is not any single insurer's product. [S#]/[R#] tags refer to the source list in
-`sources.md` (numbering carried from `uk/_research/critical-illness.md`); [REG-R#]
+`sources.md` (numbering carried from `_research/critical-illness.md`); [REG-R#]
 tags refer to the cross-product reference library
-`uk/references/regulatory-and-actuarial-references.md` (its own R-numbering; research
-provenance in `uk/_research/regulatory-actuarial.md`). **[std]** marks
+`references/regulatory-and-actuarial-references.md` (its own R-numbering; research
+provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation; [unverified] marks
 claims not confirmed against a retrieved document. Parameter values are identical to
 those in `product-spec.md`. The model mirrors the term assurance reference model in
-`uk/products/term-assurance/` (base chassis); only CI-specific mechanics are new here.
+`products/term_assurance/` (base chassis); only CI-specific mechanics are new here.
 
 ---
 

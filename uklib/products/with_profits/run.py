@@ -1,8 +1,8 @@
 """Run the WP_UK_A reference model and print its payout and cash flow statements.
 
-    python uk/models/with-profits/run.py            # scenario A, the up market
-    python uk/models/with-profits/run.py 2          # scenario B, the down market
-    python uk/models/with-profits/run.py 5          # the conventional endowment
+    python products/with_profits/run.py            # scenario A, the up market
+    python products/with_profits/run.py 2          # scenario B, the down market
+    python products/with_profits/run.py 5          # the conventional endowment
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

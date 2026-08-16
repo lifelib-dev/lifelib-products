@@ -1,7 +1,7 @@
 """Run the CI_UK_S reference model and print its cash flow statement.
 
-    python uk/models/critical-illness/run.py            # anchor cell (point_id = 1)
-    python uk/models/critical-illness/run.py 2          # another model point
+    python products/critical_illness/run.py            # anchor cell (point_id = 1)
+    python products/critical_illness/run.py 2          # another model point
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

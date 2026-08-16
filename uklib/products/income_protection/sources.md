@@ -1,7 +1,7 @@
 # Sources — Individual Income Protection (United Kingdom)
 
 Source ids, titles, publishers, URLs, and retrieval markers are carried over verbatim
-from `uk/_research/income-protection.md` (the citation ground truth for [S#]/[R#]
+from `_research/income-protection.md` (the citation ground truth for [S#]/[R#]
 tags; ids S1–S12 and R1–R10 are frozen and never renumbered). All sources in the
 research file are cited in `product-spec.md` or `technical-notes.md`, so none are
 dropped. No new sources were fetched at drafting; nothing is marked "added at
@@ -9,7 +9,7 @@ drafting".
 
 Access date for all citations: 2026-08-03. (The research file's access-date field was
 originally left unfilled and has since been corrected to 2026-08-03, consistent with the
-shared UK regulatory library `uk/_research/regulatory-actuarial.md`, compiled in the same
+shared UK regulatory library `_research/regulatory-actuarial.md`, compiled in the same
 working session.)
 
 ---
@@ -172,8 +172,8 @@ working session.)
 These are cited with the [REG-R#] prefix to avoid collision with the product
 research file's own R-numbering. Full annotated entries (titles, publishers, URLs,
 retrieval markers, access date 2026-08-03) live in
-`uk/_research/regulatory-actuarial.md` (the research provenance); the shared
-reference library is `uk/references/regulatory-and-actuarial-references.md` (same
+`_research/regulatory-actuarial.md` (the research provenance); the shared
+reference library is `references/regulatory-and-actuarial-references.md` (same
 R-numbering, R1–R38 frozen). Entries cited by the two documents in this directory:
 
 | Tag | Short title | Retrieval status (per that file) |
@@ -198,7 +198,7 @@ R-numbering, R1–R38 frozen). Entries cited by the two documents in this direct
 
 ## Provenance note
 
-Extraction details live in `uk/_research/income-protection.md`: that file records
+Extraction details live in `_research/income-protection.md`: that file records
 which facts came from which source, including the [unverified] flags, the
 fetched_ok = false entries (R9, R10), the mirror-hosting caveat for S4 and S9
 (retrieved from intermediary mirrors at lifequote.co.uk because the insurer
@@ -206,7 +206,7 @@ originals are bot-blocked or superseded; document codes recorded for
 re-verification), and the edition-mismatch caveats (LV= S3 vs S4; Cirencester S11
 vs S12; The Exeter S7/S8 vs S9 — the newest contractual document is preferred where
 numbers conflict). The cross-product bibliography
-`uk/_research/regulatory-actuarial.md` plays the same role for [REG-R#] tags.
+`_research/regulatory-actuarial.md` plays the same role for [REG-R#] tags.
 Standardizations marked **[std]** in `product-spec.md` and `technical-notes.md` are
 introduced at drafting and are not attributable to any source; the [std] morbidity
 proxy tables in `technical-notes.md` are placeholders shaped like the CMI IP11

@@ -1,7 +1,7 @@
 """Golden and structural tests for WOL_UK_S.
 
 The golden values are the worked example in
-uk/products/whole-of-life/technical-notes.md ("Worked example"), which projects the
+products/whole_of_life/technical-notes.md ("Worked example"), which projects the
 over-50s anchor cell: entry age 70 last birthday, non-smoker, GBP 30.00 a month for a
 GBP 5,000 cash sum, premiums ceasing at month 240.  They are hard-coded here rather than
 pickled so that a reviewer can compare them against the notes by eye.

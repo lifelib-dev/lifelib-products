@@ -1,7 +1,7 @@
 # Sources — With-Profits Business (United Kingdom)
 
 Source ids ([S#] primary product/firm documents; [R#] regulatory/actuarial
-references) are carried **verbatim** from `uk/_research/with-profits.md` and are
+references) are carried **verbatim** from `_research/with-profits.md` and are
 frozen — never renumber. Only sources actually cited in `product-spec.md` or
 `technical-notes.md` are listed; unused research sources (S14, S15) are omitted but
 retain their numbers in the research file. No new sources were fetched at drafting.
@@ -179,9 +179,9 @@ successful fetches were performed on 2026-08-03; that date is used below.
 ## Cross-product references [REG-R#]
 
 [REG-R#] tags resolve against the UK cross-product reference library
-`uk/references/regulatory-and-actuarial-references.md` (ids R1–R38 frozen there;
+`references/regulatory-and-actuarial-references.md` (ids R1–R38 frozen there;
 prefixed REG- in product documents to avoid collision with the product research
-R-numbering above). Research provenance: `uk/_research/regulatory-actuarial.md`,
+R-numbering above). Research provenance: `_research/regulatory-actuarial.md`,
 compiled 2026-08-03. Entries cited by the two documents in this directory:
 
 - **REG-R1** — PRA Rulebook: Technical Provisions Part. https://www.prarulebook.co.uk/pra-rules/technical-provisions (fetched_ok: yes)
@@ -206,10 +206,10 @@ compiled 2026-08-03. Entries cited by the two documents in this directory:
 
 Extraction details — the key facts recorded per source, the extracted specification
 sections, the cross-insurer variation analysis and the gaps/caveats register that this
-product's documents draw on — live in `uk/_research/with-profits.md`. The
+product's documents draw on — live in `_research/with-profits.md`. The
 cross-product regulatory bibliography with full annotations lives in
-`uk/_research/regulatory-actuarial.md` (drafting provenance for
-`uk/references/regulatory-and-actuarial-references.md`). Notable recorded gaps
+`_research/regulatory-actuarial.md` (drafting provenance for
+`references/regulatory-and-actuarial-references.md`). Notable recorded gaps
 inherited by this specification: current declared bonus rates and EGRs were not
 collected (snapshot rates are [std]); original conventional policy conditions for
 closed books are unpublished (Chassis B anchors are [std]); Scottish Widows/Clerical

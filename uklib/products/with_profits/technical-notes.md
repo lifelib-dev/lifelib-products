@@ -5,10 +5,10 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model
 for the standardized composite product defined in `product-spec.md` (same directory).
 This is not any single insurer's fund. [S#]/[R#] tags refer to the source list in
-`sources.md` (numbering carried from `uk/_research/with-profits.md`); [REG-R#] tags
+`sources.md` (numbering carried from `_research/with-profits.md`); [REG-R#] tags
 refer to the cross-product reference library
-`uk/references/regulatory-and-actuarial-references.md` (its own R-numbering; research
-provenance in `uk/_research/regulatory-actuarial.md`). **[std]** marks
+`references/regulatory-and-actuarial-references.md` (its own R-numbering; research
+provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation; [unverified] marks
 claims not confirmed against a retrieved document. Parameter values are identical to
 those in `product-spec.md`. Mechanics anchors: PAC PPFM [S1], Phoenix PPFM [S4],

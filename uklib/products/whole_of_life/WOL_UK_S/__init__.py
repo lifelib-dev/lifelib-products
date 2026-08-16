@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for UK whole of life assurance.
 
-:mod:`~WOL_UK_S` is the executable counterpart of
-``uk/products/whole-of-life/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.WOL_UK_S` is the executable counterpart of
+``products/whole_of_life/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for single-policy model points of the
 two cells those notes specify, which share one engine:
 
@@ -37,14 +37,14 @@ product rather than a small adjustment.
 
 **Spaces.** The model contains two:
 
-:mod:`~WOL_UK_S.Data`
+:mod:`~.WOL_UK_S.Data`
     Reads the three input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~WOL_UK_S.Projection`
+:mod:`~.WOL_UK_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~WOL_UK_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.WOL_UK_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -81,7 +81,7 @@ month-12/13 moratorium discontinuity and the month-167 crossover.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("uk/models/whole-of-life/WOL_UK_S")
+    >>> model = mx.read_model("products/whole_of_life/WOL_UK_S")
     >>> model.Projection[1].result_cf()
 """
 

@@ -1,9 +1,9 @@
 # WP_UK_A — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/with-profits/technical-notes.md`](../../products/with-profits/technical-notes.md);
+[`products/with_profits/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/with-profits/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > mechanics are sourced — the asset share item list and its regulatory codification,
@@ -17,16 +17,16 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/with-profits/run.py           # scenario A, the up market
-python uk/models/with-profits/run.py 2         # scenario B, the down market
-python uk/models/with-profits/run.py 5         # the conventional endowment
+python products/with_profits/run.py           # scenario A, the up market
+python products/with_profits/run.py 2         # scenario B, the down market
+python products/with_profits/run.py 5         # the conventional endowment
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/with-profits/WP_UK_A")
+model = mx.read_model("products/with_profits/WP_UK_A")
 model.Projection[1].result_cf()
 ```
 
@@ -208,12 +208,15 @@ The three input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `WP_UK_A/` holds nothing but formulas:
 
 ```
-uk/models/with-profits/
+products/with_profits/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   lapse_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   WP_UK_A/                    <- formulas only
     __init__.py                   (model docstring)
     _system.json

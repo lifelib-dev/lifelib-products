@@ -1,9 +1,9 @@
 # ULB_UK_S — reference liability cash flow model
 
 **Status:** Draft, 2026-08-15. Built from
-[`uk/products/unit-linked-bond/technical-notes.md`](../../products/unit-linked-bond/technical-notes.md);
+[`products/unit_linked_bond/technical-notes.md`](technical-notes.md);
 the product it implements is specified in
-[`product-spec.md`](../../products/unit-linked-bond/product-spec.md).
+[`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the 100.1% death uplift, the surrender value as
@@ -17,15 +17,15 @@ the product it implements is specified in
 ## Run it
 
 ```bash
-python uk/models/unit-linked-bond/run.py         # the anchor cell
-python uk/models/unit-linked-bond/run.py 2       # the accumulation cell
+python products/unit_linked_bond/run.py         # the anchor cell
+python products/unit_linked_bond/run.py 2       # the accumulation cell
 ```
 
 Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("uk/models/unit-linked-bond/ULB_UK_S")
+model = mx.read_model("products/unit_linked_bond/ULB_UK_S")
 model.Projection[1].result_cf()
 ```
 
@@ -168,12 +168,15 @@ The three input CSVs live **in this directory**, beside `run.py` — not inside 
 folder. `ULB_UK_S/` holds nothing but formulas:
 
 ```
-uk/models/unit-linked-bond/
+products/unit_linked_bond/
   model_point_table.csv        <- inputs live here
   mort_table.csv
   surr_table.csv
   run.py
-  README.md
+  model.md
+  product-spec.md              <- the documents this model implements
+  technical-notes.md
+  sources.md
   ULB_UK_S/                   <- formulas only
     __init__.py                   (model docstring)
     _system.json
@@ -252,7 +255,7 @@ premium and allowance clock), joint last-death bonds, segment-level granularity 
 level is exact only while all 100 segments stay identical), settlement frictions, and
 smoothed and with-profits funds — PruFund's EGR and smoothing limits and MVR-bearing
 funds change the unit-price dynamics and add guarantee costs, and belong to
-[`uk/models/with-profits`](../with-profits/README.md), not to this recursion.
+[`products/with_profits`](../with_profits/model.md), not to this recursion.
 
 ## Tests
 

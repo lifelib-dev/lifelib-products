@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for UK individual income protection.
 
-:mod:`~IP_UK_S` is the executable counterpart of
-``uk/products/income-protection/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.IP_UK_S` is the executable counterpart of
+``products/income_protection/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for a single-policy model point of
 full-term guaranteed-premium own-occupation income protection: a monthly income benefit
 payable in arrears after a deferred period, escalating in claim, ceasing at recovery,
@@ -29,14 +29,14 @@ materially misstates claim run-off, and is the notes' first-listed pitfall.
 
 **Spaces.** The model contains two:
 
-:mod:`~IP_UK_S.Data`
+:mod:`~.IP_UK_S.Data`
     Reads the five input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~IP_UK_S.Projection`
+:mod:`~.IP_UK_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~IP_UK_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.IP_UK_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -77,7 +77,7 @@ month-one active-lives figures alongside it.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("uk/models/income-protection/IP_UK_S")
+    >>> model = mx.read_model("products/income_protection/IP_UK_S")
     >>> model.Projection[1].result_cf()
 """
 

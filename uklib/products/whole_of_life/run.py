@@ -1,7 +1,7 @@
 """Run the WOL_UK_S reference model and print its cash flow statement.
 
-    python uk/models/whole-of-life/run.py            # the O50 anchor cell
-    python uk/models/whole-of-life/run.py 5          # the underwritten cell
+    python products/whole_of_life/run.py            # the O50 anchor cell
+    python products/whole_of_life/run.py 5          # the underwritten cell
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """

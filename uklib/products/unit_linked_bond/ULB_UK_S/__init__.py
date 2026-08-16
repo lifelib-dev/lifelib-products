@@ -5,8 +5,8 @@
 
 """Reference liability cash flow model for a UK unit-linked investment bond.
 
-:mod:`~ULB_UK_S` is the executable counterpart of
-``uk/products/unit-linked-bond/technical-notes.md`` in the lifelib-products library. It
+:mod:`~.ULB_UK_S` is the executable counterpart of
+``products/unit_linked_bond/technical-notes.md`` in the lifelib-products library. It
 projects gross liability cash flows for a single-policy model point of a modern
 clean-charge onshore unit-linked bond: a single premium, a death benefit of 100.1% of
 the bid value of units, no surrender penalty, and the 5% a year tax-deferred withdrawal
@@ -33,14 +33,14 @@ management charge itself.
 
 **Spaces.** The model contains two:
 
-:mod:`~ULB_UK_S.Data`
+:mod:`~.ULB_UK_S.Data`
     Reads the three input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~ULB_UK_S.Projection`
+:mod:`~.ULB_UK_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~ULB_UK_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.ULB_UK_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -76,7 +76,7 @@ the reconciliation that closes them — plus the insurer-side extraction beside 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("uk/models/unit-linked-bond/ULB_UK_S")
+    >>> model = mx.read_model("products/unit_linked_bond/ULB_UK_S")
     >>> model.Projection[1].result_cf()
 """
 

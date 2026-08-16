@@ -1,7 +1,7 @@
 """Golden and structural tests for ULB_UK_S.
 
 The golden values are the worked example in
-uk/products/unit-linked-bond/technical-notes.md ("Worked example"), which projects the
+products/unit_linked_bond/technical-notes.md ("Worked example"), which projects the
 anchor cell: male 65, GBP 100,000 in 100 segments, AMC 1.00%, further costs 0.10%, tax
 provision 20%, death uplift 1.001, a 5% gross fund return and GBP 416.67 a month of
 withdrawals.  They are hard-coded here rather than pickled so that a reviewer can compare

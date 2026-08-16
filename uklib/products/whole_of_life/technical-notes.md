@@ -5,9 +5,9 @@
 **Scope note.** These notes specify a reference liability cash flow projection model for the
 standardized composite product defined in `product-spec.md` (same directory). This is not any
 single insurer's product. [S#]/[R#] tags refer to the source list in
-`uk/_research/whole-of-life.md` via `sources.md`; [REG-R#] tags refer to the cross-product
-reference library `uk/references/regulatory-and-actuarial-references.md` (its own
-R-numbering; research provenance in `uk/_research/regulatory-actuarial.md`). **[std]** marks
+`_research/whole-of-life.md` via `sources.md`; [REG-R#] tags refer to the cross-product
+reference library `references/regulatory-and-actuarial-references.md` (its own
+R-numbering; research provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation; [unverified] marks claims not
 confirmed against a retrieved document. Parameter values are identical to those in
 `product-spec.md`. Two cells share one engine:
@@ -337,7 +337,7 @@ table): q(y) = 0.024 x 1.10^(y−1) — i.e. a 0.020 population-style rate at 70
 anti-selection loading, with 10% p.a. age progression; lapse 8%/6%/4%/4% (years 1/2/3–5/6+),
 0 after cessation; δ_acc = 3%. Monthly rates: q_m(1) = 1 − (1−0.024)^(1/12) = 0.0020223;
 w_m(1) = 1 − (1−0.08)^(1/12) = 0.0069244. Expenses omitted from the table for clarity.
-E[death outgo](t) = l(t−1) x q_m x (0.97 x DB_na + 0.03 x DB_ac) for t <= 12, and
+`E[death outgo](t)` = l(t−1) x q_m x (0.97 x DB_na + 0.03 x DB_ac) for t <= 12, and
 l(t−1) x q_m x 5,000 thereafter. All £, full precision carried, displayed rounded.
 
 | t | y | CumPrem | DB non-acc | DB acc | l(t−1) | E[premium] | E[death outgo] |

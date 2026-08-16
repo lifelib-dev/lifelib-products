@@ -1,7 +1,7 @@
 """Golden and structural tests for Term_UK_A.
 
 The golden values are the worked example in
-uk/products/term-assurance/technical-notes.md ("Worked example"), which projects the
+products/term_assurance/technical-notes.md ("Worked example"), which projects the
 anchor cell M35 / non-smoker / level shape / 25-year term / GBP 150,000 sum assured /
 GBP 12.00 per month.  They are hard-coded here rather than pickled so that a reviewer
 can compare them against the notes by eye.

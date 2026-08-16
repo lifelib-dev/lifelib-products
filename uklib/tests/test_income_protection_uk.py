@@ -1,7 +1,7 @@
 """Golden and structural tests for IP_UK_S.
 
 The golden values are the worked example in
-uk/products/income-protection/technical-notes.md ("Worked example"), which is a
+products/income_protection/technical-notes.md ("Worked example"), which is a
 **claims-in-payment** recursion: a claim in payment from duration zero on the base cell's
 level-cover variant, benefit GBP 2,000 a month, duration-year-1 termination rates,
 discounted at a flat 3%.  Model point 2 is that cell.  The notes also give the month-one

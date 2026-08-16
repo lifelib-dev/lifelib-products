@@ -5,19 +5,19 @@
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
 carrying a source tag — [S#] (primary product documents) and [R#] (regulatory/actuarial
-references), both numbered per `uk/_research/critical-illness.md` and resolved against
+references), both numbered per `_research/critical-illness.md` and resolved against
 `sources.md` in this directory — were extracted from the cited document. [REG-R#] tags
 resolve against the cross-product reference library
-`uk/references/regulatory-and-actuarial-references.md` (its own R-numbering, distinct
+`references/regulatory-and-actuarial-references.md` (its own R-numbering, distinct
 from the product research file's R#; research provenance in
-`uk/_research/regulatory-actuarial.md`). Values marked **[std]** are standardizations
+`_research/regulatory-actuarial.md`). Values marked **[std]** are standardizations
 introduced for the reference implementation; each [std] table row carries a footnote
 giving the rationale and the observed range across insurers. Facts the research file
 could not verify are flagged [unverified].
 
 **Base-chassis rule.** The representative product is an *accelerated* critical illness
 benefit built on the level, guaranteed-premium term assurance chassis specified in
-`uk/products/term-assurance/` (companion product folder). Term-chassis provisions —
+`products/term_assurance/` (companion product folder). Term-chassis provisions —
 premium guarantee mechanics, terminal illness benefit, the first-year suicide clause on
 the life element, grace and lapse, indexation (increasing cover) mechanics, and the
 guaranteed insurability / life-change options — are cross-referenced there and only the

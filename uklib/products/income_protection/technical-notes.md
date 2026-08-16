@@ -6,9 +6,9 @@
 for the standardized composite product defined in `product-spec.md` (same directory).
 This is not any single insurer's product. [S#]/[R#] tags refer to the source list in
 `sources.md`, whose numbering is carried verbatim from
-`uk/_research/income-protection.md`; [REG-R#] tags refer to the cross-product
-reference library `uk/references/regulatory-and-actuarial-references.md` (its own
-R-numbering; research provenance in `uk/_research/regulatory-actuarial.md`).
+`_research/income-protection.md`; [REG-R#] tags refer to the cross-product
+reference library `references/regulatory-and-actuarial-references.md` (its own
+R-numbering; research provenance in `_research/regulatory-actuarial.md`).
 **[std]** marks standardizations introduced for the reference implementation;
 [unverified] marks claims not confirmed against a retrieved document. Parameter
 values are identical to those in `product-spec.md`.

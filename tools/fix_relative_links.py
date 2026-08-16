@@ -22,6 +22,10 @@ A target that exists only under ``doc/source/libraries/`` is accepted as-is: the
 landing pages and the autodoc pages are Sphinx scaffolding and are deliberately not shipped
 with the library, so a link to one is right even though nothing is there on disk.
 
+Code is excluded from the scan in all three of its forms -- fenced blocks, four-space
+indented blocks, and inline spans.  Notation like ``E[death outgo](t)`` appears in each,
+and is a markdown link to any scanner that cannot see what encloses it.
+
 Usage::
 
     python tools/fix_relative_links.py uslib --dry-run
@@ -29,6 +33,7 @@ Usage::
 """
 import re
 import sys
+import os
 import pathlib
 import collections
 
@@ -36,6 +41,46 @@ import collections
 LINK = re.compile(r'\]\(([^)\s#]+)(#[^)\s]*)?\)')
 FENCE = re.compile(r'^\s*(```|~~~)', re.M)
 EXTERNAL = re.compile(r'^(?:[a-z][a-z0-9+.-]*:|//|#)')
+
+
+CODE_SPAN = re.compile(r'(`+)(?:(?!\1).)*?\1', re.S)
+
+
+def blank_code(text):
+    """A copy of ``text`` with non-fenced code blanked, offsets preserved.
+
+    Two things a link scanner must not read as prose, neither of them a fence:
+
+    * a **four-space indented block**, which is a code block in CommonMark exactly as a
+      fenced one is.  Formula notation inside one -- ``E[death outgo](t)`` in the
+      whole-of-life notes -- looks precisely like a markdown link to a scanner that
+      cannot see the indentation.
+    * an **inline code span**.  The same notation appears in prose, backticked, and the
+      backticks are what stop CommonMark reading it as a link -- so a scanner that
+      ignores them contradicts the renderer.  (P0 hit this in a different scan: four
+      angle-bracket tokens flagged in a README were already inside backticks.)
+
+    Reporting either wastes a reviewer's time; *repairing* one would rewrite a path
+    inside a code sample, which is worse.  Offsets are preserved rather than the text
+    removed, because the caller indexes back into the original to place its edits.
+    """
+    out, in_fence, blank_before = [], False, True
+    for line in text.splitlines(keepends=True):
+        stripped = line.lstrip()
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            out.append(line)
+            blank_before = False
+            continue
+        indented = line.startswith(("    ", "\t"))
+        if not in_fence and indented and blank_before:
+            out.append(" " * (len(line) - 1) + line[-1] if line.endswith("\n")
+                       else " " * len(line))
+        else:
+            out.append(line)
+        if not in_fence and not indented:
+            blank_before = not line.strip()
+    return CODE_SPAN.sub(lambda m: " " * (m.end() - m.start()), "".join(out))
 
 
 def prose_spans(text):
@@ -56,10 +101,17 @@ def doc_here(path, library):
 
 
 def relative(absolute, source_dir):
-    """``absolute`` expressed relative to ``source_dir``, POSIX-style, or None."""
+    """``absolute`` expressed relative to ``source_dir``, POSIX-style, or None.
+
+    ``os.path.relpath`` rather than ``Path.relative_to(..., walk_up=True)``, which needs
+    Python 3.12 -- the library floor is set by modelx and pandas, and there is no reason
+    for a link fixer to raise it.  The two agree on every path that has an answer; both
+    fail on paths with no common anchor, which is what the guard is for.
+    """
     try:
-        parts = pathlib.Path(absolute).resolve().relative_to(
-            source_dir.resolve(), walk_up=True).parts
+        parts = pathlib.Path(
+            os.path.relpath(pathlib.Path(absolute).resolve(),
+                            source_dir.resolve())).parts
     except (ValueError, OSError):
         return None
     return str(pathlib.PurePosixPath(*parts))
@@ -114,9 +166,12 @@ def main(argv):
 
     for path in sorted(library.rglob("*.md")):
         text = original = path.read_text(encoding="utf-8")
+        # Scan a copy with indented code blocks blanked, but edit the original: the two
+        # are the same length, so an offset means the same thing in both.
+        scan = blank_code(text)
         edits = []
-        for start, end in prose_spans(text):
-            for m in LINK.finditer(text, start, end):
+        for start, end in prose_spans(scan):
+            for m in LINK.finditer(scan, start, end):
                 target = m.group(1)
                 if EXTERNAL.match(target):
                     continue
