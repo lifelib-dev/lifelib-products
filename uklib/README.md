@@ -63,7 +63,7 @@ other sense of `S`.
 
 That name is deliberately not derivable from the folder slug — `unit_linked_bond` spelled
 out is unusable in a model name — so the pairing is registered once in
-[`tests/conftest.py`](tests/conftest.py), and `tests/test_model_conventions.py` asserts
+[`tests/conftest.py`](tests/conftest.py), and `tests/test_model_conventions_uk.py` asserts
 that the registry, the directory on disk and the model's own `_name` all agree, along with
 the country and grid tags.
 

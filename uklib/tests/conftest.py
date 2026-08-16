@@ -10,7 +10,7 @@ canonical locator resolves to the *installed* library, so a copy would silently 
 lifelib's pristine models instead of the user's edited ones, and pass while proving
 nothing.
 
-:data:`MODELS` is the registry ``test_model_conventions.py`` is parametrized over, so
+:data:`MODELS` is the registry ``test_model_conventions_uk.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
 fails.  The metadata records the projection basis, which is not uniform across the
 library — some products run on an annual grid and some on a monthly one — and records
@@ -37,7 +37,7 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # basiclife/BasicTerm_S and savings/CashValue_SE are the monthly ones.
 #
 # This pairing is not derivable from the folder slug — "unit_linked_bond" spelled out is
-# unusable in a model name — so it lives here, and test_model_conventions.py asserts name,
+# unusable in a model name — so it lives here, and test_model_conventions_uk.py asserts name,
 # folder and the model's own _name all agree.
 MODELS = {
     # Protection
