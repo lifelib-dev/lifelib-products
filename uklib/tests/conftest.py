@@ -42,6 +42,7 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 MODELS = {
     # Protection
     "Term_UK_A": ("products/term_assurance/Term_UK_A", ANNUAL),
+    "CI_UK_S": ("products/critical_illness/CI_UK_S", MONTHLY),
 }
 
 
@@ -62,3 +63,17 @@ def term_assurance():
 def uk_term_anchor(term_assurance):
     """Model point 1 — the UK term worked-example anchor cell."""
     return term_assurance.Projection[1]
+
+
+@pytest.fixture(scope="module")
+def critical_illness():
+    """The CI_UK_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("CI_UK_S"))
+    yield model
+    model.close()
+
+
+@pytest.fixture(scope="module")
+def uk_ci_anchor(critical_illness):
+    """Model point 1 — the UK critical illness worked-example anchor cell."""
+    return critical_illness.Projection[1]
