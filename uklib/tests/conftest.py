@@ -43,6 +43,7 @@ MODELS = {
     # Protection
     "Term_UK_A": ("products/term_assurance/Term_UK_A", ANNUAL),
     "CI_UK_S": ("products/critical_illness/CI_UK_S", MONTHLY),
+    "IP_UK_S": ("products/income_protection/IP_UK_S", MONTHLY),
 }
 
 
@@ -77,3 +78,17 @@ def critical_illness():
 def uk_ci_anchor(critical_illness):
     """Model point 1 — the UK critical illness worked-example anchor cell."""
     return critical_illness.Projection[1]
+
+
+@pytest.fixture(scope="module")
+def income_protection():
+    """The IP_UK_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("IP_UK_S"))
+    yield model
+    model.close()
+
+
+@pytest.fixture(scope="module")
+def uk_ip_claim(income_protection):
+    """Model point 2 — the claims-in-payment cell the worked example computes."""
+    return income_protection.Projection[2]
