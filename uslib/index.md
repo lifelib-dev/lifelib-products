@@ -3,6 +3,11 @@
 
 # The **uslib** Library
 
+```{warning}
+{mod}`uslib` is in its draft stage, and its contents are subject to change as development
+continues.
+```
+
 ## Overview
 
 The **uslib** library packages **twelve reference liability cash flow projection models**
