@@ -35,6 +35,81 @@ Chassis relationships: critical-illness states only its deltas against the
 unit-linked-bond's smoothed-fund (PruFund) variation cross-references the
 [with-profits](products/with_profits/technical-notes.md) mechanics.
 
+## Executable models
+
+Each `products/<product>/` directory holds its model **beside the documents that specify
+it** — the modelx model folder, its CSV inputs, a `run.py`, and a `model.md` mapping every
+cells back to the notes section it implements.
+
+All seven products are implemented. Every model reproduces its own technical notes'
+worked example, asserted cell by cell to the precision the notes display.
+
+| Product | Model | Grid | Verified against |
+|---|---|---|---|
+| term_assurance | [`products/term_assurance`](products/term_assurance/model.md) — `Term_UK_A` | annual | the notes' 25-year worked example row by row on its applied-rate basis, plus all three benefit shapes |
+| critical_illness | [`products/critical_illness`](products/critical_illness/model.md) — `CI_UK_S` | monthly | the accelerated anchor cell month by month, plus the overlap factor and the standalone variant |
+| income_protection | [`products/income_protection`](products/income_protection/model.md) — `IP_UK_S` | monthly | the claims-in-payment recursion and the month-one active-lives figures beside it |
+| whole_of_life | [`products/whole_of_life`](products/whole_of_life/model.md) — `WOL_UK_S` | monthly | the over-50s anchor cell across the moratorium, the crossover and the Payout Promise |
+| with_profits | [`products/with_profits`](products/with_profits/model.md) — `WP_UK_A` | annual | **both scenarios** of the two-scenario worked example, step by step, plus the endowment maturity line |
+| unit_linked_bond | [`products/unit_linked_bond`](products/unit_linked_bond/model.md) — `ULB_UK_S` | monthly | the unit fund table, the year-one totals, and the insurer-side extraction beside them |
+| pension_annuity | [`products/pension_annuity`](products/pension_annuity/model.md) — `PA_UK_S` | monthly | the joint-life scenario through the annuitant's death in month 17, and the value-protection run-off |
+
+Model names are `<product>_<country>_<grid>`: the short name the product is actually known
+by — CI, IP, WOL, ULB, WP, PA — then `UK`, then `_A` for an annual step or `_S` for a
+monthly one. The grid letters follow lifelib, where `annuallife/TradLife_A` is the
+annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are the monthly
+ones; all seven models here are scalar single-model-point projections, which is lifelib's
+other sense of `S`.
+
+That name is deliberately not derivable from the folder slug — `unit_linked_bond` spelled
+out is unusable in a model name — so the pairing is registered once in
+[`tests/conftest.py`](tests/conftest.py), and `tests/test_model_conventions.py` asserts
+that the registry, the directory on disk and the model's own `_name` all agree, along with
+the country and grid tags.
+
+The registry is per library, but the contract it enforces is the same one the
+[U.S. models](../uslib/index.md#executable-models) are held to: two Spaces (`Data` reads
+the input CSVs once per model, `Projection` is parameterized by `point_id`), inputs as
+**external** CSVs beside `run.py` so the model folder holds nothing but formulas, and a
+`Projection` docstring carrying the mapping from the technical notes' actuarial symbols to
+the cells names. Cells names come from lifelib — `basiclife/BasicTerm_S` first, then
+`savings/CashValue_SE` — and the shared vocabulary table in
+[uslib/index.md](../uslib/index.md#shared-vocabulary) is the settled ruling for both.
+
+### What is UK-specific about these models
+
+Three things recur across the set and are worth knowing before reading any one of them.
+
+**Every mortality and morbidity basis shipped here is a [std] proxy.** The CMI's tables —
+the "16" Series assured-lives tables, SAPS S3/S4, IP11, the CI diagnosis tables — are
+restricted to Authorised Users, so no current UK insured rate can be redistributed. The
+decrement tables shipped here — `mort_table.csv`, and the CI, inception and termination
+tables beside them — are ONS-shaped or notes-derived constructions, anchored so that the
+model's best-estimate factor reproduces the notes' own placeholder rate exactly. **This is
+the single largest gap between these models and a production one**, and it is why every
+`model.md` opens by saying the model is a mechanics demonstration rather than a pricing or
+reserving result.
+
+**Where a worked example is on a different basis from a realistic run, the basis is a
+model point column** rather than a switch buried in a formula — the `mort_basis` column in
+both `Term_UK_A` and `PA_UK_S` — following `uslib/products/immediate_annuity`'s precedent.
+The alternative, silently running the notes' illustrative basis as if it were the
+projection basis, is the failure this pattern exists to prevent.
+
+**Scope limits are stated and validated against, not faked.** With-profits' smoothed-fund
+(PruFund) chassis is out of scope because its smoothing limits are daily and quarterly and
+an annual grid smooths away the mechanics that define it, so `WP_UK_A.chassis()` rejects it
+by name; the stochastic guarantee valuation the with-profits notes require is out of scope
+and the model says what it does and does not produce. Where a deterministic run cannot
+reach a mechanic, that is stated rather than smoothed over: `PA_UK_S`'s RPI catch-up
+ratchet degenerates to fixed escalation under a monotone inflation path, because the zero
+floor, the ratchet and the LPI cap are all inflation options that a deterministic path
+values at intrinsic only; and `IP_UK_S` holds the amount-payable ratio at 1, which
+overstates outgo and understates nothing.
+
+Run the suite with `python -m pytest uklib/tests -q` from the repository root; see
+[requirements.txt](../requirements.txt) for the modelx version floor.
+
 ## Regulatory and actuarial reference library
 
 [references/regulatory-and-actuarial-references.md](references/regulatory-and-actuarial-references.md)
