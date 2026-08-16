@@ -10,13 +10,13 @@ for the individual life insurance and annuity products sold in the United States
 with modelx — and, for each one, the product specification and technical notes the model
 was built from.
 
-The models are the centre of the library. Each is a scalar, single-model-point projection
+The models are the centre of the library. Each is a by-model-point projection
 of one product's gross liability cash flows: premiums, claims, surrenders, withdrawals,
 expenses and commissions, on the product's own processing order and timing. None of them
 discounts — every model publishes the cash flows and leaves discounting, reserving and
 capital to a layer that consumes them.
 
-What distinguishes these models is that **each one reproduces a documented worked example,
+**Each one of these models reproduces a documented worked example,
 asserted cell by cell to the precision the notes display**. The chain is deliberate and
 complete in both directions:
 
@@ -53,8 +53,9 @@ Model names are `<product>_<country>_<grid>`: the short name the product is actu
 by — `MYGA`, `FIA`, `RILA`, `SPIA`, `DIA`, `ULSG` — then `US`, then `_A` for an annual step
 or `_S` for a monthly one. The grid letters follow lifelib, where `annuallife/TradLife_A` is
 the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are the monthly
-ones; all twelve here are scalar single-model-point projections, which is lifelib's other
-sense of `S`.
+ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
+the vectorized `_M` models — and that is true of all twelve here, whether or not they carry
+the letter.
 
 **Life**
 
