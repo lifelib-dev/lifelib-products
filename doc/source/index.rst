@@ -11,14 +11,13 @@ models they describe, not under ``doc/``, and are mirrored into the doc tree at 
    :maxdepth: 2
 
    libraries/uslib/index
+   libraries/uklib/index
 
-The **uslib** library covers twelve U.S. individual life and annuity product types. Each
-product directory holds its representative specification, the liability cash flow model
-derived from it, the modelx model itself, the cells reference generated from that model's
+The **uslib** library covers twelve U.S. individual life and annuity product types; the
+**uklib** library covers seven UK ones, including the pension annuity. Each product
+directory holds its representative specification, the liability cash flow model derived
+from it, the modelx model itself, the cells reference generated from that model's
 docstrings, and the source list every citation resolves against.
-
-The United Kingdom section is not yet a library — it is still a country section in the
-older layout and is not built here. See ``uk/`` in the repository.
 
 .. _create-a-project:
 
@@ -29,10 +28,12 @@ Inside lifelib this label belongs to the *quickstart* page, where ``lifelib.crea
 introduced. It is defined here so the library's own pages resolve while they still live in
 this repository, and it does not travel with them: this page stays behind at the merge.
 
-Until then, the library is simply a directory — clone the repository and work in ``uslib/``
-directly. Each model reads its inputs from its own product directory, so it runs in place::
+Until then, each library is simply a directory — clone the repository and work in
+``uslib/`` or ``uklib/`` directly. Each model reads its inputs from its own product
+directory, so it runs in place::
 
     python uslib/products/term_life/run.py
+    python uklib/products/term_assurance/run.py
 
 .. note::
 

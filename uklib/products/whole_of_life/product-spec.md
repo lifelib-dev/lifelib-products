@@ -1,4 +1,4 @@
-# Whole of Life Assurance — Representative Product Specification (United Kingdom)
+# Product Specification
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03; see `sources.md`).
 

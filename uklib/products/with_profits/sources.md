@@ -1,4 +1,4 @@
-# Sources — With-Profits Business (United Kingdom)
+# Sources
 
 Source ids ([S#] primary product/firm documents; [R#] regulatory/actuarial
 references) are carried **verbatim** from `_research/with-profits.md` and are

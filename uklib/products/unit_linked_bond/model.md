@@ -1,4 +1,4 @@
-# ULB_UK_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/unit_linked_bond/technical-notes.md`](technical-notes.md);

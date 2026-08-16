@@ -14,7 +14,7 @@ benefit** — with terminal illness inside the death decrement, an optional RPI
 indexation option, and **no tail states of any kind**: cover ceases at the end of the
 term with no maturity value, no renewal and no conversion.
 
-That last point is the structural difference from :mod:`Term_US_A`, the U.S. model in
+That last point is the structural difference from :mod:`.Term_US_A`, the U.S. model in
 the same library. A U.S. level premium term policy jumps to ART rates at the end of
 the level period and runs on to attained age 95; a UK policy simply stops. There is no
 post-level-term phase, no shock lapse, no jump ratio and no mortality deterioration

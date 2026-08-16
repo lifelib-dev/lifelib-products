@@ -1,4 +1,4 @@
-# Sources — Individual Income Protection (United Kingdom)
+# Sources
 
 Source ids, titles, publishers, URLs, and retrieval markers are carried over verbatim
 from `_research/income-protection.md` (the citation ground truth for [S#]/[R#]

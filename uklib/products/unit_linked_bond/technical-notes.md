@@ -1,4 +1,4 @@
-# Unit-Linked Investment Bond — Liability Cash Flow Model: Technical Notes (United Kingdom)
+# Technical Notes
 
 **Status:** Draft, 2026-08-03 (all cited sources accessed 2026-08-03; see `sources.md`).
 

@@ -1,4 +1,4 @@
-# WOL_UK_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/whole_of_life/technical-notes.md`](technical-notes.md);

@@ -133,6 +133,8 @@ the contract.
 
 .. rubric:: The asset share is a state variable, not a cash flow
 
+::
+
     AS(t) = [AS(t-1) + P(t) - W_AS(t)] (1 + r(t)) (1 - c_amc - c_g) - ST(t) - MC(t) + M(t)
 
 Every item in it is a recorded deduction from or addition to a retrospective
@@ -154,15 +156,17 @@ A declared regular bonus increases the guaranteed benefit permanently. The unit 
 therefore never falls — ``b(t) >= 0`` is a contractual floor, not a modelling choice —
 and every declaration converts non-guaranteed final bonus into guaranteed benefit
 without changing the target payout. That is the whole tension the discretion manages,
-and it is why :data:`guar_fill_target` and :data:`bonus_speed` are genuine modelling
+and it is why ``guar_fill_target`` and ``bonus_speed`` are genuine modelling
 choices with no public calibration rather than parameters someone measured.
 
 The base projection holds the model point's snapshot rate level, as the notes specify.
 :func:`bonus_supportable` and the smoothed setting rule are implemented and switched off
-behind :data:`bonus_rule_on`, so the revision module is available for scenario work
+behind ``bonus_rule_on``, so the revision module is available for scenario work
 without disturbing the reproduction of the worked example.
 
 .. rubric:: Smoothing: the cap, then the corridor
+
+::
 
     S_raw = AS(t)
     S_cap = clamp(S_raw, (1-sigma) S(t-1), (1+sigma) S(t-1))
@@ -610,15 +614,24 @@ def misc_surplus_pp(t):
 def asset_share_at(t, timing):
     """The asset share at a point inside policy year t.
 
-    ``"BEF_RETURN"``  ``AS(t-1) + P(t) - W_AS(t)``, after the start-of-year premium and
-                      withdrawal.
-    ``"AFT_RETURN"``  after the year's fund return.
-    ``"AFT_CHARGE"``  after the annual management charge and the guarantee charge.
-    ``"AFT_ST"``      after the shareholder transfer, which is charged to asset shares.
-                      **This is the balance the mortality charge's sum at risk is
-                      measured against.**
-    ``"AFT_MC"``      after the mortality charge and any estate distribution; the
-                      year-end asset share, and the same number as :func:`asset_share`.
+    ``"BEF_RETURN"``
+        ``AS(t-1) + P(t) - W_AS(t)``, after the start-of-year premium and
+        withdrawal.
+
+    ``"AFT_RETURN"``
+        after the year's fund return.
+
+    ``"AFT_CHARGE"``
+        after the annual management charge and the guarantee charge.
+
+    ``"AFT_ST"``
+        after the shareholder transfer, which is charged to asset shares.
+        **This is the balance the mortality charge's sum at risk is
+        measured against.**
+
+    ``"AFT_MC"``
+        after the mortality charge and any estate distribution; the
+        year-end asset share, and the same number as :func:`asset_share`.
 
     The steps are exposed individually because their order is contractual discipline
     rather than arithmetic convenience.
@@ -723,14 +736,14 @@ def bonus_supportable(t):
     """b_supp: the level bonus rate that fills the guarantee to the target **[std]**.
 
     Project the asset share to the horizon at the expected net return, take
-    :data:`guar_fill_target` of it, and solve for the level rate that grows the current
+    ``guar_fill_target`` of it, and solve for the level rate that grows the current
     guaranteed benefit to that amount::
 
         b_supp = [theta AS_proj / GB(t)]^(1/m) - 1
 
     with ``m`` the remaining endowment term or the bond's bonus-setting horizon.  Future
     premiums are accumulated to the horizon at the same net return.  Read only when
-    :data:`bonus_rule_on` is set.
+    ``bonus_rule_on`` is set.
     """
     m = (bonus_horizon if is_unitised()                              # noqa: F821
          else max(1, policy_term() - t))
@@ -752,7 +765,7 @@ def bonus_rate(t):
     """b(t): the regular or reversionary bonus rate declared for policy year t.
 
     The model point's snapshot rate, held level, which is what the notes' base
-    projection does.  With :data:`bonus_rule_on` set, the smoothed setting rule applies
+    projection does.  With ``bonus_rule_on`` set, the smoothed setting rule applies
     instead::
 
         b(t) = max(0, b(t-1) + clamp(kappa (b_supp - b(t-1)), -1%, +1%))
@@ -799,7 +812,7 @@ def shareholder_transfer_pp(t):
 def mort_rate(t):
     """q(x+t-1): the annual best-estimate mortality rate in policy year t **[std]**.
 
-    The shipped table rate times :data:`mort_be_factor`.  Both are placeholders: CMI
+    The shipped table rate times ``mort_be_factor``.  Both are placeholders: CMI
     tables issued after March 2013 are subscriber-restricted, so the table is an
     ONS-shaped proxy and the factor a crude allowance for population mortality being
     heavier than insured experience.
@@ -927,28 +940,35 @@ def mvr_applied_pp(t):
 def claim_pp(t, kind):
     """The payout per claim in policy year t, by kind.
 
-    ``"DEATH"``      ``g_db (FV + FB)`` on the bond chassis - the 101% uplift applies to
-                     the whole payout - and ``G + TB`` on the endowment.  **Never
-                     MVR'd**: an MVR is not applied on death on either chassis.
-    ``"SURRENDER"``  ``FV + FB - MVR_applied`` on the bond chassis, the non-guaranteed
-                     exit.  On the endowment chassis there is no MVR, and the surrender
-                     value targets the smoothed payout - the asset share under the
-                     smoothing discipline - capped at the prospective value ``G + TB``,
-                     which is what the policy would be worth if it ran to maturity.
-                     Early surrender values are therefore well below the guaranteed
-                     maturity benefit, as they are on a real conventional policy.
-    ``"GUARANTEE"``  ``GB + FB``, what a guarantee-date exit pays.  Computed at every
-                     ``t`` so the two can be compared, but paid only where
-                     :func:`is_guarantee_date` - on those years it equals the surrender
-                     payout, because the MVR is not applied.  The endowment chassis has
-                     no guarantee dates, so this is informational there.
-    ``"MATURITY"``   ``G(n) + TB(n)`` at the end of the endowment term.  On the bond
-                     chassis, which is whole of life, this is zero unless the projection
-                     ends in a **forced encashment** - the withdrawal election has
-                     cancelled the last unit - in which case the survivors are paid
-                     ``FV + FB``, the residual final bonus included.  A limiting-age
-                     ending pays nothing, because it is a modelling truncation rather
-                     than a contractual event.
+    ``"DEATH"``
+        ``g_db (FV + FB)`` on the bond chassis - the 101% uplift applies to
+        the whole payout - and ``G + TB`` on the endowment.  **Never
+        MVR'd**: an MVR is not applied on death on either chassis.
+
+    ``"SURRENDER"``
+        ``FV + FB - MVR_applied`` on the bond chassis, the non-guaranteed
+        exit.  On the endowment chassis there is no MVR, and the surrender
+        value targets the smoothed payout - the asset share under the
+        smoothing discipline - capped at the prospective value ``G + TB``,
+        which is what the policy would be worth if it ran to maturity.
+        Early surrender values are therefore well below the guaranteed
+        maturity benefit, as they are on a real conventional policy.
+
+    ``"GUARANTEE"``
+        ``GB + FB``, what a guarantee-date exit pays.  Computed at every
+        ``t`` so the two can be compared, but paid only where
+        :func:`is_guarantee_date` - on those years it equals the surrender
+        payout, because the MVR is not applied.  The endowment chassis has
+        no guarantee dates, so this is informational there.
+
+    ``"MATURITY"``
+        ``G(n) + TB(n)`` at the end of the endowment term.  On the bond
+        chassis, which is whole of life, this is zero unless the projection
+        ends in a **forced encashment** - the withdrawal election has
+        cancelled the last unit - in which case the survivors are paid
+        ``FV + FB``, the residual final bonus included.  A limiting-age
+        ending pays nothing, because it is a modelling truncation rather
+        than a contractual event.
     """
     base = guar_benefit_pp(t) + final_bonus_pp(t)
     if kind == "DEATH":
@@ -1038,11 +1058,16 @@ def pols_if(t):
 def pols_if_at(t, timing):
     """The number of policies in force at a point inside policy year t.
 
-    ``"BEF_DECR"``  the start of the year, before any decrement; :func:`pols_if`.
-    ``"BEF_SURR"``  after deaths, before surrenders - the processing order is death
-                    before surrender **[std]**.
-    ``"AFT_DECR"``  the end-of-year count, and zero in the final projected year, where
-                    the endowment matures and the bond projection is truncated.
+    ``"BEF_DECR"``
+        the start of the year, before any decrement; :func:`pols_if`.
+
+    ``"BEF_SURR"``
+        after deaths, before surrenders - the processing order is death
+        before surrender **[std]**.
+
+    ``"AFT_DECR"``
+        the end-of-year count, and zero in the final projected year, where
+        the endowment matures and the bond projection is truncated.
     """
     if timing == "BEF_DECR":
         return pols_if(t)

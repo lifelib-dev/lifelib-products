@@ -200,7 +200,7 @@ and eleven months, which is the FCA's stylised example exactly. It is searched r
 than closed-form so that an escalating variant still resolves, and it is reported rather
 than acted on — the notes' crossover-aware lapse module, which raises lapse past the
 tipping point, is a pure stress dial and is off in the base run
-(:data:`lapse_crossover_beta` is 0). Total premiums are capped at ``P x T_cess``, so a
+(``lapse_crossover_beta`` is 0). Total premiums are capped at ``P x T_cess``, so a
 crossover exists only where the cash sum is below that cap.
 
 .. rubric:: Sign convention
@@ -442,7 +442,7 @@ def esc_cover_step():
     """The annual increase in the sum assured under the escalation variant.
 
     5% on the underwritten increasing-cover variant, and RPI floored at 0 and capped at
-    10% on the over-50s RPI variant.  Scaled by :data:`esc_take_up`, which is 1 in the
+    10% on the over-50s RPI variant.  Scaled by ``esc_take_up``, which is 1 in the
     base run: holders may decline an increase, with three declines removing the option,
     but a deterministic run cannot represent a take-up probability, so full take-up is
     assumed and the decline rule is not implemented.
@@ -652,10 +652,15 @@ def pols_all(t):
 def pols_if_at(t, timing):
     """The number of full-cover policies in force at a point inside month t.
 
-    ``"BEF_DECR"``   the start of the month, before any decrement; :func:`pols_if`.
-    ``"BEF_LAPSE"``  after deaths, before lapses - the notes' processing order is
-                     **death before lapse** **[std]**.
-    ``"AFT_DECR"``   the notes' ``l(t)``, the end-of-month count.
+    ``"BEF_DECR"``
+        the start of the month, before any decrement; :func:`pols_if`.
+
+    ``"BEF_LAPSE"``
+        after deaths, before lapses - the notes' processing order is
+        **death before lapse** **[std]**.
+
+    ``"AFT_DECR"``
+        the notes' ``l(t)``, the end-of-month count.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -723,19 +728,26 @@ def pols_maturity(t):
 def benefit_pp(t, kind):
     """The benefit amount per policy in month t, by kind.
 
-    ``"NON_ACC"``  the non-accidental death benefit.  On the O50 cell it is
-                   ``CumPrem(t)`` inside the moratorium and the cash sum after it; on
-                   the UW cell it is the sum assured, with the suicide refund handled
-                   under ``"DEATH"``.
-    ``"ACC"``      the accidental death benefit: the full cash sum from day one, and
-                   ``k_adb`` times it past the moratorium.  On the UW cell there is no
-                   accidental split, so this is the sum assured.
-    ``"DEATH"``    the expected benefit per death on the full-cover strand, blending the
-                   two above by the accidental share on O50, and the sum assured with
-                   the suicide refund by the suicide share inside the first twelve
-                   months on UW.  This is what :func:`claims` multiplies by.
-    ``"PAID_UP"``  the Payout Promise payout for a policy converting in month t,
-                   ``SA x N_paid / N_expected``.  Zero without the variant.
+    ``"NON_ACC"``
+        the non-accidental death benefit.  On the O50 cell it is
+        ``CumPrem(t)`` inside the moratorium and the cash sum after it; on
+        the UW cell it is the sum assured, with the suicide refund handled
+        under ``"DEATH"``.
+
+    ``"ACC"``
+        the accidental death benefit: the full cash sum from day one, and
+        ``k_adb`` times it past the moratorium.  On the UW cell there is no
+        accidental split, so this is the sum assured.
+
+    ``"DEATH"``
+        the expected benefit per death on the full-cover strand, blending the
+        two above by the accidental share on O50, and the sum assured with
+        the suicide refund by the suicide share inside the first twelve
+        months on UW.  This is what :func:`claims` multiplies by.
+
+    ``"PAID_UP"``
+        the Payout Promise payout for a policy converting in month t,
+        ``SA x N_paid / N_expected``.  Zero without the variant.
     """
     if kind == "NON_ACC":
         if cell() == "O50" and in_moratorium(t):
@@ -774,12 +786,17 @@ def premiums(t):
 def claims(t, kind=None):
     """Death outgo in month t, by kind; the total when kind is omitted.
 
-    ``"DEATH"``     outgo on the full-cover strand, ``deaths x benefit_pp(t, "DEATH")``.
-    ``"DEATH_PU"``  outgo on the paid-up strand, ``pu_benefit(t) x q_m(t)`` - the
-                    aggregate paid-up cover times the monthly mortality rate, which is
-                    why the strand carries a benefit total as well as a count.
-    ``"LAPSE"``     zero, always.  There is no surrender value at any time on either
-                    cell; the kind exists so the zero is stated rather than inferred.
+    ``"DEATH"``
+        outgo on the full-cover strand, ``deaths x benefit_pp(t, "DEATH")``.
+
+    ``"DEATH_PU"``
+        outgo on the paid-up strand, ``pu_benefit(t) x q_m(t)`` - the
+        aggregate paid-up cover times the monthly mortality rate, which is
+        why the strand carries a benefit total as well as a count.
+
+    ``"LAPSE"``
+        zero, always.  There is no surrender value at any time on either
+        cell; the kind exists so the zero is stated rather than inferred.
     """
     if kind is None:
         return sum(claims(t, k) for k in ("DEATH", "DEATH_PU", "LAPSE"))

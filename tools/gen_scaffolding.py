@@ -55,6 +55,14 @@ TITLES = {
     "immediate_annuity": "Single Premium Immediate Annuity (SPIA)",
     "deferred_income_annuity":
         "Deferred Income Annuity (DIA) and Qualified Longevity Annuity Contract (QLAC)",
+    # uklib.  Slugs are unique across libraries, so one map serves both.
+    "term_assurance": "Term Assurance",
+    "critical_illness": "Critical Illness Cover (CI)",
+    "income_protection": "Income Protection (IP)",
+    "whole_of_life": "Whole of Life (WOL)",
+    "with_profits": "With-Profits (WP)",
+    "unit_linked_bond": "Unit-Linked Investment Bond (ULB)",
+    "pension_annuity": "Pension Annuity (PA)",
 }
 
 

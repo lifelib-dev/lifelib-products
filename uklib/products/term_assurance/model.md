@@ -1,4 +1,4 @@
-# Term_UK_A — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/term_assurance/technical-notes.md`](technical-notes.md);

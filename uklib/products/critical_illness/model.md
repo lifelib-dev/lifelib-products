@@ -1,4 +1,4 @@
-# CI_UK_S — reference liability cash flow model
+# Implementation Notes
 
 **Status:** Draft, 2026-08-15. Built from
 [`products/critical_illness/technical-notes.md`](technical-notes.md);

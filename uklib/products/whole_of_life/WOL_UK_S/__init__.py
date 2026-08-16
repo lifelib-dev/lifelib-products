@@ -22,7 +22,7 @@ premiums exceed the cash sum.
 
 **Neither cell has an account value, a unit fund or a surrender value.** Both are pure
 decrement protection models: premiums in, death benefits and expenses out, weighted by
-survivorship. That is the deliberate contrast with :mod:`WholeLife_US_A`, the U.S.
+survivorship. That is the deliberate contrast with :mod:`.WholeLife_US_A`, the U.S.
 whole life model in the same library, which is built around a guaranteed cash value
 schedule, three-factor dividends, paid-up additions and policy loans. None of that
 machinery exists here, and a lapse on either UK cell pays exactly nothing.

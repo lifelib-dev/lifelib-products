@@ -1,4 +1,4 @@
-# Sources — Term Assurance (United Kingdom)
+# Sources
 
 Source ids [S#]/[R#] are carried verbatim from `_research/term-assurance.md` (the
 citation ground truth for this product) and are **frozen — never renumber**. Unused

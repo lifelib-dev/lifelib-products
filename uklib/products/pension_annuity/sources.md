@@ -1,4 +1,4 @@
-# Sources — Pension Annuity (United Kingdom)
+# Sources
 
 Source ids [S#]/[R#] are carried **verbatim** from `_research/pension-annuity.md`
 (the citation ground truth; ids frozen — never renumber). Only sources actually cited

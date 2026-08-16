@@ -1,4 +1,4 @@
-# Sources — Unit-Linked Investment Bond (United Kingdom)
+# Sources
 
 Source ids, titles, publishers, URLs, access dates, and retrieval markers are carried
 over verbatim from `_research/unit-linked-bond.md` (the citation ground truth for
