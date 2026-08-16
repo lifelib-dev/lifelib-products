@@ -330,3 +330,8 @@ products/pension_annuity/index
 
 references/regulatory-and-actuarial-references
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #uklib-std
+[unverified]: #uklib-unverified
+<!-- END generated citation links -->
