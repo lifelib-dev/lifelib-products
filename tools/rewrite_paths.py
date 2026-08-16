@@ -1,4 +1,4 @@
-"""Rewrite intra-library path references for the uslib layout.
+"""Rewrite intra-library path references for the country-library layout.
 
 Two things change under P1: the product slugs are underscored, and each model moved from
 ``<lib>/models/<slug>/`` to ``<lib>/products/<slug>/`` beside the documents that specify
@@ -10,6 +10,9 @@ plan proposed.  A path relative to the library root is correct in this repositor
 after the move into ``lifelib/libraries/uslib/``, and it is the same string uklib will
 want -- so it survives both moves untouched, which an absolute prefix would not.
 
+The section prefix the old paths carry is **derived from the library directory** rather
+than hardcoded, per D8: ``uslib`` rewrites ``us/...`` and ``uklib`` rewrites ``uk/...``.
+
 ``regulatory/`` references are deliberately left alone: they appear only in ``_research/``
 and name a statutory-framework stream that was removed from the library in 832247f.  There
 is nothing to point them at, and rewriting them would falsify a provenance record.
@@ -17,7 +20,7 @@ is nothing to point them at, and rewriting them would falsify a provenance recor
 Usage::
 
     python tools/rewrite_paths.py uslib --dry-run
-    python tools/rewrite_paths.py uslib
+    python tools/rewrite_paths.py uklib
 """
 import re
 import sys
@@ -32,15 +35,22 @@ def slug_map(library):
             for d in sorted(products.iterdir()) if d.is_dir()}
 
 
+# The section prefix is the library directory without its "lib" suffix: uslib rewrites
+# "us/", uklib rewrites "uk/".
+def prefix(library):
+    return library.name.removesuffix("lib")
+
+
 # "us/" also occurs inside third-party URLs -- prudential.com/content/dam/us/sites/...,
-# pennmutual.com/about-us/news/..., viewpoint.pwc.com/dt/us/en/...  None of those continue
-# with one of our directory names today, but a source list grows, so the boundary is
-# enforced rather than left to luck: a library path may not be preceded by a path
-# separator, a word character, a dot or a hyphen.
-START = r'(?<![/\w.-])us/'
+# pennmutual.com/about-us/news/..., viewpoint.pwc.com/dt/us/en/...  "uk/" does the same in
+# gov.uk and .co.uk paths.  None of those continue with one of our directory names today,
+# but a source list grows, so the boundary is enforced rather than left to luck: a library
+# path may not be preceded by a path separator, a word character, a dot or a hyphen.
+def start(pre):
+    return rf'(?<![/\w.-]){pre}/'
 
 
-def rules(slugs):
+def rules(slugs, START):
     """Ordered (pattern, replacement) pairs.  Most specific first."""
     out = []
     for hyphen, under in slugs.items():
@@ -61,7 +71,8 @@ def rules(slugs):
     return [(re.compile(p), r) for p, r in out]
 
 
-UNHANDLED = re.compile(START + r'(?!regulatory\b)[A-Za-z0-9_.-]*')
+def unhandled(START):
+    return re.compile(START + r'(?!regulatory\b)[A-Za-z0-9_.-]*')
 
 
 def main(argv):
@@ -69,7 +80,10 @@ def main(argv):
     args = [a for a in argv if not a.startswith("-")]
     library = pathlib.Path(args[0] if args else "uslib")
 
-    compiled = rules(slug_map(library))
+    pre = prefix(library)
+    START = start(pre)
+    UNHANDLED = unhandled(START)
+    compiled = rules(slug_map(library), START)
     counts = collections.Counter()
     rewritten = {}
     touched = 0
@@ -105,11 +119,12 @@ def main(argv):
         for m in UNHANDLED.finditer(text):
             leftovers[m.group(0)] += 1
     if leftovers:
-        print("\nunhandled 'us/...' strings still present:")
+        print(f"\nunhandled '{pre}/...' strings still present:")
         for s, n in leftovers.most_common(20):
             print(f"  {n:4}  {s}")
     else:
-        print("\nno unhandled 'us/...' strings remain (regulatory/ excluded by design)")
+        print(f"\nno unhandled '{pre}/...' strings remain "
+              "(regulatory/ excluded by design)")
     return 0
 
 

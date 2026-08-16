@@ -5,11 +5,12 @@ country**, together with the documentation needed to build **reference implement
 of liability cash flow projection models** (lifelib/modelx style), organized by product
 type and country.
 
-**Status:** Draft, 2026-08-14. Current coverage: United States (6 individual life and
+**Status:** Draft, 2026-08-15. Current coverage: United States (6 individual life and
 6 individual annuity product types) and United Kingdom (7 product types, including
-pension annuities). **All twelve U.S. products now ship an executable reference model**
-in `uslib/products/<product>/`, beside the documents that specify it; the UK models are
-a planned follow-on (see Roadmap).
+pension annuities). **All nineteen products now ship an executable reference model** in
+`<library>/products/<product>/`, beside the documents that specify it — twelve in
+`uslib/` and seven in `uklib/`, each one reproducing its own technical notes' worked
+example, asserted cell by cell.
 
 ---
 
@@ -35,9 +36,10 @@ a planned follow-on (see Roadmap).
 ```
 
 `uslib/` is in this shape and ready to merge into lifelib — see
-[USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md) and [MERGE.md](MERGE.md). `uk/` is still a country
-section in the older layout (`products/<product-type>/` with hyphenated slugs, no models) and
-becomes `uklib/` on the same pattern.
+[USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md) and [MERGE.md](MERGE.md). `uklib/` follows the same
+layout and carries its seven models and their tests; what it does not have yet is the Sphinx
+half — no `index.md`, no product landing pages, no citation anchors — so it does not build
+as a library and is not ready to merge.
 
 ## Building the documentation
 
@@ -57,10 +59,12 @@ than reported:
 python tools/doccheck.py
 ```
 
-That is 80 pages, and it should report zero. Run the model suite with:
+That is 103 pages, and it should report zero. Only `uslib/` is in the build; `uklib/` has no
+Sphinx pages yet. Run the model suites with:
 
 ```bash
 python -m pytest uslib/tests -q
+python -m pytest uklib/tests -q
 ```
 
 - **`product-spec.md`** defines a *representative* product: a standardized composite
@@ -115,24 +119,27 @@ Each country section is built in three passes:
 
 | Country | Products | Status |
 |---|---|---|
-| [United States](uslib/index.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted |
-| [United Kingdom](uk/README.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs + technical notes drafted |
+| [United States](uslib/index.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs + technical notes drafted; all 12 [executable models](uslib/index.md#executable-models) shipped |
+| [United Kingdom](uklib/README.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs + technical notes drafted; all 7 [executable models](uklib/README.md#executable-models) shipped |
 
 Scope note: both country sections cover individual life insurance and annuities, but
 the annuity coverage differs by market. The U.S. section covers the individual deferred
 and payout annuity families sold at retail; the UK section covers pension annuities,
 which are the dominant UK annuity form and the centrepiece of the Solvency UK matching
-adjustment — see [uk/README.md](uk/README.md). Group insurance and institutional
+adjustment — see [uklib/README.md](uklib/README.md). Group insurance and institutional
 business (bulk purchase annuities, pension risk transfer) are out of scope in both.
 
 ## Roadmap
 
 - **Reference implementations**: `<library>/products/<product>/` — executable liability
-  cash flow projection models built from the technical notes. **All twelve U.S. products
-  are shipped** (modelx; each one's worked example is asserted cell by cell by the
-  library's own `tests/`, and a shared conventions suite enforces the house style across
-  the set — see [uslib/index.md](uslib/index.md#executable-models)). The seven UK products
-  follow the same pattern.
+  cash flow projection models built from the technical notes. **All nineteen products are
+  shipped** (modelx; each one's worked example is asserted cell by cell by its library's
+  own `tests/`, and a conventions suite enforces one house style across both — see
+  [uslib/index.md](uslib/index.md#executable-models) and
+  [uklib/README.md](uklib/README.md#executable-models)).
+- **`uklib/` as a buildable library**: the Sphinx half — `index.md`, the product landing
+  pages, the citation anchors and link definitions, and the autodoc API pages — on the
+  pattern [USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md) records for `uslib/`.
 - **Additional countries**, and additional product families (group insurance,
   institutional/pension risk transfer business) as coverage grows.
 
