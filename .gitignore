@@ -1,5 +1,7 @@
-# Claude Code local settings
+# Claude Code local settings, and the local doc-preview server config, which pins an
+# absolute interpreter path
 .claude/settings.local.json
+.claude/launch.json
 
 # OS junk
 Thumbs.db
@@ -23,3 +25,10 @@ __pycache__/
 *_nomx_cy/
 *.pyd
 *.mx
+
+# doc-check build tree (tools/doccheck.py)
+.doccheck/
+.doccheck.log
+
+# Sphinx build output and the mirrored library documents (doc/source/conf.py)
+doc/build/

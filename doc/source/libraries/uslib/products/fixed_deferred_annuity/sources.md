@@ -1,0 +1,2 @@
+```{include} ../../../../../../uslib/products/fixed_deferred_annuity/sources.md
+```
