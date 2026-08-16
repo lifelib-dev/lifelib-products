@@ -26,7 +26,7 @@ per entry below.
 import modelx as mx
 import pytest
 
-from conftest import LIB
+from us_registry import LIB
 
 MODEL_PATH = LIB / "products/variable_annuity/VA_US_S"
 

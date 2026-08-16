@@ -27,7 +27,7 @@ import re
 import modelx as mx
 import pytest
 
-from conftest import LIB
+from us_registry import LIB
 
 MODEL_PATH = LIB / "products/registered_index_linked_annuity/RILA_US_S"
 

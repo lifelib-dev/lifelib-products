@@ -19,7 +19,7 @@ decimals of a percentage, the MVA factor to the eight decimals it is printed at.
 import modelx as mx
 import pytest
 
-from conftest import LIB
+from us_registry import LIB
 
 MODEL_PATH = LIB / "products/fixed_indexed_annuity/FIA_US_S"
 
