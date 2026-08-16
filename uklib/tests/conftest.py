@@ -45,6 +45,8 @@ MODELS = {
     "CI_UK_S": ("products/critical_illness/CI_UK_S", MONTHLY),
     "IP_UK_S": ("products/income_protection/IP_UK_S", MONTHLY),
     "WOL_UK_S": ("products/whole_of_life/WOL_UK_S", MONTHLY),
+    # Annuity
+    "PA_UK_S": ("products/pension_annuity/PA_UK_S", MONTHLY),
 }
 
 
@@ -107,3 +109,17 @@ def whole_of_life():
 def uk_o50_anchor(whole_of_life):
     """Model point 1 — the over-50s worked-example anchor cell."""
     return whole_of_life.Projection[1]
+
+
+@pytest.fixture(scope="module")
+def pension_annuity():
+    """The PA_UK_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("PA_UK_S"))
+    yield model
+    model.close()
+
+
+@pytest.fixture(scope="module")
+def uk_pa_scenario(pension_annuity):
+    """Model point 1 — the worked example's scenario configuration."""
+    return pension_annuity.Projection[1]
