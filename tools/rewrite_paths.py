@@ -19,8 +19,8 @@ is nothing to point them at, and rewriting them would falsify a provenance recor
 
 Usage::
 
-    python tools/rewrite_paths.py uslib --dry-run
-    python tools/rewrite_paths.py uklib
+    python tools/rewrite_paths.py lifelib/libraries/uslib --dry-run
+    python tools/rewrite_paths.py lifelib/libraries/uklib
 """
 import re
 import sys
@@ -78,7 +78,7 @@ def unhandled(START):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
 
     pre = prefix(library)
     START = start(pre)

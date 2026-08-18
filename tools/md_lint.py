@@ -6,13 +6,20 @@ failing the build:
 - a ``---`` line directly under a paragraph line, which is a setext H2, not a rule;
 - non-consecutive heading level increases, which MyST warns about;
 - a document without exactly one H1, which gives the toctree no title to use;
-- bracket adjacencies ``][``, which become a single reference link the moment the
-  citation link definitions of P5 exist -- see USLIB-MERGE-PLAN.md D4.
+- bracket adjacencies ``][``, which CommonMark reads as one full reference link -- text
+  from the first pair, target from the second -- swallowing the first citation whole.
+
+That last check matters *more* now that ``[S#]`` no longer links, not less.  It would be
+easy to read the withdrawal of the ``S`` definitions as removing the hazard; it removes it
+only for ``S``-on-``S``.  ``[S1][R2]`` still collapses, because ``R2`` still has a
+definition, and it collapses into a link labelled ``S1`` pointing at R2's entry -- losing
+the S1 citation silently.  Every ``R``/``REG-R`` combination is untouched too.  Both
+libraries are at zero adjacencies and this is what holds them there.
 
 Run over a country directory::
 
-    python tools/md_lint.py uslib
-    python tools/md_lint.py uslib uk        # both
+    python tools/md_lint.py lifelib/libraries/uslib
+    python tools/md_lint.py lifelib/libraries/uslib lifelib/libraries/uklib   # both
 
 Exits non-zero if anything is reported, so it can gate a commit.
 """
@@ -92,11 +99,16 @@ def check(path):
                 continue
             stripped = INLINE_CODE.sub("`c`", INLINE_LINK.sub("LINK", line))
             for _ in ADJACENCY.finditer(stripped):
-                yield n, "bracket adjacency '][' -- becomes one reference link once P5 lands"
+                yield n, "bracket adjacency '][' -- CommonMark reads this as one reference link"
 
 
 def main(argv):
-    roots = [pathlib.Path(a) for a in argv] or [pathlib.Path("us")]
+    roots = [pathlib.Path(a) for a in argv] or [pathlib.Path("lifelib/libraries/uslib")]
+    # A gate that cannot find its input must not report success.  `rglob` on a missing
+    # directory yields nothing, `total` stays 0, and "0 TOTAL" reads exactly like a clean
+    # library -- the same silent pass `tools/doccheck.py` guards against at its own end.
+    if missing := [r for r in roots if not r.is_dir()]:
+        sys.exit(f"no directory at {', '.join(str(r) for r in missing)}")
     counts, total = {}, 0
     for root in roots:
         for path in sorted(root.rglob("*.md")):

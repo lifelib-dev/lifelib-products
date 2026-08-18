@@ -28,8 +28,8 @@ and is a markdown link to any scanner that cannot see what encloses it.
 
 Usage::
 
-    python tools/fix_relative_links.py uslib --dry-run
-    python tools/fix_relative_links.py uslib
+    python tools/fix_relative_links.py lifelib/libraries/uslib --dry-run
+    python tools/fix_relative_links.py lifelib/libraries/uslib
 """
 import re
 import sys
@@ -159,7 +159,7 @@ def candidates(target, source_dir, library):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
 
     stats = collections.Counter()
     unresolved = []

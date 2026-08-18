@@ -1,2 +1,2 @@
-```{include} ../../../../../../uslib/products/term_life/product-spec.md
+```{include} ../../../../../../lifelib/libraries/uslib/products/term_life/product-spec.md
 ```

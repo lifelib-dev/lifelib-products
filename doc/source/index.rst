@@ -5,7 +5,9 @@ Product specifications for major life insurance products, organized by country, 
 with the executable liability cash flow models built from them.
 
 This site is built from the documents inside each country library — they live beside the
-models they describe, not under ``doc/``, and are mirrored into the doc tree at build time.
+models they describe, not under ``doc/``. Each library document is rendered by a one-line
+``{include}`` page here, so no document is copied; alongside them are the autodoc pages,
+which Sphinx builds from the models' own docstrings.
 
 .. toctree::
    :maxdepth: 2
@@ -29,14 +31,18 @@ introduced. It is defined here so the library's own pages resolve while they sti
 this repository, and it does not travel with them: this page stays behind at the merge.
 
 Until then, each library is simply a directory — clone the repository and work in
-``uslib/`` or ``uklib/`` directly. Each model reads its inputs from its own product
-directory, so it runs in place::
+``lifelib/libraries/uslib/`` or ``lifelib/libraries/uklib/`` directly, which is where
+lifelib itself keeps them. Each model reads its inputs from its own product directory, so
+it runs in place::
 
-    python uslib/products/term_life/run.py
-    python uklib/products/term_assurance/run.py
+    python lifelib/libraries/uslib/products/term_life/run.py
+    python lifelib/libraries/uklib/products/term_assurance/run.py
 
 .. note::
 
-   Every citation tag is a link. ``[S6]`` in a product document lands on entry S6 in *that
-   product's* source list, and ``[REG-R18]`` lands on entry R18 of the shared reference
-   library. Numbering is per product, so ``S1`` means a different source in each.
+   Whether a citation tag is a link says what kind of source it is. ``[R1]`` and
+   ``[REG-R18]`` are links: the first lands on entry R1 in *that product's* source list,
+   the second on entry R18 of the shared reference library. ``[S6]`` is not a link — a
+   primary product source is a specification citation rather than an authority, so it
+   stays on the page as bracketed text naming the entry to look up. Numbering is per
+   product, so ``S1`` means a different source in each.

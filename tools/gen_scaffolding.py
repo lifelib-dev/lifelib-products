@@ -27,8 +27,8 @@ purpose is to tell Sphinx how to render it.
 
 Usage::
 
-    python tools/gen_scaffolding.py uslib --dry-run
-    python tools/gen_scaffolding.py uslib
+    python tools/gen_scaffolding.py lifelib/libraries/uslib --dry-run
+    python tools/gen_scaffolding.py lifelib/libraries/uslib
 """
 import ast
 import os
@@ -128,8 +128,11 @@ def cells_of(space_dir):
 def relative(target, start):
     """``target`` as a POSIX path relative to ``start``.
 
-    The stubs sit six directories deep and the library is at the repository root, so this
-    is counted by the filesystem rather than by hand.
+    Counted by the filesystem rather than by hand, which is what makes the result the
+    string lifelib needs rather than merely one that works here: both repositories keep
+    their libraries at ``lifelib/libraries/<lib>/`` and their pages at
+    ``doc/source/libraries/<lib>/``, so the same relative path is correct in both, and the
+    page tree merges without being regenerated.
     """
     return pathlib.PurePath(os.path.relpath(target, start)).as_posix()
 
@@ -151,10 +154,18 @@ def write(path, text, dry, log):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
     lib = library.name
     docs = DOC_ROOT / lib
     log = []
+
+    # Before the rmtree below, and not after.  `docs` is derived from `library.name`, so a
+    # stale `uslib` -- the argument that was correct before the libraries moved under
+    # `lifelib/libraries/`, and still the natural thing to type -- resolves `docs` to the
+    # real, committed page tree.  Without this the tool would delete it and only then fail
+    # on the missing products directory.
+    if not (library / "products").is_dir():
+        sys.exit(f"no library at {library} -- expected a products/ directory under it")
 
     if not dry:
         # Regenerated wholesale; nothing here is hand-edited.  Removal must not be fatal:

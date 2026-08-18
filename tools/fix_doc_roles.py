@@ -28,8 +28,8 @@ dot, and they are found by looking, not guessed.
 
 Usage::
 
-    python tools/fix_doc_roles.py uslib --dry-run
-    python tools/fix_doc_roles.py uslib
+    python tools/fix_doc_roles.py lifelib/libraries/uslib --dry-run
+    python tools/fix_doc_roles.py lifelib/libraries/uslib
 """
 import ast
 import re
@@ -103,7 +103,7 @@ def fix_text(text, models, this_model, own_cells, other_cells, other_space, loca
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
 
     def models_under(root):
         found = {}

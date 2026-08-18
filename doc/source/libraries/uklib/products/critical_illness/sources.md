@@ -1,2 +1,2 @@
-```{include} ../../../../../../uklib/products/critical_illness/sources.md
+```{include} ../../../../../../lifelib/libraries/uklib/products/critical_illness/sources.md
 ```

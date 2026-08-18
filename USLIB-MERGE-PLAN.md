@@ -157,6 +157,19 @@ entry too.
 
 ### D4 — Citations become links via per-file link reference definitions
 
+> **Amended after this plan was executed: `[S#]` is no longer linked.** The mechanism below
+> is unchanged and still governs `[R#]`, `[REG-R#]`, `[std]` and `[unverified]`; it was
+> withdrawn from `[S#]` alone, by narrowing `TAG` in `tools/gen_citation_links.py` so that
+> the definitions, the comma splitting and the pinpoint links stop together. The line drawn
+> is the one each `sources.md` already draws between its own sections: a **specification**
+> citation — the brochure or specimen policy a number came from — reads as bracketed text,
+> and an **authority** the model is held to is a link. With no definition, `[S1]` is an
+> undefined shortcut reference, which CommonMark leaves as literal text (C8) — so the
+> brackets come back and the prose is again unchanged. Read the rest of D4 as applying to
+> the regulatory tags. **C7 still applies in full**, and to `[S1][R2]` as much as ever: see
+> the note on de-adjacency at the end of this section, which the change makes more
+> important, not less.
+
 The compact `[S6]` form stays in the prose. Each document gains a generated block of link
 reference definitions at its foot:
 

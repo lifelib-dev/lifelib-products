@@ -21,8 +21,8 @@ the same way the renderer finds them -- see :mod:`mdspans`.
 
 Usage::
 
-    python tools/separate_citations.py uslib --dry-run
-    python tools/separate_citations.py uslib
+    python tools/separate_citations.py lifelib/libraries/uslib --dry-run
+    python tools/separate_citations.py lifelib/libraries/uslib
 """
 import re
 import sys
@@ -32,6 +32,12 @@ import collections
 from mdspans import prose_spans
 
 
+# `S` stays here, and must, even though `tools/gen_citation_links.py` has dropped it from
+# its own `TAG`.  This tool separates adjacent brackets, and the adjacency hazard (C7) is
+# not about whether the *first* tag links: `[S1][R2]` still collapses into one link
+# labelled `S1` pointing at R2's entry, because `R2` still has a definition.  Narrowing
+# this pattern to match the generator's would stop separating exactly the pairs that remain
+# dangerous.
 TAG = r'(?:S|R|REG-R)\d+[a-z]?'
 
 # A citation-ish bracket: a bare tag, a tag carrying a pinpoint or a comma list, or one of
@@ -109,7 +115,7 @@ def separate(text):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
 
     total, unknown_all = 0, collections.Counter()
     files = 0

@@ -15,8 +15,8 @@ and never occurs inside a cell.
 
 Usage::
 
-    python tools/fix_docstring_tables.py uslib --dry-run
-    python tools/fix_docstring_tables.py uslib
+    python tools/fix_docstring_tables.py lifelib/libraries/uslib --dry-run
+    python tools/fix_docstring_tables.py lifelib/libraries/uslib
 """
 import re
 import sys
@@ -106,7 +106,7 @@ def process(text):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
 
     total = collections.Counter()
     for path in sorted((library / "products").rglob("*.py")):
