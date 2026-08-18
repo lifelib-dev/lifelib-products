@@ -134,8 +134,11 @@ annuities, pension risk transfer) are out of scope in both.
 
 - **The merge itself**: both libraries are prepared, and what remains is the lifelib-side
   half — [MERGE.md](MERGE.md) is the checklist.
-- **Additional countries**, and additional product families (group insurance,
-  institutional/pension risk transfer business) as coverage grows.
+- **Additional countries** — [COUNTRY-EXPANSION.md](COUNTRY-EXPANSION.md) assesses Germany,
+  France, China, Switzerland, Japan, Korea and Hong Kong against what the three-pass
+  methodology actually needs from public sources, and recommends a build order.
+- **Additional product families** (group insurance, institutional/pension risk transfer
+  business) as coverage grows.
 
 ## Disclaimer
 
