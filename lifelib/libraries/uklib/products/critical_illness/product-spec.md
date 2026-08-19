@@ -361,7 +361,7 @@ Class I (life and annuity); standalone CI is typically written as long-term Clas
 (permanent health: defined benefits for incapacity from accident or sickness, of
 indefinite duration or running to retirement age, with restricted insurer cancellation
 rights) or general classes 1–2 for short-term forms [R4] [REG-R14 for the class
-definitions; the mapping of CI products to classes is [unverified]](#uklib-reg-r14).
+definitions; the mapping of CI products to classes](#uklib-reg-r14) [unverified].
 
 **Tax.** Under FA 2012 Part 2, protection business written post-2012 is non-BLAGAB
 long-term business taxed on trade profits (BLAGAB I-E applies to investment life

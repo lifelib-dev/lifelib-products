@@ -81,9 +81,19 @@ BRACKETED = re.compile(r'\[[^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*\]')
 SOURCE = re.compile(r'(?<![\w-])S(\d+[a-z]?)(?![\w-])')
 COMMA_LIST = re.compile(rf'\[({TAG}(?:\s*,\s*{TAG})+)\]')
 # The separator between a tag and its pinpoint is not always whitespace -- semicolons and
-# dashes both occur -- and the pinpoint text may itself contain a bracketed marker, as in
-# ``[REG-R17; exact table mapping [unverified]]``.
-PINPOINT = re.compile(rf'\[({TAG})([\s,;:—–][^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*)\]')
+# dashes both occur.
+#
+# **A pinpoint carrying a nested marker is deliberately not matched.**  An earlier version
+# allowed one level of nesting here, so that ``[REG-R17; exact table mapping [unverified]]``
+# would be wrapped -- but wrapping it produces a link that cannot exist.  CommonMark forbids
+# a link inside link text, so the inner ``[unverified]`` shortcut reference wins, the outer
+# link never forms, and the page prints the raw ``](#uslib-reg-r17)`` at the reader.  It
+# fails silently in both directions: ``sphinx-build -n -W`` sees valid markup, and
+# ``tools/check_anchors.py`` counts ``<a>`` elements, of which there is none to count.
+# Eighteen of these reached the documents before the raw-syntax scan in check_anchors found
+# them; they were repaired by moving the marker out of the pinpoint and after the link,
+# which is also the fix if this pattern ever declines to wrap something.
+PINPOINT = re.compile(rf'\[({TAG})([\s,;:—–][^\[\]]*)\]')
 # An earlier `split_comma_lists` bracketed each tag *and* then joined the bracketed tokens
 # with the separator meant for bare ones, so `[S3, S7]` came out as `[S3]], [[S7]` -- one
 # stray bracket on each side of every join.  It went unnoticed because the tags kept

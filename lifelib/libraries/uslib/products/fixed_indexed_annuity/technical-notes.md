@@ -441,7 +441,7 @@ versus 33% without** [R8]:
 The third row extrapolates **[std]** from the qualitative finding that "contracts with GLWBs lapse
 less than those without" and "activated GLWBs lapse least," with the lowest rates where the
 withdrawal is 95%–105% of the maximum [R1]. Applying a plain fixed-deferred shock lapse — reported
-at roughly 52%–56% for fixed-rate deferred annuities [REG-R63, [unverified]](#uslib-reg-r63) — to an FIA with an
+at roughly 52%–56% for fixed-rate deferred annuities [REG-R63](#uslib-reg-r63) [unverified] — to an FIA with an
 in-force rider will materially understate the tail this product is sold for.
 
 **Rider moneyness multiplier [std].** Surrender is further suppressed when the guarantee is in the
@@ -454,7 +454,7 @@ Rational surrender destroys a guarantee worth `BB − AV` in benefit-base terms;
 direction is documented [R1] [R8], the functional form is not.
 
 **GLWB activation (utilization timing) [std].** Activation clusters at the
-required-minimum-distribution age [R1] [REG-R64 [unverified]](#uslib-reg-r64), which makes the RMD regulations a
+required-minimum-distribution age [R1] [REG-R64](#uslib-reg-r64) [unverified], which makes the RMD regulations a
 behavioral input, not merely a tax one [REG-R57] [REG-R58]:
 
     h(a) = 0.00  for a < 60      h(a) = 0.05  for 60 ≤ a < rmd_age

@@ -325,7 +325,7 @@ S1–S5].
 - Capital redemption variant [brief]: the same bond chassis written without lives
   assured as an RAO Class VI capital redemption contract, so no death-based
   chargeable event occurs; noted as a market variant only [REG-R14 class list;
-  product-level terms not in any fetched document — [unverified]](#uklib-reg-r14).
+  product-level terms not in any fetched document](#uklib-reg-r14) [unverified].
 
 ---
 

@@ -122,8 +122,7 @@ protection base-table generation is the "16" Series (term assurance mortality an
 accelerated CI, 2015–2018 experience, finalized with WP154) [REG-R26]; the latest
 public experience output is WP167 (accelerated CI by cause, 2017–2020) [R9]. **Honest
 flagging:** CMI working papers are public, but current CMI tables and datasets are
-restricted to Authorised Users (subscribers) [REG-R22] [R9 — access limits
-[unverified]](#uklib-critical_illness-r9); AC04/16-Series rate values were not obtained. The reference basis below
+restricted to Authorised Users (subscribers) [REG-R22] [R9 — access limits](#uklib-critical_illness-r9) [unverified]; AC04/16-Series rate values were not obtained. The reference basis below
 is therefore a **[std] proxy** shaped like the named tables, to be replaced by a
 licensed basis in any real application.
 

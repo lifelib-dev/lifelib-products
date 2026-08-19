@@ -419,7 +419,7 @@ surrenders, must also be included [R1].
 **Risk-neutral scenarios — for hedging and fair value.** A separate, market-consistent set
 is required for hedge valuation under a Clearly Defined Hedging Strategy (VM-21 §9)
 [REG-R35] and for the fair value of the GLWB/GMDB as **market risk benefits** under LDTI
-[REG-R34 — **[unverified]**, source not fetched (fasb.org 403); summary-based](#uslib-reg-r34) [REG-R71].
+[REG-R34 — source not fetched (fasb.org 403); summary-based](#uslib-reg-r34) **[unverified]** [REG-R71].
 The two sets are not interchangeable; the model exposes the scenario basis as an input,
 never as a hard-coded assumption.
 
@@ -475,7 +475,7 @@ surrender charge period — an 84% suppression [R1]. Compose them as here, or re
 multiplier with a direct table lookup; do not apply both gradings at once. The economic
 anchor for the size of the effect is the FIA experience split: in the year the surrender
 charge expires, surrender was roughly **10% with a GLWB rider versus 33% without**
-[REG-R62 — **[unverified]**, from press coverage of the 2019–20 study](#uslib-reg-r62).
+[REG-R62 — from press coverage of the 2019–20 study](#uslib-reg-r62) **[unverified]**.
 
 ### GLWB utilization
 
@@ -485,7 +485,7 @@ construction below is VM-21's [R1], not that file's: it carries no cohort machin
 Parameterized here by:
 
 - **First-withdrawal age.** Base run **[std]**: age 70, on the finding that activation
-  clusters at the RMD age [REG-R64 — **[unverified]**](#uslib-reg-r64) [REG-R57] [REG-R58]. The prescribed
+  clusters at the RMD age [REG-R64](#uslib-reg-r64) **[unverified]** [REG-R57] [REG-R58]. The prescribed
   alternative is VM-21's Withdrawal Delay Cohort Method, which splits the contract into
   cohorts weighted by differences in a revised GAPV across candidate initial withdrawal
   ages, discarding cohorts below the attained age and rescaling [R1].
@@ -590,8 +590,8 @@ them and are cited, not reproduced:
   NAIC-prescribed method (CARVM, i.e. VM-21), capped at statutory [REG-R16]; the LB&I
   examination directive on AG 43/VM-21 tax reserves is [unverified] (irs.gov 404) [REG-R72].
 - **U.S. GAAP** — the GLWB and GMDB are the paradigm **market risk benefits** at fair value
-  through earnings under LDTI [REG-R34 — **[unverified]**, ASU 2018-12 not fetched
-  (fasb.org 403); summary-based](#uslib-reg-r34), with ASOP No. 10 as the professional counterpart, which
+  through earnings under LDTI [REG-R34 — ASU 2018-12 not fetched
+  (fasb.org 403); summary-based](#uslib-reg-r34) **[unverified]**, with ASOP No. 10 as the professional counterpart, which
   *was* retrieved and supplies the MRB definition and classification test [REG-R71].
 - **Standards for the modeling work** — ASOP Nos. 7 [REG-R27], 22 [REG-R29], 56 [REG-R32],
   2 (non-guaranteed elements, expressly covering variable deferred annuities, so governing

@@ -577,7 +577,7 @@ retail MYGAs are not [S2] [S8] [S9] [S12] [unverified as a legal test]. The SEC'
 rulemaking moved registered index-linked and **registered market value adjustment**
 annuities onto **Form N-4** with tailored disclosure of contract adjustments and surrender
 charges and a prescribed Key Information Table; effective September 23, 2024, compliance
-date May 1, 2026 [REG-R49; that entry flags the compliance date [unverified]](#uslib-reg-r49). The
+date May 1, 2026 [REG-R49; that entry flags the compliance date](#uslib-reg-r49) [unverified]. The
 representative contract has a capped MVA and is outside that regime. **That SEC category is
 not the statutory instrument of the same name.** AP&P Appendix A-255, "Modified Guaranteed
 Annuities", defines the term by asset location — "a deferred annuity contract … the

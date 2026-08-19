@@ -164,19 +164,21 @@ def main(argv):
     for path, n in plain.most_common(15):
         print(f"     {n:4}x  {path}")
 
-    # Reported, not enforced -- deliberately, and this should be revisited.  These are dead
-    # cross-references, but every one of them predates the citation work and none is
-    # reachable by fixing a target: the fix is to unnest the marker in the pinpoint text,
-    # which is an edit to the documents.  Failing here would gate the repository on damage
-    # it already had.  Once the count is zero, fold it into the return below.
+    # Enforced.  These are links that never parsed, so they are invisible to every other
+    # check in the repository: `sphinx-build -n -W` sees valid markup, and the count above
+    # counts `<a>` elements, of which a failed link has none.  The corpus carried eighteen
+    # of them -- pinpoints whose text nested a `[std]`/`[unverified]` marker, which
+    # CommonMark resolves in favour of the inner marker -- until this scan found them.  The
+    # count is zero now, `PINPOINT` in tools/gen_citation_links.py no longer wraps a
+    # pinpoint that would produce one, and this keeps it that way.
     if unparsed:
         print(f"\n  {sum(unparsed.values())} links did not parse and printed their raw "
-              f"markup -- a nested [std]/[unverified] inside pinpoint text (not counted "
-              f"above: there is no <a> to check)")
+              f"markup on the page -- move the nested [std]/[unverified] marker out of the "
+              f"pinpoint text and put it after the link")
         for path, n in unparsed.most_common(15):
             print(f"     {n:4}x  {path}")
 
-    return 1 if broken or plain else 0
+    return 1 if broken or plain or unparsed else 0
 
 
 if __name__ == "__main__":

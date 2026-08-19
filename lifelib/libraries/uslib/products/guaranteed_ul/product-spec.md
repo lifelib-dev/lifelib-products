@@ -450,7 +450,7 @@ framework before state adoption of Model 787. [R6; REG-R11; REG-R12](#uslib-guar
 
 **IRC 7702 / 7702A.** The contract must qualify as life insurance via CVAT or
 GPT + corridor; level-DB GUL is typically GPT/corridor-tested [R4 for the tests;
-design attribution [unverified]](#uslib-guaranteed_ul-r4). The 2021 change to dynamic "insurance interest
+design attribution](#uslib-guaranteed_ul-r4) [unverified]. The 2021 change to dynamic "insurance interest
 rates" (2% transition rate for 2021) materially affects GUL premium/corridor limits
 [R4; REG-R13](#uslib-guaranteed_ul-r4). Heavy prefunding (single-pay/short-pay, the 1035 "sweet spot" [S2])
 can create a MEC under the 7702A 7-pay test, taxing loans/withdrawals income-first

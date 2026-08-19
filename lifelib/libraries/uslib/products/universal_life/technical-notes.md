@@ -271,7 +271,7 @@ max(GSP, cumulative GLP)) and the 7-pay MEC test are tracked as compliance
 side-calculations that cap or refuse premiums [S3] [R2] [R3] [REG-R13] [REG-R14]; they
 generate no cash flow of their own — a refused premium simply never enters the model,
 and MEC status changes policyholder taxation, not insurer liability cash flows [R3
-consequence detail [unverified] beyond the statutory cross-reference](#uslib-universal_life-r3). The base model
+consequence detail beyond the statutory cross-reference](#uslib-universal_life-r3) [unverified]. The base model
 verifies `CumPrem(t) <= max(GSP, GLP x years elapsed)` and flags (does not project)
 7-pay failures.
 
@@ -350,8 +350,7 @@ NOT reproduced here:
   Manual (operative 2017-01-01; accreditation standard 2020-01-01 — both verbatim at
   [R5], now also the shared [REG-R150]) [REG-R3];
   implementation guidance in the AAA VM-20 practice note [REG-R23]. Prescribed NPR
-  mortality: 2017 CSO family via VM-M [REG-R3] [REG-R17; exact table mapping
-  [unverified]](#uslib-reg-r17).
+  mortality: 2017 CSO family via VM-M [REG-R3] [REG-R17; exact table mapping](#uslib-reg-r17) [unverified].
 - **Tax.** IRC 807: greater of net surrender value and 92.81% of the NAIC-method
   reserve, capped at statutory [REG-R16].
 - **Standards for the modeling work itself.** ASOP 7 (life cash flow analysis)

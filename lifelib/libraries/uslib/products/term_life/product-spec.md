@@ -429,7 +429,7 @@ Listed for completeness; none is modeled in the reference implementation:
   premium test plus cash value corridor with applicable percentages 250% at ages 0–40
   grading to 100% at 90–95) [R5]. Level premium term with no cash value satisfies these
   tests trivially, and §7702A MEC status is not normally implicated [R5 — analytical note
-  flagged [unverified] in the research](#uslib-term_life-r5). No §7702 testing machinery is needed in the term
+  flagged in the research](#uslib-term_life-r5) [unverified]. No §7702 testing machinery is needed in the term
   reference model.
 
 - **IRC §807 tax reserves [REG-R16].** Post-TCJA, the tax reserve is the greater of net

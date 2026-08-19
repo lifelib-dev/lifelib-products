@@ -539,9 +539,9 @@ exempts registered products complying with SEC and FINRA rules under its §3.D, 
 Buyer's Guide is still required in variable annuity sales** [REG-R45]; Model #275's
 best-interest standard changes exchange and replacement behavior and therefore surrender
 assumptions [REG-R46]. Under LDTI the GLWB and GMDB are the paradigm **market risk
-benefits**, at fair value through earnings [REG-R34 — **[unverified]**: fasb.org returned
+benefits**, at fair value through earnings [REG-R34 — fasb.org returned
 403, so ASU 2018-12 itself was never retrieved and its substance rests on secondary
-summaries](#uslib-reg-r34) [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
+summaries](#uslib-reg-r34) **[unverified]** [REG-R71 for the MRB-vs-insurance-liability classification, which *was*
 retrieved](#uslib-reg-r71) — a second consumer of the same cash flows on a risk-neutral basis.
 *Fifth correction:* **there is no ASOP for principle-based reserves for annuities** —
 ASOP No. 52 is scoped to VM-20 life products, so

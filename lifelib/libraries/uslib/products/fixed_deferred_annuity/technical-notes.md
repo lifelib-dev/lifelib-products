@@ -356,7 +356,7 @@ window [S2]; the MVA period has expired [S8] [S13] [S16]; the benefit is a death
 with `i_nf` the contract GMSV rate (**2.80%** [S11]). The statute *defines* the indexed
 nonforfeiture rate — it is not a band the contract rate sits inside:
 
-    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B](#uslib-fixed_deferred_annuity-r1) [REG-R42]
+    i_stat = max( 0.0015,  min( 0.03,  round_{1/20 of 1%}(CMT5) − 0.0125 ) )  [R1 §4.B] [REG-R42]
 
 and the contract rate must satisfy `i_nf ≥ i_stat`; crediting the floor at more than the
 statutory rate is permitted and simply produces a higher floor, which is exactly what
