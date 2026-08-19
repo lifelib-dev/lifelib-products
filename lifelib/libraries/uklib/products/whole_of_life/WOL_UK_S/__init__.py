@@ -31,7 +31,7 @@ The arithmetic consequence is the product's defining economics: **every lapse
 extinguishes a liability for nothing**. The FCA records that without the
 continuing-payer cross-subsidy insurers would need to rely on lapses to remain
 profitable, so the best estimate falls as assumed lapses rise — which makes lapse the
-assumption to govern hardest, and makes the Royal London *Payout Promise* variant, which
+assumption to govern hardest, and makes one plan's *pro-rata paid-up value* variant [S9], which
 converts late lapses into paid-up liabilities instead of forfeitures, a different
 product rather than a small adjustment.
 
@@ -66,7 +66,7 @@ the underwritten cell's specimen defines entry age that way.
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 moratorium and its return-of-premiums benefit, accidental death paying the full cash sum
 from day one, premium cessation at 90 with cover continuing, the absence of any
-surrender value, the suicide clause, the escalation ratios and the Payout Promise
+surrender value, the suicide clause, the escalation ratios and the pro-rata paid-up value
 formula. Every rate is a standardization. The CMI's current tables are restricted to
 Authorised Users, so the two mortality bases shipped here are **[std]** proxies shaped
 like the tables the notes name, and no insurer publishes premium rate tables, so the

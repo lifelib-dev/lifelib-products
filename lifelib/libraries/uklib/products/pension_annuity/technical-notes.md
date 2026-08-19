@@ -10,8 +10,8 @@ refer to the cross-product reference library
 `references/regulatory-and-actuarial-references.md` (its own R-numbering; research
 provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation. Parameter values are
-identical to those in `product-spec.md`; the mechanics anchor is the L&G Pension
-Annuity [S1] [S2].
+identical to those in `product-spec.md`; the mechanics anchor is one carrier's
+pension annuity [S1] [S2].
 
 ---
 
@@ -29,8 +29,8 @@ Annuity [S1] [S2].
   design property that makes the liability MA-eligible [R1].
 - **Projection frequency.** Monthly grid, t = 1, 2, ... months from the start date
   **[std]**. Payment dates fall on the grid per the frequency m; exact-day mechanics
-  (Just's first-of-month payments and stub proportioning [S5 §§5.2–5.3], L&G's
-  working-day adjustment [S2 §2.4]) are not modeled **[std]**.
+  (one carrier's first-of-month payments and stub proportioning [S5 §§5.2–5.3],
+  another's working-day adjustment [S2 §2.4]) are not modeled **[std]**.
 - **Timing conventions [std].** Escalation is applied at the start of the month
   containing the policy anniversary (first at t = 13) [S2 §3.3]. Advance instalments
   are paid at the start of a payment period and require survival at the start;
@@ -193,8 +193,8 @@ below is currency per month.
     lpi5:         A(y) = A(y−1) × (1 + min(0.05, max(0, rpi_Sep(y−1))))      [S2 §3.2, defs; floor [S5 §7.1.4][S9 §4.3]]
     rpi_catchup:  see pseudocode                                              [S2 defs]
 
-RPI catch-up pseudocode (path-dependent ratchet [S2 defs]; Aviva operates the same
-rule [S9]):
+RPI catch-up pseudocode (path-dependent ratchet [S2 defs]; a second carrier operates
+the same rule [S9]):
 
     # I[k] = RPI reference level for anniversary k
     # (index for the 12 months ending six months before the anniversary [S2 defs])
@@ -253,7 +253,7 @@ G accumulates gross instalments scheduled while the annuitant is alive; measurin
 the balance at t−1 implements "instalments already paid" for a mid-month death
 **[std discretization]**. On the last-survivor basis, replace d_a(t) with the density
 of the last death, d_last(t) = d(l_a + l_d − l_a l_d)(t), and let G accumulate the
-dependant's instalments too [S2 §7.3] [S5 §8.4]. (The Canada Life variant additionally
+dependant's instalments too [S2 §7.3] [S5 §8.4]. (One carrier's variant additionally
 nets guarantee payments due, excluding future RPI/LPI increases [S7 §4.3] —
 implementable by extending G with guarantee outflows.)
 
@@ -353,8 +353,8 @@ scheduled payment date after death (t = 18) **[std convention]**.
 Checks. VP balance at death uses instalments paid before death: G(16) = 6,790.50, so
 the lump sum is 50,000 − 6,790.50 = 43,209.50 [S1 p11] [S2 §7]. Had "with proportion"
 been chosen, a stub of ≈ (1 + 0.5)/3 × 1,390.50 = 695.25 would be paid for the
-accrued month-and-a-half since t = 15 (**[std]** half-month accrual; Just would net
-this stub off the VP fund-value formula [S5 §8.3]). The dependant's 695.25 continues
+accrued month-and-a-half since t = 15 (**[std]** half-month accrual; one carrier would
+net this stub off the VP fund-value formula [S5 §8.3]). The dependant's 695.25 continues
 for her life, escalating 3% at each anniversary on the same basis [S2 §§5.12–5.13].
 
 Guarantee/VP interaction. Had the model point instead carried a 10-year guarantee
@@ -442,16 +442,16 @@ Known modeling pitfalls:
 - **Guarantee double-counting.** During the guarantee, the annuitant stream is
   certain — do not also weight it by l_a(t) (the max(1{t≤n}, l_a) form prevents
   paying 1 + l_a). Symmetrically, VP and guarantee never coexist in the
-  representative design [S2 §§6.7, 7.6]; engines supporting the Canada Life
-  combinable variant must net guarantee payments off VPbal [S7 §4.3] or the death
+  representative design [S2 §§6.7, 7.6]; engines supporting the combinable variant
+  offered by one carrier must net guarantee payments off VPbal [S7 §4.3] or the death
   benefit is double-paid.
 - **Overlap gating.** Without overlap the dependant stream is gated on t > n even
   when the annuitant died mid-guarantee; applying δ from the death date silently
   converts every without-overlap policy into the more expensive with-overlap form
   [S2 §§5.9–5.11].
 - **Higher-of dependant base.** The δ × A(y(t)) simplification relies on
-  non-decreasing escalation; if a decreasing option is configured (Just's pure RPI
-  [S5 §7.1.2]), the contractual "higher of income at death and at guarantee end"
+  non-decreasing escalation; if a decreasing option is configured (one carrier's pure
+  RPI [S5 §7.1.2]), the contractual "higher of income at death and at guarantee end"
   [S2 §5.12] must be implemented explicitly.
 - **Survival-measurement timing.** Arrears payments require survival at the payment
   date; advance payments at the period start. Using end-of-period survival for
@@ -463,7 +463,7 @@ Known modeling pitfalls:
 - **Escalation timing.** Increases apply on the anniversary [S2 §3.3], not on
   payment dates; applying the year-2 rate to the t = 12 arrears instalment (accrued
   in year 1) overstates income. GMP-bearing policies use different escalation dates
-  (1 April / 1 May at Just [S5 §7.2]) — out of scope with GMP generally **[std]**.
+  (1 April / 1 May at one carrier [S5 §7.2]) — out of scope with GMP generally **[std]**.
 - **VP balance timing.** VPbal must net instalments *paid before death*; netting the
   instalment due at the death-month payment date that was never paid (arrears,
   without proportion) understates the lump sum [S2 §§4, 7]. Symmetrically, on

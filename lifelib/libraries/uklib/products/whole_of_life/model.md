@@ -9,7 +9,7 @@ the product it implements is specified in
 > contractual mechanics are sourced — the moratorium and its return-of-premiums benefit,
 > accidental death paying the full cash sum from day one, premium cessation at 90 with
 > cover continuing, the absence of any surrender value, the suicide clause, the
-> escalation ratios, the Payout Promise formula. Every **rate** is a **[std]**
+> escalation ratios, the pro-rata paid-up formula. Every **rate** is a **[std]**
 > standardization: the CMI's current tables are restricted to Authorised Users
 > [REG-R22] [R7], so both mortality bases are proxies **shaped like** the tables the notes
 > name, and no insurer publishes whole of life premium rate tables, so the premium is a
@@ -81,10 +81,10 @@ Note where the year-one outgo actually comes from. At month 1 the blended benefi
 paying the full cash sum, not the premium refund. An implementation that dropped the
 accidental split would understate year-one claims by about that much.
 
-**The Aviva variant** doubles the accidental benefit, but **only on and after the first
-anniversary** [S7]. Inside the moratorium the accidental benefit is already the full cash
-sum, so doubling it there — or applying the multiplier to all deaths — overstates outgo.
-`adb_multiplier()` is applied in exactly one place, `benefit_pp(t, "ACC")`, past the
+**The accidental-multiplier variant** doubles the accidental benefit, but **only on and after
+the first anniversary** [S7]. Inside the moratorium the accidental benefit is already the
+full cash sum, so doubling it there — or applying the multiplier to all deaths — overstates
+outgo. `adb_multiplier()` is applied in exactly one place, `benefit_pp(t, "ACC")`, past the
 moratorium only.
 
 ## Lapse pays nothing, which is the whole economics
@@ -103,7 +103,7 @@ lapse decrement past cessation silently destroys liability, and the notes list i
 pitfall. The post-cessation period is pure outgo — the worked example's month 241 row
 shows premium income at zero while death outgo *rises*.
 
-**The Payout Promise variant is a different product.** Once half the expected payments
+**The pro-rata paid-up variant is a different product.** Once half the expected payments
 have been made, a would-be lapse converts to a **paid-up** policy at
 `SA × N_paid / N_expected` [S9] instead of forfeiting everything. That converts lapse
 profit into a retained pro-rata liability and collapses most of the lapse sensitivity —
@@ -195,7 +195,7 @@ rating factors, for the reason above.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Seven model points. **Point 1 is the worked-example anchor cell** (O50 / F70 / non-smoker / £5,000 / £30.00 a month / cessation at 240 months); points 2–4 are the accidental-double, Payout Promise and RPI-increasing O50 variants; points 5–6 are the underwritten cell level and on the 5% increasing-cover variant; point 7 is an O50 male smoker on a longer cessation | anchor cell **[std]**, technical notes' worked example |
+| `model_point_table.csv` | Seven model points. **Point 1 is the worked-example anchor cell** (O50 / F70 / non-smoker / £5,000 / £30.00 a month / cessation at 240 months); points 2–4 are the accidental-double, pro-rata paid-up value and RPI-increasing O50 variants; points 5–6 are the underwritten cell level and on the 5% increasing-cover variant; point 7 is an O50 male smoker on a longer cessation | anchor cell **[std]**, technical notes' worked example |
 | `mort_table.csv` | Annual mortality by basis × sex × smoker × age 18–120, capped at 1, with a `provenance` column | **[std]** throughout. The `population` rates are anchored so that `q(F, NS, 70) × 1.20 = 0.024` with 10% p.a. age progression — the notes' walk-through basis *exactly* — and the `assured` rates are anchored at `q(M, NS, 40) = 0.00090` on the same progression. Sex and smoker cells are flat factors. Neither basis is a published table |
 | `lapse_table.csv` | Annual lapse by cell and policy year: O50 8/6/4/4/4/4 %, UW 6/5/3/3/3/2 % | **[std]**; no public UK whole of life lapse study was retrieved, and on a product with no surrender value this is the single largest lever on the liability |
 
@@ -226,7 +226,7 @@ for monthly ones, `*_pp` for per-policy amounts, `claims(t, kind)` and
 
 | Notes | Cells | Why |
 |---|---|---|
-| `l(t)` | `pols_if` / `pols_pu` / `pols_all` | The Payout Promise variant splits the population into full-cover and paid-up strands; on every other model point the three coincide |
+| `l(t)` | `pols_if` / `pols_pu` / `pols_all` | The pro-rata paid-up variant splits the population into full-cover and paid-up strands; on every other model point the three coincide |
 | `SA` | `sum_assured` / `cover_pp` | A constant in the notes and a function of `t` here, because the escalating variants move it |
 | *(no analogue)* | `pols_maturity` | Borrowed from the term models but a **truncation artefact**, not a benefit — see above |
 
@@ -240,7 +240,7 @@ suicide share of year-one deaths (1%); premium cessation at the anniversary on o
 90; the 5% increasing-cover pick; the flat 3% RPI snapshot; full escalation take-up (the
 three-declines rule cannot be represented in a deterministic run and is not implemented);
 the crossover lapse stress dial; the assumption that **all** would-be lapses convert once
-the Payout Promise halfway point is passed; acquisition £150 / £300 and maintenance £30 /
+the pro-rata paid-up halfway point is passed; acquisition £150 / £300 and maintenance £30 /
 £50 a year inflating at 3%; initial commission at 25% of first-year premiums; and
 death-before-lapse as the processing order.
 
@@ -255,7 +255,7 @@ and the anti-selective milestone-benefit increases on the underwritten cell.
 the penny and the in-force column to five decimals, the month-12/13 moratorium
 discontinuity and its size, the accidental split's share of year-one outgo, the
 month-167 crossover, that lapse pays nothing and stops at cessation, both escalation
-variants, the Payout Promise strand and its effect on the liability, the two mortality
+variants, the pro-rata paid-up strand and its effect on the liability, the two mortality
 bases against each other, and that the truncation residual is negligible.
 
 ```bash

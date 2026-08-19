@@ -11,8 +11,8 @@ refer to the cross-product reference library
 provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation; [unverified] marks
 claims not confirmed against a retrieved document. Parameter values are identical to
-those in `product-spec.md`. Mechanics anchors: PAC PPFM [S1], Phoenix PPFM [S4],
-Aviva PPFM [S5]; regulatory codification of the asset-share item list: PRA Surplus
+those in `product-spec.md`. Mechanics anchors: the PPFMs of three proprietary insurers
+[S1] [S4] [S5]; regulatory codification of the asset-share item list: PRA Surplus
 Funds Part [R8]; canonical methodology literature: Needleman & Roff (1995) on asset
 shares and Hibbert & Turnbull (2003) on guarantee costs, as listed on the IFoA SA2
 resources page [R13].
@@ -75,7 +75,7 @@ resources page [R13].
 | `mvr_free_wd_rate` | % of original premium p.a. | 5% |
 | `tax_basis` | enum {life_net, pension_gross} [S1] [REG-R17] | life_net |
 | `gao_flag` / `gao_rate` | bool / annuity per £1 cash | false / — |
-| `profitshare_flag` | bool (mutual variation [S6]) | false |
+| `mutual_dist_flag` | bool (mutual profit distribution variation [S6]) | false |
 
 ---
 
@@ -134,7 +134,7 @@ experience.
 | Interim bonus rate | = last declared regular bonus rate | practice [S1] [S7]; equality **[std]**, product-spec (17) |
 | MVR scale | derived each year from the formulas below (no tabulated scale) | [S5] [S6]; derivation **[std]** |
 | EGR (smoothed-fund variation) | 5.0% p.a. | **[std]**, product-spec (25) |
-| ProfitShare (mutual variation) | 0 in base | [S6]; base choice **[std]** |
+| Mutual profit distribution (variation) | 0 in base | [S6]; base choice **[std]** |
 
 ### (c) Behavioral / experience assumptions (modeler's view)
 
@@ -297,9 +297,10 @@ The first argument recovers the smoothed-payout shortfall below face value (post
 payouts target 100% of asset share, here its smoothed image [S5]); the second is the
 COBS 20.2.16R bound — the MVR may not exceed the excess of unit value over the
 underlying asset value [R1]. Because `FB > 0` requires `S > FV` and `MVR > 0`
-requires `S < FV`, final bonus and MVR are never simultaneous (observed Phoenix WPF
-rule [S4]; adoption product-spec (24)). MVR-free events: death [S5], guarantee dates
-[S4] [S5], withdrawals within the 5% allowance **[std]** (product-spec (13)).
+requires `S < FV`, final bonus and MVR are never simultaneous (the rule observed in one
+consolidated with-profits fund [S4]; adoption product-spec (24)). MVR-free events:
+death [S5], guarantee dates [S4] [S5], withdrawals within the 5% allowance **[std]**
+(product-spec (13)).
 
 ### Cost of bonus and shareholder transfer (90:10 mechanics)
 
@@ -318,16 +319,16 @@ Measurement of `CB` **[std]**:
 `ST` is a cash outflow from the fund (distribution to shareholders), reported
 separately in the model output; per COBS 20.2.17AR, adjustments reducing policyholder
 distributions below the required percentage require proportionate
-shareholder-transfer reductions [R1] — modeled
-implicitly by tying `ST` to actually-declared/paid bonus.
+shareholder-transfer reductions [R1] — modeled implicitly by tying `ST` to
+actually-declared/paid bonus.
 
 ### Smoothing account
 
 On each exit, post the smoothing cost `(payout − AS(t))` weighted by the exiting
 probability to `SM(t)` (within the estate). Intended broadly neutral over time
 [S1] [S2] [S5] [S6]; the base model tracks the balance without recycling. Optional
-module: Aviva-style year-end recycling into credited returns (maximum deduction
-currently 2.5% of asset shares p.a.) [S5].
+module: year-end recycling into credited returns as one insurer operates it (maximum
+deduction currently 2.5% of asset shares p.a.) [S5].
 
 ### Cost of guarantees — cited, not specified
 
@@ -346,7 +347,7 @@ Where `gao_flag` is set (CWP pension cells), the retirement benefit is
 `max( CashFund(T) · OMR(T), CashFund(T) · gao_rate )` — the guaranteed annuity rate
 floors the open-market conversion. GAOs are present in several closed funds, backed
 by fixed-interest assets, with interest-rate risk identified as a fund business risk
-[S4]; the Equitable Life history is [unverified] context. `gao_rate` = £0.09 p.a. per
+[S4]; the 2000 GAO litigation history is [unverified] context. `gao_rate` = £0.09 p.a. per
 £1 of cash fund **[std]** [unverified as typical]; take-up per class (c). The GAO is
 a valuation-critical option (stochastic interest-rate exposure) — cited, not
 fully specified.
@@ -476,8 +477,9 @@ cited, not reproduced.
 
 1. **Fund return / equity backing.** Asset shares, final bonuses and MVR incidence
    all key off `r(t)`; the observed strategy ceiling is a benchmark equity backing
-   ratio of 75% (Aviva EBR upper limit [S5]). Deterministic base runs materially understate
-   guarantee costs (convexity) — the central model risk here [R7] [R13].
+   ratio of 75% (one insurer's EBR upper limit [S5]). Deterministic base runs
+   materially understate guarantee costs (convexity) — the central model risk here
+   [R7] [R13].
 2. **Bonus discretion path.** The split of payout between hardened regular bonus and
    final bonus changes guarantee costs without changing the target payout: a higher
    `θ` or faster `κ` hardens guarantees. The [std] parametrization is a genuine
@@ -486,8 +488,8 @@ cited, not reproduced.
    a market shock passes to payouts immediately; firms' actual limits vary (5%–15%
    observed [S1] [S5] [S7]) and can be suspended under solvency stress [S5].
 4. **MVR application.** Whether the discretion is exercised promptly (and the review
-   buffer — Phoenix tolerates up to 10% return variation before an extra MVR review
-   [S4]) drives surrender strain in down markets.
+   buffer — one consolidator tolerates up to 10% return variation before an extra MVR
+   review [S4]) drives surrender strain in down markets.
 5. **Surrender behavior at guarantee dates.** The guarantee-date spike multiplier and
    MVR deterrent are unverified [std] shapes; anti-selective exit when guarantees are
    in the money is the dominant behavioral risk (dynamic assumptions required [R7]).
@@ -499,9 +501,9 @@ cited, not reproduced.
    flow this single-policy model does not capture.
 8. **GAO interest-rate exposure.** Legacy GAO cells are long interest-rate optionality
    [S4]; omitting the stochastic layer understates their cost materially.
-9. **Estate interactions.** Reattributions, special bonuses and ProfitShare
-   [S5] [S6] are fund-level discretions outside the base model; scenario overlays
-   should treat them as management actions.
+9. **Estate interactions.** Reattributions, special bonuses and mutual profit
+   distributions [S5] [S6] are fund-level discretions outside the base model; scenario
+   overlays should treat them as management actions.
 10. **Data-provenance limits.** Snapshot bonus rates, EGRs and MVR scales are [std]
     placeholders by design (declarations are not in PPFMs — research gap); a
     calibration pass against current bonus declarations is required before any

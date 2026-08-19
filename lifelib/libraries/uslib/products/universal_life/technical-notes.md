@@ -10,7 +10,7 @@ library `references/regulatory-and-actuarial-references.md` (its own R-numbering
 research provenance in `_research/regulatory-actuarial.md`). **[std]** marks
 standardizations introduced for the reference implementation. Parameter values are
 identical to those in `product-spec.md`; the implementation anchor for mechanics is
-the Pacific Life Versa-Flex PRO specimen policy [S3].
+one carrier's specimen policy [S3].
 
 **Revision note, 2026-08-06.** The reserve material under "Valuation and reserve
 pointers" was revised when the AP&P Manual appendix items were read at first hand from

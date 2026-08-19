@@ -69,7 +69,7 @@ cumulative-premium design as the principal variation.
 | Maturity | No maturity date; premiums and all charges cease at attained age 121, coverage continues | [S7] |
 
 **[std] notes:**
-1. Band structure: Pacific Life and Protective use five bands with identical
+1. Band structure: two of the carriers surveyed use five bands with identical
    breakpoints from $25K/$50K up ([S2], [S7]). Because the representative minimum face
    is $100,000 [S4], [S6], the sub-$100K band is dropped and the remaining four sourced
    breakpoints are kept. Observed minimum faces range $25,000 [S2] to $100,000
@@ -102,9 +102,9 @@ cumulative-premium design as the principal variation.
    with AG 38's treatment of unlimited catch-up rights [R1] and with carrier
    statements that restoration premiums "may be significantly higher than the premiums
    illustrated" [S7].
-3. Observed range: withdrawals reduce the guarantee measure (Nationwide subtracts
-   partial surrenders and fees [S4]; Pacific Life/Protective state loans and
-   withdrawals impair the guarantee value or duration [S2], [S3], [S7]); Penn Mutual's
+3. Observed range: withdrawals reduce the guarantee measure (one carrier subtracts
+   partial surrenders and fees [S4]; two others state that loans and withdrawals
+   impair the guarantee value or duration [S2], [S3], [S7]); another carrier's
    premium-test design subtracts withdrawals from premiums paid [S5]. Dollar-for-dollar
    reduction of the shadow account is the simplest representative treatment.
 

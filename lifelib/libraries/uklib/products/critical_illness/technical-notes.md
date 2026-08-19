@@ -109,7 +109,7 @@ rates, no asset shares, no MVRs. Two snapshot elements exist:
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| Reviewable-premium reviews (variant module only) | Reviews every 5 years from the 5th anniversary; changes driven by claims/industry experience, medical advances, law; Aviva: "no limits" on changes, <2% or 50p ignored; L&G intermediary: ±5% tolerance, individual health not a factor. Snapshot: premiums unchanged at each review **[std]** | [S3] [S4] [S5] |
+| Reviewable-premium reviews (variant module only) | Reviews every 5 years from the 5th anniversary; changes driven by claims/industry experience, medical advances, law; one carrier: "no limits" on changes, <2% or 50p ignored; another's intermediary variant: ±5% tolerance, individual health not a factor. Snapshot: premiums unchanged at each review **[std]** | [S3] [S4] [S5] |
 | Indexation basis (if `indexation = true`) | RPI snapshot 3.0% p.a. **[std]** → cover +3.0%, premium +4.5% (x1.5 factor), within caps 10%/15% | mechanics [S1] [S4]; RPI level **[std]** |
 
 ### (c) Behavioral / experience assumptions (modeler's view)
@@ -269,11 +269,11 @@ resolution **[std]**.
 
 For `premium_guarantee = reviewable`: `P(t)` is constant between reviews; at each
 5-yearly review from the 5th anniversary [S3] [S4], `P ← P x (1 + ρ_review)` where
-`ρ_review` is a scenario input (snapshot 0 **[std]**). Contractual constraints:
-Aviva-style — no limits, changes under 2% or 50p ignored, policyholder may instead
-reduce cover [S4] [S5]; L&G-intermediary-style — ±5% tolerance per review, individual
-health not a factor [S3]. A review-driven lapse response belongs in behavior modeling
-(below). Premium rates for in-force reviewable business are insurer-discretionary
+`ρ_review` is a scenario input (snapshot 0 **[std]**). Contractual constraints: one
+carrier's form — no limits, changes under 2% or 50p ignored, policyholder may instead
+reduce cover [S4] [S5]; another's intermediary form — ±5% tolerance per review,
+individual health not a factor [S3]. A review-driven lapse response belongs in behavior
+modeling (below). Premium rates for in-force reviewable business are insurer-discretionary
 current elements — class (b) snapshots, not guarantees.
 
 ---
@@ -292,7 +292,7 @@ for calibration.
   library is deliberately absent **[std]**.
 - **Premium-review shock (reviewable module only) [std].**
   `w_shock = min(0.30, w(y) + 2.0 x max(0, ρ_review − 0.05))` applied in the 12 months
-  following a review that raises premiums by more than 5%. Rationale: Aviva's
+  following a review that raises premiums by more than 5%. Rationale: one carrier's
   unlimited review changes [S4] make review-driven shocks the dominant behavioral risk
   on reviewable business; slope and cap are placeholders.
 - **Selective lapsation [std].** Optional morbidity-anti-selection overlay: after a
@@ -402,8 +402,8 @@ Known modeling pitfalls:
   `SA` as a death claim [S1]; `δ` bites only in the standalone variant [S4] [S11].
 - **Depleting the sum assured for partial claims.** Additional-payment and children's
   claims must not reduce `SA` or decrement `l(t)` [S1] [S3] [S4] [S8] [S11]; modeling
-  them as accelerations (Vitality-style plan-account depletion [S10]) is a different
-  product.
+  them as accelerations (the severity-graded plan-account depletion design [S10]) is a
+  different product.
 - **Terminating on additional-payment claims.** Same error, opposite sign: only the
   main benefit ends the policy [S1] [S4] [S11].
 - **Age-basis mismatch.** `i_ci`, `q_d` and attained-age indexing must share the ANB
@@ -414,7 +414,7 @@ Known modeling pitfalls:
   requirements [R10] [REG-R33]).
 - **Premium placeholder.** £55/month is not a market rate (no insurer publishes CI
   rate cards — research-file gap); profitability conclusions from the worked example
-  are meaningless. Aviva's reviewable reviews have "no limits" [S4] — do not model
+  are meaningless. One carrier's reviewable reviews have "no limits" [S4] — do not model
   reviewable business with the guaranteed-premium constraint.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->

@@ -11,8 +11,8 @@ to the cross-product reference library
 provenance in `_research/regulatory-actuarial.md`). **[std]** marks standardizations
 introduced for the reference implementation; [unverified] marks claims not confirmed
 against a retrieved document. Parameter values are identical to those in
-`product-spec.md`; the implementation anchor for mechanics is the Prudential Investment
-Plan KFD + Policy Provisions pair [S1] [S2].
+`product-spec.md`; the implementation anchor for mechanics is a single carrier's
+KFD + Policy Provisions pair [S1] [S2].
 
 ---
 

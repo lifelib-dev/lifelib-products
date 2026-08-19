@@ -81,7 +81,7 @@ delta_acc                  acc_share                       Accidental share of d
 delta_su                   suicide_share                   Suicide share of year-1 deaths
 N_paid(t)                  payments_made(t)                Monthly payments made
 N_expected                 payments_expected()             Payments expected to cessation
-paid_up                    pu_eligible(t)                  Payout Promise qualifies
+paid_up                    pu_eligible(t)                  Pro-rata paid-up qualifies
 t*                         crossover_mth()                 Month cumulative premiums pass SA
 (basis)                    mort_basis()                    population or assured
 (loading)                  mort_loading()                  Anti-selection loading
@@ -112,7 +112,7 @@ CF(t)                      net_cf(t)                       Net cash flow, income
 
 Three names needed care.
 
-The notes' ``l(t)`` is a single in-force probability, but the Payout Promise variant
+The notes' ``l(t)`` is a single in-force probability, but the pro-rata paid-up variant
 splits the population in two: policies still on **full cover**, and policies made
 **paid-up** at a reduced payout. :func:`pols_if` is the first strand — the notes' ``l``,
 and what the worked example prints — :func:`pols_pu` the second, and :func:`pols_all`
@@ -163,11 +163,11 @@ Note where the year-one outgo actually comes from. At month 1 the blended benefi
 tail paying the full cash sum, not the premium refund. An implementation that dropped
 the accidental split would understate year-one claims by about that much.
 
-The Aviva variant doubles the accidental benefit, but **only on and after the first
-anniversary** — inside the moratorium the accidental benefit is already the full cash
-sum, and doubling it there, or applying the multiplier to all deaths, overstates outgo.
-:func:`adb_multiplier` is applied in one place, in ``benefit_pp(t, "ACC")``, past the
-moratorium only.
+The accidental-multiplier variant doubles the accidental benefit, but **only on and after
+the first anniversary** [S7] — inside the moratorium the accidental benefit is already
+the full cash sum, and doubling it there, or applying the multiplier to all deaths,
+overstates outgo. :func:`adb_multiplier` is applied in one place, in
+``benefit_pp(t, "ACC")``, past the moratorium only.
 
 .. rubric:: Lapse pays nothing, which is the whole economics
 
@@ -182,7 +182,7 @@ into the model rather than left as prose:
   cell reaches cessation, so :func:`lapse_rate` is zero from there. Applying a lapse
   decrement past cessation silently destroys liability, and the notes list it as a
   pitfall.
-- **The Payout Promise variant is a different product.** Once half the expected payments
+- **The pro-rata paid-up variant is a different product.** Once half the expected payments
   have been made, a would-be lapse converts to a **paid-up** policy at
   ``SA x N_paid / N_expected`` instead of forfeiting everything. That converts lapse
   profit into a retained pro-rata liability and collapses most of the lapse sensitivity,
@@ -334,7 +334,7 @@ def adb_multiplier():
 
 
 def payout_promise():
-    """Whether the Payout Promise variant applies.
+    """Whether the pro-rata paid-up variant applies.
 
     Once half the expected payments have been made, a would-be lapse converts to a
     paid-up policy instead of forfeiting everything.  Requires a premium cessation date,
@@ -522,7 +522,7 @@ def payments_made(t):
 def payments_expected():
     """N_expected: the payments expected over the premium-paying period.
 
-    The Payout Promise denominator, so it is the cessation month; zero where premiums
+    The pro-rata paid-up denominator, so it is the cessation month; zero where premiums
     are payable for life, in which case the variant does not apply.
     """
     return cessation_mths()
@@ -531,7 +531,7 @@ def payments_expected():
 def pu_eligible(t):
     """Whether a would-be lapse in month t converts to paid-up instead of terminating.
 
-    The Payout Promise rule: at least half the expected payments must have been made
+    The pro-rata paid-up rule: at least half the expected payments must have been made
     [S9].  Before that halfway point a lapse is a total loss and the base lapse rate
     applies; after it, forfeiture is strictly dominated, so **all** would-be lapses are
     assumed to convert **[std]**.
@@ -600,7 +600,7 @@ def pols_if(t):
     The notes' in-force probability, and the column their worked-example table prints.
     Paid-up policies are **not** counted here: they are a separate strand,
     :func:`pols_pu`, because their benefit is a reduced amount.  On every model point
-    without the Payout Promise variant the two coincide with :func:`pols_all`.
+    without the pro-rata paid-up variant the two coincide with :func:`pols_all`.
     """
     if t < 1 or t > proj_len():
         return 0.0
@@ -611,11 +611,11 @@ def pols_if(t):
 
 
 def pols_pu(t):
-    """Paid-up policies in force at the start of month t; zero without Payout Promise.
+    """Paid-up policies in force at the start of month t.
 
-    Paid-up policies pay no premium, carry no lapse decrement and do not escalate, so
-    they roll forward on mortality alone and take conversions in from the full-cover
-    strand.
+    Zero without the pro-rata paid-up variant.  Paid-up policies pay no premium, carry no
+    lapse decrement and do not escalate, so they roll forward on mortality alone and take
+    conversions in from the full-cover strand.
     """
     if t < 1 or t > proj_len() or not payout_promise():
         return 0.0
@@ -679,7 +679,7 @@ def pols_death(t):
 
 
 def pols_death_pu(t):
-    """Deaths on paid-up cover at the end of month t; zero without Payout Promise."""
+    """Deaths on paid-up cover at the end of month t; zero without the pro-rata paid-up value."""
     return pols_pu(t) * mort_rate_mth(t)
 
 
@@ -695,7 +695,7 @@ def pols_exit(t):
 def pols_convert(t):
     """Would-be lapses converted to paid-up at the end of month t.
 
-    All of them once the Payout Promise halfway point is passed **[std]**, none before
+    All of them once the pro-rata paid-up halfway point is passed **[std]**, none before
     it, and none at all without the variant.  A state change, not a cash flow.
     """
     return pols_exit(t) if pu_eligible(t) else 0.0
@@ -746,7 +746,7 @@ def benefit_pp(t, kind):
         months on UW.  This is what :func:`claims` multiplies by.
 
     ``"PAID_UP"``
-        the Payout Promise payout for a policy converting in month t,
+        the pro-rata paid-up payout for a policy converting in month t,
         ``SA x N_paid / N_expected``.  Zero without the variant.
     """
     if kind == "NON_ACC":
@@ -837,7 +837,7 @@ def expenses(t):
 
     The acquisition charge falls once, at issue.  Maintenance is carried on
     :func:`pols_all`, so a paid-up policy still costs money to administer even though it
-    pays no premium - which is part of why the Payout Promise variant is expensive.
+    pays no premium - which is part of why the pro-rata paid-up variant is expensive.
     """
     acq = expense_acq_pp() * pols_if(t) if t == 1 else 0.0
     return acq + expense_maint_pp() / 12.0 * inflation_factor(t) * pols_all(t)
@@ -910,7 +910,7 @@ def result_cf():
 
     ``pols_if`` is the full-cover count at the start of the month, which is the weight
     on premium income and on full-cover death outgo; ``pols_pu`` is the paid-up strand,
-    empty on every model point without the Payout Promise variant.  ``claims_lapse`` is
+    empty on every model point without the pro-rata paid-up variant.  ``claims_lapse`` is
     a column of zeros by product design - there is no surrender value - and is published
     rather than dropped.
     """

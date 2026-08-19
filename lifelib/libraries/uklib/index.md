@@ -92,7 +92,7 @@ the letter.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Pension annuity](products/pension_annuity/index.md) | `PA_UK_S` | monthly | Immediate lifetime annuity on the L&G pattern: single or joint life, escalation nil / fixed / RPI-floored / LPI, guarantee period XOR value protection, enhanced terms as a mortality-rating overlay. Longevity is the model |
+| [Pension annuity](products/pension_annuity/index.md) | `PA_UK_S` | monthly | Immediate lifetime annuity on a single carrier's pattern: single or joint life, escalation nil / fixed / RPI-floored / LPI, guarantee period XOR value protection, enhanced terms as a mortality-rating overlay. Longevity is the model |
 
 ### One shape, enforced
 
@@ -309,15 +309,16 @@ Aggregated from the per-product research; each product's documents carry the ful
   features documents — £100,000 at 65 buying £6,657 p.a. with 50% value protection, January
   2026 — with **[std]** rate scales constructed around them.
 - **Bot-blocked primary sources.** The ABI Guide to Minimum Standards for Critical Illness
-  Cover, parts of the FCA Handbook (JS-rendered), PRA PS10/24 and SS7/18, and Scottish
-  Widows PPFMs could not be machine-fetched; facts relying on them are triangulated from
-  secondary material and tagged accordingly.
-- **Vintage issues.** Some retrieved documents are older editions — Aviva pension annuity
-  terms 2019/20 via a mirror, Aviva over-50s pages dated 2016. Structural mechanics are
-  stable but parameter details may be stale; disclosed wherever used.
+  Cover, parts of the FCA Handbook (JS-rendered), PRA PS10/24 and SS7/18, and one insurer's
+  with-profits PPFMs could not be machine-fetched; facts relying on them are triangulated
+  from secondary material and tagged accordingly.
+- **Vintage issues.** Some retrieved documents are older editions — a single insurer's
+  pension annuity terms of 2019/20 via a mirror, and its over-50s pages dated 2016.
+  Structural mechanics are stable but parameter details may be stale; disclosed wherever
+  used.
 - **[unverified] items remain** wherever a claim could not be confirmed against a retrieved
-  document: the ICOBS chapter mapping for pure protection, market-share claims, the L&G
-  funeral benefit partner option.
+  document: the ICOBS chapter mapping for pure protection, market-share claims, one
+  provider's funeral benefit partner option.
 
 ```{toctree}
 :hidden:

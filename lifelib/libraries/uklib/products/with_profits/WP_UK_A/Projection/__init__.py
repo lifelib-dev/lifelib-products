@@ -1178,8 +1178,8 @@ def smoothing_account(t):
     """SM(t): the cumulative smoothing and guarantee cost borne by the estate.
 
     Intended broadly neutral over time.  The base model tracks the balance without
-    recycling it into credited returns; a firm operating an Aviva-style recycling would
-    feed it back subject to a maximum annual deduction from asset shares.
+    recycling it into credited returns; one insurer operates that recycling, feeding it
+    back subject to a maximum annual deduction from asset shares [S5].
     """
     if t < proj_start():
         return 0.0

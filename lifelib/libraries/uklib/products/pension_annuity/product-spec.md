@@ -14,8 +14,8 @@ from the product research file's; research provenance in
 introduced for the reference implementation; each [std] table row carries a footnote
 giving the rationale and the observed range across insurers. Facts the research file
 could not verify are flagged [unverified]. The implementation anchor for mechanics is
-the Legal & General Pension Annuity (Key Features W12325 [S1]; Terms and Conditions
-DA2440 [S2]).
+one carrier's pension annuity — the "anchor carrier" of the footnotes below (Key
+Features Document [S1]; Terms and Conditions [S2]).
 
 ---
 
@@ -32,23 +32,24 @@ annuities and guarantee periods longer than ten years [R6] [R7]; the 30-year gua
 periods in current products rely on this relaxation [S1] [S4] [S6] [S9]. The contract is
 long-term insurance business Class I (life and annuity) under the RAO 2001 Sch 1
 Part II [R8], and pension business under s.58 Finance Act 2012 (stated expressly in
-Just's conditions) [S5 §14.11].
+one carrier's conditions) [S5 §14.11].
 
-Annuities in payment are non-participating guaranteed business: Canada Life states the
-policy does not share in profits [S7 §7.9], and the L&G/Just/Aviva contracts contain no
-participation mechanics [S2] [S5] [S9] (that this holds market-wide is [unverified]).
-There is no surrender value at any time [S1 p4] [S2 §12] [S5 cl.14.7] [S7 §7.5] [S9 §3.9]
-— the feature that makes UK annuity books the canonical matching-adjustment portfolios
-under Solvency UK [R1]. Enhanced (medically underwritten) terms are standard market
-practice: Just underwrites individually as standard [S4], and L&G, Canada Life and
-Aviva all offer enhanced rates for health and lifestyle factors [S1 p5] [S6] [S9]. Bulk
-purchase annuities (DB buy-ins/buy-outs) are the institutional variation of the same
-liability mechanics [unverified — no BPA document retrieved; see Variations].
+Annuities in payment are non-participating guaranteed business: one carrier states the
+policy does not share in profits [S7 §7.9], and the other three carriers' contracts
+contain no participation mechanics [S2] [S5] [S9] (that this holds market-wide is
+[unverified]). There is no surrender value at any time [S1 p4] [S2 §12] [S5 cl.14.7]
+[S7 §7.5] [S9 §3.9] — the feature that makes UK annuity books the canonical
+matching-adjustment portfolios under Solvency UK [R1]. Enhanced (medically
+underwritten) terms are standard market practice: one carrier underwrites individually
+as standard [S4], and the other three all offer enhanced rates for health and lifestyle
+factors [S1 p5] [S6] [S9]. Bulk purchase annuities (DB buy-ins/buy-outs) are the
+institutional variation of the same liability mechanics [unverified — no BPA document
+retrieved; see Variations].
 
-This composite is built on the L&G Pension Annuity chassis [S1] [S2]. The research
-comparison of four insurers (L&G, Just, Canada Life, Aviva) found that the others
-differ mainly in parameter bounds and edge mechanics rather than structure, so one
-cash-flow engine covers all four with configuration; the chassis choice is **[std]**.
+This composite is built on the anchor carrier's pension annuity chassis [S1] [S2]. The
+research comparison of four insurers ([S1] [S2]; [S4] [S5]; [S6] [S7]; [S9]) found that
+the others differ mainly in parameter bounds and edge mechanics rather than structure,
+so one cash-flow engine covers all four with configuration; the chassis choice is **[std]**.
 
 ---
 
@@ -74,16 +75,16 @@ cash-flow engine covers all four with configuration; the chassis choice is **[st
 
 Footnotes to [std] rows:
 
-1. Observed minimum purchase: £10,000 after tax-free cash at L&G [S1 p4], Canada Life
-   [S6] and Aviva [S9]; Just instead requires at least £2,000 to remain to buy the
+1. Observed minimum purchase: £10,000 after tax-free cash at three of the four carriers
+   [S1 p4] [S6] [S9]; the fourth instead requires at least £2,000 to remain to buy the
    annuity after any lump sums, with no £10k floor stated [S4]. The £10,000 floor is
    the modal rule.
-2. Not [std], but note: Just states 55 rising to 57 from 6 April 2028 (or 50 where
-   allowed by law) [S4]; Canada Life allows any age for beneficiary annuities [S6].
-3. Only Aviva states a maximum issue age (55–90) [S9]; L&G, Just and Canada Life state
-   none in the retrieved documents [S1] [S4] [S6], with L&G constraining only the
-   guarantee-period end (age ≤ 100) [S1 p10]. The composite adopts 90 so the model has
-   a bounded issue-age domain.
+2. Not [std], but note: one carrier states 55 rising to 57 from 6 April 2028 (or 50
+   where allowed by law) [S4]; another allows any age for beneficiary annuities [S6].
+3. Only one of the four carriers states a maximum issue age (55–90) [S9]; the other
+   three state none in the retrieved documents [S1] [S4] [S6], with the anchor carrier
+   constraining only the guarantee-period end (age ≤ 100) [S1 p10]. The composite
+   adopts 90 so the model has a bounded issue-age domain.
 
 ### Income payment options
 
@@ -101,19 +102,20 @@ Footnotes to [std] rows:
 | Snapshot escalation for the worked configuration | Fixed 3% p.a. | **[std]** (6) |
 | Deterministic RPI assumption | 3.0% p.a. | **[std]** (7) |
 
-4. The four-option menu drops L&G's RPI-capped-3% variant [S2 §3.2], Just's pure RPI
-   (income can decrease) and LPI-max-2.5% variants [S4] [S5 §§7.1.2, 7.1.5] and Canada
-   Life's LPI 2.5 [S6] [S7 defs]. All are parameterizations of the same indexation
-   engine (cap/floor/catch-up parameters); the retained four span the mechanics.
-5. Observed LPI definitions: L&G — RPI capped 5% using the September RPI figure
-   [S2 defs "LPI"]; Just — LPI max 5% over 1 October–30 September of the prior year,
-   collar 0% [S5 §7.1.4]; Canada Life — RPI for the year ending September [S6] [S7
-   defs]; Aviva — declared RPI for 1 October–30 September, floor 0 [S9 §4.3]. The
-   composite takes cap 5%, floor 0%, September reference year, and no catch-up ratchet
-   (catch-up is recorded only for the uncapped RPI option [S2 defs] [S9]).
-6. Pure snapshot choice within the contractual range (≤ 10% [S1 p8] [S2 §3.2];
-   0.1%–10% at Canada Life [S6]; Just's cap unstated [S4] [S5]). 3% keeps the worked
-   example's escalation visible without dominating it.
+4. The four-option menu drops the anchor carrier's RPI-capped-3% variant [S2 §3.2],
+   another's pure RPI (income can decrease) and LPI-max-2.5% variants [S4]
+   [S5 §§7.1.2, 7.1.5] and a third's LPI 2.5 [S6] [S7 defs]. All are parameterizations
+   of the same indexation engine (cap/floor/catch-up parameters); the retained four
+   span the mechanics.
+5. Observed LPI definitions, one per carrier: RPI capped 5% using the September RPI
+   figure [S2 defs "LPI"]; LPI max 5% over 1 October–30 September of the prior year,
+   collar 0% [S5 §7.1.4]; RPI for the year ending September [S6] [S7 defs]; declared
+   RPI for 1 October–30 September, floor 0 [S9 §4.3]. The composite takes cap 5%,
+   floor 0%, September reference year, and no catch-up ratchet (catch-up is recorded
+   only for the uncapped RPI option [S2 defs] [S9]).
+6. Pure snapshot choice within the contractual range (the anchor carrier's ≤ 10%
+   [S1 p8] [S2 §3.2]; 0.1%–10% at another carrier [S6]; a third's cap unstated
+   [S4] [S5]). 3% keeps the worked example's escalation visible without dominating it.
 7. Modeling assumption for projecting RPI-linked options; no source publishes an
    inflation basis. The RPI floor and LPI collar are inflation options whose value a
    deterministic path cannot capture (see technical notes).
@@ -129,20 +131,20 @@ Footnotes to [std] rows:
 | Dependant underwriting | The second life's health is underwritten and can attract an enhancement | [S6] [S9] |
 
 8. All four insurers allow up to 100% [S1 p9] [S2 §5.1] [S4] [S6] [S7 §3.5.2];
-   percentages are free-form at L&G [S1 p9] and Just [S4]; Canada Life quotes 50% as
+   percentages are free-form at two of them [S1 p9] [S4]; a third quotes 50% as
    a typical example [S6]. Market-standard quoted levels of 50%/67%/100% are
-   [unverified]. 50% matches the Canada Life example and the anchor's VP% so the
+   [unverified]. 50% matches that example [S6] and the anchor's VP% so the
    VP-plus-dependant constraint binds exactly at 100%.
-9. Observed bases: L&G — named spouse / any spouse (married at least the last six
-   months and not 10+ years younger) / named financial dependant [S2 §§5.2–5.7];
-   Canada Life — named individual (survives divorce) or spouse-at-death, with an
+9. Observed bases, one per carrier: named spouse / any spouse (married at least the
+   last six months and not 10+ years younger) / named financial dependant
+   [S2 §§5.2–5.7]; named individual (survives divorce) or spouse-at-death, with an
    actuarial reduction where the survivor is more than 10 years younger [S7 §§3.5.1,
-   3.5.5]; Aviva — named, absolute or conditional on FA 2004 Sch 28 para 15 dependence
-   [S9 §4.6]; Just — named dependant aged 40+ [S4] [S5 §6.1]. A named dependant with
+   3.5.5]; named, absolute or conditional on FA 2004 Sch 28 para 15 dependence
+   [S9 §4.6]; named dependant aged 40+ [S4] [S5 §6.1]. A named dependant with
    attributes fixed at outset is the only basis a single-policy model point can carry
    without marriage-state modeling.
-10. Both forms are offered by all four insurers [S1 p9] [S2 §§5.9–5.11] [S4] [S5
-    §6.2.2] [S6]. "Without overlap" is the default here because it exercises the
+10. Both forms are offered by all four insurers [S1 p9] [S2 §§5.9–5.11] [S4]
+    [S5 §6.2.2] [S6]. "Without overlap" is the default here because it exercises the
     guarantee/dependant interaction; the overlap flag is a model-point attribute.
 
 ### Death benefits — guarantee period and value protection
@@ -158,50 +160,50 @@ Footnotes to [std] rows:
 | No death benefit selected | Payments stop on death; nothing else is payable | [S1 p6] [S4] [S6] [S9] |
 | VP exclusions | Not available on GMP or Section 9(2B) rights; may be limited for the most severe medical conditions | [S2 §7.7] [S4] |
 
-11. Observed ranges: L&G 1–30 years with the age-100 limit [S1 p10] [S2 §§6.5–6.6];
-    Just 1–30 years [S4]; Canada Life one month to 30 years [S6]; Aviva one year as
+11. Observed ranges, one per carrier: 1–30 years with the age-100 limit [S1 p10]
+    [S2 §§6.5–6.6]; 1–30 years [S4]; one month to 30 years [S6]; one year as
     standard, extendable to 30 (capped at 10 where the annuity originates from a DB
     scheme) [S9]. 10 years is a round mid-range default; the model takes the period
     as an input in whole months.
-12. Just offers a "lump sum basis" guarantee paying the balance of instalments
-    [S5 §4.3.2] and Aviva a commuted lump sum (death before 75) discounted at a set
-    rate, currently 0.75% compounded [S9 §4.5]; L&G and Canada Life pay only
+12. One carrier offers a "lump sum basis" guarantee paying the balance of instalments
+    [S5 §4.3.2] and another a commuted lump sum (death before 75) discounted at a set
+    rate, currently 0.75% compounded [S9 §4.5]; the remaining two pay only
     continuing instalments [S2 §6] [S7 §4.2]. The composite pays continuing
     instalments only.
-13. VP% is free-form up to 100% at L&G [S1 p11] and Aviva [S9]; Just protects a
-    percentage of the fund after PCLS and any taxable lump sum [S5 §8.3]; Canada Life
+13. VP% is free-form up to 100% at two of the carriers [S1 p11] [S9]; a third protects
+    a percentage of the fund after PCLS and any taxable lump sum [S5 §8.3]; the fourth
     nets off annuitant instalments, guarantee payments due (excluding future RPI/LPI
     increases) and second-annuitant instalments [S7 §4.3]. 50% matches the anchor
     illustration [S1 p11]. The representative formula nets *gross instalments paid*
-    (L&G form [S1 p11] [S2 §7]).
-14. L&G and Just: either a guarantee period or value protection, not both [S2 §§6.7,
-    7.6] [S4]. Canada Life's provisions net guarantee payments off the VP lump sum,
-    implying the two can coexist [S7 §4.3]; Aviva's extended VP replaces the standard
-    one-year guarantee [S9]. The XOR rule is the modal design and keeps the death
-    benefit state machine simple; the Canada Life netting variant is documented under
-    Variations.
+    (the anchor carrier's form [S1 p11] [S2 §7]).
+14. Two of the four carriers: either a guarantee period or value protection, not both
+    [S2 §§6.7, 7.6] [S4]. A third's provisions net guarantee payments off the VP lump
+    sum, implying the two can coexist [S7 §4.3]; the fourth's extended VP replaces the
+    standard one-year guarantee [S9]. The XOR rule is the modal design and keeps the
+    death benefit state machine simple; the netting variant [S7 §4.3] is documented
+    under Variations.
 
 ### Underwriting, charges, tax
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Enhanced/impaired terms | Health and lifestyle rating (smoking, blood pressure, serious conditions; questionnaire, no medical exam); modeled as a mortality rating overlay (qx multiplier or rated age), not a structural variant | existence [S1 p5] [S4] [S6] [S9]; overlay representation **[std]** (15) |
-| Mis-statement remedy | Income may be reduced (not below the standard rate) and overpayments reclaimed if medical/lifestyle information is not confirmed | [S1 p4]; interest at BoE base +1% at Canada Life [S7 §3.4] — context, not modeled |
+| Mis-statement remedy | Income may be reduced (not below the standard rate) and overpayments reclaimed if medical/lifestyle information is not confirmed | [S1 p4]; interest at BoE base +1% under one carrier's provisions [S7 §3.4] — context, not modeled |
 | Explicit charges | None; set-up and administration are priced into the annuity rate | [S1 p6] [S4] [S6] [S9] |
 | Adviser charges | Deductible from the premium, shown on the quote; commission priced into rates | [S1 p12] [S4] [S6] [S9] |
 | Income tax | Taxed as earned income under PAYE | [S1 p5] [S2 §8] |
 | Tax-free cash (context) | PCLS up to 25% of the pot before purchase, capped by the Lump Sum Allowance £268,275; taken before the annuity starts | [S1 p6] [S4] [S6] |
 | Death benefit tax | Death before 75: dependant's income normally income-tax-free, lump sums tax-free within the LSDBA £1,073,100; at/after 75: recipient's marginal rate | [S1 p11] [S2 §8] [S4] [S6] |
-| IHT (announced) | From 6 April 2027 remaining guarantee-period income and VP lump sums are intended to fall within the estate (not where a dependant's income was chosen, per Just's summary); announced-but-not-enacted | [S1 p11] [S4] |
+| IHT (announced) | From 6 April 2027 remaining guarantee-period income and VP lump sums are intended to fall within the estate (not where a dependant's income was chosen, per one carrier's summary); announced-but-not-enacted | [S1 p11] [S4] |
 | FSCS | 100% of a valid claim, no upper limit | [S1 p15] [S4] [S6] [S9] |
 
-15. All four insurers price on health and lifestyle [S1 p5] [S4] [S6] [S9]; Just is
+15. All four insurers price on health and lifestyle [S1 p5] [S4] [S6] [S9]; one is
     individually underwritten as standard [S4]. Enhanced terms change the mortality
     basis, not the contract mechanics, so the reference model represents enhancement
     as a rating overlay (multiplier θ on qx, or a rated-age offset — see technical
     notes); the overlay form itself is a modeling standardization (insurers' rating
-    factor structures are not public; L&G's underwriting guide was located but not
-    extracted).
+    factor structures are not public; the anchor carrier's underwriting guide was
+    located but not extracted).
 
 ---
 
@@ -243,15 +245,15 @@ Applied on each policy anniversary, first on the first anniversary [S2 §3.3]:
       A(y+1) = A(y) × max(1, I(y) / peak(y−1))
 
   — income never falls; after a fall in RPI it stays frozen and increases resume only
-  once the index exceeds its previous historical peak [S2 defs]. (Aviva operates the
-  same held-level-with-catch-up rule on its uncapped RPI option [S9].)
+  once the index exceeds its previous historical peak [S2 defs]. (A second carrier
+  operates the same held-level-with-catch-up rule on its uncapped RPI option [S9].)
 - **LPI (RPI capped 5%)** [S2 §3.2]:
 
       A(y+1) = A(y) × (1 + min(5%, max(0%, rpi_Sep(y))))
 
   where rpi_Sep(y) is the September-year RPI change [S2 defs "LPI"]; the 0% floor is
-  explicit at Just and Aviva [S5 §7.1.4] [S9 §4.3] and harmonized here **[std]** (spec
-  footnote 5). No catch-up ratchet applies to LPI **[std]**.
+  explicit at two other carriers [S5 §7.1.4] [S9 §4.3] and harmonized here **[std]**
+  (spec footnote 5). No catch-up ratchet applies to LPI **[std]**.
 
 If any escalation option is chosen, the starting income is lower than the level-income
 equivalent for the same premium [S1 p8] [S4] [S6].
@@ -328,12 +330,12 @@ first-death basis [S2 §§6–7] [S4]; enhanced underwriting as a rating overlay
 
 **Out of scope (listed for completeness):**
 
-- Taxable lump sum at outset alongside PCLS, with ≥ £2,000 retained (Just; triggers
-  the MPAA) [S4] [S5 §10].
-- Lump-sum commutation of the remaining guarantee on death (Just: balance of
-  instalments [S5 §4.3.2]; Aviva: discounted at a set rate, currently 0.75%
+- Taxable lump sum at outset alongside PCLS, with ≥ £2,000 retained (one carrier;
+  triggers the MPAA) [S4] [S5 §10].
+- Lump-sum commutation of the remaining guarantee on death (one carrier: balance of
+  instalments [S5 §4.3.2]; another: discounted at a set rate, currently 0.75%
   compounded, death before 75 [S9 §4.5]).
-- Aviva's automatic 90-day value protection and extended-VP-replaces-guarantee
+- One carrier's automatic 90-day value protection and extended-VP-replaces-guarantee
   mechanics [S9].
 - "Any spouse" and spouse-at-death dependant bases with marriage-condition tests
   [S2 §§5.2–5.7] [S7 §3.5.1].
@@ -350,7 +352,7 @@ first-death basis [S2 §§6–7] [S4]; enhanced underwriting as a rating overlay
 
 ## Variations across insurers
 
-| Feature | L&G [S1] [S2] | Just [S4] [S5] | Canada Life [S6] [S7] | Aviva (2019/20) [S9] |
+| Feature | Carrier A [S1] [S2] | Carrier B [S4] [S5] | Carrier C [S6] [S7] | Carrier D (2019/20) [S9] |
 |---|---|---|---|---|
 | Minimum purchase | £10,000 after TFC | ≥ £2,000 must remain | £10,000 after TFC | £10,000 after TFC |
 | Age at purchase | 55+ (no stated max) | 55+ (57 from 2028) | 55+ (any age, beneficiary annuity) | 55–90 |
@@ -359,39 +361,44 @@ first-death basis [S2 §§6–7] [S4]; enhanced underwriting as a rating overlay
 | Guarantee period | 1–30 yrs; ≤ age 100 at end | 1–30 yrs | 1 month–30 yrs | 1 yr standard; ≤ 30 (10 if DB-sourced) |
 | Guarantee vs VP | either, not both | either, not both | combinable (VP nets off guarantee payments) | extended VP replaces standard guarantee |
 | Guarantee commutation on death | no | yes (balance of instalments) | no | yes (discounted at 0.75%) |
-| Distinctive | proportionate payment option; IVPP wrapper | taxable lump sum at outset; individually underwritten as standard | Annuity Elements architecture; £1m enhanced premium cap | 90-day automatic VP; £40 rewrite charge; overseas payment charge £2.74 |
+| Distinctive | proportionate payment option; IVPP wrapper | taxable lump sum at outset; individually underwritten as standard | modular benefit-elements architecture; £1m enhanced premium cap | 90-day automatic VP; £40 rewrite charge; overseas payment charge £2.74 |
+
+Carrier A–D are stable labels for the four surveyed carriers, keyed by the source tags
+in the header row and used only in this section; Carrier A is the "anchor carrier"
+of the sections above [S1] [S2].
 
 Why the representative choices were made:
 
-1. **Chassis.** The L&G product is the cleanest structural representative; the others
-   differ in parameter bounds and edge mechanics, so one engine parameterized per the
-   tables above covers all four (research conclusion; adoption **[std]**).
+1. **Chassis.** Carrier A's product is the cleanest structural representative; the
+   others differ in parameter bounds and edge mechanics, so one engine parameterized
+   per the tables above covers all four (research conclusion; adoption **[std]**).
 2. **Escalation menu.** All observed indexation options are cap/floor/catch-up
    parameterizations of one indexation rule; the composite keeps nil / fixed / RPI
    (floor + catch-up) / LPI-5 and treats the rest as parameter settings (spec
    footnotes 4–5).
-3. **Guarantee XOR VP.** The modal rule (L&G, Just) [S2 §§6.7, 7.6] [S4]. Canada
-   Life's combinable design instead nets annuitant instalments, guarantee payments
+3. **Guarantee XOR VP.** The modal rule (Carriers A and B) [S2 §§6.7, 7.6] [S4].
+   Carrier C's combinable design instead nets annuitant instalments, guarantee payments
    due (excluding future RPI/LPI increases) and second-annuitant instalments off the
    VP lump sum [S7 §4.3] — implementable in the same engine by extending the G(t)
    accumulator; documented, not defaulted.
-4. **Guarantee as instalments.** Commutation variants (Just lump-sum basis, Aviva
-   discounted commutation) change the timing but not the undiscounted amount of the
-   guarantee obligation and are excluded (spec footnote 12).
+4. **Guarantee as instalments.** Commutation variants (Carrier B's lump-sum basis,
+   Carrier D's discounted commutation) change the timing but not the undiscounted
+   amount of the guarantee obligation and are excluded (spec footnote 12).
 5. **Enhanced underwriting.** A rating overlay at every insurer, never a structural
-   variant [S1 p5] [S4] [S6] [S9]; Canada Life's £1,000,000 aggregate enhanced-premium
+   variant [S1 p5] [S4] [S6] [S9]; Carrier C's £1,000,000 aggregate enhanced-premium
    re-rating right [S7 §6] is an underwriting control, not a cash-flow mechanic.
-6. **Aviva vintage caveat.** The Aviva evidence is the 10/2019 KFD + 02/2020 terms
-   retrieved via a third-party mirror [S9]; the current editions (S10, S11) sit
+6. **Carrier D vintage caveat.** The Carrier D evidence is the 10/2019 KFD + 02/2020
+   terms retrieved via a third-party mirror [S9]; the current editions (S10, S11) sit
    behind a host that returns HTTP 403 to automated fetches and are kept as known
-   references only. Structural features are stable but Aviva-specific details (e.g.
+   references only. Structural features are stable but Carrier D's own details (e.g.
    whether the 90-day standard VP persists) are unconfirmed, and S9's tax content
    predates the 2024 LSA/LSDBA regime.
 7. **Institutional variation.** Bulk purchase annuities (buy-ins/buy-outs) transfer
-   DB scheme liabilities to insurers; major writers include L&G, Aviva, Just, PIC and
-   Rothesay [unverified — no BPA document retrieved]. The individual-annuity
-   mechanics here (GMP tranches, LPI escalation, scheme maxima) mirror BPA benefit
-   structures [S2 §9] [S5 §§4–7], so the same engine extends to BPA benefit tranches.
+   DB scheme liabilities to insurers; major writers include three of the four carriers
+   surveyed here and other specialist bulk annuity writers [unverified — no BPA
+   document retrieved]. The individual-annuity mechanics here (GMP tranches, LPI
+   escalation, scheme maxima) mirror BPA benefit structures [S2 §9] [S5 §§4–7], so the
+   same engine extends to BPA benefit tranches.
 
 ---
 

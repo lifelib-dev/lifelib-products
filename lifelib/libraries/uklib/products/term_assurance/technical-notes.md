@@ -131,7 +131,7 @@ residual discretionary items:
 | Underwriting exclusions / rated terms | None on the composite cell (standard rates) | case-by-case schedule exclusions exist [S1] [S3]; scope **[std]** |
 
 Reviewable-premium mechanics (5-yearly reviews on claims experience, reinsurance
-cost, lapses, expenses, etc.) exist on CI-type covers at Aviva and Royal London
+cost, lapses, expenses, etc.) exist on CI-type covers at two of the three carriers
 [S6] [S8] and are documented there as a modeling template, but are out of scope here.
 
 ### (c) Behavioral / experience assumptions (modeler's view)
@@ -329,9 +329,10 @@ cited where it exists.
   P_inforce`, so M_reb = 1.
 - **Indexation take-up [std].** If `indexation = true`: each anniversary the increase
   is accepted with probability 80% **[std]**; after 3 consecutive declines the option
-  is removed [S1] [S6] (RL: 2 [S8]). Deterministic base run: always accept, RPI
-  scenario input flat 3% **[std]**, giving `idx(t+1) = idx(t) × 1.03` and
-  `idx_p(t+1) = idx_p(t) × 1.045` (premium factor 1.5 [S1] [S2] [S6]).
+  is removed [S1] [S6] (two at one insurer [S8]). Deterministic base run:
+  always accept, RPI scenario input flat 3% **[std]**, giving
+  `idx(t+1) = idx(t) × 1.03` and `idx_p(t+1) = idx_p(t) × 1.045`
+  (premium factor 1.5 [S1] [S2] [S6]).
 - **GIO exercise.** Not modeled: exercises create *new* policies at then-current
   rates [S1] [S6] [S8], so they add model points rather than changing this one
   **[std scope]**.

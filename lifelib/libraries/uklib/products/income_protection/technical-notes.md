@@ -127,8 +127,8 @@ for the variations only:
   contractual cap [S1] [S4] [S6] [S10]. Review formulas are discretionary and
   undisclosed (research file gap) — any reviewable-premium model needs a **[std]**
   review rule; none is specified here.
-- **Holloway surplus participation** (out-of-scope variation): Surplus Allocation /
-  Bonus Allocation / discretionary Terminal Bonus on With-Profits Actuary advice
+- **Holloway surplus participation** (out-of-scope variation): surplus and bonus
+  allocations plus a discretionary terminal bonus, on With-Profits Actuary advice
   [S11] [S12] — requires a capital-account state not present in this model.
 - **Escalation index snapshot**: future RPI is an economic input, not insurer
   discretion; the reference snapshot is RPI = 3.0%/yr flat **[std]**, so
@@ -261,8 +261,8 @@ terminate without value [S1] [S3] [S5] [S7] [S10]):
 
 Net cash flow (insurer perspective): `CF(t) = PREM(t) − BEN(t) − EXP(t)`. Death and
 lapse generate no payment (no death benefit, no surrender value [S4] [S5] [S7]; the
-out-of-scope £5,000–£10,000 death benefits at LV=/Royal London [S3] [S5] would add a
-`dth × DB` term).
+out-of-scope £5,000–£10,000 death benefits in two sampled contracts [S3] [S5] would
+add a `dth × DB` term).
 
 ### Deferred-period mechanics
 
@@ -333,13 +333,13 @@ policyholder-behavior study was retrieved.
   year; the model multiplies lapse by
   `M_esc(y) = 1 + 2 × max(0, 1.5 × j(y) − 0.05)` in anniversary years (lapse
   response to premium increases above 5%; e.g. j at the 10% cap gives 1.5 × 0.10 =
-  15% premium growth and M_esc = 1.2). Contract anchor: sampled insurers let policyholders
-  decline escalation increases, with the option lapsing after consecutive
-  refusals — two consecutive cancelled increases end the option at Royal London
-  [S5]; declining three consecutive increases removes it at Cirencester [S11];
-  declines are modeled as lapse of the
-  escalation margin only at portfolio level — the base single-cell model keeps
-  escalation always-on and uses M_esc as the aggregate proxy.
+  15% premium growth and M_esc = 1.2). Contract anchor: sampled insurers let
+  policyholders decline escalation increases, with the option lapsing after
+  consecutive refusals — two consecutive cancelled increases end the option in one
+  contract [S5]; declining three consecutive increases removes it in another [S11];
+  declines are modeled as lapse of the escalation margin only at portfolio level —
+  the base single-cell model keeps escalation always-on and uses M_esc as the
+  aggregate proxy.
 - **Economic-cycle morbidity link [std note].** Claim inceptions are widely believed
   to rise (and recoveries to slow) in recessions — job insecurity raises claim
   propensity on an own-occupation definition. No sampled document or public CMI

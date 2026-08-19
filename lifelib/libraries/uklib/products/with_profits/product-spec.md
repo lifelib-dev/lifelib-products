@@ -13,9 +13,10 @@ provenance in `_research/regulatory-actuarial.md`). Values marked **[std]** are
 standardizations introduced for the reference implementation; each [std] table row
 carries a footnote giving the rationale and the observed range across insurers.
 Facts the research file could not confirm against a retrieved document are flagged
-[unverified]. The mechanics anchors are the Prudential Assurance PPFM [S1], the Phoenix
-Life PPFM [S4] and the Aviva PPFM [S5]; the modern smoothed-fund variation is anchored
-to the PruFund PPFM, customer guide and policy provisions [S2] [S9] [S11].
+[unverified]. The mechanics anchors are the published PPFMs of three proprietary
+insurers [S1] [S4] [S5]; the with-profits fund documented in the first of these is
+called *the anchor fund* below. The modern smoothed-fund variation is anchored to the
+PruFund PPFM, customer guide and policy provisions [S2] [S9] [S11].
 
 ---
 
@@ -46,20 +47,19 @@ with-profits assurances and annuities fall in Class I (life and annuity), with
 unitised/linked structures typically involving Class III [R9; per-product allocation
 unverified](#uklib-with_profits-r9).
 
-Most conventional and unitised with-profits funds are legacy books: Phoenix Life alone
-runs 18 internally segregated funds consolidating many acquired offices [S4], and most
-UK conventional funds are closed to new business [unverified as a market-wide
-statement]. Documented open with-profits business today comprises smoothed funds (Prudential
-PruFund range, currently marketed [S10] [S13]), mutuals (NFU Mutual's open fund [S7];
-Royal London's ProfitShare distribution [S6]), friendly societies (with-profits ISAs
-[S12]) and new niche forms (Prudential's Credit Matched With-Profits, added 2026
-[S1] [S3]).
+Most conventional and unitised with-profits funds are legacy books: one consolidator
+alone runs 18 internally segregated funds inherited from many acquired offices [S4], and
+most UK conventional funds are closed to new business [unverified as a market-wide
+statement]. Documented open with-profits business today comprises smoothed funds (the
+PruFund range, currently marketed [S10] [S13]), mutuals (one with an open fund [S7],
+another distributing profits annually [S6]), friendly societies (with-profits
+ISAs [S12]) and new niche forms (credit-matched with-profits, added 2026 [S1] [S3]).
 
 This specification standardizes a single composite: a **proprietary 90:10 with-profits
 fund** carrying two product chassis — a **unitised with-profits bond** (primary cell,
 representative of the largest open/recently-open retail block) and a **conventional
 with-profits endowment** (legacy cell) — with the PruFund-style smoothed fund and the
-mutual ProfitShare model described as variations.
+mutual profit-distribution model described as variations.
 
 ---
 
@@ -78,26 +78,28 @@ mutual ProfitShare model described as variations.
 
 Footnotes to [std] rows:
 
-1. Proprietary 90:10 is the representative historical design: PAC WPSF operates with at
-   least 90% of divisible profit to policyholders [S1]; Aviva shareholders currently
-   receive 10% of distributed surplus [S5]; the consumer statement is "up to 10%" to
-   shareholders [S8]. Variants observed: 100:0 classes and defined-charge (DCPSF)
-   structures at PAC [S1] [S2]; mutuals with no shareholder (Royal London [S6], NFU
-   Mutual [S7]). That 90:10 is the typical proprietary basis generally is [unverified];
-   the COBS 20.2.17R "required percentage" floor was not separately captured [R1 note](#uklib-with_profits-r1).
+1. Proprietary 90:10 is the representative historical design: the anchor fund
+   distributes at least 90% of divisible profit to policyholders [S1]; at another
+   proprietary insurer shareholders currently receive 10% of distributed surplus
+   [S5]; the consumer statement is "up to 10%" to shareholders [S8]. Variants
+   observed: 100:0 classes and defined-charge (DCPSF) structures in the anchor fund's
+   own long-term fund [S1] [S2]; two mutuals with no shareholder [S6] [S7]. That 90:10
+   is the typical proprietary basis generally is [unverified]; the COBS 20.2.17R
+   "required percentage" floor was not separately captured
+   [R1 note](#uklib-with_profits-r1).
 2. One-ninth is the arithmetic restatement of 90:10 — if policyholders receive a bonus
    cost of 90 units, shareholders receive 10 = 90/9. Charging the transfer to asset
-   shares follows Aviva practice [S5] and the PRA retrospective asset-share item list
-   [R8]. The measurement basis for "cost of bonus" varies by firm and is not fully
-   recorded in the retrieved PPFMs; the reference measurement is defined in
-   `technical-notes.md` as **[std]**.
-3. Observed estate behavior ranges from no-distribution working capital (PAC [S1]) to
-   active distribution (Aviva reattribution special bonuses [S5]; Royal London annual
-   ProfitShare [S6]; PAC excess-surplus unit price enhancements [S1] [S2]) and
-   estate-floor triggers (Phoenix Scottish Mutual fund estate ≥0.5% of aggregate asset
-   shares [S4]). The base model holds the estate as a residual with no scheduled
-   distribution; COBS 20.2.21R requires at least annual excess-surplus determination
-   [R1].
+   shares follows one insurer's documented practice [S5] and the PRA retrospective
+   asset-share item list [R8]. The measurement basis for "cost of bonus" varies by
+   firm and is not fully recorded in the retrieved PPFMs; the reference measurement is
+   defined in `technical-notes.md` as **[std]**.
+3. Observed estate behavior ranges from no-distribution working capital (the anchor
+   fund [S1]) to active distribution (reattribution special bonuses at another
+   proprietary insurer [S5]; an annual mutual profit distribution [S6]; excess-surplus
+   unit price enhancements in the anchor fund [S1] [S2]) and estate-floor triggers (one
+   consolidated closed fund's estate ≥0.5% of aggregate asset shares [S4]). The base
+   model holds the estate as a residual with no scheduled distribution; COBS 20.2.21R
+   requires at least annual excess-surplus determination [R1].
 4. Mirrors the market split: consolidated closed conventional books [S4] [S5] against
    currently marketed unitised/smoothed business [S10] [S12] [S13].
 
@@ -120,13 +122,13 @@ Footnotes to [std] rows:
 | Anchor model cell | £25,000 single premium, male, age 55 at entry, units purchased at £1.0000 | **[std]** (14) |
 
 5. Single-premium whole-of-life bonds with guarantee dates are the documented unitised
-   retail shape (Phoenix: "single-premium bonds: whole-of-life; some have guarantee
-   dates at which encashment is MVR-free" [S4]); the currently marketed Prudential
-   Investment Plan is the same wrapper on PruFund [S10]. A regular-premium unitised
+   retail shape (one consolidator: "single-premium bonds: whole-of-life; some have
+   guarantee dates at which encashment is MVR-free" [S4]); the currently marketed
+   retail bond is the same wrapper on PruFund [S10]. A regular-premium unitised
    endowment/pension is the same recursion with a premium vector (supported by the
    technical notes).
-6. Adopted from the Prudential Investment Plan [S10] — the only currently-marketed
-   bond limits retrieved; closed-book originals are unpublished (research gap 4).
+6. Adopted from the currently marketed retail bond [S10] — the only such limits
+   retrieved; closed-book originals are unpublished (research gap 4).
 7. PPFMs state that "a proportion of each premium less charges" buys units [S4] without
    publishing allocation rates; 100% allocation with explicit AMC is the cleanest
    composite and matches modern single-premium practice [S10 charges structure].
@@ -135,28 +137,32 @@ Footnotes to [std] rows:
    snapshot chosen below the composite fund-return assumption (5.0% p.a., technical
    notes) so that a substantial final-bonus proportion emerges, per the PPFM bonus
    philosophy [S1].
-9. Observed anchors: 1% p.a. expense-charge cap on many PAC pension contracts since
-   April 2001 [S1]; Aviva 1% p.a. total charge restriction for certain pre-Dec-2000
-   unitised business [S5]. Modern PruFund bonds charge less (0.30%–0.575% tiered AMC
-   [S10]); 1.00% is representative of the legacy unitised block.
-10. PAC caps the total lifetime guarantee/smoothing deduction for most traditional WP
-    policies at 2% of asset shares, built up gradually (4% for post-March-2019 AVCs)
-    [S1]. Other observed forms: Aviva 0.7% p.a. unit charge for the first 10 years on
-    certain products [S5]; Phoenix Alba conditional deficit-triggered charges capped at
-    10%/25% of asset shares [S4]; Scottish Mutual ladder 1.0% p.a., 7.0% lifetime cap
-    [S4]; Royal London charge via deduction or reduced credited return [S6]. A level
-    0.10% p.a. against the [S1] 2% lifetime cap is the composite.
-11. Observed death benefits: 100.1% of bid value of units (Prudential Investment Plan)
-    [S10] [S11]; 101% guarantee on net money paid in (Shepherds Friendly ISA) [S12].
-    101% of unit face value is adopted as the round composite.
+9. Observed levels: 1% p.a. expense-charge cap on many pension contracts in the anchor
+   fund since April 2001 [S1]; a 1% p.a. total charge restriction for certain
+   pre-Dec-2000 unitised business at another proprietary insurer [S5]. Modern PruFund
+   bonds charge less (0.30%–0.575% tiered AMC [S10]); 1.00% is representative of the
+   legacy unitised block.
+10. The anchor fund caps the total lifetime guarantee/smoothing deduction for most
+    traditional WP policies at 2% of asset shares, built up gradually (4% for
+    post-March-2019 AVCs) [S1]. Other observed forms: a 0.7% p.a. unit charge for the
+    first 10 years on certain products [S5]; conditional deficit-triggered charges
+    capped at 10%/25% of asset shares in one consolidated closed fund [S4]; a charging
+    ladder of 1.0% p.a. with a 7.0% lifetime cap in another [S4]; a charge taken by
+    deduction or reduced credited return at a mutual [S6]. A level 0.10% p.a. against
+    the [S1] 2% lifetime cap is the composite.
+11. Observed death benefits: 100.1% of bid value of units (the currently marketed
+    retail bond) [S10] [S11]; 101% guarantee on net money paid in (a friendly society's
+    with-profits ISA) [S12]. 101% of unit face value is adopted as the round composite.
 12. Observed MVR-free points: contractual guarantee dates varying by tranche, with no
-    (or limited) MVR at the 10th policy anniversary for with-profits bonds in the
-    Phoenix WPF [S4]; MVR-free guarantee periods at PAC [S1]; policy-condition dates at
-    Aviva [S5]; NFU Mutual tapers the MVR to zero at selected retirement date [S7]. A
-    single 10th-anniversary guarantee date is the minimal composite.
-13. Anchored to Phoenix ("some policies allow small regular encashments MVR-free" [S4])
-    and sized to the familiar 5% p.a. tax-deferred withdrawal allowance for UK bonds
-    [S10] [REG-R15]. The 5% MVR-free level itself is a standardization.
+    (or limited) MVR at the 10th policy anniversary for with-profits bonds in one
+    consolidated fund [S4]; MVR-free guarantee periods in the anchor fund [S1];
+    policy-condition dates at another proprietary insurer [S5]; one mutual tapers the
+    MVR to zero at selected retirement date [S7]. A single 10th-anniversary guarantee
+    date is the minimal composite.
+13. Taken from one consolidator ("some policies allow small regular encashments
+    MVR-free" [S4]) and sized to the familiar 5% p.a. tax-deferred withdrawal
+    allowance for UK bonds [S10] [REG-R15]. The 5% MVR-free level itself is a
+    standardization.
 14. Pure modeling choice; used in the technical-notes worked example (year-6 state:
     asset share £30,000, unit price £1.104081 after five 2.00% declarations).
 
@@ -188,18 +194,19 @@ Footnotes to [std] rows:
     commonly compound or super-compound as an unverified convention). Compound form is
     chosen as the simpler standard; the rate 1.50% is a snapshot standardization (bonus
     declarations not collected — research gap 3).
-17. Interim bonus rates are set as the best estimate of the next declaration (NFU
-    Mutual sets them annually [S7]; PAC applies interim rates between declaration and
-    claim [S1]); equating the interim rate to the last declared rate is the modeling
-    simplification.
-18. PAC sets final bonus by reference to asset shares of sample policies subject to
-    smoothing [S1]; Phoenix pays guaranteed benefits plus any final bonus [S4]. The
-    max(0, ·) formalization makes the guarantee floor explicit.
-19. PAC: conventional surrender values are formula-based with parameters set to broadly
-    target asset shares over the long term, based on sum assured, regular bonus and
-    final bonus, reviewed normally annually [S1]; Aviva reviews surrender bases when
-    market indicators move 5% [S5]. The reference parametrization (clamped
-    asset-share targeting) is defined in `technical-notes.md`.
+17. Interim bonus rates are set as the best estimate of the next declaration (one
+    mutual sets them annually [S7]; the anchor fund applies interim rates between
+    declaration and claim [S1]); equating the interim rate to the last declared rate is
+    the modeling simplification.
+18. The anchor fund sets final bonus by reference to asset shares of sample policies
+    subject to smoothing [S1]; one consolidator pays guaranteed benefits plus any final
+    bonus [S4]. The max(0, ·) formalization makes the guarantee floor explicit.
+19. In the anchor fund, conventional surrender values are formula-based with parameters
+    set to broadly target asset shares over the long term, based on sum assured,
+    regular bonus and final bonus, reviewed normally annually [S1]; another
+    proprietary insurer reviews surrender bases when market indicators move 5% [S5].
+    The reference parametrization (clamped asset-share targeting) is defined in
+    `technical-notes.md`.
 
 ### Bonus framework (both chassis)
 
@@ -210,9 +217,9 @@ Footnotes to [std] rows:
 | Bonus philosophy | Keep a substantial proportion of payout in non-guaranteed (final bonus) form; reference guarantee-fill target θ = 80% of projected asset share | philosophy [S1]; θ **[std]** (21) |
 | Final bonus scale scope | Same scale applies at maturity, death and surrender | [S1] |
 
-20. Observed change limits: PAC "not expected to exceed 1% p.a." with full discretion
-    to declare zero [S1]; NFU Mutual 1% compound y/y (traditional), 1.25%/1.5%
-    (unitised, by product) [S7]. ±1.00% adopted for both chassis.
+20. Observed change limits: "not expected to exceed 1% p.a." with full discretion
+    to declare zero in the anchor fund [S1]; 1% compound y/y (traditional), 1.25%/1.5%
+    (unitised, by product) at a mutual [S7]. ±1.00% adopted for both chassis.
 21. PPFMs state the philosophy qualitatively [S1] but publish no guarantee-fill
     parameter. θ = 80% (regular-bonus path aims for guaranteed benefits ≈ 80% of the
     projected maturity asset share, leaving ≈ 20% as final bonus) is the reference
@@ -228,23 +235,26 @@ Footnotes to [std] rows:
 | Smoothing cost | Tracked in a smoothing account within the estate; intended broadly neutral over time | [S1] [S2] [S5] [S6]; PPFM expected to state neutrality intent (COBS 20.3.8G guidance) [R2] |
 | MVR trigger | Exit outside MVR-free events while unit face value (incl. attached bonuses) exceeds the asset share | [S1] [S4] [S5] [S6] |
 | MVR bound | MVR no greater than necessary to reflect the excess of unit value over the underlying asset value | [R1 COBS 20.2.16R](#uklib-with_profits-r1); post-MVR payouts target 100% of asset share [S5] |
-| Final bonus / MVR interaction | Never applied simultaneously to the same policy | [S4 Phoenix WPF]; adoption **[std]** (24) |
+| Final bonus / MVR interaction | Never applied simultaneously to the same policy | [S4]; adoption **[std]** (24) |
 
-22. Observed maturity target ranges: 80–120% (PAC, aim ≥90% of policies within [S1];
-    Phoenix typical funds, before smoothing [S4]; Aviva group payouts [S5]); 80–130%
-    conventional / 75–125% unitised (Royal London [S6]); 75–125% / 85–111% / 80–120% by
-    product (NFU Mutual [S7]). 80–120% with the ≥90% test is the modal design and
-    matches the COBS structure (range must include 100% of unsmoothed asset share;
-    payments may fall outside if ≥90% of the group is within) [R1].
-23. Observed smoothing formulations: PAC ±10% y/y in normal circumstances, smoothed vs
-    unsmoothed value rarely >20% apart [S1] [S8]; Aviva stepped 5%/7.5% limits with a
-    15% annual maximum and a smoothing account recycled at year-end (maximum deduction
-    2.5% of asset shares p.a.) [S5]; NFU Mutual ≤15% y/y with hard floor/cap at the range edges [S7]; Royal London
-    formulaic pull-to-asset-share with no fixed maximum [S6]. The ±10% cap plus a
-    cost-neutral smoothing account is the most transferable abstraction.
-24. In the Phoenix WPF, final bonus and MVR do not apply simultaneously to any policy
-    class; in some other funds they may [S4]. Exclusivity is adopted because it follows
-    automatically from the reference one-sided formulas (technical notes).
+22. Observed maturity target ranges: 80–120% (the anchor fund, aim ≥90% of policies
+    within [S1]; a consolidator's typical funds, before smoothing [S4]; another
+    proprietary insurer's group payouts [S5]); 80–130% conventional / 75–125% unitised
+    (one mutual [S6]); 75–125% / 85–111% / 80–120% by product (another mutual [S7]).
+    80–120% with the ≥90% test is the modal design and matches the COBS structure
+    (range must include 100% of unsmoothed asset share; payments may fall outside if
+    ≥90% of the group is within) [R1].
+23. Observed smoothing formulations: ±10% y/y in normal circumstances in the anchor
+    fund, smoothed vs unsmoothed value rarely >20% apart [S1] [S8]; stepped 5%/7.5%
+    limits with a 15% annual maximum and a smoothing account recycled at year-end
+    (maximum deduction 2.5% of asset shares p.a.) at another proprietary insurer [S5];
+    ≤15% y/y with hard floor/cap at the range edges at one mutual [S7]; formulaic
+    pull-to-asset-share with no fixed maximum at another mutual [S6]. The ±10% cap
+    plus a cost-neutral smoothing account is the most transferable abstraction.
+24. In one consolidated with-profits fund, final bonus and MVR do not apply
+    simultaneously to any policy class; in some other funds they may [S4]. Exclusivity
+    is adopted because it follows automatically from the reference one-sided formulas
+    (technical notes).
 
 ### Modern open variation — PruFund-style smoothed fund
 
@@ -266,17 +276,18 @@ Footnotes to [std] rows:
     in the technical notes so the smoothed and unsmoothed paths coincide in the base
     deterministic scenario.
 
-### Ownership variation — mutual distribution (Royal London-style ProfitShare)
+### Ownership variation — mutual profit distribution
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Shareholder transfer | None (mutual) | [S6] [S7] |
-| Distribution mechanism | Annual discretionary "ProfitShare" from the Estate (may be zero): extra regular bonus plus asset-share enhancement for conventional/unitised WP; bonus units for unit-linked WP | [S6] |
-| Relative rate | CWP/UWP ProfitShare rate = 8× the unit-linked WP rate for pre-2022 policies; multiple variable (independent actuarial advice required below 6 or above 10) | [S6] |
-| Estate protection | ProfitShare may be reduced to zero and asset-share charges introduced if the Estate becomes too low | [S6] |
+| Distribution mechanism | Annual discretionary profit distribution from the Estate (may be zero): extra regular bonus plus asset-share enhancement for conventional/unitised WP; bonus units for unit-linked WP | [S6] |
+| Relative rate | CWP/UWP distribution rate = 8× the unit-linked WP rate for pre-2022 policies; multiple variable (independent actuarial advice required below 6 or above 10) | [S6] |
+| Estate protection | The distribution may be reduced to zero and asset-share charges introduced if the Estate becomes too low | [S6] |
 
-The base model sets ProfitShare to zero (proprietary composite); the mutual variation
-replaces the shareholder-transfer deduction with an optional ProfitShare addition.
+The base model sets the mutual distribution to zero (proprietary composite); the mutual
+variation replaces the shareholder-transfer deduction with an optional
+profit-distribution addition.
 
 ---
 
@@ -339,23 +350,23 @@ at the transaction date [S2].
 **In scope (modeled as flags):**
 
 - **Guaranteed annuity option (GAO)** — legacy pension cells only. A guaranteed rate of
-  annuity conversion at retirement, present in several closed funds (Scottish Mutual
-  deferred annuities and retirement annuity contracts; former Scottish Provident
-  unit-linked GAO risk); GAO liabilities are backed by fixed-interest assets and GAO
+  annuity conversion at retirement, present in several closed funds (deferred annuities
+  and retirement annuity contracts in one acquired book; unit-linked GAO risk in
+  another); GAO liabilities are backed by fixed-interest assets and GAO
   interest-rate risk is an identified fund business risk [S4]. Historical market
-  significance (Equitable Life's closure in 2000 after the House of Lords ruling on GAO
-  costs) is [unverified] context. Parametrized in the technical notes as a flag with a
+  significance (a major UK office's closure in 2000 after the House of Lords ruling on
+  GAO costs) is [unverified] context. Parametrized in the technical notes as a flag with a
   **[std]** guaranteed annuity rate.
 - **Guarantee-date capital guarantees (smoothed-fund variation)** — optional minimum
   fund value at chosen guarantee dates for an explicit annual charge taken by unit
   cancellation [S10].
 
-**Out of scope for the composite:** with-profits annuities and Income Choice Annuity
-(smoothing caps 11–12% on income rises [S1]); Credit Matched With-Profits (guaranteed
-benefit at outset, prospective asset shares [S1] [S3]); cash accumulation business
-(bonuses added to contributions; regular bonus guaranteed to the next revision date
-[S1]); unit-linked with-profits (bonus units, no asset shares or smoothing [S6]);
-deposit administration [S6]; Industrial Branch business [S1]; return-of-premium death
+**Out of scope for the composite:** with-profits annuities (smoothing caps 11–12% on
+income rises [S1]); credit-matched with-profits (guaranteed benefit at outset,
+prospective asset shares [S1] [S3]); cash accumulation business (bonuses added to
+contributions; regular bonus guaranteed to the next revision date [S1]); unit-linked
+with-profits (bonus units, no asset shares or smoothing [S6]); deposit
+administration [S6]; Industrial Branch business [S1]; return-of-premium death
 guarantees on modern bonds [S10]; protection riders (waiver, critical illness) —
 original conventional policy conditions are unpublished (research gap 4).
 
@@ -370,38 +381,44 @@ original conventional policy conditions are unpublished (research gap 4).
    as core chassis and (c) as the open-business variation because that is where the
    respective blocks of UK liability sit [S4] [S10] [S13].
 2. **Target ranges.** All firms target 100% of asset share on average, but ranges
-   differ: 80–120% (PAC [S1], Phoenix [S4], Aviva [S5]); 80–130%/75–125% (Royal London
-   [S6]); 75–125%, 85–111%, 80–120% by product (NFU Mutual [S7]). 80–120% with the
-   ≥90%-of-policies test is chosen as modal and as the direct implementation of the
-   COBS structure [R1].
-3. **Smoothing formulation** varies more than any other feature: y/y payout caps (PAC
-   10% [S1]; NFU Mutual 15% [S7]; Aviva stepped 5%/7.5% with 15% annual max [S5]),
-   explicit smoothing accounts recycled to asset shares (Aviva, maximum deduction
-   2.5% p.a. [S5]; PAC bonus smoothing accounts within the Estate [S1] [S2]), or pure formulaic
-   pull-to-asset-share with no stated cap (Royal London [S6]). Chosen: ±10% cap plus a
-   neutral smoothing account — the most transferable abstraction.
-4. **MVR triggers.** Shortfall-based (PAC [S1], Aviva [S5], Phoenix [S4] — all capped
-   at the asset-value shortfall per COBS 20.2.16R [R1]); explicit numeric
-   trigger/taper (NFU Mutual: MVR when asset share <90% of unit value, linear
+   differ: 80–120% (three proprietary funds [S1] [S4] [S5]); 80–130%/75–125% (one
+   mutual [S6]); 75–125%, 85–111%, 80–120% by product (another mutual [S7]). 80–120%
+   with the ≥90%-of-policies test is chosen as modal and as the direct implementation
+   of the COBS structure [R1].
+3. **Smoothing formulation** varies more than any other feature: y/y payout caps (10%
+   in the anchor fund [S1]; 15% at one mutual [S7]; stepped 5%/7.5% with a 15% annual
+   max at another proprietary insurer [S5]), explicit smoothing accounts recycled to
+   asset shares (maximum deduction 2.5% p.a. [S5]; bonus smoothing accounts within the
+   Estate in the anchor fund [S1] [S2]), or pure formulaic pull-to-asset-share with no
+   stated cap (another mutual [S6]). Chosen: ±10% cap plus a neutral smoothing
+   account — the most transferable abstraction.
+4. **MVR triggers.** Shortfall-based (three proprietary funds [S1] [S4] [S5] — all
+   capped at the asset-value shortfall per COBS 20.2.16R [R1]); explicit numeric
+   trigger/taper (one mutual: MVR when asset share <90% of unit value, linear
    smoothing-in between 85% and 90%, taper to zero over 3 years to retirement [S7]).
    MVR-free events are universal: death [S5], contractual guarantee dates
    [S1] [S4] [S5], frequently the 10th anniversary for bonds [S4]. Chosen: the
    shortfall-capped form — it is the regulatory bound itself.
-5. **Ownership/distribution.** Proprietary 90:10 (PAC [S1]; Aviva, transfer charged to
-   asset shares [S5]) vs mutual (Royal London ProfitShare, 8× multiple [S6]; NFU
-   Mutual [S7]) vs defined-charge (PAC DCPSF: explicit charges only, shareholder bears
-   expense differences [S2]). Chosen: 90:10 proprietary as the representative
-   historical design, with the mutual variation specified separately.
-6. **Guarantee charging.** Lifetime caps as % of asset share (PAC 2%/4% [S1]),
-   time-limited unit charges (Aviva 0.7% × 10 years [S5]), conditional
-   deficit-triggered charges (Phoenix Alba 10%/25% caps, reversible [S4]; Scottish
-   Mutual ladder 1% p.a./7% lifetime [S4]), or annual deductions from credited return
-   (PAC WP annuities [S1]; Royal London option [S6]). Chosen: a level annual deduction
-   with the [S1] 2% lifetime cap — a configurable single dial.
-7. **Estate handling.** From pure working capital (PAC [S1]) to reattribution with
-   special bonuses (Aviva 2009 scheme, RIEESA support [S5]), annual ProfitShare
-   (Royal London [S6]) and estate-floor triggers (Phoenix [S4]). Chosen: residual
-   estate, no distribution — the least model-intrusive and the PAC-documented stance.
+5. **Ownership/distribution.** Proprietary 90:10 (the anchor fund [S1]; another
+   proprietary insurer, transfer charged to asset shares [S5]) vs mutual (an annual
+   profit distribution at an 8× multiple [S6]; another mutual [S7]) vs defined-charge
+   (a DCPSF alongside the anchor fund in the same long-term fund: explicit charges
+   only, shareholder bears expense differences [S1] [S2]). Chosen: 90:10 proprietary
+   as the representative historical design, with the mutual variation specified
+   separately.
+6. **Guarantee charging.** Lifetime caps as % of asset share (2%/4% in the anchor fund
+   [S1]), time-limited unit charges (0.7% × 10 years [S5]), conditional
+   deficit-triggered charges (10%/25% caps, reversible, in one consolidated closed fund
+   [S4]; a 1% p.a./7% lifetime ladder in another [S4]), or annual deductions from
+   credited return (with-profits annuities in the anchor fund [S1]; an option at a
+   mutual [S6]). Chosen: a level annual deduction with the [S1] 2% lifetime cap — a
+   configurable single dial.
+7. **Estate handling.** From pure working capital (the anchor fund [S1]) to
+   reattribution with special bonuses (a 2009 scheme backed by an external
+   inherited-estate support account [S5]), an annual mutual profit distribution [S6]
+   and estate-floor triggers (a consolidator [S4]). Chosen: residual estate, no
+   distribution — the least model-intrusive and the stance documented for the anchor
+   fund [S1].
 
 ---
 

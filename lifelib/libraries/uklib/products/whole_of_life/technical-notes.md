@@ -12,9 +12,9 @@ standardizations introduced for the reference implementation; [unverified] marks
 confirmed against a retrieved document. Parameter values are identical to those in
 `product-spec.md`. Two cells share one engine:
 
-- **RefWOL-UW** (underwritten guaranteed; Zurich pattern [S10]) — anchor: male, entry age 40,
-  non-smoker, £150,000 sum assured, level cover, £101.25/month **[std]**.
-- **RefWOL-O50** (over-50s guaranteed acceptance; L&G/SunLife pattern [S1] [S4]) — anchor:
+- **RefWOL-UW** (underwritten guaranteed; the chassis-carrier pattern [S10]) — anchor: male,
+  entry age 40, non-smoker, £150,000 sum assured, level cover, £101.25/month **[std]**.
+- **RefWOL-O50** (over-50s guaranteed acceptance; the direct-sold pattern [S1] [S4]) — anchor:
   entry age 70 **[std]**, non-smoker, £30/month, £5,000 cash sum ([R2] stylised pair).
 
 Neither cell carries any account value, unit fund, or surrender value [S1] [S4] [S7] [S9] [S10]:
@@ -31,14 +31,14 @@ cash-value whole life chassis (no CSV schedule, no dividends, no loans).
   cells, on a monthly grid. Reserves, discounting, risk margin and capital are pointed to,
   not computed (see Valuation and reserve pointers).
 - **Projection frequency.** Monthly **[std]**. Premiums are monthly Direct Debit in the O50
-  cell [S1] [S4] [S7] [S9] and monthly or annual at Zurich [S10]; monthly is the natural grid.
+  cell [S1] [S4] [S7] [S9] and monthly or annual in the UW cell [S10]; monthly is the natural grid.
 - **Timing conventions [std].** Premiums (and premium-linked commission) at the beginning of
   the policy month (BOM); deaths during the month resolved at end of month (EOM) against the
   BOM in-force; lapses at EOM after deaths (death-before-lapse order). Escalation steps
-  (Increasing Cover, RPI variants) apply at policy anniversaries [S4] [S10]. Annual-grid
+  (increasing cover, RPI variants) apply at policy anniversaries [S4] [S10]. Annual-grid
   implementations must preserve the month-13 moratorium boundary.
-- **Age basis.** Age last birthday (ALB) **[std]**. Rationale: Zurich defines entry age x as
-  "before the (x+1)th birthday" [S10], which is ALB; the O50 documents price on "age at
+- **Age basis.** Age last birthday (ALB) **[std]**. Rationale: the UW chassis defines entry
+  age x as "before the (x+1)th birthday" [S10], which is ALB; the O50 documents price on "age at
   outset" without stating a basis [S1]. All age lookups in this model are ALB.
 - **Currency / units.** GBP. Sum assured in £; premiums in £/month; mortality and lapse
   rates dimensionless per annum, converted to monthly as q_m = 1 − (1 − q)^(1/12) **[std]**.
@@ -60,15 +60,15 @@ cash-value whole life chassis (no CSV schedule, no dividends, no loans).
 | `cell` | enum {O50, UW} | O50 | UW |
 | `entry_age` | int (ALB) | 70 | 40 |
 | `sex` | enum {M, F} | F **[std]** (pick for the anchor cell; attribute carried for basis lookup — O50 pricing itself does not rate by sex in the fetched documents, which state age and smoker status as the rate factors [S1] [S4]) | M |
-| `smoker` | enum {NS, S} | NS | NS (Zurich 3-state definition [S10] collapsed to 2 **[std]**) |
+| `smoker` | enum {NS, S} | NS | NS (the chassis 3-state definition [S10] collapsed to 2 **[std]**) |
 | `sum_assured` | currency (£) | 5,000 | 150,000 |
 | `monthly_premium` | currency (£/month) | 30.00 | 101.25 **[std]** |
 | `escalation` | enum {level, fixed_5pct, rpi} | level | level (fixed_5pct variant) |
 | `cessation_months` | int (∞ for UW) | 240 (anniversary on/after 90th birthday **[std]**) | none — premiums payable for life [S10] |
 | `moratorium_months` | int | 12 [S1] [S4] [S7] [S9] | 0 (suicide-only clause instead [S10]) |
-| `variant_adb_2x` | bool (Aviva multiplier [S7]) | false | n/a |
-| `variant_payout_promise` | bool (Royal London [S9]) | false | n/a |
-| `variant_rpi_increasing` | bool (L&G [S4]) | false | n/a |
+| `variant_adb_2x` | bool (accidental multiplier, one plan [S7]) | false | n/a |
+| `variant_paid_up` | bool (pro-rata paid-up value, one plan [S9]) | false | n/a |
+| `variant_rpi_increasing` | bool (RPI indexation, one plan [S4]) | false | n/a |
 | `issue_date` | date | month 1 | month 1 |
 
 ---
@@ -79,11 +79,11 @@ cash-value whole life chassis (no CSV schedule, no dividends, no loans).
 |---|---|---|
 | `l(t)` | In-force probability at end of month t; l(0) = 1 | monthly (deaths, lapses) |
 | `CumPrem(t)` | Cumulative premiums paid to end of month t (year-1 refund base; crossover tracking) | monthly |
-| `N_paid(t)` | Count of monthly payments made (Payout Promise numerator [S9]) | monthly |
+| `N_paid(t)` | Count of monthly payments made (pro-rata paid-up numerator [S9]) | monthly |
 | `SA(t)` | Current sum assured / cash sum (escalating variants) | anniversaries |
 | `P(t)` | Current monthly premium (escalating variants; 0 after cessation) | anniversaries / cessation |
-| `paid_up` | Payout Promise state: policy premium-free with reduced payout PU [S9] | on qualifying lapse |
-| `PU` | Paid-up payout = SA x N_paid / N_expected (Payout Promise variant) [S9] | on paid-up conversion |
+| `paid_up` | Pro-rata paid-up state: policy premium-free with reduced payout PU [S9] | on qualifying lapse |
+| `PU` | Paid-up payout = SA x N_paid / N_expected (pro-rata paid-up variant) [S9] | on paid-up conversion |
 | `in_moratorium(t)` | Indicator t <= 12 (O50) | monthly |
 | `attained_age(t)` | entry_age + floor((t−1)/12) (ALB) | monthly |
 
@@ -103,8 +103,8 @@ Three classes are distinguished explicitly.
 | UW terminal illness | Sum assured accelerated on 12-month prognosis; pays once, policy ends | [S10] [S12] |
 | UW suicide clause | Suicide/intentional self-inflicted injury within 12 months of start (or increase) → refund of premiums for that cover | [S10] [S11] |
 | UW escalation (variant) | SA +5%/year, premium +10%/year (2% premium per 1% cover) | [S10]; 5% pick **[std]** |
-| O50 RPI variant (L&G) | Cash sum +RPI (floor 0%, cap 10%); premium +RPI x 1.5 (cap 15%); freeze on first declined increase; cash-sum indexation continues post-90 | [S4] |
-| Payout Promise (RL variant) | If N_paid >= N_expected/2 at premium stop: paid-up payout = SA x N_paid/N_expected; else cancellation with nothing | [S9] |
+| O50 RPI variant (one plan) | Cash sum +RPI (floor 0%, cap 10%); premium +RPI x 1.5 (cap 15%); freeze on first declined increase; cash-sum indexation continues post-90 | [S4] |
+| Pro-rata paid-up value (one plan's variant) | If N_paid >= N_expected/2 at premium stop: paid-up payout = SA x N_paid/N_expected; else cancellation with nothing | [S9] |
 | Arrears | 60 days to make good; death in window → claim reduced by unpaid amounts; then lapse with no value | [S4] [S9]; pick **[std]** |
 | Surrender value | None at any time, either cell | [S1] [S4] [S5] [S7] [S9] [S10] |
 
@@ -119,7 +119,7 @@ to:
 - **New-business rate tables.** Insurers do not publish full premium rate tables (research
   file gap); only quote anchors exist (£20/month at 50 NS → £5,694 [S2]; £25/month NS →
   £7,643/£6,046/£3,701/£1,893 at 50/60/70/80 [S6]) plus the FCA per-£1,000 averages (£71.73
-  GO50, £8.10 underwritten) [R2]. The model takes premium as a model-point input; any shipped
+  O50, £8.10 underwritten) [R2]. The model takes premium as a model-point input; any shipped
   rate table is a **[std]** snapshot calibrated to these anchors.
 - **Claims interest rate.** Contractual formula, BoE-base-linked (base − 0.5%, floor 0.5%)
   [S1] [S9]; excluded from the base model **[std]** (conventions).
@@ -143,18 +143,19 @@ Authorised Users/Subscribers; older publications are free — so a reference bas
 | UW suicide share of year-1 deaths | 1% **[std]** — refund instead of sum assured; immaterial, carried for completeness | **[std]** |
 | Terminal illness acceleration (UW) | Model TI claims as deaths accelerated by 6 months on average; base model ignores the acceleration (pays at death) **[std]** | timing **[std]**; benefit [S10] |
 | Lapse | [std] tables below; no public UK WoL lapse study was retrieved (research gap); the FCA documents the lapse-supported dependence qualitatively | [R2]; tables **[std]** |
-| Expenses | O50: acquisition £150/policy + commission 25% of year-1 premiums **[std]**; maintenance £30/policy/year inflating 3% p.a. **[std]**. UW: acquisition £300/policy + initial commission **[std]**; maintenance £50/policy/year inflating 3% **[std]**. Commission existence per SunLife (intermediary "paid by commission as a percentage of total annual premium" [S1]); all levels **[std]** | [S1]; levels **[std]** |
+| Expenses | O50: acquisition £150/policy + commission 25% of year-1 premiums **[std]**; maintenance £30/policy/year inflating 3% p.a. **[std]**. UW: acquisition £300/policy + initial commission **[std]**; maintenance £50/policy/year inflating 3% **[std]**. Commission existence per one plan's disclosure (intermediary "paid by commission as a percentage of total annual premium" [S1]); all levels **[std]** | [S1]; levels **[std]** |
 
 **Why the O50 basis is population-plus-loading, not assured lives.** Guaranteed acceptance
 removes underwriting, so the pool cannot be better than population and self-selects worse:
 the CMI is analysing *non-underwritten* whole of life experience separately from underwritten
 — direct recognition of the anti-selection distinction [R7] — and the FCA's price
 differential (£71.73 vs £8.10 per £1,000) reflects guaranteed-acceptance anti-selection,
-older entry ages and shorter durations [R2]. No insurer discloses its GO50 pricing basis
-(expected — proprietary; research file gap), so the 120% loading on ONS population rates is a
-**[std]** placeholder to be calibrated; population mortality is itself heavier than insured
-experience [REG-R32], so the loading is deliberately modest. The UW cell uses an
-assured-lives shape ("00" series [R6]) because full underwriting restores select experience.
+older entry ages and shorter durations [R2]. No insurer discloses its guaranteed-acceptance
+pricing basis (expected — proprietary; research file gap), so the 120% loading on ONS
+population rates is a **[std]** placeholder to be calibrated; population mortality is itself
+heavier than insured experience [REG-R32], so the loading is deliberately modest. The UW cell
+uses an assured-lives shape ("00" series [R6]) because full underwriting restores select
+experience.
 
 Reference base lapse tables **[std]** (annual rates; shapes are drafting constructions —
 no public product-specific study; replace with experience):
@@ -185,7 +186,7 @@ no public product-specific study; replace with experience):
 | δ_su | suicide share of year-1 deaths (UW), 0.01 **[std]** |
 | l(t) | in-force probability at end of month t; l(0) = 1 |
 | DB_na(t), DB_ac(t) | death benefit for non-accidental / accidental death in month t (O50) |
-| k_adb | accidental multiplier after year 1: 1 (base) or 2 (Aviva variant [S7]) |
+| k_adb | accidental multiplier after year 1: 1 (base) or 2 (one plan's variant [S7]) |
 | E[·] | expectation over decrements (survivorship weighting) |
 
 Dimensional check: premiums and benefits are £; q_m, w_m, δ are dimensionless; every expected
@@ -202,15 +203,15 @@ At month t while in force and not paid-up:
    [S4] [S10].
 4. EOM: deaths at rate q_m(y) applied to l(t−1); benefit per the rules below.
 5. EOM: lapses at rate w_m(y) applied to survivors of step 4; death-before-lapse **[std]**.
-   In the Payout Promise variant a "lapse" with N_paid >= N_expected/2 converts to paid-up
+   In the pro-rata paid-up variant a "lapse" with N_paid >= N_expected/2 converts to paid-up
    (state change, no cash flow) instead of termination [S9].
 6. Update l(t) = l(t−1) x (1 − q_m(y)) x (1 − w_m(y)).
 
-Paid-up policies (Payout Promise) and post-cessation O50 policies skip steps 1 and 5
-(no premiums due, so no lapse decrement **[std]**) and continue steps 2, 4, 6 with w_m = 0.
-Step 3 is also skipped, with one exception: in the RPI-increasing variant the cash sum
-continues to index at anniversaries after premiums cease at 90 [S4] (the premium step, being
-zero, stops).
+Paid-up policies (the pro-rata paid-up variant) and post-cessation O50 policies skip steps 1
+and 5 (no premiums due, so no lapse decrement **[std]**) and continue steps 2, 4, 6 with
+w_m = 0. Step 3 is also skipped, with one exception: in the RPI-increasing variant the cash
+sum continues to index at anniversaries after premiums cease at 90 [S4] (the premium step,
+being zero, stops).
 
 ### RefWOL-O50 recursions
 
@@ -223,7 +224,7 @@ Death benefit split during the 12-month moratorium [S1] [S4] [S7] [S9]:
     DB_na(t) = CumPrem(t)   if t <= 12          (return of premiums paid, no interest)
              = SA           if t >  12
     DB_ac(t) = SA           if t <= 12          (full cash sum from day 1)
-             = k_adb x SA   if t >  12          (k_adb = 2: Aviva variant [S7])
+             = k_adb x SA   if t >  12          (k_adb = 2: one plan's variant [S7])
 
 Expected cash flows in month t (per policy issued):
 
@@ -247,14 +248,14 @@ example exactly [R2]. Total premiums payable are capped at P x T_cess (anchor: �
 £5,000 cash sum). A crossover exists iff SA < P x T_cess; the FCA notes entrants at 79–80 are
 most exposed and that the majority of policies still pay out more than premiums paid [R2].
 
-Payout Promise variant [S9]: on premium stop at month t with N_paid(t) >= N_expected/2
+Pro-rata paid-up variant [S9]: on premium stop at month t with N_paid(t) >= N_expected/2
 (N_expected = T_cess):
 
     PU = SA x N_paid(t) / N_expected        (worked example: 180/240 x £3,500 = £2,625 [S9])
 
 thereafter DB_na = DB_ac = PU (the moratorium is long past), premiums 0, lapse 0 **[std]**.
 
-RPI-increasing variant (L&G [S4]), r_y = RPI inflation for year y:
+RPI-increasing variant (one plan [S4]), r_y = RPI inflation for year y:
 
     SA(y+1) = SA(y) x (1 + min(max(r_y, 0), 0.10))
     P(y+1)  = P(y)  x (1 + min(max(1.5 x r_y, 0), 0.15))       while y < cessation
@@ -313,17 +314,18 @@ with the qualitative anchors cited.
   communications must enable informed choice about the over-payment risk [R2], which could
   raise post-tipping-point lapses; the FCA has seen no evidence that a significant proportion
   of customers reach the premium caps [R2]. β is a pure stress dial.
-- **Payout Promise selection (RL variant) [std].** Once N_paid >= N_expected/2, all would-be
-  lapses convert to paid-up (rational: forfeiture is strictly dominated; mechanics per [S9]);
-  before the halfway point, lapse means total loss, so the base w applies. This converts
-  lapse profit into a retained pro-rata liability — the variant exists precisely to remove
-  the forfeiture cliff, and materially weakens lapse support (sensitivity mandatory).
-- **Premium reduction options [std].** One-off reductions (SunLife/L&G/RL [S1] [S4] [S9]) are
-  not modeled; they are economically a partial lapse with proportionate SA reduction.
-- **Escalation opt-out (UW variant) [std].** Increasing Cover holders decline an increase
+- **Pro-rata paid-up selection (one plan's variant) [std].** Once N_paid >= N_expected/2, all
+  would-be lapses convert to paid-up (rational: forfeiture is strictly dominated; mechanics
+  per [S9]); before the halfway point, lapse means total loss, so the base w applies. This
+  converts lapse profit into a retained pro-rata liability — the variant exists precisely to
+  remove the forfeiture cliff, and materially weakens lapse support (sensitivity mandatory).
+- **Premium reduction options [std].** One-off reductions (three of the O50 plans
+  [S1] [S4] [S9]) are not modeled; they are economically a partial lapse with proportionate
+  SA reduction.
+- **Escalation opt-out (UW variant) [std].** Increasing-cover holders decline an increase
   with probability 10% per anniversary; three declines remove the option [S10]; base model
   assumes full take-up.
-- **Payment holidays (RL [S9])** are ignored **[std]** (≤ 12 months' premiums deferred or
+- **Payment holidays (one plan [S9])** are ignored **[std]** (≤ 12 months' premiums deferred or
   netted; second-order).
 
 ---
@@ -331,8 +333,8 @@ with the qualitative anchors cited.
 ## Worked example
 
 RefWOL-O50 anchor cell: entry age 70 (ALB), non-smoker, P = £30/month, SA = £5,000, T_cess =
-240 months (anniversary on/after 90th birthday **[std]**), base design (k_adb = 1, no Payout
-Promise). Illustrative walk-through basis **[std]** (placeholder, not attributable to any
+240 months (anniversary on/after 90th birthday **[std]**), base design (k_adb = 1, no
+pro-rata paid-up value). Illustrative walk-through basis **[std]** (placeholder, not attributable to any
 table): q(y) = 0.024 x 1.10^(y−1) — i.e. a 0.020 population-style rate at 70 x the 120%
 anti-selection loading, with 10% p.a. age progression; lapse 8%/6%/4%/4% (years 1/2/3–5/6+),
 0 after cessation; δ_acc = 3%. Monthly rates: q_m(1) = 1 − (1−0.024)^(1/12) = 0.0020223;
@@ -402,11 +404,11 @@ them and are cited, not reproduced:
 Dominant assumptions, in order, for a guaranteed-acceptance (O50) block:
 
 1. **Lapse — sensitivity analysis mandatory.** With no surrender value, every lapse is a
-   pure profit release; the FCA itself records the reliance on lapses for profitability [R2]. BEL is
-   monotonically decreasing in lapse rates; run at 0.5x / 1x / 2x base lapse and at zero
-   lapse (the conduct-stress floor). The Payout Promise variant [S9] converts post-halfway
-   lapses into paid-up liabilities and collapses most of the lapse sensitivity — model it as
-   a separate variant, never as a small adjustment.
+   pure profit release; the FCA itself records the reliance on lapses for profitability [R2].
+   BEL is monotonically decreasing in lapse rates; run at 0.5x / 1x / 2x base lapse and at
+   zero lapse (the conduct-stress floor). The pro-rata paid-up variant [S9] converts
+   post-halfway lapses into paid-up liabilities and collapses most of the lapse sensitivity —
+   model it as a separate variant, never as a small adjustment.
 2. **Guaranteed-acceptance mortality and anti-selection.** The 120% x ONS loading is a [std]
    placeholder; the true basis is proprietary and the CMI's non-underwritten whole of life
    analysis was pending as of the fetched announcement [R7] [REG-R32]. Year-one anti-selection
@@ -434,9 +436,9 @@ Known modeling pitfalls:
 - **Lapse after cessation.** There are no premiums to stop paying after T_cess; applying a
   lapse decrement there silently destroys liability. Set w = 0 post-cessation **[std]** (and
   in paid-up states).
-- **Aviva variant double-count.** The 2x applies to *accidental* death on/after the first
-  anniversary only [S7]; applying it in year 1 (where accidental already pays 1x SA in the
-  base plans, and the Aviva year-1 accidental benefit is 1x the Life Insurance Amount [S7])
+- **Accidental-multiplier double-count.** The 2x applies to *accidental* death on/after the
+  first anniversary only [S7]; applying it in year 1 (where accidental already pays 1x SA in
+  the base plans, and that variant's own year-1 accidental benefit is 1x the cash sum [S7])
   or to all deaths overstates outgo.
 - **Anti-selective options (UW).** Milestone-benefit increases without underwriting [S10]
   and smoker-status reviews [S10] are exercised against the office; excluding them is a

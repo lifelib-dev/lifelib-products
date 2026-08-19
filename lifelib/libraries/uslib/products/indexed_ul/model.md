@@ -190,7 +190,7 @@ projection, and the notes label the numbers as example values.
 
 So it is asserted against the engine cells with exactly those inputs, and every row and
 column reproduces to the cent — including the two variant credits the notes price in the
-same paragraph: Transamerica's half-weighted adjusted beginning value
+same paragraph: one carrier's half-weighted adjusted beginning value
 (10.00% × (12,000.00 − 90.00) = **1,191.00** [S3]) via `seg_credit_base(..., "ADJ_BEGIN")`,
 and the guaranteed-cap-only credit (2.00% × 11,820.00 = **236.40** [S2]) via the `cap`
 argument of `index_credit`.

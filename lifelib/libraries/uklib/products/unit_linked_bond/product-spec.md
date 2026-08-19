@@ -12,7 +12,7 @@ research provenance in `_research/regulatory-actuarial.md`). Values marked **[st
 are standardizations introduced for the reference implementation; each [std] table row
 carries a footnote giving the rationale and the observed range across insurers.
 Facts the research file could not verify are flagged [unverified]. The implementation
-anchor for mechanics is the Prudential Investment Plan document pair — Key Features
+anchor for mechanics is a single carrier's document pair — Key Features
 Document [S1] plus Policy Provisions [S2] — the most completely specified public source.
 
 ---
@@ -38,11 +38,11 @@ tax credit in the policyholder's hands [R6] [S4] [S5]. The life cover element is
 — a death uplift of 0.1%–1% over unit value [S1] [S2] [S3] [S4] [S5] — so the contract is
 economically a taxed investment account with a thin insurance wrapper.
 
-The market has consolidated around adviser-platform providers: Canada Life closed its
-Select Account onshore bond to new business on 23 January 2024 (retaining all features
-for existing customers) to concentrate on offshore bonds, and the closed products were
-under 1% of its customer base [S7]. Current open books are platform or platform-style
-"clean-charge" designs (Prudential/M&G [S1] [S2], Aviva Wealth [S4], Quilter [S5]);
+The market has consolidated around adviser-platform providers: one carrier closed its
+onshore bond to new business on 23 January 2024 (retaining all features for existing
+customers) to concentrate on offshore bonds, and the closed products were under 1% of
+its customer base [S7]. Current open books are platform or platform-style
+"clean-charge" designs (three of the carriers surveyed [S1] [S2] [S4] [S5]);
 legacy back-books carry bid-offer, establishment and early cash-in charge layers
 [S3] (see Variations).
 
@@ -51,8 +51,8 @@ legacy back-books carry bid-offer, establishment and early cash-in charge layers
 ## Representative specification
 
 The composite is a modern **clean-charge onshore** single-premium bond on the
-Prudential chassis [S1] [S2], with the explicit life-fund tax pass-through documented
-on the platform products [S4] [S5].
+anchor carrier's chassis [S1] [S2], with the explicit life-fund tax pass-through
+documented on the platform products [S4] [S5].
 
 ### Product identity and issue rules
 
@@ -72,22 +72,23 @@ on the platform products [S4] [S5].
 
 Footnotes to [std] rows:
 
-1. All five product sets write single or joint lives on a last-death basis; Aviva's
-   platform bond allows up to 10 lives assured [S4] and Quilter accepts companies and
+1. All five product sets write single or joint lives on a last-death basis; one
+   platform bond allows up to 10 lives assured [S4] and another accepts companies and
    trusts [S5]. The composite restricts to a single life assured who is also the sole
    owner — joint-life last-death mortality is a second-order refinement for a product
    whose death strain is 0.1% of unit value (see Contractual mechanics).
 2. Observed maxima for a life assured at outset: 85 next birthday [S1]; top-ups while
    the younger life is not over 84 (legacy) [S3]; 89 [S4]; owner aged 18–90 attained
-   [S5]. The Prudential band is adopted with the document pair it anchors.
+   [S5]. The anchor carrier's band [S1] is adopted, since the composite is built on
+   that carrier's document pair.
 3. Observed segment counts: 20 default, up to 999 on request, minimum £1,000 per
    segment when more than 20 [S1] [S2 §2.4]; 100 [S3]; 1,000 [S4]; 1,000 [S5].
    Standardized to 100 so each segment is exactly 1% of the bond (£1,000 per segment
-   at the anchor premium, consistent with the Prudential per-segment floor [S2 §2.4]),
-   matching the Aviva legacy structure [S3] and keeping segment-level arithmetic
-   transparent. Purpose in every source is tax flexibility: full surrender of
-   individual segments and part surrender across all segments produce different
-   chargeable-event outcomes [S1] [S4] [S5 Q12] [R1 s484/s498](#uklib-unit_linked_bond-r1) [R2].
+   at the anchor model cell premium, which meets that £1,000 per-segment floor
+   [S2 §2.4]), matching the legacy structure [S3] and keeping segment-level
+   arithmetic transparent. Purpose in every source is tax flexibility: full
+   surrender of individual segments and part surrender across all segments produce
+   different chargeable-event outcomes [S1] [S4] [S5 Q12] [R1 s484/s498](#uklib-unit_linked_bond-r1) [R2].
 4. Top-up minima observed: £10,000 [S1]; £1,000 [S4]; permitted, minimum not stated
    [S5]. The base projection excludes top-ups; a top-up is modeled as a new model
    point (its own premium, allowance clock and segment set) — consistent with the
@@ -112,10 +113,11 @@ Footnotes to [std] rows:
 6. Observed death uplifts: 100.1% of bid value of units [S1] [S2]; 100.1% of plan
    value, 101% for pre-3-August-2006 plans (legacy) [S3]; 101% [S4]; 100.1% of
    surrender value, 101% prior to 25 November 2024 [S5]. 100.1% is chosen — it is the
-   Prudential anchor value and the value both currently open non-Aviva products use;
-   the 101% variant is a one-line parameter change (uplift 1.0% instead of 0.1%).
-7. Both optional guarantees observed (Prudential Return of Premium Death Benefit
-   [S1] [S2 §5.2, §10]; Quilter Capital Protected Death Benefit [S5]) are elected at
+   anchor-document value [S1] [S2], shared by another currently open product [S5];
+   only one platform writes 101% [S4]. The 101% variant is a one-line parameter change
+   (uplift 1.0% instead of 0.1%).
+7. Both optional guarantees observed (a return-of-premium death benefit
+   [S1] [S2 §5.2, §10]; a capital-protected death benefit [S5]) are elected at
    outset only, cancellable but not restartable, and charged monthly. Excluded from
    the base model to keep the death strain at 0.1% of unit value; the rider module is
    specified under Riders so it can be enabled without changing the core recursion.
@@ -126,7 +128,7 @@ Footnotes to [std] rows:
 |---|---|---|
 | Annual management charge (AMC) | 1.00% p.a. of unit value, accrued daily through the unit price (modeled as 1/12 monthly) | mechanism [S2 §5.1.1]; level **[std]** (8) |
 | Fund-level further costs | 0.10% p.a., borne within the fund (not insurer income) | existence [S1] [S2 §3.1.7]; level **[std]** (9) |
-| AMC fund-size discount | Not modeled; documented option — Prudential tiers 0.30% (<£25k) to 0.575% (£3m+), applied monthly on AUM per premium | [S1] [S2 §5.1.4]; scope **[std]** (10) |
+| AMC fund-size discount | Not modeled; documented option — one carrier's tiers 0.30% (<£25k) to 0.575% (£3m+), applied monthly on AUM per premium | [S1] [S2 §5.1.4]; scope **[std]** (10) |
 | Life-fund tax pass-through | 20% of the gross fund investment return, deducted within the unit price (neutral pass-through to the insurer) | mechanism [S2 §3.2.1] [S3 Part E] [S4] [S5 Q15]; rate proxy **[std]** (11) |
 | Bid-offer spread / allocation rate | None — single-priced units, 100% allocation | [S3 Part D single-priced default] [S4] [S5]; clean scope **[std]** (12) |
 | Establishment / early cash-in charges | None in the clean design | [S4] [S5]; scope **[std]** (12) |
@@ -134,7 +136,7 @@ Footnotes to [std] rows:
 | Dilution levy | Reserved power, collected through unit pricing; not modeled | [S2 §3.2.6]; scope **[std]** |
 
 8. Actual AMC percentages are per-fund and live in fund guides that were not fetched
-   (research gap 5 in `_research/unit-linked-bond.md`); only the Prudential
+   (research gap 5 in `_research/unit-linked-bond.md`); only one carrier's
    fund-size *discount* tier table is public [S1]. 1.00% p.a. is a round
    representative level for a managed fund net of any discount. The AMC is
    insurer-reviewable — increase provisions tied to cost/tax/regulatory changes are
@@ -152,7 +154,7 @@ Footnotes to [std] rows:
     enabling it makes the AMC margin band-dependent on fund size.
 11. Onshore life funds bear corporation tax on income and gains under I-E/BLAGAB, at
     the policyholder rate (basic rate, 20% in the HMRC example) on the policyholder
-    slice [R6]. Prudential/Aviva insured funds allow for tax inside the daily unit
+    slice [R6]. The two insurer-managed fund ranges allow for tax inside the daily unit
     price [S2 §3.2.1] [S3 Part E]; the platform products levy explicit periodic tax
     charges to the policy (on income as received, on realised gains at the next bond
     charge date, an annual deemed-disposal charge, and on full surrender from
@@ -160,8 +162,8 @@ Footnotes to [std] rows:
     fund return deducted within the unit price — a deliberate simplification of the
     I-E timing detail (see technical notes for what the proxy ignores).
 12. The clean design has no initial charge, no allocation-rate machinery and no exit
-    penalties: Aviva platform withdrawals are "at any time without penalty" [S4] and
-    Quilter discloses charges via personalised illustration documents with no
+    penalties: one platform's withdrawals are "at any time without penalty" [S4] and
+    the other discloses charges via personalised illustration documents with no
     early-exit layer recorded [S5 Q7]. Legacy layers (bid-offer One-Off Charge,
     Early Cash-in Charges, Establishment Charge [S3]) are back-book variations only —
     see Variations across insurers.
@@ -182,9 +184,9 @@ Footnotes to [std] rows:
 | Cooling-off | 30 days from plan documents; refund reduced by any fall in value; adviser fees not refunded | [S1] [S4] [S5 Q19] |
 | Settlement frictions | Same-working-day unit cancellation before 12:00 cut-off; up to 2 working days for large deals; deferral up to 6 months (property funds) / 1 month (others); not modeled | [S2 §4.1.1, §4.4, §8] [S1] [S3]; scope **[std]** |
 
-13. The Prudential provisions confirm partial/full withdrawals at any time with no
-    penalty layer in the current product [S1] [S2 §7.2–7.3]; Aviva platform states
-    "without penalty" [S4]. Quilter caps a one-off part surrender at 95% of value
+13. The anchor provisions confirm partial/full withdrawals at any time with no
+    penalty layer in the current product [S1] [S2 §7.2–7.3]; one platform states
+    "without penalty" [S4]. The other caps a one-off part surrender at 95% of value
     with £1,000 minimum remaining [S5 Q12] — remaining-balance minima are
     administrative and not modeled. Early cash-in charges exist only in the legacy
     layer [S3].
@@ -193,7 +195,7 @@ Footnotes to [std] rows:
     to explain the wrapper [S1] [S4] [S5]. Behavioral rationale and the dynamic variant
     are in the technical notes.
 15. A representative ongoing adviser charge, when the module is enabled, is 0.5% p.a.
-    of unit value — the illustrative rate in the Prudential cap example ("0.5% OAC ⇒
+    of unit value — the illustrative rate in the anchor cap example ("0.5% OAC ⇒
     maximum 7% withdrawals") [S1] [S2 §7.1]. The anchor cell carries all three adviser
     charges at zero so the worked example stays within the 5% allowance without
     consuming it on charges (ongoing/ad hoc adviser charges consume the allowance
@@ -209,17 +211,17 @@ funds; premium and units are divided equally between the 100 segments (**[std]**
 count; mechanics [S1] [S2 §2.4]). Each segment is an identical mini-policy that can be
 assigned or fully surrendered separately [S1] [S2 §2.4].
 
-**Units and unit pricing.** Units are notional [S2 §3.1.5]. Prudential
+**Units and unit pricing.** Units are notional [S2 §3.1.5]. The anchor carrier's
 internally-managed funds are valued at least monthly between a maximum value (lowest
 buying price of assets) and minimum value (highest selling price), net of taxes,
 duties, reserves and the AMC, with the basis swinging between purchase and sale
 valuation according to whether the fund is expanding or contracting; bid price ≥
 minimum value / units in issue, rounded to the nearest 0.1p [S2 §3.2.1–3.2.4].
 Externally-linked funds follow the external manager's prices with the same
-expansion/contraction logic [S2 §3.2.3, §3.2.5]; Aviva values funds every business
-day on the same swinging-basis design [S3 Part E]; platform deals receive forward
-pricing at the next dealing point [S5 Q9]. The reference model abstracts all of this
-to a single daily-priced, single-priced unit fund per policy (**[std]**; see
+expansion/contraction logic [S2 §3.2.3, §3.2.5]; the legacy book values funds every
+business day on the same swinging-basis design [S3 Part E]; platform deals receive
+forward pricing at the next dealing point [S5 Q9]. The reference model abstracts all
+of this to a single daily-priced, single-priced unit fund per policy (**[std]**; see
 technical notes).
 
 **Charges.** For unit-linked funds, 1/365 of the fund's AMC is deducted daily from
@@ -238,7 +240,7 @@ technical notes; the same parameter values are used there).
 
 **Death benefit.** On death of the (last) life assured the plan pays the sum assured:
 
-    DB = 100.1% × bid value of units    [S1][S2]; uplift choice **[std]** (6)
+    DB = 100.1% × bid value of units    [S1] [S2]; uplift choice **[std]** (6)
 
 with units counted at the date of death and valued on the working day notice is
 received [S2 §4.2.7, §9]. The insurer's death strain per claim is DB − unit fund
@@ -287,14 +289,14 @@ S1–S5].
 
 **In scope (described; charged at 0 / disabled in the base model [std]):**
 
-- **Return-of-premium guaranteed minimum death benefit (GMDB).** Prudential "Return
-  of Premium Death Benefit option": pays max(Sum Assured, GMDB) where GMDB = total
+- **Return-of-premium guaranteed minimum death benefit (GMDB).** As written on the
+  anchor documents, the option pays max(Sum Assured, GMDB) where GMDB = total
   premiums (net of set-up adviser charges) − partial/regular withdrawals −
   ongoing/ad hoc adviser charges. Monthly charge = (GMDB − Sum Assured, if positive)
   × a mortality factor depending on age at the last policy anniversary, levied by
   unit cancellation pro-rata across premiums and funds; the charge is zero while the
   option is out of the money; elected at outset only, cancellable but not
-  restartable [S1] [S2 §5.2, §10]. Quilter's "Capital Protected Death Benefit" is the
+  restartable [S1] [S2 §5.2, §10]. A second currently open product carries the
   same design (greater of premiums-less-withdrawals and 100.1% of value; monthly
   charge that may exceed growth; unavailable if any life assured is over 90 at
   outset) [S5]. The mortality-factor scale is not published in the fetched documents
@@ -303,7 +305,7 @@ S1–S5].
 **Out of scope (listed):**
 
 - Accidental Death Benefit — 110% of bond value on accidental death within 90 days
-  (legacy Aviva; war/self-inflicted/aviation exclusions) [S3].
+  (legacy layer; war/self-inflicted/aviation exclusions) [S3].
 - PruFund smoothed funds inside the wrapper — Expected Growth Rate accrual, quarterly
   and daily smoothing limits, 28-day waits, quarter dates [S2 §3.3.7–3.3.10]; see the
   with-profits folder (`products/with_profits/`) for smoothing mechanics; the
@@ -314,9 +316,9 @@ S1–S5].
   cancellations) [S2 §5.3, §11].
 - With-profits funds within the bond, including Market Value Reduction (MVR) on
   cash-in or switch-out — MVR never applied on death or on regular withdrawals up to
-  7.5% of plan value p.a. (legacy Aviva) [S3].
-- Trustee Bond capital guarantee (greater of net invested premiums less withdrawals
-  and 101% of bond value) [S3].
+  7.5% of plan value p.a. (legacy layer) [S3].
+- Capital guarantee on the trustee-owned variant (greater of net invested premiums
+  less withdrawals and 101% of bond value) [S3].
 - Distribution funds / natural-income options [S1] [S3].
 - Discretionary investment manager (DIM) portfolios and model-portfolio rebalancing
   [S4] [S5].
@@ -356,14 +358,14 @@ S1–S5].
    return assumption, not the liability mechanics.
 6. **Withdrawal caps.** 7.5%-of-value/paid-in product cap including ongoing adviser
    charges [S1] [S2 §7.1] vs minima-only (£25 minimum, £1,000 residual [S5]; residual
-   minimum [S4]). Chosen: the Prudential 7.5% cap, because it is a real constraint
+   minimum [S4]). Chosen: the 7.5% cap [S2 §7.1], because it is a real constraint
    that binds the withdrawal-plus-adviser-charge total.
 7. **Smoothed-fund option.** PruFund range with published smoothing mechanics
-   [S2 §3.3] vs Aviva Smooth Managed funds (quarterly switch limit) [S4] vs
-   with-profits with MVR (legacy) [S3] vs none [S5]. Chosen: excluded — smoothing
-   belongs to the with-profits reference product.
+   [S2 §3.3] vs a platform's smoothed-managed fund range (quarterly switch limit)
+   [S4] vs with-profits with MVR (legacy) [S3] vs none [S5]. Chosen: excluded —
+   smoothing belongs to the with-profits reference product.
 8. **Guarantee riders.** Return-of-premium GMDB [S1] [S2 §5.2, §10] [S5] vs none
-   observed on the Aviva platform KFD [S4]. Chosen: specified as an optional module,
+   observed on one platform KFD [S4]. Chosen: specified as an optional module,
    disabled in the base cell.
 9. **Settlement frictions.** 28-day PruFund waits, 2-working-day large-deal delay,
    6-month property deferral [S1] [S2 §4.4, §8]; suspension/deferment powers [S3] [S4];

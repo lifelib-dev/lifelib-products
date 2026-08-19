@@ -305,7 +305,7 @@ def test_no_crossover_where_the_cash_sum_exceeds_total_premiums(whole_of_life):
 
 
 # ---------------------------------------------------------------------------
-# The Payout Promise variant
+# The pro-rata paid-up variant
 
 
 def test_payout_promise_converts_lapses_to_paid_up_after_the_halfway_point(whole_of_life):

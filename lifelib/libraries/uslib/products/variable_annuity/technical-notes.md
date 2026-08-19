@@ -17,8 +17,8 @@ appendix items read at first hand on 2026-08-06 — of which four are cited here
 most of the **R73–R149** block unused). **[std]** marks a standardization
 introduced for the reference implementation; **[unverified]** marks a claim the research
 file could not confirm against a retrieved document. **Every parameter value below is
-identical to the value in `product-spec.md`.** The mechanics anchor is the Jackson
-Perspective II chassis [S1] [S2] [S3].
+identical to the value in `product-spec.md`.** The mechanics anchor is the single-carrier
+chassis contract [S1] [S2] [S3].
 
 **Relationship to sibling documents.** The *separate-account charge-accrual convention* — a
 monthly discretization of daily fund-expense and asset-charge accrual, `(1 + r)(1 − e/12)(1 −
@@ -36,9 +36,9 @@ this library) and **referenced rather than restated** where the two products agr
 **post-depletion phase**. Two items on that list are *not* shared and are written out below:
 that file carries **no cohort construction** (the cohort method used here is VM-21's [R1]),
 and its excess-withdrawal rule reduces the benefit base **pro rata on the excess only**, with
-no dollar-for-dollar reduction for the guaranteed portion — whereas the Jackson GWB *is*
-reduced dollar-for-dollar by the non-excess portion first. The one structural difference is
-decisive: in an FIA the account value is driven by a floored index-credit formula, whereas
+no dollar-for-dollar reduction for the guaranteed portion — whereas the GWB here *is*
+reduced dollar-for-dollar by the non-excess portion first [S1]. The one structural difference
+is decisive: in an FIA the account value is driven by a floored index-credit formula, whereas
 here **separate-account performance drives the account value directly and can fall without
 limit**, so the guarantee is far more path-dependent and its cost cannot be obtained from a
 deterministic run.
@@ -153,7 +153,7 @@ discipline for non-guaranteed elements, which expressly covers variable deferred
 
 ### (b) Insurer-declared current elements (snapshot; revisable NGEs [REG-R26])
 
-Snapshot dated **2026-04-27**, the Jackson rate sheet date [S3]. Rate sheets carry an
+Snapshot dated **2026-04-27**, the rate sheet date [S3]. Rate sheets carry an
 explicit "can be superseded at any time" clause with a 10-day advance-filing commitment
 [S3] [S5] [S8], so the rate-sheet date is a first-class model input, not metadata.
 
@@ -347,9 +347,9 @@ At BOM of month t:
 credited before or after the anniversary step-up test [S1]. The **[std]** order above
 (bonus, then step-up) yields `GWB_new = max(GWB_old + bonus, AV)`; the reverse yields
 `max(GWB_old, AV) + bonus`, which is strictly more generous. The [std] choice follows the
-one design in the set that states the interaction explicitly — Lincoln's, where "an
-Enhancement and an Account Value Step-up cannot both occur in the same year; if the step-up
-is ≥ the Enhancement, the Enhancement is not applied" [S8]. Treat the alternative as a
+one design in the set that states the interaction explicitly, where "an Enhancement and an
+Account Value Step-up cannot both occur in the same year; if the step-up is ≥ the
+Enhancement, the Enhancement is not applied" [S8]. Treat the alternative as a
 first-order sensitivity, not a rounding issue.
 
 ### Guaranteed minimum death benefit
@@ -517,9 +517,9 @@ Parameterized here by:
 ## Worked example — one month, two subaccounts, charge stack, GMDB claim test
 
 Anchor cell: male, issue age 60, single Designated Life, non-qualified; single premium
-$100,000 at issue with premium tax 0.00% **[std]**; allocation 60/40 **[std]**; Flex GMWB
-Single Core (`phi_G` = 1.25%, `b` = 6.00%, annual CV step-up, `s` = 105%) [S3] and Roll-up
-GMDB (`phi_D` = 0.90%, `ρ` = 6.00%) [S3]; `m + α` = 1.30% [S2]; `e_1` = 0.95%, `e_2` = 0.65%
+$100,000 at issue with premium tax 0.00% **[std]**; allocation 60/40 **[std]**; the
+single-life Core GLWB (`phi_G` = 1.25%, `b` = 6.00%, annual CV step-up, `s` = 105%) [S3] and
+Roll-up GMDB (`phi_D` = 0.90%, `ρ` = 6.00%) [S3]; `m + α` = 1.30% [S2]; `e_1` = 0.95%, `e_2` = 0.65%
 **[std]**. No withdrawals to date.
 
 Carried state at the beginning of month 27 (contract year 3; month 27 is the 9th Contract
@@ -659,7 +659,7 @@ them and are cited, not reproduced:
   most consequential error.
 - **Fixed account and MVA are absent by design** — the Roll-up GMDB election removes Fixed
   Account Options [S1]. If a variant re-enables them, note that **no closed-form MVA factor
-  was found in any of the four prospectuses read**: Jackson discloses a rate-differential
+  was found in any of the four prospectuses read**: the chassis discloses a rate-differential
   rule with a 0.25% dead band and a Fixed Account Minimum Value floor [S1], so any algebraic
   MVA formula in a model would be **[unverified]** [S1] — **and that flag stays**, because the
   contract formula itself was never disclosed in closed form. What has changed is that the
