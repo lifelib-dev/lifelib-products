@@ -333,7 +333,7 @@ def adb_multiplier():
     return 2.0 if bool(model_point()["variant_adb_2x"]) else 1.0
 
 
-def payout_promise():
+def pu_variant():
     """Whether the pro-rata paid-up variant applies.
 
     Once half the expected payments have been made, a would-be lapse converts to a
@@ -341,9 +341,9 @@ def payout_promise():
     since ``N_expected`` is measured to it; the underwritten cell has none, so the
     combination raises rather than dividing by zero.
     """
-    v = bool(model_point()["variant_payout_promise"])
+    v = bool(model_point()["variant_paid_up"])
     if v and cessation_mths() <= 0:
-        raise ValueError("payout promise needs a premium cessation date")
+        raise ValueError("the pro-rata paid-up value needs a premium cessation date")
     return v
 
 
@@ -536,7 +536,7 @@ def pu_eligible(t):
     applies; after it, forfeiture is strictly dominated, so **all** would-be lapses are
     assumed to convert **[std]**.
     """
-    if not payout_promise():
+    if not pu_variant():
         return False
     return payments_made(t) >= payments_expected() / 2.0
 
@@ -617,7 +617,7 @@ def pols_pu(t):
     lapse decrement and do not escalate, so they roll forward on mortality alone and take
     conversions in from the full-cover strand.
     """
-    if t < 1 or t > proj_len() or not payout_promise():
+    if t < 1 or t > proj_len() or not pu_variant():
         return 0.0
     if t == 1:
         return 0.0
@@ -633,7 +633,7 @@ def pu_benefit(t):
     factor, so the sum of their payouts satisfies the same recursion as the count.
     Death outgo on the strand is then ``pu_benefit(t) x q_m(t)``.
     """
-    if t < 1 or t > proj_len() or not payout_promise():
+    if t < 1 or t > proj_len() or not pu_variant():
         return 0.0
     if t == 1:
         return 0.0
@@ -768,7 +768,7 @@ def benefit_pp(t, kind):
                     + suicide_share * prem_cum_pp(t))                # noqa: F821
         return cover_pp(t)
     if kind == "PAID_UP":
-        if not payout_promise():
+        if not pu_variant():
             return 0.0
         return cover_pp(t) * payments_made(t) / payments_expected()
     raise ValueError("invalid kind")

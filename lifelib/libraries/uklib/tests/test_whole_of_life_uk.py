@@ -308,10 +308,10 @@ def test_no_crossover_where_the_cash_sum_exceeds_total_premiums(whole_of_life):
 # The pro-rata paid-up variant
 
 
-def test_payout_promise_converts_lapses_to_paid_up_after_the_halfway_point(whole_of_life):
+def test_pu_variant_converts_lapses_to_paid_up_after_the_halfway_point(whole_of_life):
     """N_paid >= N_expected/2 - month 120 on the anchor - and PU = SA x N_paid/N_expected."""
     p = whole_of_life.Projection[3]
-    assert p.payout_promise() is True
+    assert p.pu_variant() is True
     assert p.payments_expected() == 240
     assert p.pu_eligible(119) is False
     assert p.pu_eligible(120) is True
@@ -349,7 +349,7 @@ def test_the_paid_up_strand_carries_its_own_benefit_total(whole_of_life):
     assert 2500.0 <= avg <= 5000.0
 
 
-def test_payout_promise_collapses_the_lapse_support(whole_of_life):
+def test_pu_variant_collapses_the_lapse_support(whole_of_life):
     """It converts lapse profit into a retained liability - a variant, not an adjustment."""
     p1, p3 = whole_of_life.Projection[1], whole_of_life.Projection[3]
     assert p3.result_cf()["net_cf"].sum() < p1.result_cf()["net_cf"].sum()
@@ -357,17 +357,17 @@ def test_payout_promise_collapses_the_lapse_support(whole_of_life):
     assert p3.result_cf()["claims_death_pu"].sum() > 0.0
 
 
-def test_payout_promise_needs_a_cessation_date(whole_of_life):
+def test_pu_variant_needs_a_cessation_date(whole_of_life):
     """N_expected is measured to it, so the underwritten cell cannot carry the variant."""
     table = whole_of_life.Data.model_point_table()
-    combined = (table["variant_payout_promise"] & (table["cessation_months"] <= 0))
+    combined = (table["variant_paid_up"] & (table["cessation_months"] <= 0))
     assert not combined.any()
 
 
 def test_the_other_cells_have_no_paid_up_strand(whole_of_life):
     for point_id in (1, 2, 4, 5, 6, 7):
         proj = whole_of_life.Projection[point_id]
-        assert proj.payout_promise() is False
+        assert proj.pu_variant() is False
         assert (proj.result_cf()["pols_pu"] == 0.0).all()
         assert proj.pols_all(50) == proj.pols_if(50)
 

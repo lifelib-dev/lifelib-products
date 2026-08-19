@@ -23,9 +23,9 @@ print("basis = {} x {:.0%}   moratorium = {} months   premiums {}   escalation =
     "cease at month {}".format(cess) if cess else "payable for life",
     proj.escalation()))
 xover = proj.crossover_mth()
-print("crossover = {}   payout promise = {}   accidental multiplier = {:.0f}x".format(
+print("crossover = {}   paid-up variant = {}   accidental multiplier = {:.0f}x".format(
     "month {} ({} years {} months)".format(xover, xover // 12, xover % 12)
-    if xover else "none", proj.payout_promise(), proj.adb_multiplier()))
+    if xover else "none", proj.pu_variant(), proj.adb_multiplier()))
 print()
 rows = [1, 6, 12, 13, 24, 60, 120]
 print(proj.result_cf().loc[[t for t in rows if t <= proj.proj_len()]].round(2).to_string())
