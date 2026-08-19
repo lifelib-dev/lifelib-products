@@ -30,5 +30,6 @@ __pycache__/
 .doccheck/
 .doccheck.log
 
-# Sphinx build output and the mirrored library documents (doc/source/conf.py)
+# Sphinx build output.  The page tree under doc/source/libraries/ is committed source,
+# written by tools/gen_scaffolding.py, not build output.
 doc/build/

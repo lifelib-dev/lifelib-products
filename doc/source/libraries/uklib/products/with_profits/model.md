@@ -1,2 +1,2 @@
-```{include} ../../../../../../uklib/products/with_profits/model.md
+```{include} ../../../../../../lifelib/libraries/uklib/products/with_profits/model.md
 ```

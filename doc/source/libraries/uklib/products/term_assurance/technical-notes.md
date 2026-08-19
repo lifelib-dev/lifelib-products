@@ -1,2 +1,2 @@
-```{include} ../../../../../../uklib/products/term_assurance/technical-notes.md
+```{include} ../../../../../../lifelib/libraries/uklib/products/term_assurance/technical-notes.md
 ```

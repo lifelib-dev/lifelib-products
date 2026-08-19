@@ -1,2 +1,2 @@
-```{include} ../../../../../../uslib/products/fixed_deferred_annuity/sources.md
+```{include} ../../../../../../lifelib/libraries/uslib/products/fixed_deferred_annuity/sources.md
 ```

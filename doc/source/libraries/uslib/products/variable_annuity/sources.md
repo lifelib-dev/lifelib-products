@@ -1,2 +1,2 @@
-```{include} ../../../../../../uslib/products/variable_annuity/sources.md
+```{include} ../../../../../../lifelib/libraries/uslib/products/variable_annuity/sources.md
 ```

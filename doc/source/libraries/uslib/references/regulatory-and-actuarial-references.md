@@ -1,2 +1,2 @@
-```{include} ../../../../../uslib/references/regulatory-and-actuarial-references.md
+```{include} ../../../../../lifelib/libraries/uslib/references/regulatory-and-actuarial-references.md
 ```

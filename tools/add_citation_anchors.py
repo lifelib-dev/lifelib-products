@@ -23,8 +23,8 @@ Idempotent: a heading that already carries a target is left alone.
 
 Usage::
 
-    python tools/add_citation_anchors.py uslib --dry-run
-    python tools/add_citation_anchors.py uslib
+    python tools/add_citation_anchors.py lifelib/libraries/uslib --dry-run
+    python tools/add_citation_anchors.py lifelib/libraries/uslib
 """
 import re
 import sys
@@ -63,7 +63,7 @@ def anchor_lines(text, name_for):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uslib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uslib")
     # The directory *is* the library: uslib/ here, lifelib/libraries/uslib/ after the
     # merge, and uklib/ when the UK section follows.  Deriving the name any other way
     # would make the anchors and module paths disagree with where the files actually are.

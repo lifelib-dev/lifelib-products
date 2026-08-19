@@ -1,2 +1,2 @@
-```{include} ../../../../../../uslib/products/indexed_ul/technical-notes.md
+```{include} ../../../../../../lifelib/libraries/uslib/products/indexed_ul/technical-notes.md
 ```

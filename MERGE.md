@@ -9,7 +9,7 @@ there first; `uklib` was then put through the same phases, and [§9](#what-the-u
 records where the second run contradicted the first.
 
 **Status of the prep:** the documentation builds to **161 pages with 0 warnings** under
-`-n -W --keep-going -E`, **24,771 internal anchor links resolve with 0 broken**, and the two
+`-n -W --keep-going -E`, **16,794 internal anchor links resolve with 0 broken**, and the two
 libraries' **1,576 tests pass**. All three are reproducible here:
 
 ```bash
@@ -17,7 +17,7 @@ python tools/doccheck.py
 ```
 
 ```bash
-python -m pytest uslib/tests uklib/tests -q
+python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests -q
 ```
 
 ```bash
@@ -26,21 +26,23 @@ python tools/doccheck.py --keep && python tools/check_anchors.py doc/build/check
 
 ---
 
-## 1. Move the directories
+## 1. Copy the two library directories
 
 ```bash
-git mv uslib lifelib/libraries/uslib
-git mv uklib lifelib/libraries/uklib
+cp -r lifelib/libraries/uslib lifelib/libraries/uklib <lifelib>/lifelib/libraries/
 ```
 
-That is the whole move. Each library is already self-contained: the models sit beside the
-documents that specify them, the test suite is inside at `<lib>/tests/`, and every internal
-path reference is either relative or library-root-relative, so nothing inside names its own
-location. Each directory is already called by its library name, so these are moves and not
-renames: the anchors, the `automodule` paths and the package names all say `uslib` and
-`uklib` today.
+That is the whole step, and it is a copy with no path rewriting because **the libraries
+already sit at `lifelib/libraries/<lib>/` in this repository too**. That is deliberate: it
+is what lets the page tree in §4 be copied verbatim rather than regenerated on this side.
 
-**Move them together.** `uklib/index.md` links to `../uslib/index.md` and to two explicit
+Each library is self-contained: the models sit beside the documents that specify them, the
+test suite is inside at `<lib>/tests/`, and every internal path reference is either
+relative or library-root-relative, so nothing inside names its own location. Each directory
+is already called by its library name — the anchors, the `automodule` paths and the package
+names all say `uslib` and `uklib` today.
+
+**Take them together.** `uklib/index.md` links to `../uslib/index.md` and to two explicit
 targets on it — `#uslib-one-shape` and `#uslib-shared-vocabulary` — because D8 makes the
 enforced model shape and the settled cells vocabulary rulings for *both* libraries, stated
 once. The relative path holds inside `libraries/`, but only once both are there. Merging
@@ -69,9 +71,10 @@ The nineteen models are serialized with modelx serializer v8. modelx 0.31.1 cann
 them; `read_model` fails outright rather than degrading. This is a hard requirement of the
 merge, not a preference.
 
-## 4. `doc/source/conf.py` — nothing to add
+## 4. `doc/source/conf.py` — nothing to add, one thing to keep
 
-**No configuration change is needed at all.** lifelib already loads `myst_parser`,
+**No configuration change is needed at all**, but one existing workaround becomes load-
+bearing — see the end of this section. lifelib already loads `myst_parser`,
 `sphinx.ext.autodoc`, `autosummary` and `napoleon`, already sets
 `autodoc_member_order = 'bysource'`, and already puts `lifelib/libraries` on `sys.path` —
 which is why the models are importable as `<lib>.products.<slug>.<Model>` and why the
@@ -84,9 +87,10 @@ keep resolving. Nothing is copied and nothing is generated at build time.
 
 Copy `doc/source/libraries/uslib/` (98 files) and `doc/source/libraries/uklib/` (58 files)
 from this repository into lifelib's `doc/source/libraries/` as they stand. All of them come
-from `python tools/gen_scaffolding.py <lib>`, and all of their include paths are relative,
-so they need no edit if the libraries keep their position relative to `doc/`. If they do
-not, regenerate them.
+from `python tools/gen_scaffolding.py lifelib/libraries/<lib>`, and every include path they
+carry is already the one lifelib needs — `../../../../../../lifelib/libraries/uslib/…`,
+counted from the stub by `os.path.relpath` rather than written by hand — because the
+libraries sit at that same path in this repository. Nothing here needs regenerating.
 
 Those trees also carry the autodoc pages — `<Model>.rst` and one `<Space>.rst` per Space,
 following `annuallife/TradLife_A.rst` — which deliberately do **not** live in the libraries:
@@ -100,6 +104,31 @@ but it carries its own deliberately independent `[S#]` numbering, and a second, 
 **Do not enable `myst_enable_extensions = ["dollarmath"]`.** These documents are full of
 currency: `$100,000`, `£100,000`. lifelib's MyST extension set is empty today and must stay
 that way for these libraries to render.
+
+**`_scope_nbsphinx_link_rewriting_to_notebooks()` is now mandatory.** lifelib's `conf.py`
+already carries it (it is defined around line 289 and called from `setup`), and it must
+stay. nbsphinx registers `RewriteLocalLinks` with `app.add_transform`, so the transform
+runs over *every* document rather than only notebooks: given a link that is nothing but a
+fragment, it substitutes the current document's own filename and emits a `std:ref` to
+`/<docname>.md#fragment`, which no explicit MyST target matches. The node is replaced during
+the read phase, so myst-parser's own resolver never sees it.
+
+Every `[R#]`, `[REG-R#]`, `[std]` and `[unverified]` citation is exactly such a bare
+`#fragment` link: **5,300** of them as authored — 2,735 regulatory, 2,229 convention
+markers and 336 inline pinpoint links. (Do not read the 16,794 from the status block as
+this number: that counts every internal anchor link in the built site, most of which are
+heading permalinks and autodoc cross-references, which this transform cannot touch. Nor
+does the built HTML show the exposure, because Sphinx has by then rewritten every
+cross-page citation to a full relative URL — the transform runs during the read phase,
+while they are all still bare fragments.)
+
+They are produced by **link reference definitions**, for which there is no `{ref}`-role
+equivalent, because a shortcut reference is Markdown link syntax by construction. There is
+no version of these documents that avoids the problem.
+
+This repository cannot reproduce the failure: it does not load nbsphinx, so its build is
+clean either way. That is exactly the trap — the check that passes here is not the check
+that matters there.
 
 ## 5. `doc/source/libraries/index.rst` — list them
 
@@ -172,8 +201,8 @@ What follows is everything that did not go to plan, because that is the part wor
 
 ### The tests could not both be collected
 
-`conftest.py` is a name pytest fixes. With two in-library suites, `pytest uslib/tests
-uklib/tests` puts two files called `conftest` on `sys.path`; one wins `sys.modules`, and
+`conftest.py` is a name pytest fixes. With two in-library suites, `pytest lifelib/libraries/uslib/tests
+lifelib/libraries/uklib/tests` puts two files called `conftest` on `sys.path`; one wins `sys.modules`, and
 every `from conftest import LIB` in *either* suite resolves to the other library. It
 surfaced as a `FileNotFoundError` naming a uslib product under `uklib/`. The quiet version
 of the same fault is a suite that locates the wrong library's models and passes.
@@ -188,12 +217,15 @@ tidy-up:** CI runs bare `pytest` from the lifelib root, which collects both.
 CommonMark also has indented code — a four-space run after a blank line — which is how these
 technical notes lay out their recursions, and 47 such blocks carry citation tags.
 
-In uslib every one of them is a bare `[S1]`, inert whether it is processed or not, so the
-gap never showed. In uklib they carry pinpoint cites, and the pinpoint pass is the one that
-*rewrites* text: P5 would have written a literal `(#uklib-pension_annuity-s2)` into a
-rendered formula block. This is the D5 asymmetry the plan predicted — uk has roughly twice
-the pinpoint cites of us despite being half the size — arriving in a form the inventory
-could not show.
+In uslib all but one of them is a bare `[S1]`, inert whether it is processed or not, so the
+gap all but never showed. The exception found it: P5 had already written a literal
+`(#uslib-immediate_annuity-s5)` into an indented block in
+`immediate_annuity/technical-notes.md`, and that page printed the raw markup at the reader
+until the S-citation reversal took it back out. In uklib they carry pinpoint cites
+throughout, and the pinpoint pass is the one that *rewrites* text, so the same fault would
+have landed in a rendered formula block on every product. This is the D5 asymmetry the plan
+predicted — uk has roughly twice the pinpoint cites of us despite being half the size —
+arriving in a form the inventory could not show.
 
 New `tools/mdspans.py` answers where-is-the-code with markdown-it, MyST's own parser, rather
 than a heuristic. Verified byte-neutral on uslib.
@@ -221,7 +253,7 @@ reason the two libraries want to be in one build.
 
 ### Open: uslib has five of those blocks left
 
-`python tools/fix_docstring_lists.py uslib --dry-run` reports **5 blocks, in five
+`python tools/fix_docstring_lists.py lifelib/libraries/uslib --dry-run` reports **5 blocks, in five
 `Projection` docstrings**. **None of them warns**, which is why a build at zero warnings did
 not find them: they are all the silent kind, one term with a wrapped description, which
 docutils parses as a definition list whose *term* is the whole first line — description

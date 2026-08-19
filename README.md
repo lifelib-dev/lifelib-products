@@ -9,29 +9,31 @@ type and country.
 6 individual annuity product types) and United Kingdom (7 product types, including
 pension annuities). **All nineteen products ship an executable reference model** in
 `<library>/products/<product>/`, beside the documents that specify it — twelve in
-`uslib/` and seven in `uklib/`, each one reproducing its own technical notes' worked
-example, asserted cell by cell. Both are lifelib libraries in shape: they render as
-Sphinx page trees, and every citation tag in them is a working link.
+`lifelib/libraries/uslib/` and seven in `lifelib/libraries/uklib/`, each one reproducing
+its own technical notes' worked example, asserted cell by cell. Both are lifelib libraries
+in shape: they sit at the path lifelib puts its libraries on, they render as Sphinx page
+trees, and every regulatory citation in them is a working link.
 
 ---
 
 ## Organization
 
 ```
-<library>/                           uslib/, uklib/ — named for the lifelib library each becomes
-  index.md                           library overview, the models, citation conventions
-  products/
-    <product>/                       each product's documents and its executable model, together
-      product-spec.md                representative product specification
-      technical-notes.md             liability cash flow model: design, assumptions, recursions
-      model.md                       how the model implements the notes, and what is [std]
-      sources.md                     numbered source list for this product's documents
-      run.py  *.csv  <Model>/        the modelx model and its inputs
-  references/
-    regulatory-and-actuarial-references.md
+lifelib/libraries/                   the path lifelib keeps its libraries on, and so does this
+  <library>/                         uslib/, uklib/ — named for the lifelib library each becomes
+    index.md                         library overview, the models, citation conventions
+    products/
+      <product>/                     each product's documents and its executable model, together
+        product-spec.md              representative product specification
+        technical-notes.md           liability cash flow model: design, assumptions, recursions
+        model.md                     how the model implements the notes, and what is [std]
+        sources.md                   numbered source list for this product's documents
+        run.py  *.csv  <Model>/      the modelx model and its inputs
+    references/
+      regulatory-and-actuarial-references.md
                                      curated cross-product bibliography
-  tests/                             one module per model, plus the shared conventions suite
-  _research/                         raw research notes — citation ground truth / provenance
+    tests/                           one module per model, plus the shared conventions suite
+    _research/                       raw research notes — citation ground truth / provenance
 ```
 
 The Sphinx pages are **not** in the library: `doc/source/libraries/<lib>/` holds a one-line
@@ -45,9 +47,10 @@ lifelib-side checklist.
 
 ## Building the documentation
 
-The documents live beside the models they describe rather than under `doc/`, and are
-mirrored into the doc tree at build time by a hook in `doc/source/conf.py` — the same
-arrangement they will have inside lifelib. Any library with an `index.md` is picked up.
+The documents live beside the models they describe rather than under `doc/`. The page tree
+under `doc/source/libraries/<lib>/` is written out by `tools/gen_scaffolding.py`, one
+`{include}` stub per document, so nothing is copied and nothing is generated at build time
+— the same arrangement the documents have inside lifelib, down to the include paths.
 
 ```bash
 cd doc && make html
@@ -65,7 +68,7 @@ That is 161 pages across both libraries, and it should report zero. Run the mode
 with:
 
 ```bash
-python -m pytest uslib/tests uklib/tests -q
+python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests -q
 ```
 
 - **`product-spec.md`** defines a *representative* product: a standardized composite
@@ -84,15 +87,17 @@ python -m pytest uslib/tests uklib/tests -q
 
 ## Citation conventions
 
-Used uniformly across the library:
+Used uniformly across the library. Whether a tag renders as a link says what kind of source
+it is: a **specification** citation stays as bracketed text, an **authority** the model is
+held to is a link you can follow.
 
-| Tag | Meaning |
-|---|---|
-| `[S#]` | Fact taken from a primary product document (brochure, specimen policy, prospectus, producer guide) listed in the product's `sources.md` |
-| `[R#]` | Fact taken from a product-specific regulatory/actuarial reference in the product's `sources.md` |
-| `[REG-R#]` | Fact taken from the cross-product reference library `references/regulatory-and-actuarial-references.md` (frozen R-numbering) |
-| **[std]** | A *standardization introduced for the reference implementation* — a parameter or convention chosen where sources vary, are proprietary, or are silent. Each carries a rationale and, where available, the observed range across insurers |
-| `[unverified]` | A claim from general knowledge or a secondary snippet that could **not** be confirmed against a retrieved document — treat as a to-verify item, not an established fact |
+| Tag | On the page | Meaning |
+|---|---|---|
+| `[S#]` | bracketed text | Fact taken from a primary product document (brochure, specimen policy, prospectus, producer guide) listed in the product's `sources.md` |
+| `[R#]` | link | Fact taken from a product-specific regulatory/actuarial reference in the product's `sources.md` |
+| `[REG-R#]` | link | Fact taken from the cross-product reference library `references/regulatory-and-actuarial-references.md` (frozen R-numbering) |
+| **[std]** | link | A *standardization introduced for the reference implementation* — a parameter or convention chosen where sources vary, are proprietary, or are silent. Each carries a rationale and, where available, the observed range across insurers |
+| `[unverified]` | link | A claim from general knowledge or a secondary snippet that could **not** be confirmed against a retrieved document — treat as a to-verify item, not an established fact |
 
 The hard rule throughout: **every quantitative parameter is either source-tagged or
 marked [std]** — information taken from source materials is never mixed silently with
@@ -120,14 +125,14 @@ Each country section is built in three passes:
 
 | Country | Products | Status |
 |---|---|---|
-| [United States](uslib/index.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs, technical notes and all 12 [models](uslib/index.md#the-models); builds as a library |
-| [United Kingdom](uklib/index.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs, technical notes and all 7 [models](uklib/index.md#the-models); builds as a library |
+| [United States](lifelib/libraries/uslib/index.md) | **Life:** term life, whole life, universal life, indexed UL, variable UL, guaranteed UL<br>**Annuity:** fixed deferred (MYGA), fixed indexed, variable, registered index-linked (RILA), immediate (SPIA), deferred income (DIA/QLAC) | specs, technical notes and all 12 [models](lifelib/libraries/uslib/index.md#the-models); builds as a library |
+| [United Kingdom](lifelib/libraries/uklib/index.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs, technical notes and all 7 [models](lifelib/libraries/uklib/index.md#the-models); builds as a library |
 
 Scope note: both libraries cover individual life insurance and annuities, but the annuity
 coverage differs by market. The U.S. library covers the individual deferred and payout
 annuity families sold at retail; the UK library covers pension annuities, which are the
 dominant UK annuity form and the centrepiece of the Solvency UK matching adjustment — see
-[uklib/index.md](uklib/index.md). Group insurance and institutional business (bulk purchase
+[uklib/index.md](lifelib/libraries/uklib/index.md). Group insurance and institutional business (bulk purchase
 annuities, pension risk transfer) are out of scope in both.
 
 ## Roadmap

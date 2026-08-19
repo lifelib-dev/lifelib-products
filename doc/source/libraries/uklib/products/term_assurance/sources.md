@@ -1,2 +1,2 @@
-```{include} ../../../../../../uklib/products/term_assurance/sources.md
+```{include} ../../../../../../lifelib/libraries/uklib/products/term_assurance/sources.md
 ```

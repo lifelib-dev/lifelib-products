@@ -1,2 +1,2 @@
-```{include} ../../../../../../uslib/products/variable_annuity/technical-notes.md
+```{include} ../../../../../../lifelib/libraries/uslib/products/variable_annuity/technical-notes.md
 ```

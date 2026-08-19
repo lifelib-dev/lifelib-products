@@ -28,7 +28,7 @@ Cells Descriptions
 
 .. autofunction:: adb_multiplier
 
-.. autofunction:: payout_promise
+.. autofunction:: pu_variant
 
 .. autofunction:: pols_if_init
 

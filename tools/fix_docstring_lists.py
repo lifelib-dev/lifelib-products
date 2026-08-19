@@ -37,8 +37,8 @@ renders correctly as the paragraph it is.
 
 Usage::
 
-    python tools/fix_docstring_lists.py uklib --dry-run
-    python tools/fix_docstring_lists.py uklib
+    python tools/fix_docstring_lists.py lifelib/libraries/uklib --dry-run
+    python tools/fix_docstring_lists.py lifelib/libraries/uklib
 """
 import re
 import sys
@@ -104,7 +104,7 @@ def process(text):
 def main(argv):
     dry = "--dry-run" in argv
     args = [a for a in argv if not a.startswith("-")]
-    library = pathlib.Path(args[0] if args else "uklib")
+    library = pathlib.Path(args[0] if args else "lifelib/libraries/uklib")
 
     total = collections.Counter()
     for path in sorted((library / "products").rglob("*.py")):

@@ -7,11 +7,14 @@ reach it, and an inserted ``(#anchor)`` shows up as literal text on the page.
 A regex covers fenced code and stops there.  CommonMark also has **indented** code -- a
 four-space run opening after a blank line -- and this corpus is full of it: the technical
 notes lay their recursions out as indented blocks, and 47 of those blocks carry citation
-tags.  In ``uslib`` every one of them is a bare ``[S1]``, which is inert either way, so the
-gap never showed.  In ``uklib`` they carry pinpoint cites -- ``[S2 §6]``, ``[S1 p11]``,
-``[S5 §7.1.4]`` -- which is the one form that rewrites the text, so there the gap is
-visible corruption.  That asymmetry is USLIB-MERGE-PLAN.md's own warning about D5: uk has
-roughly twice the pinpoint cites of us despite being half the size.
+tags.  In ``uslib`` all but one of them is a bare ``[S1]``, which is inert either way, so
+the gap all but never showed: the exception is ``immediate_annuity/technical-notes.md``,
+where P5 rewrote a pinpoint inside an indented block and the page printed the raw
+``](#uslib-immediate_annuity-s5)`` at the reader until it was reverted.  In ``uklib`` they
+carry pinpoint cites throughout -- ``[S2 §6]``, ``[S1 p11]``, ``[S5 §7.1.4]`` -- which is
+the one form that rewrites the text, so there the gap is visible corruption at scale.  That
+asymmetry is USLIB-MERGE-PLAN.md's own warning about D5: uk has roughly twice the pinpoint
+cites of us despite being half the size.
 
 Telling indented code from an indented list continuation is not a heuristic worth writing
 by hand -- ``- item`` followed by a blank line and four spaces is a paragraph in that item,
