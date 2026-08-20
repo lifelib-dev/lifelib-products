@@ -820,15 +820,28 @@ def test_rounded_lines_do_not_re_add(jp_cancer_anchor):
 # Roll-forward identities and the ledger checks
 
 
-def test_the_check_cells_hold_on_every_shipped_model_point(cancer):
-    """All seven identities close on all eight model points, not only the anchor."""
+def test_the_seven_check_cells_are_published_with_their_residuals(cancer):
+    """These seven identities, and no others, each with its per-month residual beside it.
+
+    That they *close*, on all eight model points, is asserted in
+    ``test_model_conventions_jp.py``: its sweep discovers every ``check_*`` generically and
+    calls it on every model point of every model in the library. Running them again here,
+    on a second instance of the same model, meant a second cold projection of the whole
+    table to reach a verdict that had already been reached.
+
+    What generic discovery cannot say is *which* checks ought to exist — a check that
+    disappears simply stops being discovered, and the sweep passes. That is the statement
+    left here.
+    """
     checks = ("check_pols_roll_fwd", "check_cancer_roll_fwd", "check_cycle_ledger",
               "check_insitu_ledger", "check_treat_cap", "check_adv_cap",
               "check_net_cf")
-    for point_id in cancer.Data.model_point_table().index:
-        p = cancer.Projection[point_id]
-        for check in checks:
-            assert getattr(p, check)() is True, (point_id, check)
+    cells = set(cancer.Projection.cells)
+    published = {c for c in cells
+                 if c.startswith("check_") and not c.endswith("_resid")}
+    assert published == set(checks)
+    for check in checks:
+        assert check + "_resid" in cells, check
 
 
 def test_the_in_force_roll_forward_names_every_decrement(jp_cancer_anchor):
@@ -1281,22 +1294,20 @@ def test_result_cf_publishes_the_notes_columns(jp_cancer_anchor):
     assert "liability_cf" not in set(jp_cancer_anchor.cells)     # one stream, one sign
 
 
-def test_every_model_point_projects_and_carries_its_own_variant(cancer):
+def test_the_model_point_table_carries_its_eight_variants(cancer):
     """Eight points, each exercising something the anchor cell does not.
 
-    The table documents a capability only if every row of it projects, so the variants are
-    listed here as well as run: the female limb and the 118 terminal age, the 定期 flag with
-    conditioned repeats, the ¥5,000 course with no 先進医療 rider and a cap that binds, both
-    ends of the 20-75 issue-age range, 65歳払済, a no-waiver design and the discharge rider.
+    The variants are listed here as well as shipped: the female limb and the 118 terminal
+    age, the 定期 flag with conditioned repeats, the ¥5,000 course with no 先進医療 rider and a
+    cap that binds, both ends of the 20-75 issue-age range, 65歳払済, a no-waiver design and
+    the discharge rider.
+
+    That every row of the table *projects* — a clean frame spanning ``proj_len()``, no NaN,
+    ``pols_if`` never negative — is asserted in ``test_model_conventions_jp.py``, over one
+    instance of the model rather than a second one built here.
     """
     table = cancer.Data.model_point_table()
     assert len(table) == 8
-    for point_id in table.index:
-        p = cancer.Projection[point_id]
-        df = p.result_cf()
-        assert len(df) == p.proj_len()
-        assert df.notna().all().all(), point_id
-        assert (df["pols_if"] >= -1e-15).all(), point_id
     assert set(table["sex"]) == {"M", "F"}
     assert set(table["chassis"]) == {"shushin", "teiki"}
     assert set(table["prem_period"]) == {"whole_life", "to_65"}

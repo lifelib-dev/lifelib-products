@@ -670,21 +670,28 @@ def test_pitfall_reserve_pp_is_not_cv_pp(whole_life):
 # Roll-forward identities, on every shipped model point
 
 
-def test_every_check_cells_is_true_on_every_model_point(whole_life):
-    """The six roll-forward identities, on all ten points.
+def test_six_check_cells_are_published_each_with_its_residual(whole_life):
+    """Six roll-forward identities, each with the signed residual beside it.
 
     ``check_*`` takes no argument and returns one bool over all t, which is the
     library-wide form; the signed residual of the year that failed lives at
     ``check_*_resid(t)``.
+
+    That they are *true*, on all ten points, is asserted in
+    ``test_model_conventions_jp.py``: its sweep discovers every ``check_*`` generically and
+    calls it on every model point of every model in the library. Running them again here,
+    on a second instance of the same model, meant a second cold projection of the whole
+    table to reach a verdict already reached.
+
+    Generic discovery cannot notice a check that has *gone*: it simply stops being
+    discovered. Counting them is the statement left here.
     """
-    checks = [c for c in whole_life.Projection.cells
+    cells = set(whole_life.Projection.cells)
+    checks = [c for c in cells
               if c.startswith("check_") and not c.endswith("_resid")]
     assert len(checks) == 6
-    for point_id in whole_life.Data.model_point_table().index:
-        proj = whole_life.Projection[point_id]
-        for name in checks:
-            value = getattr(proj, name)()
-            assert value is True, f"point {point_id}: {name}() is False"
+    for name in checks:
+        assert name + "_resid" in cells, name
 
 
 def test_inforce_rollforward_closes_on_every_model_point(whole_life):
@@ -1218,6 +1225,7 @@ def test_the_model_point_premiums_follow_the_documented_rule(whole_life):
     assert gross_to_net == pytest.approx(0.990608, abs=5e-7)
 
     table = whole_life.Data.model_point_table()
+    assert len(table) == 10
     priced_ordinary = set()
     for point_id in table.index:
         p = whole_life.Projection[point_id]
@@ -1238,19 +1246,6 @@ def test_the_model_point_premiums_follow_the_documented_rule(whole_life):
     assert whole_life.Projection[2].premium_pp() == 209032.0
     assert (anchor.premium_pp() / whole_life.Projection[2].premium_pp()
             == pytest.approx(LOW_CV_PREMIUM_RATIO, abs=5e-6))
-
-
-def test_every_model_point_projects(whole_life):
-    """No model point may sit in the table that the input tables cannot serve."""
-    table = whole_life.Data.model_point_table()
-    assert len(table) == 10
-    for point_id in table.index:
-        proj = whole_life.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) == proj.proj_len()
-        assert df.notna().all().all()
-        assert (df["pols_if"] >= 0.0).all()
-        assert df["pols_if"].iloc[0] == 1.0
 
 
 def test_round_trip_is_stable(tmp_path):

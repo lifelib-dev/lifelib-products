@@ -691,23 +691,29 @@ def test_pitfall_the_table_is_read_at_the_attained_age_on_the_death_basis(
 # Roll-forward identities and the check_* cells, on every shipped model point
 
 
-def test_every_check_cells_holds_on_every_model_point(income_guarantee):
-    """All seven identity checks return True on all nine points, as the protocol requires.
+def test_the_seven_check_cells_are_published_with_their_residuals(income_guarantee):
+    """These seven identities, and no others, each with its per-month residual beside it.
 
-    ``check_*`` takes no argument and returns a bool over all t; the per-t signed
-    residual lives at ``check_*_resid(t)``.  Running them over every point is what stops
-    an identity from holding on the anchor cell alone.
+    ``check_*`` takes no argument and returns a bool over all t; the per-t signed residual
+    lives at ``check_*_resid(t)``.
+
+    That they *hold*, on all nine points, is asserted in ``test_model_conventions_jp.py``:
+    its sweep discovers every ``check_*`` generically and calls it on every model point of
+    every model in the library, which is what stops an identity from holding on the anchor
+    cell alone. Running them again here, on a second instance of the same model, meant a
+    second cold projection of the whole table to reach a verdict already reached.
+
+    What generic discovery cannot say is which checks ought to exist — a check that
+    disappears simply stops being discovered — so that is the statement left here.
     """
-    checks = sorted(c for c in income_guarantee.Projection.cells
+    cells = set(income_guarantee.Projection.cells)
+    checks = sorted(c for c in cells
                     if c.startswith("check_") and not c.endswith("_resid"))
     assert checks == ["check_annuity_ledger", "check_annuity_total",
                       "check_class_factor_norm", "check_expired_cover",
                       "check_net_cf", "check_pay_count", "check_pols_roll_fwd"]
-    for point_id in income_guarantee.Data.model_point_table().index:
-        proj = income_guarantee.Projection[point_id]
-        for check in checks:
-            value = getattr(proj, check)()
-            assert value is True, f"point {point_id}: {check}() is False"
+    for check in checks:
+        assert check + "_resid" in cells, check
 
 
 def test_the_inforce_rollforward_closes_on_every_model_point(income_guarantee):
@@ -1177,17 +1183,6 @@ def test_net_cf_carries_the_notes_own_income_positive_sign(income_guarantee):
     assert a.net_cf(1) == pytest.approx(
         a.premiums(1) - a.claims(1) - a.claim_expenses(1) - a.annuity_expenses(1)
         - a.expenses(1) - a.commissions(1), abs=1e-9)
-
-
-def test_every_model_point_projects_without_nan(income_guarantee):
-    """No model point may sit in the table that the input tables cannot serve."""
-    for point_id in income_guarantee.Data.model_point_table().index:
-        proj = income_guarantee.Projection[point_id]
-        df = proj.result_cf()
-        assert len(df) == proj.proj_len()
-        assert df.notna().all().all()
-        assert (df["pols_if"] >= 0.0).all()
-        assert (df["annuities_if"] >= 0.0).all()
 
 
 def test_the_inputs_live_beside_the_model_and_mark_their_provenance():

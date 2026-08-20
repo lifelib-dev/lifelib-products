@@ -87,6 +87,50 @@ MODELS = {
 }
 
 
+# name -> the exact set of input files a full sweep of the shipped model point table reads.
+#
+# ``test_model_conventions_jp.py`` asserts this set, not merely that whatever was read was
+# read once.  Counting only the files that happen to be read makes the check self-
+# fulfilling: a file that stops being read drops out of the counter, and the read-once
+# assertion then passes over less coverage rather than failing.  Registering the set is
+# what turns "each file is read once per model" into a statement about *which* files.
+#
+# It also fixes how far the sweep has to run.  Eight of the nine models read every file
+# they need on the very first model point, but ``FXWholeLife_JP_S`` does not:
+# ``fx_path_table.csv`` is first read at model point 7 of 8, because the 為替 path only
+# differs from the flat TTM there.  A check over a truncated table would drop it silently.
+INPUT_FILES = {
+    "Annuity_JP_A": {
+        "commute_factor_table.csv", "expense_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_anchor_table.csv", "mort_table.csv",
+        "pricing_table.csv"},
+    "Cancer_JP_S": {
+        "hosp_stay_table.csv", "incidence_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "sex_factor_table.csv",
+        "survival_table.csv"},
+    "Endowment_JP_A": {
+        "benefit_schedule_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv"},
+    "FXWholeLife_JP_S": {
+        "charge_table.csv", "fx_path_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv"},
+    "IncomeTerm_JP_S": {
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "rate_class_table.csv"},
+    "LTC_JP_S": {
+        "grade_share_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv", "prevalence_table.csv"},
+    "Medical_JP_S": {
+        "incidence_table.csv", "lapse_table.csv", "los_table.csv",
+        "model_point_table.csv", "mort_table.csv"},
+    "Term_JP_A": {
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "prem_rate_table.csv"},
+    "WholeLife_JP_A": {
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+}
+
+
 def model_path(name):
     """Absolute path to a model folder, from its entry in :data:`MODELS`."""
     return LIB / MODELS[name][0]

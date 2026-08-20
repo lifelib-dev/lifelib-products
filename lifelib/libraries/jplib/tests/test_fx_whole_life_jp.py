@@ -28,6 +28,7 @@ identically — so *zero* is the assertion, and a non-zero value there is a bug 
 refinement.
 """
 import modelx as mx
+import pandas as pd
 import pytest
 from modelx.core.errors import FormulaError
 
@@ -36,6 +37,14 @@ from jp_registry import model_path
 # The model folder, located through the registry rather than by walking the tree, so that
 # a copy made by ``lifelib.create()`` tests *that copy's* model.
 MODEL_DIR = model_path("FXWholeLife_JP_S")
+
+# Every model point the CSV ships, read at collection time because a parametrization has to
+# be built before any fixture exists.  This was written out as ``[1, 2, 3, 4, 5, 6, 7, 8]``
+# in three places, which matched the file and would have gone on matching it silently: an
+# added model point would simply not have been parametrized over, and the tests would have
+# kept passing over less of the table.
+POINT_IDS = list(
+    pd.read_csv(MODEL_DIR.parent / "model_point_table.csv")["point_id"])
 
 
 # Every entry of the notes' "Known modeling pitfalls" list, and the test that would fail
@@ -1278,7 +1287,7 @@ def test_surrenders_are_taken_from_the_survivors_of_mortality(fx_whole_life):
         assert p.pols_lapse(t) < p.pols_if(t) * p.lapse_rate_mth(t)
 
 
-@pytest.mark.parametrize("point_id", [1, 2, 3, 4, 5, 6, 7, 8])
+@pytest.mark.parametrize("point_id", POINT_IDS)
 def test_the_in_force_roll_forward_closes_month_by_month(fx_whole_life, point_id):
     """``l(t) - l(t+1) = D(t) + S(t) + conv(t)`` in every month of every model point.
 
@@ -1319,8 +1328,6 @@ def test_the_shipped_mortality_table_marks_its_own_provenance(fx_whole_life):
     is a construction anchored to the individual rates the worked example quotes.  Marking
     each row is what stops the file being mistaken for the published table.
     """
-    import pandas as pd
-
     assert fx_whole_life.Data.input_dir() == MODEL_DIR.parent
     table = pd.read_csv(MODEL_DIR.parent / fx_whole_life.Data.mort_table_file)
     assert list(table.columns) == ["sex", "age", "mort_rate", "provenance"]
@@ -1358,35 +1365,34 @@ def test_an_issue_age_the_shipped_table_cannot_serve_is_not_priced_silently(
 
 
 # ---------------------------------------------------------------------------
-# The check cells, on every shipped model point
+# The check cells the model publishes, and the shape of what it publishes
 
 
-@pytest.mark.parametrize("point_id", [1, 2, 3, 4, 5, 6, 7, 8])
-def test_every_check_cells_holds_on_every_model_point(fx_whole_life, point_id):
-    """The five identities, on all eight points.
+def test_the_five_check_cells_are_published_with_their_residuals(fx_whole_life):
+    """These five identities, and no others, each with its per-month residual beside it.
 
     ``check_pols_roll_fwd`` closes the in-force roll-forward and the whole-run exits;
     ``check_av_roll_fwd`` the 積立金 recursion; ``check_cv_ledger`` the surrender benefit
     against ``CV(t+1)``; ``check_net_cf`` that no account-value charge leaks into the
     cash flow; ``check_fx_ledger`` the three-rate yen translation.
+
+    That they *close*, on all eight model points, is asserted in
+    ``test_model_conventions_jp.py``: its sweep discovers every ``check_*`` generically and
+    calls it on every model point of every model in the library, so a second evaluation
+    here meant a second cold projection to reach a verdict already reached. What generic
+    discovery cannot say is which checks ought to exist — a check that disappears simply
+    stops being discovered — so that is what is asserted here. The same sweep covers this
+    model's frame: non-empty, spanning ``proj_len()``, indexed by ``t``, free of NaN and
+    publishing one column vocabulary across all eight points.
     """
-    p = fx_whole_life.Projection[point_id]
-    assert p.check_pols_roll_fwd() is True
-    assert p.check_av_roll_fwd() is True
-    assert p.check_cv_ledger() is True
-    assert p.check_net_cf() is True
-    assert p.check_fx_ledger() is True
-
-
-@pytest.mark.parametrize("point_id", [1, 2, 3, 4, 5, 6, 7, 8])
-def test_every_model_point_projects_without_nan(fx_whole_life, point_id):
-    """No model point may sit in the table that the shipped tables cannot serve."""
-    df = fx_whole_life.Projection[point_id].result_cf()
-    assert len(df) > 0
-    assert df.index.name == "t"
-    assert df.notna().all().all()
-    assert list(df.columns)[0] == "pols_if"
-    assert "net_cf" in df.columns
+    checks = ("check_pols_roll_fwd", "check_av_roll_fwd", "check_cv_ledger",
+              "check_net_cf", "check_fx_ledger")
+    cells = set(fx_whole_life.Projection.cells)
+    published = {c for c in cells
+                 if c.startswith("check_") and not c.endswith("_resid")}
+    assert published == set(checks)
+    for check in checks:
+        assert check + "_resid" in cells, check
 
 
 def test_the_result_columns_are_the_notes_columns(fx_whole_life):
@@ -1439,8 +1445,6 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     in as a same-schema CSV, with no formula change.  Doubling the 維持費率 here must move
     the 積立金 and nothing about the model's structure.
     """
-    import pandas as pd
-
     src = MODEL_DIR.parent / "charge_table.csv"
     doubled = pd.read_csv(src, index_col=["shape", "item"])
     doubled.loc[("LEVEL", "maint_rate"), "value"] *= 2.0
