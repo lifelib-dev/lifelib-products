@@ -1,4 +1,4 @@
-# Merging `uslib/` and `uklib/` into lifelib
+# Merging `uslib/`, `uklib/` and `jplib/` into lifelib
 
 Everything in this repository is ready. This file is the lifelib-side half: the steps that
 cannot be done here because they touch lifelib's own files.
@@ -6,18 +6,20 @@ cannot be done here because they touch lifelib's own files.
 The design decisions behind each step are in [USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md);
 this is the checklist, not the argument. The plan was written for `uslib` and executed
 there first; `uklib` was then put through the same phases, and [§9](#what-the-uklib-run-changed)
-records where the second run contradicted the first.
+records where the second run contradicted the first. `jplib` is the third, and
+[§10](#what-the-jplib-run-changed) records what the third run changed — less than the second,
+which is the point of having parameterized the tooling.
 
-**Status of the prep:** the documentation builds to **161 pages with 0 warnings** under
-`-n -W --keep-going -E`, **16,794 internal anchor links resolve with 0 broken**, and the two
-libraries' **1,576 tests pass**. All three are reproducible here:
+**Status of the prep:** the documentation builds to **235 pages with 0 warnings** under
+`-n -W --keep-going -E`, **25,075 internal anchor links resolve with 0 broken**, and the three
+libraries' **2,453 tests pass** (37 skipped). All three are reproducible here:
 
 ```bash
 python tools/doccheck.py
 ```
 
 ```bash
-python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests -q
+python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests lifelib/libraries/jplib/tests -q
 ```
 
 ```bash
@@ -26,10 +28,10 @@ python tools/doccheck.py --keep && python tools/check_anchors.py doc/build/check
 
 ---
 
-## 1. Copy the two library directories
+## 1. Copy the three library directories
 
 ```bash
-cp -r lifelib/libraries/uslib lifelib/libraries/uklib <lifelib>/lifelib/libraries/
+cp -r lifelib/libraries/uslib lifelib/libraries/uklib lifelib/libraries/jplib <lifelib>/lifelib/libraries/
 ```
 
 That is the whole step, and it is a copy with no path rewriting because **the libraries
@@ -40,13 +42,14 @@ Each library is self-contained: the models sit beside the documents that specify
 test suite is inside at `<lib>/tests/`, and every internal path reference is either
 relative or library-root-relative, so nothing inside names its own location. Each directory
 is already called by its library name — the anchors, the `automodule` paths and the package
-names all say `uslib` and `uklib` today.
+names all say `uslib`, `uklib` and `jplib` today.
 
 **Take them together.** `uklib/index.md` links to `../uslib/index.md` and to two explicit
 targets on it — `#uslib-one-shape` and `#uslib-shared-vocabulary` — because D8 makes the
-enforced model shape and the settled cells vocabulary rulings for *both* libraries, stated
-once. The relative path holds inside `libraries/`, but only once both are there. Merging
-`uklib` alone would break four cross-references and fail the `-n` build.
+enforced model shape and the settled cells vocabulary rulings for *all* the libraries, stated
+once. `jplib/index.md` links to both siblings and to the same two targets. The relative paths
+hold inside `libraries/`, but only once all three are there. Merging any one of them alone
+breaks cross-references and fails the `-n` build.
 
 ## 2. `setup.py` — ship the markdown
 
@@ -67,7 +70,7 @@ tests travel as they are.
 install_requires=['modelx>=0.31.0']       # -> 'modelx>=0.32'
 ```
 
-The nineteen models are serialized with modelx serializer v8. modelx 0.31.1 cannot read
+The twenty-eight models are serialized with modelx serializer v8. modelx 0.31.1 cannot read
 them; `read_model` fails outright rather than degrading. This is a hard requirement of the
 merge, not a preference.
 
@@ -85,8 +88,9 @@ page under `doc/source/libraries/<lib>/` is a one-line `{include}` of the corres
 library document, and the page tree mirrors the library tree so the authored relative links
 keep resolving. Nothing is copied and nothing is generated at build time.
 
-Copy `doc/source/libraries/uslib/` (98 files) and `doc/source/libraries/uklib/` (58 files)
-from this repository into lifelib's `doc/source/libraries/` as they stand. All of them come
+Copy `doc/source/libraries/uslib/` (98 files), `doc/source/libraries/uklib/` (58 files) and
+`doc/source/libraries/jplib/` (74 files) from this repository into lifelib's
+`doc/source/libraries/` as they stand. All of them come
 from `python tools/gen_scaffolding.py lifelib/libraries/<lib>`, and every include path they
 carry is already the one lifelib needs — `../../../../../../lifelib/libraries/uslib/…`,
 counted from the stub by `os.path.relpath` rather than written by hand — because the
@@ -102,7 +106,9 @@ but it carries its own deliberately independent `[S#]` numbering, and a second, 
 `S1` in front of a reader is worse than not publishing it.
 
 **Do not enable `myst_enable_extensions = ["dollarmath"]`.** These documents are full of
-currency: `$100,000`, `£100,000`. lifelib's MyST extension set is empty today and must stay
+currency: `$100,000`, `£100,000`, `¥10,000,000` — and `jplib`'s foreign-currency whole life
+adds seventy more dollar signs of its own, as `US$100,000`, in a library where every other
+figure is yen. lifelib's MyST extension set is empty today and must stay
 that way for these libraries to render.
 
 **`_scope_nbsphinx_link_rewriting_to_notebooks()` is now mandatory.** lifelib's `conf.py`
@@ -114,8 +120,9 @@ fragment, it substitutes the current document's own filename and emits a `std:re
 the read phase, so myst-parser's own resolver never sees it.
 
 Every `[R#]`, `[REG-R#]`, `[std]` and `[unverified]` citation is exactly such a bare
-`#fragment` link: **5,300** of them as authored — 2,735 regulatory, 2,229 convention
-markers and 336 inline pinpoint links. (Do not read the 16,794 from the status block as
+`#fragment` link: **8,572** of them as authored across the three libraries — 4,789
+regulatory, 3,451 convention markers and 332 inline pinpoint links, recounted on the current
+corpus. (Do not read the 25,075 from the status block as
 this number: that counts every internal anchor link in the built site, most of which are
 heading permalinks and autodoc cross-references, which this transform cannot touch. Nor
 does the built HTML show the exposure, because Sphinx has by then rewritten every
@@ -137,13 +144,15 @@ Two rows in the table:
 ```
    :doc:`uslib/index`                              U.S. life and annuity reference products and models
    :doc:`uklib/index`                              UK life and pension annuity reference products and models
+   :doc:`jplib/index`                              Japan life, third-sector and annuity reference products and models
 ```
 
-and two entries in the toctree:
+and three entries in the toctree:
 
 ```
    uslib/index.md
    uklib/index.md
+   jplib/index.md
 ```
 
 ## 6. `.gitignore` — nothing to add
@@ -154,20 +163,22 @@ what lifelib already ignores.
 ## 7. Verify
 
 ```bash
-python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests -q
+python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests lifelib/libraries/jplib/tests -q
 ```
 
 CI needs no change: `.github/workflows/tests.yml` and `tox.ini` both run bare `pytest` from
 the repository root, which already collects `ifrs17a`'s in-library tests and will collect
 these the same way. **That is precisely why §9's first item matters** — a bare `pytest` at
-the lifelib root collects both suites in one process.
+the lifelib root collects all three suites in one process, and the registry split is what
+keeps them apart.
 
 Then build the docs and confirm the pages are clean, with
 `sphinx-build -n -W --keep-going -E`; **the `-n` matters**.
 Sphinx does not warn about an unresolved `:func:`/`:mod:` role by default — it drops the
 role and renders plain text — so a build without nitpicky mode cannot tell you whether the
 cross-references survived. During the uslib prep it was the only thing that revealed 38
-silently dead references; during the uklib prep, 63 problems of which one warned.
+silently dead references; during the uklib prep, 63 problems of which one warned; during the jplib prep, two, both
+inside model docstrings and neither visible without it.
 
 Finally, confirm the links **arrive** rather than merely exist:
 
@@ -314,3 +325,86 @@ The same thing happened to `uklib/index.md` during its own P6 and was caught by
 - **Cross-document target links need no path.** `[text](../uslib/index.md#uslib-one-shape)`
   makes MyST look for a local *id* in that document rather than a label, and an explicit
   `(target)=` does not match. Bare `#target` resolves project-wide.
+
+---
+
+## 10. What the jplib run changed
+
+The `uklib` run tested whether the plan's conventions were conventions; the `jplib` run tests
+whether the *tooling* is. Mostly it is: every citation tool ran unmodified and every count came
+out of them without an argument. What follows is the part that did not.
+
+### The one map that served two libraries could not serve three
+
+`gen_scaffolding.py`'s `TITLES` was keyed by slug, under a comment recording the assumption:
+"Slugs are unique across libraries, so one map serves both." Japan ends that. It sells a 定期保険
+and a 終身保険, the honest slugs for them are `term_life` and `whole_life`, and `uslib` already
+uses both for different products. `TITLES` is now keyed by `(library, slug)` — `main` had the
+library name all along, derived from its argument. Verified byte-neutral: `--dry-run` reports
+**0 files** on both existing libraries.
+
+This is the first place the two-library design leaked an assumption that only a third library
+could falsify, and it is worth expecting others of the same shape.
+
+### The registry split generalized without widening
+
+§9's first item was written for two in-library suites. Three is the same fault with more ways to
+land, and the fix needed no change: `jp_registry.py` beside `us_registry.py` and
+`uk_registry.py`, with `conftest.py` re-exporting for its fixtures. Worth stating because the
+hazard grows with each *library*, not with each product, and CI runs a bare `pytest` from the
+lifelib root.
+
+### Japanese text found a tool bug, in the dangerous direction
+
+docutils lays an RST simple table out by **display column**, where an East Asian wide or
+fullwidth character occupies two. `tools/fix_docstring_tables.py` measured in characters. On two
+ASCII libraries the measures coincide and the tool was correct; on `jplib` it read a correctly
+laid out table as broken, and re-laying it would have produced one that really was — a clean
+build turned into `Malformed table`, which is the wrong direction for a repair tool to fail in.
+It now measures display width throughout (`width`, `at_column`, `between_columns`) and reports
+**0 tables to re-lay on all three libraries**. This is the only tool change the `jplib` run
+required.
+
+The build found the converse independently: two `Projection` docstrings really did have a cell
+wider than its rule, both caught by `-n -W` and fixed by splitting the row across two. Only the
+build is the authority here — a character-counting checker flags the wrong ones in both
+directions.
+
+### `run.py` output stays ASCII
+
+Japanese in a document is fine; the pages are UTF-8 and the docstrings render. Japanese on a
+Windows console is not portable across code pages, so every `jplib` `run.py` prints `JPY` and
+`USD` rather than currency signs, and romanizes or glosses what it labels. Asserted by running
+all nine and decoding each one's output as ASCII.
+
+### Model short names had to be chosen rather than borrowed
+
+`uslib` takes `MYGA`, `RILA`, `SPIA` and `ULSG` from the trade's own usage, and `uklib` takes
+`CI`, `IP`, `WOL`, `ULB`, `WP` and `PA` the same way. Japanese products have no Latin short form
+in circulation, so there was nothing to borrow: `jplib`'s names are short English descriptors —
+`Term_JP_A`, `IncomeTerm_JP_S`, `WholeLife_JP_A`, `Endowment_JP_A`, `Medical_JP_S`,
+`Cancer_JP_S`, `LTC_JP_S`, `Annuity_JP_A`, `FXWholeLife_JP_S`. `jp_registry.py` records that they
+are chosen and why, so the next library does not re-litigate it, and it names the two that could
+be misread: `IncomeTerm_JP_S` is 収入保障保険, a **death** benefit paid as an income and not
+`uklib`'s disability cover, and `LTC_JP_S` is private cover written on top of the public
+公的介護保険 scheme rather than that scheme.
+
+### The rest ran unmodified
+
+`separate_citations.py` reported **0** adjacencies — the drafting pass wrote `[S1] [S6]`
+throughout rather than needing the repair afterwards; `add_citation_anchors.py` placed **230**
+product entries and **47** reference-library entries; `gen_citation_links.py` wrote **944**
+definitions across 38 documents and checked **365** source tags with none unresolved;
+`fix_doc_roles.py`, `fix_docstring_lists.py`, `unlink_spec_citations.py` and `md_lint.py` each
+reported **0**. That is what D8's parameterization was for.
+
+### One library-level fact that is not a tooling note
+
+`uklib`'s decrement bases are all `[std]` proxies because the CMI tables cannot be *read* without
+a subscription. Japan's statutory tables can be read by anyone, free, at a stable public URL —
+but the publisher's terms forbid redistribution. So `jplib` cites them, quotes the individual
+rates its worked examples use, and ships `[std]` constructions anchored to them. The distinction
+matters at merge time because it is the one claim in `jplib/index.md` that a reader is most
+likely to over-read, and every product document, `model.md` and `Data` docstring is written to
+state it the same way.
+

@@ -14,12 +14,15 @@ which Sphinx builds from the models' own docstrings.
 
    libraries/uslib/index
    libraries/uklib/index
+   libraries/jplib/index
 
 The **uslib** library covers twelve U.S. individual life and annuity product types; the
-**uklib** library covers seven UK ones, including the pension annuity. Each product
-directory holds its representative specification, the liability cash flow model derived
-from it, the modelx model itself, the cells reference generated from that model's
-docstrings, and the source list every citation resolves against.
+**uklib** library covers seven UK ones, including the pension annuity; the **jplib**
+library covers nine Japanese ones, three of which are 第三分野 (third-sector) health
+products — medical, cancer and nursing care — which is what Japanese households buy most.
+Each product directory holds its representative specification, the liability cash flow
+model derived from it, the modelx model itself, the cells reference generated from that
+model's docstrings, and the source list every citation resolves against.
 
 .. _create-a-project:
 
@@ -31,12 +34,13 @@ introduced. It is defined here so the library's own pages resolve while they sti
 this repository, and it does not travel with them: this page stays behind at the merge.
 
 Until then, each library is simply a directory — clone the repository and work in
-``lifelib/libraries/uslib/`` or ``lifelib/libraries/uklib/`` directly, which is where
-lifelib itself keeps them. Each model reads its inputs from its own product directory, so
-it runs in place::
+``lifelib/libraries/uslib/``, ``lifelib/libraries/uklib/`` or
+``lifelib/libraries/jplib/`` directly, which is where lifelib itself keeps them. Each model
+reads its inputs from its own product directory, so it runs in place::
 
     python lifelib/libraries/uslib/products/term_life/run.py
     python lifelib/libraries/uklib/products/term_assurance/run.py
+    python lifelib/libraries/jplib/products/term_life/run.py
 
 .. note::
 

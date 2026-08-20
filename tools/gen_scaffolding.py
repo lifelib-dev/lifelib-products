@@ -39,30 +39,48 @@ import pathlib
 
 # The product's display name.  This is editorial and not derivable from the folder --
 # "registered_index_linked_annuity" is unusable and the industry says RILA -- so it is
-# written down once, exactly as the model-name registry is written down in conftest.py.
+# written down once, exactly as the model-name registry is written down in each library's
+# test registry.
+#
+# Keyed by (library, slug) rather than by slug alone.  Slugs were unique across the first
+# two libraries and a single flat map served both; jplib ends that, because Japan sells a
+# 定期保険 and a 終身保険 and the honest slugs for them are `term_life` and `whole_life`,
+# which uslib already uses for different products.  The library name was available here all
+# along -- `main` derives it from the argument -- so the key carries it.
 TITLES = {
-    "term_life": "Level Premium Term Life",
-    "whole_life": "Whole Life",
-    "universal_life": "Universal Life (current assumption)",
-    "indexed_ul": "Indexed Universal Life (IUL)",
-    "variable_ul": "Variable Universal Life (VUL)",
-    "guaranteed_ul": "Guaranteed Universal Life (ULSG)",
-    "fixed_deferred_annuity": "Fixed Deferred Annuity (MYGA)",
-    "fixed_indexed_annuity":
+    ("uslib", "term_life"): "Level Premium Term Life",
+    ("uslib", "whole_life"): "Whole Life",
+    ("uslib", "universal_life"): "Universal Life (current assumption)",
+    ("uslib", "indexed_ul"): "Indexed Universal Life (IUL)",
+    ("uslib", "variable_ul"): "Variable Universal Life (VUL)",
+    ("uslib", "guaranteed_ul"): "Guaranteed Universal Life (ULSG)",
+    ("uslib", "fixed_deferred_annuity"): "Fixed Deferred Annuity (MYGA)",
+    ("uslib", "fixed_indexed_annuity"):
         "Fixed Indexed Annuity (FIA) with Guaranteed Lifetime Withdrawal Benefit",
-    "variable_annuity": "Variable Annuity with Living and Death Benefit Guarantees",
-    "registered_index_linked_annuity": "Registered Index-Linked Annuity (RILA)",
-    "immediate_annuity": "Single Premium Immediate Annuity (SPIA)",
-    "deferred_income_annuity":
+    ("uslib", "variable_annuity"): "Variable Annuity with Living and Death Benefit Guarantees",
+    ("uslib", "registered_index_linked_annuity"): "Registered Index-Linked Annuity (RILA)",
+    ("uslib", "immediate_annuity"): "Single Premium Immediate Annuity (SPIA)",
+    ("uslib", "deferred_income_annuity"):
         "Deferred Income Annuity (DIA) and Qualified Longevity Annuity Contract (QLAC)",
-    # uklib.  Slugs are unique across libraries, so one map serves both.
-    "term_assurance": "Term Assurance",
-    "critical_illness": "Critical Illness Cover (CI)",
-    "income_protection": "Income Protection (IP)",
-    "whole_of_life": "Whole of Life (WOL)",
-    "with_profits": "With-Profits (WP)",
-    "unit_linked_bond": "Unit-Linked Investment Bond (ULB)",
-    "pension_annuity": "Pension Annuity (PA)",
+    # uklib
+    ("uklib", "term_assurance"): "Term Assurance",
+    ("uklib", "critical_illness"): "Critical Illness Cover (CI)",
+    ("uklib", "income_protection"): "Income Protection (IP)",
+    ("uklib", "whole_of_life"): "Whole of Life (WOL)",
+    ("uklib", "with_profits"): "With-Profits (WP)",
+    ("uklib", "unit_linked_bond"): "Unit-Linked Investment Bond (ULB)",
+    ("uklib", "pension_annuity"): "Pension Annuity (PA)",
+    # jplib.  The Japanese name leads, because it is what the product is called and what
+    # every document in the library uses; the English gloss follows it.
+    ("jplib", "term_life"): "定期保険 — Level Term Life",
+    ("jplib", "income_guarantee"): "収入保障保険 — Survivor Income Term",
+    ("jplib", "whole_life"): "終身保険 — Whole Life",
+    ("jplib", "endowment"): "養老保険 — Endowment, with 学資保険",
+    ("jplib", "medical"): "医療保険 — Medical (third sector)",
+    ("jplib", "cancer"): "がん保険 — Cancer (third sector)",
+    ("jplib", "nursing_care"): "介護保険 — Nursing Care (third sector)",
+    ("jplib", "individual_annuity"): "個人年金保険 — Individual Annuity",
+    ("jplib", "fx_whole_life"): "外貨建終身保険 — Foreign-Currency Whole Life",
 }
 
 
@@ -189,7 +207,7 @@ def main(argv):
         # Written in place, not included: the landing page is scaffolding, and the library
         # is better off without it.
         write(page_dir / "index.md",
-              PRODUCT_INDEX.format(title=TITLES[product.name],
+              PRODUCT_INDEX.format(title=TITLES[(lib, product.name)],
                                    blurb=BLURB.format(model=model),
                                    entries=entries),
               dry, log)

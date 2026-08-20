@@ -13,6 +13,13 @@ The fix re-lays the table: measure every cell, widen each column to fit, re-emit
 recovered by splitting on runs of two or more spaces, which is what separates columns here
 and never occurs inside a cell.
 
+**Columns are measured in display width, not characters.**  docutils lays a simple table out
+by display column, where an East Asian wide or fullwidth character occupies two.  jplib's
+docstrings carry Japanese in the symbol column, so a character-counting version of this tool
+reads a correctly laid out table as broken and re-lays it into one that really is -- the
+failure runs in the direction that turns a clean build into "Malformed table".  Every
+measurement below therefore goes through :func:`width`.
+
 Usage::
 
     python tools/fix_docstring_tables.py lifelib/libraries/uslib --dry-run
@@ -22,19 +29,72 @@ import re
 import sys
 import pathlib
 import collections
+import unicodedata
 
 
 RULE = re.compile(r'^(\s*)=+(\s+=+)+\s*$')
 
 
+def char_width(ch):
+    """Display columns one character occupies: two if East Asian wide or fullwidth."""
+    return 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+
+
+def width(text):
+    """Display width of ``text``, which is what docutils measures a table by."""
+    return sum(char_width(c) for c in text)
+
+
+def at_column(row, col):
+    """The character occupying display column ``col``, or "" if the row ends first.
+
+    A wide character straddling the boundary is returned, which is the answer that
+    matters: it is occupying the column either way.
+    """
+    pos = 0
+    for ch in row:
+        w = char_width(ch)
+        if pos <= col < pos + w:
+            return ch
+        pos += w
+    return ""
+
+
+def between_columns(row, start, stop):
+    """The substring of ``row`` occupying display columns ``[start, stop)``."""
+    out, pos = [], 0
+    for ch in row:
+        if pos >= stop:
+            break
+        if pos >= start:
+            out.append(ch)
+        pos += char_width(ch)
+    return "".join(out)
+
+
 def columns(rule):
-    """(start, end) of each column marker in a rule line."""
+    """(start, end) of each column marker in a rule line.
+
+    Rule lines are pure ASCII, so their character and display indices coincide.
+    """
     return [(m.start(), m.end()) for m in re.finditer(r'=+', rule)]
 
 
 def overflows(row, bounds):
-    """True if a cell crosses an interior column boundary."""
-    return any(len(row) > end and row[end] != " " for _, end in bounds[:-1])
+    """True if a cell intrudes on an interior separator, measured by display width.
+
+    The whole separator span is checked, not just its first column.  A cell that is one
+    column too *short* pushes the next cell one column left, into the far end of the
+    separator -- which docutils rejects exactly as it rejects a cell that is too long, and
+    which a single-column check walks straight past.  Renaming a cells to a shorter name
+    without re-padding produces precisely that row.
+    """
+    for i, (_, end) in enumerate(bounds[:-1]):
+        stop = bounds[i + 1][0]
+        for col in range(end, stop):
+            if at_column(row, col) not in ("", " "):
+                return True
+    return False
 
 
 def cells_of(row, bounds):
@@ -42,8 +102,8 @@ def cells_of(row, bounds):
     if not overflows(row, bounds):
         out = []
         for i, (start, _) in enumerate(bounds):
-            stop = bounds[i + 1][0] if i + 1 < len(bounds) else len(row)
-            out.append(row[start:stop].strip())
+            stop = bounds[i + 1][0] if i + 1 < len(bounds) else width(row)
+            out.append(between_columns(row, start, stop).strip())
         return out
     parts = re.split(r'\s{2,}', row.strip())
     if row.startswith("  ") and len(parts) < len(bounds):
@@ -60,7 +120,7 @@ def fix_block(lines, first, last):
     if not any(overflows(lines[i], bounds) for i in range(first + 1, last)):
         return None
 
-    widths = [max((len(r[c]) for r in rows), default=0) for c in range(len(bounds))]
+    widths = [max((width(r[c]) for r in rows), default=0) for c in range(len(bounds))]
     rule = " " * indent + "  ".join("=" * max(w, 1) for w in widths)
 
     out, r = [rule], 0
@@ -71,7 +131,7 @@ def fix_block(lines, first, last):
         cells = rows[r]
         r += 1
         line = " " * indent + "  ".join(
-            cell.ljust(widths[c]) for c, cell in enumerate(cells))
+            cell + " " * (widths[c] - width(cell)) for c, cell in enumerate(cells))
         out.append(line.rstrip())
     out.append(rule)
     return out
