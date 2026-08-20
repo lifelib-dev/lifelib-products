@@ -621,21 +621,31 @@ def test_pitfall_monthly_rounding_does_not_re_add(jp_medical_anchor):
 
 
 # ---------------------------------------------------------------------------
-# The roll-forward identities, on every shipped model point
+# The check cells, and the roll-forward identities behind them
 
 
-@pytest.mark.parametrize("check", CHECKS)
-def test_every_check_closes_on_every_model_point(medical, check):
-    """All seven identities return True on all nine model points.
+def test_the_seven_check_cells_are_published_with_their_residuals(medical):
+    """These seven identities are published, and no others, each with its residual.
 
     ``check_*`` takes no argument and returns a bool over every projected month, with the
-    signed per-month residual at ``check_*_resid(t)``, so a failure here is located by
-    calling the residual.
+    signed per-month residual at ``check_*_resid(t)``, so a failure is located by calling
+    the residual.
+
+    That they *close*, on all nine model points, is asserted in
+    ``test_model_conventions_jp.py``: its sweep discovers every ``check_*`` generically and
+    calls it on every model point of every model in the library. Running them again here,
+    on a second instance of the same model, meant a second cold projection of the whole
+    table to reach a verdict already reached.
+
+    Generic discovery cannot notice a check that has *gone*: it simply stops being
+    discovered. Naming the set is the statement left here.
     """
-    for point_id in medical.Data.model_point_table().index:
-        proj = medical.Projection[point_id]
-        value = getattr(proj, check)()
-        assert value is True, f"point {point_id}: {check}() is False"
+    cells = set(medical.Projection.cells)
+    published = {c for c in cells
+                 if c.startswith("check_") and not c.endswith("_resid")}
+    assert published == set(CHECKS)
+    for check in CHECKS:
+        assert check + "_resid" in cells, check
 
 
 def test_inforce_rollforward_closes_month_by_month(medical):

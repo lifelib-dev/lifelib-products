@@ -869,19 +869,23 @@ ALL_CHECKS = ("check_pols_roll_fwd", "check_lives_roll_fwd", "check_fund",
               "check_mort_graduation")
 
 
-def test_every_check_closes_on_every_model_point(individual_annuity):
-    """All seven roll-forward and ledger checks return True on all nine model points.
+def test_the_seven_check_cells_are_the_published_set(individual_annuity):
+    """These seven roll-forward and ledger checks are published, and no others.
 
     The library-wide form: no argument, one bool over all t, with the signed per-period
     residual at ``check_*_resid(t)``.  A check that is only ever run on the anchor cell is
-    a check of the anchor cell.
+    a check of the anchor cell — which is why they are run on all nine model points, in
+    ``test_model_conventions_jp.py``, whose sweep discovers every ``check_*`` generically
+    and calls it on every point of every model in the library. Running them again here, on
+    a second instance of the same model, meant a second cold projection of the whole table
+    to reach a verdict already reached.
+
+    Generic discovery cannot notice a check that has *gone*: it simply stops being
+    discovered. Naming the set is the statement left here.
     """
-    for point_id in individual_annuity.Data.model_point_table().index:
-        p = individual_annuity.Projection[point_id]
-        for name in ALL_CHECKS:
-            value = getattr(p, name)()
-            assert isinstance(value, bool), f"{name} returned {type(value).__name__}"
-            assert value is True, f"point {point_id}: {name}() is False"
+    published = {c for c in individual_annuity.Projection.cells
+                 if c.startswith("check_") and not c.endswith("_resid")}
+    assert published == set(ALL_CHECKS)
 
 
 def test_the_inforce_rollforward_closes_term_by_term(individual_annuity):

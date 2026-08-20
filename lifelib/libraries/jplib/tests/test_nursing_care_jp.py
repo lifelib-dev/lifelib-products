@@ -722,21 +722,32 @@ def test_pitfall_the_prevalence_tail_is_an_unsourced_extrapolation(nursing_care)
 # Roll-forward identities and the check_* cells
 
 
-def test_every_check_cells_holds_on_every_shipped_model_point(nursing_care):
-    """All four ``check_*`` cells return True on all eight model points.
+def test_the_four_check_cells_are_published_with_their_residuals(nursing_care):
+    """These four ``check_*`` cells are published, and no others, each with its residual.
 
     ``check_pols_roll_fwd`` closes the in-force against the month's decrements,
     ``check_nesting`` the ledger ordering, ``check_ann_ledger`` the annuity ledger against
     an independent rebuild, and ``check_net_cf`` the cash flow statement against
     ``net_cf``. Each returns a bool over all t, with the signed per-month residual at
     ``<name>_resid(t)``.
+
+    That they *hold*, on all eight model points, is asserted in
+    ``test_model_conventions_jp.py``: its sweep discovers every ``check_*`` generically and
+    calls it on every model point of every model in the library. Running them again here,
+    on a second instance of the same model, meant a second cold projection of the whole
+    table to reach a verdict already reached.
+
+    Generic discovery cannot notice a check that has *gone*: it simply stops being
+    discovered. Naming the set is the statement left here.
     """
-    for point_id in nursing_care.Data.model_point_table().index:
-        p = nursing_care.Projection[point_id]
-        assert p.check_pols_roll_fwd() is True, point_id
-        assert p.check_nesting() is True, point_id
-        assert p.check_ann_ledger() is True, point_id
-        assert p.check_net_cf() is True, point_id
+    checks = ("check_pols_roll_fwd", "check_nesting", "check_ann_ledger",
+              "check_net_cf")
+    cells = set(nursing_care.Projection.cells)
+    published = {c for c in cells
+                 if c.startswith("check_") and not c.endswith("_resid")}
+    assert published == set(checks)
+    for check in checks:
+        assert check + "_resid" in cells, check
 
 
 def test_the_in_force_roll_forward_names_every_decrement(nursing_care):

@@ -1255,19 +1255,6 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         model.close()
 
 
-def test_every_model_point_projects_and_closes_its_ledgers(term_life):
-    """No model point may sit in the table that the input tables cannot serve."""
-    table = term_life.Data.model_point_table()
-    assert len(table) == 9
-    for point_id in table.index:
-        p = term_life.Projection[point_id]
-        df = p.result_cf()
-        assert len(df) == p.proj_len() > 0
-        assert df.notna().all().all()
-        assert p.check_pols_roll_fwd() is True
-        assert p.check_net_cf() is True
-
-
 def test_the_model_point_table_exercises_the_product(term_life):
     """Both sexes, both term shapes, both boundaries, all three riders, both extremes.
 
@@ -1275,6 +1262,7 @@ def test_the_model_point_table_exercises_the_product(term_life):
     rather than left to a reader counting rows.
     """
     table = term_life.Data.model_point_table()
+    assert len(table) == 9
     assert set(table["sex"]) == {"M", "F"}
     assert set(table["term_type"]) == {"nen", "sai"}
     assert set(table["contract_boundary"]) == {"ceiling", "current_term"}
