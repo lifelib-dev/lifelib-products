@@ -7,25 +7,25 @@ it is named below rather than absorbed.
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** What is sourced
 > on this product is the contractual machinery: the either/or public-certification and
-> company-basis trigger, the once-only 介護一時金 (*kaigo ichijikin*, care lump sum) that does
-> **not** terminate the contract, the survival-tested 介護年金 (*kaigo nenkin*, care annuity)
+> company-basis trigger, the once-only care lump sum (*kaigo ichijikin*, 介護一時金) that does
+> **not** terminate the contract, the survival-tested care annuity (*kaigo nenkin*, 介護年金)
 > paid in advance with its ten-instalment cap and retroactive extinction, the 保険料払込免除
 > (*hokenryō haraikomi menjo*, premium waiver) firing one grade **below** the lump sum, and
-> the outright nil 解約返戻金 (*kaiyaku-henreikin*, surrender value) [S1] [S2] [S4] [S7] [S8]
+> the outright nil surrender value (*kaiyaku-henreikin*, 解約返戻金) [S1] [S2] [S4] [S7] [S8]
 > [S12]. Everything quantitative is a **[std]** standardization. No carrier publishes 予定発生率
-> (assumed incidence), 予定利率 (*yotei riritsu*, assumed interest rate) or 予定死亡率 for this
+> (assumed incidence), assumed interest rate (*yotei riritsu*, 予定利率) or 予定死亡率 for this
 > product, the regulator confirms there is nothing standard to publish for 第三分野
 > (*dai-san-bun'ya*, third-sector) business [R10], and
 > the 算出方法書 is a filed 基礎書類 that is not public [REG-R2] — so the office premium is a
 > model-point **input**, the mortality table is a constructed proxy, and the whole morbidity
-> basis is built in public from the government's 認定率 (*nintei-ritsu*, certification rate)
+> basis is built in public from the government's certification rate (*nintei-ritsu*, 認定率)
 > and grade composition [R4] [R5] [REG-R30]. Replace the assumption tables with company data
 > before drawing any conclusion from the output.
 
 `LTC_JP_S` is the modelx implementation of the notes: a monthly, single-model-point
-projection of gross best-estimate liability cash flows for 介護保険 (*kaigo hoken*,
-nursing-care insurance) on the 公的介護保険連動型 (*kōteki kaigo hoken rendō-gata*,
-public-scheme-linked) design.
+projection of gross best-estimate liability cash flows for nursing-care insurance
+(*kaigo hoken*, 介護保険) on the public-scheme-linked (*kōteki kaigo hoken rendō-gata*,
+公的介護保険連動型) design.
 
 **The chassis.** This product states its deltas against the `jplib` third-sector chassis,
 whose model is [`Medical_JP_S`](../medical/model.md) and whose documents are
@@ -33,7 +33,7 @@ whose model is [`Medical_JP_S`](../medical/model.md) and whose documents are
 [the medical technical notes](../medical/technical-notes.md). `LTC_JP_S` does **not**
 inherit from that model in modelx — `Projection._bases` is empty and every formula here is
 written out — so the relationship is documentary, not structural. What is inherited in
-substance is the monthly grid, the timing conventions, the 満年齢 (*man-nenrei*, attained age)
+substance is the monthly grid, the timing conventions, the attained age (*man-nenrei*, 満年齢)
 basis, the mortality construction from 第三分野標準生命表2018, the lapse table and the expense
 structure; what is replaced outright is the benefit machinery. `Medical_JP_S` is
 **frequency × severity × limit** with two day ledgers that never bind; `LTC_JP_S` is
@@ -175,13 +175,13 @@ the policy is still administered when nobody is paying for it.
 `pols_lapse(t)` is taken from `pols_act(t)` alone. With the premium waived and treated as
 paid, and with no 解約返戻金 to surrender for, a life on waiver has nothing to lapse [S1] [S2].
 Applying lapse to `pols_if` destroys the annuity liability it took thirty years to build.
-There is no 自動振替貸付 (*jidō furikae kashitsuke*, automatic premium loan) machinery here
+There is no automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付) machinery here
 either: with no surrender value there is nothing to lend against [S2] [REG-R14], so a missed
 premium lapses the contract outright and the savings-chassis logic must not be inherited.
 
 ## The step at age 65, and where "180日" means two different things
 
-`f_age(t)` is the sub-65 特定疾病 (*tokutei shippei*, specified-disease) gate: 0.20 below 65
+`f_age(t)` is the sub-65 specified-disease (*tokutei shippei*, 特定疾病) gate: 0.20 below 65
 where the company-basis limb is written, 0.05 without it, 1.00 at 65 and over [S1] [S4]
 [S12] [R1] [R3]. Entry into 要介護2以上 jumps 6.1× between age 64 and age 65 on the shipped
 basis. That step is a real feature of the product — a smooth curve through 65 misprices
@@ -190,7 +190,7 @@ gate is the company-basis limb's **only** effect in the model: the limb's own ad
 is out of scope **[std scope]**.
 
 "180日" names two mechanisms in this market and an implementation must not carry one of them
-twice. A 不担保期間 (*futanpo kikan*, exclusion period) or a 認知症診断責任開始期 means cover has not
+twice. An exclusion period (*futanpo kikan*, 不担保期間) or a 認知症診断責任開始期 means cover has not
 started; the 180-day (90-day where dementia-defined) test inside the company-basis trigger
 means the care state must have **persisted**. The composite has the second and not the first
 on the care benefits, so `waiting_mths()` is zero on the anchor cell and claims run from
@@ -210,7 +210,7 @@ back by accident:
   "LAPSE")` exists, returns zero and is published as a zero column, because a missing column
   would hide the product fact rather than state it.
 - **No `claims_death`.** The contract terminates on death with nothing payable [S1] [S11].
-- **No maturity.** Cover and premiums are both 終身 (whole of life), so `proj_len()` is set by
+- **No maturity.** Cover and premiums are both whole of life (終身), so `proj_len()` is set by
   the mortality table's terminal age — 116 male, 118 female, read from the table rather than
   hard-coded — and there is no `policy_term`, no maturity benefit and no renewal.
 
@@ -315,7 +315,7 @@ example, and exercised in its other position by a shipped model point.
 |---|---|---|---|
 | State-tested annuity and its recovery decrement | `annuity_test`, `rec_rate` | `survival`, 0.0 | point 5: `state` with the notes' 5% p.a. placeholder — recovery cuts that point's lifetime annuity claims by 12.4% |
 | Anti-selective lapse, loading **incidence** | `sel_lapse_lambda` | 0.0 | point 8: 0.30, where cumulative lapse has passed the 20% reference point |
-| 認知症一時金特約 (*ninchishō ichijikin tokuyaku*), a dementia lump-sum 特約 (*tokuyaku*, rider) | `dementia_rider` | false | point 6: adds ¥47,673 of lifetime rider claims |
+| 認知症一時金特約 (*ninchishō ichijikin tokuyaku*), a dementia lump-sum rider (*tokuyaku*, 特約) | `dementia_rider` | false | point 6: adds ¥47,673 of lifetime rider claims |
 | 1-year 不担保期間 of the simplified-underwriting design | `waiting_1y` | false | point 7: zeroes all three entry rates and every claim for `t < 12` |
 | Company-basis trigger limb | `company_limb` | true, so the sub-65 gate is 0.20 | point 4: written off, dropping the gate to 0.05 |
 
@@ -348,10 +348,10 @@ so `pols_term(t)` extinguishes fewer contracts. Nothing ever releases a life bac
 `test_a_recovered_life_keeps_its_waiver_for_life` asserts every clause of this, so it is a
 documented limit rather than a silent one.
 
-Two further constructions are outside the model and named rather than hidden: the 基礎率変更権
-(right to change base rates), whose *exercise* is not modelled although the parameterized
-incidence basis is precisely the capability the regime asks for [R10] [REG-R15]; and 復活
-(*fukkatsu*, reinstatement), which belongs here as a **new model point** rather than as a
+Two further constructions are outside the model and named rather than hidden: the right to
+change base rates (基礎率変更権), whose *exercise* is not modelled although the parameterized
+incidence basis is precisely the capability the regime asks for [R10] [REG-R15]; and
+reinstatement (*fukkatsu*, 復活), which belongs here as a **new model point** rather than as a
 negative lapse, because the 責任開始期 resets to the 復活日 [S1] [S2].
 
 ## Sign convention

@@ -3,10 +3,10 @@
 **Status:** Draft, 2026-08-20. Built from
 [`products/endowment/technical-notes.md`](technical-notes.md); the product it implements is
 specified in [`product-spec.md`](product-spec.md). The savings machinery underneath it — the
-保険料積立金 (*hokenryō tsumitatekin*, policy value), the 解約返戻金 (*kaiyaku-henreikin*, surrender
-value), 契約者貸付 (*keiyakusha kashitsuke*, policy loan), 自動振替貸付 (*jidō furikae kashitsuke*,
-automatic premium loan) and the grace, 失効 and 復活 chain — is specified once in
-[終身保険 technical notes](../whole_life/technical-notes.md) and implemented in
+policy value (*hokenryō tsumitatekin*, 保険料積立金), the surrender value (*kaiyaku-henreikin*,
+解約返戻金), policy loan (*keiyakusha kashitsuke*, 契約者貸付), automatic premium loan (*jidō furikae
+kashitsuke*, 自動振替貸付) and the grace, 失効 and 復活 chain — is specified once in
+[whole life technical notes (終身保険)](../whole_life/technical-notes.md) and implemented in
 [`WholeLife_JP_A`](../whole_life/model.md), whose cells names this model carries wherever
 the two express the same quantity — `pol_val_pp`, `cv_pp`, `surr_charge_pp`, `reserve_pp`,
 `loan_pp`, `pols_if_at`, `check_net_cf`. This file states the deltas; where it sets an
@@ -16,15 +16,15 @@ deviation and gives its reason rather than leaving it silent.
 > **This is a mechanics demonstration, not a pricing or reserving result.** Three things
 > here are sourced and everything else is constructed. Both annual premiums are twelve
 > times a monthly premium published for exactly the model point they sit on — the 養老保険
-> (*yōrō hoken*, endowment assurance) anchor cell [S9] and the 学資保険 (*gakushi hoken*,
-> education endowment) cell [S11]; the 予定利率 (*yotei riritsu*, assumed interest rate) of
+> (*yōrō hoken*, endowment assurance) anchor cell [S9] and the education endowment (*gakushi
+> hoken*, 学資保険) cell [S11]; the assumed interest rate (*yotei riritsu*, 予定利率) of
 > 1.00% that the cash-value construction runs on is published by product group, before and
-> after a dated revision [S9]; and the staged 学資金 (*gakushikin*, education money) grid is
+> after a dated revision [S9]; and the staged education money (*gakushikin*, 学資金) grid is
 > one carrier's published S型 schedule [S10] [S11]. The surrender-value formula, the expense
 > basis and the surrender curve are published by **no** carrier for either cell — a sharper
 > gap than the savings chassis faced — so `α`, every expense level and the whole lapse table
 > are **[std]**. The shipped mortality table is a **[std]** construction whose `provenance`
-> column points at 日本アクチュアリー会 (the Institute of Actuaries of Japan); it is not a copy of
+> column points at the Institute of Actuaries of Japan (日本アクチュアリー会); it is not a copy of
 > 生保標準生命表2018（死亡保険用）, which the publisher's site terms forbid this library to
 > redistribute [REG-R21]. Replace the tables and the cash-value basis with a company
 > 算出方法書 before drawing any conclusion from the numbers.
@@ -84,8 +84,8 @@ DB(t)  = max( P x min(t, m) - S x G(t - 1) - L(t),  Wb(t) )
 Both live in `pol_val_at(t, i)`, which branches on `cell()`; `pol_val_pp(t)` is that at
 `i_cv` and `reserve_pp(t)` the same at `i_std`. Excluding the death benefit from the
 education cell's EPV is the **[std]** step, and it is one carrier's own wording read
-literally: its 死亡払戻金 *is* the 責任準備金相当額 — the amount equivalent to the 責任準備金
-(*sekinin-junbikin*, policy reserve) [S10] — so on that design the decrement is exactly
+literally: its 死亡払戻金 *is* the 責任準備金相当額 — the amount equivalent to the policy reserve
+(*sekinin-junbikin*, 責任準備金) [S10] — so on that design the decrement is exactly
 value-neutral and the composite's max-form dominates it [S3] [S13].
 
 Both limbs of that `max` must be evaluated. On the composite's basis the value limb
@@ -119,7 +119,7 @@ projection must not move it. That is testable rather than asserted — model poi
 bit.
 
 A third identity falls out of `i_std` defaulting to `i_cv`, which it does because the
-numeric 標準利率 (*hyōjun riritsu*, standard valuation rate) could not be established from any
+numeric standard valuation rate (*hyōjun riritsu*, 標準利率) could not be established from any
 retrieved official document [R4] [R5]:
 `reserve_pp(t) - cv_pp(t) = surr_charge_pp(t)` exactly, wherever the value exceeds the
 deduction. That is `check_surr_charge()`; the one branch it does not assert is where the
@@ -127,9 +127,9 @@ deduction would exhaust the value and `surr_val_pp` floors at zero.
 
 ## Two lives, two decrements, one policy
 
-The education cell carries **保険料払込免除** (*hokenryō haraikomi menjo*, waiver of premium) on
-the 契約者 (*keiyakusha*, policyholder) — a second decrement on a second life who is not the
-被保険者 (*hihokensha*, the insured). It has no analogue in `uslib` or `uklib`.
+The education cell carries waiver of premium (*hokenryō haraikomi menjo*, **保険料払込免除**) on
+the policyholder (*keiyakusha*, 契約者) — a second decrement on a second life who is not the
+insured (*hihokensha*, 被保険者). It has no analogue in `uslib` or `uklib`.
 
 `mort_rate(t)` reads the table at the insured's `x + t - 1`; `mort_rate_ph(t)` reads it at
 the policyholder's `y + t - 1`. Reading one table at one age for both is the most likely
@@ -209,8 +209,8 @@ statement produces.
 
 ## What is absent, and why that is a product fact
 
-There is **no cliff**. No retrieved document offers a 低解約返戻金型
-(*tei-kaiyaku-henreikin-gata*, suppressed-surrender-value) form of either cell, so there is
+There is **no cliff**. No retrieved document offers a suppressed-surrender-value
+(*tei-kaiyaku-henreikin-gata*, 低解約返戻金型) form of either cell, so there is
 no `k` multiplier, no step at 払込満了 and no surrender spike, and no lapse-rate spike to go
 with them. `surr_val_pp(t)` and `cv_pp(t)` are the same series and both are published, so
 that the absence is stated rather than inferred. Importing the savings chassis's `k` = 0.70,
@@ -284,8 +284,8 @@ every age these nine model points reach: the 養老 anchor cell matures at attai
 Two further distinctions survive that one, both in the `Data` docstring. The shipped rates
 trace a **valuation** table carrying a margin sized to roughly a 2σ level [R2] [REG-R20],
 not best-estimate experience — which is what `mort_be_factor` is for. And the table is read at
-満年齢 (*man-nenrei*, attained age) while the published table is built on a 保険年齢方式
-(*hoken-nenrei hōshiki*, nearest-birthday) basis [REG-R20], an understatement of up to half
+attained age (*man-nenrei*, 満年齢) while the published table is built on a nearest-birthday
+(*hoken-nenrei hōshiki*, 保険年齢方式) basis [REG-R20], an understatement of up to half
 a year of age that the notes name rather than hide.
 
 ## Modules that are off in the base run
@@ -296,8 +296,8 @@ exercised in both positions by the tests.
 
 | Module | Switch | Off | On at | What it does |
 |---|---|---|---|---|
-| 自動振替貸付 (automatic premium loan) | `apl_default_mult` | `0.0` | point 8 | Scales the table premium-default rate. The advance is applied to the premium, so it moves `premiums(t)` and `loan_pp(t)` and leaves the in-force recursion alone: a default is **not** a lapse, and a policy does not lapse while the cash value can carry the premium [S1] [S10]. `apl_advance_pp(t)` is capped at the value still free of loan. Two of the six carriers do not offer it at all [S6] [S13], so the off position is a product variant and not merely a switch |
-| 契約者貸付 (policy loan) | `pol_loan_util` | `0.0` | point 9 (0.50) | Draws that fraction of `cv_pp(1)` at outset **[std]**, rolling up at `i_loan` = 2.40% [S9] — **a deviation from `WholeLife_JP_A`'s 2.75%**, and a deliberate one. The chassis picks 2.75% off a different carrier's vintage 貸付利率 schedule, the band a contract written under the older 予定利率 falls in, and marks the pick **[std]**. Here the rate is the 契約貸付利率 this product's own anchor carrier publishes — 2.00% → 2.40% for contracts dated on or after 2025-01-02, moved in the same release as the 予定利率 the model runs on [S9] — so the loan rate and the pricing rate come from one document. Both sets of notes give the same reason the two products need not agree: the loan rate tracks the contract's vintage 予定利率, not the market. No cash flow of its own: it nets off `death_ben_pp(t)` and the surrender benefit, which is why every benefit in the base run is gross |
+| Automatic premium loan (自動振替貸付) | `apl_default_mult` | `0.0` | point 8 | Scales the table premium-default rate. The advance is applied to the premium, so it moves `premiums(t)` and `loan_pp(t)` and leaves the in-force recursion alone: a default is **not** a lapse, and a policy does not lapse while the cash value can carry the premium [S1] [S10]. `apl_advance_pp(t)` is capped at the value still free of loan. Two of the six carriers do not offer it at all [S6] [S13], so the off position is a product variant and not merely a switch |
+| Policy loan (契約者貸付) | `pol_loan_util` | `0.0` | point 9 (0.50) | Draws that fraction of `cv_pp(1)` at outset **[std]**, rolling up at `i_loan` = 2.40% [S9] — **a deviation from `WholeLife_JP_A`'s 2.75%**, and a deliberate one. The chassis picks 2.75% off a different carrier's vintage 貸付利率 schedule, the band a contract written under the older 予定利率 falls in, and marks the pick **[std]**. Here the rate is the 契約貸付利率 this product's own anchor carrier publishes — 2.00% → 2.40% for contracts dated on or after 2025-01-02, moved in the same release as the 予定利率 the model runs on [S9] — so the loan rate and the pricing rate come from one document. Both sets of notes give the same reason the two products need not agree: the loan rate tracks the contract's vintage 予定利率, not the market. No cash flow of its own: it nets off `death_ben_pp(t)` and the surrender benefit, which is why every benefit in the base run is gross |
 | The refused waiver | `wv_frac` | `1.00` | point 4 (0.90) | Splits the 契約者 decrement between a transition to the waived state and a **termination** paying `pol_val_pre_pp(t)` to the 契約者's legal heirs [S1] [S7] [S10]. `claims_ph_death` is a column of zeros while this is 1, and that zero is the product fact |
 | Dynamic surrender | `dyn_lapse` | `False` | point 6 | `w x min(3, max(1, 1 + β (CV / cumprem − 1)))`, β = 2.0 **[std]**. **Inert wherever it is switched on**, which is the finding rather than a defect: the value never reaches cumulative premiums on either cell, peaking at 92.0% at maturity on the anchor cell, so an owner is never given a value reason to surrender |
 | Mortality margins | `mort_be_factor`, `wv_load` | `1.00` | point 4 (1.25, 1.50) | Two inputs and not one, because the margin points opposite ways on the two lives: on the 契約者 the waiver is a cost, so an overstated rate is prudent, while on an insured child whose death benefit is roughly the reserve already held it is nearly neutral. `wv_load` is the one place a separate disability decrement is right — 高度障害 is inside the table rate [R2] [REG-R20], the waiver's third trigger 身体障害 within 180 days of a listed accident is not [S1] [S10] [S16] — so 1.00 *understates* the waiver |
@@ -308,13 +308,13 @@ by name rather than by silence. `dividend_type` is validated and the value `five
 **rejected**: the ５年ごと利差配当 variant [S1] [S10] needs a 配当基準 that sits in the filed but
 unpublished 算出方法書 [REG-R2], and the notes' cash flow equation carries no dividend term.
 `net_cf` evaluates the validator, so such a model point fails on its first cash flow rather
-than being projected silently under a 有配当 label. 復活 (reinstatement) is not modelled
+than being projected silently under a 有配当 label. Reinstatement (復活) is not modelled
 either, and it costs more here than on a protection product: two carriers pay a 学資金 whose
 payment date fell while the policy was lapsed once the policy is reinstated [S1] [S10], so
 treating every exit as terminal understates later-duration in force, premium income, staged
 benefits and the maturity benefit together.
 
-**減額** (*gengaku*, reduction of the sum assured) is the third, and it belongs to the
+Reduction of the sum assured (*gengaku*, **減額**) is the third, and it belongs to the
 chassis rather than to this product: reducing 基準保険金額 is treated as a partial surrender,
 the reduced portion releasing its own 解約返戻金 and the future premium being re-rated
 [S1] [S2] [S6] [S10]. It is in the composite specification and **not implemented** — there

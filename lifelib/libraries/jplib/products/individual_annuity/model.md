@@ -10,9 +10,9 @@ product as a liability cash flow model on paper) and [`product-spec.md`](product
 > (*kaiyaku-henreikin*, surrender value) capped at that same amount, the unavailability of
 > surrender from the 年金支払開始日, the unconditional 確定年金 instalments, the 年金の一括払
 > factor table, the 自動振替貸付 interest ceiling and the conditions of the 税制適格特約
-> (*zeisei tekikaku tokuyaku*), the tax-qualification 特約 (*tokuyaku*, rider). Nearly
-> everything quantitative is a standardization. The two 予定利率 (*yotei riritsu*, assumed
-> interest rate) are published [S5] [S8] but the 予定事業費率 and the 年金支払開始時費用 are
+> (*zeisei tekikaku tokuyaku*), the tax-qualification rider (*tokuyaku*, 特約). Nearly
+> everything quantitative is a standardization. The two assumed interest rates (*yotei
+> riritsu*, 予定利率) are published [S5] [S8] but the 予定事業費率 and the 年金支払開始時費用 are
 > calibrated **[std]** against one published specimen [S6], because the 算出方法書 is a
 > 基礎書類 filed with the FSA and not published [REG-R2]; no carrier publishes an expense basis, a commission scale or a
 > lapse curve by duration; and the mortality basis is **not** a published table.
@@ -22,8 +22,8 @@ product as a liability cash flow model on paper) and [`product-spec.md`](product
 > Replace the assumption tables with company data, and the mortality basis with a licensed
 > one, before drawing any conclusion from the output.
 
-`Annuity_JP_A` is the annual-grid model of the 定額個人年金保険 (*teigaku kojin nenkin hoken*,
-fixed individual annuity insurance) composite with the 税制適格特約 attached. It is the
+`Annuity_JP_A` is the annual-grid model of the fixed individual annuity insurance (*teigaku
+kojin nenkin hoken*, 定額個人年金保険) composite with the 税制適格特約 attached. It is the
 library's **payout chassis**: the deferral phase is a savings accumulation and the payout
 phase is the annuity machinery the other stream-benefit products point at.
 
@@ -56,7 +56,7 @@ three values *is* the product, and printing them only inside a cash flow is not 
 
 ## The product is two contracts joined at one date
 
-Before the 年金支払開始日 (*nenkin shiharai kaishi bi*, annuity commencement date) the liability
+Before the annuity commencement date (*nenkin shiharai kaishi bi*, 年金支払開始日) the liability
 is a savings fund: a level office premium net of the 予定事業費率 accumulates at the deferral
 予定利率 with a **survivorship release**, against a 死亡給付金 capped at cumulative premiums and a
 解約返戻金 capped at the 死亡給付金. After that date the liability is a stream of instalments that
@@ -90,7 +90,7 @@ product wrongly.
 
 ## The fund and the surrender value are different quantities
 
-`av_pp` is the 保険料積立金 (*hokenryō tsumitatekin*, premium reserve fund); `cv_pp` is the
+`av_pp` is the premium reserve fund (*hokenryō tsumitatekin*, 保険料積立金); `cv_pp` is the
 解約返戻金. The recursion
 
 ```
@@ -208,7 +208,7 @@ and testable. Each is a model point column, so a non-anchor point exercises it.
 |---|---|---|---|
 | 保証期間付終身年金 life-annuity election | `payout_form` | `certain` | points 4 and 9 |
 | 年金の一括払 commutation | `commute_rate` | 0.0 | point 5, at 100% |
-| 自動振替貸付 (APL) | `apl_on` | false | point 7 |
+| APL (自動振替貸付) | `apl_on` | false | point 7 |
 | 契約者貸付 policy loan | `loan_on` | false | point 8 |
 | 契約者配当 dividend | `div_rate` | 0.000 | point 8, at 0.2% |
 | Dynamic lapse | `rate_new` | 0.0100 (= `i_d`) | point 8, at 1.50% |

@@ -4,10 +4,10 @@
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
-carrying a source tag — [S#] (primary product documents: 約款 (*yakkan*, policy conditions),
-ご契約のしおり (*go-keiyaku no shiori*, policy booklet), 契約締結前交付書面 (*keiyaku teiketsu-mae
-kōfu shomen*, pre-contract disclosure), 重要事項説明書 (*jūyō jikō setsumeisho*, statement of
-material matters) and product pages) and [R#] (product-specific regulatory and actuarial
+carrying a source tag — [S#] (primary product documents: policy conditions (*yakkan*, 約款),
+policy booklet (*go-keiyaku no shiori*, ご契約のしおり), pre-contract disclosure (*keiyaku
+teiketsu-mae kōfu shomen*, 契約締結前交付書面), statement of material matters (*jūyō jikō
+setsumeisho*, 重要事項説明書) and product pages) and [R#] (product-specific regulatory and actuarial
 references), both numbered per `_research/medical.md` and resolved in `sources.md` (same
 directory; numbering frozen, never renumbered), and [REG-R#] (the cross-product reference
 library `references/regulatory-and-actuarial-references.md`, whose own R-numbering is
@@ -15,16 +15,16 @@ distinct) — were extracted from the cited document. Values marked **[std]** ar
 standardizations introduced for the reference implementation; each [std] table row carries a
 numbered footnote giving the rationale and the observed range across insurers. Facts the
 research file could not verify are flagged [unverified]. The composite is drawn from five
-carriers' current retail medical products: one carrier's 終身 (*shūshin*, whole-of-life)
+carriers' current retail medical products: one carrier's whole-of-life (*shūshin*, 終身)
 chassis with a lifestyle-disease limit relaxation [S1] [S2] [S3]; a second carrier's 終身
 chassis with a severe-surgery tier, plus its rider booklet [S4] [S5]; a third carrier's
-paired 終身 and 定期 (*teiki*, term) products, with the only complete published premium scale
+paired 終身 and term (*teiki*, 定期) products, with the only complete published premium scale
 found [S6] [S7] [S8]; a fourth carrier's three-型 chassis [S9]; and a fifth carrier's
 ten-year renewable 定期型 [S10]. Two further carriers' documents downloaded but could not be
 text-extracted, and the facts attributed to them are [unverified] [S11] [S12].
 
 **This is the `jplib` third-sector chassis.**
-[がん保険](../cancer/product-spec.md) and [介護保険](../nursing_care/product-spec.md) state
+[cancer (がん保険)](../cancer/product-spec.md) and [nursing care (介護保険)](../nursing_care/product-spec.md) state
 their deltas against this document rather than restating the machinery. The benefit structure specified
 here is **frequency × severity × limit** — a daily amount multiplied by paid days, capped
 per hospitalization and again in aggregate, with event benefits layered on top — not a sum
@@ -34,13 +34,13 @@ assured. Every downstream document should treat that as the defining structural 
 
 ## Product overview and market role
 
-医療保険 (*iryō hoken*, medical insurance) is **第三分野** (*dai-san-bun'ya*, third-sector)
-business. 保険業法 (*Hoken-gyō-hō*, Insurance Business Act) 第3条第4項第2号 lists, among the
-business a 生命保険業免許 (life licence) covers, insurance paying a fixed sum or indemnifying loss
-on 人が疾病にかかったこと (a person contracting a disease), 傷害を受けたこと又は疾病にかかったことを
-原因とする人の状態 (a state of the person caused by injury or disease) and 治療を受けたこと
-(receiving treatment for either); 第3条第5項第2号 makes the identical class available under a
-損害保険業免許 (non-life licence) [R1] [REG-R1]. Writable under either licence, it is named
+Medical insurance (*iryō hoken*, 医療保険) is third-sector (*dai-san-bun'ya*, **第三分野**)
+business. Insurance Business Act (*Hoken-gyō-hō*, 保険業法) 第3条第4項第2号 lists, among the
+business a life licence (生命保険業免許) covers, insurance paying a fixed sum or indemnifying loss
+on a person contracting a disease (人が疾病にかかったこと), a state of the person caused by injury or
+disease (傷害を受けたこと又は疾病にかかったことを原因とする人の状態) and receiving treatment for
+either (治療を受けたこと); 第3条第5項第2号 makes the identical class available under a
+non-life licence (損害保険業免許) [R1] [REG-R1]. Writable under either licence, it is named
 separately — and the separation is not cosmetic: the reserving rules and the standard
 valuation table differ by 分野 [REG-R8] [REG-R10] [REG-R13].
 
@@ -49,33 +49,33 @@ stood at 4,545万件 in force — 23.3% of all 個人保険 policies, ahead of �
 (13.9%) and ガン保険 (12.9%) — and took 23.8% of new business by count [REG-R31]. The picture
 inverts on sum insured, where 定期保険 holds 38.6% and a 医療保険 has no sum assured to report at
 all. Third-sector 年換算保険料 in force was 7兆3,062億円, a series that has risen every year
-published. In FY2024 the industry paid 入院給付金 (*nyūin kyūfukin*, hospitalization benefit) on
-800万件 of claims totalling 7,598億円 and 手術給付金 (*shujutsu kyūfukin*, surgery benefit) on
+published. In FY2024 the industry paid hospitalization benefit (*nyūin kyūfukin*, 入院給付金) on
+800万件 of claims totalling 7,598億円 and surgery benefit (*shujutsu kyūfukin*, 手術給付金) on
 561万件 totalling 4,900億円 [REG-R31] — mean claims of roughly ¥95,000 and ¥87,000, the order of
 magnitude this specification has to reproduce. Household penetration is near-saturation:
-95.1% of insured households hold a 医療保険 or a 医療特約 (*iryō tokuyaku*, medical rider)
+95.1% of insured households hold a 医療保険 or a medical rider (*iryō tokuyaku*, 医療特約)
 [REG-R32], and 65.6% of individuals hold cover paying 疾病入院給付金, at an average enrolled daily
 amount of **¥8,500** against a self-assessed need of ¥10,100 [R12].
 
 **The public morbidity data is the sharp contrast with
 [uklib](../../../uklib/index.md).** Where a UK protection model must proxy restricted CMI
 tables, a Japanese medical model can be calibrated from
-厚生労働省 statistics anyone can download. 患者調査 (*kanja chōsa*, Patient Survey), a 基幹統計, gives
-入院受療率 (*nyūin juryō-ritsu*, hospitalization treatment-receiving rate) per 100,000
+厚生労働省 statistics anyone can download. Patient Survey (*kanja chōsa*, 患者調査), a 基幹統計, gives
+hospitalization treatment-receiving rate (*nyūin juryō-ritsu*, 入院受療率) per 100,000
 population — national **945** in October 2023, rising from 137 at ages 20–24 to 2,952 at
-80–84 and 6,275 at 90 and over [R6] [REG-R26] — and 退院患者平均在院日数 (*heikin zaiin nissū*,
-average length of stay), national **28.4 days**, down from 40.8 in 平成8年 and 32.8 in 平成23年
+80–84 and 6,275 at 90 and over [R6] [REG-R26] — and average length of stay (*heikin zaiin
+nissū*, 退院患者平均在院日数), national **28.4 days**, down from 40.8 in 平成8年 and 32.8 in 平成23年
 [R6] [REG-R27]. The same survey publishes the length-of-stay distribution in **32 bands** by
 five-year age band and by cause, its cumulative form, and 推計退院患者数 by
 過去の入院の有無・再入院までの期間 — respectively what a 60-day cap, a per-cause severity split and the
 180-day re-admission rule each need, all as downloadable CSV [R7] [REG-R33]; 医療給付実態調査 adds
 a claims-cost cross-check from the public schemes' own records [R13]. What is **not** public
 is any morbidity table: 日本アクチュアリー会 publishes the mortality basis only — free, in full, and
-machine-readable [R4] [REG-R18] [REG-R19] — and every insurer's 危険発生率 (*kiken hasseiritsu*,
-incidence rate) is its own.
+machine-readable [R4] [REG-R18] [REG-R19] — and every insurer's incidence rate (*kiken
+hasseiritsu*, 危険発生率) is its own.
 
-Two structural facts shape everything below. First, the main contract is **無配当・無解約返戻金型**
-(*mu-haitō*, non-participating; *mu-kaiyaku-henreikin-gata*, without surrender value). The
+Two structural facts shape everything below. First, the main contract is non-participating,
+without surrender value (*mu-haitō*, *mu-kaiyaku-henreikin-gata*, **無配当・無解約返戻金型**). The
 no-surrender-value half is in the formal product name at four of the five carriers [S2]
 [S4] [S6] [S9]; the 無配当 half is in the formal name at three [S2] [S6] [S7] and stated in
 terms at two [S1] [S6]. There is no savings element, no dividend, and — decisively —
@@ -83,10 +83,10 @@ terms at two [S1] [S6]. There is no savings element, no dividend, and — decisi
 kashitsuke*, automatic premium loan), because there is no surrender value to lend against;
 one carrier says so in terms [S1]. A medical policy really does lapse when a premium is
 missed, which is where this chassis parts company with the
-[終身保険 savings chassis](../whole_life/product-spec.md). Second,
-the policy is 主契約 (*shu-keiyaku*, main contract) plus 特約 (*tokuyaku*, riders) and 特則
-(*tokusoku*, special provisions elected at issue), and much of the economics lives in the
-riders — the 先進医療特約 (*senshin iryō tokuyaku*, advanced-medicine rider) costs about 2% of the
+[whole life savings chassis (終身保険)](../whole_life/product-spec.md). Second,
+the policy is main contract (*shu-keiyaku*, 主契約) plus riders (*tokuyaku*, 特約) and special
+provisions elected at issue (*tokusoku*, 特則), and much of the economics lives in the
+riders — the advanced-medicine rider (*senshin iryō tokuyaku*, 先進医療特約) costs about 2% of the
 premium [S9] and buys a ¥20,000,000 lifetime cap.
 
 ---
@@ -99,13 +99,13 @@ premium [S9] and buys a ¥20,000,000 lifetime cap.
 |---|---|---|
 | Design type | 医療保険, 無配当・無解約返戻金型; 主契約 paying 疾病入院給付金, 災害入院給付金 and 手術給付金, with 特約 attached | [S1] [S2] [S4] [S6] [S9] [S10] |
 | Regulatory class | 第三分野 (保険業法 第3条第4項第2号 / 第5項第2号) | [R1] [REG-R1] |
-| Chassis | 終身 (whole-of-life cover, whole-of-life or short premium term); 10年更新 定期型 as a model-point flag | [S1] [S6] [S9] vs [S7] [S10]; **[std]** (1) |
-| 契約年齢 (issue age) range | 20–80 | observed range; **[std]** (2) |
-| Age basis | 満年齢 (*man-nenrei*, attained age at 契約日 with the fraction discarded), incremented at each 年単位の契約応当日 | [S4] [S10] |
-| 保険期間 (policy term) | 終身 (to the terminal age of the mortality table) | [S1] [S6] [S9] |
-| 保険料払込期間 (premium-paying period) | 終身払 (pay for life) default; 65歳払済 短期払 variant | [S1] [S6]; **[std]** (3) |
-| 入院給付金日額 (daily hospitalization amount) menu | ¥3,000 / ¥5,000 / ¥8,000 / ¥10,000 / ¥12,000 / ¥15,000; composite default **¥5,000** | menu [S6]; default **[std]** (4) |
-| Underwriting | 告知扱い (*kokuchi-atsukai*, written declaration), no medical examination in the direct channels; 告知受領権 rests with the company | [S1] [S6] [S10] |
+| Chassis | Whole-of-life cover (終身), whole-of-life or short premium term; 10年更新 定期型 as a model-point flag | [S1] [S6] [S9] vs [S7] [S10]; **[std]** (1) |
+| Issue age (契約年齢) range | 20–80 | observed range; **[std]** (2) |
+| Age basis | Attained age at 契約日 with the fraction discarded (*man-nenrei*, 満年齢), incremented at each 年単位の契約応当日 | [S4] [S10] |
+| Policy term (保険期間) | 終身 (to the terminal age of the mortality table) | [S1] [S6] [S9] |
+| Premium-paying period (保険料払込期間) | Pay for life (終身払) default; 65歳払済 短期払 variant | [S1] [S6]; **[std]** (3) |
+| Daily hospitalization amount (入院給付金日額) menu | ¥3,000 / ¥5,000 / ¥8,000 / ¥10,000 / ¥12,000 / ¥15,000; composite default **¥5,000** | menu [S6]; default **[std]** (4) |
+| Underwriting | Written declaration (*kokuchi-atsukai*, 告知扱い), no medical examination in the direct channels; 告知受領権 rests with the company | [S1] [S6] [S10] |
 | Lives basis | Single life only | [S1] [S4] [S6] [S9] [S10] |
 | 死亡保険金 in the main contract | None | [S1] [S4] [S6] [S9] [S10] |
 | **Anchor model cell** | Male, 契約年齢 40, 終身 chassis, 入院給付金日額 ¥5,000, 60日型 per-hospitalization limit, 通算1,095日, 終身払, level premium ¥2,100 per month, 手術給付金 20倍/5倍, 先進医療特約 attached, five-day minimum payment off | **[std]** (5) |
@@ -147,19 +147,19 @@ Footnotes to [std] rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium basis | Level for the whole premium-paying period, 無配当 — no dividend, no premium review; on the 定期 flag, recomputed at each renewal | [S3] [S6] [S8] for 終身; [S7] [S10] for 定期 |
-| 払込回数 (frequency) | 月払 (monthly) default; 半年払 / 年払 available | [S1] [S4]; default **[std]** (6) |
-| 払込経路 (payment route) | 口座振替 / クレジットカード / 団体扱 / 振込 | [S1] [S4] |
-| 前納 (advance payment) | 月払 contracts may prepay 6 or 12 months at a company-set discount; not modeled | [S4]; scope **[std]** (6) |
+| Frequency (払込回数) | Monthly (月払) default; 半年払 / 年払 available | [S1] [S4]; default **[std]** (6) |
+| Payment route (払込経路) | 口座振替 / クレジットカード / 団体扱 / 振込 | [S1] [S4] |
+| Advance payment (前納) | 月払 contracts may prepay 6 or 12 months at a company-set discount; not modeled | [S4]; scope **[std]** (6) |
 | Rating factors | 契約年齢, sex, 入院給付金日額, 支払限度の型, riders and 特則 elected, 告知 outcome; one carrier discloses that it also prices 受療率 by prefecture of residence, taken from 患者調査 | [S6]; composite **[std]** (7) |
 | Rate structure | Not published by any carrier; the office premium is a model-point input, backed by a **[std]** morbidity basis constructed from 患者調査 in the technical notes | gap; **[std]** (7) |
 | Anchor premium | ¥2,100 per month | **[std]** (5) |
-| 保険料払込免除 (waiver of premium) | Disability-triggered: 高度障害状態 (*kōdo shōgai jōtai*, severe disability) from any cause, or a listed 身体障害の状態 arising from an 不慮の事故 (accident) within 180 days of it; available only during the premium-paying period | [S1] [S2] [S9] [S10] |
+| Waiver of premium (保険料払込免除) | Disability-triggered: severe disability (*kōdo shōgai jōtai*, 高度障害状態) from any cause, or a listed 身体障害の状態 arising from an accident (不慮の事故) within 180 days of it; available only during the premium-paying period | [S1] [S2] [S9] [S10] |
 
 6. Monthly is the dominant retail mode and one net-direct product is 月払 only as at its
    2024年4月 edition [S10]; the composite standardizes on monthly (which is also why the model
    runs on a monthly grid) and treats 前納 discounting [S4] as an immaterial modal refinement.
-7. The 算出方法書 (*sanshutsu hōhō-sho*, statement of the method of calculating premiums and
-   policy reserves) is a 基礎書類 filed with the 金融庁 and is **not published** [REG-R2] — which
+7. The statement of the method of calculating premiums and policy reserves (*sanshutsu
+   hōhō-sho*, 算出方法書) is a 基礎書類 filed with the 金融庁 and is **not published** [REG-R2] — which
    is precisely why every pricing-basis parameter in this library is [std] while every
    contractual parameter carries an [S#] tag. Two carriers publish specimen scales by age
    and sex on a fixed specification [S3] [S8] and one publishes a single specimen contract
@@ -173,24 +173,24 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 疾病入院給付金 (disease hospitalization benefit) | 入院給付金日額 × 入院日数 per hospitalization | [S1] [S2] [S6] [S9] [S10] |
-| 災害入院給付金 (accident hospitalization benefit) | Same daily amount; admission must begin within 180 days of the accident | [S1] [S4] [S9] [S10] |
+| Disease hospitalization benefit (疾病入院給付金) | 入院給付金日額 × 入院日数 per hospitalization | [S1] [S2] [S6] [S9] [S10] |
+| Accident hospitalization benefit (災害入院給付金) | Same daily amount; admission must begin within 180 days of the accident | [S1] [S4] [S9] [S10] |
 | Concurrency | 疾病入院給付金 and 災害入院給付金 are never paid for the same day; where 災害 is running and a disease is diagnosed mid-stay, 疾病 begins the day after the 災害 period ends | [S1] [S2] [S4] [S9] [S10] |
-| 日帰り入院 (same-day admission) | Covered — the 支払事由 is one day or more of 入院 | [S3] [S6] [S9] |
+| Same-day admission (日帰り入院) | Covered — the 支払事由 is one day or more of 入院 | [S3] [S6] [S9] |
 | Five-day minimum payment | Switch, **off** in the composite base; when on, a stay of 5 days or fewer pays 日額 × 5 | [S4] [S6] [S7] have it, [S1] [S2] [S9] [S10] do not; **[std]** (8) |
-| 1入院の支払限度日数 (per-hospitalization day limit) | **60日型** default; 120日型 switch | [S1] [S4] [S9]; **[std]** (9) |
+| Per-hospitalization day limit (1入院の支払限度日数) | **60日型** default; 120日型 switch | [S1] [S4] [S9]; **[std]** (9) |
 | One-hospitalization test | Two or more admissions are one hospitalization where the causes are the same or medically related; a new hospitalization begins on the **181st day** counting from the day after the previous discharge | [S1] [S2] [S6] [S7] [S10]; **[std]** (10) |
-| 通算支払限度日数 (aggregate day limit) | **1,095日**, applied separately to the 疾病 and 災害 limbs; 1,000日 switch; on the 定期 flag it runs across renewals | [S4] [S6] [S7] [S10] vs [S1] [S9]; **[std]** (11) |
-| 手術給付金 (surgery benefit) | 入院給付金日額 × **20** for surgery during a paid hospitalization, × **5** otherwise; unlimited in count | [S1] [S3]; **[std]** (12) |
-| Surgery trigger | Procedures chargeable under 手術料 in the 医科診療報酬点数表 (*ika shinryō hōshū tensū-hyō*, the public health system's medical fee schedule), plus 放射線治療料-listed procedures, plus 骨髄移植術 chargeable under 輸血料, plus procedures qualifying as 先進医療 | [S1] [S2] [S4] [S9] [S10] |
+| Aggregate day limit (通算支払限度日数) | **1,095日**, applied separately to the 疾病 and 災害 limbs; 1,000日 switch; on the 定期 flag it runs across renewals | [S4] [S6] [S7] [S10] vs [S1] [S9]; **[std]** (11) |
+| Surgery benefit (手術給付金) | 入院給付金日額 × **20** for surgery during a paid hospitalization, × **5** otherwise; unlimited in count | [S1] [S3]; **[std]** (12) |
+| Surgery trigger | Procedures chargeable under 手術料 in the public health system's medical fee schedule (*ika shinryō hōshū tensū-hyō*, 医科診療報酬点数表), plus 放射線治療料-listed procedures, plus 骨髄移植術 chargeable under 輸血料, plus procedures qualifying as 先進医療 | [S1] [S2] [S4] [S9] [S10] |
 | Surgery exclusions | The seven-item list: 傷の処理; 切開術（皮膚、鼓膜）; 骨・関節の非観血的整復術等; 抜歯; 異物除去（外耳、鼻腔内）; 鼻焼灼術; 魚の目・タコ切除術 | [S2] [S4] [S6] [S10] |
 | Surgery frequency limits | One surgery per day (the highest-paying); a per-day-charged 手術料 pays the first day only; 放射線照射 and 温熱療法 pay at most once in 60 days | [S1] [S2] [S9] [S10] |
 | Surgery during a stay whose day limit is exhausted | Paid, at the in-hospital multiple | [S4] vs [S10]; **[std]** (13) |
-| 放射線治療給付金 (radiation therapy benefit) | Folded into 手術給付金 through the 放射線治療料 limb of the trigger, at most once per 60 days | [S1] [S2] [S6] [S10]; **[std]** (14) |
-| 通院給付金 (outpatient benefit) | Not in the composite main contract | [S1] [S5]; **[std]** (15) |
-| 骨髄幹細胞の採取術 (bone-marrow harvesting) | Covered only from one year after 責任開始日 (*sekinin kaishi-bi*, the date cover attaches); 自家移植 excluded | [S1] [S2] [S6] [S9] [S10] |
+| Radiation therapy benefit (放射線治療給付金) | Folded into 手術給付金 through the 放射線治療料 limb of the trigger, at most once per 60 days | [S1] [S2] [S6] [S10]; **[std]** (14) |
+| Outpatient benefit (通院給付金) | Not in the composite main contract | [S1] [S5]; **[std]** (15) |
+| Bone-marrow harvesting (骨髄幹細胞の採取術) | Covered only from one year after the date cover attaches (*sekinin kaishi-bi*, 責任開始日); 自家移植 excluded | [S1] [S2] [S6] [S9] [S10] |
 | Pre-inception disease and injury | Not covered — only disease arising, and accidents occurring, on or after 責任開始時 | [S1] [S2] [S9] [S10] vs [S4]; **[std]** (16) |
-| 免責事由 (exclusions) | 故意 or 重大な過失 of the policyholder or insured; the insured's criminal act; an accident caused by 精神障害 or 泥酔; unlicensed driving; drink-driving; 薬物依存; 頚部症候群（むちうち症）or 腰痛 with no objective findings, whatever the cause; 地震・噴火・津波; 戦争その他の変乱 | [S4], matched on substance by [S1] [S5] [S10] |
+| Exclusions (免責事由) | 故意 or 重大な過失 of the policyholder or insured; the insured's criminal act; an accident caused by 精神障害 or 泥酔; unlicensed driving; drink-driving; 薬物依存; 頚部症候群（むちうち症）or 腰痛 with no objective findings, whatever the cause; 地震・噴火・津波; 戦争その他の変乱 | [S4], matched on substance by [S1] [S5] [S10] |
 | Catastrophe proportionality | Where an earthquake, eruption, tsunami or war raises claims but its effect on the pricing basis is small, the insurer may pay in full or reduce the benefit in proportion | [S4] |
 | Suicide | Nothing is paid where the insured takes their own life within **3 years** of 責任開始日 | [S1]; statutory frame [REG-R34] |
 | Termination on exhausting the limits | Cover ceases where both the 疾病 and 災害 aggregate limits are reached | [S9]; **[std]** (17) |
@@ -251,7 +251,7 @@ Footnotes to [std] rows:
     通院治療支援特約（退院時一時金給付型）paying a lump sum on surviving discharge from a paid admission,
     once per discharge, 通算50回 [S1]; another sells a general 通院特約 in its rider booklet [S5].
     The composite leaves outpatient benefits out of the main contract and out of the base
-    run, so that [がん保険](../cancer/product-spec.md) introduces a 通院 benefit as its own
+    run, so that [cancer (がん保険)](../cancer/product-spec.md) introduces a 通院 benefit as its own
     delta rather than inheriting an unused one.
 16. The base rule everywhere is that only post-責任開始時 disease and accidents are covered
     [S1] [S2] [S9] [S10]. One carrier softens it twice: a pre-inception condition **is**
@@ -271,14 +271,14 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 先進医療特約 | Reimburses in full the 技術料 (technique fee) of a 厚生労働大臣-designated 先進医療, which sits entirely outside the public scheme; lifetime aggregate **¥20,000,000**; the rider terminates on reaching the cap | [S1] [S3] [S5] [S6] [S7] [S9] |
+| 先進医療特約 | Reimburses in full the technique fee (技術料) of a 厚生労働大臣-designated 先進医療, which sits entirely outside the public scheme; lifetime aggregate **¥20,000,000**; the rider terminates on reaching the cap | [S1] [S3] [S5] [S6] [S7] [S9] |
 | 先進医療 cash top-up | 10% of the 先進医療給付金, capped at ¥500,000 per 療養 | [S1]; **[std]** (18) |
 | 先進医療 unit of claim | A series of treatments under the same 先進医療 counts as one 療養; cover is tested at the treatment date, so a technology that has left the 先進医療 list pays nothing; 患者申出療養 is excluded | [S1] [S5] [S6] [S9] |
 | 先進医療特約 term | Attached for the life of the main contract | [S1] [S5] vs [S9]; **[std]** (18) |
-| 入院一時金特約 (hospitalization lump-sum rider) | ¥100,000 per hospitalization, one payment per hospitalization, 通算50回, cause-blind aggregation with the same 181st-day reset | [S1]; **[std]** (19) |
+| Hospitalization lump-sum rider (入院一時金特約) | ¥100,000 per hospitalization, one payment per hospitalization, 通算50回, cause-blind aggregation with the same 181st-day reset | [S1]; **[std]** (19) |
 | 三大疾病無制限 特則 | Elected at issue and never cancellable: for がん（悪性新生物・上皮内新生物）, 心疾患 and 脳血管疾患 the per-hospitalization limit is 無制限 and those days sit outside the 通算 limit; for the remaining four 七大生活習慣病 the per-hospitalization limit doubles | [S1] [S2]; **[std]** (20) |
-| 特定三疾病保険料払込免除特則 (three-disease waiver) | Premiums waived for life on: がん — first diagnosis on or after the がん責任開始日, the 91st day from 責任開始日; 心疾患 — 急性心筋梗塞 on any admission for treatment or a listed surgery, other 心疾患 on a continuous stay of 10 days or more or a listed surgery; 脳血管疾患 — the same structure with 脳卒中 as the acute limb | [S1] |
-| 引受基準緩和型 (relaxed underwriting) | Out of scope | [S9]; scope **[std]** (21) |
+| Three-disease waiver (特定三疾病保険料払込免除特則) | Premiums waived for life on: がん — first diagnosis on or after the がん責任開始日, the 91st day from 責任開始日; 心疾患 — 急性心筋梗塞 on any admission for treatment or a listed surgery, other 心疾患 on a continuous stay of 10 days or more or a listed surgery; 脳血管疾患 — the same structure with 脳卒中 as the acute limb | [S1] |
+| Relaxed underwriting (引受基準緩和型) | Out of scope | [S9]; scope **[std]** (21) |
 
 18. The **¥20,000,000 cap is uniform** at every carrier that publishes one [S1] [S3] [S5]
     [S6] [S7] [S9] — one of the few genuinely market-wide parameters in the product. The
@@ -325,17 +325,17 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 解約返戻金 (*kaiyaku-henreikin*, surrender value) | None under 終身払, at any duration; under the 65歳払済 variant, **10 × 入院給付金日額** once the premium-paying period completes | [S1] [S6] [S9]; **[std]** (22) |
-| 配当金 (policyholder dividend) | None — the chassis is 無配当; no 満期保険金 (maturity benefit) exists | [S1] [S6]; [REG-R9] |
+| Surrender value (*kaiyaku-henreikin*, 解約返戻金) | None under 終身払, at any duration; under the 65歳払済 variant, **10 × 入院給付金日額** once the premium-paying period completes | [S1] [S6] [S9]; **[std]** (22) |
+| Policyholder dividend (配当金) | None — the chassis is 無配当; no maturity benefit (満期保険金) exists | [S1] [S6]; [REG-R9] |
 | 契約者貸付 / 自動振替貸付 | Neither offered — there is no surrender value to lend against, so a missed premium lapses the policy | [S1]; [REG-R14] |
 | Rider values | Riders carry no surrender value at any point in the policy period | [S1] |
-| 払込猶予期間 (grace period), 月払 | From the first day of the month following the 払込期月 to the **last day of that month** | [S1] [S4] [S10]; **[std]** (23) |
+| Grace period (払込猶予期間), 月払 | From the first day of the month following the 払込期月 to the **last day of that month** | [S1] [S4] [S10]; **[std]** (23) |
 | 払込猶予期間, 半年払・年払 | From the first day of the month following the 払込期月 to the monthly contract anniversary in the month after that | [S1] [S4] |
 | Claims during grace | Unpaid premiums are deducted from the benefit; if the benefit is insufficient the balance must be paid by the end of grace, failing which the contract lapses from the day after grace expires and neither the benefit nor the waiver is given | [S4] |
-| 失効 (lapse) | From the day after the grace period expires | [S1] [S4] [S6] [S10] |
-| 復活 (reinstatement) | Available within **1 year** of 失効, on payment of arrears and fresh 告知; may be refused on health grounds; cover restarts on the 復活日 and the pre-existing-condition and waiting-period clocks reset to it | [S4] [S9]; **[std]** (24) |
+| Lapse (失効) | From the day after the grace period expires | [S1] [S4] [S6] [S10] |
+| Reinstatement (復活) | Available within **1 year** of 失効, on payment of arrears and fresh 告知; may be refused on health grounds; cover restarts on the 復活日 and the pre-existing-condition and waiting-period clocks reset to it | [S4] [S9]; **[std]** (24) |
 | First-premium failure | The contract is **void** (無効), not lapsed | [S1] [S10] |
-| 告知義務違反 (non-disclosure) | Rescission within **2 years** of 責任開始日 or of the 復活日; no defeat of a claim where there is no causal connection; 詐欺による取消 has no time limit and returns nothing | [S1] [S10]; ceiling [REG-R35] |
+| Non-disclosure (告知義務違反) | Rescission within **2 years** of 責任開始日 or of the 復活日; no defeat of a claim where there is no causal connection; 詐欺による取消 has no time limit and returns nothing | [S1] [S10]; ceiling [REG-R35] |
 | クーリング・オフ | 15 days from the application date [S1] / 8 days from the day after it [S10]; out of scope | [REG-R36]; scope **[std]** (25) |
 | Death of the insured | Cover terminates; any surrender value that exists is paid to the policyholder | [S1] |
 
@@ -346,7 +346,7 @@ Footnotes to [std] rows:
     says a value "may exist but is small" without a figure [S10]. The composite adopts 10 ×
     日額 after a completed 短期払 and zero everywhere else. On the anchor cell (終身払) it is
     identically zero, which is the point: the surrender decrement here carries no cash flow
-    at all, unlike on the [終身保険 savings chassis](../whole_life/product-spec.md).
+    at all, unlike on the [whole life savings chassis (終身保険)](../whole_life/product-spec.md).
 23. Three carriers state the same monthly grace [S1] [S4] [S10] and one states two months
     [S6]; the composite takes the majority. One carrier's calendar special case for 半年払・年払
     where the 契約応当日 falls on the last day of February, June or November [S4] is not adopted.
@@ -501,7 +501,7 @@ one of them [S10]; one year on a named list of eight elective procedures — 痔
 on a 白内障 limb of one 先進医療特約 [S6]; and one year on a 骨髄ドナー入院給付金, where nothing is paid
 if the stay *ends* within the year [S9].
 
-告知 is a 質問応答義務 (answer-the-question duty) made in writing or on screen; 告知受領権 rests with
+告知 is an answer-the-question duty (質問応答義務) made in writing or on screen; 告知受領権 rests with
 the company and, where there is one, the examining physician — telling a 生命保険募集人 orally is
 not 告知 [S1] [S10]. Rescission for 告知義務違反 runs for **2 years** from 責任開始日 or 復活日
 [S1] [S10], inside the statutory ceiling of five years from inception [REG-R35]; a shorter
@@ -521,7 +521,7 @@ premium under 自動振替貸付 — an election the 監督指針 requires be at
 notified promptly [REG-R14] — but this chassis has no surrender value and one carrier states
 that neither 契約者貸付 nor 自動振替貸付 is offered [S1]. **The lapse is real and immediate**, and
 that is the structural difference between the third-sector chassis and the
-[終身保険 savings chassis](../whole_life/product-spec.md).
+[whole life savings chassis (終身保険)](../whole_life/product-spec.md).
 
 復活 within one year restores cover from the 復活日 on payment of arrears and fresh 告知, and may
 be refused on health grounds [S4] [S9]. Reinstatement is not a rewind: the 責任開始期 for
@@ -550,7 +550,7 @@ the 復活日 where the remainder would otherwise have expired [S9].
 
 **Out of scope:** 通院治療支援特約（退院時一時金給付型）and general 通院特約 [S1] [S5];
 特定三疾病一時金特約 and がん治療給付金 (which belong to
-[がん保険](../cancer/product-spec.md)) [S1] [S6]; 女性入院給付金 and
+[cancer (がん保険)](../cancer/product-spec.md)) [S1] [S6]; 女性入院給付金 and
 女性疾病入院特約 [S2] [S5]; 七大疾病無制限 as distinct from 三大疾病無制限 [S1] [S2]; the
 主契約-型 lump-sum designs — 短期入院一時金型 and 入院一時金型 — and their day-conversion rules
 [S9]; the 手術総合特約 written on a separate 手術給付金基準額 [S9]; the separate 放射線治療給付金 of
@@ -623,8 +623,8 @@ at a term end [S10].
     [S9] [S10]; the per-hospitalization 型 is elected at issue and never changeable [S4]
     [S9]; and every main contract is 無配当 and, during the premium-paying period, 無解約返戻金 [S1]
     [S2] [S4] [S6] [S9]. These are the invariant core of the composite, and the parts of it
-    a [がん保険](../cancer/product-spec.md) or
-    [介護保険](../nursing_care/product-spec.md) delta should expect to inherit unchanged.
+    a [cancer (がん保険)](../cancer/product-spec.md) or
+    [nursing care (介護保険)](../nursing_care/product-spec.md) delta should expect to inherit unchanged.
 
 ---
 
@@ -634,19 +634,19 @@ at a term end [S10].
 available under a 損害保険業免許 by 第3条第5項第2号 [R1] [REG-R1]. Everything below follows from that
 classification rather than from the product's shape.
 
-**Prudential — the third-sector reserving overlay.** 保険業法 第116条第1項 requires a 責任準備金
-(*sekinin-junbikin*, policy reserve) at each 決算期, and 第2項 delegates the accumulation method
+**Prudential — the third-sector reserving overlay.** 保険業法 第116条第1項 requires a policy
+reserve (*sekinin-junbikin*, 責任準備金) at each 決算期, and 第2項 delegates the accumulation method
 and the level of the calculation coefficients for long-term contracts [REG-R4]; 施行規則 第68条
-says which contracts are in scope of the resulting 標準責任準備金 (*hyōjun sekinin-junbikin*,
-standard policy reserve) [R2] [REG-R7]; and 平成8年大蔵省告示第48号 sets the method — **平準純保険料式**
-(*heijun jun-hokenryō-shiki*, net level premium), with no Zillmer adjustment — the table
-vintages and the 標準利率 (*hyōjun riritsu*, standard valuation interest rate) reset machinery
+says which contracts are in scope of the resulting standard policy reserve (*hyōjun
+sekinin-junbikin*, 標準責任準備金) [R2] [REG-R7]; and 平成8年大蔵省告示第48号 sets the method — net level
+premium (*heijun jun-hokenryō-shiki*, **平準純保険料式**), with no Zillmer adjustment — the table
+vintages and the standard valuation interest rate (*hyōjun riritsu*, 標準利率) reset machinery
 [REG-R10]. For contracts concluded on or after **1 April 2018** the third-sector valuation
 mortality is **第三分野標準生命表2018** [REG-R11] [R4] [REG-R18].
 
 On top of that sits the overlay specific to this product class. 施行規則 第69条第1項 divides the
-reserve into 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 (*kiken junbikin*, contingency
-reserve) [R2] [REG-R8], and **第69条第6項第1号の2 requires a separately identified
+reserve into 保険料積立金, 未経過保険料, 払戻積立金 and contingency reserve (*kiken junbikin*,
+危険準備金) [R2] [REG-R8], and **第69条第6項第1号の2 requires a separately identified
 「第三分野保険の保険リスクに備える危険準備金」** — a contingency reserve held specifically against
 third-sector insurance risk, whose accumulation and release follow standards set by the
 金融庁長官 [R2]. The 監督指針 then says how it is computed: 「第三分野保険のストレステストを使用しての
@@ -677,8 +677,8 @@ explicit [std] adjustment, and must say which of the two it is using at each poi
 [REG-R20], so a model that treats 高度障害 as a termination must add it separately. The table
 was built on the national 第21回生命表 (2010) with 2.5% p.a. improvement for five years and 1.0%
 for three, plus a 2σ risk-theory margin bounded **below at 70% and above at 85%** of the
-unadjusted rate, and it is constructed for use on a 保険年齢方式 (*hoken-nenrei hōshiki*,
-nearest-birthday) basis while the contracts age on 満年齢 [R5] [REG-R20] — half a year of age
+unadjusted rate, and it is constructed for use on a nearest-birthday (*hoken-nenrei
+hōshiki*, 保険年齢方式) basis while the contracts age on 満年齢 [R5] [REG-R20] — half a year of age
 between a pricing and a valuation model.
 
 Third, **the table is readable but not redistributable, and the difference matters.**
@@ -716,7 +716,7 @@ through the 生命保険契約者保護機構 [REG-R40], the rate set by ordinan
 [REG-R41].
 
 **Tax.** A 医療保険 premium falls in the **介護医療保険料** basket of the post-2012 three-basket
-生命保険料控除 (*seimei hokenryō kōjo*, life insurance premium deduction), which covers contracts
+life insurance premium deduction (*seimei hokenryō kōjo*, 生命保険料控除), which covers contracts
 concluded on or after 2012-01-01 that pay on 医療費支払事由 [R11]. The income-tax deduction is the
 full premium up to ¥20,000; premium/2 + ¥10,000 to ¥40,000; premium/4 + ¥20,000 to ¥80,000;
 and a flat **¥40,000** above — capped at ¥40,000 per basket and **¥120,000** overall [R10]
@@ -725,8 +725,8 @@ deduction of about ¥22,600: real, and second-order. The 住民税 caps are not 
 pages retrieved and are [unverified] [R11]. Benefits are not modelled net of policyholder
 tax.
 
-**Professional standards.** Every life insurer appoints a 保険計理人 (*hoken keirinin*, appointed
-actuary) under 保険業法 第120条 [REG-R5], who confirms at each 決算期 whether the 責任準備金
+**Professional standards.** Every life insurer appoints an appointed actuary (*hoken
+keirinin*, 保険計理人) under 保険業法 第120条 [REG-R5], who confirms at each 決算期 whether the 責任準備金
 「が健全な保険数理に基づいて積み立てられているかどうか」 and submits an 意見書 under 第121条 [REG-R6]. The
 日本アクチュアリー会 実務基準 turns that item into the **1号収支分析** — a forward income-and-outgo
 analysis over 「少なくとも将来10年間」, by 区分経理 segment, with sufficiency judged over the first five

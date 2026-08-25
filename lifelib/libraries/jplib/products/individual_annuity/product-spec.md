@@ -3,8 +3,8 @@
 **Status:** Draft, 2026-08-20 (all cited sources accessed 2026-08-20).
 
 **Scope note.** This is a *standardized composite specification* of a Japanese fixed
-individual deferred annuity — 個人年金保険 (*kojin nenkin hoken*, individual annuity insurance) in
-its 定額 (*teigaku*, fixed) form — assembled for reference liability cash-flow modeling. It
+individual deferred annuity — individual annuity insurance (*kojin nenkin hoken*, 個人年金保険) in
+its fixed (*teigaku*, 定額) form — assembled for reference liability cash-flow modeling. It
 describes no single insurer's contract. Facts carrying a source tag — [S#] (primary product
 documents) and [R#] (product-specific regulatory/actuarial references), both numbered per
 `_research/individual-annuity.md` and resolved in `sources.md` (same directory; numbering
@@ -15,7 +15,7 @@ introduced for the reference implementation; each [std] table row carries a numb
 footnote giving the rationale and, where one exists, the observed range across carriers.
 Facts the research file could not verify are flagged [unverified]. Documents from **seven**
 carriers were pursued; **five** yielded extractable text and are the basis of this composite
-— one carrier's 約款 (*yakkan*, policy conditions) booklet, tax rider and tontine release [S1]
+— one carrier's policy conditions (*yakkan*, 約款) booklet, tax rider and tontine release [S1]
 [S2] [S3]; a second's booklet bound with its 契約概要／注意喚起情報 [S4]; a third's rate release and
 product page [S5] [S6]; a fourth's rate release, two product pages and rate schedule [S8]
 [S9] [S10] [S11]; and a fifth's product page and declared-rate page [S12] [S13]. Two
@@ -23,21 +23,21 @@ further booklets [S14] [S15] and one pre-contract disclosure [S7] downloaded cle
 are typeset in subset CID fonts with no ToUnicode map, so no parameter below rests on them.
 
 The composite is a **level-annual-premium 生存保障重視型** (*seizon hoshō jūshi-gata*,
-survival-benefit-weighted) fixed deferred annuity with the **税制適格特約** (*zeisei tekikaku
-tokuyaku*, tax-qualification rider) attached, paying a **10年確定年金** (*kakutei nenkin*,
-annuity-certain) from age 65. Its two phases — accumulation to a 年金原資 (*nenkin genshi*,
-annuity fund), then payout — run on one annual grid in `Annuity_JP_A`. 変額 (variable) and 外貨建
-(foreign-currency) annuities are out of scope and appear below as scope boundaries.
+survival-benefit-weighted) fixed deferred annuity with the tax-qualification rider (*zeisei
+tekikaku tokuyaku*, **税制適格特約**) attached, paying a **10年確定年金** (*kakutei nenkin*,
+annuity-certain) from age 65. Its two phases — accumulation to an annuity fund (*nenkin
+genshi*, 年金原資), then payout — run on one annual grid in `Annuity_JP_A`. Variable (変額) and
+foreign-currency (外貨建) annuities are out of scope and appear below as scope boundaries.
 
 ---
 
 ## Product overview and market role
 
-個人年金保険 is 第一分野 (*dai-ichi-bun'ya*, first-sector) business — fixed-sum insurance on human
+個人年金保険 is first-sector (*dai-ichi-bun'ya*, 第一分野) business — fixed-sum insurance on human
 survival or death under 保険業法第3条第4項第1号 [REG-R1]. Level premiums accumulate over a deferral
-phase to a 年金原資; on the 年金支払開始日 (*nenkin shiharai kaishi-bi*, annuity payment start date)
+phase to a 年金原資; on the annuity payment start date (*nenkin shiharai kaishi-bi*, 年金支払開始日)
 that fund buys the annuity, paid annually thereafter [S2] [S4] [R16]. Japanese practice uses
-据置期間 (*sueoki kikan*, deferral period) narrowly, for the gap between the end of premium
+deferral period (*sueoki kikan*, 据置期間) narrowly, for the gap between the end of premium
 payment and the annuity start; this document keeps that narrow sense and says "deferral
 phase" for the whole pre-annuitisation period.
 
@@ -53,15 +53,15 @@ savings purchase rather than a protection purchase. New business skews female: 4
 54.1% female [R15].
 
 One definition must be carried into any model built from these figures: for annuities 契約高
-means **年金原資 before annuitisation and 責任準備金 (*sekinin-junbikin*, policy reserve)
+means **年金原資 before annuitisation and policy reserve (*sekinin-junbikin*, 責任準備金)
 after it** [R15] — a quantity that grows with duration, so it is not comparable to a sum
 assured. The published **解約・失効率 of 3.4%** for
 FY2024 is measured on pre-annuitisation in-force 契約高 at the start of the year only [R15],
 which makes it exactly the deferral-phase decrement a projection needs; the 個人保険 figure is
 5.6% [REG-R31].
 
-What the product is *for* is the third basket of the **生命保険料控除** (*seimei hokenryō kōjo*,
-life insurance premium deduction). Post-2012 the deduction runs in three baskets — 一般 / 介護医療
+What the product is *for* is the third basket of the life insurance premium deduction (*seimei
+hokenryō kōjo*, **生命保険料控除**). Post-2012 the deduction runs in three baskets — 一般 / 介護医療
 / 個人年金 — each capped at **¥40,000**, with an overall ceiling of **¥120,000** at national
 income-tax level [REG-R43] [R11]. The 個人年金 basket is reachable only by a contract meeting
 所得税法第76条第8項 [R9] and 所得税法施行令第211条・第212条 [R10]; the 税制適格特約 is what binds the policy to them.
@@ -73,8 +73,8 @@ part-commuting the annuity.
 
 Underwriting is largely absent. One carrier's annuity states 「ご契約に際して、告知は不要です」 — no
 disclosure at all [S2] — and the same carrier's tontine advertises no medical examination
-and no disclosure [S3]; a second offers a 無選択特則 (*musentaku tokusoku*, no-selection special
-provision) which, attached, removes both the disclosure duty and the premium-waiver benefit
+and no disclosure [S3]; a second offers a no-selection special provision (*musentaku tokusoku*,
+無選択特則) which, attached, removes both the disclosure duty and the premium-waiver benefit
 [S4]. The mortality risk the insurer carries in deferral is a *refund* obligation capped at
 premiums paid, not a sum assured, so there is little to select against.
 
@@ -88,10 +88,10 @@ premiums paid, not a sum assured, so there is little to select against.
 |---|---|---|
 | Design type | 定額個人年金保険, deferred, level annual premium, 生存保障重視型 | [S2] [S4] [S5] [S6] [R16] |
 | Regulatory class | 第一分野 life business (保険業法第3条第4項第1号) | [REG-R1] |
-| Participation | 5年ごと利差配当 (interest-differential dividend every five years) | adoption **[std]** (1) |
+| Participation | Interest-differential dividend every five years (5年ごと利差配当) | adoption **[std]** (1) |
 | Lives basis | Single life; 被保険者 = 年金受取人 = 保険契約者 | [S1] [S4] [S9] [S10] |
-| Underwriting | None — no medical examination, no 告知 (disclosure) | [S2] [S3] [S4] |
-| 契約年齢 (issue age) | 20–55, on a 保険年齢 (*hoken-nenrei*, insurance age — age nearest birthday) basis | envelope **[std]** (2) |
+| Underwriting | None — no medical examination, no disclosure (告知) | [S2] [S3] [S4] |
+| Issue age (契約年齢) | 20–55, on an insurance age — age nearest birthday (*hoken-nenrei*, 保険年齢) basis | envelope **[std]** (2) |
 | 保険料払込期間 | To age 60, a whole number of years, minimum 10 | **[std]** (3); ≥ 10 forced by [S1] [R9] |
 | 据置期間 (narrow sense) | 5 years, from 払込満了 to the 年金支払開始日 | **[std]** (3) |
 | 年金支払開始年齢 | 65 | **[std]** (3) |
@@ -106,8 +106,8 @@ Footnotes to [std] rows:
 1. Three of the five carriers write this chassis as participating on a five-year cycle:
    5年ごと利差配当 at two [S4] [S5] [S6], 5年ごと配当 on a third's tontine [S3]. A fourth's dividend
    basis was not extracted from the documents retrieved; the fifth is outside the chassis,
-   paying a 金利キャッチアップ配当 when new-business 予定利率 (*yotei riritsu*, assumed interest
-   rate) rises above the rate at issue [S12]. Market-wide the menu is 無配当 / 5年ごと利差配当 / 毎年配当, 無配当 dominating
+   paying a 金利キャッチアップ配当 when new-business assumed interest rate (*yotei riritsu*, 予定利率) rises
+   above the rate at issue [S12]. Market-wide the menu is 無配当 / 5年ごと利差配当 / 毎年配当, 無配当 dominating
    single-premium, 積立利率変動型 and foreign-currency annuities [R16]. The composite takes
    5年ごと利差配当 and then sets the declared dividend to zero in the base run — footnote 16.
 2. Observed 契約年齢: **0–75** [S6]; **7–65**, narrowing to 18–55 online [S9]; **0–80** on one
@@ -150,9 +150,9 @@ Footnotes to [std] rows:
 | 予定利率, payout phase | 0.65% p.a., set separately from the deferral rate | [S5]; adoption **[std]** (7) |
 | 予定事業費率 | Not published; a [std] loading is specified in `technical-notes.md` | [REG-R2]; **[std]** (8) |
 | Premium-band discount | Applied once the monthly-equivalent premium reaches ¥15,000 | [S6] |
-| 前納 (prepayment of ≥ 3 annual premiums) | Discounted at a declared rate, balance accumulated at a declared rate. Out of scope | [S4] [S11] |
-| 契約者貸付 (policy loan) | Within a stated fraction of the 解約返戻金 (*kaiyaku-henreikin*, surrender value), compound at 2.40% p.a. for the current issue cohort; none after annuitisation | [S4] [S11]; adoption **[std]** (9) |
-| 自動振替貸付 (automatic premium loan) | A policyholder election; compound interest capped at 8% p.a. | [S4] [REG-R14]; scope **[std]** (17) |
+| Prepayment of ≥ 3 annual premiums (前納) | Discounted at a declared rate, balance accumulated at a declared rate. Out of scope | [S4] [S11] |
+| Policy loan (契約者貸付) | Within a stated fraction of the surrender value (*kaiyaku-henreikin*, 解約返戻金), compound at 2.40% p.a. for the current issue cohort; none after annuitisation | [S4] [S11]; adoption **[std]** (9) |
+| Automatic premium loan (自動振替貸付) | A policyholder election; compound interest capped at 8% p.a. | [S4] [REG-R14]; scope **[std]** (17) |
 | Refund of unused premium | Whole unused months refunded on annual and semi-annual modes; nothing on monthly | [S4] |
 
 5. Modes are 月払 / 年払 / 半年払 plus 一時払 on single-premium products [S4] [R16]. The composite
@@ -195,23 +195,23 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 死亡給付金 (death benefit) | Cumulative premiums paid, contractually 月払保険料 × 経過月数 — the monthly premium for the basic annuity times elapsed months, whatever the actual mode | [S2] [S4]; [S6] states it as 既払込保険料相当額 |
+| Death benefit (死亡給付金) | Cumulative premiums paid, contractually 月払保険料 × 経過月数 — the monthly premium for the basic annuity times elapsed months, whatever the actual mode | [S2] [S4]; [S6] states it as 既払込保険料相当額 |
 | Why that shape | 所得税法施行令第211条第1号ロ requires the death or severe-disability amount to increase progressively with elapsed duration or cumulative premiums | [R10] |
 | Payment form | Lump sum, as an annuity, or left on deposit at a declared rate | [S4] |
 | Deductions | Unpaid premiums, policy-loan principal and interest, 自動振替貸付 balances | [S2] [S4] |
-| Where an exclusion bites | 責任準備金 (policy reserve), capped at the death-benefit amount, paid to the policyholder | [S2] |
-| 解約返戻金 (surrender value) | From 経過年月数, capped at the 払込年月数 while premiums are being paid, and **limited to the death-benefit amount** | [S2] [S4] |
+| Where an exclusion bites | Policy reserve (責任準備金), capped at the death-benefit amount, paid to the policyholder | [S2] |
+| Surrender value (解約返戻金) | From 経過年月数, capped at the 払込年月数 while premiums are being paid, and **limited to the death-benefit amount** | [S2] [S4] |
 | Consequence | On a 生存保障重視型 contract it can never exceed cumulative premiums paid | [S4] [R16] |
 | Early durations | Nil or negligible for an initial period; equal to the death benefit after a period | shape [S2] [S4]; schedule **[std]** (10) |
 | Surrender after annuitisation | Not available | [S2] [S4] [R16] |
-| 減額 (reduction of the 基本年金額) | Permitted, releasing the surrender value of the reduced portion — but under the rider that amount is **not paid out** | [S1] [S2] [S4] |
+| Reduction of the 基本年金額 (減額) | Permitted, releasing the surrender value of the reduced portion — but under the rider that amount is **not paid out** | [S1] [S2] [S4] |
 | Claim settlement | Within five business days of a complete claim file | [S2] [S4] |
 
 10. Both 約款 read state the shape but not the parameters: 「ご契約後短期間で解約されたときには、解約返還金がない場合があります」
     [S2] and 「まったくないか、あってもごくわずか」, with 「この保険の解約返戻金は、一定期間経過後は死亡給付金と同額になります」 [S4]. Neither
     publishes the period or the schedule; the formula sits in the unpublished 算出方法書
     [REG-R2]. The composite standardizes the *schedule* — `max(0, 保険料積立金 − 解約控除)` capped at
-    the death benefit, with the 解約控除 (*kaiyaku kōjo*, surrender charge) run off linearly
+    the death benefit, with the surrender charge (*kaiyaku kōjo*, 解約控除) run off linearly
     over a **[std]** ten initial policy years — while holding both sourced invariants
     exactly: a hard cap at cumulative premiums paid, and a nil-or-negligible value at the
     shortest durations. Only the path between them is [std]. One carrier outside this design
@@ -224,12 +224,12 @@ Footnotes to [std] rows:
 |---|---|---|
 | 年金原資 | The accumulated fund at the 年金支払開始日 out of which the annuity is bought; one carrier publishes both 一括受取率 (= 年金原資 ÷ 払込保険料総額) and 年金受取率 (= 年金受取総額 ÷ 払込保険料総額) at one model point, pinning the definition down | [S6] |
 | Base annuity | 10年確定年金 — paid on the 年金支払開始日 and its nine annual anniversaries, regardless of survival | menu 5/10/15 [S2] [S3] [S9]; pick **[std]** (11) |
-| Alternative elected at annuitisation | 10年保証期間付終身年金 (*hoshō-kikan-tsuki shūshin nenkin*, life annuity with a guarantee period) | [S2] [S4] [S9]; period **[std]** (12) |
+| Alternative elected at annuitisation | Life annuity with a guarantee period (*hoshō-kikan-tsuki shūshin nenkin*, 10年保証期間付終身年金) | [S2] [S4] [S9]; period **[std]** (12) |
 | 年金支払開始日 | The 年単位の契約応当日 on which the insured's 保険年齢 reaches the 年金支払開始年齢 chosen at issue | [S2] [S4] [S9] |
 | When the amount is fixed | At issue for a type chosen at issue; **at annuitisation**, on the 基礎率 then in force, for a type elected at annuitisation | [S2] [S3] [S9] |
 | Death during a 確定年金 period | The present value of the unpaid instalments (未払年金の現価) is paid; the recipient may instead elect **continuation** to the end of the term | [S2] [R16] |
 | Death inside a guarantee period | The present value of the unpaid guaranteed instalments is paid | [S4] [R16] |
-| 年金の一括払 (commutation) | From the 年金支払開始日 to the last 年金支払日, at the present value of the remaining certain or guaranteed instalments; the contract then terminates | [S2] [S4] |
+| Commutation (年金の一括払) | From the 年金支払開始日 to the last 年金支払日, at the present value of the remaining certain or guaranteed instalments; the contract then terminates | [S2] [S4] |
 | Commutation discount rate | 0.40% p.a. | derived from [S2]; **[std]** (13) |
 | After annuitisation | No policy loan, no reduction of the annuity, no surrender; commutation only | [S4] |
 | Partial commutation | Refused; where the fund was split across types, a request on one is a request on **all** | [S1] [S4]; required by 所令211①ハ [R10] |
@@ -261,10 +261,10 @@ Footnotes to [std] rows:
 |---|---|---|
 | 個人年金保険料税制適格特約 | Attached in the base run; four attachment conditions, reshaping dividends, refunds, loans, contract changes and paid-up conversion | [S1] [S4] [S9] [S10] [S12] |
 | 年金内容変更制度 | One election at annuitisation, between the base type and 10年保証期間付終身年金 | [S4] [S9]; scope **[std]** (14) |
-| 複数年金選択制度 (splitting the fund) | Available at one carrier; out of scope | [S4]; **[std]** (14) |
+| Splitting the fund (複数年金選択制度) | Available at one carrier; out of scope | [S4]; **[std]** (14) |
 | Deferral of the first annuity payment date | Up to five years at one carrier; out of scope | [S9]; **[std]** (14) |
 | 年金の自動すえ置 | Instalments falling due automatically left on deposit with interest, at one carrier; out of scope | [S2]; **[std]** (14) |
-| 保険料の払込免除 (premium waiver) | Excluded | [S4] [S9]; **[std]** (15) |
+| Premium waiver (保険料の払込免除) | Excluded | [S4] [S9]; **[std]** (15) |
 | 指定代理請求特約 | Out of scope — no cash-flow effect | [S2] |
 | 夫婦年金特約 / 夫婦年金移行特約 | Out of scope; contract mechanics [unverified] | [S2] [R16] |
 
@@ -294,12 +294,12 @@ Footnotes to [std] rows:
 | 契約者配当 | Declared from the sixth policy year then every five years, and on death, surrender, reduction and commutation. **Zero** in the base run | [S4]; base run **[std]** (16) |
 | Dividends before annuitisation | Accumulated at a declared 配当積立利率 and applied to increase the 基本年金額; **cannot be withdrawn** under the rider | [S1] [S2] [S4] [S12]; required by 所令211①ニ [R10] |
 | 自動振替貸付 | Optional module, off in the base run | present [S4], absent [S2]; **[std]** (17) |
-| 払込猶予期間 (grace) | Monthly: to the last day of the month after the 払込期月. Annual and semi-annual: to the monthly contract anniversary of the second following month | [S4]; annual-grid mapping **[std]** (18) |
-| 失効 (lapse) | Effect lost from the day after grace expires, where the premium is unpaid and no 自動振替貸付 is made | [S4] |
-| 復活 (reinstatement) | Within **three years** of lapse and only before the 年金支払開始日; all arrears plus late interest in one sum, and fresh 告知 (waived under the 無選択特則) | [S2] [S4] |
-| 払済年金保険 (paid-up) | Premiums stop, the 基本年金額 is redefined from the surrender value, the 年金支払開始日 is unchanged, the death benefit held at its value at conversion. **Refused inside the first ten policy years under the rider** | [S1] [S2] [S4] [S12] |
-| 復旧 (reversal) | Within three years of a paid-up conversion or a reduction | [S4] |
-| 自殺免責 (suicide exclusion) | No death benefit where the insured takes their own life within **three years**, counted inclusively, from the 責任開始日 — or from the last 復活日 | [S2] [S4] |
+| Grace (払込猶予期間) | Monthly: to the last day of the month after the 払込期月. Annual and semi-annual: to the monthly contract anniversary of the second following month | [S4]; annual-grid mapping **[std]** (18) |
+| Lapse (失効) | Effect lost from the day after grace expires, where the premium is unpaid and no 自動振替貸付 is made | [S4] |
+| Reinstatement (復活) | Within **three years** of lapse and only before the 年金支払開始日; all arrears plus late interest in one sum, and fresh 告知 (waived under the 無選択特則) | [S2] [S4] |
+| Paid-up (払済年金保険) | Premiums stop, the 基本年金額 is redefined from the surrender value, the 年金支払開始日 is unchanged, the death benefit held at its value at conversion. **Refused inside the first ten policy years under the rider** | [S1] [S2] [S4] [S12] |
+| Reversal (復旧) | Within three years of a paid-up conversion or a reduction | [S4] |
+| Suicide exclusion (自殺免責) | No death benefit where the insured takes their own life within **three years**, counted inclusively, from the 責任開始日 — or from the last 復活日 | [S2] [S4] |
 | 告知義務違反 | Rescission within **two years** of the 責任開始日 or 復活日, and within one month of discovery | [S4]; statutory ceiling five years [REG-R35] |
 | 詐欺・不法取得目的 | Contract void; premiums not refunded | [S2] [S4] |
 | クーリング・オフ | Eight days from the later of application and delivery of the disclosure documents. Out of scope | [S4] [REG-R36] |
@@ -343,7 +343,7 @@ Footnotes to [std] rows:
 
 ### Timing, premiums, grace, lapse and reinstatement
 
-Two dates govern everything. The **責任開始日** (*sekinin kaishi-bi*, the date cover attaches)
+Two dates govern everything. The date cover attaches (*sekinin kaishi-bi*, **責任開始日**)
 starts the suicide-exclusion and contestability clocks [S2] [S4]. The **年金支払開始日** is the
 年単位の契約応当日 on which the insured's 保険年齢 reaches the 年金支払開始年齢 chosen at issue, and the 年金支払日
 are that date and its annual anniversaries [S2] [S4] [S9]. Almost no mechanic survives it:
@@ -537,7 +537,7 @@ carried because they drive the annuitisation and commutation assumptions.
 
 ## Riders and options
 
-A Japanese policy is a 主契約 (*shu-keiyaku*, main contract) with 特約 (*tokuyaku*, riders)
+A Japanese policy is a main contract (*shu-keiyaku*, 主契約) with riders (*tokuyaku*, 特約)
 attached, and which of the two a mechanic sits in decides whether it is in scope here.
 
 **In scope (modelled or parameterized):**
@@ -566,8 +566,8 @@ attached, and which of the two a mechanic sits in decides whether it is in scope
 the composite is built on [S4] [S9]; 指定代理請求特約 [S2]; 夫婦年金特約 and 夫婦年金移行特約, whose own
 conditions live in a booklet that was not retrieved, so anything beyond "either spouse's
 survival keeps the annuity in payment, usually with a roughly ten-year guarantee" is
-[unverified] [S2] [R16]; 前納 of three or more annual premiums [S4] [S11]; 有期年金 (*yūki
-nenkin*, temporary annuity), which survives in the taxonomy [R16] and in one rider's
+[unverified] [S2] [R16]; 前納 of three or more annual premiums [S4] [S11]; temporary annuity
+(*yūki nenkin*, 有期年金), which survives in the taxonomy [R16] and in one rider's
 contemplation of 保証期間付有期年金 [S1] but which **no retrieved carrier product offers today**, so
 "有期年金 is sold in the current market" is [unverified]; 年金総額保証付終身年金 [R16]; and クーリング・オフ, an
 eight-day dispatch-rule withdrawal right on every contract of this term [S4] [REG-R36],
@@ -606,7 +606,7 @@ force.
    moving with it and a 金利キャッチアップ配当 when new-business rates rise [S12]. This is a regulatory
    construction, not a flourish: 保険業法施行規則第68条 excludes from the 標準責任準備金 regime any contract
    whose 約款 lets the insurer change the 予定利率 — **except** where the 約款 guarantees a floor at
-   or above the 標準利率 (*hyōjun riritsu*, standard valuation interest rate) applicable at
+   or above the standard valuation interest rate (*hyōjun riritsu*, 標準利率) applicable at
    issue [R5] [REG-R7]. The minimum guarantee is what keeps the contract inside the
    standard-reserve regime. Composite: excluded; the composite's
    予定利率 is fixed at issue.
@@ -616,7 +616,7 @@ force.
    at one carrier [S11] [S8], and described only as declared and reviewed each January and
    July at another [S4]. Composite: 2.40%, with the automatic premium loan an optional
    module off in the base run (footnotes 9 and 17).
-7. **トンチン年金 (tontine annuities).** The sharpest variation in the set, and a distinctively
+7. **Tontine annuities (トンチン年金).** The sharpest variation in the set, and a distinctively
    Japanese design. One is a 5年ごと配当付生存保障重視型個人年金保険: 契約年齢 50–80, 年金支払開始年齢 60–90, 保険料払込期間 5–30
    years, すえ置期間 ≤ 15 years, contract-to-annuitisation ≤ 30 years, 10年保証期間付終身年金 or 確定年金
    5/10/15, a **死亡返還金 fixed at 70% of cumulative premiums**, a surrender refund capped at
@@ -640,7 +640,7 @@ force.
    of the two is sold explicitly as a 低解約返戻金型 product [S10], a category 監督指針 IV-1-9 names as
    needing extra explanation [REG-R14] and one of the three features 金融サービス提供法第4条 requires
    to be explained as a restriction on cancellation [REG-R39]; `jplib`'s 低解約返戻金型 cliff
-   itself lives in the [終身保険 technical notes](../whole_life/technical-notes.md).
+   itself lives in the [whole life technical notes (終身保険)](../whole_life/technical-notes.md).
 8. **Underwriting.** No 告知 at all on one carrier's annuity or on its tontine [S2] [S3]; a
    無選択特則 at a second which, attached, removes both the disclosure duty and the premium
    waiver [S4]; a 保険料払込免除特約 for the three major diseases at a third [S9]. Composite: no
@@ -680,11 +680,11 @@ force.
 ## Regulatory context
 
 **Prudential — ESR, and what it replaced.** From **2026-03-31** insurers are supervised on
-the 経済価値ベースのソルベンシー規制 (*keizai-kachi bēsu no soruvenshī kisei*, economic-value-based solvency
-regulation, ESR), applied from the 2026年3月期 accounts on a three-pillar structure. Early
+the economic-value-based solvency regulation (*keizai-kachi bēsu no soruvenshī kisei*,
+経済価値ベースのソルベンシー規制, ESR), applied from the 2026年3月期 accounts on a three-pillar structure. Early
 corrective action triggers when the **ESR falls below 100%**, where the old regime triggered
 when the ソルベンシー・マージン比率 fell below **200%** [REG-R15] [REG-R17]. Under ESR assets are at fair
-value and liabilities are re-measured at each 基準日 as **現在推計 (current estimate) plus MOCE**,
+value and liabilities are re-measured at each 基準日 as **current estimate (現在推計) plus MOCE**,
 against the old ロックイン basis on which mortality, lapse, incidence and interest were fixed at
 issue; required capital is calibrated to **99.5%** over one year [REG-R15]. `jplib` computes
 neither ratio. What this product owes the regime is that its projection is re-runnable on a
@@ -697,14 +697,14 @@ contracts are inside the 標準責任準備金 regime — excluding contracts wh
 assets, and contracts whose 約款 lets the insurer change the calculation coefficients, with a
 carve-out where the 約款 guarantees a floor at or above the 標準利率 applicable at issue [R5]
 [REG-R7]. 第69条 gives the taxonomy — 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 [REG-R8]. The method and
-rates are in 平成8年大蔵省告示第48号: accumulation on the **平準純保険料式** (*heijun jun-hokenryō-shiki*,
-net level premium method) with no Zillmer adjustment, the standard rate reset annually on a
+rates are in 平成8年大蔵省告示第48号: accumulation on the net level premium method (*heijun
+jun-hokenryō-shiki*, **平準純保険料式**) with no Zillmer adjustment, the standard rate reset annually on a
 1 October 基準日 from JGB yields with banded safety coefficients, and the mortality table the
 指定法人 produces for the contract's vintage [REG-R10] [REG-R23]. **The current numeric 標準利率
 could not be established from a retrieved official document** — the mechanism is verified,
 the level is not, so any figure used downstream is **[std]** or [unverified] [REG-R10]. This
 library projects gross cash flows and builds none of these reserves; they are cited, not
-reproduced. The 保険計理人 (*hoken keirinin*, appointed actuary) must submit an 意見書 confirming
+reproduced. The appointed actuary (*hoken keirinin*, 保険計理人) must submit an 意見書 confirming
 the reserve is properly accumulated [REG-R6], and the 実務基準 sets out how: the **1号収支分析** is a
 forward income-and-outgo analysis run annually by 区分経理 segment over **at least ten future
 years**, with sufficiency tested against the standard reserve being accumulable at each year
@@ -714,7 +714,7 @@ end over the first five [REG-R22]. That is precisely the shape `Annuity_JP_A` pr
 2018-04-01 the standard-reserve mortality basis is 生保標準生命表2018（死亡保険用）for death cover — and
 **生保標準生命表2007（年金開始後用）**, expressly **not** updated in 2018, for annuities in payment
 [REG-R10] [REG-R11]. The 2018 file published by 日本アクチュアリー会 contains exactly four tables —
-死亡保険用 男/女 and 第三分野 (*dai-san-bun'ya*, third sector) 男/女 — and **no 年金開始後用 table at all** [R2] [REG-R18]; the only public,
+死亡保険用 男/女 and third sector (*dai-san-bun'ya*, 第三分野) 男/女 — and **no 年金開始後用 table at all** [R2] [REG-R18]; the only public,
 machine-readable source located for the 年金開始後用 table is the combined Excel workbook [R3]
 [REG-R19]. The IAJ confirmed on 2025-12-18 that all three continue to apply for FY2026 [R4].
 The annuity table is materially **lighter** than the death-cover table at every adult age —
@@ -748,7 +748,7 @@ three-year 自殺免責 narrows an exclusion with no statutory time limit [REG-R
 two-year 告知義務違反 window sits inside the statutory ceiling of five years from inception, with
 a one-month clock from discovery [REG-R35]. Where a 相互会社 distributes surplus it must do so
 per contract category by one of four permitted methods, of which 「剰余金の生じた原因に応じて」 is the
-statutory form of the 三利源 (*san-rigen*, three sources of surplus) dividend; the article does
+statutory form of the three sources of surplus (*san-rigen*, 三利源) dividend; the article does
 not name 死差, 利差 or 費差 and neither does the 監督指針 [REG-R9], so this library uses the
 vocabulary without attributing it to a regulatory text.
 

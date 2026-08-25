@@ -10,11 +10,11 @@ model is [`WholeLife_JP_A`](../whole_life/model.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the surrender-value formula and the base the
-> 解約控除 (*kaiyaku kōjo*, surrender charge) is applied to, the symmetry of the
-> 市場価格調整 (*shijō kakaku chōsei*, market value adjustment, MVA), the 増加死亡保険金額
+> surrender charge (*kaiyaku kōjo*, 解約控除) is applied to, the symmetry of the
+> market value adjustment, MVA (*shijō kakaku chōsei*, 市場価格調整), the 増加死亡保険金額
 > (*zōka shibō hokenkin-gaku*, death-benefit uplift) defined against a 予定利率
 > (*yotei riritsu*, assumed interest rate) basis, the
-> 低解約返戻金割合 (*tei-kaiyaku-henreikin wariai*, reduced surrender-value ratio) ramp, the
+> reduced surrender-value ratio (*tei-kaiyaku-henreikin wariai*, 低解約返戻金割合) ramp, the
 > ±50銭 conversion spread and the one-year dead zone on the target test. The charge stack
 > is not: every carrier in the source set refuses to quantify its
 > mortality-and-expense charge in identical words [S2] [S7], so the three charge rates
@@ -56,14 +56,14 @@ point column — an exchange rate buried in a recursion is an economic assumptio
 disguised as a product feature, and cannot be varied by the point that owns it.
 
 The yen ledger is **three translations, not one**: premiums cross at `e + s` under the
-円入金特約 (*en nyūkin tokuyaku*, the yen-payment-in rider), benefits at `e − s` under the
-円支払特約 (*en shiharai tokuyaku*, the yen-payment-out rider), and expenses and commission
+yen-payment-in rider (*en nyūkin tokuyaku*, 円入金特約), benefits at `e − s` under the
+yen-payment-out rider (*en shiharai tokuyaku*, 円支払特約), and expenses and commission
 at the plain `e`, because they are the insurer's own costs and never cross the
 policyholder boundary. So
 
     net_cf_jpy(t) != net_cf(t) x fx_rate(t)
 
-identically. The gap is the insurer's 為替手数料 (*kawase tesūryō*, currency conversion fee)
+identically. The gap is the insurer's currency conversion fee (*kawase tesūryō*, 為替手数料)
 spread income, and the model publishes it as its own column `fx_spread_jpy` rather than
 letting it hide inside a translated net figure: ¥125.17 in month 0 on the anchor cell and
 ¥39,146 over the whole run.
@@ -77,10 +77,10 @@ That is the parameter position the difference is measured against.
 ## Two shapes on one chassis
 
 `shape` is a model point column and it changes more than rates. The state variable both
-shapes share is the 積立金 (*tsumitatekin*, the account value), credited at the declared
-積立利率 (*tsumitate riritsu*, crediting rate) and floored at the contract's own 予定利率
-(*yotei riritsu*, assumed interest rate); the payable value is the 解約返戻金
-(*kaiyaku-henreikin*, surrender value).
+shapes share is the account value (*tsumitatekin*, 積立金), credited at the declared
+crediting rate (*tsumitate riritsu*, 積立利率) and floored at the contract's own assumed
+interest rate (*yotei riritsu*, 予定利率); the payable value is the surrender value
+(*kaiyaku-henreikin*, 解約返戻金).
 
 | | `LEVEL` | `SINGLE` |
 |---|---|---|
@@ -92,7 +92,7 @@ shapes share is the 積立金 (*tsumitatekin*, the account value), credited at t
 | 自動振替貸付 | present | **structurally absent** — there is no premium to advance |
 | Target rider | not offered | optional |
 
-The 自動振替貸付 (*jidō furikae kashitsuke*, automatic premium loan) row and the target-rider
+The automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付) row and the target-rider
 row are the point. The two shapes have different **decrement sets**, not merely different
 rates, and the model rejects a SINGLE point carrying `apl_on` or a LEVEL point carrying
 `target_on` or `dyn_lapse` by name rather than silently pricing a contract that does not
@@ -201,15 +201,15 @@ self-funding at the guaranteed floor, which is what actuarial equivalence predic
 the account value overtakes the sum assured at month **740**, attained age 101, where the
 net amount at risk goes to zero and the cost-of-insurance charge stops.
 
-One caveat the fit does not cover, and it shows in a shipped model point. The 低解約返戻金特則
-(*tei-kaiyaku-henreikin tokusoku*, the reduced-surrender-value special condition) form's
-lower premium of US$225.00 is **not** self-funding to the terminal age at this charge
-stack: on model point 2 the 積立金 is exhausted in the sixth decade and the guaranteed 終身
-cover is thereafter carried by the insurer rather than by the fund, with a nil surrender
-value. `charge_coi()` is capped at what the fund holds so that the 積立金 can never run
-negative — it is an account, not a debt — and without that cap the shortfall compounds
-into the net amount at risk and the projection diverges. The notes already flag that
-published table's durations 30, 40 and 50 as `[unverified]`, and this is the same fact
+One caveat the fit does not cover, and it shows in a shipped model point. The
+reduced-surrender-value special condition (*tei-kaiyaku-henreikin tokusoku*, 低解約返戻金特則)
+form's lower premium of US$225.00 is **not** self-funding to the terminal age at this
+charge stack: on model point 2 the 積立金 is exhausted in the sixth decade and the
+guaranteed 終身 cover is thereafter carried by the insurer rather than by the fund, with a
+nil surrender value. `charge_coi()` is capped at what the fund holds so that the 積立金 can
+never run negative — it is an account, not a debt — and without that cap the shortfall
+compounds into the net amount at risk and the projection diverges. The notes already flag
+that published table's durations 30, 40 and 50 as `[unverified]`, and this is the same fact
 seen from the model side.
 
 ## Two mechanics that vanish at the guaranteed floor
@@ -226,7 +226,7 @@ shows 特別積立金 of (0) at both 10 and 20 years [S2], so that is what a cor
 implementation must produce: **a non-zero uplift or top-up on the base run is a bug, not
 a refinement**, and both are tests.
 
-The 特別積立金 (*tokubetsu tsumitatekin*, the special reserve top-up) itself is not merely
+The special reserve top-up (*tokubetsu tsumitatekin*, 特別積立金) itself is not merely
 set to zero; it is a fitted mechanic that happens to be zero here. It is a share of the
 fund's excess over its benchmark, 0.24 at ten years and 0.16 at twenty, fitted to the
 four published amounts — 147 and 527 on the 3.50% column, 302 and 1,120 on the 4.00%

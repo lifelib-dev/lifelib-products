@@ -2,11 +2,11 @@
 
 **Status:** Draft, 2026-08-20 (all cited sources accessed 2026-08-20).
 
-**Scope note.** This is a *standardized composite specification* of Japanese 終身保険 (*shūshin
-hoken*, whole life assurance), including its 低解約返戻金型 (*tei-kaiyaku-henreikin-gata*,
-suppressed-surrender-value) form, assembled for reference liability cash-flow modeling. It
-does not describe any single insurer's product. Facts carrying a source tag — [S#] (primary
-product documents: 約款 (*yakkan*, policy conditions), ご契約のしおり, パンフレット and published rate
+**Scope note.** This is a *standardized composite specification* of Japanese whole life
+assurance (*shūshin hoken*, 終身保険), including its suppressed-surrender-value
+(*tei-kaiyaku-henreikin-gata*, 低解約返戻金型) form, assembled for reference liability cash-flow
+modeling. It does not describe any single insurer's product. Facts carrying a source tag — [S#]
+(primary product documents: policy conditions (*yakkan*, 約款), ご契約のしおり, パンフレット and published rate
 pages) and [R#] (regulatory and actuarial references), both numbered per
 `_research/whole-life.md` and resolved in `sources.md` (same directory; numbering frozen,
 never renumbered), and [REG-R#] (the cross-product reference library
@@ -22,11 +22,11 @@ offer the automatic premium loan [S8] [S9] — plus one carrier's published sing
 rate page cited only for a scope boundary [S12].
 
 This product is the library's **savings chassis**. The
-[養老保険 product spec](../endowment/product-spec.md) inherits its reserve, surrender-value
-and loan machinery and adds a 満期保険金 (*manki hokenkin*, maturity benefit); the
-[外貨建終身保険 product spec](../fx_whole_life/product-spec.md) inherits it and adds 積立利率変動
-(*tsumitate riritsu hendō*, a variable crediting rate), 市場価格調整 (*shijō kakaku chōsei*,
-market value adjustment, MVA) and a currency layer.
+[endowment product spec (養老保険)](../endowment/product-spec.md) inherits its reserve, surrender-value
+and loan machinery and adds a maturity benefit (*manki hokenkin*, 満期保険金); the
+[FX whole life product spec (外貨建終身保険)](../fx_whole_life/product-spec.md) inherits it and adds
+a variable crediting rate (*tsumitate riritsu hendō*, 積立利率変動), market value adjustment, MVA
+(*shijō kakaku chōsei*, 市場価格調整) and a currency layer.
 Mechanics specified here are stated once, here.
 
 ---
@@ -37,24 +37,24 @@ Mechanics specified here are stated once, here.
 insured dies, with no expiry date and no 満期保険金 [S1] [S3] [S5] [S7] [S9] [S10]. One carrier
 states the negative flatly in its application terms: this contract has neither dividends nor
 a maturity benefit [S5]. Participation varies by carrier, and the composite is 無配当. The main
-contract pays two benefits at the same amount: **死亡保険金** (death benefit) on death, and
-**高度障害保険金** (*kōdo shōgai hokenkin*, severe-disability benefit) on the insured reaching the
+contract pays two benefits at the same amount: death benefit (**死亡保険金**) on death, and
+severe-disability benefit (*kōdo shōgai hokenkin*, **高度障害保険金**) on the insured reaching the
 disability state defined in the 約款's own schedule; paying the second extinguishes the
 contract retroactively to the date the state was reached [S1] [S3] [S7] [S9]. Because the
-contract must eventually pay, it accumulates a 保険料積立金 (*hokenryō tsumitatekin*, policy
-value) and therefore a 解約返戻金 (*kaiyaku-henreikin*, surrender value) — which is what makes it
+contract must eventually pay, it accumulates a policy value (*hokenryō tsumitatekin*, 保険料積立金)
+and therefore a surrender value (*kaiyaku-henreikin*, 解約返戻金) — which is what makes it
 a savings product sold on protection wording, and what makes every mechanic in this document
 turn on the surrender value rather than on the sum assured.
 
-It is a 第一分野 (*dai-ichi bun'ya*, first-sector) contract — fixed-sum insurance on human
+It is a first-sector (*dai-ichi bun'ya*, 第一分野) contract — fixed-sum insurance on human
 survival or death under 保険業法第3条第4項第1号 [REG-R1] — which decides the statutory mortality table
 the reserve must use, 生保標準生命表2018（死亡保険用）for contracts concluded from 1 April 2018 [REG-R10]
 [REG-R11] [R1], and separates this chassis from the third-sector products:
-[医療保険](../medical/product-spec.md), [がん保険](../cancer/product-spec.md) and
-[介護保険](../nursing_care/product-spec.md).
+[medical (医療保険)](../medical/product-spec.md), [cancer (がん保険)](../cancer/product-spec.md) and
+[nursing care (介護保険)](../nursing_care/product-spec.md).
 
 **Market position: second-largest individual line on every measure, and the largest of the
-savings-bearing lines.** For FY2024, 個人保険 (individual insurance) new business was 12.43
+savings-bearing lines.** For FY2024, individual insurance (個人保険) new business was 12.43
 million policies, of which 終身保険 was 2.31 million (18.6%), behind 医療保険 at 23.8%; new business
 by sum assured was ¥57.06 trillion, of which 終身保険 was ¥12.997 trillion (22.8%), behind 定期保険
 at 43.2%. In force, 終身保険 was 38.48 million policies (19.7% of 195.3 million) and ¥215.10
@@ -68,7 +68,7 @@ Demand is driven by two things a US or UK reader will not assume. First, **inher
 planning**: a death benefit received by an heir is exempt up to ¥5,000,000 multiplied by the
 number of statutory heirs [R9] [R10] [REG-R44] [REG-R45], which is why sums assured cluster
 in multiples of ¥5,000,000 and why a policy bought at 60 is a normal transaction. Second,
-the **生命保険料控除** (*seimei hokenryō kōjo*, life insurance premium deduction): three baskets of
+the life insurance premium deduction (*seimei hokenryō kōjo*, **生命保険料控除**): three baskets of
 ¥40,000 capped at ¥120,000 in total, whole life competing for the 一般 basket alongside term
 cover [R11] [REG-R43]. The 低解約返戻金型 variant adds a third driver — a surrender value
 engineered to cross 100% of premiums paid shortly after the premium-paying period ends, so
@@ -84,31 +84,31 @@ published table, the 払戻率 runs 70.1% at duration 5, 78.0% at 15 while still
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Level-premium 終身保険; 無配当 (*mu-haitō*, non-participating); carries 保険料積立金 and 解約返戻金; not unit-linked | [S3] [S5] [S11]; default **[std]** (1) |
-| 保険期間 (policy term) | 終身 — whole of life. No expiry, no 満期保険金 | [S1] [S3] [S5] [S7] [S9] [S10] |
+| Design type | Level-premium 終身保険; non-participating (*mu-haitō*, 無配当); carries 保険料積立金 and 解約返戻金; not unit-linked | [S3] [S5] [S11]; default **[std]** (1) |
+| Policy term (保険期間) | 終身 — whole of life. No expiry, no 満期保険金 | [S1] [S3] [S5] [S7] [S9] [S10] |
 | Regulatory class | 第一分野, 保険業法第3条第4項第1号 | [REG-R1] |
 | 低解約返戻金型 switch | Model-point flag. When on: suppression factor 70%, suppressed period identical to 保険料払込期間, full value from 払込満了 | Factor: [S3] [S7] [S9] [S11]. Period and full value from 払込満了: [S3] [S6] [S7] [S11]. **[S6] states the period only — it does not give the percentage** |
-| 保険料払込期間 (premium-paying period) | 終身払, or 年満了 5 / 10 / 15 / 20 年, or 歳満了 to age 50 / 55 / 60 / 65 / 70 / 75 / 80 | [S5] |
-| 契約年齢 (issue age) | 15–80; 歳満了 options gated by a 10-year minimum payment period (e.g. 60歳払済 to age 50), 20年払 to age 75 | [S5]; envelope **[std]** (2) |
-| Age basis | 満年齢 (*man-nenrei*, attained age) with the fractional year discarded at 契約日; the rating age then increments on each 年単位の契約応当日, not on the birthday | [S1] [S3] [S9] |
-| 保険金額 (sum assured) | ¥2,000,000–¥50,000,000 in ¥1,000,000 units; a 5-year payment term requires ≥ ¥10,000,000 | [S5]; adoption **[std]** (3) |
+| Premium-paying period (保険料払込期間) | 終身払, or 年満了 5 / 10 / 15 / 20 年, or 歳満了 to age 50 / 55 / 60 / 65 / 70 / 75 / 80 | [S5] |
+| Issue age (契約年齢) | 15–80; 歳満了 options gated by a 10-year minimum payment period (e.g. 60歳払済 to age 50), 20年払 to age 75 | [S5]; envelope **[std]** (2) |
+| Age basis | Attained age (*man-nenrei*, 満年齢) with the fractional year discarded at 契約日; the rating age then increments on each 年単位の契約応当日, not on the birthday | [S1] [S3] [S9] |
+| Sum assured (保険金額) | ¥2,000,000–¥50,000,000 in ¥1,000,000 units; a 5-year payment term requires ≥ ¥10,000,000 | [S5]; adoption **[std]** (3) |
 | Sex | Male and female rated separately; the female rate is about 92% of the male rate at age 30 on the one published scale | [S4] |
-| Lives basis | Single life; 契約者 (policyholder) and 被保険者 (insured) the same person | [S5]; scope **[std]** (4) |
+| Lives basis | Single life; policyholder (契約者) and insured (被保険者) the same person | [S5]; scope **[std]** (4) |
 | **Anchor model cell** | Male, 契約年齢 30, 低解約返戻金型 on, 保険金額 ¥5,000,000, 保険期間 終身, 保険料払込期間 15年, 月払保険料 ¥14,580 (annualized ¥174,960) | [S4]; annualization **[std]** (5) |
 
 Footnotes to [std] rows:
 
 1. Participation varies and is part of the product name at every carrier: 無配当 at three [S1]
-   [S3] [S5] [S11], 5年ごと利差配当 (*go-nen goto risa haitō*, a dividend declared every five years
-   out of investment margin) at a fourth [S7], 5年ごと配当 at a fifth [S10], 有配当 at a sixth [S8],
+   [S3] [S5] [S11], a dividend declared every five years out of investment margin (*go-nen
+   goto risa haitō*, 5年ごと利差配当) at a fourth [S7], 5年ごと配当 at a fifth [S10], 有配当 at a sixth [S8],
    and a participating design at a seventh [S9]. 無配当 is the composite default because it is
    the largest single group and because a dividend is an insurer-discretionary element, not
    a contractual one [REG-R9]. The 5年ごと利差配当 design is retained as a parameterized variant,
    not dropped — see Riders and options.
 2. Only one carrier publishes a complete issue-age × payment-term grid [S5]; a second
    publishes only the 契約年齢 definition and no envelope at all, because its envelopes live in
-   a 契約概要 that is a separate document [S1]; a third is bound instead by a statutory 加入限度額
-   (*kanyū gendogaku*, maximum sum insurable) [S9]. The composite adopts the one published
+   a 契約概要 that is a separate document [S1]; a third is bound instead by a statutory maximum
+   sum insurable (*kanyū gendogaku*, 加入限度額) [S9]. The composite adopts the one published
    grid verbatim, including its asymmetry — 年満了 short-pay is offered to the top of the issue
    range while 歳満了 short-pay is not [S5]. No carrier in the set publishes a maximum issue
    age above 80; whether that is universal is [unverified].
@@ -140,15 +140,15 @@ Footnotes to [std] rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium basis | Level and guaranteed for the whole of 保険料払込期間; no review mechanic | [S1] [S3] [S7] [S10] |
-| 払込回数 (mode) | 月払 / 半年払 / 年払 at every carrier; composite default 年払 | [S1] [S3] [S5] [S9] [S10]; default **[std]** (6) |
-| 払込経路 (route) | 口座振替 (direct debit) or クレジットカード払; one carrier lists five routes | [S1] [S3] [S5] |
+| Mode (払込回数) | 月払 / 半年払 / 年払 at every carrier; composite default 年払 | [S1] [S3] [S5] [S9] [S10]; default **[std]** (6) |
+| Route (払込経路) | Direct debit (口座振替) or クレジットカード払; one carrier lists five routes | [S1] [S3] [S5] |
 | Rating factors | 契約年齢, sex, 保険金額 (via 高額割引), 保険料払込期間, and whether the 低解約返戻金型 form is taken | [S4] [S7] [S8] |
 | 低解約返戻金型 premium discount | The suppressed form costs 83.7% of the ordinary form on the one carrier that publishes both scales for the same model point | [S7] |
-| 高額割引 (volume discount) | Applied from ¥10,000,000 of sum assured | observed [S4] [S7] [S8] [S11]; threshold **[std]** (7) |
-| 予定利率 (*yotei riritsu*, assumed interest rate) | Not published for level-premium designs. Composite value 1.75% p.a., flat | [S11] [S12]; **[std]** (8) |
-| 前納 (advance payment) | Available — 6 or 12 months' monthly premiums at a company discount rate, or arbitrary future premiums on 半年払/年払 accumulated at a company rate. Out of scope | [S1] [S7] [S10]; scope **[std]** (9) |
-| 保険料払込免除 (premium waiver) | On a listed 身体障害の状態 arising from an 不慮の事故 within 180 days, with the usual conduct exclusions; does **not** apply after 払込満了; an optional 特定疾病 特則 extends the trigger | [S3] |
-| Non-smoker rating | Handled as a 特約 (*tokuyaku*, rider) substituting a 非喫煙保険料率 for the main contract and named riders, not as a rating class | [S1] |
+| Volume discount (高額割引) | Applied from ¥10,000,000 of sum assured | observed [S4] [S7] [S8] [S11]; threshold **[std]** (7) |
+| Assumed interest rate (*yotei riritsu*, 予定利率) | Not published for level-premium designs. Composite value 1.75% p.a., flat | [S11] [S12]; **[std]** (8) |
+| Advance payment (前納) | Available — 6 or 12 months' monthly premiums at a company discount rate, or arbitrary future premiums on 半年払/年払 accumulated at a company rate. Out of scope | [S1] [S7] [S10]; scope **[std]** (9) |
+| Premium waiver (保険料払込免除) | On a listed 身体障害の状態 arising from an 不慮の事故 within 180 days, with the usual conduct exclusions; does **not** apply after 払込満了; an optional 特定疾病 特則 extends the trigger | [S3] |
+| Non-smoker rating | Handled as a rider (*tokuyaku*, 特約) substituting a 非喫煙保険料率 for the main contract and named riders, not as a rating class | [S1] |
 
 6. Every carrier offers 月払 / 半年払 / 年払 [S1] [S3] [S5] [S9] [S10], and monthly is the mode the
    published scales are quoted in [S4] [S7]. The model is annual-step, so the composite pays
@@ -172,7 +172,7 @@ Footnotes to [std] rows:
    level-premium 予定利率 is **[unverified]**, and secondary sources reporting a 1.75–2.5% range
    are not relied on. The composite takes 1.75% because it is the only level-premium figure
    actually read from a carrier document, and every document using it carries that date. The
-   statutory 標準利率 (*hyōjun riritsu*, standard valuation rate) is a separate rate on a
+   statutory standard valuation rate (*hyōjun riritsu*, 標準利率) is a separate rate on a
    separate calendar, and its current value could not be established from any retrieved
    official document either [R8] [REG-R10].
 9. 前納, and one carrier's 保険料のステップ払込方式の特則 — an elective scale lower for a 10- or 15-year step
@@ -191,9 +191,9 @@ Footnotes to [std] rows:
 | Benefit shape | Level only. Step-down and multiplier designs are excluded | [S9]; scope **[std]** (10) |
 | 免責 — suicide | No benefit where the insured commits suicide within **3 years** of the 責任開始期, reset to the latest 復活 | [S1] [S3] [S7] [S8] [S9] [S10]; statutory frame [REG-R34] |
 | 免責 — other | Intentional act of the 保険契約者 or of the 死亡保険金受取人; war and civil disturbance. On the 高度障害保険金, also the insured's own intentional act or criminal act | [S1] [S9] [S10] |
-| Payment when a benefit is refused | The 保険料積立金 / 責任準備金 (*sekinin-junbikin*, policy reserve) is paid to the policyholder. Nothing is paid where the policyholder intentionally caused the death; where one of several beneficiaries acted intentionally, the others are paid and the reserve for the withheld share goes to the policyholder | [S1] [S9] [S10] |
+| Payment when a benefit is refused | The 保険料積立金 / policy reserve (*sekinin-junbikin*, 責任準備金) is paid to the policyholder. Nothing is paid where the policyholder intentionally caused the death; where one of several beneficiaries acted intentionally, the others are paid and the reserve for the withheld share goes to the policyholder | [S1] [S9] [S10] |
 | War clause | Scalable, not absolute: where the increase in affected insureds does not disturb the calculation basis the insurer may pay in full or pay a proportionately reduced amount | [S1] [S10] |
-| 告知義務違反 (contestability) | Rescission within **2 years** of the 責任開始日 (or of the 復活日); beyond that only where a claim event inside the window is involved | [S1] [S7] [S9]; statutory ceiling [REG-R35] |
+| Contestability (告知義務違反) | Rescission within **2 years** of the 責任開始日 (or of the 復活日); beyond that only where a claim event inside the window is involved | [S1] [S7] [S9]; statutory ceiling [REG-R35] |
 | Underwriting loadings | Handled by a 特別条件付保険特約 rather than by declining | [S3] |
 
 10. One carrier sells designs in which the death benefit is the 基準保険金額 during 保険料払込期間 and
@@ -209,14 +209,14 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 自動振替貸付 (automatic premium loan, APL) | Elected at outset, **on by default**; at the expiry of 猶予期間 the insurer advances the premium due against the surrender value and the contract continues | [S1] [S7] [S10] [S11]; default **[std]** (11); election requirement [REG-R14] |
+| Automatic premium loan, APL (自動振替貸付) | Elected at outset, **on by default**; at the expiry of 猶予期間 the insurer advances the premium due against the surrender value and the contract continues | [S1] [S7] [S10] [S11]; default **[std]** (11); election requirement [REG-R14] |
 | APL continuation condition | The advance plus interest must not exceed the surrender value computed as if the premium had been paid, net of any existing loan | [S1] [S3] [S10] |
 | APL interest | Compound, rolled into principal at each subsequent grace expiry (annually on 年払). Published ceilings 年8% / 半年4% / 月 8/12%. Composite rate 2.75% p.a. | ceilings [S1] [S7] [S10]; level [S2]; pick **[std]** (12) |
 | APL cancellation window | An advance already made is treated as never having happened if 解約, 減額 or conversion to 払済保険 is requested within **3 months** of the day after grace expiry | [S1] [S3] [S10] |
-| 契約者貸付 (policy loan) | Up to **9/10** of the surrender value while premiums are being paid, **8/10** once the contract is 保険料払込済; existing loan and APL principal and interest deducted first; compound interest at a company-set rate | [S1] [S3] [S7]; limit **[std]** (14) |
-| 払済保険 (reduced paid-up) | The surrender value net of loan and APL balance is applied as a single premium to a reduced sum assured. Term stays 終身; premiums cease; riders terminate | [S1] [S3] [S7] [S9] [S10] |
-| 延長定期保険 (extended term) | Surrender value applied as a single premium to term cover for the **same** sum assured, term set by the amount available, capped at the original 払込満了 date. **Out of scope** | [S7]; scope **[std]** (13) |
-| 減額 (sum-assured reduction) | Permitted; the reduced portion is treated as surrendered and pays the corresponding surrender value | [S1] [S3] [S9] [S10] |
+| Policy loan (契約者貸付) | Up to **9/10** of the surrender value while premiums are being paid, **8/10** once the contract is 保険料払込済; existing loan and APL principal and interest deducted first; compound interest at a company-set rate | [S1] [S3] [S7]; limit **[std]** (14) |
+| Reduced paid-up (払済保険) | The surrender value net of loan and APL balance is applied as a single premium to a reduced sum assured. Term stays 終身; premiums cease; riders terminate | [S1] [S3] [S7] [S9] [S10] |
+| Extended term (延長定期保険) | Surrender value applied as a single premium to term cover for the **same** sum assured, term set by the amount available, capped at the original 払込満了 date. **Out of scope** | [S7]; scope **[std]** (13) |
+| Sum-assured reduction (減額) | Permitted; the reduced portion is treated as surrendered and pays the corresponding surrender value | [S1] [S3] [S9] [S10] |
 | 保険料払込期間の変更 | Offered at two carriers subject to conditions. Out of scope | [S1] [S10]; scope **[std]** (9) |
 | リビング・ニーズ特約 | Attached at no extra premium; on a prognosis of **6 months or less**, the 指定保険金額 elected by the insured is paid less 6 months' interest and premium equivalent, capped at ¥30,000,000; the main contract's sum assured reduces by the amount paid | [S1] [S3] [S4] [S7] |
 
@@ -265,10 +265,10 @@ Footnotes to [std] rows:
 | The step at 払込満了 | A discontinuity, not a ramp: on the one published table the value goes from ¥2,047,650 to ¥2,928,450 across the boundary, a 43.0% jump, and 払戻率 from 78.0% to 111.5% | [S4] [S7] |
 | Clawback | If not all premiums falling in the suppressed period were paid, the suppressed basis continues to apply after the period ends | [S3] [S4] [S5] [S9] |
 | 満期保険金 | None | [S5] |
-| 猶予期間 (grace) | 月払: from the first day of the month following the 払込期月 to the last day of that month. 半年払 / 年払: to the monthly 契約応当日 in the month after that, with named end-of-month substitutions | [S1] [S3] [S10]; regime **[std]** (16) |
-| 失効 (lapse) | From the day after grace expiry, **only where the APL cannot carry the premium**. The policyholder may then claim the surrender value | [S1] [S3] [S10] |
+| Grace (猶予期間) | 月払: from the first day of the month following the 払込期月 to the last day of that month. 半年払 / 年払: to the monthly 契約応当日 in the month after that, with named end-of-month substitutions | [S1] [S3] [S10]; regime **[std]** (16) |
+| Lapse (失効) | From the day after grace expiry, **only where the APL cannot carry the premium**. The policyholder may then claim the surrender value | [S1] [S3] [S10] |
 | Loan-excess termination | Where loan and APL principal and interest exceed the surrender value the insurer notifies for a top-up; if unpaid by the end of the month following the notice month the contract lapses from the next day | [S1] [S3] [S10] |
-| 復活 (reinstatement) | Within **3 years** of lapse, on fresh 告知 and payment of the arrears; barred once the surrender value has been claimed. The 責任開始期 resets, restarting both the suicide clause and the contestability clock | [S1] [S3] [S7] [S10]; window **[std]** (17) |
+| Reinstatement (復活) | Within **3 years** of lapse, on fresh 告知 and payment of the arrears; barred once the surrender value has been claimed. The 責任開始期 resets, restarting both the suicide clause and the contestability clock | [S1] [S3] [S7] [S10]; window **[std]** (17) |
 | クーリング・オフ | 8 days from the later of delivery of the disclosure document and the application date, effective on dispatch. **Out of scope** | [REG-R36]; scope **[std]** (18) |
 | Policyholder protection | On a member insurer's failure, up to **90%** of the 責任準備金 at the failure date | [REG-R40] [REG-R41] |
 
@@ -286,7 +286,7 @@ Footnotes to [std] rows:
     one, whose worked example has a September premium due 9/1–9/30, grace 10/1–11/30 and
     lapse on 12/1 [S9]; and at one carrier no grace and no lapse at all — a 催告 naming a
     解除予定日, the monthly anniversary in the **third month after** the 払込期月, on which the
-    contract is 解除 (terminated) and the surrender value paid net of unpaid premiums [S8].
+    contract is terminated (解除) and the surrender value paid net of unpaid premiums [S8].
     The composite takes the four-carrier grace. The 解除 regime is named but excluded because
     it differs in kind: a terminated contract cannot be reinstated at all, whereas a 失効
     contract can.
@@ -389,7 +389,7 @@ One carrier applies the factor only to the guaranteed part of the value on an �
 chassis: the low-period surrender value is 70% of the surrender value on the 基本保険金額 part
 plus an **unsuppressed** amount derived from the excess of the actual 積立金 over the
 予定利率-based 積立金 [S11]. That split belongs to the
-[外貨建終身保険](../fx_whole_life/product-spec.md), which inherits this chassis and
+[FX whole life (外貨建終身保険)](../fx_whole_life/product-spec.md), which inherits this chassis and
 adds the crediting-rate layer; it is named here so that the inheritance is explicit.
 
 ### Premium payment, grace, and why lapse is a funded event
@@ -400,7 +400,7 @@ the month after that for 半年払 and 年払, with named end-of-month substitut
 What happens at the end of grace is where Japanese whole life departs from every product in
 `uslib` and `uklib`.
 
-**自動振替貸付** (*jidō furikae kashitsuke*, automatic premium loan). Where the premium is unpaid
+Automatic premium loan (*jidō furikae kashitsuke*, **自動振替貸付**). Where the premium is unpaid
 at grace expiry and the contract has a surrender value, the insurer **lends the premium
 against that value and applies it to the premium**, and the contract continues in force [S1]
 [S3] [S7] [S10] [S11]. The advance is deemed made at the moment grace expires [S1] [S3] [S7]
@@ -489,7 +489,7 @@ dedicated article, and every rider in that booklet repeats it [S1]. On the parti
 variant, the legal frame is 保険業法第114条 (any distribution provided for in the 約款 must follow
 the fair-and-equitable standard set by ordinance) and 施行規則第30条の2, whose second permitted
 method — identifying the distributable amount **by the cause in which it arose** — is the
-legal footing of the 三利源 (*san-rigen*, three sources of surplus: 死差 mortality, 利差 interest,
+legal footing of the three sources of surplus (*san-rigen*, 三利源: 死差 mortality, 利差 interest,
 費差 expense) framing [R5] [R6] [REG-R9]. The limit stated honestly: neither the ordinance nor
 the supervisory guideline names 死差, 利差 or 費差 — 三利源 is Japanese actuarial and industry
 practice, and this library uses the vocabulary without attributing it to a regulatory text
@@ -530,12 +530,12 @@ one) [S1]; 介護前払特約, payable after 払込満了 from age 65 on public 
 of the death benefit [S3] [S4]; 年金支払移行特約, converting the 責任準備金等 into an annuity or care
 benefit after 払込満了 [S7] [S11]; 指定代理請求特約 [S7]; the attachable protection riders (定期保険特約,
 逓減/逓増定期保険特約, 家計保障定期保険特約, 災害割増特約, 傷害特約) and the third-sector riders (災害入院特約, 疾病入院特約,
-三大疾病関連特約), whose shape belongs to the [医療保険](../medical/product-spec.md) [S1] [S3] [S7]; 特別条件付保険特約 [S3]; the 倍額保障 and
+三大疾病関連特約), whose shape belongs to the [medical (医療保険)](../medical/product-spec.md) [S1] [S3] [S7]; 特別条件付保険特約 [S3]; the 倍額保障 and
 step-down designs of one carrier [S9]; and the 一時払 and 積立利率変動型 forms, which are scope
 boundaries rather than riders — see below.
 
 **Scope boundaries at the edge of this chassis.** Two neighbouring shapes are excluded and
-named. **一時払終身保険** (single-premium whole life) is the same benefit on a single-premium
+named. Single-premium whole life (**一時払終身保険**) is the same benefit on a single-premium
 chassis; it matters because it is the one form whose 予定利率 is publicly disclosed and
 refreshed twice a month [S12], and because it sits on the 標準利率's quarterly reset calendar
 rather than the annual one [R8] [REG-R10]. **積立利率変動型終身保険** replaces the fixed 予定利率 with a
@@ -543,7 +543,7 @@ crediting rate reset monthly off the 10-year JGB 応募者利回り less an expl
 margin, rounded to 0.01% and floored at the 予定利率, the excess buying ratcheting 増加保険金額 [S11].
 It stays inside the 標準責任準備金 regime — 施行規則第68条 excludes contracts whose 約款 lets the insurer
 change the *予定利率*, not contracts whose crediting rate floats above a fixed one [R6] [REG-R7]
-— and it is the direct ancestor of the [外貨建終身保険](../fx_whole_life/product-spec.md), which
+— and it is the direct ancestor of the [FX whole life (外貨建終身保険)](../fx_whole_life/product-spec.md), which
 adds the currency and MVA layers
 [REG-R12] [REG-R37].
 
@@ -581,7 +581,7 @@ adds the currency and MVA layers
    suppresses only the guaranteed part, adding an unsuppressed amount from the excess of the
    actual 積立金 over the 予定利率-based 積立金 [S11]; the others apply one multiplier to the whole
    value [S3] [S7] [S9]. Composite: one multiplier, the split deferred to the
-   [外貨建終身保険](../fx_whole_life/product-spec.md).
+   [FX whole life (外貨建終身保険)](../fx_whole_life/product-spec.md).
 7. **契約者貸付 limit.** 9/10 in payment and 8/10 paid up at three [S1] [S3] [S7]; 8/10 less
    three months' premium at one [S8]; an unpublished company formula with a one-year 貸付期間 at
    another [S9]. Composite: 9/10 and 8/10.
@@ -627,12 +627,12 @@ adds the currency and MVA layers
 ## Regulatory context
 
 **Prudential — ESR, and what it replaced.** From **31 March 2026** Japanese insurers are
-supervised on 経済価値ベースのソルベンシー規制 (*keizai-kachi bēsu no soruvenshī kisei*,
-economic-value-based solvency regulation, **ESR**), a three-pillar regime in which assets
-are at fair value and liabilities are 現在推計 (*genzai suikei*, current estimate) plus MOCE,
+supervised on economic-value-based solvency regulation, **ESR** (*keizai-kachi bēsu no
+soruvenshī kisei*, 経済価値ベースのソルベンシー規制), a three-pillar regime in which assets
+are at fair value and liabilities are current estimate (*genzai suikei*, 現在推計) plus MOCE,
 re-measured at each 基準日 on assumptions re-set then and discounted on a prescribed yield
 curve, calibrated in principle to **99.5%**. Early corrective action triggers when the ESR
-falls below **100%**, replacing the old ソルベンシー・マージン比率 (*soruvenshī mājin hiritsu*, SMR)
+falls below **100%**, replacing the old SMR (*soruvenshī mājin hiritsu*, ソルベンシー・マージン比率)
 **200%** trigger [REG-R15] [REG-R17]. The change matters to this product specifically: the
 old basis was **ロックイン** — mortality, lapse and interest fixed at issue — and a 終身保険 written
 today has a run-off measured in decades, so a re-projectable, assumption-parameterized
@@ -645,8 +645,8 @@ standard-formula coefficients sit in 告示 that were not opened in the research
 and empowers the Prime Minister to prescribe the accumulation method and the level of the
 assumed coefficients for long-term contracts [R5] [REG-R4]. 施行規則第68条 says which contracts
 are in scope — a level-premium 終身保険 with a fixed 予定利率 is [R6] [REG-R7] — and 第69条 splits the
-reserve into 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 (*kiken junbikin*, contingency reserve), with a
-floor of 平準純保険料式 (*heijun jun-hokenryō-shiki*, net level premium method) for anything out of
+reserve into 保険料積立金, 未経過保険料, 払戻積立金 and contingency reserve (*kiken junbikin*, 危険準備金), with a
+floor of net level premium method (*heijun jun-hokenryō-shiki*, 平準純保険料式) for anything out of
 scope [R6] [REG-R8]. 平成8年大蔵省告示第48号 sets the method (平準純保険料式, no Zillmer adjustment), the
 table (生保標準生命表2018（死亡保険用）for contracts from 1 April 2018) and the 標準利率 machinery, which for
 ordinary contracts resets off a 1 October 基準日 against the lower of the 3-year and 10-year
@@ -659,7 +659,7 @@ and out of scope [REG-R3]. This library projects gross cash flows and builds non
 reserves.
 
 What the regime asks a liability model for is set by 保険業法第121条第1項第1号, which requires the
-保険計理人 (appointed actuary) to confirm in an 意見書 that the reserve is soundly accumulated
+appointed actuary (保険計理人) to confirm in an 意見書 that the reserve is soundly accumulated
 [REG-R6]; the IAJ practice standard turns that into the **1号収支分析**, a forward
 income-and-outgo analysis over **at least ten future years** by product segment, under
 prescribed deterministic scenarios or a stochastic set, with sufficiency tested over the
@@ -680,8 +680,8 @@ reproduction and transmission to third parties without written consent [REG-R21]
 cites the tables by URL, quotes only the rates its worked example needs, and ships
 `mort_table.csv` as a **[std]** construction whose `provenance` column points at the IAJ
 entries. The terminal age on the male 死亡保険用 basis is **109** — a hard parameter for a
-whole-life projection, which terminates there [R1] [REG-R18]. The table is built for a 保険年齢
-(*hoken-nenrei*, nearest-birthday insurance age) basis while this product ages on 満年齢
+whole-life projection, which terminates there [R1] [REG-R18]. The table is built for a
+nearest-birthday insurance age (*hoken-nenrei*, 保険年齢) basis while this product ages on 満年齢
 [REG-R20] [S1] [S3]; the difference
 is handled in `technical-notes.md`.
 

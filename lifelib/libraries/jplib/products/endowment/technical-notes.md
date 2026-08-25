@@ -3,8 +3,8 @@
 **Status:** Draft, 2026-08-20 (all cited sources accessed 2026-08-20).
 
 **Scope note.** These notes turn the standardized composite of `product-spec.md` (same
-directory) — 養老保険 (*yōrō hoken*, endowment assurance) as the first cell and 学資保険 (*gakushi
-hoken*, educational endowment) as the second — into a reference liability cash-flow
+directory) — endowment assurance (*yōrō hoken*, 養老保険) as the first cell and educational
+endowment (*gakushi hoken*, 学資保険) as the second — into a reference liability cash-flow
 projection on paper. This is not any single insurer's product. [S#] and [R#] tags resolve
 against `sources.md`, whose numbering is carried verbatim from `_research/endowment.md` and
 is frozen; [REG-R#] tags resolve against the cross-product reference library
@@ -21,20 +21,20 @@ multiplier `wv_lapse_mult`, the surrender-rate table, the premium-default table,
 dynamic-surrender sensitivity `β`, the expense and commission scale, and the reference
 valuation rate `i_std`. Each is **[std]** and each is derived, not asserted, below.
 
-**This product states deltas against the savings chassis.** The 保険料積立金 (*hokenryō
-tsumitatekin*, policy value), 解約返戻金 (*kaiyaku-henreikin*, surrender value), 契約者貸付
-(*keiyakusha kashitsuke*, policy loan), 自動振替貸付 (*jidō furikae kashitsuke*, automatic premium
-loan, APL), 猶予期間 (*yūyo kikan*, grace), 失効 (*shikkō*, lapse), 復活 (*fukkatsu*,
-reinstatement) and 減額 (*gengaku*, reduction of the sum assured) machinery is specified once,
-in [終身保険 technical notes](../whole_life/technical-notes.md), and is **not restated here**.
+**This product states deltas against the savings chassis.** The policy value (*hokenryō
+tsumitatekin*, 保険料積立金), surrender value (*kaiyaku-henreikin*, 解約返戻金), policy loan
+(*keiyakusha kashitsuke*, 契約者貸付), automatic premium loan (*jidō furikae kashitsuke*,
+自動振替貸付, APL), grace (*yūyo kikan*, 猶予期間), lapse (*shikkō*, 失効), reinstatement (*fukkatsu*, 復活)
+and reduction of the sum assured (*gengaku*, 減額) machinery is specified once,
+in [whole life technical notes (終身保険)](../whole_life/technical-notes.md), and is **not restated here**.
 Four things are genuinely this product's and are given full treatment: a **finite term with
 a 満期保険金** (*manki hokenkin*, maturity benefit) equal to the death benefit, which turns
 the policy-value roll-forward into a real check; a **staged 学資金**
-(*gakushikin*, education money) schedule that is data rather than formula; a **死亡給付金**
-(*shibō kyūfukin*, death payment) that is a return of premiums rather than a sum assured;
-and **保険料払込免除** (*hokenryō haraikomi menjo*, waiver of premium) on the 契約者 (*keiyakusha*,
-policyholder) — **a second decrement on a second life who is not the 被保険者** (*hihokensha*,
-the insured). That last has no analogue in `uslib` or `uklib`.
+(*gakushikin*, education money) schedule that is data rather than formula; a death payment
+(*shibō kyūfukin*, **死亡給付金**) that is a return of premiums rather than a sum assured;
+and waiver of premium (*hokenryō haraikomi menjo*, **保険料払込免除**) on the policyholder
+(*keiyakusha*, 契約者) — **a second decrement on a second life who is not the 被保険者**
+(*hihokensha*, the insured). That last has no analogue in `uslib` or `uklib`.
 
 ---
 
@@ -42,11 +42,11 @@ the insured). That last has no analogue in `uslib` or `uklib`.
 
 - **Purpose.** Project **gross best-estimate liability cash flows** per policy — premiums,
   death claims, staged survival benefits, the maturity benefit, surrender benefits, expenses
-  and commission — for a single-policy model point, in the sense the ESR 現在推計 (*genzai
-  suikei*, current estimate) requires: probability-weighted future cash flows on assumptions
+  and commission — for a single-policy model point, in the sense the ESR current estimate
+  (*genzai suikei*, 現在推計) requires: probability-weighted future cash flows on assumptions
   re-set at each 基準日 [REG-R15]. They are gross of reinsurance, which is a scope choice of
-  this library and not a requirement of that entry. It is also the shape the 保険計理人 (*hoken
-  keirinin*, appointed actuary) 1号収支分析 consumes — a forward income-and-outgo projection over
+  this library and not a requirement of that entry. It is also the shape the appointed actuary
+  (*hoken keirinin*, 保険計理人) 1号収支分析 consumes — a forward income-and-outgo projection over
   at least ten future years by product segment, re-runnable under prescribed scenarios
   [REG-R6] [REG-R22]. **Discounting, MOCE, required capital and every statutory reserve are
   out of scope** and are cited, not reproduced (see Valuation and reserve pointers).
@@ -64,14 +64,14 @@ the insured). That last has no analogue in `uslib` or `uklib`.
   **end** of the policy year, to policies surviving that year's mortality; surrenders at the
   end of the policy year, **after** deaths and **after** any staged benefit due at that
   anniversary, valued on the surrender value net of that benefit.
-- **Age basis — two ages, not one.** 契約年齢 is 満年齢 (*man-nenrei*, attained age) with the
+- **Age basis — two ages, not one.** 契約年齢 is attained age (*man-nenrei*, 満年齢) with the
   fractional year discarded at 契約日, incrementing on each 年単位の契約応当日 rather than on the
   birthday [S1] [S2] [S10] [S13]. The attained age of the 被保険者 in year `t` is therefore `x +
   t − 1` exactly. **On the 学資 cell there is a second age**, the 契約者's `y + t − 1`, which
   runs an entirely separate decrement over `t = 1 … m` only. Both model cells sit at exact
   integer ages at issue, so the four different 満年齢 rounding rules in the composite do not
   bind on either [S1] [S2] [S10] [S13]. **The table does not share this basis**:
-  生保標準生命表2018（死亡保険用）is built for a 保険年齢方式 (*hoken-nenrei hōshiki*, nearest-birthday)
+  生保標準生命表2018（死亡保険用）is built for a nearest-birthday (*hoken-nenrei hōshiki*, 保険年齢方式)
   basis [REG-R20]. The reference
   implementation reads it at the 満年齢 attained age with no adjustment **[std]**, as the
   chassis does, and the resulting understatement of up to half a year of age is named here,
@@ -131,8 +131,8 @@ the published ¥1,845,588 of total premiums over 17 years exactly [S11]. No carr
 an annual-mode scale, so the modal discount a real 年払 rate would carry is not applied and
 both annual premiums are slightly **overstated**. The direction matters more here than on
 the chassis, because the number this product is sold on moves with it: one carrier states
-plainly that paying in larger blocks lowers total premiums and raises the 返戻率
-(*henreiritsu*, return ratio) [S16], and the highest published ratio in the research set,
+plainly that paying in larger blocks lowers total premiums and raises the return ratio
+(*henreiritsu*, 返戻率) [S16], and the highest published ratio in the research set,
 129.2%, is quoted on a 一括払込 basis [S14]. The model's derived 返戻率 is therefore a
 **monthly-basis ratio evaluated on an annual grid** and sits below a true 年払 figure.
 
@@ -164,8 +164,8 @@ The base run carries no loan and no APL cohort: `default_rate ≡ 0` and `pol_lo
 so `loan_pp ≡ 0` and every benefit is gross. The APL triangle, its exhaustion test and its
 clawback are the chassis's and are exercised in both positions there.
 
-**There is no `low_cv` and no `k`.** No retrieved document offers a 低解約返戻金型
-(*tei-kaiyaku-henreikin-gata*, suppressed-surrender-value) form of either product; the one
+**There is no `low_cv` and no `k`.** No retrieved document offers a suppressed-surrender-value
+(*tei-kaiyaku-henreikin-gata*, 低解約返戻金型) form of either product; the one
 appearance of the term in the research set is on a different product group in a pricing
 release [S9]. The chassis's signature mechanic — the cliff at 払込満了 and the surrender spike
 on it — is **absent by construction here**, and so is the lapse-rate spike that goes with
@@ -193,18 +193,18 @@ presenting a non-guaranteed element as certain is 断定的判断の提供 under
 | 死亡給付金 — 学資 cell | `max(cumulative premiums − 学資金 already paid − loans, 積立金)` | [S3] [S13]; form **[std]** |
 | 保険料払込免除 trigger | The 契約者's death, 高度障害, or 身体障害 from a listed accident within 180 days, during 保険料払込期間 | [S1] [S10] [S16] |
 | What the waiver promises | Every benefit paid in full **and each future premium treated as paid on its 契約応当日** | [S1] [S10] [S13] |
-| Waiver carve-outs | 3-year suicide of the 契約者; the 後継保険契約者's intentional act; war — each **terminating** the contract against the 責任準備金 (*sekinin-junbikin*, policy reserve) | [S1] [S3] [S7] [S10] |
+| Waiver carve-outs | 3-year suicide of the 契約者; the 後継保険契約者's intentional act; war — each **terminating** the contract against the policy reserve (*sekinin-junbikin*, 責任準備金) | [S1] [S3] [S7] [S10] |
 | 解約返戻金 arguments | Elapsed months, capped at paid months, **and the timing of the 学資金 payments** | [S1] [S2] [S10] |
 | 解約返戻金 constraints | Below cumulative premiums; capped at the death benefit; reduced by each 祝金 | [S7] |
 | 免責 — suicide of the 被保険者 | 3 years from the 責任開始の日, paying the 積立金 or 責任準備金 rather than nothing | [S2] [S8]; frame [REG-R34] |
-| 告知義務違反 (contestability) | 2 years from the 責任開始期, on the 契約者's disclosure as well as the 被保険者's | [S1] [S6]; ceiling [REG-R35] |
+| Contestability (告知義務違反) | 2 years from the 責任開始期, on the 契約者's disclosure as well as the 被保険者's | [S1] [S6]; ceiling [REG-R35] |
 | Policyholder protection | 90% of the 責任準備金 on insurer failure | [REG-R40] [REG-R41] |
 
 ### (b) Insurer-discretionary current elements
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| 予定利率 (*yotei riritsu*, assumed interest rate — the pricing rate) | **1.00% p.a. on both cells**, for contracts dated on or after 2025-01-02 (学資保険 0.85% → 1.00%; 養老保険（一時払を除く）0.60% → 1.00%) | [S9]; adoption **[std]** |
+| Assumed interest rate — the pricing rate (*yotei riritsu*, 予定利率) | **1.00% p.a. on both cells**, for contracts dated on or after 2025-01-02 (学資保険 0.85% → 1.00%; 養老保険（一時払を除く）0.60% → 1.00%) | [S9]; adoption **[std]** |
 | Cash-value basis rate `i_cv` | **1.00% p.a.** — the 予定利率 above, adopted directly | [S9]; adoption **[std]**, below |
 | Acquisition deduction `α` | **0.25 of one annual premium**, grading linearly to zero at `m` | **[std]**, below |
 | APL / 契約者貸付 interest `i_L` | **2.40% p.a.**, compound, held flat — a named **deviation** from the chassis's 2.75%, below | [S9]; ceilings 年8% / 半年4% [S1] [S10] |
@@ -636,7 +636,7 @@ exists for any of them on either product.
   carry the premium [S1] [S10]. Off in the base run. Two of the six carriers do not offer
   the APL at all [S6] [S13], so the off position is a product variant and not merely a
   switch.
-- **復活 (reinstatement) is not modelled [std]**, and it costs more here than on the chassis.
+- **Reinstatement (復活) is not modelled [std]**, and it costs more here than on the chassis.
   Within three years of lapse a Japanese policy comes back [S1] [S10]; on this product two
   carriers additionally pay a 学資金 **whose payment date fell while the policy was lapsed**,
   provided the policy is later reinstated [S1] [S10]. So lapse is not terminal even for
@@ -891,15 +891,15 @@ published "approx. 113.7%" for exactly this plan [S11].
 This library projects gross liability cash flows. Every valuation layer consumes them and is
 cited, never reproduced.
 
-- **標準責任準備金 (*hyōjun sekinin junbikin*, standard policy reserve).** 保険業法第116条 obliges the
+- **Standard policy reserve (*hyōjun sekinin junbikin*, 標準責任準備金).** 保険業法第116条 obliges the
   reserve and delegates the accumulation method and the level of the assumed coefficients
   for long-term contracts [REG-R4]. 施行規則第68条 fixes the scope, and a conventional 養老保険 or
   学資保険 with a fixed 予定利率 and a real 保険料積立金 is squarely **in** it [R3] [REG-R7]; 第69条 splits
-  the reserve into 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 (*kiken junbikin*, contingency reserve),
-  with 平準純保険料式 (*heijun jun-hokenryō-shiki*, net level premium method) as the floor for
+  the reserve into 保険料積立金, 未経過保険料, 払戻積立金 and contingency reserve (*kiken junbikin*, 危険準備金),
+  with net level premium method (*heijun jun-hokenryō-shiki*, 平準純保険料式) as the floor for
   anything out of scope [R3] [REG-R8]. 平成8年大蔵省告示第48号 sets the method (平準純保険料式, no Zillmer
   adjustment), the table (生保標準生命表2018（死亡保険用）for contracts concluded from 1 April 2018) and
-  the 標準利率 (*hyōjun riritsu*, standard valuation rate) machinery, which references the lower
+  the standard valuation rate (*hyōjun riritsu*, 標準利率) machinery, which references the lower
   of the three-year and ten-year mean 10-year JGB yield and is determined annually [R4]
   [REG-R10] [REG-R11]; the 2021 amendments brought USD- and AUD-denominated contracts into
   scope from 2022-04-01, which is the currency boundary this yen composite sits inside [R5]

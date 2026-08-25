@@ -4,12 +4,12 @@
 product those notes describe is specified in [`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
-> contractual mechanics are sourced: attained-age repricing at 更新 (*kōshin*, renewal)
-> with no 告知 (*kokuchi*, health declaration), truncation at the renewal ceiling into an
-> 80歳満了 term, the 歳満了 (*sai manryō*, to-a-stated-age) shape never renewing, the
-> absence of any 解約返戻金 (*kaiyaku-henreikin*, surrender value) and hence of
-> 自動振替貸付 (*jidō furikae kashitsuke*, automatic premium loan), and the
-> リビング・ニーズ特約 (a *tokuyaku*, rider — the living-needs acceleration)
+> contractual mechanics are sourced: attained-age repricing at renewal (*kōshin*, 更新)
+> with no health declaration (*kokuchi*, 告知), truncation at the renewal ceiling into an
+> 80歳満了 term, the to-a-stated-age (*sai manryō*, 歳満了) shape never renewing, the
+> absence of any surrender value (*kaiyaku-henreikin*, 解約返戻金) and hence of
+> automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付), and the
+> living-needs acceleration (a *tokuyaku*, rider — リビング・ニーズ特約)
 > discount and per-insured cap. So,
 > unusually for this repository, is the **premium**: carriers publish rate cards, and the
 > anchor cell's ¥974 a month is a published figure [S2]. Everything else is **[std]** —
@@ -43,8 +43,8 @@ notes' symbols mapped to the cells names.
 ## The horizon is the renewal ceiling, not the term
 
 This is the structural difference from the UK and U.S. term models in this repository, not
-a parameter difference. A 年満了 (*nen manryō*, fixed-year) 更新型 contract **renews
-automatically** at the end of every 保険期間 (*hoken kikan*, policy term) unless the
+a parameter difference. A fixed-year (*nen manryō*, 年満了) 更新型 contract **renews
+automatically** at the end of every policy term (*hoken kikan*, 保険期間) unless the
 policyholder gives notice, with no 告知 and no fresh underwriting, and the premium is
 recomputed on attained age at the scale then in force [S1] [S4] [S8] [S12]. So
 `proj_len()` is `renew_ceiling() - age_at_entry()`, not `policy_term()`: a ten-year term
@@ -65,8 +65,8 @@ year, and `proj_len()` is the term. Model points 3, 6 and 9 are 歳満了.
 
 Nothing else resets at a boundary. `pols_if` is continuous across it; no acquisition
 expense and, in the base run, no commission is paid; and the suicide and contestability
-clocks run from the original 責任開始日 (*sekinin kaishi bi*, risk commencement date) and
-do **not** restart [S1] [S4] [S7] [S8] — only 復活 (*fukkatsu*, reinstatement) restarts
+clocks run from the original risk commencement date (*sekinin kaishi bi*, 責任開始日) and
+do **not** restart [S1] [S4] [S7] [S8] — only reinstatement (*fukkatsu*, 復活) restarts
 them [S1]. Neither clock is monetized, so neither is a cells, but treating a renewed term
 as a fresh policy gets persistency, the strain pattern and both clocks wrong at once.
 
@@ -134,12 +134,12 @@ whose position is documented does write this design with a surrender value** [S1
 Japan term chassis cannot assume the absence the way a UK one can, so the zero is asserted from sources, not from the class.
 
 There is no 自動振替貸付, stated in terms by one carrier [S7], and no collateral for a
-契約者貸付 (*keiyakusha kashitsuke*, policy loan) either — the second being an inference from
+policy loan (*keiyakusha kashitsuke*, 契約者貸付) either — the second being an inference from
 the missing surrender value rather than a citation, since that same carrier points its
 policyholders at the 契約貸付制度 [S7] and the document appearing to rule the policy loan out
 could not be extracted [S11]. Importing the APL mechanic that the
-[終身保険 technical notes](../whole_life/technical-notes.md)
-carries would create a no-lapse cushion this contract does not have; grace, then 失効 (*shikkō*, force-out), then 復活-or-not is the whole persistency machinery.
+[whole life technical notes (終身保険)](../whole_life/technical-notes.md)
+carries would create a no-lapse cushion this contract does not have; grace, then force-out (*shikkō*, 失効), then 復活-or-not is the whole persistency machinery.
 
 ## Inputs are external files
 
@@ -206,7 +206,7 @@ are model point columns and five are References on `Projection`.
 | Contract boundary | `contract_boundary` | `ceiling` | point 5 | `current_term` truncates at the end of the 保険期間 in force at the valuation date. The two answers have opposite signs, **+¥50,400.25** against **−¥15,878.74**, and the ESR treatment settling it is [unverified] here [REG-R16] |
 | Selective lapsation | `sel_lapse_lambda` | `0.0` | — | `q_eff = q (1 + λ max(0, 1 − l(t)/l_ref))`, with `sel_lapse_ref = 1.0` **[std]** so the reference block is the cohort at issue. One-directional: renewal takes no 告知 [S1] [S4] [S8] [S12], so an uninsurable life renews while a healthy one re-shops, four times over on the anchor cell |
 | Renewal-decline elasticity | `decline_beta` | `0.0` | — | `d = min(d_max, d_0 (P_a(k+1)/P_a(k))^β)`, the flat 15% at zero. The jump it responds to accelerates: ×1.87, ×2.16, ×2.28, ×2.66, so `decline_max = 0.50` **[std]** binds at β = 2 on every boundary and at β = 1 on none |
-| Age-basis shift | `mort_age_shift` | `False` | — | `q_x → sqrt(q_x q_(x+1))`. 契約年齢 is 満年齢 (*man-nenrei*, age last birthday) [S1] and the table is built for 保険年齢 (*hoken-nenrei*, age nearest birthday) [REG-R20], so the base run reads half a year early and understates. The shift moves `q` **up** — 0.73% at age 30, 4.15% at 40 — and one moving it down has the sign wrong |
+| Age-basis shift | `mort_age_shift` | `False` | — | `q_x → sqrt(q_x q_(x+1))`. 契約年齢 is age last birthday (*man-nenrei*, 満年齢) [S1] and the table is built for age nearest birthday (*hoken-nenrei*, 保険年齢) [REG-R20], so the base run reads half a year early and understates. The shift moves `q` **up** — 0.73% at age 30, 4.15% at 40 — and one moving it down has the sign wrong |
 | Commission at 更新 | `comm_new_term_rate` | `0.0` | — | Pays acquisition commission in the first year of each renewed term. A 更新 is not new business [S1] [S4], but no document discloses a commission scale at all, so the zero is a choice — and a first-year scale would flip the **sign** of years 11, 21, 31 and 41 |
 
 Two scope limits are stated rather than approximated. The 復活 arrears at 年6% compound
@@ -250,7 +250,7 @@ per-policy amounts, `claims(t, kind)`, `pols_if_at(t, timing)`. The full map is 
 
 There is deliberately no `cv_pp` and no account value. The absence is a product fact, and
 it is why this chassis carries a plain lapse model while the
-[終身保険 technical notes](../whole_life/technical-notes.md)
+[whole life technical notes (終身保険)](../whole_life/technical-notes.md)
 carries 自動振替貸付.
 
 ## Standardizations used

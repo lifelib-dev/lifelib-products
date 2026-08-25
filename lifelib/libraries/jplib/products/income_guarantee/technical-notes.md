@@ -15,19 +15,19 @@ new, and both are named as such where they appear: a **rate-class mortality fact
 premium differential between classes, and a **per-instalment annuity administration
 expense**, which the chassis has no need of because the chassis pays a lump sum.
 
-**This is a death benefit.** 収入保障保険 (*shūnyū hoshō hoken*, survivor income term) pays on the
-death of the insured, or on the contractual 高度障害状態 (*kōdo shōgai jōtai*, severe disability
-state) treated as its accelerated equivalent, and pays it as a monthly income. It is **not**
+**This is a death benefit.** Survivor income term (*shūnyū hoshō hoken*, 収入保障保険) pays on the
+death of the insured, or on the contractual severe disability state (*kōdo shōgai jōtai*,
+高度障害状態) treated as its accelerated equivalent, and pays it as a monthly income. It is **not**
 income protection in `uklib`'s sense; `uklib`'s `IP_UK_S` insures disability. Nothing in
 this file models a disability decrement.
 
-**This file states deltas.** The [定期保険 technical notes](../term_life/technical-notes.md)
+**This file states deltas.** The [term life technical notes (定期保険)](../term_life/technical-notes.md)
 are the library's protection chassis, implemented in
 [`Term_JP_A`](../term_life/model.md). Inherited unchanged and **not restated here**: the
 decrement recursion and its processing order, the premium chassis, the **[std]** mortality
 construction with its 0.80 best-estimate factor, the lapse table, the expense and commission
-levels, the 満年齢 (*man-nenrei*, age last birthday) / 保険年齢 (*hoken-nenrei*, age nearest
-birthday) age-basis reconciliation, and the treatment of 高度障害 as one decrement with death.
+levels, the age last birthday (*man-nenrei*, 満年齢) / age nearest birthday (*hoken-nenrei*,
+保険年齢) age-basis reconciliation, and the treatment of 高度障害 as one decrement with death.
 What changes: a monthly grid, a benefit that is an annuity-certain rather than a lump sum, a
 premium stream that stops on the annuity event while the benefit stream runs on, and a
 projection horizon that is **longer than the policy term**.
@@ -38,19 +38,19 @@ projection horizon that is **longer than the policy term**.
 
 - **Purpose.** Project gross best-estimate liability cash flows — premiums, the death and
   高度障害 annuity instalments, claim expenses, annuity administration expenses, maintenance
-  expenses and commission — for a single-policy model point, in the sense the ESR 現在推計
-  (*genzai suikei*, current estimate) requires: probability-weighted future cash flows on
+  expenses and commission — for a single-policy model point, in the sense the ESR current
+  estimate (*genzai suikei*, 現在推計) requires: probability-weighted future cash flows on
   assumptions re-set at the 基準日 rather than locked in at issue [REG-R15]. The same
-  projection is the shape of the 1号収支分析 (*ichi-gō shūshi bunseki*, item-1 income-and-outgo
-  analysis) [REG-R22].
+  projection is the shape of the item-1 income-and-outgo analysis (*ichi-gō shūshi bunseki*,
+  1号収支分析) [REG-R22].
 - **Discounting, MOCE, required capital and reserving are out of scope**, cited and not
   reproduced (see Valuation and reserve pointers). `jplib` computes no ratio and builds no
-  責任準備金 (*sekinin-junbikin*, policy reserve). The omission matters more on this product
+  policy reserve (*sekinin-junbikin*, 責任準備金). The omission matters more on this product
   than on any other protection product in the library, and Key sensitivities quantifies why.
 - **Projection frequency.** Monthly — the model is `IncomeTerm_JP_S`. The grid is not a
   refinement here, it is the contract: the benefit is one instalment per monthly payment
   date [S1 第3条第2項] [S5], the instalment count is a month count [S5] [S14] [S15], and the
-  最低支払保証期間 (*saitei shiharai hoshō kikan*, minimum payment guarantee period) is stated in
+  minimum payment guarantee period (*saitei shiharai hoshō kikan*, 最低支払保証期間) is stated in
   years but binds in months. An annual grid cannot represent `max(N − m + 1, G)` without
   inventing a within-year convention for both `m` and `G`.
 - **Timing conventions [std].** Premium at the **start** of each policy month, in advance,
@@ -68,7 +68,7 @@ projection horizon that is **longer than the policy term**.
   [S1 第14条] — so a policy year costs the same at all three frequencies and only the timing
   moves. The worked example is 月払, the frequency the only published rate grid is quoted
   in [S6].
-- **Age basis [std].** 契約年齢 (*keiyaku nenrei*, issue age) is 満年齢 with the fraction
+- **Age basis [std].** Issue age (*keiyaku nenrei*, 契約年齢) is 満年齢 with the fraction
   truncated [S1 第37条] [S14]; attained age in month `t` is
   `x + floor((t − 1) / 12)`. 生保標準生命表2018（死亡保険用）is built for a 保険年齢
   basis [REG-R20] [R2], so reading it at 満年齢 reads it
@@ -78,8 +78,8 @@ projection horizon that is **longer than the policy term**.
 - **Model points.** Single-policy, on an expected (probability-weighted) basis. The anchor
   cell of the worked example is `point_id = 1`.
 - **Termination — and the sentence this product exists to force.** The policy terminates at
-  the end of the 保険期間 (*hoken kikan*, policy term) with nothing payable on survival: no
-  満期保険金, no 解約返戻金 (*kaiyaku-henreikin*, surrender value) at any duration [S2] [S5] [S6]
+  the end of the policy term (*hoken kikan*, 保険期間) with nothing payable on survival: no
+  満期保険金, no surrender value (*kaiyaku-henreikin*, 解約返戻金) at any duration [S2] [S5] [S6]
   [S7] [S9] [S15]. **But cash flow does not stop there.** Where the insured event falls so
   late that fewer than `G` months remain, the annuity payment period is **extended past the
   expiry date** until the guarantee has run [S1 第3条第2項] [S3 第3条第3項] [S5] [S12] [S14]. The
@@ -91,11 +91,11 @@ projection horizon that is **longer than the policy term**.
   policy month 420 pays its twenty-fourth instalment in month 443, twenty-three months after
   cover ended. Terminating the projection at `t = N` truncates real, contractual liability,
   and it is the single easiest error to make in an implementation of this product.
-- **Contract boundary.** Unlike the chassis, this contract has no 更新 (*kōshin*, renewal) in
+- **Contract boundary.** Unlike the chassis, this contract has no renewal (*kōshin*, 更新) in
   any retrieved document [S5] [S6] [S8], and the premium is level and guaranteed for the
   whole 保険期間 with no review mechanic [S1] [S2] [S5] [S6] [S8] [S12]. The insurer therefore
   has no unilateral repricing right, the boundary is the full term, and the boundary
-  argument that dominates the [定期保険 technical notes](../term_life/technical-notes.md) does
+  argument that dominates the [term life technical notes (定期保険)](../term_life/technical-notes.md) does
   not arise here. The run-off
   tail in months `N + 1 … T` is inside the boundary: it is the settlement of a claim that
   arose inside it.
@@ -137,7 +137,7 @@ changes nothing before the last two policy years. **[std]** here covers the choi
 and nothing else about the premium.
 
 `term_m` is **derived, not an input**: every published contract example sets the term as
-歳満了 (*sai manryō*, to a stated attained age) [S2] [S5] [S6] [S8] [S9] [S12] [S14] [S15]
+to a stated attained age (*sai manryō*, 歳満了) [S2] [S5] [S6] [S8] [S9] [S12] [S14] [S15]
 [S17]. A model point supplying an n-year term is describing a product the composite does not
 have.
 
@@ -169,8 +169,8 @@ no analogue anywhere else in `jplib`:
 > instalment.
 
 There is deliberately **no** `cv_pp` and no account value: the composite has no 解約返戻金 for
-the whole term [S2] [S5] [S6] [S7] [S9] [S15], and with no cash value there is no 自動振替貸付
-(*jidō furikae kashitsuke*, automatic premium loan) and no 契約者貸付 — one carrier states the
+the whole term [S2] [S5] [S6] [S7] [S9] [S15], and with no cash value there is no automatic
+premium loan (*jidō furikae kashitsuke*, 自動振替貸付) and no 契約者貸付 — one carrier states the
 absence in terms [S2]. Grace to 失効 to 復活-or-not is the whole persistency machinery, exactly
 as on the chassis.
 
@@ -188,7 +188,7 @@ Three classes, kept separate.
 
 | Input | Value | Basis |
 |---|---|---|
-| 遺族年金 (*izoku nenkin*, survivor annuity) | `A` per month from the insured event to the 保険期間満了日, extended where the guarantee requires | [S1 第3条] [S3 第3条] [S5] [S9] [S12] [S14] |
+| Survivor annuity (*izoku nenkin*, 遺族年金) | `A` per month from the insured event to the 保険期間満了日, extended where the guarantee requires | [S1 第3条] [S3 第3条] [S5] [S9] [S12] [S14] |
 | 高度障害年金 | **The same `A`**, same timetable, same guarantee; mutually exclusive with the death annuity | [S1 第3条] [S3 第3条] [S5] [S9] |
 | Instalment count | `n_pay(m) = max(N − m + 1, G)` | derivation below; [S5] [S14] [S15] |
 | Guarantee mechanic | A **term extension past expiry**, not a benefit floor inside the term | [S1 第3条第2項] [S3 第3条第3項] [S5] [S12] [S14] |
@@ -196,10 +196,10 @@ Three classes, kept separate.
 | Premium | Level for the whole 保険期間; 保険料払込期間 = 保険期間; no review, no 更新 | [S1] [S2] [S5] [S6] [S8] [S12] |
 | Premium cessation | **On the annuity event**: no further premium once the annuity begins | [S1 第12条第2項] [S3 第5条] [S8] |
 | 解約返戻金 | **None**, whole term | [S2] [S5] [S6] [S7] [S9] [S15] |
-| 猶予期間 (*yūyo kikan*, grace), 月払 | To the last day of the month after the 払込期月; then 失効 | [S1 第15条] [S3] [S4] |
+| Grace (*yūyo kikan*, 猶予期間), 月払 | To the last day of the month after the 払込期月; then 失効 | [S1 第15条] [S3] [S4] |
 | 復活 | 3 years from lapse, on fresh underwriting and arrears with interest; rate class carries over | [S1 第17条] [S3] [S5] |
 | Suicide 免責 | 3 years from the 責任開始期, reset on 復活; 責任準備金 paid to the owner | [S1] [S3] [S4] [S5] |
-| 一括受取 (commutation) | Present value of unpaid instalments, in whole, in part, or as the residue | [S2] [S3] [S5] [S7] [S10] [S12] [S14] |
+| Commutation (一括受取) | Present value of unpaid instalments, in whole, in part, or as the residue | [S2] [S3] [S5] [S7] [S10] [S12] [S14] |
 | Residual floor | A partial commutation leaving 年金月額 below ¥50,000 is refused | [S7] [S1 第5条第3項] [S3 第6条第4項] |
 | Benefit cap | 年金現価保険金額 ¥300,000,000 — a cap on the **present value** | [S8] |
 | リビング・ニーズ特約 | 年金現価 of the designated 年金月額 less 6 months' interest and premium; cap ¥30,000,000; barred in the final year | [S2] [S5] [S7] |
@@ -229,7 +229,7 @@ assert. For `m ≤ N − G + 1` every stream ends at exactly `N`; only later cla
 | 契約者配当 | **Nil** — every retrieved product is 無配当 | [S1 第39条] [S2] [S5] [S15] |
 | Commutation basis | Annuity-certain at **0.65% p.a. effective**, monthly in arrears | **[std]** (1) |
 | 前納 discount, 高額割引 | Insurer-set and unpublished; not modeled | [S1 第14条] [S6]; scope **[std]** |
-| Pricing basis (予定利率 (*yotei riritsu*, assumed interest rate), 予定死亡率, 予定事業費率) | **Not published for any 収入保障 contract in the set**; filed under 保険業法第4条第2項第4号 and not public | [REG-R2]; gap |
+| Pricing basis (assumed interest rate (*yotei riritsu*, 予定利率), 予定死亡率, 予定事業費率) | **Not published for any 収入保障 contract in the set**; filed under 保険業法第4条第2項第4号 and not public | [REG-R2]; gap |
 
 1. **The most important [std] number in this product, and the best-evidenced.** No direct
    writer publishes the discount basis; the wordings are 「年金月額に所定の係数を乗じた額」 [S6] and
@@ -270,7 +270,7 @@ entries.
 | Step | Rule | Basis |
 |---|---|---|
 | Anchors verified for this product | Male 死亡保険用 `q30 = 0.00068`, `q60 = 0.00653`, `q65 = 0.01015`, `q80 = 0.05006`; female `q60 = 0.00363` | read from the table [R1] [REG-R18] |
-| Anchors carried from the chassis | Male `q35 = 0.00077`, `q40 = 0.00118`, `q50 = 0.00285`, `q90 = 0.15760`; female `q30 = 0.00037` | [定期保険 technical notes](../term_life/technical-notes.md) |
+| Anchors carried from the chassis | Male `q35 = 0.00077`, `q40 = 0.00118`, `q50 = 0.00285`, `q90 = 0.15760`; female `q30 = 0.00037` | [term life technical notes (定期保険)](../term_life/technical-notes.md) |
 | Shipped anchors | The **union** of every anchor any `jplib` product reads from the table: both sexes at ages 20, 22, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80 and 85, plus male 31–34 | one canonical **[std]** file, so a cell carries the same value and the same provenance in every product that ships it |
 | Female rates | Read at the female anchors in their own right, not built as a ratio to the male rate | [R1] [REG-R18] |
 | Interpolation | Log-linear in `ln q` between the two **neighbouring** anchors, rounded to 5 decimals; no extrapolation anywhere, because every shipped age lies between two sourced anchors | **[std]** |
@@ -281,7 +281,7 @@ entries.
 2. **The rate-class factor is the parameter `product-spec.md` footnote 6 defers to this
    file.** The composite has four classes [S2] [S5] [S14], their qualification is published
    and **measured rather than declared** — BMI 18.0 to under 27.0, 最大血圧 under 140 and 最小血圧
-   under 90 mmHg, no tobacco in the past year, verified by a コチニン (cotinine) test [S2] [S5]
+   under 90 mmHg, no tobacco in the past year, verified by a cotinine (コチニン) test [S2] [S5]
    — and **no carrier publishes the premium differential between them.** The reference set
    is therefore wholly **[std]**, given a stated internal structure rather than four free
    numbers:
@@ -474,7 +474,7 @@ rather than calibrate to it.
 | Selective lapsation | `sel_lapse_ref` | **1.0** | The threshold `l_ref` is expressed as a fraction of the original cohort, so 1.0 makes the loading start at issue and grow as the cohort runs off. It has no effect while `λ = 0` |
 | 一括受取 | `commute_rate` | **0.65% p.a. effective** | The one **[std]** number here with published anchors; assumption class (b) footnote 1 carries the derivation and the 0.61%–1.45% observed range |
 
-- **一括受取 (commutation).** With `commutation = true`, a claim in month `m` is settled at the
+- **Commutation (一括受取).** With `commutation = true`, a claim in month `m` is settled at the
   claim date by a lump sum instead of the stream:
 
       L(n) = A * v * (1 - v^n) / (1 - v),    v = (1 + i_c)^(-1/12),  n = n_pay(m)
@@ -688,16 +688,16 @@ any other in the library.
 This library projects gross cash flows. Every valuation layer consumes them and is cited,
 never reproduced.
 
-- **標準責任準備金** (*hyōjun sekinin junbikin*, standard policy reserve). A conventional
+- Standard policy reserve (*hyōjun sekinin junbikin*, **標準責任準備金**). A conventional
   guaranteed 収入保障 contract is inside the regime: 保険業法第116条第2項 delegates the method and the
   coefficients [REG-R4], and 施行規則第68条 excludes only separate-account-linked contracts,
   contracts with no 保険料積立金, contracts where the insurer has disclosed it may change the
   basis, and residually designated classes — none of which catches this product [R8]
-  [REG-R7]. 第69条 requires 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 (*kiken junbikin*, contingency
-  reserve) per category [R8] [REG-R8]. 平成8年大蔵省告示第48号 supplies the method — **平準純保険料式**
-  (*heijun jun-hokenryō-shiki*, net level premium method) — and the table vintage: contracts
+  [REG-R7]. 第69条 requires 保険料積立金, 未経過保険料, 払戻積立金 and contingency reserve (*kiken junbikin*,
+  危険準備金) per category [R8] [REG-R8]. 平成8年大蔵省告示第48号 supplies the method — net level premium
+  method (*heijun jun-hokenryō-shiki*, **平準純保険料式**) — and the table vintage: contracts
   from 2018-04-01 value on 生保標準生命表2018（死亡保険用）[REG-R10] [REG-R11] [R3]. The discount rate is
-  the **標準利率** (*hyōjun riritsu*, standard valuation interest rate), which the supervisory
+  the standard valuation interest rate (*hyōjun riritsu*, **標準利率**), which the supervisory
   guideline defines as 「責任準備金告示に規定する予定利率」 [R9] [REG-R10]; its **current numeric value could
   not be established from any retrieved document and is [unverified]** — the 新旧対照表
   attachments on the regulator's page were not fetched [R10].
@@ -756,7 +756,7 @@ cash flow or claim outgo per policy issued, from the same projection.
    undiscounted and −¥10,895.85 at 2% p.a. Nowhere else in `jplib` does the discount rate
    move the answer this far, because nowhere else is the benefit a 35-year stream beginning
    at an uncertain date. Any user comparing this product's undiscounted output with
-   the [定期保険 chassis](../term_life/technical-notes.md)'s is comparing two quantities of
+   the [term life chassis (定期保険)](../term_life/technical-notes.md)'s is comparing two quantities of
    different economic meaning.
 4. **The guarantee length.** Annuity outgo is **¥440,668.48 with no guarantee, ¥443,313.69
    at 2年, ¥457,179.73 at 5年 and ¥503,961.05 at 10年** — so the composite's 2年 guarantee is
@@ -827,7 +827,7 @@ Known modeling pitfalls:
   低解約返戻金型 whole life has no analogue here. A model importing that cliff invents it.
 - **There is no 自動振替貸付.** With no cash value there is no collateral, and one carrier states
   the absence in terms [S2]. The APL mechanic specified in the
-  [終身保険 technical notes](../whole_life/technical-notes.md) must not be
+  [whole life technical notes (終身保険)](../whole_life/technical-notes.md) must not be
   imported; the supervisory guideline in any case requires an APL, where one exists, to run
   at the policyholder's election rather than automatically [REG-R14].
 - **A full commutation settles the claim; it does not alter the policy.** Paying the whole

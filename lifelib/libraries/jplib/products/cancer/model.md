@@ -3,7 +3,7 @@
 **Status:** Draft, 2026-08-20. Built from
 [`products/cancer/technical-notes.md`](technical-notes.md); the product it
 implements is specified in [`product-spec.md`](product-spec.md). Both state their
-**deltas against the third-sector chassis**, 医療保険 (*iryō hoken*, medical insurance):
+**deltas against the third-sector chassis**, medical insurance (*iryō hoken*, 医療保険):
 its [product specification](../medical/product-spec.md), its
 [technical notes](../medical/technical-notes.md), and the model that implements them,
 [`Medical_JP_S`](../medical/model.md). This model carries that model's names for every
@@ -16,13 +16,13 @@ shared concept.
 > not trigger the premium waiver, the absence of any day limit and of any surrender
 > value, and the waiver on the first invasive diagnosis. The **incidence basis is
 > sourced too**, which makes this product an exception in `jplib`: 全国がん登録
-> (*zenkoku gan tōroku*, the national cancer registry) publishes 罹患率 (*rikanritsu*,
-> incidence rates) by five-year age band, freely [R5] [REG-R29]. Everything else is
+> (*zenkoku gan tōroku*, the national cancer registry) publishes incidence rates
+> (*rikanritsu*, 罹患率) by five-year age band, freely [R5] [REG-R29]. Everything else is
 > **[std]** — the sex split of that basis, the post-diagnosis survival model, the
 > relapse hazard, the care frequencies, the expense scale and the premium itself. No
-> carrier publishes a rate table for a cancer main contract, the 算出方法書 (*sanshutsu
-> hōhō-sho*, statement of the method of calculating premiums and reserves) is not
-> published [REG-R2], and 第三分野 (*dai-san-bun'ya*, third-sector) business has no standard
+> carrier publishes a rate table for a cancer main contract, the statement of the
+> method of calculating premiums and reserves (*sanshutsu hōhō-sho*, 算出方法書) is not
+> published [REG-R2], and third-sector (*dai-san-bun'ya*, 第三分野) business has no standard
 > incidence table and no reference pure premium to fall back on [R3]. Replace the
 > assumption tables with company data before drawing any conclusion from the numbers.
 
@@ -62,8 +62,8 @@ off-by-one in the delay shows up and nowhere else in the in-force figures.
 
 Four things the third-sector chassis has are **absent here, as product facts**:
 
-- **no `L1` and no `LA`** — no per-hospitalization day ledger and no 通算 (*tsūsan*,
-  lifetime aggregate) day ledger [S1] [S3] [R11]. What replaces them is a **60-month
+- **no `L1` and no `LA`** — no per-hospitalization day ledger and no lifetime aggregate
+  (*tsūsan*, 通算) day ledger [S1] [S3] [R11]. What replaces them is a **60-month
   ledger on the treatment benefit**, a ledger on *months*, not days;
 - **no benefit-driven termination** — paying the diagnosis lump sum neither terminates
   nor exhausts the contract [S1], so the in-force roll-forward has two ways out;
@@ -76,7 +76,7 @@ Four things the third-sector chassis has are **absent here, as product facts**:
 ## The cycle is a delay on the trigger history, not a rate
 
 A life that has just been paid cannot be paid again for `C` = 24 months; after that it
-can, on a fresh 再発 (*saihatsu*, relapse), 転移 (*ten'i*, metastasis) or new primary,
+can, on a fresh relapse (*saihatsu*, 再発), metastasis (*ten'i*, 転移) or new primary,
 without limit [S5] [S7] [S10]. That clock is keyed to an **event** — the previous
 payment trigger — so `unlock(t)` is the trigger cohort of month `t − C` carried forward
 on diagnosed decrements alone, and not a release rate applied to a stock. Two
@@ -99,9 +99,9 @@ disease — full rate, half rate and 10% — are one model-point parameter, `ins
 
 An in-situ diagnosis pays the reduced lump sum and the surgery benefit in full, and
 **nothing continuing** **[std]**. The rationale is a data fact rather than a
-convenience: the sourced 推計患者数 (*suikei kanjasū*, estimated patient counts) and
-平均在院日数 (*heikin zaiin nissū*, mean length of stay) are for 悪性新生物 (*akusei
-shinseibutsu*, malignant neoplasm) and do not measure in-situ exposure [R7], so
+convenience: the sourced estimated patient counts (*suikei kanjasū*, 推計患者数) and
+mean length of stay (*heikin zaiin nissū*, 平均在院日数) are for malignant neoplasm
+(*akusei shinseibutsu*, 悪性新生物) and do not measure in-situ exposure [R7], so
 attaching the invasive frequencies to in-situ lives would credit them with an exposure
 no retrieved statistic observes. The direction of the error is stated: it understates
 the in-situ tier. `check_insitu_ledger()` asserts that benefit paid plus availability
@@ -111,7 +111,7 @@ recursion, so the identity cannot close by construction.
 ## Two ledgers that are per diagnosed life, not per block
 
 `treat_months` counts against the 60-month cap and `adv_paid` against the ¥20,000,000
-先進医療 (*senshin iryō*, advanced medicine) cap, and both measure what an **individual**
+advanced medicine (*senshin iryō*, 先進医療) cap, and both measure what an **individual**
 has consumed. Diagnosed lives enter at different times, so each is carried as a cohort
 average diluted by new entrants — and only by `diag_first`, because a repeat trigger is
 an already-diagnosed life whose ledger continues. Weighting either by `pols_cancer`
@@ -131,8 +131,8 @@ hundred months of its projection.
 
 Three mechanics are monthly by construction rather than by approximation: the 90-day
 waiting period is three months of the grid, the treatment benefit's unit of payment
-**is** the calendar month [S5] [S10] [S11], and the premium mode is 月払 (*getsubarai*,
-monthly) throughout the composite [S1] [S6] [S11] [S12]. `t` is the policy month, and
+**is** the calendar month [S5] [S10] [S11], and the premium mode is monthly (*getsubarai*,
+月払) throughout the composite [S1] [S6] [S11] [S12]. `t` is the policy month, and
 `proj_len() = 12 × (omega_age − x + 1)` — 924 months on the anchor cell, running to the
 terminal age of 第三分野標準生命表2018, 116 male and 118 female [REG-R18] [REG-R20]. A
 diagnosis arising in month `t` pays its lump sum in month `t` and the life enters the
@@ -164,7 +164,7 @@ products/cancer/
 | `mort_table.csv` | 第三分野標準生命表2018 proxy by sex, male ages 20–116 and female 20–118 | **[std]** library-wide construction: the quoted rates — 男 q(40) = 0.00076 among them — graduated log-linearly between anchors [R1] [REG-R18] [REG-R19] [REG-R20]; **not a copy** [REG-R21] |
 | `incidence_table.csv` | 罹患率 per 100,000 by five-year age band, both sexes, all sites C00–C96, 2023 | Sourced and reproduced verbatim with its attribution [R5] [REG-R29] |
 | `sex_factor_table.csv` | The two sourced male / both-sexes ratios, at band midpoints 37.5 and 72.5 | Sourced [R5]; the *interpolation between them* is **[std]** |
-| `survival_table.csv` | 5年相対生存率 (*go-nen sōtai seizonritsu*, five-year relative survival) by sex, 2018 diagnoses | Sourced [R6] [REG-R28] |
+| `survival_table.csv` | Five-year relative survival (*go-nen sōtai seizonritsu*, 5年相対生存率) by sex, 2018 diagnoses | Sourced [R6] [REG-R28] |
 | `lapse_table.csv` | Annual lapse by policy year, 9% grading to a 3% ultimate | **[std]**, shared unchanged with the medical chassis; anchored to the sourced 5.6% 解約・失効率 [REG-R31] |
 | `hosp_stay_table.csv` | Mean stay for 悪性新生物 discharges: all-ages, and the four-band age gradient | Both sourced [R7] [REG-R27]; which basis is read is a switch |
 
@@ -219,7 +219,7 @@ visible and testable. `lapse_canc_factor` is the one whose base is inert rather 
 | `sel_lapse_lambda` | `0.0` | Anti-selective lapse on the **incidence** basis, `1 + lam × max(0, w_cum − w_ref)`. Amplified here by the waiver: the healthiest lives are also the only ones still paying. No Japanese evidence was retrieved |
 | `repeat_conditioned` | `False` (model point) | Multiplies the relapse hazard by `treat_prob`. Two of the three sourced two-year designs condition the repeat on being under treatment [S7] [S10], so the designs differ by an order of magnitude, not a rounding. True on point 3 |
 | `hosp_age_gradient` | `False` | Reads the sourced 35–64 / 65+ / 75+ mean-stay gradient instead of the all-ages 14.4 days [R7] [REG-R27]. The base run takes the all-ages figure because the gradient has four broad bands and the incidence twenty-one narrow ones |
-| `mort_age_offset` | `0.0` | Reads the mortality table at `age(t) + 0.5`, interpolating between rows: the table is built for a 保険年齢方式 (*hoken-nenrei hōshiki*, nearest-birthday age) basis, so reading it at 満年齢 (*man-nenrei*, attained age with the fraction discarded) understates the valuation age by about half a year [R2] [REG-R20] |
+| `mort_age_offset` | `0.0` | Reads the mortality table at `age(t) + 0.5`, interpolating between rows: the table is built for a nearest-birthday age (*hoken-nenrei hōshiki*, 保険年齢方式) basis, so reading it at attained age with the fraction discarded (*man-nenrei*, 満年齢) understates the valuation age by about half a year [R2] [REG-R20] |
 | `net_of_cancer` | `False` | Nets the never-diagnosed baseline of `cancer_death_share` = **0.28 [std]**, so cancer mortality inside the table's own rates is not carried twice against the diagnosed excess hazard. 0.28 is a round placeholder with **no observed range**: no document in this product's source set gives 悪性新生物's share of all-cause Japanese mortality — [REG-R28] publishes the cancer death count and no all-cause denominator — so the switch shows the capability, not a calibration |
 | `renew_reprice_rate` | `0.0` | Steps the premium at each ten-year renewal on the 定期 chassis flag [S5] [S7]. Point 3 carries the flag with the rate at zero |
 | `lapse_canc_factor` | `1.0` | Scales the diagnosed lapse rate off the healthy one. Inert wherever the waiver fires — a waived life has no premium to miss and no surrender value to take — so it reaches a cash flow only on the `waiver_trigger = "none"` and `"disability"` designs [S7] [S10] [S11]. Live on point 7 |
@@ -235,7 +235,7 @@ is stated rather than left to inference. A **duration-banded excess hazard** nee
 cohort tracking by time since diagnosis that a three-state model does not carry; the
 flat hazard overstates late-duration mortality and therefore understates the
 long-survivor benefits, and a cure-fraction basis moves the liability one way only — up.
-And **復活** (*fukkatsu*, reinstatement) enters as a new model point rather than as a
+And reinstatement (*fukkatsu*, **復活**) enters as a new model point rather than as a
 negative lapse, because the waiting period **re-runs from the 復活日** [S1] [S6]: a
 reinstated policy has 90 days of no cover in front of it, and a negative lapse would
 hand back cover the contract does not restore and delete an anti-selection control.
@@ -243,8 +243,8 @@ hand back cover the contract does not restore and delete an anti-selection contr
 ## One divergence from the technical notes
 
 `technical-notes.md` carries `disch_rider` in its model point attribute table, but its
-cash-flow section defines seven claim lines and none of them is the がん退院一時金 (*gan
-taiin ichijikin*, cancer discharge lump sum). `product-spec.md` does specify the benefit
+cash-flow section defines seven claim lines and none of them is the cancer discharge
+lump sum (*gan taiin ichijikin*, がん退院一時金). `product-spec.md` does specify the benefit
 — ¥100,000 on discharge from a covered stay of ten or more consecutive days, unlimited
 count, with a 30-day re-payment bar [S1] [S2] — and puts it in scope. The model
 therefore supplies a **[std]** formula:

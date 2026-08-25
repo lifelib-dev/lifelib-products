@@ -19,7 +19,7 @@ three that carry the claim cost and are the load-bearing additions — the hospi
 hospitalization. Every one of them is introduced below as **[std]** with its rationale.
 
 **This is the `jplib` third-sector chassis in model form.**
-[がん保険](../cancer/technical-notes.md) and [介護保険](../nursing_care/technical-notes.md)
+[cancer (がん保険)](../cancer/technical-notes.md) and [nursing care (介護保険)](../nursing_care/technical-notes.md)
 state deltas against the machinery below — in particular against the day-limit ledger and
 the frequency × severity × limit decomposition — rather than restating it.
 
@@ -28,26 +28,26 @@ the frequency × severity × limit decomposition — rather than restating it.
 ## Model scope and conventions
 
 - **Purpose.** Project gross best-estimate liability cash flows for a single-policy model
-  point of 医療保険 (*iryō hoken*, third-sector medical insurance): office premiums,
-  入院給付金 (*nyūin kyūfukin*, hospitalization benefit), 手術給付金 (*shujutsu kyūfukin*,
-  surgery benefit), 先進医療給付金 (*senshin iryō kyūfukin*, advanced-medicine benefit),
-  maintenance and claim expenses, and commission. The intended sense is the **現在推計**
-  (*genzai suikei*, current estimate) that the economic-value solvency regime requires:
-  probability-weighted future cash flows on assumptions re-set at a stated 基準日
-  (*kijunbi*, reporting date) rather than locked in at issue [REG-R15]. It is also the shape
+  point of third-sector medical insurance (*iryō hoken*, 医療保険): office premiums,
+  hospitalization benefit (*nyūin kyūfukin*, 入院給付金), surgery benefit (*shujutsu kyūfukin*,
+  手術給付金), advanced-medicine benefit (*senshin iryō kyūfukin*, 先進医療給付金),
+  maintenance and claim expenses, and commission. The intended sense is the current estimate
+  (*genzai suikei*, **現在推計**) that the economic-value solvency regime requires:
+  probability-weighted future cash flows on assumptions re-set at a stated reporting date
+  (*kijunbi*, 基準日) rather than locked in at issue [REG-R15]. It is also the shape
   the 1号収支分析 takes — a forward income-and-outgo projection over at least ten future
   years, by 区分経理 segment [REG-R22].
 - **Out of scope, cited not reproduced.** Discounting, MOCE, required capital, and every
-  reserving basis. 標準責任準備金 (*hyōjun sekinin-junbikin*, standard policy reserve),
-  危険準備金 (*kiken junbikin*, contingency reserve) including the third-sector limb, the ESR
+  reserving basis. Standard policy reserve (*hyōjun sekinin-junbikin*, 標準責任準備金),
+  contingency reserve (*kiken junbikin*, 危険準備金) including the third-sector limb, the ESR
   balance sheet and IFRS 17 all consume these cash flows and are pointed at in *Valuation
   and reserve pointers*, not computed here.
 - **Projection frequency.** Monthly grid. This is not a refinement of an annual model: the
   daily benefit's unit of account is a **day**, the per-hospitalization limit is 60 days —
-  about two months — and the premium mode is 月払 (monthly) at every carrier in the
+  about two months — and the premium mode is monthly (月払) at every carrier in the
   composite [S1] [S4] [S10]. `t` is the **policy month**, `t = 0, 1, …, proj_len − 1`, and
-  month `t` is the interval from `t` to `t + 1` months after the 契約日 (*keiyakubi*,
-  contract date).
+  month `t` is the interval from `t` to `t + 1` months after the contract date
+  (*keiyakubi*, 契約日).
 - **Timing conventions [std].** Office premium received at the **start** of month `t`;
   maintenance expense at the start of month `t`; hospitalization, surgery and 先進医療
   benefits and the claim-handling expense at the **end** of month `t`; mortality then lapse
@@ -63,10 +63,10 @@ the frequency × severity × limit decomposition — rather than restating it.
   one month at `L1` = 60 and three at `L1` = 120, and the model does not discount, so the
   distortion is confined to the termination boundary and to deaths in hospital. A
   day-accrual alternative is named in the pitfalls list.
-- **Age basis.** 満年齢 (*man-nenrei*, attained age at 契約日 with the fraction discarded),
+- **Age basis.** Attained age at 契約日 with the fraction discarded (*man-nenrei*, 満年齢),
   incremented at each 年単位の契約応当日 [S4] [S10]. Attained age in month `t` is
   `age(t) = x + floor(t / 12)`, `x` the 契約年齢. 第三分野標準生命表2018 is constructed for use on
-  a 保険年齢方式 (*hoken-nenrei hōshiki*, nearest-birthday) basis [R5] [REG-R20], so reading it
+  a nearest-birthday (*hoken-nenrei hōshiki*, 保険年齢方式) basis [R5] [REG-R20], so reading it
   at 満年齢 understates the valuation age by about half a year. `jplib` accepts the offset in
   the base run and marks it **[std]**; the alternative — reading the table at `age(t) + 0.5`
   — is a switch.
@@ -123,8 +123,8 @@ the frequency × severity × limit decomposition — rather than restating it.
 | `issue_date` | date | — |
 
 `premium` is an **input, not a computed quantity**. No carrier publishes a rate table by
-age and duration; the 算出方法書 (*sanshutsu hōhō-sho*, statement of the method of calculating
-premiums and reserves) is a 基礎書類 filed with the 金融庁 and is not published [REG-R2]. The
+age and duration; the statement of the method of calculating premiums and reserves
+(*sanshutsu hōhō-sho*, 算出方法書) is a 基礎書類 filed with the 金融庁 and is not published [REG-R2]. The
 anchor value sits between the two public specimen rates for this exact specification —
 ¥2,121 and ¥2,080 at age 40 male on a ¥5,000 daily amount, 60日型, 終身払 [S8] [S3].
 
@@ -146,12 +146,12 @@ anchor value sits between the two public specimen rates for this exact specifica
 | `net_cf(t)` | Net cash flow of month `t`, insurer perspective, **income-positive** | monthly |
 
 Three absences are product facts, not gaps. There is **no cash-surrender-value state**: the
-main contract is 無解約返戻金型 (*mu-kaiyaku-henreikin-gata*, without surrender value) at
+main contract is without surrender value (*mu-kaiyaku-henreikin-gata*, 無解約返戻金型) at
 every carrier during the premium-paying period [S1] [S6] [S9], so `cv_pp` does not exist on
 the anchor cell and lapse carries **no cash flow**.
 There is **no 契約者貸付 / 自動振替貸付 state**: with no surrender value there is nothing to lend
 against, and one carrier says so in terms [S1] — so, unlike the
-[終身保険 savings chassis](../whole_life/technical-notes.md), a missed premium really does
+[whole life savings chassis (終身保険)](../whole_life/technical-notes.md), a missed premium really does
 lapse the policy. And there is **no death benefit**: the main
 contract pays nothing on death [S1] [S4] [S6] [S9] [S10], so mortality is a pure
 liability-releasing decrement and `claims_death` does not exist.
@@ -190,17 +190,17 @@ error in the product.
 ### (b) Insurer-discretionary current elements
 
 This class is **nearly empty, and its emptiness is the product fact.** The main contract is
-無配当 (*mu-haitō*, non-participating) — carried in the formal product name at three of the
+non-participating (*mu-haitō*, 無配当) — carried in the formal product name at three of the
 five carriers [S2] [S6] [S7] and stated in terms at two [S1] [S6], with no retrieved
-document showing a participating medical main contract anywhere. So there is no 契約者配当
-(policyholder dividend), and the 三利源 framing of
-死差 / 利差 / 費差 and the surplus-distribution methods of 施行規則 第30条の2 [REG-R9] simply do
-not attach to it. There is no premium review on the 終身 chassis, no MVA, no bonus and no
-non-guaranteed charge scale. What remains:
+document showing a participating medical main contract anywhere. So there
+is no policyholder dividend (契約者配当), and the 三利源 framing of 死差 / 利差 / 費差 and
+the surplus-distribution methods of 施行規則 第30条の2 [REG-R9] simply do not
+attach to it. There is no premium review on the 終身 chassis, no MVA, no bonus
+and no non-guaranteed charge scale. What remains:
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| 危険発生率 (*kiken hasseiritsu*, incidence basis) | The insurer's own, unpublished, sitting in the 算出方法書 | [REG-R2]; regulator requires a **test**, not a table [R3] [REG-R13] [REG-R14] |
+| Incidence basis (*kiken hasseiritsu*, 危険発生率) | The insurer's own, unpublished, sitting in the 算出方法書 | [REG-R2]; regulator requires a **test**, not a table [R3] [REG-R13] [REG-R14] |
 | 定期 flag renewal rates | Recomputed at each ten-year renewal at then-current rates | [S7] [S10]; base run holds the issue rate flat **[std]** |
 | Catastrophe proportionality | Insurer may pay in full or reduce in proportion after earthquake, eruption, tsunami or war | [S4]; not modelled **[std scope]** |
 | Prospective 支払事由 change | Insurer may vary the surgery trigger with 主務官庁 approval if the 診療報酬点数表 is amended | [S2] [S6]; not modelled **[std scope]** |
@@ -241,7 +241,7 @@ approximation to it.
 **Morbidity — the incidence basis, and where it comes from.** There is no published
 morbidity table in Japan: 日本アクチュアリー会 publishes the mortality basis only [R4] [REG-R23],
 and every insurer's 危険発生率 is its own [REG-R2]. What is public, and what makes this model
-buildable, is 患者調査 (*kanja chōsa*, Patient Survey), a 基幹統計 of 厚生労働省 [R6] [R7]
+buildable, is Patient Survey (*kanja chōsa*, 患者調査), a 基幹統計 of 厚生労働省 [R6] [R7]
 [REG-R26] [REG-R27]. The construction, in three steps:
 
 1. **入院受療率** (*nyūin juryō-ritsu*) is a point-in-time **prevalence** per 100,000
@@ -447,8 +447,8 @@ the 三大疾病無制限 特則 cannot be expressed without it: the 特則 take
 脳血管疾患 days out of the 通算 count entirely [S1] [S2], which is a change in *what the
 ledger counts* — and which defers the termination further still rather than bringing it
 closer. It is **not** kept for the two deltas: **neither dependant inherits it.**
-[がん保険](../cancer/technical-notes.md) records having no `L1` and no `LA` at all, and
-[介護保険](../nursing_care/technical-notes.md) no `d_pay`, no `d_ben` and no `agg_days_*`
+[cancer (がん保険)](../cancer/technical-notes.md) records having no `L1` and no `LA` at all, and
+[nursing care (介護保険)](../nursing_care/technical-notes.md) no `d_pay`, no `d_ben` and no `agg_days_*`
 ledger — each states the deletion as a product fact of its own. Do not delete a ledger
 because it reads zero.
 
@@ -534,15 +534,15 @@ from moving together in one figure.
 
 ## Policyholder behavior modeling
 
-- **Lapse is real and immediate.** On a product with a 解約返戻金 (*kaiyaku-henreikin*,
-  surrender value) the insurer would advance an unpaid premium under 自動振替貸付, which
+- **Lapse is real and immediate.** On a product with a surrender value (*kaiyaku-henreikin*,
+  解約返戻金) the insurer would advance an unpaid premium under 自動振替貸付, which
   [REG-R14] IV-1-12 requires be at the policyholder's
   **election** with prompt notice. This chassis has none, and one carrier states
   that neither 契約者貸付 nor 自動振替貸付 is offered [S1]. So there is no mechanism that carries a
   policy through a missed premium, and no lapse-suppression term belongs in the recursion.
   This is the structural fork between the third-sector and savings chassis in `jplib`,
   and it is why the 自動振替貸付 machinery of the
-  [終身保険 savings chassis](../whole_life/technical-notes.md) must **not** be inherited
+  [whole life savings chassis (終身保険)](../whole_life/technical-notes.md) must **not** be inherited
   here.
 - **Grace [std scope].** Grace runs to the last day of the month following the 払込期月 [S1]
   [S4] [S10] — roughly one month. The base run applies lapse at the end of the month in
@@ -551,7 +551,7 @@ from moving together in one figure.
   arrears and the balance is unpaid, **neither the benefit nor the waiver** is given [S4]).
   The lag is a one-month timing effect on an undiscounted projection; the grace-window rule
   is second-order and is named rather than modelled.
-- **復活 (reinstatement) [std scope].** Available within one year at the composite [S4] [S9],
+- **Reinstatement (復活) [std scope].** Available within one year at the composite [S4] [S9],
   but a reinstated policy is **not the policy that lapsed**: the 責任開始期 for
   pre-existing-condition tests resets to the 復活日 [S4] and waiting periods re-run from it
   [S9]. It therefore belongs in the model as a *new model point*, not as a negative lapse,
@@ -559,11 +559,11 @@ from moving together in one figure.
   the widest carrier divergence in the product — not available at all at one carrier [S6]
   [S8], three years at another [S10] — and it is the parameter that decides whether
   lapse is absorbing.
-- **No dynamic lapse from surrender value or interest.** With no cash value, no 予定利率
-  (*yotei riritsu*, assumed interest rate) disclosure on this chassis and no MVA, there is
+- **No dynamic lapse from surrender value or interest.** With no cash value, no assumed
+  interest rate (*yotei riritsu*, 予定利率) disclosure on this chassis and no MVA, there is
   no economic surrender trigger to model.
   The 低解約返戻金型 cliff that drives the
-  [終身保険](../whole_life/technical-notes.md) surrender spike has no analogue here.
+  [whole life (終身保険)](../whole_life/technical-notes.md) surrender spike has no analogue here.
 - **Anti-selective lapse [std] (optional module, off in the base run).** Healthy lives lapse
   first; the persisting block is progressively impaired on the *morbidity* basis rather than
   the mortality one, which is the reverse of the term-assurance case:
@@ -575,7 +575,7 @@ from moving together in one figure.
 - **型 elections are not behaviour.** `L1`, `LA` and the 三大疾病無制限 特則 are elected at issue
   and can **never** be changed [S4] [S9] [S2]. They are model-point attributes; a model that
   lets them move over the projection is modelling something that does not exist.
-- **前納 (advance payment) and mode.** Monthly is the dominant retail mode and one net-direct
+- **Advance payment (前納) and mode.** Monthly is the dominant retail mode and one net-direct
   product is 月払 only [S10]; 6- or 12-month prepayment at a company-set discount [S4] is
   treated as an immaterial modal refinement and is not modelled **[std scope]**.
 - **クーリング・オフ.** Out of scope: it is a pre-inception decrement, eight days from dispatch
@@ -701,11 +701,11 @@ every age band with the 35–64 row and 33.8% with the 65+ row — while the 通
 This library projects gross cash flows. Every valuation layer below consumes them and is
 cited, never reproduced.
 
-- **標準責任準備金.** 保険業法 第116条第1項 requires a 責任準備金 (*sekinin-junbikin*, policy
-  reserve) at each 決算期 and 第2項 delegates the accumulation method [REG-R4]; 施行規則 第68条
+- **標準責任準備金.** 保険業法 第116条第1項 requires a policy reserve (*sekinin-junbikin*,
+  責任準備金) at each 決算期 and 第2項 delegates the accumulation method [REG-R4]; 施行規則 第68条
   fixes scope [R2] [REG-R7]; 平成8年大蔵省告示第48号 sets
-  the method as **平準純保険料式** (*heijun jun-hokenryō-shiki*, net level premium), with no
-  Zillmer adjustment, on the 標準利率 (*hyōjun riritsu*, standard valuation interest rate) and
+  the method as net level premium (*heijun jun-hokenryō-shiki*, **平準純保険料式**), with no
+  Zillmer adjustment, on the standard valuation interest rate (*hyōjun riritsu*, 標準利率) and
   the standard table [REG-R10]. For contracts from **1 April 2018** the third-sector
   valuation mortality is **第三分野標準生命表2018** [REG-R11] [R4] [REG-R18]. The 標準利率 in force
   could not be established from a retrieved official document; any value asserted for it is
@@ -803,8 +803,8 @@ In rough order of leverage on a third-sector block:
 - **Do not delete the ledgers because they read zero.** On the anchor cell's expectation
   `LA` never binds and the ¥20,000,000 先進医療 cap is never approached — but
   `E[min(Σ, LA)] ≠ min(E[Σ], LA)`, so the deterministic ledger *understates* the limit, and
-  [がん保険](../cancer/technical-notes.md) and
-  [介護保険](../nursing_care/technical-notes.md) inherit the same code with limits that do
+  [cancer (がん保険)](../cancer/technical-notes.md) and
+  [nursing care (介護保険)](../nursing_care/technical-notes.md) inherit the same code with limits that do
   bind.
 - **Radiation is not a separate claim stream.** The composite folds 放射線治療 into 手術給付金
   through the 放射線治療料 limb of the trigger, once per 60 days [S1] [S2] [S6] [S10]. Adding a
@@ -815,7 +815,7 @@ In rough order of leverage on a third-sector block:
   misstates one design.
 - **No surrender value, no APL, no policy loan.** `claims_lapse(t)` is identically zero and
   no mechanism carries a policy through a missed premium [S1] [S6] [S9]. Importing the
-  [終身保険](../whole_life/technical-notes.md) 自動振替貸付 logic into this chassis
+  [whole life (終身保険)](../whole_life/technical-notes.md) 自動振替貸付 logic into this chassis
   suppresses lapses that really happen.
 - **No death benefit.** Mortality is a pure release [S1] [S4] [S6] [S9] [S10]; a
   `claims_death` column on this model is a benefit that does not exist.
