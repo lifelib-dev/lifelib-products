@@ -18,9 +18,9 @@ rate, the **上皮内新生物 incidence** increment, the **post-diagnosis survi
 stay for a diagnosed life, the **surgery frequency**, the **qualifying-treatment-month
 probability**, the **outpatient-day frequency**, and the 先進医療 frequency and severity.
 
-**Deltas against the 医療保険 (*iryō hoken*, medical insurance) chassis.** The
-[医療保険 technical notes](../medical/technical-notes.md) are the 第三分野
-(*dai-san-bun'ya*, third-sector) chassis in model form and are not restated here. Five
+**Deltas against the medical insurance (*iryō hoken*, 医療保険) chassis.** The
+[medical technical notes (医療保険)](../medical/technical-notes.md) are the third-sector
+(*dai-san-bun'ya*, 第三分野) chassis in model form and are not restated here. Five
 things change, and every one of them changes the *shape* of the model rather than a
 parameter in it:
 
@@ -32,11 +32,11 @@ parameter in it:
    diagnosed state, and needs a **survival model as well as an incidence model**.
 2. **The 90-day waiting period is a hard zero** in months `t = 0, 1, 2`. No cancer benefit
    of any kind is payable, and the premium is [S1] [S5] [S6] [S7] [S10].
-3. **No `L1` and no `LA`.** The per-hospitalization and 通算 (*tsūsan*, lifetime aggregate)
+3. **No `L1` and no `LA`.** The per-hospitalization and lifetime aggregate (*tsūsan*, 通算)
    day ledgers that dominate `medical` do not exist here, and neither does the
    benefit-driven termination they create [S1] [S3] [R11]. What replaces them is a
    **60-month ledger on the treatment benefit**, which is a ledger on *months*, not days.
-4. **上皮内新生物** (*jōhinai shinseibutsu*, carcinoma in situ) **is a second benefit tier, not a
+4. Carcinoma in situ (*jōhinai shinseibutsu*, **上皮内新生物**) **is a second benefit tier, not a
    discount** — a separate benefit at 50% of the diagnosis lump sum, payable once, on its
    own cap, not triggering the premium waiver [S6] [S11] [S7] [S10].
 5. **The premium waiver is correlated with the insured event**, not independent of it. It
@@ -48,29 +48,29 @@ parameter in it:
 ## Model scope and conventions
 
 - **Purpose.** Project gross best-estimate liability cash flows for a single-policy model
-  point of がん保険 (*gan hoken*, cancer insurance): office premiums, がん診断一時金 (*gan shindan
-  ichijikin*, cancer diagnosis lump sum), the 上皮内新生物 diagnosis benefit, がん入院給付金 (*gan nyūin
-  kyūfukin*, cancer hospitalization benefit), がん手術給付金 (*gan shujutsu kyūfukin*, cancer
-  surgery benefit), がん治療給付金 (*gan chiryō kyūfukin*, monthly cancer treatment benefit),
-  がん通院給付金 (*gan tsūin kyūfukin*, cancer outpatient benefit), 先進医療給付金 (*senshin iryō
-  kyūfukin*, advanced-medicine benefit), maintenance and claim expenses, and commission. The
-  intended sense is the **現在推計** (*genzai suikei*, current estimate) the economic-value
+  point of cancer insurance (*gan hoken*, がん保険): office premiums, cancer diagnosis lump sum
+  (*gan shindan ichijikin*, がん診断一時金), the 上皮内新生物 diagnosis benefit, cancer hospitalization
+  benefit (*gan nyūin kyūfukin*, がん入院給付金), cancer surgery benefit (*gan shujutsu kyūfukin*,
+  がん手術給付金), monthly cancer treatment benefit (*gan chiryō kyūfukin*, がん治療給付金),
+  cancer outpatient benefit (*gan tsūin kyūfukin*, がん通院給付金), advanced-medicine benefit
+  (*senshin iryō kyūfukin*, 先進医療給付金), maintenance and claim expenses, and commission. The
+  intended sense is the current estimate (*genzai suikei*, **現在推計**) the economic-value
   solvency regime requires: probability-weighted future cash flows on assumptions re-set at
-  a stated 基準日 (*kijunbi*, reporting date) rather than locked in at issue [REG-R15]. It is
+  a stated reporting date (*kijunbi*, 基準日) rather than locked in at issue [REG-R15]. It is
   also the shape the 1号収支分析 takes — a forward income-and-outgo projection over at least ten
   future years, by 区分経理 segment [REG-R22].
 - **Out of scope, cited not reproduced.** Discounting, MOCE, required capital and every
-  reserving basis — 標準責任準備金 (*hyōjun sekinin-junbikin*, standard policy reserve), 危険準備金
-  (*kiken junbikin*, contingency reserve), the ESR balance sheet and IFRS 17 all consume
+  reserving basis — standard policy reserve (*hyōjun sekinin-junbikin*, 標準責任準備金), contingency
+  reserve (*kiken junbikin*, 危険準備金), the ESR balance sheet and IFRS 17 all consume
   these cash flows and are pointed at in *Valuation and reserve pointers*.
 - **Projection frequency.** Monthly grid. Three of the product's mechanics are monthly by
   construction and not by approximation: the 90-day waiting period is three months of the
   grid, the treatment benefit's unit of payment **is** the calendar month [S5] [S10] [S11],
-  and the premium mode is 月払 (monthly) at every carrier in the composite [S1] [S6] [S11]
+  and the premium mode is monthly (月払) at every carrier in the composite [S1] [S6] [S11]
   [S12]. `t` is the **policy month**, `t = 0, 1, …, proj_len − 1`; month `t` is the interval
-  from `t` to `t + 1` months after the 契約日 (*keiyakubi*, contract date).
+  from `t` to `t + 1` months after the contract date (*keiyakubi*, 契約日).
 - **The waiting period lands on a grid boundary.** がん責任開始日 is the 91st day counting the
-  責任開始日 (*sekinin kaishibi*, date cover attaches) as day 1 [S1] [S5] [S6] [S10] [S13]; two
+  date cover attaches (*sekinin kaishibi*, 責任開始日) as day 1 [S1] [S5] [S6] [S10] [S13]; two
   carriers instead write three calendar months [S8] [S11]. On a monthly grid these are the
   same boundary, `t = 3` **[std]**, and the model does not claim a precision it does not
   have. A daily implementation must separate them; the two wordings are recorded in
@@ -87,10 +87,10 @@ parameter in it:
   post-diagnosis survival. The one-month lag is a timing effect on an undiscounted
   projection; the alternative — recognising a treatment episode in the diagnosis month — is
   named in the pitfalls list.
-- **Age basis.** 満年齢 (*man-nenrei*, attained age at the 契約日 with the fraction discarded),
+- **Age basis.** Attained age at the 契約日 with the fraction discarded (*man-nenrei*, 満年齢),
   incremented at each 年単位の契約応当日; 契約年齢 is age last birthday at the 契約日 [S8]. Attained age in
   month `t` is `age(t) = x + floor(t / 12)`, `x` the 契約年齢. 第三分野標準生命表2018 is constructed for
-  use on a 保険年齢方式 (*hoken-nenrei hōshiki*, nearest-birthday age) basis [R2] [REG-R20], so
+  use on a nearest-birthday age (*hoken-nenrei hōshiki*, 保険年齢方式) basis [R2] [REG-R20], so
   reading it at 満年齢 understates the valuation age by about half a year; the base run accepts
   the offset and marks it **[std]**, with reading at `age(t) + 0.5` as a switch. The
   incidence basis is published by **five-year age band** [R5], so it is read at the band
@@ -107,10 +107,10 @@ parameter in it:
   lump sum neither terminates nor exhausts the contract [S1], and with no day limits the
   inpatient benefit cannot exhaust it either [S1] [S3] [R11]. The decrements are death and
   lapse, and nothing else.
-- **Contract boundary.** On the 終身 (whole-of-life) chassis the premium is level and 無配当
-  (*mu-haitō*, non-participating) with no insurer repricing right [S5] [S6] [S11], so all
+- **Contract boundary.** On the whole-of-life (終身) chassis the premium is level and
+  non-participating (*mu-haitō*, 無配当) with no insurer repricing right [S5] [S6] [S11], so all
   future premiums and benefits are inside the boundary and the horizon is the whole of life.
-  On the 10年更新 定期 (ten-year renewable term) model-point flag the renewal reprices, which
+  On the ten-year renewable term (10年更新 定期) model-point flag the renewal reprices, which
   would ordinarily close the boundary at each renewal; `jplib` projects that flag to final
   expiry and records the tension rather than resolving it, exactly as the `medical` chassis
   does.
@@ -151,8 +151,8 @@ parameter in it:
 
 `premium` is an **input, not a computed quantity**, and on this product that is a stronger
 statement than on any other in the library. No carrier publishes a rate table for a cancer
-main contract; the 算出方法書 (*sanshutsu hōhō-sho*, statement of the method of calculating
-premiums and reserves) is a 基礎書類 filed with the 金融庁 and is not published [REG-R2]; and for
+main contract; the statement of the method of calculating premiums and reserves (*sanshutsu
+hōhō-sho*, 算出方法書) is a 基礎書類 filed with the 金融庁 and is not published [REG-R2]; and for
 third-sector business there is additionally **no standard incidence table and no reference
 pure premium to fall back on** [R3]. The single retrieved price point is a ten-year term at
 twice the composite's benefit amounts on a 2013 calculation basis [S5]. The anchor's ¥3,000
@@ -183,7 +183,7 @@ its being a market rate.
 **Why three states and not two.** The two-year cycle is not a cap and not a lockout on a
 counter: it is a *clock keyed to an event*, and the event that restarts it is the previous
 payment trigger [S5]. A life that has just been paid cannot be paid again for `C` months;
-after that it can, on a fresh 再発 (relapse), 転移 (metastasis) or new primary, without limit
+after that it can, on a fresh relapse (再発), metastasis (転移) or new primary, without limit
 [S5] [S7] [S10]. `pols_locked` and `pols_open` are exactly that distinction, and the flow
 between them is a **24-month delay**, not a rate. This clock is emphatically **not** the
 180-day one-hospitalization memory of the `medical` chassis: different length, different
@@ -235,14 +235,14 @@ approximation with a stated direction of error, not an accident.
 ### (b) Insurer-discretionary current elements
 
 This class is **nearly empty, and its emptiness is the product fact.** The composite is 無配当
-wherever the dividend basis is stated [S5] [S6] [S11]: there is no 契約者配当 (policyholder
-dividend), so the 三利源 (*san-rigen*, three sources of surplus) framing and the
+wherever the dividend basis is stated [S5] [S6] [S11]: there is no policyholder dividend
+(契約者配当), so the three sources of surplus (*san-rigen*, 三利源) framing and the
 surplus-distribution methods of 施行規則 第30条の2 [REG-R9] do not attach. There is no premium
 review on the 終身 chassis, no MVA and no non-guaranteed charge scale. What remains:
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| 危険発生率 (*kiken hasseiritsu*, incidence basis) | The insurer's own, unpublished, in the 算出方法書 | [REG-R2]; the regulator supplies a **test**, not a table [R3] [R4] [REG-R13] |
+| Incidence basis (*kiken hasseiritsu*, 危険発生率) | The insurer's own, unpublished, in the 算出方法書 | [REG-R2]; the regulator supplies a **test**, not a table [R3] [R4] [REG-R13] |
 | Prospective 支払事由 change | The insurer may vary the treatment-benefit trigger prospectively with 主務官庁 approval and two months' notice if the public fee schedule changes | [S1] [S5]; not modelled **[std scope]** |
 | 定期 flag renewal rates | Recomputed at each ten-year renewal at then-current rates | [S5] [S7]; base run holds the issue rate flat **[std]** |
 | 給付倍率 election | On one design the diagnosis benefit is 入院給付金日額 × a 倍率 the policyholder picks from an insurer-set range | [S6]; model-point input, not a projected variable |
@@ -287,8 +287,8 @@ issue-age range through to each sex's terminal age.
 **Incidence — and this is the one assumption in `jplib` that is genuinely sourced.** For
 third-sector business the FSA states flatly that no standard incidence rate and no reference
 pure premium exist, and that insurers must build the rate for each 支払事由 from public data and
-their own experience [R3]. For cancer the public data is excellent. 全国がん登録 (*zenkoku gan
-tōroku*, the national cancer registry), collected under 「がん登録等の推進に関する法律」, publishes
+their own experience [R3]. For cancer the public data is excellent. The national cancer
+registry (*zenkoku gan tōroku*, 全国がん登録), collected under 「がん登録等の推進に関する法律」, publishes
 罹患数 and 罹患率 by **five-year age band, site, sex and diagnosis year**, freely downloadable
 [R5] [REG-R29]. Age-specific crude rates per 100,000, both sexes, 2023, all sites C00–C96
 [R5]:
@@ -354,7 +354,7 @@ direction (in-situ detection is screening-driven and concentrated at the screene
 the age-banded breakdown on the in-situ-inclusive basis was not confirmed cell by cell [R5].
 
 **Post-diagnosis survival — the assumption a cancer model has that a medical model does
-not.** 全国がん登録 publishes 5年相対生存率 (five-year relative survival) by site, sex and 臨床進行度: for
+not.** 全国がん登録 publishes five-year relative survival (5年相対生存率) by site, sex and 臨床進行度: for
 2018 diagnoses, all sites, **63.17% male** and **66.84% female** [R6] [REG-R28]. Relative
 survival already nets out background mortality, so it converts directly into an **excess
 hazard** without double-counting:
@@ -463,7 +463,7 @@ are unsourced; between them they are a factor-of-four uncertainty on this benefi
 
 **先進医療 [std].** `adv_freq` = **0.012 療養 per diagnosed life-year** and `adv_sev` = **¥600,000
 per 療養**, both **[std]** with no observed range. The `medical` chassis carries the sourced
-先進医療 cost anchors (see the [医療保険 technical notes](../medical/technical-notes.md));
+先進医療 cost anchors (see the [medical technical notes (医療保険)](../medical/technical-notes.md));
 this product's own source set does
 not, so neither figure can be tagged here. The severity is set well above the `medical`
 chassis's population-wide figure because a cancer-only trigger selects for particle-beam
@@ -697,10 +697,10 @@ asymmetry that defines the product's cash-flow signature: **premiums are weighte
 
 ## Policyholder behavior modeling
 
-- **Lapse is real and immediate — for the never-diagnosed.** On a product with a 解約返戻金
-  (*kaiyaku-henreikin*, surrender value) the
-  insurer would advance an unpaid premium under 自動振替貸付, which [REG-R14] requires be at the
-  policyholder's election with prompt notice; the composite has no surrender value, so
+- **Lapse is real and immediate — for the never-diagnosed.** On a product with a surrender
+  value (*kaiyaku-henreikin*, 解約返戻金) the insurer would advance an unpaid
+  premium under 自動振替貸付, which [REG-R14] requires be at the policyholder's election
+  with prompt notice; the composite has no surrender value, so
   neither 契約者貸付 nor 自動振替貸付 can operate [S1] [S7] [S10] [S11]. On the one retrieved cancer
   contract that does carry a value, the APL runs at **≤ 8% p.a.** compounded until principal
   plus interest would exceed the surrender value [S6], and a model that lapses that contract
@@ -710,7 +710,7 @@ asymmetry that defines the product's cash-flow signature: **premiums are weighte
   month in which the premium is missed and does not model the one-month lag, nor the
   grace-window rule under which a claim is paid net of the arrears and two months' premium
   is deducted where the event falls on or after the anniversary inside the window [S1] [S6].
-- **復活 (reinstatement) — and on this product it is not a persistency detail.** Available
+- **Reinstatement (復活) — and on this product it is not a persistency detail.** Available
   within one year at the composite [S1] [S8]; three years at one carrier [S6]; **not at
   all** at another [S11]. What makes it structural here is that the **90-day waiting period
   re-runs from the 復活日** [S1] [S6]: a reinstated cancer policy is a policy with 90 days of
@@ -729,12 +729,12 @@ asymmetry that defines the product's cash-flow signature: **premiums are weighte
   and `lam` = 0.30 **[std]**. Base run `lam` = 0. No Japanese evidence was retrieved. On
   this product the effect is amplified by the waiver: the healthiest lives are also the only
   ones still paying.
-- **No dynamic lapse from surrender value or interest.** With no cash value, no 予定利率
-  (*yotei riritsu*, assumed interest rate) disclosure on this chassis and no MVA, there is
-  no economic surrender trigger. The 低解約返戻金型
-  cliff that drives the `whole_life` surrender spike has no analogue here.
+- **No dynamic lapse from surrender value or interest.** With no cash value, no assumed
+  interest rate (*yotei riritsu*, 予定利率) disclosure on this chassis and no MVA, there is
+  no economic surrender trigger. The 低解約返戻金型 cliff that drives the `whole_life` surrender
+  spike has no analogue here.
 - **Elections are not behaviour.** `base_amount`, `insitu_pct`, `treat_cap` and the rider
-  set are fixed at issue; 減額 (benefit reduction) is available on request with fresh
+  set are fixed at issue; benefit reduction (減額) is available on request with fresh
   underwriting for any increase [S1] [S6] [S12] and is not projected. A model that lets them
   move over `t` is modelling a contract term that does not exist.
 - **クーリング・オフ.** Out of scope: a pre-inception decrement, eight days from dispatch under 保険業法
@@ -918,13 +918,13 @@ both use — sees almost none of the liability this contract actually carries.
 
 This library projects gross cash flows. Every valuation layer below consumes them and is
 cited, never reproduced. The statutory chain is the third-sector chain and is set out once,
-on the chassis, in the [医療保険 technical notes](../medical/technical-notes.md); only what
+on the chassis, in the [medical technical notes (医療保険)](../medical/technical-notes.md); only what
 differs for cancer is repeated here.
 
 - **標準責任準備金.** 保険業法 第116条 requires the reserve and delegates the method [REG-R4], 施行規則 第68条
-  fixes scope [REG-R7], and 平成8年大蔵省告示第48号 sets it as **平準純保険料式** (*heijun
-  jun-hokenryō-shiki*, net level premium) on the 標準利率 (*hyōjun riritsu*, standard valuation
-  interest rate) and the standard table [R4] [REG-R10]; for contracts from **1 April 2018**
+  fixes scope [REG-R7], and 平成8年大蔵省告示第48号 sets it as net level premium (*heijun
+  jun-hokenryō-shiki*, **平準純保険料式**) on the standard valuation interest rate (*hyōjun riritsu*,
+  標準利率) and the standard table [R4] [REG-R10]; for contracts from **1 April 2018**
   that table is **第三分野標準生命表2018** [R1] [R2] [REG-R11] [REG-R18]. The 標準利率 in force could not
   be established from a retrieved document and any value asserted for it is [unverified]
   [REG-R10]. What the chain does **not** contain is a cancer-incidence basis: the reserve's
@@ -942,7 +942,7 @@ differs for cancer is repeated here.
   **現在推計 + MOCE** at each 基準日 on assumptions re-set then, required capital at **99.5%**,
   corrective action below **100%** [REG-R15], superseding the ソルベンシー・マージン比率 **200%** trigger
   [REG-R17]. `jplib` computes neither; what it owes both is a projection re-runnable at a
-  stated 基準日. The 保険計理人 (*hoken keirinin*, appointed actuary) of 保険業法 第120条 [REG-R5] submits
+  stated 基準日. The appointed actuary (*hoken keirinin*, 保険計理人) of 保険業法 第120条 [REG-R5] submits
   the 意見書 of 第121条 [REG-R6], which the 実務基準 turns into a forward income-and-outgo analysis
   over 「少なくとも将来10年間」 by 区分経理 segment [REG-R22] — and on this product more than any other,
   ten years is a small fraction of the liability. J-GAAP [REG-R10], ESR [REG-R15] and IFRS

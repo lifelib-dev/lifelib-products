@@ -4,7 +4,7 @@
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's contract. Facts
-carrying a source tag — [S#] (primary product documents: 約款 (*yakkan*, policy conditions),
+carrying a source tag — [S#] (primary product documents: policy conditions (*yakkan*, 約款),
 ご契約のしおり, 契約概要, 注意喚起情報, 重要事項説明書, 商品ページ) and [R#] (product-specific regulatory and actuarial
 references), both numbered per `_research/income-guarantee.md` and resolved in `sources.md`
 in this directory, numbering frozen; and [REG-R#], the cross-product library
@@ -20,21 +20,21 @@ tag. **Nine of the ten write the product as a main contract; the tenth writes th
 economics as a 収入保障特約 rider [S13]**, and counts below say which population they are
 counting.
 
-**This is a death benefit.** 収入保障保険 (*shūnyū hoshō hoken*, survivor income term) pays on the
-death of the insured — or on the contractual 高度障害状態 (*kōdo shōgai jōtai*, severe disability
-state, treated throughout as an accelerated equivalent of death) — and pays it as a monthly
+**This is a death benefit.** Survivor income term (*shūnyū hoshō hoken*, 収入保障保険) pays on the
+death of the insured — or on the contractual severe disability state (*kōdo shōgai jōtai*,
+高度障害状態, treated throughout as an accelerated equivalent of death) — and pays it as a monthly
 income instead of a lump sum. It is **not** income protection in `uklib`'s sense: `uklib`'s
 `IP_UK_S` insures disability and pays while the insured is unable to work. The Japanese
 product's insured event is death, its beneficiary is the survivor, and disability and
-long-term-care income appear on this chassis only as 特則 (*tokusoku*, special provisions) and
-特約 (*tokuyaku*, riders), all of which are out of scope here.
+long-term-care income appear on this chassis only as special provisions (*tokusoku*, 特則) and
+riders (*tokuyaku*, 特約), all of which are out of scope here.
 
-**This document states deltas.** [定期保険](../term_life/product-spec.md) is the library's
+**This document states deltas.** [term life (定期保険)](../term_life/product-spec.md) is the library's
 protection chassis.
-The decrement structure, the premium-payment machinery, the 免責事由 (*menseki jiyū*, exclusion
-grounds), the grace / 失効 / 復活 sequence, the 告知義務違反 contestability window and the 高度障害
+The decrement structure, the premium-payment machinery, the exclusion grounds (*menseki
+jiyū*, 免責事由), the grace / 失効 / 復活 sequence, the 告知義務違反 contestability window and the 高度障害
 double-counting trap are specified in full in the
-[定期保険 product specification](../term_life/product-spec.md) and its
+[term life product specification (定期保険)](../term_life/product-spec.md) and its
 [technical notes](../term_life/technical-notes.md) and are **not restated here**. What
 follows is what this product adds or changes: the benefit shape, the 最低支払保証期間,
 commutation, the preferred-risk rate classes, and the absence of renewal.
@@ -43,9 +43,9 @@ commutation, the preferred-risk rate classes, and the absence of renewal.
 
 ## Product overview and market role
 
-収入保障保険 sells the same insured event as 定期保険 (*teiki hoken*, level term life) in a different
-currency: instead of a fixed 保険金額 (sum assured) the contract promises a level 年金月額 (*nenkin
-getsugaku*, monthly annuity amount) running from the insured event to a fixed expiry date
+収入保障保険 sells the same insured event as level term life (*teiki hoken*, 定期保険) in a different
+currency: instead of a fixed sum assured (保険金額) the contract promises a level monthly annuity
+amount (*nenkin getsugaku*, 年金月額) running from the insured event to a fixed expiry date
 [S1] [S3] [S5] [S9] [S12] [S14]. Because the expiry date is fixed at issue and the monthly
 amount is level, the **number of remaining instalments — and therefore the total benefit —
 falls month by month as the term runs off** [S3] [S5] [S7] [S9] [S12] [S14]. It is the
@@ -53,7 +53,7 @@ Japanese analogue of UK family income benefit, sold in Japan as a stand-alone ma
 rather than as a payout option on a term policy.
 
 The design answers a specific demand-side fact. Household death cover in Japan is falling:
-the 2024 national survey puts 世帯普通死亡保険金額 (household ordinary death cover) at ¥19,360,000
+the 2024 national survey puts household ordinary death cover (世帯普通死亡保険金額) at ¥19,360,000
 against ¥20,270,000 in the previous wave, and the household head's own cover at ¥12,580,000
 against ¥13,860,000 [R11]. A declining income benefit is priced against a need that also
 declines — a surviving family needs replacement income until the children are independent,
@@ -78,7 +78,7 @@ by distribution model or size, so this document does not. Any claim about market
 
 **Two documentary contrasts with the chassis.** First, one carrier publishes a monthly
 premium grid by age and sex for two plan shapes [S6], where
-[定期保険](../term_life/product-spec.md) had four such grids
+[term life (定期保険)](../term_life/product-spec.md) had four such grids
 — premium disclosure is thinner here, and the anchor rests on a single carrier's table.
 Second, and more valuable, one 特約条項 publishes **the commutation factor tables themselves**
 [S13], which no direct writer does. That single document is why the commutation basis in
@@ -92,11 +92,11 @@ this library is a **[std]** value inside a *published* range rather than a guess
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | 定額型 収入保障保険, 無配当, 無解約返戻金型; the 主契約 (*shu-keiyaku*, main contract) pays a death annuity and a 高度障害年金 of the same amount | [S2] [S5] [S6] [S7] [S9] [S15]; participation and cash value **[std]** (1) |
+| Design type | 定額型 収入保障保険, 無配当, 無解約返戻金型; the main contract (*shu-keiyaku*, 主契約) pays a death annuity and a 高度障害年金 of the same amount | [S2] [S5] [S6] [S7] [S9] [S15]; participation and cash value **[std]** (1) |
 | Benefit shape | Level 年金月額 from the insured event to the expiry date, floored by the 最低支払保証期間 | [S1] [S3] [S5] [S9] [S12] [S14] |
 | Lives basis | Single life. No joint-life basis appears in any retrieved document | [S1] [S3] [S5] [S14] |
 | Regulatory class | 第一分野 (保険業法第3条第4項第1号) — a fixed-sum death cover, paid in instalments | [REG-R1] |
-| 契約年齢 (issue age) | 20–70, 満年齢 (*man-nenrei*, age last birthday) with the fraction truncated | [S6] [S7] [S14]; envelope **[std]** (2) |
+| Issue age (契約年齢) | 20–70, age last birthday (*man-nenrei*, 満年齢) with the fraction truncated | [S6] [S7] [S14]; envelope **[std]** (2) |
 | 保険期間 | 歳満了 only — to a stated attained age, 45–90; **no 年満了, no 更新** | [S6] [S8]; menu **[std]** (3) |
 | 保険料払込期間 | Equal to the 保険期間, always | [S2] [S8] [S12] |
 | 年金月額 | ¥50,000 minimum, in ¥10,000 steps | [S6] [S8] [S12] |
@@ -109,10 +109,10 @@ Footnotes to **[std]** rows:
 
 1. Seven of the nine direct writers write 無配当無解約返戻金型, with no surrender value at any
    duration [S2] [S5] [S6] [S7] [S9] [S15] [S16]. One writes a **低解約返戻金型** design whose
-   surrender value is the ordinary value times a 低解約返戻金割合 (*tei-kaiyaku-henreikin
-   wariai*, reduced surrender-value ratio) of **70%** [S12], and one 約款 retains full
-   解約返戻金 (*kaiyaku-henreikin*, surrender value) and 責任準備金 (*sekinin-junbikin*, policy
-   reserve) machinery in its text although the product is sold without a value
+   surrender value is the ordinary value times a reduced surrender-value ratio
+   (*tei-kaiyaku-henreikin wariai*, 低解約返戻金割合) of **70%** [S12], and one 約款 retains full
+   surrender value (*kaiyaku-henreikin*, 解約返戻金) and policy reserve (*sekinin-junbikin*,
+   責任準備金) machinery in its text although the product is sold without a value
    [S1 第23条・第24条]. No
    retrieved product pays a policyholder dividend [S1 第39条] [S2] [S5] [S15]. Composite: 無配当,
    無解約返戻金型 — the mode, and the design for which the widest evidence exists. The 70% variant
@@ -122,15 +122,15 @@ Footnotes to **[std]** rows:
    the 満年齢 with the fraction truncated —
    「契約日における満年で計算し、1年未満の端数は切り捨てます」 [S1 第37条], worked as 「35歳7カ月の被保険者の方の契約年齢は35歳」 [S14]. That
    is not the age basis the valuation table is built on (Regulatory context; the
-   [定期保険 technical notes](../term_life/technical-notes.md) carry the reconciliation).
-3. Every published contract example sets the term as 歳満了 (*sai manryō*, to a stated attained
-   age): 60歳満了 [S2] [S6] [S9] [S12], 65歳満了 [S2] [S5] [S6] [S14] [S15] [S17], to 90歳 at the
+   [term life technical notes (定期保険)](../term_life/technical-notes.md) carry the reconciliation).
+3. Every published contract example sets the term as to a stated attained age (*sai manryō*,
+   歳満了): 60歳満了 [S2] [S6] [S9] [S12], 65歳満了 [S2] [S5] [S6] [S14] [S15] [S17], to 90歳 at the
    extreme [S6] [S8]. Minimum expiry 45歳 and maximum 90歳 are published by one carrier [S8],
    maximum 90歳 by a second (75歳 when a named 特約 is attached) [S6]. **No retrieved document
-   offers 更新 (renewal)** and one states the absence in terms [S5]. That is the single
+   offers renewal (更新)** and one states the absence in terms [S5]. That is the single
    largest structural delta from the chassis, where 年満了 with automatic renewal at
    attained-age rates is the base design
-   ([定期保険 product specification](../term_life/product-spec.md)).
+   ([term life product specification (定期保険)](../term_life/product-spec.md)).
 4. Only one carrier publishes a benefit ceiling, and it is expressed as a present value:
    年金現価保険金額 ¥300,000,000 [S8]. Two others publish only floors — the residual 年金月額 after a
    partial commutation may not fall below ¥50,000 [S7], and any payout election must leave
@@ -175,10 +175,10 @@ Footnotes to **[std]** rows:
 | Rate structure | Not published as a rate table by any carrier. Published rate points only; the office premium is a model-point input | [S6] [S12]; gap (9) |
 | Rating factors | Sex, 契約年齢, 保険期間 (expiry age), 年金月額, 最低支払保証期間, rate class | [S6] [S12] |
 | Premium ceases | On an annuity event: no further premium is payable once the death or 高度障害 annuity begins | [S1 第12条第2項] [S3 第5条] [S8] |
-| 前納 (advance payment) | Available at an insurer-set discount; not modeled | [S1 第14条]; scope **[std]** (8) |
-| Non-level patterns | A ステップ払込方式 (two-step premium) exists at one carrier and a 平準払込方式 is named as one option at another; **out of scope** | [S1 第43条] [S9]; scope **[std]** (10) |
-| 高額割引 (large-case discount) | Exists at one carrier; thresholds not published; not applied | [S6]; scope **[std]** (10) |
-| Pricing basis (予定利率 (*yotei riritsu*, assumed interest rate) etc.) | **Not published for any 収入保障 contract in the set.** The model's basis is **[std]** | [REG-R2]; gap (9) |
+| Advance payment (前納) | Available at an insurer-set discount; not modeled | [S1 第14条]; scope **[std]** (8) |
+| Non-level patterns | A two-step premium (ステップ払込方式) exists at one carrier and a 平準払込方式 is named as one option at another; **out of scope** | [S1 第43条] [S9]; scope **[std]** (10) |
+| Large-case discount (高額割引) | Exists at one carrier; thresholds not published; not applied | [S6]; scope **[std]** (10) |
+| Pricing basis (assumed interest rate (*yotei riritsu*, 予定利率) etc.) | **Not published for any 収入保障 contract in the set.** The model's basis is **[std]** | [REG-R2]; gap (9) |
 
 8. 月払・半年払・年払 are all available [S1 第12条] and the grace table distinguishes them [S1 第15条]
    [S4]. Monthly is the mode of the published examples and the frequency the only published
@@ -212,13 +212,13 @@ Footnotes to **[std]** rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 遺族年金 (death annuity) | 年金月額, monthly, from the insured event to the 保険期間満了日, extended where the 最低支払保証期間 requires it | [S1 第3条] [S3 第3条] [S5] [S9] [S12] [S14] |
+| Death annuity (遺族年金) | 年金月額, monthly, from the insured event to the 保険期間満了日, extended where the 最低支払保証期間 requires it | [S1 第3条] [S3 第3条] [S5] [S9] [S12] [S14] |
 | 高度障害年金 | **The same 年金月額 on the same timetable and the same guarantee**, on entering a 高度障害状態 within the 保険期間; the two annuities are mutually exclusive | [S1 第3条] [S3 第3条] [S5] [S9] |
 | Instalment count | `max(N - m + 1, G)` — one instalment per monthly payment date from the event to expiry, floored at the guarantee | [S5] [S14] [S15]; derivation (11) |
 | Payment timetable | First instalment on the **day before** the first monthly policy anniversary falling on or after the event; each later instalment on the day before the corresponding anniversary | [S1 第3条第2項] [S5]; pick **[std]** (12) |
 | Recipient's death | Remaining instalments commuted and paid as a lump sum to the 法定相続人 | [S1 第3条第6・7項] [S3 第7条] [S14] |
 | Survival condition | **None** on the composite: instalments do not depend on the recipient being alive | [S1] [S5] [S14]; pick **[std]** (12) |
-| 一括受取 (commutation) | The recipient may take the present value of unpaid instalments in whole, in part, or as the residue mid-payment | [S2] [S3] [S5] [S7] [S10] [S12] [S14] |
+| Commutation (一括受取) | The recipient may take the present value of unpaid instalments in whole, in part, or as the residue mid-payment | [S2] [S3] [S5] [S7] [S10] [S12] [S14] |
 | Commutation basis | Annuity-certain at **0.65% p.a. effective**, monthly in arrears | **[std]** (13) |
 | Residual floor | A partial commutation is refused if it leaves the 年金月額 below ¥50,000 | [S7]; [S1 第5条第3項] [S3 第6条第4項] [S14] |
 | Suicide exclusion | No annuity where the insured dies by suicide within **3 years** of the 責任開始期, reset to the last 復活 | [S1] [S3] [S4] [S5]; identical to the chassis |
@@ -275,7 +275,7 @@ Footnotes to **[std]** rows:
 14. Two designs sit outside the composite and are named so a reader knows they exist. A
     満期給付金支払特則 adds a survival benefit at expiry where no annuity event occurred, and that
     benefit is explicitly **not** subject to the carrier's 70% low-surrender factor [S12].
-    The 引受基準緩和型 (relaxed-underwriting) version grades the benefit: death from the 責任開始日 to
+    The relaxed-underwriting (引受基準緩和型) version grades the benefit: death from the 責任開始日 to
     the day before the first policy anniversary pays 50% of the 年金月額, with 不慮の事故 and
     specified 感染症 deaths paying in full, and the worked example applies the 50% across all
     411 remaining instalments [S15] — a per-instalment reduction, not a shortened stream.
@@ -289,21 +289,21 @@ Footnotes to **[std]** rows:
 | — effect of a full commutation | Extinguishes the contract | [S1 第5条第2項] [S3 第6条第3項] [S12] [S14] |
 | 保険料払込免除 | In the 主契約: premiums waived where the insured, from an 不慮の事故 on or after 責任開始期, comes within **180 days** to a 別表4 身体障害の状態. Disease-based waiver is a rider only | [S1 第6条] [S3 第8条] [S5] [S6] |
 | リビング・ニーズ特約 | Attached automatically and free. Pays the 年金現価 of the designated 年金月額 less six months' interest and premium equivalent, capped at **¥30,000,000**; barred in the final year before expiry | [S2] [S5] [S7]; attachment **[std]** (15) |
-| 減額 (reduction) | Permitted above an insurer-set floor; on a 無解約返戻金型 contract it produces **no refund at all** | [S1 第28条] [S3] [S7] |
+| Reduction (減額) | Permitted above an insurer-set floor; on a 無解約返戻金型 contract it produces **no refund at all** | [S1 第28条] [S3] [S7] |
 | 指定代理請求人特約 | Standard; a nominated proxy may claim where the insured cannot | [S1] [S5] [S12] |
 | 更新 / conversion / indexation / joint life | **No 更新 in any retrieved document.** One carrier offers 保険契約の変換 into a 定期保険 or 終身保険 without underwriting, blocked in the final two years | [S5]; [S6]; scope **[std]** (16) |
 
 15. All four payout elections in the set are: 全部一括受取 at **all nine** direct writers [S1]
     [S2] [S3] [S5] [S6] [S7] [S10] [S12] [S14] [S17] — the one election that does not vary;
     一部一括受取 at six of them [S2] [S3] [S5] [S7] [S10] [S12] [S14]; 残額一括受取, taken
-    mid-payment, at two [S2] [S3] [S12]; and すえ置 (deferral of instalments, in whole or
-    part) at one [S5].
+    mid-payment, at two [S2] [S3] [S12]; and deferral of instalments, in whole or part
+    (すえ置) at one [S5].
     Composite: the first three, dropping すえ置 as a single-carrier election that adds a
     deferred-interest basis nobody publishes. リビング・ニーズ特約 is attached automatically and free
     at three carriers [S2] [S5] [S7], and its terms — 年金現価 of the designated amount, less
     six months' interest and premium equivalent, ¥30,000,000 cap, no claim in the final year
     — do not vary where it exists [S2] [S5]. It is the same rider on the same terms as on
-    the chassis ([定期保険 product specification](../term_life/product-spec.md)), with one
+    the chassis ([term life product specification (定期保険)](../term_life/product-spec.md)), with one
     product-specific consequence: on
     this product the amount is the present value of an income stream, so the cap binds far
     earlier in the term than it does on a level sum assured.
@@ -320,10 +320,10 @@ Footnotes to **[std]** rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | 解約返戻金 | **None, for the whole term** | [S2] [S5] [S6] [S7] [S9] [S15] |
-| 猶予期間 (grace), 月払 | From the first day of the month following the 払込期月 to the last day of that month | [S1 第15条] [S3] [S4] |
+| Grace (猶予期間), 月払 | From the first day of the month following the 払込期月 to the last day of that month | [S1 第15条] [S3] [S4] |
 | Claim during grace | The unpaid premium is deducted from the annuity payable; if that is insufficient, from the 死亡時保障換算額, and the 基準年金月額 is restated | [S1 第16条第1項] [S1 第12条第5項] |
-| 失効 (lapse) | The day after grace ends; nothing payable | [S1 第15条第2項] |
-| 復活 (reinstatement) | Available for **3 years** from lapse, on fresh underwriting and arrears with interest; the rate class carries over unchanged | [S1 第17条] [S3] [S5] |
+| Lapse (失効) | The day after grace ends; nothing payable | [S1 第15条第2項] |
+| Reinstatement (復活) | Available for **3 years** from lapse, on fresh underwriting and arrears with interest; the rate class carries over unchanged | [S1 第17条] [S3] [S5] |
 | 自動振替貸付 / 契約者貸付 | **Explicitly not offered.** With no cash value there is nothing to lend against | [S2] |
 | 告知義務違反 | Rescission within **2 years** of the 責任開始日 or last 復活日; after two years still available where the event occurred inside them | [S1 第21条第5号] [S4] [S5] |
 | 時効 | Rights to an annuity, the 責任準備金, the 解約返戻金 or a waiver extinguish after 3 years | [S1 第41条] |
@@ -340,7 +340,7 @@ Footnotes to **[std]** rows:
 ## Contractual mechanics
 
 Everything in this section that is *not* stated here is stated in the
-[定期保険 product specification](../term_life/product-spec.md) — the three 免責事由 and what is
+[term life product specification (定期保険)](../term_life/product-spec.md) — the three 免責事由 and what is
 paid on each, the two-year and
 three-year windows and the clocks they run on, the grace-to-失効-to-復活 sequence, the 別表3
 高度障害状態 schedule with its numeric 備考, and the reasoning behind treating 死亡 and 高度障害 as one
@@ -364,7 +364,7 @@ month 361 pays ¥9,000,000 [S14]. There is no schedule, no rate and no formula b
 decline — it is the calendar. That is the sharpest contrast with a UK decreasing term
 assurance, whose benefit falls on a *notional mortgage schedule* at a chosen interest rate,
 and with the 逓減定期保険 sold in Japan, whose benefit falls by `基本保険金額 ÷ 保険期間` a year and whose
-**premium falls with it** ([定期保険 product specification](../term_life/product-spec.md)).
+**premium falls with it** ([term life product specification (定期保険)](../term_life/product-spec.md)).
 Here the premium is level and
 the benefit declines by construction.
 
@@ -438,7 +438,7 @@ single preferred class [S6] and one banding the thresholds by issue age — BMI 
 契約年齢20–39 and 17–28 at 40–70, 最高血圧 under 140 then under 150, 最低血圧 under 90 then under 100
 [S14]. 「喫煙」 is defined broadly enough to include cigars, pipe, chewing and snuff tobacco,
 e-cigarettes, heated tobacco and nicotine patches or gum [S2] [S5] [S6], and non-smoker
-status is verified by a **コチニン (cotinine) test** within an insurer-set range, which passive
+status is verified by a **cotinine (コチニン) test** within an insurer-set range, which passive
 smoking can fail [S2] [S5]. A preferred class additionally requires a 健康診断結果通知書 or a 人間ドック
 result; without one the standard class applies [S2] [S5].
 
@@ -500,7 +500,7 @@ annuities **at no extra premium** [S5]. Disease-based waiver riders — three-di
 five-disease and seven-disease variants with 90-day cancer waiting periods and differing
 heart and cerebrovascular triggers [S2] [S5] [S6] [S11] [S16] — are out of scope. The
 care-income 特則 turn on 要介護状態 as defined by 介護保険法第7条 [REG-R42]; written alone they would be
-第三分野 (*dai-san-bun'ya*, third sector) business, which is why they are 特則 on a 第一分野 main
+third sector (*dai-san-bun'ya*, 第三分野) business, which is why they are 特則 on a 第一分野 main
 contract [REG-R1].
 
 **Absent from the market rather than out of scope:** no retrieved document offers 更新, joint
@@ -586,23 +586,23 @@ described above are sold as 特則 attached to this contract rather than as the 
 its own [S7].
 
 **Prudential — ESR, and what it replaced.** From **2026年3月31日** insurers are supervised on
-the 経済価値ベースのソルベンシー規制 (*keizai-kachi bēsu no soruvenshī kisei*, economic-value-based solvency
-regulation, **ESR**): assets at fair value, insurance liabilities as the 現在推計 (*genzai
-suikei*, current estimate) re-measured at each 基準日 plus a MOCE, calibrated to 99.5% over one
-year, with early corrective action triggered below **100%** [REG-R15]. It replaces, as the
-trigger, the ソルベンシー・マージン比率 threshold of **200%** [REG-R17] [REG-R15]. `jplib` computes
-neither ratio. What matters for this product is the re-measurement: a benefit whose amount
-is a function of the *time* the claim occurs, discounted on a curve that moves, is far more
-interest-sensitive than a level sum assured, and a locked-in basis hides it.
+the economic-value-based solvency regulation (*keizai-kachi bēsu no soruvenshī kisei*,
+経済価値ベースのソルベンシー規制, **ESR**): assets at fair value, insurance liabilities as the current
+estimate (*genzai suikei*, 現在推計) re-measured at each 基準日 plus a MOCE, calibrated to 99.5%
+over one year, with early corrective action triggered below **100%** [REG-R15]. It replaces,
+as the trigger, the ソルベンシー・マージン比率 threshold of **200%** [REG-R17] [REG-R15]. `jplib`
+computes neither ratio. What matters for this product is the re-measurement: a benefit whose
+amount is a function of the *time* the claim occurs, discounted on a curve that moves, is
+far more interest-sensitive than a level sum assured, and a locked-in basis hides it.
 
 **Statutory reserving — cited, not reproduced.** A conventional guaranteed 収入保障 contract is
-inside the 標準責任準備金 (*hyōjun sekinin junbikin*, standard policy reserve) regime: 保険業法第116条第2項
+inside the standard policy reserve (*hyōjun sekinin junbikin*, 標準責任準備金) regime: 保険業法第116条第2項
 delegates the method and the coefficients [REG-R4], and 施行規則第68条 excludes only
 separate-account-linked contracts, contracts with no 保険料積立金, contracts where the insurer has
 disclosed it may change the basis, and residually designated classes — none of which catches
 this product [R8] [REG-R7]. 第69条 requires 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 per category [R8]
-[REG-R8]. The discount rate is the **標準利率** (*hyōjun riritsu*, standard valuation interest
-rate), which the supervisory guideline defines as 「責任準備金告示に規定する予定利率」 [R9]; the 告示 is
+[REG-R8]. The discount rate is the standard valuation interest rate (*hyōjun riritsu*,
+**標準利率**), which the supervisory guideline defines as 「責任準備金告示に規定する予定利率」 [R9]; the 告示 is
 **平成8年大蔵省告示第48号**, amended alongside 平成13年金融庁告示第24号 with effect from 令和3年10月1日 and 令和4年4月1日
 [R10] [REG-R10]. Its **current numeric value could not be established from any retrieved
 document and is [unverified]** — the 新旧対照表 attachments on the regulator's page were not
@@ -617,7 +617,7 @@ reproduction, so the library **cites** the table, quotes only the rates a worked
 needs, and **ships** its mortality CSV as a **[std]** construction whose `provenance` column
 points at the IAJ entries [REG-R21]. And it is a **valuation** table — a 2σ risk-theory
 margin capped at 130% of the unadjusted rate, a forward improvement allowance of 2.5% p.a.
-for five years then 1.0% for three, built on a 保険年齢 (*hoken-nenrei*, age nearest birthday)
+for five years then 1.0% for three, built on an age nearest birthday (*hoken-nenrei*, 保険年齢)
 basis, and **including 高度障害 inside the
 death rate** [R2] [REG-R20] — so a best-estimate basis is a **[std]** adjustment of it.
 
@@ -651,7 +651,7 @@ insurer failure 生命保険契約者保護機構 covers contracts up to **90% o
 delegated by 保険業法第270条の3 to ordinance [REG-R40] [REG-R41]. Cited, never modeled.
 
 **Tax — two layers, and the second is what makes this product different.** At the death the
-object taxed for 相続税 is the **年金受給権** (*nenkin jukyūken*, the right to the annuity), not the
+object taxed for 相続税 is the right to the annuity (*nenkin jukyūken*, **年金受給権**), not the
 instalments [R5]. A 有期定期金 whose 給付事由 has occurred is valued at the **greatest** of the
 surrender value payable at that moment, the lump sum available in lieu of the annuity, and
 the average annual amount over the remaining period times the 複利年金現価率 at the contract's 予定利率

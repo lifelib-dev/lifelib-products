@@ -3,9 +3,9 @@
 **Status:** Draft, 2026-08-20 (all cited sources accessed 2026-08-20).
 
 **Scope note.** These notes specify a reference liability cash-flow projection model for the
-standardized composite defined in `product-spec.md` (same directory) — a 定額個人年金保険 (*teigaku
-kojin nenkin hoken*, fixed individual annuity insurance) with the 税制適格特約 (*zeisei tekikaku
-tokuyaku*, tax-qualification rider) attached, implemented as `Annuity_JP_A` on an annual
+standardized composite defined in `product-spec.md` (same directory) — a fixed individual
+annuity insurance (*teigaku kojin nenkin hoken*, 定額個人年金保険) with the tax-qualification rider
+(*zeisei tekikaku tokuyaku*, 税制適格特約) attached, implemented as `Annuity_JP_A` on an annual
 grid. This is no single insurer's contract. [S#] and [R#] tags resolve against `sources.md`
 (ids carried verbatim from `_research/individual-annuity.md`; frozen); [REG-R#] tags resolve
 against the cross-product reference library
@@ -23,16 +23,16 @@ explicitly defers it, or because it is a modeling construct with no contractual 
 
 - **Purpose.** Project gross best-estimate liability cash flows — premiums, deferral-phase
   death benefits, surrender payments, annuity instalments, expenses and commission — for a
-  single-policy model point, in the sense the ESR 現在推計 (*genzai suikei*, current estimate)
+  single-policy model point, in the sense the ESR current estimate (*genzai suikei*, 現在推計)
   requires: probability-weighted future cash flows re-measured on assumptions re-set at a
   stated 基準日 rather than locked in at issue [REG-R15]. Discounting, MOCE, required capital
   and every reserve are **out of scope** and are cited, not reproduced (see *Valuation and
   reserve pointers*).
 - **Projection frequency.** Annual **[std]**. The contract's own clocks are annual: premiums
-  are taken annually in the composite, the 年金支払日 (*nenkin shiharai-bi*, annuity payment
-  dates) are the 年単位の契約応当日 and its anniversaries [S2] [S4] [S9], and the 確定年金 (*kakutei
-  nenkin*, annuity-certain) pays once a year. What the annual grid gives up is the
-  sub-annual 払込猶予期間 (*haraikomi yūyo kikan*, grace period) state and the contractual monthly
+  are taken annually in the composite, the annuity payment dates (*nenkin shiharai-bi*, 年金支払日)
+  are the 年単位の契約応当日 and its anniversaries [S2] [S4] [S9], and the annuity-certain
+  (*kakutei nenkin*, 確定年金) pays once a year. What the annual grid gives up is the
+  sub-annual grace period (*haraikomi yūyo kikan*, 払込猶予期間) state and the contractual monthly
   definition of the death benefit; both are handled below.
 - **Timing conventions [std].** Premiums and annuity instalments at the **start** of the
   policy year, in advance; maintenance expense and commission at the start of the year;
@@ -42,9 +42,9 @@ explicitly defers it, or because it is a modeling construct with no contractual 
   `product-spec.md`: premiums fall at `t = 0 … m − 1`, the fund accumulates over
   `t = 0 … n`, and the annuity is paid at `t = n … n + k − 1`. `pols_if(t)` is the in-force
   count at the **start** of year `t` and weights that same `result_cf()` row.
-- **Age basis.** 保険年齢 (*hoken-nenrei*, insurance age — age nearest birthday). Attained age
+- **Age basis.** Insurance age — age nearest birthday (*hoken-nenrei*, 保険年齢). Attained age
   in year `t` is `x + t`, where `x` is the 契約年齢. This is the basis 標準生命表2018 is built for
-  [REG-R20]; a model that ages its points on 満年齢 (*man-nenrei*, age last birthday) must say so and
+  [REG-R20]; a model that ages its points on age last birthday (*man-nenrei*, 満年齢) must say so and
   say what it does about the half-year difference.
 - **Currency.** JPY throughout. Premiums and benefits are yen amounts on a yen contract [S2]
   [S4] [S5] [S6] [S8] [S9]; there is no currency layer. 外貨建年金 is out of scope, and is a
@@ -53,8 +53,8 @@ explicitly defers it, or because it is a modeling construct with no contractual 
   survivorship and persistency factors multiply per-policy amounts. No aggregation logic.
 - **Termination.** The projection ends at `t = n + k`, the year after the last 年金支払日. There
   are no tail states: the 確定年金 pays exactly `k` instalments and the contract ends [S2] [S4].
-  With the 保証期間付終身年金 (*hoshō-kikan-tsuki shūshin nenkin*, life annuity with a guarantee
-  period) module on, `proj_len` runs instead to the terminal age of the payout table — 122
+  With the life annuity with a guarantee period (*hoshō-kikan-tsuki shūshin nenkin*,
+  保証期間付終身年金) module on, `proj_len` runs instead to the terminal age of the payout table — 122
   for a male, 126 for a female [R3] [REG-R19].
 - **Contract boundary.** Premiums are level and guaranteed for the whole 保険料払込期間 with no
   review right [S2] [S4] [S5] [S6], so the insurer has no unilateral repricing lever and all
@@ -63,7 +63,7 @@ explicitly defers it, or because it is a modeling construct with no contractual 
   guarantee makes the question moot for this product, but not for a rate-resetting design
   [S12].
 - **Rounding.** Intermediate values at full precision. Displayed cash flows to the yen with
-  two decimals **[std]**. The 基本年金額 (*kihon nenkin-gaku*, basic annuity amount) is rounded
+  two decimals **[std]**. The basic annuity amount (*kihon nenkin-gaku*, 基本年金額) is rounded
   **down to the nearest ¥100** **[std, new here]** — Japanese specimens are published at
   that granularity [S3] [S5] [S6] [S10], and it is a contractual amount rather than a
   display convention, so the rounding must happen inside the model.
@@ -105,9 +105,9 @@ below checkable.
 |---|---|---|
 | `pols_if(t)` | Contracts with an obligation open at the start of year `t`; `pols_if(0) = 1` | annual recursion |
 | `lives_if(t)` | Probability the annuitant is alive at the start of year `t`; `lives_if(0) = 1` | annual recursion |
-| `av_pp(t)` | 保険料積立金 (*hokenryō tsumitatekin*, premium reserve fund) per policy at the start of year `t`, before that year's premium | annual recursion |
-| `cv_pp(t)` | 解約返戻金 (*kaiyaku-henreikin*, surrender value) per policy at time `t` | derived from `av_pp` |
-| `db_pp(t)` | 死亡給付金 (*shibō kyūfukin*, death benefit) payable for a death in year `t − 1` | schedule |
+| `av_pp(t)` | Premium reserve fund (*hokenryō tsumitatekin*, 保険料積立金) per policy at the start of year `t`, before that year's premium | annual recursion |
+| `cv_pp(t)` | Surrender value (*kaiyaku-henreikin*, 解約返戻金) per policy at time `t` | derived from `av_pp` |
+| `db_pp(t)` | Death benefit (*shibō kyūfukin*, 死亡給付金) payable for a death in year `t − 1` | schedule |
 | `annuity_pp(t)` | Annuity instalment per contract payable at the start of year `t` | fixed from `t = n` |
 | `mort_rate(t)` | Best-estimate annual mortality rate applied in year `t` | assumption lookup |
 | `lapse_rate(t)` | Best-estimate annual 解約・失効 rate applied in year `t` | assumption lookup |
@@ -121,7 +121,7 @@ table. Collapsing the two is the single most likely way to build this product wr
 it is the first pitfall below.
 
 `av_pp` occupies the library's account-value slot: a per-policy fund credited with the
-premium net of loading, with interest at the 予定利率 (*yotei riritsu*, assumed interest rate)
+premium net of loading, with interest at the assumed interest rate (*yotei riritsu*, 予定利率)
 and with a survivorship release. `prem_to_av_pp(t)` is the credited premium, and `cv_pp` —
 not `av_pp` — is the surrender quantity, as the library's naming ruling requires.
 
@@ -167,10 +167,10 @@ not `av_pp` — is the surrender quantity, as the library's naming ruling requir
 | 自動振替貸付 | Module off | present [S4], absent [S2]; election required [REG-R14]; **[std]** |
 | 契約者貸付 | Module off | [S4] [S11]; **[std]** |
 
-1. No retrieved document discloses a 予定事業費率 or a 死差 / 利差 / 費差 (*shisa / risa / hisa*,
-   mortality / interest / expense surplus) split for this line: the
-   保険料及び責任準備金の算出方法書 — the method document for premiums and the 責任準備金
-   (*sekinin-junbikin*, policy reserve) — is a 基礎書類 filed with the FSA and not published
+1. No retrieved document discloses a 予定事業費率 or a mortality / interest / expense surplus
+   (*shisa / risa / hisa*, 死差 / 利差 / 費差) split for this line: the
+   保険料及び責任準備金の算出方法書 — the method document for premiums and the policy reserve
+   (*sekinin-junbikin*, 責任準備金) — is a 基礎書類 filed with the FSA and not published
    [REG-R2], and 三利源 is practice vocabulary in any
    event — 施行規則第30条の2 permits distribution 「剰余金の生じた原因に応じて」 without naming three sources
    [REG-R9]. Rather than invent a three-way split (新契約費 / 維持費 / 集金費) that no source can
@@ -333,9 +333,9 @@ and 復活 are not exercised in the base run **[std scope]** [S1] [S2] [S4].
 | `ρ` | death-benefit ratio, 1.00 on the composite and 0.70 on a tontine (`db_ratio`) |
 | `V(t)` | 保険料積立金 per policy at the start of year `t`, before that year's premium (`av_pp`) |
 | `DB(t)` | 死亡給付金 payable for a death in year `t − 1`, paid at `t` (`db_pp`) |
-| `SC(t)` | 解約控除 (*kaiyaku kōjo*, surrender charge) at time `t` |
+| `SC(t)` | surrender charge (*kaiyaku kōjo*, 解約控除) at time `t` |
 | `CV(t)` | 解約返戻金 at time `t` (`cv_pp`) |
-| `F` | 年金原資 (*nenkin genshi*, annuity fund) `= V(n)` (`annuity_fund_pp`) |
+| `F` | annuity fund (*nenkin genshi*, 年金原資) `= V(n)` (`annuity_fund_pp`) |
 | `ä(k, i)` | annuity-due factor `(1 − (1 + i)^(−k)) / i × (1 + i)` |
 | `B` | 基本年金額, the annual instalment (`annuity_pp` while in payment) |
 | `l(t)`, `L(t)` | `pols_if(t)`; `lives_if(t)` |
@@ -355,7 +355,7 @@ year.
 ### The 保険料積立金 recursion
 
 The fund is a net-level-premium accumulation carrying a survivorship release, which is what
-lets a 生存保障重視型 (*seizon hoshō jūshi-gata*, survival-benefit-weighted) design pay a larger
+lets a survival-benefit-weighted (*seizon hoshō jūshi-gata*, 生存保障重視型) design pay a larger
 annuity than a pure savings contract of the same premium:
 
     V(0) = 0
@@ -686,15 +686,15 @@ composite is a profitable but thin contract.
 This library projects gross cash flows and builds no reserve. Each layer below consumes them
 and is cited, not reproduced.
 
-- **標準責任準備金 (*hyōjun sekinin-junbikin*, standard policy reserve).** 保険業法第116条第1項
+- **Standard policy reserve (*hyōjun sekinin-junbikin*, 標準責任準備金).** 保険業法第116条第1項
   requires a 責任準備金 at each period end and 第2項
   delegates the method [REG-R4]; 施行規則第68条 fixes which contracts are inside the
   regime, excluding those whose reserve varies with 特別勘定 assets and those whose 約款 lets the
   insurer change the coefficients, with a carve-out where the 約款 floors the 予定利率 at or above
-  the 標準利率 (*hyōjun riritsu*, standard valuation interest rate) at issue [R5] [REG-R7] —
+  the standard valuation interest rate (*hyōjun riritsu*, 標準利率) at issue [R5] [REG-R7] —
   which is exactly why the rate-resetting design at [S12] carries a minimum guarantee. 第69条 gives the taxonomy: 保険料積立金, 未経過保険料, 払戻積立金, 危険準備金
-  [REG-R8]. 平成8年大蔵省告示第48号 sets the method — **平準純保険料式** (*heijun jun-hokenryō-shiki*, net
-  level premium), with no Zillmer adjustment — the 標準利率 reset from JGB yields on a 1 October
+  [REG-R8]. 平成8年大蔵省告示第48号 sets the method — net level premium (*heijun jun-hokenryō-shiki*,
+  **平準純保険料式**), with no Zillmer adjustment — the 標準利率 reset from JGB yields on a 1 October
   基準日 with banded safety coefficients, and the mortality table by contract vintage
   [REG-R10]. **The current numeric 標準利率 could not be established from a retrieved official
   document**: the mechanism is verified and the level is not, so any figure used downstream

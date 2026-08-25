@@ -1,4 +1,4 @@
-# 収入保障保険 — Survivor Income Term
+# Survivor Income Term (収入保障保険)
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

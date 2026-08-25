@@ -11,7 +11,7 @@ implements is specified in [`product-spec.md`](product-spec.md).
 > 自動振替貸付 continuation test and its 年8% interest ceiling, the 9/10 and 8/10 契約者貸付
 > fractions, and the clawback that keeps the suppressed basis in force where low-period
 > premiums went unpaid. Every quantitative assumption is a **[std]** standardization.
-> The 予定利率 (*yotei riritsu*, assumed interest rate), 予定死亡率 and 予定事業費率 live in the
+> The assumed interest rate (*yotei riritsu*, 予定利率), 予定死亡率 and 予定事業費率 live in the
 > filed but unpublished 算出方法書 [REG-R2]; no carrier publishes an expense basis, a
 > commission scale or a lapse curve by duration; and the mortality table shipped here is a construction, not the published
 > table. Replace them with company data and a real 算出方法書 before drawing any
@@ -88,11 +88,11 @@ forced through it.
 The check that ties the value construction to the statutory quantity is
 `check_reserve_identity()`: `reserve_pp(t) − pol_val_pp(t) = surr_charge_pp(t)`, the whole
 difference being the 解約控除 that 平準純保険料式 forbids the reserve to carry [REG-R10]. It
-holds **only** because `i_std` defaults to `i_cv`; the current numeric 標準利率
-(*hyōjun riritsu*, standard valuation rate) could not be established from any retrieved
-official document [R8], and under a deep 逆ざや the
-ordering `reserve_pp ≥ pol_val_pp ≥ cv_pp` fails outright. The model therefore never
-asserts that ordering, and `reserve_pp` never appears in `net_cf`.
+holds **only** because `i_std` defaults to `i_cv`; the current numeric standard
+valuation rate (*hyōjun riritsu*, 標準利率) could not be established from any
+retrieved official document [R8], and under a deep 逆ざや the ordering
+`reserve_pp ≥ pol_val_pp ≥ cv_pp` fails outright. The model therefore never asserts
+that ordering, and `reserve_pp` never appears in `net_cf`.
 
 ## Lapse is a funded event
 
@@ -196,7 +196,7 @@ a valuation-table run, not a best estimate** [REG-R20]. The terminal rate is hel
 whatever `mort_be_factor` is set to, because `omega_age` is the table's horizon and not an
 experience assumption.
 
-Not implemented, and stated as absences rather than gaps: **復活** (reinstatement), which
+Not implemented, and stated as absences rather than gaps: reinstatement (**復活**), which
 understates later-duration in force and therefore both premium income and claims, because
 no retrieved source gives a reinstatement rate; **前納**, which changes the premium stream
 without changing any mechanic this chassis exists to demonstrate; **リビング・ニーズ**, which
@@ -204,14 +204,14 @@ accelerates the death benefit and reduces `SA` by what it pays, so modelling it 
 addition would double-count; and **免責 incidence**, where a refused claim pays the
 保険料積立金 to the policyholder rather than nothing [S1] [S9] [S10].
 
-**減額 (*gengaku*, sum-assured reduction) is not implemented either, and the absence is
+**Sum-assured reduction (*gengaku*, 減額) is not implemented either, and the absence is
 worth its own paragraph** because it is the one in-scope contractual option on this
 chassis that no model in the library implements. `product-spec.md` records it as universal
 and as treated by contract as a **partial surrender**: the reduced portion is cancelled and
 pays the surrender value attaching to it, the remainder continuing on a smaller `SA` at a
 smaller premium [S1] [S3] [S9] [S10]. The same is true of the two savings products that
-inherit this chassis — the [養老保険](../endowment/product-spec.md) and the
-[外貨建終身保険](../fx_whole_life/product-spec.md) specify it the same way — so all three
+inherit this chassis — the [endowment (養老保険)](../endowment/product-spec.md) and the
+[FX whole life (外貨建終身保険)](../fx_whole_life/product-spec.md) specify it the same way — so all three
 savings specifications carry it in scope and none of the three models moves a policy
 through it. Nothing in the model rejects a 減額 input: there is no such input to reject.
 Modelling it would need a partial-decrement state, because a reduced policy is neither
@@ -260,8 +260,8 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 Every one is tagged **[std]** at its cells and in `technical-notes.md`: the cash-value
 basis rate `i_cv` = 1.468% and the acquisition deduction `α` = 0.0090, both solved
 against one carrier's published surrender table [S4]; `i_std` defaulting to `i_cv`; the
-mortality interpolation and the reading of the table at the 満年齢 (*man-nenrei*, attained
-age) with no 保険年齢 (*hoken-nenrei*, nearest-birthday insurance age) adjustment; `mort_be_factor` = 1.00; the lapse curve 4% / 3% / 2% and the 15% cliff
+mortality interpolation and the reading of the table at the attained age (*man-nenrei*, 満年齢)
+with no nearest-birthday insurance age (*hoken-nenrei*, 保険年齢) adjustment; `mort_be_factor` = 1.00; the lapse curve 4% / 3% / 2% and the 15% cliff
 spike; `default_rate` = 1% in the module; the APL test read at the year-end value on the
 annual grid, the clawback treatment of the defaulting cohort, and no notice-and-top-up
 period; the 契約者貸付 as a single capped drawdown at an elected year; expense and

@@ -1,4 +1,4 @@
-# 終身保険 — Whole Life
+# Whole Life (終身保険)
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

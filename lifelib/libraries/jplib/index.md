@@ -16,20 +16,20 @@ product specification and technical notes the model was built from.
 
 The coverage differs in kind from both [uslib](../uslib/index.md) and
 [uklib](../uklib/index.md), because the Japanese market does. Three of the nine are
-**第三分野** (*dai-san bun'ya*, third-sector) products — 医療保険 (medical), がん保険 (cancer) and
-介護保険 (nursing care) — and that is not a rounding item. Third-sector cover is what Japanese
+third-sector (*dai-san bun'ya*, **第三分野**) products — medical (医療保険), cancer (がん保険) and
+nursing care (介護保険) — and that is not a rounding item. Third-sector cover is what Japanese
 households buy most by policy count, and none of the three is priced off a sum assured.
 医療保険 is **frequency × severity × limit** — a daily amount, a per-event day cap, a lifetime
 day cap; がん保険 keeps the frequency and severity and removes the day limit entirely; and
 介護保険 is neither, being a state model whose benefit turns on a grading made by the public
 scheme rather than on a count of days. A Japan library without them would describe a market
 that does not exist. Group business,
-共済 (cooperative insurance) and 団体信用生命保険 (group credit life) are out of scope.
+cooperative insurance (共済) and group credit life (団体信用生命保険) are out of scope.
 
 The models are the centre of the library. Each is a by-model-point projection of one product's
 gross liability cash flows: premiums, claims, benefits, surrenders, expenses and commission, on
 the product's own processing order and timing. None of them discounts — every model publishes
-the cash flows and leaves discounting, the 現在推計 (*genzai suikei*, current estimate), MOCE
+the cash flows and leaves discounting, the current estimate (*genzai suikei*, 現在推計), MOCE
 and required capital to a layer that consumes them.
 
 **Each one of these models reproduces a documented worked example, asserted cell by cell to the
@@ -85,30 +85,30 @@ written down here and in `tests/jp_registry.py` rather than inferred.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [定期保険 term life](products/term_life/index.md) | `Term_JP_A` | annual | 平準定期保険, 無配当, 無解約返戻金型: one decrement carrying both 死亡保険金 and 高度障害保険金 at the same sum assured, and **年満了 更新型** (*nen-manryō kōshin-gata*, a fixed-year term that auto-renews) — the term renews at attained-age rates to a ceiling of 80, which is what makes the liability longer than the term |
-| [収入保障保険 survivor income term](products/income_guarantee/index.md) | `IncomeTerm_JP_S` | monthly | A **death** benefit paid as a level 年金月額 to a fixed expiry date, so the total falls month by month, floored by the 最低支払保証期間 — which is implemented as a *term extension*, not a benefit floor, and so carries the projection past policy expiry. On the 定期保険 chassis, with 非喫煙者優良体 rate classes |
+| [term life (定期保険)](products/term_life/index.md) | `Term_JP_A` | annual | 平準定期保険, 無配当, 無解約返戻金型: one decrement carrying both 死亡保険金 and 高度障害保険金 at the same sum assured, and **年満了 更新型** (*nen-manryō kōshin-gata*, a fixed-year term that auto-renews) — the term renews at attained-age rates to a ceiling of 80, which is what makes the liability longer than the term |
+| [survivor income term (収入保障保険)](products/income_guarantee/index.md) | `IncomeTerm_JP_S` | monthly | A **death** benefit paid as a level 年金月額 to a fixed expiry date, so the total falls month by month, floored by the 最低支払保証期間 — which is implemented as a *term extension*, not a benefit floor, and so carries the projection past policy expiry. On the 定期保険 chassis, with 非喫煙者優良体 rate classes |
 
 **Savings**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [終身保険 whole life](products/whole_life/index.md) | `WholeLife_JP_A` | annual | Level-premium 終身保険, 無配当, carrying 保険料積立金 (*hokenryō tsumitatekin*, the policy reserve) and 解約返戻金 (*kaiyaku henreikin*, the surrender value) — the **base chassis** for the two below. **低解約返戻金型** (*tei-kaiyaku-henreikin-gata*, the suppressed-surrender-value form) suppresses the surrender value during the premium-paying period and steps it up at 払込満了: a cliff, not a curve. 自動振替貸付 (*jidō furikae kashitsuke*, the automatic premium loan) is a modelled state |
-| [養老保険 endowment](products/endowment/index.md) | `Endowment_JP_A` | annual | 死亡保険金 = 満期保険金 over a fixed term, on the 終身保険 chassis; plus a **学資保険** cell whose 保険料払込免除 (*hokenryō haraikomi menjo*, premium waiver) runs on the death of the 契約者 (*keiyakusha*, the policyholder) — a decrement on a life who is not the insured, with no analogue anywhere in the sister libraries |
-| [外貨建終身保険 FX whole life](products/fx_whole_life/index.md) | `FXWholeLife_JP_S` | monthly | 米ドル建 積立利率変動型 on the 終身保険 chassis, with three layers on top: a declared crediting rate over a guaranteed floor, 解約控除 plus 市場価格調整 (MVA) on surrender, and the currency itself. A **特定保険契約** under 保険業法第300条の2, and the library's one product projected in a currency other than yen |
+| [whole life (終身保険)](products/whole_life/index.md) | `WholeLife_JP_A` | annual | Level-premium 終身保険, 無配当, carrying the policy reserve (*hokenryō tsumitatekin*, 保険料積立金) and the surrender value (*kaiyaku henreikin*, 解約返戻金) — the **base chassis** for the two below. The suppressed-surrender-value form (*tei-kaiyaku-henreikin-gata*, **低解約返戻金型**) suppresses the surrender value during the premium-paying period and steps it up at 払込満了: a cliff, not a curve. The automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付) is a modelled state |
+| [endowment (養老保険)](products/endowment/index.md) | `Endowment_JP_A` | annual | 死亡保険金 = 満期保険金 over a fixed term, on the 終身保険 chassis; plus a **学資保険** cell whose premium waiver (*hokenryō haraikomi menjo*, 保険料払込免除) runs on the death of the policyholder (*keiyakusha*, 契約者) — a decrement on a life who is not the insured, with no analogue anywhere in the sister libraries |
+| [FX whole life (外貨建終身保険)](products/fx_whole_life/index.md) | `FXWholeLife_JP_S` | monthly | 米ドル建 積立利率変動型 on the 終身保険 chassis, with three layers on top: a declared crediting rate over a guaranteed floor, 解約控除 plus MVA (市場価格調整) on surrender, and the currency itself. A **特定保険契約** under 保険業法第300条の2, and the library's one product projected in a currency other than yen |
 
 **Third sector (第三分野)**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [医療保険 medical](products/medical/index.md) | `Medical_JP_S` | monthly | The **third-sector chassis**: 入院給付金日額 (*nyūin kyūfukin nichigaku*, the daily hospitalization benefit) with a 60日 per-hospitalization cap and a 通算1,095日 lifetime cap, 手術給付金 at a multiple of the daily amount, and 先進医療特約. The limits are the model — a projection that pays the daily amount without them is not this product |
-| [がん保険 cancer](products/cancer/index.md) | `Cancer_JP_S` | monthly | Deltas off 医療保険: a **90-day 免責期間** (*menseki kikan*, waiting period) before cover starts, a repeating がん診断一時金 on a stated cycle, がん入院給付金 with **no day limit** at all, 上皮内新生物 as a reduced second tier, and treatment-month benefits. Needs a post-diagnosis survival model, which a medical model does not |
-| [介護保険 nursing care](products/nursing_care/index.md) | `LTC_JP_S` | monthly | Deltas off 医療保険, but structurally a **three-state** model — healthy / in care / dead — with the care state absorbing and carrying its own mortality. The trigger is the public scheme's own 要介護 grading, so the benefit definition is a statute's, not a carrier's |
+| [medical (医療保険)](products/medical/index.md) | `Medical_JP_S` | monthly | The **third-sector chassis**: the daily hospitalization benefit (*nyūin kyūfukin nichigaku*, 入院給付金日額) with a 60日 per-hospitalization cap and a 通算1,095日 lifetime cap, 手術給付金 at a multiple of the daily amount, and 先進医療特約. The limits are the model — a projection that pays the daily amount without them is not this product |
+| [cancer (がん保険)](products/cancer/index.md) | `Cancer_JP_S` | monthly | Deltas off 医療保険: a **90-day 免責期間** (*menseki kikan*, waiting period) before cover starts, a repeating がん診断一時金 on a stated cycle, がん入院給付金 with **no day limit** at all, 上皮内新生物 as a reduced second tier, and treatment-month benefits. Needs a post-diagnosis survival model, which a medical model does not |
+| [nursing care (介護保険)](products/nursing_care/index.md) | `LTC_JP_S` | monthly | Deltas off 医療保険, but structurally a **three-state** model — healthy / in care / dead — with the care state absorbing and carrying its own mortality. The trigger is the public scheme's own 要介護 grading, so the benefit definition is a statute's, not a carrier's |
 
 **Annuity**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [個人年金保険 individual annuity](products/individual_annuity/index.md) | `Annuity_JP_A` | annual | 定額個人年金保険: accumulation to a 年金原資 (*nenkin genshi*, the annuitisation proceeds), then a 10年確定年金 payout, with 税制適格特約 (*zeisei tekikaku tokuyaku*, the tax-qualification rider) attached. **Two standard tables in one model** — 死亡保険用 in deferral, 年金開始後用 in payment — and using one for both is a pitfall the tests assert against |
+| [individual annuity (個人年金保険)](products/individual_annuity/index.md) | `Annuity_JP_A` | annual | 定額個人年金保険: accumulation to the annuitisation proceeds (*nenkin genshi*, 年金原資), then a 10年確定年金 payout, with the tax-qualification rider (*zeisei tekikaku tokuyaku*, 税制適格特約) attached. **Two standard tables in one model** — 死亡保険用 in deferral, 年金開始後用 in payment — and using one for both is a pitfall the tests assert against |
 
 (jplib-one-shape)=
 
@@ -167,8 +167,8 @@ anchor premium of `Term_JP_A`, `IncomeTerm_JP_S`, `WholeLife_JP_A`, `Endowment_J
 for a handful of products from specimen policies and prospectuses; uklib reaches it for none,
 because UK protection pricing is quote-driven. The third-sector three are the exception and their anchor premiums
 are **[std]** — not because nothing is published, but because what is published does not price
-the composite: specimen 月払保険料 scales were retrieved for 医療保険, and the 算出方法書 (*sanshutsu hōhōsho*, the filed
-premium and reserve basis) that would settle the representative specification is one of the
+the composite: specimen 月払保険料 scales were retrieved for 医療保険, and the filed premium and reserve basis
+(*sanshutsu hōhōsho*, 算出方法書) that would settle the representative specification is one of the
 基礎書類 (*kiso shorui*) filed with the 金融庁 and is not
 published [REG-R2].
 
@@ -180,10 +180,10 @@ with a citation on it rather than an invention — and why the modelling work th
 `LTC_JP_S` is the prevalence-to-incidence conversion, which is shown rather than assumed.
 
 **Two contractual mechanics have no analogue in uslib or uklib, and both change the liability
-rather than a parameter.** 更新 (renewal): a 年満了 定期保険 renews automatically at attained-age
+rather than a parameter.** Renewal (更新): a 年満了 定期保険 renews automatically at attained-age
 rates unless the owner declines, so the contract boundary question is real and the answer changes
 the sign of the reported result — `Term_JP_A` publishes both readings rather than picking one
-silently. 自動振替貸付 (automatic premium loan): where a premium is unpaid and there is a
+silently. Automatic premium loan (自動振替貸付): where a premium is unpaid and there is a
 解約返戻金, the insurer *lends* the premium against it, so a policy with a surrender value does
 not lapse while the loan can carry it. It is a modelled state in `WholeLife_JP_A`, and its
 absence from `Term_JP_A` is a product fact — 無解約返戻金型 leaves nothing to lend against.
@@ -200,15 +200,15 @@ Products that share machinery point at the file where it is specified rather tha
 restating it, and each pointer states what it inherits and where it deviates:
 
 - **収入保障保険** states only its deltas against the
-  [定期保険 technical notes](products/term_life/technical-notes.md) — the same decrement and
+  [term life technical notes (定期保険)](products/term_life/technical-notes.md) — the same decrement and
   premium chassis, with the benefit replaced by an income stream and the horizon extended past
   policy expiry by the 最低支払保証期間.
 - **養老保険** and **外貨建終身保険** inherit the
-  [終身保険 savings chassis](products/whole_life/technical-notes.md) — 保険料積立金, 解約返戻金,
+  [whole life savings chassis (終身保険)](products/whole_life/technical-notes.md) — 保険料積立金, 解約返戻金,
   自動振替貸付 — and add, respectively, the maturity benefit with the 学資 payment-waiver
   decrement, and the crediting, surrender-charge and currency layers.
 - **がん保険** and **介護保険** state their deltas against the
-  [医療保険 third-sector chassis](products/medical/technical-notes.md), which is where the
+  [medical third-sector chassis (医療保険)](products/medical/technical-notes.md), which is where the
   benefit-day limit machinery is specified once.
 - **個人年金保険** stands alone. Its payout phase is not a chassis for anything here, and the
   two other products that project an income stream do not inherit it: 収入保障保険 pays an

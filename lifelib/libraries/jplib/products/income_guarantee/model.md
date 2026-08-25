@@ -15,12 +15,12 @@ against [`sources.md`](sources.md), and `[REG-R#]` against
 > on this product is the *shape*: the instalment count `max(N − m + 1, G)`, the 最低支払保証期間
 > (*saitei shiharai hoshō kikan*, minimum payment guarantee period) as an extension of the
 > payment period past the expiry date rather than a floor inside it, the absence of any
-> survival condition on the instalments, the absence of any 解約返戻金 (*kaiyaku-henreikin*,
-> surrender value) at any duration, premium cessation on the annuity event, the absence of
-> 更新 (*kōshin*, renewal), and the anchor cell's ¥2,565 monthly office premium, which is a
+> survival condition on the instalments, the absence of any surrender value (*kaiyaku-henreikin*,
+> 解約返戻金) at any duration, premium cessation on the annuity event, the absence of
+> renewal (*kōshin*, 更新), and the anchor cell's ¥2,565 monthly office premium, which is a
 > published rate [S6]. Everything else quantitative is **[std]**: the mortality table
-> shipped here is a construction and not a copy of 生保標準生命表2018 (*seiho hyōjun seimeihyō
-> 2018*, the standard mortality table for death cover), and the best-estimate factor, the
+> shipped here is a construction and not a copy of the standard mortality table for death
+> cover (*seiho hyōjun seimeihyō 2018*, 生保標準生命表2018), and the best-estimate factor, the
 > four rate-class factors, the lapse table, every expense and commission level, the
 > commutation discount rate and all four optional-module parameters are standardizations
 > introduced for the reference implementation. Replace them with company data before
@@ -28,7 +28,7 @@ against [`sources.md`](sources.md), and `[REG-R#]` against
 
 `IncomeTerm_JP_S` is the executable counterpart of `technical-notes.md`. It projects gross
 best-estimate liability cash flows on a **monthly** grid for a single-policy model point of
-収入保障保険 (*shūnyū hoshō hoken*, survivor income term) — a **death** benefit paid as a level
+survivor income term (*shūnyū hoshō hoken*, 収入保障保険) — a **death** benefit paid as a level
 monthly income to a fixed expiry date, floored by the 最低支払保証期間. It is not income
 protection: nothing here models a disability decrement, and a reader arriving from
 `uklib`'s `IP_UK_S` should expect the family income benefit shape instead.
@@ -160,7 +160,7 @@ chassis, which pays a lump sum and closes the file.
 
 `premium_mode` is implemented rather than carried and ignored: `prem_due_pp(t)` collects
 `12 / f` months of premium at the start of each payment period and nothing in between. No
-前納 (*zennō*, advance payment) or frequency discount is applied, because the discount is
+advance payment (*zennō*, 前納) or frequency discount is applied, because the discount is
 insurer-set and unpublished **[std scope]** — so a policy year costs the same at all three
 frequencies and only the timing moves. The anchor cell is 月払, which is the frequency the
 only published rate grid is quoted in [S6], so the worked example is unaffected; model
@@ -267,10 +267,10 @@ model point columns; the fifth is a `Projection` Reference.
 
 | Module | Switch | Off value | What it does when on |
 |---|---|---|---|
-| 一括受取 (full commutation) | model point `commutation` | `False` (point 4 excepted) | Settles the claim at the claim date with `commute_pp(t)`, an annuity-certain on `pay_count(t)` instalments at `commute_rate` = 0.65% p.a. **[std]**, and does **not** open the ledger for that claim — a full commutation extinguishes the contract [S1 第5条第2項] [S3 第6条第3項] [S12] [S14], so paying the lump sum *and* opening the stream doubles the benefit. Partial commutation is out of scope **[std scope]** |
+| Full commutation (一括受取) | model point `commutation` | `False` (point 4 excepted) | Settles the claim at the claim date with `commute_pp(t)`, an annuity-certain on `pay_count(t)` instalments at `commute_rate` = 0.65% p.a. **[std]**, and does **not** open the ledger for that claim — a full commutation extinguishes the contract [S1 第5条第2項] [S3 第6条第3項] [S12] [S14], so paying the lump sum *and* opening the stream doubles the benefit. Partial commutation is out of scope **[std scope]** |
 | リビング・ニーズ特約 | model point `living_needs` | `False` (point 5 excepted) | Settles a **[std]** proportion `ln_take_up` of the month's claims as an acceleration at the 年金現価 less six months' interest and premium equivalent, capped at `ln_cap` = ¥30,000,000 and barred in the final year [S2] [S5] [S7]. Carved **out** of the death decrement, not added to it |
-| 保険料払込免除 | model point `wop` | `False` (point 7 excepted) | Runs a two-state incidence/recovery chain **[std]** on the premium-paying population, on the 不慮の事故 plus 180 days plus 別表4 test [S1 第6条] [S3 第8条] [S5] [S6]. 別表4 is a materially lower bar than the 別表3 高度障害 schedule, so the incidence deliberately does not reuse `mort_rate`. The waiver is in the 主契約 (*shu-keiyaku*, main contract), so it carries no extra premium |
-| 復活 (reinstatement) | model point `reinstatement` | `False` (point 8 excepted) | Returns a **[std]** proportion `reinst_rate` of each month's lapses to force `reinst_lag_m` months later — a single-lag approximation of the three-year `reinst_window_m` [S1 第17条] [S3] [S5] — paying arrears with interest through `prem_arrears_pp()`. The rate class carries over unchanged [S3], which matters because the class is a mortality parameter |
+| 保険料払込免除 | model point `wop` | `False` (point 7 excepted) | Runs a two-state incidence/recovery chain **[std]** on the premium-paying population, on the 不慮の事故 plus 180 days plus 別表4 test [S1 第6条] [S3 第8条] [S5] [S6]. 別表4 is a materially lower bar than the 別表3 高度障害 schedule, so the incidence deliberately does not reuse `mort_rate`. The waiver is in the main contract (*shu-keiyaku*, 主契約), so it carries no extra premium |
+| Reinstatement (復活) | model point `reinstatement` | `False` (point 8 excepted) | Returns a **[std]** proportion `reinst_rate` of each month's lapses to force `reinst_lag_m` months later — a single-lag approximation of the three-year `reinst_window_m` [S1 第17条] [S3] [S5] — paying arrears with interest through `prem_arrears_pp()`. The rate class carries over unchanged [S3], which matters because the class is a mortality parameter |
 | Selective lapsation | Reference `sel_lapse_lambda` | `0.0` | Loads persisters' mortality by `1 + λ max(0, 1 − l(t)/l_ref)`. Weaker here than on the protection chassis, which has a periodic no-underwriting renewal to select against, but not absent: the rate class is fixed at issue and cannot be changed, so a life whose health deteriorates keeps a preferred rate while a life whose health improves cannot get one and may re-shop |
 
 The リビング・ニーズ module has one product-specific consequence. Because the payout is the present
@@ -300,8 +300,8 @@ publish: one stream, one sign, one name.
 fact.** The instalments are paid on the death of the insured, or on the contractual 高度障害
 state carried inside the same decrement as its accelerated equivalent — not on survival and
 not on disability as such. The name records the benefit's *form*, and the same name carries a
-*living* benefit in `LTC_JP_S` ([介護保険 model notes](../nursing_care/model.md)) and
-`Annuity_JP_A` ([個人年金保険 model notes](../individual_annuity/model.md)), so this model states
+*living* benefit in `LTC_JP_S` ([nursing care model notes (介護保険)](../nursing_care/model.md)) and
+`Annuity_JP_A` ([individual annuity model notes (個人年金保険)](../individual_annuity/model.md)), so this model states
 the contingency in the `claims` docstring and in the `result_cf` docstring rather than leaving
 it to the column name. **There is no `claims_death` column**: the contract pays no lump sum on
 death at any duration — a claim *opens* an annuity stream instead of settling one — so the
@@ -316,8 +316,8 @@ properties true.
 composite is 無解約返戻金型 with no 解約返戻金 at any duration [S2] [S5] [S6] [S7] [S9] [S15]. The zero
 column is published rather than dropped, because a non-zero lapse row imported from a
 cash-value chassis is one of the notes' listed pitfalls and a missing column would only hide
-the product fact. For the same reason there is no `cv_pp` and no 自動振替貸付 (*jidō furikae
-kashitsuke*, automatic premium loan) anywhere in the model: with no cash value there is no
+the product fact. For the same reason there is no `cv_pp` and no automatic premium loan
+(*jidō furikae kashitsuke*, 自動振替貸付) anywhere in the model: with no cash value there is no
 collateral to lend against, and one carrier states the absence in terms [S2].
 
 One presentational note. The notes' worked-example *table* puts `E0 + c0` in a "Maint. +

@@ -1,4 +1,4 @@
-# 外貨建終身保険 — Foreign-Currency Whole Life
+# Foreign-Currency Whole Life (外貨建終身保険)
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

@@ -70,17 +70,18 @@ TITLES = {
     ("uklib", "with_profits"): "With-Profits (WP)",
     ("uklib", "unit_linked_bond"): "Unit-Linked Investment Bond (ULB)",
     ("uklib", "pension_annuity"): "Pension Annuity (PA)",
-    # jplib.  The Japanese name leads, because it is what the product is called and what
-    # every document in the library uses; the English gloss follows it.
-    ("jplib", "term_life"): "定期保険 — Level Term Life",
-    ("jplib", "income_guarantee"): "収入保障保険 — Survivor Income Term",
-    ("jplib", "whole_life"): "終身保険 — Whole Life",
-    ("jplib", "endowment"): "養老保険 — Endowment, with 学資保険",
-    ("jplib", "medical"): "医療保険 — Medical (third sector)",
-    ("jplib", "cancer"): "がん保険 — Cancer (third sector)",
-    ("jplib", "nursing_care"): "介護保険 — Nursing Care (third sector)",
-    ("jplib", "individual_annuity"): "個人年金保険 — Individual Annuity",
-    ("jplib", "fx_whole_life"): "外貨建終身保険 — Foreign-Currency Whole Life",
+    # jplib.  The English name leads, so the page titles read as the sister libraries' do;
+    # the Japanese name -- what the product is actually called, and what every document in
+    # the library uses -- follows it in parentheses.
+    ("jplib", "term_life"): "Level Term Life (定期保険)",
+    ("jplib", "income_guarantee"): "Survivor Income Term (収入保障保険)",
+    ("jplib", "whole_life"): "Whole Life (終身保険)",
+    ("jplib", "endowment"): "Endowment (養老保険), with 学資保険",
+    ("jplib", "medical"): "Medical (医療保険)",
+    ("jplib", "cancer"): "Cancer (がん保険)",
+    ("jplib", "nursing_care"): "Nursing Care (介護保険)",
+    ("jplib", "individual_annuity"): "Individual Annuity (個人年金保険)",
+    ("jplib", "fx_whole_life"): "Foreign-Currency Whole Life (外貨建終身保険)",
 }
 
 

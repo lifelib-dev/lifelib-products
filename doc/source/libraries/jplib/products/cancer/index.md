@@ -1,4 +1,4 @@
-# がん保険 — Cancer (third sector)
+# Cancer (がん保険)
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

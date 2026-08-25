@@ -16,7 +16,7 @@ published ages. No retrieved document supplies any of them, so every one is **[s
 its rationale given where it is introduced.
 
 This is the library's **protection chassis**. The
-[収入保障保険 technical notes](../income_guarantee/technical-notes.md)
+[survivor income term technical notes (収入保障保険)](../income_guarantee/technical-notes.md)
 (survivor income term) state only their deltas against this file: the decrement recursion,
 the premium chassis, the expense and commission structure and the processing order are
 specified here once and are not restated there.
@@ -26,33 +26,33 @@ specified here once and are not restated there.
 ## Model scope and conventions
 
 - **Purpose.** Project gross best-estimate liability cash flows — premiums, death and
-  高度障害 (*kōdo shōgai*, severe disability) claims, claim expenses, maintenance expenses
-  and commission — for a single-policy model point of 定期保険 (*teiki hoken*, level term
-  life), in the sense the ESR 現在推計 (*genzai suikei*, current estimate) requires:
+  severe disability (*kōdo shōgai*, 高度障害) claims, claim expenses, maintenance expenses
+  and commission — for a single-policy model point of level term life (*teiki hoken*, 定期保険),
+  in the sense the ESR current estimate (*genzai suikei*, 現在推計) requires:
   probability-weighted future cash flows on assumptions re-set at the 基準日 rather than
-  locked in at issue [REG-R15]. The same projection is the shape of the 1号収支分析
-  (*ichi-gō shūshi bunseki*, item-1 income-and-outgo analysis) — premiums, claims,
+  locked in at issue [REG-R15]. The same projection is the shape of the item-1
+  income-and-outgo analysis (*ichi-gō shūshi bunseki*, 1号収支分析) — premiums, claims,
   expenses and surrenders by segment over at least ten future years [REG-R22].
 - **Discounting, MOCE, required capital and reserving are out of scope**, cited and not
   reproduced (see Valuation and reserve pointers). `jplib` computes no ratio and builds no
-  責任準備金 (*sekinin-junbikin*, policy reserve).
+  policy reserve (*sekinin-junbikin*, 責任準備金).
 - **Projection frequency.** Annual — the model is `Term_JP_A`. Nothing in the composite has
   intra-year contractual structure: the sum assured is level and the premium is level
-  within each 保険期間 (*hoken kikan*, policy term). The one intra-year mechanic that
-  matters, the 猶予期間 (*yūyo kikan*, grace period) of about one month [S1] [S8], sits
+  within each policy term (*hoken kikan*, 保険期間). The one intra-year mechanic that
+  matters, the grace period (*yūyo kikan*, 猶予期間) of about one month [S1] [S8], sits
   inside a decrement the annual grid represents as a rate. The
-  [収入保障保険 technical notes](../income_guarantee/technical-notes.md)
+  [survivor income term technical notes (収入保障保険)](../income_guarantee/technical-notes.md)
   run monthly because that benefit is a monthly income stream; this product does not
   need to.
 - **Timing conventions [std].** Premiums at the start of each policy year (annualized, in
   advance); maintenance expense at the start of the year; acquisition expense and initial
   commission at issue; death and 高度障害 claims and their claim expense at the end of the
   policy year in which they arise; ordinary lapse at the end of the year, after deaths;
-  the 更新 (*kōshin*, renewal) decline at the end of a boundary year, after lapse.
-- **Age basis [std].** 契約年齢 (*keiyaku nenrei*, issue age) is 満年齢 (*man-nenrei*, age
-  last birthday) with fractions discarded [S1]; attained age in year `t` is `x + t − 1`.
-  生保標準生命表2018（死亡保険用）is built for a 保険年齢 (*hoken-nenrei*, age nearest
-  birthday) basis [REG-R20], so reading it at 満年齢 reads it half a year early and
+  the renewal (*kōshin*, 更新) decline at the end of a boundary year, after lapse.
+- **Age basis [std].** Issue age (*keiyaku nenrei*, 契約年齢) is age last birthday
+  (*man-nenrei*, 満年齢) with fractions discarded [S1]; attained age in year `t` is `x + t − 1`.
+  生保標準生命表2018（死亡保険用）is built for an age nearest birthday (*hoken-nenrei*, 保険年齢) basis
+  [REG-R20], so reading it at 満年齢 reads it half a year early and
   **understates** mortality. The base run accepts and states that bias; an optional shift
   `q_x → sqrt(q_x · q_{x+1})` raises the rate by about 0.7% at age 30 and 4.2% at age 40
   on the [std] table below. This resolves the mismatch `product-spec.md` footnote 3 flags.
@@ -60,11 +60,11 @@ specified here once and are not restated there.
 - **Model points.** Single-policy, on an expected (probability-weighted) basis:
   survivorship multiplies per-policy cash flows. No aggregation logic is specified here.
   `point_id = 1` is the worked example's anchor cell.
-- **Termination.** A 歳満了 (*sai manryō*, to-a-stated-age) contract ends at the end of its
-  term with nothing payable [S1] [S8] [S10] [S14]. A 年満了 (*nen manryō*, fixed-year)
+- **Termination.** A to-a-stated-age (*sai manryō*, 歳満了) contract ends at the end of its
+  term with nothing payable [S1] [S8] [S10] [S14]. A fixed-year (*nen manryō*, 年満了)
   更新型 contract ends only at the **renewal ceiling of attained age 80** [S1] [S2] [S8],
-  because until then it renews. No 満期保険金, no 解約返戻金 (*kaiyaku-henreikin*, surrender
-  value), no tail state of any kind [S1] [S4] [S8] [S9] [S10] [S13] [S14].
+  because until then it renews. No 満期保険金, no surrender value (*kaiyaku-henreikin*, 解約返戻金),
+  no tail state of any kind [S1] [S4] [S8] [S9] [S10] [S13] [S14].
 - **Contract boundary — the paragraph this product forces.** A UK term assurance guarantees
   its premium for the whole term, so the boundary is the term. A Japanese 年満了 contract
   guarantees it only **within** the current 保険期間: at each 更新 the insurer recomputes it
@@ -141,15 +141,15 @@ that restarts them [S1].
 
 There is deliberately **no** `cv_pp` and no account value. The composite has no 解約返戻金
 for the whole term [S1] [S4] [S6] [S8] [S9] [S10] [S13] [S14], and with no surrender value
-there is no 自動振替貸付 (*jidō furikae kashitsuke*, automatic premium loan) to carry the
-policy through non-payment: one carrier states that absence in terms [S7]. A 契約者貸付
-(*keiyakusha kashitsuke*, policy loan) has no collateral either, but that is an inference
+there is no automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付) to carry the
+policy through non-payment: one carrier states that absence in terms [S7]. A policy loan
+(*keiyakusha kashitsuke*, 契約者貸付) has no collateral either, but that is an inference
 from the missing surrender value and **not** a sourced fact — the carrier stating the APL
 absence points its policyholders at its 契約貸付制度 instead [S7], and the one document that
 appears to rule the policy loan out could not be text-extracted [S11] [unverified]. The
 absence is a product fact: it is why this chassis carries a plain lapse model, and why the
 APL mechanic is specified in the
-[終身保険 technical notes](../whole_life/technical-notes.md) and not here.
+[whole life technical notes (終身保険)](../whole_life/technical-notes.md) and not here.
 
 ---
 
@@ -186,8 +186,8 @@ and is **[std]** throughout, because no Japanese public source supplies it.
 
 On 無配当 protection business this class is **almost empty**, and the emptiness is why the
 classes are separated at all: on the
-[終身保険 technical notes](../whole_life/technical-notes.md) and the
-[外貨建終身保険 technical notes](../fx_whole_life/technical-notes.md),
+[whole life technical notes (終身保険)](../whole_life/technical-notes.md) and the
+[FX whole life technical notes (外貨建終身保険)](../fx_whole_life/technical-notes.md),
 declared 契約者配当 and 積立利率 live here. Three residual items:
 
 | Input | Snapshot value | Basis |
@@ -438,7 +438,7 @@ premium adjustment.
 - **Contract boundary.** `contract_boundary = current_term` truncates at the end of the
   term in force at the valuation date.
 
-### What the [収入保障保険 technical notes](../income_guarantee/technical-notes.md) inherits
+### What the [survivor income term technical notes (収入保障保険)](../income_guarantee/technical-notes.md) inherits
 
 Unchanged from this file: the decrement recursion and processing order (steps 1–7), the
 premium chassis `P_m = f + r × SA / 5,000,000` with its renewal repricing, the [std]
@@ -602,18 +602,18 @@ cost, and a jump back into surplus the year after.
 This library projects gross cash flows. Every valuation layer consumes them and is cited,
 never reproduced:
 
-- **標準責任準備金** (*hyōjun sekinin-junbikin*, standard policy reserve). 保険業法第116条第2項
+- Standard policy reserve (*hyōjun sekinin-junbikin*, **標準責任準備金**). 保険業法第116条第2項
   delegates the accumulation method and coefficient levels for the contracts the ordinance
   specifies [REG-R4]; 施行規則第68条 fixes the set [REG-R7] and 第69条第1項 the taxonomy
   保険料積立金 / 未経過保険料 / 払戻積立金 / 危険準備金 [REG-R8]. 平成8年大蔵省告示第48号 supplies
-  the method — **平準純保険料式** (*heijun jun-hokenryō-shiki*, net level premium method),
+  the method — net level premium method (*heijun jun-hokenryō-shiki*, **平準純保険料式**),
   no Zillmer adjustment — and the table vintage: contracts from 2018-04-01 value on
-  生保標準生命表2018（死亡保険用）[REG-R10] [REG-R11]. The 標準利率 (*hyōjun riritsu*,
-  standard valuation interest rate) resets annually for regular-premium yen business off
+  生保標準生命表2018（死亡保険用）[REG-R10] [REG-R11]. The standard valuation interest rate
+  (*hyōjun riritsu*, 標準利率) resets annually for regular-premium yen business off
   three- and ten-year means of 10-year JGB yields with safety coefficients by band, on a
   0.5% trigger and 0.25% rounding, effective the following 1 April [REG-R10]; its **current
   numeric value could not be established from any retrieved document and is [unverified]**.
-- **危険準備金** (*kiken junbikin*, contingency reserve) is one of the four 第69条第1項
+- Contingency reserve (*kiken junbikin*, **危険準備金**) is one of the four 第69条第1項
   components [REG-R8]. 価格変動準備金 is asset-driven and outside a liability projection.
 - **The valuation table is not this model's basis.** 標準生命表2018 carries an explicit ~2σ
   margin capped at 130% of the unadjusted rate plus a forward improvement allowance
@@ -698,7 +698,7 @@ Known modeling pitfalls:
   composite's sources, not from the product class.
 - **There is no 自動振替貸付 on this chassis.** With no 解約返戻金 there is no collateral, and
   one carrier states the absence in terms [S7]. Importing the APL mechanic from the
-  [終身保険 technical notes](../whole_life/technical-notes.md)
+  [whole life technical notes (終身保険)](../whole_life/technical-notes.md)
   creates a no-lapse cushion the contract does not have; the supervisory guideline in any
   case requires an APL, where one exists, to run **at the policyholder's election** rather
   than automatically [REG-R14]. Grace → 失効 → 復活-or-not is the whole persistency

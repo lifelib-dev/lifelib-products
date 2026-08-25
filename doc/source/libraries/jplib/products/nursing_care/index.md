@@ -1,4 +1,4 @@
-# 介護保険 — Nursing Care (third sector)
+# Nursing Care (介護保険)
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

@@ -1,4 +1,4 @@
-# 養老保険 — Endowment, with 学資保険
+# Endowment (養老保険), with 学資保険
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

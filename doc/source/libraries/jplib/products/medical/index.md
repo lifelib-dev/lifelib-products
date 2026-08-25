@@ -1,4 +1,4 @@
-# 医療保険 — Medical (third sector)
+# Medical (医療保険)
 
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.

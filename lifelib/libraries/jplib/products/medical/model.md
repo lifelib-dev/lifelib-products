@@ -16,8 +16,8 @@ where this document adds one it says so and tags it **[std]**.
 
 `Medical_JP_S` is the executable counterpart of
 [`technical-notes.md`](technical-notes.md): a monthly, by-policy projection of gross
-best-estimate liability cash flows for 医療保険 (*iryō hoken*, third-sector medical
-insurance). It is the `jplib` **third-sector chassis** — [`Cancer_JP_S`](../cancer/model.md)
+best-estimate liability cash flows for third-sector medical insurance (*iryō hoken*, 医療保険).
+It is the `jplib` **third-sector chassis** — [`Cancer_JP_S`](../cancer/model.md)
 and [`LTC_JP_S`](../nursing_care/model.md) state deltas against the day-limit machinery
 here rather than restating it.
 
@@ -111,8 +111,8 @@ days out of the 通算 count entirely, which is a change in *what the ledger cou
 which defers the benefit-driven termination further still. They are **not** kept for the
 dependants: **neither [`Cancer_JP_S`](../cancer/model.md) nor
 [`LTC_JP_S`](../nursing_care/model.md) inherits them**, and both document the deletion as
-a product fact — [がん保険](../cancer/technical-notes.md) has no `L1` and no `LA`,
-[介護保険](../nursing_care/technical-notes.md) no `d_pay`, no `d_ben` and no `agg_days_*`
+a product fact — [cancer (がん保険)](../cancer/technical-notes.md) has no `L1` and no `LA`,
+[nursing care (介護保険)](../nursing_care/technical-notes.md) no `d_pay`, no `d_ben` and no `agg_days_*`
 ledger. **Do not delete a ledger because it reads zero.**
 
 One statement here is sharper than the notes'. A ledger advances by
@@ -133,7 +133,7 @@ There is **no death benefit** — the main contract pays nothing on death [S1] [
 [S9] [S10] — so mortality is a pure liability release and no `claims_death` exists. There
 is **no 契約者貸付 and no 自動振替貸付** [S1], so nothing carries a policy through a missed
 premium and no lapse-suppression term belongs in the recursion; the automatic-premium-loan
-machinery of the [終身保険 savings chassis](../whole_life/technical-notes.md) must **not**
+machinery of the [whole life savings chassis (終身保険)](../whole_life/technical-notes.md) must **not**
 be inherited here. And there is **no
 surrender value** under 終身払 at any duration, so `claims(t, "LAPSE")` is identically zero
 on eight of the nine model points and the zero column is published rather than dropped.
@@ -153,7 +153,7 @@ parent's CSVs and it reads cleanly and then fails on first evaluation.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | 9 model points: chassis, 契約年齢, sex, 日額, `L1`, `LA`, premium period, office premium, surgery multiples, and the six 特約 (*tokuyaku*, rider), 特則 (*tokusoku*, special provision) and switch flags | Contractual columns from the composite [S1] [S4] [S6] [S9] [S10]; the office premium is **[std]** on every row |
+| `model_point_table.csv` | 9 model points: chassis, 契約年齢, sex, 日額, `L1`, `LA`, premium period, office premium, surgery multiples, and the six rider (*tokuyaku*, 特約), special provision (*tokusoku*, 特則) and switch flags | Contractual columns from the composite [S1] [S4] [S6] [S9] [S10]; the office premium is **[std]** on every row |
 | `mort_table.csv` | Annual `mort_rate` by sex and age, 20 to the terminal age (116 male, 118 female) | The library-wide canonical **[std]** construction: log-linear graduation between the 22 sourced anchors read out of 第三分野標準生命表2018, exact at every one of them — 男 q40 = 0.00076 [R4] [REG-R18] [REG-R19] [REG-R20]; **not** a copy — redistribution is prohibited [REG-R21] |
 | `lapse_table.csv` | Annual `lapse_rate` by policy year 1–21, last row applying onward | **[std]**, anchored by construction to the 5.6% industry 解約・失効率 [REG-R31] |
 | `incidence_table.csv` | 入院受療率 per 100,000 by five-year band, 平均在院日数 by broad band, and the sex factors | All fifteen 受療率 bands sourced [R6] [REG-R26], all four 平均在院日数 bands sourced [R6] [REG-R27]; sex factors **[std]** |
@@ -200,7 +200,7 @@ testable. Each is exercised somewhere, and the test suite asserts both positions
 | 保険料払込免除: an **absorbing** state on the premium-paying population, since the 特定三疾病 特則 waives premiums for life once triggered [S1] and has no recovery limb | Incidence zero unless the 特則 is elected. The base *disability* waiver is zero in **every** run, not only the base one: 第三分野標準生命表2018 excludes 高度障害 [R5] [REG-R20] and no public 高度障害 incidence table was retrieved | Model point 7, at the notes' placeholder `waiver_inc_mult = 0.25 × mort_rate`: 6.9% on waiver at ten years, 94.5% by the horizon |
 | The 三大疾病無制限 特則: it does not merely raise the limits — it removes `L1` for がん, 心疾患 and 脳血管疾患 and takes those days out of the 通算 count entirely [S1] [S2], deferring the benefit-driven termination | `share_free()` returns 0 and `d_ben` collapses onto `d_pay` | Model point 4: benefit days per hospitalization 15.20 → 16.70, ledger-consuming days 15.20 → 10.64 |
 | 入院一時金特約: ¥100,000 per hospitalization against a 通算50回 count ledger [S1] | `lump_claims_pp` and the count ledger are identically zero | Model points 3 and 7; point 3 pays ¥231,914.26 over the lifetime and reaches a count of 24.91 |
-| The age-basis offset: the contract ages on 満年齢 (*man-nenrei*, attained age with the fraction discarded) [S4] [S10] while 第三分野標準生命表2018 is built for 保険年齢方式 (*hoken-nenrei hōshiki*, nearest-birthday) [R5] [REG-R20], so half a year sits between the projection basis and the valuation basis | `age_basis_offset = 0` accepts the offset **[std]** | 0.5 reads the table at `age(t) + 0.5` by linear interpolation and moves the anchor's lifetime `net_cf` by +¥2,704.33 |
+| The age-basis offset: the contract ages on attained age with the fraction discarded (*man-nenrei*, 満年齢) [S4] [S10] while 第三分野標準生命表2018 is built for nearest-birthday (*hoken-nenrei hōshiki*, 保険年齢方式) [R5] [REG-R20], so half a year sits between the projection basis and the valuation basis | `age_basis_offset = 0` accepts the offset **[std]** | 0.5 reads the table at `age(t) + 0.5` by linear interpolation and moves the anchor's lifetime `net_cf` by +¥2,704.33 |
 
 `surg_after_limit` is a switch too, but it is **on** in the base run because it resolves a
 genuine **contradiction between carriers** rather than an optional feature: where surgery

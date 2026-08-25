@@ -4,9 +4,9 @@
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling. It does not describe any single insurer's product. Facts
-carrying a source tag — [S#] (primary product documents: 約款 (*yakkan*, policy conditions),
-ご契約のしおり (*go-keiyaku no shiori*, policy booklet), 契約締結前交付書面 (*keiyaku teiketsu-mae kōfu
-shomen*, pre-contract disclosure), 商品パンフレット (product brochure) and product pages) and [R#]
+carrying a source tag — [S#] (primary product documents: policy conditions (*yakkan*, 約款),
+policy booklet (*go-keiyaku no shiori*, ご契約のしおり), pre-contract disclosure (*keiyaku
+teiketsu-mae kōfu shomen*, 契約締結前交付書面), product brochure (商品パンフレット) and product pages) and [R#]
 (product-specific regulatory, statistical and actuarial references), both numbered per
 `_research/nursing-care.md` and resolved in `sources.md` (same directory; numbering frozen,
 never renumbered), and [REG-R#] (the cross-product reference library
@@ -28,24 +28,24 @@ says so rather than inferring.
 
 **This document states its deltas against
 [the medical product specification](../medical/product-spec.md), the `jplib` third-sector
-chassis.** It inherits that chassis's contract machinery — 無配当 (*mu-haitō*,
-non-participating) and 無解約返戻金型, carrying no 解約返戻金 (*kaiyaku-henreikin*, surrender value)
-at any duration; no 自動振替貸付 (*jidō furikae kashitsuke*, automatic premium loan); the
-grace/lapse/復活 sequence; the 告知 (*kokuchi*, declaration) duty; the 第三分野
-(*dai-san-bun'ya*, third-sector) reserving overlay; and the 第三分野標準生命表2018 valuation
+chassis.** It inherits that chassis's contract machinery — non-participating (*mu-haitō*,
+無配当) and 無解約返戻金型, carrying no surrender value (*kaiyaku-henreikin*, 解約返戻金)
+at any duration; no automatic premium loan (*jidō furikae kashitsuke*, 自動振替貸付); the
+grace/lapse/復活 sequence; the declaration (*kokuchi*, 告知) duty; the third-sector
+(*dai-san-bun'ya*, 第三分野) reserving overlay; and the 第三分野標準生命表2018 valuation
 mortality — and replaces its benefit structure entirely. Medical cover is **frequency ×
 severity × limit**: a daily amount multiplied by paid days, capped per hospitalization and
 again in aggregate. Nursing care is **incidence into a persistent state**: a lump sum on
 entering a defined care state, an annuity while the insured survives in it, and a premium
-waiver from a *lower* care state than either. There is no 日額 (*nichigaku*, daily amount), no
-支払限度日数 (per-event day limit), no 通算 aggregate day limit and no 181-day one-hospitalization
+waiver from a *lower* care state than either. There is no daily amount (*nichigaku*, 日額), no
+per-event day limit (支払限度日数), no 通算 aggregate day limit and no 181-day one-hospitalization
 rule anywhere in this product. What replaces them is a decrement into a state whose entry is
 certified by a municipality, not diagnosed by a physician.
 
 **And this is private cover written on top of the public scheme, not the public scheme.**
-公的介護保険 (*kōteki kaigo hoken*, the public long-term-care insurance scheme) is a compulsory
-social-insurance programme run under 介護保険法 (*Kaigo Hoken-hō*, the Long-Term Care Insurance
-Act) by municipalities; it pays for services in kind against a certification of need [R1].
+The public long-term-care insurance scheme (*kōteki kaigo hoken*, 公的介護保険) is a compulsory
+social-insurance programme run under the Long-Term Care Insurance Act (*Kaigo Hoken-hō*,
+介護保険法) by municipalities; it pays for services in kind against a certification of need [R1].
 The product specified here is a private 第三分野 insurance
 contract that pays **cash** to the insured, and it borrows the public scheme only as a
 **benefit trigger**. Nothing in this document describes an entitlement under 公的介護保険.
@@ -54,16 +54,16 @@ contract that pays **cash** to the insured, and it borrows the public scheme onl
 
 ## Product overview and market role
 
-介護保険 (*kaigo hoken*, nursing-care insurance) in its private form is 第三分野 business, the class
+Nursing-care insurance (*kaigo hoken*, 介護保険) in its private form is 第三分野 business, the class
 保険業法 第3条 makes writable under either a life or a non-life licence [REG-R1], and the 金融庁
 groups it with 医療保険 and がん保険 as the field paying "insurance money or benefits on disease or
-injury and for treatment" [R10]. The dominant design is 公的介護保険連動型 (*kōteki kaigo hoken
-rendō-gata*, public-scheme-linked): the contract's 支払事由 (payment trigger) is written by
+injury and for treatment" [R10]. The dominant design is public-scheme-linked (*kōteki kaigo
+hoken rendō-gata*, 公的介護保険連動型): the contract's payment trigger (支払事由) is written by
 reference to a grade of public certification, so the insurer outsources the adjudication of
 "is this person in a care state?" to a municipal administrative process it does not control.
 
-**The public scheme the trigger points at.** 介護保険法 第7条第1項 defines 要介護状態 (*yō-kaigo jōtai*, a
-state requiring nursing care) as a state in which, because of a physical or mental
+**The public scheme the trigger points at.** 介護保険法 第7条第1項 defines a state requiring nursing
+care (*yō-kaigo jōtai*, 要介護状態) as a state in which, because of a physical or mental
 impairment, the person is expected to require constant care for all or part of the basic
 daily-living actions — bathing, toileting, eating and the like — continuously over a period
 fixed by ministerial ordinance [R1] [REG-R42]. 要支援状態 is the parallel, milder definition for
@@ -78,8 +78,8 @@ why almost every company-basis alternative trigger in this product class is writ
 lives under 65 (see Contractual mechanics).
 
 Certification runs on seven grades — 要支援1, 要支援2 and 要介護1 through 要介護5 — and the grades are
-defined **quantitatively**, in 要介護認定等基準時間 (*yō-kaigo nintei-tō kijun jikan*, the estimated
-minutes of care per day computed by a ministry-defined method from a 74-item assessment)
+defined **quantitatively**, in the estimated minutes of care per day computed by a
+ministry-defined method from a 74-item assessment (*yō-kaigo nintei-tō kijun jikan*, 要介護認定等基準時間)
 [R2]:
 
 | Band | 要介護認定等基準時間 | Additional test |
@@ -102,7 +102,7 @@ construct incidence from 患者調査 prevalence, a Japanese nursing-care model 
 from a **national census of certified persons**, published annually by 厚生労働省 and split by
 sex, six age bands and all seven grades. At 31 March 2024 there were **about 7.08 million**
 certified persons — 6,952 thousand 第一号被保険者 and 131 thousand 第二号被保険者 — against 35,890
-thousand 第一号被保険者, an 認定率 (certification rate) of **19.4%**, up from 19.0% a year earlier and
+thousand 第一号被保険者, a certification rate (認定率) of **19.4%**, up from 19.0% a year earlier and
 from 13.9% in the scheme's first year [R4] [R5] [REG-R30]. The age gradient is the product:
 **4.3%** of the 65–74 population is certified against **31.1%** of the 75-and-over
 population [R4] [R5], and among 第一号被保険者 the counts run 200 thousand at 65–70 to 2,028
@@ -133,8 +133,8 @@ sub-shares [R4]. Utilisation, as a sanity check rather than an incidence measure
 介護保険総合データベース [R6].
 
 **Market position.** Private nursing-care cover is a growing minority line, not a saturated
-one. Among 民保加入世帯 (*minpo kanyū setai*, households insured with a private-sector life
-insurer — the survey's own base, which excludes the postal insurer), **20.1%** hold a 介護保険
+one. Among households insured with a private-sector life insurer — the survey's own base,
+which excludes the postal insurer (*minpo kanyū setai*, 民保加入世帯), **20.1%** hold a 介護保険
 or a 介護特約 (a nursing-care 特約 — *tokuyaku*, rider), up from 16.7% at the previous survey, and **7.6%** hold a 認知症保険 or 認知症特約, up from 6.6%
 [R14]. Against that, 医療保険・医療特約 stands at 95.1% and ガン保険・ガン特約 at 68.2% [R14]. The 20.1% is a
 **floor rather than a point estimate**: 31.4% of respondents answered 不明 to the nursing-care
@@ -158,18 +158,18 @@ statistic for the duration of the certified state was found in any register.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | 介護保険, 公的介護保険連動型, 無配当 and 無解約返戻金型; stand-alone 主契約 (*shu-keiyaku*, main contract) paying 介護一時金 and 介護年金, with 特約 attached | [S1] [S4] [S7] [S8] [S11] |
+| Design type | 介護保険, 公的介護保険連動型, 無配当 and 無解約返戻金型; stand-alone main contract (*shu-keiyaku*, 主契約) paying 介護一時金 and 介護年金, with 特約 attached | [S1] [S4] [S7] [S8] [S11] |
 | Regulatory class | 第三分野 (保険業法 第3条第4項第2号 / 第5項第2号) | [REG-R1] [R10] |
 | Chassis | Stand-alone third-sector cover, no death benefit and no surrender value; the accelerated-benefit whole-life chassis is out of scope | five of seven carriers [S1] [S4] [S7] [S8] [S11] against [S12]; **[std]** (1) |
-| 契約年齢 (issue age) range | 40–79 | observed 15–80; **[std]** (2) |
-| Age basis | 満年齢 (*man-nenrei*, attained age at 契約日 with the fraction discarded), incremented at each 年単位の契約応当日 | [S1] |
-| 保険期間 (policy term) | 終身 (*shūshin*, whole of life), to the terminal age of the mortality table | [S1] [S4] [S7] [S8] [S10] [S11] |
-| 保険料払込期間 (premium-paying period) | 終身払 (pay for life) | [S1] [S4] [S7] [S8] [S10] [S11] |
+| Issue age (契約年齢) range | 40–79 | observed 15–80; **[std]** (2) |
+| Age basis | Attained age at 契約日 with the fraction discarded (*man-nenrei*, 満年齢), incremented at each 年単位の契約応当日 | [S1] |
+| Policy term (保険期間) | Whole of life (*shūshin*, 終身), to the terminal age of the mortality table | [S1] [S4] [S7] [S8] [S10] [S11] |
+| Premium-paying period (保険料払込期間) | Pay for life (終身払) | [S1] [S4] [S7] [S8] [S10] [S11] |
 | Lives basis | Single life only | [S1] [S4] [S7] [S8] [S11] |
-| 死亡保険金 (death benefit) | None; the contract terminates on death with nothing payable | [S11] explicit, [S1] [S7] by absence; **[std]** (3) |
-| 介護一時金額 (lump-sum amount) menu | ¥500,000–¥3,000,000 in ¥100,000 steps; composite default **¥3,000,000** | [S1] [S8]; **[std]** (4) |
-| 基準介護年金額 (annuity base amount) menu | ¥200,000–¥1,200,000 in ¥100,000 steps; composite default **¥600,000** per year | [S1] [S6] [S7]; **[std]** (5) |
-| Underwriting | 告知扱い (written declaration), no medical examination; anyone who holds, has ever held, or has applied for a 要支援 or 要介護 certification is declined, as is anyone resident in a 高齢者向け施設 | [S1] [S7] [S11] |
+| Death benefit (死亡保険金) | None; the contract terminates on death with nothing payable | [S11] explicit, [S1] [S7] by absence; **[std]** (3) |
+| Lump-sum amount (介護一時金額) menu | ¥500,000–¥3,000,000 in ¥100,000 steps; composite default **¥3,000,000** | [S1] [S8]; **[std]** (4) |
+| Annuity base amount (基準介護年金額) menu | ¥200,000–¥1,200,000 in ¥100,000 steps; composite default **¥600,000** per year | [S1] [S6] [S7]; **[std]** (5) |
+| Underwriting | Written declaration (告知扱い), no medical examination; anyone who holds, has ever held, or has applied for a 要支援 or 要介護 certification is declined, as is anyone resident in a 高齢者向け施設 | [S1] [S7] [S11] |
 | **Anchor model cell** | Male, 契約年齢 60, 終身 / 終身払, 介護一時金 ¥3,000,000 on 要介護2以上, 介護年金 ¥600,000 per year from 要介護3以上 capped at 10 payments, 保険料払込免除 from 要介護1以上, 認知症一時金特約 off, level 月払 premium **¥11,500** | **[std]** (6) |
 
 Footnotes to [std] rows:
@@ -209,7 +209,7 @@ Footnotes to [std] rows:
    [S7]; up to ¥2,000,000 [S10]; a fixed ¥600,000 in the published rate table [S6]. The
    composite takes the union range on the ¥100,000 step, which is the majority step, and
    ¥600,000 as the default for the same reason as footnote 4.
-6. **No carrier publishes 予定発生率, 予定利率 (*yotei riritsu*, assumed interest rate) or 予定死亡率
+6. **No carrier publishes 予定発生率, assumed interest rate (*yotei riritsu*, 予定利率) or 予定死亡率
    for this product**, and the regulator
    confirms there is nothing standard to publish [R10]; the 算出方法書 is a 基礎書類 filed with the
    金融庁 and is not public [REG-R2]. The office premium is therefore a model-point input, not
@@ -230,12 +230,12 @@ Footnotes to [std] rows:
 |---|---|---|
 | Premium basis | Level 平準払 for the whole of life, 無配当 — no dividend, no premium review, no renewal repricing | [S1] [S4] [S7] [S8] |
 | Rating factors | Sex and 契約日における満年齢 only — no smoker, occupation or amount band was disclosed by any carrier | [S1] |
-| 払込回数 (frequency) | 月払 (monthly) default; 半年払 and 年払 available, with a refund of the unexpired whole months where premiums cease mid-period | [S1]; default **[std]** (7) |
-| 払込経路 (payment route) | 口座振替 or クレジットカード扱 | [S1] [S6] |
+| Frequency (払込回数) | Monthly (月払) default; 半年払 and 年払 available, with a refund of the unexpired whole months where premiums cease mid-period | [S1]; default **[std]** (7) |
+| Payment route (払込経路) | 口座振替 or クレジットカード扱 | [S1] [S6] |
 | Rate structure | Not published by any carrier; the office premium is a model-point input, backed by a **[std]** incidence basis constructed from 介護保険事業状況報告 in the technical notes | [R10]; **[std]** (8) |
 | Anchor premium | ¥11,500 per month | **[std]** (6) |
 | Sex differential | Female rates **exceed** male at every age on the lump-sum shapes, by about 1.09–1.16×; on the 終身年金 shape the female loading reaches 1.65× at age 40 and 1.79× at 69. The 要支援-level whole-life product runs the other way, female slightly below male | [S6] [S8]; counter-example [S9] |
-| 保険料払込免除 (premium waiver) | On 要介護1以上 certification (or the company-basis limb at that level), and on 高度障害状態, and on a listed 身体障害状態 reached within 180 days of an accident; waived premiums are treated as paid on each 払込期月の契約応当日 | [S1] [S2] [S8]; threshold **[std]** (9) |
+| Premium waiver (保険料払込免除) | On 要介護1以上 certification (or the company-basis limb at that level), and on 高度障害状態, and on a listed 身体障害状態 reached within 180 days of an accident; waived premiums are treated as paid on each 払込期月の契約応当日 | [S1] [S2] [S8]; threshold **[std]** (9) |
 
 7. Monthly is the dominant retail mode and the mode of every published rate table found [S6]
    [S7] [S8] [S9] [S10] [S12]; the composite standardizes on it, which is also why the model
@@ -263,16 +263,16 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 介護一時金 (*kaigo ichijikin*, care lump sum) | 介護一時金額 paid **once only** per contract, on first satisfaction of the 要介護2以上 trigger; does not terminate the contract | four of seven carriers [S1] [S4] [S7] [S12]; threshold **[std]** (10) |
-| 介護年金 (*kaigo nenkin*, care annuity) | 基準介護年金額 paid annually in advance, the first instalment on the 介護年金支払基準日 (the date the 要介護3以上 trigger was first met) and later instalments on its annual anniversaries, **at most 10 payments** | [S1] [S7] [S10]; threshold and cap **[std]** (11) |
+| Care lump sum (*kaigo ichijikin*, 介護一時金) | 介護一時金額 paid **once only** per contract, on first satisfaction of the 要介護2以上 trigger; does not terminate the contract | four of seven carriers [S1] [S4] [S7] [S12]; threshold **[std]** (10) |
+| Care annuity (*kaigo nenkin*, 介護年金) | 基準介護年金額 paid annually in advance, the first instalment on the date the 要介護3以上 trigger was first met (介護年金支払基準日) and later instalments on its annual anniversaries, **at most 10 payments** | [S1] [S7] [S10]; threshold and cap **[std]** (11) |
 | Annuity metering | **Survival-tested** — each instalment requires only that the insured be alive on the payment date; the **state-tested** variant, which additionally requires the care state to persist, is a switch | [S4] [S7] [S10] [S12] against [S1]; **[std]** (11) |
 | Unpaid lump sum at annuity start | Where the annuity triggers before the lump sum has been paid, the unpaid lump sum is paid together with the first annuity instalment | [S1] |
-| Company-basis limb — physical | 約款所定の要介護状態 (dependency in defined daily-living actions, physician-diagnosed) that has **continued 180 days or more**; available only where the insured is 満65歳未満 | [S1] [S2] [S4] [S12]; **[std]** (12) |
-| Company-basis limb — dementia | 器質性認知症 (*kishitsusei ninchishō*, organic dementia) with 見当識障害 (disorientation) in the absence of clouded consciousness, **continued 90 days or more**; 満65歳未満 only | [S1] [S2] |
+| Company-basis limb — physical | Dependency in defined daily-living actions, physician-diagnosed (約款所定の要介護状態) that has **continued 180 days or more**; available only where the insured is 満65歳未満 | [S1] [S2] [S4] [S12]; **[std]** (12) |
+| Company-basis limb — dementia | Organic dementia (*kishitsusei ninchishō*, 器質性認知症) with disorientation (見当識障害) in the absence of clouded consciousness, **continued 90 days or more**; 満65歳未満 only | [S1] [S2] |
 | Both limbs satisfied | The public-certification limb governs and its amount is paid | [S1] |
 | Waiting period | **None** on the care benefits; a 180-day 認知症診断責任開始期 applies to the dementia rider only | [S1] against [S4] [S5] [S7] [S13]; **[std]** (13) |
-| 責任開始期前 (pre-inception) rule | Nothing is paid where the certification, or the company-basis state, results from an illness contracted or an accident occurring before the 責任開始期 | [S1] [S2] |
-| 免責事由 (exclusions) | 故意 or 重大な過失 of the policyholder or the insured; the insured's 犯罪行為; 戦争その他の変乱; 薬物依存. The war exclusion is qualified — where the number of lives affected would not materially change the insurer's liability the benefit may still be paid | [S2] |
+| Pre-inception (責任開始期前) rule | Nothing is paid where the certification, or the company-basis state, results from an illness contracted or an accident occurring before the 責任開始期 | [S1] [S2] |
+| Exclusions (免責事由) | 故意 or 重大な過失 of the policyholder or the insured; the insured's 犯罪行為; 戦争その他の変乱; 薬物依存. The war exclusion is qualified — where the number of lives affected would not materially change the insurer's liability the benefit may still be paid | [S2] |
 | Other refusal grounds | Certification at 要支援1, 要支援2 or 非該当（自立）where the contractual threshold is a 要介護 band; failure to meet the 約款 definition of a company-basis state; lapse; rescission for non-disclosure or for 重大事由 | [S1] |
 | Suicide | Nothing is paid where the care state results from an intentional act of the insured; no separate 免責期間 is stated for this product | [S2]; statutory frame [REG-R34] |
 | Contract termination | On the **10th annuity payment**, effective retroactively to the date that payment's trigger was met; otherwise on death, on lapse, or on rescission | [S1]; **[std]** (14) |
@@ -346,9 +346,9 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 認知症一時金特約 (dementia lump-sum rider) | ¥1,000,000 on the first diagnosis of 約款所定の器質性認知症 after the 認知症診断責任開始期, once per contract; **10% of that amount** on the first diagnosis of 軽度認知障害 (*keido ninchi shōgai*, MCI), once and extinguishing for that benefit line; where dementia is diagnosed first with no prior MCI claim, both are paid together | [S4] [S5] [S7] [S13]; **[std]** (15) |
+| Dementia lump-sum rider (認知症一時金特約) | ¥1,000,000 on the first diagnosis of 約款所定の器質性認知症 after the 認知症診断責任開始期, once per contract; **10% of that amount** on the first diagnosis of MCI (*keido ninchi shōgai*, 軽度認知障害), once and extinguishing for that benefit line; where dementia is diagnosed first with no prior MCI claim, both are paid together | [S4] [S5] [S7] [S13]; **[std]** (15) |
 | Dementia diagnostic standard | 器質性認知症 requires an acquired organic brain lesion and a persistent, global loss of already-acquired intelligence caused by it; diagnosis must rest on cognitive testing and imaging, with a reasonable-grounds fallback where those cannot be performed. MCI is 日常生活動作は自立しているものの、認知機能が低下し、認知機能領域の障害が認められる状態 | [S2] [S4] [S5] |
-| 軽度介護一時金給付特則 (mild-care lump sum) | A lump sum at 要支援1以上 or 要支援2以上; paying it extinguishes the 特則 and stops its premium but leaves the contract in force. **Out of the base run** | [S5] [S9] [S11]; scope **[std]** (16) |
+| Mild-care lump sum (軽度介護一時金給付特則) | A lump sum at 要支援1以上 or 要支援2以上; paying it extinguishes the 特則 and stops its premium but leaves the contract in force. **Out of the base run** | [S5] [S9] [S11]; scope **[std]** (16) |
 | 新保険料払込免除特約 | Extends the waiver to a listed disease range, priced separately. Out of scope | [S5] |
 | 健康祝金特則 | 10% of the 介護年金額 every five years while no claim has been made. Out of scope | [S7] |
 | 介護保険金割増年金支払特約 | Converts a lump sum into an enhanced annuity, with a 40-or-over commencement age and the top tier reserved for 要介護4 / 要介護5. Out of scope | [S12] |
@@ -381,14 +381,14 @@ Footnotes to [std] rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | 解約返戻金 | **None at any duration** — 「この保険契約の解約払戻金はありません」 | [S1] [S2] [S7] [S8]; **[std]** (17) |
-| 配当金 (policyholder dividend) | None — the chassis is 無配当; none of the four statutory surplus-distribution methods applies | [S1] [S2] [S4]; [REG-R9] |
+| Policyholder dividend (配当金) | None — the chassis is 無配当; none of the four statutory surplus-distribution methods applies | [S1] [S2] [S4]; [REG-R9] |
 | 契約者貸付 / 自動振替貸付 | Neither is offered: there is no surrender value to lend against, so a missed premium lapses the contract | [S2]; [REG-R14]; **[std]** (17) |
-| 払込猶予期間 (grace), 月払 | From the first day of the month following the 払込期月 to the **last day of that month** | [S2] |
+| Grace (払込猶予期間), 月払 | From the first day of the month following the 払込期月 to the **last day of that month** | [S2] |
 | 払込猶予期間, 半年払・年払 | From the first day of the month following the 払込期月 to the 月単位の契約応当日 in the month after that | [S2] |
 | Claims during grace | Unpaid premiums are deducted from the benefit; where the benefit is smaller than the arrears the balance must be paid by the end of grace, failing which the contract lapses and **no benefit is paid** | [S2] |
-| 失効 (*shikkō*, lapse) | From the day after the grace period expires | [S2] |
-| 復活 (*fukkatsu*, reinstatement) | Within **1 year** of the lapse date, on fresh 告知, payment of arrears and the insurer's consent; the 復活日 is the later of the arrears payment date and the 告知日, and the 責任開始期 resets to it | [S1] [S2]; **[std]** (18) |
-| 告知義務違反 (non-disclosure) | Rescission where a material misstatement is found within **2 years** of the 責任開始日; the two-year bar does not protect the policyholder where the claim event fell inside those two years; rescission for fraud is not time-limited | [S1]; ceiling [REG-R35] |
+| Lapse (*shikkō*, 失効) | From the day after the grace period expires | [S2] |
+| Reinstatement (*fukkatsu*, 復活) | Within **1 year** of the lapse date, on fresh 告知, payment of arrears and the insurer's consent; the 復活日 is the later of the arrears payment date and the 告知日, and the 責任開始期 resets to it | [S1] [S2]; **[std]** (18) |
+| Non-disclosure (告知義務違反) | Rescission where a material misstatement is found within **2 years** of the 責任開始日; the two-year bar does not protect the policyholder where the claim event fell inside those two years; rescission for fraud is not time-limited | [S1]; ceiling [REG-R35] |
 | クーリング・オフ | 8 days from the later of the 申込日 and the 告知日, full refund; out of scope | [S1]; [REG-R36]; scope **[std]** (18) |
 | Death of the insured | Contract terminates, nothing payable | [S1] [S11]; **[std]** (3) |
 
@@ -569,7 +569,7 @@ inside the five-year statutory ceiling [REG-R35].
 
 **Out of scope:** the accelerated-benefit whole-life chassis and its 低解約返戻金型 surrender
 progression, 自動振替貸付, 延長定期保険, 払済保険 and 減額 [S12] — that machinery belongs to the
-[終身保険 product specification](../whole_life/product-spec.md) and its model
+[whole life product specification (終身保険)](../whole_life/product-spec.md) and its model
 [`WholeLife_JP_A`](../whole_life/model.md);
 介護保険金割増年金支払特約 and the 介護年金移行特約, which convert a lump sum into an enhanced annuity with 要介護4
 / 要介護5 top tiers [S12]; 軽度介護一時金給付特則 and 軽度認知障害診断一時金給付特則 as separate extinguishing benefit
@@ -663,15 +663,15 @@ is what pulls in everything below. The public 公的介護保険 scheme it links
 business at all: it is social insurance under 介護保険法, administered by municipalities [R1]
 [REG-R42].
 
-**Prudential — the third-sector reserving overlay.** 保険業法 第116条 requires a 責任準備金
-(*sekinin-junbikin*, policy reserve) at each 決算期
-and delegates the accumulation method for long-term contracts [REG-R4]; 施行規則 第68条 sets the
-scope of the resulting 標準責任準備金 [REG-R7]; 平成8年大蔵省告示第48号 fixes the method as **平準純保険料式** (net
-level premium) with the table vintages and the 標準利率 (*hyōjun riritsu*, standard valuation
-interest rate) reset machinery [REG-R10]; and for
-contracts concluded on or after 1 April 2018 the third-sector valuation mortality is
-**第三分野標準生命表2018** [REG-R11]. **The 標準利率 applicable to this product class could not be
-established from a retrieved document and is [unverified].**
+**Prudential — the third-sector reserving overlay.** 保険業法 第116条 requires a
+policy reserve (*sekinin-junbikin*, 責任準備金) at each 決算期 and delegates the
+accumulation method for long-term contracts [REG-R4]; 施行規則 第68条 sets the scope
+of the resulting 標準責任準備金 [REG-R7]; 平成8年大蔵省告示第48号 fixes the method as net level
+premium (**平準純保険料式**) with the table vintages and the standard valuation interest
+rate (*hyōjun riritsu*, 標準利率) reset machinery [REG-R10]; and for contracts
+concluded on or after 1 April 2018 the third-sector valuation mortality is
+**第三分野標準生命表2018** [REG-R11]. **The 標準利率 applicable to this product class could
+not be established from a retrieved document and is [unverified].**
 
 On top of that sits the overlay that is specific to this class and decisive for this
 product. 施行規則 第69条 divides the reserve into 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金, and requires a

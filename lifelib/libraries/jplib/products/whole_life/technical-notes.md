@@ -2,8 +2,8 @@
 
 **Status:** Draft, 2026-08-20 (all cited sources accessed 2026-08-20).
 
-**Scope note.** These notes turn the standardized composite 終身保険 (*shūshin hoken*, whole
-life assurance) of `product-spec.md` (same directory) into a reference liability cash-flow
+**Scope note.** These notes turn the standardized composite whole life assurance (*shūshin
+hoken*, 終身保険) of `product-spec.md` (same directory) into a reference liability cash-flow
 projection on paper. This is not any single insurer's product. [S#] and [R#] tags resolve
 against `sources.md`, whose numbering is carried verbatim from `_research/whole-life.md` and
 is frozen; [REG-R#] tags resolve against the cross-product reference library
@@ -16,12 +16,12 @@ specification footnote 15 defers to this document: the cash-value basis rate `i_
 acquisition-deduction rate `α`, and the reference valuation rate `i_std`. Each is **[std]**
 and each is derived, not asserted, below.
 
-This is the library's **savings chassis**. The policy value, the 解約返戻金
-(*kaiyaku-henreikin*, surrender value), the 低解約返戻金型 (*tei-kaiyaku-henreikin-gata*,
-suppressed-surrender-value) cliff and the 自動振替貸付 (*jidō furikae kashitsuke*, automatic
-premium loan, APL) are specified once, here. The
-[養老保険 technical notes](../endowment/technical-notes.md) and the
-[外貨建終身保険 technical notes](../fx_whole_life/technical-notes.md) state deltas against this
+This is the library's **savings chassis**. The policy value, the surrender value
+(*kaiyaku-henreikin*, 解約返戻金), the suppressed-surrender-value
+(*tei-kaiyaku-henreikin-gata*, 低解約返戻金型) cliff and the automatic premium loan, APL
+(*jidō furikae kashitsuke*, 自動振替貸付) are specified once, here. The
+[endowment technical notes (養老保険)](../endowment/technical-notes.md) and the
+[FX whole life technical notes (外貨建終身保険)](../fx_whole_life/technical-notes.md) state deltas against this
 file.
 
 ---
@@ -29,9 +29,9 @@ file.
 ## Model scope and conventions
 
 - **Purpose.** Project **gross best-estimate liability cash flows** per policy — premiums,
-  death and 高度障害 (*kōdo shōgai*, severe disability) claims, surrender benefits, expenses and
-  commission — for a single-policy model point, in the sense the ESR 現在推計 (*genzai suikei*,
-  current estimate) requires: probability-weighted future cash flows on assumptions re-set
+  death and severe disability (*kōdo shōgai*, 高度障害) claims, surrender benefits, expenses and
+  commission — for a single-policy model point, in the sense the ESR current estimate (*genzai
+  suikei*, 現在推計) requires: probability-weighted future cash flows on assumptions re-set
   at each 基準日, gross of reinsurance [REG-R15]. It is also what the 保険計理人's **1号収支分析**
   consumes [REG-R6] [REG-R22]. **Discounting, MOCE, required capital and every statutory
   reserve are out of scope** and are cited, not reproduced — see Valuation and reserve
@@ -40,19 +40,19 @@ file.
   (`WholeLife_JP_A`). The product has no intra-year contractual structure on the composite:
   the sum assured is level for life, the premium is level, and the only date that matters
   inside a year is the 払込満了日, which is an anniversary by construction. The composite pays
-  annually, so the 猶予期間 (grace) and the APL both operate on an annual cycle [S1] [S3] [S10].
+  annually, so the grace (猶予期間) and the APL both operate on an annual cycle [S1] [S3] [S10].
 - **Timing conventions [std].** Premium at the **start** of each policy year, in advance,
   for years 1 … m; maintenance expense and renewal commission at the start of each year;
   acquisition expense and initial commission at issue (start of year 1); death claims and
   claim expenses at the **end** of the policy year of death; surrenders at the **end** of
   the policy year, **after** deaths, valued on the surrender value at that anniversary.
-- **Age basis.** 契約年齢 is 満年齢 (*man-nenrei*, attained age) with the fractional year discarded
+- **Age basis.** 契約年齢 is attained age (*man-nenrei*, 満年齢) with the fractional year discarded
   at 契約日, incrementing on each 年単位の契約応当日 rather than on the birthday [S1] [S3] [S9]. A
   projection stepped on anniversaries therefore steps the rating age correctly by
   construction, and the attained age in year `t` is `x + t − 1` exactly — no select
   adjustment, no half-year offset. **The mortality table does not share this basis**:
-  生保標準生命表2018（死亡保険用）is built for use on a 保険年齢 (*hoken-nenrei*, nearest-birthday
-  insurance age) 方式 [REG-R20]. The
+  生保標準生命表2018（死亡保険用）is built for use on a nearest-birthday insurance age
+  (*hoken-nenrei*, 保険年齢) 方式 [REG-R20]. The
   reference implementation reads the table at the 満年齢 attained age with no adjustment
   **[std]**, because no public mapping between the two bases exists; the resulting bias
   understates mortality by up to half a year of age. On the male table half a year of age
@@ -61,7 +61,7 @@ file.
   16, where `q` is smallest and climbing steeply. Named here, not hidden.
 - **Currency.** JPY throughout. Amounts are written ¥ with thousands separators. There is no
   currency layer on this product; the
-  [外貨建終身保険](../fx_whole_life/technical-notes.md) adds one.
+  [FX whole life (外貨建終身保険)](../fx_whole_life/technical-notes.md) adds one.
 - **Model points.** Single-policy model points projected on an expected
   (probability-weighted) basis: survivorship multiplies per-policy cash flows. `point_id`
   parameterizes `Projection`; `point_id = 1` is the worked-example anchor cell. No
@@ -100,7 +100,7 @@ file.
 | `pol_loan_util` | fraction of `cv_pp` drawn as 契約者貸付 | 0.00 |
 | `dividend_type` | enum {none, five\_year} | none |
 
-There is **no 契約日 (issue date) attribute**, and that is a product fact rather than an
+There is **no issue date (契約日) attribute**, and that is a product fact rather than an
 omission: the projection runs on policy years, 契約年齢 is fixed at 契約日 and increments on the
 年単位の契約応当日 rather than the birthday [S1] [S3] [S9], and the one intra-year date that
 matters — the 払込満了日 — is an anniversary by construction. Six further model-point columns
@@ -153,7 +153,7 @@ modules are exercised in both positions in testing.
 ## Assumption inputs
 
 Three classes, kept apart on purpose. The split is not a modelling nicety here: a Japanese
-illustration must separate 保証 (guaranteed) from 非保証 (non-guaranteed) elements, because
+illustration must separate guaranteed (保証) from non-guaranteed (非保証) elements, because
 presenting a non-guaranteed element as certain is 断定的判断の提供 under 消費者契約法第4条 [REG-R38].
 
 ### (a) Contractual / guaranteed elements (cited; the insurer cannot change them)
@@ -173,7 +173,7 @@ presenting a non-guaranteed element as certain is 断定的判断の提供 under
 | 契約者貸付 limit | 9/10 of `cv_pp` while premiums are paid, 8/10 once 払込済, existing balance deducted first | [S1] [S3] [S7] |
 | Loan-excess termination | Contract lapses where loan and interest exceed the surrender value and the top-up is unpaid | [S1] [S3] [S10] |
 | 免責 — suicide | 3 years from the 責任開始期, reset on 復活 | [S1] [S3] [S7] [S8] [S9] [S10]; statutory frame [REG-R34] |
-| Refused claim | The 保険料積立金 / 責任準備金 (*sekinin-junbikin*, policy reserve) is paid to the policyholder, not nothing | [S1] [S9] [S10] |
+| Refused claim | The 保険料積立金 / policy reserve (*sekinin-junbikin*, 責任準備金) is paid to the policyholder, not nothing | [S1] [S9] [S10] |
 | 復活 window | 3 years from lapse, barred once the surrender value is claimed | [S1] [S3] [S7] [S10] |
 | Policyholder protection | 90% of the 責任準備金 on insurer failure | [REG-R40] [REG-R41] |
 
@@ -187,7 +187,7 @@ change.
 |---|---|---|
 | APL / 契約者貸付 interest `i_L` | **2.75% p.a.**, compound, held flat | level [S2]; ceilings [S1] [S7] [S10]; pick **[std]** |
 | Rate-review calendar | Reviewed each January and July at two carriers, the revision applying to existing loans; not modelled | [S7] [S11]; flat **[std]** |
-| 予定利率 (*yotei riritsu*, assumed pricing interest rate) | 1.75% p.a. — a 2010 disclosure, carried as documentation | [S11]; current value [unverified] |
+| Assumed pricing interest rate (*yotei riritsu*, 予定利率) | 1.75% p.a. — a 2010 disclosure, carried as documentation | [S11]; current value [unverified] |
 | Cash-value basis rate `i_cv` | **1.468% p.a.** — solved from the published surrender table | derived **[std]**, below |
 | Acquisition deduction `α` | **0.0090** of `SA`, grading linearly to zero at `m` | derived **[std]**, below |
 | 契約者配当 | None — the composite is 無配当. Variant: 5年ごと利差配当, off in the base run, declaring `div_spread × div_period × V(t)` at every fifth anniversary with `div_spread` = **0.25% p.a.** over `div_period` = **5** years | [S1] [S3] [S5] [S11]; variant [S7]; legal frame [REG-R9]; spread and period **[std]**, below |
@@ -359,8 +359,8 @@ They are different objects and a model that conflates them is wrong in both dire
 
 **責任準備金** is statutory. For an in-scope contract — and
 a level-premium 終身保険 with a fixed 予定利率 is in scope [R6] [REG-R7] — it is accumulated
-**平準純保険料式** (*heijun jun-hokenryō-shiki*, net level premium method), with **no Zillmer
-adjustment**, on the 標準利率 (*hyōjun riritsu*, standard valuation rate) and
+net level premium method (*heijun jun-hokenryō-shiki*, **平準純保険料式**), with **no Zillmer
+adjustment**, on the standard valuation rate (*hyōjun riritsu*, 標準利率) and
 生保標準生命表2018（死亡保険用）[R7] [R8] [REG-R10] [REG-R11]:
 
     π*        = SA × A*(x) / ä*(x, m)                     on (i_std, 標準生命表2018)
@@ -384,7 +384,7 @@ i_cv`, which is the base-run default so that the identity can be asserted),
 — the whole difference is the 解約控除, which is precisely what 平準純保険料式 forbids the reserve to
 carry [REG-R10]. **When they do not coincide the ordering can fail**: with a 標準利率 below the
 pricing basis the statutory reserve exceeds the cash value by far more than `SC(t)`, and in
-a deep 逆ざや (negative-spread) configuration the reserve can exceed even the sum assured.
+a deep negative-spread (逆ざや) configuration the reserve can exceed even the sum assured.
 `reserve_pp ≥ V ≥ CV` is therefore **not** a model invariant and must not be asserted as
 one. `reserve_pp` produces no cash flow; it exists so the identity above can be checked.
 
@@ -536,7 +536,7 @@ evidence for any of them on this product.
   value can carry the premium, so a whole-life lapse model that applies a lapse rate to
   unpaid premiums without first running the APL test is modelling a decrement the contract
   does not have.
-- **復活 (reinstatement) is not modelled [std].** Within three years of lapse, on fresh 告知 and
+- **Reinstatement (復活) is not modelled [std].** Within three years of lapse, on fresh 告知 and
   payment of arrears, a Japanese policy comes back [S1] [S3] [S7] [S10] — the composite's
   lapse is genuinely not a terminal state, unlike the UK reference set's. Treating every
   exit as terminal **understates** later-duration in force and therefore both premium income
@@ -722,8 +722,8 @@ cited, never reproduced.
 - **標準責任準備金.** 保険業法第116条 obliges the reserve and empowers the Prime Minister to prescribe
   the accumulation method and the level of the assumed coefficients for long-term contracts
   [R5] [REG-R4]. 施行規則第68条 fixes the scope — a level-premium 終身保険 with a fixed 予定利率 is in it
-  [R6] [REG-R7] — and 第69条 splits the reserve into 保険料積立金, 未経過保険料, 払戻積立金 and 危険準備金 (*kiken
-  junbikin*, contingency reserve), with 平準純保険料式 as the floor for anything out of scope [R6]
+  [R6] [REG-R7] — and 第69条 splits the reserve into 保険料積立金, 未経過保険料, 払戻積立金 and contingency
+  reserve (*kiken junbikin*, 危険準備金), with 平準純保険料式 as the floor for anything out of scope [R6]
   [REG-R8]. 平成8年大蔵省告示第48号 sets the method (平準純保険料式, **no Zillmer adjustment**), the table
   (生保標準生命表2018（死亡保険用）for contracts concluded from 1 April 2018) and the 標準利率 machinery,
   which for ordinary contracts resets off a 1 October 基準日 against the lower of the
@@ -733,7 +733,7 @@ cited, never reproduced.
   established from any retrieved official document**, and the 安全率係数 table for the annual
   case is printed as 「［表略］」 in the retrieved redline [R8] — so `i_std` is **[std]** and
   defaults to `i_cv` so that the `reserve_pp − V = SC` identity is exactly testable. 危険準備金
-  is prescribed by sub-class (保険リスク, 第三分野 (*dai-san-bun'ya*, third sector) 保険リスク,
+  is prescribed by sub-class (保険リスク, third sector (*dai-san-bun'ya*, 第三分野) 保険リスク,
   予定利率リスク, 最低保証リスク) [R6] [REG-R8] and is not
   modelled. 価格変動準備金 under 保険業法第115条 is asset-driven and out of scope entirely [REG-R3].
 - **ESR.** From **31 March 2026** insurers are supervised on 経済価値ベースのソルベンシー規制, with
@@ -748,7 +748,7 @@ cited, never reproduced.
   and a 終身保険 written today runs off over eighty years, so a re-projectable,
   assumption-parameterized liability model is the operative artefact rather than a one-off
   pricing exercise [REG-R15].
-- **The 意見書 chain.** 保険業法第121条第1項第1号 requires the 保険計理人 (appointed actuary) to confirm in
+- **The 意見書 chain.** 保険業法第121条第1項第1号 requires the appointed actuary (保険計理人) to confirm in
   an 意見書 that the reserve is soundly accumulated [REG-R6]; the IAJ 実務基準 turns that into the
   **1号収支分析**, a forward income-and-outgo analysis over at least ten future years by product
   segment under prescribed deterministic or stochastic scenarios, with sufficiency tested
