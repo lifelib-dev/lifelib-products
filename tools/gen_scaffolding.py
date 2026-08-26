@@ -82,6 +82,18 @@ TITLES = {
     ("jplib", "nursing_care"): "Nursing Care (介護保険)",
     ("jplib", "individual_annuity"): "Individual Annuity (個人年金保険)",
     ("jplib", "fx_whole_life"): "Foreign-Currency Whole Life (外貨建終身保険)",
+    # frlib.  Same arrangement as jplib: the English name leads and the French name --
+    # what the product is called, and what every document in the library uses -- follows
+    # it in parentheses.
+    ("frlib", "assurance_vie_euro"): "Euro-Fund Savings (assurance vie, fonds en euros)",
+    ("frlib", "assurance_vie_uc"): "Unit-Linked Savings (assurance vie multisupport, unités de compte)",
+    ("frlib", "eurocroissance"): "Eurocroissance",
+    ("frlib", "per_assurance"): "Retirement Savings Plan (PER assurantiel)",
+    ("frlib", "rente_viagere"): "Immediate Life Annuity (rente viagère immédiate)",
+    ("frlib", "temporaire_deces"): "Term Life (assurance temporaire décès)",
+    ("frlib", "assurance_emprunteur"): "Borrower's Protection (assurance emprunteur, ADE)",
+    ("frlib", "obseques"): "Funeral Cover (contrat obsèques)",
+    ("frlib", "dependance"): "Long-Term Care (assurance dépendance)",
 }
 
 
