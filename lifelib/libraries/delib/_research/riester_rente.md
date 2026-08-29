@@ -907,3 +907,545 @@ rather than capped [R4] [R5].
   no delib document mistakes their absence for their non-existence. Anything they would have
   supplied is `[std]` downstream.
 
+---
+
+## Extracted facts, by mechanic
+
+This is the section the `product-spec.md` and `technical-notes.md` are written from. It is long
+because it is the part of a research file that does not depend on having a PDF open: the mechanics
+of the German subsidy are statutory, stable and well documented in the profession's general
+knowledge, and they can be stated precisely even where a level cannot. **Every level that could not
+be established appears here as a `[std]` parameter with a rationale, never as a citation.**
+
+### 1. Product structure, legal form and the Schicht-2 placing
+
+- A Riester contract is an ordinary **private law contract** — an insurance contract, a fund savings
+  contract, a deposit contract or a loan — that has additionally been **certified** under the
+  AltZertG [R1] [R2]. Certification does not change the contract's legal nature. An insurance
+  Riester contract is a *Lebensversicherungsvertrag* governed by the VVG, and every VVG mechanic
+  that applies to a Schicht-3 annuity applies here too, **subject to** the AltZertG's overrides.
+- The three overrides that matter, and they are the whole product:
+  1. **Money comes in from the state** [R8] [R9], as a contribution rather than a benefit.
+  2. **A guarantee is compulsory** [R1] — the provider may not write the contract without it.
+  3. **The exit is closed** [R14] — surrender is permitted by contract law but is punished by tax
+     law severely enough to make it economically irrational in most cases.
+- **Schicht 2** in the *Alterseinkünftegesetz* taxonomy [R18]: subsidised supplementary provision,
+  relieved on the way in and taxed in full on the way out, alongside the *betriebliche
+  Altersversorgung*. Schicht 1 (*Basisrente*) is relieved more generously and is completely
+  illiquid; Schicht 3 is unrelieved and liquid. Riester sits between the two on both axes and is,
+  in the German market's own description, the layer designed for the employed household of modest
+  income with children.
+- **The subsidy is the product.** Stripped of the Zulagen and the § 10a deduction, a Riester annuity
+  is a worse Schicht-3 annuity: same chassis, more constraints, full taxation instead of the
+  *Ertragsanteil*. Every economic argument for the product runs through the subsidy, and every
+  criticism of it runs through the cost of the constraints the subsidy buys.
+- No delib document may call the product "state-guaranteed". The state pays a subsidy and certifies
+  the terms; the guarantee is the provider's own [R2].
+
+### 2. Eligibility: who can hold this contract
+
+- ***Unmittelbar zulageberechtigt*** — the eligibility that the saver holds in their own right
+  [R7]: compulsory members of the statutory pension insurance (the great majority of employees);
+  *Beamte*, judges, soldiers and equivalent office-holders, on consenting to the transmission of
+  their remuneration data; farmers in the *Alterssicherung der Landwirte*; recipients of
+  *Arbeitslosengeld*; parents credited with *Kindererziehungszeiten*, for up to three years per
+  child `[unverified]`; recipients of a full *Erwerbsminderungs-* or *Dienstunfähigkeitsrente*; and
+  *geringfügig Beschäftigte* who have waived the exemption from compulsory insurance.
+- ***Mittelbar zulageberechtigt*** — derived from a spouse or registered partner who is
+  *unmittelbar* eligible, provided the couple are not permanently separated, both are EU/EEA
+  resident, and **the derived person holds an own certified contract and pays at least the 60 €
+  *Sockelbeitrag*** [R7] [R10] [R20].
+- **Not eligible**: the self-employed who are not compulsorily insured, and members of the
+  *berufsständische Versorgungswerke* [R7]. Those groups are directed to the *Basisrente* instead —
+  which is exactly why delib carries `basisrente` as a separate product.
+- **Eligibility is annual and can change.** A saver can be *unmittelbar* eligible in one year,
+  *mittelbar* in the next and not eligible at all in a third, without the contract changing. Nothing
+  happens to the contract when eligibility lapses: contributions may continue, but they are
+  **unsubsidised** [R12] and go into the second tax pool (section 6).
+- **Consequence for the model.** Eligibility is a **model-point attribute of the saver, not of the
+  policy**, and it drives the entire Zulage stream. The reference implementation carries it as a
+  per-period flag with a `[std]` default of "*unmittelbar* eligible throughout", because the model
+  is a mechanics demonstration and a stochastic eligibility path would obscure the mechanic it is
+  demonstrating. A second model point exercising a mid-term lapse of eligibility is the honest way
+  to show that the mechanic exists.
+
+### 3. The Zulagen: amounts, entitlement and the cohort rule
+
+All amounts `[unverified]` — no search corroborated any of them; they are stated from general
+knowledge of §§ 84 and 85 EStG [R9] and are the figures a downstream document must check.
+
+| Component | Amount per year | From | Condition |
+|---|---|---|---|
+| *Grundzulage* | **175 €** | contribution year 2018 | one per eligible saver, own contract |
+| *Grundzulage*, previous level | 154 € | 2008–2017 | raised by [R21] |
+| *Grundzulage*, phase-in | 38 € / 76 € / 114 € | 2002–03 / 2004–05 / 2006–07 | [R17] |
+| *Berufseinsteiger-Bonus* | **200 €**, **once** | contribution year 2008 | *unmittelbar* eligible, under 25 at the start of the contribution year |
+| *Kinderzulage*, child born **before** 1 Jan 2008 | **185 €** | 2008 | per child, while *Kindergeld* is drawn |
+| *Kinderzulage*, child born **from** 1 Jan 2008 | **300 €** | 2008 | per child, while *Kindergeld* is drawn |
+| *Kinderzulage*, phase-in | 46 € / 92 € / 138 € | 2002–03 / 2004–05 / 2006–07 | [R17] |
+
+- **The two *Kinderzulage* rates are a permanent birth-cohort split, not a transition** [R9] [R19].
+  A household with a child born in 2006 and one born in 2009 draws 185 € and 300 € simultaneously.
+  A model that treats the *Kinderzulage* as a single rate will misprice every family model point
+  spanning the 2008 boundary, and that is a listed pitfall for the technical notes.
+- **The *Kinderzulage* is credited to the mother's contract** unless the parents jointly elect
+  otherwise `[unverified]` [R9]. In a one-contract household model this is a labelling question; in
+  a two-contract household it decides which contract's *Mindesteigenbeitrag* the Zulagen offset,
+  and therefore which contract needs how much own money.
+- **The *Kinderzulage* stops when *Kindergeld* stops** — normally at the child's 18th birthday,
+  later during education `[unverified]`. So the Zulage stream on a family contract is a **step
+  function that falls**, typically twice or three times, during a contract that runs thirty or forty
+  years. The reference implementation carries a *Kinderzulage* schedule as an external CSV column
+  per model point rather than as a scalar, for exactly this reason.
+- **The *Berufseinsteiger-Bonus* is once in a lifetime, not once per contract** `[unverified]`. A
+  saver who takes a second contract does not get a second bonus. In a per-policy model it is a
+  first-period addition to the Zulage on the anchor model point and is switched off elsewhere.
+- **The Zulage is paid to the provider and credited to the contract** [R8] [R11]. It is not paid to
+  the saver, it is not a tax refund, and it does not appear in the saver's bank statement. In the
+  model it is a **premium-equivalent inflow with a different payer**.
+
+### 4. The *Mindesteigenbeitrag*, the *Sockelbeitrag*, and what they do to the contribution
+
+The rule [R10], with the derivation set out because it is the arithmetic the model's premium cells
+implement:
+
+> *Mindesteigenbeitrag* = **min( 4 % × income of the previous calendar year , 2 100 € ) − Zulagen**,
+> floored at the *Sockelbeitrag* of **60 €**.
+
+Inputs `[unverified]` [R10]: the 4 %, the 2 100 € cap and the 60 € floor. Everything derived below
+is `[std] derived` — exact arithmetic on those inputs, shown so a reader can redo it.
+
+**The total contribution** into the contract is then `Eigenbeitrag + Zulagen`, and where the saver
+pays exactly the *Mindesteigenbeitrag* that total equals **min(4 % × income, 2 100 €)** — the
+Zulagen are a **substitute** for the saver's own money, not an addition to it. This is the single
+most misunderstood feature of the product and it must be said explicitly in the product spec: at the
+*Mindesteigenbeitrag*, **raising the Zulage does not raise the amount invested; it lowers the amount
+the saver pays.**
+
+**Worked cases** — all `[std] derived` on the [R10] and [R9] inputs, 2018-and-later rates:
+
+| Case | Prior-year income | Zulagen | 4 % of income | *Mindesteigenbeitrag* | *Eigenbeitrag* paid | Total into contract | Zulage share |
+|---|---|---|---|---|---|---|---|
+| A — single, no children | 40 000 € | 175 € | 1 600,00 € | 1 425,00 € | 1 425,00 € | 1 600,00 € | 10,94 % |
+| B — single, at the cap | 60 000 € | 175 € | 2 400,00 € → capped 2 100,00 € | 1 925,00 € | 1 925,00 € | 2 100,00 € | 8,33 % |
+| C — one child born 2010 | 30 000 € | 475 € | 1 200,00 € | 725,00 € | 725,00 € | 1 200,00 € | 39,58 % |
+| D — two children born from 2008 | 20 000 € | 775 € | 800,00 € | 25,00 € → floor **60,00 €** | 60,00 € | 835,00 € | 92,81 % |
+| E — *mittelbar* eligible spouse | n/a | 175 € | n/a | **60,00 €** | 60,00 € | 235,00 € | 74,47 % |
+
+- **Case D is the product's political case and its actuarial oddity at once.** A household paying
+  **60 €** of its own money draws **775 €** of Zulagen — a multiple of **12,92×** `[std] derived` —
+  and the contract receives 835 € a year. No other German savings product has anything like that
+  leverage, and it is the reason the product's defenders describe it as working exactly as intended
+  for its target group.
+- **The income at which the *Sockelbeitrag* stops binding** is `(60 € + Zulagen) / 4 %`
+  `[std] derived`: **5 875 €** for a childless single, **10 500 €** with one pre-2008 child,
+  **13 375 €** with one post-2008 child, and **20 875 €** with two post-2008 children. Below those
+  incomes the contribution is a flat 60 € plus the Zulagen and does not vary with income at all.
+- **The income at which the 2 100 € cap binds** is `2 100 € / 4 % = 52 500 €` `[std] derived`.
+  Above it the total contribution is frozen at 2 100 € regardless of earnings, which is why the
+  product's subsidy value falls monotonically with income once the cap is reached.
+- **Under-payment is proportional, not fatal** [R10]: pay half the *Mindesteigenbeitrag* and receive
+  half the Zulagen. A model that treats the *Mindesteigenbeitrag* as a cliff will misstate every
+  path in which the saver reduces contributions, and the German book is full of those paths
+  (section 21).
+- **The reference income is the previous calendar year's** [R10]. The Zulage entitlement for
+  contribution year `t` is a function of income in `t − 1`, and the Zulage cash itself lands in
+  `t + 1` [R11]. The model therefore carries **two distinct lags** in the subsidy chain and they are
+  a listed pitfall.
+
+### 5. The *Sonderausgabenabzug* and the *Günstigerprüfung*
+
+- Contributions **plus the Zulagen** are deductible under § 10a EStG up to **2 100 € per year**
+  `[unverified]` [R6]. The ceiling covers the two together, so a saver at the maximum contributes
+  2 100 € of which the state has supplied the Zulagen.
+- The **Günstigerprüfung** is automatic [R6]: the tax office computes the tax reduction the deduction
+  would give, compares it against the Zulagen entitlement, and applies the deduction only if it is
+  better. Where it is, the Zulagen are added back to the assessed tax so that the saver ends up with
+  the **larger** of the two benefits and not their sum `[unverified]` on the mechanism.
+- **Who gains from which route.** The Zulagen route dominates for low incomes and for households with
+  children, because a fixed euro subsidy is worth more than a percentage deduction when the marginal
+  rate is low and the Zulagen are large. The § 10a route dominates for high incomes with no children.
+  The crossover is a function of marginal rate and family composition and is **not** established
+  numerically here — see gap 5.
+- **The 2 100 € ceiling has not been raised since 2008** `[unverified]` [R6]. Over the same period the
+  contribution ceiling of the statutory pension insurance and the *Basisrente* deduction have both
+  risen substantially. That divergence is a fact about the product's decline and belongs in the
+  product spec's market-role section.
+- **A *mittelbar* eligible spouse has no § 10a deduction of their own** `[unverified]` [R6] [R7];
+  their subsidy is the Zulage alone.
+- **Consequence for the model: none directly.** The delib model publishes gross liability cash flows
+  and does not compute the saver's tax. The *Sonderausgabenabzug* matters to the model in exactly one
+  indirect way — it is part of what is repaid on *schädliche Verwendung* [R14], and therefore part of
+  the reason the modelled lapse rate for a Riester contract should be materially **below** a
+  Schicht-3 one.
+
+### 6. Contribution structure, and the two contribution pools
+
+- **Contributions are flexible in a way a Schicht-3 tariff usually is not.** The AltZertG does not
+  require a level premium; what it requires is that the guarantee cover whatever was paid [R1]. In
+  practice German Riester insurance tariffs are written with a nominal level annual or monthly
+  contribution and a wide right to vary it, because the *Mindesteigenbeitrag* itself moves every year
+  with income and family status [R10].
+- **Three contribution movements are routine and all three must be representable**: an increase to
+  restore the *Mindesteigenbeitrag* after a pay rise; a reduction to the *Sockelbeitrag*; and a
+  complete stop (*Beitragsfreistellung*), which leaves the contract in force and the guarantee
+  standing on what has been paid (section 14).
+- **The two pools.** A single Riester contract can hold **subsidised** and **unsubsidised**
+  contributions at once [R12]:
+  - *geförderte Beiträge* — own contributions up to the § 10a ceiling that attracted a Zulage or a
+    deduction, plus the Zulagen. Taxed **in full** on the way out.
+  - *ungeförderte Beiträge* — anything paid above the ceiling, or paid in a year in which the saver
+    was not eligible. Taxed on the *Ertragsanteil* (annuity) or under the § 20 rules (lump sum).
+  The provider must track the two pools and their investment return separately for the whole life of
+  the contract, and must apportion every benefit between them in the annual *Leistungsmitteilung*
+  [R12] `[unverified]`.
+- **Both pools count for the *Beitragsgarantie***. The guarantee is on the *Altersvorsorgebeiträge*
+  paid in — it does not distinguish subsidised from unsubsidised money `[unverified]` [R1]. This is
+  worth stating because it is the natural place for an implementer to go wrong.
+- **Reference implementation.** The delib model carries a **single pool** and states that it does so:
+  the anchor model point contributes at or below the ceiling throughout, so the two pools coincide.
+  A second model point with contributions above the ceiling exists to prove the split is
+  representable, and the technical notes list "collapsing the two pools" as a pitfall. This is a
+  `[std]` simplification with a stated rationale, not an omission.
+
+### 7. The AltZertG criteria, read as product constraints
+
+The § 1 criteria [R1] are the product's specification. Read as constraints on a cash-flow model,
+they are these, with every specific `[unverified]`:
+
+| Criterion | Constraint on the model |
+|---|---|
+| Payout not before age **62** (contracts from 2012; **60** before) | `Rentenbeginn` is bounded below; a model point with an earlier annuity start is not a Riester contract |
+| **Beitragserhaltungszusage** — contributions **and** Zulagen available at *Rentenbeginn* | a floor on the conversion capital: `max(Deckungskapital + Überschuss, Σ contributions + Σ Zulagen)` |
+| Benefit must be a **lifelong** annuity, **constant or rising** | no decreasing annuity, no fixed-term-only payout; a *Rentengarantiezeit* is permitted because it does not make the annuity fall |
+| Or an **Auszahlungsplan** with **Restverrentung** from age **85** | a second payout topology, used by the fund and bank chassis, not by the insurance one |
+| **Teilkapitalauszahlung ≤ 30 %** at *Rentenbeginn* | a single lump-sum election at one date, sized as a fraction of the conversion capital |
+| Acquisition costs spread over **≥ 5 years** | the charge basis cannot front-load the whole acquisition cost into year 1 |
+| **Wechselrecht** with capital transfer | a termination that pays out the **full** accumulated capital to another provider, with no subsidy consequence |
+| **Unisex** contributions | one mortality basis; no sex as a rating factor and none in the *Rentenfaktor* |
+| Risk-cover contributions capped and excluded from the guarantee | a *Berufsunfähigkeits-Zusatzversicherung* premium does not enlarge the guarantee |
+| Annual information duty | no cash-flow effect; a per-policy expense |
+
+- **Two of these are much stronger than anything in the Schicht-3 product.** The five-year cost
+  spreading is a statutory cap on *Zillmerung* aimed at this product specifically, and the
+  *Wechselrecht* is a portability right with no Schicht-3 analogue. Both are constraints on the
+  provider's economics rather than on the policyholder's, and both push a Riester tariff toward
+  lower front-end charges and a thinner acquisition margin than a comparable Schicht-3 tariff
+  `[unverified]` as a market characterisation.
+- **The 30 % *Teilkapitalauszahlung* is an election, not an entitlement to a design.** The contract
+  must permit it; the saver need not take it. In the model it is a switch on the anchor decrement,
+  and its default should be **taken**, because German market commentary consistently reports it as
+  the usual choice `[unverified]` — see gap 10, which is where that claim's lack of support is
+  recorded.
+
+### 8. The *Beitragsgarantie*
+
+- **What is guaranteed**: that at the beginning of the payout phase, the capital available for the
+  benefit is **at least the sum of the *Altersvorsorgebeiträge* paid in** — the saver's own
+  contributions **plus** the Zulagen credited [R1].
+- **What is not guaranteed, and each of these is load-bearing:**
+  - **Not the value at any other date.** The guarantee is tested **once**, at *Rentenbeginn*. Before
+    that date the contract's surrender value can be, and in the early years of a charged contract
+    usually is, **below** the contributions paid.
+  - **Not on surrender.** A saver who terminates for cash gets the *Rückkaufswert*, which the
+    guarantee does not floor, **and** loses the subsidy [R14].
+  - **Not on transfer.** A saver exercising the *Wechselrecht* transfers the capital as it stands.
+    Whether the guarantee is preserved, restarted or lost on transfer is a design question of the
+    receiving contract and is **not established** — gap 8.
+  - **Not in real terms.** It is a **nominal** guarantee. Over a thirty-year contract at even
+    moderate inflation the guaranteed floor is worth a fraction of the contributions in real terms,
+    which is the substance of the most serious criticism of the product's design.
+  - **Not the annuity.** The guarantee is on the **capital** at *Rentenbeginn*. What that capital
+    buys is a separate guarantee — the *garantierter Rentenfaktor* (section 10) — and the two are
+    frequently conflated in consumer material.
+  - **Not the risk-cover premiums.** Contributions applied to a *Berufsunfähigkeits-* or
+    survivor's-benefit rider are excluded, within a statutory share `[unverified]` [R1].
+- **Why it is compulsory.** Certification is unavailable without it [R1] [R2], and without
+  certification there is no subsidy. So the guarantee is not a competitive feature a provider may
+  drop; it is the entry ticket. That is the fact that makes the *Höchstrechnungszins* [R22] a
+  Riester-market variable rather than a pricing detail, and it is the whole content of section 19.
+- **How an insurer meets it.** In the classic chassis, by holding the *Deckungskapital* in the
+  general account and accumulating it at the guaranteed *Rechnungszins*; the guarantee then binds
+  only if the cumulative charges exceed the cumulative guaranteed interest, which at a low
+  *Rechnungszins* they easily do (section 19). In the unit-linked chassis, by a dynamic split
+  between a guarantee asset and a risk asset (section 18). In the bank chassis, trivially [S12].
+- **Modelling it.** The guarantee is a **running accumulator** on contributions and Zulagen, not a
+  discounted quantity: `G(t) = G(t−1) + Eigenbeitrag(t) + Zulage(t)`, with `G(0) = 0`. The
+  conversion capital at `Rentenbeginn` is `max(AV(T), G(T))`, and the excess of `G(T)` over `AV(T)`
+  — the *Garantielücke* — is a **cost the insurer bears out of its own funds** in that scenario. A
+  model that never exhibits a positive *Garantielücke* on any model point has not demonstrated the
+  product's defining mechanic, and the delib model point set must contain at least one point on
+  which it bites.
+
+### 9. The accumulation phase
+
+- The classic Riester chassis is the Schicht-3 chassis: the contribution less charges and less any
+  risk premium is the *Sparbeitrag*, which is credited to the *Deckungskapital* and accumulates at
+  the guaranteed *Rechnungszins*; declared *Überschussbeteiligung* is credited on top, in one of the
+  standard German surplus systems. The full recursion, the four surplus components
+  (*Zinsüberschuss*, *Risikoüberschuss*, *Kostenüberschuss*, *Schlussüberschussanteil*) and the
+  *Bewertungsreserven* participation of § 153 Abs. 3 VVG are documented in
+  `_research/klassische_rentenversicherung.md` and are **not restated here**; they are unchanged by
+  the AltZertG.
+- **What the AltZertG changes in the accumulation phase is three things and no more:**
+  1. **The Zulage arrives as an extra contribution**, in a later period than the contribution year
+     it belongs to [R11], and is charged like any other contribution unless the tariff says
+     otherwise. **Whether German Riester tariffs levy acquisition charges on the Zulagen as well as
+     on the *Eigenbeitrag* is not established** and is gap 14 — it is a material charge-base
+     question, because the Zulagen can be the majority of the contribution in the low-income cases
+     of section 4.
+  2. **The guarantee accumulator runs alongside the account value** (section 8).
+  3. **Acquisition costs must be spread over at least five years** [R1], which changes the *shape*
+     of the early-duration charge run-off relative to a Schicht-3 tariff.
+- **Surplus in the Riester chassis is doing double duty.** In a Schicht-3 contract surplus is upside.
+  Here, at a low *Rechnungszins*, surplus is the **first line of defence for the guarantee**: it is
+  what closes the *Garantielücke* before the insurer's own funds have to. That inverts the usual
+  reading of a surplus assumption — a low surplus assumption does not merely reduce the projected
+  benefit, it increases the projected guarantee cost. The technical notes must carry this as a
+  sensitivity, and it is a listed pitfall.
+- **All levels are `[std]`.** No *Rechnungszins* vintage, no *Überschuss* declaration, no charge and
+  no *Rentenfaktor* was established for any Riester tariff at any carrier (gaps 12, 13, 14).
+
+### 10. *Rentenbeginn*: conversion, *Teilkapitalauszahlung* and the *Rentenfaktor*
+
+- **The date.** Contractually fixed at inception, bounded below by the statutory age [R1] — **62**
+  for contracts concluded from 2012, **60** before `[unverified]`. German practice sets it at or near
+  the saver's statutory retirement age. Deferral is normally possible; **whether a statutory upper
+  bound applies to the start of the payout phase itself, as distinct from the age-85 bound on the
+  *Restverrentung*, was not established** — gap 10.
+- **The conversion capital** is `max(Deckungskapital + Überschussguthaben + Schlussüberschuss +
+  Bewertungsreserven-Anteil, Σ Eigenbeiträge + Σ Zulagen)` — the guarantee floor of section 8
+  applied to the sum of the account's own parts. Which of the surplus components count toward
+  satisfying the guarantee, and in particular whether a *Schlussüberschussanteil* may be used to
+  close the *Garantielücke*, is a tariff-design question that **was not established** (gap 9); the
+  reference implementation counts all of them and says so as a `[std]` convention.
+- **The *Teilkapitalauszahlung***: up to **30 %** of the conversion capital may be taken as a lump
+  sum at *Rentenbeginn* without *schädliche Verwendung* `[unverified]` [R1]. It is taxed in full
+  under § 22 Nr. 5 in the year it is paid [R12] — with **no** *Fünftelregelung*, which is available
+  only for the *Kleinbetragsrenten-Abfindung* [R15] `[unverified]`. That asymmetry is worth stating:
+  a 30 % lump sum on a large contract is taxed at the top of the saver's rate in one year, and the
+  German consumer literature accordingly treats the decision as non-obvious.
+- **The remaining 70 % must be annuitised** into a lifelong, constant-or-rising monthly *Leibrente*
+  [R1].
+- **The *Rentenfaktor*.** The conversion runs at the *garantierter Rentenfaktor* struck at inception,
+  compared at *Rentenbeginn* with the carrier's then-current factor, the **higher** of the two
+  applying. That two-factor construction is documented for the German market in
+  `_research/klassische_rentenversicherung.md` from a sibling session's searches; **it was not
+  established for any Riester tariff** and is carried here as the expected construction, `[std]` in
+  the reference implementation with that rationale (gap 9).
+- **The Riester *Rentenfaktor* is unisex from a 2006 vintage** [R23] — earlier than the Schicht-3
+  market — so a Riester factor and a same-vintage Schicht-3 factor for a male life are **not**
+  comparable. No level, at any carrier, for any year, was established; every *Rentenfaktor* in the
+  delib Riester documents is `[std]`, anchored so the worked example reproduces exactly.
+- **The mortality basis** for the annuity is the German annuitant table family — DAV 2004 R,
+  generational, in its unisex application. The tables are the property of the Deutsche
+  Aktuarvereinigung, are not public and are **not redistributed** in this library; the delib CSV is a
+  `[std]` proxy anchored to the worked example, and the model documentation says what a replacement
+  must preserve.
+
+### 11. The payout phase
+
+- **A lifelong monthly annuity**, constant or rising [R1]. The German market pays it monthly in
+  advance `[unverified]`.
+- **Surplus continues in payment.** The payout-phase surplus systems of the German market — a
+  *Gewinnrente* added to the guaranteed annuity, a *Bonusrente*, or a *flexible*/*dynamische*
+  *Überschussrente* that can fall — are the same as for a Schicht-3 annuity and are documented in
+  the sibling file. **The AltZertG's "constant or rising" requirement constrains which of them may be
+  used on a Riester contract**: a surplus system whose declared component can be reduced would make
+  the total annuity fall, so the certifiable forms are those in which the guaranteed floor never
+  decreases `[unverified]` as a legal reading. This is a genuine product difference from Schicht 3
+  and the product spec should state it.
+- **A *Rentengarantiezeit*** — a guaranteed minimum payment period — is permitted and is common.
+  Because it does not make the annuity fall, it is compatible with the AltZertG constraint; and
+  because payments in the guarantee period run to the beneficiaries rather than the estate, it is
+  the *förderunschädliche* route for a death shortly after *Rentenbeginn* [R14] (section 13).
+- **The payout-phase administration charge** is normally a percentage of each annuity payment. No
+  level was established; `[std]`.
+- **The *Auszahlungsplan mit Restverrentung*** is the alternative topology [R1]: level or rising
+  scheduled withdrawals, then a lifelong annuity bought with the remaining capital, beginning at the
+  latest from the **85th** year of life `[unverified]`. It is the fund and bank chassis's payout form
+  [S9]–[S12], not the insurance one, and the delib model does not implement it. It is described here
+  because it is the reason a Riester fund savings plan still ends in an insurance annuity: **the
+  insurance industry receives the *Restverrentung* capital of the fund industry's contracts**, which
+  is a real, if indirect, source of immediate-annuity business.
+
+### 12. *Kleinbetragsrente* and the *Abfindung*
+
+- **Trigger** [R15]: the monthly annuity that the conversion capital would buy does not exceed
+  **1 % of the monatliche Bezugsgröße** of § 18 SGB IV — a threshold in the region of **35 € to
+  38 € per month** in the mid-2020s `[unverified]`, reset annually and **not** established for any
+  specific year (gap 7).
+- **Effect**: the provider may pay the whole capital as a lump sum. This is **not** *schädliche
+  Verwendung*; the subsidy is not repaid [R15].
+- **Taxation**: full taxation under § 22 Nr. 5 [R12], but with the **Fünftelregelung** of § 34 EStG
+  since 2018 [R21], and with an election to have the payment made at the **beginning of the
+  following calendar year** `[unverified]`.
+- **It is the provider's option, not the saver's** `[unverified]` — the statute permits the payment,
+  and the contract terms decide whether the provider must, may, or will on request. **This was not
+  established** and is gap 7.
+- **Why it matters more here than the threshold suggests.** The Riester book contains a large tail of
+  small contracts: contracts taken to draw the Zulagen at the *Sockelbeitrag* (case D and case E of
+  section 4), and contracts that went *ruhend* early (section 21). On a 60 €-plus-Zulagen contract
+  run for twenty years, the accumulated capital is of the order of **10 000 € to 20 000 €**
+  `[std] derived` from the section 4 cases, which at any plausible *Rentenfaktor* produces a monthly
+  annuity in the tens of euros — squarely in *Kleinbetragsrente* territory. **A material fraction of
+  Riester contracts will therefore never pay an annuity at all.** The delib model must carry the
+  commutation as a real payout mode with its own model point, not as a footnote.
+
+### 13. Death benefits and *Hinterbliebenenschutz*
+
+- **Before *Rentenbeginn***. The contract's death benefit is normally the accumulated capital
+  `[unverified]` as a market characterisation. The subsidy treatment, not the benefit design, is
+  what is distinctive [R14]:
+  - **Transfer to a surviving spouse's own certified contract is *förderunschädlich***, subject to
+    conditions (marriage subsisting, not permanently separated) `[unverified]`. This is the route the
+    product intends.
+  - **Payment to any other heir is *schädlich***: the *Rückzahlungsbetrag* — all Zulagen and all
+    § 10a relief — is deducted before payment, and the investment return on the subsidised part
+    becomes taxable `[unverified]`.
+- **After *Rentenbeginn***. Continuation to a spouse under a survivor's-annuity option, or payments
+  for the remainder of a *Rentengarantiezeit*, are *förderunschädlich* `[unverified]`. A lump-sum
+  death benefit outside those forms is not certifiable at all [R1].
+- **Riders.** A Riester contract may carry a *Berufsunfähigkeits-Zusatzversicherung* or a survivor's
+  benefit, with the contributions applied to them capped as a share of total contributions and
+  excluded from the *Beitragsgarantie* [R1] `[unverified]`. **The cap's level was not established**
+  (gap 11).
+- **Consequence for the model**: the death benefit before *Rentenbeginn* is the account value, and
+  the *Rückzahlungsbetrag* is a **deduction from the benefit paid, not an insurer cash flow** — the
+  provider withholds it and remits it to the ZfA. A gross-liability model may publish the death
+  benefit either gross or net of the *Rückzahlungsbetrag*; the reference implementation publishes it
+  **gross** and states the convention, because the withholding is a tax collection, not a change in
+  the insurer's obligation.
+
+### 14. Options: *Anbieterwechsel*, *Beitragsfreistellung*, *Kündigung*
+
+- **Anbieterwechsel** [R1]. A statutory right: terminate, and have the accumulated capital
+  transferred directly to another certified contract. No *schädliche Verwendung*, no tax
+  consequence, the guarantee accumulator travels with the money `[unverified]` — **and it is the
+  single most important structural difference from every other product in delib.** No Schicht-3
+  German life contract carries a portability right of this kind. Its cash-flow consequence is that a
+  Riester "lapse" is frequently **not** a surrender at all but a **transfer out at full value**,
+  which for the ceding insurer is a full-value exit and for the model is a distinct decrement from
+  a surrender. **The notice period and the transfer-charge cap were not established** (gap 8).
+- **Beitragsfreistellung** — stopping contributions and leaving the contract in force. Under § 165
+  VVG the policyholder of a German life contract may convert to a paid-up contract at any time; the
+  Riester overlay is that the contract stays certified, the guarantee stands on what was paid, no
+  further Zulagen arrive, and no subsidy is repaid. **This is the German Riester book's dominant
+  exit** (section 21).
+- **Kündigung with payment of the *Rückkaufswert*** — permitted by the VVG and punished by the EStG.
+  The saver receives the surrender value **less** the *Rückzahlungsbetrag* (all Zulagen and all
+  § 10a relief), and the growth on the subsidised part becomes taxable [R14]. Against a surrender
+  value that is itself below the contributions paid in the early years, the combination makes a cash
+  surrender an economically severe act. It is the reason a Riester lapse assumption should be
+  materially **lower** than a Schicht-3 one and the reason the *ruhender Vertrag* exists as a
+  category at all.
+- **Versorgungsausgleich** on divorce — internal or external division of the contract, transfer to
+  the other spouse's certified contract, *förderunschädlich* `[unverified]` [R14].
+- **Wohn-Riester withdrawal** — a complete or partial exit into property, *förderunschädlich*, with
+  the *Wohnförderkonto* consequence (section 16) [R13].
+- **Reference implementation.** Four exits: death; transfer out (*Anbieterwechsel*) at full value;
+  *Beitragsfreistellung*, which is a change of state rather than an exit; and surrender, at a `[std]`
+  rate set low with the rationale above. Wohn-Riester withdrawal is **not** implemented and the
+  model documentation says so.
+
+### 15. Taxation
+
+- **In**: contributions relieved via the Zulagen [R9] or the § 10a deduction [R6], whichever the
+  *Günstigerprüfung* favours.
+- **Out**: **full** taxation of the benefit as *sonstige Einkünfte* under § 22 Nr. 5 EStG, to the
+  extent it derives from subsidised contributions [R12]. No *Ertragsanteil*. This is what "Schicht 2"
+  means in cash terms.
+- **The unsubsidised pool** is taxed on the *Ertragsanteil* (annuity) or under § 20 Abs. 1 Nr. 6
+  (lump sum) [R12]; the provider apportions in the annual *Leistungsmitteilung* `[unverified]`.
+- **The *Teilkapitalauszahlung*** is taxed in full in its year, with no *Fünftelregelung*
+  `[unverified]`; the *Kleinbetragsrenten-Abfindung* **does** get the *Fünftelregelung* [R15] [R21].
+- **Social insurance**: a Riester annuity from a **private** contract is not a *Versorgungsbezug* and
+  is not subject to *Krankenversicherung* contributions for a compulsorily insured pensioner; a
+  Riester annuity from a **bAV** vehicle was, and the double charge was removed by [R21]
+  `[unverified]` on both limbs. Voluntarily insured pensioners are assessed on all income
+  `[unverified]`.
+- **Means-tested basic security**: a *Freibetrag* applies so that a Riester annuity is no longer
+  offset one-for-one against *Grundsicherung im Alter* [R21] `[unverified]` on the amounts. This
+  repaired the product's sharpest design criticism — that for a low earner the subsidy could end up
+  benefiting the state rather than the saver — and it is the reason the low-income case D of
+  section 4 can be described as working.
+- **Consequence for the model: none in the cash flows.** delib publishes gross liability cash flows;
+  tax is a recipient-side matter. It is documented because the product spec must be able to say why
+  a Riester annuity of a given gross amount is not comparable with a Schicht-3 annuity of the same
+  gross amount.
+
+### 16. Wohn-Riester and the *Wohnförderkonto* — and why they are out of scope
+
+- **What it is** [R13] [R19] [S13]. Two routes into owner-occupied property: withdraw the
+  accumulated capital as an *Altersvorsorge-Eigenheimbetrag* to buy, build, repay a loan on, or
+  barrier-reduce a dwelling; or hold a certified **loan** or *Bausparvertrag* [R3] whose
+  *Tilgungsleistungen* themselves draw the Zulagen [R8].
+- **The *Wohnförderkonto*** [R13]. Because the money left the annuity, the subsidy attached to it
+  must still be taxed. Withdrawals and subsidised repayments are recorded in a **notional** account
+  accruing at a statutory **2 %** per year `[unverified]`, whose balance is taxed in the payout
+  phase either **spread annually to the year the saver reaches 85** or **in one sum with a 30 %
+  discount** `[unverified]`.
+- **Why it is excluded from the delib model, in three reasons of decreasing weight:**
+  1. **There is no cash flow.** The *Wohnförderkonto* is a tax memorandum with a notional interest
+     rate; it never holds money, never pays money, and never appears in an insurer's liability. A
+     liability cash-flow projection has nothing to project.
+  2. **The liability, where there is one, is a loan.** A Riester *Darlehen* or *Bausparvertrag* is a
+     banking liability with a repayment schedule, an interest rate and a credit exposure — a
+     different model, in a different library, if it were in scope at all.
+  3. **From the insurer's side the withdrawal is simply an exit.** An *Eigenheimbetrag* taken out of
+     a Riester **insurance** contract terminates the annuity liability at full value. The model can
+     represent that as a decrement; it cannot represent what happens to the money afterwards, and
+     pretending otherwise would be the kind of scope creep the delib brief forbids.
+- **What the delib documents must nonetheless say.** That Wohn-Riester exists, that it is a large
+  share of the Riester contract count (section 20), that a contract counted as "Riester" in an
+  official statistic may be a mortgage, and that the model's contract count is therefore **not**
+  comparable with a published Riester contract count without adjustment.
+
+### 17. The four product forms, and which one this model represents
+
+| Form | Provider | Accumulation | Guarantee met by | Payout | In delib? |
+|---|---|---|---|---|---|
+| **Klassische Riester-Rentenversicherung** | life insurer | *Deckungskapital* at the *Rechnungszins* + *Überschuss* | the general account and the guaranteed interest | lifelong annuity at a *Rentenfaktor* | **yes — `riester_rente`, `Riester_DE_A`** |
+| Fondsgebundene Riester-Rentenversicherung | life insurer | unit funds + a guarantee asset | dynamic reallocation (section 18) | lifelong annuity at a *Rentenfaktor* | no — chassis documented in `fondsgebundene_rentenversicherung` |
+| Riester-Fondssparplan | *Kapitalverwaltungsgesellschaft* [S9]–[S11] | fund units | rule-based reallocation between an equity and a bond fund | *Auszahlungsplan* + *Restverrentung* from 85 | no |
+| Riester-Banksparplan | bank / *Sparkasse* [S12] | deposit balance + bonus scale | trivially — a deposit cannot fall | *Auszahlungsplan* + *Restverrentung* from 85 | no |
+| Wohn-Riester (*Bausparvertrag*, *Darlehen*) | *Bausparkasse* / bank [S13] | savings, then a loan | n/a | property use + *Wohnförderkonto* | no (section 16) |
+
+- **The delib model represents the first row**: the classic general-account Riester annuity. The
+  reasons are three, and the product spec should give all of them. It is the form for which the
+  *Beitragsgarantie* interacts with an actuarial mechanic (the *Rechnungszins*) rather than with an
+  asset-allocation algorithm, so the guarantee's cost is **visible in the recursion** instead of
+  hidden in a rebalancing rule. It is the form whose payout is an insurance annuity throughout, so
+  the whole contract is one liability. And it is the form the GDV still maintains a 2025-vintage
+  model wording for [S2], so it is a live contract type and not a historical curiosity.
+- **What the model deliberately does not do**: no unit-linked funds, no rebalancing algorithm, no
+  *Auszahlungsplan*, no loan, no *Wohnförderkonto*. Each of those is stated in `model.md` as an
+  explicit non-implementation rather than left to be discovered.
+
+### 18. The unit-linked guarantee designs, for contrast
+
+Recorded because they are the sharpest illustration of section 19 and because a reader will ask why
+a 100 %-guaranteed unit-linked product is possible at all. All of this is `[unverified]` as a
+description of any particular product; it is the German market's generic taxonomy.
+
+- **Statisches Hybridmodell** — each contribution is split **once**, at receipt, between the
+  *Sicherungsvermögen* (which must accumulate to the guaranteed amount at *Rentenbeginn*) and a free
+  fund. The split ratio is exactly the `(1 + i)^−n` factor of section 19 and is fixed for that
+  contribution's remaining term. Simple, transparent, and maximally conservative.
+- **Dynamisches Hybridmodell (two- or three-pot)** — the split is **rebalanced periodically** between
+  the *Sicherungsvermögen*, a *Wertsicherungsfonds* and a free fund, so that a contract running ahead
+  of its guarantee can carry more risk.
+- **i-CPPI** — an individual constant-proportion portfolio insurance rule: the risk allocation is a
+  multiple of the *cushion* (the excess of the account value over the present value of the
+  guarantee), rebalanced frequently and per policy.
+- **The pathology all three share is the *cash lock***. When the account value falls to the present
+  value of the guarantee, the cushion is zero, the risk allocation is zero, and the contract is
+  locked into the guarantee asset for its remaining term — it cannot participate in a subsequent
+  recovery. The lower the *Rechnungszins* and the shorter the remaining term, the more easily this
+  happens, which is why the 0,25 % regime of 2022–2024 [R22] was as damaging to the unit-linked
+  Riester designs as to the classic ones.
+- **The classic chassis has no cash lock** because it has no risk asset at the policy level: the
+  policyholder's account is always the *Deckungskapital*, and the asset risk sits in the insurer's
+  general account under the *Überschussbeteiligung*. That is a real advantage of the form this model
+  represents and the product spec should say so.
+

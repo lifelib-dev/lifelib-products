@@ -1296,3 +1296,300 @@ Inherited wholesale from delib product 2; recorded here only as the delta.
   and are documented under delib products 5 and 6.
 - No German tax rule turns on the index mechanic itself. delib's model publishes gross cash flows and
   does not compute tax; the tax section of the product specification is context.
+
+### 19. Two worked *Indexjahre* — constructed, `[std]` throughout
+
+**The brief asked for a documented worked example of an *Indexjahr* from insurer material or the
+consumer press, with the twelve monthly index movements and the resulting credit. None was located**
+— see gap 4 and [S10]. The two examples below are therefore **constructed by this author** to
+exhibit the mechanic exactly, and every number in them is `[std]`. They are not evidence about any
+carrier or any year. They are, however, arithmetically exact, and they are the pattern the delib
+worked example and its tests should follow.
+
+Common assumptions, all `[std]`: participating capital at the start of the *Indexjahr*
+`G = 50,000.00 €`; monthly Cap `C = 3.00 %`; declared surplus rate (option budget) `b = 2.50 %`;
+guaranteed rate `i_g = 1.00 %`; *Partizipationsquote* variant `q = 60 %`.
+
+**Example A — a strong year. The cap costs 4,20 points and the year still credits well.**
+
+| Month | Index return `r_m` (%) | Capped `x_m = min(r_m, 3.00)` (%) | Given away (%) |
+|---|---|---|---|
+| 1 | 1.80 | 1.80 | 0.00 |
+| 2 | -2.40 | -2.40 | 0.00 |
+| 3 | 4.60 | 3.00 | 1.60 |
+| 4 | 0.90 | 0.90 | 0.00 |
+| 5 | -3.70 | -3.70 | 0.00 |
+| 6 | 2.20 | 2.20 | 0.00 |
+| 7 | 3.40 | 3.00 | 0.40 |
+| 8 | -1.10 | -1.10 | 0.00 |
+| 9 | 0.40 | 0.40 | 0.00 |
+| 10 | 5.20 | 3.00 | 2.20 |
+| 11 | -0.80 | -0.80 | 0.00 |
+| 12 | 2.60 | 2.60 | 0.00 |
+| **Sum** | **13.10** | **8.90** | **4.20** |
+
+- Sum of capped monthly returns `S = +8.90 %`; positive, so `Indexrendite = 8.90 %`.
+- ***Indexgutschrift* = 8.90 % x 50,000.00 = 4,450.00 €**, credited and locked in.
+- Cross-checks a reader can do with a calculator:
+  - the **compounded** index return over the year is `prod(1 + r_m) - 1 = +13.4548 %`, against the
+    **sum** of `+13.10 %` — the two differ by 0.35 points, which is the compounding effect the
+    contractual formula does not give;
+  - the cap bound in exactly three months and cost **4.20 points**, which is `13.10 - 8.90`;
+  - the *sichere Verzinsung* arm would have credited `b x G = 2.50 % x 50,000.00 = 1,250.00 €`. The
+    index arm therefore paid **3.56 times** the safe arm in this year;
+  - the *Partizipationsquote* variant would have credited
+    `max(60 % x 13.4548 %, 0) x 50,000.00 = 4,036.44 €` — **less** than the cap variant here,
+    because the cap variant's give-up was concentrated in three months.
+
+**Example B — the case the product is criticised for. The index rises 6,44 % and the credit is zero.**
+
+| Month | Index return `r_m` (%) | Capped `x_m = min(r_m, 3.00)` (%) | Given away (%) |
+|---|---|---|---|
+| 1 | 6.50 | 3.00 | 3.50 |
+| 2 | -2.10 | -2.10 | 0.00 |
+| 3 | 5.80 | 3.00 | 2.80 |
+| 4 | -1.90 | -1.90 | 0.00 |
+| 5 | -2.40 | -2.40 | 0.00 |
+| 6 | 4.20 | 3.00 | 1.20 |
+| 7 | -3.10 | -3.10 | 0.00 |
+| 8 | 0.60 | 0.60 | 0.00 |
+| 9 | -2.80 | -2.80 | 0.00 |
+| 10 | 5.10 | 3.00 | 2.10 |
+| 11 | -1.70 | -1.70 | 0.00 |
+| 12 | -1.20 | -1.20 | 0.00 |
+| **Sum** | **7.00** | **-2.60** | **9.60** |
+
+- Sum of capped monthly returns `S = -2.60 %`; negative, so `Indexrendite = max(-2.60 %, 0) = 0`.
+- ***Indexgutschrift* = 0.00 €.** Nothing is credited, nothing is lost, the capital is untouched, and
+  the year's surplus of 1,250.00 € has been spent on options that expired worthless.
+- Cross-checks:
+  - the **compounded index return for the year was `+6.4402 %`** and the sum of raw monthly returns
+    was `+7.00 %` — **the index rose, and the credit was zero**;
+  - the cap bound in four months and cost **9.60 points**, which is `7.00 - (-2.60)`;
+  - the *sichere Verzinsung* arm would have credited **1,250.00 €**;
+  - the *Partizipationsquote* variant would have credited
+    `max(60 % x 6.4402 %, 0) x 50,000.00 = 1,932.06 €` — **more than the safe arm and infinitely more
+    than the cap variant**, which is the cleanest possible demonstration that the two designs are not
+    interchangeable.
+- **This example is the delib pitfall test.** An implementation that floors each month at zero, or
+  that compounds rather than sums, or that applies the floor to the compounded return rather than to
+  the sum of capped returns, will credit something here. The correct answer is zero, and a test must
+  assert it.
+
+**The two years together.** Over the two *Indexjahre*, on an unchanged base of 50,000.00 € for
+clarity, the index arm credits `4,450.00 + 0.00 = 4,450.00 €`; the safe arm credits
+`1,250.00 + 1,281.25 = 2,531.25 €` (the second year's 2,50 % struck on 51,250.00 €). The index arm
+wins over these two constructed years by **1,918.75 €**, and it does so entirely on the strength of
+one year in three-and-a-half-times territory while losing the other outright. That shape — a
+minority of large years carrying a majority of zero years — is the product's real return
+distribution, and section 20 puts a number on it.
+
+### 20. What the cap costs — an expected-value calculation, `[std]` throughout
+
+The single most useful thing this file can supply downstream, given that no market cap level or
+outcome distribution could be established, is the arithmetic that turns an assumed volatility and an
+assumed cap into an expected credit. It is elementary and it is decisive.
+
+**Assumptions, all `[std]`, and all of them exposed as parameters in the delib technical notes**:
+monthly index returns independent and normally distributed; monthly mean `mu = 0.60 %` (an
+arithmetic 7,2 % per year, a plausible real-world equity drift on a price index); monthly standard
+deviation `sigma = 5.00 %` (an annualised 17,3 %, ordinary for a broad European equity index);
+monthly Cap `C = 3.00 %`.
+
+**Step 1 — what one month gives away.** With `d = (C - mu) / sigma = 0.48`:
+
+```
+E[ max(r - C, 0) ]  =  sigma x phi(d)  -  (C - mu) x (1 - Phi(d))
+                    =  5.00 x 0.35551  -  2.40 x 0.31561
+                    =  1.7776 - 0.7575  =  1.0201 %
+```
+
+**Step 2 — what one month is worth after the cap.**
+
+```
+E[ min(r, C) ]  =  mu - E[ max(r - C, 0) ]  =  0.60 - 1.02  =  -0.42 % per month
+```
+
+**Read that line twice.** With a 3 % monthly cap and a 17 % index, **the expected value of a capped
+month is negative**, because the cap removes more expected return than the month has. The
+policyholder's expected sum over the year is `12 x (-0.42) = -5.04 %`.
+
+**Step 3 — what the annual floor is worth.** The floor is the only reason the product has a positive
+expectation at all. With `Var[min(r, C)] = 13.62` per month and independence, `S` has mean `-5.04 %`
+and standard deviation `sqrt(12 x 13.62) = 12.79 %`, and
+
+```
+E[ max(S, 0) ]  =  mu_S x Phi(mu_S / sigma_S)  +  sigma_S x phi(mu_S / sigma_S)
+                =  -5.04 x 0.3467  +  12.79 x 0.36912
+                =  -1.747 + 4.719  =  2.97 % per year
+
+P( S <= 0 )     =  Phi( 5.04 / 12.79 )  =  0.65
+```
+
+**The three numbers to carry downstream**, all `[std]` and all conditional on the assumptions above:
+
+| Quantity | Value | Meaning |
+|---|---|---|
+| Expected annual credit | about 2.97 % | what the index arm is worth per year |
+| Probability of a zero year | about 65 % | roughly two years in three credit nothing |
+| The safe arm | 2.50 % | what the same surplus credits with certainty |
+
+- **The index arm's expected credit exceeds the safe arm's by a modest margin and does so with a very
+  high probability of zero.** That is the product's true risk-return profile under these assumptions,
+  and it is very far from how it is normally described. The excess over the safe arm is not free
+  money: it is the **equity risk premium earned on the option package's delta**, and it is the only
+  economic reason the index arm can be worth more than the safe arm at all (section 3).
+- **A consistency check the delib technical notes must run, and which is instructive because it
+  fails at these numbers.** Repeating the calculation under a risk-neutral drift on a price index —
+  drift `r - q`, with a 2,5 % risk-free rate and a 3 % dividend yield, so `mu = -0.04 %` per month —
+  gives an option-package value of the order of **1,7 % of `G`**. That is **below** the assumed
+  option budget of 2,5 %, which means the assumed pair (`C = 3,0 %`, `b = 2,5 %`) is **not mutually
+  consistent**: at that volatility, a 2,5 % budget would buy a cap somewhat **above** 3,0 %.
+- **The instruction that follows is the important one.** A delib model must **calibrate the Cap to
+  the option budget**, not choose the two independently, or it will publish a product that is either
+  free money or a swindle depending on which way the inconsistency falls. The technical notes are
+  required to state the calibration explicitly, to run it, and to report the calibrated cap beside
+  the `[std]` 3,0 % headline.
+- **Sensitivity, which is the real point**: the expected credit is extremely sensitive to the assumed
+  volatility, because volatility enters twice — it makes the cap bind more often (lowering the
+  expectation) and it makes the floor worth more (raising it). At a 5 % annualised volatility, the
+  low-volatility house-index case of section 9, the same cap almost never binds and the payoff
+  approaches the index return; at 25 % the expected credit is dominated by the floor. **Any single
+  expected-return number quoted for this product without its volatility assumption is meaningless**,
+  and that is worth saying in the product specification.
+
+### 21. Criticism of the product
+
+Recorded as arguments, with their strength assessed, because no consumer test or academic paper was
+retrieved and none is cited.
+
+1. **The cap's effect on the expected credit is large and is not disclosed in a form a purchaser can
+   use.** Section 20 quantifies it: at ordinary equity volatility a 3 % monthly cap can make a
+   capped month's expected value negative, and the product's positive expectation then rests
+   entirely on the annual floor. The purchaser is told the cap, is not told the volatility, and is
+   in no position to do this calculation. **This is the strongest criticism of the product and it is
+   structural, not a matter of any carrier's conduct.**
+2. **Negative months are uncapped and this is genuinely counter-intuitive.** A symmetric-sounding
+   description — "you get the index's monthly moves, up to 3 % a month" — conceals that the
+   asymmetry runs entirely one way. Example B in section 19 is the demonstration: the index rose
+   6,44 % and the credit was zero. **This is the feature most often misdescribed in secondary
+   material**, including by intermediaries.
+3. **The comparison with a direct index investment is unfavourable on every axis except the
+   guarantee and the tax deferral.** A direct holding of a total-return index fund receives the
+   dividends (some 3 % per year on euro-area equity, `[unverified]`), has no cap, no participation
+   rate, no annual reset and charges of a few basis points. The Indexpolice gives up the dividends
+   (section 9), gives up the tail of every good month, adds acquisition and administration costs
+   (section 13), and possibly adds an index-level fee that is not disclosed. **What it gives back is
+   real**: the capital cannot fall, credits are locked in permanently, the guarantee is the
+   insurer's, and the accumulation is tax-deferred inside the wrapper with a favourable treatment on
+   exit [R14]. A fair statement puts both sides, and the delib product specification is required to.
+4. **The Cap is redetermined annually at the insurer's discretion.** The purchaser signs a contract
+   whose economic terms for year 12 are unknown at inception and will be set by the counterparty.
+   § 315 BGB [R22] constrains that discretion in principle; **no decided case tests it** (gap 16),
+   and no carrier is established as guaranteeing a *Mindest-Cap* (gap 10).
+5. **The move to house indices moved the give-up out of sight** (section 9): a participation rate
+   near 100 % on a volatility-targeted excess-return index with an embedded fee is not obviously a
+   better deal than 55 % of the EURO STOXX 50, and it is much harder to evaluate.
+6. **Complexity as a defect in itself.** A retail savings product whose payoff requires the reader to
+   understand a strip of capped monthly returns, an annual floor, an option budget financed by a
+   discretionary surplus declaration and an annual election, is a product most purchasers cannot
+   evaluate. That is a conduct-supervision concern in the terms of BaFin's value-for-money framing
+   [R16][R17], and it is the reason this product, more than any other in delib, deserves a
+   mechanically exact reference implementation.
+7. **The counter-argument, stated fairly.** The relevant comparison for most purchasers is not with
+   an index fund but with the *sichere Verzinsung* arm of the same contract — the classic annuity
+   they would otherwise have bought. Against that benchmark the index arm has a higher expected
+   value (section 20), cannot do worse than zero in any year, and costs nothing extra. On that
+   comparison the product is defensible, and the annual *Wahlrecht* means the purchaser can retreat
+   to the benchmark at any anniversary.
+
+### 22. Typical parameter levels
+
+**Every level in this section is `[unverified]` or `[std]`. Not one was established from a
+document.** The `[std]` column is what the delib reference implementation uses; the range column is
+this author's assessment of the plausible market band and is itself `[unverified]`.
+
+| Parameter | `[std]` for delib | Plausible market range | Basis for the choice |
+|---|---|---|---|
+| Monthly Cap | 3.00 % | 1.5 % – 5.0 % | midpoint of the band; must be calibrated to the budget (section 20) |
+| *Partizipationsquote*, equity price index | 60 % | 50 % – 80 % | midpoint; variant design only |
+| *Partizipationsquote*, house multi-asset index | 100 % | 80 % – 120 % | the design's selling point (section 9) |
+| Declared surplus rate = option budget `b` | 2.50 % | 2.0 % – 3.0 % | consistent with the 2026 declared rates recorded at [R20] |
+| Guaranteed rate `i_g` | 1.00 % | 0.25 % – 1.00 % by cohort | the *Höchstrechnungszins* for 2025–2026 [R7][R18] |
+| *Garantieniveau* (*Beitragsgarantie*) | 90 % of *Beitragssumme* | 60 %, 80 %, 90 %, 100 % | section 11; 100 % is statutory for *Riester* [R12] |
+| Index volatility (annualised) | 17.3 % | 15 % – 22 % equity; 5 % – 8 % house index | section 9 and section 20 |
+| Dividend yield forgone (price index) | 3.0 % | 2.5 % – 3.5 % | euro-area equity; section 9 |
+| *Beitrag* | 200.00 € per month | 50 € – 1,000 € | a plausible mass-market monthly savings premium |
+| *Eintrittsalter* | 40 | 25 – 55 | mid-career, the segment this product is sold into |
+| *Rentenbeginn* | 67 | 62 – 70 | the German statutory retirement age; 62 is the tax boundary [R14] |
+| *Aufschubdauer* | 27 years | 12 – 40 years | 12 is the tax minimum [R14]; 27 follows from 40 to 67 |
+| *Rentenfaktor*, guaranteed | 25.00 € per 10,000 € per month | not established | inherited `[std]` from delib product 2 |
+| *Abschlusskosten* | 2.5 % of *Beitragssumme* | ceiling 25 ‰ [R7] | at the *Höchstzillmersatz* |
+| *Verwaltungskosten* | 3 % of premium + 0.25 % of reserve p.a. | not established | inherited `[std]` from delib products 1 and 2 |
+| *Ratenzahlungszuschlag* | 5 % monthly | 2 % / 3 % / 5 % | market convention `[unverified]` |
+| *Stornoabzug* | 2 % of *Deckungskapital* | 0 % – 20 % | inherited `[std]`; observed range at [R2] discussion |
+| *Stornoquote* | 3 % per year, level | 1.2 % – 2.7 % market-wide | inherited `[std]`; no index-specific rate exists |
+| *Wahlrecht* election `w` | 1.00 (full index) every year | 0.00 – 1.00 | the product exists to demonstrate the index arm |
+
+- **The one parameter that cannot be chosen freely is the Cap**, because it is determined by the
+  budget (sections 3, 8 and 20). delib's 3,00 % is the headline; the calibrated value is what the
+  model must actually use, and the technical notes must publish both.
+- **The *Eintrittsalter*, the *Beitrag* and the term are pure `[std] `construction.** No
+  *Produktinformationsblatt* was located [S3][S11] and therefore no commercial envelope was
+  established. Gap 5.
+
+### 23. Market context
+
+- **No figure for the size of the German index-participation segment exists in this file, and this
+  author does not believe a published one exists at all**, because GDV's product statistics count
+  these contracts within conventional annuity business, which is what they are [R15][R19]. Gap 8.
+- What can be said qualitatively, and is not in doubt: the product family emerged in the second half
+  of the 2000s, grew through the low-interest decade as the guaranteed component of a conventional
+  contract shrank towards nothing [R7], became a standard offering across the large and mid-sized
+  carriers, and was one of the main vehicles of the ***Neue Klassik*** generation of designs that
+  replaced the annually-accruing guarantee with a *Rentenbeginn* guarantee [S6].
+- **The rise in interest rates from 2022 and the *Höchstrechnungszins* increase to 1,00 % for 2025
+  changed the product's relative position** [R7][R18]: a larger guaranteed component makes the safe
+  arm of the *Wahlrecht* more attractive and reduces the pressure that created the product. Whether
+  index tariffs have lost share as a result **is not established** `[unverified]`.
+- **Carrier inventory.** This author can name, with moderate confidence and tagged `[unverified]`,
+  three carriers and product names in this family — **Allianz IndexSelect** [S2], **R+V-IndexInvest**
+  [S7] and **Stuttgarter index-safe** [S8] — and is confident, without being able to name products,
+  that the family extends across much of the large and mid-sized German market. **The rest of the
+  carrier inventory the brief asked for could not be assembled**, and inventing product names would
+  have been worse than admitting it. Gap 2.
+
+### 24. What a projection model needs, and what this file supplies
+
+| The model needs | Status | Where it comes from |
+|---|---|---|
+| Contract chassis (premium, reserve, death benefit, surrender, paid-up, annuitisation) | established | delib product 2, inherited unchanged |
+| The payoff formula `max(sum of min(r_m, C), 0) x G` | **established**, structurally certain | section 5 |
+| The annual lock-in and the guarantee architecture | **established** | sections 6, 11 |
+| The financing identity between surplus and option budget | **established** | section 3 |
+| The annual *Wahlrecht* as a policyholder election | **established** as a mechanic | section 4 |
+| The Cap level | **not established** — `[std]` 3,00 %, band 1,5–5,0 % | sections 8, 22 |
+| The declared surplus rate | **not established** — `[std]` 2,50 % | sections 3, 22 |
+| The *Garantieniveau* | **not established** — `[std]` 90 % | sections 11, 22 |
+| The base `G` of the participation | **not established** — `[std]` whole capital at year start | section 5 |
+| The mid-year exit treatment | **not established** — `[std]` no credit in the year of exit | sections 5, 14 |
+| Charges, lapse rates, entry age, premium, term | **not established** — all `[std]` | sections 13, 17, 22 |
+| A real *Indexjahr* to reproduce | **not established** — constructed | section 19 |
+
+**The design recommendation this research leads to, and the reason it is defensible under these
+retrieval conditions.** Because no real *Indexjahr* could be obtained, the delib model should not
+model the index credit as an assumed rate. It should **implement the contractual formula literally,
+against an explicit table of monthly index returns supplied as an external CSV** beside the model,
+one row per projection year and twelve columns of monthly returns, with the `provenance` column
+recording the path as `[std]`. The annual-step model then reads twelve monthly returns per year,
+caps each at `C`, sums them, floors at zero, and credits. That way:
+
+- the mechanic — the thing this product **is** — is reproduced exactly rather than approximated;
+- the worked example of section 19 becomes the model's anchor cell and is asserted cell by cell;
+- the pitfall in Example B (index up, credit zero) becomes a test rather than a remark;
+- every unestablished level stays a visible `[std]` parameter rather than being buried in an assumed
+  credit rate;
+- and the volatility sensitivity of section 20 is demonstrable by swapping the CSV.
+
+This is the strongest thing a research file written with no research channel can hand downstream: not
+a set of numbers it could not obtain, but the exact arithmetic the numbers would have gone into.

@@ -1253,3 +1253,520 @@ Two escalations, on different quantities, at different times, and routinely conf
   require a ban-incidence assumption that no public source supplies.
 
 ---
+
+### 15. The BUZ form, and the Basisrente-BUZ
+
+- A **BUZ** is the same BU liability written as a rider [S2]. The rider premium is quoted separately
+  inside the host contract's premium, the *Beitragsbefreiung* covers the whole package, and the
+  rider cannot outlive the host.
+- **Inside a *Rentenversicherung* or *Kapitallebensversicherung* (Schicht 3)** the tax treatment is
+  the same as an SBU's (section 24) and the rider is bought for the *Beitragsbefreiung* on the
+  savings premium.
+- **Inside a *Basisrente* (Schicht 1)** the economics change entirely. The whole premium — savings
+  plus BU — is deductible as an *Altersvorsorgeaufwendung*, provided the BU component satisfies the
+  conditions of [R28]: the BU benefit must be an **annuity**, must not run beyond the host
+  contract's deferment, and must account for **no more than 49 % of the total premium**
+  `[unverified]`. In exchange the *BU-Rente* is taxed **in full** at the cohort *Besteuerungsanteil*
+  rather than at the small *Ertragsanteil* of an SBU.
+- **The trade is not obviously favourable.** A buyer in a high marginal bracket while working and a
+  low one while disabled gains; a buyer whose *BU-Rente* would be her only income and would push her
+  through the basic allowance may lose. The 49 % rule also forces a large savings premium alongside
+  the BU cover, so the *Basisrente*-BUZ is a poor vehicle for someone who wants BU cover alone. This
+  is why the **standalone SBU remains the dominant retail form** and is delib's product 9
+  `[unverified]` as to the market split between SBU and BUZ (gap 3).
+
+### 16. Underwriting — Berufsgruppen
+
+- **Occupation is the dominant rating factor**, ahead of age and far ahead of anything else. That
+  follows directly from the definition: the insured event is inability to do **this** job, so a job
+  with high physical demands both raises the incidence and lowers the threshold at which 50 % is
+  reached.
+- **Classification.** Each insurer maintains a *Berufsgruppenverzeichnis* mapping named occupations
+  to rating classes [S6]. The number of classes varies by carrier — **four to six** is the common
+  range, with some carriers running ten or more and the direct writers running as few as three
+  `[unverified]`. The classes are not comparable across carriers: an occupation in class 2 at one
+  insurer may be class 3 at another, which is precisely why the market's comparison portals exist.
+- **The shape of the classification**, stated qualitatively because no list could be sourced:
+  academic and pure office occupations at the top; qualified commercial and technical occupations
+  next; skilled trades with light physical content; skilled manual trades; heavy manual, hazardous
+  and outdoor occupations at the bottom. Some occupations — roofers, scaffolders, some care roles,
+  professional drivers, some artistic professions — are **declined outright** by many carriers, or
+  offered only with a *Karenzzeit*, a reduced *Endalter* or a limited *Leistungsdauer*.
+- **The price ratio between a *Bürotätigkeit* and a *Handwerker* tariff** is the number the brief
+  asks for. The recalled market range for the same age, *BU-Rente* and *Endalter* is
+  **about 2× to 4×**, with a central value near **3×** for a mainstream skilled trade against a
+  pure office occupation, and **4× to 6×** for the heaviest insurable trades `[unverified]`
+  throughout. **delib adopts a `[std]` occupational factor set anchored at 1.00 for the reference
+  office class**, with the reference manual class at **3.00**, and states in `product-spec.md` that
+  the ratio is a `[std]` construction inside an argued 2×–4× range and not a sourced figure.
+- **Academic status and qualification** move the classification independently of the job title: the
+  same technical role is priced better for a graduate engineer than for a technician, on the theory
+  that the graduate's *Verweisung* possibilities and job content are more office-like `[unverified]`.
+- **Students and pupils** are insurable and are classified by the occupation they are training for,
+  or by a special student class; this is the market's principal argument for buying young.
+- **Model consequence.** The *Berufsgruppe* enters delib as a **multiplicative factor on the
+  inception rate and hence on the premium**, not as a different table. That is how German pricing
+  works — one base table, occupational loadings — and it keeps the model's data file to a single
+  inception curve plus a small factor table, each row carrying its `provenance` tag as delib's
+  ruling 2 requires.
+
+### 17. Underwriting — Gesundheitsprüfung, Risikozuschläge, Ausschlüsse, Angemessenheitsgrenze
+
+- **Health questions.** The application asks about treatments, complaints, diagnoses and
+  hospitalisations over defined look-back windows, recalled as **five years for outpatient treatment
+  and ten years for inpatient treatment and psychotherapy** `[unverified]`, together with height and
+  weight, current complaints, planned treatments, tobacco use, and existing or refused disability
+  cover. **Psychiatric and musculoskeletal history are the two areas that most often produce a
+  loading, an exclusion or a decline** — which is exactly where the claims come from (section 26).
+- **Medical examination** is required above sum and age thresholds; the recalled threshold for a
+  medical report is an insured annual *BU-Rente* of the order of **€18 000–€30 000** `[unverified]`.
+  Below it, underwriting is on the questionnaire alone.
+- **Outcomes**, in the order the market uses them: acceptance at the *Normaltarif*; acceptance with
+  a ***Risikozuschlag*** — a percentage loading on the premium, recalled as commonly **25 % to
+  100 %** and occasionally more `[unverified]`; acceptance with an ***Ausschlussklausel*** excluding
+  BU caused by a named condition or body region (spine, knee, psyche are the classic three);
+  *Zurückstellung* pending the outcome of a treatment; and *Ablehnung*.
+- **The proportion of BU applications not accepted on standard terms is high** — an order of
+  magnitude of **a quarter to a third** is recalled `[unverified]` — and it is the reason the
+  ***Risikovoranfrage*** exists: an anonymised pre-enquiry, made through a broker, so that a decline
+  is never recorded against the applicant in the industry's *Hinweis- und Informationssystem* (HIS)
+  and does not have to be disclosed to the next insurer [R7] [S16].
+- ***Vorvertragliche Anzeigepflicht*.** Incomplete health answers are the commonest reason a
+  technically valid BU claim fails, because the *Leistungsprüfung* routinely obtains the insured's
+  full medical history [R7] [R21]. The insurer's remedies lapse after five years, ten in cases of
+  intent or fraud `[unverified]`.
+- ***Angemessenheitsgrenze*.** Insurers cap the insurable *BU-Rente* at a fraction of income —
+  recalled as **60 % to 70 % of gross** or **around 80 % of net** `[unverified]` — to preserve the
+  incentive to return to work. The cap is applied at inception and again on every
+  *Nachversicherungsgarantie* exercise. **Model consequence**: it bounds the sum insured but does not
+  enter the cash-flow recursion; delib records it as an issue rule.
+- **Smoker status** is a rating factor in *Risikolebensversicherung* but is **not** systematically
+  one in BU `[unverified]`; where it appears, its effect is much smaller than the occupational
+  factor.
+
+### 18. Premium — Bruttobeitrag, Zahlbeitrag and the Beitragsverrechnung
+
+**This is the mechanic a German BU model must get right, and it has no counterpart in the US, UK or
+French products in this repository.**
+
+- A German BU tariff is quoted as **two numbers**:
+  - the ***Bruttobeitrag*** (*Tarifbeitrag*) — the premium computed on first-order bases, and the
+    **contractually guaranteed maximum**. The insurer may never charge more than this;
+  - the ***Zahlbeitrag*** (*Nettobeitrag*) — what the policyholder actually pays, after the
+    anticipated *Überschussbeteiligung* has been applied in advance as a reduction of the premium.
+- **The mechanism is *Beitragsverrechnung***, the standard *Überschussverwendung* in German
+  biometric business: the surplus a contract is expected to generate — overwhelmingly **risk
+  surplus**, because the first-order *Invalidisierungswahrscheinlichkeiten* are deliberately prudent,
+  plus **expense surplus** — is credited immediately against the premium instead of being
+  accumulated [R10] [R14].
+- **The gap is large.** The recalled market range for the *Zahlbeitrag* as a fraction of the
+  *Bruttobeitrag* is **50 % to 80 %**, most commonly **60 % to 75 %** `[unverified]`. delib adopts
+  a `[std]` ratio of **0.70**, i.e. a *Zahlbeitrag* equal to 70 % of the *Bruttobeitrag*, as the
+  midpoint of the recalled common range, and states it as a construction.
+- **The gap is also a risk to the buyer, and this is the point.** If the insurer's risk experience
+  deteriorates or its expense surplus falls, it may reduce the *Beitragsverrechnung* and raise the
+  *Zahlbeitrag* — **up to the *Bruttobeitrag* and no further**. A buyer who chose a tariff on its
+  *Zahlbeitrag* alone can face a premium increase of 40 % or more with no change in cover and no
+  right to complain. This is why consumer advice tells buyers to compare *Bruttobeiträge* [S16] and
+  why the ratings score the stability of an insurer's *Beitragsverrechnung* [R22] [R23].
+- **Alternative *Überschussverwendungen*** exist and appear in some tariffs: a ***Bonusrente***, in
+  which the surplus buys additional *BU-Rente* rather than cutting the premium; ***verzinsliche
+  Ansammlung***; and an ***Überschussrente im Leistungsfall***, in which the surplus is paid out as
+  an increment to the annuity while a claim runs. `[unverified]` as to their market shares.
+  *Beitragsverrechnung* is the dominant form and is what delib models.
+- **Model consequence and the delib choice.** delib projects **both** premium streams. The
+  *Bruttobeitrag* is the contractual quantity; the *Zahlbeitrag* is what is collected; and the
+  difference **is** the modelled *Überschussbeteiligung*. There is no separate surplus account, no
+  RfB and no declaration mechanic in this product's model — a deliberate simplification, correct for
+  BU precisely because the surplus is applied immediately rather than accumulated, and stated as
+  such in `technical-notes.md`. A model that projects only the *Zahlbeitrag* silently assumes the
+  *Beitragsverrechnung* never changes; a model that projects only the *Bruttobeitrag* overstates
+  income by about 43 %.
+- **Premium payment.** Monthly by SEPA direct debit is the retail norm; quarterly, half-yearly and
+  annual are offered. A ***Ratenzahlungszuschlag*** loads the non-annual frequencies — the German
+  market convention is recalled as **2 % half-yearly, 3 % quarterly, 5 % monthly** `[unverified]`,
+  and delib carries those as `[std]` values. Premiums are payable throughout the
+  *Beitragszahlungsdauer*, which for BU equals the *Versicherungsdauer* (there is no shorter
+  premium-paying option in the standard product), and stop on death, lapse, or the start of the
+  *Beitragsbefreiung*.
+- ***Stundung* and *Anwartschaft*.** Most tariffs allow the premium to be deferred or the contract
+  put into a dormant *Anwartschaft* for defined interruptions — parental leave, unemployment,
+  further study — preserving insurability without full cover `[unverified]`. Not modelled by delib;
+  named in the product specification as an unmodelled feature.
+
+### 19. Charges
+
+**No German insurer publishes the charge structure of a BU tariff, and there is no *Effektivkosten*
+disclosure for a pure risk product** [R12] (section S14). Everything in this section is `[std]` or
+`[unverified]`, and the product's `technical-notes.md` says so in the same words.
+
+- ***Abschluss- und Vertriebskosten*** — acquisition and distribution costs, financed by
+  *Zillmerung* into the *Deckungsrückstellung* and capped at the *Höchstzillmersatz* of **25 ‰ of
+  the *Beitragssumme*** [R13] `[unverified]`. For a BU contract the *Beitragssumme* is large — a
+  37-year term at a monthly *Bruttobeitrag* of €100 is €44 400 — so the zillmered allowance is large
+  in absolute terms even though the annual premium is modest. delib's `[std]` acquisition-cost
+  assumption is set **at the cap**, because that is where German level-premium risk business
+  generally sits and because a cap is at least a sourced ceiling.
+- ***Verwaltungskosten*** — administration, modelled as a percentage of the *Bruttobeitrag* plus a
+  per-policy amount. Both `[std]`; delib uses a percentage-of-premium *beta* loading and a flat
+  annual *gamma* per policy, with the levels chosen so that the worked example reproduces exactly
+  and stated as constructions.
+- ***Leistungsbearbeitungskosten*** — **claims-handling costs, which are a genuinely material and
+  BU-specific charge**. A BU claim is expensive to assess (medical reports, occupational analysis,
+  sometimes litigation) and expensive to maintain (annual *Nachprüfung*). delib carries a `[std]`
+  one-off claim-assessment cost at inception of a claim and a `[std]` recurring cost per month in
+  payment, and names them as the charge a modeller coming from a term-life product will forget.
+- ***Ratenzahlungszuschlag*** — section 18.
+- **No premium tax** [R31] `[unverified]`.
+
+### 20. Rechnungsgrundlagen and the multi-state structure
+
+- **Three biometric bases are needed**, and the market's first-order set is the DAV 1997 family
+  [R16]:
+  1. ***Invalidisierungswahrscheinlichkeit*** *i(x)* — active life aged *x* becomes *berufsunfähig*
+     within the year. Rises steeply with age: the curve is roughly flat and low to about 30, rises
+     through the forties, and accelerates sharply from the mid-fifties. This is why the *Endalter*
+     is the dominant premium lever (section 8).
+  2. ***Reaktivierungswahrscheinlichkeit*** *r(x, s)* — disabled life recovers, depending on **age
+     at disablement** *x* and **duration since disablement** *s*. Concentrated in the first one to
+     two years; near zero after about five (section 6).
+  3. ***Sterbewahrscheinlichkeit der Invaliden*** *q^i(x, s)* — mortality of disabled lives,
+     materially above active mortality and itself select on duration.
+  Plus **active-lives mortality** *q^a(x)* from a *Todesfall*-character table [R17], and a
+  **lapse rate**.
+- **All are unisex for pricing** [R15], whatever the underlying research bases are.
+- **None is public.** delib ships `[std]` proxies with a `provenance` column on every row (ruling 2)
+  and states in `model.md` what a replacement built from the real DAV tables must preserve: the age
+  shape of *i(x)*, the duration shape of *r*, and the excess of *q^i* over *q^a*.
+- **Lapse.** German BU lapse rates are lower than for savings contracts — the cover is hard to
+  replace once health has changed, which is a powerful anti-lapse force and a selective one, because
+  the lives who lapse are disproportionately the healthy ones. delib uses a `[std]` *Stornoquote*
+  falling with duration, on the order of **4 % a year in the first two years falling to 2 %**
+  `[std]`, with the selection effect **not** modelled and named as a model risk.
+- **The state space.** Four states — *aktiv* (paying premium, exposed to inception, death and
+  lapse), *leistungspflichtig* (receiving *BU-Rente*, premium-free, exposed to reactivation and to
+  disabled mortality), *tot*, *storniert* — with a transition back from *leistungspflichtig* to
+  *aktiv*. Monthly grid (`BU_DE_S`), premiums and annuity both monthly in advance, and the
+  three-month run-off of § 174 [R3] attached to every reactivation.
+
+### 21. Deckungsrückstellung, Rückkaufswert and Beitragsfreistellung
+
+- **The reserve is real.** A level-premium BU contract to 67 overcharges heavily in the early years
+  relative to *i(x)*, and the excess accumulates as *Deckungsrückstellung*. This is the *provision
+  pour risques croissants* problem in German dress, and it makes BU a much better mechanics
+  demonstration than a term-life contract.
+- **Two reserves, not one.** A BU book carries (a) a *Deckungsrückstellung* for **active** lives —
+  the prospective difference between future benefits and future premiums — and (b) a
+  ***Leistungsrückstellung* / *Deckungsrückstellung für laufende Renten*** for **claims in payment**,
+  which is the present value of the remaining annuity on disabled-lives bases. The second is much
+  the larger per life. delib publishes **undiscounted gross cash flows only** and does not compute
+  either; both are named as valuation pointers in `technical-notes.md`.
+- ***Rückkaufswert*** — payable under § 169 VVG through § 176 [R5] [R9]. It exists and is not
+  nominal, but it is small relative to premiums paid, is depressed by *Zillmerung* in the early
+  years, and may be reduced by a contractual, quantified *Stornoabzug*. Some BU wordings state that
+  the contract has no or only a minimal surrender value in the first years `[unverified]`.
+- ***Beitragsfreistellung*** — § 165 VVG through § 176 [R8]. Produces a *beitragsfreie BU-Rente*,
+  a small fraction of the original. It is the policyholder's alternative to surrendering when the
+  premium becomes unaffordable and is the option consumer advice recommends over lapse [S16].
+- **delib models neither surrender nor paid-up as a cash flow.** Lapse removes the policy from the
+  in-force count and pays nothing, which is the correct treatment for a gross benefit-and-premium
+  cash-flow projection and is stated as a scope limitation rather than left to be discovered.
+
+### 22. Exclusions
+
+- The German BU exclusion list is short by international standards and is broadly uniform
+  `[unverified]` as to any particular carrier's list:
+  - BU caused by **war or internal unrest**, with a carve-out where the insured is passively caught
+    up in it;
+  - BU caused by the **deliberate execution or attempted execution of a crime** by the insured;
+  - BU caused by the insured's **intentional self-harm**, subject to the *Selbsttötung* rule of
+    § 161 VVG through § 176 [R5] [R11];
+  - BU caused by **nuclear energy**;
+  - in some wordings, BU arising from **aviation other than as a passenger** and from defined
+    hazardous activities, or an increased premium for them.
+- **What is notably *not* excluded**: illness of any kind, including psychiatric illness — which is
+  the largest single cause of BU (section 26) — and ordinary accidents. Attempts to exclude
+  psychiatric causes exist at the margin of the market as a cheaper "BU ohne Psyche" variant
+  `[unverified]`; consumer advice is uniformly against them, since excluding the largest cause
+  removes about a third of the cover.
+- Individual ***Ausschlussklauseln*** imposed at underwriting (section 17) sit alongside the
+  general list and are contract-specific.
+- **Model consequence.** Exclusions are absorbed into the calibration of *i(x)*, not modelled
+  separately.
+
+---
+
+### 23. Taxation
+
+- **Premium, standalone SBU (Schicht 3).** A *sonstige Vorsorgeaufwendung* under
+  § 10 Abs. 1 Nr. 3a EStG [R27], deductible only within an annual ceiling recalled as **€1 900**
+  (employees, civil servants) / **€2 800** (self-employed) `[unverified]`. That ceiling is in
+  practice already consumed by statutory health and long-term-care contributions, so **the effective
+  deduction for most buyers is nil**. This is a real product fact, not a technicality: it is the
+  main reason the *Basisrente*-BUZ exists.
+- **Benefit, standalone SBU.** The *BU-Rente* is an *abgekürzte Leibrente* taxed on its
+  ***Ertragsanteil*** under § 22 Nr. 1 EStG [R27]. The *Ertragsanteil* is read from a table keyed on
+  the annuity's **remaining term at the start of payment**, not on the recipient's age. Recalled
+  values `[unverified]` throughout: about **5 %** for a 5-year remaining term, **12 %** for 10 years,
+  **16 %** for 15, **21 %** for 20, **26 %** for 25 and **30 %** for 30. A €1 500 monthly *BU-Rente*
+  starting at 45 and running to 67 (22 years) therefore brings roughly €4 000 a year into taxable
+  income out of €18 000 received — a light burden, and the compensation for the non-deductible
+  premium.
+- **Benefit, BUZ inside a *Basisrente* (Schicht 1).** Fully taxable as *sonstige Einkünfte* at the
+  cohort ***Besteuerungsanteil***, against a fully deductible premium [R27] [R28] (section 15).
+- **No premium tax** [R31] `[unverified]`.
+- **Model consequence.** delib projects **gross, pre-tax** cash flows in every product. Taxation is
+  described in `product-spec.md` and does not enter the model. It is recorded here at length because
+  it is the reason two economically identical contracts are sold in two different wrappers.
+
+### 24. The gesetzliche Erwerbsminderungsrente underneath
+
+The German private BU contract is designed as a top-up on a statutory benefit that deliberately does
+not cover occupational disability. The design only makes sense against that background.
+
+- **There is no statutory occupational-disability pension for anyone born on or after 2 January
+  1961** [R25] `[unverified]` on the date. The statutory *Berufsunfähigkeitsrente* was closed to
+  later cohorts by the 2001 reform; § 240 SGB VI preserves it only for the older ones.
+- **What remains is the *Erwerbsminderungsrente*** [R24], in two tiers, both tested against the
+  **general labour market** and measured in **hours a day**, not against the insured's own
+  occupation:
+  - ***Volle Erwerbsminderung*** — able to work **less than three hours** a day;
+  - ***Teilweise Erwerbsminderung*** — able to work **at least three but less than six hours** a day;
+    the benefit is about **half** the full one.
+  Both need the five-year *Wartezeit* and three years of compulsory contributions in the last five
+  `[unverified]`.
+- **Why it is not a substitute for BU**, in three points, each of which the private product answers:
+  1. **The test is the general labour market, not the last occupation.** A surgeon who loses the use
+     of a hand cannot operate but can answer a telephone for six hours a day. She is fully
+     *berufsunfähig* and not at all *erwerbsgemindert*.
+  2. **The threshold is far higher.** BU bites at 50 % of one's own job; full EM needs a capacity
+     below three hours a day in **any** work.
+  3. **The level is low.** Recalled averages `[unverified]`: a new *volle Erwerbsminderungsrente* of
+     roughly **€1 000 a month gross** before deductions, and a *teilweise* one of roughly half that;
+     against a replacement need normally put at 70–80 % of net income. The *Zurechnungszeit*
+     extension of recent reforms raised the level; *Abschläge* of up to **10.8 %** for early receipt
+     reduce it `[unverified]`.
+  4. The self-employed are frequently **not insured in the statutory scheme at all**, so for them
+     the statutory floor is zero and BU is the whole cover.
+- **Model consequence: none.** The statutory pension is not offset against the *BU-Rente* in the
+  standard German contract — the *BU-Rente* is paid **in addition**, not as a top-up computed after
+  the statutory benefit. Products that do offset exist at the margin `[unverified]` and are not
+  modelled. This section exists to justify the product's market role, not to enter the recursion.
+
+### 25. Statistics — causes, average benefit, age at claim, Anerkennungsquote
+
+**Every figure in this section is `[unverified]`.** None was corroborated by any search or any
+document, and the year each belongs to is itself uncertain. They are recorded so that a later
+researcher knows the shape to expect and the publisher to check against; **no delib document should
+print any of them without re-establishing it** from [R21], [R22], [R20] or [R26].
+
+- **Causes of BU.** The usual publisher is Morgen & Morgen, annually [R22]. The recalled
+  distribution, for a recent year in the **2023–2024** range `[unverified]`:
+
+| Cause group | Recalled share | Tag |
+|---|---|---|
+| *Nervenkrankheiten*, including psychiatric conditions | about 33 % | `[unverified]` |
+| *Erkrankungen des Skelett- und Bewegungsapparates* | about 20 % | `[unverified]` |
+| *Krebs und andere bösartige Geschwülste* | about 18 % | `[unverified]` |
+| *Sonstige Erkrankungen* | about 15 % | `[unverified]` |
+| *Unfälle* | about 7 % | `[unverified]` |
+| *Erkrankungen des Herzens und des Gefäßsystems* | about 7 % | `[unverified]` |
+
+  The **direction of travel** is better established than the levels and is worth stating on its own:
+  the psychiatric share has risen substantially over the last two decades, from roughly a quarter to
+  roughly a third, while the musculoskeletal share has fallen `[unverified]`. **Accidents are a
+  small minority — under a tenth** — which is the single most useful number in the table, because it
+  is the answer to the buyer who thinks an *Unfallversicherung* is a substitute.
+- **Average insured *BU-Rente*.** Recalled at roughly **€1 000–€1 200 a month** in new business
+  `[unverified]`, against a recommended level of 70–80 % of net income — i.e. the market is
+  systematically underinsured relative to its own advice.
+- **Average age at claim.** Recalled in the range **47 to 52** `[unverified]`. The distribution is
+  strongly skewed to the last decade before the *Endalter*, which is the actuarial content of
+  section 8.
+- ***Anerkennungsquote*.** The usual publisher is **Franke und Bornberg**, in its recurring
+  *BU-Leistungspraxis* study [R21]; the GDV has more recently published an industry figure [R20].
+  The recalled level is **about 75 % to 80 %** of decided claims accepted `[unverified]`. Recalled
+  composition of the declines `[unverified]`: roughly half fail because the **BU degree of 50 % is
+  not reached**; a smaller share fail on ***Anzeigepflichtverletzung*** or *Anfechtung*; the rest on
+  failure to co-operate or withdrawal of the claim. **Litigation follows only a small minority of
+  declines.**
+- **Model consequence.** The *Anerkennungsquote* enters delib as a `[std]` **acceptance factor on
+  the inception rate**, set at **0.80**, with the observed uncertainty recorded. It is applied to
+  the transition, not to the benefit, because a declined claim generates no annuity at all. The
+  causes distribution does not enter the model; it enters `product-spec.md` as the justification for
+  refusing to model an accident-only variant.
+
+### 26. Typical parameter levels
+
+All levels `[unverified]` unless marked `[std]`; ranges are the author's recollection of the German
+retail market and must be re-established before use.
+
+| Parameter | Typical level | Recalled range | Tag |
+|---|---|---|---|
+| *BU-Rente* | €1 500 per month | €1 000 – €2 000; higher for high earners | `[unverified]` |
+| *Endalter* (cover and benefit) | 67 | 60, 62, 63, 65, 67 | `[unverified]` |
+| Entry age | 25 – 35 | 15 (pupils) – 50 | `[unverified]` |
+| Term | 32 – 42 years | anything to the *Endalter* | derived |
+| *Karenzzeit* | 0 months | 0, 3, 6, 12, 18, 24 | `[unverified]` |
+| *Leistungsdynamik* | 2 % a year | 1 % – 3 % | `[std]` level |
+| *Beitragsdynamik* | 3 % or 5 % a year, or none | 1 % – 10 % | `[unverified]` |
+| *Zahlbeitrag* / *Bruttobeitrag* | 0.70 | 0.50 – 0.80 | `[std]` level |
+| *Berufsgruppen* per carrier | 4 – 6 | 3 – 10+ | `[unverified]` |
+| Manual : office premium ratio | 3× | 2× – 4×, up to 6× for the heaviest | `[std]` level |
+| *Angemessenheitsgrenze* | 60 – 70 % of gross income | — | `[unverified]` |
+| *Ratenzahlungszuschlag* | 5 % monthly, 3 % quarterly, 2 % half-yearly | — | `[std]` |
+
+- **Price points the brief asks for.** For a **BU-Rente of €1 500 a month to age 67, entry age 30**,
+  the recalled *Zahlbeitrag* is of the order of **€55 – €90 a month for a pure office occupation**
+  and **€160 – €300 a month for a mainstream skilled manual trade** `[unverified]` on both. The
+  corresponding *Bruttobeiträge* are those figures divided by the *Beitragsverrechnung* ratio, i.e.
+  roughly **€80 – €130** and **€230 – €430**. **These are recollections, not quotations**, and they
+  are the single most likely figures in this file to be materially wrong; they belong to gap 11.
+- **delib's anchor model point** (`[std]` throughout, and the choices are argued in
+  `product-spec.md`): entry age **30**, occupational class **office (factor 1.00)**, *BU-Rente*
+  **€1 500 a month**, *Endalter* **67**, *Karenzzeit* **0**, *Leistungsdynamik* **2 %**, no
+  *Beitragsdynamik*, monthly premium, *Zahlbeitrag* = 0.70 × *Bruttobeitrag*. Chosen because it is
+  the market's central sale, because a 37-year term exercises the full inception curve, and because
+  an office class keeps the premium in a range a reader can sanity-check.
+
+---
+
+## Observed variation across insurers
+
+**An honest variations table here is mostly a record of what could not be compared.** No insurer
+document was retrieved and no search corroborated any carrier-level parameter, so the table below
+records, per feature, **what the German market does** and **where the genuine variation lies** —
+not who sits where. Attributing a parameter to a named carrier would require a document this file
+does not have.
+
+| Feature | Market position | Where carriers genuinely differ | Tag |
+|---|---|---|---|
+| BU definition (50 %, six months, last occupation) | uniform, descended from the GDV model text | almost nowhere | [S1] [R1] |
+| *Abstrakte Verweisung* | waived by essentially all current tariffs | legacy books only | [S1]–[S12] |
+| *Konkrete Verweisung* | retained | whether it is waived on a material income drop; the *Lebensstellung* threshold | [S1] `[unverified]` |
+| *Prognosezeitraum* | 6 months | a minority shorten it to 3 | `[unverified]` |
+| Retroactive payment from onset | market standard | weaker wordings pay from the end of the six months | `[unverified]` |
+| *Befristetes Anerkenntnis* | permitted once, § 173 | maximum length (6 or 12 months); some waive it entirely | [R2] `[unverified]` |
+| *Nachprüfung* frequency | annual or biennial | some waive it after a stated benefit duration | `[unverified]` |
+| Three-month run-off | statutory floor, § 174 | some contract for longer | [R3] |
+| *Karenzzeit* menu | 0 as standard | 0/3/6/12/18/24 offered | `[unverified]` |
+| *Endalter* menu | 65 or 67 | 60/62/63 as budget options | `[unverified]` |
+| *AU-Klausel* | the principal differentiator | present or absent; 18/24/36-month cap or unlimited; set-off rules | `[unverified]` |
+| *Nachversicherungsgarantie* | present everywhere | event list breadth, per-event and aggregate caps, event-independent windows | `[unverified]` |
+| *Leistungsdynamik* | offered everywhere | 1–3 % fixed or index-linked | `[unverified]` |
+| *Wiedereingliederungshilfe* | common | 3 to 12 monthly *Renten* | `[unverified]` |
+| *Infektionsklausel* | standard for medical occupations | scope of occupations covered | [R30] `[unverified]` |
+| *Berufsgruppen* | 4–6 typical | 3 at direct writers to 10+ at specialists; and which occupations are declined | `[unverified]` |
+| *Zahlbeitrag* / *Bruttobeitrag* | 0.50 – 0.80 | the widest and least transparent variation in the product | `[unverified]` |
+| Channel | broker vs direct vs bank/*Öffentliche* | option breadth and occupational appetite track the channel, not the carrier | [S12] |
+
+**Representative design the research supports.** A **single-life, individual, standalone SBU**;
+monthly grid; the market-standard definition — **last occupation, 50 %, six-month prognosis with the
+six-month fiction, *abstrakte Verweisung* waived, *konkrete Verweisung* retained**; a **level
+*Bruttobeitrag*** guaranteed for the term with a ***Zahlbeitrag* of 0.70 × *Bruttobeitrag*** `[std]`
+representing the *Beitragsverrechnung*, so that the *Brutto*/*Zahl* gap **is** the modelled
+*Überschussbeteiligung* and no surplus account is needed; a monthly ***BU-Rente*** paid in advance
+from onset with **no *Karenzzeit*** and a ***Leistungsdynamik* of 2 %** `[std]`; full
+***Beitragsbefreiung*** while in claim; benefit ending at **age 67**, on death, or on a
+***Nachprüfung*** termination followed by the **statutory three-month run-off**; *Reaktivierung*
+returning the life to the premium-paying state with a `[std]` ***Wiedereingliederungshilfe* of six
+monthly Renten**; an ***Anerkennungsquote* acceptance factor of 0.80** `[std]` on the inception
+rate; occupational rating as a **multiplicative factor, 1.00 for office and 3.00 for the reference
+manual class** `[std]`; and **no surrender or paid-up cash flow modelled**. The options the corpus
+describes but cannot quantify — *Nachversicherungsgarantie*, *Beitragsdynamik*, *AU-Klausel*,
+*Verlängerungsoption*, *Infektionsklausel* — are specified in `product-spec.md` and shipped **off**,
+which is the honest treatment of an option whose take-up and anti-selection loading no source
+supplies.
+
+---
+
+## Gaps and caveats
+
+1. **Nothing was retrieved and nothing was searched.** This file has no primary evidence of any
+   kind. Every `[S#]` and `[R#]` is a pointer to a document that exists and is the right kind of
+   document; none is a record of a document read. That is stated at the head of the file and it
+   qualifies every line of it.
+
+2. **No insurer *Bedingungswerk* was opened, so no carrier-level parameter is attributed.** The
+   variations table above records market positions, not carriers. Sixteen named German life
+   insurers write this product [S3]–[S12]; the file names them and attributes nothing to them.
+
+3. **The SBU / BUZ market split is unknown.** Whether the standalone or the rider form dominates
+   German new business, and by how much, is not established [R20]. delib's choice of the standalone
+   form as product 9 rests on the argument in section 15, not on a market-share figure.
+
+4. **No *Produktinformationsblatt* was retrieved, so no *Brutto*/*Zahlbeitrag* pair is sourced.**
+   The PIB [S13] is the one public document that routinely prints both figures for a named age,
+   occupation and *BU-Rente*. Without one, the 0.70 ratio in section 18 is `[std]` and the recalled
+   0.50–0.80 range is `[unverified]`. **This is the most consequential single gap in the file**,
+   because the ratio drives the modelled premium income directly.
+
+5. **No rate card of any kind was obtained.** No German BU tariff table, no occupational factor set,
+   no age curve. Every premium level in section 26 is a recollection. Contrast frlib's
+   `temporaire_deces`, where one carrier published a complete attained-age grid and the model
+   reproduces it exactly; **delib's BU model can reproduce nothing external** and its worked example
+   is internally consistent only.
+
+6. **No history of *Zahlbeitrag* increases was established.** The risk that an insurer reduces its
+   *Beitragsverrechnung* and raises the premium toward the *Bruttobeitrag* is the product's main
+   consumer risk (section 18), and its empirical frequency and size are unknown [R23].
+
+7. **The DAV 1997 tables are not public and were not seen.** delib ships `[std]` proxies for
+   *i(x)*, *r(x, s)* and *q^i(x, s)* [R16]. Their **shapes** are asserted from general actuarial
+   knowledge — steeply rising inception, front-loaded reactivation, disabled mortality above active
+   — and their **levels** are constructions anchored so the worked example reproduces exactly.
+
+8. **The DAV table names may be wrong.** This file states that the reactivation probabilities sit in
+   a table recalled as **DAV 1997 RI** and that **DAV 1997 TI** is disabled-lives mortality,
+   correcting the brief that commissioned it. That correction is itself `[unverified]` [R16]. Anyone
+   citing a DAV table name in a delib document must confirm it first.
+
+9. **Whether a successor to DAV 1997 I exists is unresolved.** No newer homologated German BU
+   first-order table could be established [R16] [R18]. The file treats DAV 1997 I as current and
+   flags the question rather than answering it.
+
+10. **The statutory text was not read, so every paragraph number is `[unverified]`.** §§ 172–177 VVG
+    are cited throughout on the author's recollection [R1]–[R6]. The two specific items most at risk
+    are the **exact range of sections § 176 imports** — on which the surrender value, the paid-up
+    right and the *Überschussbeteiligung* all depend — and the **precise wording of § 173 Abs. 2**
+    on the *befristetes Anerkenntnis*.
+
+11. **The price points in section 26 are the least reliable numbers in the file.** The recalled
+    €55–€90 (office) and €160–€300 (manual) monthly *Zahlbeiträge* at age 30 for €1 500 to 67 are
+    recollections of consumer-press figures, with no year attached and no source [S15]. Treat them
+    as order-of-magnitude only.
+
+12. **The *AU-Klausel*'s effect on inception is unquantified.** No public source gives the uplift in
+    claim frequency a six-month *Arbeitsunfähigkeit* trigger produces (section 11), so delib ships
+    the clause off and leaves the uplift as an unset model-point parameter rather than inventing one.
+
+13. **The statistics in section 25 carry no confirmed year.** The causes distribution, the average
+    *BU-Rente*, the average age at claim and the *Anerkennungsquote* are all recalled without a
+    verified vintage [R20]–[R22]. The house rule that every figure carries its year is satisfied only
+    by the honest answer here: **the year is not established**, and the figures are tagged
+    accordingly rather than given a plausible-looking date.
+
+14. **The *Erwerbsminderungsrente* levels are recalled, not sourced** [R26]. The €1 000-a-month
+    order of magnitude for a new *volle* pension, the half-of-that for the *teilweise*, the 10.8 %
+    *Abschlag* and the 2 January 1961 cohort boundary all need re-establishing before any delib
+    document prints them.
+
+15. **Tax figures are recalled.** The €1 900 / €2 800 *Vorsorgeaufwendungen* ceilings, the
+    *Ertragsanteil* table and the 49 % *Basisrente* threshold are all `[unverified]` [R27] [R28].
+    delib projects pre-tax cash flows, so nothing in the model depends on them, but nothing in
+    `product-spec.md` should assert them either.
+
+16. **Charges are entirely `[std]`.** No German insurer discloses BU acquisition, administration or
+    claims-handling costs, and a pure risk product carries no *Effektivkosten* disclosure [R12]. The
+    25 ‰ *Höchstzillmersatz* [R13] is the only sourced ceiling in the whole charge structure, and it
+    is `[unverified]` as to its own figure.
+
+17. **Lapse selection is not modelled.** BU lapse is strongly selective — the healthy leave, the
+    impaired cannot — and delib's `[std]` *Stornoquote* ignores that, understating the average
+    inception rate of the surviving book. Named as a model risk in `technical-notes.md` rather than
+    corrected, because correcting it needs an assumption no source supplies.
+
+18. **Living texts.** The VVG, SGB VI, EStG, DeckRV, MindZV, VAG and IfSG are all amended
+    frequently, and the *Höchstrechnungszins* changes by instrument [R13]. No version date is
+    asserted anywhere in this file, because none was seen. Check every provision against the current
+    consolidated text before relying on it.

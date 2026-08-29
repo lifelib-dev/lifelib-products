@@ -928,3 +928,755 @@ sibling file's search corroborated it.
   *Einmalbeitrag*, or the average age at purchase** — see gap 7.
 
 ---
+
+## Extracted facts, organised by mechanic
+
+This is the section the `sofortrente` product-spec and technical-notes are written from. It is
+long because the corpus establishes this product's **mechanics** well and its **levels** hardly at
+all, and because the house rules direct that the weight of a delib research file goes here rather
+than into the source list. Every quantitative statement below is either tagged to a source or
+marked `[std]` with its derivation printed.
+
+### 1. Product structure, legal form and the Schicht-3 placing
+
+- A *Sofortrente* is an ordinary German **life insurance contract** (*Lebensversicherung*) under
+  the VVG, written on the insurer's general account (*Sicherungsvermögen*), in the classic
+  (*konventionell*) non-unit-linked form [S2] [S6]. It is not a banking product, not an investment
+  fund and not a *Sparplan*, and the difference is the whole point: it transfers
+  *Langlebigkeitsrisiko* to the insurer.
+- **Structure in one line:** one payment in, from the policyholder, at inception; a stream of
+  payments out, to the annuitant, from inception until death — subject to a floor supplied by the
+  *Rentengarantiezeit* or the *Kapitalrückgewähr*, and to an uplift supplied by the
+  *Überschussrente*.
+- **It is the deferred annuity with the accumulation phase deleted.** The corpus establishes this
+  structurally rather than by assertion: at NÜRNBERGER the immediate-annuity AVB [S4] sits in the
+  same numbered AVB family as the deferred-annuity AVB [S5] and the unit-linked one; at Zurich
+  Deutscher Herold the immediate-annuity *Verbraucherinformation* [S2] sits in the same
+  *Konventionelle Versicherungen* series as the deferred one [S3]. **No GDV model condition set
+  specific to the immediate annuity was established** [S1] — gap 3.
+- **The parties.** The *Versicherungsnehmer* (policyholder) contracts and pays; the *versicherte
+  Person* (annuitant) is the life on which the annuity depends; a *mitversicherte Person* may be
+  named for the *Hinterbliebenenrente* (section 7); and a *Bezugsberechtigter* (beneficiary)
+  receives whatever falls due after death [R6]. In the common retail case all of the first three
+  are the same person, but they need not be, and where they are not the *versicherte Person* must
+  consent [R6] `[unverified]`.
+- **Schicht 3.** The contract attracts no *Sonderausgabenabzug*, no *Zulage* and no state
+  certification. Nothing is deductible going in; correspondingly, only the *Ertragsanteil* is
+  taxable coming out [R13]. That symmetry — taxed capital in, lightly taxed income out — is the
+  product's tax logic and it is the reason the *Sofortrente* is bought with money that has already
+  been taxed: an inheritance, a property sale, a matured endowment, a severance payment, or the
+  lump sum from a *Kapitalwahlrecht* exercised on a different contract.
+- **Non-participating it is not.** The contract carries the statutory *Überschussbeteiligung* of
+  § 153 VVG [R3] throughout the payout phase, including participation in *Bewertungsreserven*
+  [S3] [R3]. A model that treats the annuity as a fixed guaranteed stream models less than half the
+  payment.
+
+### 2. The *Einmalbeitrag* and the issue rules
+
+- **One premium, paid once, at inception.** There is no premium stream, no *Beitragsdynamik*, no
+  *Ratenzahlungszuschlag* and no premium-payment decrement. A projection of this product has
+  exactly one inflow, at `t = 0`.
+- The insurer deducts the acquisition and administration loadings from the *Einmalbeitrag* and
+  annuitises the remainder. Debeka's own definition of the accumulation quantity — **the
+  *Deckungskapital* is the sum of the contributions accumulated at the *Rechnungszins*, insofar as
+  those contributions are not required for risk and expense cover** [S8] — degenerates for a single
+  premium to a single netting step:
+
+  ```
+  Nettoeinmalbeitrag = Einmalbeitrag x (1 - alpha)
+  ```
+
+  where `alpha` is the *Abschluss- und Vertriebskosten* charge expressed as a fraction of the
+  *Einmalbeitrag*. **No value of `alpha` was established at any carrier** — see section 12 and
+  gap 8.
+- **Entry ages.** Nothing was established. The product is sold at and around retirement; the
+  German market's typical purchase window is in the sixties, and immediate annuities are written
+  into the eighties at some carriers. **Every one of those statements is `[unverified]`.** A
+  reference implementation adopts an entry-age envelope of **60 to 85** as `[std]`, on the
+  argument that below 60 the *Ertragsanteil* is high enough (section 15) to make the tax case weak
+  and above 85 the *Rentengarantiezeit* options collapse, with the boundary values carrying no
+  claim to be any carrier's.
+- **Minimum and maximum *Einmalbeitrag*.** Nothing was established at any carrier. The German
+  market convention is a five-figure minimum — a *Sofortrente* is not sold in small tickets,
+  because the fixed per-policy administration cost would swamp a small annuity — and an upper
+  limit set by reinsurance and *Großrisiko* considerations rather than by tariff. A reference
+  implementation adopts a minimum of **10 000 €** and a working range of **25 000 € to
+  500 000 €** as `[std]`, with a representative case of **100 000 €** chosen because that is the
+  unit the German market quotes annuities in (section 4). See gap 7.
+- **Underwriting.** A *Sofortrente* is normally written **without medical underwriting**, because
+  the insurer's exposure runs the wrong way: an annuity is anti-selected by healthy lives, and
+  medical evidence would be used by the applicant, not the insurer. **This was not established by
+  any source** and is `[unverified]`. Its converse — the *enhanced annuity* or
+  *Pflegebedürftigkeitsrente*, priced up for an impaired life — is a recognised product family in
+  the UK and is **not established to exist in the German retail market** at all; nothing in this
+  file asserts it does.
+
+### 3. The *Aufschubzeit* variant
+
+- The market sells a hybrid between this product and the deferred annuity: the *Einmalbeitrag* is
+  paid now, the annuity begins **after a short deferment** of typically one to fifteen years. It
+  is variously called an *aufgeschobene Rentenversicherung gegen Einmalbeitrag*, a *Sofortrente mit
+  Aufschub*, or simply the *Aufschubzeit* option of the same tariff. **No carrier's terms were
+  established**; the Mecklenburgische "Rente flex" [S14], whose truncated title reads
+  "Private Rentenversicherung mit flexiblem …", is the corpus's only candidate document and its
+  feature is unestablished.
+- **Three things happen during an *Aufschubzeit*, and they must not be conflated.**
+  1. **Interest accrues** at the *Rechnungszins*, so the capital that is eventually annuitised is
+     larger.
+  2. **Mortality accrues**: the annuitant may die before *Rentenbeginn*, which raises the annuity
+     for those who survive — the survivorship credit that makes deferral so powerful — and makes
+     the death benefit during the deferment a first-order design question.
+  3. **The annuity starts at an older age**, so the annuity value `ä_x` is smaller for two reasons
+     at once (shorter expected duration, and a shorter discounting period).
+- **The death benefit during the *Aufschubzeit* is what the variant turns on.** Two forms exist in
+  the German market: a **pure deferred annuity** with no death benefit, in which the fund of those
+  who die is forfeited to the surviving cohort; and a *Beitragsrückgewähr* form, in which the
+  *Einmalbeitrag* is refunded on death before *Rentenbeginn*. The second is much the more common
+  retail form, because a retail buyer will not accept the first. **Neither was established for this
+  product** and the pairing is carried over from the deferred-annuity file's treatment of
+  *Beitragsrückgewähr* before *Rentenbeginn*.
+- **Order of magnitude of the deferral effect**, computed on the `[std]` proxy basis of section 4
+  at 1,00 % interest, for a purchase at exact age 65 and an *Einmalbeitrag* of 100 000 €, monthly
+  annuity in advance:
+
+  | Deferment | Annuity, no death benefit in deferment | Annuity, with full *Beitragsrückgewähr* in deferment |
+  |---|---|---|
+  | 0 years | 407.98 € | 407.98 € |
+  | 2 years | 451.43 € | 444.07 € |
+  | 5 years | 532.48 € | 508.12 € |
+  | 10 years | 732.64 € | 651.24 € |
+
+  All eight figures are `[std]` (1): arithmetic on a stated proxy basis, gross of all charges,
+  printed so a reader can reproduce them, and **not** any carrier's quotation. The table's message
+  is the one the German consumer literature makes: a five-year deferment raises the annuity by
+  about **30 %** with a death benefit and about **31 %** without, and the difference between the
+  two columns — 4,6 % at five years, 11,1 % at ten — **is the price of the death benefit**, which
+  is the honest way to present it to a buyer.
+- **The deferral also lowers the tax.** The *Ertragsanteil* is fixed by the age at which the
+  annuity **starts**, not the age at which it is bought [R13], so deferring from 65 to 70 moves the
+  taxable fraction from 18 % to 15 % `[unverified]` (section 15) at the same time as it raises the
+  gross annuity. The two effects compound, and they are the reason the variant exists.
+
+### 4. *Rentenhöhe*: how the annuity is determined, and how it moves with the *Höchstrechnungszins*
+
+**The determination.** The guaranteed monthly annuity is the *Nettoeinmalbeitrag* divided by the
+value of a monthly life annuity-due on the tariff bases, with the annuity administration loading
+applied:
+
+```
+R_garantiert = Einmalbeitrag x (1 - alpha) / ( 12 x a12(x, i) x (1 + beta) )
+
+  a12(x, i)  monthly annuity-due factor at attained age x and Rechnungszins i,
+             on the first-order DAV 2004 R basis for the annuitant's birth cohort  [S6] [R10]
+  alpha      Abschluss- und Vertriebskosten as a fraction of the Einmalbeitrag     [std]
+  beta       administration loading on each annuity payment                        [std]
+```
+
+- **The mortality basis is DAV 2004 R** and it is named in an insurer's own AVB: the annuity factor
+  is calculated "on the basis of a recognised mortality table (currently DAV 2004 R)" [S6] [R10].
+- **The interest basis need not be the *Höchstrechnungszins*.** The same clause continues "and an
+  underlying interest rate (currently 0 percent p.a.)" [S6] — a carrier pricing a *guaranteed*
+  annuity factor at zero interest while the statutory maximum was positive. For a *Sofortrente*
+  that choice is less likely than for a deferred contract, because here the guarantee is given for
+  a stream starting today rather than in thirty years, but the clause establishes that the tariff
+  rate is the insurer's choice **at or below** the cap [R7], never automatically the cap.
+- **The market's quoting unit is the euro per 100 000 €**, not the *Rentenfaktor* per 10 000 € that
+  the deferred market uses. The two are the same number scaled by ten: a *Rentenfaktor* of 40,80
+  per 10 000 € and an annuity of 408 € per 100 000 € are one statement `[std]`.
+
+**The `[std]` proxy basis.** No annuity level was established at any carrier for any year (gap 5),
+so this file **constructs** one rather than guessing. The construction is:
+
+- Mortality: a Gompertz–Makeham proxy `mu(x) = A + B c^x` with **A = 0.0002, B = 1.5e-5,
+  c = 1.10**, calibrated so that the curtate-plus-half life expectancy at 65 is **24.29 years**,
+  at 75 **16.63** and at 85 **10.46**. Sample rates: `q(65) = 0.00789`, `q(75) = 0.02001`,
+  `q(85) = 0.05078`, `q(95) = 0.12617`. This is a **prudent annuitant** shape of the right order
+  for a first-order German annuity basis; it is **not** DAV 2004 R, which is not public and is not
+  redistributed here [R10].
+- Monthly-in-advance adjustment: `a12 = a_due - 11/24`, the standard approximation.
+- Interest: three regimes — **0,25 %** (the pre-2025 *Höchstrechnungszins*), **1,00 %** (the rate
+  from 1 January 2025), and **1,75 %** as an illustrative higher rate [R7] [R8].
+- Charges: **excluded** from the table, so the figures are gross annuity values, not quotations.
+
+**Annuity per 100 000 € of *Einmalbeitrag*, monthly in advance, gross of charges** `[std]` (2):
+
+| Age at *Rentenbeginn* | i = 0,25 % | i = 1,00 % | i = 1,75 % | uplift 0,25 % → 1,00 % |
+|---|---|---|---|---|
+| 60 | 314.43 € | 352.08 € | 391.63 € | +12.0 % |
+| 65 | 369.64 € | 407.98 € | 447.93 € | +10.4 % |
+| 70 | 443.58 € | 482.84 € | 523.40 € | +8.9 % |
+| 75 | 544.89 € | 585.32 € | 626.75 € | +7.4 % |
+| 80 | 687.02 € | 728.86 € | 771.44 € | +6.1 % |
+
+The corresponding annuity-due factors `a12(x, i)` at 1,00 % are 23.669, 20.426, 17.259, 14.237 and
+11.433, so a reader can check any cell as `100 000 / (12 x a12)`.
+
+**How it has moved with the *Höchstrechnungszins*.** This is the question the brief asks and the
+table answers it structurally rather than empirically:
+
+- The *Höchstrechnungszins* fell for thirty years to **0,25 %** and rose to **1,00 % on 1 January
+  2025** — the first increase since 1994 [R7] — with the DAV recommending 1,0 % again for 2026
+  [R8].
+- On the `[std]` basis, that single step is worth about **+10 %** on the guaranteed annuity at age
+  65 and **+12 %** at age 60, tapering to **+6 %** at 80: the younger the annuitant, the longer the
+  stream, the more the discount rate matters. A 65-year-old buying in 2025 rather than 2024 gets,
+  on this arithmetic, roughly one extra euro of guaranteed monthly annuity for every ten they
+  previously got `[std]` (2).
+- **The direction is not in doubt and the magnitude is `[std]`, not observed.** The mechanism is
+  established from the tariff formula itself [S6] and from the statutory rate history [R7] [R8];
+  **no carrier's before-and-after quotation was established** (gap 5). Real quotations will differ
+  from this table in both directions because carriers price below the cap [S6], because their
+  first-order mortality margin is heavier or lighter than this proxy, and because charges are
+  excluded here.
+- **Two offsetting forces work against the interest uplift over longer horizons**: continuing
+  mortality improvement inside the generation table's *Trendfunktion* [R10] raises annuity values
+  each year for each successive cohort, and any strengthening of the first-order margin does the
+  same. A cohort buying ten years apart at the same *Rechnungszins* would not get the same annuity.
+
+**What is guaranteed.** The *garantierte Rente* computed at inception is guaranteed **for life**
+and is not adjustable: § 163 VVG is the only channel, it is narrow, and the courts have narrowed it
+further [R4]. Everything above the guaranteed annuity is the *Überschussrente* of section 9 and is
+**not** guaranteed.
+
+### 5. *Rentengarantiezeit*
+
+- **Mechanic.** A *Rentengarantiezeit* is a guaranteed payment period running from *Rentenbeginn*.
+  If the annuitant dies inside it, **the annuity continues to be paid to the beneficiaries until
+  the agreed number of years has expired** — the sibling corpus's worked illustration is a 10-year
+  period with death after 6 years, the spouse receiving the remaining 4 years [R23]. If the
+  annuitant survives the period, it simply lapses and the annuity continues for life as before.
+  After the guarantee period nothing is payable on death unless a *Kapitalrückgewähr* (section 6)
+  or a *Hinterbliebenenrente* (section 7) was also bought.
+- **It is not an extra benefit bolted on; it is a re-shaping of the same annuity.** The contract
+  becomes `annuity-certain for n years + deferred life annuity from n`, which is worth more than a
+  plain life annuity, so the *Einmalbeitrag* buys less of it. There is no free guarantee.
+- **Durations offered**: **5, 10, 15, 20, 25 or more than 30 years**; **typical durations 15 years
+  for retirement ages 61–70 and 10 years for 71 and above**; **most policyholders choose 10 to
+  20 years** [R23]. It is carried in the tariff name at NÜRNBERGER, whose deferred AVB is titled
+  "… mit aufgeschobener Rentenzahlung **und Rentengarantiezeit** nach Tarif NIR3301" [S5], and it
+  is a policyholder-selectable parameter with a contractual floor at Allianz — the guarantee period
+  "can be set to a minimum" [S7]. A *Sofortrente* with **no** guarantee period is therefore a
+  configuration, not the default.
+- **Two settlement forms exist on the annuitant's death inside the period** and they are not
+  economically identical: the instalments continue to be paid as they fall due, or the present
+  value of the *Restgarantiezeit* is commuted and paid as a lump sum. **Which form a German carrier
+  uses, and on what basis a commutation would be computed, was not established** — gap 10. A
+  reference implementation pays the instalments as they fall due, which is the form the consumer
+  illustration describes [R23], and carries the commutation as an unimplemented variant.
+- **Cost of the guarantee**, computed on the `[std]` proxy basis of section 4 at 1,00 % interest,
+  age 65, per 100 000 € `[std]` (3):
+
+  | *Rentengarantiezeit* | `a12` | Monthly annuity | Reduction vs no guarantee |
+  |---|---|---|---|
+  | none | 20.426 | 407.98 € | — |
+  | 5 years | 20.530 | 405.92 € | 0.51 % |
+  | 10 years | 20.897 | 398.78 € | 2.26 % |
+  | 15 years | 21.624 | 385.38 € | 5.54 % |
+  | 20 years | 22.821 | 365.16 € | 10.50 % |
+  | 25 years | 24.591 | 338.87 € | 16.94 % |
+  | 30 years | 26.972 | 308.97 € | 24.27 % |
+
+- **The cost rises steeply with age, because the guarantee bites sooner.** On the same basis, a
+  10-year guarantee costs **2.26 %** of the annuity at 65, **4.10 %** at 70 and **7.42 %** at 75; a
+  20-year guarantee costs **10.50 %**, **17.20 %** and **26.71 %** at those three ages `[std]` (3).
+  That is why the market's typical duration falls with age — 15 years to 70, 10 years thereafter
+  [R23].
+- **A cross-check on the order of magnitude.** The sibling corpus records a consumer illustration
+  on a *deferred* contract — 200 € monthly premium over 30 years producing 573 €/month with no
+  guarantee — in which a 10-year guarantee costs **3 €** per month, a 20-year **15 €** and a
+  30-year **46 €**, i.e. roughly **0,5 %, 2,6 % and 8,0 %** of the annuity [R23]. Those are
+  materially *cheaper* than the table above at every duration, which is exactly what one would
+  expect: that illustration's annuity starts at a lower age with a much longer expected duration,
+  so a fixed guarantee period covers a smaller share of it. The two are consistent in shape and
+  differ in level for a stated reason; **neither is a tariff**.
+- **Modelling consequences.** During the guarantee period the payment is **certain**, so `pols_if`
+  must not be decremented against it; after it, the payment is contingent on survival. A model that
+  applies survival probabilities across the whole stream understates the liability, and one that
+  applies none overstates it. This is a listed pitfall for the delib `Sofort_DE_S` model.
+
+### 6. *Kapitalrückgewähr* / *Beitragsrückgewähr* on death
+
+- **Mechanic.** On the annuitant's death the insurer refunds the *Einmalbeitrag* **less the annuity
+  instalments already paid**, floored at zero. The benefit therefore starts at the full
+  *Einmalbeitrag* and runs down to nothing over roughly the period in which the annuitant recovers
+  their capital in nominal terms — on the `[std]` basis of section 4, about **21,5 years** at age
+  65, i.e. to about age 86 `[std]` (4).
+- Variants named in the German market: ***volle Beitragsrückgewähr*** (the full unconsumed
+  *Einmalbeitrag*), and forms in which only a stated percentage is refunded or in which the refund
+  is capped at a number of years' payments. **No carrier's variant was established.**
+- **It overlaps with the *Rentengarantiezeit* and is usually an alternative to it, not an addition.**
+  Both protect against early death; the guarantee period does so with a *fixed number of payments*,
+  the refund with a *declining lump sum*. A buyer who takes both pays for both, and some carriers do
+  not permit the combination. **Which carriers permit which combination was not established** —
+  gap 10.
+- **Cost of the refund**, on the `[std]` proxy basis of section 4 at 1,00 %, age 65, per
+  100 000 €: the monthly annuity falls from **407.98 €** to **335.48 €**, a reduction of
+  **17.8 %** `[std]` (5). That is a large price, materially larger than a 20-year guarantee period
+  (10.5 %), and it is the honest answer to a buyer who asks why the "money-back" version pays so
+  much less. The computation solves for the annuity `R` satisfying
+
+  ```
+  Einmalbeitrag = 12 x R x a12(65, i) + PV( max(Einmalbeitrag - 12 x R x t, 0) payable on death at t )
+  ```
+
+  with deaths taken at mid-year and the refund discounted from mid-year.
+- **A design trap the model must respect.** Because the refund is `Einmalbeitrag − instalments
+  paid`, and because a *larger* refund means a *smaller* annuity, and a smaller annuity means the
+  refund runs off more slowly, the equation above is **implicit in `R`** and must be solved, not
+  evaluated. An implementation that computes the plain annuity first and then subtracts a refund
+  cost gets a different — and wrong — answer.
+- **Whether the refund counts the *guaranteed* annuity or the *total* annuity paid** (including
+  the *Überschussrente*) is a live contractual question and **was not established** at any carrier.
+  The two readings diverge materially over twenty years. A reference implementation uses the
+  **guaranteed** annuity as `[std]`, on the argument that the refund is a guaranteed benefit and a
+  guaranteed benefit cannot be defined by reference to a discretionary quantity — but the argument
+  is a modeller's, not a carrier's. See gap 10.
+
+### 7. *Hinterbliebenenrente* and its *Anwartschaft*
+
+- **Mechanic.** A second life — the *mitversicherte Person*, in practice the spouse or registered
+  partner — is named at inception. While the annuitant lives, the main annuity is paid and the
+  survivor holds an ***Anwartschaft***: a contingent, not-yet-payable entitlement. On the
+  annuitant's death, if the second life is then alive, the *Hinterbliebenenrente* begins and is
+  paid for the second life's remaining lifetime. If the second life predeceases the annuitant, the
+  entitlement lapses and **nothing is refunded** — the cover has been consumed.
+- The German market treats it as a ***Zusatzversicherung*** — a rider with its own condition set —
+  and the GDV publishes model conditions for exactly that [S9]. The direct modelling consequence:
+  in a reference implementation it is a **separate module with its own insured life, off in the
+  base run**, not a term in the main annuity's benefit formula.
+- **Typical percentages** of the main annuity: 60 % and 100 % are the market's two standard
+  levels `[unverified]`; other percentages exist. **No carrier's menu was established.**
+- **This makes the contract a joint-life-last-survivor annuity** and changes its mortality
+  arithmetic completely: the liability now runs until **both** lives are dead, and the second
+  life's age, sex and health matter as much as the annuitant's. The second life is fixed at
+  inception and generally **cannot be substituted** — a later marriage does not acquire the
+  entitlement `[unverified]`.
+- **Cost**, on the `[std]` proxy basis of section 4 at 1,00 %, annuitant aged 65 and second life
+  aged 62 on the same mortality proxy, per 100 000 € `[std]` (6):
+
+  | Survivor's percentage | `a12` (joint) | Monthly annuity | Reduction |
+  |---|---|---|---|
+  | none | 20.426 | 407.98 € | — |
+  | 60 % | 23.838 | 349.58 € | 14.3 % |
+  | 100 % | 26.113 | 319.12 € | 21.8 % |
+
+  The proxy applies the same mortality to both lives and assumes independence, both of which are
+  simplifications: real joint-life pricing uses sex-distinct or portfolio-mix bases (section 11)
+  and a dependence allowance. **These are `[std]` illustrations, not tariff values.**
+- **A tax question this file cannot answer.** Whether the *Hinterbliebenenrente*, once in payment,
+  is taxed on the survivor's own *Ertragsanteil* computed at the survivor's age when it starts, or
+  continues on the original annuitant's fraction, **was not established** and is a real practical
+  question with a material answer. See gap 15.
+
+### 8. Payment frequency and timing
+
+- **The annuity is monthly.** Every description in the delib corpus treats the private annuity as a
+  monthly payment [S7] [R23], and the *Sofortrente*'s whole commercial proposition is a monthly
+  income replacing a salary. Quarterly, half-yearly and annual frequencies exist as options
+  `[unverified]`; no carrier's menu, and no loading or discount for choosing one, was established.
+- ***Vorschüssig*** — payable **in advance**, at the start of each payment period — is the German
+  market convention for annuities in payment, and every arithmetic in this file uses an
+  annuity-**due**. **No source in the delib corpus states it in terms**, for this product or for
+  the deferred one, and the sibling file records the same gap [gap 19 there]. It is therefore a
+  `[std]` convention here with the gap stated beside it, not an established fact — see gap 11.
+- **The parameter is first-order, which is why the gap matters.** Advance against arrears moves the
+  annuity value by roughly half a month's interest **and** shifts every payout cash flow by one
+  period. On the `[std]` basis at 1,00 %, `a12_due − a12_arrears = 1`, so the annuity per
+  100 000 € at age 65 would be `100 000 / (12 x 19.426) = 428.99 €` on an arrears basis against
+  `407.98 €` in advance — a **5,1 %** difference from a single convention `[std]`.
+- **The first payment date.** For a genuine *Sofortrente* the first payment falls at or within a
+  month of inception. **Whether the market's convention is "on the day the *Einmalbeitrag* is
+  received" or "on the first of the month following" was not established.** A reference
+  implementation pays the first instalment at `t = 0`, simultaneously with the *Einmalbeitrag*
+  inflow, as `[std]`.
+- **Payment ceases at death, not at the end of the month of death.** Whether an instalment already
+  paid for a period in which the annuitant dies is reclaimed (*Rückforderung der Überzahlung*) or
+  retained by the estate **was not established**; a reference implementation retains it, which is
+  the ordinary consequence of paying in advance.
+
+### 9. *Überschussbeteiligung* in the *Rentenbezug* — the four *Überschussverwendung* forms
+
+**The two-part payment.** The annuity actually paid is `garantierte Rente + Überschussrente`. Only
+the first is a promise; the second is declared annually by the insurer, out of surplus it has
+actually earned, and it can move down as well as up. The sibling corpus states the same for the
+deferred product's payout phase: the insurer sets a value at the start of the payout phase
+"composed of the *Garantierente* and a surplus share projected for the whole annuity period"
+[R21], and only the guaranteed part is a promise.
+
+**The four forms.** German carriers offer the policyholder a choice of ***Überschussverwendung***
+for the payout phase, made at *Rentenbeginn* — which for this product means **at inception, once,
+irrevocably** `[unverified]`. The four forms and what each does to the projected payment stream:
+
+| Form | Mechanic | Payment stream |
+|---|---|---|
+| **konstante Überschussrente** | The insurer fixes the total annuity at *Rentenbeginn* from the *garantierte Rente* plus a surplus share **projected for the whole annuity period**, and intends to hold it level [R21] | Highest at outset; flat thereafter **in intention only** |
+| **steigende (volldynamische) Überschussrente** | The annuity **adjusts annually and flexibly to the actual surplus development** [R21] | Lowest at outset; rises each year that surplus is declared |
+| **teildynamische Überschussrente** | Part of the expected surplus is applied under the constant system and part under the dynamic system, so the annuity rises regularly by a **fixed percentage** provided the insurer earns corresponding surpluses [R21] [R23] | Intermediate at outset; rises at a stated rate, subject to surplus |
+| **Bonusrente** | Declared surplus **buys a paid-up increment of annuity**, permanently added to the payment: "the ongoing surplus shares are used partly for an age-dependent *Überschussrente* and partly for an additional premium-free annuity (*Bonusrente*)" [R23] | Ratchets: each increment, once bought, does not come back off |
+
+- **The *Bonusrente* is the mechanism underneath the rising forms, not a fourth alternative to
+  them.** That is the corpus's own reading [R23]: what makes a *volldynamische Rente* **ratchet
+  rather than fluctuate** is that its increments are bought as paid-up annuity. A carrier may
+  present *Bonusrente* as a named option in its own right; a model should treat it as the
+  crediting mechanism and the three dynamics as the profile.
+- **The constant form is not actually constant, and this is the single most important thing to
+  understand about the product.** The total annuity under it is set from a **projection** of
+  surplus over the whole remaining lifetime; if the insurer earns less than projected, **the
+  annuity is reduced** [R21]. A model that treats the *konstante Überschussrente* as a level
+  guaranteed stream is wrong. Only the *garantierte Rente* inside it is guaranteed, and the gap
+  between the two — on typical market designs, of the order of 15 % to 25 % of the payment
+  `[unverified]` — is the amount at risk.
+- **The trade-off, stated plainly.** All four forms distribute the same expected surplus; they
+  differ only in *when*. The constant form front-loads it and carries reduction risk; the
+  volldynamic form back-loads it and carries the risk of dying before collecting. The German
+  consumer literature's framing of the choice — Franke und Bornberg titled its treatment "Die Qual
+  der Wahl" [R20] — is that there is no dominant answer.
+- ***Bewertungsreserven* participation continues throughout the payout phase** [S3] [R3], with
+  § 153 Abs. 3 VVG currently providing for equal participation [S3]. This is a **separate**
+  entitlement from the *Überschussrente* and is credited on the occasions the contract specifies.
+- **The increase is declared, never guaranteed.** No German carrier guarantees a *Rentendynamik*
+  out of surplus. The AVB disclaimer the corpus records for a sister product applies verbatim:
+  "the amount of profit sharing depends on many influences which are unpredictable and only
+  limitedly controllable by the company, with the most important influencing factor being
+  capital-market developments" [S6]. **Any projected increase in a delib model is an
+  insurer-discretionary current assumption, marked as such, and never a guaranteed cash flow.**
+- **No rate was established, for any form, at any carrier, for any year** — not a
+  *Überschussrentensatz*, not a *laufende Verzinsung*, not a dynamic percentage. [S10] establishes
+  the document class that publishes them and nothing inside it; [R22] establishes the market study
+  that aggregates them and nothing inside it. This is gap 4.
+
+### 10. Where the surplus comes from
+
+- **Three sources, and for an annuity in payment they are not equally important.**
+  - ***Zinsüberschuss*** — the excess of the insurer's actual investment return over the
+    *Rechnungszins* on the *Deckungsrückstellung*. For a *Sofortrente* this is the dominant source,
+    because the reserve is large from day one and runs off slowly over decades.
+  - ***Risikoüberschuss*** — for an annuity, a **longevity** result rather than a mortality one. It
+    is positive when annuitants die **faster** than the first-order table assumed [R10], and
+    negative when they live longer. It is the source that can go the wrong way for a whole cohort
+    at once, and it is why annuity tariffs carry the *Sicherheitszuschlag* they do.
+  - ***Kostenüberschuss*** — the excess of the loadings taken over the expenses actually incurred.
+    Small in absolute terms for this product, because a *Sofortrente* has one acquisition event and
+    then a long, cheap payment routine.
+- **The statutory floor.** MindZV fixes a minimum share of each of the three results that must be
+  credited to policyholders, computed separately on the *Kapitalanlageergebnis*, the
+  *Risikoergebnis* and the *übrige Ergebnis*, with a deduction for the *Sicherungsbedarf* arising
+  from legacy guarantees [R15] [R16]. **No percentage was established** and none appears here.
+- **The competition for the same money.** The *Überschussrente* of an annuity cohort is paid out of
+  the same RfB from which the *Zinszusatzreserve* was financed [R16]. During the ZZR build-up years
+  that competition suppressed declarations across the German market; the release of the ZZR as
+  rates rose should work the other way. **Neither the size of the ZZR nor its release profile was
+  established** and nothing quantitative about this is asserted — it is recorded because it is the
+  single largest driver of what a German annuitant's *Überschussrente* will actually do over the
+  next decade, and a model that projects a flat surplus rate is ignoring it.
+- **`[std]` posture for a reference implementation.** Model the total surplus as a single
+  *Überschussrentensatz* applied to the guaranteed annuity, split it into the three sources only if
+  the notes need the split, and label the whole of it an **insurer-discretionary current
+  assumption** in the assumption inventory — category (b) in the delib technical-notes taxonomy,
+  never category (a).
+
+### 11. *Rechnungsgrundlagen*: DAV 2004 R, DAV 2004 R-Bestand, the *Trendfunktion*, the *Sicherheitszuschlag*, and the unisex tariff
+
+- **The table is DAV 2004 R**, named in an insurer's own AVB [S6] and derived in a DAV guideline
+  [R10]. It is a ***Generationentafel***: mortality is given by **birth cohort**, and the expected
+  future improvement is inside the table rather than applied on top of it [R10]. A 65-year-old
+  born in 1961 and a 65-year-old born in 1971 are priced on **different** mortality.
+- **Component structure** [R10]: a **base table of second order**; a **base table of first order**;
+  a ***mortality trend* of second order**; a ***mortality trend* of first order**; and an **age
+  adjustment (*Altersverschiebung*) with a base table**. The *Trendfunktion* therefore exists in
+  both a best-estimate and a prudent version, which is the correct structure: prudence in an
+  annuity table must be applied to the **rate of improvement** as well as to the level, because the
+  improvement compounds over a forty-year payment stream.
+- **First against second order** [R10]: first-order probabilities are used for premiums and
+  reserves and **carry safety margins relative to the second-order ("realistic") probabilities in
+  order to assess the risk prudently**; the second-order base tables represent the **best estimate
+  of period mortality in 1999 for insured lives, as three-dimensional selection tables**. For an
+  annuity, prudent means **lighter** mortality: the *Sicherheitszuschlag* pushes `q` **down**, which
+  pushes the annuity value **up** and the annuity bought by a given *Einmalbeitrag* **down**. **The
+  size of that margin was not established** — gap 12 — and it is one of the two numbers (with the
+  *Rechnungszins*) that decide the whole tariff.
+- **Dates** [R10]: in use since **June 2004**, intended for new business from **2005**, the DAV
+  document dated **22 February 2005**, the derivation guideline **reissued 28 June 2023**. The
+  reissue is the evidence that **no successor annuity table has displaced DAV 2004 R** in twenty
+  years, which for a *Sofortrente* means the 1999 base year is now more than a quarter of a century
+  behind the business being written on it — and the *Trendfunktion* is carrying all of that
+  distance.
+- ***DAV 2004 R-Bestand***. A companion table for the **existing annuity book** exists, paired with
+  DAV 2004 R in a 2004 presentation "DAV 2004 R und RBx" [R11]. New business is priced on
+  DAV 2004 R; the in-force portfolio is reserved on the *Bestand* table. **Nothing beyond the
+  pairing was established** — not the difference in level, not the trend, not the application
+  rule — and nothing about it may be asserted downstream. For this product the distinction is
+  structurally important because a *Sofortrente* is written once on the new-business basis and
+  then spends thirty years in the *Bestand*.
+- **Sex-distinct tables, unisex tariff.** German annuity tables are constructed sex-distinctly
+  while the tariff sold for new business since **21 December 2012** must be unisex
+  [R24] `[unverified]`. **Neither half of that sentence was corroborated by any delib search.** The
+  practical resolution is that the insurer prices on a **blended basis reflecting an assumed
+  portfolio sex mix**, which is a pricing assumption the carrier chooses and never publishes.
+  Two consequences a model must respect: (i) a unisex annuity is a **worse deal for men and a
+  better one for women** than a sex-distinct one, so the realised mix drives the *Risikoergebnis*
+  [R15]; and (ii) the delib `Sofort_DE_S` model's decrement table is a **unisex `[std]` proxy** and
+  must be described as one, with the sex-distinct construction named as what a replacement table
+  would have to supply.
+- **What delib ships.** The DAV tables are the property of the Deutsche Aktuarvereinigung, are not
+  public and are **not redistributed here**. delib cites them by name and ships a `[std]` proxy —
+  the Gompertz–Makeham basis printed in section 4 — anchored so the model's own worked example
+  reproduces exactly, with the anchor stated in the `Data` docstring. **A replacement must preserve
+  the generational structure (a `q(x, cohort)` surface, not a period table), the first-order margin
+  over second order, and the age-adjustment convention** [R10].
+
+### 12. Charges
+
+- German life insurers build charges into the tariff and disclose them, if at all, in the
+  *Produktinformationsblatt* [S11] or the *Basisinformationsblatt* [S12]. **No charge parameter for
+  this product was established at any carrier**: not the *Abschluss- und Vertriebskosten*, not the
+  administration loading on the annuity, not the *Effektivkosten*, not a *Renditeminderung*
+  figure. See gap 8.
+- **The three charge points a *Sofortrente* has**, which is fewer than most life products:
+  1. an **acquisition and distribution charge on the *Einmalbeitrag***, taken once, at inception —
+     `alpha` in section 4's formula. In German practice this is expressed as a percentage of the
+     single premium and is materially lower than the *Zillmerung* of a recurring-premium contract,
+     because there is no premium stream to amortise against;
+  2. an **administration loading on each annuity payment** — `beta` — covering the cost of running
+     the payment, the annual *Standmitteilung* [S15] and the periodic proof-of-life process;
+  3. an implicit **margin inside the *Rechnungsgrundlagen***: pricing at 0 % when the cap is 1,00 %
+     [S6] [R7] is a charge in economic substance even though no document calls it one.
+- **`[std]` values for a reference implementation**, with the rationale stated because none of them
+  is sourced: `alpha = 2,5 %` of the *Einmalbeitrag* and `beta = 2,0 %` of each annuity payment
+  `[std]` (7). The rationale: a single-premium annuity's acquisition cost is a one-off commission
+  plus issue expense, which the German market prices in low single figures of percent; and the
+  running loading must cover a per-policy administration cost that is, in euros, roughly constant,
+  so on a 100 000 € case a 2 % loading is of the right order and on a 25 000 € case it would be
+  too small — which is itself the reason minimum *Einmalbeiträge* exist (section 2). **Both are
+  the modeller's view and neither has any observed range attached, because none was observed.**
+- **Effect on the headline number.** Applying those two `[std]` charges to section 4's gross annuity
+  at age 65 and 1,00 % gives `407.98 x 0.975 / 1.02 = 389.99 €` per 100 000 € per month; adding a
+  10-year *Rentengarantiezeit* takes it to about **381 €** `[std]`. That is the shape of a quotable
+  guaranteed *Sofortrente* on this file's own arithmetic, and it is offered as a **constructed
+  illustration**, not as a market rate.
+
+### 13. No surrender in the *Rentenbezug*
+
+- **Once the *Rentenbezug* has begun, the contract cannot be surrendered.** § 168 Abs. 3 VVG
+  provides that the policyholder's right of termination in a *Rentenversicherung* without a
+  *Kapitalwahlrecht* exists only **up to the start of the annuity payments** [R1] `[unverified]` as
+  to the paragraph number. For a *Sofortrente* that boundary is at or within weeks of inception, so
+  in practice **the contract is irrevocable from the outset**.
+- **What follows for a projection model, and it is a great deal:**
+  - **No `Rückkaufswert` cells.** § 169 VVG [R2] is displaced. There is no surrender-value table,
+    no *Stornoabzug*, no five-year cost-spreading rule to implement.
+  - **No lapse decrement.** A policyholder cannot lapse a contract they cannot terminate and on
+    which no further premium is due. The only decrement in the payout phase is **death**.
+  - **No `Beitragsfreistellung`.** § 165 VVG [R5] has no application: there is no premium to stop.
+  - **The `[std]` behavioural assumption set is empty.** Every other delib product needs a lapse
+    rate, a paid-up rate and an option take-up rate, all of them the modeller's view. This product
+    needs none of them, which makes it the cleanest of the ten to project and the one whose result
+    depends most purely on the mortality basis and the surplus assumption.
+- **The economic reason the rule exists, and why it is not a defect.** A surrenderable life annuity
+  would be surrendered by exactly those annuitants who expected to die soon, leaving the insurer
+  with the long-lived. The rule is not consumer-unfriendly by accident; it is what makes the
+  mortality pooling — the whole product — possible. The corresponding consumer warning is that the
+  *Einmalbeitrag* is **irreversibly committed**, which is the first thing every German consumer
+  page about the product says [R21] [R23].
+- **One qualification.** The *Aufschubzeit* variant of section 3 has a genuine pre-*Rentenbeginn*
+  window in which § 168 Abs. 3 does not yet bite, so a surrender right — and a *Rückkaufswert*
+  under § 169 [R2] — may exist during the deferment. **No carrier's terms were established** and a
+  reference implementation switches the deferment variant off in its base run.
+
+### 14. Decrements and policyholder behaviour
+
+- **One decrement: death.** In the payout phase there is no lapse, no paid-up conversion and no
+  option exercise (section 13). Where a *Hinterbliebenenrente* is in force there are **two lives**
+  and the liability runs to the second death (section 7).
+- **The pricing basis is DAV 2004 R first order; the best-estimate basis is DAV 2004 R second
+  order** [S6] [R10]. The gap between them is the *Sicherheitszuschlag* and it is the single
+  largest source of expected surplus on this product (section 10).
+- **Anti-selection at issue is real and is not underwritten away.** Annuities are bought
+  disproportionately by people who expect to live long; the German market does not medically
+  underwrite them (section 2, `[unverified]`), so the selection sits in the tariff's margin rather
+  than in an individual assessment. A best-estimate projection that applies population mortality to
+  an annuity book will overstate deaths and understate the liability, and by a wide margin.
+- **Proof of life.** Insurers verify survival periodically (a *Lebensbescheinigung* or an
+  equivalent register check) and recover overpayments made after an unnotified death. **No
+  carrier's frequency or procedure was established.** It is an expense item, not a cash-flow one,
+  and a reference implementation ignores it.
+- **No behavioural assumption in this file is evidenced by any source.** There is nothing to
+  evidence: the product removes the behaviours. That is a finding worth stating, not a gap.
+
+### 15. Taxation — the *Ertragsanteil*
+
+- **The annuity is taxed on the *Ertragsanteil* under § 22 EStG** [R13]. Only the "Ertrag des
+  Rentenrechts" — the interest element deemed to be contained in the annuity — is income; the
+  return-of-capital element is not taxed at all. The taxable fraction is a **flat statutory
+  percentage of every payment**, determined once by the annuitant's **age at *Rentenbeginn*** and
+  **fixed for the whole life of the annuity** [R13].
+- **The statutory table.** The values below are the *Ertragsanteil* percentages by age at annuity
+  commencement as they have applied since the *Alterseinkünftegesetz* took effect on 1 January
+  2005. **The whole table is `[unverified]`**: no delib search returned it, and only the single
+  value **18 % at age 65** was corroborated [R13]. It is reproduced because a product-spec must
+  carry the schedule and because the corroborated cell matches it exactly, which is the only
+  internal check available.
+
+  | Age at start | % | Age | % | Age | % | Age | % |
+  |---|---|---|---|---|---|---|---|
+  | 50 | 30 | 60–61 | 22 | 71 | 14 | 81–82 | 7 |
+  | 51–52 | 29 | 62 | 21 | 72–73 | 13 | 83–84 | 6 |
+  | 53 | 28 | 63 | 20 | 74 | 12 | 85–87 | 5 |
+  | 54 | 27 | 64 | 19 | 75 | 11 | 88–91 | 4 |
+  | 55–56 | 26 | **65–66** | **18** | 76–77 | 10 | 92–93 | 3 |
+  | 57 | 25 | 67 | 17 | 78–79 | 9 | 94–96 | 2 |
+  | 58 | 24 | 68 | 16 | 80 | 8 | from 97 | 1 |
+  | 59 | 23 | 69–70 | 15 | | | | |
+
+  The statutory address usually given — **§ 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst. bb EStG** —
+  is itself `[unverified]` [R13].
+- **What that is worth.** On the section 12 illustration of a **389.99 €** monthly annuity starting
+  at 65, the taxable amount is `0.18 x 389.99 = 70.20 €` per month, or 842 € a year. At a marginal
+  rate of 25 % the tax is **17.55 € per month — 4.5 % of the annuity**; at 42 % it is **29.48 €,
+  7.6 %** `[std]` (8). Against a *Bankauszahlplan*, whose interest is taxed in full (section 16),
+  the difference over a twenty-five-year payout is the product's main quantitative selling point.
+- **Deferring the start lowers the fraction as well as raising the annuity**: 18 % at 65 against
+  15 % at 70 `[unverified]`, on an annuity that is itself about 18 % larger on the `[std]` basis
+  (section 4). The two effects compound and the combination is why the *Aufschubzeit* variant
+  exists (section 3).
+- **The boundary with § 20 EStG.** The *Halbeinkünfteverfahren* of § 20 Abs. 1 Nr. 6 EStG applies
+  only to lump sums and payout-plan withdrawals, requires the 12/62 rule, and **does not apply to
+  monthly annuity payments** [R14]. A *Sofortrente* pays no lump sum and could not satisfy the
+  twelve-year test in any event. **The whole of its cash flow is § 22 and none of it is § 20.**
+- **Not established, and needed downstream**: whether the *Rentengarantiezeit* payments made to a
+  beneficiary after the annuitant's death keep the original *Ertragsanteil*; whether the
+  *Kapitalrückgewähr* refund is taxable at all; whether the *Hinterbliebenenrente* is taxed on the
+  survivor's own commencement age; the *Erbschaftsteuer* treatment of any post-death payment; and
+  the *Solidaritätszuschlag*. All are gap 15.
+
+### 16. The *Bankauszahlplan* comparison and the longevity argument
+
+- The German consumer literature's standard comparator for a *Sofortrente* is a
+  ***Bankauszahlplan*** (or *Entnahmeplan*): the same capital held at a bank and drawn down at a
+  chosen monthly rate until it is exhausted. The comparison is the product's whole sales argument
+  and it has three limbs.
+- **Limb one — the payout plan ends.** On this file's `[std]` arithmetic, 100 000 € drawn down at
+  a monthly rate in advance is exhausted after `[std]` (9):
+
+  | Monthly withdrawal | at 0 % interest | at 2 % | at 3 % |
+  |---|---|---|---|
+  | 350 € | 23.8 years — age 88.8 | 32.2 years — age 97.2 | 41.1 years — age 106.1 |
+  | 400 € | 20.8 years — age 85.8 | 26.9 years — age 91.9 | 32.3 years — age 97.3 |
+  | 450 € | 18.6 years — age 83.6 | 23.1 years — age 88.1 | 26.8 years — age 91.8 |
+
+  Read against section 4: an annuity of about **390 €** guaranteed for life is roughly what
+  100 000 € buys at 65 on this file's `[std]` basis, and a payout plan matching that rate at 2 %
+  runs out at about **age 92**. Beyond that age the annuitant has income and the drawdown investor
+  has none. The probability of a 65-year-old reaching 92 on this file's proxy basis is not
+  negligible — it is the reason the product exists.
+- **Limb two — the *Ertragsanteil* against full taxation.** The annuity is taxed on 18 % of each
+  payment [R13]; the payout plan's interest is taxable in full as *Kapitalerträge*. The comparison
+  is not like-for-like on gross rates and any presentation that compares them gross is misleading.
+- **Limb three — what the annuitant gives up.** The capital is irreversibly committed (section 13),
+  there is no residual estate beyond the *Rentengarantiezeit* or *Kapitalrückgewähr* (sections 5
+  and 6), and an early death is a poor outcome. The *Bankauszahlplan* keeps every euro not yet
+  drawn. The honest framing, which the consumer material uses, is that a *Sofortrente* is
+  **insurance against outliving one's money**, priced like insurance: a premium is paid, most
+  buyers "lose", and the ones who need it are made whole.
+- **The nominal break-even.** On this file's `[std]` illustration the annuitant recovers the
+  *Einmalbeitrag* in nominal terms after `100 000 / (12 x 389.99) = 21.4` years, i.e. at about
+  **age 86** `[std]` (4) — close to the life expectancy the tariff assumes, which is exactly what
+  one would expect of a fairly priced annuity and is a useful sanity check on any quotation.
+- **No German market comparison, no published payout-plan rate and no Stiftung Warentest
+  side-by-side was established.** Every figure in this section is `[std]` arithmetic.
+
+### 17. Typical *Einmalbeitrag* sizes and market context
+
+- **Nothing quantitative was established.** No market size, no number of contracts, no average
+  *Einmalbeitrag*, no average purchase age, no distribution of *Rentengarantiezeit* choices beyond
+  the qualitative "most choose 10 to 20 years" [R23]. [R25] establishes the GDV statistical series
+  that would carry the first four and nothing inside it, and notes that even a retrieved figure
+  would aggregate *Sofortrenten* with other single-premium business.
+- **What can be said structurally.** The *Sofortrente* is a **decumulation** product bought with a
+  lump sum that already exists: a matured endowment or deferred annuity taken as a
+  *Kapitalabfindung*, an inheritance, a property sale, a severance payment. Its natural size is
+  therefore the size of those events, which in the German retail market means a five- to low
+  six-figure sum. A reference implementation's representative case of **100 000 €** `[std]`
+  (section 2) is chosen because it is the market's own quoting unit, not because it was observed.
+- **The product's market position is the mirror image of the deferred annuity's.** The sibling file
+  records that the classic **deferred** annuity has been withdrawn from sale by several of the
+  largest German writers — Debeka from 2016, and Allianz, Zurich and Generali before it — in favour
+  of hybrid designs with partial guarantees [R21 in that file; S8] [S7]. **No equivalent retreat
+  from the immediate annuity was established, and there is a structural reason not to expect one**:
+  the objection to the classic deferred contract was that a thirty-year interest guarantee is
+  expensive to hedge, whereas an immediate annuity's guarantee is short-dated in interest terms and
+  its real risk is longevity, which no alternative design removes. The *Sofortrente* is also the
+  natural destination of the *Kapitalwahlrecht* exercised on all those withdrawn contracts. **This
+  is an argument, not a finding**; it is flagged as such in gap 14.
+
+### 18. What a projection model needs, and what the corpus supplies
+
+| Input | Needed for | Status |
+|---|---|---|
+| *Einmalbeitrag* | the single inflow | model-point attribute |
+| Age and sex at *Rentenbeginn* | the annuity factor | model-point attribute |
+| *Rechnungszins* | the annuity factor | 0,25 % / 1,00 % established as statutory maxima [R7] [R8]; the carrier's own choice may be lower [S6] — model-point attribute |
+| Mortality, first order | the guaranteed annuity | DAV 2004 R named [S6] [R10]; **table not public, `[std]` proxy shipped** |
+| Mortality, second order | best-estimate cash flows | DAV 2004 R second order named [R10]; **`[std]` proxy** |
+| *Trendfunktion* | the generational surface | structure established [R10]; **parameters not established, `[std]`** |
+| `alpha`, `beta` charges | the net annuity | **nothing established, `[std]`** (section 12) |
+| *Rentengarantiezeit* | the certain-payment window | durations established [R23]; choice is a model-point attribute |
+| *Kapitalrückgewähr* | the declining death benefit | mechanic established; **basis and interaction not established** |
+| *Hinterbliebenenrente* % and second life | the joint-life liability | rider structure established [S9]; **percentages `[unverified]`** |
+| Payment frequency and timing | every cash-flow date | monthly established [S7] [R23]; ***vorschüssig* is `[std]`** (section 8) |
+| *Überschussrentensatz* and its profile | the non-guaranteed part of the payment | four forms established [R20] [R21] [R23]; **every rate `[std]`** (section 9) |
+| Lapse, paid-up, option take-up | — | **not needed**: the product has none [R1] (section 13) |
+
+The one-line summary of this file: **the mechanics are well enough established to specify the
+product; the levels are not established at all, and every one of them is `[std]`.**
+
+---
+
+## Observed variation across insurers
+
+**This file supports no numeric variation table.** No search was run for this product (gap 1), so
+no carrier's *Rentenhöhe*, charge, envelope, option menu or surplus rate was observed. A table with
+a column per carrier would be fabrication. What the corpus supports is a **structural** table —
+which features exist, and what evidence there is that a named carrier has them — and an honest
+statement of the parameters whose range is unknown.
+
+### Carriers in the corpus
+
+| Carrier | Document | What it establishes for this product |
+|---|---|---|
+| Zurich Deutscher Herold | [S2] *Verbraucherinformation*, sofort beginnende Rentenversicherung, Fassung 01/2022 | that a current-vintage conventional immediate-annuity pack exists, in the same series as the deferred one [S3]; **no clause content** |
+| Zurich Deutscher Herold | [S3] same series, deferred, Fassung 01/2026 | the two-factor rule at *Rentenbeginn*, and that *Bewertungsreserven* participation **continues in the payout phase** |
+| NÜRNBERGER | [S4] AVB `gn331303_p`, *mit sofort beginnender Rentenzahlung* | that an insurer AVB for exactly this product exists, in the same numbered family as the deferred and unit-linked ones |
+| NÜRNBERGER | [S5] AVB tariff NIR3301 | the *Rentengarantiezeit* as a **tariff-level feature carried in the product name** |
+| CosmosDirekt (Generali) | [S6] AVB LA 904 A | the conversion basis: **DAV 2004 R**, interest **0 % p.a.** at an unestablished vintage; the surplus disclaimer |
+| Allianz | [S7] KomfortDynamik page | that the current annuity factor **is the carrier's immediate-annuity tariff**; that the *Rentengarantiezeit* has a settable minimum |
+| Debeka | [S8] B LV series, Privatrente page | the *Deckungskapital* definition; the *Ertragsanteil* framing from an insurer's own page |
+| GDV | [S1] [S9] | the model-conditions taxonomy, the **absence** of an immediate-annuity model set from it, and the survivor's annuity as a **rider with its own conditions** |
+| Konzern Versicherungskammer | [S10] Überschussverteilung 2026 | the annual surplus-declaration document class, current to 2026; **no rate** |
+| Stuttgarter, Mecklenburgische | [S14] | that *Verbraucherinformation*, *Vertragsinformationen* and *Allgemeine Informationen* name the same pack |
+| Twenty-plus further carriers | [S13] | names only; **no document, no parameter** |
+
+### Structural variation the corpus supports
+
+| Feature | Variants that exist | Evidence |
+|---|---|---|
+| *Rentengarantiezeit* | 5 / 10 / 15 / 20 / 25 / 30+ years, or none; typical 15 years to age 70 and 10 years thereafter; most choose 10–20 | [R23]; tariff-level at [S5]; settable minimum at [S7] |
+| Settlement inside the guarantee period | instalments continue, **or** commuted lump sum | mechanic recorded; **which carriers use which, not established** |
+| Death benefit | *Rentengarantiezeit*, *Kapital-/Beitragsrückgewähr*, *Hinterbliebenenrente*, or none | sections 5–7; **no carrier's menu established** |
+| Survivor's annuity | rider with its own condition set; 60 % and 100 % are the market's standard levels `[unverified]` | [S9] |
+| *Überschussverwendung* in payout | konstant / steigend (volldynamisch) / teildynamisch / *Bonusrente* | [R20] [R21] [R23] |
+| *Bewertungsreserven* in payout | continue, at currently equal participation | [S3] [R3] |
+| Interest basis of the guarantee | at or **below** the *Höchstrechnungszins*; 0 % observed at one carrier | [S6] [R7] |
+| *Aufschubzeit* | 0 years (pure *Sofortrente*) or a short deferment | section 3; **no carrier's range established** |
+| Payment frequency | monthly standard; other frequencies `[unverified]` | [S7] [R23] |
+
+### Parameters whose range is unknown
+
+*Rentenhöhe* per 100 000 € at any age, at any carrier, in any year; the spread between the best and
+worst quotation; `alpha` and `beta` charges; *Effektivkosten* or *Renditeminderung*; minimum and
+maximum *Einmalbeitrag*; minimum and maximum entry age; the *Überschussrentensatz* and every other
+surplus rate; the split of new business between the *Überschussverwendung* forms; the take-up of
+*Kapitalrückgewähr* against *Rentengarantiezeit*; the market's size and the average ticket. **Every
+one of these is a gap, not an omission**, and each appears below.
+
+---
