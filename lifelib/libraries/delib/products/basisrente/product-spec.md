@@ -21,19 +21,17 @@ that disclaimer is stronger than usual: the corpus contains **two** carrier arte
 them a *Bedingungswerk*, so the composite is built from the **statute and the market's settled
 mechanics** rather than from a comparison of contracts. [S#] tags mark primary product documents and
 [R#] product-specific regulatory and actuarial references, both numbered per
-`_research/basisrente.md` and resolved in `sources.md` (same directory; numbering frozen). [REG-R#]
-refers to the cross-product reference library `references/regulatory-and-actuarial-references.md`,
-whose own numbering is distinct and also frozen. **[std]** marks a standardization introduced for the
-reference implementation, each with a rationale and, where the research recorded one, an argued
-plausible range.
+`_research/basisrente.md` and resolved in `sources.md` (numbering frozen); [REG-R#] refers to the
+cross-product reference library `references/regulatory-and-actuarial-references.md`, whose own
+numbering is distinct and also frozen. **[std]** marks a standardization introduced for the reference
+implementation, each with a rationale and an argued plausible range where the research recorded one.
 
 **Out of scope.** The *Riester-Rente* (Schicht 2, delib product 6) and the *klassische private
 Rentenversicherung* (Schicht 3, delib product 2) share this chassis and appear only as contrasts. The
 competing Schicht-1 vehicles of § 10 Abs. 1 Nr. 2 Buchst. **a** are not modelled, but they **consume
 the same annual ceiling** and that is treated below as a first-order fact about demand. The
-*Fonds-Basisrente* written by a *Kapitalverwaltungsgesellschaft*, *betriebliche Altersversorgung*,
-*Gruppenversicherung*, *private Krankenversicherung* and *Sterbegeldversicherung* are outside delib
-entirely.
+*Fonds-Basisrente*, *betriebliche Altersversorgung*, *Gruppenversicherung*, *private
+Krankenversicherung* and *Sterbegeldversicherung* are outside delib entirely.
 
 ---
 
@@ -104,11 +102,10 @@ consumer or comparison source was established [R22] [S16] (gap 3). The orders of
 **fifteen to sixteen million** Riester contracts and falling; **of the order of a hundred thousand**
 new contracts a year on a declining count trend; an **average contribution of two to four thousand
 euro a year** against roughly eight hundred for a Riester contract. Its share of new business by
-**premium** is much higher than by count, because the ceiling is fifteen to thirty times larger and
-the buyer is a higher earner. **Nothing downstream may cite a delib figure for the size of the
-Basisrente market.** For context, the *Altersvorsorgereformgesetz* — Bundesrat consent **8 May 2026**,
-new subsidised model from **1 January 2027** [REG-R44] — closes *Riester* to new business and leaves
-the Basisrente untouched, which if anything raises its relative weight in the certified market.
+**premium** is much higher than by count. **Nothing downstream may cite a delib figure for the size of
+the Basisrente market.** For context, the *Altersvorsorgereformgesetz* — Bundesrat consent **8 May
+2026**, new subsidised model from **1 January 2027** [REG-R44] — closes *Riester* to new business and
+leaves the Basisrente untouched.
 
 ---
 
@@ -144,8 +141,7 @@ guarantee mechanics by delib product 4.
 | Lives basis | Single life. A second life may enter only through the permitted *Hinterbliebenenabsicherung* | [R1] |
 | Entry ages | 18 to the low sixties; no statutory floor or ceiling on entry, only on *Rentenbeginn* | **[std]** (2) |
 | Earliest *Rentenbeginn* | Completion of the **62nd** year of life for contracts concluded **after 31 December 2011**; the **60th** for contracts concluded on or before that date | [R1] [R8] [REG-R39]; both [unverified] (3) |
-| Latest *Rentenbeginn* | **No statutory ceiling**; contracts commonly allow deferral past the statutory retirement age | [R1]; envelope **[std]** (2) |
-| Representative *Rentenbeginn* | Attained age **67** | **[std]** (4) |
+| Latest and representative *Rentenbeginn* | **No statutory ceiling**; contracts commonly allow deferral past the statutory retirement age. Representative attained age **67** | [R1]; **[std]** (2) (4) |
 | Annuity form | **Monthly, lifelong, on the taxpayer's own life.** No term-certain annuity, no *Auszahlungsplan* of the Riester type, no annuity on any other single life | [R1] [REG-R39] |
 | Unisex pricing | Mandatory for contracts concluded from **21 December 2012**; sex is carried for reporting only and must not enter pricing | [REG-R34] |
 | Anchor model cell | Entry age 45, *Rentenbeginn* 67, conclusion year 2026, *laufender Beitrag* 6 000,00 € p.a. annual in advance with a 2 % *Beitragsdynamik*, *Zuzahlung* 4 000,00 € p.a., *Rechnungszins* 1,00 %, guaranteed *Rentenfaktor* 28,00 €, no riders | **[std]** (5) |
@@ -220,9 +216,8 @@ Footnotes to **[std]** rows:
 | Old-age benefit | A **monthly lifelong annuity** on the taxpayer's own life, from *Rentenbeginn* until death | [R1] [REG-R39] |
 | Payment timing | Monthly **in advance**; no German market convention on *vorschüssig* against *nachschüssig* was established | gap 21; **[std]** |
 | Conversion rule | `monthly_annuity = Kapital(Rentenbeginn) / 10 000 × Rentenfaktor`, with `Rentenfaktor_applied = max(garantierter, aktueller)` | [R17] [S1] |
-| ***Garantierter Rentenfaktor*** | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a deliberate prudential margin. Representative **28,00 €** per month per 10 000 € at age 67 | mechanics [R17] [S1]; level **[std]** (12) |
+| ***Garantierter Rentenfaktor*** | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a deliberate prudential margin — one carrier's Schicht-3 sibling wording computes it on **DAV 2004 R at an interest basis of 0 % p.a.**, [unverified] as a Basisrente fact (gap 4). Representative **28,00 €** per month per 10 000 € at age 67 | mechanics [R17] [S1]; level **[std]** (12) |
 | ***Aktueller Rentenfaktor*** | The carrier's then-current immediate-annuity tariff at *Rentenbeginn*; the **higher of the two applies** — a guarantee with upside | [R17]; level **[std]** (12) |
-| Conversion basis quoted in the corpus | One carrier's Schicht-3 sibling wording computes the guaranteed factor on **DAV 2004 R at an interest basis of 0 % p.a.** | [S1] [R17]; transfer to the Basisrente [unverified] (gap 4) |
 | ***Schlussüberschussanteil*** | Allocated **only at *Rentenbeginn***, because the contract has no surrender and therefore no early-exit trigger — a cleaner single-date cash flow than anywhere else in delib | [R15] [REG-R24]; level **[std]** |
 | Death benefit, *Aufschubphase*, base design | **Nothing.** The reserve is released as a mortality profit | [R1] [REG-R39] |
 | Death benefit, *Aufschubphase*, with the rider | The *Deckungskapital* must **buy a survivor's annuity** for an eligible survivor; with no eligible survivor, **nothing is paid** | [R1] |
@@ -573,12 +568,11 @@ familiar German death-benefit designs into something different:
 survivor exists at the moment of death**. On a contract taken at 45 and running to 67 the child
 channel has usually closed long before *Rentenbeginn*, so in practice the cover is a spouse cover.
 That probability is **[std]** with no evidence behind it and is one of the more consequential **[std]**
-choices in the whole delib library. **The cover also costs annuity**: every euro of survivor cover
-reduces the *Rentenfaktor* or raises the premium. The sibling delib corpus's Schicht-3 illustration
-put a 10-year *Rentengarantiezeit* at roughly **0,5 %** of the annuity, 20 years at **2,6 %** and 30
-years at **8,0 %** — [unverified], **Schicht-3 figures, not transferable**, and **no Basisrente-specific
-cost was established**. The composite carries the reduction as a **[std]** table keyed by the option,
-anchored on those figures and labelled non-transferable.
+choices in the whole delib library. **The cover also costs annuity**: the sibling delib corpus's
+Schicht-3 illustration put a 10-year *Rentengarantiezeit* at roughly **0,5 %** of the annuity, 20
+years at **2,6 %** and 30 years at **8,0 %** — [unverified], **Schicht-3 figures, not transferable**,
+and **no Basisrente-specific cost was established**. The composite carries the *Rentenfaktor*
+reduction as a **[std]** table keyed by the option, anchored on those figures.
 
 ***Rentengarantiezeit*.** A guaranteed payment period measured from *Rentenbeginn*, representative
 values 0, 10 or 20 years, payable only to an eligible survivor and never commutable [R1].
@@ -589,10 +583,9 @@ Erwerbsfähigkeit* [R1] [REG-R29], and the premium for it is deductible **inside
 *Höchstbetrag*** at 100 % [R2] [R7]. **The 50 % rule**: the contributions qualify only if **more than
 half of the total contribution is attributable to the old-age provision**, so the supplementary covers
 together must stay **below 50 %** of the total [R1] [unverified] as to the statutory address, settled
-as substance. Three consequences: **a standalone Basisrenten-BU does not exist**, the cover having to
-ride on an old-age contract that is itself more than half the premium; the rule **caps the achievable
-disability annuity** for a given total premium, which is exactly the legislator's intention; and it is
-a **hard constraint on a model point**, `buz_prem_share < 0.50` being an invariant the test module
+as substance. Hence **a standalone Basisrenten-BU does not exist**, the rule **caps the achievable
+disability annuity** for a given total premium — exactly the legislator's intention — and it is a
+**hard constraint on a model point**, `buz_prem_share < 0.50` being an invariant the test module
 asserts.
 
 **Why anyone does this, and what it costs.** The premium for a *selbständige
@@ -604,18 +597,18 @@ is deductible in full inside a much larger ceiling. **The counterweight is the t
 [R4] [REG-R41], not at the *Ertragsanteil* of the *abgekürzte Leibrente* from a standalone SBU
 [unverified] (gap 16). **The buyer is trading relief now for a heavily taxed benefit later, at a
 moment — disability — when income has collapsed and the marginal rate may be low.** That is the whole
-of the BUZ-versus-SBU argument, stated here as a trade rather than as an advantage. Further
-constraints, [unverified] in every particular: the cover ends at the latest at the main contract's
-*Rentenbeginn*; the *BU-Rente* is itself subject to the non-capitalisation rule; a premium waiver is
-the normal companion cover. **No carrier's BUZ wording was reached** [S5] (gap 18).
+of the BUZ-versus-SBU argument, stated here as a trade rather than an advantage. Further constraints,
+[unverified] in every particular: the cover ends at the latest at the main contract's *Rentenbeginn*;
+the *BU-Rente* is itself subject to the non-capitalisation rule; a premium waiver is the normal
+companion cover. **No carrier's BUZ wording was reached** [S5] (gap 18).
 
-***Beitragsdynamik*** and ***Zuzahlung***, treated above, are contractual options rather than riders
-and are **on** in the base run, because they are the shape of the product's premium.
+***Beitragsdynamik*** and ***Zuzahlung*** are contractual options rather than riders and are **on** in
+the base run, because they are the shape of the product's premium.
 
 **Out of scope.** Everything a Schicht-3 or Riester contract offers and this one may not: the
 *Kapitalwahlrecht*, the *Teilkapitalauszahlung*, the *Kleinbetragsrenten-Abfindung*, the policy loan,
-assignment, the secondary-market sale, and any death lump sum to any beneficiary. These are not
-switched-off options; they are **structural absences**, and the model carries no cells for them.
+assignment, the secondary-market sale, and any death lump sum. These are not switched-off options;
+they are **structural absences**, and the model carries no cells for them.
 
 ---
 
@@ -638,11 +631,9 @@ table here would be a fabrication, so what follows is the real state of the evid
 
 **A range table needs two observations of one parameter and this corpus supplies exactly one:** at
 least **four Basisrente tariff wordings maintained in parallel at one carrier** [S1] [unverified] —
-what a tariff family looks like when *klassisch*, *fondsgebunden* and vintage editions coexist, and
-the most useful structural fact the corpus yields about the product's market form.
-
-**Everything a variations table would normally carry has no observation at all**: entry ages, minimum
-premiums, maximum *Zuzahlung*, permitted *Rentenbeginn* range, *Rentengarantiezeit* durations,
+what a tariff family looks like when *klassisch*, *fondsgebunden* and vintage editions coexist.
+**Everything else a variations table would normally carry has no observation at all**: entry ages,
+minimum premiums, maximum *Zuzahlung*, permitted *Rentenbeginn* range, *Rentengarantiezeit* durations,
 survivor-cover forms, BUZ terms, *Effektivkosten*, guarantee levels beyond one carrier,
 *Mindestversicherungsleistung*, fund universes. Twenty named German life writers whose Basisrente
 documents exist were not reached and **not one contributes a single fact** [S11] (gap 1). They are
@@ -651,10 +642,10 @@ Leipziger** (*AL_RoyalBasisRente*, repeatedly at the top of independent ratings)
 **NÜRNBERGER** (a principal *Berufsunfähigkeit* writer, and so the natural place to look for a **BUZ
 written inside a Basisrente** — **the single most valuable document this corpus could not reach**)
 [S5]; **Volkswohl Bund** [S6]; **LV 1871** (the best-known ***fondsgebundene* Basisrente with an open
-fund and ETF universe and no *Beitragsgarantie***) [S7] [unverified]; **Swiss Life** (a hybrid with a
-selectable guarantee level) [S8]; **Continentale** [S9]; **Stuttgarter** (whose *index-safe* naming, if
-right, would be an **index-linked Basisrente**; gap 12) [S10]; and the carriers of [S11], for which
-**nothing whatever** was established.
+fund and ETF universe and no *Beitragsgarantie***) [S7] [unverified]; **Swiss Life** [S8];
+**Continentale** [S9]; **Stuttgarter** (whose *index-safe* naming, if right, would be an
+**index-linked Basisrente**; gap 12) [S10]; and the carriers of [S11], for which **nothing whatever**
+was established.
 
 **What varies, on the reasoning rather than the evidence.** Four dimensions can be stated as ranges
 because they follow from the statute and the market's structure rather than from a comparison:
