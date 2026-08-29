@@ -331,16 +331,15 @@ entries a checker should verify first.
 - URL: not established (there is no single URL; every provider publishes its own, per tariff and per
   model point)
 - Content — **the document type a delib reader must understand even though none was opened**:
-  - It is **product-specific and quotation-specific**: the figures on it are computed for the
-    prospect's own age, term and contribution, not for the tariff in the abstract.
-  - It carries the three standardised comparators the German legislator built for this layer: the
-    ***Effektivkosten*** (reduction in yield — the annualised return give-up caused by all charges),
-    the ***Chancen-Risiko-Klasse*** (a standardised risk class computed by PIA on a common
-    capital-market model), and a set of **standardised projection scenarios** `[unverified]` as to
-    the exact current field list.
-  - It is the **only public document in the German market that states a Basisrente's total charge
-    burden as a single comparable number.** That is why gap 2 — that not one PIB was reached — is
-    the most consequential gap in this file: every charge parameter downstream is `[std]`.
+  It is **quotation-specific** — the figures are computed for the prospect's own age, term and
+  contribution, not for the tariff in the abstract — and it carries the three standardised
+  comparators the legislator built for this layer: the ***Effektivkosten*** (reduction in yield, the
+  annualised return give-up caused by all charges), the ***Chancen-Risiko-Klasse*** (a risk class
+  computed by PIA on a common capital-market model) and standardised projection scenarios,
+  `[unverified]` as to the exact current field list. It is the **only public document in the German
+  market that states a Basisrente's total charge burden as a single comparable number**, which is
+  why gap 2 is the most consequential gap in this file: every charge parameter downstream is
+  `[std]`.
 
 ### S14 — *Basisinformationsblatt* (PRIIP key information document)
 - Publisher: each provider
@@ -819,10 +818,9 @@ another delib product it is stated once and cross-referenced rather than re-deri
 - **The defining sentence** is the five-limb prohibition of [R1]: entitlements under the contract
   must be **not inheritable, not transferable, not chargeable, not saleable and not capitalisable**.
   Mechanic 3 takes them one at a time.
-- **Providers.** Life insurers are the dominant providers. A Basisrentenvertrag may also be written
-  by a *Kapitalverwaltungsgesellschaft* as a fund savings plan with an insurance-backed payout
-  phase — the *Fonds-Basisrente* — which meets the same tests but is out of delib scope
-  `[unverified]` as to the current market presence of that form.
+- **Providers.** Life insurers dominate. A Basisrentenvertrag may also be written by a
+  *Kapitalverwaltungsgesellschaft* as a fund savings plan with an insurance-backed payout phase —
+  the *Fonds-Basisrente*, out of delib scope, `[unverified]` as to its current market presence.
 
 ### 2. The two phases and the Rentenbeginn boundary
 
@@ -878,10 +876,9 @@ for a cash-flow model.
   the same person* without loss of the tax status — the entitlement is not being transferred to a
   third party — but **the conditions live in the administrative guidance at [R18] and could not be
   established**. Gap 13. Downstream this must not be asserted.
-- **What "nicht vererblich" does not mean.** It does not mean the contract may not pay on death. It
+- **What *nicht vererblich* does not mean.** It does not mean the contract may not pay on death; it
   means the entitlement is not part of the estate and may not be directed by will. Within the narrow
-  channel of mechanic 14 — spouse or registered partner, and children while *Kindergeld* runs — a
-  death benefit is permitted, provided it is itself paid **as an annuity**.
+  channel of mechanic 14 a death benefit is permitted, provided it is itself paid **as an annuity**.
 
 ### 4. Certification under § 5a AltZertG
 
@@ -1084,8 +1081,8 @@ for a cash-flow model.
 ### 10. The Rentenfaktor and the conversion at Rentenbeginn
 
 - The mechanic is identical to the Schicht-3 annuity and is established in detail in the sibling
-  delib file, which corroborated it across a carrier AVB, a carrier product page and a consumer
-  cluster. Restated here in one paragraph, with pointers rather than a re-derivation:
+  delib file, which corroborated it across a carrier AVB, a product page and a consumer cluster.
+  Restated here with pointers rather than a re-derivation:
 
   ```
   monthly_annuity = Kapital(Rentenbeginn) / 10 000 x Rentenfaktor
@@ -1125,9 +1122,9 @@ for a cash-flow model.
      and convert it into annuity at *Rentenbeginn* — are the natural forms. **No carrier's option
      list was established** and gap 17 records it.
   2. **The *Schlussüberschussanteil* has no early-exit trigger.** On an endowment a terminal bonus
-     is allocated at maturity and, partly, on surrender; a Basisrente has no surrender, so the
-     terminal bonus is allocated **only at *Rentenbeginn***. That makes the terminal component a
-     cleaner single-date cash flow on this product than on any other in delib.
+     is allocated at maturity and, partly, on surrender; a Basisrente has no surrender, so it is
+     allocated **only at *Rentenbeginn***, a cleaner single-date cash flow than anywhere else in
+     delib.
 - **No declared rate specific to a Basisrente was established.** The market-average declared rates
   carried in the sibling files are Schicht-3 and endowment figures and must not be relabelled.
 
@@ -1333,12 +1330,11 @@ for a cash-flow model.
     `[unverified]`; **no carrier's threshold was established** and it is `[std]` downstream.
   - **Reversible.** Premiums can normally be resumed within a stated window
     (*Wiederinkraftsetzung*); **no window was established**.
-- **Why this matters more here than anywhere else in delib.** On an endowment or a Schicht-3
-  annuity, *Kündigung* and *Beitragsfreistellung* are two exits competing for the same policyholder,
-  and a model must not merge them. On a Basisrente **there is only one**, and the policyholder
-  facing a cash crisis has exactly one lever. That should make the *Beitragsfreistellung* rate on
-  this product materially higher than on its Schicht-3 sibling at short durations, and it makes the
-  paid-up cohort a large and permanent part of the book rather than a residue.
+- **Why this matters more here than anywhere else in delib.** Elsewhere *Kündigung* and
+  *Beitragsfreistellung* are two exits competing for the same policyholder and a model must not
+  merge them; here **there is only one**, and the policyholder facing a cash crisis has one lever.
+  That should put the *Beitragsfreistellung* rate above a Schicht-3 lapse rate at short durations
+  and make the paid-up cohort a large permanent part of the book rather than a residue.
 - **A paid-up Basisrente is still a Basisrente**: still certified, still protected, still taxed on
   the *Besteuerungsanteil*, still payable only as an annuity from 62 at the earliest. Nothing about
   going premium-free releases the constraints.

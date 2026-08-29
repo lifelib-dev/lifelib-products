@@ -1344,12 +1344,11 @@ guaranteed rate `i_g = 1.00 %`; *Partizipationsquote* variant `q = 60 %`.
   the sum of capped returns, will credit something here. The correct answer is zero, and a test must
   assert it.
 
-**The two years together.** Over the two *Indexjahre*, on an unchanged base of 50,000.00 € for
-clarity, the index arm credits `4,450.00 + 0.00 = 4,450.00 €`; the safe arm credits
-`1,250.00 + 1,281.25 = 2,531.25 €` (the second year's 2,50 % struck on 51,250.00 €). The index arm
-wins over these two constructed years by **1,918.75 €**, and it does so entirely on the strength of
-one year in three-and-a-half-times territory while losing the other outright. That shape — a
-minority of large years carrying a majority of zero years — is the product's real return
+**The two years together.** On an unchanged base of 50,000.00 € the index arm credits
+`4,450.00 + 0.00 = 4,450.00 €` and the safe arm `1,250.00 + 1,281.25 = 2,531.25 €` (the second
+year's 2,50 % struck on 51,250.00 €) — the index arm ahead by **1,918.75 €**, entirely on the
+strength of one year at three-and-a-half times the safe rate while losing the other outright. That
+shape, a minority of large years carrying a majority of zero years, is the product's real return
 distribution, and section 20 puts a number on it.
 
 ### 20. What the cap costs — an expected-value calculation, `[std]` throughout
@@ -1418,58 +1417,49 @@ P( S <= 0 )     =  Phi( 5.04 / 12.79 )  =  0.65
   free money or a swindle depending on which way the inconsistency falls. The technical notes are
   required to state the calibration explicitly, to run it, and to report the calibrated cap beside
   the `[std]` 3,0 % headline.
-- **Sensitivity, which is the real point**: the expected credit is extremely sensitive to the assumed
-  volatility, because volatility enters twice — it makes the cap bind more often (lowering the
-  expectation) and it makes the floor worth more (raising it). At a 5 % annualised volatility, the
-  low-volatility house-index case of section 9, the same cap almost never binds and the payoff
-  approaches the index return; at 25 % the expected credit is dominated by the floor. **Any single
-  expected-return number quoted for this product without its volatility assumption is meaningless**,
-  and that is worth saying in the product specification.
+- **Sensitivity, which is the real point**: volatility enters twice — it makes the cap bind more
+  often, lowering the expectation, and it makes the floor worth more, raising it. At the 5 %
+  annualised volatility of the house-index case (section 9) the cap almost never binds and the payoff
+  approaches the index return; at 25 % the expected credit is dominated by the floor. **Any expected
+  return quoted for this product without its volatility assumption is meaningless.**
 
 ### 21. Criticism of the product
 
 Recorded as arguments, with their strength assessed, because no consumer test or academic paper was
 retrieved and none is cited.
 
-1. **The cap's effect on the expected credit is large and is not disclosed in a form a purchaser can
-   use.** Section 20 quantifies it: at ordinary equity volatility a 3 % monthly cap can make a
-   capped month's expected value negative, and the product's positive expectation then rests
-   entirely on the annual floor. The purchaser is told the cap, is not told the volatility, and is
-   in no position to do this calculation. **This is the strongest criticism of the product and it is
-   structural, not a matter of any carrier's conduct.**
-2. **Negative months are uncapped and this is genuinely counter-intuitive.** A symmetric-sounding
-   description — "you get the index's monthly moves, up to 3 % a month" — conceals that the
-   asymmetry runs entirely one way. Example B in section 19 is the demonstration: the index rose
-   6,44 % and the credit was zero. **This is the feature most often misdescribed in secondary
-   material**, including by intermediaries.
-3. **The comparison with a direct index investment is unfavourable on every axis except the
-   guarantee and the tax deferral.** A direct holding of a total-return index fund receives the
-   dividends (some 3 % per year on euro-area equity, `[unverified]`), has no cap, no participation
-   rate, no annual reset and charges of a few basis points. The Indexpolice gives up the dividends
-   (section 9), gives up the tail of every good month, adds acquisition and administration costs
-   (section 13), and possibly adds an index-level fee that is not disclosed. **What it gives back is
-   real**: the capital cannot fall, credits are locked in permanently, the guarantee is the
-   insurer's, and the accumulation is tax-deferred inside the wrapper with a favourable treatment on
-   exit [R14]. A fair statement puts both sides, and the delib product specification is required to.
-4. **The Cap is redetermined annually at the insurer's discretion.** The purchaser signs a contract
-   whose economic terms for year 12 are unknown at inception and will be set by the counterparty.
-   § 315 BGB [R22] constrains that discretion in principle; **no decided case tests it** (gap 16),
-   and no carrier is established as guaranteeing a *Mindest-Cap* (gap 10).
-5. **The move to house indices moved the give-up out of sight** (section 9): a participation rate
-   near 100 % on a volatility-targeted excess-return index with an embedded fee is not obviously a
-   better deal than 55 % of the EURO STOXX 50, and it is much harder to evaluate.
-6. **Complexity as a defect in itself.** A retail savings product whose payoff requires the reader to
-   understand a strip of capped monthly returns, an annual floor, an option budget financed by a
-   discretionary surplus declaration and an annual election, is a product most purchasers cannot
-   evaluate. That is a conduct-supervision concern in the terms of BaFin's value-for-money framing
-   [R16][R17], and it is the reason this product, more than any other in delib, deserves a
-   mechanically exact reference implementation.
-7. **The counter-argument, stated fairly.** The relevant comparison for most purchasers is not with
-   an index fund but with the *sichere Verzinsung* arm of the same contract — the classic annuity
-   they would otherwise have bought. Against that benchmark the index arm has a higher expected
-   value (section 20), cannot do worse than zero in any year, and costs nothing extra. On that
-   comparison the product is defensible, and the annual *Wahlrecht* means the purchaser can retreat
-   to the benchmark at any anniversary.
+1. **The cap's effect on the expected credit is large and is not disclosed in a usable form.**
+   Section 20 quantifies it: at ordinary equity volatility a 3 % monthly cap makes a capped month's
+   expected value negative, and the product's positive expectation then rests entirely on the annual
+   floor. The purchaser is told the cap, is not told the volatility, and cannot do the calculation.
+   **This is the strongest criticism and it is structural, not a matter of any carrier's conduct.**
+2. **Negative months are uncapped, and that is genuinely counter-intuitive.** A symmetric-sounding
+   description — the index's monthly moves, up to 3 % a month — conceals an asymmetry running
+   entirely one way. Example B in section 19 is the demonstration: the index rose 6,44 % and the
+   credit was zero. **This is the feature most often misdescribed in secondary material.**
+3. **Against a direct index investment the product loses on every axis but two.** A total-return
+   index fund receives the dividends (some 3 % per year on euro-area equity `[unverified]`), has no
+   cap, no participation rate and charges of a few basis points; the Indexpolice gives up the
+   dividends, gives up the tail of every good month, and adds acquisition, administration and
+   possibly index-level costs. **What it gives back is real**: the capital cannot fall, credits lock
+   in permanently, the guarantee is the insurer's, and the accumulation is tax-deferred with a
+   favourable exit [R14]. A fair statement puts both sides and the product specification must.
+4. **The Cap is redetermined annually at the insurer's discretion**, so the purchaser signs a
+   contract whose economic terms for year 12 will be set by the counterparty. § 315 BGB [R22]
+   constrains that in principle; **no decided case tests it** (gap 16), and no carrier is established
+   as guaranteeing a *Mindest-Cap* (gap 10).
+5. **The move to house indices moved the give-up out of sight** (section 9): a near-100 %
+   participation on a volatility-targeted excess-return index with an embedded fee is not obviously
+   better than 55 % of the EURO STOXX 50, and is much harder to evaluate.
+6. **Complexity is itself a defect.** A retail product whose payoff requires a strip of capped
+   monthly returns, an annual floor, an option budget financed by a discretionary declaration and an
+   annual election is one most purchasers cannot evaluate — a conduct concern in BaFin's
+   value-for-money terms [R16][R17], and the reason this product above all deserves a mechanically
+   exact reference implementation.
+7. **The counter-argument, fairly stated.** The relevant benchmark for most purchasers is not an
+   index fund but the *sichere Verzinsung* arm of the same contract. Against that, the index arm has
+   a higher expected value (section 20), cannot do worse than zero in any year, costs nothing extra,
+   and can be abandoned at any anniversary. On that comparison the product is defensible.
 
 ### 22. Typical parameter levels
 
@@ -1544,23 +1534,18 @@ this author's assessment of the plausible market band and is itself `[unverified
 | Charges, lapse rates, entry age, premium, term | **not established** — all `[std]` | sections 13, 17, 22 |
 | A real *Indexjahr* to reproduce | **not established** — constructed | section 19 |
 
-**The design recommendation this research leads to, and the reason it is defensible under these
-retrieval conditions.** Because no real *Indexjahr* could be obtained, the delib model should not
-model the index credit as an assumed rate. It should **implement the contractual formula literally,
-against an explicit table of monthly index returns supplied as an external CSV** beside the model,
-one row per projection year and twelve columns of monthly returns, with the `provenance` column
-recording the path as `[std]`. The annual-step model then reads twelve monthly returns per year,
-caps each at `C`, sums them, floors at zero, and credits. That way:
-
-- the mechanic — the thing this product **is** — is reproduced exactly rather than approximated;
-- the worked example of section 19 becomes the model's anchor cell and is asserted cell by cell;
-- the pitfall in Example B (index up, credit zero) becomes a test rather than a remark;
-- every unestablished level stays a visible `[std]` parameter rather than being buried in an assumed
-  credit rate;
-- and the volatility sensitivity of section 20 is demonstrable by swapping the CSV.
-
-This is the strongest thing a research file written with no research channel can hand downstream: not
-a set of numbers it could not obtain, but the exact arithmetic the numbers would have gone into.
+**The design recommendation this research leads to.** Because no real *Indexjahr* could be obtained,
+the delib model must **not** model the index credit as an assumed rate. It should **implement the
+contractual formula literally against an explicit table of monthly index returns supplied as an
+external CSV** beside the model — one row per projection year, twelve monthly-return columns, the
+`provenance` column recording the path as `[std]` — and cap, sum, floor and credit each year from it.
+That way the mechanic is reproduced exactly rather than approximated; the worked example of section
+19 becomes the anchor cell and is asserted cell by cell; the Example B pitfall (index up, credit
+zero) becomes a test rather than a remark; every unestablished level stays a visible `[std]`
+parameter instead of being buried in an assumed credit rate; and the volatility sensitivity of
+section 20 is demonstrable by swapping the CSV. That is the strongest thing a research file written
+with no research channel can hand downstream: not the numbers it could not obtain, but the exact
+arithmetic those numbers would have gone into.
 
 ---
 
@@ -1619,12 +1604,11 @@ This register is not a formality. Under the retrieval conditions stated at the h
 is a substantial part of the document's value, and it is written so that a later researcher with a
 working network knows exactly what to go and get, and in what order.
 
-1. **No carrier *Bedingungswerk* for an index tariff was obtained, and that is the file's central
-   defect.** The AVB is the document that settles the *Indexjahr* definition, the observation dates,
-   the payoff formula's exact wording, the base of the participation, the *Wahlrecht* timing, the
-   *Cap-Festlegung* clause, the *Mindest-Cap* if any, the *Lock-in* clause and the *Ersatzindex*
-   clause [S2]. Everything this file says about those is written from knowledge of the design family,
-   not from a document. **Get one AVB and half of this register closes.**
+1. **No carrier *Bedingungswerk* for an index tariff was obtained; that is the file's central
+   defect.** The AVB settles the *Indexjahr* definition, the observation dates, the payoff wording,
+   the base of the participation, the *Wahlrecht* timing, the *Cap-Festlegung* clause, any
+   *Mindest-Cap*, the *Lock-in* and the *Ersatzindex* clause [S2]. Everything here on those points is
+   written from knowledge of the design family. **Get one AVB and half of this register closes.**
 
 2. **The carrier and product-name inventory could not be assembled.** The brief named twenty-six
    German carriers. This file can name three products with moderate confidence — Allianz IndexSelect,

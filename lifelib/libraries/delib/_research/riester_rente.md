@@ -175,18 +175,15 @@ gloss. The vocabulary this product needs, beyond the shared Schicht-3 vocabulary
 Sixteen known references. **None was retrieved and none was corroborated by a search run for this
 file** (three carry corroboration inherited from a sibling delib session and say so). They are
 listed because a research file's job is to name the documents a downstream claim must be checked
-against, and because the *kinds* of document that exist for a German Riester product are themselves
-a finding: unlike the French corpus, where a single *notice d'information* carries everything, the
-German Riester disclosure is split across four documents — the **AVB** (the contract terms), the
-**Produktinformationsblatt** (the statutory comparison sheet, with the *Effektivkosten* and the
-*Chancen-Risiko-Klasse*), the **Verbraucherinformation / vorvertragliche Information** (the VVG-InfoV
-pack) and the **jährliche Information** (the annual statement) [R4] [R5].
+against, and because the *kinds* of document that exist here are themselves a finding: the German
+Riester disclosure is split across four — the **AVB**, the **Produktinformationsblatt** (the
+statutory comparison sheet with the *Effektivkosten* and the *Chancen-Risiko-Klasse*), the
+**Verbraucherinformation** pack and the **jährliche Information** [R4] [R5].
 
-Four families are represented: the **GDV model conditions** [S1] [S2] [S3], the shared drafting
-template; the **insurance wordings** [S4]–[S8] [S16], which are the product this model represents;
-the **fund and bank wordings** [S9]–[S12], which are the same subsidy on a different chassis; and
-the **Wohn-Riester** documents [S13], which are the boundary of scope. [S14] and [S15] are the two
-statutory disclosure artefacts that every one of the others carries.
+Four families: the **GDV model conditions** [S1]–[S3]; the **insurance wordings** [S4]–[S8] [S16],
+which are the product this model represents; the **fund and bank wordings** [S9]–[S12], the same
+subsidy on a different chassis; and the **Wohn-Riester** documents [S13], the boundary of scope.
+[S14] and [S15] are the statutory disclosure artefacts every one of the others carries.
 
 ### S1 — GDV, "Allgemeine Bedingungen für die fondsgebundene Rentenversicherung nach dem Altersvorsorgeverträge-Zertifizierungsgesetz" (Musterbedingungen)
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV), Berlin
@@ -427,21 +424,18 @@ statutory disclosure artefacts that every one of the others carries.
 
 ## Regulatory and actuarial references
 
-Twenty-seven known references. The same retrieval statement applies to every one of them: **no
-document was retrieved and no search was run for this file.** The statutory URLs given in canonical
-`gesetze-im-internet.de` form are marked `[unverified]` — they are the form the host uses, not a
-link anyone followed. The **content blocks state what the instrument provides, in this file's own
-words, from general knowledge of German pension law**, with every paragraph number, date and figure
-tagged. That is the honest description of their status and it is weaker than a citation.
+Twenty-seven known references. The same retrieval statement applies to every one: **no document was
+retrieved and no search was run for this file.** The statutory URLs given in canonical
+`gesetze-im-internet.de` form are marked `[unverified]` — they are the form the host uses, not a link
+anyone followed. The **content blocks state what the instrument provides, in this file's own words,
+from general knowledge of German pension law**, with every paragraph number, date and figure tagged.
 
-Two structural points about the German arrangement, stated once so they need not be repeated. First,
-**the Riester product is defined by two statutes that do different jobs**: the AltZertG says what a
-contract must contain to be certifiable, and the EStG says who gets what subsidy and how the
-benefits are taxed. A delib document that wants a *product* rule looks in the AltZertG; one that
-wants a *money* rule looks in the EStG. Second, **there is no supervisory instrument that sets
-Riester tariff levels**. The *Höchstrechnungszins* [R22] binds the guarantee's discount rate and
-nothing else; charges, *Rentenfaktoren* and surplus are unregulated as to level and are disclosed
-rather than capped [R4] [R5].
+Two structural points, stated once. **The product is defined by two statutes doing different jobs**:
+the AltZertG says what a contract must contain to be certifiable, the EStG says who gets what
+subsidy and how benefits are taxed — a *product* rule is in the first, a *money* rule in the second.
+And **no supervisory instrument sets Riester tariff levels**: the *Höchstrechnungszins* [R22] binds
+the guarantee's discount rate and nothing else; charges, *Rentenfaktoren* and surplus are unregulated
+as to level and are disclosed rather than capped [R4] [R5].
 
 ### R1 — AltZertG § 1, the criteria of a certifiable *Altersvorsorgevertrag*
 - Publisher: Bundesministerium der Justiz / juris (Gesetze im Internet)
