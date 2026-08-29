@@ -1525,33 +1525,31 @@ Two different things that are routinely confused: the first is a **product form*
 ## Observed variation across insurers
 
 **The honest headline: no carrier was sampled.** The frlib term-life file could put eight carriers
-side by side because eight *notices d'information* were downloaded and read [`frlib` variations
-table]. The sibling delib endowment file could put six carriers side by side, thinly, because six
-produced a document in a search result [`kapitallebensversicherung.md` variations table]. **This file
-can put none side by side, because no search was available and no document was retrieved.** What
-follows therefore states what a variations table would have contained, and records for every cell
-that it is empty.
+side by side because eight *notices d'information* were downloaded and read; the sibling delib
+endowment file could put six side by side, thinly, because six produced a document in a search result.
+**This file can put none side by side, because no search was available and no document was retrieved.**
+What follows states what a variations table would have contained and records that every cell is empty.
 
 ### Carrier coverage actually achieved
 
-| Carrier | Sells an individual RLV | AVB located | Product document content established | Any parameter established |
+| Carrier | Sells an individual RLV | AVB located | Document content established | Any parameter established |
 |---|---|---|---|---|
 | CosmosDirekt [S3] | asserted | no | no | no |
 | Hannoversche [S4] | asserted | no | no | no |
-| HUK-COBURG / HUK24 [S5] | asserted | no | **one guide page URL inherited**, title and four-component surplus vocabulary only | no |
-| Debeka [S6] | asserted | no — document library path pattern inherited only | no | no |
+| HUK-COBURG / HUK24 [S5] | asserted | no | **one guide-page URL inherited**; title and four-component surplus vocabulary only | no |
+| Debeka [S6] | asserted | no — library path pattern inherited only | no | no |
 | Dialog [S7] | asserted | no | no | no |
 | Allianz [S8] | asserted | no | no | no |
 | R+V [S9] | asserted | no | no | no |
-| Nürnberger [S10] | asserted | no | no | no |
+| NÜRNBERGER [S10] | asserted | no | no | no |
 | LV 1871 [S11] | asserted | no | no | no |
 | Continentale / Europa [S12] | asserted | no | no | no |
 | Seventeen further carriers [S13] | asserted | no | no | no |
 
 ### Parameter ranges — what is argued, and what is observed
 
-Every "observed range" below is **argued from structure or from market knowledge**, not observed in a
-document. The "who sits where" column is the point of a variations table and it is empty throughout.
+Every "range" below is **argued from structure or market knowledge**, not observed in a document. The
+"who sits where" column is the point of a variations table, and it is empty throughout.
 
 | Parameter | Range carried in the delib specification | Who sits where | Tag |
 |---|---|---|---|
@@ -1566,43 +1564,41 @@ document. The "who sits where" column is the point of a variations table and it 
 | Vereinfachte Gesundheitsprüfung threshold | **not established at all** | **not established** | gap 22 |
 | Berufsgruppen count | small, or none below a hazardous-occupation list | **not established** | gap 22 |
 | Nachversicherung event list | nine recurring event families | **not established** | gap 7 |
-| Nachversicherung cap and age limit | **not established at all** | **not established** | gap 7 |
+| Nachversicherung cap, window and age limit | **not established at all** | **not established** | gap 7 |
 | Ratenzahlungszuschlag | 2 % / 3 % / 5 % | market convention, no attribution | **[std]**, gap 21 |
 | Rückkaufswert | none, market-wide | uniform | [R2], gap 2 |
 | Selbsttötung window | three years, statutory minimum, extendable | statutory | [R1] |
 | Versicherungssumme shapes offered | all three at most carriers | **not established** | mechanic 3 |
 | Verbundene Leben offered | widely | **not established** | mechanic 14 |
-| Lapse rate | 2 % to 8 % early durations | **not established** | **[std]**, gap 13 |
+| Lapse rate | 2 % to 8 % in early durations | **not established** | **[std]**, gap 13 |
 
 ### What the corpus supports as a representative design
 
-The design below is what the **mechanics** support. It is a **composite**, not a copy of any carrier's
-tariff, and it could not be otherwise, because no carrier's tariff was read.
+A **composite**, not a copy of any carrier's tariff — it could not be otherwise, because no carrier's
+tariff was read.
 
-- **Single life, individual, participating *Risikolebensversicherung***, written on medical
-  underwriting, in the *Neubestand* [R9] [R12].
-- ***Konstante Versicherungssumme*** of **300,000 EUR** as the base shape, with `linear fallend` and
+- **Single life, individual, participating *Risikolebensversicherung***, medically underwritten,
+  *Neubestand* [R9] [R12].
+- ***Konstante Versicherungssumme* of 300 000 €** as the base shape, with `linear fallend` and
   `annuitätisch fallend` available as external schedule tables on the same chassis (mechanic 3).
-  **[std]**; 300,000 EUR is chosen because it is the sum at which the *Erbschaftsteuer* contrast of
+  **[std]**; 300 000 € is chosen because it is the sum at which the *Erbschaftsteuer* contrast of
   mechanic 14 becomes the decisive product-design fact.
 - **Entry age 35, term 25 years, cover to age 60**, level *Bruttobeitrag* over the whole term
-  (mechanic 4). **[std]**; the term is long enough for the *Deckungskapital* to build and run off
-  visibly and short enough to fit one worked-example table.
-- ***Bruttobeitrag* struck on first-order bases** — a DAV 2008 T-shaped `[std]` proxy at
-  `q1 = 2.25 x q2`, unisex 50/50, non-smoker, *Rechnungszins* 1,00 %, *gezillmert* at the 25 ‰
-  ceiling [R10] [R12] [R13].
+  (mechanic 4). **[std]**; long enough for the *Deckungskapital* to build and run off visibly, short
+  enough to fit one worked-example table.
+- ***Bruttobeitrag* on first-order bases** — a DAV 2008 T-shaped `[std]` proxy at `q1 = 2.25 x q2`,
+  unisex 50/50, non-smoker, *Rechnungszins* 1,00 %, *gezillmert* at the 25 ‰ ceiling [R10] [R12] [R13].
 - ***Zahlbeitrag* derived, not assumed**: the model computes the mortality margin against the
   second-order basis, returns the MindZV minimum of **90 %** of it as *Beitragsverrechnung*, and
-  publishes **both** premium streams [R9] (mechanic 5). The derived ratio is **0.57 [std]**.
+  publishes **both** premium streams [R9] (mechanic 5). Derived ratio **0.57 [std]**.
 - **No *Rückkaufswert*, no *beitragsfreie Versicherungssumme*, no maturity value.** Lapse is a pure
   decrement and `claims_surr` is structurally zero [R2] [R3] [R8] (mechanic 11).
-- **Three-year *Selbsttötung* window** applied as a benefit switch paying the (nil) *Rückkaufswert*
-  [R1] (mechanic 12).
-- **No exclusion decrement.** The *Kriegsklausel* is documented and not modelled (mechanic 13).
+- **Three-year *Selbsttötung* window** as a benefit switch paying the (nil) *Rückkaufswert* [R1]
+  (mechanic 12); **no exclusion decrement** — the *Kriegsklausel* is documented, not modelled
+  (mechanic 13).
 - **Options off in the base run**: *Nachversicherungsgarantie*, *Dynamik*, *verbundene Leben*, UZV,
-  BUZ, *vorgezogene Todesfallleistung* (mechanics 8, 14).
-- **Lapse `[std]` at 6 % / 4 % / 3 %**, with selective lapse deliberately not modelled and recorded
-  as a pitfall (mechanic 17).
+  BUZ, *vorgezogene Todesfallleistung* (mechanics 8, 14). **Lapse `[std]` at 6 % / 4 % / 3 %**, with
+  selective lapse deliberately not modelled and recorded as a pitfall (mechanic 17).
 - **Gross cash flows, undiscounted.** No *Deckungsrückstellung*, no Solvency II, no tax computation
   [R21] [R22].
 
@@ -1610,153 +1606,141 @@ tariff, and it could not be otherwise, because no carrier's tariff was read.
 
 ## Gaps and caveats
 
-1. **No price point of any kind was obtained, and this is the largest gap in the file.** The brief
-   asked for annual *Zahlbeiträge* at 100,000 EUR and 300,000 EUR, ages 30 and 40, non-smoker, from
-   comparison portals, on the correct ground that these are the only public German price data for
-   this product. No German carrier publishes a rate card [S3]–[S13]; the *Produktinformationsblatt*
-   quotes the applicant's own premium [S2]; a portal result is generated per query rather than
-   published [S14]; and no search or fetch was available. **Not one *Bruttobeitrag*, *Zahlbeitrag*,
-   spread ratio or smoker ratio in this file is an observation.** The whole premium scale of mechanic
-   16 is a `[std]` construction. **One published *Bruttobeitrag* / *Zahlbeitrag* pair at a known age,
-   sum and term would pin the *Sicherheitszuschlag* directly and re-derive the rest**, and is the
-   single highest-value datum a later researcher could add.
+1. **No price point of any kind was obtained — the largest gap in the file.** No German carrier
+   publishes a rate card [S3]–[S13]; the *Produktinformationsblatt* quotes the applicant's own premium
+   [S2]; a portal result is generated per query rather than published [S14]; and no search or fetch was
+   available. **Not one *Bruttobeitrag*, *Zahlbeitrag*, spread ratio or smoker ratio in this file is an
+   observation**; the whole premium scale of mechanic 16 is a `[std]` construction. **One published
+   *Bruttobeitrag* / *Zahlbeitrag* pair at a known age, sum and term would pin the *Sicherheitszuschlag*
+   directly and re-derive the rest**, and is the highest-value datum a later researcher could add.
 
-2. **The statutory basis for the absence of a *Rückkaufswert* is `[unverified]`.** The claim that
-   § 169 Abs. 1 VVG confines the surrender-value duty to a life insurance whose insured event is
-   **certain to occur**, and therefore does not reach a term assurance, is asserted from knowledge of
-   the section's structure [R2]. **No search returned that wording.** The practical result — that a
-   German RLV pays nothing on *Kündigung* — is corroborated by uniform market practice and is not in
-   doubt; the route to it is. A reader relying on the legal analysis must check § 169 Abs. 1 at
-   source. The same `[unverified]` applies to whether § 165 carries the same limitation [R3].
+2. **The statutory basis for the absence of a *Rückkaufswert* is `[unverified]`.** That § 169 Abs. 1
+   VVG confines the surrender-value duty to a life insurance whose insured event is **certain to
+   occur**, and so does not reach a term assurance, is asserted from knowledge of the section's
+   structure [R2]; **no search returned that wording**. The practical result — nothing is paid on
+   *Kündigung* — is corroborated by uniform market practice and is not in doubt; the route to it is. The
+   same tag applies to whether § 165 carries the same limitation [R3].
 
-3. **No *Produktinformationsblatt* was located, in specimen or in model form** [S2]. The PIB is the
-   one German document type that routinely shows the *Bruttobeitrag* and the *Zahlbeitrag* side by
-   side, which makes its absence the direct cause of gap 1. Its field list is asserted from the
-   document's purpose and is `[unverified]`.
+3. **No *Produktinformationsblatt* was located, in specimen or model form** [S2]. The PIB is the one
+   German document type that routinely shows the *Bruttobeitrag* and *Zahlbeitrag* side by side, so its
+   absence is the direct cause of gap 1. Its field list is inferred from the document's purpose and is
+   `[unverified]`.
 
 4. **MindZV section numbering is unsettled.** The three percentages — **90 % of the *Risikoergebnis*,
    90 % of the investment result, 50 % of the *übriges Ergebnis*** — are inherited from a
-   search-corroborated sibling entry and are used [R9]. **The section numbers are not**: the sibling
-   file places the investment result at § 6, and the author's recollection places it at § 4, the
-   *Risikoergebnis* at § 5 and the *übriges Ergebnis* at § 6. No MindZV section number is cited
-   anywhere in the delib `risikolebensversicherung` documents.
+   search-corroborated sibling entry and are used [R9]; **the section numbers are not**, the sibling
+   file and the author's recollection disagreeing. No MindZV section number is cited anywhere in the
+   delib `risikolebensversicherung` documents.
 
-5. **The Continentale / Europa natural experiment was not run** [S12]. One group runs a broker-channel
+5. **The Continentale / Europa natural experiment was not run** [S12]: one group runs a broker-channel
    and a direct-channel carrier on the same product with the same underwriting and reserving basis,
    which is the cleanest available way to isolate the channel effect on the *Brutto*/*Zahlbeitrag*
    spread. Neither carrier's documents were reached. The same applies to Dialog as a monoline
    comparator [S7].
 
 6. **The magnitude of the DAV 2008 T *Sicherheitszuschlag* was not established.** The *Richtlinie*
-   regulates the **procedure** for setting it [R12]; the level is not public. It is the parameter that
-   determines the *Brutto*/*Zahlbeitrag* spread almost by itself (mechanic 5), and it is shipped as
-   **[std] `m = 1.25`** with the calibration and sensitivity of mechanic 16 stated in full.
+   regulates the **procedure** for setting it [R12]; the level is not public. It determines the
+   *Brutto*/*Zahlbeitrag* spread almost by itself (mechanic 5) and is shipped as **[std] `m = 1.25`**
+   with its calibration and sensitivity stated in full.
 
-7. **No *Nachversicherungsgarantie* parameters were established** [S11] [S17]. The nine recurring
-   event families of mechanic 8 are asserted from market knowledge and are `[unverified]`; **no
-   exercise window, no per-event cap, no cumulative cap and no maximum age comes from any document.**
-   The option is off in the base run, so the gap does not affect the reference implementation's
-   numbers — but it does mean the specification's option section is entirely `[std]`.
+7. **No *Nachversicherungsgarantie* parameters were established** [S11] [S17]. The nine recurring event
+   families of mechanic 8 are `[unverified]`; **no exercise window, per-event cap, cumulative cap or
+   maximum age comes from any document.** The option is off in the base run, so the gap does not affect
+   the reference implementation's numbers — but the specification's option section is entirely `[std]`.
 
-8. **German term-life charge levels are structurally undisclosed, not merely unretrieved.** There is
-   no *Effektivkostenquote* because there is no yield; no *Basisinformationsblatt* because the product
-   is not a PRIIP; and the *Produktinformationsblatt* quotes premiums, not loadings [R17]. So
-   acquisition, collection and administration cost levels would have been missing even with full
-   egress. Every charge parameter is **[std]** (mechanic 16). **The `[std]` α at the 25 ‰ Zillmer
-   ceiling is an assumption that a term tariff runs at the cap, and it may well be wrong**; a carrier
-   with a slim direct-channel acquisition cost would sit far below it.
+8. **German term-life charge levels are structurally undisclosed, not merely unretrieved.** There is no
+   *Effektivkostenquote* because there is no yield, no *Basisinformationsblatt* because the product is
+   not a PRIIP, and the *Produktinformationsblatt* quotes premiums, not loadings [R17]. Charge levels
+   would have been missing even with full egress, so every charge parameter is **[std]** (mechanic 16).
+   **The `[std]` α at the 25 ‰ Zillmer ceiling assumes a term tariff runs at the cap, and may well be
+   wrong**: a slim direct-channel acquisition cost would sit far below it.
 
 9. **Whether the § 161 three-year clock restarts on an increase is not established** [R1]. The French
-   statute expressly restarts its one-year clock for the increment [`frlib` R1]; German AVB practice
-   is understood to do the same, and **no wording was seen**. This matters because the
+   statute expressly restarts its one-year clock for the increment [`frlib` R1]; German AVB practice is
+   understood to do the same, and **no wording was seen**. It matters because the
    *Nachversicherungsgarantie* makes increments routine (mechanic 8).
 
-10. **What German carriers actually offer in place of *Beitragsfreistellung* was not established**
-    [R3]. *Beitragsstundung*, a temporary *Ruhen*, and a reduction of the *Versicherungssumme* are
-    asserted from market knowledge and are `[unverified]`. The analysis that § 165 and § 166 both
-    collapse to nil on this product [R3] [R8] is structural and does not depend on the gap.
+10. **What German carriers offer in place of *Beitragsfreistellung* was not established** [R3]:
+    *Beitragsstundung*, a temporary *Ruhen* and a reduction of the sum insured are asserted from market
+    knowledge and are `[unverified]`. The analysis that §§ 165 and 166 both collapse to nil on this
+    product [R3] [R8] is structural and does not depend on the gap.
 
 11. **The *Zillmerung* treatment of a term contract is only half established.** The 25 ‰ cap on the
-    *Beitragssumme* is inherited and firm [R10]; **whether that cap is applied to a *Risikoversicherung*
-    in the same way as to a savings contract was not established**, and neither was the
-    *Nullstellung* question — whether a negative individual *Deckungsrückstellung* must be floored at
-    zero for balance-sheet purposes [R21]. Both matter for this product specifically, because a
-    *gezillmert* term contract sits below zero for a long stretch (mechanic 10). The delib model does
-    not publish a reserve, so neither gap reaches its cash flows.
+    *Beitragssumme* is inherited and firm [R10]; **whether it applies to a *Risikoversicherung* in the
+    same way as to a savings contract was not established**, and neither was the *Nullstellung*
+    question — whether a negative individual *Deckungsrückstellung* must be floored at zero for
+    balance-sheet purposes [R21]. Both matter here because a *gezillmert* term contract sits below zero
+    for a long stretch (mechanic 10). The model publishes no reserve, so neither reaches its cash flows.
 
 12. **The DAV 2008 T data coverage for the term-assurance segment is not established.** The sibling
-    research established that the cleansed insured data covered **60 % of the German market in the
-    *Kapitallebensversicherung* segment**; the corresponding term-assurance figure **was truncated in
-    the search summary** [R12] [inherited: `kapitallebensversicherung.md` R14]. Since this is the
-    table for **this** product, that is the one number of the two that mattered.
+    research established coverage of **60 % of the German market in the *Kapitallebensversicherung*
+    segment**; **the term-assurance figure was truncated in the search summary** [R12]. Since this is
+    the table for **this** product, that is the one number of the two that mattered.
 
-13. **The German *Risikoversicherung* market has no numbers in this file.** No contract count, no new
-    business, no premium income, no aggregate *versicherte Summe*, no average sum insured, no average
-    premium, and — most consequentially for the model — **no segment-specific *Stornoquote*** [R18].
-    The inherited whole-market *Stornoquote* of **2,72 % (2024) / 2,56 % (2023)**, with a second and
-    irreconcilable measure at **1,2 % (2024)** [inherited: `kapitallebensversicherung.md` R20], is a
-    book average dominated by long-dated savings contracts and is **deliberately not used**. The
-    delib lapse assumption is **[std] 6 % / 4 % / 3 %** on the structural argument of mechanic 17,
-    with an argued range of 2 % to 8 %, and **no German figure supports any of it.**
+13. **The German *Risikoversicherung* market has no numbers in this file.** No contract count, new
+    business, premium income, aggregate *versicherte Summe*, average sum insured, average premium and —
+    most consequentially — **no segment-specific *Stornoquote*** [R18]. The inherited whole-market
+    figures (**2,72 % / 2,56 %**, with a second irreconcilable measure at **1,2 %**) are a book average
+    dominated by long-dated savings contracts and are **deliberately not used**. The delib lapse
+    assumption is **[std] 6 % / 4 % / 3 %** on the structural argument of mechanic 17, range 2 % to 8 %,
+    and **no German figure supports any of it.**
 
-14. **No BaFin material specific to term assurance was located.** *Merkblatt* 01/2023 (VA) is
-    expressly about ***kapitalbildende*** products and does not reach a pure protection contract
-    [R19] [inherited: `kapitallebensversicherung.md` R17]. So this file carries **no supervisory
-    conduct standard** for the product, and a reader must not import the endowment one.
+14. **No BaFin material specific to term assurance was located.** *Merkblatt* 01/2023 (VA) is expressly
+    about ***kapitalbildende*** products and does not reach a pure protection contract [R19]. So this
+    file carries **no supervisory conduct standard** for the product, and a reader must not import the
+    endowment one.
 
-15. **Falling-sum schedule parameters were not established** (mechanic 3). The nominal rate a German
-    *annuitätisch fallende* tariff amortises at, the residual sum at expiry, and the premium
-    reduction relative to the constant shape are all absent. The model computes the reduction from
-    the schedule, so the gap affects the schedule table only, which is **[std]**. The same applies to
-    the *verbundene Leben* premium relative to two single contracts.
+15. **Falling-sum schedule parameters were not established** (mechanic 3): the nominal rate a German
+    *annuitätisch fallende* tariff amortises at, the residual sum at expiry, and the premium reduction
+    relative to the constant shape. The model computes the reduction from the schedule, so the gap
+    affects the **[std]** schedule table only. The same applies to the *verbundene Leben* premium
+    relative to two single contracts.
 
-16. **The non-application of § 20 Abs. 1 Nr. 6 EStG to a pure death benefit is `[unverified]`**
-    [R14]. It is asserted from the section's own subject matter — an *Unterschiedsbetrag* on a
-    survival or surrender payment — and is corroborated indirectly by the existence of the
-    *Mindesttodesfallschutz* rule, which exists to stop savings contracts posing as death covers
-    [inherited: `kapitallebensversicherung.md` R12]. **No search confirmed it directly.**
+16. **The non-application of § 20 Abs. 1 Nr. 6 EStG to a pure death benefit is `[unverified]`** [R14].
+    It is asserted from the section's own subject matter — an *Unterschiedsbetrag* on a survival or
+    surrender payment — and corroborated indirectly by the existence of the *Mindesttodesfallschutz*
+    rule, which exists to stop savings contracts posing as death covers. **No search confirmed it
+    directly.**
 
 17. **The *Sonderausgaben* ceiling figures are deliberately omitted** [R14]. The classification of RLV
-    premiums among the *sonstige Vorsorgeaufwendungen* under § 10 Abs. 1 Nr. 3a EStG, and the
-    practical result that the ceiling is already consumed by health and long-term-care contributions,
-    are asserted and `[unverified]`. **No ceiling amount is stated anywhere in this file**, because
-    the amounts differ by taxpayer category and none could be confirmed.
+    premiums among the *sonstige Vorsorgeaufwendungen* under § 10 Abs. 1 Nr. 3a EStG, and the practical
+    result that the ceiling is already consumed by health and long-term-care contributions, are
+    `[unverified]`. **No ceiling amount is stated anywhere in this file**, because the amounts differ by
+    taxpayer category and none could be confirmed.
 
-18. **Every *Erbschaftsteuer* figure is `[unverified]`** [R15]. The *Freibeträge* (500,000 /
-    400,000 / 200,000 / 100,000 / 20,000 EUR), the three *Steuerklassen*, and the rate schedule
-    beginning at 7 % in class I and 30 % in class III are stated from knowledge and confirmed by no
-    source. **The 84,000 EUR illustration of mechanic 14 is arithmetic performed on unverified
-    inputs** and is carried downstream as a `[std]` illustration, never as a citation. The
-    *structural* conclusion — that an unmarried partner faces a large charge a spouse does not, and
-    that this is why the *Über-Kreuz* structure exists — does not depend on the exact figures.
+18. **Every *Erbschaftsteuer* figure is `[unverified]`** [R15]: the *Freibeträge* (500 000 / 400 000 /
+    200 000 / 100 000 / 20 000 €), the three *Steuerklassen*, and the rates beginning at 7 % in class I
+    and 30 % in class III. **The 84 000 € illustration of mechanic 14 is arithmetic performed on
+    unverified inputs**, carried downstream as a `[std]` illustration and never as a citation. The
+    *structural* conclusion — that an unmarried partner faces a large charge a spouse does not, and that
+    this is why the *Über-Kreuz* structure exists — does not depend on the exact figures.
 
 19. **The *Versicherungsteuer* exemption's statutory location is `[unverified]`** [R16]. That German
-    life insurance premiums bear no insurance premium tax is not in doubt; the section reference is
-    not confirmed. The delib model carries no premium-tax line and states why.
+    life premiums bear no insurance premium tax is not in doubt; the section reference is not confirmed.
+    The model carries no premium-tax line and states why.
 
-20. **No case law is cited by name anywhere in this file** [R23]. German term-life litigation
-    clusters on the completeness of the *Gesundheitsfragen* answers, on the § 19 Abs. 5 warning
-    requirement, and on the mental-illness exception to § 161 — and **not one decision was located,
-    so none is named and none is invented.**
+20. **No case law is cited by name anywhere in this file** [R23]. German term-life litigation clusters
+    on the completeness of the *Gesundheitsfragen* answers, on the § 19 Abs. 5 warning requirement and
+    on the mental-illness exception to § 161 — and **not one decision was located, so none is named and
+    none is invented.**
 
 21. **The *Ratenzahlungszuschlag* of 2 % / 3 % / 5 % is a market convention with no carrier
-    attribution**, inherited from the sibling research [inherited: `kapitallebensversicherung.md`
-    R28]. Whether German RLV carriers strike it on the *Bruttobeitrag* or the *Zahlbeitrag* was not
-    established; the delib model applies it to the *Zahlbeitrag* and says so (mechanic 7).
+    attribution**, inherited from the sibling research. Whether German RLV carriers strike it on the
+    *Bruttobeitrag* or the *Zahlbeitrag* was not established; the model applies it to the *Zahlbeitrag*
+    and says so (mechanic 7).
 
-22. **No underwriting parameter was established at any level.** Health-question look-back periods;
-    the sum insured above which a medical examination is required; the sum below which a simplified
-    question set applies; the smoker qualifying period; the *Berufsgruppen* count and their loadings;
-    the entry-age and cover-age envelopes; the minimum and maximum sums insured — **none of it comes
-    from any document** (mechanic 9). Every one is **[std]** in the specification. This is the second
-    largest evidential hole after the price points, and it is the one a single retrieved AVB would
-    close almost entirely.
+22. **No underwriting parameter was established at any level**: health-question look-back periods; the
+    sum above which a medical examination is required; the sum below which a simplified question set
+    applies; the smoker qualifying period; the *Berufsgruppen* count and their loadings; the entry-age
+    and cover-age envelopes; the minimum and maximum sums insured (mechanic 9). Every one is **[std]**.
+    This is the second largest evidential hole after the price points, and the one a **single retrieved
+    AVB** would close almost entirely.
 
 23. **Comparison with the sister libraries, stated so the difference is not glossed.** `frlib`'s
-    term-life file rests on eight *notices d'information* and five Légifrance articles **downloaded
-    and read**. The two sibling delib files rest on search-result summaries. **This file rests on
-    neither.** Its `[S#]` and `[R#]` tags are pointers to documents that exist and were not opened;
-    its inherited-corroboration notes are the only evidence in it that anyone checked anything; and
-    its numbers are `[std]` constructions with their arithmetic shown. That is a weaker document than
-    its siblings, it is weaker in a way that is visible on every page, and the alternative — a
-    confident-looking file full of invented figures — would have been worse.
+    term-life file rests on eight *notices d'information* and five Légifrance articles **downloaded and
+    read**. The two sibling delib files rest on search-result summaries. **This file rests on neither.**
+    Its `[S#]` and `[R#]` tags point at documents that exist and were not opened; its
+    inherited-corroboration notes are the only evidence in it that anyone checked anything; and its
+    numbers are `[std]` constructions with their arithmetic shown. That is a weaker document than its
+    siblings, it is weaker in a way visible on every page, and the alternative — a confident-looking
+    file full of invented figures — would have been worse.

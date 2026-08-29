@@ -957,7 +957,7 @@ rationale or tagged `[unverified]`.**
 ### 2. The unit / non-unit split
 
 - The policy's value is the ***Fondsguthaben***: the number of *Anteileinheiten* held in each
-  fund, multiplied by that fund's *Anteilspreis* at the *Bewertungsstichtag*. Formally, with
+  fund, multiplied by that fund's *Anteilspreis* at the *Bewertungsstichtag* [S17]. Formally, with
   `n_j(t)` the units held in fund `j` and `P_j(t)` its unit price:
 
   ```
@@ -992,7 +992,7 @@ rationale or tagged `[unverified]`.**
   delib model is monthly** (`FRV_DE_S`), which matches the dominant frequency and makes the charge
   mechanics visible.
 - **The *Beitragsverrechnung* is the operative rule of the accumulation phase**: what is taken out
-  of each gross premium, in what order, before the remainder buys units. The German market order,
+  of each gross premium, in what order, before the remainder buys units. The German market order [S1],
   which the delib model follows:
 
   1. **Gross premium** `B` received.
@@ -1082,10 +1082,10 @@ is German market practice; the **levels** were established nowhere in this corpu
 ### 5. *Effektivkosten* — the metric that ties the stack together
 
 - The ***Effektivkostenquote*** (Reduction in Yield, RIY) states **all charges as the annual
-  percentage by which they reduce the contract's return**. It is required in German quotations
-  since 1 January 2015 under the *VVG-InfoV* [R7] `[unverified]` and, in its PRIIPs form, in the
-  *Basisinformationsblatt* at **three time points — one year, half the recommended holding period,
-  and the end of it** [R9].
+  percentage by which they reduce the contract's return**. It is required in quotations since
+  1 January 2015 under § 7 VVG and the *VVG-InfoV* [R6] [R7] [S16] `[unverified]`, and in its
+  PRIIPs form in the *Basisinformationsblatt* at **three time points — one year, half the
+  recommended holding period, and the end of it** [R9].
 - **Order-of-magnitude check on the delib `[std]` stack**, given as arithmetic and not as an
   observation: on the section 4 levels at a 200 € monthly premium over 30 years, the premium-based
   charges take roughly 5,5 % of every premium plus the 15 % early instalment, and the fund-based
@@ -1095,8 +1095,8 @@ is German market practice; the **levels** were established nowhere in this corpu
 - **Market levels are `[unverified]` in their entirety.** The commonly stated picture — that
   broker-sold commission tariffs sit materially above direct and net tariffs, with a market spread
   of more than a percentage point of annual yield — is consistent with BaFin's "differ
-  considerably" [R10], but **no range, median or carrier-level figure is established anywhere in
-  this corpus**. Gap 6.
+  considerably" [R10], but **no range, median or carrier-level figure is established
+  anywhere in this corpus** [R23] [R24]. Gap 6.
 
 ### 6. *Todesfallleistung* before *Rentenbeginn*, and the *Risikobeitrag*
 

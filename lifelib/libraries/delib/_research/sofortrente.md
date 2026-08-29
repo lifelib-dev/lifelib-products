@@ -116,11 +116,8 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 | *Sofortrente* / *sofort beginnende Rentenversicherung* | immediate annuity: annuity payments begin at once, or after a short deferment |
 | *Einmalbeitrag* | single premium: the whole consideration, paid once at inception |
 | *Leibrente* | life annuity: payable for as long as the annuitant lives, and not one day longer |
-| *garantierte Rente* | the guaranteed annuity, computed on the tariff bases alone |
 | *Überschussrente* | the surplus-financed increment to the annuity in payment; declared, not guaranteed |
-| *Gesamtrente* | the sum of the two, the amount actually paid in a given year |
 | *Rentenfaktor* | annuity factor: monthly annuity per 10 000 € of capital. For an immediate annuity the market more often quotes *Rente je 100 000 € Einmalbeitrag* |
-| *vorschüssig* / *nachschüssig* | payable in advance / in arrears, at the start or the end of the payment period |
 | *Rentengarantiezeit* | annuity guarantee period: payments continue to survivors if the annuitant dies inside it |
 | *Kapitalrückgewähr* / *Beitragsrückgewähr* | refund on death of the *Einmalbeitrag* less the annuity instalments already paid |
 | *Hinterbliebenenrente* | survivor's annuity, payable to a named second life after the annuitant's death |
@@ -133,8 +130,6 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 | *Bonusrente* | surplus applied as a paid-up increment of annuity, permanently added to the payment |
 | *Rechnungszins* | the technical interest rate in the tariff |
 | *Höchstrechnungszins* (*Garantiezins*) | the statutory maximum *Rechnungszins* for new business, set in the *Deckungsrückstellungsverordnung* |
-| *Trendfunktion* | the mortality-improvement function of a generation table |
-| *Sicherheitszuschlag* | the prudential margin added to the best-estimate basis to make a first-order basis |
 | *Ertragsanteil* | the taxable fraction of a private life annuity under § 22 EStG |
 | *Bankauszahlplan* / *Entnahmeplan* | bank payout plan: a capital drawdown with a fixed term, the *Sofortrente*'s standard comparator |
 
@@ -464,14 +459,12 @@ sibling file's search corroborated it.
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` — recorded by the sibling file
   [R1 there] as returned by a search
 - Retrieved: no — egress blocked; content is the sibling file's search record
-- Content: the general surrender-value provision. It obliges the insurer to pay the *Rückkaufswert*
-  where a contract is terminated by the policyholder; for unit-linked contracts the value is the
-  *Zeitwert* computed by recognised actuarial rules; paragraphs 3 to 5 carry the calculation rules
-  and the rule spreading *Abschluss- und Vertriebskosten* over the first five years `[unverified]`.
-  **Recorded here for its boundary, not its content**: § 169 is displaced for this product by
-  § 168 Abs. 3 [R1] the moment the *Rentenbezug* begins. A delib `Sofort_DE_S` model therefore
-  publishes **no surrender-value cells and no lapse decrement in the payout phase**, and the
-  absence is a specification, not an omission.
+- Content: the general surrender-value provision — the insurer must pay the *Rückkaufswert* on the
+  policyholder's termination; for unit-linked contracts the value is the *Zeitwert* on recognised
+  actuarial rules; paragraphs 3 to 5 carry the calculation rules and the five-year spreading of
+  *Abschluss- und Vertriebskosten* `[unverified]`. **Recorded for its boundary**: § 169 is displaced
+  by § 168 Abs. 3 [R1] the moment the *Rentenbezug* begins, so a `Sofort_DE_S` model publishes **no
+  surrender-value cells and no lapse decrement** — a specification, not an omission.
 
 ### R3 — VVG § 153, *Überschussbeteiligung*, and § 153 Abs. 3, *Beteiligung an den Bewertungsreserven*
 - Publisher: Bundesministerium der Justiz / juris
@@ -493,16 +486,15 @@ sibling file's search corroborated it.
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__163.html` — canonical form, `[unverified]`
 - Retrieved: no — egress blocked; established at commentary level only, from the sibling file
   [R3, R17 there]
-- Content: the statutory channel through which a German life insurer may change a contract term
-  after conclusion — the successor to the contractual *Treuhänderklausel*. The sibling file
-  establishes from consumer commentary that **the *Treuhänderklausel* is used only in older
-  contracts and that today a guaranteed *Rentenfaktor* can be changed only on the basis of
-  § 163 VVG**, and that the **Landgericht Köln** held **the low-interest phase not to be a
-  sufficient ground, because it is entrepreneurial risk that cannot be passed to policyholders**
-  (case reference, date and parties **not established**). For this product the provision is close
-  to inert: the guaranteed annuity of a *Sofortrente* is struck once, at inception, on bases that
-  are then fixed for life, and no adjustment channel that survives judicial scrutiny reaches it.
-  A delib model treats the *garantierte Rente* as **immutable** and records § 163 as a model risk.
+- Content: the statutory channel by which a German life insurer may change a contract term after
+  conclusion — successor to the contractual *Treuhänderklausel*. The sibling file establishes from
+  commentary that **the *Treuhänderklausel* survives only in older contracts and that a guaranteed
+  *Rentenfaktor* can today be changed only under § 163 VVG**, and that the **Landgericht Köln** held
+  **the low-interest phase not a sufficient ground, being entrepreneurial risk that cannot be
+  passed to policyholders** (case reference, date and parties **not established**). Here the
+  provision is close to inert: the guaranteed annuity is struck once at inception on bases then
+  fixed for life. A delib model treats the *garantierte Rente* as **immutable** and records § 163
+  as a model risk.
 
 ### R5 — VVG § 165, *Prämienfreie Versicherung*, and § 166, *Kündigung des Versicherers*
 - Publisher: Bundesministerium der Justiz / juris
@@ -522,17 +514,14 @@ sibling file's search corroborated it.
 - URLs: `https://www.gesetze-im-internet.de/vvg_2008/__150.html`,
   `.../__159.html`, `.../__160.html` — canonical forms, all `[unverified]`
 - Retrieved: no — egress blocked; no search corroboration
-- Content: the provisions that make the *Rentengarantiezeit* and the *Hinterbliebenenrente*
-  work as a matter of contract law. § 150 distinguishes the *Versicherungsnehmer* from the
-  *versicherte Person* and requires the insured person's written consent where a life other than
-  the policyholder's own is insured for a benefit above a threshold; § 159 gives the policyholder
-  the right to designate a *Bezugsberechtigter* (beneficiary), revocably or irrevocably; § 160
-  supplies default construction rules where several beneficiaries are named or a designation
-  fails. All three are `[unverified]` as to paragraph number and content. They matter here because
-  the payments made *after* the annuitant's death under a *Rentengarantiezeit* or a
-  *Kapitalrückgewähr* go to a **designated beneficiary**, not automatically to the estate, and the
-  designation is a live contractual element that a policyholder may change. A model treats the
-  beneficiary as a pass-through and the payment as a liability of the same contract.
+- Content: the provisions that make the *Rentengarantiezeit* and the *Hinterbliebenenrente* work as
+  contract law. § 150 distinguishes the *Versicherungsnehmer* from the *versicherte Person* and
+  requires the insured person's consent where another life is insured above a threshold; § 159
+  gives the right to designate a *Bezugsberechtigter*, revocably or irrevocably; § 160 supplies
+  default construction rules. All three `[unverified]` as to number and content. They matter
+  because payments made *after* the annuitant's death go to a **designated beneficiary**, not
+  automatically to the estate, and the designation is a live element the policyholder may change.
+  A model treats the beneficiary as a pass-through.
 
 ### R7 — Deckungsrückstellungsverordnung (DeckRV) § 2 — the *Höchstrechnungszins*
 - Publisher: Bundesministerium der Justiz / juris
@@ -698,15 +687,13 @@ sibling file's search corroborated it.
 - Retrieved: no — egress blocked; the VVG-InfoV *Effektivkosten* point is recorded at existence
   level by the sibling file [R9 in the KLV file]
 - Content: the two disclosure regimes that generate [S11] and [S12]. VVG-InfoV § 2 lists the
-  pre-contractual information a German life insurer must supply and is the source of the
-  *Verbraucherinformation* document class [S2] [S3] [S14]; it also carries the ***Effektivkosten***
-  disclosure — a reduction-in-yield figure — for products in scope. The PRIIPs Regulation generates
-  the *Basisinformationsblatt* [S12] with its *Risikoindikator*, four performance scenarios and
-  *Renditeminderung* cost figures, and the DAV maintains a standard method for category 4 products
-  (the sibling KLV file records an *Ergebnisbericht* of **1 July 2025** [R27 there]). **Whether
-  either regime's cost disclosure applies to a payout-only *Sofortrente* was not established** —
-  gap 8 — and **no *Effektivkosten* or *Renditeminderung* figure for this product was established
-  at any carrier.**
+  pre-contractual information a German life insurer must supply — the source of the
+  *Verbraucherinformation* class [S2] [S3] [S14] — and carries the ***Effektivkosten*** disclosure.
+  The PRIIPs Regulation generates the *Basisinformationsblatt* [S12] with its *Risikoindikator*,
+  four performance scenarios and *Renditeminderung* figures; the DAV maintains a standard method
+  for category 4 products (*Ergebnisbericht* of **1 July 2025**, per the sibling KLV file).
+  **Whether either regime's cost disclosure reaches a payout-only *Sofortrente* was not
+  established** — gap 8 — and **no cost figure was established at any carrier.**
 
 ### R18 — BaFin material on life-insurance product oversight
 - Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)
@@ -727,11 +714,10 @@ sibling file's search corroborated it.
 - URL: `https://www.dieversicherer.de/versicherer/altersvorsorge/news/auszahlung-private-rentenversicherung-141750`
   — recorded by the sibling file [R21 there] from a search result
 - Retrieved: no — egress blocked; content is the sibling file's search record
-- Content: the industry association's own consumer account of the payout options of a private
-  annuity, and part of the result set from which the payout-phase surplus taxonomy of section 9
-  was established. It is the closest thing in the delib corpus to an authoritative German-industry
-  statement of the annuity-versus-lump-sum choice. **No notice period, no rate and no envelope was
-  established from it.**
+- Content: the industry association's own consumer account of a private annuity's payout options,
+  part of the result set behind section 9's surplus taxonomy, and the closest thing in the delib
+  corpus to an authoritative German-industry statement of the annuity-versus-lump-sum choice.
+  **No rate and no envelope was established from it.**
 
 ### R20 — Franke und Bornberg, "Altersvorsorge: Überschüsse im Rentenbezug — Teil 1: Die Qual der Wahl", and "Was bedeutet der Rentenfaktor und wie hoch ist er?"
 - Publisher: Franke und Bornberg GmbH, Hannover — independent product-rating house
@@ -740,13 +726,11 @@ sibling file's search corroborated it.
   recorded by the sibling file [R19 there] from search results
 - Retrieved: no — egress blocked; content is the sibling file's search record
 - Content: **the professional source behind section 9.** The first title is explicitly about
-  ***Überschüsse im Rentenbezug*** — surplus in the payout phase — which is the exact subject of
-  this product, and it is titled "Teil 1" of a series, so at least one further part exists and was
-  not located. It is the rating house's treatment of the choice between the *Überschussverwendung*
-  forms. The second is the rating house's *Rentenfaktor* article, whose slug dates it to the
-  **2021/2022** window. **Neither returned a level, a range or a table**: the very question the
-  second title asks — "und wie hoch ist er?" — was not answered by anything any delib search
-  returned. That is gap 5, the largest quantitative hole in this file.
+  ***Überschüsse im Rentenbezug*** — the exact subject of this product — and is "Teil 1" of a
+  series whose further parts were not located; it is the rating house's treatment of the choice
+  between the *Überschussverwendung* forms. The second is its *Rentenfaktor* article, dated by its
+  slug to **2021/2022**. **Neither returned a level, a range or a table**: the question the second
+  title asks — "und wie hoch ist er?" — was answered by nothing any delib search returned. Gap 5.
 
 ### R21 — Consumer-organisation material on the *Sofortrente*
 - Publishers: Finanztip Verbraucherinformation gemeinnützige GmbH; Stiftung Warentest
@@ -756,15 +740,14 @@ sibling file's search corroborated it.
   [R20 there] from search results. **Finanztip's, Stiftung Warentest's and the Verbraucherzentrale's
   *Sofortrente*-specific pages were not located and no URL for them is given.**
 - Retrieved: no — egress blocked
-- Content: what the sibling file established from the two located Finanztip pages is the surplus
-  taxonomy used in section 9 — the *konstant* / *teildynamisch* / *volldynamisch* division, and the
+- Content: from the two located Finanztip pages the sibling file established the surplus taxonomy
+  used in section 9 — the *konstant* / *teildynamisch* / *volldynamisch* division, and the
   observation that **under the constant system the annuity can still fall, because if the insurer
-  earns less than expected the surplus-financed part is reduced** — together with the 12/62 rule
-  [R14]. **Stiftung Warentest's periodic *Sofortrente* comparison is the single most valuable
-  unlocated document for this product**: it is the German market's standard published table of
-  guaranteed and total monthly annuities per 100 000 € by carrier, and it would settle gaps 2, 5
-  and 7 together. Its existence is asserted here from general knowledge and is `[unverified]`; no
-  issue, date, price point or ranking is claimed.
+  earns less than expected the surplus-financed part is reduced** — plus the 12/62 rule [R14].
+  **Stiftung Warentest's periodic *Sofortrente* comparison is the single most valuable unlocated
+  document for this product**: the market's standard published table of guaranteed and total
+  monthly annuities per 100 000 € by carrier, which would settle gaps 2, 5 and 7 together. Its
+  existence is `[unverified]`; no issue, date, price point or ranking is claimed.
 
 ### R22 — Assekurata, "Marktstudie Überschussbeteiligungen und Garantien"
 - Publisher: Assekurata Assekuranz Rating-Agentur GmbH, Cologne
@@ -897,13 +880,11 @@ marked `[std]` with its derivation printed.
 
 ### 3. The *Aufschubzeit* variant
 
-- The market sells a hybrid between this product and the deferred annuity: the *Einmalbeitrag* is
-  paid now, the annuity begins **after a short deferment** of typically one to fifteen years. It
-  is variously called an *aufgeschobene Rentenversicherung gegen Einmalbeitrag*, a *Sofortrente mit
-  Aufschub*, or simply the *Aufschubzeit* option of the same tariff. **No carrier's terms were
-  established**; the Mecklenburgische "Rente flex" [S14], whose truncated title reads
-  "Private Rentenversicherung mit flexiblem …", is the corpus's only candidate document and its
-  feature is unestablished.
+- The market sells a hybrid: the *Einmalbeitrag* is paid now and the annuity begins **after a short
+  deferment**, typically one to fifteen years — an *aufgeschobene Rentenversicherung gegen
+  Einmalbeitrag*, a *Sofortrente mit Aufschub*, or simply the *Aufschubzeit* option of the same
+  tariff. **No carrier's terms were established**; the Mecklenburgische "Rente flex" [S14] is the
+  corpus's only candidate and its feature is unestablished.
 - **Three things happen during an *Aufschubzeit* and must not be conflated**: interest accrues at
   the *Rechnungszins*, so more capital is annuitised; **mortality accrues**, so the survivors share
   the fund of those who died — the survivorship credit that makes deferral powerful, and the reason
@@ -1146,16 +1127,14 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
 
 ### 9. *Überschussbeteiligung* in the *Rentenbezug* — the four *Überschussverwendung* forms
 
-**The two-part payment.** The annuity actually paid is `garantierte Rente + Überschussrente`. Only
-the first is a promise; the second is declared annually by the insurer, out of surplus it has
-actually earned, and it can move down as well as up. The sibling corpus states the same for the
-deferred product's payout phase: the insurer sets a value at the start of the payout phase
-"composed of the *Garantierente* and a surplus share projected for the whole annuity period"
-[R21], and only the guaranteed part is a promise.
+**The two-part payment.** The annuity paid is `garantierte Rente + Überschussrente`. Only the first
+is a promise; the second is declared annually out of surplus actually earned and can move down as
+well as up. The sibling corpus states the same for the deferred product's payout phase: the insurer
+sets a value at the start "composed of the *Garantierente* and a surplus share projected for the
+whole annuity period" [R21], and only the guaranteed part is a promise.
 
-**The four forms.** German carriers offer the policyholder a choice of ***Überschussverwendung***
-for the payout phase, made at *Rentenbeginn* — which for this product means **at inception, once,
-irrevocably** `[unverified]`. The four forms and what each does to the projected payment stream:
+**The four forms.** Carriers offer a choice of ***Überschussverwendung*** for the payout phase, made
+at *Rentenbeginn* — for this product **at inception, once, irrevocably** `[unverified]`:
 
 | Form | Mechanic | Payment stream |
 |---|---|---|
@@ -1310,12 +1289,11 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
     rate, a paid-up rate and an option take-up rate; this one needs none, which makes it the
     cleanest of the ten to project and the one whose result depends most purely on the mortality
     basis and the surplus assumption.
-- **The economic reason the rule exists, and why it is not a defect.** A surrenderable life annuity
-  would be surrendered by exactly those annuitants who expected to die soon, leaving the insurer
-  with the long-lived. The rule is not consumer-unfriendly by accident; it is what makes the
-  mortality pooling — the whole product — possible. The corresponding consumer warning is that the
-  *Einmalbeitrag* is **irreversibly committed**, which is the first thing every German consumer
-  page about the product says [R21] [R23].
+- **Why the rule exists, and why it is not a defect.** A surrenderable life annuity would be
+  surrendered by exactly those annuitants expecting to die soon, leaving the insurer with the
+  long-lived; the rule is what makes the mortality pooling — the whole product — possible. The
+  consumer warning that follows is that the *Einmalbeitrag* is **irreversibly committed**, the
+  first thing every German consumer page about the product says [R21] [R23].
 - **One qualification.** The *Aufschubzeit* variant of section 3 has a genuine pre-*Rentenbeginn*
   window in which § 168 Abs. 3 does not yet bite, so a surrender right — and a *Rückkaufswert*
   under § 169 [R2] — may exist during the deferment. **No carrier's terms were established** and a
@@ -1388,7 +1366,7 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
   chosen monthly rate until it is exhausted. The comparison is the product's whole sales argument
   and it has three limbs.
 - **Limb one — the payout plan ends.** On this file's `[std]` arithmetic, 100 000 € drawn down at
-  a monthly rate in advance is exhausted after `[std]` (9):
+  a monthly rate in advance is exhausted after `[std]` (8):
 
   | Monthly withdrawal | at 0 % interest | at 2 % | at 3 % |
   |---|---|---|---|
@@ -1441,8 +1419,7 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
 | Age and sex at *Rentenbeginn* | the annuity factor | model-point attribute |
 | *Rechnungszins* | the annuity factor | 0,25 % / 1,00 % established as statutory maxima [R7] [R8]; the carrier's own choice may be lower [S6] — model-point attribute |
 | Mortality, first order | the guaranteed annuity | DAV 2004 R named [S6] [R10]; **table not public, `[std]` proxy shipped** |
-| Mortality, second order | best-estimate cash flows | DAV 2004 R second order named [R10]; **`[std]` proxy** |
-| *Trendfunktion* | the generational surface | structure established [R10]; **parameters not established, `[std]`** |
+| Mortality, second order, and the *Trendfunktion* | best-estimate cash flows; the generational surface | DAV 2004 R second order named and the trend's structure established [R10]; **parameters not established, `[std]` proxy** |
 | `alpha`, `beta` charges | the net annuity | **nothing established, `[std]`** (section 12) |
 | *Rentengarantiezeit* | the certain-payment window | durations established [R23]; choice is a model-point attribute |
 | *Kapitalrückgewähr* | the declining death benefit | mechanic established; **basis and interaction not established** |
@@ -1616,14 +1593,14 @@ for the reference implementation where the corpus is silent; none is any carrier
     whether a *Rentengarantiezeit* pays the remaining instalments or a commuted lump sum, and on
     what basis a commutation would be struck; whether *Kapitalrückgewähr* and *Rentengarantiezeit*
     may be combined and at which carriers; whether the refund is measured against the guaranteed
-    annuity or the total paid (this file adopts the guaranteed annuity as `[std]` (12) on an
+    annuity or the total paid (this file adopts the guaranteed annuity as `[std]` (11) on an
     argument, not a clause); whether partial or capped refund variants are sold; and the percentage
     menu for the *Hinterbliebenenrente*, where 60 % and 100 % are `[unverified]`.
 
 11. **The payment timing was not established.** No source in the delib corpus states whether a
     German annuity in payment is *vorschüssig* or *nachschüssig*, for this product or the deferred
     one. It is first-order: on this file's own basis the two conventions differ by about **5 %** of
-    the annuity (section 8). Monthly-in-advance is adopted as `[std]` (11) and must be stated as a
+    the annuity (section 8). Monthly-in-advance is adopted as `[std]` (10) and must be stated as a
     convention wherever it is used. Likewise unestablished: the first payment date, the treatment
     of an instalment already paid for the period of death, and the loadings attaching to
     non-monthly frequencies.

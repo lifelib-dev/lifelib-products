@@ -60,17 +60,11 @@ blocked by an organisation network policy. `WebFetch` and `curl` are refused wit
 egress gateway for every host outside a short package-registry allowlist. The hosts that matter for
 this product were all tried and all refused:
 
-| Host | What it would have supplied | Result |
-|---|---|---|
-| `gesetze-im-internet.de` | SGB XI, VVG, VAG, EStG, SGB XII, DeckRV, KVAV | HTTP 403 |
-| `bafin.de` | supervisory *Merkblätter*, *Fachartikel*, statistics | HTTP 403 |
-| `gdv.de` | *Musterbedingungen*, life-market statistics | HTTP 403 |
-| `aktuar.de` | DAV *Ergebnisberichte*, the DAV 2008 P derivation paper | HTTP 403 |
-| `pkv.de` | PKV-Verband *Zahlenbericht*, Pflege-Bahr take-up, MB/EPV | HTTP 403 |
-| `destatis.de` | *Pflegestatistik*, *Pflegevorausberechnung* | HTTP 403 |
-| `bundesgesundheitsministerium.de` | SPV benefit amounts, *Beitragssatz* | HTTP 403 |
-| `vdek.com` | *Eigenanteil* series for *Pflegeheime* | HTTP 403 |
-| `de.wikipedia.org` | orientation only | HTTP 403 |
+Every host that would have supplied a document for this product was tried and refused with HTTP
+403: `gesetze-im-internet.de` (SGB XI, VVG, VAG, EStG, SGB XII, DeckRV, KVAV), `bafin.de`,
+`gdv.de`, `aktuar.de` (the DAV 2008 P derivation), `pkv.de` (the PKV-Verband statistics and the
+MB/EPV), `destatis.de` (the *Pflegestatistik*), `bundesgesundheitsministerium.de`, `vdek.com`
+(the *Eigenanteil* series) and `de.wikipedia.org`.
 
 Not one *Bedingungswerk*, not one *Produktinformationsblatt*, not one *Basisinformationsblatt*, not
 one statutory text, not one DAV paper and not one statistical release was opened.
@@ -226,32 +220,24 @@ number, page count or date is correct.
 - Content — what a wording of this class contains, stated as a document-class description and not as
   a reading of any instance. The clause inventory is stable across the German life market and is the
   skeleton the delib product specification follows:
-  - **Benefit clause.** What the insurer pays, on what trigger, from when, for how long: the
-    *vereinbarte Pflegerente*, the *Leistungsstaffel* by *Pflegegrad*, whether *Pflegegrad* 1 is
-    insured, whether the annuity differs between care at home and *vollstationäre* care, and whether
-    it is payable for life.
-  - **Trigger clause.** How *Pflegebedürftigkeit* is established: normally by the *Pflegegrad*
-    determined by the SPV or the PPV, with a fallback assessment by a doctor the insurer appoints
-    where the insured is not covered by either.
-  - **Waiting and deferred periods.** *Wartezeit* from inception; *Karenzzeit* from the onset of
-    *Pflegebedürftigkeit*; whether either is waived for *Pflegebedürftigkeit* caused by an accident.
-  - **Waiver clause.** *Beitragsbefreiung im Leistungsfall*: from which *Pflegegrad*, from which
-    month, and whether it is full or partial.
-  - **Re-verification clause.** *Nachprüfung*: the insurer's right to require evidence that the
-    *Pflegegrad* persists, and the consequences of a *Herabstufung* — reduction of the annuity to
-    the lower step, or cessation.
-  - **Death-benefit clause**, where one is written: *Beitragsrückgewähr*, a fixed sum, or the
-    *Deckungskapital*.
-  - **Indexation clause.** *Beitragsdynamik* before claim; *Leistungsdynamik* in payment; the
-    policyholder's right to decline and whether declining is final.
-  - **Surplus clause.** How the *Überschussbeteiligung* is declared and applied [R11].
-  - **Surrender and paid-up clauses** under §§ 169 and 165 VVG, with the *Stornoabzug*.
-  - **Disclosure and exclusion clauses**: § 19 VVG *vorvertragliche Anzeigepflicht*; exclusions for
-    *Pflegebedürftigkeit* caused by war, by the insured's own intentional act, and — variably — by
-    addiction, by aviation other than as a passenger, and by an existing condition disclosed and
-    excluded at underwriting.
-  - **Territorial clause**: whether the annuity remains payable if the insured is cared for outside
-    Germany or the EU/EEA.
+  - **Benefit clause** — the *vereinbarte Pflegerente*, the *Leistungsstaffel* by *Pflegegrad*,
+    whether grade 1 is insured, whether the annuity differs between care at home and
+    *vollstationäre* care, and whether it is payable for life.
+  - **Trigger clause** — how *Pflegebedürftigkeit* is established: normally by the *Pflegegrad*
+    determined by the SPV or the PPV, with a fallback assessment by a physician the insurer
+    appoints where the insured is covered by neither.
+  - **Waiting and deferred periods** — *Wartezeit* from inception, *Karenzzeit* from onset, and
+    whether either is waived where *Pflegebedürftigkeit* follows an accident.
+  - **Waiver clause** — *Beitragsbefreiung im Leistungsfall*: from which grade, from which month,
+    and whether full or proportionate.
+  - **Re-verification clause** — *Nachprüfung*, and the consequences of a *Herabstufung*.
+  - **Death-benefit clause** where one is written: *Beitragsrückgewähr*, a fixed sum, or the
+    *Deckungskapital*. **Indexation clause** — *Beitragsdynamik* and *Leistungsdynamik*.
+    **Surplus clause** [R11]. **Surrender and paid-up clauses** under §§ 169 and 165 VVG, with the
+    *Stornoabzug*. **Disclosure and exclusion clauses** — § 19 VVG, and exclusions for care caused
+    by war, by the insured's intentional act and, variably, by addiction or by a condition
+    disclosed and excluded at underwriting. **Territorial clause** — whether the annuity survives
+    care given outside Germany or the EEA.
   No page count, no edition date and no clause number for any carrier's wording is asserted; every
   such specific is `[unverified]` and is recorded as gap 14.
 
@@ -592,37 +578,27 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
 - URLs of the canonical form `https://www.gesetze-im-internet.de/vvg_2008/__169.html` etc.
   `[unverified]`
 - Content, provision by provision, described in substance and never quoted:
-  - **§ 7 and the VVG-InfoV** — pre-contractual information duties; the source of the document
-    classes at S5 and S7.
-  - **§ 19** — *vorvertragliche Anzeigepflicht*. The applicant must answer the insurer's written
-    questions truthfully. The insurer's remedies for breach are graded by fault — rescission,
-    termination, contract amendment — and are time-barred, generally after five years, ten in cases
-    of intent `[unverified]`. On a product whose claims arrive forty years after underwriting, the
-    time bar is what makes the *Gesundheitsprüfung* an incidence-shaping device only for the first
-    decade and not thereafter.
-  - **§ 153** — *Überschussbeteiligung*. The policyholder participates in the insurer's surplus and
-    in the *Bewertungsreserven* unless participation is excluded by agreement; the method must be
-    *verursachungsorientiert*. A biometric-risk product's surplus is dominated by the *Risikoergebnis*
-    rather than the *Zinsergebnis*.
-  - **§ 163** — the narrow circumstances in which a life insurer may adjust a premium: essentially
-    where a calculation basis has changed in a way that is not merely temporary and an independent
-    trustee agrees. **This is the whole of a *Lebensversicherer*'s re-rating power**, and it is far
-    narrower than § 203's for health insurance.
-  - **§ 165** — *Beitragsfreistellung*: the policyholder may demand conversion to a paid-up contract
-    at any premium due date, the paid-up benefit being calculated by recognised actuarial rules from
-    the reserve, less any agreed *Stornoabzug*.
-  - **§ 169** — *Rückkaufswert*: on termination the insurer pays the surrender value, computed as
-    the actuarial reserve on the tariff bases; acquisition costs must be spread over at least the
-    first **five** years `[unverified]`; a *Stornoabzug* is admissible only if agreed, appropriate,
-    and **quantified in the contract**. The provision carries an exception for covers that pay only
-    on death within a defined period, which is why a *Risikolebensversicherung* has no surrender
-    value. **Whether that exception reaches a pure-risk *Pflegerente* — which pays on an uncertain
-    event other than death, and which does build a substantial reserve — was not established and is
-    gap 9.**
+  - **§ 7 and the VVG-InfoV** — pre-contractual information duties; the source of S5 and S7.
+  - **§ 19** — *vorvertragliche Anzeigepflicht*. Remedies for breach are graded by fault and are
+    time-barred, generally after five years and ten in cases of intent `[unverified]`. On a
+    product whose claims arrive forty years after underwriting, the time bar is what confines the
+    *Gesundheitsprüfung*'s effect on incidence to the first decade.
+  - **§ 153** — *Überschussbeteiligung*, on a *verursachungsorientiert* method. A biometric-risk
+    product's surplus is dominated by the *Risikoergebnis*, not the *Zinsergebnis*.
+  - **§ 163** — the narrow route by which a life insurer may adjust a premium: a non-temporary
+    change in a calculation basis, with an independent trustee's agreement. **This is the whole of
+    a *Lebensversicherer*'s re-rating power.**
+  - **§ 165** — *Beitragsfreistellung*: conversion to a paid-up contract at any premium due date,
+    the reduced benefit computed from the reserve less any agreed *Stornoabzug*.
+  - **§ 169** — *Rückkaufswert*: the actuarial reserve on the tariff bases, acquisition costs
+    spread over at least the first **five** years `[unverified]`, and a *Stornoabzug* admissible
+    only if agreed, appropriate and **quantified in the contract**. The provision excepts covers
+    paying only on death within a defined period, which is why a *Risikolebensversicherung* has no
+    surrender value. **Whether that exception reaches a pure-risk *Pflegerente* was not established
+    and is gap 9.**
   - **§ 155** — the annual statement (S8) `[unverified]`.
   - **§ 203** — *Beitragsanpassung*, and the point of the whole comparison: **it applies to health
-    insurance, not to life insurance.** A *Pflegetagegeld* on the health chassis can be repriced on
-    a trustee-approved trigger; a *Pflegerente* on the life chassis cannot, save under § 163.
+    insurance, not to life insurance.**
 
 ### R12 — VAG §§ 138, 139, 146, and § 341f HGB
 - URL: `https://www.gesetze-im-internet.de/vag_2016/` `[unverified]`

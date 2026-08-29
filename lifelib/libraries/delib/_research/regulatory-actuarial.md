@@ -1574,3 +1574,453 @@ run on the **HGB** side.
 - Products: FRV load-bearing (item 3); KLV, RV, BAS, RIE, IDX, SOF for items 1, 2, 4, 5; all ten
   for the institutional context and items 6 and 7.
 
+---
+
+## 5. Contract law — the Versicherungsvertragsgesetz
+
+German life contract law is a single statute whose **Kapitel 5 (§§ 150–171) is *halbzwingend***:
+§§ 152 Abs. 1 and 2, 153 to 155, 157, 158, 161 and 163 to 170 may not be varied to the
+policyholder's detriment (§ 171 VVG). That one sentence is why a delib model may treat the
+surrender-value floor, the paid-up right, the suicide clause and the profit-participation
+entitlement as **contractual facts rather than insurer choices**, and why the discretionary layer
+sits only where the statute leaves room. This block carries the strongest search corroboration in
+the library: roughly 45 German-language queries, with six to ten independent publishers returning
+each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
+
+### R22. VVG 2008 — the statute, Kapitel 5 and § 171 (halbzwingende Vorschriften)
+- Publisher: Bundesministerium der Justiz / Bundesamt für Justiz; mirrors at `dejure.org`,
+  `buzer.de`, `lexetius.com`, `rewis.io`, `juraforum.de`, `lxgesetze.de`,
+  `sozialgesetzbuch-sgb.de`. Doc type: federal statute of **23 November 2007**, in force from
+  1 January 2008.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/BJNR263110007.html (returned);
+  https://www.gesetze-im-internet.de/vvg_2008/__170.html and `__171.html` (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (the act's index
+  page plus every single-paragraph query below; **§ 171's enumeration returned as quoted German
+  text**; § 170 from ten hosts including a Schwintowski/Brömmelmeyer *Praxiskommentar* section)
+- Content: the VVG 2008 replaced the VVG of 1908 with effect from 1 January 2008. Structure, as
+  confirmed repeatedly: **Teil 1** general provisions (§§ 1–73, including the advice and
+  information duties §§ 6, 7, 7a–7d, the withdrawal right § 8, pre-contractual disclosure
+  §§ 19–22, premium default §§ 33, 37, 38 and the intermediary rules §§ 59–68); **Teil 2** the
+  individual branches, of which **Kapitel 5 Lebensversicherung** runs §§ 150–171 and **Kapitel 6
+  Berufsunfähigkeitsversicherung** §§ 172–177; **Teil 3** final provisions including § 214. A
+  *single* statute therefore supplies the death-cover rules, the savings-contract rules and the
+  disability-income rules, and **§ 176 imports §§ 150–170 into the BU chapter *entsprechend***
+  [R29]. **§ 171**, quoted by a summary: *"Von § 152 Abs. 1 und 2 und den §§ 153 bis 155, 157,
+  158, 161 und 163 bis 170 kann nicht zum Nachteil des Versicherungsnehmers, der versicherten
+  Person oder des Eintrittsberechtigten abgewichen werden."* A *halbzwingende* provision may be
+  varied in the policyholder's favour; a variation to their detriment is not void as such, but
+  **the insurer may not rely on it**. Note what is **not** in the list: §§ 150, 156, 159, 160,
+  162 and 171 itself — so beneficiary designation and the consent rule are freely variable.
+  **§ 170 *Eintrittsrecht***: where the claim is attached or insolvency is opened over the
+  policyholder's assets, the **namentlich bezeichnete Bezugsberechtigte** may, with the
+  policyholder's consent, step into the contract, satisfying the executing creditors or the
+  estate **up to the amount the policyholder could have demanded on termination**, i.e. up to the
+  *Rückkaufswert*; where no beneficiary is named, the right belongs to the spouse or civil
+  partner and children; the declaration may be made **only within one month**.
+  **Two chapters have no VVG home at all, and this matters for delib**: there is no statutory
+  chapter for *Pflegerentenversicherung* (reached, if at all, through § 177 Abs. 1, which is
+  contested — [R29], [R36]) and none for *indexgebundene* Rentenversicherung, which in law is a
+  *fondsgebundene* or *klassische* contract with the index participation living entirely inside
+  the *Überschussbeteiligung* of § 153 [R24].
+- Not established: no consolidated-version date was confirmed; the "last amended by" line is
+  **not established**. The **VVG a.F.** numbering — § 5a (Policenmodell), § 172 Abs. 2
+  (Bedingungsanpassung) and § 176 Abs. 3/4 (Rückkaufswert, Stornoabzug), all of which appear in
+  the case law [R36] — was confirmed only through case-law summaries, not from a text. **§ 156
+  VVG was never searched.** Whether the § 170 one-month period is an *Ausschlussfrist* was not
+  stated; the § 170 Absatz numbering is `[unverified]`.
+- Products: all ten.
+
+### R23. VVG §§ 8 and 152 — the 14-day and 30-day Widerrufsrechte
+- Publisher: Bundesamt für Justiz; mirrors at `juraforum.de`, `buzer.de`, `rewis.io`,
+  `lxgesetze.de`, `datenbank.nwb.de`, `haufe.de`, `dejure.org`, `freirecht.de`,
+  `sozialgesetzbuch-sgb.de`, `gesetze-in-app.de`, `deutsche-versicherungsboerse.de`.
+  Doc type: statutory sections plus the statutory *Anlage* (Muster für die Widerrufsbelehrung).
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__8.html (returned);
+  https://www.gesetze-im-internet.de/vvg_2008/anlage.html (returned);
+  https://www.gesetze-im-internet.de/vvg_2008/__152.html (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (five queries; nine
+  independent hosts on § 8, ten across the two § 152 queries, with both § 152 summaries agreeing
+  independently on the 30-day period, the 24-month long stop, the Rückkaufswert consequence and
+  the deferred first premium)
+- Content: **§ 8** — the policyholder may withdraw within **14 days**, in *Textform*, without
+  reasons, and **timely dispatch suffices**. The period begins on conclusion but **does not
+  begin** before the policyholder has received, in Textform, the *Versicherungsschein*, the
+  contract terms including the AVB, and the information required by the VVG-InfoV [R31]. A
+  summary reported the general cut-off as *"Das Widerrufsrecht erlischt spätestens zwölf Monate
+  und 14 Tage nach dem Vertragsschluss"*. The **Anlage** is a statutory safe-harbour model whose
+  blocks a summary reported as: the 14-day/no-reasons/Textform statement; the start-of-period
+  block listing the *Versicherungsschein*, the AVB with *Tarifbestimmungen*, the
+  *Widerrufsbelehrung*, the *Informationsblatt zu Versicherungsprodukten* and the further
+  information of Abschnitt 2; the legal-consequences block; and a **30-day repayment deadline**.
+  **§ 152 makes three deviations for life insurance**, each expressed as an *abweichend von*
+  clause. **Abs. 1**: the period is **30 days**, and the right **lapses at the latest 24 months
+  and 30 days after conclusion**. **Abs. 2**: where the withdrawal is effective the insurer owes
+  the ***Rückkaufswert einschließlich der Überschussanteile nach § 169***; in the § 9 Satz 2 case
+  it owes that or, if more favourable, **the premiums paid for the first year**. **Abs. 3**: the
+  single or first premium falls due **immediately after the expiry of 30 days from receipt of the
+  Versicherungsschein**. This is the single most model-relevant conduct rule in the German life
+  chapter: **a withdrawal exercised after cover has begun is settled at the surrender value, not
+  at premiums-paid**, so the § 169 floor [R28] reaches into the withdrawal window. For delib it
+  fixes a **first-duration decrement legally distinct from lapse**: a withdrawal unwinds the
+  contract, a surrender pays a *Rückkaufswert*, and a model that lumps the two into one lapse
+  rate loses the distinction and should say so.
+- Not established: **the Absatz structure of § 8 is partly contradictory across summaries** — the
+  Muster is at Abs. 4 Satz 1 (reliable, from the Anlage's own title), one summary puts the
+  twelve-month long stop at Abs. 4 Satz 2, a third describes Abs. 3 as the no-withdrawal list and
+  Abs. 5 as the *Verordnungsermächtigung*; **the Absatz-to-rule mapping inside § 8 is
+  `[unverified]`** while the substantive rules are corroborated. The content of **§ 9 VVG
+  (Rückabwicklung)** was never searched. The *Fernabsatz* interaction is **not established**.
+- Products: all ten.
+
+### R24. VVG § 153 — Überschussbeteiligung and the hälftige Beteiligung an den Bewertungsreserven
+- Publisher: Bundesamt für Justiz; mirrors at `dejure.org`, `buzer.de`, `rewis.io`,
+  `lxgesetze.de`, `juraforum.de`, `anwalt24.de`, `gesatz.de`, `sozialgesetzbuch-sgb.de`,
+  `gesetze-in-app.de`. Doc type: statutory section.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__153.html `[unverified canonical form]`;
+  https://dejure.org/gesetze/VVG/153.html (returned); https://www.buzer.de/153_VVG.htm (returned);
+  https://rewis.io/gesetze/vvg/p/153-vvg/ (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries, nine
+  and eight hosts respectively, with the BGH press release [R36] and a general-reference article
+  corroborating the Abs. 3 mechanics independently)
+- Content: the article the whole KLV/RV/IDX chassis hangs on. **(1) The entitlement.** The
+  policyholder has a **right** to participate in the *Überschuss* and in the *Bewertungsreserven*
+  **unless participation is excluded by express agreement**, and such an exclusion **can only be
+  made for the whole of the profit participation** — there is no partial opt-out. This is the
+  German counterpart to the French *participation aux bénéfices*, but it is an **individual
+  contractual entitlement with a statutory default**, not a collective minimum computed from a
+  regulated account. **(2) The method.** The insurer must operate the participation by a
+  ***verursachungsorientiertes Verfahren***, or by *"andere vergleichbare angemessene
+  Verteilungsgrundsätze"*. The statute names the principle and **does not prescribe the
+  algorithm**, which is precisely why the three surplus sources (*Zinsüberschuss*,
+  *Risikoüberschuss*, *Kostenüberschuss*) and their declared rates are insurer-discretionary
+  inputs and every level in delib is `**[std]**` unless a *Tarifblatt* supplies it. The BGH tied
+  this Absatz to § 138 Abs. 2 VAG in **IV ZR 436/22 of 18 September 2024** [R8]. **(3)
+  Bewertungsreserven.** The insurer must **recompute them annually** and allocate them by a
+  cause-oriented method; **on termination of the contract, half of the amount then determined is
+  allocated and paid to the policyholder**, and earlier allocation may be agreed. **(4) The LVRG
+  override.** § 153 Abs. 3 Satz 3, in the version given by the LVRG of 1 August 2014 in force
+  7 August 2014 [R20], preserves the supervisory rules securing permanent fulfilment — a summary
+  named **§§ 89, 124 Abs. 1, § 139 Abs. 3 und 4, §§ 140 and 214 VAG** — with the effect that
+  **Bewertungsreserven from fixed-interest securities and interest-rate hedging instruments count
+  toward the policyholder's share only to the extent that they exceed a *Sicherungsbedarf***
+  [R9][R18]. In a low-rate environment this reduced the payable half to zero for many portfolios,
+  and the BGH held the rule constitutional [R36]. **For delib**: the *Bewertungsreserven* leg is
+  path- and balance-sheet-dependent in a way a gross liability cash flow model cannot reproduce,
+  so the reference implementations model the declared *laufende Überschussbeteiligung* and the
+  *Schlussüberschussanteil* explicitly and treat the *Bewertungsreserven* share as an explicitly
+  excluded component, saying so.
+- Not established: the **Absatz/Satz numbering** of the entitlement (Abs. 1) and the method
+  (Abs. 2) was inferred from the ordering in the summaries and from the BGH's citation of "§ 153
+  Abs. 3 Satz 3"; **the Abs. 1 and Abs. 2 attributions are `[unverified]`**. The VAG
+  cross-references in Satz 3 come from a **single summary** and are `[unverified]` as a list.
+- Products: KLV, RV, FRV, IDX, BAS, RIE, SOF load-bearing; RLV, BU, PFL qualified.
+
+### R25. VVG §§ 154 and 155 — Modellrechnung and Standmitteilung
+- Publisher: Bundesamt für Justiz; mirrors at eight and nine hosts respectively; Gabler's
+  *Versicherungslexikon*; a Haufe commentary section; BaFin's *Auslegungsentscheidung* [R21]; a
+  Verbraucherzentrale Hamburg *Sonderuntersuchung Standmitteilung*. Doc type: statutory sections.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__154.html (returned);
+  https://www.gesetze-im-internet.de/vvg_2008/__155.html (returned);
+  https://www.gesetze-im-internet.de/vvg-infov/__2.html (returned, for the three rates)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries;
+  eight and nine hosts; the three interest rates located in **§ 2 Abs. 3 VVG-InfoV**, not in
+  § 154, by a second query)
+- Content: **§ 154 *Modellrechnung*.** Where the insurer, in connection with the offer or
+  conclusion of a life contract, makes **quantified statements about possible benefits beyond the
+  contractually guaranteed benefits**, it must give the policyholder a *Modellrechnung* showing
+  the possible *Ablaufleistung* computed **on the calculation bases used for the premium
+  calculation** at **three different interest rates**. The duty does **not** apply to
+  *Risikoversicherungen* nor to contracts providing benefits of the kind described in § 124
+  Abs. 2 Satz 2 VAG. The three rates are set by **§ 2 Abs. 3 VVG-InfoV**, quoted by a summary as:
+  *"a) Der Höchstrechnungszinssatz, multipliziert mit 1,67; b) der Zinssatz nach a) zuzüglich
+  eines Prozentpunkts und c) der Zinssatz nach a) abzüglich eines Prozentpunkts."* The insurer
+  must state clearly that the *Modellrechnung* rests on fictitious assumptions and that **no
+  contractual claim** derives from it. **Arithmetic consequence for delib, and it is sharp**:
+  with a *Höchstrechnungszins* of **1.00 %** (new business from 2025, [R15]) the statutory triple
+  is **1.67 % / 2.67 % / 0.67 %**. A delib `product-spec.md` reproducing a published
+  *Modellrechnung* reproduces that triple, and a technical note projecting an illustrative
+  surplus scenario either uses those rates or says explicitly that it does not and why.
+  **§ 155 *Standmitteilung*.** For **profit-participating** insurance the insurer must inform the
+  policyholder **annually in Textform** about the **current status of their claims including the
+  profit participation**, and must **disclose to what extent that profit participation is
+  guaranteed**. The reported content: the agreed benefit on the insured event plus profit
+  participation at the key date; the agreed benefit plus **guaranteed** profit participation at
+  maturity or annuity commencement assuming unchanged continuation; and further information on
+  surrender values and premiums paid. A second limb is the interesting one: **where the insurer
+  has made statements about the possible future development of the profit participation, it must
+  inform the policyholder of deviations of the actual development from those statements** — a
+  direct statutory link back to § 154, making the *Modellrechnung* a benchmark the insurer keeps
+  reporting against. For delib this is not a cash flow: it is the reason **published
+  Standmitteilung specimens are a legitimate `[S#]` source class** for declared surplus rates and
+  for the guaranteed/non-guaranteed split.
+- Not established: the current *Höchstrechnungszins* was **not established in the contract sweep**
+  and is carried from [R15]. The § 124 Abs. 2 Satz 2 VAG carve-out was reported by one summary
+  only and its content is `[unverified]`. The **Satz numbering within § 155** is `[unverified]`
+  except for "§ 155 Satz 1", which the BaFin decision cites; whether the *Standmitteilung* must
+  show the *Rückkaufswert* as such differed in emphasis between summaries. The date and instrument
+  of the *Jährliche Unterrichtung* → *Standmitteilung* rename (almost certainly the LVRG) is **not
+  established**. One query explicitly sought published criticism of the 1.67 multiplier at a 1 %
+  ceiling and returned **nothing**; the observation that the multiplier is now nearly inert is the
+  compiler's inference, not a sourced claim.
+- Products: KLV, RV, IDX, BAS, RIE load-bearing; FRV, SOF, BU, PFL qualified; not relevant to RLV
+  (a pure *Risikoversicherung* is outside § 154).
+
+### R26. VVG §§ 150, 159, 160, 161 and 162 — Einwilligung, Bezugsberechtigung, Selbsttötung
+- Publisher: Bundesamt für Justiz; mirrors at `buzer.de`, `lxgesetze.de`, `dejure.org`,
+  `juraforum.de`, `datenbank.nwb.de`, `anwalt.de`, `sozialgesetzbuch-sgb.de`, `rechtsportal.de`;
+  a Haufe commentary and a Universität des Saarlandes lecture PDF. Doc type: statutory sections.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__150.html `[unverified canonical form]`;
+  https://www.gesetze-im-internet.de/vvg_2008/__159.html and `__161.html`, `__162.html`
+  (returned); `__160.html` `[unverified canonical form]` — **§ 160 was not returned at all**
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; nine
+  or ten hosts on §§ 150, 159, 161 and 162; **zero** on § 160)
+- Content: **§ 150** — where a policy is taken out **on the death of another person** and the
+  agreed benefit **exceeds the amount of ordinary funeral costs** (*gewöhnliche
+  Beerdigungskosten*), the **written consent** of that person is required for validity. It does
+  not apply to *betriebliche Altersversorgung*, which delib excludes anyway. Two refinements from
+  the summary: where the life assured lacks or has limited legal capacity, or has a *Betreuer*
+  with authority over personal affairs, the policyholder **may not represent** them in consenting;
+  and where a parent insures a **minor child**, consent is required **only** if the insurer is
+  also to pay on death **before age seven** and the benefit for that case exceeds ordinary funeral
+  costs. For delib this is an **issue-rule constraint** rather than a cash flow, and the funeral-
+  cost boundary is what makes *Sterbegeldversicherung* a distinct product in German law rather
+  than a small RLV — which is why delib excludes it.
+  **§ 159 *Bezugsberechtigung*** — the policyholder is, in case of doubt, entitled **without the
+  insurer's consent** to designate a third party as beneficiary and to substitute another. The
+  timing rule is what matters: a **widerruflich** designated third party acquires the right
+  **only on occurrence of the insured event**; an **unwiderruflich** designated third party
+  acquires it **already on designation**. For delib this determines whether the death benefit
+  forms part of the estate (it does not, where a beneficiary is designated) and whether the
+  policyholder can still surrender — **an irrevocable designation removes the unilateral
+  disposal, so a model point carrying one should not carry a surrender assumption.**
+  **§ 161 *Selbsttötung*** — in *Todesfallversicherung* the insurer is **not liable if the insured
+  person intentionally took their own life within three years of conclusion of the contract**,
+  unless the act was committed **in a state excluding free determination of the will owing to a
+  pathological mental disturbance**. **Abs. 2** allows the three-year period to be **extended by
+  individual agreement**; § 171 makes shortening in the insurer's favour impossible [R22]. **Abs.
+  3** — where the insurer is not liable it must nevertheless **pay the Rückkaufswert einschließlich
+  der Überschussanteile nach § 169** [R28]. **§ 162** — the insurer is not liable where the
+  policyholder intentionally and unlawfully brought about the death of the insured; and a
+  third-party beneficiary's **designation is void** if that third party did so. **Model
+  consequence for RLV and the death cover inside KLV**: the first three policy years carry a
+  benefit that is the **surrender value rather than the sum assured for the suicide sub-cause of
+  death** — a *duration-dependent benefit definition*, not a rate adjustment, and therefore a
+  listed modeling pitfall even in a model that does not split the death decrement by cause.
+- Not established: the statute uses the undefined standard *gewöhnliche Beerdigungskosten* and
+  **no search result supplied a figure, benchmark or case law fixing it**; any euro threshold in
+  a delib document is `**[std]**`. The age-seven rule was reported by one summary only. **§ 160
+  VVG was never returned by any search** and its content — the default interpretation rules for
+  several beneficiaries and for an "Erben" designation — is **not established**. The presumption
+  that a designation is revocable unless stated otherwise is implied by § 159's structure but was
+  not stated by any summary and is `[unverified]`. Whether the three-year suicide clock restarts
+  on reinstatement or on an increase in sum assured is the general understanding and is
+  `[unverified]`; no summary gave typical AVB wording.
+- Products: RLV and KLV load-bearing; the other eight qualified.
+
+### R27. VVG § 163 — Prämien- und Leistungsänderung
+- Publisher: Bundesamt für Justiz; mirrors at ten hosts including two Haufe commentary sections
+  and Gabler's *Beitragsanpassung*. Doc type: statutory section.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__163.html (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (one query, ten
+  hosts, with the three cumulative conditions reported consistently)
+- Content: the insurer may adjust the agreed premium where **three cumulative conditions** are
+  met: (1) the **Leistungsbedarf** has changed in a way that is **not merely temporary and was
+  not foreseeable** relative to the calculation bases of the agreed premium; (2) the **newly set
+  premium**, on the corrected bases, is **appropriate and necessary** to secure the permanent
+  fulfilment of the benefit; and (3) an **unabhängiger Treuhänder** has reviewed and confirmed the
+  bases and those conditions — the contractual counterpart of the supervisory trustee of § 142 VAG
+  [R11]. Two limits: **the adjustment is excluded** to the extent the benefits were
+  **insufficiently calculated at the original or a previous calculation and a diligent and
+  conscientious actuary should have recognised this**, in particular on the statistical bases then
+  available — i.e. **the insurer may not reprice its way out of its own mispricing**; and the
+  trustee step falls away where the change requires supervisory approval. The article also permits
+  a **reduction of the insurance benefit** on the same conditions as an alternative to raising the
+  premium. **For delib**: this is why a German BU or Pflegerente premium is *not* unconditionally
+  guaranteed even where it is level, and why the correct description of a BU or PFL premium is a
+  ***Bruttobeitrag* with a *Zahlbeitrag* below it**, the gap being a discretionary surplus rebate
+  withdrawable **without invoking § 163 at all** [R53]. A model that treats the *Zahlbeitrag* as
+  guaranteed for the whole term is making a behavioural assumption and the notes must label it.
+- Not established: whether § 163 reaches *kapitalbildende* premiums in practice, or is effectively
+  confined to biometric covers, **was not settled by any summary**. The interaction with the
+  *Zahlbeitrag*/*Bruttobeitrag* mechanism — which operates through § 153 rather than § 163 — is
+  the compiler's synthesis and is `[unverified]` as to its legal characterisation. No trustee-
+  appointment procedure or VAG cross-reference was returned.
+- Products: BU and PFL load-bearing; KLV, RV, RLV qualified.
+
+### R28. VVG §§ 165–170 — prämienfreie Versicherung, Kündigung, Rückkaufswert and the Stornoabzug
+- Publisher: Bundesamt für Justiz; mirrors at `dejure.org`, `buzer.de`, `lxgesetze.de`,
+  `lexetius.com`, `juraforum.de`, `datenbank.nwb.de`, `anwalt.de`, `fachanwalt.de`, `haufe.de`,
+  `sozialgesetzbuch-sgb.de`, `adams-kanzlei.de`, `bavheute.de`, `versicherungsbote.de`. Doc type:
+  statutory sections.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__165.html, `__166.html`, `__168.html`,
+  `__169.html` (returned); `__167.html` `[unverified canonical form]`
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (**nine queries
+  touched this block**; ten hosts each for §§ 165, 166 and 168, six independent search passes on
+  § 169, with §§ 169 Abs. 3 and Abs. 5 returned as quoted German text)
+- Content: **§ 165 *Prämienfreie Versicherung*.** The policyholder may **at any time, for the end
+  of the current insurance period, demand conversion into a prämienfreie Versicherung**, provided
+  the **agreed *Mindestversicherungsleistung*** is reached; if it is not, the insurer must instead
+  **pay the Rückkaufswert including surplus shares under § 169**. The calculation rule is what a
+  model implements: the paid-up benefit is computed **by recognised actuarial rules, on the
+  calculation bases of the premium calculation, on the basis of the Rückkaufswert under § 169
+  Abs. 3 to 5**, and **must be stated in the contract for each insurance year**, for the end of
+  the current period and taking account of premium arrears. **§ 166 *Kündigung des
+  Versicherers*** — where the **insurer** terminates, the insurance is **automatically converted
+  into a prämienfreie Versicherung**, § 165 governing the conversion; and in the § 38 Abs. 2
+  premium-default case [R30] the insurer owes **the benefit it would have owed had the insurance
+  been converted to paid-up at the time of the claim**, a consequence the § 38 Abs. 1 notice must
+  point out. **German lapse is therefore a three-way decrement** — surrender for the
+  *Rückkaufswert*, *Beitragsfreistellung* to a reduced paid-up sum, and premium-default conversion
+  — and the second and third keep the policy in force with a reduced benefit and a continuing
+  expense loading. A delib model implementing only surrender says so and states what the paid-up
+  path would do; a model implementing *Beitragsfreistellung* anchors the paid-up sum to the
+  **same § 169 value** the surrender path uses, or the two paths will not reconcile.
+  **§ 167** lets the policyholder **at any time demand conversion into an insurance meeting the
+  requirements of § 851c Abs. 1 ZPO** [R40], the policyholder bearing the costs; commentary adds
+  that it confers **no power of disposal**, only a right to demand conversion. **§ 168 *Kündigung
+  des Versicherungsnehmers*** — **Abs. 1**: where *laufende Prämien* are payable the policyholder
+  may terminate **at any time for the end of the current insurance period**; **Abs. 2**: for
+  insurance covering a risk where the **occurrence of the insurer's obligation is certain** the
+  right exists **even on a single premium**; **Abs. 3** is the carve-out that defines the German
+  pension products — Abs. 1 and 2 do **not** apply to a contract intended for old-age provision
+  where realisation of the claims has been excluded, namely (a) a **Basisrentenvertrag certified
+  under § 5a AltZertG** with *Verwertung* excluded under § 10 Abs. 1 Nr. 2 Satz 1 Buchst. b EStG
+  [R39][R43], and (b) more generally contracts where the parties have **irrevocably excluded
+  realisation before entry into retirement**, capped by the amounts in § 12 Abs. 2 Nr. 3 SGB II;
+  limb (b) was dated by a summary to an amendment of **26 August 2022 in force 1 January 2023**,
+  introduced by the *Bürgergeld-Gesetz*. **Model consequence, the sharpest product distinction in
+  delib: BAS has no surrender value and no lapse-to-surrender decrement.**
+  **§ 169 *Rückkaufswert*.** The base measure is the ***Deckungskapital*** computed by recognised
+  actuarial rules **on the calculation bases of the premium calculation**, as at the **end of the
+  current insurance period**. **The floor — Abs. 3**, quoted by a summary: *"bei Kündigung des
+  Vertrags mindestens der Betrag des Deckungskapitals, der sich bei gleichmäßiger Verteilung der
+  angesetzten Abschluss- und Vertriebskosten auf die ersten fünf Vertragsjahre ergibt"*, with
+  **supervisory rules on maximum Zillmer rates remaining unaffected** [R16]. It is a **floor on
+  the value, not a cap on the charge**. **Unit-linked — Abs. 4**: where the benefit is not
+  guaranteed at a fixed amount the *Rückkaufswert* is the ***Zeitwert***, the contract able to
+  prescribe the method. **The Stornoabzug — Abs. 5**, quoted: *"Der Versicherer ist zu einem Abzug
+  von dem nach Absatz 3 oder 4 berechneten Betrag nur berechtigt, wenn er vereinbart, beziffert
+  und angemessen ist"*, and *"Die Vereinbarung eines Abzugs für noch nicht getilgte Abschluss-
+  und Vertriebskosten ist unwirksam"*; the **burden of proof** lies on the insurer. The
+  *Rückkaufswert* and the extent to which it is guaranteed must be **communicated before the
+  policyholder makes the contract declaration**. A delib model carrying an acquisition charge
+  implements the **five-year floor as a `max()` against the tariff surrender value** and is
+  tested on model points that surrender where the floor binds and where it does not.
+- Not established: the **Absatz numbering for the § 169 base measure and for the pre-contractual
+  disclosure duty is `[unverified]`**; only Abs. 3 and Abs. 5 are corroborated by quoted text and
+  Abs. 4 by the Abs. 5 cross-reference. **No market range for Stornoabzug levels was
+  established**, so every *Stornoabzug* percentage in delib is `**[std]**` — except that the BGH
+  Debeka decision [R36] puts one concrete number in the record. The *vereinbarte
+  Mindestversicherungsleistung* is a **contractual, not statutory, threshold and no market range
+  was returned**, so every such threshold is `**[std]**`. Whether the paid-up conversion may carry
+  its own *Abzug* separate from § 169 Abs. 5 is **not established**; § 166's Absatz structure is
+  `[unverified]`. Whether § 168 Abs. 2 gives a **single-premium immediate annuity in payment** a
+  termination right **was not resolved**: the market answer is that annuities in payment are not
+  surrenderable, **no search result confirmed it**, and it is `[unverified]`. The § 12 Abs. 2
+  Nr. 3 SGB II amounts are **not established**, and whether Abs. 3 limb (b) requires an
+  irrevocable exclusion at inception or permits a later election was reported inconsistently. No
+  conversion mechanics, actuarial basis or cost figure for § 167 was returned.
+- Products: KLV, RV, FRV, IDX, RIE, BU, PFL load-bearing; BAS qualified (§ 165 yes, §§ 168–169
+  no); SOF and RLV qualified.
+
+### R29. VVG §§ 172–177 — Kapitel 6, Berufsunfähigkeitsversicherung
+- Publisher: Bundesamt für Justiz; mirrors at `dejure.org`, `buzer.de`, `rewis.io`,
+  `lxgesetze.de`, `juraforum.de`, `datenbank.nwb.de`, `rechtsportal.de`, `jurion.de`,
+  `anwalt24.de`, `sozialgesetzbuch-sgb.de`, plus a Haufe chapter page. Doc type: statutory
+  sections (§ 172 *Leistung des Versicherers*; § 173 *Anerkenntnis*; § 174 *Leistungsfreiheit*;
+  § 175 *Abweichende Vereinbarungen*; § 176 *Anzuwendende Vorschriften*; § 177 *Ähnliche
+  Versicherungsverträge*).
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__172.html, `__176.html`, `__177.html`
+  (returned); `__173.html`, `__174.html`, `__175.html` `[unverified canonical form]`
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries;
+  **the § 172 Abs. 2 definition and the § 177 text returned as quoted German** from nine and five
+  hosts respectively; §§ 173/174 from eight hosts)
+- Content: **§ 172 Abs. 1** — the insurer is obliged to render the agreed benefits for a
+  *Berufsunfähigkeit* that arose **after the start of the insurance**. **§ 172 Abs. 2 — the
+  statutory definition**, quoted by the summary: *"Berufsunfähig ist, wer seinen zuletzt
+  ausgeübten Beruf, so wie er ohne gesundheitliche Beeinträchtigung ausgestaltet war, infolge
+  Krankheit, Körperverletzung oder mehr als altersentsprechendem Kräfteverfall ganz oder teilweise
+  voraussichtlich auf Dauer nicht mehr ausüben kann."* Four elements matter for a model: the
+  reference occupation is **the last occupation as it was structured before the impairment**; the
+  causes are **illness, bodily injury or more-than-age-appropriate decline of strength**; the
+  incapacity may be **whole or partial**; and the standard is ***voraussichtlich auf Dauer***.
+  **§ 172 Abs. 3** permits the additional condition that the insured **does not and cannot pursue
+  another activity** their training and abilities enable and which corresponds to their previous
+  *Lebensstellung* — the statutory basis of the ***abstrakte Verweisung*** [R37]. **§ 173
+  *Anerkenntnis***: after a claim the insurer must **declare in Textform whether it acknowledges
+  its obligation**; the acknowledgement may be **time-limited only once** and is binding until the
+  end of that period. **§ 174 *Leistungsfreiheit***: where the insurer establishes that the
+  conditions of liability have ceased it is free of the obligation, but **cessation takes effect
+  only after prior notice in Textform and only from the end of the third month following that
+  notice** — the *Nachprüfung* mechanism. **§ 175**: §§ 173 and 174 may not be varied to the
+  policyholder's detriment. **§ 176**, quoted: *"Die §§ 150 bis 170 sind auf die
+  Berufsunfähigkeitsversicherung entsprechend anzuwenden, soweit die Besonderheiten dieser
+  Versicherung nicht entgegenstehen."* **§ 177**, quoted: *"(1) Die §§ 173 bis 176 sind auf alle
+  Versicherungsverträge, bei denen der Versicherer für eine dauerhafte Beeinträchtigung der
+  Arbeitsfähigkeit eine Leistung verspricht, entsprechend anzuwenden. (2) Auf die
+  Unfallversicherung sowie auf Krankenversicherungsverträge … ist Absatz 1 nicht anzuwenden."*
+  **Model consequences for BU**: the **three-month notice** before benefits stop is a real monthly
+  cash-flow item — a reactivation recognised in month *t* still pays through *t+3*; the
+  **once-only time-limited acknowledgement** is why a claims-in-payment model needs a distinct
+  "acknowledged" state; and § 176 is the authority for giving a BU model a *Rückkaufswert*, a
+  *Beitragsfreistellung* and an *Überschussbeteiligung* at all.
+- Not established: **the six-month prognosis and the 50 % degree thresholds that dominate the
+  German market are not in § 172** — the statute says *voraussichtlich auf Dauer* and *ganz oder
+  teilweise*; those are **AVB conventions** [R37]. **Whether § 177 Abs. 1 reaches a
+  *Pflegerentenversicherung* is contested and unresolved**: a trade headline returned by the § 177
+  query reads *"VVG-Regeln zu LV gelten bei Grundfähigkeits- und Schwere-Krankheiten-Policen
+  nicht"*, which points against for non-work-capacity triggers. This is **the main open legal
+  question for PFL**. § 172 Abs. 1's "after the start of the insurance" wording was reported by
+  one summary only.
+- Products: BU load-bearing; PFL qualified and contested; KLV, RV, RLV, BAS qualified (rider
+  forms).
+
+### R30. VVG §§ 19, 37, 38, 157 and 158 — Anzeigepflicht, Zahlungsverzug, Altersangabe, Gefahränderung
+- Publisher: Bundesamt für Justiz; mirrors at `buzer.de`, `dejure.org`, `juraforum.de` and
+  practitioner PDFs including a *Versicherer im Raum der Kirchen* leaflet and an Allrecht
+  *VVG-Belehrung § 19* tariff document; a Bavarian consumer-portal page for §§ 37/38. Doc type:
+  statutory sections plus two live market instruction texts.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__19.html, `__37.html`, `__157.html`,
+  `__158.html` (returned); `__38.html` `[unverified canonical form]`
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; ten
+  hosts across §§ 157/158 and across §§ 37/38)
+- Content: **§ 19** — the policyholder must disclose, up to making the contract declaration, the
+  risk circumstances known to them for which the insurer has **asked in Textform**. On breach the
+  insurer may **rescind**; rescission is **excluded** where the breach was neither intentional nor
+  grossly negligent, in which case the insurer may **terminate on one month's notice**; and the
+  obligation to perform falls away where the breach was ***arglistig***. The rights to rescind,
+  terminate and adjust **lapse five years after conclusion**, extended to **ten years** where the
+  breach was intentional or fraudulent; the lapse does not apply to insured events occurring
+  before the period expires. **§ 157** — where the **age of the insured person was misstated**,
+  the insurer's benefit **changes in the ratio of the premium corresponding to the true age to the
+  agreed premium**, and the right to rescind exists only if the insurer would not have concluded
+  the contract at the true age. **§ 158** — an **increase in risk** counts as such **only where it
+  has been expressly agreed to count as one**, in Textform, and can no longer be invoked once
+  **five years** (ten on intent or fraud) have passed; a premium reduction can likewise be
+  demanded only for an expressly agreed decrease. **§ 37** — if the single or first premium is
+  unpaid the insurer may rescind, and is not liable if the insured event occurs while it is
+  unpaid, **but only if** it drew attention to that consequence by a separate Textform notice or a
+  conspicuous notice in the *Versicherungsschein*. **§ 38** — for a *Folgeprämie* the insurer may
+  set a payment deadline at the policyholder's cost; the reported requirements for a valid
+  *qualifizierte Mahnung* are **Textform**, an **itemised statement of arrears of premium,
+  interest and costs**, and a **minimum period of two weeks**; the insurer is free of liability
+  where the event occurs after expiry and the policyholder is in default. **§ 166 overrides the
+  general § 38 consequence for life insurance**: cover does not simply cease, the contract
+  converts to *prämienfrei* [R28]. **Model consequences**: § 157's **pro-rata benefit adjustment**
+  is a clean, implementable rule and a natural test for RLV and KLV; § 158's default — **no
+  risk-increase consequence unless expressly agreed** — is why German life and BU contracts are
+  *not* subject to a general occupation-change clause and why a delib BU model needs no mid-term
+  reunderwriting state; and **German lapse is not instantaneous**: due date → qualified reminder
+  with a **two-week** period → expiry → conversion to paid-up. A monthly model that applies a
+  lapse decrement in the month of the missed premium is off by at least one month and applies the
+  wrong benefit basis. The **five-year contestability window** is a real first-duration mortality
+  and morbidity effect a model may fold into a select period, provided it says so.
+- Not established: the § 19 Absatz numbering is the standard account but was **not confirmed
+  Absatz by Absatz** and is `[unverified]`. Whether § 38 Abs. 3 also gives a right to terminate
+  without notice after the deadline was **not returned**. **§ 23 VVG (Gefahrerhöhung)**,
+  cross-referenced by § 158, and **§ 33 VVG (Fälligkeit)**, cross-referenced by § 152 Abs. 3, were
+  never searched. Whether the ten-year period runs from conclusion or from the breach differed in
+  emphasis between summaries. No search result addressed market practice on grace periods beyond
+  the statutory two weeks.
+- Products: RLV, BU, PFL, KLV, RV load-bearing; the rest qualified.
+
