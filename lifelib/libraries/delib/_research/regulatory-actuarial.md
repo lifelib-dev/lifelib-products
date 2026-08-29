@@ -1125,3 +1125,452 @@ layout is why a German product document cites §§ 138–141 for the contract-si
   established. The exact wording of the § 352 linear formula was not read.
 - Products: all ten (cited-not-specified).
 
+---
+
+## 3. Prudential — reserving, the Höchstrechnungszins and the Zinszusatzreserve
+
+The DeckRV is made under § 88 Abs. 3 VAG [R6] and fixes the *Rechnungsgrundlagen* of the German
+statutory *Deckungsrückstellung* — the HGB reserve of § 341f HGB [R54], **not** the Solvency II
+best estimate. This distinction is the axis of the whole German reserving picture and every
+delib document keeps it: an insurer carries **two liability measures**, and the
+*Überschussbeteiligung*, the *Zinszusatzreserve* and the § 139 VAG *Bewertungsreserven* test all
+run on the **HGB** side.
+
+### R14. DeckRV — the reserving regulation and its § 2, the Höchstrechnungszins
+- Publisher: Bundesamt für Justiz; mirrored by `buzer.de`, `umwelt-online.de`, `jurawelt.com`,
+  `gesatz.de`, `de.wikipedia.org`; BaFin for the FAQ that states the 2025 change
+- Doc type: Rechtsverordnung of **18 April 2016**, and its § 2
+- URL: https://www.gesetze-im-internet.de/deckrv_2016/BJNR076700016.html (returned); PDF
+  https://www.gesetze-im-internet.de/deckrv_2016/DeckRV.pdf (returned);
+  https://www.gesetze-im-internet.de/deckrv_2016/__2.html (returned);
+  https://www.buzer.de/gesetz/12006/a198101.htm (returned);
+  https://www.bafin.de/SharedDocs/FAQs/DE/VA/Pensionskassen/01_Frage.html (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (five queries; the
+  instrument's title and 18 April 2016 date from three independent publishers; the 2025 rate
+  change from BaFin's own FAQ title)
+- Content: *Verordnung über Rechnungsgrundlagen für die Deckungsrückstellungen*. The sections
+  that matter to delib are **§ 2** (the *Höchstrechnungszins*), **§ 4** (*Höchstzillmersätze und
+  versicherungsmathematische Berechnungsmethode*, [R16]) and **§ 5**, whose **Absatz 3** carries
+  the *Referenzzins* that generates the *Zinszusatzreserve* [R17]. **§ 2 fixes the maximum
+  interest rate at which a German life insurer may discount its statutory
+  *Deckungsrückstellung* for contracts carrying an interest guarantee**, and therefore — through
+  § 138 Abs. 1 VAG's requirement that premiums be adequate to fund that reserve [R8] — the
+  maximum rate at which a new tariff may be priced. It is the *Garantiezins* of market language,
+  although the two are not legally identical: § 2 caps the **reserving** rate; the guaranteed
+  rate a policy carries is a tariff decision that may be lower. BaFin's FAQ title states the
+  operative change in terms: *"Zum 1. Januar 2025 wird der Höchstrechnungszins in § 2 der
+  Deckungsrückstellungsverordnung (DeckRV) von 0,25 Prozent auf 1,0 Prozent angehoben"* (Stand
+  09.09.2024) — quoted from the search result, not from BaFin. Two structural facts a delib
+  document needs: the rate applies **to new business at the time of contract conclusion** and
+  then **stays with the contract for its whole term**, which is why the German in-force book is a
+  stack of cohorts [R15] and why the *Zinszusatzreserve* exists at all; and the same rate applies
+  to Pensionskassen, which delib puts out of scope, so the FAQ is cited for the life rate only.
+- Not established: the **wording of § 2 was not read**; whether it states a single rate or a rate
+  plus qualifications is `[unverified]`. Whether § 2 caps the reserving rate only, or the
+  guaranteed rate directly, is **inference from § 88 Abs. 3 VAG's wording, not retrieval**. The
+  **section titles disagree between publishers** — `buzer.de` titles § 2 *"Höchstzinssatz"* while
+  BaFin, the BMF and the DAV all speak of the *Höchstrechnungszins*; delib writes
+  *Höchstrechnungszins* and cites § 2 DeckRV. The full section list of the DeckRV (§ 1, § 3, § 6
+  and beyond) was **not established**; one summary attributes a historic 60 %/85 % yield cap to
+  "§ 3 DeckRV", which must be the **pre-2016** regulation and must not be carried forward [R56].
+- Products: all ten; qualified for FRV, where it bites on the *Rentenphase* and any guarantee
+  component rather than on the unit fund.
+
+### R15. The Höchstrechnungszins rate history and the Sechste Verordnung of 19 July 2024
+- Publisher: Bundesministerium der Justiz / `recht.bund.de` for the BGBl; Bundesministerium der
+  Finanzen for the Referentenentwurf; Deutsche Aktuarvereinigung for the fact sheet; VPV,
+  Wikipedia, cecu.de, bavprofis.de and ihre-vorsorge.de for the rate table
+- Doc type: amending Rechtsverordnung; professional fact sheet; secondary rate tables
+- URL: https://www.recht.bund.de/bgbl/1/2024/250/VO.html (returned);
+  https://aktuar.de/content/PDF/Fachwissen/H%C3%B6chstrechnungszins_in_der_Lebensversicherung.pdf
+  (returned); https://de.wikipedia.org/wiki/H%C3%B6chstrechnungszins (returned);
+  https://www.bundesfinanzministerium.de/Content/DE/Gesetzestexte/Gesetze_Gesetzesvorhaben/Abteilungen/Abteilung_VII/20_Legislaturperiode/2024-06-27-Sechste-VO-VAG/1-Referentenentwurf.pdf?__blob=publicationFile&v=2
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; the
+  BGBl citation from two independent sources; the rate table returned in full by one source and
+  corroborated at the endpoints 4.00 %, 0.25 % and 1.00 % by four others)
+- Content: **the full rate history**, as returned by the search summary of the rate table. Every
+  figure carries its period:
+
+  | Period | Höchstrechnungszins |
+  |---|---|
+  | 1987 – 06/1994 | **3.50 %** |
+  | 07/1994 – 06/2000 | **4.00 %** |
+  | 07/2000 – 2003 | **3.25 %** |
+  | 2004 – 2006 | **2.75 %** |
+  | 2007 – 2011 | **2.25 %** |
+  | 2012 – 2014 | **1.75 %** |
+  | 2015 – 2016 | **1.25 %** |
+  | 2017 – 2021 | **0.90 %** |
+  | 2022 – 2024 | **0.25 %** |
+  | from 2025 | **1.00 %** |
+
+  Two facts about the table are load-bearing and separately corroborated: the **1994 move was an
+  increase**, from 3.50 % to 4.00 %, and the summary states the rate "only increased in 1994 …
+  and has only been reduced since then"; and the **2025 move to 1.00 % is the first increase in
+  about thirty years**, described in the sources as the first since deregulation in 1994 [R11].
+  **The instrument.** The Bundesministerium der Finanzen amended the DeckRV by the **Sechste
+  Verordnung zur Änderung von Verordnungen nach dem Versicherungsaufsichtsgesetz of 19 July
+  2024**, published as **BGBl. 2024 I Nr. 250**, setting the *Höchstrechnungszins* at **1.00 %
+  with effect from 1 January 2025**; the DeckRV amendment is Article 1 of that regulation, and a
+  **Referentenentwurf of 27 June 2024** is on the BMF site. The same regulation **updated the
+  absolute floors for the Mindestkapitalanforderung** following a European Commission
+  notification. For delib the operative number for a new-business tariff written today is
+  **1.00 % (2025 onwards)**, and every model point representing an older cohort carries its
+  cohort's rate; all ten products' `**[std]**` guaranteed rates are anchored to this table.
+- Not established: the precise **within-year effective dates** for the 2000, 2004, 2007, 2012,
+  2015, 2017 and 2022 steps were not established beyond the half-year granularity shown. The
+  **MCR absolute floors** set by the Sechste Verordnung are `[unverified]` — no euro figure was
+  returned. Two later instruments in the same series were located and **not investigated**: the
+  **Siebte Verordnung** (`https://www.recht.bund.de/bgbl/1/2024/414/VO.html`, returned) and the
+  **Achte Verordnung** (`https://www.recht.bund.de/bgbl/1/2025/31/VO.html`, returned); their
+  content is `[unverified]` and either could have moved the rate again.
+- Products: all ten.
+
+### R16. DeckRV § 4 — Höchstzillmersätze
+- Publisher: Bundesamt für Justiz; `buzer.de`; `haufe.de` (pre-2016 version under the same
+  section number); secondary explanations at `verivox.de`, `ivwkoeln.web.th-koeln.de`,
+  `versicherungsbote.de`, `versicherungs-wiki.de`
+- Doc type: section of a Rechtsverordnung
+- URL: https://www.gesetze-im-internet.de/deckrv_2016/__4.html (returned);
+  https://www.verivox.de/lebensversicherung/themen/zillmerung/ (returned);
+  https://ivwkoeln.web.th-koeln.de/versicherungslexikon/2015/08/11/zillmerung/ (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; the
+  25 ‰ figure and the 40 ‰ → 25 ‰ cut effective 1 January 2015 from four independent sources)
+- Content: *Zillmerung* is the mechanism by which an insurer offsets a contract's one-off
+  acquisition costs against its first premiums, which is why a German endowment or annuity has a
+  very low surrender value in its early years. **§ 4 DeckRV caps it: the *Zillmersatz* may not
+  exceed 25 per mille (25 ‰, i.e. 2.5 %) of the *Beitragssumme***, the sum of all premiums
+  payable under the contract. The claim for reimbursement of one-off acquisition costs may be
+  covered individually, from the highest possible premium components up to the height of the
+  *Zillmersatz*, **from the inception of the insurance**; and **the *Zillmersatz* an undertaking
+  uses at the time of contract conclusion applies for the whole term**, so a pre-2015 contract
+  keeps its 40 ‰ basis. **The 2015 cut**: the maximum was reduced from **40 ‰ to 25 ‰ with
+  effect from 1 January 2015** by the LVRG [R20]; summaries state the pre-reform figure both as
+  "40 Promille" and as "bis zu 4 Prozent", which are the same number. For delib this parameter
+  sets the shape of the guaranteed surrender-value curve in the first years of every
+  regular-premium product, and it **interacts with § 169 VVG's independent five-year-spread
+  floor** [R28]: the DeckRV governs what the insurer may **reserve**, § 169 VVG governs what it
+  must **pay**, and a delib model carrying a zillmerised reserve applies both separately, the
+  tighter binding.
+- Not established: **a real conflict in the summaries about what the percentage is a percentage
+  of.** One rendering states the cap applies to premiums paid that are *not used for insurance
+  coverage and administration cost coverage*; a second, closer to the DeckRV text, states that in
+  the *Barwert der Prämien* no more than **2.5 % of premium components above the current value of
+  the obligation** may be applied; a third states plainly "25 ‰ der Beitragssumme". **The plain
+  reading is the one German market documents use and the one delib adopts, but the exact
+  statutory base is not established**, and any restatement of the mechanism beyond "25 ‰ of the
+  Beitragssumme" is `[unverified]`. Whether the cap applies to single-premium contracts, and how
+  the *Beitragssumme* is defined for them, was not established. The statement that the § 169
+  five-year spread and the 25 ‰ cap are **independent constraints** is the compiler's inference;
+  no source says so explicitly.
+- Products: every regular-premium product load-bearing — KLV, RV, BAS, RIE, FRV, IDX, RLV, BU,
+  PFL. Not relevant to SOF, a single-premium payout annuity that is not zillmered in this sense.
+
+### R17. DeckRV § 5 Abs. 3 — the Referenzzins, the Zinszusatzreserve and the Korridormethode
+- Publisher: Bundesamt für Justiz; BaFin for the interpretive decision; `buzer.de`, `jurion.de`,
+  `de.wikipedia.org`; technical commentary at `heistermannconsulting.de` and
+  `msg-insurance-suite.com`; trade press (`cash-online.de`, Versicherungsbote, Pfefferminzia,
+  GDV, Allianz Global Investors) for the quantum
+- Doc type: section of a Rechtsverordnung; a BaFin *Auslegungsentscheidung*; trade-press analysis
+- URL: https://www.gesetze-im-internet.de/deckrv_2016/__5.html (returned);
+  https://www.buzer.de/gesetz/12006/a198104.htm (returned);
+  https://www.bafin.de/SharedDocs/Downloads/DE/Auslegungsentscheidung/dl_ae_151204_projektion_referenzzins_va.html
+  (returned); https://heistermannconsulting.de/referenzzinsatz-fuer-die-zzr-zum-31-12-2022-betraegt-157/
+  (returned); https://msg-insurance-suite.com/de/blog/reform-der-zinszusatzreserve-neuregelung/
+  (returned);
+  https://www.cash-online.de/a/zinszusatzreserve-korridormethode-bringt-zehn-milliarden-euro-entlastung-allein-2018-430796/
+  (returned);
+  https://www.versicherungsbote.de/id/4939216/Zinszusatzreserve-2024-Milliarden-fliessen-zurueck---und-vieles-bleibt-offen/
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (five queries; the
+  corridor reform date and mechanism from four independent sources; the 2018 counterfactual from
+  two; the 1.57 % reference rate from three, for three different dates; the 2024 turn from three
+  independent outlets)
+- Content: **What the ZZR is.** The *Zinszusatzreserve* is the additional German statutory
+  reserve that arises when the discount rate applicable under § 5 DeckRV must be reduced below a
+  contract's tariff rate, producing a **higher *Deckungsrückstellung* than the tariff rate alone
+  would give**. It is an **HGB** reserve, financed out of the insurer's result and, under § 140
+  VAG's second escape hatch, out of the free RfB [R10].
+  **How the *Referenzzins* is built.** It uses the **month-end levels of the zero-coupon Euro
+  interest-rate swap rates with a maturity of ten years published by the Deutsche Bundesbank
+  under § 7 der Rückstellungsabzinsungsverordnung**. For each of the **nine preceding calendar
+  years** the annual mean of the month-end levels is taken, **rounded up to two decimal places**;
+  for the **current calendar year**, the mean of the month-end levels of the **first nine
+  months**, likewise rounded up. For **2009 to 2013** the regulation **fixes the annual means by
+  statute at 3.81, 3.13, 3.15, 2.14 and 1.96 per cent**. The reference rate is the **arithmetic
+  mean over the ten-year reference period**.
+  **The Korridormethode.** The calculation was **newly regulated with effect from 23 October
+  2018**, published in Bundesgesetzblatt Teil I of **22 October 2018**. The current year's
+  reference rate must lie **within a corridor around the previous calendar year's reference
+  rate**, limiting the annual change **in both directions**. The reform touched **only the
+  determination of the reference rate**; the ZZR calculation itself was unchanged. **The 2018
+  counterfactual, corroborated twice**: under the old method the reference rate would have fallen
+  from **2.21 % (2017)** to about **1.9 % in 2018**; under the corridor method it fell only to
+  **2.10 %**, and the corridor alone meant relief of **about ten billion euros for the industry
+  in 2018**. **The reference rate has been 1.57 % at 31 December 2022 and 1.57 % in 2025**, and
+  the sources state it has been **unchanged since 2021** — the corridor has pinned it flat for
+  five years while market swap rates moved sharply. BaFin's *Auslegungsentscheidung* **Projektion
+  des Referenzzinses gemäß § 5 Abs. 3 DeckRV** tells undertakings how to project it forward,
+  which is what makes a multi-year ZZR projection auditable [R21].
+  **The ZZR in quantum**, all from trade press and rating-agency reporting, never from a
+  supervisory source: the industry-wide stock was about **€84 bn at the 2024 balance-sheet
+  date**, down from a **peak of €96 bn at end-2021**; about **€8.5 bn was added in 2021**; in
+  **2022 and 2023** the stock fell by **more than €3 bn each year**; **2024 was the first year
+  since the ZZR was introduced in which life insurers had to add nothing at all**, with about
+  **€5 bn flowing back industry-wide** and releases among the **fifty largest providers summing
+  to about €3.4 bn**; for **2025** a further **€4 bn** reduction through *Bestandsveränderung*,
+  with capacity to release **around €5 bn a year in 2025 and 2026**. **The released funds benefit
+  policyholders through a higher *Überschussbeteiligung***, which is the mechanical link between
+  this entry and the declared rates in [R53], and the reason German declarations have risen since
+  2023 despite the reference rate being pinned at 1.57 %. An earlier projection had the ZZR
+  rising to **€225 bn**; that path was made obsolete by the 2022 rate rise and the corridor and
+  is recorded only so a reader can date it.
+- Not established: **the width of the corridor was not established** — no search result gave the
+  percentage-point or relative bound, and it is the single most important missing number in this
+  entry; **any delib statement of the corridor width is `[unverified]`**. Whether the ZZR itself
+  uses the same fifteen-year look-forward as MindZV § 12 [R18] was **not established**, and the
+  two must not be conflated. The rest of § 5 beyond Absatz 3 was not read. The **€5 bn and
+  €3.4 bn 2024 figures are different cuts** (whole industry vs the fifty largest) and are
+  consistent, but no source reconciles them; likewise the €4 bn realised and €5 bn capacity
+  figures for 2025. **None of the quantum figures comes from a supervisory source**; the BaFin
+  *Erstversicherungsstatistik* [R53] would carry the audited aggregate and should be preferred
+  once retrievable, and every ZZR figure quoted from this entry in a delib document is attributed
+  to the trade press.
+- Products: KLV, RV, BAS, RIE, SOF, IDX load-bearing; BU and PFL qualified (annuities in payment
+  carry a tariff rate and therefore a ZZR); RLV and FRV background. **Cited-not-specified: no
+  delib model builds a ZZR.**
+
+---
+
+## 4. Prudential — the surplus regulations, the LVRG and the supervisor
+
+### R18. MindZV — the minimum allocation to the RfB, and §§ 11–13
+- Publisher: Bundesamt für Justiz; mirrored by `buzer.de`, `lxgesetze.de`, `freirecht.de`,
+  `anwalt.de`, `gesetze.legal`, `de.wikipedia.org`, `bundestag.github.io`
+- Doc type: Rechtsverordnung of **18 April 2016**, made under § 145 VAG [R10]
+- URL: https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html (returned);
+  https://www.gesetze-im-internet.de/mindzv_2016/__4.html (returned);
+  https://www.gesetze-im-internet.de/mindzv_2016/__6.html (returned);
+  https://www.buzer.de/gesetz/12013/a198221.htm (returned, § 6);
+  https://www.gesetze-im-internet.de/mindzv_2016/__11.html (returned);
+  https://www.buzer.de/gesetz/12013/a198226.htm (returned, § 11);
+  https://lxgesetze.de/mindzv/11 (returned); https://freirecht.de/g/MindZV:11 (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; the
+  **90 / 90 / 50** split returned by two independent queries with identical percentages and
+  identical assignment to the three result sources; § 6's detailed wording from one source in
+  near-statutory form; § 11's title from five independent publishers)
+- Content: *Verordnung über die Mindestbeitragsrückerstattung in der Lebensversicherung* — the
+  arithmetic floor under the German *Überschussbeteiligung*. It applies to life insurers **except
+  Pensionskassen**, which have their own § 5.
+  **The three result sources and their minimum shares.** **§ 6 *Kapitalanlageergebnis* — 90 %**:
+  per the returned wording, the minimum allocation to the RfB from investment income for
+  profit-participating contracts is **90 per cent of the Kapitalerträge to be credited under § 3
+  Abs. 1, less the Rechnungszinsen**, without reducing the externally financed provision
+  component under § 3 Abs. 7 Satz 5 and without the pro-rata interest on *Pensionsrückstellungen*
+  attributable to profit-participating contracts. **The subtraction of the *Rechnungszinsen* is
+  the crucial detail: the guarantee is funded first, and only the excess is shared 90/10.**
+  **§ 7 *Risikoergebnis* — 90 %**, raised from 75 % by the LVRG with effect from **7 August
+  2014** [R20]. **§ 8 *Übriges Ergebnis* — 50 %**, the cost result, shared half and half.
+  **§ 4 — how the minimum is assembled.** From the sum of the amounts under § 6 Abs. 1, § 7 and
+  § 8, the ***Direktgutschrift*** attributable to profit-participating contracts is **deducted** —
+  including *Schlusszahlungen* from participation in *Bewertungsreserven* insofar as those are
+  distributed as a direct credit. **Alt- and Neubestand are treated separately throughout** [R11].
+  **A mathematically negative minimum allocation is replaced by zero.** Those two rules are what
+  make the MindZV a **minimum transfer to the RfB rather than a minimum payout**.
+  **§§ 11–13 — the Sicherungsbedarf machinery** behind § 139 Abs. 3/4 VAG [R9], i.e. the test
+  that decides whether a departing policyholder receives any share of the fixed-income
+  *Bewertungsreserven*. **§ 11**: the reference rate is the **zero-coupon Euro interest-rate swap
+  rate published by the Deutsche Bundesbank under § 7 der Rückstellungsabzinsungsverordnung, with
+  a maturity of ten years, at the end of the month preceding the date on which the
+  Bewertungsreserven are determined**. Note the difference from the ZZR reference rate [R17]: the
+  ZZR rate is a **ten-year average of ten-year swap rates**, damped by the corridor; the
+  *Sicherungsbedarf* rate is a **single month-end spot** ten-year swap rate. **They are different
+  numbers computed from the same Bundesbank series, and confusing them is one of the standard
+  errors in describing a German life balance sheet.** **§ 12**: at each determination date the
+  § 11 rate is **compared with the highest Rechnungszins applicable to the contract over the next
+  fifteen years**; where the reference rate is lower, the contract generates a *Sicherungsbedarf*
+  and to that extent the fixed-income valuation reserves are locked away from departing
+  policyholders. The fifteen-year window is what makes the test bite on annuity business in
+  particular: a deferred annuity whose *Rentenphase* guarantee runs at 3.25 % keeps generating a
+  *Sicherungsbedarf* long after a comparable endowment has matured.
+  **Why this is the centre of the delib library.** Six of the ten products are
+  profit-participating general-account contracts whose credited return is the guarantee plus a
+  discretionary share of these three results. Any delib model of the *Überschussbeteiligung*
+  chassis represents at least the three result sources, the 90/90/50 floor, the
+  direct-credit-versus-RfB split, and the fact that the floor binds on the **HGB** accounts.
+- Not established: **§ 7 and § 8 were never returned in their own words** — the 90 % and 50 %
+  come from summaries of § 4 and of the regulation as a whole, twice and consistently, but the
+  section texts were not read. **§ 3's definition of the *zuzurechnende Kapitalerträge* — the
+  base the 90 % bites on — was not established, and it is the number that actually matters for a
+  projection.** § 2 (definitions, including *Direktgutschrift*) was not retrieved. Whether the
+  50 % on the *übriges Ergebnis* applies symmetrically to a negative cost result was not
+  established. **§ 13 was not retrieved**; its title and content are `[unverified]` and it is
+  named only because the numbering implies further provisions. The **valuation formula in § 12**
+  — how the *Zinsverpflichtung* is computed from the reference rate — was not returned. The
+  *Rückstellungsabzinsungsverordnung* itself was not researched beyond the cross-reference.
+- Products: KLV, RV, BAS, RIE, IDX, SOF load-bearing; RLV, BU, PFL load-bearing **on the risk
+  result** — the 90 % share of the *Risikoergebnis* is what funds a German term, BU or Pflege
+  tariff's *Beitragsrückerstattung*; FRV qualified, see [R21].
+
+### R19. RfBV — the collective part of the Rückstellung für Beitragsrückerstattung
+- Publisher: Bundesamt für Justiz; `dejure.org` for the BGBl citation; `jurawelt.com`; Bundesrat
+  Drucksache 585/16 as background; BaFin for the interpretive decision on *Teilkollektivierung*
+- Doc type: Rechtsverordnung, **BGBl. I 2015 S. 300**
+- URL: https://www.gesetze-im-internet.de/rfbv/BJNR030000015.html (returned);
+  https://www.gesetze-im-internet.de/rfbv/__3.html (returned);
+  https://dejure.org/BGBl/2015/BGBl._I_S._300 (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_110419_mindestzufuehrung_rfb_va.html
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; three
+  independent publishers plus the Bundesrat papers, with one substantive summary of §§ 2 and 3
+  that reads close to the statutory wording)
+- Content: implements § 140 Abs. 1 Satz 2 VAG [R10]. It applies to life insurers **except
+  Sterbekassen and regulierte Pensionskassen**. **§ 2 — the cap on the *ungebundene* RfB.** On
+  establishing a *kollektiver Teil*, the undertaking must set an ***Obergrenze* for the
+  ungebundene Rückstellung für Beitragsrückerstattung of the *Teilbestände*, expressed as a
+  percentage**; the percentage is **at least 100**, is **identical for all Teilbestände**, and
+  **may be changed from the prior year only with the supervisor's consent**. Where a
+  *Teilbestand*'s *ungebundene* RfB **exceeds** that ceiling and no *Rückführungen* into the
+  *Teilbestände* take place at the balance-sheet date, **the excess is transferred to the
+  kollektiver Teil**. **§ 3** requires an *Obergrenze* for the collective part itself, as a
+  percentage of an amount. **Why it exists**: the collective part lets an insurer hold surplus
+  committed to policyholders as a class but not yet attributed to any *Teilbestand*, which is what
+  makes cross-cohort smoothing legally possible without breaching the § 138 Abs. 2 VAG equal
+  treatment rule [R8]. BaFin's interpretive decision on the *Zusammenwirken von Mindestzuführung
+  zur RfB und Teilkollektivierung* (**19 April 2011**) governs how the MindZV floor interacts with
+  it [R21]. **Vocabulary for delib**: the statutory term is *ungebundene* RfB; German market
+  writing says *freie RfB* for the same thing and *gebundene RfB* for the part already committed
+  to declared shares and to the *Schlussüberschussanteilfonds* of § 28 RechVersV [R54].
+- Not established: **the percentage base in § 3 was not established**; one summary of § 140 VAG
+  describes the ceiling as "a percentage of declared profit shares and the expected expenses for
+  declared Direktgutschriften, with a minimum percentage of 100", which appears to describe
+  **§ 2**, not § 3 — **the two are conflated in the summaries and the conflation is not
+  resolved**. § 1 (*Geltungsbereich*) and any further sections were not retrieved. **Whether the
+  German market actually uses the collective part, and how large it is, was not established.**
+- Products: KLV, RV, BAS, RIE, IDX, SOF load-bearing for the surplus chassis; the other four
+  qualified.
+
+### R20. LVRG 2014 — the Lebensversicherungsreformgesetz
+- Publisher: Bundesgesetzblatt / `dejure.org` for the citation; Deutscher Bundestag for the
+  Drucksache and the plenary record; Gabler and Haufe for the summaries; DIA/ITA for the impact
+  study
+- Doc type: federal statute, **BGBl. I 2014 S. 1330**, of **1 August 2014**; Gesetzentwurf
+  **BT-Drs. 18/1772** of 18 June 2014
+- URL: https://dejure.org/BGBl/2014/BGBl._I_S._1330 (returned);
+  https://dserver.bundestag.de/btd/18/017/1801772.pdf (returned);
+  https://www.haufe.de/steuern/gesetzgebung-politik/aenderungen-im-ueberblick-das-neue-lebensversicherungsreformgesetz_168_265064.html
+  (returned); https://wirtschaftslexikon.gabler.de/definition/lebensversicherungsreformgesetz-54407
+  (returned); https://www.dia-vorsorge.de/wp-content/uploads/2019/07/150519_DIA_Studie_final_LVRG.pdf
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; the
+  three headline changes from four independent sources with identical figures and dates)
+- Content: *Gesetz zur Absicherung stabiler und fairer Leistungen für Lebensversicherte* — the
+  reform that reshaped the German *Überschussbeteiligung* for the low-rate era. Three of its
+  changes are load-bearing for delib. **(1) Bewertungsreserven restricted**: the distribution
+  restriction applies **only to valuation reserves from festverzinsliche Wertpapiere**, and
+  participation by departing policyholders is limited where an insurer's provisions are, at
+  prevailing low rates, insufficient to fund the guarantees given to remaining policyholders —
+  this is the *Sicherungsbedarf* test now in § 139 Abs. 3/4 VAG [R9] and MindZV §§ 11–12 [R18].
+  **(2) *Höchstzillmersatz* cut from 40 ‰ to 25 ‰** of the *Beitragssumme*, effective **1 January
+  2015** [R16]. **(3) *Risikoüberschuss* share raised from 75 % to 90 %**, effective **7 August
+  2014**, now § 7 MindZV [R18] — the single change that most affects delib's biometric products,
+  since a German term, BU or Pflege tariff's surplus is predominantly a risk surplus. Alongside
+  them, **distributions to shareholders may be prohibited** where needed to secure the guaranteed
+  benefits (an *Ausschüttungssperre*). The constitutionality of the LVRG's insertion into
+  **§ 153 Abs. 3 Satz 3 VVG** was litigated and upheld [R36].
+- Not established: the LVRG amended the **old** VAG (§ 56a a.F. and others) and **the mapping
+  from those old sections onto the 2016 VAG sections was not established**; delib cites the
+  current sections and describes the LVRG as the reform that introduced the rules, not as the
+  current legal source. Whether the LVRG also introduced a commission cap
+  (*Provisionsdeckel*) — trade press in the results discusses one as a later, separate proposal —
+  was **not established and is not asserted**.
+- Products: all ten; most materially RLV, BU and PFL (the 90 % risk-result share) and KLV, RV,
+  BAS, RIE (the *Bewertungsreserven* restriction and the Zillmerung cut).
+
+### R21. BaFin — the FinDAG, the MaGo and the Auslegungsentscheidungen
+- Publisher: Bundesamt für Justiz for the FinDAG; Bundesanstalt für Finanzdienstleistungsaufsicht
+  for the circulars, interpretive decisions and topic pages; Gabler, KPMG, Wavestone and Fincon
+  as secondary
+- Doc type: federal statute; supervisory circular; a cluster of *Auslegungsentscheidungen*
+- URL: https://www.gesetze-im-internet.de/findag/BJNR131010002.html (returned);
+  https://www.bafin.de/DE/die-bafin/ueber-die-bafin/aufgaben/versicherungsaufsicht/versicherungsaufsicht_node.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/EN/Rundschreiben/2017/rs_1702_mago_va_en.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Konsultation/2025/kon_05_2025_konsultation_ueberarbeitung_mago_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_151204_wechselwirkung_ueberschussbeteiligung_neugeschaeft_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_160610_beteiligung_an_bewertungsreserven.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_091222_mzffglv_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_110419_mindestzufuehrung_rfb_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_161111_kapitalmarktmodelle_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_160222_latente_steuern_auf_versicherungstechnische_rueckstellungen.html
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries;
+  BaFin's own pages plus five independent secondary sources agreeing on the 2002 founding, the
+  FinDAG date, the MaGo dates and the supervisory objective; the interpretive decisions returned
+  as URLs with **one or two sentences of summary each**)
+- Content: **The institution.** BaFin was created in **2002** by the
+  *Finanzdienstleistungsaufsichtsgesetz of 22 May 2002*, merging the Bundesaufsichtsämter for
+  banking, securities and insurance into a single *Allfinanzaufsicht*; the merger was
+  organisational and **did not create new or extended competences**. BaFin is subject to the
+  *Rechts- und Fachaufsicht* of the Bundesministerium der Finanzen (§ 2 FinDAG) and supervises
+  under the KWG, the VAG and the WpHG. **The objective**: the stated main objective of German
+  insurance supervision is to ensure the **permanent fulfilment capability of insurance
+  contracts** — the *dauernde Erfüllbarkeit* standard that also appears in § 341e HGB [R54] and
+  § 138 Abs. 1 VAG [R8] — together with the protection of the insured and beneficiaries.
+  Supervision splits into *Finanzaufsicht/Solvenzaufsicht*, *Rechtsaufsicht* and, in German
+  usage, *Missstandsaufsicht*.
+  **The MaGo.** *Rundschreiben 2/2017 (VA) — Mindestanforderungen an die Geschäftsorganisation
+  von Versicherungsunternehmen* was **published 25 January 2017 and in force from 1 February
+  2017**. It **interprets the business-organisation provisions of the VAG and of Delegated
+  Regulation (EU) 2015/35 and binds BaFin's own application of them**. Its content covers
+  *Aufbauorganisation*, internal guidelines, the Solvency II *Schlüsselfunktionen*, the risk
+  management system, undertaking-specific stress tests and *Ausgliederung*. A **revised version
+  was published on 14 July 2025** following **Konsultation 05/2025** opened 29 January 2025, its
+  **Chapter 8** specifying group-level requirements. For delib the MaGo is the reason the
+  ***versicherungsmathematische Funktion*** exists alongside the § 141 VAG *Verantwortlicher
+  Aktuar* [R11] — **two distinct actuarial roles, one from Solvency II governance and one from
+  German life law, which delib does not conflate.**
+  **The Auslegungsentscheidungen.** These are BaFin's published statements of how it will apply a
+  provision. They are not law, but they bind BaFin's own practice and carry much of the operative
+  detail the regulations leave open. Established, each from one or two sentences of summary:
+  (1) ***Wechselwirkungen zwischen Überschussbeteiligung und Neugeschäft*** (4 December 2015) —
+  German life and health insurance is characterised by **collective mechanisms**, so new business
+  can affect the future *Überschussbeteiligung* of the existing portfolio, and BaFin addresses
+  when that interaction is acceptable. (2) ***Ausweis der Beteiligung an den Bewertungsreserven
+  in der Standmitteilung*** (10 June 2016) — the annual statement must disclose the **full**
+  allocation of the participation in *Bewertungsreserven*, and showing only a guaranteed minimum
+  share (*Sockelbeteiligung*) **is not sufficient**, because without full disclosure the
+  policyholder cannot obtain clarity about the development of their claims as § 155 Satz 1 VVG
+  requires [R25]. (3) ***Mindestzuführung in der fondsgebundenen Lebensversicherung***
+  (22 December 2009) — directly load-bearing for FRV, whose investment result belongs to the
+  policyholder and whose MindZV base is therefore not the general account's. (4)
+  ***Zusammenwirken von Mindestzuführung zur RfB und Teilkollektivierung*** (19 April 2011)
+  [R19]. (5) ***Auswirkung von passiver Rückversicherung auf die Angemessenheit der Zuführung zur
+  RfB*** — the design of reinsurance treaties affects the minimum allocation but **must not lead
+  to an inappropriate reduction of policyholders' Überschussbeteiligung**. (6) ***Anforderungen
+  an Kapitalmarktmodelle für die Bewertung der versicherungstechnischen Rückstellungen unter
+  Solvency II*** (11 November 2016) — calibration of parameters and scenarios must be consistent
+  with the relevant risk-free curve used for the best estimate under **Art. 77(2) of Directive
+  2009/138/EC** [R1]. (7) ***Latente Steuern auf versicherungstechnische Rückstellungen unter
+  Solvency II*** (22 February 2016). (8) ***Projektion des Referenzzinses gemäß § 5 Abs. 3
+  DeckRV*** [R17].
+- Not established: **none of these documents was read.** Each is represented by one or two
+  sentences of search summary; the operative wording, the thresholds and the worked examples are
+  all unknown, and **the interpretive decisions are the weakest-evidenced supervisory material in
+  this file relative to their importance**. The date of item (5), and a 2020 decision on the same
+  subject that the summaries mention, were **not established**. Whether any of them has been
+  withdrawn or superseded was not checked. The four Solvency II **Schlüsselfunktionen** are named
+  only generically in the returned summaries; their individual names and VAG section numbers were
+  **not established**. Whether the 2025 MaGo revision is already in force, or applies from a
+  stated date, was not established.
+- Products: FRV load-bearing (item 3); KLV, RV, BAS, RIE, IDX, SOF for items 1, 2, 4, 5; all ten
+  for the institutional context and items 6 and 7.
+

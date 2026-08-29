@@ -372,7 +372,7 @@ result.
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: a broker-channel mutual whose unit-linked pension carries a *Rente Invest* name
-  `[unverified]`. Recorded to widen the carrier set behind section 20. **No parameter is
+  `[unverified]`. Recorded to widen the carrier set behind the variation section. **No parameter is
   established.**
 
 ### S13 — HDI Lebensversicherung AG, AVB for the fondsgebundene Rentenversicherung ("CleverInvest")
@@ -979,11 +979,10 @@ rationale or tagged `[unverified]`.**
   detail disappears; it is recorded because it is the reason a real policy's unit count and a
   model's differ by a few days' price movement.
 - **The non-unit side.** Everything that is not the unit holding is a cash flow in the insurer's
-  own accounts: the charges it withholds or cancels, the *Risikobeitrag* it collects and the death
-  benefits it pays, its expenses and its commission. **The delib model projects the non-unit cash
-  flows and carries the unit fund only as the base on which they are computed**, which is the
-  right emphasis for a liability cash-flow model: the unit fund is the policyholder's money
-  passing through.
+  own accounts: the charges it withholds or cancels, the *Risikobeitrag* it collects, the death
+  benefits it pays, its expenses and its commission. **delib projects the non-unit cash flows and
+  carries the unit fund only as the base on which they are computed** — the right emphasis for a
+  liability model, since the unit fund is the policyholder's money passing through.
 
 ### 3. Premium and *Beitragsverrechnung*
 
@@ -1094,10 +1093,10 @@ is German market practice; the **levels** were established nowhere in this corpu
   is **of the order of 1 % per annum**. The technical notes must compute it exactly from the
   model's own output rather than quote this estimate.
 - **Market levels are `[unverified]` in their entirety.** The commonly stated picture — that
-  broker-sold commission tariffs sit materially above direct and net tariffs, and that the spread
-  across the market is more than a percentage point of annual yield — is consistent with BaFin's
-  "differ considerably" [R10] but **no range, no median and no carrier-level figure is established
-  anywhere in this corpus**. Gap 6.
+  broker-sold commission tariffs sit materially above direct and net tariffs, with a market spread
+  of more than a percentage point of annual yield — is consistent with BaFin's "differ
+  considerably" [R10], but **no range, median or carrier-level figure is established anywhere in
+  this corpus**. Gap 6.
 
 ### 6. *Todesfallleistung* before *Rentenbeginn*, and the *Risikobeitrag*
 
@@ -1298,12 +1297,12 @@ insurance.**
   at all**. **The delib `[std]` is a zero *Stornoabzug***, with the parameter present and
   switchable, on the ground that a non-zero one would be an unsourced number attached to a
   contested clause.
-- **Early values are nevertheless poor, and for a structural reason worth stating**: at the
-  section 4 levels, a contract surrendered in year 3 has had 15 % of every premium taken for
-  acquisition plus the ongoing charges, so the *Rückkaufswert* is well below premiums paid even
-  with a flat market. **That is not a penalty and there is no deduction** — it is the acquisition
-  charge already spent. The delib worked example must display the first five years explicitly,
-  because that is where the product's economics are least intuitive.
+- **Early values are nevertheless poor, for a structural reason worth stating**: at the section 4
+  levels, a contract surrendered in year 3 has had 15 % of every premium taken for acquisition plus
+  the ongoing charges, so the *Rückkaufswert* is well below premiums paid even in a flat market.
+  **That is not a penalty and there is no deduction** — it is the acquisition charge already spent.
+  The worked example must display the first five years explicitly, because that is where the
+  product's economics are least intuitive.
 
 ### 12. *Beitragsfreistellung*
 
@@ -1340,19 +1339,17 @@ and because the vocabulary is a German market invention with no English equivale
   in two steps rather than one.
 - ***i-CPPI*** — individual Constant Proportion Portfolio Insurance. The exposure to the risky
   fund is set, **per policy and continuously**, as a multiplier times the cushion between the
-  policy value and the present value of the guarantee. Guarantees are secured by the algorithm
-  rather than by a static allocation. It is the most efficient of the three and the most
+  policy value and the present value of the guarantee. The most efficient of the three and the most
   path-dependent.
-- **Why the delib model does not implement any of them.** Every one of the three is a **rule for
-  reallocating between a guaranteed pot and a risky pot along a path**. Its entire content is what
-  it does when the risky pot falls. A deterministic gross best-estimate projection has **one path,
-  and it is a smooth one**, so a guarantee mechanism modelled inside it either never triggers — in
-  which case it is dead code presented as a feature — or triggers on a hand-chosen shock, in which
-  case the model is asserting a scenario it has no basis for. **delib therefore models the pure
-  unit-linked chassis, states the guarantee variants here, and says what would have to be added**:
-  a stochastic or at minimum multi-scenario asset model, a monthly reallocation rule, a guaranteed
-  pot accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is a
-  different model, and an honest reference implementation says so rather than gesturing at it.
+- **Why the delib model implements none of them.** Each is a **rule for reallocating between a
+  guaranteed pot and a risky pot along a path**, and its entire content is what it does when the
+  risky pot falls. A deterministic projection has **one path, and it is a smooth one**, so a
+  guarantee mechanism modelled inside it either never triggers — dead code presented as a feature —
+  or triggers on a hand-chosen shock, which asserts a scenario the model has no basis for. **delib
+  models the pure unit-linked chassis and states what would have to be added**: a stochastic or at
+  least multi-scenario asset model, a monthly reallocation rule, a guaranteed pot accreting at a
+  *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is a different model, and an
+  honest reference implementation says so rather than gesturing at it.
 - **What the model *does* keep from the hybrid world**: the *Ablaufmanagement* glide (section 7),
   which is de-risking without a guarantee and is representable deterministically.
 
@@ -1663,5 +1660,5 @@ observation because no observation was available:
 28. **Living texts.** VVG, VVG-InfoV, DeckRV, MindZV, VAG, EStG and InvStG all change; the PRIIPs
     RTS was reworked with effect from 1 January 2023 `[unverified]`; the *Höchstrechnungszins*
     changed on 1 January 2025 `[unverified]`; BaFin's focus-risk agenda is annual [R11]. **Every
-    paragraph number and every date in this file is `[unverified]`** and must be re-checked
-    against the instrument before anything in the delib product documents relies on it.
+    paragraph number and every date in this file is `[unverified]`** and must be re-checked against
+    the instrument before anything in the delib product documents relies on it.
