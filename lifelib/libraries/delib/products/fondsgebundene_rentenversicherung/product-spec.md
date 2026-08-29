@@ -21,29 +21,24 @@ standardizations introduced for the reference implementation; each carries a rat
 where the research file recorded one, the argued range across the German market. Claims flagged
 [unverified] could not be confirmed against any retrieved document or search result.
 
-**Read this before reading anything else.** This library was built under two limits that
-applied at full strength to this product. Direct HTTP egress was blocked by an organisation
-network policy, so **no document cited anywhere in this specification was retrieved** — not one
-*Bedingungswerk*, not one *Basisinformationsblatt*, not one *Produktinformationsblatt*. And the
-session's `WebSearch` budget was exhausted before this product's research began, so **no search
-was run for it either**; the few facts corroborated at one remove were corroborated by searches
-run for sibling delib products, and are attributed to those siblings wherever they appear. A
-delib citation is therefore **a pointer, not a certificate**: it names the instrument a claim
-should be checked against; it does not assert that anyone checked it. The consequence is stated
-plainly rather than glossed. The **mechanics** below are common ground in German practice and
-are written without hedging. The **levels** are almost entirely **[std]**: not one
+**Read this before reading anything else.** Two limits applied at full strength to this product.
+Direct HTTP egress was blocked by an organisation network policy, so **no document cited
+anywhere in this specification was retrieved** — not one *Bedingungswerk*, not one
+*Basisinformationsblatt*, not one *Produktinformationsblatt*. And the session's `WebSearch`
+budget was exhausted before this product's research began, so **no search was run for it
+either**; the few facts corroborated at one remove were corroborated by searches run for sibling
+delib products and are attributed to those siblings wherever they appear. A delib citation is
+therefore **a pointer, not a certificate**. The **mechanics** below are common ground in German
+practice and are written without hedging. The **levels** are almost entirely **[std]**: not one
 *Abschlusskostenquote*, not one *Verwaltungskostensatz*, not one *Stückkosten* amount, not one
-*Effektivkostenquote* and not one *Rentenfaktor* was established at any carrier. Where a level
-is [std] it is a parameter of the reference implementation with a stated derivation, and it is
-labelled as such at every appearance.
+*Effektivkostenquote* and not one *Rentenfaktor* was established at any carrier.
 
-Out of scope and named so the boundary is explicit: **hybrid and guarantee designs**
-(*statische* and *dynamische Hybride*, *Zwei-* und *Drei-Topf-Hybride*, i-CPPI,
-*Wertsicherungsfonds*), which are this same chassis wrapped in a path-dependent reallocation
-rule and are discussed but deliberately not specified (see *Riders and options*);
-**indexgebundene Rentenversicherung** (delib `indexpolice`); the **fondsgebundene Basisrente**
-and **fondsgebundene Riester-Rente** (delib `basisrente`, `riester_rente`), which carry their
-own subsidy, guarantee and payout rules; the **payout phase**, which belongs to delib
+Out of scope, named so the boundary is explicit: **hybrid and guarantee designs** (*statische*
+and *dynamische Hybride*, *Zwei-* und *Drei-Topf-Hybride*, i-CPPI, *Wertsicherungsfonds*), which
+are this same chassis wrapped in a path-dependent reallocation rule and are discussed but
+deliberately not specified (see *Riders and options*); **indexgebundene Rentenversicherung**
+(delib `indexpolice`); the **fondsgebundene Basisrente** and **fondsgebundene Riester-Rente**
+(delib `basisrente`, `riester_rente`); the **payout phase**, which belongs to delib
 `sofortrente`; and **bAV** in all its forms.
 
 ---
