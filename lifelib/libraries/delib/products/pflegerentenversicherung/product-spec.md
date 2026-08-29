@@ -177,6 +177,10 @@ is a visible backstop, because the *Angehörigen-Entlastungsgesetz* removed the 
 motive for all but high earners from 2020 [R24] [unverified], and because the products are hard to
 compare.
 
+---
+
+## Representative specification
+
 The representative design is a **composite**, not a carrier's tariff. Because no product document of
 any kind was retrieved (research gap 14), every representative choice below is argued against the
 **observed or argued range** the research file records, and every choice that the corpus cannot
@@ -193,35 +197,33 @@ source is a **[std]** standardization with a numbered rationale.
 | Lives basis and cover period | Single life — no joint-life *Pflegerente* is recorded anywhere in the corpus — and **whole of life**: the annuity is payable for as long as an insured *Pflegegrad* holds, and the contract ends on death | [S4] [unverified] |
 | Entry ages / age basis | **18 to 65** at entry, some tariffs to 70, with purchase clustering at **45 to 60**; age last birthday at issue, stepping at the policy anniversary | [unverified]; **[std]** (2), (3) |
 | *Vereinbarte Pflegerente* | **1 000,00 € per month** at *Pflegegrad* 5; market band 1 000 € to 1 500 € | **[std]** (4) |
-| Currency | EUR | — |
-| Sex | Carried for reporting and for the projection basis; **pricing is unisex** for contracts concluded from 21 December 2012 | [REG-R34]; blend **[std]** (5) |
+| Currency / sex | EUR; sex is carried for reporting and for the projection basis, but **pricing is unisex** for contracts concluded from 21 December 2012 | [REG-R34]; blend **[std]** (5) |
 | *Pflege-Bahr* eligibility | **None.** § 127 SGB XI confines the *Zulage* to a *Pflegetagegeld* conducted *nach Art der Lebensversicherung*; a *Pflegerente* cannot be a *geförderter Tarif* | [R8] [unverified] |
 | Anchor model cell | Female, entry age 45, *vereinbarte Pflegerente* 1 000,00 €/month, `delib_std` *Leistungsstaffel*, lifelong monthly premium struck by equivalence, no *Wartezeit*, no *Karenzzeit*, no *Dynamik*, no *Todesfallleistung*, no *Stornoabzug* | **[std]** (6) |
 
 Footnotes to **[std]** rows:
 
 1. **Setting-independence is modern practice.** Older wordings paid the full annuity only for
-    *vollstationäre* care and a reduced one at home [unverified]; modern practice pays irrespective
-    of setting, which is what makes the product a *Summenversicherung*. A setting-dependent benefit
-    would need a care-setting state the corpus supplies no transition data for.
+    *vollstationäre* care and a reduced one at home [unverified]; modern practice pays irrespective of
+    setting, which is what makes the product a *Summenversicherung*. A setting-dependent benefit would
+    need a care-setting state the corpus supplies no transition data for.
 2. **Observed entry ages: 18 to 65, some tariffs to 70** [unverified]. The composite takes 18–65 as
     the envelope and 45 as the anchor because that is the lower edge of the observed *purchase*
     cluster, not of the permitted band — the two differ by twenty-five years, and conflating them is
-    the commonest error in describing this product. Both boundary ages are exercised by model
-    points.
+    the commonest error in describing this product.
 3. No age basis is established for any *Pflegerenten* tariff; German practice uses the
     *versicherungstechnisches Alter* on carrier-specific rounding rules. The composite uses age last
     birthday at entry, the delib registry's convention, and a different rule shifts the projection by
     at most one year of age.
-4. **No *vereinbarte Rente* band was established from any product document** (research gap 1). 1
-    000,00 € comes from the gap arithmetic above, sits at the lower end of the 1 000–1 500 € band
-    the market is understood to sell [unverified], and is a **scaling constant** — every benefit is
-    a percentage of it, so changing it rescales the whole liability linearly.
+4. **No *vereinbarte Rente* band was established from any product document** (gap 1). 1 000,00 €
+    comes from the gap arithmetic above, sits at the lower end of the 1 000–1 500 € band the market
+    is understood to sell [unverified], and is a **scaling constant** — changing it rescales the
+    whole liability linearly.
 5. Unisex pricing is compulsory from 21 December 2012 [REG-R34], and matters more here than on any
     other delib product: **women have materially higher LTC incidence and longer care durations**
     [unverified], so the unisex premium embeds a cross-subsidy whose size depends on the sex mix
     written — itself endogenous to the price. The composite prices on a **50 / 50** blend **[std]**
-    and projects on the point's own sex, so the cross-subsidy is visible rather than assumed away.
+    and projects on the point's own sex.
 6. Entry age 45 gives a long enough pre-claim period for the *Deckungskapital* to be the object it
     is. The anchor is **female** deliberately: the projection then runs the higher-incidence basis
     against a unisex price.
@@ -231,8 +233,7 @@ Footnotes to **[std]** rows:
 |---|---|---|
 | Premium form | **Level monthly *Beitrag*, guaranteed for the life of the contract**, subject only to the narrow § 163 VVG route | [R11]; [REG-R27] |
 | Premium-paying period | **Lifelong** in the base case, until death or the start of a waiver. Two alternatives are sold and are carried as options: an *abgekürzte Beitragszahlungsdauer* to a fixed age, typically **65** or **85**, and a single ***Einmalbeitrag*** | [unverified]; base choice **[std]** (7) |
-| Payment frequency | Monthly, quarterly, half-yearly or annual, in advance | [S4] [unverified] |
-| *Ratenzahlungszuschlag* | **Not modelled as a separate charge.** The instalment loading is folded into the single administration-cost assumption | **[std]** (8) |
+| Payment frequency and the *Ratenzahlungszuschlag* | Monthly, quarterly, half-yearly or annual, in advance; the instalment loading is **not modelled as a separate charge** but folded into the administration-cost assumption | [S4] [unverified]; **[std]** (8) |
 | Premium level | **No German *Pflegerenten* rate card exists in this corpus.** The premium is struck by **equivalence** on the tariff (*erster Ordnung*) bases at the *Rechnungszins* | [R9] (absent); method [REG-R8] [REG-R47]; level **[std]** (9) |
 | Argued premium band, 1 000 € *vereinbarte Rente*, `delib_std` grid, lifelong monthly premium, waiver, no death benefit, no dynamics | entry age 45: about **50,00 € to 100,00 €** per month; entry age 55: about **80,00 € to 160,00 €** per month | **[std]** (9) |
 | Rating factors | Attained age at entry; *vereinbarte Rente*; the *Leistungsstaffel*; the premium-paying period; medical acceptance (*Risikozuschlag*). **Occupation is not a rating factor at all** — the sharpest single contrast with *Berufsunfähigkeit* | [S4] [unverified]; occupation [unverified] |
@@ -243,23 +244,23 @@ Footnotes to **[std]** rows:
 
 7. Three premium-paying periods are sold [unverified]: lifelong; to a fixed age; and a single
     *Einmalbeitrag*. The composite takes **lifelong**, the form that shows the *Deckungskapital*
-    building and running off across the whole risk period. Both alternatives are model-point options
-    and are exercised; the *Einmalbeitrag* is explicitly **not** the base model.
+    building and running off across the whole risk period; both alternatives are model-point options,
+    and the *Einmalbeitrag* is explicitly **not** the base model.
 8. German tariffs load monthly, quarterly and half-yearly payment relative to annual [unverified];
-    **no level was established** (gap 2), and shipping a loading nobody sourced would put a
-    fabricated price difference into the model. The frequency therefore changes the *timing* of
-    premium income and nothing else — a stated departure from market practice and a listed pitfall,
-    because paying annually in advance is *earlier*, so the equivalence premium per month is
-    slightly *lower*, the opposite sign to a real *Ratenzahlungszuschlag*.
+    **no level was established** (gap 2), and shipping a loading nobody sourced would put a fabricated
+    price difference into the model. The frequency therefore changes the *timing* of premium income
+    and nothing else — a listed pitfall, because paying annually in advance is *earlier*, so the
+    equivalence premium per month is slightly *lower*, the opposite sign to a real
+    *Ratenzahlungszuschlag*.
 9. **No German *Pflegerenten* premium was established from any source** (gap 3) — the sharpest
     difference from `frlib/products/temporaire_deces`, which had a published rate card to reproduce.
-    The band is derived arithmetic, set out in the research file § 23: a time-weighted average
-    benefit of about 52 % of the *vereinbarte Rente* over a spell; about 25 000 € of expected
-    nominal benefit per claim; a lifetime probability of reaching an insured grade of about 45 %; a
-    mean age at first insured grade of about 82; discounting at 1,00 %; and a gross-to-net ratio
-    between **2 and 3**. **It is not a market observation and must never be cited as one.**
-10. Underwriting outcomes are documented in kind [S4] [unverified] but **no *Risikozuschlag* scale
-    is public**, so the factor is a pure model-point input. It multiplies the **premium**, never the
+    The band is derived arithmetic, set out in the research file § 23: a time-weighted average benefit
+    of about 52 % of the *vereinbarte Rente* over a spell; about 25 000 € of expected nominal benefit
+    per claim; a lifetime probability of reaching an insured grade of about 45 %; a mean age at first
+    insured grade of about 82; discounting at 1,00 %; and a gross-to-net ratio between **2 and 3**.
+    **It is not a market observation and must never be cited as one.**
+10. Underwriting outcomes are documented in kind [S4] [unverified] but **no *Risikozuschlag* scale is
+    public**, so the factor is a pure model-point input, multiplying the **premium** and never the
     benefit.
 11. Waiver detail that varies and was not established [unverified]: from which grade the waiver runs,
     whether it is full or proportionate, and whether the premium revives on a *Herabstufung*. The
@@ -276,33 +277,32 @@ Footnotes to **[std]** rows:
 | Care setting, payment start and duration | Setting is **irrelevant to the benefit** — the same annuity is payable at home and in a *Pflegeheim*; payment starts from the beginning of the month in which the *Pflegegrad* takes effect, subject to any *Karenzzeit*, and continues for as long as an insured grade holds | **[std]** (1); [S4] [unverified] (13) |
 | ***Wartezeit*** (from inception) / ***Karenzzeit*** (from onset) | **None / none** in the base case. Observed: *Wartezeit* commonly none on an underwritten tariff, up to **3 years** where present, up to **5 years** on *Pflege-Bahr*; *Karenzzeit* commonly none, **3** or **6** months where present | [R8] for the 5 years [unverified]; base **[std]** (14) |
 | ***Beitragsbefreiung im Leistungsfall*** | **Full**, from the first month in which any annuity is payable; the premium revives on exit from the paying grades | [S4]; detail **[std]** (11) |
-| ***Nachprüfung*** | The insurer may require periodic evidence that the *Pflegegrad* persists. In practice the evidence is the statutory determination itself | [S4] [unverified] (15) |
+| ***Nachprüfung*** | The insurer may require periodic evidence that the *Pflegegrad* persists; in practice that evidence is the statutory determination itself | [S4] [unverified] (15) |
 | ***Herabstufung*** / ***Höherstufung*** / ***Reaktivierung*** | The annuity moves to the step of the new grade; if the grade falls below the insured threshold, or the insured recovers to the active state, the annuity **stops** and the premium revives | [S4] [unverified] |
-| ***Todesfallleistung*** | **None** in the base case. Carried as a switchable *Beitragsrückgewähr* option | [S4]; base **[std]** (16) |
+| ***Todesfallleistung*** | **None** in the base case; carried as a switchable *Beitragsrückgewähr* option | [S4]; base **[std]** (16) |
 | ***Leistungsdynamik*** in payment / ***Beitragsdynamik*** before claim | **Off** in the base case (band 1–3 % a year) / **not modelled** (band 3–5 % a year, with a right to decline that lapses permanently after two or three refusals) | [unverified]; **[std]** (17) |
 | Exclusions and territorial scope | Care caused by war, by the insured's intentional act and, variably, by addiction, plus any condition excluded at underwriting; whether the annuity survives care given outside Germany or the EEA is a real term difference and was not established | [S4] [unverified] |
 
-12. **The *Leistungsstaffel* is the most important parameter in the product and the one the corpus
-    can least support** (gap 6). The observed range, attributed to no carrier: grade 1 **0–10 %**; 2
+12. **The *Leistungsstaffel* is the most important parameter in the product and the one the corpus can
+    least support** (gap 6). The observed range, attributed to no carrier: grade 1 **0–10 %**; 2
     **10–30 %**; 3 **30–50 %**; 4 **60–75 %**; 5 **100 %**. Two shapes recur — the statutory
-    *Pflege-Bahr* 10 / 20 / 30 / 40 / 100 [R8], and a flatter, higher shape near 0 / 30 / 50 / 75 /
-    100, which is what a *Pflegerente* aimed at the residential gap uses because grades 3 to 5 are
-    where residential care happens. The composite takes the second: **grade 1 at 0 %** because grade
-    1 is not a funding event in the statutory scheme either, so insuring it adds incidence-heavy,
-    low-severity claims that dominate the claim *count* and not the claim *cost*; **grade 2 at 30
-    %**, the top of its range, because that is where care at home begins in earnest; **3 at 50 %**
-    and **4 at 75 %**, mid-range; **5 at 100 %**, the scaling constant. The schedule is read from a
-    CSV with a `provenance` column.
+    *Pflege-Bahr* 10 / 20 / 30 / 40 / 100 [R8], and a flatter, higher shape near 0 / 30 / 50 / 75 / 100,
+    which is what a *Pflegerente* aimed at the residential gap uses because grades 3 to 5 are where
+    residential care happens. The composite takes the second: **grade 1 at 0 %** because grade 1 is not
+    a funding event in the statutory scheme either, so insuring it adds incidence-heavy, low-severity
+    claims that dominate the claim *count* and not the claim *cost*; **grade 2 at 30 %**, the top of its
+    range, because that is where care at home begins in earnest; **3 at 50 %** and **4 at 75 %**,
+    mid-range; **5 at 100 %**, the scaling constant.
 13. The statutory determination is often backdated to the date of application, so a wording keyed to
     the *effective date* pays earlier than one keyed to the *decision date*; the composite keys off
     the effective date.
 14. **The pairing between underwriting and waiting periods is near deterministic**: no underwriting
     implies a long *Wartezeit* (the *Pflege-Bahr* design [R8]); underwriting implies none. Both are
-    **zero** in the base run and both are exercised by model points — a *Karenzzeit* on a population
-    with heavily elevated mortality removes disproportionately more claims than the same period
-    would on a healthy population.
-15. The insurer does not define the insured event — the state does, and re-defines it [R9] — and
-    does not assess the claim [R6], so claims administration is materially cheaper than on a
+    **zero** in the base run and both are exercised by model points, because a *Karenzzeit* on a
+    population with heavily elevated mortality removes disproportionately more claims than the same
+    period would on a healthy population.
+15. The insurer does not define the insured event — the state does, and re-defines it [R9] — and does
+    not assess the claim [R6], so claims administration is materially cheaper than on a
     *Berufsunfähigkeitsrente* [REG-R29]. The price of that cheapness is **definition risk**: any
     loosening of the *Begutachtungs-Richtlinien* or of § 15 SGB XI raises incidence with no
     contractual change and no re-rating remedy.
@@ -312,16 +312,16 @@ Footnotes to **[std]** rows:
     annuity is not, and it very likely brings the contract inside the PRIIPs perimeter [REG-R32]. The
     base run omits it so that the LTC mechanics are what the model demonstrates.
 17. **The *Leistungsdynamik* is the economically important dynamic**, and its cost is
-    counter-intuitively small: the annuity is paid to a population with heavily elevated mortality,
-    so a 2 % escalation on an annuity of about four years' expected duration costs of the order of
-    **4 %** of its value, not the 15 % or 20 % it would cost on a healthy-life pension. The
-    **Beitragsdynamik** is **not modelled at all**: the acceptance rate on each offer is a
-    behavioural assumption this corpus cannot support.
+    counter-intuitively small: the annuity is paid to a population with heavily elevated mortality, so
+    a 2 % escalation on an annuity of about four years' expected duration costs of the order of **4 %**
+    of its value, not the 15 % or 20 % it would cost on a healthy-life pension. The **Beitragsdynamik**
+    is **not modelled at all**.
+
+### Underwriting and rating
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Health evidence | Full ***Gesundheitsprüfung*** on the underwritten product | [S4] [unverified] |
-| Question catalogue | Materially **shorter than a *Berufsunfähigkeit* application's**: the risk is driven by conditions that predict dependency in old age — cardiovascular and cerebrovascular disease, diabetes, neurological and psychiatric conditions, early cognitive impairment, musculoskeletal disease — rather than by occupation | [unverified] |
+| Health evidence and question catalogue | Full ***Gesundheitsprüfung***, with a catalogue materially **shorter than a *Berufsunfähigkeit* application's**: the risk is driven by conditions that predict dependency in old age — cardiovascular and cerebrovascular disease, diabetes, neurological and psychiatric conditions, early cognitive impairment, musculoskeletal disease | [S4] [unverified] |
 | Occupation | **Not a rating factor.** The sharpest single contrast with *Berufsunfähigkeit* | [unverified] |
 | Outcomes | Accept at standard rates; accept with a *Risikozuschlag*; accept with a *Leistungsausschluss* for a named condition; defer; decline | [S4] [unverified] |
 | Absolute bar | Existing *Pflegebedürftigkeit* at application | [S4] [unverified] |
@@ -355,19 +355,17 @@ statutory *ceiling* is known, and only [unverified].
     Claims administration is set **low**, the one charge with a real argument behind it: the trigger
     is determined by a third party [R6], so the insurer's own claims cost is materially smaller than
     on a *Berufsunfähigkeitsrente* [REG-R29].
-20. The *Höchstzillmersatz* is a per-mille of the ***Beitragssumme***, the sum of all premiums
-    payable under the contract [REG-R16] — **not** a percentage of the annual premium, and getting
-    that base wrong is a listed pitfall. On a lifelong-premium contract the *Beitragssumme* is not
-    finite without a convention, so the composite caps the premium term at attained age **85**
-    **[std]**, making the anchor's *Beitragssumme* forty years of premium and the 25 ‰ ceiling bind
-    visibly rather than notionally.
+20. The *Höchstzillmersatz* is a per-mille of the ***Beitragssumme***, the sum of all premiums payable
+    under the contract [REG-R16] — **not** a percentage of the annual premium, and getting that base
+    wrong is a listed pitfall. On a lifelong-premium contract the *Beitragssumme* is not finite without
+    a convention, so the composite caps the premium term at attained age **85** **[std]**, which makes
+    the 25 ‰ ceiling bind visibly rather than notionally.
 ### Termination and values
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | ***Rückkaufswert*** | Payable on surrender. The base measure is the ***Deckungskapital*** computed on the premium calculation bases, with acquisition costs spread over at least the first **five** contract years as a **floor on the value**, not a cap on the charge | [R11]; [REG-R28] |
-| Shipped surrender basis | A table of guaranteed surrender values expressed as a **fraction of premiums paid to date**, by completed policy year — the form in which a German contract actually states them | **[std]** (21) |
-| Practical size | **Near zero for the first several years** and well below premiums paid for a long time | **[std]** (21) |
+| Shipped surrender basis | A table of guaranteed values expressed as a **fraction of premiums paid to date**, by completed policy year — the form in which a German contract states them — **near zero for the first several years** and well below premiums paid for a long time | **[std]** (21) |
 | ***Stornoabzug*** | **0 %** in the base run. Admissible only if agreed, appropriate and **quantified in the contract**, with a deduction for unamortised acquisition costs expressly ineffective and the burden of proof on the insurer | [REG-R28]; level **[std]** (22) |
 | ***Beitragsfreistellung*** | The policyholder may at any time demand conversion to a paid-up *Pflegerente* at a reduced *vereinbarte Rente*, computed from the same § 169 value the surrender path uses | [R11]; [REG-R28]; scope **[std]** (23) |
 | The open statutory question | Whether a **pure-risk** *Pflegerente* — no death benefit, no survival benefit — falls inside the § 169 exception that denies a *Risikolebensversicherung* its surrender value **was not established** | [R11]; research gap 9 |
@@ -385,11 +383,13 @@ statutory *ceiling* is known, and only [unverified].
     a deduction only if agreed, quantified and appropriate. The base run is **0 %**; one model point
     switches it on at 5 %.
 23. **The model implements the surrender path only.** *Beitragsfreistellung* and the § 38
-    premium-default conversion both keep the policy in force at a reduced *vereinbarte Rente*,
-    anchored to the same § 169 value [REG-R28], and carrying them needs a paid-up ledger for which
-    the corpus supplies no take-up split. The model treats every voluntary exit as a surrender and
-    records the bias: the omitted paths would move policies into a reduced-benefit ledger that still
-    pays claims, so **the model understates late-duration claims and overstates surrender outgo**.
+    premium-default conversion both keep the policy in force at a reduced *vereinbarte Rente*, anchored
+    to the same § 169 value [REG-R28], and carrying them needs a paid-up ledger for which the corpus
+    supplies no take-up split. The model records the bias: the omitted paths would move policies into a
+    reduced-benefit ledger that still pays claims, so **the model understates late-duration claims and
+    overstates surrender outgo**.
+---
+
 ## Contractual mechanics
 
 ### The benefit trigger — the statutory *Pflegegrad*
@@ -603,14 +603,11 @@ attribution column that says, honestly, that nothing is attributed.
 | *Leistungsstaffel*, grades 1 to 5 | 0–10 % / 10–30 % / 30–50 % / 60–75 % / 100 % | none established; the *Pflege-Bahr* statutory steps are 10 / 20 / 30 / 40 / 100 % | [unverified]; [R8] for the statutory steps |
 | *Wartezeit*, underwritten / *Pflege-Bahr* | 0 to 3 years, usually waived for accident / up to 5 years | none established / statutory | [unverified]; [R8] |
 | *Karenzzeit* | 0, 3 or 6 months | none established | [unverified] |
-| Entry age / purchase cluster | 18 to 65, some to 70 / 45 to 60 | none established | [unverified] |
-| *Vereinbarte Rente* as sold | 1 000 € to 1 500 € per month | none established | [unverified] |
+| Entry age / purchase cluster / *vereinbarte Rente* as sold | 18 to 65, some to 70 / 45 to 60 / 1 000 € to 1 500 € per month | none established | [unverified] |
 | *Beitragsdynamik* / *Leistungsdynamik* in payment | 3 % to 5 % / 1 % to 3 % a year | none established | [unverified] |
-| *Todesfallleistung* | none / *Beitragsrückgewähr* / fixed sum / *Deckungskapital* | none established | [unverified] |
-| *Beitragszahlungsdauer* | lifelong / to 65 / to 85 / *Einmalbeitrag* | none established | [unverified] |
+| *Todesfallleistung* / *Beitragszahlungsdauer* | none, *Beitragsrückgewähr*, fixed sum or *Deckungskapital* / lifelong, to 65, to 85 or *Einmalbeitrag* | none established | [unverified] |
 | *Stornoabzug* | 0 % to about 5 % of the *Deckungskapital* | none established | [unverified] |
-| Benefit by care setting | setting-independent (modern) / reduced at home (older wordings) | none established | [unverified] |
-| *Herabstufung* guarantee | present in some wordings, absent in others | none established | [unverified]; gap 17 |
+| Benefit by care setting / *Herabstufung* guarantee | setting-independent (modern) or reduced at home (older wordings) / present in some wordings, absent in others | none established | [unverified]; gap 17 |
 
 **What can be said about carriers without a source.** The delib brief names twenty-six German
 undertakings, and **this corpus establishes nothing about any of them**. The one structural

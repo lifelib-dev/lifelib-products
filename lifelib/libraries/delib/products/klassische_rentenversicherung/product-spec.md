@@ -2,25 +2,22 @@
 
 **Status:** Draft, 2026-08-29 (all cited sources accessed 2026-08-29).
 
-**Scope note.** This is a *standardized composite specification* assembled for reference
-liability cash-flow modeling of a German **klassische aufgeschobene private
-Rentenversicherung** — the classic deferred private annuity of *Schicht 3*, in which a premium
-accumulates in the *Deckungskapital* (policy reserve) of the insurer's general account at a
-guaranteed *Rechnungszins* (technical interest rate), participates in the
-*Überschussbeteiligung* (profit participation), and is converted at a contractually fixed
-*Rentenbeginn* (annuity commencement date) into a lifelong *Leibrente* at a *Rentenfaktor*
-(annuity factor) — or taken instead as a lump sum under the *Kapitalwahlrecht*. **It does not
-describe any single insurer's contract.** Facts carrying a source tag — [S#] (primary product
-documents: *Allgemeine Versicherungsbedingungen*, *Verbraucherinformation*, *Kundeninformation*,
-GDV *Musterbedingungen*, insurer product pages, surplus declarations) and [R#]
-(product-specific regulatory and actuarial references), both numbered per
-`_research/klassische_rentenversicherung.md` and resolved in `sources.md` (same directory;
-**numbering frozen, never renumbered**), and [REG-R#] (the cross-product reference library
-`references/regulatory-and-actuarial-references.md`, whose own R-numbering is separate and also
-frozen) — are attributed to the cited document. Values marked **[std]** are standardizations
-introduced for the reference implementation; each carries a numbered footnote giving the
-rationale and, where the research file recorded one, the observed range. Claims no search result
-corroborated are flagged [unverified].
+**Scope note.** This is a *standardized composite specification* assembled for reference liability
+cash-flow modeling of a German **klassische aufgeschobene private Rentenversicherung** — the classic
+deferred private annuity of *Schicht 3*, in which a premium accumulates in the *Deckungskapital*
+(policy reserve) of the insurer's general account at a guaranteed *Rechnungszins* (technical interest
+rate), participates in the *Überschussbeteiligung* (profit participation), and is converted at a
+contractually fixed *Rentenbeginn* (annuity commencement date) into a lifelong *Leibrente* at a
+*Rentenfaktor* (annuity factor) — or taken instead as a lump sum under the *Kapitalwahlrecht*. **It
+does not describe any single insurer's contract.** Facts carrying a source tag — [S#] (primary
+product documents: AVB, *Verbraucherinformation*, *Kundeninformation*, GDV *Musterbedingungen*,
+insurer product pages, surplus declarations) and [R#] (product-specific regulatory and actuarial
+references), both numbered per `_research/klassische_rentenversicherung.md` and resolved in
+`sources.md` (**numbering frozen, never renumbered**), and [REG-R#] (the cross-product reference
+library, whose own numbering is separate and also frozen) — are attributed to the cited document.
+Values marked **[std]** are standardizations introduced for the reference implementation, each with
+a numbered footnote giving the rationale and, where the research file recorded one, the observed
+range. Claims no search result corroborated are flagged [unverified].
 
 **Retrieval conditions — read this before relying on a single number below.** Direct HTTP egress
 from the build environment is blocked by an organisation network policy: `WebFetch` and `curl` are
@@ -282,7 +279,6 @@ sized so the total load is of the order the one Schicht-1/2 figure implies (0,95
 | Below the minimum | The insurer must instead pay the surrender value attributable to the insurance, **including profit shares**, under § 169 — a small contract cannot be made paid-up; it is cashed out | [R2] |
 | The *Mindestversicherungsleistung* | **Not established at any carrier.** Representative threshold: a guaranteed annuity of 30,00 € a month | gap 22; **[std]** (14) |
 | Premium-default conversion | § 166 VVG converts automatically to *prämienfrei* rather than terminating cover — German lapse is a **three-way** decrement | [REG-R28] [REG-R30] |
-| *Wiederinkraftsetzung* | Reinstatement of a paid-up contract exists as a documented process at one carrier and nothing more. **Not modeled** | [S11] |
 
 13. No German source says whether a deferred annuity in payment may be surrendered; the reading
 follows from § 168 VVG as recorded in the cross-product library
@@ -586,31 +582,29 @@ premium-default case rather than ending cover [REG-R28] [REG-R30]. **The
 [S9] [S13]; the ***Kapitalwahlrecht*** as a take-up rate at *Rentenbeginn* [S12] [R6] [R21]; the
 death-benefit **form** switch across the three documented designs [S1] [R24] and the with-surplus
 variant [R24]; the ***Dynamik*** as an annual increase rate, base 0 and on for one model point [S4];
-***Beitragsfreistellung*** as a deterministic election at a stated policy year, with the
-*Mindestversicherungsleistung* cash-out branch [R2]; and the three payout-phase
-*Überschussverwendung* systems [R19] [R20] [R24].
+***Beitragsfreistellung*** as a deterministic election with the *Mindestversicherungsleistung*
+cash-out branch [R2]; and the three payout-phase *Überschussverwendung* systems [R19] [R20] [R24].
 
 **Documented and deliberately not modeled**, each with its reason. The
 ***Hinterbliebenenrenten-Zusatzversicherung***, published by the GDV as a **separate model condition
 set attaching to this contract** [S10] — it needs a second life and no model point carries one. The
 ***Berufsunfähigkeits-Zusatzversicherung***, a named section with its own conditions in the same
 pack [S4] and delib's `berufsunfaehigkeit` product in standalone form. ***Zuzahlung***: **no source
-in this corpus named it** (gap 15), so there is nothing to parameterize — the one option the research
-brief asked for that the corpus does not support at all. ***Bonusrente*** [R24] and
-***Beitragsverrechnung*** (gap 16) as accumulation-phase surplus systems, and surplus **invested in
-an internal fund** [S12], a departure from the classic chassis. The § 163 VVG / *Treuhänderklausel*
-adjustment of the guaranteed *Rentenfaktor* [R3] [R17] [REG-R27], and § 169 Abs. 6 **reduction of
-surrender values** [R1] — both supervised or contested channels with no published trigger a
-deterministic model could key off.
+in this corpus named it** (gap 15), the one option the research brief asked for that the corpus does
+not support at all. ***Bonusrente*** [R24] and ***Beitragsverrechnung*** (gap 16) as
+accumulation-phase surplus systems, and surplus **invested in an internal fund** [S12]. The § 163 VVG
+/ *Treuhänderklausel* adjustment of the guaranteed *Rentenfaktor* [R3] [R17] [REG-R27], and § 169
+Abs. 6 **reduction of surrender values** [R1] — both supervised or contested channels with no
+published trigger a deterministic model could key off.
 
 ---
 
 ## Variations across insurers
 
-The corpus supports **structural** variation tables. It does **not** support quantitative range
-tables for the parameters that matter most — *Rentenfaktor* levels, charges, entry ages, premium
-envelopes and surplus rates — because **no search in this session returned a number for any of them
-at any carrier**. Where a row reads "not established", that is the finding.
+The corpus supports **structural** variation tables but **not** quantitative range tables for the
+parameters that matter most — *Rentenfaktor* levels, charges, entry ages, premium envelopes and
+surplus rates — because no search in this session returned a number for any of them at any carrier.
+Where a row reads "not established", that is the finding.
 
 | Carrier | Documents | Status of the classic deferred annuity |
 |---|---|---|
@@ -629,24 +623,20 @@ at any carrier**. Where a row reads "not established", that is the finding.
 |---|---|---|
 | Death benefit | *Beitragsrückgewähr* premiums-only, named in the GDV wording; premiums **plus attributable surplus**, which "can be agreed"; the accumulated *Deckungskapital*; or a *Hinterbliebenenrente* as a rider. `max(fund, premiums)` is **unit-linked wording**, its classic analogue [unverified] | [S1] [S10] [R24]; [S19] |
 | Guaranteed *Rentenfaktor* basis | DAV 2004 R at a **0 % interest basis** — one carrier, at an unestablished vintage | [S8]; gap 5 |
-| Current factor | The carrier's then-current immediate-annuity tariff — one carrier | [S13] |
-| Rule at *Rentenbeginn* | **The higher of the two** — one carrier, restated by secondary material | [S4] [R24] |
 | *Rentengarantiezeit* | 5, 10, 15, 20, 25, 30+ years offered; typically 15 at retirement ages 61–70 and 10 at 71+; most choose 10–20; cost 3 € / 15 € / 46 € a month at 10 / 20 / 30 years on a 573 € base | [R24] [S9] [S13] |
 | Accumulation surplus system | *Verzinsliche Ansammlung*, *Bonusrente* and internal-fund investment all established; *Beitragsverrechnung* **not established** | [R24] [S12]; gap 16 |
-| Payout surplus system | *konstant*, *teildynamisch*, *volldynamisch* all established; the constant form **falls if the insurer earns less** | [R19] [R20] [R24] |
 | *Rentenfaktor* levels, declared surplus rates, charge levels, issue envelopes, behavioural rates | **Not established at any carrier for any year** | gaps 3, 4, 13, 14, 20 |
 
 **What does not vary.** Three things are the same everywhere in the corpus and all three are legal
-facts rather than commercial ones: the **two-phase structure with a fixed *Rentenbeginn*** is
-definitional [S1] [S4] [S8] [S9] [R24]; the ***Rückkaufswert*** and ***Beitragsfreistellung*** rights
-are statutory and *halbzwingend*, §§ 165 to 170 VVG not being variable to the policyholder's
-detriment under § 171 VVG [REG-R22] [REG-R28]; and the **unisex tariff** has been compulsory for
-contracts concluded from 21 December 2012 [REG-R34], which is why sex appears nowhere in the pricing
-of this composite even though the underlying annuity tables are sex-specific raw material [REG-R47]
-[REG-R49]. Against that, **two limbs of the composite's core rest on a single carrier each**: the
-*Rentenfaktor* comparison rule [S4], restated only by secondary material [R24], and the conversion
-basis [S8], at a vintage that document itself marks as time-dependent and that the corpus could not
-date (gap 5).
+rather than commercial facts: the **two-phase structure with a fixed *Rentenbeginn*** is definitional
+[S1] [S4] [S8] [S9] [R24]; the ***Rückkaufswert*** and ***Beitragsfreistellung*** rights are
+statutory and *halbzwingend*, §§ 165 to 170 VVG not being variable to the policyholder's detriment
+under § 171 VVG [REG-R22] [REG-R28]; and the **unisex tariff** has been compulsory since 21 December
+2012 [REG-R34], which is why sex appears nowhere in the pricing of this composite even though the
+annuity tables behind it are sex-specific raw material [REG-R47] [REG-R49]. Against that, **two limbs
+of the composite's core rest on a single carrier each**: the *Rentenfaktor* comparison rule [S4],
+restated only by secondary material [R24], and the conversion basis [S8], at a vintage that document
+itself marks as time-dependent and that the corpus could not date (gap 5).
 
 ---
 ## Regulatory context

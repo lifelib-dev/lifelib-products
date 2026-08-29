@@ -81,6 +81,57 @@ German terms of art keep their German form in prose.
 
 ---
 
+## Model inputs
+
+Inputs are **external CSVs beside `run.py`**, in the `annuallife/TradLife_A` layout: the model folder
+holds `__init__.py`, `_system.json` and the two Space directories and nothing else. `Data` holds
+`input_dir()`, one reader cells per file and one `*_file` string Reference per file, takes no
+parameters, and is therefore read **once per model** rather than once per model point; `Projection`
+reaches it through a `data` Reference and holds no `*_file` Reference and no `input_dir`.
+
+| File | Index columns | Value columns |
+|---|---|---|
+| `model_point_table.csv` | `point_id` | the twenty-six attributes tabulated below |
+| `mort_table_accum.csv` | `age` (16–110) | `qx`, `provenance` |
+| `annuity_mort_table.csv` | `age` (55–110) | `qx_base`, `improvement`, `provenance` |
+| `lapse_table.csv` | `duration` (1–60) | `lapse_rate`, `transfer_rate`, `provenance` |
+| `zulage_schedule.csv` | `zulage_id`, `t` | `unmittelbar`, `n_kinder_pre2008`, `n_kinder_post2008`, `bonus`, `provenance` |
+| `income_schedule.csv` | `income_id`, `t` | `income`, `provenance` |
+| `surplus_scenario.csv` | `scenario_id`, `t` | `laufende_verz`, `provenance` |
+| `freq_loading.csv` | `prem_freq` | `load`, `provenance` |
+
+**Every file except `model_point_table.csv` carries a per-row `provenance` column**, delib's second
+ruling: a model point is a configuration, every other row is an assumption and says where its number
+came from. The two decrement tables are **[std] proxies** for proprietary DAV tables that this
+library does not ship [REG-R47] [REG-R48] [REG-R49], anchored so that the worked example reproduces
+exactly; what a replacement must preserve is stated in assumption class (c) and in `sources.md`.
+
+### Cells vocabulary
+
+`Data` publishes `input_dir`, `model_point_table`, `mort_table_accum`, `annuity_mort_table`,
+`lapse_table`, `zulage_schedule`, `income_schedule`, `surplus_scenario` and `freq_loading`.
+
+`Projection` publishes the library's shared names — **`model_point`, `proj_len`, `age`, `pols_if`,
+`mort_rate`, `claims`, `expenses`, `net_cf`, `result_cf`** — plus, in the same lifelib spelling:
+`pols_if_init`, `pols_if_at`, `pols_death`, `pols_lapse`, `pols_transfer`, `pols_conv`,
+`pols_annuity_pay`; `mort_rate_at_age`, `annuity_mort_rate`, `lapse_rate`, `transfer_rate`;
+`duration`, `calendar_year`, `t_conv`, `is_accum`, `is_payout`; `income_ref`,
+`zulage_entitlement_pp`, `zulage_granted_pp`, `zulage_pp`, `zulage_cum_pp`,
+`mindesteigenbeitrag_pp`, `eigenbeitrag_pp`, `eigenbeitrag_paid_pp`, `contrib_total_pp`;
+`acq_charge_pp`, `admin_charge_pp`, `prem_to_av_pp`; `dk_pp`, `surplus_acct_pp`, `av_pp`,
+`av_pp_at`, `av_at`, `int_guar_pp`, `int_surplus_pp`, `int_credited_pp`, `laufende_verz`;
+`guar_pp`, `guar_carve_out_pp`, `garantieluecke_pp`, `pool_gefoerdert_pp`, `pool_ungefoerdert_pp`;
+`slueb_pp`, `bewres_pp`, `account_conv_pp`, `capital_conv_pp`, `garantieluecke_conv_pp`,
+`ann_factor`, `rentenfaktor_curr`, `rentenfaktor_applied`, `annuity_month_pp`, `is_kleinbetrag`,
+`teilkapital_pp`, `annuity_capital_pp`, `commutation_pp`, `annuity_pp`; `db_pp`, `cv_pp`,
+`transfer_value_pp`, `exit_charge_pp`; `premiums`, `zulagen`, `int_credited`, `commissions`,
+`liability_cf`; and the six `check_*` cells with their `check_*_resid` companions. `claims(t, kind)`
+takes an uppercase `kind` in `{DEATH, LAPSE, TRANSFER, LUMPSUM, COMMUTATION, ANNUITY}` and produces
+the `claims_<lowercase kind>` columns. **No retired name is used**: there is no `lapse_rate_ann`, no
+`prem_net_pp`, no `mort_ae_factor`, no `check_pols_if`, no `claims_wd` and no bare `claims` column.
+
+---
+
 ## Model point attributes
 
 `model_point_table.csv` is indexed by `point_id` and carries the columns below. It is the one input
@@ -122,6 +173,29 @@ exists **only** because the Zulage arrives a year late [R11], so an in-force poi
 `rider_prem_pp` is a contribution the model deliberately does **not** see as cash; and
 `contrib_ratio` is not a lapse or a premium holiday but the § 86 proportional Kürzung, which reduces
 the **subsidy** and not only the contribution.
+
+### The thirteen model points
+
+Between them they exercise both contribution forms, all four payment frequencies, every option the
+contract carries, an at-issue point beside the in-force ones, and four boundary cases.
+
+| # | Cell | What it exercises |
+|---|---|---|
+| **1** | **Anchor** — F, issue age 47 in 2024, in force at duration 3, attained 50, *Rentenbeginn* 67, 0,25 %, one child born 2010, annual | The worked example. A live acquisition-charge window, a falling Zulage step, the 2 100 € ceiling binding from year 13, a 30 % lump sum, a 10-year *Rentengarantiezeit*, and an account opening **below** the guarantee |
+| **2** | The same contract **at its own inception** — `duration_init = 0`, 2024 | Acquisition charge from contract year 1, the acquisition expense and initial commission cash at issue, and the **reconciliation of point 1's opening balances** |
+| **3** | Family with children born **2006 and 2010** — M, issue age 38 in 2018, 0,90 %, monthly | Both *Kinderzulage* rates running **simultaneously** (660,00 € entitlement); an older *Rechnungszins* vintage; the monthly frequency loading |
+| **4** | **§ 86 case D** — income 20 000 €, two post-2008 children, quarterly | The *Sockelbeitrag* **floor** binding (boundary); a 12,92× subsidy multiple; and a *Kleinbetragsrente* **commutation** at *Rentenbeginn* |
+| **5** | ***Mittelbar* eligible spouse** — `contrib_form = fixed`, 60,00 € a year, *Grundzulage* only | The `fixed` contribution form; the economically extreme corner of the book; a second commutation |
+| **6** | **Berufseinsteiger** — M, issue age 23 in 2026, attained 24, monthly | The once-in-a-lifetime **200 € bonus** inside `zulage_init_pp`; the longest projection in the table |
+| **7** | **Under-payer** — `contrib_ratio = 0.50`, half-yearly | The § 86 **proportional Kürzung**: half the contribution, half the Zulagen |
+| **8** | **Two pools** — `contrib_form = fixed` at the ceiling plus `contrib_extra_pp = 900,00 €` | `pool_ungefoerdert_pp`; unsubsidised money entering the **guarantee** while drawing no Zulage |
+| **9** | **Rider carve-out at the cap** — `rider_prem_pp = 400,00 €` on a 1 200,00 € contribution | The **20 % cap** on the biometric carve-out binding (boundary) |
+| **10** | ***Beitragsfreistellung*** — `bfs_year = 4`, monthly | The book's dominant exit as a state change: guarantee frozen, Zulagen stopped, account rolling, acquisition charge still biting |
+| **11** | **Low declared rate** — `scenario_id = low` (0,50 %) | A **positive *Garantielücke*** at *Rentenbeginn* — the product's signature output |
+| **12** | **No lump sum, no guarantee period** — `teilkapital_share = 0`, `rentengarantie_years = 0` | The pure lifelong annuity, and the invariance of `annuity_pp` to the guarantee period |
+| **13** | **Late entrant at the statutory floor** — issue age 60 in 2026, *Rentenbeginn* **62**, monthly | The earliest certifiable payout age for a post-2012 contract (boundary); the shortest accumulation and the least guarantee headroom |
+
+**Model point 1 is the worked example's anchor cell** and is `Projection[1]`.
 
 ---
 
@@ -235,7 +309,8 @@ consequential, because the declared rate is what decides whether the guarantee c
    administration is a per-policy expense cash flow. The consequence to check is that
    `rentenfaktor_curr()` and the annuity table are **consistent by construction**, while
    `rentenfaktor_guar` is an independent contract term — so the model states which is authoritative
-   when they disagree: the **higher** applies [R1-adjacent market practice] **[std]**.
+   when they disagree: the **higher** applies, which is the German market's own construction and is
+   **[std]** here because it was not established for any Riester tariff (gap 9).
 
 ### (c) Behavioural and experience assumptions (the modeller's view)
 
@@ -640,24 +715,26 @@ the **1 January 2027** valuation date. `point_id = 1`; `sex = F` (reporting only
 conversion are unisex [R23]); `issue_age = 47`, the contract having been concluded on 1 January
 **2024**; `duration_init = 3`, so `age(1) = 50`, `duration(1) = 4` and `calendar_year(1) = 2027`;
 `pols_if_init = 1.0`; `rentenbeginn_age = 67`; `rechnungszins = 0.0025`, the *Höchstrechnungszins* of
-the 2024 vintage [R22] [REG-R15]; `beitragssumme = 30,240.00`; `contrib_form = mindest` with
+the 2024 vintage [R22] [REG-R15]; `beitragssumme = 33,600.00`; `contrib_form = mindest` with
 `contrib_fixed_pp = 0.00`; `contrib_ratio = 1.00`, the full *Mindesteigenbeitrag* paid;
 `contrib_extra_pp = 0.00`, so the two contribution pools coincide; `rider_prem_pp = 0.00`, so the
 guarantee carries no carve-out; `income_id = grow2` and `income_init = 42,000.00`;
 `zulage_id = k1_2010`, a household with **one child born in 2010** drawing *Kindergeld* to 2028, so
 the entitlement is 475,00 € in contribution years 2027 and 2028 and 175,00 € thereafter;
 `zulage_init_pp = 475.00`, the Zulage earned in 2026 and credited in projection year 1;
-`prem_freq = annual`, so `prem_freq_load = 1.0000`; `bfs_year = 0`; `dk_pp_init = 3,911.14`;
-`surplus_pp_init = 152.59`, so `av_pp(1) = 4,063.73`; `guar_pp_init = 4,565.00` — three
-*Eigenbeiträge* of 1 205,00 € plus the two Zulagen of 475,00 € credited in 2025 and 2026 — which is
-**above** the account, so the anchor opens with a positive `garantieluecke_pp(1)` of 501,27 €;
+`prem_freq = annual`, so `prem_freq_load = 1.0000`; `bfs_year = 0`; `dk_pp_init = 3,860.50`;
+`surplus_pp_init = 150.48`, so `av_pp(1) = 4,010.98`; `guar_pp_init = 4,369.92` — three
+*Eigenbeiträge* on the same income path plus the two Zulagen of 475,00 € credited in 2025 and 2026 —
+which is **above** the account, so the anchor opens with a positive `garantieluecke_pp(1)` of
+358,94 €;
 `teilkapital_share = 0.30`, the statutory maximum lump sum; `rentenfaktor_guar = 29.00`;
 `rentengarantie_years = 10`; and `scenario_id = base`. Hence `t_conv() = 67 − 50 + 1 = 18`, so
 accumulation runs `t = 1 … 17` (attained ages 50 to 66, calendar 2027 to 2043), conversion falls at
 `t = 18` (age 67, calendar 2044), the payout phase runs `t = 18 … 61`, and
-`proj_len() = 110 − 50 + 1 = 61`. The opening balances are **[std]** seeds derived from the same
-charge basis over contract years 2024–2026; **model point 2 is this contract projected from its own
-inception and reconciles them**.
+`proj_len() = 110 − 50 + 1 = 61`. The opening balances are **[std]** seeds produced by the same
+charge basis over contract years 2024 to 2026; **model point 2 is this contract projected from its
+own inception, and reconciles them to the cent** — an independent check the model stage must run and
+record.
 
 **Assumptions, each tagged.** *Grundzulage* **175,00 €**, *Kinderzulage* **300,00 €** for the child
 born in 2010, no *Berufseinsteiger-Bonus* — all [R9] [REG-R42] `[unverified]`. *Mindesteigenbeitrag*
@@ -668,7 +745,7 @@ the entitlement, floored at the **60,00 €** *Sockelbeitrag*, with the Kürzung
 ceiling first binds in projection year 13. *Rechnungszins* **0,25 %** [R22] [REG-R15], the carrier's
 own choice **[std]**. *Laufende Verzinsung* **2,30 %** level on the `base` scenario **[std]**, so
 `int_surplus_pp` runs at **2,05 %** above the guaranteed leg. Acquisition charge **2,5 %** of the
-30 240,00 € *Beitragssumme* — 756,00 €, in five equal instalments of **151,20 €** in contract years
+33 600,00 € *Beitragssumme* — 840,00 €, in five equal instalments of **168,00 €** in contract years
 1 to 5, so projection years 1 and 2 carry it and years 3 onward do not — [R1] [REG-R16], level
 **[std]**. Administration charge **4,0 %** of each contribution credited, Zulagen **included**
 `[std]` (gap 14), plus a fixed **12,00 €** a year **[std]**. Frequency loading **1.0000** (annual)
