@@ -64,19 +64,18 @@ block:
 **The search budget was exhausted.** This session shares a hard cap of 200 `WebSearch` calls across
 all its work, and the cap was reached after **24 searches** on this product — against a brief that
 anticipated thirty to eighty. The consequence is not evenly spread. The statutory core (§§ 153, 161,
-165, 169 VVG; MindZV; DeckRV; § 139 VAG; VVG-InfoV; EStG § 20 Abs. 1 Nr. 6), the supervisory
-material (BaFin *Merkblatt* 01/2023, *Risiken im Fokus* 2026) and the surplus mechanics are
-researched to a usable depth. The **insurer-by-insurer parameter sweep is not**: of the twenty-six
-carriers the brief named, only Debeka, Allianz, Gothaer, die Bayerische, ERGO and ÖSA produced any
-document at all, and only Debeka produced quantified terms. Every gap this caused is numbered in the
-register at the foot of this file, and no gap was papered over with a guess.
+165, 169 VVG; MindZV; DeckRV; § 139 VAG; VVG-InfoV; EStG § 20 Abs. 1 Nr. 6), the supervisory material
+(BaFin *Merkblatt* 01/2023, *Risiken im Fokus* 2026) and the surplus mechanics are researched to a
+usable depth. The **insurer-by-insurer parameter sweep is not**: of the twenty-six carriers the brief
+named, only Debeka, Allianz, Gothaer, die Bayerische, ERGO and ÖSA produced any document at all, and
+only Debeka produced quantified terms. Every gap this caused is numbered in the register at the foot
+of this file, and no gap was papered over with a guess.
 
 `[unverified]` keeps its normal meaning: a claim no search result corroborated. A fact several
 independent search results agree on is **not** `[unverified]`; a paragraph number, an effective date
 or a figure that no search result confirmed **is**. Every URL below is one a search result actually
-returned, or the obvious canonical form of one
-(`https://www.gesetze-im-internet.de/vvg_2008/__153.html` for § 153 VVG). Where there is no URL the
-entry says `URL: not established` rather than guessing.
+returned, or the obvious canonical form of one (`.../vvg_2008/__153.html` for § 153 VVG). Where there
+is no URL the entry says `URL: not established` rather than guessing.
 
 ---
 
@@ -138,8 +137,8 @@ search-result summary and not of the document.
   presented as the same document:
   http://www.vbed.de/wp-content/uploads/Allgemeine-Bedingungen-Kapitalbildende-Lebensversicherung.pdf
   and a `silo.tips` copy under the same title
-- Content — the closest thing the German market has to a canonical wording, and the natural spine
-  for a composite specification:
+- Content — the closest thing the German market has to a canonical wording, and the natural spine for
+  a composite specification:
   - It is a **GDV *Musterbedingung***, and the GDV states its model conditions are **unverbindlich**
     for undertakings and their use **purely optional**. That competition-law disclaimer matters: an
     S1-tagged fact is a *market template*, weaker evidence about a carrier than the same fact taken
@@ -148,9 +147,8 @@ search-result summary and not of the document.
     for post-2008 VVG wordings. **§ 1 is headed "Welche Leistungen erbringen wir?"** — the benefit
     clause; the remaining section numbering was **not** established.
   - **No article text beyond the § 1 heading was returned.** Every substantive benefit, surplus,
-    surrender or paid-up rule attributed below to "the model conditions" is therefore attributed
-    instead to the statute it implements [R1]–[R4] or to a named carrier's wording [S3]–[S8], never
-    to S1.
+    surrender or paid-up rule attributed below to "the model conditions" is attributed instead to the
+    statute it implements [R1]–[R4] or to a named carrier's wording [S3]–[S8], never to S1.
 
 ### S2 — GDV, "Jährliche Mitteilung zum Stand Ihrer Versicherung" (Muster-Standmitteilung, kapitalbildende Lebensversicherung, 02/2017)
 - Publisher: GDV. Doc type: model *Standmitteilung* — the annual statement sent to the policyholder
@@ -243,10 +241,10 @@ search-result summary and not of the document.
   exact URL under the title "Allgemeine Bedingungen für die kapitalbildende ...". A narrower search
   for "die Bayerische … 510121" returned the sibling documents (B 510123 *Sterbegeldversicherung*,
   B 520127 *AVB gezillmert Klassikrente*, B 520136 *AVB Klassikrente*, B 660121, B 660800, B 117000)
-  but **not** 510121, reporting that it "may not be publicly available online". The honest position:
-  **the URL was returned by a search and is recorded verbatim; no content was established from it**,
-  and its current availability is `[unverified]`. The file name and the `51xxxx` prefix shared with
-  the Sterbegeld AVB `510123` are consistent with a BL die Bayerische document series.
+  but **not** 510121, reporting it "may not be publicly available online". **The URL was returned by
+  a search and is recorded verbatim; no content was established from it**, and its availability is
+  `[unverified]`. The file name and the `51xxxx` prefix shared with the Sterbegeld AVB `510123` are
+  consistent with a BL die Bayerische document series.
 
 ### S9 — die Bayerische, AVB **Klassikrente** (B 520136, 01.2025) and AVB **gezillmerte Klassikrente** (B 520127, 01.2022)
 - Publisher: BL die Bayerische Lebensversicherung AG. Doc type: AVB for a *klassische
@@ -263,9 +261,9 @@ search-result summary and not of the document.
     amounts are **booked into the contract's *Deckungskapital***.
   - **The level of future *Überschussbeteiligung* cannot be guaranteed and may be zero euros.**
   Together these give the *annual, balance-date, reserve-crediting* allocation convention an
-  annual-step endowment model needs, and the explicit statement that the rate may be **zero** is
-  the cleanest sourced justification for treating the surplus rate as insurer-discretionary. That
-  the document is an annuity wording is stated wherever the fact is used.
+  annual-step endowment model needs, and the explicit statement that the rate may be **zero** is the
+  cleanest sourced justification for treating the surplus rate as insurer-discretionary. That the
+  document is an annuity wording is stated wherever the fact is used.
   - The existence of a *gezillmert* and a non-*gezillmert* edition of the **same** tariff is direct
     evidence that **Zillmerung is a per-tariff design choice a German insurer makes and
     publishes**, not an invariant of German practice.
@@ -299,12 +297,11 @@ search-result summary and not of the document.
   - On *Rückkaufswert*: on *Kündigung* the policyholder receives it, and it **can be below the
     premiums paid, especially in the early contract years**; the investment return earned and the
     *Überschussbeteiligung* are **included in** the calculation. An insurer's own confirmation that
-    the surrender value is reserve-based-plus-surplus and that early durations are loss-making to
-    the customer — the economic signature of *Zillmerung*.
+    the surrender value is reserve-based-plus-surplus and that early durations are loss-making — the
+    economic signature of *Zillmerung*.
   - Market position: the product "is rarely newly concluded today, because modern annuity insurance
-    typically offers better flexibility and earnings opportunities". An insurer saying this about
-    its own historic flagship is the strongest single piece of evidence for delib's market-role
-    paragraph.
+    typically offers better flexibility and earnings opportunities" — an insurer saying this about
+    its own historic flagship is the strongest evidence for delib's market-role paragraph.
 
 ### S12 — ERGO, "Ratgeber Kapitallebensversicherung"
 - Publisher: ERGO Group. Doc type: insurer guide page.
@@ -398,13 +395,13 @@ of the search-result summary and not of the instrument.
   **Abs. 3** — the insurer must **determine the *Bewertungsreserven* anew each year** and allocate
   them by a causation-oriented procedure; **on termination of the contract half of the amount then
   determined is allocated and paid out**, and **earlier allocation may be agreed**.
-- The article sits in **Chapter 5 (Lebensversicherung) of the VVG 2008**.
-- A separate result establishes **§ 153 Abs. 3 Satz 3 VVG in the version given by the
-  Lebensversicherungsreformgesetz of 1 August 2014**, described as a *Vorbehalt
-  aufsichtsrechtlicher Regelungen* — a proviso subordinating the determination of the
-  *Bewertungsreserven* to supervisory rules — and as having been challenged as unconstitutional
-  before the BGH. That proviso is the hinge letting the *Sicherungsbedarf* of § 139 VAG [R8] cut
-  into the half share; see [R23]. **The wording of Satz 3 was not established.**
+- The article sits in **Chapter 5 (Lebensversicherung) of the VVG 2008**. A separate result
+  establishes **§ 153 Abs. 3 Satz 3 VVG in the version given by the Lebensversicherungsreformgesetz
+  of 1 August 2014**, described as a *Vorbehalt aufsichtsrechtlicher Regelungen* — a proviso
+  subordinating the determination of the *Bewertungsreserven* to supervisory rules — and as having
+  been challenged as unconstitutional before the BGH. That proviso is the hinge letting the
+  *Sicherungsbedarf* of § 139 VAG [R8] cut into the half share; see [R23]. **The wording of Satz 3
+  was not established.**
 - **No version date, no *Fassung* line and no amending statute later than the LVRG 2014 were
   returned.** See gap 15.
 
@@ -414,10 +411,9 @@ of the search-result summary and not of the instrument.
 - URLs: https://www.gesetze-im-internet.de/vvg_2008/__169.html ·
   https://dejure.org/gesetze/VVG/169.html · https://lxgesetze.de/vvg/169 ·
   https://www.buzer.de/169_VVG.htm
-- **Scope.** The article governs the claim to a *Rückkaufswert* where the insurance ends,
-  **in particular by *Kündigung*, *Rücktritt* or *Anfechtung***, and fixes the calculation
-  principles, the limits on payment, the deduction and reduction powers and the insurer's
-  information duties.
+- **Scope.** The article governs the claim to a *Rückkaufswert* where the insurance ends, **in
+  particular by *Kündigung*, *Rücktritt* or *Anfechtung***, and fixes the calculation principles, the
+  limits on payment, the deduction and reduction powers and the insurer's information duties.
 - **Abs. 3, the calculation rule.** The summary returned this German sentence, quoted here **as
   the summary reported it**:
   > "Der Rückkaufswert ist das nach anerkannten Regeln der Versicherungsmathematik mit den
@@ -447,9 +443,9 @@ of the search-result summary and not of the instrument.
   NWB, sozialgesetzbuch-sgb.de
 - URLs: https://www.gesetze-im-internet.de/vvg_2008/__165.html ·
   https://dejure.org/gesetze/VVG/165.html · https://www.buzer.de/165_VVG.htm
-- The policyholder may **at any time, with effect for the end of the current
-  *Versicherungsperiode*, demand conversion into a *prämienfreie Versicherung***, **provided the
-  agreed *Mindestversicherungsleistung* is reached**.
+- The policyholder may **at any time, with effect for the end of the current *Versicherungsperiode*,
+  demand conversion into a *prämienfreie Versicherung***, **provided the agreed
+  *Mindestversicherungsleistung* is reached**.
 - **If it is not reached**, the insurer must instead **pay the *Rückkaufswert* attributable to the
   insurance, including *Überschussanteile*, under § 169**. Below the minimum the paid-up election
   **becomes a surrender**; a model that offers *Beitragsfreistellung* without the test is wrong.
@@ -476,10 +472,9 @@ of the search-result summary and not of the instrument.
 - **The three-year period may be extended by individual agreement** — a statutory minimum window,
   extendable and by implication not shortenable.
 - **Where the insurer is *leistungsfrei* it must nevertheless pay the *Rückkaufswert*, including
-  *Überschussanteile*, under § 169.** The German rule is a **benefit substitution**, not a
-  forfeiture — materially unlike art. L. 132-7 of the French Code des assurances, where the cover
-  is "de nul effet" in the first year and there is no surrender value to fall back on.
-- Located in **Chapter 5 of the VVG 2008**.
+  *Überschussanteile*, under § 169.** The German rule is a **benefit substitution**, not a forfeiture
+  — materially unlike art. L. 132-7 of the French Code des assurances, where the cover is "de nul
+  effet" in the first year and there is no surrender value to fall back on. Located in **Chapter 5**.
 
 ### R5 — VVG § 19, *Vorvertragliche Anzeigepflicht*
 - Publisher: Bundesministerium der Justiz; commentary from ra-zn.de, fairtest.de,
@@ -544,9 +539,9 @@ of the search-result summary and not of the instrument.
   *Bewertungsreserven* exceed any *Sicherungsbedarf* arising from contracts with an interest
   guarantee.**
 - ***Sicherungsbedarf*** is the sum, over contracts with an **überhöhter Rechnungszins**, of the
-  **actuarially valued interest obligation less the *Deckungsrückstellung***.
-- Purpose, as reported: to counter the fear, fuelled by the prolonged low-interest period, that
-  life insurers would no longer be able to meet the benefits they had guaranteed.
+  **actuarially valued interest obligation less the *Deckungsrückstellung***. Purpose, as reported:
+  to counter the fear, fuelled by the prolonged low-interest period, that life insurers would no
+  longer be able to meet the benefits they had guaranteed.
 - A ***Sockelbetrag*** — a floor participation calculated under the LVRG — is mentioned by one
   weak secondary source only; its existence, base and size are `[unverified]` (gap 8).
 
@@ -558,10 +553,9 @@ of the search-result summary and not of the instrument.
   https://www.ifa-ulm.de/index.php?id=41&tx_ttnews%5Btt_news%5D=486&cHash=0f2266fa054d0c32b0a0c2e018ae0ed2
 - **§ 2 VVG-InfoV** is headed *Informationspflichten bei der Lebensversicherung, der
   Berufsunfähigkeitsversicherung und der Unfallversicherung mit Prämienrückgewähr* — one provision
-  covering all three savings-bearing personal lines.
-- The legal basis for the cost disclosure is **§ 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3
-  VVG-InfoV**, requiring disclosure of the ***Abschluss- und Vertriebskosten* included in the
-  premium, in euro amounts**.
+  covering all three savings-bearing personal lines. The legal basis for the cost disclosure is
+  **§ 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3 VVG-InfoV**, requiring disclosure of the ***Abschluss-
+  und Vertriebskosten* included in the premium, in euro amounts**.
 - The **Effektivkostenquote (Reduction in Yield, RIY)** was introduced in quotations **with effect
   from 1 January 2015**, following the **LVRG of 2014**; **later VVG-InfoV amendments closed gaps** in
   that regime (the ifa note concerns an amendment to the *Effektivkosten* calculation; **its date was

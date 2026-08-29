@@ -188,9 +188,9 @@ largest classic-guarantee life writer and because it withdrew this exact product
 - Doc type: publisher index page listing the association's model-condition sets
 - URL: https://www.gdv.de/gdv/service/musterbedingungen
 - Retrieved: no — egress blocked; established from search-result summaries.
-- Content: establishes that the GDV maintains model conditions across product lines and that
-  **their use is non-binding and optional**. The index also fixes the **product taxonomy** used in
-  the scope note: separate model conditions exist for (a) *Rentenversicherung mit aufgeschobener
+- Content: establishes that the GDV maintains model conditions across product lines, that **their
+  use is non-binding and optional**, and the **product taxonomy** used in the scope note: separate
+  model conditions exist for (a) *Rentenversicherung mit aufgeschobener
   Rentenzahlung* — this product [S1] [S2]; (b) *Rentenversicherung gemäß § 10 Absatz 1 Nr. 2
   Buchstabe b Doppelbuchstabe aa EStG* — the **Basisrente (Alter)**; (c) a *fondsgebundene*
   Riester wrapper under the *Altersvorsorgeverträge-Zertifizierungsgesetz*; (d) a non-unit-linked
@@ -275,10 +275,10 @@ largest classic-guarantee life writer and because it withdrew this exact product
   controllable by the company, with the most important influencing factor being capital-market
   developments."** The document also appeared in the result set for the death benefit before
   *Rentenbeginn*. **The vintage of LA 904 A was not established**, which matters because the
-  "currently 0 percent p.a." clause is explicitly time-stamped — gap 5. Siblings in the same series
-  fix the house numbering: **LA 1204 A (11.22)**, **LA 1201 A (11.22)** (8 pp.), **LA 1005 A**
-  (Riester), **LA 1311 A** (FlexInvest), **LA 1100 A** and **LA 1079/936/1099 A** (Basisrente),
-  **LA 1081 A** (Direktversicherung). LA 904 is the oldest number in that list.
+  "currently 0 percent p.a." clause is explicitly time-stamped — gap 5. Siblings fix the house
+  numbering: **LA 1204 A (11.22)**, **LA 1201 A (11.22)** (8 pp.), **LA 1005 A** (Riester),
+  **LA 1311 A** (FlexInvest), **LA 1100 A** and **LA 1079/936/1099 A** (Basisrente), **LA 1081 A**
+  (Direktversicherung) — LA 904 being the oldest number in that list.
 
 ### S9 — NÜRNBERGER Lebensversicherung AG, "Allgemeine Bedingungen für die Rentenversicherung mit aufgeschobener Rentenzahlung und Rentengarantiezeit nach Tarif NIR3301"
 - Publisher: NÜRNBERGER Lebensversicherung AG
@@ -328,10 +328,10 @@ largest classic-guarantee life writer and because it withdrew this exact product
   of the accumulation phase are invested in an internal fund and can enable additional benefits"**,
   and **"fund holdings generally receive no *Überschussbeteiligung* from the earnings of Debeka's
   general *Sicherungsvermögen* before *Rentenbeginn*"**. On tax: **if a lifelong monthly annuity is
-  chosen at *Rentenbeginn*, only part of the payout is taxed — the comparatively low
-  *Ertragsanteil*, depending on age at *Rentenbeginn*** [R5]. The insurer **no longer offers the
-  classical annuity product**; the offer is now the newer variants with a flexible allocation
-  between guaranteed and fund-based components — corroborating [R22] from the insurer's own page.
+  chosen, only part of the payout is taxed — the comparatively low *Ertragsanteil*, depending on age
+  at *Rentenbeginn*** [R5]. The insurer **no longer offers the classical annuity product**, the
+  offer being the newer variants with a flexible allocation between guaranteed and fund-based
+  components — corroborating [R22] from the insurer's own page.
 
 ### S13 — Allianz Lebensversicherungs-AG, "Vorsorgekonzept KomfortDynamik" / PrivatRente KomfortDynamik
 - Publisher: Allianz Lebensversicherungs-AG
@@ -353,11 +353,11 @@ largest classic-guarantee life writer and because it withdrew this exact product
   from a second carrier, that the *aktueller Rentenfaktor* is the carrier's then-current
   immediate-annuity tariff. The **Rentengarantiezeit** "can be set to a minimum" — a
   policyholder-selectable parameter with a floor. Two charge figures were returned by commentary in
-  the same result set and are recorded with their provenance stated: an **Abschlussprovision of
-  1 575 €** on the specimen quotation, and, in the BasisRente and RiesterRente variants, **total
-  costs relative to the capital formed of at most 0,95 € per 100 €**. Both come from third-party
-  analyses rather than an Allianz tariff sheet, are `[unverified]` as market-representative levels,
-  and are the **only** charge figures the whole corpus produced.
+  the same result set: an **Abschlussprovision of 1 575 €** on the specimen quotation, and, in the
+  BasisRente and RiesterRente variants, **total costs relative to the capital formed of at most
+  0,95 € per 100 €**. Both come from third-party analyses rather than an Allianz tariff sheet, are
+  `[unverified]` as market-representative levels, and are the **only** charge figures the corpus
+  produced.
 
 ### S14 — Mecklenburgische Versicherungsgruppe, "Vertragsinformationen für die Private Rentenversicherung mit flexiblem …" (Rente flex)
 - Publisher: Mecklenburgische Lebensversicherungs-AG
@@ -743,8 +743,8 @@ its procedural requirements (trustee review, notice) were not established** — 
 - URL: https://www.dieversicherer.de/versicherer/altersvorsorge/news/auszahlung-private-rentenversicherung-141750
 - Retrieved: no — egress blocked; established from search-result summaries.
 - Content: **the industry association's own consumer account of the payout options** of a private
-  annuity, and therefore the closest thing in the corpus to an authoritative statement of the
-  *Kapitalwahlrecht*-versus-annuity choice. It sits in the result set that established the three
+  annuity — the closest thing in the corpus to an authoritative statement of the
+  *Kapitalwahlrecht*-versus-annuity choice, and part of the result set that established the three
   payout-phase surplus systems. **The notice period for exercising the *Kapitalwahlrecht* was not
   established from it** — gap 11.
 
@@ -859,12 +859,11 @@ its procedural requirements (trustee review, notice) were not established** — 
 
 ### 2. The accumulation and payout phases, and the Rentenbeginn boundary
 
-- The contract has **two phases separated by the *Rentenbeginn***: the *Aufschubzeit* (deferment
-  period), over which premiums are paid and the *Deckungskapital* accumulates, and the
-  *Rentenbezugsphase*, over which the annuity is paid [S1] [S4] [S8] [S11].
-- **"Eine Aufschubzeit gibt es nur bei aufgeschobenen Rentenversicherungen"** — a deferment period
-  exists only in a deferred annuity contract, which is the definitional line separating this
-  product from delib's `sofortrente` [R24].
+- The contract has **two phases separated by the *Rentenbeginn***: the *Aufschubzeit*, over which
+  premiums are paid and the *Deckungskapital* accumulates, and the *Rentenbezugsphase*, over which
+  the annuity is paid [S1] [S4] [S8] [S11]. **"Eine Aufschubzeit gibt es nur bei aufgeschobenen
+  Rentenversicherungen"** — a deferment period exists only in a deferred annuity contract, the
+  definitional line separating this product from delib's `sofortrente` [R24].
 - The *Rentenbeginn* is **the pivot of the whole contract**, and three distinct things happen at
   it, all of which a model must sequence explicitly: (1) the accumulated value is struck, including
   surplus and *Bewertungsreserven* [S9]; (2) the *Rentenfaktor* to be applied is determined, by
