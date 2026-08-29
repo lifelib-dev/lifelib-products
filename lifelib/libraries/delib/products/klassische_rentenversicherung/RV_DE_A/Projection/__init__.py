@@ -165,16 +165,21 @@ and the two credits together deliver ``decl_rate(t)`` on the post-premium *Decku
 and never more. On the anchor cell that is 1,00 % into ``int_credited_pp`` and 1,55 % into
 ``bonus_credited_pp`` against a 2,55 % declaration. On model point 6 — a 2,75 % legacy
 vintage against the same declaration — ``bonus_rate(t)`` is **zero at every t** while
-``int_credited_pp(t)`` is the largest in the table. A model that credits 1,00 % *and* 2,55 %
-overstates the anchor cell's *Deckungskapital* by more than half.
+``int_credited_pp(t)`` is the largest in the table. A model that credits 1,00 % *and* a further
+2,55 % puts 56,82 € into the anchor cell's first year against 40,82 €, and reaches 63 768,69 €
+of accumulated value at the *Rentenbeginn* against 58 788,98 € — 8,5 % too much, the whole of it
+sitting in the *Ansammlungsguthaben*.
 
 .. rubric:: The guarantee vintage is a model-point attribute
 
 ``int_rate_guar()`` reads the model point, not a Reference. A German life book is a layered
 stack of guarantee vintages: the *Höchstrechnungszins* applies to contracts concluded while
 it is in force and existing contracts keep the rate they were written on. Points 1, 6 and 14
-credit 1,00 %, 2,75 % and 0,90 % in the same run, from the same tables, and a single global
-rate would change point 6's *Deckungskapital* at *Rentenbeginn* by more than a fifth.
+credit 1,00 %, 2,75 % and 0,90 % in the same run, from the same tables. Re-running point 6 on a
+single global 1,00 % rate moves its *Deckungskapital* at *Rentenbeginn* by −7,7 % and its
+*Ansammlungsguthaben* by +156 %, while the conversion capital moves by −0,8 %: the vintage error
+is a **misallocation between the two accounts**, not a hole in the total, and it therefore
+survives a reasonableness check on the headline figure.
 
 .. rubric:: The within-year order, which no source fixes
 

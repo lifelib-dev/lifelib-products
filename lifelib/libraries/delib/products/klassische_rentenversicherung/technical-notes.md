@@ -712,7 +712,11 @@ becomes a test in `tests/test_klassische_rentenversicherung_de.py`.
     exogenous here and already carries the tariff's payout loading, so `annuity_admin_rate` is
     recorded in `charge_table.csv` and **not applied**. Assert
     `annuity_payments(t) = 12 × (G + U(t)) × pols_annuity(t)` exactly, with no charge term, and that
-    the model's `expenses` in the payout phase are the per-policy `expense_annuity_pp` only.
+    the model's payout-phase `expenses` are the inflated per-policy `expense_annuity_pp` on the
+    exposed count plus the `expense_claim_pp` settlement cost of that year's deaths — 14,12 € and
+    0,24 € at `t = 18` on the anchor — and nothing else. The settlement line survives into the
+    payout phase although the death pays no benefit, because stopping an annuity and running the
+    *Rentengarantiezeit* succession is administration the insurer still performs.
 13. **Paying a death benefit after *Rentenbeginn*.** *Beitragsrückgewähr in der Rentenbezugsphase*
     **was not established by any source in this corpus** and must not be asserted (gap 18); what the
     corpus establishes for post-*Rentenbeginn* death is the *Rentengarantiezeit* and the survivor's
@@ -724,8 +728,12 @@ becomes a test in `tests/test_klassische_rentenversicherung_de.py`.
     `pols_if(t) = 0` and every cash flow is zero for `t > n`.
 15. **Forgetting that the guarantee vintage is a model-point attribute.** Existing contracts keep the
     *Rechnungszins* they were written on [R7] [REG-R14]. Assert that points 1, 6 and 14 credit
-    1,00 %, 2,75 % and 0,90 % respectively, and that a single global rate would change point 6's
-    *Deckungskapital* at `Rentenbeginn` by more than a fifth.
+    1,00 %, 2,75 % and 0,90 % respectively, and that re-running point 6 on a single global 1,00 %
+    rate moves its *Deckungskapital* at `Rentenbeginn` from 82 833,38 € to 76 439,87 €, −7,7 %,
+    while its *Ansammlungsguthaben* goes the other way, 3 629,35 € to 9 292,76 €, +156 %. The
+    conversion capital barely moves — 87 759,66 € against 87 018,62 €, −0,8 % — which is the point:
+    a single global rate leaves the *total* looking almost right and puts the money in the wrong
+    account, where it carries no guarantee.
 16. **Letting `sex` reach the tariff.** Unisex has been compulsory since 21 December 2012
     [REG-R34]. Assert that two model points identical but for `sex` produce identical `prem_pp`,
     identical `charge_*` except through `mort_rate_guar`, and identical `annuity_rate_appl()`.
@@ -1016,7 +1024,7 @@ Rentenfaktor* of 34,00 € struck on 2005 bases **beats** the current 32,00 €,
 
 #### What changed in these notes, and why
 
-Three statements written before the model existed did not survive contact with it, and were corrected
+Five statements written before the model existed did not survive contact with it, and were corrected
 here rather than worked around in the model. (i) ***`pup_uplift` moved one row earlier***, to
 `t = pup_year − 1`: the fund-level roll-forward needs it on the transition row, or
 `check_av_roll_fwd()` fails there by the whole uplift. The amount is unchanged. (ii) ***Pitfall 5 no
@@ -1027,7 +1035,14 @@ moves no policy. (iii) ***Pitfall 1's and pitfall 11's magnitudes were wrong for
 parameterisation*** and now carry the model's own figures: the double-credit error is 8,5 % of the
 accumulated value rather than "more than half" of the *Deckungskapital*, and the anchor's net amount
 at risk **rises** to 4 587,95 € at `t = 6` and ends the deferment at 3 204,24 € rather than falling
-towards zero.
+towards zero. (iv) ***Pitfall 15's "more than a fifth" was wrong***, and wrong in an interesting
+direction: re-running point 6 on a global 1,00 % rate moves its *Deckungskapital* at *Rentenbeginn*
+by −7,7 % and its *Ansammlungsguthaben* by +156 %, while the conversion capital moves by −0,8 %.
+The vintage error is a **misallocation between the two accounts**, not a hole in the total, which
+is why it survives a reasonableness check on the headline figure. (v) ***Pitfall 12 overstated the
+payout-phase expense***: `expenses(t)` there is the inflated `expense_annuity_pp` on the exposed
+count **plus** the `expense_claim_pp` settlement cost of that year's deaths, which is 1,7 % of the
+line at `t = 18` and grows with mortality down the tail.
 
 ---
 

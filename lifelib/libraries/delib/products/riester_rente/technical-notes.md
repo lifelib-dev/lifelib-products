@@ -884,7 +884,7 @@ the table's 125,21 €, and `A(2) = 5 568,986940 €`. Decrements at attained ag
 duration 4: `q = 0,001500 × 1,10⁰ × 0,80 = 0,001200`, `w = 0,008`, `θ = 0,012`, applied in that
 order, so `pols_death = 0,001200`, `pols_lapse = 0,9988 × 0,008 = 0,0079904` and
 `pols_transfer = 0,9988 × 0,992 × 0,012 = 0,0118897152`. Benefits struck on `A(2)`:
-`claims_death = 5 568,986940 × 0,001200 = 6,68 €`;
+`claims_death = 5 568,986940 × 0,001200 = 6,682784 €`;
 `claims_lapse = 0,98 × 5 568,986940 × 0,0079904 = 5 457,607201 × 0,0079904 = 43,608465 €`;
 `claims_transfer = (5 568,986940 − 50,00) × 0,0118897152 = 65,619183 €`. Expenses:
 `30,00 × 1,02³ = 31,836240 €` of maintenance, inflated on **contract** duration and not on
@@ -920,9 +920,9 @@ Rebuilt from year 1's own published parts: the opening account 4 010,98 €, plu
 and 65,619183 €, less the **exit charge the insurer retains** —
 `0,02 × 5 568,986940 × 0,0079904 = 0,889966 €` of *Stornoabzug* plus
 `50,00 × 0,0118897152 = 0,594486 €` of transfer charge, 1,484454 € — gives
-`5 568,986940 − 117,394886 = 5 451,592054 €`. The two agree to the last printed digit. Dropping the exit charge, which
-looks like income rather than like account released, leaves a residual of 1,48 € in year 1 and is
-the usual way this identity fails.
+`5 568,986940 − 117,394886 = 5 451,592054 €`. The two agree to the last printed digit. Dropping
+the exit charge — which looks like income rather than like account released — leaves a residual
+of 1,48 € in year 1, and is the usual way this identity fails.
 
 *Closure: the decrements sum to one.* Over the whole sixty-one-year projection, expected deaths
 in accumulation are **0,04132833**, deaths in payout **0,76758768**, surrenders **0,07668891**
@@ -937,9 +937,9 @@ as well as how much of it goes.
 *Closure: the statement reconciles.* On the Total row,
 `25 631,84 + 3 627,10 − 35 580,17 − 1 069,29 − 436,87 = −7 827,39 €`, where 35 580,17 € is the
 sum of all six `claims_*` columns. `int_credited` of 7 544,45 € is **not** in that sum: it moves
-money inside the account rather than across the insurer's boundary, and adding it would flip the
-cell from a 7 827,39 € deficit to a surplus. This is `check_net_cf()`, delib's first ruling,
-evaluated on the totals rather than period by period.
+money inside the account rather than across the insurer's boundary, and adding it would report
+the cell's undiscounted deficit as 282,94 € instead of 7 827,39 €. This is `check_net_cf()`,
+delib's first ruling, evaluated on the totals rather than period by period.
 
 ### Variant 1 — the `low` scenario and a binding *Beitragsgarantie* (model point 11)
 
