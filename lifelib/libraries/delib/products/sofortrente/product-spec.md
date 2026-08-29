@@ -184,23 +184,22 @@ in those words: a **[std]** with no range is a weaker object than a **[std]** wi
 | Cancellation | *Widerrufsrecht* of 30 days for life insurance, against 14 days generally | [REG-R23] |
 
 6. **No charge parameter was established at any carrier** — not the *Abschluss- und
-   Vertriebskosten*, not the administration loading, not an *Effektivkosten* figure under the
-   VVG-InfoV [REG-R31], not a *Renditeminderung* under PRIIPs [REG-R32] (gap 8). The product has
-   exactly three charge points, fewer than any other delib product: an acquisition charge on the
-   *Einmalbeitrag*, taken once; a running loading on each annuity payment, covering the payment run,
-   the annual *Standmitteilung* [REG-R25] and proof of life; and an implicit margin inside the
-   *Rechnungsgrundlagen*, since pricing at 0 % when the cap is 1,00 % [S6] [REG-R14] is a charge in
-   economic substance whatever a document calls it. α = 2,5 % is argued from a single-premium
-   annuity's cost base being a one-off commission plus issue expense, materially below the
-   *Zillmerung* of a recurring-premium contract; β = 2,0 % from a per-policy running cost roughly
-   constant in euros — which is why 2 % is of the right order on a 100 000 € case and too small on a
-   25 000 € one, itself the reason minimum *Einmalbeiträge* exist. **Both are the modeller's view
+   Vertriebskosten*, not the administration loading, not an *Effektivkosten* figure [REG-R31], not a
+   *Renditeminderung* [REG-R32] (gap 8). The product has exactly three charge points, fewer than any
+   other delib product: an acquisition charge on the *Einmalbeitrag*, taken once; a running loading
+   on each annuity payment, covering the payment run, the annual *Standmitteilung* [REG-R25] and
+   proof of life; and an implicit margin inside the *Rechnungsgrundlagen*, pricing at 0 % when the
+   cap is 1,00 % [S6] [REG-R14] being a charge in economic substance. α = 2,5 % is argued from a
+   single-premium annuity's cost base — a one-off commission plus issue expense, materially below
+   the *Zillmerung* of a recurring-premium contract; β = 2,0 % from a per-policy running cost roughly
+   constant in euros, which is why 2 % is of the right order on a 100 000 € case and too small on a
+   25 000 € one — itself the reason minimum *Einmalbeiträge* exist. **Both are the modeller's view
    with no observed range, because nothing was observed.** The only market benchmark is an
-   insurer-level *Verwaltungskostenquote* of **2,4 %** on one measurement and **2,19 %** on another,
-   spread from under 2 % to over 4 % [REG-R53] — a ratio on premium income, not a product charge.
+   insurer-level *Verwaltungskostenquote* of 2,4 % or 2,19 % depending on measurement, spread from
+   under 2 % to over 4 % [REG-R53] — a ratio on premium income, not a product charge.
 7. Whether carriers permit a *Zuzahlung* after inception **was not established**. Economically a
-   top-up is a second annuity purchase at the then-current tariff, and the representative design
-   treats it that way by excluding it: a second *Einmalbeitrag* is a second model point.
+   top-up is a second annuity purchase at the then-current tariff, and the design treats it that way
+   by excluding it: a second *Einmalbeitrag* is a second model point.
 
 ### Benefit provisions
 
@@ -331,13 +330,12 @@ and the behavioural assumption set every other delib product needs is **empty**.
 ### The *Einmalbeitrag* and the *Nettoeinmalbeitrag*
 
 **The rule.** The insurer deducts the acquisition and distribution loading and annuitises the
-remainder: `Nettoeinmalbeitrag = Einmalbeitrag × (1 − α)` [S8].
-
-**What it does.** It fixes, once and for all, the capital the annuity is struck against: there is no
-later accumulation, no *Beitragsdynamik* and no second netting, so everything downstream is a
-division of this one number by an annuity factor. It is also the whole of the product's new-business
-strain — the acquisition cost falls at `t = 0` against a single inflow, so the first period carries
-a large positive `net_cf` and every later period a negative one.
+remainder: `Nettoeinmalbeitrag = Einmalbeitrag × (1 − α)` [S8]. **What it does:** it fixes, once and
+for all, the capital the annuity is struck against — no later accumulation, no *Beitragsdynamik*, no
+second netting, so everything downstream is a division of this one number by an annuity factor. It
+is also the whole of the product's new-business strain, the acquisition cost falling at `t = 0`
+against a single inflow, so the first period carries a large positive `net_cf` and every later
+period a negative one.
 
 ### *Rentenhöhe* — how the guaranteed annuity is struck
 
@@ -607,32 +605,29 @@ warning that follows is the first thing every German consumer page says: the *Ei
 
 ## Riders and options
 
-**In scope, carried as model-point parameters.** The ***Rentengarantiezeit***, 0 to 30 years, priced
-as an annuity-certain floor on the first `n` years [R23] [S5] [S7]. The
-***Kapital-/Beitragsrückgewähr***, a declining refund netted against the guaranteed instalments
-already paid and solved implicitly [R23]; mutually exclusive with the guarantee period and with the
-survivor's annuity **[std]**. The ***Hinterbliebenenrente***, a *Zusatzversicherung* with its own
-second life and *Anwartschaft*, at 60 % or 100 % [S9], **off in the base run**. The
-***Aufschubzeit***, 0 to 15 years, with the deferment death benefit taking the same refund form,
-**off in the base run** [S14]. The ***Überschussverwendung* form** — *konstant*, *teildynamisch*,
-*volldynamisch* or none — parameterised as an opening surplus percentage and an annual growth rate
-[R20] [R21] [R23], both **[std]**. And **payment frequency and timing**, both carried so the
-unestablished timing convention (footnote 8) can be switched and its 5 % effect measured rather than
-assumed away.
+**In scope, carried as model-point parameters.** The ***Rentengarantiezeit***, 0 to 30 years, as an
+annuity-certain floor on the first `n` years [R23] [S5] [S7]; the ***Kapital-/Beitragsrückgewähr***,
+solved implicitly and **[std]** mutually exclusive with the guarantee period and the survivor's
+annuity [R23]; the ***Hinterbliebenenrente*** at 60 % or 100 %, a *Zusatzversicherung* with its own
+second life and *Anwartschaft* [S9], **off in the base run**; the ***Aufschubzeit***, 0 to 15 years,
+its deferment death benefit taking the same refund form, **off in the base run** [S14]; the
+***Überschussverwendung* form** — *konstant*, *teildynamisch*, *volldynamisch* or none —
+parameterised as an opening surplus percentage and an annual growth rate, both **[std]** [R20] [R21]
+[R23]; and **payment frequency and timing**, carried so the unestablished timing convention
+(footnote 8) can be switched and its 5 % effect measured rather than assumed away.
 
 **Out of scope, said rather than left to be discovered.** ***Bewertungsreserven* participation**
 continues throughout the payout phase and is a statutory entitlement [S3] [REG-R24], but it is path-
-and balance-sheet-dependent in a way a gross liability cash-flow model cannot reproduce: it is
+and balance-sheet-dependent in a way a gross liability cash-flow model cannot reproduce, being
 recomputed annually on the HGB accounts and reduced by the *Sicherungsbedarf* test of § 139 VAG and
-MindZV §§ 11–13, whose fifteen-year window "bites hardest on annuity business" [REG-R9] [REG-R18].
-The reference implementation models the declared *Überschussrente* explicitly and treats the
-*Bewertungsreserven* share as an **explicitly excluded component**. Also out: a **commuted settlement
-of the *Restgarantiezeit*** (gap 10); a ***Kapitalwahlrecht*** or partial commutation after
-*Rentenbeginn*, of which there is none [R1]; **indexed or inflation-linked annuities** and
-**impaired-life (*enhanced*) annuities**, neither established to exist in the German retail market
-and neither asserted to; **proof of life**, whose failure suspends payment until the certificate
-arrives; and the ***fondsgebundene Sofortrente*** in *Renten-Bezugseinheiten*, which belongs to
-`fondsgebundene_rentenversicherung`.
+MindZV §§ 11–13, whose fifteen-year window "bites hardest on annuity business" [REG-R9] [REG-R18];
+the reference implementation models the declared *Überschussrente* explicitly and treats the
+*Bewertungsreserven* share as an **explicitly excluded component**. Also out: a commuted settlement
+of the *Restgarantiezeit* (gap 10); a *Kapitalwahlrecht* or partial commutation after *Rentenbeginn*,
+of which there is none [R1]; indexed or inflation-linked annuities and impaired-life (*enhanced*)
+annuities, neither established to exist in the German retail market and neither asserted to; proof of
+life, whose failure suspends payment until the certificate arrives; and the *fondsgebundene
+Sofortrente*, which belongs to `fondsgebundene_rentenversicherung`.
 
 ---
 
@@ -646,8 +641,14 @@ business — Allianz, R+V, Debeka, Generali and CosmosDirekt, Dialog, HDI, Alte 
 Continentale and Europa, NÜRNBERGER, Swiss Life, Zurich Deutscher Herold, ERGO, AXA, Barmenia,
 Hannoversche, Württembergische, Gothaer, Stuttgarter, Volkswohl Bund, Baloise, Universa, DEVK, Signal
 Iduna, Provinzial, HUK-Coburg, Konzern Versicherungskammer and Mecklenburgische [S13] — and **not one
-has a rate, a charge, an envelope or an option menu attached**. Naming a carrier asserts only that it
-is a German life insurer of the right kind.
+has a rate, a charge, an envelope or an option menu attached**; naming a carrier asserts only that it
+is a German life insurer of the right kind. The GDV maintains *Musterbedingungen* for the deferred
+annuity, the *Basisrente*, two Riester wrappers and the
+*Hinterbliebenenrenten-Zusatzversicherung* [S1] [S9] [REG-R37], and **no model condition set for a
+*Rentenversicherung mit sofort beginnender Rentenzahlung* appears in that list**; whether one exists
+under another title, or the market drafts from the deferred template with the *Aufschubzeit* set to
+zero, was **not established** (gap 3), and the inference from [S2] and [S4] — immediate-annuity
+documents sitting inside their carrier's deferred families — is not asserted.
 
 | Carrier | Document | What it establishes for this product |
 |---|---|---|
@@ -660,14 +661,6 @@ is a German life insurer of the right kind.
 | GDV | [S1] [S9] | the model-conditions taxonomy, the **absence** of an immediate-annuity model set from it, and the survivor's annuity as a **rider with its own conditions** |
 | Konzern Versicherungskammer | [S10] *Überschussverteilung 2026* | the annual surplus-declaration document class, current to 2026; **no rate** |
 | Stuttgarter, Mecklenburgische | [S14] | that *Verbraucherinformation*, *Vertragsinformationen* and *Allgemeine Informationen* name the same pre-contractual pack |
-
-**One negative finding worth recording.** The GDV maintains *Musterbedingungen* for the deferred
-annuity, the *Basisrente*, two Riester wrappers and the *Hinterbliebenenrenten-Zusatzversicherung*
-[S1] [S9] [REG-R37], and **no model condition set for a *Rentenversicherung mit sofort beginnender
-Rentenzahlung* appears in that list**. Whether the association maintains one under another title, or
-whether the market drafts from the deferred template with the *Aufschubzeit* set to zero, was **not
-established** (gap 3). [S2] and [S4] — immediate-annuity documents sitting inside their carrier's
-deferred-annuity families — point to the second reading, but that is an inference.
 
 | Feature | Variants that exist | Evidence |
 |---|---|---|
@@ -695,111 +688,93 @@ the dedicated comparison portals [R23] — in that order, and none was located.
 
 ## Regulatory context
 
-**Contract law — the VVG.** The contract is an ordinary *Lebensversicherung* under Kapitel 5 of the
-VVG, whose provisions are largely *halbzwingend*: they may be varied only in the policyholder's
-favour [REG-R22]. Six articles do the work. **§ 153** gives the statutory *Überschussbeteiligung*,
-requires a *verursachungsorientiertes Verfahren* without prescribing the algorithm, and requires the
-*Bewertungsreserven* to be recomputed annually and shared, currently *hälftig*, subject to the LVRG's
-*Sicherungsbedarf* override [REG-R24] [REG-R20] [S3]. **§ 154** requires a *Modellrechnung* wherever
-the insurer makes quantified statements about benefits beyond the guaranteed ones — which a
-*Produktinformationsblatt* quoting a *Gesamtrente* does — computed on the premium-calculation bases
-at **three interest rates fixed by § 2 Abs. 3 VVG-InfoV as the *Höchstrechnungszins* × 1,67, that
-rate plus one point and that rate less one point**; at the current 1,00 % the statutory triple is
-**1,67 % / 2,67 % / 0,67 %** [REG-R25] [REG-R15]. **§ 155** requires an annual *Standmitteilung* in
-*Textform* disclosing the current status of the policyholder's claims including profit participation
-and **to what extent that participation is guaranteed** — which makes a published *Standmitteilung* a
-legitimate primary source class for declared rates, and its absence from this corpus a real gap
-[REG-R25] [S15]. **§§ 150, 159–162** carry consent, the *Bezugsberechtigung* and its revocability,
-and the suicide and unlawful-killing exclusions [REG-R26]; the three-year suicide bar is a
-*Todesfallversicherung* rule and reaches this product only through the death benefits, which are
-refunds of the policyholder's own capital rather than sums at risk. **§ 163** is the sole channel for
-changing a term after conclusion and is narrow [REG-R27] [R4]. **§§ 165–170** carry
-*Beitragsfreistellung*, termination, the *Rückkaufswert* with its five-year cost-spreading floor and
-the *Stornoabzug* — and **none of them operates on this product once the *Rentenbezug* has begun**
-[REG-R28] [R1] [R2] [R5]. The *Widerrufsrecht* is 30 days for life insurance [REG-R23].
+**Contract law — the VVG.** The contract is an ordinary *Lebensversicherung* under Kapitel 5, whose
+provisions are largely *halbzwingend* [REG-R22]. **§ 153** gives the statutory
+*Überschussbeteiligung*, requires a *verursachungsorientiertes Verfahren* without prescribing the
+algorithm, and requires the *Bewertungsreserven* to be recomputed annually and shared, currently
+*hälftig*, subject to the LVRG's *Sicherungsbedarf* override [REG-R24] [REG-R20] [S3]. **§ 154**
+requires a *Modellrechnung* wherever the insurer quantifies benefits beyond the guaranteed ones —
+which a *Produktinformationsblatt* quoting a *Gesamtrente* does — at **three rates fixed by § 2
+Abs. 3 VVG-InfoV as the *Höchstrechnungszins* × 1,67, that rate ± one point**, so at 1,00 % the
+statutory triple is **1,67 % / 2,67 % / 0,67 %** [REG-R25] [REG-R15]. **§ 155** requires an annual
+*Standmitteilung* disclosing the current claims including profit participation and **how much of it
+is guaranteed** — which makes a published specimen a legitimate primary source class, and its
+absence here a real gap [REG-R25] [S15]. **§§ 150, 159–162** carry consent, the *Bezugsberechtigung*
+and the suicide exclusion [REG-R26]; **§ 163** is the sole and narrow channel for changing a term
+[REG-R27] [R4]; and **§§ 165–170** — *Beitragsfreistellung*, termination, *Rückkaufswert*,
+*Stornoabzug* — **do not operate once the *Rentenbezug* has begun** [REG-R28] [R1] [R2] [R5]. The
+*Widerrufsrecht* is 30 days for life insurance [REG-R23].
 
-**Tariff bases — the DeckRV and the DAV.** § 2 DeckRV fixes the *Höchstrechnungszins*, and through
-§ 138 Abs. 1 VAG's requirement that premiums be adequate to fund the reserve it caps the rate at
-which a new tariff may be priced [REG-R14] [REG-R8]. **The rate applies at the time of contract
-conclusion and then stays with the contract for its whole term** — which is why the German in-force
-book is a stack of cohorts and why every delib model point carries its cohort's rate rather than
-today's: 3,50 % to mid-1994; 4,00 % to mid-2000; 3,25 %; 2,75 %; 2,25 %; 1,75 %; 1,25 %; 0,90 %;
-0,25 % for 2022–2024; **1,00 % from 2025**, by the *Sechste Verordnung zur Änderung von Verordnungen
-nach dem Versicherungsaufsichtsgesetz* of 19 July 2024, BGBl. 2024 I Nr. 250 [REG-R15]. The rate is
-set by the Bundesministerium der Finanzen on an annual DAV recommendation — **practice, not law** —
-built from model calculations on a representative *Neuanlageportfolio*, stochastically weighted
-scenarios, a five-year average and a ***Sicherheitsabschlag* of 40 %** [REG-R56]. **§ 4 DeckRV's
-*Höchstzillmersatz* of 25 ‰ does not reach this product at all**, there being no *Beitragssumme* to
-zillmer against [REG-R16]. No statute names a mortality table: § 138 VAG requires prudent assumptions
-and § 2 DeckRV prudently chosen bases, and the gap between "prudent" and "this specific `q_x`" is
-closed by the *Verantwortlicher Aktuar* under § 141 VAG exercising professional judgement [REG-R56]
-[REG-R11]. **A German biometric basis is therefore soft law with hard consequences**, and an insurer
-may use its own table: DAV 2004 R is a market default and benchmark, not a legal mandate [REG-R47]
-[REG-R49].
+**Tariff bases — the DeckRV and the DAV.** § 2 DeckRV fixes the *Höchstrechnungszins* and, through
+§ 138 Abs. 1 VAG's requirement that premiums fund the reserve, caps the rate at which a new tariff
+may be priced [REG-R14] [REG-R8]. **The rate applies at conclusion and stays with the contract for
+its whole term** — which is why the German book is a stack of cohorts and every delib model point
+carries its cohort's rate: 3,50 % to mid-1994; 4,00 % to mid-2000; 3,25 %; 2,75 %; 2,25 %; 1,75 %;
+1,25 %; 0,90 %; 0,25 % for 2022–2024; **1,00 % from 2025**, by the *Sechste Verordnung zur Änderung
+von Verordnungen nach dem Versicherungsaufsichtsgesetz* of 19 July 2024, BGBl. 2024 I Nr. 250
+[REG-R15]. The Bundesministerium der Finanzen sets it on an annual DAV recommendation — **practice,
+not law** — from model calculations on a representative *Neuanlageportfolio*, stochastic scenarios,
+a five-year average and a ***Sicherheitsabschlag* of 40 %** [REG-R56]. **§ 4 DeckRV's
+*Höchstzillmersatz* of 25 ‰ does not reach this product**, there being no *Beitragssumme* [REG-R16].
+No statute names a table: the gap between "prudent" [REG-R8] [REG-R14] and a specific `q_x` is closed
+by the *Verantwortlicher Aktuar* under § 141 VAG [REG-R56] [REG-R11], so **a German biometric basis
+is soft law with hard consequences** and DAV 2004 R is a benchmark, not a mandate [REG-R47] [REG-R49].
 
-**Unisex.** The ECJ held on 1 March 2011 in C-236/09 (*Test-Achats*) that using sex as a risk factor
-in insurance is incompatible with the Charter and invalidated the Gender Directive's derogation
-**with effect from 21 December 2012**. On the German side § 19 AGG carries the prohibition and names
-private insurance, § 20 Abs. 2 Satz 1 AGG — which had permitted sex-differentiated actuarial
-pricing — **was repealed**, and § 33 Abs. 5 AGG preserves the old treatment for relationships
-concluded before that date [REG-R34]. **Every delib model prices unisex.** A model point may carry a
-`sex` attribute for **decrement** purposes, because the underlying tables are sex-specific [REG-R49],
-but sex must not enter the annuity factor; letting it leak into pricing reproduces a tariff unlawful
-in Germany since 2012, and is a numbered pitfall.
+**Unisex.** The ECJ held on 1 March 2011 in C-236/09 (*Test-Achats*) that sex as a risk factor is
+incompatible with the Charter and invalidated the Gender Directive's derogation **with effect from
+21 December 2012**; § 19 AGG carries the prohibition and names private insurance, § 20 Abs. 2 Satz 1
+AGG was **repealed**, and § 33 Abs. 5 AGG preserves the old treatment for earlier relationships
+[REG-R34]. **Every delib model prices unisex.** A model point may carry `sex` for **decrement**
+purposes, the tables being sex-specific [REG-R49], but sex must not enter the annuity factor: letting
+it leak into pricing reproduces a tariff unlawful in Germany since 2012, and is a numbered pitfall.
 
-**Surplus, the RfB and the supervisor.** The arithmetic floor is the MindZV's 90 / 90 / 50 [REG-R18];
-the RfB's ring fence and escape hatches are § 140 VAG [REG-R10]; the *ungebundene* part's ceiling and
-the *kollektiver Teil* are the RfBV [REG-R19]; the *Sicherungsbedarf* test on *Bewertungsreserven* is
-§ 139 VAG with MindZV §§ 11–13 [REG-R9] [REG-R18]; the equal-treatment constraint binding the scheme
-is § 138 Abs. 2 VAG, which the BGH tied to § 153 VVG in IV ZR 436/22 of 18 September 2024 [REG-R8]
-[REG-R36]. All of it is computed on the **HGB** accounts, not the Solvency II ones [REG-R54]. Assets
-sit in the *Sicherungsvermögen* under the qualitative § 124 VAG prudent-person principle; the AnlV
-quotas German market writing routinely cites **do not bind** a Solvency II life insurer [REG-R7].
+**Surplus, the RfB and the supervisor.** The arithmetic floor under the insurer's discretion is the
+MindZV: **90 % of the *Kapitalanlageergebnis* less the *Rechnungszinsen*** — the guarantee funded
+first, only the excess shared — **90 % of the *Risikoergebnis***, raised from 75 % by the LVRG from
+7 August 2014, and **50 % of the *übrige Ergebnis*** [REG-R18] [REG-R20]. The *Direktgutschrift* is
+**deducted** and a negative minimum replaced by zero, which makes it a minimum **transfer to the RfB,
+not a minimum payout** [REG-R18]. Above it sit § 140 VAG's ring fence [REG-R10], the RfBV's ceiling
+on the *ungebundene* part and its *kollektiver Teil* [REG-R19], the § 139 VAG *Sicherungsbedarf* test
+[REG-R9], and the § 138 Abs. 2 VAG equal-treatment rule the BGH tied to § 153 VVG in IV ZR 436/22 of
+18 September 2024 [REG-R8] [REG-R36] — all computed on the **HGB** accounts [REG-R54]. Assets sit in
+the *Sicherungsvermögen* under § 124 VAG's prudent-person principle, and the AnlV quotas German market
+writing routinely cites **do not bind** a Solvency II life insurer [REG-R7].
 
 **Disclosure and distribution.** The VVG-InfoV prescribes the pre-contractual pack — the
 *Verbraucherinformation* / *Vertragsinformationen* / *Allgemeine Informationen* class [S2] [S3]
-[S14] — and carries the *Effektivkosten* disclosure [REG-R31]. The PRIIPs Regulation generates the
-*Basisinformationsblatt* with its *Risikoindikator*, four performance scenarios and *Renditeminderung*
-figures [REG-R32] [S12] — but **whether a payout-only *Sofortrente* falls inside PRIIPs scope was not
-established**: it looks like an insurance-based investment product on the usual reading, while its
-payout-only character and the absence of any surrender value make the holding-period and "what you
-might get back" sections awkward (gap 8). If one exists it is the **only** public document giving
-this product's cost in the standardised *Renditeminderung* form, and none was located. Distribution
-runs under the IDD as transposed on 20 July 2017 and § 34d GewO [REG-R33].
+[S14] — and carries the *Effektivkosten* disclosure [REG-R31]. PRIIPs generates the
+*Basisinformationsblatt* with its *Risikoindikator*, four performance scenarios and
+*Renditeminderung* [REG-R32] [S12], but **whether a payout-only *Sofortrente* falls inside PRIIPs
+scope was not established** (gap 8): it reads as an insurance-based investment product, while its
+payout-only character and the absence of a surrender value make the holding-period and "what you
+might get back" sections awkward. If one exists it is the **only** public document giving this
+product's cost in standardised form; none was located. Distribution runs under the IDD as transposed
+on 20 July 2017 and § 34d GewO [REG-R33].
 
-**Taxation.** The whole of a *Sofortrente*'s cash flow is taxed under **§ 22 EStG** on the
-*Ertragsanteil* and **none of it under § 20** [R13] [R14] [REG-R41] [REG-R45]. Only the "Ertrag des
-Rentenrechts" is income; the return-of-capital element is not taxed at all. The fraction is fixed once
-by the annuitant's age at *Rentenbeginn* and never changes: **18 % at 65** [R13], 22 % at 60
-[REG-R41], the remainder of the statutory schedule being [unverified] in its entirety with the 65
-value as its only check. On the constructed 389,99 € monthly annuity of footnote 10 the taxable amount
-is 70,20 € a month, so the tax is **17,55 € — 4,5 % of the annuity** at a 25 % marginal rate and
-29,48 €, **7,6 %**, at 42 % **[std]**. The § 20 Abs. 1 Nr. 6 *Halbeinkünfteverfahren* requires the
-contract to have run twelve years and the payment to fall after the 62nd birthday, applies only to
-lump sums and payout-plan withdrawals, and **does not apply to monthly annuity payments** [REG-R45];
-a *Sofortrente* bought at 65 has by construction not run twelve years when its first payment falls
-due and pays no lump sum in any event. **That boundary is the product's main quantitative selling
-point** against a *Bankauszahlplan* whose interest is taxed in full at the *Abgeltungsteuer* rate.
-Two further points reach the buyer. A death benefit paid to a named beneficiary is an ordinary
-*Erwerb von Todes wegen* under § 3 Abs. 1 Nr. 4 ErbStG at the beneficiary's own *Steuerklasse* and
-*Freibetrag* — Germany has **no insurance-specific death-benefit tax regime** [REG-R46]. And social
-insurance can reverse the tax argument: a Schicht-3 annuity is **not** a *Versorgungsbezug* under
-§ 229 SGB V, so a compulsorily insured pensioner pays no health or long-term-care contribution on it
-— but **§ 240 SGB V reverses that for *freiwillig versicherte* members**, for whom the whole economic
-capacity is contributory, expressly including private annuities [REG-R46]. **Not established, and
-needed:** whether *Rentengarantiezeit* payments made to a beneficiary keep the original
-*Ertragsanteil*; whether a *Kapitalrückgewähr* refund is taxable at all; whether a
-*Hinterbliebenenrente* is re-based on the survivor's own commencement age; and the
-*Solidaritätszuschlag* (gap 15).
+**Taxation.** The whole cash flow is taxed under **§ 22 EStG** on the *Ertragsanteil* and **none of
+it under § 20** [R13] [R14] [REG-R41] [REG-R45]: only the "Ertrag des Rentenrechts" is income, and
+the fraction is fixed once by the age at *Rentenbeginn* — **18 % at 65** [R13], 22 % at 60 [REG-R41],
+the rest of the schedule [unverified] with the 65 value as its only check. On the constructed
+389,99 € monthly annuity of footnote 10 the taxable amount is 70,20 €, so the tax is **17,55 €, 4,5 %
+of the annuity**, at a 25 % marginal rate and 29,48 €, **7,6 %**, at 42 % **[std]**. The § 20 Abs. 1
+Nr. 6 *Halbeinkünfteverfahren* requires twelve contract years and payment after the 62nd birthday and
+reaches only lump sums and payout-plan withdrawals [REG-R45] — **the boundary that is the product's
+main quantitative selling point** against a *Bankauszahlplan* taxed in full at the *Abgeltungsteuer*
+rate. A death benefit to a named beneficiary is an ordinary *Erwerb von Todes wegen* under § 3 Abs. 1
+Nr. 4 ErbStG, Germany having **no insurance-specific death-benefit tax regime**; and a Schicht-3
+annuity is **not** a *Versorgungsbezug* under § 229 SGB V, so a compulsorily insured pensioner pays no
+health or care contribution on it — but **§ 240 SGB V reverses that for *freiwillig versicherte*
+members** [REG-R46]. **Not established:** whether *Rentengarantiezeit* payments to a beneficiary keep
+the original *Ertragsanteil*, whether a *Kapitalrückgewähr* refund is taxable, whether a
+*Hinterbliebenenrente* is re-based on the survivor's commencement age, and the *Solidaritätszuschlag*
+(gap 15).
 
-**Prudential and accounting — cited, never specified.** BaFin supervises German life insurers under
-Solvabilität II as transposed into the VAG [REG-R1] [REG-R2] [REG-R5] [REG-R6], with Directive (EU)
-2025/2 amending the regime [REG-R3] and EIOPA publishing the risk-free curves [REG-R4]. A German
-insurer values this book **twice**: the HGB *Deckungsrückstellung* on the first-order bases, increased
-by the ZZR [REG-R14] [REG-R17] [REG-R54], on which the whole surplus system operates; and the
-Solvency II best estimate at the EIOPA curve plus a risk margin [REG-R6]. IFRS 17 is a third measure
-and a group-reporting one, German solo statutory accounts remaining HGB [REG-R55]. **`delib` computes
-none of them.** The reference models publish gross best-estimate-style liability cash flows per model
-point, income-positive and **undiscounted**; the discounting, the margins, the *Deckungsrückstellung*
-recursion, the ZZR, the RfB as a balance-sheet stock and the CSM belong to a layer above, and this
-specification names them so a reader knows what the model is an input to.
+**Prudential and accounting — cited, never specified.** BaFin supervises under Solvabilität II as
+transposed into the VAG [REG-R1] [REG-R2] [REG-R5] [REG-R6], with Directive (EU) 2025/2 amending the
+regime [REG-R3] and EIOPA publishing the curves [REG-R4]. A German insurer values this book
+**twice**: the HGB *Deckungsrückstellung* on the first-order bases, increased by the ZZR [REG-R14]
+[REG-R17] [REG-R54], on which the whole surplus system operates; and the Solvency II best estimate at
+the EIOPA curve plus a risk margin [REG-R6]. IFRS 17 is a third, group-reporting measure [REG-R55].
+**`delib` computes none of them:** the models publish gross best-estimate-style liability cash flows
+per model point, income-positive and **undiscounted**, and the discounting, the margins, the
+*Deckungsrückstellung* recursion, the ZZR, the RfB stock and the CSM belong to a layer above.
