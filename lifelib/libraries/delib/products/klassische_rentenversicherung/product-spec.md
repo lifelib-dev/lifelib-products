@@ -249,16 +249,16 @@ relative to the capital formed of **at most 0,95 € per 100 €** — come from
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Charge structure | **Premium-based deductions, not asset-based ones**, in the classic chassis: a portion of the premium is "intended for risk and cost coverage" and is deducted before the *Sparbeitrag* | [S11] |
-| *Abschluss- und Vertriebskosten* (α) | **25 ‰ of the *Beitragssumme***, zillmered — charged against the earliest premiums until exhausted | cap [REG-R16]; use of the cap **[std]** (13) |
+| *Abschluss- und Vertriebskosten* (α) | **25 ‰ of the *Beitragssumme***, zillmered — charged against the earliest premiums until exhausted | cap [REG-R16]; use of the cap **[std]** (12) |
 | Legacy α vintage | **40 ‰** for contracts concluded before 1 January 2015; the rate used at conclusion applies for the whole term | [REG-R16] [REG-R20] |
-| *Verwaltungskosten* on premium (β) | 4,0 % of each gross premium | **[std]** |
-| *Verwaltungskosten* on the reserve (γ) | 0,20 % p.a. of the *Deckungskapital* | **[std]** |
+| *Verwaltungskosten* on premium (β) | 4,0 % of each gross premium | **[std]** (12) |
+| *Verwaltungskosten* on the reserve (γ) | 0,20 % p.a. of the *Deckungskapital* | **[std]** (12) |
 | *Risikobeitrag* (ρ) | The tariff mortality rate on the net amount at risk, `max(0, death benefit − Deckungskapital)` | structure [S11]; level follows the table |
-| *Stornoabzug* | 2,0 % of the computed surrender value. A deduction is permitted **only if agreed, quantified (*beziffert*) and appropriate (*angemessen*)**, and **a deduction for not-yet-amortised acquisition and distribution costs is void** | [R1] [REG-R28]; level **[std]** (13) |
-| Payout-phase administration | 1,5 % of each annuity instalment | **[std]** |
+| *Stornoabzug* | 2,0 % of the computed surrender value. A deduction is permitted **only if agreed, quantified (*beziffert*) and appropriate (*angemessen*)**, and **a deduction for not-yet-amortised acquisition and distribution costs is void** | [R1] [REG-R28]; level **[std]** (12) |
+| Payout-phase administration | 1,5 % of each annuity instalment | **[std]** (12) |
 | *Effektivkosten* | Required by the German disclosure regime; **no value established for this product** | gap 14 |
 
-**Every charge level above is a placeholder and none is a market rate.** Two have an anchor of a
+12. **Every charge level above is a placeholder and none is a market rate.** Two have an anchor of a
 kind: the α rate is the **statutory ceiling** of § 4 DeckRV — 25 ‰ of the *Beitragssumme* since
 1 January 2015, 40 ‰ before [REG-R16] [REG-R20] — though using a ceiling as a tariff rate is a
 modelling choice; and the *Stornoabzug* is a percentage because § 169 Abs. 5 requires it to be
@@ -276,19 +276,19 @@ sized so the total load is of the order the one Schicht-1/2 figure implies (0,95
 | **The statutory floor** | § 169 Abs. 3 VVG: **at least the *Deckungskapital* that results from spreading the charged acquisition and distribution costs evenly over the first five contract years** — a floor on the value, not a cap on the charge, and independent of the supervisory *Zillmer* rules | [REG-R28]; at article level [unverified] here (gap 12) |
 | *Stornoabzug* | Permitted only if agreed, quantified and appropriate; a deduction for unamortised acquisition costs is void; the burden of proof is on the insurer | [R1] [REG-R28] |
 | § 169 Abs. 6 | The insurer may in defined cases reduce surrender values to be paid out — a solvency valve, **not modeled** | [R1] |
-| Surrender in the payout phase | **None.** § 168 Abs. 1 gives the right where *laufende Prämien* are payable, Abs. 2 on a single premium where the occurrence of the obligation is certain; a life annuity already in payment is neither | [REG-R28]; reading **[std]** (14) |
+| Surrender in the payout phase | **None.** § 168 Abs. 1 gives the right where *laufende Prämien* are payable, Abs. 2 on a single premium where the occurrence of the obligation is certain; a life annuity already in payment is neither | [REG-R28]; reading **[std]** (13) |
 | *Beitragsfreistellung* | The policyholder may **at any time, for the end of the current insurance period**, demand conversion into a premium-free insurance, **provided the agreed *Mindestversicherungsleistung* is reached** | [R2] [REG-R28] |
 | Its value | Calculated by recognised actuarial principles **on the calculation basis of the premium calculation, on the basis of the *Rückkaufswert* under § 169 Abs. 3 to 5**, and **stated in the contract for each insurance year** | [R2] [REG-R28] |
 | Below the minimum | The insurer must instead pay the surrender value attributable to the insurance, **including profit shares**, under § 169 — a small contract cannot be made paid-up; it is cashed out | [R2] |
-| The *Mindestversicherungsleistung* | **Not established at any carrier.** Representative threshold: a guaranteed annuity of 30,00 € a month | gap 22; **[std]** (15) |
+| The *Mindestversicherungsleistung* | **Not established at any carrier.** Representative threshold: a guaranteed annuity of 30,00 € a month | gap 22; **[std]** (14) |
 | Premium-default conversion | § 166 VVG converts automatically to *prämienfrei* rather than terminating cover — German lapse is a **three-way** decrement | [REG-R28] [REG-R30] |
 | *Wiederinkraftsetzung* | Reinstatement of a paid-up contract exists as a documented process at one carrier and nothing more. **Not modeled** | [S11] |
 
-**Notes to the termination table.** No German source says whether a deferred annuity in payment may
-be surrendered; the reading follows from § 168 VVG as recorded in the cross-product library
+13. No German source says whether a deferred annuity in payment may be surrendered; the reading
+follows from § 168 VVG as recorded in the cross-product library
 [REG-R28] and from the fact that the insurer's obligation in the payout phase has already occurred,
-and the implementation acts on it by setting the lapse rate to zero from *Rentenbeginn*. § 165 VVG
-makes the paid-up right conditional on a *Mindestversicherungsleistung* [R2] and **no carrier's
+and the implementation acts on it by setting the lapse rate to zero from *Rentenbeginn*.
+14. § 165 VVG makes the paid-up right conditional on a *Mindestversicherungsleistung* [R2] and **no carrier's
 threshold was returned** (gap 22); 30,00 € a month is chosen so one model point trips it and is
 cashed out instead of being made paid-up — the branch the statute cares about.
 

@@ -68,18 +68,17 @@ search corroborated. The asymmetry against the subsidised layers is total: a Sch
 in the *Überschussrente* — is fully taxable, whereas in Schicht 3 it is the *percentage* that is
 frozen, so surplus increases are taxed at the same light rate [REG-R41]. That is the whole economic
 case for the product, and the reason it is bought with money already taxed: an inheritance, a
-property sale, a matured endowment, a severance payment, or the *Kapitalwahlrecht* lump sum from a
-deferred contract.
+property sale, a matured endowment, a severance payment, or a *Kapitalwahlrecht* lump sum.
 
 **Its structural role: the pricing primitive of every other German annuity.** Two carriers state
 independently that the *aktueller Rentenfaktor* at which a deferred contract converts is the tariff
-the insurer is then writing **for immediately beginning annuities**. Zurich Deutscher Herold's
-deferred pack describes a second *Rentenfaktor* compared at *Rentenbeginn* with the guaranteed one,
-the higher of the two being guaranteed for the annuity payment period [S3]; Allianz states that the
-calculation bases at *Rentenbeginn* "relate to the interest rate and mortality table that the
-company uses at that time for immediately beginning annuities" [S7]. A model of this product is
-therefore also the conversion engine of `klassische_rentenversicherung`,
-`fondsgebundene_rentenversicherung`, `indexpolice`, `basisrente` and `riester_rente`.
+the insurer is then writing **for immediately beginning annuities** — Zurich Deutscher Herold
+comparing a second *Rentenfaktor* at *Rentenbeginn* with the guaranteed one and guaranteeing the
+higher [S3], and Allianz stating that the calculation bases at *Rentenbeginn* "relate to the
+interest rate and mortality table that the company uses at that time for immediately beginning
+annuities" [S7]. A model of this product is therefore also the conversion engine of
+`klassische_rentenversicherung`, `fondsgebundene_rentenversicherung`, `indexpolice`, `basisrente`
+and `riester_rente`.
 
 **Market size.** No figure isolates this product: the GDV series separates *Einmalbeiträge* from
 *laufende Beiträge* in new business, but that line aggregates *Sofortrenten* with single-premium
@@ -105,13 +104,12 @@ arithmetic below. The direction falls out of the tariff formula [S6] and the sta
 **What it is bought against.** The standard German comparator is a ***Bankauszahlplan***: the same
 capital drawn down at a bank until exhausted. The plan **ends** — 100 000 € drawn at 400 € a month
 at 2 % is exhausted after 26,9 years, at about age 92 **[std]** (14) — whereas the annuity does not;
-the annuity is taxed on 18 % of each instalment [R13] while the plan's interest is taxable in full,
-so any gross comparison misleads; and the annuitant gives up the capital irreversibly and does badly
-by dying early. The honest framing: a *Sofortrente* **is insurance against outliving one's money,
-priced like insurance** — most buyers "lose", and the ones who need it are made whole. One market
-fact does *not* transfer here: the classic **deferred** annuity was withdrawn by Debeka in 2016 and
-by Allianz, Zurich and Generali before it, in favour of partial-guarantee hybrids [S7] [S8], but
-**no equivalent retreat from the immediate annuity was established** and there is a structural
+the annuity is taxed on 18 % of each instalment [R13] while the plan's interest is taxable in full;
+and the annuitant gives up the capital irreversibly and does badly by dying early. The honest
+framing: a *Sofortrente* **is insurance against outliving one's money, priced like insurance**. One
+market fact does *not* transfer here: the classic **deferred** annuity was withdrawn by Debeka in
+2016 and by Allianz, Zurich and Generali before it in favour of partial-guarantee hybrids [S7] [S8],
+but **no equivalent retreat from the immediate annuity was established** and there is a structural
 reason not to expect one — the objection to the deferred contract was a thirty-year interest
 guarantee, whereas an immediate annuity's guarantee is short-dated in interest terms and its real
 risk is longevity, which no design removes. An argument, not a finding (gap 14).
@@ -255,27 +253,24 @@ in those words: a **[std]** with no range is a weaker object than a **[std]** wi
 
 **What delib ships instead of the table.** DAV 2004 R and DAV 2004 R-Bestand are the property of the
 Deutsche Aktuarvereinigung, distributed to members and licensees rather than published, and **not
-redistributable**. `delib` ships **no version of either** and quotes no `q_x`, no improvement rate
+redistributable**; `delib` ships **no version of either** and quotes no `q_x`, no improvement rate
 and no annuity factor from them [REG-R47] [REG-R49]. The decrement CSV shipped with `Sofort_DE_S` is
-a **[std] proxy**, anchored so the worked example reproduces exactly, with the anchor stated in the
-model's `Data` docstring. **A replacement must preserve three things**: the **generational**
-structure — a `q(x, cohort)` surface, because a period-table proxy applied to a forty-year annuity
-understates the liability by a margin that dwarfs every other assumption in the model [REG-R49]; the
-**first-order margin in both dimensions**, level and trend [REG-R47]; and the *Altersverschiebung*
-convention [R10]. Destatis's *Generationensterbetafeln für Deutschland* are the free,
-redistributable public analogue and the intended base for a replacement [REG-R52]. DAV 2004 R is the
-**new-business** table and the *Bestand* variant that for the **existing annuity book** [R11]
-[REG-R49]; **nothing beyond the pairing was established** and nothing about it may be asserted
-downstream (gap 12) — though it matters here, a *Sofortrente* being priced once on the new-business
-table and then spending thirty years in the *Bestand*.
+a **[std] proxy**, anchored so the worked example reproduces exactly. **A replacement must preserve
+three things**: the **generational** structure — a `q(x, cohort)` surface, because a period-table
+proxy applied to a forty-year annuity understates the liability by a margin that dwarfs every other
+assumption in the model [REG-R49]; the **first-order margin in both dimensions**, level and trend
+[REG-R47]; and the *Altersverschiebung* convention [R10]. Destatis's *Generationensterbetafeln* are
+the free, redistributable public analogue and the intended base [REG-R52]. Of the *Bestand* variant
+**nothing beyond the pairing was established** and nothing may be asserted downstream (gap 12) —
+though it matters here, a *Sofortrente* being priced once on the new-business table and then
+spending thirty years in the *Bestand*.
 
 **The unisex tension bites harder here than on any other delib product.** German annuity tables are
-built sex-distinctly while a tariff sold since 21 December 2012 must be unisex [REG-R34] [REG-R49].
-A *Sofortrente* is the purest longevity bet in the market and female annuitants are materially
-longer-lived, so a unisex tariff on sex-distinct tables must be struck on an **assumed portfolio sex
-mix no insurer publishes**. Two consequences: the realised mix drives the *Risikoergebnis* the
-MindZV then shares [REG-R18]; and the reference implementation's decrement table is a **unisex [std]
-proxy** with a stated mix assumption, described as one (gap 13).
+built sex-distinctly while a tariff sold since 21 December 2012 must be unisex [REG-R34] [REG-R49],
+and a *Sofortrente* is the purest longevity bet in the market, so a unisex tariff must be struck on
+an **assumed portfolio sex mix no insurer publishes**. The realised mix drives the *Risikoergebnis*
+the MindZV then shares [REG-R18], and the reference implementation's decrement table is a **unisex
+[std] proxy** with a stated mix assumption, described as one (gap 13).
 
 ### Charges
 
@@ -293,15 +288,11 @@ proxy** with a stated mix assumption, described as one (gap 13).
     *Sofortrente* on this file's own arithmetic, printed because a reader needs an order of magnitude
     to sanity-check a model against and because printing the construction is the only honest
     alternative to printing a fabricated quotation. **No German carrier's quotation, at any age, for
-    any year, appears anywhere in this specification** (gap 5).
-
-**The supervisory backdrop, and why it does not reach here.** BaFin's *Merkblatt 01/2023 (VA)* on
-*wohlverhaltensaufsichtliche Aspekte* says the supervisor will scrutinise insurers whose
-*Effektivkosten* are very high in a sector comparison and whose intermediary expenses are noticeably
-high, and requires producers to formulate a return target for the target market so the product
-delivers an *angemessener Kundennutzen* [REG-R35]. **All of it is addressed to *kapitalbildende*
-products — the accumulation side.** Whether BaFin has published anything on payout annuities, or
-scrutinises *Rentenhöhe* or surplus declarations for value, **was not established** [R18].
+    any year, appears anywhere in this specification** (gap 5). BaFin's *Merkblatt 01/2023 (VA)* on
+    *Wohlverhaltensaufsicht* — which polices *Effektivkosten* against a sector comparison and
+    requires a return target for the target market [REG-R35] — **is addressed to *kapitalbildende*
+    products**, and whether the supervisor scrutinises *Rentenhöhe* or surplus declarations on a
+    payout annuity **was not established** [R18].
 
 ### Termination and values
 
@@ -317,21 +308,21 @@ scrutinises *Rentenhöhe* or surplus declarations for value, **was not establish
 | *Aufschubzeit* qualification | The deferment has a genuine pre-*Rentenbeginn* window in which the termination bar does not yet bite, so a surrender right — and a *Rückkaufswert* under § 169 — **may** exist during it. **No carrier's terms established**; the base run switches the variant off | [R1] [R2]; gap 17 |
 
 **A discrepancy between two delib documents, named rather than resolved.** The research file states
-that **§ 168 Abs. 3 VVG** provides that in a *Rentenversicherung ohne Kapitalwahlrecht* the right of
-termination exists only up to the start of the annuity payments [R1], flagging the paragraph number
-as [unverified] (gap 9). The cross-product library, from nine queries touching §§ 165–170, reports
-**§ 168 Abs. 3** as the carve-out excluding Abs. 1 and 2 for a *Basisrentenvertrag* certified under
-§ 5a AltZertG and where the parties irrevocably excluded realisation before retirement [REG-R28].
-**Neither was read at article level.** The readings are not necessarily inconsistent — one *Absatz*
-may carry more than one exclusion — but the delib corpus cannot choose between them and this
-specification does not pretend to. What matters for the model is the **substance**, on which both
-entries, the consumer literature [R21] [R23] and the economics agree: **once the *Rentenbezug* has
-begun there is no termination right and no *Rückkaufswert*.** A surrenderable life annuity would be
-surrendered by exactly those annuitants expecting to die soon, leaving the insurer with the
-long-lived; the bar is what makes the mortality pooling — the whole product — possible. Consequently
-`Sofort_DE_S` publishes **no surrender-value cells, no lapse decrement, no paid-up state and no
-*Stornoabzug***; the only decrement is **death**, and the behavioural assumption set that every
-other delib product needs is **empty**. Each absence is a **specification, not a simplification**.
+that **§ 168 Abs. 3 VVG** confines the right of termination in a *Rentenversicherung ohne
+Kapitalwahlrecht* to the period before the annuity payments start [R1], flagging the paragraph
+number as [unverified] (gap 9); the cross-product library, from nine queries touching §§ 165–170,
+reports **§ 168 Abs. 3** as the carve-out excluding Abs. 1 and 2 for a *Basisrentenvertrag*
+certified under § 5a AltZertG and where realisation before retirement was irrevocably excluded
+[REG-R28]. **Neither was read at article level.** The readings are not necessarily inconsistent —
+one *Absatz* may carry more than one exclusion — but the corpus cannot choose between them and this
+specification does not pretend to. What matters is the **substance**, on which both entries, the
+consumer literature [R21] [R23] and the economics agree: **once the *Rentenbezug* has begun there is
+no termination right and no *Rückkaufswert*.** A surrenderable life annuity would be surrendered by
+exactly those annuitants expecting to die soon, leaving the insurer with the long-lived; the bar is
+what makes the mortality pooling possible. Consequently `Sofort_DE_S` publishes **no surrender-value
+cells, no lapse decrement, no paid-up state and no *Stornoabzug***; the only decrement is **death**,
+and the behavioural assumption set every other delib product needs is **empty**. Each absence is a
+**specification, not a simplification**.
 
 ---
 
@@ -566,29 +557,20 @@ reserve is large from day one and runs off slowly over decades. The ***Risikoüb
 annuity, a **longevity** result: positive when annuitants die **faster** than the first-order table
 assumed, negative when they live longer, and the one source that can go the wrong way for a whole
 cohort at once. The ***Kostenüberschuss*** is small, because the product has one acquisition event
-and then a long, cheap payment routine.
-
-**The statutory floor.** The MindZV fixes a minimum share of each result: **90 % of the
-*Kapitalanlageergebnis* less the *Rechnungszinsen*** — the guarantee is funded first and only the
-excess shared — **90 % of the *Risikoergebnis***, raised from 75 % by the LVRG with effect from
-7 August 2014, and **50 % of the *übrige Ergebnis*** [REG-R18] [REG-R20]. The *Direktgutschrift* is
-**deducted** and a mathematically negative minimum replaced by zero, which is why the MindZV is a
-minimum **transfer to the *Rückstellung für Beitragsrückerstattung* (RfB), not a minimum payout**
-[REG-R18]. Above it sit § 140 VAG's ring fence and its escape hatches [REG-R10] and the RfBV's
-ceiling on the *ungebundene* part with its *kollektiver Teil*, the device that makes cross-cohort
-smoothing legally possible without breaching § 138 Abs. 2 VAG [REG-R19] [REG-R8].
+and then a long, cheap payment routine. The statutory floor beneath the insurer's discretion is the
+MindZV's 90 / 90 / 50 and the RfB machinery above it, set out under *Regulatory context* below.
 
 **The competition for the same money, and why it is first-order here.** The *Überschussrente* is paid
-from the same RfB that financed the ***Zinszusatzreserve*** (ZZR), the additional HGB reserve arising
-when the § 5 Abs. 3 DeckRV *Referenzzins* falls below a contract's tariff rate [REG-R17]. The ZZR
-build-up suppressed declarations across the market for a decade; its release should work the other
-way. On trade-press figures — **never a supervisory source** — the ZZR stood at about **84 Mrd €** at
-the 2024 balance-sheet date against a **96 Mrd €** peak at end-2021, **2024 was the first year since
-introduction in which insurers had to add nothing at all**, and about 5 Mrd € flowed back
-industry-wide with a further 4 Mrd € for 2025; released funds reach policyholders **through a higher
-*Überschussbeteiligung*** [REG-R17]. That release profile is the largest single driver of what a
-German annuitant cohort will actually receive over the next decade, and a model projecting a flat
-surplus rate is ignoring it.
+from the same *Rückstellung für Beitragsrückerstattung* that financed the ***Zinszusatzreserve***
+(ZZR), the additional HGB reserve arising when the § 5 Abs. 3 DeckRV *Referenzzins* falls below a
+contract's tariff rate [REG-R17]. The ZZR build-up suppressed declarations across the market for a
+decade; its release should work the other way. On trade-press figures — **never a supervisory
+source** — the ZZR stood at about **84 Mrd €** at the 2024 balance-sheet date against a **96 Mrd €**
+peak at end-2021, **2024 was the first year since introduction in which insurers had to add nothing
+at all**, and about 5 Mrd € flowed back industry-wide with a further 4 Mrd € for 2025; released
+funds reach policyholders **through a higher *Überschussbeteiligung*** [REG-R17]. That release
+profile is the largest single driver of what a German annuitant cohort will actually receive over
+the next decade, and a model projecting a flat surplus rate is ignoring it.
 
 ### The *Aufschubzeit* variant
 
@@ -642,16 +624,15 @@ assumed away.
 continues throughout the payout phase and is a statutory entitlement [S3] [REG-R24], but it is path-
 and balance-sheet-dependent in a way a gross liability cash-flow model cannot reproduce: it is
 recomputed annually on the HGB accounts and reduced by the *Sicherungsbedarf* test of § 139 VAG and
-MindZV §§ 11–13, which compares a single month-end Bundesbank swap rate with the highest
-*Rechnungszins* applicable over the next fifteen years — a window that "bites hardest on annuity
-business" [REG-R9] [REG-R18]. The reference implementation models the declared *Überschussrente*
-explicitly and treats the *Bewertungsreserven* share as an **explicitly excluded component**. Also
-out: a **commuted settlement of the *Restgarantiezeit*** (gap 10); a ***Kapitalwahlrecht*** or
-partial commutation after *Rentenbeginn*, of which there is none [R1]; **indexed or inflation-linked
-annuities** and **impaired-life (*enhanced*) annuities**, neither established to exist in the German
-retail *Sofortrente* market and neither asserted to; **proof of life**, whose failure suspends payment
-until the certificate arrives; and the ***fondsgebundene Sofortrente*** in *Renten-Bezugseinheiten*,
-which belongs to `fondsgebundene_rentenversicherung`.
+MindZV §§ 11–13, whose fifteen-year window "bites hardest on annuity business" [REG-R9] [REG-R18].
+The reference implementation models the declared *Überschussrente* explicitly and treats the
+*Bewertungsreserven* share as an **explicitly excluded component**. Also out: a **commuted settlement
+of the *Restgarantiezeit*** (gap 10); a ***Kapitalwahlrecht*** or partial commutation after
+*Rentenbeginn*, of which there is none [R1]; **indexed or inflation-linked annuities** and
+**impaired-life (*enhanced*) annuities**, neither established to exist in the German retail market
+and neither asserted to; **proof of life**, whose failure suspends payment until the certificate
+arrives; and the ***fondsgebundene Sofortrente*** in *Renten-Bezugseinheiten*, which belongs to
+`fondsgebundene_rentenversicherung`.
 
 ---
 

@@ -62,7 +62,7 @@ this one too, **subject to** three AltZertG overrides. Those three overrides are
    subsidy, which makes the *Beitragsgarantie* the entry ticket rather than a feature.
 3. **The exit is closed.** Surrender is permitted by contract law and punished by tax law: a
    *schädliche Verwendung* triggers repayment of **all Zulagen credited and all § 10a relief
-   granted**, and the return on the subsidised part becomes taxable [R14] [REG-R42].
+   granted**, and taxes the return on the subsidised part [R14] [REG-R42].
 
 In the *Alterseinkünftegesetz* taxonomy [R18] [REG-R38] this is **Schicht 2** — subsidised
 supplementary provision, relieved on the way in and taxed **in full** on the way out under
@@ -76,10 +76,9 @@ general-account chassis, more constraints, full taxation instead of the *Ertrags
 **Certification is not endorsement, and no document in this library may suggest otherwise.** The
 certifying authority — the *Bundeszentralamt für Steuern*, which took the function over from the
 BaFin [unverified] as to the date — confirms only that a contract's **terms** satisfy the § 1
-criteria, and says nothing about the provider's financial standing, the product's cost or its
-expected return [R2] [S15] [REG-R43]. The state pays a subsidy and certifies the terms; the
-*Beitragsgarantie* is the **provider's own**, and its ability to honour it is an ordinary solvency
-question under the VAG [REG-R5] [REG-R6].
+criteria, saying nothing about the provider's financial standing, the product's cost or its expected
+return [R2] [S15] [REG-R43]. The *Beitragsgarantie* is the **provider's own**, and its ability to
+honour it is an ordinary solvency question under the VAG [REG-R5] [REG-R6].
 
 ### The four certified chassis, and which one this is
 
@@ -158,16 +157,16 @@ Footnotes to **[std]** rows:
 1. No entry-age envelope was established at any carrier (gap 12). Nothing statutory bounds it below;
    the arithmetic bounds it above, since at 0,25 % a short remaining term leaves almost no room for
    charges — late entry is real but structurally hostile, and the model point table carries one.
-2. German practice sets *Rentenbeginn* at or near the statutory retirement age [unverified]. Whether
-   any statutory **upper** bound applies to the start of the payout phase, as distinct from the
-   age-85 bound on the *Restverrentung*, was **not established** (gap 10).
-3. The anchor is an **in-force** cell for three reasons. The product is closed to new business from
-   1 January 2027 [REG-R44], so an in-force cell is what the book contains. A **2024-vintage**
-   tariff carries a *Rechnungszins* of **0,25 %** [R22] [REG-R15], the regime the whole guarantee
-   argument turns on. And at duration 3 the contract is still inside the statutory **five-year**
-   acquisition-cost spreading window [R1], so the anchor exercises the AltZertG charge rule rather
-   than only describing it. Model point 2 is the *same contract projected from its own inception*,
-   which reconciles the anchor's opening balances.
+2. German practice sets *Rentenbeginn* at or near the statutory retirement age [unverified]; whether
+   a statutory **upper** bound applies to the start of the payout phase, as distinct from the age-85
+   bound on the *Restverrentung*, was **not established** (gap 10).
+3. The anchor is an **in-force** cell for three reasons: the product is closed to new business from
+   1 January 2027 [REG-R44], so an in-force cell is what the book contains; a **2024-vintage** tariff
+   carries a *Rechnungszins* of **0,25 %** [R22] [REG-R15], the regime the whole guarantee argument
+   turns on; and at duration 3 it is still inside the statutory **five-year** acquisition-cost
+   spreading window [R1], so the anchor exercises the AltZertG charge rule rather than describing
+   it. Model point 2 is the *same contract projected from its own inception*, reconciling the
+   anchor's opening balances.
 
 ### Contributions
 
@@ -208,21 +207,20 @@ reach to draw the subsidy, computed from the saver's own income and reduced by t
 | E — *mittelbar* eligible spouse | not applicable | 175.00 | not applicable | 60.00 | 60.00 | 235.00 | 74.47 % |
 
 Three consequences the model must reproduce and a test must assert. **At the *Mindesteigenbeitrag*
-the Zulagen do not raise the amount invested; they lower the amount the saver pays** — the total
-into the contract is `min(4 % × income, 2 100 €)`, so the Zulagen **substitute** for the saver's own
+the Zulagen do not raise the amount invested; they lower the amount the saver pays** — the total into
+the contract is `min(4 % × income, 2 100 €)`, so the Zulagen **substitute** for the saver's own
 money, the single most misunderstood feature of the product. **The *Sockelbeitrag* stops binding at
 `(60 € + Zulagen) / 4 %`** `[std] derived` — 5 875 € childless, 10 500 € with one pre-2008 child,
 13 375 € with one post-2008 child, 20 875 € with two — below which the contribution is a flat 60 €
-plus the Zulagen and does not vary with income at all; case D is the product's political case and
-its actuarial oddity at once, a household paying **60,00 €** drawing **775,00 €**, a multiple of
-**12,92×** `[std] derived`. And **the ceiling binds at `2 100 € / 4 % = 52 500 €`** `[std] derived`,
-above which the total is frozen and the subsidy's value falls monotonically with income.
+plus the Zulagen; case D is the product's political case and its actuarial oddity at once, a
+household paying **60,00 €** drawing **775,00 €**, a multiple of **12,92×** `[std] derived`. And
+**the ceiling binds at `2 100 € / 4 % = 52 500 €`** `[std] derived`, above which the total is frozen
+and the subsidy's value falls monotonically with income.
 
 ### The Zulagen
 
-All amounts `[unverified]`: no search corroborated any of them, and they are stated from general
-knowledge of §§ 84 and 85 EStG [R9], corroborated at one remove by [REG-R42], which reports the same
-figures.
+All amounts `[unverified]`: none was corroborated by any search. They are stated from general
+knowledge of §§ 84 and 85 EStG [R9], and [REG-R42] reports the same figures at one remove.
 
 | Component | Amount per year | From | Condition |
 |---|---|---|---|
@@ -317,10 +315,10 @@ payment month nor the reversal frequency is established (gap 6).
 | *Rechnungszins* | Chosen by the carrier at or below the *Höchstrechnungszins* in force at conclusion: **0,25 %** from 1 January 2022, **1,00 %** from 1 January 2025. Representative value **0,25 %** for the anchor, a 2024-vintage tariff | [R22] [REG-R14] [REG-R15]; carrier's choice not established (gap 12); representative value **[std]** (13) |
 
 13. The *Höchstrechnungszins* is a **cap on the reserving rate**, not the rate a policy guarantees
-    [REG-R14]; a tariff may guarantee less, and nothing was established about any carrier's choice.
-    The composite uses the cap in force at the tariff's vintage — the highest defensible value, and
-    therefore the one that makes the guarantee **cheapest**; a lower tariff rate widens the
-    *Garantielücke*, and the technical notes carry that direction explicitly.
+    [REG-R14]; a tariff may guarantee less, and no carrier's choice was established. The composite
+    uses the cap in force at the tariff's vintage — the highest defensible value, and so the one
+    making the guarantee **cheapest**; a lower tariff rate widens the *Garantielücke*, a direction
+    the technical notes carry explicitly.
 
 ### Charges
 
@@ -351,8 +349,8 @@ in an Allianz *RiesterRente* variant, from third-party analysis of a specimen qu
     charging them or not moves the account value by tens of per cent on exactly the model points the
     product was designed for. The composite charges them and says so.
 16. A real product fact, not a simplification: with a death benefit equal to the accumulated capital
-    there is no positive sum at risk and therefore no *Risikobeitrag* [REG-R47]. A
-    *Beitragsrückgewähr* floor **would** create one, which is one reason the composite avoids it.
+    there is no sum at risk and so no *Risikobeitrag* [REG-R47]. A *Beitragsrückgewähr* floor
+    **would** create one, which is one reason the composite avoids it.
 17. German market *Rentenfaktoren* sit materially below the actuarially fair factor implied by any
     plausible annuitant basis, carrying both the *Sicherheitsabschlag* of a guarantee given decades
     ahead and the payout phase's cost loading. Deducting from each annuity payment **and** applying
@@ -573,9 +571,9 @@ the lapse rate. The notice period and the transfer-charge cap were not establish
 right generally [REG-R28], and the Riester overlay is that the contract stays **certified**, the
 guarantee stands on what was paid, no further Zulagen arrive and **no subsidy is repaid** [R14]. It
 is a **state change, not a termination** — the guarantee accumulator freezes, the Zulage stream
-stops, the account keeps rolling and the fixed policy charges keep biting. Against a surrender value
-already below contributions in the early years, and a *Rückzahlungsbetrag* on the way out, that is
-why the German book shows *Beitragsfreistellung* where another market would show surrender [R16].
+stops, the account keeps rolling and the fixed charges keep biting. Against a surrender value below
+contributions and a *Rückzahlungsbetrag* on the way out, that is why the German book shows
+*Beitragsfreistellung* where another market would show surrender [R16].
 
 ### The two contribution pools
 
