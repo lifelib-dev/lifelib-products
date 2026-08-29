@@ -79,9 +79,7 @@ On the anchor the two series come apart completely: by `t = 23` the in-force cou
 only to 0,932780 while the premium-paying count has fallen to 0,512516, and the 0,441765
 difference is a cohort still in force, still credited and still converting.
 `check_pols_roll_fwd()` asserts both limbs — that the ledgers sum to `pols_if` and that
-`pols_if` decrements on mortality alone.
-
-The two ledgers carry **different account values**, and that asymmetry is the whole economic
+`pols_if` decrements on mortality alone. The two ledgers carry **different account values**, and that asymmetry is the whole economic
 content of the freeze: `av_pp_at` is **per premium-paying policy**, `av_pu_at` is the
 premium-free block **at fund level**, and a premium-free policy keeps paying the *Stückkosten*
 and the reserve charge γ out of its own reserve while it stops paying β and the *Zillmerung*
@@ -151,13 +149,11 @@ zuz_pp(t)       = zuzahlung_pp x zuz_take_up(duration(t) + 1)       # behavioura
 ```
 
 The *Beitragsdynamik* compounds on the base premium from **inception**, so it is keyed to
-`duration(t)` and not to `t` — which is what makes an in-force model point work: model point
-6 opens at `3 600,00 × 1,02^17 = 5 040,87 €`, not at 3 600,00 €. The *Ratenzahlungszuschlag*
-`prem_freq_load()` multiplies the *laufender Beitrag* and **nothing else**: not the
-*Zuzahlung*, which is a single payment, and not an *Einmalbeitrag*, for which it is 1,000.
-Both streams stop at `ret_t()`, and the *Zuzahlung* stops again once
-`duration(t) ≥ zuzahlung_end_dur`.
-
+`duration(t)` and not to `t` — which is what makes an in-force model point work: model point 6
+opens at `3 600,00 × 1,02^17 = 5 040,87 €`, not at 3 600,00 €. The *Ratenzahlungszuschlag*
+`prem_freq_load()` multiplies the *laufender Beitrag* and **nothing else**: not the *Zuzahlung*,
+which is a single payment, and not an *Einmalbeitrag*, for which it is 1,000. Both streams stop
+at `ret_t()`, and the *Zuzahlung* stops again once `duration(t) ≥ zuzahlung_end_dur`.
 `zuz_take_up` is published as a cells of its own rather than hidden inside `zuz_pp`, because it
 is a **utilisation rate and not a contract term** — the top-up is paid out of a profit not
 known until the year end — and a model that treats the *Zuzahlung* as contractual has quietly
@@ -177,13 +173,12 @@ ann_pp(ret_t())        = fund_at_conv() / pols_if(ret_t()) / rf_unit
                          x rentenfaktor_applied() x ann_freq
 ```
 
-with `rf_unit = 10000` and `ann_freq = 12`. There is no lump sum, no election switch, no
-take-up assumption and no notice period — three simplifications that follow from the ban on
+with `rf_unit = 10000` and `ann_freq = 12`. There is no lump sum, no election switch, no take-up
+assumption and no notice period — three simplifications that follow from the ban on
 capitalisation rather than from a modelling choice [R1]. The *Schlussüberschussanteil* is
 allocated at this single date and at no other, which is a **contract fact**: with no surrender
-there is no earlier exit for a terminal bonus to attach to [R15].
-
-The `max` is a genuine discontinuity, so the projection is sensitive to whichever factor is
+there is no earlier exit for a terminal bonus to attach to [R15]. The `max` is a genuine
+discontinuity, so the projection is sensitive to whichever factor is
 higher and **completely insensitive to the other**. Both branches ship: the anchor converts at
 the current 31,50 € against a guaranteed 28,00 € (which would have given 6 721,70 € instead of
 7 561,91 €), while model point 13 converts at its guaranteed 34,00 € against a `low`-scenario
@@ -385,8 +380,8 @@ silently missing column is worse than an inert one.
 
 ## Standardizations used
 
-Every row of this table is **[std]** — a parameter or convention chosen where the sources are
-silent, proprietary or unreachable. Nothing here is a market observation.
+Every row is **[std]** — a parameter or convention chosen where the sources are silent,
+proprietary or unreachable. Nothing here is a market observation.
 
 | Standardization | Value | Rationale |
 |---|---|---|

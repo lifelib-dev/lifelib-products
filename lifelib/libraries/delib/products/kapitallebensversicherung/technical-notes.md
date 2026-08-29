@@ -817,10 +817,9 @@ All amounts in euros; `pols_if` to six decimals, cash flows and balances to the 
 **at full precision and then rounded**, not summed from the rounded cells.
 
 **The derived tariff.** The equivalence gives a *Bruttobeitrag* of **2 004,04 €** a year, a
-*Beitragssumme* of **50 101,05 €**, a zillmered acquisition cost `alpha_cost` of **1 252,53 €**,
-a net level premium `prem_net_level_pp` of **1 811,15 €** and a Zillmer premium `prem_zill_pp`
-of **1 868,92 €**. The first-order basis behind them: `pv_death_1st` = 3 611,698493 €,
-`pv_maturity_1st` = 35 655,282574 €, and `ann_due_prem_1st` = `ann_due_term_1st` = 21,680698,
+*Beitragssumme* of **50 101,05 €**, `alpha_cost` **1 252,53 €**, `prem_net_level_pp`
+**1 811,15 €** and `prem_zill_pp` **1 868,92 €**, on `pv_death_1st` = 3 611,698493 €,
+`pv_maturity_1st` = 35 655,282574 € and `ann_due_prem_1st` = `ann_due_term_1st` = 21,680698 —
 the two annuities coinciding because the *Beitragszahlungsdauer* is the whole
 *Versicherungsdauer*.
 
@@ -869,15 +868,13 @@ full precision against 16.648982 from the printed column. The other four columns
 cent. Where a reader needs the totals to reconcile with the printed cells rather than with the
 model, it is the printed cells that are the approximation.
 
-The shape is worth naming. Year 1 very nearly washes — **+320,89 €** — because the year's
-*Beitrag* of 2 004,04 € almost exactly meets the initial commission of 2,5 % of the
-*Beitragssumme*, 1 252,53 €, plus the 300 € acquisition expense. **The new-business strain of a
-*gezillmert* German endowment is in the reserve, not in the cash flow**: the *Deckungskapital*
-opens at −1 252,53 €. Thereafter the margin runs at roughly a thousand euros a year and decays
-as the cohort lapses, with a visible dip at `t` = 12 — 249,78 € against 953,35 € the year
-before — where the surrender rate spikes to 6,0 % at the twelve-year tax threshold. The last
-year is a single large outflow of **−28 172,76 €** as the *Erlebensfallleistung* and the whole
-accumulated *Überschussguthaben* fall due together.
+The shape is worth naming. Year 1 very nearly washes — **+320,89 €** — the *Beitrag* of
+2 004,04 € almost exactly meeting the initial commission of 1 252,53 € plus the 300 €
+acquisition expense, so **the new-business strain of a *gezillmert* German endowment is in the
+reserve and not in the cash flow**: the *Deckungskapital* opens at −1 252,53 €. The margin then
+runs near a thousand euros a year and decays with the cohort, dipping visibly at `t` = 12 —
+249,78 € against 953,35 € — where the surrender rate spikes to 6,0 % at the twelve-year tax
+threshold. The last year is a single outflow of **−28 172,76 €**.
 
 ### The state behind it
 
@@ -975,15 +972,13 @@ that same amount, so the 25 ‰ *Zillmersatz* buys only 1 081,83 € of zillmere
 | **Total** | **16.648981** | **43,273.05** | **2,983.43** | **35,570.54** | **25,043.35** | **1,327.88** | **1,081.83** | **-22,733.97** |
 
 Three consequences are visible in five rows. **The § 169 floor is slack from the first
-anniversary**: `res_zill_pp(2)` = 39 648,80 € against `res_min_pp(2)` = 38 783,34 €, the reverse
-of the level-premium ordering, because a single premium leaves almost nothing to amortise. **The
-surrender outflow is far larger throughout** — 25 043,35 € in total against 10 104,99 € — since
-every surrendering policy carries a reserve built in year 1 rather than over twenty-five years;
-the first year alone pays 1 816,26 €. And **the maturity benefit is much higher**, 80 699,89 €
-per surviving policy against 65 227,99 €, the *Überschussbeteiligung* having had the full
-capital to work on from the start. The projected `net_cf` totals are not comparable between the
-two forms and should not be read as a profitability comparison: the equivalence holds in
-present value on tariff survivorship, not in undiscounted totals over a lapsing cohort.
+anniversary** — `res_zill_pp(2)` = 39 648,80 € against `res_min_pp(2)` = 38 783,34 €, the reverse
+of the level-premium ordering, a single premium leaving almost nothing to amortise. **The
+surrender outflow is far larger throughout**, 25 043,35 € in total against 10 104,99 €, every
+surrendering policy carrying a reserve built in year 1; the first year alone pays 1 816,26 €.
+And **the maturity benefit is much higher**, 80 699,89 € against 65 227,99 €. The two forms'
+`net_cf` totals are *not* comparable: the equivalence holds in present value on tariff
+survivorship, not in undiscounted totals over a lapsing cohort.
 
 ### The variant: the three *Überschussverwendung* systems
 
