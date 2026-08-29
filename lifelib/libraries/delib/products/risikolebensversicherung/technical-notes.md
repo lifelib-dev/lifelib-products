@@ -278,8 +278,9 @@ Three anchors a replacement table must preserve, so that the worked example stil
 scale the research file constructed and froze; **the female-to-male ratio is 0.50** at every age,
 the order of magnitude reported for insured lives at the ages this product is sold [unverified]; and
 **the smoker multiplier is 2.20**, the mid-point of the two-to-three range reported for insured-lives
-smoker mortality at working ages [unverified], which reproduces a *premium* ratio near 2.04 once
-sum-related and per-policy expenses are added back. The 9,5 % per year of age is the slope of the
+smoker mortality at working ages [unverified], which reproduces a *premium* ratio near 2 once
+sum-related and per-policy expenses are added back — **2.007** between model points 3 and 1 on the
+built model, against the research file's zero-interest construction of 2.04. The 9,5 % per year of age is the slope of the
 research's construction; it is a fitted-in-spirit gradient with **no German source**, and on a
 40-year run (model point 14) it is the single most exposed number in the file. **Population tables
 are the wrong starting point for a replacement**: an RLV model built on a Destatis table without a
@@ -292,8 +293,8 @@ selection adjustment overstates claims by a wide margin at issue ages 25–45 [R
 
 with the *Sicherheitszuschlag* `m = 1.25` **[std]** and the unisex mix `ω = sex_mix_male = 0.50`
 **[std]**. So `q1 = 2.25 × q2` **for the tariff's own unisex life**, and for a real policy the ratio
-is `2.25 × (unisex blend / own-sex rate)` — **1.5 for a male and 3.0 for a female** on the shipped
-proxy. That asymmetry is the unisex cross-subsidy, and it is a product fact, not a modelling
+is `2.25 × (unisex blend / own-sex rate)`. On the shipped proxy the blend is `0.75 × q̃(M)`, so the
+ratio is **1.6875 for a male and 3.375 for a female**. That asymmetry is the unisex cross-subsidy, and it is a product fact, not a modelling
 artefact. `m` is the single parameter that sets the *Brutto*/*Zahlbeitrag* spread; **its level is not
 public** — the DAV *Richtlinie* regulates the **procedure** for setting the *Sicherheitszuschläge*,
 not the level [R12] — and the argued range is **1.0 to 1.5** (research gap 6).
@@ -563,12 +564,19 @@ Indexed by `t`, contiguous from `duration_y + 1` to `proj_len()`, in this order:
 
     pols_if, prem_gross, premiums, prem_rebate,
     claims_death, claims_lapse, claims_maturity,
-    expenses, commissions, net_cf
+    expenses, commissions, net_cf, liability_cf
 
 `prem_gross` is the **guaranteed** stream and does not enter `net_cf`; `premiums` is the **billed**
 stream and does. Publishing both is required by the product — a model carrying one premium stream
 cannot represent a German RLV [R6] — and `check_net_cf()` names exactly which columns enter the
 identity, so there is no ambiguity about which to skip.
+
+`liability_cf` is the eleventh column and is `−net_cf(t)` exactly: `net_cf` is income-positive, the
+library-wide sign, and the outgo-positive orientation a valuation layer wants is published beside it
+rather than left to a reader to flip. It was added to the list at the model stage, because the
+conventions suite reads the identity **off the frame** — a model that publishes a `liability_cf`
+cells and omits the column fails `test_net_cf_is_income_positive`. `expenses` **excludes**
+`commissions` here, which is its own column, and `net_cf` subtracts the two separately.
 
 ### The published `check_*` identities
 
@@ -630,9 +638,14 @@ These are the specific ways an implementation of **this** product looks right an
 one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
 
 1. **Confusing the three "netto"s.** *Nettoprämie* (actuarial), *Nettobeitrag*/*Zahlbeitrag*
-   (consumer) and *Nettotarif* (distribution) are unrelated [mechanic 4]. Assert
-   `prem_net_level_pp() < prem_paid_pp(1)/φ < prem_gross_pp(1)/φ` on the anchor, and that no cells
-   is named `prem_net_pp` or `nettobeitrag`.
+   (consumer) and *Nettotarif* (distribution) are unrelated [mechanic 4]. Assert the order the
+   built model actually produces on the anchor —
+   `prem_paid_pp(1)/φ < prem_net_level_pp() < prem_gross_pp(1)/φ`, i.e. 733,01 € < 1 084,80 € <
+   1 275,41 € — and that no cells is named `prem_net_pp` or `nettobeitrag`. **The billed
+   *Zahlbeitrag* sits *below* the actuarial *Nettoprämie***, because `Gn = A/ä` is struck on the
+   loaded first-order rate and 90 % of that loading is handed straight back as
+   *Beitragsverrechnung*. Asserting `Gn < P` instead would be asserting the absence of the
+   product's central mechanic.
 2. **Carrying only one premium stream.** A model with a single premium cannot represent this product
    [R6]. Assert `prem_gross(t) > premiums(t)` at every `t` with a premium due on model point 1, and
    `prem_gross(t) == premiums(t)` exactly on model point 12, where `surplus_form = keine`.
@@ -647,15 +660,18 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
 5. **Concluding there is no *Deckungskapital*.** A level premium against a rising death rate builds
    one (mechanic 11). Assert `res_pp_at(1,"BEF_PREM") == 0` and `res_pp_at(n+1,"BEF_PREM") == 0` to
    1e-9, that `res_pp_at(t,"BEF_PREM") > 0` at some interior `t` on the anchor, that
-   `res_zill_pp_at(1,"BEF_PREM") == −z·k·G` exactly, and that `check_res_roll_fwd()` is `True`.
+   `res_zill_pp_at(1,"BEF_PREM") == −z·k·G` to 1e-9 (the two are formed by different summations
+   and agree to about 4e-12 on the anchor, not to the last bit), and that `check_res_roll_fwd()`
+   is `True`.
 6. **Letting `sex` into the price.** Unlawful in Germany since 21 December 2012 [R13] [REG-R34].
    Model points 1 and 2 differ **only** in `sex`: assert their `prem_gross_pp(t)`,
    `prem_paid_pp(t)` and `beitragsverrechnung_rate()` are identical to 1e-12, while their
    `claims_death` totals differ by a factor near two.
 7. **Applying the *Sicherheitszuschlag* to the projection.** `q₁` prices, `q₂` projects. Assert that
    `claims_death` is invariant to `sicherheitszuschlag_m` while `prem_gross` is not, and that
-   `mort_rate_tar(t) / mort_rate(t)` equals `2.25 × (unisex blend / own-sex rate)` — 1.5 for a male,
-   3.0 for a female on the shipped proxy — rather than 2.25 for both.
+   `mort_rate_tar(t) / mort_rate(t)` equals `2.25 × (unisex blend / own-sex rate)` — 1.6875 for a
+   male, 3.375 for a female on the shipped proxy, the blend being `0.75 × q̃(M)` — rather than 2.25
+   for both.
 8. **Applying the § 161 switch beyond three years, or to the wrong things.** Assert
    `suicide_factor(t) == 1 − suicide_share` exactly for `t ∈ {1,2,3}` and `== 1` for `t ≥ 4` on model
    point 1; that it is `1` at every projected `t` on the in-force point 8 (`t0 = 13`); and that it
@@ -843,8 +859,9 @@ In rough order of leverage for a German term-life block.
    reason the *Zahlbeitrag* is derived rather than assumed.
 2. **`decl_scale` — the declaration, and the product's largest policyholder risk.** Setting it to 0
    raises `premiums` to `prem_gross` at every `t`, with **no § 163 procedure, no *Treuhänder* and no
-   policyholder remedy** [R6] [REG-R27]. On the anchor that is roughly a **75 % increase in the
-   billed premium** with no change to any benefit. Nothing in the corpus bounds how far or how often
+   policyholder remedy** [R6] [REG-R27]. On the anchor that is a **74,0 % increase in the billed
+   premium** — 21 303,65 € collected over the term against 12 243,75 € — with no change to any
+   benefit and no change to any decrement. Nothing in the corpus bounds how far or how often
    a German carrier has actually moved a declaration on this product (research gap 1), and the
    premium-shock lapse module exists precisely because a stress that ignores the behavioural response
    understates itself.

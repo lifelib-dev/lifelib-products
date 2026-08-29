@@ -115,6 +115,32 @@ vacuously without explanation.
 `surv_age`, `surv_birth_year` and `surv_sex` are ignored where `surv_pct == 0`, and the shipped table
 carries zeros there. `sex` is carried but **must not** enter the annuity factor [REG-R34].
 
+**The fourteen shipped model points.** Between them they exercise every option, all four payment
+frequencies, both payment timings, all four *Überschussverwendung* forms, both derived and given
+annuities, three tariff vintages and both ends of the issue-age envelope. Model point 1 is the
+worked example's anchor cell.
+
+| # | `SP` | age / year / cohort / sex | options | `m` / timing | `i` | surplus | what it is for |
+|---|---|---|---|---|---|---|---|
+| 1 | 100,000 | 65 / 2025 / 1960 / M | guar 10 y | 12 / adv | 1,00 % | teildyn. | **anchor**; the representative design |
+| 2 | 100,000 | 65 / 2025 / 1960 / M | none | 12 / adv | 1,00 % | teildyn. | the plain *Leibrente*, against which every option's price is read |
+| 3 | 100,000 | 65 / 2025 / 1960 / M | refund `full` | 12 / adv | 1,00 % | teildyn. | the implicit solve |
+| 4 | 100,000 | 65 / 2025 / 1960 / M | surv 60 %, life 2 aged 62 / 1963 / F | 12 / adv | 1,00 % | teildyn. | the joint-life leg, and a **longer second-life horizon** |
+| 5 | 150,000 | 68 / 2025 / 1957 / F | guar 20 y **and** surv 100 %, life 2 aged 70 / 1955 / M | 12 / adv | 1,00 % | konstant | the combined option, and the `(1 − γ)` gate |
+| 6 | 100,000 | 62 / 2025 / 1963 / M | defer 5 y, refund `full` | 12 / adv | 1,00 % | volldyn. | the *Aufschubzeit* and its *Beitragsrückgewähr* |
+| 7 | 100,000 | 65 / 2025 / 1960 / M | guar 10 y | **4** / adv | 1,00 % | teildyn. | quarterly instalments |
+| 8 | 200,000 | 72 / 2025 / 1953 / M | guar 15 y | **1** / adv | 1,00 % | konstant | annual instalments |
+| 9 | 100,000 | 65 / 2025 / 1960 / M | guar 10 y | 12 / **arr** | 1,00 % | teildyn. | *nachschüssig*, the timing switch of research gap 11 |
+| 10 | 100,000 | 65 / **2012** / 1947 / M | guar 15 y | 12 / adv | **1,75 %** | konstant | **in force**: `annuity_pp_init = 430.00`, `duration_mth_init = 156` |
+| 11 | **25,000** | **85** / 2025 / 1940 / F | none | **2** / adv | 1,00 % | konstant | boundary: oldest entry, smallest ticket, half-yearly |
+| 12 | **500,000** | **60** / 2025 / 1965 / F | guar 30 y | 12 / adv | 1,00 % | volldyn. | boundary: youngest entry, largest ticket, longest guarantee |
+| 13 | 250,000 | 70 / **2022** / 1952 / M | guar 10 y | 12 / adv | **0,25 %** | konstant | the pre-2025 *Höchstrechnungszins* vintage [REG-R15] |
+| 14 | 100,000 | 65 / 2025 / 1960 / M | guar 10 y | 12 / adv | 1,00 % | **none** | surplus off, so the *Überschussrente*'s contribution is isolatable |
+
+Point 10's `annuity_pp_init` is **[std]**: no *Standmitteilung* was located at any carrier [S15], so
+the in-force annuity is a round figure of the right order for a 2012 tariff at 1,75 %, and its
+*Überschussrente* is reconstructed from the form and the elapsed duration rather than carried.
+
 ---
 
 ## State variables
@@ -567,7 +593,7 @@ product's own roll-forward and pricing identities.
 | `check_annuity_roll_fwd` | `annuity_surp_pp(t) == annuity_surp_pp(t − 1) · (1 + ψ)^{1 if t % 12 == 0 else 0}` inside the payment phase, and `annuity_pp(t) ≥ annuity_pp(t − 1)` at every `t` — the *Bonusrente* ratchet |
 | `check_refund_run_off` | `refund_pp(t) == max(refund_pp(t − 1) − R·1{payment month}, 0)`, non-increasing and reaching zero at `⌈SP / R⌉` instalments; identically zero where `refund_form == "none"` |
 | `check_payment_factor` | `annuity_payments(t) + claims(t,"GUARANTEE") == pols_if_init · A(t) · payment_factor(t)` at every payment month, and zero at every other |
-| `check_guarantee_certain` | `payment_factor(t) == 1 + δ·0 == 1` at every payment month with `t < guar_end_mth()` — the instalment is certain inside the *Rentengarantiezeit* [R23] |
+| `check_guarantee_certain` | `payment_factor(t) == 1.0` at every payment month with `t < guar_end_mth()`, whatever `δ` — the instalment is certain inside the *Rentengarantiezeit* [R23] |
 | `check_equivalence` | `net_single_prem() == annuity_pp_derived()·ä·(1 + β) + refund_pv()` to `roll_fwd_tol`. Returns `True` where `annuity_pp_init() > 0`, the annuity having been struck on a basis this model does not reproduce; the notes say so rather than letting it pass silently |
 | `check_death_option_xor` | `refund_form() == "none"` **or** (`guar_years() == 0` **and** `surv_pct() == 0`) — the **[std]** exclusivity of research gap 10, asserted rather than assumed |
 | `check_tariff_int_rate` | `tariff_int_rate() ≤ max_tariff_int_rate() + roll_fwd_tol`, the cap read at `entry_year()` [REG-R14] [REG-R15]. An inequality, not an equality: a carrier may price below the cap and one is observed doing so [S6] |

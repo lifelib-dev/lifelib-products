@@ -194,9 +194,8 @@ the footnote says so in those words: a **[std]** with no range is weaker than on
    no observed range, because nothing was observed.** The only market benchmark is an insurer-level
    *Verwaltungskostenquote* of 2,4 % or 2,19 % depending on measurement, spread from under 2 % to over
    4 % [REG-R53] — a ratio on premium income, not a product charge.
-7. Whether carriers permit a *Zuzahlung* after inception **was not established**. Economically a
-   top-up is a second annuity purchase at the then-current tariff, and the design treats it that way
-   by excluding it: a second *Einmalbeitrag* is a second model point.
+7. Whether carriers permit a *Zuzahlung* after inception **was not established**; economically a
+   top-up is a second annuity purchase at the then-current tariff, and a second model point.
 
 ### Benefit provisions
 
@@ -254,7 +253,8 @@ period-table proxy applied to a forty-year annuity understates the liability by 
 every other assumption in the model [REG-R49]; the **first-order margin in both dimensions**, level
 and trend [REG-R47]; and the *Altersverschiebung* convention [R10]. Destatis's
 *Generationensterbetafeln* are the free public analogue and the intended base [REG-R52]. Of the
-*Bestand* variant **nothing beyond the pairing was established** (gap 12) — though it matters here, a
+*Bestand* variant, the table for the in-force annuity book, **nothing beyond the pairing with the
+new-business table was established** [R11] (gap 12) — though it matters here, a
 *Sofortrente* being priced once on the new-business table and then spending thirty years in the
 *Bestand*.
 
@@ -405,9 +405,9 @@ costs, on the [std] basis at 1,00 %, age 65, per 100 000 € **[std]** (12):
     The corpus's consumer illustration on a *deferred* contract puts the same three at roughly 0,5 %,
     2,6 % and 8,0 % [R23]: consistent in shape, different in level, **neither a tariff**.
 
-**Two settlement forms exist and only one is modelled.** On death inside the period the instalments
-may continue as they fall due, or the *Restgarantiezeit* may be commuted; **which form German
-carriers use, and on what basis, was not established** (gap 10), and the model pays the instalments.
+**Two settlement forms exist and only one is modelled.** The instalments may continue as they fall
+due or the *Restgarantiezeit* may be commuted; **which form German carriers use, and on what basis,
+was not established** (gap 10), and the model pays the instalments — the form [R23] describes.
 
 ### *Kapital-* und *Beitragsrückgewähr*
 
