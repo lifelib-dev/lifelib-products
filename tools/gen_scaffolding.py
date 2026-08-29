@@ -94,6 +94,26 @@ TITLES = {
     ("frlib", "assurance_emprunteur"): "Borrower's Protection (assurance emprunteur, ADE)",
     ("frlib", "obseques"): "Funeral Cover (contrat obsèques)",
     ("frlib", "dependance"): "Long-Term Care (assurance dépendance)",
+    # delib.  Same arrangement as jplib and frlib: the English name leads and the German
+    # name -- what the product is called, and what every document in the library uses --
+    # follows it in parentheses.
+    ("delib", "kapitallebensversicherung"):
+        "Endowment (kapitalbildende Lebensversicherung)",
+    ("delib", "klassische_rentenversicherung"):
+        "Deferred Annuity, classic (klassische private Rentenversicherung)",
+    ("delib", "fondsgebundene_rentenversicherung"):
+        "Unit-Linked Deferred Annuity (fondsgebundene Rentenversicherung)",
+    ("delib", "indexpolice"):
+        "Index-Participation Annuity (indexgebundene Rentenversicherung, Indexpolice)",
+    ("delib", "basisrente"): "Basisrente (Rürup), Schicht 1",
+    ("delib", "riester_rente"): "Riester-Rente, Schicht 2",
+    ("delib", "sofortrente"):
+        "Immediate Life Annuity (sofortbeginnende Rentenversicherung)",
+    ("delib", "risikolebensversicherung"): "Term Life (Risikolebensversicherung)",
+    ("delib", "berufsunfaehigkeit"):
+        "Occupational Disability (selbständige Berufsunfähigkeitsversicherung)",
+    ("delib", "pflegerentenversicherung"):
+        "Long-Term Care Annuity (Pflegerentenversicherung)",
 }
 
 
