@@ -454,14 +454,11 @@ cited from them. The order below is the order in which they should be fetched.
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration
 - Content: **a list of where to look, and nothing more.** The *Sofortrente* is a commodity product
-  in Germany: the great majority of the carriers above write one, comparison portals rank them on
-  the single dimension of *Rentenhöhe*, and the spread between the best and the worst quotation for
-  identical terms is the market's own measure of pricing variation. **No carrier's product name,
-  tariff code, envelope, rate or document was established here**, and this file therefore contains
-  **no insurer-level quantitative comparison at all** — which is the honest statement of gap 2,
-  and the reason section 18's "observed variation" table is a structural table rather than a
-  numeric one. Naming a carrier in this entry asserts only that it is a German life insurer of the
-  right kind; it does not assert that it sells this product today.
+  in Germany: most of the carriers above write one, and comparison portals rank them on the single
+  dimension of *Rentenhöhe*. **No carrier's product name, tariff code, envelope, rate or document
+  was established here**, so this file contains **no insurer-level quantitative comparison at all**
+  (gap 2). Naming a carrier asserts only that it is a German life insurer of the right kind; it
+  does not assert that it sells this product today.
 
 ### S14 — Stuttgarter Lebensversicherung a. G. and Mecklenburgische Lebensversicherungs-AG — further pre-contractual packs
 - Publishers: Stuttgarter Lebensversicherung a. G.; Mecklenburgische Lebensversicherungs-AG
@@ -474,26 +471,24 @@ cited from them. The order below is the order in which they should be fetched.
 - Retrieved: no — egress blocked; no clause content established from either
 - Content: recorded to establish that ***Verbraucherinformation*, *Vertragsinformationen* and
   *Allgemeine Informationen* are three names for the same pre-contractual pack**, so a later build
-  searching for one should search for all three. The Stuttgarter URL's `?t=1604038997833` query
-  parameter is a millisecond timestamp corresponding to **October/November 2020**, which dates that
-  file. The Mecklenburgische title is truncated after "mit flexiblem", so its distinguishing
-  feature — most plausibly a flexible *Rentenbeginn*, which would make it a near neighbour of the
-  *Aufschubzeit* variant of section 3 — is **not established**.
+  searching for one should search for all three. The Stuttgarter URL's `?t=1604038997833` parameter
+  is a millisecond timestamp corresponding to **October/November 2020**. The Mecklenburgische title
+  is truncated after "mit flexiblem", so its feature — most plausibly a flexible *Rentenbeginn*,
+  which would make it a neighbour of the *Aufschubzeit* variant of section 3 — is **not
+  established**.
 
 ### S15 — The annual *Standmitteilung* and *Rentenanpassungsmitteilung* in the *Rentenbezug* — document class
 - Publisher: each insurer; the GDV publishes a *Muster-Standmitteilung*
 - Doc type: the annual statement a German life insurer must send. For a contract in the
   *Rentenbezug* it reports the *garantierte Rente*, the current *Überschussrente*, the resulting
-  *Gesamtrente*, and — where the *Überschussverwendung* is a rising form — the amount by which the
-  annuity has been increased with effect from the anniversary
-- URL: not established for the payout form. The sibling file records the GDV *Muster-Standmitteilung*
-  for the **endowment** at `_research/kapitallebensversicherung.md` [S2 there]
+  *Gesamtrente*, and — under a rising *Überschussverwendung* — the increase taking effect at the
+  anniversary
+- URL: not established for the payout form; the sibling file records the GDV
+  *Muster-Standmitteilung* for the **endowment** at `_research/kapitallebensversicherung.md`
 - Retrieved: no — egress blocked; no search corroboration
-- Content: **known reference only.** This document class is the direct evidence of what a
-  *Rentenanpassung* looks like in practice — whether the annuity moved up, stayed flat or moved
-  down after a declaration, and by how much — which is exactly the question section 9's "the
-  constant form is not actually constant" turns on. **No specimen was located and no anniversary
-  adjustment was established, at any carrier, for any year.**
+- Content: **known reference only**, and the direct evidence of what a *Rentenanpassung* actually
+  does — up, flat or down — which is the question section 9 turns on. **No specimen was located and
+  no anniversary adjustment was established, at any carrier, for any year.**
 
 ---
 
@@ -699,12 +694,11 @@ sibling file's search corroborated it.
 - URL: not established; the sibling file [R14 there] records presentations of **16 August 2004**,
   **14 September 2004** and a reinsurer's exposition of **27 October 2004**
 - Retrieved: no — egress blocked
-- Content: the profession's contemporaneous explanation of the table at the moment of its
-  introduction, which is where the *Sicherheitszuschlag* structure and the trend construction were
-  set out for practitioners. **No content was established** beyond the fact of the presentations
-  and their dates. Recorded because these are the documents a later build should fetch to
-  substantiate anything specific about the first-order margin, which this file can describe only
-  qualitatively.
+- Content: the profession's contemporaneous explanation of the table, where the
+  *Sicherheitszuschlag* structure and the trend construction were set out for practitioners.
+  **No content was established** beyond the fact of the presentations and their dates. These are
+  the documents a later build should fetch to substantiate anything specific about the first-order
+  margin, which this file can describe only qualitatively.
 
 ### R13 — EStG § 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst. bb — the *Ertragsanteil* table
 - Publisher: Bundesministerium der Justiz / juris
@@ -770,15 +764,13 @@ sibling file's search corroborated it.
 - Retrieved: no — egress blocked; recorded at existence level by the sibling file [R8 in the KLV
   file]
 - Content: the supervisory side of the surplus rules — the *Rückstellung für
-  Beitragsrückerstattung* (RfB), the conditions under which it may be drawn down, and the
-  *Sicherungsbedarf* deduction that let German insurers withhold *Bewertungsreserven* from
-  maturing and surrendered contracts during the low-interest years. The ***Zinszusatzreserve***
-  — the additional reserve built against legacy guarantees on a *Referenzzins* mechanism — belongs
-  to the same complex. **Nothing specific was established**: not the paragraph numbers, not the
-  *Referenzzins* formula, not the ZZR's size in any year, not whether it is now being released.
-  It is recorded because a *Sofortrente*'s *Überschussrente* is paid out of the same RfB that the
-  ZZR competes with, so the reserve's release profile is a first-order driver of the surplus a
-  cohort of annuitants will actually receive — and it is entirely `[unverified]` here.
+  Beitragsrückerstattung* (RfB), the conditions for drawing it down, and the *Sicherungsbedarf*
+  deduction; the ***Zinszusatzreserve*** built against legacy guarantees on a *Referenzzins*
+  mechanism belongs to the same complex. **Nothing specific was established**: not the paragraph
+  numbers, not the *Referenzzins* formula, not the ZZR's size in any year, not whether it is now
+  being released. Recorded because a *Sofortrente*'s *Überschussrente* is paid from the same RfB
+  the ZZR competes with, which makes the release profile a first-order driver of what a cohort of
+  annuitants actually receives — and it is entirely `[unverified]` here.
 
 ### R17 — VVG-Informationspflichtenverordnung (VVG-InfoV), and the PRIIPs Regulation
 - Publisher: Bundesministerium der Justiz / juris; European Union
@@ -806,12 +798,10 @@ sibling file's search corroborated it.
   Fokus" (2024)
 - Retrieved: no — egress blocked
 - Content: the supervisor's *Wohlverhaltensaufsicht* (conduct supervision) of life products —
-  value-for-money expectations, cost scrutiny and the *Kundennutzen* framing. **All of the recorded
-  material is addressed to *kapitalbildende* (capital-forming) products, i.e. the accumulation
-  side.** Whether BaFin has published anything specific to payout annuities, and in particular
-  whether it scrutinises *Rentenhöhe* or *Überschussrente* declarations for value, **was not
-  established**. Recorded so a later build knows the supervisor's material exists and is
-  accumulation-shaped.
+  value-for-money expectations, cost scrutiny, the *Kundennutzen* framing. **All of it is addressed
+  to *kapitalbildende* products, i.e. the accumulation side.** Whether BaFin has published anything
+  on payout annuities, and whether it scrutinises *Rentenhöhe* or surplus declarations for value,
+  **was not established**.
 
 ### R19 — GDV / dieversicherer.de, "Private Rentenversicherung: Auszahlmöglichkeiten"
 - Publisher: GDV, under its consumer brand *Die Versicherer*
@@ -863,14 +853,11 @@ sibling file's search corroborated it.
   "Überschussbeteiligungen und Garantien 2026"**
 - Retrieved: no — egress blocked; the title and 2026 edition number are the sibling file's search
   record
-- Content: the German market's annual survey of declared surplus rates — the document that
-  aggregates what [S10] publishes carrier by carrier. That it has reached a **24th edition** dates
-  the series to the early 2000s and establishes it as the market's standard reference. **No rate,
-  no average, no range and no payout-phase breakdown was established from it.** For this product
-  the relevant series would be the *laufende Verzinsung* and, more specifically, the surplus
-  credited to annuities in payment, which the study is likely to report separately from the
-  accumulation figure. Locating it is the third-highest-value action for a later build, after
-  [S2] and Stiftung Warentest [R21].
+- Content: the market's annual survey of declared surplus rates — the document that aggregates
+  what [S10] publishes carrier by carrier. A **24th edition** dates the series to the early 2000s
+  and marks it as the standard reference. **No rate, no average, no range and no payout-phase
+  breakdown was established from it.** Locating it is the third-highest-value action for a later
+  build, after [S2] and Stiftung Warentest [R21].
 
 ### R23 — Comparison-portal and broker cluster specific to the *Sofortrente*
 - Publishers: `vergleich-sofortrente.de`; `lifefinance.de`; Verivox; CHECK24; and the broader
@@ -919,13 +906,12 @@ sibling file's search corroborated it.
   Lebensversicherer für die letzten zehn Geschäftsjahre"
 - Retrieved: no — egress blocked
 - Content: the industry statistics that would size this product. The GDV series separates
-  ***Einmalbeiträge*** from *laufende Beiträge* in new business, which is the split that would
-  reveal how large single-premium annuity business is — but the *Einmalbeitrag* line aggregates
-  *Sofortrenten* with single-premium endowments, bAV single contributions and *Zuzahlungen* into
-  existing contracts, so even a retrieved figure would not isolate this product. **No figure of any
-  kind was established.** There is therefore **no sourced number anywhere in this file for the
-  size of the German *Sofortrente* market, the number of contracts in force, the average
-  *Einmalbeitrag*, or the average age at purchase** — see gap 7.
+  ***Einmalbeiträge*** from *laufende Beiträge* in new business — but that line aggregates
+  *Sofortrenten* with single-premium endowments, bAV contributions and *Zuzahlungen*, so even a
+  retrieved figure would not isolate this product. **No figure of any kind was established**, so
+  there is **no sourced number anywhere in this file for the size of the German *Sofortrente*
+  market, the contracts in force, the average *Einmalbeitrag* or the average purchase age** —
+  gap 7.
 
 ---
 

@@ -1562,3 +1562,134 @@ saying both.
 - **Take-up of the 30 % *Teilkapitalauszahlung*** and of the *Kleinbetragsrenten-Abfindung*: both
   `[std]`, both unestablished (gaps 7 and 10).
 
+---
+
+## Observed variation across insurers
+
+**No carrier-specific parameter was established for any Riester product, at any house, for any
+year.** That is the honest state of this corpus and it is stated first so that no downstream document
+reads a silence as a value.
+
+But the *reason* the variation table is empty is not only the failed research. **This product varies
+across carriers far less than any other in delib**, because most of what a French *temporaire décès*
+leaves to the insurer, German statute fixes for everyone:
+
+| Parameter | Set by | Variation across carriers |
+|---|---|---|
+| Zulagen amounts, eligibility, *Mindesteigenbeitrag*, *Sockelbeitrag* | statute [R9] [R10] | **none — identical for every provider and every chassis** |
+| § 10a ceiling and *Günstigerprüfung* | statute [R6] | **none** |
+| Earliest payout age; lifelong-annuity requirement; 30 % *Teilkapitalauszahlung*; 5-year cost spreading; *Wechselrecht*; unisex | statute [R1] | **none** |
+| 100 % *Beitragsgarantie* | statute [R1] | **none in level; the *mechanism* varies by chassis (section 18)** |
+| Taxation of the benefit; *schädliche Verwendung* | statute [R12] [R14] | **none** |
+| *Kleinbetragsrente* threshold | statute [R15] | **none in level; whether commutation is mandatory or optional is a contract term — not established** |
+| Disclosure: PIB, *Effektivkosten*, *Chancen-Risiko-Klasse* | statute [R4] [R5] | **format none; the disclosed values vary and none was established** |
+| *Rechnungszins* | capped by [R22], chosen below the cap by the carrier | not established (gap 12) |
+| *Garantierter Rentenfaktor* | carrier | not established (gap 9) |
+| Charges: acquisition, administration, fund, payout-phase, *Effektivkosten* | carrier | not established (gaps 13, 14) |
+| *Überschussbeteiligung* declarations and surplus system | carrier | not established (gap 12) |
+| Guarantee **mechanism** (classic / static hybrid / dynamic hybrid / i-CPPI / fund reallocation) | carrier and chassis | taxonomy established (section 18); no carrier's design established |
+| Rider inventory (BUZ, survivor's benefit, *Rentengarantiezeit*) | carrier | not established (gap 11) |
+| Whether the tariff is open to new business | carrier | **not established for any house** (gap 12) |
+
+**What follows for a representative composite.** In frlib the representative design was chosen by
+picking the carrier whose document published the most; here that is impossible and unnecessary in
+equal measure. The composite is built the other way round: **take every statutory parameter as fact
+and make every carrier parameter `[std]`**, anchored so the worked example reproduces exactly. The
+result is defensible precisely because the statutory half — which is the half that makes this a
+Riester contract rather than a private annuity — is not a composite at all.
+
+---
+
+## Gaps and caveats
+
+1. **The status of the pAV reform as at 2026-08-29 is not established, and it is the most important
+   thing this file could not determine.** [R26] records a 2023 working-group report recommending
+   relaxation of the 100 % *Beitragsgarantie* and a securities-account product, and a 2024 draft bill
+   creating an *Altersvorsorgedepot* with a proportional Zulage, which did not become law in that
+   parliamentary term. **Whether a successor bill exists, has been introduced, or has been enacted by
+   the access date is unknown.** Nothing downstream may assert the current legal position on reform,
+   and any delib statement about it must be framed as of the 2024 draft and marked `[unverified]`.
+2. **No market figure was established.** Section 20's contract counts, chassis split, new-business
+   collapse and *ruhende Verträge* share are `[unverified]` recollection at order-of-magnitude
+   precision. The official quarterly series [R25] was neither retrieved nor searched. **There is no
+   official statistic for *ruhende Verträge* at all**, so even a successful research pass would find
+   only parliamentary answers and provider surveys for that figure.
+3. **The BMF *Anwendungsschreiben* [R24] was not identified.** Its date, reference number and content
+   are unknown. It is the authoritative source for the *Günstigerprüfung* mechanism, the two-pool
+   tracking, the *Rückzahlungsbetrag* calculation and the *Wohnförderkonto* arithmetic — i.e. for
+   most of what this file has had to mark `[unverified]` in sections 5, 6 and 16.
+4. **Every statutory paragraph number in this file is `[unverified]`.** Not one was confirmed against
+   the statute. The § numbering used — AltZertG § 1, § 2, § 7; EStG § 10a, § 22 Nr. 5, §§ 79, 82–87,
+   89–95, 97 — is stated from general knowledge and is the numbering a downstream reader must verify
+   before citing. **No delib document may quote a paragraph as though it had been read.**
+5. **The *Günstigerprüfung* crossover was not established.** The income and family composition at
+   which the § 10a deduction overtakes the Zulagen is a straightforward calculation given a marginal
+   rate schedule, but it depends on the current *Einkommensteuertarif*, which was not established.
+   No crossover figure appears in this file and none may be invented downstream.
+6. **The Zulage payment timing is not established.** [R11] establishes that the ZfA pays the provider
+   and that the application deadline runs to the end of the second year after the contribution year;
+   it does not establish **when in the following year** the money arrives, nor how often entitlements
+   are subsequently reversed. The model's one-year lag is a `[std]` convention with that rationale.
+7. **The *Kleinbetragsrente* is under-specified in three ways.** The *Bezugsgröße* for any specific
+   year was not established, so the threshold is given only as a region (section 12); the East/West
+   unification of the *Bezugsgröße* and its date are `[unverified]`; and **whether commutation is the
+   provider's right, the saver's right or automatic is a contract term that was not established at
+   any carrier.**
+8. **The *Wechselrecht*'s parameters were not established** — neither the notice period, nor the cap
+   on the ceding provider's transfer charge, nor what the receiving provider may charge on transferred
+   capital, nor **whether the guarantee accumulator survives the transfer intact**. That last is a
+   substantive open question: if the receiving contract's guarantee runs only on the transferred sum
+   rather than on the original contributions, the *Wechselrecht* is materially less valuable than it
+   appears, and this file cannot say which is right.
+9. **No Riester tariff's conversion basis was established.** The two-*Rentenfaktor* construction
+   (guaranteed at inception, compared with the current factor at *Rentenbeginn*, higher applying) is
+   documented for the German market in a sibling delib file from that session's searches, **for
+   Schicht-3 tariffs**. Whether Riester tariffs use it, and which surplus components may be counted
+   toward satisfying the *Beitragsgarantie*, are both unestablished. Both are `[std]` downstream.
+10. **The *Teilkapitalauszahlung* take-up rate is not established**, nor is any statutory upper bound
+    on deferring the start of the payout phase (as distinct from the age-85 bound on the
+    *Restverrentung*). Section 10's "usual choice" characterisation of the 30 % lump sum is
+    `[unverified]` and rests on nothing.
+11. **The rider regime is not established.** The share of contributions that may be applied to a
+    *Berufsunfähigkeits-Zusatzversicherung* or a survivor's benefit while the contract stays
+    certifiable, and the exact interaction of those premiums with the *Beitragsgarantie*, are
+    `[unverified]` [R1]. No carrier's rider inventory was established.
+12. **Nothing carrier-specific was established, for any of the twenty-plus houses named in [S5]–[S8]
+    and [S16].** Not one AVB, tariff code (beyond LA 1005 A, inherited), *Rechnungszins*,
+    *Rentenfaktor*, *Überschuss* declaration, guarantee design or new-business status. The named
+    houses are named because a follow-up pass needs a list, **not** because anything about them is
+    known. No parameter may cite them for a level.
+13. **No charge figure exists in this corpus.** The one number inherited from a sibling session —
+    total costs of at most **0,95 € per 100 €** of capital formed, in an Allianz *RiesterRente*
+    variant, from third-party analysis of a specimen quotation [S5] — is `[unverified]`, is not from
+    a tariff sheet, and is not enough to found anything. **No *Effektivkosten* value, no acquisition
+    rate, no administration rate and no payout-phase charge was established.** Every charge in the
+    delib Riester documents is `[std]`.
+14. **The charge base for the Zulagen is unknown.** Whether German Riester tariffs levy acquisition
+    and administration charges on the Zulagen as they do on the *Eigenbeitrag* was not established.
+    It is materially important — in the low-income cases of section 4 the Zulagen are the great
+    majority of the contribution — and the reference implementation must state its `[std]` choice
+    explicitly rather than let it be inferred from a formula.
+15. **The emigration rule of § 95 EStG is not established.** That the original repayment obligation on
+    ending unlimited tax liability was challenged and amended in the light of EU free-movement law is
+    recorded in [R14]; **the judgment, the amending statute, the date and the current rule are all
+    unknown.** Nothing about a saver moving abroad may be asserted downstream.
+16. **No behavioural rate was established** — no *Stornoquote*, no *Beitragsfreistellung* rate, no
+    transfer-out rate, no commutation take-up, for any German Riester book, for any year. Section 21
+    is entirely `[std]`, and the rationale for each rate is an argument from the statutory
+    consequences, not from data.
+17. **The unisex chronology is `[unverified]`.** That Riester contracts were unisex from 1 January
+    2006 by the AltZertG, six years before *Test-Achats* reached the general market on 21 December
+    2012, is stated from general knowledge [R23]; the case number C-236/09 and the judgment date of
+    1 March 2011 were not confirmed.
+18. **The *Höchstrechnungszins* series is established only at its two recent points.** 0,25 % from
+    2022 and 1,00 % from 2025 are corroborated in sibling delib files from their own searches [R22];
+    the earlier sequence used in the section 19 tables — 0,90 %, 1,75 %, 2,25 % — is `[unverified]`
+    as to both levels and effective dates. **The arithmetic in section 19 is exact given those rates
+    and is only as good as they are.**
+19. **This file had no research channel at all.** Direct HTTP egress was blocked and the session's
+    `WebSearch` budget was exhausted before the file was begun. Three items are inherited from
+    sibling delib sessions' searches and are attributed at the point of use [S3] [S4] [S5] [R22];
+    everything else rests on general knowledge of German pension law, disciplined by tagging every
+    specific number. **A reader should treat this file as a well-organised set of hypotheses about
+    what the documents say, not as a record of what they say.**
