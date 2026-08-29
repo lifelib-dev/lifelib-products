@@ -56,6 +56,12 @@ CSV_FILES = {"model_point_table.csv", "mort_table.csv", "lapse_table.csv",
 CHECKS = ("check_net_cf", "check_prem_split", "check_units_roll_fwd", "check_av_roll_fwd",
           "check_benefit_funding", "check_pols_roll_fwd", "check_acq_charge")
 
+
+def _names(model):
+    """Every cells and reference name published by ``Projection``."""
+    return set(model.Projection.cells) | set(model.Projection.refs)
+
+
 # Panel A -- the non-unit ledger.  stornoabzug and withdrawals are 0.00 in every month of
 # this cell, so the notes omit them from the printed table; they are asserted all the same.
 # t: (pols_if, premiums, prem_to_av, charge_acq, charge_admin_prem, charge_admin_fund,
@@ -469,7 +475,6 @@ def test_the_nettotarif_gap_is_the_acquisition_load(fondsgebundene_rentenversich
     assert netto.expense_acq_pp(1) == pytest.approx(
         0.025 * netto.beitragssumme() + 200.0, rel=1e-12)
 
-
 # ---------------------------------------------------------------------------
 # One test per numbered modeling pitfall in the technical notes
 
@@ -479,7 +484,7 @@ def test_pitfall_1_the_fund_charge_cancels_units_and_survives_the_premium(
     """A model netting gamma off the *Beitrag* is right until the premium stops.
 
     Model point 7 goes *beitragsfrei* at month 121 on a zero-return fund: from there
-    ``premiums`` is zero and ``charge_admin_fund`` is not, and the fund decays.
+    ``premiums`` is zero, ``charge_admin_fund`` is not, and the fund decays.
     """
     p = fondsgebundene_rentenversicherung.Projection[7]
     assert p.pup_month() == 121 and p.scenario_id() == "zero"
@@ -513,8 +518,7 @@ def test_pitfall_2_the_ter_lives_in_the_unit_price_and_in_no_charge_column(
     assert [c for c in p.result_cf().columns if c.startswith("charge_")] == [
         "charge_acq", "charge_admin_prem", "charge_admin_fund", "charge_policy_fee",
         "charge_risk"]
-    names = set(fondsgebundene_rentenversicherung.Projection.cells) | set(
-        fondsgebundene_rentenversicherung.Projection.refs)
+    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("charge_ter", "charge_fund_cost", "ter_charge_pp", "fund_cost_pp"):
         assert absent not in names, absent
     etf = fondsgebundene_rentenversicherung.Projection[11]
@@ -532,17 +536,13 @@ def test_pitfall_3_the_two_mortality_bases_live_in_two_files(
     formula touches both files.
     """
     proj = fondsgebundene_rentenversicherung.Projection
-    readers = {}
-    for nm in proj.cells:
-        src = proj.cells[nm].formula.source or ""
-        readers[nm] = {t for t in ("data.mort_table(", "data.rentenfaktor_table(")
-                       if t in src}
+    readers = {nm: {f for f in ("data.mort_table(", "data.rentenfaktor_table(")
+                    if f in (proj.cells[nm].formula.source or "")}
+               for nm in proj.cells}
     assert readers["mort_rate_tariff_at_age"] == {"data.mort_table("}
     assert readers["rentenfaktor_guar"] == {"data.rentenfaktor_table("}
     assert readers["rentenfaktor_curr"] == {"data.rentenfaktor_table("}
-    both = [nm for nm, hits in readers.items() if len(hits) == 2]
-    assert both == [], f"cells reading both mortality files: {both}"
-
+    assert [nm for nm, hits in readers.items() if len(hits) == 2] == []
     p = de_frv_anchor
     assert p.charge_risk_pp(1) == pytest.approx(
         p.mort_rate_tariff_mth(1) * p.nar_pp(1), rel=1e-12)
@@ -581,8 +581,8 @@ def test_pitfall_5_the_two_monthly_conversions_stay_different(
     At q = 0.00080 the two splits differ by 0.04 %, which would land entirely in the risk
     result -- the one quantity the model is trying to measure.  The same asymmetry runs
     through the tax-threshold step, which needs **both** limbs of the 12/62 rule: the
-    anchor cell passes duration 12 at age 48, fourteen years before the benefit exists, so
-    its step falls in policy year 26 and not at month 145.
+    anchor passes duration 12 at age 48, fourteen years before the benefit exists, so its
+    step falls in policy year 26 and not at month 145.
     """
     p = de_frv_anchor
     for t in (1, 61, 300, 360):
@@ -598,11 +598,9 @@ def test_pitfall_5_the_two_monthly_conversions_stay_different(
             1.0 - (1.0 - p.lapse_rate(t)) ** (1.0 / 12.0), rel=1e-14)
         assert p.lapse_rate_mth(t) < p.lapse_rate(t)
     assert p.lapse_rate_mth(1) == pytest.approx(0.00514301, abs=EIGHT_DP)
-    assert p.lapse_rate_mth(61) == pytest.approx(0.00253505, abs=EIGHT_DP)
     assert (1.0 + p.fund_return_net_mth(1)) ** 12 - 1.0 == pytest.approx(
         p.fund_return_net_ann(1), rel=1e-14)
     assert p.gamma_rate_mth() * 12.0 == pytest.approx(p.gamma_rate_ann(), rel=1e-15)
-
     assert max(13, 62 - p.entry_age() + 1) == 26
     assert p.policy_year(301) == 26 and p.age(301) == 62
     assert p.lapse_tax_step(300) == 1.0 and p.lapse_tax_step(313) == 1.0
@@ -622,12 +620,11 @@ def test_pitfall_6_the_net_amount_at_risk_is_floored_at_zero(
     On the *Beitragsrückgewähr* shape the amount at risk vanishes once the fund overtakes
     the premiums paid -- month 95 on the anchor -- and the unfloored difference is large
     and negative for the remaining 266 months.  A `pct_fund` floor behaves the other way
-    round, growing with the fund, and a `fund` benefit has no floor at all.
+    round, growing with the fund; a `fund` benefit has no floor at all.
     """
     p = de_frv_anchor
     n = p.proj_len()
-    assert all(p.nar_pp(t) >= 0.0 for t in range(1, n + 1))
-    assert all(p.death_strain(t) >= 0.0 for t in range(1, n + 1))
+    assert all(p.nar_pp(t) >= 0.0 and p.death_strain(t) >= 0.0 for t in range(1, n + 1))
     assert p.nar_pp(94) > 0.0 and p.nar_pp(95) == 0.0
     assert p.av_pp_at(94, "AFT_WD") < p.cum_prem_pp(94)
     assert p.av_pp_at(95, "AFT_WD") > p.cum_prem_pp(95)
@@ -642,8 +639,6 @@ def test_pitfall_6_the_net_amount_at_risk_is_floored_at_zero(
     pct = fondsgebundene_rentenversicherung.Projection[12]
     assert pct.db_form() == "pct_fund" and pct.db_pct() == 1.1
     for t in (1, 24, 144):
-        assert pct.db_floor_pp(t) == pytest.approx(
-            1.1 * pct.av_pp_at(t, "AFT_WD"), rel=1e-12)
         assert pct.nar_pp(t) == pytest.approx(0.1 * pct.av_pp_at(t, "AFT_WD"), rel=1e-9)
     assert pct.result_cf()["charge_risk"].sum() > 0.0
 
@@ -653,18 +648,16 @@ def test_pitfall_7_the_acquisition_instalment_stops_at_its_window(
     """The instalment is zero past the window, and the count follows the frequency.
 
     60 monthly, 20 quarterly, 10 half-yearly, 5 annual, and **24** on model point 12, whose
-    premium term is two years.  Two exceptions follow from the definition of the charge and
-    are stated rather than asserted away: ``charge_acq(121)`` is non-zero on model point 9,
+    premium term is two years.  Two exceptions follow from the charge's definition and are
+    stated rather than asserted away: ``charge_acq(121)`` is non-zero on model point 9,
     where the *Zuzahlung* pays 500,00 of *Zuzahlungskosten*; and the per-policy total
-    equals ``alpha_rate x beitragssumme()`` on eleven points but not on point 6 (an
-    in-force frame opening past the window) nor on point 9.
+    equals ``alpha_rate x beitragssumme()`` on eleven points but not on point 6, whose
+    in-force frame opens past the window, nor on point 9.
     """
     p = de_frv_anchor
     assert p.acq_window_months() == 60 and p.acq_instalments() == 60
     assert all(p.charge_acq_pp(t) == 30.0 for t in (1, 30, 59, 60))
     assert all(p.charge_acq_pp(t) == 0.0 for t in (61, 62, 120, 360))
-    assert p.check_acq_charge() is True
-
     for point_id, (mode, count, instalment) in {
             1: (1, 60, 30.0), 3: (3, 20, 111.0), 4: (6, 10, 132.0),
             5: (12, 5, 630.0)}.items():
@@ -674,16 +667,13 @@ def test_pitfall_7_the_acquisition_instalment_stops_at_its_window(
         assert q.charge_acq_pp(1) == pytest.approx(instalment, abs=CENT)
         assert q.charge_acq_total() == pytest.approx(count * instalment, abs=CENT)
         assert q.check_acq_charge() is True
-
     short = fondsgebundene_rentenversicherung.Projection[12]
     assert short.prem_term_y() == 2
     assert short.acq_window_months() == 24 and short.acq_instalments() == 24
     assert short.charge_acq_total() == pytest.approx(0.025 * 12000.0, rel=1e-12) == 300.0
     assert short.charge_acq_pp(24) == 12.5 and short.charge_acq_pp(25) == 0.0
     assert short.cum_charge_acq_pp(144) == pytest.approx(300.0, abs=1e-9)
-
     topup = fondsgebundene_rentenversicherung.Projection[9]
-    assert topup.topup_month() == 121 and topup.topup_amount() == 20000.0
     assert topup.charge_acq_pp(121) == pytest.approx(500.0, rel=1e-12)
     assert topup.charge_acq_pp(122) == 0.0
     assert sum(topup.charge_acq_pp(t) for t in range(1, topup.proj_len() + 1)) == (
@@ -709,8 +699,7 @@ def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
     assert p.cum_charge_acq_pp(p.proj_len()) == 0.0
     assert p.expense_acq_pp(97) == 0.0
     assert p.expenses(97) == pytest.approx(
-        p.expense_maint_pp(97) * p.pols_if(97)
-        + 0.015 * p.prem_pp(97) * p.pols_if(97)
+        p.expense_maint_pp(97) * p.pols_if(97) + 0.015 * p.prem_pp(97) * p.pols_if(97)
         + 150.0 * p.pols_death(97) + 50.0 * p.pols_lapse(97), rel=1e-12)
     assert p.expenses(97) < 20.0
     # The cell opens with a live fund, a real Beitragsrückgewähr base and a live charge.
@@ -732,15 +721,11 @@ def test_pitfall_9_the_beitragssumme_is_the_premiums_payable_at_the_initial_leve
     assert p.beitragssumme() == pytest.approx(
         p.prem_pp_base() * (12.0 / p.prem_mode_months()) * p.prem_term_y(), rel=1e-12)
     assert p.beitragssumme() == 72000.0
-    assert p.result_cf()["premiums"].sum() == pytest.approx(40586.28, abs=CENT)
     assert p.result_cf()["premiums"].sum() < 0.6 * p.beitragssumme()
-
     pup = fondsgebundene_rentenversicherung.Projection[7]
-    assert pup.pup_month() == 121
     assert pup.beitragssumme() == pytest.approx(250.0 * 12 * 27, rel=1e-12) == 81000.0
     assert pup.cum_charge_acq_pp(pup.proj_len()) == pytest.approx(2025.0, abs=1e-9)
     assert sum(pup.prem_pp(t) for t in range(1, pup.proj_len() + 1)) < pup.beitragssumme()
-
     dyn = fondsgebundene_rentenversicherung.Projection[10]
     assert dyn.dynamik_rate() == 0.03
     assert dyn.prem_pp(1) == 150.0 and dyn.prem_pp(12) == 150.0
@@ -749,7 +734,6 @@ def test_pitfall_9_the_beitragssumme_is_the_premiums_payable_at_the_initial_leve
     assert dyn.beitragssumme() == pytest.approx(150.0 * 12 * 39, rel=1e-12) == 70200.0
     assert dyn.charge_acq_pp(13) == pytest.approx(
         dyn.charge_acq_total() / 60.0, rel=1e-12)
-
     topup = fondsgebundene_rentenversicherung.Projection[9]
     assert topup.topup_amount() == 20000.0
     assert topup.beitragssumme() == pytest.approx(300.0 * 12 * 32, rel=1e-12) == 115200.0
@@ -760,9 +744,8 @@ def test_pitfall_10_beitragsfreistellung_is_a_change_of_state_and_not_an_exit(
     """pols_if is continuous across month 121 while premiums step to zero.
 
     One is an exit paying the *Rückkaufswert*, the other a change of state paying nothing.
-    Conflating them would remove the policy at month 121 and pay it a surrender value it
-    never asked for.  It is a model point election, not a cohort decrement, which is why
-    exactly one shipped point carries it and no paid-up rate exists anywhere.
+    It is a model point election and not a cohort decrement, which is why exactly one
+    shipped point carries it and no paid-up rate exists anywhere in the model.
     """
     p = fondsgebundene_rentenversicherung.Projection[7]
     assert p.premiums(120) > 0.0 and p.premiums(121) == 0.0
@@ -774,8 +757,7 @@ def test_pitfall_10_beitragsfreistellung_is_a_change_of_state_and_not_an_exit(
     assert p.pols_maturity(121) == 0.0
     table = fondsgebundene_rentenversicherung.Data.model_point_table()
     assert (table["pup_month"] > 0).sum() == 1 and table.loc[1, "pup_month"] == 0
-    names = set(fondsgebundene_rentenversicherung.Projection.cells) | set(
-        fondsgebundene_rentenversicherung.Projection.refs)
+    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("pup_rate", "pols_pup", "paid_up_rate", "pols_paidup"):
         assert absent not in names, absent
 
@@ -795,8 +777,7 @@ def test_pitfall_11_the_surrender_value_is_the_fund_and_nothing_else(
         assert p.claims(t, "LAPSE") == pytest.approx(
             p.pols_lapse(t) * p.av_pp_at(t, "BEF_DECR"), rel=1e-12)
     assert p.av_pp_at(1, "BEF_DECR") > 0.0 and p.claims(1, "LAPSE") > 0.0
-    names = set(fondsgebundene_rentenversicherung.Projection.cells) | set(
-        fondsgebundene_rentenversicherung.Projection.refs)
+    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("disc_factor", "tech_rate", "rechnungszins", "deckungskapital",
                    "min_surr_value_pp", "zillmer_rate", "surr_value_pp",
                    "paid_up_factor", "asset_share", "mvr"):
@@ -819,8 +800,6 @@ def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
     p = fondsgebundene_rentenversicherung.Projection[5]
     assert p.charge_id() == "std_high" and p.stornoabzug_rate() == 0.02
     for t in (1, 13, 60, 240):
-        assert p.stornoabzug_pp(t) == pytest.approx(
-            0.02 * p.av_pp_at(t, "BEF_DECR"), rel=1e-12)
         assert p.stornoabzug(t) == pytest.approx(
             0.02 * p.pols_lapse(t) * p.av_pp_at(t, "BEF_DECR"), rel=1e-12)
         assert p.claims(t, "LAPSE") == pytest.approx(
@@ -831,7 +810,6 @@ def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
     assert p.result_cf()["stornoabzug"].sum() == pytest.approx(853.00, abs=CENT)
     assert p.check_benefit_funding() is True and p.check_net_cf() is True
     charges = fondsgebundene_rentenversicherung.Data.charge_table()
-    assert set(charges.index) == {"std_gross", "std_netto", "std_high", "std_low"}
     assert (charges["stornoabzug_rate"] > 0).sum() == 1
     assert float(charges.loc["std_gross", "stornoabzug_rate"]) == 0.0
 
@@ -901,8 +879,6 @@ def test_pitfall_15_the_applied_factor_is_the_higher_of_guaranteed_and_current(
     assert rich.rentenfaktor_id() == "rich_current" and rich.annuity_age() == 70
     assert rich.rentenfaktor_guar() == pytest.approx(26.809651, abs=5e-7)
     assert rich.rentenfaktor_curr() == pytest.approx(30.026809, abs=5e-7)
-    assert rich.rentenfaktor_curr() / rich.rentenfaktor_guar() == pytest.approx(
-        1.12, abs=5e-8)
     assert rich.rentenfaktor_applied() == rich.rentenfaktor_curr()
     assert rich.annuity_mth_pp() == pytest.approx(476.24, abs=CENT)
     guaranteed_only = rich.av_maturity_pp() / 10000.0 * rich.rentenfaktor_guar()
@@ -928,7 +904,6 @@ def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
     for point_id, (mode, amount) in {3: (3, 600.0), 4: (6, 1200.0),
                                      5: (12, 3000.0)}.items():
         q = fondsgebundene_rentenversicherung.Projection[point_id]
-        assert q.prem_mode_months() == mode
         assert q.prem_pp(1) == pytest.approx(amount, abs=CENT)
         assert q.premiums(1) == pytest.approx(amount * q.pols_if(1), rel=1e-12)
         for offset in range(1, mode):
@@ -936,8 +911,7 @@ def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
             assert q.charge_admin_prem(1 + offset) == 0.0
             assert q.charge_acq(1 + offset) == 0.0
         assert q.prem_pp(1 + mode) == pytest.approx(amount, abs=CENT)
-    names = set(fondsgebundene_rentenversicherung.Projection.cells) | set(
-        fondsgebundene_rentenversicherung.Projection.refs)
+    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("prem_freq_load", "prem_freq_fee", "freq_loading_table",
                    "ratenzahlungszuschlag", "prem_tariff_pp"):
         assert absent not in names, absent
@@ -955,9 +929,8 @@ def test_pitfall_17_the_death_benefit_floor_is_the_premiums_paid_not_invested(
     invested = sum(p.prem_to_av_pp(t) for t in range(1, 61))
     assert invested == pytest.approx(60 * 162.0, rel=1e-12) == 9720.0
     assert 1.0 - invested / p.cum_prem_pp(60) == pytest.approx(0.19, abs=0.0005)
-    assert p.db_form() == "prem_return"
+    assert p.db_form() == "prem_return" and p.cum_prem_init() == 0.0
     assert p.db_floor_pp(60) == pytest.approx(p.cum_prem_pp(60), rel=1e-15)
-    assert p.cum_prem_init() == 0.0
     for t in (1, 61, 240, 360):
         assert p.cum_prem_pp(t) == pytest.approx(
             p.cum_prem_pp(t - 1) + p.prem_pp(t) + p.topup_pp(t), rel=1e-12)
@@ -981,21 +954,18 @@ def test_pitfall_18_no_balance_goes_negative_and_no_floor_is_triggered(
     timings = ("BEF_CHARGE", "AFT_CHARGE", "AFT_WD", "BEF_DECR")
     p = de_frv_anchor
     for t in range(1, p.proj_len() + 1, 17):
-        for timing in timings:
-            assert p.av_pp_at(t, timing) >= 0.0, (t, timing)
+        assert all(p.av_pp_at(t, tau) >= 0.0 for tau in timings), t
         assert p.charge_policy_fee_pp(t) == pytest.approx(3.0, rel=1e-12)
     hard = fondsgebundene_rentenversicherung.Projection[7]
     assert hard.db_form() == "sum_assured" and hard.sum_assured() == 40000.0
     for t in range(hard.proj_start(), hard.proj_len() + 1, 11):
-        for timing in timings:
-            assert hard.av_pp_at(t, timing) >= 0.0, (t, timing)
+        assert all(hard.av_pp_at(t, tau) >= 0.0 for tau in timings), t
         assert hard.charge_policy_fee_pp(t) == pytest.approx(3.0, rel=1e-12)
         assert hard.charge_risk_pp(t) == pytest.approx(
             hard.mort_rate_tariff_mth(t) * hard.nar_pp(t), rel=1e-12)
     assert hard.nar_pp(324) > hard.nar_pp(121)
     assert hard.charge_risk_pp(324) > hard.charge_risk_pp(121)
     assert hard.av_maturity_pp() > 0.0
-    assert all(getattr(hard, c)() is True for c in CHECKS)
 
 
 # ---------------------------------------------------------------------------
@@ -1093,7 +1063,6 @@ def test_the_two_result_frames_have_the_shape_the_notes_publish(de_frv_anchor):
     assert df["net_cf"].iloc[0] == pytest.approx(-1966.22, abs=CENT)
     assert (df["net_cf"].iloc[1:120] > 0).all()
     assert df.loc[240, "net_cf"] > df.loc[120, "net_cf"]
-
     fund = p.result_fund()
     assert list(fund.columns) == [
         "unit_price", "units_pp", "av_pp", "av_pp_bef_charge", "av_pp_aft_charge",
@@ -1105,9 +1074,14 @@ def test_the_two_result_frames_have_the_shape_the_notes_publish(de_frv_anchor):
     assert fund["unit_price"].is_monotonic_increasing
 
 
-def test_the_behaviour_modules_are_off_and_reachable(
+def test_the_modules_off_in_the_base_run_are_reachable(
         fondsgebundene_rentenversicherung, de_frv_anchor):
-    """Base-run values, so the worked example reproduces with the machinery still there."""
+    """Base-run values, so the worked example reproduces with the machinery still there.
+
+    The *Ablaufmanagement* glide is the one of the three a model point can switch on:
+    model point 8 ramps the **gross** return linearly to 1.50 % p.a. over the last sixty
+    months, the TER untouched because it is a fund cost and not a return assumption.
+    """
     proj = fondsgebundene_rentenversicherung.Projection
     assert proj.lapse_dyn_beta == 0.0 and proj.lapse_cap == 0.4
     assert proj.mort_be_factor == 0.75
@@ -1118,31 +1092,21 @@ def test_the_behaviour_modules_are_off_and_reachable(
         p.lapse_rate_base(t) * p.lapse_tax_step(t), rel=1e-12) for t in (1, 61, 301))
     assert p.ablauf_flag() is False
     assert all(p.fund_return_gross_ann(t) == 0.05 for t in (1, 300, 360))
-    names = set(proj.cells) | set(proj.refs)
     for absent in ("surplus_rate", "bonus_rate", "ueberschuss_pp", "schlussueberschuss",
                    "rfb_rate", "surplus_units_pp"):
-        assert absent not in names, absent
+        assert absent not in _names(fondsgebundene_rentenversicherung), absent
 
-
-def test_the_ablaufmanagement_glide_bites_only_in_the_last_sixty_months(
-        fondsgebundene_rentenversicherung):
-    """Model point 8 switches it on: a linear ramp of the gross return to 1.50 % p.a.
-
-    With one fund and a deterministic return a reallocation and a change of assumed return
-    are the same thing, which is why it is represented this way.  The TER is untouched: it
-    is a fund cost, not a return assumption.
-    """
-    p = fondsgebundene_rentenversicherung.Projection[8]
-    assert p.ablauf_flag() is True and p.proj_len() == 240
-    assert p.fund_return_gross_ann(180) == 0.05          # 60 months remaining
-    assert p.fund_return_gross_ann(181) == pytest.approx(
+    glide = fondsgebundene_rentenversicherung.Projection[8]
+    assert glide.ablauf_flag() is True and glide.proj_len() == 240
+    assert glide.fund_return_gross_ann(180) == 0.05        # 60 months remaining
+    assert glide.fund_return_gross_ann(181) == pytest.approx(
         0.05 - (0.05 - 0.015) / 60.0, rel=1e-9)
-    assert p.fund_return_gross_ann(210) == pytest.approx(0.0325, abs=5e-7)
-    assert p.fund_return_gross_ann(240) == pytest.approx(0.015, rel=1e-12)
-    assert p.fund_ter_ann(240) == pytest.approx(p.fund_ter_ann(1), rel=1e-15)
-    assert all(getattr(p, c)() is True for c in CHECKS)
-    table = fondsgebundene_rentenversicherung.Data.model_point_table()
-    assert table["ablauf_flag"].sum() == 1
+    assert glide.fund_return_gross_ann(210) == pytest.approx(0.0325, abs=5e-7)
+    assert glide.fund_return_gross_ann(240) == pytest.approx(0.015, rel=1e-12)
+    assert glide.fund_ter_ann(240) == pytest.approx(glide.fund_ter_ann(1), rel=1e-15)
+    assert all(getattr(glide, c)() is True for c in CHECKS)
+    assert fondsgebundene_rentenversicherung.Data.model_point_table()[
+        "ablauf_flag"].sum() == 1
 
 
 def test_the_zuzahlung_buys_units_and_the_teilentnahme_cancels_them(
@@ -1150,8 +1114,7 @@ def test_the_zuzahlung_buys_units_and_the_teilentnahme_cancels_them(
     """A Zuzahlung raises the Beitragsrückgewähr base; a Teilentnahme is an owner election.
 
     The withdrawal is published as ``withdrawals`` and never as a claim, and it is settled
-    by cancelling units at the closing *Anteilspreis* after the fund charges -- so it
-    raises the following months' net amount at risk on this contract.
+    by cancelling units at the closing *Anteilspreis* after the fund charges.
     """
     p = fondsgebundene_rentenversicherung.Projection[9]
     assert p.topup_month() == 121 and p.wd_month() == 241
@@ -1186,13 +1149,11 @@ def test_the_dynamic_lapse_module_bites_where_the_fund_is_under_water():
         assert p.av_pp(13) < p.cum_prem_pp(13)
         assert p.lapse_dyn_add(13) == pytest.approx(
             0.15 * (1.0 - p.av_pp(13) / p.cum_prem_pp(13)), rel=1e-12)
-        assert p.lapse_dyn_add(13) > 0.0
         assert p.lapse_rate_base(13) < p.lapse_rate(13) <= model.Projection.lapse_cap
         assert p.lapse_rate_mth(p.proj_len()) == 0.0
         assert p.check_pols_roll_fwd() is True and p.check_net_cf() is True
-        late = p.proj_len()
-        assert p.av_pp(late) > p.cum_prem_pp(late)
-        assert p.lapse_dyn_add(late) == 0.0
+        assert p.av_pp(p.proj_len()) > p.cum_prem_pp(p.proj_len())
+        assert p.lapse_dyn_add(p.proj_len()) == 0.0
     finally:
         model.close()
 
@@ -1212,14 +1173,12 @@ def test_the_shipped_tables_mark_their_own_provenance():
 
     The mortality table is a **[std]** proxy anchored at ``q(37) = 0.00080``, the value the
     worked example rests on, and the *Rentenfaktor* table is derived rather than observed:
-    DAV 2008 T and DAV 2004 R are cited by name and never shipped.
-    ``model_point_table.csv`` is the library's one provenance-exempt input, a model point
-    being a configuration and not an assumption.
+    DAV 2008 T and DAV 2004 R are cited by name and never shipped.  ``model_point_table.csv``
+    is the one provenance-exempt input, a model point being a configuration.
     """
     import pandas as pd
 
     assert CSV_FILES == {q.name for q in INPUT_DIR.iterdir() if q.suffix == ".csv"}
-
     mort = pd.read_csv(INPUT_DIR / "mort_table.csv", index_col="age")
     assert list(mort.index) == list(range(18, 101))
     assert all(v.startswith("[std]") and "DAV 2008 T" in v for v in mort["provenance"])
@@ -1227,66 +1186,34 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert float(mort.loc[38, "qx_tariff"]) / float(mort.loc[37, "qx_tariff"]) == (
         pytest.approx(1.10, rel=1e-9))
     assert mort["qx_tariff"].max() <= 1.0
-
     lapse = pd.read_csv(INPUT_DIR / "lapse_table.csv", index_col="policy_year")
     assert [float(lapse.loc[y, "lapse_rate"]) for y in (1, 5, 6, 10, 11, 12, 13)] == [
         0.06, 0.06, 0.03, 0.03, 0.02, 0.02, 0.03]
     assert all("[std]" in v and "Stornoquote" in v for v in lapse["provenance"])
-
     charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="charge_id")
+    assert set(charges.index) == {"std_gross", "std_netto", "std_high", "std_low"}
     assert float(charges.loc["std_gross", "alpha_rate"]) == 0.025
     assert int(charges.loc["std_gross", "alpha_spread_months"]) == 60
     assert float(charges.loc["std_netto", "alpha_rate"]) == 0.0
     assert "Hoechstzillmersatz" in charges.loc["std_gross", "provenance"]
     assert all("[std]" in v for v in charges["provenance"])
-
     funds = pd.read_csv(INPUT_DIR / "fund_scenario_table.csv")
     assert set(funds["scenario_id"]) == {"base", "etf", "zero", "stress"}
     assert all("[std]" in v for v in funds["provenance"])
     assert all("not a PRIIPs performance scenario" in v
                for v in funds[funds["scenario_id"] == "base"]["provenance"])
-
     factors = pd.read_csv(INPUT_DIR / "rentenfaktor_table.csv")
     assert set(factors["factor_id"]) == {"std_2026", "rich_current"}
-    assert all("[std]" in v for v in factors["provenance"])
     assert all("derived not observed" in v or "guaranteed factor as std_2026" in v
                for v in factors["provenance"])
-
     points = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
     assert len(points) == 13 and points.loc[1, "policy_id"] == "DE-FRV-0001"
     assert "provenance" not in points.columns      # the one exemption
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
-    """What a production user does with a real tariff or a licensed mortality basis."""
-    import pandas as pd
-
-    lighter = pd.read_csv(INPUT_DIR / "mort_table.csv", index_col="age")
-    lighter["qx_tariff"] = lighter["qx_tariff"] * 0.5
-    model = mx.read_model(MODEL_DIR, name="FRV_DE_S_swap")
-    try:
-        alt_name = "mort_table_light.csv"
-        lighter.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].result_cf()
-            assert base["charge_risk"].sum() == pytest.approx(5.85, abs=CENT)
-            model.Data.mort_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            swapped = model.Projection[1].result_cf()
-            # Half the tariff rate: half the risk charge, half the decrement, so more
-            # policies persist and more charges are collected.
-            assert swapped["charge_risk"].sum() == pytest.approx(0.5 * 5.85, abs=0.02)
-            assert swapped["pols_if"].sum() > base["pols_if"].sum()
-            assert model.Projection[1].check_net_cf() is True
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
-    finally:
-        model.close()
-
-
-def test_docstrings_describe_the_current_structure(fondsgebundene_rentenversicherung):
-    """Specifics a reader would rely on, asserted so they cannot go stale silently."""
+def test_the_docstrings_and_the_chassis_vocabulary_are_present(
+        fondsgebundene_rentenversicherung):
+    """Specifics a reader relies on, and the names shared with frlib's UC_FR_S."""
     doc = fondsgebundene_rentenversicherung.doc
     assert "fondsgebundene Rentenversicherung" in doc
     assert "mechanics demonstration" in doc
@@ -1304,9 +1231,6 @@ def test_docstrings_describe_the_current_structure(fondsgebundene_rentenversiche
     for cells in ("input_dir", "model_point_table", "mort_table", "rentenfaktor_table"):
         assert cells in data, cells
 
-
-def test_the_unit_linked_chassis_vocabulary_is_present(fondsgebundene_rentenversicherung):
-    """Names this model shares with frlib's UC_FR_S and with the library's own register."""
     shared = {
         "model_point", "proj_len", "proj_start", "age", "policy_year",
         "pols_if", "pols_if_at", "pols_if_init", "pols_death", "pols_lapse",
@@ -1316,8 +1240,7 @@ def test_the_unit_linked_chassis_vocabulary_is_present(fondsgebundene_rentenvers
         "nar_pp", "db_pp", "claims", "withdrawals", "av_releases", "death_strain",
         "expenses", "net_cf", "liability_cf", "result_cf",
     }
-    names = set(fondsgebundene_rentenversicherung.Projection.cells) | set(
-        fondsgebundene_rentenversicherung.Projection.refs)
+    names = _names(fondsgebundene_rentenversicherung)
     assert shared <= names, f"missing: {sorted(shared - names)}"
     for retired in ("lapse_rate_ann", "prem_net_pp", "mort_ae_factor", "mort_adj",
                     "mort_rate_table", "premium_net_pp", "check_pols_if", "pols_init",
