@@ -36,8 +36,6 @@ python products/risikolebensversicherung/run.py 7     # the Einmalbeitrag form
 python products/risikolebensversicherung/run.py 8     # the in-force cell, opening at t = 13
 ```
 
-Three lines to the same thing:
-
 ```python
 import modelx as mx
 model = mx.read_model("products/risikolebensversicherung/RLV_DE_A")
@@ -111,12 +109,10 @@ points 1 and 2 differ **only** in `sex`: they pay the same premium to the last b
 `beitragsverrechnung_rate()` is identical, and their `claims_death` totals stand at
 9 899,20 € against 5 009,05 €. The ratio `mort_rate_tar / mort_rate` is **not** `1 + m`:
 it is `2.25 × (unisex blend / own-sex rate)`, which on the shipped proxy is **1.6875 for a
-male and 3.375 for a female**, the blend being `0.75 × q̃(M)`.
-
-**What the model does not do.** It does not price on `sex`, and it does not carry a
-carrier-specific mixing ratio, because none is public. `sex_mix_male` is a Reference so
-that a user with a real new-business mix can move it in one place; moving it changes every
-premium and no claim.
+male and 3.375 for a female**, the blend being `0.75 × q̃(M)`. **What the model does not
+do** is price on `sex`, or carry a carrier-specific mixing ratio, none being public;
+`sex_mix_male` is a Reference so a user with a real new-business mix can move it in one
+place, and moving it changes every premium and no claim.
 
 ## No cash value anywhere — and yet a *Deckungskapital*
 
@@ -182,34 +178,26 @@ German tariffs offer *konstant*, *linear fallend* and *annuitätisch fallend* on
 underwriting and the same *Rechnungsgrundlagen* (mechanic 3). All three are one mechanic —
 a schedule `f(t)` on the initial sum — and the model carries it as a first-class external
 input, because **a model that hard-codes a constant sum insured cannot represent two of
-the three shapes the German market sells**. The falling shapes price lower *mechanically*:
-the equivalence integrates `B(t)` and nothing is discounted as a "discount".
-
-`benefit_schedule.csv` is term-specific by construction — an amortisation shape is agreed
-at issue for a stated term, so `linear_fallend` is written for model point 4's twenty
-years and `annuitaet_fallend_3pct` for model point 5's thirty. The annuity shape falls
-**slowly then fast**: on point 5 the first year's fall is 8 407,70 € against 19 236,22 €
-in the last, the property a linear schedule gets backwards. The nominal rate is a
-contractual schedule parameter fixed at issue and does not follow a borrower's loan; no
-German rate was established, so 3,00 % is **[std]** (gap 15). *Dynamik* — a rising shape —
-is a different mechanic and is **not modelled**.
+the three shapes the German market sells**. The falling shapes price lower *mechanically*: the equivalence integrates `B(t)`, and
+nothing is applied as a "discount". `benefit_schedule.csv` is term-specific by
+construction — an amortisation shape is agreed at issue for a stated term — and the
+annuity shape falls **slowly then fast**: on point 5 the first year's fall is 8 407,70 €
+against 19 236,22 € in the last, the property a linear schedule gets backwards. The
+nominal rate is a schedule parameter fixed at issue and does not follow a borrower's loan;
+no German rate was established, so 3,00 % is **[std]** (gap 15). *Dynamik* — a rising
+shape — is a different mechanic and is **not modelled**.
 
 ## Two lives, one benefit, combined before loading
 
 The *verbundene Leben* form is one contract on two lives paying **once**, on the first
-death. It is a `lives = 2` variant on the same chassis, not a second engine, and it is
-**off in the base run** (model point 10 exercises it). The two lives are combined at
-**table level, before any loading**, on an independence assumption **[std]**:
-
-```
-Q̃(t) = q̃_A(t) + q̃_B(t) − q̃_A(t)·q̃_B(t)
-```
-
-and the same combination is applied to the two unisex blends before `(1 + m)·rf`.
-Combining *after* loading inflates the cross term. On point 10 the combined rate is
-0,0015156941 against a naive sum of 0,0015162642. The independence assumption
-**understates** the true first-death rate for a couple sharing a household, a vehicle and a
-lifestyle, and no German figure bounds the understatement.
+death — a `lives = 2` variant on the same chassis, not a second engine, and **off in the
+base run** (model point 10 exercises it). The two lives are combined at **table level,
+before any loading**, on an independence assumption **[std]**:
+`Q̃ = q̃_A + q̃_B − q̃_A·q̃_B`, and the same combination is applied to the two unisex blends
+before `(1 + m)·rf`. Combining *after* loading inflates the cross term; on point 10 the
+combined rate is 0,0015156941 against a naive sum of 0,0015162642. The assumption
+**understates** the true first-death rate for a couple sharing a household, a vehicle and
+a lifestyle, and no German figure bounds the understatement.
 
 The ***Über-Kreuz-Versicherung*** is **not** in this model, and its absence is deliberate:
 it is a *contracting structure* with identical cover, premiums and cash flows, and only
@@ -225,10 +213,10 @@ cohort leaves through `pols_maturity`. The table's own row for year `n` still re
 the zero is a property of the last policy year, not of the assumption, and putting it in
 the formula is what keeps the two readable apart.
 
-No cash flow moves either way, but the closure identity is load-bearing, and on the anchor
-it divides **0,03305608** deaths, **0,53554078** lapses and **0,43140314** expiries,
-summing to `pols_if_init() = 1` exactly with `pols_if(26) = 0`. That is what lets
-`result_cf()` stop at `proj_len()` with nothing left over.
+No cash flow moves either way, but the closure identity is load-bearing: on the anchor it
+divides **0,03305608** deaths, **0,53554078** lapses and **0,43140314** expiries, summing
+to `pols_if_init() = 1` exactly with `pols_if(26) = 0` — which is what lets `result_cf()`
+stop at `proj_len()` with nothing left over.
 
 ## Inputs are external files
 
@@ -252,11 +240,11 @@ directory and no embedded values here at all.
 ### Read once, in `Data`
 
 `Projection` is parameterized by `point_id`, so every `Projection[N]` is a separate
-ItemSpace with its own cells cache. Readers placed there would re-read every file for
+ItemSpace with its own cells cache, and readers placed there would re-read every file for
 every policy. They live instead in an unparameterized **`Data`** Space, which `Projection`
-references as `data` — so each file is read once per model no matter how many policies are
-projected. The conventions suite counts the reads and asserts the *set* of files read,
-against the registration in `tests/de_registry.py`.
+references as `data`, so each file is read once per model however many policies are
+projected. The conventions suite counts the reads and asserts the *set* against
+`tests/de_registry.py`.
 
 | Reference | Cells | File |
 |---|---|---|
@@ -267,17 +255,14 @@ against the registration in `tests/de_registry.py`.
 | `lapse_file` | `lapse_table()` | `lapse_table.csv` |
 | `freq_loading_file` | `freq_loading_table()` | `freq_loading_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `RLV_DE_A/` without the CSVs
-and it will read fine, then fail on first evaluation. What you gain is that a diff of the
-model shows logic changes only, and an input can be swapped in place — point
-`Data.mort_table_file` at another same-schema file and the projection follows, with no
-formula change. Tests cover both halves of that bargain.
-
-**Every file but the model point table carries a per-row `provenance` column.** That is
-this library's second ruling, and it is machine-checked: a number in a shipped input file
-says where it came from, in the same `[S#]` / `[R#]` / `[REG-R#]` / `[std]` vocabulary the
-documents use. `model_point_table.csv` is the single exemption, because a model point is a
-*configuration* — one policy's own terms — rather than an assumption about the world.
+**The trade-off:** the model is not portable on its own — copy `RLV_DE_A/` without the
+CSVs and it reads fine, then fails on first evaluation. What you gain is that a diff shows
+logic changes only, and an input can be swapped in place: point `Data.mort_table_file` at
+another same-schema file and the projection follows, with no formula change. Tests cover
+both halves of that bargain. **Every file but the model point table carries a per-row
+`provenance` column** — this library's second ruling, machine-checked, in the same `[S#]` /
+`[R#]` / `[REG-R#]` / `[std]` vocabulary the documents use. `model_point_table.csv` is the
+single exemption, a model point being a *configuration* rather than an assumption.
 
 | File | Contents | Provenance |
 |---|---|---|
@@ -342,13 +327,12 @@ with its ABC companion, a catastrophe-scenario provision rather than a best-esti
 ## Sign convention
 
 `net_cf` is **income positive** — billed premiums in, claims, expenses and commission out
-— which is the notes' own orientation and the library-wide sign. `liability_cf` publishes
-the same stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are
-columns of `result_cf()` so the identity is verifiable in the frame rather than only in
-prose. A Solvency II best estimate is `Σ v(t)·liability_cf(t)` over the relevant risk-free
-term structure, plus a risk margin [REG-R1] [REG-R2] [REG-R6]; **nothing in this library
-discounts a published cash flow.** The one place a discount rate appears is inside the
-pricing equivalence and the first-order reserve, neither of which is a cash flow.
+— the notes' own orientation and the library-wide sign. `liability_cf` publishes the same
+stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are columns of
+`result_cf()`, so the identity is verifiable in the frame. A Solvency II best estimate is
+`Σ v(t)·liability_cf(t)` plus a risk margin [REG-R1] [REG-R2] [REG-R6]; **nothing here
+discounts a published cash flow** — the one place a discount rate appears is the pricing
+equivalence and the first-order reserve, neither of which is a cash flow.
 
 The shape to expect on the anchor is a year-one strain of **−359,51 €** — the acquisition
 cost and initial commission together exceed the first year's billed premium — thin

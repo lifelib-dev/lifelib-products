@@ -282,7 +282,9 @@ _allow_none = None
 _spaces = []
 
 # ---------------------------------------------------------------------------
-# Cells - the model point
+# Cells
+
+# --- the model point -------------------------------------------------------
 
 def model_point():
     """The selected model point as a Series, indexed by ``point_id``."""
@@ -534,8 +536,7 @@ def bfz_year():
     return int(model_point()["bfz_year"])
 
 
-# ---------------------------------------------------------------------------
-# Cells - the projection frame
+# --- the projection frame --------------------------------------------------
 
 def proj_len():
     """n: the **last projected period index**, equal to :func:`policy_term`.
@@ -573,8 +574,7 @@ def duration(t):
     return t - 1
 
 
-# ---------------------------------------------------------------------------
-# Cells - the bases
+# --- the bases -------------------------------------------------------------
 
 def mort_rate_at_age(x):
     """The first-order annual death rate at attained age x, on this policy's ``sex`` row.
@@ -719,8 +719,7 @@ def gamma_rate():
     return float(data.cost_table().loc[cost_id(), "gamma_rate"])     # noqa: F821
 
 
-# ---------------------------------------------------------------------------
-# Cells - pricing on the first-order basis
+# --- pricing on the first-order basis --------------------------------------
 
 def sum_death():
     """SD: the guaranteed *Todesfallleistung*, ``sum_assured() * death_ratio()``.
@@ -849,8 +848,7 @@ def prem_zill_pp():
     return prem_net_level_pp() + alpha_cost() / ann_due_prem_1st()
 
 
-# ---------------------------------------------------------------------------
-# Cells - the Deckungskapital
+# --- the Deckungskapital ---------------------------------------------------
 
 def pv_benefit_fut(t):
     """The first-order present value of the remaining guaranteed benefits at the start of t.
@@ -1089,8 +1087,7 @@ def res_guar_pp(t):
     return max(res_zill_pp(t + 1), res_min_pp(t + 1), 0.0)
 
 
-# ---------------------------------------------------------------------------
-# Cells - the Ueberschussbeteiligung
+# --- the Ueberschussbeteiligung --------------------------------------------
 
 def decl_rate(t):
     """d(t): the declared *laufende Verzinsung* in policy year t, from the scenario table.
@@ -1284,8 +1281,7 @@ def prem_offset_pp(t):
     return min(prem_charged_pp(t), surplus_credit_pp(t - 1))
 
 
-# ---------------------------------------------------------------------------
-# Cells - premium
+# --- premium ---------------------------------------------------------------
 
 def prem_charged_pp(t):
     """The *Zahlbeitrag* charged per policy in year t, before any *Beitragsverrechnung*.
@@ -1322,8 +1318,7 @@ def premiums(t):
     return prem_paid_pp(t) * pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells - decrements
+# --- decrements ------------------------------------------------------------
 
 def lapse_rate(t):
     """w(t): the annual surrender rate applied at the **end** of policy year t.
@@ -1447,8 +1442,7 @@ def pols_maturity(t):
     return pols_if_at(t, "AFT_MORT")
 
 
-# ---------------------------------------------------------------------------
-# Cells - benefits
+# --- benefits --------------------------------------------------------------
 
 def benefit_full_pp(t):
     """The full death benefit per claim in policy year t, before the § 161 VVG substitution.
@@ -1557,8 +1551,7 @@ def claims(t, kind=None):
     raise ValueError("invalid kind")
 
 
-# ---------------------------------------------------------------------------
-# Cells - expenses and commission
+# --- expenses and commission -----------------------------------------------
 
 def inflation_factor(t):
     """The expense inflation factor in policy year t: ``(1 + expense_infl)^(t-1)`` **[std]**.
@@ -1631,8 +1624,7 @@ def commissions(t):
     return init + renew
 
 
-# ---------------------------------------------------------------------------
-# Cells - output
+# --- output ----------------------------------------------------------------
 
 def net_cf(t):
     """The net liability cash flow of policy year t, **income positive**.
