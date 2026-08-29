@@ -332,7 +332,9 @@ _allow_none = None
 _spaces = []
 
 # ---------------------------------------------------------------------------
-# Cells — the model point and the frame
+# Cells
+#
+# The model point and the frame
 
 
 def model_point():
@@ -419,8 +421,8 @@ def roll_fwd_tol():
     return float(data.param_table().at["roll_fwd_tol", "value"])     # noqa: F821
 
 
-# ---------------------------------------------------------------------------
-# Cells — the premium and the Beitragssumme
+# ----------------------------------------
+# The premium and the Beitragssumme
 
 
 def freq_load():
@@ -522,8 +524,8 @@ def premiums(t):
     return prem_pp(t) * pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the premium decomposition
+# ----------------------------------------
+# The premium decomposition
 
 
 def charge_acq_pp(t):
@@ -645,8 +647,8 @@ def prem_to_av(t):
     return prem_to_av_pp(t) * pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Deckungskapital
+# ----------------------------------------
+# The Deckungskapital
 
 
 def av_pp(t):
@@ -740,8 +742,8 @@ def av_release(t):
     return av_pp_at(t, "AFT_INT") * (pols_if(t) - pols_if(t + 1))
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Ansammlungsguthaben
+# ----------------------------------------
+# The Ansammlungsguthaben
 
 
 def av_sur_pp(t):
@@ -822,8 +824,8 @@ def av_sur_release(t):
     return av_sur_pp_at(t, "AFT_INT") * (pols_if(t) - pols_if(t + 1))
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Sec. 169(3) parallel account, carried as a difference
+# ----------------------------------------
+# The Sec. 169(3) parallel account, carried as a difference
 
 
 def spread_diff_pp(t):
@@ -881,8 +883,8 @@ def av_spread_pp_at(t, timing):
     return av_pp_at(t, timing) + spread_diff_pp_at(t, timing)
 
 
-# ---------------------------------------------------------------------------
-# Cells — rates
+# ----------------------------------------
+# Rates
 
 
 def mort_rate_at_age(x):
@@ -992,8 +994,8 @@ def lapse_rate(t):
     return float(tbl.at[min(int(t), int(tbl.index.max())), "lapse_rate"])
 
 
-# ---------------------------------------------------------------------------
-# Cells — benefits, values and the Beitragsfreistellung election
+# ----------------------------------------
+# Benefits, values and the Beitragsfreistellung election
 
 
 def db_base_pp(t):
@@ -1155,8 +1157,8 @@ def pup_uplift(t):
     return (pup_value_pp() - av_pp_at(t, "AFT_INT")) * pols_if(t + 1)
 
 
-# ---------------------------------------------------------------------------
-# Cells — decrements and the in-force recursion
+# ----------------------------------------
+# Decrements and the in-force recursion
 
 
 def pols_if(t):
@@ -1284,8 +1286,8 @@ def pols_annuity(t):
     return pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Rentenbeginn and the annuity in payment
+# ----------------------------------------
+# The Rentenbeginn and the annuity in payment
 
 
 def capital_gross_pp():
@@ -1470,8 +1472,8 @@ def annuity_due_factor():
     return total
 
 
-# ---------------------------------------------------------------------------
-# Cells — claims, expenses and the cash flow statement
+# ----------------------------------------
+# Claims, expenses and the cash flow statement
 
 
 def claims(t, kind=None):
@@ -1597,8 +1599,8 @@ def liability_cf(t):
     return -net_cf(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the published identities
+# ----------------------------------------
+# The published identities
 
 
 def check_net_cf_resid(t):
@@ -1833,8 +1835,8 @@ def check_annuity_guarantee():
                for t in result_cf().index)
 
 
-# ---------------------------------------------------------------------------
-# Cells — output
+# ----------------------------------------
+# Output
 
 
 def result_cf():

@@ -251,7 +251,9 @@ _allow_none = None
 _spaces = []
 
 # ---------------------------------------------------------------------------
-# Cells — the model point
+# Cells
+#
+# === the model point
 
 
 def model_point():
@@ -510,8 +512,7 @@ def scenario_id():
     return model_point()["scenario_id"]
 
 
-# ---------------------------------------------------------------------------
-# Cells — the time axis and the two phases
+# === the time axis and the two phases
 
 
 def proj_len():
@@ -587,8 +588,7 @@ def is_payout(t):
     return t >= t_conv()
 
 
-# ---------------------------------------------------------------------------
-# Cells — decrement rates
+# === decrement rates
 
 
 def mort_rate_at_age(x):
@@ -669,8 +669,7 @@ def transfer_rate(t):
     return float(data.lapse_table().at[duration(t), "transfer_rate"])  # noqa: F821
 
 
-# ---------------------------------------------------------------------------
-# Cells — the in-force recursion
+# === the in-force recursion
 
 
 def pols_if(t):
@@ -778,8 +777,7 @@ def pols_annuity_pay(t):
     return pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the subsidy chain
+# === the subsidy chain
 
 
 def income_ref(t):
@@ -912,8 +910,7 @@ def zulage_cum_pp(t):
     return zulage_cum_pp(t - 1) + zulage_pp(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — contributions, charges and the Sparbeitrag
+# === contributions, charges and the Sparbeitrag
 
 
 def contrib_total_pp(t):
@@ -981,8 +978,7 @@ def prem_to_av_pp(t):
     return contrib_total_pp(t) - acq_charge_pp(t) - admin_charge_pp(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the account: two balances, one credited rate
+# === the account: two balances, one credited rate
 
 
 def laufende_verz(t):
@@ -1112,8 +1108,7 @@ def av_at(t, timing):
     return av_pp_at(t, timing) * pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Beitragsgarantie accumulator and the two pools
+# === the Beitragsgarantie accumulator and the two pools
 
 
 def guar_carve_out_pp(t):
@@ -1200,8 +1195,7 @@ def pool_ungefoerdert_pp(t):
     return add if t == 1 else pool_ungefoerdert_pp(t - 1) + add
 
 
-# ---------------------------------------------------------------------------
-# Cells — conversion at Rentenbeginn
+# === conversion at Rentenbeginn
 
 
 def slueb_pp():
@@ -1403,8 +1397,7 @@ def annuity_pp(t):
     return 12.0 * annuity_month_pp()
 
 
-# ---------------------------------------------------------------------------
-# Cells — benefits on exit
+# === benefits on exit
 
 
 def db_pp(t):
@@ -1467,8 +1460,7 @@ def exit_charge_pp(t):
             + min(transfer_charge, a) * pols_transfer(t))            # noqa: F821
 
 
-# ---------------------------------------------------------------------------
-# Cells — the cash flow statement
+# === the cash flow statement
 
 
 def claims(t, kind=None):
@@ -1629,8 +1621,7 @@ def liability_cf(t):
     return -net_cf(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the check identities
+# === the check identities
 
 
 def check_net_cf_resid(t):
@@ -1832,8 +1823,7 @@ def check_zulage_lag():
                for t in range(1, proj_len() + 1))
 
 
-# ---------------------------------------------------------------------------
-# Cells — result tables
+# === result tables
 
 
 def result_cf():
