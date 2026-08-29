@@ -112,6 +112,7 @@ pols_lapse(t)               pols_lapse(t)                   Surrenders, active s
 (none)                      premium_due(t)                  Is an instalment due?
 (none)                      premium_pp(t)                   The instalment charged
 (none)                      cum_prem_max_pp(t)              Premium payable to date
+(none)                      prem_units_at(t)                The same, in units of P
 premiums(t)                 premiums(t)                     Beitrag income
 (none)                      rkw_pp(t)                       Rueckkaufswert per policy
 (none)                      brg_pp(t)                       Beitragsrueckgewaehr per policy

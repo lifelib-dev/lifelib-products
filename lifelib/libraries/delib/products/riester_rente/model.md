@@ -26,9 +26,8 @@ are listed in [`sources.md`](sources.md).
 ```bash
 python products/riester_rente/run.py
 python products/riester_rente/run.py 11     # the cell on which the guarantee binds
-python products/riester_rente/run.py 5      # the cell that commutes instead of annuitising
+python products/riester_rente/run.py 5      # the cell that commutes rather than annuitising
 ```
-
 Three lines to the same thing:
 ```python
 import modelx as mx
@@ -37,12 +36,12 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell — a female
-life aged 50 at the 1 January 2027 valuation date, three contract years in force,
-*Rentenbeginn* at 67, one child born in 2010. `result_cf()` returns a `DataFrame` indexed by
-policy year `t`, `1 … 61`, with fifteen columns; `result_acct()` puts the account, the
-guarantee accumulator and the subsidy chain beside it. `model.doc` describes the product and
-its two phases, `model.Projection.doc` maps the notes' symbols to the cells names, and
-`model.Data.doc` says what each input file is and what a replacement must preserve.
+life aged 50 at the 1 January 2027 valuation date, three contract years in force, *Rentenbeginn*
+at 67, one child born in 2010. `result_cf()` returns a `DataFrame` indexed by policy year `t`,
+`1 … 61`, with fifteen columns; `result_acct()` puts the account, the guarantee accumulator and
+the subsidy chain beside it. `model.doc` describes the product and its two phases,
+`model.Projection.doc` maps the notes' symbols to the cells names, and `model.Data.doc` says
+what each input file is and what a replacement must preserve.
 
 ## The Zulage is a contribution, and it arrives a year late
 
@@ -53,13 +52,11 @@ is a positive income column of `result_cf()`, published **beside** `premiums` an
 into it: on model point 5 the state pays 1 926,26 € against the saver's 609,80 € over the whole
 projection — 76 % of the contribution — and a statement that netted the two could not say so.
 
-Three cells carry the subsidy and they are three different amounts:
-
-| Cells | Anchor, `t = 3` | What it is |
-|---|---|---|
-| `zulage_entitlement_pp(t)` | 175,00 € | The full § 84/85 entitlement of contribution year `t` [R9] |
-| `zulage_granted_pp(t)` | 175,00 € | The same after the § 86 **proportional** Kürzung [R10] |
-| `zulage_pp(t)` | **475,00 €** | The cash **credited** in `t`, which is `zulage_granted_pp(t − 1)` [R11] |
+Three cells carry the subsidy and they are three different amounts, 175,00 €, 175,00 € and
+475,00 € on the anchor at `t = 3`: `zulage_entitlement_pp(t)`, the full § 84/85 entitlement of
+contribution year `t` [R9]; `zulage_granted_pp(t)`, the same after the § 86 **proportional**
+Kürzung [R10]; and `zulage_pp(t)`, the cash **credited** in `t`, which is
+`zulage_granted_pp(t − 1)` because the ZfA pays in arrear [R11].
 
 **There are two lags and they are different lags.** `income_ref(t)` looks back one *calendar*
 year, because § 86 strikes the minimum on the previous year's earnings; `zulage_pp(t)` looks
@@ -79,9 +76,9 @@ arrives.
 
 ## The 100 % Beitragsgarantie, and the one moment it is tested
 
-`guar_pp(t)` accumulates **contributions** — the *Eigenbeitrag*, the Zulagen credited, and
-any unsubsidised contribution — less the biometric carve-out. It never accrues interest: the
-*Beitragserhaltungszusage* is nominal [R1].
+`guar_pp(t)` accumulates **contributions** — the *Eigenbeitrag*, the Zulagen credited, and any
+unsubsidised contribution — less the biometric carve-out, and never accrues interest, the
+*Beitragserhaltungszusage* being nominal [R1]:
 
 ```
 G(t+1) = G(t) + E(t) + Z(t) + contrib_extra_pp − κ(t)
@@ -146,12 +143,12 @@ from `t = 4`, `prem_to_av_pp(4) = 175,00 − 168,00 − 19,00 = −12,00 €` an
 *Deckungskapital* falls — the cost-spreading rule, not a modelling artefact, and the reason
 `prem_to_av_pp` is documented as possibly negative rather than clamped at zero.
 
-The *Ratenzuschlag* is a **charge and never a credit**: the saver pays `E(t) × φ` and only
-`E(t)` reaches the *Sparbeitrag* base and the guarantee. `contrib_total_pp` is the cash
-**received** and so carries the loading; `admin_charge_pp` deducts it straight back out while
-striking its percentage on the **unloaded** `E + Z + extra`. Deducting it in both places —
-which the notes' drafted `S = C − K_a − K_v` with an unloaded `C` did — makes the
-*Sparbeitrag* fall with the payment frequency, the opposite of the product fact.
+The *Ratenzuschlag* is a **charge and never a credit**: the saver pays `E(t) × φ`, only `E(t)`
+reaches the *Sparbeitrag* base and the guarantee, `contrib_total_pp` is the cash **received**
+and so carries the loading, and `admin_charge_pp` deducts it straight back out while striking
+its percentage on the **unloaded** `E + Z + extra`. Deducting it in both places — which the
+notes' drafted `S = C − K_a − K_v` with an unloaded `C` did — makes the *Sparbeitrag* fall with
+the payment frequency, the opposite of the product fact.
 
 ## Conversion: the *Rentenfaktor*, the lump sum and the *Kleinbetragsrente*
 
@@ -169,11 +166,10 @@ table, and the model states which is authoritative rather than leaving it to be 
 whole payout loading sits in `rentenfaktor_margin` (30 % **[std]**) rather than being split
 between the factor and each instalment, which would double-count; payout administration is an
 explicit `expense_annuity` flow instead. `check_conversion()` asserts
-`rentenfaktor_curr() · 12 · ann_factor() = (1 − rentenfaktor_margin) · 10 000`, which holds on
-every model point whether or not the current factor applies, and catches a Woolhouse
-correction applied twice or a factor struck on the second-order basis. `teilkapital_pp()` is
-the elected share clamped at the statutory 30 % [R1]: 13 726,91 € on the anchor, leaving
-32 029,47 € to annuitise at 92,885458 € a month.
+`rentenfaktor_curr() · 12 · ann_factor() = (1 − rentenfaktor_margin) · 10 000` on every model
+point, whether or not the current factor applies. `teilkapital_pp()` is the elected share
+clamped at the statutory 30 % [R1]: 13 726,91 € on the anchor, leaving 32 029,47 € to annuitise
+at 92,885458 € a month.
 
 **The *Kleinbetragsrente* commutation is computed, not assumed.** `is_kleinbetrag()` tests
 the annuity the model has actually produced, so the commutation rate on a book is an
@@ -204,11 +200,10 @@ AltZertG requires [R1]. The *Rentengarantiezeit* changes **who is paid**, never 
 `claims_annuity` is **exactly 855,57 € in each of those ten years** although a tenth of the
 annuitants have died; model point 12 carries no guarantee period and pays the same annuity per
 policy to a smaller count. The one genuinely sub-annual element is compressed: the *Leibrente*
-is paid as twelve
-instalments in one amount at the start of the payout year, to those alive at the start, which
-overstates by roughly `½ · q(x) · 12R` for a life dying during the year — about 0,7 % at
-attained age 70 — while the *level* stays right, the factor carrying the Woolhouse `−11/24`
-correction. `products/sofortrente/` runs monthly for exactly this reason.
+is paid as twelve instalments in one amount at the start of the payout year, to those alive at
+the start, which overstates by roughly `½ · q(x) · 12R` for a life dying during the year — about
+0,7 % at attained age 70 — while the *level* stays right, the factor carrying the Woolhouse
+`−11/24` correction. `products/sofortrente/` runs monthly for exactly this reason.
 
 ## Four exits, and why a transfer is not a surrender
 
@@ -235,9 +230,9 @@ leaves as a benefit or stays with the insurer; dropping it leaves exactly that r
 accumulator freezes once the last Zulage has landed, the Zulage stream stops. It is a
 per-model-point switch (`bfs_year`) rather than a rate, because a paid-up policy and a
 premium-paying one have different account values and different guarantee accumulators from the
-moment they diverge, and a scalar single-model-point projection cannot carry two of each
-without doubling every recursion. Model point 10 shows the mechanic on one policy; a book
-projection needs the cohort split, and the notes say so under *Key sensitivities*.
+moment they diverge, and a scalar projection cannot carry two of each without doubling every
+recursion. Model point 10 shows the mechanic on one policy; a book projection needs the cohort
+split, and the notes say so under *Key sensitivities*.
 
 ## Inputs are external files
 
@@ -270,16 +265,11 @@ Reference, so each file is read once per model however many policies are project
 conventions suite counts the reads. `Data.input_dir()` resolves the location from
 `_model.path.parent` at run time, so the model works wherever the repository sits.
 
-| Reference | Cells | File |
-|---|---|---|
-| `model_point_file` | `model_point_table()` | `model_point_table.csv` |
-| `mort_accum_file` | `mort_table_accum()` | `mort_table_accum.csv` |
-| `annuity_mort_file` | `annuity_mort_table()` | `annuity_mort_table.csv` |
-| `lapse_file` | `lapse_table()` | `lapse_table.csv` |
-| `zulage_file` | `zulage_schedule()` | `zulage_schedule.csv` |
-| `income_file` | `income_schedule()` | `income_schedule.csv` |
-| `surplus_file` | `surplus_scenario()` | `surplus_scenario.csv` |
-| `freq_loading_file` | `freq_loading()` | `freq_loading.csv` |
+Each file has one string Reference and one reader cells on `Data`, named alike:
+`model_point_file` → `model_point_table()`, `mort_accum_file` → `mort_table_accum()`,
+`annuity_mort_file` → `annuity_mort_table()`, `lapse_file` → `lapse_table()`, `zulage_file` →
+`zulage_schedule()`, `income_file` → `income_schedule()`, `surplus_file` →
+`surplus_scenario()` and `freq_loading_file` → `freq_loading()`.
 
 **The trade-off:** the model is not portable on its own — copy `Riester_DE_A/` without the CSVs
 and it reads fine, then fails on first evaluation. What you gain is a diff that shows logic
@@ -308,9 +298,8 @@ net_cf(t) = premiums(t) + zulagen(t) − claims_death − claims_lapse − claim
             − claims_lumpsum − claims_commutation − claims_annuity − expenses(t) − commissions(t)
 ```
 
-with `int_credited` deliberately outside it. Five more sit beside it, each a `bool` over all
-`t` with a `check_*_resid(t)` companion; the conventions suite calls all six on every model
-point.
+with `int_credited` deliberately outside it. Five more sit beside it, each a `bool` over all `t`
+with a `check_*_resid(t)` companion, and the conventions suite calls all six on every model point.
 
 | Check | What it catches |
 |---|---|
@@ -322,14 +311,14 @@ point.
 
 ## Modules that are off in the base run
 
-Everything the product carries is implemented; the anchor is deliberately the plain cell, so the
-worked example reproduces while the machinery stays visible and testable.
+Everything the product carries is implemented; the anchor is the plain cell, so the worked
+example reproduces while the machinery stays visible and testable.
 
 | Module | Switch | Off value on the anchor | On at |
 |---|---|---|---|
 | Unsubsidised second contribution pool — enters the account **and** the guarantee while drawing no Zulage [R12] | `contrib_extra_pp` | `0.00` | point 8, 900,00 € |
 | Biometric-rider carve-out — capped at 20 % of total contributions [REG-R43]; never a cash flow here | `rider_prem_pp` | `0.00` | point 9, 400,00 € |
-| *Beitragsfreistellung* — contribution and Zulage stop, account rolls, acquisition charge bites on | `bfs_year` | `0` (never) | point 10, year 4 |
+| *Beitragsfreistellung* — contribution and Zulage stop, the account rolls on, the acquisition charge keeps biting | `bfs_year` | `0` (never) | point 10, year 4 |
 | § 86 proportional Kürzung — halves the contribution and, in proportion, the subsidy [R10] | `contrib_ratio` | `1.00` | point 7, 0.50 |
 | *Ratenzuschlag* — raises `premiums` by `E(t)(φ − 1)` and nothing else | `prem_freq` | `annual`, `φ = 1.0000` | points 3, 4, 6, 7, 10, 13 |
 | *Berufseinsteiger-Bonus* — the once-in-a-lifetime addition to the *Grundzulage* [R9] | the `bonus` column of `zulage_schedule.csv`, and `zulage_init_pp` | `0` | point 6, 200,00 € inside a 375,00 € opening credit |
@@ -361,19 +350,19 @@ structure plus a risk margin [REG-R5] [REG-R6]; nothing in this library discount
 `expenses` and `commissions` are **separate** columns and `net_cf` subtracts each exactly once —
 frlib's reading, where `expenses` was the total and contained the commission, is not the reading
 here, because the notes' worked example prints both as parts; `int_credited` is a state movement
-and is in neither. The shape to expect on an in-force accumulation cell is a modest positive
-`net_cf` every accumulation year — 1 505,37 € at `t = 1` — then −11 276,67 € in the conversion
-year as the *Teilkapitalauszahlung* leaves in one payment, then a long thin annuity tail, for an
+and is in neither. The shape to expect is a modest positive `net_cf` every
+accumulation year — 1 505,37 € at `t = 1` — then −11 276,67 € in the conversion year as the
+*Teilkapitalauszahlung* leaves in one payment, then a long thin annuity tail, for an
 undiscounted total of −7 827,39 €.
 
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` where that model has an analogue and
-`savings/CashValue_SE` for the account-value chassis: `pols_*` for policy counts, plural
-nouns for cash flows, `*_rate` for rates, `*_pp` for per-policy amounts, `claims(t, kind)`
-with an uppercase `kind`, `pols_if_at(t, timing)` and `av_pp_at(t, timing)` for the
-within-year reads, `prem_to_av_pp` for the part of the contribution credited to the account.
-The full symbol map lives in the `Projection` docstring. Six cases needed care:
+`savings/CashValue_SE` for the account-value chassis: `pols_*` for policy counts, plural nouns
+for cash flows, `*_rate` for rates, `*_pp` for per-policy amounts, `claims(t, kind)` with an
+uppercase `kind`, `pols_if_at(t, timing)` and `av_pp_at(t, timing)` for the within-year reads,
+`prem_to_av_pp` for the contribution credited to the account. The full symbol map lives in the
+`Projection` docstring. Six cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
@@ -405,20 +394,16 @@ all; the carrier half is entirely one, because nothing carrier-specific was esta
 |---|---|---|
 | Accumulation mortality and its slope | `qx = 0.001500 × 1.10^(age − 50)` at `mort_be_factor = 0.80` | DAV 2008 T is proprietary and not redistributed [REG-R47] [REG-R48]. The slope is a placeholder; the anchor is the rate at age 50 |
 | Annuity table, improvement scale and base year | `qx_base = 0.006000 × 1.115^(age − 65)`, improvement 1,8 % tapering to 0,2 %, base 2027, at factor 1.15 | DAV 2004 R is proprietary [REG-R49]. The generational structure is **not** optional; the anchor is `ann_factor() = 20.87222879` |
-| *Rechnungszins* | 0,25 % on the anchor, 0,90 % on point 3 | The *Höchstrechnungszins* caps the reserving rate, not what a policy may guarantee [REG-R14]; the cap of the vintage is the highest defensible value and makes the guarantee cheapest |
-| *Laufende Verzinsung* | `base` 2,30 %, `low` 0,50 %, level | No carrier declaration was established (gap 12); `low` is a stress, not a forecast |
+| *Rechnungszins*; *laufende Verzinsung* | 0,25 % on the anchor and 0,90 % on point 3; `base` 2,30 % and `low` 0,50 %, level | The *Höchstrechnungszins* caps the reserving rate, not what a policy may guarantee [REG-R14], and the cap of the vintage is the highest defensible value, which makes the guarantee cheapest. No carrier declaration was established (gap 12); `low` is a stress, not a forecast |
 | *Risikoüberschuss* and *Kostenüberschuss*; *Schlussüberschussanteil*; *Bewertungsreserven* share, and counting the last two toward the guarantee | zero; 2,0 % of contributions credited; 1,0 % of the account | The accumulation risk result is nil by construction — the death benefit is the account value, so there is no sum at risk — and no cost result was established; the two terminal levels are unestablished and **whether either may close a shortfall is unsettled** (gap 9), so counting them is the provider-favourable reading |
-| Acquisition charge | 2,5 % of `beitragssumme` over five contract years | The five-year floor is statutory [R1]; the level is sized so the charge is of the same order as one year's contribution |
-| Administration charge **and its base** | 4,0 % of each contribution credited, Zulagen **included**, plus 12,00 € a year | **Whether German tariffs charge the Zulagen is unknown** (gap 14), and on the low-income cells they are the majority of the contribution — so the choice is stated rather than inferred from a formula |
+| Acquisition charge; administration charge **and its base** | 2,5 % of `beitragssumme` over five contract years; 4,0 % of each contribution credited, Zulagen **included**, plus 12,00 € a year | The five-year floor is statutory [R1] and the level is sized so the charge is of the order of one year's contribution. **Whether German tariffs charge the Zulagen is unknown** (gap 14), and on the low-income cells they are the majority of the contribution, so the choice is stated rather than inferred from a formula |
 | Frequency loading, as a charge; *Stornoabzug*; transfer charge | 1.0000 / 1.0100 / 1.0200 / 1.0300; 2,0 % of the account; 50,00 € flat | No *Ratenzuschlag* scale was established, and the statutory cap on the transfer charge is unestablished (gap 8) |
 | *Rentenfaktor* margin; annuitisation interest; the guaranteed factor; and `max(R_g, R_c)` | 30 %; 1,00 %; 29,00 € per 10 000 € per month | No *Rentenfaktor* at any carrier for any year was established (gap 9); the two-factor construction is documented for Schicht 3 and assumed here |
 | *Kleinbetragsrente* threshold, and the basis of the test | 39,55 € a month, flat in nominal terms, applied **after** the lump sum | Two irreconcilable readings exist [REG-R42] [REG-R46]; the lower is taken. Both choices push toward fewer commutations and a longer-tailed liability (gap 7) |
 | Zulage cash lag; income growth | one year; 2,0 % p.a. nominal | [R11] establishes the arrear but not the month (gap 6); the growth rate is a round real-plus-inflation number and decides when the 2 100 € ceiling binds |
 | Surrender and transfer rates | 0,8 / 0,6 / 0,4 % and 1,2 / 0,9 / 0,6 % by duration band | **No German Riester behavioural rate was established** (gap 16). The ordering is an argument from the statutory consequences, not from data |
-| *Teilkapitalauszahlung* take-up | 30 % on the anchor | German commentary reports the lump sum as usual, and **gap 10 records that this rests on nothing** |
-| Expenses and commission, all of them | 30,00 € maintenance inflating at 2,0 %; 24,00 € per annuitant; 80,00 € per claim; 150,00 € + 2,0 % of `beitragssumme` at issue; 2,5 % initial and 1,5 % renewal commission | No German insurer publishes a unit cost. The maintenance figure carries the Zulage administration — *Dauerzulageantrag*, annual ZfA exchange, *Leistungsmitteilung* — a real product-specific cost |
-| Timing, processing order and decrement ordering | Contribution and Zulage at the start, interest at the end, decrements after crediting, conversion at the start of `t_conv()`; mortality, then surrender, then transfer | No source fixes the ordering inside a period, so it is stated to be compared line by line |
-| The monthly annuity on an annual grid | twelve instalments in one payment at the start of the payout year | The level is right because the factor carries the Woolhouse correction; the timing overstates by about `½ · q(x) · 12R` |
+| Expenses and commission, all of them, and the 30 % *Teilkapitalauszahlung* take-up | 30,00 € maintenance inflating at 2,0 %; 24,00 € per annuitant; 80,00 € per claim; 150,00 € + 2,0 % of `beitragssumme` at issue; 2,5 % initial and 1,5 % renewal commission | No German insurer publishes a unit cost. The maintenance figure carries the Zulage administration — *Dauerzulageantrag*, annual ZfA exchange, *Leistungsmitteilung* — a real product-specific cost. German commentary reports the lump sum as the usual election, and **gap 10 records that this rests on nothing** |
+| Timing, processing and decrement order; the monthly annuity on an annual grid | Contribution and Zulage at the start, interest at the end, decrements after crediting, conversion at the start of `t_conv()`; mortality, then surrender, then transfer; twelve instalments in one payment | No source fixes the ordering inside a period, so it is stated to be compared line by line. The annuity's *level* is right because the factor carries the Woolhouse correction; the timing overstates by about `½ · q(x) · 12R` |
 | `omega_age = 110` with `q = 1` there; the opening balances and the model points themselves | — | The omega forces the decrement closure to be exact rather than approximate; the seeds are **[std]**, and the notes record that `guar_pp_init` and the account seeds were struck on different income paths, a 195,08 € discrepancy kept rather than papered over |
 
 The quantities that are **not** standardizations are the statutory ones: the 175,00 € /
@@ -432,13 +417,13 @@ unisex pricing [R23].
 
 ## Tests
 
-`tests/test_riester_rente_de.py` asserts every row of the notes' worked-example table to the
-cent and `pols_if` to six decimals, the payout phase's selected rows, the full-precision
-totals over all sixty-one periods against the four-cent difference a sum of rounded cells
-gives, the notes' four independent rebuilds — projection year 1 from the statute up, the
-conversion year, the aggregate account roll-forward with its exit charge, and the four-way
-decrement closure to 1.00000000 — and the two variants, model point 11's binding
-*Garantielücke* and model point 5's commuting *Sockelbeitrag* cell.
+`tests/test_riester_rente_de.py` asserts every row of the notes' worked-example table to the cent
+and `pols_if` to six decimals, the payout phase's selected rows, the full-precision totals over
+all sixty-one periods against the four-cent difference a sum of rounded cells gives, the notes'
+four independent rebuilds — projection year 1 from the statute up, the conversion year, the
+aggregate account roll-forward with its exit charge, and the four-way decrement closure to
+1.00000000 — and the two variants, model point 11's binding *Garantielücke* and model point 5's
+commuting *Sockelbeitrag* cell.
 
 Beyond that it asserts **one test per numbered modeling pitfall**: the two subsidy lags kept
 apart; the final contribution year's Zulage credited at `t_conv()`; the § 86 Kürzung

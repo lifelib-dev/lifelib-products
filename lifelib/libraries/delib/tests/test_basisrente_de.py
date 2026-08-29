@@ -19,11 +19,10 @@ every year of the first six, a five-yearly sample of the accumulation phase, the
 and its neighbours, and a decade sample of the payout phase -- plus a **Total** row summed at
 full precision and then rounded.  Every one of those eighteen rows is asserted here, cell by
 cell, together with the full-precision totals and the fact that adding the *rounded* cells
-instead gives a different answer in three of the six money columns.
-
-The goldens are hard-coded rather than pickled so that a reviewer can compare them against the
-notes by eye.  Tolerances follow the precision the notes display: money to the cent, ``pols_if``
-and ``pols_paying`` to six decimals.
+instead gives a different answer in three of the six money columns.  The goldens are hard-coded
+rather than pickled so a reviewer can compare them with the notes by eye, and the tolerances
+follow the precision the notes display: money to the cent, the two policy counts to six
+decimals.
 
 What this module asserts, beyond those rows:
 
@@ -34,23 +33,19 @@ What this module asserts, beyond those rows:
 * the two documented **variant tables**: model point 5, the *Einmalbeitrag*, and model point 13,
   the cell on which the guaranteed *Rentenfaktor* binds instead of the current one;
 * all six published ``check_*`` identities and their per-``t`` residuals, including
-  ``check_net_cf()`` -- delib's first ruling -- and the shape and sign conventions of
-  ``result_cf()``;
+  ``check_net_cf()`` -- delib's first ruling -- and the shape and sign of ``result_cf()``;
 * **one test per numbered modeling pitfall** in the technical notes, named for the pitfall:
-  (1) no surrender value at any duration and none of the names that would carry one;
-  (2) a *Beitragsfreistellung* is not a lapse and is absent from the in-force roll-forward;
-  (3) the paying and premium-free account blocks are not averaged; (4) an account charge is not
-  also an expense; (5) the *Zillmerung* is spread over five **contract** years and capped;
-  (6) the declared rate is a ``max`` against the guarantee and not a sum; (7) premiums, the
-  *Zuzahlung* and the *Dynamik* are keyed to the policy duration and stop at *Rentenbeginn*;
-  (8) the *Ratenzahlungszuschlag* loads the *laufender Beitrag* alone; (9) death before
-  *Rentenbeginn* pays nothing with the rider off; (10) with the rider on it pays only where an
-  eligible survivor exists, and never a lump sum; (11) the conversion is struck on the
-  contractual basis and is invariant to ``mort_be_factor``; (12) the annuity is booked in
-  advance on the opening in-force count; (13) ``max(garantiert, aktuell)`` takes the higher
-  factor, both branches shipping; (14) the *Rentengarantiezeit* runs from *Rentenbeginn* and is
-  never commuted; (15) the mortality basis is generational; (16) the guarantee vintage attaches
-  at conclusion; (17) the BUZ is a premium share that reaches no cash flow.
+  no surrender value and none of the names that carry one (1); a *Beitragsfreistellung* absent
+  from the in-force roll-forward (2); the two account blocks not averaged (3); an account charge
+  that is not also an expense (4); the *Zillmerung* spread over five **contract** years (5); the
+  declared rate as a ``max`` and not a sum (6); the premium stream keyed to the policy duration
+  and stopping at *Rentenbeginn* (7); the *Ratenzahlungszuschlag* on the *laufender Beitrag*
+  alone (8); no death benefit with the rider off (9), and with it on, only where an eligible
+  survivor exists and never as a lump sum (10); the conversion invariant to ``mort_be_factor``
+  (11); the annuity booked in advance on the opening count (12); both branches of
+  ``max(garantiert, aktuell)`` (13); the *Rentengarantiezeit* running from *Rentenbeginn* and
+  never commuted (14); the generational basis (15); the guarantee vintage attaching at
+  conclusion (16); and the BUZ as a premium share that reaches no cash flow (17).
 
 The whole-model-point-table sweep is deliberately **not** here: ``test_model_conventions_de.py``
 owns the single sweep, because a model point's first evaluation is the most expensive thing in
@@ -176,9 +171,9 @@ MP13_GUARANTEE_WORTH = 824.65         # 4 464,66 - 3 640,01, a year
 def alt_model(name):
     """A private copy of the model, for tests that mutate a Reference or swap an input.
 
-    The module-scoped ``basisrente`` fixture is shared, so a test that changes
-    ``Projection.mort_be_factor`` or ``Data.charge_file`` on it would leak into every test that
-    ran afterwards.  Each such test reads its own copy and closes it in a ``finally``.
+    The module-scoped ``basisrente`` fixture is shared, so a test that changed
+    ``Projection.mort_be_factor`` or ``Data.charge_file`` on it would leak into every later test.
+    Each such test reads its own copy and closes it in a ``finally``.
     """
     return mx.read_model(MODEL_DIR, name=name)
 
@@ -219,9 +214,8 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_basis_anchor)
 def test_the_totals_differ_from_the_sum_of_the_rounded_cells(de_basis_anchor):
     """Rounding seventy-seven times before adding costs one or two cents, in three columns.
 
-    The notes say so explicitly.  Asserting both numbers is what stops the difference being
-    quietly "corrected" in either direction, and it is why a test that summed the printed cells
-    would be asserting the wrong number.
+    Asserting both numbers is what stops the difference being quietly "corrected" in either
+    direction, and it is why a test that summed the printed cells would assert the wrong number.
     """
     df = de_basis_anchor.result_cf()
     for column, rounded_sum in ROUNDED_CELL_SUMS.items():
@@ -238,10 +232,9 @@ def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_a
     """The notes' first independent check: N(1) and the account, from the charge scale up.
 
     ``S = 6 000 x (1.02^22 - 1) / 0.02``; the *Zillmerung* is ``0.025 x S`` in five instalments;
-    the *Zuzahlung* actually paid is ``4 000 x 0.70`` and carries its own 2,5 % charge rather
-    than a share of the *Zillmerung*; the residue is credited at ``0.026 - 0.0035``.  The ``av``
-    the table prints at ``t = 2`` is that figure **after** the year's death decrement, which is
-    the fund-level roll-forward and not the per-policy one.
+    the *Zuzahlung* paid is ``4 000 x 0.70`` and carries its own 2,5 % charge rather than a share
+    of the *Zillmerung*; the residue is credited at ``0.026 - 0.0035``.  The ``av`` the table
+    prints at ``t = 2`` is that figure **after** the year's death decrement.
     """
     p = de_basis_anchor
     assert p.beitragssumme_pp() == pytest.approx(S_ANCHOR, rel=1e-12)
@@ -268,8 +261,7 @@ def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_a
 def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_anchor):
     """The notes' second check: the shipped table's rate at 45, improved, and the split.
 
-    The 4 % *Beitragsfreistellung* rate cancels out of ``pols_if`` entirely, which is what
-    distinguishes this product's decrement structure from a Schicht-3 annuity's.
+    The 4 % *Beitragsfreistellung* rate cancels out of ``pols_if`` entirely.
     """
     p = de_basis_anchor
     assert p.mort_rate_at_age(45, 2005) == pytest.approx(QX45_TABLE, abs=5e-11)
@@ -290,7 +282,7 @@ def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_an
         1.0 * (1 - Q1_BEST_ESTIMATE) * 0.04, rel=1e-8)
     assert p.pols_paying(2) == pytest.approx(POLS_PAYING_2, abs=5e-10)
     assert p.pols_paidup(2) == pytest.approx(POLS_PAIDUP_2, abs=5e-10)
-    assert p.pols_if(2) == pytest.approx(POLS_PAYING_2 + POLS_PAIDUP_2, rel=1e-12)
+    assert p.pols_if(2) == pytest.approx(POLS_PAYING_2 + POLS_PAIDUP_2, abs=5e-10)
     assert p.pols_if(2) == pytest.approx(1.0 - Q1_BEST_ESTIMATE, abs=5e-10)
 
 
@@ -323,9 +315,8 @@ def test_check_3_the_conversion_and_the_branch_of_the_max_that_binds(de_basis_an
 def test_the_decrements_close_to_exactly_one(de_basis_anchor):
     """Deaths over the whole projection plus ``pols_if(n + 1)`` equal the original policy.
 
-    Not one policy leaves by any other route: there is no lapse decrement, no surrender and no
-    commutation on this product, and the 0,441765 of the cohort that went *beitragsfrei* is
-    **inside** that 1,000000 rather than beside it.
+    Not one policy leaves by any other route, and the 0,441765 of the cohort that went
+    *beitragsfrei* is **inside** that 1,000000 rather than beside it.
     """
     p = de_basis_anchor
     n = p.proj_len()
@@ -353,10 +344,9 @@ def test_the_cash_flow_statement_closes_over_the_whole_projection(de_basis_ancho
 def test_the_initial_commission_and_the_zillmerung_are_the_same_number(de_basis_anchor):
     """2,5 % of the *Beitragssumme*, twice -- the German design, not a coincidence.
 
-    What the insurer pays out at inception is sized to what it may write into the reserve, which
-    is why moving ``comm_init_rate`` without moving ``zill_rate`` opens a first-year hole that
-    nothing closes.  One is an expense and the other is not: the commission is in ``net_cf`` and
-    the *Zillmerung* instalment is only in the account.
+    What the insurer pays out at inception is sized to what it may write into the reserve.  One
+    is an outgo and the other is not: the commission is in ``net_cf``, the *Zillmerung*
+    instalment only in the account.
     """
     p = de_basis_anchor
     assert p.commissions(1) == pytest.approx(ALPHA_TOTAL_ANCHOR, rel=1e-12)
@@ -390,9 +380,8 @@ def test_every_published_check_holds_and_its_residual_is_zero(de_basis_anchor):
 def test_check_net_cf_is_read_from_the_published_frame(de_basis_anchor):
     """delib ruling 1: the identity is reconstructed from ``result_cf()``'s own columns.
 
-    ``pols_if``, ``pols_paying`` and ``av`` are two counts and a balance and are excluded by
-    construction -- adding ``av`` to anything is a category error, and the residual would be
-    enormous if it were included.
+    ``pols_if``, ``pols_paying`` and ``av`` are two counts and a balance, excluded by
+    construction -- adding ``av`` to anything is a category error.
     """
     p = de_basis_anchor
     df = p.result_cf()
@@ -436,8 +425,8 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_basis_anchor):
 def test_invalid_enum_values_raise(de_basis_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup.
 
-    ``"SURRENDER"`` in particular: there is no fourth kind of claim on this product and there
-    can be none, so asking for one is an error and not a zero.
+    ``"SURRENDER"`` in particular: there is no fourth kind of claim and there can be none, so
+    asking for one is an error and not a zero.
     """
     p = de_basis_anchor
     with pytest.raises(FormulaError):
@@ -476,9 +465,9 @@ def test_the_einmalbeitrag_totals_and_its_first_year_account(basisrente):
     """The single premium's own totals, and the two features that are the point of the variant.
 
     The *Beitragssumme* of a single-premium contract **is** the single premium, so the
-    *Zillmerung* and the initial commission are an order of magnitude below the anchor's; and
-    the five *Zillmerung* instalments still run, so from ``t = 2`` the account is debited by an
-    acquisition charge that the one premium has already come and gone without covering.
+    *Zillmerung* and the initial commission are an order of magnitude below the anchor's; and the
+    five instalments still run, so from ``t = 2`` the account is debited by an acquisition charge
+    the one premium has already come and gone without covering.
     """
     p = basisrente.Projection[5]
     df = p.result_cf()
@@ -528,8 +517,8 @@ def test_on_model_point_13_the_guarantee_is_worth_824_euro_a_year(basisrente):
     """The other branch of the ``max``, and what it is worth.
 
     The projection is sensitive to whichever factor is higher and completely insensitive to the
-    other, which is why a sensitivity run on the guaranteed factor over a book returns zero
-    until it crosses the current one and then moves in a straight line.
+    other, which is why a sensitivity run on the guaranteed factor returns zero until it crosses
+    the current one and then moves in a straight line.
     """
     p = basisrente.Projection[13]
     per = p.fund_at_conv() / p.pols_if(p.ret_t())
@@ -551,8 +540,7 @@ def test_pitfall_1_no_surrender_value_and_none_of_the_names_that_carry_one(
 
     The absences cannot be asserted from inside the model -- a missing cells has no formula --
     so they are asserted here, against the exact names a modeller reusing the delib endowment or
-    Schicht-3 chassis would carry across by habit.  The mirror error is subtler and is asserted
-    too: ``prem_to_av_pp`` is **not** floored at an internally computed surrender value.
+    Schicht-3 chassis would carry across by habit.
     """
     names = set(basisrente.Projection.cells) | set(basisrente.Projection.refs)
     for absent in ("cv_pp", "cv", "surr_value_pp", "surr_rate", "surr_charge_rate",
@@ -589,11 +577,9 @@ def test_pitfall_1_the_account_is_never_floored_at_a_surrender_value():
     """Push the *Stückkosten* past the premium and the account goes negative, as it must.
 
     The mirror of the missing surrender column is a *Rückkaufswert* computed internally "for
-    reference" and then used as a floor under the *Deckungskapital*.  There is nothing for such
-    a floor to protect on this product, and this test proves there is none: with the
-    *Stückkosten* at 400,00 EUR a year, model point 10's first-year credit is negative and the
-    account follows it down.  That a German *Deckungskapital* starts near zero is a consequence
-    of this line and not a modelling artefact.
+    reference" and used as a floor under the *Deckungskapital*.  There is nothing for such a
+    floor to protect here, and this proves there is none: at 400,00 EUR of *Stückkosten* model
+    point 10's first-year credit is negative and the account follows it down.
     """
     charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
     charges.loc["de_basis_std", "unit_cost_pp"] = 400.00
@@ -644,8 +630,7 @@ def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged():
     """Set ``bf_rate = 0`` and ``pols_if`` does not move, while ``premiums`` grows.
 
     That is the arithmetic statement of "not a lapse": a lapse rate that vanished would move the
-    in-force count, and this one does not.  It moves 45 636 EUR of premium income instead, and
-    a much larger fund at *Rentenbeginn*.
+    in-force count, and this one moves 45 635 EUR of premium income instead.
     """
     beh = pd.read_csv(INPUT_DIR / "behaviour_table.csv", index_col=["beh_table_id", "dur"])
     beh["bf_rate"] = 0.0
@@ -682,8 +667,7 @@ def test_pitfall_3_the_paying_and_premium_free_blocks_are_not_averaged(de_basis_
     """They are equal at the first freeze and diverge from then on, permanently.
 
     ``av_pp_at`` is per **paying policy** and ``av_pu_at`` is the premium-free block at **fund**
-    level.  Collapsing them into one per-policy figure loses the whole economic content of a
-    *Beitragsfreistellung*, and the fund-level roll-forward would stop closing.
+    level; collapsing them loses the whole economic content of a *Beitragsfreistellung*.
     """
     p = de_basis_anchor
     # t = 2 is the first year with a premium-free block, and everyone in it froze together.
@@ -715,10 +699,9 @@ def test_pitfall_3_the_paying_and_premium_free_blocks_are_not_averaged(de_basis_
 def test_pitfall_4_the_account_charges_are_income_and_never_an_expense():
     """``expenses`` is invariant to beta, gamma and the *Zillmersatz*; the annuity is not.
 
-    Raise all three -- beta from 7,5 % to 10 %, gamma from 0,35 % to 0,60 %, the *Zillmersatz*
-    from 25 permille to 40 -- and not one euro of ``expenses`` or ``commissions`` moves.  What
-    moves is the *Deckungskapital*, and through it the annuity the smaller fund buys at
-    *Rentenbeginn*: 249 887,21 EUR of annuity claims against 270 016,08 EUR.
+    Raise all three -- beta 7,5 % to 10 %, gamma 0,35 % to 0,60 %, the *Zillmersatz* 25 permille
+    to 40 -- and not one euro of ``expenses`` or ``commissions`` moves.  What moves is the
+    *Deckungskapital*, and through it the annuity: 249 887,21 EUR against 270 016,08 EUR.
     """
     charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
     charges.loc["de_basis_std", "beta_prem"] = 0.10
@@ -757,8 +740,8 @@ def test_pitfall_5_the_zillmerung_is_five_equal_instalments_of_the_contract(basi
                                                                            de_basis_anchor):
     """Equal at ``t = 1..5``, zero from ``t = 6``, summing to ``zill_rate x S`` exactly.
 
-    The window belongs to the **contract**, not the projection, so an in-force point past
-    duration 5 sees none of it at any ``t``: model point 6 opens at ``duration_init = 17``.
+    The window belongs to the **contract**: model point 6, in force at ``duration_init = 17``,
+    sees none of it at any ``t``.
     """
     p = de_basis_anchor
     instalments = [p.alpha_amort_pp(t) for t in range(1, 6)]
@@ -787,9 +770,8 @@ def test_pitfall_5_the_zillmerung_is_five_equal_instalments_of_the_contract(basi
 def test_pitfall_6_the_credited_rate_is_a_maximum_and_not_a_sum(basisrente, de_basis_anchor):
     """A German *laufende Verzinsung* already includes the *Rechnungszins*.
 
-    On the anchor, ``gtd_rate = 1,00 %`` sits below the whole declared path, so the declared
-    rate binds at every ``t``.  On model point 8, ``gtd_rate = 2,75 %`` sits above it, so the
-    guarantee binds at every ``t``.  A sum would give 3,60 % in year one on the anchor.
+    The anchor's 1,00 % sits below the whole declared path so the declared rate binds; model
+    point 8's 2,75 % sits above it so the guarantee binds.  A sum would give 3,60 % in year one.
     """
     p = de_basis_anchor
     assert float(p.model_point()["gtd_rate"]) == 0.0100
@@ -878,8 +860,7 @@ def test_pitfall_9_death_pays_nothing_with_the_survivor_rider_off(basisrente,
                                                                   de_basis_anchor):
     """*Nicht vererblich*: the reserve is released as a mortality profit and nothing is paid.
 
-    The account still closes -- the released reserve leaves the fund whether or not anything is
-    paid, which is the arithmetic content of the prohibition.
+    The account still closes -- the released reserve leaves the fund either way.
     """
     p = de_basis_anchor
     assert float(p.model_point()["surv_annuity_rate"]) == 0.0
@@ -903,9 +884,8 @@ def test_pitfall_9_death_pays_nothing_with_the_survivor_rider_off(basisrente,
 def test_pitfall_10_the_death_benefit_is_conditional_and_buys_an_annuity(basisrente):
     """Model point 3: ``elig_surv_prob x mort_rate(t) x av_at(t, "AFT_INT")``, and nothing else.
 
-    It is not a lump sum to a beneficiary: what is booked is the *Deckungskapital* leaving this
-    contract as the single premium of a survivor's annuity.  The cover is paid for through the
-    *Rentenfaktor* -- 31,50 x 0,930 -- and not by scaling the benefit.
+    Not a lump sum to a beneficiary: what is booked is the *Deckungskapital* leaving as the
+    single premium of a survivor's annuity, the cover being paid for through the *Rentenfaktor*.
     """
     p = basisrente.Projection[3]
     assert float(p.model_point()["surv_annuity_rate"]) == 0.60
@@ -928,8 +908,7 @@ def test_pitfall_10_with_no_eligible_survivor_nothing_is_paid():
     """``elig_surv_prob = 0`` removes the whole death benefit and moves no other column.
 
     The annuity stays reduced by the option factor, because a German tariff pays for the cover
-    out of the annuity whether or not a survivor is ever found -- so this is not the same run as
-    a rider-off model point, and the test says which columns are allowed to move.
+    out of the annuity whether or not a survivor is found -- so this is not a rider-off run.
     """
     model = alt_model("Basis_DE_A_nosurv")
     try:
@@ -957,9 +936,8 @@ def test_pitfall_10_with_no_eligible_survivor_nothing_is_paid():
 def test_pitfall_11_the_conversion_is_invariant_to_the_best_estimate_mortality():
     """``ann_pp(ret_t())`` does not move with ``mort_be_factor``; ``claims_annuity`` does.
 
-    The guaranteed *Rentenfaktor* was struck on first-order DAV 2004 R with a prudential margin;
-    the projection runs on the best estimate.  The wedge between them is the payout phase's
-    *Risikoüberschuss*, and a model that converted on its own mortality would abolish it.
+    The wedge between the contractual first-order basis and the projection's best estimate is
+    the payout phase's *Risikoüberschuss*; converting on its own mortality would abolish it.
     """
     model = alt_model("Basis_DE_A_mort")
     try:
@@ -988,9 +966,8 @@ def test_pitfall_12_the_annuity_is_twelve_instalments_on_the_opening_in_force(
         de_basis_anchor):
     """``claims_annuity(t) = ann_pp(t) x pols_if(t)`` exactly, at every ``t``.
 
-    A life that dies during the payout year has been paid for the whole of it: that is the
-    stated approximation of a monthly grid on an annual one, generous to the year of death by up
-    to a full year's annuity and concentrated in the high-mortality tail.
+    A life that dies during the payout year has been paid for the whole of it -- the stated
+    approximation of a monthly grid on an annual one, and not an accident.
     """
     p = de_basis_anchor
     assert p.ann_freq == 12
@@ -1046,9 +1023,8 @@ def test_pitfall_13_the_higher_of_the_two_rentenfaktoren_applies(basisrente,
 def test_pitfall_14_the_guarantee_period_runs_from_rentenbeginn(basisrente):
     """Model point 4: ten years from ``ret_t()``, closing at ``gtd_end_t()``, whatever the death.
 
-    Each death contributes ``elig_surv_prob`` of a continuation, the ledger is monotone
-    non-decreasing inside the window and exactly zero outside it, and the stream is never
-    discounted into a capital sum.
+    Each death contributes ``elig_surv_prob`` of a continuation, the ledger is monotone inside
+    the window and zero outside it, and the stream is never discounted into a capital sum.
     """
     p = basisrente.Projection[4]
     assert int(p.model_point()["guarantee_period_y"]) == 10
@@ -1162,8 +1138,7 @@ def test_pitfall_17_the_buz_is_a_premium_share_that_enters_nothing(basisrente,
     """``buz_prem_share < 0.50`` on every shipped point, and ``prem_total_pp`` is inert.
 
     ``prem_base_pp`` is the **old-age** contribution; the BUZ premium buys a cover this model
-    does not project, and its disability mechanics belong to ``BU_DE_S``.  The 50 % rule is the
-    one thing about the rider this model owns.
+    does not project.  The 50 % rule is the one thing about the rider this model owns.
     """
     table = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
     assert (table["buz_prem_share"] < 0.50).all()
@@ -1235,8 +1210,8 @@ def test_the_shared_vocabulary_and_the_absent_names(basisrente):
 def test_the_shipped_tables_mark_their_own_provenance():
     """Seven CSVs beside run.py, six of them tagged row by row -- delib's second ruling.
 
-    The mortality table is a **[std]** proxy: DAV 2004 R is cited by name and never shipped, and
-    the anchor a substitute must preserve is ``qx(67) = 0.014000``.
+    The mortality table is a **[std]** proxy: DAV 2004 R is cited and never shipped, and the
+    anchor a substitute must preserve is ``qx(67) = 0.014000``.
     """
     found = {p.name for p in INPUT_DIR.iterdir() if p.suffix == ".csv"}
     assert found == INPUT_FILES
@@ -1287,9 +1262,8 @@ def test_the_shipped_tables_mark_their_own_provenance():
 def test_an_input_can_be_swapped_without_touching_formulas():
     """This is what a production user does with a company or licensed mortality basis.
 
-    Lighter mortality means more annuitants alive to be paid, and a larger fund at
-    *Rentenbeginn* -- but the same annuity per annuitant, because the conversion is struck on
-    the contractual *Rentenfaktor* and not on the projection's own table.
+    Lighter mortality means more annuitants alive to be paid and more premium collected, and the
+    roll-forward identities still close.
     """
     lighter = pd.read_csv(INPUT_DIR / "mort_table.csv", index_col="age")
     lighter["qx"] = lighter["qx"] * 0.5

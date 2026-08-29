@@ -212,7 +212,7 @@ def test_the_frame_spans_the_whole_projection(de_bu_anchor):
 
 
 def test_the_bruttobeitrag_is_reached_two_independent_ways(de_bu_anchor):
-    """P = 25,863.8772130176 / 25.5302042134 = 1,013.0697368527 EUR p.a.
+    """P = 25,863.8772642487 / 25.5302042134 = 1,013.0697368527 EUR p.a.
 
     First from the five present values the notes print, arithmetic a reader can follow
     with a calculator; then from the model's own ``pv_*`` cells, which is the same

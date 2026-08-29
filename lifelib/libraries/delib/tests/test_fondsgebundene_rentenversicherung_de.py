@@ -30,16 +30,11 @@ Beyond the worked example this module asserts: the notes' three independent rebu
 1 from the tariff alone, month 61 at the cliff, the reduction in yield read as a savings
 account); the four closure identities it prints; the *Einmalbeitrag* variant and the
 four-tariff reduction-in-yield comparison; the seven ``check_*()`` identities and their
-per-month residuals, ``check_net_cf()`` among them -- delib's first ruling, that the
-headline number of a cash flow model must be reconstructible from the parts the frame
-publishes; **one test per numbered modeling pitfall in the technical notes**, eighteen of
-them, each named for the pitfall it guards; and the product's own invariants -- the frame's
-shape and both signs of the net flow, the behaviour modules being off and reachable, the
-enum accessors validating, and the shipped tables marking their own provenance.
-
-There is deliberately **no sweep of the whole model point table** here: the conventions
-suite owns the single sweep, because a model point's first evaluation is the most expensive
-thing in the run.
+per-month residuals, ``check_net_cf()`` among them -- delib's first ruling; **one test per
+numbered modeling pitfall in the technical notes**, eighteen of them, each named for the
+pitfall it guards; and the product's own invariants.  There is deliberately **no sweep of
+the whole model point table**: the conventions suite owns the single sweep, because a model
+point's first evaluation is the most expensive thing in the run.
 """
 import modelx as mx
 import pytest
@@ -120,26 +115,16 @@ PANEL_B_TOTALS = {
 # t: (unit_price, units_pp, av_pp, bef_charge, aft_charge, bef_decr, cum_prem_pp, nar_pp,
 #     lapse_rate_mth, mort_rate_mth)
 PANEL_C = {
-    1:   (100.371482,   0.000000,      0.00,    162.60,    159.56,    159.56,
-          200.00,    40.44, 0.00514301, 0.00005000),
-    2:   (100.744344,   1.589679,    159.56,    322.75,    319.67,    319.67,
-          400.00,    80.33, 0.00514301, 0.00005000),
-    6:   (102.249694,   7.885561,    803.31,    968.90,    965.66,    965.64,
-          1200.00,  234.34, 0.00514301, 0.00005000),
-    60:  (124.916609,  83.728674,  10420.39,  10621.70,  10616.05,  10615.91,
-          12000.00, 1383.95, 0.00514301, 0.00007321),
-    61:  (125.380652,  84.984001,  10615.91,  10848.06,  10842.35,  10842.20,
-          12200.00, 1357.65, 0.00253505, 0.00008053),
-    94:  (141.700579, 131.144920,  18514.53,  18776.02,  18768.33,  18768.33,
-          18800.00,   31.67, 0.00253505, 0.00009744),
-    95:  (142.226971, 132.450597,  18768.33,  19030.76,  19023.00,  19023.00,
-          19000.00,    0.00, 0.00253505, 0.00009744),
-    240: (243.489783, 274.678167,  66633.79,  67074.04,  67054.27,  67054.27,
-          48000.00,    0.00, 0.00253505, 0.00030580),
-    359: (378.539129, 340.534729, 128428.63, 129098.43, 129063.16, 129063.16,
-          71800.00,    0.00, 0.00253505, 0.00079315),
-    360: (379.945333, 340.950641, 129063.16, 129735.32, 129699.88, 129699.88,
-          72000.00,    0.00, 0.00000000, 0.00079315),
+    1:   (100.371482, 0.000000, 0.00, 162.60, 159.56, 159.56, 200.00, 40.44, 0.00514301, 5e-05),
+    2:   (100.744344, 1.589679, 159.56, 322.75, 319.67, 319.67, 400.00, 80.33, 0.00514301, 5e-05),
+    6:   (102.249694, 7.885561, 803.31, 968.90, 965.66, 965.64, 1200.00, 234.34, 0.00514301, 5e-05),
+    60:  (124.916609, 83.728674, 10420.39, 10621.70, 10616.05, 10615.91, 12000.00, 1383.95, 0.00514301, 0.00007321),
+    61:  (125.380652, 84.984001, 10615.91, 10848.06, 10842.35, 10842.20, 12200.00, 1357.65, 0.00253505, 0.00008053),
+    94:  (141.700579, 131.144920, 18514.53, 18776.02, 18768.33, 18768.33, 18800.00, 31.67, 0.00253505, 0.00009744),
+    95:  (142.226971, 132.450597, 18768.33, 19030.76, 19023.00, 19023.00, 19000.00, 0.00, 0.00253505, 0.00009744),
+    240: (243.489783, 274.678167, 66633.79, 67074.04, 67054.27, 67054.27, 48000.00, 0.00, 0.00253505, 0.00030580),
+    359: (378.539129, 340.534729, 128428.63, 129098.43, 129063.16, 129063.16, 71800.00, 0.00, 0.00253505, 0.00079315),
+    360: (379.945333, 340.950641, 129063.16, 129735.32, 129699.88, 129699.88, 72000.00, 0.00, 0.0, 0.00079315),
 }
 
 # The Einmalbeitrag variant, model point 2: 50 000,00 EUR at age 50, proj_len() = 204, a
@@ -281,7 +266,6 @@ def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
     assert p.charge_admin_prem_pp(1) == pytest.approx(0.04 * 200.0, rel=1e-12) == 8.0
     assert p.prem_to_av_pp(1) == pytest.approx(200.0 - 30.0 - 8.0, rel=1e-12) == 162.0
     assert p.units_bought_pp(1) == pytest.approx(1.62, rel=1e-12)
-
     i = p.fund_return_net_mth(1)
     assert i == pytest.approx(1.0455 ** (1.0 / 12.0) - 1.0, rel=1e-14)
     assert i == pytest.approx(0.0037148195588312, abs=5e-16)
@@ -290,11 +274,9 @@ def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
     assert p.charge_admin_fund_pp(1) == pytest.approx(0.040650450, abs=5e-9)
     assert p.charge_policy_fee_pp(1) == 3.0
     assert p.av_pp_at(1, "AFT_CHARGE") == pytest.approx(159.561150318, abs=5e-9)
-
     assert p.db_floor_pp(1) == 200.0
     assert p.nar_pp(1) == pytest.approx(40.438849682, abs=5e-9)
     assert p.charge_risk_pp(1) == pytest.approx(0.00080 / 12 * 40.438849682, abs=5e-10)
-    assert p.charge_risk_pp(1) == pytest.approx(0.002695923, abs=5e-10)
     assert p.av_pp_at(1, "BEF_DECR") == pytest.approx(159.558454395, abs=5e-9)
     assert p.units_pp(2) == pytest.approx(159.558454395 / p.unit_price(1), abs=5e-9)
     assert p.units_pp(2) == pytest.approx(1.589679, abs=SIX_DP)
@@ -364,14 +346,12 @@ def test_the_four_identities_that_close(de_frv_anchor):
     p = de_frv_anchor
     n = p.proj_len()
     df = p.result_cf()
-
     deaths = sum(p.pols_death(t) for t in range(1, n + 1))
     lapses = sum(p.pols_lapse(t) for t in range(1, n + 1))
-    maturity = p.pols_maturity(n)
     assert deaths == pytest.approx(DECREMENTS["deaths"], abs=5e-9)
     assert lapses == pytest.approx(DECREMENTS["lapses"], abs=5e-9)
-    assert maturity == pytest.approx(DECREMENTS["maturity"], abs=5e-9)
-    assert deaths + lapses + maturity == pytest.approx(1.0, abs=1e-12)
+    assert p.pols_maturity(n) == pytest.approx(DECREMENTS["maturity"], abs=5e-9)
+    assert deaths + lapses + p.pols_maturity(n) == pytest.approx(1.0, abs=1e-12)
     assert p.pols_if(n + 1) == 0.0
 
     charge_risk, strain = df["charge_risk"].sum(), df["death_strain"].sum()
@@ -389,7 +369,6 @@ def test_the_four_identities_that_close(de_frv_anchor):
                 + df["claims_maturity"].sum())
     assert benefits == pytest.approx(BENEFIT_FUNDING, abs=5e-6)
     assert df["av_releases"].sum() + strain == pytest.approx(BENEFIT_FUNDING, abs=5e-6)
-
     charges = sum(df[c].sum() for c in ("charge_acq", "charge_admin_prem",
                                         "charge_admin_fund", "charge_policy_fee",
                                         "charge_risk", "stornoabzug"))
