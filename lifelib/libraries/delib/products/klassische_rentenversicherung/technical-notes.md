@@ -32,15 +32,13 @@ each recursion, and that is what this file is for.
   the two account balances that make the product what it is: the *Deckungskapital* and the
   *Ansammlungsguthaben*.
 - **Out of scope, and said so rather than left to be discovered.** Discounting; the statutory
-  *Deckungsrückstellung* of § 341f HGB [REG-R54]; the *Zinszusatzreserve* [REG-R17]; the RfB as a
-  balance-sheet stock and the MindZV minimum-allocation arithmetic [REG-R18] [REG-R19]; the
-  *Sicherungsbedarf* test on the *Bewertungsreserven* [REG-R20]; the Solvency II best estimate, risk
-  margin, SCR and MCR [REG-R6]; IFRS 17 measurement [REG-R55]; and **all taxation** — every cash
+  *Deckungsrückstellung* [REG-R54]; the *Zinszusatzreserve* [REG-R17]; the RfB and the MindZV
+  arithmetic [REG-R18] [REG-R19]; the *Sicherungsbedarf* test [REG-R20]; the Solvency II best
+  estimate, risk margin, SCR and MCR [REG-R6]; IFRS 17 [REG-R55]; and **all taxation** — every cash
   flow is gross of *Kapitalertragsteuer*, *Solidaritätszuschlag* and *Kirchensteuer* [REG-R38]. Also
-  not modeled, each for a stated reason: the *Bonusrente* accumulation-phase surplus system [R24];
-  *Zuzahlung*, which no source in the corpus names (gap 15); the survivor's-annuity and BU riders
-  [S10] [S4]; § 163 VVG adjustment of the guaranteed *Rentenfaktor* [R3] [R17] [REG-R27]; and § 169
-  Abs. 6 reduction of surrender values [R1].
+  not modeled, each for a stated reason: the *Bonusrente* surplus system [R24]; *Zuzahlung*, which no
+  source names (gap 15); the survivor's-annuity and BU riders [S10] [S4]; § 163 VVG adjustment of the
+  guaranteed *Rentenfaktor* [R3] [R17] [REG-R27]; and § 169 Abs. 6 [R1].
 - **Projection frequency.** **Annual grid.** The contract's own natural period is the *Versicherungs-
   jahr*: the *Rechnungszins* is credited annually, the *Überschussbeteiligung* is declared annually
   and the *Ansammlungsguthaben*'s interest is "credited at the end of each insurance year and upon
@@ -149,24 +147,18 @@ amortised under both treatments, so every in-force point has `duration_init ≥ 
 | `age(t)` | Attained age at the start of policy year `t` = `issue_age + t − 1` | annual |
 | `calendar_year(t)` | `issue_year + t − 1`; the second index of the generational mortality surface | annual |
 | `pols_if(t)` | Policies in force at the **start** of policy year `t`; `pols_if(t0) = pols_if_init()` | annual recursion |
-| `pols_if_at(t, timing)` | `"BEF_DECR"`, `"AFT_DEATH"`, `"AFT_LAPSE"`, `"AFT_DECR"` | within year `t` |
 | `pols_annuity(t)` | The count the annuity instalment is **paid on** — the annuitised count inside the *Rentengarantiezeit*, survivors after it, zero before *Rentenbeginn* | annual |
 | `av_pp(t)` | *Deckungskapital* per policy at the start of year `t` | annual recursion |
 | `av_pp_at(t, timing)` | `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_INT"` | within year `t` |
 | `av_sur_pp(t)`, `av_sur_pp_at(t, timing)` | *Ansammlungsguthaben* per policy, and its within-year points | annual recursion |
 | `av_spread_pp(t)`, `av_spread_pp_at(t, timing)` | The parallel *Deckungskapital* in which the acquisition charge is spread evenly over the first five contract years — the § 169 Abs. 3 VVG floor [REG-R28] | annual recursion |
 | `spread_diff_pp(t)` | `av_spread_pp(t) − av_pp(t)`; the only quantity by which the two accounts differ | annual recursion |
-| `alpha_cum_pp(t)` | Acquisition charge amortised before year `t`; seeded at `alpha_amort_pp_init` | annual recursion |
-| `prem_cum_pp(t)` | Premiums paid before year `t`; seeded at `prem_cum_pp_init`. The *Beitragsrückgewähr* base | annual recursion |
-| `av(t)`, `av_sur(t)` | Fund-level balances, `av_pp(t) × pols_if(t)` and likewise | annual |
-| `paid_up(t)` | Whether the contract is premium-free in year `t` (`pup_year > 0 and t ≥ pup_year`) | annual |
 | `capital_conv_pp` | Conversion capital struck at *Rentenbeginn* | once |
 | `annuity_rate_appl` | `max(annuity_rate_guar, annuity_rate_curr)` [S4] | once |
 | `annuity_guar_mth_pp` | *garantierte Rente*, monthly, struck at *Rentenbeginn* | once |
 | `annuity_sur_mth_pp(t)` | *Überschussrente*, monthly, by payout system | annual |
 | `mort_rate_guar(t)`, `mort_rate(t)` | First-order (tariff) and second-order (best-estimate) annual mortality | lookup |
 | `lapse_rate(t)` | Annual surrender rate; **0** from *Rentenbeginn* | lookup |
-| `decl_rate(t)`, `bonus_rate(t)` | Declared *laufende Verzinsung*, and the surplus rate above the guarantee | lookup |
 
 There is **no** paid-up sub-population state: *Beitragsfreistellung* is a deterministic election at a
 stated policy year rather than a continuous decrement, for the reason given under *Policyholder
@@ -176,6 +168,27 @@ survivor's-annuity state.
 ---
 
 ## Assumption inputs
+
+**The eight input files.** All inputs are **external CSVs beside `run.py`**, read once per model by
+the unparameterized `Data` Space (the `annuallife/TradLife_A` layout). Every file but the model point
+table carries a per-row `provenance` column, this library's second ruling.
+
+| File | Index columns | Value columns |
+|---|---|---|
+| `model_point_table.csv` | `point_id` | the thirty model-point attributes above (**provenance-exempt**) |
+| `mort_table.csv` | `sex`, `age` | `q_base`, `improve`, `provenance` |
+| `decl_rate_table.csv` | `scenario_id`, `calendar_year` | `decl_rate`, `provenance` |
+| `rentenfaktor_table.csv` | `rf_scenario_id`, `age` | `annuity_rate_curr`, `provenance` |
+| `charge_table.csv` | `charge_id`, `item` | `value`, `provenance` |
+| `lapse_table.csv` | `duration` | `lapse_rate`, `provenance` |
+| `freq_load_table.csv` | `prem_freq` | `freq_load`, `n_instalments`, `provenance` |
+| `param_table.csv` | `item` | `value`, `provenance` |
+
+`param_table.csv` holds every scalar [std] assumption that is neither a charge nor a rate table:
+`expense_acq_pp`, `expense_maint_pp`, `expense_annuity_pp`, `expense_claim_pp`, `expense_infl`,
+`mort_be_factor`, `mort_base_year`, `omega_age`, `val_reserve_rate`, `sur_ann_rate`,
+`sur_ann_growth`, `sur_ann_theta` and `roll_fwd_tol`. Keeping them in a file rather than in
+`Projection` References is what gives each of them its own provenance tag.
 
 ### (a) Contractual and guaranteed elements (cited)
 
@@ -800,41 +813,36 @@ grid. The valuation layers consume them and are cited, never reproduced.
 
 - **The German statutory *Deckungsrückstellung*.** The HGB reserve of § 341f HGB, computed
   prospectively **on the *Rechnungsgrundlagen* of the premium calculation** [REG-R54] and discounted
-  at no more than the § 2 DeckRV *Höchstrechnungszins* applicable when the contract was concluded
-  [REG-R14]. It is **not** the Solvency II best estimate, and the whole German picture depends on
-  keeping the two apart: an insurer carries two liability measures, and the *Überschussbeteiligung*,
-  the *Zinszusatzreserve* and the § 139 VAG *Bewertungsreserven* test all run on the **HGB** side
-  [REG-R14] [REG-R54]. `av_pp(t) × pols_if(t)` is this model's contribution to the corresponding
-  line, not the line itself: a statutory *Deckungskapital* is a prospective reserve on first-order
-  bases, while `av_pp` is a retrospective account roll-forward, and the two coincide only under
-  assumptions this model does not impose.
+  at no more than the § 2 DeckRV rate applicable when the contract was concluded [REG-R14]. It is
+  **not** the Solvency II best estimate: an insurer carries two liability measures, and the
+  *Überschussbeteiligung*, the *Zinszusatzreserve* and the § 139 VAG *Bewertungsreserven* test all
+  run on the **HGB** side [REG-R14] [REG-R54]. `av_pp(t) × pols_if(t)` is this model's contribution
+  to that line, not the line itself — a statutory *Deckungskapital* is a prospective reserve on
+  first-order bases while `av_pp` is a retrospective account roll-forward, and the two coincide only
+  under assumptions this model does not impose.
 - **The *Zinszusatzreserve*.** Arises where the § 5 Abs. 3 DeckRV *Referenzzins* falls below a
   contract's tariff rate, and the § 12 MindZV *Sicherungsbedarf* test compares a Bundesbank month-end
   swap rate with **the highest *Rechnungszins* applicable to the contract over the next fifteen
   years** — a window that bites hardest on annuity business [REG-R17] [REG-R18]. Model points 6 and
   14, on 2,75 % and 0,90 % vintages, are exactly the cells that would carry one. **Not computed.**
-- **The surplus layer.** The MindZV's 90 % of the investment result net of the *Rechnungszinsen*,
-  90 % of the risk result and 50 % of the remaining result is a minimum **transfer to the RfB**, not
-  a minimum payout, with the *Direktgutschrift* deducted and *Alt-* and *Neubestand* separate
-  [REG-R18] [REG-R10] [REG-R19]. This model represents the **credited outcome** — `decl_rate` and
-  the *Ansammlungsguthaben* — and not the three result sources that fund it; a model of the surplus
-  chassis itself belongs in delib's `kapitallebensversicherung`.
-- **Solvency II.** Best estimate plus risk margin [REG-R6], with the future discretionary benefits —
-  the surplus credit and the *Bewertungsreserven* crystallisation — the substance of the calculation
-  and the crediting rule above the management action a market-consistent valuation must model.
-  `BEL = Σ_t v(t) × liability_cf(t)` over the stream this model publishes. **No risk-free curve,
+- **The surplus layer.** The MindZV's 90 / 90 / 50 minima are a minimum **transfer to the RfB**, not
+  a minimum payout [REG-R18] [REG-R10] [REG-R19]. This model represents the **credited outcome** —
+  `decl_rate` and the *Ansammlungsguthaben* — not the three result sources that fund it; a model of
+  the surplus chassis itself belongs in delib's `kapitallebensversicherung`.
+- **Solvency II.** Best estimate plus risk margin [REG-R6], `BEL = Σ_t v(t) × liability_cf(t)` over
+  the stream this model publishes, with the future discretionary benefits — the surplus credit and
+  the *Bewertungsreserven* crystallisation — the substance of the calculation. **No risk-free curve,
   cost-of-capital rate or contract-boundary rule in this library was read from a retrieved
-  instrument** [REG-R2] [REG-R4], so every such figure would be [std].
-- **The guarantees are options.** The `max(guaranteed, current) Rentenfaktor` [S4] is a written
-  option on the insurer's own future annuity tariff, and the *Rechnungszins* floor is a written
-  interest guarantee; the deterministic path here prices neither. A stochastic-on-deterministic run —
-  this recursion, the crediting rule and the conversion rule re-evaluated per scenario — is what a
+  instrument** [REG-R2] [REG-R4], so every such figure would be [std]. And **the guarantees are
+  options**: the `max(guaranteed, current) Rentenfaktor` [S4] is a written option on the insurer's
+  own future annuity tariff and the *Rechnungszins* floor a written interest guarantee, neither of
+  which the deterministic path prices. A stochastic-on-deterministic run — this recursion, the
+  crediting rule and the conversion rule re-evaluated per scenario — is what a
   time-value-of-options-and-guarantees calculation consumes.
-- **IFRS 17 and professional standards.** A profit-participating deferred annuity is the archetypal
-  direct-participating contract and would be measured under the variable fee approach [REG-R55]; the
-  fulfilment-cash-flow engine is this same projection. Actuarial work sits under the DAV
-  *Fachgrundsätze* and the § 141 VAG *Verantwortlicher Aktuar*, distinct from the MaGo's
-  *versicherungsmathematische Funktion* [REG-R56] [REG-R11] [REG-R21].
+- **IFRS 17 and professional standards.** A profit-participating deferred annuity would be measured
+  under the variable fee approach [REG-R55], on this same fulfilment-cash-flow engine; actuarial work
+  sits under the DAV *Fachgrundsätze* and the § 141 VAG *Verantwortlicher Aktuar*, distinct from the
+  MaGo's *versicherungsmathematische Funktion* [REG-R56] [REG-R11] [REG-R21].
 
 ---
 
@@ -844,15 +852,14 @@ In rough order of leverage on a German deferred-annuity block.
 
 1. **The *Rentenfaktor*, and the fact that it is not calibrated to the shipped mortality table.**
    The annuity amount is `K / 10 000 × f`, so the whole payout phase scales linearly with `f`, and
-   `f` is **[std]** with no market anchor of any kind (gap 3). Worse, the reference library warns
-   that a model publishing a [std] *Rentenfaktor* **and** a [std] annuity table must say whether the
-   two are consistent and which is authoritative [REG-R49]. **They are not calibrated to each other,
-   and the *Rentenfaktor* is authoritative**: it fixes the benefit amount, while the mortality proxy
-   fixes only how long that amount is paid. The model publishes `annuity_due_factor()` — the
-   annuity-due present value on the shipped proxy at the guarantee interest basis — purely as a
-   diagnostic, so a reader can see the size of the gap rather than have it hidden. Anyone
-   substituting a real DAV 2004 R must re-strike the *Rentenfaktoren* with it or accept an
-   inconsistency the model will not flag.
+   `f` is **[std]** with no market anchor of any kind (gap 3). The reference library warns that a
+   model publishing a [std] *Rentenfaktor* **and** a [std] annuity table must say whether the two are
+   consistent and which is authoritative [REG-R49]. **They are not calibrated to each other, and the
+   *Rentenfaktor* is authoritative**: it fixes the benefit amount, while the mortality proxy fixes
+   only how long that amount is paid. The model publishes `annuity_due_factor()` — the annuity-due
+   present value on the shipped proxy at the guarantee interest basis — purely as a diagnostic, so
+   the gap is visible rather than hidden. Anyone substituting a real DAV 2004 R must re-strike the
+   *Rentenfaktoren* with it or accept an inconsistency the model will not flag.
 2. **The declared rate and the guarantee vintage together.** `bonus_rate = max(0, decl_rate −
    int_rate_guar)` is a difference of two numbers of similar size, so a 25 bp move in `decl_rate`
    moves the *Ansammlungsguthaben*'s accrual by about 16 % on the 1,00 % vintage and by **all of it**
@@ -875,12 +882,10 @@ In rough order of leverage on a German deferred-annuity block.
    it substitutes for a tax comparison the model does not perform [R6] [REG-R45].
 6. **The charge set, and the § 169 Abs. 3 floor it collides with.** `alpha_rate` at the statutory
    ceiling makes the year-one *Sparbeitrag* small and the early *Deckungskapital* correspondingly
-   thin, but the floor then reverses most of that for surrender purposes [REG-R16] [REG-R28]. The two
-   parameters must be moved together: cutting `alpha_rate` without cutting the floor's base changes
-   surrender values less than a reader would expect.
-7. **The annual grid against a monthly annuity, and the in-advance convention.** The annuity is paid
-   monthly [S13] [R24] and neither its timing nor its in-advance/in-arrears basis was established
-   (gap 19). Compressing twelve monthly-in-advance instalments into one start-of-year payment is
+   thin, but the floor then reverses most of that for surrender purposes [REG-R16] [REG-R28], so the
+   two parameters must be moved together.
+7. **The annual grid against a monthly annuity.** Neither the annuity's payment timing nor its
+   in-advance/in-arrears basis was established [S13] [R24] (gap 19). Compressing twelve monthly-in-advance instalments into one start-of-year payment is
    generous to the payout phase by roughly half a year's interest on one year's annuity, every year.
 8. **Everything the model does not do.** No *Bonusrente*, no *Zuzahlung*, no survivor's annuity, no
    § 163 VVG adjustment, no *Zinszusatzreserve*, no MindZV allocation, no *Sicherungsbedarf* test, no

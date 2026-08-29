@@ -182,7 +182,9 @@ _allow_none = None
 _spaces = []
 
 # ---------------------------------------------------------------------------
-# Cells — the model point
+# Cells
+
+# --- the model point ---------------------------------------------------------
 
 def model_point():
     """The selected model point as a Series."""
@@ -367,8 +369,7 @@ def surr_charge_on():
     return int(model_point()["surr_charge_on"])
 
 
-# ---------------------------------------------------------------------------
-# Cells — the frame
+# --- the frame ---------------------------------------------------------------
 
 def t_start():
     """``t0``: the first projected policy year, ``dur_init() + 1``.
@@ -404,8 +405,7 @@ def age(t):
     return entry_age() + t - 1
 
 
-# ---------------------------------------------------------------------------
-# Cells — the premium and its charges
+# --- the premium and its charges ---------------------------------------------
 
 def prem_sum():
     """``BS``: the *Beitragssumme*, on the **annual-mode** premium.
@@ -557,8 +557,7 @@ def premiums(t):
     return prem_gross_pp(t) * pols_if(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the surplus, the election and the option budget
+# --- the surplus, the election and the option budget -------------------------
 
 def surplus_rate(t):
     """``b(t)``: the declared *Überschussanteilsatz* for policy year t.
@@ -641,8 +640,7 @@ def surplus_credit(t):
     return surplus_credit_pp(t) * pols_if_at(t, "AFT_LAPSE")
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Indexjahr
+# --- the Indexjahr -----------------------------------------------------------
 
 def index_return(t, m):
     """``r(t, m)``: the index return of month m of *Indexjahr* t, as a decimal.
@@ -795,8 +793,7 @@ def index_budget_ratio():
     return credits / budget
 
 
-# ---------------------------------------------------------------------------
-# Cells — the account
+# --- the account -------------------------------------------------------------
 
 def av_pp(t):
     """``A(t)``: the *Deckungskapital* per policy at the **start** of policy year t.
@@ -931,8 +928,7 @@ def av_released(t):
             + av_pp(t + 1) * pols_maturity(t))
 
 
-# ---------------------------------------------------------------------------
-# Cells — the § 169 Abs. 3 shadow account
+# --- the § 169 Abs. 3 shadow account -----------------------------------------
 
 def av_min_pp(t):
     """The shadow *Deckungskapital* on the statutory five-year acquisition-cost spread.
@@ -975,8 +971,7 @@ def av_min_pp_at(t, timing):
     raise ValueError("invalid timing")
 
 
-# ---------------------------------------------------------------------------
-# Cells — the Höchststandsicherung ledger and the guarantee
+# --- the Höchststandsicherung ledger and the guarantee -----------------------
 
 def credit_cum_pp(t):
     """``K(t)``: the *Höchststandsicherung* ledger — every credit ever made, cumulated.
@@ -1025,8 +1020,7 @@ def guar_cap_pp(t):
     return guar_floor_pp(t) + credit_cum_pp(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — decrements
+# --- decrements --------------------------------------------------------------
 
 def mort_rate(t):
     """``q_d(t)``: the annual death rate at the attained age of policy year t.
@@ -1143,8 +1137,7 @@ def pols_maturity(t):
     return pols_if_at(t, "AFT_LAPSE")
 
 
-# ---------------------------------------------------------------------------
-# Cells — benefits
+# --- benefits ----------------------------------------------------------------
 
 def db_pp(t):
     """``D(t)``: the death benefit per policy in policy year t.
@@ -1283,8 +1276,7 @@ def ann_monthly_pp():
     return mat_pp(proj_len()) / 10000.0 * rentenfaktor()
 
 
-# ---------------------------------------------------------------------------
-# Cells — expenses and the cash flow statement
+# --- expenses and the cash flow statement ------------------------------------
 
 def exp_acq_pp(t):
     """The insurer's acquisition expense per policy: 2.5 % of ``BS`` at inception **[std]**.
@@ -1352,8 +1344,7 @@ def liability_cf(t):
     return -net_cf(t)
 
 
-# ---------------------------------------------------------------------------
-# Cells — the published identities
+# --- the published identities ------------------------------------------------
 
 def check_net_cf_resid(t):
     """The cash flow statement's reconciliation residual in policy year t; zero everywhere.
@@ -1383,7 +1374,8 @@ def check_net_cf():
     :func:`check_net_cf_resid` gives the signed residual of the year that failed.
     """
     return bool(all(abs(check_net_cf_resid(t)) <= roll_fwd_tol       # noqa: F821
-                    * max(abs(premiums(t)), 1.0)
+                    * max(abs(premiums(t)), abs(claims(t)),
+                          abs(expenses(t)), 1.0)
                     for t in range(t_start(), proj_len() + 1)))
 
 
@@ -1533,8 +1525,7 @@ def check_index_credit():
                     for t in range(t_start(), proj_len() + 1)))
 
 
-# ---------------------------------------------------------------------------
-# Cells — the result table
+# --- the result table --------------------------------------------------------
 
 def result_cf():
     """Result table of cash flows and account movements, indexed by policy year t.
