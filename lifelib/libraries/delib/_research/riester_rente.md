@@ -1557,12 +1557,12 @@ leaves to the insurer, German statute fixes for everyone:
 | Rider inventory (BUZ, survivor's benefit, *Rentengarantiezeit*) | carrier | not established (gap 11) |
 | Whether the tariff is open to new business | carrier | **not established for any house** (gap 12) |
 
-**What follows for a representative composite.** In frlib the representative design was chosen by
-picking the carrier whose document published the most; here that is impossible and unnecessary in
-equal measure. The composite is built the other way round: **take every statutory parameter as fact
-and make every carrier parameter `[std]`**, anchored so the worked example reproduces exactly. The
-result is defensible precisely because the statutory half — which is the half that makes this a
-Riester contract rather than a private annuity — is not a composite at all.
+**What follows for a representative composite.** In frlib the representative design was the carrier
+whose document published the most; here that is impossible and unnecessary in equal measure. The
+composite is built the other way round: **take every statutory parameter as fact and make every
+carrier parameter `[std]`**, anchored so the worked example reproduces exactly. It is defensible
+precisely because the statutory half — the half that makes this a Riester contract rather than a
+private annuity — is not a composite at all.
 
 ---
 

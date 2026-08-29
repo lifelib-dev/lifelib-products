@@ -711,11 +711,10 @@ level is either `[unverified]` or `[std]`.
   an *indexgebundene Lebensversicherung* in the balance-sheet sense, because the policyholder does
   not bear the investment risk [R15]. This classification decides how it is reserved, how it is
   reported, and which Solvency II line of business it falls in.
-- **Wrappers.** The same index module is written on four chassis in the German market: *Schicht 3*
-  private annuity (the delib scope), *Basisrente* (*Schicht 1*, delib product 5), *Riester*
-  (*Schicht 2*, delib product 6), and *Direktversicherung* in *bAV* (out of delib scope). The
-  wrapper changes the guarantee requirement [R12], the tax treatment [R13][R14] and the accessibility
-  of the capital, and **not the index mechanics**.
+- **Wrappers.** The same index module is written on four chassis: *Schicht 3* private annuity (the
+  delib scope), *Basisrente* (product 5), *Riester* (product 6) and *Direktversicherung* in *bAV*
+  (out of scope). The wrapper changes the guarantee requirement [R12], the tax treatment [R13][R14]
+  and the accessibility of the capital, and **not the index mechanics**.
 
 ### 2. Where the money sits — *Sicherungsvermögen*, not *Anlagestock*
 
@@ -873,21 +872,14 @@ to be stated in full and without hedging.**
   something; it is perfectly ordinary for a year in which the index finished **higher** to credit
   **zero**, because the up-months were capped and the down-months were not. The second worked example
   in section 19 is exactly that case, and it is the case a delib test must assert.
-- **Interpretation questions the corpus does not settle**, each of which changes a credited amount and
-  each of which is a carrier-level clause:
-  - Whether the monthly observation dates are calendar month-ends or the monthly recurrences of the
-    *Indexstichtag*. Gap 18.
-  - Whether the index level used is a closing level, an average of a few days, or an average over the
-    month (an "Asian" reading, which lowers the effective volatility and so buys a higher cap).
-    Gap 18.
-  - Whether `G`, the participating capital, is the whole *Deckungskapital* at the start of the
-    *Indexjahr*, or only a defined index-participating part of it, or the accumulated
-    *Überschussguthaben* alone. Different carriers do different things and **none is established**.
-    Gap 19. delib takes `G` = the whole accumulated capital at the start of the *Indexjahr* as a
-    `[std]` choice, because it is the reading under which the arithmetic in the customer-facing
-    material of this product family works.
-  - Whether a contract that begins or ends mid-*Indexjahr* participates pro rata or not at all.
-    Gap 12.
+- **Interpretation questions the corpus does not settle**, each a carrier-level clause and each
+  changing a credited amount: whether the monthly observation dates are calendar month-ends or
+  monthly recurrences of the *Indexstichtag*, and whether the level used is a closing level or an
+  average (an Asian reading lowers the effective volatility and so buys a higher cap) — gap 18;
+  whether `G` is the whole *Deckungskapital* at the start of the year, a defined index-participating
+  sub-account, or the accumulated *Überschussguthaben* alone — gap 19, with delib taking the whole
+  accumulated capital as `[std]`; and whether a contract beginning or ending mid-*Indexjahr*
+  participates pro rata or not at all — gap 12.
 
 ### 6. The floor and the annual lock-in — *Höchststandsicherung*
 
@@ -936,13 +928,12 @@ dominant one.
 
   There is no monthly cap and no monthly asymmetry: a down-month is not penalised relative to an
   up-month, because only the year's net movement matters. The whole of the give-up is in `q`.
-- **The two designs are not equivalent and they fail in different ways.** The Cap design gives away
-  the *large* monthly moves and is therefore hurt by volatility even when the year ends well; the
-  *Quote* design gives away a constant fraction and is hurt in exactly the same proportion in every
-  state. For a policyholder, the *Quote* design is far easier to understand and to compare with a
-  direct investment; for an insurer, the Cap design has historically bought a higher headline number
-  out of the same budget, because the strip of monthly caps is a cheaper package than a fraction of
-  a one-year call when volatility is high.
+- **The two designs are not equivalent and fail differently.** The Cap design gives away the *large*
+  monthly moves and is hurt by volatility even when the year ends well; the *Quote* design gives away
+  a constant fraction in every state. The *Quote* design is far easier for a policyholder to compare
+  with a direct investment; the Cap design has historically bought a higher headline out of the same
+  budget, a strip of monthly caps being cheaper than a fraction of a one-year call at high
+  volatility.
 - **Typical levels, all `[unverified]` and all `[std]` downstream**: participation rates on a broad
   price index of the order of **50 % to 80 %**; participation rates on a low-volatility house
   multi-asset index (section 9) of the order of **80 % to above 100 %**, the latter being possible
@@ -1043,12 +1034,10 @@ dominant one.
   is materially restructured, or ceases to be available on terms on which the insurer can buy the
   hedge. The standard solution is an ***Ersatzindex*** clause: the insurer may substitute a
   comparable index, on notice to the policyholder.
-- Two questions on which carriers differ and on which **nothing is established**:
-  - Whether the substitution requires the confirmation of an **unabhängiger Treuhänder** [R4]. Some
-    German AVB in adjacent product families do require it; whether index tariffs do is not
-    established. Gap 22.
-  - Whether the policyholder gets a **special termination right** (*Sonderkündigungsrecht*) or at
-    least an unscheduled right to switch to the *sichere Verzinsung* when the index changes. Gap 22.
+- Two questions on which carriers differ and **nothing is established** (gap 22): whether the
+  substitution requires the confirmation of an **unabhängiger Treuhänder** [R4], as some German AVB in
+  adjacent families do; and whether the policyholder gets a *Sonderkündigungsrecht* or at least an
+  unscheduled right to move to the *sichere Verzinsung* when the index changes.
 - The distinction from § 163 VVG matters again here: substituting the index is a change to a
   contractual term and therefore lives in the § 164 VVG / *Treuhänder* / express-clause world, while
   redetermining the Cap is not [R4][R22].
@@ -1100,12 +1089,10 @@ dominant one.
 - A ***Dynamik*** option (automatic annual premium increase, with a matching benefit increase, and a
   right to decline) is normal on this chassis. It interacts with the guarantee: each increment is a
   new tranche with its own guarantee basis `[unverified]`.
-- **The premium does not enter the index formula.** Premiums build the capital `K`; the index payoff
-  is struck on the participating capital `G` at the *start* of the *Indexjahr*. Premiums paid during
-  an *Indexjahr* therefore, in the natural reading, participate only from the following *Indexjahr*.
-  **Whether carriers pro-rate them is not established** — gap 12 — and delib adopts the natural
-  reading as `[std]`: `G(t)` is the capital at the start of the year, premiums of year `t` join `G`
-  at `t+1`.
+- **The premium does not enter the index formula.** Premiums build the capital `K`; the payoff is
+  struck on `G`, the participating capital at the *start* of the *Indexjahr*, so on the natural
+  reading premiums paid during a year participate only from the following one. **Whether carriers
+  pro-rate them is not established** (gap 12); delib adopts the natural reading as `[std]`.
 - **`[std]` model point**: *Beitrag* **200 € per month**, entry age **40**, *Aufschubdauer* **27
   years** to *Rentenbeginn* at **67**, premiums payable throughout. Rationale in section 22.
 
@@ -1201,11 +1188,10 @@ Inherited wholesale from delib product 2; recorded here only as the delta.
 
 ### 17. Decrements, underwriting and policyholder behaviour
 
-- **Underwriting is light or absent.** The sum at risk before *Rentenbeginn* is close to zero, so a
-  savings-form deferred annuity is normally issued on a short declaration or none at all
-  `[unverified]`. The mortality basis for the accumulation phase matters little; the basis for the
-  *Rentenphase* matters greatly and is **DAV 2004 R**, the generational annuitant table, documented
-  in product 2's research.
+- **Underwriting is light or absent**, the sum at risk before *Rentenbeginn* being close to zero, so
+  the contract is normally issued on a short declaration or none `[unverified]`. The accumulation
+  mortality basis matters little; the *Rentenphase* basis matters greatly and is **DAV 2004 R**, the
+  generational annuitant table, documented in product 2's research.
 - **DAV tables are the property of the Deutsche Aktuarvereinigung, are not public and are not
   redistributed in this library.** delib ships `[std]` proxies anchored so the worked example
   reproduces exactly, and says what a replacement must preserve.
@@ -1485,12 +1471,11 @@ this author's assessment of the plausible market band and is itself `[unverified
   changed the product's relative position** [R7][R18]: a larger guaranteed component makes the safe
   arm of the *Wahlrecht* more attractive and reduces the pressure that created the product. Whether
   index tariffs have lost share as a result **is not established** `[unverified]`.
-- **Carrier inventory.** This author can name, with moderate confidence and tagged `[unverified]`,
-  three carriers and product names in this family — **Allianz IndexSelect** [S2], **R+V-IndexInvest**
-  [S7] and **Stuttgarter index-safe** [S8] — and is confident, without being able to name products,
-  that the family extends across much of the large and mid-sized German market. **The rest of the
-  carrier inventory the brief asked for could not be assembled**, and inventing product names would
-  have been worse than admitting it. Gap 2.
+- **Carrier inventory.** Three products can be named with moderate confidence, all `[unverified]` —
+  **Allianz IndexSelect** [S2], **R+V-IndexInvest** [S7], **Stuttgarter index-safe** [S8] — and the
+  family plainly extends across much of the large and mid-sized German market. **The rest of the
+  inventory the brief asked for could not be assembled**, and inventing names would have been worse
+  than admitting it. Gap 2.
 
 ### 24. What a projection model needs, and what this file supplies
 
@@ -1526,11 +1511,10 @@ arithmetic those numbers would have gone into.
 
 ## Observed variation across insurers
 
-**An honest variations table for this product is almost entirely a record of what could not be
-compared.** No carrier document was retrieved and no search corroborated any carrier-level term, so
-there is no per-insurer evidence to tabulate. What follows is therefore the *structure* of the
-comparison a later researcher must fill in, with the delib `[std]` in the last column, and the
-parameter bands from section 22 restated as ranges.
+**An honest variations table here is almost entirely a record of what could not be compared.** No
+carrier document was retrieved and no search corroborated any carrier-level term. What follows is the
+*structure* of the comparison a later researcher must fill in, with the delib `[std]` in the last
+column and the section-22 bands restated as ranges.
 
 | Feature to compare | Allianz [S2][S3][S4][S5] | R+V [S7] | Die Stuttgarter [S8] | Anyone else | delib `[std]` |
 |---|---|---|---|---|---|
