@@ -291,9 +291,9 @@ wherever the repository is checked out.
 | `fund_scenario_file` | `fund_scenario_table()` | `fund_scenario_table.csv` |
 | `rentenfaktor_file` | `rentenfaktor_table()` | `rentenfaktor_table.csv` |
 
-**The trade-off:** the model is not portable on its own — copy `FRV_DE_S/` without the CSVs
-and it reads fine, then fails on first evaluation — but a diff of the model shows logic
-changes only, and an input can be swapped in place. **Every file but
+**The trade-off:** the model is not portable on its own — copy `FRV_DE_S/` without the CSVs and
+it reads fine, then fails on first evaluation — but a diff of the model shows logic changes
+only, and an input can be swapped in place. **Every file but
 `model_point_table.csv` carries a `provenance` column**, one tag per row, asserted by the
 conventions suite: delib's second ruling, the citation discipline reaching the data files
 rather than stopping at the prose. The model point table is the one exemption, a model point

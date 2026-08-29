@@ -956,17 +956,23 @@ closed form with no table:
     total instalments, months 0 … 119                = 48,073.0432208278
 
 The model's own `annuity_payments + claims_guarantee` over `t = 0 … 119` is
-**48,073.0432208278 €**, agreeing to 7 × 10⁻¹² €. A model that decremented the guaranteed
-instalments for survival — pitfall 2 — would come out about 8 % below this figure, and a model
-that added the certain floor instead of taking a `max` — pitfall 3 — about 92 % above it.
+**48,073.0432208278 €**, agreeing to 7 × 10⁻¹² €. The two errors this closes off are large and
+in opposite directions. A model that decremented the guaranteed instalments for survival —
+pitfall 2 — would pay only the annuitant's leg, 44 645,0162147316 €, **7,13 % below**. A model
+that added the certain floor instead of taking a `max` — pitfall 3 — would pay
+92 718,0594355593 €, **92,87 % above**, because it pays `1 + l_a` for the whole guarantee.
 
 ### The variant the notes promised: the same cell *nachschüssig*
 
 Model point 9 is model point 1 with `payment_timing = arrears` and nothing else changed. The
 first instalment moves from `t = 0` to `t = 1`, the guarantee window from `0 … 119` to
-`1 … 120`, and the tariff factor falls from 263.5711140230 to **262.6685503335** — by 0.9025636895,
-which is the value of the one instalment that has moved to the far end of the guarantee. The
-guaranteed instalment rises in exactly that proportion:
+`1 … 120`, and the tariff factor falls from 263.5711140230 to **262.6685503335**, by 0.9025636895 — and that
+difference is itself checkable in one line. Arrears does not pay the instalment at `t = 0`, worth
+1; against that, its guarantee window is `1 … 120` rather than `0 … 119`, so the instalment at
+`t = 120` is certain for it and survival-contingent for advance, worth
+`v¹⁰ (1 − l̃(120)) = 0.9052869504 × (1 − 0.8923696956) = 0.0974363105`. The net is
+`1 − 0.0974363105 = 0.9025636895`, to the last printed digit. The guaranteed instalment rises in
+exactly the inverse proportion:
 
     363.9119916441 / 362.6658241684  =  263.5711140230 / 262.6685503335  =  1.00343586
 
@@ -983,8 +989,10 @@ guaranteed instalment rises in exactly that proportion:
 | **Total** | **259.081684** | **100,000.00** | **101,038.39** | **3,504.53** | **4,227.99** | **−8,770.91** |
 
 Three things are worth reading off it. `t = 0` carries no instalment and no instalment-running
-expense — 2 205,00 € against the anchor's 2 206,50 € — so the *nachschüssig* cell is 400 € better
-off in its first month and pays it back over the following fifty-six years. The guarantee still
+expense — 2 205,00 € against the anchor's 2 206,50 € — so the *nachschüssig* cell's first month is
+**400,43 €** better, exactly one instalment plus its 1,50 € running cost, and it pays that back
+over the following fifty-six years: its undiscounted `net_cf` total is −8 770,91 € against
+−8 747,64 €. The guarantee still
 covers **120 instalments**, now at `t = 1 … 120` (pitfall 13). And the annuity is **0,34 % higher**,
 not 5 %: see the correction recorded at the end of this section.
 
