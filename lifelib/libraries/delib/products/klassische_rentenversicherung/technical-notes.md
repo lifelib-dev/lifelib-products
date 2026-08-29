@@ -470,8 +470,13 @@ If `pup_cashout` is false the contract continues premium-free: `P(t) = 0` from `
 computed on the § 169 Abs. 3–5 value, on the premium basis [R2] [REG-R28] — the *Ansammlungsguthaben*
 is untouched, `Δ` is set to zero because the two accounts have merged, and the reserve-based charge
 switches to `gamma_pup_rate`. **The uplift is real money and it is published**, as
-`pup_uplift(t) = (pup_value_pp − av_pp_at(pup_year−1,"AFT_INT")) × l(t)`, so that the fund-level
-roll-forward still closes. If `pup_cashout` is true the contract is **cashed out instead**, the whole
+`pup_uplift(pup_year − 1) = ( pup_value_pp − av_pp_at(pup_year−1,"AFT_INT") ) × l(pup_year)`, so that
+the fund-level roll-forward still closes. It is booked in the **transition** year `pup_year − 1`,
+because that is the row whose roll-forward needs it: the uplift is the step between the zillmered
+end-of-year balance of year `pup_year − 1` and the reset opening balance of year `pup_year`, and
+`check_av_roll_fwd()` closes at every `t` only if it is credited on the earlier of the two rows. On
+the anchor cell it is identically zero; on point 7 it is 28,39 € at `t = 9`.
+If `pup_cashout` is true the contract is **cashed out instead**, the whole
 surviving cohort leaving at the end of year `pup_year − 1` through the surrender decrement at `R(t)`
 [R2]. **No *Stornoabzug* is applied on the paid-up route [std]**: Abs. 5 is drafted for a payout on
 *Kündigung*, and here the contract continues. The alternative is a documented variant.
@@ -591,7 +596,8 @@ the boundary, step 11 only in the payout phase.
 2. **Test the phase and the elections.** Accumulation if `t ≤ n`, payout if `t > n`;
    `paid_up(t)` is true if `pup_year > 0 and t ≥ pup_year`. If `t = pup_year` and the contract is
    converting, `av_pp(t)` has already been reset to `pup_value_pp` by step 1's recursion and
-   `spread_diff_pp(t)` to zero; `pup_uplift(t)` records the difference.
+   `spread_diff_pp(t)` to zero; `pup_uplift(pup_year − 1)` — booked one row earlier, on the
+   transition year — records the difference.
 3. **Look up the year's rates.** `mort_rate_guar(t)` from the generational surface at
    `(sex, age(t), calendar_year(t))`, `mort_rate(t) = mort_rate_guar(t) × mort_be_factor`,
    `lapse_rate(t)` from the duration table (zero if `t > n`), `decl_rate(t)` from the declared-rate
@@ -657,7 +663,12 @@ becomes a test in `tests/test_klassische_rentenversicherung_de.py`.
    consequences: the paid-up contract keeps its guarantee vintage and its guaranteed *Rentenfaktor*
    and pays a reduced benefit; the surrendered one is gone for cash [R1] [R2]. Assert that on point 7
    `pols_if` is unbroken through `pup_year`, `prem_pp(t) = 0` from it, `int_rate_guar` is unchanged,
-   and `claims_lapse(pup_year) = 0`.
+   and that the conversion itself moves **no** policy: `pols_lapse(pup_year − 1)` is the ordinary
+   duration-9 table rate of 3,5 % and not 1, and `av_pp(pup_year) = pup_value_pp > av_pp_at(pup_year
+   − 1,"AFT_INT")`. What is **not** true is that surrender ceases: a *beitragsfrei* contract keeps
+   its § 168 VVG *Kündigung* right, so `claims_lapse(t)` stays positive after `pup_year` — 764,12 €
+   at `t = 10` on point 7 — and only the § 165 cash-out branch of point 8 empties the cohort in one
+   year.
 6. **Booking the *Kostenbeitrag* as an expense.** The charges are internal deductions that move money
    inside the contract; `expenses` is the insurer's best-estimate outgo. Assert
    `expenses(t) ≠ charge_due_pp(t) × pols_if(t)` and that `expenses(t)` is invariant to
@@ -686,8 +697,14 @@ becomes a test in `tests/test_klassische_rentenversicherung_de.py`.
 11. **Charging the risk premium on a zero net amount at risk.** With
     `death_benefit_form = deckungskapital` the death benefit **is** the reserve, so there is nothing
     at risk. Assert `charge_risk_pp(t) = 0` at every `t` on points 2 and 12, and that
-    `charge_risk_pp(t) > 0` early and falls towards zero on the anchor as the *Deckungskapital*
-    catches up with the premiums paid.
+    `charge_risk_pp(t) > 0` at every accumulation `t` on the anchor, where the benefit is the
+    premiums paid. On that cell the net amount at risk **rises** to a peak of 4 587,95 € at `t = 6`
+    and then declines, ending the deferment at 3 204,24 € rather than at zero: with the whole 25 ‰
+    zillmered out of year 1, a 4 % premium charge and a 1,00 % *Rechnungszins*, the
+    *Deckungskapital* never overtakes the premiums paid inside seventeen years, which is precisely
+    why *Beitragsrückgewähr* is real risk cover on this design and not a formality. The risk charge
+    itself rises monotonically, from 4,37 € to 15,39 €, because first-order mortality more than
+    triples over the deferment while the amount at risk moves by a third.
 12. **Deducting the payout-phase administration charge from the annuity.** The *Rentenfaktor* is
     exogenous here and already carries the tariff's payout loading, so `annuity_admin_rate` is
     recorded in `charge_table.csv` and **not applied**. Assert

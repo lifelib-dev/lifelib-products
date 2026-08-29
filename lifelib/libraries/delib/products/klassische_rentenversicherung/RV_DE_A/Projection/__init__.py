@@ -215,7 +215,7 @@ The floor is the § 169 Abs. 3 *Deckungskapital* **alone**: profit shares sit on
 statutory minimum rather than inside it. That reading lets the floor bind early and stop
 binding once the *Ansammlungsguthaben* has outgrown the interest residual and the
 *Stornoabzug*, so both branches of ``cv_pp(t) = max(cv_tariff_pp, cv_floor_pp)`` are
-exercised on the anchor cell alone — it binds through ``t = 5`` and not after. The
+exercised on the anchor cell alone — it binds through ``t = 4`` and not after. The
 alternative reading, in which the floor also carries the *Ansammlungsguthaben*, is **not
 implemented** and would make the floor bind at every duration.
 
@@ -1085,7 +1085,7 @@ def cv_floor_pp(t):
 def cv_pp(t):
     """R(t): the surrender value per policy, ``max(cv_tariff_pp(t), cv_floor_pp(t))``.
 
-    On the anchor cell the **floor binds through t = 5** — the zillmered account has not yet
+    On the anchor cell the **floor binds through t = 4** — the zillmered account has not yet
     caught up with the evenly spread one — and stops binding once the *Ansammlungsguthaben*
     has outgrown the interest residual and the *Stornoabzug*.  Both branches are therefore
     exercised on the anchor cell alone, which is why the floor is not merely present but
