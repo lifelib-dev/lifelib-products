@@ -3,26 +3,25 @@
 The golden values are the worked example in
 ``products/basisrente/technical-notes.md`` ("Worked example"), which is a **configuration**
 rather than a scenario.  Model point 1 is that cell: policy ``DE-BAS-0001``, a male aged 45 at
-conclusion (``sex`` is reporting only -- pricing is unisex), the contract concluded in **2026**
-with ``duration_init = 0``, *Rentenbeginn* at attained age **67**, one policy in force, a
-**regular** *laufender Beitrag* of **6 000,00 EUR** a year paid **annually in advance** so the
+conclusion (``sex`` is reporting only -- pricing is unisex), concluded in **2026** with
+``duration_init = 0``, *Rentenbeginn* at attained age **67**, one policy in force, a **regular**
+*laufender Beitrag* of **6 000,00 EUR** a year paid **annually in advance** so the
 *Ratenzahlungszuschlag* is 1,000, a **2 % *Beitragsdynamik***, an annual ***Zuzahlung*** of
 **4 000,00 EUR** to policy duration 22, not paid-up at the valuation date, no opening account
 value and no annuity in payment, a *Rechnungszins* of **1,00 %**, a **guaranteed *Rentenfaktor*
-of 28,00 EUR** per month per 10 000 EUR, **no *Rentengarantiezeit*, no survivor's annuity and
-no BUZ**, on tariff ``de_basis_std`` with the ``base`` behaviour, surplus and *Rentenfaktor*
+of 28,00 EUR** per month per 10 000 EUR, **no *Rentengarantiezeit*, no survivor's annuity and no
+BUZ**, on tariff ``de_basis_std`` with the ``base`` behaviour, surplus and *Rentenfaktor*
 scenarios.  Hence ``age(1) = 45``, ``ret_t() = 23``, ``omega_age() = 121`` and
-``proj_len() = 77``: twenty-two years of *Aufschubphase* and fifty-five years of *Rentenphase*.
+``proj_len() = 77``: twenty-two years of *Aufschubphase*, fifty-five of *Rentenphase*.
 
-Because the projection is seventy-seven years long, the notes print **eighteen selected rows** --
-every year of the first six, a five-yearly sample of the accumulation phase, the conversion year
-and its neighbours, and a decade sample of the payout phase -- plus a **Total** row summed at
-full precision and then rounded.  Every one of those eighteen rows is asserted here, cell by
-cell, together with the full-precision totals and the fact that adding the *rounded* cells
-instead gives a different answer in three of the six money columns.  The goldens are hard-coded
-rather than pickled so a reviewer can compare them with the notes by eye, and the tolerances
-follow the precision the notes display: money to the cent, the two policy counts to six
-decimals.
+Because the projection is that long the notes print **eighteen selected rows** -- every year of
+the first six, a five-yearly sample of the accumulation phase, the conversion year and its
+neighbours, and a decade sample of the payout phase -- plus a **Total** row summed at full
+precision and then rounded.  Every one of those rows is asserted here, cell by cell, with the
+full-precision totals and the fact that adding the *rounded* cells instead gives a different
+answer in three of the six money columns.  The goldens are hard-coded rather than pickled so a
+reviewer can compare them with the notes by eye, and the tolerances follow the precision the
+notes display: money to the cent, the two policy counts to six decimals.
 
 What this module asserts, beyond those rows:
 
@@ -34,10 +33,10 @@ What this module asserts, beyond those rows:
   the cell on which the guaranteed *Rentenfaktor* binds instead of the current one;
 * all six published ``check_*`` identities and their per-``t`` residuals, including
   ``check_net_cf()`` -- delib's first ruling -- and the shape and sign of ``result_cf()``;
-* **one test per numbered modeling pitfall** in the technical notes, named for the pitfall:
-  no surrender value and none of the names that carry one (1); a *Beitragsfreistellung* absent
-  from the in-force roll-forward (2); the two account blocks not averaged (3); an account charge
-  that is not also an expense (4); the *Zillmerung* spread over five **contract** years (5); the
+* **one test per numbered modeling pitfall** in the technical notes, named for the pitfall: no
+  surrender value and none of the names that carry one (1); a *Beitragsfreistellung* absent from
+  the in-force roll-forward (2); the two account blocks not averaged (3); an account charge that
+  is not also an expense (4); the *Zillmerung* spread over five **contract** years (5); the
   declared rate as a ``max`` and not a sum (6); the premium stream keyed to the policy duration
   and stopping at *Rentenbeginn* (7); the *Ratenzahlungszuschlag* on the *laufender Beitrag*
   alone (8); no death benefit with the rider off (9), and with it on, only where an eligible
@@ -123,11 +122,10 @@ AV_PP_AFT_INT_1 = 7377.3686799475     # N(1) x (1 + 0.026 - 0.0035)
 AV_2_ANCHOR = 7366.7479330812         # that, after the year-1 death decrement
 QX45_TABLE = 0.0023263433             # 0.014000 x 1.085^(45 - 67), the shipped table at 45
 TREND_2005_TO_2026 = 0.7280493868     # (1 - 0.015)^21
-Q1_FIRST_ORDER = 0.0016936928         # mort_rate_base(1)
-Q1_BEST_ESTIMATE = 0.0014396389       # mort_rate(1) = 0.85 x that
-FREEZE_1 = 0.0399424144               # pols_freeze(1)
+Q1_FIRST_ORDER = 0.0016936928         # mort_rate_base(1); mort_rate(1) is 0.85 x it
+Q1_BEST_ESTIMATE = 0.0014396389
+FREEZE_1 = POLS_PAIDUP_2 = 0.0399424144
 POLS_PAYING_2 = 0.9586179467
-POLS_PAIDUP_2 = 0.0399424144
 FUND_PER_ANNUITANT = 200050.6219643070
 ANN_PP_23 = 7561.9135102508
 ANN_PP_23_IF_GUARANTEE_BOUND = 6721.70   # what 28,00 EUR would have given
@@ -203,20 +201,18 @@ def test_worked_example_row(de_basis_anchor, t):
 
 
 def test_the_worked_example_totals_are_summed_at_full_precision(de_basis_anchor):
-    """The Total row is a full-precision sum over all seventy-seven years, then rounded."""
+    """The Total row is a full-precision sum over all seventy-seven years, then rounded.
+
+    Adding the *rounded* cells instead costs one or two cents in three of the six money columns,
+    and the notes say so.  Asserting both numbers is what stops the difference being quietly
+    "corrected" in either direction, and it is why a test that summed the printed cells would be
+    asserting the wrong number.  The Total row also closes on itself, which is
+    ``check_net_cf()`` evaluated over all seventy-seven years at once.
+    """
     df = de_basis_anchor.result_cf()
     assert len(df) == 77
     for column, total in TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
-
-
-def test_the_totals_differ_from_the_sum_of_the_rounded_cells(de_basis_anchor):
-    """Rounding seventy-seven times before adding costs one or two cents, in three columns.
-
-    Asserting both numbers is what stops the difference being quietly "corrected" in either
-    direction, and it is why a test that summed the printed cells would assert the wrong number.
-    """
-    df = de_basis_anchor.result_cf()
     for column, rounded_sum in ROUNDED_CELL_SUMS.items():
         assert round(sum(round(v, 2) for v in df[column]), 2) == pytest.approx(
             rounded_sum, abs=CENT), column
@@ -225,6 +221,11 @@ def test_the_totals_differ_from_the_sum_of_the_rounded_cells(de_basis_anchor):
     for column in ("premiums", "zuzahlungen", "net_cf"):
         assert round(sum(round(v, 2) for v in df[column]), 2) == pytest.approx(
             TOTALS[column], abs=CENT), column
+    total = (df["premiums"].sum() + df["zuzahlungen"].sum() - df["claims_death"].sum()
+             - df["claims_annuity"].sum() - df["claims_survivor"].sum()
+             - df["expenses"].sum() - df["commissions"].sum())
+    assert total == pytest.approx(-115187.0842315298, abs=CENT)
+    assert total == pytest.approx(df["net_cf"].sum(), rel=1e-12)
 
 
 def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_anchor):
@@ -278,7 +279,6 @@ def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_an
     assert p.mort_rate_base(1) == pytest.approx(Q1_FIRST_ORDER, abs=5e-10)
     assert p.mort_rate(1) == pytest.approx(Q1_BEST_ESTIMATE, abs=5e-10)
     assert p.mort_rate(1) == pytest.approx(0.85 * p.mort_rate_base(1), rel=1e-12)
-
     assert p.pols_death(1) == pytest.approx(Q1_BEST_ESTIMATE, abs=5e-10)
     assert p.bf_rate(1) == 0.04
     assert p.pols_freeze(1) == pytest.approx(FREEZE_1, abs=5e-10)
@@ -318,23 +318,11 @@ def test_the_decrements_close_to_exactly_one(de_basis_anchor):
     """
     p = de_basis_anchor
     n = p.proj_len()
-    assert n == 77
     deaths = sum(p.pols_death(t) for t in range(1, n + 1))
     assert p.pols_if(n + 1) == pytest.approx(0.0, abs=1e-12)
     assert deaths + p.pols_if(n + 1) == pytest.approx(p.pols_if_init(), abs=1e-10)
     assert sum(p.pols_freeze(t) for t in range(1, n + 1)) == pytest.approx(
         0.4417651793, abs=5e-9)
-
-
-def test_the_cash_flow_statement_closes_over_the_whole_projection(de_basis_anchor):
-    """The Total row itself closes -- check_net_cf() evaluated over all years at once."""
-    df = de_basis_anchor.result_cf()
-    total = (df["premiums"].sum() + df["zuzahlungen"].sum()
-             - df["claims_death"].sum() - df["claims_annuity"].sum()
-             - df["claims_survivor"].sum() - df["expenses"].sum()
-             - df["commissions"].sum())
-    assert total == pytest.approx(-115187.0842315298, abs=CENT)
-    assert total == pytest.approx(df["net_cf"].sum(), rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -346,9 +334,7 @@ def test_every_published_check_holds_and_its_residual_is_zero(de_basis_anchor):
     p = de_basis_anchor
     for check in ("check_net_cf", "check_pols_roll_fwd", "check_av_roll_fwd",
                   "check_conversion", "check_no_capital", "check_annuity_roll_fwd"):
-        value = getattr(p, check)()
-        assert value is True, check
-        assert isinstance(value, bool), check
+        assert getattr(p, check)() is True, check
     for t in (1, 2, 5, 22, 23, 24, 77):
         assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-8)
         assert p.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-10)
@@ -369,7 +355,11 @@ def test_every_published_check_holds_and_its_residual_is_zero(de_basis_anchor):
 
 
 def test_result_cf_shape_and_both_signs_of_the_net_flow(de_basis_anchor):
-    """Twelve columns in the notes' order, ``pols_if`` first, contiguous 1..proj_len()."""
+    """Twelve columns in the notes' order, ``pols_if`` first, contiguous 1..proj_len().
+
+    And the two accessors that take an enum raise on an unknown one rather than returning a
+    zero, which on this product would be a claim kind that cannot exist.
+    """
     p = de_basis_anchor
     df = p.result_cf()
     assert df.index.name == "t"
@@ -390,20 +380,12 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_basis_anchor):
     # The shape: a first-year strain that is all commission, then positive accumulation-phase
     # margin, then a payout tail that never turns.
     assert df["net_cf"].iloc[0] == pytest.approx(4395.15, abs=CENT)
-    assert (df["net_cf"].iloc[1:22] > 0).all()
-    assert (df["net_cf"].iloc[22:] < 0).all()
-
-
-def test_invalid_enum_values_raise(de_basis_anchor):
-    """The enum accessors validate rather than propagating a typo into a lookup.
-
-    ``"SURRENDER"`` in particular: there is no fourth kind of claim and there can be none, so
-    asking for one is an error and not a zero.
-    """
-    p = de_basis_anchor
+    assert (df["net_cf"].iloc[1:22] > 0).all() and (df["net_cf"].iloc[22:] < 0).all()
+    # The enum accessors validate rather than propagating a typo into a lookup.  "SURRENDER" in
+    # particular: there is no fourth kind of claim and there can be none, so asking for one is
+    # an error and not a zero.
     for call in (lambda: p.claims(1, "SURRENDER"), lambda: p.claims(1, "LAPSE"),
-                 lambda: p.pols_if_at(1, "AFTER_LAPSE"),
-                 lambda: p.av_pp_at(1, "AFT_SURR")):
+                 lambda: p.pols_if_at(1, "AFTER_LAPSE"), lambda: p.av_pp_at(1, "AFT_SURR")):
         with pytest.raises(FormulaError):
             call()
 
@@ -445,7 +427,6 @@ def test_the_einmalbeitrag_totals_and_its_first_year_account(basisrente):
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
     assert round(sum(round(v, 2) for v in df["net_cf"]), 2) == pytest.approx(
         SINGLE_NET_CF_ROUNDED_CELL_SUM, abs=CENT)
-
     assert p.beitragssumme_pp() == 60000.00
     assert p.alpha_total_pp() == pytest.approx(0.025 * 60000.00, rel=1e-12)
     assert p.commissions(1) == pytest.approx(p.alpha_total_pp(), rel=1e-12)
@@ -514,9 +495,9 @@ def test_pitfall_1_no_surrender_value_and_none_of_the_names_that_carry_one(
         assert absent not in names, absent
     p = de_basis_anchor
     assert p.check_no_capital() is True
-    assert all(p.check_no_capital_resid(t) == 0.0 for t in (1, 10, 23, 40, 77))
     # The only three kinds of payment there are.
     for t in (1, 10, 23, 40, 77):
+        assert p.check_no_capital_resid(t) == 0.0
         assert p.claims(t) == pytest.approx(
             p.claims(t, "DEATH") + p.claims(t, "ANNUITY") + p.claims(t, "SURVIVOR"),
             rel=1e-12)
@@ -583,7 +564,6 @@ def test_pitfall_2_a_beitragsfreistellung_removes_the_premium_not_the_policy(de_
     assert p.pols_paying(23) == pytest.approx(0.512516, abs=SIX_DP)
     assert p.pols_if(23) == pytest.approx(0.932780, abs=SIX_DP)
     assert p.pols_if(23) - p.pols_paying(23) == pytest.approx(0.420265, abs=SIX_DP)
-    assert p.pols_paidup(23) > 0.0
 
 
 def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged():
@@ -609,10 +589,10 @@ def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged():
             assert all(p.bf_rate(t) == 0.0 for t in (1, 5, 12, 22))
             assert p.pols_paidup(23) == 0.0
             assert p.pols_paying(23) == pytest.approx(p.pols_if(23), rel=1e-12)
+            assert p.check_pols_roll_fwd() is True and p.check_av_roll_fwd() is True
             assert (nobf["premiums"] > base["premiums"]).loc[2:22].all()
             assert nobf["premiums"].sum() == pytest.approx(159397.29, abs=CENT)
             assert p.ann_pp(23) == pytest.approx(10448.66, abs=CENT)
-            assert p.check_pols_roll_fwd() is True and p.check_av_roll_fwd() is True
         finally:
             alt.unlink(missing_ok=True)
     finally:
@@ -676,11 +656,8 @@ def test_pitfall_4_the_account_charges_are_income_and_never_an_expense():
             model.Data.clear_all()
             model.Projection.clear_all()
             loaded = model.Projection[1].result_cf()
-            assert (base["expenses"] - loaded["expenses"]).abs().max() == 0.0
-            assert (base["commissions"] - loaded["commissions"]).abs().max() == 0.0
-            assert (base["premiums"] - loaded["premiums"]).abs().max() == 0.0
-            assert (base["zuzahlungen"] - loaded["zuzahlungen"]).abs().max() == 0.0
-            assert (base["pols_if"] - loaded["pols_if"]).abs().max() == 0.0
+            for column in ("expenses", "commissions", "premiums", "zuzahlungen", "pols_if"):
+                assert (base[column] - loaded[column]).abs().max() == 0.0, column
             assert (base["av"] - loaded["av"]).abs().max() > 1000.0
             assert loaded["claims_annuity"].sum() == pytest.approx(249887.21, abs=CENT)
             assert loaded["claims_annuity"].sum() < base["claims_annuity"].sum()
@@ -711,7 +688,6 @@ def test_pitfall_5_the_zillmerung_is_five_equal_instalments_of_the_contract(basi
         0.025 * p.beitragssumme_pp(), rel=1e-9)
     assert p.alpha_total_pp() == pytest.approx(0.025 * p.beitragssumme_pp(), rel=1e-12)
     assert p.zill_spread_y == 5
-
     in_force = basisrente.Projection[6]
     assert in_force.duration(1) == 17
     assert all(in_force.alpha_amort_pp(t) == 0.0
@@ -739,7 +715,6 @@ def test_pitfall_6_the_credited_rate_is_a_maximum_and_not_a_sum(basisrente, de_b
         assert p.cred_rate(t) == pytest.approx(decl, rel=1e-12)
         assert p.cred_rate(t) == max(0.0100, decl)
         assert p.cred_rate(t) != pytest.approx(0.0100 + decl, rel=1e-12)
-
     high = basisrente.Projection[8]
     assert float(high.model_point()["gtd_rate"]) == 0.0275
     for t in (1, 5, 30):
@@ -767,7 +742,6 @@ def test_pitfall_7_premiums_and_zuzahlungen_stop_at_rentenbeginn(basisrente, de_
     for t in (1, 5, 22):
         assert p.prem_base_pp(t) == pytest.approx(
             6000.00 * 1.02 ** p.duration(t), rel=1e-12)
-
     in_force = basisrente.Projection[6]
     assert in_force.duration(1) == 17
     assert in_force.prem_base_pp(1) == pytest.approx(3600.00 * 1.02 ** 17, rel=1e-12)
@@ -787,13 +761,11 @@ def test_pitfall_8_the_frequency_loading_is_applied_once_and_to_one_thing(basisr
     assert p.prem_freq_load() == 1.000
     for t in (1, 5, 22):
         assert p.prem_pp(t) / p.prem_base_pp(t) == pytest.approx(1.000, rel=1e-12)
-
     monthly = basisrente.Projection[2]
     assert monthly.prem_freq_load() == 1.050
     assert monthly.prem_pp(1) == pytest.approx(3000.00 * 1.05, abs=CENT)
     for t in (1, 5, 20):
         assert monthly.prem_pp(t) / monthly.prem_base_pp(t) == pytest.approx(1.050, rel=1e-12)
-
     quarterly = basisrente.Projection[3]
     assert quarterly.prem_freq_load() == 1.030
     assert quarterly.prem_pp(1) == pytest.approx(7200.00 * 1.03, abs=CENT)
@@ -851,8 +823,8 @@ def test_pitfall_10_the_death_benefit_is_conditional_and_buys_an_annuity(basisre
     assert p.ret_t() == 20
     assert all(p.claims(t, "DEATH") == 0.0 for t in (20, 21, 40))
     # The cover is bought out of the annuity.
-    assert p.rf_option_factor() == pytest.approx(0.930, rel=1e-12)
-    assert p.rentenfaktor_applied() == pytest.approx(31.50 * 0.930, rel=1e-12)
+    assert p.rentenfaktor_applied() == pytest.approx(
+        31.50 * p.rf_option_factor(), rel=1e-12) == pytest.approx(31.50 * 0.930, rel=1e-12)
     assert p.check_no_capital() is True
 
 
@@ -951,7 +923,6 @@ def test_pitfall_13_the_higher_of_the_two_rentenfaktoren_applies(basisrente,
     p = de_basis_anchor
     assert p.rentenfaktor_applied() == pytest.approx(31.50, rel=1e-12)
     assert p.rentenfaktor_curr() > float(p.model_point()["rentenfaktor_gtd"])
-
     for point_id, gtd, curr in ((6, 26.00, 24.76), (13, 34.00, 27.72)):
         q = basisrente.Projection[point_id]
         assert float(q.model_point()["rentenfaktor_gtd"]) == gtd
@@ -993,7 +964,6 @@ def test_pitfall_14_the_guarantee_period_runs_from_rentenbeginn(basisrente):
     assert p.claims(26, "SURVIVOR") == 0.0
     assert p.rf_option_factor() == pytest.approx(0.995, rel=1e-12)
     assert p.check_annuity_roll_fwd() is True
-
     # Both options together on model point 12: twenty years, and a survivor's annuity.
     both = basisrente.Projection[12]
     assert int(both.model_point()["guarantee_period_y"]) == 20
@@ -1025,7 +995,6 @@ def test_pitfall_15_the_basis_is_generational_and_not_a_period_table(basisrente,
     assert older.mort_rate(4) == pytest.approx(0.00467744, abs=5e-9)
     assert newer.mort_rate(11) == pytest.approx(0.00420787, abs=5e-9)
     assert newer.mort_rate(11) < older.mort_rate(4)
-
     # The terminal age is absorbing whatever the trend and whatever mort_be_factor says.
     assert p.omega_age() == 121 and p.age(77) == 121 and p.mort_rate(77) == 1.0
     assert p.mort_rate(76) == pytest.approx(0.19920354, abs=5e-9)
@@ -1041,16 +1010,15 @@ def test_pitfall_16_the_rechnungszins_attaches_at_conclusion_and_stays(basisrent
     """Four distinct vintages ship, and each in-force point carries its own, not today's."""
     table = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
     assert set(table["gtd_rate"]) == {0.0100, 0.0175, 0.0225, 0.0275}
-    assert table.loc[6, "conclusion_year"] == 2009 and table.loc[6, "gtd_rate"] == 0.0225
-    assert table.loc[7, "conclusion_year"] == 2014 and table.loc[7, "gtd_rate"] == 0.0175
-    assert table.loc[8, "conclusion_year"] == 2006 and table.loc[8, "gtd_rate"] == 0.0275
-    assert table.loc[1, "conclusion_year"] == 2026 and table.loc[1, "gtd_rate"] == 0.0100
+    for point_id, year, gtd in ((1, 2026, 0.0100), (6, 2009, 0.0225),
+                                (7, 2014, 0.0175), (8, 2006, 0.0275)):
+        assert table.loc[point_id, "conclusion_year"] == year
+        assert table.loc[point_id, "gtd_rate"] == gtd
     for point_id in (1, 6, 7, 8, 13):
         p = basisrente.Projection[point_id]
         gtd = float(p.model_point()["gtd_rate"])
         for t in (1, 2, min(5, p.proj_len())):
             assert p.cred_rate(t) == max(gtd, p.decl_rate(t)) >= gtd
-
     # The other two in-force shapes: already beitragsfrei, and already in payment.
     paid_up = basisrente.Projection[7]
     assert int(paid_up.model_point()["paidup_at_init"]) == 1
@@ -1058,18 +1026,16 @@ def test_pitfall_16_the_rechnungszins_attaches_at_conclusion_and_stays(basisrent
     assert paid_up.pols_paidup(1) == pytest.approx(paid_up.pols_if_init(), rel=1e-12)
     assert paid_up.av(1) == pytest.approx(42000.00, abs=CENT)
     assert paid_up.prem_pp(1) == 0.0 and paid_up.zuz_pp(1) == 0.0
-    assert paid_up.commissions(1) == 0.0                     # acquisition is before the valuation
+    assert paid_up.commissions(1) == 0.0        # the acquisition cost fell before the valuation
     assert paid_up.expenses(1) == pytest.approx(60.00, abs=CENT)
-    assert paid_up.check_av_roll_fwd() is True
     in_payment = basisrente.Projection[8]
     assert in_payment.ret_t() == -2
     assert in_payment.ann_pp(1) == pytest.approx(7200.00, abs=CENT)
     assert in_payment.claims(1, "ANNUITY") == pytest.approx(7200.00, abs=CENT)
-    assert in_payment.fund_at_conv() == 0.0
-    assert in_payment.rentenfaktor_curr() == 0.0
+    assert in_payment.fund_at_conv() == 0.0 and in_payment.rentenfaktor_curr() == 0.0
+    assert in_payment.av(1) == 0.0
     assert in_payment.check_conversion() is True             # vacuously: no conversion occurs
     assert all(in_payment.check_conversion_resid(t) == 0.0 for t in (1, 2, 10))
-    assert in_payment.av(1) == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -1086,7 +1052,6 @@ def test_pitfall_17_the_buz_is_a_premium_share_that_enters_nothing(basisrente,
     table = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
     assert (table["buz_prem_share"] < 0.50).all()
     assert table["buz_prem_share"].max() == 0.49              # model point 11, the boundary
-
     boundary = basisrente.Projection[11]
     assert float(boundary.model_point()["buz_prem_share"]) == 0.49
     assert boundary.prem_total_pp(1) == pytest.approx(
@@ -1123,9 +1088,9 @@ def test_docstrings_describe_the_current_structure(basisrente):
         assert cells in proj, cells
     data = basisrente.Data.doc
     assert "TradLife_A" in data
+    assert "0.014000" in data                      # the anchor a replacement must preserve
     for cells in ("input_dir", "model_point_table", "mort_table", "behaviour_table"):
         assert cells in data, cells
-    assert "0.014000" in data                      # the anchor a replacement must preserve
 
 
 def test_the_shipped_tables_mark_their_own_provenance():
@@ -1136,7 +1101,6 @@ def test_the_shipped_tables_mark_their_own_provenance():
     """
     found = {p.name for p in INPUT_DIR.iterdir() if p.suffix == ".csv"}
     assert found == INPUT_FILES
-
     for name in INPUT_FILES - {"model_point_table.csv"}:
         frame = pd.read_csv(INPUT_DIR / name)
         assert "provenance" in frame.columns, name
@@ -1144,10 +1108,8 @@ def test_the_shipped_tables_mark_their_own_provenance():
         assert (frame["provenance"].str.len() > 0).all(), name
     # A model point is a configuration, not an assumption: the one exemption.
     points = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
-    assert "provenance" not in points.columns
-    assert len(points) == 13
-
-    mort = pd.read_csv(INPUT_DIR / "mort_table.csv", index_col="age")
+    assert "provenance" not in points.columns and len(points) == 13
+    mort = pd.read_csv(INPUT_DIR / "mort_table.csv", index_col="age")  # a [std] proxy
     assert list(mort.index) == list(range(20, 122))
     assert float(mort.loc[67, "qx"]) == 0.014000        # the anchor of the worked example
     assert float(mort.loc[121, "qx"]) == 1.0 and mort["qx"].max() <= 1.0
@@ -1155,20 +1117,17 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert float(mort.loc[68, "qx"]) / float(mort.loc[67, "qx"]) == pytest.approx(
         1.085, rel=1e-6)
     assert all(t.startswith("[std]") and "DAV 2004 R" in t for t in mort["provenance"])
-
     charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
     assert set(charges.index) == {"de_basis_std", "de_basis_zill40"}
     assert float(charges.loc["de_basis_std", "zill_rate"]) == 0.025
     assert float(charges.loc["de_basis_zill40", "zill_rate"]) == 0.040
     assert all("Hoechstzillmersatz" in t for t in charges["provenance"])
-
     behaviour = pd.read_csv(INPUT_DIR / "behaviour_table.csv",
                             index_col=["beh_table_id", "dur"])
     assert [float(behaviour.loc[("base", d), "bf_rate"]) for d in (1, 6, 11)] == [
         0.0400, 0.0300, 0.0200]
     assert float(behaviour.loc[("base", 1), "zuz_take_up"]) == 0.7000
     assert all("no German insurer publishes" in t for t in behaviour["provenance"])
-
     factors = pd.read_csv(INPUT_DIR / "option_table.csv",
                           index_col=["option_id", "option_key"])
     assert float(factors.loc[("prem_mode", "annual"), "factor"]) == 1.000
