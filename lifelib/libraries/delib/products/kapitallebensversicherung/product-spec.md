@@ -52,10 +52,10 @@ guaranteed interest rate, a savings component and death cover in one product" [S
 make the German chassis what it is, and each changes the shape of the projected cash flows.
 
 1. **Participation is the default and it is all-or-nothing.** § 153 Abs. 1 VVG entitles the
-   policyholder to a share in the surplus **and** in the *Bewertungsreserven* unless participation
-   is excluded by express agreement, and such an exclusion can only be made for the whole of it
-   [R1] [REG-R24]. There is no partially participating German endowment, and every carrier document
-   located is participating [S3] [S7] [S9] [S11].
+   policyholder to a share in the surplus **and** in the *Bewertungsreserven* unless participation is
+   excluded by express agreement, and such an exclusion can only be made for the whole of it [R1]
+   [REG-R24]. There is no partially participating German endowment, and every carrier document located
+   is participating [S3] [S7] [S9] [S11].
 2. **The surplus is declared as a percentage of the contract's own reserve.** *Zinsüberschussanteile*
    and *Schlussüberschussanteile* are each fixed as a percentage of the *Deckungskapital* calculated
    at the allocation date [S3], the allocation falls at the *Bilanzstichtag* of 31 December, and the
@@ -603,9 +603,8 @@ Three observations follow, and each shapes a composite choice.
 2. **Only one carrier publishes a declared rate for a classic book** [S11] and **only one publishes a
    *Stornoabzug*, under collective action and a BGH remittal** [S3] [R22] [R30]. Composite: the
    endowment carrier's rate, with the annuity identity [unverified] (gap 2); and a declining **[std]**
-   deduction schedule inside the observed range, with the single observation beside it. The vintage
-   spread — one insurer maintaining three parallel wordings [S3] [S4] [S5] — is carried instead by
-   `issue_year` and `rechnungszins`.
+   deduction schedule inside the observed range. The vintage spread — one insurer maintaining three
+   parallel wordings [S3] [S4] [S5] — is carried instead by `issue_year` and `rechnungszins`.
 3. **What does not vary is legal rather than commercial**: participation as an all-or-nothing statutory
    default [R1]; the § 169 calculation rule and its five-year floor [R2]; the § 165 paid-up right and
    its *Mindestversicherungsleistung* test [R3]; the § 161 three-year window paying the *Rückkaufswert*

@@ -406,9 +406,8 @@ costs, on the [std] basis at 1,00 %, age 65, per 100 000 € **[std]** (12):
     2,6 % and 8,0 % [R23]: consistent in shape, different in level, **neither a tariff**.
 
 **Two settlement forms exist and only one is modelled.** On death inside the period the instalments
-may continue as they fall due, or the present value of the *Restgarantiezeit* may be commuted. **Which
-form German carriers use, and on what basis a commutation would be struck, was not established**
-(gap 10). The reference implementation pays the instalments — the form [R23] describes.
+may continue as they fall due, or the *Restgarantiezeit* may be commuted; **which form German
+carriers use, and on what basis, was not established** (gap 10), and the model pays the instalments.
 
 ### *Kapital-* und *Beitragsrückgewähr*
 
@@ -444,11 +443,10 @@ lifetime. **If the second life predeceases the annuitant the entitlement lapses 
 refunded** — the cover has been consumed. **What it does:** it makes the contract a
 **joint-life-last-survivor** annuity, the liability running
 until *both* lives are dead, so the second life's age and sex matter as much as the annuitant's, and
-that life is fixed at inception and generally cannot be substituted [unverified]. The German market
-treats the survivor's annuity as a ***Zusatzversicherung*** — a rider with its own condition set —
-and the GDV publishes model conditions for exactly that [S9], so in the reference implementation it
-is a **separate module with its own insured life, off in the base run**, rather than a term in the
-main annuity's benefit formula. Typical percentages are **60 % and 100 %** [unverified]; **no
+that life is fixed at inception [unverified]. The German market treats the survivor's annuity as a
+***Zusatzversicherung*** — a rider with its own condition set — and the GDV publishes model
+conditions for exactly that [S9], so in the reference implementation it is a **separate module with
+its own insured life, off in the base run**. Typical percentages are **60 % and 100 %** [unverified]; **no
 carrier's menu was established**. On the [std] basis at 1,00 %, annuitant 65 and second life 62 on
 the same mortality, per 100 000 € **[std]** (14): 60 % gives `a12` 23.838 and **349,58 €**, −14,3 %;
 100 % gives `a12` 26.113 and **319,12 €**, −21,8 %.
@@ -515,13 +513,12 @@ a guaranteed rate is the commonest arithmetic error in describing a German contr
 ### Where the surplus comes from
 
 **Three sources, unequally important for an annuity in payment.** The ***Zinsüberschuss*** — actual
-investment return over the *Rechnungszins* on the *Deckungsrückstellung* — dominates, because the
-reserve is large from day one and runs off slowly over decades. The ***Risikoüberschuss*** is, for an
+investment return over the *Rechnungszins* on the *Deckungsrückstellung* — dominates, the reserve
+being large from day one and running off slowly over decades. The ***Risikoüberschuss*** is, for an
 annuity, a **longevity** result: positive when annuitants die **faster** than the first-order table
 assumed, negative when they live longer, and the one source that can go the wrong way for a whole
-cohort at once. The ***Kostenüberschuss*** is small, the product having one acquisition event and
-then a long, cheap payment routine. The statutory floor beneath the insurer's discretion is the
-MindZV's 90 / 90 / 50 and the RfB machinery above it, set out under *Regulatory context*.
+cohort at once. The ***Kostenüberschuss*** is small. The statutory floor beneath the insurer's
+discretion is the MindZV's 90 / 90 / 50 and the RfB machinery above it, under *Regulatory context*.
 
 **The competition for the same money is first-order here.** The *Überschussrente* is paid from the
 same *Rückstellung für Beitragsrückerstattung* that financed the ***Zinszusatzreserve*** (ZZR), the

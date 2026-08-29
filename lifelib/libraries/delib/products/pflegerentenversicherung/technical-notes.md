@@ -431,3 +431,438 @@ behavioural assumption that depends on the path that depends on the premium.
 **Unisex blending [std].** Pricing uses `unisex_mix_male = 0.50`, so every first-order rate is
 `0.5 × male + 0.5 × female`. The projection uses the model point's own sex. The mix is a modelling
 choice with no source; "pricing unisex on a 50 / 50 mix while writing 60 / 40" is model risk 7.
+
+---
+
+## Cash flow components and recursions
+
+### Notation (defined once, used throughout)
+
+| Symbol | Meaning |
+|---|---|
+| `t` | policy month, 0-based, `t = d0 … n` with `d0 = duration_mth_init` and `n = proj_len` |
+| `x(t)` | attained age in month `t` = `age_at_entry + t // 12` |
+| `y(t)` | policy year = `t // 12 + 1` |
+| `g` | *Pflegegrad*, `g = 1 … 5` |
+| `π_g` | `benefit_pct(g)`, the *Leistungsstaffel* percentage |
+| `R` | `rente_mth`, the *vereinbarte Pflegerente* at *Pflegegrad* 5 |
+| `P` | `premium_mth_pp()`, the level monthly gross *Beitrag* per policy |
+| `m` | `prem_mode_months()` — 1, 3, 6, 12, or 0 for the *Einmalbeitrag* |
+| `μ_A(t)` | force of active-life mortality at `x(t)` |
+| `μ_g(t)` | force of mortality in *Pflegegrad* `g` = `mort_mult(g) × μ_A(t)` |
+| `ι(t)` | force of incidence into care, **0** while `t < wartezeit_months` |
+| `s_g` | `entry_share(g)`, the distribution of the grade first entered |
+| `δ_g(t)`, `ρ_g(t)` | forces of deterioration `g → g+1` and of recovery `g → g-1` (from PG1, to active) |
+| `w(t)` | monthly lapse probability from the active state, `lapse_rate_mth`, **0** outside the premium term |
+| `ℓ_A(t)` | `pols_act(t)` |
+| `W_{g,z}(t)` | `pols_karenz(t, g, z)` |
+| `ℓ_g(t)` | `pols_pg(t, g)` |
+| `E_g(t)` | `esc_pg(t, g)`, the escalation-weighted counterpart of `ℓ_g` |
+| `d` | `leistungsdynamik`, the annual escalation of the annuity in payment |
+| `K` | `karenz_months` |
+| `i` | `rechnungszins`; `v = (1 + i) ** (-1/12)`, used **only** in the pricing engine |
+| `α`, `β`, `γ`, `c`, `f` | `acq_permille/1000`, `admin_prem_pct`, `admin_mth_pp`, `claim_expense_pp`, `expense_infl` |
+
+Forces are per annum and dimensionless; `R`, `P` and every cash-flow component are EUR.
+
+### Rates, forces and the monthly step
+
+Every shipped rate is **annual**, and every transition inside a month is computed from **forces held
+constant over the month**, with the competing transitions sharing one survival probability in
+proportion to their forces. Writing `q` for an annual rate, the force is `μ = -ln(1 - q)`; the
+probability of remaining in a state over one month, when the forces out of it are `μ_1 … μ_k`, is
+
+    p_stay = exp(-(μ_1 + … + μ_k) / 12)
+
+and the probability of leaving by route `j` is
+
+    p_j = (μ_j / Σ_k μ_k) * (1 - p_stay)
+
+so that `p_stay + Σ_j p_j = 1` exactly, by construction. This is the standard constant-force,
+proportional-allocation convention, and **declaring it is not optional**: adding monthly rates
+instead, or applying `q/12`, gives different answers wherever the forces are large, which on this
+product means exactly the ages where the money is. Pitfalls 7 and 8 test it.
+
+From the active state, with `μ_A`, `ι`:
+
+    p_act_stay(t)  = exp(-(μ_A(t) + ι(t)) / 12)
+    p_act_death(t) = (μ_A(t) / (μ_A(t) + ι(t))) * (1 - p_act_stay(t))
+    p_act_care(t)  = (ι(t)   / (μ_A(t) + ι(t))) * (1 - p_act_stay(t))
+
+From *Pflegegrad* `g`, with `μ_g`, `δ_g`, `ρ_g` (and `δ_5 = 0`, `ρ_1` leading to the active state):
+
+    p_pg_stay(t, g)   = exp(-(μ_g(t) + δ_g(t) + ρ_g(t)) / 12)
+    p_pg_death(t, g)  = (μ_g(t) / S) * (1 - p_pg_stay(t, g))
+    p_pg_worse(t, g)  = (δ_g(t) / S) * (1 - p_pg_stay(t, g))
+    p_pg_better(t, g) = (ρ_g(t) / S) * (1 - p_pg_stay(t, g)),   S = μ_g + δ_g + ρ_g
+
+Both sets are published as cells, and `check_states()` uses their summation to one.
+
+### The in-force recursions
+
+**Active state.** Entrants leave, deaths leave, and the survivors of both are exposed to lapse:
+
+    ℓ_A(t+1) = [ ℓ_A(t) * p_act_stay(t) + Σ_g ρ_1-recoveries into active ] * (1 - w(t))
+
+written out, with `Rec(t) = Σ over the PG1 ledger of p_pg_better(t, 1)` the reactivation inflow:
+
+    pols_entry(t, g) = ℓ_A(t) * p_act_care(t) * s_g
+    pols_reactiv(t)  = [ ℓ_1(t) + Σ_z W_{1,z}(t) ] * p_pg_better(t, 1)
+    pols_lapse(t)    = [ ℓ_A(t) * p_act_stay(t) + pols_reactiv(t) ] * w(t)
+    ℓ_A(t+1)         = [ ℓ_A(t) * p_act_stay(t) + pols_reactiv(t) ] * (1 - w(t))
+
+**Lapse acts after the insured decrements and after any reactivation**, on the survivors — the same
+ordering frlib's term model uses, stated because the alternative orderings give different answers.
+
+**The *Karenz* ledger**, present only when `K > 0`. Entrants join at `z = 1` and advance one month
+at a time, subject to the same transitions as a served life; the clock is **discarded** on
+reactivation, because the *Karenzzeit* runs from the onset of *Pflegebedürftigkeit* and a recovered
+life who later relapses starts a new onset:
+
+    W_{g,1}(t+1)   = pols_entry(t, g)
+    W_{g,z+1}(t+1) = Σ_h W_{h,z}(t) * p_karenz(t, h → g),        1 ≤ z < K
+    pols_grad(t, g) = Σ_h W_{h,K}(t) * p_karenz(t, h → g)
+
+where `p_karenz(t, h → g)` is `p_pg_stay` for `h = g`, `p_pg_worse` for `g = h + 1`, `p_pg_better`
+for `g = h - 1` and zero otherwise. When `K = 0` the ledger is empty and
+`pols_grad(t, g) = pols_entry(t, g)`, which is the degenerate case the base run runs in.
+
+**The paying ledger.**
+
+    ℓ_g(t+1) = ℓ_g(t) * p_pg_stay(t, g)
+             + ℓ_{g-1}(t) * p_pg_worse(t, g-1)
+             + ℓ_{g+1}(t) * p_pg_better(t, g+1)
+             + pols_grad(t, g)
+
+with the `g = 1` recovery term flowing to the active state instead and the `g = 5` deterioration
+term absent.
+
+**The escalation ledger.** `E_g(t)` is the same population weighted by each life's own escalation
+factor since its annuity began. It obeys the identical recursion with one extra factor and one
+different seeding, entrants joining at weight 1:
+
+    E_g(t+1) = (1 + d) ** (1/12) * [ E_g(t) * p_pg_stay(t, g)
+                                   + E_{g-1}(t) * p_pg_worse(t, g-1)
+                                   + E_{g+1}(t) * p_pg_better(t, g+1) ]
+             + pols_grad(t, g)
+
+When `d = 0` this is the `ℓ_g` recursion exactly, so `E_g ≡ ℓ_g` in the base run — an invariant
+worth asserting, and `check_esc_ledger()` does. Carrying the escalation as a **value ledger** rather
+than a duration-since-onset cohort dimension is what keeps the model O(n) instead of O(n²); the
+price is that the model cannot report the distribution of escalation factors, only its aggregate,
+which is all the cash flow needs.
+
+**Deaths, and the closure.**
+
+    pols_death(t)     = ℓ_A(t) * p_act_death(t)
+                      + Σ_g [ ℓ_g(t) + Σ_z W_{g,z}(t) ] * p_pg_death(t, g)
+    pols_dead_cum(t+1)  = pols_dead_cum(t) + pols_death(t)
+    pols_lapse_cum(t+1) = pols_lapse_cum(t) + pols_lapse(t)
+
+    pols_if(t) + pols_dead_cum(t) + pols_lapse_cum(t) = pols_if_init()   for every t
+
+The last line is `check_states()`. Because `mort_rate` is forced to 1 in the final year of age, the
+identity closes at `t = n + 1` with `pols_if = 0`, so the decrements sum to `pols_if_init()`
+exactly — a closure a reader can check with a calculator on the worked example.
+
+### Premium, waiver and the premium-paying population
+
+    pols_in_term(t) = pols_if(t)                      if x(t) < prem_end_age else 0
+    pols_waived(t)  = Σ_{g : π_g > 0} ℓ_g(t)          restricted to the in-term population
+    pols_prem(t)    = pols_in_term(t) - pols_waived(t)
+
+Three consequences follow directly from the *Leistungsstaffel*, and each is a test. A life in a
+*Karenz* ledger **pays**, because no annuity is yet payable and the waiver runs with the annuity. A
+life at *Pflegegrad* 1 on the `delib_std` grid **pays**, because `π_1 = 0`; on the `bahr` grid,
+where `π_1 = 0.10`, the same life is **waived**. And a life that is downgraded out of the paying
+grades **starts paying again**, so `pols_prem` is not monotone.
+
+The instalment is charged only on due months:
+
+    premium_due(t)  = (m > 0) and (t % m == 0) and (x(t) < prem_end_age)
+    premium_pp(t)   = P * m           if premium_due(t) else 0
+    premiums(t)     = premium_pp(t) * pols_prem(t)
+
+For the *Einmalbeitrag* (`m = 0`), `premium_pp(0) = P_single` and zero thereafter. A waiver that
+begins between two due dates therefore takes effect **at the next due date**, which is the German
+convention for a *Beitragsbefreiung* on a fractionated contract and is stated because the
+alternative — refunding the unearned instalment — is a different and equally arguable rule the model
+does not implement.
+
+`cum_prem_max_pp(t)` is the premium payable to date on an uninterrupted path, `P` times the number
+of premium-months elapsed inside the term (for the single-premium form, `P_single` from `t = 0`).
+It is a **deterministic** quantity, not a ledger, and it is what both the *Rückkaufswert* and the
+*Beitragsrückgewähr* are struck on.
+
+### Benefits
+
+    claims(t, "ANNUITY") = R * Σ_g π_g * E_g(t)
+    claims(t, "LAPSE")   = rkw_pp(t) * pols_lapse(t)
+    claims(t, "DEATH")   = brg_pp(t) * pols_death(t)
+    claims(t)            = claims(t, "ANNUITY") + claims(t, "LAPSE") + claims(t, "DEATH")
+
+with
+
+    rkw_pp(t) = rkw_prem_ratio(min(y(t), 40)) * cum_prem_max_pp(t) * (1 - stornoabzug)
+    brg_pp(t) = cum_prem_max_pp(t)   if beitragsrueckgewaehr else 0.0
+
+Note what `claims(t, "ANNUITY")` is weighted on: `E_g(t)`, the escalation ledger, **not** `ℓ_g(t)`.
+In the base run they are identical; with the dynamic on they are not, and using `ℓ_g` would silently
+drop the escalation. Note also that the *Karenz* ledger contributes nothing — a life inside its
+deferred period is in care, is counted in `pols_if`, pays its premium and receives no annuity.
+
+**The *Beitragsrückgewähr* implemented here is the gross form**: return of premiums payable to date,
+with **no** offset for annuity already paid. The market's more common form nets the annuity off
+[S4] [unverified], and the model does not, for a reason worth stating precisely: the netting is
+floored at zero **per life**, and the model's ledgers are aggregates, so netting at the aggregate
+level would let a life that received a large annuity subsidise one that received none. Implementing
+the net form needs a paid-to-date value ledger per state *and* a per-life floor, which an aggregate
+projection cannot supply. The consequence — the option overstates the death benefit relative to the
+market-standard form — is stated rather than hidden, and pitfall 11 asserts the gross rule.
+
+### Expenses and net cash flow
+
+    expense_infl_factor(t) = (1 + f) ** (t / 12)
+    acq_expense_pp()       = α * beitragssumme()
+    expenses(t)            = acq_expense_pp() * 1{t = 0}
+                           + γ * expense_infl_factor(t) * pols_if(t)
+                           + β * premiums(t)
+    claim_expenses(t)      = c * expense_infl_factor(t) * Σ_{g : π_g > 0} ℓ_g(t)
+    net_cf(t)              = premiums(t) - claims(t) - expenses(t) - claim_expenses(t)
+    liability_cf(t)        = -net_cf(t)
+
+The acquisition charge falls at `t = 0` only, so **an in-force model point never incurs it** — its
+frame opens at `t = duration_mth_init > 0`. That is correct (the cost was incurred before the
+valuation date) and it is worth knowing before comparing an in-force point's first row with a
+new-business point's.
+
+`claim_expenses` is per **annuity payment made**, so it is weighted on the paying grades only and a
+*Pflegegrad* 1 life on the `delib_std` grid generates none. It is published as its own `result_cf()`
+column because it is a per-event cost rather than a per-policy one.
+
+### The pricing engine — `premium_mth_pp()`
+
+Where `premium_mth > 0` on the model point, that is the premium and the engine is not consulted.
+Where it is `0.0`, `P` is struck by equivalence on the **first-order** bases: every rate multiplied
+by its margin, blended 50 / 50 across the sexes, **no lapse**, discounted at `v = (1+i)^(-1/12)`.
+The `tar_*` ledgers obey exactly the recursions above with `w ≡ 0` and the margined forces.
+
+Define, over `t = 0 … n` on the tariff ledgers:
+
+    A  = Σ_t v**t * R * Σ_g π_g * tar_esc_pg(t, g)                  EPV of the annuity
+    U  = Σ_{t : premium_due(t)} v**t * m * tar_pols_prem(t)         EPV of premium in units of P
+    G  = Σ_t v**t * γ * expense_infl_factor(t) * tar_pols_if(t)     EPV of per-policy admin
+    C  = Σ_t v**t * c * expense_infl_factor(t) * Σ_{g:π_g>0} tar_pols_pg(t, g)
+    D1 = Σ_t v**t * (premium-months elapsed at t) * tar_pols_death(t)    (0 unless BRG)
+    a1 = α * 12 * (min(prem_end_age, beitragssumme_cap_age) - age_at_entry)
+
+Everything on the benefit side that scales with `P` — the *Beitragsrückgewähr* and the *Zillmerung*
+allowance — is linear in `P`, so the equivalence
+
+    P * U = A + P * D1 + P * a1 + β * P * U + G + C
+
+solves in closed form:
+
+    P = (A + G + C) / [ U * (1 - β) - D1 - a1 ]
+    premium_mth_pp() = rating_factor * P
+    prem_net_level_pp() = A / U          the net level premium, benefits only
+
+For the *Einmalbeitrag*, `U = 1` (one payment at `t = 0`) and the same expression gives the
+*Einmalbeitrag* directly. The *Risikozuschlag* multiplies the **gross** premium, never the benefit.
+
+`check_prem_equiv_resid(t)` publishes the per-month discounted imbalance
+
+    v**t * [ premium_pp_tar(t) * tar_pols_prem(t) - benefit_tar(t) - expense_tar(t) ]
+
+whose sum over `t` is zero when the equivalence holds; `check_prem_equiv()` is that sum against a
+tolerance scaled by `P * U`. It is not a tautology: the two sides are assembled from the ledgers
+rather than from the closed form, so substituting a best-estimate rate into one leg, or forgetting
+the *Zillmerung* term, makes it fail.
+
+### `result_cf()`
+
+`result_cf()` returns a `DataFrame` indexed by `t` (`df.index.name == "t"`), contiguous from
+`duration_mth_init()` to `proj_len()`, in this column order:
+
+| # | Column | Meaning |
+|---|---|---|
+| 1 | `pols_if` | In force at the **start** of month `t`; first value equals `pols_if_init()` exactly |
+| 2 | `pols_act` | Of which active |
+| 3 | `pols_care` | Of which in care — the *Karenz* and paying ledgers together |
+| 4 | `pols_prem` | Of which actually paying a *Beitrag* |
+| 5 | `premiums` | *Beitrag* income, in advance |
+| 6 | `claims_annuity` | *Pflegerente* paid, in advance |
+| 7 | `claims_lapse` | *Rückkaufswert* paid on surrender, at month end |
+| 8 | `claims_death` | *Beitragsrückgewähr* paid on death, at month end; structurally 0 in the base run |
+| 9 | `expenses` | Acquisition, per-policy administration and premium-related administration |
+| 10 | `claim_expenses` | Per-annuity-payment claims cost |
+| 11 | `net_cf` | `premiums - claims_annuity - claims_lapse - claims_death - expenses - claim_expenses` |
+
+A second frame, `result_states()`, publishes the ledgers and rates a reader needs to follow the
+projection: `pols_pg1` … `pols_pg5`, `pols_karenz`, `pols_entry`, `pols_grad`, `pols_reactiv`,
+`pols_death`, `pols_lapse`, `mort_rate`, `mort_rate_care_pg5`, `inc_rate`, `lapse_rate` and
+`premium_pp`. It is not part of the house contract and carries no `check_*`.
+
+### The published identities
+
+`check_*()` takes no argument and returns a **`bool`** over all `t`; the per-`t` residual is
+`check_*_resid(t)`. Six identities are published, and the conventions suite calls every one of them
+on every model point.
+
+| Check | Identity |
+|---|---|
+| **`check_net_cf`** (delib ruling 1) | `net_cf(t) = premiums(t) - claims(t, "ANNUITY") - claims(t, "LAPSE") - claims(t, "DEATH") - expenses(t) - claim_expenses(t)` — `net_cf` rebuilt from the statement's own published parts, so the headline number is reconciled in code and not only in prose |
+| `check_pols_roll_fwd` | `pols_if(t+1) = pols_if(t) - pols_death(t) - pols_lapse(t)`: lives leave the in-force population only by death or surrender, and every *Pflegegrad* transition is internal |
+| `check_states` | `pols_act(t) + Σ_{g,z} pols_karenz(t,g,z) + Σ_g pols_pg(t,g) + pols_dead_cum(t) + pols_lapse_cum(t) = pols_if_init()`: the ledgers plus the absorbed partition the initial cohort at every `t` |
+| `check_waiver` | `pols_prem(t) + pols_waived(t) = pols_in_term(t)`: the *Beitragsbefreiung* splits the in-term population and neither loses nor creates a policy |
+| `check_esc_ledger` | `esc_pg(t,g) ≥ pols_pg(t,g)` for every `t, g` when `leistungsdynamik ≥ 0`, with **equality** when it is zero |
+| `check_prem_equiv` | `Σ_t check_prem_equiv_resid(t) ≈ 0`: the gross premium closes the first-order equivalence, assembled from the tariff ledgers rather than from the closed form |
+
+`check_net_cf` is mandatory across the library; the other five are this product's own. All six use
+`roll_fwd_tol` from `basis_table.csv`.
+
+---
+
+## Processing order
+
+Inside month `t`, in this order. Nothing here is optional: several of the pitfalls below are simply
+this list executed in a different sequence.
+
+1. **Set the clocks.** `x(t) = age_at_entry + t // 12`; `y(t) = t // 12 + 1`. At
+   `t = duration_mth_init()` seed the ledgers from `status` and `pols_if_init()` instead of rolling
+   them in — an active point seeds `pols_act`, a point in claim seeds `pols_pg(·, g)` at its grade
+   with the *Karenz* already served.
+2. **Classify the in-force.** `pols_in_term(t)`, then `pols_waived(t)` from the paying grades, then
+   `pols_prem(t)` as the difference. The *Karenz* ledger is in-term and unwaived.
+3. **Collect the *Beitrag*, in advance.** If `premium_due(t)`, `premiums(t) = P × m × pols_prem(t)`;
+   otherwise zero. Accumulate `cum_prem_max_pp(t)`.
+4. **Pay the *Pflegerente*, in advance**, on the **escalation** ledger:
+   `claims(t, "ANNUITY") = R × Σ_g π_g × esc_pg(t, g)`. The *Karenz* ledger receives nothing.
+5. **Charge start-of-month expenses.** `acq_expense_pp()` at `t = 0` only; per-policy administration
+   on `pols_if(t)`, inflated; premium-related administration on the premium just collected; and
+   `claim_expenses(t)` on the annuity payments just made.
+6. **Look up the month's forces at `x(t)`.** `μ_A`, and `ι` — **zero while `t < wartezeit_months`**;
+   `μ_g = mort_mult(g) × μ_A`; `δ_g`; `ρ_g`, damped above `rec_age_ref`. Then `w(t)`, zero outside
+   the premium term.
+7. **Apply the transitions over the month**, constant forces, proportional allocation. From the
+   active state: death, entry into care split by `entry_share`, or stay. From each grade, in both
+   the *Karenz* and the paying ledger: death, deterioration, recovery, or stay.
+8. **Advance the *Karenz* clock** by one month and graduate the `z = K` cohort into `pols_pg`.
+9. **Apply lapse**, to the survivors of the active state **after** the insured decrements and after
+   the reactivation inflow. `pols_lapse(t)` is the result; nothing in care lapses.
+10. **Pay the end-of-month benefits.** `claims(t, "LAPSE") = rkw_pp(t) × pols_lapse(t)`, and
+    `claims(t, "DEATH") = brg_pp(t) × pols_death(t)` where the option is on.
+11. **Roll the escalation ledger**: escalate the surviving weights by `(1 + d)^(1/12)`, then add the
+    graduating entrants at weight 1.
+12. **Post the ledgers to `t + 1`** and form
+    `net_cf(t) = premiums - claims_annuity - claims_lapse - claims_death - expenses - claim_expenses`.
+
+The projection ends at `t = proj_len()`. There is **no maturity, no survival benefit and no tail
+state**: the contract runs for life, and the closure identity is carried by the decrements.
+
+---
+
+## Known modeling pitfalls
+
+The specific ways an implementation of *this* product looks right and is wrong. Each one is a test
+in `tests/test_pflegerentenversicherung_de.py`.
+
+1. **Applying an average benefit percentage to an average survival curve.** Grade and mortality are
+   correlated: *Pflegegrad* 5 pays the most and is lived in the shortest. Assert that
+   `claims(t, "ANNUITY")` equals the grade-by-grade sum `R × Σ_g π_g × esc_pg(t, g)` and that
+   replacing it by `π̄ × R × pols_care(t)`, with `π̄` the time-weighted mean percentage, changes the
+   projected annuity total by more than 5 %.
+2. **Pricing the annuity in payment on an annuity table.** DAV 2004 R is built to be prudent about
+   people living *longer* [REG-R49]; this annuity is paid to a heavily impaired population. Assert
+   `mort_rate_care(t, g) > mort_rate(t)` for every `g` and `t`, strictly increasing in `g`, and that
+   the grade-5 ratio is at least 5.
+3. **Treating "in claim" as one state exited only by death.** There are three exits. Assert
+   `Σ_t pols_reactiv(t) > 0` and `Σ_t Σ_g pols_pg_better(t, g) > 0`, and that suppressing recovery
+   and downgrade raises the projected annuity total.
+4. **Insuring *Pflegegrad* 1 by accident.** On `delib_std`, `π_1 = 0`. Assert that
+   `claims(t, "ANNUITY")` is invariant to `pols_pg(t, 1)`, and that a life at grade 1 is counted in
+   `pols_prem`, not in `pols_waived`.
+5. **Waiving the premium at the wrong grade.** The waiver runs from the first grade at which an
+   annuity is payable. Assert `pols_waived` excludes grade 1 on `delib_std` (point 1) and includes
+   it on `bahr` (point 5), with `check_waiver()` closing on both.
+6. **Forgetting that the premium revives on a *Herabstufung*.** Assert `pols_prem(t)` is **not**
+   monotone decreasing over the ages where downgrades occur, and that `check_waiver()` still closes.
+7. **Adding monthly transition probabilities instead of allocating one survival.** Assert
+   `p_pg_stay(t,g) + p_pg_death(t,g) + p_pg_worse(t,g) + p_pg_better(t,g) == 1` to 1e-12 for every
+   `t` and `g`, and the same for the three active-state probabilities.
+8. **Dividing an annual rate by twelve.** Assert `mort_rate_mth(t) == 1 - (1 - mort_rate(t))**(1/12)`
+   and `lapse_rate_mth(t) == 1 - (1 - lapse_rate(t))**(1/12)`, and that `12 × the monthly rate` is
+   strictly below the annual rate wherever the annual rate is positive.
+9. **Treating the *Karenzzeit* as a benefit gate on the aggregate.** It is a deferral clock per
+   onset: entrants who die or recover inside it never become payable. On point 7 assert
+   `Σ_t Σ_g pols_grad(t, g) < Σ_t Σ_g pols_entry(t, g)` strictly, and that the shortfall equals the
+   deaths and recoveries recorded inside the *Karenz* ledger.
+10. **Escalating the annuity at general-population duration.** With `d = 0.02` on point 8 the
+    projected annuity total rises by **less than 5 %**, not the 15–20 % the same escalation buys on
+    a healthy-life pension, because the spell is short. Assert that, and assert
+    `esc_pg(t,g) == pols_pg(t,g)` exactly on point 1, where `d = 0`.
+11. **Netting the annuity off a *Beitragsrückgewähr* at the aggregate level.** The floor at zero is
+    per life. The model pays the **gross** form. Assert
+    `claims(t, "DEATH") == cum_prem_max_pp(t) × pols_death(t)` on point 9 and `== 0.0` everywhere on
+    point 1, and that `brg_pp(t)` is non-decreasing while premiums are payable and flat afterwards.
+12. **Paying a surrender value out of the paying state.** Lapse acts on the active ledger only.
+    Assert `pols_lapse(t) ≤ pols_act(t)` at every `t`, that `claims(t, "LAPSE") == 0` wherever
+    `pols_act(t) == 0`, and that `lapse_rate(t) == 0` once `x(t) ≥ prem_end_age` (point 4).
+13. **Charging the *Zillmerung* on the wrong base.** The 25 ‰ ceiling is a per-mille of the
+    *Beitragssumme*, not of the annual premium [REG-R16]. Assert
+    `acq_expense_pp() == 0.025 × premium_mth_pp() × 12 × (min(prem_end_age, 85) - age_at_entry)`, and
+    that it is charged at `t = 0` only, so an in-force point (11, 12) never incurs it.
+14. **Striking the equivalence premium on the projection basis.** The premium is a first-order
+    quantity: margined rates, unisex, **no lapse**. Assert `check_prem_equiv()` is `True`, that
+    `premium_mth_pp()` is invariant to every value in `lapse_table.csv`, and that the tariff
+    incidence exceeds the best-estimate incidence at every age by exactly `inc_margin`.
+15. **Pricing on the model point's own sex.** Pricing is unisex [REG-R34]; the projection is not.
+    Assert that points 1 and 2 — female and male, identical otherwise — have **equal**
+    `premium_mth_pp()` and **unequal** projected annuity totals, the female point's being the larger.
+16. **Collecting a premium in a month that is not a due date.** With `m > 1` the *Beitrag* is
+    charged once per `m` months and a waiver beginning mid-instalment takes effect at the next due
+    date. Assert `premiums(t) == 0` at every non-due `t` on points 3, 4 and 5, and
+    `premium_pp(t) == premium_mth_pp() × prem_mode_months()` at every due `t`.
+17. **Using the *Pflegegrad* stock distribution as the entry mix.** The stock is about
+    9 / 44 / 27 / 14 / 6 % [R18]; entrants are not, because deterioration moves people up over a
+    spell. Assert `Σ_g entry_share(g) == 1.0` and that the model's own stock share at *Pflegegrad* 4
+    and 5, taken over the whole projection, **exceeds** the corresponding `entry_share`.
+
+Two further errors are worth naming even though they are not tests of the shipped model, because
+they are the ones a *user* will make. **Reading a payment-frequency difference as a price
+difference**: the model folds the *Ratenzahlungszuschlag* into the administration assumption
+(product spec, footnote 8), so annual mode prices slightly *below* monthly, the opposite sign to a
+real tariff. And **treating `proj_len()` as a row count**: it is the last projected index, and the
+frame starts at `duration_mth_init()`, so an in-force point has fewer rows than `proj_len() + 1`.
+
+---
+
+## Policyholder behaviour modelling
+
+Every dynamic formula here is a **[std]** reference construction; **no German calibration evidence
+for any of them exists in this corpus** (research gap 20).
+
+- **Base lapse [std].** The duration table in class (c), from the active state only, zero after the
+  premium term ends. The argument for the shape, not its level, is *Zillmerung*: the *Rückkaufswert*
+  is near zero for the first years [REG-R16] [REG-R28], so an early lapse is expensive to the
+  policyholder and the profile is flatter than a savings product's.
+- **No lapse from a paying grade [std].** A claimant with a waived premium has no premium to default
+  on and a live annuity to forfeit. A *Pflegegrad* 1 life on `delib_std` does still pay and could in
+  principle lapse; the population is small and the model does not model it.
+- **Premium-shock lapse [std], optional, off.** A *Pflegerente* premium is level and guaranteed, so
+  the affordability shock frlib's `temporaire_deces` models — a rising attained-age premium — has no
+  counterpart here. What could replace it is a *Zahlbeitrag* shock: a withdrawal of the surplus
+  rebate raises the amount actually called without invoking § 163 [REG-R27] [REG-R53]. The model
+  projects the *Bruttobeitrag* and carries no rebate, so the module is empty and is named here only
+  so that a user who adds a rebate knows what to add with it.
+- **Selective lapsation [std], optional, off.** Lapsers are healthier on average, so persisters'
+  incidence should be loaded: `inc_rate_eff(t) = inc_rate(t) × [1 + λ × max(0, w_cum(t) - w_ref)]`
+  with `w_ref = 0.30`, `λ = 0.25` **[std]** and base run `λ = 0`. The effect is **smaller** here
+  than on a term cover, and for a reason specific to this product: cumulative lapse is largely
+  complete decades before the risk period, so the surviving cohort at 80 is barely a selected one.
+- **Not modelled at all, and each for a stated reason.** *Beitragsfreistellung* take-up — no split
+  between the three German exits exists in the corpus [REG-R28]. *Beitragsdynamik* acceptance — a
+  behaviourally driven second premium path with no evidence behind it. *Höherstufung* application
+  behaviour — the insured applies and the state re-assesses [R6], so the model treats grade change
+  as biometric rather than elective. And anti-selection at purchase, which underwriting removes
+  [S4] and which in any case decays long before the claims arrive.
