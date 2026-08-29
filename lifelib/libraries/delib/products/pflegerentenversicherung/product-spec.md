@@ -182,9 +182,9 @@ compare.
 ## Representative specification
 
 The representative design is a **composite**, not a carrier's tariff. Because no product document of
-any kind was retrieved (research gap 14), every representative choice below is argued against the
-**observed or argued range** the research file records, and every choice that the corpus cannot
-source is a **[std]** standardization with a numbered rationale.
+any kind was retrieved (gap 14), every representative choice below is argued against the **observed
+or argued range** the research file records, and every choice the corpus cannot source is a **[std]**
+standardization with a numbered rationale.
 
 ### Product identity and issue rules
 
@@ -324,8 +324,7 @@ Footnotes to **[std]** rows:
 | Health evidence and question catalogue | Full ***Gesundheitsprüfung***, with a catalogue materially **shorter than a *Berufsunfähigkeit* application's**: the risk is driven by conditions that predict dependency in old age — cardiovascular and cerebrovascular disease, diabetes, neurological and psychiatric conditions, early cognitive impairment, musculoskeletal disease | [S4] [unverified] |
 | Occupation | **Not a rating factor.** The sharpest single contrast with *Berufsunfähigkeit* | [unverified] |
 | Outcomes | Accept at standard rates; accept with a *Risikozuschlag*; accept with a *Leistungsausschluss* for a named condition; defer; decline | [S4] [unverified] |
-| Absolute bar | Existing *Pflegebedürftigkeit* at application | [S4] [unverified] |
-| Disclosure duty | *Vorvertragliche Anzeigepflicht* under § 19 VVG; remedies graded by fault and time-barred, generally after five years and ten in cases of intent | [R11]; [REG-R30] [unverified] |
+| Absolute bar and disclosure duty | Existing *Pflegebedürftigkeit* at application is an absolute bar; the *vorvertragliche Anzeigepflicht* of § 19 VVG applies, with remedies graded by fault and time-barred generally after five years, ten in cases of intent | [S4]; [R11]; [REG-R30] [unverified] |
 | Effect of selection on the liability | **Essentially irrelevant to the cost of the benefit.** Claims arrive thirty to forty years after underwriting, and the § 19 time bar confines the *Gesundheitsprüfung*'s effect to the first decade | [R11]; **[std]** (18) |
 | Sex / smoker status | Sex may not be a rating factor for contracts concluded from 21 December 2012; smoker status was not established as one for this product | [REG-R34]; [unverified] |
 
@@ -568,14 +567,13 @@ declared-rate assumption this corpus cannot supply.
 the annuity in payment at an agreed 1 % to 3 % a year [unverified], off in the base run, implemented
 as an escalation ledger running from the first month the annuity is payable; it is the economically
 important dynamic on this product. ***Beitragsrückgewähr*** — a *Todesfallleistung* returning the
-premiums paid, off in the base run, implemented in its **gross** form, without an annuity offset,
-for the reason the technical notes give. ***Abgekürzte Beitragszahlungsdauer***, premiums to a fixed
-attained age, typically 65 or 85 [unverified]. ***Einmalbeitrag***, explicitly **not** the base
-model but carried so the chassis can price it. ***Wartezeit*** and ***Karenzzeit***, both zero in
-the base run. ***Risikozuschlag***, a multiplier on the gross premium, 1.00 at standard rates.
-***Stornoabzug***, 0 % in the base run. And an alternative ***Leistungsstaffel***, the statutory
-*Pflege-Bahr* grid [R8], shipped beside the composite's own so that the effect of the middle steps
-is demonstrable rather than asserted.
+premiums paid, off in the base run, implemented in its **gross** form, without an annuity offset.
+***Abgekürzte Beitragszahlungsdauer***, premiums to a fixed attained age, typically 65 or 85
+[unverified]. ***Einmalbeitrag***, explicitly **not** the base model but carried so the chassis can
+price it. ***Wartezeit*** and ***Karenzzeit***, both zero in the base run; ***Risikozuschlag***, a
+multiplier on the gross premium, 1.00 at standard rates; ***Stornoabzug***, 0 % in the base run. And
+an alternative ***Leistungsstaffel***, the statutory *Pflege-Bahr* grid [R8], shipped beside the
+composite's own so that the effect of the middle steps is demonstrable rather than asserted.
 
 **Out of scope, and why.** ***Beitragsdynamik*** — indexation of premium and cover before claim at
 3 % to 5 % a year [unverified] — is not modelled at all: the acceptance rate on each offer is a
@@ -601,22 +599,20 @@ attribution column that says, honestly, that nothing is attributed.
 | Parameter | Observed / argued range | Attribution | Basis |
 |---|---|---|---|
 | *Leistungsstaffel*, grades 1 to 5 | 0–10 % / 10–30 % / 30–50 % / 60–75 % / 100 % | none established; the *Pflege-Bahr* statutory steps are 10 / 20 / 30 / 40 / 100 % | [unverified]; [R8] for the statutory steps |
-| *Wartezeit*, underwritten / *Pflege-Bahr* | 0 to 3 years, usually waived for accident / up to 5 years | none established / statutory | [unverified]; [R8] |
-| *Karenzzeit* | 0, 3 or 6 months | none established | [unverified] |
+| *Wartezeit*, underwritten / *Pflege-Bahr* / *Karenzzeit* | 0 to 3 years, usually waived for accident / up to 5 years / 0, 3 or 6 months | none established, save the statutory *Pflege-Bahr* maximum | [unverified]; [R8] |
 | Entry age / purchase cluster / *vereinbarte Rente* as sold | 18 to 65, some to 70 / 45 to 60 / 1 000 € to 1 500 € per month | none established | [unverified] |
-| *Beitragsdynamik* / *Leistungsdynamik* in payment | 3 % to 5 % / 1 % to 3 % a year | none established | [unverified] |
+| *Beitragsdynamik* / *Leistungsdynamik* in payment / *Stornoabzug* | 3 % to 5 % / 1 % to 3 % a year / 0 % to about 5 % of the *Deckungskapital* | none established | [unverified] |
 | *Todesfallleistung* / *Beitragszahlungsdauer* | none, *Beitragsrückgewähr*, fixed sum or *Deckungskapital* / lifelong, to 65, to 85 or *Einmalbeitrag* | none established | [unverified] |
-| *Stornoabzug* | 0 % to about 5 % of the *Deckungskapital* | none established | [unverified] |
 | Benefit by care setting / *Herabstufung* guarantee | setting-independent (modern) or reduced at home (older wordings) / present in some wordings, absent in others | none established | [unverified]; gap 17 |
 
 **What can be said about carriers without a source.** The delib brief names twenty-six German
-undertakings, and **this corpus establishes nothing about any of them**. The one structural
-statement that follows without a source is that ***Pflegetagegeld* is written by the
-*Krankenversicherer* in that list and *Pflegerente* by the *Lebensversicherer***; which undertakings
-currently write a *Pflegerente* was not established. **Where the ranges would have come from:**
-Franke und Bornberg and Morgen & Morgen rate wordings clause by clause [S14] [REG-R53]; Stiftung
-Warentest and Finanztip publish comparative tests, both concentrating on *Pflegetagegeld* [S10]
-[S12]; Verivox and Check24 quote on demand [S13]. **None was retrieved or searched.**
+undertakings, and **this corpus establishes nothing about any of them**. The one structural statement
+that follows without a source is that ***Pflegetagegeld* is written by the *Krankenversicherer* in
+that list and *Pflegerente* by the *Lebensversicherer***; which undertakings currently write a
+*Pflegerente* was not established. **Where the ranges would have come from:** Franke und Bornberg and
+Morgen & Morgen rate wordings clause by clause [S14] [REG-R53]; Stiftung Warentest and Finanztip
+publish comparative tests, both concentrating on *Pflegetagegeld* [S10] [S12]; Verivox and Check24
+quote on demand [S13]. **None was retrieved or searched.**
 
 **What does not vary.** Three rows above are legal facts rather than commercial ones and can be
 stated without attribution: *Pflegegrad* 5 pays 100 %, which is the definition of the *vereinbarte

@@ -26,20 +26,18 @@ German form in prose.
   with the three state variables that make the product what it is: the guaranteed *Deckungskapital*,
   the accumulated *Überschussguthaben* and the accrued *Schlussüberschussanteil*.
 - **Out of scope, and said so.** No discounting. **No *Deckungsrückstellung***: the model projects the
-  contract's *Deckungskapital* — the amount that should be held — and not the balance-sheet quantity,
-  which is § 341f HGB's [REG-R54]. No *Zinszusatzreserve* [REG-R17], no RfB stock [REG-R10]
-  [REG-R19], no MindZV allocation [R6] [REG-R18], no P&L, no Solvency II technical provision, risk
-  margin, SCR or MCR [REG-R1] [REG-R2] [REG-R6]. No *Beteiligung an den Bewertungsreserven* in the
-  base run — the parameter exists and is zero [R1] [R8]. No tax: delib publishes gross benefits, and
-  the tax rules enter only as design constraints (`product-spec.md`, *Taxation*). No premium-default
-  path, because §§ 37 and 38 VVG were never researched (gap 20). No supervisory write-down under
-  § 222 or § 314 VAG [REG-R12]. No *Zusatzversicherungen*, no *Kapitalwahlrecht*, no *Dynamik*, no
-  *Beleihung*.
-- **Projection frequency.** **Annual grid.** The contract's own operative clock is annual: the surplus
+  contract's *Deckungskapital* — the amount that should be held — not the balance-sheet quantity of
+  § 341f HGB [REG-R54]. No *Zinszusatzreserve* [REG-R17], no RfB stock [REG-R10] [REG-R19], no MindZV
+  allocation [R6] [REG-R18], no P&L, no Solvency II technical provision, risk margin, SCR or MCR
+  [REG-R1] [REG-R2] [REG-R6]. No *Beteiligung an den Bewertungsreserven* in the base run — the
+  parameter exists and is zero [R1] [R8]. No tax: delib publishes gross benefits, and the tax rules
+  enter only as design constraints. No premium-default path, §§ 37 and 38 VVG never having been
+  researched (gap 20); no supervisory write-down under § 222 or § 314 VAG [REG-R12]; no
+  *Zusatzversicherungen*, *Kapitalwahlrecht*, *Dynamik* or *Beleihung*.
+- **Projection frequency.** **Annual grid**, which is the contract's own operative clock: the surplus
   is declared once a year and allocated at the *Bilanzstichtag* [S9], the *Rückkaufswert* is struck at
   the end of the current *Versicherungsperiode* [R2], the *beitragsfreie Versicherungssumme* is
-  tabulated *für jedes Versicherungsjahr* [R3], and the *Ablauf* falls on an anniversary [S7]. A finer
-  grid would add nothing the contract distinguishes.
+  tabulated *für jedes Versicherungsjahr* [R3], and the *Ablauf* falls on an anniversary [S7].
 - **What `t` counts.** `t` is the **policy year**, **1-based**, measured from **issue**: policy year
   `t` runs from the (`t`−1)-th policy anniversary to the `t`-th, and `age(t) = issue_age + t − 1` is
   the attained age at the start of it. `duration(t) = t − 1` is the number of completed policy years
@@ -62,21 +60,21 @@ German form in prose.
   closing reserve; death claims and the maturity claim at the **end** of the year; surrender at the
   end of the year, **after** the mortality decrement and **after** the surplus credit.
 - **The Bilanzstichtag becomes the policy anniversary [std].** The sources put the allocation at the
-  *Bilanzstichtag*, 31 December [S9]. On a policy-year grid that date falls inside a policy year for
-  every contract not written on 1 January, so the model allocates at the **policy-year end** instead.
-  The effect is a timing shift of up to one year in the surplus credit relative to a real book, and
-  it is stated rather than hidden; a calendar-year model would need a two-part first year.
+  *Bilanzstichtag*, 31 December [S9]; on a policy-year grid that date falls inside a policy year for
+  every contract not written on 1 January, so the model allocates at the **policy-year end**. The
+  effect is a timing shift of up to one year in the surplus credit relative to a real book, stated
+  rather than hidden; a calendar-year model would need a two-part first year.
 - **Age basis.** Age last birthday at issue, stepping at the policy anniversary **[std]** — no located
   German endowment wording states one (`product-spec.md`, footnote 6).
 - **Unisex pricing is a hard constraint.** `sex` is carried and drives the **decrement** lookup, but
   **must not enter the premium**: § 20 Abs. 2 Satz 1 AGG was repealed and new business has been unisex
   since 21 December 2012 [REG-R34]. The pricing basis is a fixed portfolio blend, and letting `sex`
   leak into `prem_gross_pp` reproduces a tariff unlawful in Germany since 2012 (pitfall 17).
-- **No account value in the unit-linked sense.** The house vocabulary's `prem_to_av_pp` — the premium
-  credited to an account — has **no counterpart here** and is not published: a *Beitrag* funds the
-  *Deckungskapital* through the tariff, not a policyholder account, and the only true account is the
-  *Überschussguthaben*, which receives surplus and never premium. `withdrawals` is likewise absent: a
-  classic German endowment has no partial-withdrawal right in any located wording.
+- **No account value in the unit-linked sense.** The house vocabulary's `prem_to_av_pp` has **no
+  counterpart here** and is not published: a *Beitrag* funds the *Deckungskapital* through the tariff,
+  not a policyholder account, and the only true account is the *Überschussguthaben*, which receives
+  surplus and never premium. `withdrawals` is likewise absent — a classic German endowment has no
+  partial-withdrawal right in any located wording.
 - **Currency, sign and rounding.** EUR throughout. `net_cf(t)` is **income-positive** (premiums +,
   claims, expenses and commission −), with the outgo-positive orientation published as
   `liability_cf(t) = −net_cf(t)`. Intermediate values at full precision; displayed cash flows to euro
@@ -727,13 +725,12 @@ All formulas are **[std]**; no German calibration evidence exists for any of the
   years and age 60 or 62 [R10] [REG-R45] — and the levels unsourced. The anchor cell's *Ablauf* at
   attained age 62 makes the two thresholds coincide, which is exactly why a German buyer is sold that
   term and exactly why the surrender rate collapses in the run-up to it.
-- **The *Beitragsfreistellung* election is deterministic.** It is a model-point column, not a
-  decrement. The corpus establishes the right in full [R3] and gives **no take-up rate at all**, and
-  the one aggregate that would bear on it — GDV's headline *Stornoquote* — mixes the paid-up route in
-  with surrenders and cannot be split [R20]. Modelling it as a scheduled election rather than as a
-  fitted rate keeps the unsourced number out of the base run. What that costs the projection is
-  stated: a real book converts a material and duration-dependent share of contracts to *beitragsfrei*,
-  and this model shows that path only where a model point elects it.
+- **The *Beitragsfreistellung* election is deterministic** — a model-point column, not a decrement.
+  The corpus establishes the right in full [R3] and gives **no take-up rate at all**, and the one
+  aggregate that would bear on it mixes the paid-up route in with surrenders and cannot be split [R20].
+  Modelling it as a scheduled election keeps the unsourced number out of the base run; what that costs
+  is stated — a real book converts a material, duration-dependent share to *beitragsfrei*, and this
+  model shows that path only where a model point elects it.
 - **Premium-shock lapse [std] (optional module, off in the base run).** Not applicable to the base
   contract, whose *Bruttobeitrag* is level, but live under *Beitragsverrechnung*, where a fall in the
   declared rate raises the *Zahlbeitrag*:
@@ -746,10 +743,9 @@ All formulas are **[std]**; no German calibration evidence exists for any of the
 - **Rate-gap lapse [std] (optional module, off in the base run).** German surrender behaviour on a
   savings contract keys on the gap between the declared rate and what is available elsewhere:
   `lapse_add(t) = a · max(0, ref_rate − decl_rate(t) − tol)` with `a = 3.0`, `tol = 0.5 pp` and
-  `ref_rate` a model Reference **[std]**. Base run `a = 0`. **No German calibration of any of these
-  three numbers exists in the corpus**, which is why the module ships off.
-- **Selective lapsation is not modelled.** Surrenders on an endowment are wealth- and tax-driven rather
-  than health-driven, and no source supports a mortality loading on persisters.
+  `ref_rate` a model Reference **[std]**; base run `a = 0`. **No German calibration of any of these
+  numbers exists in the corpus**, which is why the module ships off. **Selective lapsation is not
+  modelled** either: surrenders on an endowment are wealth- and tax-driven rather than health-driven.
 - **What the model deliberately does not do.** No premium-default path (§§ 37/38 VVG unresearched, gap
   20); no *Widerruf* decrement (§ 152 VVG unresearched); no dynamic *Beitragsverrechnung* take-up; and
   no management action on the declared rate — the rate is a scenario, and the RfB and its
@@ -837,12 +833,11 @@ The valuation layers consume them and are **cited, never reproduced**.
   pricing equation funds it, and the classical reserve convention used here assumes the ongoing
   loadings exactly meet the ongoing costs. On a full HGB basis that provision would be separate.
 - **The *Zinszusatzreserve*.** An HGB reserve arising when the § 5 Abs. 3 DeckRV *Referenzzins* falls
-  below a contract's tariff rate, financed out of the result and, under § 140 VAG's second escape
-  hatch, out of the free RfB [REG-R10] [REG-R17]. It exists in no other jurisdiction in this repository
-  and **this model does not compute it**. It matters here for one reason: the ZZR is the mechanism by
-  which a high-guarantee cohort — the in-force model point on 1,75 %, and far more so a 4,00 % cohort —
-  consumes the surplus that would otherwise be declared, which is why a delib scenario path is a
-  scenario and not a forecast.
+  below a contract's tariff rate, financed out of the result and, under § 140 VAG's second escape hatch,
+  out of the free RfB [REG-R10] [REG-R17]. It exists in no other jurisdiction in this repository and
+  **this model does not compute it**, but it matters here: the ZZR is how a high-guarantee cohort
+  consumes the surplus that would otherwise be declared, which is why a delib path is a scenario and
+  not a forecast.
 - **The RfB, the *Schlussüberschussanteilfonds* and the MindZV.** The surplus this model credits is the
   **output** of the insurer's declaration policy, not the MindZV minimum, which is a transfer to the RfB
   — 90 % of the *Kapitalanlageergebnis* after deducting the *Rechnungszinsen*, 90 % of the
@@ -860,13 +855,12 @@ The valuation layers consume them and are **cited, never reproduced**.
   boundary rule or standard-formula shock in this library was read from a retrieved instrument**, so
   every such figure is **[std]** [REG-R2].
 - **The guarantee is an option.** A guaranteed sum insured plus a guaranteed *Rechnungszins* is a
-  written put on the *Sicherungsvermögen*, and the deterministic path above prices none of it. A
-  stochastic-on-deterministic run — the crediting rule and the surrender formula re-evaluated per
-  scenario — is what a time-value-of-options-and-guarantees calculation consumes. The outer boundary is
-  the *Sicherungsfonds*: a fund-level 5 % haircut under § 222 VAG and an uncapped, asset-position-driven
-  reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit the *Rückkauf***
-  [REG-R12]. **A mass-surrender run here produces the values the contract owes, not the ones that would
-  be paid if § 314 were in force.**
+  written put on the *Sicherungsvermögen*, and the deterministic path above prices none of it; a
+  stochastic-on-deterministic run is what a time-value-of-options-and-guarantees calculation consumes.
+  The outer boundary is the *Sicherungsfonds*: a fund-level 5 % haircut under § 222 VAG and an
+  uncapped reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit the
+  *Rückkauf*** [REG-R12]. **A mass-surrender run here produces the values the contract owes, not the
+  ones that would be paid if § 314 were in force.**
 - **IFRS 17.** The archetypal direct-participating contract, measured under the variable fee approach;
   the fulfilment-cash-flow engine is this same projection, and grouping, CSM and risk adjustment are out
   of scope [REG-R55].
