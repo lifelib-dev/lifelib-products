@@ -323,8 +323,8 @@ German index product**, and every charge below is **[std]**.
 26. Inherited **[std]** from the sibling delib endowment and classic-annuity products; no charge level of
     any kind was established here [S3] [S4] [S11]. The market frame: the 2024 *Verwaltungskostenquote* was
     **2,4 %** on one measurement and **2,19 %** on another, spread **from under 2 % to over 4 %**
-    [REG-R53], and BaFin's *Merkblatt* 01/2023 (VA) makes cost a supervisory test [R16] [REG-R35] — so a
-    charge parameterisation should be plausible against a sector distribution, not merely self-consistent.
+    [REG-R53], and BaFin makes cost a supervisory focus [R16] [R17] [REG-R35] — so a charge
+    parameterisation should be plausible against a sector distribution, not merely self-consistent.
 27. § 169 Abs. 5 VVG permits a deduction **only if it is agreed, quantified and appropriate**, with the
     burden of proof on the insurer and a deduction for unredeemed acquisition costs expressly
     ineffective [R2] [REG-R28]. The sibling endowment research records one carrier's 5 % base deduction
@@ -599,8 +599,7 @@ established, and none may add a fourth**.
 
 | Feature | Allianz [S2] [S3] [S4] [S5] | R+V [S7] | Die Stuttgarter [S8] | Anyone else | delib **[std]** |
 |---|---|---|---|---|---|
-| Index AVB obtained | no | no | no | no | composite [S1] |
-| Product name | IndexSelect [unverified] | IndexInvest [unverified] | index-safe [unverified] | not established | n/a |
+| Index AVB obtained; product name | no; IndexSelect [unverified] | no; IndexInvest [unverified] | no; index-safe [unverified] | no; not established | composite [S1] |
 | Payoff design (Cap / Quote / both) | not established | not established | not established | not established | Cap; Quote as a variant |
 | Cap level, any year | **not established** | **not established** | **not established** | **not established** | 3,00 % monthly |
 | *Mindest-Cap* guaranteed | not established | not established | not established | not established | none |
@@ -623,8 +622,7 @@ many **[std]** rows.
 | Declared surplus rate, 2026 | of the order of 2,5 % – 2,7 %, on incompatible surveyed averages | market-wide [R20] [REG-R53] |
 | *Höchstrechnungszins* by cohort | 0,25 % – 4,00 %; **1,00 % for 2025–2026** | market-wide [R7] [R18] [REG-R15] |
 | Index volatility (annualised) | 15 % – 22 % equity; 5 % – 8 % house index | **no index named** |
-| *Verwaltungskostenquote*, 2024 | under 2 % to over 4 %, market average 2,19–2,4 % | market-wide [REG-R53] |
-| *Ratenzahlungszuschlag* | 2 % half-yearly / 3 % quarterly / 5 % monthly | market convention [unverified] |
+| *Verwaltungskostenquote* 2024; *Ratenzahlungszuschlag* | under 2 % to over 4 %, average 2,19–2,4 %; 2 % / 3 % / 5 % | [REG-R53]; convention [unverified] |
 | *Stornoabzug* | 0 % – 20 % of the *Deckungskapital* | one carrier's structure [unverified] |
 | *Stornoquote*, market-wide | 1,2 % – 2,7 % on two irreconcilable measures | no index-specific rate exists [R19] |
 
@@ -704,17 +702,19 @@ does not restart the twelve-year clock [unverified]. The duration-12 / age-62 do
 strongest single driver of German surrender behaviour and shapes the lapse assumption in the technical
 notes [REG-R45].
 
-**The criticism, stated fairly, because a specification that omits it is not a specification.** The
-cap's effect on the expected credit is large and is not disclosed in a usable form: the purchaser is
-told the cap, is not told the volatility, and cannot do the calculation. Negative months are uncapped,
-which is genuinely counter-intuitive. Against a direct index investment the product loses on every axis
-but two — it gives up the dividends of a price index and the tail of every good month, and adds
-acquisition, administration and possibly index-level costs — but **what it gives back is real**: the
-capital cannot fall, credits lock in permanently, the guarantee is the insurer's, and the accumulation
-is tax-deferred with a favourable exit. The Cap is redetermined annually at the insurer's discretion,
-constrained in principle by § 315 BGB and by no decided case [R22]; the move to house indices moved the
-give-up out of sight; and complexity is itself a defect in a retail product. **The counter-argument,
-fairly stated**: the relevant benchmark for most purchasers is not an index fund but the *sichere
-Verzinsung* arm of the same contract, and against that the index arm has a higher expected value, cannot
-do worse than zero in any year, costs nothing extra, and can be abandoned at any anniversary. The
-reference implementation exists to let a reader run that comparison rather than assert it.
+**The criticism, stated fairly, because a specification that omits it is not a specification.** Its home
+is the German consumer publishers and trade press — Finanztip [S12], Stiftung Warentest [S13], the
+Verbraucherzentralen [S14] and the trade titles [S16] — **none of which was retrieved**, so what follows
+is the argument, not a citation of it. The cap's effect on the expected credit is large and is not
+disclosed in a usable form: the purchaser is told the cap, is not told the volatility, and cannot do the
+calculation. Negative months are uncapped, which is genuinely counter-intuitive. Against a direct index
+investment the product loses on every axis but two — it gives up the dividends of a price index and the
+tail of every good month, and adds acquisition, administration and possibly index-level costs — but
+**what it gives back is real**: the capital cannot fall, credits lock in permanently, the guarantee is
+the insurer's, and the accumulation is tax-deferred with a favourable exit. The Cap is redetermined
+annually at the insurer's discretion, constrained in principle by § 315 BGB and by no decided case
+[R22]; the move to house indices moved the give-up out of sight; and complexity is itself a defect in a
+retail product. **The counter-argument, fairly stated**: the relevant benchmark for most purchasers is
+not an index fund but the *sichere Verzinsung* arm of the same contract, and against that the index arm
+has a higher expected value, cannot do worse than zero in any year, costs nothing extra, and can be
+abandoned at any anniversary. The reference implementation lets a reader run that comparison.

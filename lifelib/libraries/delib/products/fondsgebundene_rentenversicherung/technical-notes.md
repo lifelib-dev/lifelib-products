@@ -1,0 +1,870 @@
+# Technical Notes
+
+**Status:** Draft, 2026-08-29 (all sources accessed 2026-08-29).
+
+**Scope note.** These notes specify a reference liability cash-flow projection model — model name
+**`FRV_DE_S`**, **monthly** grid — for the standardized composite German *fondsgebundene
+Rentenversicherung* defined in `product-spec.md` (same directory). This is not any single
+insurer's product. [S#]/[R#] tags refer to the source list in `sources.md` (numbering carried
+from `_research/fondsgebundene_rentenversicherung.md`; frozen); [REG-R#] tags refer to the
+cross-product reference library `references/regulatory-and-actuarial-references.md` (its own
+R-numbering). **[std]** marks a standardization introduced for the reference implementation;
+[unverified] marks a claim no retrieved document or search result confirmed. Parameter values are
+identical to those in `product-spec.md`. Cells names, model-point columns and CSV headers are
+English `lower_snake_case`; German terms of art keep their German form in prose, and three of
+them — *Rentenfaktor*, *Beitragssumme*, *Stornoabzug* — keep it in the cells names too, because
+each names a quantity with a statutory definition and no English equivalent that would not
+mislead.
+
+**The retrieval condition, once, because it governs every number below.** No document cited here
+was retrieved, and no web search was run for this product; the few facts corroborated at one
+remove come from searches run for sibling delib products and are attributed to them. The
+**mechanics** are common ground in German practice. The **levels** are almost entirely **[std]**:
+not one charge rate, not one *Rentenfaktor* and not one lapse rate was established at any carrier.
+
+---
+
+## Model scope and conventions
+
+- **Purpose.** Project **gross best-estimate liability cash flows, undiscounted**, on a monthly
+  grid, for a single-policy model point on an expected (probability-weighted) basis. Discounting,
+  the *Deckungsrückstellung*, Solvency II technical provisions and capital are out of scope and
+  are referenced, never computed (see *Valuation and reserve pointers*).
+- **`net_cf` is the non-unit stream, and that is the single most important convention here.**
+  Every benefit this contract pays before *Rentenbeginn* — the death benefit up to the fund, the
+  *Rückkaufswert*, the *Teilentnahme*, the capital released at *Rentenbeginn* — is funded by
+  cancelling the policyholder's own units, so a gross presentation would count the same money
+  twice. `net_cf(t)` is therefore **charges collected, less insurer expenses, less the death
+  strain**. The gross flows are still published — `premiums`, `prem_to_av`, `claims_death`,
+  `claims_lapse`, `claims_maturity`, `withdrawals` and `av_releases` are all `result_cf()`
+  columns — and `check_benefit_funding()` asserts that they net exactly. This is the same
+  decomposition `frlib/products/assurance_vie_uc` uses for a French *unités de compte* contract;
+  what is German about it is that the *Anlagestock* rule makes the unit assets and the unit
+  liability move together by law [R15] [REG-R7], so the model has **no investment-mismatch term**.
+- **Projection frequency.** Monthly. Sourced in substance rather than chosen: the dominant premium
+  frequency is monthly, the *Risikobeitrag* and the *kapitalbezogenen Verwaltungskosten* are
+  levied monthly by unit cancellation, and the *Abschluss- und Vertriebskosten* instalment runs
+  for exactly **60 months** [R1] [REG-R28]. An annual grid cannot place the month-60 cliff.
+- **Projection horizon.** The ***Aufschubzeit* only.** `proj_len() = 12 × (annuity_age −
+  entry_age)` is the **last projected policy month**, the month in which *Rentenbeginn* falls; at
+  the end of it the units are cancelled, the *Fondsguthaben* is converted at the *Rentenfaktor*
+  and the contract leaves this model. The payout phase — the *Überschussrente*, the
+  *Rentengarantiezeit*, the *Rentenbezugskosten* — belongs to `products/sofortrente/`.
+- **The frame is 1-based in policy months counted from inception, and an in-force model point
+  opens partway through it.** `t` is the policy month index from the contract's own inception, so
+  `t = 61` means the same thing on every model point: the first month after the acquisition-charge
+  instalment ends. The frame runs `t = proj_start() … proj_len()` with `proj_start() =
+  duration_init_m + 1`, which is `1` for new business and `97` for the in-force cell. That is what
+  lets a single `charge_acq_pp(t)` rule serve both without a duration offset, and it is why the
+  library's conventions suite asserts frame **contiguity** and the last index rather than the
+  first.
+- **Timing conventions [std].** Premium in advance at the start of the month; units bought at the
+  *Anteilspreis* at the start of the month; the month's investment return then accrues; the
+  fund-based charges, the *Stückkosten*, any *Teilentnahme* and the *Risikobeitrag* are taken at
+  the end of the month at the closing *Anteilspreis*; decrements act at the end of the month,
+  deaths before lapses. The *Bewertungsstichtag* lag a real contract carries — how many dealing
+  days after receipt units are bought — disappears on a monthly grid and is not modelled.
+- **The net amount at risk is observed once a month, before the risk charge that prices it.** The
+  death benefit is therefore the floor **as observed before that month's *Risikobeitrag***, so the
+  insurer's non-unit cost per death is **exactly the *riskiertes Kapital*** and nothing else. That
+  half-month discretization is **[std]** and is the same one `UC_FR_S` makes for the French
+  *garantie plancher*.
+- **Age basis.** Age last birthday at inception, stepping at each policy anniversary:
+  `policy_year(t) = floor((t − 1)/12) + 1`, `age(t) = entry_age + policy_year(t) − 1`. **At
+  `t = proj_len()` the attained age is `annuity_age − 1`**, because the annuity begins at the
+  **end** of that month. The *Rentenfaktor* is read at `annuity_age`, not at `age(proj_len())`,
+  and getting that wrong is a listed pitfall.
+- **One fund.** The composite carries a single composite fund; with a deterministic return a
+  multi-fund split is arithmetically identical to one fund at the weighted return. *Fondswechsel*
+  and *Ablaufmanagement* are therefore represented as changes to the assumed return, not as
+  reallocations, and the model cannot show dispersion between funds.
+- **Currency and precision.** EUR throughout. Unit counts are carried at full precision and
+  reported to six decimals, money to the cent **[std]**. `pols_if` to six decimals.
+- **Out of scope, and said so rather than left to be discovered.** No *Überschussbeteiligung*
+  credit (the omission understates the projected *Fondsguthaben*); no hybrid or guarantee
+  mechanism of any kind; no *Widerruf* window; no stochastic asset model, so nothing here may be
+  compared with a PRIIPs performance scenario [R8] [R9] [REG-R32]; no tax computation — the tax
+  rules enter only through the lapse shape; and no payout-phase machinery beyond the annuity the
+  *Rentenfaktor* buys.
+
+---
+
+## Model point attributes
+
+Columns of `model_point_table.csv`, indexed by `point_id`. The last column names the model points
+that exercise the attribute non-trivially, so a reader can find the row that tests it.
+
+| Attribute | Type | Meaning | Exercised by |
+|---|---|---|---|
+| `point_id` | int | index; **model point 1 is the worked example's anchor cell** | all |
+| `policy_id` | str | label, e.g. `DE-FRV-0001` | all |
+| `sex` | enum {M, F} | **reporting only.** German tariffs are unisex for contracts from 21 December 2012 [REG-R34], so this must not enter pricing | 1, 4, 9 |
+| `entry_age` | int (ALB) | age at inception | all |
+| `duration_init_m` | int | policy months already elapsed at the valuation date; 0 for new business | 6 |
+| `pols_if_init` | float | policies the model point represents | all |
+| `annuity_age` | int | age at *Rentenbeginn*; fixes `proj_len()` and the *Rentenfaktor* row | 13 (70), all others 67 |
+| `prem_form` | enum {`laufend`, `einmal`} | recurring or single premium | 2 (`einmal`) |
+| `prem_pp` | EUR | the **instalment the policy states**, or the *Einmalbeitrag*. Already contains whatever *Ratenzahlungszuschlag* the tariff applied | all |
+| `prem_mode_months` | int {1, 3, 6, 12} | payment frequency in months | 3 (3), 4 (6), 5 (12) |
+| `prem_term_y` | int | premium-paying term in years; 0 for `einmal` | 12 (2 years against a 12-year deferment) |
+| `dynamik_rate` | float | *Beitragsdynamik*, annual premium increase at each anniversary; 0 = off | 10 (3 %) |
+| `pup_month` | int | policy month from which the contract is *beitragsfrei*; 0 = never | 7 (121) |
+| `db_form` | enum {`fund`, `prem_return`, `pct_fund`, `sum_assured`} | *Todesfallleistung* shape | 2, 13 (`fund`); 4, 12 (`pct_fund`); 7 (`sum_assured`); rest `prem_return` |
+| `db_pct` | float | multiple of the fund used by `pct_fund` | 4, 12 (1.10) |
+| `sum_assured` | EUR | *garantierte Mindesttodesfallleistung* used by `sum_assured` | 7 (40,000) |
+| `charge_id` | str | key into `charge_table.csv` | 5 (`std_high`), 11 (`std_netto`), 13 (`std_low`) |
+| `scenario_id` | str | key into `fund_scenario_table.csv` | 7 (`zero`), 11 (`etf`), 12 (`stress`) |
+| `rentenfaktor_id` | str | key into `rentenfaktor_table.csv` | 13 (`rich_current`) |
+| `unit_price_init` | EUR | *Anteilspreis* at the projection's opening, i.e. `unit_price(proj_start() − 1)` | 6 (118.40); 100.00 elsewhere |
+| `units_init` | float | units held at the projection's opening | 6 (190.0); 0 elsewhere |
+| `cum_prem_init` | EUR | premiums paid before the valuation date — the *Beitragsrückgewähr* base | 6 (24,000.00) |
+| `topup_month` | int | month of a *Zuzahlung*; 0 = none | 9 (121) |
+| `topup_amount` | EUR | the *Zuzahlung* | 9 (20,000.00) |
+| `wd_month` | int | month of a *Teilentnahme*; 0 = none | 9 (241) |
+| `wd_amount` | EUR | the *Teilentnahme* | 9 (15,000.00) |
+| `ablauf_flag` | bool | *Ablaufmanagement* return glide on | 8 |
+| `kapitalwahl` | bool | *Kapitalwahlrecht* elected at *Rentenbeginn* — a **reporting** split, since both routes release the same *Fondsguthaben* from this model | 13 |
+
+Two columns are assumptions in disguise and are tagged where they are used rather than in the
+file, because `model_point_table.csv` is the library's one provenance-exempt input: `sum_assured`
+and `db_pct` are **[std]** levels chosen to exercise the two death-benefit shapes with a positive
+net amount at risk, and `dynamik_rate` is **[std]** at 3 % because no carrier's dynamic step was
+established.
+
+**The thirteen model points.** 1 anchor (new business, monthly, *Beitragsrückgewähr*); 2 single
+premium with a fund-only death benefit, so `charge_risk` is structurally zero; 3 quarterly;
+4 half-yearly with a 110 % death benefit; 5 annual on the top-of-range charge tariff, which is
+also the only point with a non-zero *Stornoabzug*; 6 in-force at duration 96, past the
+acquisition window; 7 *beitragsfrei* from month 121 with a fixed *Mindesttodesfallleistung* on a
+zero-return fund — the decay case; 8 *Ablaufmanagement*; 9 *Zuzahlung* and *Teilentnahme*;
+10 *Beitragsdynamik*; 11 *Nettotarif* on an ETF fund; 12 a two-year premium term inside a
+twelve-year deferment on the stress path, which is the acquisition-spread boundary; 13 a
+*Rentenbeginn* at 70 with a current *Rentenfaktor* above the guaranteed one, so the `max()` bites.
+
+---
+
+## State variables
+
+| Variable | Description | Updated |
+|---|---|---|
+| `proj_start()` | first projected month, `duration_init_m + 1` | once |
+| `proj_len()` | last projected month, `12 × (annuity_age − entry_age)` | once |
+| `beitragssumme()` | sum of premiums **payable** over the premium term at the initial level — the acquisition-charge base [R12] [REG-R16] | once |
+| `unit_price(t)` | *Anteilspreis* at the **end** of month `t`; `unit_price(proj_start() − 1) = unit_price_init` | monthly |
+| `units_pp(t)` | *Anteileinheiten* per policy at the **start** of month `t` | monthly recursion |
+| `av_pp(t)` | *Fondsguthaben* per policy at the start of month `t`, `= units_pp(t) × unit_price(t − 1)` | derived |
+| `av_pp_at(t, timing)` | the within-month balances: `"BEF_CHARGE"`, `"AFT_CHARGE"`, `"AFT_WD"`, `"BEF_DECR"` | within month |
+| `av_at(t, timing)` | `av_pp_at(t, timing) × pols_if(t)` — the in-force fund at that point | derived |
+| `cum_prem_pp(t)` | cumulative **gross** premiums paid to and including month `t`, seeded at `cum_prem_init` | monthly |
+| `cum_charge_acq_pp(t)` | cumulative acquisition charge withheld — the ledger `check_acq_charge()` closes | monthly |
+| `db_floor_pp(t)` | guaranteed minimum death benefit under `db_form` | monthly |
+| `nar_pp(t)` | *riskiertes Kapital*, `max(db_floor_pp(t) − av_pp_at(t, "AFT_WD"), 0)` | monthly |
+| `pols_if(t)` | policies in force at the **start** of month `t`; `pols_if(proj_start()) = pols_if_init()` | monthly decrements |
+| `pols_if_at(t, timing)` | `"BEF_DECR"`, `"AFT_DEATH"`, `"AFT_DECR"`; `"AFT_DECR"` is the end-of-month count | within month |
+| `pols_death(t)`, `pols_lapse(t)`, `pols_maturity(t)` | the three exits; `pols_maturity` is non-zero only at `t = proj_len()` | monthly |
+
+There is **no** *Deckungskapital*, **no** guaranteed-value state and **no** paid-up-benefit
+state. That is a statutory fact about the product, not a simplification: § 169 VVG sends a
+fondsgebundene contract to the *Zeitwert* [R1] [REG-R28], and § 165 VVG's conversion to a
+*prämienfreie Versicherung* recomputes nothing on this chassis [R3].
+
+---
+
+## Assumption inputs
+
+### (a) Contractual / guaranteed elements (cited)
+
+| Input | Value | Basis |
+|---|---|---|
+| What is guaranteed | The **number** of *Anteileinheiten*, never their value | [S1]; *Anlagestock* [R15] [REG-R7] |
+| *Beitragsverrechnung* order | gross *Beitrag* → less the acquisition instalment → less the premium-based admin charge → the remainder is the *Anlagebeitrag* and buys units | [S1] |
+| Acquisition-charge cap | **2.50 %** of the *Beitragssumme* — the *Höchstzillmersatz* of 25 ‰ | [R12] [R13] [REG-R16] [REG-R20] |
+| Acquisition-charge spreading | Evenly over the first **five contract years**, i.e. `min(60, 12 × prem_term_y)` months | [R1] [REG-R28] |
+| Death benefit (base) | `max(Fondsguthaben, Summe der gezahlten Beiträge)` — *Beitragsrückgewähr* | [S2] |
+| *Risikobeitrag* base | `max(Todesfallleistung − Fondsguthaben, 0)`, recomputed monthly | [S1] |
+| *Risikobeitrag* mortality basis | A **death** table — DAV 2008 T, first order — not the annuity table | [R17] [REG-R48] |
+| *Rentenfaktor* rule | `max(garantierter, aktueller)` at *Rentenbeginn* | [S4] [R22] |
+| *Rentenfaktor* conversion basis | DAV 2004 R, generational, at an underlying rate of currently 0 % p.a. | [S10] (classic tariff, transfer is an inference); [R16] [REG-R49] |
+| *Rückkaufswert* | The ***Zeitwert***, which on a pure unit-linked contract **is the *Fondsguthaben*** | [R1] [REG-R28] |
+| *Stornoabzug* | Only if *vereinbart*, *beziffert* and *angemessen*; never for untilgte acquisition costs | [R1] [REG-R28] [REG-R36] |
+| *Kündigung* | At any time for the end of the current *Versicherungsperiode* | [R2] [REG-R28] |
+| *Beitragsfreistellung* | Premium-based charges stop; fund-based charges, the *Stückkosten* and the *Risikobeitrag* continue by unit cancellation | [R3] [REG-R28] |
+| Unisex | Sex may not enter the premium or the benefit | [REG-R34] |
+| *Überschussbeteiligung* | Risk and cost results only; **not projected** | [R5] [R14] [REG-R9] [REG-R18] |
+
+### (b) Insurer-discretionary current elements
+
+Thin, and thinner than on the sibling general-account products, because the discretion on this
+contract bites through the **charge scale** and the **current *Rentenfaktor***, not through a
+declared rate.
+
+| Input | Snapshot value | Basis |
+|---|---|---|
+| Charge scale (`charge_table.csv`) | `std_gross`: α 2.50 %, spread 60 months, β 4.00 %, γ 0.30 % p.a., *Stückkosten* 3.00 EUR/month, *Zuzahlungskosten* 2.50 %, *Stornoabzug* 0.00 % | levels **[std]** (1) |
+| Charge variants | `std_netto` (α 0, β 1.00 %, γ 0.20 %, fee 2.00); `std_high` (β 10.00 %, γ 1.20 %, fee 5.00, *Stornoabzug* 2.00 %); `std_low` (α 1.00 %, β 2.00 %, γ 0.10 %, fee 0.00) | **[std]** (1) |
+| *Kickback* credited back | **0.00 % p.a.** — the composite's fund is passive and pays no trail | **[std]** (2) |
+| Current *Rentenfaktor* | `std_2026`: equal to the guaranteed factor, so the `max()` is exercised without injecting an unsourced uplift. `rich_current`: 12 % above it | **[std]** (3) |
+| *Ablaufmanagement* | A linear glide of the **gross** return from the scenario's rate to `mmkt_return_ann` = 1.50 % p.a. over the last 60 months; off unless `ablauf_flag` | **[std]** (4) |
+| *Überschuss* credit | **None.** Omitting it biases the projected *Fondsguthaben* **downward** | [R5] [R14]; omission **[std]** |
+
+1. **No charge level of any kind was established at any carrier** — not one
+   *Abschlusskostenquote*, not one *Verwaltungskostensatz* in either form, not one *Stückkosten*
+   amount [S3]–[S14] [S16] [S18] [R23] [R24]. The only anchor in the stack is the 25 ‰
+   *Höchstzillmersatz* [R12] [REG-R16], and the composite takes **the cap** rather than a guessed
+   interior point. `std_high` and `std_low` are the ends of the argued range in the product
+   specification's variation table; `std_netto` is the commission-free tariff [S18], and the
+   difference between its reduction in yield and `std_gross`'s **is** the acquisition load — the
+   parameter this library most needs and cannot source.
+2. Whether an insurer may retain a *Bestandsprovision* under the IDD-derived *Zuwendungen* rules,
+   and how a credited rebate is treated inside the PRIIPs cost calculation, are both unresolved
+   [R15] [R7] [R8] [REG-R32] [REG-R33]. A passive fund sidesteps both.
+3. Setting the current factor equal to the guaranteed one keeps the base run reproducible from
+   the derivation alone while still exercising the `max()`. The 12 % uplift on `rich_current` is a
+   round figure chosen so the `max()` visibly bites; **it is not a market observation**.
+4. **No *Ablaufmanagement* parameter was established** — not whether it is opt-in or a default,
+   not the number of years, not the tranches, not the destination [unverified]. A five-year ramp
+   is the shape most often described.
+
+### (c) Behavioral / experience assumptions (modeler's view)
+
+**Every input in this class is [std].** No German unit-linked lapse rate, paid-up rate,
+*Kapitalwahlrecht* take-up or expense loading was established anywhere in this corpus.
+
+**Mortality — two bases, and the wedge between them is the product.** The tariff prices the
+*Risikobeitrag* on a **first-order death table**, DAV 2008 T [R17] [REG-R48]; the projection
+decrements on the **second-order** best estimate [REG-R47]. DAV tables are the property of the
+Deutsche Aktuarvereinigung, are not public and are **not redistributed by this library**. The
+shipped `mort_table.csv` is a **[std] Gompertz-form proxy** of the first-order table:
+
+    mort_rate_tariff_at_age(x) = 0.00080 × 1.10^(x − 37),   ages 18–100
+
+**anchored at `q(37) = 0.00080` exactly**, which is the number the worked example rests on and
+which a substitute table must preserve if the example is to reproduce. The 10 % per year of age
+is an insured-lives death gradient, not a population one — a German term insurer's book is
+**selected**, and a proxy built on population mortality overstates claims at the working ages this
+product lives at [REG-R48] [REG-R52]. The best estimate is a flat ratio:
+
+    mort_be_factor = 0.75     mort_rate(t) = 0.75 × mort_rate_tariff(t)
+
+A flat ratio is crude and is stated as such; what it buys is that the *Risikoergebnis* is exactly
+`(1 − 0.75) = 25 %` of the *Risikobeitrag* collected, which is a closed-form check a reader can
+verify with a calculator. What a replacement must preserve: a first-order margin **above** the
+best estimate for a death cover, which is the opposite direction from the annuity table
+[REG-R47].
+
+**Monthly conversion, and the asymmetry between mortality and lapse [std].** Mortality is split
+**linearly**, `mort_rate_mth(t) = mort_rate(t)/12`, because the tariff's own *Risikobeitrag* is
+`q(x)/12 × riskiertes Kapital` and the charge and the decrement must rest on the same split or the
+model manufactures a risk result out of a rounding convention. Lapse is split **geometrically**,
+`lapse_rate_mth(t) = 1 − (1 − lapse_rate(t))^(1/12)`, because nothing is priced off it and the
+annual rate is the observable that must be reproduced over twelve months. Both conventions are
+stated, and mixing them across the two mortality bases is a listed pitfall.
+
+**Lapse — and the tax threshold that shapes it.** No German unit-linked *Stornoquote* was
+established (gap 18 of the research file). What is structurally true is that unit-linked lapse is
+**front-loaded**, because the acquisition charge is being taken and the value is furthest below
+premiums paid, and that the exit is near-frictionless: § 168 VVG permits termination for the end
+of the current *Versicherungsperiode* and § 169 pays the fund [R1] [R2] [REG-R28]. On top of that
+sits the German tax threshold, which the reference library names as **the strongest single driver
+of German surrender behaviour** [REG-R45]: under § 20 Abs. 1 Nr. 6 EStG only half the
+*Unterschiedsbetrag* is taxable where the contract has run **at least twelve years** and payment
+falls after completion of the **62nd** year of life, so surrenders are suppressed as the threshold
+approaches and spike when both limbs are met [R20] [REG-R45].
+
+| Policy year | 1–5 | 6–10 | 11 | 12 | 13+ |
+|---|---|---|---|---|---|
+| `lapse_rate_base` **[std]** | 6.0 % | 3.0 % | 2.0 % | 2.0 % | 3.0 % |
+
+    lapse_tax_step(t)  = 2.5  in the twelve months of the policy year in which
+                              BOTH duration 12 is complete AND attained age 62 is reached;
+                              1.0 otherwise                                        [std]
+    lapse_rate(t)      = min( lapse_cap, lapse_rate_base(t) × lapse_tax_step(t) + lapse_dyn_add(t) )
+    lapse_rate_mth(t)  = 1 − (1 − lapse_rate(t))^(1/12)
+    lapse_rate_mth(proj_len()) = 0                                                 [std]
+
+with `lapse_cap = 40 %` **[std]**. The step year is `max(13, 62 − entry_age + 1)` in policy years
+— on the anchor cell that is policy year **26**, months 301–312, where the base 3.0 % becomes
+7.5 % and the monthly rate 0.253505 % becomes 0.647574 %. **Keying the spike on duration alone is
+wrong** and is a listed pitfall: the anchor cell passes duration 12 at age 48, fourteen years
+before the tax benefit exists. On model point 12 the step never fires at all, because the
+projection ends at month 144 and the step year begins at month 145.
+
+**In the final month the lapse rate is zero.** The end of month `proj_len()` is *Rentenbeginn*,
+so a surrender and an annuitisation are the same event releasing the same *Fondsguthaben*; the
+whole surviving cohort is booked as `pols_maturity`. No cash flow moves either way, but the
+convention decides the split between `Σ pols_lapse` and `pols_maturity(proj_len())` and it is
+what the closure identity below reproduces. It is frlib's convention on `TD_FR_A` and delib
+adopts it.
+
+**Fund return.** No document in this corpus supplies one, and PRIIPs deliberately does not: its
+scenarios are derived from the underlying's own return history under the RTS, not chosen by the
+insurer [R8] [R9] [REG-R32]. `fund_scenario_table.csv` therefore carries **[std]** paths by
+`(scenario_id, policy_year)`:
+
+| `scenario_id` | Gross return p.a. | TER p.a. | Purpose |
+|---|---|---|---|
+| `base` | 5.00 % level | 0.45 % | the base run **[std]** |
+| `etf` | 5.00 % level | 0.15 % | the low-cost fund, for the *Nettotarif* cell |
+| `zero` | 0.00 % level | 0.45 % | isolates the charge stack: every movement is a charge |
+| `stress` | −20.00 % in year 1, then 5.00 % | 0.45 % | a fall that puts the fund far below premiums paid |
+
+    fund_return_net_ann(t) = gross_return_ann(t) − ter_ann(t)                      [std]
+    fund_return_net_mth(t) = (1 + fund_return_net_ann(t))^(1/12) − 1
+    unit_price(t)          = unit_price(t − 1) × (1 + fund_return_net_mth(t))
+
+On the base path that is 4.55 % p.a. net of fund costs and **0.371482 % per month**. **The TER is
+netted off the return and is never a policy charge**: it lives inside the unit price and never
+appears in the ledger, so charging it explicitly double-counts and ignoring it overstates the
+policyholder's return. The **return** is compounded geometrically because it is an effective
+annual rate; the **charges** are divided by twelve because a German tariff quotes a nominal
+monthly rate — an asymmetry that is deliberate and is a listed pitfall. This is a scenario, not a
+forecast, and **nothing in delib produces a distribution, so nothing in delib may be compared
+with a PRIIPs performance scenario**.
+
+**Expenses and commission (all levels [std]; no German commission scale was established).**
+
+| Input | Value | Basis |
+|---|---|---|
+| Acquisition commission `comm_acq_rate` | **2.50 % of the *Beitragssumme***, paid at `t = 1` | **[std]** (5) |
+| Issue expense `expense_issue` | 200.00 EUR at `t = 1` | **[std]** (5) |
+| Maintenance expense `expense_maint_mth` | 4.00 EUR per policy per month, inflating at `expense_infl` | **[std]** (5) |
+| Expense inflation `expense_infl` | 2.0 % p.a., applied as `1.02^((t − 1)/12)` | **[std]** |
+| Renewal commission `comm_renew_rate` | 1.5 % of each gross premium | **[std]** (5) |
+| Claim expense `expense_claim` | 150.00 EUR per death claim | **[std]** |
+| Surrender expense `expense_surr` | 50.00 EUR per surrender | **[std]** |
+| Annuitisation expense `expense_annuitisation` | 100.00 EUR per policy converting at *Rentenbeginn* | **[std]** |
+| Dynamic-lapse coefficient `lapse_dyn_beta` | **0** in the base run; 0.15 as the reference value | **[std]** (6) |
+
+5. **The acquisition commission is set equal to the acquisition charge deliberately.** The insurer
+   pays 2.50 % of the *Beitragssumme* at inception and recovers exactly that, undiscounted, over
+   the following sixty months — so the model demonstrates in one number the financing problem the
+   *Höchstzillmersatz* and the five-year spread exist to regulate, and month 1 of the worked
+   example is a large negative `net_cf`. No German commission scale was established, so any other
+   level would be an unsourced number pretending to be an observation.
+6. The dynamic module is off in the base run and is specified under *Policyholder behavior
+   modeling* below.
+
+---
+
+## Cash flow components and recursions
+
+### Notation (defined once, used throughout)
+
+| Symbol | Cells | Meaning |
+|---|---|---|
+| `t` | — | policy month index from inception; `t = t₀ … n` |
+| `t₀`, `n` | `proj_start()`, `proj_len()` | `duration_init_m + 1`; `12 × (annuity_age − entry_age)` |
+| `y(t)`, `x(t)` | `policy_year(t)`, `age(t)` | `floor((t−1)/12) + 1`; `entry_age + y(t) − 1` |
+| `p(t)` | `unit_price(t)` | *Anteilspreis* at the **end** of month `t`; `p(t₀−1) = unit_price_init` |
+| `i(t)` | `fund_return_net_mth(t)` | monthly return net of the fund's TER |
+| `u(t)` | `units_pp(t)` | units per policy at the **start** of month `t` |
+| `F(t)`, `F_τ(t)` | `av_pp(t)`, `av_pp_at(t, τ)` | *Fondsguthaben* per policy, `F(t) = u(t)·p(t−1)` |
+| `B(t)`, `Z(t)` | `prem_pp(t)`, `topup_pp(t)` | gross *Beitrag* due; *Zuzahlung* |
+| `A(t)` | `prem_to_av_pp(t)` | *Anlagebeitrag* — what actually buys units |
+| `α(t)` | `charge_acq_pp(t)` | acquisition instalment, plus *Zuzahlungskosten* on any `Z(t)` |
+| `β`, `γₘ`, `SK` | `beta_rate`, `gamma_rate_mth`, `policy_fee_mth` | premium-based rate; `gamma_rate_ann/12`; *Stückkosten* |
+| `S` | `beitragssumme()` | sum of premiums payable at the initial level |
+| `C(t)` | `cum_prem_pp(t)` | cumulative **gross** premiums paid to and including month `t` |
+| `D(t)`, `K(t)` | `db_floor_pp(t)`, `nar_pp(t)` | guaranteed minimum death benefit; *riskiertes Kapital* |
+| `qᴵ(t)`, `q(t)` | `mort_rate_tariff_mth(t)`, `mort_rate_mth(t)` | first-order (the price) and second-order (the decrement) monthly death rates |
+| `f` | `mort_be_factor` | 0.75; `q(t) = f · qᴵ(t)` |
+| `w(t)` | `lapse_rate_mth(t)` | monthly lapse rate; `w(n) = 0` |
+| `l(t)` | `pols_if(t)` | policies in force at the **start** of month `t` |
+| `W(t)` | `withdrawals_pp(t)` | *Teilentnahme* |
+| `σ` | `stornoabzug_rate` | *Stornoabzug* rate on the *Fondsguthaben* |
+| `R_g`, `R_c`, `R` | `rentenfaktor_guar()`, `rentenfaktor_curr()`, `rentenfaktor_applied()` | euro of monthly annuity per 10 000 € |
+
+### The *Beitragsverrechnung*
+
+    B(t) = prem_pp_base · d(t)   if t ≤ 12·prem_term_y, t < pup_month, (t − t₀) mod prem_mode_months = 0
+         = 0                     otherwise
+    d(t) = (1 + dynamik_rate)^(y(t) − 1)                        Beitragsdynamik, 1.0 when off
+
+    S    = prem_pp_base × (12 / prem_mode_months) × prem_term_y      laufend
+         = prem_pp_base                                              einmal
+
+    N_α  = min(60, 12 × prem_term_y) / prem_mode_months          acquisition instalments
+    α(t) = alpha_rate · S / N_α        on the first N_α premium dates      laufend
+         = zuzahlung_rate · B(t₀)      at t = t₀, once                     einmal
+         + zuzahlung_rate · Z(t)       whenever a Zuzahlung falls
+
+    A(t) = B(t) + Z(t) − α(t) − β · B(t)
+
+`S` is the sum of premiums **payable**, at the **initial** level. It does not shrink when a
+contract lapses or goes *beitragsfrei*, and it does not grow with a *Beitragsdynamik* increment,
+because a real tariff re-zillmers each accepted increment over its own sixty months and an
+increment cannot be assumed at inception [R12] [REG-R16]. The bias — the acquisition charge on a
+dynamic contract is understated — is stated rather than hidden. `β` is charged on the regular
+*Beitrag* only; a *Zuzahlung* pays its own charge and no second one.
+
+### The unit fund
+
+    Δu(t) = A(t) / p(t − 1)                                    units bought, at the opening price
+    p(t)  = p(t − 1) · (1 + i(t))
+    F_BEF_CHARGE(t) = ( u(t) + Δu(t) ) · p(t)
+
+    charge_admin_fund_pp(t) = γₘ · F_BEF_CHARGE(t)
+    charge_policy_fee_pp(t) = min( SK, F_BEF_CHARGE(t) − charge_admin_fund_pp(t) )
+    F_AFT_CHARGE(t) = F_BEF_CHARGE(t) − charge_admin_fund_pp(t) − charge_policy_fee_pp(t)
+
+    W(t)  = min( wd_amount, F_AFT_CHARGE(t) )   if t = wd_month, else 0
+    F_AFT_WD(t) = F_AFT_CHARGE(t) − W(t)
+
+    K(t)  = max( D(t) − F_AFT_WD(t), 0 )
+    charge_risk_pp(t) = min( qᴵ(t) · K(t), F_AFT_WD(t) )
+    F_BEF_DECR(t) = F_AFT_WD(t) − charge_risk_pp(t)
+
+    u(t + 1) = F_BEF_DECR(t) / p(t)
+
+The `min(·, remaining)` floors are **[std] safeguards**, not tariff terms: they keep the
+*Fondsguthaben* non-negative on a contract whose fixed charges outrun a decayed fund. **None of
+the thirteen shipped model points triggers one**, and a model point that did would in practice
+have its cover terminated; the safeguard exists so that a user's own model point cannot produce a
+negative fund silently.
+
+The death-benefit floor is the model point's `db_form`:
+
+    fund          D(t) = 0                                     → K(t) ≡ 0, no Risikobeitrag
+    prem_return   D(t) = C(t)                                   Beitragsrückgewähr        [S2]
+    pct_fund      D(t) = db_pct × F_AFT_WD(t)
+    sum_assured   D(t) = sum_assured
+
+`prem_return` is the composite. The net amount at risk is then `max(C(t) − F_AFT_WD(t), 0)`,
+positive early and after a market fall and vanishing once the fund overtakes the premiums paid,
+which is why **`cum_prem_pp` is a state variable of this product** and why the charge has to be
+recomputed every month. It is the premiums **paid**, gross — not the premiums invested.
+
+### Decrements and the in-force recursion
+
+    pols_death(t)    = l(t) · q(t)
+    pols_lapse(t)    = l(t) · (1 − q(t)) · w(t)
+    pols_maturity(t) = l(t) · (1 − q(t))                 at t = n, where w(n) = 0
+                     = 0                                 for t < n
+    l(t + 1) = l(t) · (1 − q(t)) · (1 − w(t)),   l(t₀) = pols_if_init(),   l(n + 1) = 0
+
+Deaths act before lapses **[std]**. `pols_if_at(t, ·)` exposes `"BEF_DECR"` (= `l(t)`),
+`"AFT_DEATH"` and `"AFT_DECR"` (= `l(t+1)` before the maturity sweep), so the ordering is
+inspectable rather than buried in one expression. **Closure identity**, which
+`check_pols_roll_fwd()` asserts every month and a test asserts in total:
+
+    Σ_{t=t₀..n} [ pols_death(t) + pols_lapse(t) + pols_maturity(t) ] = pols_if_init()
+
+### Benefits, funding and the non-unit cash flow
+
+    claims(t, "DEATH")    = pols_death(t)    · ( F_BEF_DECR(t) + K(t) )
+    claims(t, "LAPSE")    = pols_lapse(t)    · F_BEF_DECR(t) · (1 − σ)
+    claims(t, "MATURITY") = pols_maturity(t) · F_BEF_DECR(t)
+    stornoabzug(t)        = pols_lapse(t)    · F_BEF_DECR(t) · σ
+    withdrawals(t)        = l(t) · W(t)
+    death_strain(t)       = pols_death(t) · K(t)
+    av_releases(t)        = ( pols_death(t) + pols_lapse(t) + pols_maturity(t) ) · F_BEF_DECR(t)
+                            + l(t) · W(t)
+
+The death benefit is the floor **as observed before that month's *Risikobeitrag***, so the
+insurer's non-unit cost per death is **exactly `K(t)`**. The *Rückkaufswert* is the
+*Fondsguthaben* less a *Stornoabzug* if one is validly agreed [R1] [REG-R28]; with `σ = 0` on the
+composite it is the *Fondsguthaben* exactly, and `claims_lapse` is then the whole release.
+
+    premiums(t)  = ( B(t) + Z(t) ) · l(t)
+    prem_to_av(t)= A(t) · l(t)
+    charge_*(t)  = charge_*_pp(t) · l(t)                       for the four unit-side charges
+    expenses(t)  = ( comm_acq_rate · S + expense_issue ) · l(1) · 1{t = 1}
+                   + expense_maint_pp(t) · l(t)
+                   + comm_renew_rate · B(t) · l(t)
+                   + expense_claim · pols_death(t)
+                   + expense_surr  · pols_lapse(t)
+                   + expense_annuitisation · pols_maturity(t)
+
+    net_cf(t) = charge_acq(t) + charge_admin_prem(t) + charge_admin_fund(t)
+                + charge_policy_fee(t) + charge_risk(t) + stornoabzug(t)
+                − expenses(t) − death_strain(t)
+
+    liability_cf(t) = − net_cf(t)
+
+`net_cf` is **income-positive**, as it is in every model in this library. The acquisition expense
+falls at `t = 1` and **only** at `t = 1`, so an in-force model point whose frame opens at
+`t = 97` never incurs it — which is correct, and which is the same reason its `charge_acq(t)` is
+zero at every projected month.
+
+**Three amounts that move on this contract are not insurer cash flow.** The *Anlagebeitrag* and
+every account-value benefit are the policyholder's money passing through the unit fund; the fund's
+**TER** never leaves the unit price and accrues to the fund manager; and any *Überschuss* credit
+would be a policyholder credit, which this model does not project. Publishing `premiums`,
+`prem_to_av`, `claims_*` and `av_releases` as columns while excluding them from `net_cf` makes
+that exclusion visible rather than merely asserted.
+
+### *Rentenbeginn*
+
+    R_g = rentenfaktor_guar(annuity_age)      read at annuity_age, not at age(n)
+    R_c = rentenfaktor_curr(annuity_age)
+    R   = max( R_g, R_c )
+    av_maturity_pp() = F_BEF_DECR(n)
+    annuity_mth_pp() = av_maturity_pp() / 10 000 × R
+
+The shipped `rentenfaktor_table.csv` is **[std] and derived, not observed**. At a *Rechnungszins*
+of 0 % [S10] a monthly annuity of `R` per 10 000 € for an expected `T` years has present value
+`12·T·R`, so `R = 10 000 / (12·T)`; the table sets
+
+    T_eff(x) = 33.3333 − 0.75 · (x − 67),     ages 60–75,
+    rentenfaktor_guar(x) = 10 000 / (12 · T_eff(x))
+
+which gives exactly **25.00** at age 67, 22.47 at 62 and 26.81 at 70. Read the other way, 25.00
+at a 0 % *Rechnungszins* prices the guarantee as though the insurer holds the capital for 33⅓
+years and earns nothing on it — the *Sicherheitsabschlag* made concrete [R16] [R22] [REG-R49].
+`rentenfaktor_curr` equals `rentenfaktor_guar` on `std_2026` and is 12 % higher on
+`rich_current`. **This model stops here**: the annuity is published, not projected.
+
+### Reduction in yield
+
+The product's defining metric, and the reason the library publishes it: on a contract with no
+*Rechnungszins*, the charge stack **is** the economics. `reduction_in_yield()` is a scalar:
+
+    gross_return_ref() = ( Π_{t=t₀..n} (1 + gross_return_mth(t)) )^(12 / (n − t₀ + 1)) − 1
+
+    irr_ann() solves, by bisection on k:
+       Σ_t (B(t) + Z(t)) · (1 + k)^((n − t + 1)/12)
+       − Σ_t W(t) · (1 + k)^((n − t)/12)                 =  av_maturity_pp()
+
+    reduction_in_yield() = gross_return_ref() − irr_ann()
+
+on a **single persisting contract** — no survivorship, no lapse — because a reduction in yield is
+a statement about one policy's own money. **It is a delib-defined measure and it is not the
+statutory *Effektivkostenquote***: the German figure is aligned to the total-cost-indicator method
+of Annex VI to Delegated Regulation (EU) 2017/653 over a specified recommended holding period,
+and this model implements neither [R7] [REG-R31] [REG-R32]. Any level it produces is arithmetic on
+delib's own [std] stack and **must never be quoted as a market figure** [R10] [R23] [R24].
+
+### `result_cf()` and the published identities
+
+`result_cf()` returns a DataFrame indexed by `t` (`index.name == "t"`), contiguous from
+`proj_start()` to `proj_len()`, with these columns in this order:
+
+    pols_if, premiums, prem_to_av, charge_acq, charge_admin_prem, charge_admin_fund,
+    charge_policy_fee, charge_risk, stornoabzug, withdrawals, claims_death, claims_lapse,
+    claims_maturity, av_releases, death_strain, expenses, net_cf
+
+`pols_if` is first and `pols_if(proj_start()) == pols_if_init()` exactly. Every flow on row `t` is
+weighted by that row's `pols_if`, so dividing a flow by it recovers the per-policy amount; the
+end-of-month count is `pols_if_at(t, "AFT_DECR")`, and the closing fund of the surviving cohort is
+`av_pp(t+1) × pols_if(t+1)`, not `av_at(t, ·)`.
+
+Seven `check_*()` cells are published, each a `bool` over all `t` with a per-`t`
+`check_*_resid(t)` companion:
+
+| Check | Identity |
+|---|---|
+| `check_net_cf()` | **delib ruling 1.** `net_cf = charge_acq + charge_admin_prem + charge_admin_fund + charge_policy_fee + charge_risk + stornoabzug − expenses − death_strain` |
+| `check_prem_split()` | `premiums = prem_to_av + charge_acq + charge_admin_prem` — the *Beitragsverrechnung* closes |
+| `check_units_roll_fwd()` | `units_pp(t+1) = units_pp(t) + units_bought_pp(t) − units_cancelled_pp(t)` — no price term |
+| `check_av_roll_fwd()` | `F_BEF_DECR(t) = (F(t) + A(t))·(1 + i(t)) − charges − W(t)` — the price term, once |
+| `check_benefit_funding()` | `claims_death + claims_lapse + claims_maturity + withdrawals + stornoabzug = av_releases + death_strain` |
+| `check_pols_roll_fwd()` | `pols_if(t) = pols_death + pols_lapse + pols_maturity + pols_if(t+1)` |
+| `check_acq_charge()` | `cum_charge_acq_pp(t)` equals the instalments elapsed × the instalment, and the total equals `alpha_rate × beitragssumme()` exactly |
+
+`check_units_roll_fwd()` and `check_av_roll_fwd()` look redundant and are not: the unit identity
+has **no price term at all**, so it fails if a charge is taken in euro without cancelling the
+matching units, while the account identity carries the return and fails if the price is applied
+at the wrong point in the month. An implementation can pass either alone.
+
+### Monthly processing order
+
+For `t = t₀ … n`, in this order:
+
+1. Advance `y(t)`, `x(t)`; read the charge row, the scenario row, `qᴵ(t)`, `q(t)` and `w(t)`.
+2. Open the month: `u(t)` units, `F(t) = u(t)·p(t−1)`.
+3. **Premium in advance.** `B(t)` if a premium is due (not after `prem_term_y`, not from
+   `pup_month`), plus any `Z(t)`. Update `C(t) = C(t−1) + B(t) + Z(t)`.
+4. **Withhold**, in order: the acquisition instalment `α(t)`, then `β·B(t)`. The remainder is
+   `A(t)`.
+5. **Buy units** at the opening price: `Δu(t) = A(t)/p(t−1)`.
+6. **Investment return.** `p(t) = p(t−1)(1 + i(t))`; unit count unchanged; strike
+   `F_BEF_CHARGE(t)`.
+7. **Cancel units for the fund-based admin charge** `γₘ · F_BEF_CHARGE(t)`.
+8. **Cancel units for the *Stückkosten*** `SK`, floored at the remaining balance.
+9. **Settle any *Teilentnahme*** `W(t)`, floored at the remaining balance.
+10. **Observe** `D(t)` and `K(t) = max(D(t) − F_AFT_WD(t), 0)`.
+11. **Cancel units for the *Risikobeitrag*** `qᴵ(t)·K(t)`, floored at the remaining balance.
+12. **Decrements at the end of the month**, deaths before lapses; at `t = n`, `w(n) = 0` and the
+    survivors are booked as `pols_maturity(n)`.
+13. **Book the benefits** at `F_BEF_DECR(t)` plus `K(t)` on a death, less `σ` on a lapse.
+14. **Roll forward** `u(t+1)` and `l(t+1)`.
+15. **Extract the non-unit row** and accumulate `net_cf(t)`.
+
+At `t = n` the units are cancelled, `av_maturity_pp()` is struck and `annuity_mth_pp()` is
+published. There is no `t = n + 1` row.
+
+---
+
+## Known modeling pitfalls
+
+These are the specific ways an implementation of *this* product looks right and is wrong. Each
+one becomes a test.
+
+1. **Netting the fund-based charge out of the premium instead of cancelling units.** A model that
+   deducts `γ` from the *Beitrag* gives the right answer while premiums are paid and the wrong
+   answer the moment they stop. Assert that on model point 7 `charge_admin_fund(t) > 0` and
+   `charge_policy_fee(t) > 0` at every `t ≥ 121`, where `premiums(t) = 0`.
+2. **Charging the fund's TER as a policy charge.** It is inside the unit price [R7] [REG-R32]:
+   charging it explicitly double-counts, ignoring it overstates the return. Assert
+   `unit_price(t)/unit_price(t−1) = (1 + gross − ter)^(1/12)` exactly on `base`, and that no
+   `charge_*` column contains a TER term.
+3. **Pricing the *Risikobeitrag* on the annuity table.** The death charge is priced on a **death**
+   table, DAV 2008 T [R17] [REG-R48]; the conversion guarantee rests on DAV 2004 R [R16]
+   [REG-R49]. Assert that `mort_rate_tariff_at_age` reads `mort_table.csv` and
+   `rentenfaktor_guar` reads `rentenfaktor_table.csv`, and that no cells reads both.
+4. **Using one mortality basis for the charge and for the decrement.** That makes the
+   *Risikoergebnis* identically zero and deletes the mechanic. Assert
+   `Σ charge_risk − Σ death_strain = (1 − mort_be_factor) · Σ charge_risk` **exactly**, and that
+   it is strictly positive on the anchor.
+5. **Mixing the monthly conversions.** `qᴵ` and `q` must use the same split, or the model
+   manufactures a risk result out of a rounding convention: at `q = 0.00080`, `q/12 = 0.00006667`
+   against `1 − (1−q)^(1/12) = 0.00006664`, a 0.05 % difference that lands entirely in the risk
+   result. Assert `mort_rate_mth(t) = mort_rate(t)/12` and
+   `lapse_rate_mth(t) = 1 − (1 − lapse_rate(t))^(1/12)`, and that `lapse_rate_mth < lapse_rate`
+   wherever the annual rate is positive.
+6. **Forgetting to floor the net amount at risk at zero.** `max(D − F, 0)`, not `D − F`. Without
+   the floor the contract pays the insurer a negative charge in every month the fund is above the
+   floor, and the death strain turns negative — the model silently books the fund's growth as
+   insurance profit. Assert `nar_pp(t) ≥ 0` at every `t`, and that on model points 2 and 13
+   (`db_form = fund`) `charge_risk(t) = 0.00` at every `t`.
+7. **Running the acquisition instalment past its window, or spreading it over sixty months when
+   the premium term is shorter.** Assert `charge_acq(t) = 0` for `t > 60` on every model point;
+   that `Σ charge_acq_pp = alpha_rate × beitragssumme()` to the cent on every point; and that on
+   model point 12 the instalment count is **24**, not 60.
+8. **Charging an in-force model point again for acquisition.** Model point 6 opens at `t = 97`.
+   Assert `charge_acq(t) = 0` at every projected `t` **and** that `expenses(97)` contains no
+   acquisition commission — the whole of the difference between it and a new-business cell.
+9. **Letting the *Beitragssumme* follow the premiums actually paid.** `S` is the sum of premiums
+   **payable**, at the **initial** level; it does not shrink on lapse or *Beitragsfreistellung*
+   and does not grow with a *Beitragsdynamik* increment [R12] [REG-R16]. Assert `beitragssumme()`
+   is invariant to `pup_month`, to `lapse_rate` and to `dynamik_rate`.
+10. **Conflating *Storno* with *Beitragsfreistellung*.** They are two different things: one is an
+    exit paying the *Rückkaufswert*, the other a change of state paying nothing [R2] [R3]
+    [REG-R28]. Assert that on model point 7 `pols_if` is continuous across month 121 while
+    `premiums` steps to zero and the unit-side charges continue.
+11. **Inventing a *Rückkaufswert* formula.** The *Zeitwert* of a pure unit-linked contract **is**
+    the *Fondsguthaben*: no discounting, no *Rechnungszins*, no mortality basis, no *Zillmerung*
+    residue, no second-basis *Mindestrückkaufswert* [R1] [REG-R28]. Assert
+    `claims_lapse(t) = pols_lapse(t) × av_pp_at(t, "BEF_DECR")` exactly wherever `σ = 0`.
+12. **Building the *Stornoabzug* out of unamortised acquisition costs.** § 169 Abs. 5 VVG makes
+    exactly that deduction ineffective and puts the burden of proof on the insurer [R1] [REG-R28]
+    [REG-R36]. Assert `stornoabzug(t) = σ × pols_lapse(t) × av_pp_at(t, "BEF_DECR")` and that it
+    is **not** a function of `charge_acq_total() − cum_charge_acq_pp(t)`.
+13. **Booking the whole *Fondsguthaben* as an insurer outgo.** `net_cf` is the non-unit stream;
+    the fund is the policyholder's money passing through. Assert `check_benefit_funding()` and
+    `check_net_cf()`, and that no account-value benefit appears inside `net_cf`.
+14. **Getting the age at *Rentenbeginn* off by one.** `age(proj_len()) = annuity_age − 1`, because
+    the annuity begins at the **end** of that month. Assert exactly that, and that
+    `rentenfaktor_guar()` is read at `annuity_age`: on the anchor 25.00 at 67, not 24.45 at 66.
+15. **Applying only the guaranteed *Rentenfaktor*.** The rule is `max(guaranteed, current)`
+    [S4] [R22]. Assert equality on the anchor and, on model point 13,
+    `rentenfaktor_applied() = rentenfaktor_curr() = 1.12 × rentenfaktor_guar()`.
+16. **Re-applying a *Ratenzahlungszuschlag*.** `prem_pp` is the instalment the policy states and
+    already contains whatever loading the tariff applied. Assert `premiums(t) = prem_pp ×
+    pols_if(t)` exactly in a premium month on model points 3, 4 and 5, and `0.00` in the
+    intervening months.
+17. **Letting the *Beitragsrückgewähr* base be the premiums invested rather than the premiums
+    paid.** Assert `cum_prem_pp(60) = 12,000.00` on the anchor — 60 × 200.00 — against
+    `Σ_{t≤60} prem_to_av_pp(t)`, which is 9,720.00, a 19 % understatement of the death benefit.
+18. **Letting a fixed charge drive the fund negative.** The *Stückkosten* and the *Risikobeitrag*
+    are floored at the remaining balance **[std]**. Assert `av_pp_at(t, τ) ≥ 0` at every `t` and
+    every timing on every model point, and that no shipped point actually triggers a floor.
+
+---
+
+## Policyholder behavior modeling
+
+All formulas are **[std]** reference constructions. There is no German calibration evidence for
+any of them, and the research file's gaps register records that as gaps 18 and 19.
+
+- **Base lapse [std].** The duration table above: 6 % p.a. in years 1–5, 3 % thereafter, dipping
+  to 2 % in years 11–12. The front-loading is a structural inference from the exit terms — the
+  acquisition charge is being taken, the value is furthest below premiums paid, and § 168 VVG
+  makes the exit near-frictionless [R1] [R2] [REG-R28] — not an observation.
+- **The tax-threshold step [std].** A ×2.5 multiplier for twelve months from the later of duration
+  12 and attained age 62 [R20] [REG-R45]. This is the one behavioural feature the cross-product
+  reference library actively requires of every German Schicht-3 model, and the reason is that a
+  lapse assumption flat in duration ignores the strongest single driver of German surrender
+  behaviour. Keying it on duration alone is pitfall 5's twin: on the anchor cell duration 12
+  arrives fourteen years before the tax benefit does.
+- **Dynamic lapse [std], off in the base run.** Unit-linked lapse is market-sensitive, because
+  the exit is at fund value on short notice. The reference module raises the rate when the
+  contract is under water against the premiums paid:
+
+      lapse_dyn_add(t) = lapse_dyn_beta × max( 0, 1 − av_pp(t) / cum_prem_pp(t) )
+
+  with `lapse_dyn_beta = 0` in the base run and **0.15** as the reference value. Switched on, it
+  bites hardest on model point 12, whose stress path leaves the fund far below premiums paid for
+  years, and it introduces a feedback the deterministic run only samples once: a falling fund
+  raises lapse, which removes the policies whose charges would have recovered the acquisition
+  cost.
+- ***Beitragsfreistellung* is a model-point election, not a cohort decrement, and that is a
+  deliberate limitation.** A paid-up policy's fund and its *Beitragsrückgewähr* base both depend
+  on the month it went paid-up, so a cohort-level paid-up rate would need one sub-cohort per
+  month — a two-dimensional recursion over 360 months for a second-order effect. The model
+  therefore carries `pup_month` on the model point and reproduces the mechanic exactly on one
+  cell (point 7) rather than approximately on all of them. A **[std]** paid-up rate of **1 % p.a.**
+  is what a cohort implementation would use; it is recorded and **not implemented**, and omitting
+  it biases the projected charge income **upward**, because a paid-up contract stops paying the
+  premium-based charges.
+- **What the model deliberately does not do.** No *Kapitalwahlrecht* take-up rate: the base run
+  annuitises, which is a modelling choice made so that the *Rentenfaktor* is the thing the worked
+  example demonstrates, and **not** an estimate of behaviour — no take-up rate was established
+  anywhere [R20]. No *Abrufphase*: the *Rentenbeginn* is fixed, and whether deferral restates the
+  guaranteed factor was not established. No *Widerruf* decrement: the 30-day window sits inside
+  the year-1 lapse rate [R6] [REG-R23]. No *Fondswechsel* behaviour beyond the
+  *Ablaufmanagement* glide.
+
+---
+
+## Worked example
+
+**Configuration.** Model point 1, the anchor cell of `model_point_table.csv`:
+`policy_id = DE-FRV-0001`; `sex = M` (reporting only — the tariff is unisex [REG-R34]);
+`entry_age = 37`; `duration_init_m = 0`, so `proj_start() = 1`; `pols_if_init = 1.0`;
+`annuity_age = 67`, so `proj_len() = 12 × (67 − 37) = 360` and the frame is `t = 1 … 360`;
+`prem_form = laufend`; `prem_pp = 200.00 EUR`; `prem_mode_months = 1`; `prem_term_y = 30`;
+`dynamik_rate = 0.00`; `pup_month = 0`; `db_form = prem_return`, so `db_pct` and `sum_assured` are
+unused; `charge_id = std_gross`; `scenario_id = base`; `rentenfaktor_id = std_2026`;
+`unit_price_init = 100.00 EUR`; `units_init = 0.0`; `cum_prem_init = 0.00 EUR`;
+`topup_month = 0`, `topup_amount = 0.00`; `wd_month = 0`, `wd_amount = 0.00`;
+`ablauf_flag = False`; `kapitalwahl = False`. Hence `beitragssumme() = 200.00 × 12 × 30 =
+72 000,00 €`, the acquisition charge at the cap is `0.025 × 72 000 = 1 800,00 €`, and the
+instalment is `1 800,00 / 60 = 30,00 € per month` — **15 % of each of the first 60 premiums, and
+nothing from month 61**.
+
+**Assumptions, each tagged.** *Charges*, from row `std_gross` of `charge_table.csv`, every level
+**[std]** except where noted: acquisition rate `alpha_rate = 2.50 %` of the *Beitragssumme*, which
+is the *Höchstzillmersatz* [R12] [REG-R16], spread over `alpha_spread_months = 60` [R1]
+[REG-R28]; premium-based admin `beta_rate = 4.00 %` of each gross *Beitrag*; fund-based admin
+`gamma_rate_ann = 0.30 % p.a.`, taken monthly as `gamma_rate_mth = 0.30 %/12 = 0.025 %` of the
+*Fondsguthaben*; *Stückkosten* `policy_fee_mth = 3.00 €` per month, taken by cancelling units;
+*Zuzahlungskosten* `zuzahlung_charge_rate = 2.50 %` (not exercised on this cell);
+*Stornoabzug* `stornoabzug_rate = 0.00 %` [R1] [REG-R28]. *Fund*, from row `base` of
+`fund_scenario_table.csv`: gross return `5.00 % p.a.` **[std]**, fund `TER = 0.45 % p.a.`
+**[std]**, so `fund_return_net_ann = 4.55 % p.a.` and `fund_return_net_mth = (1.0455)^(1/12) − 1
+= 0.371482 % per month`; *Kickback* credited back `0.00 %` **[std]**; no *Ablaufmanagement* glide.
+*Mortality*: the tariff basis is the **[std]** DAV 2008 T proxy `mort_rate_tariff_at_age(x) =
+0.00080 × 1.10^(x − 37)`, anchored at `q(37) = 0.00080` [R17] [REG-R48], so
+`mort_rate_tariff(1) = 0.00080` and `mort_rate_tariff_mth(1) = 0.00080/12 = 0.00006667`; the
+best-estimate decrement is `mort_be_factor = 0.75` **[std]** times it, so `mort_rate(1) = 0.00060`
+and `mort_rate_mth(1) = 0.00005`. *Lapse*, all **[std]**: `lapse_rate_base` 6.0 % p.a. in policy
+years 1–5, 3.0 % in 6–10, 2.0 % in 11–12 and 3.0 % from 13, converted as
+`lapse_rate_mth = 1 − (1 − lapse_rate)^(1/12)` — 0.514301 % monthly at 6 % and 0.253505 % at 3 %;
+the tax step `lapse_tax_step = 2.5` applies in policy year 26 (months 301–312), the year in which
+attained age 62 is reached and duration 12 is long past [R20] [REG-R45], giving 7.5 % p.a. and
+0.647574 % monthly there; `lapse_cap = 40 %`; `lapse_dyn_beta = 0` (module off);
+`lapse_rate_mth(360) = 0`, because the end of month 360 is *Rentenbeginn*. *Expenses*, all
+**[std]**: acquisition commission `comm_acq_rate = 2.50 %` of the *Beitragssumme* = 1 800,00 €
+plus `expense_issue = 200,00 €`, both at `t = 1`; maintenance `expense_maint_mth = 4,00 €` per
+month inflating at `expense_infl = 2.0 % p.a.` as `4.00 × 1.02^((t−1)/12)`; renewal commission
+`comm_renew_rate = 1.5 %` of each gross premium; `expense_claim = 150,00 €` per death;
+`expense_surr = 50,00 €` per surrender; `expense_annuitisation = 100,00 €` at *Rentenbeginn*.
+*Conversion*: `rentenfaktor_guar(67) = 25.00` and `rentenfaktor_curr(67) = 25.00` from row
+`std_2026`, both **[std]** and derived from `T_eff(67) = 33.3333` at a 0 % *Rechnungszins*
+[S10] [R16] [R22] [REG-R49], so `rentenfaktor_applied() = 25.00`. No *Überschussbeteiligung*, no
+*Zuzahlung*, no *Teilentnahme*, no *Beitragsdynamik*, no behaviour modules.
+
+`proj_len() = 360` is far too long to print in full, so the table below shows a representative set
+of months — the first six, which are the *Beitragsverrechnung* in detail; months 12, 24 and 59–61,
+which straddle the acquisition-charge cliff; months 120 and 240; months 300–301, which straddle
+the tax-threshold lapse step; and months 359–360, the last two — together with the full-precision
+totals over all 360 months. Totals are summed at full precision and then rounded, not summed from
+the rounded cells. Money is shown to the cent, `pols_if` and unit counts to six decimals.
+
+<!-- WORKED EXAMPLE TABLE -- filled by the model stage from the model's own output -->
+
+---
+
+## Valuation and reserve pointers
+
+This library projects gross best-estimate-style liability cash flows, undiscounted, on a declared
+grid. The valuation layers consume them and are cited, not reproduced.
+
+- **The German statutory *Deckungsrückstellung*.** For a fondsgebundene contract the reserve is
+  in two parts that must not be confused: the **unit liability**, which is the *Fondsguthaben*
+  itself, backed one-for-one by the *Anlagestock* [R15] [REG-R7], and a **non-unit reserve** for
+  the future administration and risk cash flows the charges are supposed to cover. This model
+  produces the second stream and does not discount it. The *Höchstrechnungszins* of the DeckRV
+  does **not** bind the accumulation phase [R12] [REG-R14] [REG-R15]; the *Höchstzillmersatz*
+  does, and it is a parameter of the model rather than of the valuation [R12] [REG-R16]. The
+  *Zinszusatzreserve* has nothing to attach to on the unit side [REG-R17].
+- **§ 169 VVG is a payment floor, not a reserve.** The five-year spreading rule governs what the
+  insurer must **pay** on *Kündigung*; § 4 DeckRV governs what it may **reserve** [R1] [R12]
+  [REG-R16] [REG-R28]. On this design the two do not conflict, because the tariff takes the
+  acquisition charge in exactly the sixty instalments the payment floor implies, so the
+  *Rückkaufswert* is the *Fondsguthaben* at every duration and no `max()` against a floor is
+  needed. **Whether the statutory floor formally reaches the *Zeitwert* branch at all was not
+  established**, and both readings give the same numbers here.
+- **Solvency II.** Technical provisions are a best estimate — the probability-weighted average of
+  future cash flows discounted at the relevant risk-free term structure — plus a risk margin
+  [REG-R1] [REG-R2] [REG-R6], with EIOPA publishing the curves monthly [REG-R4].
+  `BEL_non_unit = Σ_t v(t) × liability_cf(t)` over the recursion above, with the unit liability
+  added at market value. **The contract boundary is an open question on this product and this
+  library does not resolve it**: the *Beitragsdynamik* is optional at each anniversary and the
+  insurer's charge scale is revisable in some tariffs, both of which bear on where the boundary
+  falls, and **no boundary rule in this library was read from a retrieved instrument** [REG-R2].
+- **The *Rentenfaktor* is an option and this model does not value it.** A guaranteed conversion
+  rate applied thirty years forward to an unknown capital is a written option on longevity and on
+  interest rates, and a deterministic projection prices none of it. The `max(guaranteed, current)`
+  rule makes it explicitly one-sided [S4] [R22]. A stochastic run — the same recursion with a
+  scenario-dependent unit price and a scenario-dependent current factor — is what a
+  time-value-of-options-and-guarantees calculation consumes.
+- **IFRS 17 and professional standards.** A fondsgebundene contract is the archetypal
+  direct-participating contract and would be measured under the **variable fee approach**; the VFA
+  mechanics were not read and are `[unverified]` [REG-R55]. German statutory reporting runs under
+  HGB §§ 341–341o and the *RechVersV*, which report unit-linked business separately [REG-R54].
+  The DAV's *Fachgrundsätze* and the responsible actuary's certifications under §§ 141–143 VAG
+  frame the professional obligations [REG-R11] [REG-R56].
+
+---
+
+## Key sensitivities and model risks
+
+In rough order of leverage for a German unit-linked block:
+
+1. **The assumed fund return.** It is the single largest number in the model and it has **no
+   source at all** — PRIIPs deliberately supplies none, deriving its scenarios from the
+   underlying's own history [R8] [R9] [REG-R32]. It drives the *Fondsguthaben*, the fund-based
+   charge income, the net amount at risk (and so the risk charge), and the annuity the
+   *Rentenfaktor* buys. The `zero` scenario is shipped precisely so a reader can see the charge
+   stack with the return switched off, and the four scenarios together bracket what the assumption
+   is worth.
+2. **The charge stack, and the acquisition charge above all.** Every level is **[std]** and the
+   whole first-order economics of the product is *return minus charges*. The `std_netto` variant
+   on the same chassis isolates the acquisition load — the parameter this library most needs and
+   cannot source — and BaFin has said the market spread is "considerable" without publishing a
+   number [R10] [R11] [REG-R35].
+3. **The guaranteed *Rentenfaktor*.** 25.00 at age 67 is **derived arithmetic, not a market
+   observation** (gap 4 of the research file). It is linear in the annuity, so a 10 % error in the
+   factor is a 10 % error in the pension the model reports, and it interacts with the annuity age
+   through `T_eff`. A reader who needs a market level must go to a current
+   *Produktinformationsblatt* or a rating-house comparison [R23]; none was available here.
+4. **The lapse shape.** No German unit-linked *Stornoquote* was established. On this product the
+   direction of the exposure is the opposite of a protection block's: lapses in the first five
+   years remove policies **before** the insurer has recovered the commission it paid at inception,
+   so early lapse destroys value while late lapse merely shortens a profitable tail. The
+   tax-threshold step is the least arbitrary part of the table, because the threshold itself is
+   statutory [R20] [REG-R45]; its magnitude is not.
+5. **`mort_be_factor`, and the two mortality bases.** A flat 0.75 ratio makes the *Risikoergebnis*
+   exactly 25 % of the *Risikobeitrag*, which is analytically convenient and biologically crude;
+   the real wedge varies by age. Because the *Beitragsrückgewähr* net amount at risk vanishes once
+   the fund overtakes the premiums paid, the whole of this exposure sits in the first decade of
+   the anchor cell, and it is far larger on model point 7, where a fixed *Mindesttodesfallleistung*
+   on a decaying fund makes the risk charge grow without limit.
+6. **The one-fund simplification.** *Fondswechsel*, multi-fund splits and *Ablaufmanagement* all
+   collapse into a single return path, so the model cannot show dispersion between funds and
+   cannot represent a *Wertsicherungsfonds* at all. That is also why the hybrid designs are named
+   and not implemented: their whole content is what they do on paths this projection does not
+   generate.
+7. **The unmodelled *Überschussbeteiligung*.** A unit-linked contract's surplus arises from the
+   risk and cost results only [R5] [R14] [REG-R9] [REG-R18], and the model computes the risk
+   result but credits none of it back. The projected *Fondsguthaben* is therefore biased
+   **downward** — the honest direction for a charge demonstration, and the direction a reader
+   should keep in mind when comparing the reduction in yield with a published *Effektivkostenquote*.
+8. **Provenance.** Every paragraph number, every date and every level in this file is either
+   **[std]** or `[unverified]`. The three facts with any corroboration at all — the
+   *Beitragsrückgewähr* death benefit [S2], the `max(guaranteed, current)` factor rule [S4] and
+   the 25 ‰ *Höchstzillmersatz* [R12] [REG-R16] — reach this file at one remove, through searches
+   run for sibling delib products. A calibration pass against a real *Produktinformationsblatt*
+   and a real *Basisinformationsblatt* is required before any quantitative use of this model.

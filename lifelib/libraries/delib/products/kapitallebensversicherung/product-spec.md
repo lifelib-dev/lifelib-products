@@ -3,33 +3,30 @@
 **Status:** Draft, 2026-08-29 (all cited sources accessed 2026-08-29).
 
 **Scope note.** This is a *standardized composite specification* assembled for reference liability
-cash-flow modeling of the German **kapitalbildende Lebensversicherung** — the classic endowment,
-the *gemischte Versicherung auf den Todes- und Erlebensfall*, which pays a guaranteed
-*Erlebensfallleistung* (survival benefit) at the *Ablauf* (maturity) if the *versicherte Person* is
-then alive and a *Todesfallleistung* (death benefit) if she dies before it, both increased by the
-*Überschussbeteiligung* (participation in the insurer's surplus). **It describes no single
-insurer's contract.** Facts carrying a source tag — [S#] (primary product documents:
-*Versicherungsbedingungen* / AVB, *Basisinformationsblatt*, *Standmitteilung*, insurer product
-pages) and [R#] (product-specific regulatory and actuarial references), both numbered per
-`_research/kapitallebensversicherung.md` and resolved in `sources.md` (same directory; numbering
-frozen, never renumbered), and [REG-R#] (the cross-product library
+cash-flow modeling of the German **kapitalbildende Lebensversicherung** — the classic endowment, the
+*gemischte Versicherung auf den Todes- und Erlebensfall*, which pays a guaranteed
+*Erlebensfallleistung* at the *Ablauf* (maturity) if the *versicherte Person* is then alive and a
+*Todesfallleistung* if she dies before it, both increased by the *Überschussbeteiligung*. **It
+describes no single insurer's contract.** Source tags — [S#] (primary product documents: AVB,
+*Basisinformationsblatt*, *Standmitteilung*, insurer product pages) and [R#] (product-specific
+regulatory and actuarial references), both numbered per `_research/kapitallebensversicherung.md` and
+resolved in `sources.md`, numbering frozen; and [REG-R#] (the cross-product library
 `references/regulatory-and-actuarial-references.md`, whose R1–R56 numbering is separate and also
-frozen) — name the instrument the claim should be checked against. Values marked **[std]** are
-standardizations introduced for the reference implementation; each carries a numbered footnote
-giving the rationale and, where the research established one, the observed range across insurers.
-Claims no search result corroborated are flagged [unverified].
+frozen) — name the instrument a claim should be checked against. **[std]** marks a standardization
+introduced for the reference implementation, each with a numbered footnote giving the rationale and,
+where one was established, the observed range; [unverified] marks a claim no search corroborated.
 
-**Read this before relying on a citation.** No document cited anywhere in this library was
-retrieved. Direct HTTP egress from the build environment is blocked by an organisation network
-policy, and every host that matters here — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
-`aktuar.de`, `dejure.org`, `de.wikipedia.org` — was tried and refused. Everything below was
-established from `WebSearch` result summaries, and that channel's budget was exhausted after
-twenty-four searches on this product. **A delib citation is a pointer, not a certificate.** The
-consequence is uneven: the statutory core (§§ 153, 161, 165, 169 VVG; MindZV; DeckRV; § 139 VAG)
-and the surplus mechanics are researched to a usable depth, while the insurer-by-insurer parameter
-sweep is not — of twenty-six carriers, six produced a document and **one** produced quantified
-terms. Where a level could not be established it is a **[std]** parameter with a stated rationale
-rather than a citation, because a `[std]` number is honest and a wrong `[S#]` number is not.
+**Read this before relying on a citation.** No document cited anywhere in this library was retrieved:
+direct HTTP egress from the build environment is blocked by an organisation network policy, and every
+host that matters here — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `dejure.org`,
+`de.wikipedia.org` — was tried and refused. Everything below was established from `WebSearch` result
+summaries, and that channel's budget was exhausted after twenty-four searches on this product. **A
+delib citation is a pointer, not a certificate.** The consequence is uneven: the statutory core
+(§§ 153, 161, 165, 169 VVG; MindZV; DeckRV; § 139 VAG) and the surplus mechanics are researched to a
+usable depth, while the insurer-by-insurer parameter sweep is not — of twenty-six carriers, six
+produced a document and **one** produced quantified terms. Where a level could not be established it
+is a **[std]** parameter with a stated rationale rather than a citation, because a `[std]` number is
+honest and a wrong `[S#]` number is not.
 
 **Composite base.** The six carriers that produced a document are set out in *Variations across
 insurers* below: Debeka [S3] [S4] [S5] [S6], Gothaer [S7], die Bayerische [S8] [S9], Allianz [S11],
@@ -62,10 +59,9 @@ make the German chassis what it is, and each changes the shape of the projected 
    located is participating [S3] [S7] [S9] [S11].
 2. **The surplus is declared as a percentage of the contract's own reserve.** *Zinsüberschussanteile*
    and *Schlussüberschussanteile* are each fixed as a percentage of the *Deckungskapital* calculated
-   at the allocation date [S3], the allocation falls at the *Bilanzstichtag* of 31 December [S9], and
-   the allocated amounts are booked into the *Deckungskapital* [S9] — so the reserve is both the base
-   of the declaration and its destination. This is the single most useful mechanical fact in the
-   corpus and it is what a projection has to get right.
+   at the allocation date [S3], the allocation falls at the *Bilanzstichtag* of 31 December, and the
+   amounts are booked into the *Deckungskapital* [S9] — so the reserve is both the base of the
+   declaration and its destination. This is the single most useful mechanical fact in the corpus.
 3. **The reserve is normally *gezillmert*, so it is negative in the early years.** *Zillmerung*
    reduces the *Deckungskapital* by the present value of the acquisition costs not yet recovered
    [R28], and § 4 DeckRV caps the *Zillmersatz* at **25 ‰ — 2,5 % — of the *Beitragssumme***, cut
@@ -85,18 +81,17 @@ of the segment for 2026 is *"Klassik wird zur Nische"* [R26]; and Assekurata rep
 shifting to capital-market-linked products with fewer guarantees even as surplus participation edges
 up [R25]. **No quantification of the shift was established**: GDV publishes new-business
 *Beitragssumme* and Annual Premium Equivalent series [R21], but no endowment-specific figure and no
-time series showing the effect of the 1 January 2005 *Alterseinkünftegesetz* boundary was returned
-by any search, so the market-role argument here is qualitative and is labelled as such. For scale,
-2024 German life premium income on the GDV basis was **+2,8 % to 94,6 Mrd €** with *laufende
-Beiträge* of **66,3 Mrd €** roughly flat, *Einmalbeitragsgeschäft* about **+10 % to 28 Mrd €** and a
-contract count **−1,4 % to 80,3 Mio**; the GDV taxonomy's *Kapitalversicherungen* line is this
-product, and the BaFin basis gives life-segment *verdiente Bruttobeiträge* of **90,4 Mrd €** for the
-same year on a different population, so the two must never appear in the same table [REG-R53]. Lapse
-is high and rising: the GDV headline *Stornoquote* was **2,72 % in 2024** against **2,56 % in 2023**,
-on the measure counting contracts terminated early, surrendered **or converted to *beitragsfrei***,
-while a second GDV measure by number of contracts gives **1,2 %** for the same year [R20] —
-irreconcilable from the search evidence, both recorded, neither endowment-specific, neither by
-duration, and the 2024 figure an eight-year high [R26].
+time series showing the effect of the 1 January 2005 *Alterseinkünftegesetz* boundary, so the
+market-role argument here is qualitative and is labelled as such. For scale, 2024 German life premium
+income on the GDV basis was **+2,8 % to 94,6 Mrd €**, *laufende Beiträge* **66,3 Mrd €** roughly flat,
+*Einmalbeitragsgeschäft* about **+10 % to 28 Mrd €** and the contract count **−1,4 % to 80,3 Mio**;
+the GDV taxonomy's *Kapitalversicherungen* line is this product, and the BaFin basis gives
+life-segment *verdiente Bruttobeiträge* of **90,4 Mrd €** for the same year on a different population,
+so the two must never appear in the same table [REG-R53]. Lapse is high and rising: the GDV headline
+*Stornoquote* was **2,72 % in 2024** against **2,56 % in 2023**, on the measure counting contracts
+terminated early, surrendered **or converted to *beitragsfrei***, while a second GDV measure by number
+of contracts gives **1,2 %** [R20] — irreconcilable from the search evidence, both recorded, neither
+endowment-specific, neither by duration, and the 2024 figure an eight-year high [R26].
 
 **The charge level is a supervised parameter, not a free one.** BaFin's *Merkblatt 01/2023 (VA)*
 requires an appropriate *Kundennutzen* and undertakes to examine closely any undertaking whose
@@ -110,17 +105,16 @@ attributed to the *Merkblatt* anywhere in delib, and **every charge level here i
 
 ## Representative specification
 
-The representative design is the one the research supports as a composite: a single-life,
-individual, participating endowment with **equal death and survival sums**, a **level annual
-*Beitrag* over the full term**, priced and reserved at the **1,00 % *Höchstrechnungszins*** on a
-**DAV 2008 T-shaped, medically underwritten** basis, **gezillmert to the 25 ‰ ceiling**, surplus
-declared **annually as a percentage of the *Deckungskapital* at the balance date** and applied by
-***verzinsliche Ansammlung***, a **surrender value equal to the *gezillmert* prospective reserve
-floored by the five-year-spread *Mindestrückkaufswert*** less a **contractual, pre-declared
-*Stornoabzug***, a **contractually tabulated *beitragsfreie Versicherungssumme*** subject to a
-*Mindestversicherungsleistung* test, and a **three-year *Selbsttötung* window paying the
-*Rückkaufswert***. Every choice the corpus does not source carries a **[std]** tag with the observed
-range beside it.
+The representative design is a single-life, individual, participating endowment with **equal death
+and survival sums**, a **level annual *Beitrag* over the full term**, priced and reserved at the
+**1,00 % *Höchstrechnungszins*** on a **DAV 2008 T-shaped, medically underwritten** basis,
+**gezillmert to the 25 ‰ ceiling**, surplus declared **annually as a percentage of the
+*Deckungskapital* at the balance date** and applied by ***verzinsliche Ansammlung***, a **surrender
+value equal to the *gezillmert* prospective reserve floored by the five-year-spread
+*Mindestrückkaufswert*** less a **pre-declared *Stornoabzug***, a **contractually tabulated
+*beitragsfreie Versicherungssumme*** subject to a *Mindestversicherungsleistung* test, and a
+**three-year *Selbsttötung* window paying the *Rückkaufswert***. Every choice the corpus does not
+source carries a **[std]** tag with the observed range beside it.
 
 ### Product identity and issue rules
 
@@ -148,19 +142,19 @@ Footnotes to **[std]** rows:
    2009** the *Todesfallleistung* must be **at least 50 % of all premiums payable over the whole
    term** — the *Mindesttodesfallschutz*, or "50 %-Regel" [R12] [REG-R45]. Equal sums satisfy that
    comfortably at any realistic charge level; a savings-dominant design does not. The ratio is
-   therefore an explicit parameter with the floor as a design constraint on every model point, and one
-   point is written at `death_ratio = 0.60` to exercise it. A **second** reported condition requires
-   the death benefit to exceed the *Deckungskapital* or *Zeitwert* by at least 10 %; the summary
-   attaches the words "after five years", which does not parse as a rule, so **the 10 % figure is
-   recorded and its base, time profile and qualifier are [unverified]** [R12].
+   therefore a parameter with the floor as a design constraint on every model point, one point being
+   written at `death_ratio = 0.60` to exercise it. A **second** reported condition requires the death
+   benefit to exceed the *Deckungskapital* or *Zeitwert* by at least 10 %; the summary attaches the
+   words "after five years", which does not parse as a rule, so **the 10 % figure is recorded and its
+   base, time profile and qualifier are [unverified]** [R12].
 2. **No source states the range of abbreviated-payment options offered**, so the
    *Beitragszahlungsdauer* is a free model-point parameter. The single-premium point is included
    because *Einmalbeitragsgeschäft* is now roughly 30 % of German life premium income and growing an
-   order of magnitude faster than regular premium [REG-R53]; this product's own corpus says nothing
-   about single-premium endowment specifically.
+   order of magnitude faster than regular premium [REG-R53]; this corpus says nothing about
+   single-premium endowment specifically.
 3. **No entry age was established at all**, for any German carrier. 25 to 60 is an envelope chosen so
-   a 25-year contract issued at the top still matures before age 90 and one at the bottom still
-   matures after the age-62 tax threshold.
+   a 25-year contract issued at the top still matures before age 90 and one at the bottom after the
+   age-62 tax threshold.
 4. The corpus contradicts itself: a "minimum term" of 12 years and one of 3 to 5 years both appear in
    the same fused summary, together with the 2,500 / 5,000 EUR minimum sums [S11] [S12] [S13] [S15]
    group, and the second set most likely belongs to a *Sterbegeldversicherung* or a short savings
@@ -173,17 +167,17 @@ Footnotes to **[std]** rows:
    *Mindesttodesfallschutz* test [R12] visibly non-trivial and the *Zillmerung* visibly material.
 6. Four systems are named, and the corpus says that as a rule "either the *verzinsliche Ansammlung* or
    the *Bonussystem*" applies, **without saying which is more common** [R28]; the fourth was not
-   established by any search result and is [unverified]. Debeka's own mechanics [S3] [S9] are the
-   reserve-crediting form, closest to *verzinsliche Ansammlung*, and that is why it is the base case.
-   **Any statement that one system is "the market default" would be [unverified].**
+   established at all and is [unverified]. Debeka's own mechanics [S3] [S9] are the reserve-crediting
+   form, closest to *verzinsliche Ansammlung*, and that is why it is the base case. **Any statement
+   that one system is "the market default" would be [unverified].**
 7. **No German endowment wording located states an age basis.** Age last birthday is the ordinary
-   German convention and is adopted without a citation; the alternative worth naming is
+   German convention, adopted without a citation; the alternative worth naming is
    *versicherungstechnisches Alter*. On an annual grid the choice moves the first-year risk premium by
    up to one year of mortality and nothing else.
 8. **Nothing in the corpus establishes a waiting period for an underwritten German endowment**; German
    *Wartezeit* constructions belong to *Sterbegeldversicherung* and simplified-issue covers. The only
    period that operates like one is the **three-year *Selbsttötung* window** of § 161 VVG [R4]
-   [REG-R26], a benefit substitution rather than an exclusion, specified below.
+   [REG-R26], a benefit substitution rather than an exclusion.
 9. Issue age 37 with a 25-year term makes the *Ablauf* fall at attained age **62** — the age the
    half-income tax rule requires for contracts concluded after 31 December 2011 [R10] [REG-R45] — and
    comfortably exceeds the twelve-year minimum, so the anchor is a contract a German buyer would
@@ -294,12 +288,12 @@ Footnotes to **[std]** rows:
 
 18. Sitting the composite at the statutory ceiling is deliberate: it makes the *Zillmerung* mechanics
     maximally visible, makes the § 169 Abs. 3 floor bite where a real contract's would, and is the one
-    acquisition-cost level in the corpus with a citation behind it — as a **ceiling**, not as an
-    observed level. **No actual acquisition-cost level was established for any German carrier.** The
-    market data are that *Abschlusskosten* are reported to have **fallen by almost 8 % after the
-    LVRG**, with author, sample and base year not established, and that Die Stuttgarter cut its
-    *Abschlussprovision* to 25 ‰, compensating brokers with *Bestandsprovision* [R29] — evidence that
-    the statutory ceiling became an operative commercial ceiling.
+    acquisition-cost level in the corpus with a citation behind it — as a **ceiling**, not an observed
+    level. **No actual acquisition-cost level was established for any German carrier.** The market data
+    are that *Abschlusskosten* reportedly **fell by almost 8 % after the LVRG**, with author, sample
+    and base year not established, and that Die Stuttgarter cut its *Abschlussprovision* to 25 ‰,
+    compensating brokers with *Bestandsprovision* [R29] — the statutory ceiling become an operative
+    commercial one.
 19. This is the one administration-cost form the corpus establishes: "it is customary in life insurance
     that ongoing costs are charged annually as a percentage of the ongoing premium and/or as a
     percentage of the *Vertragsguthaben*" [R28]. The **level** is not established, for any carrier.
@@ -318,20 +312,18 @@ Footnotes to **[std]** rows:
     *Beitragssumme*) modestly exceeds what the *Zillmerung* recovers, producing the new-business strain
     a real German endowment carries.
 22. **The only quantified *Stornoabzug* in the corpus belongs to one carrier and is sub judice.** Debeka
-    applies a **standard 5 % deduction** plus a **kapitalmarktabhängige Stornogebühr** which can be
-    **5 %, 10 % or 15 % of the *Deckungskapital*** — an observed total range of **5 % to 20 %** [S3]
-    [R30]. The clause is the subject of a live Verbraucherzentrale collective action [R30] and the BGH
-    **remitted the *Angemessenheit* question rather than deciding it** [R22]. A single-carrier figure
-    under challenge is not a market range; the composite's declining schedule is **[std]**, sitting
-    inside the observed range and declining with duration, which is what *Angemessenheit* points
-    towards and what the older BGH line makes possible [R24].
+    applies a **standard 5 % deduction** plus a **kapitalmarktabhängige Stornogebühr** of **5 %, 10 %
+    or 15 % of the *Deckungskapital*** — an observed total range of **5 % to 20 %** [S3] [R30]. The
+    clause is the subject of a live Verbraucherzentrale collective action [R30] and the BGH **remitted
+    the *Angemessenheit* question rather than deciding it** [R22]. A single-carrier figure under
+    challenge is not a market range; the composite's declining schedule is **[std]**, inside the
+    observed range and falling with duration, which is what *Angemessenheit* points towards [R24].
 23. The *Effektivkostenquote* (Reduction in Yield) discloses all costs as the reduction they cause in
     the contract's annual yield; the basis is § 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3 VVG-InfoV, it
-    was introduced by the LVRG and has been mandatory in quotations since 1 January 2015 [R9]
-    [REG-R31], and under PRIIPs it must appear in the *Basisinformationsblatt* at three time points
-    split into one-off and ongoing costs [R19] [REG-R32]. **Reproducing one exactly needs the PRIIPs
-    Annex VI algorithm and a specified holding period, neither of which delib implements**, so the
-    figure is a validation target for a charge parameterisation and not an input [REG-R31].
+    was introduced by the LVRG and has been mandatory in quotations since 1 January 2015, and under
+    PRIIPs it must appear in the *Basisinformationsblatt* [R9] [R19] [REG-R31] [REG-R32].
+    **Reproducing one exactly needs the PRIIPs Annex VI algorithm and a specified holding period,
+    neither of which delib implements**, so it is a validation target and not an input.
 
 
 ### Termination and values
@@ -380,23 +372,22 @@ Footnotes to **[std]** rows:
 the insurer to operate it by a ***verursachungsorientiertes Verfahren***, or by other comparable
 appropriate distribution principles [R1] [REG-R24]. The statute **names the principle and does not
 prescribe the algorithm**, which is exactly why the declared rates are insurer-discretionary and why
-every level in delib is **[std]** unless a *Tarifblatt* supplies one; the BGH tied that Absatz to the
-equal-treatment rule of § 138 Abs. 2 VAG in IV ZR 436/22 of 18 September 2024 [REG-R24] [REG-R8]. A
-model allocating surplus **in proportion to each contract's own reserve** is implementing a
-causation-oriented procedure and can say so.
+every level in delib is **[std]** unless a *Tarifblatt* supplies one; the BGH tied that Absatz to
+§ 138 Abs. 2 VAG in IV ZR 436/22 of 18 September 2024 [REG-R24] [REG-R8]. A model allocating surplus
+**in proportion to each contract's own reserve** is implementing a causation-oriented procedure.
 
 Two clauses fix the base and the timing, and both come from named carriers. **The base is the
 contract's own reserve**: *Zinsüberschussanteile* and *Schlussüberschussanteile* are each fixed as a
 percentage of the *Deckungskapital* calculated at the allocation date [S3]. **The timing is the
 balance date**: the contract is allocated *Zinsüberschussanteile* at each *Bilanzstichtag*, being
 31 December, and again at the end of the accumulation phase, and the amounts are **booked into the
-contract's *Deckungskapital*** [S9] — an annuity wording of the same carrier, and that provenance is
-stated wherever the rule is used. **The entitlement starts immediately**, with no qualifying period,
-and **the level is discretionary and may be zero**: it cannot be guaranteed, it is set annually, it
-depends on capital-market development and the insurer's own results [S3], and it **"may also be zero
-euros"** [S9] — the cleanest sourced justification in the corpus for classifying the surplus rate as
-an insurer-discretionary current assumption rather than a contractual one. Carriers and commentators
-decompose the surplus into four components [S16] [S15] [S17] [R28]:
+*Deckungskapital*** [S9] — an annuity wording of the same carrier, a provenance stated wherever the
+rule is used. **The entitlement starts immediately**, with no qualifying period, and **the level is
+discretionary and may be zero**: it cannot be guaranteed, is set annually, depends on capital-market
+development and the insurer's own results [S3], and **"may also be zero euros"** [S9] — the cleanest
+sourced justification in the corpus for treating the surplus rate as an insurer-discretionary current
+assumption. Carriers and commentators decompose the surplus into four components [S16] [S15] [S17]
+[R28]:
 
 | Component | Arises when | Minimum policyholder share |
 |---|---|---|
@@ -405,17 +396,15 @@ decompose the surplus into four components [S16] [S15] [S17] [R28]:
 | *Kostenüberschuss* | the book is administered more cheaply than loaded | MindZV: 50% of the *übriges Ergebnis*, of which the cost result is the main part [R6] [REG-R18] |
 | *Schlussüberschussanteil* | long-run results not fully allocated during the term | **no statutory minimum established** [S16] |
 
-**Deducting the discounting charge before applying the 90 % is the mechanism by which the guaranteed
-interest is taken off the top before the policyholder's interest share is struck** [R6] [REG-R18];
-the framings differ and the MindZV's is the one to cite, consumer sources saying "half of the
-*Kostenüberschuss*" [S16] where the MindZV requires 50 % of the wider *übriges Ergebnis*, so any
-statement that the cost surplus specifically carries a 50 % minimum is [unverified] (gap 6). And
-**these are minimum allocations to a provision, not to a contract**: the *Rohüberschuss* reaches the
-RfB before it reaches any policy, the minimum is computed separately for *Altbestand* and
-*Neubestand* [R6] [REG-R10] [REG-R11] [REG-R18], and between the RfB and the policy sits the
-insurer's annual, discretionary declaration [S3] [S9]. A delib model projecting a declared rate
-projects the **output** of that policy and **must not present the 90/90/50 quotas as if they
-determined it**.
+**Deducting the discounting charge before applying the 90 % is how the guaranteed interest is taken
+off the top before the policyholder's interest share is struck** [R6] [REG-R18]; the framings differ
+and the MindZV's is the one to cite, consumer sources saying "half of the *Kostenüberschuss*" [S16]
+where the MindZV requires 50 % of the wider *übriges Ergebnis*, so any statement that the cost surplus
+specifically carries a 50 % minimum is [unverified] (gap 6). And **these are minimum allocations to a
+provision, not to a contract**: the *Rohüberschuss* reaches the RfB first, the minimum is computed
+separately for *Altbestand* and *Neubestand* [R6] [REG-R10] [REG-R11] [REG-R18], and between the RfB
+and the policy sits the insurer's annual, discretionary declaration [S3] [S9]. A delib model projects
+the **output** of that policy and **must not present the 90/90/50 quotas as if they determined it**.
 
 ### Überschussverwendung — how the allocated surplus is applied
 
@@ -464,13 +453,12 @@ Allianz's **2,70 %** is attached to a classic **endowment** book by its manufact
 one carrier's page. That the two products share a declared rate is plausible — the same
 *Sicherungsvermögen* backs both — but **the corpus does not say so and the identity is [unverified]**
 (gap 2). The composite uses 2,70 % because it is the only rate in the corpus attached to a classic
-endowment book at all. Direction of travel for 2026: about **one in three** insurers raised the
-*Überschussbeteiligung*, **Allianz did not**, and the caution is attributed to remaining *stille
-Lasten* and conservative interest forecasts [R25] [R26]. For orientation, § 154 VVG requires a
-*Modellrechnung* at three rates set by § 2 Abs. 3 VVG-InfoV — the *Höchstrechnungszins* multiplied by
-1,67, and that rate plus and minus one percentage point [REG-R25] — so at 1,00 % the statutory triple
-is **1,67 % / 2,67 % / 0,67 %**, and the composite's declared 2,70 % sits a hair above the middle rate
-of a German insurer's own statutory illustration.
+endowment book at all. For 2026 about **one in three** insurers raised the *Überschussbeteiligung* and
+**Allianz did not**, the caution being attributed to remaining *stille Lasten* and conservative rate
+forecasts [R25] [R26]. For orientation, § 154 VVG requires a *Modellrechnung* at three rates set by
+§ 2 Abs. 3 VVG-InfoV — the *Höchstrechnungszins* × 1,67, and that rate ± one percentage point
+[REG-R25] — so at 1,00 % the statutory triple is **1,67 % / 2,67 % / 0,67 %**, and the composite's
+2,70 % sits a hair above the middle rate of a German insurer's own statutory illustration.
 
 ### Deckungskapital, Zillmerung and the Bewertungsreserven
 
@@ -492,21 +480,19 @@ the present value of the acquisition costs not yet recovered**, so **in the earl
 distribution partners with an *Abschlussprovision* as a share of the contractually agreed
 *Beitragssumme* at conclusion of the contract, **regardless of whether the customer has already paid
 that premium sum**" [R28-family]. And ***Zillmerung is a per-tariff choice a German insurer makes and
-publishes***: die Bayerische publishes a *gezillmert* edition (B 520127) and a non-*gezillmert*
-edition (B 520136) of the **same** tariff [S9], so the implementation must be able to run with
-*Zillmerung* off, and one model point does.
+publishes***: die Bayerische publishes a *gezillmert* edition (B 520127) and a non-*gezillmert* one
+(B 520136) of the **same** tariff [S9], so the implementation must run with *Zillmerung* off too.
 
 The ***Bewertungsreserven*** leg sits alongside the reserve and is not projected. § 153 Abs. 3 VVG
 requires the insurer to determine them anew each year, allocate them by a causation-oriented
 procedure, and **on termination allocate and pay out half of the amount then determined** [R1]
 [REG-R24]; § 139 VAG then cuts that back, permitting participation by **exiting** policyholders **only
-to the extent the *Bewertungsreserven* exceed any *Sicherungsbedarf*** from contracts with an interest
-guarantee — the sum, over contracts with an *überhöhter Rechnungszins*, of the actuarially valued
-interest obligation less the *Deckungsrückstellung* [R8] [REG-R9]. The legal hinge is § 153 Abs. 3
-Satz 3 VVG in its LVRG form [R1] [REG-R20] and the leading decision **BGH, 20 January 2021, IV ZR
-318/19**, which held the cut-back lawful [R23] [REG-R36]. The base run sets the participation to
-**zero** (footnote 15) — not because the mechanism is unimportant but because it is **path- and
-balance-sheet-dependent in a way a gross liability cash flow model cannot reproduce** [REG-R24].
+to the extent the *Bewertungsreserven* exceed any *Sicherungsbedarf*** — the sum, over contracts with
+an *überhöhter Rechnungszins*, of the actuarially valued interest obligation less the
+*Deckungsrückstellung* [R8] [REG-R9]. The hinge is § 153 Abs. 3 Satz 3 VVG in its LVRG form [R1]
+[REG-R20] and the leading decision **BGH, 20 January 2021, IV ZR 318/19**, which held the cut-back
+lawful [R23] [REG-R36]. The base run sets the participation to **zero** (footnote 15) because it is
+**path- and balance-sheet-dependent in a way a gross cash flow model cannot reproduce** [REG-R24].
 
 ### Rückkaufswert and Stornoabzug — § 169 VVG
 
@@ -531,18 +517,16 @@ A model carrying a zillmerised reserve applies both separately, the tighter bind
 
 The *Stornoabzug* is subject to three cumulative conditions — ***vereinbart*, *beziffert* und
 *angemessen*** — and a deduction for *noch nicht getilgte Abschluss- und Vertriebskosten* is **void**,
-with the burden of proof on the insurer [R2] [REG-R28]; that last limb is what stops an insurer
-recovering through the deduction what the five-year spreading denies it. On *Bezifferung* the BGH has
-held that the requirement does **not** compel a concrete euro amount at conclusion: **an unambiguous
-calculation procedure suffices, provided it leaves the insurer no *Ermessensspielraum* and is free of
-unilateral determination rights**, so a capital-market-dependent deduction is lawful in principle and
-need not be a constant [R22]. The docket reads as **IV ZR 184/24**, inferred from a URL slug, and both
-it and the decision date are [unverified]; the court remitted the *Angemessenheit* question rather
-than deciding it. The **older line** required the deduction to be *eindeutig erkennbar* and struck down
-clauses that failed to distinguish the *Rückkaufswert* from the *Stornoabzug*, left it to discretion,
-or named it only after the *Kündigung*, the 2007 decision being specifically about the
-*Kapitallebensversicherung* [R24] — **the historical reason delib treats the *Stornoabzug* as a
-contractual, pre-declared schedule.**
+with the burden of proof on the insurer [R2] [REG-R28]; that last limb stops an insurer recovering
+through the deduction what the five-year spreading denies it. On *Bezifferung* the BGH has held that
+the requirement does **not** compel a concrete euro amount at conclusion: **an unambiguous calculation
+procedure suffices, provided it leaves the insurer no *Ermessensspielraum* and is free of unilateral
+determination rights**, so a capital-market-dependent deduction is lawful in principle and need not be
+a constant [R22]. The docket reads as **IV ZR 184/24**, inferred from a URL slug, and both it and the
+decision date are [unverified]. The **older line** required the deduction to be *eindeutig erkennbar*
+and struck down clauses that failed to distinguish the *Rückkaufswert* from the *Stornoabzug*, left it
+to discretion, or named it only after the *Kündigung* [R24] — **the historical reason delib treats the
+*Stornoabzug* as a contractual, pre-declared schedule.**
 
 ### Beitragsfreistellung — § 165 VVG
 
@@ -584,27 +568,25 @@ carrier extends the period was not established; no carrier's suicide clause was 
 ## Riders and options
 
 **In scope (modeled or parameterized).** The three *Überschussverwendung* systems the corpus
-establishes [R28], as a model-point enum, with the base run on *verzinsliche Ansammlung* and one model
-point on each of the others. The ***abgekürzte Beitragszahlungsdauer***, as a `prem_term` shorter than
-`policy_term` [S3] [R28-family]. The ***Einmalbeitrag***, as `prem_term = 1`, because single premium is
-now roughly 30 % of German life premium income [REG-R53]. The ***Beitragsfreistellung*** election of
-§ 165 VVG, as a scheduled policy year, with both branches of the *Mindestversicherungsleistung* test
-exercised [R3]. The ***Stornoabzug***, as a pre-declared duration schedule [S3] [R22] [R24] [R30]. The
-***Risikozuschlag***, as a multiplier on the risk premium [R5]. The ***Zillmerung*** switch, because
-one carrier publishes both editions of one tariff [S9]. And the ***Beteiligung an den
-Bewertungsreserven***, as a parameter set to zero in the base run [R1] [R8].
+establishes [R28], as a model-point enum with the base run on *verzinsliche Ansammlung* and one point
+on each of the others; the ***abgekürzte Beitragszahlungsdauer***, as a `prem_term` shorter than
+`policy_term` [S3] [R28-family]; the ***Einmalbeitrag***, as `prem_term = 1` [REG-R53]; the
+***Beitragsfreistellung*** election of § 165 VVG, as a scheduled policy year with both branches of the
+*Mindestversicherungsleistung* test exercised [R3]; the ***Stornoabzug***, as a pre-declared duration
+schedule [S3] [R22] [R24] [R30]; the ***Risikozuschlag***, as a multiplier on the risk premium [R5];
+the ***Zillmerung*** switch, because one carrier publishes both editions of one tariff [S9]; and the
+***Beteiligung an den Bewertungsreserven***, as a parameter set to zero in the base run [R1] [R8].
 
 **Out of scope, and said so.** The ***Berufsunfähigkeits-Zusatzversicherung*** and every other
-*Zusatzversicherung*, which are separate covers with their own decrements and which § 165 VVG's
-practical note records are **regularly lost on *Beitragsfreistellung*** [R3]. The
-***Unfall-Zusatzversicherung***, the ***Beleihung*** (policy loan) and the ***Abtretung***, none of
-which any located German endowment wording describes. The ***Kapitalwahlrecht* / annuitisation option
-at the *Ablauf***, because no located wording sets one out and no *Rentenfaktor* for an endowment was
-established; the annuity chassis is `products/klassische_rentenversicherung/`. The ***Anlage in
-Fondsanteilen*** system, which no source in this corpus mentions [unverified]. ***Dynamik***, which
-would reprice sum and premium together on an exogenous index. And the ***Vorwegabzug*** of the
-*Bewertungsreserven* before termination, which § 153 Abs. 3 permits by agreement [R1] and no carrier
-document evidences.
+*Zusatzversicherung*, separate covers with their own decrements which § 165 VVG's practical note
+records are **regularly lost on *Beitragsfreistellung*** [R3]; the ***Unfall-Zusatzversicherung***,
+the ***Beleihung*** and the ***Abtretung***, none of which any located German endowment wording
+describes; the ***Kapitalwahlrecht* / annuitisation option at the *Ablauf***, because no located
+wording sets one out and no *Rentenfaktor* for an endowment was established (the annuity chassis is
+`products/klassische_rentenversicherung/`); the ***Anlage in Fondsanteilen*** system, which no source
+mentions [unverified]; ***Dynamik***, which would reprice sum and premium together on an exogenous
+index; and the ***Vorwegabzug*** of the *Bewertungsreserven* before termination, which § 153 Abs. 3
+permits by agreement [R1] and no carrier document evidences.
 
 ---
 
@@ -641,27 +623,24 @@ Parameter ranges, where more than one observation exists:
 | Contract term as sold | 12 years (tax minimum) to 40 years | market-wide | [R10] + consumer group |
 | *Stornoquote*, 2024 | 1.2% (per contract) to 2.72% (main GDV measure) | market-wide, irreconcilable measures | [R20] |
 
-Five observations follow, and each shapes a composite choice.
+Three observations follow, and each shapes a composite choice.
 
-1. **One insurer maintains at least three parallel endowment wordings of different vintages** [S3]
-   [S4] [S5]. Composite: a single wording, with the cohort variation carried by `issue_year` and
-   `rechnungszins` instead.
-2. **The surplus base is published by exactly one carrier and the timing by exactly one other** —
-   Debeka the base [S3], die Bayerische the timing [S9], the second being an **annuity** wording of the
-   same chassis. Composite: both, with that provenance stated wherever it is used.
-3. ***Zillmerung* is visibly a per-tariff choice at one carrier and invisible everywhere else** [S9];
-   and **only one carrier's wording says the premium stops on death** [S7], the operative rule a
-   projection is most likely to get wrong. Composite: a *Zillmerung* switch defaulting on, and premium
-   cessation implemented and made a numbered pitfall.
-4. **Only one carrier publishes a declared rate for a classic book** [S11] and **only one publishes a
+1. **Each of the four mechanics that a projection turns on is published by exactly one carrier**: the
+   surplus base by Debeka [S3]; the surplus timing by die Bayerische, in an **annuity** wording of the
+   same chassis [S9]; the *Zillmerung* choice, again by die Bayerische, which publishes both editions
+   of one tariff [S9]; and premium cessation on death by Gothaer [S7]. Composite: all four, with the
+   annuity provenance of the timing rule stated wherever it is used, a *Zillmerung* switch defaulting
+   on, and premium cessation made a numbered pitfall.
+2. **Only one carrier publishes a declared rate for a classic book** [S11] and **only one publishes a
    *Stornoabzug*, under collective action and a BGH remittal** [S3] [R22] [R30]. Composite: the
    endowment carrier's rate, with the annuity identity [unverified] (gap 2); and a declining **[std]**
-   deduction schedule inside the observed range, with the single observation cited beside it.
-5. **What does not vary is legal rather than commercial**: participation as an all-or-nothing statutory
+   deduction schedule inside the observed range, with the single observation beside it. The vintage
+   spread — one insurer maintaining three parallel wordings [S3] [S4] [S5] — is carried instead by
+   `issue_year` and `rechnungszins`.
+3. **What does not vary is legal rather than commercial**: participation as an all-or-nothing statutory
    default [R1]; the § 169 calculation rule and its five-year floor [R2]; the § 165 paid-up right and
    its *Mindestversicherungsleistung* test [R3]; the § 161 three-year window paying the *Rückkaufswert*
-   [R4]; and the 25 ‰ *Höchstzillmersatz* [R7]. Every one is a statutory fact and none is a carrier
-   variation.
+   [R4]; and the 25 ‰ *Höchstzillmersatz* [R7]. Every one is a statutory fact.
 
 ---
 

@@ -65,15 +65,14 @@ Four features make the German chassis different from its French, UK and US sibli
 changes the shape of the projected cash flows.
 
 1. **The premium is level, and there are two of them.** The *Bruttobeitrag* is struck at the
-   *Eintrittsalter* and held there for the whole *Beitragszahlungsdauer* [R6] [R10]. What the
+   *Eintrittsalter* and held there for the whole *Beitragszahlungsdauer* [R6] [R10]; what the
    customer is billed is the ***Zahlbeitrag***, the *Bruttobeitrag* less a declared
    *Beitragsverrechnung* — the *Überschussbeteiligung* of § 153 VVG applied as an immediate offset
-   against the premium rather than as a credit to an account there is none of [R5] [R9] [S5].
-   **Only the *Bruttobeitrag* is guaranteed.** The insurer may cut the *Beitragsverrechnung* and
-   raise the bill toward it **without any § 163 procedure, without a *Treuhänder* and without a
-   policyholder right of objection**, because no guaranteed term has moved [R6] [REG-R27]. This is
-   the single most important legal fact about the German term-life premium, and a model carrying
-   only one premium stream cannot represent this product.
+   against the premium rather than as a credit to an account there is none of [R5] [R9] [S5]. **Only
+   the *Bruttobeitrag* is guaranteed**, and the insurer may cut the *Beitragsverrechnung* and raise
+   the bill toward it **without any § 163 procedure, without a *Treuhänder* and without a policyholder
+   right of objection** [R6] [REG-R27]. This is the single most important legal fact about the German
+   term-life premium, and a model carrying only one premium stream cannot represent this product.
 2. **There is no cash value at any duration, and the reason is not that nothing accumulates.** A
    level premium against a rising death rate overcharges early and undercharges late, and the
    difference is a *Deckungskapital* that builds, peaks mid-term and runs off to exactly zero at
@@ -84,33 +83,31 @@ changes the shape of the projected cash flows.
    closure check.**
 3. **The exclusion list is remarkably short.** Beyond the statutory three-year *Selbsttötung* window
    [R1] and the forfeitures of § 162 VVG [R7], a German RLV wording carries essentially one
-   substantive exclusion — the *Kriegsklausel* — plus a nuclear/ABC clause. **There is no list of
-   hazardous sports, no aviation exclusion, no alcohol or narcotics exclusion and no
-   pre-existing-condition exclusion.** Hazardous activity is handled at underwriting by a
-   *Risikozuschlag*, not by a standing clause. The French *notices* retrieved for `frlib` carry
-   exclusion lists running to a dozen heads or more; **a German wording covers all of it by pricing
-   it.** So the German product's claim rate is a mortality question, the French product's is partly
-   a coverage question.
+   substantive exclusion — the *Kriegsklausel* — plus a nuclear/ABC clause: **no hazardous-sports
+   list, no aviation exclusion, no alcohol or narcotics exclusion, no pre-existing-condition
+   exclusion**, hazardous activity being handled at underwriting by a *Risikozuschlag*. The French
+   *notices* retrieved for `frlib` carry exclusion lists running to a dozen heads or more; **a German
+   wording covers all of it by pricing it**, so the German product's claim rate is a mortality
+   question where the French product's is partly a coverage question.
 4. **There is no living-benefit acceleration in the base design.** Germany has no counterpart to the
    French *perte totale et irréversible d'autonomie*, present in seven of the eight standalone
    `frlib` contracts: one decrement pays one benefit and there is no interlock to get wrong. What
    Germany has instead is a *vorgezogene Todesfallleistung* triggered by a terminal **prognosis**,
    and disability is sold as a rider or as `products/berufsunfaehigkeit/`.
 
-**Where it sits in the market.** The GDV taxonomy — the vocabulary any German market figure arrives
-in — puts this product in ***Risikoversicherungen***, alongside *Kapitalversicherungen*,
-*Rentenversicherungen*, *fondsgebundene* and *sonstige Lebensversicherungen* [REG-R53]. **The size
-of that segment could not be established**: no contract count, no new business, no premium income,
-no aggregate *versicherte Summe*, no average sum insured, no average premium and — most
-consequentially for the model — **no segment-specific *Stornoquote*** [R18], research gap 13. What
-can be given is the whole of German life on the GDV basis for 2024: premium income **+2,8 % to
-94,6 Mrd. €**, *laufende Beiträge* **66,3 Mrd. €**, *Einmalbeitragsgeschäft* about **+10 % to
-28 Mrd. €**, contract count **−1,4 % to 80,3 Mio.** [REG-R53]. Two structural remarks stand in for
-the missing breakdown, both arithmetic rather than observation: a term contract's **premium** is
-tiny relative to its **sum insured**, so the segment is far larger measured by risk carried than by
-premium earned and any ranking by premium income understates it; and because its whole technical
-result is a *Risikoergebnis*, the MindZV's 90 % minimum allocation [R9] [REG-R18] binds it more
-tightly than it binds any savings product.
+**Where it sits in the market.** The GDV taxonomy puts this product in ***Risikoversicherungen***,
+alongside *Kapitalversicherungen*, *Rentenversicherungen*, *fondsgebundene* and *sonstige
+Lebensversicherungen* [REG-R53]. **The size of that segment could not be established**: no contract
+count, no new business, no premium income, no aggregate *versicherte Summe*, no average sum insured
+or premium and — most consequentially for the model — **no segment-specific *Stornoquote*** [R18]
+(research gap 13). What can be given is the whole of German life on the GDV basis for 2024: premium
+income **+2,8 % to 94,6 Mrd. €**, *laufende Beiträge* **66,3 Mrd. €**, *Einmalbeitragsgeschäft*
+about **+10 % to 28 Mrd. €**, contract count **−1,4 % to 80,3 Mio.** [REG-R53]. Two structural
+remarks stand in for the missing breakdown, both arithmetic rather than observation: a term
+contract's **premium** is tiny relative to its **sum insured**, so the segment is far larger measured
+by risk carried than by premium earned and any ranking by premium income understates it; and because
+its whole technical result is a *Risikoergebnis*, the MindZV's 90 % minimum allocation [R9] [REG-R18]
+binds it more tightly than it binds any savings product.
 
 **Distribution is genuinely three-channel** — tied agents and bank branches [S8] [S9], independent
 brokers [S7] [S10] [S11], direct writers [S3] [S4] [S12] — and the channel is visible in the
@@ -488,16 +485,15 @@ everything after the last premium being funded from the reserve [unverified].
 | Extension by agreement | **Expressly permitted** | Not provided for; the statutory minimum is the rule |
 
 The two systems reach **nearly the same economic answer by opposite routes**, and the German answer
-applies for **three times as long**. Two things the model deliberately cannot represent, both stated
-rather than left to be discovered. **The mental-illness exception is not a formality** — it is the
-ground on which German *Selbsttötung* claims are actually litigated [R23] — so the rule is not a
-clean contractual switch, and a best-estimate model cannot carry a litigated state of mind; it is
-applied as a **benefit switch over the first three policy years on the suicide share of deaths**.
-And **whether the clock restarts on an increase is not established for Germany** (gap 9): the French
-statute expressly restarts its one-year clock for the increment only [`frlib` R1], German AVB
-practice is understood to do the same, and no wording was seen. It matters because the
-*Nachversicherungsgarantie* makes increments routine, so the model **restarts the clock for the
-increment only** and tags the choice [unverified].
+applies for **three times as long**. Two things the model deliberately cannot represent. **The
+mental-illness exception is not a formality** — it is the ground on which German *Selbsttötung*
+claims are actually litigated [R23] — so the rule is not a clean contractual switch and a
+best-estimate model cannot carry a litigated state of mind; it is applied as a **benefit switch over
+the first three policy years on the suicide share of deaths**. And **whether the clock restarts on an
+increase is not established for Germany** (gap 9): the French statute expressly restarts its one-year
+clock for the increment only [`frlib` R1] and German AVB practice is understood to do the same, but
+no wording was seen — so the model restarts it for the increment only and tags the choice
+[unverified].
 
 ### No *Rückkaufswert* — why, precisely, and what collapses with it
 
@@ -515,13 +511,12 @@ on it will fail its own closure check.** **Two: the statute does not require it 
 wording, and the most consequential such tag in this product (gap 2).
 
 ***Zillmerung* on a term product is a peculiar thing.** The 25 ‰ cap is a fraction of the
-*Beitragssumme*, which for a 25-year contract is 25 times the annual premium — a large number — while
-the contract's *Deckungskapital* is tiny. **So the Zillmer charge is large relative to the reserve it
-is written into**, and the *gezillmerte Deckungsrückstellung* of a term contract is negative for a
-long stretch and never becomes large. Whether the cap applies to a *Risikoversicherung* the same way
-as to a savings contract was **not established**, and neither was the *Nullstellung* question [R10]
-[R21] [REG-R16] (gap 11). **The model publishes no balance-sheet reserve, so neither reaches its cash
-flows**; the first-order *Deckungskapital* it does publish is a **pricing** diagnostic.
+*Beitragssumme*, 25 times the annual premium on a 25-year contract, while the *Deckungskapital* it is
+written into is tiny — **so the Zillmer charge is large relative to that reserve**, and the
+*gezillmerte Deckungsrückstellung* of a term contract is negative for a long stretch and never
+becomes large. Whether the cap applies to a *Risikoversicherung* the same way as to a savings
+contract was **not established**, nor was the *Nullstellung* question [R10] [R21] [REG-R16] (gap 11);
+**the model publishes no balance-sheet reserve, so neither reaches its cash flows.**
 
 **Everything else collapses with the surrender value.** The § 165 paid-up right and the § 166
 non-payment path both run through a **minimum-benefit test** whose fallback is payment of the
@@ -538,31 +533,25 @@ sum insured — is [unverified] (gap 10).
 The mortality basis is ***DAV 2008 T***, with ***DAV 2008 T NR*** and ***DAV 2008 T R*** [R12]
 [REG-R48], inherited corroboration: derived over **2006 to 2008** from German insurers' own policy
 data with German population statistics; the *Richtlinie* **regulates both the derivation methodology
-and the procedure for setting the *Sicherheitszuschläge***; the smoker and non-smoker variants are
-**suitable for premium calculation** but **not for policies written without a *Gesundheitsprüfung***;
-adopted **4 December 2008**, restated as a *Fachgrundsatz* dated **29 November 2022**. **The table
-values are the property of the Deutsche Aktuarvereinigung, are not public, and are not redistributed
-here.** The implementation ships a **[std] proxy** and states what a replacement must preserve: an
-age-graded death rate for **medically selected** lives, separable into smoker and non-smoker
-variants, sex-distinct as raw material, and separable into first- and second-order levels.
-
-**Three structural reasons the effective first-order margin on a contract written today is large**,
-none a criticism of the insurer: the table was derived on 2006–2008 experience and German mortality
-has improved since; it is applied to a **medically selected** portfolio in its early durations, where
-selection is strongest and the table's own allowance is generic; and the *Sicherheitszuschläge* sit
-on top of both. A first-order to second-order ratio **in the region of two** is therefore entirely
-plausible. **The ratio is [std]; the reasoning is not numeric.** A death-cover basis also carries
-**no projected mortality improvement**, improvement being favourable to the insurer — the exact
-opposite of the annuity tables [REG-R49], and the reason a single "German mortality table" does not
-exist. **Unisex** makes it worse: DAV 2008 T is sex-distinct, so every German unisex term tariff is a
-**blend at a mixing ratio the carrier chooses from its own expected new-business mix** —
-proprietary, unpublished, periodically re-estimated [R13] [REG-R34]. The implementation blends
-**50/50 for the tariff and projects on the model point's own sex**, the only arrangement consistent
-with both § 138 VAG and the fact that a book's actual mortality depends on who bought it. And **no
-German insurer publishes its own basis** — the AVB say the calculation follows *die anerkannten
-Regeln der Versicherungsmathematik* and stop there [unverified]. `frlib` reached the same position
-for France with one difference: a French carrier published a complete attained-age gross rate card
-[`frlib` S3], and **no German carrier publishes anything comparable** (gap 1).
+and the procedure for setting the *Sicherheitszuschläge***; the variants are **suitable for premium
+calculation** but **not for policies written without a *Gesundheitsprüfung***; adopted **4 December
+2008**, restated as a *Fachgrundsatz* dated **29 November 2022**. **The values are the property of
+the Deutsche Aktuarvereinigung, are not public, and are not redistributed here**; the technical notes
+ship a [std] proxy and state what a replacement must preserve. **Three structural reasons the
+effective first-order margin on a contract written today is large**, none a criticism of the insurer:
+the table was derived on 2006–2008 experience and German mortality has improved since; it is applied
+to a **medically selected** portfolio in its early durations, where selection is strongest and the
+table's own allowance is generic; and the *Sicherheitszuschläge* sit on top of both — so a
+first-order to second-order ratio **in the region of two** is entirely plausible. **The ratio is
+[std]; the reasoning is not numeric.** A death-cover basis carries **no projected mortality
+improvement**, improvement being favourable to the insurer — the exact opposite of the annuity tables
+[REG-R49], and the reason a single "German mortality table" does not exist. **Unisex** makes it
+worse: DAV 2008 T is sex-distinct, so every German unisex term tariff is a **blend at a mixing ratio
+the carrier chooses from its own expected new-business mix**, proprietary and unpublished [R13]
+[REG-R34]. And **no German insurer publishes its own basis** — the AVB say the calculation follows
+*die anerkannten Regeln der Versicherungsmathematik* and stop there [unverified]. `frlib` reached the
+same position for France with one difference: a French carrier published a complete attained-age
+gross rate card [`frlib` S3], and **no German carrier publishes anything comparable** (gap 1).
 
 ### *Verbundene Leben*, the *Über-Kreuz-Versicherung*, and the decrements
 
@@ -570,39 +559,35 @@ for France with one difference: a French carrier published a complete attained-a
 contract then **ends**, leaving the survivor with no cover; both lives are underwritten and both give
 the § 150 consent [R7], and **no premium ratio against two single contracts is asserted** (gap 15).
 **The separation problem** is the standard consumer-press criticism: on divorce the contract covers
-two people who no longer want a joint benefit and cannot halve it, and where the carrier offers no
-conversion into two single contracts without a new *Gesundheitsprüfung*, the only exit is termination
-with nothing back [unverified].
+two people who no longer want a joint benefit and cannot halve it, and absent a conversion right into
+two single contracts the only exit is termination with nothing back [unverified].
 
 ***Über-Kreuz-Versicherung*** is **two contracts, crossed**: A owns and is beneficiary of a contract
 on **B's** life and vice versa, each paying on **his own** contract out of **his own** funds. **The
 cover is identical to two ordinary single contracts, and the model is indifferent to the structure**
 — worth saying so a reader does not go looking for a mechanic that is not there. **The tax outcome is
 not identical, and that is the whole point.** Under the ordinary structure the benefit is an
-***Erwerb von Todes wegen*** under § 3 Abs. 1 Nr. 4 ErbStG, charged against the beneficiary's
+***Erwerb von Todes wegen*** under § 3 Abs. 1 Nr. 4 ErbStG charged against the beneficiary's
 *Freibetrag* [R15] [REG-R46]; under the crossed structure A receives a payment under a contract A
 owns and paid for, nothing passes from B's estate, and there is **no *Erwerb von Todes wegen***. Two
-conditions, both [unverified]: premiums paid **from the surviving partner's own funds, verifiably** —
-a joint account fed by one income invites recharacterisation as a gift — and the § 150 consent [R7].
-On 300 000 € to a **spouse** the 500 000 € *Freibetrag* absorbs it and the tax is nil; to an
-**unmarried partner** the *Freibetrag* is 20 000 €, *Steuerklasse* III applies from 30 %, and the
-liability is on the order of **84 000 € — 28 % of the sum insured** [R15] [unverified]. **So the
-structure is close to compulsory for unmarried couples and close to pointless for married ones below
-the spousal allowance**, which is why a real German RLV book contains a large share of cross-owned
-policies [REG-R46]. **Every figure in that arithmetic is [unverified]** (gap 18); the structural
-conclusion does not depend on the numbers.
+conditions, both [unverified]: premiums paid **from the surviving partner's own funds, verifiably**,
+and the § 150 consent [R7]. On 300 000 € to a **spouse** the 500 000 € *Freibetrag* absorbs it and
+the tax is nil; to an **unmarried partner** the *Freibetrag* is 20 000 €, *Steuerklasse* III applies
+from 30 %, and the liability is on the order of **84 000 € — 28 % of the sum insured** [R15]
+[unverified]. **So it is close to compulsory for unmarried couples and close to pointless for married
+ones below the spousal allowance**, which is why a real German RLV book contains a large share of
+cross-owned policies [REG-R46]. **Every figure in that arithmetic is [unverified]** (gap 18); the
+structural conclusion does not depend on the numbers.
 
-**Two decrements only: death and lapse** — no disability acceleration, no surrender benefit, no
-paid-up state, no partial withdrawal, the simplest decrement structure of the ten delib products. A
-contract ends on death (benefit paid), on lapse or non-payment (nothing paid), or at the end of the
-*Versicherungsdauer* (nothing paid). **Anti-selective lapse is real and is not modelled**: healthy
-lives can re-underwrite into a cheaper contract and impaired lives cannot, so the lapsing population
-is healthier than the remaining one and a term book's mortality drifts up relative to a table
-calibrated on the whole cohort — one basis serves stayers and leavers, a known simplification carried
-as a switchable module that is off in the base run. And **the *Zahlbeitrag* is itself a lapse
-driver**: a cut in the *Beitragsverrechnung* raises the bill without any change the policyholder
-agreed to, and his remedy is to leave [R6]. **A model that raises the *Zahlbeitrag* toward the
-*Bruttobeitrag* in a stress and leaves the lapse assumption unchanged is understating the stress.**
+**Two decrements only: death and lapse** — the simplest decrement structure of the ten delib
+products. A contract ends on death (benefit paid), on lapse or non-payment (nothing paid), or at the
+end of the *Versicherungsdauer* (nothing paid). Two behavioural facts follow and neither is in the
+base run. **Anti-selective lapse is real and is not modelled**: healthy lives can re-underwrite into
+a cheaper contract and impaired lives cannot, so a term book's mortality drifts up relative to a
+table calibrated on the whole cohort. And **the *Zahlbeitrag* is itself a lapse driver**: a cut in
+the *Beitragsverrechnung* raises the bill without any change the policyholder agreed to, and his
+remedy is to leave [R6] — **so a model that raises the *Zahlbeitrag* toward the *Bruttobeitrag* in a
+stress and leaves the lapse assumption unchanged is understating the stress.**
 
 ---
 
@@ -610,25 +595,24 @@ agreed to, and his remedy is to leave [R6]. **A model that raises the *Zahlbeitr
 
 **Parameterized, and off in the base run.** ***Nachversicherungsgarantie*** is **the most important
 option on the product**: the policyholder may raise the *Versicherungssumme* **without a new
-*Gesundheitsprüfung*** on a named life event. The event families that recur across the German
-market, asserted from market knowledge and [unverified] in every particular (research gap 7):
-marriage or a *eingetragene Lebenspartnerschaft*; birth or adoption of a child; buying a property or
-drawing a loan secured on one; completing training or a degree and starting employment; a
-substantial rise in income; taking up self-employment; divorce or the ending of a partnership; and
-the loss or reduction of other death cover, including an employer-provided one. The standard
-restrictions, likewise [unverified]: an **exercise window** after the event; a **cap per event** and
-a **cumulative cap**; a **maximum age**; and an **exclusion where the *versicherte Person* is
-already unable to work or in treatment**. Some tariffs add an ***ereignisunabhängige
-Nachversicherung*** in the first years. **No event list, cap, window or age limit is asserted from
-any document.** Actuarially it matters because an increase without underwriting is an increase in
-expected claims the increment's tariff does not reflect, bounded only by the trigger and the caps;
-and it is the point at which the § 161 clock is understood to restart for the increment [R1]
-[unverified]. The implementation carries it as an **exercised-increase schedule** — a cumulative
-uplift on the sum insured by policy year, the increment repriced at the attained age with its own
-three-year § 161 window — and ships a `keine` schedule as the base. ***Dynamik***
-(*Beitragsdynamik* / *Summendynamik*) is **the same mechanic with a schedule instead of a trigger**,
-with a right of *Widerspruch* that typically lapses after a stated number of consecutive objections
-[unverified], so one model input serves both. ***Risikozuschlag*** is `rating_factor` (footnote 9).
+*Gesundheitsprüfung*** on a named life event. The event families that recur across the German market,
+asserted from market knowledge and [unverified] in every particular (research gap 7): marriage or a
+*eingetragene Lebenspartnerschaft*; birth or adoption of a child; buying a property or drawing a loan
+secured on one; completing training and starting employment; a substantial rise in income; taking up
+self-employment; divorce; and the loss or reduction of other death cover, including an
+employer-provided one. The standard restrictions, likewise [unverified]: an **exercise window**, a
+**cap per event** and a **cumulative cap**, a **maximum age**, and an **exclusion where the
+*versicherte Person* is already unable to work or in treatment**; some tariffs add an
+***ereignisunabhängige Nachversicherung*** in the first years. **No event list, cap, window or age
+limit is asserted from any document.** Actuarially it matters because an increase without
+underwriting is an increase in expected claims the increment's tariff does not reflect, bounded only
+by the trigger and the caps, and it is the point at which the § 161 clock is understood to restart
+for the increment [R1] [unverified]. The implementation carries it as an **exercised-increase
+schedule** — a cumulative uplift by policy year, the increment repriced at the attained age with its
+own three-year window — and ships a `keine` schedule as the base. ***Dynamik*** is **the same
+mechanic with a schedule instead of a trigger**, with a right of *Widerspruch* that typically lapses
+after a stated number of consecutive objections [unverified], so one input serves both.
+***Risikozuschlag*** is `rating_factor` (footnote 9).
 
 **Described, not modeled — and the omissions are deliberate.** ***Verlängerungsoption***, extension
 at expiry without renewed underwriting at the tariff then in force. ***Umtauschoption***, conversion

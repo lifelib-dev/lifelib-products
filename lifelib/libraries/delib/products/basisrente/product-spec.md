@@ -81,8 +81,7 @@ since 2015 to the maximum contribution to the *knappschaftliche Rentenversicheru
 earnings, and the fund is protected up to an age-graduated annual allowance subject to an **aggregate
 ceiling of 340 000 €** [R12] [REG-R40] [unverified]. And ***nachgelagerte Besteuerung*** on the way
 out [R4] [REG-R41]. **The protection is a by-product of the prohibitions, not an added feature** —
-there is nothing to attach because there is nothing to realise, and the clause that makes the
-contract illiquid for the owner makes it invisible to the owner's creditors.
+there is nothing to attach because there is nothing to realise.
 
 **Two buyer populations, and the model point table represents both.** The **self-employed person with
 no compulsory scheme** — the buyer the product was designed for: the entire *Höchstbetrag* is free,
@@ -130,10 +129,8 @@ mechanics by delib product 4.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Individual single-life deferred annuity, general account (*klassisch*), profit-participating, certified *Basisrentenvertrag* | [R1] [R9] [R15]; form choice **[std]** (1) |
-| Legal wrapper | Individual contract; the policyholder and the insured life are the **same person**, because the annuity must be on the taxpayer's own life | [R1] [REG-R39] |
-| Certification | *Zertifizierungsnummer* issued by the **Bundeszentralamt für Steuern** under § 5a AltZertG; required for contracts concluded from **1 January 2010** | [R9] [REG-R43]; date [unverified] |
-| What certification is not | A **formal conformity check**, expressly **not a quality mark**: it says nothing about charges, investment quality or the provider's strength | [R10] [REG-R43] |
+| Design type and wrapper | Individual single-life deferred annuity, general account (*klassisch*), profit-participating, certified *Basisrentenvertrag*; the policyholder and the insured life are the **same person**, because the annuity must be on the taxpayer's own life | [R1] [R9] [R15] [REG-R39]; form choice **[std]** (1) |
+| Certification | *Zertifizierungsnummer* issued by the **Bundeszentralamt für Steuern** under § 5a AltZertG, required for contracts concluded from **1 January 2010**. A **formal conformity check**, expressly **not a quality mark**: it says nothing about charges, investment quality or the provider's strength | [R9] [R10] [REG-R43]; date [unverified] |
 | Asset form | (i) `klassisch` — general account, modelled; (ii) `fondsgebunden ohne Garantie`; (iii) `fondsgebunden mit Beitragsgarantie` (hybrid) | (i) **[std]** (1); (ii) [S7] [unverified]; (iii) [S2] [S8] |
 | Lives basis | Single life. A second life may enter only through the permitted *Hinterbliebenenabsicherung* | [R1] |
 | Entry ages | 18 to the low sixties; no statutory floor or ceiling on entry, only on *Rentenbeginn* | **[std]** (2) |
@@ -171,15 +168,13 @@ Footnotes to **[std]** rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium forms | (i) ***laufender Beitrag*** — a level recurring premium; (ii) ***Zuzahlung*** — a one-off top-up into an existing contract; (iii) ***Einmalbeitrag*** — a single-premium contract. All three are common and all three are modelled | [S1] [R2]; offering [unverified] (6) |
-| Representative form | A **level base *Beitrag* plus an annual *Zuzahlung***, split 60 / 40 at the anchor | **[std]** (7) |
+| Representative form | A **level base *Beitrag* plus an annual *Zuzahlung***, split 60 / 40 at the anchor; the market minimum recurring premium is of the order of **25 € per month** [unverified] | **[std]** (7) (9) |
 | Payment frequency | Annual, half-yearly, quarterly or monthly; annual in advance is the base case | **[std]** (8) |
 | *Ratenzahlungszuschlag* | Annual 0 %; half-yearly **2 %**; quarterly **3 %**; monthly **5 %**, as a multiplier on the *laufender Beitrag* only | **[std]** (8) |
-| Minimum recurring premium | Of the order of **25 € per month** | [unverified]; level **[std]** (9) |
-| Maximum contribution | Not a contractual limit but a tax one: the **shared annual *Höchstbetrag*** of § 10 Abs. 3 EStG, `BBG_knappschaftlich × Beitragssatz_knappschaftlich`, doubled on joint assessment | [R2] [R20] [REG-R39] |
+| Maximum contribution and maximum *Zuzahlung* | Not a contractual limit but a tax one: the **shared annual *Höchstbetrag*** of § 10 Abs. 3 EStG, `BBG_knappschaftlich × Beitragssatz_knappschaftlich`, doubled on joint assessment. No carrier's *Zuzahlung* ceiling was established (gap 8) | [R2] [R20] [REG-R39]; **[std]** |
 | *Höchstbetrag*, single / joint | 2023 **26 528 / 53 056 €**; 2024 **27 566 / 55 132 €**; 2025 **29 344 / 58 688 €**; 2026 **30 826 / 61 652 €** | [R2] [R20]; every figure [unverified] (10) |
 | Deductible share of the capped contribution | **100 %** from the assessment period **2023**, brought forward from 2025; 94 % in 2021 and 96 % in 2022 | [R7]; [unverified] |
-| ***Beitragsdynamik*** | Contractual annual escalation with a right to decline individual increases; representative **2 % p.a.** | mechanics [R2] [R20]; rate **[std]** (11) |
-| Maximum *Zuzahlung* | Not established for any carrier; in practice bounded by the year's remaining *Höchstbetrag* headroom | gap 8; **[std]** |
+| ***Beitragsdynamik*** | Contractual annual escalation with a right to decline individual increases; representative **2 % p.a.**, sized to the drift of the ceiling series rather than to any carrier's offering, because the *Höchstbetrag* rises annually with the *knappschaftliche* BBG so a static premium loses relief capacity each year | mechanics [R2] [R20]; rate **[std]** |
 | Suspension, resumption, cessation | Suspension is a *Beitragsfreistellung*; resumption is a *Wiederinkraftsetzung* within a stated window (**not established**, gap 8). Premiums cease at *Rentenbeginn*, at death and on *Beitragsfreistellung* | [R1] [R14]; gap 8 |
 | Misstatement and payment default | §§ 19, 37, 38, 157 and 158 VVG apply as to any German life contract | [REG-R30] |
 
@@ -193,36 +188,30 @@ Footnotes to **[std]** rows:
    sibling delib corpus as a German market convention and is **[std]** throughout the library. It
    loads the *laufender Beitrag*; a *Zuzahlung* is a single payment and carries none.
 9. Minimum premiums exist partly to stop a contract reaching *Rentenbeginn* with a trivial capital,
-   because **there is no *Kleinbetragsrenten-Abfindung* in Schicht 1**. No threshold was established.
+   because **there is no *Kleinbetragsrenten-Abfindung* in Schicht 1**. No level was established.
 10. **The series is arithmetic, not evidence.** Each line reproduces itself from its own inputs —
     107 400 × 24,7 % = 26 527,80 → 26 528; 111 600 × 24,7 % = 27 565,20 → 27 566; 118 800 × 24,7 % =
     29 343,60 → 29 344; 124 800 × 24,7 % = 30 825,60 → 30 826 — and the rounding convention is
     inferred from that arithmetic and is itself [unverified]. **The 2026 line is the least secure**
     (gap 11). From 2025 the ceilings are uniform across the former East and West [R20] [unverified].
-11. The *Beitragsdynamik* appears as on every German life contract but with **a rationale it lacks
-    elsewhere**: the *Höchstbetrag* rises every year with the *knappschaftliche* BBG [R2] [R20], so a
-    static premium loses relief capacity annually. 2 % p.a. is **[std]**, sized to the drift of the
-    ceiling series rather than to any carrier's offering.
 
 ### Benefit provisions
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Old-age benefit | A **monthly lifelong annuity** on the taxpayer's own life, from *Rentenbeginn* until death | [R1] [REG-R39] |
-| Payment timing | Monthly **in advance**; no German market convention on *vorschüssig* against *nachschüssig* was established | gap 21; **[std]** |
-| Conversion rule | `monthly_annuity = Kapital(Rentenbeginn) / 10 000 × Rentenfaktor`, with `Rentenfaktor_applied = max(garantierter, aktueller)` | [R17] [S1] |
-| ***Garantierter Rentenfaktor*** | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a deliberate prudential margin — one carrier's Schicht-3 sibling wording computes it on **DAV 2004 R at an interest basis of 0 % p.a.**, [unverified] as a Basisrente fact (gap 4). Representative **28,00 €** per month per 10 000 € at age 67 | mechanics [R17] [S1]; level **[std]** (12) |
-| ***Aktueller Rentenfaktor*** | The carrier's then-current immediate-annuity tariff at *Rentenbeginn*; the **higher of the two applies** — a guarantee with upside | [R17]; level **[std]** (12) |
+| Old-age benefit | A **monthly lifelong annuity** on the taxpayer's own life, from *Rentenbeginn* until death, paid **in advance** — no German market convention on *vorschüssig* against *nachschüssig* was established (gap 21). Conversion rule: `monthly_annuity = Kapital(Rentenbeginn) / 10 000 × Rentenfaktor`, `Rentenfaktor_applied = max(garantierter, aktueller)` | [R1] [R17] [S1] [REG-R39]; timing **[std]** |
+| ***Garantierter Rentenfaktor*** | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a deliberate prudential margin — one carrier's Schicht-3 sibling wording computes it on **DAV 2004 R at an interest basis of 0 % p.a.**, [unverified] as a Basisrente fact (gap 4). Representative **28,00 €** per month per 10 000 € at age 67 | mechanics [R17] [S1]; level **[std]** (11) |
+| ***Aktueller Rentenfaktor*** | The carrier's then-current immediate-annuity tariff at *Rentenbeginn*; the **higher of the two applies** — a guarantee with upside | [R17]; level **[std]** (11) |
 | ***Schlussüberschussanteil*** | Allocated **only at *Rentenbeginn***, because the contract has no surrender and therefore no early-exit trigger — a cleaner single-date cash flow than anywhere else in delib | [R15] [REG-R24]; level **[std]** |
 | Death benefit, *Aufschubphase*, base design | **Nothing.** The reserve is released as a mortality profit | [R1] [REG-R39] |
 | Death benefit, *Aufschubphase*, with the rider | The *Deckungskapital* must **buy a survivor's annuity** for an eligible survivor; with no eligible survivor, **nothing is paid** | [R1] |
 | Death benefit, *Rentenphase* | The annuity ends. With a *Rentengarantiezeit*, remaining instalments continue **only to an eligible survivor** and are **not commutable** | [R1] |
-| Permitted survivors | The **spouse or registered partner**, and **children while the taxpayer is entitled to *Kindergeld* or the *Kinderfreibetrag***. Nobody else — not a cohabiting partner, not a parent, not a sibling, not the estate | [R1] [REG-R39] |
+| Permitted survivors | The **spouse or registered partner**, and **children while *Kindergeld* or the *Kinderfreibetrag* runs**. Nobody else — not a cohabiting partner, not a parent, not a sibling, not the estate | [R1] [REG-R39] |
 | Lump sums | **None, to anyone, at any time.** No *Kapitalwahlrecht*, no *Teilkapitalauszahlung*, no death lump sum, no commutation | [R1] [R23] [REG-R39] |
 | Disability benefit | Only through a BUZ written inside the same contract, subject to the 50 % rule. **Its cash flows belong to delib product 9** | [R1] [REG-R29] |
-| Surplus in payment | The declared *Überschussrente*, in one of *konstante*, *teildynamische* or *volldynamische Rente*. Representative: **teildynamisch**, a compounding annual uplift | [R15] [REG-R18]; system and level **[std]** (13) |
+| Surplus in payment | The declared *Überschussrente*, in one of *konstante*, *teildynamische* or *volldynamische Rente*. Representative: **teildynamisch**, a compounding annual uplift | [R15] [REG-R18]; system and level **[std]** (12) |
 
-12. **No *Rentenfaktor* level, range or time series was established anywhere in the delib corpus**
+11. **No *Rentenfaktor* level, range or time series was established anywhere in the delib corpus**
     (gap 4). The argued plausible band for a *klassisch* tariff converting at 67 is **24 € to 34 €**
     per month per 10 000 €, guaranteed factor at the bottom and current factor above it. **The
     guaranteed factor is worth materially more here than on the Schicht-3 sibling**: there a
@@ -230,7 +219,7 @@ Footnotes to **[std]** rows:
     alternative, so it is the **only** protection against a bad conversion. The § 163 VVG channel
     [REG-R27] and the historic *Treuhänderklausel*, both narrowed by the courts [REG-R36], apply as in
     Schicht 3; delib treats the guaranteed factor as fixed and records the channel as a model risk.
-13. **No carrier's *Überschussverwendung* option list was established** (gap 17); that *verzinsliche
+12. **No carrier's *Überschussverwendung* option list was established** (gap 17); that *verzinsliche
     Ansammlung* and *Bonusrente* are the natural *Aufschubphase* forms — cash-paying systems sitting
     awkwardly with *nicht kapitalisierbar* — is the research file's own inference. The payout-phase
     choice has a **tax dimension it lacks in Schicht 3**: the *Rentenfreibetrag* is frozen in euro, so
@@ -243,9 +232,8 @@ Footnotes to **[std]** rows:
 | Underwriting of the main contract | **None in substance.** A deferred annuity with no death benefit carries no anti-selection the insurer needs to underwrite; the annuity risk runs the other way | [R17]; **[std]** |
 | Underwriting of the riders | A *Hinterbliebenenabsicherung* and, decisively, a **BUZ** are fully underwritten, under the §§ 19 ff. VVG *Anzeigepflicht* regime | [R1] [REG-R29] [REG-R30] |
 | Rating factors, main contract | Entry age, deferment term, premium form and frequency, chosen *Rentenbeginn*, option set. **Sex may not be a rating factor** for contracts concluded from 21 December 2012 and is carried for reporting only | [R1]; unisex [REG-R34] |
-| Mortality basis | **DAV 2004 R**, a ***Generationentafel*** — mortality by birth cohort, with the improvement trend inside the table rather than applied on top of it. First-order probabilities carry prudential margins and price the contract and the guaranteed *Rentenfaktor*; second order is the best estimate | [R17] [REG-R47] [REG-R49] |
+| Mortality basis | **DAV 2004 R**, a ***Generationentafel*** — mortality by birth cohort, with the improvement trend inside the table rather than applied on top. First-order probabilities carry prudential margins and price the contract and the guaranteed *Rentenfaktor*; second order is the best estimate. The DAV tables are the association's property, **not public and not redistributed by delib** | [R17] [REG-R47] [REG-R49] |
 | Selection | **Lighter than a comparable Schicht-3 portfolio**, because the contract cannot be surrendered or commuted, so a policyholder in poor health has no exit and nobody leaves the annuitant pool. **No evidence for this was found**; the direction is arguable from the product's own structure, but no German experience study was reached, so it is a stated model risk rather than a parameter this document asserts | [R17]; **[std]** view |
-| Table availability | The DAV tables are the property of the **Deutsche Aktuarvereinigung**, are **not public and are not redistributed by delib** | [R17] [REG-R47] [REG-R49] |
 | Interest basis | The ***Höchstrechnungszins***: **1,00 %** for new business from 1 January 2025, the first increase in about thirty years, recommended at 1,00 % for 2026 | [R16] [REG-R14] [REG-R15] [REG-R56] |
 | Guarantee vintages in force | 2,75 % (2004–2006), 2,25 % (2007–2011), 1,75 % (2012–2014), 1,25 % (2015–2016), 0,90 % (2017–2021), 0,25 % (2022–2024), 1,00 % (from 2025). **The rate applies at conclusion and stays with the contract for its whole term** | [REG-R14] [REG-R15] |
 
@@ -256,31 +244,29 @@ two Basisrente-specific points on top of it.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| *Abschluss- und Vertriebskosten* | Financed by ***Zillmerung***, capped at **25 ‰ (2,5 %) of the *Beitragssumme*** by § 4 DeckRV, reduced from 40 ‰ with effect from 1 January 2015 by the LVRG. The rate used at conclusion applies for the whole term | [R16] [REG-R16] [REG-R20]; level **[std]** (15) |
-| Acquisition-cost amortisation | Charged to the *Deckungskapital* in **five equal annual instalments** over the first five premium-paying years | **[std]** (16) |
-| Acquisition charge on a *Zuzahlung* | A percentage of each *Zuzahlung*, charged in the year it is paid | **[std]** (15); gap 8 |
-| *Verwaltungskosten*, % of premium (β) | Representative **7,5 %**; argued band 5 % – 10 % | **[std]** (15) |
-| *Verwaltungskosten*, % of the *Deckungskapital* (γ) | Representative **0,35 % p.a.**; argued band 0,2 % – 0,6 % | **[std]** (15) |
-| *Stückkosten* | A fixed euro amount per policy per year, inflating | **[std]** (15) |
-| Annuity administration | A per-annuitant amount in the *Rentenphase* | **[std]** (15) |
-| ***Effektivkosten***, *klassisch* | Argued band **0,6 % – 1,2 % p.a.** | **[std]** (15) (17) |
-| *Effektivkosten*, *fondsgebunden* with commission | Argued band **1,0 % – 1,8 % p.a.** | **[std]** (15) |
-| *Effektivkosten*, *Nettotarif* (fee-based) | Argued band **0,3 % – 0,8 % p.a.**; a real and growing segment on this product | **[std]** (15) |
+| *Abschluss- und Vertriebskosten* | Financed by ***Zillmerung***, capped at **25 ‰ (2,5 %) of the *Beitragssumme*** by § 4 DeckRV, reduced from 40 ‰ with effect from 1 January 2015 by the LVRG. The rate used at conclusion applies for the whole term | [R16] [REG-R16] [REG-R20]; level **[std]** (13) |
+| Acquisition-cost amortisation | Charged to the *Deckungskapital* in **five equal annual instalments** over the first five premium-paying years; a *Zuzahlung* carries its own percentage charge in the year it is paid | **[std]** (14); gap 8 |
+| *Verwaltungskosten*, % of premium (β) | Representative **7,5 %**; argued band 5 % – 10 % | **[std]** (13) |
+| *Verwaltungskosten*, % of the *Deckungskapital* (γ) | Representative **0,35 % p.a.**; argued band 0,2 % – 0,6 % | **[std]** (13) |
+| *Stückkosten* | A fixed euro amount per policy per year, inflating | **[std]** (13) |
+| Annuity administration | A per-annuitant amount in the *Rentenphase* | **[std]** (13) |
+| ***Effektivkosten***, *klassisch* | Argued band **0,6 % – 1,2 % p.a.** | **[std]** (13) (15) |
+| *Effektivkosten*, other forms | *fondsgebunden* with commission **1,0 % – 1,8 % p.a.**; *Nettotarif* (fee-based) **0,3 % – 0,8 % p.a.**, a real and growing segment on this product | **[std]** (13) |
 | The one charge datum in the corpus | Total costs relative to the capital formed of **at most 0,95 € per 100 €** in one carrier's BasisRente and RiesterRente variants, and an ***Abschlussprovision* of 1 575 €** on a specimen quotation | [S2]; both [unverified], both from third-party commentary rather than a tariff sheet |
 
-15. **Every charge level in this document is [std].** No *Effektivkosten* figure and no charge
+13. **Every charge level in this document is [std].** No *Effektivkosten* figure and no charge
     schedule was obtained for any carrier (gap 2), the most consequential gap in the corpus: the
     § 7 AltZertG *Produktinformationsblatt* exists **precisely** to publish a comparable total-charge
     number for this product, per quotation, and not one was reached. The bands are the reference
     implementation's parameter set with its reasoning attached, **not a market survey**.
-16. **Whether the AltZertG's five-year spreading of acquisition costs reaches *Basisrentenverträge*
+14. **Whether the AltZertG's five-year spreading of acquisition costs reaches *Basisrentenverträge*
     was not established** (gap 8) — § 1 imposes it on Riester contracts and what § 5a picks up is
     unresolved [R10] [REG-R43]. The spread is adopted as **[std]** because it is the LVRG-era German
     market shape and because § 169 VVG's independent five-year floor [REG-R28] produces the same
     profile on every other German regular-premium contract. Note that § 169 VVG is itself
     **inoperative here** — it governs what must be *paid* on surrender — so the spread is adopted for
     its effect on the *Deckungskapital*, not because a surrender-value floor requires it.
-17. **The *Beitragssumme* is large on this product**, so a 25 ‰ cap permits a large **euro** amount of
+15. **The *Beitragssumme* is large on this product**, so a 25 ‰ cap permits a large **euro** amount of
     acquisition cost, far above what the same percentage allows on a short contract. **How
     *Zuzahlungen* enter the *Beitragssumme* for the cap was not established** (gap 8); the composite
     excludes them and charges them a separate percentage, the conservative reading and **[std]**.
@@ -298,8 +284,7 @@ this section for a reason.
 | ***Beitragsfreistellung*** | Exercisable **at any time**, effective at the end of the current premium period; converts to a **premium-free entitlement to a reduced annuity** computed from the *Deckungskapital* reached | [R14] [REG-R28] |
 | *Mindestversicherungsleistung* | The reduced benefit must reach a threshold agreed in the contract. **No carrier's threshold was established** | [R14]; gap 8; **[std]** |
 | Status of a paid-up contract | **Still a Basisrente**: still certified, still protected, still taxed on the *Besteuerungsanteil*, still payable only as an annuity from the statutory floor age | [R1] [R9] [R14] |
-| Policy loan | **Prohibited** — *nicht beleihbar* | [R1] [REG-R39] |
-| Assignment, sale, secondary market | **Prohibited** — *nicht übertragbar*, *nicht veräußerbar*. The German life secondary market, which exists for Schicht-3 endowments, cannot touch this product | [R1] [REG-R39] |
+| Policy loan, assignment, sale | **Prohibited** — *nicht beleihbar*, *nicht übertragbar*, *nicht veräußerbar*. The German life secondary market, which exists for Schicht-3 endowments, cannot touch this product | [R1] [REG-R39] |
 | Transfer to another provider | **Unresolved.** The market understanding is that a transfer to another *Basisrentenvertrag of the same person* is tax-neutral, but the conditions live in the BMF guidance and could not be established | [R18]; gap 13; **must not be asserted** |
 | *Versorgungsausgleich* | The **one permitted transfer**: on divorce, pension-sharing law splits entitlements acquired during the marriage, and the receiving spouse's entitlement remains subject to the same prohibitions. The mechanism was not established and delib does not model it | [R1]; gap 14 |
 | *Widerruf* and expiry | The 30-day life-assurance withdrawal right applies as to any German life contract [REG-R23]. **There is no expiry**: the contract runs from conclusion to the death of the annuitant, with no maturity date and no maturity value | [REG-R23]; [R1] |
@@ -352,9 +337,9 @@ The regime also carries the § 7 AltZertG pre-sale obligations [R11] [REG-R43]: 
 **quotation-specific** *Produktinformationsblatt* carrying the ***Effektivkosten*** and a
 ***Chancen-Risiko-Klasse*** from **CRK 1 to CRK 5**, computed by the *Produktinformationsstelle
 Altersvorsorge* on a common capital-market model the insurer does not control. **delib does not
-implement the PIA simulation.** The document's current field list and scenario set were not
-established (gap 7), and how the PIB interacts with the PRIIPs *Basisinformationsblatt* on a
-unit-linked Basisrente is unresolved (gap 6) and must not be asserted [S13] [S14] [REG-R32].
+implement the PIA simulation.** That document's field list was not established (gap 7), and how it
+interacts with the PRIIPs *Basisinformationsblatt* is unresolved (gap 6) and must not be asserted
+[S13] [S14] [REG-R32].
 
 ### The Höchstbetrag, the knappschaftliche peg, and the employee reductions
 
@@ -374,9 +359,8 @@ And **the ceiling moves every year, so the premium should too** — which is why
 year-end *Zuzahlungen* are far more prominent here than on a Schicht-3 annuity.
 
 **Two further mechanisms operate on an employee and are routinely conflated** [R2] [REG-R39]. **The
-GRV contributions consume the ceiling**: employee **and** employer contributions both count toward
-the same *Höchstbetrag*. **The tax-free employer share is then subtracted from the deductible
-amount**, because it was never taxed in the employee's hands and may not be relieved twice:
+GRV contributions consume the ceiling**, employee and employer alike; **the tax-free employer share is
+then subtracted from the deductible amount**, never having been taxed in the employee's hands:
 
     base       = min( GRV_employee + GRV_employer + Basisrente_contribution , Hoechstbetrag )
     deductible = base x 1.00                      # 100 % from 2023  [R7]
@@ -384,11 +368,10 @@ amount**, because it was never taxed in the employee's hands and may not be reli
 
 **A third reduction applies to taxpayers with a non-contributory entitlement** — *Beamte*, judges,
 soldiers, controlling shareholder-directors with a *Pensionszusage* — whose ceiling is reduced by a
-**notional** contribution computed on their remuneration, leaving very little headroom [R2]
-[unverified], which is why the product is effectively closed to *Beamte*. **None of this is a
-liability cash flow**: the relief accrues to the policyholder through the tax system, never through
-the insurer, and its place in a delib model is **upstream of the model point** — it determines how
-large the premium is and why it is shaped the way it is.
+**notional** contribution computed on their remuneration [R2] [unverified], which is why the product
+is effectively closed to *Beamte*. **None of this is a liability cash flow**: the relief accrues
+through the tax system, never through the insurer, and its place in a delib model is **upstream of the
+model point** — it determines how large the premium is and why it is shaped the way it is.
 
 ### Premium flexibility — the operative shape of the contribution stream
 
@@ -425,14 +408,13 @@ and 50 % of the cost result** [REG-R18], the RfBV [REG-R19] and the annual decla
 date all apply unchanged.
 
 **Two things are different, and both follow from the prohibitions.** First, **the
-*Überschussverwendung* options are narrower in the *Aufschubphase***: systems that pay surplus out in
-cash sit awkwardly with *nicht kapitalisierbar*, so *verzinsliche Ansammlung* and *Bonusrente* are the
-natural forms — the research file's own inference, not a sourced fact (gap 17). Second, **the
-*Schlussüberschussanteil* has no early-exit trigger**: on an endowment a terminal bonus is allocated
-at maturity and, partly, on surrender; a Basisrente has no surrender, so it is allocated **only at
-*Rentenbeginn***, a cleaner single-date cash flow than anywhere else in delib. **No declared rate
-specific to a Basisrente was established**, and the market-average rates in sibling delib files are
-Schicht-3 and endowment figures that **must not be relabelled**.
+*Überschussverwendung* options are narrower in the *Aufschubphase***: cash-paying systems sit
+awkwardly with *nicht kapitalisierbar*, so *verzinsliche Ansammlung* and *Bonusrente* are the natural
+forms — the research file's own inference, not a sourced fact (gap 17). Second, **the
+*Schlussüberschussanteil* has no early-exit trigger**: a Basisrente has no surrender, so it is
+allocated **only at *Rentenbeginn***, a cleaner single-date cash flow than anywhere else in delib.
+**No declared rate specific to a Basisrente was established**, and the market-average rates in sibling
+delib files are Schicht-3 and endowment figures that **must not be relabelled**.
 
 ### The conversion at Rentenbeginn
 
@@ -442,16 +424,15 @@ The rule [R17] [S1]:
     Rentenfaktor_applied = max( Rentenfaktor_garantiert , Rentenfaktor_aktuell(Rentenbeginn) )
 
 Three things happen at *Rentenbeginn* on a German deferred annuity and **only two survive into
-Schicht 1**: the capital is converted at a *Rentenfaktor* — survives; the *Überschussverwendung*
-system for the payout phase is fixed — survives; the *Kapitalwahlrecht* is exercised or allowed to
-lapse — **does not exist here** [R1]. That third absence is what makes the guaranteed factor
-load-bearing: **the policyholder bears conversion risk with no way out**, so the guaranteed
-*Rentenfaktor* is this product's most valuable guarantee, and a specification that treats the
-conversion as the Schicht-3 one has missed the product. For the model the conversion is a
-**single-date event**: the whole fund, including the terminal bonus, leaves the *Deckungskapital* and
-becomes an annuity obligation, with no election switch, no take-up assumption and no notice-period
-parameter — three simplifications relative to the Schicht-3 chassis, all three consequences of the
-ban rather than modelling choices.
+Schicht 1**: the capital is converted at a *Rentenfaktor*; the *Überschussverwendung* system for the
+payout phase is fixed; and the *Kapitalwahlrecht* is exercised or allowed to lapse — which **does not
+exist here** [R1]. That third absence is what makes the guaranteed factor load-bearing: **the
+policyholder bears conversion risk with no way out**, so it is this product's most valuable guarantee,
+and a specification that treats the conversion as the Schicht-3 one has missed the product. For the
+model the conversion is a **single-date event**: the whole fund, including the terminal bonus, leaves
+the *Deckungskapital* and becomes an annuity obligation, with no election switch, no take-up
+assumption and no notice-period parameter — three simplifications that are consequences of the ban
+rather than modelling choices.
 
 ### The annuity in payment, and the Besteuerungsanteil
 
@@ -484,12 +465,12 @@ not be capitalised [R1], termination cannot produce a *Rückkaufswert*, and a pu
 operates as a *Beitragsfreistellung*. The AVB wording is [unverified]; the outcome is settled.
 
 **Why this matters more here than anywhere else in delib.** Elsewhere *Kündigung* and
-*Beitragsfreistellung* are two exits competing for the same policyholder and a model must not merge
-them; here **there is only one**. Two consequences: the *Beitragsfreistellung* rate should sit
-**above** a Schicht-3 lapse rate at short durations — the buyer's income is volatile by construction
-and going premium-free is free of penalty and reversible — and **below** it at long durations, because
-there is no realisable value to tempt anyone out. That shape is **[std]**; **no *Beitragsfreistellung*
-rate or market *Stornoquote* specific to the Basisrente was established** (gap 3).
+*Beitragsfreistellung* are two exits competing for the same policyholder; here **there is only one**.
+The *Beitragsfreistellung* rate should therefore sit **above** a Schicht-3 lapse rate at short
+durations — the buyer's income is volatile by construction and going premium-free is free of penalty
+and reversible — and **below** it at long durations, because there is no realisable value to tempt
+anyone out. That shape is **[std]**; **no *Beitragsfreistellung* rate or market *Stornoquote* specific
+to the Basisrente was established** (gap 3).
 
 ### The ban on capitalisation — Kapitalwahl, Teilkapital and the Kleinbetragsrente
 
@@ -541,13 +522,12 @@ in doubt.
 
 ## Riders and options
 
-**In scope and parameterized in the model, off in the base run:**
-
-***Hinterbliebenenabsicherung* (survivor's annuity).** The permitted beneficiaries are closed to the
+**In scope and parameterized in the model, off in the base run.**
+***Hinterbliebenenabsicherung* (survivor's annuity)**: the permitted beneficiaries are closed to the
 **spouse or registered partner** and to **children while *Kindergeld* or the *Kinderfreibetrag* runs**
-— in practice to the completion of the 18th year, or the 25th while in education [R1] [unverified] on
-the ages. **Everything paid to a survivor must be paid as an annuity** [R1], which converts the two
-familiar German death-benefit designs into something different:
+— in practice to the 18th year, or the 25th while in education [R1] [unverified] on the ages. And
+**everything paid to a survivor must be paid as an annuity** [R1], which converts the two familiar
+German death-benefit designs into something different:
 
 | Design | In Schicht 3 | In Schicht 1 |
 |---|---|---|
@@ -566,7 +546,7 @@ years at **2,6 %** and 30 years at **8,0 %** — [unverified], **Schicht-3 figur
 and **no Basisrente-specific cost was established**. The composite carries the *Rentenfaktor*
 reduction as a **[std]** table keyed by the option, anchored on those figures.
 
-***Rentengarantiezeit*.** A guaranteed payment period measured from *Rentenbeginn*, representative
+***Rentengarantiezeit*** is a guaranteed payment period measured from *Rentenbeginn*, representative
 values 0, 10 or 20 years, payable only to an eligible survivor and never commutable [R1].
 
 ***Berufsunfähigkeits-Zusatzversicherung* (BUZ), and the 50 % rule.** § 10 Abs. 1 Nr. 2 Buchst. b
@@ -607,7 +587,7 @@ they are **structural absences**, and the model carries no cells for them.
 ## Variations across insurers
 
 **An honest variations table for this product is almost entirely a record of what could not be
-compared.** Two carriers produced any artefact at all and neither produced a term. Presenting a rich
+compared.** Two carriers produced any artefact at all and neither produced a term; presenting a rich
 table here would be a fabrication, so what follows is the real state of the evidence.
 
 | Feature | CosmosDirekt [S1] | Allianz [S2] [S3] | The other nineteen carriers [S4]–[S11] |
@@ -703,15 +683,15 @@ projection model must carry — contributions paid in the year, accumulated valu
 and projected annuity. **The field list was not established.**
 
 **Prudential.** The insurer is a Solvency II undertaking supervised under the VAG [REG-R5] [REG-R6],
-writing this contract in the *Lebensversicherung* Sparte, with the *Sicherungsvermögen* and the
-prudent-person principle of § 124 VAG governing the assets [REG-R7]. Premium calculation and equal
-treatment run under § 138 VAG [REG-R8]; the *Überschussbeteiligung* and the *Sicherungsbedarf* test
-under § 139 VAG [REG-R9]; the *RfB* under §§ 140 and 145 VAG with the MindZV and the RfBV beneath
-[REG-R10] [REG-R18] [REG-R19]. The statutory *Deckungsrückstellung* runs on the DeckRV [REG-R14]
-[REG-R16] [REG-R17] and the HGB accounts on §§ 341–341o HGB and the RechVersV [REG-R54]; the
-*Zinszusatzreserve* exists in no other jurisdiction in this repository and is an **HGB** reserve.
-**AnlV investment quotas do not bind this insurer** — since 1 January 2016 they reach only small
-undertakings under §§ 212–217 VAG and domestic Pensionskassen and Pensionsfonds [REG-R7].
+writing in the *Lebensversicherung* Sparte, with the *Sicherungsvermögen* and the prudent-person
+principle of § 124 VAG governing the assets [REG-R7]. Premium calculation runs under § 138 VAG
+[REG-R8]; the *Überschussbeteiligung* and the *Sicherungsbedarf* test under § 139 VAG [REG-R9]; the
+*RfB* under §§ 140 and 145 VAG with the MindZV and the RfBV beneath [REG-R10] [REG-R18] [REG-R19].
+The statutory *Deckungsrückstellung* runs on the DeckRV [REG-R14] [REG-R16] [REG-R17] and the HGB
+accounts on §§ 341–341o HGB and the RechVersV [REG-R54]; the *Zinszusatzreserve* exists in no other
+jurisdiction in this repository and is an **HGB** reserve. **AnlV investment quotas do not bind this
+insurer** — since 1 January 2016 they reach only small undertakings and domestic Pensionskassen and
+Pensionsfonds [REG-R7].
 
 **Conduct and disclosure.** The § 7 AltZertG *Produktinformationsblatt* with its individually computed
 *Effektivkosten* [R11] [REG-R43] sits on top of the VVG-InfoV product-level regime [REG-R31]; PRIIPs
@@ -735,7 +715,6 @@ no downstream document may invent one.
 **Living texts.** The *Höchstrechnungszins* is 1,00 % for 2025 and recommended at 1,00 % for 2026
 [R16]; the *Besteuerungsanteil* for a 2026 cohort is 84,0 % [unverified]; the *Höchstbetrag* for 2026
 is 30 826 € [unverified]; the deductible share has been 100 % since 2023; the full-taxation year is
-2058. **Every one of those moves**, the *Höchstbetrag* annually with the
-*Sozialversicherungsrechengrößen-Verordnung* [R20] and the *Besteuerungsanteil* annually by
-construction. Check both, and every paragraph number in this document, before relying on anything
-here.
+2058. **Every one of those moves** — the *Höchstbetrag* annually with the
+*Sozialversicherungsrechengrößen-Verordnung* [R20], the *Besteuerungsanteil* annually by construction.
+Check both, and every paragraph number in this document, before relying on anything here.
