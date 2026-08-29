@@ -18,16 +18,15 @@ it implements is specified in [`product-spec.md`](product-spec.md).
 > *Höchstrechnungszins* of **1,00 %** and the *Höchstzillmersatz* of **25 ‰ of the
 > *Beitragssumme*** bound the tariff [R10] [REG-R14] [REG-R16].
 >
-> **No level is sourced at all.** Direct HTTP egress was blocked in the build environment
-> and the session's `WebSearch` budget was exhausted **before** this product was
-> researched, so not one *Bruttobeitrag*, *Zahlbeitrag*, spread ratio, smoker ratio,
-> charge, commission scale or lapse rate was established for any German carrier
-> [S3]–[S13] [S14] [S16] [R17] [R18]. Every price, charge, margin and behavioural level in
-> this model is therefore **[std]** with a stated rationale, and the DAV tables — **DAV
-> 2008 T**, with its *NR* and *R* variants — are the property of the Deutsche
-> Aktuarvereinigung, are cited by name and are **never shipped** [R12] [REG-R48]. Replace
-> the decrement and charge tables with company data, and the composite's parameters with a
-> real tariff's, before drawing any conclusion from the output.
+> **No level is sourced at all.** Direct HTTP egress was blocked and the session's
+> `WebSearch` budget was exhausted **before** this product was researched, so not one
+> *Bruttobeitrag*, *Zahlbeitrag*, spread ratio, smoker ratio, charge, commission scale or
+> lapse rate was established for any German carrier [S3]–[S13] [S14] [S16] [R17] [R18].
+> Every price, charge, margin and behavioural level here is therefore **[std]** with a
+> stated rationale, and the DAV tables — **DAV 2008 T**, with its *NR* and *R* variants —
+> are the property of the Deutsche Aktuarvereinigung, are cited by name and are **never
+> shipped** [R12] [REG-R48]. Replace the decrement and charge tables with company data
+> before drawing any conclusion from the output.
 
 ## Run it
 
@@ -56,17 +55,15 @@ the mortality table, **what it is not** and what a replacement must preserve.
 
 ## The customer is not billed the premium the contract guarantees
 
-This is the German delta, and it is visible in the frame rather than buried in a
-parameter. A German *Risikolebensversicherung* carries **two** premiums, and a model
-carrying one cannot represent it [R6].
-
-The ***Bruttobeitrag*** `G` is struck once, at issue, by first-order equivalence on tariff
-survivorship — mortality only, no lapse — so it is acyclic with respect to everything
-behavioural. It is what the contract guarantees: the maximum the policyholder can ever be
-required to pay, unchanged for the term [R6] [REG-R27]. The ***Zahlbeitrag*** then follows
-from the surplus mechanic rather than from an assumption — the tariff's own mortality
-margin has actuarial value `(m/(1+m))·A` at issue, and the declared
-*Beitragsverrechnungssatz* returns `surplus_share` of it over the paying term:
+This is the German delta, visible in the frame rather than buried in a parameter. A German
+*Risikolebensversicherung* carries **two** premiums, and a model carrying one cannot
+represent it [R6]. The ***Bruttobeitrag*** `G` is struck once, at issue, by first-order
+equivalence on tariff survivorship — mortality only, no lapse — so it is acyclic with
+respect to everything behavioural, and it is what the contract guarantees: the maximum the
+policyholder can ever be required to pay, unchanged for the term [R6] [REG-R27]. The
+***Zahlbeitrag*** then follows from the surplus mechanic rather than from an assumption —
+the tariff's own mortality margin has actuarial value `(m/(1+m))·A` at issue, and the
+declared *Beitragsverrechnungssatz* returns `surplus_share` of it over the paying term:
 
 ```
 G   = ( A + γ·Γ ) / ( (1 − β)·ä − z·k )
@@ -88,19 +85,17 @@ one inside `net_cf`) and `prem_rebate` between them.
 because in the real product it is an output of the surplus mechanic; it does not return
 the *Kostenüberschuss* alongside the *Risikoüberschuss*, because the MindZV's *übriges
 Ergebnis* limb carries a different minimum share and no basis for splitting a German term
-tariff's expense result was established [R9] — the cost result therefore emerges in
-`net_cf` and stays there; and it does not implement § 163 VVG's *Treuhänder* adjustment of
-the *Bruttobeitrag*, which on this product is essentially never used [R6] [unverified].
-The lever that matters is `decl_scale`, and setting it to **0** raises `premiums` to
-`prem_gross` at every `t` — 21 303,65 € collected against 12 243,75 €, a **74,0 %**
-increase in the customer's bill with no change to any benefit, any decrement or any
-guaranteed term, and therefore with no § 163 procedure, no *Treuhänder* and no
-policyholder remedy. That is the product's single largest policyholder risk and it is a
-one-Reference change.
-
-`surplus_form = keine` is the § 153-excluded non-participating tariff [R5]: `v_d` is zero
-and the billed premium *is* the guaranteed one. That is model point 12, and it ships so
-that the zero branch is exercised rather than merely reachable.
+tariff's expense result was established [R9] — the cost result emerges in `net_cf` and
+stays there; and it does not implement § 163 VVG's *Treuhänder* adjustment of the
+*Bruttobeitrag*, which on this product is essentially never used [R6] [unverified]. The
+lever that matters is `decl_scale`: setting it to **0** raises `premiums` to `prem_gross`
+at every `t` — 21 303,65 € collected against 12 243,75 €, a **74,0 %** increase in the
+bill with no change to any benefit, decrement or guaranteed term, and therefore with no
+§ 163 procedure, no *Treuhänder* and no policyholder remedy. That is the product's largest
+policyholder risk and it is a one-Reference change. `surplus_form = keine` is the
+§ 153-excluded non-participating tariff [R5]: `v_d` is zero and the billed premium *is*
+the guaranteed one. That is model point 12, and it ships so the zero branch is exercised
+rather than merely reachable.
 
 ## The tariff is unisex and the projection is not
 
@@ -137,22 +132,21 @@ column of zeros states the product fact where a missing column would hide it.
 `check_no_cash_value()` asserts it on every model point.
 
 What is **not** true is that nothing accumulates, and this is the modelling error the
-product invites. A level premium charged against a rising death rate necessarily
-overcharges early and undercharges late, and the difference is a *Deckungskapital* that
-builds, peaks near the middle of the term and runs off to exactly zero at expiry — on the
-anchor it peaks at **7 553,29 €**, 2,52 % of the sum insured, at `t = 16`. `res_pp_at`
-publishes it and `check_res_roll_fwd()` asserts the Thiele recursion together with
-`res_pp_at(1) = 0` by the equivalence and `res_pp_at(n+1) = 0` by exhaustion. Stating "no
-*Sparanteil*, therefore no reserve" and building on it fails that check.
+product invites. A level premium charged against a rising death rate overcharges early and
+undercharges late, and the difference is a *Deckungskapital* that builds, peaks near the
+middle of the term and runs off to exactly zero at expiry — on the anchor it peaks at
+**7 553,29 €**, 2,52 % of the sum insured, at `t = 16`. `res_pp_at` publishes it and
+`check_res_roll_fwd()` asserts the Thiele recursion together with `res_pp_at(1) = 0` by
+the equivalence and `res_pp_at(n+1) = 0` by exhaustion. Building on "no *Sparanteil*,
+therefore no reserve" fails that check.
 
 **What the reserve is not.** It is a **pricing diagnostic**: net, not *gezillmert*, not
 floored, entering no cash flow, and not a *Deckungsrückstellung* under HGB § 341f [R21]
 [REG-R54]. `res_zill_pp_at` subtracts the unamortised Zillmer balance and opens at
 `−z·k·G = −797,132426 €` — negative from the first day, which is what *Zillmerung* on a
-contract with almost no reserve looks like [R10] (mechanic 10). Whether a negative
-individual reserve must be floored for balance-sheet purposes — the *Nullstellung*
-question — was not established, and because the model publishes no balance-sheet reserve
-it does not reach these cash flows.
+contract with almost no reserve looks like [R10]. The *Nullstellung* question — whether a
+negative individual reserve must be floored for balance-sheet purposes — was not
+established, and no reserve of any kind enters `result_cf()`.
 
 ## The § 161 window is three years, and each increment carries its own
 
@@ -173,15 +167,14 @@ year when one tranche is inside its window and another is not — 0,995 at `t = 
 sum to 1.2 at year 6 and 1.4 at year 12. On the in-force point 8, which opens at `t = 13`,
 the factor is 1 at every projected `t`.
 
-**What the model does not do.** It does not model the mental-illness exception, which is
-the ground on which German *Selbsttötung* claims are actually litigated [R23] and cannot
-be a best-estimate switch; it does not apply the switch to a lapse or an expiry, both of
-which pay nothing in any event; and it does not model *Nachversicherungsgarantie* take-up
-as a decision. No event list, exercise window, per-event cap, cumulative cap or age limit
-was established from any document, so take-up is **exogenous** — a schedule in
-`nvg_schedule.csv`, `keine` in the base run. What the model *does* do with an increment is
-not exogenous: the clock restarts for the increment, which is `[unverified]` for Germany
-and is what the French statute expressly provides [R1] [`frlib` R1].
+**What the model does not do.** It does not model the mental-illness exception, the ground
+on which German *Selbsttötung* claims are actually litigated [R23] and not something a
+best-estimate switch can carry; it does not apply the switch to a lapse or an expiry, both
+of which pay nothing anyway; and it does not model *Nachversicherungsgarantie* take-up as
+a decision — no event list, window, cap or age limit was established, so take-up is
+**exogenous**, a schedule in `nvg_schedule.csv`, `keine` in the base run. What the model
+*does* do with an increment is not exogenous: the clock restarts for it, which is
+`[unverified]` for Germany and is what the French statute expressly provides [R1].
 
 ## Three *Versicherungssumme* shapes, one mechanic
 
@@ -306,9 +299,9 @@ The first is delib's own ruling and is stated here in one line:
 Which columns are *not* in it is the whole point of publishing it: `prem_gross` is the
 guaranteed stream and does not enter, and `prem_rebate` is the difference between the two
 premium columns and must not be subtracted again. `expenses` here **excludes**
-`commissions`, which is its own column — the opposite convention from `frlib.TD_FR_A`,
-where the notes fold commission into the expense total. The two libraries' columns look
-alike and do not mean the same thing, and this identity is what settles the reading.
+`commissions` — the opposite convention from `frlib.TD_FR_A`, whose notes fold commission
+into the expense total. The two libraries' columns look alike and do not mean the same
+thing; this identity settles the reading.
 
 | Check | Identity |
 |---|---|
@@ -319,11 +312,10 @@ alike and do not mean the same thing, and this identity is what settles the read
 | `check_no_cash_value()` | `claims(t,"LAPSE") = 0` and `claims(t,"MATURITY") = 0` at every `t` |
 
 Two further identities are **scalar rather than per-period** — the first-order equivalence
-`G·ä = A + z·k·G + β·G·ä + γ·Γ`, and the surplus equivalence
-`v_d·G·ä = decl_scale·surplus_share·(m/(1+m))·A` — and are asserted in
-`tests/test_risikolebensversicherung_de.py` instead of published as `check_*` cells.
-Forcing a scalar identity into a per-`t` residual would mean inventing a per-period
-decomposition the product does not have.
+`G·ä = A + z·k·G + β·G·ä + γ·Γ` and the surplus equivalence
+`v_d·G·ä = decl_scale·surplus_share·(m/(1+m))·A` — and are asserted in the product's test
+module instead. Forcing a scalar identity into a per-`t` residual would mean inventing a
+per-period decomposition the product does not have.
 
 ## Modules that are off in the base run
 
@@ -339,15 +331,13 @@ Both are driven off the premium and the lapse table alone, never off `pols_if`, 
 projection stays acyclic: a pricing quantity struck by equivalence must not depend on a
 behavioural assumption that depends on the path that depends on the premium. The
 equivalence is struck on `mort_rate_tar` and tariff survivorship, which is both the
-actuarially right basis and what keeps the derivation acyclic.
-
-Three further things are described in the sources and **not** implemented, each because
-modelling it would add an assumption with no source rather than a mechanic: the
-*Summenzuwachs*, *verzinsliche Ansammlung* and *Todesfallbonus* surplus forms (mechanic
-6); the *Dynamik* and every rider — UZV, BUZ, *Beitragsbefreiung*, *vorgezogene
-Todesfallleistung*, *Verlängerungs-* and *Umtauschoption*, *vorläufiger
-Versicherungsschutz* (mechanic 8); and the *Kriegsklausel* with its ABC companion, which
-is a catastrophe-scenario provision rather than a best-estimate one (mechanic 13).
+actuarially right basis and what keeps the derivation acyclic. Three further things are
+described in the sources and **not** implemented, each because modelling it would add an
+assumption with no source rather than a mechanic: the *Summenzuwachs*, *verzinsliche
+Ansammlung* and *Todesfallbonus* surplus forms (mechanic 6); the *Dynamik* and every rider
+— UZV, BUZ, *Beitragsbefreiung*, *vorgezogene Todesfallleistung*, *Verlängerungs-* and
+*Umtauschoption*, *vorläufiger Versicherungsschutz* (mechanic 8); and the *Kriegsklausel*
+with its ABC companion, a catastrophe-scenario provision rather than a best-estimate one.
 
 ## Sign convention
 
@@ -375,11 +365,10 @@ Cells follow lifelib's `basiclife/BasicTerm_S` wherever that model has an analog
 `model_point`, `proj_len`, `age`, `sum_assured`, `policy_term`, `pols_if`, `pols_death`,
 `pols_lapse`, `pols_maturity`, `mort_rate`, `lapse_rate`, `premiums`, `claims`,
 `expenses`, `commissions`, `inflation_factor`, `net_cf`, `result_cf` — with `*_pp` for
-per-policy amounts, `claims(t, kind)` with an uppercase `kind` string, and
-`pols_if_at(t, timing)` for the within-year in-force reads, which is `savings/CashValue_SE`'s
-form. The external-CSV layout and `Data.input_dir()` come from `annuallife/TradLife_A`.
-The technical notes use compact actuarial symbols; the full mapping lives in the
-`Projection` Space docstring. Four cases needed care:
+per-policy amounts, `claims(t, kind)` with an uppercase `kind`, and `pols_if_at(t, timing)`
+for the within-year reads, which is `savings/CashValue_SE`'s form. The external-CSV layout
+and `Data.input_dir()` come from `annuallife/TradLife_A`. The full symbol mapping lives in
+the `Projection` Space docstring. Four cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
@@ -440,12 +429,12 @@ is cited and the choice to sit at it is the standardization.
 | `roll_fwd_tol`, `val_tol` | 1e-10, 1e-9 | Tolerances scaled by `pols_if_init()` and `sum_assured()` respectively |
 | The fourteen model points | — | The anchor is the research file's representative composite; the rest are chosen to exercise the mechanics, not to describe a market |
 
-The only quantities in this model that are **not** standardizations are the structural
-rules: the guaranteed *Bruttobeitrag* and non-guaranteed *Zahlbeitrag* [R6], the MindZV's
-90 % minimum from the *Risikoergebnis* [R9], the three-year § 161 window and its nil
-substitution [R1] [R2], the absence of any surrender, paid-up or maturity value
-[R2] [R3] [R8], the unisex rule [R13], the *Rechnungszins* of 1,00 % and the 25 ‰ Zillmer
-ceiling [R10], and the absence of a premium-tax line [R16].
+The only quantities **not** standardizations are the structural rules: the guaranteed
+*Bruttobeitrag* and non-guaranteed *Zahlbeitrag* [R6], the MindZV's 90 % minimum from the
+*Risikoergebnis* [R9], the three-year § 161 window and its nil substitution [R1] [R2], the
+absence of any surrender, paid-up or maturity value [R2] [R3] [R8], the unisex rule [R13],
+the *Rechnungszins* of 1,00 % and the 25 ‰ Zillmer ceiling [R10], and the absence of a
+premium-tax line [R16].
 
 ## Tests
 
@@ -466,10 +455,10 @@ premium cessation at death not double-counted, the premium stopping at the
 never scaling the benefit, and the *Über-Kreuz-Versicherung* not appearing as a product.
 
 The house style — two Spaces, the external-CSV layout, the read-once `Data`, the shared
-vocabulary, the retired names, `proj_len()` as the last projected index, the round trip,
-and both of delib's own rulings — is asserted for every model in the library by
-`tests/test_model_conventions_de.py`, which also owns the library's single sweep of a
-model over its whole model point table.
+vocabulary, the retired names, `proj_len()` as the last projected index, the round trip
+and both of delib's own rulings — is asserted for every model by
+`tests/test_model_conventions_de.py`, which also owns the library's single model-point
+sweep.
 
 ```bash
 python -m pytest tests -q
