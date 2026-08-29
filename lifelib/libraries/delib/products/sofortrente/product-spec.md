@@ -379,14 +379,13 @@ Any cell checks as `100 000 / (12 × a12)`.
     years apart at the same *Rechnungszins* would not get the same annuity.**
 
 **What is guaranteed.** The *garantierte Rente* is guaranteed **for life** and is not adjustable.
-§ 163 VVG is the only channel for changing a term after conclusion and requires three cumulative
-conditions — a change in the *Leistungsbedarf* that is neither temporary nor foreseeable; a new term
-appropriate and necessary to secure permanent fulfilment; and confirmation by an independent
-*Treuhänder* — while expressly excluding adjustment to the extent the benefits were insufficiently
-calculated in the first place [REG-R27]. The Landgericht Köln held the low-interest phase **not** a
-sufficient ground, being entrepreneurial risk that cannot be passed to policyholders (case reference
-not established) [R4]. A delib model treats the *garantierte Rente* as **immutable** and records
-§ 163 as a model risk.
+§ 163 VVG is the only channel for changing a term after conclusion and needs three cumulative
+conditions — a change in the *Leistungsbedarf* that is neither temporary nor foreseeable, a new term
+appropriate and necessary to secure permanent fulfilment, and an independent *Treuhänder*'s
+confirmation — while excluding adjustment to the extent the benefits were insufficiently calculated
+in the first place [REG-R27]; the Landgericht Köln held the low-interest phase **not** a sufficient
+ground, being entrepreneurial risk (case reference not established) [R4]. A delib model treats the
+*garantierte Rente* as **immutable** and records § 163 as a model risk.
 
 ### *Rentengarantiezeit*
 
