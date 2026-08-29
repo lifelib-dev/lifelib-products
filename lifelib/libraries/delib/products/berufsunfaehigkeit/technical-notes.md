@@ -93,7 +93,7 @@ established German ones, and each carries the instrument it must be checked agai
 | `sex` | enum {M, F} | Decrement and reporting only — **never prices** [REG-R34] | 1 / 2 (the unisex twin) |
 | `berufsgruppe` | str | Key into `occupation_table.csv`; BG1 … BG5 | 1 / 3 (BG1 vs BG4), 5, 8, 9, 11 |
 | `bu_rente_mth` | EUR/month | The agreed *BU-Rente* at inception | all; 1 000 – 2 500 |
-| `cover_end_age` | int | *Endalter* — the *Versicherungsdauer* ends at this attained age | 8 (60), 9 (67) |
+| `cover_end_age` | int | *Endalter* — the *Versicherungsdauer* ends at this attained age | 8 (60); 67 elsewhere |
 | `benefit_end_age` | int | *Leistungsendalter* — the *Leistungsdauer* ends here | 9 (63 against a cover end of 67) |
 | `karenz_months` | int | *Karenzzeit*, months of deferment of payment | 5 (6), 8 (3), 13 (12) |
 | `leistungsdyn_rate` | float p.a. | *Leistungsdynamik*, escalation of the *BU-Rente* **in payment**, on each anniversary of onset | all at 0,02; 12 at 0,00 |
@@ -112,6 +112,32 @@ established German ones, and each carries the instrument it must be checked agai
 `pols_if_init()` is **1.0 for every model point**: the model is a per-policy probability projection,
 one model point at a time, so `pols_if(0) == 1.0` exactly and `result_cf()`'s first `pols_if` value
 is that. There is no `policy_count` column.
+
+**The shipped model point table.** Thirteen points, `bu_rente_mth` in EUR per month, `LD` the
+*Leistungsdynamik* and `WE` the *Wiedereingliederungshilfe* in monthly *Renten*. Every column not
+shown takes its base value (`leistungsdyn_rate` 0,02, `premium_form` `level`, `beitragsdyn_rate`
+0,00, `gross_prem_ann` 0, `beitragsverrechnung` 0,70, `risk_factor` 1,00, `au_klausel` false,
+`au_uplift` 1,00, `WE` 6, `duration_init_months` 0, `claim_duration_init` 0).
+
+| # | status | entry | sex | BG | *BU-Rente* | cover/benefit end | K | what it exercises |
+|---|---|---|---|---|---|---|---|---|
+| **1** | aktiv | 30 | F | BG1 | 1 500 | 67 / 67 | 0 | **the anchor cell**, monthly mode |
+| 2 | aktiv | 30 | M | BG1 | 1 500 | 67 / 67 | 0 | the anchor's **unisex twin** — differs in `sex` and nothing else |
+| 3 | aktiv | 30 | F | BG4 | 1 500 | 67 / 67 | 0 | the **occupational factor** — differs from the anchor in `berufsgruppe` alone |
+| 4 | aktiv | 25 | F | BG2 | 1 200 | 67 / 67 | 0 | the second **premium form**, `dynamik` at 3 %, **annual** mode |
+| 5 | aktiv | 40 | M | BG3 | 2 000 | 67 / 67 | 6 | *Karenzzeit* 6, **quarterly** mode |
+| 6 | aktiv | 30 | F | BG1 | 1 500 | 67 / 67 | 0 | **in-force active**, `duration_init_months` 180, **half-yearly** mode |
+| 7 | leistung | 35 | M | BG3 | 1 800 | 67 / 67 | 0 | **in-force in claim**, `duration_init_months` 200, `claim_duration_init` 8 |
+| 8 | aktiv | 50 | M | BG5 | 1 000 | 60 / 60 | 3 | **boundary** — short term, heaviest class, *Endalter* 60 |
+| 9 | aktiv | 45 | F | BG2 | 1 500 | 67 / **63** | 0 | **boundary** — *Leistungsendalter* below the *Versicherungsdauer* |
+| 10 | aktiv | 33 | M | BG1 | 1 500 | 67 / 67 | 0 | *AU-Klausel* **on** with `au_uplift` 1,00 — an invariance test |
+| 11 | aktiv | 38 | F | BG2 | 1 500 | 67 / 67 | 0 | *Risikozuschlag* `risk_factor` 1,50 |
+| 12 | aktiv | 30 | M | BG1 | 1 500 | 67 / 67 | 0 | **options off** — `leistungsdyn_rate` 0,00, `WE` 0 |
+| 13 | aktiv | 50 | F | BG1 | 2 500 | 67 / 67 | 12 | premium **override** 2 400,00 € p.a., `beitragsverrechnung` 0,55, longest *Karenzzeit* |
+
+Model point 1 is the worked example's anchor cell, as the house style requires. Points 2 and 3 are
+deliberately one-attribute neighbours of it, so that the unisex invariance and the occupational
+loading can each be measured against the anchor rather than inferred.
 
 **Three columns a reader is most likely to get wrong.** `berufsgruppe` loads **the inception rate**,
 and so reaches the premium only through the equivalence, while `risk_factor` loads **the premium
@@ -138,7 +164,10 @@ anniversary, before any claim: different quantities, different clocks.
 | `pols_inception(t)` | Transitions *aktiv* → *leistungspflichtig* at end of month `t` | monthly |
 | `pols_recovery(t)` | Claim terminations other than death at end of month `t` — recovery **and** *konkrete Verweisung*, which this model does not separate — entering run-off slot 1 | monthly |
 | `pols_reactivation(t)` | Run-off completions returning to *aktiv* at end of month `t` | monthly |
-| `pols_death(t)` | Deaths from all three ledgers at end of month `t` | monthly |
+| `pols_death_actv(t)`, `pols_death_dis(t)`, `pols_death_runoff(t)` | Deaths out of each ledger at end of month `t` | monthly |
+| `pols_death(t)` | Their sum — a decrement, **never a cash flow**, because an SBU pays nothing on death | derived |
+| `pols_if_at(t, timing)` | `pols_if(t)` for `timing = "BEG"`, the end-of-month count for `"END"` — the only route to end-of-period state | derived |
+| `inc_rate_base(t)` | The **table** inception rate at `age(t)`, before `occ_factor`, `accept_factor` and `au_uplift`; `inc_rate(t)` is the composed rate | lookup |
 | `pols_lapse(t)` | Lapses, from `pols_actv` only | monthly |
 | `bu_rente_pp(t)` | The **insured** monthly *BU-Rente* at time `t`, after any *Beitragsdynamik* | at anniversaries |
 | `rente_pay_pp(t, z)` | The monthly *BU-Rente* **in payment** for the duration-`z` cohort | at claim anniversaries |
@@ -567,7 +596,7 @@ is a test.
    `mort_rate_dis(t, 1) / mort_rate(t) = 4,00 × 3,0 = 12,0` and `mort_rate_dis(t, 61)/mort_rate(t)
    = 4,80` at every `t`, and that the ratio is never 1.
 4. **A flat reactivation rate.** Reactivation is front-loaded and near zero after about five years
-   [R16] [REG-R50]. Assert `recov_rate(1) = 0,250`, `recov_rate(13) = 0,130`, `recov_rate(61) =
+   [R16] [REG-R50]. Assert `recov_rate(1) = 0,250`, `recov_rate(13) = 0,130`, `recov_rate(49) =
    0,025` and strict decrease across the first five claim years. A flat rate at the year-1 level
    roughly halves the projected benefit; at the ultimate level it roughly doubles it.
 5. **Forgetting the § 174 three-month run-off.** A recovery does not stop the annuity in the month

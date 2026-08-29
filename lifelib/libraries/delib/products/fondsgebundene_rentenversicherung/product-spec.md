@@ -592,7 +592,7 @@ The ***Effektivkostenquote*** states all charges as the annual percentage by whi
 the contract's return. It has been required in quotations since 1 January 2015 under § 7 VVG and
 the *VVG-InfoV* `[unverified]` [R7] [S16] [REG-R31], and appears in its PRIIPs form in the
 *Basisinformationsblatt* at **three time points — one year, half the recommended holding period,
-and the end of it** [R9] [REG-R32]. **For a fondsgebundene contract it must include the fund's
+and the end of it** [S15] [R9] [REG-R32]. **For a fondsgebundene contract it must include the fund's
 own costs**, which is what makes the *TER* a policy parameter rather than a fund parameter.
 
 Two warnings a specification must carry. The German figure is now aligned to the
@@ -758,7 +758,7 @@ the **costs the investor bears**; and complaint information — the scenarios an
 **three time points**, after one year, after half the recommended holding period and at the end of
 it, with the cost disclosure split into **one-off and ongoing costs** and the ***Reduction in
 Yield* per year** stated [R9] [REG-R32]. For an FRV those points are typically year 1, year 15 and
-year 30. **No actual *Basisinformationsblatt* for this product was located**, so **no scenario
+year 30. **No actual *Basisinformationsblatt* for this product was located** [S15], so **no scenario
 return, no cost figure and no reduction-in-yield value in this document comes from one**. The
 categorisation matters and is `[unverified]`: a pure unit-linked contract's scenarios come from the
 funds' own return history, a guarantee-bearing one from the DAV's standard method for **PRIIP

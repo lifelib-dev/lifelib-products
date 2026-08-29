@@ -9,18 +9,17 @@ is paid for as long as the annuitant lives. **It is not any single insurer's con
 clause of any German AVB for this product was read. [S#] tags name primary product documents
 (*Verbraucherinformation*, *Allgemeine Versicherungsbedingungen*, *Produktinformationsblatt*,
 *Basisinformationsblatt*, *Überschussverteilung*) and [R#] product-specific regulatory and actuarial
-references, both numbered per `_research/sofortrente.md` and resolved in `sources.md` (numbering
-frozen, never renumbered); [REG-R#] tags the cross-product reference library
+references, both numbered per `_research/sofortrente.md` and resolved in `sources.md` (frozen, never
+renumbered); [REG-R#] tags the cross-product library
 `references/regulatory-and-actuarial-references.md`, whose R1–R56 numbering is separately frozen.
-**[std]** marks a standardization introduced for the reference implementation, each carrying a
-numbered footnote with its rationale and, where one exists, the observed range. Claims no search
-corroborated are flagged [unverified]. German terms of art stay in German, italicised on first use
-with a gloss.
+**[std]** marks a standardization introduced for the reference implementation, each with a numbered
+footnote giving its rationale and, where one exists, the observed range; claims no search
+corroborated are flagged [unverified]. German terms of art stay in German, italicised on first use.
 
 **Retrieval conditions, stated first because they govern every line below.** Direct HTTP egress is
 blocked by an organisation network policy: `WebFetch` and `curl` are refused with HTTP 403 for
 `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `destatis.de`, `eur-lex.europa.eu` and
-every insurer host named here. And the session's 200-call `WebSearch` budget was **exhausted before
+every insurer host named here; and the session's 200-call `WebSearch` budget was **exhausted before
 work on this product began**, so **not one search was run for the *Sofortrente***. Every source is
 therefore either a **known reference** — a document class and carrier that exists and is the right
 kind of thing to cite — or a fact carried over with attribution from a sibling delib research file
@@ -34,14 +33,13 @@ variations section is structural rather than numeric, and every euro and percent
 representative design is either **[std]** with its derivation printed or tagged to a cross-product
 reference.
 
-**Out of scope, named so the boundary is explicit.** The **accumulation phase** of a deferred
-annuity is the separate delib product `klassische_rentenversicherung`; premium accumulation, the
-*Deckungskapital* recursion, the *Rückkaufswert*, *Beitragsfreistellung* and the *Kapitalwahlrecht*
-belong there. **Schicht 1** (*Basisrente*) and **Schicht 2** (*Riester-Rente*, bAV) run the same
-payout machinery under completely different tax rules [REG-R38]. *Fondsgebundene* and
-*indexgebundene* payout annuities, *Sterbegeldversicherung*, *Pflegerentenversicherung*,
-*Gruppenversicherung*, private *Krankenversicherung* and institutional pension-risk transfer are all
-outside this file.
+**Out of scope.** The **accumulation phase** of a deferred annuity is the separate delib product
+`klassische_rentenversicherung`; premium accumulation, the *Deckungskapital* recursion, the
+*Rückkaufswert*, *Beitragsfreistellung* and the *Kapitalwahlrecht* belong there. **Schicht 1**
+(*Basisrente*) and **Schicht 2** (*Riester-Rente*, bAV) run the same payout machinery under
+completely different tax rules [REG-R38]. *Fondsgebundene* and *indexgebundene* payout annuities,
+*Sterbegeldversicherung*, *Pflegerentenversicherung*, *Gruppenversicherung*, private
+*Krankenversicherung* and institutional pension-risk transfer are all outside this file.
 
 ---
 
@@ -605,14 +603,12 @@ death benefit is a first-order design question rather than a detail. And the ann
 older age, so `a12` is smaller for two reasons at once. Two death-benefit forms exist — a **pure
 deferred annuity** with no death benefit, and a *Beitragsrückgewähr* form refunding the
 *Einmalbeitrag* on death before *Rentenbeginn*, much the more common retail form — and **neither was
-established for this product**. Order of magnitude on the [std] basis at 1,00 %, age 65, 100 000 €,
-monthly in advance **[std]** (15): a 2-year deferment gives 451,43 € without a deferment death
-benefit and 444,07 € with full *Beitragsrückgewähr*; 5 years gives 532,48 € and 508,12 €; 10 years
-gives 732,64 € and 651,24 €, against 407,98 € with no deferment.
+established for this product**. On the [std] basis at 1,00 %, age 65, 100 000 €, a five-year
+deferment raises the monthly annuity from 407,98 € to **532,48 €** without a deferment death benefit
+and **508,12 €** with full *Beitragsrückgewähr* — about +31 % and +25 %, the 4,6 % gap between them
+being **the price of the death benefit**, which at ten years widens to 11,1 % **[std]** (15).
 
-15. **[std]**, same basis, gross of charges. A five-year deferment raises the annuity by about
-    **25 %** with a death benefit and **31 %** without, and the gap between the columns — 4,6 % at
-    five years, 11,1 % at ten — **is the price of the death benefit**.
+15. **[std]**, same basis, gross of charges; the research file prints the 2-, 5- and 10-year rows.
 
 ### No surrender, no lapse, no *Beitragsfreistellung*
 
@@ -622,8 +618,8 @@ retail life product whose only decrement is death. Everything else a liability m
 carry — a *Rückkaufswert* table, a *Stornoabzug*, a five-year cost-spreading floor [REG-R28], a
 *Beitragsfreistellung* conversion, a lapse rate, a dynamic surrender formula, a duration-12 tax
 threshold driving surrender behaviour [REG-R45] — is **absent by specification**. The consumer
-warning that follows is the first thing every German consumer page about this product says: the
-*Einmalbeitrag* is **irreversibly committed** [R21] [R23].
+warning that follows is the first thing every German consumer page says: the *Einmalbeitrag* is
+**irreversibly committed** [R21] [R23].
 
 ---
 

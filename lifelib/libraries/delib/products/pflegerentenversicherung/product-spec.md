@@ -216,8 +216,8 @@ Footnotes to **[std]** rows:
    *vollstationäre* care and a reduced one at home [unverified]; modern practice pays irrespective
    of setting, which is what makes the product a *Summenversicherung*. A setting-dependent benefit
    would need a care-setting state the corpus supplies no transition data for.
-2. **Observed entry ages: 18 to 65, some tariffs to 70** [unverified]. The composite takes 18–65
-   as the envelope and 45 as the anchor because that is the lower edge of the observed *purchase*
+2. **Observed entry ages: 18 to 65, some tariffs to 70** [unverified]. The composite takes 18–65 as
+   the envelope and 45 as the anchor because that is the lower edge of the observed *purchase*
    cluster, not of the permitted band — the two differ by twenty-five years, and conflating them is
    the commonest error in describing this product. Both boundary ages are exercised by model points.
 3. No age basis is established for any *Pflegerenten* tariff; German practice uses the
@@ -234,9 +234,8 @@ Footnotes to **[std]** rows:
    written — itself endogenous to the price. The composite prices on a **50 / 50** blend **[std]**
    and projects on the point's own sex, so the cross-subsidy is visible rather than assumed away.
 6. Entry age 45 gives a long enough pre-claim period for the *Deckungskapital* to be the object it
-   is and makes the equivalence premium comparable with the argued band. The anchor is **female**
-   deliberately: the projection then runs the higher-incidence basis against a unisex price.
-
+   is. The anchor is **female** deliberately: the projection then runs the higher-incidence basis
+   against a unisex price.
 ### Premiums
 
 | Parameter | Representative value | Basis |
@@ -261,10 +260,10 @@ Footnotes to **[std]** rows:
 8. German tariffs load monthly, quarterly and half-yearly payment relative to annual [unverified];
    **no level was established** (research gap 2), and shipping a loading nobody sourced would put a
    fabricated price difference into the model. The frequency therefore changes the *timing* of
-   premium income and nothing else. This is a stated departure from market practice and a listed
-   pitfall, because a reader who reads a frequency difference off this model as a price difference
-   reads it backwards: paying annually in advance is *earlier*, so the equivalence premium per month
-   is slightly *lower*, the opposite sign to a real *Ratenzahlungszuschlag*.
+   premium income and nothing else — a stated departure from market practice and a listed pitfall,
+   because a reader who reads a frequency difference off this model as a price difference reads it
+   backwards: paying annually in advance is *earlier*, so the equivalence premium per month is
+   slightly *lower*, the opposite sign to a real *Ratenzahlungszuschlag*.
 9. **No German *Pflegerenten* premium was established from any source** (research gap 3) — the
    sharpest difference from `frlib/products/temporaire_deces`, which had a published rate card to
    reproduce. The band is derived arithmetic, set out in the research file § 23: a time-weighted
@@ -282,7 +281,6 @@ Footnotes to **[std]** rows:
     on exit from the paying grades** — the market-standard design, and the one that keeps waiver and
     benefit on a single trigger, which is what lets the model publish one `check_waiver()` identity
     reconciling both streams.
-
 ### Benefit provisions
 
 | Parameter | Representative value | Basis |
@@ -318,15 +316,15 @@ Footnotes to **[std]** rows:
     where care at home begins in earnest; **3 at 50 %** and **4 at 75 %**, both mid-range; **5 at
     100 %**, the scaling constant. The schedule is read from a CSV with a `provenance` column.
 13. The statutory determination is often backdated to the date of application, so a wording keyed
-    to the *effective date* pays earlier than one keyed to the *decision date*. Which a tariff uses
-    was not established; the composite keys off the effective date.
+    to the *effective date* pays earlier than one keyed to the *decision date*; which a tariff uses
+    was not established, and the composite keys off the effective date.
 14. **The pairing between underwriting and waiting periods is near deterministic**: no underwriting
     implies a long *Wartezeit* (the *Pflege-Bahr* design [R8]); underwriting implies none. Both are
-    **zero** in the base run, both are model-point parameters, and both are exercised — a
-    *Karenzzeit* on a population with heavily elevated mortality removes disproportionately more
-    claims than the same period would on a healthy population.
+    **zero** in the base run and both are exercised by model points — a *Karenzzeit* on a population
+    with heavily elevated mortality removes disproportionately more claims than the same period
+    would on a healthy population.
 15. The insurer does not define the insured event — the state does, and re-defines it [R9] — and
-    does not assess the claim [R6]. Claims administration is therefore materially cheaper than on a
+    does not assess the claim [R6], so claims administration is materially cheaper than on a
     *Berufsunfähigkeitsrente* [REG-R29]. The price of that cheapness is **definition risk**: any
     loosening of the *Begutachtungs-Richtlinien* or of § 15 SGB XI raises incidence with no
     contractual change and no re-rating remedy.
@@ -336,13 +334,12 @@ Footnotes to **[std]** rows:
     **[std]** because the death benefit is close to certain to be paid whereas the annuity is not,
     and it very likely brings the contract inside the PRIIPs perimeter [REG-R32]. The base run omits
     it so that the LTC mechanics are what the model demonstrates.
-17. **The *Leistungsdynamik* is the economically important dynamic**, for the reason given under the
-    *Versorgungslücke*, and its cost is counter-intuitively small: the annuity is paid to a
-    population with heavily elevated mortality, so a 2 % escalation on an annuity of about four
-    years' expected duration costs of the order of **4 %** of its value, not the 15 % or 20 % it
-    would cost on a healthy-life pension. The **Beitragsdynamik** is **not modelled at all**: the
-    acceptance rate on each offer is a behavioural assumption this corpus cannot support.
-
+17. **The *Leistungsdynamik* is the economically important dynamic**, and its cost is
+    counter-intuitively small: the annuity is paid to a population with heavily elevated mortality,
+    so a 2 % escalation on an annuity of about four years' expected duration costs of the order of
+    **4 %** of its value, not the 15 % or 20 % it would cost on a healthy-life pension. The
+    **Beitragsdynamik** is **not modelled at all**: the acceptance rate on each offer is a
+    behavioural assumption this corpus cannot support.
 ### Underwriting and rating
 
 | Parameter | Representative value | Basis |
@@ -393,7 +390,6 @@ therefore `[std]`.** Only the statutory *ceiling* is known, and only [unverified
     finite without a convention, so the composite caps the premium term at attained age **85**
     **[std]**, making the anchor's *Beitragssumme* forty years of premium and the 25 ‰ ceiling bind
     visibly rather than notionally.
-
 ### Termination and values
 
 | Parameter | Representative value | Basis |
@@ -410,29 +406,25 @@ therefore `[std]`.** Only the statutory *ceiling* is known, and only [unverified
 | Expiry | **None.** The contract runs for life; there is no maturity and no survival benefit | [S4] |
 
 21. **No *Rückkaufswert* table for any German *Pflegerenten* tariff was established.** The
-    composite ships guaranteed values as **data** rather than computing a reserve, for two reasons.
-    It is what a German contract does: § 165 VVG requires the paid-up benefit to be **stated in the
-    contract for each insurance year** [REG-R28], so a table by policy year is the contractual
-    object. And computing a reserve would break the library's rule that its models publish gross
-    undiscounted cash flows. The shipped shape encodes two cited facts — the 25 ‰ *Zillmerung*
-    allowance [REG-R16], which puts the value at zero for the first two years, and the § 169 Abs. 3
-    five-year spread **floor** [REG-R28], which makes it positive from year three. Levels beyond
-    that shape are **[std]**.
+    composite ships guaranteed values as **data** rather than computing a reserve: § 165 VVG
+    requires the paid-up benefit to be **stated in the contract for each insurance year**
+    [REG-R28], so a table by policy year is the contractual object, and computing a reserve would
+    break the library's rule that its models publish gross undiscounted cash flows. The shipped
+    shape encodes two cited facts — the 25 ‰ *Zillmerung* allowance [REG-R16], which puts the value
+    at zero for the first two years, and the § 169 Abs. 3 five-year spread **floor** [REG-R28],
+    which makes it positive from year three. Levels beyond that shape are **[std]**.
 22. The German life-market *Stornoabzug* range runs from nil to about **5 %** of the
-    *Deckungskapital* [unverified]; **none was established for this product**. § 169 Abs. 5 admits a
-    deduction only if agreed, quantified and appropriate, so a non-zero default would assert a
+    *Deckungskapital* [unverified]; **none was established for this product**. § 169 Abs. 5 admits
+    a deduction only if agreed, quantified and appropriate, so a non-zero default would assert a
     contractual quantification this corpus cannot supply. The base run is **0 %**; one model point
     switches it on at 5 %.
 23. **The model implements the surrender path only.** *Beitragsfreistellung* and the § 38
     premium-default conversion both keep the policy in force at a reduced *vereinbarte Rente*,
-    anchored to the same § 169 value [REG-R28], and carrying them needs a paid-up ledger with its
-    own benefit, expense loading and decrements, for which the corpus supplies no take-up split. The
+    anchored to the same § 169 value [REG-R28]; carrying them needs a paid-up ledger with its own
+    benefit, expense loading and decrements, for which the corpus supplies no take-up split. The
     model treats every voluntary exit as a surrender and records the bias: the omitted paths would
     move policies into a reduced-benefit ledger that still pays claims, so **the model understates
     late-duration claims and overstates surrender outgo**, by an amount the corpus cannot size.
-
----
-
 ## Contractual mechanics
 
 ### The benefit trigger — the statutory *Pflegegrad*

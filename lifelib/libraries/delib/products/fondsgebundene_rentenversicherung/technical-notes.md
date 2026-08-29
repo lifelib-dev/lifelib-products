@@ -618,8 +618,8 @@ one becomes a test.
    it is strictly positive on the anchor.
 5. **Mixing the monthly conversions.** `qᴵ` and `q` must use the same split, or the model
    manufactures a risk result out of a rounding convention: at `q = 0.00080`, `q/12 = 0.00006667`
-   against `1 − (1−q)^(1/12) = 0.00006664`, a 0.05 % difference that lands entirely in the risk
-   result. Assert `mort_rate_mth(t) = mort_rate(t)/12` and
+   against `1 − (1−q)^(1/12) = 0.00006669`, a 0.04 % difference that lands entirely in the risk
+   result and grows with `q`. Assert `mort_rate_mth(t) = mort_rate(t)/12` and
    `lapse_rate_mth(t) = 1 − (1 − lapse_rate(t))^(1/12)`, and that `lapse_rate_mth < lapse_rate`
    wherever the annual rate is positive.
 6. **Forgetting to floor the net amount at risk at zero.** `max(D − F, 0)`, not `D − F`. Without

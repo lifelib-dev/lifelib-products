@@ -378,16 +378,14 @@ insurance year and upon termination of the insurance" [R24] — a **second, para
 *Deckungskapital*, with its own credited rate, settling at year end and at exit. ***Bonusrente***
 buys **additional premium-free annuity** with the declared surplus [R24]; it is established and
 **not implemented**, because it is a second full mechanic on the same declaration and carrying both
-would double the accumulation-phase state for a choice no source quantifies — the *volldynamische
-Rente* of the payout phase is the same idea where the corpus supports it better. **Investment of
-surplus in an internal fund** is the Debeka successor design, where "fund holdings generally receive
-no *Überschussbeteiligung* from the earnings of Debeka's general *Sicherungsvermögen* before
-*Rentenbeginn*" [S12] — a variation, not the representative design. ***Beitragsverrechnung*** is the
-fourth system the German market uses and **no source in this corpus named it for this product**
-(gap 16); that is a gap in the corpus, not evidence that it does not exist. The **four-component
-decomposition** is only one quarter established here (gap 17), is the primary subject of the delib
-`kapitallebensversicherung` file, and has the MindZV's 90 / 90 / 50 minima under it [REG-R18]; the
-implementation models the credited outcome, not the source decomposition.
+would double the accumulation-phase state for a choice no source quantifies. **Investment of surplus
+in an internal fund** is the Debeka successor design, a variation rather than the representative one
+[S12]. ***Beitragsverrechnung*** is the fourth system the German market uses and **no source in this
+corpus named it for this product** (gap 16) — a gap in the corpus, not evidence that it does not
+exist. The **four-component decomposition** is only one quarter established here (gap 17), is the
+primary subject of the delib `kapitallebensversicherung` file, and has the MindZV's 90 / 90 / 50
+minima under it [REG-R18]; the implementation models the credited outcome, not the source
+decomposition.
 
 **Bewertungsreserven.** Under **§ 153 Abs. 3 VVG** policyholders participate in the unrealised gains
 in the insurer's assets, restated by an insurer's own consumer information as **equal (*hälftige*)
@@ -584,13 +582,13 @@ premium-default case rather than ending cover [REG-R28] [REG-R30]. **The
 
 ## Riders and options
 
-**In scope and modeled.** The ***Rentengarantiezeit*** as a selectable term in years, base value 10
-[R24] [S9] [S13]; the ***Kapitalwahlrecht*** as a take-up rate at *Rentenbeginn* [S12] [R6] [R21];
-the death-benefit **form** switch across the three documented designs [S1] [R24] and the with-surplus
-variant [R24]; the ***Dynamik*** as an annual premium-and-benefit increase rate, base 0 and switched
-on for one model point [S4]; ***Beitragsfreistellung*** as a deterministic election at a stated
-policy year, with the *Mindestversicherungsleistung* cash-out branch [R2]; and the three
-payout-phase *Überschussverwendung* systems [R19] [R20] [R24].
+**In scope and modeled.** The ***Rentengarantiezeit*** as a selectable term in years, base 10 [R24]
+[S9] [S13]; the ***Kapitalwahlrecht*** as a take-up rate at *Rentenbeginn* [S12] [R6] [R21]; the
+death-benefit **form** switch across the three documented designs [S1] [R24] and the with-surplus
+variant [R24]; the ***Dynamik*** as an annual increase rate, base 0 and on for one model point [S4];
+***Beitragsfreistellung*** as a deterministic election at a stated policy year, with the
+*Mindestversicherungsleistung* cash-out branch [R2]; and the three payout-phase
+*Überschussverwendung* systems [R19] [R20] [R24].
 
 **Documented and deliberately not modeled**, each with its reason. The
 ***Hinterbliebenenrenten-Zusatzversicherung***, published by the GDV as a **separate model condition
@@ -721,18 +719,17 @@ EStG at **18 % for age 65** [R5] [R24] [REG-R41]; the *Kapitalabfindung* falls u
 Nr. 6 EStG and the *Halbeinkünfteverfahren* on the 12/62 rule [R6] [REG-R45]. **Not established, and
 not asserted anywhere in this library**: the rate on the taxable half in the general case, the
 *Solidaritätszuschlag*, the inheritance-tax treatment of the death benefit, and the
-*Kleinbetragsrente* threshold for this product (gap 23). **delib computes no tax**: every benefit
-cash flow is gross of *Kapitalertragsteuer*, *Solidaritätszuschlag* and *Kirchensteuer* [REG-R38].
-The pre-contractual pack — *Verbraucherinformation* [S4]–[S7],
-*Vertragsinformationen* [S14], *Kundeninformation* [S19], *Allgemeine Informationen* [S18] — is one
-object under §§ 6, 7 and 7a–7c VVG with the VVG-InfoV [REG-R31]; distribution sits under the IDD as
-transposed and § 34d GewO [REG-R33]; and BaFin's *Merkblatt 01/2023* on *Wohlverhaltensaufsicht*
-governs product governance and value for money for this class of contract [REG-R35]. The statutory
+*Kleinbetragsrente* threshold (gap 23). **delib computes no tax**: every benefit cash flow is gross
+of *Kapitalertragsteuer*, *Solidaritätszuschlag* and *Kirchensteuer* [REG-R38]. The pre-contractual
+pack — *Verbraucherinformation* [S4]–[S7], *Vertragsinformationen* [S14], *Kundeninformation* [S19],
+*Allgemeine Informationen* [S18] — is one object under §§ 6, 7 and 7a–7c VVG with the VVG-InfoV
+[REG-R31]; distribution sits under the IDD and § 34d GewO [REG-R33]; BaFin's *Merkblatt 01/2023* on
+*Wohlverhaltensaufsicht* governs product governance and value for money [REG-R35]. The statutory
 balance sheet is the HGB one of §§ 341–341o HGB with the RechVersV and BerVersV [REG-R54], and its
 *Deckungsrückstellung* is **not** the Solvency II best estimate — an insurer carries two liability
 measures, and the *Überschussbeteiligung*, the *Zinszusatzreserve* and the *Bewertungsreserven* test
 all run on the **HGB** side [REG-R14] [REG-R54]. IFRS 17 would measure this contract under the
 variable fee approach [REG-R55]; actuarial work sits under the DAV *Fachgrundsätze* and the § 141 VAG
 *Verantwortlicher Aktuar*, a role the MaGo keeps distinct from the *versicherungsmathematische
-Funktion* [REG-R56] [REG-R11] [REG-R21]; and policyholder protection in a failure runs through
+Funktion* [REG-R56] [REG-R11] [REG-R21]; policyholder protection in a failure runs through
 **Protektor** under §§ 221–236 VAG [REG-R12].

@@ -155,13 +155,12 @@ nothing carrier-specific was established (gap 12). Amounts in prose use German n
 
 Footnotes to **[std]** rows:
 
-1. No entry-age envelope was established at any carrier (gap 12). Nothing statutory bounds it
-   below; the arithmetic bounds it above, since at 0,25 % a short remaining term leaves almost no
-   room for charges — so late entry is real but structurally hostile, and the model point table
-   carries one.
-2. German practice sets *Rentenbeginn* at or near the statutory retirement age [unverified].
-   Whether any statutory **upper** bound applies to the start of the payout phase, as distinct from
-   the age-85 bound on the *Restverrentung*, was **not established** (gap 10).
+1. No entry-age envelope was established at any carrier (gap 12). Nothing statutory bounds it below;
+   the arithmetic bounds it above, since at 0,25 % a short remaining term leaves almost no room for
+   charges — late entry is real but structurally hostile, and the model point table carries one.
+2. German practice sets *Rentenbeginn* at or near the statutory retirement age [unverified]. Whether
+   any statutory **upper** bound applies to the start of the payout phase, as distinct from the
+   age-85 bound on the *Restverrentung*, was **not established** (gap 10).
 3. The anchor is an **in-force** cell for three reasons. The product is closed to new business from
    1 January 2027 [REG-R44], so an in-force cell is what the book contains. A **2024-vintage**
    tariff carries a *Rechnungszins* of **0,25 %** [R22] [REG-R15], the regime the whole guarantee
@@ -193,9 +192,9 @@ reach to draw the subsidy, computed from the saver's own income and reduced by t
    contribution drawing a 175 € Grundzulage** [R7] [R10] [REG-R42] — an economically extreme part of
    the book. Neither form was established at any carrier.
 5. **No fractionation scale was established anywhere in this corpus** (gap 13). German life tariffs
-   levy a *Ratenzuschlag* for sub-annual payment; the scale above is a round-number placeholder,
-   and the reference implementation treats the loading as a **charge** rather than as money
-   credited to the account, so raising it never enlarges the guarantee.
+   levy a *Ratenzuschlag* for sub-annual payment; the scale above is a placeholder, and the model
+   treats the loading as a **charge** rather than money credited to the account, so raising it never
+   enlarges the guarantee.
 
 **Worked cases of the § 86 arithmetic**, at the 2018-and-later rates. All rows are `[std] derived`
 — exact arithmetic on the [R9] and [R10] inputs, shown so that a reader can redo them:
@@ -275,10 +274,10 @@ payment month nor the reversal frequency is established (gap 6).
    alternative raises the projected guarantee cost and is a named sensitivity in the technical
    notes.
 7. German consumer commentary reports the 30 % lump sum as the usual choice `[unverified]`, and
-   **gap 10 records that this rests on nothing**. 30 % is adopted for the anchor because it
-   exercises the option at its statutory maximum and because the decision is genuinely non-obvious:
-   the lump sum is taxed **in full in the year it is paid, with no *Fünftelregelung***, which is
-   available only for the *Kleinbetragsrenten-Abfindung* [R12] [R15]. Model point 12 takes none.
+   **gap 10 records that this rests on nothing**. It is adopted for the anchor because it exercises
+   the option at its statutory maximum and because the decision is genuinely non-obvious — the lump
+   sum is taxed **in full in the year it is paid, with no *Fünftelregelung*** [R12] [R15]. Model
+   point 12 takes none.
 8. **No *Rentenfaktor* level, at any carrier, for any year, was established** (gap 9), so both the
    guaranteed factor and the construction comparing it with the current one are **[std]**. The
    sibling `delib` Schicht-3 file establishes the two-factor construction from that session's
@@ -292,11 +291,10 @@ payment month nor the reversal frequency is established (gap 6).
    that the annuity basis is a ***Generationentafel***, two-dimensional in attained age and calendar
    year, because a period-table proxy understates a deferred annuitisation by a margin that dwarfs
    every other assumption in the model [REG-R49].
-10. No *Rentengarantiezeit* length and no payout-phase surplus system was established at any
-    carrier (gaps 11, 12); ten years is the common German market length `[unverified]`. A constant
-    annuity is the base run because the AltZertG constrains which surplus systems are available
-    [R1]; model point 12 switches the guarantee period off, making its effect testable by
-    difference.
+10. No *Rentengarantiezeit* length and no payout-phase surplus system was established at any carrier
+    (gaps 11, 12); ten years is the common German market length `[unverified]`. A constant annuity
+    is the base run because the AltZertG constrains which surplus systems are available [R1]; model
+    point 12 switches the guarantee period off, making its effect testable by difference.
 11. The corpus establishes three death-benefit designs for the German deferred-annuity chassis —
     *Beitragsrückgewähr*, the accumulated capital, and a *Hinterbliebenenrente* — and does not
     establish which a Riester tariff uses. The composite pays **the accumulated capital**, because
@@ -352,10 +350,9 @@ in an Allianz *RiesterRente* variant, from third-party analysis of a specimen qu
     low-income cases of the § 86 table the Zulagen are the **majority** of the contribution, so
     charging them or not moves the account value by tens of per cent on exactly the model points the
     product was designed for. The composite charges them and says so.
-16. A real product fact, not a simplification: with a death benefit equal to the accumulated
-    capital there is no positive sum at risk in the accumulation phase and therefore no
-    *Risikobeitrag* [REG-R47]. A *Beitragsrückgewähr* floor **would** create one, which is one
-    reason the composite does not adopt it (footnote 11).
+16. A real product fact, not a simplification: with a death benefit equal to the accumulated capital
+    there is no positive sum at risk and therefore no *Risikobeitrag* [REG-R47]. A
+    *Beitragsrückgewähr* floor **would** create one, which is one reason the composite avoids it.
 17. German market *Rentenfaktoren* sit materially below the actuarially fair factor implied by any
     plausible annuitant basis, carrying both the *Sicherheitsabschlag* of a guarantee given decades
     ahead and the payout phase's cost loading. Deducting from each annuity payment **and** applying
@@ -408,13 +405,12 @@ exist in the statute, and the German book is full of the paths that discontinuit
 ### The one-year Zulage lag, and the second lag behind it
 
 **Two distinct lags run in the subsidy chain and they are easy to collapse into one.** The
-entitlement for contribution year `t` is computed from income in `t − 1` [R10]; the **cash** for
-contribution year `t` arrives from the ZfA in `t + 1` [R11] [REG-R42]. The reference implementation
-carries both explicitly: `income_ref(t) = income(t − 1)` for the entitlement, and
-`zulage_credited(t) = zulage_granted(t − 1)` for the cash. The **[std]** one-year cash lag has a
-stated rationale — [R11] establishes that the ZfA pays the provider and that the application
-deadline runs to the end of the **second** calendar year after the contribution year, but not **when
-in the following year** the money arrives (gap 6).
+entitlement for contribution year `t` is computed from income in `t − 1` [R10]; the **cash** arrives
+from the ZfA in `t + 1` [R11] [REG-R42]. The reference implementation carries both explicitly:
+`income_ref(t) = income(t − 1)` for the entitlement, `zulage_credited(t) = zulage_granted(t − 1)`
+for the cash. The **[std]** one-year cash lag has a stated rationale — [R11] establishes that the
+ZfA pays the provider and that the application deadline runs to the end of the **second** calendar
+year after the contribution year, but not **when in the following year** the money arrives (gap 6).
 
 One consequence is load-bearing and is a numbered pitfall: **the Zulage for the final contribution
 year arrives after contributions have stopped**, landing in the conversion year itself, where it
@@ -570,11 +566,10 @@ computed from contract data at all.
 
 ***Anbieterwechsel*** is a **statutory portability right with no Schicht-3 analogue**: terminate and
 have the accumulated capital transferred directly to another certified contract, with no *schädliche
-Verwendung* and no tax consequence [R1] [R14] [REG-R43]. Its cash-flow consequence is that a Riester
-"lapse" is frequently a **transfer out at full value** rather than a surrender — for the ceding
-insurer a full-value exit with no *Stornoabzug*, and for the model a **distinct decrement** that
-must not be collapsed into the lapse rate. The notice period and the transfer-charge cap were not
-established (gap 8). ***Beitragsfreistellung*** leaves the contract in force: § 165 VVG gives the
+Verwendung* and no tax consequence [R1] [R14] [REG-R43]. A Riester "lapse" is therefore frequently a
+**transfer out at full value** rather than a surrender — for the ceding insurer a full-value exit
+with no *Stornoabzug*, and for the model a **distinct decrement** that must not be collapsed into
+the lapse rate. The notice period and the transfer-charge cap were not established (gap 8). ***Beitragsfreistellung*** leaves the contract in force: § 165 VVG gives the
 right generally [REG-R28], and the Riester overlay is that the contract stays **certified**, the
 guarantee stands on what was paid, no further Zulagen arrive and **no subsidy is repaid** [R14]. It
 is a **state change, not a termination** — the guarantee accumulator freezes, the Zulage stream
@@ -654,8 +649,7 @@ fixes for everyone.
 |---|---|---|
 | GDV *Musterbedingungen* [S1] [S2] [S3] | both insurance forms | That a **unit-linked** AltZertG model wording exists [S1], that a **non-unit-linked** one exists at "Stand: 21.07.2025" [S2], and that they are **separate condition sets**. Inherited from a sibling session's search [S3]. **No clause, edition or page count** |
 | CosmosDirekt [S4] | classic insurance | That the house's Riester wording is tariff **LA 1005 A**, a **separate tariff family** from its Schicht-3 annuity (LA 904 A, LA 1204 A / LA 1201 A) and its Basisrente (LA 1100 A). Inherited [S4]. **No clause content** |
-| Allianz Lebensversicherungs-AG [S5] | classic and unit-linked | The market-leader comparator and the source of the corpus's only cost datum [unverified]. **Product names, tariff codes and new-business status not established** (gap 12) |
-| Debeka [S6]; R+V [S7]; Alte Leipziger [S8] | classic (and unit-linked at [S8]) | Why each is the right place to look: Debeka is Germany's largest writer of classically guaranteed life business with a membership weighted to *Beamte*, the most natural Riester constituency; R+V is the one group whose Riester offering spans an insurance and a fund chassis in the **same** distribution network as [S9]; Alte Leipziger is the broker-market comparator. **No document, tariff code or vintage for any of them** |
+| Allianz [S5]; Debeka [S6]; R+V [S7]; Alte Leipziger [S8] | classic (and unit-linked at [S5] [S8]) | Why each is the right place to look: Allianz is the market-leader comparator and the source of the corpus's only cost datum [unverified]; Debeka is Germany's largest writer of classically guaranteed life business, with a membership weighted to *Beamte*, the most natural Riester constituency; R+V is the one group whose Riester offering spans an insurance and a fund chassis in the **same** distribution network as [S9]; Alte Leipziger is the broker-market comparator. **No document, tariff code, vintage or new-business status for any of them** (gap 12) |
 | Union Investment [S9], DWS [S10], Deka [S11] | Riester-Fondssparplan | The three large fund savings plans, all meeting the same guarantee by **rule-based reallocation** between an equity and a bond fund and all sharing the **cash-lock** pathology. **No reallocation rule, fund name, fee or new-business status** (gaps 11, 12) |
 | *Sparkassen*; *Volks- und Raiffeisenbanken* [S12] | Riester-Banksparplan | The structurally simplest certified product and the one for which the guarantee costs **nothing at all**, since a deposit balance cannot fall below its deposits — the analytical control case, isolating the guarantee's cost as **return forgone** rather than as a capital charge. **No product, rate or bonus scale** |
 | Twenty-plus further life offices [S16] | classic and unit-linked | Named so a follow-up research pass has a list. **Nothing carrier-specific is known for any of them**, and no parameter anywhere in this library may cite [S16] for a **level** |
