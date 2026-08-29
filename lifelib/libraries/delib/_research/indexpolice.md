@@ -74,31 +74,26 @@ What that means for every claim here:
    records `Retrieved: no — direct HTTP egress blocked; no search corroboration (session search
    budget exhausted)`. **No document number, edition date, page count or publication date is
    asserted anywhere in this file**, because none could be established, and none is guessed.
-2. **No verbatim quotation appears anywhere in this file.** Where German contractual or statutory
-   wording is described, it is described in this author's own words as *what the instrument
-   provides*. There is no sentence in quotation marks attributed to any *Bedingungswerk*, statute or
-   supervisory document, because there is no summary and no retrieval to attribute one to. This is
-   the sharpest difference from `frlib/_research/temporaire-deces.md`, where the PDFs were
-   downloaded and read, and from the two sibling delib files, where search summaries reproduced
-   German sentences.
-3. **`[unverified]` is used generously and means what it always means.** Every specific paragraph
-   number, effective date, monetary amount, percentage, cap level, participation rate, product name
-   and market figure in this file is tagged `[unverified]` unless it is a structural fact of the
-   product that is not in dispute. The general shape of a well-established mechanic — that surplus
-   finances an option, that monthly returns are capped and summed, that the year cannot end
-   negative — is *not* tagged, because tagging it would drown the signal. The moment a claim becomes
-   specific and numeric, it is tagged.
+2. **No verbatim quotation appears anywhere in this file.** Statutory and contractual content is
+   described in this author's own words as *what the instrument provides*; no sentence is placed in
+   quotation marks and attributed to any *Bedingungswerk*, statute or supervisory document, because
+   there is neither a retrieval nor a search summary to attribute one to. That is the sharpest
+   difference from `frlib/_research/temporaire-deces.md`, whose PDFs were downloaded and read, and
+   from the two sibling delib files, whose search summaries reproduced German sentences.
+3. **`[unverified]` is used generously.** Every specific paragraph number, effective date, amount,
+   percentage, cap level, participation rate, product name and market figure is tagged unless it is
+   a structural fact of the product that is not in dispute. The general shape of a well-established
+   mechanic — surplus finances an option, monthly returns are capped and summed, the year cannot end
+   negative — is *not* tagged, because tagging it would drown the signal.
 4. **Uncertain numbers become `[std]` parameters, not citations.** Where the mechanic is certain and
-   the level is not — the Cap, the *Partizipationsquote*, the *Beitragsgarantie* percentage, the
-   *Rentenfaktor*, the charge levels, the lapse rate — the file states a `[std]` value with a
-   rationale and, where one can be argued, a plausible range. **A `[std]` number is honest; a
-   fabricated `[S4]` number is not.** The delib product specification and technical notes for
-   `indexpolice` are expected to carry a higher proportion of `[std]` parameters than any other
-   product in the library, and section 22 and the gaps register say exactly which.
-5. **Product names are the weakest class of claim in this file.** Where a carrier's index product is
-   named below, the name is recalled from general knowledge of the German market and is tagged
-   `[unverified]`. Gap 2 records this as the file's largest single defect. **A downstream document
-   must not present any product name in this file as established.**
+   the level is not — the Cap, the *Partizipationsquote*, the *Beitragsgarantie*, the
+   *Rentenfaktor*, the charges, the lapse rate — the file states a `[std]` value with a rationale and
+   an argued range. **A `[std]` number is honest; a fabricated `[S4]` number is not.** `indexpolice`
+   carries a higher proportion of `[std]` parameters than any other delib product, and section 22
+   and the gaps register say exactly which.
+5. **Product names are the weakest class of claim here.** Every carrier product name below is
+   recalled from general market knowledge and tagged `[unverified]`; gap 2 records this as the
+   file's largest single defect. **No downstream document may present one as established.**
 
 The consequence, stated plainly: a delib `indexpolice` citation is a **pointer, not a certificate**.
 It names the instrument a claim should be checked against. It does not assert that anyone checked
@@ -750,19 +745,17 @@ level is either `[unverified]` or `[std]`.
 - **What the index does is define a payoff, not an investment.** The policyholder is not invested in
   the index at any moment. The insurer buys the option package that hedges the payoff it has
   promised [R9]; the policyholder never holds it.
-- Three consequences a projection model must get right, and each of which is a place where a modeller
-  who thinks of the product as unit-linked will be wrong:
-  1. **The capital cannot fall.** There is no mark-to-market of a policyholder account. A bad index
-     year credits zero; it does not take anything away.
-  2. **There is no unit-pricing timing.** Values are struck at the *Indexjahr* boundary, annually,
-     not continuously. This is why the delib model is on an **annual** grid (`Index_DE_A`) while the
-     genuinely unit-linked product 3 is on a monthly one.
-  3. **The surrender value is a reserve, not a unit value** [R2].
-- **What the policyholder actually risks** is the *opportunity cost of one year's surplus*: if the
-  *Indexjahr* ends at or below zero, the surplus that would have been credited as interest under the
-  *sichere Verzinsung* is gone, spent on an option that expired worthless. That, and nothing more,
-  is the downside — and stating it precisely is the antidote to both of the usual misreadings (that
-  the product can lose capital; and that it is a cheap way to be long equities).
+- Three consequences a modeller who thinks of the product as unit-linked will get wrong:
+  (i) **the capital cannot fall** — there is no mark-to-market of an account, a bad year credits zero
+  rather than taking anything away; (ii) **there is no unit-pricing timing** — values are struck at
+  the *Indexjahr* boundary, annually, which is why the delib model is on an **annual** grid
+  (`Index_DE_A`) while the genuinely unit-linked product 3 is monthly; (iii) **the surrender value is
+  a reserve, not a unit value** [R2].
+- **What the policyholder actually risks is the opportunity cost of one year's surplus**: if the
+  *Indexjahr* ends at or below zero, the surplus that would have been credited under the *sichere
+  Verzinsung* is gone, spent on an option that expired worthless. That, and nothing more, is the
+  downside — and stating it precisely is the antidote to both usual misreadings, that the product can
+  lose capital and that it is a cheap way to be long equities.
 
 ### 3. The financing identity — the *Überschuss* as an option budget
 
@@ -789,15 +782,13 @@ This is the mechanical core of the product and everything else follows from it.
   interest rate, there is exactly one Cap at which the twelve-month capped-sum payoff costs the
   budget. That is why caps move from year to year without any change in the contract, and why they
   move in the directions described in section 8.
-- Two corollaries that ought to be on the first page of any honest description of the product:
-  1. **An Indexpolice does not have a larger risk budget than a *Klassik* contract of the same
-     vintage.** It has the identical budget — the same declared surplus, from the same
-     *Sicherungsvermögen*, subject to the same MindZV minimum — and spends it differently.
-  2. **The expected value of the index arm, priced risk-neutrally, equals the value of the safe arm.**
-     The whole of the difference between them is the equity risk premium earned on the option's
-     delta, less whatever the option package costs above its theoretical value in dealing terms. The
-     product is a redistribution of one year's surplus across states of the world, not a source of
-     extra return.
+- Two corollaries that belong on the first page of any honest description of the product:
+  (i) **an Indexpolice does not have a larger risk budget than a *Klassik* contract of the same
+  vintage** — it has the identical budget, the same declared surplus from the same
+  *Sicherungsvermögen* under the same MindZV minimum, and spends it differently; (ii) **priced
+  risk-neutrally, the index arm is worth exactly what the safe arm is worth** — the whole difference
+  between them is the equity risk premium earned on the option's delta, less dealing costs. The
+  product is a redistribution of one year's surplus across states of the world, not extra return.
 - **The budget can be zero.** If the insurer declares no surplus for a year, there is nothing to buy
   an option with, and the *Indexbeteiligung* for that year is worthless whatever the index does
   [R1][R8]. No German carrier's AVB, as far as this author knows, guarantees a minimum option
@@ -977,18 +968,14 @@ dominant one.
   price index of the order of **50 % to 80 %**; participation rates on a low-volatility house
   multi-asset index (section 9) of the order of **80 % to above 100 %**, the latter being possible
   precisely because the index is engineered to be cheap to buy options on. Gap 9.
-- **Other variants that exist in this product family**, none of them established for any named German
-  carrier and all `[unverified]`:
-  - **Cap plus Quote in combination** — monthly returns capped *and* the sum multiplied by a
-    participation rate.
-  - **A choice of variant each year**, so that the annual *Wahlrecht* is a three-way election between
-    the safe rate, the cap variant and the quote variant.
-  - **A *Mindest-Cap*** — a contractually guaranteed floor under the Cap the insurer may declare.
-    This is a real feature in the family and a meaningful one, because it converts an unbounded
-    discretion into a bounded one; but no level for any carrier is established. Gap 10.
-  - **Averaging (an Asian reading of the index)**, which reduces the effective volatility of the
-    observation and therefore buys a higher cap or quote at the cost of tracking the index less
-    closely.
+- **Other variants in this product family**, none established for any named German carrier, all
+  `[unverified]`: **Cap and Quote in combination** (monthly returns capped *and* the sum multiplied
+  by a participation rate); **a choice of variant each year**, making the *Wahlrecht* a three-way
+  election; a ***Mindest-Cap***, a contractually guaranteed floor under the Cap the insurer may
+  declare — a meaningful feature, because it converts an unbounded discretion into a bounded one, but
+  no level for any carrier is established (gap 10); and **averaging**, an Asian reading of the index
+  that lowers the effective volatility and so buys a higher cap or quote at the cost of tracking the
+  index less closely.
 - **delib's choice.** The reference implementation carries the **Cap design as the base** — because
   it is the design the product's reputation and its criticism both rest on, and because it is the one
   whose mechanic a model can demonstrate non-trivially — and the *Partizipationsquote* as a
@@ -1047,22 +1034,18 @@ dominant one.
      conditions `[unverified]` — which makes the monthly cap strip expensive and therefore forces the
      Cap down.
 - **The shift to house indices.** From the mid-2010s a substantial part of the German market replaced
-  the EURO STOXX 50 in these tariffs with **bespoke multi-asset indices**, constructed for the
-  insurer by an investment bank or index provider. Their common features:
-  - **Multi-asset**: equities, bonds, sometimes commodities and money market, so that the index's
-    volatility is structurally lower than an equity index's.
-  - **Volatility targeting**: a rule that scales exposure up and down to hold realised volatility at
-    a target, often around **5 %** `[unverified]`. This is the decisive engineering step: at a
-    5 % volatility target the option package costs a fraction of what it costs on a 20 %-volatility
-    equity index, so the same budget buys a **participation rate near or above 100 %**, or a very high
-    cap, which is a far better headline than "you get 55 % of the EURO STOXX 50".
-  - **Excess-return construction** and an **embedded fee**: the index is often defined net of a
-    funding rate and net of an index-level deduction of the order of **0,5 % to 1,5 % per year**
-    `[unverified]`. That deduction is inside the index, so it reduces the policyholder's return
-    without appearing anywhere in the contract's cost disclosure.
-  - **A short live history and a long backtest.** A house index constructed in year `T` typically has
-    a simulated history before `T` and only a few years of live data, which makes any published
-    "historical" performance of the product weaker evidence than it appears.
+  the EURO STOXX 50 in these tariffs with **bespoke multi-asset indices** built for the insurer by an
+  investment bank or index provider. Their common features: **multi-asset** composition (equities,
+  bonds, sometimes commodities and money market) so that volatility is structurally lower than an
+  equity index's; **volatility targeting**, a rule scaling exposure to hold realised volatility at a
+  target often around **5 %** `[unverified]` — the decisive engineering step, because at a 5 % target
+  the option package costs a fraction of what it costs on a 20 %-volatility equity index, so the same
+  budget buys a **participation rate near or above 100 %**, a far better headline than 55 % of the
+  EURO STOXX 50; an **excess-return construction with an embedded fee**, the index defined net of a
+  funding rate and net of an index-level deduction of the order of **0,5 % to 1,5 % per year**
+  `[unverified]`, which reduces the policyholder's return without appearing in any cost disclosure;
+  and **a short live history behind a long backtest**, which makes published "historical" performance
+  of the product weaker evidence than it appears.
 - **The honest summary of the shift**: it moved the give-up from a place the purchaser can see (a
   55 % participation rate; a 3 % cap) to places the purchaser cannot (an index rule, a volatility
   target, a fee inside the index level, a backtest). The headline numbers improved and the expected

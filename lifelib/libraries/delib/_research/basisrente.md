@@ -63,17 +63,10 @@ frlib one.
 blocked by an organisation network policy. `WebFetch` and `curl` are refused at the egress gateway
 for every host outside a short package-registry allowlist. The hosts that matter for this product
 were tried again while writing this file and every one of them was refused with the identical
-error — `curl: (56) CONNECT tunnel failed, response 403`:
-
-| Host | What it holds for this product | Result |
-|---|---|---|
-| `gesetze-im-internet.de` | EStG § 10, § 22; AltZertG; ZPO § 851c; VVG; DeckRV | 403 at the gateway |
-| `bafin.de` | supervisory material, *Merkblätter*, statistics | 403 at the gateway |
-| `gdv.de` | *Musterbedingungen*, market statistics | 403 at the gateway |
-| `de.wikipedia.org` | the encyclopaedic overview | 403 at the gateway |
-| `aktuar.de` | DAV, *Höchstrechnungszins*, DAV 2004 R | 403 at the gateway |
-| `bundesfinanzministerium.de` | BMF-Schreiben, *Sonderausgabenabzug* guidance | 403 at the gateway |
-| `bzst.de` | the certifying authority for Basisrentenverträge | 403 at the gateway |
+error — `curl: (56) CONNECT tunnel failed, response 403`: **`gesetze-im-internet.de`** (EStG § 10
+and § 22, AltZertG, ZPO § 851c, VVG, DeckRV), **`bafin.de`**, **`gdv.de`**, **`aktuar.de`**,
+**`bundesfinanzministerium.de`**, **`bzst.de`** — the authority that certifies Basisrentenverträge —
+and **`de.wikipedia.org`**.
 
 Not one *Bedingungswerk*, not one *Produktinformationsblatt*, not one *Basisinformationsblatt*, not
 one statutory text, not one BMF-Schreiben and not one insurer *Verbraucherinformation* was opened.
@@ -111,10 +104,8 @@ What follows from that, exactly, and it is applied without exception below:
    the level is not — a charge, a *Rentenfaktor*, a *Beitragsfreistellung* rate, a market share —
    this file ships a `[std]` value with a stated rationale and an argued plausible range rather than
    a fabricated source tag. A `[std]` number is honest. A guessed `[S4]` number is not.
-6. **The weight of the file is in the mechanics.** Sections 1 to 22 below are the part that does not
-   depend on having a PDF open, and they are written long and precise. The source blocks are
-   correspondingly short: they name the documents a checker must go to, and they say plainly what
-   they do and do not establish.
+6. **The weight of the file is in the mechanics.** Sections 1 to 22 below do not depend on having a
+   PDF open and are written long and precise; the source blocks are correspondingly short.
 
 **A delib citation is a pointer, not a certificate.** An `[R1]` tag on a sentence about
 § 10 Abs. 1 Nr. 2 Buchst. b EStG means *this is the instrument this claim must be checked against*.
@@ -132,18 +123,14 @@ turns on:
 | *Basisrente*, *Rürup-Rente*, *Basisrentenvertrag* | The Schicht-1 private pension of § 10 Abs. 1 Nr. 2 Buchst. b EStG. "Rürup" is a market nickname; the statute and the certifying authority say *Basisrentenvertrag* |
 | *Schicht 1 / 2 / 3* | The three layers of German retirement provision: basic (GRV, Versorgungswerk, Basisrente); subsidised supplementary (Riester, bAV); unsubsidised private |
 | *Alterseinkünftegesetz* (AltEinkG) | The 2004 statute that created the layer architecture, the *nachgelagerte Besteuerung* and the Basisrente |
-| *Nachgelagerte Besteuerung* | Deferred taxation: relief on contributions, tax on benefits — the design principle of Schicht 1 |
 | *Sonderausgabenabzug* | Deduction of contributions from taxable income as *Sonderausgaben* under § 10 EStG |
 | *Höchstbetrag* | The annual ceiling on deductible Schicht-1 contributions, pegged to the maximum contribution to the *knappschaftliche Rentenversicherung* |
 | *Beitragsbemessungsgrenze* (BBG) | Contribution assessment ceiling of a social-insurance branch; the *knappschaftliche* BBG is what the *Höchstbetrag* tracks |
-| *Knappschaftliche Rentenversicherung* | The miners' branch of the statutory pension scheme, with its own higher BBG and higher contribution rate |
 | *Besteuerungsanteil* | The percentage of the annuity that is taxable, fixed by the calendar year of *Rentenbeginn* and constant for life |
 | *Rentenfreibetrag* | The euro complement of the *Besteuerungsanteil*, frozen in the year after *Rentenbeginn* and never re-indexed |
 | *Ertragsanteil* | The much lower taxable fraction applied to Schicht-3 annuities under § 22 EStG — the comparator, not this product's rule |
-| *Kohortenprinzip* | The cohort principle: the taxable share depends on the year the annuity starts, not on the taxpayer |
 | *Vererblichkeit*, *Übertragbarkeit*, *Beleihbarkeit*, *Veräußerbarkeit*, *Kapitalisierbarkeit* | The five properties a Basisrente entitlement must **not** have |
 | *Hinterbliebenenabsicherung* | Survivor cover; permitted only for the spouse or registered partner and for children while *Kindergeld* runs |
-| *Kindergeldberechtigung* | Entitlement to child benefit; the statutory test that defines an eligible child beneficiary |
 | *Beitragsrückgewähr* | Return of contributions on death; in Schicht 1 it can only fund a survivor's annuity, never a lump sum |
 | *Rentengarantiezeit* | Guaranteed payment period after *Rentenbeginn*; in Schicht 1 payable only to permitted survivors |
 | *Berufsunfähigkeits-Zusatzversicherung* (BUZ) | Occupational-disability rider written inside the main contract |
@@ -151,20 +138,16 @@ turns on:
 | *Beitragsfreistellung* | Making the contract paid-up; the Basisrente's only exit |
 | *Kündigung* / *Rückkaufswert* | Termination / surrender value — both effectively unavailable on this product |
 | *Zuzahlung* / *Einmalbeitrag* | A one-off top-up into an existing contract / a single-premium contract |
-| *Beitragsdynamik* | Contractual annual premium escalation |
 | *Rentenbeginn* | Vesting date; the boundary at which the accumulated capital becomes an annuity |
 | *Aufschubphase* / *Rentenphase*, *Rentenbezugsphase* | Deferment (accumulation) phase / payout phase |
 | *Rentenfaktor* | Monthly annuity per 10 000 € of capital at *Rentenbeginn* |
-| *Deckungskapital* / *Deckungsrückstellung* | The actuarial reserve of one contract / the balance-sheet provision covering it |
 | *Rechnungszins* / *Höchstrechnungszins* | The technical interest rate the contract is priced and reserved on / its statutory maximum for new business |
 | *Überschussbeteiligung* / *Schlussüberschussanteil* | Participation in surplus / terminal bonus |
-| *Zillmerung* / *Höchstzillmersatz* | Financing acquisition costs into the reserve / the statutory cap on the amount so financed |
 | *Effektivkosten* | Reduction in yield: the annualised return give-up caused by all charges, disclosed on the *Produktinformationsblatt* |
 | *Chancen-Risiko-Klasse* (CRK) | The standardised risk class shown on the *Produktinformationsblatt* |
 | *Pfändungsschutz* | Protection from attachment by creditors; § 851c ZPO for this product |
 | *Zertifizierung* | Certification of the contract by the *Bundeszentralamt für Steuern* under AltZertG |
 | *Produktinformationsblatt* (PIB) | The standardised pre-sale document required for certified contracts |
-| *Basisinformationsblatt* (BIB) | The PRIIP key information document |
 | *Versorgungsausgleich* | Pension rights sharing on divorce — the one transfer the statute permits |
 | *Kleinbetragsrente* | A trivially small annuity; commutable in Schicht 2, **not** in Schicht 1 |
 
@@ -247,18 +230,17 @@ entries a checker should verify first.
   "Neue Klassik" design) and **BasisRente InvestFlex** (unit-linked) `[unverified]` as to the exact
   current line-up
 - URL: not established
-- Content: **nothing established beyond the family's existence and the market position of its
-  publisher.** Named here because Allianz is the largest German life writer and its Basisrente
-  wordings are the single most consequential set of primary documents this file could not reach.
-  Any downstream statement about Allianz Basisrente terms must be sourced to [S2] or dropped.
+- Content: **nothing established beyond the family's existence.** Named because Allianz is the
+  largest German life writer, so its Basisrente wordings are the most consequential documents this
+  file could not reach. Any downstream statement about them must be sourced to [S2] or dropped.
 
 ### S4 — Alte Leipziger Lebensversicherung a. G., **AL_RoyalBasisRente** (Klassik and Fonds)
 - Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel
 - Doc type: AVB, *Produktinformationsblatt*, *Verbraucherinformation*
 - URL: not established
-- Content: **nothing established beyond existence.** Alte Leipziger is one of the carriers most
-  consistently placed at the top of independent Basisrente ratings [R24] and is the natural first
-  target for a checker with a working network. Product names are `[unverified]`.
+- Content: **nothing established beyond existence.** Alte Leipziger is repeatedly placed at the top
+  of independent Basisrente ratings [R24] and is the natural first target for a checker with a
+  working network. Product names are `[unverified]`.
 
 ### S5 — NÜRNBERGER Lebensversicherung AG, **Basis-Rente** with **Berufsunfähigkeits-Zusatzversicherung**
 - Publisher: NÜRNBERGER Lebensversicherung AG
@@ -279,9 +261,8 @@ entries a checker should verify first.
 - Publisher: Volkswohl Bund Lebensversicherung a. G., Dortmund
 - Doc type: AVB, *Produktinformationsblatt*
 - URL: not established
-- Content: **nothing established beyond existence.** Named because Volkswohl Bund is a
-  broker-channel carrier with a large Basisrente book and is repeatedly named in rating
-  commentary [R24]; the broker channel is where this product is predominantly sold (mechanic 21).
+- Content: **nothing established beyond existence.** A broker-channel carrier with a large
+  Basisrente book [R24]; the broker channel is where this product is sold (mechanic 21).
 
 ### S7 — LV 1871 (Lebensversicherung von 1871 a. G.), Basisrente
 - Publisher: Lebensversicherung von 1871 a. G., München
@@ -297,10 +278,9 @@ entries a checker should verify first.
 - Publisher: Swiss Life AG, Niederlassung für Deutschland
 - Doc type: AVB, *Produktinformationsblatt*
 - URL: not established
-- Content: **nothing established beyond existence.** Named because Swiss Life is a large
-  broker-channel Schicht-1 writer and because its *Maximo* line is a hybrid with a selectable
-  guarantee level, i.e. the third of the three asset forms in mechanic 9. Product name
-  `[unverified]`.
+- Content: **nothing established beyond existence.** A large broker-channel Schicht-1 writer whose
+  *Maximo* line is a hybrid with a selectable guarantee level — the third asset form of mechanic 9.
+  Product name `[unverified]`.
 
 ### S9 — Continentale Lebensversicherung AG, Basisrente (**Rente Invest Basis** family)
 - Publisher: Continentale Lebensversicherung AG, Dortmund
@@ -313,10 +293,9 @@ entries a checker should verify first.
 - Doc type: AVB, *Produktinformationsblatt*. Marketed in *performance-safe* and *index-safe*
   variants `[unverified]`
 - URL: not established
-- Content: **nothing established beyond existence.** Named because the *index-safe* variant, if the
-  name is right, would be an **index-linked Basisrente** — a fourth asset form beyond the three of
-  mechanic 9, and a bridge to delib product 4 (`indexpolice`). That this could not be checked is
-  gap 12.
+- Content: **nothing established beyond existence.** If the *index-safe* name is right it would be
+  an **index-linked Basisrente** — a fourth asset form beyond the three of mechanic 9 and a bridge
+  to delib product 4 (`indexpolice`). That this could not be checked is gap 12.
 
 ### S11 — The carriers for which nothing whatever was established
 - Publishers: **Debeka**, **R+V**, **HDI**, **Gothaer**, **Zurich Deutscher Herold**, **ERGO**,
@@ -379,10 +358,9 @@ entries a checker should verify first.
 - Doc type: the statutory annual information for a certified contract
 - URL: not established
 - Content: the statute requires an annual statement to a Basisrente saver `[unverified]` as to the
-  precise paragraph. Its interest for delib is the same as the *Standmitteilung*'s for the endowment
-  chassis: it names, side by side, the state variables a projection model must carry — the
-  contributions paid in the year, the accumulated value, the guaranteed benefit and the projected
-  annuity. **The field list was not established.**
+  paragraph. Its interest for delib is that it names, side by side, the state variables a projection
+  model must carry — contributions paid in the year, accumulated value, guaranteed benefit and
+  projected annuity. **The field list was not established.**
 
 ### S16 — Consumer, comparison and rating material
 - Publishers: **Finanztip**, **Stiftung Warentest / Finanztest**, the **Verbraucherzentralen**,
@@ -845,9 +823,6 @@ another delib product it is stated once and cross-referenced rather than re-deri
   by a *Kapitalverwaltungsgesellschaft* as a fund savings plan with an insurance-backed payout
   phase — the *Fonds-Basisrente* — which meets the same tests but is out of delib scope
   `[unverified]` as to the current market presence of that form.
-- **No document in the corpus states this structure.** Sections 1 to 5 rest on [R1] and [R9] as
-  pointers, and on general knowledge. That is the honest position and it is why the register at the
-  end of this file is long.
 
 ### 2. The two phases and the Rentenbeginn boundary
 
@@ -945,10 +920,9 @@ for a cash-flow model.
   contractually excluded [R13]. Taken together with § 851c this is the market's *insolvenzfest* /
   *Hartz-IV-fest* claim, and it is the principal non-tax reason a self-employed person buys the
   product.
-- **The protection is a consequence of the prohibitions, not an added feature.** There is nothing to
-  attach because there is nothing to realise. That symmetry is worth stating in the product-spec:
-  the same clause that makes the product illiquid for the owner makes it invisible to the owner's
-  creditors.
+- **The protection is a consequence of the prohibitions, not an added feature**: there is nothing to
+  attach because there is nothing to realise. The same clause that makes the product illiquid for
+  the owner makes it invisible to the owner's creditors.
 
 ### 6. The Förderung — the Höchstbetrag and the knappschaftliche peg
 
@@ -1096,11 +1070,10 @@ for a cash-flow model.
   there is nothing to stop a writer selling a pure unit-linked policy. The judgement that
   ***fondsgebundene* Basisrenten, with or without a partial guarantee, are the dominant new-business
   form and that pure *klassisch* is residual** is **general knowledge, `[unverified]`, and
-  unsupported by any figure in this corpus.** Gap 3. It is nevertheless the judgement the
-  product-spec should adopt, with the tag, because the alternative — asserting that *klassisch*
-  still leads — is contradicted by the same market evidence that led three of the largest German
-  writers to withdraw the classic Schicht-3 tariff altogether, which a sibling delib file did
-  establish by search.
+  unsupported by any figure in this corpus** (gap 3). It is nevertheless the judgement the
+  product-spec should adopt, with the tag: the alternative is contradicted by the same market
+  evidence that led three of the largest German writers to withdraw the classic Schicht-3 tariff
+  altogether, which a sibling delib file did establish by search.
 - **What delib should model, and why.** The **klassisch** form, on an annual grid. The reasons are
   stated in mechanic 22; the short version is that the Schicht-1 *constraints* are the subject of
   this product and they are clearest against a general-account chassis whose reserve recursion the
@@ -1389,8 +1362,7 @@ for a cash-flow model.
      Schicht-3 mechanics that reach a Basisrente at no point in its life.
 - **The economic price of the ban** is that the policyholder bears conversion risk with no way out —
   which is what makes the guaranteed *Rentenfaktor* the product's most valuable guarantee
-  (mechanic 10) — and that the contract is worth nothing to anyone needing liquidity. Both belong in
-  the product-spec's risk section rather than being left for the reader to infer.
+  (mechanic 10) — and that the contract is worth nothing to anyone needing liquidity.
 
 ### 19. Kleinbetragsrente — the answer is no
 
@@ -1474,25 +1446,21 @@ carried. Gap 3 records the whole of it.
   contribution — the ceiling is fifteen to thirty times larger and the buyer is a higher earner.
 - **Average contribution.** Of the order of **two to four thousand euro a year** `[unverified]`,
   against roughly eight hundred for a Riester contract `[unverified]`.
-- **The buyer.** Two distinct populations, and the product-spec should describe both:
-  1. **The self-employed person with no compulsory scheme** — the buyer the product was designed
-     for. The entire *Höchstbetrag* is free (mechanic 7); the *Pfändungsschutz* (mechanic 5) matters
-     as much as the relief; the income is volatile, which is what the *Zuzahlung* structure is for
-     (mechanic 8); and there is often no other pension at all.
-  2. **The high-earning employee or partner using residual headroom** as a late-career deferral
-     vehicle, frequently by *Einmalbeitrag* in a high-income year. This buyer enters at 50 or later,
-     with a short deferment and a high marginal rate, and treats the contract as a tax instrument
-     rather than a pension.
-  In both cases the entry age is **materially higher than for a Riester or Schicht-3 contract** —
-  the mid-forties rather than the early thirties `[unverified]` — because the product only makes
-  sense once income is high enough for the relief to be worth the illiquidity.
-- **Distribution** is predominantly through **brokers and independent advisers** `[unverified]`,
-  because the tax interaction requires advice; the *Nettotarif* / fee-based segment is
-  correspondingly more developed on this product than on most German life products.
-- **The product's fundamental commercial problem**, and the thing every consumer source says about
-  it: the relief is real and large, but **the product is irreversible**. A buyer who commits at 45
-  and needs the money at 55 cannot have it. That is not a defect to be engineered away; it is the
-  consideration for the *Pfändungsschutz* and for the relief.
+- **The buyer.** Two distinct populations, and the product-spec should describe both. First, **the
+  self-employed person with no compulsory scheme** — the buyer the product was designed for: the
+  entire *Höchstbetrag* is free (mechanic 7), the *Pfändungsschutz* (mechanic 5) matters as much as
+  the relief, the income is volatile, which is what the *Zuzahlung* structure is for (mechanic 8),
+  and there is often no other pension at all. Second, **the high-earning employee or partner using
+  residual headroom** as a late-career deferral vehicle, frequently by *Einmalbeitrag* in a
+  high-income year, entering at 50 or later with a short deferment. In both cases the entry age is
+  **materially higher than for a Riester or Schicht-3 contract** — the mid-forties rather than the
+  early thirties `[unverified]` — because the product only makes sense once income is high enough
+  for the relief to be worth the illiquidity. **Distribution** is predominantly through **brokers
+  and independent advisers** `[unverified]`, and the fee-based *Nettotarif* segment is more
+  developed here than on most German life products.
+- **The product's fundamental commercial problem**: the relief is real and large, but **the product
+  is irreversible**. A buyer who commits at 45 and needs the money at 55 cannot have it. That is not
+  a defect to be engineered away; it is the consideration for the *Pfändungsschutz* and the relief.
 
 ### 22. What a projection model needs, and what the corpus supplies
 

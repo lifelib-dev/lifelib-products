@@ -416,13 +416,12 @@ statutory disclosure artefacts that every one of the others carries.
 - Doc type: AVB, *Verbraucherinformationen* and *Produktinformationsblätter* for Riester annuities
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration in this session.
-- Content: a single grouped known-reference entry, deliberately not split into per-carrier entries,
-  because **nothing carrier-specific was established for any of them**. They are named because the
-  brief asked for named insurers and because a downstream reader needs to know which houses' Riester
-  documents a real research pass would go to. **Which of these houses ever wrote Riester business,
-  which still do, and what their tariffs contain are all unestablished** (gap 12). No parameter in
-  the delib `riester_rente` documents may cite [S16] for a **level**; it may be cited only for the
-  proposition that a body of carrier wordings exists.
+- Content: one grouped known-reference entry, deliberately not split per carrier, because **nothing
+  carrier-specific was established for any of them**. They are named so a downstream reader knows
+  which houses' Riester documents a real research pass would go to. **Which of these houses ever
+  wrote Riester business, which still do, and what their tariffs contain are all unestablished**
+  (gap 12). No parameter may cite [S16] for a **level**; it may be cited only for the proposition
+  that a body of carrier wordings exists.
 
 ---
 
@@ -944,19 +943,14 @@ be established appears here as a `[std]` parameter with a rationale, never as a 
 
 ### 2. Eligibility: who can hold this contract
 
-- ***Unmittelbar zulageberechtigt*** — the eligibility that the saver holds in their own right
-  [R7]: compulsory members of the statutory pension insurance (the great majority of employees);
-  *Beamte*, judges, soldiers and equivalent office-holders, on consenting to the transmission of
-  their remuneration data; farmers in the *Alterssicherung der Landwirte*; recipients of
-  *Arbeitslosengeld*; parents credited with *Kindererziehungszeiten*, for up to three years per
-  child `[unverified]`; recipients of a full *Erwerbsminderungs-* or *Dienstunfähigkeitsrente*; and
-  *geringfügig Beschäftigte* who have waived the exemption from compulsory insurance.
-- ***Mittelbar zulageberechtigt*** — derived from a spouse or registered partner who is
-  *unmittelbar* eligible, provided the couple are not permanently separated, both are EU/EEA
-  resident, and **the derived person holds an own certified contract and pays at least the 60 €
-  *Sockelbeitrag*** [R7] [R10] [R20].
-- **Not eligible**: the self-employed who are not compulsorily insured, and members of the
-  *berufsständische Versorgungswerke* [R7]. Those groups are directed to the *Basisrente* instead —
+- The three categories are set out in full in [R7] and are not repeated here. In summary:
+  ***unmittelbar*** — compulsory members of the statutory pension insurance, *Beamte* and equivalent
+  office-holders (on consenting to data transmission), farmers, *Arbeitslosengeld* recipients,
+  parents in *Kindererziehungszeiten*, full *Erwerbsminderungs-* and *Dienstunfähigkeitsrentner*,
+  and *geringfügig Beschäftigte* who waived the exemption; ***mittelbar*** — the spouse of an
+  *unmittelbar* eligible person, holding an own certified contract and paying the 60 €
+  *Sockelbeitrag* [R10] [R20]; **not eligible** — the self-employed outside compulsory insurance and
+  members of the *berufsständische Versorgungswerke*, who are directed to the *Basisrente* instead,
   which is exactly why delib carries `basisrente` as a separate product.
 - **Eligibility is annual and can change.** A saver can be *unmittelbar* eligible in one year,
   *mittelbar* in the next and not eligible at all in a third, without the contract changing. Nothing
@@ -1385,17 +1379,14 @@ they are these, with every specific `[unverified]`:
   accruing at a statutory **2 %** per year `[unverified]`, whose balance is taxed in the payout
   phase either **spread annually to the year the saver reaches 85** or **in one sum with a 30 %
   discount** `[unverified]`.
-- **Why it is excluded from the delib model, in three reasons of decreasing weight:**
-  1. **There is no cash flow.** The *Wohnförderkonto* is a tax memorandum with a notional interest
-     rate; it never holds money, never pays money, and never appears in an insurer's liability. A
-     liability cash-flow projection has nothing to project.
-  2. **The liability, where there is one, is a loan.** A Riester *Darlehen* or *Bausparvertrag* is a
-     banking liability with a repayment schedule, an interest rate and a credit exposure — a
-     different model, in a different library, if it were in scope at all.
-  3. **From the insurer's side the withdrawal is simply an exit.** An *Eigenheimbetrag* taken out of
-     a Riester **insurance** contract terminates the annuity liability at full value. The model can
-     represent that as a decrement; it cannot represent what happens to the money afterwards, and
-     pretending otherwise would be the kind of scope creep the delib brief forbids.
+- **Why it is excluded from the delib model, in three reasons of decreasing weight.** (1) **There is
+  no cash flow**: the *Wohnförderkonto* is a tax memorandum with a notional interest rate; it never
+  holds or pays money and never appears in an insurer's liability. (2) **The liability, where there
+  is one, is a loan**: a Riester *Darlehen* or *Bausparvertrag* is a banking liability with a
+  repayment schedule and a credit exposure — a different model, in a different library, if in scope
+  at all. (3) **From the insurer's side the withdrawal is simply an exit**: an *Eigenheimbetrag* out
+  of a Riester **insurance** contract terminates the annuity liability at full value; the model can
+  represent that as a decrement and cannot represent what happens to the money afterwards.
 - **What the delib documents must nonetheless say.** That Wohn-Riester exists, that it is a large
   share of the Riester contract count (section 20), that a contract counted as "Riester" in an
   official statistic may be a mortgage, and that the model's contract count is therefore **not**
@@ -1429,25 +1420,20 @@ a 100 %-guaranteed unit-linked product is possible at all. All of this is `[unve
 description of any particular product; it is the German market's generic taxonomy.
 
 - **Statisches Hybridmodell** — each contribution is split **once**, at receipt, between the
-  *Sicherungsvermögen* (which must accumulate to the guaranteed amount at *Rentenbeginn*) and a free
-  fund. The split ratio is exactly the `(1 + i)^−n` factor of section 19 and is fixed for that
-  contribution's remaining term. Simple, transparent, and maximally conservative.
-- **Dynamisches Hybridmodell (two- or three-pot)** — the split is **rebalanced periodically** between
-  the *Sicherungsvermögen*, a *Wertsicherungsfonds* and a free fund, so that a contract running ahead
-  of its guarantee can carry more risk.
-- **i-CPPI** — an individual constant-proportion portfolio insurance rule: the risk allocation is a
-  multiple of the *cushion* (the excess of the account value over the present value of the
-  guarantee), rebalanced frequently and per policy.
+  *Sicherungsvermögen* and a free fund, in exactly the `(1 + i)^−n` ratio of section 19, fixed for
+  that contribution's remaining term. **Dynamisches Hybridmodell (two- or three-pot)** — the same
+  split, **rebalanced periodically** across the *Sicherungsvermögen*, a *Wertsicherungsfonds* and a
+  free fund, so a contract running ahead of its guarantee may carry more risk. **i-CPPI** — an
+  individual constant-proportion rule: the risk allocation is a multiple of the *cushion* (account
+  value less the present value of the guarantee), rebalanced per policy.
 - **The pathology all three share is the *cash lock***. When the account value falls to the present
-  value of the guarantee, the cushion is zero, the risk allocation is zero, and the contract is
-  locked into the guarantee asset for its remaining term — it cannot participate in a subsequent
-  recovery. The lower the *Rechnungszins* and the shorter the remaining term, the more easily this
-  happens, which is why the 0,25 % regime of 2022–2024 [R22] was as damaging to the unit-linked
-  Riester designs as to the classic ones.
-- **The classic chassis has no cash lock** because it has no risk asset at the policy level: the
-  policyholder's account is always the *Deckungskapital*, and the asset risk sits in the insurer's
-  general account under the *Überschussbeteiligung*. That is a real advantage of the form this model
-  represents and the product spec should say so.
+  value of the guarantee the cushion is zero, the risk allocation is zero, and the contract is locked
+  into the guarantee asset for its remaining term, unable to participate in a recovery. The lower the
+  rate and the shorter the remaining term, the more easily this happens — which is why the 0,25 %
+  regime [R22] damaged the unit-linked Riester designs as much as the classic ones.
+- **The classic chassis has no cash lock**: it has no risk asset at policy level, the account is
+  always the *Deckungskapital*, and the asset risk sits in the insurer's general account under the
+  *Überschussbeteiligung*. That is a real advantage of the form this model represents.
 
 ### 19. Why the 100 % *Beitragsgarantie* is the mechanical heart
 

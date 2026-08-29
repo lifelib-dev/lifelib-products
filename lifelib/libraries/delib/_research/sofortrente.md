@@ -61,9 +61,8 @@ Access date for all citations: **2026-08-29**.
 
 ## Citation discipline and retrieval conditions
 
-Read this section before reading any citation in this file, because a delib citation is a weaker
-object than a citation in the four sister libraries and the difference is stated rather than
-glossed.
+A delib citation is a weaker object than a citation in the four sister libraries, and the
+difference is stated rather than glossed.
 
 **No document listed in this file was retrieved.** Direct HTTP egress from this build environment
 is blocked by an organisation network policy. `WebFetch` and `curl` are refused with HTTP 403 at
@@ -76,11 +75,8 @@ below (`zurich.de`, `cosmosdirekt.de`, `nuernberger.de`, `debeka.de`, `allianz.d
 
 **A second, independent limit applied to this product.** The session's `WebSearch` budget — 200
 calls, shared across the parallel delib researchers — was **already exhausted before work on this
-product began**. Not one search was run for the *Sofortrente*. The brief anticipated thirty to
-eighty German-language queries covering *Rentenfaktor* levels from comparison portals, insurer
-*Versicherungsbedingungen*, *Produktinformationsblätter*, *Basisinformationsblätter*, the
-*Überschussbeteiligung* declarations, Stiftung Warentest's *Sofortrente* tests and twenty named
-carriers. **Zero were available.** This is gap 1 and everything in this file follows from it.
+product began**. Not one search was run for the *Sofortrente*, against a brief that anticipated
+thirty to eighty. This is gap 1 and everything in this file follows from it.
 
 What that means, exactly, and it is applied without exception below:
 
@@ -106,16 +102,15 @@ What that means, exactly, and it is applied without exception below:
    well-established mechanic — that would drown the signal — but the moment a claim becomes
    *specific and numeric* it carries either a corroborated source or the tag.
 5. **Uncertain numbers are `[std]` parameters, not citations.** This is the most consequential
-   rule for this product, because the *Sofortrente* is a product whose entire commercial character
-   is a number — the euros per month per 100 000 € of *Einmalbeitrag* — and that number could not
-   be established at any carrier for any year. Rather than guess it, section 4 below **constructs**
-   it from annuity mathematics on an explicitly stated proxy basis, prints the construction so a
-   reader can reproduce it with a calculator, and labels every resulting figure `[std]`. A `[std]`
-   number with a printed derivation is honest. A fabricated `[S6]` number is not.
+   rule here, because the *Sofortrente*'s entire commercial character is a number — the euros per
+   month per 100 000 € of *Einmalbeitrag* — and that number could not be established at any carrier
+   for any year. Rather than guess it, section 4 **constructs** it from annuity mathematics on an
+   explicitly stated proxy basis, prints the construction so a reader can reproduce it, and labels
+   every resulting figure `[std]`. A `[std]` number with a printed derivation is honest; a
+   fabricated `[S6]` number is not.
 
-**Prefer to say less, precisely, than more, loosely.** Where the corpus establishes a mechanic and
-not its level — which is the normal case here — the mechanic is written long and the level is a
-`[std]` parameter with an argued range. The gaps register at the end is not a formality; it is a
+Where the corpus establishes a mechanic and not its level — the normal case here — the mechanic is
+written long and the level is `[std]` with an argued range. The gaps register at the end is a
 substantial part of this file's value, and a reader who needs a market figure should start there.
 
 ---
@@ -130,11 +125,7 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 |---|---|
 | *Sofortrente* / *sofort beginnende Rentenversicherung* | immediate annuity: annuity payments begin at once, or after a short deferment |
 | *Einmalbeitrag* | single premium: the whole consideration, paid once at inception |
-| *Rentenbeginn* | annuity commencement date; for this product, at or shortly after inception |
-| *Rentenbezugsphase* / *Rentenbezug* | the payout phase — for this product, the whole of the contract |
 | *Leibrente* | life annuity: payable for as long as the annuitant lives, and not one day longer |
-| *versicherte Person* | the life on which the annuity depends; not necessarily the *Versicherungsnehmer* |
-| *Versicherungsnehmer* | the policyholder: the party to the contract, who pays and who elects |
 | *garantierte Rente* | the guaranteed annuity, computed on the tariff bases alone |
 | *Überschussrente* | the surplus-financed increment to the annuity in payment; declared, not guaranteed |
 | *Gesamtrente* | the sum of the two, the amount actually paid in a given year |
@@ -142,11 +133,9 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 | *Rentenhöhe* | the level of the annuity — the quantity a *Sofortrente* is bought and compared on |
 | *vorschüssig* / *nachschüssig* | payable in advance / in arrears, at the start or the end of the payment period |
 | *Rentengarantiezeit* | annuity guarantee period: payments continue to survivors if the annuitant dies inside it |
-| *Restgarantiezeit* | the unexpired part of the *Rentengarantiezeit* at the date of death |
 | *Kapitalrückgewähr* / *Beitragsrückgewähr* | refund on death of the *Einmalbeitrag* less the annuity instalments already paid |
 | *Hinterbliebenenrente* | survivor's annuity, payable to a named second life after the annuitant's death |
 | *Anwartschaft* | the contingent entitlement of the survivor while the annuitant is alive |
-| *mitversicherte Person* | the second life whose survival triggers the *Hinterbliebenenrente* |
 | *Aufschubzeit* | deferment period: the gap between payment of the *Einmalbeitrag* and *Rentenbeginn* |
 | *Überschussbeteiligung* | profit participation: the policyholder's share of the insurer's surplus |
 | *Überschussverwendung* | the *use* the declared surplus is put to — the four payout-phase forms of section 9 |
@@ -154,26 +143,17 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 | *steigende* / *dynamische Überschussrente* | the form in which the annuity starts low and rises each year with declared surplus |
 | *teildynamische Überschussrente* | the intermediate form: part of the surplus taken up front, part left to finance increases |
 | *Bonusrente* | surplus applied as a paid-up increment of annuity, permanently added to the payment |
-| *Zinsüberschuss* / *Risikoüberschuss* / *Kostenüberschuss* | the interest, mortality and expense components of surplus |
 | *Bewertungsreserven* | unrealised capital gains; policyholders participate under § 153 Abs. 3 VVG |
 | *Rechnungszins* | the technical interest rate in the tariff |
 | *Höchstrechnungszins* (*Garantiezins*) | the statutory maximum *Rechnungszins* for new business, set in the *Deckungsrückstellungsverordnung* |
-| *Deckungsrückstellung* | the statutory reserve for the contract; for an annuity in payment, the reserve for the remaining payments |
 | *Zinszusatzreserve* | the additional interest reserve German insurers built against legacy guarantees |
-| *Rechnungsgrundlagen* | the tariff bases: mortality table, interest rate, expense loadings |
 | *Generationentafel* | generation table: mortality by year of birth, with the future trend inside the table |
 | *Trendfunktion* | the mortality-improvement function of a generation table |
 | *Sicherheitszuschlag* | the prudential margin added to the best-estimate basis to make a first-order basis |
-| *Rechnungsgrundlagen erster / zweiter Ordnung* | first-order (prudent, tariff) and second-order (best-estimate) bases |
-| *Altersverschiebung* | age shift: the device by which one table is adapted to another cohort |
 | *Ertragsanteil* | the taxable fraction of a private life annuity under § 22 EStG |
 | *Bankauszahlplan* / *Entnahmeplan* | bank payout plan: a capital drawdown with a fixed term, the *Sofortrente*'s standard comparator |
 | *Langlebigkeitsrisiko* | longevity risk — the risk the annuity is written to remove from the annuitant |
 | *Kapitalverzehr* | the consumption of capital: what a payout plan does and an annuity does not |
-| *Rentenanpassung* | the annual adjustment of the annuity in payment following a new declaration |
-| *Standmitteilung* | the annual statement the insurer must send |
-| *Sicherungsvermögen* | the ring-fenced general account backing guarantees |
-| *Schicht 1 / 2 / 3* | the three layers of German retirement provision; this product is Schicht 3 |
 
 ---
 
@@ -1672,39 +1652,34 @@ one of these is a gap, not an omission**, and each appears below.
 The `[std]` markers used above, with their rationale. Each is a parameter or an illustration chosen
 for the reference implementation where the corpus is silent; none is any carrier's value.
 
-1. **Deferral illustration** (section 3). Arithmetic on the section 4 proxy basis at 1,00 %, gross
-   of charges, for a purchase at exact age 65. Printed to show the *shape* of the deferral effect
-   and the price of a death benefit inside it, not to quote a market.
-2. **Annuity per 100 000 €** (section 4). The Gompertz–Makeham proxy `mu(x) = 0.0002 +
+1. **Deferral illustration** (section 3): arithmetic on the section 4 proxy basis at 1,00 %, gross
+   of charges, at exact age 65 — the *shape* of the deferral effect and the price of a death
+   benefit inside it, not a market quote.
+2. **Annuity per 100 000 €** (section 4): the Gompertz–Makeham proxy `mu(x) = 0.0002 +
    1.5e-5 x 1.10^x`, monthly-in-advance via `a12 = a_due - 11/24`, at 0,25 %, 1,00 % and 1,75 %,
-   gross of charges. Chosen so that life expectancy at 65 (24.29 years) is of the right order for a
-   **prudent annuitant** basis. Reproducible from the printed parameters. **Not DAV 2004 R**,
-   which is not public [R10].
-3. **Cost of the *Rentengarantiezeit*** (section 5). Same basis; `a12` replaced by
-   `annuity-certain-due(n) + n-year-deferred life annuity`. Cross-checked against the corpus's own
+   gross of charges, calibrated so life expectancy at 65 (24.29 years) is of the right order for a
+   **prudent annuitant** basis. Reproducible from the printed parameters. **Not DAV 2004 R** [R10].
+3. **Cost of the *Rentengarantiezeit*** (section 5): same basis, `a12` replaced by
+   `annuity-certain-due(n) + n-year-deferred life annuity`; cross-checked against the corpus's own
    consumer illustration [R23], which is cheaper at every duration for a stated reason.
-4. **Nominal capital-return duration** (sections 6, 16). `Einmalbeitrag / (12 x annuity)`, no
+4. **Nominal capital-return duration** (sections 6, 16): `Einmalbeitrag / (12 x annuity)`, no
    interest, no mortality — the arithmetic a buyer does.
-5. **Cost of the *Kapitalrückgewähr*** (section 6). Solves the implicit equation printed there,
+5. **Cost of the *Kapitalrückgewähr*** (section 6): solves the implicit equation printed there,
    deaths at mid-year, refund discounted from mid-year.
-6. **Cost of the *Hinterbliebenenrente*** (section 7). Joint-life with both lives on the same
-   proxy and independent, annuitant 65 and second life 62. A simplification on both counts.
-7. **Charges `alpha = 2,5 %` and `beta = 2,0 %`** (section 12). The modeller's view, argued from
-   the structure of a single-premium annuity's cost base. **No observed range exists** because
-   nothing was observed.
-8. **Tax illustration** (section 15). 18 % *Ertragsanteil* [R13] applied to the section 12
-   constructed annuity at stated marginal rates.
-9. **Payout-plan exhaustion** (section 16). Monthly withdrawal in advance, monthly compounding at
-   the stated annual rate, capital run to zero.
-10. **Entry-age envelope 60–85, *Einmalbeitrag* 10 000 € minimum and 25 000–500 000 € working
-    range, representative case 100 000 €** (section 2). Chosen so the representative case matches
-    the market's quoting unit; the boundaries carry no claim to be any carrier's.
-11. **Monthly-in-advance payment timing** (section 8), and **first instalment at `t = 0`**.
-    Adopted as a convention because no source states the market's; the alternative moves every
-    figure in this file by about 5 %.
-12. **The refund basis in a *Kapitalrückgewähr* is the *guaranteed* annuity, not the total**
-    (section 6). Argued from the principle that a guaranteed benefit cannot be defined by reference
-    to a discretionary quantity. A modeller's argument, not a carrier's clause.
+6. **Cost of the *Hinterbliebenenrente*** (section 7): joint-life, both lives on the same proxy and
+   independent, annuitant 65 and second life 62 — a simplification on both counts.
+7. **Charges `alpha = 2,5 %` and `beta = 2,0 %`** (section 12): the modeller's view, argued from a
+   single-premium annuity's cost base. **No observed range exists**, because nothing was observed.
+8. **Tax illustration** (section 15): 18 % *Ertragsanteil* [R13] on the section 12 annuity.
+9. **Payout-plan exhaustion** (section 16): monthly withdrawal in advance, monthly compounding.
+10. **Envelope**: entry ages 60–85, *Einmalbeitrag* minimum 10 000 €, working range
+    25 000–500 000 €, representative case 100 000 € (section 2) — the last chosen to match the
+    market's quoting unit, the boundaries claiming to be no carrier's.
+11. **Monthly-in-advance timing and first instalment at `t = 0`** (section 8): a convention adopted
+    because no source states the market's; the alternative moves every figure here by about 5 %.
+12. **The *Kapitalrückgewähr* refund is measured against the *guaranteed* annuity** (section 6):
+    argued from the principle that a guaranteed benefit cannot be defined by reference to a
+    discretionary quantity. A modeller's argument, not a carrier's clause.
 
 ---
 

@@ -288,66 +288,55 @@ recollection is weak the entry says so and names only the insurer and the docume
   document in this class.**
 
 ### S13 — *Produktinformationsblatt* (PIB) for a *selbständige Berufsunfähigkeitsversicherung* (document class)
-- Publisher: each insurer, for each tariff
-- Doc type: the short pre-contractual product information sheet required by the *VVG-Informations­pflichten­verordnung* (VVG-InfoV) `[unverified]` as to the precise article
-- URL: not established
+- Publisher: each insurer, for each tariff. Doc type: the short pre-contractual information sheet
+  required by the *VVG-Informationspflichtenverordnung* (VVG-InfoV) `[unverified]` as to the precise
+  article; URL: not established
 - Content: the German retail life market's standard two-page disclosure. For a BU tariff it states
-  the type of contract, the insured risk (in a single sentence naming the 50 % and six-month
-  criteria), the *BU-Rente* and its escalation, the *Bruttobeitrag* and the *Zahlbeitrag* with an
-  explicit warning that the *Zahlbeitrag* may rise as far as the *Bruttobeitrag*, the term and
-  *Endalter*, the principal exclusions, the consequences of non-disclosure, and the surrender and
-  paid-up positions. **This is the single most useful public document for a modeller**, because it
-  is the only one that routinely puts a *Bruttobeitrag* and a *Zahlbeitrag* on the same page for a
-  named age, occupation and *BU-Rente*. None was retrieved, and that is gap 4 in the register.
+  the contract type, the insured risk (naming the 50 % and six-month criteria in a sentence), the
+  *BU-Rente* and its escalation, **the *Bruttobeitrag* and the *Zahlbeitrag*** with an explicit
+  warning that the *Zahlbeitrag* may rise as far as the *Bruttobeitrag*, the term and *Endalter*,
+  the principal exclusions, the consequences of non-disclosure, and the surrender and paid-up
+  positions. **This is the single most useful public document for a modeller**, because it is the
+  only one that routinely puts a *Bruttobeitrag* and a *Zahlbeitrag* on the same page for a named
+  age, occupation and *BU-Rente*. None was retrieved, and that is gap 4 in the register.
 
 ### S14 — *Basisinformationsblatt* (PRIIP-KID) — and why an SBU normally does not have one
-- Publisher: each insurer, where the product is in scope
-- Doc type: PRIIPs key information document
-- URL: not established
-- Content: recorded as a **negative** finding of substance. The PRIIPs regime covers
-  *insurance-based investment products* — contracts offering a maturity or surrender value exposed
-  to market fluctuations. A pure biometric protection contract with no investment element is
-  outside it. A standalone SBU is therefore normally documented by a *Produktinformationsblatt*
-  [S13] and **not** by a *Basisinformationsblatt*, which is the opposite of the position for delib's
-  savings products (products 1–7), where the *Basisinformationsblatt* is the richest public
-  document. Where BU is written as a **rider on a savings contract**, the host contract's
-  *Basisinformationsblatt* covers the package and the BU premium sits inside its cost figures. The
-  precise PRIIPs scope boundary is `[unverified]` here and must be checked before it is relied on;
-  what is certain is that this product family does not hand the modeller the cost table that the
-  savings products do.
+- Publisher: each insurer, where the product is in scope; URL: not established
+- Content: recorded as a **negative** finding of substance. PRIIPs covers *insurance-based
+  investment products* — contracts offering a maturity or surrender value exposed to market
+  fluctuations — so a pure biometric protection contract falls outside it. A standalone SBU is
+  therefore documented by a *Produktinformationsblatt* [S13] and **not** by a
+  *Basisinformationsblatt*, the opposite of the position for delib's savings products (products
+  1–7), where the *Basisinformationsblatt* is the richest public document. Where BU is written as a
+  rider on a savings contract, the host's *Basisinformationsblatt* covers the package and the BU
+  premium sits inside its cost figures. The precise PRIIPs scope boundary is `[unverified]`; what is
+  certain is that this product family does not hand the modeller the cost table the savings products
+  do.
 
-### S15 — Comparison portals and consumer press (document class)
+### S15 — Comparison portals, consumer press and rating agencies (document class)
 - Publishers: Verivox; CHECK24; Finanztip; Stiftung Warentest / *Finanztest*; Handelsblatt;
-  Morgen & Morgen (M&M Rating Berufsunfähigkeit); Franke und Bornberg (BU-Rating and
-  BU-Leistungspraxis); ASSEKURATA
-- Doc type: comparison pages, consumer guides, periodical product tests and rating publications —
-  **secondary throughout**
-- URL: not established
+  MORGEN & MORGEN; Franke und Bornberg; ASSEKURATA. Doc type: comparison pages, consumer guides,
+  periodical product tests and ratings — **secondary throughout**; URL: not established
 - Content: this class is where every published German BU **price point** and every published
   **wording-quality rating** lives, and it is the class this file most needed and least could reach.
-  What it would supply: indicative *Zahlbeiträge* by age, occupation, *BU-Rente* and *Endalter*
-  across carriers; the *Brutto*/*Zahlbeitrag* ratio by carrier; the number of *Berufsgruppen* per
-  carrier; scoring of the *Verweisung*, *AU-Klausel* and *Nachversicherungsgarantie* wordings;
-  the periodic *Finanztest* BU rankings; and Morgen & Morgen's annual analysis of the **causes of
-  BU** (section 26). All of the figures in sections 26 and 27 below are of the kind this class
-  publishes, and none of them is sourced to it — they are the author's recollection, tagged
-  `[unverified]`, and they must be re-established before use.
+  It would supply indicative *Zahlbeiträge* by age, occupation, *BU-Rente* and *Endalter* across
+  carriers; the *Brutto*/*Zahlbeitrag* ratio by carrier; the number of *Berufsgruppen* per carrier;
+  scoring of the *Verweisung*, *AU-Klausel* and *Nachversicherungsgarantie* wordings; and Morgen &
+  Morgen's annual analysis of the **causes of BU** (section 25). Every figure in sections 25 and 26
+  is of the kind this class publishes and **none of them is sourced to it** — they are recollection,
+  tagged `[unverified]`, and must be re-established before use.
 
 ### S16 — Verbraucherzentrale material on the *Berufsunfähigkeitsversicherung*
-- Publisher: the *Verbraucherzentralen* and the *Verbraucherzentrale Bundesverband* (vzbv)
-- Doc type: consumer-advice pages and brochures — **secondary**
-- URL: not established
-- Content: the consumer-protection view of the product: that the statutory *Erwerbsminderungsrente*
-  is not a substitute (section 25), that the *Gesundheitsfragen* must be answered completely and
-  that incomplete answers are the commonest reason a claim later fails, that a *Risikovoranfrage*
-  should precede any application, that the *Bruttobeitrag* rather than the *Zahlbeitrag* is the
-  figure a buyer should compare across carriers, and that *Karenzzeiten* and reduced *Endalter*
-  are the two levers that cut the premium at a real cost in cover. Recorded because these are
-  exactly the behavioural facts a lapse and option-take-up assumption has to reflect, and because
-  the "compare the *Bruttobeitrag*" advice is the clearest external statement of why the
-  *Brutto*/*Zahlbeitrag* pair is a modelling issue and not a presentational one.
-
----
+- Publisher: the *Verbraucherzentralen* and the *Verbraucherzentrale Bundesverband* (vzbv). Doc
+  type: consumer-advice pages and brochures — **secondary**; URL: not established
+- Content: the consumer-protection view: that the statutory *Erwerbsminderungsrente* is not a
+  substitute (section 24); that incomplete *Gesundheitsfragen* are the commonest reason a claim
+  later fails; that a *Risikovoranfrage* should precede any application; that **the *Bruttobeitrag*
+  and not the *Zahlbeitrag* is the figure a buyer should compare across carriers**; and that
+  *Karenzzeiten* and a reduced *Endalter* are the two levers that cut the premium at a real cost in
+  cover. Recorded because these are the behavioural facts a lapse and option-take-up assumption has
+  to reflect, and because the "compare the *Bruttobeitrag*" advice is the clearest external
+  statement of why the *Brutto*/*Zahlbeitrag* pair is a modelling issue and not a presentational one.
 
 ## Regulatory and actuarial references
 
@@ -358,37 +347,31 @@ numbering it encodes is itself part of what is unverified.
 
 ### R1 — VVG § 172, *Leistung des Versicherers* (the statutory definition of *Berufsunfähigkeit*)
 - Publisher: Bundesministerium der Justiz / Bundesamt für Justiz, via `gesetze-im-internet.de`
-- Doc type: statute — *Gesetz über den Versicherungsvertrag* (VVG) of 2008, Kapitel 5 (Lebens-,
-  Berufsunfähigkeits- und Unfallversicherung), Teil 2, Abschnitt 3
+- Doc type: statute — *Gesetz über den Versicherungsvertrag* (VVG) of 2008, Kapitel 5, Teil 2,
+  Abschnitt 3 (*Berufsunfähigkeitsversicherung*)
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__172.html` `[unverified]`
-- Content: the anchor provision of the whole product. Three limbs, as the author recalls them and
-  each `[unverified]` as to its exact numbering and wording:
-  1. **Abs. 1** obliges the insurer, in a *Berufsunfähigkeitsversicherung*, to render the agreed
-     benefits for a *Berufsunfähigkeit* that arises **after the inception of the cover**. The
-     temporal condition is the reason a BU contract is a genuine risk contract and not a health
-     indemnity: a condition that had already produced BU before inception is not covered, and the
-     *vorvertragliche Anzeigepflicht* [R7] polices the boundary.
+- Content: the anchor provision of the whole product. Three limbs, recalled and `[unverified]` as to
+  numbering and wording:
+  1. **Abs. 1** obliges the insurer to render the agreed benefits for a *Berufsunfähigkeit* arising
+     **after inception**. That temporal condition makes BU a genuine risk contract rather than a
+     health indemnity, and the *vorvertragliche Anzeigepflicht* [R7] polices the boundary.
   2. **Abs. 2** defines *berufsunfähig* as a person who, as a consequence of *Krankheit*,
      *Körperverletzung* or *mehr als altersentsprechender Kräfteverfall*, is prospectively
      permanently (*voraussichtlich auf Dauer*) unable, wholly or in part, to exercise **the last
-     occupation actually exercised, as it was arranged before the impairment**
-     (*den zuletzt ausgeübten Beruf, so wie er ohne gesundheitliche Beeinträchtigung ausgestaltet
-     war*). Three features of that definition drive everything downstream: the reference occupation
-     is the **last one actually exercised**, not any occupation and not the trained one; it is taken
-     **as actually arranged**, so that the concrete duties, hours and physical demands of the
-     insured's own job are the measure; and the impairment must be **medically caused**, which
-     excludes economic inability to work.
-  3. **Abs. 3** permits the parties to **agree as a further condition** of the insurer's liability
-     that the insured neither exercises nor is able to exercise another activity which, given her
-     training and abilities, she is in a position to take up and which corresponds to her previous
-     *Lebensstellung*. This is the statutory basis of the *abstrakte Verweisung*: it is **permitted
-     but not implied**, it operates only if agreed, and the German market has almost universally
-     stopped agreeing it (section 4).
-- **What is *not* in § 172**: neither the **six-month** period nor the **50 %** threshold appears in
-  the statute. Both are contractual standards carried in the AVB [S1] and are the market's own
-  concretisation of the statutory words *voraussichtlich auf Dauer* and *ganz oder teilweise*. This
-  correction matters and is made explicitly in section 3, because a brief that attributes the six
-  months and the 50 % to § 172 VVG would mislead every downstream document.
+     occupation actually exercised, as it was arranged before the impairment**. Three features drive
+     everything downstream: the reference occupation is the **last one actually exercised**, not any
+     occupation and not the trained one; it is taken **as actually arranged**, so the concrete
+     duties, hours and physical demands of this insured's own post are the measure; and the
+     impairment must be **medically caused**, which excludes economic inability to work.
+  3. **Abs. 3** permits the parties to **agree as a further condition** that the insured neither
+     exercises nor can exercise another activity she is in a position to take up given her training
+     and abilities and which corresponds to her previous *Lebensstellung*. This is the statutory
+     basis of the *abstrakte Verweisung*: **permitted but not implied**, operative only if agreed,
+     and almost universally no longer agreed (section 4).
+- **What is *not* in § 172**: neither the **six-month** period nor the **50 %** threshold. Both are
+  contractual standards carried in the AVB [S1] and are the market's concretisation of the statutory
+  words *voraussichtlich auf Dauer* and *ganz oder teilweise*. The correction is made explicitly in
+  section 3, because a document attributing them to the statute would mislead everything downstream.
 
 ### R2 — VVG § 173, *Anerkenntnis*
 - Publisher: as R1
@@ -581,38 +564,33 @@ numbering it encodes is itself part of what is unverified.
   underlying research bases are.
 
 ### R16 — DAV 1997 I, DAV 1997 RI and DAV 1997 TI — the *Rechnungsgrundlagen* for BU
-- Publisher: Deutsche Aktuarvereinigung e. V. (DAV), Köln
-- Doc type: actuarial tables and the accompanying *Herleitung* (derivation) report of the DAV's
-  working party on BU bases
-- URL: not established
+- Publisher: Deutsche Aktuarvereinigung e. V. (DAV), Köln. Doc type: actuarial tables and the
+  accompanying *Herleitung* report of the DAV working party on BU bases; URL: not established
 - Content: the German BU pricing and reserving standard, and — critically — **not public**. The
-  package as the author recalls it comprises three tables `[unverified]` on the names:
-  - **DAV 1997 I** — *Invalidisierungswahrscheinlichkeiten*: the probability that an active life
-    aged x becomes *berufsunfähig* within a year, by age and sex, before occupational loading.
-  - **DAV 1997 RI** — *Reaktivierungswahrscheinlichkeiten*: the probability that a disabled life
+  package as recalled comprises three tables, `[unverified]` on the names:
+  - **DAV 1997 I** — *Invalidisierungswahrscheinlichkeiten*: probability that an active life aged x
+    becomes *berufsunfähig* within a year, by age and sex, before occupational loading.
+  - **DAV 1997 RI** — *Reaktivierungswahrscheinlichkeiten*: probability that a disabled life
     recovers, **by age at disablement and by duration since disablement**. The duration dimension is
-    the essential one: reactivation is concentrated in the first one to two years of a claim and
-    falls close to zero thereafter.
-  - **DAV 1997 TI** — *Sterbewahrscheinlichkeiten der Invaliden*: mortality of disabled lives, which
-    is materially heavier than active mortality and itself select on duration.
+    essential: reactivation is concentrated in the first one to two years of a claim and falls close
+    to zero thereafter.
+  - **DAV 1997 TI** — *Sterbewahrscheinlichkeiten der Invaliden*: disabled-lives mortality,
+    materially heavier than active mortality and itself select on duration.
   The bases are *erster Ordnung*, i.e. deliberately prudent, and are used with insurer-specific
-  **occupational loading factors** and **safety margins**; second-order (best-estimate) versions are
-  derived by each insurer from its own experience. The brief that commissioned this file attributed
-  both the entry and the reactivation probabilities to "DAV 1997 I and DAV 1997 TI"; **the
-  correction is that DAV 1997 TI is the disabled-lives mortality table and the reactivation
-  probabilities sit in a third table**, recalled as DAV 1997 RI. That correction is itself
+  **occupational loading factors** and safety margins; second-order versions are derived by each
+  insurer from its own experience.
+- **Correction to the commissioning brief.** It attributed both entry and reactivation probabilities
+  to "DAV 1997 I and DAV 1997 TI". DAV 1997 TI is the **disabled-lives mortality** table and the
+  reactivation probabilities sit in a third table, recalled as DAV 1997 RI. That correction is itself
   `[unverified]` and is gap 8 in the register.
-- **Is there a newer table?** No successor in general market use could be established. The DAV's
-  working parties have published *Ergebnisberichte* on the adequacy of the 1997 bases and on the
-  drift in BU experience since — in particular the rise in psychiatric causes (section 26) — but
-  this file cannot confirm that a "DAV 20xx I" exists, is homologated, or is used. **Treat
-  DAV 1997 I / RI / TI as the current first-order standard and the existence of any successor as
-  unresolved** (gap 9).
-- **Redistribution.** The DAV tables are the property of the Deutsche Aktuarvereinigung, are not
-  published, and **are not redistributed by delib**. The delib BU model ships `[std]` proxy tables
-  and states, in its `Data` docstring and in `model.md`, what a replacement built from the real
-  tables must preserve: the age shape of the inception rate, the duration shape of reactivation, and
-  the excess of disabled-lives mortality over active mortality.
+- **Is there a newer table?** No successor in general market use could be established. DAV working
+  parties have published *Ergebnisberichte* on the adequacy of the 1997 bases and on drift in BU
+  experience — notably the rise in psychiatric causes (section 25) — but this file cannot confirm
+  that a "DAV 20xx I" exists, is homologated, or is used (gap 9).
+- **Redistribution.** The tables are DAV property, are not published, and **are not redistributed by
+  delib**. The model ships `[std]` proxies and states, in its `Data` docstring and in `model.md`,
+  what a replacement built from the real tables must preserve: the age shape of the inception rate,
+  the duration shape of reactivation, and the excess of disabled over active mortality.
 
 ### R17 — DAV 2008 T — active-lives mortality
 - Publisher: Deutsche Aktuarvereinigung e. V.
@@ -773,28 +751,24 @@ numbering it encodes is itself part of what is unverified.
   must respect if it ever carries this rider.
 
 ### R29 — BGH case law on *Verweisung*, *Anerkenntnis* and *Nachprüfung*
-- Publisher: Bundesgerichtshof, IV. Zivilsenat (the insurance senate)
-- Doc type: judgments
-- URL: not established; **no docket number is given anywhere in this file**, because none could be
+- Publisher: Bundesgerichtshof, IV. Zivilsenat (the insurance senate). Doc type: judgments.
+  URL: not established; **no docket number is given anywhere in this file**, because none could be
   confirmed and inventing one is barred
-- Content: four settled lines, each recalled in substance and each `[unverified]` in every detail:
-  1. **Binding effect of the *Anerkenntnis*.** A declaratory *Anerkenntnis* binds the insurer; it
-     may free itself only by the *Nachprüfung* route, and only prospectively. It cannot simply
-     re-decide the original claim.
+- Content: four settled lines, each recalled in substance and `[unverified]` in every detail:
+  1. **Binding effect of the *Anerkenntnis*.** It binds the insurer, which may free itself only by
+     the *Nachprüfung* route and only prospectively; it cannot re-decide the original claim.
   2. **The *Nachprüfung* requires a demonstrated change.** The insurer must compare the insured's
-     state at the *Nachprüfung* with the state on which the *Anerkenntnis* rested and demonstrate a
-     material improvement; a mere re-assessment of the same facts, or a corrected earlier error,
-     does not entitle it to stop paying. The *Einstellungsmitteilung* must set out that comparison
-     intelligibly, and one that does not is ineffective — so the three-month period of § 174 never
-     starts to run.
-  3. **Lebensstellung.** A *Verweisungsberuf* must correspond to the previous occupation in income
-     **and** in social standing. A noticeable drop in income breaks the correspondence; the market's
-     working threshold of **about 20 %** `[unverified]` is a rule of thumb drawn from the case law
-     rather than a figure the BGH has fixed.
-  4. **Umorganisation for the self-employed.** A self-employed insured must, before being treated as
-     *berufsunfähig*, consider whether the business can be reorganised so that she can continue to
-     run it within her remaining capacity — but only where the reorganisation is economically
-     sensible and does not require a substantial loss of income or a loss of the leading position.
+     state now with the state on which the *Anerkenntnis* rested and show a material improvement; a
+     re-assessment of the same facts, or correction of its own earlier error, does not suffice. The
+     *Einstellungsmitteilung* must set out that comparison intelligibly, and one that does not is
+     ineffective — so the three-month period of § 174 never starts to run.
+  3. ***Lebensstellung*.** A *Verweisungsberuf* must correspond in **income and social standing**. A
+     noticeable income drop breaks the correspondence; the market's working threshold of about
+     **20 %** `[unverified]` is a rule of thumb from lower-court practice, not a BGH figure.
+  4. ***Umorganisation* for the self-employed.** Before being treated as *berufsunfähig* a
+     self-employed insured must consider whether the business can be reorganised so she can continue
+     to run it within her remaining capacity — but only where that is economically sensible and does
+     not cost her a substantial part of her income or her leading position.
 
 ### R30 — Infektionsschutzgesetz (IfSG) — the basis of the *Infektionsklausel*
 - Publisher: Bundesministerium der Justiz

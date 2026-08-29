@@ -242,3 +242,196 @@ routinely mistranslated.
   *Basisversorgung* including the ***Basisrente*** (Rürup); Schicht 2 the subsidised
   supplementary layer including the ***Riester-Rente***; Schicht 3 everything unsubsidised.
 
+---
+
+## The German regulatory architecture in one page
+
+**Who supervises what.** German insurance supervision is exercised by the **Bundesanstalt für
+Finanzdienstleistungsaufsicht (BaFin)**, created in **2002** by the *Finanzdienstleistungs-
+aufsichtsgesetz* of **22 May 2002** out of the three predecessor authorities for banking,
+securities and insurance; the merger was organisational and did not create new competences
+[R21]. BaFin is subject to the *Rechts- und Fachaufsicht* of the **Bundesministerium der
+Finanzen**, and supervises under the KWG, the **VAG** and the WpHG. Its stated main objective
+in insurance is to *ensure the permanent fulfilment capability of insurance contracts* — the
+***dauernde Erfüllbarkeit*** standard, which reappears verbatim in § 138 Abs. 1 VAG on premium
+adequacy [R8] and in § 341e HGB on technical provisions [R54] — together with the protection of
+the insured and beneficiaries [R21]. German usage splits the function into *Finanzaufsicht*
+(solvency), *Rechtsaufsicht* (proper conduct of business) and *Missstandsaufsicht*.
+
+There is **no second national insurance supervisor**. Unlike France, where the ACPR and the AMF
+share competence over unit-linked distribution, and unlike the United Kingdom's twin peaks,
+Germany runs conduct and prudential supervision inside one authority. The consequences are
+visible in this file: the same body issues the *Auslegungsentscheidungen* that govern how the
+MindZV minimum allocation works in unit-linked business [R21] and the *Merkblatt* that tells
+insurers their savings products must deliver an *angemessener Kundennutzen* [R35]. Above BaFin
+sits **EIOPA**, whose published risk-free curves are made binding on German undertakings by
+§ 83 VAG [R6][R4].
+
+**Why a German life model reads VAG and VVG and DeckRV and MindZV together.** This is the
+single most important structural fact about the German market, and it has no counterpart in the
+sister libraries. France puts prudential rules and contract law in **one** code — the *Code des
+assurances*, Livre III and Livre I. Germany splits them across **two statutes with different
+addressees**, and then delegates the arithmetic to **two regulations**:
+
+- The **VAG** (*Versicherungsaufsichtsgesetz* 2016) is **supervisory law**. It binds the
+  undertaking to the supervisor. It says how the balance sheet is valued (§§ 74–88), how much
+  capital is required (§§ 96–110), how the assets must be invested (§§ 124–125), that premiums
+  must be *auf der Grundlage angemessener versicherungsmathematischer Annahmen* and adequate to
+  fund the *Deckungsrückstellung* (§ 138), that surplus earmarked for policyholders goes into
+  the RfB (§ 139) and may be used only for them (§ 140), and that a named
+  *Verantwortlicher Aktuar* proposes the declaration (§ 141). It gives the policyholder no
+  claim.
+- The **VVG** (*Versicherungsvertragsgesetz* 2008) is **contract law**. It binds the insurer to
+  the policyholder. Its Kapitel 5 (§§ 150–171) supplies the entitlement to
+  *Überschussbeteiligung* (§ 153), the right to convert to paid-up (§ 165), the right to
+  surrender and the surrender-value floor (§§ 168–169) and the withdrawal right (§ 152); and
+  § 171 makes almost all of them ***halbzwingend*** — variable in the policyholder's favour
+  only. Kapitel 6 (§§ 172–177) does the same for *Berufsunfähigkeit*.
+- The **DeckRV** (*Deckungsrückstellungsverordnung*, 18 April 2016) is made under **§ 88 Abs. 3
+  VAG** and fixes the *Rechnungsgrundlagen* of the statutory *Deckungsrückstellung*: the
+  *Höchstrechnungszins* (§ 2), the *Höchstzillmersatz* (§ 4) and the *Referenzzins* that
+  generates the *Zinszusatzreserve* (§ 5 Abs. 3).
+- The **MindZV** (*Mindestzuführungsverordnung*, 18 April 2016) is made under **§ 145 VAG** and
+  turns § 139's "put it in the RfB" and § 140's "use it only for policyholders" into an
+  arithmetic floor: at least **90 %** of the investment result net of the *Rechnungszinsen*,
+  **90 %** of the risk result and **50 %** of the remaining result, less the *Direktgutschrift*,
+  computed separately for *Alt-* and *Neubestand*, and floored at zero.
+
+**What each contributes to a cash flow model.** Read alone, none of the four gives a modeller a
+projection. Read together they do, and each supplies a different kind of quantity:
+
+| Instrument | Kind of rule | What the model gets from it |
+|---|---|---|
+| **VVG** [R22–R31] | contractual, one-way mandatory | the *benefits and options that must exist*: the surrender-value floor, the paid-up right, the profit-participation entitlement, the suicide window, the BU definition and the *Nachprüfung* notice period |
+| **DeckRV** [R14–R17] | reserving arithmetic | the *ceilings that shape the tariff*: the discount rate a guarantee may be priced at, the acquisition cost that may be zillmered, the reserve that low rates force |
+| **VAG** [R5–R13] | supervisory | the *constraints on the insurer's discretion*: adequacy of premiums, equal treatment, the RfB ring fence, the actuary's proposal, the *Bewertungsreserven* test |
+| **MindZV / RfBV** [R18][R19] | distribution arithmetic | the *floor under the discretionary declaration*, expressed on the three result sources a German P&L is decomposed into |
+
+The join is tighter than a list suggests, and three joins in particular are where a delib model
+lives:
+
+1. **§ 138 VAG → § 2 DeckRV → the guarantee.** Premiums must be adequate to form adequate
+   *Deckungsrückstellungen*; the DeckRV caps the rate at which those may be discounted;
+   therefore the *Höchstrechnungszins* caps what a new tariff may guarantee. The rate has been
+   **1.00 % since 1 January 2025** [R15], the first increase in about thirty years, and it stays
+   with a contract for its whole term — which is why a German book is a stack of cohorts at
+   4.00 %, 3.25 %, 2.75 %, 2.25 %, 1.75 %, 1.25 %, 0.90 %, 0.25 % and now 1.00 % [R15].
+2. **§ 153 Abs. 3 VVG → § 139 Abs. 3/4 VAG → MindZV §§ 11–12.** The contract entitles the
+   policyholder to *half* the *Bewertungsreserven* attributed to it; the VAG then removes from
+   the fixed-income pool any *Sicherungsbedarf* arising from contracts with interest
+   guarantees; the MindZV defines the reference rate — a **single month-end ten-year zero-coupon
+   Euro swap rate** — and the fifteen-year look-forward against which a contract's highest
+   applicable *Rechnungszins* is tested. In the low-rate decade that chain reduced the payable
+   half to **zero** for many portfolios, and the BGH held the rule constitutional in 2018 [R36].
+3. **§ 4 DeckRV ∥ § 169 Abs. 3 VVG.** The DeckRV governs what the insurer may **reserve** for
+   acquisition costs (25 ‰ of the *Beitragssumme*); § 169 governs what it must **pay** on
+   surrender (the value on a five-year even spread of the charged costs). They are independent
+   constraints and the tighter one binds. A model that applies only one of them has an early-
+   duration surrender curve that is wrong in a way a German reviewer will see immediately.
+
+**What sits outside the four.** The **statutory accounts** are HGB §§ 341–341o plus the
+**RechVersV**, whose *Formblatt 1* replaces § 266 HGB for the balance sheet and whose § 28
+Abs. 8 forces the RfB development, the *Schlussüberschussanteilfonds* and the declared
+*Überschussanteile* per *Abrechnungsverband* into the published *Anhang* [R54] — which is the
+practical reason a delib product document can cite a named insurer's declaration at all. The
+**BerVersV** carries the national supervisory returns, including the *Zerlegung des
+Rohergebnisses nach Ergebnisquellen* on forms F.213.01 to F.219.01, which is the three-way
+split the MindZV minima operate on [R54]. The **Solvency II layer** — Directive 2009/138/EG,
+Delegated Regulation (EU) 2015/35, the 2025 review and the EIOPA curves [R1–R4] — reaches
+German life business through the VAG rather than directly, which is why delib cites VAG
+sections throughout and directive articles only where the European layer is itself the point.
+The **guarantee** is bounded at the bottom by the *Sicherungsfonds* and § 314 VAG [R12]: a
+supervisory power to cut guaranteed benefits by up to 5 % where the fund steps in, and an
+uncapped, asset-position-driven reduction where it does not. **No delib document describes a
+German guarantee as unconditional.**
+
+**And what delib does not model.** All ten models publish gross, undiscounted,
+best-estimate-style liability cash flows. The Solvency II balance sheet, the SCR and MCR, the
+risk margin, the *Deckungsrückstellung*, the *Zinszusatzreserve*, the RfB stock as a
+balance-sheet item and the IFRS 17 measurement are **cited, never specified**. Where a document
+needs a discount rate, an asset return or a declared rate to make a worked example run, that
+number is `**[std]**` with a rationale, not a citation.
+
+---
+
+## Product key and product-relevance matrix
+
+**Product key**, used in the `Products` line of every entry and as the matrix columns:
+
+`KLV` kapitallebensversicherung · `RV` klassische_rentenversicherung ·
+`FRV` fondsgebundene_rentenversicherung · `IDX` indexpolice · `BAS` basisrente ·
+`RIE` riester_rente · `SOF` sofortrente · `RLV` risikolebensversicherung ·
+`BU` berufsunfaehigkeit · `PFL` pflegerentenversicherung.
+
+`x` = load-bearing for that product's specification, technical notes or model; `(x)` =
+qualified, conditional or background relevance — the entry governs the product but does not
+shape its cash flows, or reaches it only through an option or a rider; blank = not relevant.
+
+| R# | Reference (short name) | KLV | RV | FRV | IDX | BAS | RIE | SOF | RLV | BU | PFL |
+|----|------------------------|-----|----|-----|-----|-----|-----|-----|-----|----|-----|
+| R1 | Richtlinie 2009/138/EG — Solvabilität II | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R2 | Delegierte Verordnung (EU) 2015/35 | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R3 | Richtlinie (EU) 2025/2 — the Solvency II review | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R4 | EIOPA — RFR term structures, UFR, Volatilitätsanpassung | (x) | (x) | | (x) | (x) | (x) | (x) | | (x) | (x) |
+| R5 | VAG 2016 and Anlage 1 — the Sparten | x | x | x | x | x | x | x | x | x | x |
+| R6 | VAG §§ 74–110 and § 40 — balance sheet, SCR/MCR, SFCR | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R7 | VAG §§ 124–125 — Anlagegrundsätze, Anlagestock | x | x | x | x | x | x | x | (x) | (x) | (x) |
+| R8 | VAG § 138 — Prämienkalkulation; Gleichbehandlung | x | x | (x) | x | x | x | x | x | x | x |
+| R9 | VAG § 139 — Überschussbeteiligung; Sicherungsbedarf | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
+| R10 | VAG §§ 140 and 145 — the RfB and its Verordnungen | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
+| R11 | VAG §§ 141–143; Altbestand/Neubestand 1994 | x | x | x | x | x | x | x | x | x | x |
+| R12 | VAG §§ 221–236 and § 314; Protektor | x | x | x | x | x | x | x | x | x | x |
+| R13 | VAG §§ 351–353 — Übergangsmaßnahmen | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R14 | DeckRV and § 2 — the Höchstrechnungszins provision | x | x | (x) | x | x | x | x | x | x | x |
+| R15 | Höchstrechnungszins history; Sechste VO 19.07.2024 | x | x | (x) | x | x | x | x | x | x | x |
+| R16 | DeckRV § 4 — Höchstzillmersätze | x | x | x | x | x | x | | x | x | x |
+| R17 | DeckRV § 5 Abs. 3 — Referenzzins, ZZR, Korridor | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
+| R18 | MindZV — the 90/90/50 minima and §§ 11–13 | x | x | (x) | x | x | x | x | x | x | x |
+| R19 | RfBV — the collective part of the RfB | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
+| R20 | LVRG 2014 | x | x | (x) | x | x | x | (x) | x | x | x |
+| R21 | BaFin — FinDAG, MaGo, Auslegungsentscheidungen | (x) | (x) | x | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R22 | VVG 2008 — the statute, Kapitel 5, § 171 | x | x | x | x | x | x | x | x | x | x |
+| R23 | VVG §§ 8 and 152 — Widerruf | x | x | x | x | x | x | x | x | x | x |
+| R24 | VVG § 153 — Überschussbeteiligung, Bewertungsreserven | x | x | x | x | x | x | x | (x) | (x) | (x) |
+| R25 | VVG §§ 154–155 — Modellrechnung, Standmitteilung | x | x | (x) | x | x | x | (x) | | (x) | (x) |
+| R26 | VVG §§ 150, 159–162 — consent, beneficiary, suicide | x | (x) | (x) | (x) | (x) | (x) | (x) | x | (x) | (x) |
+| R27 | VVG § 163 — Prämien- und Leistungsänderung | (x) | (x) | | | | | | (x) | x | x |
+| R28 | VVG §§ 165–170 — paid-up, surrender, Rückkaufswert | x | x | x | x | (x) | x | (x) | (x) | x | x |
+| R29 | VVG §§ 172–177 — Berufsunfähigkeitsversicherung | (x) | (x) | | | (x) | | | (x) | x | (x) |
+| R30 | VVG §§ 19, 37, 38, 157, 158 | x | x | (x) | (x) | (x) | (x) | (x) | x | x | x |
+| R31 | VVG §§ 6, 7, 1a, 7b, 7c, 214 and the VVG-InfoV | x | x | x | x | x | x | x | x | x | x |
+| R32 | PRIIPs — VO (EU) 1286/2014 and the RTS | (x) | (x) | x | x | (x) | (x) | (x) | | | |
+| R33 | IDD — RL (EU) 2016/97, transposition, § 34d GewO | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R34 | Unisex — EuGH C-236/09 and the AGG | x | x | x | x | x | x | x | x | x | x |
+| R35 | BaFin Merkblatt 01/2023 — Wohlverhaltensaufsicht | x | x | x | x | (x) | (x) | (x) | | | |
+| R36 | The BGH line of authority | x | x | x | x | (x) | x | (x) | (x) | (x) | x |
+| R37 | GDV-Musterbedingungen; BU market practice | x | x | (x) | (x) | (x) | (x) | (x) | x | x | (x) |
+| R38 | AltEinkG and the Drei-Schichten-Modell | x | x | x | x | x | x | x | (x) | (x) | (x) |
+| R39 | EStG § 10 Abs. 1 Nr. 2 b and Abs. 3 — Basisrente | | | | | x | (x) | | (x) | (x) | |
+| R40 | ZPO §§ 850b and 851c — Pfändungsschutz | (x) | (x) | (x) | | x | (x) | | | x | (x) |
+| R41 | EStG § 22 Nr. 1 S. 3 a and § 55 EStDV | (x) | x | x | x | x | (x) | x | | x | (x) |
+| R42 | EStG § 10a and §§ 79–99 — the Riester machinery | | | (x) | | (x) | x | | | | |
+| R43 | AltZertG, BZSt, AltvPIBV and the PIA | | (x) | (x) | (x) | x | x | | | | |
+| R44 | Altersvorsorgereformgesetz 2026; Altersvorsorgedepot | | (x) | (x) | | (x) | x | | | | |
+| R45 | EStG § 20 Abs. 1 Nr. 6 — 12/62, Mindesttodesfallschutz | x | x | x | x | | (x) | (x) | (x) | | |
+| R46 | ErbStG and SGB V §§ 226, 229, 240 | x | (x) | (x) | (x) | (x) | x | (x) | x | (x) | (x) |
+| R47 | Rechnungsgrundlagen 1./2. Ordnung; the DAV tables | x | x | x | x | x | x | x | x | x | x |
+| R48 | DAV 2008 T and its predecessors | x | (x) | (x) | (x) | (x) | (x) | | x | (x) | (x) |
+| R49 | DAV 2004 R and DAV 2004 R-Bestand | (x) | x | x | x | x | x | x | | | (x) |
+| R50 | DAV 1997 I / RI / TI | (x) | | | | | | | (x) | x | (x) |
+| R51 | DAV 2008 P, § 15 SGB XI and the Pflegegrad break | (x) | (x) | | | | | | | (x) | x |
+| R52 | Destatis — Sterbetafeln, Generationentafeln, Pflege | x | x | x | x | x | x | x | x | x | x |
+| R53 | The German life market in numbers | x | x | x | x | x | x | x | x | x | x |
+| R54 | HGB §§ 341–341o, RechVersV, BerVersV | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
+| R55 | IFRS 17 and the Variable Fee Approach | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
+| R56 | DAV Fachgrundsätze and the Höchstrechnungszins recommendation | x | x | x | x | x | x | x | x | x | x |
+
+**One row is deliberately absent from the matrix and is recorded here instead.** BaFin
+*Rundschreiben 11/2017 (VA)*, the *Kapitalanlagerundschreiben*, and the **Anlageverordnung
+(AnlV)** it interprets apply to **small insurers under §§ 212–217 VAG and to domestic
+Pensionskassen and Pensionsfonds** — **not** to the Solvency II life insurers that write the
+ten delib products, which are governed by the qualitative § 124 VAG prudent person principle
+[R7]. German market writing routinely cites AnlV quotas as if they bound all insurers; since
+1 January 2016 they do not bind the large life insurers at all. The circular is discussed
+inside R7 so that no delib author misapplies an AnlV quota, and it carries no id of its own.
+
