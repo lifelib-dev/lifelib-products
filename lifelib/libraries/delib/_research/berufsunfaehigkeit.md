@@ -197,96 +197,75 @@ recollection is weak the entry says so and names only the insurer and the docume
   the tax treatment of a BUZ inside a *Basisrente* is materially different from that of an SBU
   (section 24).
 
-### S3 — Allianz Lebensversicherungs-AG, *Allgemeine Versicherungsbedingungen für die selbständige Berufsunfähigkeitsversicherung*, with the associated *Produktinformationsblatt*
-- Publisher: Allianz Lebensversicherungs-AG, Stuttgart
-- Doc type: AVB (*Bedingungswerk*) plus *Produktinformationsblatt*
-- URL: not established
-- Content: Allianz is the largest German life insurer by premium income and its BU wording is the
-  most widely read in the market. Expected to contain: the standard 50 % / six-month definition;
-  waiver of the *abstrakte Verweisung*; a *Nachversicherungsgarantie* on a defined event list; a
-  *Beitragsdynamik* option; occupational classification into a small number of *Berufsgruppen*; and
-  the *Brutto*/*Zahlbeitrag* pair. Allianz also writes BU as a rider inside its *Rentenversicherung*
-  and *Basisrente* ranges. **No product name, tariff code, edition date or parameter from any
-  Allianz document is asserted in this file.**
+### S3 — Allianz Lebensversicherungs-AG, AVB for the *selbständige Berufsunfähigkeitsversicherung*, with the associated *Produktinformationsblatt*
+- Publisher: Allianz Lebensversicherungs-AG, Stuttgart — the largest German life insurer
+- Doc type: AVB (*Bedingungswerk*) plus *Produktinformationsblatt*; URL: not established
+- Content: the most widely read BU wording in the market. Expected to contain the standard
+  50 % / six-month definition, waiver of the *abstrakte Verweisung*, a *Nachversicherungsgarantie*
+  on a defined event list, a *Beitragsdynamik* option, occupational classification into a small
+  number of *Berufsgruppen*, and the *Brutto*/*Zahlbeitrag* pair. Allianz also writes BU as a rider
+  in its *Rentenversicherung* and *Basisrente* ranges. **No product name, tariff code, edition date
+  or parameter from any Allianz document is asserted anywhere in this file.**
 
-### S4 — Alte Leipziger Lebensversicherung a. G., AVB for the *selbständige Berufsunfähigkeitsversicherung*
-- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel
-- Doc type: AVB plus *Tarifbestimmungen*
-- URL: not established
-- Content: Alte Leipziger is one of the small group of carriers the German broker market treats as
-  BU specialists, alongside Nürnberger, LV 1871, Swiss Life, HDI and Volkswohl Bund. The tariff
-  family is recalled as carrying a `BV` prefix `[unverified]`. This is the class of document that
-  would settle the *Berufsgruppen* count, the *Nachversicherungsgarantie* event list and caps, the
-  *Verlängerungsoption* window, and the *Karenzzeit* menu — none of which this file can source.
+### S4 — Alte Leipziger Lebensversicherung a. G., AVB and *Tarifbestimmungen* for its BU range
+- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel; URL: not established
+- Content: one of the small group of carriers the German broker market treats as BU specialists,
+  alongside Nürnberger, LV 1871, Swiss Life, HDI and Volkswohl Bund. The tariff family is recalled
+  as carrying a `BV` prefix `[unverified]`. This is the class of document that would settle the
+  *Berufsgruppen* count, the *Nachversicherungsgarantie* event list and caps, the
+  *Verlängerungsoption* window and the *Karenzzeit* menu — none of which this file can source.
 
-### S5 — LV 1871 (Lebensversicherung von 1871 a. G. München), AVB for its BU range
-- Publisher: Lebensversicherung von 1871 a. G. München
-- Doc type: AVB plus *Produktinformationsblatt*
-- URL: not established
+### S5 — LV 1871 (Lebensversicherung von 1871 a. G. München), AVB and PIB for its BU range
+- Publisher: Lebensversicherung von 1871 a. G. München; URL: not established
 - Content: LV 1871 markets a BU range under a "Golden BU" family name `[unverified]`, with tiers
   differing chiefly in the option set (*Nachversicherungsgarantie* breadth, *AU-Klausel*,
-  *Leistungsdynamik*) rather than in the core definition. Recorded because a tiered range is the
-  normal German shape — a base tariff and one or two enhanced tariffs on the same risk basis — and a
-  reference implementation should model the base tariff and treat the enhancements as switchable
-  options.
+  *Leistungsdynamik*) rather than in the core definition. Recorded because a tiered range on one
+  risk basis is the normal German shape, and a reference implementation should model the base tariff
+  and treat the enhancements as switchable options.
 
-### S6 — NÜRNBERGER Lebensversicherung AG, AVB for the *selbständige Berufsunfähigkeitsversicherung*
-- Publisher: NÜRNBERGER Lebensversicherung AG, Nürnberg
-- Doc type: AVB plus *Tarifbestimmungen* plus *Berufsgruppenverzeichnis*
-- URL: not established
-- Content: historically the largest BU book in Germany by number of contracts `[unverified]`. The
-  document class that matters most here is the **Berufsgruppenverzeichnis** — the occupational
-  classification list, running to hundreds of named occupations mapped to rating classes. No German
-  insurer's full list was retrievable, and the classification is the single largest driver of the
-  premium (section 16). Nürnberger also writes BU cover for occupations other carriers decline, and
-  publishes claims statistics for its own book.
+### S6 — NÜRNBERGER Lebensversicherung AG, AVB, *Tarifbestimmungen* and *Berufsgruppenverzeichnis*
+- Publisher: NÜRNBERGER Lebensversicherung AG, Nürnberg; URL: not established
+- Content: historically one of the largest BU books in Germany `[unverified]`. The document class
+  that matters most here is the ***Berufsgruppenverzeichnis*** — the occupational classification
+  list, running to hundreds of named occupations mapped to rating classes. No German insurer's full
+  list was retrievable, and the classification is the single largest driver of the premium
+  (section 16). Nürnberger also insures occupations other carriers decline.
 
-### S7 — Swiss Life AG, Niederlassung für Deutschland, AVB for its BU range
-- Publisher: Swiss Life AG, Niederlassung für Deutschland, München
-- Doc type: AVB plus *Produktinformationsblatt*
-- URL: not established
-- Content: Swiss Life's German BU range is regarded in the broker market as a benchmark for
-  wording quality `[unverified]`, in particular on the *Verweisung* clauses and on the treatment of
-  the self-employed (*Umorganisationspflicht*). Needed for the *Umorganisation* rules, which are the
-  most product-specific part of the German BU definition and the part least visible from consumer
-  material.
+### S7 — Swiss Life AG, Niederlassung für Deutschland, AVB and PIB for its BU range
+- Publisher: Swiss Life AG, Niederlassung für Deutschland, München; URL: not established
+- Content: regarded in the broker market as a wording-quality benchmark `[unverified]`, in
+  particular on the *Verweisung* clauses and on the treatment of the self-employed
+  (*Umorganisationspflicht*) — the most product-specific part of the German BU definition and the
+  part least visible from consumer material.
 
-### S8 — HDI Lebensversicherung AG, AVB for its BU range
-- Publisher: HDI Lebensversicherung AG, Köln (Talanx group)
-- Doc type: AVB plus *Produktinformationsblatt*
-- URL: not established
-- Content: HDI markets its BU under an "EGO" family name `[unverified]`, with a tier structure and
-  a strong academic/office proposition. Recorded as one of the carriers whose wording would settle
-  the *AU-Klausel* parameters — the certified duration required, the maximum benefit period under
-  the clause, and whether payment under it is set off against a later BU recognition (section 11).
+### S8 — HDI Lebensversicherung AG, AVB and PIB for its BU range
+- Publisher: HDI Lebensversicherung AG, Köln (Talanx group); URL: not established
+- Content: HDI markets its BU under an "EGO" family name `[unverified]`, with a tier structure and a
+  strong academic/office proposition. Recorded as one of the carriers whose wording would settle the
+  *AU-Klausel* parameters — the certified duration required, the maximum benefit period under the
+  clause, and whether payment under it is set off against a later BU recognition (section 11).
 
-### S9 — VOLKSWOHL BUND Lebensversicherung a. G., AVB for its BU range
-- Publisher: VOLKSWOHL BUND Lebensversicherung a. G., Dortmund
-- Doc type: AVB plus *Tarifbestimmungen*
-- URL: not established
-- Content: a broker-channel BU specialist. Recorded because its range is one of those that publishes
-  a *Bruttobeitrag* and *Zahlbeitrag* side by side in the quotation, which is the practice this file
-  needs documented (section 18) and which no retrieved document confirms.
+### S9 — VOLKSWOHL BUND Lebensversicherung a. G., AVB and *Tarifbestimmungen*
+- Publisher: VOLKSWOHL BUND Lebensversicherung a. G., Dortmund; URL: not established
+- Content: a broker-channel BU specialist. Recorded because its range is one of those that prints a
+  *Bruttobeitrag* and a *Zahlbeitrag* side by side in the quotation — the practice this file needs
+  documented (section 18) and which no retrieved document confirms.
 
-### S10 — Barmenia Lebensversicherung a. G., AVB for its standalone BU cover
-- Publisher: Barmenia Lebensversicherung a. G., Wuppertal (now within the Barmenia Gothaer group)
-- Doc type: AVB plus *Produktinformationsblatt*
-- URL: not established
-- Content: Barmenia has sold standalone BU under a "SoloBU" name `[unverified]`. Recorded chiefly
-  as the carrier most associated with the standalone rather than rider form, and as a reminder that
-  the German market's word for the standalone contract — *selbständige* BU — is itself a product
-  name in some ranges.
+### S10 — Barmenia Lebensversicherung a. G., AVB and PIB for its standalone BU cover
+- Publisher: Barmenia Lebensversicherung a. G., Wuppertal (Barmenia Gothaer group); URL: not established
+- Content: Barmenia has sold standalone BU under a "SoloBU" name `[unverified]`. Recorded chiefly as
+  the carrier most associated with the standalone rather than the rider form, and as a reminder that
+  the German word for the standalone contract — *selbständige* BU — is itself a product name in some
+  ranges.
 
-### S11 — Dialog Lebensversicherungs-AG (Generali Deutschland), AVB for its BU range
+### S11 — Dialog Lebensversicherungs-AG (Generali Deutschland), AVB and *Tarifbestimmungen*
 - Publisher: Dialog Lebensversicherungs-AG, Augsburg — the Generali group's broker-channel
-  biometric-risk carrier
-- Doc type: AVB plus *Tarifbestimmungen*
-- URL: not established
-- Content: Dialog is the German market's clearest example of a carrier writing **only** biometric
-  risk — *Risikolebensversicherung* and BU — with no savings business at all. Recorded because that
-  makes its *Überschussbeteiligung* pure risk and expense surplus with no interest component, which
-  is the cleanest illustration of where the *Brutto* / *Zahlbeitrag* gap in a BU tariff comes from
-  (section 18). A BU tariff name with a "professional" suffix is recalled `[unverified]`.
+  biometric-risk carrier; URL: not established
+- Content: the German market's clearest example of a carrier writing **only** biometric risk —
+  *Risikolebensversicherung* and BU — with no savings business. That makes its
+  *Überschussbeteiligung* pure risk and expense surplus with no interest component, which is the
+  cleanest illustration of where the *Brutto* / *Zahlbeitrag* gap in a BU tariff comes from
+  (section 18). A tariff name with a "professional" suffix is recalled `[unverified]`.
 
 ### S12 — Further German BU carriers, *Bedingungswerke* and *Produktinformationsblätter* (document class)
 - Publishers, all real German life insurers writing BU: R+V Lebensversicherung AG; Debeka

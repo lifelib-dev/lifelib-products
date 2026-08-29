@@ -1449,3 +1449,116 @@ description of any particular product; it is the German market's generic taxonom
   general account under the *Überschussbeteiligung*. That is a real advantage of the form this model
   represents and the product spec should say so.
 
+### 19. Why the 100 % *Beitragsgarantie* is the mechanical heart
+
+The guarantee is a **nominal sum, due at a fixed future date, on money paid in over decades**. Its
+cost is therefore an interest-rate quantity and nothing else, and the whole product follows from one
+piece of arithmetic: **to guarantee one euro payable in `n` years, an insurer must immobilise
+`(1 + i)^−n` of it now**, where `i` is the rate at which it may discount the guarantee — bounded by
+the *Höchstrechnungszins* [R22]. What is left, `1 − (1 + i)^−n`, is the entire budget for **risk
+assets and for all charges**.
+
+**Fraction of a single contribution locked to back the guarantee, by remaining term and rate**
+(`[std] derived`; the rate values are [R22]):
+
+| `i` \ `n` | 1 y | 5 y | 10 y | 15 y | 20 y | 25 y | 30 y | 35 y |
+|---|---|---|---|---|---|---|---|---|
+| **0,25 %** (2022–2024) | 0,9975 | 0,9876 | 0,9753 | 0,9632 | 0,9513 | 0,9395 | 0,9278 | 0,9163 |
+| **0,90 %** (2017–2021) | 0,9911 | 0,9562 | 0,9143 | 0,8742 | 0,8359 | 0,7993 | 0,7643 | 0,7308 |
+| **1,00 %** (from 2025) | 0,9901 | 0,9515 | 0,9053 | 0,8613 | 0,8195 | 0,7798 | 0,7419 | 0,7059 |
+| **1,75 %** | 0,9828 | 0,9169 | 0,8407 | 0,7709 | 0,7068 | 0,6481 | 0,5942 | 0,5449 |
+| **2,25 %** | 0,9780 | 0,8947 | 0,8005 | 0,7162 | 0,6408 | 0,5733 | 0,5130 | 0,4590 |
+
+Read the first row. At the 0,25 % regime, a contribution paid **thirty years** before *Rentenbeginn*
+still has **92,8 %** of itself locked away, leaving **7,2 %** for equity **and** for every charge the
+contract will ever levy. A contribution paid **five years out** leaves **1,24 %**. A contribution
+paid one year out leaves **0,25 %** — which is to say, **the last few years' contributions to a
+Riester contract cannot be invested at all**.
+
+The same fact stated on the whole contract. For level contributions in advance over `n` years, the
+guaranteed accumulation is `C × s̈(n, i)`, the guarantee is `C × n`, and the **headroom** —
+everything available for charges and for anything above the guaranteed rate — is `s̈(n, i)/n − 1`:
+
+| Term | 0,25 % | 0,90 % | 1,00 % | 1,75 % | 2,25 % |
+|---|---|---|---|---|---|
+| 12 years | **1,64 %** | 6,05 % | 6,74 % | 12,14 % | 15,90 % |
+| 20 years | **2,67 %** | 10,01 % | 11,20 % | 20,58 % | 27,36 % |
+| 30 years | **3,97 %** | 15,24 % | 17,11 % | 32,33 % | 43,82 % |
+| 35 years | **4,63 %** | 17,98 % | 20,22 % | 38,76 % | 53,06 % |
+
+`[std] derived`, exact on the [R22] rates. On 1 200 € a year for thirty years — 36 000 € of
+contributions — the 0,25 % regime produces a guaranteed accumulation of **37 429,31 €**, a headroom
+of **1 429,31 €**; the 1,00 % regime produces **42 159,29 €**, a headroom of **6 159,29 €**
+`[std] derived`.
+
+**The consequences, and they are the product's whole recent history:**
+
+1. **At 0,25 %, a thirty-year Riester contract had under 4 % of contributions to pay for acquisition,
+   administration, risk and any margin.** Typical German life charge levels are a multiple of that.
+   The guarantee was therefore not merely expensive, it was **arithmetically unfinanceable** on a
+   normally charged tariff — and that, not consumer demand, is why new Riester business stopped in
+   2022 (section 20).
+2. **The guarantee bites hardest on short terms and late money.** A saver entering at 55 has almost
+   no headroom at any rate; a saver entering at 30 has some. The product is structurally hostile to
+   late entrants, which is the opposite of what a supplementary pension usually wants.
+3. **The asset allocation is dictated, not chosen.** Whatever chassis is used — general account,
+   hybrid, i-CPPI, fund reallocation — the equity share is bounded above by the headroom, which is a
+   function of `i` and `n` and of nothing the provider controls. A 100 %-guaranteed pension product
+   in a low-rate regime is, unavoidably, a bond product.
+4. **A rate rise repairs it mechanically.** The move to 1,00 % on 1 January 2025 [R22] roughly
+   **quadrupled** the thirty-year headroom, from 3,97 % to 17,11 % `[std] derived`. That is the
+   arithmetic behind the GDV maintaining a 2025-vintage classic Riester model wording [S2].
+5. **It is why every reform proposal starts here.** The *Fokusgruppe*'s central recommendation was to
+   relax or remove the 100 % guarantee [R26], because no amount of charge discipline can create
+   headroom the interest rate has not left.
+
+**For the model.** The *Garantielücke* — `max(0, G(t) − AV(t))` at *Rentenbeginn* — is the product's
+signature output. The delib model publishes it, and at least one model point must exhibit it as
+positive; a Riester model in which the guarantee never binds has demonstrated nothing.
+
+### 20. Market context
+
+Everything in this section is `[unverified]` order-of-magnitude recollection. **No figure here was
+established from any source**, the official series [R25] was neither retrieved nor searched, and the
+whole section is qualified by gap 2. It is included because a product spec has to place the product,
+and because saying "unknown" without saying "unknown at roughly what scale" is less useful than
+saying both.
+
+- **Contract count**: of the order of **15 to 16 million** certified Riester contracts in the
+  mid-2020s, having peaked around **16,5 million** in the late 2010s and declined slowly since. Split
+  by chassis, insurance contracts are roughly two thirds, fund savings plans roughly a fifth,
+  Wohn-Riester contracts a little over a tenth, and bank savings plans a small remainder. Every one
+  of those figures is `[unverified]`.
+- **New business has effectively stopped.** The collapse dates from the 0,25 % *Höchstrechnungszins*
+  regime of 2022 (section 19), when the three large fund houses withdrew their Riester savings plans
+  from sale and a substantial number of insurers followed `[unverified]` as to which houses and
+  when. The contract count has fallen in most quarters since, meaning **terminations exceed new
+  business**.
+- **Ruhende Verträge.** A large minority of the book — commonly reported at **a fifth to a quarter**,
+  i.e. **three to four million contracts** — is *beitragsfrei gestellt*: in force, certified,
+  guaranteed on what was paid, and receiving nothing further `[unverified]`. **There is no official
+  statistic for this**; the figures quoted in German public debate come from parliamentary answers
+  and provider surveys, and none was established here (gap 2). It is nonetheless the most
+  model-relevant market fact in this file: *Beitragsfreistellung*, not surrender, is this product's
+  characteristic exit, and a delib model that carries only a lapse rate has mis-specified the book.
+
+### 21. Decrements and policyholder behaviour
+
+- **Mortality**: DAV 2004 R (generational, unisex application) for the annuity; a first-order
+  accumulation-phase basis for the death benefit. Tables are cited by name and **not redistributed**;
+  the delib CSVs are `[std]` proxies anchored to the worked example.
+- **Surrender**: expected to be **materially lower** than a Schicht-3 contract's, because of the
+  *Rückzahlungsbetrag* and the taxation of growth [R14] and because the capital is protected from
+  execution [R16]. `[std]`, with that rationale; no German Riester *Stornoquote* was established
+  (gap 16).
+- ***Beitragsfreistellung***: the dominant exit (section 20). Modelled as a **state change**, not a
+  termination — the policy stays in force, the guarantee accumulator freezes, the Zulage stream
+  stops, and the account value continues to roll. `[std]` rate.
+- **Transfer out (*Anbieterwechsel*)**: a full-value exit with no subsidy consequence [R1]. `[std]`
+  rate; no market transfer rate was established.
+- **Contribution variation**: a routine, annual, income-driven adjustment (section 4), not an
+  exception. The reference implementation carries a per-period contribution vector rather than a
+  scalar premium.
+- **Take-up of the 30 % *Teilkapitalauszahlung*** and of the *Kleinbetragsrenten-Abfindung*: both
+  `[std]`, both unestablished (gaps 7 and 10).
+

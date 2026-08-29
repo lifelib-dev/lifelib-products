@@ -338,54 +338,48 @@ not from the document — and every specific number inside it carries `[unverifi
 - Doc type: consumer guidance page
 - URL: not established.
 - Retrieved: no — egress blocked; no search corroboration.
-- Content: Finanztip's editorial position on German life-insurance savings products is
-  well-established and consistently sceptical, and it is one of the few German consumer publishers
-  that explains the sum-of-capped-monthly-returns mechanic in enough detail for a lay reader to see
-  the asymmetry. Its typical argument — that the cap plus the price-index basis plus the charges
-  leave a return well short of a direct index investment — is reproduced, as an argument rather than
-  as a citation, in mechanics section 21. **Not retrieved**; nothing numeric is taken from it.
+- Content: one of the few German consumer publishers that explains the sum-of-capped-monthly-returns
+  mechanic in enough detail for a lay reader to see the asymmetry. Its standing argument — that the
+  cap, the price-index basis and the charges together leave a return well short of a direct index
+  investment — is reproduced as an argument, not as a citation, in mechanics section 21.
+  **Not retrieved**; nothing numeric is taken from it.
 
 ### S13 — Stiftung Warentest / *Finanztest*, comparative tests of *Indexpolicen*
 - Publisher: Stiftung Warentest — **secondary**
 - Doc type: comparative product test with scoring and a cost analysis
 - URL: not established (Stiftung Warentest content is largely paywalled in any case).
 - Retrieved: no — egress blocked; no search corroboration.
-- Content: *Finanztest* is the German market's most authoritative independent comparative tester of
-  retail savings insurance and has covered index-linked annuities. A test of this class would supply
-  cap levels, cost quotas and modelled outcomes for a named panel of carriers in a named year —
-  precisely the evidence gaps 3 and 6 record. **Not retrieved, nothing cited.**
+- Content: a comparative test of this class would supply cap levels, cost quotas and modelled
+  outcomes for a named panel of carriers in a named year — precisely the evidence gaps 3 and 6
+  record. **Not retrieved, nothing cited.**
 
 ### S14 — Verbraucherzentrale (federal association and Länder consumer centres), pages on *Indexpolicen*
 - Publisher: Verbraucherzentrale Bundesverband e. V. and the Länder centres — **secondary**
 - Doc type: consumer-advice pages
 - URL: not established.
 - Retrieved: no — egress blocked; no search corroboration.
-- Content: the consumer-advice sector's standing criticisms of the product are: that the payoff
-  formula is not comprehensible to a normal purchaser; that the Cap is redetermined annually at the
-  insurer's discretion so the purchaser cannot know the future terms of their own contract; and that
-  a zero year is a real and frequent outcome. These are recorded as **positions**, not as findings,
-  in mechanics section 21. **Not retrieved.**
+- Content: the sector's standing criticisms — that the payoff formula is not comprehensible to a
+  normal purchaser, that the Cap is redetermined annually at the insurer's discretion, and that a
+  zero year is a frequent outcome — are recorded as **positions**, not findings, in section 21.
+  **Not retrieved.**
 
 ### S15 — Comparison portals: Verivox, Check24
 - Publisher: Verivox GmbH; CHECK24 Vergleichsportal GmbH — **secondary**
 - Doc type: product-comparison and explainer pages
 - URL: not established.
 - Retrieved: no — egress blocked; no search corroboration.
-- Content: portals of this class publish explainer pages on *Indexpolicen* and, for some products,
-  indicative premium and benefit quotations. They are the usual public source for the commercial
-  envelope (minimum premium, entry ages, term bands) when insurer *Produktinformationsblätter* are
-  not reachable. **Not retrieved**; the envelope parameters in section 22 are `[std]`.
+- Content: the usual public source for the commercial envelope — minimum premium, entry ages, term
+  bands — when insurer *Produktinformationsblätter* are not reachable. **Not retrieved**; the
+  envelope parameters in section 22 are `[std]`.
 
 ### S16 — German insurance trade press: *procontra*, *Versicherungsbote*, *Versicherungsjournal*, *Cash.Online*, *Versicherungswirtschaft*, *Handelsblatt*
 - Publisher: various — **secondary**
 - Doc type: trade and financial press reporting
 - URL: not established.
 - Retrieved: no — egress blocked; no search corroboration.
-- Content: the trade press is where cap changes, index switches and the withdrawal or repricing of
-  index tariffs are reported, and it is the practical route by which cap levels for a named carrier
-  and year reach the public record [S5]. It is also where the "Klassik wird zur Nische" narrative
-  around the retreat from guaranteed products, and the 2022 collapse of new *Riester* business, were
-  documented. **Not retrieved**; every figure that would have come from it is a gap.
+- Content: where cap changes, index switches and the repricing or withdrawal of index tariffs are
+  reported, and the practical route by which a cap level for a named carrier and year reaches the
+  public record [S5]. **Not retrieved**; every figure that would have come from it is a gap.
 
 ---
 
@@ -475,9 +469,8 @@ number is `[unverified]`.
   benefits and their guarantee status, the surrender and paid-up values, the costs, and — the item
   that matters most for cost transparency — the ***Effektivkosten*** (reduction in yield).
 - Why it matters here: a *Modellrechnung* for an Indexpolice is intrinsically awkward, because the
-  product's return does not scale linearly with an assumed interest rate: the interest assumption
-  drives the **option budget**, which drives the **Cap**, which drives the payoff non-linearly. How
-  German carriers discharge § 154 for this product **is not established**. Gap 13.
+  interest assumption drives the **option budget**, which drives the **Cap**, which drives the payoff
+  non-linearly. How carriers discharge § 154 for this product **is not established**. Gap 13.
 
 ### R6 — VVG § 161, *Selbsttötung*
 - Publisher: Gesetze im Internet
@@ -502,16 +495,13 @@ number is `[unverified]`.
   2022–2024**; **1,00 % from 1 January 2025**. The sibling delib research files establish the
   0,25 % → 1,00 % move and the 1,00 % level for 2025 and 2026 from search evidence; the earlier
   steps are recalled and tagged.
-- **Why the rate history is the reason this product exists.** At a *Höchstrechnungszins* of 0,25 %,
-  a conventional annuity credits a guaranteed 0,25 % and hands everything above it to the
-  policyholder as declared surplus — so the *guaranteed* component of the return is negligible and
-  the *discretionary* component is the whole story. An Indexpolice takes that same discretionary
-  component and, instead of paying it out as a modest and certain interest credit, converts it into
-  a bounded lottery on an equity index. **The product is a direct commercial response to a
-  near-zero guaranteed rate**, and the reason it was launched in the mid-2000s and grew through the
-  2010s. Correspondingly, the 2025 rise to 1,00 % raises the guaranteed component again and makes
-  the *sichere Verzinsung* arm of the *Wahlrecht* relatively more attractive `[unverified]` as to
-  whether that has shifted observed elections.
+- **Why the rate history is the reason this product exists.** At a *Höchstrechnungszins* of 0,25 %
+  the guaranteed component of a conventional annuity's return is negligible and the discretionary
+  component is the whole story. An Indexpolice takes that same discretionary component and, instead
+  of crediting it as a modest certain interest amount, converts it into a bounded lottery on an
+  index. **The product is a direct commercial response to a near-zero guaranteed rate.** The 2025
+  rise to 1,00 % raises the guaranteed component again and makes the *sichere Verzinsung* arm
+  relatively more attractive; whether that has shifted observed elections is `[unverified]`.
 
 ### R8 — *Mindestzuführungsverordnung* (MindZV)
 - Publisher: Gesetze im Internet
@@ -540,14 +530,12 @@ number is `[unverified]`.
   states the **prudent person** investment principle; the derivative provisions of the same part
   permit derivatives that contribute to a reduction of risk or facilitate efficient portfolio
   management `[unverified]` at section level.
-- Why it matters here: the insurer's purchase of index options to back an index-participation
-  obligation is the paradigm of a derivative used to **hedge a liability it has itself written** —
-  the liability and the hedge are matched by construction, month for month and cap for cap. That is
-  the supervisory frame in which the product is written, and it explains an important design fact:
-  the insurer does **not** take an equity view on the policyholder's behalf; it buys the exact
-  payoff it has promised, and the Cap is set at whatever level makes that purchase cost exactly the
-  option budget. Sections 3 and 8 develop this. `[unverified]` at section level; the substance is
-  standard practice and is not in doubt.
+- Why it matters here: buying index options to back an index-participation obligation is the
+  paradigm of a derivative **hedging a liability the insurer has itself written** — liability and
+  hedge matched by construction, month for month and cap for cap. The insurer does **not** take an
+  equity view for the policyholder; it buys the exact payoff it promised, and the Cap is whatever
+  level makes that purchase cost the option budget. Sections 3 and 8 develop this. `[unverified]` at
+  section level; the substance is standard practice.
 
 ### R10 — PRIIPs: Regulation (EU) No 1286/2014 and Delegated Regulation (EU) 2017/653
 - Publisher: EUR-Lex (the host refused the fetch)
@@ -558,11 +546,10 @@ number is `[unverified]`.
   favourable), the costs over time and the composition of costs including the reduction in yield,
   and the recommended holding period. The delegated regulation prescribes the methodology and the
   **product categories** that determine how scenarios are computed.
-- Why it matters here: an Indexpolice is a **Category 4** PRIIP — a product whose values depend in
-  part on factors not observed in the market, namely the insurer's discretionary surplus
-  declaration — rather than a Category 3 derivative-based product `[unverified]` as to the category
-  assignment in any specific carrier's KID. The distinction is not academic: Category 4 permits the
-  use of the insurer's own model for the discretionary component, which is why two Indexpolicen with
+- Why it matters here: an Indexpolice is a **Category 4** PRIIP — its value depends in part on a
+  factor not observed in the market, the insurer's discretionary surplus declaration — rather than a
+  Category 3 derivative product; `[unverified]` for any specific carrier's KID. Category 4 permits
+  the insurer's own model for the discretionary component, which is why two Indexpolicen with
   similar mechanics can publish very different favourable scenarios.
 
 ### R11 — DAV, *Ergebnisbericht* of the *Ausschuss Lebensversicherung* on the PRIIP Category 4 *Standardverfahren*
@@ -618,10 +605,9 @@ number is `[unverified]`.
   **1 April 2009** the favourable treatment additionally requires a minimum death cover
   (*Mindesttodesfallschutz*) — in the standard formulation, a death benefit of at least **50 %** of
   the premiums payable over the term `[unverified]`.
-- Relevance and delta: identical to product 2, with one wrinkle worth stating. The *twelve-year /
-  age-62* test interacts with the **annual *Wahlrecht***: exercising the *Wahlrecht* is not a change
-  of contract and does not restart the twelve-year clock `[unverified]`, but a *Vertragsänderung*
-  that materially alters the contract can. Nothing in the corpus settles where the line falls.
+- Relevance and delta: identical to product 2, with one wrinkle. Exercising the annual *Wahlrecht*
+  is not a change of contract and does not restart the twelve-year clock `[unverified]`, whereas a
+  *Vertragsänderung* that materially alters the contract can. Where the line falls is not settled.
 
 ### R15 — RechVersV and the VAG *Sparten*: what "indexgebundene Lebensversicherung" means in regulation
 - Publisher: Gesetze im Internet (RechVersV, VAG); BaFin (statistical classifications)
@@ -648,11 +634,10 @@ number is `[unverified]`.
   capital-forming life products — established as existing by the sibling `kapitallebensversicherung`
   research file, where it supported the propositions that *Effektivkosten* differ considerably
   across the market and that BaFin will examine outliers.
-- Relevance here: an Indexpolice is squarely within the *Merkblatt*'s scope, and the product raises
-  the *Kundennutzen* question in its sharpest form, because a design that returns zero in a
-  substantial fraction of years while charging a full acquisition-cost load is exactly the kind of
-  product a value-for-money supervision regime exists to interrogate. **Whether the *Merkblatt*
-  names index products specifically is not established.** Gap 15.
+- Relevance: an Indexpolice is squarely within scope and raises the *Kundennutzen* question in its
+  sharpest form — a design that credits zero in a substantial fraction of years while carrying a full
+  acquisition-cost load is what a value-for-money regime exists to interrogate. **Whether the
+  *Merkblatt* names index products is not established.** Gap 15.
 
 ### R17 — BaFin, *Risiken im Fokus* (annual risk report) and BaFin *Fachartikel* on costs and PRIIPs
 - Publisher: BaFin
@@ -1593,3 +1578,172 @@ caps each at `C`, sums them, floors at zero, and credits. That way:
 
 This is the strongest thing a research file written with no research channel can hand downstream: not
 a set of numbers it could not obtain, but the exact arithmetic the numbers would have gone into.
+
+---
+
+## Observed variation across insurers
+
+**An honest variations table for this product is almost entirely a record of what could not be
+compared.** No carrier document was retrieved and no search corroborated any carrier-level term, so
+there is no per-insurer evidence to tabulate. What follows is therefore the *structure* of the
+comparison a later researcher must fill in, with the delib `[std]` in the last column, and the
+parameter bands from section 22 restated as ranges.
+
+| Feature to compare | Allianz [S2][S3][S4][S5] | R+V [S7] | Die Stuttgarter [S8] | Anyone else | delib `[std]` |
+|---|---|---|---|---|---|
+| Index AVB located | no | no | no | no | composite [S1] |
+| Product name | IndexSelect `[unverified]` | IndexInvest `[unverified]` | index-safe `[unverified]` | not established | n/a |
+| Payoff design (Cap / Quote / both) | not established | not established | not established | not established | Cap, Quote as variant |
+| Cap level, any year | **not established** | **not established** | **not established** | **not established** | 3.00 % monthly |
+| *Mindest-Cap* guaranteed | not established | not established | not established | not established | none |
+| Underlying index | not established | not established | not established | not established | generic, by volatility |
+| *Wahlrecht* notice period | not established | not established | not established | not established | annual, at year end |
+| Cap announced before the election deadline | not established | not established | not established | not established | assumed yes |
+| Base `G` of the participation | not established | not established | not established | not established | whole capital |
+| *Garantieniveau* choices | not established | not established | not established | not established | 90 % |
+| Mid-year exit treatment | not established | not established | not established | not established | no credit |
+| Charges / *Effektivkosten* | not established | not established | not established | not established | `[std]`, section 13 |
+
+Parameter bands, restated — every one `[unverified]`, and the reason section 22 exists:
+
+| Parameter | Band | Who sits where |
+|---|---|---|
+| Monthly Cap | 1.5 % – 5.0 %, typically 2.5 % – 4.0 % | **no carrier placed** |
+| *Partizipationsquote* | 50 % – 80 % on an equity price index; 80 % – 120 % on a house index | **no carrier placed** |
+| *Garantieniveau* | 60 % / 80 % / 90 % / 100 % of premiums | 100 % statutory for *Riester* [R12]; otherwise not placed |
+| Declared surplus rate 2026 | of the order of 2.5 % – 2.7 % | market averages via the sibling file's [R20] |
+| *Höchstrechnungszins* by cohort | 0.25 % – 4.00 %, 1.00 % for 2025–2026 | market-wide [R7][R18] |
+| Underlying | EURO STOXX 50 historically; house multi-asset indices increasingly | **no carrier placed** [R21] |
+
+**Representative design the research supports.** A single-life *Schicht 3* deferred annuity, capital
+in the *Sicherungsvermögen*, guaranteed at the 1,00 % *Höchstrechnungszins* with a **90 %
+*Beitragsgarantie* falling due at *Rentenbeginn*** and no annually accruing guarantee beyond the
+technical rate; the annually declared *Überschuss* spent, at the policyholder's **annual election**,
+as an **option budget** buying a one-year index participation; the credit computed as the **sum of
+twelve monthly index returns each capped at a monthly Cap, with negative months entering in full,
+floored at zero**, applied to the accumulated capital at the start of the *Indexjahr*; the credit
+**locked in permanently** into the guaranteed capital; a *Partizipationsquote* design available as a
+switchable variant; conversion at *Rentenbeginn* at the **greater of the guaranteed and the current
+*Rentenfaktor***; *Rückkaufswert* and *Beitragsfreistellung* on the ordinary § 169 / § 165 VVG
+footing, with **no index credit in the year of exit**. Every level in that design is `[std]` and is
+listed in section 22.
+
+---
+
+## Gaps and caveats
+
+This register is not a formality. Under the retrieval conditions stated at the head of the file it
+is a substantial part of the document's value, and it is written so that a later researcher with a
+working network knows exactly what to go and get, and in what order.
+
+1. **No carrier *Bedingungswerk* for an index tariff was obtained, and that is the file's central
+   defect.** The AVB is the document that settles the *Indexjahr* definition, the observation dates,
+   the payoff formula's exact wording, the base of the participation, the *Wahlrecht* timing, the
+   *Cap-Festlegung* clause, the *Mindest-Cap* if any, the *Lock-in* clause and the *Ersatzindex*
+   clause [S2]. Everything this file says about those is written from knowledge of the design family,
+   not from a document. **Get one AVB and half of this register closes.**
+
+2. **The carrier and product-name inventory could not be assembled.** The brief named twenty-six
+   German carriers. This file can name three products with moderate confidence — Allianz IndexSelect,
+   R+V-IndexInvest, Stuttgarter index-safe — **all tagged `[unverified]`**, and cannot say for any
+   other named carrier whether it writes the product at all. No downstream document may present any
+   of the three as established, and none may add a fourth.
+
+3. **No cap level, for any insurer, in any year, was established.** Not one. The range quoted
+   throughout (1,5 %–5,0 %, typically 2,5 %–4,0 %) is this author's recollection of the market band
+   and is `[unverified]`; the delib 3,00 % is `[std]`. The documents that carry real cap levels are
+   the annual customer notification [S5], the *Standmitteilung* [S10] and the rating-house
+   compilations [R21], none of which was reachable.
+
+4. **No documented worked *Indexjahr* was found** — no *Standmitteilung*, no insurer illustration, no
+   consumer-press example with twelve monthly index movements and a resulting credit. The brief
+   identified this as the gold document and it is absent. The two examples in section 19 are
+   **constructed** and are labelled `[std]` in every cell.
+
+5. **The commercial envelope is entirely `[std]`.** No entry-age band, minimum premium, term band,
+   maximum sum, *Garantieniveau* menu or *Rentenfaktor* level was established for any carrier,
+   because no *Produktinformationsblatt* was located [S3][S11].
+
+6. **No charge level of any kind was established**, and no PRIIP *Basisinformationsblatt* was located
+   [S4]. Every charge in delib is `[std]`. The index-specific give-ups — the option dealing spread
+   inside the Cap, the index-level fee inside a house index, the volatility-target drag — are
+   **structurally invisible in any disclosure**, which is a finding rather than a gap, but their
+   magnitude is a gap.
+
+7. **The AltZertG *Produktinformationsblatt* with the *Chancen-Risiko-Klasse* was not located**
+   [S11][R12]. This is the most frustrating single absence, because it is the German market's one
+   standardised, mandatory, comparable disclosure, and for a *Basisrente* index variant it would have
+   supplied cost quota, projected benefits and risk class on one page.
+
+8. **There is no market-size figure for the index-participation segment, and probably none exists.**
+   GDV counts these contracts within conventional annuity business [R15][R19]. Any statement in delib
+   about how large the segment is, or how it has moved, is `[unverified]`.
+
+9. **Participation-rate levels are `[unverified]` throughout.** The 50–80 % band on an equity price
+   index and the 80–120 % band on a house index are this author's assessment, not an observation.
+
+10. **No carrier is established as guaranteeing a *Mindest-Cap*, and none as guaranteeing a minimum
+    option budget.** These are different promises — the first bounds the Cap given a budget, the
+    second bounds the budget — and the difference matters, because a *Mindest-Cap* is worthless in a
+    year in which no surplus is declared [R1][R8]. delib assumes neither.
+
+11. **The *Wahlrecht*'s notice period, and whether the Cap is announced before the election deadline,
+    are both unestablished.** The second is the more important: it decides whether the annual election
+    is informed or blind, and therefore whether the *Wahlrecht* is worth anything. delib assumes the
+    Cap is known at election time and flags the assumption in the technical notes.
+
+12. **The mid-year exit treatment is unestablished** — whether surrender, death or annuitisation
+    inside an *Indexjahr* attracts a pro-rata credit, a refund of the unspent option budget, or
+    nothing [R2]. delib's `[std]` is nothing. This is a real cash-flow difference and it interacts
+    with the lapse-timing incentive noted in section 14.
+
+13. **How German carriers discharge § 154 VVG (*Modellrechnung*) for this product is unestablished**
+    [R5]. The prescribed three-interest-rate model does not map onto a payoff whose relationship to
+    the interest assumption runs through the option budget and the Cap.
+
+14. **The DAV's PRIIP Category 4 *Standardverfahren* was not obtained** [R11], so nothing can be said
+    about how the disclosed performance scenarios of a German Indexpolice are actually computed.
+
+15. **Whether BaFin's conduct *Merkblatt* addresses index products specifically is unestablished**
+    [R16][R17]. The product is plainly within scope; whether the supervisor has said anything about
+    the cap mechanic is not known.
+
+16. **No German court decision on the *Cap-Festlegung* is known to this author and none was
+    established** [R22]. The § 315 BGB framing in section 8 is doctrinally sound but untested in the
+    sources available here. Likewise, no decision on an *Ersatzindex* substitution.
+
+17. **Whether index participation is ever offered in the *Rentenphase* is unestablished.** delib
+    assumes it is not, and that the *Wahlrecht* lapses at *Rentenbeginn*.
+
+18. **The observation convention is unestablished** — calendar month-ends versus monthly recurrences
+    of the *Indexstichtag*, closing levels versus averages. An averaging (Asian) reading materially
+    changes the effective volatility and therefore the fair Cap, so this is not a detail.
+
+19. **The base `G` of the participation is unestablished** — whole *Deckungskapital*, an
+    index-participating sub-account, or the accumulated *Überschussguthaben* alone. delib takes the
+    whole capital as `[std]`; a different reading rescales every credit in the model.
+
+20. **A within-year monthly *Höchststandsicherung* is not established for any German carrier** and
+    should not be assumed. delib implements the annual lock-in only.
+
+21. **No house multi-asset index is named in this file.** The shift away from the EURO STOXX 50 is
+    described qualitatively in section 9 and is not in doubt as a market development; no specific
+    index name, rulebook, volatility target or fee level is asserted, because none could be
+    established and a wrong name would be worse than none.
+
+22. **The *Ersatzindex* clause's mechanics are unestablished** — whether a *Treuhänder* must confirm
+    a substitution, and whether the policyholder gets a *Sonderkündigungsrecht* or an unscheduled
+    right to move to the *sichere Verzinsung* [R4][R10 discussion in section 10].
+
+23. **Nothing in this file is quoted.** There is no verbatim statutory or contractual wording
+    anywhere in it, because no document was opened and no search summary was available to attribute
+    one to. Every description of a statute or a clause is a paraphrase from this author's knowledge,
+    and every paragraph number is `[unverified]`. That is a weaker evidentiary position than either
+    sibling delib research file, and materially weaker than any frlib file.
+
+24. **Living texts.** The VVG, the DeckRV, the MindZV, the VAG, the AltZertG, the EStG and the PRIIPs
+    delegated regulation all change. The *Höchstrechnungszins* is reset by regulation and was last
+    moved, on the evidence of the sibling delib files, to 1,00 % with effect from 1 January 2025 and
+    confirmed for 2026 [R7][R18]. Every date, rate and paragraph number in this file must be
+    re-checked against the instrument before it is relied on. **A delib citation is a pointer, not a
+    certificate.**

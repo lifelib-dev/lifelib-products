@@ -1522,3 +1522,182 @@ carried. Gap 3 records the whole of it.
 | Carrier parameter ranges | **not established for any carrier** | gap 1 |
 
 ---
+
+## Observed variation across insurers
+
+**An honest variations table for this product is almost entirely a record of what could not be
+compared.** Two carriers produced any artefact at all, and neither produced a term. Presenting a
+rich table here would be a fabrication, so what follows is the real state of the evidence.
+
+| Feature | CosmosDirekt [S1] | Allianz [S2] [S3] | The other 19 carriers [S4]–[S11] |
+|---|---|---|---|
+| Basisrente wording located | **yes — four tariff codes**, LA 1100 A, LA 1079 A, LA 936 A, LA 1099 A | no; the chassis is evidenced by a broker-hosted specimen and a product page | **no** |
+| Edition date | not established | specimen dated by its path to 02/2025 [unverified] | not established |
+| Asset form | not established | hybrid: *Sicherungsvermögen* plus *Spezialfonds* | not established |
+| Guarantee level published | no | **yes** — 60 / 80 / 90 % of premiums paid, 80 % standard [unverified] | no |
+| *Rentenfaktor* basis published | not for the Basisrente; the Schicht-3 sibling names DAV 2004 R at 0 % p.a. | expressed as a minimum annuity | no |
+| Charge figure published | no | **yes** — 1 575 € *Abschlussprovision*; ≤ 0,95 € per 100 € of capital formed [unverified] | no |
+| Layer sold on a common chassis | not established | **yes** — PrivatRente / BasisRente / RiesterRente are one design | not established |
+| *Produktinformationsblatt* obtained | no | no | no |
+
+Parameter ranges, where more than one observation exists — **there is exactly one row**:
+
+| Parameter | Observed range | Who sits where | Tag |
+|---|---|---|---|
+| Tariff wordings maintained in parallel for one product | at least 4 at one carrier | CosmosDirekt [S1] | [unverified] |
+
+Everything else a variations table would normally carry — entry ages, minimum premiums, maximum
+*Zuzahlung*, permitted *Rentenbeginn* range, *Rentengarantiezeit* durations, survivor-cover forms,
+BUZ terms, *Effektivkosten*, guarantee levels beyond one carrier, *Mindestversicherungsleistung*,
+fund universes — **has no observation at all in this corpus.** Gap 1.
+
+**Representative design the research supports.** A single-life, individual, **klassisch**
+Basisrentenvertrag on an annual grid, certified under § 5a AltZertG [R9]; premium a **level base
+*Beitrag* plus an annual *Zuzahlung*** sized against the *Höchstbetrag* and rising with it
+[R2] [R20]; priced and reserved at the **1,00 % *Höchstrechnungszins*** [R16] on a **DAV 2004 R**
+first-order basis [R17]; *gezillmert* toward the **25 ‰** cap [R16]; surplus declared annually and
+applied so that it stays inside the contract, with the terminal component allocated **only at
+*Rentenbeginn*** [R15]; ***Rentenbeginn* at 67, floored at 62*** [R1] [R8]; conversion at
+`max(garantierter, aktueller) Rentenfaktor` [R17]; a **monthly lifelong annuity and nothing else** —
+**no *Kapitalwahlrecht*, no *Teilkapitalauszahlung*, no *Kleinbetragsrenten-Abfindung*, no
+*Rückkaufswert*, no policy loan, no assignment** [R1]; **death before *Rentenbeginn* pays nothing**
+in the base run [R1]; and ***Beitragsfreistellung* as the only exit** [R14]. The optional modules,
+off in the base run, are a **survivor's annuity** limited to spouse and *Kindergeld*-eligible
+children [R1] and a **BUZ constrained to below 50 % of the total premium** [R1]. Every level the
+corpus does not source — the *Rentenfaktor*, the charge levels, the minimum premium and annuity, the
+*Beitragsfreistellung* rate, the eligible-survivor probability, the *Zuzahlung* share of the premium
+— carries a `[std]` tag with its rationale beside it.
+
+---
+
+## Gaps and caveats
+
+1. **Not one carrier's Basisrente contract terms were established.** Twenty named German life
+   writers [S11] publish AVB, *Produktinformationsblätter* and *Verbraucherinformationen* for this
+   product and none was reached. The two carriers that contribute anything [S1] [S2] contribute
+   four tariff codes and two third-party charge figures between them. **Every parameter in the delib
+   `basisrente` product-spec that would normally be sourced to a carrier is therefore `[std]`**, and
+   the variations table above is a record of absence rather than of variation.
+
+2. **No *Effektivkosten* figure and no charge schedule was obtained.** The § 7 AltZertG
+   *Produktinformationsblatt* [S13] [R11] exists precisely to publish a comparable total-charge
+   number for this product, per quotation, and not one was reached. The only charge evidence in the
+   corpus is third-party commentary on one carrier's specimen [S2]. The whole charge table in
+   mechanic 20 is `[std]` with argued ranges.
+
+3. **No market statistic of any kind was established.** Contract stock, new business, average
+   contribution, the *klassisch*/*fondsgebunden* split, the *Beitragsfreistellung* rate, the buyer's
+   age distribution and the distribution-channel split are all `[unverified]` general knowledge in
+   mechanics 9 and 21, given as orders of magnitude. **Nothing downstream may cite a delib figure
+   for the size of the Basisrente market.**
+
+4. **No *Rentenfaktor* level, range or time series exists anywhere in the delib corpus**, for this
+   or any other product. The delib worked example must choose one and it will be `[std]`. The one
+   quantified conversion basis in the corpus — DAV 2004 R at 0 % p.a. interest — is a **Schicht-3**
+   observation at one carrier [S1] and its transfer to the Basisrente is `[unverified]`.
+
+5. **Whether the GDV publishes Basisrente model conditions was not established** [S12]. A GDV
+   *Musterbedingung* would have been the natural spine for a composite specification, as it was for
+   the delib endowment file. Nothing downstream may assume one exists.
+
+6. **The interaction of the § 7 AltZertG *Produktinformationsblatt* with the PRIIPs
+   *Basisinformationsblatt* was not established** [S13] [S14]. Whether both are required for a
+   unit-linked Basisrente, or one substitutes for the other, is unresolved and must not be asserted.
+
+7. **The *Produktinformationsblatt*'s current field list, its scenario set and the number of
+   *Chancen-Risiko-Klassen* were not established** [R11]. Any statement about what the document
+   shows beyond "*Effektivkosten* and a risk class" is `[unverified]`.
+
+8. **Several tariff-level parameters that a model needs are entirely unsourced**: the minimum
+   recurring premium, the maximum *Zuzahlung*, whether *Zuzahlungen* enter the *Beitragssumme* for
+   the 25 ‰ *Zillmerung* cap, the *Mindestversicherungsleistung* that gates *Beitragsfreistellung*,
+   the *Wiederinkraftsetzung* window, the permitted *Rentenbeginn* range, and whether the five-year
+   spreading of acquisition costs in the AltZertG reaches Basisrentenverträge [R10]. All `[std]`.
+
+9. **The § 851c ZPO protected amounts were deliberately not reproduced.** Practitioner sources give
+   a six-band age-graduated annual allowance and an overall ceiling; **this file could not confirm a
+   single one of those numbers and therefore prints none of them** [R12]. The product-spec may state
+   the shape — age-graduated annual allowance, overall cap — and must not state a level. The
+   § 12 SGB II and § 90 SGB XII conditions are likewise unestablished [R13].
+
+10. **The § 851c ZPO age condition (60) and the § 10 EStG age floor (62) are different provisions
+    and this file could confirm neither.** Both are `[unverified]`. A reader must not assume the two
+    were harmonised, and a downstream document must not merge them into one age.
+
+11. **The *Höchstbetrag* series is arithmetic, not evidence.** Every BBG, contribution rate and
+    resulting ceiling in mechanic 6 is `[unverified]`; the table's only corroboration is that it
+    reproduces itself from its own inputs. **The 2026 line (124 800 € × 24,7 % = 30 826 €) is the
+    least secure**, because the relevant *Sozialversicherungsrechengrößen-Verordnung* [R20] is the
+    most recent and the least likely to be correctly recalled. The rounding convention is inferred.
+
+12. **A possible fourth asset form — an index-linked Basisrente — was not established** [S10]. If it
+    exists it is a bridge to delib product 4 and the product-spec should acknowledge the possibility
+    without asserting it.
+
+13. **Whether a Basisrentenvertrag may be transferred to another provider was not resolved.** The
+    market understanding is that a transfer to another Basisrentenvertrag of the same person is
+    tax-neutral, but the conditions live in the BMF guidance [R18] and could not be established.
+    Downstream this must not be asserted, and the transfer decrement in mechanic 12 stays flagged as
+    "possibly".
+
+14. **The *Versorgungsausgleich* mechanism was not established** [R1]. Whether the division on
+    divorce is effected by *interne* or *externe Teilung*, and what happens to the receiving
+    spouse's entitlement, is unresolved. delib does not model it.
+
+15. **Nothing Basisrente-specific was established from BaFin** [R21]. The product sits squarely in
+    the conduct-supervision perimeter for capital-forming life products, and the supervisory
+    material carried over from a sibling delib file is about the endowment chassis, not this layer.
+
+16. **The taxation of a BU annuity paid out of a Basisrentenvertrag is `[unverified]`** [R4]. The
+    position stated in mechanic 13 — full cohort *Besteuerungsanteil* rather than the *Ertragsanteil*
+    of an *abgekürzte Leibrente* — is the settled market understanding and is the whole substance of
+    the BUZ-versus-standalone-SBU comparison, so its being unconfirmed matters.
+
+17. **No carrier's *Überschussverwendung* option list for a Basisrente was established** [R15]. The
+    argument in mechanic 11 that *verzinsliche Ansammlung* and *Bonusrente* are the natural forms,
+    because cash-paying systems sit awkwardly with *nicht kapitalisierbar*, is this file's own
+    inference and is not sourced.
+
+18. **No BUZ wording was reached** [S5]. The 50 % rule is stated in mechanic 13 as substance, but
+    what it looks like in a contract — how the premium split is disclosed, what happens if the split
+    drifts over time, whether the disability cover ends at *Rentenbeginn* — is entirely unsourced.
+
+19. **Whether a small Basisrente annuity may be paid at longer than monthly intervals was not
+    established** [R18]. The statute requires a *monatliche* annuity [R1]; the administrative
+    tolerance the market is understood to rely on is `[unverified]`. This is the practical residue
+    of the *Kleinbetragsrente* answer in mechanic 19.
+
+20. **The taxation of a *Hinterbliebenenrente* from a Basisrentenvertrag in the survivor's hands was
+    not established** [R4], including which cohort year fixes its *Besteuerungsanteil*.
+
+21. **The social-insurance treatment of the annuity in payment was not established** [R4]. The
+    distinction between a compulsorily insured pensioner and a voluntarily insured one is of the
+    order of 18 % of the annuity and is stated in mechanic 16 without a source.
+
+22. **The commissioning brief for this file stated the pre-2012 *Rentenbeginn* floor as 63; this
+    file resolves it against 60.** The rule established here is: **62 for contracts concluded after
+    31 December 2011, 60 for contracts concluded on or before that date** [R1] [R8]. Both figures
+    are `[unverified]` in the sense that no source in this session confirmed them, but the 60/62
+    split is settled German practice and 63 corresponds to no threshold in this statute. Recorded
+    explicitly so that the discrepancy is resolved once, here, rather than propagating.
+
+23. **Two statutory instruments are cited entirely without identifiers.** No *Bundesgesetzblatt*
+    citation appears for the *Alterseinkünftegesetz* [R5], the *Wachstumschancengesetz* [R6], the
+    *Jahressteuergesetz 2022* [R7] or the *Jahressteuergesetz 2007* [R8], and no file number appears
+    for the BMF circular [R18] or for the 2021 BFH judgments [R19] beyond two `[unverified]` case
+    references. None was confirmed and none was guessed.
+
+24. **Living texts.** The *Höchstrechnungszins* is 1,00 % for 2025 and recommended at 1,00 % for
+    2026 [R16]; the *Besteuerungsanteil* for a 2026 cohort is 84,0 % `[unverified]` [R4]; the
+    *Höchstbetrag* for 2026 is 30 826 € `[unverified]` [R2]; the deductible share has been 100 %
+    since 2023 [R7]; the full-taxation year is 2058 [R6]. **Every one of those moves.** The
+    *Höchstbetrag* moves annually with the *Sozialversicherungsrechengrößen-Verordnung* [R20] and the
+    *Besteuerungsanteil* moves annually by construction. Check both, and every paragraph number in
+    this file, before relying on anything here.
+
+25. **This file had no research channel at all.** Egress was blocked and the session's `WebSearch`
+    budget was already exhausted when the product was reached. Two sibling delib research files,
+    written while search was available, supplied [S1], [S2], and the carried-over material in [R14]
+    through [R17] and [R21]; everything else rests on general knowledge, disciplined by the tagging
+    rules in the retrieval-conditions section and by this register. **A reader who needs any figure
+    in this file to be right must check it against the instrument named beside it.**
