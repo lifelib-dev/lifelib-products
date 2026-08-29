@@ -1132,8 +1132,6 @@ is German market practice; the **levels** were established nowhere in this corpu
   annuity table used for the *Rentenfaktor* [R16]. A German FRV carries two mortality bases at
   once. A model that prices the death charge on the annuity table will understate it, because an
   annuitant table's mortality is lighter by selection and by projection.
-- **After *Rentenbeginn*** the death benefit is whatever the annuity form provides — a
-  *Rentengarantiezeit*, a *Beitragsrückgewähr in der Rentenphase*, or nothing. That is section 10.
 
 ### 7. Fund selection, *Fondswechsel*, *Ablaufmanagement*
 
@@ -1153,34 +1151,28 @@ is German market practice; the **levels** were established nowhere in this corpu
   normally **opt-in or opt-out with a default**, and the number of years and the tranche schedule
   are tariff parameters `[unverified]`. **A five-year monthly ramp is the shape most often
   described** `[unverified]`.
-- **Why *Ablaufmanagement* matters to a cash-flow model**: it changes the assumed fund return in
-  the final years, and therefore the *Fondsguthaben* at *Rentenbeginn*, and therefore the annuity.
-  The delib model implements it as a **deterministic glide on the assumed return** — a `[std]`
-  linear ramp from the equity assumption to a money-market assumption over the last 60 months,
-  switchable off — rather than as a fund-level reallocation, because with one fund and a
-  deterministic return the two are the same thing and the glide is the honest representation of
-  what is known.
+- **Why it matters to a cash-flow model**: it changes the assumed fund return in the final years,
+  and therefore the *Fondsguthaben* at *Rentenbeginn* and the annuity. delib implements it as a
+  **deterministic glide on the assumed return** — a `[std]` linear ramp from the equity assumption
+  to a money-market assumption over the last 60 months, switchable off — because with one fund and
+  a deterministic return that is the same thing as a reallocation and is the honest representation
+  of what is known.
 
 ### 8. *Zuzahlungen*, *Teilentnahmen*, and the flexible *Rentenbeginn*
 
-- ***Zuzahlung*** — an additional single premium into an existing contract. Subject to a minimum
-  (commonly a few hundred euro `[unverified]`), sometimes to an annual maximum, and to its own
-  acquisition charge (section 4). It buys units at the *Anteilspreis* on the *Bewertungsstichtag*
-  following receipt. It **raises the *Beitragssumme*** and therefore the *Rückkaufswert* and the
-  benefit at *Rentenbeginn*. **The delib model supports it as a model-point-driven schedule with a
-  `[std]` default of none.**
-- ***Teilentnahme* / *Entnahme*** — a partial withdrawal of the *Fondsguthaben* during the
-  *Aufschubzeit*. Subject to a minimum withdrawal, a minimum remaining *Fondsguthaben*, and
-  sometimes a fee `[unverified]`. It is a **partial surrender** and carries the tax consequences
-  of one [R20]. Modelled as a unit cancellation at the *Anteilspreis*; delib's `withdrawals(t)`
-  publishes it, per the house naming rules.
+- ***Zuzahlung*** — an additional single premium into an existing contract, subject to a minimum
+  and sometimes an annual maximum `[unverified]`, and to its own acquisition charge (section 4). It
+  buys units at the *Anteilspreis* on the following *Bewertungsstichtag* and **raises the
+  *Beitragssumme***. delib supports it as a model-point schedule with a `[std]` default of none.
+- ***Teilentnahme* / *Entnahme*** — a partial withdrawal during the *Aufschubzeit*, subject to a
+  minimum withdrawal and a minimum remaining *Fondsguthaben* `[unverified]`. It is a partial
+  surrender with a partial surrender's tax consequences [R20], modelled as a unit cancellation;
+  delib's `withdrawals(t)` publishes it, per the house naming rules.
 - ***Abrufphase* / flexible *Rentenbeginn*** — a window, commonly a few years either side of the
-  agreed *Rentenbeginn*, inside which the policyholder may bring the conversion forward or defer
-  it `[unverified]` as to width. **Deferring changes the *Rentenfaktor***, because the factor is
-  age-dependent: a later start means a shorter expected payout and a higher factor. Whether the
-  *guaranteed* factor is restated on deferral, or only the current one, is `[unverified]` and is
-  gap 13. **The delib model fixes *Rentenbeginn*** and records the *Abrufphase* as an unmodelled
-  option.
+  agreed date `[unverified]`, inside which the conversion may be brought forward or deferred.
+  **Deferring changes the *Rentenfaktor***, which is age-dependent. Whether the *guaranteed* factor
+  is restated on deferral, or only the current one, is `[unverified]` (gap 13). **delib fixes the
+  *Rentenbeginn*** and records the *Abrufphase* as an unmodelled option.
 
 ### 9. The *Rentenfaktor*
 
@@ -1260,9 +1252,6 @@ insurance.**
   *Überschussrente* on top from the payout-phase surplus. **The unit-linked character of the
   contract ends at *Rentenbeginn***, which is the boundary of the delib model's scope: the payout
   phase's machinery belongs to `sofortrente`.
-- **A fund-linked payout phase exists** at some carriers — the annuity continues to be expressed
-  in units and varies with the fund — but it is a minority form `[unverified]` and delib does not
-  model it.
 - ***Rentengarantiezeit***: a guaranteed payment period, commonly 5, 10 or 15 years
   `[unverified]`, during which instalments continue to the beneficiary if the annuitant dies. It
   reduces the *Rentenfaktor*, because it is a second benefit paid for out of the same capital.
@@ -1315,9 +1304,8 @@ insurance.**
   If the death benefit is a *garantierte Mindesttodesfallleistung*, the *Risikobeitrag*
   accelerates the decay as the fund falls and the net amount at risk rises — a feedback the model
   reproduces automatically and a real product risk.
-- ***Beitragsfreistellung* and *Storno* are two decrements, not one.** They have different
-  triggers, different cash flows and different subsequent projections, and the delib model treats
-  them separately. Conflating them is a listed modelling pitfall.
+- ***Beitragsfreistellung* and *Storno* are two decrements, not one** — different triggers,
+  different cash flows, different subsequent projections. Conflating them is a listed pitfall.
 
 ### 13. Hybrid and guarantee variants — named, and deliberately not implemented
 
@@ -1416,10 +1404,9 @@ and because the vocabulary is a German market invention with no English equivale
   the same three points. For a fondsgebundene Rentenversicherung with a 30-year *Aufschubzeit*
   those points are roughly year 1, year 15 and year 30.
 - **Category matters.** A pure unit-linked contract's scenarios come from the funds' history
-  (Category 2 `[unverified]`); a guarantee-bearing or profit-participating one from the DAV
-  standard method for Category 4 [R18]. **Two BIBs for economically similar products can therefore
-  show very different scenario returns**, and no scenario figure transfers between carriers or
-  between products. This is why the delib documents cite **no** scenario return.
+  (Category 2 `[unverified]`); a guarantee-bearing or profit-participating one from the DAV standard
+  method for Category 4 [R18]. **Two BIBs for economically similar products can therefore show very
+  different scenario returns**, which is why the delib documents cite **no** scenario return.
 - **The German *Modellrechnung*** required by the *VVG-InfoV* [R7] illustrates the maturity benefit
   at prescribed assumed rates; the number of rates and their levels are `[unverified]` (gap 23).
 - **The delib `[std]` fund return** is a **single deterministic gross rate of 5,00 % p.a., less
@@ -1525,7 +1512,6 @@ observation because no observation was available:
    this corpus and a quoted one would be an invention; the derivation in section 9 from a 0 %
    *Rechnungszins* [S10] and a generational annuitant table [R16] is checkable arithmetic and the
    result is labelled `[std]` at every appearance.
-
 
 ---
 
