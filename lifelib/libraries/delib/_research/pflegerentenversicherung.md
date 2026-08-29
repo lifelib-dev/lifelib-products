@@ -809,3 +809,454 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
      private LTC cover — protecting one's children from a maintenance claim — from all but
      high-earning families, and shifted the sales argument to protecting the buyer's **own** assets
      and standard of care. Any statement about the effect on sales volumes is `[unverified]`.
+
+---
+
+## Extracted facts, organised by mechanic
+
+Every figure below carries its year and a tag. Where the mechanic is certain and the level is not,
+the level is a `[std]` parameter with its rationale stated, never a citation.
+
+### 1. Where the product sits: the three layers of German LTC funding
+
+- German long-term care is funded in **three layers**, and the *Pflegerentenversicherung* is the
+  third:
+  1. **Compulsory statutory cover** — the *soziale Pflegeversicherung* of SGB XI for the
+     statutorily health-insured [R1], and the *private Pflegepflichtversicherung* of § 23 SGB XI for
+     the privately health-insured [R7]. Benefits are **defined amounts per *Pflegegrad***, not the
+     cost of care.
+  2. **The insured person's own resources** — pension income, savings, the family home — applied to
+     whatever the first layer does not meet.
+  3. **Voluntary private top-up** (*Pflegezusatzversicherung*) or, failing that, **means-tested
+     social assistance** (*Hilfe zur Pflege*, SGB XII) [R24].
+- The first layer is a ***Teilleistungssystem*** by design [R1]: it was legislated in 1994 as a
+  partial cover, and no amendment since has changed that. This is not a defect of the scheme but its
+  constitutive choice, and it is the reason the third layer exists as a market at all.
+- **The gap the third layer addresses is largest in *vollstationäre* care** [R4][R20]. At home, the
+  *Pflegegeld* plus family labour can cover a large part of the need; in a *Pflegeheim* the resident
+  pays a four-figure monthly sum indefinitely (section 4).
+- The *Pflegerente* is therefore an **income-replacement-shaped** product aimed at a **cost** that
+  arises very late in life, is measured in years rather than decades, and terminates on death. That
+  combination — late onset, short duration, high mortality in the paying state — is what makes its
+  actuarial shape unlike every other product in delib.
+
+### 2. The statutory trigger: *Pflegebedürftigkeit* and the five *Pflegegrade*
+
+- **Since 1 January 2017 there are five *Pflegegrade***, replacing the three *Pflegestufen* plus
+  *Härtefall* of the old regime [R9]`[unverified]` as to the date. Every private LTC wording written
+  since then grades its benefit on them.
+- **The concept measures *Selbstständigkeit*, not care minutes** [R2]. § 14 SGB XI defines
+  *Pflegebedürftigkeit* as a health-related impairment of independence or of abilities that requires
+  help from others and is expected to last at least **six months** `[R2][unverified]`.
+- **The assessment instrument is the *Neues Begutachtungsassessment* (NBA)** [R6], applied by the
+  *Medizinischer Dienst* for the SPV and by MEDICPROOF for the PPV `[R6][unverified]`.
+- **Module and weights** `[R2][unverified]`:
+
+| Modul | Content | Weight in the total |
+|---|---|---|
+| 1 | *Mobilität* | 10% |
+| 2 | *Kognitive und kommunikative Fähigkeiten* | 15% — modules 2 and 3 are scored separately and only the **higher** enters |
+| 3 | *Verhaltensweisen und psychische Problemlagen* | (shares the 15% with module 2) |
+| 4 | *Selbstversorgung* | 40% |
+| 5 | *Bewältigung von und selbständiger Umgang mit krankheits-/therapiebedingten Anforderungen* | 20% |
+| 6 | *Gestaltung des Alltagslebens und sozialer Kontakte* | 15% |
+| 7 | *Außerhäusliche Aktivitäten* | assessed, **not scored** |
+| 8 | *Haushaltsführung* | assessed, **not scored** |
+
+- **Thresholds on the weighted 0-to-100 point scale** `[R2][unverified]`:
+
+| *Pflegegrad* | Weighted points | Description |
+|---|---|---|
+| 1 | 12.5 to under 27 | *geringe Beeinträchtigung der Selbstständigkeit* |
+| 2 | 27 to under 47.5 | *erhebliche Beeinträchtigung* |
+| 3 | 47.5 to under 70 | *schwere Beeinträchtigung* |
+| 4 | 70 to under 90 | *schwerste Beeinträchtigung* |
+| 5 | 90 to 100 | *schwerste Beeinträchtigung mit besonderen Anforderungen an die pflegerische Versorgung* |
+
+- A separate route to *Pflegegrad* 5 exists for defined *besondere Bedarfskonstellationen*
+  irrespective of the point total `[R2][unverified]`.
+- **Module 4, *Selbstversorgung*, carries 40 % of the weight on its own.** That is the module
+  covering washing, dressing, feeding and continence — the classic activities of daily living. A
+  reader coming from a US or UK LTC product will recognise the ADL trigger inside the German
+  scoring, but should not equate them: the German instrument reaches a *Pflegegrad* 2 on a
+  combination of moderate impairments across several modules that no two-ADL-failure trigger would
+  catch, and it scores dementia through modules 2, 3 and 5 without any physical impairment at all.
+- **Consequences for a private product, all structural:**
+  - The private insurer does **not** define the insured event; the state does, and re-defines it
+    from time to time [R9]. The insurer carries **definition risk** that no contractual wording can
+    hedge, because the wording refers to the statutory grade.
+  - The private insurer does **not** assess the claim; the MD or MEDICPROOF does [R6]. Claim
+    administration is cheap and claim disputes are rare compared with *Berufsunfähigkeit*, where the
+    insurer must establish the trigger itself. This is one of the two reasons *Pflegerente* claims
+    management is far lighter than BU claims management; the other is that recovery is rare
+    (section 17).
+  - A *Pflegegrad* is a **step function of a continuous underlying state**, re-assessed
+    episodically [R6]. That is exactly a discrete-state, discrete-time Markov chain, and it is why
+    the model of section 17 is the natural representation rather than an approximation.
+
+### 3. Statutory benefit amounts by *Pflegegrad* — the first layer, quantified
+
+All amounts **as in force from 1 January 2025**, per calendar month unless stated, and all
+`[unverified]`: no figure below was confirmed by any retrieved document or search result, and
+whether any of them changed on 1 January 2026 was not established (gap 8).
+
+**Care at home** `[R3][unverified]`:
+
+| *Pflegegrad* | *Pflegegeld* (cash, informal care) | *Pflegesachleistung* (benefit in kind) |
+|---|---|---|
+| 1 | none | none |
+| 2 | 347.00 EUR | 796.00 EUR |
+| 3 | 599.00 EUR | 1,497.00 EUR |
+| 4 | 800.00 EUR | 1,859.00 EUR |
+| 5 | 990.00 EUR | 2,299.00 EUR |
+
+**Care in a *Pflegeheim*** — the SPV's contribution to the **care-related** cost only
+`[R4][unverified]`:
+
+| *Pflegegrad* | SPV contribution, *vollstationär* |
+|---|---|
+| 1 | 125.00 EUR (a flat contribution, not a graded benefit) |
+| 2 | 805.00 EUR |
+| 3 | 1,319.00 EUR |
+| 4 | 1,855.00 EUR |
+| 5 | 2,096.00 EUR |
+
+**Secondary heads** `[R5][unverified]`: *Entlastungsbetrag* **131,00 €** per month, available in
+every *Pflegegrad* including 1, earmarked for approved relief services and not payable in cash;
+*Verhinderungspflege* and *Kurzzeitpflege* merged into a **gemeinsamer Jahresbetrag** of the order of
+**3 500 €** per year for *Pflegegrade* 2 to 5 from 1 July 2025; consumable *Pflegehilfsmittel* of
+the order of **40 €** per month; a *Wohngruppenzuschlag* of the order of **220 €** per month.
+
+Three readings of these tables that the product specification needs:
+
+1. ***Pflegegrad* 1 is, for cash purposes, uninsured by the state** — 125 € towards a *Pflegeheim*
+   and an earmarked 131 € *Entlastungsbetrag*, and nothing else `[R3][R4][R5][unverified]`. This is
+   the reason most private *Leistungsstaffeln* also pay nothing, or a token, at grade 1 (section 7):
+   the private product mirrors the state's own judgement that grade 1 is not a funding event.
+2. **The *Pflegegeld* is roughly 44 % of the corresponding *Sachleistung*** at every grade
+   `[R3][unverified]` — 347/796, 599/1 497, 800/1 859, 990/2 299 give 43.6 %, 40.0 %, 43.0 %,
+   43.1 %. The state pays informal carers substantially less than professional ones, which is what
+   makes the *Angehörigenpflege* model financially viable for families and is why five in six
+   *Pflegebedürftige* are cared for at home (section 21).
+3. **The residential contribution at grade 5 (2 096 €) is *lower* than the home *Sachleistung*
+   at grade 5 (2 299 €)** `[R3][R4][unverified]`. The statutory scheme does not scale its
+   residential contribution to the cost of a *Pflegeheim*; the *Pflegeheim*'s price is set by the
+   facility and the residue falls on the resident. That asymmetry is the *Versorgungslücke*.
+
+### 4. The *Eigenanteil* and the *Versorgungslücke* — the number the product is sized against
+
+- A resident of a German *Pflegeheim* pays **four separate components** `[R4][R20]`:
+  1. the ***einrichtungseinheitlicher Eigenanteil* (EEE)** — the care-related cost the SPV
+     contribution does not meet, **identical for *Pflegegrade* 2 to 5 within one facility** since
+     2017 [R9];
+  2. ***Unterkunft und Verpflegung*** — board and lodging, met by the resident in full;
+  3. ***Investitionskosten*** — the facility's capital costs, met by the resident in full unless a
+     *Land* subsidises them;
+  4. an ***Ausbildungsumlage*** where levied.
+- Only component 1 is reduced by the § 43c ***Leistungszuschläge***, and only by duration of stay:
+  **15 % / 30 % / 50 % / 75 %** in months 1–12, 13–24, 25–36 and from 37 respectively, on the 2024
+  step-up `[R4][unverified]`. Components 2, 3 and 4 are neither capped nor subsidised, and are the
+  fastest-growing part of the bill `[R20][unverified]`.
+- **Level.** The average total monthly payment by a resident in the **first year** of a stay was of
+  the order of **2 900 € to 3 200 €** during 2025, with the EEE component of the order of
+  **1 300 € to 1 500 €**, board and lodging of the order of **900 €** and investment costs of the
+  order of **500 €** `[R20][unverified]`. Regional dispersion is wide — Nordrhein-Westfalen and
+  Baden-Württemberg at the top and several eastern *Länder* several hundred euro below
+  `[R20][unverified]`. **These are the least reliable figures in this file** and are recorded as
+  gap 15; they are used only to argue the order of magnitude of the `[std]` *vereinbarte Rente*.
+- **The gap arithmetic**, worked at the order of magnitude and tagged as the construction it is:
+
+| Line | Amount, 2025 | Tag |
+|---|---|---|
+| Average total resident payment, *Pflegeheim*, first year of stay | about 3,000.00 EUR/month | [R20][unverified] |
+| Less: net *gesetzliche Rente* of a median new retiree | of the order of 1,200.00 to 1,600.00 EUR/month | [unverified] |
+| **Residual funded from savings, family or *Hilfe zur Pflege*** | **of the order of 1,400.00 to 1,800.00 EUR/month** | [std] arithmetic on the two lines above |
+
+- That residual is why the market sells *Pflegerenten* of **1 000 € to 1 500 €** per month, and it
+  is the rationale for delib's `[std]` *vereinbarte Rente* of **1 000 € per month** (section 23):
+  a round number at the lower end of the band, defensible as the amount that closes most of the gap
+  for a resident with an average pension, and small enough that the resulting premium is
+  recognisably a mass-market figure.
+- **The gap widens over time.** The statutory amounts are uprated episodically by legislation
+  [R10], while the *Eigenanteil* rises with wage costs in the care sector every year
+  `[R20][unverified]`. Every uprating of the statutory benefit is a one-off catch-up against a
+  continuous drift. This is the structural argument for the ***Leistungsdynamik*** option
+  (section 11) and against a level annuity in payment.
+- **The duration matters as much as the level.** Because the § 43c *Zuschläge* rise with length of
+  stay, the *Eigenanteil* is **highest in the first year** and falls thereafter `[R4][unverified]`.
+  A private annuity that pays a constant amount from the first month is therefore best matched to
+  the gap at the start of a stay and progressively over-covers it — an argument, never seen taken in
+  the market, for a **decreasing** care annuity. Recorded here because the product specification
+  should say why delib does **not** model one: no German wording is known to offer it, and the
+  effect is second-order beside the *Eigenanteil*'s general drift upward.
+
+### 5. The three private forms, and why the *Pflegerente* is one of them
+
+| | *Pflegetagegeldversicherung* | *Pflegekostenversicherung* | *Pflegerentenversicherung* |
+|---|---|---|---|
+| Legal branch | private Krankenversicherung | private Krankenversicherung | **Lebensversicherung** |
+| Benefit form | agreed daily/monthly cash amount per *Pflegegrad*, no proof of spend | reimbursement of a percentage of residual actual cost, invoices required | agreed **monthly annuity** per *Pflegegrad*, no proof of spend |
+| Legal character | *Summenversicherung* | indemnity | *Summenversicherung* |
+| Premium re-rating | **possible** under § 203 VVG on a trustee-approved trigger | possible | **not possible** save under the narrow § 163 VVG route |
+| Ageing provision | *Alterungsrückstellung* where written *nach Art der Lebensversicherung*; **none** where written *nach Art der Schadenversicherung* | as *Pflegetagegeld* | ***Deckungsrückstellung*** always |
+| Surrender value | none in substance | none | **yes**, § 169 VVG, subject to gap 9 |
+| Waiver of premium in claim | usual | usual | **usual, and contractual** |
+| Death benefit | rare | none | **common option** |
+| *Pflege-Bahr* eligible | **yes — the only eligible form** | no | **no** |
+| Market share by contracts | **dominant** | negligible | small |
+| Average premium | lowest | — | **highest** |
+
+Tags: the branch, benefit-form, re-rating and *Pflege-Bahr* rows follow from [R11][R14][R8] and are
+structural, not `[unverified]`. The market-share and average-premium rows are `[unverified]`.
+
+- **The load-bearing difference is the re-rating power.** A *Pflegetagegeld* is health business: if
+  the calculated claims experience deviates beyond the *auslösender Faktor*, the insurer may raise
+  the premium with a trustee's agreement under § 203 VVG [R11][R14]. A *Pflegerente* is life
+  business: the premium is fixed at issue and the insurer's only adjustment route is § 163 VVG,
+  which requires a permanent, unforeseeable change in a calculation basis and a trustee's agreement,
+  and is used very rarely [R11]. **A buyer at 45 who wants to know what the cover will cost at 80
+  gets an answer from a *Pflegerente* and does not from a *Pflegetagegeld*.** Every consumer
+  comparison of the two reduces to that trade, and so does the price difference: the *Pflegerente*
+  costs more because the insurer, not the policyholder, carries the basis risk on a fifty-year view
+  of a biometric table that was built on a superseded assessment regime [R15].
+- **The second difference is the ageing provision.** A *Pflegetagegeld* written *nach Art der
+  Schadenversicherung* has **no** ageing provision, so its premium follows attained-age risk upward
+  and becomes unaffordable at exactly the ages the cover is needed. Consumer bodies single this form
+  out as the one to avoid [S11]`[unverified]`. A *Pflegerente* cannot take that form: as a
+  *Lebensversicherung* it is calculated with a prospective reserve by construction (section 14).
+- **The third is the surrender value**, which cuts both ways: it makes the *Pflegerente* the only
+  one of the three from which a policyholder can recover anything on lapse [R11], and it makes the
+  contract realisable assets in a *Hilfe zur Pflege* means test [R24].
+- The **Pflegekostenversicherung** is recorded for completeness. It reimburses a stated percentage
+  of the cost left after the SPV benefit, requires invoices, and is effectively obsolete
+  `[unverified]`: it is administratively heavy for the insured, it pays nothing for informal care,
+  and it exposes the insurer to the whole of care-cost inflation with no cap. Nothing in delib
+  models it.
+
+### 6. *Pflege-Bahr*: what it is, why it matters here, and why it is not this product
+
+- **Design** [R8], every figure `[unverified]`: a **5 €** monthly *Pflegevorsorgezulage* on top of a
+  minimum own contribution of **10 €**; no *Gesundheitsprüfung*, no *Risikozuschlag*, no
+  *Leistungsausschluss* and a *Kontrahierungszwang*; entry from age **18**; the applicant must not
+  already be *pflegebedürftig*; a *Wartezeit* of at most **five years**; a benefit of at least
+  **600 €** per month at the top *Pflegegrad* with the lower grades at at least **10 / 20 / 30 /
+  40 %** of it; and the contract must be a *Pflegetagegeld* conducted *nach Art der
+  Lebensversicherung*.
+- **Why it matters to a *Pflegerente* file** even though a *Pflegerente* cannot be one:
+  1. It is the **only statutory *Leistungsstaffel*** in German private LTC. The 10/20/30/40/100
+     grid is the reference point every private grid is read against, and several unsubsidised
+     *Pflegetagegeld* tariffs simply adopt it.
+  2. It fixes a **statutory floor benefit of 600 € per month** at the top grade, which is
+     approximately **one fifth** of the *Eigenanteil* in section 4 `[std]` arithmetic on
+     `[R8][R20][unverified]`. That ratio is the whole critique of the scheme.
+  3. Its **no-underwriting design is the natural experiment** on anti-selection in German LTC. The
+     *Kontrahierungszwang* means the subsidised pool contains everyone who chose to join, which is a
+     worse pool than an underwritten one; the *Wartezeit* is the only screen; and the 5 € subsidy
+     does not compensate. That is why insurers price the residual defensively and why the benefit
+     per euro of premium is poor compared with an underwritten tariff.
+- **Why take-up stalled.** No figure below is sourced and each is a reasoned market observation
+  `[unverified]`:
+  - The **subsidy is fixed in nominal terms** at 5 € per month since 2013 and has never been
+    uprated, while the *Eigenanteil* it is meant to help meet has risen by well over half over the
+    same period [R20].
+  - The **benefit is too small to change a decision**: 600 € against a gap of roughly 1 500 €
+    (section 4) leaves the buyer needing further cover anyway, at which point the underwritten
+    tariff is better value per euro.
+  - The **five-year *Wartezeit*** deters exactly the older buyers for whom the product is most
+    relevant.
+  - **No underwriting cuts both ways commercially**: it is the scheme's selling point for
+    impaired lives, but it means insurers cannot compete on risk selection and have little incentive
+    to promote it.
+  - Consumer testing has been consistently unenthusiastic [S10]`[unverified]`, and distribution
+    incentives on a 15 €-per-month contract are negligible.
+  - Take-up rose quickly to the order of **0,8 to 0,9 million** contracts within the scheme's first
+    three or four years and has been **broadly flat since** [R21]`[unverified]`.
+- **delib does not implement the *Zulage*.** The *Pflege-Bahr* parameters are recorded because they
+  bound the observed range of the *Leistungsstaffel* (section 7) and because the product
+  specification must explain, in one paragraph, why a state subsidy that exists for LTC cover is not
+  available to the modelled product.
+
+### 7. Benefit structure — the *Leistungsstaffel*
+
+- The contract fixes one number, the ***vereinbarte Pflegerente*** — the monthly annuity payable at
+  the **top** *Pflegegrad* — and a **schedule of percentages** of it by grade. Everything else in the
+  benefit design is a modifier on that schedule.
+- **The observed range across the German market**, reconstructed from market knowledge and **not**
+  from any retrieved wording; every cell `[unverified]`:
+
+| *Pflegegrad* | Common low | Common high | Notes |
+|---|---|---|---|
+| 1 | 0% | 10% | Most tariffs insure nothing at grade 1; a minority pay a token step |
+| 2 | 10% | 30% | The widest dispersion in the schedule |
+| 3 | 30% | 50% | |
+| 4 | 60% | 75% | |
+| 5 | 100% | 100% | The scaling constant; universally 100% |
+
+- Two grid shapes recur `[unverified]`:
+  - the **statutory *Pflege-Bahr* shape**, 10 / 20 / 30 / 40 / 100 [R8], borrowed by tariffs that
+    want to say they match the subsidised minimum; and
+  - a **flatter, higher shape** in the 0 / 30 / 50 / 75 / 100 region, which is the one a
+    *Pflegerente* aimed at the residential gap tends to use, because grades 3 to 5 are where
+    residential care actually happens.
+- **Setting-dependent benefits.** Older wordings paid the full annuity only for *vollstationäre*
+  care and a reduced one for care at home `[unverified]`. Modern practice is to pay **irrespective
+  of the care setting**, which is what makes the product a *Summenversicherung* and removes the
+  administrative burden of proving where care is given. delib models the setting-independent form
+  and says so.
+- **delib's `[std]` schedule** and its rationale:
+
+| *Pflegegrad* | delib `[std]` | Rationale |
+|---|---|---|
+| 1 | 0% | Grade 1 is not a funding event in the statutory scheme either (section 3); insuring it would add incidence-heavy, low-severity claims that dominate the count and not the cost |
+| 2 | 30% | Upper end of the observed range: grade 2 is where care at home begins in earnest and where the *Pflegegeld* is smallest relative to need |
+| 3 | 50% | Mid-range and the modal market value |
+| 4 | 75% | Mid-range |
+| 5 | 100% | The scaling constant, universal |
+
+  Tag: **[std]**, observed range as tabulated above `[unverified]`. The schedule is a model
+  parameter, read from a CSV with a `provenance` column, so a user with a real *Tarifblatt* can
+  substitute a carrier's grid without touching a formula.
+- **What the schedule does to the liability**, and why the choice matters more than it looks: the
+  time spent at each grade is very unequal. A person entering care at grade 2 and deteriorating
+  spends the **majority** of their care duration at grades 2 and 3 and only the final months at
+  grade 5 `[unverified]`. So the **weighted average benefit percentage over a care spell is far
+  below 100 %** — on the deterioration profile assumed in section 23, about **50 %**. Two tariffs
+  with the same 100 % top step and different mid-steps differ in expected cost by more than the
+  headline suggests, and a naive comparison on the *vereinbarte Rente* alone is misleading. The
+  product specification must say this.
+
+### 8. The benefit trigger and its administration
+
+- **The trigger is the *Pflegegrad*** determined under §§ 14, 15 SGB XI [R2], normally established
+  by the MD for the statutorily insured or by MEDICPROOF for the privately insured [R6]. Wordings
+  provide a fallback assessment by a physician the insurer appoints where the insured is covered by
+  neither `[S4][unverified]`.
+- **Payment starts** from the beginning of the month in which the *Pflegegrad* takes effect, or from
+  the month after, subject to any *Karenzzeit* `[S4][unverified]`. Because the statutory decision
+  itself is often backdated to the date of application, a wording that keys off the *effective date*
+  of the *Pflegegrad* rather than the *decision date* pays earlier; which of the two a tariff uses is
+  a real term difference and was not established.
+- ***Nachprüfung*.** The insurer may require periodic evidence that the *Pflegegrad* persists
+  `[S4][unverified]`. In practice the evidence is the statutory determination itself, so the
+  *Nachprüfung* is a documentation exercise rather than the adversarial re-assessment that
+  characterises *Berufsunfähigkeit*. This is the second reason (after section 2) that
+  *Pflegerente* claims management is light.
+- ***Herabstufung*.** If the *Pflegegrad* falls, the annuity falls to the lower step of the
+  *Leistungsstaffel*, and if it falls below the insured threshold the annuity **stops** and the
+  premium obligation **revives** `[S4][unverified]`. Some tariffs guarantee that an annuity once
+  granted will not be reduced; whether such a guarantee is common was not established (gap 17).
+- **Modelling consequence, and a pitfall.** The paying state has **three** exits, not one: death,
+  *Herabstufung* to an uninsured grade, and *Herabstufung* to a lower insured grade. Only the first
+  is absorbing. A model that treats "in claim" as a single state exited only by death **overstates**
+  the liability, and a model that treats every downgrade as a termination **understates** it. The
+  delib model carries the grade explicitly for exactly this reason (section 17).
+- ***Pflegebedürftigkeit* at inception is an absolute bar.** Every form of German private LTC cover,
+  subsidised or not, requires the applicant not to be *pflegebedürftig* when the contract is made
+  [R8]`[unverified]` for the subsidised form and `[S4][unverified]` for the underwritten one.
+
+### 9. *Wartezeit* and *Karenzzeit*
+
+- The two are different devices and are routinely confused in consumer material.
+  - ***Wartezeit*** runs from **inception of the contract**. Care beginning inside it is not
+    covered at all, or is covered only if caused by an accident.
+  - ***Karenzzeit*** runs from **the onset of *Pflegebedürftigkeit***. The claim is admitted but the
+    annuity does not start until the deferred period has run; some wordings then pay retroactively
+    to onset and some do not.
+- **Observed levels**, `[unverified]` throughout:
+
+| Device | Underwritten *Pflegerente* | *Pflege-Bahr* [R8] |
+|---|---|---|
+| *Wartezeit* | commonly **none**; where present, up to **3 years**, and usually waived for accident | up to **5 years** |
+| *Karenzzeit* | commonly **none**; where present, **3** or **6** months | not the operative screen |
+
+- **Why the underwritten product usually has no *Wartezeit*.** The *Gesundheitsprüfung* does the
+  screening that the *Wartezeit* does in the subsidised product. Where both exist, the *Wartezeit*
+  is doing very little work and is a competitive disadvantage; where neither exists, the tariff is
+  exposed. The pairing is therefore near-deterministic: **no underwriting implies a long
+  *Wartezeit*; underwriting implies none**.
+- **delib `[std]`: *Wartezeit* = 0, *Karenzzeit* = 0 in the base run**, both switchable. Rationale:
+  the base run models the underwritten mainstream form, in which neither is standard; and a
+  *Karenzzeit* of three or six months on a benefit whose expected duration is of the order of four
+  years is a second-order effect on the liability (of the order of 6 % to 12 % of the annuity's
+  duration) that would obscure the mechanics the model is built to demonstrate. Both are exposed as
+  model parameters so a user can switch them on and see the effect, and the technical notes list the
+  interaction between a *Karenzzeit* and the high early mortality of section 17 as a modelling
+  pitfall: **a deferred period on a population with elevated mortality removes disproportionately
+  more claims than the same period would on a healthy population**, because a material share of new
+  claimants die inside it.
+
+### 10. *Beitragsbefreiung im Leistungsfall*
+
+- **Premiums are waived while the annuity is payable.** This is standard in the German market for
+  *Pflegerenten* and is contractual, not discretionary `[S4]`.
+- The details that vary and were not established `[unverified]`:
+  - **From which *Pflegegrad*** the waiver runs — usually the lowest grade at which a benefit is
+    paid, so that waiver and benefit start together, but some tariffs waive only from a higher grade
+    than the one at which the annuity begins.
+  - **Whether the waiver is full or proportionate** to the benefit percentage. Full waiver is the
+    normal design; a proportionate waiver at grade 2 would be unusual.
+  - **Whether the premium revives on *Herabstufung*** below the trigger. It ordinarily does, since
+    the waiver is an incident of the claim.
+- **delib `[std]`: full waiver, from the first month in which any annuity is payable, revived on
+  exit from the paying state.** Rationale: it is the market-standard design, it keeps waiver and
+  benefit on one trigger, and it makes the premium stream a function of the same state variable as
+  the benefit stream, which is what allows the model to publish a single `check_net_cf()` identity
+  reconciling both.
+- **The waiver is not a cosmetic term.** On a level-premium contract issued at 45 and claiming at
+  82, the waiver removes the remaining premium stream for the whole of the paying period — of the
+  order of four years of premium, of the same order as one year of benefit at the modelled levels.
+  Its cost sits inside the level premium and is one of the reasons a *Pflegerente* is dearer than a
+  *Pflegetagegeld* of nominally equal benefit, where waiver is common but not universal.
+
+### 11. *Dynamik* — indexation before and during claim
+
+- Two distinct options, both offered in the German market, and they must not be conflated:
+  1. ***Beitragsdynamik*** (planned increase before claim). The premium rises by an agreed
+     percentage each year — commonly **3 % to 5 %** `[unverified]` — and the *vereinbarte Rente*
+     rises by whatever that additional premium buys **at the attained age**, without renewed
+     underwriting. The policyholder may decline; declining twice or three times in succession
+     ordinarily ends the option permanently `[unverified]`.
+  2. ***Leistungsdynamik im Leistungsbezug*** (increase during claim). The annuity in payment rises
+     by an agreed percentage each year — commonly **1 % to 3 %** `[unverified]` — to track care-cost
+     inflation.
+- **The second is the economically important one for this product**, and the reasoning is section 4:
+  the *Eigenanteil* rises continuously while the statutory benefit is uprated episodically, so a
+  level annuity loses ground against the gap it was bought to close throughout a care spell that may
+  last a decade. A *Leistungsdynamik* is the only contractual answer.
+- **Its cost is much smaller than it looks**, and this is worth stating because it is
+  counter-intuitive: the annuity is paid to a population with heavily elevated mortality
+  (section 17), so the duration over which the escalation compounds is short. A 2 % escalation on an
+  annuity with an expected duration of about four years costs of the order of **4 %** of the
+  annuity's value, not the 15 % or 20 % the same escalation would cost on a healthy-life pension.
+- **delib `[std]`: both dynamics off in the base run**, both exposed as parameters. Rationale: the
+  base run must demonstrate the multi-state benefit machinery cleanly, and a *Beitragsdynamik*
+  introduces a second, behaviourally driven premium path (the acceptance rate on each offer) for
+  which there is no evidence at all in this corpus. The technical notes carry the *Leistungsdynamik*
+  as a switchable escalation on the annuity and list "escalating the annuity at general-population
+  duration rather than at impaired-life duration" as a modelling pitfall.
+
+### 12. *Todesfallleistung* and *Beitragsrückgewähr*
+
+- Many German *Pflegerenten* carry a death benefit, most often in the form of a
+  ***Beitragsrückgewähr*** — return of the premiums paid, usually **without interest** and usually
+  **net of any annuity already paid** `[S4][unverified]`. Other forms found in the market are a
+  fixed *Todesfallsumme* and a benefit equal to the *Deckungskapital* `[unverified]`.
+- **Why the option exists.** A pure-risk *Pflegerente* bought at 45 by someone who dies suddenly at
+  70 returns nothing at all, and the *fonds perdu* character is the standard sales objection. The
+  *Beitragsrückgewähr* answers it, at a cost.
+- **What it does to the product, and this is the fact that matters most for delib:**
+  - It converts a **pure biometric risk cover into a savings-bearing contract**. The reserve
+    required to fund a return of premiums on death at any time is close to the accumulated premium
+    itself, so the *Deckungskapital* becomes an order of magnitude larger than the risk reserve
+    (section 14).
+  - It very likely brings the contract **inside the PRIIPs perimeter**, since the benefit is no
+    longer payable only on death or on incapacity [R25]`[unverified]` (S6, gap 16).
+  - It **roughly doubles or more the premium** for the same annuity `[std]` estimate, because the
+    death benefit is close to certain to be paid whereas the annuity is not.
+  - It makes the *Rückkaufswert* substantial, with the consequences for a *Hilfe zur Pflege* means
+    test noted at [R24].
+- **delib `[std]`: no *Todesfallleistung* in the base run**, with a *Beitragsrückgewähr* available as
+  a switchable option. Rationale: the base run should demonstrate the LTC mechanics, and a return of
+  premiums would make the model's cash flows dominated by a savings roll-forward that
+  `kapitallebensversicherung` already demonstrates far better. Turning the option on is the model's
+  way of showing how large the effect is.

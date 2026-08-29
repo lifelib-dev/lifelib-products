@@ -393,15 +393,13 @@ subsidy on a different chassis; and the **Wohn-Riester** documents [S13], the bo
   product carries in its documentation
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration in this session.
-- Content: the artefact that makes a contract a Riester contract. Two properties of it matter
-  downstream and both are structural rather than numeric. First, **certification attaches to the
-  contract type, not to the individual policy** — a provider certifies a tariff and then sells it.
-  Second, **certification is expressly not a quality judgement**: the authority confirms that the
-  terms meet the § 1 AltZertG criteria and makes no statement about the provider's financial
-  soundness, the product's cost, or its expected return [R2] `[unverified]` at paragraph level. A
-  delib document must therefore never describe a Riester product as "state-approved" in any sense
-  broader than that. **No individual certification number appears in this file and none may be
-  invented.**
+- Content: the artefact that makes a contract a Riester contract. Two structural properties matter
+  downstream. **Certification attaches to the contract type, not the individual policy** — a provider
+  certifies a tariff and then sells it. And **certification is expressly not a quality judgement**:
+  the authority confirms the terms meet the § 1 criteria and says nothing about the provider's
+  financial soundness, the product's cost or its expected return [R2] `[unverified]`. No delib
+  document may describe a Riester product as "state-approved" in any broader sense. **No
+  certification number appears in this file and none may be invented.**
 
 ### S16 — The second tier of Riester insurance wordings
 - Publishers: Stuttgarter Lebensversicherung a. G.; NÜRNBERGER Lebensversicherung AG; Continentale
@@ -1059,11 +1057,10 @@ the saver pays.**
   product spec's market-role section.
 - **A *mittelbar* eligible spouse has no § 10a deduction of their own** `[unverified]` [R6] [R7];
   their subsidy is the Zulage alone.
-- **Consequence for the model: none directly.** The delib model publishes gross liability cash flows
-  and does not compute the saver's tax. The *Sonderausgabenabzug* matters to the model in exactly one
-  indirect way — it is part of what is repaid on *schädliche Verwendung* [R14], and therefore part of
-  the reason the modelled lapse rate for a Riester contract should be materially **below** a
-  Schicht-3 one.
+- **Consequence for the model: none directly** — delib publishes gross liability cash flows and does
+  not compute the saver's tax. The deduction matters in one indirect way: it is part of what is
+  repaid on *schädliche Verwendung* [R14], and therefore part of the reason a Riester lapse rate
+  should sit materially **below** a Schicht-3 one.
 
 ### 6. Contribution structure, and the two contribution pools
 
@@ -1383,13 +1380,12 @@ they are these, with every specific `[unverified]`:
 | Riester-Banksparplan | bank / *Sparkasse* [S12] | deposit balance + bonus scale | trivially — a deposit cannot fall | *Auszahlungsplan* + *Restverrentung* from 85 | no |
 | Wohn-Riester (*Bausparvertrag*, *Darlehen*) | *Bausparkasse* / bank [S13] | savings, then a loan | n/a | property use + *Wohnförderkonto* | no (section 16) |
 
-- **The delib model represents the first row**: the classic general-account Riester annuity. The
-  reasons are three, and the product spec should give all of them. It is the form for which the
-  *Beitragsgarantie* interacts with an actuarial mechanic (the *Rechnungszins*) rather than with an
-  asset-allocation algorithm, so the guarantee's cost is **visible in the recursion** instead of
-  hidden in a rebalancing rule. It is the form whose payout is an insurance annuity throughout, so
-  the whole contract is one liability. And it is the form the GDV still maintains a 2025-vintage
-  model wording for [S2], so it is a live contract type and not a historical curiosity.
+- **The delib model represents the first row**: the classic general-account Riester annuity, for
+  three reasons the product spec should give. The *Beitragsgarantie* there interacts with an
+  actuarial mechanic (the *Rechnungszins*) rather than an asset-allocation algorithm, so the
+  guarantee's cost is **visible in the recursion** instead of hidden in a rebalancing rule; the
+  payout is an insurance annuity throughout, so the whole contract is one liability; and the GDV
+  still maintains a 2025-vintage model wording for it [S2], so it is a live contract type.
 - **What the model deliberately does not do**: no unit-linked funds, no rebalancing algorithm, no
   *Auszahlungsplan*, no loan, no *Wohnförderkonto*. Each of those is stated in `model.md` as an
   explicit non-implementation rather than left to be discovered.
@@ -1513,20 +1509,17 @@ at roughly what scale" is less useful than saying both.
 - **Mortality**: DAV 2004 R (generational, unisex application) for the annuity; a first-order
   accumulation-phase basis for the death benefit. Tables are cited by name and **not redistributed**;
   the delib CSVs are `[std]` proxies anchored to the worked example.
-- **Surrender**: expected to be **materially lower** than a Schicht-3 contract's, because of the
-  *Rückzahlungsbetrag* and the taxation of growth [R14] and because the capital is protected from
-  execution [R16]. `[std]`, with that rationale; no German Riester *Stornoquote* was established
-  (gap 16).
-- ***Beitragsfreistellung***: the dominant exit (section 20). Modelled as a **state change**, not a
-  termination — the policy stays in force, the guarantee accumulator freezes, the Zulage stream
-  stops, and the account value continues to roll. `[std]` rate.
-- **Transfer out (*Anbieterwechsel*)**: a full-value exit with no subsidy consequence [R1]. `[std]`
-  rate; no market transfer rate was established.
-- **Contribution variation**: a routine, annual, income-driven adjustment (section 4), not an
-  exception. The reference implementation carries a per-period contribution vector rather than a
-  scalar premium.
-- **Take-up of the 30 % *Teilkapitalauszahlung*** and of the *Kleinbetragsrenten-Abfindung*: both
-  `[std]`, both unestablished (gaps 7 and 10).
+- **Surrender**: materially **lower** than a Schicht-3 contract's, because of the *Rückzahlungsbetrag*
+  and the taxation of growth [R14] and the protection from execution [R16]. `[std]` with that
+  rationale; no German Riester *Stornoquote* was established (gap 16).
+- ***Beitragsfreistellung***: the dominant exit (section 20). A **state change**, not a termination —
+  the policy stays in force, the guarantee accumulator freezes, the Zulage stream stops, the account
+  value continues to roll. `[std]` rate.
+- **Transfer out (*Anbieterwechsel*)**: a full-value exit with no subsidy consequence [R1]. `[std]`.
+- **Contribution variation**: a routine annual income-driven adjustment (section 4), not an
+  exception — hence a per-period contribution vector rather than a scalar premium.
+- **Take-up of the 30 % *Teilkapitalauszahlung*** and of the *Abfindung*: both `[std]`, both
+  unestablished (gaps 7 and 10).
 
 ---
 

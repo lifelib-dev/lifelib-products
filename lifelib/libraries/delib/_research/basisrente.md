@@ -880,11 +880,10 @@ for a cash-flow model.
 
 ### 4. Certification under § 5a AltZertG
 
-- Certification by the **Bundeszentralamt für Steuern** is a **condition of the relief**, not of the
-  contract's validity [R3] [R9]. Contracts concluded from 1 January 2010 require it `[unverified]`.
+- Certification by the **Bundeszentralamt für Steuern** is a **condition of the relief**, not of the contract's validity [R3] [R9]; required for contracts concluded from 1 January 2010 `[unverified]`.
 - Certification is a **formal conformity check** and expressly **not a quality mark** [R10]: it says
-  nothing about charges, investment quality or the provider's strength. Every delib document that
-  mentions the *Zertifizierungsnummer* must repeat that.
+  nothing about charges, investment quality or the provider's strength, and every delib document
+  mentioning it must repeat that.
 - **What § 5a does not import is the load-bearing fact** [R9] [R10]: the Riester
   ***Beitragserhaltungsgarantie*** — the promise that at least the nominal contributions and
   *Zulagen* are available at the start of the payout phase — **has no Schicht-1 counterpart.** A
@@ -1293,9 +1292,8 @@ for a cash-flow model.
   **voluntarily insured** pensioner pays on it. `[unverified]` in every particular; gap 21. The
   difference is large enough — of the order of 18 % of the annuity — that a product-spec should
   flag it as a driver of the after-tax comparison, without asserting the rule.
-- **The 102 € *Werbungskosten-Pauschbetrag*** for *sonstige Einkünfte* `[unverified]` reduces the
-  taxable amount trivially. **Nothing on the payout side is a liability cash flow**; all of it is
-  context for the model point.
+- The 102 € *Werbungskosten-Pauschbetrag* `[unverified]` reduces the taxable amount trivially.
+  **Nothing on the payout side is a liability cash flow**; all of it is context for the model point.
 
 ### 17. Beitragsfreistellung against Kündigung — the exits
 

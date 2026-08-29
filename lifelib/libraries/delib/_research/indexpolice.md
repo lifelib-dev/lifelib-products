@@ -100,12 +100,11 @@ It names the instrument a claim should be checked against. It does not assert th
 it. Where this file is more confident than that, it says so in the sentence itself.
 
 **What the file is nevertheless worth.** The mechanics of an *Indexpolice* are not in doubt and do
-not depend on having a PDF open: the financing identity between the declared surplus and the option
-budget, the sum-of-capped-monthly-returns payoff with uncapped negative months, the zero floor, the
-annual lock-in, the annual *Wahlrecht*, and the way each of those lands in a cash-flow projection.
-The weight of this file is deliberately placed in the extracted-facts-by-mechanic sections and in
-the two constructed worked examples, which is where a research file written under these conditions
-earns its place.
+not depend on having a PDF open: the financing identity between declared surplus and option budget,
+the sum-of-capped-monthly-returns payoff with uncapped negative months, the zero floor, the annual
+lock-in, the annual *Wahlrecht*, and the way each lands in a cash-flow projection. The weight of the
+file is deliberately in the extracted-facts-by-mechanic sections and the two constructed worked
+examples, which is where a research file written under these conditions earns its place.
 
 ---
 
@@ -867,11 +866,10 @@ to be stated in full and without hedging.**
   times a year, against an expected monthly return well under 1 %. Section 20 does the arithmetic.
 - **The floor is what makes it a life-insurance product rather than a bet**, and it is genuine: the
   worst *Indexjahr* imaginable credits zero, and the capital is untouched.
-- **A trap for the modeller and for the reader.** The `max(S, 0)` floor operates on the *sum*, not on
-  each month. It is therefore **not** true that a year with more up-months than down-months credits
-  something; it is perfectly ordinary for a year in which the index finished **higher** to credit
-  **zero**, because the up-months were capped and the down-months were not. The second worked example
-  in section 19 is exactly that case, and it is the case a delib test must assert.
+- **A trap for the modeller and the reader.** The `max(S, 0)` floor operates on the *sum*, not on
+  each month, so it is **not** true that a year with more up-months than down-months credits
+  something: it is perfectly ordinary for a year in which the index finished **higher** to credit
+  **zero**. Example B in section 19 is that case, and a delib test must assert it.
 - **Interpretation questions the corpus does not settle**, each a carrier-level clause and each
   changing a credited amount: whether the monthly observation dates are calendar month-ends or
   monthly recurrences of the *Indexstichtag*, and whether the level used is a closing level or an
@@ -1015,18 +1013,17 @@ dominant one.
   `[unverified]`, which reduces the policyholder's return without appearing in any cost disclosure;
   and **a short live history behind a long backtest**, which makes published "historical" performance
   of the product weaker evidence than it appears.
-- **The honest summary of the shift**: it moved the give-up from a place the purchaser can see (a
-  55 % participation rate; a 3 % cap) to places the purchaser cannot (an index rule, a volatility
-  target, a fee inside the index level, a backtest). The headline numbers improved and the expected
-  outcome did not necessarily improve with them, because the financing identity of section 3 still
-  binds: **the payoff still costs the option budget, whatever the underlying is called.**
+- **The honest summary of the shift**: it moved the give-up from somewhere the purchaser can see — a
+  55 % participation rate, a 3 % cap — to somewhere they cannot: an index rule, a volatility target,
+  a fee inside the index level, a backtest. Headline numbers improved; expected outcomes did not
+  necessarily improve with them, because the section-3 identity still binds — **the payoff still
+  costs the option budget, whatever the underlying is called.**
 - **No specific German house index is named in this file.** This author cannot name one with
   confidence, and naming one wrongly would be worse than not naming one. Gap 21.
-- **Modelling consequence.** delib parameterises the index by **an assumed annualised volatility and
-  an assumed drift**, both `[std]`, and by an explicit monthly return path supplied as an external
-  CSV, and shows the outcome under a high-volatility equity index and a low-volatility multi-asset
-  index side by side. That is the honest way to represent a fact the corpus establishes
-  qualitatively and not quantitatively.
+- **Modelling consequence.** delib parameterises the index by an assumed annualised volatility and
+  drift, both `[std]`, and by an explicit monthly return path in an external CSV, showing the
+  high-volatility equity and low-volatility multi-asset cases side by side — the honest way to
+  represent a fact established qualitatively and not quantitatively.
 
 ### 10. Index substitution, *Ersatzindex* and adjustment clauses
 
@@ -1041,9 +1038,9 @@ dominant one.
 - The distinction from § 163 VVG matters again here: substituting the index is a change to a
   contractual term and therefore lives in the § 164 VVG / *Treuhänder* / express-clause world, while
   redetermining the Cap is not [R4][R22].
-- **Modelling consequence**: none directly, but it belongs in the technical notes' model-risk list.
-  A model that projects thirty *Indexjahre* on one index rule is assuming no substitution over a
-  period in which the market has already substituted once.
+- **Modelling consequence**: none directly, but it belongs in the model-risk list — a model
+  projecting thirty *Indexjahre* on one index rule assumes no substitution over a period in which the
+  market has already substituted once.
 
 ### 11. The guarantee at *Rentenbeginn*, and *Beitragsgarantie* levels below 100 %
 
@@ -1073,10 +1070,10 @@ dominant one.
   over a 30-year term, and that it sits inside the observed 60–100 % band. The specification exposes
   the level and the technical notes show the option budget as a function of it — that dependency is
   the most instructive single sensitivity this product has.
-- **Interaction with the lock-in.** The effective guarantee at any time is
-  `max( Beitragsgarantie, guaranteed capital including all locked-in index credits )`, and after a
-  few good years the second term dominates. A projection must carry both and take the maximum, and a
-  test should assert that the guaranteed capital is monotone non-decreasing.
+- **Interaction with the lock-in.** The effective guarantee is
+  `max( Beitragsgarantie, guaranteed capital including all locked-in index credits )`, the second
+  term dominating after a few good years. A projection must carry both, and a test should assert that
+  the guaranteed capital is monotone non-decreasing.
 
 ### 12. Premium
 
@@ -1213,13 +1210,11 @@ Inherited wholesale from delib product 2; recorded here only as the delta.
   investment income; if the contract has run twelve years and the payment falls after age 62, **half
   the difference** is taxable at the personal rate, subject to the *Mindesttodesfallschutz*
   condition for contracts from 1 April 2009 [R14]. All figures `[unverified]`.
-- **The index credits are not separately taxed.** They are absorbed into the capital as they are
-  credited; there is no annual tax event, no *Abgeltungsteuer* on the year's index gain, and no
-  *Teilfreistellung* under the *Investmentsteuergesetz* — the latter because there is no fund. This
-  **tax deferral inside the wrapper is one of the two genuine advantages the product has over
-  holding an index fund directly**, the other being the guarantee. It should be stated in the
-  product specification alongside the criticism in section 21, because a fair comparison has to carry
-  both sides.
+- **The index credits are not separately taxed**: they are absorbed into the capital as credited, so
+  there is no annual tax event, no *Abgeltungsteuer* on the year's index gain and no
+  *Teilfreistellung* under the *Investmentsteuergesetz* — the last because there is no fund. This
+  **tax deferral is one of the two genuine advantages over holding an index fund directly**, the
+  other being the guarantee, and the product specification must state it alongside section 21.
 - *Basisrente* and *Riester* wrappers change the tax treatment entirely (full deductibility of
   contributions and full taxation of the annuity; allowances and *Sonderausgabenabzug* respectively)
   and are documented under delib products 5 and 6.

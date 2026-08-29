@@ -799,28 +799,25 @@ either `[std]` with a rationale or `[unverified]` with a warning.
 ### 1. Product structure and legal form
 
 - An SBU is a **life-assurance contract** written by a *Lebensversicherungsunternehmen*, governed by
-  §§ 172–177 VVG for its own mechanics and, through § 176, by the general life provisions
-  §§ 150–170 VVG for everything else [R1] [R5]. It is not health business and not accident business,
-  even though its trigger is a health event.
-- The contract is a **pure risk contract with a reserve**. It pays only on the insured event, has no
-  maturity benefit, and returns nothing if the insured stays healthy. It nevertheless carries a
-  material *Deckungsrückstellung*, because the premium is level and the risk rises steeply with age
-  [R9]. That combination — no savings intent, substantial reserve — is the structural fact that
-  distinguishes BU from every other product in delib.
-- Two commercial forms, one liability:
-  - **Selbständige BU (SBU)** — standalone. The premium buys BU cover and nothing else. This is
-    delib product 9 and the subject of this file.
-  - **BU-Zusatzversicherung (BUZ)** — a rider on a *Renten-*, *Kapitallebens-* or
-    *Basisrentenversicherung* [S2]. The BU risk, definition, claim procedure and *Nachprüfung* are
-    identical; what differs is that the *Beitragsbefreiung* waives the **whole** premium of the host
-    contract, and that the tax treatment follows the host (section 24).
-  - A third form, the **BU-Rente as a benefit inside an occupational pension** (*bAV-BU*), is out of
-    delib's scope entirely.
-- The German market's own hierarchy of biometric income protection, from broadest trigger to
-  narrowest, is worth stating because it bounds the product: *Berufsunfähigkeit* (last occupation,
-  50 %) → *Grundfähigkeitsversicherung* (loss of defined basic abilities) → *Erwerbsunfähigkeit*
-  (any occupation) → statutory *Erwerbsminderungsrente* (general labour market, hours-based) [R24].
-  BU is the **broadest and most expensive** of the four and is the one the market sells first.
+  §§ 172–177 VVG for its own mechanics and, through § 176, by the general life provisions §§ 150–170
+  VVG for everything else [R1] [R5]. It is not health business and not accident business, even though
+  its trigger is a health event.
+- The contract is a **pure risk contract with a reserve**: it pays only on the insured event and
+  returns nothing if the insured stays healthy, yet it carries a material *Deckungsrückstellung*
+  because the premium is level and the risk rises steeply with age [R9]. That combination — no
+  savings intent, substantial reserve — is the structural fact distinguishing BU from every other
+  product in delib.
+- Two commercial forms, one liability. ***Selbständige BU (SBU)*** — standalone; delib product 9 and
+  the subject of this file. ***BU-Zusatzversicherung (BUZ)*** — a rider on a *Renten-*,
+  *Kapitallebens-* or *Basisrentenversicherung* [S2]; the BU risk, definition, claim procedure and
+  *Nachprüfung* are identical, but the *Beitragsbefreiung* waives the **whole** premium of the host
+  contract and the tax treatment follows the host (section 23). A third form, the BU-Rente inside an
+  occupational pension (*bAV-BU*), is out of delib's scope entirely.
+- The German market's own hierarchy of biometric income protection, broadest trigger first, bounds
+  the product: *Berufsunfähigkeit* (last occupation, 50 %) → *Grundfähigkeitsversicherung* (loss of
+  defined basic abilities) → *Erwerbsunfähigkeit* (any occupation) → statutory
+  *Erwerbsminderungsrente* (general labour market, hours-based) [R24]. BU is the **broadest and most
+  expensive** of the four and is the one the market sells first.
 
 ### 2. The statutory definition — § 172 VVG
 
@@ -951,35 +948,33 @@ non-German modeller most often gets wrong.
 
 ### 6. Nachprüfung, Leistungsfreiheit and Reaktivierung (§ 174 VVG)
 
-- Once benefit is in payment the insurer may **periodically re-examine** whether its conditions
-  still hold. Market practice is an annual or biennial *Nachprüfung*, with the AVB imposing
-  *Mitwirkungspflichten* on the insured — to supply medical evidence, to notify a change in health
-  or occupation, and to submit to examination `[unverified]` as to frequency.
-- **What the insurer must show.** A *change* relative to the state on which the *Anerkenntnis*
+- Once benefit is in payment the insurer may **periodically re-examine** whether its conditions still
+  hold — annually or biennially in market practice, with the AVB imposing *Mitwirkungspflichten* on
+  the insured to supply medical evidence, notify changes in health or occupation, and submit to
+  examination `[unverified]` as to frequency.
+- **What the insurer must show** is a *change* relative to the state on which the *Anerkenntnis*
   rested: either a medical improvement lifting the insured above the 50 % threshold in her old
-  occupation, or a new occupation **actually taken up** that satisfies *konkrete Verweisung*
-  (section 4) [R3] [R29].
-- **The three-month run-off.** Where the insurer establishes that the conditions have ceased, it
-  remains liable to the **end of the third month after the notice reaches the policyholder** [R3].
-  A defective notice — one that does not intelligibly set out the comparison — does not start the
-  period at all [R29]. **Model consequence**: a claim termination other than death is followed by
-  three further monthly payments. In a monthly model this is a three-month tail on every
-  reactivation, and it is a real cash-flow effect, not a rounding detail: at a reactivation rate
-  concentrated in the first two years of a claim, the tail adds a measurable amount to the expected
-  benefit.
+  occupation, or a new occupation **actually taken up** satisfying *konkrete Verweisung* (section 4)
+  [R3] [R29].
+- **The three-month run-off.** Where the insurer establishes that the conditions have ceased it
+  remains liable to the **end of the third month after the notice reaches the policyholder** [R3]; a
+  defective notice does not start the period at all [R29]. **Model consequence**: a claim termination
+  other than death is followed by three further monthly payments — a three-month tail on every
+  reactivation, and a real cash-flow effect rather than a rounding detail, because reactivation is
+  concentrated in the first two years of a claim.
 - ***Reaktivierung*** — the insured recovers and the cover **revives**. The contract does not end:
-  the *Beitragsbefreiung* stops, the premium resumes at the same *Zahlbeitrag*, and a fresh BU may
-  be claimed later. This bidirectional structure is what makes BU a genuine multi-state model rather
-  than a decrement model, and it is the single most important structural difference from the
-  `risikolebensversicherung` product.
-- **Reactivation is strongly duration-dependent.** The probability of recovery is highest in the
-  first year of a claim, falls sharply over the second and third, and is close to zero after about
-  five years [R16]. The corollary is the one that governs the reserve: a claim that survives its
-  first two years is very likely to run to the *Endalter*. Any delib reactivation proxy must
-  reproduce that shape, and a flat reactivation rate is a modelling error the tests should catch.
-- **Some tariffs waive the *Nachprüfung*** after a stated benefit duration, or promise not to
-  invoke *konkrete Verweisung* after a stated period `[unverified]`. Treated by delib as an option
-  switch, off in the base run.
+  the *Beitragsbefreiung* stops, the premium resumes at the same *Zahlbeitrag*, and a fresh BU may be
+  claimed later. This bidirectional structure makes BU a genuine multi-state model rather than a
+  decrement model, and it is the most important structural difference from delib's
+  `risikolebensversicherung`.
+- **Reactivation is strongly duration-dependent**: highest in the first year of a claim, falling
+  sharply over the second and third, close to zero after about five [R16]. The corollary governs the
+  reserve — a claim surviving its first two years is very likely to run to the *Endalter*. Any delib
+  reactivation proxy must reproduce that shape, and a flat reactivation rate is a modelling error the
+  tests should catch.
+- **Some tariffs waive the *Nachprüfung*** after a stated benefit duration, or promise not to invoke
+  *konkrete Verweisung* after a stated period `[unverified]`. Treated as an option switch, off in the
+  base run.
 
 ### 7. Karenzzeit, rückwirkende Leistung and the start of benefit
 
@@ -1055,26 +1050,19 @@ non-German modeller most often gets wrong.
 
 ### 10. Wiedereingliederungshilfe and the assistance benefits
 
-- ***Wiedereingliederungshilfe*** — a **one-off lump sum** paid to support a return to work after a
-  period of BU. Typical form: a payment equal to a stated number of monthly *BU-Renten*, recalled as
-  up to **six** `[unverified]`, payable once, on *Reaktivierung* or on the insured taking up work
-  again.
-- Related benefits that appear in the better wordings, all small relative to the annuity and all
-  optional or tariff-specific:
-  - ***Umorganisationshilfe*** for the self-employed — a payment toward reorganising the business so
-    that the insured can continue to run it, which is the commercial counterpart of the
-    *Umorganisationspflicht* [R29].
-  - ***Reha-Hilfe*** / *Rehabilitationsleistung* — support for rehabilitation measures.
-  - ***Soforthilfe*** / *Überbrückungsleistung* — an advance paid while the *Leistungsprüfung* runs,
-    set against the eventual benefit.
-  - ***Pflegeleistung*** — a *Pflegerente* triggered by care need, sold as an add-on inside a BU
-    contract by some carriers.
+- ***Wiedereingliederungshilfe*** — a **one-off lump sum** supporting a return to work after a period
+  of BU, typically a stated number of monthly *BU-Renten*, recalled as up to **six** `[unverified]`,
+  payable once on *Reaktivierung* or on taking up work again.
+- Related benefits in the better wordings, all small relative to the annuity and all optional or
+  tariff-specific: ***Umorganisationshilfe*** for the self-employed, the commercial counterpart of
+  the *Umorganisationspflicht* [R29]; ***Reha-Hilfe***; ***Soforthilfe*** paid while the
+  *Leistungsprüfung* runs and set against the eventual benefit; and a ***Pflegeleistung*** add-on.
 - **Model consequence and the delib choice.** delib models the *Wiedereingliederungshilfe* as a
   `[std]` lump of **6 × the monthly *BU-Rente*** paid on each *Reaktivierung*, switchable off, and
-  models none of the others. Rationale: it is the only one of the group that is both common enough
-  to be representative and simple enough to attach to an existing transition. The others are either
-  discretionary, tiny, or duplicate a benefit already modelled. The 6-month level is `[std]`,
-  observed range recalled as **3 to 12 monthly Renten** `[unverified]`.
+  models none of the others — it is the only one of the group both common enough to be representative
+  and simple enough to attach to an existing transition; the rest are discretionary, tiny, or
+  duplicate a benefit already modelled. The 6-month level is `[std]`, observed range recalled as
+  **3 to 12 monthly Renten** `[unverified]`.
 
 ### 11. The Arbeitsunfähigkeits-Klausel (AU-Klausel)
 
@@ -1308,27 +1296,24 @@ French products in this repository.**
 ### 19. Charges
 
 **No German insurer publishes the charge structure of a BU tariff, and there is no *Effektivkosten*
-disclosure for a pure risk product** [R12] (section S14). Everything in this section is `[std]` or
-`[unverified]`, and the product's `technical-notes.md` says so in the same words.
+disclosure for a pure risk product** [R12] [S14]. Everything here is `[std]` or `[unverified]`, and
+`technical-notes.md` says so in the same words.
 
-- ***Abschluss- und Vertriebskosten*** — acquisition and distribution costs, financed by
-  *Zillmerung* into the *Deckungsrückstellung* and capped at the *Höchstzillmersatz* of **25 ‰ of
-  the *Beitragssumme*** [R13] `[unverified]`. For a BU contract the *Beitragssumme* is large — a
-  37-year term at a monthly *Bruttobeitrag* of €100 is €44 400 — so the zillmered allowance is large
-  in absolute terms even though the annual premium is modest. delib's `[std]` acquisition-cost
-  assumption is set **at the cap**, because that is where German level-premium risk business
-  generally sits and because a cap is at least a sourced ceiling.
-- ***Verwaltungskosten*** — administration, modelled as a percentage of the *Bruttobeitrag* plus a
-  per-policy amount. Both `[std]`; delib uses a percentage-of-premium *beta* loading and a flat
-  annual *gamma* per policy, with the levels chosen so that the worked example reproduces exactly
-  and stated as constructions.
-- ***Leistungsbearbeitungskosten*** — **claims-handling costs, which are a genuinely material and
-  BU-specific charge**. A BU claim is expensive to assess (medical reports, occupational analysis,
-  sometimes litigation) and expensive to maintain (annual *Nachprüfung*). delib carries a `[std]`
-  one-off claim-assessment cost at inception of a claim and a `[std]` recurring cost per month in
-  payment, and names them as the charge a modeller coming from a term-life product will forget.
-- ***Ratenzahlungszuschlag*** — section 18.
-- **No premium tax** [R31] `[unverified]`.
+- ***Abschluss- und Vertriebskosten*** — financed by *Zillmerung* into the *Deckungsrückstellung* and
+  capped at the *Höchstzillmersatz* of **25 ‰ of the *Beitragssumme*** [R13] `[unverified]`. For BU
+  the *Beitragssumme* is large — 37 years at a monthly *Bruttobeitrag* of €100 is €44 400 — so the
+  zillmered allowance is large in absolute terms though the annual premium is modest. delib's `[std]`
+  acquisition assumption sits **at the cap**, because that is where German level-premium risk
+  business generally sits and because a cap is at least a sourced ceiling.
+- ***Verwaltungskosten*** — a percentage-of-*Bruttobeitrag* loading plus a flat annual per-policy
+  amount, both `[std]`, with levels chosen so the worked example reproduces exactly and stated as
+  constructions.
+- ***Leistungsbearbeitungskosten*** — **claims-handling costs, a genuinely material and BU-specific
+  charge**: a BU claim is expensive to assess (medical reports, occupational analysis, sometimes
+  litigation) and expensive to maintain (annual *Nachprüfung*). delib carries a `[std]` one-off
+  assessment cost at claim inception and a `[std]` recurring cost per month in payment, and names
+  them as the charge a modeller from a term-life background will forget.
+- ***Ratenzahlungszuschlag*** — section 18. **No premium tax** [R31] `[unverified]`.
 
 ### 20. Rechnungsgrundlagen and the multi-state structure
 
@@ -1385,27 +1370,20 @@ disclosure for a pure risk product** [R12] (section S14). Everything in this sec
 
 ### 22. Exclusions
 
-- The German BU exclusion list is short by international standards and is broadly uniform
-  `[unverified]` as to any particular carrier's list:
-  - BU caused by **war or internal unrest**, with a carve-out where the insured is passively caught
-    up in it;
-  - BU caused by the **deliberate execution or attempted execution of a crime** by the insured;
-  - BU caused by the insured's **intentional self-harm**, subject to the *Selbsttötung* rule of
-    § 161 VVG through § 176 [R5] [R11];
-  - BU caused by **nuclear energy**;
-  - in some wordings, BU arising from **aviation other than as a passenger** and from defined
-    hazardous activities, or an increased premium for them.
-- **What is notably *not* excluded**: illness of any kind, including psychiatric illness — which is
-  the largest single cause of BU (section 26) — and ordinary accidents. Attempts to exclude
-  psychiatric causes exist at the margin of the market as a cheaper "BU ohne Psyche" variant
-  `[unverified]`; consumer advice is uniformly against them, since excluding the largest cause
-  removes about a third of the cover.
-- Individual ***Ausschlussklauseln*** imposed at underwriting (section 17) sit alongside the
-  general list and are contract-specific.
+- The German BU exclusion list is short by international standards and broadly uniform `[unverified]`
+  as to any particular carrier: BU caused by **war or internal unrest** (with a carve-out where the
+  insured is passively caught up in it); by the **deliberate execution or attempted execution of a
+  crime**; by the insured's **intentional self-harm**, subject to the *Selbsttötung* rule of § 161 VVG
+  through § 176 [R5] [R11]; by **nuclear energy**; and, in some wordings, by **aviation other than as
+  a passenger** and defined hazardous activities, or those loaded rather than excluded.
+- **What is notably *not* excluded**: illness of any kind, **including psychiatric illness** — the
+  largest single cause of BU (section 25) — and ordinary accidents. A cheaper "BU ohne Psyche"
+  variant exists at the margin of the market `[unverified]`; consumer advice is uniformly against it,
+  since excluding the largest cause removes about a third of the cover.
+- Individual ***Ausschlussklauseln*** imposed at underwriting (section 17) sit alongside the general
+  list and are contract-specific.
 - **Model consequence.** Exclusions are absorbed into the calibration of *i(x)*, not modelled
   separately.
-
----
 
 ### 23. Taxation
 

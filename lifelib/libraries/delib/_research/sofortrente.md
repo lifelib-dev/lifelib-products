@@ -1507,17 +1507,15 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
   payment [R13]; the payout plan's interest is taxable in full as *Kapitalerträge*. The comparison
   is not like-for-like on gross rates and any presentation that compares them gross is misleading.
 - **Limb three — what the annuitant gives up.** The capital is irreversibly committed (section 13),
-  there is no residual estate beyond the *Rentengarantiezeit* or *Kapitalrückgewähr* (sections 5
-  and 6), and an early death is a poor outcome. The *Bankauszahlplan* keeps every euro not yet
-  drawn. The honest framing, which the consumer material uses, is that a *Sofortrente* is
-  **insurance against outliving one's money**, priced like insurance: a premium is paid, most
-  buyers "lose", and the ones who need it are made whole.
-- **The nominal break-even.** On this file's `[std]` illustration the annuitant recovers the
-  *Einmalbeitrag* in nominal terms after `100 000 / (12 x 389.99) = 21.4` years, i.e. at about
-  **age 86** `[std]` (4) — close to the life expectancy the tariff assumes, which is exactly what
-  one would expect of a fairly priced annuity and is a useful sanity check on any quotation.
-- **No German market comparison, no published payout-plan rate and no Stiftung Warentest
-  side-by-side was established.** Every figure in this section is `[std]` arithmetic.
+  there is no residual estate beyond the *Rentengarantiezeit* or *Kapitalrückgewähr*, and an early
+  death is a poor outcome, while the *Bankauszahlplan* keeps every euro not yet drawn. The honest
+  framing is that a *Sofortrente* is **insurance against outliving one's money**, priced like
+  insurance: most buyers "lose" and the ones who need it are made whole.
+- **The nominal break-even.** `100 000 / (12 x 389.99) = 21.4` years, about **age 86** `[std]` (4)
+  — close to the life expectancy the tariff assumes, which is what a fairly priced annuity should
+  give and a useful sanity check on any quotation.
+- **No market comparison, no published payout-plan rate and no Stiftung Warentest side-by-side was
+  established.** Every figure in this section is `[std]` arithmetic.
 
 ### 17. Typical *Einmalbeitrag* sizes and market context
 
@@ -1527,21 +1525,18 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
   that would carry the first four and nothing inside it, and notes that even a retrieved figure
   would aggregate *Sofortrenten* with other single-premium business.
 - **What can be said structurally.** The *Sofortrente* is a **decumulation** product bought with a
-  lump sum that already exists: a matured endowment or deferred annuity taken as a
-  *Kapitalabfindung*, an inheritance, a property sale, a severance payment. Its natural size is
-  therefore the size of those events, which in the German retail market means a five- to low
-  six-figure sum. A reference implementation's representative case of **100 000 €** `[std]`
-  (section 2) is chosen because it is the market's own quoting unit, not because it was observed.
-- **The product's market position is the mirror image of the deferred annuity's.** The sibling file
-  records that the classic **deferred** annuity has been withdrawn from sale by several of the
-  largest German writers — Debeka from 2016, and Allianz, Zurich and Generali before it — in favour
-  of hybrid designs with partial guarantees [R21 in that file; S8] [S7]. **No equivalent retreat
+  lump sum that already exists — a *Kapitalabfindung* from a matured contract, an inheritance, a
+  property sale, a severance payment — so its natural size is the size of those events: a five- to
+  low six-figure sum in the German retail market. The representative case of **100 000 €** `[std]`
+  is the market's quoting unit, not an observation.
+- **Its market position is the mirror image of the deferred annuity's.** The sibling file records
+  that the classic **deferred** annuity was withdrawn by Debeka in 2016 and by Allianz, Zurich and
+  Generali before it, in favour of partial-guarantee hybrids [S7] [S8]. **No equivalent retreat
   from the immediate annuity was established, and there is a structural reason not to expect one**:
-  the objection to the classic deferred contract was that a thirty-year interest guarantee is
-  expensive to hedge, whereas an immediate annuity's guarantee is short-dated in interest terms and
-  its real risk is longevity, which no alternative design removes. The *Sofortrente* is also the
-  natural destination of the *Kapitalwahlrecht* exercised on all those withdrawn contracts. **This
-  is an argument, not a finding**; it is flagged as such in gap 14.
+  the objection to the deferred contract was a thirty-year interest guarantee, whereas an immediate
+  annuity's guarantee is short-dated in interest terms and its real risk is longevity, which no
+  alternative design removes — and the *Sofortrente* is the natural destination of the
+  *Kapitalwahlrecht* exercised on the withdrawn contracts. **An argument, not a finding**; gap 14.
 
 ### 18. What a projection model needs, and what the corpus supplies
 
@@ -1569,10 +1564,9 @@ product; the levels are not established at all, and every one of them is `[std]`
 ## Observed variation across insurers
 
 **This file supports no numeric variation table.** No search was run for this product (gap 1), so
-no carrier's *Rentenhöhe*, charge, envelope, option menu or surplus rate was observed. A table with
-a column per carrier would be fabrication. What the corpus supports is a **structural** table —
-which features exist, and what evidence there is that a named carrier has them — and an honest
-statement of the parameters whose range is unknown.
+no carrier's *Rentenhöhe*, charge, envelope, option menu or surplus rate was observed, and a table
+with a column per carrier would be fabrication. What the corpus supports is a **structural** table
+and an honest statement of the parameters whose range is unknown.
 
 ### Carriers in the corpus
 
@@ -1606,12 +1600,11 @@ statement of the parameters whose range is unknown.
 
 ### Parameters whose range is unknown
 
-*Rentenhöhe* per 100 000 € at any age, at any carrier, in any year; the spread between the best and
-worst quotation; `alpha` and `beta` charges; *Effektivkosten* or *Renditeminderung*; minimum and
-maximum *Einmalbeitrag*; minimum and maximum entry age; the *Überschussrentensatz* and every other
-surplus rate; the split of new business between the *Überschussverwendung* forms; the take-up of
-*Kapitalrückgewähr* against *Rentengarantiezeit*; the market's size and the average ticket. **Every
-one of these is a gap, not an omission**, and each appears below.
+*Rentenhöhe* per 100 000 € at any age, carrier or year; the spread between the best and worst
+quotation; `alpha` and `beta`; *Effektivkosten* or *Renditeminderung*; the *Einmalbeitrag* and
+entry-age envelopes; every surplus rate; the split of new business between the
+*Überschussverwendung* forms; the take-up of *Kapitalrückgewähr* against *Rentengarantiezeit*; the
+market's size and average ticket. **Every one is a gap, not an omission**, and each appears below.
 
 ---
 
