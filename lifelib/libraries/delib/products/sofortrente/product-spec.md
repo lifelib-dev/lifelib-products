@@ -146,28 +146,27 @@ the footnote says so in those words: a **[std]** with no range is weaker than on
 
 1. **Nothing was established about entry ages at any carrier**; a typical window in the sixties and
    issue into the eighties are [unverified]. **60 to 85** is adopted because below 60 the
-   *Ertragsanteil* is high enough (22 % at 60 against 18 % at 65 [REG-R41]) to weaken the tax case
-   the product exists for, and above 85 the *Rentengarantiezeit* options collapse — a 20-year
-   guarantee at 85 costs a quarter of the annuity. The boundaries claim to be no carrier's.
-2. **Nothing was established.** The convention is a five-figure minimum, because the fixed
-   per-policy administration cost would swamp a small annuity, with an upper limit set by
-   reinsurance rather than tariff. **100 000 €** is the unit German annuities are quoted in — *Rente
-   je 100 000 € Einmalbeitrag*, not the *Rentenfaktor* per 10 000 € the deferred market uses.
+   *Ertragsanteil* is high enough (22 % at 60 against 18 % at 65 [REG-R41]) to weaken the tax case the
+   product exists for, and above 85 the *Rentengarantiezeit* options collapse — a 20-year guarantee at
+   85 costs a quarter of the annuity. The boundaries claim to be no carrier's.
+2. **Nothing was established.** The convention is a five-figure minimum, the fixed per-policy
+   administration cost swamping a small annuity, with an upper limit set by reinsurance rather than
+   tariff. **100 000 €** is the unit German annuities are quoted in — *Rente je 100 000 €
+   Einmalbeitrag*, not the *Rentenfaktor* per 10 000 € the deferred market uses.
 3. The variant exists but **no carrier's terms, minimum, maximum or deferment death benefit were
-   established** (gap 17). The representative design takes **0** — which is what makes the contract
-   a *Sofortrente* rather than a single-premium deferred annuity — and carries the deferment as a
-   model-point column so it can be switched on.
+   established** (gap 17). The design takes **0** — which is what makes the contract a *Sofortrente*
+   rather than a single-premium deferred annuity — and carries the deferment as a model-point column
+   so it can be switched on.
 4. A *Sofortrente* is normally written **without medical underwriting**, because the exposure runs
    the wrong way: medical evidence would be used by the applicant, not the insurer, so the selection
-   sits in the tariff margin rather than in an individual assessment. **No source states this**,
-   hence [unverified]. Its converse, the impaired-life *enhanced annuity*, is **not established to
-   exist in the German retail market**. § 19 VVG's *Anzeigepflicht* [REG-R30] is inert where the
-   insurer asks nothing.
+   sits in the tariff margin rather than in an individual assessment. **No source states this**, hence
+   [unverified]; its converse, the impaired-life *enhanced annuity*, is **not established to exist in
+   the German retail market**, and § 19 VVG's *Anzeigepflicht* [REG-R30] is inert where the insurer
+   asks nothing.
 5. Age 65 is where the corroborated *Ertragsanteil* applies [R13] and where the [std] annuity table
-   is anchored. The 10-year guarantee sits inside the market's typical band — 15 years for
-   retirement ages 61–70, 10 years for 71 and above, most choosing 10 to 20 [R23] — at the shorter
-   end, so the certain window fits a readable worked-example table. The 2025 inception puts the cell
-   on the current 1,00 % *Höchstrechnungszins* [REG-R15].
+   is anchored; the 10-year guarantee sits at the short end of the market's typical band (15 years to
+   age 70, 10 thereafter, most choosing 10 to 20 [R23]) so the certain window fits a readable
+   worked-example table; and the 2025 inception puts the cell on the current 1,00 % rate [REG-R15].
 
 ### Premiums — the *Einmalbeitrag*
 
@@ -188,13 +187,13 @@ the footnote says so in those words: a **[std]** with no range is weaker than on
    on each annuity payment, covering the payment run, the annual *Standmitteilung* [REG-R25] and
    proof of life; and an implicit margin inside the *Rechnungsgrundlagen*, pricing at 0 % when the
    cap is 1,00 % [S6] [REG-R14] being a charge in economic substance. α = 2,5 % is argued from a
-   single-premium annuity's cost base — a one-off commission plus issue expense, materially below
-   the *Zillmerung* of a recurring-premium contract; β = 2,0 % from a per-policy running cost roughly
+   single-premium annuity's cost base — a one-off commission plus issue expense, materially below the
+   *Zillmerung* of a recurring-premium contract; β = 2,0 % from a per-policy running cost roughly
    constant in euros, which is why 2 % is of the right order on a 100 000 € case and too small on a
-   25 000 € one — itself the reason minimum *Einmalbeiträge* exist. **Both are the modeller's view
-   with no observed range, because nothing was observed.** The only market benchmark is an
-   insurer-level *Verwaltungskostenquote* of 2,4 % or 2,19 % depending on measurement, spread from
-   under 2 % to over 4 % [REG-R53] — a ratio on premium income, not a product charge.
+   25 000 € one, itself the reason minimum *Einmalbeiträge* exist. **Both are the modeller's view with
+   no observed range, because nothing was observed.** The only market benchmark is an insurer-level
+   *Verwaltungskostenquote* of 2,4 % or 2,19 % depending on measurement, spread from under 2 % to over
+   4 % [REG-R53] — a ratio on premium income, not a product charge.
 7. Whether carriers permit a *Zuzahlung* after inception **was not established**. Economically a
    top-up is a second annuity purchase at the then-current tariff, and the design treats it that way
    by excluding it: a second *Einmalbeitrag* is a second model point.
@@ -220,19 +219,17 @@ the footnote says so in those words: a **[std]** with no range is weaker than on
 | Settlement on death | To the *Bezugsberechtigter*, not automatically to the estate | [REG-R26] |
 
 8. **The payment timing was not established by any source in the delib corpus**, for this product or
-   the deferred one, and it is first-order: advance against arrears moves the annuity value by
-   roughly half a month's interest *and* shifts every payout cash flow by one period. On the [std]
-   basis at 1,00 %, `a12_due − a12_arrears = 1`, so the annuity per 100 000 € at 65 would be
-   `100 000 / (12 × 19.426) = 428,99 €` in arrears against **407,98 €** in advance — a **5,1 %**
-   difference from a single convention. *Vorschüssig* is adopted **[std]** because it is the German
-   market convention for annuities in payment and because every arithmetic in the research file uses
-   an annuity-due, but it is a convention stated as one, not a finding (gap 11). The first payment
-   date was likewise not established.
+   the deferred one, and it is first-order: advance against arrears moves the annuity value by roughly
+   half a month's interest *and* shifts every payout cash flow by one period. On the [std] basis at
+   1,00 %, `a12_due − a12_arrears = 1`, so the annuity per 100 000 € at 65 would be
+   `100 000 / (12 × 19.426) = 428,99 €` in arrears against **407,98 €** in advance — **5,1 %** from a
+   single convention. *Vorschüssig* is adopted **[std]** as the German market convention and because
+   every arithmetic in the research file uses an annuity-due, but it is a convention stated as one,
+   not a finding (gap 11); the first payment date was likewise not established.
 9. **Whether the refund counts the *guaranteed* or the *total* annuity paid is a live contractual
-   question, not established at any carrier**, and the readings diverge materially over twenty
-   years. The representative design measures it against the **guaranteed** annuity, on the argument
-   that a guaranteed benefit cannot be defined by reference to a discretionary quantity — a
-   modeller's argument, not a carrier's clause (gap 10).
+   question, not established at any carrier**, and the readings diverge materially over twenty years.
+   The design measures it against the **guaranteed** annuity, on the argument that a guaranteed
+   benefit cannot be defined by reference to a discretionary quantity (gap 10).
 
 ### Underwriting and rating
 
@@ -279,12 +276,10 @@ the MindZV then shares [REG-R18], and the reference implementation's decrement t
 | *Renditeminderung* (PRIIPs) | **Not established**, and whether a payout-only *Sofortrente* is within PRIIPs scope is itself unresolved | [S12] [REG-R32]; gap 8 |
 | Effect of both [std] charges | On the [std] gross annuity of 407,98 € at 65 and 1,00 %: `407,98 × 0,975 / 1,02 = 389,99 €` per month per 100 000 €; a 10-year guarantee takes it to about **381 €** | **[std]** (10) |
 
-10. A **constructed illustration**, not a market rate: the shape of a quotable guaranteed
-    *Sofortrente* on this file's own arithmetic, printed because a reader needs an order of magnitude
-    to sanity-check a model against and because printing the construction is the only honest
-    alternative to printing a fabricated quotation. **No German carrier's quotation, at any age, for
-    any year, appears anywhere in this specification** (gap 5). BaFin's *Merkblatt 01/2023 (VA)* on
-    *Wohlverhaltensaufsicht* — which polices *Effektivkosten* against a sector comparison and
+10. A **constructed illustration**, not a market rate: printing the construction is the only honest
+    alternative to printing a fabricated quotation, and **no German carrier's quotation, at any age,
+    for any year, appears anywhere in this specification** (gap 5). BaFin's *Merkblatt 01/2023 (VA)*
+    on *Wohlverhaltensaufsicht* — which polices *Effektivkosten* against a sector comparison and
     requires a return target for the target market [REG-R35] — **is addressed to *kapitalbildende*
     products**, and whether the supervisor scrutinises *Rentenhöhe* or surplus declarations on a
     payout annuity **was not established** [R18].
@@ -299,7 +294,7 @@ the MindZV then shares [REG-R18], and the reference implementation's decrement t
 | *Beitragsfreistellung* | **None.** § 165 VVG has no application: there is no premium to stop | [R5] [REG-R28] |
 | Termination of the contract | On the annuitant's death, subject to any *Rentengarantiezeit* still running, any *Kapitalrückgewähr* then due and any *Hinterbliebenenrente* then beginning | [R23]; structural |
 | Insolvency of the insurer | Contracts transfer to **Protektor Lebensversicherungs-AG**, the statutory *Sicherungsfonds* | [REG-R12] |
-| *Aufschubzeit* qualification | The deferment has a genuine pre-*Rentenbeginn* window in which the termination bar does not yet bite, so a surrender right — and a *Rückkaufswert* under § 169 — **may** exist during it. **No carrier's terms established**; the base run switches the variant off | [R1] [R2]; gap 17 |
+| *Aufschubzeit* qualification | A deferment gives a pre-*Rentenbeginn* window in which the bar does not yet bite, so a surrender right **may** exist. **No carrier's terms established**; the base run switches the variant off | [R1] [R2]; gap 17 |
 
 **A discrepancy between two delib documents, named rather than resolved.** The research file states
 that **§ 168 Abs. 3 VVG** confines the right of termination in a *Rentenversicherung ohne
@@ -408,8 +403,7 @@ costs, on the [std] basis at 1,00 %, age 65, per 100 000 € **[std]** (12):
     sooner**: a 10-year guarantee costs 2,26 % at 65, 4,10 % at 70 and 7,42 % at 75, a 20-year one
     10,50 %, 17,20 % and 26,71 % — which is why the market's typical duration falls with age [R23].
     The corpus's consumer illustration on a *deferred* contract puts the same three at roughly 0,5 %,
-    2,6 % and 8,0 % [R23]: cheaper at every duration, as one expects from an annuity starting at a
-    lower age. Consistent in shape, different in level, **neither a tariff**.
+    2,6 % and 8,0 % [R23]: consistent in shape, different in level, **neither a tariff**.
 
 **Two settlement forms exist and only one is modelled.** On death inside the period the instalments
 may continue as they fall due, or the present value of the *Restgarantiezeit* may be commuted. **Which
@@ -421,26 +415,24 @@ form German carriers use, and on what basis a commutation would be struck, was n
 **The rule.** On death the insurer refunds the *Einmalbeitrag* **less the annuity instalments already
 paid**, floored at zero — so the benefit starts at the full *Einmalbeitrag* and runs to nothing over
 roughly the period in which the annuitant recovers the capital nominally, on the [std] basis about
-**21,5 years** at 65. **The trap inside it:** because a *larger* refund means a *smaller* annuity,
-and a smaller annuity means the refund runs off more slowly, the pricing equation is **implicit in
-the annuity**:
+**21,5 years** at 65. **The trap inside it:** a *larger* refund means a *smaller* annuity, and a
+smaller annuity means the refund runs off more slowly, so the pricing equation is **implicit in R**:
 
     Einmalbeitrag = 12 × R × a12(x, i) + PV( max(Einmalbeitrag − 12 × R × t, 0) payable on death at t )
 
-It must be **solved**, not evaluated: an implementation that computes the plain annuity first and
-then subtracts a refund cost gets a different — and wrong — answer. On the [std] basis at 1,00 %, age
-65, per 100 000 €, the monthly annuity falls from **407,98 €** to **335,48 €**, a reduction of
-**17,8 %** **[std]** (13) — materially more than a 20-year guarantee period (10,5 %), and the honest
-answer to a buyer who asks why the "money-back" version pays so much less.
+It must be **solved**, not evaluated: computing the plain annuity first and then subtracting a refund
+cost gets a different — and wrong — answer. On the [std] basis at 1,00 %, age 65, per 100 000 €, the
+monthly annuity falls from **407,98 €** to **335,48 €**, **−17,8 %** **[std]** (13) — materially more
+than a 20-year guarantee period, and the honest answer to a buyer who asks why the "money-back"
+version pays so much less.
 
 13. **[std]**, solving the equation above with deaths at mid-year and the refund discounted from
     mid-year. Market variants — ***volle Beitragsrückgewähr***, a stated percentage, a refund capped
     at a number of years' payments — exist, but **no carrier's variant was established.** The refund
     and the *Rentengarantiezeit* protect the same risk in different shapes and are usually offered as
-    alternatives; **which carriers permit the combination was not established** (gap 10), so the
-    representative design treats them as **mutually exclusive [std]** and the reference
-    implementation asserts that exclusivity rather than silently permitting an unsupported
-    configuration.
+    alternatives; **which carriers permit the combination was not established** (gap 10), so the design
+    treats them as **mutually exclusive [std]** and the model asserts that exclusivity rather than
+    silently permitting an unsupported configuration.
 
 ### *Hinterbliebenenrente* and its *Anwartschaft*
 
@@ -461,9 +453,9 @@ carrier's menu was established**. On the [std] basis at 1,00 %, annuitant 65 and
 the same mortality, per 100 000 € **[std]** (14): 60 % gives `a12` 23.838 and **349,58 €**, −14,3 %;
 100 % gives `a12` 26.113 and **319,12 €**, −21,8 %.
 
-14. **[std]**, applying the same mortality to both lives and assuming independence, both
-    simplifications: real joint-life pricing uses sex-distinct or portfolio-mix bases and a
-    dependence allowance. The overview's payout-plan exhaustion figures are on the same basis.
+14. **[std]**, applying the same mortality to both lives and assuming independence — real joint-life
+    pricing uses sex-distinct or portfolio-mix bases and a dependence allowance. The overview's
+    payout-plan exhaustion figures are on the same basis.
 
 ### Payment frequency and timing
 

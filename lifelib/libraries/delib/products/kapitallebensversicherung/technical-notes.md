@@ -9,12 +9,11 @@ product.** [S#] / [R#] tags refer to the source list in `sources.md` (numbering 
 `_research/kapitallebensversicherung.md`; frozen); [REG-R#] tags refer to the cross-product library
 `references/regulatory-and-actuarial-references.md` (its own frozen R1–R56 numbering). **[std]** marks
 a standardization introduced for the reference implementation; [unverified] marks a claim no search
-result corroborated. Parameter values are identical to those in `product-spec.md`. **No document
-cited anywhere in this library was retrieved** — direct HTTP egress from the build environment is
-blocked and everything rests on `WebSearch` result summaries — so a delib citation names the
-instrument a claim should be checked against and does not assert that anyone checked it. Cells names,
-model-point columns and CSV headers are English `lower_snake_case`; German terms of art keep their
-German form in prose.
+result corroborated. Parameter values are identical to those in `product-spec.md`. **No document cited
+anywhere in this library was retrieved** — direct HTTP egress is blocked and everything rests on
+`WebSearch` result summaries — so a delib citation names the instrument a claim should be checked
+against and does not assert that anyone checked it. Cells names, model-point columns and CSV headers
+are English `lower_snake_case`; German terms of art keep their German form in prose.
 
 ---
 
@@ -112,11 +111,10 @@ Every column of `model_point_table.csv` is published as a cells of the same name
 
 `sum_assured` and `death_ratio` are the two halves of the *gemischte Versicherung*: the guaranteed
 survival sum is `sum_assured`, the guaranteed death sum is `sum_assured × death_ratio`, and the
-*Mindesttodesfallschutz* of [R12] [REG-R45] requires the latter to be at least 50 % of the
-*Beitragssumme* — a **model-point design constraint**, checked when the table is built, not a model
-formula. `rechnungszins` is a contract term and not a market rate: it is fixed at conclusion and stays
-with the contract for its whole term [REG-R14], which is why the in-force point carries 1,75 % while
-new business carries 1,00 %.
+*Mindesttodesfallschutz* [R12] [REG-R45] requires the latter to be at least 50 % of the *Beitragssumme*
+— a **model-point design constraint**, checked when the table is built, not a model formula. And
+`rechnungszins` is a contract term, not a market rate: fixed at conclusion and carried for the whole
+term [REG-R14], which is why the in-force point carries 1,75 % while new business carries 1,00 %.
 
 ---
 
@@ -132,9 +130,9 @@ new business carries 1,00 %.
 | `bfz_si_pp` | *Beitragsfreie Versicherungssumme* bought at the *Beitragsfreistellung*, or 0 where the *Mindestversicherungsleistung* test fails and the election became a surrender | once per model point |
 
 There is **no** unit fund, **no** policyholder account fed by premium and **no** partial-withdrawal
-ledger. The *Überschussguthaben* is a genuine account, but it is fed by declared surplus alone, and
-§ 341f HGB confirms the separation from the other direction: the *Deckungsrückstellung* is formed
-**excluding *verzinslich angesammelte Überschussanteile*** [REG-R54].
+ledger. The *Überschussguthaben* is a genuine account fed by declared surplus alone, and § 341f HGB
+confirms the separation from the other direction: the *Deckungsrückstellung* is formed **excluding
+*verzinslich angesammelte Überschussanteile*** [REG-R54].
 
 ---
 
@@ -156,12 +154,12 @@ tag per row, which is delib's second ruling and is machine-checked.
 | `deckrv_table.csv` | `issue_year` | `hoechstrechnungszins`, `hoechstzillmersatz`, `provenance` |
 
 `cost_table.csv` deliberately carries the **first-order tariff loadings and the second-order expense
-assumptions on the same row**, because the difference between them *is* the *Kostenüberschuss*.
+assumptions on the same row**, because the difference between them *is* the *Kostenüberschuss*, and
 `deckrv_table.csv` carries both DeckRV ceilings — § 2's *Höchstrechnungszins* and § 4's
-*Höchstzillmersatz* — keyed by `issue_year`, because both are cohort facts that travel with the
-contract [REG-R14] [REG-R15] [REG-R16]. The scalar assumptions that are not tables — `mort_be_factor`,
-`suicide_share`, `bfz_min_si`, `term_surr_share`, `bwr_rate` and the two behaviour-module switches —
-are `Projection` References, and their values and tags are in this section.
+*Höchstzillmersatz* — keyed by `issue_year`, both being cohort facts that travel with the contract
+[REG-R14] [REG-R15] [REG-R16]. The scalars that are not tables — `mort_be_factor`, `suicide_share`,
+`bfz_min_si`, `term_surr_share`, `bwr_rate` and the two behaviour-module switches — are `Projection`
+References, and their values and tags are in this section.
 
 Three classes. Class (a) is contractual or statutory and is cited; class (b) is the insurer's current
 discretionary declaration, revisable annually and capable of being zero [S3] [S9]; class (c) is the
@@ -231,21 +229,20 @@ distributing the wedge between them.
 **Every input in this class is [std].** No German insurer publishes a mortality basis, an expense
 loading, a commission scale or a lapse rate for this product, and the DAV tables are not public.
 
-**Mortality — two bases, one table.** The first-order basis is the shipped `mort_table.csv`, a
-**[std] Makeham-form proxy**, sex-specific, for ages 0 to 120:
+**Mortality — two bases, one table.** The first-order basis is `mort_table.csv`, a **[std] Makeham-form
+proxy**, sex-specific, ages 0 to 120:
 
 ```
 mort_rate_1st(M, x) = 0.00022 + B · 1.10^x          with B fixed by the anchor below
 mort_rate_1st(F, x) = 0.00016 + B · 1.10^(x − 3)     a three-year setback on the same curve
 ```
 
-**The anchor is `mort_rate_1st(M, 37) = 0.001200` exactly**, which fixes `B` and is what makes the
-worked example reproduce; the `Data` docstring states it. The best-estimate basis is the same table
-scaled: `mort_rate(t) = mort_rate_base(t) × mort_be_factor` with **`mort_be_factor = 0.75` [std]**,
-so the first-order table carries a 33 % safety loading over the best estimate. That wedge is the
-***Sicherheitszuschlag*** and its systematic release **is** the *Risikoüberschuss* [REG-R47] — the
-model does not compute the surplus from it, but the two must not be confused, and using one basis
-where the other belongs is pitfall 14.
+**The anchor is `mort_rate_1st(M, 37) = 0.001200` exactly**, which fixes `B` and makes the worked
+example reproduce; the `Data` docstring states it. The best-estimate basis is the same table scaled:
+`mort_rate(t) = mort_rate_base(t) × mort_be_factor` with **`mort_be_factor = 0.75` [std]**, so the
+first-order table carries a 33 % safety loading. That wedge is the ***Sicherheitszuschlag*** and its
+systematic release **is** the *Risikoüberschuss* [REG-R47] — the model does not compute the surplus
+from it, but the two must not be confused, and using one basis where the other belongs is pitfall 14.
 
 The table this proxy stands in for is **DAV 2008 T**, the market-standard first-order basis for German
 death-benefit business, derived over 2006–2008 from insurers' own policy data, the cleansed insured
@@ -301,21 +298,19 @@ row per `cost_id`, because the difference between them **is** the *Kostenübersc
 | `claim_expense` | 120 EUR per death, maturity or surrender claim | second order | **[std]** |
 
 **No charge level of any kind was established for any German carrier** (gap 7). The levels are
-round-number placeholders sized so the first-year acquisition outgo — 300 EUR plus 2,5 % of the
-*Beitragssumme* — modestly exceeds what the *Zillmerung* recovers, so the anchor cell carries the
-new-business strain a real German endowment carries. **The *Effektivkosten* these produce is a
-validation target, not an input**: reproducing one exactly needs the PRIIPs Annex VI algorithm and a
-specified holding period, neither of which delib implements [R9] [R19] [REG-R31] [REG-R32].
+placeholders sized so the first-year acquisition outgo — 300 EUR plus 2,5 % of the *Beitragssumme* —
+modestly exceeds what the *Zillmerung* recovers, so the anchor cell carries the new-business strain a
+real German endowment carries. **The *Effektivkosten* they produce is a validation target, not an
+input**: reproducing one exactly needs the PRIIPs Annex VI algorithm and a specified holding period,
+neither of which delib implements [R9] [R19] [REG-R31] [REG-R32].
 
 **Suicide share `suicide_share` = 0.02 [std].** § 161 VVG substitutes the *Rückkaufswert* for the sum
 insured on the suicide sub-cause of death in the first three policy years [R4] [REG-R26]. No source
-gives a suicide share of deaths at any age, so 2 % is a pure placeholder standing for "about one death
-in fifty in the window is an excluded suicide". Setting it to zero is a defensible variant; **paying
-nil instead of the *Rückkaufswert* is not** (pitfall 7).
-
-**Bewertungsreserven, and dynamic behaviour.** Both off. The *Bewertungsreserven* share is zero and
-the reason is in `product-spec.md`, footnote 13. There is no dynamic lapse formula in the base run;
-the optional module is below.
+gives a suicide share of deaths at any age, so 2 % is a placeholder standing for "about one death in
+fifty in the window is an excluded suicide". Setting it to zero is a defensible variant; **paying nil
+instead of the *Rückkaufswert* is not** (pitfall 7). The *Bewertungsreserven* share is zero for the
+reason in `product-spec.md`, footnote 13, and there is no dynamic lapse formula in the base run — the
+optional modules are under *Policyholder behaviour modelling*.
 
 ---
 
@@ -343,8 +338,7 @@ the optional module is below.
 | `d(t)`, `z(t)`, `a(t)`, `s(t)` | `decl_rate`, `zins_ueberschuss_rate`, `ans_rate`, `term_rate` | declared rate; interest-surplus rate; *Ansammlungszinssatz*; terminal rate |
 | `C(t)` | `surplus_credit_pp(t)` | surplus allocated to the contract for year `t` |
 
-`q₁`, `q`, `w`, `σ`, `d`, `z`, `a`, `s` are dimensionless annual rates; `SE`, `SD`, `B`, `V`, `U`, `Z`,
-`S` are EUR per policy; every cash-flow component is EUR per policy year.
+`q₁`, `q`, `w`, `σ`, `d`, `z`, `a`, `s` are dimensionless annual rates; `SE`, `SD`, `B`, `V`, `U`, `Z`, `S` are EUR per policy; every cash-flow component is EUR per policy year.
 
 ### The first-order basis and the pricing equivalence
 
@@ -439,14 +433,12 @@ Three rules ride on those four lines:
 
 - **The *Stornoabzug* bites on the guaranteed value only**, not on the *Überschussguthaben*: Debeka's
   published deduction is a percentage of the *Deckungskapital* [S3] [R30] (pitfall 6).
-- **`term_surr_share = 0` in the base run [std]**, so the accrued *Schlussüberschussanteil* is paid at
-  the *Ablauf* and on death and not on surrender (`product-spec.md`, footnote 12). The parameter is
-  exposed.
+- **`term_surr_share = 0` in the base run [std]** — the accrued *Schlussüberschussanteil* is paid at the
+  *Ablauf* and on death, not on surrender (`product-spec.md`, footnote 12); the parameter is exposed.
 - **The *Mindestversicherungsleistung* test**: if `bfz_si_pp < bfz_min_si` (**2,500 EUR [std]**) the
-  election is **not** a *Beitragsfreistellung*. § 165 VVG then obliges the insurer to pay the § 169
-  value instead, so the model converts the whole model point to a **surrender at the end of
-  `bfz_year`** and the projection terminates there [R3] (pitfall 8). Model point 12 exercises exactly
-  this branch.
+  election is **not** a *Beitragsfreistellung* — § 165 VVG obliges the insurer to pay the § 169 value
+  instead, so the model converts the point to a **surrender at the end of `bfz_year`** and the
+  projection terminates there [R3] (pitfall 8). Model point 12 exercises that branch.
 
 Where the election succeeds the contract stays in force with `bfz_si_pp` in place of `SE`, no further
 premium and a reserve `bfz_si_pp · pu_single_prem(t)`. Because the § 169 floor generally exceeds the
@@ -547,9 +539,8 @@ flow, and are therefore kept out of `result_cf()`.
 
 ### Published identities
 
-Nine `check_*()` cells, each taking no argument and returning a `bool` over all `t`, each with a
-per-`t` residual at `check_*_resid(t)`. The conventions suite calls every one of them on every model
-point and requires `True`.
+Nine `check_*()` cells, each taking no argument, returning a `bool` over all `t` and carrying a per-`t`
+residual at `check_*_resid(t)`. The conventions suite calls every one on every model point.
 
 | Identity | What it asserts |
 |---|---|
@@ -563,7 +554,7 @@ point and requires `True`.
 | `check_rechnungszins_cap()` | § 2 DeckRV: `rechnungszins ≤ hoechstrechnungszins(issue_year)` [REG-R14] [REG-R15] |
 | `check_zillmer_cap()` | § 4 DeckRV: `alpha_rate ≤ hoechstzillmersatz(issue_year)`, and `alpha_cost ≤ hoechstzillmersatz · beitragssumme` [R7] [REG-R16] |
 
-The last two are parameter invariants rather than roll-forward identities, and they are here rather
+The last two are parameter invariants rather than roll-forward identities, and they live here rather
 than in a build script because a German model point's cohort **is** an assumption: a 4,00 % guarantee
 on a 2026 issue year is not a stress, it is a data error.
 
@@ -704,10 +695,10 @@ a test in `tests/test_kapitallebensversicherung_de.py`.
 
 All formulas are **[std]**; no German calibration evidence exists for any of them.
 
-- **Base surrender.** The duration table above, with the shape driven by the tax thresholds — twelve
-  years and age 60 or 62 [R10] [REG-R45] — and the levels unsourced. The anchor cell's *Ablauf* at
-  attained age 62 makes the two thresholds coincide, which is exactly why a German buyer is sold that
-  term and exactly why the surrender rate collapses in the run-up to it.
+- **Base surrender.** The duration table above: shape driven by the tax thresholds — twelve years and
+  age 60 or 62 [R10] [REG-R45] — levels unsourced. The anchor cell's *Ablauf* at attained age 62 makes
+  the two thresholds coincide, which is why a German buyer is sold that term and why the surrender rate
+  collapses in the run-up to it.
 - **The *Beitragsfreistellung* election is deterministic** — a model-point column, not a decrement.
   The corpus establishes the right in full [R3] and gives **no take-up rate at all**, and the one
   aggregate that would bear on it mixes the paid-up route in with surrenders and cannot be split [R20].
