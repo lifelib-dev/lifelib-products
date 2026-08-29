@@ -8,21 +8,20 @@ the product it implements is specified in [`product-spec.md`](product-spec.md).
 > *mechanics* are common ground in German practice and several are cited: the
 > *Beitragsverrechnung* order and the purchase of *Anteileinheiten* at the *Anteilspreis*
 > [S1], the *Höchstzillmersatz* of 25 ‰ of the *Beitragssumme* [R12] [R13] [REG-R16] and the
-> even spreading of the acquisition charge over the first five contract years [R1]
-> [REG-R28], the *Beitragsrückgewähr* death benefit [S2], the *Zeitwert* *Rückkaufswert* and
-> the conditions on a *Stornoabzug* [R1] [REG-R36], the survival of the fund-based charges
-> into a *beitragsfrei* contract [R3], the `max(guaranteed, current)` *Rentenfaktor* rule
-> [S4] [R22], and the unisex tariff [REG-R34]. The **levels** are almost entirely **[std]**:
-> **no charge rate, no *Rentenfaktor*, no lapse rate and no expense loading was established
-> at any carrier**, and **no document cited anywhere in this library was retrieved** —
-> direct HTTP egress was blocked and the session's search budget was exhausted before this
-> product's research began. The DAV tables behind both mortality bases — DAV 2008 T for the
-> *Risikobeitrag* [R17] [REG-R48], DAV 2004 R behind the *Rentenfaktor* [R16] [REG-R49] —
-> are Deutsche Aktuarvereinigung property, are not public and are **cited by name, never
-> shipped**. Replace the charge scale, the decrement tables and the fund path with a real
-> tariff and company data before drawing any conclusion from a number. Nothing here is an
-> *Effektivkostenquote* and nothing here may be compared with a PRIIPs performance scenario
-> [R8] [R9] [REG-R32].
+> even spreading of the acquisition charge over the first five contract years [R1] [REG-R28],
+> the *Beitragsrückgewähr* death benefit [S2], the *Zeitwert* *Rückkaufswert* and the
+> conditions on a *Stornoabzug* [R1] [REG-R36], the survival of the fund-based charges into a
+> *beitragsfrei* contract [R3], the `max(guaranteed, current)` *Rentenfaktor* rule [S4] [R22],
+> and the unisex tariff [REG-R34]. The **levels** are almost entirely **[std]**: **no charge
+> rate, no *Rentenfaktor*, no lapse rate and no expense loading was established at any
+> carrier**, and **no document cited anywhere in this library was retrieved** — direct HTTP
+> egress was blocked and the session's search budget was exhausted before this product's
+> research began. The DAV tables behind both mortality bases — DAV 2008 T for the
+> *Risikobeitrag* [R17] [REG-R48], DAV 2004 R behind the *Rentenfaktor* [R16] [REG-R49] — are
+> Deutsche Aktuarvereinigung property and are **cited by name, never shipped**. Replace the
+> charge scale, the decrement tables and the fund path with a real tariff and company data
+> before drawing any conclusion from a number. Nothing here is an *Effektivkostenquote* and
+> nothing here may be compared with a PRIIPs performance scenario [R8] [R9] [REG-R32].
 
 ## Run it
 
@@ -53,11 +52,10 @@ says what each input file is and what a replacement must preserve.
 
 Everything else follows from that sentence, and it is what makes this a unit-linked model
 rather than a translation of the general-account ones beside it. There is no *Rechnungszins*
-in the accumulation phase, no *Deckungskapital*, no *Zinsüberschuss* — and, because § 125
-VAG makes the covering assets a segregated *Anlagestock* held in the very units the liability
-is denominated in [R15] [REG-R7], **no investment-mismatch term anywhere in the model**.
-
-The state variable is therefore the unit count, and euro are derived from it:
+in the accumulation phase, no *Deckungskapital*, no *Zinsüberschuss* — and, because § 125 VAG
+makes the covering assets a segregated *Anlagestock* held in the very units the liability is
+denominated in [R15] [REG-R7], **no investment-mismatch term anywhere in the model**. The
+state variable is therefore the unit count, and euro are derived from it:
 
 ```
 units_pp(t + 1) = units_pp(t) + units_bought_pp(t) − units_cancelled_pp(t)
@@ -81,9 +79,9 @@ explicitly double-counts; ignoring it overstates the policyholder's return. On t
 
 Every benefit paid before *Rentenbeginn* — the death benefit up to the fund, the
 *Rückkaufswert*, the *Teilentnahme*, the capital released at *Rentenbeginn* — is funded by
-cancelling the policyholder's **own** units, so a gross presentation would count the same
-money twice. **delib's first ruling** requires every model to publish `check_net_cf()`; here
-the identity is one line:
+cancelling the policyholder's **own** units, so a gross presentation counts the same money
+twice. **delib's first ruling** requires every model to publish `check_net_cf()`; the identity
+here is one line:
 
 ```
 net_cf = charge_acq + charge_admin_prem + charge_admin_fund + charge_policy_fee
@@ -109,13 +107,11 @@ claims_death + claims_lapse + claims_maturity + withdrawals + stornoabzug
 Booking the whole *Fondsguthaben* as an insurer outgo is this product's first-order failure
 mode — every column still looks reasonable and the liability is overstated by the entire fund
 — and publishing the excluded columns is what lets a reader see what was excluded. The scale
-of it on the anchor cell: 64 869,36 € of benefits against 40 586,28 € of premiums, of which
-**4,39 € is an insurer cost**.
-
-Seven `check_*()` cells travel with the model, each a `bool` over all `t` with a
-`check_*_resid(t)` companion: `check_net_cf`, `check_prem_split`, `check_units_roll_fwd`,
-`check_av_roll_fwd`, `check_benefit_funding`, `check_pols_roll_fwd`, `check_acq_charge`. All
-seven are `True` on all thirteen model points.
+of it on the anchor: 64 869,36 € of benefits against 40 586,28 € of premiums, of which
+**4,39 € is an insurer cost**. Seven `check_*()` cells travel with the model, each a `bool`
+over all `t` with a `check_*_resid(t)` companion — `check_net_cf`, `check_prem_split`,
+`check_units_roll_fwd`, `check_av_roll_fwd`, `check_benefit_funding`, `check_pols_roll_fwd`,
+`check_acq_charge` — and all seven are `True` on all thirteen model points.
 
 ## Withheld from the premium, or cancelled out of the fund
 
@@ -131,18 +127,15 @@ units_bought_pp(t) = prem_to_av_pp(t) / unit_price(t − 1)
 while the *kapitalbezogene Verwaltungskosten*, the *Stückkosten* and the *Risikobeitrag* are
 levied **after** the month's return, by cancelling units that already exist.
 `check_prem_split()` asserts that the premium splits exactly three ways, so a model that also
-netted the *Stückkosten* or the fund-based charge out of the *Beitrag* fails there.
-
-What the model avoids is the shortcut that looks identical while premiums are paid: netting
+netted the *Stückkosten* or the fund-based charge out of the *Beitrag* fails there. What the
+model avoids is the shortcut that looks identical while premiums are paid: netting
 `gamma` out of the *Beitrag* is right until the premium stops and wrong from then on. Model
 point 7 goes *beitragsfrei* at month 121 on a zero-return fund, and from there `premiums(t)`
 is zero while `charge_admin_fund(t)`, `charge_policy_fee(t)` and `charge_risk(t)` continue
 and the fund decays — the product fact § 165 VVG makes possible [R3] [REG-R28], not a
-modelling artefact.
-
-A *Zuzahlung* pays its own *Zuzahlungskosten* and **no** *beitragsbezogene* charge, being no
-regular *Beitrag*; it is booked in `charge_acq`, which is why `charge_acq(121)` is non-zero
-on model point 9.
+modelling artefact. A *Zuzahlung* pays its own *Zuzahlungskosten* and **no**
+*beitragsbezogene* charge, being no regular *Beitrag*; it is booked in `charge_acq`, which is
+why `charge_acq(121)` is non-zero on model point 9.
 
 ## The acquisition charge, its window, and the in-force cell
 
@@ -169,12 +162,10 @@ it does not shrink on lapse or *Beitragsfreistellung* and does not grow with a
 increment over its own sixty months, and an increment cannot be assumed at inception; the
 bias that leaves is stated rather than hidden. Letting `S` follow the premiums actually paid
 would make the acquisition charge a function of the lapse assumption — wrong, and circular.
-
-An **in-force** model point opens after the window has closed. Model point 6 starts at
+An **in-force** model point opens after the window has closed: model point 6 starts at
 `t = 97`, so `charge_acq(t)` is zero at every projected month **and** `expenses(97)` carries
-no acquisition commission: `expense_acq_pp` falls at `t = 1` and only there, and `t = 1` is
-not in that frame. That is the whole of the difference between an in-force cell and a
-new-business one on this chassis.
+no acquisition commission, `expense_acq_pp` falling at `t = 1` and only there. That is the
+whole of the difference between an in-force cell and a new-business one on this chassis.
 
 ## The *Beitragsrückgewähr*, and two mortality bases at once
 
@@ -190,30 +181,29 @@ The floor at zero in `nar_pp()` is load-bearing. Without it the contract would p
 insurer a negative charge in every month the fund is above the floor and `death_strain` would
 turn negative, silently booking the fund's growth as insurance profit. And
 `db_pp(t) = av_pp_at(t, "BEF_DECR") + nar_pp(t)` rather than `max(floor, fund)`: writing it as
-a sum is what keeps the two sides apart, the first term being the policyholder's money and
-the second the insurer's.
+a sum keeps the two sides apart, the first term being the policyholder's money and the second
+the insurer's.
 
 **The *Risikobeitrag* is priced on a death table and the conversion guarantee on an annuity
 table.** `mort_rate_tariff_at_age` reads `mort_table.csv`, a **[std]** first-order DAV 2008 T
-proxy [R17] [REG-R48]; `rentenfaktor_guar` reads `rentenfaktor_table.csv`, which stands in
-for DAV 2004 R [R16] [REG-R49]. **No cells reads both files** — the arithmetic form of the
-statement that a German fondsgebundene contract carries two mortality bases at once. A model
-pricing the death charge on an annuitant table understates it.
-
-The projection then decrements on a **third** rate, the second-order best estimate
-`mort_be_factor = 0.75` times the tariff rate [REG-R47]. The wedge is the *Risikoergebnis*,
-and because the factor is flat it is exactly 25 % of the *Risikobeitrag* collected — 5,849973
-less 4,387480 = 1,462493 € on the anchor — a closed form a reader can check with a
-calculator. A model using one basis for both makes the risk result identically zero.
+proxy [R17] [REG-R48]; `rentenfaktor_guar` reads `rentenfaktor_table.csv`, standing in for
+DAV 2004 R [R16] [REG-R49]. **No cells reads both files** — the arithmetic form of the
+statement that a German fondsgebundene contract carries two mortality bases at once; a model
+pricing the death charge on an annuitant table understates it. The projection then decrements
+on a **third** rate, the second-order best estimate `mort_be_factor = 0.75` times the tariff
+rate [REG-R47]. The wedge is the *Risikoergebnis*, and because the factor is flat it is
+exactly 25 % of the *Risikobeitrag* collected — 5,849973 less 4,387480 = 1,462493 € on the
+anchor — a closed form a reader can check with a calculator. One basis for both makes the
+risk result identically zero.
 
 The two monthly conversions are deliberately different. Mortality is split **linearly**,
 `mort_rate_mth = mort_rate / 12`, because the tariff's *Risikobeitrag* is `q(x)/12` times the
 *riskiertes Kapital* and charge and decrement must share the split, or the model manufactures
 a risk result out of a rounding convention. Lapse is split **geometrically**,
 `1 − (1 − lapse_rate)^(1/12)`, because nothing is priced off it and the annual rate is the
-observable to reproduce. The fund return is compounded geometrically for the same reason,
-while `gamma_rate_mth()` is `gamma_rate_ann() / 12` because a German tariff quotes charge
-rates nominally.
+observable to reproduce. The fund return compounds geometrically for the same reason, while
+`gamma_rate_mth()` is `gamma_rate_ann() / 12` because a German tariff quotes charge rates
+nominally.
 
 ## The *Rückkaufswert* is the *Fondsguthaben*
 
@@ -221,10 +211,8 @@ rates nominally.
 contract with no insurer-given guarantee the *Zeitwert* **is** the fund [R1] [REG-R28]. There
 is no discounting, no *Rechnungszins*, no mortality basis, no *Zillmerung* residue and no
 second-basis *Mindestrückkaufswert* anywhere in this model — the cleanest surrender rule of
-the ten delib products. The protection for the policyholder sits earlier, in the sixty-month
-spreading, which is why the surrender value is positive from the first month.
-
-A *Stornoabzug* is permissible only if *vereinbart*, *beziffert* and *angemessen*, and
+the ten delib products. The protection sits earlier, in the sixty-month spreading, which is
+why the surrender value is positive from the first month. A *Stornoabzug* is permissible only if *vereinbart*, *beziffert* and *angemessen*, and
 **never for unamortised acquisition costs** [R1] [REG-R36]. `stornoabzug_pp(t)` is therefore
 a flat rate on the *Fondsguthaben* and deliberately **not** a function of
 `charge_acq_total() − cum_charge_acq_pp(t)`: that prohibition is what stops an insurer
@@ -232,14 +220,13 @@ recovering through the deduction what the five-year spreading denies it. Only `s
 carries a rate and only model point 5 uses it.
 
 *Beitragsfreistellung* is a **model point election**, `pup_month`, not a cohort decrement —
-the one place the model reproduces a mechanic exactly on one cell rather than approximately
-on all of them. A paid-up policy's fund and its *Beitragsrückgewähr* base both depend on the
+the one place the model reproduces a mechanic exactly on one cell rather than approximately on
+all of them. A paid-up policy's fund and its *Beitragsrückgewähr* base both depend on the
 month it went paid-up, so a cohort rate would need one sub-cohort per month: a
 two-dimensional recursion over 360 months for a second-order effect. The **[std]** 1 % p.a.
-rate a cohort implementation would use is recorded and not implemented, and the omission
-biases charge income **upward**. *Storno* and *Beitragsfreistellung* stay two different
-things: one an exit paying the *Rückkaufswert*, the other a change of state paying nothing
-[R2] [R3].
+rate is recorded and not implemented, and the omission biases charge income **upward**.
+*Storno* and *Beitragsfreistellung* stay two different things: one an exit paying the
+*Rückkaufswert*, the other a change of state paying nothing [R2] [R3].
 
 ## The last month, the age at *Rentenbeginn*, and the reduction in yield
 
@@ -251,23 +238,23 @@ what the closure identity reproduces — deaths 0,04377181 plus lapses 0,6532293
 0,30299882 = 1,00000000. It is frlib's convention on `TD_FR_A` and delib adopts it.
 
 `age(proj_len()) = annuity_age − 1`, because the annuity begins at the **end** of that month,
-and the *Rentenfaktor* is read at `annuity_age`: **25,00 at 67 on the anchor, not the 24,45
-an off-by-one fetches at 66**, a 2,2 % understatement of the pension. The rule applied is
-`max(rentenfaktor_guar(), rentenfaktor_curr())` [S4] [R22] — a guarantee **with upside**, so
-a model applying only the guaranteed factor understates the benefit whenever the current
-tariff is richer. On `std_2026` the two are equal, so the `max()` is exercised without
-injecting an unsourced uplift; model point 13 carries `rich_current`, 12 % higher, where it
-visibly bites. Only the **conversion terms** are guaranteed; the capital they multiply is the
-market's, so a guaranteed *Rentenfaktor* is not a guaranteed pension.
+and the *Rentenfaktor* is read at `annuity_age`: **25,00 at 67 on the anchor, not the 24,45 an
+off-by-one fetches at 66**, a 2,2 % understatement of the pension. The rule applied is
+`max(rentenfaktor_guar(), rentenfaktor_curr())` [S4] [R22] — a guarantee **with upside**, so a
+model applying only the guaranteed factor understates the benefit whenever the current tariff
+is richer. On `std_2026` the two are equal, so the `max()` is exercised without an unsourced
+uplift; model point 13 carries `rich_current`, 12 % higher, where it visibly bites. Only the
+**conversion terms** are guaranteed; the capital they multiply is the market's, so a
+guaranteed *Rentenfaktor* is not a guaranteed pension.
 
 `reduction_in_yield()` is the product's defining metric, because on a contract with no
-*Rechnungszins* the charge stack **is** the economics. It is `gross_return_ref() −
-irr_ann()`, computed on a **single persisting contract** — no survivorship, no lapse —
-because a reduction in yield is a statement about one policy. On the anchor 5,0000 % less
-3,6593 % = **1,3407 % p.a.**, and across the four shipped charge scales it moves by a factor
-of five. **It is a delib-defined measure and not the statutory *Effektivkostenquote***, which
-is aligned to the total-cost-indicator method of the PRIIPs RTS over a specified recommended
-holding period [R7] [R9] [REG-R31] [REG-R32]; this model implements neither.
+*Rechnungszins* the charge stack **is** the economics. It is `gross_return_ref() − irr_ann()`,
+computed on a **single persisting contract** — no survivorship, no lapse — because a reduction
+in yield is a statement about one policy. On the anchor 5,0000 % less 3,6593 % =
+**1,3407 % p.a.**, and across the four shipped charge scales it moves by a factor of five.
+**It is a delib-defined measure and not the statutory *Effektivkostenquote***, which is aligned
+to the total-cost-indicator method of the PRIIPs RTS over a specified recommended holding
+period [R7] [R9] [REG-R31] [REG-R32]; this model implements neither.
 
 ## Inputs are external files
 
@@ -276,22 +263,14 @@ The six input CSVs live **in this directory**, beside `run.py` — not inside th
 
 ```
 products/fondsgebundene_rentenversicherung/
-  model_point_table.csv        <- inputs live here
-  mort_table.csv
-  lapse_table.csv
-  charge_table.csv
-  fund_scenario_table.csv
-  rentenfaktor_table.csv
+  model_point_table.csv  mort_table.csv  lapse_table.csv     <- inputs live here
+  charge_table.csv  fund_scenario_table.csv  rentenfaktor_table.csv
   run.py
-  model.md
-  product-spec.md              <- the documents this model implements
-  technical-notes.md
-  sources.md
-  FRV_DE_S/                    <- formulas only
-    __init__.py                   (model docstring)
-    _system.json
-    Data/__init__.py              (reads the CSVs, once per model)
-    Projection/__init__.py        (the by-policy projection)
+  product-spec.md  technical-notes.md  model.md  sources.md  <- the documents
+  FRV_DE_S/                                                  <- formulas only
+    __init__.py  _system.json                                   (model docstring)
+    Data/__init__.py                (reads the CSVs, once per model)
+    Projection/__init__.py          (the by-policy projection)
 ```
 
 This follows lifelib's `annuallife/TradLife_A`, which keeps its inputs beside the model and
@@ -302,12 +281,12 @@ no embedded values here at all.
 ### Read once, in `Data`
 
 `Projection` is parameterized by `point_id`, so every `Projection[N]` is a separate ItemSpace
-with its own cells cache; readers placed there would re-read every file for every policy.
-They live instead in an unparameterized **`Data`** Space, which `Projection` references as
-`data` — so each file is read once per model however many policies are projected. The
-conventions suite counts the reads over a full sweep and asserts the file set, not merely the
-count. `Data.input_dir()` resolves the location from `_model.path.parent` when the model is
-read, so it works wherever the repository is checked out.
+with its own cells cache; readers placed there would re-read every file for every policy. They
+live instead in an unparameterized **`Data`** Space, which `Projection` references as `data` —
+so each file is read once per model however many policies are projected. The conventions suite
+counts the reads over a full sweep and asserts the file set, not merely the count.
+`Data.input_dir()` resolves the location from `_model.path.parent` at read time, so it works
+wherever the repository is checked out.
 
 | Reference | Cells | File |
 |---|---|---|
@@ -321,12 +300,11 @@ read, so it works wherever the repository is checked out.
 **The trade-off:** the model is not portable on its own. Copy `FRV_DE_S/` without the CSVs
 and it reads fine, then fails on first evaluation. What you gain is that a diff of the model
 shows logic changes only, and an input can be swapped in place — point `Data.mort_file` at
-another same-schema file and the projection follows, with no formula change.
-
-**Every file but `model_point_table.csv` carries a `provenance` column**, one tag per row,
-asserted by the conventions suite: delib's second ruling, the citation discipline reaching the
-data files rather than stopping at the prose. The model point table is the one exemption,
-because a model point is a *configuration* and not an assumption.
+another same-schema file and the projection follows, with no formula change. **Every file but
+`model_point_table.csv` carries a `provenance` column**, one tag per row, asserted by the
+conventions suite: delib's second ruling, the citation discipline reaching the data files
+rather than stopping at the prose. The model point table is the one exemption, because a
+model point is a *configuration* and not an assumption.
 
 | File | Contents | Provenance |
 |---|---|---|
@@ -354,12 +332,10 @@ inside it either never triggers — dead code presented as a feature — or trig
 hand-chosen shock the model has no basis for. What would have to be added is named instead: a
 multi-scenario or stochastic asset model, a monthly reallocation rule, a guaranteed pot
 accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is a different
-model.
-
-`kapitalwahl` is a fourth switch and changes no cash flow by design: both routes release the
-same *Fondsguthaben*, the annuity being published rather than projected. It is carried
-because the two tax regimes genuinely differ [R19] [R20] [REG-R41] [REG-R45] and because
-take-up is the largest behavioural unknown in the product; **no take-up rate was
+model. `kapitalwahl` is a fourth switch and changes no cash flow by design: both routes
+release the same *Fondsguthaben*, the annuity being published rather than projected. It is
+carried because the two tax regimes genuinely differ [R19] [R20] [REG-R41] [REG-R45] and
+because take-up is the largest behavioural unknown in the product; **no take-up rate was
 established**, so the base run annuitises.
 
 ## Sign convention
@@ -373,19 +349,17 @@ structure, with the unit liability — the *Fondsguthaben* itself, backed one-fo
 *Anlagestock* — added at market value [R15] [REG-R6] [REG-R7]. Nothing in this library
 discounts.
 
-`expenses` is the notes' **total** and **includes commission**: the acquisition commission
-and issue expense at `t = 1`, the inflating monthly maintenance expense, the renewal
-commission on each gross *Beitrag*, and the per-event expenses of a death, a surrender and an
-annuitisation. Commission is a *part* of that column, not a further line, so subtracting both
-from the charge income would charge it twice. The worked example fixes the reading:
-`expenses(1) = 1 800,00 + 200,00 + 4,00 + 3,00 + 0,0075 + 0,2571 = 2 007,26 €`.
-
-The shape to expect on a new-business cell is a large negative `net_cf` in month 1 —
-−1 966,22 € on the anchor, the commission and issue expense falling there while the
-acquisition charge that funds them arrives over sixty months — then a thin positive margin
-growing with the fund. On the *Einmalbeitrag* cell the sign reverses: month 1 is
-**+1 060,45 €**, the 3 250,00 € withheld at inception more than covering the acquisition cost
-with no sixty-month recovery to wait for.
+`expenses` is the notes' **total** and **includes commission**: the acquisition commission and
+issue expense at `t = 1`, the inflating monthly maintenance expense, the renewal commission on
+each gross *Beitrag*, and the per-event expenses of a death, a surrender and an annuitisation.
+Commission is a *part* of that column, not a further line, so subtracting both from the charge
+income would charge it twice. The worked example fixes the reading:
+`expenses(1) = 1 800,00 + 200,00 + 4,00 + 3,00 + 0,0075 + 0,2571 = 2 007,26 €`. The shape to
+expect on a new-business cell is a large negative `net_cf` in month 1 — −1 966,22 € on the
+anchor, the commission and issue expense falling there while the acquisition charge that funds
+them arrives over sixty months — then a thin positive margin growing with the fund. On the
+*Einmalbeitrag* cell the sign reverses: month 1 is **+1 060,45 €**, the 3 250,00 € withheld at
+inception more than covering the acquisition cost with no recovery to wait for.
 
 ## Naming
 
@@ -412,7 +386,8 @@ Three German terms of art keep their German form in the cells names, each naming
 with a statutory definition and no English equivalent that would not mislead:
 `beitragssumme()`, the base of the *Höchstzillmersatz* and not "total premiums";
 `stornoabzug()`, a deduction whose validity conditions are statutory and not a "surrender
-charge"; and the three `rentenfaktor_*()`, euro per 10 000 € and not an annuity factor.
+charge"; and the three `rentenfaktor_*()`, euro per 10 000 € and not an annuity factor. Four
+further cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
@@ -468,10 +443,10 @@ the survival of the fund-based charges into a *beitragsfrei* contract [R3], the 
 ## Tests
 
 `tests/test_fondsgebundene_rentenversicherung_de.py` asserts the notes' worked example — all
-seventeen printed rows of Panel A to the cent and `pols_if` to six decimals, Panel B's
-benefit columns, Panel C's per-policy unit side, and every column total at full precision —
-the notes' three independent rebuilds (month 1 from the tariff alone, month 61 at the cliff,
-the reduction in yield as a savings account), the four closure identities, the *Einmalbeitrag*
+seventeen printed rows of Panel A to the cent and `pols_if` to six decimals, Panel B's benefit
+columns, Panel C's per-policy unit side, and every column total at full precision — the notes'
+three independent rebuilds (month 1 from the tariff alone, month 61 at the cliff, the
+reduction in yield as a savings account), the four closure identities, the *Einmalbeitrag*
 variant's printed table, the four-tariff reduction-in-yield comparison, and **one test per
 listed modeling pitfall**: the fund-based charge cancelling units rather than netting off the
 premium, the TER never appearing as a policy charge, the two mortality bases living in two
@@ -479,17 +454,15 @@ files, the risk result being exactly a quarter of the risk charge, the two month
 staying different, the amount at risk floored at zero, the acquisition instalment stopping at
 its window, an in-force cell never charged again for acquisition, the *Beitragssumme* being
 invariant, *Storno* and *Beitragsfreistellung* staying two decrements, the *Rückkaufswert*
-being the fund itself, the *Stornoabzug* not being built out of unamortised acquisition costs,
-no account-value benefit reaching `net_cf`, the age at *Rentenbeginn* not being off by one,
-the `max()` factor rule biting, the *Ratenzahlungszuschlag* not applied twice, the
-*Beitragsrückgewähr* base being the premiums paid, and no fixed charge driving the fund
-negative. The seven `check_*()` identities and their residuals are asserted on the anchor and
-on every model point the pitfall tests touch.
-
-The library-wide house style — layout, docstrings, naming, the retired-name register, the
-`check_net_cf` ruling, the `provenance` ruling, the model point sweep and the round trip — is
-asserted separately, once, in `tests/test_model_conventions_de.py`, which owns the only
-whole-table sweep in the library.
+being the fund itself, the *Stornoabzug* not built out of unamortised acquisition costs, no
+account-value benefit reaching `net_cf`, the age at *Rentenbeginn* not off by one, the `max()`
+factor rule biting, the *Ratenzahlungszuschlag* not applied twice, the *Beitragsrückgewähr*
+base being the premiums paid, and no fixed charge driving the fund negative. The seven
+`check_*()` identities and their residuals are asserted on the anchor and on every model point
+the pitfall tests touch. The library-wide house style — layout, docstrings, naming, the
+retired-name register, the `check_net_cf` ruling, the `provenance` ruling, the model point
+sweep and the round trip — is asserted separately, once, in
+`tests/test_model_conventions_de.py`, which owns the only whole-table sweep in the library.
 
 ```bash
 python -m pytest lifelib/libraries/delib/tests -q

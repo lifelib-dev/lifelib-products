@@ -80,19 +80,18 @@ assumption**. The model publishes `prem_gross` (guaranteed), `premiums` (billed,
 one inside `net_cf`) and `prem_rebate` between them.
 
 **What the model deliberately does not do here.** It does not treat `v` as a free input,
-because in the real product it is an output of the surplus mechanic; it does not return
-the *Kostenüberschuss* alongside the *Risikoüberschuss*, because the MindZV's *übriges
-Ergebnis* limb carries a different minimum share and no basis for splitting a German term
-tariff's expense result was established [R9] — the cost result emerges in `net_cf` and
-stays there; and it does not implement § 163 VVG's *Treuhänder* adjustment of the
-*Bruttobeitrag*, which on this product is essentially never used [R6] [unverified]. The
-lever that matters is `decl_scale`: setting it to **0** raises `premiums` to `prem_gross`
-at every `t` — 21 303,65 € collected against 12 243,75 €, a **74,0 %** increase in the
-bill with no change to any benefit, decrement or guaranteed term, and therefore with no
-§ 163 procedure, no *Treuhänder* and no policyholder remedy. That is the product's largest
-policyholder risk and it is a one-Reference change. `surplus_form = keine` is the
-§ 153-excluded non-participating tariff [R5]: `v_d` is zero and the billed premium *is*
-the guaranteed one. That is model point 12, and it ships so the zero branch is exercised
+`v` being an output of the surplus mechanic in the real product; it does not return the
+*Kostenüberschuss* alongside the *Risikoüberschuss*, the MindZV's *übriges Ergebnis* limb
+carrying a different minimum share and no basis for splitting a German term tariff's
+expense result having been established [R9] — the cost result emerges in `net_cf` and
+stays there; and it does not implement § 163 VVG's *Treuhänder* adjustment, essentially
+never used on this product [R6] [unverified]. The lever that matters is `decl_scale`:
+setting it to **0** raises `premiums` to `prem_gross` at every `t` — 21 303,65 € against
+12 243,75 €, a **74,0 %** increase in the bill with no change to any benefit, decrement or
+guaranteed term, and so with no § 163 procedure, no *Treuhänder* and no remedy. That is
+the largest policyholder risk here, and it is a one-Reference change. `surplus_form =
+keine` is the § 153-excluded non-participating tariff [R5]: `v_d` is zero and the billed
+premium *is* the guaranteed one — model point 12, shipped so the zero branch is exercised
 rather than merely reachable.
 
 ## The tariff is unisex and the projection is not
@@ -118,23 +117,20 @@ place, and moving it changes every premium and no claim.
 
 § 169 Abs. 1 VVG confines the surrender-value duty to a life insurance whose insured event
 is **certain to occur**, which a term assurance's is not; § 165's *Beitragsfreistellung*
-right and § 166's paid-up conversion on non-payment both collapse into the same nil
-through the minimum-benefit test [R2] [R3] [R8] [REG-R28]. So there is **no account value,
-no `av_pp_at`, no surrender cells and no paid-up state**, and a lapse is a pure decrement:
-it moves `pols_if` and pays nothing. `claims(t, "LAPSE")` and `claims(t, "MATURITY")` are
-published as zero columns rather than dropped, because a non-zero lapse row is exactly
-what a reader arriving from a US model with cash surrender values will import, and a
-column of zeros states the product fact where a missing column would hide it.
-`check_no_cash_value()` asserts it on every model point.
+right and § 166's paid-up conversion both collapse into the same nil through the
+minimum-benefit test [R2] [R3] [R8] [REG-R28]. So there is **no account value, no
+`av_pp_at`, no surrender cells and no paid-up state**, and a lapse is a pure decrement.
+`claims(t, "LAPSE")` and `claims(t, "MATURITY")` are published as zero columns rather than
+dropped — a non-zero lapse row is what a reader arriving from a US model with cash
+surrender values will import — and `check_no_cash_value()` asserts them everywhere.
 
 What is **not** true is that nothing accumulates, and this is the modelling error the
 product invites. A level premium charged against a rising death rate overcharges early and
-undercharges late, and the difference is a *Deckungskapital* that builds, peaks near the
-middle of the term and runs off to exactly zero at expiry — on the anchor it peaks at
-**7 553,29 €**, 2,52 % of the sum insured, at `t = 16`. `res_pp_at` publishes it and
-`check_res_roll_fwd()` asserts the Thiele recursion together with `res_pp_at(1) = 0` by
-the equivalence and `res_pp_at(n+1) = 0` by exhaustion. Building on "no *Sparanteil*,
-therefore no reserve" fails that check.
+undercharges late, and the difference is a *Deckungskapital* that peaks near the middle of
+the term and runs off to exactly zero at expiry — **7 553,29 €**, 2,52 % of the sum
+insured, at `t = 16`. `check_res_roll_fwd()` asserts the Thiele recursion with
+`res_pp_at(1) = 0` by the equivalence and `res_pp_at(n+1) = 0` by exhaustion; building on
+"no *Sparanteil*, therefore no reserve" fails it.
 
 **What the reserve is not.** It is a **pricing diagnostic**: net, not *gezillmert*, not
 floored, entering no cash flow, and not a *Deckungsrückstellung* under HGB § 341f [R21]
@@ -157,11 +153,10 @@ benefit_paid_pp(t) = S0 · f(t) · Σ_j Δu(t_j) · σ_j(t),   σ_j = 1 − suic
 ```
 
 so `suicide_factor(t) = benefit_paid_pp(t)/benefit_pp(t)` is **0,97 for `t ∈ {1,2,3}` and
-1 thereafter** on the anchor, and a **weighted average strictly between 0,97 and 1** in a
-year when one tranche is inside its window and another is not — 0,995 at `t = 6…8` and
-0,9957142857 at `t = 12…14` on model point 9, whose *Nachversicherungsgarantie* steps the
-sum to 1.2 at year 6 and 1.4 at year 12. On the in-force point 8, which opens at `t = 13`,
-the factor is 1 at every projected `t`.
+1 thereafter** on the anchor, and a **weighted average strictly between 0,97 and 1** where
+one tranche is inside its window and another is not — 0,995 at `t = 6…8` and 0,9957142857
+at `t = 12…14` on model point 9, whose *Nachversicherungsgarantie* steps the sum to 1.2 at
+year 6 and 1.4 at year 12. On the in-force point 8 it is 1 at every projected `t`.
 
 **What the model does not do.** It does not model the mental-illness exception, the ground
 on which German *Selbsttötung* claims are actually litigated [R23] and not something a
@@ -175,10 +170,10 @@ a decision — no event list, window, cap or age limit was established, so take-
 ## Three *Versicherungssumme* shapes, one mechanic
 
 German tariffs offer *konstant*, *linear fallend* and *annuitätisch fallend* on the same
-underwriting and the same *Rechnungsgrundlagen* (mechanic 3). All three are one mechanic —
-a schedule `f(t)` on the initial sum — and the model carries it as a first-class external
-input, because **a model that hard-codes a constant sum insured cannot represent two of
-the three shapes the German market sells**. The falling shapes price lower *mechanically*: the equivalence integrates `B(t)`, and
+underwriting and *Rechnungsgrundlagen*. All three are one mechanic — a schedule `f(t)` on
+the initial sum — carried as a first-class external input, because **a model that
+hard-codes a constant sum insured cannot represent two of the three shapes the German
+market sells**. The falling shapes price lower *mechanically*: the equivalence integrates `B(t)`, and
 nothing is applied as a "discount". `benefit_schedule.csv` is term-specific by
 construction — an amortisation shape is agreed at issue for a stated term — and the
 annuity shape falls **slowly then fast**: on point 5 the first year's fall is 8 407,70 €
@@ -200,18 +195,17 @@ combined rate is 0,0015156941 against a naive sum of 0,0015162642. The assumptio
 a lifestyle, and no German figure bounds the understatement.
 
 The ***Über-Kreuz-Versicherung*** is **not** in this model, and its absence is deliberate:
-it is a *contracting structure* with identical cover, premiums and cash flows, and only
-the *Erbschaftsteuer* outcome changes [R15] [REG-R46]. No model-point column, no cells and
-no CSV refers to it. Taxation is documented in `product-spec.md` and computed nowhere.
+it is a *contracting structure* with identical cover, premiums and cash flows, and only the
+*Erbschaftsteuer* outcome changes [R15] [REG-R46]. No column, cells or CSV refers to it,
+and taxation is documented in `product-spec.md` and computed nowhere.
 
 ## The last policy year has no lapse
 
 Lapses fall at the **end** of the policy year, after the death decrement, and the end of
 policy year `n` is the moment cover expires. A lapse and an expiry are then the same event
-paying the same nothing, so `lapse_rate(proj_len())` is **0** and the whole surviving
-cohort leaves through `pols_maturity`. The table's own row for year `n` still reads 3 %:
-the zero is a property of the last policy year, not of the assumption, and putting it in
-the formula is what keeps the two readable apart.
+paying the same nothing, so `lapse_rate(proj_len())` is **0** and the surviving cohort
+leaves through `pols_maturity`. The table's own row for year `n` still reads 3 %: the zero
+is a property of the last policy year, not of the assumption.
 
 No cash flow moves either way, but the closure identity is load-bearing: on the anchor it
 divides **0,03305608** deaths, **0,53554078** lapses and **0,43140314** expiries, summing
@@ -314,15 +308,13 @@ the worked example while the machinery stays visible and testable.
 
 Both are driven off the premium and the lapse table alone, never off `pols_if`, so the
 projection stays acyclic: a pricing quantity struck by equivalence must not depend on a
-behavioural assumption that depends on the path that depends on the premium. The
-equivalence is struck on `mort_rate_tar` and tariff survivorship, which is both the
-actuarially right basis and what keeps the derivation acyclic. Three further things are
-described in the sources and **not** implemented, each because modelling it would add an
-assumption with no source rather than a mechanic: the *Summenzuwachs*, *verzinsliche
-Ansammlung* and *Todesfallbonus* surplus forms (mechanic 6); the *Dynamik* and every rider
+behavioural assumption that depends on the path that depends on the premium. Three further
+things are described in the sources and **not** implemented, each because modelling it
+would add an assumption with no source rather than a mechanic: the *Summenzuwachs*,
+*verzinsliche Ansammlung* and *Todesfallbonus* surplus forms; the *Dynamik* and every rider
 — UZV, BUZ, *Beitragsbefreiung*, *vorgezogene Todesfallleistung*, *Verlängerungs-* and
-*Umtauschoption*, *vorläufiger Versicherungsschutz* (mechanic 8); and the *Kriegsklausel*
-with its ABC companion, a catastrophe-scenario provision rather than a best-estimate one.
+*Umtauschoption*, *vorläufiger Versicherungsschutz*; and the *Kriegsklausel* with its ABC
+companion, a catastrophe-scenario provision rather than a best-estimate one.
 
 ## Sign convention
 
@@ -422,21 +414,20 @@ premium-tax line [R16].
 
 ## Tests
 
-`tests/test_risikolebensversicherung_de.py` asserts every one of the twenty-five rows of
-the notes' worked example to the cent and `pols_if` to six decimals, the totals at full
-precision, the *Bruttobeitrag* 1 275,411882 € and the *Beitragsverrechnungssatz*
-0,42527476 behind them reached two independent ways, the notes' three independent rebuilds
-and three closure identities, the `decl_scale = 0` and *Einmalbeitrag* variant tables, the
-five `check_*` identities with their residuals, and **one test per listed modeling
-pitfall** — the three "netto"s in the order the model actually produces them, two premium
-streams rather than one, the *Zahlbeitrag* not guaranteed, no *Rückkaufswert*, a
-*Deckungskapital* that exists, `sex` never reaching the price, the *Sicherheitszuschlag*
-never reaching the projection, the § 161 switch confined to three years and to death
-claims, the clock restarting per increment, the *Ratenzahlungszuschlag* applied once,
-premium cessation at death not double-counted, the premium stopping at the
-*Beitragszahlungsdauer*, the three sum shapes, two lives combined before loading, the
-*Kostenüberschuss* not returned, the whole-market *Stornoquote* not used, `rating_factor`
-never scaling the benefit, and the *Über-Kreuz-Versicherung* not appearing as a product.
+`tests/test_risikolebensversicherung_de.py` asserts all twenty-five rows of the notes'
+worked example to the cent and `pols_if` to six decimals, the totals at full precision, the
+*Bruttobeitrag* 1 275,411882 € and the *Beitragsverrechnungssatz* 0,42527476 reached two
+independent ways, the notes' three rebuilds and three closure identities, the
+`decl_scale = 0` and *Einmalbeitrag* variant tables, the five `check_*` identities with
+their residuals, and **one test per listed modeling pitfall** — the three "netto"s in the
+order the model produces them, two premium streams rather than one, the *Zahlbeitrag* not
+guaranteed, no *Rückkaufswert*, a *Deckungskapital* that exists, `sex` never reaching the
+price, the *Sicherheitszuschlag* never reaching the projection, the § 161 switch confined
+to three years and to death claims, the clock restarting per increment, the
+*Ratenzahlungszuschlag* applied once, premium cessation not double-counted, the premium
+stopping at the *Beitragszahlungsdauer*, the three sum shapes, two lives combined before
+loading, the *Kostenüberschuss* not returned, the *Stornoquote* not used, `rating_factor`
+never scaling the benefit, and the *Über-Kreuz-Versicherung* not a product.
 
 The house style — two Spaces, the external-CSV layout, the read-once `Data`, the shared
 vocabulary, the retired names, `proj_len()` as the last projected index, the round trip

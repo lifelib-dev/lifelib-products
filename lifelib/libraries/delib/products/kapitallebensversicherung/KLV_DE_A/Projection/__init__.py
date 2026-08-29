@@ -577,26 +577,49 @@ def duration(t):
 # --- the bases -------------------------------------------------------------
 
 def mort_rate_at_age(x):
-    """The first-order annual death rate at attained age x, on this policy's ``sex`` row.
+    """q1(x): the **first-order tariff** death rate at attained age x - the unisex blend.
 
-    A table lookup into *mort_table.csv* and nothing else.  The table is a **[std]**
-    Makeham-form proxy anchored at ``mort_rate_1st(M, 37) = 0.001200`` exactly, standing in
-    for DAV 2008 T, which is the property of the Deutsche Aktuarvereinigung, is not public and
-    is not redistributed here; see the ``Data`` docstring for what a replacement must
-    preserve.
+    ``unisex_share`` of the male table row plus the rest of the female one, at 0.5 / 0.5
+    **[std]**.  This is the *Rechnungsgrundlage erster Ordnung* of the tariff, and **every
+    pricing and reserving formula in the model reads it**: :func:`tpx_1st`,
+    :func:`pv_death_1st`, :func:`pv_benefit_fut`, :func:`ann_due_prem_fut` and the Fackler
+    roll-forward in :func:`res_pp_at`.
+
+    It is blended rather than read off the policy's own ``sex`` row because **German new
+    business has been unisex since 21 December 2012**: § 20 Abs. 2 Satz 1 AGG was repealed,
+    and a tariff that charged a woman less than a man for the same endowment would be
+    unlawful.  The first-order *table* is nevertheless sex-specific, because that is the raw
+    material a unisex tariff blends - which is exactly why this cells and
+    :func:`mort_rate_base` are two different quantities and **not two indexings of one**.
+    The blend itself is a fixed portfolio mix and is **[std]**: no German insurer publishes
+    the mix behind its unisex tariff.
+
+    The table is a **[std]** Makeham-form proxy anchored at
+    ``mort_rate_1st(M, 37) = 0.001200`` exactly, standing in for DAV 2008 T, which is the
+    property of the Deutsche Aktuarvereinigung, is not public and is not redistributed here;
+    see the ``Data`` docstring for what a replacement must preserve.
     """
-    return float(data.mort_table().loc[(sex(), int(x)), "mort_rate_1st"])   # noqa: F821
+    tbl = data.mort_table()                                          # noqa: F821
+    return (unisex_share * float(tbl.loc[("M", int(x)), "mort_rate_1st"])   # noqa: F821
+            + (1.0 - unisex_share)                                   # noqa: F821
+            * float(tbl.loc[("F", int(x)), "mort_rate_1st"]))
 
 
 def mort_rate_base(t):
-    """q1(t): the **first-order** annual death rate in policy year t.
+    """The **sex-specific** first-order table rate in policy year t, before the BE scaling.
 
-    This is the rate that **prices and reserves**: it drives :func:`pv_death_1st`,
-    :func:`tpx_1st`, :func:`pv_benefit_fut` and the Fackler roll-forward.  It is *not* the
-    rate the projection decrements at; see :func:`mort_rate`.  Crossing the two throws away
-    the *Sicherheitszuschlag* whose systematic release is the *Risikoüberschuss*.
+    A lookup into *mort_table.csv* on this policy's own ``sex`` row at :func:`age`, and the
+    parent of the best-estimate decrement: ``mort_rate(t) = mort_rate_base(t) *
+    mort_be_factor``.
+
+    It is **not** the rate the contract is priced or reserved on - that is
+    :func:`mort_rate_at_age`, the unisex blend - and the two are deliberately different
+    quantities.  A German tariff may not price on sex; a best-estimate projection of a
+    particular life must.  ``sex`` therefore reaches the **decrement** and nothing else, and
+    ``prem_gross_pp()`` is identical for two model points differing only in it.
     """
-    return mort_rate_at_age(age(t))
+    return float(data.mort_table().loc[                              # noqa: F821
+        (sex(), int(age(t))), "mort_rate_1st"])
 
 
 def mort_rate(t):
@@ -607,6 +630,9 @@ def mort_rate(t):
     requires; this model has no monthly rate because its grid is the contract's own annual
     one.  Invariant to :func:`rating_factor`, which is a *first-order* loading and has no
     business in a best estimate.
+
+    This is the **only** cells the projection decrements at, and it is the only place
+    ``sex`` reaches a cash flow.
     """
     return min(1.0, mort_rate_base(t) * mort_be_factor)              # noqa: F821
 
