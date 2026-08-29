@@ -7,13 +7,13 @@ the product it implements is specified in
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The contractual
 > mechanics are sourced — the *Deckungskapital* as the premium net of risk and expense cover
-> accumulated at the *Rechnungszins* [S11], the *Höchstzillmersatz* of 25 ‰ of the
-> *Beitragssumme* from 2015 and 40 ‰ before [REG-R16], the § 169 Abs. 3 surrender floor and
-> the § 169 Abs. 5 conditions on a *Stornoabzug* [R1] [REG-R28], the § 165 paid-up rule and
-> its minimum-benefit branch [R2], the three death-benefit designs before *Rentenbeginn*
-> [S1] [S19] [R24], the conversion at `max(garantierter, aktueller) Rentenfaktor` [S4] [S13]
-> [R24], the *Bewertungsreserven* crystallisation at the transition to annuity payment [S4]
-> [R4], and the *Rentengarantiezeit* [R17] [R24]. **Every level is a standardization.** No
+> accumulated at the *Rechnungszins* [S11], the *Höchstzillmersatz* of 25 ‰ from 2015 and
+> 40 ‰ before [REG-R16], the § 169 Abs. 3 surrender floor and the § 169 Abs. 5 *Stornoabzug*
+> conditions [R1] [REG-R28], the § 165 paid-up rule and its minimum-benefit branch [R2], the
+> three death-benefit designs [S1] [S19] [R24], the conversion at
+> `max(garantierter, aktueller) Rentenfaktor` [S4] [S13] [R24], the *Bewertungsreserven*
+> crystallisation at the transition to annuity payment [S4] [R4], and the
+> *Rentengarantiezeit* [R17] [R24]. **Every level is a standardization.** No
 > *Rentenfaktor*, no declared surplus rate, no charge parameter, no expense and no
 > behavioural rate was established for this product at any German carrier for any year, and
 > the DAV tables — DAV 2004 R here [R12] [R13] — are the property of the Deutsche
@@ -41,10 +41,10 @@ model.Projection[1].result_cf()
 per cash flow line and the two account balances beside them, and `result_pols()` the
 per-policy and decrement side.
 
-The model and both its Spaces carry docstrings — `model.doc` describes the product and the
-projection basis, `model.Projection.doc` holds the full mapping between the technical notes'
-symbols and the cells names, and `model.Data.doc` says what each input file is and, for the
-three proxies, what it is *not* and what a replacement must preserve.
+The model and both its Spaces carry docstrings: `model.doc` describes the product and the
+projection basis, `model.Projection.doc` holds the mapping between the notes' symbols and the
+cells names, and `model.Data.doc` says what each input file is and, for the three proxies,
+what it is *not*.
 
 `t` counts **policy years**, 1-based, and `proj_len() = omega_age() − issue_age` is the
 **last** projected year: 71 on the anchor cell, running to attained age 120. A life annuity
@@ -84,11 +84,11 @@ exists to produce. Over point 6's five remaining accumulation years the model cr
 9 187,70 € of guaranteed interest and 399,55 € of surplus, and every euro of that surplus is
 the declared rate paid on the *Ansammlungsguthaben*'s **own** balance.
 
-What the model does **not** do is decompose the declaration into its four German components.
-*Zinsüberschuss*, *Risikoüberschuss*, *Kostenüberschuss* and *Schlussüberschussanteil* are
-one declared rate here; only the first was established for this product [R24], the other
-three belong to the `kapitallebensversicherung` file that shares this chassis, and inventing
-a split would be inventing three rates.
+What the model does **not** do is decompose the declaration into its four German components:
+*Zinsüberschuss*, *Risikoüberschuss*, *Kostenüberschuss* and *Schlussüberschussanteil* are one
+declared rate here. Only the first was established for this product [R24], the other three
+belong to the `kapitallebensversicherung` file that shares this chassis, and inventing a split
+would be inventing three rates.
 
 ## The guarantee vintage is a model-point attribute
 
@@ -125,16 +125,15 @@ consequential such choice in the model: crediting interest on the opening balanc
 changes year-one interest by the whole of `i × (S(1) − C(1))`, which is 16,01 € of a
 1 616,64 € closing balance on the anchor cell.
 
-Two further conventions inside the decomposition are **[std]** and are worth naming.
-`charge_risk_pp` and `charge_admin_pp` are struck on **start-of-year** balances, or the
-recursion is circular — a risk charge computed on the post-charge balance depends on itself.
-And charges are met **from the premium where there is one and from the *Deckungskapital*
-where there is not**, which is what makes a *Beitragsfreistellung* cost something instead of
-being free.
+Two further conventions are **[std]**. `charge_risk_pp` and `charge_admin_pp` are struck on
+**start-of-year** balances, or the recursion is circular — a risk charge computed on the
+post-charge balance depends on itself. And charges are met **from the premium where there is
+one and from the *Deckungskapital* where there is not**, which is what makes a
+*Beitragsfreistellung* cost something instead of being free.
 
-The model does **not** model instalments. `freq_load()` charges the loaded annual amount at
-the start of the policy year and `n_instalments` in the table is documentation; a monthly
-payer on this grid pays 1,050 × the annual premium once a year, not twelve times.
+Instalments are not modelled: `freq_load()` charges the loaded annual amount at the start of
+the policy year and `n_instalments` is documentation, so a monthly payer here pays 1,050 ×
+the annual premium once a year, not twelve times.
 
 ## The § 169 Abs. 3 floor, carried as a difference
 
@@ -148,13 +147,11 @@ spread_diff_pp_at(t, "AFT_INT") = (Δ(t) + charge_acq_pp(t) − charge_acq_sprea
 ```
 
 with `gamma` and `rho` taken at the same euro amount in both **[std]**, which is what makes
-the difference exact. Two consequences are not obvious. The difference is **large in the
-first five years** — on the anchor cell the whole 1 275,00 € is taken in year 1 against
-255,00 € — and it **never returns to zero**, because the spread account earns the
-*Rechnungszins* on what has not yet been deducted. On a zillmered tariff with a positive
-*Rechnungszins* the floor therefore sits above the tariff *Deckungskapital* at every
-duration; whether it *binds* depends on the *Ansammlungsguthaben* and the *Stornoabzug*
-beside it.
+the difference exact. Two consequences are not obvious. The difference is **large in the first
+five years** — on the anchor cell the whole 1 275,00 € is taken in year 1 against 255,00 € —
+and it **never returns to zero**, because the spread account earns the *Rechnungszins* on what
+has not yet been deducted. So the floor sits above the tariff *Deckungskapital* at every
+duration; whether it *binds* depends on the *Ansammlungsguthaben* and the *Stornoabzug*.
 
 The floor is the § 169 Abs. 3 *Deckungskapital* **alone**: profit shares sit on top of the
 statutory minimum rather than inside it, which is the reading § 165 Abs. 2's "surrender value
@@ -226,9 +223,8 @@ scaling linearly in `f`.
 *hälftig* and for which the transition to annuity payment is a key point [S4] [R4]; the
 **rate** is a placeholder, and the continuing participation during the payout phase that the
 same source establishes is **not modelled**. The commuting policyholders receive
-`capital_conv_pp` — the same capital the annuitants convert, *Bewertungsreserven* included:
-the corpus gives no basis for paying them less, and inventing one would be a charge no
-source supports.
+`capital_conv_pp`, the same capital the annuitants convert: the corpus gives no basis for
+paying them less, and inventing one would be a charge no source supports.
 
 ## The *Rentengarantiezeit* is paid to the dead
 
@@ -260,8 +256,7 @@ therefore not asserted. What the corpus does establish for post-*Rentenbeginn* d
 separate GDV condition set [S10] and is off.
 
 Deaths still *happen* in the payout phase: they move `pols_if`, they end the annuity outside
-the guarantee window, and they carry an `expense_claim_pp` settlement cost. They pay no
-benefit.
+the guarantee window, and they carry an `expense_claim_pp` settlement cost. They pay no benefit.
 
 ## Inputs are external files
 
@@ -368,13 +363,13 @@ number ever stop being the same arithmetic, which is the failure it exists to ca
 
 Not implemented at all, and named here rather than left to be discovered: no *Bonusrente*
 ledger; no *Zuzahlung* (gap 15); no survivor's-annuity or BU rider [S10]; no § 163 VVG
-adjustment of the guaranteed *Rentenfaktor*, which is recorded as a model risk [R3] [R17];
-no dynamic surrender, for the reason the notes give — the surrendering policyholder forfeits
-a guaranteed *Rentenfaktor* struck on old bases, and a rate-gap formula does not capture
-that; no premium-default path, although § 166 VVG makes German lapse a three-way decrement
-in reality; no *Wiederinkraftsetzung*; no continuing *Bewertungsreserven* participation in
-the payout phase; and **no tax**, so the *Ertragsanteil* [R5] and the *Halbeinkünfteverfahren*
-under the 12/62 rule [R6] appear in the documents and not in the model.
+adjustment of the guaranteed *Rentenfaktor*, recorded as a model risk instead [R3] [R17]; no
+dynamic surrender, because the surrendering policyholder forfeits a guaranteed *Rentenfaktor*
+struck on old bases and a rate-gap formula does not capture that; no premium-default path,
+although § 166 VVG makes German lapse a three-way decrement in reality; no
+*Wiederinkraftsetzung*; no continuing *Bewertungsreserven* participation in the payout phase;
+and **no tax**, so the *Ertragsanteil* [R5] and the *Halbeinkünfteverfahren* under the 12/62
+rule [R6] appear in the documents and not in the model.
 
 ## Sign convention
 
@@ -442,10 +437,8 @@ vary, are proprietary, or are silent. Nothing in it is a market figure.
 | Expenses | 400,00 € acquisition, 45,00 € p.a. accumulation, 30,00 € p.a. payout, 120,00 € per settlement, 2,0 % inflation | No German carrier publishes an expense assumption (gap 14) |
 | `freq_load` | 1,000 / 1,020 / 1,030 / 1,050 | No carrier's *Ratenzahlungszuschlag* was established (gap 14) |
 | Surrender table | 6,0 % falling to 3,0 %, with a **6,0 % step at duration 12** | No German *Stornoquote* for this product was established (gap 20). The duration-12 shape is argued from the § 20 Abs. 1 Nr. 6 EStG threshold; every level is a placeholder |
-| Within-year order | premium, then charges, then interest | No document in the corpus fixes the sequence |
-| Charge incidence | `γ` and `ρ` on start-of-year balances; charges from the premium first, then from the account | The first keeps the recursion acyclic; the second is what makes a paid-up contract pay for itself |
-| § 169 Abs. 3 floor scope | the *Deckungskapital* **alone** | Profit shares sit on top of the statutory minimum, the reading § 165 Abs. 2 supports. The alternative is named and not implemented |
-| No *Stornoabzug* on the paid-up route | — | Abs. 5 is drafted for a payout on *Kündigung*; here the contract continues |
+| Within-year order and charge incidence | premium, then charges, then interest; `γ` and `ρ` on start-of-year balances; charges from the premium first, then from the account | No document in the corpus fixes the sequence. Start-of-year incidence keeps the recursion acyclic; premium-first incidence is what makes a paid-up contract pay for itself |
+| § 169 Abs. 3 floor scope | the *Deckungskapital* **alone**, and no *Stornoabzug* on the paid-up route | Profit shares sit on top of the statutory minimum, the reading § 165 Abs. 2 supports; the alternative is named and not implemented. Abs. 5 is drafted for a payout on *Kündigung*, and on the paid-up route the contract continues |
 | Annuity timing | twelve monthly instalments paid at the **start** of the policy year | Neither the payment timing nor the in-advance / in-arrears basis was established (gap 19). This is generous to the payout phase by roughly half a year's interest on one year's annuity |
 | *Kapitalabfindung* amount | `capital_conv_pp`, the same capital annuitants convert | The corpus gives no basis for paying commuters less |
 | Decrement order | deaths at the end of the year, then surrenders | No source fixes it; it decides which population the surrender rate applies to |
@@ -474,10 +467,9 @@ residuals, and **one test per listed modeling pitfall**: the declared rate conta
 guarantee, the within-year order, `max(garantierter, aktueller)`, the *Rentengarantiezeit*
 weighting, *Beitragsfreistellung* against lapse, charges against expenses, the § 169 Abs. 3
 floor, the *Stornoabzug*'s shape, the two mortality bases, the generational surface, the zero
-net amount at risk, the unapplied payout charge, the absent post-*Rentenbeginn* death
-benefit, the *Kapitalwahlrecht* leaving no account behind, the guarantee vintage, unisex
-pricing, the *Beitragssumme* surviving a *Beitragsfreistellung*, and the untruncated payout
-phase.
+net amount at risk, the unapplied payout charge, the absent post-*Rentenbeginn* death benefit,
+the *Kapitalwahlrecht* leaving no account behind, the guarantee vintage, unisex pricing, the
+*Beitragssumme* surviving a *Beitragsfreistellung*, and the untruncated payout phase.
 
 The whole-model-point-table sweep is **not** here: the conventions suite owns the single
 sweep, because a model point's first evaluation is the most expensive thing in the run.

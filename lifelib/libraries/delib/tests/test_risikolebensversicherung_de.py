@@ -213,8 +213,7 @@ def test_worked_example_row(de_rlv_anchor, t):
     """Every cell of the notes' twenty-five-row table, to the displayed precision.
 
     The two zero claim columns and ``liability_cf`` are asserted here rather than carried
-    in the table: a term contract pays nothing on lapse and nothing at expiry, and
-    ``liability_cf`` is ``net_cf`` with its sign turned over.
+    in the table: a term contract pays nothing on lapse and nothing at expiry.
     """
     age, pols, gross, prem, rebate, cd, exp, comm, net = WORKED_EXAMPLE[t]
     p = de_rlv_anchor
@@ -250,7 +249,7 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_rlv_anchor):
 
 
 def test_the_anchor_cell_is_the_configuration_the_notes_describe(de_rlv_anchor):
-    """Model point 1, attribute by attribute, and the three quantities derived from it."""
+    """Model point 1, attribute by attribute, and the five quantities derived from it."""
     p = de_rlv_anchor
     assert p.policy_id() == "RLV-000001"
     assert p.issue_age() == 35 and p.sex() == "M" and p.smoker() == "N"
@@ -305,10 +304,9 @@ def test_the_bruttobeitrag_solves_the_equivalence_it_was_derived_from(de_rlv_anc
 def test_the_beitragsverrechnungssatz_is_reached_without_forming_the_premium(de_rlv_anchor):
     """v_d = 0,42527476 from its definition, and again from the one-line identity.
 
-    ``v_d = decl_scale surplus_share (m/(1+m)) [1 - beta - (gamma Gamma + z k G)/(G ae)]``
-    -- the surplus share, times the margin fraction of the risk element, times the risk
-    share of the gross premium.  On this calibration the first two multiply to exactly one
-    half, so the *Zahlbeitrag* is "the *Bruttobeitrag* less half its risk element".
+    The surplus share times the margin fraction of the risk element times the risk share
+    of the gross premium.  The first two multiply to exactly one half here, so the
+    *Zahlbeitrag* is "the *Bruttobeitrag* less half its risk element".
     """
     p = de_rlv_anchor
     v_d = p.beitragsverrechnung_rate()
@@ -369,9 +367,9 @@ def test_year_one_rebuilt_from_the_table_rate_up(de_rlv_anchor):
 def test_year_three_rebuilt_through_two_decrement_steps(de_rlv_anchor):
     """The notes' third check: l(2) and l(3) built by hand, then claims_death(3).
 
-    Using the contractual 300 000 EUR instead of the paragraph 161 benefit here gives
-    204,13 EUR against 198,01 -- a 3 % overstatement that runs for three years and then
-    disappears, which is exactly the kind of error a totals-only test misses.
+    Using the contractual 300 000 EUR instead of the paragraph 161 benefit gives 204,13
+    against 198,01 -- a 3 % overstatement that runs three years and then disappears,
+    exactly the kind of error a totals-only test misses.
     """
     p = de_rlv_anchor
     q1 = 0.00040 * 1.095 ** 5
@@ -395,8 +393,8 @@ def test_year_three_rebuilt_through_two_decrement_steps(de_rlv_anchor):
 def test_closure_one_the_decrements_account_for_the_whole_policy(de_rlv_anchor):
     """Deaths + lapses + expiries = pols_if_init() exactly, and pols_if(n+1) = 0.
 
-    The split between the last two is what ``w(25) = 0`` decides, and **no cash flow moves
-    either way** -- which is why the identity and not the split is the load-bearing thing.
+    The split between the last two is what ``w(25) = 0`` decides, and no cash flow moves
+    either way -- which is why the identity and not the split is load-bearing.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -415,13 +413,12 @@ def test_closure_one_the_decrements_account_for_the_whole_policy(de_rlv_anchor):
 
 def test_closure_two_the_suicide_wedge_is_the_only_gap_between_events_and_amounts(
         de_rlv_anchor):
-    """300 000 x 0,03305608 = 9 916,82 of events against 9 899,20 paid.
+    """300 000 x 0,03305608 of events against 9 899,20 paid, and the 17,62 gap.
 
-    The 17,62 EUR difference is exactly ``0,03 x 300 000`` times the death rates of policy
-    years 1 to 3.  No lapse pays, no expiry pays and the schedule is flat, so the
-    *Selbsttoetung* switch is the **only** thing standing between events and amounts on
-    this cell -- an implementation applying it to every year, or to a lapse, or over the
-    wrong window breaks this while leaving every total plausible.
+    It is exactly ``0,03 x 300 000`` times the death rates of policy years 1 to 3.  No
+    lapse pays, no expiry pays and the schedule is flat, so the *Selbsttoetung* switch is
+    the only thing between events and amounts -- and a switch applied to every year, or to
+    a lapse, or over the wrong window breaks this while leaving every total plausible.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -440,9 +437,8 @@ def test_closure_three_the_cash_flow_statement_is_check_net_cf(de_rlv_anchor):
     """12 243,747304 - 9 899,201951 - 2 396,505040 - 752,813300 = -804,772987.
 
     Which columns are *not* in it is the point: ``prem_gross`` is the guaranteed stream
-    and does not enter, and ``prem_rebate`` is the difference between the two premium
-    columns and must not be subtracted again.  That ambiguity is why delib requires
-    ``check_net_cf()`` of every model.
+    and does not enter, and ``prem_rebate`` must not be subtracted again.  That ambiguity
+    is why delib requires ``check_net_cf()`` of every model.
     """
     p = de_rlv_anchor
     df = p.result_cf()
@@ -465,9 +461,8 @@ def test_the_first_order_deckungskapital_opens_and_closes_at_zero(de_rlv_anchor)
     """res(1) = 0 by the equivalence, res(n+1) = 0 by exhaustion, and a Thiele step.
 
     The interior peaks at 7 553,29 EUR at ``t = 16`` -- 2,52 % of the sum insured -- and
-    the *gezillmerte* companion opens at ``-z k G = -797,132426``, negative from the first
-    day.  The two are formed by different summations and agree to about 4e-12, not to the
-    last bit, which is why this is a 1e-9 assertion.
+    the *gezillmerte* companion opens at ``-z k G``.  The two are formed by different
+    summations and agree to about 4e-12, which is why these are 1e-9 assertions.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -505,9 +500,7 @@ def test_the_first_order_deckungskapital_opens_and_closes_at_zero(de_rlv_anchor)
 def test_the_declaration_withdrawn_variant_row(risikolebensversicherung, t):
     """decl_scale = 0: the billed premium becomes the guaranteed one, and nothing else.
 
-    ``pols_if``, ``claims_death`` and ``prem_gross`` are identical to the last bit; only
-    the flows that scale with the *billed* premium move -- collection at 3 % and renewal
-    commission at 1 %.
+    ``pols_if``, ``claims_death`` and ``prem_gross`` are identical to the last bit.
     """
     pols, gross, prem, rebate, cd, exp, comm, net = DECL_WITHDRAWN[t]
     model = mx.read_model(MODEL_DIR, name="RLV_DE_A_decl0")
@@ -534,8 +527,7 @@ def test_the_einmalbeitrag_variant_row(risikolebensversicherung, t):
     """Model point 7: the same engine at k = 1, with ae = 1 exactly.
 
     One large inflow then nine years of pure outgo -- the shape inverts against the
-    level-premium cell -- and the renewal commission and collection cost stop with the
-    premium while ``claims_death`` runs to expiry.
+    level-premium cell -- while ``claims_death`` runs to expiry.
     """
     age, pols, gross, prem, rebate, cd, exp, comm, net = EINMAL[t]
     p = risikolebensversicherung.Projection[7]
@@ -556,7 +548,7 @@ def test_the_einmalbeitrag_is_the_same_engine_at_a_boundary(risikolebensversiche
 
     With one premium instead of twenty-five the Zillmer charge is 25 permille of a much
     smaller *Beitragssumme*, so the risk share of the gross premium is larger and more of
-    it comes back as *Beitragsverrechnung*: 0,44151243 against 0,42527476.
+    it comes back: 0,44151243 against 0,42527476.
     """
     p = risikolebensversicherung.Projection[7]
     assert p.tariff_annuity() == pytest.approx(EINMAL_PRICING["tariff_annuity"], rel=1e-15)
@@ -584,13 +576,12 @@ def test_the_einmalbeitrag_is_the_same_engine_at_a_boundary(risikolebensversiche
 # Pitfall 1 -- confusing the three "netto"s
 def test_pitfall_1_the_three_nettos_are_three_different_things(
         risikolebensversicherung, de_rlv_anchor):
-    """P < Gn < G: 733,01 < 1 084,80 < 1 275,41, and the order is *not* the intuitive one.
+    """P < Gn < G: 733,01 < 1 084,80 < 1 275,41, and the order is not the intuitive one.
 
     The billed *Zahlbeitrag* sits **below** the actuarial *Nettopraemie*, because
-    ``Gn = A/ae`` is struck on the loaded first-order rate and 90 % of that loading is
-    handed straight back as *Beitragsverrechnung*.  Asserting ``Gn < P`` instead would be
-    asserting the absence of the product's central mechanic.  The third sense --
-    *Nettotarif*, a commission-free tariff -- is not modelled at all.
+    ``Gn = A/ae`` is struck on the loaded first-order rate and 90 % of that loading comes
+    straight back.  Asserting ``Gn < P`` would be asserting the absence of the product's
+    central mechanic.  The third sense, *Nettotarif*, is not modelled at all.
     """
     p = de_rlv_anchor
     phi = p.prem_freq_load()
@@ -614,11 +605,10 @@ def test_pitfall_1_the_three_nettos_are_three_different_things(
 # Pitfall 2 -- carrying only one premium stream
 def test_pitfall_2_the_model_carries_two_premium_streams(
         risikolebensversicherung, de_rlv_anchor):
-    """prem_gross > premiums at every t where a premium is due -- except where v_d = 0.
+    """prem_gross > premiums wherever a premium is due -- except where v_d = 0.
 
     Model point 12 is the paragraph 153-excluded non-participating tariff: there the
-    billed premium *is* the guaranteed one, exactly, and the rebate column is zero.  Both
-    branches ship, so neither is merely reachable.
+    billed premium *is* the guaranteed one, exactly, and the rebate column is zero.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -638,10 +628,9 @@ def test_pitfall_2_the_model_carries_two_premium_streams(
 def test_pitfall_3_only_the_bruttobeitrag_is_guaranteed():
     """decl_scale = 0 raises premiums to prem_gross and changes no claim and no decrement.
 
-    A 74,0 % increase in the customer's bill for no change whatever in cover, with no
-    paragraph 163 procedure, no *Treuhaender* and no policyholder remedy, because no
-    guaranteed term has moved.  Only the two flows that scale with the *billed* premium
-    follow it: collection at 3 % and renewal commission at 1 %.
+    A 74,0 % increase in the bill for no change whatever in cover, with no paragraph 163
+    procedure and no policyholder remedy.  Only the two flows that scale with the *billed*
+    premium follow it: collection at 3 % and renewal commission at 1 %.
     """
     base = mx.read_model(MODEL_DIR, name="RLV_DE_A_decl_base")
     stressed = mx.read_model(MODEL_DIR, name="RLV_DE_A_decl_str")
@@ -675,9 +664,9 @@ def test_pitfall_4_a_lapse_pays_nothing_at_any_duration(
         risikolebensversicherung, de_rlv_anchor):
     """Paragraph 169 Abs. 1 VVG does not reach a term assurance, so the columns are zeros.
 
-    The absent names are asserted too: they are exactly what a reader arriving from a US
-    model with cash surrender values would add, and every total would still look sane.
-    The lapses themselves are real -- only the benefit is nil.
+    The absent names are asserted too: they are what a reader arriving from a US model
+    with cash surrender values would add, and every total would still look sane.  The
+    lapses themselves are real -- only the benefit is nil.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -702,11 +691,11 @@ def test_pitfall_4_a_lapse_pays_nothing_at_any_duration(
 
 # Pitfall 5 -- concluding there is no Deckungskapital
 def test_pitfall_5_a_level_premium_against_a_rising_rate_builds_a_reserve(de_rlv_anchor):
-    """It is small, it is fully consumed by expiry, and it is strictly positive inside.
+    """It is small, fully consumed by expiry, and strictly positive inside.
 
     "No *Sparanteil*, therefore no reserve" is the wrong inference, and a model built on
-    it fails its own closure check.  The *gezillmerte* companion is the other half of the
-    picture: negative from the first day and back to zero at expiry.
+    it fails its own closure check.  The *gezillmerte* companion is the other half:
+    negative from the first day and back to zero at expiry.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -732,10 +721,9 @@ def test_pitfall_5_a_level_premium_against_a_rising_rate_builds_a_reserve(de_rlv
 def test_pitfall_6_sex_never_reaches_the_premium(risikolebensversicherung):
     """Model points 1 and 2 differ only in ``sex`` and pay the same premium exactly.
 
-    Unlawful in Germany for contracts concluded from 21 December 2012, while the DAV
-    2008 T tables the tariff is built on remain sex-distinct -- so the cross-subsidy has
-    to appear in the cash flows, and it does: claim totals differing by a factor near two
-    on identical premiums.
+    Unlawful in Germany from 21 December 2012, while the DAV 2008 T tables remain
+    sex-distinct -- so the cross-subsidy has to appear in the cash flows, and it does:
+    claim totals differing by a factor near two on identical premiums.
     """
     male = risikolebensversicherung.Projection[1]
     female = risikolebensversicherung.Projection[2]
@@ -763,10 +751,9 @@ def test_pitfall_6_sex_never_reaches_the_premium(risikolebensversicherung):
 def test_pitfall_7_q1_prices_and_q2_projects(risikolebensversicherung):
     """claims_death is invariant to ``sicherheitszuschlag_m``; prem_gross is not.
 
-    And the ratio between the two orders is **not** ``1 + m``: it is
-    ``2.25 x (unisex blend / own-sex rate)``, 1,6875 for a male and 3,375 for a female on
-    the shipped proxy, the blend being ``0.75 x q(M)``.  Moving ``m`` across its argued
-    range of 1.0 to 1.5 moves the *Bruttobeitrag* 22,5 % and the *Zahlbeitrag* 6,0 %.
+    And the ratio between the two orders is not ``1 + m``: it is
+    ``2.25 x (blend / own-sex rate)``, 1,6875 for a male and 3,375 for a female.  Moving
+    ``m`` across 1.0 to 1.5 moves the *Bruttobeitrag* 22,5 % and the *Zahlbeitrag* 6,0 %.
     """
     male = risikolebensversicherung.Projection[1]
     female = risikolebensversicherung.Projection[2]
@@ -805,9 +792,9 @@ def test_pitfall_8_the_suicide_switch_runs_three_years_and_touches_death_alone(
         risikolebensversicherung, de_rlv_anchor):
     """0,97 for t in {1,2,3} and 1 thereafter, and nothing else in the model moves.
 
-    On the in-force point 8, which opens at ``t = 13`` with twelve completed policy years,
-    the factor is 1 at every projected ``t`` -- the window is keyed to duration, not to the
-    frame's first row.  On the five-year boundary cell, point 13, it covers three of five.
+    On the in-force point 8, opening at ``t = 13`` with twelve completed policy years, the
+    factor is 1 at every projected ``t`` -- the window is keyed to duration, not to the
+    frame's first row.  On the five-year boundary cell it covers three of five.
     """
     p = de_rlv_anchor
     n = p.proj_len()
@@ -835,9 +822,8 @@ def test_pitfall_9_each_increment_carries_its_own_three_year_window(
     """Model point 9 steps the sum to 1.2 at year 6 and 1.4 at year 12.
 
     In the year of and the two years after each increase the base tranche is out of its
-    window and the increment is inside it, so ``benefit_paid_pp / benefit_pp`` is a
-    weighted average **strictly between** 0,97 and 1: 0,995 after the first step, where
-    the increment is 0,2 of 1,2, and 0,99571 after the second, where it is 0,2 of 1,4.
+    window and the increment is inside it, so the ratio is a weighted average strictly
+    between 0,97 and 1: 0,995 after the first step and 0,99571 after the second.
     """
     p = risikolebensversicherung.Projection[9]
     assert p.nvg_schedule_id() == "nvg_zwei_erhoehungen"
@@ -865,10 +851,9 @@ def test_pitfall_9_each_increment_carries_its_own_three_year_window(
 def test_pitfall_10_the_frequency_loading_is_applied_once(risikolebensversicherung):
     """phi multiplies the billed amount, so both streams and the rebate carry it.
 
-    Model point 4 is monthly: ``prem_gross_pp(1)`` is exactly 1.05 times the same cell
-    recomputed at *jaehrlich*, which is the unloaded ``prem_gross_level_pp()``.  Applying
-    the loading to each stream separately, or to the rebate a second time, breaks the
-    split identity -- which is why ``check_prem_split()`` is asserted at every frequency.
+    Model point 4 is monthly: ``prem_gross_pp(1)`` is exactly 1.05 times the unloaded
+    ``prem_gross_level_pp()``.  Loading each stream separately breaks the split identity,
+    which is why ``check_prem_split()`` is asserted at every frequency.
     """
     monthly = risikolebensversicherung.Projection[4]
     assert monthly.prem_freq() == "monatlich"
@@ -900,9 +885,8 @@ def test_pitfall_10_the_frequency_loading_is_applied_once(risikolebensversicheru
 def test_pitfall_11_the_premium_cessation_rule_is_applied_once(de_rlv_anchor):
     """Premiums are in advance and claims at year end, so a claimant has already paid.
 
-    Multiplying ``premiums(t)`` by ``(1 - q2)`` as well applies the rule twice and
-    understates year-t income -- by 0,46 EUR in year one on this cell, and by a growing
-    amount as the death rate climbs.
+    Multiplying ``premiums(t)`` by ``(1 - q2)`` as well applies the rule twice, and
+    understates year-one income by 0,46 EUR on this cell and by more as the rate climbs.
     """
     p = de_rlv_anchor
     for t in (1, 13, 25):
@@ -927,8 +911,7 @@ def test_pitfall_12_the_premium_stops_at_the_beitragszahlungsdauer(
     """Model point 6 has k = 12 against n = 20: eight years of cover with no premium.
 
     All three premium cells are zero from ``t = 13``, while ``claims_death`` runs to
-    expiry and the reserve falls -- and ``check_prem_split()`` guards the zero branch as
-    well as the paying one.
+    expiry and the reserve falls -- and ``check_prem_split()`` guards the zero branch too.
     """
     p = risikolebensversicherung.Projection[6]
     assert p.prem_term() == 12 and p.policy_term() == 20 and p.proj_len() == 20
@@ -988,12 +971,10 @@ def test_pitfall_13_the_three_versicherungssumme_shapes_are_a_schedule(
 
 # Pitfall 14 -- combining two lives after loading instead of before
 def test_pitfall_14_two_lives_are_combined_before_the_loading(risikolebensversicherung):
-    """Q = qA + qB - qA qB, at table level, and then (1 + m) rf on the combined blend.
+    """Q = qA + qB - qA qB at table level, then (1 + m) rf on the combined blend.
 
-    Combining after loading inflates the cross term.  The independence assumption itself
-    understates the true first-death rate for a couple sharing a household, a vehicle and
-    a lifestyle, and no German figure bounds the understatement -- which is why it is
-    [std] and stated rather than buried.
+    The independence assumption understates the true first-death rate for a couple sharing
+    a household, a vehicle and a lifestyle, and no German figure bounds it.
     """
     p = risikolebensversicherung.Projection[10]
     assert p.lives() == 2 and p.issue_age() == 38 and p.issue_age2() == 36
@@ -1025,9 +1006,8 @@ def test_pitfall_15_only_the_mortality_margin_is_returned(de_rlv_anchor):
     """prem_rebate is invariant to the modelled expense levels; net_cf is not.
 
     The tariff's beta is 5,0 % and the modelled collection cost 3,0 %, so a cost result
-    emerges in ``net_cf`` and **stays there**.  Returning it would need the MindZV's
-    *uebriges Ergebnis* limb, whose minimum share is different and for which the research
-    file gives no basis -- a stated simplification, not an oversight.
+    emerges in ``net_cf`` and stays there.  Returning it would need the MindZV's *uebriges
+    Ergebnis* limb, for which the research file gives no basis -- a stated simplification.
     """
     base_rebate = de_rlv_anchor.result_cf()["prem_rebate"].sum()
     base_net = de_rlv_anchor.result_cf()["net_cf"].sum()
@@ -1055,9 +1035,8 @@ def test_pitfall_16_the_lapse_table_is_the_term_life_one(
     """6 % / 4 % / 4 % / 3 %, and zero in the final policy year.
 
     The zero is a property of the last policy year and lives in the formula, not in the
-    table: the table's own row for year 25 still reads 3 %.  A lapse and an expiry at the
-    end of year n are the same event paying the same nothing, so the split between them
-    is a convention and no cash flow moves either way.
+    table, whose own row for year 25 still reads 3 %.  A lapse and an expiry at the end of
+    year n are the same event paying the same nothing.
     """
     p = de_rlv_anchor
     assert p.lapse_rate(1) == 0.06
@@ -1083,7 +1062,7 @@ def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit()
 
     Both orders are loaded, so an impaired life pays more *and* is expected to claim more,
     and the *Zahl/Brutto* ratio barely moves -- 0,4835 of a percentage point across the
-    whole range, well under the one point the notes claim.  The benefit is untouched.
+    whole range.  The benefit is untouched.
     """
     import pandas as pd
 
@@ -1194,8 +1173,7 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_rlv_anchor):
     """The notes' eleven columns in order, contiguous from t0 to proj_len().
 
     ``liability_cf`` is the eleventh and is ``-net_cf`` exactly: ``net_cf`` is income
-    positive, the library-wide sign, and the outgo-positive orientation a valuation layer
-    wants is published beside it rather than left to a reader to flip.
+    positive, and the outgo-positive orientation is published beside it.
     """
     df = de_rlv_anchor.result_cf()
     assert list(df.columns) == [
@@ -1346,7 +1324,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
 
 
 def test_an_input_can_be_swapped_without_touching_formulas():
-    """This is what a production user does with a company or licensed mortality basis.
+    """What a production user does with a company or licensed mortality basis.
 
     On a German term product the swap moves **both** premiums as well as the claims, which
     is the difference from a model whose premium is a published rate card: the tariff is
