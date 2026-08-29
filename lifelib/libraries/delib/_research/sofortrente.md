@@ -496,3 +496,435 @@ cited from them. The order below is the order in which they should be fetched.
   adjustment was established, at any carrier, for any year.**
 
 ---
+
+## Regulatory and actuarial references
+
+Twenty-five entries. The statutory ones carry the canonical `gesetze-im-internet.de` address where
+that form is unambiguous, marked `[unverified]` because no search in this session returned it; the
+professional and market ones carry a URL only where a sibling delib file recorded one. **None was
+retrieved.** Where a provision's *content* is stated below, it is stated as what the provision
+provides, in this file's own words, and the paragraph number carries `[unverified]` unless a
+sibling file's search corroborated it.
+
+### R1 — VVG § 168, *Kündigung des Versicherungsnehmers* — and the rule that ends surrender at *Rentenbeginn*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__168.html` — canonical form, `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: **the provision that decides the single most important modelling question about this
+  product.** § 168 VVG governs the policyholder's right to terminate a life insurance contract:
+  a contract with recurring premiums may be terminated at the end of the current insurance period,
+  and a single-premium contract on stated conditions. The paragraph that matters here is
+  **§ 168 Abs. 3 VVG**, which provides that **in the case of a *Rentenversicherung* without a
+  *Kapitalwahlrecht* the right of termination exists only up to the start of the annuity payments**
+  `[unverified]` — after *Rentenbeginn* there is no right to terminate and therefore no
+  *Rückkaufswert* to pay. For a *Sofortrente*, whose *Rentenbeginn* is at or within weeks of
+  inception, the practical effect is that **the contract is irrevocable from the outset**: the
+  *Einmalbeitrag* is gone, and the only thing the policyholder holds thereafter is the annuity
+  itself and whatever death benefit was bought with it.
+- The paragraph number, the exact scope of the "*ohne Kapitalwahlrecht*" qualifier, and the
+  treatment of a contract that carries a *Kapitalwahlrecht* exercisable during a short
+  *Aufschubzeit* are all `[unverified]` here. The **substance** — no surrender in the
+  *Rentenbezug* — is not seriously in doubt: it is the uniform statement of the German consumer
+  literature [R21] [R23], it is the economic precondition for a life annuity to be writable at all
+  (a surrenderable annuity would be selected against by every annuitant in poor health), and it is
+  the exact rule French law states in the same words for the same reason. See gap 9.
+
+### R2 — VVG § 169, *Rückkaufswert*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` — recorded by the sibling file
+  [R1 there] as returned by a search
+- Retrieved: no — egress blocked; content is the sibling file's search record
+- Content: the general surrender-value provision. It obliges the insurer to pay the *Rückkaufswert*
+  where a contract is terminated by the policyholder; for unit-linked contracts the value is the
+  *Zeitwert* computed by recognised actuarial rules; paragraphs 3 to 5 carry the calculation rules
+  and the rule spreading *Abschluss- und Vertriebskosten* over the first five years `[unverified]`.
+  **Recorded here for its boundary, not its content**: § 169 is displaced for this product by
+  § 168 Abs. 3 [R1] the moment the *Rentenbezug* begins. A delib `Sofort_DE_S` model therefore
+  publishes **no surrender-value cells and no lapse decrement in the payout phase**, and the
+  absence is a specification, not an omission.
+
+### R3 — VVG § 153, *Überschussbeteiligung*, and § 153 Abs. 3, *Beteiligung an den Bewertungsreserven*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__153.html` — recorded by the sibling files
+  [R4 in the RV file, R1 in the KLV file] as returned by searches
+- Retrieved: no — egress blocked; content is the sibling files' search record
+- Content: the statutory right to participate in surplus. The policyholder is entitled to a share
+  of the *Überschuss* and of the *Bewertungsreserven* unless participation is excluded by express
+  agreement; the surplus must be determined by a method appropriate under recognised actuarial
+  principles; and **§ 153 Abs. 3 currently provides for equal (*hälftige*) participation in the
+  *Bewertungsreserven***, allocated at the times the contract specifies [S3]. Two consequences for
+  this product: participation is a **statutory right, not a marketing feature**, and it **does not
+  stop at *Rentenbeginn*** — [S3] states in terms that policyholders also participate during the
+  annuity payment period. The level of participation is entirely at the insurer's discretion within
+  the statutory minimum [R15], which is why every surplus figure downstream is `[std]`.
+
+### R4 — VVG § 163, *Anpassung der Prämie oder der Vertragsbestimmungen*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__163.html` — canonical form, `[unverified]`
+- Retrieved: no — egress blocked; established at commentary level only, from the sibling file
+  [R3, R17 there]
+- Content: the statutory channel through which a German life insurer may change a contract term
+  after conclusion — the successor to the contractual *Treuhänderklausel*. The sibling file
+  establishes from consumer commentary that **the *Treuhänderklausel* is used only in older
+  contracts and that today a guaranteed *Rentenfaktor* can be changed only on the basis of
+  § 163 VVG**, and that the **Landgericht Köln** held **the low-interest phase not to be a
+  sufficient ground, because it is entrepreneurial risk that cannot be passed to policyholders**
+  (case reference, date and parties **not established**). For this product the provision is close
+  to inert: the guaranteed annuity of a *Sofortrente* is struck once, at inception, on bases that
+  are then fixed for life, and no adjustment channel that survives judicial scrutiny reaches it.
+  A delib model treats the *garantierte Rente* as **immutable** and records § 163 as a model risk.
+
+### R5 — VVG § 165, *Prämienfreie Versicherung*, and § 166, *Kündigung des Versicherers*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` — recorded by the sibling file
+  [R2 there] as returned by a search
+- Retrieved: no — egress blocked
+- Content: § 165 gives the policyholder of a contract with recurring premiums the right to convert
+  it to a premium-free contract, the reduced benefit being derived from the surrender value on the
+  premium basis and tabulated per insurance year, subject to a *Mindestversicherungsleistung*
+  threshold. **Recorded purely for its boundary**: a *Sofortrente* is bought with a single
+  *Einmalbeitrag*, so there is no future premium to cease and **§ 165 has no application to this
+  product at all**. A reference implementation carries **no `Beitragsfreistellung` decrement**, and
+  that is a specification rather than a simplification.
+
+### R6 — VVG §§ 150, 159, 160 — *versicherte Person*, *Bezugsberechtigung*, *Auslegung der Bezugsberechtigung*
+- Publisher: Bundesministerium der Justiz / juris
+- URLs: `https://www.gesetze-im-internet.de/vvg_2008/__150.html`,
+  `.../__159.html`, `.../__160.html` — canonical forms, all `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration
+- Content: the provisions that make the *Rentengarantiezeit* and the *Hinterbliebenenrente*
+  work as a matter of contract law. § 150 distinguishes the *Versicherungsnehmer* from the
+  *versicherte Person* and requires the insured person's written consent where a life other than
+  the policyholder's own is insured for a benefit above a threshold; § 159 gives the policyholder
+  the right to designate a *Bezugsberechtigter* (beneficiary), revocably or irrevocably; § 160
+  supplies default construction rules where several beneficiaries are named or a designation
+  fails. All three are `[unverified]` as to paragraph number and content. They matter here because
+  the payments made *after* the annuitant's death under a *Rentengarantiezeit* or a
+  *Kapitalrückgewähr* go to a **designated beneficiary**, not automatically to the estate, and the
+  designation is a live contractual element that a policyholder may change. A model treats the
+  beneficiary as a pass-through and the payment as a liability of the same contract.
+
+### R7 — Deckungsrückstellungsverordnung (DeckRV) § 2 — the *Höchstrechnungszins*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/deckrv/__2.html` — recorded by the sibling file
+  [R7 there] as returned by a search
+- Retrieved: no — egress blocked; content is the sibling file's search record
+- Content: the statutory maximum technical interest rate for new German life business. Established
+  points: the rate was **0,25 %** before 2025 and is **1,00 % from 1 January 2025**, and the 2025
+  increase was **the first increase since 1994** — every earlier move having been downwards. The
+  DAV recommended **1,0 % for 2026 as well** [R8]. **The intermediate sequence — 4 %, 3,25 %,
+  2,75 %, 2,25 %, 1,75 %, 1,25 %, 0,90 %, 0,25 % — and every effective date in it is
+  `[unverified]` here**; a model point carrying a legacy *Rechnungszins* must cite the delib
+  cross-product reference library rather than this file.
+- **Why the rate is the whole product.** For a *Sofortrente* the *Höchstrechnungszins* is not a
+  background parameter; it is close to being the price. The annuity is the reciprocal of an
+  annuity value, and the annuity value at these ages and durations is dominated by the discount
+  rate. Section 4 computes the sensitivity on a stated proxy basis and finds that moving the
+  interest basis from 0,25 % to 1,00 % raises the annuity at age 65 by about **10 %** `[std]` —
+  a change of the same order as a decade of mortality improvement, delivered in one legislative
+  step on 1 January 2025.
+
+### R8 — DAV recommendations on the *Höchstrechnungszins* for 2025 and 2026
+- Publisher: Deutsche Aktuarvereinigung e. V. (DAV), Cologne
+- URL: not established; the sibling file [R8, R9 there] records the two press items by title —
+  "Deutsche Aktuarvereinigung empfiehlt auch für 2026 einen Höchstrechnungszins in Höhe von 1,0
+  Prozent" and "Deutsche Aktuarvereinigung begrüßt Ministeriumsvorstoß zum Höchstrechnungszins
+  2025"
+- Retrieved: no — egress blocked; titles corroborated by the sibling file's search record
+- Content: the profession's own recommendations, which the *Bundesministerium der Finanzen*
+  converts into the DeckRV figure. Establishes that **1,0 % was recommended for 2026** as well as
+  applying from 2025, so a contract written in 2026 is on the same interest basis as one written
+  in 2025 — which matters for a *Sofortrente*, where the tariff vintage and the contract vintage
+  are the same thing. The DAV's methodology, the *Referenzzins* it derives the recommendation
+  from, and any figure inside the releases are **not established**.
+
+### R9 — GDV media information on the *Höchstrechnungszins* increase
+- Publisher: GDV; and HDI, "Höchstrechnungszins in der Lebensversicherung steigt zum 01.01.2025"
+- URL: not established; titles recorded by the sibling files [R10, R11 there; R16 in the KLV file]
+- Retrieved: no — egress blocked
+- Content: the industry's framing of the 2025 increase as "eine angemessene Reaktion auf gestiegene
+  Zinsen" and a carrier's own customer-facing note of the same change. Corroborates the **1 January
+  2025** effective date and the direction of travel. **No figure for the effect on annuity levels
+  was established from either**, which is the figure this product most needs; see gap 5.
+
+### R10 — DAV, "Herleitung der DAV-Sterbetafel 2004 R für Rentenversicherungen"
+- Publisher: Deutsche Aktuarvereinigung e. V.
+- Doc type: *DAV-Richtlinie* — the profession's derivation guideline for the annuity table
+- URL: not established; the sibling file [R12 there] records the document and its 2023 reissue
+- Retrieved: no — egress blocked; content is the sibling file's search record
+- Content: **the mortality basis of this product.** Established from the sibling file:
+  - DAV 2004 R is a ***Generationentafel***: mortality is given per **birth cohort**, and the
+    expected future improvement is **inside the table**, not applied on top of it.
+  - Its **component structure** is: a **base table of second order**; a **base table of first
+    order**; a **mortality trend of second order**; a **mortality trend of first order**; and an
+    **age adjustment (*Altersverschiebung*) with a base table**. The trend is therefore a named,
+    separately-parameterised object — the *Trendfunktion* — and it exists in both a best-estimate
+    and a prudent version.
+  - **First-order probabilities are used for premiums and reserves and carry safety margins
+    relative to the second-order ("realistic") probabilities, in order to assess the risk
+    prudently**; the **second-order base tables represent the best estimate of period mortality in
+    1999 for insured lives, as three-dimensional selection tables**. For an annuity, "prudent"
+    means **lower** mortality than best estimate: the first-order basis assumes annuitants live
+    longer, which raises the annuity value and lowers the annuity bought by a given
+    *Einmalbeitrag*.
+  - **Dates**: in use since **June 2004**, intended for new business from **2005**, the DAV
+    document dated **22 February 2005**; the derivation guideline was **reissued on 28 June 2023**.
+    That the profession was still maintaining DAV 2004 R in 2023 — nineteen years after first use,
+    twenty-four years after its 1999 base year — is itself the evidence that **no successor annuity
+    table has displaced it**.
+- **The table is not public and delib does not redistribute it.** It is the property of the DAV.
+  delib cites it by name, ships a `[std]` proxy anchored so its own worked example reproduces
+  exactly, and states the anchor in the model's `Data` docstring. A replacement must preserve the
+  **generational structure** (a `q(x, cohort)` surface, not a period table), the **first-order
+  margin over second order**, and the **age-adjustment convention**.
+
+### R11 — DAV 2004 R-Bestand and the *Rentenbestandstafel* RBx
+- Publisher: Deutsche Aktuarvereinigung e. V.
+- URL: not established
+- Retrieved: no — egress blocked; the pairing is recorded by the sibling file [R14 there] from a
+  2004 presentation titled "DAV 2004 R und RBx"
+- Content: the corpus establishes **that a companion in-force table exists and nothing more.**
+  DAV 2004 R is the **new-business** table; the ***Bestand*** variant is the table for the
+  **existing annuity book**, reflecting the different composition and selection history of
+  annuities already in payment. **The distinction between "DAV 2004 R" and "DAV 2004 R-Bestand"
+  is established only as a naming pairing**; the difference in level, in trend, in age range or in
+  application rule was **not established** and nothing about it may be asserted downstream — see
+  gap 12. For a *Sofortrente* the distinction is nevertheless conceptually central: a contract is
+  priced on the new-business table at inception and then, for the whole of its long life, sits in
+  the *Bestand* to which the other table applies.
+
+### R12 — Contemporaneous expositions of DAV 2004 R
+- Publishers: Deutsche Gesellschaft für Versicherungs- und Finanzmathematik (DGVFM); General
+  Reinsurance AG; the *qx-Club* actuarial seminar series
+- URL: not established; the sibling file [R14 there] records presentations of **16 August 2004**,
+  **14 September 2004** and a reinsurer's exposition of **27 October 2004**
+- Retrieved: no — egress blocked
+- Content: the profession's contemporaneous explanation of the table at the moment of its
+  introduction, which is where the *Sicherheitszuschlag* structure and the trend construction were
+  set out for practitioners. **No content was established** beyond the fact of the presentations
+  and their dates. Recorded because these are the documents a later build should fetch to
+  substantiate anything specific about the first-order margin, which this file can describe only
+  qualitatively.
+
+### R13 — EStG § 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst. bb — the *Ertragsanteil* table
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/estg/__22.html` — recorded by the sibling file [R5
+  there] as **returned directly by a search**
+- Retrieved: no — egress blocked; the general content below is the sibling file's search record;
+  the table values in section 15 are from general knowledge and are `[unverified]`
+- Content, as established by the sibling file:
+  - Payments from private annuity contracts, and from life contracts converted into a classic
+    monthly *Leibrente*, are taxed on the ***Ertragsanteil*** basis.
+  - **Only the "Ertrag des Rentenrechts"** — the interest component contained in the annuity from
+    the beginning of the payout phase — **is subject to tax**. The return-of-capital element is not
+    income at all.
+  - **The *Ertragsanteil* is determined by the annuitant's age at *Rentenbeginn*.** The earlier the
+    annuity begins, the longer its expected duration, and **the higher the taxable fraction**.
+  - **For an annuity commencing at age 65 the *Ertragsanteil* is 18 % of the annuity.** This is
+    the only value of the statutory table that any delib search corroborated.
+  - The statutory address usually given for the table — **§ 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst.
+    bb EStG** — was **not** confirmed by any search summary and is `[unverified]`.
+- The fraction is **fixed for life at the annuity's commencement age** and does not fall as the
+  annuitant ages, which is the feature that makes a deferred start economically attractive
+  (section 3) and is easy to model wrongly.
+
+### R14 — EStG § 20 Abs. 1 Nr. 6 — the *Kapitalabfindung* regime, and its boundary
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/estg/__20.html` — recorded by the sibling file [R6
+  there]
+- Retrieved: no — egress blocked; content is the sibling file's search record
+- Content: the regime that taxes a **lump sum** from a life or annuity contract. The
+  *Halbeinkünfteverfahren* — half the *Ertrag* taxable, half exempt — applies where the "12/62
+  rule" is met: **the contract must have run at least 12 years and the payment must occur after
+  completion of the 62nd year of life**, and the contract must be one in which the capital option
+  **cannot be exercised before 12 years** from conclusion. **The method applies only to lump-sum
+  payments and to multiple capital withdrawals under a payout plan; it does not apply to monthly
+  annuity payments.** Contracts concluded before 1 January 2005 retain the earlier treatment.
+- **Recorded here for its boundary, and the boundary is sharp.** A *Sofortrente* bought at, say,
+  age 65 has by construction **not** run twelve years when its first payment falls due, so § 20
+  Abs. 1 Nr. 6 could never apply to it favourably even if it paid a lump sum. It pays no lump sum
+  in any event. **The whole of a *Sofortrente*'s cash flow is taxed under § 22 [R13] and none of it
+  under § 20** — which is precisely the tax arbitrage the product is sold on, and the reason a
+  *Sofortrente* is compared with a *Bankauszahlplan* whose interest is taxed in full at the
+  *Abgeltungsteuer* rate (section 17).
+
+### R15 — Mindestzuführungsverordnung (MindZV)
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/mindzv/` — canonical form, `[unverified]`
+- Retrieved: no — egress blocked; recorded at existence level by the sibling file [R6 in the KLV
+  file]
+- Content: the regulation fixing the **minimum share of each surplus source that must be credited
+  to policyholders** — the floor beneath the insurer's discretion under § 153 VVG [R3]. It
+  operates separately on the *Kapitalanlageergebnis* (investment result), the *Risikoergebnis*
+  (mortality and biometric result) and the *übriges Ergebnis* (expense and other result), and it
+  permits deductions for the *Sicherungsbedarf* arising from legacy guarantees [R16]. **No
+  percentage in the regulation was established by any delib search** — the commonly quoted
+  90 % / 90 % / 50 % structure is `[unverified]` and does not appear here as a figure. For this
+  product MindZV matters because **the annuitant's *Risikoergebnis* is a longevity result**: when
+  annuitants die faster than the first-order table assumed, the *Risikoüberschuss* is positive and
+  a minimum share of it must flow back into the *Überschussrente*.
+
+### R16 — VAG §§ 138–140 — *Überschussbeteiligung*, *Sicherungsbedarf*, and the *Zinszusatzreserve*
+- Publisher: Bundesministerium der Justiz / juris
+- URL: `https://www.gesetze-im-internet.de/vag_2016/__139.html` — canonical form, `[unverified]`
+- Retrieved: no — egress blocked; recorded at existence level by the sibling file [R8 in the KLV
+  file]
+- Content: the supervisory side of the surplus rules — the *Rückstellung für
+  Beitragsrückerstattung* (RfB), the conditions under which it may be drawn down, and the
+  *Sicherungsbedarf* deduction that let German insurers withhold *Bewertungsreserven* from
+  maturing and surrendered contracts during the low-interest years. The ***Zinszusatzreserve***
+  — the additional reserve built against legacy guarantees on a *Referenzzins* mechanism — belongs
+  to the same complex. **Nothing specific was established**: not the paragraph numbers, not the
+  *Referenzzins* formula, not the ZZR's size in any year, not whether it is now being released.
+  It is recorded because a *Sofortrente*'s *Überschussrente* is paid out of the same RfB that the
+  ZZR competes with, so the reserve's release profile is a first-order driver of the surplus a
+  cohort of annuitants will actually receive — and it is entirely `[unverified]` here.
+
+### R17 — VVG-Informationspflichtenverordnung (VVG-InfoV), and the PRIIPs Regulation
+- Publisher: Bundesministerium der Justiz / juris; European Union
+- URLs: `https://www.gesetze-im-internet.de/vvg-infov/` — canonical form, `[unverified]`; the
+  PRIIPs Regulation (Regulation (EU) No 1286/2014) `[unverified]` as to number
+- Retrieved: no — egress blocked; the VVG-InfoV *Effektivkosten* point is recorded at existence
+  level by the sibling file [R9 in the KLV file]
+- Content: the two disclosure regimes that generate [S11] and [S12]. VVG-InfoV § 2 lists the
+  pre-contractual information a German life insurer must supply and is the source of the
+  *Verbraucherinformation* document class [S2] [S3] [S14]; it also carries the ***Effektivkosten***
+  disclosure — a reduction-in-yield figure — for products in scope. The PRIIPs Regulation generates
+  the *Basisinformationsblatt* [S12] with its *Risikoindikator*, four performance scenarios and
+  *Renditeminderung* cost figures, and the DAV maintains a standard method for category 4 products
+  (the sibling KLV file records an *Ergebnisbericht* of **1 July 2025** [R27 there]). **Whether
+  either regime's cost disclosure applies to a payout-only *Sofortrente* was not established** —
+  gap 8 — and **no *Effektivkosten* or *Renditeminderung* figure for this product was established
+  at any carrier.**
+
+### R18 — BaFin material on life-insurance product oversight
+- Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)
+- URL: not established; the sibling KLV file [R17, R18, R19 there] records **Merkblatt 01/2023 (VA)
+  *zu wohlverhaltensaufsichtlichen Aspekten bei kapitalbildenden Lebensversicherungsprodukten***,
+  the *Risiken im Fokus 2026* section on "Kosten von kapitalbildenden Lebensversicherungen", and
+  *Fachartikel* including "Wenn Lebensversicherungen zu viel kosten" (2022) and "Kundennutzen im
+  Fokus" (2024)
+- Retrieved: no — egress blocked
+- Content: the supervisor's *Wohlverhaltensaufsicht* (conduct supervision) of life products —
+  value-for-money expectations, cost scrutiny and the *Kundennutzen* framing. **All of the recorded
+  material is addressed to *kapitalbildende* (capital-forming) products, i.e. the accumulation
+  side.** Whether BaFin has published anything specific to payout annuities, and in particular
+  whether it scrutinises *Rentenhöhe* or *Überschussrente* declarations for value, **was not
+  established**. Recorded so a later build knows the supervisor's material exists and is
+  accumulation-shaped.
+
+### R19 — GDV / dieversicherer.de, "Private Rentenversicherung: Auszahlmöglichkeiten"
+- Publisher: GDV, under its consumer brand *Die Versicherer*
+- URL: `https://www.dieversicherer.de/versicherer/altersvorsorge/news/auszahlung-private-rentenversicherung-141750`
+  — recorded by the sibling file [R21 there] from a search result
+- Retrieved: no — egress blocked; content is the sibling file's search record
+- Content: the industry association's own consumer account of the payout options of a private
+  annuity, and part of the result set from which the payout-phase surplus taxonomy of section 9
+  was established. It is the closest thing in the delib corpus to an authoritative German-industry
+  statement of the annuity-versus-lump-sum choice. **No notice period, no rate and no envelope was
+  established from it.**
+
+### R20 — Franke und Bornberg, "Altersvorsorge: Überschüsse im Rentenbezug — Teil 1: Die Qual der Wahl", and "Was bedeutet der Rentenfaktor und wie hoch ist er?"
+- Publisher: Franke und Bornberg GmbH, Hannover — independent product-rating house
+- URLs: `https://www.franke-bornberg.de/blog/altersvorsorge-ueberschuesse-im-rentenbezug-teil-1-die-qual-der-wahl`
+  and `https://www.franke-bornberg.de/de/blog/was-bedeutet-rentenfaktor-wie-hoch-2021-2022` —
+  recorded by the sibling file [R19 there] from search results
+- Retrieved: no — egress blocked; content is the sibling file's search record
+- Content: **the professional source behind section 9.** The first title is explicitly about
+  ***Überschüsse im Rentenbezug*** — surplus in the payout phase — which is the exact subject of
+  this product, and it is titled "Teil 1" of a series, so at least one further part exists and was
+  not located. It is the rating house's treatment of the choice between the *Überschussverwendung*
+  forms. The second is the rating house's *Rentenfaktor* article, whose slug dates it to the
+  **2021/2022** window. **Neither returned a level, a range or a table**: the very question the
+  second title asks — "und wie hoch ist er?" — was not answered by anything any delib search
+  returned. That is gap 5, the largest quantitative hole in this file.
+
+### R21 — Consumer-organisation material on the *Sofortrente*
+- Publishers: Finanztip Verbraucherinformation gemeinnützige GmbH; Stiftung Warentest
+  (*Finanztest*); the *Verbraucherzentralen*
+- URLs: `https://www.finanztip.de/lebensversicherung/ueberschussbeteiligung-lebensversicherung/`
+  and `https://www.finanztip.de/lebensversicherung-versteuern/` — recorded by the sibling file
+  [R20 there] from search results. **Finanztip's, Stiftung Warentest's and the Verbraucherzentrale's
+  *Sofortrente*-specific pages were not located and no URL for them is given.**
+- Retrieved: no — egress blocked
+- Content: what the sibling file established from the two located Finanztip pages is the surplus
+  taxonomy used in section 9 — the *konstant* / *teildynamisch* / *volldynamisch* division, and the
+  observation that **under the constant system the annuity can still fall, because if the insurer
+  earns less than expected the surplus-financed part is reduced** — together with the 12/62 rule
+  [R14]. **Stiftung Warentest's periodic *Sofortrente* comparison is the single most valuable
+  unlocated document for this product**: it is the German market's standard published table of
+  guaranteed and total monthly annuities per 100 000 € by carrier, and it would settle gaps 2, 5
+  and 7 together. Its existence is asserted here from general knowledge and is `[unverified]`; no
+  issue, date, price point or ranking is claimed.
+
+### R22 — Assekurata, "Marktstudie Überschussbeteiligungen und Garantien"
+- Publisher: Assekurata Assekuranz Rating-Agentur GmbH, Cologne
+- URL: not established; the sibling KLV file [R25 there] records the **24. Marktstudie
+  "Überschussbeteiligungen und Garantien 2026"**
+- Retrieved: no — egress blocked; the title and 2026 edition number are the sibling file's search
+  record
+- Content: the German market's annual survey of declared surplus rates — the document that
+  aggregates what [S10] publishes carrier by carrier. That it has reached a **24th edition** dates
+  the series to the early 2000s and establishes it as the market's standard reference. **No rate,
+  no average, no range and no payout-phase breakdown was established from it.** For this product
+  the relevant series would be the *laufende Verzinsung* and, more specifically, the surplus
+  credited to annuities in payment, which the study is likely to report separately from the
+  accumulation figure. Locating it is the third-highest-value action for a later build, after
+  [S2] and Stiftung Warentest [R21].
+
+### R23 — Comparison-portal and broker cluster specific to the *Sofortrente*
+- Publishers: `vergleich-sofortrente.de`; `lifefinance.de`; Verivox; CHECK24; and the broader
+  German broker-blog cluster the sibling file records as [R24] there —
+  `versicherungenmitkopf.de`, `fragfina.de`, `gn-finanzpartner.de`, `finanzkueche.de`,
+  `compeon.de`, `financedoor.de`, `versicherung-vergleiche.de`, LV 1871's and NÜRNBERGER's own
+  wiki pages, `vr.de`, `ruv.de`
+- URLs: the two product-specific hosts `vergleich-sofortrente.de` and `lifefinance.de` were
+  returned inside the sibling file's [R24] publisher list; **no individual page URL for either was
+  recorded**, and none is given here
+- Retrieved: no — egress blocked; no search corroboration in this session
+- Content: **the class of source that would supply the price points this file lacks, and did not.**
+  A German *Sofortrente* comparison portal exists precisely to rank carriers by monthly annuity per
+  100 000 € for a stated age and set of options, and `vergleich-sofortrente.de` is by its domain
+  name dedicated to exactly that. **Nothing from it was established.** What the wider cluster did
+  establish, through the sibling file, is the definitional material this file relies on: the
+  *Rentenfaktor* arithmetic and the guaranteed/current distinction; the *Rentengarantiezeit*
+  mechanics, durations and cost illustration (section 5); the *Zinsüberschuss* hurdle-rate
+  definition; the *Bonusrente* mechanic; and the *Ertragsanteil*. Every fact drawn from the cluster
+  below is corroborated by at least two of its members in the sibling file's record, and none of
+  it is a price.
+
+### R24 — The unisex rule: CJEU *Test-Achats* and its German application
+- Publisher: Court of Justice of the European Union; the German *Allgemeines
+  Gleichbehandlungsgesetz* (AGG) and the VVG's implementing provisions
+- URL: not established
+- Retrieved: no — egress blocked; **no delib search touched this topic at all**
+- Content: **`[unverified]` in both directions and recorded as a known reference only.** The
+  established German market position is that life and annuity tariffs written for new business
+  from **21 December 2012** must be **unisex** — premiums and benefits may not differ by sex —
+  while the actuarial tables the profession publishes, DAV 2004 R among them, are constructed
+  **sex-distinctly**. Neither half of that sentence was corroborated by any delib search: no
+  summary confirmed that DAV 2004 R is published by sex, and no search reached the CJEU judgment,
+  its case number, or the German application date. The tension is real and this product is where
+  it bites hardest — a *Sofortrente* is the purest longevity bet in the German market, female
+  annuitants are materially longer-lived, and a unisex tariff on sex-distinct tables must
+  therefore be struck on an assumed **portfolio sex mix**, which is a pricing assumption the
+  insurer chooses and never publishes. The unisex rule belongs to the delib cross-product
+  reference library `references/regulatory-and-actuarial-references.md` and must be cited from
+  there, not from this file. See gap 13.
+
+### R25 — GDV statistics on *Einmalbeiträge* and the German annuity market
+- Publisher: GDV
+- URL: not established; the sibling KLV file [R20, R21 there] records "Die deutsche
+  Lebensversicherung in Zahlen 2024" and the statistical series "Neugeschäft und Bestand der
+  Lebensversicherer für die letzten zehn Geschäftsjahre"
+- Retrieved: no — egress blocked
+- Content: the industry statistics that would size this product. The GDV series separates
+  ***Einmalbeiträge*** from *laufende Beiträge* in new business, which is the split that would
+  reveal how large single-premium annuity business is — but the *Einmalbeitrag* line aggregates
+  *Sofortrenten* with single-premium endowments, bAV single contributions and *Zuzahlungen* into
+  existing contracts, so even a retrieved figure would not isolate this product. **No figure of any
+  kind was established.** There is therefore **no sourced number anywhere in this file for the
+  size of the German *Sofortrente* market, the number of contracts in force, the average
+  *Einmalbeitrag*, or the average age at purchase** — see gap 7.
+
+---
