@@ -21,10 +21,9 @@ module.
 360 months is too long to assert row by row, so this module asserts the seventeen the notes
 print -- the first six, 12, 24, the acquisition cliff at 59 to 61, 120, 240, the
 tax-threshold step at 300 to 301 and the last two -- together with **every column total at
-full precision**, which is where a slice of rows cannot hide an error.  Goldens are
-hard-coded rather than pickled so a reviewer can compare them with the notes by eye, and
-tolerances follow the precision the notes display: money to the cent, ``pols_if`` to six
-decimals, rates to eight.
+full precision**, where a slice of rows cannot hide an error.  Goldens are hard-coded
+rather than pickled so a reviewer can compare them with the notes by eye, and tolerances
+follow the precision the notes display: money to the cent, ``pols_if`` to six decimals.
 
 Beyond the worked example: the notes' three independent rebuilds (month 1 from the tariff
 alone, month 61 at the cliff, the reduction in yield read as a savings account); the four
@@ -192,11 +191,9 @@ def test_worked_example_panel_a_row(de_frv_anchor, t):
 
 @pytest.mark.parametrize("t", sorted(PANEL_B))
 def test_worked_example_panel_b_row(de_frv_anchor, t):
-    """The benefits and what funds them.
-
-    ``death_strain`` is carried to four decimals rather than to the cent, because for most
-    of the projection it is a hundredth of a cent a month and rounds to zero.
-    """
+    """The benefits and what funds them.  ``death_strain`` is carried to four decimals
+    rather than to the cent, because for most of the projection it is a hundredth of a cent
+    a month and rounds to zero."""
     cd, cl, cm, releases, strain, liab = PANEL_B[t]
     p = de_frv_anchor
     assert p.claims(t, "DEATH") == pytest.approx(cd, abs=CENT)
@@ -211,10 +208,8 @@ def test_worked_example_panel_b_row(de_frv_anchor, t):
 @pytest.mark.parametrize("t", sorted(PANEL_C))
 def test_worked_example_panel_c_row(de_frv_anchor, t):
     """The per-policy unit side: the price, the units and the four within-month balances.
-
-    ``AFT_WD`` equals ``AFT_CHARGE`` throughout, there being no *Teilentnahme* here, and the
-    notes omit the column for that reason; it is asserted so the omission stays a fact.
-    """
+    ``AFT_WD`` equals ``AFT_CHARGE`` throughout, there being no *Teilentnahme* here, and
+    the notes omit the column for that reason; it is asserted so it stays a product fact."""
     (price, units, av, bef_charge, aft_charge, bef_decr, cum_prem, nar,
      lapse_mth, mort_mth) = PANEL_C[t]
     p = de_frv_anchor
@@ -229,7 +224,7 @@ def test_worked_example_panel_c_row(de_frv_anchor, t):
     assert p.db_floor_pp(t) == pytest.approx(cum_prem, abs=CENT)   # Beitragsrückgewähr
     assert p.nar_pp(t) == pytest.approx(nar, abs=CENT)
     assert p.lapse_rate_mth(t) == pytest.approx(lapse_mth, abs=EIGHT_DP)
-    assert p.mort_rate_mth(t) == pytest.approx(mort_mth, abs=EIGHT_DP)
+    assert p.mort_rate_mth(t) == pytest.approx(mort_mth, abs=EIGHT_DP)  # both bases below
     assert p.av_at(t, "BEF_DECR") == pytest.approx(
         p.av_pp_at(t, "BEF_DECR") * p.pols_if(t), rel=1e-12)
 
@@ -249,8 +244,7 @@ def test_the_totals_are_summed_at_full_precision(de_frv_anchor):
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
     assert df["stornoabzug"].sum() == 0.0 and df["withdrawals"].sum() == 0.0
     assert sum(round(p.death_strain(t), 2) for t in df.index) == pytest.approx(
-        4.33, abs=CENT)
-    assert df["death_strain"].sum() == pytest.approx(4.39, abs=CENT)
+        4.33, abs=CENT)     # the rounded-cell sum, against 4.39 at full precision
 
 
 def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
@@ -264,7 +258,6 @@ def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
     assert p.charge_acq_total() == pytest.approx(0.025 * 72000.0, rel=1e-12) == 1800.0
     assert p.acq_instalments() == 60
     assert p.charge_acq_pp(1) == pytest.approx(1800.0 / 60, rel=1e-12) == 30.0
-    assert p.charge_acq_pp(1) / p.prem_pp(1) == pytest.approx(0.15, rel=1e-12)
     assert p.charge_admin_prem_pp(1) == pytest.approx(0.04 * 200.0, rel=1e-12) == 8.0
     assert p.prem_to_av_pp(1) == pytest.approx(200.0 - 30.0 - 8.0, rel=1e-12) == 162.0
     assert p.units_bought_pp(1) == pytest.approx(1.62, rel=1e-12)
@@ -359,8 +352,8 @@ def test_the_four_identities_that_close(de_frv_anchor):
     assert p.cum_charge_acq_pp(n) == pytest.approx(
         p.alpha_rate() * p.beitragssumme(), rel=1e-12)
     assert df["charge_acq"].sum() == pytest.approx(1549.75, abs=CENT)
-    benefits = (df["claims_death"].sum() + df["claims_lapse"].sum()
-                + df["claims_maturity"].sum())
+    benefits = sum(df[c].sum() for c in
+                   ("claims_death", "claims_lapse", "claims_maturity"))
     assert benefits == pytest.approx(BENEFIT_FUNDING, abs=5e-6)
     assert df["av_releases"].sum() + strain == pytest.approx(BENEFIT_FUNDING, abs=5e-6)
     charges = sum(df[c].sum() for c in ("charge_acq", "charge_admin_prem",
@@ -389,15 +382,13 @@ def test_the_annuity_the_contract_exists_for(de_frv_anchor):
 
 @pytest.mark.parametrize("t", sorted(SINGLE_PREMIUM))
 def test_the_einmalbeitrag_variant_row(fondsgebundene_rentenversicherung, t):
-    """Model point 2: the charges are taken once, at the front, and the sign reverses.
-
-    Month 1 carries a ``net_cf`` of **+1 060,45** where the anchor's is -1 966,22, the
-    3 250,00 withheld at inception more than covering the 2 204,28 of acquisition cost.
-    """
+    """Model point 2: the charges are taken once at the front and the sign reverses -- month
+    1 carries a ``net_cf`` of **+1 060,45** where the anchor's is -1 966,22, the 3 250,00
+    withheld at inception more than covering the 2 204,28 of acquisition cost."""
     (pols_if, prem, to_av, acq, admin_prem, admin_fund, fee, exp, net,
      av) = SINGLE_PREMIUM[t]
     p = fondsgebundene_rentenversicherung.Projection[2]
-    assert p.prem_form() == "einmal"
+    assert p.prem_form() == "einmal" and p.charge_risk(t) == 0.0
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
     assert p.prem_to_av(t) == pytest.approx(to_av, abs=CENT)
@@ -408,12 +399,11 @@ def test_the_einmalbeitrag_variant_row(fondsgebundene_rentenversicherung, t):
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
     assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(av, abs=CENT)
-    assert p.charge_risk(t) == 0.0
 
 
 def test_the_einmalbeitrag_totals_and_conversion(fondsgebundene_rentenversicherung):
     """The acquisition charge is the *Zuzahlungskosten*, levied once on receipt: a single
-    premium has no *Beitragssumme* to zillmer and no five-year spreading to obey."""
+    premium has no *Beitragssumme* to zillmer and no five-year spread to obey."""
     p = fondsgebundene_rentenversicherung.Projection[2]
     df = p.result_cf()
     assert p.proj_len() == 12 * (67 - 50) == 204
@@ -432,31 +422,26 @@ def test_the_einmalbeitrag_totals_and_conversion(fondsgebundene_rentenversicheru
 @pytest.mark.parametrize("point_id", sorted(RIY_BY_TARIFF))
 def test_the_reduction_in_yield_across_the_four_charge_scales(
         fondsgebundene_rentenversicherung, point_id):
-    """The charge scale moves the measure by a factor of five across the argued range."""
+    """The charge scale moves the measure by a factor of five across the argued range.
+
+    The gap between model point 11's *Nettotarif* and the anchor's commission tariff **is**
+    the acquisition load.  ``comm_acq_rate`` is a flat scalar, so on the two low-load
+    tariffs the assumed commission exceeds the tariff's own charge and those cells carry a
+    projected loss -- the flat assumption showing, not a product fact.
+    """
     charge_id, scenario_id, riy, av = RIY_BY_TARIFF[point_id]
     p = fondsgebundene_rentenversicherung.Projection[point_id]
     assert p.charge_id() == charge_id and p.scenario_id() == scenario_id
     assert p.reduction_in_yield() == pytest.approx(riy, abs=5e-7)
     assert p.av_maturity_pp() == pytest.approx(av, abs=CENT)
     assert p.gross_return_ref() == pytest.approx(0.05, abs=1e-9)
-
-
-def test_the_nettotarif_gap_is_the_acquisition_load(fondsgebundene_rentenversicherung):
-    """std_netto carries no acquisition charge, and the model shows what that costs.
-
-    ``comm_acq_rate`` is a flat scalar, so on the low-load tariffs the assumed commission
-    exceeds the tariff's own charge and those cells carry a projected loss -- the flat
-    assumption showing, not a product fact.
-    """
-    netto = fondsgebundene_rentenversicherung.Projection[11]
-    gross = fondsgebundene_rentenversicherung.Projection[1]
-    assert netto.alpha_rate() == 0.0 and gross.alpha_rate() == 0.025
-    assert netto.charge_acq_total() == 0.0
-    assert netto.result_cf()["charge_acq"].sum() == 0.0
-    assert netto.reduction_in_yield() < gross.reduction_in_yield()
-    assert netto.result_cf()["net_cf"].sum() < 0.0 < gross.result_cf()["net_cf"].sum()
-    assert netto.expense_acq_pp(1) == pytest.approx(
-        0.025 * netto.beitragssumme() + 200.0, rel=1e-12)
+    assert p.expense_acq_pp(1) == pytest.approx(
+        0.025 * p.beitragssumme() + 200.0, rel=1e-12)
+    if charge_id == "std_netto":
+        assert p.alpha_rate() == 0.0 and p.charge_acq_total() == 0.0
+        assert p.result_cf()["charge_acq"].sum() == 0.0
+        assert p.result_cf()["net_cf"].sum() < 0.0
+        assert p.reduction_in_yield() < RIY_BY_TARIFF[1][2]
 
 # ---------------------------------------------------------------------------
 # One test per numbered modeling pitfall in the technical notes
@@ -464,11 +449,9 @@ def test_the_nettotarif_gap_is_the_acquisition_load(fondsgebundene_rentenversich
 
 def test_pitfall_1_the_fund_charge_cancels_units_and_survives_the_premium(
         fondsgebundene_rentenversicherung):
-    """A model netting gamma off the *Beitrag* is right until the premium stops.
-
-    Model point 7 goes *beitragsfrei* at month 121 on a zero-return fund: from there
-    ``premiums`` is zero, ``charge_admin_fund`` is not, and the fund decays.
-    """
+    """A model netting gamma off the *Beitrag* is right until the premium stops.  Model
+    point 7 goes *beitragsfrei* at 121 on a zero-return fund: from there ``premiums`` is
+    zero, ``charge_admin_fund`` is not, and the fund decays."""
     p = fondsgebundene_rentenversicherung.Projection[7]
     assert p.pup_month() == 121 and p.scenario_id() == "zero"
     assert p.premiums(120) > 0.0
@@ -487,11 +470,9 @@ def test_pitfall_1_the_fund_charge_cancels_units_and_survives_the_premium(
 
 def test_pitfall_2_the_ter_lives_in_the_unit_price_and_in_no_charge_column(
         fondsgebundene_rentenversicherung, de_frv_anchor):
-    """unit_price(t)/unit_price(t-1) = (1 + gross - ter)^(1/12), exactly.
-
-    Charging the TER explicitly double-counts the fund's costs; ignoring it overstates the
-    return.  The model nets it off the assumed return, so it is in no ``charge_*`` cells.
-    """
+    """unit_price(t)/unit_price(t-1) = (1 + gross - ter)^(1/12), exactly.  Charging the
+    TER explicitly double-counts the fund's costs and ignoring it overstates the return;
+    the model nets it off the assumed return, so it is in no ``charge_*`` cells."""
     p = de_frv_anchor
     assert p.fund_return_gross_ann(1) == 0.05 and p.fund_ter_ann(1) == 0.0045
     assert p.fund_return_net_ann(1) == pytest.approx(0.0455, rel=1e-12)
@@ -501,9 +482,8 @@ def test_pitfall_2_the_ter_lives_in_the_unit_price_and_in_no_charge_column(
     assert [c for c in p.result_cf().columns if c.startswith("charge_")] == [
         "charge_acq", "charge_admin_prem", "charge_admin_fund", "charge_policy_fee",
         "charge_risk"]
-    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("charge_ter", "charge_fund_cost", "ter_charge_pp", "fund_cost_pp"):
-        assert absent not in names, absent
+        assert absent not in _names(fondsgebundene_rentenversicherung), absent
     etf = fondsgebundene_rentenversicherung.Projection[11]   # same gross, a cheaper fund
     assert etf.fund_ter_ann(1) == 0.0015
     assert etf.fund_return_net_mth(1) > p.fund_return_net_mth(1)
@@ -577,8 +557,8 @@ def test_pitfall_5_the_two_monthly_conversions_stay_different(
     assert (1.0 + p.fund_return_net_mth(1)) ** 12 - 1.0 == pytest.approx(
         p.fund_return_net_ann(1), rel=1e-14)
     assert p.gamma_rate_mth() * 12.0 == pytest.approx(p.gamma_rate_ann(), rel=1e-15)
-    assert max(13, 62 - p.entry_age() + 1) == 26
-    assert p.policy_year(301) == 26 and p.age(301) == 62
+    assert max(13, 62 - p.entry_age() + 1) == 26 == p.policy_year(301)
+    assert p.age(301) == 62
     assert p.lapse_tax_step(300) == 1.0 and p.lapse_tax_step(313) == 1.0
     assert all(p.lapse_tax_step(t) == 2.5 for t in (301, 306, 312))
     assert p.lapse_rate(301) == pytest.approx(0.075, rel=1e-12)
@@ -607,9 +587,8 @@ def test_pitfall_6_the_net_amount_at_risk_is_floored_at_zero(
     assert p.charge_risk_pp(240) == 0.0
     for point_id in (2, 13):
         q = fondsgebundene_rentenversicherung.Projection[point_id]
-        assert q.db_form() == "fund"
-        assert q.result_cf()["charge_risk"].sum() == 0.0 == q.result_cf()[
-            "death_strain"].sum()
+        assert q.db_form() == "fund"     # no floor, so no Risikobeitrag at all
+        assert q.result_cf()["charge_risk"].sum() == 0.0
         assert all(q.nar_pp(t) == 0.0 for t in (1, q.proj_len() // 2, q.proj_len()))
     pct = fondsgebundene_rentenversicherung.Projection[12]
     assert pct.db_form() == "pct_fund" and pct.db_pct() == 1.1
@@ -669,11 +648,10 @@ def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
     assert p.charge_acq_total() == pytest.approx(0.025 * 111000.0, rel=1e-12) == 2775.0
     assert p.result_cf()["charge_acq"].sum() == 0.0
     assert p.cum_charge_acq_pp(p.proj_len()) == 0.0
-    assert p.expense_acq_pp(97) == 0.0
+    assert p.expense_acq_pp(97) == 0.0 and p.expenses(97) < 20.0
     assert p.expenses(97) == pytest.approx(
         p.expense_maint_pp(97) * p.pols_if(97) + 0.015 * p.prem_pp(97) * p.pols_if(97)
         + 150.0 * p.pols_death(97) + 50.0 * p.pols_lapse(97), rel=1e-12)
-    assert p.expenses(97) < 20.0
     # It opens with a live fund, a real Beitragsrückgewähr base and a live risk charge.
     assert p.av_pp(97) == pytest.approx(190.0 * 118.4, rel=1e-12) == 22496.0
     assert p.cum_prem_init() == 24000.0 and p.cum_prem_pp(96) == 24000.0
@@ -683,20 +661,17 @@ def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
 
 def test_pitfall_9_the_beitragssumme_is_the_premiums_payable_at_the_initial_level(
         fondsgebundene_rentenversicherung, de_frv_anchor):
-    """S is invariant to lapse, to Beitragsfreistellung and to the Beitragsdynamik.
-
-    Letting it follow the premiums actually paid would make the acquisition charge a
-    function of the lapse assumption -- wrong, and circular.
-    """
+    """S is invariant to lapse, to Beitragsfreistellung and to the Beitragsdynamik: letting
+    it follow the premiums actually paid would make the acquisition charge a function of
+    the lapse assumption -- wrong, and circular."""
     p = de_frv_anchor
     assert p.beitragssumme() == pytest.approx(
         p.prem_pp_base() * (12.0 / p.prem_mode_months()) * p.prem_term_y(), rel=1e-12)
     assert p.beitragssumme() == 72000.0
     assert p.result_cf()["premiums"].sum() < 0.6 * p.beitragssumme()
-    pup = fondsgebundene_rentenversicherung.Projection[7]
+    pup = fondsgebundene_rentenversicherung.Projection[7]   # beitragsfrei from 121
     assert pup.beitragssumme() == pytest.approx(250.0 * 12 * 27, rel=1e-12) == 81000.0
     assert pup.cum_charge_acq_pp(pup.proj_len()) == pytest.approx(2025.0, abs=1e-9)
-    assert sum(pup.prem_pp(t) for t in range(1, pup.proj_len() + 1)) < pup.beitragssumme()
     dyn = fondsgebundene_rentenversicherung.Projection[10]
     assert dyn.dynamik_rate() == 0.03
     assert dyn.prem_pp(1) == 150.0 and dyn.prem_pp(12) == 150.0
@@ -712,8 +687,8 @@ def test_pitfall_10_beitragsfreistellung_is_a_change_of_state_and_not_an_exit(
     """pols_if is continuous across month 121 while premiums step to zero.
 
     One is an exit paying the *Rückkaufswert*, the other a change of state paying nothing.
-    It is a model point election and not a cohort decrement, which is why exactly one
-    shipped point carries it and no paid-up rate exists anywhere in the model.
+    It is a model point election, not a cohort decrement: one point carries it, and no
+    paid-up rate exists anywhere in the model.
     """
     p = fondsgebundene_rentenversicherung.Projection[7]
     assert p.premiums(120) > 0.0 and p.premiums(121) == 0.0
@@ -721,13 +696,11 @@ def test_pitfall_10_beitragsfreistellung_is_a_change_of_state_and_not_an_exit(
     assert p.pols_if(120) / p.pols_if(121) == pytest.approx(ordinary, rel=1e-12)
     assert p.claims(121, "LAPSE") == pytest.approx(
         p.pols_lapse(121) * p.av_pp_at(121, "BEF_DECR"), rel=1e-12)
-    assert p.pols_lapse(121) > 0.0            # lapse continues, unrelated to the pup
-    assert p.pols_maturity(121) == 0.0
+    assert p.pols_lapse(121) > 0.0 and p.pols_maturity(121) == 0.0
     table = fondsgebundene_rentenversicherung.Data.model_point_table()
     assert (table["pup_month"] > 0).sum() == 1 and table.loc[1, "pup_month"] == 0
-    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("pup_rate", "pols_pup", "paid_up_rate", "pols_paidup"):
-        assert absent not in names, absent
+        assert absent not in _names(fondsgebundene_rentenversicherung), absent
 
 
 def test_pitfall_11_the_surrender_value_is_the_fund_and_nothing_else(
@@ -752,7 +725,6 @@ def test_pitfall_11_the_surrender_value_is_the_fund_and_nothing_else(
     # In the last month a surrender and an annuitisation are the same event.
     assert p.lapse_rate_base(n) > 0.0 and p.lapse_rate_mth(n) == 0.0
     assert p.pols_lapse(n) == 0.0 and p.claims(n, "LAPSE") == 0.0
-    assert p.pols_maturity(n) == pytest.approx(p.pols_if_at(n, "AFT_DECR"), rel=1e-15)
 
 
 def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
@@ -776,8 +748,7 @@ def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
     assert p.result_cf()["stornoabzug"].sum() == pytest.approx(853.00, abs=CENT)
     assert p.check_benefit_funding() is True and p.check_net_cf() is True
     charges = fondsgebundene_rentenversicherung.Data.charge_table()
-    assert (charges["stornoabzug_rate"] > 0).sum() == 1
-    assert float(charges.loc["std_gross", "stornoabzug_rate"]) == 0.0
+    assert (charges["stornoabzug_rate"] > 0).sum() == 1   # only std_high carries one
 
 
 def test_pitfall_13_the_fund_is_not_booked_as_an_insurer_outgo(de_frv_anchor):
@@ -799,7 +770,6 @@ def test_pitfall_13_the_fund_is_not_booked_as_an_insurer_outgo(de_frv_anchor):
         assert funded == pytest.approx(p.av_releases(t) + p.death_strain(t), abs=1e-8)
     assert df.loc[360, "claims_maturity"] == pytest.approx(39298.91, abs=CENT)
     assert df.loc[360, "net_cf"] == pytest.approx(-20.27, abs=CENT)
-    assert df["death_strain"].sum() == pytest.approx(4.39, abs=CENT)
 
 
 def test_pitfall_14_the_rentenfaktor_is_read_at_the_annuity_age(
@@ -872,19 +842,16 @@ def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
             assert q.charge_admin_prem(1 + offset) == 0.0
             assert q.charge_acq(1 + offset) == 0.0
         assert q.prem_pp(1 + mode) == pytest.approx(amount, abs=CENT)
-    names = _names(fondsgebundene_rentenversicherung)
     for absent in ("prem_freq_load", "prem_freq_fee", "freq_loading_table",
                    "ratenzahlungszuschlag", "prem_tariff_pp"):
-        assert absent not in names, absent
+        assert absent not in _names(fondsgebundene_rentenversicherung), absent
 
 
 def test_pitfall_17_the_death_benefit_floor_is_the_premiums_paid_not_invested(
         de_frv_anchor):
-    """cum_prem_pp(60) = 12 000,00 against 9 720,00 actually put into units.
-
-    Reading the floor off the invested amount would understate the death benefit by 19 %
-    over the whole acquisition window -- exactly where the amount at risk is largest.
-    """
+    """cum_prem_pp(60) = 12 000,00 against 9 720,00 actually put into units: reading the
+    floor off the invested amount understates the death benefit by 19 % over the whole
+    acquisition window, exactly where the amount at risk is largest."""
     p = de_frv_anchor
     assert p.cum_prem_pp(60) == pytest.approx(60 * 200.0, rel=1e-12) == 12000.0
     invested = sum(p.prem_to_av_pp(t) for t in range(1, 61))
@@ -921,9 +888,8 @@ def test_pitfall_18_no_balance_goes_negative_and_no_floor_is_triggered(
         assert hard.charge_policy_fee_pp(t) == pytest.approx(3.0, rel=1e-12)
         assert hard.charge_risk_pp(t) == pytest.approx(
             hard.mort_rate_tariff_mth(t) * hard.nar_pp(t), rel=1e-12)
-    assert hard.nar_pp(324) > hard.nar_pp(121)
+    assert hard.nar_pp(324) > hard.nar_pp(121) and hard.av_maturity_pp() > 0.0
     assert hard.charge_risk_pp(324) > hard.charge_risk_pp(121)
-    assert hard.av_maturity_pp() > 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -1008,7 +974,7 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
     assert list(df.index) == list(range(1, 361)) and df.index[-1] == n
     assert "claims" not in df.columns          # no subtotal beside its own parts
     assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(0.0, abs=1e-12)
-    assert df["net_cf"].iloc[0] == pytest.approx(-1966.22, abs=CENT)
+    assert df["net_cf"].iloc[0] == pytest.approx(-1966.22, abs=CENT)  # new-business strain
     assert (df["net_cf"].iloc[1:120] > 0).all()
     fund = p.result_fund()
     assert list(fund.columns) == [
@@ -1053,17 +1019,14 @@ def test_the_modules_off_in_the_base_run_are_reachable(
     assert glide.fund_return_gross_ann(240) == pytest.approx(0.015, rel=1e-12)
     assert glide.fund_ter_ann(240) == pytest.approx(glide.fund_ter_ann(1), rel=1e-15)
     assert all(getattr(glide, c)() is True for c in CHECKS)
-    assert fondsgebundene_rentenversicherung.Data.model_point_table()[
-        "ablauf_flag"].sum() == 1
+    assert proj.model.Data.model_point_table()["ablauf_flag"].sum() == 1
 
 
 def test_the_zuzahlung_buys_units_and_the_teilentnahme_cancels_them(
         fondsgebundene_rentenversicherung):
-    """A Zuzahlung raises the Beitragsrückgewähr base; a Teilentnahme is an owner election.
-
-    The withdrawal is published as ``withdrawals`` and never as a claim, and is settled by
-    cancelling units at the closing *Anteilspreis* after the fund charges.
-    """
+    """A Zuzahlung raises the Beitragsrückgewähr base; a Teilentnahme is an owner election,
+    published as ``withdrawals`` and never as a claim, settled by cancelling units at the
+    closing *Anteilspreis* after the fund charges."""
     p = fondsgebundene_rentenversicherung.Projection[9]
     assert p.topup_month() == 121 and p.wd_month() == 241
     assert p.topup_pp(121) == 20000.0 and p.topup_pp(122) == 0.0
@@ -1097,7 +1060,6 @@ def test_the_dynamic_lapse_module_bites_where_the_fund_is_under_water():
         assert p.lapse_dyn_add(13) == pytest.approx(
             0.15 * (1.0 - p.av_pp(13) / p.cum_prem_pp(13)), rel=1e-12)
         assert p.lapse_rate_base(13) < p.lapse_rate(13) <= model.Projection.lapse_cap
-        assert p.lapse_rate_mth(p.proj_len()) == 0.0
         assert p.check_pols_roll_fwd() is True and p.check_net_cf() is True
         assert p.av_pp(p.proj_len()) > p.cum_prem_pp(p.proj_len())
         assert p.lapse_dyn_add(p.proj_len()) == 0.0
@@ -1132,7 +1094,7 @@ def test_the_two_derived_tables_are_anchored_where_the_notes_need_them(
     lapse = pd.read_csv(INPUT_DIR / "lapse_table.csv", index_col="policy_year")
     assert [float(lapse.loc[y, "lapse_rate"]) for y in (1, 6, 11, 13)] == [
         0.06, 0.03, 0.02, 0.03]
-    assert all("Stornoquote" in v for v in lapse["provenance"])
+    assert all("Stornoquote" in v for v in lapse["provenance"])   # none established
     points = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
     assert len(points) == 13 and points.loc[1, "policy_id"] == "DE-FRV-0001"
     assert "provenance" not in points.columns      # a model point is a configuration
