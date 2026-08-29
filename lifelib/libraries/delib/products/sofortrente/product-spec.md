@@ -105,27 +105,25 @@ the effective cap on a new tariff's technical rate [REG-R8] [REG-R14] — fell f
 **0,25 %** and rose to **1,00 % on 1 January 2025**, the first increase since 1994 [REG-R15]; the
 DAV recommended 1,0 % again for 2026 and 2027 [R8] [REG-R56]. For a deferred contract the rate
 matters over a thirty-year accumulation; for a *Sofortrente*, **the rate at which the tariff is
-struck fixes the buyer's whole income, permanently, on the day of purchase**. On the [std]
-arithmetic below that step is worth about **+10 %** on the guaranteed annuity at 65 and **+12 %**
-at 60, tapering to **+6 %** at 80. The direction falls out of the tariff formula [S6] and the
-statutory rate history [REG-R15]; **the magnitude is constructed, not observed** (gap 5).
+struck fixes the buyer's whole income, permanently, on the day of purchase** — worth about
+**+10 %** on the guaranteed annuity at 65 and **+12 %** at 60, tapering to **+6 %** at 80 on the
+[std] arithmetic below. The direction falls out of the tariff formula [S6] and the statutory rate
+history [REG-R15]; **the magnitude is constructed, not observed** (gap 5).
 
 **What it is bought against.** The standard German comparator is a ***Bankauszahlplan***: the same
-capital held at a bank and drawn down until exhausted. Three limbs, and only the third is usually
-put honestly. The payout plan **ends** — 100 000 € drawn at 400 € a month at 2 % is exhausted after
-26,9 years, at about age 92 **[std]** (14) — whereas the annuity does not. The annuity is taxed on
-18 % of each instalment [R13] while the plan's interest is taxable in full, so any gross comparison
-misleads. And the annuitant gives up the capital irreversibly and does badly by dying early. The
-honest framing: a *Sofortrente* **is insurance against outliving one's money, priced like
-insurance** — most buyers "lose", and the ones who need it are made whole.
+capital drawn down at a bank until exhausted. The plan **ends** — 100 000 € drawn at 400 € a month
+at 2 % is exhausted after 26,9 years, at about age 92 **[std]** (14) — whereas the annuity does
+not; the annuity is taxed on 18 % of each instalment [R13] while the plan's interest is taxable in
+full, so any gross comparison misleads; and the annuitant gives up the capital irreversibly and
+does badly by dying early. The honest framing: a *Sofortrente* **is insurance against outliving
+one's money, priced like insurance** — most buyers "lose", and the ones who need it are made whole.
 
 **One market fact that does not apply here.** The classic **deferred** annuity was withdrawn by
 Debeka in 2016 and by Allianz, Zurich and Generali before it, in favour of partial-guarantee
 hybrids [S7] [S8]. **No equivalent retreat from the immediate annuity was established**, and there
 is a structural reason not to expect one: the objection to the deferred contract was a thirty-year
 interest guarantee, whereas an immediate annuity's guarantee is short-dated in interest terms and
-its real risk is longevity, which no alternative design removes. That is an argument, not a
-finding, and must not be asserted downstream as market fact (gap 14).
+its real risk is longevity, which no design removes. An argument, not a finding (gap 14).
 
 ---
 
@@ -160,32 +158,31 @@ range is a weaker object than a **[std]** with one.
 | *Rechnungszins* | **1,00 %** for a 2025 or 2026 contract, at or below the *Höchstrechnungszins* of the contract's own vintage | [REG-R14] [REG-R15]; below-cap pricing observed [S6] |
 | Anchor model cell | 100 000 €, annuitant male aged 65 (born 1960), inception 2025, *Rechnungszins* 1,00 %, *Rentengarantiezeit* 10 years, monthly *vorschüssig*, *teildynamische Überschussrente* | **[std]** (5) |
 
-1. **Nothing was established about entry ages at any carrier.** The product is sold at and around
-   retirement, with a typical window in the sixties and issue into the eighties at some carriers,
-   all [unverified]. **60 to 85** is adopted because below 60 the *Ertragsanteil* is high enough
-   (22 % at 60 against 18 % at 65 [REG-R41]) to weaken the tax case the product exists for, and
-   above 85 the *Rentengarantiezeit* options collapse — a 20-year guarantee at 85 costs a quarter
-   of the annuity on the arithmetic below. The boundaries claim to be no carrier's.
+1. **Nothing was established about entry ages at any carrier**; a typical window in the sixties
+   and issue into the eighties are [unverified]. **60 to 85** is adopted because below 60 the
+   *Ertragsanteil* is high enough (22 % at 60 against 18 % at 65 [REG-R41]) to weaken the tax case
+   the product exists for, and above 85 the *Rentengarantiezeit* options collapse — a 20-year
+   guarantee at 85 costs a quarter of the annuity. The boundaries claim to be no carrier's.
 2. **Nothing was established.** The convention is a five-figure minimum, because the fixed
    per-policy administration cost would swamp a small annuity, with an upper limit set by
-   reinsurance rather than tariff. **100 000 €** is chosen because it is the unit German annuities
-   are quoted in — *Rente je 100 000 € Einmalbeitrag*, not the *Rentenfaktor* per 10 000 € the
-   deferred market uses — so it is the figure a reader can compare against any quotation they find.
+   reinsurance rather than tariff. **100 000 €** is the unit German annuities are quoted in —
+   *Rente je 100 000 € Einmalbeitrag*, not the *Rentenfaktor* per 10 000 € the deferred market
+   uses — so it is what a reader can compare against any quotation they find.
 3. The variant exists but **no carrier's terms, minimum, maximum or deferment death benefit were
-   established** (gap 17). The representative design takes **0**, which is what makes the contract
-   a *Sofortrente* rather than a single-premium deferred annuity, and carries the deferment as a
+   established** (gap 17). The representative design takes **0** — which is what makes the contract
+   a *Sofortrente* rather than a single-premium deferred annuity — and carries the deferment as a
    model-point column so it can be switched on.
 4. A *Sofortrente* is normally written **without medical underwriting**, because the exposure runs
    the wrong way: medical evidence would be used by the applicant, not the insurer, so the
    selection sits in the tariff margin rather than in an individual assessment. **No source states
    this**, hence [unverified]. Its converse, the impaired-life *enhanced annuity*, is **not
-   established to exist in the German retail market** and nothing here asserts it does. § 19 VVG's
-   *Anzeigepflicht* [REG-R30] is inert where the insurer asks nothing.
-5. Age 65 is the age at which the corroborated *Ertragsanteil* applies [R13] and at which the
-   [std] annuity table is anchored. The 10-year guarantee sits inside the market's typical band —
-   15 years for retirement ages 61–70, 10 years for 71 and above, most choosing 10 to 20 [R23] —
-   at the shorter end, so the certain window is visible inside a readable worked-example table.
-   The 2025 inception puts the cell on the current 1,00 % *Höchstrechnungszins* [REG-R15].
+   established to exist in the German retail market**. § 19 VVG's *Anzeigepflicht* [REG-R30] is
+   inert where the insurer asks nothing.
+5. Age 65 is where the corroborated *Ertragsanteil* applies [R13] and where the [std] annuity
+   table is anchored. The 10-year guarantee sits inside the market's typical band — 15 years for
+   retirement ages 61–70, 10 years for 71 and above, most choosing 10 to 20 [R23] — at the shorter
+   end, so the certain window fits a readable worked-example table. The 2025 inception puts the
+   cell on the current 1,00 % *Höchstrechnungszins* [REG-R15].
 
 ### Premiums — the *Einmalbeitrag*
 
@@ -204,21 +201,20 @@ range is a weaker object than a **[std]** with one.
    VVG-InfoV [REG-R31], not a *Renditeminderung* under PRIIPs [REG-R32] (gap 8). The product has
    exactly three charge points, fewer than any other delib product: an acquisition charge on the
    *Einmalbeitrag*, taken once; a running loading on each annuity payment, covering the payment
-   run, the annual *Standmitteilung* [REG-R25] and proof of life; and an implicit margin inside
-   the *Rechnungsgrundlagen*, since pricing at 0 % when the cap is 1,00 % [S6] [REG-R14] is a
-   charge in economic substance whatever a document calls it. α = 2,5 % is argued from a
-   single-premium annuity's cost base being a one-off commission plus issue expense, materially
-   below the *Zillmerung* of a recurring-premium contract; β = 2,0 % from a per-policy running cost
-   roughly constant in euros — which is why 2 % is of the right order on a 100 000 € case and too
-   small on a 25 000 € one, itself the reason minimum *Einmalbeiträge* exist. **Both are the
-   modeller's view with no observed range, because nothing was observed.** The only market
-   benchmark that exists is an insurer-level *Verwaltungskostenquote* of **2,4 %** on one
-   measurement and **2,19 %** on another, spread from under 2 % to over 4 % [REG-R53] — a ratio on
-   premium income, not a product charge, and it bounds nothing here.
-7. Whether German carriers permit a *Zuzahlung* after inception **was not established**.
-   Economically a top-up is a second annuity purchase at the then-current tariff, and the
-   representative design treats it that way by excluding it: a second *Einmalbeitrag* is a second
-   model point.
+   run, the annual *Standmitteilung* [REG-R25] and proof of life; and an implicit margin inside the
+   *Rechnungsgrundlagen*, since pricing at 0 % when the cap is 1,00 % [S6] [REG-R14] is a charge in
+   economic substance whatever a document calls it. α = 2,5 % is argued from a single-premium
+   annuity's cost base being a one-off commission plus issue expense, materially below the
+   *Zillmerung* of a recurring-premium contract; β = 2,0 % from a per-policy running cost roughly
+   constant in euros — which is why 2 % is of the right order on a 100 000 € case and too small on
+   a 25 000 € one, itself the reason minimum *Einmalbeiträge* exist. **Both are the modeller's view
+   with no observed range, because nothing was observed.** The only market benchmark is an
+   insurer-level *Verwaltungskostenquote* of **2,4 %** on one measurement and **2,19 %** on
+   another, spread from under 2 % to over 4 % [REG-R53] — a ratio on premium income, not a product
+   charge, and it bounds nothing here.
+7. Whether carriers permit a *Zuzahlung* after inception **was not established**. Economically a
+   top-up is a second annuity purchase at the then-current tariff, and the representative design
+   treats it that way by excluding it: a second *Einmalbeitrag* is a second model point.
 
 ### Benefit provisions
 
@@ -249,12 +245,12 @@ range is a weaker object than a **[std]** with one.
    difference from a single convention. *Vorschüssig* is adopted **[std]** because it is the German
    market convention for annuities in payment and because every arithmetic in the research file
    uses an annuity-due, but it is a convention stated as one, not a finding (gap 11). The first
-   payment date convention — the day the *Einmalbeitrag* is received against the first of the
-   following month — was likewise not established.
+   payment date — the day the *Einmalbeitrag* is received against the first of the following
+   month — was likewise not established.
 9. **Whether the refund counts the *guaranteed* or the *total* annuity paid is a live contractual
    question, not established at any carrier**, and the readings diverge materially over twenty
    years. The representative design measures it against the **guaranteed** annuity, on the argument
-   that a guaranteed benefit cannot be defined by reference to a discretionary quantity. That is a
+   that a guaranteed benefit cannot be defined by reference to a discretionary quantity — a
    modeller's argument, not a carrier's clause (gap 10).
 
 ### Underwriting and rating
@@ -281,20 +277,18 @@ a forty-year annuity understates the liability by a margin that dwarfs every oth
 the model [REG-R49]; the **first-order margin in both dimensions**, level and trend [REG-R47]; and
 the *Altersverschiebung* convention [R10]. Destatis's *Generationensterbetafeln für Deutschland*
 are the free, redistributable public analogue and the intended base for a replacement [REG-R52].
-
-**DAV 2004 R-Bestand.** DAV 2004 R is the **new-business** table; the *Bestand* variant is the
-table for the **existing annuity book** [R11] [REG-R49]. **Nothing beyond the pairing was
-established** — not the difference in level, trend, age range or application rule — and nothing
-about it may be asserted downstream (gap 12). It matters nonetheless: a *Sofortrente* is priced
-once on the new-business table and then spends thirty years in the *Bestand*.
+DAV 2004 R is the **new-business** table and the *Bestand* variant that for the **existing annuity
+book** [R11] [REG-R49]; **nothing beyond the pairing was established**, and nothing about it may be
+asserted downstream (gap 12) — though it matters here, a *Sofortrente* being priced once on the
+new-business table and then spending thirty years in the *Bestand*.
 
 **The unisex tension bites harder here than on any other delib product.** German annuity tables are
-built sex-distinctly while a tariff sold since 21 December 2012 must be unisex [REG-R34]
-[REG-R49]. A *Sofortrente* is the purest longevity bet in the market and female annuitants are
-materially longer-lived, so a unisex tariff on sex-distinct tables must be struck on an **assumed
-portfolio sex mix no insurer publishes**. Two consequences: the realised mix drives the
-*Risikoergebnis* the MindZV then shares [REG-R18]; and the reference implementation's decrement
-table is a **unisex [std] proxy** with a stated mix assumption, described as one (gap 13).
+built sex-distinctly while a tariff sold since 21 December 2012 must be unisex [REG-R34] [REG-R49].
+A *Sofortrente* is the purest longevity bet in the market and female annuitants are materially
+longer-lived, so a unisex tariff on sex-distinct tables must be struck on an **assumed portfolio
+sex mix no insurer publishes**. Two consequences: the realised mix drives the *Risikoergebnis* the
+MindZV then shares [REG-R18]; and the reference implementation's decrement table is a **unisex
+[std] proxy** with a stated mix assumption, described as one (gap 13).
 
 ### Charges
 

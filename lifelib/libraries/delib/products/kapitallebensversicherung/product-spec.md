@@ -65,43 +65,41 @@ make the German chassis what it is, and each changes the shape of the projected 
    located is participating [S3] [S7] [S9] [S11].
 2. **The surplus is declared as a percentage of the contract's own reserve.** *Zinsüberschussanteile*
    and *Schlussüberschussanteile* are each fixed as a percentage of the *Deckungskapital* calculated
-   at the allocation date [S3], the allocation falls at the *Bilanzstichtag* of 31 December [S9],
-   and the allocated amounts are booked into the *Deckungskapital* [S9]. The reserve is thus both
-   the base of the declaration and its destination. This is the single most useful mechanical fact
-   in the corpus, and it is what a projection has to get right.
+   at the allocation date [S3], the allocation falls at the *Bilanzstichtag* of 31 December [S9], and
+   the allocated amounts are booked into the *Deckungskapital* [S9] — so the reserve is both the base
+   of the declaration and its destination. This is the single most useful mechanical fact in the
+   corpus and it is what a projection has to get right.
 3. **The reserve is normally *gezillmert*, so it is negative in the early years.** *Zillmerung*
    reduces the *Deckungskapital* by the present value of the acquisition costs not yet recovered
    [R28], and § 4 DeckRV caps the *Zillmersatz* at **25 ‰ — 2,5 % — of the *Beitragssumme***, cut
    from 40 ‰ by the LVRG with effect from 1 January 2015 [R7] [S15] [REG-R16] [REG-R20]. That
-   negative early reserve is precisely why § 169 Abs. 3 VVG needs a *Mindestrückkaufswert* [R2]
-   [R28].
+   negative early reserve is why § 169 Abs. 3 VVG needs a *Mindestrückkaufswert* [R2] [R28].
 4. **The guarantee travels with the contract, not with the calendar.** The *Rechnungszins* is fixed
    at conclusion and stays with the contract for its whole term [REG-R14], so a German endowment
    book is a stack of cohorts running from **4,00 %** (July 1994 to June 2000) down to **0,25 %**
    (2022 to 2024) and back up to **1,00 %** from 1 January 2025 — the first increase in about thirty
    years [REG-R15] [R7] [R15]. The *Sicherungsbedarf* machinery of § 139 VAG exists because of the
-   top of that range [R8] [REG-R9], and the *Zinszusatzreserve* exists for the same reason
-   [REG-R17].
+   top of that range [R8] [REG-R9], and the *Zinszusatzreserve* for the same reason [REG-R17].
 
 **Market role: a large in-force book with a thin new-business layer.** Allianz says of its own
 historic flagship that it "is rarely newly concluded today, because modern annuity insurance
 typically offers better flexibility and earnings opportunities" [S11]; the trade characterisation
 of the segment for 2026 is *"Klassik wird zur Nische"* [R26]; and Assekurata reports business
-shifting to capital-market-linked products with fewer guarantees even as surplus participation
-edges up [R25]. **No quantification of the shift was established**: GDV publishes new-business
+shifting to capital-market-linked products with fewer guarantees even as surplus participation edges
+up [R25]. **No quantification of the shift was established**: GDV publishes new-business
 *Beitragssumme* and Annual Premium Equivalent series [R21], but no endowment-specific figure and no
 time series showing the effect of the 1 January 2005 *Alterseinkünftegesetz* boundary was returned
-by any search, so the market-role argument here is qualitative and is labelled as such. For scale
-on the whole German life market, 2024 premium income on the GDV basis was **+2,8 % to 94,6 Mrd €**
-with *laufende Beiträge* of **66,3 Mrd €** roughly flat, *Einmalbeitragsgeschäft* about **+10 % to
-28 Mrd €**, and a contract count **−1,4 % to 80,3 Mio**; the GDV taxonomy's *Kapitalversicherungen*
-line is this product, and the BaFin basis gives life-segment *verdiente Bruttobeiträge* of
-**90,4 Mrd €** for the same year on a different population, so the two must never appear in the
-same table [REG-R53]. Lapse is high and rising: the GDV headline *Stornoquote* was **2,72 % in
-2024** against **2,56 % in 2023**, on the measure counting contracts terminated early, surrendered
-**or converted to *beitragsfrei***, while a second GDV measure by number of contracts gives
-**1,2 %** for the same year [R20] — irreconcilable from the search evidence, both recorded, neither
-endowment-specific, neither by duration, and the 2024 figure an eight-year high [R26].
+by any search, so the market-role argument here is qualitative and is labelled as such. For scale,
+2024 German life premium income on the GDV basis was **+2,8 % to 94,6 Mrd €** with *laufende
+Beiträge* of **66,3 Mrd €** roughly flat, *Einmalbeitragsgeschäft* about **+10 % to 28 Mrd €** and a
+contract count **−1,4 % to 80,3 Mio**; the GDV taxonomy's *Kapitalversicherungen* line is this
+product, and the BaFin basis gives life-segment *verdiente Bruttobeiträge* of **90,4 Mrd €** for the
+same year on a different population, so the two must never appear in the same table [REG-R53]. Lapse
+is high and rising: the GDV headline *Stornoquote* was **2,72 % in 2024** against **2,56 % in 2023**,
+on the measure counting contracts terminated early, surrendered **or converted to *beitragsfrei***,
+while a second GDV measure by number of contracts gives **1,2 %** for the same year [R20] —
+irreconcilable from the search evidence, both recorded, neither endowment-specific, neither by
+duration, and the 2024 figure an eight-year high [R26].
 
 **The charge level is a supervised parameter, not a free one.** BaFin's *Merkblatt 01/2023 (VA)*
 requires a kapitalbildendes Lebensversicherungsprodukt to offer an appropriate *Kundennutzen*,
@@ -166,26 +164,26 @@ Footnotes to **[std]** rows:
    because *Einmalbeitragsgeschäft* is now roughly 30 % of German life premium income and growing an
    order of magnitude faster than regular premium [REG-R53]; this product's own corpus says nothing
    about single-premium endowment specifically.
-3. **No entry age was established at all**, for any German carrier. 25 to 60 is a modeller's
-   envelope chosen so a 25-year contract issued at the top of it still matures before age 90 and one
-   issued at the bottom still matures after the age-62 tax threshold.
+3. **No entry age was established at all**, for any German carrier. 25 to 60 is a modeller's envelope
+   chosen so a 25-year contract issued at the top still matures before age 90 and one issued at the
+   bottom still matures after the age-62 tax threshold.
 4. The corpus contains an internal contradiction: a "minimum term" of 12 years and one of 3 to 5
    years both appear in the same fused summary, together with the 2,500 / 5,000 EUR minimum sums
-   [S11] [S12] [S13] [S15] group; the second set most likely belongs to a *Sterbegeldversicherung*
-   or a short savings contract the same search matched. The honest reading is that the corpus
-   supports **a long-term contract of the order of two to three decades and nothing finer**. Twelve
-   years is a hard floor because it is the condition of the half-income tax rule [R10] [REG-R45].
+   [S11] [S12] [S13] [S15] group, and the second set most likely belongs to a *Sterbegeldversicherung*
+   or a short savings contract the same search matched. The honest reading is that the corpus supports
+   **a long-term contract of the order of two to three decades and nothing finer**; twelve years is a
+   hard floor because it is the condition of the half-income tax rule [R10] [REG-R45].
 5. See footnote 4 on the provenance of the observed minima. **No maximum *Versicherungssumme* and no
-   premium level of any kind was established.** 50,000 EUR is a round mid-market figure chosen so
-   the *Beitragssumme* over 25 years is of the order of the sum insured, which is what makes the
+   premium level of any kind was established.** 50,000 EUR is a round mid-market figure chosen so the
+   *Beitragssumme* over 25 years is of the order of the sum insured, which makes the
    *Mindesttodesfallschutz* test [R12] visibly non-trivial and the *Zillmerung* visibly material.
 6. Four systems are named — *verzinsliche Ansammlung*, *Bonussystem* (*Summenzuwachs*),
    *Beitragsverrechnung* and *Anlage in Fondsanteilen* — and the corpus says that as a rule "either
    the *verzinsliche Ansammlung* or the *Bonussystem*" applies, **without saying which is more
    common** [R28]; the fourth was not established by any search result and is [unverified]. Debeka's
    own mechanics — surplus declared as a percentage of, and booked into, the *Deckungskapital* [S3]
-   [S9] — are the reserve-crediting form, closest to *verzinsliche Ansammlung*, and that is why it
-   is the base case. **Any statement that one system is "the market default" would be [unverified].**
+   [S9] — are the reserve-crediting form, closest to *verzinsliche Ansammlung*, and that is why it is
+   the base case. **Any statement that one system is "the market default" would be [unverified].**
 7. **No German endowment wording located states an age basis.** Age last birthday is the ordinary
    German convention and is adopted without a citation; the alternative worth naming is
    *versicherungstechnisches Alter*. On an annual grid the choice moves the first-year risk premium
@@ -193,12 +191,12 @@ Footnotes to **[std]** rows:
 8. **Nothing in the corpus establishes a waiting period for an underwritten German endowment**;
    German *Wartezeit* constructions belong to *Sterbegeldversicherung* and simplified-issue covers.
    The only period that operates like one is the **three-year *Selbsttötung* window** of § 161 VVG
-   [R4] [REG-R26], which is a benefit substitution rather than an exclusion and is specified below.
+   [R4] [REG-R26], a benefit substitution rather than an exclusion, specified below.
 9. Issue age 37 with a 25-year term makes the *Ablauf* fall at attained age **62** — the age the
-   half-income tax rule requires for contracts concluded after 31 December 2011 [R10] [REG-R45] —
-   and comfortably exceeds the twelve-year minimum, so the anchor cell is a contract a German buyer
-   would actually have been sold. Twenty-five rows is also a projection a reader can check by hand,
-   which is the second criterion the anchor has to meet.
+   half-income tax rule requires for contracts concluded after 31 December 2011 [R10] [REG-R45] — and
+   comfortably exceeds the twelve-year minimum, so the anchor is a contract a German buyer would
+   actually have been sold; and twenty-five rows is a projection a reader can check by hand, which is
+   the second criterion the anchor has to meet.
 
 ### Premiums
 

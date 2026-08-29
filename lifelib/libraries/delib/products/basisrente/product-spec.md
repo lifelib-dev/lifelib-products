@@ -56,16 +56,14 @@ kapitalisierbar* (not convertible into capital) [R1] [REG-R39]. Everything below
 sentence, and three consequences change the shape of the projected cash flows:
 
 1. **There is no *Rückkaufswert* at any duration.** The § 169 VVG surrender-value regime [R14]
-   [REG-R28] — the *Zeitwert* rule, the *Mindestrückkaufswert*, the requirement that a *Stornoabzug*
-   be agreed, appropriate and quantified — is **inoperative**. The contract has a *Deckungskapital*
-   like any other and **there is no duration at which any part of it is payable to the policyholder
-   as capital**. This is the single most important thing a modeller coming from the delib endowment
-   or Schicht-3 chassis has to unlearn.
+   [REG-R28] is **inoperative**: the contract has a *Deckungskapital* like any other and **there is
+   no duration at which any part of it is payable to the policyholder as capital**. This is the
+   single most important thing a modeller coming from the delib endowment or Schicht-3 chassis has
+   to unlearn.
 2. ***Beitragsfreistellung* is the only exit, and it is not a lapse.** § 165 VVG's right to convert
    to a premium-free contract with a reduced benefit survives intact [R14]; § 168 VVG's termination
-   right survives too but **produces no payment**, so a purported *Kündigung* is administered as a
-   *Beitragsfreistellung*. The policyholder facing a cash crisis has exactly one lever, and the
-   paid-up cohort is a **large permanent part of the book rather than a residue**.
+   right survives too but **produces no payment**. The policyholder facing a cash crisis has exactly
+   one lever, and the paid-up cohort is a **large permanent part of the book, not a residue**.
 3. **Death before *Rentenbeginn* pays nothing in the base design.** *Nicht vererblich* means the
    entitlement forms no part of the estate and may not be directed by will [R1]; with no
    *Hinterbliebenenabsicherung* the reserve is released to the *Versichertengemeinschaft* as a
@@ -130,11 +128,10 @@ to *fondsgebundene* Basisrenten since the *Höchstrechnungszins* fell below 1 % 
 on a Schicht-1 contract nothing stops a writer selling a pure unit-linked policy — because
 § 5a AltZertG **does not import the Riester *Beitragserhaltungsgarantie*** [R9] [R10] [REG-R43]. That
 judgement is [unverified] general knowledge unsupported by any figure in this corpus (gap 3). The
-composite nevertheless models the *klassisch* form, for a stated reason: **the Schicht-1 constraints
-are the subject of this product and they are clearest against a general-account chassis whose reserve
-recursion the library already has**, while the unit-linked machinery is carried by delib product 3
-and the hybrid guarantee mechanics by delib product 4. Modelling the constraints twice would teach
-nothing; modelling them once, cleanly, is the point of this product.
+composite nevertheless models the *klassisch* form: **the Schicht-1 constraints are the subject of
+this product and they are clearest against a general-account chassis whose reserve recursion the
+library already has**, while the unit-linked machinery is carried by delib product 3 and the hybrid
+guarantee mechanics by delib product 4.
 
 ### Product identity and issue rules
 
@@ -238,18 +235,17 @@ Footnotes to **[std]** rows:
 
 12. **No *Rentenfaktor* level, range or time series was established anywhere in the delib corpus**
     (gap 4). The argued plausible band for a *klassisch* tariff converting at 67 is **24 € to 34 €**
-    per month per 10 000 €, with the guaranteed factor at the bottom and the current factor above it.
-    **The guaranteed factor is worth materially more here than on the Schicht-3 sibling**: there, a
+    per month per 10 000 €, guaranteed factor at the bottom and current factor above it. **The
+    guaranteed factor is worth materially more here than on the Schicht-3 sibling**: there a
     policyholder facing a poor conversion can take the *Kapitalwahlrecht* instead; here there is no
-    alternative, so it is the **only** protection against a bad conversion. The § 163 VVG adjustment
-    channel [REG-R27] and the historic *Treuhänderklausel*, both narrowed by the courts [REG-R36],
-    apply as in Schicht 3; delib treats the guaranteed factor as fixed for the life of the contract
-    and records the channel as a model risk.
-13. **No carrier's *Überschussverwendung* option list was established** (gap 17). The argument that
-    *verzinsliche Ansammlung* and *Bonusrente* are the natural *Aufschubphase* forms — because
-    cash-paying systems sit awkwardly with *nicht kapitalisierbar* — is the research file's own
-    inference. The payout-phase choice has a **tax dimension it lacks in Schicht 3**: the
-    *Rentenfreibetrag* is frozen in euro, so every increase in the annuity is fully taxable.
+    alternative, so it is the **only** protection against a bad conversion. The § 163 VVG channel
+    [REG-R27] and the historic *Treuhänderklausel*, both narrowed by the courts [REG-R36], apply as in
+    Schicht 3; delib treats the guaranteed factor as fixed and records the channel as a model risk.
+13. **No carrier's *Überschussverwendung* option list was established** (gap 17); that *verzinsliche
+    Ansammlung* and *Bonusrente* are the natural *Aufschubphase* forms — cash-paying systems sitting
+    awkwardly with *nicht kapitalisierbar* — is the research file's own inference. The payout-phase
+    choice has a **tax dimension it lacks in Schicht 3**: the *Rentenfreibetrag* is frozen in euro, so
+    every increase in the annuity is fully taxable.
 
 ### Underwriting and rating
 
@@ -259,15 +255,10 @@ Footnotes to **[std]** rows:
 | Underwriting of the riders | A *Hinterbliebenenabsicherung* and, decisively, a **BUZ** are fully underwritten, under the §§ 19 ff. VVG *Anzeigepflicht* regime | [R1] [REG-R29] [REG-R30] |
 | Rating factors, main contract | Entry age, deferment term, premium form and frequency, chosen *Rentenbeginn*, option set. **Sex may not be a rating factor** | [R1]; unisex [REG-R34] |
 | Mortality basis | **DAV 2004 R**, a ***Generationentafel*** — mortality by birth cohort, with the improvement trend inside the table rather than applied on top of it. First-order probabilities carry prudential margins and price the contract and the guaranteed *Rentenfaktor*; second order is the best estimate | [R17] [REG-R47] [REG-R49] |
-| Selection | **Lighter than a comparable Schicht-3 portfolio**, because the contract cannot be surrendered or commuted, so a policyholder in poor health has no exit. **No evidence for this was found** | [R17]; **[std]** view (14) |
+| Selection | **Lighter than a comparable Schicht-3 portfolio**, because the contract cannot be surrendered or commuted, so a policyholder in poor health has no exit and nobody leaves the annuitant pool. **No evidence for this was found**; the direction is arguable from the product's own structure, but no German experience study was reached, so it is a stated model risk rather than a parameter this document asserts | [R17]; **[std]** view |
 | Table availability | The DAV tables are the property of the **Deutsche Aktuarvereinigung**, are **not public and are not redistributed by delib** | [R17] [REG-R47] [REG-R49] |
 | Interest basis | The ***Höchstrechnungszins***: **1,00 %** for new business from 1 January 2025, the first increase in about thirty years, recommended at 1,00 % for 2026 | [R16] [REG-R14] [REG-R15] [REG-R56] |
 | Guarantee vintages in force | 2,75 % (2004–2006), 2,25 % (2007–2011), 1,75 % (2012–2014), 1,25 % (2015–2016), 0,90 % (2017–2021), 0,25 % (2022–2024), 1,00 % (from 2025). **The rate applies at conclusion and stays with the contract for its whole term** | [REG-R14] [REG-R15] |
-
-14. A **[std]** view with nothing behind it, and stated as such. The direction is arguable from the
-    product's own structure — the *Kapitalwahlrecht* is what lets an impaired life leave a Schicht-3
-    annuitant pool, and there is no such exit here — but no German experience study was reached. It is
-    a stated model risk, not a parameter this document asserts.
 
 ### Charges
 
@@ -289,24 +280,21 @@ Basisrente-specific points sit on top of it.
 | The one charge datum in the corpus | Total costs relative to the capital formed of **at most 0,95 € per 100 €** in one carrier's BasisRente and RiesterRente variants, and an ***Abschlussprovision* of 1 575 €** on a specimen quotation | [S2]; both [unverified], both from third-party commentary rather than a tariff sheet |
 
 15. **Every charge level in this document is [std].** No *Effektivkosten* figure and no charge
-    schedule was obtained for any carrier (gap 2), which is the most consequential gap in the corpus:
-    the § 7 AltZertG *Produktinformationsblatt* exists **precisely** to publish a comparable
-    total-charge number for this product, per quotation, and not one was reached. The bands are the
-    reference implementation's parameter set with its reasoning attached, **not a market survey**.
-16. **Whether the AltZertG's five-year spreading of acquisition and distribution costs reaches
-    *Basisrentenverträge* was not established** (gap 8) — § 1 imposes it on Riester contracts and what
-    § 5a picks up is unresolved [R10] [REG-R43]. The five-year spread is adopted as **[std]** because
-    it is the LVRG-era German market shape and because § 169 VVG's independent five-year floor
-    [REG-R28] produces the same profile on every other German regular-premium contract. Note that
-    § 169 VVG is itself **inoperative here** — it governs what must be *paid* on surrender, and
-    nothing is ever paid — so the spread is adopted for its effect on the *Deckungskapital*, not
-    because a surrender-value floor requires it.
-17. **The *Beitragssumme* is large on this product.** A long-dated contract with a *Beitragsdynamik*
-    and regular *Zuzahlungen* accumulates a big *Beitragssumme*, so a 25 ‰ cap permits a large **euro**
-    amount of acquisition cost, far above what the same percentage allows on a short contract. **How
+    schedule was obtained for any carrier (gap 2), the most consequential gap in the corpus: the
+    § 7 AltZertG *Produktinformationsblatt* exists **precisely** to publish a comparable total-charge
+    number for this product, per quotation, and not one was reached. The bands are the reference
+    implementation's parameter set with its reasoning attached, **not a market survey**.
+16. **Whether the AltZertG's five-year spreading of acquisition costs reaches *Basisrentenverträge*
+    was not established** (gap 8) — § 1 imposes it on Riester contracts and what § 5a picks up is
+    unresolved [R10] [REG-R43]. The spread is adopted as **[std]** because it is the LVRG-era German
+    market shape and because § 169 VVG's independent five-year floor [REG-R28] produces the same
+    profile on every other German regular-premium contract. Note that § 169 VVG is itself
+    **inoperative here** — it governs what must be *paid* on surrender — so the spread is adopted for
+    its effect on the *Deckungskapital*, not because a surrender-value floor requires it.
+17. **The *Beitragssumme* is large on this product**, so a 25 ‰ cap permits a large **euro** amount of
+    acquisition cost, far above what the same percentage allows on a short contract. **How
     *Zuzahlungen* enter the *Beitragssumme* for the cap was not established** (gap 8); the composite
-    excludes them from the base *Beitragssumme* and charges them a separate percentage, which is the
-    conservative reading and is **[std]**.
+    excludes them and charges them a separate percentage, the conservative reading and **[std]**.
 
 ### Termination and values
 
@@ -350,30 +338,28 @@ not chargeable as security, not saleable and not convertible into capital** [R1]
 
 **The prohibitions bind the insurer's product design, not merely the policyholder's rights.** A
 contract offering any of these features is not a *Basisrentenvertrag*, cannot be certified [R9], and
-attracts no relief [R3] — stronger than a contractual restriction, because it is a condition of the
-tax status of the whole contract. That is why the model carries these as **structural absences**
-rather than as switched-off options. **What *nicht vererblich* does not mean**: it does not forbid a
-payment on death; it means the entitlement is not part of the estate and may not be directed by will.
-A death benefit is permitted inside the narrow channel below, **provided it is itself paid as an
-annuity**.
+attracts no relief [R3] — a condition of the tax status of the whole contract rather than a
+contractual restriction, which is why the model carries these as **structural absences** rather than
+as switched-off options. **What *nicht vererblich* does not mean**: it does not forbid a payment on
+death; it means the entitlement is not part of the estate and may not be directed by will. A death
+benefit is permitted inside the narrow channel below, **provided it is itself paid as an annuity**.
 
 ### Certification under § 5a AltZertG, and what it does not import
 
 The rule: certification by the **Bundeszentralamt für Steuern** is a condition of the *relief*, not
 of the contract's validity [R3] [R9] [REG-R43]. It is a **formal conformity check** and each
 certified tariff receives a *Zertifizierungsnummer*. § 2 Abs. 2, or a provision to that effect, states
-expressly that **certification is not a seal of quality** [R10]: a *Zertifizierungsnummer* on a
-*Versicherungsschein* is a tax fact, not a value judgement, and every delib document repeats that.
+expressly that **certification is not a seal of quality** [R10]: it is a tax fact, not a value
+judgement, and every delib document repeats that.
 
 **What § 5a does not import from § 1 is as important as what it does.** The Riester
 ***Beitragserhaltungsgarantie*** — at least the paid-in contributions and *Zulagen* available at the
 start of the payout phase, with up to 20 % of contributions left out of account where they secure
 biometric cover [REG-R43] — **has no Schicht-1 counterpart**. A Basisrente may be sold with a 100 %
-*Beitragsgarantie*, a partial one, or **none at all**. That single omission is why the two subsidised
-layers diverged so sharply after the interest-rate collapse: Riester writers had to hold a nominal
-guarantee that became unaffordable at a 0,25 % *Höchstrechnungszins* and withdrew; Basisrente writers
-dropped the guarantee and kept selling. The drafting mechanism is [unverified]; the substance is
-settled and universally relied on.
+*Beitragsgarantie*, a partial one, or **none at all**. That omission is why the two subsidised layers
+diverged so sharply after the interest-rate collapse: Riester writers had to hold a nominal guarantee
+that became unaffordable at a 0,25 % *Höchstrechnungszins* and withdrew; Basisrente writers dropped
+the guarantee and kept selling. The drafting mechanism is [unverified]; the substance is settled.
 
 The regime also carries the § 7 AltZertG pre-sale obligations [R11] [REG-R43]: a standardised,
 **quotation-specific** *Produktinformationsblatt* carrying the ***Effektivkosten*** and a

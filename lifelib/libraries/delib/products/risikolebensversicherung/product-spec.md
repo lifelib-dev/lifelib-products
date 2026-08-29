@@ -446,17 +446,13 @@ rating cell receive the same declaration though their best-estimate mortality di
 cross-subsidy therefore appears in the projected cash flows rather than in the price**, which is
 exactly where German law puts it.
 
-### The three unrelated meanings of "netto"
-
-| Term as used | Means | Where it appears |
-|---|---|---|
-| *Nettoprämie* / *Nettobeitrag* (**actuarial**) | The risk premium from the mortality and interest bases, **before** expense loadings; the *Bruttobeitrag* is this plus α, β and γ | Actuarial texts, DAV material [REG-R47] |
-| *Nettobeitrag* / *Zahlbeitrag* (**consumer**) | The premium billed = *Bruttobeitrag* **less** the *Beitragsverrechnung*. **The market's dominant usage for this product** | Insurer pages, PIBs, portals, consumer press [S5] [S14] [S15] [S16] |
-| *Nettotarif* / *Honorartarif* (**distribution**) | A **commission-free** tariff sold through fee-based advice, the *Abschlussprovision* stripped out and charged as a fee | Broker and fee-adviser market [unverified] |
-
-Confusing them is the classic implementation error. These documents use ***Zahlbeitrag*** for the
-consumer sense and ***Nettoprämie*** for the actuarial one; **the bare word "*Nettobeitrag*" is never
-a delib parameter name**, and `prem_net_pp` is retired library-wide.
+**Three unrelated things are called "netto" in this product** — the *Nettoprämie* of actuarial
+usage (the risk premium before loadings), the *Nettobeitrag* of consumer usage (a synonym for the
+*Zahlbeitrag*), and the *Nettotarif* of distribution usage (a commission-free tariff sold through
+fee-based advice) — **and confusing them is the classic implementation error**. These documents use
+***Zahlbeitrag*** and ***Nettoprämie*** and never the bare word *Nettobeitrag*; the three senses are
+tabulated in the technical notes, where the notation is fixed [S5] [S14] [S15] [S16] [REG-R47]
+[unverified].
 
 ### The premium is level, and the benefit need not be
 
@@ -474,18 +470,17 @@ while the benefit falls on two of the three shapes, the opposite of the French p
 premium stream carries the shape of the liability.
 
 The three sums-insured shapes are **one schedule**, `S(t) = S(0) × f(t)` with `f(1) = 1`, priced on
-the same underwriting and the same *Rechnungsgrundlagen*. ***Konstant*** is the default and the
-majority form, for a need that does not amortise. ***Linear fallend*** falls by a fixed amount each
-year and is **a poor match to an annuity loan**, whose balance falls slowly at first and quickly at
-the end while a linear schedule does the opposite. ***Annuitätisch fallend*** follows the outstanding
-balance of an annuity loan at a nominal rate **agreed at issue** — a contractual schedule parameter,
-**not the borrower's actual loan rate**, and it does not follow the loan if that is refinanced,
-repaid early or rolled onto a new fixed rate. Carriers price the falling shapes lower for the same
-**initial** sum **mechanically, not as a discount**. A fourth, **rising** shape is a different
-mechanic — the *Dynamik* and the *Nachversicherungsgarantie* — because the premium rises with it and
-the § 161 clock restarts for the increment. An ***abgekürzte Beitragszahlungsdauer*** is offered by
-some tariffs [unverified] and is where the *Deckungskapital* is largest, everything after the last
-premium being funded from the reserve.
+the same underwriting and the same *Rechnungsgrundlagen*: ***konstant*** for a need that does not
+amortise; ***linear fallend***, cheap, simple and **a poor match to an annuity loan**, whose balance
+falls slowly at first and quickly at the end while a linear schedule does the opposite; and
+***annuitätisch fallend***, following the outstanding balance of an annuity loan at a nominal rate
+**agreed at issue** — a contractual schedule parameter, **not the borrower's actual loan rate**,
+which does not follow the loan if that is refinanced, repaid early or rolled onto a new fixed rate.
+Carriers price the falling shapes lower for the same **initial** sum **mechanically, not as a
+discount**. A fourth, **rising** shape is a different mechanic — the *Dynamik* and the
+*Nachversicherungsgarantie* — because the premium rises with it and the § 161 clock restarts for the
+increment. An ***abgekürzte Beitragszahlungsdauer*** is where the *Deckungskapital* is largest,
+everything after the last premium being funded from the reserve [unverified].
 
 ### *Selbsttötung* — § 161 VVG, and how it differs from the French rule
 
@@ -532,33 +527,28 @@ as to a savings contract was **not established**, and neither was the *Nullstell
 [R21] [REG-R16] (gap 11). **The model publishes no balance-sheet reserve, so neither question reaches
 its cash flows**; the first-order *Deckungskapital* it does publish is a **pricing** diagnostic.
 
-**Everything else collapses with the surrender value.** § 165 VVG gives the policyholder the right,
-at any time and for the end of the current *Versicherungsperiode*, to demand conversion into a
-***prämienfreie Versicherung***, subject to a **minimum-benefit test** whose fallback is payment of
-the *Rückkaufswert* [R3] [REG-R28] — so the right **exists in form and is empty in substance**. **The
-same collapse happens on the non-payment path**: § 166 VVG converts a lapsed life contract into a
-*prämienfreie Versicherung* rather than ending it, **unless** the paid-up benefit falls below the
-minimum, which here it does, so the contract simply ends [R8] [unverified]. And § 168 VVG's
-termination right runs to the end of each *Versicherungsperiode*, which follows the *Zahlweise* — so
-**a monthly-paying contract is terminable monthly**, and **German term-life lapse is not concentrated
-at policy anniversaries** the way an annual-mode book's is. That is a caution for any model assuming
-anniversary-only exits, and one this annual-grid implementation makes in prose rather than in code.
-What carriers offer instead — *Beitragsstundung*, a temporary *Ruhen*, a reduction of the sum insured
-— is [unverified] and was not established (gap 10).
+**Everything else collapses with the surrender value.** The § 165 paid-up right and the § 166
+non-payment path both run through a **minimum-benefit test** whose fallback is payment of the
+*Rückkaufswert*, so both terminate in nil and the contract simply ends [R3] [R8] [REG-R28]. And
+§ 168's termination right runs to the end of each *Versicherungsperiode*, which follows the
+*Zahlweise* — so **a monthly-paying contract is terminable monthly**, and **German term-life lapse is
+not concentrated at policy anniversaries** the way an annual-mode book's is. That is a caution for
+any model assuming anniversary-only exits, and one this annual-grid implementation makes in prose
+rather than in code. What carriers offer instead — *Beitragsstundung*, a temporary *Ruhen*, a
+reduction of the sum insured — is [unverified] (gap 10).
 
 ### The *Rechnungsgrundlagen*, and the unisex problem
 
 The mortality basis is ***DAV 2008 T***, with ***DAV 2008 T NR*** and ***DAV 2008 T R*** [R12]
-[REG-R48], inherited corroboration: derived by the DAV *Arbeitsgruppe Biometrische
-Rechnungsgrundlagen* over **2006 to 2008** from German insurers' own policy data with German
-population statistics; the *Richtlinie* **regulates both the derivation methodology and the procedure
-for setting the *Sicherheitszuschläge***; the smoker and non-smoker variants are **suitable for
-premium calculation** but **not for policies written without a *Gesundheitsprüfung***; adopted
-**4 December 2008**, restated as a *Fachgrundsatz* dated **29 November 2022**. **The table values are
-the property of the Deutsche Aktuarvereinigung, are not public, and are not redistributed here.** The
-implementation ships a **[std] proxy** and states what a replacement must preserve: an age-graded
-death rate for **medically selected** lives, separable into smoker and non-smoker variants,
-sex-distinct as raw material, and separable into first- and second-order levels.
+[REG-R48], inherited corroboration: derived over **2006 to 2008** from German insurers' own policy
+data with German population statistics; the *Richtlinie* **regulates both the derivation methodology
+and the procedure for setting the *Sicherheitszuschläge***; the smoker and non-smoker variants are
+**suitable for premium calculation** but **not for policies written without a *Gesundheitsprüfung***;
+adopted **4 December 2008**, restated as a *Fachgrundsatz* dated **29 November 2022**. **The table
+values are the property of the Deutsche Aktuarvereinigung, are not public, and are not redistributed
+here.** The implementation ships a **[std] proxy** and states what a replacement must preserve: an
+age-graded death rate for **medically selected** lives, separable into smoker and non-smoker
+variants, sex-distinct as raw material, and separable into first- and second-order levels.
 
 **Three structural reasons the effective first-order margin on a contract written today is large**,
 none a criticism of the insurer: the table was derived on 2006–2008 experience and German mortality
@@ -587,12 +577,11 @@ comparable** (gap 1).
 
 ### *Verbundene Leben*, the *Über-Kreuz-Versicherung*, and the decrements
 
-***Risikolebensversicherung auf verbundene Leben*** is **one contract, two *versicherte Personen***:
-the sum is paid **once, on the first death**, and the contract then **ends**, leaving the survivor
-with no cover. Both lives are underwritten and both give the § 150 consent [R7]. The premium sits
-below two single contracts of the same sum and above one; **no ratio is asserted** (gap 15). **The
-separation problem** is the standard consumer-press criticism: on divorce the contract covers two
-people who no longer want a joint benefit and cannot halve it, and where the carrier offers no
+***Risikolebensversicherung auf verbundene Leben*** pays **once, on the first death**, and the
+contract then **ends**, leaving the survivor with no cover; both lives are underwritten and both give
+the § 150 consent [R7], and **no premium ratio against two single contracts is asserted** (gap 15).
+**The separation problem** is the standard consumer-press criticism: on divorce the contract covers
+two people who no longer want a joint benefit and cannot halve it, and where the carrier offers no
 conversion into two single contracts without a new *Gesundheitsprüfung*, the only exit is termination
 with nothing back [unverified].
 
@@ -767,22 +756,16 @@ compulsory for new business since 21 December 2012 and admitting no carrier vari
 
 **Contract law — the VVG.** The product sits in **Kapitel 5** (*Lebensversicherung*, §§ 150–171),
 whose provisions are largely ***halbzwingend*** — a deviation to the policyholder's disadvantage is
-ineffective [REG-R22]. Seven sections do the work. **§ 150** permits insurance on the life of another
-and requires that person's **written consent** where the benefit exceeds ordinary funeral costs [R7]
-[REG-R26]; the funeral-cost boundary is what makes *Sterbegeldversicherung* a distinct product in
-German law rather than a small RLV, and it is why delib excludes it. **§ 152** extends the general
-14-day *Widerrufsfrist* to **30 days** for life insurance [R8] [REG-R23]. **§ 153** confers the
-*Überschussbeteiligung*, requires the allocation to be ***verursachungsorientiert***, and permits
-exclusion only by express agreement [R5] [REG-R24]. **§ 159** governs the *Bezugsberechtigung*:
-revocable by default, with an *unwiderrufliche* nomination vesting the claim immediately and taking
-it out of the policyholder's disposal [R7] [REG-R26]. **§ 161** is the *Selbsttötung* rule [R1].
-**§ 162** strips the benefit where the policyholder intentionally and unlawfully brings about the
-death, and strips a beneficiary who does so of his entitlement [R7]. **§§ 165–169** carry the
+ineffective [REG-R22]. **§ 150** requires the insured life's **written consent** where the benefit
+exceeds ordinary funeral costs [R7] [REG-R26], and that funeral-cost boundary is what makes
+*Sterbegeldversicherung* a distinct product in German law rather than a small RLV — the reason delib
+excludes it. **§ 152** gives a 30-day *Widerrufsfrist* [R8] [REG-R23]; **§ 153** the
+*verursachungsorientiert* *Überschussbeteiligung* [R5] [REG-R24]; **§ 159** the *Bezugsberechtigung*
+[R7]; **§ 161** the *Selbsttötung* rule [R1]; **§ 162** the forfeitures [R7]; and **§§ 165–169** the
 paid-up right, the *Kündigung* right, the *Beitragsverzug* machinery and the *Rückkaufswert* [R2]
-[R3] [R8] [REG-R28] — all of which, on this product, terminate in nil. **§ 19** is the
-*vorvertragliche Anzeigepflicht*, and its question-bounded duty and five-/ten-year remedy windows
-are the whole of the claims-risk story on a term contract [R4] [REG-R30]. **§ 163** is the
-*Treuhänder* clause, and its near-total absence from this product's practice is the point [R6]
+[R3] [R8] [REG-R28] — all of which, on this product, terminate in nil. **§ 19**'s question-bounded
+duty and five-/ten-year remedy windows are the whole of the claims-risk story on a term contract [R4]
+[REG-R30], and **§ 163**'s near-total absence from this product's practice is the point [R6]
 [REG-R27].
 
 **Supervisory law — the VAG.** **§ 138 Abs. 1** requires premiums to be set **high enough** that the

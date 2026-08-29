@@ -34,13 +34,11 @@ document cited anywhere in this product's documentation was retrieved: direct HT
 blocked by an organisation network policy, and the session's `WebSearch` budget was exhausted
 before this product's research began. Three facts carry corroboration inherited from a sibling
 `delib` research session and say so at the point of use [S3] [S4] [S5]; the two recent
-*Höchstrechnungszins* values [R22] and the 2026 reform [REG-R44] likewise. Everything else rests
-on general knowledge of German pension law, disciplined by tagging every specific number. A
-`delib` citation is a **pointer, not a certificate**.
-
-**Out of scope, named so the boundary is explicit:** *Wohn-Riester* in both limbs [R3] [R13] [R19]
-[S13]; the **Riester-Fondssparplan** and **Riester-Banksparplan** [S9]–[S12]; the
-**fondsgebundene** Riester wrapper [S1], whose chassis is
+*Höchstrechnungszins* values [R22] and the 2026 reform [REG-R44] likewise. Everything else rests on
+general knowledge of German pension law, disciplined by tagging every specific number. A `delib`
+citation is a **pointer, not a certificate**. **Out of scope**, named so the boundary is explicit:
+*Wohn-Riester* in both limbs [R3] [R13] [R19] [S13]; the **Riester-Fondssparplan** and
+**Riester-Banksparplan** [S9]–[S12]; the **fondsgebundene** Riester wrapper [S1], whose chassis is
 `products/fondsgebundene_rentenversicherung/`; the **Basisrente** of Schicht 1,
 `products/basisrente/`; Riester inside the *betriebliche Altersversorgung*; and
 *Gruppenversicherung*.
@@ -577,32 +575,28 @@ a guarantee cost of zero and concludes the mechanic does not matter.
 
 ### The five-year cost spreading
 
-Acquisition and distribution costs must be **spread over at least five years** [R1] [REG-R43].
-This is a statutory cap on *Zillmerung* aimed at this product specifically and is materially
-tighter than anything the VVG imposes on a Schicht-3 contract; together with the *Wechselrecht* it
-pushes a Riester tariff toward lower front-end charges and a thinner acquisition margin than a
-comparable Schicht-3 tariff `[unverified]` as a market characterisation. Two model consequences.
-The charge basis **cannot front-load the whole acquisition cost into year one**, which changes the
-*shape* of the early-duration charge run-off and therefore of the early-duration surrender value.
-And the **commission cash still leaves at issue** while the charge is recovered over five years —
-the new-business strain is real and is carried by the insurer, not by the contract.
+Acquisition and distribution costs must be **spread over at least five years** [R1] [REG-R43] — a
+statutory cap on *Zillmerung* aimed at this product specifically, materially tighter than anything
+the VVG imposes on a Schicht-3 contract, and, with the *Wechselrecht*, a push toward lower
+front-end charges and a thinner acquisition margin `[unverified]` as a market characterisation. Two
+model consequences. The charge basis **cannot front-load the whole acquisition cost into year one**,
+which changes the *shape* of the early-duration charge run-off and therefore of the early-duration
+surrender value. And the **commission cash still leaves at issue** while the charge is recovered
+over five years, so the new-business strain is carried by the insurer, not by the contract.
 
 ### *Rentenbeginn*: conversion, the lump sum and the *Rentenfaktor*
 
 At the contractually fixed *Rentenbeginn*, bounded below by the statutory age [R1], four things
 happen in order and the order matters. The **final Zulage** is credited. The **conversion capital**
 is struck as the guarantee floor applied to the account's own parts. Up to **30 %** may be taken as
-a ***Teilkapitalauszahlung*** [R1] [REG-R43]; it is taxed **in full in the year it is paid, with no
-*Fünftelregelung*** [R12] [R15], and that asymmetry against the *Kleinbetragsrenten-Abfindung* is
+a ***Teilkapitalauszahlung*** [R1] [REG-R43], taxed **in full in the year it is paid, with no
+*Fünftelregelung*** [R12] [R15] — an asymmetry against the *Kleinbetragsrenten-Abfindung* that is
 why German consumer literature treats the decision as non-obvious. The **remainder is annuitised**
-into a lifelong, constant-or-rising monthly *Leibrente* at the *Rentenfaktor*, the higher of the
-guaranteed and the then-current factor applying:
-
-    monthly_annuity = annuitised_capital / 10 000 € × Rentenfaktor
-
-The Riester *Rentenfaktor* is **unisex from a 2006 vintage** [R23], earlier than the Schicht-3
-market, so a Riester factor and a same-vintage Schicht-3 factor for a male life are **not
-comparable** — a comparison German market commentary makes routinely and wrongly.
+into a lifelong, constant-or-rising monthly *Leibrente* at `annuitised_capital / 10 000 € ×
+Rentenfaktor`, the higher of the guaranteed and the then-current factor applying. The Riester
+*Rentenfaktor* is **unisex from a 2006 vintage** [R23], earlier than the Schicht-3 market, so a
+Riester factor and a same-vintage Schicht-3 factor for a male life are **not comparable** — a
+comparison German market commentary makes routinely and wrongly.
 
 ### The *Kleinbetragsrente*
 
@@ -610,18 +604,16 @@ Where the monthly annuity would not exceed the statutory threshold the provider 
 whole capital to a lump sum, **without** *schädliche Verwendung* [R15] [REG-R42]; the *Abfindung*
 is taxable in full under § 22 Nr. 5 but, since 2018, under the ***Fünftelregelung*** of § 34 EStG,
 with an election to have the payment made at the beginning of the following calendar year [R15]
-[R21] `[unverified]`.
-
-**This matters far more than the threshold suggests**, which is why the model carries it as a
-switch on the anchor decrement rather than as a footnote. The book carries a long tail of small
-contracts: those run at the *Sockelbeitrag* (§ 86 cases D and E above) and those that went *ruhend*
-early. Case D contributes 835,00 € a year, so twenty years is **16 700,00 €** of contributions
-`[std] derived`; case E contributes 235,00 €, so twenty years is **4 700,00 €**. At any plausible
-*Rentenfaktor* both produce a monthly annuity in the tens of euros. **A material fraction of
-Riester contracts will never pay an annuity at all.** One ordering question the statute does not
-settle and the composite must: is the test applied to the annuity the **whole** conversion capital
-would buy, or to the annuity payable after an elected *Teilkapitalauszahlung*? The composite tests
-the **annuity actually payable**, on the argument that it is the annuity the provider would have to
+[R21] `[unverified]`. **This matters far more than the threshold suggests**, which is why the model
+carries it as a switch on the anchor decrement rather than as a footnote: the book carries a long
+tail of small contracts, those run at the *Sockelbeitrag* (§ 86 cases D and E) and those that went
+*ruhend* early. Case D contributes 835,00 € a year, so twenty years is **16 700,00 €** of
+contributions `[std] derived`; case E contributes 235,00 €, so twenty years is **4 700,00 €**. At
+any plausible *Rentenfaktor* both produce a monthly annuity in the tens of euros. **A material
+fraction of Riester contracts will never pay an annuity at all.** One ordering question the statute
+does not settle and the composite must: is the test applied to the annuity the **whole** conversion
+capital would buy, or to the annuity payable after an elected *Teilkapitalauszahlung*? The composite
+tests the **annuity actually payable**, on the argument that it is what the provider would have to
 administer, and prints the alternative; the choice is **[std]** and gap 7 records that neither
 reading was established.
 
@@ -659,31 +651,29 @@ German book shows *Beitragsfreistellung* where another market would show surrend
 
 ### The two contribution pools
 
-A single Riester contract can hold **subsidised** and **unsubsidised** contributions at once
-[R12]. *Geförderte Beiträge* — own contributions up to the § 10a ceiling that attracted a Zulage or
-a deduction, plus the Zulagen — are taxed **in full** on the way out. *Ungeförderte Beiträge* —
+A single Riester contract can hold **subsidised** and **unsubsidised** contributions at once [R12].
+*Geförderte Beiträge* — own contributions up to the § 10a ceiling that attracted a Zulage or a
+deduction, plus the Zulagen — are taxed **in full** on the way out; *ungeförderte Beiträge* —
 anything above the ceiling, or paid in a year of ineligibility — are taxed on the *Ertragsanteil*
-for an annuity, or under § 20 Abs. 1 Nr. 6 for a lump sum [R12] [REG-R41] [REG-R45]. The provider
+for an annuity or under § 20 Abs. 1 Nr. 6 for a lump sum [R12] [REG-R41] [REG-R45]. The provider
 must track the two pools **and their investment return** separately for the life of the contract
-and apportion every benefit between them in the annual *Leistungsmitteilung* `[unverified]`.
-
-**Both pools count for the *Beitragsgarantie***: the guarantee is on the *Altersvorsorgebeiträge*
-paid in and does not distinguish subsidised from unsubsidised money [R1] `[unverified]`. That is the
-natural place for an implementer to go wrong and it is a numbered pitfall.
+and apportion every benefit between them in the annual *Leistungsmitteilung* `[unverified]`. **Both
+pools count for the *Beitragsgarantie***: the guarantee is on the *Altersvorsorgebeiträge* paid in
+and does not distinguish subsidised from unsubsidised money [R1] `[unverified]` — the natural place
+for an implementer to go wrong, and a numbered pitfall.
 
 ---
 
 ## Riders and options
 
-**In scope, modelled or parameterized.** The ***Teilkapitalauszahlung***, a single lump-sum
-election at one date, capped at 30 % [R1]. The ***Kleinbetragsrenten-Abfindung***, a switch on the
-anchor decrement whose trigger the model computes rather than assumes [R15]. The
-***Rentengarantiezeit***, which changes the payment obligation but not the annuity amount and is
-the *förderunschädliche* route for an early death in payment [R1] [R14]. The
-***Anbieterwechsel***, a full-value exit decrement distinct from surrender [R1].
-***Beitragsfreistellung***, carried as a per-model-point switch on the year contributions stop.
-**Unsubsidised over-ceiling contributions**, proving the two-pool split is representable. And a
-**biometric rider premium**, carried **only** for its effect on the guarantee — the carve-out
+**In scope, modelled or parameterized.** The ***Teilkapitalauszahlung***, a single lump-sum election
+capped at 30 % [R1]; the ***Kleinbetragsrenten-Abfindung***, a switch on the anchor decrement whose
+trigger the model computes rather than assumes [R15]; the ***Rentengarantiezeit***, which changes
+the payment obligation but not the annuity amount and is the *förderunschädliche* route for an
+early death in payment [R1] [R14]; the ***Anbieterwechsel***, a full-value exit decrement distinct
+from surrender [R1]; ***Beitragsfreistellung***, a per-model-point switch on the year contributions
+stop; **unsubsidised over-ceiling contributions**, proving the two-pool split is representable; and
+a **biometric rider premium**, carried **only** for its effect on the guarantee — the carve-out
 capped at 20 % of total contributions [REG-R43].
 
 **Out of scope, and why.** The ***Berufsunfähigkeits-Zusatzversicherung*** itself: its liability is
@@ -692,13 +682,12 @@ carries only the statutory carve-out that premium creates. The **survivor's annu
 needs a second life and has its own GDV condition set [S3]. The ***Auszahlungsplan mit
 Restverrentung***, the fund and bank chassis's payout topology [S9]–[S12] — worth naming because it
 is why a Riester fund savings plan still ends in an insurance annuity: **the insurance industry
-receives the *Restverrentung* capital of the fund industry's contracts**. ***Wohn-Riester*** in
-both limbs [R13] [R19] [S13], because the *Wohnförderkonto* is a notional tax memorandum carrying
-**no cash whatsoever** and the certified *Darlehen* is a banking liability; what the model could
-have represented and deliberately does not is the *Eigenheimbetrag* **withdrawal**, which from the
-insurer's side is an early and complete exit at full value. And **surplus in payment**, because the
-constant-or-rising requirement constrains which systems are available [R1] and no declaration level
-was established.
+receives the *Restverrentung* capital of the fund industry's contracts**. ***Wohn-Riester*** in both
+limbs [R13] [R19] [S13], because the *Wohnförderkonto* is a notional tax memorandum carrying **no
+cash whatsoever** and the certified *Darlehen* is a banking liability; what the model could have
+represented and deliberately does not is the *Eigenheimbetrag* **withdrawal**, an early and complete
+exit at full value. And **surplus in payment**, because the constant-or-rising requirement
+constrains which systems are available [R1] and no declaration level was established.
 
 ---
 

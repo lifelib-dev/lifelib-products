@@ -501,42 +501,35 @@ assessment by a physician the insurer appoints where the insured is covered by n
 § 14 SGB XI defines *Pflegebedürftigkeit* as a health-related impairment of *Selbstständigkeit*
 or of abilities, requiring help from others and expected to last **at least six months**
 [R2] [unverified]. § 15 converts the assessment into a *Pflegegrad*: six *Module* are scored,
-weighted and summed to *gewichtete Punkte* on a 0-to-100 scale [R2] [unverified] —
-*Mobilität* 10 %; *kognitive und kommunikative Fähigkeiten* and *Verhaltensweisen und
-psychische Problemlagen* sharing 15 %, assessed separately with only the **higher** entering
-the total; *Selbstversorgung* **40 %**; *Bewältigung von krankheits- und therapiebedingten
-Anforderungen* 20 %; *Gestaltung des Alltagslebens und sozialer Kontakte* 15 %. Two further
-areas, *außerhäusliche Aktivitäten* and *Haushaltsführung*, are assessed for care planning and
-**do not enter the score**. The thresholds [R2] [unverified] are 12,5 to under 27 points for
-grade 1, 27 to under 47,5 for grade 2, 47,5 to under 70 for grade 3, 70 to under 90 for grade
-4 and 90 to 100 for grade 5, with a separate route to grade 5 for defined *besondere
-Bedarfskonstellationen* irrespective of the total.
+weighted and summed to *gewichtete Punkte* on a 0-to-100 scale [R2] [unverified] — *Mobilität*
+10 %; cognitive and behavioural functioning sharing 15 %, the **higher** of the two entering;
+*Selbstversorgung* **40 %**; management of illness- and therapy-related demands 20 %; and daily
+life and social contact 15 %. The thresholds are 12,5 to under 27 points for grade 1, 27 to
+under 47,5 for grade 2, 47,5 to under 70 for grade 3, 70 to under 90 for grade 4 and 90 to 100
+for grade 5, with a separate route to grade 5 for defined *besondere Bedarfskonstellationen*
+[R2] [unverified].
 
-**What this does to the product.** *Selbstversorgung* alone carries 40 % of the weight —
-washing, dressing, feeding, continence — and a reader coming from a US or UK LTC product will
-recognise an ADL trigger inside the German scoring. The two should not be equated: the
-instrument reaches grade 2 on moderate impairments spread across several modules that no
-two-ADL-failure trigger would catch, and it scores dementia through modules 2, 3 and 5 with no
-physical impairment at all. Three consequences are structural and all three reach the model.
-The insurer **does not define the insured event** and so carries definition risk no wording can
-hedge; the insurer **does not assess the claim**, which makes claims administration cheap and
-disputes rare compared with *Berufsunfähigkeit*; and a *Pflegegrad* is a **step function of a
-continuous state, re-assessed episodically** rather than continuously [R6], which is exactly a
-discrete-state, discrete-time Markov chain and is why the model's state space is the natural
-representation rather than an approximation.
+**What this does to the product.** *Selbstversorgung* alone carries 40 % of the weight, and a
+reader coming from a US or UK product will recognise an ADL trigger inside the German scoring.
+The two should not be equated: the instrument reaches grade 2 on moderate impairments spread
+across several modules that no two-ADL-failure trigger would catch, and it scores dementia with
+no physical impairment at all. Three consequences reach the model. The insurer **does not define
+the insured event**, and so carries definition risk no wording can hedge. The insurer **does not
+assess the claim**, which makes claims administration cheap and disputes rare compared with
+*Berufsunfähigkeit*. And a *Pflegegrad* is a **step function of a continuous state, re-assessed
+episodically** rather than continuously [R6] — which is exactly a discrete-state, discrete-time
+Markov chain, and is why the model's state space is the natural representation rather than an
+approximation.
 
-**The 2017 break, and why it is the largest basis risk in the product.** The *Zweite
+**The 2017 break is the largest basis risk in the product.** The *Zweite
 Pflegestärkungsgesetz* replaced the three *Pflegestufen* with the five *Pflegegrade* and the
-time-based assessment with the *Neues Begutachtungsassessment*, with effect from 1 January 2017
-[R9] [unverified]. The reform deliberately **widened** the definition, bringing cognitive and
-psychiatric impairment onto equal terms with physical impairment, and recognised
-*Pflegebedürftige* rose sharply afterwards. Every time series therefore has a structural break
-at that date, and pre-2017 incidence data cannot be used for pricing without a stated mapping.
-The market's standard actuarial basis, **DAV 2008 P**, was built on the *Pflegestufen*
-[R15] [unverified], and the BGH has **refused to map the two scales** [REG-R36] [REG-R51]. If
-the courts will not map the grades, a modeller may not silently do so either — which is why
-delib's transition rates are an explicitly-labelled `[std]` proxy calibrated on *Pflegegrad*
-prevalence shapes and are **not** a proxy for DAV 2008 P.
+time-based assessment with the NBA, with effect from 1 January 2017 [R9] [unverified], and
+deliberately **widened** the definition; recognised *Pflegebedürftige* rose sharply afterwards.
+Every time series has a structural break at that date. The market's standard basis, **DAV 2008
+P**, was built on the *Pflegestufen* [R15] [unverified], and the BGH has **refused to map the
+two scales** [REG-R36] [REG-R51]. If the courts will not map the grades, a modeller may not
+silently do so either — which is why delib's transition rates are an explicitly labelled `[std]`
+proxy shaped on *Pflegegrad* prevalence and are **not** a proxy for DAV 2008 P.
 
 ### The *Leistungsstaffel*
 
@@ -545,15 +538,15 @@ monthly annuity at the top *Pflegegrad* — and a schedule of percentages of it 
 Everything else in the benefit design is a modifier on that schedule.
 
 What the schedule does to the liability is not obvious from its headline. Time spent at each
-grade is very unequal: a person entering at grade 2 and deteriorating spends most of the spell
-at grades 2 and 3 and only the final months at grade 5 [unverified]. **The time-weighted
-average benefit percentage over a spell is therefore far below 100 %** — about 52 % on the
-profile the research file works through. Two tariffs with the same 100 % top step and different
-middle steps differ in expected cost by more than the headline suggests, so comparing tariffs on
-the *vereinbarte Rente* alone is misleading, and so is any model that applies an average benefit
-percentage to an average survival curve. The middle steps carry the cost because the stock
-distribution is weighted to the lower grades — about 9 / 44 / 27 / 14 / 6 % across grades 1 to 5
-[R18] [unverified].
+grade is very unequal: a person entering at grade 2 and deteriorating spends most of the spell at
+grades 2 and 3 and only the final months at grade 5 [unverified], so **the time-weighted average
+benefit percentage over a spell is far below 100 %** — about 52 % on the profile the research
+file works through. Two tariffs with the same 100 % top step and different middle steps differ in
+expected cost by more than the headline suggests. Comparing tariffs on the *vereinbarte Rente*
+alone is therefore misleading, and so is any model that applies an average benefit percentage to
+an average survival curve. The middle steps carry the cost because the stock distribution is
+weighted to the lower grades — about 9 / 44 / 27 / 14 / 6 % across grades 1 to 5 [R18]
+[unverified].
 
 ### *Wartezeit* and *Karenzzeit*
 
@@ -565,19 +558,14 @@ The two are different devices and are routinely confused in consumer material.
   the annuity does not start until the deferred period has run; some wordings then pay
   retroactively to onset and some do not [S4] [unverified].
 
-Why the underwritten product usually has neither: the *Gesundheitsprüfung* does the screening
-that a *Wartezeit* does in the subsidised product, so where both exist the *Wartezeit* is a
-competitive disadvantage doing very little work. The pairing is near deterministic — **no
-underwriting implies a long *Wartezeit*; underwriting implies none** — and *Pflege-Bahr*, which
-by statute has no *Gesundheitsprüfung*, no *Risikozuschlag* and no *Leistungsausschluss*, is
-allowed a *Wartezeit* of up to **five years** for exactly that reason [R8] [unverified].
-
-The mechanic that matters for the model: **a deferred period on a population with elevated
-mortality removes disproportionately more claims than the same period would on a healthy
-population**, because a material share of new claimants die inside it — and because mortality
-after onset is highest immediately after onset, especially at grades 4 and 5. That is selection
-*at onset*, not at underwriting, and it makes a *Karenzzeit* bite harder than its length
-suggests.
+Why the underwritten product usually has neither: the *Gesundheitsprüfung* does the screening a
+*Wartezeit* does in the subsidised product, so where both exist the *Wartezeit* is a competitive
+disadvantage doing very little work. *Pflege-Bahr*, which by statute has no *Gesundheitsprüfung*,
+no *Risikozuschlag* and no *Leistungsausschluss*, is allowed a *Wartezeit* of up to **five
+years** for exactly that reason [R8] [unverified]. The mechanic that matters for the model: **a
+deferred period on a population with elevated mortality removes disproportionately more claims
+than the same period would on a healthy population**, because a material share of new claimants
+die inside it — selection *at onset*, not at underwriting.
 
 ### *Beitragsbefreiung im Leistungsfall*
 
@@ -585,18 +573,16 @@ The operative rule: **premiums are waived while the annuity is payable**, and th
 revives if the annuity stops. This is standard in the German market for *Pflegerenten* and is
 contractual, not discretionary [S4].
 
-**The waiver is not a cosmetic term.** On a level-premium contract issued at 45 and claiming at
-82, it removes the remaining premium stream for the whole of the paying period — of the order of
-four years of premium, of the same order as one year of benefit at the modelled levels. Its cost
-sits inside the level premium and is one of the reasons a *Pflegerente* is dearer than a
-*Pflegetagegeld* of nominally equal benefit, where waiver is common but not universal.
-
-The interlock with the *Leistungsstaffel* is the subtle part and the model has to get it right.
-Waiver runs from the first *Pflegegrad* at which an annuity is payable, so on the composite's
+**The waiver is not a cosmetic term.** On a contract issued at 45 and claiming at 82 it removes
+the remaining premium stream for the whole paying period — of the order of four years of premium,
+the same order as one year of benefit at the modelled levels. Its cost sits inside the level
+premium and is one reason a *Pflegerente* is dearer than a *Pflegetagegeld* of nominally equal
+benefit. The interlock with the *Leistungsstaffel* is the subtle part and the model has to get it
+right: waiver runs from the first *Pflegegrad* at which an annuity is payable, so on the
 0 / 30 / 50 / 75 / 100 grid a life at *Pflegegrad* 1 **is in care, receives nothing, and still
-pays the premium**; on the *Pflege-Bahr* grid, which pays 10 % at grade 1, the same life is
-waived. Two tariffs differing only in whether they insure grade 1 therefore differ in their
-premium *income* as well as their benefit outgo, in opposite directions.
+pays the premium**, while on the *Pflege-Bahr* grid, which pays 10 % at grade 1, the same life is
+waived. Two tariffs differing only in whether they insure grade 1 differ in their premium
+*income* as well as their benefit outgo, in opposite directions.
 
 ### *Nachprüfung*, *Herabstufung* and *Reaktivierung*
 
@@ -611,16 +597,12 @@ downgrade as a termination **understates** it. The model therefore carries the *
 explicitly as a state variable and moves lives between grades in both directions.
 
 Some tariffs guarantee that an annuity once granted will not be reduced; **whether such a
-guarantee is common was not established** (research gap 17). With such a guarantee the paying
-state is exited only by death and the state space collapses. The composite models the
-**unguaranteed** form, which is the more general one, and a user who holds a wording with the
-guarantee obtains it by setting the recovery and downgrade rates to zero.
-
-The *Nachprüfung* itself is a documentation exercise rather than the adversarial re-assessment
-that characterises *Berufsunfähigkeit*, because the evidence is the statutory determination
-[R6] [S4] [unverified]. Note also that assessment is **not** re-done continuously: a person sits
-at a grade until re-assessed, which is why a discrete-time chain is a good match for how the
-benefit actually behaves rather than a convenience.
+guarantee is common was not established** (research gap 17). With it the paying state is exited
+only by death and the state space collapses. The composite models the **unguaranteed** form, the
+more general one; a user holding a wording with the guarantee obtains it by setting the recovery
+and downgrade rates to zero. The *Nachprüfung* itself is a documentation exercise rather than the
+adversarial re-assessment that characterises *Berufsunfähigkeit*, because the evidence is the
+statutory determination [R6] [S4] [unverified].
 
 ### The level guaranteed *Beitrag*
 
@@ -628,20 +610,19 @@ The operative rule: **the *Beitrag* is level and is guaranteed for the life of t
 subject only to § 163 VVG [R11] [REG-R27]. This is the product's defining commercial property
 and the whole of its price premium over a *Pflegetagegeld*.
 
-Three things follow. The insurer carries the **basis risk** on a fifty-year view of a biometric
-table built on a superseded assessment regime, and § 163 is a narrow escape: it needs a
-non-temporary, unforeseeable change in a calculation basis, an appropriate and necessary new
-premium and a trustee's confirmation, and it is **excluded** to the extent the original
-calculation was insufficient and a diligent and conscientious actuary should have recognised
-it [REG-R27]. The premium must be **prudently calculated and permanently sufficient** under
-§ 138 VAG [REG-R8], and for this product the prudence requirement bites hardest on the
-*Pflegewahrscheinlichkeiten*, which are the least stable of the biometric bases. And German
-biometric products are conventionally quoted as a *Bruttobeitrag* with a lower *Zahlbeitrag*
-below it, the gap being a discretionary surplus rebate withdrawable **without invoking § 163 at
-all** [REG-R27] [REG-R53] — so a level *Zahlbeitrag* is not the same promise as a level
-*Bruttobeitrag*. **Whether the *Pflegerente* market quotes the pair as the *Berufsunfähigkeit*
-market does was not established** (research gap 18). The composite models the *Bruttobeitrag*
-and no surplus rebate, and says so.
+Three things follow. The insurer carries the **basis risk** on a fifty-year view of a table
+built on a superseded assessment regime, and § 163 is a narrow escape: it needs a non-temporary,
+unforeseeable change in a calculation basis, an appropriate and necessary new premium and a
+trustee's confirmation, and it is **excluded** to the extent the original calculation was
+insufficient and a diligent actuary should have recognised it [REG-R27]. The premium must be
+**prudently calculated and permanently sufficient** under § 138 VAG [REG-R8], and the prudence
+requirement bites hardest on the *Pflegewahrscheinlichkeiten*, the least stable of the biometric
+bases. And German biometric products are conventionally quoted as a *Bruttobeitrag* with a lower
+*Zahlbeitrag* below it, the gap being a discretionary surplus rebate withdrawable **without
+invoking § 163 at all** [REG-R27] [REG-R53] — so a level *Zahlbeitrag* is not the same promise as
+a level *Bruttobeitrag*. **Whether the *Pflegerente* market quotes the pair as the
+*Berufsunfähigkeit* market does was not established** (research gap 18); the composite models the
+*Bruttobeitrag* and no rebate.
 
 ### The *Deckungskapital* as an ageing reserve
 
@@ -652,31 +633,26 @@ The precise words are worth using: *the* Deckungskapital *of a* Pflegerente *is 
 reserve in economic function and a* Deckungsrückstellung *in law and in the accounts*.
 
 The economics are unambiguous. The annual probability of entering care is negligible before 60,
-small to 75 and rises steeply thereafter; the level premium is far above the risk premium for
-the first three or four decades and far below it afterwards, and the difference accumulates.
-Issued at 45 with lifelong level premiums, the *Deckungskapital* rises for roughly thirty-five
-years, peaks somewhere in the early eighties where the incidence curve crosses the level
-premium, and then runs off as claims are paid and the survivors thin. Compared with an
-endowment's reserve it is later-peaking and smaller relative to premiums paid; compared with a
-*Risikolebensversicherung*'s it is very much larger, because the risk is back-loaded rather
-than spread.
-
-*Zillmerung* applies as it does to any level-premium life contract: acquisition costs are
-financed through the reserve up to the *Höchstzillmersatz* of 25 ‰ of the *Beitragssumme*
-[REG-R16], producing a negative reserve in the earliest years. On a lifelong-premium
-*Pflegerente* the *Beitragssumme* is large, so the absolute *Zillmerung* allowance is large and
-the early-duration surrender value is correspondingly poor.
+small to 75 and rises steeply thereafter; the level premium is far above the risk premium for the
+first three or four decades and far below it afterwards, and the difference accumulates. Issued
+at 45 with lifelong level premiums, the *Deckungskapital* rises for roughly thirty-five years,
+peaks in the early eighties where the incidence curve crosses the level premium, and then runs
+off as claims are paid and the survivors thin. Compared with an endowment's reserve it is
+later-peaking and smaller relative to premiums paid; compared with a
+*Risikolebensversicherung*'s it is very much larger, because the risk is back-loaded rather than
+spread. *Zillmerung* applies as to any level-premium life contract, up to the
+*Höchstzillmersatz* of 25 ‰ of the *Beitragssumme* [REG-R16], producing a negative reserve in the
+earliest years; on a lifelong-premium contract the *Beitragssumme* is large, so the allowance is
+large and the early-duration surrender value is correspondingly poor.
 
 Two consequences reach the model directly. **Interest sensitivity is the highest in delib**,
-because benefits fall on average some thirty-five years after issue, so a 100 bp change in the
-*Rechnungszins* moves the premium far more than on a term assurance or an endowment. And
-**lapse is profitable early and expensive late**: the reserve released on an early lapse exceeds
-the surrender value paid, while a lapse at 70 removes a policyholder who paid for twenty-five
-years and never reached the risk period. Lapse therefore feeds the premium through the
-equivalence principle in a real tariff — and the composite's pricing basis is deliberately
-**lapse-free**, both because that is German first-order practice and because the library's house
-style forbids a pricing quantity that depends on a behavioural assumption that depends on the
-path that depends on the premium.
+because benefits fall on average some thirty-five years after issue. And **lapse is profitable
+early and expensive late**: the reserve released on an early lapse exceeds the surrender value
+paid, while a lapse at 70 removes a policyholder who paid for twenty-five years and never reached
+the risk period. Lapse therefore feeds the premium through the equivalence principle in a real
+tariff — and the composite's pricing basis is deliberately **lapse-free**, both because that is
+German first-order practice and because the house style forbids a pricing quantity that depends
+on a behavioural assumption that depends on the path that depends on the premium.
 
 ### *Rückkaufswert*, *Beitragsfreistellung* and the *Stornoabzug*
 
@@ -702,23 +678,19 @@ the statutory question is open and that a carrier's own wording settles it for t
 The contract participates in surplus under § 153 VVG and § 139 VAG like any other German life
 contract, unless participation is excluded by agreement [R11] [R12] [REG-R24] [REG-R9]. **The
 composition is different from an endowment's.** On a *Kapitallebensversicherung* the surplus is
-dominated by the *Zinsergebnis*; on a *Pflegerente* the reserve is smaller relative to the risk
-and the biometric basis is the prudent one, so the ***Risikoergebnis*** — the difference between
-the incidence and mortality assumed and those experienced — is the dominant component, with the
+dominated by the *Zinsergebnis*; here the reserve is smaller relative to the risk and the
+biometric basis is the prudent one, so the ***Risikoergebnis*** is the dominant component, the
 *Zinsergebnis* second and the *Kostenergebnis* third. That is the *Sicherheitszuschlag* between
-the first- and second-order bases being released as experience emerges [REG-R47], and it is
-distributed through the *Rückstellung für Beitragsrückerstattung* under the MindZV and the RfBV
-[REG-R10] [REG-R18] [REG-R19].
+the first- and second-order bases being released as experience emerges [REG-R47], distributed
+through the *Rückstellung für Beitragsrückerstattung* under the MindZV and the RfBV [REG-R10]
+[REG-R18] [REG-R19]. Application forms [unverified]: *Beitragsverrechnung*, where the declared
+surplus reduces the premium called — dominant on biometric-risk products; *verzinsliche
+Ansammlung*; and a *Bonus* form raising the *vereinbarte Rente*.
 
-Application forms used in the German market [unverified]: *Beitragsverrechnung*, where the
-declared surplus reduces the premium called — the dominant form on biometric-risk products;
-*verzinsliche Ansammlung*; and a *Bonus* form raising the *vereinbarte Rente*.
-
-**The base run carries no *Überschussbeteiligung* at all**, deliberately. The delib library
-publishes gross best-estimate-style, undiscounted cash flows; the surplus chassis is
-demonstrated in full by `products/kapitallebensversicherung/`; and modelling a discretionary
-*Beitragsverrechnung* here would require a declared-rate assumption for which this corpus
-supplies nothing. The mechanic is recorded; the omission is deliberate and stated.
+**The base run carries no *Überschussbeteiligung* at all**, deliberately: delib publishes gross
+undiscounted cash flows, the surplus chassis is demonstrated in full by
+`products/kapitallebensversicherung/`, and a discretionary *Beitragsverrechnung* would need a
+declared-rate assumption for which this corpus supplies nothing.
 
 ---
 

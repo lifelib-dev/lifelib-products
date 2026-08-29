@@ -14,9 +14,9 @@ regulatory and actuarial references), both numbered per
 `_research/berufsunfaehigkeit.md` and resolved in `sources.md` (same directory; numbering frozen,
 never renumbered), and [REG-R#] (the cross-product reference library
 `references/regulatory-and-actuarial-references.md`, whose own R-numbering is distinct) — name the
-document the claim must be checked against. Values marked **[std]** are standardizations introduced
-for the reference implementation; each carries a rationale and, where the research file recorded
-one, the observed range. Claims the research file could not corroborate are flagged [unverified].
+document the claim must be checked against. **[std]** marks a standardization introduced for the
+reference implementation, each with a rationale and, where the research file recorded one, the
+observed range; [unverified] marks a claim no search corroborated.
 
 **Read this before any number below.** Under this build's retrieval conditions **no document cited
 in this specification was retrieved, and none was corroborated by a web search**. Direct HTTP
@@ -116,8 +116,7 @@ anchor model cell is defined in the last row of the first table and argued in fo
 | Age basis | *Eintrittsalter* on an age-last-birthday basis, advancing at the policy anniversary | **[std]** (5) |
 | *BU-Rente* | 1 500 € per month; 1 000 – 2 000 € the retail band, higher for high earners | [R22] [S15] `[unverified]`; level **[std]** (6) |
 | *Angemessenheitsgrenze* | The insurable *BU-Rente* is capped at 60–70 % of gross income, or about 80 % of net | [S1] [S16] `[unverified]` |
-| Residence and territorial scope | German residence at application; cover worldwide, with notification duties for long stays abroad | [S1] `[unverified]` |
-| Currency | EUR | — |
+| Residence, scope, currency | German residence at application; cover worldwide, with notification duties for long stays abroad; EUR | [S1] `[unverified]` |
 | **Anchor model cell** | Entry age **30**, occupational class **BG1 (Bürotätigkeit)**, *BU-Rente* **1 500 €/month**, *Endalter* and *Leistungsendalter* **67**, *Karenzzeit* **0**, *Leistungsdynamik* **2 % p.a.**, no *Beitragsdynamik*, **monthly** payment, *Zahlbeitrag* = 0,70 × *Bruttobeitrag*, *Wiedereingliederungshilfe* 6 monthly *Renten* | **[std]** (6) |
 
 Footnotes to **[std]** rows:
@@ -176,8 +175,7 @@ Footnotes to **[std]** rows:
 | *Ratenzahlungszuschlag* | Annual 1,000; half-yearly **1,02**; quarterly **1,03**; monthly **1,05** | German market convention `[unverified]`; carried as **[std]** (9) |
 | Premium cessation | On death, on lapse, at the end of the *Versicherungsdauer*, and — for as long as the *BU-Rente* is in payment — under the *Beitragsbefreiung* | [S1] |
 | *Risikozuschlag* (model-point parameter) | `risk_factor`, a multiplier on the *Bruttobeitrag*; 1,00 at *Normaltarif*. Observed loadings commonly **25 % to 100 %**, occasionally more | [S1] [S3]–[S12] `[unverified]`; base value **[std]** |
-| Premium tax | **None.** German insurance premium tax exempts life-assurance premiums and the exemption extends to BU written by a life insurer | [R31] `[unverified]` |
-| *Stundung* and *Anwartschaft* | Most tariffs allow deferral of the premium or a dormant *Anwartschaft* for parental leave, unemployment or study, preserving insurability without full cover | [S1] `[unverified]`; not modelled |
+| *Stundung*, *Anwartschaft*, premium tax | Deferral or a dormant *Anwartschaft* for parental leave, unemployment or study preserves insurability without full cover; not modelled. **No premium tax** | [S1] [R31] `[unverified]` |
 
 7. **This is the most consequential single gap in the whole corpus.** The
    *Produktinformationsblatt* [S13] is the one public German document that routinely prints both
@@ -211,10 +209,8 @@ Footnotes to **[std]** rows:
 | ***Leistungsdynamik*** | **2 % a year**, applied on each anniversary of the start of benefit, to the *BU-Rente* in payment | recalled menu 1 % / 2 % / 3 %, some index-linked `[unverified]`; level **[std]** (10) |
 | ***Wiedereingliederungshilfe*** | A one-off lump of **6 monthly *BU-Renten*** on a return to work | recalled range 3 – 12 monthly *Renten* `[unverified]`; level **[std]** (11) |
 | End of benefit | At the *Leistungsendalter*; on death; or on a *Nachprüfung* termination, followed by the statutory **three-month run-off** | [S1] [R3] [REG-R29] |
-| Death benefit | **None.** An SBU pays nothing on death, before or during a claim | [S1] |
-| Maturity or survival benefit | **None.** Survival to the *Endalter* pays nothing and returns nothing | [S1] |
-| Benefit on expiry of a claim at the *Leistungsendalter* | **Nothing.** No commutation, no residual value, no conversion into an old-age annuity in the standalone form | [S1] |
-| Other assistance benefits | *Umorganisationshilfe*, *Reha-Hilfe*, *Soforthilfe* paid while the *Leistungsprüfung* runs and set off against the eventual benefit, *Pflegeleistung* add-ons | [S1] [S5] [S8] `[unverified]`; not modelled (11) |
+| Death, maturity and expiry benefits | **All none.** An SBU pays nothing on death, before or during a claim; survival to the *Endalter* returns nothing; and a claim in payment at the *Leistungsendalter* stops with no commutation, no residual value and no conversion | [S1] |
+| Other assistance benefits | *Umorganisationshilfe*, *Reha-Hilfe*, *Soforthilfe* set off against the eventual benefit, *Pflege* add-ons | [S1] [S5] [S8] `[unverified]`; not modelled (11) |
 
 10. **The *Karenzzeit* is an option, not a feature, and the standard sale does not carry one.**
     It is taken to cut the premium, typically by a buyer with employer sick pay or a professional
@@ -223,10 +219,9 @@ Footnotes to **[std]** rows:
     **The *Karenzzeit* is not the six-month prognosis period**, and the two are constantly
     confused: the prognosis is part of the *definition* of BU, the *Karenzzeit* a deferment of
     *payment* on a BU that is already established.
-11. Of the assistance benefits, only the *Wiedereingliederungshilfe* is both common enough to be
-    representative and simple enough to attach to a transition the model already carries — it is
-    paid once, on a return to work. The rest are discretionary, small relative to the annuity, or
-    duplicate a benefit already modelled, and are specified here and shipped off.
+11. Only the *Wiedereingliederungshilfe* is both common enough to be representative and simple
+    enough to attach to a transition the model already carries. The rest are discretionary, small
+    relative to the annuity, or duplicate a benefit already modelled.
 
 ### Underwriting and rating
 
@@ -237,13 +232,10 @@ Footnotes to **[std]** rows:
 | Classification list | Each insurer maintains its own *Berufsgruppenverzeichnis* mapping named occupations to classes. **The classes are not comparable between carriers** — an occupation in class 2 at one insurer may be class 3 at another, which is precisely why the comparison portals exist | [S6] [S15] |
 | Composite classification | Five classes: **BG1** academic and pure office; **BG2** qualified commercial and technical; **BG3** skilled trades with light physical content; **BG4** skilled manual trades; **BG5** heavy manual, hazardous and outdoor | shape [S6] `[unverified]`; five-class cut **[std]** (12) |
 | Occupational factors | BG1 **1,00**; BG2 **1,40**; BG3 **2,10**; BG4 **3,00**; BG5 **4,50**, applied multiplicatively to the *Invalidisierungswahrscheinlichkeit* | recalled manual/office premium ratio 2× – 4×, centred near 3×, and 4× – 6× for the heaviest insurable trades `[unverified]`; **[std]** (12) |
-| Declined occupations | Roofers, scaffolders, some care roles, professional drivers and some artistic professions are declined outright by many carriers, or offered only with a *Karenzzeit*, a reduced *Endalter* or a limited *Leistungsdauer* | [S6] [S12] `[unverified]`; not modelled |
-| Academic status | Moves the classification independently of the job title: the same technical role prices better for a graduate engineer than for a technician | [S6] `[unverified]`; absorbed into the class |
+| Declined occupations, academic status | Roofers, scaffolders, some care roles, professional drivers and some artistic professions are declined outright by many carriers, or offered only with a *Karenzzeit*, a reduced *Endalter* or a limited *Leistungsdauer*. Academic status moves the classification independently of the job title | [S6] [S12] `[unverified]`; absorbed into the class |
 | Sex | **May not be a rating factor.** Unisex pricing has been compulsory for new contracts since **21 December 2012**, following *Test-Achats* (C-236/09, 1 March 2011) and the repeal of § 20 Abs. 2 Satz 1 AGG | [R15] [REG-R34] |
 | Smoker status | **Not systematically a rating factor in BU**, unlike *Risikolebensversicherung*; where it appears its effect is far smaller than the occupational factor | [S1] `[unverified]`; not modelled |
-| *Gesundheitsprüfung* | Health questions over defined look-back windows — recalled as five years for outpatient and ten for inpatient treatment and psychotherapy — plus height and weight, current complaints, planned treatments, tobacco use and existing or refused disability cover | [S1] [S16] `[unverified]` |
-| The two decisive histories | **Psychiatric and musculoskeletal**, which is exactly where the claims come from | [S16] [R22] |
-| Medical examination threshold | Recalled at an insured annual *BU-Rente* of the order of 18 000 – 30 000 € | [S1] `[unverified]` |
+| *Gesundheitsprüfung* | Health questions over defined look-back windows — recalled as five years outpatient, ten inpatient and for psychotherapy — plus height and weight, current complaints, planned treatments, tobacco use and existing or refused disability cover; a medical report above an insured *BU-Rente* of the order of 18 000 – 30 000 € a year. **Psychiatric and musculoskeletal history are the two decisive ones**, which is exactly where the claims come from | [S1] [S16] [R22] `[unverified]` |
 | Underwriting outcomes | Acceptance at *Normaltarif*; acceptance with a ***Risikozuschlag***, commonly 25 % – 100 %; acceptance with an ***Ausschlussklausel*** excluding a named condition or body region (spine, knee, psyche are the classic three); *Zurückstellung*; *Ablehnung* | [S1] `[unverified]` |
 | Proportion not accepted on standard terms | An order of magnitude of a quarter to a third | [S15] [S16] `[unverified]` |
 | ***Risikovoranfrage*** | An anonymised pre-enquiry made through a broker so a decline is never recorded against the applicant in the industry's *Hinweis- und Informationssystem* (HIS) | [S16] [R7] |
@@ -280,10 +272,7 @@ this table is therefore **[std]** or a statutory ceiling.
 | ***Verwaltungskosten***, flat | **18 € per policy per year**, level in euro, not inflated | **[std]** (15) |
 | ***Leistungsbearbeitungskosten***, assessment | **800 € per claim inception** | **[std]** (16) |
 | ***Leistungsbearbeitungskosten***, maintenance | **12 € per month a claim is in payment** | **[std]** (16) |
-| Commission | Not separately modelled — it sits inside the *Abschluss- und Vertriebskosten* line, which is the German charge taxonomy | **[std]** (14) |
-| *Ratenzahlungszuschlag* | See *Premiums* | **[std]** |
-| Expense inflation | **None.** German loadings are fixed at inception for the term | **[std]** (15) |
-| Premium tax | None | [R31] `[unverified]` |
+| Expense inflation, commission | **No inflation** — German loadings are fixed at inception for the term. Commission is not separately modelled; it sits inside the *Abschluss- und Vertriebskosten* line, which is the German charge taxonomy | **[std]** (14) (15) |
 
 14. **The only sourced ceiling in the entire charge structure** is the *Höchstzillmersatz*, itself
     `[unverified]` as to its own figure — the reference library records three different renderings
@@ -306,10 +295,8 @@ this table is therefore **[std]** or a statutory ceiling.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| ***Rückkaufswert*** | **Exists and is not nominal**, under § 169 VVG applied through § 176: the *Deckungsrückstellung* on recognised actuarial principles, with acquisition and distribution costs spread over at least the first five years for the *Mindestrückkaufswert*, and a *Stornoabzug* permissible only if agreed, appropriate and quantified in the contract | [R9] [R5] [REG-R28] `[unverified]` on the detail |
-| Size of it | Modest relative to premiums paid — the reserve is a risk reserve, not a savings account, and *Zillmerung* absorbs its early years. Some wordings state there is no or only a minimal surrender value in the first years | [R9] [R13] `[unverified]` |
-| ***Beitragsfreistellung*** | A right at any time, under § 165 VVG through § 176, producing a **beitragsfreie *BU-Rente*** computed on recognised actuarial principles net of conversion costs; below a stated minimum the contract is instead terminated against the *Rückkaufswert* | [R8] [R5] [REG-R28] `[unverified]` |
-| Size of it | **Small.** A BU contract's *Deckungsrückstellung* is a fraction of the present value of the remaining risk, so the paid-up *BU-Rente* is a small fraction of the original. It is nonetheless the option consumer advice recommends over lapse | [R8] [S16] |
+| ***Rückkaufswert*** | **Exists and is not nominal**, under § 169 VVG through § 176: the *Deckungsrückstellung* on recognised actuarial principles, acquisition and distribution costs spread over at least five years for the *Mindestrückkaufswert*, and a *Stornoabzug* only if agreed, appropriate and quantified. It is nonetheless modest relative to premiums paid — a risk reserve, not a savings account, with *Zillmerung* absorbing its early years, and some wordings give no or only a minimal value in the first years | [R9] [R5] [R13] [REG-R28] `[unverified]` on the detail |
+| ***Beitragsfreistellung*** | A right at any time, under § 165 VVG through § 176, producing a **beitragsfreie *BU-Rente*** net of conversion costs; below a stated minimum the contract is instead terminated against the *Rückkaufswert*. It is **small** — the *Deckungsrückstellung* is a fraction of the present value of the remaining risk — and is nonetheless the option consumer advice recommends over lapse | [R8] [R5] [S16] [REG-R28] `[unverified]` |
 | **What the model does with both** | **Neither is modelled as a cash flow.** A lapse removes the policy from the in-force count and pays nothing | scope **[std]** (17) |
 | Effect of a lapse | Cover ends. Once health has changed the cover cannot be replaced, which makes BU lapse both low and **strongly selective** | [S16]; selection not modelled — see the technical notes' model risks |
 | Non-payment path | German lapse is not instantaneous: due date → *qualifizierte Mahnung* in *Textform* with an itemised statement and a **two-week** minimum period → expiry; and § 166 VVG overrides the general § 38 consequence for life business, so cover converts to *prämienfrei* rather than simply ceasing | [REG-R30] [REG-R28]; timing simplification **[std]** (17) |
@@ -415,13 +402,11 @@ falls due, whether it acknowledges its liability. A time-limited acknowledgement
 Anerkenntnis* — may be given **only once** [R2] [REG-R29].
 
 **What it does.** The *Anerkenntnis* **binds**. Once given, the insurer cannot revisit the same
-facts; it can only stop paying prospectively, through a *Nachprüfung* in which **the burden of
-proof is on the insurer** [R3] [R29]. That reversal of the burden is the most valuable thing an
-insured obtains from a BU claim, and § 173's restriction on the *befristetes Anerkenntnis* exists
-precisely because insurers previously used repeated time-limited acknowledgements to keep the
-burden on the insured indefinitely. Market practice limits the time-limited form to a stated
-maximum, recalled as 6 or 12 months, and a few tariffs waive it entirely as a selling point
-`[unverified]`.
+facts; it can only stop paying prospectively, through a *Nachprüfung* in which **the burden of proof
+is on the insurer** [R3] [R29]. That reversal is the most valuable thing an insured obtains from a
+BU claim, and § 173's restriction exists precisely because insurers previously used repeated
+time-limited acknowledgements to keep the burden on the insured indefinitely. Market practice limits
+the time-limited form to 6 or 12 months, and a few tariffs waive it entirely `[unverified]`.
 
 **Timing.** German claims studies report an average decision time measured in months — an order of
 five to six is recalled — with a long tail `[unverified]` [R21]. Because benefit is retroactive to
@@ -650,8 +635,7 @@ this corpus does not have.
 | *Infektionsklausel* | Standard for medical occupations | Scope of occupations covered | Not modelled | [R30] `[unverified]` |
 | *Berufsgruppen* | 4 – 6 typical | 3 at direct writers to 10+ at specialists; which occupations are declined; **the classes are not comparable across carriers** | Five classes, 1,00 – 4,50 **[std]** | [S6] `[unverified]` |
 | *Zahlbeitrag* / *Bruttobeitrag* | 0,50 – 0,80 | **The widest and least transparent variation in the product** | 0,70 **[std]** | `[unverified]` |
-| *Ratenzahlungszuschlag* | 5 % / 3 % / 2 % | Not established | As stated **[std]** | `[unverified]` |
-| Channel | Broker vs direct vs bank and *Öffentliche* | Option breadth and occupational appetite track the **channel**, not the carrier: direct writers and the bank channel sell simpler tariffs with narrower occupational coverage and fewer options; the broker channel sells the full option set | Broker-channel design | [S12] |
+| Channel | Broker vs direct vs bank/*Öffentliche* | Option breadth and occupational appetite track the **channel**, not the carrier: direct and bank channels sell simpler tariffs, narrower coverage, fewer options | Broker-channel design | [S12] |
 
 **What the composite is, in one paragraph.** A single-life individual standalone SBU on a monthly
 grid; the market-standard definition — last occupation, 50 %, six-month prognosis with the
@@ -673,44 +657,40 @@ no surrender or paid-up cash flow modelled.
 **Contract law — the VVG.** The product's own chapter is §§ 172–177: § 172 the definition and the
 permission to agree an *abstrakte Verweisung*; § 173 the *Anerkenntnis* and its once-only time
 limitation; § 174 the *Leistungsfreiheit* and its three-month notice; § 175 making §§ 173–174
-*halbzwingend*; § 176 applying §§ 150–170 *entsprechend* so far as the particularities of this
-insurance do not preclude it; and § 177 extending the same procedural frame to cover of reduced
-earning capacity, of *Arbeitsunfähigkeit*, and to accident cover paying for a lasting impairment of
-working capacity [R1]–[R6] [REG-R29]. **§ 176 is load-bearing and its exact reach is a named gap**:
-it is the authority for giving a BU contract an *Überschussbeteiligung* (§ 153) [R10] [REG-R24], a
-*prämienfreie Versicherung* (§ 165) [R8], a *Kündigung* right and a *Rückkaufswert* (§§ 168–169)
+*halbzwingend*; § 176 applying §§ 150–170 *entsprechend*; § 177 extending the same procedural frame
+to cover of reduced earning capacity, of *Arbeitsunfähigkeit* and to accident cover paying for a
+lasting impairment of working capacity [R1]–[R6] [REG-R29]. **§ 176 is load-bearing and its exact
+reach is a named gap**: it is the authority for an *Überschussbeteiligung* (§ 153) [R10] [REG-R24],
+a *prämienfreie Versicherung* (§ 165) [R8], a *Kündigung* right and a *Rückkaufswert* (§§ 168–169)
 [R9] [REG-R28] and the *Selbsttötung* rule (§ 161) [R11] — five consequences resting on a range of
-sections that was not read. Outside the chapter, § 19 governs the *vorvertragliche Anzeigepflicht*
-and its five- and ten-year windows, § 157 the misstatement of age, and § 158 the rule that **an
-increase in risk counts as such only where it has been expressly agreed to** — which is why a German
-BU contract carries no general occupation-change clause and why this model needs no mid-term
-reunderwriting state [R7] [REG-R30].
+sections that was not read. Outside it, § 19 governs the *vorvertragliche Anzeigepflicht* and its
+five- and ten-year windows, § 157 the misstatement of age, and § 158 the rule that **an increase in
+risk counts as such only where expressly agreed to** — which is why a German BU contract carries no
+general occupation-change clause and why this model needs no reunderwriting state [R7] [REG-R30].
 
 **Disclosure.** The VVG-InfoV mandates the *Produktinformationsblatt* for life and BU contracts
-[R12] [REG-R31]. For a savings contract it also mandates the *Effektivkosten* — the reduction in
-yield — but **for a pure risk contract there is no yield to reduce**, so a BU
-*Produktinformationsblatt* discloses costs only through the *Brutto*/*Zahlbeitrag* pair [S13]. And
-because PRIIPs reaches *insurance-based investment products*, **a standalone SBU normally has no
-*Basisinformationsblatt* at all** [S14] [REG-R32] — the opposite of the position for delib's savings
-products, where the KID is the richest public document. Those two absences together are why every
-charge assumption in this file is **[std]** while the delib endowment's are not. Distribution sits
-under the IDD and § 34d GewO, with the conduct duties of §§ 6, 7 and 1a VVG and BaFin's *Merkblatt
-01/2023 (VA)* on *Wohlverhaltensaufsicht* and *angemessener Kundennutzen* above them [REG-R33]
-[REG-R31] [REG-R35].
+[R12] [REG-R31]. For a savings contract it also mandates the *Effektivkosten*, but **for a pure risk
+contract there is no yield to reduce**, so a BU PIB discloses costs only through the
+*Brutto*/*Zahlbeitrag* pair [S13]; and because PRIIPs reaches *insurance-based investment products*,
+**a standalone SBU normally has no *Basisinformationsblatt* at all** [S14] [REG-R32] — the opposite
+of delib's savings products, where the KID is the richest public document. Those two absences are
+why every charge assumption here is **[std]** while the delib endowment's are not. Distribution sits
+under the IDD and § 34d GewO, with §§ 6, 7 and 1a VVG and BaFin's *Merkblatt 01/2023 (VA)* on
+*Wohlverhaltensaufsicht* above them [REG-R33] [REG-R31] [REG-R35].
 
 **Supervision and pricing.** § 138 VAG requires premiums sufficient to meet the obligations
 permanently and equal treatment of equal risks; § 139 governs the *Überschussbeteiligung* on the
-supervisory side; §§ 141–143 place the bases in the hands of the *Verantwortlicher Aktuar* [R15]
-[REG-R8] [REG-R9] [REG-R11]. The DeckRV fixes the *Höchstrechnungszins* — **0,25 % for contracts
-written 2022–2024, raised to 1,00 % with effect from 1 January 2025** `[unverified] on both figures
-and the date` — and the *Höchstzillmersatz* of 25 ‰ [R13] [REG-R14] [REG-R15] [REG-R16]. The MindZV
-prescribes the minimum allocation of *Rohüberschuss* to the RfB by source, and the risk-result
-minimum is the one that governs a BU book [R14] [REG-R18] [REG-R19]. **Unisex pricing** has been
-compulsory since 21 December 2012 [R15] [REG-R34], and it bites unusually hard here: the underlying
-*Invalidisierungswahrscheinlichkeiten* differ materially by sex `[unverified]`, so a unisex BU
-tariff embeds a portfolio mix assumption the insurer bears the risk of. BaFin supervises
-*Leistungsprüfung* practice as a conduct matter and publishes the *Beschwerdestatistik*, in which
-BU is persistently over-represented relative to its premium share `[unverified]` [R19].
+supervisory side; §§ 141–143 place the bases with the *Verantwortlicher Aktuar* [R15] [REG-R8]
+[REG-R9] [REG-R11]. The DeckRV fixes the *Höchstrechnungszins* — **0,25 % for contracts written
+2022–2024, raised to 1,00 % from 1 January 2025** `[unverified] on both figures and the date` — and
+the *Höchstzillmersatz* of 25 ‰ [R13] [REG-R14]–[REG-R16]; the MindZV prescribes the minimum
+allocation of *Rohüberschuss* to the RfB by source, the risk-result minimum being the one that
+governs a BU book [R14] [REG-R18] [REG-R19]. **Unisex pricing** has been compulsory since
+21 December 2012 [R15] [REG-R34] and bites unusually hard here: the underlying
+*Invalidisierungswahrscheinlichkeiten* differ materially by sex `[unverified]`, so a unisex tariff
+embeds a portfolio mix assumption the insurer bears the risk of. BaFin supervises *Leistungsprüfung*
+practice as a conduct matter and publishes the *Beschwerdestatistik*, in which BU is persistently
+over-represented relative to its premium share `[unverified]` [R19].
 
 **Actuarial bases.** The German BU standard is the **DAV 1997 family** — **DAV 1997 I** for
 *Invalidisierungswahrscheinlichkeiten*, **DAV 1997 RI** for *Reaktivierungswahrscheinlichkeiten* by
@@ -762,7 +742,7 @@ them.
 `[unverified]` in every detail, with **no docket number given anywhere in this library** because
 none could be confirmed: the binding effect of the *Anerkenntnis*; the *Nachprüfung*'s requirement
 of a **demonstrated change** rather than a re-decision; *Lebensstellung* as the limit on any
-*Verweisung*; and the self-employed insured's ***Umorganisationspflicht***, which requires her to
-consider whether the business can be reorganised so she can continue within her remaining capacity,
-but only where that is economically sensible and does not cost her a substantial part of her income
-or her leading position [R29] [REG-R36].
+*Verweisung*; and the self-employed insured's ***Umorganisationspflicht***, to consider whether the
+business can be reorganised so she can continue within her remaining capacity — but only where that
+is economically sensible and does not cost her a substantial part of her income or her leading
+position [R29] [REG-R36].
