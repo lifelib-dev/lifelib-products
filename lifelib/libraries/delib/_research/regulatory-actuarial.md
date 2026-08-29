@@ -2980,3 +2980,611 @@ the KLV product sweep). Everything else is general knowledge.
   Schicht-1 position and the reason the market sells **BU cover inside a Basisrente**.
 - Products: KLV, RLV and RIE load-bearing; the rest qualified.
 
+---
+
+## 9. Biometric bases and market statistics
+
+**Read the evidence warning first.** The biometric sweep also ran **zero successful searches**;
+both queries it issued were refused for budget. **No value from any DAV table is known to this
+library, at any age, for any of the five tables**, and none may appear anywhere in delib
+attributed to one. The market aggregates in R53 are second-hand from the prudential sweep and
+carry its caveats. The DAV tables are **proprietary and are not shipped**; every decrement CSV in
+delib is a `**[std]**` proxy, anchored so the product's own worked example reproduces exactly, and
+each product's `sources.md` names the DAV table the proxy stands in for and says what a
+replacement must preserve.
+
+### R47. Rechnungsgrundlagen erster und zweiter Ordnung, and the DAV as owner of the tables
+- Publisher: Deutsche Aktuarvereinigung e.V. (DAV); the concept itself is carried by § 138 VAG
+  [R8], § 2 DeckRV [R14], § 341f HGB [R54] and the DAV *Fachgrundsätze* [R56]. Doc type: market
+  terminology and professional practice, not a document.
+- URL: `https://aktuar.de/` — the host and the path shapes `content/PDF/Fachwissen/` and
+  `de/newsroom/detail/` were **returned in the prudential sweep**; **no table-specific path is
+  established**.
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration by the biometric sweep
+  (budget exhausted)**; the host and path shapes are second-hand from the prudential sweep.
+- Content: the DAV occupies a position with **no equivalent in frlib, uklib or uslib**: it is at
+  once the professional body whose members sign the statutory certifications [R11], the
+  standard-setter whose *Fachgrundsätze* bind them [R56], **the body that derives and owns the
+  market's biometric tables**, and the body that makes the annual *Höchstrechnungszins*
+  recommendation [R56]. In France the mortality tables are homologated by *arrêté* and printed in
+  the *Code des assurances* annexe, so a modeller can read them; in Germany the equivalent tables
+  are a **members' deliverable of a private association**. That single institutional difference is
+  why this section is shaped the way it is: **every table citation in delib is a citation to a
+  document the library has not read and cannot ship.**
+  **The mechanic that does not depend on having a PDF open.** German life actuarial practice runs
+  **two parallel sets of assumptions** over the same contract. ***Rechnungsgrundlagen erster
+  Ordnung*** are the pricing and reserving bases — the *Rechnungszins* capped by the
+  *Höchstrechnungszins*, a biometric table carrying explicit safety margins, and cost loadings.
+  They are deliberately **prudent**, which is a statutory requirement [R8], and they determine the
+  *Bruttobeitrag* and the *Deckungsrückstellung*. ***Rechnungsgrundlagen zweiter Ordnung*** are the
+  best-estimate assumptions and determine what actually happens. **The *Sicherheitszuschlag* is the
+  wedge between them, and its direction depends on which way the risk runs**: for a **death
+  benefit** prudence means assuming mortality **higher** than expected; for a **survival benefit or
+  annuity** it means **lower** mortality **and a stronger assumed improvement trend**, so a
+  generational annuity table carries safety in **two dimensions** and a proxy reproducing only the
+  level is not a proxy for the table; for **disability incidence** it means **higher** incidence and
+  **lower** reactivation; for **care** it means higher incidence, longer duration in care and lower
+  mortality of care recipients. **The wedge is not waste — it is the profit-sharing engine**: its
+  systematic release as experience emerges is the *Risikoüberschuss*, one of the three
+  *Überschussquellen* fed into the RfB and distributed under the MindZV [R10][R18]. **A delib model
+  that projects only best-estimate cash flows must still know the first-order basis**, because that
+  is what fixes the *Bruttobeitrag* and the guaranteed benefits — the numbers the contract states —
+  while the second-order basis drives the projection. The technical notes' three-way assumption
+  split is this distinction wearing different clothes. The most visible market artefact of the
+  wedge is the **Bruttobeitrag/Zahlbeitrag gap in Berufsunfähigkeit** [R37][R50].
+  **An insurer may use its own table.** German practice permits *Rechnungsgrundlagen* derived from
+  the undertaking's own portfolio experience where the data suffices, provided the derivation is
+  documented and § 138 VAG's prudence requirement is met; the DAV table is a **market default and
+  benchmark, not a legal mandate**. That is a real difference from France, where art. A. 335-1
+  *C. ass.* enumerates the permitted kinds of table and floors experience-table annuity rates at
+  the homologated table; **no German analogue of that explicit floor was established, and its
+  existence or absence is an open question.**
+- Not established: **the size of the DAV's safety loading on any table**, as a percentage, an
+  age-dependent function or a separate tabulation, **for any of the five tables**. Whether the DAV
+  publishes both orders of each table or only the first-order table with a derivation report is
+  **not established**, though market practice speaks of "1. Ordnung" and "2. Ordnung" tabulations.
+  **The DAV's licence terms — member-only, licensed to insurers, licensed to software vendors —
+  were not established at all**, and this is the highest-value single question for the next sweep:
+  it is the fact that would tell a delib user how to obtain the real table lawfully. The DAV's
+  seat, founding year and membership are `[unverified]`. **The derivations of the German market
+  tables have historically been published in the peer-reviewed actuarial literature — the *Blätter
+  der DGVFM*, continued from 2010 as the *European Actuarial Journal* — even though the tables
+  themselves are not freely available**, which is the right place to send a reader who wants to
+  improve on a delib proxy; but **no specific derivation paper was identified for any of the five
+  tables**, and volume numbers, years, authors and titles are all **not established**.
+- Products: all ten.
+
+### R48. DAV 2008 T and its predecessors — the death-benefit mortality basis
+- Publisher: Deutsche Aktuarvereinigung e.V., 2008 `[unverified]`. Doc type: proprietary actuarial
+  table. **Not public, not redistributable; delib ships no version of it.**
+- URL: **not established.**
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (budget exhausted)**.
+  The table's *name* is corroborated only at one remove, from the commissioning brief and the
+  prudential sweep's gap register, not from an independent search hit.
+- Content: the market-standard first-order mortality basis for **German death-benefit business** —
+  *Risikolebensversicherung*, the death component of a *Kapitallebensversicherung*, death cover in
+  a deferred annuity's accumulation phase, and the *Beitragsrückgewähr* death benefit of a BAS or
+  RIE contract. It succeeded **DAV 1994 T** and is understood to derive from pooled German
+  insured-lives experience rather than population data — the substantive difference from a Destatis
+  table [R52], since insured lives are **selected** and their mortality is materially lighter than
+  the general population's at the working ages term cover lives at. Structural features a
+  `**[std]**` proxy must reproduce, each `[unverified]`: **sex-specific base tables** (raw material
+  even though a tariff may not price on sex since 2012, [R34]); a **smoker/non-smoker split**,
+  which German term insurers use heavily and which produces the roughly two-to-one premium spread
+  in the RLV market; **selection factors** for the first years after underwriting, medical selection
+  putting $q_x$ in policy years 1–5 substantially below the ultimate rate; and **no projected
+  mortality improvement**, because for death cover improvement is favourable to the insurer, so a
+  prudent first-order basis does not project it. **That is the exact opposite of DAV 2004 R [R49],
+  and it is why a single "German mortality table" does not exist: the direction of prudence forks
+  by product.** Model consequences: an RLV model built on a population table without a selection
+  adjustment **overstates claims by a wide margin at issue ages 25–45**, so the RLV proxy is
+  documented as insured-lives-shaped with its anchor stated; and where a KLV carries both a death
+  and a survival benefit, **using one table for both is a numbered pitfall**, since the prudent
+  basis for the death leg is not the prudent basis for the survival leg. **The in-force cohorts**
+  were priced on **DAV 1994 T** (pre-2008) or **ADSt 1986** and older (pre-1994) `[unverified]`;
+  delib's treatment is stated identically in every affected product — **the model point carries its
+  cohort's *Höchstrechnungszins* [R15] and a single `[std]` decrement proxy is used across all
+  cohorts**, with the notes saying explicitly that cohort-specific first-order mortality is not
+  modelled and why: the guaranteed benefits of an in-force point are given data on the model point
+  row, so the table that produced them need not be re-derived.
+- Not established: the publication year (2008 is inferred from the name), the data window, the age
+  range, whether smoker/non-smoker and selection tables are part of the published set, the size of
+  the loading, and whether a first- and second-order pair is distributed — **all not established**.
+  Names, dates and publishers of DAV 1994 T, ADSt 1986 and the older tables are `[unverified]`, as
+  are the cut-over dates between them. **No $q_x$ value at any age is known to this library and
+  none may appear anywhere in delib attributed to this table.**
+- Products: RLV and KLV load-bearing; the others qualified; not relevant to SOF.
+
+### R49. DAV 2004 R and DAV 2004 R-Bestand — the generational annuity tables
+- Publisher: Deutsche Aktuarvereinigung e.V., 2004 `[unverified]`. Doc type: proprietary actuarial
+  tables. **Not public, not redistributable; delib ships no version of them.**
+- URL: **not established.**
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration**; the two queries the
+  biometric sweep was permitted to attempt were both aimed at this table and both were refused.
+- Content: the market-standard first-order basis for **every German annuity promise** — RV and SOF
+  directly, and FRV, IDX, BAS and RIE through annuitisation of the accumulated fund. Its defining
+  property is that it is a ***Generationentafel***: a two-dimensional basis $q(x,\tau)$ in attained
+  age and calendar year, **not a period table**. That is the one structural fact a delib annuity
+  model must reproduce, and reproducing it is not optional — **a period-table proxy priced at a
+  40-year-old's annuitisation in 2055 understates the liability by a margin that dwarfs every other
+  assumption in the model**. The construction, as the German market describes it and
+  `[unverified]` in every detail: a **Basistafel** of second-order mortality for a stated base year,
+  sex-specific; a ***Trendfunktion*** supplying age-dependent annual improvement rates; and safety
+  loadings applied to **both** the level and the trend. The trend is not constant over time — the
+  German construction uses a **Starttrend** fitted to recent experience **converging to a weaker
+  Zieltrend** over a transition period, so **a proxy applying one flat improvement rate forever is
+  qualitatively wrong in long deferrals**. For single-premium immediate annuities buyers
+  self-select for good health and the table is understood to carry ***Selektionsfaktoren*** reducing
+  mortality in the first years — the mirror image of the underwriting selection in DAV 2008 T,
+  running the same direction for the opposite reason, and **a SOF model that ignores it understates
+  the annuity cost**. **DAV 2004 R-Bestand** is the variant for the *Deckungsrückstellung* of
+  annuities **already in force**, as distinct from pricing new business: when DAV 2004 R was
+  introduced it revealed that the book priced on DAV 1994 R was reserved on mortality that had
+  proved far too heavy, and the strengthening (*Nachreservierung*) was permitted to be financed
+  over a transition period rather than in one balance sheet. **Modelling consequences**: every
+  delib annuity model needs **two indices** on the mortality cells, with the calendar year stated as
+  `issue_year + t`; the `**[std]**` proxy must be **generational**, built as a base table times a
+  cumulative improvement factor with its improvement parameters documented as `[std]` and anchored
+  to Destatis's own generational tables [R52], which are the free and redistributable analogue; and
+  the guaranteed *Rentenfaktor* of an FRV or IDX contract is the arithmetic image of this table plus
+  the guaranteed rate, so a model publishing a `[std]` *Rentenfaktor* **and** a `[std]` annuity
+  table must state whether the two are consistent and, if not, which is authoritative.
+- Not established: the base year, the age range, the trend function's form, the transition length,
+  the loading structure, the selection period and the smoker treatment are **all not established**;
+  nor is whether the table is distributed as a first-order/second-order pair. The length and legal
+  basis of the *Nachreservierung* transition, and whether BaFin prescribed or merely permitted it,
+  are not established; the existence, name and date of a **DAV 1994 R** predecessor are
+  `[unverified]`. ***"DAV 2004 R-B20" has two incompatible readings*** — a table applying the trend
+  for a **twenty-year horizon**, or something else entirely (a *Bestand* table with a 20 % loading,
+  or a 2020 valuation table) — and **neither can be excluded**; any delib document naming it must
+  say only that it is an in-force annuity variant of the DAV 2004 R family and stop there. **No
+  $q_x$, no improvement rate and no annuity factor may be attributed to this table anywhere in
+  delib.**
+- Products: RV, SOF, FRV, IDX, BAS, RIE load-bearing; KLV and PFL qualified.
+
+### R50. DAV 1997 I / RI / TI — the Berufsunfähigkeit decrement family
+- Publisher: Deutsche Aktuarvereinigung e.V., 1997 `[unverified]`. Doc type: proprietary actuarial
+  tables. **Not public, not redistributable; delib ships no version of them.**
+- URL: **not established.**
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (budget exhausted)**.
+- Content: **a correction to the commissioning brief, recorded as a question rather than a
+  correction.** The brief names "DAV 1997 I and DAV 1997 TI (Eintritts- und
+  Reaktivierungswahrscheinlichkeiten)". On this compiler's understanding that pairing is
+  incomplete: a German BU model needs **three** decrements and the market names a family of
+  **three** tables — **I** for *Invalidisierung* (incidence), **RI** for *Reaktivierung*, and **TI**
+  for the *Sterbewahrscheinlichkeiten der Invaliden*. Reading "TI" as the reactivation table would
+  leave disabled-life mortality unspecified, which no multi-state BU model can do. **This is
+  `[unverified]` and is recorded as a question for the next sweep**, but a delib document should not
+  repeat the two-table pairing without checking. **The multi-state structure the tables serve.** A
+  BU model is a three-state process — *aktiv* → *invalide* → *tot*, with a return arc *invalide* →
+  *aktiv* — needing, per age and sex: $i_x$ (incidence), $q_x^{aa}$ (active-life mortality, from
+  DAV 2008 T or its predecessor, [R48]), $q_x^{ii}$ (disabled-life mortality, materially heavier
+  than active mortality especially in the first year after disablement) and $r_x$ (reactivation,
+  concentrated in the first two years of a claim and near zero thereafter). **This is the most
+  data-hungry product in delib and the one whose `[std]` proxies carry the least support.** **The
+  age of the basis is itself a finding**: these tables date from 1997 and rest on older experience,
+  while German BU claims experience has shifted decisively — the causes mix has moved towards
+  psychiatric diagnoses and the statutory *Berufsunfähigkeitsrente* was abolished for cohorts born
+  from 1961, changing both the insured population and its incentives. A thirty-year-old first-order
+  basis with a heavy safety loading is **why the German BU market runs a large and persistent
+  *Bruttobeitrag*/*Zahlbeitrag* gap** [R37]. **Modelling consequences**: the BU model must publish
+  an **explicit reactivation assumption** — setting it to zero is a choice with a large,
+  one-directional effect that must be argued, not defaulted; **disabled-life mortality must be
+  separate from active-life mortality**, using one rate for both being a numbered pitfall; and the
+  six-month qualification and the 50 % degree threshold are **AVB conventions, not table
+  properties** [R37] — the tables give probabilities of a *state*, and the contract decides when
+  that state pays.
+- Not established: the three-table structure, the names **RI** and **TI**, the publication year,
+  the data window, whether the tables distinguish **occupational classes** (*Berufsgruppen* rating
+  is the dominant premium driver in the German BU market and must come from somewhere, but the DAV
+  1997 family is not obviously it), and the size of the loadings — **all not established**. Whether
+  a table exists for *Erwerbsunfähigkeit* as distinct from *Berufsunfähigkeit* is not established.
+  **A table designated "DAV 1998 E" could not be characterised at all**: two incompatible readings
+  of the letter are available — *Erlebensfall*, a survival-benefit table, and *Erwerbsunfähigkeit* —
+  and neither can be preferred on the available evidence, so **no delib document may cite DAV
+  1998 E.** **No incidence rate at any age may be attributed to DAV 1997 I anywhere in delib.**
+- Products: BU load-bearing; RLV, KLV and PFL qualified.
+
+### R51. DAV 2008 P, § 15 SGB XI and the Pflegegrad break
+- Publisher: Deutsche Aktuarvereinigung e.V., 2008 `[unverified]`, for the table; Bundesministerium
+  der Justiz for SGB XI. Doc type: proprietary actuarial table; statutory sections.
+- URL: table **not established**; https://dejure.org/gesetze/SGB_XI/15.html (returned in the
+  contract sweep); `https://www.gesetze-im-internet.de/sgb_11/__37.html` and `__43.html`
+  `[unverified canonical form]`.
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration for the table**; the
+  **five Pflegegrade, § 15 SGB XI as their home and the NBA points assessment are corroborated at
+  one remove by the contract sweep (three independent sources)**.
+- Content: **DAV 2008 P** is the market-standard first-order basis for private long-term-care
+  business — *Pflegerentenversicherung*, and in the health sector *Pflegetagegeld* and
+  *Pflegekosten* cover, which delib treats as out of scope. It is understood to supply, by age and
+  sex, **transition probabilities into care**, **mortality of people in care** and **transitions
+  between care levels** `[unverified]`. **The finding that matters most is a mismatch, not a
+  number.** A table published in 2008 is necessarily defined on the **three *Pflegestufen*** of the
+  pre-2017 social care insurance. The *Zweites Pflegestärkungsgesetz* replaced them on **1 January
+  2017** with the **five *Pflegegrade*** of § 15 SGB XI, assessed by a points-based
+  *Begutachtungsinstrument* that deliberately **widened** the definition of care need, particularly
+  on cognitive and mental grounds — and the BGH has **refused to map the two scales** [R36]. **If
+  the courts will not map the grades, a modeller may not silently do so either.** Therefore, for
+  delib's PFL product: the model **states which trigger scale it implements** — *Pflegegrade*, an
+  ADL points system, or a combination — and **any incidence proxy calibrated to Pflegegrade data is
+  explicitly not a proxy for DAV 2008 P**, because the two are defined on different state spaces
+  separated by a definitional break that raised measured prevalence. **The social scheme is the
+  benchmark the private product is sold against**: it pays *Pflegegeld* (cash where care is given
+  informally), *Pflegesachleistung* (in kind) and *vollstationäre Pflege* (a fixed contribution to
+  residential care), with **Pflegegrad 1 receiving none of the three**, only the monthly
+  *Entlastungsbetrag*; the amounts rise steeply with grade and are capped and partly in kind, which
+  is why **the private *Pflegerente* — uncapped cash, paid irrespective of setting — is the
+  product's entire selling proposition** and why its benefit is modelled as an annuity rather than a
+  reimbursement. The private benefit ladder is conventionally a **percentage of the full
+  *Pflegerente* per Pflegegrad**, and **no market standard was established**, so it is `**[std]**`
+  in delib unless a *Tarifblatt* supplies it. Since 2022 the care-related *Eigenanteil* in
+  residential care is reduced by ***Leistungszuschläge* rising with the duration of residence**
+  (§ 43c SGB XI), **so the funding gap a private *Pflegerente* is sized to fill is largest in the
+  first year of residential care** — a feature with a direct modelling implication for the sum
+  insured.
+- Not established: **whether DAV 2008 P is defined on Pflegestufen (the reasoned inference) or was
+  reissued on Pflegegrade is not established, and this is the most consequential unresolved
+  question for PFL** — if a post-2017 revision exists, the whole caveat changes shape. The data
+  source, age range, state space, loading structure and whether reactivation out of a care level is
+  modelled are **all not established**; whether an earlier *DAV 1998 P* exists is not established.
+  **The § 15 SGB XI point bands separating grades 1 to 5 were sought and not returned in the
+  contract sweep either, and remain unknown** — without them the PFL grade ladder cannot be grounded
+  in anything but `[std]`. **No SGB XI euro amount was established** — no *Pflegegeld*, no
+  *Pflegesachleistung*, no § 43 residential contribution, no *Eigenanteil*, no *Leistungszuschlag*
+  percentage — and **no delib document may quote one without confirming it**; magnitudes in
+  circulation from general knowledge are recorded nowhere in this library as figures. The § numbers
+  other than § 15 are `[unverified]`. The subsidised **Pflege-Bahr** product (§ 127 SGB XI
+  `[unverified]`, from 1 January 2013, a €5 monthly *Zulage* on a €10 own contribution with **no
+  health underwriting**) is recorded as **out of scope but instructive**: it is the clearest
+  illustration in the German market of anti-selection risk, so **delib's PFL incidence assumption is
+  an underwritten-lives assumption and is not transferable to a guaranteed-issue tariff**; every
+  Pflege-Bahr parameter here is `[unverified]`.
+- Products: PFL load-bearing; BU, KLV and RV qualified.
+
+### R52. Destatis — Sterbetafeln, Generationensterbetafeln, Pflegestatistik and the reuse licence
+- Publisher: Statistisches Bundesamt (Destatis), Wiesbaden; the *Datenlizenz Deutschland* is issued
+  by the German administration `[unverified]`. Doc type: official statistical publications and
+  datasets.
+- URL: **not established** for any of them; no Destatis path was returned to any sweep.
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (budget exhausted)**.
+- Content: the **free, redistributable, population-level German mortality basis**, and therefore the
+  raw material behind every `**[std]**` decrement CSV delib ships — exactly the role INSEE plays in
+  frlib. **Two distinct products, and confusing them is a real error**: the *Sterbetafel 20xx/20yy*
+  is a **period table** computed annually from three years of deaths and population, giving $q_x$
+  and $e_x$ by single year of age and sex; the *Allgemeine Sterbetafel* is computed once per census
+  cycle on census-corrected denominators, is the more accurate, and is the one usually used as a
+  base table. **Why a population table is the wrong shape**: insured lives are selected, so
+  population mortality is heavier than insured mortality at the ages term and endowment business
+  lives at, and lighter than annuitant mortality is light — **it sits between the two insured
+  populations and matches neither**. A delib proxy built from it therefore carries an explicit,
+  `[std]`-tagged adjustment with a stated direction: **downward for a term or endowment death leg**
+  (medical selection) and **downward again and generationally for an annuity** (voluntary
+  anti-selection plus improvement). **The *Generationensterbetafeln für Deutschland* are the single
+  most useful public document in this section**: cohort life tables built from historical German
+  mortality plus a projected improvement, normally in more than one variant distinguished by the
+  strength of assumed improvement — **exactly the structure DAV 2004 R has** [R49], and therefore
+  the right public basis for delib's `[std]` generational annuity proxy, built as
+  $q(x,\tau)=q_{\text{base}}(x)\cdot\prod(1-\lambda(x))$ over the calendar years from the base year,
+  with $\lambda(x)$ a `[std]` age-dependent improvement rate anchored so the worked example
+  reproduces exactly and documented as a **simplification** of the Starttrend/Zieltrend structure
+  rather than a replication of it. What it does **not** supply is the annuitant selection effect and
+  the first-order safety loading; both stay `[std]` adjustments layered on top. The
+  ***Pflegestatistik*** is the **only public German prevalence data for long-term care** and
+  therefore the calibration target for every `[std]` PFL incidence assumption: it counts
+  *Pflegebedürftige* recognised by the social scheme by **Pflegegrad 1 to 5**, by age and sex, and by
+  care setting. **The series contains a definitional break at the 2017 reform that is not a change
+  in the underlying risk** [R51], so any delib document quoting a prevalence trend says so and no
+  incidence proxy is calibrated across the break. **The licence question and why delib's position
+  does not depend on it**: German official statistics are understood to be released under a
+  permissive attribution licence (*Datenlizenz Deutschland – Namensnennung*) permitting commercial
+  reuse, redistribution and modification with attribution — the same assumption frlib records as
+  `[unverified]` for INSEE. **delib's ruling is safe under either answer**: the shipped CSVs are
+  **constructed, anchored, documented `[std]` proxies**, not reproductions of any published series,
+  each carrying a `provenance` column naming what it stands in for, so the library's position does
+  not turn on resolving the licence. **It does depend on never shipping a DAV table**, which is not
+  a licence question at all.
+- Not established: the exact edition names and reference periods, the exact life-expectancy values
+  (recent German period tables are understood to give **about 78 years for men and about 83 for
+  women** `[unverified]`, and **no figure from this entry may be quoted to more precision than
+  that**), the age ranges, the publication dates and the tabulation form. For the generational
+  tables: the cohort range, the number and names of the variants, the projection horizon and whether
+  they are machine-readable — **none of the commonly cited framing could be confirmed and none may
+  be stated**. For the Pflegestatistik: **no figure was corroborated**, including the widely cited
+  headline of around **5.7 million** *Pflegebedürftige* on the 2023 reference date, the grade
+  percentages, the home/institution split and the periodicity; whether it covers privately insured
+  care recipients was not established and materially affects its use as a denominator. The licence
+  name, version and attribution wording are **not established**. The *koordinierte
+  Bevölkerungsvorausberechnung* — the right citation for any statement about the direction of German
+  longevity — has an **unestablished current edition, base year and variant set**. **HMD** (long,
+  methodologically consistent historical series, the right basis for fitting an improvement trend,
+  requiring registration and carrying its own terms) and **Eurostat** are recorded as the other free
+  routes; their coverage and licence terms are not established.
+- Products: all ten (the base of every `[std]` proxy).
+
+### R53. The German life market in numbers — GDV, BaFin, Assekurata, Map-Report, Morgen & Morgen and Franke und Bornberg
+- Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e.V.; Bundesanstalt für
+  Finanzdienstleistungsaufsicht; Assekurata Assekuranz Rating-Agentur GmbH; Franke und Bornberg
+  GmbH / map-report; MORGEN & MORGEN GmbH; Deutsche Rentenversicherung Bund. Doc type: statistical
+  compendia, supervisory statistics, rating-agency surveys and claims-practice studies.
+- URL: https://www.gdv.de/resource/blob/180978/b8ae8eb0b1bf4b15e7cc3354bc231af9/die-deutsche-lebensversicherung-in-zahlen-2024-publikation-pdf-data.pdf
+  (returned);
+  https://www.gdv.de/gdv/statistik/statistiken-zur-deutschen-versicherungswirtschaft-uebersicht/lebensversicherung/brutto-beitraege-lebensversicherung-gebuchte-brutto-beitraege-188638
+  (returned); https://www.bafin.de/SharedDocs/Downloads/DE/Statistik/Erstversicherer/neu/dl_st_24_erstvu_lv_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Meldung/2025/meldung_2025_11_17_tabellenteil_statistik_erstversicherer_2024.html
+  (returned); https://www.assekurata-rating.de/2026/01/29/ueberschussdeklaration/ (returned);
+  https://www.assekurata-rating.de/2025/03/05/assekurata-marktstudie-zu-ueberschussbeteiligungen-und-garantien-2025/
+  (returned); https://www.franke-bornberg.de/blog/map-report-verwaltungskostenquote-2023-lebensversicherer
+  (returned); https://www.franke-bornberg.de/fb-news/pressemitteilungen/map-report-939-solvabilitaet-im-vergleich-2015-bis-2024
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the prudential
+  sweep** (six queries; the GDV aggregates from two independent reports of the same publication;
+  the statistics series and its publication date from BaFin's own pages; the solvency figures from
+  two independent secondary analyses that agree on direction and named outliers but **disagree on
+  the industry aggregate**; the declared rates from **four sources that disagree**)
+- Content: **Volumes, 2024, GDV basis** (Lebensversicherer, Pensionskassen and Pensionsfonds
+  together): premium income **+2.8 % to €94.6 bn**; *laufende Beiträge* **€66.3 bn**, roughly flat;
+  *Einmalbeitragsgeschäft* about **+10 % to €28 bn**; composition **63.9 % laufende Beiträge,
+  29.5 % Einmalbeiträge, 6.7 % Zusatzversicherungen**; **contract count −1.4 % to 80.3 m**; new
+  business *laufender Beitrag* **€6.6 bn (+2.8 %)** and *Einmalbeitragsgeschäft* **+10.8 % to
+  €27.2 bn**. The operative reading for a cash flow library is the **Einmalbeitrag shift**: single
+  premium business is now roughly 30 % of income and growing at ten times the rate of regular
+  premium business, which is why SOF is a live product and why KLV and RV model point tables include
+  single-premium points. **Volumes, 2024, BaFin basis**: life-segment *verdiente Bruttobeiträge* of
+  **€90.4 bn**. **The GDV €94.6 bn and the BaFin €90.4 bn measure different populations on
+  different bases and must never appear in the same table in delib.** **The taxonomy** the GDV
+  reports on maps onto delib's products closely enough to be worth stating, since it is the
+  vocabulary any German market figure will be expressed in `[unverified]`: *Kapitalversicherungen* →
+  KLV, *Risikoversicherungen* → RLV, *Rentenversicherungen* → RV and SOF, *fondsgebundene Lebens-
+  und Rentenversicherungen* → FRV, *sonstige Lebensversicherungen* (where index-linked business
+  generally sits and is **therefore not separately visible**), the excluded *Kollektiv-* and *bAV*
+  lines, and *Zusatzversicherungen* (where BU sold as a **rider** appears, while delib's BU models
+  the *selbständige* form). Riester and Basisrente **cut across** the taxonomy and are reported
+  separately, double-counting against the product lines. **Declared rates.** For **2025** the
+  average *laufende Verzinsung* was **2.53 % in the Klassik and 2.58 % in the Neue Klassik**. For
+  **2026** the sources give **2.6–2.7 %** (Assekurata forecast), **2.87 %** (market average, +0.05 pp
+  on the prior year) and **2.54 %** (average for policies written in 2025) — **three incompatible
+  averages**. Highest declared rates named: **Inter 3.40 %**, **Provinzial 3.25 %**. **The
+  *laufende Verzinsung* is the *Garantieverzinsung* plus the *laufende Zinsüberschussbeteiligung***,
+  so a declared 2.5 % on a 1.0 % guarantee implies a 1.5 pp surplus credit and **a delib model must
+  never add the declared rate on top of the guarantee** — a numbered pitfall for every product with
+  a general-account leg. The *Gesamtverzinsung* adds the *Schlussüberschussanteil* and the
+  *Bewertungsreserven* share, neither guaranteed until declared. **Cost ratios, 2024**:
+  *Verwaltungskostenquote* **2.4 %** on one measurement and **2.19 %** on another, against **2.5 %
+  for 2023**, with a market spread running **from under 2 % to over 4 %**; the two 2024 figures use
+  **different denominators** (*gebuchte* versus *verdiente Bruttobeiträge*) and the conflict is
+  unresolved. **The 2024 solvency reset**, the consequence of [R13]: the regulatory SCR ratio of the
+  life industry **including** transitionals was **340.3 % at end-2024 against 663.6 % at end-2023**,
+  a fall of about **323 percentage points driven by the recalculation rather than by economics**;
+  **three life insurers failed to reach a 100 % coverage ratio without Hilfs- und Übergangsmaßnahmen
+  at 31 December 2024**; the base ratios **excluding** transitionals remained largely stable — which
+  is the point, the recalculation removed an accounting cushion, not capital. Named outliers for
+  2024 **without volatility adjustment and without transitionals**: highest **LVM 730.1 %** and
+  **LV 1871 715.7 %**; lowest **Concordia Oeco 27.6 %**, **LPV 35.5 %** and **Öffentliche Oldenburg
+  59.6 %**. **The rating and survey houses** supply what no statutory source does: Assekurata's
+  annual *Überschussdeklaration* and its *Marktstudie zu Überschussbeteiligungen und Garantien*
+  track the declared rates and the shift from full *Beitragsgarantie* through "Neue Klassik" partial
+  guarantees to levels below 100 % of premiums paid — the entire premise of delib's IDX product;
+  *map-report* draws insurer-level and market-level series from the statutory accounts [R54], which
+  is the only route to a cost or lapse figure defined the same way for every insurer, and supplies
+  the **spread** as well as the average, which is what a `**[std]**` parameter needs to be
+  defensible; and MORGEN & MORGEN and Franke und Bornberg publish the two standard **BU
+  claims-practice** studies, reporting the *Anerkennungsquote*, the grounds for declinature — the
+  dominant one being *Anzeigepflichtverletzung* under § 19 VVG [R30] — the share settled by
+  *Vergleich*, the processing time and the average age at claim. **The BU model consequence is
+  specific**: a model that projects incidence and pays every incident claim in full is modelling a
+  product with a 100 % acceptance rate; **delib's honest treatment is a net-of-declinature `[std]`
+  incidence assumption, stated as such**, with a pitfall recorded that applying both a gross
+  incidence table *and* an acceptance ratio double-counts.
+- Not established: **the disagreements above are recorded and none is resolved** — 2026 declared
+  rate **2.6–2.7 % vs 2.87 % vs 2.54 %**; *Verwaltungskostenquote* 2024 **2.4 % vs 2.19 %**;
+  *Einmalbeiträge* 2024 **€28 bn (total) vs €27.2 bn (new business)**, consistent different cuts
+  that no source reconciles; and the industry SCR ratio with transitionals at end-2024 reported as
+  **340.3 %** on one analysis and **484 %** on another (different populations, possibly different
+  dates). **No Abschlusskostenquote figure was established at all**, which is a real gap because
+  acquisition cost drives the early-duration *Rückkaufswert* pattern; the only anchor is the 25 ‰
+  *Höchstzillmersatz* [R16], which is a **cap, not an observation**. **No Stornoquote value for any
+  year was established**, and **no duration-shaped lapse curve exists publicly for any German
+  product** — the GDV publishes a market rate on **two different bases (by contract count and by
+  sum insured or premium)** which give materially different answers, and a delib lapse assumption is
+  therefore a `**[std]**` duration-shaped curve whose duration-weighted average is anchored to the
+  market rate, with that anchoring stated as the rationale. **No product-level GDV split** — no
+  count, sum insured or premium for Kapital-, Renten-, Risiko-, fondsgebundene or index business
+  separately — and **no Riester or Basisrente contract count**, on any basis, in any year. **No
+  *Rentenfaktor* and no *Effektivkosten* value, guaranteed or current, from any insurer, in any
+  year**, although both are published per contract by law [R31][R43] — the two most consequential
+  missing numbers in the library. **No BU figure was established**: no causes percentage (the
+  *ordering* — psychiatric largest, then musculoskeletal, then cancer — is robust and the shares are
+  not), no *Anerkennungsquote*, no average BU-Rente, no *Berufsgruppen* differential, no
+  Brutto/Zahlbeitrag ratio, and no *Erwerbsminderungsrente* amount or threshold. **`idx` is
+  statistically invisible**: no public German series isolates index-linked business, which is itself
+  a finding the IDX documentation must state rather than quoting a market size. Nothing in the BaFin
+  statistics themselves was read — only landing pages and one aggregate premium figure — and the
+  number of German life insurers and the aggregate *Deckungsrückstellung* were not established.
+- Products: all ten (market context, and the observed ranges behind every `[std]` choice).
+
+---
+
+## 10. Accounting and professional standards
+
+### R54. HGB §§ 341–341o, RechVersV and BerVersV — the German statutory accounts and supervisory returns
+- Publisher: Bundesamt für Justiz; BaFin for the BerVersV *Begründung*; mirrored by `dejure.org`,
+  `buzer.de`, `freirecht.de`, `juraforum.de`, `ra.de`, `gesatz.de`, `lxgesetze.de`, `haufe.de`,
+  `anwalt.de`, `datenbank.nwb.de`, `de.wikipedia.org`. Doc type: statute and two Rechtsverordnungen.
+- URL: https://dejure.org/gesetze/HGB/341f.html and `/341e.html` (returned);
+  https://www.gesatz.de/link.aspx?lnk=17400 (returned, §§ 341f–341h);
+  https://www.gesetze-im-internet.de/rechversv/BJNR337800994.html, `.../formblatt_1.html`,
+  `.../__28.html` (returned); https://www.gesetze-im-internet.de/berversv_2017/BJNR285800017.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Aufsichtsrecht/Verordnung/begruendung_berversv_va.html
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; seven
+  independent publishers on § 341f with two substantive summaries that agree closely; six on § 28
+  RechVersV with one detailed summary of Abs. 8; four plus BaFin's memorandum on the BerVersV)
+- Content: **§ 341e — the standard of prudence.** Insurers must form technical provisions **to the
+  extent necessary according to reasonable commercial judgement (*nach vernünftiger kaufmännischer
+  Beurteilung*) to ensure the *dauernde Erfüllbarkeit* of the obligations** — the same standard
+  § 138 Abs. 1 VAG imposes on premiums [R8] and BaFin states as its supervisory objective [R21],
+  and the reason the German statutory reserve is deliberately conservative rather than
+  best-estimate. **§ 341f — the *Deckungsrückstellung*.** One must be formed for obligations from
+  **life insurance and from insurance business conducted in the manner of life insurance** — the
+  hook that brings a *Pflegerente* or a stand-alone BU annuity inside the same reserving rule — at
+  the amount of its ***versicherungsmathematisch berechneter Wert***, **including profit shares
+  already allocated** but **excluding *verzinslich angesammelte Überschussanteile***, and **after
+  deducting the actuarially calculated present value of future premiums**: the **prospective
+  method**. Where a prospective calculation is not possible, the **retrospective method** on
+  accumulated income and expenses applies. **§ 341h** covers the *Schwankungsrückstellung*, a
+  non-life instrument noted only for completeness. **The RechVersV** is the statutory-accounts
+  rulebook: insurers use **Formblatt 1 instead of § 266 HGB** for the balance sheet and **Formblatt
+  3** for the life/health profit and loss account, both following the ***Nettoprinzip*** with
+  reinsurers' shares openly deducted. **§ 28 gives the German surplus system its published
+  anatomy**: within the RfB a ***Schlussüberschussanteilfonds*** is formed for
+  *Schlussüberschussanteile*, *Schlusszahlungen*, *Gewinnrenten* and the minimum participation in
+  *Bewertungsreserven*, per the applicable *Deklaration*, and the RfB may be used only for those
+  purposes. **§ 28 Abs. 8 is the disclosure that makes the chassis auditable from outside**: the
+  *Anhang* must give, in tabular form, the **development of the RfB** (*Anfangsbestand*,
+  *Zuführungen*, *Entnahmen*, *Endbestand*); the portions attributable to its components
+  **including the Schlussüberschussanteilfonds**; for **individual *Abrechnungsverbände*** the
+  ***festgelegte Überschussanteile*** and where applicable the ***Ansammlungszinssatz***, with the
+  *Zuteilungsjahr* stated; and the **procedures used to calculate the Schlussüberschussanteilfonds
+  together with the chosen actuarial assumptions**. **This is the single most useful published
+  source on a named insurer's surplus system**, and the reason a delib product document can cite a
+  declared *Überschussanteilsatz* at all. **The BerVersV** governs what an insurer files with BaFin
+  **beyond** the Solvency II templates — the national, HGB-based returns: life insurers must
+  additionally prepare *formgebundene Erläuterungen* including the ***Zerlegung des Rohergebnisses
+  nach Ergebnisquellen*** under **Nachweisungen 213 bis 219**, filed as forms **F.213.01 to
+  F.219.01**. That is the **source-of-earnings split** — *Kapitalanlageergebnis*, *Risikoergebnis*,
+  *übriges Ergebnis* — which is exactly the three-way split the MindZV's 90/90/50 minima operate on
+  [R18]; and the MindZV cross-refers into these forms by **named cell**, its § 5 identifying inputs
+  as the amount in "**Formblatt 200 Seite 7 Zeile 10 Spalte 04**" and "**Formblatt 200 Seite 7 Zeile
+  12 Spalte 03**". **A German minimum allocation is therefore computed from named cells of a named
+  supervisory form**, which is unusually concrete and is worth saying in a delib technical note.
+  **delib computes none of this**: no model produces a *Deckungsrückstellung*, an RfB stock or a
+  P&L, and the accounting layer is cited, never specified.
+- Not established: the exact boundary of §§ 341–341o and which sections cover the *Anhang* and
+  *Lagebericht*; § 341g was not retrieved; **the precise HGB treatment of *verzinslich angesammelte
+  Überschussanteile* — which balance-sheet line they sit on — was not established, and it matters
+  for any delib product with an accumulation option**. **The line structure of Formblatt 1 was not
+  established**, so where the *Deckungsrückstellung*, the RfB and the *Anlagestock* sit on a German
+  balance sheet is unknown. Whether the RfB's *gebundene*/*ungebundene* split appears in § 28 or
+  only in the RfBV was not established; the definition of *Abrechnungsverband* was not retrieved.
+  **The contents of Nachweisungen 213–219 were not established**, only that the forms exist and
+  carry the decomposition; and **the MindZV cell references quoted above are from the Pensionskassen
+  section (§ 5), not from § 4, and must not be assumed to be the same for life insurers**. Whether
+  the returns are public was not established (they are generally understood not to be). The
+  RechVersV's own dates — **8 November 1994, BGBl. I S. 3378**, last amended **10 August 2021, BGBl.
+  I S. 3436** — were returned by the search summaries and are recorded as such.
+- Products: all ten as the source of published insurer data; load-bearing for KLV, RV, BAS, RIE,
+  IDX and SOF.
+
+### R55. IFRS 17 — Versicherungsverträge and the Variable Fee Approach
+- Publisher: IASB; European Commission for the endorsement regulation; **DRSC** for the German
+  project page; Haufe and Deloitte as commentary; the DAV for actuarial application material. Doc
+  type: accounting standard, endorsed into EU law by **Verordnung (EU) 2021/2036**.
+- URL: https://www.drsc.de/projekte/insurance-contracts/ (returned);
+  https://www.deloitte.com/de/de/services/audit-assurance/perspectives/versicherungsvertraege-ifrs-17.html
+  (returned);
+  https://www.haufe.de/id/kommentar/joerg-baetgepeter-wollmerthans-juergen-kirschpeter-oser-2-variable-fee-approach-vfa-HI16462224.html
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; the
+  endorsement regulation number and the 2023 effective date from two independent sources; the VFA
+  description from three)
+- Content: the EU published **Verordnung (EU) 2021/2036 in November 2021**, taking IFRS 17 into EU
+  law; the application date had been **deferred by one year to 1 January 2023**, and the standard
+  applies **for financial years beginning on or after 1 January 2023**. **Scope**: insurance
+  contracts, reinsurance contracts and **investment contracts with discretionary participation
+  features** (*Kapitalanlageverträge mit ermessensabhängiger Überschussbeteiligung*) — the last
+  category matters in Germany because it catches savings vehicles that are not insurance in the
+  risk-transfer sense. **The Variable Fee Approach** is an adaptation of the building-block approach
+  for contracts with **direct participation features** and is **mandatory** for them: it explicitly
+  reflects the value development of the underlying items, and the difference between the value
+  computed at the first step and the value the actuaries compute at the second is **recorded in the
+  Contractual Service Margin** — which is what "variable fee" names. Under the VFA, **investment
+  returns on the underlying portfolio no longer hit the income statement immediately; they flow
+  through the CSM, which is released progressively.** German life contracts qualifying for the VFA
+  typically include the **HGB gross-surplus participation** — i.e. **the *Überschussbeteiligung*
+  chassis of [R9], [R10] and [R18] is precisely what makes them direct-participating.** For delib
+  IFRS 17 is **cited, never specified**: no model produces a CSM, a risk adjustment or a fulfilment
+  cash flow, and the models produce gross liability cash flows that an IFRS 17 measurement would
+  take as one input.
+- Not established: the CSM, the risk adjustment, the coverage units and the transition approaches
+  beyond the sentences above. Which German life insurers report under IFRS 17 (only listed groups
+  do; solo German statutory accounts remain HGB) was **not established**. **Whether Riester and
+  Basisrente contracts qualify as direct-participating was not established.** The endorsement
+  regulation appears in one summary as "Verordnung (EG) Nr. 2021/2036" and in another as
+  "Verordnung (EU) 2021/2036"; **EU** is correct for a 2021 instrument and the "EG" rendering is
+  treated as a transcription error, but **that judgment is inference**.
+- Products: all ten (qualified — group reporting context).
+
+### R56. DAV Fachgrundsätze and the annual Höchstrechnungszins recommendation
+- Publisher: Deutsche Aktuarvereinigung e.V.; PwC Deutschland *Insurance News* and
+  Versicherungsmagazin as secondary reporters. Doc type: professional standards; annual
+  recommendation and its supporting *Zinsbericht*.
+- URL: https://aktuar.de/de/newsroom/detail/dav-empfiehlt-auch-fuer-2027-einen-hoechstrechnungszins-fuer-lebensversicherungs-neuvertraege-in-hoehe-von-10-prozent/
+  (returned);
+  https://aktuar.de/content/PDF/News/Pressemeldungen/2025_11_26_DAV_PM_H%C3%B6chstrechnungszins.pdf
+  (returned); https://aktuar.de/content/PDF/Fachwissen/2024-11-22_Zinsbericht_f%C3%BCr_2026.pdf
+  (returned);
+  https://blogs.pwc.de/de/insurance-news/article/252092/dav-empfiehlt-beibehaltung-des-hoechstrechnungszinses-in-der-lebensversicherung-bei-1-0-prozent-fuer-2027
+  (returned). **No URL for the *Fachgrundsätze* index or for any individual standard was returned.**
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **for the
+  recommendation** (four queries; the mechanism described consistently by three independent sources
+  and the 2026 and 2027 recommendations each by two); **no search corroboration for the
+  Fachgrundsätze** (the subject was flagged as belonging to a researcher whose queries never ran)
+- Content: **The recommendation and its method.** The *Höchstrechnungszins* is set by the
+  Bundesministerium der Finanzen as the DeckRV's *Verordnungsgeber* [R14]; **the DAV submits an
+  annual proposal**, and **the ministry has in the past mostly followed it** — a soft-law channel
+  with no statutory anchoring any search result identified, so delib describes it as **practice
+  rather than law**. The method: the DAV runs **model calculations on a representative
+  *Neuanlageportfolio***; scenarios for the development of returns are **weighted stochastically**;
+  a **five-year average** damps short-term fluctuations; and a ***Sicherheitsabschlag* of 40 %** is
+  applied to the smoothed return. The 40 % haircut is the residue of the statutory **60 % ceiling**
+  that bound the German rate from the mid-1990s until Solvency II — derived from **Article 17 of the
+  Third Life Directive of 1992**, carried forward as **Article 20 of Directive 2002/83/EC**, under
+  which the reserving rate could not exceed **60 % of the rate on bonds issued by the State in whose
+  currency the contract is denominated**, in the German application 60 % of the average yield on
+  **ten-year government bonds**. **That rule was repealed without replacement when Solvency II took
+  effect on 1 January 2016**, which is why the current German rate rests on a ministerial judgment
+  informed by an actuarial recommendation rather than on a formula. The DAV recommended the increase
+  from **0.25 % to 1.00 % for 2025**, which the ministry adopted [R15], then recommended **keeping
+  1.0 % for 2026** and again **1.0 % for 2027** (press release of **26 November 2025**), stating
+  that one percent can be stably maintained in the medium term. **The asymmetry that matters for
+  delib**: the interest haircut is **documented and quantified at 40 %**; the biometric haircuts
+  [R47] are **neither, for any of the five tables**, and the reference library must not present the
+  two legs of the *Rechnungsgrundlagen* as equally supported.
+  **The professional standards.** The German actuarial standards system is understood to be a
+  three-tier hierarchy of binding instruments — *Grundsätze*, *Richtlinien* and *Hinweise*, together
+  the ***Fachgrundsätze***, binding on DAV members through the association's conduct rules — plus
+  non-binding ***Ergebnisberichte*** `[unverified]` throughout. The mechanism that matters for a
+  cash flow model is the chain from standard to tariff: § 138 VAG requires prudent actuarial
+  assumptions [R8] and § 2 DeckRV requires prudently chosen bases [R14], and **neither instrument
+  names a table**. The gap between "prudent" and "this specific $q_x$" is closed by the
+  *Verantwortlicher Aktuar* under § 141 VAG [R11] exercising professional judgement under DAV
+  standards, and in practice by using the DAV table appropriate to the product. **A German biometric
+  basis is therefore soft law with hard consequences**: no statute mandates DAV 2008 T, and yet
+  essentially every German term tariff is priced on it or on an insurer table justified against it.
+  **The delib convention that follows**: cite the **named document or nothing** — a delib document
+  that cites "a DAV standard" without saying which tier it belongs to is making a claim it cannot
+  support. And the modelling consequence belongs in every product's technical notes: the model's
+  decrement table is a **modeller's assumption, not a contractual term**, sitting in assumption
+  class (c) behavioural for a BU incidence rate but in class (a) contractual for a
+  *Rentenversicherung*, whose tariff table is fixed at inception and whose guaranteed *Rentenfaktor*
+  is its arithmetic image. Getting that split wrong is a category error.
+- Not established: **a direct conflict on the historic formula.** One summary states the ceiling as
+  *"60 % der durchschnittlichen Rendite zehnjähriger deutscher Staatsanleihen"*; another states the
+  German rate could amount to only *"85 Prozent der gemittelten monatlichen Umlaufrendite von
+  Anleihen der öffentlichen Hand"* under **§ 3 DeckRV**. These are **different bases and different
+  percentages**. The 60 % figure is corroborated by the EU-directive lineage and by the DAV's own
+  40 %-haircut framing and is the one delib uses; **the 85 % figure is recorded and left unresolved,
+  and any use of it must be marked `[unverified]`.** The contents of the DAV *Zinsbericht* — the
+  portfolio composition, the scenario set, the resulting smoothed return — were not read. Whether
+  the ministry has ever departed from a DAV recommendation, and when, was not established. **The
+  exact names of the standards tiers, whether *Hinweise* bind at all, the mechanism by which the
+  DAV's rules bind, and the title of any individual *Fachgrundsatz* are all not established**, nor
+  is whether BaFin has ever endorsed a DAV standard by circular — which would convert soft law into
+  a supervisory expectation. Whether a **successor** to DAV 2008 T, DAV 2004 R, DAV 1997 I or DAV
+  2008 P has been published **is not known**, so **delib's formulation everywhere is "the DAV table
+  conventionally used for this product is X"** — a statement about market convention that survives a
+  successor being published — rather than "the current DAV table is X", which does not.
+- Products: all ten.
+
