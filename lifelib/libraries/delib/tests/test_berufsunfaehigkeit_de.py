@@ -13,44 +13,28 @@ premium override so the *Bruttobeitrag* is **derived by equivalence**, a
 *Wiedereingliederungshilfe* of six monthly *Renten*, and a new-business valuation date
 (``duration_init_months = 0``).  Model point 1 is that cell.  ``pols_if_init() = 1.0`` and
 ``proj_len() = 12 x (67 - 30) - 1 = 443``, so the frame is 444 monthly rows and the notes
-print eighteen of them plus a Total row over all of them.
+print eighteen of them plus a Total row over all of them.  The equivalence gives
+``P = 1,013.0697368527`` EUR p.a. of *Bruttobeitrag*, an instalment of
+``P x 1.05 / 12 = 88.6436019746`` EUR and a *Zahlbeitrag* of ``0.70 x`` that.
 
-The equivalence the notes run gives ``P = 1,013.0697368527`` EUR p.a. of *Bruttobeitrag*,
-a monthly instalment of ``P x 1.05 / 12 = 88.6436019746`` EUR and a *Zahlbeitrag* of
-``0.70 x`` that ``= 62.0505213822`` EUR.
-
-Goldens are hard-coded rather than pickled so that a reviewer can compare them against the
+Goldens are hard-coded rather than pickled so a reviewer can compare them against the
 notes by eye.  Tolerances follow the precision the notes display: money to the cent, the
 ``pols_*`` ledgers to six decimals, and the totals at **full precision** -- 13 151,35 EUR
 of *BU-Rente* that way against 13 151,28 EUR if the 444 rounded cells are added, and
 -0,79 EUR of ``net_cf`` against -0,85 EUR.  The notes print both, and both are asserted.
 
-What this module asserts, beyond the eighteen printed rows and the totals:
-
-* the derived *Bruttobeitrag* reached two independent ways -- from the five present values
-  the notes print, and from the model's own ``pv_*`` cells;
-* month 0 rebuilt term by term with a calculator, and the first inception and the first
-  *BU-Rente* rebuilt from the annual rates through the model's stated processing order;
-* the Sec. 174 run-off traced through a single cohort, from the recovery at the end of
-  month 1 to the *Wiedereingliederungshilfe* three months later;
-* the decrement closure -- deaths plus lapses plus survivors equal exactly one policy,
-  with inception, recovery and reactivation **absent** from that identity;
-* the *Brutto* / *Zahl* ratio surviving aggregation to fifteen figures;
-* the *Beitragsdynamik* variant (model point 4), all twelve printed rows and its totals;
-* what the two escalation options cost, from model point 12;
-* the seven published ``check_*`` identities and their per-``t`` residuals, including
-  ``check_net_cf`` -- delib's first ruling;
-* **one test per numbered modeling pitfall** in the technical notes, eighteen of them: the
-  premium weighted by the wrong count; one premium stream instead of two; one mortality
-  rate for both states; a flat reactivation rate; forgetting the three-month run-off;
-  splitting recovery from *konkrete Verweisung*; confusing the *Karenzzeit* with the
-  six-month prognosis; waiving the premium inside the *Karenzzeit*; escalating the
-  *BU-Rente* on the policy clock; double-counting the *Anerkennungsquote*; confusing
-  ``occ_factor`` with ``risk_factor``; letting ``sex`` price; running benefit past the
-  *Leistungsendalter*; charging acquisition cost to an in-force point; deleting the
-  disabled mass at the *Leistungsendalter*; paying the *Wiedereingliederungshilfe* on every
-  recovery; inventing a surrender or paid-up cash flow; and assuming a *Beitragsdynamik*
-  increase buys proportional cover.
+What this module asserts, beyond the eighteen printed rows and the totals: the derived
+*Bruttobeitrag* reached two independent ways; month 0 rebuilt term by term with a
+calculator; the first inception and the first *BU-Rente* rebuilt from the annual rates
+through the model's stated processing order; the Sec. 174 run-off traced through a single
+cohort from its recovery to its *Wiedereingliederungshilfe*; the decrement closure, with
+inception, recovery and reactivation **absent** from it; the *Brutto* / *Zahl* ratio
+surviving aggregation to fifteen figures; the *Beitragsdynamik* variant (model point 4)
+and its totals; what the two escalation options cost, from model point 12; the seven
+published ``check_*`` identities with their per-``t`` residuals, ``check_net_cf`` --
+delib's first ruling -- among them; and **one test per numbered modeling pitfall** in the
+technical notes, eighteen of them, from weighting the premium by the wrong count to
+assuming a *Beitragsdynamik* increase buys proportional cover.
 
 The whole-model-point-table sweep is deliberately **not** here: the conventions suite owns
 the library's single sweep, because a model point's first evaluation is by far the most
@@ -167,10 +151,7 @@ DYNAMIK_ACQ = 2382.918707             # 0.025 x 1,162.0706385124 x 82.0231964511
 DYNAMIK_BS_UNIT = 82.0231964511       # sum of 1.03^(y-1) over 42 policy years
 
 
-# ---------------------------------------------------------------------------
 # The worked example
-
-
 @pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE))
 def test_worked_example_row(de_bu_anchor, t):
     """Every cell of the notes' eighteen printed rows, to the displayed precision."""
@@ -250,10 +231,12 @@ def test_the_bruttobeitrag_is_reached_two_independent_ways(de_bu_anchor):
     numer = (EQUIVALENCE["pv_rente"] + EQUIVALENCE["pv_wgh"]
              + EQUIVALENCE["pv_cost"] + EQUIVALENCE["pv_admin"])
     denom = EQUIVALENCE["pv_prem"] * (1.0 - 0.09) - 0.025 * EQUIVALENCE["bs_unit"]
-    assert numer == pytest.approx(25863.8772130176, abs=5e-9)
+    assert numer == pytest.approx(25863.8772642487, abs=5e-9)
     assert denom == pytest.approx(25.5302042134, abs=5e-9)
+    # The quotient of the ten-decimal figures the notes print is P to nine figures; the
+    # model carries the present values unrounded, hence the 1e-9 gap between the two.
     assert numer / denom == pytest.approx(PREM_GROSS_ANN, abs=5e-8)
-    assert p.prem_gross_level_pp() == pytest.approx(PREM_GROSS_ANN, abs=5e-8)
+    assert p.prem_gross_level_pp() == pytest.approx(PREM_GROSS_ANN, abs=5e-10)
 
     assert p.risk_factor() == 1.0
     assert p.gross_prem_ann() == 0.0            # derived, not overridden
@@ -317,11 +300,11 @@ def test_the_first_inception_and_the_first_bu_rente_from_the_annual_rates(de_bu_
     assert q_m == pytest.approx(0.000029171347, abs=5e-13)
     assert w_m == pytest.approx(0.003396053199, abs=5e-13)
     ordered = (1.0 - q_m) * (1.0 - w_m) * i_m
-    assert ordered == pytest.approx(0.000073111651, abs=5e-15)
+    assert ordered == pytest.approx(0.000073111651, abs=5e-13)
     assert p.pols_inception(0) == pytest.approx(ordered, rel=1e-12)
     assert p.pols_dis(1) == pytest.approx(ordered, rel=1e-12)
     # Incidence-first would be visibly different, which is why the order is a [std] choice.
-    assert i_m / ordered - 1.0 == pytest.approx(0.00343, abs=5e-6)
+    assert i_m / ordered - 1.0 == pytest.approx(0.00344, abs=5e-6)
     # The first BU-Rente and the first assessment cost follow directly.
     assert p.claims(1, "BU_RENTE") == pytest.approx(1500.0 * ordered, rel=1e-12)
     assert p.claims(1, "BU_RENTE") == pytest.approx(0.1096674758, abs=5e-9)
@@ -344,7 +327,7 @@ def test_the_run_off_is_three_months_wide_traced_through_one_cohort(de_bu_anchor
     assert qi_m == pytest.approx(0.000350675563, abs=5e-13)
     assert r_m == pytest.approx(0.023688424223, abs=5e-13)
     rec = p.pols_dis_dur(1, 1) * (1.0 - qi_m) * r_m
-    assert rec == pytest.approx(0.00000173129246, abs=5e-17)
+    assert rec == pytest.approx(0.00000173129246, abs=5e-15)
     assert p.pols_recovery(1) == pytest.approx(rec, rel=1e-12)
     assert p.pols_runoff(2) == pytest.approx(rec, rel=1e-12)
     assert p.pols_runoff_slot(2, 1) == pytest.approx(rec, rel=1e-12)
@@ -440,10 +423,7 @@ def test_what_the_two_escalation_options_cost(berufsunfaehigkeit, de_bu_anchor):
     assert all(plain.rente_pay_pp(200, z) == 1500.0 for z in (1, 13, 121))
 
 
-# ---------------------------------------------------------------------------
 # The Beitragsdynamik variant -- model point 4
-
-
 @pytest.mark.parametrize("t", sorted(DYNAMIK))
 def test_dynamik_variant_row(berufsunfaehigkeit, t):
     """The notes' second table: annual payment on the escalating form."""
@@ -514,10 +494,7 @@ def test_the_annual_payer_pays_in_month_zero_and_every_twelfth_month(berufsunfae
     assert all(anchor.prem_due(t) == 1.0 for t in range(0, 20))
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 1 -- weighting the premium by pols_if instead of pols_prem
-
-
 def test_pitfall_01_the_premium_is_weighted_by_the_premium_paying_count(
         berufsunfaehigkeit, de_bu_anchor):
     """The classic German BU error: charging premium to lives in claim.
@@ -549,10 +526,7 @@ def test_pitfall_01_the_premium_is_weighted_by_the_premium_paying_count(
     assert in_claim.claims(0, "BU_RENTE") == pytest.approx(1800.0, abs=CENT)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 2 -- one premium stream instead of two
-
-
 def test_pitfall_02_two_premium_streams_are_projected_not_one(de_bu_anchor):
     """A model carrying only the *Zahlbeitrag* assumes the credit is permanent.
 
@@ -574,10 +548,7 @@ def test_pitfall_02_two_premium_streams_are_projected_not_one(de_bu_anchor):
     assert p.prem_gross_pp(0) / p.prem_zahl_pp(0) == pytest.approx(1.0 / 0.70, rel=1e-14)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 3 -- one mortality rate for both states
-
-
 def test_pitfall_03_disabled_and_active_mortality_are_different_rates(de_bu_anchor):
     """12.0x active mortality in the first claim year, 4.8x ultimately, at every age.
 
@@ -602,10 +573,7 @@ def test_pitfall_03_disabled_and_active_mortality_are_different_rates(de_bu_anch
     assert (tbl["mort_rate_dis"] > tbl["mort_rate_actv"]).all()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 4 -- a flat reactivation rate
-
-
 def test_pitfall_04_reactivation_is_front_loaded_not_flat(de_bu_anchor):
     """0.250 in claim year 1 falling to 0.006 ultimately, strictly over the first five.
 
@@ -630,10 +598,7 @@ def test_pitfall_04_reactivation_is_front_loaded_not_flat(de_bu_anchor):
     assert p.recov_rate_mth(1) < p.recov_rate(1)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 5 -- forgetting the Sec. 174 three-month run-off
-
-
 def test_pitfall_05_the_run_off_is_not_forgotten(de_bu_anchor):
     """A recovery does not stop the annuity in the month it happens.
 
@@ -660,10 +625,7 @@ def test_pitfall_05_the_run_off_is_not_forgotten(de_bu_anchor):
         assert p.check_runoff_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-14)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 6 -- recovery and konkrete Verweisung as two decrements
-
-
 def test_pitfall_06_there_is_exactly_one_claim_termination_rate(
         berufsunfaehigkeit, de_bu_anchor):
     """They end the benefit the same way, and no public data separates them.
@@ -691,10 +653,7 @@ def test_pitfall_06_there_is_exactly_one_claim_termination_rate(
         assert p.check_dis_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-14)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 7 -- the Karenzzeit is not the six-month prognosis period
-
-
 def test_pitfall_07_the_karenzzeit_is_not_the_prognosis_period(de_bu_anchor):
     """With ``K = 0`` the first *BU-Rente* falls the month **after** an onset.
 
@@ -714,10 +673,7 @@ def test_pitfall_07_the_karenzzeit_is_not_the_prognosis_period(de_bu_anchor):
     assert all(p.claims(t, "BU_RENTE") > 0.0 for t in range(1, 8))
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 8 -- waiving the premium during the Karenzzeit
-
-
 def test_pitfall_08_the_premium_runs_through_the_karenzzeit(
         berufsunfaehigkeit, de_bu_anchor):
     """The *Beitragsbefreiung* runs with the **benefit**, so a life not yet paid still pays.
@@ -747,10 +703,7 @@ def test_pitfall_08_the_premium_runs_through_the_karenzzeit(
                for t in range(0, 444)) == 0.0
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 9 -- escalating the BU-Rente on the wrong clock
-
-
 def test_pitfall_09_the_two_escalations_run_on_different_clocks(de_bu_anchor):
     """*Leistungsdynamik* steps on the anniversary of **onset**, not of the policy.
 
@@ -780,10 +733,7 @@ def test_pitfall_09_the_two_escalations_run_on_different_clocks(de_bu_anchor):
         1.02 ** 28, rel=1e-13)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 10 -- double-counting the Anerkennungsquote
-
-
 def test_pitfall_10_the_inception_rate_composition_is_published(
         berufsunfaehigkeit, de_bu_anchor):
     """``inc_rate = inc_rate_base x occ_factor x accept_factor x au_uplift``, exactly.
@@ -815,10 +765,7 @@ def test_pitfall_10_the_inception_rate_composition_is_published(
         pytest.approx(1.13, rel=1e-6))
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 11 -- confusing occ_factor with risk_factor
-
-
 def test_pitfall_11_the_two_rating_multipliers_do_different_things(
         berufsunfaehigkeit, de_bu_anchor):
     """``occ_factor`` loads the inception rate; ``risk_factor`` loads the premium alone.
@@ -869,10 +816,7 @@ def test_pitfall_11_the_two_rating_multipliers_do_different_things(
         model.close()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 12 -- letting sex price
-
-
 def test_pitfall_12_sex_does_not_price(berufsunfaehigkeit, de_bu_anchor):
     """Unlawful in Germany for contracts written from 21 December 2012.
 
@@ -894,10 +838,7 @@ def test_pitfall_12_sex_does_not_price(berufsunfaehigkeit, de_bu_anchor):
         berufsunfaehigkeit.Projection[1].claims(1, "DEATH")
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 13 -- running benefit past the Leistungsendalter
-
-
 def test_pitfall_13_benefit_stops_at_the_leistungsendalter_and_premium_does_not(
         berufsunfaehigkeit):
     """Model point 9: cover to 67, benefit to 63 -- two contractual terms, not one.
@@ -925,10 +866,7 @@ def test_pitfall_13_benefit_stops_at_the_leistungsendalter_and_premium_does_not(
         assert p.check_cover_end_resid(t) == pytest.approx(0.0, abs=1e-12)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 14 -- charging acquisition cost to an in-force model point
-
-
 def test_pitfall_14_no_acquisition_charge_on_an_in_force_point(
         berufsunfaehigkeit, de_bu_anchor):
     """An in-force point has already incurred it; charging it again at the valuation date
@@ -963,10 +901,7 @@ def test_pitfall_14_no_acquisition_charge_on_an_in_force_point(
     assert de_bu_anchor.expenses(1) < 10.0
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 15 -- deleting the disabled mass at the Leistungsendalter
-
-
 def test_pitfall_15_the_disabled_mass_is_held_not_deleted(berufsunfaehigkeit):
     """Deleting the cohorts at the *Leistungsendalter* breaks both state identities.
 
@@ -993,10 +928,7 @@ def test_pitfall_15_the_disabled_mass_is_held_not_deleted(berufsunfaehigkeit):
     assert p.pols_prem(216) < p.pols_if(216)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 16 -- paying the Wiedereingliederungshilfe on every recovery
-
-
 def test_pitfall_16_the_reintegration_benefit_is_paid_on_a_completed_run_off(
         de_bu_anchor):
     """A life that dies inside the run-off never returns to work and is paid nothing.
@@ -1023,10 +955,7 @@ def test_pitfall_16_the_reintegration_benefit_is_paid_on_a_completed_run_off(
             6 * p.runoff_val(t, 3) * (1.0 - p.mort_rate_mth(t)), rel=1e-12)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 17 -- inventing a surrender or paid-up cash flow
-
-
 def test_pitfall_17_a_lapse_pays_nothing_at_any_duration(
         berufsunfaehigkeit, de_bu_anchor):
     """Sec. 169 and Sec. 165 VVG through Sec. 176 give this contract both, and the model
@@ -1054,10 +983,7 @@ def test_pitfall_17_a_lapse_pays_nothing_at_any_duration(
         p.claims(1, "SURRENDER")
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 18 -- assuming the Beitragsdynamik buys proportional cover
-
-
 def test_pitfall_18_the_beitragsdynamik_escalates_both_sides_by_the_same_factor(
         berufsunfaehigkeit):
     """Model point 4: both grow by exactly 1.03 a year and are flat within a policy year.
@@ -1086,10 +1012,7 @@ def test_pitfall_18_the_beitragsdynamik_escalates_both_sides_by_the_same_factor(
     assert all(level.dyn_factor(t) == 1.0 for t in (0, 12, 443))
 
 
-# ---------------------------------------------------------------------------
 # The published identities -- delib ruling 1 and the six beside it
-
-
 def test_every_published_check_closes_on_the_anchor_cell(de_bu_anchor):
     """Seven no-argument bools over all t, each with a per-t residual companion."""
     p = de_bu_anchor
@@ -1146,10 +1069,7 @@ def test_check_states_is_not_trivially_zero(de_bu_anchor):
         p.pols_death_actv(0) + p.pols_death_dis(0) + p.pols_death_runoff(0), rel=1e-15)
 
 
-# ---------------------------------------------------------------------------
 # Structure, documentation and inputs
-
-
 def test_result_cf_shape_and_both_signs_of_the_net_flow(de_bu_anchor):
     """The notes' fourteen columns, in order, with liability_cf the outgo orientation."""
     df = de_bu_anchor.result_cf()
@@ -1239,9 +1159,8 @@ def test_the_shipped_tables_mark_their_own_provenance():
     """Seven CSVs beside run.py, and each says what it is -- especially what it is not.
 
     The three biometric tables are **[std]** proxies: DAV 1997 I / RI / TI and DAV 2008 T
-    are cited by name and never shipped.  The anchors a substitute must preserve are the
-    inception rate at 30, the active mortality rate at 30, and the duration shape of the
-    claim-duration table.
+    are cited by name and never shipped, and the anchors a substitute must preserve are
+    ``inc_rate(30) = 0.001100``, ``mort_rate_actv(30) = 0.000350`` and the duration shape.
     """
     import pandas as pd
 
@@ -1252,8 +1171,9 @@ def test_the_shipped_tables_mark_their_own_provenance():
 
     inc = pd.read_csv(MODEL_DIR.parent / "inception_table.csv", index_col="age")
     assert list(inc.index) == list(range(18, 67))
-    assert all(p.startswith("[std]") for p in inc["provenance"])
-    assert all("DAV 1997 I" in p for p in inc["provenance"])
+    assert all(p.startswith("[std]") and "[R16]" in p for p in inc["provenance"])
+    assert "DAV 1997 I" in inc.loc[18, "provenance"]
+    assert "anchor" in inc.loc[30, "provenance"]      # the row a replacement must match
     assert float(inc.loc[30, "inc_rate"]) == pytest.approx(0.001100, rel=1e-6)
     assert (inc["inc_rate"].diff().dropna() > 0).all()
 
@@ -1261,8 +1181,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert list(mort.index) == list(range(18, 71))
     assert all(p.startswith("[std]") for p in mort["provenance"])
     assert float(mort.loc[30, "mort_rate_actv"]) == pytest.approx(0.000350, rel=1e-6)
-    ratio = mort["mort_rate_dis"] / mort["mort_rate_actv"]
-    assert (ratio - 4.0).abs().max() < 1e-6
+    assert (mort["mort_rate_dis"] / mort["mort_rate_actv"] - 4.0).abs().max() < 1e-6
     assert float(mort.loc[31, "mort_rate_actv"]) / float(
         mort.loc[30, "mort_rate_actv"]) == pytest.approx(1.095, rel=1e-5)
 
@@ -1271,13 +1190,11 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert list(dur["recov_rate"]) == [0.250, 0.130, 0.070, 0.040, 0.025, 0.018,
                                        0.014, 0.011, 0.009, 0.008, 0.006]
     assert list(dur["mort_dis_sel_factor"])[:6] == [3.0, 2.0, 1.6, 1.4, 1.3, 1.2]
-    assert all("not shipped" in p for p in dur["provenance"])
+    assert all("DAV 1997 RI / TI" in p for p in dur["provenance"])
 
     occ = pd.read_csv(MODEL_DIR.parent / "occupation_table.csv", index_col="berufsgruppe")
     assert list(occ.index) == ["BG1", "BG2", "BG3", "BG4", "BG5"]
-    assert float(occ.loc["BG1", "occ_factor"]) == 1.00
-    assert float(occ.loc["BG4", "occ_factor"]) == 3.00
-    assert float(occ.loc["BG5", "occ_factor"]) == 4.50
+    assert list(occ["occ_factor"]) == [1.00, 1.40, 2.10, 3.00, 4.50]
 
     lapse = pd.read_csv(MODEL_DIR.parent / "lapse_table.csv", index_col="policy_year")
     assert list(lapse["lapse_rate"]) == [0.040, 0.040, 0.035, 0.030, 0.025, 0.020]

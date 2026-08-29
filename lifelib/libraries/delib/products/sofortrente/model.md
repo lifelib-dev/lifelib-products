@@ -6,10 +6,10 @@ is specified in [`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result**, and on this
 > product the two are further apart than the arithmetic makes them look, because the whole
-> answer rests on a mortality table nobody may ship. The *mechanics* are cited: the
-> guaranteed annuity is struck once at inception by converting the *Einmalbeitrag* at a
-> factor calculated on DAV 2004 R and an interest rate at or below the statutory
-> *Höchstrechnungszins* [S6] [R10] [REG-R14] [REG-R15]; the *Rentengarantiezeit* is a
+> answer rests on a mortality table nobody may ship. The *mechanics* are cited: the guaranteed
+> annuity is struck once at inception by converting the *Einmalbeitrag* at a factor calculated
+> on DAV 2004 R at an interest rate at or below the statutory *Höchstrechnungszins* [S6] [R10]
+> [REG-R14] [REG-R15]; the *Rentengarantiezeit* is a
 > tariff-level feature carried in a carrier's own product name [S5] with a settable minimum
 > at another [S7]; the *Kapitalrückgewähr* refunds the *Einmalbeitrag* less the instalments
 > already paid [R23]; the *Hinterbliebenenrente* is a *Zusatzversicherung* with its own
@@ -35,7 +35,6 @@ python products/sofortrente/run.py 10      # the in-force cell with a given annu
 ```
 
 Three lines to the same thing:
-
 ```python
 import modelx as mx
 model = mx.read_model("products/sofortrente/Sofort_DE_S")
@@ -54,10 +53,9 @@ its anchor and what a replacement must preserve.
 ## One payment in, and no behaviour at all
 
 This is the first thing to know about the model and it is a statutory fact rather than a
-simplification. Once the *Rentenbezug* has begun the policyholder has no right of
-termination, so § 169 VVG is displaced by § 168 Abs. 3 VVG and § 165 VVG has nothing to
-apply to [R1] [R2] [R5] [REG-R28]. The consequences reach further into a projection model
-than they look:
+simplification. Once the *Rentenbezug* has begun the policyholder has no right of termination,
+so § 169 VVG is displaced by § 168 Abs. 3 VVG and § 165 VVG has nothing to apply to [R1] [R2]
+[R5] [REG-R28]. The consequences reach further into a projection model than they look:
 
 - **No `lapse_rate`, `lapse_rate_mth`, `av_pp_at`, `cv_pp` or any surrender cells exists**,
   at any duration: no *Rückkaufswert* table, no *Stornoabzug*, no cost-spreading rule.
@@ -81,7 +79,6 @@ docstring rather than passing silently.
 
 Inside the guarantee period the instalment is payable **whether the annuitant is alive or
 not** [R23], and the arithmetic that expresses this is a `max` and not a sum:
-
 ```
 payment_factor(t) = max(γ(t), l_a(t)) + δ (1 − l_a(t)) l_s(t) (1 − γ(t))
 ```
@@ -104,10 +101,8 @@ at every payment month inside the guarantee, whatever `δ` is.
 ## The *Kapitalrückgewähr* is solved, not evaluated
 
 Where `refund_form() == "full"` the death benefit is the *Einmalbeitrag* less the guaranteed
-instalments already paid, floored at zero. Because a larger refund means a smaller annuity,
-and a smaller annuity runs the refund off more slowly, the pricing equation is **implicit in
-`R`**:
-
+instalments already paid, floored at zero. Because a larger refund means a smaller annuity, and
+a smaller annuity runs the refund off more slowly, the pricing equation is **implicit in `R`**:
 ```
 g(R) = R ä (1 + β) + Σ_t v^(t/12) d̃_a(t) max(SP − n(t) R, 0)  =  SP_net
 ```
@@ -115,16 +110,14 @@ g(R) = R ä (1 + β) + Σ_t v^(t/12) d̃_a(t) max(SP − n(t) R, 0)  =  SP_net
 `g` is increasing in `R` on `(0, R_max]` with `g(0) < SP_net`, so `annuity_pp_derived()`
 bisects to `solve_tol = 1e-10` in at most `solve_max_iter = 200` steps, evaluating the sum
 inline from the cached `tariff_lives` path rather than through a cells parameterized by the
-trial `R` — which is what keeps the solve out of the dependency graph.
-
-**Computing `R_max` and then subtracting a refund cost is a different — and wrong — answer,
-and the difference is not a rounding.** On model point 3 the plain annuity is
-`R_max = 370,1660 €`; the refund leg valued *at that annuity* is 13 546,3742 €, and dividing
-the remaining *Nettoeinmalbeitrag* by `ä (1 + β)` gives **318,7362 €**. The solved answer is
-**298,8348 €**, 6,2 % lower, and the refund leg at the solved annuity is 18 788,3117 € —
-nearly a fifth of the *Nettoeinmalbeitrag*, and 39 % larger than the naive valuation of it.
-`refund_pv()` is published so the identity can be *seen*, and `check_equivalence()` asserts
-it.
+trial `R` — which is what keeps the solve out of the dependency graph. **Computing `R_max` and
+then subtracting a refund cost is a different — and wrong — answer, and the difference is not
+a rounding.** On model point 3 the plain annuity is `R_max = 370,1660 €`; the refund leg
+valued *at that annuity* is 13 546,3742 €, and dividing the remaining *Nettoeinmalbeitrag* by
+`ä (1 + β)` gives **318,7362 €**. The solved answer is **298,8348 €**, 6,2 % lower, and the
+refund leg at the solved annuity is 18 788,3117 € — nearly a fifth of the
+*Nettoeinmalbeitrag*, and 39 % larger than the naive valuation of it. `refund_pv()` is
+published so the identity can be *seen*, and `check_equivalence()` asserts it.
 
 During an *Aufschubzeit* no instalment has been paid, so `cum_annuity_guar_pp(t) = 0` and the
 refund is the whole *Einmalbeitrag*: the *Beitragsrückgewähr* on death before *Rentenbeginn*
@@ -259,43 +252,31 @@ no embedded values here at all.
 ### Read once, in `Data`
 
 `Projection` is parameterized by `point_id`, so every `Projection[N]` is a separate ItemSpace
-with its own cells cache. Readers placed there would re-read every file for every model
-point. They live instead in an unparameterized **`Data`** Space, which `Projection`
-references as `data` — so each file is read once per model however many points are projected.
-The conventions suite counts the reads and asserts the file set.
+with its own cells cache, and readers placed there would re-read every file for every model
+point. They live instead in an unparameterized **`Data`** Space, which `Projection` references
+as `data`, so each file is read once per model however many points are projected. The
+conventions suite counts the reads and asserts the file set.
 
-| Reference | Cells | File |
+| File | Reference / Cells | Contents and provenance |
 |---|---|---|
-| `model_point_file` | `model_point_table()` | `model_point_table.csv` |
-| `mort_table_file` | `mort_table()` | `mort_table.csv` |
-| `improvement_file` | `improvement_table()` | `improvement_table.csv` |
-| `surplus_scale_file` | `surplus_scale_table()` | `surplus_scale_table.csv` |
-| `hoechstrechnungszins_file` | `hoechstrechnungszins_table()` | `hoechstrechnungszins_table.csv` |
+| `model_point_table.csv` | `model_point_file` / `model_point_table()` | Fourteen points. **Point 1 is the worked-example anchor cell** (100 000 €, M65 born 1960, 2025 vintage, 10-year *Rentengarantiezeit*, monthly *vorschüssig*, `i = 1,00 %`, *teildynamisch*), **[std]**; points 2–14 exercise the plain *Leibrente*, each death-benefit option, a joint-life cell, all four frequencies, both timings, all four surplus forms, a five-year *Aufschubzeit*, an in-force cell with a given annuity, a 0,25 %-era vintage, both ends of the age envelope and the surplus switched off. The only file without a `provenance` column: a model point is a configuration, not an assumption |
+| `mort_table.csv` | `mort_table_file` / `mort_table()` | Annual death rates by `(basis, sex, age)` in four series, `{FIRST, SECOND} × {M, F}`, ages 50–120. A **[std]** Gompertz–Makeham proxy and **not DAV 2004 R**, which is DAV property and is cited by name, never shipped [R10] [REG-R49]. **The anchor a replacement must preserve** is that the `mix_male = 0.45` blend of the FIRST series reproduces the research file's own `q_base(x)` — to 2,5 × 10⁻⁷ relative, the female factor being a six-decimal rounding of `0.4375/0.55` |
+| `improvement_table.csv` | `improvement_file` / `improvement_table()` | The *Trendfunktion* `λ(x)` by `(basis, age)`: **[std]** 1,5 % a year to age 70 on the second-order basis, tapering linearly to zero at 105, with the first-order basis improving 25 % faster. DAV 2004 R's own trend is not public [R10] [R12] |
+| `surplus_scale_table.csv` | `surplus_scale_file` / `surplus_scale_table()` | `surplus_init_pct` and `surplus_growth` for the four *Überschussverwendung* forms. **[std]**, and **no observed range exists**: no *Überschussanteilsatz* was established at any carrier for any year [S10] [R22] (research gap 4). The corpus gives the *shape* and nothing else [R20] [R21] [R23] |
+| `hoechstrechnungszins_table.csv` | `hoechstrechnungszins_file` / `hoechstrechnungszins_table()` | The statutory rate history by vintage band [REG-R14] [REG-R15]; the two mid-year steps of 1994 and 2000 are assigned **[std]** to the rate in force on 1 January of the split year |
 
-`Data.input_dir()` resolves the location from `_model.path.parent` when the model is read, so
-it works wherever the repository is checked out. **The trade-off:** the model is not portable
-on its own — copy `Sofort_DE_S/` without the CSVs and it reads fine, then fails on first
-evaluation. What you gain is that a diff of the model shows logic changes only, and an input
-can be swapped in place with no formula change.
-
-| File | Contents | Provenance |
-|---|---|---|
-| `model_point_table.csv` | Fourteen points. **Point 1 is the worked-example anchor cell** (100 000 €, M65 born 1960, 2025 vintage, 10-year *Rentengarantiezeit*, monthly *vorschüssig*, `i = 1,00 %`, *teildynamisch*). Points 2–14 exercise the plain *Leibrente*, each death-benefit option, a joint-life cell, all four frequencies, both timings, all four surplus forms, a five-year *Aufschubzeit*, an in-force cell with a given annuity, a 0,25 %-era vintage, both ends of the age envelope and the surplus switched off | anchor cell **[std]**, the technical notes' worked example. The only file without a `provenance` column: a model point is a configuration, not an assumption |
-| `mort_table.csv` | Annual death rates by `(basis, sex, age)` in four series, `{FIRST, SECOND} × {M, F}`, ages 50–120 | **[std]** Gompertz–Makeham proxy. **Not DAV 2004 R**, which is DAV property and is cited by name, never shipped [R10] [REG-R49]. **The anchor a replacement must preserve** is that the `mix_male = 0.45` blend of the FIRST series reproduces the research file's own `q_base(x)` — exactly to 2,5 × 10⁻⁷ relative, the female factor being a six-decimal rounding of `0.4375/0.55` |
-| `improvement_table.csv` | The *Trendfunktion* `λ(x)` by `(basis, age)` | **[std]** 1,5 % a year to age 70 on the second-order basis, tapering linearly to zero at 105, with the first-order basis improving 25 % faster. DAV 2004 R's own trend is not public [R10] [R12] |
-| `surplus_scale_table.csv` | `surplus_init_pct` and `surplus_growth` for the four *Überschussverwendung* forms | **[std]**, and **no observed range exists**: no *Überschussanteilsatz* was established at any carrier for any year [S10] [R22] (research gap 4). The corpus gives the *shape* and nothing else [R20] [R21] [R23] |
-| `hoechstrechnungszins_table.csv` | The statutory rate history by vintage band | [REG-R14] [REG-R15]; the two mid-year steps of 1994 and 2000 are assigned **[std]** to the rate in force on 1 January of the split year |
-
-Every file but the model point table carries a final `provenance` column, one tag per row,
-per the library's second ruling.
+Every file but the model point table carries a final `provenance` column, one tag per row, per
+the library's second ruling. `Data.input_dir()` resolves the location from `_model.path.parent`
+when the model is read, so it works wherever the repository is checked out. **The trade-off:**
+the model is not portable on its own — copy `Sofort_DE_S/` without the CSVs and it reads fine,
+then fails on first evaluation. What you gain is that a diff of the model shows logic changes
+only, and an input can be swapped in place with no formula change.
 
 ## The published identities
 
 Nine `check_*` cells, each taking no argument and returning one `bool` over all `t`, with the
 per-period residual at `check_*_resid(t)`. The library's first ruling makes the first
-mandatory; the rest are this product's own.
-
-**`check_net_cf`, in one line** — delib ruling 1:
+mandatory; the rest are this product's own. **`check_net_cf`, in one line** — delib ruling 1:
 
 ```
 net_cf(t) == premiums(t) − 1{payment month}·pols_if_init·annuity_pp(t)·payment_factor(t)
@@ -328,8 +309,8 @@ because a carrier may price below it and one in the corpus is observed doing so 
 ## Modules that are off in the base run
 
 Five constructions are implemented and switched off, so the base run reproduces the worked
-example while the machinery stays visible and testable. Each is switched on by a **model
-point column**, not by a Space Reference, because on this product every option is elected
+example while the machinery stays visible and testable. Each is switched on by a **model point
+column** rather than by a Space Reference, because on this product every option is elected
 once at inception and is thereafter a parameter rather than a decision.
 
 | Module | Switch | Off value | On at | What it does |

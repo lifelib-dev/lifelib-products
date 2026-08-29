@@ -164,12 +164,9 @@ DESIGNS = {
 
 @pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE))
 def test_worked_example_row(de_index_anchor, t):
-    """Every cell of the notes' twenty-seven-row table, to the displayed precision.
-
-    ``surplus_credit`` and ``liability_cf`` are omitted from the notes' printed table for
-    width and are asserted anyway: zero on a cell that elects the index arm every year, and
-    the sign convention made verifiable in the frame.
-    """
+    """Every cell of the notes' table, to the displayed precision.  ``surplus_credit`` and
+    ``liability_cf`` are omitted from the printed table for width and asserted anyway: zero
+    on a cell that elects the index arm every year, and the sign convention in the frame."""
     (age, pols_if, prem, cd, cl, cm, exp, gi, ic, av, net) = WORKED_EXAMPLE[t]
     p = de_index_anchor
     assert p.age(t) == age
@@ -193,11 +190,9 @@ def test_worked_example_row(de_index_anchor, t):
 
 def test_the_worked_example_totals_are_summed_at_full_precision(de_index_anchor):
     """The Total row is a full-precision sum, then rounded -- not a sum of rounded cells.
-
     Three of the eight differ from the rounded-cell sum by one cent; a test written against
     the rounded column fails on all three and looks like a modelling error, so both are
-    asserted here and the difference is on the record.
-    """
+    asserted here and the difference is on the record."""
     df = de_index_anchor.result_cf()
     for column, total in TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
@@ -244,11 +239,9 @@ def test_check_one_policy_year_one_rebuilt_from_scratch(de_index_anchor):
 
 def test_check_two_the_indexjahr_of_year_nine_rebuilt_on_its_own_terms(de_index_anchor):
     """The notes' second check: Example A, rebuilt from its twelve monthly returns.
-
     ``S(9) = +8,90 %`` is positive, so ``rho(9) = 8,90 %`` on the **opening** balance, to
     the survivors of both decrements.  Compounding the same twelve capped returns gives
-    8,9599 %, and the raw year return is +13,4548 % against a raw sum of +13,10 %.
-    """
+    8,9599 %, and the raw year return is +13,4548 % against a raw sum of +13,10 %."""
     p = de_index_anchor
     monthly = [p.index_return(9, m) for m in range(1, 13)]
     capped = [p.index_return_capped(9, m) for m in range(1, 13)]
@@ -294,11 +287,9 @@ def test_check_three_the_decrements_close_three_ways(de_index_anchor):
 
 def test_check_four_the_account_rolls_forward_at_year_nine(de_index_anchor):
     """The notes' fourth check: the fund-level roll-forward at ``t = 9``, term by term.
-
     Every term is on a **different population** -- premium, charge and guaranteed interest
     on the opening in-force, the credit on the survivors, ``av_released`` on the exits at
-    the balance they left with, which is what they take out and not what they are paid.
-    """
+    the balance they left with, which is what they take out and not what they are paid."""
     p = de_index_anchor
     assert p.av(9) == pytest.approx(14394.0730, abs=5e-4)
     assert p.prem_to_av_pp(9) == pytest.approx(2328.00, abs=CENT)
@@ -338,11 +329,9 @@ def test_check_five_the_cash_flow_statement_closes_on_the_total_row(de_index_anc
 
 def test_check_six_the_guarantee_at_rentenbeginn(de_index_anchor):
     """The notes' sixth check: the ledger, the *Beitragsgarantie* and what falls due.
-
     4 851,4383 EUR of credits plus a 58 320,00 EUR *Beitragsgarantie* gives a guaranteed
     capital of 63 171,4383 EUR; the account stands above it, so the floor does **not** bind
-    and the maturity is the account.  The monthly *Rente* is reported, never paid.
-    """
+    and the maturity is the account.  The monthly *Rente* is reported, never paid."""
     p = de_index_anchor
     n = p.proj_len()
     assert p.credit_cum_pp(n + 1) == pytest.approx(4851.4383, abs=5e-4) == (
@@ -385,11 +374,9 @@ def test_the_partizipationsquote_variant_row(indexpolice, t):
 
 def test_the_two_payoff_designs_are_not_interchangeable(indexpolice, de_index_anchor):
     """``t = 10`` is the most instructive row in the library: nothing against 675,83 EUR.
-
     The Cap design credits **zero** on a sum of ``-2,60 %``; the *Quote* design credits
     3,8641 % of ``G`` on the same twelve returns.  At ``t = 9`` the ranking reverses,
-    Example A's give-up having been concentrated in three months.
-    """
+    Example A's give-up having been concentrated in three months."""
     cap, quote = de_index_anchor, indexpolice.Projection[2]
     assert cap.index_credit_rate(10) == 0.0 and cap.index_credit(10) == 0.0
     assert quote.index_credit_rate(10) == pytest.approx(0.0386412, abs=5e-7)
@@ -477,12 +464,10 @@ def test_pitfall_01_treating_the_contract_as_unit_linked(indexpolice, de_index_a
 
 
 def test_pitfall_02_flooring_each_month_at_zero(de_index_anchor):
-    """``x(m) = min(r, C)`` has **no lower bound**; the floor is on the year alone.
-
-    On ``t = 10`` (Example B) the sum is ``-2,60 %`` and the credit is 0,00 EUR.  Flooring
-    each capped month gives ``S = +12,60 %``, the corrected figure the notes record, 9,60
-    points being what the cap *gave away* rather than what flooring produces.
-    """
+    """``x(m) = min(r, C)`` has **no lower bound**; the floor is on the year alone.  On
+    ``t = 10`` (Example B) the sum is ``-2,60 %`` and the credit is 0,00 EUR.  Flooring each
+    capped month gives ``S = +12,60 %``, the corrected figure the notes record, 9,60 points
+    being what the cap *gave away* rather than what flooring produces."""
     p = de_index_anchor
     monthly = [p.index_return(10, m) for m in range(1, 13)]
     capped = [p.index_return_capped(10, m) for m in range(1, 13)]
@@ -538,12 +523,9 @@ def test_pitfall_04_applying_the_floor_to_the_compounded_raw_return(de_index_anc
 
 
 def test_pitfall_05_striking_the_participation_on_the_wrong_base(de_index_anchor):
-    """``G(t) = av_pp(t)``, **before** the year's premium and before the year's charges.
-
-    So a new-business point credits nothing in year 1 however well the index does, and
-    striking the base after the premium instead credits a first-year amount that does not
-    exist -- 243,09 EUR here.
-    """
+    """``G(t) = av_pp(t)``, **before** the year's premium and before the year's charges, so
+    a new-business point credits nothing in year 1 however well the index does; striking the
+    base after the premium credits a first-year amount that does not exist, 243,09 EUR."""
     p = de_index_anchor
     for t in range(1, p.proj_len() + 1):
         assert p.index_base_pp(t) == pytest.approx(p.av_pp(t), rel=1e-12)
@@ -585,12 +567,9 @@ def test_pitfall_06_crediting_the_index_and_the_declared_surplus(
 
 
 def test_pitfall_07_adding_the_declared_rate_on_top_of_the_guaranteed_rate(indexpolice):
-    """In the index arm the surplus is **not** credited at all; it is spent.
-
-    Point 9 runs ``zero_path`` at ``w = 1``, so the account grows at exactly
-    ``(1 - gamma)(1 + i_g)`` and by nothing more; point 11 runs ``w = 0``, so it grows by
-    that **plus** ``b G(t)`` and by nothing more either.
-    """
+    """In the index arm the surplus is **not** credited at all; it is spent.  Point 9 runs
+    ``zero_path`` at ``w = 1``, so the account grows at exactly ``(1 - gamma)(1 + i_g)`` and
+    by nothing more; point 11 runs ``w = 0``, so it grows by that **plus** ``b G(t)``."""
     flat = indexpolice.Projection[9]
     assert flat.index_id() == "zero_path" and flat.elect_id() == "always_index"
     for t in range(1, flat.proj_len() + 1):
@@ -632,13 +611,10 @@ def test_pitfall_08_crediting_the_indexjahr_to_the_lives_that_left(de_index_anch
 
 
 def test_pitfall_09_paying_a_pro_rata_index_credit_on_a_mid_year_exit(de_index_anchor):
-    """A death or a surrender is struck on the balance **before** the year's credits.
-
-    The assertion carrying the meaning is on ``av_pp_at(t, "AFT_GUAR")`` and **not** on
-    ``db_pp``: the *Mindesttodesfallschutz* floor of 32 400,00 EUR exceeds the account
-    until year 13, so the benefit is larger than the account at any timing there.  That is
-    the correction the notes record.
-    """
+    """A death or a surrender is struck on the balance **before** the year's credits.  The
+    assertion carrying the meaning is on ``av_pp_at(t, "AFT_GUAR")`` and **not** on
+    ``db_pp``: the *Mindesttodesfallschutz* floor of 32 400,00 EUR exceeds the account until
+    year 13, so the benefit is larger there at any timing.  That correction is the notes'."""
     p = de_index_anchor
     n = p.proj_len()
     floor = 0.50 * p.prem_sum()
@@ -663,10 +639,10 @@ def test_pitfall_09_paying_a_pro_rata_index_credit_on_a_mid_year_exit(de_index_a
 
 def test_pitfall_10_testing_the_lock_in_as_the_account_never_falls(
         indexpolice, de_index_anchor):
-    """It is the **credits** that ratchet, not the balance.  On point 13 the
-    *Rechnungszins* equals the reserve charge and premiums stop at year 12, so the account
-    falls from year 14 while ``guar_cap_pp`` is still monotone; a lock-in check written on
-    ``av_pp`` would fail a correct implementation and pass a wrong one."""
+    """It is the **credits** that ratchet, not the balance.  On point 13 the *Rechnungszins*
+    equals the reserve charge and premiums stop at year 12, so the account falls from year 14
+    while ``guar_cap_pp`` is monotone; a lock-in check on ``av_pp`` would fail a correct
+    implementation and pass a wrong one."""
     p = de_index_anchor
     assert p.check_lock_in() is True
     for t in (1, 9, 13, 27):
@@ -690,11 +666,9 @@ def test_pitfall_10_testing_the_lock_in_as_the_account_never_falls(
 def test_pitfall_11_running_the_guarantee_as_an_annual_rate_on_the_reserve(
         de_index_anchor):
     """*Neue Klassik*: the guarantee is owed at *Rentenbeginn* and at no other date.
-
-    ``guar_cap_pp(t)`` enters one benefit and no other, and ``av_pp(t) < guar_cap_pp(t)``
-    at intermediate ``t`` is permitted and ordinary -- it holds at ``t = 2 ... 7`` here,
-    while the *Zillmer* charge is being recovered -- with no check failing there.
-    """
+    ``guar_cap_pp(t)`` enters one benefit and no other, and ``av_pp(t) < guar_cap_pp(t)`` at
+    intermediate ``t`` is permitted and ordinary -- it holds at ``t = 2 ... 7`` here, while
+    the *Zillmer* charge is being recovered -- with no check failing there."""
     p = de_index_anchor
     n = p.proj_len()
     assert [t for t in range(1, n + 2) if p.av_pp(t) < p.guar_cap_pp(t)] == [
@@ -736,11 +710,9 @@ def test_pitfall_12_forgetting_the_beitragsgarantie_floor_at_rentenbeginn(
 def test_pitfall_13_confusing_the_minimum_surrender_value_with_the_zillmer_cap(
         indexpolice, de_index_anchor):
     """Two rules with two functions: what may be **reserved** against what must be **paid**.
-
     With ``zill_years = 5`` the tariff and shadow accounts coincide at every ``t``, so the
     floor is a no-op -- delib's charge profile already sits at the statutory floor -- while
-    the 2 % *Stornoabzug* still bites.
-    """
+    the 2 % *Stornoabzug* still bites."""
     p = de_index_anchor
     n = p.proj_len()
     assert p.zill_years == 5 and p.acq_cost_rate == 0.025 and p.zill_cap_rate == 0.025
@@ -764,11 +736,9 @@ def test_pitfall_13_confusing_the_minimum_surrender_value_with_the_zillmer_cap(
 
 def test_pitfall_14_double_charging_or_mis_basing_the_ratenzahlungszuschlag(indexpolice):
     """``phi`` multiplies the premium **collected** and does not enter the *Beitragssumme*.
-
     Point 4 pays monthly: 2 520,00 EUR a year collected against a ``prem_sum()`` of
     76 800,00 EUR.  A frequency surcharge is the price of paying in instalments, so it may
-    not inflate the acquisition charge or the death floor.
-    """
+    not inflate the acquisition charge or the death floor."""
     p = indexpolice.Projection[4]
     assert p.prem_freq() == "monthly" and p.freq_load() == 1.05
     assert p.prem_base_pp(1) == pytest.approx(2400.00, abs=CENT)
@@ -791,12 +761,10 @@ def test_pitfall_14_double_charging_or_mis_basing_the_ratenzahlungszuschlag(inde
 def test_pitfall_15_letting_the_cap_and_the_option_budget_be_independent(
         indexpolice, de_index_anchor):
     """The Cap is the level at which the option strip costs the budget, so the two are not
-    free parameters, and ``index_budget_ratio()`` reports the discrepancy.
-
-    On the anchor it is **0,2082** on amounts, for timing rather than pricing reasons: the
-    path credits in years 1-4, 6, 9 and 13 and never after, while ``G(t)`` runs to
-    70 637,97 EUR.  On rates it credits 2,1330 % against a 2,50 % budget, a ratio of 0,853.
-    """
+    free parameters, and ``index_budget_ratio()`` reports the discrepancy.  On the anchor it
+    is **0,2082** on amounts, for timing rather than pricing reasons: the path credits in
+    years 1-4, 6, 9 and 13 and never after, while ``G(t)`` runs to 70 637,97 EUR.  On rates
+    it credits 2,1330 % against a 2,50 % budget, a ratio of 0,853."""
     p = de_index_anchor
     n = p.proj_len()
     credits = sum(p.index_credit_pp(t) for t in range(1, n + 1))
@@ -820,11 +788,9 @@ def test_pitfall_15_letting_the_cap_and_the_option_budget_be_independent(
 
 def test_pitfall_16_assuming_the_wahlrecht_is_exercised_optimally(indexpolice):
     """The election is a **behavioural** assumption whose path is read, never derived.
-
     Point 11 reproduces a *klassische Rentenversicherung* exactly -- every index cells
     evaluates and none reaches the account -- and point 10 switches arms at 15, never
-    crediting both in one year.
-    """
+    crediting both in one year."""
     safe = indexpolice.Projection[11]
     n = safe.proj_len()
     assert safe.elect_id() == "always_safe" and safe.payoff_form() == "cap"
@@ -846,11 +812,9 @@ def test_pitfall_16_assuming_the_wahlrecht_is_exercised_optimally(indexpolice):
 
 def test_pitfall_17_a_lapse_assumption_flat_in_duration(de_index_anchor):
     """The duration-12 tax threshold is the strongest single driver of German surrender.
-
     ``lapse_rate(12) = 6 %`` against 3 % the year before, and the worked example's year-12
     spike -- 1 229,59 EUR against 583,79 EUR -- is that step and nothing else.  In the final
-    year the applied rate is zero while the table still says 2 %.
-    """
+    year the applied rate is zero while the table still says 2 %."""
     p = de_index_anchor
     n = p.proj_len()
     assert p.lapse_rate(1) == 0.05 and p.lapse_rate(2) == 0.05
@@ -889,13 +853,11 @@ def test_pitfall_18_reporting_the_credits_inside_net_cf(de_index_anchor):
 
 
 def test_every_check_returns_a_bool_and_its_residual_is_zero(de_index_anchor):
-    """Six ``check_*()`` cells, each no-argument and each returning a real ``bool``.
-
-    delib's first ruling is that ``check_net_cf()`` is mandatory: the identity that rebuilds
+    """Six ``check_*()`` cells, each no-argument and each returning a real ``bool``.  delib's
+    first ruling is that ``check_net_cf()`` is mandatory: the identity that rebuilds
     ``net_cf(t)`` from the statement's own published parts, so no model's headline number is
     reconciled only in prose.  It takes the kind-less ``claims(t)`` while ``net_cf`` names
-    the kinds one by one, so the two agree only if both carry the same list of kinds.
-    """
+    the kinds one by one, so the two agree only if both carry the same list of kinds."""
     p = de_index_anchor
     checks = ("check_net_cf", "check_av_roll_fwd", "check_pols_roll_fwd",
               "check_surplus_alloc", "check_lock_in", "check_index_credit")
@@ -1014,12 +976,10 @@ def test_the_shared_library_vocabulary_is_present(indexpolice):
 
 def test_the_shipped_tables_mark_their_own_provenance():
     """Eight CSVs beside run.py, and each says what it is -- especially what it is not.
-
     delib's second ruling: every assumption file carries a populated ``provenance`` column,
     ``model_point_table.csv`` being the only exemption.  The mortality table is a **[std]**
     Gompertz proxy anchored at ``qx(M, 40) = 0.001200``; DAV 2008 T and DAV 2004 R are cited
-    by name and never shipped.
-    """
+    by name and never shipped."""
     import pandas as pd
 
     parent = MODEL_DIR.parent

@@ -594,7 +594,8 @@ makes it fail.
 ### `result_cf()`
 
 `result_cf()` returns a `DataFrame` indexed by `t` (`df.index.name == "t"`), contiguous from
-`duration_mth_init()` to `proj_len()`, in this column order:
+`duration_mth_init()` to `proj_len()`, in this column order — eleven cash-flow and exposure columns
+and then `liability_cf`:
 
 | # | Column | Meaning |
 |---|---|---|
@@ -609,6 +610,7 @@ makes it fail.
 | 9 | `expenses` | Acquisition, per-policy administration and premium-related administration |
 | 10 | `claim_expenses` | Per-annuity-payment claims cost |
 | 11 | `net_cf` | `premiums - claims_annuity - claims_lapse - claims_death - expenses - claim_expenses` |
+| 12 | `liability_cf` | The same stream outgo-positive, `-net_cf(t)` exactly. Published as a column because the conventions suite verifies the sign convention in the frame rather than in prose |
 
 A second frame, `result_states()`, publishes the ledgers and rates a reader needs to follow the
 projection: `pols_pg1` … `pols_pg5`, `pols_karenz`, `pols_entry`, `pols_grad`, `pols_reactiv`,

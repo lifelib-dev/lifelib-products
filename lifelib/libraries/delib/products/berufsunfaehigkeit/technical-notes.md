@@ -741,7 +741,7 @@ mortality × 0,80, active-lives mortality × 0,80, no lapse, discounted at 1,00 
 
     P = (24,452.4895291302 + 531.1897520089 + 335.6805156244 + 544.5174674852)
         / (29.0716529817 x 0.91 - 0.025 x 37)
-      = 25,863.8772130176 / 25.5302042134
+      = 25,863.8772642487 / 25.5302042134
       = 1,013.0697368527 EUR p.a.
 
 so the annual *Bruttobeitrag* is **1 013,07 €**, the monthly instalment
