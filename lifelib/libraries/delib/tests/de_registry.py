@@ -112,12 +112,23 @@ INPUT_FILES = {
     },
     "FRV_DE_S": set(),
     "Index_DE_A": set(),
-    "KLV_DE_A": set(),
+    "KLV_DE_A": {
+        "model_point_table.csv",
+        "mort_table.csv",
+        "lapse_table.csv",
+        "surplus_rate_table.csv",
+        "cost_table.csv",
+        "freq_loading_table.csv",
+        "deckrv_table.csv",
+    },
     "Pflege_DE_S": set(),
     "RLV_DE_A": set(),
     "RV_DE_A": set(),
     "Riester_DE_A": set(),
-    "Sofort_DE_S": set(),
+    "Sofort_DE_S": {
+        "model_point_table.csv", "mort_table.csv", "improvement_table.csv",
+        "surplus_scale_table.csv", "hoechstrechnungszins_table.csv",
+    },
 }
 
 

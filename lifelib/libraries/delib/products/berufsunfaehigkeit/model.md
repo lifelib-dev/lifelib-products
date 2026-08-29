@@ -1,8 +1,7 @@
 # Implementation Notes
 
 **Status:** Draft, 2026-08-29. Built from
-[`products/berufsunfaehigkeit/technical-notes.md`](technical-notes.md);
-the product it implements is specified in
+[`technical-notes.md`](technical-notes.md); the product it implements is specified in
 [`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The *mechanics*
@@ -59,11 +58,11 @@ aktiv  --inception-->  leistungspflichtig  --Nachprüfung-->  run-off (3 months)
  death, lapse              death                                death
 ```
 
-`pols_actv`, `pols_dis` and `pols_runoff` are the three ledgers and `pols_if` is their
-total. **Death and lapse are the only exits**, so `pols_if(t+1) = pols_if(t) −
-pols_death(t) − pols_lapse(t)`, and inception, recovery and reactivation are **internal
-transfers** that must not appear in that identity. Putting them there is how a multi-state
-model silently loses mass, and the loss is invisible in the cash flows.
+`pols_actv`, `pols_dis` and `pols_runoff` are the three ledgers and `pols_if` is their total.
+**Death and lapse are the only exits**, so `pols_if(t+1) = pols_if(t) − pols_death(t) −
+pols_lapse(t)`, and inception, recovery and reactivation are **internal transfers** that must
+not appear in that identity — putting them there is how a multi-state model silently loses
+mass, invisibly in the cash flows.
 
 The run-off ledger is § 174 VVG in arithmetic [R3] [REG-R29]: where the insurer establishes that
 its liability has ceased it remains obliged to pay **to the end of the third month after the
@@ -166,10 +165,10 @@ plausible, and it is why `check_net_cf()` rebuilds the premium leg from
 
 A life inside the *Karenzzeit* is *berufsunfähig*, is **not** yet paid, and **still pays
 premium** **[std]** — the waiver runs with the benefit. On the anchor `karenz_months = 0`, so
-`pols_prem(t) == pols_actv(t)` at every `t`; on model point 5 (`K = 6`) they differ at 323 of
-324 months. The *Karenzzeit* is **not** the six-month *Prognosezeitraum*, which is part of the
-*definition* of *Berufsunfähigkeit*: with `K = 0` the first *BU-Rente* falls in the month
-**after** an onset — `claims(1, "BU_RENTE") = 0,11 €` — not six months after it.
+`pols_prem(t) == pols_actv(t)` everywhere; on model point 5 (`K = 6`) they differ at 323 of 324
+months. The *Karenzzeit* is **not** the six-month *Prognosezeitraum*, which is part of the
+*definition* of BU: with `K = 0` the first *BU-Rente* falls in the month **after** an onset —
+`claims(1, "BU_RENTE") = 0,11 €`.
 
 ## Two escalations, two clocks
 
@@ -216,10 +215,10 @@ premiums and benefits have been unlawful in Germany for contracts written from 2
 
 ## The *Leistungsendalter* stops the benefit and holds the mass
 
-`cover_end_age` and `benefit_end_age` are separate contractual terms, not synonyms. Model
-point 9 carries cover to 67 and benefit to 63: from attained age 63 the *BU-Rente* and the
-claim-maintenance cost are exactly zero while the premium runs on for four more years,
-collecting a further 2 244,03 €.
+`cover_end_age` and `benefit_end_age` are separate contractual terms, not synonyms. Model point 9
+carries cover to 67 and benefit to 63: from attained age 63 the *BU-Rente* and the
+claim-maintenance cost are exactly zero while the premium runs on for four more years, collecting
+a further 2 244,03 €.
 
 What is easy to get wrong is the population. **The mass is held, not deleted**: the ledgers
 keep rolling past `benefit_end_age`, so `check_states()` and `check_pols_roll_fwd()` still close
@@ -231,10 +230,9 @@ rather than to the payment. The alternative reading is defensible and is named.
 ## Four absences are product facts
 
 - **No death benefit.** An SBU pays nothing on death, before or during a claim [S1], so
-  `pols_death(t)` is a decrement and never a cash flow, and there is no `claims_death` column
-  for a reader arriving from a term-life model to find.
-- **No maturity benefit.** Survival to the *Endalter* pays nothing, and a claim still in payment
-  at the horizon simply stops.
+  `pols_death(t)` is a decrement and never a cash flow, and there is no `claims_death` column.
+- **No maturity benefit.** Survival to the *Endalter* pays nothing; a claim still in payment at
+  the horizon simply stops.
 - **No cash value.** § 169 VVG through § 176 gives this contract a real *Rückkaufswert* and
   § 165 a real *beitragsfreie BU-Rente* [R8] [R9] [R5] [REG-R28] — both the release of a reserve
   this model deliberately does not compute. `claims(t, "LAPSE")` therefore exists, returns zero
@@ -300,12 +298,11 @@ reconciliation instead of a restatement of `net_cf`'s own formula: it crosses th
 | `check_prem_split` | `premiums(t) − surplus_credit(t) = prem_zahl_pp(t) × pols_prem(t)` |
 | `check_cover_end` | `claims(t,"BU_RENTE") = 0` wherever `age(t) ≥ benefit_end_age()`, and `premiums(t) = 0` wherever `age(t) ≥ cover_end_age()` |
 
-`check_pols_roll_fwd` is **trivially zero by construction**, because `pols_if` is defined by
-exactly that recursion, and it is published anyway because it is the notes' own identity.
-`check_states` is the one that is **not** trivial: `pols_if` is built off the two exits rather
-than as the sum of the three ledgers, so comparing it against them catches a life that leaves
-one ledger without arriving in another, or arrives in two. The first fixes the definition,
-the second tests it.
+`check_pols_roll_fwd` is **trivially zero by construction** — `pols_if` is defined by exactly
+that recursion — and is published because it is the notes' own identity. `check_states` is the
+one that is **not** trivial: `pols_if` is built off the two exits rather than as the sum of the
+three ledgers, so comparing it against them catches a life that leaves one ledger without
+arriving in another, or arrives in two. The first fixes the definition, the second tests it.
 
 ## Modules that are off in the base run
 
@@ -348,9 +345,8 @@ age 52, and reach −76,85 € in the last month. That crossing is the *Deckungs
 model does not compute being built and run down.
 
 `expenses` is administration only — acquisition, the proportional loading and the flat charge.
-The *Leistungsbearbeitungskosten* are `claim_expenses`, a separate column because they scale
-with **claims** rather than policies; commission is not a line at all, sitting inside
-`acq_rate`, which is the German taxonomy.
+The *Leistungsbearbeitungskosten* are `claim_expenses`, separate because they scale with
+**claims** rather than policies; commission is not a line at all, sitting inside `acq_rate`.
 
 ## Naming
 

@@ -22,10 +22,14 @@ declared *laufende Verzinsung* **is** the *Garantieverzinsung* plus the *laufend
 Zinsüberschussbeteiligung*, so a declared 2,70 % on a 1,00 % guarantee is a **1,70 pp**
 credit and never 2,70 pp on top of 1,00 pp: ``zins_ueberschuss_rate(t) = max(0,
 decl_rate(t) - rechnungszins())``, applied to ``max(res_pp_at(t, "AFT_INT"), 0)``. Both
-``max`` are load-bearing. A *gezillmerte Deckungskapital* is **negative** for the first
-several years, so a positive rate on an un-floored base would credit a negative surplus,
-and on the ``nil`` scenario the declared rate falls below the guarantee, which the
-reserve still meets in full.
+``max`` are load-bearing. A *gezillmerte Deckungskapital* is **negative at issue**, so a
+positive rate on an un-floored base would credit a negative surplus; and on the ``nil``
+scenario the declared rate falls below the guarantee, which the reserve still meets in
+full, so the credit is zero rather than negative. How long the base stays negative is a
+parameter question rather than a structural one: at the post-2015 25 ‰ ceiling over a
+long *Beitragszahlungsdauer* the first Zillmer premium more than repays the zillmered
+cost, and the floor is inert on every shipped model point; at the pre-2015 40 ‰ ceiling it
+is not.
 
 **There are three reserves and the product needs all three.** ``res_zill_pp`` is the
 *gezillmerte Deckungskapital* the insurer holds, negative at issue and equal to

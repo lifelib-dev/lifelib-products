@@ -271,10 +271,13 @@ where commission sits inside the expense column — so the six flow columns of
 :func:`result_cf` sum to :func:`net_cf` without a double count. That sum is what
 :func:`check_net_cf` asserts, and it is this library's first ruling.
 
-The shape to expect on the anchor cell is a large first-year strain, the *Zillmerung* and the
-initial commission together far exceeding the first *Beitrag*, then positive margins that grow
-as the *Deckungskapital* and the *Überschussguthaben* build, and a single very large negative
-year at the *Ablauf* when the *Erlebensfallleistung* falls due.
+The shape to expect on the anchor cell is a first year that very nearly washes - the *Beitrag*
+of 2 004,04 € almost exactly meeting the initial commission of 2,5 % of the *Beitragssumme*
+plus the 300 € acquisition expense - then annual margins of the order of a thousand euros that
+decay as the cohort lapses, and a single very large negative year at the *Ablauf* when the
+*Erlebensfallleistung* and the whole accumulated *Überschussguthaben* fall due together. The
+new-business strain of a *gezillmert* German endowment sits in the **reserve**, which opens at
+``-alpha_cost()``, and not in the cash flow.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -945,10 +948,14 @@ def res_zill_pp(t):
     ``res_net_pp(t) - alpha_cost() * ann_due_prem_fut(t) / ann_due_prem_1st()``: the net
     reserve less the part of the acquisition cost the future premiums have yet to repay.
 
-    **It is exactly ``-alpha_cost()`` at ``t = 1``** and stays negative for several years.
-    That is not a defect: it is the arithmetic of *Zillmerung*, and it is the reason § 169
-    Abs. 3 VVG needs a floor at all.  With ``zillmer_on = 0`` it coincides with
-    :func:`res_net_pp`.
+    **It is exactly ``-alpha_cost()`` at ``t = 1``**, which on the anchor cell is
+    -1 252,53 €.  That is not a defect: it is the arithmetic of *Zillmerung*, and it is the
+    reason § 169 Abs. 3 VVG needs a floor at all.  **How long it stays negative is a parameter
+    question.**  At the post-2015 25 ‰ ceiling over a twenty-five-year *Beitragszahlungsdauer*
+    the zillmered cost is 0,625 of one annual premium, so the first Zillmer premium more than
+    repays it and the reserve is positive from the first anniversary; at the pre-2015 40 ‰
+    ceiling, or over a long term with a short premium period, it is negative for longer.  With
+    ``zillmer_on = 0`` it coincides with :func:`res_net_pp`.
     """
     return (res_net_pp(t)
             - alpha_cost() * ann_due_prem_fut(t) / ann_due_prem_1st())
@@ -1181,11 +1188,18 @@ def surplus_base_pp(t):
     after that year's interest and mortality and before this year's surplus - the reserve
     "calculated at the allocation date", which the sources put at the *Bilanzstichtag*.
 
-    The ``max`` is load-bearing.  A *gezillmerte Deckungskapital* is negative in the early
-    years, and a positive rate on a negative base credits a **negative** surplus.  So a
-    *gezillmert* contract earns no interest surplus in its first years even though the § 153
-    VVG entitlement runs from inception: economically right, because there is no fund to earn
-    on, and worth saying because it looks like a bug.
+    The ``max`` is load-bearing wherever the base is negative, and a *gezillmerte
+    Deckungskapital* is negative at issue.  A positive rate on a negative base credits a
+    **negative** surplus - so a contract whose *Zillmerung* is not yet recovered earns no
+    interest surplus at all, even though the § 153 VVG entitlement runs from inception:
+    economically right, because there is no fund to earn on, and worth saying because it looks
+    like a bug.
+
+    On the shipped parameters the guard is **inert**: the base here is the *closing* reserve,
+    and at a 25 ‰ *Zillmersatz* over a twenty-five-year premium term that is already positive
+    in policy year 1 (570,75 € on the anchor cell against an opening -1 252,53 €).  It is not
+    inert at the pre-2015 40 ‰ ceiling, and it is the kind of guard whose absence is invisible
+    until the parameter that needs it arrives.
     """
     return max(res_pp_at(t, "AFT_INT"), 0.0)
 
@@ -1665,9 +1679,12 @@ def net_cf(t):
     each subtracted exactly once, :func:`expenses` excluding commission by construction.  The
     notes' own sign and the library-wide one.
 
-    The shape to expect on the anchor cell is a large first-year strain, then positive margins
-    that grow as the *Deckungskapital* and the *Überschussguthaben* build, then a single very
-    large negative year at the *Ablauf*.
+    The shape to expect on the anchor cell is a **first year that very nearly washes** -
+    +320,89 €, the year's *Beitrag* of 2 004,04 € almost exactly meeting the 1 252,53 € initial
+    commission plus the 300 € acquisition expense - then margins of the order of a thousand
+    euros a year that decay as the cohort lapses, then a single very large negative year at the
+    *Ablauf*, -28 172,76 €.  The new-business strain of this product sits in the **reserve**,
+    which opens at -1 252,53 €, and not in the cash flow.
     """
     return (premiums(t) - claims(t, "DEATH") - claims(t, "MATURITY")
             - claims(t, "LAPSE") - expenses(t) - commissions(t))
@@ -1989,8 +2006,11 @@ def result_surplus():
     know which columns to skip.
 
     Read the first rows of this frame beside the first rows of :func:`result_cf` and the
-    product is visible in two numbers: ``res_pp`` is negative while the *Zillmerung* is
-    unrecovered, and ``surplus_credit_pp`` is therefore exactly zero over the same years.
+    product is visible in two numbers.  ``res_pp`` opens at ``-alpha_cost()`` - the whole of the
+    *Zillmerung*, unrecovered - while ``surplus_credit_pp`` is struck on the year's *closing*
+    reserve and is therefore small but positive from the first year.  The gap between the two
+    columns in the early durations is the entire economics of a German endowment's first
+    years.
     """
     ts = list(range(t_start(), proj_len() + 1))
     return pd.DataFrame(                                             # noqa: F821

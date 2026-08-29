@@ -256,11 +256,15 @@ proxy in four series — `{FIRST, SECOND} × {M, F}` — over attained ages 50 t
 
 `q_base` is the Gompertz–Makeham law the research file constructs and prints, with life expectancy
 24,29 years at 65 and `q(65) = 0.00789`, `q(75) = 0.02001`, `q(85) = 0.05078`. **The anchor is that
-the 45 % / 55 % unisex blend of the FIRST series reproduces `q_base(x)` exactly at every age** —
-`0.45 × 1.250000 + 0.55 × 0.795455 = 1.000000` — so the model's tariff basis is the research file's
-own basis and any figure printed there can be traced into the model. The identity holds at ages 50 to
-119; age 120 is the closing row, where all four series are set to `1.0` and the survival path
-therefore reaches zero exactly. The `Data` docstring states this anchor.
+the 45 % / 55 % unisex blend of the FIRST series reproduces `q_base(x)`** —
+`0.45 × 1.250000 + 0.55 × 0.795455 = 1.00000025` — so the model's tariff basis is the research
+file's own basis and any figure printed there can be traced into the model. The reproduction is
+exact to **2,5 × 10⁻⁷ relative** rather than exactly exact: the female factor that would close it
+is `0.4375 / 0.55 = 0.795454545…` and the table carries its six-decimal rounding. The identity
+holds in that sense at ages 50 to 119; age 120 is the closing row, where all four series are set to
+`1.0` and the survival path therefore reaches zero inside the horizon. **Every series is also
+capped at 1.0**, which binds only on `SECOND/M` at attained ages 117 to 119, where `1.20 × FIRST`
+would otherwise exceed 1 and stop being a probability. The `Data` docstring states this anchor.
 
 **The generational surface.** A period table is the wrong object for a forty-year annuity [REG-R49].
 `improvement_table.csv` ships `λ(x)` in two series **[std]**:
@@ -421,9 +425,12 @@ projection basis are different objects**: `mort_rate_tariff` is first order and 
 `mort_rate` second order and sex-specific, and `mort_rate_tariff(t, life) < mort_rate(t, life)` at
 every `t` (pitfall 9).
 
-Because `q(120) = 1` in every series and `λ(120) = 0`, `lives_if` reaches exactly zero at
-`horizon_mths(life)` and the decrements close: `Σ_t lives_death(t, life) = lives_if(t₀, life)` with
-`lives_if(n + 1, life) = 0`. That is `check_lives_roll_fwd()`.
+Because `q(120) = 1` in every series and `λ(120) = 0`, `lives_if` reaches zero **at or before**
+`horizon_mths(life)` — the monthly conversion of `q = 1` is 1, so the path in fact goes to zero in
+the first month of attained age 120, eleven months inside the horizon — and the decrements close:
+`Σ_t lives_death(t, life) = lives_if(t₀, life)` with `lives_if(n + 1, life) = 0`. That is
+`check_lives_roll_fwd()`. The horizon is an upper bound and no cash flow depends on which of the
+two it is.
 
 ### Payment months, the certain floor and the payment factors
 
@@ -588,13 +595,13 @@ product's own roll-forward and pricing identities.
 
 | Check | Identity |
 |---|---|
-| `check_net_cf` | `net_cf(t) == premiums(t) − pols_if_init·A(t)·payment_factor(t) − claims(t,"REFUND") − expenses(t)`. **Not a restatement of the definition**: it rebuilds the annuity outgo through the `max()` payment factor rather than through the two published legs, so it asserts that the split into `annuity_payments` and `claims_guarantee` is exhaustive and non-overlapping |
+| `check_net_cf` | `net_cf(t) == premiums(t) − 1{payment month}·pols_if_init·A(t)·payment_factor(t) − claims(t,"REFUND") − expenses(t)`. The instalment term carries the payment-month indicator, because `payment_factor(t)` is defined at every `t` and only some `t` carry an instalment on a quarterly, half-yearly or annual point. **Not a restatement of the definition**: it rebuilds the annuity outgo through the `max()` payment factor rather than through the two published legs, so it asserts that the split into `annuity_payments` and `claims_guarantee` is exhaustive and non-overlapping |
 | `check_lives_roll_fwd` | `lives_if(t + 1, life) == lives_if(t, life)·(1 − mort_rate_mth(t, life))`, and `Σ_t lives_death(t, life) + lives_if(n + 1, life) == lives_if(t₀, life)` for each life in scope |
 | `check_annuity_roll_fwd` | `annuity_surp_pp(t) == annuity_surp_pp(t − 1) · (1 + ψ)^{1 if t % 12 == 0 else 0}` inside the payment phase, and `annuity_pp(t) ≥ annuity_pp(t − 1)` at every `t` — the *Bonusrente* ratchet |
 | `check_refund_run_off` | `refund_pp(t) == max(refund_pp(t − 1) − R·1{payment month}, 0)`, non-increasing and reaching zero at `⌈SP / R⌉` instalments; identically zero where `refund_form == "none"` |
 | `check_payment_factor` | `annuity_payments(t) + claims(t,"GUARANTEE") == pols_if_init · A(t) · payment_factor(t)` at every payment month, and zero at every other |
 | `check_guarantee_certain` | `payment_factor(t) == 1.0` at every payment month with `t < guar_end_mth()`, whatever `δ` — the instalment is certain inside the *Rentengarantiezeit* [R23] |
-| `check_equivalence` | `net_single_prem() == annuity_pp_derived()·ä·(1 + β) + refund_pv()` to `roll_fwd_tol`. Returns `True` where `annuity_pp_init() > 0`, the annuity having been struck on a basis this model does not reproduce; the notes say so rather than letting it pass silently |
+| `check_equivalence` | `net_single_prem() == annuity_pp_derived()·ä·(1 + β) + refund_pv()` to `roll_fwd_tol` scaled by `net_single_prem()` — the identity is an equality between euro amounts of the order of 10⁵ and the refund solve converges on `R` rather than on the residual. Returns `True` where `annuity_pp_init() > 0`, the annuity having been struck on a basis this model does not reproduce; the notes say so rather than letting it pass silently |
 | `check_death_option_xor` | `refund_form() == "none"` **or** (`guar_years() == 0` **and** `surv_pct() == 0`) — the **[std]** exclusivity of research gap 10, asserted rather than assumed |
 | `check_tariff_int_rate` | `tariff_int_rate() ≤ max_tariff_int_rate() + roll_fwd_tol`, the cap read at `entry_year()` [REG-R14] [REG-R15]. An inequality, not an equality: a carrier may price below the cap and one is observed doing so [S6] |
 
@@ -777,7 +784,294 @@ All amounts in euros; `pols_if` and the survival probabilities to six decimals, 
 cent, and every total summed **at full precision and then rounded** rather than accumulated from
 rounded cells.
 
-<!-- WORKED EXAMPLE TABLE -- filled by the model stage from the model's own output -->
+### The derived quantities
+
+Everything below follows from four numbers, and the first three of them a reader can check with
+a calculator.
+
+| Quantity | Cells | Value |
+|---|---|---|
+| *Nettoeinmalbeitrag* `SP_net = SP (1 − α)` | `net_single_prem()` | 97,500.0000 € |
+| Tariff annuity factor `ä` | `annuity_factor()` | 263.5711140230 |
+| the same as the market's `a12 = ä / m` | — | 21.9642595019 |
+| PV of the refund leg | `refund_pv()` | 0.0000 € — no refund elected |
+| *garantierte Rente* `R = SP_net / (ä (1 + β))` | `annuity_pp_derived()` | **362.6658241684 €** per month |
+| *Überschussrente* at outset `U(0) = R u₀` | `annuity_surp_pp(0)` | 36.2665824168 € |
+| Total instalment at outset `A(0)` | `annuity_pp(0)` | **398.9324065852 €** per month |
+
+So the anchor configuration buys a **guaranteed 362,67 € a month for life** per 100 000 € of
+*Einmalbeitrag*, with a ten-year *Rentengarantiezeit*, and a **total 398,93 € a month at outset**
+of which a tenth is the non-guaranteed *Überschussrente*.
+
+**This is 4,9 % below the 381 € the research file's own arithmetic gives**, and the whole of the
+difference is the annuity factor: `a12 = 21.9643` here against `20.897` there, `+5.1 %`, and
+`1 / 1.05107 = 0.9514`. The research file computes `a12` from a **period** table with
+`a12 = a_due − 11/24`; this model reads a **generational** surface, so the same annuitant is
+priced on mortality that improves for the whole of the fifty-six-year projection. The gap is
+the *Trendfunktion* [REG-R49], it is one-sided, and it is the reason a period-table proxy is
+pitfall 8 rather than a simplification.
+
+### The frame
+
+672 monthly rows, `t = 0 … 671`. The table shows the first policy year in full, then the two
+months either side of the guarantee's expiry and one row every ten years to the horizon. Money
+to the cent, `pols_if` to six decimals; the **Total** row is summed over all 672 rows at full
+precision and then rounded.
+
+| `t` | `pols_if` | `premiums` | `annuity_payments` | `claims_guarantee` | `claims_refund` | `expenses` | `liability_cf` | `net_cf` |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 1.000000 | 100,000.00 | 398.93 | 0.00 | 0.00 | 2,206.50 | −97,394.57 | 97,394.57 |
+| 1 | 1.000000 | 0.00 | 398.54 | 0.40 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 2 | 1.000000 | 0.00 | 398.14 | 0.79 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 3 | 1.000000 | 0.00 | 397.75 | 1.19 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 4 | 1.000000 | 0.00 | 397.35 | 1.58 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 5 | 1.000000 | 0.00 | 396.96 | 1.97 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 6 | 1.000000 | 0.00 | 396.57 | 2.37 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 7 | 1.000000 | 0.00 | 396.17 | 2.76 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 8 | 1.000000 | 0.00 | 395.78 | 3.15 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 9 | 1.000000 | 0.00 | 395.39 | 3.54 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 10 | 1.000000 | 0.00 | 395.00 | 3.94 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 11 | 1.000000 | 0.00 | 394.60 | 4.33 | 0.00 | 6.50 | 405.43 | −405.43 |
+| 12 | 1.000000 | 0.00 | 394.57 | 4.72 | 0.00 | 6.60 | 405.89 | −405.89 |
+| 60 | 1.000000 | 0.00 | 373.69 | 27.09 | 0.00 | 7.00 | 407.78 | −407.78 |
+| 119 | 1.000000 | 0.00 | 338.58 | 63.75 | 0.00 | 7.43 | 409.76 | −409.76 |
+| 120 | 0.839834 | 0.00 | 338.22 | 0.00 | 0.00 | 6.34 | 344.56 | −344.56 |
+| 121 | 0.837965 | 0.00 | 337.47 | 0.00 | 0.00 | 6.32 | 343.79 | −343.79 |
+| 240 | 0.555887 | 0.00 | 226.20 | 0.00 | 0.00 | 4.87 | 231.07 | −231.07 |
+| 360 | 0.189111 | 0.00 | 77.83 | 0.00 | 0.00 | 1.92 | 79.75 | −79.75 |
+| 480 | 0.007818 | 0.00 | 3.26 | 0.00 | 0.00 | 0.09 | 3.35 | −3.35 |
+| 600 | 0.000000 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | −0.00 |
+| 671 | 0.000000 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | −0.00 |
+| **Total** | **258.921518** | **100,000.00** | **101,091.33** | **3,428.03** | **0.00** | **4,228.28** | **8,747.64** | **−8,747.64** |
+
+**The Total row is summed at full precision and then rounded, and here that visibly matters.**
+Adding the 672 *rounded* `net_cf` cells gives **−8 747,47 €** against the **−8 747,64 €** above —
+17 cents apart, because 672 half-cent roundings do not cancel. The same happens in the other
+columns: `annuity_payments` accumulates to 101 091,23 € from the rounded cells against
+101 091,33 € at full precision, and `claims_guarantee` to 3 428,04 € against 3 428,03 €. Any test
+of this table must sum the model's own values, not the printed ones.
+
+Reading the frame in four steps. **Month 0** takes in the whole *Einmalbeitrag*, pays the first
+instalment and the acquisition expense, and is the only positive `net_cf` in the projection.
+**Months 0 to 119** are inside the *Rentengarantiezeit*: `pols_if` is exactly 1.000000, and
+`annuity_payments + claims_guarantee` is exactly the instalment, the split between them moving
+from the annuitant to the beneficiaries as survival falls — 398,54 € against 0,40 € in month 1,
+338,58 € against 63,75 € in month 119. **Month 120** is the discontinuity: the guarantee expires,
+`claims_guarantee` goes to zero for the rest of the projection, and the outgo drops by a sixth in
+one step, from 409,76 € to 344,56 €. **Months 120 to 671** are the pure *Leibrente*: the
+instalment keeps rising with the *Überschussrente* while survival falls faster, so the cash flow
+decays to nothing by about month 600.
+
+The state behind those rows:
+
+| `t` | `lives_if_1` | `certain_floor` | `payment_factor` | `annuity_guar_pp` | `annuity_surp_pp` | `annuity_pp` | `cum_annuity_guar_pp` |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 1.000000 | 1.000000 | 1.000000 | 362.67 | 36.27 | 398.93 | 362.67 |
+| 11 | 0.989151 | 1.000000 | 1.000000 | 362.67 | 36.27 | 398.93 | 4,351.99 |
+| 12 | 0.988171 | 1.000000 | 1.000000 | 362.67 | 36.63 | 399.30 | 4,714.66 |
+| 119 | 0.841553 | 1.000000 | 1.000000 | 362.67 | 39.66 | 402.33 | 43,519.90 |
+| 120 | 0.839834 | 0.000000 | 0.839834 | 362.67 | 40.06 | 402.73 | 43,882.56 |
+| 240 | 0.555887 | 0.000000 | 0.555887 | 362.67 | 44.25 | 406.92 | 87,402.46 |
+| 360 | 0.189111 | 0.000000 | 0.189111 | 362.67 | 48.88 | 411.55 | 130,922.36 |
+| 671 | 0.000000 | 0.000000 | 0.000000 | 362.67 | 62.69 | 425.35 | 243,711.43 |
+
+`annuity_surp_pp` is flat across `t = 0 … 11` and steps at `t = 12`, which is the anniversary rule
+of pitfall 14; `payment_factor` is exactly 1 up to `t = 119` and equals `lives_if_1` from `t = 120`,
+which is the certain floor of pitfall 3.
+
+### Three independent checks
+
+Each rebuilds a cell of the table a **different way** from the way the model builds it.
+
+**1. The guaranteed instalment, from the annuity factor alone.** The model builds `ä` by summing
+672 discounted survival-weighted payment months. A reader with the printed `ä` does one division:
+
+    R = 97,500.00 / (263.5711140230 x 1.02) = 97,500.00 / 268.8425363035 = 362.6658241684
+
+and in the market's own unit, `100,000 x 0.975 / (12 x 21.9642595019 x 1.02) = 362.67 €`. The
+opening total instalment is then `362.6658241684 x 1.10 = 398.9324065852`, the 1.10 being
+`1 + u₀` with the *teildynamisch* opening share of 10 % and the growth exponent still zero in
+policy year 0.
+
+**2. Month 1, rebuilt from the mortality table.** The annuitant is 65 and born in 1960, so the
+cohort exponent is `1960 + 65 − 2025 = 0` and the generational surface returns the shipped rate
+unmodified. From `mort_table.csv`, `FIRST/M at 65 = 0.009857796019`, so
+`q⁽²⁾ = 1.20 x 0.009857796019 = 0.011829355222`; monthly,
+`1 − (1 − 0.011829355222)^(1/12) = 0.000991165035`; hence
+
+    lives_if(1) = 1 − 0.000991165035 = 0.999008834965          -> 0.999009
+    annuity_payments(1) = 398.9324065852 x 0.999008834965 = 398.5369987327   -> 398.54
+    claims_guarantee(1) = 398.9324065852 x 0.000991165035 =   0.3954078526   ->   0.40
+
+and the two add back to `398.9324065852` exactly, because inside the *Rentengarantiezeit*
+`payment_factor(1) = max(1, 0.999009) = 1`. The **unisex tariff rate** at the same age comes off
+the same two rows: `0.45 x 0.009857796019 + 0.55 x 0.006273146506 = 0.007886238787`, which is
+`q_base(65)` to 2,5 × 10⁻⁷ relative — the anchor of the shipped proxy, and the reason every
+annuity factor printed in `_research/sofortrente.md` traces into this model.
+
+**3. Month 0's expense and cash flow, from the parameter list.** No survival enters either:
+
+    expenses(0)  = 0.02 x 100,000 + 200            (acquisition)
+                 + 60 / 12                          (one month's maintenance, pols_if = 1)
+                 + 1.50                             (one instalment run)
+                 = 2,000.00 + 200.00 + 5.00 + 1.50 = 2,206.50
+    net_cf(0)    = 100,000.00 − 398.93 − 0.00 − 2,206.50 = 97,394.57
+
+and the *Kostenüberschuss* the tariff is designed to earn is visible in the same two lines: the
+acquisition **loading** takes `α x SP = 2,500.00 €` and the acquisition **expense** incurred is
+2 200,00 €, a 300,00 € margin at inception **[std]**.
+
+### Two closure identities
+
+**The decrements close.** Death is the only decrement in this product, so the whole cohort must be
+accounted for by deaths plus survivors:
+
+    sum over t = 0 … 671 of lives_death(t, 1)  =  1.000000000000
+    lives_if(672, 1)                            =  0.000000000000
+    total                                       =  1.000000000000  =  lives_if(0, 1)
+
+That is `check_lives_roll_fwd()`, and it closes to the last printed digit because `q = 1` at
+attained age 120 forces the survival path to zero inside the `omega_age = 121` horizon.
+
+**The cash flow statement closes.** Summing the columns at full precision,
+
+    100,000.0000000000            premiums
+  − 101,091.3334710770            annuity_payments
+  −   3,428.0270060962            claims_guarantee
+  −       0.0000000000            claims_refund
+  −   4,228.2772978315            expenses
+  = −  8,747.6377750047           net_cf
+
+which is the printed Total to the cent. That is `check_net_cf()` summed rather than asserted
+per month.
+
+**And a third, which is the one worth having.** Inside the *Rentengarantiezeit* the outgo does
+not depend on mortality **at all**, so the first ten years of this projection can be computed in
+closed form with no table:
+
+    120 R                                            = 120 x 362.6658241684  = 43,519.8989002072
+    12 R u₀ x s̈10 at 1 %,  s̈10 = (1.01¹⁰ − 1)/0.01 = 10.4622125411
+                                                     = 435.1989890021 x 10.4622125411
+                                                     =  4,553.1443206206
+    total instalments, months 0 … 119                = 48,073.0432208278
+
+The model's own `annuity_payments + claims_guarantee` over `t = 0 … 119` is
+**48,073.0432208278 €**, agreeing to 7 × 10⁻¹² €. A model that decremented the guaranteed
+instalments for survival — pitfall 2 — would come out about 8 % below this figure, and a model
+that added the certain floor instead of taking a `max` — pitfall 3 — about 92 % above it.
+
+### The variant the notes promised: the same cell *nachschüssig*
+
+Model point 9 is model point 1 with `payment_timing = arrears` and nothing else changed. The
+first instalment moves from `t = 0` to `t = 1`, the guarantee window from `0 … 119` to
+`1 … 120`, and the tariff factor falls from 263.5711140230 to **262.6685503335** — by 0.9025636895,
+which is the value of the one instalment that has moved to the far end of the guarantee. The
+guaranteed instalment rises in exactly that proportion:
+
+    363.9119916441 / 362.6658241684  =  263.5711140230 / 262.6685503335  =  1.00343586
+
+| `t` | `pols_if` | `premiums` | `annuity_payments` | `claims_guarantee` | `expenses` | `net_cf` |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 1.000000 | 100,000.00 | 0.00 | 0.00 | 2,205.00 | 97,795.00 |
+| 1 | 1.000000 | 0.00 | 399.91 | 0.40 | 6.50 | −406.80 |
+| 2 | 1.000000 | 0.00 | 399.51 | 0.79 | 6.50 | −406.80 |
+| 3 | 1.000000 | 0.00 | 399.11 | 1.19 | 6.50 | −406.80 |
+| 12 | 1.000000 | 0.00 | 395.93 | 4.74 | 6.60 | −407.26 |
+| 120 | 1.000000 | 0.00 | 339.39 | 64.72 | 7.54 | −411.65 |
+| 121 | 0.837965 | 0.00 | 338.63 | 0.00 | 6.32 | −344.95 |
+| 240 | 0.555887 | 0.00 | 226.98 | 0.00 | 4.87 | −231.84 |
+| **Total** | **259.081684** | **100,000.00** | **101,038.39** | **3,504.53** | **4,227.99** | **−8,770.91** |
+
+Three things are worth reading off it. `t = 0` carries no instalment and no instalment-running
+expense — 2 205,00 € against the anchor's 2 206,50 € — so the *nachschüssig* cell is 400 € better
+off in its first month and pays it back over the following fifty-six years. The guarantee still
+covers **120 instalments**, now at `t = 1 … 120` (pitfall 13). And the annuity is **0,34 % higher**,
+not 5 %: see the correction recorded at the end of this section.
+
+### The other configuration: an in-force point with a **given** annuity
+
+A *Sofortrente* has one premium form, so the pair this model must serve is *derived* against
+*given*. Model point 10 carries an annuity struck in 2012 on a 1,75 % tariff —
+`annuity_pp_init = 430.00`, `duration_mth_init = 156`, `surplus_form = konstant` — and the model
+uses it rather than striking one. Its frame opens at `t = 156` and runs to 671: **516 rows, and no
+`t = 0` in them.**
+
+| `t` | `pols_if` | `premiums` | `annuity_payments` | `claims_guarantee` | `expenses` | `net_cf` |
+|---:|---:|---:|---:|---:|---:|---:|
+| 156 | 1.000000 | 0.00 | 516.00 | 0.00 | 7.89 | −523.89 |
+| 157 | 1.000000 | 0.00 | 514.26 | 1.74 | 7.89 | −523.89 |
+| 168 | 1.000000 | 0.00 | 495.50 | 20.50 | 8.01 | −524.01 |
+| 179 | 1.000000 | 0.00 | 475.88 | 40.12 | 8.01 | −524.01 |
+| 180 | 0.918857 | 0.00 | 474.13 | 0.00 | 7.47 | −481.60 |
+| 240 | 0.689197 | 0.00 | 355.63 | 0.00 | 6.03 | −361.66 |
+| **Total** | **135.648915** | **0.00** | **69,516.79** | **478.05** | **1,192.84** | **−71,187.68** |
+
+`premiums` is **zero in every row** — the *Einmalbeitrag* was paid in 2012, before the valuation
+date, and counting it again is pitfall 11 — and the acquisition expense appears nowhere, which is
+pitfall 12. `pols_if(156) = 1.000000 = pols_if_init()`, as it does on a new-business point, because
+the projection is conditional on the annuitant being alive at the valuation date. The instalment is
+`430.00 + 0.20 x 430.00 = 516.00 €` and stays there: the *konstante Überschussrente* has
+`surplus_growth = 0`, so nothing steps at the anniversary and only the expense inflation index does.
+`check_equivalence()` returns `True` without asserting anything, the annuity having been struck on a
+basis this model does not reproduce.
+
+### And the cell with the *Überschussrente* switched off
+
+Model point 14 is the anchor with `surplus_form = none`. It derives the **identical** guaranteed
+instalment — 362.6658241684 € — which is the arithmetic statement that `ä` does not depend on
+`surplus_form`, the *Überschussrente* being financed out of surplus actually earned rather than
+priced into the guarantee. Everything else differs:
+
+| Over the whole 672-month frame | point 1, *teildynamisch* | point 14, surplus off | difference |
+|---|---:|---:|---:|
+| `annuity_payments` | 101,091.33 | 90,804.02 | 10,287.32 |
+| `claims_guarantee` | 3,428.03 | 3,097.97 | 330.06 |
+| `expenses` | 4,228.28 | 4,228.28 | 0.00 |
+| `net_cf` | −8,747.64 | **+1,869.74** | −10,617.38 |
+
+The whole modelled *Überschussrente* is **10 617,38 €** undiscounted, and **none of it is
+guaranteed**. It is also what turns the sign of the undiscounted total: on the guaranteed annuity
+alone the anchor cell collects 1 869,74 € more than it pays out over fifty-six years, and with the
+surplus it pays out 8 747,64 € more than it collects. Neither figure is an economic result — these
+are undiscounted flows and the *Einmalbeitrag* arrives fifty-six years before the last of them —
+but the *difference* between them is exactly the quantity the four *Überschussverwendung* forms
+distribute, and pricing it is what a sensitivity on this product is for.
+
+### Corrections made to these notes when the model was built
+
+Six, all in this document, none in `product-spec.md`, `sources.md` or the frozen research file.
+Each is recorded because a reader comparing an earlier draft with this one should not have to
+guess which side moved.
+
+1. **`check_net_cf`'s identity now carries the payment-month indicator.** The row in *Published
+   `check_*` identities* read `net_cf(t) == premiums(t) − pols_if_init·A(t)·payment_factor(t) −
+   claims(t,"REFUND") − expenses(t)`. `payment_factor(t)` is defined at every `t`, not only at
+   payment months, so on a quarterly, half-yearly or annual model point the identity as written
+   subtracted an instalment in months where none was paid. The annuity term is gated by
+   `1{payment month}`, as the cash flows themselves already were.
+2. **`check_equivalence`'s tolerance is `roll_fwd_tol` scaled by the *Nettoeinmalbeitrag*.** The
+   identity is an equality between euro amounts of the order of 10⁵ and the refund solve converges
+   on `R` rather than on the residual, so an unscaled 1e-8 would have been a tolerance on the
+   fifteenth significant figure.
+3. **The shipped mortality series are capped at 1.0.** `SECOND = 1.20 × FIRST` exceeds 1 on the
+   male series at attained ages 117 to 119, where a rate is no longer a probability. The cap binds
+   nowhere else, and `mort_rate_gen` carries the same cap for the case of a negative cohort
+   exponent.
+4. **`lives_if` reaches zero at or before `horizon_mths(life)`, not exactly at it.** With
+   `q = 1` at attained age 120 the monthly rate is 1 in the first month of that age, so the path
+   reaches zero eleven months inside the horizon. The horizon is an upper bound; nothing depends
+   on which of the two it is.
+5. **The unisex anchor is exact to 2,5 × 10⁻⁷ relative, not exactly exact.** The female factor
+   that would make `0.45 × 1.250000 + (1 − 0.45) × f = 1` exactly is `0.4375 / 0.55 =
+   0.795454545…`; the shipped table carries its six-decimal rounding, 0.795455.
+6. **The payment-timing convention is worth 0,34 % of the annuity on this product, not 5 %.** The
+   figure of about 5 % in *Key sensitivities* was carried over from `_research/sofortrente.md`
+   section 8, which computes it as `ä_due − ä_arrears = 1` — the difference between an **annual**
+   annuity-due and an annual annuity-immediate. On a **monthly** annuity the difference is one
+   *month's* instalment, `1 / a12 ≈ 1 / 21.96 ≈ 0.4 %` before the guarantee period damps it
+   further. Model points 1 and 9 measure it directly at **0,34 %**, and the sensitivity list now
+   says so. The research file is frozen and is not amended; the discrepancy is recorded here
+   instead, and it is a real error in that file's section 8 rather than a difference of basis.
 
 ---
 
@@ -847,10 +1141,16 @@ In rough order of leverage for a German payout-annuity block:
    worth about +10 % on the guaranteed annuity at age 65 (`product-spec.md`, *Rentenhöhe*). Model
    points 1 and 13 differ in almost nothing else, so the pair isolates the effect; **the magnitude is
    constructed, not observed** (research gap 5).
-4. **The payment timing convention.** *Vorschüssig* is **[std]** and unestablished (research gap 11),
-   and it is worth about **5 %** of the annuity — larger than most assumption changes anyone would
-   argue about. Model point 9 is the same cell in arrears and exists to make the difference
-   measurable rather than assumed.
+4. **The payment timing convention.** *Vorschüssig* is **[std]** and unestablished (research gap 11).
+   Model points 1 and 9 are the same cell under the two conventions and measure the difference at
+   **0,34 %** of the guaranteed annuity — `363.9119916441 / 362.6658241684`. That is **not** the
+   "about 5 %" of `_research/sofortrente.md` section 8, which computes the gap as
+   `ä_due − ä_arrears = 1`: true of an **annual** annuity, and twelve times too large for a monthly
+   one, where the gap is one *month's* instalment. The research file is frozen and is not amended;
+   the correction is recorded in the worked example above. The convention still matters — it shifts
+   every payout cash flow by a month and moves the first month's `net_cf` by the whole instalment —
+   but it is not the largest assumption in the model, and treating it as such would misdirect a
+   sensitivity programme.
 5. **The *Kapitalrückgewähr* solve.** Model point 3's guaranteed annuity is about 18 % below the plain
    life annuity on the [std] basis, and the reduction is sensitive to the interest rate in a way the
    plain annuity is not, because the refund is a *death* benefit discounted from an earlier date than
