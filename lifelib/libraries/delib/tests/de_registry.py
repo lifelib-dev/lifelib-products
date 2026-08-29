@@ -97,7 +97,15 @@ MODELS = {
 # expectation would assert nothing at all.
 INPUT_FILES = {
     "Basis_DE_A": set(),
-    "BU_DE_S": set(),
+    "BU_DE_S": {
+        "model_point_table.csv",
+        "inception_table.csv",
+        "claim_duration_table.csv",
+        "mortality_table.csv",
+        "occupation_table.csv",
+        "lapse_table.csv",
+        "freq_loading_table.csv",
+    },
     "FRV_DE_S": set(),
     "Index_DE_A": set(),
     "KLV_DE_A": set(),

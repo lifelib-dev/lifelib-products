@@ -568,8 +568,8 @@ a test** in `tests/test_indexpolice_de.py`.
    `av_pp_at(t,"AFT_CREDIT") ≥ av_pp_at(t,"AFT_GUAR")` at every `t`.
 2. **Flooring each month at zero.** `x(m) = min(r, C)` has **no lower bound**. On the anchor's `t = 10`
    (research Example B) the correct sum is **−2,60 %** and the credit is **0,00 €**; an implementation
-   that floors each month gets `S = +9,60 %` and credits something. Assert `index_sum(10) < 0` and
-   `index_credit_pp(10) == 0.0`.
+   that floors each capped month gets `S = +12,60 %` and credits something. Assert `index_sum(10) < 0`
+   and `index_credit_pp(10) == 0.0`.
 3. **Compounding the capped returns instead of summing them.** The contractual formula is a **sum**. On
    `t = 9` (Example A) assert `index_sum(9) == 0.0890` exactly; compounding the same twelve capped
    returns gives **8,9599 %**, an error of 0,0599 points — small enough to look like rounding and large
@@ -597,7 +597,11 @@ a test** in `tests/test_indexpolice_de.py`.
    assert `index_credit(t) == index_credit_pp(t) * pols_if_at(t, "AFT_LAPSE")`.
 9. **Paying a pro-rata index credit on a mid-year exit.** [std] no credit in the year of exit. Assert
    `db_pp(t) == max(av_pp_at(t,"AFT_GUAR"), death_min_rate * prem_sum())` exactly, with no index term,
-   and that `db_pp(t) < av_pp(t+1)` in every year the index credited something.
+   and that `av_pp_at(t,"AFT_GUAR") < av_pp(t+1)` in every year the index credited something — the
+   benefit is struck on the balance **before** the year's credits. Assert it on that balance and not
+   on `db_pp` itself: the *Mindesttodesfallschutz* floor of 32 400,00 € exceeds the anchor's account
+   until year 13, so the death benefit there is larger than the account at any timing, which is what
+   a floor is for.
 10. **Testing the lock-in as "the account never falls".** It is the **credits** that ratchet, not the
     balance. On model point 13 (`guar_rate = 0,25 % = γ`) the account is flat or falling once premiums
     stop, while `guar_cap_pp` is still monotone. Assert `check_lock_in()` on every point **and** that
@@ -717,7 +721,258 @@ no dynamic behaviour module, no discounting.
 All amounts in euros; `pols_if` to six decimals, cash flows and balances to the cent. The **Total** row
 is summed **at full precision and then rounded**, not summed from the rounded cells.
 
-<!-- WORKED EXAMPLE TABLE -- filled by the model stage from the model's own output -->
+**The projection.** Transcribed from `Projection[1].result_cf()`. `surplus_credit` is a required
+column of the frame and is **0,00 € at every `t`** — the anchor elects the index arm in all 27 years —
+and `liability_cf` is exactly `−net_cf`; both are omitted here for width. `av` is a **balance**, so its
+column is deliberately not totalled: adding twenty-seven opening balances is not a quantity.
+
+| t | x(t) | pols_if | premiums | claims_death | claims_lapse | claims_maturity | expenses | guar_int | index_credit | av | net_cf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 40 | 1.000000 | 2,400.00 | 38.88 | 98.81 | 0.00 | 1,656.00 | 19.99 | 0.00 | 0.00 | 606.31 |
+| 2 | 41 | 0.948860 | 2,277.26 | 40.40 | 188.20 | 0.00 | 34.67 | 38.08 | 81.79 | 1,915.73 | 2,014.00 |
+| 3 | 42 | 0.900233 | 2,160.56 | 41.97 | 163.70 | 0.00 | 33.39 | 55.21 | 186.81 | 3,730.48 | 1,921.51 |
+| 4 | 43 | 0.871969 | 2,092.73 | 44.51 | 216.92 | 0.00 | 32.82 | 73.17 | 1,204.06 | 5,587.67 | 1,798.47 |
+| 5 | 44 | 0.844477 | 2,026.75 | 47.20 | 297.26 | 0.00 | 32.27 | 100.28 | 0.00 | 8,360.99 | 1,650.01 |
+| 6 | 45 | 0.817730 | 1,962.55 | 50.05 | 346.23 | 0.00 | 31.71 | 116.82 | 41.78 | 9,807.67 | 1,534.56 |
+| 7 | 46 | 0.791700 | 1,900.08 | 53.06 | 393.37 | 0.00 | 31.16 | 132.75 | 0.00 | 11,465.08 | 1,422.49 |
+| 8 | 47 | 0.766360 | 1,839.26 | 56.24 | 436.27 | 0.00 | 30.62 | 147.26 | 0.00 | 12,978.50 | 1,316.13 |
+| 9 | 48 | 0.741686 | 1,780.05 | 59.60 | 476.31 | 0.00 | 30.08 | 160.80 | 1,239.56 | 14,394.07 | 1,214.06 |
+| 10 | 49 | 0.717651 | 1,722.36 | 63.15 | 550.17 | 0.00 | 29.54 | 185.79 | 0.00 | 16,954.47 | 1,079.50 |
+| 11 | 50 | 0.694231 | 1,666.15 | 66.89 | 583.79 | 0.00 | 29.00 | 197.19 | 0.00 | 18,152.02 | 986.47 |
+| 12 | 51 | 0.671401 | 1,611.36 | 70.84 | 1,229.59 | 0.00 | 28.47 | 207.72 | 0.00 | 19,261.02 | 282.46 |
+| 13 | 52 | 0.629062 | 1,509.75 | 75.88 | 415.58 | 0.00 | 27.08 | 210.68 | 823.46 | 19,656.70 | 991.21 |
+| 14 | 53 | 0.614282 | 1,474.28 | 90.60 | 453.04 | 0.00 | 26.84 | 229.75 | 0.00 | 21,602.56 | 903.80 |
+| 15 | 54 | 0.599646 | 1,439.15 | 103.58 | 472.83 | 0.00 | 26.59 | 239.88 | 0.00 | 22,651.89 | 836.15 |
+| 16 | 55 | 0.585141 | 1,404.34 | 117.93 | 491.43 | 0.00 | 26.34 | 249.41 | 0.00 | 23,641.56 | 768.64 |
+| 17 | 56 | 0.570753 | 1,369.81 | 133.76 | 508.81 | 0.00 | 26.07 | 258.35 | 0.00 | 24,571.29 | 701.16 |
+| 18 | 57 | 0.556471 | 1,335.53 | 151.20 | 524.98 | 0.00 | 25.80 | 266.69 | 0.00 | 25,440.64 | 633.55 |
+| 19 | 58 | 0.542280 | 1,301.47 | 170.37 | 539.92 | 0.00 | 25.52 | 274.43 | 0.00 | 26,249.06 | 565.67 |
+| 20 | 59 | 0.528168 | 1,267.60 | 191.39 | 553.60 | 0.00 | 25.23 | 281.55 | 0.00 | 26,995.84 | 497.38 |
+| 21 | 60 | 0.514121 | 1,233.89 | 214.41 | 566.02 | 0.00 | 24.93 | 288.05 | 0.00 | 27,680.11 | 428.53 |
+| 22 | 61 | 0.500125 | 1,200.30 | 239.56 | 577.14 | 0.00 | 24.61 | 293.91 | 0.00 | 28,300.85 | 358.99 |
+| 23 | 62 | 0.486168 | 1,166.80 | 266.98 | 586.94 | 0.00 | 24.29 | 299.14 | 0.00 | 28,856.92 | 288.59 |
+| 24 | 63 | 0.472234 | 1,133.36 | 296.81 | 595.39 | 0.00 | 23.94 | 303.70 | 0.00 | 29,346.98 | 217.22 |
+| 25 | 64 | 0.458311 | 1,099.95 | 329.17 | 602.46 | 0.00 | 23.59 | 307.59 | 0.00 | 29,769.58 | 144.73 |
+| 26 | 65 | 0.444386 | 1,066.53 | 364.19 | 608.12 | 0.00 | 23.21 | 310.80 | 0.00 | 30,123.10 | 71.00 |
+| 27 | 66 | 0.430446 | 1,033.07 | 402.00 | 0.00 | 31,240.67 | 22.82 | 313.29 | 0.00 | 30,405.82 | −30,632.42 |
+| **Total** | | | **42,474.94** | **3,780.63** | **12,476.88** | **31,240.67** | **2,376.60** | **5,562.28** | **3,577.46** | — | **−7,399.84** |
+
+The **Total** row is the sum **at full precision, then rounded**. Three of the eight totals differ from
+the sum of the twenty-seven already-rounded cells, each by one cent: `claims_death` 3 780,63 € against
+3 780,62 €, `expenses` 2 376,60 € against 2 376,59 €, and `net_cf` −7 399,84 € against −7 399,83 €.
+**Assert the full-precision totals**; a test written against the rounded column will fail on three of
+them and look like a modelling error.
+
+The shape is the one a *Zillmer*-financed savings contract has and no other: a **first year that is
+almost the whole story of the strain** — 1 620,00 € of acquisition expense against 2 400,00 € of
+premium, so `net_cf(1) = 606,31 €` rather than the 2 000 € the premium suggests — then twenty-five
+thin positive years while the account builds, then one very large negative year when the whole
+surviving cohort's capital falls due at once. The year-12 surrender spike (1 229,59 € against 583,79 €
+the year before) is the § 20 Abs. 1 Nr. 6 EStG threshold in the lapse table and nothing else.
+
+### Independent checks
+
+Six checks. Four rebuild a number in the table by a route the model does not take, and two are
+closure identities — the decrements, and the cash flow statement itself.
+
+**1. Policy year 1, rebuilt end to end with a calculator.** The acquisition charge is
+`0,025 × 64 800,00 = 1 620,00 €` over five years, `324,00 €` a year; the administration charge is
+`0,03 × 2 400,00 = 72,00 €`; so `P⁺(1) = 2 400,00 − 324,00 − 72,00 = 2 004,00 €`. The account opens at
+zero, so `av_pp_at(1,"AFT_PREM") = 2 004,00`, the reserve charge is
+`0,0025 × 2 004,00 = 5,01 €`, `av_pp_at(1,"AFT_CHARGE") = 1 998,99` and the guaranteed interest is
+`0,01 × 1 998,99 = 19,9899 €` — the table's `guar_int` of **19,99**, on `pols_if(1) = 1`. That leaves
+`av_pp_at(1,"AFT_GUAR") = 2 018,9799 €`. Decrements: `q_d(1) = 0,001200` at attained age 40 by the
+proxy's own anchor, so 0,001200 deaths, then `0,05 × (1 − 0,001200) = 0,049940` surrenders and
+`pols_if(2) = 0,948860` — the table's second row to six decimals. Benefits: the *Mindesttodesfallschutz*
+floor is `0,50 × 64 800,00 = 32 400,00 €` and dominates the account, so
+`claims_death(1) = 32 400,00 × 0,001200 = 38,88 €`; the surrender value is
+`2 018,9799 × 0,98 = 1 978,6003 €` and `claims_lapse(1) = 1 978,6003 × 0,049940 = 98,8113 €`. Expenses
+are `1 620,00 + 36,00 = 1 656,00 €`. Hence
+`net_cf(1) = 2 400,00 − 38,88 − 98,81 − 0 − 1 656,00 = 606,31 €`. Every figure in row 1 is reproduced
+without the model.
+
+**2. The *Indexjahr* of year 9, rebuilt on its own terms.** The twelve capped monthly returns of
+research Example A sum to `S(9) = +8,90 %` (table below), which is positive, so
+`ρ(9) = 8,90 %`. The base is the **opening** balance `G(9) = av_pp(9) = 19 407,2450 €`, giving
+`X(9) = 0,0890 × 19 407,2450 = 1 727,2448 €` per policy; the credit goes to the survivors of both
+decrements, `pols_if_at(9,"AFT_LAPSE") = 0,717651`, so
+`index_credit(9) = 1 727,2448 × 0,717651 = 1 239,5583 €` — the table's **1 239,56**. Two contrasts a
+reader can check on the same twelve numbers: **compounding** the capped returns instead of summing them
+gives 8,9599 %, and the **raw** year return is `Y(9) = +13,4548 %` against a raw sum of +13,10 %.
+
+**3. The decrement closure.** Summed over the twenty-seven years, deaths **0,074584**, surrenders
+**0,500439** and maturities **0,424977** add to **1,000000** exactly — the whole opening cohort, with
+nothing left in force at `t = 28`. This is `check_pols_roll_fwd()`'s second condition, and it is built
+by direct summation over the exit cells with no reference to the recursion that produced `pols_if`.
+
+**4. The account roll-forward at `t = 9`, at fund level.**
+
+    av(9)              14,394.0730
+    + prem_to_av(9)     1,726.6439      = 2,328.00 x 0.741686
+    − av_charge(9)         40.3018      = 54.3381 x 0.741686
+    + guar_int(9)         160.8042
+    + surplus_credit(9)     0.0000      w(9) = 1, so the safe arm is empty
+    + index_credit(9)   1,239.5583      to the survivors, not to pols_if(9)
+    − av_released(9)      526.3103      = 21,897.7159 x (0.0018396 + 0.0221954)
+    -------------------------------
+    = av(10)           16,954.4673      the table's next row
+
+Every term is struck on a **different population**, which is the whole difficulty of this product: the
+premium, the charge and the guaranteed interest on the opening in-force, the credit on the survivors,
+and `av_released` on the two exits at the balance they left with. This is `check_av_roll_fwd()`.
+
+**5. The cash flow statement closes on the Total row.** `42 474,94 − 3 780,63 − 12 476,88 −
+31 240,67 − 2 376,60 = −7 399,84 €`, which is the `net_cf` total to the cent, and at full precision
+`42 474,939948 − 47 498,182738 − 2 376,599620 = −7 399,842410`. Note what is **not** in it: the
+guaranteed interest of 5 562,28 € and the index credits of 3 577,46 € are movements of the
+policyholder's account, and adding them would move `net_cf` by 9 139,74 €. This is `check_net_cf()`.
+
+**6. The guarantee at *Rentenbeginn*.** The ledger closes at
+`credit_cum_pp(28) = 4 851,4383 €` — the sum of the per-policy index credits over the 27 years, the safe
+arm being empty — and the *Beitragsgarantie* at `0,90 × 64 800,00 = 58 320,00 €`, so the guaranteed
+capital is `guar_cap_pp(28) = 63 171,4383 €`. The account stands at `av_pp(28) = 73 511,3936 €`, above
+it, so the floor **does not bind** on the anchor and `mat_pp(27) = 73 511,39 €`. The maturity cash flow
+is `73 511,3936 × 0,424977 = 31 240,67 €`, the table's last row. Reported beside it, and **not a cash
+flow of this model**: `ann_monthly_pp() = 73 511,3936 / 10 000 × 25,00 = 183,78 €` a month.
+
+### The budget diagnostic
+
+`index_budget_ratio()` on the anchor is **0,2082** — total index credits 4 851,44 € against a total
+option budget of 23 298,38 €. That is a long way from 1 and it needs reading carefully, because two
+different things are in it.
+
+- **On rates**, the twenty-seven *Indexjahre* credited an average of **2,1330 %** against a budget of
+  2,50 %, a ratio of **0,853**. That is the like-for-like comparison, and it is consistent with the
+  research file's expectation of about 2,97 % a year at these parameters, one realised path being a
+  sample of size 27 from a distribution with a 65 % chance of zero in any year.
+- **On amounts** the ratio collapses to 0,2082, and the reason is **timing, not pricing**: the path
+  credits at a positive rate in years 1, 2, 3, 4, 6, 9 and 13 and in no year after 13 — and year 1's
+  rate of 12,04 % lands on a base of zero — so the six years that actually credit all fall while the
+  account is small and the twenty-one that do not fall while it is large. `G(t)` runs from 0,00 € at
+  `t = 1` to 70 637,97 € at `t = 27`, and a rate ratio weighted by `G(t)` is dominated by the late
+  years.
+
+Both numbers are worth having and neither should be quoted alone. What the pair says about the shipped
+parameters is that **the Cap and the option budget are not badly mismatched on this path** — 0,853 on
+rates — while the amount ratio is a warning that a single deterministic index path cannot calibrate
+anything. The research file's own risk-neutral arithmetic points the other way, pricing the strip at
+about 1,7 % of `G` against a 2,50 % budget, i.e. a 2,50 % budget would buy a cap somewhat **above**
+3,00 %. **A calibrated model would solve for the Cap; this one is given both and reports the
+discrepancy**, which is the honest treatment when neither number could be established for any carrier.
+
+### The two *Indexjahre* the mechanic turns on
+
+`t = 9` and `t = 10` of `eqidx_vol17` are the research file's constructed Example A and Example B,
+wired into the shipped path so that the model reproduces them rather than restating them. Monthly
+returns in per cent, Cap `C = 3,00 %`:
+
+| Month `m` | A: `r(9,m)` | A: `min(r, C)` | B: `r(10,m)` | B: `min(r, C)` |
+|---|---|---|---|---|
+| 1 | +1.80 | +1.80 | +6.50 | +3.00 |
+| 2 | −2.40 | −2.40 | −2.10 | −2.10 |
+| 3 | +4.60 | +3.00 | +5.80 | +3.00 |
+| 4 | +0.90 | +0.90 | −1.90 | −1.90 |
+| 5 | −3.70 | −3.70 | −2.40 | −2.40 |
+| 6 | +2.20 | +2.20 | +4.20 | +3.00 |
+| 7 | +3.40 | +3.00 | −3.10 | −3.10 |
+| 8 | −1.10 | −1.10 | +0.60 | +0.60 |
+| 9 | +0.40 | +0.40 | −2.80 | −2.80 |
+| 10 | +5.20 | +3.00 | +5.10 | +3.00 |
+| 11 | −0.80 | −0.80 | −1.70 | −1.70 |
+| 12 | +2.60 | +2.60 | −1.20 | −1.20 |
+| **Sum** | **+13.10** | **+8.90** | **+7.00** | **−2.60** |
+| **Compounded `Y`** | **+13.4548** | | **+6.4402** | |
+
+**Example A** is the strong year. The cap bound in three months and cost `13,10 − 8,90 = 4,20` points;
+`S(9) = +8,90 %` and `ρ(9) = 8,90 %`.
+
+**Example B is the case the product is criticised for**: the cap bound in four months and cost
+`7,00 − (−2,60) = 9,60` points, `S(10) = −2,60 %`, and so `ρ(10) = max(−2,60 %, 0) = 0`. **The index
+rose 6,4402 % over the year and the credit was nothing.** The capital was untouched, and the year's
+option budget bought options that expired worthless. An implementation that floors each *month* at zero
+gets `S = +12,60 %` here; one that applies the floor to the compounded raw return credits 6,44 %; one
+that applies the *Partizipationsquote* to it credits 3,86 %. All three are wrong, and all three look
+entirely plausible in a printout.
+
+**Model point 8 reproduces both to the euro.** It is the in-force cell, `dur_init = 8` and
+`av_pp_init = 50 000,00 €`, so its first projected *Indexjahr* is `t = 9` and its base is exactly the
+research file's `G = 50 000,00 €`:
+
+- `index_credit_pp(9) = 0,0890 × 50 000,00 = 4 450,00 €`, against a *sichere Verzinsung* arm that would
+  have credited `0,0250 × 50 000,00 = 1 250,00 €` — the index arm paying **3,56 times** the safe arm;
+- `index_credit_pp(10) = 0,00 €` on a base of 60 631,57 €, the safe arm having offered 1 515,79 €.
+
+### The *Partizipationsquote* variant, on the identical index path
+
+Model point 2 is the anchor with `payoff_form = "quote"` and nothing else changed, so the two payoff
+designs run against the **same** twelve monthly returns in every year. Selected rows; the **Total** row
+covers all 27 years, not only the six displayed:
+
+| t | x(t) | pols_if | premiums | claims_death | claims_lapse | claims_maturity | expenses | guar_int | index_credit | av | net_cf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 40 | 1.000000 | 2,400.00 | 38.88 | 98.81 | 0.00 | 1,656.00 | 19.99 | 0.00 | 0.00 | 606.31 |
+| 4 | 43 | 0.871969 | 2,092.73 | 44.51 | 226.65 | 0.00 | 32.82 | 76.45 | 2,036.27 | 5,916.59 | 1,788.74 |
+| 9 | 48 | 0.741686 | 1,780.05 | 59.60 | 511.12 | 0.00 | 30.08 | 172.56 | 1,216.40 | 15,572.35 | 1,179.24 |
+| 10 | 49 | 0.717651 | 1,722.36 | 63.15 | 583.42 | 0.00 | 29.54 | 197.01 | 675.83 | 18,079.93 | 1,046.25 |
+| 13 | 52 | 0.629062 | 1,509.75 | 84.90 | 465.03 | 0.00 | 27.08 | 235.75 | 832.65 | 22,169.87 | 932.74 |
+| 27 | 66 | 0.430446 | 1,033.07 | 538.84 | 0.00 | 41,875.02 | 22.82 | 419.94 | 0.00 | 41,097.09 | −41,403.61 |
+| **Total** | | | **42,474.94** | **4,636.36** | **14,723.29** | **41,875.02** | **2,376.60** | **6,712.41** | **16,521.86** | — | **−21,136.33** |
+
+Summed at full precision and then rounded, as above; `claims_death`, `expenses` and `net_cf` again
+differ from the sum of the rounded cells, here by two cents, one cent and one cent.
+
+The single most instructive row is `t = 10`. On the Cap design that year credits **nothing**; on the
+*Quote* design the same twelve returns credit `max(0,60 × 6,4402 %, 0) = 3,8641 %` of `G(10)`, which is
+**675,83 €** at fund level. At `t = 9` the ranking reverses — the Cap design credits 8,90 % against the
+*Quote*'s `0,60 × 13,4548 % = 8,0729 %` — because Example A's give-up was concentrated in three months
+while the *Quote* gives away 40 % of the year in every state. **The two designs are not
+interchangeable and they fail differently**, which is why a product specification may not describe one
+and price the other. Over the whole projection the *Quote* design credits 16 521,86 € against the Cap
+design's 3 577,46 €, and its `index_budget_ratio()` is **0,9782** against **0,2082** — on this path, at
+these levels, `q = 60 %` on a 17 %-volatility price index is close to a fair spend of the budget and
+`C = 3,00 %` a month is not.
+
+### The four designs at *Rentenbeginn*
+
+All four are the same 40-year-old paying 2 400,00 € a year to 67 under a 90 % *Beitragsgarantie* at
+`i_g = 1,00 %`, differing only in what the declared surplus buys. Every column below is **per policy**
+at `t = n + 1 = 28`, so the credit columns are the ledger `credit_cum_pp(28)` and are larger than the
+frame's fund-level totals, which carry the decrements: the anchor's 4 851,44 € of per-policy index
+credits is the 3 577,46 € of the `index_credit` column above, before survivorship.
+
+| Model point | Design | Index path | Index credits | Safe-arm credits | Account | Guaranteed capital | Benefit | Monthly *Rente* | `index_budget_ratio()` |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 (anchor) | Cap 3,00 %/month | eqidx_vol17 | 4,851.44 | 0.00 | 73,511.39 | 63,171.44 | 73,511.39 | 183.78 | 0.2082 |
+| 2 | Quote 60 % | eqidx_vol17 | 28,216.23 | 0.00 | 98,534.74 | 86,536.23 | 98,534.74 | 246.34 | 0.9782 |
+| 3 | Quote 100 % | houseidx_vol5 | 46,118.84 | 0.00 | 116,178.75 | 104,438.84 | 116,178.75 | 290.45 | 1.6482 |
+| 11 | *Sichere Verzinsung* | eqidx_vol17 | 0.00 | 25,967.50 | 95,425.52 | 84,287.50 | 95,425.52 | 238.56 | — |
+
+Read the last row first: **the safe arm beats the anchor's Cap design by 21 914,13 € of terminal
+capital on this path.** That is not an argument against the product — it is one realisation of a payoff
+whose expected value the research file puts slightly *above* the safe arm, with a two-in-three chance
+of a zero year — but it is exactly why the *Wahlrecht* comparison belongs in a specification and why
+`always_index` is a modelling choice rather than a recommendation. Model point 3 shows the other end:
+a volatility-targeted house index at a 100 % participation rate credits 46 118,84 €, and its
+`index_budget_ratio()` of 1,65 says that at 5 % volatility the shipped Cap and *Quote* are, if anything,
+*too generous* for the budget — which is the same calibration failure as the anchor's, pointing the
+other way. **All four columns are the same 2,50 % of surplus, spent differently.**
+
+### Two corrections made to these notes at the model stage
+
+The model was built to the specification above and reproduces it; two numbers in the *Known modeling
+pitfalls* list did not survive contact with it, and the notes rather than the model were corrected.
+
+1. **Pitfall 2** said that an implementation flooring each month at zero would get `S = +9,60 %` on
+   `t = 10`. 9,60 points is what the cap *gave away* that year, `7,00 − (−2,60)`; flooring each capped
+   month at zero gives `3,00 + 3,00 + 3,00 + 0,60 + 3,00 = +12,60 %`. The pitfall's point is unchanged
+   and the corrected figure is now in it.
+2. **Pitfall 9** asked for `db_pp(t) < av_pp(t+1)` in every year the index credited something. That is
+   false at early durations for a reason the product intends: the *Mindesttodesfallschutz* floor of
+   32 400,00 € exceeds the account until year 13, so the death benefit is larger than the account at
+   *any* timing there. The assertion that carries the pitfall's meaning — that the death benefit is
+   struck on the balance **before** the year's credits — is
+   `av_pp_at(t,"AFT_GUAR") < av_pp(t+1)` in every year that credited, and that is what the pitfall now
+   asks for.
 
 ---
 

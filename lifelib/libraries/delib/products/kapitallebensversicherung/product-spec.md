@@ -274,8 +274,7 @@ Footnotes to **[std]** rows:
     level. **No actual acquisition-cost level was established for any German carrier.** The market data
     are that *Abschlusskosten* reportedly **fell by almost 8 % after the LVRG** (author, sample and
     base year not established) and that Die Stuttgarter cut its *Abschlussprovision* to 25 ‰,
-    compensating brokers with *Bestandsprovision* [R29] — the ceiling become an operative commercial
-    one.
+    compensating brokers with *Bestandsprovision* [R29] — the ceiling become an operative commercial one.
 16. The corpus establishes exactly one administration-cost form: "it is customary in life insurance
     that ongoing costs are charged annually as a percentage of the ongoing premium and/or as a
     percentage of the *Vertragsguthaben*" [R28]. The **level** is not established, for any carrier.
@@ -357,8 +356,7 @@ rule is used. **The entitlement starts immediately**, with no qualifying period,
 discretionary and may be zero**: it cannot be guaranteed, is set annually, depends on capital-market
 development and the insurer's own results [S3], and **"may also be zero euros"** [S9] — the cleanest
 sourced justification in the corpus for treating the surplus rate as an insurer-discretionary current
-assumption. Carriers and commentators decompose the surplus into four components [S16] [S15] [S17]
-[R28]:
+assumption. Carriers and commentators decompose the surplus into four components [S16] [S15] [S17] [R28]:
 
 | Component | Arises when | Minimum policyholder share |
 |---|---|---|

@@ -350,7 +350,8 @@ optional modules are under *Policyholder behaviour modelling*.
 | `d(t)`, `z(t)`, `a(t)`, `s(t)` | `decl_rate`, `zins_ueberschuss_rate`, `ans_rate`, `term_rate` | declared rate; interest-surplus rate; *Ansammlungszinssatz*; terminal rate |
 | `C(t)` | `surplus_credit_pp(t)` | surplus allocated to the contract for year `t` |
 
-`q₁`, `q`, `w`, `σ`, `d`, `z`, `a`, `s` are dimensionless annual rates; `SE`, `SD`, `B`, `V`, `U`, `Z`, `S` are EUR per policy; every cash-flow component is EUR per policy year.
+`q₁`, `q`, `w`, `σ`, `d`, `z`, `a`, `s` are dimensionless annual rates; `SE`, `SD`, `B`, `V`, `U`,
+`Z`, `S` are EUR per policy; every cash-flow component is EUR per policy year.
 
 ### The first-order basis and the pricing equivalence
 
@@ -372,8 +373,7 @@ The *Bruttobeitrag* is struck by equivalence, which is linear in `B` because `BS
 B · ann_due_prem_1st = pv_benefit_1st + α · B · m
                        + β · B · ann_due_prem_1st + γ · SE · ann_due_term_1st
 
-⇒  prem_gross_pp = ( pv_benefit_1st + γ · SE · ann_due_term_1st )
-                   / ( (1 − β) · ann_due_prem_1st − α · m )
+⇒  prem_gross_pp = ( pv_benefit_1st + γ · SE · ann_due_term_1st ) / ( (1 − β) · ann_due_prem_1st − α · m )
 ```
 
 `check_equivalence()` asserts that identity closes. **Note that the acquisition cost `α · BS` is in
@@ -393,7 +393,9 @@ prem_net_level_pp = pv_benefit_1st / ann_due_prem_1st
 prem_zill_pp      = prem_net_level_pp + alpha_cost / ann_due_prem_1st
 ```
 
-**Single premium.** `prem_term = 1` gives `ann_due_prem_1st = 1` and `BS = B`, so the 25 ‰ *Zillmersatz* buys almost nothing and the § 169 floor is slack from the first anniversary. That is the correct answer, not a degenerate case.
+**Single premium.** `prem_term = 1` gives `ann_due_prem_1st = 1` and `BS = B`, so the 25 ‰
+*Zillmersatz* buys almost nothing and the § 169 floor is slack from the first anniversary. That is
+the correct answer, not a degenerate case.
 
 ### The Deckungskapital
 
@@ -429,8 +431,7 @@ because that is what "zum Schluss der laufenden Versicherungsperiode" requires [
 
 ```
 res_guar_pp(t)     = max( res_zill_pp(t+1), res_min_pp(t+1), 0 )
-surr_value_pp(t)   = res_guar_pp(t) · (1 − storno_rate(t))
-                     + av_pp_at(t, "AFT_CREDIT")
+surr_value_pp(t)   = res_guar_pp(t) · (1 − storno_rate(t)) + av_pp_at(t, "AFT_CREDIT")
                      + term_surr_share · term_bonus_pp(t+1)
 pu_single_prem(t)  = SD/SE · Σ_{j} v₁^(j+1) · jp(x(t)) · q₁(x(t)+j)  +  v₁^(n-k) · (n-k)p(x(t))
 bfz_si_pp          = res_guar_pp(bfz_year) / pu_single_prem(bfz_year + 1)
@@ -522,8 +523,7 @@ expenses(t)    = acq_expense · 1{t = t_start and duration_init = 0}
 commissions(t) = comm_init_rate · beitragssumme · 1{t = t_start and duration_init = 0}
                  + comm_renew_rate · prem_charged_pp(t) · pols_if(t)   for t > t_start
 net_cf(t)      = premiums(t) − claims(t,"DEATH") − claims(t,"MATURITY") − claims(t,"LAPSE")
-                 − expenses(t) − commissions(t)
-liability_cf(t)= − net_cf(t)
+                 − expenses(t) − commissions(t) liability_cf(t)= − net_cf(t)
 ```
 
 Two orientations worth naming. **`sum_death` is `sum_assured × death_ratio` and the surplus is added to
@@ -549,7 +549,8 @@ flow, and are therefore kept out of `result_cf()`.
 
 ### Published identities
 
-Nine `check_*()` cells, each taking no argument, returning a `bool` over all `t` and carrying a per-`t` residual at `check_*_resid(t)`. The conventions suite calls every one on every model point.
+Nine `check_*()` cells, each taking no argument, returning a `bool` over all `t` and carrying a
+per-`t` residual at `check_*_resid(t)`. The conventions suite calls every one on every model point.
 
 | Identity | What it asserts |
 |---|---|
@@ -829,7 +830,13 @@ The valuation layers consume them and are **cited, never reproduced**.
   **[std]** [REG-R2]. Under **IFRS 17** this is the archetypal direct-participating contract, measured
   under the variable fee approach on this same fulfilment-cash-flow engine; grouping, CSM and risk
   adjustment are out of scope [REG-R55].
-- **The guarantee is an option.** A guaranteed sum insured plus a guaranteed *Rechnungszins* is a written put on the *Sicherungsvermögen*, and the deterministic path above prices none of it; a stochastic-on-deterministic run is what a time-value-of-options-and-guarantees calculation consumes. The outer boundary is the *Sicherungsfonds*: a fund-level 5 % haircut under § 222 VAG and an uncapped reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit the *Rückkauf*** [REG-R12]. **A mass-surrender run here produces the values the contract owes, not the ones that would be paid if § 314 were in force.**
+- **The guarantee is an option.** A guaranteed sum insured plus a guaranteed *Rechnungszins* is a
+  written put on the *Sicherungsvermögen*, and the deterministic path above prices none of it; a
+  stochastic-on-deterministic run is what a time-value-of-options-and-guarantees calculation
+  consumes. The outer boundary is the *Sicherungsfonds*: a fund-level 5 % haircut under § 222 VAG
+  and an uncapped reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit
+  the *Rückkauf*** [REG-R12]. **A mass-surrender run here produces the values the contract owes, not
+  the ones that would be paid if § 314 were in force.**
 
 ---
 
@@ -842,14 +849,12 @@ In rough order of leverage on this product.
    the maturity benefit and every surrender value after the early durations. The base run is **one
    carrier's 2026 rate held level forever** [S11]; the `low` and `nil` scenarios exist so the range
    is exercisable. And the base rate is for an **endowment** book while the only market averages
-   available are for the **annuity** [R25] — the identity of the two is plausible and [unverified]
-   (gap 2).
+   available are for the **annuity** [R25] — the identity of the two is plausible and [unverified] (gap 2).
 2. **The *Zillmerung* and the § 169 floor together.** `alpha_rate` at the 25 ‰ ceiling drives the
    negative early reserve, the whole early-duration surrender-value profile, the year-one strain and
    the duration at which the contract first earns any interest surplus at all. The ceiling is cited
    [R7] [REG-R16]; **the level is [std] and no German carrier's actual acquisition cost is public**
-   (gap 7). Halving it moves the first five surrender values by more than any other single
-   parameter.
+   (gap 7). Halving it moves the first five surrender values by more than any other single parameter.
 3. **The mortality basis, in two directions at once.** The proxy's level and slope are both
    unsourced, and the same table serves a death leg and a survival leg whose directions of prudence
    are opposite [REG-R47] [REG-R48]. The survival leg dominates a twenty-five-year endowment's
@@ -861,8 +866,7 @@ In rough order of leverage on this product.
    cohort before the *Ablauf*, and on an endowment the late years are the profitable ones, so the
    assumption governs how much of the loaded tail is collected. The duration-12 spike is the one
    feature the evidence supports [R10] [REG-R45]; **the levels are unsourced**, the market
-   aggregates are not surrender rates [R20], and a user with experience data should replace the
-   table.
+   aggregates are not surrender rates [R20], and a user with experience data should replace the table.
 5. **The terminal bonus, and the *Überschussverwendung* choice.** `term_rate = 0.40%` has **no
    source at all** (gap 1), accrues on the reserve for the whole term, and its payability on
    surrender — zero here — is a second unsourced choice that would move surrender values most. And

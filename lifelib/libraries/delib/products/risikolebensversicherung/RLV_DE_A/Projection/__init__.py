@@ -142,8 +142,8 @@ rate — the unisex 50/50 blend, loaded by ``(1 + sicherheitszuschlag_m)`` and b
 *Risikozuschlag* — and it enters the premium and the reserve and **nothing else**.
 :func:`mort_rate` is the second-order rate on the policy's own sex and smoker status and
 it drives every decrement and every claim. The ratio between them is *not* ``1 + m``: it
-is ``2.25 x (unisex blend / own-sex rate)``, which on the shipped proxy is **1.5 for a
-male and 3.0 for a female**. That asymmetry is the unisex cross-subsidy and it is a
+is ``2.25 x (unisex blend / own-sex rate)``, which on the shipped proxy is **1.6875 for a
+male and 3.375 for a female**. That asymmetry is the unisex cross-subsidy and it is a
 product fact, not a modelling artefact. Applying the *Sicherheitszuschlag* to the
 projection is the pitfall; ``claims_death`` must be invariant to ``sicherheitszuschlag_m``
 while ``prem_gross`` is not.
@@ -234,7 +234,7 @@ What is **not** true is that nothing accumulates. A level premium charged agains
 death rate necessarily overcharges early and undercharges late, and the difference is a
 *Deckungskapital* that builds, peaks near the middle of the term and runs off to exactly
 zero at expiry — on the anchor cell it peaks at 7 553,29 €, 2,5 % of the sum insured, at
-``t = 17``. :func:`res_pp_at` publishes it and :func:`check_res_roll_fwd` asserts the
+``t = 16``. :func:`res_pp_at` publishes it and :func:`check_res_roll_fwd` asserts the
 Thiele recursion, ``res_pp_at(1) = 0`` by the equivalence and ``res_pp_at(n + 1) = 0`` by
 exhaustion. **It is a pricing diagnostic and not a balance-sheet provision**: it is net,
 it is not *gezillmert*, it is not floored, it enters no cash flow, and nothing in this
@@ -253,7 +253,7 @@ the assumption, and putting it in the formula is what keeps the two readable apa
 cash flow moves either way — the split only decides how the closure identity divides
 between lapses and expiries — but the identity itself is load-bearing, and
 :func:`check_pols_roll_fwd` asserts that the three exits account for the whole cohort:
-``0.02840823`` deaths, ``0.53775657`` lapses and ``0.43383520`` expiries on the anchor
+``0.03305608`` deaths, ``0.53554078`` lapses and ``0.43140314`` expiries on the anchor
 cell, summing to ``pols_if_init() = 1`` exactly.
 
 .. rubric:: Sign convention
@@ -269,7 +269,7 @@ than only in prose.
 The shape to expect on the anchor is a year-one strain of -359,51 €, the acquisition cost
 and the initial commission together exceeding the first year's billed premium; thin
 positive years while the level premium runs ahead of the natural risk premium; and a
-crossover near ``t = 18`` after which the rising death rate takes the year negative. The
+crossover at ``t = 14`` after which the rising death rate takes the year negative. The
 **total** is negative on model point 1 and strongly positive on model point 2, and the
 difference is the unisex cross-subsidy: the tariff prices a 50/50 blend, the declaration
 returns 90 % of the margin measured against that blend, and a male life then claims a
@@ -658,8 +658,8 @@ def mort_rate_tar(t):
     the narrowest effect on the billed premium.
 
     ``mort_rate_tar(t) / mort_rate(t)`` is **not** ``1 + m``.  It is
-    ``(1 + m) x (blend / own-sex rate)``, which on the shipped proxy is 1.5 for a male and
-    3.0 for a female.  That is the unisex cross-subsidy, and expecting 2.25 for both is a
+    ``(1 + m) x (blend / own-sex rate)``, which on the shipped proxy is 1.6875 for a male
+    and 3.375 for a female.  That is the unisex cross-subsidy, and expecting 2.25 for both is a
     listed pitfall.
     """
     return (1.0 + sicherheitszuschlag_m) * rating_factor() * mort_rate_blend(t)  # noqa: F821
@@ -1063,7 +1063,7 @@ def res_pp_at(t, timing):
 
     Zero at ``t = 1`` by the equivalence, zero at ``t = n + 1`` by exhaustion, and
     strictly positive in between — on the anchor cell it peaks at 7 553,29 €, 2,5 % of the
-    sum insured, at ``t = 17``.  **That it exists at all is the point.**  An RLV has no
+    sum insured, at ``t = 16``.  **That it exists at all is the point.**  An RLV has no
     *Sparanteil* in the endowment's sense, but a level premium charged against a rising
     death rate necessarily overcharges early and undercharges late, and the difference has
     to be held.  Concluding "no *Sparanteil*, therefore no reserve" is wrong, and a model
@@ -1451,7 +1451,7 @@ def check_pols_roll_fwd():
     It also asserts the **closure identity** at the horizon: the three exits summed over
     the whole projection equal ``pols_if_init()``, so every policy the projection opens
     with leaves it through exactly one named door.  On the anchor cell that is
-    0,02840823 deaths, 0,53775657 lapses and 0,43383520 expiries.
+    0,03305608 deaths, 0,53554078 lapses and 0,43140314 expiries.
     """
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     if not all(abs(check_pols_roll_fwd_resid(t)) <= tol
