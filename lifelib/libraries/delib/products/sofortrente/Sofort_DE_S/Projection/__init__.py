@@ -595,10 +595,16 @@ def mort_rate_gen(x, table_sex, cohort, basis):
 
     The exponent may be **negative** — an in-force point issued in 2012 attains its ages
     before 2025 and reads correspondingly heavier mortality — and it is not floored.
+
+    The result is capped at 1.  A negative exponent scales the rate **up**, and at the top
+    of the proxy's age range the second-order series is already close to 1, so the cap is
+    what keeps ``q`` a probability; it binds only in the last two or three years of the
+    table, where survival is zero to eleven decimal places and no cash flow depends on it.
     """
-    return (mort_rate_at_age(x, table_sex, basis)
-            * (1.0 - improve_rate_at_age(x, basis))
-            ** (cohort + x - mort_base_year))                        # noqa: F821
+    return min(1.0,
+               mort_rate_at_age(x, table_sex, basis)
+               * (1.0 - improve_rate_at_age(x, basis))
+               ** (cohort + x - mort_base_year))                     # noqa: F821
 
 
 def mort_rate(t, life=1):
