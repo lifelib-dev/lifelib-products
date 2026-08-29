@@ -56,9 +56,12 @@ prose, where they are the name of the thing.
   payout year, a **[std]** convention and pitfall 12.
 - **Projection horizon.** The annuity is lifelong, so the projection runs to the end of the mortality
   table: `proj_len() = omega_age() − age(1) + 1`, where `omega_age()` is the last age in
-  `mort_table.csv` and `mort_rate_at_age(omega_age, ·) = 1.0`, so `pols_if(proj_len() + 1) = 0`
-  exactly. `omega_age = 121` **[std]**, the terminal age German annuity tables are conventionally
-  carried to. For the anchor cell `proj_len() = 121 − 45 + 1 = 77`.
+  `mort_table.csv`, where `qx = 1.0`. **The terminal age is absorbing**: `mort_rate(t) = 1.0`
+  wherever `age(t) ≥ omega_age()`, whatever `mort_be_factor` says, so `pols_if(proj_len() + 1) = 0`
+  exactly and the decrement closure identity holds to the last euro. Without that rule the
+  generational trend would carry the table's own terminal rate below 1 and leave a residue in force
+  after the end of the table. `omega_age = 121` **[std]**, the terminal age German annuity tables
+  are conventionally carried to. For the anchor cell `proj_len() = 121 − 45 + 1 = 77`.
 - **`proj_len()` is the last projected period index**, not a row count: `result_cf().index[-1] ==
   proj_len()`. This is frlib's ruling and delib adopts and asserts it. Where the frame *starts* is a
   product fact and is not asserted; contiguity is.
@@ -104,12 +107,12 @@ ruling, asserted by the conventions suite.
 | `surplus_table.csv` | `scenario_id`, `t` | `decl_rate`, `ann_bonus_rate` | The declared *laufende Verzinsung* in the *Aufschubphase* and the *Überschussrente* uplift in the *Rentenphase*, by scenario and projection year |
 | `rentenfaktor_table.csv` | `rf_scenario_id`, `age` | `rf_curr` | The insurer's *aktueller Rentenfaktor* at each conversion age, by scenario |
 | `charge_table.csv` | `tariff_id` | `zill_rate`, `alpha_zuz_rate`, `beta_prem`, `gamma_av`, `unit_cost_pp`, `terminal_bonus_rate`, `acq_expense_pp`, `comm_init_rate`, `comm_renew_rate`, `maint_expense_pp`, `annuity_admin_pp`, `expense_infl` | One row per tariff: the charge scale and the insurer's own expense and commission scale |
-| `behaviour_table.csv` | `beh_table_id`, `dur` | `bf_rate`, `zuz_take_up` | The two behavioural assumptions that vary by policy duration: the *Beitragsfreistellung* rate and the *Zuzahlung* take-up |
+| `behaviour_table.csv` | `beh_table_id`, `dur` | `bf_rate`, `zuz_take_up` | The two behavioural assumptions that vary by policy duration: the *Beitragsfreistellung* rate and the *Zuzahlung* take-up. **`dur` is the policy year, `duration(t) + 1`**, so "durations 1–5" below reads off the file directly |
 | `option_table.csv` | `option_id`, `option_key` | `factor` | One multiplicative factor per contractual option: `prem_mode` → the *Ratenzahlungszuschlag* on the premium; `guarantee_period` and `survivor` → the reduction in the *Rentenfaktor* |
 
 Scalar assumptions that are single numbers rather than tables are `Projection` References and are
 tagged in *Assumption inputs* below: `mort_be_factor`, `elig_surv_prob`, `mort_base_year`,
-`zill_spread_y`, `omega_age_max`, `rf_unit`, `ann_freq`, `roll_fwd_tol`.
+`zill_spread_y`, `rf_unit`, `ann_freq`, `roll_fwd_tol`.
 
 ---
 
@@ -127,15 +130,15 @@ tagged in *Assumption inputs* below: `mort_be_factor`, `elig_surv_prob`, `mort_b
 | `pols_if_init` | float | Policies the model point represents | all |
 | `prem_form` | enum {regular, single} | *laufender Beitrag* against *Einmalbeitrag* | 5 (single) |
 | `prem_base_pp` | EUR p.a. | The contractual *laufender Beitrag* at inception, before the *Ratenzahlungszuschlag* and before any *Dynamik*; for `single`, the *Einmalbeitrag* | all but 7, 8 |
-| `prem_mode` | enum {annual, half_yearly, quarterly, monthly} | Payment frequency; keys `option_table.csv` for the *Ratenzahlungszuschlag* | 1, 5, 9, 13 annual · 4 half-yearly · 3, 11 quarterly · 2, 10, 12 monthly |
+| `prem_mode` | enum {annual, half_yearly, quarterly, monthly} | Payment frequency; keys `option_table.csv` for the *Ratenzahlungszuschlag* | 1, 5, 7, 8, 9, 13 annual · 4 half-yearly · 3, 11 quarterly · 2, 6, 10, 12 monthly |
 | `prem_dyn_rate` | rate p.a. | *Beitragsdynamik*, the contractual annual escalation | 1, 2, 3, 4, 6, 9, 11, 12 |
-| `zuzahlung_pp` | EUR p.a. | The nominal annual *Zuzahlung* before take-up | 1, 3, 9, 11 |
-| `zuzahlung_end_dur` | int | Last policy duration at which a *Zuzahlung* is assumed | 1, 3, 9, 11 |
+| `zuzahlung_pp` | EUR p.a. | The nominal annual *Zuzahlung* before take-up | 1, 3, 11 |
+| `zuzahlung_end_dur` | int | Last policy duration at which a *Zuzahlung* is assumed | 1, 3, 11 |
 | `paidup_at_init` | bool | The model point is already *beitragsfrei* at the valuation date | 7 |
 | `av_pp_init` | EUR | *Deckungskapital* per policy at the valuation date | 6, 7 |
 | `ann_pp_init` | EUR p.a. | Annual annuity already in payment, for a point that opens in the *Rentenphase* | 8 |
 | `gtd_rate` | rate p.a. | The contract's *Rechnungszins*, the cohort's guarantee vintage [REG-R15] | 6 (2,25 %), 7 (1,75 %), 8 (2,75 %), rest 1,00 % |
-| `rentenfaktor_gtd` | EUR per month per 10 000 € | *Garantierter Rentenfaktor*, fixed at inception [R17] [S1] | 13 (set above the current-factor scenario, so the guarantee binds) |
+| `rentenfaktor_gtd` | EUR per month per 10 000 € | *Garantierter Rentenfaktor*, fixed at inception [R17] [S1] | 6, 13 (both set above the current-factor scenario at their conversion age, so the guarantee binds) |
 | `guarantee_period_y` | int | *Rentengarantiezeit* in years from *Rentenbeginn*; 0 = none | 4 (10), 12 (20) |
 | `surv_annuity_rate` | rate | Survivor's annuity as a fraction of the main annuity; 0 = **rider off**, which is the base design | 3 (0.60), 12 (0.60) |
 | `buz_prem_share` | rate | Share of the **total** contribution attributable to a BUZ. Must satisfy `buz_prem_share < 0.50` [R1] | 11 (0.49, the boundary) |
@@ -512,7 +515,7 @@ claims(t, "DEATH")   = 1{s > 0} × 1{t < T} × π
                        × [ db_pp(t) × pols_death_paying(t) + db_pu_pp(t) × pols_death_paidup(t) ]
 claims(t, "ANNUITY") = ann_pp(t) × l(t)                            for t ≥ max(1, T), else 0
 claims(t, "SURVIVOR")= ann_pp(t) × g(t)                            the Rentengarantiezeit stream
-expenses(t)          = acq_expense_pp × 1{t = 1 and duration_init = 0}
+expenses(t)          = acq_expense_pp × pols_if_init × 1{t = 1 and duration_init = 0}
                        + maint_expense_pp × (1 + expense_infl)^(t−1) × l(t)   for t < T
                        + annuity_admin_pp × (1 + expense_infl)^(t−1) × ( l(t) + g(t) ) for t ≥ T
 commissions(t)       = comm_init_rate × S × pols_if_init × 1{t = 1 and duration_init = 0}
@@ -564,7 +567,7 @@ balance, published because a reader cannot follow the projection without them, a
 |---|---|
 | `check_net_cf()` | `net_cf(t) = premiums + zuzahlungen − claims_death − claims_annuity − claims_survivor − expenses − commissions` at every `t`. **delib ruling 1**, mandatory on every model in the library |
 | `check_pols_roll_fwd()` | `pols_paying(t) + pols_paidup(t) = pols_if(t)`, and `pols_if(t+1) = pols_if(t) × (1 − mort_rate(t))` — the *Beitragsfreistellung* rate does **not** appear |
-| `check_av_roll_fwd()` | `av_at(t+1) = av_at(t, "AFT_INT") × (1 − mort_rate(t))` for `t < ret_t()`, and `av(t) = 0` for `t ≥ ret_t()` |
+| `check_av_roll_fwd()` | `av_at(t+1) = av_at(t, "AFT_INT") × (1 − mort_rate(t))` for `t < ret_t()`; `av_at(ret_t(), "AFT_INT") = 0`, the conversion having emptied the account; and `av(t) = 0` for every `t > ret_t()`. **`av(ret_t())` is not zero** — it is the pre-conversion fund the annuity is struck on, and it is what the `av` column publishes in the conversion year |
 | `check_conversion()` | The whole fund converts exactly once, at `ret_t()`, at `rentenfaktor_applied()`; residual zero at every other `t` |
 | `check_no_capital()` | The *nicht kapitalisierbar* invariant: no payment to the policyholder at any `t` other than an annuity instalment or a permitted survivor benefit; `claims_death = 0` wherever the rider is off and wherever `t ≥ ret_t()` |
 | `check_annuity_roll_fwd()` | `ann_pp(t) = ann_pp(t−1) × (1 + ann_bonus_rate(t−1))` for `t > ret_t()`, and `pols_gtd(t) = 0` for `t > ret_t() + guarantee_period_y − 1` |
