@@ -873,20 +873,22 @@ acquisition charge 2.50 % of it = 1,800.00; over 60 instalments = **30.00 a mont
 is 15 % of each premium. Premium admin 4.00 % x 200.00 = **8.00**. The *Anlagebeitrag* is
 200.00 - 30.00 - 8.00 = **162.00** and at the opening *Anteilspreis* of 100.00 buys
 **1.620000 units**. The month's return is (1.0455)^(1/12) - 1 = 0.0037148195588312, so the
-price closes at 100.371482 and the fund at 1.62 x 100.371482 = **162.601801**. *Gammakosten*
-0.0030/12 x 162.601801 = **0.040650**; *Stückkosten* **3.00**; fund 159.561150. The
-*Beitragsrückgewähr* floor is the premium paid, 200.00, so the *riskiertes Kapital* is
-**40.438850** and the *Risikobeitrag* 0.00080/12 x 40.438850 = **0.00269592**. The month
-closes at **159.558454** — Panel C's `av BEF_DECR` at t = 1 — and 159.558454 / 100.371482 =
-**1.589679 units**, Panel C's `units_pp` at t = 2.
+price closes at 100.371481956 and the fund at 1.62 x 100.371481956 = **162.601800769**.
+*Gammakosten* 0.0030/12 x 162.601800769 = **0.040650450**; *Stückkosten* **3.000000000**;
+fund **159.561150318**. The *Beitragsrückgewähr* floor is the premium paid, 200.00, so the
+*riskiertes Kapital* is **40.438849682** and the *Risikobeitrag* 0.00080/12 x 40.438849682 =
+**0.002695923**. The month closes at **159.558454395** — Panel C's `av BEF_DECR` at t = 1,
+159.56 — and 159.558454395 / 100.371481956 = **1.589679 units**, Panel C's `units_pp` at
+t = 2. Nine decimals are carried here because six do not close the chain: the *Gammakosten*
+at 0.040650 would leave 159.561151.
 
 **2. Month 61 — the cliff, and the risk charge at a second age.** The acquisition instalment
 has stopped, so the *Anlagebeitrag* is 200.00 - 8.00 = **192.00**, up from 162.00, and
 `charge_acq` is 0.00. Opening fund 10,615.913263 plus 192.00, times 1.0037148195588312, is
-**10,848.062710**; less 0.00025 x 10,848.062710 = 2.712016 and 3.00 gives **10,842.350694**.
+**10,848.062710117**; less 0.00025 x that = 2.712015678 and 3.00 gives **10,842.350694440**.
 The attained age is 37 + 5 = **42**, so the tariff rate is 0.00080 x 1.10^5 =
 **0.001288408** and its twelfth 0.000107367333. Premiums paid are 61 x 200.00 = 12,200.00,
-so the *riskiertes Kapital* is **1,357.649306** and the *Risikobeitrag* **0.14576719**;
+so the *riskiertes Kapital* is **1,357.649305560** and the *Risikobeitrag* **0.145767186**;
 weighted by `pols_if(61) = 0.73122052` that is **0.10658796**, Panel A's 0.11. The same row
 carries a second step: `claims_lapse` halves from 40.13 to 20.10, because month 61 opens
 policy year 6 and the lapse rate drops from 6.0 % to 3.0 %, the monthly rate from
