@@ -176,7 +176,6 @@ def alt_model(name):
     return mx.read_model(MODEL_DIR, name=name)
 
 
-# ---------------------------------------------------------------------------
 # The worked example
 
 
@@ -325,7 +324,6 @@ def test_the_decrements_close_to_exactly_one(de_basis_anchor):
         0.4417651793, abs=5e-9)
 
 
-# ---------------------------------------------------------------------------
 # The published checks and the frame
 
 
@@ -390,7 +388,6 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_basis_anchor):
             call()
 
 
-# ---------------------------------------------------------------------------
 # The variants the notes print
 
 
@@ -474,7 +471,6 @@ def test_the_conversion_table_of_the_notes(basisrente, point_id):
             ANN_PP_23_IF_GUARANTEE_BOUND, abs=CENT)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 1 -- there is no surrender value, at any duration
 
 
@@ -545,7 +541,6 @@ def test_pitfall_1_the_account_is_never_floored_at_a_surrender_value():
         model.close()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 2 -- a Beitragsfreistellung is not a lapse
 
 
@@ -599,7 +594,6 @@ def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged():
         model.close()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 3 -- the two account blocks are not one average
 
 
@@ -631,7 +625,6 @@ def test_pitfall_3_the_paying_and_premium_free_blocks_are_not_averaged(de_basis_
         p.av_pu_at(10, "BEF_PREM") - p.unit_cost_pp(10) * p.pols_paidup(10), rel=1e-12)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 4 -- a charge is not an expense
 
 
@@ -668,7 +661,6 @@ def test_pitfall_4_the_account_charges_are_income_and_never_an_expense():
         model.close()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 5 -- the Zillmerung is spread, and capped
 
 
@@ -698,7 +690,6 @@ def test_pitfall_5_the_zillmerung_is_five_equal_instalments_of_the_contract(basi
         0.040 * in_force.beitragssumme_pp(), rel=1e-12)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 6 -- the declared rate is a max, not a sum
 
 
@@ -722,7 +713,6 @@ def test_pitfall_6_the_credited_rate_is_a_maximum_and_not_a_sum(basisrente, de_b
         assert high.cred_rate(t) > high.decl_rate(t)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 7 -- the premium stream is keyed to the duration and stops at Rentenbeginn
 
 
@@ -749,7 +739,6 @@ def test_pitfall_7_premiums_and_zuzahlungen_stop_at_rentenbeginn(basisrente, de_
     assert in_force.prem_base_pp(1) > 3600.00
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 8 -- the Ratenzahlungszuschlag loads the laufender Beitrag alone
 
 
@@ -776,7 +765,6 @@ def test_pitfall_8_the_frequency_loading_is_applied_once_and_to_one_thing(basisr
     assert basisrente.Projection[5].prem_freq_load() == 1.0
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 9 -- death before Rentenbeginn pays nothing with the rider off
 
 
@@ -801,7 +789,6 @@ def test_pitfall_9_death_pays_nothing_with_the_survivor_rider_off(basisrente,
         assert q.result_cf()["claims_death"].sum() == 0.0
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 10 -- with the rider on, only to an eligible survivor, and never a lump sum
 
 
@@ -853,7 +840,6 @@ def test_pitfall_10_with_no_eligible_survivor_nothing_is_paid():
         model.close()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 11 -- the conversion is struck on the contractual basis
 
 
@@ -882,7 +868,6 @@ def test_pitfall_11_the_conversion_is_invariant_to_the_best_estimate_mortality()
         model.close()
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 12 -- the annuity is booked in advance on the opening count
 
 
@@ -913,7 +898,6 @@ def test_pitfall_12_the_annuity_is_twelve_instalments_on_the_opening_in_force(
     assert p.check_annuity_roll_fwd() is True
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 13 -- max(garantiert, aktuell), both branches
 
 
@@ -938,7 +922,6 @@ def test_pitfall_13_the_higher_of_the_two_rentenfaktoren_applies(basisrente,
             * q.rf_option_factor(), rel=1e-12)
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 14 -- the Rentengarantiezeit runs from Rentenbeginn and is never commuted
 
 
@@ -972,7 +955,6 @@ def test_pitfall_14_the_guarantee_period_runs_from_rentenbeginn(basisrente):
     assert all(both.pols_gtd(t) == 0.0 for t in range(36, both.proj_len() + 1))
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 15 -- the mortality basis is generational
 
 
@@ -1002,7 +984,6 @@ def test_pitfall_15_the_basis_is_generational_and_not_a_period_table(basisrente,
     assert p.pols_if(78) == 0.0
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 16 -- the guarantee vintage attaches at conclusion
 
 
@@ -1038,7 +1019,6 @@ def test_pitfall_16_the_rechnungszins_attaches_at_conclusion_and_stays(basisrent
     assert all(in_payment.check_conversion_resid(t) == 0.0 for t in (1, 2, 10))
 
 
-# ---------------------------------------------------------------------------
 # Pitfall 17 -- the BUZ is a premium share and reaches no cash flow
 
 
@@ -1070,7 +1050,6 @@ def test_pitfall_17_the_buz_is_a_premium_share_that_enters_nothing(basisrente,
     assert p.prem_total_pp(1) == pytest.approx(p.prem_pp(1) + p.zuz_pp(1), rel=1e-12)
 
 
-# ---------------------------------------------------------------------------
 # Structure, documentation and inputs
 
 

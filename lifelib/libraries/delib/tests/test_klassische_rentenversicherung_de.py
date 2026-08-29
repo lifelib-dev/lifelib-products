@@ -54,11 +54,23 @@ Beyond the worked example this module asserts:
 There is **no whole-model-point-table sweep here**: the conventions suite owns the single
 sweep, because a model point's first evaluation is the most expensive thing in the run.
 """
+import re
+
 import modelx as mx
 import pytest
 from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
+
+
+def flat(doc):
+    """Collapse whitespace, so a phrase split across a line break still matches.
+
+    These docstrings are hard-wrapped prose, so searching the raw text for a sentence
+    fragment would test where the wrap fell rather than what the sentence says.  The
+    conventions suite normalises the same way.
+    """
+    return re.sub(r"\s+", " ", doc)
 
 
 def model_files(folder):
@@ -879,8 +891,10 @@ def test_pitfall_9_the_product_uses_two_mortality_bases(de_rv_anchor):
     # Swapping them would move net_cf: the year-one death claim alone moves by 15 %.
     swapped = 3000.00 * p.pols_if(1) * p.mort_rate_guar(1)
     assert p.claims(1, "DEATH") / swapped == pytest.approx(1.15, rel=1e-12)
-    assert p.mort_rate(120) == 1.0                      # closed at omega_age - 1
     assert p.omega_age() == 121
+    assert p.age(71) == 120 == p.omega_age() - 1
+    assert p.mort_rate_guar(71) == 1.0                  # closed at omega_age - 1
+    assert p.mort_rate(71) == 1.0                       # and capped, not 1.15
 
 
 # ---------------------------------------------------------------------------
@@ -1328,19 +1342,19 @@ def test_invalid_enum_values_raise(de_rv_anchor):
 
 def test_docstrings_describe_the_current_structure(klassische_rentenversicherung):
     """Specifics a reader would rely on, asserted so they cannot go stale silently."""
-    doc = klassische_rentenversicherung.doc
+    doc = flat(klassische_rentenversicherung.doc)
     assert "mechanics demonstration" in doc
     assert "external" in doc                      # inputs are not stored in the model
     assert "once per model" in doc                # why Data exists
     assert "Data" in doc and "Projection" in doc
     assert "Rentenfaktor" in doc and "Rentengarantiezeit" in doc
     assert "Deckungskapital" in doc
-    proj = klassische_rentenversicherung.Projection.doc
+    proj = flat(klassische_rentenversicherung.Projection.doc)
     assert "Notes symbol" in proj
     for cells in ("proj_len", "model_point", "av_pp_at", "pols_annuity", "bonus_rate",
                   "int_rate_guar", "annuity_rate_appl", "cv_floor_pp"):
         assert cells in proj, cells
-    data = klassische_rentenversicherung.Data.doc
+    data = flat(klassische_rentenversicherung.Data.doc)
     assert "TradLife_A" in data
     for cells in ("input_dir", "model_point_table", "mort_table", "rentenfaktor_table"):
         assert cells in data, cells
@@ -1389,8 +1403,12 @@ def test_the_shipped_tables_mark_their_own_provenance():
         pytest.approx(1.09, rel=1e-6))
     assert float(mort.loc[("M", 55), "improve"]) == 0.015
     assert float(mort.loc[("M", 110), "improve"]) == 0.0
-    assert all("DAV 2004 R" in p for p in mort["provenance"])
-    assert all("not redistributed" in p for p in mort["provenance"])
+    assert all(p.startswith("[std]") for p in mort["provenance"])
+    gompertz = mort[mort["provenance"].str.contains("Gompertz")]["provenance"]
+    assert len(gompertz) == len(mort) - 2          # every row but the two age-120 closures
+    assert all("DAV 2004 R is DAV property and is not redistributed" in p for p in gompertz)
+    closure = mort[~mort["provenance"].str.contains("Gompertz")]["provenance"]
+    assert all("omega_age - 1 = 120" in p for p in closure)
 
     factors = pd.read_csv(INPUT_DIR / "rentenfaktor_table.csv",
                           index_col=["rf_scenario_id", "age"])
