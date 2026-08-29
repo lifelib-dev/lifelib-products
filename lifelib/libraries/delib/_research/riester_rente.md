@@ -424,3 +424,486 @@ statutory disclosure artefacts that every one of the others carries.
   the delib `riester_rente` documents may cite [S16] for a **level**; it may be cited only for the
   proposition that a body of carrier wordings exists.
 
+---
+
+## Regulatory and actuarial references
+
+Twenty-seven known references. The same retrieval statement applies to every one of them: **no
+document was retrieved and no search was run for this file.** The statutory URLs given in canonical
+`gesetze-im-internet.de` form are marked `[unverified]` — they are the form the host uses, not a
+link anyone followed. The **content blocks state what the instrument provides, in this file's own
+words, from general knowledge of German pension law**, with every paragraph number, date and figure
+tagged. That is the honest description of their status and it is weaker than a citation.
+
+Two structural points about the German arrangement, stated once so they need not be repeated. First,
+**the Riester product is defined by two statutes that do different jobs**: the AltZertG says what a
+contract must contain to be certifiable, and the EStG says who gets what subsidy and how the
+benefits are taxed. A delib document that wants a *product* rule looks in the AltZertG; one that
+wants a *money* rule looks in the EStG. Second, **there is no supervisory instrument that sets
+Riester tariff levels**. The *Höchstrechnungszins* [R22] binds the guarantee's discount rate and
+nothing else; charges, *Rentenfaktoren* and surplus are unregulated as to level and are disclosed
+rather than capped [R4] [R5].
+
+### R1 — AltZertG § 1, the criteria of a certifiable *Altersvorsorgevertrag*
+- Publisher: Bundesministerium der Justiz / juris (Gesetze im Internet)
+- URL: https://www.gesetze-im-internet.de/altzertg/__1.html `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted).
+- Content: the operative product statute. What it requires of the contract, as this file
+  understands it, with every specific tagged:
+  - **Payout may not begin before a statutory age.** The threshold is the completed **62nd** year of
+    life for contracts concluded from **1 January 2012**, and the completed **60th** for contracts
+    concluded before that date `[unverified]` on both the ages and the cut-off; the alternative
+    trigger is the start of an old-age pension from a statutory scheme. The change was made by the
+    *RV-Altersgrenzenanpassungsgesetz*, which lifted the statutory retirement age generally
+    `[unverified]`.
+  - **A *Beitragserhaltungszusage***: the provider must undertake that at the beginning of the
+    payout phase **at least the sum of the *Altersvorsorgebeiträge* paid in — the saver's own
+    contributions **and** the Zulagen credited — is available** for the benefit. This is the "100 %
+    Beitragsgarantie". It is nominal, it is tested **only at *Rentenbeginn***, and it is the
+    mechanical heart of the product (section 19).
+  - **A lifelong benefit form.** Either a *lebenslange Leibrente* with **constant or rising**
+    monthly payments, or an *Auszahlungsplan* with constant or rising instalments followed
+    immediately by a **lifelong** *Teilkapitalverrentung* beginning at the latest from the
+    **85th** year of life `[unverified]` on the age. A falling annuity is not certifiable; nor is a
+    pure drawdown with no lifelong element.
+  - **A *Teilkapitalauszahlung* of up to 30 %** of the capital available at the start of the payout
+    phase may be taken as a lump sum without losing the subsidy `[unverified]` on the percentage.
+    The remainder must be annuitised.
+  - **Acquisition and distribution costs must be spread over at least five years** `[unverified]`
+    on the period — the statutory cap on *Zillmerung* in this product, and a materially tighter
+    constraint than anything the VVG imposes on a Schicht-3 contract.
+  - **A *Wechselrecht***: the saver may terminate and have the accumulated capital transferred to
+    another certified contract. The notice period is stated as a period to a quarter end
+    `[unverified]`, and the transferring provider's charge for the transfer is capped at a fixed
+    euro amount `[unverified]` — see gap 8.
+  - **Information duties**: before conclusion, and annually thereafter on the use of contributions,
+    the capital accumulated, the costs charged and the income earned.
+  - **Unisex**: equal contributions for men and women, required for Riester contracts from
+    **1 January 2006** — six years before the general unisex rule [R23] `[unverified]` on the date.
+  - **Contributions used to insure reduced earning capacity or a survivor's benefit** may be
+    included in the contract but are **limited to a share of total contributions** and are excluded
+    from the *Beitragserhaltungszusage* `[unverified]` on the share. This is why a Riester contract
+    can carry a *Berufsunfähigkeits-Zusatzversicherung* without the guarantee having to reproduce
+    its premiums.
+  - **The claim must not be assignable, pledgeable or realisable** — see [R16].
+
+### R2 — AltZertG §§ 2, 3 and 5, certification and the certifying authority
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: certification is an administrative act confirming that a contract's **terms** satisfy the
+  § 1 criteria [R1]. It is **not** a statement about the provider's financial standing, the
+  product's charges, or its expected return, and the statute says so `[unverified]` at paragraph
+  level. The certifying authority is the **Bundeszentralamt für Steuern**; the function previously
+  sat with the **BaFin** and was transferred `[unverified]` as to the date. Certification can be
+  withdrawn where a contract ceases to meet the criteria. **Consequence for delib**: no document may
+  describe a Riester product as state-guaranteed or state-endorsed. The state guarantees nothing;
+  the **provider** gives the *Beitragsgarantie*, and the provider's ability to honour it is a
+  solvency question governed by the ordinary prudential regime.
+
+### R3 — AltZertG § 1 Abs. 1a, the *Altersvorsorgevertrag* in the form of a *Darlehen*
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: certification is available not only to savings contracts but to a **loan** used to
+  acquire owner-occupied residential property, and to a *Bausparvertrag* combining the two
+  `[unverified]` at paragraph level. This is the statutory hook for Wohn-Riester's lending side
+  [S13] [R13] [R19]. Its relevance here is negative and definitional: it is why "Riester" in German
+  usage covers a mortgage as well as an annuity, and why the delib model must say which of the four
+  chassis it represents.
+
+### R4 — AltZertG §§ 7 ff., the *Produktinformationsblatt*, *Effektivkosten* and *Chancen-Risiko-Klassen*
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the disclosure regime, and the most distinctive feature of German subsidised-pension
+  regulation. Every certified product must be offered with a **standardised**
+  *Produktinformationsblatt* [S14] whose layout and content are prescribed so that products are
+  comparable across chassis — an insurance annuity, a fund savings plan and a bank savings plan
+  produce the *same sheet*. It carries the **Effektivkosten** (reduction in yield, an annual
+  percentage) and a **Chancen-Risiko-Klasse** on a scale of **1 to 5** assigned by the
+  **Produktinformationsstelle Altersvorsorge** (PIA), an institution established for the purpose,
+  which computes the class from a common stochastic capital-market model rather than from the
+  provider's own projection `[unverified]` on the scale, on the PIA's constitution and on the
+  methodology. A 100 %-guaranteed product sits at the low-risk end of that scale by construction.
+  **The regime was introduced by [R20]** `[unverified]`.
+
+### R5 — *Altersvorsorge-Produktinformationsblattverordnung* (AltvPIBV)
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the regulation that prescribes the *form* of the sheet [S14] [R4] — the model cases, the
+  contribution and term assumptions, the return scenarios and the presentation of the
+  *Effektivkosten*. It is the document a delib charge basis would be calibrated against, because it
+  fixes **what** the disclosed cost figure means. Nothing about its content is established here.
+
+### R6 — EStG § 10a, the *Sonderausgabenabzug* and the *Günstigerprüfung*
+- Publisher: Gesetze im Internet
+- URL: https://www.gesetze-im-internet.de/estg/__10a.html `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the second of the two subsidy routes. Contributions to a certified contract, **together
+  with the Zulagen credited**, are deductible as *Sonderausgaben* up to **2 100 € per year**
+  `[unverified]`. The ceiling was phased in — **525 €**, **1 050 €**, **1 575 €**, then **2 100 €**
+  from the 2008 assessment year `[unverified]` — and has **not been raised since**, which is a
+  substantive fact about the product's decline, not a detail: the ceiling has been nominal for
+  roughly two decades. The *Günstigerprüfung* is performed **automatically by the tax office**: it
+  computes the tax reduction the deduction would produce, compares it with the Zulagen entitlement,
+  and grants the deduction only where it is the more favourable; where it is, the Zulagen are added
+  back to the assessed tax so that the saver receives the **difference** and not both `[unverified]`
+  on the mechanism's precise expression. The deduction is available only to those *unmittelbar*
+  eligible [R7]; a *mittelbar* eligible spouse has no § 10a deduction of their own `[unverified]`.
+  Civil servants and the other groups whose income data the pension insurance does not hold must
+  consent to the transmission of their remuneration data for the entitlement to be determined
+  `[unverified]`.
+
+### R7 — EStG § 79, who is *zulageberechtigt*
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the eligibility rule, and the one that decides whether a model point can hold this
+  product at all.
+  - ***Unmittelbar zulageberechtigt*** — those compulsorily insured in the **gesetzliche
+    Rentenversicherung**; **Beamte**, judges, soldiers and equivalent office-holders whose old-age
+    provision is a civil-service pension; those insured in the **Alterssicherung der Landwirte**;
+    recipients of *Arbeitslosengeld*; persons credited with **Kindererziehungszeiten**; recipients
+    of a full *Erwerbsminderungsrente* or *Dienstunfähigkeitsrente*; and **geringfügig
+    Beschäftigte** who have waived the exemption from compulsory insurance `[unverified]` on the
+    completeness and precise wording of the list.
+  - ***Nicht* berechtigt** — the self-employed who are not compulsorily insured, and members of the
+    **berufsständische Versorgungswerke** (doctors, lawyers, architects and the like). This is the
+    single largest design criticism of the product and it is structural: the group with the weakest
+    statutory pension is the group the subsidy does not reach `[unverified]` as a characterisation.
+  - ***Mittelbar zulageberechtigt*** — the spouse or registered partner of an *unmittelbar*
+    eligible person, where the couple are not permanently separated and both are resident in an
+    EU/EEA state, **provided the *mittelbar* eligible person holds an own certified contract**. From
+    the **2012** contribution year that person must also pay the **60 € *Sockelbeitrag*** in their
+    own contract [R10] [R20] `[unverified]` on the year. Before that change, a *mittelbar* eligible
+    spouse drew the full *Grundzulage* on a **zero** own contribution — the most generous provision
+    the product ever contained, and the one most often described as its administrative low point.
+
+### R8 — EStG § 82 and § 83, *Altersvorsorgebeiträge* and the *Altersvorsorgezulage*
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: § 82 defines what counts as a subsidised contribution — payments into a certified
+  contract, and, on the Wohn-Riester side, *Tilgungsleistungen* on a certified loan [R3] [R13]; it
+  also brings **Riester-funded bAV contributions** (paid from **taxed** salary into a
+  *Direktversicherung*, *Pensionskasse* or *Pensionsfonds*) into the subsidy `[unverified]` at
+  paragraph level. § 83 establishes the *Altersvorsorgezulage* as the sum of *Grundzulage* and
+  *Kinderzulage* [R9]. The point that matters for the model is definitional and load-bearing:
+  **the Zulage is a contribution, not a benefit.** It is paid to the provider, credited to the
+  contract, counted in the *Beitragsgarantie*, invested, and taxed at the end like any other
+  contribution. It never reaches the saver's bank account.
+
+### R9 — EStG § 84 (*Grundzulage*, *Berufseinsteiger-Bonus*) and § 85 (*Kinderzulage*)
+- Publisher: Gesetze im Internet
+- URLs: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the money. All figures `[unverified]`.
+  - **Grundzulage: 175 € per year**, from the **2018** contribution year. Its history is
+    **38 €** (2002–2003), **76 €** (2004–2005), **114 €** (2006–2007), **154 €** (2008–2017), then
+    175 € — raised by [R21]. It has not moved since 2018.
+  - **Berufseinsteiger-Bonus: a one-off 200 €** added to the *Grundzulage*, for an *unmittelbar*
+    eligible saver who has **not completed the 25th year of life** at the start of the contribution
+    year, granted **once**, in the first year for which a Zulage is claimed. Introduced for
+    contribution years from **2008**.
+  - **Kinderzulage: 185 € per year** per child for whom *Kindergeld* is drawn, for children born
+    **before 1 January 2008**; **300 € per year** for children born **on or after 1 January 2008**.
+    Its history mirrors the *Grundzulage* phase-in: 46 €, 92 €, 138 €, then 185 €. The two-tier
+    split is permanent — it is a **birth-cohort** rule, not a transitional one, so a contract can
+    carry both rates at once.
+  - The *Kinderzulage* is credited to the **mother's** contract unless both parents jointly request
+    otherwise `[unverified]`. It runs for as long as *Kindergeld* is drawn, and stops when
+    *Kindergeld* stops — typically at 18, or later while the child is in education `[unverified]`.
+    **This makes the Zulage stream a function of a household variable that the insurance contract
+    itself does not observe**, which is the most awkward fact in the whole product for a
+    per-policy projection model.
+
+### R10 — EStG § 86 (*Mindesteigenbeitrag*, *Sockelbeitrag*) and § 87
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the condition on the money. To draw the **full** Zulagen the saver must pay an own
+  contribution of at least the *Mindesteigenbeitrag*, defined `[unverified]` as
+  **4 % of the previous calendar year's contribution-liable earnings, capped at 2 100 €, less the
+  Zulagen entitlement**, subject to a floor — the *Sockelbeitrag* — of **60 € per year**. The
+  percentage was phased in at **1 %** (2002–2003), **2 %** (2004–2005), **3 %** (2006–2007) and
+  **4 %** from 2008 `[unverified]`. Where the saver pays **less** than the *Mindesteigenbeitrag*,
+  the Zulagen are **reduced in the ratio of the contribution actually paid to the
+  *Mindesteigenbeitrag***, rather than lost — a proportional, not a cliff-edge, sanction
+  `[unverified]`. § 87 governs the case of a saver holding more than one certified contract: the
+  Zulage is granted on a limited number of contracts and the saver must designate `[unverified]`.
+  The reference income is the **previous** year's — so the Zulage year `t` entitlement depends on
+  income in `t − 1`, a one-year lag the model must carry explicitly.
+
+### R11 — EStG §§ 89 to 91, and the *Zentrale Zulagenstelle für Altersvermögen* (ZfA)
+- Publisher: Gesetze im Internet; Deutsche Rentenversicherung Bund
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the administration, and the source of the model's **timing**. The saver applies for the
+  Zulage **through the provider**, normally once by a *Dauerzulageantrag* that then runs
+  automatically; the application deadline is the **end of the second calendar year following the
+  contribution year** `[unverified]`. The **ZfA**, a unit of the Deutsche Rentenversicherung Bund,
+  determines entitlement by matching the provider's contribution data against the pension
+  insurance's earnings data and the *Kindergeld* data, then **pays the Zulage to the provider**,
+  who credits it to the contract. Where entitlement later proves wrong, the ZfA **reclaims** and
+  the provider debits the contract — so a Zulage credit is **provisional** until the data match
+  settles. **Consequence for the model**: the Zulage for contribution year `t` is a cash inflow in
+  a **later** period, conventionally `t + 1`, and it is subject to a small reversal risk. Neither
+  the payment month nor the reversal frequency is established (gap 6).
+
+### R12 — EStG § 22 Nr. 5, the taxation of the benefit
+- Publisher: Gesetze im Internet
+- URL: https://www.gesetze-im-internet.de/estg/__22.html `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the *nachgelagerte Besteuerung* rule, and the sharpest difference between this product
+  and the Schicht-3 annuity of `klassische_rentenversicherung`.
+  - Benefits from an *Altersvorsorgevertrag* are **sonstige Einkünfte**. To the extent they derive
+    from **subsidised** contributions — own contributions that attracted a Zulage or a § 10a
+    deduction, plus the Zulagen themselves, plus all the investment return on both — they are
+    taxable **in full** at the recipient's marginal rate. There is **no *Ertragsanteil*** on that
+    part `[unverified]` at paragraph level.
+  - To the extent they derive from **unsubsidised** contributions — money paid into the same
+    contract above the § 10a ceiling, or after eligibility lapsed — the ordinary private-annuity
+    rules apply: the *Ertragsanteil* for an annuity, or the § 20 Abs. 1 Nr. 6 rules for a lump sum
+    `[unverified]`. A single Riester contract can therefore carry **two tax regimes at once**, and
+    the provider must track the two contribution pools separately for the life of the contract.
+  - The provider issues an annual ***Leistungsmitteilung*** to the recipient and to the tax
+    administration, stating how much of the year's benefit falls in each pool `[unverified]`.
+  - The *Werbungskosten-Pauschbetrag* for *sonstige Einkünfte* is **102 €** `[unverified]`.
+  - **Consequence for delib**: the model publishes **gross** liability cash flows, so tax is
+    context, not a cash flow. But the tax rule is what makes the *Teilkapitalauszahlung* and the
+    *Kleinbetragsrenten-Abfindung* interesting [R15], and it is why a Riester annuity of a given
+    gross amount is worth materially less to the saver than a Schicht-3 annuity of the same gross
+    amount.
+
+### R13 — EStG § 92a and § 92b, Wohn-Riester and the *Wohnförderkonto*
+- Publisher: Gesetze im Internet
+- URLs: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the housing route, out of the model's scope and described here so that the exclusion is
+  informed. All figures `[unverified]`.
+  - **§ 92a — *Altersvorsorge-Eigenheimbetrag***: the saver may withdraw capital from a certified
+    contract, **without *schädliche Verwendung***, to acquire or build an owner-occupied dwelling,
+    to repay a loan on one, to buy cooperative housing shares, or to fund a **barrier-reducing
+    conversion**. Minimum and maximum amounts and a minimum share of the capital apply to the
+    various uses, and the conversion use carries its own thresholds and a requirement that the works
+    meet stated standards.
+  - **§ 92a/§ 92b — the *Wohnförderkonto***: because the withdrawn money escapes the annuity, the
+    subsidy attached to it must still be taxed. The amounts withdrawn, and the *Tilgungsleistungen*
+    on a certified loan [R3], are recorded in a **notional account** that accrues at a statutory
+    notional rate of **2 % per year** and is then taxed in the payout phase — either **spread
+    annually** until the year the saver reaches **85**, or **in one sum with a 30 % discount** on
+    the balance if the saver so elects.
+  - **The *Wohnförderkonto* carries no cash whatsoever.** It is a tax memorandum. That is the reason
+    Wohn-Riester is out of scope for a liability cash-flow model: there is no liability and no cash
+    flow to project. What the model **can** represent, and what a delib document should say it does
+    not, is the **withdrawal itself** — an *Eigenheimbetrag* is, from the insurer's side, an early
+    and complete exit that terminates the annuity liability.
+
+### R14 — EStG § 93, § 94 and § 95, *schädliche Verwendung* and its consequences
+- Publisher: Gesetze im Internet
+- URLs: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the sanction, and the reason a Riester surrender is not an ordinary surrender.
+  - **§ 93 — *schädliche Verwendung***: any use of the capital outside the permitted purposes —
+    paradigmatically **surrender for cash** — triggers repayment of **all Zulagen credited and all
+    § 10a tax reductions granted**, the *Rückzahlungsbetrag*. The provider deducts it from the
+    payment and remits it. **On top of that**, the accumulated **investment return** attributable
+    to the subsidised part becomes taxable under § 22 Nr. 5 at the saver's marginal rate
+    `[unverified]` at paragraph level. So the saver loses the subsidy **and** pays tax on the
+    growth, which is why the German market speaks of a Riester contract as effectively
+    unsurrenderable in economic terms.
+  - **Not *schädlich***, and this list is what the model's option set is built from: transfer of the
+    capital to another certified contract (*Anbieterwechsel*) [R1]; transfer to the spouse's
+    certified contract under a *Versorgungsausgleich* on divorce; the *Eigenheimbetrag* [R13];
+    payment of a *Kleinbetragsrente* as a lump sum [R15]; and, on death, transfer of the capital to
+    a surviving spouse's own certified contract, subject to conditions `[unverified]`.
+  - **Death without that transfer is *schädlich***: the capital passes to the estate net of the
+    *Rückzahlungsbetrag*. A *Rentengarantiezeit* or a survivor's annuity running to the spouse is
+    the *förderunschädlich* route.
+  - **§ 95 — end of unlimited tax liability**: emigration historically triggered repayment. The rule
+    was challenged as incompatible with the free movement of workers and was amended so that a move
+    within the EU/EEA no longer has that effect `[unverified]` as to the judgment, the amending
+    statute and the date. This is recorded as a **gap** (gap 15), not as a fact: the current rule
+    was not established and must not be asserted downstream.
+
+### R15 — EStG § 93 Abs. 3 with SGB IV § 18, the *Kleinbetragsrente*; EStG § 34, the *Fünftelregelung*
+- Publisher: Gesetze im Internet
+- URLs: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the small-annuity commutation, and the one place where German pension law lets a
+  subsidised contract pay a lump sum outside the 30 % rule. All figures `[unverified]`.
+  - **Threshold**: the provider may commute the annuity to a lump sum, without *schädliche
+    Verwendung*, where the monthly annuity would not exceed **1 % of the monatliche Bezugsgröße**
+    of § 18 SGB IV. The *Bezugsgröße* is reset annually; its monthly value has been in the
+    **3 500 € to 3 800 €** region in the mid-2020s, putting the *Kleinbetragsrente* threshold near
+    **35 € to 38 € per month**. **The precise value for any given year is not established** (gap 7),
+    and a separate East/West value applied until the values were unified `[unverified]`.
+  - **Taxation**: the *Abfindung* is taxable in full under § 22 Nr. 5 [R12], but since **2018** it
+    is taxed under the **ermäßigte Besteuerung** of § 34 EStG — the *Fünftelregelung*, which
+    computes the tax as five times the tax on one fifth of the amount, flattening the progression.
+    Introduced by [R21].
+  - **Deferral election**: also since 2018, the saver may elect to have the *Abfindung* paid at the
+    **beginning of the following calendar year**, so that it falls into a year with lower other
+    income `[unverified]`.
+  - **Why it matters for the model**: a Riester contract with a small accumulated capital does not
+    produce an annuity at all — it produces a lump sum at *Rentenbeginn*. Given that a substantial
+    share of Riester contracts are *ruhend* with small balances (section 20), the
+    *Kleinbetragsrente* is not an edge case; it is a **material second payout mode** and belongs in
+    the model as a switch on the anchor decrement.
+
+### R16 — EStG § 97, non-transferability and protection from execution
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the entitlement to the Zulage and the **subsidised** capital are **not transferable** and
+  are protected from attachment `[unverified]` at paragraph level and as to the extent of the
+  protection. The practical effects are two: the contract cannot be assigned as loan collateral,
+  which removes a use that a Schicht-3 endowment has; and the subsidised capital is, within limits,
+  protected in personal insolvency. Neither produces a cash flow, but both bear on lapse behaviour —
+  a saver in financial difficulty cannot realise the contract as easily as a Schicht-3 one, and this
+  is one of the reasons the German Riester book shows **Beitragsfreistellung** where another market
+  would show surrender.
+
+### R17 — *Altersvermögensgesetz* (AVmG) and *Altersvermögensergänzungsgesetz* (AVmEG), 2001
+- Publisher: Bundesgesetzblatt / Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the founding statutes, in force for contribution years from **2002** `[unverified]`. They
+  did two things at once, and the pairing is the whole political logic of the product: they
+  **reduced the future replacement rate of the statutory pension** and **created a subsidised
+  private product to fill the gap**. The subsidy was phased in over four two-year steps to 2008
+  [R9] [R10]. The product is named after the then federal labour minister; the name is colloquial
+  and appears in no statute.
+
+### R18 — *Alterseinkünftegesetz* (AltEinkG), 2004
+- Publisher: Bundesgesetzblatt / Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the statute that created the **three-layer** taxonomy German practice now uses —
+  **Schicht 1** *Basisversorgung* (statutory pension, *Basisrente*), **Schicht 2**
+  *Zusatzversorgung* (Riester, bAV), **Schicht 3** *Kapitalanlageprodukte* (unsubsidised private
+  annuities and endowments) — and moved the statutory pension to *nachgelagerte Besteuerung* on a
+  long transition `[unverified]` on the dates. Riester was already taxed that way from the start,
+  which is why it is a Schicht-2 rather than a Schicht-3 product. The delib library uses this
+  taxonomy in every product's scope note.
+
+### R19 — *Eigenheimrentengesetz* (EigRentG), 2008
+- Publisher: Bundesgesetzblatt / Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the statute that created **Wohn-Riester** — the *Eigenheimbetrag*, the certifiable loan
+  [R3] and the *Wohnförderkonto* [R13] `[unverified]` on the year. It also raised the *Kinderzulage*
+  for children born from 2008 to 300 € [R9] `[unverified]`. Its effect on the shape of the Riester
+  book is large and is the reason a contract count cannot be read as an annuity count: a material
+  minority of all Riester contracts are housing contracts that will never pay an annuity
+  (section 20).
+
+### R20 — *Altersvorsorge-Verbesserungsgesetz* (AltvVerbG), 2013
+- Publisher: Bundesgesetzblatt / Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the administrative reform. It introduced the standardised *Produktinformationsblatt*
+  [R4] [S14], capped the provider's charge for a *Wechsel* [R1], and required the **60 €
+  *Sockelbeitrag* of a *mittelbar* eligible spouse** [R7] [R10] — closing the zero-contribution
+  entitlement — with effect for contribution years from **2012** `[unverified]` on all four points
+  and on the year.
+
+### R21 — *Betriebsrentenstärkungsgesetz* (BRSG), 2017
+- Publisher: Bundesgesetzblatt / Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the last substantive Riester reform. It raised the **Grundzulage from 154 € to 175 €**
+  with effect from the **2018** contribution year [R9]; brought the *Kleinbetragsrenten-Abfindung*
+  under the **Fünftelregelung** and added the **deferral election** [R15]; introduced a
+  ***Freibetrag* in der Grundsicherung im Alter** so that a Riester annuity is no longer offset
+  one-for-one against means-tested basic security — a base amount plus a percentage of the excess,
+  subject to a cap `[unverified]` on all three figures; and removed the **double
+  *Krankenversicherung* charge** on Riester annuities drawn from a **bAV** vehicle `[unverified]`.
+  Every one of these was a repair to a criticism of the product rather than an extension of it, and
+  none of them changed the *Beitragsgarantie*.
+
+### R22 — *Deckungsrückstellungsverordnung* (DeckRV) § 2, the *Höchstrechnungszins*
+- Publisher: Gesetze im Internet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration; the two most recent values below are
+  corroborated in the **sibling** delib research files from their own searches and are cited here on
+  that authority.
+- Content: the statutory maximum technical interest rate for new German life business. The two
+  values that matter to this product are **0,25 %**, in force **from 1 January 2022**, and
+  **1,00 %**, in force **from 1 January 2025** — the first increase in the series since 1994. The
+  earlier sequence — 4 %, 3,25 %, 2,75 %, 2,25 %, 1,75 %, 1,25 %, 0,90 % — and every effective date
+  in it is `[unverified]` here and belongs in the cross-product reference library rather than this
+  file. **Why it is a Riester reference at all**: the *Beitragsgarantie* [R1] is a nominal guarantee
+  at a fixed future date, and the rate at which an insurer may discount it is the rate that decides
+  how much of each contribution must be immobilised to back it. The 0,25 % regime of 2022–2024 is
+  the direct cause of the Riester new-business collapse (sections 19 and 20).
+
+### R23 — Unisex pricing: the AltZertG rule and *Test-Achats*
+- Publisher: Gesetze im Internet; Court of Justice of the European Union
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: Riester contracts have been required to be **unisex** — equal contributions for men and
+  women — since **1 January 2006**, by the AltZertG itself [R1] `[unverified]`. The general German
+  market followed only from **21 December 2012**, after the Court of Justice's judgment in the
+  *Test-Achats* case (C-236/09, **1 March 2011**) `[unverified]` on the case number and date. **The
+  ordering is the substantive point**: Riester was the German market's first unisex product, so
+  Riester annuity tariffs were struck on a unisex basis from a vintage at which Schicht-3 tariffs
+  were still sex-distinct, and a Riester *Rentenfaktor* is therefore **not** comparable with a
+  contemporaneous Schicht-3 one for a male life.
+
+### R24 — BMF *Anwendungsschreiben* on the tax treatment of subsidised private pensions
+- Publisher: Bundesministerium der Finanzen
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the consolidated administrative guidance on §§ 10a and 79 to 99 EStG and on § 22 Nr. 5 —
+  the document German practitioners actually work from, running to well over a hundred paragraphs
+  and reissued periodically. It is the authoritative source for exactly the points this file has had
+  to leave `[unverified]`: the treatment of a change of eligibility mid-year, the mechanics of the
+  *Günstigerprüfung*, the two-pool tracking of subsidised and unsubsidised contributions, the
+  *Rückzahlungsbetrag* calculation, and the *Wohnförderkonto* arithmetic. **Its date, reference
+  number and content are not established** and none may be invented (gap 3).
+
+### R25 — Riester contract statistics: BMAS quarterly series; GDV statistics
+- Publisher: Bundesministerium für Arbeit und Soziales; Gesamtverband der Deutschen
+  Versicherungswirtschaft
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the official count. The BMAS publishes a **quarterly** series of the number of
+  Riester contracts split by chassis — *Versicherungsverträge*, *Investmentfondsverträge*,
+  *Banksparpläne* and *Wohn-Riester-Verträge* — derived from the ZfA's own data [R11]; the GDV
+  publishes the insurance subset with premium volumes. **These are the documents any market figure
+  in the delib Riester documents must be checked against.** What this file says about levels in
+  section 20 is `[unverified]` order-of-magnitude recollection, not a reading of either series, and
+  the whole of section 20 is qualified accordingly (gap 2).
+
+### R26 — *Fokusgruppe private Altersvorsorge* (2023) and the pAV-Reform / *Altersvorsorgedepot* debate
+- Publisher: Bundesministerium der Finanzen (the working group); the federal government (the bill)
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the reform track, described in section 21. The *Fokusgruppe*, convened by the finance
+  ministry with the labour, justice and economics ministries and reporting in **2023**
+  `[unverified]`, recommended reforming rather than replacing the subsidised private layer:
+  **relaxing or removing the 100 % *Beitragsgarantie***, admitting a **securities-account product**
+  without an insurance wrapper, simplifying the Zulage into a proportional match, and widening
+  eligibility. A draft bill followed in **2024** creating an ***Altersvorsorgedepot*** alongside
+  guaranteed products, with a proportional *Grundzulage* per euro contributed, a proportional
+  *Kinderzulage*, a retained *Berufseinsteiger-Bonus* and a supplement for low earners
+  `[unverified]` on every element. **The bill did not become law in that parliamentary term**
+  `[unverified]`. **The position as at the 2026-08-29 access date is not established** and is
+  recorded as gap 1 — the single most important thing this file could not determine.
+
+### R27 — Consumer, comparison and rating cluster
+- Publishers: Stiftung Warentest / *Finanztest*; Finanztip; the *Verbraucherzentralen*; Verivox;
+  Check24; Handelsblatt; Morgen & Morgen; Franke und Bornberg; Assekurata
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration.
+- Content: the secondary layer that, in a normal research pass, supplies the price points and the
+  observed spread across carriers that a representative composite is built from — *Effektivkosten*
+  comparisons, *Rentenfaktor* tables, guarantee-design ratings and the running commentary on
+  providers leaving the market. **Nothing from any of them is established in this file.** They are
+  named so that the gaps register can say precisely what a follow-up pass should read, and so that
+  no delib document mistakes their absence for their non-existence. Anything they would have
+  supplied is `[std]` downstream.
+

@@ -841,3 +841,415 @@ numbering it encodes is itself part of what is unverified.
   a non-life background will otherwise wonder where the tax line is.
 
 ---
+
+## Extracted facts, organised by mechanic
+
+This is the section the `product-spec.md` and `technical-notes.md` are written from. Under the
+retrieval conditions of this build it is also the section that carries the file's weight: the
+**mechanics** of the German BU contract are well established and are set out here in full, and the
+`[S#]` / `[R#]` tags name the document each statement must be checked against. Every **level** is
+either `[std]` with a rationale or `[unverified]` with a warning.
+
+### 1. Product structure and legal form
+
+- An SBU is a **life-assurance contract** written by a *Lebensversicherungsunternehmen*, governed by
+  §§ 172–177 VVG for its own mechanics and, through § 176, by the general life provisions
+  §§ 150–170 VVG for everything else [R1] [R5]. It is not health business and not accident business,
+  even though its trigger is a health event.
+- The contract is a **pure risk contract with a reserve**. It pays only on the insured event, has no
+  maturity benefit, and returns nothing if the insured stays healthy. It nevertheless carries a
+  material *Deckungsrückstellung*, because the premium is level and the risk rises steeply with age
+  [R9]. That combination — no savings intent, substantial reserve — is the structural fact that
+  distinguishes BU from every other product in delib.
+- Two commercial forms, one liability:
+  - **Selbständige BU (SBU)** — standalone. The premium buys BU cover and nothing else. This is
+    delib product 9 and the subject of this file.
+  - **BU-Zusatzversicherung (BUZ)** — a rider on a *Renten-*, *Kapitallebens-* or
+    *Basisrentenversicherung* [S2]. The BU risk, definition, claim procedure and *Nachprüfung* are
+    identical; what differs is that the *Beitragsbefreiung* waives the **whole** premium of the host
+    contract, and that the tax treatment follows the host (section 24).
+  - A third form, the **BU-Rente as a benefit inside an occupational pension** (*bAV-BU*), is out of
+    delib's scope entirely.
+- The German market's own hierarchy of biometric income protection, from broadest trigger to
+  narrowest, is worth stating because it bounds the product: *Berufsunfähigkeit* (last occupation,
+  50 %) → *Grundfähigkeitsversicherung* (loss of defined basic abilities) → *Erwerbsunfähigkeit*
+  (any occupation) → statutory *Erwerbsminderungsrente* (general labour market, hours-based) [R24].
+  BU is the **broadest and most expensive** of the four and is the one the market sells first.
+
+### 2. The statutory definition — § 172 VVG
+
+- A person is *berufsunfähig* who, **as a consequence of illness, bodily injury or more than
+  age-appropriate decline in strength**, is **prospectively permanently** unable, wholly or in part,
+  to exercise **the occupation last actually exercised, as it was arranged before the impairment**
+  [R1].
+- Four things follow, and all four are model-relevant:
+  1. **The reference occupation is the last one actually exercised.** Not the trained occupation,
+     not an average occupation, not "any occupation". A trained lawyer working as a warehouse
+     supervisor is tested against warehouse supervision. This is why the German BU trigger is so
+     much more generous than an "any occupation" disability definition, and why the price is so much
+     more sensitive to the insured's actual job.
+  2. **It is taken as actually arranged** (*so wie er ohne gesundheitliche Beeinträchtigung
+     ausgestaltet war*). The concrete duties, working hours and physical demands of this insured's
+     own post are the yardstick. Two people with the same job title can have different tests.
+  3. **The cause must be medical.** Illness, bodily injury, or a decline in strength beyond what the
+     age would explain. Loss of the job, loss of a licence for non-medical reasons, or an economic
+     inability to find work is not BU — with the single contractual exception of the
+     *Infektionsklausel* (section 14).
+  4. **Prospectively permanent** — *voraussichtlich auf Dauer*. The statute does not put a number on
+     it; the market does (section 3).
+- **§ 172 Abs. 3 permits, but does not imply, the *abstrakte Verweisung*** [R1]. Absent an express
+  agreement, the insurer may **not** refer the insured to an occupation she does not actually
+  exercise. Section 4 records what the market does with that permission.
+
+### 3. The contractual definition — six months, 50 per cent, and the two routes to a claim
+
+**This section corrects the brief that commissioned the file.** The six-month period and the 50 %
+threshold are **not** in § 172 VVG. They are contractual standards, carried in the AVB [S1] [S3]–[S12]
+and near-uniform across the market, which concretise the statutory words *voraussichtlich auf Dauer*
+and *ganz oder teilweise*. A downstream document that attributes them to the statute is wrong, and
+this file's product-spec must not.
+
+- **The market-standard AVB definition** (substance, not wording, and `[unverified]` in every
+  detail): the insured is *vollständig berufsunfähig* if, as a consequence of illness, bodily injury
+  or more than age-appropriate decline in strength — **each to be demonstrated medically** — she is
+  **prospectively for at least six months continuously** unable to exercise her last occupation, as
+  it was arranged before the impairment, **to at least 50 %** [S1].
+- **The 50 % threshold is all-or-nothing.** At 50 % or more inability, the **full** *BU-Rente* is
+  payable. At 49 %, nothing is payable. There is no proportional benefit in the market standard.
+  Some tariffs historically offered a *Staffelregelung* paying a partial *BU-Rente* between 25 % and
+  50 % inability `[unverified]`, and a few modern tariffs offer a "Teil-BU"; both are minority
+  designs and delib models the all-or-nothing form.
+- **Measuring the 50 %** is done on **working time**, on the share of the occupation's essential
+  tasks the insured can still perform, or on both, depending on the AVB. Where a residual capacity
+  exists, the test is whether the insured could still perform her own job for at least half a normal
+  working day, or perform at least half of its defining tasks. Practically the assessment is a
+  medical report plus a detailed description of the actual job, and the burden of proof on the
+  initial claim is on the **insured** [R21].
+- **Two routes to a claim, and both matter to the model.**
+  - **The prognosis route.** A doctor certifies that the 50 % inability is expected to last at
+    least six months from now. Benefit is due from the onset of the BU (subject to any
+    *Karenzzeit*), without waiting for the six months to elapse.
+  - **The six-month fiction route.** Where the insured **has actually been** unable, continuously,
+    for six months to exercise the occupation to at least 50 %, the **continuation of that state
+    counts as BU** without any further prognosis. This is the clause the German market calls the
+    *Sechs-Monats-Regelung* or the *BU-Fiktion*, and it exists because a forward-looking prognosis
+    is hard to obtain and easy to contest.
+  - **Retroactivity is the difference between good and bad wordings.** The modern market standard
+    pays **retroactively from the beginning of the six-month period** once the fiction is
+    established. Older and weaker wordings paid only **from the end** of the six months, i.e. the
+    insured lost half a year of benefit `[unverified]` as to how much of the current market still
+    does this. delib models retroactive payment from onset and records the alternative as a switch
+    (section 7).
+- **Prognosezeitraum variants.** Six months is the standard. Some tariffs shorten the prognosis to
+  **three months** as a competitive feature `[unverified]`; a shorter prognosis makes a claim easier
+  to establish and therefore raises the effective inception rate without changing the definition.
+
+### 4. Abstrakte and konkrete Verweisung
+
+The two *Verweisung* clauses are the most distinctive feature of German BU and the ones a
+non-German modeller most often gets wrong.
+
+- ***Abstrakte Verweisung*** — the insurer refers the insured to an occupation she **could**
+  take up, given her training and abilities, corresponding to her previous *Lebensstellung* —
+  **whether or not she actually does so** [R1 Abs. 3]. If agreed and applicable, no benefit is
+  payable at all, however unable she is to do her own job. It is the clause that made German BU
+  cover much less valuable than it looked, because almost any insured can be pointed at *some*
+  theoretically available occupation.
+  - **The market standard is now to waive it.** Essentially every quality tariff sold in the
+    contemporary German market contains a *Verzicht auf die abstrakte Verweisung* [S1] [S3]–[S12].
+    The waiver is not a legal requirement — § 172 Abs. 3 still permits the clause — it is a
+    competitive standard, and a tariff that retains the *abstrakte Verweisung* is not sold in the
+    broker channel. `[unverified]` as to when the waiver became universal; the shift is recalled as
+    having taken place over the late 1990s and 2000s.
+  - **Legacy books still carry it.** Contracts written before the waiver became standard remain in
+    force with it, which is why the *Verweisung* still generates litigation. delib models the
+    modern, waived form and notes the legacy form as a variant.
+- ***Konkrete Verweisung*** — the insurer refers the insured to another occupation she **actually
+  exercises**. This is **retained** by the market, and it is retained on both sides of the claim:
+  - **At the initial claim**, if the insured has already taken up another occupation which
+    corresponds to her training, abilities and previous *Lebensstellung*, she is not *berufsunfähig*.
+  - **In the *Nachprüfung***, if the insured takes up such an occupation after benefit has started,
+    the insurer may end the benefit — subject to the three-month run-off of § 174 [R3].
+  - **The limit is *Lebensstellung***. The new occupation must correspond in **income** and in
+    **social standing** to the old. The working market threshold is that an income drop of more than
+    about **20 %** breaks the correspondence `[unverified]`; that figure comes from lower-court
+    practice and market wordings rather than from a fixed statutory or BGH rule [R29].
+  - Some tariffs go further and **waive the konkrete Verweisung as well**, or waive it where the new
+    occupation pays materially less. That is a genuine competitive variable and one of the things a
+    *Bedingungsrating* scores [R21] [R22].
+- **Model consequence.** *Konkrete Verweisung* is not a separate decrement. In a cash-flow model it
+  is **indistinguishable from recovery**: both end the benefit, both operate through the
+  *Nachprüfung*, and both carry the same three-month run-off. delib therefore folds recovery and
+  *konkrete Verweisung* into a single duration-dependent **claim-termination-other-than-death**
+  rate, and says so explicitly rather than pretending to separate two things no public data
+  separates.
+
+### 5. The claim procedure — *Leistungsantrag*, *Leistungsprüfung* and *Anerkenntnis* (§ 173 VVG)
+
+- The insured files a *Leistungsantrag* with a detailed description of the occupation as actually
+  exercised, medical reports, and releases allowing the insurer to obtain records. The insurer runs
+  a *Leistungsprüfung*, which routinely involves its own medical assessment and, for the
+  self-employed, an analysis of the business [R21].
+- **The insurer must declare in *Textform* whether it acknowledges liability** [R2]. The declaration
+  is an *Anerkenntnis*.
+- **The *Anerkenntnis* binds.** Once given, the insurer cannot revisit the same facts; it can only
+  stop paying prospectively through a *Nachprüfung* in which the **burden of proof is on the
+  insurer** [R3] [R29]. This reversal of the burden is the most valuable thing an insured obtains
+  from a BU claim, and it is why § 173's restriction on the *befristetes Anerkenntnis* matters.
+- ***Befristetes Anerkenntnis*.** A time-limited acknowledgement may be given **only once** [R2].
+  Within the period it binds absolutely. Market practice limits it to a stated maximum, recalled as
+  **6 or 12 months** `[unverified]`; a few tariffs waive the *befristetes Anerkenntnis* entirely as a
+  selling point. When the period ends, the insurer must either continue paying or run a proper
+  *Nachprüfung* — it cannot simply stop.
+- **Time to decision.** The German market's own claims studies report an average decision time
+  measured in months, with a figure of the order of **five to six months** recalled `[unverified]`,
+  and a meaningful tail of much longer cases. **Model consequence**: the benefit is paid
+  retroactively to onset, so a decision delay produces a **lump catch-up payment**, not a lost
+  payment. A monthly cash-flow model that pays from onset and ignores the decision delay is
+  understating the timing but not the amount; delib takes that simplification and records it as a
+  pitfall.
+- **Not every incepted BU becomes a paid claim.** The proportion accepted is the *Anerkennungsquote*
+  (section 26). For a projection model this is an **acceptance factor** applied to the inception
+  rate, not a separate state.
+
+### 6. Nachprüfung, Leistungsfreiheit and Reaktivierung (§ 174 VVG)
+
+- Once benefit is in payment the insurer may **periodically re-examine** whether its conditions
+  still hold. Market practice is an annual or biennial *Nachprüfung*, with the AVB imposing
+  *Mitwirkungspflichten* on the insured — to supply medical evidence, to notify a change in health
+  or occupation, and to submit to examination `[unverified]` as to frequency.
+- **What the insurer must show.** A *change* relative to the state on which the *Anerkenntnis*
+  rested: either a medical improvement lifting the insured above the 50 % threshold in her old
+  occupation, or a new occupation **actually taken up** that satisfies *konkrete Verweisung*
+  (section 4) [R3] [R29].
+- **The three-month run-off.** Where the insurer establishes that the conditions have ceased, it
+  remains liable to the **end of the third month after the notice reaches the policyholder** [R3].
+  A defective notice — one that does not intelligibly set out the comparison — does not start the
+  period at all [R29]. **Model consequence**: a claim termination other than death is followed by
+  three further monthly payments. In a monthly model this is a three-month tail on every
+  reactivation, and it is a real cash-flow effect, not a rounding detail: at a reactivation rate
+  concentrated in the first two years of a claim, the tail adds a measurable amount to the expected
+  benefit.
+- ***Reaktivierung*** — the insured recovers and the cover **revives**. The contract does not end:
+  the *Beitragsbefreiung* stops, the premium resumes at the same *Zahlbeitrag*, and a fresh BU may
+  be claimed later. This bidirectional structure is what makes BU a genuine multi-state model rather
+  than a decrement model, and it is the single most important structural difference from the
+  `risikolebensversicherung` product.
+- **Reactivation is strongly duration-dependent.** The probability of recovery is highest in the
+  first year of a claim, falls sharply over the second and third, and is close to zero after about
+  five years [R16]. The corollary is the one that governs the reserve: a claim that survives its
+  first two years is very likely to run to the *Endalter*. Any delib reactivation proxy must
+  reproduce that shape, and a flat reactivation rate is a modelling error the tests should catch.
+- **Some tariffs waive the *Nachprüfung*** after a stated benefit duration, or promise not to
+  invoke *konkrete Verweisung* after a stated period `[unverified]`. Treated by delib as an option
+  switch, off in the base run.
+
+### 7. Karenzzeit, rückwirkende Leistung and the start of benefit
+
+- ***Karenzzeit*** — an **agreed deferment** between the onset of BU and the first payment. It is a
+  contractual option chosen at inception, not a standard feature. Menus observed in the market are
+  recalled as **0, 3, 6, 12, 18 and 24 months** `[unverified]`. The standard sale is **no
+  Karenzzeit**; a *Karenzzeit* is taken to cut the premium, typically by a buyer who has employer
+  sick pay or a professional scheme covering the first period.
+- **The *Karenzzeit* is not the six-month prognosis.** They are independent and frequently confused.
+  The prognosis period is part of the **definition** of BU (section 3); the *Karenzzeit* is a
+  deferment of **payment** on a BU that is already established. A contract with no *Karenzzeit* still
+  needs a six-month prognosis or the six-month fiction before anything is due.
+- ***Rückwirkende Leistung*** — once the claim is recognised, the benefit is paid **back to the
+  onset of BU** (after any *Karenzzeit*), not from the date of the decision. Combined with the
+  six-month fiction this means the first payment on a typical claim is a lump sum covering the
+  elapsed months plus the current month.
+- **The premium keeps being paid in the meantime**, and is **refunded** for the period covered by
+  the retroactive benefit when the *Beitragsbefreiung* is applied retroactively `[unverified]` as to
+  whether all AVB do this. delib models the *Beitragsbefreiung* as starting at the same date as the
+  benefit and treats the interim premium and its refund as netting to zero.
+- **Model consequence and the delib choice.** delib's monthly model pays the *BU-Rente* from the
+  first month after onset plus the *Karenzzeit*, at a `[std]` *Karenzzeit* of **0 months** in the
+  base run, and does **not** model the decision delay or the catch-up lump. That is a timing
+  simplification, stated in `technical-notes.md` as a known pitfall with a test asserting that the
+  benefit stream starts where the notes say it does.
+
+### 8. Leistungsdauer, Versicherungsdauer and the Endalter
+
+- Two ages, and they are not the same thing:
+  - ***Versicherungsdauer*** — the period during which a BU can incept and be covered. A BU
+    beginning after it ends is not covered at all.
+  - ***Leistungsdauer*** — the period over which benefit is paid on a covered claim. Payment stops
+    at the *Leistungsendalter* even if the insured is still *berufsunfähig*.
+- In the market standard the two are **equal**, and both end at the agreed *Endalter*. Where they
+  differ, the *Leistungsdauer* is the shorter — a cheaper design in which cover runs to 67 but
+  benefit stops at, say, 60 `[unverified]` as to how common that is.
+- **The *Endalter* is 65 or 67**, and the market's advice is 67 because that is the statutory
+  retirement age for cohorts born from 1964 `[unverified]`. Anything earlier leaves a gap between
+  the end of the *BU-Rente* and the start of the old-age pension. Lower *Endalter* — 60, 62, 63 —
+  are sold as budget options and are heavily discounted, because the last years before retirement
+  carry by far the highest *Invalidisierungswahrscheinlichkeiten*.
+- **The premium is extremely sensitive to the *Endalter*.** Moving the *Endalter* from 67 to 60
+  removes the seven most expensive years of cover and, on the shape of the DAV 1997 I curve,
+  removes a large share of the expected claim cost `[unverified]` as to the magnitude. This is the
+  single most effective premium lever in the product and the one consumer advice warns hardest
+  against using.
+- **A claim in payment at the *Leistungsendalter* simply stops.** There is no commutation, no
+  residual value and no conversion to an old-age annuity in the standalone product. In a BUZ on a
+  *Rentenversicherung* the host contract's annuity then begins, which is exactly why the rider form
+  is sold.
+
+### 9. Beitragsbefreiung
+
+- While the *BU-Rente* is in payment, the **premium is waived**. This is not an option; it is part
+  of the core cover in every German BU contract.
+- In an **SBU** the waiver covers the SBU's own premium. In a **BUZ** it covers the **entire**
+  premium of the host contract as well — which is the rider form's main attraction, because it keeps
+  the retirement provision running through a disability [S2].
+- The waiver starts with the benefit and ends with it, including through the three-month run-off:
+  during the run-off the insured is still receiving benefit and is still premium-free `[unverified]`
+  as to whether all AVB align the two exactly.
+- On *Reaktivierung* the premium **resumes at the same *Zahlbeitrag***, not at a repriced one. The
+  insured has not aged into a higher tariff, because the tariff is level.
+- **Model consequence.** The *Beitragsbefreiung* is not a benefit cash flow; it is the **absence of
+  a premium cash flow** in the disabled state. In a multi-state monthly model this falls out
+  automatically once premiums are weighted by the active-state count rather than by total in-force.
+  Getting it wrong — weighting premiums by all surviving policies — is the classic BU modelling
+  error and is pitfall 1 in delib's `technical-notes.md`.
+- The *Beitragsbefreiung* is economically **large**. On a claim incepting at age 45 on a contract to
+  67, it removes 22 years of premium as well as adding 22 years of annuity. For a typical office
+  tariff the waived premium is of the order of 5 % of the annuity paid `[std]`, but for a manual
+  trade, where the premium is three times as large for the same *BU-Rente*, it can approach 15 %.
+
+### 10. Wiedereingliederungshilfe and the assistance benefits
+
+- ***Wiedereingliederungshilfe*** — a **one-off lump sum** paid to support a return to work after a
+  period of BU. Typical form: a payment equal to a stated number of monthly *BU-Renten*, recalled as
+  up to **six** `[unverified]`, payable once, on *Reaktivierung* or on the insured taking up work
+  again.
+- Related benefits that appear in the better wordings, all small relative to the annuity and all
+  optional or tariff-specific:
+  - ***Umorganisationshilfe*** for the self-employed — a payment toward reorganising the business so
+    that the insured can continue to run it, which is the commercial counterpart of the
+    *Umorganisationspflicht* [R29].
+  - ***Reha-Hilfe*** / *Rehabilitationsleistung* — support for rehabilitation measures.
+  - ***Soforthilfe*** / *Überbrückungsleistung* — an advance paid while the *Leistungsprüfung* runs,
+    set against the eventual benefit.
+  - ***Pflegeleistung*** — a *Pflegerente* triggered by care need, sold as an add-on inside a BU
+    contract by some carriers.
+- **Model consequence and the delib choice.** delib models the *Wiedereingliederungshilfe* as a
+  `[std]` lump of **6 × the monthly *BU-Rente*** paid on each *Reaktivierung*, switchable off, and
+  models none of the others. Rationale: it is the only one of the group that is both common enough
+  to be representative and simple enough to attach to an existing transition. The others are either
+  discretionary, tiny, or duplicate a benefit already modelled. The 6-month level is `[std]`,
+  observed range recalled as **3 to 12 monthly Renten** `[unverified]`.
+
+### 11. The Arbeitsunfähigkeits-Klausel (AU-Klausel)
+
+- **What it does.** The *AU-Klausel* pays the full *BU-Rente* on production of a **doctor's
+  certificate of continuous *Arbeitsunfähigkeit*** — inability to work in the current job — of a
+  stated duration, **without the insurer determining that BU exists**. The certified duration is
+  normally **six months**, either already elapsed or elapsed plus certified to continue
+  `[unverified]`.
+- **Why it exists.** The *Leistungsprüfung* for BU takes months (section 5) and the insured has no
+  income in the meantime. The *AU-Klausel* converts a long, contested, prognosis-based assessment
+  into a short, documentary one. It has become the principal wording-quality differentiator in the
+  contemporary German BU market and is heavily weighted in the ratings [R21] [R22].
+- **How it is bounded.** Insurers limit the exposure in three ways, and the combination varies by
+  tariff `[unverified]` throughout:
+  1. **A maximum benefit period under the clause** — recalled as **18, 24 or 36 months**, or in some
+     tariffs an unlimited AU benefit for as long as the certificates continue.
+  2. **Set-off.** Payments under the clause are set against the eventual BU decision; if BU is later
+     denied, the payments are usually **not** reclaimed, which is what makes the clause valuable.
+  3. **A requirement to continue pursuing the BU claim** in parallel, and to supply certificates at
+     stated intervals.
+- **Model consequence.** The *AU-Klausel* raises the **effective inception rate** and shifts the
+  **timing** of payment forward, without changing the annuity amount. delib models it as an option
+  switch that (a) multiplies the inception rate by a `[std]` factor and (b) removes any decision
+  delay — and, because delib already pays from onset (section 7), in the base parameterisation the
+  second effect is nil and only the first survives. The `[std]` inception uplift is set at
+  **1.00 in the base run (clause off)** with the switched-on value left as a model-point parameter,
+  because no public data quantifies the uplift and inventing one would be worse than declaring it
+  unknown (gap 12).
+
+### 12. Options — Beitragsdynamik and Leistungsdynamik
+
+Two escalations, on different quantities, at different times, and routinely confused.
+
+- ***Beitragsdynamik*** (also *Anwartschaftsdynamik*, *Dynamik in der Anwartschaftszeit*) — a
+  **pre-claim** annual increase of the **premium**, with a corresponding increase of the insured
+  *BU-Rente*, **without renewed *Gesundheitsprüfung***.
+  - Agreed rate: commonly **3 % or 5 %** of the premium a year, with menus from **1 % to 10 %**
+    `[unverified]`.
+  - The *BU-Rente* increase corresponding to a given premium increase is **less than proportional
+    and falls with age**, because the additional premium buys cover at the attained age for the
+    remaining term.
+  - The policyholder may **decline** an individual increase. Declining a stated number of
+    consecutive increases — recalled as **two or three** `[unverified]` — extinguishes the option
+    permanently, which is the insurer's protection against anti-selection.
+  - **Model consequence.** A *Beitragsdynamik* makes both the premium and the sum at risk
+    time-varying and introduces a **take-up assumption**. delib ships it off in the base run and
+    available as a model-point switch with a `[std]` take-up.
+- ***Leistungsdynamik*** (*Rentendynamik im Leistungsfall*, *Leistungsdynamik im Leistungsbezug*) —
+  an **in-claim** annual increase of the *BU-Rente* **while it is being paid**, protecting the
+  benefit against inflation over what can be a 30-year payment period.
+  - Agreed rate: commonly **1 %, 2 % or 3 %** a year `[unverified]`; some tariffs index to a
+    published inflation measure instead of a fixed rate.
+  - It is paid for in the premium from inception, not on claim.
+  - **This is the more important of the two for a liability projection**, because it compounds over
+    the whole benefit period. On a claim incepting at 40 and running to 67, a 2 % *Leistungsdynamik*
+    raises the final payment to about **1.70×** the initial one and the total benefit paid by roughly
+    a third relative to a level annuity `[std]` — arithmetic, not a source.
+  - **delib's base run carries a *Leistungsdynamik* of 2 % a year** `[std]`, applied annually on the
+    anniversary of the benefit start, because a BU model without in-claim escalation misses the
+    product's dominant long-duration sensitivity. The 2 % is the midpoint of the recalled
+    1 %–3 % menu, and the level is a `[std]` choice, not a citation.
+
+### 13. Options — Nachversicherungsgarantie and Verlängerungsoption
+
+- ***Nachversicherungsgarantie*** — the right to **increase the insured *BU-Rente*** without a fresh
+  *Gesundheitsprüfung*, on the occurrence of a defined event. It is the single most valuable option
+  in the German BU product, because it lets a healthy 25-year-old lock in insurability cheaply and
+  build the cover later as income grows.
+  - **Event-linked** (*ereignisabhängig*) triggers, near-uniform across the market: marriage or
+    registered partnership; birth or adoption of a child; completion of studies or vocational
+    training; a first job or a substantial pay rise; purchase of a property or taking out a
+    mortgage; starting self-employment; the birth of a child in the insured's household; and, in
+    some tariffs, the death of a partner or a divorce.
+  - **Event-independent** (*ereignisunabhängig*) windows exist in some tariffs — a right to increase
+    in each of the first N years regardless of any event `[unverified]`.
+  - **Caps**, all `[unverified]` in level: a maximum increase per event (often expressed as a
+    percentage of the original *BU-Rente*); an aggregate cap (often that the *BU-Rente* may at most
+    be **doubled** relative to the original); an absolute ceiling on the resulting *BU-Rente*; an
+    age limit for exercise; and an *Angemessenheitsgrenze* requiring the total *BU-Rente* to stay
+    within a stated fraction of income (section 17).
+  - **Anti-selection is controlled by the event list and the exercise window** — typically a right
+    exercisable within **6 or 12 months** of the event `[unverified]` — not by underwriting.
+  - **Model consequence.** delib ships the *Nachversicherungsgarantie* **off** in the base run. Any
+    on-run needs a take-up assumption and an anti-selection loading on the incremental cover, and
+    neither is sourceable. It is described in `product-spec.md` and named in `technical-notes.md` as
+    an unmodelled option, which is the honest treatment.
+- ***Verlängerungsoption*** — the right to **extend the *Versicherungs-* and *Leistungsdauer***, for
+  example from 63 to 65 or from 65 to 67, without renewed underwriting. Sold to protect against a
+  further rise in the statutory retirement age. Exercise is normally confined to a window before the
+  original *Endalter* `[unverified]`. Modelled by delib as a model-point parameter on the *Endalter*
+  rather than as a dynamic option.
+
+### 14. The Infektionsklausel
+
+- **The problem it solves.** A doctor, dentist, nurse or laboratory worker who is infected or is a
+  carrier may be forbidden by the competent authority to practise, under a *Tätigkeitsverbot*
+  imposed by the *Infektionsschutzgesetz* [R30]. She then cannot earn in her occupation — but she is
+  not necessarily unable to work in the sense of § 172 VVG, so the ordinary BU definition may not
+  bite.
+- **What the clause does.** It **deems** the official prohibition to be BU, so that the *BU-Rente*
+  becomes payable for as long as the ban lasts, without a 50 % medical test.
+- **Who gets it.** Standard for physicians and dentists; common for nursing staff, medical and
+  dental assistants, midwives and laboratory personnel; not offered outside the medical field.
+  Tariffs marketed specifically at medical professions treat it as a headline feature
+  `[unverified]`.
+- **Bounding.** Some wordings require the ban to be **complete** rather than partial, or to have
+  lasted a stated period; some pay only for the duration of the ban and end the benefit when it is
+  lifted, which makes the *Nachprüfung* mechanical rather than medical `[unverified]`.
+- **Model consequence.** delib does **not** model the *Infektionsklausel* separately. It is
+  described in the product specification as a rating and definition variant applying to a specific
+  occupational segment, and its effect on the model is a higher inception rate in that segment —
+  which is already how *Berufsgruppen* enter (section 16). Modelling it as a distinct trigger would
+  require a ban-incidence assumption that no public source supplies.
+
+---

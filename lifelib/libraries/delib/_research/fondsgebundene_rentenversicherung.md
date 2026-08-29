@@ -524,3 +524,510 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
   established**; the observation that the gap exists is structural, not numeric.
 
 ---
+
+## Regulatory and actuarial references
+
+Twenty-six product-specific regulatory and actuarial references. Statutory articles carry the
+canonical `gesetze-im-internet.de` form of their URL **marked `[unverified]`**, because no search
+in this session returned it; the form itself is a mechanical construction from the statute's
+abbreviation and the paragraph number and is given so that a reader can check the claim, not as
+evidence that it resolves. Where the substance of a provision was corroborated by search **in a
+sibling delib research file**, that is stated and attributed.
+
+### R1 — VVG § 169, *Rückkaufswert* — and the *Zeitwert* branch that governs this product
+
+- Publisher: Bundesministerium der Justiz (Versicherungsvertragsgesetz 2008)
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` `[unverified]`
+- Retrieved: no — egress blocked. **The substance below was corroborated by search in the sibling
+  delib research on `kapitallebensversicherung` (its R2) and on `klassische_rentenversicherung`
+  (its R1)**, including the German wording of the calculation rule; it is not corroborated here.
+- Content, and this is the pivot of the whole product:
+  - **Scope.** The article governs the claim to a *Rückkaufswert* where the insurance ends, in
+    particular by *Kündigung*, *Rücktritt* or *Anfechtung*, and fixes the calculation principles,
+    the limits on payment, the deduction power and the insurer's information duties.
+  - **The general rule** (for a conventional contract) is that the *Rückkaufswert* is the
+    *Deckungskapital* computed by recognised actuarial rules on the ***Rechnungsgrundlagen der
+    Prämienkalkulation*** — the pricing basis, not a current or reserving basis — as at the end of
+    the current *Versicherungsperiode*; and on *Kündigung* it is floored by the
+    ***Mindestrückkaufswert***, the *Deckungskapital* that results when the *angesetzte Abschluss-
+    und Vertriebskosten* are **spread evenly over the first five contract years**.
+  - **The branch that governs delib product 3.** For ***fondsgebundene Versicherungen*** and other
+    contracts providing benefits of the corresponding kind, the *Rückkaufswert* is instead **the
+    *Zeitwert* of the insurance, computed by recognised actuarial rules**. The sibling's
+    corroborated entry states that branch explicitly and says of it: "That branch governs delib
+    product 3." The internal paragraph designation of the *Zeitwert* branch — whether it is Abs. 3
+    Satz 2 or Abs. 4 — and the cross-reference it makes into the *Versicherungsaufsichtsgesetz*
+    are **`[unverified]`**; the *substance* is corroborated.
+  - **What the *Zeitwert* branch removes.** For a pure unit-linked contract with no insurer-given
+    benefit guarantee, the *Zeitwert* is **the value of the units held** — there is no discounting,
+    no mortality basis, no *Rechnungszins* and no *Zillmerung* residue in it, because there is no
+    *Deckungskapital* in the general-account sense to compute. This is the single largest
+    modelling simplification in the delib library: **`Rückkaufswert(t) = Fondsguthaben(t)`**, less
+    a *Stornoabzug* if one is validly agreed.
+  - ***Abzug* (*Stornoabzug*).** Permissible **only if *vereinbart*, *beziffert* and
+    *angemessen*** — agreed, quantified in the contract, and appropriate. A deduction **for
+    *noch nicht getilgte Abschluss- und Vertriebskosten* is unwirksam**, which is what prevents an
+    insurer recovering through the deduction what the five-year spreading denies it.
+  - **The open question for a fondsgebundene contract** is whether the *Mindestrückkaufswert*
+    floor of the general rule reaches the *Zeitwert* branch at all, or whether the same protection
+    operates instead through the tariff — by limiting the acquisition-cost deduction from premiums
+    to one fifth per year over the first five years, so that the units are simply never removed in
+    the first place. **The market implements the second**, and that implementation is what section
+    4 models. Which of the two the statute requires is **`[unverified]`** and is gap 2.
+
+### R2 — VVG § 168, *Kündigung* (the policyholder's termination right)
+
+- Publisher: Bundesministerium der Justiz
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__168.html` `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: the provision giving the policyholder of a life contract with recurring premiums the
+  right to terminate **for the end of the current *Versicherungsperiode***, which for a
+  monthly-premium contract is a short notice period rather than an annual one. It is the pairing
+  of this right with the § 169 valuation rule [R1] that makes *Storno* on a German unit-linked
+  policy a **near-frictionless exit at the fund value** — which in turn is why unit-linked lapse
+  experience is materially different from conventional lapse experience, and why the delib model
+  treats *Storno* and *Beitragsfreistellung* as two separate decrements rather than one. **The
+  paragraph number, the notice period and any restriction for single-premium contracts are
+  `[unverified]`.**
+
+### R3 — VVG § 165, *Prämienfreie Versicherung* (*Beitragsfreistellung*)
+
+- Publisher: Bundesministerium der Justiz
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `klassische_rentenversicherung` (its R2) and `kapitallebensversicherung` (its R3), including the
+  paid-up formula for a conventional contract.
+- Content: the policyholder of a recurring-premium life contract may **demand conversion to a
+  paid-up contract** for the end of the current *Versicherungsperiode*. For a conventional
+  contract the paid-up benefit is computed from the *Rückkaufswert* on the pricing basis. **For a
+  fondsgebundene contract the mechanic is different and simpler, and this is the point section 12
+  turns on**: nothing is converted. The units stay where they are, premium payment stops, the
+  *beitragsbezogene* charges stop with it because there are no more premiums to charge them on,
+  and the ***kapitalbezogene* charges, the *Stückkosten* and the *Risikobeitrag* continue to be
+  taken by cancelling units**. A paid-up unit-linked policy therefore **decays**: on a small
+  *Fondsguthaben* the fixed *Stückkosten* can consume it. Insurers accordingly set a **minimum
+  *Fondsguthaben* below which *Beitragsfreistellung* is refused and the contract is surrendered
+  instead** — the level is `[unverified]` and is a `[std]` parameter.
+
+### R4 — VVG § 163, *Anpassung der Prämie* / adjustment with a *Treuhänder*
+
+- Publisher: Bundesministerium der Justiz
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__163.html` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated in the sibling delib research** on
+  `klassische_rentenversicherung` (its R3), where it is the statutory successor to the
+  *Treuhänderklausel*.
+- Content: the statutory channel through which a life insurer may adjust a contract where the
+  calculation bases have changed in a way that is permanent and was not foreseeable, subject to an
+  **independent trustee's confirmation** that the conditions are met. For this product it is the
+  **only remaining route by which a *garantierter Rentenfaktor* can be reduced**, the contractual
+  *Treuhänderklausel* being confined to older contracts [R22]. The paragraph number and the
+  conditions' exact formulation are `[unverified]`.
+
+### R5 — VVG § 153, *Überschussbeteiligung*, and the *Bewertungsreserven*
+
+- Publisher: Bundesministerium der Justiz
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__153.html` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated in the sibling delib research** on
+  `kapitallebensversicherung` (its R1).
+- Content: the policyholder is entitled to a share of the surplus and of the *Bewertungsreserven*
+  unless profit participation is excluded by express agreement. **The application to a
+  fondsgebundene contract is the point worth recording**: the investment result belongs to the
+  policyholder already, by construction, so the *Überschussbeteiligung* of an FRV arises from the
+  **risk result and the cost result only**, and the *Bewertungsreserven* limb has almost nothing to
+  attach to because the assets backing the unit liability are the units themselves. In practice
+  surplus on an FRV is credited as **additional units** or as a **reduction of charges**, plus a
+  *Schlussüberschuss* at *Rentenbeginn*. Whether an insurer may exclude participation altogether on
+  a unit-linked tariff, and on what conditions, is `[unverified]`.
+
+### R6 — VVG § 152, *Widerruf* (cancellation right) and §§ 7–8 VVG (pre-contractual information)
+
+- Publisher: Bundesministerium der Justiz
+- URLs: `https://www.gesetze-im-internet.de/vvg_2008/__152.html` ·
+  `https://www.gesetze-im-internet.de/vvg_2008/__7.html` — both `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: § 7 VVG requires the insurer to supply the contract terms and the information specified
+  by the *VVG-InfoV* [R7] in text form before the policyholder's declaration is bound; § 152 gives
+  a life policyholder a **cancellation period of 30 days** `[unverified]` — longer than the general
+  14 days — running from receipt of that information. Recorded because on a unit-linked contract
+  the *Widerruf* has a mechanical consequence a conventional contract does not have: the amount
+  repayable is tied to the **unit value at the date of cancellation**, so a *Widerruf* after a
+  market fall is not a full premium refund. The exact rule is `[unverified]`; the delib model does
+  not project the *Widerruf* window.
+
+### R7 — VVG-InfoV § 2 — cost disclosure, the *Effektivkosten* and the *Modellrechnung*
+
+- Publisher: Bundesministerium der Justiz (*Verordnung über Informationspflichten bei
+  Versicherungsverträgen*)
+- URL: `https://www.gesetze-im-internet.de/vvg-infov/__2.html` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `kapitallebensversicherung` (its R9), which established the provision's heading, the statutory
+  basis and the introduction date of the *Effektivkosten*.
+- Content, as corroborated there and applied here:
+  - § 2 VVG-InfoV is headed *Informationspflichten bei der Lebensversicherung, der
+    Berufsunfähigkeitsversicherung und der Unfallversicherung mit Prämienrückgewähr* — one
+    provision covering all the savings-bearing personal lines, this product included.
+  - The legal basis for the cost disclosure is **§ 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3
+    VVG-InfoV**, requiring disclosure of the ***Abschluss- und Vertriebskosten* included in the
+    premium, in euro amounts** — not as a percentage, not netted into a yield.
+  - The ***Effektivkostenquote* (Reduction in Yield, RIY)** was introduced in quotations **with
+    effect from 1 January 2015** `[unverified]`, following the **LVRG of 2014** [R13]. It
+    discloses **all costs — acquisition, ongoing and investment — expressed as a reduction of the
+    contract's yield**.
+  - **For a fondsgebundene contract the *Effektivkosten* must include the fund's own costs**, not
+    only the policy-level charges. That is what makes the metric meaningful on this product and
+    what makes the fund's *TER* a policy parameter rather than a fund parameter. The precise
+    treatment of *Kickbacks* credited back to the contract inside the calculation is
+    `[unverified]` and is gap 8.
+  - § 2 also requires a ***Modellrechnung*** — an illustration of the benefit at maturity on
+    prescribed assumed returns. The **number of assumed rates and their level** are `[unverified]`;
+    the German market convention of illustrating a fondsgebundene contract at three rates is
+    recorded in section 17 as market practice, not as a statutory requirement.
+
+### R8 — PRIIPs Regulation (EU) 1286/2014 and the RTS, Delegated Regulation (EU) 2017/653 as amended
+
+- Publisher: European Parliament and Council; European Commission
+- URL: not established (EUR-Lex is among the blocked hosts)
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: the regulation that requires a ***Basisinformationsblatt*** (key information document)
+  for every packaged retail and insurance-based investment product, a fondsgebundene
+  Rentenversicherung being the paradigm German IBIP. The **regulation number 1286/2014**, the
+  **RTS number 2017/653** and the **amending regulation that reworked the performance-scenario
+  methodology with effect from 1 January 2023** are all `[unverified]` here — they are recalled,
+  not searched. What is not in doubt, because BaFin's own explanation of it was corroborated in
+  the sibling research [R9], is the **content** of the document: risk indicator, maximum loss,
+  four performance scenarios, costs, complaints — at three time points, with the RIY stated per
+  year. The RTS's **categorisation of PRIIPs** into four classes, under which a **pure unit-linked
+  contract without profit participation falls in Category 2** (linear unleveraged exposure, with
+  the scenarios derived from the underlying's own return history) while a **profit-participating
+  or guarantee-bearing contract falls in Category 4** (values depend partly on factors not observed
+  in the market), is `[unverified]` as to the category numbers but is corroborated as to the
+  existence of Category 4 by [R18].
+
+### R9 — BaFin *Fachartikel*, "PRIIPs-Verordnung: Wie Versicherer Verbraucher informieren" (2022)
+
+- Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFinJournal)
+- URL: `https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Fachartikel/2022/fa_bj_2207_priips_surfday.html`
+  — recorded in the sibling delib research on `kapitallebensversicherung` (its R19) as a search
+  result; **not a search result of this file's own**
+- Retrieved: no — egress blocked; corroborated by search in the sibling file only
+- Content, as corroborated there: the supervisor's own statement of what a *Basisinformationsblatt*
+  must contain — a **total risk indicator**; the **possible maximum loss of invested capital**;
+  **suitable performance scenarios**; the **costs the investor bears**; and how and where to
+  complain. **Four graded scenarios — *Stress*, *pessimistisch*, *moderat*, *optimistisch* — must
+  be given as annualised average returns in per cent**, at **three time points: after one year,
+  after half the term, and at the end of the term**; **total costs and the *Reduction in Yield* per
+  year are shown at those same points**, split into **one-off and ongoing costs**. The
+  ***Effektivkosten* of a specimen contract must be stated in the BIB**, which must be **published
+  on the insurer's website** and **provided before conclusion**. This is the most precisely
+  established regulatory fact available to this file and it is the frame for section 17.
+
+### R10 — BaFin, Merkblatt 01/2023 (VA) on *wohlverhaltensaufsichtliche Aspekte bei kapitalbildenden Lebensversicherungsprodukten*
+
+- Publisher: BaFin; published **May 2023** `[unverified]`
+- URL: `https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Merkblatt/VA/mb_01_2023_wohlverhaltensaufsichtliche_aspekte_va.html`
+  — recorded in the sibling delib research (its R17); not a search result of this file's own
+- Retrieved: no — egress blocked; corroborated by search in the sibling file only
+- Content, as corroborated there, and it applies to this product with more force than to any
+  other in the library because this product's charges are its whole economics:
+  - **Purpose**: to ensure that *kapitalbildende Lebensversicherungsprodukte* offer an appropriate
+    ***Kundennutzen*** (customer value).
+  - **Cost**: the *Effektivkosten* of different providers and products **differ considerably**;
+    BaFin will **closely examine** undertakings whose *Effektivkosten* are **very high compared
+    with industry norms**, and whose ***Aufwendungen für Versicherungsvermittler*** are notably
+    high.
+  - **Return**: the manufacturer must formulate a ***Renditeziel*** for the defined target market,
+    achievable with sufficient probability, and for retirement-provision products the product must
+    **achieve a real investment success with sufficient probability — a return net of costs
+    exceeding a justified inflation expectation**.
+  - **No numerical threshold was established** — not for *Effektivkosten*, not for commission, not
+    for the real return. Any figure attributed to the *Merkblatt* would be an invention.
+
+### R11 — BaFin, *Risiken im Fokus 2026* — "Kosten von kapitalbildenden Lebensversicherungen"
+
+- Publisher: BaFin, annual supervisory risk-focus publication, consumer-protection chapter
+- URL: `https://www.bafin.de/DE/die-bafin/publikationen-daten/risiken-im-fokus/Fokusrisiken_2026/RIF_Verbraucher_3/RIF_verbraucher_lebensversicherung_node.html`
+  — recorded in the sibling delib research (its R18); not a search result of this file's own
+- Retrieved: no — egress blocked; corroborated by search in the sibling file only
+- Content: establishes that **"Kosten von kapitalbildenden Lebensversicherungen" is a named focus
+  risk in BaFin's 2026 risk agenda** — three years after the *Merkblatt* [R10], the supervisor
+  still treats the charge level of this product family as an open problem. **No text of the
+  chapter is established.** Recorded here because it is the reason the delib documents treat
+  charge levels as a **supervised** rather than a free parameter, and state their `[std]` charge
+  stack as a design decision rather than as an observation.
+
+### R12 — DeckRV, *Deckungsrückstellungsverordnung* — *Höchstrechnungszins* and *Höchstzillmersatz*
+
+- Publisher: Bundesministerium der Justiz / Bundesministerium der Finanzen
+- URL: `https://www.gesetze-im-internet.de/deckrv_2016/` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `kapitallebensversicherung` (its R7) and `klassische_rentenversicherung` (its R7).
+- Content, and its two quite different bearings on this product:
+  - **The *Höchstrechnungszins*** — the statutory maximum technical interest rate for new
+    business — was **1,00 % from 1 January 2025** `[unverified]`, raised from **0,25 %**, and the
+    DAV recommended the same 1,00 % for 2026. **On the accumulation phase of a pure fondsgebundene
+    contract this has no effect at all**, because there is no guaranteed accumulation rate to cap.
+    It bears on the product **only** through the *Rentenfaktor*, which is priced with a
+    *Rechnungszins*, and through hybrid designs whose guaranteed pot sits in the general account.
+    That asymmetry is worth stating explicitly, because it is the reason unit-linked new business
+    grew through the low-interest decade while classic new business collapsed.
+  - **The *Höchstzillmersatz*** — the cap on acquisition costs that may be financed against future
+    premiums — is **25 ‰ (2,5 %) of the *Beitragssumme*** `[unverified]`, cut from 40 ‰ by the LVRG
+    2014 [R13]. The *Beitragssumme* is the sum of all premiums payable over the premium-paying
+    term. **This is the single most useful number in the file**: combined with the five-year
+    spreading rule of § 169 VVG [R1] it pins the shape *and* the maximum level of the acquisition
+    charge in a German unit-linked tariff, and section 4 builds the `[std]` charge on it.
+
+### R13 — LVRG 2014, *Lebensversicherungsreformgesetz*
+
+- Publisher: Deutscher Bundestag / Bundesgesetzblatt
+- URL: not established. **No Bundesgesetzblatt citation is given** — inventing one is exactly what
+  the retrieval-conditions section forbids.
+- Retrieved: no — egress blocked. Corroborated in outline by search in the sibling delib research
+  (its R29 and its S15).
+- Content: the 2014 reform package that, for this product, did three things. It **cut the
+  *Höchstzillmersatz* from 40 ‰ to 25 ‰** [R12]; it **introduced the *Effektivkosten* disclosure**
+  in quotations with effect from 1 January 2015 [R7]; and it changed the *Bewertungsreserven*
+  participation rules. The sibling research also recorded an industry study reporting that
+  ***Abschlusskosten* fell by almost 8 % after the LVRG** `[unverified]`. The effective dates and
+  the 8 % figure are `[unverified]`. The 40 ‰ → 25 ‰ cut is corroborated at the level of a
+  secondary consumer page in the sibling file and is the basis of the `[std]` acquisition charge
+  here; a delib document must say that it rests on that and nothing stronger.
+
+### R14 — MindZV, *Mindestzuführungsverordnung*
+
+- Publisher: Bundesministerium der Finanzen
+- URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
+- Retrieved: no — egress blocked. Corroborated in outline by search in the sibling delib research
+  on `kapitallebensversicherung` (its R6).
+- Content: the regulation fixing the **minimum share of each surplus source that must be credited
+  to policyholders**. For this product the relevant sources are the ***Risikoergebnis*** and the
+  ***übriges Ergebnis*** (essentially the cost result), because the investment result of a
+  unit-linked contract is the policyholder's by construction and never enters the insurer's
+  *Rohüberschuss* in the first place. The **minimum percentages — commonly given as 90 % of the
+  risk result and 50 % of the other result** — are `[unverified]`. The consequence for the delib
+  model is recorded and then set aside: an FRV's *Überschussbeteiligung* is a **second-order
+  credit** on a product whose first-order economics are fund return minus charges, and the model
+  does not project it (section 15).
+
+### R15 — VAG — *Sparteneinteilung*, asset congruence, and the *Zuwendungen* rules
+
+- Publisher: Bundesministerium der Justiz (*Versicherungsaufsichtsgesetz* 2016)
+- URL: `https://www.gesetze-im-internet.de/vag_2016/` `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content, three distinct provisions, all with `[unverified]` paragraph numbers:
+  - **Sparteneinteilung.** Anlage 1 to the VAG lists ***fonds- und indexgebundene
+    Lebensversicherung* as a Versicherungssparte in its own right**, separate from ordinary
+    *Lebensversicherung*. This is why German statistics report unit-linked new business separately
+    and why a German insurer's accounts show a separate *Deckungsrückstellung* line for it.
+  - **Asset congruence.** The assets covering unit-linked liabilities must be **held in the
+    corresponding units** — the insurer does not take investment risk on them and does not hold
+    them in the general *Sicherungsvermögen* pool. The practical consequence for the model is that
+    **the unit liability and the unit assets move together exactly**, so a unit-linked projection
+    has no investment-mismatch term at all; the whole of the insurer's economics is in the
+    non-unit cash flows.
+  - ***Zuwendungen*.** The IDD-derived conflict-of-interest and inducement rules govern
+    **whether and how an insurer may retain a *Kickback* / *Bestandsprovision*** received from a
+    fund company out of that fund's TER. German practice is that the insurer credits some or all
+    of it to the contract; the statutory constraint on retaining it is `[unverified]` and is
+    gap 8.
+
+### R16 — DAV 2004 R, *Sterbetafel für Rentenversicherungen*
+
+- Publisher: Deutsche Aktuarvereinigung e. V. (DAV)
+- URL: not established
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `klassische_rentenversicherung` (its R12–R14), including its derivation document and its
+  generational character.
+- Content: the German annuity table, **generational** — mortality is given per birth cohort and
+  includes the expected future improvement — with a first-order (loaded) and a second-order
+  (best-estimate) version. It is **the table on which a *Rentenfaktor* is computed**, as
+  corroborated at one carrier by the sibling research: the annuity factor fixed at inception rests
+  on "a recognised mortality table (currently DAV 2004 R)" and an underlying interest rate of
+  "currently 0 percent p.a." [S10]. **DAV tables are the property of the DAV, are not public and
+  are not redistributed by this library** (house rules §6): delib ships a `[std]` proxy, cites the
+  table by name, and states what a replacement must preserve — a generational structure, annuitant
+  (not population) selection, and a first-order margin over the second-order basis.
+
+### R17 — DAV 2008 T, *Sterbetafel für Lebensversicherungen mit Todesfallcharakter*
+
+- Publisher: Deutsche Aktuarvereinigung e. V.
+- URL: not established
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `kapitallebensversicherung` (its R14), which located the DAV derivation document by title.
+- Content: the German mortality table for death-benefit business, again with first- and
+  second-order versions. It matters to this product in one specific place: **the *Risikobeitrag*
+  charged for a death benefit above the *Fondsguthaben*** is a death-risk charge and is priced on
+  a death table, not on the annuity table used for the *Rentenfaktor*. **A German FRV therefore
+  carries two mortality bases at once** — DAV 2008 T for the pre-*Rentenbeginn* risk charge, DAV
+  2004 R for the conversion guarantee — and a model that uses one table for both will misprice one
+  of them. Same redistribution rule as [R16]: cited, not shipped.
+
+### R18 — DAV, *Ergebnisbericht* — Standardverfahren PRIIP Kategorie 4 (1 July 2025)
+
+- Publisher: Deutsche Aktuarvereinigung e. V., *Ausschuss Lebensversicherung*
+- URL: `https://aktuar.de/content/PDF/Fachwissen/2025-07-01_DAV_Ergebnisbericht_LV_Standardverfahren_PRIIP_Kategorie_4.pdf`
+  — recorded in the sibling delib research (its R27); not a search result of this file's own
+- Retrieved: no — egress blocked; corroborated by search in the sibling file only
+- Content: identified by title and date — a **profession-agreed standard method for PRIIP
+  *Kategorie 4***, the category for insurance-based products whose values depend partly on factors
+  not observed in the market. Its existence establishes that **the performance scenarios in a
+  German BIB for a guarantee-bearing or profit-participating contract come from a standard method
+  rather than from each insurer's own model**. For a **pure** fondsgebundene contract the scenarios
+  are instead derived from the underlying funds' own return history under the Category 2 method
+  `[unverified]` — which is why two BIBs for economically similar products can show very different
+  scenario returns, and why no scenario figure from one carrier transfers to another. **No content
+  of the report is established.**
+
+### R19 — EStG § 22 — *Ertragsanteilsbesteuerung* of the annuity
+
+- Publisher: Bundesministerium der Justiz (*Einkommensteuergesetz*)
+- URL: `https://www.gesetze-im-internet.de/estg/__22.html` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `klassische_rentenversicherung` (its R5).
+- Content: a private annuity — including one arising from the conversion of a fondsgebundene
+  contract at *Rentenbeginn* — is taxed on its ***Ertragsanteil***, the interest component deemed
+  contained in each instalment, and **not** on the return of capital. The *Ertragsanteil* is a
+  **statutory percentage depending on the annuitant's age at *Rentenbeginn***, falling as the age
+  rises. **At age 65 it is 18 %** — the single value corroborated in the sibling research; **every
+  other age is `[unverified]`** and the table is not reproduced here. The tax treatment is
+  identical for a fondsgebundene and a classic annuity once the annuity is in payment, which is
+  the point: **the fund wrapper affects the accumulation phase's taxation, not the payout
+  phase's**.
+
+### R20 — EStG § 20 Abs. 1 Nr. 6 — the *Kapitalwahlrecht*, the 12/62 rule and the fondsgebunden *Teilfreistellung*
+
+- Publisher: Bundesministerium der Justiz
+- URL: `https://www.gesetze-im-internet.de/estg/__20.html` `[unverified]`
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
+  `kapitallebensversicherung` (its R10) and `klassische_rentenversicherung` (its R6) as to the
+  12/62 rule and the half-income method.
+- Content:
+  - Electing a **lump sum** instead of the annuity moves the contract from § 22 [R19] to § 20:
+    the taxable amount is **the excess of the payment over the premiums paid**, and where the
+    contract has run **at least 12 years and the payment is made after the completion of the 62nd
+    year of age**, **only half that gain is taxable** (the *Halbeinkünfteverfahren* /
+    *Hälftedifferenzmethode*). Otherwise the whole gain is taxable and subject to
+    *Kapitalertragsteuer*.
+  - Contracts concluded **before 1 January 2005** sit in a different regime; the German in-force
+    book carries **two tax cohorts**.
+  - **The provision specific to this product**: for a ***fondsgebundene*** contract a
+    ***Teilfreistellung*** applies to the fund income inside the wrapper — commonly stated as
+    **15 %** for equity-fund exposure `[unverified]` — reflecting the fund-level taxation of the
+    *Investmentsteuergesetz* [R21]. The **sentence number within § 20 Abs. 1 Nr. 6, the percentage
+    and the conditions are all `[unverified]`** and are gap 22.
+  - **The accumulation-phase point, which is the product's principal commercial argument**: inside
+    the insurance wrapper there is **no annual taxation of fund income, no *Vorabpauschale*, and no
+    taxable disposal on a *Fondswechsel***. A direct fund holding is taxed on both. That deferral
+    is the reason the product exists in competition with an ETF *Sparplan*. Its statutory basis is
+    the same provision and is `[unverified]` in its detail.
+
+### R21 — InvStG — *Investmentsteuergesetz* and the *Teilfreistellung*
+
+- Publisher: Bundesministerium der Justiz
+- URL: `https://www.gesetze-im-internet.de/invstg_2018/` `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: the 2018 reform of German fund taxation, which taxes the fund itself on certain German
+  income and compensates the investor with a ***Teilfreistellung*** graded by the fund's equity
+  quota. It reaches this product through [R20]: the *Teilfreistellung* available inside a
+  fondsgebundene life contract is set by reference to this regime. **All percentages, equity-quota
+  thresholds and the interaction with the insurance wrapper are `[unverified]`.** Recorded because
+  a delib taxation section that mentions the 15 % figure without naming the statute it derives
+  from would be citing nothing.
+
+### R22 — The *Rentenfaktor* / *Treuhänderklausel* cluster (consumer and trade press, and the LG Köln line)
+
+- Publisher: Finanztip Verbraucherinformation gemeinnützige GmbH; versicherungenmitkopf.de;
+  Versicherungswirtschaft-heute
+- URLs: `https://www.finanztip.de/private-rentenversicherung/rentenfaktor/` ·
+  `https://www.versicherungenmitkopf.de/treuhaenderklausel-rentenversicherung` ·
+  `https://www.versicherungenmitkopf.de/rentenversicherung/rentenfaktor` — all recorded in the
+  sibling delib research on `klassische_rentenversicherung` (its R16–R18); **not search results of
+  this file's own**
+- Retrieved: no — egress blocked; corroborated by search in the sibling file only
+- Content, as corroborated there, and it transfers to this product **with more force than to the
+  classic one**, because on a fondsgebundene contract the *Rentenfaktor* is the **only** guarantee
+  the policyholder has:
+  - Insurers **could previously change guaranteed *Rentenfaktoren* on the basis of a
+    *Treuhänderklausel* in the conditions, with the approval of an independent external
+    *Treuhänder***, where economic conditions deteriorated permanently and unexpectedly.
+  - **Two explicit triggers**: an **unexpectedly strong increase in life expectancy**, requiring
+    adjustment of the mortality tables; and a **sustainable reduction in capital-market returns**,
+    permitting adjustment of the interest rate.
+  - **The clause is now used only in older contracts; today the guaranteed *Rentenfaktor* can be
+    changed only on the basis of § 163 VVG** [R4].
+  - **The Landgericht Köln held that the low-interest phase is not a sufficient ground**, because
+    it must be treated as entrepreneurial risk that cannot be passed on to policyholders. **The
+    case reference, decision date and parties were not established** in the sibling research either
+    — gap 15.
+  - Trade press of **4 February 2021** reports the market leader's position that customers could
+    not successfully object to an adjustment — establishing that this was a **live commercial
+    dispute at the largest German life insurer**, inside the window in which the current in-force
+    unit-linked book was written.
+  - **The consumer definition of the factor**, from the same cluster: the *Rentenfaktor*
+    determines **how much monthly annuity is received per 10 000 € of accumulated capital**, so
+    that a capital of 100 000 € with a factor of 25 yields 250 € per month. **The 25 in that
+    illustration is a teaching example, not a market level.**
+
+### R23 — Rating houses and market studies: Franke und Bornberg, Morgen & Morgen, Assekurata
+
+- Publisher: Franke und Bornberg GmbH; Morgen & Morgen GmbH; ASSEKURATA Assekuranz Rating-Agentur
+  GmbH
+- URLs: not established for any fondsgebundene study. The sibling delib research corroborated by
+  search the existence of Franke und Bornberg's *Rentenfaktor* and *Basisinformationsblätter*
+  commentary and of Assekurata's **24. Marktstudie "Überschussbeteiligungen und Garantien 2026"**.
+- Retrieved: no — egress blocked; no search corroboration for any fondsgebundene study
+- Content: these three houses are **where German unit-linked cost and *Rentenfaktor* levels are
+  actually published** — in rating reports, annual market studies and product comparisons. They are
+  the documents this file most needed and did not have. The sibling research recorded that even
+  the Franke und Bornberg article **titled** "Was bedeutet der Rentenfaktor und wie hoch ist er?"
+  returned no level, range or table in its search summary. **No figure from any of these houses is
+  used anywhere in the delib documents**, and the consequence is that every *Rentenfaktor* and
+  every charge level in this product's documents is `[std]`. Gaps 4 and 6.
+
+### R24 — Consumer bodies and comparison portals: Stiftung Warentest / Finanztest, Verbraucherzentrale, Verivox, Check24, Finanztip
+
+- Publisher: Stiftung Warentest; Verbraucherzentrale Bundesverband and the *Länder*
+  *Verbraucherzentralen*; Verivox GmbH; CHECK24 Vergleichsportal GmbH; Finanztip
+- URLs: not established for any fondsgebundene Rentenversicherung page
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: the secondary literature in which German consumers meet this product, and normally the
+  only public place where **price points** appear — a monthly premium, an *Effektivkosten*
+  percentage, a *Rentenfaktor*, a comparison of tariffs at a stated model point. Stiftung Warentest
+  publishes periodic *Finanztest* comparisons of fondsgebundene Rentenversicherungen and
+  Verbraucherzentrale publishes critical guidance on their cost. **Nothing from any of them is
+  cited in this file, because nothing from any of them was retrieved or searched.** They are
+  recorded so that a later reader knows where to look first, and so that the gaps register can say
+  precisely what kind of source would close each gap.
+
+### R25 — GDV statistics on German life new business and in-force by *Versicherungsart*
+
+- Publisher: Gesamtverband der Deutschen Versicherer e. V.
+- URL: not established. The sibling delib research corroborated by search the existence of the GDV
+  statistical series "Die deutsche Lebensversicherung in Zahlen" and "Neugeschäft und Bestand der
+  Lebensversicherer für die letzten zehn Geschäftsjahre".
+- Retrieved: no — egress blocked; no search corroboration for any unit-linked breakdown
+- Content: the series that would establish **the share of German life new business written as
+  fondsgebundene Rentenversicherung** — the single market figure this file's opening sentence
+  asserts and cannot source. The claim that the fondsgebundene form is the **dominant new-business
+  savings form** is therefore `[unverified]` as to any number and rests on the structural
+  observations that *are* corroborated: that the classic tariff has been withdrawn at major
+  carriers [S14], and that the supervisor's cost agenda [R10] [R11] is framed around
+  *kapitalbildende* products generally. Gap 25.
+
+### R26 — BGH case law on *Rückkaufswert*, *Kostenverrechnung* and *Stornoabzug*
+
+- Publisher: Bundesgerichtshof
+- URL: not established. **No case number, decision date or docket is given for any decision in
+  this entry** — the sibling delib research corroborated one docket (a 2021 decision on
+  *Bewertungsreserven*) which is not on point for this product, and nothing else.
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: there is a long and well-known German line of authority on **whether and how an insurer
+  may charge acquisition costs against the early values of a life contract**, running from
+  decisions on *Zillmerung* and on the transparency of *Rückkaufswert* clauses before the VVG 2008
+  reform, through decisions on the validity of *Stornoabzug* clauses, to decisions applying the
+  post-2008 rules. **This file records that the line exists and cites no decision from it**, since
+  no case reference could be established without a search. Any statement in a delib document about
+  what a court has held on a *Rückkaufswert* clause must carry `[unverified]` and must not carry a
+  docket number. Gap 16.
+
+---
