@@ -29,8 +29,6 @@ python products/berufsunfaehigkeit/run.py 4      # the Beitragsdynamik variant
 python products/berufsunfaehigkeit/run.py 7      # an in-force policy already in claim
 ```
 
-Three lines to the same thing:
-
 ```python
 import modelx as mx
 model = mx.read_model("products/berufsunfaehigkeit/BU_DE_S")
@@ -67,15 +65,15 @@ pols_death(t) − pols_lapse(t)`, and inception, recovery and reactivation are *
 transfers** that must not appear in that identity. Putting them there is how a multi-state
 model silently loses mass, and the loss is invisible in the cash flows.
 
-The run-off ledger is § 174 VVG in arithmetic [R3] [REG-R29]: where the insurer establishes
-that its liability has ceased it remains obliged to pay **to the end of the third month
-after the notice reaches the policyholder**, so a recovery does not stop the annuity in the
-month it happens. `pols_recovery(t)` feeds run-off slot 1, the slots roll at **active-lives**
-mortality — these lives have recovered and are no longer impaired lives — and only the
-slot-3 survivors rejoin `pols_actv` as `pols_reactivation(t)`. On the anchor cell the tail
-is 206,41 € of the 13 151,35 € of *BU-Rente*, **1,6 % of all benefit**: small in aggregate,
-structural in kind. A model returning a recovery straight to the active ledger loses three
-monthly *Renten* per recovery and fails `check_runoff_roll_fwd()` immediately.
+The run-off ledger is § 174 VVG in arithmetic [R3] [REG-R29]: where the insurer establishes that
+its liability has ceased it remains obliged to pay **to the end of the third month after the
+notice reaches the policyholder**, so a recovery does not stop the annuity in the month it
+happens. `pols_recovery(t)` feeds run-off slot 1, the slots roll at **active-lives** mortality —
+these lives have recovered and are no longer impaired — and only the slot-3 survivors rejoin
+`pols_actv` as `pols_reactivation(t)`. On the anchor cell the tail is 206,41 € of the 13 151,35 €
+of *BU-Rente*, **1,6 % of all benefit**: small in aggregate, structural in kind. A model
+returning a recovery straight to the active ledger loses three monthly *Renten* per recovery and
+fails `check_runoff_roll_fwd()` immediately.
 
 The run-off carries **amounts as well as counts**: `runoff_val(t, k)` is the slot population
 times the *BU-Rente* it is still being paid, because the cohorts terminating in one month came
@@ -85,42 +83,38 @@ keeps the *BU-Rente* it was on at the *Nachprüfung* date and receives no furthe
 case — which removes a second duration dimension at no measurable cost. The disabled ledger
 carries a value vector for the same reason: the month's benefit is one sum over a slice.
 
-`dis_cohorts(t)` and `runoff_cohorts(t)` are **list-valued cells**, a cost decision rather
-than a style one: a two-argument recursion over `(t, z)` would be `(proj_len() + 1) ×
-max_claim_dur()` separate cells — nearly two hundred thousand on the anchor cell — where this
-is one cells per month with a loop inside. The notes' two-dimensional objects stay
-addressable as `pols_dis_dur(t, z)`, `pols_runoff_slot(t, k)` and `runoff_val(t, k)`.
+`dis_cohorts(t)` and `runoff_cohorts(t)` are **list-valued cells**, a cost decision: a
+two-argument recursion over `(t, z)` would be nearly two hundred thousand separate cells on the
+anchor cell where this is one per month with a loop inside, and the notes' two-dimensional
+objects stay addressable as `pols_dis_dur(t, z)`, `pols_runoff_slot(t, k)` and `runoff_val(t, k)`.
 
 Two things this deliberately does **not** do. It does not separate recovery from *konkrete
-Verweisung*: both end the benefit through the same *Nachprüfung* with the same run-off and no
+Verweisung* — both end the benefit through the same *Nachprüfung* with the same run-off and no
 public data separates them [R3] [R29], so `recov_rate(z)` is exactly one
-claim-termination-other-than-death rate. And it carries **no age-at-disablement dimension** on
-reactivation, which DAV 1997 RI does [R16]; that absence is named rather than hidden.
+claim-termination-other-than-death rate — and it carries **no age-at-disablement dimension** on
+reactivation, which DAV 1997 RI does [R16].
 
 ## The premium is two numbers, and both are published
 
-A German BU tariff is quoted as a pair, and no other product in this repository is
-[R10] [S13] [S16]. The ***Bruttobeitrag*** is the contractually guaranteed **maximum**; the
-***Zahlbeitrag*** actually billed is `beitragsverrechnung` times it — the anticipated
-*Überschuss* credited in advance under § 153 VVG through § 176, with the MindZV risk-result
-minimum behind it [R14] [REG-R18] [REG-R24].
+A German BU tariff is quoted as a pair, and no other product in this repository is [R10] [S13]
+[S16]. The ***Bruttobeitrag*** is the contractually guaranteed **maximum**; the ***Zahlbeitrag***
+actually billed is `beitragsverrechnung` times it — the anticipated *Überschuss* credited in
+advance under § 153 VVG through § 176, with the MindZV risk-result minimum behind it [R14]
+[REG-R18] [REG-R24].
 
-`result_cf()` publishes **both**: `premiums(t)` is the gross stream and `surplus_credit(t)`
-the credit returned out of it, so the cash collected is the difference and the
+`result_cf()` publishes **both**: `premiums(t)` is the gross stream and `surplus_credit(t)` the
+credit returned out of it, so the cash collected is the difference and the
 *Überschussbeteiligung* is a visible line rather than a netting hidden inside the premium. A
-model carrying only the *Zahlbeitrag* silently assumes the credit is permanent; one carrying
-only the *Bruttobeitrag* overstates collected premium by `1/0,70 − 1 = 42,86 %`. Over the
-anchor cell's 444 months `Σ premiums / Σ (premiums − surplus_credit) = 24,771.0596 /
-17,339.7417 = 1.428571428571429`, which is `1 / 0.70` to fifteen figures — necessarily so,
-because `freq_load` scales the *Bruttobeitrag* and the *Beitragsverrechnung* **together**, so
-the *Ratenzahlungszuschlag* cancels out of the ratio.
+model carrying only the *Zahlbeitrag* silently assumes the credit is permanent; one carrying only
+the *Bruttobeitrag* overstates collected premium by `1/0,70 − 1 = 42,86 %`. Over the anchor
+cell's 444 months `Σ premiums / Σ (premiums − surplus_credit) = 24,771.0596 / 17,339.7417 =
+1.428571428571429`, which is `1 / 0.70` to fifteen figures — necessarily so, because `freq_load`
+scales *Bruttobeitrag* and *Beitragsverrechnung* **together** and cancels out of the ratio.
 
-There is **no surplus account, no RfB and no declaration mechanic**, and that is correct for
-BU rather than a simplification: *Beitragsverrechnung* applies the surplus immediately instead
-of accumulating it. Holding the ratio constant is the model's largest discretionary assumption
-and the one the product's own consumer literature warns about [S13] [S16]; a user modelling
-that risk raises `surplus_credit` toward zero over time, which moves collected premium toward
-the *Bruttobeitrag* and nothing else.
+There is **no surplus account, no RfB and no declaration mechanic**, which is correct for BU
+rather than a simplification: *Beitragsverrechnung* applies the surplus immediately instead of
+accumulating it. Holding the ratio constant is the model's largest discretionary assumption and
+the one the product's own consumer literature warns about [S13] [S16].
 
 ## The *Bruttobeitrag* is derived, not read
 
@@ -171,12 +165,11 @@ plausible, and it is why `check_net_cf()` rebuilds the premium leg from
 `prem_zahl_pp(t) × pols_prem(t)` rather than from `premiums(t) − surplus_credit(t)`.
 
 A life inside the *Karenzzeit* is *berufsunfähig*, is **not** yet paid, and **still pays
-premium** **[std]** — the waiver runs with the benefit. On the anchor cell
-`karenz_months = 0`, so `pols_prem(t) == pols_actv(t)` at every `t`; on model point 5
-(`K = 6`) they differ at 323 of 324 months. The *Karenzzeit* is **not** the six-month
-*Prognosezeitraum*: the prognosis is part of the *definition* of *Berufsunfähigkeit*, and with
-`K = 0` the first *BU-Rente* falls in the month **after** an onset —
-`claims(1, "BU_RENTE") = 0,11 €` — not six months after it.
+premium** **[std]** — the waiver runs with the benefit. On the anchor `karenz_months = 0`, so
+`pols_prem(t) == pols_actv(t)` at every `t`; on model point 5 (`K = 6`) they differ at 323 of
+324 months. The *Karenzzeit* is **not** the six-month *Prognosezeitraum*, which is part of the
+*definition* of *Berufsunfähigkeit*: with `K = 0` the first *BU-Rente* falls in the month
+**after** an onset — `claims(1, "BU_RENTE") = 0,11 €` — not six months after it.
 
 ## Two escalations, two clocks
 
@@ -193,10 +186,9 @@ on and `z = 13` opens the first escalated year. Escalating the amount in payment
 
 The `dynamik` form is model point 4, and it carries a departure from market practice recorded
 rather than corrected: German insurers price each increment at the attained age reached, so a
-given premium increase buys **less** than proportional cover and less of it with age. This
-model escalates premium and insured *BU-Rente* by the same `g_B` and prices the whole
-escalating stream by **one** equivalence at inception — internally consistent, acyclic, and
-understating what the market would charge for the cover projected.
+given increase buys **less** than proportional cover. This model escalates premium and insured
+*BU-Rente* by the same `g_B` and prices the whole stream by **one** equivalence at inception —
+internally consistent, acyclic, and understating what the market would charge.
 
 ## Two rating multipliers, and only one of them touches a claim
 
@@ -219,9 +211,8 @@ shipped table is **gross of declinature**, so a user substituting one already ne
 set the factor to 1,00 or the effect is counted twice [REG-R53].
 
 `sex` is a model-point attribute for reporting only and **must not price**: sex-differentiated
-premiums and benefits have been unlawful in Germany for contracts written from 21 December
-2012 [R15] [REG-R34]. Model points 1 and 2 differ in `sex` and in nothing else, and their
-frames are identical to the last bit.
+premiums and benefits have been unlawful in Germany for contracts written from 21 December 2012
+[R15] [REG-R34]. Model points 1 and 2 differ in `sex` alone, and their frames are identical.
 
 ## The *Leistungsendalter* stops the benefit and holds the mass
 
@@ -231,38 +222,35 @@ claim-maintenance cost are exactly zero while the premium runs on for four more 
 collecting a further 2 244,03 €.
 
 What is easy to get wrong is the population. **The mass is held, not deleted**: the ledgers
-keep rolling past `benefit_end_age`, so `check_states()` and `check_pols_roll_fwd()` still
-close across the boundary and `pols_if(t)` is continuous through it. Deleting the disabled
-cohorts there breaks both identities at once. Those lives do **not** resume paying premium
-**[std]** — they are still *berufsunfähig*, and the *Beitragsbefreiung* is read here as keyed
-to the **state** rather than to the payment. The alternative reading is defensible and is
-named so that a user who takes it knows what to change.
+keep rolling past `benefit_end_age`, so `check_states()` and `check_pols_roll_fwd()` still close
+across the boundary and `pols_if(t)` is continuous through it, where deleting the disabled
+cohorts breaks both identities at once. Those lives do **not** resume paying premium **[std]** —
+they are still *berufsunfähig*, and the *Beitragsbefreiung* is read as keyed to the **state**
+rather than to the payment. The alternative reading is defensible and is named.
 
 ## Four absences are product facts
 
 - **No death benefit.** An SBU pays nothing on death, before or during a claim [S1], so
-  `pols_death(t)` is a decrement and never a cash flow and there is no `claims_death` column
+  `pols_death(t)` is a decrement and never a cash flow, and there is no `claims_death` column
   for a reader arriving from a term-life model to find.
-- **No maturity benefit.** Survival to the *Endalter* pays nothing, and a claim still in
-  payment at the horizon simply stops.
+- **No maturity benefit.** Survival to the *Endalter* pays nothing, and a claim still in payment
+  at the horizon simply stops.
 - **No cash value.** § 169 VVG through § 176 gives this contract a real *Rückkaufswert* and
-  § 165 a real *beitragsfreie BU-Rente* [R8] [R9] [R5] [REG-R28] — both the release of a
-  reserve this model deliberately does not compute. `claims(t, "LAPSE")` therefore exists,
-  returns zero at every `t` and is published as a zero column; there is no `av_pp_at`, no
-  surrender cells and no paid-up state. The zero states the scope; a missing column would hide
-  it.
+  § 165 a real *beitragsfreie BU-Rente* [R8] [R9] [R5] [REG-R28] — both the release of a reserve
+  this model deliberately does not compute. `claims(t, "LAPSE")` therefore exists, returns zero
+  at every `t` and is published as a zero column; there is no `av_pp_at`, no surrender cells and
+  no paid-up state. The zero states the scope; a missing column would hide it.
 - **No acknowledged state.** § 173's once-only *befristetes Anerkenntnis* would justify one
   [R2], but this model pays from **onset** and does not model the *Leistungsprüfung* delay, so
-  acknowledgement is a timing event with no cash-flow consequence — right in amount, early in
-  timing.
+  acknowledgement is a timing event with no cash-flow consequence — right in amount, early.
 
 ## Inputs are external files
 
-The seven input CSVs live **in this directory**, beside `run.py`, and `BU_DE_S/` holds
-nothing but formulas — `__init__.py`, `_system.json`, `Data/__init__.py` and
-`Projection/__init__.py`, no `_data/`, no IOSpec, no embedded values. This follows lifelib's
-`annuallife/TradLife_A`, which keeps its inputs beside the model and reads them at run time;
-it is the opposite of `basiclife/BasicTerm_S`, which stores its inputs inside the model.
+The seven input CSVs live **in this directory**, beside `run.py`, and `BU_DE_S/` holds nothing
+but formulas — `__init__.py`, `_system.json`, `Data/__init__.py` and `Projection/__init__.py`, no
+`_data/`, no IOSpec, no embedded values. This follows lifelib's `annuallife/TradLife_A`, which
+keeps its inputs beside the model; it is the opposite of `basiclife/BasicTerm_S`, which stores
+its inputs inside the model.
 
 ### Read once, in `Data`
 
@@ -293,16 +281,15 @@ delib's second ruling, and it is machine-checked.
 
 ## The published identities
 
-Seven `check_*()` cells, each a no-argument `bool` over all `t` with a per-`t`
-`check_*_resid(t)` companion.
+Seven `check_*()` cells, each a no-argument `bool` over all `t` with a per-`t` residual.
 
 **`check_net_cf` — delib ruling 1, in one line:**
 `net_cf(t) = prem_zahl_pp(t) × pols_prem(t) − claims(t,"BU_RENTE") − claims(t,"REINTEGRATION") − claims(t,"LAPSE") − expenses(t) − claim_expenses(t)`.
 
 The premium leg is deliberately rebuilt from the *Zahlbeitrag* **actually billed** times the
-premium-paying count rather than from `premiums(t) − surplus_credit(t)`. That makes it a real
+premium-paying count rather than from `premiums(t) − surplus_credit(t)`, which makes it a real
 reconciliation instead of a restatement of `net_cf`'s own formula: it crosses the *Brutto* /
-*Zahl* split, and it fails if the premium is weighted by `pols_if` instead of `pols_prem`.
+*Zahl* split and fails if the premium is weighted by `pols_if` instead of `pols_prem`.
 
 | Check | Identity |
 |---|---|
@@ -331,17 +318,17 @@ the second tests it.
 | *Risikozuschlag* | `risk_factor` | `1.00` | A multiplier on the *Bruttobeitrag* alone |
 | Premium override | `gross_prem_ann` | `0.0` = derive by equivalence | Model point 13 supplies 2 400,00 € p.a. instead |
 
-Model point 12 is the anchor with both escalations off: its equivalence gives 865,95 €
-against the anchor's 1 013,07 €, so the *Leistungsdynamik* and the *Wiedereingliederungshilfe*
-together are worth **147,12 € p.a.**, 14,5 % of the *Bruttobeitrag*. The split between them is
-not additive, because both are paid out of the same claim population.
+Model point 12 is the anchor with both escalations off: its equivalence gives 865,95 € against
+the anchor's 1 013,07 €, so the *Leistungsdynamik* and the *Wiedereingliederungshilfe* together
+are worth **147,12 € p.a.**, 14,5 % of the *Bruttobeitrag* — not additively, because both are
+paid out of the same claim population.
 
 Three constructions the notes describe are **not implemented**, each because doing so would
 stack an unsourced assumption on an already-**[std]** basis: **lapse selection** (strongly
 selective in BU, so a non-selective rate understates the surviving book's inception rate —
 direction known, size not); **premium-shock lapse** (take-up of the *Beitragsdynamik* increases
-is folded into the **effective** `beitragsdyn_rate` instead, which also keeps the equivalence
-acyclic); and the ***Nachversicherungsgarantie***, which needs a take-up assumption *and* an
+is folded into the **effective** `beitragsdyn_rate` instead, which keeps the equivalence
+acyclic); and the ***Nachversicherungsgarantie***, needing both a take-up assumption and an
 anti-selection loading on the incremental cover.
 
 ## Sign convention
@@ -349,11 +336,10 @@ anti-selection loading on the incremental cover.
 `net_cf` is **income positive** — the *Bruttobeitrag* in, the *Beitragsverrechnung*, claims and
 expenses out — which is the notes' own orientation and the library-wide sign. `liability_cf`
 publishes the same stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are
-columns of `result_cf()` so the identity is verifiable in the frame rather than only in prose.
-A Solvency II best estimate is `Σ v(t) × liability_cf(t)` over the relevant risk-free term
-structure, plus a risk margin [REG-R1] [REG-R2] [REG-R4]; **nothing in this library
-discounts**, and `rechnungszins` appears only inside the equivalence that fixes
-`prem_gross_level_pp()`.
+columns of `result_cf()` so the identity is verifiable in the frame rather than only in prose. A
+Solvency II best estimate is `Σ v(t) × liability_cf(t)` over the relevant risk-free term
+structure, plus a risk margin [REG-R1] [REG-R2] [REG-R4]; **nothing in this library discounts**,
+and `rechnungszins` appears only inside the equivalence.
 
 The shape to expect is a large first-month strain — the whole acquisition charge falls in month
 0, 937,09 € of the 946,57 € of expense against an 88,64 € instalment, so `net_cf(0) = −884,58
@@ -369,11 +355,11 @@ with **claims** rather than policies; commission is not a line at all, sitting i
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` and `savings/CashValue_SE` wherever those models
-have an analogue: `pols_*` for policy counts, plural nouns for cash flows, `*_rate` for
-**annual** rates with `*_rate_mth` for their monthly equivalents, `*_pp` for per-policy amounts,
+have an analogue: `pols_*` for policy counts, plural nouns for cash flows, `*_rate` for **annual**
+rates with `*_rate_mth` for their monthly equivalents, `*_pp` for per-policy amounts,
 `claims(t, kind)` with an uppercase `kind` string, `pols_if_at(t, timing)` for the end-of-month
-read, and `check_*()` / `check_*_resid(t)` for the published identities. The notes use compact
-actuarial symbols; the full mapping lives in the `Projection` Space docstring.
+read, and `check_*()` / `check_*_resid(t)` for the identities. The full symbol mapping lives in
+the `Projection` Space docstring.
 
 The **monthly cohort-vector chassis** is shared with frlib's `Dep_FR_S` (*assurance
 dépendance*) and, inside this library, with `Pflege_DE_S`: `dis_cohorts` ↔ `dep_cohorts`,
@@ -400,8 +386,8 @@ column is worse than an inert one.
 ## Standardizations used
 
 Everything in this table is **[std]**. The product is unusually **[std]**-heavy and that is the
-correct outcome rather than a defect: the *mechanics* are well established and cited above, and
-it is only the *levels* that no retrievable document supplies.
+correct outcome, not a defect: the *mechanics* are well established and cited above, and it is
+only the *levels* that no retrievable document supplies.
 
 | Standardization | Value | Rationale |
 |---|---|---|
@@ -432,11 +418,11 @@ it is only the *levels* that no retrievable document supplies.
 | `dynamik` pricing | one equivalence at inception on the whole escalating stream | Internally consistent, acyclic, and **not** the market's annual-repricing practice — recorded rather than corrected |
 | The thirteen model points | — | Configuration rather than observation: no rate card, no commercial envelope and no *Berufsgruppenverzeichnis* was obtained |
 
-The only quantities in the model that are **not** standardizations are the structural rules:
-the three-month run-off [R3], the *Beitragsbefreiung* while the *BU-Rente* is in payment
-[S1] [S2], the *Brutto* / *Zahlbeitrag* pair and its immediate credit [R10] [R14], the unisex
-rule [R15], the zero lapse benefit and the absence of a death and a maturity benefit
-[S1] [R8] [R9], and the § 4 DeckRV ceiling the acquisition charge sits at [REG-R16].
+The only quantities in the model that are **not** standardizations are the structural rules: the
+three-month run-off [R3], the *Beitragsbefreiung* while the *BU-Rente* is in payment [S1] [S2],
+the *Brutto* / *Zahlbeitrag* pair and its immediate credit [R10] [R14], the unisex rule [R15],
+the zero lapse benefit and the absence of a death and a maturity benefit [S1] [R8] [R9], and the
+§ 4 DeckRV ceiling the acquisition charge sits at [REG-R16].
 
 ## Tests
 

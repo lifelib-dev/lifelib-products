@@ -38,7 +38,7 @@ model = mx.read_model("products/fondsgebundene_rentenversicherung/FRV_DE_S")
 model.Projection[1].result_cf()
 ```
 
-`Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
+`Projection` takes a `point_id` and `Projection[1]` is the worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by policy month `t` with one column per cash
 flow line, and `result_fund()` the per-policy unit side — the *Anteilspreis*, the unit count,
 the four within-month *Fondsguthaben* balances, the *Beitragsrückgewähr* base, the net amount
@@ -327,7 +327,7 @@ Hybrid and guarantee designs — *statisches* and *dynamisches Hybrid*, *Zwei-* 
 *Drei-Topf-Hybride*, i-CPPI, *Wertsicherungsfonds* — are described in the product
 specification and **deliberately not implemented**. Each is a rule for reallocating between a
 guaranteed pot and a risky pot along a path, and its whole content is what it does when the
-risky pot falls. A deterministic projection has one smooth path, so a guarantee mechanism
+risky pot falls; a deterministic projection has one smooth path, so a guarantee mechanism
 inside it either never triggers — dead code presented as a feature — or triggers on a
 hand-chosen shock the model has no basis for. What would have to be added is named instead: a
 multi-scenario or stochastic asset model, a monthly reallocation rule, a guaranteed pot
@@ -335,8 +335,8 @@ accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That i
 model. `kapitalwahl` is a fourth switch and changes no cash flow by design: both routes
 release the same *Fondsguthaben*, the annuity being published rather than projected. It is
 carried because the two tax regimes genuinely differ [R19] [R20] [REG-R41] [REG-R45] and
-because take-up is the largest behavioural unknown in the product; **no take-up rate was
-established**, so the base run annuitises.
+because take-up is the largest behavioural unknown here; **no take-up rate was established**,
+so the base run annuitises.
 
 ## Sign convention
 
@@ -364,9 +364,9 @@ inception more than covering the acquisition cost with no recovery to wait for.
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` where it has an analogue and
-`savings/CashValue_SE` for the account-value vocabulary: `pols_*` for policy counts, `av_*`
-for the account value, `*_pp` for per-policy amounts, `*_rate` for rates, `claims(t, kind)`
-with an uppercase `kind` string, and `av_pp_at(t, timing)` / `pols_if_at(t, timing)` for the
+`savings/CashValue_SE` for the account-value vocabulary: `pols_*` for policy counts, `av_*` for
+the account value, `*_pp` for per-policy amounts, `*_rate` for rates, `claims(t, kind)` with an
+uppercase `kind` string, and `av_pp_at(t, timing)` / `pols_if_at(t, timing)` for the
 within-month reads. The technical notes use compact actuarial symbols; the full mapping is in
 the `Projection` Space docstring. The chassis is shared with
 `frlib/products/assurance_vie_uc/UC_FR_S`, the French *unités de compte* contract, and the
@@ -376,11 +376,8 @@ shared names mean the same thing on both:
 |---|---|---|---|
 | `F(t)`, `F_τ(t)` | `av_pp` / `av_pp_at` / `av_at` | same | The fund at the start of the month, at four named points inside it, and weighted by `pols_if`. The timings are the processing order made addressable |
 | `u(t)`, `Δu(t)` | `units_pp` / `units_bought_pp` / `units_cancelled_pp` | `units` / `fee_units` / `wd_units` | The state variable and its two movements; delib puts every cancellation in one cells because the identity checking them has no price term |
-| `K(t)` | `nar_pp` | `nar` | The *riskiertes Kapital* / the French *garantie plancher* amount at risk, floored at zero in both |
-| — | `death_strain` | `plancher_strain` | The only part of a death benefit the insurer funds |
-| — | `av_releases` | `av_releases` | The unit-side total the benefit-funding identity reconciles against |
-| `W(t)` | `withdrawals` | `withdrawals` | An owner election, never `claims_wd`: a *Teilentnahme* is not a claim |
-| `A(t)` | `prem_to_av_pp` | `prem_to_av_pp` | The *Anlagebeitrag* — what is left of the month's money to buy units |
+| `K(t)`, — | `nar_pp` / `death_strain` | `nar` / `plancher_strain` | The *riskiertes Kapital* / the French *garantie plancher* amount at risk, floored at zero in both, and the only part of a death benefit the insurer funds |
+| `W(t)`, `A(t)` | `av_releases` / `withdrawals` / `prem_to_av_pp` | same | The unit-side total the benefit-funding identity reconciles against; an owner election, never `claims_wd`, a *Teilentnahme* being no claim; and the *Anlagebeitrag* that buys units |
 
 Three German terms of art keep their German form in the cells names, each naming a quantity
 with a statutory definition and no English equivalent that would not mislead:
@@ -447,21 +444,11 @@ seventeen printed rows of Panel A to the cent and `pols_if` to six decimals, Pan
 columns, Panel C's per-policy unit side, and every column total at full precision — the notes'
 three independent rebuilds (month 1 from the tariff alone, month 61 at the cliff, the
 reduction in yield as a savings account), the four closure identities, the *Einmalbeitrag*
-variant's printed table, the four-tariff reduction-in-yield comparison, and **one test per
-listed modeling pitfall**: the fund-based charge cancelling units rather than netting off the
-premium, the TER never appearing as a policy charge, the two mortality bases living in two
-files, the risk result being exactly a quarter of the risk charge, the two monthly conversions
-staying different, the amount at risk floored at zero, the acquisition instalment stopping at
-its window, an in-force cell never charged again for acquisition, the *Beitragssumme* being
-invariant, *Storno* and *Beitragsfreistellung* staying two decrements, the *Rückkaufswert*
-being the fund itself, the *Stornoabzug* not built out of unamortised acquisition costs, no
-account-value benefit reaching `net_cf`, the age at *Rentenbeginn* not off by one, the `max()`
-factor rule biting, the *Ratenzahlungszuschlag* not applied twice, the *Beitragsrückgewähr*
-base being the premiums paid, and no fixed charge driving the fund negative. The seven
-`check_*()` identities and their residuals are asserted on the anchor and on every model point
-the pitfall tests touch. The library-wide house style — layout, docstrings, naming, the
-retired-name register, the `check_net_cf` ruling, the `provenance` ruling, the model point
-sweep and the round trip — is asserted separately, once, in
+variant's printed table, the four-tariff reduction-in-yield comparison, the seven `check_*()`
+identities with their residuals, and **one test per listed modeling pitfall** — eighteen of
+them, named for the pitfall they guard. The library-wide house style — layout, docstrings,
+naming, the retired-name register, the `check_net_cf` ruling, the `provenance` ruling, the
+model point sweep and the round trip — is asserted separately, once, in
 `tests/test_model_conventions_de.py`, which owns the only whole-table sweep in the library.
 
 ```bash

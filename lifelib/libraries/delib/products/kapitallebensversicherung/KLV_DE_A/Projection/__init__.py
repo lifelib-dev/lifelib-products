@@ -72,8 +72,10 @@ SD                         sum_death()                     Guaranteed Todesfalll
 i1                         rechnungszins()                 First-order interest rate
 v1^k                       disc_factor_1st(k)              First-order discount factor
 kpx                        tpx_1st(k)                      First-order survival from issue
-q1(t)                      mort_rate_base(t)               First-order mortality in year t
-(table)                    mort_rate_at_age(x)             First-order rate at age x
+q1(x)                      mort_rate_at_age(x)             First-order tariff rate at age
+                                                           x - the unisex blend, which
+                                                           prices and reserves
+(table)                    mort_rate_base(t)               Sex-specific table rate in year t
 q(t)                       mort_rate(t)                    Best-estimate mortality
 f                          rating_factor()                 Risikozuschlag on the death leg
 alpha, beta, gamma         alpha_rate(), beta_rate(),      Zillmersatz; premium loading;
@@ -215,16 +217,20 @@ benefit **substitution** and not a forfeiture.
 
 .. rubric:: The two mortality bases must not be crossed
 
-:func:`mort_rate_base` is the first-order table rate: it prices and it reserves.
-:func:`mort_rate` is ``mort_rate_base(t) * mort_be_factor`` with ``mort_be_factor = 0.75``:
-it projects. The 33 % wedge is the *Sicherheitszuschlag*, whose systematic release **is** the
+:func:`mort_rate_at_age` is the first-order **tariff** rate: it prices and it reserves, and
+it is a fixed unisex blend of the two table rows, because German new business has been unisex
+since 21 December 2012. :func:`mort_rate_base` is this policy's own **sex-specific** table
+rate, and :func:`mort_rate` is ``mort_rate_base(t) * mort_be_factor`` with
+``mort_be_factor = 0.75``: it projects. The 33 % wedge is the *Sicherheitszuschlag*, whose systematic release **is** the
 *Risikoüberschuss* — which this model does not compute, and which a model that reserves on
 the best estimate has thrown away. ``rating_factor`` is a third thing again: it is the
 *Risikozuschlag*, and it multiplies the first-order rate **in the death leg of the pricing and
 the prospective reserve only** — never the survivorship factors, never the benefit, and never
-a best-estimate rate. ``sex`` drives the decrement lookup and **must not enter the premium**:
-German new business has been unisex since 21 December 2012, and the pricing basis here is a
-fixed portfolio blend.
+a best-estimate rate. ``sex`` reaches :func:`mort_rate_base`, and therefore the
+**decrement**, and it reaches nothing else: ``prem_gross_pp()`` is identical for two model
+points differing only in it, which is what model points 1 and 7 exist to make visible. The
+unisex blend behind the tariff is **[std]** - no German insurer publishes the portfolio mix
+behind its own.
 
 .. rubric:: The three Überschussverwendung systems
 
@@ -1034,7 +1040,7 @@ def res_pp_at(t, timing):
                 if (t <= prem_term() and not is_paid_up(t)) else 0.0)
         return res_pp(t) + prem + bfz_uplift_pp(t)
     if timing == "AFT_INT":
-        q = mort_rate_base(t)
+        q = mort_rate_at_age(age(t))
         si = bfz_si_pp() if is_paid_up(t) else sum_assured()
         return ((res_pp_at(t, "AFT_PREM") * (1.0 + rechnungszins())
                  - rating_factor() * q * si * death_ratio()) / (1.0 - q))
@@ -1092,7 +1098,7 @@ def bfz_uplift_pp(t):
     if bfz_year() <= 0 or t != bfz_year() or not is_paid_up(t + 1):
         return 0.0
     return ((res_guar_pp(t) - res_zill_pp(t + 1))
-            * (1.0 - mort_rate_base(t)) / (1.0 + rechnungszins()))
+            * (1.0 - mort_rate_at_age(age(t))) / (1.0 + rechnungszins()))
 
 
 def res_guar_pp(t):
@@ -2024,6 +2030,8 @@ beta_shock = 0.0
 lapse_gap_a = 0.0
 
 ref_rate = 0.03
+
+unisex_share = 0.5
 
 roll_fwd_tol = 1e-10
 

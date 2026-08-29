@@ -127,7 +127,7 @@ WORKED_EXAMPLE = {
     24: (63, 0.472234, 1133.36, 296.81,  595.39,     0.00,   23.94, 303.70,    0.00, 29346.98,    217.22),
     25: (64, 0.458311, 1099.95, 329.17,  602.46,     0.00,   23.59, 307.59,    0.00, 29769.58,    144.73),
     26: (65, 0.444386, 1066.53, 364.19,  608.12,     0.00,   23.21, 310.80,    0.00, 30123.10,     71.00),
-    27: (66, 0.430446, 1033.07, 401.99,    0.00, 31240.67,   22.82, 313.29,    0.00, 30405.82, -30632.42),
+    27: (66, 0.430446, 1033.07, 402.00,    0.00, 31240.67,   22.82, 313.29,    0.00, 30405.82, -30632.42),
 }
 
 # The notes' Total row: summed at full precision and then rounded, not summed from the
@@ -367,15 +367,17 @@ def test_check_four_the_account_rolls_forward_at_year_nine(de_index_anchor):
     """
     p = de_index_anchor
     assert p.av(9) == pytest.approx(14394.0730, abs=5e-4)
-    assert p.prem_to_av(9) == pytest.approx(2328.00 * 0.741686, abs=1e-3)
-    assert p.prem_to_av(9) == pytest.approx(1726.6439, abs=1e-3)
+    assert p.prem_to_av_pp(9) == pytest.approx(2328.00, abs=CENT)
+    assert p.prem_to_av(9) == pytest.approx(2328.00 * p.pols_if(9), rel=1e-12)
+    assert p.prem_to_av(9) == pytest.approx(1726.6439, abs=5e-4)
     assert p.av_charge(9) == pytest.approx(40.3018, abs=5e-4)
     assert p.guar_int(9) == pytest.approx(160.8042, abs=5e-4)
     assert p.surplus_credit(9) == 0.0
     assert p.index_credit(9) == pytest.approx(1239.5583, abs=5e-4)
+    assert p.av_pp_at(9, "AFT_GUAR") == pytest.approx(21897.7159, abs=5e-4)
     assert p.av_released(9) == pytest.approx(
-        21897.7159 * (p.pols_death(9) + p.pols_lapse(9)), abs=1e-3)
-    assert p.av_released(9) == pytest.approx(526.3103, abs=1e-3)
+        p.av_pp_at(9, "AFT_GUAR") * (p.pols_death(9) + p.pols_lapse(9)), rel=1e-12)
+    assert p.av_released(9) == pytest.approx(526.3103, abs=5e-4)
     assert p.av(10) == pytest.approx(
         p.av(9) + p.prem_to_av(9) - p.av_charge(9) + p.guar_int(9)
         + p.surplus_credit(9) + p.index_credit(9) - p.av_released(9), abs=1e-9)
@@ -427,7 +429,9 @@ def test_check_six_the_guarantee_at_rentenbeginn(de_index_anchor):
     assert p.av_pp(n + 1) == pytest.approx(73511.3936, abs=5e-4)
     assert p.av_pp(n + 1) > p.guar_cap_pp(n + 1)          # the floor does not bind here
     assert p.mat_pp(n) == pytest.approx(73511.39, abs=CENT)
-    assert p.claims(n, "MATURITY") == pytest.approx(73511.3936 * 0.424977, abs=1e-3)
+    assert p.pols_maturity(n) == pytest.approx(0.424977, abs=SIX_DP)
+    assert p.claims(n, "MATURITY") == pytest.approx(
+        p.mat_pp(n) * p.pols_maturity(n), rel=1e-12)
     assert p.claims(n, "MATURITY") == pytest.approx(31240.67, abs=CENT)
     assert p.rentenfaktor() == 25.0
     assert p.ann_monthly_pp() == pytest.approx(73511.3936 / 10000.0 * 25.0, abs=5e-4)
@@ -516,10 +520,18 @@ def test_the_four_designs_at_rentenbeginn(indexpolice, point_id):
 
 
 def test_the_safe_arm_beats_the_cap_design_on_this_path(indexpolice, de_index_anchor):
-    """21 914,13 EUR of terminal capital, and it is not an argument against the product."""
+    """21 914,12 EUR of terminal capital, and it is not an argument against the product.
+
+    The notes print 21 914,13 EUR because they difference the two *displayed* figures,
+    95 425,52 - 73 511,39; the full-precision difference is 21 914,1220.  Both are
+    asserted, because the one-cent split is exactly the kind of artefact a reader
+    comparing the two documents would otherwise read as a modelling error.
+    """
     safe = indexpolice.Projection[11]
     assert safe.elect_id() == "always_safe"
-    assert safe.av_pp(28) - de_index_anchor.av_pp(28) == pytest.approx(21914.13, abs=CENT)
+    assert safe.av_pp(28) - de_index_anchor.av_pp(28) == pytest.approx(21914.12, abs=CENT)
+    assert round(safe.av_pp(28), 2) - round(de_index_anchor.av_pp(28), 2) == (
+        pytest.approx(21914.13, abs=CENT))
 
 
 # ---------------------------------------------------------------------------
@@ -602,7 +614,7 @@ def test_pitfall_03_compounding_the_capped_returns(de_index_anchor):
     assert compounded - 1.0 == pytest.approx(0.0895989, abs=5e-7)
     assert compounded - 1.0 - p.index_sum(9) == pytest.approx(0.000599, abs=5e-7)
     assert (compounded - 1.0 - p.index_sum(9)) * p.index_base_pp(9) == pytest.approx(
-        11.63, abs=CENT)
+        11.62, abs=CENT)
     # The same distinction, everywhere: index_sum is never the compounded capped return.
     for t in (2, 3, 4, 13):
         assert p.index_sum(t) == pytest.approx(

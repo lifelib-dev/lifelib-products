@@ -173,20 +173,17 @@ The *Beitragsdynamik* compounds on the base premium from **inception**, so it is
 6 opens at `3 600,00 × 1,02^17 = 5 040,87 €`, not at 3 600,00 €. The *Ratenzahlungszuschlag*
 `prem_freq_load()` multiplies the *laufender Beitrag* and **nothing else**: not the
 *Zuzahlung*, which is a single payment, and not an *Einmalbeitrag*, for which it is 1,000.
-Both premium streams stop at `ret_t()`, and the *Zuzahlung* stops again once
+Both streams stop at `ret_t()`, and the *Zuzahlung* stops again once
 `duration(t) ≥ zuzahlung_end_dur`.
 
 `zuz_take_up` is published as a cells of its own rather than hidden inside `zuz_pp`, because
 it is a **utilisation rate and not a contract term** — the top-up is paid out of a profit not
 known until the year end — and a model that treats the *Zuzahlung* as contractual has quietly
-set it to 1.0. On the anchor it removes about two fifths of the contribution stream:
-51 236,28 € of *Zuzahlungen* against a nominal 4 000,00 € × 22.
-
-`prem_total_pp(t) = (prem_pp(t) + zuz_pp(t)) / (1 − buz_prem_share)` reconstructs what the
-policyholder actually pays and is a **reporting cells that enters no cash flow**: the BUZ
-premium buys a cover this model does not project, and its disability mechanics belong to
-`BU_DE_S`. `buz_prem_share < 0.50` is the statutory invariant [R1]; model point 11 sits at
-0.49, the boundary.
+set it to 1.0. `prem_total_pp(t) = (prem_pp(t) + zuz_pp(t)) / (1 − buz_prem_share)`
+reconstructs what the policyholder actually pays and is a **reporting cells that enters no
+cash flow**: the BUZ premium buys a cover this model does not project, and its disability
+mechanics belong to `BU_DE_S`. `buz_prem_share < 0.50` is the statutory invariant [R1]; model
+point 11 sits at 0.49, the boundary.
 
 ## The conversion at *Rentenbeginn*
 
@@ -214,16 +211,14 @@ year, the current factor alone giving 3 640,01 €). Model point 6, a 2009 tarif
 60, is the second cell on which the guarantee binds.
 
 **The conversion basis is not the projection basis, and that is deliberate.**
-`rentenfaktor_gtd` was struck at inception on **first-order** DAV 2004 R with a prudential
-margin and a conservative interest basis [R17] [S1]; the projection runs on the best estimate,
-`mort_rate(t) = mort_be_factor × mort_rate_base(t)`. The wedge between them is the payout
-phase's *Risikoüberschuss*, and `ann_bonus_rate` — a *teildynamische Rente* — is what gives it
-back. So `ann_pp(ret_t())` is **exactly invariant** to `mort_be_factor` while `claims_annuity`
-is not: dropping the factor from 0.85 to 0.70 leaves the annuity at 7 561,9135 € to the last
-bit and lifts the annuity claims from 270 016,08 € to 296 364,48 €. A model that converted on
-its own best-estimate mortality would abolish the wedge, and with it the whole German
-payout-phase surplus mechanic.
-
+`rentenfaktor_gtd` was struck at inception on **first-order** DAV 2004 R [R17] [S1]; the
+projection runs on the best estimate, `mort_rate(t) = mort_be_factor × mort_rate_base(t)`. The
+wedge between them is the payout phase's *Risikoüberschuss*, and `ann_bonus_rate` — a
+*teildynamische Rente* — is what gives it back. So `ann_pp(ret_t())` is **exactly invariant**
+to `mort_be_factor` while `claims_annuity` is not: dropping the factor from 0.85 to 0.70
+leaves the annuity at 7 561,9135 € to the last bit and lifts the annuity claims from
+270 016,08 € to 296 364,48 €. A model that converted on its own best-estimate mortality would
+abolish the wedge, and with it the whole German payout-phase surplus mechanic.
 `check_conversion()` inverts the identity at `ret_t()` and is zero at every other `t`, so it
 catches a factor applied per policy instead of per fund, an `ann_freq` of 1, an `rf_unit` of
 1 000 — and a second conversion, of which there can be none.
@@ -240,18 +235,16 @@ With the rider on, `claims(t, "DEATH") = elig_surv_prob × mort_rate(t) × av_at
 moment of death [R1]. It is **not a lump sum to a beneficiary**: everything paid to a survivor
 must be paid as an annuity, so what is booked is the reserve leaving this contract as the
 **single premium of a survivor's annuity**, itself a new liability — an immediate annuity,
-`Sofort_DE_S` — that this model does not project. A reader who takes `claims_death` for a
-payable capital sum has misread the product.
-
-The cover is paid for through `rf_option_factor()`, a reduction in the *Rentenfaktor*, rather
-than by scaling the death benefit, which is how a German tariff prices it: model point 3
-converts at `31.50 × 0.930 = 29,295 €`.
+`Sofort_DE_S` — that this model does not project. The cover is paid for through
+`rf_option_factor()`, a reduction in the *Rentenfaktor*, rather than by scaling the death
+benefit, which is how a German tariff prices it: model point 3 converts at
+`31.50 × 0.930 = 29,295 €`.
 
 A *Rentengarantiezeit* runs `guarantee_period_y` years **from *Rentenbeginn***, not from each
 death, so every continuation ends on the same date and `pols_gtd` is a one-line recursion
-closing at `gtd_end_t()`. On model point 4 that is `t = 25`, and `pols_gtd(26) = 0` however
-late the death that started it. Each death contributes `elig_surv_prob` of a continuation, and
-where no eligible survivor exists the payments simply cease. They are **never commutable**:
+closing at `gtd_end_t()` — `t = 25` on model point 4, with `pols_gtd(26) = 0` however late the
+death that started it. Each death contributes `elig_surv_prob` of a continuation, and where no
+eligible survivor exists the payments simply cease. They are **never commutable**:
 `claims(t, "SURVIVOR") = ann_pp(t) × pols_gtd(t)` is a stream, and nothing anywhere in this
 model discounts a continuation into a capital sum.
 
@@ -278,23 +271,11 @@ folder. `Basis_DE_A/` holds nothing but formulas:
 
 ```
 products/basisrente/
-  model_point_table.csv        <- inputs live here
-  mort_table.csv
-  surplus_table.csv
-  rentenfaktor_table.csv
-  charge_table.csv
-  behaviour_table.csv
-  option_table.csv
-  run.py
-  model.md
-  product-spec.md              <- the documents this model implements
-  technical-notes.md
-  sources.md
+  model_point_table.csv  mort_table.csv  surplus_table.csv    <- inputs live here
+  rentenfaktor_table.csv  charge_table.csv  behaviour_table.csv  option_table.csv
+  run.py  model.md  product-spec.md  technical-notes.md  sources.md
   Basis_DE_A/                  <- formulas only
-    __init__.py                   (model docstring)
-    _system.json
-    Data/__init__.py              (reads the CSVs, once per model)
-    Projection/__init__.py        (the by-policy projection)
+    __init__.py  _system.json  Data/__init__.py  Projection/__init__.py
 ```
 
 This follows lifelib's `annuallife/TradLife_A`, which keeps its input file beside the model
@@ -321,13 +302,10 @@ conventions suite counts the reads and asserts the file set.
 | `option_file` | `option_table()` | `option_table.csv` |
 
 `Data.input_dir()` resolves the location from `_model.path.parent` when the model is read, so
-it works wherever the repository is checked out.
-
-**The trade-off:** the model is not portable on its own. Copy `Basis_DE_A/` without the CSVs
-and it will read fine, then fail on first evaluation. What you gain is that a diff of the
-model shows logic changes only, and an input can be swapped in place — point
-`Data.mort_table_file` at another same-schema file and the projection follows, with no formula
-change. Tests cover both halves of that bargain.
+it works wherever the repository is checked out. **The trade-off:** the model is not portable
+on its own — copy `Basis_DE_A/` without the CSVs and it will read fine, then fail on first
+evaluation. What you gain is that a diff of the model shows logic changes only, and an input
+can be swapped in place, with no formula change. Tests cover both halves of that bargain.
 
 **Every file but `model_point_table.csv` carries a final `provenance` column**, one tag per
 row — delib's second ruling, asserted by the conventions suite. A model point is a
@@ -409,16 +387,14 @@ library-wide sign. `liability_cf` publishes the same stream outgo-positive,
 `liability_cf(t) = −net_cf(t)` exactly, and both are columns of `result_cf()` so the identity
 is verifiable in the frame rather than only in prose. A Solvency II best estimate is
 `Σ v(t) × liability_cf(t)` over the relevant risk-free term structure, plus a risk margin
-[REG-R1] [REG-R2] [REG-R6]; nothing in this library discounts, and no
-*Deckungsrückstellung*, *Zinszusatzreserve* or SCR is computed [REG-R14] [REG-R17].
+[REG-R1] [REG-R2] [REG-R6]; nothing in this library discounts, and no *Deckungsrückstellung*,
+*Zinszusatzreserve* or SCR is computed [REG-R14] [REG-R17].
 
-Unlike `TD_FR_A`, `expenses` here does **not** include the commission: the notes' own cash
-flow statement carries them as two lines and `net_cf` subtracts each once. The shape to expect
-on the anchor is a first-year strain that is **all commission** — the *Zillmerung* instalment
-of 818,97 € is an account deduction and costs the insurer nothing, while the 4 094,85 €
-*Abschlussprovision* and the 250,00 € acquisition expense both fall at inception — then
-twenty-one years of positive accumulation-phase margin, then a long negative payout tail from
-`t = 23` that never turns.
+Unlike `TD_FR_A`, `expenses` here does **not** include the commission: the notes' cash flow
+statement carries them as two lines and `net_cf` subtracts each once. The shape to expect on
+the anchor is a first-year strain that is **all commission** — the *Zillmerung* instalment of
+818,97 € is an account deduction and costs the insurer nothing — then twenty-one years of
+positive accumulation-phase margin, then a long negative payout tail from `t = 23`.
 
 ## Naming
 
@@ -437,21 +413,20 @@ Space docstring. Four cases needed care:
 | `P(t)`, `Z(t)` | `prem_pp` / `zuz_pp` / `prem_total_pp` | Three different amounts: the *laufender Beitrag* with its frequency loading, the behavioural *Zuzahlung* with its take-up, and the total contribution including a BUZ premium that enters no cash flow |
 | `q^t(x, y)`, `q(t)` | `mort_rate_at_age` / `mort_rate_base` / `mort_rate` | The generational table rate at an age and calendar year, that rate in projection year `t`, and the best estimate after `mort_be_factor`. The conversion is struck on the first family and the projection runs on the last |
 
-**The chassis, and who else in delib is on it.** The accumulation and payout mechanics of this
-product are those of an ordinary German deferred annuity: `RV_DE_A`
-(`klassische_rentenversicherung`) is the same chassis without the Schicht-1 constraints —
-full *Kapitalwahlrecht*, a *Rückkaufswert*, free beneficiary designation — and `KLV_DE_A`
-carries the *Überschussbeteiligung* machinery both inherit. The survivor's single premium this
-model books and does not project is an immediate annuity, `Sofort_DE_S`; the BUZ this model
-carries only as a premium share is `BU_DE_S`; the asset forms it does not model are `FRV_DE_S`
-and `Index_DE_A`. `Riester_DE_A` is the other certified layer and is the useful contrast: it
-has a statutory *Beitragserhaltungsgarantie*, a permitted 30 % *Teilkapitalauszahlung* and a
-*Kleinbetragsrenten* commutation, and this product has none of the three.
+**The chassis, and who else in delib is on it.** The accumulation and payout mechanics here
+are those of an ordinary German deferred annuity: `RV_DE_A` (`klassische_rentenversicherung`)
+is the same chassis without the Schicht-1 constraints — full *Kapitalwahlrecht*, a
+*Rückkaufswert*, free beneficiary designation — and `KLV_DE_A` carries the
+*Überschussbeteiligung* machinery both inherit. The survivor's single premium this model books
+and does not project is an immediate annuity, `Sofort_DE_S`; the BUZ it carries only as a
+premium share is `BU_DE_S`; the asset forms it does not model are `FRV_DE_S` and `Index_DE_A`.
+`Riester_DE_A` is the other certified layer and the useful contrast: a statutory
+*Beitragserhaltungsgarantie*, a permitted 30 % *Teilkapitalauszahlung* and a
+*Kleinbetragsrenten* commutation, of which this product has none.
 
 The model point carries `policy_id` and `sex`, and neither drives a formula: pricing is unisex
 for contracts concluded from 21 December 2012 [REG-R34], so `sex` is reporting only. Both are
-exposed rather than dropped, because the notes' model point attribute table lists them and a
-silently missing column is worse than an inert one.
+exposed rather than dropped, because a silently missing column is worse than an inert one.
 
 ## Standardizations used
 
