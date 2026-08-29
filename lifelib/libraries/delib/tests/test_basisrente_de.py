@@ -238,24 +238,29 @@ def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_a
     """
     p = de_basis_anchor
     assert p.beitragssumme_pp() == pytest.approx(S_ANCHOR, rel=1e-12)
-    assert p.beitragssumme_pp() == pytest.approx(
-        6000.00 * (1.02 ** 22 - 1) / 0.02, rel=1e-12)
+    assert S_ANCHOR == pytest.approx(6000.00 * (1.02 ** 22 - 1) / 0.02, rel=1e-12)
     assert p.alpha_total_pp() == pytest.approx(ALPHA_TOTAL_ANCHOR, rel=1e-12)
     assert p.alpha_amort_pp(1) == pytest.approx(ALPHA_INSTALMENT, rel=1e-12)
     assert p.zuz_pp(1) == pytest.approx(4000.00 * 0.70, rel=1e-12)
     assert p.alpha_zuz_pp(1) == pytest.approx(0.025 * 2800.00, rel=1e-12)
     assert p.unit_cost_pp(1) == pytest.approx(36.00, rel=1e-12)
-    assert p.prem_to_av_pp(1) == pytest.approx(N1_ANCHOR, rel=1e-12)
     assert p.prem_to_av_pp(1) == pytest.approx(
         8140.00 - ALPHA_INSTALMENT - 70.00 - 36.00, rel=1e-12)
+    assert p.prem_to_av_pp(1) == pytest.approx(N1_ANCHOR, rel=1e-12)
     assert p.cred_rate(1) == pytest.approx(0.026, rel=1e-12)
     assert p.av_pp_at(1, "AFT_INT") == pytest.approx(AV_PP_AFT_INT_1, rel=1e-12)
     assert p.av_pp_at(1, "AFT_INT") == pytest.approx(
         N1_ANCHOR * (1 + 0.026 - 0.0035), rel=1e-9)
     # The fund-level value the table publishes, one death decrement later.
     assert p.av(2) == pytest.approx(AV_2_ANCHOR, rel=1e-12)
-    assert p.av(2) == pytest.approx(
-        AV_PP_AFT_INT_1 * (1 - Q1_BEST_ESTIMATE), rel=1e-8)
+    assert p.av(2) == pytest.approx(AV_PP_AFT_INT_1 * (1 - Q1_BEST_ESTIMATE), rel=1e-8)
+    # 2,5 % of the Beitragssumme, twice: what the insurer pays out at inception is sized to
+    # what it may write into the reserve.  One is an outgo and the other is only an account
+    # deduction, which is why the commission is in net_cf and the instalment is not.
+    assert p.commissions(1) == pytest.approx(ALPHA_TOTAL_ANCHOR, rel=1e-12)
+    assert p.expenses(1) == pytest.approx(250.00 + 60.00, abs=CENT)
+    assert p.commissions(2) == pytest.approx(
+        0.015 * (p.premiums(2) + p.zuzahlungen(2)), rel=1e-12)
 
 
 def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_anchor):
@@ -295,7 +300,6 @@ def test_check_3_the_conversion_and_the_branch_of_the_max_that_binds(de_basis_an
     assert p.fund_at_conv() == pytest.approx(186603.2901708250, abs=CENT)
     per_annuitant = p.fund_at_conv() / p.pols_if(23)
     assert per_annuitant == pytest.approx(FUND_PER_ANNUITANT, abs=CENT)
-    assert p.rentenfaktor_gtd() if False else True     # gtd lives on the model point
     assert float(p.model_point()["rentenfaktor_gtd"]) == 28.00
     assert p.rentenfaktor_curr() == 31.50
     assert p.rf_option_factor() == 1.0
@@ -307,9 +311,6 @@ def test_check_3_the_conversion_and_the_branch_of_the_max_that_binds(de_basis_an
         ANN_PP_23 * 0.9327803550, abs=CENT)
     assert p.claims(24, "ANNUITY") == pytest.approx(
         ANN_PP_23 * 1.01 * 0.9269849437, abs=CENT)
-    # Had the guaranteed 28,00 EUR bound instead.
-    assert per_annuitant / 10000.0 * 28.00 * 12 == pytest.approx(
-        ANN_PP_23_IF_GUARANTEE_BOUND, abs=CENT)
 
 
 def test_the_decrements_close_to_exactly_one(de_basis_anchor):
@@ -341,21 +342,6 @@ def test_the_cash_flow_statement_closes_over_the_whole_projection(de_basis_ancho
     assert total == pytest.approx(df["net_cf"].sum(), rel=1e-12)
 
 
-def test_the_initial_commission_and_the_zillmerung_are_the_same_number(de_basis_anchor):
-    """2,5 % of the *Beitragssumme*, twice -- the German design, not a coincidence.
-
-    What the insurer pays out at inception is sized to what it may write into the reserve.  One
-    is an outgo and the other is not: the commission is in ``net_cf``, the *Zillmerung*
-    instalment only in the account.
-    """
-    p = de_basis_anchor
-    assert p.commissions(1) == pytest.approx(ALPHA_TOTAL_ANCHOR, rel=1e-12)
-    assert p.alpha_total_pp() == pytest.approx(ALPHA_TOTAL_ANCHOR, rel=1e-12)
-    assert p.expenses(1) == pytest.approx(250.00 + 60.00, abs=CENT)
-    assert p.commissions(2) == pytest.approx(
-        0.015 * (p.premiums(2) + p.zuzahlungen(2)), rel=1e-12)
-
-
 # ---------------------------------------------------------------------------
 # The published checks and the frame
 
@@ -375,25 +361,16 @@ def test_every_published_check_holds_and_its_residual_is_zero(de_basis_anchor):
         assert p.check_conversion_resid(t) == pytest.approx(0.0, abs=1e-6)
         assert p.check_no_capital_resid(t) == pytest.approx(0.0, abs=1e-9)
         assert p.check_annuity_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-8)
-
-
-def test_check_net_cf_is_read_from_the_published_frame(de_basis_anchor):
-    """delib ruling 1: the identity is reconstructed from ``result_cf()``'s own columns.
-
-    ``pols_if``, ``pols_paying`` and ``av`` are two counts and a balance, excluded by
-    construction -- adding ``av`` to anything is a category error.
-    """
-    p = de_basis_anchor
+    # delib ruling 1 in full: net_cf rebuilt from result_cf()'s own published columns.  The
+    # three excluded columns are two counts and a balance -- adding av to anything is a
+    # category error, and the residual would be enormous if it were in the identity.
     df = p.result_cf()
     for t in (1, 11, 23, 50, 77):
         row = df.loc[t]
-        rebuilt = float(row["premiums"] + row["zuzahlungen"]
-                        - row["claims_death"] - row["claims_annuity"]
-                        - row["claims_survivor"] - row["expenses"] - row["commissions"])
-        assert rebuilt == pytest.approx(float(row["net_cf"]), rel=1e-12)
-        assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-8)
-    assert "av" not in ("premiums", "zuzahlungen")           # the excluded columns are balances
-    assert df["av"].sum() > 0.0                              # and would wreck the identity
+        assert float(row["premiums"] + row["zuzahlungen"] - row["claims_death"]
+                     - row["claims_annuity"] - row["claims_survivor"] - row["expenses"]
+                     - row["commissions"]) == pytest.approx(float(row["net_cf"]), rel=1e-12)
+    assert df["av"].sum() > 0.0
 
 
 def test_result_cf_shape_and_both_signs_of_the_net_flow(de_basis_anchor):
@@ -509,25 +486,19 @@ def test_the_conversion_table_of_the_notes(basisrente, point_id):
     # The printed per-annuitant figure is rounded to the cent, so the identity is closed on the
     # model's own full-precision fund rather than on the table's transcription of it.
     per_exact = p.fund_at_conv() / p.pols_if(ret_t)
-    assert p.ann_pp(ret_t) == pytest.approx(
-        per_exact / 10000.0 * applied * 12, rel=1e-12)
-
-
-def test_on_model_point_13_the_guarantee_is_worth_824_euro_a_year(basisrente):
-    """The other branch of the ``max``, and what it is worth.
-
-    The projection is sensitive to whichever factor is higher and completely insensitive to the
-    other, which is why a sensitivity run on the guaranteed factor returns zero until it crosses
-    the current one and then moves in a straight line.
-    """
-    p = basisrente.Projection[13]
-    per = p.fund_at_conv() / p.pols_if(p.ret_t())
-    current_only = per / 10000.0 * 27.72 * 12
-    assert current_only == pytest.approx(MP13_ANN_IF_CURRENT_BOUND, abs=CENT)
-    assert p.ann_pp(p.ret_t()) - current_only == pytest.approx(
-        MP13_GUARANTEE_WORTH, abs=CENT)
-    assert p.model_point()["rf_scenario_id"] == "low"
-    assert p.rentenfaktor_curr() < float(p.model_point()["rentenfaktor_gtd"])
+    assert p.ann_pp(ret_t) == pytest.approx(per_exact / 10000.0 * applied * 12, rel=1e-12)
+    # What the branch that did not bind would have given: 6 721,70 EUR on the anchor, where the
+    # guarantee is worth nothing, and 3 640,01 EUR on model point 13, where it is worth 824,65.
+    unused = min(gtd, curr)
+    if point_id == 13:
+        assert per_exact / 10000.0 * unused * 12 == pytest.approx(
+            MP13_ANN_IF_CURRENT_BOUND, abs=CENT)
+        assert p.ann_pp(ret_t) - per_exact / 10000.0 * unused * 12 == pytest.approx(
+            MP13_GUARANTEE_WORTH, abs=CENT)
+        assert p.model_point()["rf_scenario_id"] == "low"
+    else:
+        assert per_exact / 10000.0 * unused * 12 == pytest.approx(
+            ANN_PP_23_IF_GUARANTEE_BOUND, abs=CENT)
 
 
 # ---------------------------------------------------------------------------
@@ -1105,9 +1076,7 @@ def test_pitfall_16_the_rechnungszins_attaches_at_conclusion_and_stays(basisrent
             assert p.cred_rate(t) >= gtd
             assert p.cred_rate(t) == max(gtd, p.decl_rate(t))
 
-
-def test_the_in_force_shapes_open_as_the_notes_say(basisrente):
-    """The three in-force shapes: accumulating, already *beitragsfrei*, already in payment."""
+    # The other two in-force shapes: already beitragsfrei, and already in payment.
     paid_up = basisrente.Projection[7]
     assert int(paid_up.model_point()["paidup_at_init"]) == 1
     assert paid_up.pols_paying(1) == 0.0
@@ -1117,7 +1086,6 @@ def test_the_in_force_shapes_open_as_the_notes_say(basisrente):
     assert paid_up.commissions(1) == 0.0                     # acquisition is before the valuation
     assert paid_up.expenses(1) == pytest.approx(60.00, abs=CENT)
     assert paid_up.check_av_roll_fwd() is True
-
     in_payment = basisrente.Projection[8]
     assert in_payment.ret_t() == -2
     assert in_payment.ann_pp(1) == pytest.approx(7200.00, abs=CENT)

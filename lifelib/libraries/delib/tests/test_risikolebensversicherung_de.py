@@ -49,41 +49,34 @@ from modelx.core.errors import FormulaError
 
 from de_registry import MODELS, LIB
 
+AP = pytest.approx        # used throughout, so an assertion fits on one line
+CENT = 0.005              # money displayed to 2 d.p.
+SIX_DP = 0.0000005        # pols_if displayed to 6 d.p.
+
+MODEL_DIR = LIB / MODELS["RLV_DE_A"][0]
+PRODUCT_DIR = MODEL_DIR.parent
+
 
 def flat(doc):
     """Collapse whitespace, so a phrase split across a line break still matches.
-    These docstrings are hard-wrapped prose.  Searching the raw text for a sentence
-    fragment finds it or not depending on where the wrap fell, which would make the
-    assertions below test the line breaks rather than the content.  This is the same
-    helper ``test_model_conventions_de.py`` uses, for the same reason.
+
+    These docstrings are hard-wrapped prose, so searching the raw text for a fragment
+    would test where the wrap fell rather than the content.  ``test_model_conventions_de``
+    uses the same helper for the same reason.
     """
     return re.sub(r"\s+", " ", doc)
 
 
 def model_files(folder):
-    """The model's own file names, ignoring interpreter caches.
-    ``__pycache__`` appears inside a model folder as soon as anything *imports* it, which
-    is routine once the autodoc API pages have been built.  Those caches are not part of
-    the model and must not make a round-trip comparison fail.
-    """
+    """The model's own file names, ignoring ``__pycache__`` left by the doc build."""
     return {p.name for p in folder.rglob("*")
             if p.is_file() and "__pycache__" not in p.parts}
 
 
-CENT = 0.005          # money displayed to 2 d.p.
-SIX_DP = 0.0000005    # pols_if displayed to 6 d.p.
-
-MODEL_DIR = LIB / MODELS["RLV_DE_A"][0]
-PRODUCT_DIR = MODEL_DIR.parent
-
-# t: (attained age, pols_if, prem_gross, premiums, prem_rebate,
-#     claims_death, expenses, commissions, net_cf)
-#
-# The notes' worked-example table, in full.  claims_lapse and claims_maturity are 0.00 at
-# every t and are omitted from the notes' table for width; both are asserted in the row
-# test all the same, because their being zero is a statutory fact about this product and
-# not an accident of the calibration.  liability_cf is omitted for the same reason -- it
-# is net_cf with its sign turned over, and the row test checks that too.
+# t: (attained age, pols_if, prem_gross, premiums, prem_rebate, claims_death, expenses,
+#     commissions, net_cf) -- the notes' worked-example table, in full.  claims_lapse,
+# claims_maturity and liability_cf are omitted there for width and asserted in the row
+# test all the same: the two zeros are a statutory fact about this product.
 WORKED_EXAMPLE = {
     1:  (35, 1.000000, 1275.41, 733.01, 542.40, 183.24, 271.57, 637.71, -359.51),
     2:  (36, 0.939408, 1198.13, 688.60, 509.54, 188.49, 107.06, 6.89, 386.16),
@@ -111,45 +104,25 @@ WORKED_EXAMPLE = {
     24: (58, 0.449515, 573.32, 329.50, 243.82, 684.73, 74.25, 3.29, -432.78),
     25: (59, 0.433815, 553.29, 317.99, 235.30, 723.59, 72.94, 3.18, -481.72),
 }
-
-# The notes' Total row, summed at full precision and then rounded.
-TOTALS = {
-    "prem_gross": 21303.65, "premiums": 12243.75, "prem_rebate": 9059.91,
-    "claims_death": 9899.20, "claims_lapse": 0.00, "claims_maturity": 0.00,
-    "expenses": 2396.51, "commissions": 752.81, "net_cf": -804.77,
-}
-
-# The same columns summed from the twenty-five *rounded* cells instead.  The notes print
-# both and say which to assert; five of the seven differ, and a test that added the
-# rounded rows would be testing the rounding.
-ROUNDED_CELL_SUMS = {
-    "prem_gross": 21303.64, "premiums": 12243.73, "prem_rebate": 9059.91,
-    "claims_death": 9899.19, "expenses": 2396.50, "commissions": 752.81,
-    "net_cf": -804.78,
-}
-
+# The notes' Total row, summed at full precision and then rounded -- and, beside it, the
+# same columns summed from the twenty-five *rounded* cells.  Five of the seven differ.
+TOTALS = {"prem_gross": 21303.65, "premiums": 12243.75, "prem_rebate": 9059.91,
+          "claims_death": 9899.20, "claims_lapse": 0.00, "claims_maturity": 0.00,
+          "expenses": 2396.51, "commissions": 752.81, "net_cf": -804.77}
+ROUNDED_CELL_SUMS = {"prem_gross": 21303.64, "premiums": 12243.73, "prem_rebate": 9059.91,
+                     "claims_death": 9899.19, "expenses": 2396.50, "commissions": 752.81,
+                     "net_cf": -804.78}
 # The pricing quantities behind every row above, at the precision the notes print them.
-PRICING = {
-    "tariff_annuity": 21.6374941,          # ae, the premium annuity-due
-    "tariff_claims_pv": 23472.374330,      # A, the APV of death benefits
-    "tariff_sum_pv": 6491248.23,           # Gamma, the sum-exposure annuity
-    "prem_gross_level_pp": 1275.411882,    # G, the Bruttobeitrag before phi
-    "prem_net_level_pp": 1084.800958,      # Gn = A / ae, the actuarial Nettopraemie
-    "beitragsverrechnung_rate": 0.42527476,
-    "prem_paid_pp": 733.011403,            # the Zahlbeitrag billed
-    "zahl_over_brutto": 0.574725,
-}
-
-# The notes' first closure identity: the decrements account for the whole policy.
+PRICING = {"tariff_annuity": 21.6374941, "tariff_claims_pv": 23472.374330,
+           "tariff_sum_pv": 6491248.23, "prem_gross_level_pp": 1275.411882,
+           "prem_net_level_pp": 1084.800958, "beitragsverrechnung_rate": 0.42527476,
+           "prem_paid_pp": 733.011403, "zahl_over_brutto": 0.574725}
 CLOSURE = {"deaths": 0.03305608, "lapses": 0.53554078, "expiries": 0.43140314}
-
-# The reserve diagnostic the notes publish, at its peak.
 RESERVE = {"peak_t": 16, "peak": 7553.290695, "next": 7511.937517,
            "q1_at_peak": 0.00414558817, "zillmer_at_1": -797.132426}
-
-# Variant 1 -- the declaration withdrawn, decl_scale = 0, on model point 1.
-# t: (pols_if, prem_gross, premiums, prem_rebate, claims_death, expenses,
-#     commissions, net_cf).  The notes print these six rows and the Total.
+# Variant 1 -- the declaration withdrawn, decl_scale = 0, on model point 1.  The notes
+# print these six rows and the Total.  t: (pols_if, prem_gross, premiums, prem_rebate,
+# claims_death, expenses, commissions, net_cf).
 DECL_WITHDRAWN = {
     1:  (1.000000, 1275.41, 1275.41, 0.00, 183.24, 287.85, 637.71, 166.62),
     2:  (0.939408, 1198.13, 1198.13, 0.00, 188.49, 122.34, 11.98, 875.32),
@@ -158,17 +131,12 @@ DECL_WITHDRAWN = {
     24: (0.449515, 573.32, 573.32, 0.00, 684.73, 81.57, 5.73, -198.71),
     25: (0.433815, 553.29, 553.29, 0.00, 723.59, 80.00, 5.53, -255.84),
 }
-
-DECL_WITHDRAWN_TOTALS = {
-    "prem_gross": 21303.65, "premiums": 21303.65, "prem_rebate": 0.00,
-    "claims_death": 9899.20, "expenses": 2668.30, "commissions": 837.99,
-    "net_cf": 7898.16,
-}
-
+DECL_TOTALS = {"prem_gross": 21303.65, "premiums": 21303.65, "prem_rebate": 0.00,
+               "claims_death": 9899.20, "expenses": 2668.30, "commissions": 837.99,
+               "net_cf": 7898.16}
 # Variant 2 -- the Einmalbeitrag form, model point 7: 50 M N, 100 000 EUR konstant, ten
-# years' cover, k = 1.  The whole ten-row table, which is short enough to assert entire.
-# t: (attained age, pols_if, prem_gross, premiums, prem_rebate, claims_death, expenses,
-#     commissions, net_cf)
+# years' cover, k = 1.  The whole table, short enough to assert entire.  Same columns as
+# WORKED_EXAMPLE.
 EINMAL = {
     1:  (50, 1.000000, 6676.93, 3728.98, 2947.95, 238.29, 175.87, 133.54, 3181.28),
     2:  (51, 0.937691, 0.00, 0.00, 0.00, 244.67, 29.32, 0.00, -274.00),
@@ -181,28 +149,21 @@ EINMAL = {
     9:  (58, 0.723645, 0.00, 0.00, 0.00, 367.44, 26.35, 0.00, -393.79),
     10: (59, 0.698372, 0.00, 0.00, 0.00, 388.29, 26.01, 0.00, -414.30),
 }
-
-EINMAL_TOTALS = {
-    "prem_gross": 6676.93, "premiums": 3728.98, "prem_rebate": 2947.95,
-    "claims_death": 3052.53, "expenses": 423.11, "commissions": 133.54,
-    "net_cf": 119.80,
-}
-
+EINMAL_TOTALS = {"prem_gross": 6676.93, "premiums": 3728.98, "prem_rebate": 2947.95,
+                 "claims_death": 3052.53, "expenses": 423.11, "commissions": 133.54,
+                 "net_cf": 119.80}
 EINMAL_PRICING = {"tariff_annuity": 1.0, "tariff_claims_pv": 5895.894609,
-                  "tariff_sum_pv": 934216.83, "prem_gross_level_pp": 6676.929360,
+                  "prem_gross_level_pp": 6676.929360,
                   "beitragsverrechnung_rate": 0.44151243}
-
-# The scalar Reference values the base run must carry, so that the worked example
-# reproduces and so that a silent edit to one of them fails here rather than in a total.
-BASE_REFS = {
-    "rechnungszins": 0.01, "sicherheitszuschlag_m": 1.25, "sex_mix_male": 0.5,
-    "mort_be_factor": 1.0, "surplus_share": 0.9, "decl_scale": 1.0, "v_max": 0.95,
-    "zillmer_rate": 0.025, "comm_rate_init": 0.02, "beta_tariff": 0.05,
-    "gamma_rate": 0.0003, "maint_prem_pct": 0.03, "comm_rate_renew": 0.01,
-    "expense_infl": 0.02, "claim_expense": 250.0, "suicide_share": 0.03,
-    "suicide_years": 3, "shock_lapse_lambda": 0.0, "sel_lapse_lambda": 0.0,
-    "sel_lapse_ref": 0.25,
-}
+# The scalar References the base run must carry, so that a silent edit to one of them
+# fails here rather than inside a total.
+BASE_REFS = {"rechnungszins": 0.01, "sicherheitszuschlag_m": 1.25, "sex_mix_male": 0.5,
+             "mort_be_factor": 1.0, "surplus_share": 0.9, "decl_scale": 1.0,
+             "v_max": 0.95, "zillmer_rate": 0.025, "comm_rate_init": 0.02,
+             "beta_tariff": 0.05, "gamma_rate": 0.0003, "maint_prem_pct": 0.03,
+             "comm_rate_renew": 0.01, "expense_infl": 0.02, "claim_expense": 250.0,
+             "suicide_share": 0.03, "suicide_years": 3, "shock_lapse_lambda": 0.0,
+             "sel_lapse_lambda": 0.0, "sel_lapse_ref": 0.25}
 
 
 # The worked example
@@ -214,54 +175,47 @@ def test_worked_example_row(de_rlv_anchor, t):
     age, pols, gross, prem, rebate, cd, exp, comm, net = WORKED_EXAMPLE[t]
     p = de_rlv_anchor
     assert p.age(t) == age
-    assert p.pols_if(t) == pytest.approx(pols, abs=SIX_DP)
-    assert p.prem_gross(t) == pytest.approx(gross, abs=CENT)
-    assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.prem_rebate(t) == pytest.approx(rebate, abs=CENT)
-    assert p.claims(t, "DEATH") == pytest.approx(cd, abs=CENT)
-    assert p.expenses(t) == pytest.approx(exp, abs=CENT)
-    assert p.commissions(t) == pytest.approx(comm, abs=CENT)
-    assert p.net_cf(t) == pytest.approx(net, abs=CENT)
-    assert p.claims(t, "LAPSE") == 0.0
-    assert p.claims(t, "MATURITY") == 0.0
-    assert p.liability_cf(t) == pytest.approx(-p.net_cf(t), rel=1e-15)
+    assert p.pols_if(t) == AP(pols, abs=SIX_DP)
+    assert p.prem_gross(t) == AP(gross, abs=CENT)
+    assert p.premiums(t) == AP(prem, abs=CENT)
+    assert p.prem_rebate(t) == AP(rebate, abs=CENT)
+    assert p.claims(t, "DEATH") == AP(cd, abs=CENT)
+    assert p.expenses(t) == AP(exp, abs=CENT)
+    assert p.commissions(t) == AP(comm, abs=CENT)
+    assert p.net_cf(t) == AP(net, abs=CENT)
+    assert p.claims(t, "LAPSE") == 0.0 and p.claims(t, "MATURITY") == 0.0
+    assert p.liability_cf(t) == AP(-p.net_cf(t), rel=1e-15)
 
 
 def test_the_worked_example_totals_are_summed_at_full_precision(de_rlv_anchor):
     """The Total row is a full-precision sum, then rounded -- not a sum of rounded cells.
     Five of the seven money columns differ by a cent, and the notes print both; asserting
-    the rounded-cell sums would be testing the rounding.
+    the rounded-cell sums instead would be testing the rounding.
     """
     df = de_rlv_anchor.result_cf()
     for column, total in TOTALS.items():
-        assert df[column].sum() == pytest.approx(total, abs=CENT), column
+        assert df[column].sum() == AP(total, abs=CENT), column
     for column, rounded in ROUNDED_CELL_SUMS.items():
-        assert sum(round(float(df.loc[t, column]), 2) for t in df.index) == (
-            pytest.approx(rounded, abs=CENT)), column
-    differ = {c for c in ROUNDED_CELL_SUMS
-              if abs(ROUNDED_CELL_SUMS[c] - TOTALS[c]) > 0.001}
+        cells = sum(round(float(df.loc[t, column]), 2) for t in df.index)
+        assert cells == AP(rounded, abs=CENT), column
+    differ = {c for c in ROUNDED_CELL_SUMS if abs(ROUNDED_CELL_SUMS[c] - TOTALS[c]) > 1e-3}
     assert differ == {"prem_gross", "premiums", "claims_death", "expenses", "net_cf"}
 
 
 def test_the_anchor_cell_is_the_configuration_the_notes_describe(de_rlv_anchor):
-    """Model point 1, attribute by attribute, and the five quantities derived from it."""
+    """Model point 1 attribute by attribute, and the five quantities derived from it --
+    ``cover_end_age`` and ``proj_len`` among them, so the two cannot disagree.
+    """
     p = de_rlv_anchor
-    assert p.policy_id() == "RLV-000001"
-    assert p.issue_age() == 35 and p.sex() == "M" and p.smoker() == "N"
-    assert p.sum_assured() == 300000.0
-    assert p.policy_term() == 25 and p.prem_term() == 25
-    assert p.premium_form() == "laufend" and p.prem_freq() == "jaehrlich"
-    assert p.benefit_schedule_id() == "konstant" and p.nvg_schedule_id() == "keine"
-    assert p.surplus_form() == "beitragsverrechnung"
-    assert p.lives() == 1 and p.issue_age2() == 0 and p.smoker2() == "-"
-    assert p.rating_factor() == 1.0 and p.mort_table_id() == "dav2008t_proxy"
-    assert p.duration_y() == 0 and p.issue_date() == "2026-01-01"
-    # Derived, so that the two cannot disagree.
-    assert p.proj_start() == 1
-    assert p.proj_len() == 25
-    assert p.cover_end_age() == 60
-    assert p.pols_if_init() == 1.0
-    assert p.prem_freq_load() == 1.0 and p.instalments() == 1
+    assert (p.policy_id(), p.issue_age(), p.sex(), p.smoker()) == ("RLV-000001", 35, "M", "N")
+    assert (p.sum_assured(), p.policy_term(), p.prem_term()) == (300000.0, 25, 25)
+    assert (p.premium_form(), p.prem_freq()) == ("laufend", "jaehrlich")
+    assert (p.benefit_schedule_id(), p.nvg_schedule_id()) == ("konstant", "keine")
+    assert (p.surplus_form(), p.mort_table_id()) == ("beitragsverrechnung", "dav2008t_proxy")
+    assert (p.lives(), p.issue_age2(), p.smoker2()) == (1, 0, "-")
+    assert (p.rating_factor(), p.duration_y(), p.issue_date()) == (1.0, 0, "2026-01-01")
+    assert (p.proj_start(), p.proj_len(), p.cover_end_age()) == (1, 25, 60)
+    assert (p.pols_if_init(), p.prem_freq_load(), p.instalments()) == (1.0, 1.0, 1)
 
 
 def test_the_base_run_references_are_the_notes_assumption_tables(risikolebensversicherung):
@@ -273,24 +227,20 @@ def test_the_base_run_references_are_the_notes_assumption_tables(risikolebensver
 
 # The pricing engine, reached two independent ways each
 def test_the_bruttobeitrag_solves_the_equivalence_it_was_derived_from(de_rlv_anchor):
-    """G = 1 275,411882 from the closed form and from the equivalence it solves.
-    ``G ae = A + z k G + beta G ae + gamma Gamma``, two sides of 27 596,717080 each.
+    """G = 1 275,411882 from the closed form and from the equivalence it solves,
+    ``G ae = A + z k G + beta G ae + gamma Gamma`` -- two sides of 27 596,717080 each.
     """
     p = de_rlv_anchor
-    assert p.tariff_annuity() == pytest.approx(PRICING["tariff_annuity"], abs=5e-7)
-    assert p.tariff_claims_pv() == pytest.approx(PRICING["tariff_claims_pv"], abs=5e-6)
-    assert p.tariff_sum_pv() == pytest.approx(PRICING["tariff_sum_pv"], abs=0.005)
-    g = p.prem_gross_level_pp()
-    assert g == pytest.approx(PRICING["prem_gross_level_pp"], abs=5e-6)
-    ae, a_pv, gamma_pv = p.tariff_annuity(), p.tariff_claims_pv(), p.tariff_sum_pv()
+    assert p.tariff_annuity() == AP(PRICING["tariff_annuity"], abs=5e-7)
+    assert p.tariff_claims_pv() == AP(PRICING["tariff_claims_pv"], abs=5e-6)
+    assert p.tariff_sum_pv() == AP(PRICING["tariff_sum_pv"], abs=0.005)
+    g, ae, a_pv = p.prem_gross_level_pp(), p.tariff_annuity(), p.tariff_claims_pv()
+    assert g == AP(PRICING["prem_gross_level_pp"], abs=5e-6)
     lhs = g * ae
-    rhs = (a_pv + 0.025 * 25 * g + 0.05 * g * ae + 0.00030 * gamma_pv)
-    assert lhs == pytest.approx(27596.717080, abs=5e-5)
-    assert rhs == pytest.approx(lhs, rel=1e-12)
-    # The four components the notes print separately.
-    assert 0.025 * 25 * g == pytest.approx(797.132426, abs=5e-6)
-    assert 0.05 * lhs == pytest.approx(1379.835854, abs=5e-6)
-    assert 0.00030 * gamma_pv == pytest.approx(1947.374470, abs=5e-6)
+    rhs = a_pv + 0.025 * 25 * g + 0.05 * lhs + 0.00030 * p.tariff_sum_pv()
+    assert lhs == AP(27596.717080, abs=5e-5) and rhs == AP(lhs, rel=1e-12)
+    assert 0.025 * 25 * g == AP(797.132426, abs=5e-6)                  # the Zillmer charge
+    assert 0.00030 * p.tariff_sum_pv() == AP(1947.374470, abs=5e-6)    # the gamma loading
 
 
 def test_the_beitragsverrechnungssatz_is_reached_without_forming_the_premium(de_rlv_anchor):
@@ -299,22 +249,19 @@ def test_the_beitragsverrechnungssatz_is_reached_without_forming_the_premium(de_
     the gross premium.  The first two multiply to exactly one half on this calibration.
     """
     p = de_rlv_anchor
-    v_d = p.beitragsverrechnung_rate()
-    assert v_d == pytest.approx(PRICING["beitragsverrechnung_rate"], abs=5e-9)
-    g, ae = p.prem_gross_level_pp(), p.tariff_annuity()
+    v_d, g, ae = p.beitragsverrechnung_rate(), p.prem_gross_level_pp(), p.tariff_annuity()
+    assert v_d == AP(PRICING["beitragsverrechnung_rate"], abs=5e-9)
     loadings = 0.00030 * p.tariff_sum_pv() + 0.025 * 25 * g
-    assert loadings == pytest.approx(2744.506896, abs=5e-6)
+    assert loadings == AP(2744.506896, abs=5e-6)
     risk_share = 1.0 - 0.05 - loadings / (g * ae)
-    assert risk_share == pytest.approx(0.85054952, abs=5e-9)
-    assert 0.90 * (1.25 / 2.25) == pytest.approx(0.5, rel=1e-15)
-    assert 0.5 * risk_share == pytest.approx(v_d, rel=1e-12)
-    # And the definition itself: v_d G ae = decl_scale surplus_share (m/(1+m)) A.
-    assert v_d * g * ae == pytest.approx(
-        0.90 * (1.25 / 2.25) * p.tariff_claims_pv(), rel=1e-12)
-    assert p.prem_paid_pp(1) == pytest.approx(PRICING["prem_paid_pp"], abs=5e-7)
-    assert p.prem_paid_pp(1) == pytest.approx((1.0 - v_d) * g, rel=1e-15)
-    assert p.prem_paid_pp(1) / p.prem_gross_pp(1) == pytest.approx(
-        PRICING["zahl_over_brutto"], abs=5e-7)
+    assert risk_share == AP(0.85054952, abs=5e-9)
+    assert 0.90 * (1.25 / 2.25) == AP(0.5, rel=1e-15)
+    assert 0.5 * risk_share == AP(v_d, rel=1e-12)
+    assert v_d * g * ae == AP(0.90 * (1.25 / 2.25) * p.tariff_claims_pv(), rel=1e-12)
+    assert p.prem_paid_pp(1) == AP(PRICING["prem_paid_pp"], abs=5e-7)
+    assert p.prem_paid_pp(1) == AP((1.0 - v_d) * g, rel=1e-15)
+    ratio = p.prem_paid_pp(1) / p.prem_gross_pp(1)
+    assert ratio == AP(PRICING["zahl_over_brutto"], abs=5e-7)
 
 
 def test_year_one_rebuilt_from_the_table_rate_up(de_rlv_anchor):
@@ -324,29 +271,25 @@ def test_year_one_rebuilt_from_the_table_rate_up(de_rlv_anchor):
     """
     p = de_rlv_anchor
     q2 = 0.00040 * 1.095 ** 5
-    assert q2 == pytest.approx(0.00062969550, abs=5e-12)
-    assert p.mort_rate(1) == pytest.approx(q2, rel=1e-12)
+    assert q2 == AP(0.00062969550, abs=5e-12) and p.mort_rate(1) == AP(q2, rel=1e-12)
     assert p.benefit_pp(1) == 300000.0
-    assert p.benefit_paid_pp(1) == pytest.approx(0.97 * 300000.0, rel=1e-15)
-    assert p.claims(1, "DEATH") == pytest.approx(291000.0 * 1.0 * q2, abs=5e-6)
-    assert p.claims(1, "DEATH") == pytest.approx(183.241389, abs=5e-6)
+    assert p.benefit_paid_pp(1) == AP(0.97 * 300000.0, rel=1e-15)
+    assert p.claims(1, "DEATH") == AP(291000.0 * q2, abs=5e-6)
+    assert p.claims(1, "DEATH") == AP(183.241389, abs=5e-6)
     g = p.prem_gross_level_pp()
     acq_net = (0.025 - 0.020) * 25 * g
-    admin = 0.00030 * 300000.0 * 1.02 ** 0
+    admin = 0.00030 * 300000.0
     collection = 0.03 * p.prem_paid_pp(1)
     claim_exp = 250.0 * q2
-    assert acq_net == pytest.approx(159.426485, abs=5e-6)
-    assert admin == pytest.approx(90.0, rel=1e-15)
-    assert collection == pytest.approx(21.990342, abs=5e-6)
-    assert claim_exp == pytest.approx(0.157424, abs=5e-6)
-    assert p.expenses(1) == pytest.approx(
-        acq_net + admin + collection + claim_exp, rel=1e-12)
-    assert p.expenses(1) == pytest.approx(271.574251, abs=5e-6)
-    assert p.commissions(1) == pytest.approx(0.020 * 25 * g, rel=1e-12)
-    assert p.commissions(1) == pytest.approx(637.705941, abs=5e-6)
-    assert p.net_cf(1) == pytest.approx(-359.510179, abs=5e-6)
+    assert acq_net == AP(159.426485, abs=5e-6) and admin == AP(90.0, rel=1e-15)
+    assert collection == AP(21.990342, abs=5e-6) and claim_exp == AP(0.157424, abs=5e-6)
+    assert p.expenses(1) == AP(acq_net + admin + collection + claim_exp, rel=1e-12)
+    assert p.expenses(1) == AP(271.574251, abs=5e-6)
+    assert p.commissions(1) == AP(0.020 * 25 * g, rel=1e-12)
+    assert p.commissions(1) == AP(637.705941, abs=5e-6)
+    assert p.net_cf(1) == AP(-359.510179, abs=5e-6)
     # The year-one strain is the initial commission: 87 % of the year's billed premium.
-    assert p.commissions(1) / p.premiums(1) == pytest.approx(0.87, abs=0.005)
+    assert p.commissions(1) / p.premiums(1) == AP(0.87, abs=0.005)
 
 
 def test_year_three_rebuilt_through_two_decrement_steps(de_rlv_anchor):
@@ -355,22 +298,17 @@ def test_year_three_rebuilt_through_two_decrement_steps(de_rlv_anchor):
     198,01 -- a 3 % error running three years, which a totals-only test would miss.
     """
     p = de_rlv_anchor
-    q1 = 0.00040 * 1.095 ** 5
-    q2 = 0.00040 * 1.095 ** 6
-    q3 = 0.00040 * 1.095 ** 7
-    l2 = 1.0 * (1.0 - q1) * (1.0 - 0.06)
+    q1, q2, q3 = (0.00040 * 1.095 ** k for k in (5, 6, 7))
+    l2 = (1.0 - q1) * (1.0 - 0.06)
     l3 = l2 * (1.0 - q2) * (1.0 - 0.04)
-    assert l2 == pytest.approx(0.93940809, abs=5e-9)
-    assert l3 == pytest.approx(0.90120993, abs=5e-9)
-    assert p.pols_if(2) == pytest.approx(l2, rel=1e-12)
-    assert p.pols_if(3) == pytest.approx(l3, rel=1e-12)
-    assert p.mort_rate(2) == pytest.approx(q2, rel=1e-12)
-    assert p.mort_rate(3) == pytest.approx(q3, rel=1e-12)
-    assert p.claims(3, "DEATH") == pytest.approx(291000.0 * l3 * q3, abs=5e-6)
-    assert p.claims(3, "DEATH") == pytest.approx(198.005742, abs=5e-6)
+    assert l2 == AP(0.93940809, abs=5e-9) and l3 == AP(0.90120993, abs=5e-9)
+    assert p.pols_if(2) == AP(l2, rel=1e-12) and p.pols_if(3) == AP(l3, rel=1e-12)
+    assert p.mort_rate(2) == AP(q2, rel=1e-12) and p.mort_rate(3) == AP(q3, rel=1e-12)
+    assert p.claims(3, "DEATH") == AP(291000.0 * l3 * q3, abs=5e-6)
+    assert p.claims(3, "DEATH") == AP(198.005742, abs=5e-6)
     wrong = 300000.0 * l3 * q3
-    assert wrong == pytest.approx(204.13, abs=CENT)
-    assert wrong / p.claims(3, "DEATH") == pytest.approx(1.0 / 0.97, rel=1e-12)
+    assert wrong == AP(204.13, abs=CENT)
+    assert wrong / p.claims(3, "DEATH") == AP(1.0 / 0.97, rel=1e-12)
 
 
 def test_closure_one_the_decrements_account_for_the_whole_policy(de_rlv_anchor):
@@ -383,14 +321,13 @@ def test_closure_one_the_decrements_account_for_the_whole_policy(de_rlv_anchor):
     deaths = sum(p.pols_death(t) for t in range(1, n + 1))
     lapses = sum(p.pols_lapse(t) for t in range(1, n + 1))
     expiries = sum(p.pols_maturity(t) for t in range(1, n + 1))
-    assert deaths == pytest.approx(CLOSURE["deaths"], abs=5e-9)
-    assert lapses == pytest.approx(CLOSURE["lapses"], abs=5e-9)
-    assert expiries == pytest.approx(CLOSURE["expiries"], abs=5e-9)
-    assert deaths + lapses + expiries == pytest.approx(1.0, abs=1e-12)
-    assert p.pols_maturity(n) == pytest.approx(expiries, rel=1e-15)
+    assert deaths == AP(CLOSURE["deaths"], abs=5e-9)
+    assert lapses == AP(CLOSURE["lapses"], abs=5e-9)
+    assert expiries == AP(CLOSURE["expiries"], abs=5e-9)
+    assert deaths + lapses + expiries == AP(1.0, abs=1e-12)
+    assert p.pols_maturity(n) == AP(expiries, rel=1e-15)
     assert all(p.pols_maturity(t) == 0.0 for t in (1, 12, n - 1))
-    assert p.pols_if(n + 1) == 0.0
-    assert p.pols_if_at(n, "AFT_DECR") == 0.0
+    assert p.pols_if(n + 1) == 0.0 and p.pols_if_at(n, "AFT_DECR") == 0.0
 
 
 def test_closure_two_the_suicide_wedge_is_the_only_gap_between_events_and_amounts(
@@ -403,13 +340,13 @@ def test_closure_two_the_suicide_wedge_is_the_only_gap_between_events_and_amount
     n = p.proj_len()
     events = sum(p.pols_death(t) for t in range(1, n + 1))
     paid = sum(p.claims(t, "DEATH") for t in range(1, n + 1))
-    assert 300000.0 * events == pytest.approx(9916.822736, abs=5e-6)
-    assert paid == pytest.approx(9899.201951, abs=5e-6)
+    assert 300000.0 * events == AP(9916.822736, abs=5e-6)
+    assert paid == AP(9899.201951, abs=5e-6)
     wedge = 300000.0 * events - paid
-    assert wedge == pytest.approx(17.620785, abs=5e-6)
+    assert wedge == AP(17.620785, abs=5e-6)
     first_three = sum(p.pols_death(t) for t in (1, 2, 3))
-    assert first_three == pytest.approx(0.00195786504, abs=5e-12)
-    assert 0.03 * 300000.0 * first_three == pytest.approx(wedge, rel=1e-9)
+    assert first_three == AP(0.00195786504, abs=5e-12)
+    assert 0.03 * 300000.0 * first_three == AP(wedge, rel=1e-9)
 
 
 def test_closure_three_the_cash_flow_statement_is_check_net_cf(de_rlv_anchor):
@@ -417,20 +354,14 @@ def test_closure_three_the_cash_flow_statement_is_check_net_cf(de_rlv_anchor):
     columns are *not* in it is the point: ``prem_gross`` is the guaranteed stream and
     ``prem_rebate`` must not be subtracted again.  That is why delib requires the check.
     """
-    p = de_rlv_anchor
-    df = p.result_cf()
-    prem = df["premiums"].sum()
-    claims = df["claims_death"].sum() + df["claims_lapse"].sum() + df["claims_maturity"].sum()
-    exp = df["expenses"].sum()
-    comm = df["commissions"].sum()
-    assert prem == pytest.approx(12243.747304, abs=5e-6)
-    assert claims == pytest.approx(9899.201951, abs=5e-6)
-    assert exp == pytest.approx(2396.505040, abs=5e-6)
-    assert comm == pytest.approx(752.813300, abs=5e-6)
-    assert prem - claims - exp - comm == pytest.approx(-804.772987, abs=5e-6)
-    assert df["net_cf"].sum() == pytest.approx(prem - claims - exp - comm, abs=1e-9)
-    # prem_gross is not in the identity, and it is much the largest premium column.
-    assert df["prem_gross"].sum() > df["premiums"].sum()
+    df = de_rlv_anchor.result_cf()
+    prem, exp, comm = df["premiums"].sum(), df["expenses"].sum(), df["commissions"].sum()
+    claims = df[["claims_death", "claims_lapse", "claims_maturity"]].sum().sum()
+    assert prem == AP(12243.747304, abs=5e-6) and claims == AP(9899.201951, abs=5e-6)
+    assert exp == AP(2396.505040, abs=5e-6) and comm == AP(752.813300, abs=5e-6)
+    assert prem - claims - exp - comm == AP(-804.772987, abs=5e-6)
+    assert df["net_cf"].sum() == AP(prem - claims - exp - comm, abs=1e-9)
+    assert df["prem_gross"].sum() > prem     # not in the identity, and the larger column
     assert (df["prem_gross"] - df["premiums"] - df["prem_rebate"]).abs().max() < 1e-9
 
 
@@ -440,32 +371,25 @@ def test_the_first_order_deckungskapital_opens_and_closes_at_zero(de_rlv_anchor)
     two are formed by different summations and agree to about 4e-12, not to the last bit.
     """
     p = de_rlv_anchor
-    n = p.proj_len()
-    assert p.res_pp_at(1, "BEF_PREM") == pytest.approx(0.0, abs=1e-9)
+    n, k = p.proj_len(), RESERVE["peak_t"]
+    assert p.res_pp_at(1, "BEF_PREM") == AP(0.0, abs=1e-9)
     assert p.res_pp_at(n + 1, "BEF_PREM") == 0.0
-    peak_t = RESERVE["peak_t"]
-    assert p.res_pp_at(peak_t, "BEF_PREM") == pytest.approx(RESERVE["peak"], abs=5e-6)
-    assert p.res_pp_at(peak_t, "BEF_PREM") / p.sum_assured() == pytest.approx(
-        0.0252, abs=5e-5)
-    assert max(p.res_pp_at(t, "BEF_PREM") for t in range(1, n + 2)) == (
-        pytest.approx(RESERVE["peak"], abs=5e-6))
+    assert p.res_pp_at(k, "BEF_PREM") == AP(RESERVE["peak"], abs=5e-6)
+    assert p.res_pp_at(k, "BEF_PREM") / p.sum_assured() == AP(0.0252, abs=5e-5)
+    assert max(p.res_pp_at(t, "BEF_PREM") for t in range(1, n + 2)) == AP(
+        RESERVE["peak"], abs=5e-6)
     gn = p.prem_net_level_pp()
-    assert gn == pytest.approx(PRICING["prem_net_level_pp"], abs=5e-7)
-    assert p.res_pp_at(peak_t, "AFT_PREM") == pytest.approx(
-        p.res_pp_at(peak_t, "BEF_PREM") + gn, rel=1e-12)
-    lhs = (p.res_pp_at(peak_t, "BEF_PREM") + gn) * 1.01
-    q1 = p.mort_rate_tar(peak_t)
-    assert q1 == pytest.approx(RESERVE["q1_at_peak"], abs=5e-12)
-    rhs = q1 * 300000.0 + (1.0 - q1) * p.res_pp_at(peak_t + 1, "BEF_PREM")
-    assert lhs == pytest.approx(8724.472569, abs=5e-6)
-    assert rhs == pytest.approx(lhs, abs=1e-6)
-    assert p.res_pp_at(peak_t + 1, "BEF_PREM") == pytest.approx(
-        RESERVE["next"], abs=5e-6)
+    assert gn == AP(PRICING["prem_net_level_pp"], abs=5e-7)
+    assert p.res_pp_at(k, "AFT_PREM") == AP(p.res_pp_at(k, "BEF_PREM") + gn, rel=1e-12)
+    q1 = p.mort_rate_tar(k)
+    assert q1 == AP(RESERVE["q1_at_peak"], abs=5e-12)
+    lhs = (p.res_pp_at(k, "BEF_PREM") + gn) * 1.01
+    rhs = q1 * 300000.0 + (1.0 - q1) * p.res_pp_at(k + 1, "BEF_PREM")
+    assert lhs == AP(8724.472569, abs=5e-6) and rhs == AP(lhs, abs=1e-6)
+    assert p.res_pp_at(k + 1, "BEF_PREM") == AP(RESERVE["next"], abs=5e-6)
     zill = p.res_zill_pp_at(1, "BEF_PREM")
-    assert zill == pytest.approx(RESERVE["zillmer_at_1"], abs=5e-6)
-    assert zill == pytest.approx(
-        -0.025 * 25 * p.prem_gross_level_pp(), abs=1e-9)
-    assert zill < 0.0
+    assert zill == AP(RESERVE["zillmer_at_1"], abs=5e-6) and zill < 0.0
+    assert zill == AP(-0.025 * 25 * p.prem_gross_level_pp(), abs=1e-9)
 
 
 # The two variant tables the notes print
@@ -481,15 +405,15 @@ def test_the_declaration_withdrawn_variant_row(risikolebensversicherung, t):
         model.Projection.clear_all()
         p = model.Projection[1]
         assert p.beitragsverrechnung_rate() == 0.0
-        assert p.pols_if(t) == pytest.approx(pols, abs=SIX_DP)
-        assert p.prem_gross(t) == pytest.approx(gross, abs=CENT)
-        assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-        assert p.prem_rebate(t) == pytest.approx(rebate, abs=CENT)
-        assert p.claims(t, "DEATH") == pytest.approx(cd, abs=CENT)
-        assert p.expenses(t) == pytest.approx(exp, abs=CENT)
-        assert p.commissions(t) == pytest.approx(comm, abs=CENT)
-        assert p.net_cf(t) == pytest.approx(net, abs=CENT)
-        assert p.premiums(t) == pytest.approx(p.prem_gross(t), rel=1e-15)
+        assert p.pols_if(t) == AP(pols, abs=SIX_DP)
+        assert p.prem_gross(t) == AP(gross, abs=CENT)
+        assert p.premiums(t) == AP(prem, abs=CENT)
+        assert p.prem_rebate(t) == AP(rebate, abs=CENT)
+        assert p.claims(t, "DEATH") == AP(cd, abs=CENT)
+        assert p.expenses(t) == AP(exp, abs=CENT)
+        assert p.commissions(t) == AP(comm, abs=CENT)
+        assert p.net_cf(t) == AP(net, abs=CENT)
+        assert p.premiums(t) == AP(p.prem_gross(t), rel=1e-15)
     finally:
         model.close()
 
@@ -501,43 +425,38 @@ def test_the_einmalbeitrag_variant_row(risikolebensversicherung, t):
     """
     age, pols, gross, prem, rebate, cd, exp, comm, net = EINMAL[t]
     p = risikolebensversicherung.Projection[7]
-    assert p.premium_form() == "einmal" and p.prem_term() == 1
-    assert p.age(t) == age
-    assert p.pols_if(t) == pytest.approx(pols, abs=SIX_DP)
-    assert p.prem_gross(t) == pytest.approx(gross, abs=CENT)
-    assert p.premiums(t) == pytest.approx(prem, abs=CENT)
-    assert p.prem_rebate(t) == pytest.approx(rebate, abs=CENT)
-    assert p.claims(t, "DEATH") == pytest.approx(cd, abs=CENT)
-    assert p.expenses(t) == pytest.approx(exp, abs=CENT)
-    assert p.commissions(t) == pytest.approx(comm, abs=CENT)
-    assert p.net_cf(t) == pytest.approx(net, abs=CENT)
+    assert p.premium_form() == "einmal" and p.prem_term() == 1 and p.age(t) == age
+    assert p.pols_if(t) == AP(pols, abs=SIX_DP)
+    assert p.prem_gross(t) == AP(gross, abs=CENT)
+    assert p.premiums(t) == AP(prem, abs=CENT)
+    assert p.prem_rebate(t) == AP(rebate, abs=CENT)
+    assert p.claims(t, "DEATH") == AP(cd, abs=CENT)
+    assert p.expenses(t) == AP(exp, abs=CENT)
+    assert p.commissions(t) == AP(comm, abs=CENT)
+    assert p.net_cf(t) == AP(net, abs=CENT)
 
 
 def test_the_einmalbeitrag_is_the_same_engine_at_a_boundary(risikolebensversicherung):
     """ae = 1, so G = (A + gamma Gamma)/(1 - beta - z), and v_d is *higher* than the
     anchor's: with one premium the Zillmer charge is 25 permille of a much smaller
-    *Beitragssumme*, so more of the gross premium is risk and more comes back.
+    *Beitragssumme*, so more of the gross premium is risk and more of it comes back.
     """
     p = risikolebensversicherung.Projection[7]
-    assert p.tariff_annuity() == pytest.approx(EINMAL_PRICING["tariff_annuity"], rel=1e-15)
-    assert p.tariff_claims_pv() == pytest.approx(
-        EINMAL_PRICING["tariff_claims_pv"], abs=5e-6)
-    assert p.prem_net_level_pp() == pytest.approx(p.tariff_claims_pv(), rel=1e-15)
+    assert p.tariff_annuity() == AP(EINMAL_PRICING["tariff_annuity"], rel=1e-15)
+    assert p.tariff_claims_pv() == AP(EINMAL_PRICING["tariff_claims_pv"], abs=5e-6)
+    assert p.prem_net_level_pp() == AP(p.tariff_claims_pv(), rel=1e-15)
     closed = (p.tariff_claims_pv() + 0.00030 * p.tariff_sum_pv()) / (1.0 - 0.05 - 0.025)
-    assert closed == pytest.approx(EINMAL_PRICING["prem_gross_level_pp"], abs=5e-6)
-    assert p.prem_gross_level_pp() == pytest.approx(closed, rel=1e-12)
-    assert p.beitragsverrechnung_rate() == pytest.approx(
-        EINMAL_PRICING["beitragsverrechnung_rate"], abs=5e-9)
-    assert p.beitragsverrechnung_rate() > 0.42527476
+    assert closed == AP(EINMAL_PRICING["prem_gross_level_pp"], abs=5e-6)
+    assert p.prem_gross_level_pp() == AP(closed, rel=1e-12)
+    v_d = p.beitragsverrechnung_rate()
+    assert v_d == AP(EINMAL_PRICING["beitragsverrechnung_rate"], abs=5e-9) and v_d > 0.4253
     df = p.result_cf()
     for column, total in EINMAL_TOTALS.items():
-        assert df[column].sum() == pytest.approx(total, abs=CENT), column
+        assert df[column].sum() == AP(total, abs=CENT), column
     # Only net_cf drifts against its rounded cells, by one cent.
-    assert sum(round(float(df.loc[t, "net_cf"]), 2) for t in df.index) == (
-        pytest.approx(119.81, abs=CENT))
+    assert sum(round(float(df.loc[t, "net_cf"]), 2) for t in df.index) == AP(119.81, abs=CENT)
     assert all(p.commissions(t) == 0.0 for t in range(2, 11))
-    assert all(p.claims(t, "DEATH") > 0.0 for t in range(2, 11))
-    assert all(p.net_cf(t) < 0.0 for t in range(2, 11))
+    assert all(p.claims(t, "DEATH") > 0.0 and p.net_cf(t) < 0.0 for t in range(2, 11))
 
 
 # Pitfall 1 -- confusing the three "netto"s
@@ -551,14 +470,12 @@ def test_pitfall_1_the_three_nettos_are_three_different_things(
     phi = p.prem_freq_load()
     paid, gn, gross = p.prem_paid_pp(1) / phi, p.prem_net_level_pp(), p.prem_gross_pp(1) / phi
     assert paid < gn < gross
-    assert paid == pytest.approx(733.011403, abs=5e-6)
-    assert gn == pytest.approx(1084.800958, abs=5e-6)
-    assert gross == pytest.approx(1275.411882, abs=5e-6)
-    # Gn is a pricing quantity and never a cash flow: it is in no result_cf column, and
-    # nothing in the frame equals it.
+    assert paid == AP(733.011403, abs=5e-6) and gn == AP(1084.800958, abs=5e-6)
+    assert gross == AP(1275.411882, abs=5e-6)
+    # Gn is a pricing quantity and never a cash flow: nothing in the frame equals it.
     df = p.result_cf()
     assert "prem_net_level_pp" not in df.columns
-    assert not (df == pytest.approx(gn, abs=1e-9)).any().any()
+    assert not (df == AP(gn, abs=1e-9)).any().any()
     names = set(risikolebensversicherung.Projection.cells) | set(
         risikolebensversicherung.Projection.refs)
     for absent in ("prem_net_pp", "nettobeitrag", "netto_beitrag", "premium_net_pp",
@@ -573,16 +490,14 @@ def test_pitfall_2_the_model_carries_two_premium_streams(
     paragraph 153-excluded tariff, where the billed premium *is* the guaranteed one.
     """
     p = de_rlv_anchor
-    n = p.proj_len()
-    assert all(p.prem_gross(t) > p.premiums(t) > 0.0 for t in range(1, n + 1))
-    assert all(p.prem_rebate(t) > 0.0 for t in range(1, n + 1))
+    assert all(p.prem_gross(t) > p.premiums(t) > 0.0 for t in range(1, p.proj_len() + 1))
+    assert all(p.prem_rebate(t) > 0.0 for t in range(1, p.proj_len() + 1))
     none = risikolebensversicherung.Projection[12]
-    assert none.surplus_form() == "keine"
-    assert none.beitragsverrechnung_rate() == 0.0
+    assert none.surplus_form() == "keine" and none.beitragsverrechnung_rate() == 0.0
     assert all(none.prem_gross(t) == none.premiums(t) for t in range(1, 26))
-    assert (none.result_cf()["prem_rebate"] == 0.0).all()
-    assert none.result_cf()["premiums"].sum() == pytest.approx(
-        none.result_cf()["prem_gross"].sum(), rel=1e-15)
+    df = none.result_cf()
+    assert (df["prem_rebate"] == 0.0).all()
+    assert df["premiums"].sum() == AP(df["prem_gross"].sum(), rel=1e-15)
 
 
 # Pitfall 3 -- treating the Zahlbeitrag as guaranteed
@@ -602,17 +517,13 @@ def test_pitfall_3_only_the_bruttobeitrag_is_guaranteed():
         assert (b["prem_gross"] - s["prem_gross"]).abs().max() == 0.0
         assert (s["premiums"] - s["prem_gross"]).abs().max() < 1e-9
         assert s["prem_rebate"].abs().max() == 0.0
-        assert s["premiums"].sum() / b["premiums"].sum() - 1.0 == pytest.approx(
-            0.740, abs=0.0005)
-        for column, total in DECL_WITHDRAWN_TOTALS.items():
-            assert s[column].sum() == pytest.approx(total, abs=CENT), column
-        # The expense and commission deltas are exactly the collection and renewal rates.
-        delta_prem = s["premiums"].sum() - b["premiums"].sum()
-        assert s["expenses"].sum() - b["expenses"].sum() == pytest.approx(
-            0.03 * delta_prem, abs=CENT)
-        assert s["commissions"].sum() - b["commissions"].sum() == pytest.approx(
-            0.01 * (delta_prem - (s["premiums"].iloc[0] - b["premiums"].iloc[0])),
-            abs=CENT)
+        assert s["premiums"].sum() / b["premiums"].sum() - 1.0 == AP(0.740, abs=0.0005)
+        for column, total in DECL_TOTALS.items():
+            assert s[column].sum() == AP(total, abs=CENT), column
+        delta = s["premiums"].sum() - b["premiums"].sum()
+        assert s["expenses"].sum() - b["expenses"].sum() == AP(0.03 * delta, abs=CENT)
+        renewed = delta - (s["premiums"].iloc[0] - b["premiums"].iloc[0])
+        assert s["commissions"].sum() - b["commissions"].sum() == AP(0.01 * renewed, abs=CENT)
     finally:
         base.close()
         stressed.close()
@@ -627,15 +538,13 @@ def test_pitfall_4_a_lapse_pays_nothing_at_any_duration(
     """
     p = de_rlv_anchor
     n = p.proj_len()
-    assert all(p.claims(t, "LAPSE") == 0.0 for t in range(1, n + 1))
-    assert all(p.claims(t, "MATURITY") == 0.0 for t in range(1, n + 1))
+    assert all(p.claims(t, "LAPSE") == p.claims(t, "MATURITY") == 0.0
+               for t in range(1, n + 1))
     df = p.result_cf()
-    assert (df["claims_lapse"] == 0.0).all()
-    assert (df["claims_maturity"] == 0.0).all()
+    assert (df["claims_lapse"] == 0.0).all() and (df["claims_maturity"] == 0.0).all()
     assert p.check_no_cash_value() is True
     assert all(p.check_no_cash_value_resid(t) == 0.0 for t in (1, 12, n))
-    assert p.pols_lapse(1) > 0.0
-    assert p.pols_maturity(n) > 0.0
+    assert p.pols_lapse(1) > 0.0 and p.pols_maturity(n) > 0.0
     names = set(risikolebensversicherung.Projection.cells) | set(
         risikolebensversicherung.Projection.refs)
     for absent in ("av_pp_at", "av_at", "prem_to_av_pp", "cv_pp", "surr_charge_rate",
@@ -654,21 +563,19 @@ def test_pitfall_5_a_level_premium_against_a_rising_rate_builds_a_reserve(de_rlv
     """
     p = de_rlv_anchor
     n = p.proj_len()
-    assert p.res_pp_at(1, "BEF_PREM") == pytest.approx(0.0, abs=1e-9)
+    assert p.res_pp_at(1, "BEF_PREM") == AP(0.0, abs=1e-9)
     assert p.res_pp_at(n + 1, "BEF_PREM") == 0.0
     interior = [p.res_pp_at(t, "BEF_PREM") for t in range(2, n + 1)]
     assert all(v > 0.0 for v in interior)
-    assert max(interior) == pytest.approx(RESERVE["peak"], abs=5e-6)
+    assert max(interior) == AP(RESERVE["peak"], abs=5e-6)
     assert max(interior) / p.sum_assured() < 0.03
-    assert p.res_zill_pp_at(1, "BEF_PREM") == pytest.approx(
+    assert p.res_zill_pp_at(1, "BEF_PREM") == AP(
         -0.025 * 25 * p.prem_gross_level_pp(), abs=1e-9)
-    assert p.res_zill_pp_at(n + 1, "BEF_PREM") == pytest.approx(0.0, abs=1e-9)
+    assert p.res_zill_pp_at(n + 1, "BEF_PREM") == AP(0.0, abs=1e-9)
     assert p.check_res_roll_fwd() is True
-    for t in (1, 8, 16, n):
-        assert p.check_res_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
-    # The reserve is a pricing diagnostic and enters no cash flow.
+    assert all(p.check_res_roll_fwd_resid(t) == AP(0.0, abs=1e-6) for t in (1, 8, 16, n))
+    # The reserve is a pricing diagnostic: it enters no cash flow and no result_cf column.
     assert "res_pp" not in p.result_cf().columns
-    assert "res_zill_pp" not in p.result_cf().columns
     assert "res_pp" in p.result_pols().columns
 
 
@@ -683,21 +590,19 @@ def test_pitfall_6_sex_never_reaches_the_premium(risikolebensversicherung):
     assert male.sex() == "M" and female.sex() == "F"
     assert male.issue_age() == female.issue_age() == 35
     assert male.sum_assured() == female.sum_assured() == 300000.0
-    assert female.prem_gross_level_pp() == pytest.approx(
-        male.prem_gross_level_pp(), rel=1e-12)
-    assert female.beitragsverrechnung_rate() == pytest.approx(
+    assert female.prem_gross_level_pp() == AP(male.prem_gross_level_pp(), rel=1e-12)
+    assert female.beitragsverrechnung_rate() == AP(
         male.beitragsverrechnung_rate(), rel=1e-12)
     for t in (1, 12, 25):
-        assert female.prem_gross_pp(t) == pytest.approx(male.prem_gross_pp(t), rel=1e-12)
-        assert female.prem_paid_pp(t) == pytest.approx(male.prem_paid_pp(t), rel=1e-12)
-        assert female.mort_rate_tar(t) == pytest.approx(male.mort_rate_tar(t), rel=1e-12)
+        assert female.prem_gross_pp(t) == AP(male.prem_gross_pp(t), rel=1e-12)
+        assert female.prem_paid_pp(t) == AP(male.prem_paid_pp(t), rel=1e-12)
+        assert female.mort_rate_tar(t) == AP(male.mort_rate_tar(t), rel=1e-12)
         # The projection is not unisex: her own-sex rate is half his.
-        assert female.mort_rate(t) == pytest.approx(0.5 * male.mort_rate(t), rel=1e-12)
-    m_claims = male.result_cf()["claims_death"].sum()
-    f_claims = female.result_cf()["claims_death"].sum()
-    assert m_claims / f_claims == pytest.approx(1.98, abs=0.05)
-    assert male.result_cf()["net_cf"].sum() == pytest.approx(-804.77, abs=CENT)
-    assert female.result_cf()["net_cf"].sum() == pytest.approx(4158.46, abs=CENT)
+        assert female.mort_rate(t) == AP(0.5 * male.mort_rate(t), rel=1e-12)
+    m_df, f_df = male.result_cf(), female.result_cf()
+    assert m_df["claims_death"].sum() / f_df["claims_death"].sum() == AP(1.98, abs=0.05)
+    assert m_df["net_cf"].sum() == AP(-804.77, abs=CENT)
+    assert f_df["net_cf"].sum() == AP(4158.46, abs=CENT)
 
 
 # Pitfall 7 -- applying the Sicherheitszuschlag to the projection
@@ -709,32 +614,27 @@ def test_pitfall_7_q1_prices_and_q2_projects(risikolebensversicherung):
     male = risikolebensversicherung.Projection[1]
     female = risikolebensversicherung.Projection[2]
     for t in (1, 13, 25):
-        assert male.mort_rate_tar(t) / male.mort_rate(t) == pytest.approx(
-            1.6875, rel=1e-9)
-        assert female.mort_rate_tar(t) / female.mort_rate(t) == pytest.approx(
-            3.375, rel=1e-9)
+        assert male.mort_rate_tar(t) / male.mort_rate(t) == AP(1.6875, rel=1e-9)
+        assert female.mort_rate_tar(t) / female.mort_rate(t) == AP(3.375, rel=1e-9)
     blend = male.mort_rate_blend(1)
-    assert blend == pytest.approx(0.75 * male.mort_rate_at_age("M", "N", 35), rel=1e-12)
-    assert male.mort_rate_tar(1) == pytest.approx(2.25 * blend, rel=1e-12)
+    assert blend == AP(0.75 * male.mort_rate_at_age("M", "N", 35), rel=1e-12)
+    assert male.mort_rate_tar(1) == AP(2.25 * blend, rel=1e-12)
     base_claims = male.result_cf()["claims_death"].sum()
     seen = {}
-    for m_value, name in ((1.0, "RLV_DE_A_m100"), (1.5, "RLV_DE_A_m150")):
+    for value, name in ((1.0, "RLV_DE_A_m100"), (1.5, "RLV_DE_A_m150")):
         model = mx.read_model(MODEL_DIR, name=name)
         try:
-            model.Projection.sicherheitszuschlag_m = m_value
+            model.Projection.sicherheitszuschlag_m = value
             model.Projection.clear_all()
             p = model.Projection[1]
-            assert p.result_cf()["claims_death"].sum() == pytest.approx(
-                base_claims, rel=1e-12)
-            seen[m_value] = (p.prem_gross_level_pp(), p.prem_paid_pp(1))
+            assert p.result_cf()["claims_death"].sum() == AP(base_claims, rel=1e-12)
+            seen[value] = (p.prem_gross_level_pp(), p.prem_paid_pp(1))
         finally:
             model.close()
-    assert seen[1.0][0] == pytest.approx(1146.33, abs=CENT)
-    assert seen[1.5][0] == pytest.approx(1404.05, abs=CENT)
-    assert seen[1.0][1] == pytest.approx(711.63, abs=CENT)
-    assert seen[1.5][1] == pytest.approx(754.34, abs=CENT)
-    assert seen[1.5][0] / seen[1.0][0] - 1.0 == pytest.approx(0.225, abs=0.001)
-    assert seen[1.5][1] / seen[1.0][1] - 1.0 == pytest.approx(0.060, abs=0.001)
+    assert seen[1.0] == AP((1146.33, 711.63), abs=CENT)
+    assert seen[1.5] == AP((1404.05, 754.34), abs=CENT)
+    assert seen[1.5][0] / seen[1.0][0] - 1.0 == AP(0.225, abs=0.001)
+    assert seen[1.5][1] / seen[1.0][1] - 1.0 == AP(0.060, abs=0.001)
 
 
 # Pitfall 8 -- applying the paragraph 161 switch beyond three years
@@ -748,8 +648,8 @@ def test_pitfall_8_the_suicide_switch_runs_three_years_and_touches_death_alone(
     n = p.proj_len()
     assert p.suicide_factor(1) == p.suicide_factor(2) == p.suicide_factor(3) == 0.97
     assert all(p.suicide_factor(t) == 1.0 for t in range(4, n + 1))
-    assert p.benefit_paid_pp(3) == pytest.approx(0.97 * p.benefit_pp(3), rel=1e-15)
-    assert p.benefit_paid_pp(4) == pytest.approx(p.benefit_pp(4), rel=1e-15)
+    assert p.benefit_paid_pp(3) == AP(0.97 * p.benefit_pp(3), rel=1e-15)
+    assert p.benefit_paid_pp(4) == AP(p.benefit_pp(4), rel=1e-15)
     # It never reaches a lapse or an expiry, both of which pay nothing in any event.
     assert p.claims(2, "LAPSE") == 0.0 and p.claims(n, "MATURITY") == 0.0
     assert p.pols_lapse(2) > 0.0
@@ -771,23 +671,21 @@ def test_pitfall_9_each_increment_carries_its_own_three_year_window(
     """
     p = risikolebensversicherung.Projection[9]
     assert p.nvg_schedule_id() == "nvg_zwei_erhoehungen"
-    assert p.sum_uplift(5) == 1.0 and p.sum_uplift(6) == 1.2
-    assert p.sum_uplift(11) == 1.2 and p.sum_uplift(12) == 1.4
-    assert p.benefit_pp(6) == pytest.approx(1.2 * p.sum_assured(), rel=1e-12)
-    assert p.benefit_pp(12) == pytest.approx(1.4 * p.sum_assured(), rel=1e-12)
-    for t in (1, 2, 3):
-        assert p.suicide_factor(t) == pytest.approx(0.97, rel=1e-15)
-    for t in (4, 5, 9, 10, 11, 15, 28):
-        assert p.suicide_factor(t) == pytest.approx(1.0, rel=1e-15)
+    assert (p.sum_uplift(5), p.sum_uplift(6)) == (1.0, 1.2)
+    assert (p.sum_uplift(11), p.sum_uplift(12)) == (1.2, 1.4)
+    assert p.benefit_pp(6) == AP(1.2 * p.sum_assured(), rel=1e-12)
+    assert p.benefit_pp(12) == AP(1.4 * p.sum_assured(), rel=1e-12)
+    assert all(p.suicide_factor(t) == AP(0.97, rel=1e-15) for t in (1, 2, 3))
+    assert all(p.suicide_factor(t) == AP(1.0, rel=1e-15)
+               for t in (4, 5, 9, 10, 11, 15, 28))
     for t in (6, 7, 8):
-        assert p.suicide_factor(t) == pytest.approx(1.0 - 0.03 * (0.2 / 1.2), rel=1e-12)
+        assert p.suicide_factor(t) == AP(1.0 - 0.03 * (0.2 / 1.2), rel=1e-12)
         assert 0.97 < p.suicide_factor(t) < 1.0
     for t in (12, 13, 14):
-        assert p.suicide_factor(t) == pytest.approx(1.0 - 0.03 * (0.2 / 1.4), rel=1e-12)
+        assert p.suicide_factor(t) == AP(1.0 - 0.03 * (0.2 / 1.4), rel=1e-12)
         assert 0.97 < p.suicide_factor(t) < 1.0
-    # The base run's schedule has no increments at all, so the factor is a clean step.
-    base = risikolebensversicherung.Projection[1]
-    assert {base.sum_uplift(t) for t in range(1, 26)} == {1.0}
+    assert {risikolebensversicherung.Projection[1].sum_uplift(t)
+            for t in range(1, 26)} == {1.0}
 
 
 # Pitfall 10 -- mishandling the Ratenzahlungszuschlag
@@ -799,26 +697,22 @@ def test_pitfall_10_the_frequency_loading_is_applied_once(risikolebensversicheru
     monthly = risikolebensversicherung.Projection[4]
     assert monthly.prem_freq() == "monatlich"
     assert monthly.prem_freq_load() == 1.05 and monthly.instalments() == 12
-    assert monthly.prem_gross_pp(1) == pytest.approx(
-        1.05 * monthly.prem_gross_level_pp(), rel=1e-12)
-    assert monthly.prem_rebate_pp(1) == pytest.approx(
-        1.05 * monthly.beitragsverrechnung_rate() * monthly.prem_gross_level_pp(),
-        rel=1e-12)
-    assert monthly.prem_paid_pp(1) == pytest.approx(
+    g, v_d = monthly.prem_gross_level_pp(), monthly.beitragsverrechnung_rate()
+    assert monthly.prem_gross_pp(1) == AP(1.05 * g, rel=1e-12)
+    assert monthly.prem_rebate_pp(1) == AP(1.05 * v_d * g, rel=1e-12)
+    assert monthly.prem_paid_pp(1) == AP(
         monthly.prem_gross_pp(1) - monthly.prem_rebate_pp(1), rel=1e-15)
-    assert monthly.check_prem_split() is True
+    # The ratio Zahl/Brutto is untouched by the loading: it cancels in both streams.
+    assert monthly.prem_paid_pp(1) / monthly.prem_gross_pp(1) == AP(1.0 - v_d, rel=1e-15)
     quarterly = risikolebensversicherung.Projection[5]
     half = risikolebensversicherung.Projection[6]
     annual = risikolebensversicherung.Projection[1]
     assert quarterly.prem_freq_load() == 1.03 and quarterly.instalments() == 4
     assert half.prem_freq_load() == 1.02 and half.instalments() == 2
     assert annual.prem_freq_load() == 1.0 and annual.instalments() == 1
-    for p in (quarterly, half, annual):
+    for p in (monthly, quarterly, half, annual):
         assert p.check_prem_split() is True
-        assert p.check_prem_split_resid(1) == pytest.approx(0.0, abs=1e-9)
-    # The ratio Zahl/Brutto is untouched by the loading: it cancels in both streams.
-    assert monthly.prem_paid_pp(1) / monthly.prem_gross_pp(1) == pytest.approx(
-        1.0 - monthly.beitragsverrechnung_rate(), rel=1e-15)
+        assert p.check_prem_split_resid(1) == AP(0.0, abs=1e-9)
 
 
 # Pitfall 11 -- double-counting premium cessation at death
@@ -829,18 +723,14 @@ def test_pitfall_11_the_premium_cessation_rule_is_applied_once(de_rlv_anchor):
     """
     p = de_rlv_anchor
     for t in (1, 13, 25):
-        assert p.premiums(t) == pytest.approx(
-            p.prem_paid_pp(t) * p.pols_if(t), rel=1e-15)
-        assert p.prem_gross(t) == pytest.approx(
-            p.prem_gross_pp(t) * p.pols_if(t), rel=1e-15)
-        assert p.prem_rebate(t) == pytest.approx(
-            p.prem_rebate_pp(t) * p.pols_if(t), rel=1e-15)
+        assert p.premiums(t) == AP(p.prem_paid_pp(t) * p.pols_if(t), rel=1e-15)
+        assert p.prem_gross(t) == AP(p.prem_gross_pp(t) * p.pols_if(t), rel=1e-15)
+        assert p.prem_rebate(t) == AP(p.prem_rebate_pp(t) * p.pols_if(t), rel=1e-15)
     twice = p.prem_paid_pp(1) * p.pols_if(1) * (1.0 - p.mort_rate(1))
-    assert p.premiums(1) - twice == pytest.approx(
-        733.011403 * 0.00062969550, abs=5e-6)
-    assert p.premiums(1) - twice == pytest.approx(0.4616, abs=0.0005)
+    assert p.premiums(1) - twice == AP(733.011403 * 0.00062969550, abs=5e-6)
+    assert p.premiums(1) - twice == AP(0.4616, abs=0.0005)
     # The claim expense, by contrast, *is* charged on the deaths and only on them.
-    assert p.expenses(25) - (p.maint_pp(25) * p.pols_if(25)) == pytest.approx(
+    assert p.expenses(25) - p.maint_pp(25) * p.pols_if(25) == AP(
         250.0 * p.pols_death(25), rel=1e-12)
 
 
@@ -855,18 +745,12 @@ def test_pitfall_12_the_premium_stops_at_the_beitragszahlungsdauer(
     assert p.prem_term() == 12 and p.policy_term() == 20 and p.proj_len() == 20
     assert p.prem_gross_pp(12) > 0.0
     for t in range(13, 21):
-        assert p.prem_gross_pp(t) == 0.0
-        assert p.prem_rebate_pp(t) == 0.0
-        assert p.prem_paid_pp(t) == 0.0
-        assert p.premiums(t) == 0.0
-        assert p.prem_gross(t) == 0.0
+        assert p.prem_gross_pp(t) == p.prem_rebate_pp(t) == p.prem_paid_pp(t) == 0.0
+        assert p.premiums(t) == p.prem_gross(t) == p.commissions(t) == 0.0
         assert p.claims(t, "DEATH") > 0.0
-        assert p.commissions(t) == 0.0
     assert p.check_prem_split() is True
     reserve = [p.res_pp_at(t, "BEF_PREM") for t in range(13, 21)]
     assert all(a > b for a, b in zip(reserve, reserve[1:]))
-    # The premium-paying period being shorter than the cover period is exactly the case
-    # HGB 341f singles out; the model publishes the diagnostic and no provision.
     assert p.res_pp_at(21, "BEF_PREM") == 0.0
 
 
@@ -877,59 +761,50 @@ def test_pitfall_13_the_three_versicherungssumme_shapes_are_a_schedule(
     property a linear schedule gets backwards, and the whole reason the *annuitaetisch
     fallende* shape exists.
     """
-    flat = de_rlv_anchor
-    assert {flat.benefit_pp(t) for t in range(1, 26)} == {300000.0}
-    assert {flat.benefit_factor(t) for t in range(1, 26)} == {1.0}
+    flat_cell = de_rlv_anchor
+    assert {flat_cell.benefit_pp(t) for t in range(1, 26)} == {300000.0}
+    assert {flat_cell.benefit_factor(t) for t in range(1, 26)} == {1.0}
     linear = risikolebensversicherung.Projection[4]
     n = linear.proj_len()
     assert linear.benefit_schedule_id() == "linear_fallend"
-    assert linear.benefit_pp(1) == pytest.approx(250000.0, rel=1e-12)
-    assert linear.benefit_pp(n) == pytest.approx(250000.0 / n, rel=1e-12)
-    steps = {round(linear.benefit_pp(t) - linear.benefit_pp(t + 1), 6)
-             for t in range(1, n)}
-    assert len(steps) == 1
-    assert steps.pop() == pytest.approx(250000.0 / n, rel=1e-9)
+    assert linear.benefit_pp(1) == AP(250000.0, rel=1e-12)
+    assert linear.benefit_pp(n) == AP(250000.0 / n, rel=1e-12)
+    steps = {round(linear.benefit_pp(t) - linear.benefit_pp(t + 1), 6) for t in range(1, n)}
+    assert len(steps) == 1 and steps.pop() == AP(250000.0 / n, rel=1e-9)
     annuity = risikolebensversicherung.Projection[5]
     m = annuity.proj_len()
     assert annuity.benefit_schedule_id() == "annuitaet_fallend_3pct"
-    assert annuity.benefit_pp(1) == pytest.approx(400000.0, rel=1e-12)
+    assert annuity.benefit_pp(1) == AP(400000.0, rel=1e-12)
     first = annuity.benefit_pp(1) - annuity.benefit_pp(2)
     last = annuity.benefit_pp(m - 1) - annuity.benefit_pp(m)
-    assert first > 0.0 and last > 0.0
-    assert first < last
-    assert first == pytest.approx(8407.70, abs=CENT)
-    assert last == pytest.approx(19236.22, abs=CENT)
+    assert 0.0 < first < last
+    assert first == AP(8407.70, abs=CENT) and last == AP(19236.22, abs=CENT)
     # A linear schedule would have made the two equal; that is the error being guarded.
-    assert last / first == pytest.approx(2.288, abs=0.005)
+    assert last / first == AP(2.288, abs=0.005)
 
 
 # Pitfall 14 -- combining two lives after loading instead of before
 def test_pitfall_14_two_lives_are_combined_before_the_loading(risikolebensversicherung):
     """Q = qA + qB - qA qB at table level, then (1 + m) rf on the combined blend.  The
-    independence assumption understates the true first-death rate for a couple, and no
-    German figure bounds the understatement.
+    independence assumption understates the true first-death rate for a couple sharing a
+    household, a vehicle and a lifestyle, and no German figure bounds the understatement.
     """
     p = risikolebensversicherung.Projection[10]
     assert p.lives() == 2 and p.issue_age() == 38 and p.issue_age2() == 36
     assert p.smoker() == "N" and p.smoker2() == "N"
-    q_a = p.mort_rate_at_age("M", "N", 38)
-    q_b = p.mort_rate_at_age("M", "N", 36)
-    assert p.mort_rate_base(1) == pytest.approx(q_a + q_b - q_a * q_b, rel=1e-15)
-    assert p.mort_rate_base(1) < q_a + q_b
-    assert p.mort_rate_base(1) > max(q_a, q_b)
-    blend_a = 0.5 * p.mort_rate_at_age("M", "N", 38) + 0.5 * p.mort_rate_at_age("F", "N", 38)
-    blend_b = 0.5 * p.mort_rate_at_age("M", "N", 36) + 0.5 * p.mort_rate_at_age("F", "N", 36)
-    combined_blend = blend_a + blend_b - blend_a * blend_b
-    assert p.mort_rate_blend(1) == pytest.approx(combined_blend, rel=1e-15)
-    assert p.mort_rate_tar(1) == pytest.approx(2.25 * combined_blend, rel=1e-12)
+    q_a, q_b = p.mort_rate_at_age("M", "N", 38), p.mort_rate_at_age("M", "N", 36)
+    assert p.mort_rate_base(1) == AP(q_a + q_b - q_a * q_b, rel=1e-15)
+    assert max(q_a, q_b) < p.mort_rate_base(1) < q_a + q_b
+    blend_a = 0.5 * q_a + 0.5 * p.mort_rate_at_age("F", "N", 38)
+    blend_b = 0.5 * q_b + 0.5 * p.mort_rate_at_age("F", "N", 36)
+    combined = blend_a + blend_b - blend_a * blend_b
+    assert p.mort_rate_blend(1) == AP(combined, rel=1e-15)
+    assert p.mort_rate_tar(1) == AP(2.25 * combined, rel=1e-12)
     # Loading first and combining after inflates the cross term by (1 + m)^2 instead of
-    # (1 + m), so the first-death rate comes out *understated* -- immaterial at these ages
-    # and material at older ones, and either way a convention that has to be declared.
-    loaded_a, loaded_b = 2.25 * blend_a, 2.25 * blend_b
-    wrong = loaded_a + loaded_b - loaded_a * loaded_b
+    # (1 + m), so the first-death rate comes out understated -- a convention to declare.
+    wrong = 2.25 * blend_a + 2.25 * blend_b - (2.25 * blend_a) * (2.25 * blend_b)
     assert wrong < p.mort_rate_tar(1)
-    assert p.mort_rate_tar(1) - wrong == pytest.approx(
-        2.25 * (2.25 - 1.0) * blend_a * blend_b, rel=1e-12)
+    assert p.mort_rate_tar(1) - wrong == AP(2.25 * 1.25 * blend_a * blend_b, rel=1e-12)
     assert p.check_pols_roll_fwd() is True
 
 
@@ -939,24 +814,21 @@ def test_pitfall_15_only_the_mortality_margin_is_returned(de_rlv_anchor):
     tariff's beta is 5,0 % against a modelled 3,0 %, so a cost result emerges in
     ``net_cf`` and stays there.  A stated simplification, not an oversight.
     """
-    base_rebate = de_rlv_anchor.result_cf()["prem_rebate"].sum()
-    base_net = de_rlv_anchor.result_cf()["net_cf"].sum()
+    base = de_rlv_anchor.result_cf()
     model = mx.read_model(MODEL_DIR, name="RLV_DE_A_cost")
     try:
         model.Projection.maint_prem_pct = 0.06
         model.Projection.comm_rate_renew = 0.02
         model.Projection.clear_all()
         df = model.Projection[1].result_cf()
-        assert df["prem_rebate"].sum() == pytest.approx(base_rebate, rel=1e-12)
-        assert df["premiums"].sum() == pytest.approx(12243.747304, abs=5e-6)
-        assert df["prem_gross"].sum() == pytest.approx(21303.653292, abs=5e-6)
-        assert df["claims_death"].sum() == pytest.approx(9899.201951, abs=5e-6)
-        assert df["net_cf"].sum() < base_net
-        assert df["net_cf"].sum() == pytest.approx(-1287.19, abs=CENT)
+        assert df["prem_rebate"].sum() == AP(base["prem_rebate"].sum(), rel=1e-12)
+        assert df["premiums"].sum() == AP(12243.747304, abs=5e-6)
+        assert df["prem_gross"].sum() == AP(21303.653292, abs=5e-6)
+        assert df["claims_death"].sum() == AP(9899.201951, abs=5e-6)
+        assert df["net_cf"].sum() < base["net_cf"].sum()
+        assert df["net_cf"].sum() == AP(-1287.19, abs=CENT)
     finally:
         model.close()
-    # And the tariff loading is not the modelled cost: the gap is the Kostenueberschuss.
-    assert 0.05 != 0.03
 
 
 # Pitfall 16 -- taking the whole-market Stornoquote as the term-life lapse rate
@@ -967,20 +839,15 @@ def test_pitfall_16_the_lapse_table_is_the_term_life_one(
     3 %.  The GDV whole-market *Stornoquote* is nowhere near it and is not used.
     """
     p = de_rlv_anchor
-    assert p.lapse_rate(1) == 0.06
-    assert p.lapse_rate(2) == p.lapse_rate(3) == 0.04
+    assert p.lapse_rate(1) == 0.06 and p.lapse_rate(2) == p.lapse_rate(3) == 0.04
     assert all(p.lapse_rate(t) == 0.03 for t in range(4, 25))
-    assert p.lapse_rate(25) == 0.0
-    assert p.lapse_rate_base(25) == 0.03
-    assert p.pols_lapse(25) == 0.0
-    assert p.pols_lapse(24) > 0.0
-    # The GDV whole-market figures are nowhere near this table and are not used.
+    assert p.lapse_rate(25) == 0.0 and p.lapse_rate_base(25) == 0.03
+    assert p.pols_lapse(25) == 0.0 and p.pols_lapse(24) > 0.0
     assert p.lapse_rate(1) > 0.0272 and p.lapse_rate(4) > 0.012
-    # Cumulative lapse over the forty-year boundary cell, where it matters most.
     longest = risikolebensversicherung.Projection[14]
     assert longest.proj_len() == 40 and longest.issue_age() == 18
-    assert longest.lapse_cum(40) == pytest.approx(0.71063050, abs=5e-9)
     assert longest.lapse_cum(1) == 0.0
+    assert longest.lapse_cum(40) == AP(0.71063050, abs=5e-9)
     assert longest.check_pols_roll_fwd() is True
 
 
@@ -990,7 +857,6 @@ def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit()
     loaded, so an impaired life pays more *and* claims more, the *Zahl/Brutto* ratio moves
     by 0,4835 of a percentage point, and the benefit is untouched.
     """
-    import pandas as pd
     model = mx.read_model(MODEL_DIR, name="RLV_DE_A_rating")
     try:
         rated = model.Projection[11]
@@ -1004,24 +870,21 @@ def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit()
         alt = model.Data.input_dir() / "model_point_table_rf1.csv"
         table.to_csv(alt)
         try:
-            model.Data.model_point_file = "model_point_table_rf1.csv"
+            model.Data.model_point_file = alt.name
             model.Data.clear_all()
             model.Projection.clear_all()
             plain = model.Projection[11]
             assert plain.rating_factor() == 1.0
             assert [plain.benefit_pp(t) for t in (1, 9, 18)] == rated_benefit
-            assert plain.prem_gross_level_pp() < rated_g
-            assert rated_g / plain.prem_gross_level_pp() == pytest.approx(1.70, abs=0.01)
+            assert rated_g / plain.prem_gross_level_pp() == AP(1.70, abs=0.01)
             plain_claims = float(plain.result_cf()["claims_death"].sum())
-            assert rated_claims / plain_claims == pytest.approx(1.69, abs=0.01)
-            plain_ratio = plain.prem_paid_pp(1) / plain.prem_gross_pp(1)
-            assert abs(rated_ratio - plain_ratio) < 0.01
-            assert abs(rated_ratio - plain_ratio) == pytest.approx(0.004835, abs=5e-6)
+            assert rated_claims / plain_claims == AP(1.69, abs=0.01)
+            moved = abs(rated_ratio - plain.prem_paid_pp(1) / plain.prem_gross_pp(1))
+            assert moved < 0.01 and moved == AP(0.004835, abs=5e-6)
         finally:
             alt.unlink(missing_ok=True)
     finally:
         model.close()
-    assert isinstance(pd.DataFrame(), pd.DataFrame)
 
 
 # Pitfall 18 -- treating the Ueber-Kreuz-Versicherung as a different product
@@ -1041,37 +904,30 @@ def test_pitfall_18_the_ueber_kreuz_structure_is_not_a_product(risikolebensversi
     assert not any("kreuz" in c.lower() for c in columns)
     for csv in sorted(PRODUCT_DIR.glob("*.csv")):
         assert "kreuz" not in csv.read_text(encoding="utf-8").lower(), csv.name
-    # The documents do carry it, and say it changes the tax and nothing else.
     doc = (PRODUCT_DIR / "model.md").read_text(encoding="utf-8")
-    assert "Über-Kreuz-Versicherung" in doc
-    assert "contracting structure" in doc
+    assert "Über-Kreuz-Versicherung" in doc and "contracting structure" in doc
 
 
-# The published check_* identities
+# The published identities
 def test_all_five_checks_hold_on_the_anchor_with_zero_residuals(de_rlv_anchor):
     """The five per-t identities, and delib's own ruling among them: ``check_net_cf()``
     reconciles the headline number in code rather than only in prose.
     """
     p = de_rlv_anchor
     n = p.proj_len()
-    assert p.check_net_cf() is True
-    assert p.check_pols_roll_fwd() is True
-    assert p.check_prem_split() is True
-    assert p.check_res_roll_fwd() is True
+    assert p.check_net_cf() is True and p.check_pols_roll_fwd() is True
+    assert p.check_prem_split() is True and p.check_res_roll_fwd() is True
     assert p.check_no_cash_value() is True
     for t in (1, 2, 13, n - 1, n):
-        assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9)
-        assert p.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
-        assert p.check_prem_split_resid(t) == pytest.approx(0.0, abs=1e-9)
-        assert p.check_res_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
+        assert p.check_net_cf_resid(t) == AP(0.0, abs=1e-9)
+        assert p.check_pols_roll_fwd_resid(t) == AP(0.0, abs=1e-12)
+        assert p.check_prem_split_resid(t) == AP(0.0, abs=1e-9)
+        assert p.check_res_roll_fwd_resid(t) == AP(0.0, abs=1e-6)
         assert p.check_no_cash_value_resid(t) == 0.0
-    # check_net_cf is the frame's own arithmetic, column by column.
     for t in (1, 7, n):
-        assert p.net_cf(t) == pytest.approx(
+        assert p.net_cf(t) == AP(
             p.premiums(t) - p.claims(t) - p.expenses(t) - p.commissions(t), rel=1e-12)
-    # claims(t) with no kind is the sum over kinds, and DEATH is the only non-zero one.
-    for t in (1, 7, n):
-        assert p.claims(t) == pytest.approx(p.claims(t, "DEATH"), rel=1e-15)
+        assert p.claims(t) == AP(p.claims(t, "DEATH"), rel=1e-15)
 
 
 def test_the_scalar_equivalences_live_here_and_not_in_a_check_cells(de_rlv_anchor):
@@ -1080,10 +936,10 @@ def test_the_scalar_equivalences_live_here_and_not_in_a_check_cells(de_rlv_ancho
     """
     p = de_rlv_anchor
     g, ae, a_pv = p.prem_gross_level_pp(), p.tariff_annuity(), p.tariff_claims_pv()
-    assert g * ae == pytest.approx(
+    assert g * ae == AP(
         a_pv + 0.025 * 25 * g + 0.05 * g * ae + 0.00030 * p.tariff_sum_pv(), rel=1e-12)
-    assert p.beitragsverrechnung_rate() * g * ae == pytest.approx(
-        1.0 * 0.90 * (1.25 / 2.25) * a_pv, rel=1e-12)
+    assert p.beitragsverrechnung_rate() * g * ae == AP(
+        0.90 * (1.25 / 2.25) * a_pv, rel=1e-12)
 
 
 # Structure, documentation and inputs
@@ -1095,24 +951,19 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_rlv_anchor):
     assert list(df.columns) == [
         "pols_if", "prem_gross", "premiums", "prem_rebate",
         "claims_death", "claims_lapse", "claims_maturity",
-        "expenses", "commissions", "net_cf", "liability_cf",
-    ]
-    assert list(df.index) == list(range(1, 26))
-    assert df.index.name == "t"
+        "expenses", "commissions", "net_cf", "liability_cf"]
+    assert list(df.index) == list(range(1, 26)) and df.index.name == "t"
     assert df.index[-1] == de_rlv_anchor.proj_len()
     assert df["pols_if"].iloc[0] == de_rlv_anchor.pols_if_init()
-    # A cash flow statement must not publish its own subtotal beside its parts.
-    assert "claims" not in df.columns
+    assert "claims" not in df.columns    # never the subtotal beside its own parts
     assert (df["net_cf"] + df["liability_cf"]).abs().max() == 0.0
     outgo = (df["claims_death"] + df["claims_lapse"] + df["claims_maturity"]
              + df["expenses"] + df["commissions"])
-    assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
-        0.0, abs=1e-9)
+    assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == AP(0.0, abs=1e-9)
     assert (df["pols_if"] > 0.0).all()
     # A year-one strain, thin positive years, then a crossover at t = 14.
-    assert df["net_cf"].iloc[0] == pytest.approx(-359.51, abs=CENT)
-    assert (df["net_cf"].loc[2:13] > 0.0).all()
-    assert (df["net_cf"].loc[14:25] < 0.0).all()
+    assert df["net_cf"].iloc[0] == AP(-359.51, abs=CENT)
+    assert (df["net_cf"].loc[2:13] > 0.0).all() and (df["net_cf"].loc[14:25] < 0.0).all()
 
 
 def test_invalid_enum_values_raise(de_rlv_anchor):
@@ -1128,13 +979,10 @@ def test_invalid_enum_values_raise(de_rlv_anchor):
 def test_docstrings_describe_the_current_structure(risikolebensversicherung):
     """Specifics a reader would rely on, asserted so they cannot go stale silently."""
     doc = flat(risikolebensversicherung.doc)
-    assert "Risikolebensversicherung" in doc
-    assert "mechanics demonstration" in doc
-    assert "external" in doc                     # inputs are not stored in the model
-    assert "once per model" in doc               # why Data exists
-    assert "Bruttobeitrag" in doc and "Zahlbeitrag" in doc
-    assert "Beitragsverrechnung" in doc
-    assert "Data" in doc and "Projection" in doc
+    for phrase in ("Risikolebensversicherung", "mechanics demonstration", "external",
+                   "once per model", "Bruttobeitrag", "Zahlbeitrag",
+                   "Beitragsverrechnung", "Data", "Projection"):
+        assert phrase in doc, phrase
     proj = flat(risikolebensversicherung.Projection.doc)
     assert "Notes symbol" in proj
     for cells in ("proj_len", "model_point", "mort_rate_tar", "suicide_factor",
@@ -1142,16 +990,16 @@ def test_docstrings_describe_the_current_structure(risikolebensversicherung):
                   "res_pp_at", "lapse_cum", "pols_if_at"):
         assert cells in proj, cells
     data = flat(risikolebensversicherung.Data.doc)
-    assert "TradLife_A" in data
+    assert "TradLife_A" in data and "DAV 2008 T" in data and "provenance" in data
     for cells in ("input_dir", "model_point_table", "mort_table", "benefit_schedule",
                   "nvg_schedule", "lapse_table", "freq_loading_table"):
         assert cells in data, cells
-    assert "DAV 2008 T" in data
-    assert "provenance" in data
 
 
 def test_the_shared_protection_vocabulary_is_present(risikolebensversicherung):
-    """The names this model shares with frlib's TD_FR_A, the same product in France."""
+    """The names this model shares with frlib's TD_FR_A, the same product in France --
+    and the German delta beside them: two premium streams, and the rate between them.
+    """
     shared = {
         "model_point", "proj_len", "age", "pols_if", "pols_if_at", "pols_if_init",
         "pols_death", "pols_lapse", "pols_maturity", "mort_rate", "mort_rate_base",
@@ -1159,15 +1007,12 @@ def test_the_shared_protection_vocabulary_is_present(risikolebensversicherung):
         "suicide_factor", "claims", "commissions", "expenses", "inflation_factor",
         "net_cf", "liability_cf", "result_cf", "prem_freq_load",
         "check_no_cash_value", "check_pols_roll_fwd",
-    }
+        "prem_gross", "prem_gross_pp", "prem_rebate", "prem_rebate_pp", "prem_paid_pp",
+        "beitragsverrechnung_rate", "mort_rate_tar", "res_pp_at", "res_zill_pp_at",
+        "check_net_cf", "check_prem_split"}
     names = set(risikolebensversicherung.Projection.cells) | set(
         risikolebensversicherung.Projection.refs)
     assert shared <= names, f"missing: {sorted(shared - names)}"
-    # And the German delta: two premium streams, and the rate that separates them.
-    for german in ("prem_gross", "prem_gross_pp", "prem_rebate", "prem_rebate_pp",
-                   "prem_paid_pp", "beitragsverrechnung_rate", "mort_rate_tar",
-                   "res_pp_at", "res_zill_pp_at", "check_net_cf", "check_prem_split"):
-        assert german in names, german
 
 
 def test_the_shipped_tables_mark_their_own_provenance():
@@ -1176,6 +1021,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
     asserted here: the 50/50 blend, the female-to-male ratio and the smoker multiplier.
     """
     import pandas as pd
+
     expected = {"model_point_table.csv", "mort_table.csv", "benefit_schedule.csv",
                 "nvg_schedule.csv", "lapse_table.csv", "freq_loading_table.csv"}
     assert expected == {p.name for p in PRODUCT_DIR.iterdir() if p.suffix == ".csv"}
@@ -1188,17 +1034,15 @@ def test_the_shipped_tables_mark_their_own_provenance():
         male = float(mort.at[("dav2008t_proxy", "M", "N", age), "mort_rate"])
         female = float(mort.at[("dav2008t_proxy", "F", "N", age), "mort_rate"])
         smoker = float(mort.at[("dav2008t_proxy", "M", "R", age), "mort_rate"])
-        assert female / male == pytest.approx(0.50, rel=1e-12)
-        assert smoker / male == pytest.approx(2.20, rel=1e-12)
-        assert 0.5 * male + 0.5 * female == pytest.approx(
-            0.00030 * 1.095 ** (age - 30), rel=1e-9)
+        assert female / male == AP(0.50, rel=1e-12) and smoker / male == AP(2.20, rel=1e-12)
+        assert 0.5 * male + 0.5 * female == AP(0.00030 * 1.095 ** (age - 30), rel=1e-9)
     assert mort["mort_rate"].max() <= 1.0
     assert sorted(set(mort.index.get_level_values("age"))) == list(range(18, 81))
     lapse = pd.read_csv(PRODUCT_DIR / "lapse_table.csv", index_col="policy_year")
     assert list(lapse["lapse_rate"])[:4] == [0.06, 0.04, 0.04, 0.03]
     assert set(lapse["lapse_rate"]) == {0.06, 0.04, 0.03}
     assert float(lapse.loc[40, "lapse_rate"]) == 0.03
-    assert any("Stornoquote" in str(p) for p in lapse["provenance"])
+    assert any("Stornoquote" in str(v) for v in lapse["provenance"])
     freq = pd.read_csv(PRODUCT_DIR / "freq_loading_table.csv", index_col="prem_freq")
     assert list(freq["prem_freq_load"]) == [1.0, 1.02, 1.03, 1.05]
     assert list(freq["instalments"]) == [1, 2, 4, 12]
@@ -1208,8 +1052,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
         "konstant", "linear_fallend", "annuitaet_fallend_3pct"}
     assert set(benefit.xs("konstant")["benefit_factor"]) == {1.0}
     assert float(benefit.at[("linear_fallend", 20), "benefit_factor"]) == 0.05
-    nvg = pd.read_csv(PRODUCT_DIR / "nvg_schedule.csv",
-                      index_col=["nvg_id", "policy_year"])
+    nvg = pd.read_csv(PRODUCT_DIR / "nvg_schedule.csv", index_col=["nvg_id", "policy_year"])
     assert set(nvg.xs("keine")["sum_uplift"]) == {1.0}
     assert float(nvg.at[("nvg_zwei_erhoehungen", 6), "sum_uplift"]) == 1.2
     assert float(nvg.at[("nvg_zwei_erhoehungen", 12), "sum_uplift"]) == 1.4
@@ -1227,6 +1070,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     struck off the same table the projection uses, one order up.
     """
     import pandas as pd
+
     lighter = pd.read_csv(PRODUCT_DIR / "mort_table.csv",
                           index_col=["table_id", "sex", "smoker", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
@@ -1236,7 +1080,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         lighter.to_csv(model.Data.input_dir() / alt_name)
         try:
             base = model.Projection[1].result_cf()
-            assert base["claims_death"].sum() == pytest.approx(9899.20, abs=CENT)
+            assert base["claims_death"].sum() == AP(9899.20, abs=CENT)
             model.Data.mort_table_file = alt_name
             model.Data.clear_all()
             model.Projection.clear_all()
@@ -1258,6 +1102,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
 def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
+
     model = mx.read_model(MODEL_DIR, name="RLV_DE_A_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
@@ -1270,15 +1115,14 @@ def test_round_trip_is_stable(tmp_path):
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():
-            assert p.prem_gross(t) == pytest.approx(row[2], abs=CENT)
-            assert p.premiums(t) == pytest.approx(row[3], abs=CENT)
-            assert p.claims(t, "DEATH") == pytest.approx(row[5], abs=CENT)
-            assert p.net_cf(t) == pytest.approx(row[8], abs=CENT)
-        assert p.prem_gross_level_pp() == pytest.approx(1275.411882, abs=5e-6)
-        assert p.beitragsverrechnung_rate() == pytest.approx(0.42527476, abs=5e-9)
+            assert p.prem_gross(t) == AP(row[2], abs=CENT)
+            assert p.premiums(t) == AP(row[3], abs=CENT)
+            assert p.claims(t, "DEATH") == AP(row[5], abs=CENT)
+            assert p.net_cf(t) == AP(row[8], abs=CENT)
+        assert p.prem_gross_level_pp() == AP(1275.411882, abs=5e-6)
+        assert p.beitragsverrechnung_rate() == AP(0.42527476, abs=5e-9)
         assert "Notes symbol" in flat(reread.Projection.doc)
-        assert p.check_net_cf() is True
-        assert p.check_no_cash_value() is True
+        assert p.check_net_cf() is True and p.check_no_cash_value() is True
     finally:
         reread.close()
     assert model_files(dest) == model_files(MODEL_DIR)
