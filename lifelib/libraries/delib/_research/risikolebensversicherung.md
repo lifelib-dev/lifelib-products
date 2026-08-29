@@ -670,10 +670,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 - URL: `https://www.gesetze-im-internet.de/verststg_1996/__4.html` `[unverified]`
 - Asserted and `[unverified]`: the *Versicherungsteuer* — at a general rate of 19 % for most non-life
-  lines — **does not apply to life insurance**. A German RLV premium is quoted and billed **without
-  insurance premium tax**, unlike a French *cotisation* quoted "TTC". The delib model carries **no
-  premium-tax line**, and the reason is recorded here so a reader does not conclude it was forgotten
-  (gap 19).
+  lines — **does not apply to life insurance**, so a German RLV premium is billed **without insurance
+  premium tax**, unlike a French *cotisation* quoted "TTC". The model carries **no premium-tax line**,
+  recorded here so a reader does not conclude it was forgotten (gap 19).
 
 ### R17 — VVG-InfoV, and the PRIIP boundary for a pure protection product
 
@@ -746,9 +745,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 ### R22 — Solvency II and the German prudential layer
 
-- Publisher: EIOPA; BaFin. URL: **not established.** A pointer only, on the same posture as R21.
-  Nothing product-specific for German term assurance was located, and **no capital, risk-margin or
-  stress figure appears anywhere in the delib `risikolebensversicherung` documents.**
+- Publisher: EIOPA; BaFin. URL: **not established.** A pointer only, on the same posture as R21: nothing
+  product-specific for German term assurance was located, and **no capital, risk-margin or stress figure
+  appears anywhere in the delib `risikolebensversicherung` documents.**
 
 ### R23 — German case law on *vorvertragliche Anzeigepflicht* and *Selbsttötung* in life insurance
 
@@ -946,9 +945,8 @@ about this product [S5].
   *Deckungskapital* being small and short-lived [R9] [R10]. That ordering is the **mirror image of the
   endowment**, where the interest result dominates. The *Bewertungsreserven* share of § 153 Abs. 3 VVG
   and § 139 VAG is economically empty here for the same reason [R5] [R11] `[unverified]`.
-- **The delib model implements *Beitragsverrechnung* only** and says so in `model.md`. *Summenzuwachs*
-  is the one worth implementing next, being the only one that changes the benefit rather than the
-  premium.
+- **The delib model implements *Beitragsverrechnung* only** and says so in `model.md`; *Summenzuwachs*
+  is the one worth implementing next, being the only one that changes the benefit, not the premium.
 
 ### 7. *Zahlweise* and the *Ratenzahlungszuschlag*
 
@@ -964,8 +962,7 @@ about this product [S5].
   right under § 168 VVG [R8]: a monthly-paying contract is terminable monthly. **This is why German
   term-life lapse is not concentrated at policy anniversaries** the way an annual-mode book's is — a
   caution for any model assuming anniversary-only exits.
-- **No *Versicherungsteuer* is charged**: life insurance is exempt [R16] `[unverified]`. There is no
-  premium-tax line anywhere in the delib model for this product.
+- **No *Versicherungsteuer***: life insurance is exempt [R16] `[unverified]`; no premium-tax line.
 
 ### 8. Options and guarantees
 
@@ -1333,8 +1330,8 @@ Two different things that are routinely confused: the first is a **product form*
 
 ### 17. Decrements and policyholder behaviour
 
-- **Two decrements only: death and lapse.** No disability acceleration, no surrender benefit, no
-  paid-up state, no partial withdrawal — the simplest decrement structure of the ten delib products.
+- **Two decrements only: death and lapse** — no disability acceleration, no surrender benefit, no
+  paid-up state, no partial withdrawal; the simplest decrement structure of the ten delib products.
 - **Lapse.** No *Risikoversicherung*-specific rate was established (gap 13). The inherited whole-market
   *Stornoquote* — **2,72 % (2024), 2,56 % (2023)** on the main GDV measure and **1,2 % (2024)** on a
   second, irreconcilable one [R18] — is a book average dominated by long-dated savings contracts and is
@@ -1348,18 +1345,16 @@ Two different things that are routinely confused: the first is a **product form*
   plausible range of **2 % to 8 %** in the early years. **No German figure supports any of it**
   (gap 13).
 - **Anti-selective lapse.** Healthy lives can re-underwrite into a cheaper contract; impaired lives
-  cannot. The lapsing population is therefore **healthier than the remaining one**, and a term book's
-  mortality drifts up relative to a table calibrated on the whole cohort. **Delib does not model
-  selective lapse** — one mortality basis for stayers and leavers — and this is recorded as a known
-  simplification and a listed modelling pitfall.
+  cannot, so the lapsing population is **healthier than the remaining one** and a term book's mortality
+  drifts up relative to a table calibrated on the whole cohort. **Delib does not model selective
+  lapse** — one basis for stayers and leavers — a known simplification and a listed pitfall.
 - **The *Zahlbeitrag* is itself a lapse driver.** A cut in the *Beitragsverrechnung* raises the bill
   without any change the policyholder agreed to, and the remedy is to leave [R6] (mechanic 5). **A
   model that raises the *Zahlbeitrag* toward the *Bruttobeitrag* in a stress and leaves the lapse
   assumption unchanged is understating the stress.** A listed pitfall.
 - **Premium cessation** at death and at the end of the *Beitragszahlungsdauer*, which may be shorter
   than the *Versicherungsdauer* (mechanic 4). The processing order must put premium collection before
-  the death decrement in the year of death if the tariff collects in advance, and the model must say
-  which it does.
+  the death decrement in the year of death if the tariff collects in advance, and the model must say so.
 
 ### 18. Taxation
 
@@ -1385,8 +1380,8 @@ Two different things that are routinely confused: the first is a **product form*
   ceiling figure is stated in this file.**
 - **No *Versicherungsteuer***: life insurance is exempt [R16] `[unverified]`, so the German premium
   bears no premium tax, unlike a French *cotisation* quoted "TTC" [`frlib` mechanic 13].
-- **Nothing in this section is modelled.** The model publishes **gross** liability cash flows; tax on
-  the beneficiary is documented, not computed.
+- **Nothing here is modelled**: the model publishes **gross** liability cash flows, and tax on the
+  beneficiary is documented, not computed.
 
 ### 19. Market context
 
@@ -1486,8 +1481,8 @@ Every "range" below is **argued from structure or market knowledge**, not observ
 
 ### What the corpus supports as a representative design
 
-A **composite**, not a copy of any carrier's tariff — it could not be otherwise, because no carrier's
-tariff was read.
+A **composite**, not a copy of any carrier's tariff — it could not be otherwise, no carrier's tariff
+having been read.
 
 - **Single life, individual, participating *Risikolebensversicherung***, medically underwritten,
   *Neubestand* [R9] [R12].
@@ -1544,10 +1539,9 @@ tariff was read.
    delib `risikolebensversicherung` documents.
 
 5. **The Continentale / Europa natural experiment was not run** [S12]: one group runs a broker-channel
-   and a direct-channel carrier on the same product with the same underwriting and reserving basis,
-   which is the cleanest available way to isolate the channel effect on the *Brutto*/*Zahlbeitrag*
-   spread. Neither carrier's documents were reached. The same applies to Dialog as a monoline
-   comparator [S7].
+   and a direct-channel carrier on the same product with the same underwriting and reserving basis — the
+   cleanest available way to isolate the channel effect on the spread. Neither carrier's documents were
+   reached, and the same applies to Dialog as a monoline comparator [S7].
 
 6. **The magnitude of the DAV 2008 T *Sicherheitszuschlag* was not established.** The *Richtlinie*
    regulates the **procedure** for setting it [R12]; the level is not public. It determines the
@@ -1597,9 +1591,8 @@ tariff was read.
     and **no German figure supports any of it.**
 
 14. **No BaFin material specific to term assurance was located.** *Merkblatt* 01/2023 (VA) is expressly
-    about ***kapitalbildende*** products and does not reach a pure protection contract [R19]. So this
-    file carries **no supervisory conduct standard** for the product, and a reader must not import the
-    endowment one.
+    about ***kapitalbildende*** products and does not reach a pure protection contract [R19], so this
+    file carries **no supervisory conduct standard** and a reader must not import the endowment one.
 
 15. **Falling-sum schedule parameters were not established** (mechanic 3): the nominal rate a German
     *annuitätisch fallende* tariff amortises at, the residual sum at expiry, and the premium reduction

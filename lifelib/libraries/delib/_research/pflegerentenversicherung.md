@@ -52,7 +52,6 @@ Access date for all citations: **2026-08-29**.
 
 ## Retrieval conditions and citation discipline
 
-
 **No document in this file was retrieved.** Direct HTTP egress from this build environment is
 blocked by an organisation network policy. `WebFetch` and `curl` are refused with HTTP 403 at the
 egress gateway for every host outside a short package-registry allowlist. The hosts that matter for
@@ -117,18 +116,14 @@ turns on:
 | *Pflegestufe* (I–III, Härtefall) | The three pre-2017 degrees, replaced by the *Pflegegrade*; still cited in older wordings and older statistics |
 | *Soziale Pflegeversicherung* (SPV) | The statutory LTC insurance of SGB XI, the fifth pillar of German social insurance |
 | *Private Pflegepflichtversicherung* (PPV) | The compulsory private equivalent for people insured in the *private Krankenversicherung*, § 23 SGB XI |
-| *Teilleistungssystem*, *Teilkaskoversicherung* | The design principle of the SPV: it deliberately meets only part of the cost of care |
 | *Neues Begutachtungsassessment* (NBA) | The assessment instrument introduced with the five *Pflegegrade*; scores six *Module* and converts them into *gewichtete Punkte* |
 | *Medizinischer Dienst* (MD, formerly MDK) / MEDICPROOF | The assessor for the SPV / the assessor for the PPV |
 | *Pflegegeld* / *Pflegesachleistung* | The cash benefit for care given informally at home / the benefit in kind for a professional *Pflegedienst* |
 | *Vollstationäre Pflege* | Care in a *Pflegeheim*; the setting in which the funding gap is largest |
 | *Eigenanteil*, *einrichtungseinheitlicher Eigenanteil* (EEE) | The resident's own share of the cost of a *Pflegeheim* / the care-related part of it, equal for *Pflegegrade* 2 to 5 within one facility since 2017 |
 | *Leistungszuschlag* | The duration-dependent statutory subsidy that reduces the *EEE* the longer the resident has been in the facility, § 43c SGB XI |
-| *Versorgungslücke* | The funding gap the private product is sold to close |
-| *Pflegezusatzversicherung* | Private LTC top-up cover generally, in any of its three forms |
 | *Pflegetagegeldversicherung* / *Pflegekostenversicherung* / *Pflegerentenversicherung* | Daily-cash form (a *Summenversicherung*) / indemnity form / annuity form written as life assurance |
 | *Pflege-Bahr* | The state-subsidised *Pflegetagegeld* of § 127 SGB XI, from the 2013 reform, carrying a monthly *Zulage* |
-| *Pflegevorsorgezulage* | The 5 € monthly subsidy paid into a *Pflege-Bahr* contract |
 | *Vereinbarte Pflegerente* | The contractual monthly annuity at the top *Pflegegrad*, the scaling constant of the whole benefit schedule |
 | *Leistungsstaffel* | The schedule of benefit percentages by *Pflegegrad* |
 | *Beitragsbefreiung im Leistungsfall* | Waiver of premium while the benefit is payable |
@@ -146,17 +141,15 @@ turns on:
 | *Gesundheitsprüfung* / *Risikozuschlag* / *Leistungsausschluss* | Medical underwriting / extra-risk loading / an exclusion written into the individual contract |
 | *Vorvertragliche Anzeigepflicht* | The applicant's pre-contractual duty of disclosure, § 19 VVG |
 | *Reaktivierung* | Recovery from *Pflegebedürftigkeit* back to the active state; in this product a decrement out of the paying state |
-| *Hilfe zur Pflege* | The means-tested social-assistance backstop of SGB XII, the alternative to private provision |
-| *Elternunterhalt* | Adult children's maintenance liability for a parent's care costs, curtailed from 2020 |
 
 ---
 
 ## Primary sources
 
 Every entry below carries the same retrieval status, stated once here rather than repeated sixteen
-times: **Retrieved: no — direct HTTP egress blocked in the build environment; no search corroboration
-(session search budget exhausted).** Each entry names a document that exists and is the right kind
-of document for this product. Nothing in an entry asserts that a particular edition, document
+times: **Retrieved: no — direct HTTP egress blocked in the build environment; no search
+corroboration (session search budget exhausted).** Each names a document that exists and is the
+right kind of document for this product; nothing asserts that a particular edition, document
 number, page count or date is correct.
 
 ### S1 — PKV-Verband, *Musterbedingungen für die private Pflegepflichtversicherung* (MB/PPV)
@@ -199,9 +192,9 @@ number, page count or date is correct.
   was not established, and this file does not assume it does.** No benefit, premium, surrender or
   paid-up rule anywhere below is attributed to S3. The entry is retained because the model-conditions
   library is the first document a reader with a working network should look for, and because a GDV
-  *Musterbedingung*, if one exists, would be the natural spine of a composite specification. Its
-  competition-law disclaimer must be respected in any case: an S3-tagged fact would be a *market
-  template*, weaker evidence about any carrier than that carrier's own AVB.
+  *Musterbedingung*, if one exists, would be the natural spine of a composite specification. An
+  S3-tagged fact would in any case be a *market template*, weaker evidence about any carrier than
+  that carrier's own AVB.
 
 ### S4 — *Allgemeine Bedingungen für die Pflegerentenversicherung* (AVB), as a document class
 - Publisher: an individual German *Lebensversicherer* (no carrier's wording was located)
@@ -275,10 +268,10 @@ number, page count or date is correct.
 - Publisher: an individual German *Lebensversicherer*; a GDV model exists for other life products
 - Doc type: the annual statement owed to the policyholder under § 155 VVG [R11][unverified]
 - URL: not established
-- Content: the document in which the guaranteed benefit, the accumulated *Überschussbeteiligung*,
-  the current *Rückkaufswert* and the current *beitragsfreie* benefit are reported side by side —
-  i.e. it names the state variables a projection model has to carry. For a *Pflegerente* the
-  guaranteed benefit reported is the *vereinbarte Pflegerente* at the top *Pflegegrad*, not a sum
+- Content: the document reporting the guaranteed benefit, the accumulated *Überschussbeteiligung*,
+  the current *Rückkaufswert* and the current *beitragsfreie* benefit side by side — i.e. it names
+  the state variables a projection model must carry. For a *Pflegerente* the guaranteed benefit is
+  the *vereinbarte Pflegerente* at the top *Pflegegrad*, not a sum
   insured. **No instance was located and the field list is `[unverified]`.**
 
 ### S9 — *Tarifblatt* / *Beitragstabelle* for a *Pflegerenten* tariff
@@ -367,20 +360,17 @@ number, page count or date is correct.
 - Doc type: annual statistical report and standing statistics pages
 - URL: not established
 - Content: the only public counting of German private LTC top-up contracts, split between
-  *geförderte* (*Pflege-Bahr*) and *ungeförderte* business. Two structural cautions that matter more
-  than any number: (a) the PKV-Verband counts **health-insurance** contracts, so *Pflegetagegeld*
-  and *Pflegekosten* are inside its count and ***Pflegerentenversicherung*, written by
-  *Lebensversicherer*, is not**; and (b) the count is of contracts, not of insured persons, and one
-  person may hold more than one. Any figure taken from this class of source is `[unverified]` and is
-  recorded in section 22 with that caution attached (gap 7).
+  *geförderte* (*Pflege-Bahr*) and *ungeförderte* business. Two cautions matter more than any
+  number: it counts **health-insurance** contracts, so *Pflegetagegeld* and *Pflegekosten* are in
+  and ***Pflegerentenversicherung*, written by *Lebensversicherer*, is not**; and it counts
+  contracts, not insured persons. Any figure of this class is `[unverified]` (gap 7).
 
 ---
 
 ## Regulatory and actuarial references
 
-Same retrieval status as the primary sources: **Retrieved: no — direct HTTP egress blocked in the
-build environment; no search corroboration (session search budget exhausted).** Canonical URLs are
-given where the form is well known and are marked `[unverified]`; elsewhere `URL: not established`.
+Same retrieval status as the primary sources. Canonical URLs are given where the form is well known
+and marked `[unverified]`; elsewhere `URL: not established`.
 
 ### R1 — SGB XI, *Elftes Buch Sozialgesetzbuch — Soziale Pflegeversicherung*
 - Publisher: Bundesministerium der Justiz / juris, via `gesetze-im-internet.de`
@@ -662,12 +652,11 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
 - Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht
 - URL: not established (`bafin.de` refused)
 - Content: BaFin supervises German life and health insurers, approves the responsible actuary's
-  function, and publishes *Merkblätter*, *Rundschreiben*, *Fachartikel* and its annual risk review.
-  Its *Wohlverhaltensaufsicht* strand has concentrated on the cost of capital-forming life products
-  and on whether products deliver customer value. **Nothing product-specific to
-  *Pflegerentenversicherung* was located**, and no BaFin statement of any kind is cited in this file
-  (gap 11). The entry is retained because a reader with a working network should look here first for
-  any supervisory expectation about *Pflegetafel* prudence or about the *Nachprüfung*.
+  function, and publishes *Merkblätter*, *Rundschreiben*, *Fachartikel* and its annual risk review;
+  its *Wohlverhaltensaufsicht* strand has concentrated on product cost and customer value.
+  **Nothing product-specific to *Pflegerentenversicherung* was located**, and no BaFin statement of
+  any kind is cited in this file (gap 11). A reader with a working network should look here first
+  for a supervisory expectation about *Pflegetafel* prudence or about the *Nachprüfung*.
 
 ### R18 — Destatis, *Pflegestatistik*
 - Publisher: Statistisches Bundesamt (Destatis)
@@ -751,20 +740,17 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
 
 ### R24 — SGB XII §§ 61 to 66 (*Hilfe zur Pflege*) and the *Angehörigen-Entlastungsgesetz*
 - URL: `https://www.gesetze-im-internet.de/sgb_12/` `[unverified]`
-- Content: the means-tested social-assistance backstop that pays what the resident cannot, after
-  income and all but a small *Schonvermögen* have been used up. Two facts make it directly relevant
-  to a private product:
-  1. **A private *Pflegerente* with a *Rückkaufswert* is realisable assets** for the means test
-     before the claim, and the annuity is **income** during it, so both reduce *Hilfe zur Pflege*
-     dependent on the case `[unverified]`. A contract with no surrender value is, on that reasoning,
-     the more robust design for a buyer whose likely destination is social assistance — an argument
-     for the pure-risk variant that has nothing to do with price.
-  2. The **Angehörigen-Entlastungsgesetz**, in force from **1 January 2020** `[unverified]`, limits
-     adult children's *Elternunterhalt* liability to children with annual gross income above
-     **100 000 €** `[unverified]`. That reform removed the most commonly cited motive for buying
-     private LTC cover — protecting one's children from a maintenance claim — from all but
-     high-earning families, and shifted the sales argument to protecting the buyer's **own** assets
-     and standard of care. Any statement about the effect on sales volumes is `[unverified]`.
+- Content: the means-tested backstop that pays what the resident cannot, after income and all but a
+  small *Schonvermögen* are used up. Two facts make it directly relevant. **A private *Pflegerente*
+  with a *Rückkaufswert* is realisable assets** in the means test before the claim, and the annuity
+  is **income** during it `[unverified]`, so a contract with no surrender value is on that reasoning
+  the more robust design for a buyer whose likely destination is social assistance — an argument for
+  the pure-risk variant that has nothing to do with price. And the **Angehörigen-Entlastungsgesetz**,
+  in force from **1 January 2020** `[unverified]`, limits adult children's *Elternunterhalt*
+  liability to children with annual gross income above **100 000 €** `[unverified]`, removing the
+  most commonly cited motive for buying private LTC cover from all but high-earning families and
+  shifting the sales argument to protecting the buyer's own assets. Any statement about the effect
+  on sales volumes is `[unverified]`.
 
 ---
 
@@ -826,12 +812,11 @@ the level is a `[std]` parameter with its rationale stated, never a citation.
 
 - A separate route to *Pflegegrad* 5 exists for defined *besondere Bedarfskonstellationen*
   irrespective of the point total `[R2][unverified]`.
-- **Module 4, *Selbstversorgung*, carries 40 % of the weight on its own.** That is the module
-  covering washing, dressing, feeding and continence — the classic activities of daily living. A
-  reader coming from a US or UK LTC product will recognise the ADL trigger inside the German
-  scoring, but should not equate them: the German instrument reaches a *Pflegegrad* 2 on a
-  combination of moderate impairments across several modules that no two-ADL-failure trigger would
-  catch, and it scores dementia through modules 2, 3 and 5 without any physical impairment at all.
+- **Module 4, *Selbstversorgung*, carries 40 % of the weight on its own** — washing, dressing,
+  feeding, continence. A reader coming from a US or UK LTC product will recognise the ADL trigger
+  inside the German scoring but should not equate them: the instrument reaches grade 2 on moderate
+  impairments spread across several modules that no two-ADL-failure trigger would catch, and it
+  scores dementia through modules 2, 3 and 5 with no physical impairment at all.
 - **Consequences for a private product, all structural:** the private insurer does **not** define
   the insured event — the state does, and re-defines it [R9], so the insurer carries **definition
   risk** no wording can hedge; the private insurer does **not** assess the claim, the MD or
@@ -867,11 +852,10 @@ whether any of them changed on 1 January 2026 was not established (gap 8).
 | 4 | 1,855.00 EUR |
 | 5 | 2,096.00 EUR |
 
-**Secondary heads** `[R5][unverified]`: *Entlastungsbetrag* **131,00 €** per month, available in
-every *Pflegegrad* including 1, earmarked for approved relief services and not payable in cash;
-*Verhinderungspflege* and *Kurzzeitpflege* merged into a **gemeinsamer Jahresbetrag** of the order of
-**3 500 €** per year for *Pflegegrade* 2 to 5 from 1 July 2025; consumable *Pflegehilfsmittel* of
-the order of **40 €** per month; a *Wohngruppenzuschlag* of the order of **220 €** per month.
+**Secondary heads** `[R5][unverified]`: *Entlastungsbetrag* **131,00 €** per month in every grade
+including 1, earmarked and not payable in cash; *Verhinderungspflege* and *Kurzzeitpflege* merged
+into a **gemeinsamer Jahresbetrag** of the order of **3 500 €** a year for grades 2 to 5 from
+1 July 2025; consumable *Pflegehilfsmittel* of the order of **40 €** a month.
 
 Three readings of these tables that the product specification needs:
 
@@ -963,9 +947,6 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
 - **The third is the surrender value**, which cuts both ways: it is the only one of the three from
   which a policyholder recovers anything on lapse [R11], and it makes the contract realisable
   assets in a *Hilfe zur Pflege* means test [R24].
-- The **Pflegekostenversicherung** is recorded for completeness and is effectively obsolete
-  `[unverified]`: administratively heavy for the insured, worthless for informal care, and open to
-  the whole of care-cost inflation with no cap. Nothing in delib models it.
 
 ### 6. *Pflege-Bahr*: what it is, why it matters here, and why it is not this product
 
@@ -1162,8 +1143,8 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
     required to fund a return of premiums on death at any time is close to the accumulated premium
     itself, so the *Deckungskapital* becomes an order of magnitude larger than the risk reserve
     (section 14).
-  - It very likely brings the contract **inside the PRIIPs perimeter**, since the benefit is no
-    longer payable only on death or on incapacity [R25]`[unverified]` (S6, gap 16).
+  - It very likely brings the contract **inside the PRIIPs perimeter**, the benefit no longer being
+    payable only on death or incapacity [R25]`[unverified]` (S6, gap 16).
   - It **roughly doubles or more the premium** for the same annuity `[std]` estimate, because the
     death benefit is close to certain to be paid whereas the annuity is not.
   - It makes the *Rückkaufswert* substantial, with the consequences for a *Hilfe zur Pflege* means
@@ -1393,8 +1374,7 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
 - ***Todesfallleistung*** from a *Pflegerente* follows the ordinary life-assurance treatment: outside
   income tax as a death benefit `[R23][unverified]`, with *Erbschaftsteuer* possible depending on the
   beneficiary designation.
-- ***Pflege-Bahr* *Zulage*** is a direct subsidy, not a deduction [R8], and is unavailable to this
-  product.
+- The ***Pflege-Bahr* Zulage** is a direct subsidy, not a deduction [R8], and is unavailable here.
 
 ### 21. Statistics: prevalence, incidence, duration, projection
 
@@ -1509,7 +1489,6 @@ portal quotation replaces it.
 **Other typical parameter levels** `[unverified]` throughout: *vereinbarte Rente* as sold, **1 000 €
 to 1 500 €** per month; entry ages permitted **18 to 65**, occasionally to 70; purchase cluster
 **45 to 60**; *Beitragsdynamik* **3 % to 5 %**; *Leistungsdynamik* **1 % to 3 %**.
-
 
 ---
 
@@ -1663,9 +1642,9 @@ premium level and every transition rate — carry the observed or argued range b
     policyholder, and a lapse after 60 forfeits the whole accumulated position — but nothing in this
     corpus describes the shape. Every lapse assumption in delib is `[std]`.
 
-21. **No search corroboration exists for anything in this file.** The other two delib research files
-    written before the budget ran out record, per fact, what a search summary established. This one
-    cannot. Every fact above rests on the author's knowledge of German insurance law and practice
-    under the discipline of house rule 3, and the `[unverified]` tags are the honest record of that.
-    A reader with a working network should treat this file as a **checklist of what to verify**, in
-    the order the gaps are numbered.
+21. **No search corroboration exists for anything in this file.** The other two delib research
+    files, written before the budget ran out, record per fact what a search summary established;
+    this one cannot. Everything above rests on the author's knowledge of German insurance law and
+    practice under the discipline of house rule 3, and the `[unverified]` tags are the honest
+    record of that. A reader with a working network should treat this file as a **checklist of what
+    to verify**, in the order the gaps are numbered.

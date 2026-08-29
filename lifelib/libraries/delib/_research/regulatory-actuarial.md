@@ -2420,3 +2420,563 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   a market range for *Leistungsdauer*, *Karenzzeit* options or *Nachversicherungsgarantien*.
 - Products: KLV, RV, RLV, BU load-bearing; the rest qualified.
 
+---
+
+## 8. Tax and the three-layer state-subsidised pension architecture
+
+**Read the evidence warning first.** The tax sweep ran **zero successful searches** — the shared
+`WebSearch` budget was exhausted before it opened, and both queries it issued were refused. Every
+entry in this section rests on one of two things: **second-hand corroboration** inherited from the
+prudential and contract sweeps, named per entry, or **general knowledge of German tax law**. The
+structural claims — which provision carries which rule, what the mechanic is — are stated plainly
+because they are well established and because hedging every clause would destroy the section's
+usefulness. **But every figure, effective date, percentage and paragraph number in this section
+is `[unverified]` unless the entry names a sweep that corroborated it, and downstream documents
+must carry that tag through.** Where a number is load-bearing for a model and cannot be confirmed,
+the honest form is `**[std]**` with a rationale, **not** a `[REG-R#]` citation. The entries with
+real second-hand corroboration are **R39** (the five prohibitions — two statutes, two sweeps),
+**R43** (the AltZertG § 1 criteria and the PIB/CRK regime — five queries, two BZSt PDFs), **R44**
+(the 2026 reform — nine hosts, four official) and **R45** (§ 20 Abs. 1 Nr. 6 and the 50 %-Regel —
+the KLV product sweep). Everything else is general knowledge.
+
+### R38. AltEinkG — the Alterseinkünftegesetz and the Drei-Schichten-Modell
+- Publisher: Deutscher Bundestag / Bundesrat; promulgated in the Bundesgesetzblatt Teil I. Doc
+  type: *Änderungsgesetz* — its operative content lives in the EStG, so it has no standing
+  `gesetze-im-internet.de` page.
+- URL: **not established.** A BGBl citation commonly reported as *vom 5. Juli 2004, BGBl. I
+  S. 1427* is `[unverified]` and is recorded as a lead, not a citation.
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration by the tax sweep
+  (session search budget exhausted)**. The act's *name* and its role as the **1 January 2005**
+  boundary are corroborated at second hand by the KLV product sweep, where multiple secondary
+  hosts identify that date as *the Alterseinkünftegesetz cut-off* for the taxation of endowment
+  proceeds.
+- Content: with effect from **1 January 2005** the act replaced *vorgelagerte* taxation of
+  pensions with a ***nachgelagerte*** system — qualifying contributions deducted during
+  accumulation, the pension taxed as income in payment — and, because a wholesale switch would
+  have doubly taxed the cohorts in the middle, introduced **two long linear transitions running in
+  parallel**: a rising deductible percentage of Schicht-1 contributions [R39] and a rising taxable
+  percentage keyed to the **year the pension starts** [R41]. Both are still running. The
+  ***Drei-Schichten-Modell*** sorts retirement products by *what the state buys with the relief it
+  gives*: **Schicht 1 — Basisversorgung** (gesetzliche Rentenversicherung, berufsständische
+  Versorgungswerke, Alterssicherung der Landwirte, and the private **Basisrente**), contributions
+  deductible under § 10 Abs. 1 Nr. 2 EStG, benefits taxed on a cohort *Besteuerungsanteil*, the
+  price of admission being that the product must look like a state pension; **Schicht 2 —
+  kapitalgedeckte, staatlich geförderte Zusatzversorgung** (**Riester** and the *betriebliche
+  Altersversorgung*), relief granted as a **direct payment into the contract** (the *Zulage*, a
+  real cash flow) or as a *Sonderausgabenabzug*, benefits taxed **in full** under § 22 Nr. 5 EStG
+  to the extent the contributions were subsidised; **Schicht 3 — private, ungeförderte Vorsorge**
+  (KLV, RV, FRV, IDX, SOF), contributions not deductible as retirement provision at all, benefits
+  lightly taxed under § 20 Abs. 1 Nr. 6 [R45] or on the *Ertragsanteil* [R41]. **For delib the
+  layer is the first classifying attribute of every product**: it decides whether a state *Zulage*
+  appears as an inflow, whether a surrender decrement is legally possible at all, and whether the
+  payout documentation discusses a *Besteuerungsanteil* or an *Ertragsanteil*. The
+  constitutional origin is the **BVerfG judgment of 6 March 2002 — 2 BvL 17/99** `[unverified]`,
+  which gave the legislature until 1 January 2005 to end the unequal treatment of
+  *Beamtenpensionen* and statutory pensions; that is why the transition is a constitutional
+  remedy with a finite end rather than a policy dial.
+- Not established: **the act's date, BGBl citation and article structure**; whether the act itself
+  introduced the *Basisrente* label (the statutory term *Basisrentenvertrag* arrives in the
+  AltZertG only later, [R43]); the **Rürup-Kommission**'s report and date; and **every element of
+  the BVerfG citation** — docket number, date, deadline and constitutional article are general
+  knowledge and `[unverified]`.
+- Products: KLV, RV, FRV, IDX, BAS, RIE, SOF load-bearing as architecture; RLV, BU, PFL qualified.
+
+### R39. EStG § 10 Abs. 1 Nr. 2 Buchst. b and § 10 Abs. 3 — the Basisrente deduction, the ceiling and the five prohibitions
+- Publisher: Bundesministerium der Justiz; the BMF *Einkommensteuer-Handbuch* and a
+  Frotscher/Geurts commentary on Haufe as secondary. Doc type: statutory section.
+- URL: https://www.gesetze-im-internet.de/estg/__10.html — **returned in the contract sweep**,
+  alongside the BMF *Einkommensteuer-Handbuch* and the Haufe commentary.
+- Retrieved: **no** — direct HTTP egress blocked; **second-hand corroboration**: the contract
+  sweep records **three queries** touching this provision, returning the statutory page, the BZSt
+  certification page, the BMF handbook, a Haufe commentary and four provider pages, and reproduces
+  the five-prohibition formula as a summary quotation. **The prohibitions are the
+  best-corroborated fact in the tax section**, because [R40] reaches the same product shape from a
+  different statute in a different sweep.
+- Content: **Buchst. a** covers the compulsory systems — statutory pension, *landwirtschaftliche
+  Alterskassen* and *berufsständische Versorgungseinrichtungen*. delib does not model those, but
+  they **consume the same ceiling a Basisrente contribution competes for**, which is the single
+  most important behavioural fact about Basisrente demand. **Buchst. b** creates the private
+  product: contributions to a contract that provides **exclusively** a **monthly, lifelong
+  *Leibrente*** on the taxpayer's own life, commencing **not before completion of the 62nd year of
+  age** (**60** for contracts concluded before 1 January 2012), optionally with supplementary
+  cover for *Berufsunfähigkeit*, *verminderte Erwerbsfähigkeit* and *Hinterbliebene*; and only if
+  the claims are, in the words a sibling search summary returned, ***nicht vererblich, nicht
+  übertragbar, nicht beleihbar, nicht veräußerbar und nicht kapitalisierbar***. **Each prohibition
+  is a model instruction**: *nicht kapitalisierbar* removes the lump-sum option and any partial
+  commutation; *nicht veräußerbar* removes the surrender value and the lapse-to-cash decrement;
+  *nicht übertragbar* removes assignment; *nicht beleihbar* removes the policy loan; and *nicht
+  vererblich* means that **on death before annuitisation the fund does not pass to the estate** —
+  a Basisrente **without** a *Hinterbliebenenabsicherung* rider produces **no benefit at all** on
+  pre-retirement death, which is why insurers sell the rider almost universally and why a delib
+  BAS model must either carry it or say loudly that the base run assumes no death benefit. The
+  permitted survivor class is narrow: spouse or registered partner, and children for as long as
+  *Kindergeld* would be payable. **The ceiling, § 10 Abs. 3**, is not a fixed euro amount: since a
+  reform reported as effective **1 January 2015** it is the contribution that would be payable to
+  the ***knappschaftliche Rentenversicherung*** on that scheme's own *Beitragsbemessungsgrenze*,
+  **doubled for spouses assessed jointly**, and reduced by the employer's tax-free share of the
+  statutory contribution and, for civil servants, by a *fiktiver Gesamtbeitrag*. The **deductible
+  share phased in from 60 % in 2005 by two percentage points a year**, and the
+  **Jahressteuergesetz 2022 brought 100 % forward to 2023**. Candidate ceiling series, **every row
+  `[unverified]`**, given with its arithmetic so it can be recomputed rather than believed:
+  **2023** 107,400 € × 24.7 % = **26,528 €**; **2024** 111,600 € × 24.7 % = **27,566 €**;
+  **2025** 118,800 € × 24.7 % = **29,344 €**; **2026** a BBG of 124,800 € would give **30,826 €**.
+  **For delib the deduction is not a cash flow of the contract** and no model computes it; it
+  belongs in `product-spec.md` as the economic driver of premium behaviour, in particular the
+  **year-end single-premium *Zuzahlung*** sized to the remaining headroom — so a BAS model that
+  offers only a level regular premium models the wrong product.
+- Not established: **the 24.7 % knappschaftliche rate, the 2015 switch, the pre-2015 flat 20,000 €,
+  the 60 %/+2 pp phase-in path, the Jahressteuergesetz 2022 attribution, the *Satz* numbers within
+  § 10 Abs. 3 and every BBG figure above are `[unverified]`** — none was corroborated by any search
+  in this session. The **2026 BBG of 124,800 €** is a derived guess, not a figure. The reported
+  **50 % limit on the share of the premium attributable to biometric riders** inside a Basisrente
+  is `[unverified]` and its source (statute or BMF-Schreiben) is not established — it decides
+  whether a BAS model may carry a large BU rider. Whether *Erwerbsminderungs-Basisrenten* are a
+  separate *Produktgruppe* for transfer purposes is not established. Whether the **Öffnungsklausel**
+  reaches a private Basisrente is **not established** and is material for high-contribution model
+  points. **The whole ceiling series should be treated as `[std]` input candidates, not
+  citations.**
+- Products: BAS load-bearing; RIE, RLV, BU qualified — by contrast, for what is *not* deductible
+  [R46].
+
+### R40. ZPO §§ 850b and 851c — Pfändungsschutz and the shape it imposes on a Basisrente
+- Publisher: Bundesamt für Justiz; two Brennecke practitioner articles, a Peter Lang monograph and
+  a Prütting/Gehrlein commentary on Haufe as secondary. Doc type: statutory sections.
+- URL: https://www.gesetze-im-internet.de/zpo/__850b.html and `__851c.html` (returned);
+  https://www.buzer.de/gesetz/7030/al162722-0.htm (returned, the pre-2022 version of § 851c)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the contract
+  sweep** (three queries; eight hosts on § 851c and nine on § 850b; the 340,000 € cap from two
+  independent summaries)
+- Content: **§ 851c Abs. 1** — claims to benefits may be attached **only as earnings from
+  employment** where **all** of the following hold: the benefit is granted **at regular intervals,
+  for life, and not before the completion of the 60th year of age, or only on the occurrence of
+  Berufsunfähigkeit**; the claims **may not be disposed of**; the **designation of third parties
+  other than survivors as beneficiaries is excluded**; and **no capital payment other than on
+  death has been agreed**. **§ 851c Abs. 2** — amounts saved in performance of such a contract to
+  build an appropriate old-age provision are not attachable, subject to an **aggregate ceiling of
+  340,000 euro** and to annual limits. **§ 850b Abs. 1 Nr. 1** — pensions payable on account of
+  injury to body or health, **including claims from a private Berufsunfähigkeitsversicherung**,
+  are ***bedingt pfändbar***: attachable under the employment-earnings rules only if execution
+  against other movable assets has not led and is not expected to lead to full satisfaction **and**
+  attachment corresponds to *Billigkeit*.
+  **Model consequence: BAS is defined by these conditions, not merely protected by them.** The
+  four requirements of § 851c Abs. 1 are the same four features § 10 Abs. 1 Nr. 2 Buchst. b EStG
+  demands [R39] and that § 168 Abs. 3 VVG makes non-terminable [R28]. Together — **three
+  instruments, two research sweeps, one product description** — they mean a BAS model has **no
+  surrender, no capital option except a death benefit, no third-party beneficiary except
+  survivors, annuity commencement not before 60 in ZPO terms and not before 62 in tax terms, and
+  no assignment**. That is a complete behavioural specification, and it is why BAS is the one
+  delib product with **no lapse-to-cash decrement at all**. For BU, § 850b means a BU annuity in
+  payment is conditionally attachable, which does not change the cash flow — and the notes should
+  say so rather than leave the reader wondering.
+- Not established: **the annual savings allowances of § 851c Abs. 2 are contradicted across
+  summaries** — a **6,000 €/7,000 €** two-band ladder reported as current law "in effect since
+  1 January 2022" versus a **2,000 €–9,000 €** age-graded ladder reported as pre-2022. Both are
+  recorded, **both `[unverified]` on the precise bands**; the 340,000 € aggregate is agreed. The
+  amending instrument is reported only as "*geändert durch Artikel 1 G. v. 07.05.2021 BGBl. I
+  S. 850*" in a URL title. **§ 851d ZPO** (the payout-phase counterpart) was named and never
+  searched.
+- Products: BAS and BU load-bearing; RIE, KLV, RV, FRV, PFL qualified.
+
+### R41. EStG § 22 Nr. 1 Satz 3 Buchst. a and § 55 EStDV — Besteuerungsanteil, Rentenfreibetrag and Ertragsanteil
+- Publisher: Bundesministerium der Justiz. Doc type: statutory section plus the implementing
+  regulation's § 55.
+- URL: https://www.gesetze-im-internet.de/estg/__22.html and
+  https://www.gesetze-im-internet.de/estdv_1955/__55.html — **both `[unverified canonical form]`**;
+  the `/estg/__NN.html` pattern is evidenced by the sibling return of `__10.html`, the EStDV slug
+  is a guess and is **the least reliable URL in this file**.
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (session search budget
+  exhausted)**. **Every figure in this entry is `[unverified]` and both tables are
+  reconstructions.**
+- Content: **Doppelbuchst. aa — the Schicht-1 rule.** Three mechanics, and the third is the one
+  models and product documents get wrong. **(1) The *Besteuerungsanteil* is fixed by the year the
+  pension starts, not by the year of receipt**, and one cohort table applies to the gesetzliche
+  Rente, a Versorgungswerk pension and a private Basisrente alike. The reported path: **50 % for
+  pensions beginning in or before 2005**, rising **two percentage points a year to 80 % for the
+  2020 cohort**, then **one point a year**, reaching 100 % with the 2040 cohort. **(2) The path
+  was flattened in 2024**: the *Wachstumschancengesetz* reduced the annual step from 1 point to
+  **0.5 point with effect from the 2023 cohort**, giving reported values of **82.5 % (2023),
+  83.0 % (2024), 83.5 % (2025), 84.0 % (2026)** and moving the 100 % endpoint to **2058**; the
+  same act wound down the *Versorgungsfreibetrag* (§ 19 Abs. 2 EStG) and the
+  *Altersentlastungsbetrag* (§ 24a EStG) on the same rhythm. **(3) The untaxed remainder is frozen
+  in euro, for life.** The ***Rentenfreibetrag*** is computed **once**, in the year following the
+  first full calendar year of receipt, as the euro amount not covered by the *Besteuerungsanteil*,
+  and **stays at that euro amount for the whole duration** — so every subsequent increase,
+  including every increase in the *Überschussrente*, is **fully taxable**. Illustration, figures
+  illustrative only: a Basisrente of 12,000 € first paid in 2026 at 84.0 % has a *Rentenfreibetrag*
+  of 1,920 € fixed for life; if surplus lifts the annuity to 15,000 € by 2040 the taxable amount is
+  13,080 €, i.e. **87.2 %**, not 84 %. **Doppelbuchst. bb — the Schicht-3 *Ertragsanteil*.** Only
+  a fixed percentage of each payment, determined **once by the annuitant's completed age at annuity
+  commencement and never changed**, is taxable; the remainder is a tax-free return of capital. The
+  two anchors most often quoted, and the two this compiler would defend, are **age 65 → 18 %** and
+  **age 60 → 22 %**; a fuller reported row (age → %) runs 50→30, 55→26, 60→22, 62→21, 63→20,
+  64→19, **65→18**, 67→17, 68→16, 70→15, 72→13, 75→11, 80→8, 85→5. **The table is an actuarial
+  artefact, not a policy dial** — a present-value split of a life annuity on an assumed interest
+  rate reported to have been cut from **5.5 % to 3 %** in 2005 — and, unlike the *Rentenfreibetrag*,
+  it is the **percentage** that is frozen, so surplus increases to a Schicht-3 annuity are taxed at
+  the same light rate. **That asymmetry is the whole economic case for SOF** [R38]. **§ 55 EStDV**
+  supplies a **second table keyed to the annuity's remaining term** for an ***abgekürzte
+  Leibrente*** — which is what a *Berufsunfähigkeitsrente* from a *selbständige* BU contract is,
+  taxed far more lightly than an equivalent lifelong annuity. **Where a BU annuity is written
+  inside a Basisrente the treatment is different again**, falling into Schicht 1 and taxed on the
+  *Besteuerungsanteil* — so the **same biometric benefit is taxed two different ways depending on
+  the wrapper**, which a BU product specification must state.
+- Not established: **the entire Besteuerungsanteil cohort table, the entire Ertragsanteil row and
+  every row of the § 55 EStDV table are `[unverified]` reconstructions**, corroborated by no
+  search result. The rule that the *Rentenfreibetrag* is fixed in the **second** year is general
+  knowledge. Whether the *Ertragsanteil* age is the completed year at commencement or at the start
+  of the calendar year is not established and would shift a boundary case by one row. Whether the
+  table sits in the statute or an annex is not established. **delib publishes gross cash flows and
+  computes no tax**; what the BAS, SOF and BU notes owe the reader is the statement that the *tax*
+  profile of the published stream is **not flat**, and that any net-of-tax analysis must apply a
+  **frozen euro allowance** in Schicht 1 and a **frozen percentage** in Schicht 3.
+- Products: RV, FRV, IDX, BAS, SOF, BU load-bearing; KLV, RIE, PFL qualified.
+
+### R42. EStG § 10a and Abschnitt XI (§§ 79–99) — the Riester subsidy machinery
+- Publisher: Bundesministerium der Justiz; the **Zentrale Zulagenstelle für Altersvermögen (ZfA)**
+  at the Deutsche Rentenversicherung Bund as the administering body. Doc type: statutory sections.
+- URL: https://www.gesetze-im-internet.de/estg/__10a.html, `__79.html`, `__84.html`, `__85.html`,
+  `__86.html`, `__93.html` — **all `[unverified canonical form]`**; the contract sweep records
+  explicitly that **no `gesetze-im-internet.de/estg/__93.html` page was returned by either of its
+  two Kleinbetragsrente queries**, twelve secondary hosts being returned instead.
+- Retrieved: **no** — direct HTTP egress blocked; **no first-hand search corroboration (budget
+  exhausted)**; second-hand only for the *Kleinbetragsrente* carve-out (contract sweep, two
+  queries, twelve secondary hosts). **Every euro figure below is `[unverified]`.**
+- Content: **§ 10a — the deduction and the *Günstigerprüfung*.** Contributions to a certified
+  *Altersvorsorgevertrag*, **plus the Zulagen credited to it**, are deductible as *Sonderausgaben*
+  up to **2,100 € a year**, reported unchanged since 2008. The tax office computes, of its own
+  motion, both the tax saved by the deduction and the *Zulagenanspruch* and grants the more
+  favourable; if the deduction wins the taxpayer receives the **difference** as a reduction of
+  assessed tax and **the Zulagen already paid stay in the contract**. **This split is the single
+  most important thing a RIE model author must understand: only the Zulage is a contract cash
+  flow; the Günstigerprüfung top-up is a personal tax refund and never touches the policy.**
+  **§ 79 — who is entitled.** *Unmittelbar Zulageberechtigte* are broadly those compulsorily
+  insured in the statutory scheme plus *Beamte* and recipients of wage-replacement benefits;
+  **notably excluded are the self-employed not compulsorily insured and berufsständisch pensioned
+  professionals** — precisely the population Basisrente serves, so **the two subsidised products
+  are complements addressed to different people, not competitors**. *Mittelbar Zulageberechtigte*
+  are the spouse or partner of an entitled person holding their **own** certified contract, who
+  since a change reported as effective **2012** must pay at least the ***Sockelbeitrag* of 60 € a
+  year**. That produces a real and modellable contract type — **a 60 € annual premium receiving a
+  175 € Grundzulage**, an inflow ratio of nearly 3:1 — and a RIE model point table omitting it
+  omits an economically extreme part of the German book. **§§ 83–85 — the Zulagen.**
+  ***Grundzulage*** **175 €** a year, reported at that level since **2018** (154 € from 2008 to
+  2017); ***Kinderzulage*** **185 €** a year per child receiving *Kindergeld*, or **300 €** where
+  the child was **born on or after 1 January 2008**, credited by default to the **mother's**
+  contract; a one-off ***Berufseinsteiger-Bonus*** of **200 €** where the entitled person has not
+  completed their 25th year at the start of the first *Beitragsjahr*. **§ 86 — the
+  *Mindesteigenbeitrag***: `min(4 % × previous year's beitragspflichtige Einnahmen, 2,100 €)`
+  **less the *Zulagenanspruch***, floored at the **60 € Sockelbeitrag**. Three features drive model
+  behaviour: the **prior-year income base**, so a model keying the premium to current salary is
+  wrong after any income step; the **subtraction of the Zulage**, so for a two-child household with
+  modest earnings the required own contribution is the 60 € floor; and — the real trap — **the
+  Kürzung is proportional, not a cliff**: underpayment reduces the Zulage **in the ratio of the
+  contribution paid to the Mindesteigenbeitrag**, so a model treating the Zulage as an
+  all-or-nothing test produces a discontinuity that does not exist. **The ZfA.** The policyholder
+  applies **through the provider**, normally once by a *Dauerzulagenantrag*; the ZfA checks
+  entitlement against the pension scheme's own earnings and Kindergeld data and **pays the Zulage
+  to the provider**, who credits it to the contract; entitlement may be claimed up to **two years**
+  back; and where entitlement is later found not to have existed the ZfA **reclaims**, so a RIE
+  contract can carry a **negative Zulage cash flow**. **The Zulage for contribution year *t* is
+  typically credited during year *t+1*** — an annual-step model must decide whether to credit it in
+  *t* or *t+1* and **state the choice in the processing order**; crediting it in *t* overstates the
+  fund and the interest on it. **§§ 93–94 — *schädliche Verwendung*.** If subsidised capital is
+  used other than as permitted — surrender, capital beyond the permitted 30 %, benefits before the
+  earliest age, transfer to a non-certified vehicle — the **Zulagen and the § 10a tax advantage
+  must be repaid**, withheld by the provider and remitted to the ZfA. **This is the behavioural
+  heart of a RIE model**: the contract is legally terminable, unlike BAS, but terminating costs the
+  entire subsidy history, so the RIE lapse assumption should be **materially below** the RV/FRV
+  assumption **with this rule stated as the reason** rather than asserted as a bare `**[std]**`
+  number; a lapse produces a *Rückkaufswert* **net of the Rückzahlungsbetrag**, a different
+  quantity from the § 169 VVG value the other products publish; and **a paid-up election is not
+  *schädlich***, so the natural RIE decrement is *ruhend stellen*, not surrender. **§ 93 Abs. 3 —
+  the *Kleinbetragsrente***: an annuity below a threshold expressed as a percentage of the
+  ***monatliche Bezugsgröße nach § 18 SGB IV*** may be commuted at the start of the payout phase
+  **without being *schädlich***, applying to **Riester and Basisrente alike**, reportedly at the
+  reduced rate of § 34 EStG. **The threshold is contested and the conflict is unresolved**:
+  **Account A** — 1 % of the monthly Bezugsgröße, i.e. **39.55 €/month** on a 2026 Bezugsgröße of
+  3,955 €, with 1.5 % only from 2027; **Account B** — § 93 Abs. 3 amended by the
+  *Altersvorsorgereformgesetz* of 26 May 2026 so that **1.5 %** applies **from June 2026**, i.e.
+  **59.33 €/month**. Both come from summaries of the same queries and cite the same Bezugsgröße;
+  **they cannot both be right, delib must pick one, tag it `**[std]**` and print both.** This is
+  not a detail: for a small contract the commutation branch is the **modal outcome**, so both RIE
+  and BAS need a commutation test at annuitisation and at least one model point that trips it.
+  Two further exits that are **not** *schädlich* and are therefore real decrements from an
+  insurance-based Riester book: the **Wohn-Riester** *Altersvorsorge-Eigenheimbetrag* (§ 92a EStG)
+  and *Tilgungsförderung* (§ 82 Abs. 1 Satz 1 Nr. 2), with the deferred tax collected through a
+  ***Wohnförderkonto*** rolled up at a notional **2 %** a year and taxed either successively to
+  age 85 or in one sum with a **30 % discount**. delib does not implement them; the RIE
+  specification names the channel and notes that a real book's persistency is worse than a
+  pure-lapse model suggests.
+- Not established: **every figure above.** The 2,100 € ceiling and its 2008 freeze; the 175 / 185 /
+  300 / 200 / 60 € amounts and their dates; the 4 % rate and its phase-in; the definition of
+  *beitragspflichtige Einnahmen* for non-employees; the two-year retro-claim window and the reclaim
+  mechanism; the § 89–91 attributions; the composition of the *Rückzahlungsbetrag* and the whole
+  § 94 procedure; the § 34 *Fünftelregelung* treatment; the 2026 Bezugsgröße of **3,955 €/month**
+  (given by two secondary sources, neither official, and **unsettled as between the
+  bundeseinheitliche and the West figure**); and every Wohn-Riester and Wohnförderkonto parameter
+  (the 3,000 € minimum and residual, the 2 % roll-up, the 30 % discount, the age-85 endpoint).
+  **§ 93 EStG's statutory text was never returned by any sweep.**
+- Products: RIE load-bearing; FRV and BAS qualified.
+
+### R43. AltZertG, the BZSt, the AltvPIBV and the Produktinformationsstelle Altersvorsorge
+- Publisher: Bundesministerium der Justiz; **Bundeszentralamt für Steuern (BZSt)** as
+  *Zertifizierungsstelle*; Bundesministerium der Finanzen; **Produktinformationsstelle
+  Altersvorsorge gGmbH (PIA)**; a DAV article, a Springer *ZVersWiss* paper, an ifa Ulm note and
+  Fraunhofer ITWM's ALMSIM page as secondary. Doc type: certification statute; regulation;
+  standardised product-information regime.
+- URL: https://www.gesetze-im-internet.de/altzertg/BJNR132200001.html and `.../__1.html`,
+  `.../__7.html` (returned); https://www.buzer.de/gesetz/2399/a182166.htm (returned, § 2a
+  *Kostenstruktur*); https://www.gesetze-im-internet.de/altvpibv/__5.html (returned);
+  https://www.bzst.de/SharedDocs/Downloads/DE/Zertifizierungsstelle/Kommentar_AltZertG_201706.pdf?__blob=publicationFile&v=6
+  (returned, the BZSt's own *Kommentar zum AltZertG*, June 2017);
+  https://produktinformationsstelle.de/ and `.../chancen-risiko-klassen/` (returned);
+  https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Weitere_Steuerthemen/Altersvorsorge/2019-03-14-Produktinformationsblatt-AltZertG-Muster-gemaess-AltvPIBV.pdf?__blob=publicationFile&v=4
+  (returned, the BMF *Muster-Produktinformationsblatt* of 14 March 2019).
+  `.../altzertg/__5a.html` is **`[unverified canonical form]`** and was **not** returned.
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the contract and
+  prudential sweeps** (six queries, thirteen hosts, including **two BZSt commentary PDFs**, the
+  BMF Muster PIB and the PIA's own *Allgemeinverfügung*; the five CRK classes and the 1 January
+  2017 start from three independent sources)
+- Content: Riester and Basisrente are **certified product categories under a statute of their
+  own**, and certification is a *product* approval, not a *tax* ruling. The AltZertG defines what
+  an *Altersvorsorgevertrag* (§ 1) and a *Basisrentenvertrag* (§ 5a) must contain; the **BZSt**
+  issues the certificate — reported to have moved from BaFin to the BZSt on **1 July 2010** — and
+  §§ 10a and 79 ff. EStG then hang the subsidy on it. **§ 1 fixes four features that are all model
+  instructions.** **(a) *Beitragsgarantie* (§ 1 Abs. 1 Nr. 3):** the provider must guarantee that
+  **at the beginning of the payout phase at least the paid-in *Altersvorsorgebeiträge* are
+  available** for the payout phase, with **up to 20 % of total contributions** left out of account
+  where they secure *Erwerbsminderung*, *Berufsunfähigkeit* or *Hinterbliebene*. This is a **100 %
+  money-back guarantee at retirement**, and it is why a German Riester insurance contract is
+  invested so conservatively and became hard to sell at a 0.25 % *Höchstrechnungszins* [R15]. For a
+  RIE model it is a **floor on the fund at annuitisation**, evaluated as
+  `max(fund, sum(premiums) + sum(zulagen) − biometric_carve_out)`. **(b) Earliest payout: age 62**
+  (60 for contracts before 2012), the same boundary as [R39] and [R45]. **(c) The payout shape
+  (§ 1 Abs. 1 Nr. 4):** a **lebenslange Leibrente**, or an *Auszahlungsplan* followed by a
+  **Teilkapitalverrentung from at the latest age 85**, with a **Teilkapitalauszahlung of up to
+  30 % of the available capital** available **at the beginning of the payout phase only**.
+  **(d) Cost structure and switching:** § 2a enumerates the cost types that may be charged and
+  requires the individual PIB to break them down by **§ 2a Satz 1 Nr. 1 Buchst. a bis f** and
+  **Nr. 2 Buchst. a bis c** — so **a certified product's charge structure is enumerated by statute
+  and a RIE charge table can be built from published PIBs in a way a Schicht-3 charge table
+  cannot**; § 1 Abs. 1 Nr. 8 is reported to require *Abschluss- und Vertriebskosten* to be spread
+  over **at least five years**; and § 1 Abs. 1 Nr. 10 Buchst. b carries a ***Wechselrecht*** to
+  transfer the *Altersvorsorgevermögen* to another certified contract, expressly **not** a
+  *schädliche Verwendung*, on a reported **three months to the end of a quarter** notice, with a
+  reported cap on the transferring provider's *Wechselkosten* (**150 €**) and acquisition costs
+  chargeable by the receiving provider on **only 50 %** of the transferred capital.
+  **The AltvPIBV and the PIA.** Since **1 January 2017** providers of Basisrente and Riester must
+  use a **uniform, individual *Produktinformationsblatt***, introduced by the
+  *Altersvorsorge-Verbesserungsgesetz* and governed by the AltvPIBV, delivered **in good time and
+  at the latest before the customer's declaration of intent**, with **provable receipt**. It
+  discloses ***Effektivkosten*** — reported as the difference **r\* − r_k**, the reduction in the
+  achievable return caused by costs — computed **individually for each contract offer** under § 7
+  Abs. 1 AltZertG with § 9 Abs. 1 AltvPIBV, a stronger duty than the product-level VVG-InfoV
+  figure [R31]; and it assigns the product to **one of five *Chancen-Risiko-Klassen*** under § 5
+  AltvPIBV, **CRK 1** the least risky and least remunerative and **CRK 5** high opportunity and
+  high risk, determined **by the PIA on behalf of the BMF** by examining the product for a
+  *Modellkunde* **under various capital-market scenarios over a comparable savings period**. **This
+  is a genuinely unusual feature of the German market with no counterpart in `uslib`, `uklib`,
+  `jplib` or `frlib`: a public body assigns a risk class using a stochastic model the insurer does
+  not control.** **delib does not implement the PIA simulation.** A RIE or BAS specification may
+  **report** a published CRK and Effektivkosten as `[S#]` facts about the reference product and
+  must say that reproducing either requires the PIA's scenario set, which is neither public nor in
+  scope — exactly the "cited, not specified" boundary the library draws around discounting and
+  capital.
+- Not established: **the text of § 5a AltZertG was never retrieved by any sweep** — only its
+  existence and its § 168 Abs. 3 VVG cross-reference [R28] are established; its conditions, its
+  relationship to § 1 and whether it imposes cost-disclosure duties of its own are **not
+  established**. The act's date (reported 26 June 2001), the **1 July 2010** BaFin→BZSt transfer,
+  and the reported **1 January 2010** start of compulsory Basisrente certification are
+  `[unverified]`. The **20 %** biometric carve-out rests on **one** summary. **Whether the
+  *Beitragsgarantie* covers the *Zulagen* as well as the contributions is not settled** — one
+  summary says yes, another implies it, the statutory text obtained does not decide it — and this
+  is **the single most material unresolved ambiguity for a delib model**, since for a two-child
+  model point it moves the guarantee floor by thousands of euro over thirty years; it must be a
+  `**[std]**` choice with both readings printed. The **150 € Wechselkosten cap, the 50 % rule, the
+  five-year spreading and the three-month notice are all `[unverified]`**. The **definitions of
+  r\* and r_k and the CRK class boundaries are not established**; whether the PIA
+  *Allgemeinverfügung* of 2022 is the operative determination is ambiguous; the BMF Muster PIB is
+  dated 14 March 2019 and may have been superseded. Whether the PIB regime reaches Schicht-3
+  products is not established — the sources describe it as *geförderte*-only.
+- Products: RIE and BAS load-bearing; RV, FRV, IDX qualified for cost-disclosure contrast.
+
+### R44. The Altersvorsorgereformgesetz 2026 and the Altersvorsorgedepot
+- Publisher: Deutscher Bundestag / Bundesrat / Bundesministerium der Finanzen; Deutsche
+  Rentenversicherung. Doc type: federal statute and its parliamentary papers.
+- URL: https://dserver.bundestag.de/btd/21/040/2104088.pdf (returned, **BT-Drs. 21/4088,
+  21. Wahlperiode, 11.02.2026**);
+  https://www.bundestag.de/dokumente/textarchiv/2026/kw13-de-altersvorsorge-1156798 (returned,
+  *Bundestag beschließt das Altersvorsorgedepot*);
+  https://www.deutsche-rentenversicherung.de/DRV/DE/Ueber-uns-und-Presse/Presse/Meldungen/2026/260508-bundesrat-reform-private-altersvorsorge
+  (returned); https://www.bundesfinanzministerium.de/Content/DE/FAQ/reform-der-privaten-altersvorsorge.html
+  (returned); https://www.bundesregierung.de/breg-de/aktuelles/reform-private-altersvorsorge-2400072
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the contract
+  sweep** (two queries, nine hosts, **four of them official** — Bundestag ×2, DRV, BMF,
+  Bundesregierung; the 8 May 2026 Bundesrat date and the 1 January 2027 start each from two
+  independent sources). **This is the strongest external corroboration available anywhere in the
+  tax section.**
+- Content: **Riester is closed.** The **Bundesrat approved the *Altersvorsorgereformgesetz* on
+  8 May 2026**, so it entered into force on publication in the Bundesgesetzblatt, and **the new
+  state-subsidised private provision starts on 1 January 2027**. From 2027 the Riester-Rente is
+  **replaced by a new subsidised model**, described by the Federal Government as more flexible,
+  cheaper and higher-yielding, whose central new vehicle the Bundestag's own text archive names the
+  ***Altersvorsorgedepot***. A provider-side page discusses whether to let an existing Riester
+  contract lie dormant or switch, which **implies grandfathering**. **This changes what a delib
+  `riester_rente` model *is***: a model of a product **closed to new business from 1 January 2027**
+  with a very large in-force book whose contractual rights survive. That is worth building — a
+  closed book is exactly what a liability cash flow model is for — but the `product-spec.md` must
+  say it plainly rather than present the product as current, and it means the *Beitragsgarantie*
+  of [R43] is a feature of the **legacy** contract.
+- Not established: **the enactment date is contradictory** — one summary refers to an act "vom
+  26.05.2026" while these sources give Bundesrat consent on 8 May 2026; reconcilable (consent then
+  promulgation) but **neither the BGBl citation nor the promulgation date is established**, and
+  both are `[unverified]`. **The substance of the Altersvorsorgedepot — contribution limits,
+  subsidy rates, whether the *Beitragsgarantie* survives, payout rules, whether insurance products
+  remain eligible — was not established by any search.** Whether existing Riester contracts may be
+  continued, must be frozen or may be transferred is **not established** beyond an inference from
+  one provider page. The earlier stages (a BMF *Fokusgruppe private Altersvorsorge* reporting in
+  2023 and a lapsed 2024 *pAV-Reformgesetz* Referentenentwurf) and the reported design of a
+  proportional subsidy are general knowledge and `[unverified]`. The **Frühstart-Rente** discussed
+  in the same debate was never searched.
+- Products: RIE load-bearing; BAS, RV, FRV qualified.
+
+### R45. EStG § 20 Abs. 1 Nr. 6 — the Unterschiedsbetrag, the 12/62 rule and the Mindesttodesfallschutz
+- Publisher: Bundesministerium der Justiz; the BMF *Einkommensteuer-Handbuch* for the annex; NWB,
+  IWW, Haufe, smartsteuer and Gonze & Schüttler as secondary. Doc type: statutory section plus
+  administrative guidance.
+- URL: https://esth.bundesfinanzministerium.de/esth/2024/C-Anhaenge/Anhang-22a/I/inhalt.html
+  (returned); https://datenbank.nwb.de/Dokument/357065/ (returned);
+  https://www.haufe.de/steuern/steuerwissen-tipps/nach-dem-31122004-abgeschlossene-lebensversicherungen_170_448252.html
+  (returned);
+  https://www.haufe.de/finance/haufe-finance-office-premium/kapitallebensversicherungen-einkommensteuer-312-mindesttodesfallschutz-bei-lebensversicherungen_idesk_PI20354_HI8459274.html
+  (returned);
+  https://www.iww.de/wvm/archiv/kapitallebensversicherungen-neuer-mindesttodesfallschutz-fuer-ab-dem-1-april-2009-abgeschlossene-vertraege-f14610
+  (returned). The statutory page `https://www.gesetze-im-internet.de/estg/__20.html` is
+  **`[unverified canonical form]`**.
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the KLV product
+  sweep** (the *Unterschiedsbetrag* base, the half-income rule, the 60→62 tightening and the
+  § 32d Abs. 2 Nr. 2 interaction from the BMF handbook annex plus five commentary hosts; the 50 %
+  rule and the 1 April 2009 date from **two independent sources**, with a third naming it the
+  *"50 %-Regel"*)
+- Content: the tax rule that decides when a German endowment or unit-linked contract is cashed in,
+  and therefore the shape of every Schicht-3 lapse assumption in delib. **The base**: the taxable
+  amount is the ***Unterschiedsbetrag* between the *Versicherungsleistung* and the sum of the
+  *Beiträge* paid on it** — a gain measure, taking no account of inflation. **The half-income
+  rule**: where the benefit is paid **after completion of the 60th year of life** and **at least
+  twelve years after conclusion**, **only half the *Unterschiedsbetrag*** is taxable; for contracts
+  concluded **after 31 December 2011** the age is **62**. **The rate**: where the halving applies
+  to a benefit accruing from 1 January 2009, the flat *Abgeltungsteuer* does **not** apply —
+  **§ 32d Abs. 2 Nr. 2 EStG** puts the half amount into the **personal marginal rate**. **The
+  Mindesttodesfallschutz**: a contract concluded from **1 April 2009** qualifies for the half-income
+  treatment **only if the *Todesfallleistung* is at least 50 % of all premiums payable over the
+  whole term**; failing the test the earnings are taxed **in full under the Abgeltungsteuer with no
+  halving**. **What this does to a model**: it creates a **duration-12 and age-60/62 double
+  threshold** that policyholders wait for, so a KLV, RV, FRV or IDX lapse assumption that is flat
+  in duration has ignored the strongest single driver of German surrender behaviour — surrenders
+  are suppressed approaching duration 12 and spike at it, and again at the age threshold. The
+  effect is directly analogous to the eight-year threshold that drives French *assurance vie*
+  behaviour, and **delib models it the same way frlib does — as a duration-dependent lapse shape
+  with the threshold named and the level `**[std]**`**. The rule reaches RV, FRV and IDX too,
+  because a deferred annuity whose *Kapitalwahlrecht* is exercised for cash is taxed here while the
+  same contract annuitised is taxed on the *Ertragsanteil* [R41] — **the annuitise-or-commute
+  election is therefore a tax election**, and a model treating it as a fixed take-up rate says that
+  the rate stands in for a tax comparison it does not perform. And the 50 %-Regel is a **model-point
+  design constraint**: a KLV, FRV or IDX representative product must carry a death benefit above
+  the floor, and a point with a very short term or a very high single premium relative to the sum
+  assured may breach it — **a model point that would fail the German tax test is not
+  representative of a real sold contract.**
+- Not established: the § 52 locus for the age-62 rule (§ 52 has been renumbered repeatedly);
+  whether the twelve years run from *Vertragsschluss* or from the first premium; the treatment of
+  late *Zuzahlungen*; the *Satz* number carrying the Mindesttodesfallschutz and its introducing act
+  (reported as the *Jahressteuergesetz 2009*); a reported **second condition** that on death the
+  agreed benefit must exceed the *Deckungskapital* or *Zeitwert* by at least **10 %** — the summary
+  attached the words "after five years", which does not parse as a rule, so **the 10 % figure is
+  recorded and its base, time profile and qualifier are `[unverified]`**; and whether the 50 % is
+  measured against premiums *payable* or *paid* for a contract that lapses early. The **pre-2005
+  cohort's qualifying conditions** — a twelve-year term, a five-year minimum premium-paying period
+  and a minimum death cover as a percentage of the *Beitragssumme* — **were not established by any
+  search result, are `[unverified]`, and are not asserted anywhere in delib**; what can be said is
+  that for contracts concluded before 1 January 2005 the *rechnungsmäßige und außerrechnungsmäßige
+  Zinsen* were entirely free of income tax on maturity, which is why an *Altvertrag* has an almost
+  nil lapse rate and why a KLV document must say the reference model does not represent that
+  cohort. The **Abgeltungsteuer** rate of 25 % plus the 5.5 % *Solidaritätszuschlag* and 8/9 %
+  *Kirchensteuer*, the § 43 withholding mechanism and the *Sparer-Pauschbetrag* are all
+  `[unverified]`. The **InvStG *Teilfreistellung*** reported at **15 %** of gains attributable to
+  equity-fund units inside a *fondsgebundene* contract, giving a composite taxable share of about
+  **42.5 %**, is **general knowledge throughout, uncorroborated, and the weakest claim in this
+  section**; an FRV specification may name it only with the tag.
+- Products: KLV, RV, FRV, IDX load-bearing; RIE, SOF, RLV qualified. **All delib benefit cash flows
+  are gross of *Kapitalertragsteuer*, *Solidaritätszuschlag* and *Kirchensteuer*; the models
+  compute no tax and no withholding**, and every Schicht-3 `technical-notes.md` says so in one line.
+
+### R46. ErbStG and SGB V §§ 226, 229 and 240 — death benefits and contributions on an annuity in payment
+- Publisher: Bundesministerium der Justiz; the GKV-Spitzenverband for the *Beitragsverfahrens-
+  grundsätze Selbstzahler*; the Bundesministerium für Arbeit und Soziales for the annual
+  *Sozialversicherungsrechengrößen*. Doc type: statutory sections; an annual Rechtsverordnung.
+- URL: **not established** for any of them. `https://www.gesetze-im-internet.de/erbstg_1974/__3.html`
+  and `https://www.gesetze-im-internet.de/sgb_5/__229.html` are **`[unverified canonical form]`**
+  and the ErbStG slug is itself a guess.
+- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (session search budget
+  exhausted)**, except the **2026 monthly *Bezugsgröße* of 3,955 €**, which the contract sweep
+  records from **two secondary sources, neither official**. **Every figure is `[unverified]`.**
+- Content: **Germany has no insurance-specific death-benefit tax regime.** Unlike France, where CGI
+  arts. 990 I and 757 B carve life insurance out of ordinary succession, a German
+  *Todesfallleistung* paid to a named beneficiary is simply an ***Erwerb von Todes wegen*** under
+  § 3 Abs. 1 Nr. 4 ErbStG — a benefit acquired under a contract for the benefit of a third party —
+  and falls into ordinary inheritance tax at the beneficiary's own *Steuerklasse* and *Freibetrag*.
+  Reported *persönliche Freibeträge* (§ 16): **500,000 €** spouse or registered partner,
+  **400,000 €** child, **200,000 €** grandchild, **100,000 €** parent on death, **20,000 €** in
+  *Steuerklassen* II and III; reported rate bands (§ 19): class I **7–30 %**, II **15–43 %**, III
+  **30–50 %**; a *Versorgungsfreibetrag* (§ 17) of **256,000 €** for a surviving spouse. **Two
+  structuring facts the German market actually uses** and that change who a model's beneficiary is:
+  the ***Über-Kreuz-Versicherung***, where *Versicherungsnehmer* and *versicherte Person* are
+  different people — spouses each owning a policy on the other's life — so that death triggers a
+  payment to a *surviving policyholder* rather than an acquisition from a deceased one and **no
+  inheritance tax arises**, which is standard advice for couples buying RLV cover and means a real
+  RLV book contains a large share of cross-owned policies; and the **gift limb**, under which
+  granting an *unwiderrufliches Bezugsrecht* during life is a *Schenkung* under § 7 ErbStG at the
+  time of the grant [R26].
+  **Social insurance is the asymmetry that can reverse the tax argument.** § 229 SGB V makes
+  certain retirement incomes ***Versorgungsbezüge***, contributory in the *Krankenversicherung der
+  Rentner* and the *soziale Pflegeversicherung* at the **full rate borne entirely by the
+  pensioner** — reported as an *allgemeiner Beitragssatz* of **14.6 %** plus the fund's
+  *Zusatzbeitrag*, and **3.6 %** (2025) for care insurance with a **0.6 %** surcharge for the
+  childless — and the class covers **betriebliche Altersversorgung** in all five
+  *Durchführungswege*. **What is not a Versorgungsbezug is the point**: a **private Riester
+  annuity**, a **Basisrente** and **every Schicht-3 annuity** (RV, FRV, IDX, SOF) attract **no
+  health or long-term-care contribution at all** for a compulsorily insured pensioner. § 226
+  Abs. 2 SGB V grants a ***Freibetrag*** in the health insurance for benefits that *are* caught,
+  reported as **one twentieth of the monthly Bezugsgröße** — **187.25 €/month in 2025** and
+  **197.75 €/month in 2026** — with only a *Freigrenze* of the same amount in the care insurance.
+  **But § 240 SGB V reverses the result for *freiwillig versicherte* members**, for whom **the
+  whole of the member's economic capacity** is contributory, expressly including private annuities:
+  the same SOF annuity that costs a compulsorily insured pensioner nothing costs a voluntarily
+  insured one roughly **19 %** of every payment. **The self-employed — the core Basisrente market
+  and a large part of the private annuity market — are overwhelmingly freiwillig or privately
+  insured**, so the exposed population is precisely the one buying the products, and a SOF, RV or
+  BAS specification discussing net-of-tax attractiveness must carry the qualification. Three delib
+  parameters hang off one annual regulation, the *Sozialversicherungsrechengrößen-Verordnung*: the
+  Basisrente ceiling [R39], the *Kleinbetragsrente* threshold [R42] and this *Freibetrag* — so
+  **delib carries them as `**[std]**` parameters in one place, with the year stated, and every
+  product document references that one place**.
+- Not established: **all figures, all paragraph attributions, the ErbStG URL slug, the
+  *Versorgungsfreibetrag* mechanics and the § 240 scope.** Whether a **Basisrente
+  Hinterbliebenenrente** is caught by the ErbStG or exempted as a *Versorgungsbezug* is **not
+  established** and is a real question given [R39]'s *nicht vererblich* condition. **Whether a
+  Pflegerente or a BU annuity in payment is a *Versorgungsbezug* is not established.** The
+  taxation of a **Pflegerente** itself is genuinely open, with two incompatible readings current —
+  **not taxable at all** (compensation for care costs, falling under no *Einkunftsart*, the
+  standard statement for *Pflegetagegeld*) versus ***Ertragsanteil*** taxation as a *Leibrente*
+  [R41]. The distinction matters because the first makes the benefit worth more per euro of premium
+  than any other benefit in delib. **The PFL `product-spec.md` states both readings, cites neither,
+  and says the model publishes gross benefits and takes no position** — which costs nothing,
+  because delib computes no tax anywhere. Likewise **not established**: whether a
+  *Pflegerentenversicherung* premium is a *sonstige Vorsorgeaufwendung* under § 10 Abs. 4 EStG,
+  where a *Risikolebensversicherung* and a *selbständige* BU premium sit within a joint annual
+  ceiling reported at **2,800 €** for the self-employed and **1,900 €** for employees — a ceiling
+  that basic health and care contributions alone normally exhaust, so that **a German
+  risk-protection premium is in practice not deductible at all**, the exact opposite of the
+  Schicht-1 position and the reason the market sells **BU cover inside a Basisrente**.
+- Products: KLV, RLV and RIE load-bearing; the rest qualified.
+
