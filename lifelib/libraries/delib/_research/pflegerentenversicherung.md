@@ -52,8 +52,6 @@ Access date for all citations: **2026-08-29**.
 
 ## Retrieval conditions and citation discipline
 
-Read this section before reading any tagged fact in this file. It is the difference between a delib
-citation and an frlib one.
 
 **No document in this file was retrieved.** Direct HTTP egress from this build environment is
 blocked by an organisation network policy. `WebFetch` and `curl` are refused with HTTP 403 at the
@@ -321,23 +319,21 @@ number, page count or date is correct.
   its premium rises with attained age. `[unverified]` throughout.
 
 ### S12 — Finanztip, guidance on *Pflegezusatzversicherung*
-- Publisher: Finanztip — **secondary**
-- Doc type: consumer guidance
-- URL: not established
-- Content: same class of evidence as S11; retained separately because Finanztip publishes explicit
-  recommended benefit levels — that a top-up should be sized against the *Eigenanteil* in a
-  *Pflegeheim* rather than against a round number — which is the reasoning delib's `[std]`
-  *vereinbarte Rente* of 1 000 € per month follows. Any specific recommended amount is
+- Publisher: Finanztip — **secondary**. Doc type: consumer guidance. URL: not established
+- Content: same class of evidence as S11, retained separately because Finanztip publishes explicit
+  sizing advice — that a top-up should be sized against the *Eigenanteil* in a *Pflegeheim* rather
+  than against a round number — which is the reasoning delib's `[std]` *vereinbarte Rente* of
+  1 000 € per month follows. Any specific recommended amount is `[unverified]`.
+
   `[unverified]`.
 
 ### S13 — Comparison portals: Verivox, Check24
-- Publisher: Verivox GmbH; CHECK24 Vergleichsportal GmbH — **secondary**
-- Doc type: quote engines and product-comparison pages
-- URL: not established
-- Content: the only public sources that produce a premium for a named age, benefit and option set on
-  demand, and therefore the natural corroboration for section 23's premium band. **None was queried**
-  (no egress, no search), so section 23's band rests on the actuarial arithmetic set out there and
-  is `[std]`, not `[S13]`. Portals cover *Pflegetagegeld* far more thoroughly than *Pflegerente*;
+- Publisher: Verivox GmbH; CHECK24 Vergleichsportal GmbH — **secondary**. Doc type: quote engines.
+  URL: not established
+- Content: the only public sources that produce a premium for a named age, benefit and option set
+  on demand, and therefore the natural corroboration for section 23's premium band. **None was
+  queried** (no egress, no search), so that band rests on the arithmetic set out there and is
+  `[std]`, not `[S13]`. Portals cover *Pflegetagegeld* far more thoroughly than *Pflegerente*;
   whether either portal quotes *Pflegerente* at all was not established (gap 5).
 
 ### S14 — Ratings agencies: Morgen & Morgen, Franke und Bornberg, Assekurata
@@ -412,13 +408,12 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
 - Content: the two provisions that define the insured event of every German LTC product, public or
   private.
   - **§ 14** defines *Pflegebedürftigkeit* as a health-related impairment of *Selbstständigkeit* or
-    of abilities, requiring help from others, expected to last **at least six months** `[unverified]`.
-    The decisive reform of 2017 [R9] was to replace the old measure — minutes of care time in
-    *Grundpflege* and *hauswirtschaftliche Versorgung* — with a measure of **independence across six
-    areas of life**, which brought cognitive and psychiatric impairment (above all dementia) into
-    the assessment on equal terms with physical impairment. That change is the reason the number of
-    recognised *Pflegebedürftige* rose sharply after 2017 and the reason pre-2017 incidence data
-    cannot be used for pricing without adjustment.
+    of abilities requiring help from others and expected to last **at least six months**
+    `[unverified]`. The decisive reform of 2017 [R9] replaced the old measure — minutes of care
+    time — with a measure of **independence across six areas of life**, bringing cognitive and
+    psychiatric impairment, above all dementia, into the assessment on equal terms with physical
+    impairment. That is why recognised *Pflegebedürftige* rose sharply after 2017 and why pre-2017
+    incidence data cannot be used for pricing without adjustment.
   - **§ 15** converts the assessment into a *Pflegegrad*. Six *Module* are scored, weighted and
     summed to *gewichtete Punkte* on a 0-to-100 scale, and the *Pflegegrad* follows from the total.
     Module weights `[unverified]`: *Mobilität* **10 %**; *kognitive und kommunikative Fähigkeiten*
@@ -516,23 +511,19 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
   (PNG) with effect from **1 January 2013** `[unverified]`, universally called ***Pflege-Bahr*** after
   the then health minister. The scheme, as the statute and the associated *Förderbedingungen*
   provide `[unverified]` throughout:
-  - **Zulage**: **5 €** per month, **60 €** per year, paid to the insurer and credited to the
+  - **Zulage** **5 €** per month, **60 €** per year, paid to the insurer and credited to the
     contract, administered through the *Zentrale Zulagenstelle für Altersvermögen* `[unverified]`.
-  - **Minimum own contribution**: **10 €** per month, so a subsidised contract costs at least
-    **15 €** per month in total.
+  - **Minimum own contribution 10 €** per month, so a subsidised contract costs at least **15 €**.
   - **No underwriting**: no *Gesundheitsprüfung*, no *Risikozuschlag*, no *Leistungsausschluss*, and
-    a *Kontrahierungszwang* on the insurer — anyone aged **18** or over who is not already
-    *pflegebedürftig* must be accepted.
-  - **Wartezeit**: at most **five years**, shortened where *Pflegebedürftigkeit* results from an
-    accident `[unverified]`.
-  - **Minimum benefit grid**: at least **600 €** per month in the top *Pflegegrad*, with the lower
-    grades at least **10 % / 20 % / 30 % / 40 %** of that amount for *Pflegegrade* 1 to 4
-    respectively `[unverified]`. This is the only *Leistungsstaffel* fixed by German statute.
-  - **Form restriction**: the subsidised contract must be a **Pflegetagegeld** (*Pflegemonatsgeld*)
-    cover conducted *nach Art der Lebensversicherung* with an ageing provision `[unverified]`.
-    ***A Pflegerentenversicherung written by a Lebensversicherer cannot be a geförderter Tarif.***
-    That is the single most important fact in this entry for delib: the *Zulage* is not available to
-    the modelled product, and the delib model does not implement it.
+    a *Kontrahierungszwang* — anyone aged **18** or over who is not already *pflegebedürftig* must
+    be accepted. **Wartezeit** at most **five years**, shortened for care following an accident.
+  - **Minimum benefit grid**: at least **600 €** per month in the top *Pflegegrad*, with grades 1
+    to 4 at at least **10 / 20 / 30 / 40 %** of it. This is the only *Leistungsstaffel* fixed by
+    German statute.
+  - **Form restriction**: the subsidised contract must be a **Pflegetagegeld** conducted *nach Art
+    der Lebensversicherung* with an ageing provision. ***A Pflegerentenversicherung written by a
+    Lebensversicherer cannot be a geförderter Tarif*** — the *Zulage* is not available to the
+    modelled product and delib does not implement it.
   - The combination of no underwriting with a fixed 5 € subsidy is the design tension the market
     identifies: the subsidy is small relative to the anti-selection the *Kontrahierungszwang*
     creates, so insurers price the residual defensively and the resulting cover is thin.
@@ -637,23 +628,19 @@ given where the form is well known and are marked `[unverified]`; elsewhere `URL
 - Content — the single most important actuarial reference for this product, and the one whose
   contents this library **cannot and does not redistribute**:
   - **DAV 2008 P is the German market's standard table for LTC business calculated *nach Art der
-    Lebensversicherung***, covering both the *Pflegerentenversicherung* written by life insurers and
-    the *Pflegetagegeld* written on the life chassis by health insurers `[unverified]`.
-  - It is a **multi-state** table, not a single decrement series. What it has to supply for the
-    product to be priced at all: **Pflegewahrscheinlichkeiten** — the probability that an active
-    life aged *x* becomes *pflegebedürftig* within the year, by sex, by attained age, and **by
-    degree of care**; **transition probabilities between degrees**, since deterioration is the
-    normal path and is what moves a policyholder up the *Leistungsstaffel*; **Reaktivierungs­wahr­schein­lich­keiten**,
-    the small probability of recovery to a lower degree or to the active state; and — decisively —
-    **separate mortality for active lives and for lives in care, by degree**.
-  - It was constructed on the *Pflegestufen* of the pre-2017 regime `[unverified]`. Its application
-    to the five *Pflegegrade* therefore requires a mapping, and any recalibration to post-2017
-    experience is the insurer's own work. This is the largest single source of basis risk in the
-    product and is gap 10.
+    Lebensversicherung***, covering the *Pflegerente* written by life insurers and the
+    *Pflegetagegeld* written on the life chassis by health insurers `[unverified]`.
+  - It is a **multi-state** table, not a single decrement series: it has to supply
+    *Pflegewahrscheinlichkeiten* by sex, attained age and grade of entry; transition probabilities
+    between grades; *Reaktivierungswahrscheinlichkeiten*; and — decisively — **separate mortality
+    for active lives and for lives in care, by grade**.
+  - It was constructed on the pre-2017 *Pflegestufen* `[unverified]`, so applying it to the five
+    *Pflegegrade* requires a mapping and any post-2017 recalibration is the insurer's own work.
+    **This is the largest single source of basis risk in the product** and is gap 10.
   - **The table is the property of the DAV, is not public, and is not redistributed by this
     library.** delib cites it by name, states what a replacement must preserve (section 17), and
-    ships a `[std]` proxy anchored so the worked example reproduces exactly — the same posture uklib
-    takes about CMI tables and frlib takes about TH00-02/TF00-02.
+    ships a `[std]` proxy anchored so the worked example reproduces exactly — the same posture
+    uklib takes about CMI tables and frlib takes about TH00-02/TF00-02.
   - No effective date, no committee name, no *Sicherheitszuschlag* level and no numeric value from
     the table is asserted anywhere in this file.
 
@@ -889,29 +876,24 @@ the order of **40 €** per month; a *Wohngruppenzuschlag* of the order of **220
 Three readings of these tables that the product specification needs:
 
 1. ***Pflegegrad* 1 is, for cash purposes, uninsured by the state** — 125 € towards a *Pflegeheim*
-   and an earmarked 131 € *Entlastungsbetrag*, and nothing else `[R3][R4][R5][unverified]`. This is
-   the reason most private *Leistungsstaffeln* also pay nothing, or a token, at grade 1 (section 7):
-   the private product mirrors the state's own judgement that grade 1 is not a funding event.
+   and an earmarked 131 € *Entlastungsbetrag*, nothing else `[R3][R4][R5][unverified]`. That is why
+   most private *Leistungsstaffeln* also pay nothing, or a token, at grade 1 (section 7).
 2. **The *Pflegegeld* is roughly 44 % of the corresponding *Sachleistung*** at every grade
-   `[R3][unverified]` — 347/796, 599/1 497, 800/1 859, 990/2 299 give 43.6 %, 40.0 %, 43.0 %,
-   43.1 %. The state pays informal carers substantially less than professional ones, which is what
-   makes the *Angehörigenpflege* model financially viable for families and is why five in six
-   *Pflegebedürftige* are cared for at home (section 21).
-3. **The residential contribution at grade 5 (2 096 €) is *lower* than the home *Sachleistung*
-   at grade 5 (2 299 €)** `[R3][R4][unverified]`. The statutory scheme does not scale its
-   residential contribution to the cost of a *Pflegeheim*; the *Pflegeheim*'s price is set by the
-   facility and the residue falls on the resident. That asymmetry is the *Versorgungslücke*.
+   `[R3][unverified]` — 43.6 %, 40.0 %, 43.0 %, 43.1 % across grades 2 to 5. The state pays
+   informal carers substantially less than professional ones, which is what makes the
+   *Angehörigenpflege* model viable and why five in six *Pflegebedürftige* are cared for at home.
+3. **The residential contribution at grade 5 (2 096 €) is *lower* than the home *Sachleistung* at
+   grade 5 (2 299 €)** `[R3][R4][unverified]`. The scheme does not scale its residential
+   contribution to the price of a *Pflegeheim*; the facility sets the price and the residue falls
+   on the resident. That asymmetry is the *Versorgungslücke*.
 
 ### 4. The *Eigenanteil* and the *Versorgungslücke* — the number the product is sized against
 
-- A resident of a German *Pflegeheim* pays **four separate components** `[R4][R20]`:
-  1. the ***einrichtungseinheitlicher Eigenanteil* (EEE)** — the care-related cost the SPV
-     contribution does not meet, **identical for *Pflegegrade* 2 to 5 within one facility** since
-     2017 [R9];
-  2. ***Unterkunft und Verpflegung*** — board and lodging, met by the resident in full;
-  3. ***Investitionskosten*** — the facility's capital costs, met by the resident in full unless a
-     *Land* subsidises them;
-  4. an ***Ausbildungsumlage*** where levied.
+- A resident of a German *Pflegeheim* pays **four separate components** `[R4][R20]`: the
+  ***einrichtungseinheitlicher Eigenanteil* (EEE)**, the care-related cost the SPV contribution
+  does not meet, **identical for *Pflegegrade* 2 to 5 within one facility** since 2017 [R9];
+  ***Unterkunft und Verpflegung***; ***Investitionskosten***; and an ***Ausbildungsumlage*** where
+  levied. The last three are met by the resident in full.
 - Only component 1 is reduced by the § 43c ***Leistungszuschläge***, and only by duration of stay:
   **15 % / 30 % / 50 % / 75 %** in months 1–12, 13–24, 25–36 and from 37 respectively, on the 2024
   step-up `[R4][unverified]`. Components 2, 3 and 4 are neither capped nor subsidised, and are the
@@ -994,18 +976,15 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   **600 €** per month at the top *Pflegegrad* with the lower grades at at least **10 / 20 / 30 /
   40 %** of it; and the contract must be a *Pflegetagegeld* conducted *nach Art der
   Lebensversicherung*.
-- **Why it matters to a *Pflegerente* file** even though a *Pflegerente* cannot be one:
-  1. It is the **only statutory *Leistungsstaffel*** in German private LTC. The 10/20/30/40/100
-     grid is the reference point every private grid is read against, and several unsubsidised
-     *Pflegetagegeld* tariffs simply adopt it.
-  2. It fixes a **statutory floor benefit of 600 € per month** at the top grade, which is
-     approximately **one fifth** of the *Eigenanteil* in section 4 `[std]` arithmetic on
-     `[R8][R20][unverified]`. That ratio is the whole critique of the scheme.
-  3. Its **no-underwriting design is the natural experiment** on anti-selection in German LTC. The
-     *Kontrahierungszwang* means the subsidised pool contains everyone who chose to join, which is a
-     worse pool than an underwritten one; the *Wartezeit* is the only screen; and the 5 € subsidy
-     does not compensate. That is why insurers price the residual defensively and why the benefit
-     per euro of premium is poor compared with an underwritten tariff.
+- **Why it matters to a *Pflegerente* file** even though a *Pflegerente* cannot be one. It is the
+  **only statutory *Leistungsstaffel*** in German private LTC, and the 10/20/30/40/100 grid is the
+  reference point every private grid is read against; several unsubsidised *Pflegetagegeld* tariffs
+  adopt it outright. It fixes a **statutory floor benefit of 600 € per month** at the top grade,
+  about **one fifth** of the *Eigenanteil* of section 4 (`[std]` arithmetic on
+  `[R8][R20][unverified]`), which is the whole critique of the scheme. And its no-underwriting
+  design is the **natural experiment on anti-selection** in German LTC: the *Kontrahierungszwang*
+  fills the subsidised pool with everyone who chose to join, the *Wartezeit* is the only screen,
+  and the 5 € subsidy does not compensate.
 - **Why take-up stalled.** No statement here is sourced; each is a reasoned market observation
   `[unverified]`. The **subsidy is fixed in nominal terms** at 5 € per month since 2013 and has
   never been uprated, while the *Eigenanteil* it helps meet has risen by well over half [R20]. The
@@ -1028,7 +1007,7 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   the **top** *Pflegegrad* — and a **schedule of percentages** of it by grade. Everything else in the
   benefit design is a modifier on that schedule.
 - **The observed range across the German market**, reconstructed from market knowledge and **not**
-  from any retrieved wording; every cell `[unverified]`:
+  from any wording; every cell `[unverified]`:
 
 | *Pflegegrad* | Common low | Common high | Notes |
 |---|---|---|---|
@@ -1094,9 +1073,6 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   is absorbing. A model that treats "in claim" as a single state exited only by death **overstates**
   the liability, and a model that treats every downgrade as a termination **understates** it. The
   delib model carries the grade explicitly for exactly this reason (section 17).
-- ***Pflegebedürftigkeit* at inception is an absolute bar.** Every form of German private LTC cover,
-  subsidised or not, requires the applicant not to be *pflegebedürftig* when the contract is made
-  [R8]`[unverified]` for the subsidised form and `[S4][unverified]` for the underwritten one.
 
 ### 9. *Wartezeit* and *Karenzzeit*
 
@@ -1114,10 +1090,9 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
 | *Karenzzeit* | commonly **none**; where present, **3** or **6** months | not the operative screen |
 
 - **Why the underwritten product usually has no *Wartezeit*.** The *Gesundheitsprüfung* does the
-  screening that the *Wartezeit* does in the subsidised product. Where both exist, the *Wartezeit*
-  is doing very little work and is a competitive disadvantage; where neither exists, the tariff is
-  exposed. The pairing is therefore near-deterministic: **no underwriting implies a long
-  *Wartezeit*; underwriting implies none**.
+  screening that the *Wartezeit* does in the subsidised product, so where both exist the
+  *Wartezeit* is a competitive disadvantage doing very little work. The pairing is near
+  deterministic: **no underwriting implies a long *Wartezeit*; underwriting implies none**.
 - **delib `[std]`: *Wartezeit* = 0, *Karenzzeit* = 0 in the base run**, both switchable. Rationale:
   the base run models the underwritten mainstream form, in which neither is standard; and a
   *Karenzzeit* of three or six months on a benefit whose expected duration is of the order of four
@@ -1154,15 +1129,12 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
 
 ### 11. *Dynamik* — indexation before and during claim
 
-- Two distinct options, both offered in the German market, and they must not be conflated:
-  1. ***Beitragsdynamik*** (planned increase before claim). The premium rises by an agreed
-     percentage each year — commonly **3 % to 5 %** `[unverified]` — and the *vereinbarte Rente*
-     rises by whatever that additional premium buys **at the attained age**, without renewed
-     underwriting. The policyholder may decline; declining twice or three times in succession
-     ordinarily ends the option permanently `[unverified]`.
-  2. ***Leistungsdynamik im Leistungsbezug*** (increase during claim). The annuity in payment rises
-     by an agreed percentage each year — commonly **1 % to 3 %** `[unverified]` — to track care-cost
-     inflation.
+- Two distinct options, both offered in the German market, and not to be conflated `[unverified]`:
+  ***Beitragsdynamik*** raises the premium before claim by an agreed **3 % to 5 %** a year, buying
+  whatever additional *vereinbarte Rente* that premium buys at the attained age without renewed
+  underwriting, with a right to decline that lapses permanently after two or three refusals; and
+  ***Leistungsdynamik im Leistungsbezug*** raises the annuity in payment by an agreed **1 % to 3 %**
+  a year to track care-cost inflation.
 - **The second is the economically important one for this product**, and the reasoning is section 4:
   the *Eigenanteil* rises continuously while the statutory benefit is uprated episodically, so a
   level annuity loses ground against the gap it was bought to close throughout a care spell that may
@@ -1175,9 +1147,9 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
 - **delib `[std]`: both dynamics off in the base run**, both exposed as parameters. Rationale: the
   base run must demonstrate the multi-state benefit machinery cleanly, and a *Beitragsdynamik*
   introduces a second, behaviourally driven premium path (the acceptance rate on each offer) for
-  which there is no evidence at all in this corpus. The technical notes carry the *Leistungsdynamik*
-  as a switchable escalation on the annuity and list "escalating the annuity at general-population
-  duration rather than at impaired-life duration" as a modelling pitfall.
+  which this corpus supplies no evidence at all. The technical notes carry the *Leistungsdynamik*
+  as a switchable escalation and list "escalating the annuity at general-population duration rather
+  than at impaired-life duration" as a modelling pitfall.
 
 ### 12. *Todesfallleistung* and *Beitragsrückgewähr*
 
@@ -1185,9 +1157,6 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   ***Beitragsrückgewähr*** — return of the premiums paid, usually **without interest** and usually
   **net of any annuity already paid** `[S4][unverified]`. Other forms found in the market are a
   fixed *Todesfallsumme* and a benefit equal to the *Deckungskapital* `[unverified]`.
-- **Why the option exists.** A pure-risk *Pflegerente* bought at 45 by someone who dies suddenly at
-  70 returns nothing at all, and the *fonds perdu* character is the standard sales objection. The
-  *Beitragsrückgewähr* answers it, at a cost.
 - **What it does to the product, and this is the fact that matters most for delib:**
   - It converts a **pure biometric risk cover into a savings-bearing contract**. The reserve
     required to fund a return of premiums on death at any time is close to the accumulated premium
@@ -1211,12 +1180,8 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   narrow § 163 VVG route [R11]. This is the product's defining commercial property (section 5).
 - **Premium-paying period.** Three forms are sold `[unverified]`: **lifelong** payment until death
   or claim; payment to a fixed age, typically **65** or **85**; and a **single premium**
-  (*Einmalbeitrag*), used to convert capital into cover and marketed to people already near care.
-  A shortened *Beitragszahlungsdauer* raises the level premium and raises the reserve, and it is the
-  form that best matches a buyer's earning life.
-- **Frequency.** Annual, half-yearly, quarterly and monthly, with a *Ratenzahlungszuschlag* for
-  paying other than annually. The German market convention is of the order of **2 % half-yearly,
-  3 % quarterly, 5 % monthly** `[unverified]`; no *Pflegerenten* tariff's loadings were established.
+  (*Einmalbeitrag*), used to convert capital into cover. A shortened *Beitragszahlungsdauer* raises
+  the level premium and the reserve, and best matches a buyer's earning life.
 - **delib `[std]`: level monthly premium payable for life, waived in claim, no
   *Ratenzahlungszuschlag* modelled separately.** Rationale: the monthly grid (`Pflege_DE_S`) makes a
   monthly premium the natural unit; a lifelong period is the form that shows the *Deckungskapital*
@@ -1278,12 +1243,11 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   *Rückkaufswert* equal to the *gezillmert* prospective reserve, floored at zero and reduced by a
   contractual *Stornoabzug*, and say in the product specification that the statutory question is
   open and that a carrier's own wording settles it for that carrier.
-- **Levels are unsourced.** No *Stornoabzug* for any German *Pflegerenten* tariff was established.
-  The market range for German life products generally runs from nil to the order of **5 %** of the
-  *Deckungskapital*, sometimes with a capital-market-dependent supplement `[unverified]`. delib
-  ships **`[std]` *Stornoabzug* = 0 in the base run** — rationale: a non-zero deduction requires a
-  contractual quantification this file cannot supply, and a zero deduction is the conservative
-  choice for a *demonstration* of the surrender mechanic — with the parameter exposed.
+- **Levels are unsourced.** No *Stornoabzug* for any German *Pflegerenten* tariff was established;
+  the German life-market range runs from nil to the order of **5 %** of the *Deckungskapital*,
+  sometimes with a capital-market-dependent supplement `[unverified]`. delib ships **`[std]`
+  *Stornoabzug* = 0 in the base run** — a non-zero deduction requires a contractual quantification
+  this file cannot supply — with the parameter exposed.
 - **Practical size.** Because the *Zillmerung* allowance is large and the risk premium in the early
   years is small, the *Rückkaufswert* of a *Pflegerente* is **near zero for the first several years**
   and remains well below premiums paid for a long time. That is the honest thing to tell a buyer, and
@@ -1295,14 +1259,13 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   *Produktinformationsblatt* (S5), no *Verbraucherinformation* (S7) and no *Tarifblatt* (S9) was
   located, and the search channel was unavailable. **Every charge in delib is `[std]`** (gap 2).
 - The **structure** is nevertheless certain, because it is the German life-market structure:
-  - ***Abschluss- und Vertriebskosten***, expressed as a per-mille of the *Beitragssumme*, capped at
-    the *Höchstzillmersatz* for the part financed through the reserve `[R13][unverified]`, and
-    amortised over at least five years for surrender-value purposes [R11].
-  - ***Verwaltungskosten***, expressed as a percentage of premium (*Beitragskosten*), sometimes with
-    a per-policy element and a percentage of the reserve (*Bestandskosten*).
-  - ***Ratenzahlungszuschlag*** for other than annual payment (section 13).
+  - ***Abschluss- und Vertriebskosten***, a per-mille of the *Beitragssumme*, capped at the
+    *Höchstzillmersatz* for the part financed through the reserve `[R13][unverified]` and amortised
+    over at least five years for surrender-value purposes [R11].
+  - ***Verwaltungskosten***, as a percentage of premium and sometimes of the reserve, plus a
+    per-policy element; and a ***Ratenzahlungszuschlag*** for other than annual payment.
   - **Claims administration cost** during the paying period, small here because the trigger is
-    determined by a third party (section 8) — materially smaller than the equivalent on a
+    determined by a third party (section 8) — materially smaller than on a
     *Berufsunfähigkeitsrente*, where the insurer runs its own *Nachprüfung*.
 - **delib `[std]` charge set**, each with its rationale, to be set out in full in the technical
   notes: an acquisition cost expressed as a per-mille of *Beitragssumme* **at or below the 25 ‰
@@ -1346,11 +1309,11 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   - **Grade and mortality are correlated**, so the model must not apply an average benefit
     percentage to a survival curve computed at an average mortality: the highest-paying state is
     also the shortest-lived. This is the pitfall the technical notes should list first.
-- **Selection at underwriting** is a further, separate effect: the *Gesundheitsprüfung* depresses
-  incidence for the first years of the contract, and its effect decays. On a product whose claims
-  arrive thirty to forty years after issue, **underwriting selection is essentially irrelevant to the
-  cost of the benefit** and matters only to the early-duration reserve. That is the opposite of
-  *Berufsunfähigkeit*, where selection is a first-order pricing effect.
+- **Selection at underwriting** is a separate effect: the *Gesundheitsprüfung* depresses incidence
+  for the first years and decays. On a product whose claims arrive thirty to forty years after
+  issue, **underwriting selection is essentially irrelevant to the cost of the benefit** and
+  matters only to the early-duration reserve — the opposite of *Berufsunfähigkeit*, where selection
+  is a first-order pricing effect.
 - **The 2017 break.** DAV 2008 P was built on *Pflegestufen* [R15]`[unverified]`; the trigger it is
   applied to is *Pflegegrade* [R9]. The mapping is the insurer's own work, and the widening of the
   definition in 2017 raised incidence at the lower grades in a way a pre-2017 table cannot capture.
@@ -1378,13 +1341,12 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   tariffs writing to **70** and a few, mostly single-premium, beyond `[unverified]`. **Purchase
   behaviour clusters much later than the permitted band**: the product is bought predominantly
   between **45 and 60** `[unverified]`, when the buyer has seen a parent go into care.
-- **Sex.** Unisex pricing has been compulsory for EU insurance contracts concluded from **21 December
-  2012** `[unverified]`. This matters more here than on any other delib product: **women have
-  materially higher LTC incidence and materially longer care durations than men**, so the unisex
-  premium embeds a cross-subsidy whose size depends on the sex mix actually written, and the sex mix
-  is itself endogenous to price. The technical notes should carry the unisex basis as a **blended**
-  set of transition rates with a stated `[std]` mix, and list "pricing unisex on a 50/50 mix while
-  writing 60/40" as a model risk.
+- **Sex.** Unisex pricing has been compulsory for EU contracts concluded from **21 December 2012**
+  `[unverified]`, and it matters more here than on any other delib product: **women have materially
+  higher LTC incidence and materially longer care durations than men**, so the unisex premium
+  embeds a cross-subsidy whose size depends on the sex mix written, and that mix is itself
+  endogenous to price. The notes carry the basis as a **blended** rate set with a stated `[std]`
+  mix and list "pricing unisex on a 50/50 mix while writing 60/40" as a model risk.
 - **delib `[std]`: unisex bases blended at 50/50, no *Risikozuschlag*, no *Leistungsausschluss*,
   entry age 45 for the anchor model point.** Rationale for the entry age: it sits at the lower edge
   of the observed purchase cluster, it gives a long enough pre-claim period for the
@@ -1400,13 +1362,12 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   and the biometric basis is the prudent one, so the ***Risikoergebnis*** — the difference between
   the incidence and mortality assumed and the incidence and mortality experienced — **is the
   dominant component**, with the *Zinsergebnis* second and the *Kostenergebnis* third.
-- **Application forms** used in the German market `[unverified]`: *Beitragsverrechnung* (the declared
-  surplus reduces the premium called — the dominant form on biometric-risk products, because the
-  policyholder sees the benefit immediately and no accumulation account is needed); *verzinsliche
-  Ansammlung* (accumulation, then applied at claim or at exit); and a *Bonus* form raising the
-  *vereinbarte Rente*. On *Berufsunfähigkeit* the *Beitragsverrechnung* form is so dominant that the
-  market quotes a *Bruttobeitrag* and a *Zahlbeitrag* side by side; **whether the *Pflegerente*
-  market does the same was not established** (gap 18), though the structural similarity is strong.
+- **Application forms** used in the German market `[unverified]`: *Beitragsverrechnung* (the
+  declared surplus reduces the premium called — the dominant form on biometric-risk products);
+  *verzinsliche Ansammlung*; and a *Bonus* form raising the *vereinbarte Rente*. On
+  *Berufsunfähigkeit* the *Beitragsverrechnung* form is so dominant that the market quotes a
+  *Bruttobeitrag* and a *Zahlbeitrag* side by side; **whether the *Pflegerente* market does the
+  same was not established** (gap 18), though the structural similarity is strong.
 - **delib `[std]`: no *Überschussbeteiligung* in the base run.** Rationale: the delib library
   publishes **gross best-estimate-style, undiscounted** cash flows; the surplus chassis is
   demonstrated in full by `kapitallebensversicherung`; and modelling a discretionary
@@ -1423,12 +1384,10 @@ structural, not `[unverified]`. The market-share and average-premium rows are `[
   is not deductible at all.** The product specification must say so plainly rather than repeat the
   formal rule.
 - **Benefits.** Two competing analyses, and **this file cannot settle which applies** (gap 13):
-  1. **Tax-free** under § 3 Nr. 1a EStG, as a benefit from a *Pflegeversicherung*
-     `[R23][unverified]` — the analysis universally applied to *Pflegetagegeld*, and the answer
-     consumer material gives for private LTC benefits generally.
-  2. **Taxed at the *Ertragsanteil*** under § 22 EStG as a *Leibrente* `[R23][unverified]` — the
-     analysis applied to a *Berufsunfähigkeitsrente*, and the one the *Pflegerente*'s life-assurance
-     form and lifelong payment argue for.
+  **tax-free** under § 3 Nr. 1a EStG as a benefit from a *Pflegeversicherung* `[R23][unverified]` —
+  the analysis universally applied to *Pflegetagegeld*; or **taxed at the *Ertragsanteil*** under
+  § 22 EStG as a *Leibrente* `[R23][unverified]` — the analysis applied to a
+  *Berufsunfähigkeitsrente*, and the one the *Pflegerente*'s life-assurance form argues for.
   The distinction is worth several percent of the product's after-tax value and **delib does not
   model taxation of the benefit**, stating the open question instead.
 - ***Todesfallleistung*** from a *Pflegerente* follows the ordinary life-assurance treatment: outside
@@ -1464,12 +1423,11 @@ whole product is built on, and it is the reason a level premium from 45 accumula
 years before it starts paying.
 
 **Lifetime risk and duration** `[unverified]`: of the order of one in two women and two in five men
-alive at 60 will be *pflegebedürftig* at some point; the average duration of *Pflegebedürftigkeit*
-conditional on onset is of the order of **three to five years**, longer for women; the duration in
-*vollstationäre* care specifically is materially shorter, of the order of **two years**, with a
-substantial share of residents dying within the first year of admission. **Duration is the single
-weakest-evidenced quantity in this file** and is gap 19: it is the direct multiplier on the
-liability, and no figure here is sourced.
+alive at 60 will be *pflegebedürftig* at some point; the average duration conditional on onset is
+of the order of **three to five years**, longer for women; the duration in *vollstationäre* care is
+shorter, of the order of **two years**, with a substantial share of residents dying within the
+first year of admission. **Duration is the weakest-evidenced quantity in this file** (gap 19): it
+is the direct multiplier on the liability, and no figure here is sourced.
 
 **Why the count grows** [R19]: the baby-boom cohorts born in the late 1950s and early 1960s reach
 the high-prevalence ages from the 2030s, and prevalence at a given age has not fallen enough to
@@ -1478,25 +1436,22 @@ assumption the projections vary.
 
 ### 22. Market: how much private LTC cover is actually in force
 
-- **Private LTC top-up contracts** counted by the PKV-Verband, i.e. *Pflegetagegeld* and
-  *Pflegekosten* only: of the order of **3,5 to 4,5 million** contracts, of which of the order of
+- **Private LTC top-up contracts** counted by the PKV-Verband — *Pflegetagegeld* and
+  *Pflegekosten* only — number of the order of **3,5 to 4,5 million**, of which of the order of
   **0,8 to 0,9 million** are subsidised *Pflege-Bahr* `[R21][unverified]`. Against 84 million
   residents and 5,7 million *Pflegebedürftige* [R18], **private top-up cover reaches only a small
-  minority of the population at risk**, and that is the settled characterisation of the market.
+  minority of the population at risk** — the settled characterisation of the market.
 - ***Pflegerentenversicherung* is not in that count**, because it is life business [R22]. **No
   sourced count of German *Pflegerente* contracts in force exists anywhere in this research**
   (gap 12). The qualitative position, `[unverified]`: it is the **smallest of the three forms by
   contract count and the largest by average premium**, it is sold overwhelmingly through advised
   channels rather than direct, and a number of *Lebensversicherer* have entered and left the segment.
-- **Why penetration is low**, as a set of reasoned market observations `[unverified]`: the risk is
-  distant and easy to discount; *Hilfe zur Pflege* [R24] provides a visible backstop that reduces the
-  perceived downside; the *Angehörigen-Entlastungsgesetz* removed the *Elternunterhalt* motive for
-  all but high earners from 2020 [R24]; the premium at the ages people actually buy is a
-  three-figure monthly sum; and the products are hard to compare because the *Leistungsstaffel*, the
+- **Why penetration is low**, as reasoned market observations `[unverified]`: the risk is distant
+  and easy to discount; *Hilfe zur Pflege* [R24] is a visible backstop that reduces the perceived
+  downside; the *Angehörigen-Entlastungsgesetz* removed the *Elternunterhalt* motive for all but
+  high earners from 2020 [R24]; the premium at the ages people actually buy is a three-figure
+  monthly sum; and the products are hard to compare because the *Leistungsstaffel*, the
   *Wartezeit* and the *Karenzzeit* interact.
-- **Rating and comparison infrastructure exists** — Morgen & Morgen, Franke und Bornberg, Assekurata,
-  Stiftung Warentest [S14][S10] — and concentrates on *Pflegetagegeld*, which is a further reason the
-  *Pflegerente*'s parameters are less visible than they would be for a mainstream product (gap 6).
 
 ### 23. Typical parameter levels, and the arithmetic behind delib's `[std]` premium band
 
@@ -1545,11 +1500,11 @@ lifelong level monthly premium, waiver in claim, no death benefit, no dynamics:
 | 45 | about 50.00 to 100.00 EUR | [std], from the arithmetic above |
 | 55 | about 80.00 to 160.00 EUR | [std], from the arithmetic above |
 
-**How to read this band.** It is not a market observation and must never be cited as one. It is a
-statement that a model premium falling well outside it indicates an error in the bases, and that a
-model premium inside it is not thereby validated. The technical notes should print the model's own
-equivalence premium beside this band and say which end it lands at and why. **Gap 3 stands until a
-real *Tarifblatt* or portal quotation replaces it.**
+**How to read this band.** It is not a market observation and must never be cited as one. It says
+that a model premium falling well outside it indicates an error in the bases, and that one inside
+it is not thereby validated. The technical notes print the model's own equivalence premium beside
+the band and say which end it lands at and why. **Gap 3 stands** until a real *Tarifblatt* or
+portal quotation replaces it.
 
 **Other typical parameter levels** `[unverified]` throughout: *vereinbarte Rente* as sold, **1 000 €
 to 1 500 €** per month; entry ages permitted **18 to 65**, occasionally to 70; purchase cluster
@@ -1561,12 +1516,10 @@ to 1 500 €** per month; entry ages permitted **18 to 65**, occasionally to 70;
 ## Observed variation across insurers
 
 **No carrier's *Pflegerenten* document was located, so there is no carrier-attributed variation
-table in this file.** That is the honest statement and it is recorded as gap 14. Naming carriers
-against parameter values that no source supplied would be exactly the fabrication house rule 3
-forbids, and it is not done here.
-
-What can be given instead is the **parameter range the German market is understood to write**, with
-the tag each range carries and an explicit statement of who, if anyone, is attributed:
+table in this file** (gap 14). Naming carriers against parameter values that no source supplied
+would be exactly the fabrication house rule 3 forbids, and it is not done here. What can be given
+instead is the **parameter range the German market is understood to write**, with its tag and an
+explicit statement of who, if anyone, is attributed:
 
 | Parameter | Range | Attribution | Tag |
 |---|---|---|---|
@@ -1583,16 +1536,13 @@ the tag each range carries and an explicit statement of who, if anyone, is attri
 | *Todesfallleistung* | none / *Beitragsrückgewähr* / fixed sum / *Deckungskapital* | none established | [unverified] |
 | *Stornoabzug* | 0% to about 5% of *Deckungskapital* | none established | [unverified] |
 
-**Carriers that write German LTC top-up business.** The delib brief names Allianz, R+V, Debeka,
-Generali/Dialog, HDI, Alte Leipziger, LV 1871, Continentale, Nürnberger, Swiss Life, Zurich, ERGO,
-AXA, Barmenia, Hannoversche, CosmosDirekt, Württembergische, Gothaer, Stuttgarter, Volkswohl Bund,
-Baloise, Universa, DEVK, Signal Iduna, Provinzial and HUK-Coburg. **This file establishes nothing
-about any of them.** It did not locate a single wording, rate card, product name or parameter for
-any carrier, and it therefore names none of them against any figure. The one structural statement it
-can make without a source, because it follows from the legal classification of section 5, is that
+**Carriers that write German LTC top-up business.** The delib brief names twenty-six German
+carriers. **This file establishes nothing about any of them** — not one wording, rate card,
+product name or parameter — and therefore names none of them against any figure. The one
+structural statement it can make without a source, because it follows from section 5, is that
 ***Pflegetagegeld* is written by the *Krankenversicherer* in that list and *Pflegerente* by the
-*Lebensversicherer***; which specific undertakings currently offer a *Pflegerente* was not
-established (gap 14).
+*Lebensversicherer***; which undertakings currently offer a *Pflegerente* was not established
+(gap 14).
 
 **Representative design the research supports.** A single-life, individual, underwritten
 *Pflegerentenversicherung* on a **monthly** grid; benefit trigger the statutory *Pflegegrad* of
@@ -1634,9 +1584,8 @@ premium level and every transition rate — carry the observed or argued range b
    nothing. Section 23's band is derived arithmetic tagged `[std]`, not an observation, and it must
    never be cited as a market figure. A single portal quotation or *Tarifblatt* would close this gap.
 
-4. **No Stiftung Warentest / *Finanztest* result was retrieved.** The characterisations at S10 — that
-   the tests concentrate on *Pflegetagegeld* and are critical of *Pflege-Bahr* — are recalled market
-   knowledge, `[unverified]`, with no score, price or test date behind them.
+4. **No Stiftung Warentest / *Finanztest* result was retrieved.** The characterisations at S10 are
+   recalled market knowledge, `[unverified]`, with no score, price or test date behind them.
 
 5. **No comparison-portal quotation was obtained**, and it was not even established whether Verivox
    or Check24 quote *Pflegerente* at all as opposed to *Pflegetagegeld* only [S13].
@@ -1680,8 +1629,8 @@ premium level and every transition rate — carry the observed or argued range b
 
 14. **Not one carrier document, product name or parameter was established for any of the
     twenty-six insurers the brief named.** No wording, no *Tarifblatt*, no product page. The
-    variation table above is therefore a market-range table with no attribution, and no insurer is
-    named against any figure anywhere in this file. This is the largest single difference between
+    variation table above is therefore a market-range table with no attribution. This is the
+    largest single difference between
     this file and its frlib counterpart, where eight carriers' contracts were read in full.
 
 15. **The *Eigenanteil* figures are the least reliable numbers in the file.** Section 4's
