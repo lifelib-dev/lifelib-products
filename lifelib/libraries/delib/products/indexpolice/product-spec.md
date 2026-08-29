@@ -83,11 +83,10 @@ doubt** [R1], [unverified] only as to subsection numbering.
 *Sicherungsvermögen*; the MindZV forces a minimum share of each result source to the policyholders —
 **90 % of the *Kapitalanlageergebnis* after the *Rechnungszinsen* are deducted, 90 % of the
 *Risikoergebnis*, 50 % of the *übrige Ergebnis*** [R8] [REG-R18]; the insurer declares an
-*Überschussanteilsatz* out of that; and a contract in the index arm has that declared amount **spent
-on options instead of credited as interest**. **An Indexpolice therefore does not have a larger risk
-budget than a *Klassik* contract of the same vintage — it has the identical budget and spends it
-differently.** This is the most under-appreciated fact about the product and it belongs on the first
-page rather than in a technical appendix.
+*Überschussanteilsatz* out of that; and a contract in the index arm has that declared amount **spent on
+options instead of credited as interest**. **An Indexpolice therefore does not have a larger risk budget
+than a *Klassik* contract of the same vintage — it has the identical budget and spends it differently.**
+That is the most under-appreciated fact about the product and it belongs on the first page.
 
 **Why the product exists.** The *Höchstrechnungszins* fell from 4,00 % (1994–2000) through 3,25 %,
 2,75 %, 2,25 %, 1,75 %, 1,25 % and 0,90 % to **0,25 % for 2022–2024**, and rose to **1,00 % from
@@ -100,19 +99,17 @@ into a bounded lottery on an index. **The product is a direct commercial respons
 guaranteed rate**, and the 2025 rise makes the *sichere Verzinsung* arm relatively more attractive
 again; whether observed elections have shifted is [unverified] [R7].
 
-**Market size.** There is none to quote, and the honest statement is that **no published figure for
-the German index-participation segment exists**. GDV counts these contracts within conventional
-annuity business, because that is what they are [R15] [R19]; index business sits inside *sonstige
-Lebensversicherungen* and is **not separately visible** [REG-R53]. The frame it sits in: German life
-premium income (life insurers, Pensionskassen and Pensionsfonds, GDV basis) was **+2,8 % to
-94,6 Mrd. €** in 2024, of which *laufende Beiträge* **66,3 Mrd. €**, roughly flat, and
-*Einmalbeitragsgeschäft* about **+10 % to 28 Mrd. €**, with the contract count **−1,4 % to
-80,3 Mio.**; on the BaFin basis, life-segment *verdiente Bruttobeiträge* were **90,4 Mrd. €**
-[REG-R53]. The two measure different populations on different bases and are never combined. The
-relevant market rate is the declared one: for 2025 the average *laufende Verzinsung* was **2,53 %
-Klassik / 2,58 % Neue Klassik**, and for 2026 the surveyed averages are mutually incompatible —
-2,6–2,7 %, 2,87 % and 2,54 % [R20] [REG-R53]. That declared rate **is** the option budget [R8], so an
-Assekurata declared-rate series is the closest public proxy for the segment's economics.
+**Market size.** There is none to quote: **no published figure for the German index-participation
+segment exists**. GDV counts these contracts within conventional annuity business, because that is what
+they are [R15] [R19], and index business sits inside *sonstige Lebensversicherungen*, **not separately
+visible** [REG-R53]. The frame it sits in: German life premium income (life insurers, Pensionskassen and
+Pensionsfonds, GDV basis) was **+2,8 % to 94,6 Mrd. €** in 2024 — *laufende Beiträge* **66,3 Mrd. €**,
+roughly flat, *Einmalbeitragsgeschäft* about **+10 % to 28 Mrd. €** — with the contract count **−1,4 %
+to 80,3 Mio.**; on the BaFin basis, life-segment *verdiente Bruttobeiträge* were **90,4 Mrd. €**
+[REG-R53]. The two measure different populations on different bases and are never combined. The relevant
+market rate is the declared one: for 2025 the average *laufende Verzinsung* was **2,53 % Klassik /
+2,58 % Neue Klassik**, and the 2026 surveyed averages are mutually incompatible — 2,6–2,7 %, 2,87 % and
+2,54 % [R20] [REG-R53]. That declared rate **is** the option budget [R8].
 
 Qualitatively, and not in doubt: the family emerged in the second half of the 2000s, grew through the
 low-interest decade as the guaranteed component shrank towards nothing [R7], became a standard
@@ -120,21 +117,19 @@ offering across the large and mid-sized carriers, and was one of the main vehicl
 Klassik*** generation [S6] [REG-R53].
 
 **The same index module is written on four chassis** — *Schicht 3* private annuity (this document),
-*Basisrente* (`products/basisrente/`), *Riester* (`products/riester_rente/`) and *Direktversicherung*
-in *bAV* (outside delib). The wrapper changes the guarantee requirement [R12] [REG-R43], the tax
-treatment [R13] [R14] [REG-R41] [REG-R45] and the accessibility of the capital — and **not the index
-mechanics**.
+*Basisrente*, *Riester* and *Direktversicherung* in *bAV* (outside delib). The wrapper changes the
+guarantee requirement [R12] [REG-R43], the tax treatment [R13] [R14] [REG-R41] [REG-R45] and the
+accessibility of the capital — and **not the index mechanics**.
 
 ---
 
 ## Representative specification
 
-The representative design is a **composite**. Not one clause of it is quoted from any carrier's AVB,
-because none was obtained; the GDV publishes *Musterbedingungen* for the deferred-annuity chassis but
-**no model wording for an index-participation module** [S1], which is the structural reason the
-clause set varies more across insurers here than for any other delib product and why no
-industry-standard formulation exists to cite. Every representative choice below is argued against the
-plausible band in the *Variations across insurers* section.
+The representative design is a **composite**, and not one clause of it is quoted from any carrier's
+AVB, because none was obtained. The GDV publishes *Musterbedingungen* for the deferred-annuity chassis
+but **no model wording for an index-participation module** [S1] — the structural reason the clause set
+varies more across insurers here than for any other delib product. Every representative choice below is
+argued against the plausible band in *Variations across insurers*.
 
 ### Product identity and issue rules
 
@@ -442,13 +437,13 @@ divided into twelve monthly observation periods. For each month `m` the index le
     Indexrendite   = max( S, 0 )       ← the floor is on the YEAR, not on the month
     Indexgutschrift = max( S, 0 ) × G
 
-The three features that define the payoff and that must never be separated:
+The three features that define the payoff and must never be separated:
 
 1. **Upside is capped monthly.** A month in which the index rises 8 % contributes `C`, not 8 %.
-2. **Downside is not capped at all.** A month in which the index falls 8 % contributes the whole
-   −8 %. There is no floor on `x(m)`, only on `S`.
-3. **The twelve are summed, not compounded.** Summation is close to compounding for small numbers, but
-   it is not the same, and the contractual formula is a sum.
+2. **Downside is not capped at all.** A month in which the index falls 8 % contributes the whole −8 %.
+   There is no floor on `x(m)`, only on `S`.
+3. **The twelve are summed, not compounded.** Summation is close to compounding for small numbers but
+   is not the same, and the contractual formula is a sum.
 
 **Why the asymmetry is the whole story.** The payoff is a *capped cliquet*: the policyholder is long
 the index's monthly returns, short a strip of twelve monthly calls struck at `C`, with an annual floor.
@@ -459,11 +454,10 @@ return per month**, twelve times a year, against an expected monthly return well
 technical notes do that arithmetic: at those parameters the expected value of a capped month is
 **negative**, and the product's positive expectation rests entirely on the annual floor.
 
-**The trap.** The `max(S, 0)` floor operates on the *sum*, not on each month, so it is **not** true
-that a year with more up-months than down-months credits something. **It is perfectly ordinary for a
-year in which the index finished higher to credit zero.** The research file's constructed Example B is
-exactly that case — the index rose 6,44 % over the year and the credit was 0,00 € — and it is a
-required test of any implementation.
+**The trap.** The `max(S, 0)` floor operates on the *sum*, not on each month, so it is **not** true that
+a year with more up-months than down-months credits something. **It is perfectly ordinary for a year in
+which the index finished higher to credit zero** — the research file's constructed Example B is exactly
+that case, the index rising 6,44 % and the credit being 0,00 € — and it is a required test.
 
 ### The floor and the *Höchststandsicherung*
 
@@ -500,9 +494,8 @@ compounded 13,4548 %); on Example B it credited **nothing** while the *Quote* va
 ### The *Cap-Festlegung* — who sets it, when, and on what
 
 The Cap is fixed **by the insurer, for one *Indexjahr* at a time, before that *Indexjahr* begins**, and
-is then binding for its whole length. It is not adjustable during the year. The determination is a
-pricing calculation rather than a discretion in substance, and the directions of movement follow from
-that:
+is then binding for its whole length, not adjustable during the year. The determination is a pricing
+calculation rather than a discretion in substance, and the directions of movement follow from that:
 
 | If this rises | the Cap | because |
 |---|---|---|
@@ -642,8 +635,8 @@ present one as established, and none may add a fourth**.
 | Mid-year exit treatment | not established | not established | not established | not established | no credit |
 | Charges / *Effektivkosten* | not established | not established | not established | not established | **[std]**, above |
 
-Parameter bands, restated. **Every one is [unverified]**, and this table is the reason the specification
-carries so many **[std]** rows.
+Parameter bands, restated — **every one [unverified]**, and the reason this specification carries so
+many **[std]** rows.
 
 | Parameter | Band | Who sits where |
 |---|---|---|
@@ -658,10 +651,10 @@ carries so many **[std]** rows.
 | *Stornoabzug* | 0 % – 20 % of the *Deckungskapital* | one carrier's structure [unverified] |
 | *Stornoquote*, market-wide | 1,2 % – 2,7 % on two irreconcilable measures | no index-specific rate exists |
 
-**What does not vary.** Four things are firm across the family and are the reason a composite is
+**What does not vary.** Four things are firm across the family, and they are the reason a composite is
 possible at all: the surplus finances the participation rather than sitting beside it; monthly returns
 are capped above and not below; the year's sum is floored at zero; and what is credited is locked in
-permanently. Everything else in the table above is a level, and no level was established.
+permanently. Everything else above is a level, and no level was established.
 
 ---
 

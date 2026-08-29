@@ -722,32 +722,31 @@ Parameter ranges, where more than one observation exists:
 | *Stornoquote*, 2024 | 1.2% (per contract) to 2.72% (main GDV measure) | market-wide, irreconcilable measures | [R20] |
 | Wording length | 18 to 21 pages | Debeka's three editions | [S3] [S4] [S5] |
 
-Seven observations follow from that table and each of them shapes a composite choice.
+Six observations follow, and each shapes a composite choice.
 
 1. **One insurer maintains at least three parallel endowment wordings of different vintages** — B LV
-   85, 86 and 97, at 21, 19 and 18 pages and with edition dates in 2026 and 2025 [S3] [S4] [S5].
+   85, 86 and 97, at 21, 19 and 18 pages, with edition dates in 2026 and 2025 [S3] [S4] [S5].
    Composite: a single wording, with the cohort variation carried by `issue_year` and
    `rechnungszins` instead.
 2. **The surplus base is published by exactly one carrier and the timing by exactly one other** —
-   Debeka gives the base as a percentage of the *Deckungskapital* at the allocation date [S3], die
-   Bayerische gives the timing as the 31 December *Bilanzstichtag* [S9], and the second is an
-   **annuity** wording of the same chassis. Composite: both, with the annuity provenance of the
-   timing rule stated wherever it is used.
-3. ***Zillmerung* is visibly a per-tariff choice at one carrier and invisible everywhere else** [S9].
-   Composite: a switch, defaulting on.
-4. **Only one carrier's wording says the premium stops on death** [S7] — the operative rule a
-   projection is most likely to get wrong. Composite: implemented, and a numbered pitfall.
-5. **Only one carrier publishes a declared rate for a classic book** [S11], and the market averages
+   Debeka gives the base as a percentage of the *Deckungskapital* at the allocation date [S3] and die
+   Bayerische the timing as the 31 December *Bilanzstichtag* [S9], the second being an **annuity**
+   wording of the same chassis. Composite: both, with that provenance stated wherever it is used.
+3. ***Zillmerung* is visibly a per-tariff choice at one carrier and invisible everywhere else** [S9];
+   and **only one carrier's wording says the premium stops on death** [S7], the operative rule a
+   projection is most likely to get wrong. Composite: a *Zillmerung* switch defaulting on, and
+   premium cessation implemented and made a numbered pitfall.
+4. **Only one carrier publishes a declared rate for a classic book** [S11], and the market averages
    available are for the **annuity** [R25]. Composite: the endowment carrier's rate, with the
    identity of the two [unverified] (gap 2).
-6. **Only one carrier publishes a *Stornoabzug*, and it is under collective action and a BGH
+5. **Only one carrier publishes a *Stornoabzug*, and it is under collective action and a BGH
    remittal** [S3] [R22] [R30]. Composite: a declining **[std]** schedule inside the observed range,
    with the single observation cited beside it.
-7. **What does not vary is legal rather than commercial.** Participation as an all-or-nothing
+6. **What does not vary is legal rather than commercial**: participation as an all-or-nothing
    statutory default [R1]; the § 169 calculation rule and its five-year floor [R2]; the § 165
    paid-up right and its *Mindestversicherungsleistung* test [R3]; the § 161 three-year window
-   paying the *Rückkaufswert* [R4]; and the 25 ‰ *Höchstzillmersatz* [R7]. Every one of those is a
-   statutory fact and none of them is a carrier variation.
+   paying the *Rückkaufswert* [R4]; and the 25 ‰ *Höchstzillmersatz* [R7]. Every one is a statutory
+   fact and none is a carrier variation.
 
 ---
 

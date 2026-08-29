@@ -690,97 +690,93 @@ and no surrender or paid-up cash flow modelled.
 
 ## Regulatory context
 
-**Contract law — the VVG.** The product's own chapter is §§ 172–177 VVG: § 172 the definition and
-the permission to agree an *abstrakte Verweisung*; § 173 the *Anerkenntnis* and the once-only
-time limitation; § 174 the *Leistungsfreiheit* and its three-month notice; § 175 making §§ 173–174
-*halbzwingend*; § 176 applying §§ 150–170 *entsprechend*, so far as the particularities of this
+**Contract law — the VVG.** The product's own chapter is §§ 172–177: § 172 the definition and the
+permission to agree an *abstrakte Verweisung*; § 173 the *Anerkenntnis* and its once-only time
+limitation; § 174 the *Leistungsfreiheit* and its three-month notice; § 175 making §§ 173–174
+*halbzwingend*; § 176 applying §§ 150–170 *entsprechend* so far as the particularities of this
 insurance do not preclude it; and § 177 extending the same procedural frame to cover of reduced
-earning capacity, of *Arbeitsunfähigkeit* and to accident cover paying for a lasting impairment of
+earning capacity, of *Arbeitsunfähigkeit*, and to accident cover paying for a lasting impairment of
 working capacity [R1]–[R6] [REG-R29]. **§ 176 is load-bearing and its exact reach is a named gap**:
 it is the authority for giving a BU contract an *Überschussbeteiligung* (§ 153) [R10] [REG-R24], a
 *prämienfreie Versicherung* (§ 165) [R8], a *Kündigung* right and a *Rückkaufswert* (§§ 168–169)
-[R9] [REG-R28], and the *Selbsttötung* rule (§ 161) [R11]. Every one of those five depends on the
-range of sections § 176 imports, and that range was not read. Outside the chapter, § 19 governs the
-*vorvertragliche Anzeigepflicht* and its five- and ten-year windows, § 157 the misstatement of age,
-and § 158 the rule that **an increase in risk counts as such only where it has been expressly agreed
-to** — which is why a German BU contract carries no general occupation-change clause and why this
-model needs no mid-term reunderwriting state [R7] [REG-R30].
+[R9] [REG-R28] and the *Selbsttötung* rule (§ 161) [R11] — five consequences resting on a range of
+sections that was not read. Outside the chapter, § 19 governs the *vorvertragliche Anzeigepflicht*
+and its five- and ten-year windows, § 157 the misstatement of age, and § 158 the rule that **an
+increase in risk counts as such only where it has been expressly agreed to** — which is why a German
+BU contract carries no general occupation-change clause and why this model needs no mid-term
+reunderwriting state [R7] [REG-R30].
 
-**Disclosure.** The VVG-InfoV mandates the *Produktinformationsblatt* for life and BU contracts, in
-a prescribed order and at a prescribed brevity [R12] [REG-R31]. For a savings contract it also
-mandates disclosure of the *Effektivkosten* — the reduction in yield — but **for a pure risk
-contract there is no yield to reduce**, so a BU *Produktinformationsblatt* discloses costs only
-through the *Brutto*/*Zahlbeitrag* pair [S13]. And because PRIIPs reaches *insurance-based
-investment products* — contracts with a maturity or surrender value exposed to market fluctuation —
-**a standalone SBU normally has no *Basisinformationsblatt* at all** [S14] [REG-R32], the opposite
-of the position for delib's savings products, where the KID is the richest public document. Those
-two absences together are the reason every charge assumption in this file is **[std]** while the
-delib endowment's are not. Distribution sits under the IDD and § 34d GewO, with the conduct duties
-of §§ 6, 7 and 1a VVG and BaFin's *Merkblatt 01/2023 (VA)* on *Wohlverhaltensaufsicht* and
-*angemessener Kundennutzen* above them [REG-R33] [REG-R31] [REG-R35].
+**Disclosure.** The VVG-InfoV mandates the *Produktinformationsblatt* for life and BU contracts
+[R12] [REG-R31]. For a savings contract it also mandates the *Effektivkosten* — the reduction in
+yield — but **for a pure risk contract there is no yield to reduce**, so a BU
+*Produktinformationsblatt* discloses costs only through the *Brutto*/*Zahlbeitrag* pair [S13]. And
+because PRIIPs reaches *insurance-based investment products*, **a standalone SBU normally has no
+*Basisinformationsblatt* at all** [S14] [REG-R32] — the opposite of the position for delib's savings
+products, where the KID is the richest public document. Those two absences together are why every
+charge assumption in this file is **[std]** while the delib endowment's are not. Distribution sits
+under the IDD and § 34d GewO, with the conduct duties of §§ 6, 7 and 1a VVG and BaFin's *Merkblatt
+01/2023 (VA)* on *Wohlverhaltensaufsicht* and *angemessener Kundennutzen* above them [REG-R33]
+[REG-R31] [REG-R35].
 
 **Supervision and pricing.** § 138 VAG requires premiums sufficient to meet the obligations
 permanently and equal treatment of equal risks; § 139 governs the *Überschussbeteiligung* on the
-supervisory side; §§ 141–143 place the pricing and reserving bases in the hands of the
-*Verantwortlicher Aktuar* [R15] [REG-R8] [REG-R9] [REG-R11]. The DeckRV fixes the
-*Höchstrechnungszins* — **0,25 % for contracts written 2022–2024, raised to 1,00 % with effect from
-1 January 2025** `[unverified] on both figures and the date` — and the *Höchstzillmersatz* of 25 ‰
-[R13] [REG-R14] [REG-R15] [REG-R16]. The MindZV prescribes the minimum allocation of *Rohüberschuss*
-to the RfB separately by source, and the risk-result minimum is the one that governs a BU book
-[R14] [REG-R18] [REG-R19]. **Unisex pricing** has been compulsory since 21 December 2012 [R15]
-[REG-R34]; it bites unusually hard in BU, because the underlying *Invalidisierungswahrscheinlichkeiten*
-differ materially by sex `[unverified]`, so a unisex BU tariff embeds a portfolio mix assumption the
-insurer bears the risk of. BaFin supervises *Leistungsprüfung* practice as a conduct matter and
-publishes the industry *Beschwerdestatistik*, in which BU is persistently over-represented relative
-to its premium share `[unverified]` [R19].
+supervisory side; §§ 141–143 place the bases in the hands of the *Verantwortlicher Aktuar* [R15]
+[REG-R8] [REG-R9] [REG-R11]. The DeckRV fixes the *Höchstrechnungszins* — **0,25 % for contracts
+written 2022–2024, raised to 1,00 % with effect from 1 January 2025** `[unverified] on both figures
+and the date` — and the *Höchstzillmersatz* of 25 ‰ [R13] [REG-R14] [REG-R15] [REG-R16]. The MindZV
+prescribes the minimum allocation of *Rohüberschuss* to the RfB by source, and the risk-result
+minimum is the one that governs a BU book [R14] [REG-R18] [REG-R19]. **Unisex pricing** has been
+compulsory since 21 December 2012 [R15] [REG-R34], and it bites unusually hard here: the underlying
+*Invalidisierungswahrscheinlichkeiten* differ materially by sex `[unverified]`, so a unisex BU
+tariff embeds a portfolio mix assumption the insurer bears the risk of. BaFin supervises
+*Leistungsprüfung* practice as a conduct matter and publishes the *Beschwerdestatistik*, in which
+BU is persistently over-represented relative to its premium share `[unverified]` [R19].
 
-**Actuarial bases.** The German BU pricing and reserving standard is the **DAV 1997 family** —
-**DAV 1997 I** for *Invalidisierungswahrscheinlichkeiten*, **DAV 1997 RI** for
-*Reaktivierungswahrscheinlichkeiten* by age at disablement and duration since disablement, and
-**DAV 1997 TI** for *Sterbewahrscheinlichkeiten der Invaliden* — together with a *Todesfall*-character
-active-lives table, **DAV 2008 T** [R16] [R17] [REG-R50] [REG-R48]. **These are the property of the
-Deutsche Aktuarvereinigung, are not public, and are not redistributed by delib.** Three further
-findings belong on the record. The **naming is itself uncertain**: reading "TI" as the reactivation
-table would leave disabled-life mortality unspecified, which no multi-state BU model can do, and the
-three-table reading is `[unverified]` [REG-R50]. **Whether a successor to DAV 1997 I exists in
-general market use could not be established** [R16] [R18]. And **the age of the basis is itself a
-finding**: tables built in 1997 on older experience, against a German BU population whose causes mix
-has moved decisively towards psychiatric diagnoses and whose incentives changed when the statutory
+**Actuarial bases.** The German BU standard is the **DAV 1997 family** — **DAV 1997 I** for
+*Invalidisierungswahrscheinlichkeiten*, **DAV 1997 RI** for *Reaktivierungswahrscheinlichkeiten* by
+age at disablement and duration since disablement, and **DAV 1997 TI** for
+*Sterbewahrscheinlichkeiten der Invaliden* — with a *Todesfall*-character active-lives table,
+**DAV 2008 T** [R16] [R17] [REG-R50] [REG-R48]. **These are the property of the Deutsche
+Aktuarvereinigung, are not public, and are not redistributed by delib.** Three findings belong on
+the record. The **naming is itself uncertain**: reading "TI" as the reactivation table would leave
+disabled-life mortality unspecified, which no multi-state BU model can do, and the three-table
+reading is `[unverified]` [REG-R50]. **Whether a successor to DAV 1997 I exists in general market
+use could not be established** [R16] [R18]. And **the age of the basis is a finding in itself**:
+tables built in 1997 on older experience, against a population whose causes mix has moved decisively
+towards psychiatric diagnoses and whose incentives changed when the statutory
 *Berufsunfähigkeitsrente* closed to the post-1960 cohorts, carry a heavy safety loading — which is
 **why the German BU market runs a large and persistent *Bruttobeitrag*/*Zahlbeitrag* gap**
-[REG-R50] [REG-R37]. The two-basis structure this implies — *Rechnungsgrundlagen erster Ordnung* for
-the tariff and the *Deckungsrückstellung*, *zweiter Ordnung* for what actually happens, with the
-*Sicherheitszuschlag* between them released as *Risikoüberschuss* — is described at [REG-R47], and
-the direction of prudence for a disability product is **higher incidence and lower reactivation**.
+[REG-R50] [REG-R37]. The two-basis structure this implies — *erster Ordnung* for the tariff and the
+*Deckungsrückstellung*, *zweiter Ordnung* for what actually happens, with the *Sicherheitszuschlag*
+between them released as *Risikoüberschuss* — is set out at [REG-R47], and the direction of prudence
+for a disability product is **higher incidence and lower reactivation**.
 
-**Reserving and prudential.** A BU book carries **two reserves, not one**: a
-*Deckungsrückstellung* for **active** lives, the prospective difference between future benefits and
-future premiums; and a *Leistungsrückstellung* — a *Deckungsrückstellung für laufende Renten* — for
-**claims in payment**, the present value of the remaining annuity on disabled-lives bases, which is
-much the larger per life [R9] [R21]. Above them sit the German statutory accounts under §§ 341–341o
-HGB and the RechVersV [REG-R54], Solvency II best estimate plus risk margin under Directive
-2009/138/EG and Delegated Regulation (EU) 2015/35 with EIOPA's monthly curves [REG-R1] [REG-R2]
-[REG-R4], and IFRS 17 for IFRS reporters [REG-R55]. **delib computes none of them.** The library
-publishes gross best-estimate-style liability cash flows, undiscounted, and names the valuation
-layers rather than reproducing them.
+**Reserving and prudential.** A BU book carries **two reserves, not one**: a *Deckungsrückstellung*
+for **active** lives, the prospective difference between future benefits and future premiums; and a
+*Leistungsrückstellung* — a *Deckungsrückstellung für laufende Renten* — for **claims in payment**,
+the present value of the remaining annuity on disabled-lives bases, which is much the larger per
+life [R9] [R21]. Above them sit the German statutory accounts under §§ 341–341o HGB and the
+RechVersV [REG-R54], Solvency II best estimate plus risk margin [REG-R1] [REG-R2] [REG-R4], and
+IFRS 17 [REG-R55]. **delib computes none of them**: the library publishes gross best-estimate-style
+liability cash flows, undiscounted, and names the valuation layers rather than reproducing them.
 
 **Taxation, and why the same liability is sold in two wrappers.** For a **standalone SBU
 (Schicht 3)** the premium is a *sonstige Vorsorgeaufwendung* under § 10 Abs. 1 Nr. 3a EStG,
 deductible only inside an annual ceiling recalled as **1 900 €** for employees and civil servants
-and **2 800 €** for the self-employed `[unverified]` — a ceiling in practice already consumed by
-statutory health and long-term-care contributions, so **the effective deduction for most buyers is
-nil**. The *BU-Rente* is then an *abgekürzte Leibrente* taxed on its ***Ertragsanteil*** under
-§ 22 Nr. 1 EStG, read from a table keyed on the annuity's **remaining term at the start of
-payment** rather than on the recipient's age — recalled at about 5 % for 5 years remaining, 12 %
-for 10, 16 % for 15, 21 % for 20, 26 % for 25 and 30 % for 30, all `[unverified]` [R27] [REG-R41].
-For **BU inside a *Basisrente* (Schicht 1)** the whole premium is an *Altersvorsorgeaufwendung*
-deductible within the much larger *Basisrente* ceiling, provided the BU benefit is paid as an
-annuity, does not run beyond the host's deferment, and accounts for **no more than 49 %** of the
-total premium `[unverified]`; in exchange the *BU-Rente* is fully taxable at the cohort
-*Besteuerungsanteil* [R27] [R28] [REG-R38] [REG-R39]. The trade is not obviously favourable, and
-the 49 % rule forces a large savings premium alongside the cover, which is why the standalone SBU
-remains the dominant retail form. **delib projects gross, pre-tax cash flows in every product**, so
-nothing in the model depends on any of these figures, and nothing here asserts them.
+and **2 800 €** for the self-employed `[unverified]` — in practice already consumed by statutory
+health and long-term-care contributions, so **the effective deduction for most buyers is nil**. The
+*BU-Rente* is then an *abgekürzte Leibrente* taxed on its ***Ertragsanteil*** under § 22 Nr. 1 EStG,
+read from a table keyed on the annuity's **remaining term at the start of payment** rather than on
+the recipient's age — recalled at about 5 % for 5 years remaining, 12 % for 10, 16 % for 15, 21 %
+for 20, 26 % for 25 and 30 % for 30, all `[unverified]` [R27] [REG-R41]. For **BU inside a
+*Basisrente* (Schicht 1)** the whole premium is an *Altersvorsorgeaufwendung* deductible within the
+much larger *Basisrente* ceiling, provided the BU benefit is paid as an annuity, does not run beyond
+the host's deferment, and accounts for **no more than 49 %** of the total premium `[unverified]`; in
+exchange the *BU-Rente* is fully taxable at the cohort *Besteuerungsanteil* [R27] [R28] [REG-R38]
+[REG-R39]. The trade is not obviously favourable, and the 49 % rule forces a large savings premium
+alongside the cover, which is why the standalone SBU remains the dominant retail form. **delib
+projects gross, pre-tax cash flows in every product**, so nothing in the model depends on any of
+these figures and nothing here asserts them.
 
 **Case law.** Four settled BGH lines govern the claim in practice, each recalled in substance and
 `[unverified]` in every detail, with **no docket number given anywhere in this library** because

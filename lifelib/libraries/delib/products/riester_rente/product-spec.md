@@ -636,60 +636,50 @@ is taxable in full under § 22 Nr. 5 but, since 2018, under the ***Fünftelregel
 with an election to have the payment made at the beginning of the following calendar year [R15]
 [R21] `[unverified]`.
 
-**This matters far more than the threshold suggests**, and it is why the model carries it as a
+**This matters far more than the threshold suggests**, which is why the model carries it as a
 switch on the anchor decrement rather than as a footnote. The book carries a long tail of small
 contracts: those run at the *Sockelbeitrag* (§ 86 cases D and E above) and those that went *ruhend*
-early. Case D contributes 835,00 € a year, so twenty years of it is **16 700,00 €** of
-contributions `[std] derived`; case E contributes 235,00 €, so twenty years is **4 700,00 €**. At
-any plausible *Rentenfaktor* both produce a monthly annuity in the tens of euros — squarely in
-*Kleinbetragsrente* territory. **A material fraction of Riester contracts will never pay an annuity
-at all.**
+early. Case D contributes 835,00 € a year, so twenty years is **16 700,00 €** of contributions
+`[std] derived`; case E contributes 235,00 €, so twenty years is **4 700,00 €**. At any plausible
+*Rentenfaktor* both produce a monthly annuity in the tens of euros. **A material fraction of
+Riester contracts will never pay an annuity at all.** One ordering question the statute does not
+settle and the composite must: is the test applied to the annuity the **whole** conversion capital
+would buy, or to the annuity payable after an elected *Teilkapitalauszahlung*? The composite tests
+the **annuity actually payable**, on the argument that it is the annuity the provider would have to
+administer, and prints the alternative; the choice is **[std]** and gap 7 records that neither
+reading was established.
 
-One ordering question the statute does not settle and the composite must: is the test applied to
-the annuity the **whole** conversion capital would buy, or to the annuity actually payable after an
-elected *Teilkapitalauszahlung*? The composite tests the **annuity actually payable**, on the
-argument that it is the annuity the provider would have to administer, and prints the alternative;
-the choice is **[std]** and gap 7 records that neither reading was established.
+### Death, the *Rückzahlungsbetrag*, *Anbieterwechsel* and *Beitragsfreistellung*
 
-### Death, and the *Rückzahlungsbetrag*
-
-Before *Rentenbeginn* the death benefit is the accumulated capital. The distinctive part is the
+Before *Rentenbeginn* the death benefit is the accumulated capital; the distinctive part is the
 **subsidy treatment, not the benefit design** [R14]. Transfer to a **surviving spouse's own
-certified contract** is *förderunschädlich*, subject to the marriage subsisting; payment to any
-other heir is *schädlich*, and the *Rückzahlungsbetrag* — all Zulagen and all § 10a relief — is
-deducted before payment, with the investment return on the subsidised part becoming taxable
-`[unverified]`. After *Rentenbeginn*, continuation to a spouse or payments for the remainder of a
-*Rentengarantiezeit* are *förderunschädlich*; a lump-sum death benefit outside those forms is not
-certifiable at all [R1].
+certified contract** is *förderunschädlich*; payment to any other heir is *schädlich*, and the
+*Rückzahlungsbetrag* — all Zulagen and all § 10a relief — is deducted before payment, with the
+return on the subsidised part becoming taxable `[unverified]`. After *Rentenbeginn*, continuation
+to a spouse or payments for the remainder of a *Rentengarantiezeit* are *förderunschädlich*; a
+lump-sum death benefit outside those forms is not certifiable at all [R1]. **The model publishes
+the death benefit gross**, because the *Rückzahlungsbetrag* is a deduction from what the
+beneficiary receives and not a change in the insurer's obligation — the provider withholds and
+remits it to the ZfA — so netting it inside the liability stream would understate the outgo and
+confuse a tax collection with a benefit. The same applies to a surrender. The model does publish
+the **cumulative Zulagen credited** as a diagnostic, which is the ZfA-reclaimable limb; the § 10a
+limb depends on the saver's marginal rate and cannot be computed from contract data at all.
 
-**The model publishes the death benefit gross.** The *Rückzahlungsbetrag* is a **deduction from
-the amount paid to the beneficiary, not a change in the insurer's obligation** — the provider
-withholds and remits it to the ZfA — so netting it inside the liability stream would understate the
-insurer's outgo and confuse a tax collection with a benefit. The same applies to a surrender. The
-model does publish the **cumulative Zulagen credited** as a diagnostic, which is the ZfA-reclaimable
-limb; the § 10a limb depends on the saver's marginal rate and **cannot be computed from contract
-data at all**.
+***Anbieterwechsel*** is a **statutory portability right with no Schicht-3 analogue**: terminate
+and have the accumulated capital transferred directly to another certified contract, with no
+*schädliche Verwendung* and no tax consequence [R1] [R14] [REG-R43]. Its cash-flow consequence is
+that a Riester "lapse" is frequently a **transfer out at full value** rather than a surrender — for
+the ceding insurer a full-value exit with no *Stornoabzug*, and for the model a **distinct
+decrement** that must not be collapsed into the lapse rate. The notice period and the
+transfer-charge cap were not established (gap 8).
 
-### *Anbieterwechsel* — a portability right with no Schicht-3 analogue
-
-The saver may terminate and have the accumulated capital transferred directly to another certified
-contract, with **no** *schädliche Verwendung* and no tax consequence [R1] [R14] [REG-R43]. **No
-Schicht-3 German life contract carries a portability right of this kind.** Its cash-flow consequence
-is that a Riester "lapse" is frequently a **transfer out at full value** rather than a surrender:
-for the ceding insurer a full-value exit with no *Stornoabzug*, and for the model a **distinct
-decrement** that must not be collapsed into the lapse rate. The notice period and the transfer-charge
-cap were not established (gap 8).
-
-### *Beitragsfreistellung* — the book's dominant exit
-
-Stopping contributions leaves the contract in force. § 165 VVG gives the right generally
+***Beitragsfreistellung*** leaves the contract in force. § 165 VVG gives the right generally
 [REG-R28]; the Riester overlay is that the contract stays **certified**, the guarantee stands on
 what was paid, no further Zulagen arrive, and **no subsidy is repaid** [R14]. It is a **state
 change, not a termination**: the guarantee accumulator freezes, the Zulage stream stops, the
-account keeps rolling, and the fixed policy charges keep biting. Against a surrender value already
-below contributions in the early years, and against a *Rückzahlungsbetrag* on the way out, that is
-why the German Riester book shows *Beitragsfreistellung* where another market would show surrender
-[R14] [R16].
+account keeps rolling and the fixed policy charges keep biting. Against a surrender value already
+below contributions in the early years, and a *Rückzahlungsbetrag* on the way out, that is why the
+German book shows *Beitragsfreistellung* where another market would show surrender [R14] [R16].
 
 ### The two contribution pools
 

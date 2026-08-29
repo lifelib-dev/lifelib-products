@@ -676,21 +676,21 @@ reference model must know what the model is *not* doing.
 **Why none is implemented.** Each is a rule for reallocating between a guaranteed pot and a
 risky pot **along a path**, and its entire content is what it does when the risky pot falls. A
 deterministic projection has one path and it is a smooth one, so a guarantee mechanism modelled
-inside it either never triggers — dead code presented as a feature — or triggers on a
-hand-chosen shock, which asserts a scenario the model has no basis for. What would have to be
-added is a stochastic or at least multi-scenario asset model, a monthly reallocation rule, a
-guaranteed pot accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is
-a different model, and an honest reference implementation says so rather than gesturing at it.
-**No reallocation rule, CPPI multiplier, *Wertsicherungsfonds* loss limit, guarantee-pot
-accretion rule or carrier guarantee menu was established** [S7] [S8] [S9]. What the composite
-keeps from the hybrid world is the *Ablaufmanagement* glide, which is de-risking without a
-guarantee and is representable deterministically.
+inside it either never triggers — dead code presented as a feature — or triggers on a hand-chosen
+shock, which asserts a scenario the model has no basis for. What would have to be added is a
+stochastic or at least multi-scenario asset model, a monthly reallocation rule, a guaranteed pot
+accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is a different
+model, and an honest reference implementation says so rather than gesturing at it. **No
+reallocation rule, CPPI multiplier, *Wertsicherungsfonds* loss limit, guarantee-pot accretion
+rule or carrier guarantee menu was established** [S7] [S8] [S9]. What the composite keeps from
+the hybrid world is the *Ablaufmanagement* glide — de-risking without a guarantee, and
+representable deterministically.
 
-**Out of scope entirely.** Attached biometric riders — *Berufsunfähigkeits-Zusatzversicherung*,
-*Unfall-Zusatzversicherung*, *Hinterbliebenenrente*, *Pflegeoption* — which are separate delib
-products or separate covers priced on their own bases; the **payout phase**, including the
-*Überschussrente*, the *Rentengarantiezeit* and any *Beitragsrückgewähr im Rentenbezug*, all of
-which belong to delib `sofortrente`; and the *Abrufphase*.
+**Out of scope entirely.** Attached biometric riders (*Berufsunfähigkeits-Zusatzversicherung*,
+*Unfall-Zusatzversicherung*, *Hinterbliebenenrente*, *Pflegeoption*), which are separate delib
+products or separate covers on their own bases; the **payout phase**, including the
+*Überschussrente*, the *Rentengarantiezeit* and any *Beitragsrückgewähr im Rentenbezug*, which
+belong to delib `sofortrente`; and the *Abrufphase*.
 
 ---
 
