@@ -95,7 +95,18 @@ MODELS = {
 # This table is generated from a real sweep rather than transcribed by hand — see
 # ``tools/`` in the repository root — but it is committed, because a generated-at-run-time
 # expectation would assert nothing at all.
-INPUT_FILES = {}
+INPUT_FILES = {
+    "Basis_DE_A": set(),
+    "BU_DE_S": set(),
+    "FRV_DE_S": set(),
+    "Index_DE_A": set(),
+    "KLV_DE_A": set(),
+    "Pflege_DE_S": set(),
+    "RLV_DE_A": set(),
+    "RV_DE_A": set(),
+    "Riester_DE_A": set(),
+    "Sofort_DE_S": set(),
+}
 
 
 def model_path(name):

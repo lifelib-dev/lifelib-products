@@ -866,16 +866,14 @@ for a cash-flow model.
   and attracts no relief [R3]. This is stronger than a contractual restriction: it is a condition
   of the tax status of the whole contract.
 - **The one permitted transfer is the *Versorgungsausgleich***. On divorce, German pension-sharing
-  law splits entitlements acquired during the marriage, and a Basisrente is within its scope
-  `[unverified]` as to the mechanism — *interne Teilung* within the same contract, or *externe
-  Teilung* to a contract of the same kind for the other spouse. Either way the receiving spouse's
-  entitlement remains subject to the same prohibitions, so the product's character is preserved.
-  **The mechanism was not established** and it is gap 14. delib does not model it.
+  law splits entitlements acquired during the marriage and a Basisrente is within its scope; the
+  receiving spouse's entitlement remains subject to the same prohibitions, so the product's
+  character is preserved. **The mechanism — *interne* or *externe Teilung* — was not established**
+  (gap 14) and delib does not model it.
 - **A change of provider is a separate question from transferability** and was not resolved. A
-  *Basisrentenvertrag* is generally understood to be transferable to another *Basisrentenvertrag of
-  the same person* without loss of the tax status — the entitlement is not being transferred to a
-  third party — but **the conditions live in the administrative guidance at [R18] and could not be
-  established**. Gap 13. Downstream this must not be asserted.
+  transfer to another *Basisrentenvertrag of the same person* is generally understood not to lose
+  the tax status, the entitlement not passing to a third party, but **the conditions live in the
+  guidance at [R18] and could not be established** (gap 13). Downstream this must not be asserted.
 - **What *nicht vererblich* does not mean.** It does not mean the contract may not pay on death; it
   means the entitlement is not part of the estate and may not be directed by will. Within the narrow
   channel of mechanic 14 a death benefit is permitted, provided it is itself paid **as an annuity**.
@@ -958,15 +956,13 @@ for a cash-flow model.
 - **The deductible share is 100 % from 2023** [R7]. The phase-in — 60 % in 2005 rising two points a
   year — is history for any contract a delib model point would represent, and the product-spec need
   carry only the current rule plus a note that pre-2023 cohorts differ.
-- **The ceiling is shared, and that is the constraint that bites.** A *Freiberufler* who is a
-  compulsory member of a *Versorgungswerk* has most of the ceiling consumed by contributions under
-  letter a before any Basisrente contribution is considered. So does a *Handwerker* with compulsory
-  GRV membership. The buyer with the whole ceiling free is the **genuinely non-insured
-  self-employed person** — and that is the product's core market (mechanic 21).
-- **The ceiling moves every year, and so should the premium.** Because the ceiling is indexed to a
-  wage-driven social-insurance parameter, a buyer optimising the relief has a reason to increase the
-  contribution each year in line with it. Mechanic 8 argues that this is why *Beitragsdynamik* and
-  year-end *Zuzahlungen* are so much more prominent on this product than on a Schicht-3 annuity.
+- **The ceiling is shared, and that is the constraint that bites.** A *Freiberufler* in a
+  *Versorgungswerk*, or a *Handwerker* with compulsory GRV membership, has most of it consumed under
+  letter a before any Basisrente contribution is considered; the buyer with the whole ceiling free is
+  the **genuinely non-insured self-employed person**, the product's core market (mechanic 21).
+- **The ceiling moves every year, and so should the premium.** It is indexed to a wage-driven
+  social-insurance parameter, which is why *Beitragsdynamik* and year-end *Zuzahlungen* are far more
+  prominent here than on a Schicht-3 annuity (mechanic 8).
 
 ### 7. The Förderung — the interaction with the gesetzliche Rentenversicherung for employees
 
@@ -1002,13 +998,11 @@ for a cash-flow model.
   illustration of the mechanism rather than as tax advice.**
 
 - **Where the ceiling does bite.** An employee at the 2025 general BBG of 96 600 € `[unverified]`
-  pays GRV contributions of 96 600 × 18,6 % = 17 967,60 € in total, leaving 29 344 − 17 968 =
-  **11 376 €** of headroom for a Basisrente. That is a real but bounded amount, and it explains the
-  product's second market: **high-earning employees using the residual headroom as a deferral
-  vehicle** (mechanic 21).
-- **A self-employed person outside the statutory scheme has the entire ceiling free** — 29 344 € in
-  2025, 58 688 € jointly `[unverified]`. That asymmetry, not the product's investment merits, is why
-  the Basisrente is described as the self-employed person's pension.
+  pays GRV contributions of 96 600 × 18,6 % = 17 967,60 €, leaving 29 344 − 17 968 = **11 376 €** of
+  headroom — a real but bounded amount, and the product's second market (mechanic 21). **A
+  self-employed person outside the statutory scheme has the entire ceiling free**, 29 344 € in 2025
+  and 58 688 € jointly `[unverified]`. That asymmetry, not the product's investment merits, is why
+  the Basisrente is called the self-employed person's pension.
 - **The third reduction, for taxpayers with a non-contributory entitlement** — *Beamte* and
   shareholder-directors with a *Pensionszusage* — subtracts a **notional** GRV contribution computed
   on their remuneration, leaving very little headroom [R2] `[unverified]`. This is why the product is
@@ -1033,18 +1027,16 @@ for a cash-flow model.
   minimum premium, maximum *Zuzahlung* or suspension rule was established** and all are `[std]`
   downstream. The observed market convention for the minimum recurring premium is of the order of
   **25 € per month** `[unverified]`.
-- ***Beitragsdynamik*** — a contractual annual escalation, commonly at a fixed percentage or tied to
-  a published index, with a right to decline individual increases — appears on this product as on
-  every German life contract. On a Basisrente it has a **specific rationale that it lacks elsewhere**:
-  the *Höchstbetrag* itself rises every year with the *knappschaftliche* BBG [R2] [R20], so a static
-  premium loses relief capacity each year in real terms.
+- ***Beitragsdynamik*** — a contractual annual escalation with a right to decline individual
+  increases — appears here as on every German life contract, but with a **rationale it lacks
+  elsewhere**: the *Höchstbetrag* itself rises every year with the *knappschaftliche* BBG [R2] [R20],
+  so a static premium loses relief capacity each year.
 - **Premium may be reduced, suspended and resumed.** Suspension is a *Beitragsfreistellung*
   (mechanic 17); resumption is a *Wiederinkraftsetzung*, usually within a stated window and possibly
   with renewed underwriting if a BUZ is attached. **No carrier's window was established.**
 - **Modelling consequence.** The delib Schicht-3 annuity carries a level premium; the Basisrente
-  should carry a **premium stream** — a level base plus an annual *Zuzahlung* — because that stream
-  is the product's actual shape, and because it makes the *Höchstbetrag* indexation visible in the
-  projection. The base run's split between the two is `[std]`.
+  should carry a **premium stream** — a level base plus an annual *Zuzahlung* — because that is the
+  product's actual shape and it makes the *Höchstbetrag* indexation visible. The split is `[std]`.
 
 ### 9. Asset forms — klassisch, fondsgebunden, fondsgebunden mit Beitragsgarantie
 
@@ -1116,11 +1108,10 @@ for a cash-flow model.
   Schicht-3 chassis in the sibling delib files. They are not re-derived here.
 - **Two things are different, and both follow from the prohibitions**:
   1. **The *Überschussverwendung* options are narrower in the *Aufschubphase*.** Systems that pay
-     surplus out in cash, or that reduce the premium in a way that returns value to the
-     policyholder outside the annuity, sit awkwardly with the *nicht kapitalisierbar* rule.
-     *Verzinsliche Ansammlung* and *Bonusrente* — both of which keep the value inside the contract
-     and convert it into annuity at *Rentenbeginn* — are the natural forms. **No carrier's option
-     list was established** and gap 17 records it.
+     surplus out in cash sit awkwardly with the *nicht kapitalisierbar* rule; *verzinsliche
+     Ansammlung* and *Bonusrente*, which keep the value inside the contract and convert it into
+     annuity at *Rentenbeginn*, are the natural forms. **No carrier's option list was established**
+     (gap 17).
   2. **The *Schlussüberschussanteil* has no early-exit trigger.** On an endowment a terminal bonus
      is allocated at maturity and, partly, on surrender; a Basisrente has no surrender, so it is
      allocated **only at *Rentenbeginn***, a cleaner single-date cash flow than anywhere else in
@@ -1150,15 +1141,14 @@ for a cash-flow model.
   | Transfer to another provider | possibly | moves the *Deckungskapital* out | Conditions not established, gap 13 |
   | *Berufsunfähigkeit* | only with a BUZ | a disability annuity plus premium waiver | Mechanic 13 |
 
-- **A model of this product has no surrender decrement.** That single sentence is the most important
-  design instruction in this file. A modeller reusing the delib endowment or Schicht-3 chassis will
-  carry a `surr_rate` and a *Rückkaufswert* cell across by habit; both must be removed, and the
-  delib retired-name register already bars the retired column name `claims_surr` from `result_cf()`.
-- **Selection.** A Basisrente cannot be surrendered and cannot be commuted, so a policyholder in
-  poor health has no exit and no reason to take one. That argues for **lighter mortality than a
-  comparable Schicht-3 annuity portfolio**, where the *Kapitalwahlrecht* gives an impaired life a
-  route out that removes them from the annuitant pool. **No evidence for this was found**; it is a
-  `[std]` view and a stated model risk.
+- **A model of this product has no surrender decrement** — the most important design instruction in
+  this file. A modeller reusing the delib endowment or Schicht-3 chassis will carry a `surr_rate`
+  and a *Rückkaufswert* cell across by habit; both must go, and delib's retired-name register
+  already bars the column `claims_surr` from `result_cf()`.
+- **Selection.** A Basisrente cannot be surrendered or commuted, so a policyholder in poor health
+  has no exit — which argues for **lighter mortality than a comparable Schicht-3 portfolio**, where
+  the *Kapitalwahlrecht* lets an impaired life leave the annuitant pool. **No evidence for this was
+  found**; it is a `[std]` view and a stated model risk.
 - **No lapse rate, no *Beitragsfreistellung* rate and no market *Stornoquote* specific to the
   Basisrente was established.** Every behavioural assumption downstream is `[std]` and labelled a
   modeller's view. The *Beitragsfreistellung* rate on this product should nevertheless be expected
@@ -1185,9 +1175,8 @@ for a cash-flow model.
 - **Why anyone does this.** The premium for a *selbständige Berufsunfähigkeitsversicherung* (delib
   product 9) falls into *sonstige Vorsorgeaufwendungen* under § 10 Abs. 1 Nr. 3a EStG, whose small
   ceiling is in practice already exhausted by health and long-term-care contributions, so it is
-  **effectively not deductible at all**. The same cover written as a BUZ inside a Basisrente is
-  deductible in full inside a much larger ceiling. For a self-employed buyer in a high marginal
-  bracket the difference in net cost is large.
+  **effectively not deductible at all**; the same cover as a BUZ inside a Basisrente is deductible
+  in full inside a much larger ceiling.
 - **The counterweight is the tax on the benefit.** A *BU-Rente* paid out of a Basisrentenvertrag is
   a benefit from that contract and is taxed under § 22 with the **full cohort *Besteuerungsanteil***
   [R4], not at the low *Ertragsanteil* that applies to the temporary annuity from a standalone SBU
@@ -1195,11 +1184,11 @@ for a cash-flow model.
   later, at a moment — disability — when income has collapsed and the marginal rate may be low.**
   That trade is the whole of the BUZ-versus-SBU argument and the product-spec should state it as a
   trade rather than as an advantage.
-- **Further constraints, `[unverified]` in every particular**: the disability cover must end at the
+- **Further constraints, `[unverified]` in every particular**: the disability cover ends at the
   latest at the main contract's *Rentenbeginn*; the *BU-Rente* is itself subject to the
-  non-capitalisation rule, so no lump-sum settlement of a disability claim is possible; and a
-  premium waiver (*Beitragsbefreiung*) on disability is the normal companion cover. **No carrier's
-  BUZ wording was reached** [S5], and this is gap 18.
+  non-capitalisation rule, so no lump-sum settlement is possible; and a premium waiver
+  (*Beitragsbefreiung*) is the normal companion cover. **No carrier's BUZ wording was reached** [S5]
+  — gap 18.
 - **Modelling.** delib's `basisrente` model should carry the BUZ as an **off-in-the-base-run module**
   with its own decrement and its own premium share, and delib product 9 owns the disability
   mechanics proper. The one thing the Basisrente model must own is the **50 % constraint**.
@@ -1229,10 +1218,9 @@ for a cash-flow model.
   cover**. That probability is a `[std]` assumption with no evidence behind it, and it is one of the
   more consequential `[std]` choices in the whole delib library.
 - **The cover costs annuity.** Every euro of survivor cover reduces the *Rentenfaktor* or raises the
-  premium, on the same arithmetic as a *Rentengarantiezeit* in Schicht 3, where the sibling corpus's
-  own illustration put a 10-year guarantee at roughly 0,5 % of the annuity, a 20-year guarantee at
-  roughly 2,6 % and a 30-year guarantee at roughly 8,0 % `[unverified]` and **Schicht-3 figures, not
-  transferable**. **No Basisrente-specific cost of survivor cover was established.**
+  premium. The sibling corpus's Schicht-3 illustration put a 10-year *Rentengarantiezeit* at roughly
+  0,5 % of the annuity, 20 years at 2,6 % and 30 years at 8,0 % — `[unverified]`, **Schicht-3
+  figures, not transferable**. **No Basisrente-specific cost was established.**
 - **Base design.** Because the channel is so narrow, the honest base run for a delib reference model
   is **no *Hinterbliebenenschutz***: death before *Rentenbeginn* pays nothing, death in payment ends
   the annuity. The rider is then an explicit module the reader can switch on, with the
@@ -1306,8 +1294,8 @@ for a cash-flow model.
   difference is large enough — of the order of 18 % of the annuity — that a product-spec should
   flag it as a driver of the after-tax comparison, without asserting the rule.
 - **The 102 € *Werbungskosten-Pauschbetrag*** for *sonstige Einkünfte* `[unverified]` reduces the
-  taxable amount trivially and is recorded only so a reader is not surprised by it.
-- **Nothing on the payout side is a liability cash flow.** All of it is context for the model point.
+  taxable amount trivially. **Nothing on the payout side is a liability cash flow**; all of it is
+  context for the model point.
 
 ### 17. Beitragsfreistellung against Kündigung — the exits
 
@@ -1348,10 +1336,9 @@ for a cash-flow model.
   capital as a lump sum at the start of the payout phase `[unverified]`; a Schicht-3 contract may
   pay 100 %. A Basisrente may pay **nothing**.
 - **Three consequences for a model, and they are all simplifications**:
-  1. **No election switch.** The delib Schicht-3 model carries the *Kapitalwahlrecht* as a
-     model-point switch that changes the entire post-*Rentenbeginn* cash-flow shape, plus a take-up
-     assumption with no public evidence behind it. The Basisrente model carries **neither**. The
-     payout phase has exactly one shape.
+  1. **No election switch.** The Schicht-3 model carries the *Kapitalwahlrecht* as a model-point
+     switch that reshapes the whole payout phase, plus an unevidenced take-up assumption. The
+     Basisrente model carries **neither**; the payout phase has exactly one shape.
   2. **No notice-period parameter.** The Schicht-3 chassis needs a declaration window before
      *Rentenbeginn*; this product does not.
   3. **The § 20 EStG tax regime never engages.** The *Halbeinkünfteverfahren* and the 12/62 rule are
@@ -1381,11 +1368,10 @@ what the answer actually is. It is:
     intervals** — quarterly or annually instead of monthly. Whether that is compatible with the
     statutory requirement of a *monatliche* annuity is an administrative question whose answer lives
     in the BMF guidance at [R18] and **was not established**. Gap 19.
-  - **Consolidation before *Rentenbeginn***: moving several small contracts into one, which depends
-    on the transfer question at gap 13.
-- **The modelling consequence** is small but real: a Basisrente model must not carry a commutation
-  option, and a model point representing a small paid-up contract must project a small annuity
-  rather than a lump sum. It is one of the pitfalls the delib test module should assert.
+  - **Consolidation before *Rentenbeginn*** into one contract, which depends on gap 13.
+- **The modelling consequence**: no commutation option, and a model point representing a small
+  paid-up contract must project a small annuity rather than a lump sum — a pitfall the delib test
+  module should assert.
 
 ### 20. Charges
 
@@ -1504,13 +1490,9 @@ rich table here would be a fabrication, so what follows is the real state of the
 | Layer sold on a common chassis | not established | **yes** — PrivatRente / BasisRente / RiesterRente are one design | not established |
 | *Produktinformationsblatt* obtained | no | no | no |
 
-Parameter ranges, where more than one observation exists — **there is exactly one row**:
-
-| Parameter | Observed range | Who sits where | Tag |
-|---|---|---|---|
-| Tariff wordings maintained in parallel for one product | at least 4 at one carrier | CosmosDirekt [S1] | [unverified] |
-
-Everything else a variations table would normally carry — entry ages, minimum premiums, maximum
+A range table needs two observations of one parameter and the corpus supplies exactly one:
+**at least four Basisrente tariff wordings maintained in parallel at one carrier** [S1]
+`[unverified]`. Everything else a variations table would normally carry — entry ages, minimum premiums, maximum
 *Zuzahlung*, permitted *Rentenbeginn* range, *Rentengarantiezeit* durations, survivor-cover forms,
 BUZ terms, *Effektivkosten*, guarantee levels beyond one carrier, *Mindestversicherungsleistung*,
 fund universes — **has no observation at all in this corpus.** Gap 1.
@@ -1631,12 +1613,15 @@ corpus does not source — the *Rentenfaktor*, the charge levels, the minimum pr
     tolerance the market is understood to rely on is `[unverified]`. This is the practical residue
     of the *Kleinbetragsrente* answer in mechanic 19.
 
-20. **The taxation of a *Hinterbliebenenrente* from a Basisrentenvertrag in the survivor's hands was
-    not established** [R4], including which cohort year fixes its *Besteuerungsanteil*.
+20. **Two further payout-side tax questions are unresolved** [R4]: the taxation of a
+    *Hinterbliebenenrente* in the survivor's hands, including which cohort year fixes its
+    *Besteuerungsanteil*; and the social-insurance treatment of the annuity in payment, where the
+    difference between a compulsorily and a voluntarily insured pensioner is of the order of 18 % of
+    the annuity and is stated in mechanic 16 without a source.
 
-21. **The social-insurance treatment of the annuity in payment was not established** [R4]. The
-    distinction between a compulsorily insured pensioner and a voluntarily insured one is of the
-    order of 18 % of the annuity and is stated in mechanic 16 without a source.
+21. **No German market convention for the payment timing of the annuity was established** — whether
+    the monthly instalment is *vorschüssig* or *nachschüssig*. The sibling delib file records the
+    same gap for the Schicht-3 annuity. delib adopts monthly-in-advance as a `[std]` convention.
 
 22. **The commissioning brief for this file stated the pre-2012 *Rentenbeginn* floor as 63; this
     file resolves it against 60.** The rule established here is: **62 for contracts concluded after

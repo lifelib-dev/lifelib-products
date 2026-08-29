@@ -100,29 +100,27 @@ What follows from that, exactly, and it governs every line below:
 3. **No verbatim quotation of any document is given.** Where a German phrase appears in quotation
    marks it is a **term of art**, not a quotation from an instrument.
 4. **`[unverified]` is used generously.** Every paragraph number, effective date, monetary amount,
-   percentage, threshold and market figure in this file is a claim from general knowledge of German
-   pension law that **no search result confirmed**, and carries the tag. The general *shape* of a
-   well-established mechanic — that a Zulage is paid into the contract, that the payout must be a
-   lifelong annuity — is not tagged, because tagging it would drown the signal. The moment a claim
-   becomes specific and numeric, it is tagged.
-5. **Where the mechanic is certain and the level is not, the level becomes a `[std]` parameter of
-   the reference implementation with a stated rationale, not a citation.** Every charge level, every
-   *Rentenfaktor*, every *Überschuss* rate, every lapse and *Beitragsfreistellung* rate downstream
-   is `[std]`. A `[std]` number is honest; a guessed `[S5]` number is not.
+   percentage, threshold and market figure here is a claim from general knowledge of German pension
+   law that **no search result confirmed**, and carries the tag. The general *shape* of a
+   well-established mechanic is not tagged — tagging it would drown the signal — but the moment a
+   claim becomes specific and numeric, it is.
+5. **Where the mechanic is certain and the level is not, the level becomes a `[std]` parameter with
+   a stated rationale, not a citation.** Every charge level, every *Rentenfaktor*, every *Überschuss*
+   rate, every lapse and *Beitragsfreistellung* rate downstream is `[std]`. A `[std]` number is
+   honest; a guessed `[S5]` number is not.
 
-**Three facts in this file come from a sibling delib research session's searches**, and are
-attributed to that file rather than claimed here: the GDV's *Musterbedingungen* index and its
-product taxonomy including a *fondsgebundene* Riester wrapper under the AltZertG and a
-non-unit-linked variant carrying "Stand: 21.07.2025" [S3]; the CosmosDirekt AVB numbering series in
-which **LA 1005 A** is the Riester wording [S4]; and a third-party cost analysis of an Allianz
-specimen quotation reporting total costs in the *RiesterRente* variant of at most **0,95 € per
-100 €** of capital formed [S5]. Those three are the only search-corroborated items here, and each
-says so at the point of use.
+**Three facts here come from a sibling delib research session's searches**, and are attributed to
+that file rather than claimed: the GDV's *Musterbedingungen* index and its taxonomy, including a
+*fondsgebundene* Riester wrapper under the AltZertG and a non-unit-linked variant carrying
+"Stand: 21.07.2025" [S3]; the CosmosDirekt AVB series in which **LA 1005 A** is the Riester wording
+[S4]; and a third-party cost analysis of an Allianz specimen quotation reporting total costs in the
+*RiesterRente* variant of at most **0,95 € per 100 €** of capital formed [S5]. Each says so at the
+point of use.
 
 **The arithmetic in sections 4, 12 and 19 is computed, not sourced.** Where this file derives a
-number — the *Mindeseigenbeitrag* worked cases, the guarantee-headroom table, the income thresholds
-at which the *Sockelbeitrag* binds — the inputs are tagged and the derivation is shown, so a reader
-can redo it. Derived numbers are marked `[std] derived` and are exact given their inputs.
+number — the *Mindesteigenbeitrag* worked cases, the guarantee-headroom tables, the income thresholds
+at which the *Sockelbeitrag* binds — the inputs are tagged and the derivation shown. Derived numbers
+are marked `[std] derived` and are exact given their inputs.
 
 ---
 
@@ -1167,21 +1165,18 @@ they are these, with every specific `[unverified]`:
 
 ### 9. The accumulation phase
 
-- The classic Riester chassis is the Schicht-3 chassis: the contribution less charges and less any
-  risk premium is the *Sparbeitrag*, which is credited to the *Deckungskapital* and accumulates at
-  the guaranteed *Rechnungszins*; declared *Überschussbeteiligung* is credited on top, in one of the
-  standard German surplus systems. The full recursion, the four surplus components
-  (*Zinsüberschuss*, *Risikoüberschuss*, *Kostenüberschuss*, *Schlussüberschussanteil*) and the
-  *Bewertungsreserven* participation of § 153 Abs. 3 VVG are documented in
-  `_research/klassische_rentenversicherung.md` and are **not restated here**; they are unchanged by
-  the AltZertG.
+- The classic Riester chassis is the Schicht-3 chassis: contribution less charges less risk premium
+  is the *Sparbeitrag*, credited to the *Deckungskapital* and accumulating at the guaranteed
+  *Rechnungszins*, with declared *Überschussbeteiligung* on top. The recursion, the four surplus
+  components and the *Bewertungsreserven* participation of § 153 Abs. 3 VVG are documented in
+  `_research/klassische_rentenversicherung.md` and are **not restated here**; the AltZertG leaves
+  them unchanged.
 - **What the AltZertG changes in the accumulation phase is three things and no more:**
   1. **The Zulage arrives as an extra contribution**, in a later period than the contribution year
-     it belongs to [R11], and is charged like any other contribution unless the tariff says
-     otherwise. **Whether German Riester tariffs levy acquisition charges on the Zulagen as well as
-     on the *Eigenbeitrag* is not established** and is gap 14 — it is a material charge-base
-     question, because the Zulagen can be the majority of the contribution in the low-income cases
-     of section 4.
+     it belongs to [R11], charged like any other contribution unless the tariff says otherwise.
+     **Whether Riester tariffs levy acquisition charges on the Zulagen as well as on the
+     *Eigenbeitrag* is not established** (gap 14) — material, because the Zulagen can be the
+     majority of the contribution in the low-income cases of section 4.
   2. **The guarantee accumulator runs alongside the account value** (section 8).
   3. **Acquisition costs must be spread over at least five years** [R1], which changes the *shape*
      of the early-duration charge run-off relative to a Schicht-3 tariff.
@@ -1235,27 +1230,24 @@ they are these, with every specific `[unverified]`:
 
 - **A lifelong monthly annuity**, constant or rising [R1]. The German market pays it monthly in
   advance `[unverified]`.
-- **Surplus continues in payment.** The payout-phase surplus systems of the German market — a
-  *Gewinnrente* added to the guaranteed annuity, a *Bonusrente*, or a *flexible*/*dynamische*
-  *Überschussrente* that can fall — are the same as for a Schicht-3 annuity and are documented in
-  the sibling file. **The AltZertG's "constant or rising" requirement constrains which of them may be
-  used on a Riester contract**: a surplus system whose declared component can be reduced would make
-  the total annuity fall, so the certifiable forms are those in which the guaranteed floor never
-  decreases `[unverified]` as a legal reading. This is a genuine product difference from Schicht 3
-  and the product spec should state it.
+- **Surplus continues in payment**, in the same systems as a Schicht-3 annuity (documented in the
+  sibling file): a *Gewinnrente* added to the guaranteed annuity, a *Bonusrente*, or a
+  *flexible*/*dynamische Überschussrente* that can fall. **The AltZertG's "constant or rising"
+  requirement constrains which of them a Riester contract may use** — a system whose declared
+  component can be reduced would make the total annuity fall `[unverified]` as a legal reading. That
+  is a genuine product difference from Schicht 3 and the product spec should state it.
 - **A *Rentengarantiezeit*** — a guaranteed minimum payment period — is permitted and is common.
   Because it does not make the annuity fall, it is compatible with the AltZertG constraint; and
   because payments in the guarantee period run to the beneficiaries rather than the estate, it is
   the *förderunschädliche* route for a death shortly after *Rentenbeginn* [R14] (section 13).
 - **The payout-phase administration charge** is normally a percentage of each annuity payment. No
   level was established; `[std]`.
-- **The *Auszahlungsplan mit Restverrentung*** is the alternative topology [R1]: level or rising
-  scheduled withdrawals, then a lifelong annuity bought with the remaining capital, beginning at the
-  latest from the **85th** year of life `[unverified]`. It is the fund and bank chassis's payout form
-  [S9]–[S12], not the insurance one, and the delib model does not implement it. It is described here
-  because it is the reason a Riester fund savings plan still ends in an insurance annuity: **the
-  insurance industry receives the *Restverrentung* capital of the fund industry's contracts**, which
-  is a real, if indirect, source of immediate-annuity business.
+- **The *Auszahlungsplan mit Restverrentung*** is the alternative topology [R1]: scheduled
+  withdrawals, then a lifelong annuity bought with the remainder from at latest the **85th** year of
+  life `[unverified]`. It is the fund and bank chassis's payout form [S9]–[S12], not the insurance
+  one, and the delib model does not implement it — but it is why a Riester fund savings plan still
+  ends in an insurance annuity: **the insurance industry receives the *Restverrentung* capital of the
+  fund industry's contracts.**
 
 ### 12. *Kleinbetragsrente* and the *Abfindung*
 
@@ -1271,14 +1263,13 @@ they are these, with every specific `[unverified]`:
 - **It is the provider's option, not the saver's** `[unverified]` — the statute permits the payment,
   and the contract terms decide whether the provider must, may, or will on request. **This was not
   established** and is gap 7.
-- **Why it matters more here than the threshold suggests.** The Riester book contains a large tail of
-  small contracts: contracts taken to draw the Zulagen at the *Sockelbeitrag* (case D and case E of
-  section 4), and contracts that went *ruhend* early (section 21). On a 60 €-plus-Zulagen contract
-  run for twenty years, the accumulated capital is of the order of **10 000 € to 20 000 €**
-  `[std] derived` from the section 4 cases, which at any plausible *Rentenfaktor* produces a monthly
-  annuity in the tens of euros — squarely in *Kleinbetragsrente* territory. **A material fraction of
-  Riester contracts will therefore never pay an annuity at all.** The delib model must carry the
-  commutation as a real payout mode with its own model point, not as a footnote.
+- **Why it matters more than the threshold suggests.** The book carries a long tail of small
+  contracts: those run at the *Sockelbeitrag* (section 4, cases D and E) and those that went *ruhend*
+  early (section 21). Case D contributes 835 € a year, so twenty years of it is **16 700 €** of
+  contributions `[std] derived`; case E contributes 235 €, so twenty years is **4 700 €**. At any
+  plausible *Rentenfaktor* both produce a monthly annuity in the tens of euros — squarely in
+  *Kleinbetragsrente* territory. **A material fraction of Riester contracts will never pay an annuity
+  at all**, so the commutation is a real payout mode with its own model point, not a footnote.
 
 ### 13. Death benefits and *Hinterbliebenenschutz*
 
@@ -1300,33 +1291,29 @@ they are these, with every specific `[unverified]`:
   (gap 11).
 - **Consequence for the model**: the death benefit before *Rentenbeginn* is the account value, and
   the *Rückzahlungsbetrag* is a **deduction from the benefit paid, not an insurer cash flow** — the
-  provider withholds it and remits it to the ZfA. A gross-liability model may publish the death
-  benefit either gross or net of the *Rückzahlungsbetrag*; the reference implementation publishes it
-  **gross** and states the convention, because the withholding is a tax collection, not a change in
-  the insurer's obligation.
+  provider withholds and remits it to the ZfA. The reference implementation publishes the death
+  benefit **gross** and states the convention, because the withholding is a tax collection and not a
+  change in the insurer's obligation.
 
 ### 14. Options: *Anbieterwechsel*, *Beitragsfreistellung*, *Kündigung*
 
 - **Anbieterwechsel** [R1]. A statutory right: terminate, and have the accumulated capital
-  transferred directly to another certified contract. No *schädliche Verwendung*, no tax
-  consequence, the guarantee accumulator travels with the money `[unverified]` — **and it is the
-  single most important structural difference from every other product in delib.** No Schicht-3
-  German life contract carries a portability right of this kind. Its cash-flow consequence is that a
-  Riester "lapse" is frequently **not** a surrender at all but a **transfer out at full value**,
-  which for the ceding insurer is a full-value exit and for the model is a distinct decrement from
-  a surrender. **The notice period and the transfer-charge cap were not established** (gap 8).
-- **Beitragsfreistellung** — stopping contributions and leaving the contract in force. Under § 165
-  VVG the policyholder of a German life contract may convert to a paid-up contract at any time; the
-  Riester overlay is that the contract stays certified, the guarantee stands on what was paid, no
-  further Zulagen arrive, and no subsidy is repaid. **This is the German Riester book's dominant
-  exit** (section 21).
+  transferred directly to another certified contract — no *schädliche Verwendung*, no tax
+  consequence, the guarantee accumulator travelling with the money `[unverified]`. **No Schicht-3
+  German life contract carries a portability right of this kind**, and its cash-flow consequence is
+  that a Riester "lapse" is frequently a **transfer out at full value** rather than a surrender: for
+  the ceding insurer a full-value exit, for the model a distinct decrement. **The notice period and
+  the transfer-charge cap were not established** (gap 8).
+- **Beitragsfreistellung** — stopping contributions and leaving the contract in force. § 165 VVG
+  gives the right generally; the Riester overlay is that the contract stays certified, the guarantee
+  stands on what was paid, no further Zulagen arrive, and no subsidy is repaid. **This is the German
+  Riester book's dominant exit** (section 21).
 - **Kündigung with payment of the *Rückkaufswert*** — permitted by the VVG and punished by the EStG.
   The saver receives the surrender value **less** the *Rückzahlungsbetrag* (all Zulagen and all
   § 10a relief), and the growth on the subsidised part becomes taxable [R14]. Against a surrender
-  value that is itself below the contributions paid in the early years, the combination makes a cash
-  surrender an economically severe act. It is the reason a Riester lapse assumption should be
-  materially **lower** than a Schicht-3 one and the reason the *ruhender Vertrag* exists as a
-  category at all.
+  value itself below the contributions paid in the early years, that makes a cash surrender an
+  economically severe act — the reason a Riester lapse assumption should be materially **lower** than
+  a Schicht-3 one, and the reason the *ruhender Vertrag* exists as a category.
 - **Versorgungsausgleich** on divorce — internal or external division of the contract, transfer to
   the other spouse's certified contract, *förderunschädlich* `[unverified]` [R14].
 - **Wohn-Riester withdrawal** — a complete or partial exit into property, *förderunschädlich*, with
@@ -1500,9 +1487,8 @@ positive; a Riester model in which the guarantee never binds has demonstrated no
 
 Everything in this section is `[unverified]` order-of-magnitude recollection. **No figure here was
 established from any source**, the official series [R25] was neither retrieved nor searched, and the
-whole section is qualified by gap 2. It is included because a product spec has to place the product,
-and because saying "unknown" without saying "unknown at roughly what scale" is less useful than
-saying both.
+whole section is qualified by gap 2. It is included because saying "unknown" without saying "unknown
+at roughly what scale" is less useful than saying both.
 
 - **Contract count**: of the order of **15 to 16 million** certified Riester contracts in the
   mid-2020s, having peaked around **16,5 million** in the late 2010s and declined slowly since. Split

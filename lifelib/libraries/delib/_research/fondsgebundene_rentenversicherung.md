@@ -132,8 +132,8 @@ What follows from that, exactly, and it is applied without exception below:
 
 **The consequence for the reader.** The **mechanics** in sections 1–18 are the part of this file
 that is load-bearing and the part that does not depend on having a PDF open: how a monthly premium
-becomes units, in what order the charges bite, how a *Risikobeitrag* is levied by cancellation, why
-the *Rückkaufswert* of a fondsgebundene policy is a *Zeitwert* and what that removes from the
+becomes units, in what order the charges bite, how a *Risikobeitrag* is levied by cancellation,
+why the *Rückkaufswert* of a fondsgebundene policy is a *Zeitwert* and what that removes from the
 calculation, what the *Rentenfaktor* guarantee actually promises. Those are written long and
 precise, and they are correct as descriptions of German market practice. The **levels** are not
 sourced and are not presented as if they were. A delib citation is a pointer to the instrument a
@@ -215,12 +215,13 @@ much of it has no clean English equivalent because the German market invented th
 Eighteen known references to primary product documents. **None was retrieved and none was
 corroborated by a search run for this file** (see the retrieval-conditions section). Two entries —
 [S2] and [S4] — carry a URL that a search returned during the sibling delib research and that is
-recorded in that sibling file; those two are the only URLs in this section, and they are attributed
-to the sibling rather than claimed here. Every other entry says `URL: not established`.
+recorded in that sibling file; those two are the only URLs in this section, and they are
+attributed to the sibling rather than claimed here. Every other entry says `URL: not established`.
 
 Each entry answers two questions honestly: **does a document of this kind exist for this product,
-and what does that kind of document establish?** Where a product name or tariff code is given it is
-tagged `[unverified]` — it is the author's recollection of the German market, not a search result.
+and what does that kind of document establish?** Where a product name or tariff code is given it
+is tagged `[unverified]` — it is the author's recollection of the German market, not a search
+result.
 
 ### S1 — GDV, Musterbedingungen for the fondsgebundene Rentenversicherung
 
@@ -231,8 +232,8 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted). The
   **document type** is established indirectly: the sibling delib research on
   `klassische_rentenversicherung` corroborated by search both the GDV *Musterbedingungen* service
-  index and a model-conditions set for the *Rentenversicherung mit aufgeschobener Rentenzahlung*. A
-  companion set for the **fondsgebundene** form is the ordinary structure of that index; **its
+  index and a model-conditions set for the *Rentenversicherung mit aufgeschobener Rentenzahlung*.
+  A companion set for the **fondsgebundene** form is the ordinary structure of that index; **its
   title, edition and clause numbering are `[unverified]`.**
 - Content: a GDV *Musterbedingung* is **the skeleton every German insurer's AVB for the line
   follows**, clause order included, which is why insurer wordings are structurally interchangeable
@@ -276,11 +277,11 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: the market leader sells its unit-linked annuity under the name **"InvestFlex"**
-  `[unverified]`, within the *PrivatRente* family whose classic and index members the sibling delib
-  research covers. Recorded because **a representative German FRV design has to be checkable
+  `[unverified]`, within the *PrivatRente* family whose classic and index members the sibling
+  delib research covers. Recorded because **a representative German FRV design has to be checkable
   against the largest writer's wording**, and because Allianz is the carrier at which the
-  *Treuhänderklausel* dispute over the *Rentenfaktor* was publicly live in 2021 [R22]. **No clause,
-  charge, factor or age limit of this contract is established here.**
+  *Treuhänderklausel* dispute over the *Rentenfaktor* was publicly live in 2021 [R22]. **No
+  clause, charge, factor or age limit of this contract is established here.**
 
 ### S4 — Zurich Deutscher Herold Lebensversicherung AG, "Verbraucherinformation für Fondsgebundene Versicherungen"
 
@@ -297,10 +298,10 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
   same carrier**: a document that has to name itself "conventional" does so to distinguish itself
   from the unit-linked one. That inference is recorded as an inference and the parallel document's
   title, edition and content are `[unverified]`. The **value of the document type** is high and is
-  why it is listed: a *Verbraucherinformation* of that length is the one German document class that
-  states, in one place, the benefit definitions, the *Beitragsverrechnung*, the cost clauses, the
-  *Rentenfaktor* rule, the option catalogue and the *Rückkaufswert* rule — the exact inventory a
-  product-spec needs. The sibling file's corroborated Zurich material also establishes the
+  why it is listed: a *Verbraucherinformation* of that length is the one German document class
+  that states, in one place, the benefit definitions, the *Beitragsverrechnung*, the cost clauses,
+  the *Rentenfaktor* rule, the option catalogue and the *Rückkaufswert* rule — the exact inventory
+  a product-spec needs. The sibling file's corroborated Zurich material also establishes the
   **conventional carrier's *Rentenfaktor* rule** — that at *Rentenbeginn* a second factor is
   compared with the guaranteed one and **the higher of the two applies** — and that rule is
   carried over here in section 9 as market practice, tagged to the sibling's evidence rather than
@@ -314,8 +315,8 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: a large mutual understood to offer both a commission tariff and a **Nettotarif** on the
   same unit-linked chassis `[unverified]` — the pairing that isolates what *Abschlusskosten* do to
-  the *Effektivkosten*, which is why the carrier is listed. **No tariff code, charge rate, fund list
-  or factor is established.**
+  the *Effektivkosten*, which is why the carrier is listed. **No tariff code, charge rate, fund
+  list or factor is established.**
 
 ### S6 — LV 1871, AVB for the fondsgebundene Rentenversicherung ("MeinPlan")
 
@@ -323,18 +324,19 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - Doc type: AVB, *Produktinformationsblatt*, *Basisinformationsblatt*
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: a mid-sized specialist selling its unit-linked pension as **"MeinPlan"** `[unverified]`,
-  with an ETF-capable *Fondsauswahl* and a *Nettotarif* variant `[unverified]`. Listed as a
-  comparator on the **option catalogue** — *Zuzahlung*, *Teilentnahme*, flexible *Rentenbeginn* —
-  the dimension on which German unit-linked contracts differ most. **No parameter is established.**
+- Content: a mid-sized specialist selling its unit-linked pension as **"MeinPlan"**
+  `[unverified]`, with an ETF-capable *Fondsauswahl* and a *Nettotarif* variant `[unverified]`.
+  Listed as a comparator on the **option catalogue** — *Zuzahlung*, *Teilentnahme*, flexible
+  *Rentenbeginn* — the dimension on which German unit-linked contracts differ most. **No parameter
+  is established.**
 
 ### S7 — Stuttgarter Lebensversicherung a. G., AVB for a hybrid fondsgebundene Rentenversicherung ("FlexRente performance-safe")
 
 - Publisher: Stuttgarter Lebensversicherung a. G.
 - Doc type: AVB for a **hybrid** unit-linked annuity, plus *Basisinformationsblatt*
 - URL: not established. The sibling delib research corroborated a different Stuttgarter document
-  ("Allgemeine Informationen zu einem Altersversorgungssystem"), establishing only that the carrier
-  publishes pre-contractual information PDFs.
+  ("Allgemeine Informationen zu einem Altersversorgungssystem"), establishing only that the
+  carrier publishes pre-contractual information PDFs.
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: the **hybrid comparator**. The guarantee-bearing unit-linked pension is marketed as
   **"FlexRente performance-safe"** `[unverified]`, a *dynamisches Hybrid* of the section 13 family
@@ -350,9 +352,9 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - Doc type: AVB plus *Basisinformationsblatt*
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: a broker-channel carrier associated with **two-pot hybrid** designs sold alongside a pure
-  fondsgebundene tariff `[unverified]`. A second hybrid comparator, so that section 13's taxonomy
-  rests on more than one named carrier. **No parameter is established.**
+- Content: a broker-channel carrier associated with **two-pot hybrid** designs sold alongside a
+  pure fondsgebundene tariff `[unverified]`. A second hybrid comparator, so that section 13's
+  taxonomy rests on more than one named carrier. **No parameter is established.**
 
 ### S9 — WWK Lebensversicherung a. G., AVB for the fondsgebundene Rentenversicherung with i-CPPI guarantee
 
@@ -414,22 +416,23 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: HDI's unit-linked pension is sold as **"CleverInvest"** `[unverified]` and is cited in
-  the broker market as a **low-cost, ETF-capable** FRV `[unverified]`. A second low-cost comparator
-  alongside [S10] and the *Nettotarife* of [S18]. **No charge level is established** — and the
-  absence of any corroborated charge level anywhere in this corpus is gap 6.
+  the broker market as a **low-cost, ETF-capable** FRV `[unverified]`. A second low-cost
+  comparator alongside [S10] and the *Nettotarife* of [S18]. **No charge level is established** —
+  and the absence of any corroborated charge level anywhere in this corpus is gap 6.
 
 ### S14 — Debeka Lebensversicherungsverein a. G., AVB for the fondsgebundene Rentenversicherung
 
 - Publisher: Debeka Lebensversicherungsverein a. G., Koblenz
 - Doc type: *Bedingungswerk* in the carrier's `B LV` series
 - URL: not established. The sibling delib research corroborated several Debeka *Bedingungswerke*
-  (**B LV 85**, **B LV 86**, **B LV 97**) and the trade-press report that Debeka **discontinued its
-  classic annuity tariff**.
+  (**B LV 85**, **B LV 86**, **B LV 97**) and the trade-press report that Debeka **discontinued
+  its classic annuity tariff**.
 - Retrieved: no — egress blocked; no search corroboration for the fondsgebundene tariff
-- Content: recorded because that discontinuation, at Germany's largest life mutual by policy count,
-  is **the market-structure fact that puts this product at the centre of the library**: when the
-  classic tariff closes, the new-business flow goes to the fondsgebundene and hybrid forms. The
-  Debeka fondsgebundene *Bedingungswerk* number, edition and content are `[unverified]`.
+- Content: recorded because that discontinuation, at Germany's largest life mutual by policy
+  count, is **the market-structure fact that puts this product at the centre of the library**:
+  when the classic tariff closes, the new-business flow goes to the fondsgebundene and hybrid
+  forms. The Debeka fondsgebundene *Bedingungswerk* number, edition and content are
+  `[unverified]`.
 
 ### S15 — *Basisinformationsblatt* (PRIIP-KID) for a fondsgebundene Rentenversicherung — document-type entry
 
@@ -444,14 +447,14 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
 - Content: this is the **document a delib product-spec would most want and does not have**. Its
   prescribed content, established from the BaFin explanation corroborated in the sibling research
   [R9], is: a **summary risk indicator**; the **possible maximum loss** of invested capital;
-  **four performance scenarios** — *Stress*, *pessimistisch*, *moderat*, *optimistisch* — expressed
-  as annualised average returns in per cent; the **costs the investor bears**; and complaint
-  information. The scenarios and the costs must be shown at **three time points — after one year,
-  after half the recommended holding period, and at the end of it** — and the cost disclosure
-  splits **one-off from ongoing costs** and states the ***Reduction in Yield* per year**. For an
-  FRV the recommended holding period is the *Aufschubzeit*, so those three points are typically
-  1 year, ~15 years and ~30 years. **No actual BIB for this product was located, so no scenario
-  return, no cost figure and no RIY value is established from one.** Gap 5.
+  **four performance scenarios** — *Stress*, *pessimistisch*, *moderat*, *optimistisch* —
+  expressed as annualised average returns in per cent; the **costs the investor bears**; and
+  complaint information. The scenarios and the costs must be shown at **three time points — after
+  one year, after half the recommended holding period, and at the end of it** — and the cost
+  disclosure splits **one-off from ongoing costs** and states the ***Reduction in Yield* per
+  year**. For an FRV the recommended holding period is the *Aufschubzeit*, so those three points
+  are typically 1 year, ~15 years and ~30 years. **No actual BIB for this product was located, so
+  no scenario return, no cost figure and no RIY value is established from one.** Gap 5.
 
 ### S16 — *Produktinformationsblatt* / *Verbraucherinformation* — document-type entry
 
@@ -464,11 +467,11 @@ tagged `[unverified]` — it is the author's recollection of the German market, 
   PRIIPs does not. Established from the corroborated statutory material [R7]: the insurer must
   disclose the ***Abschluss- und Vertriebskosten* included in the premium as a euro amount**, must
   disclose the other costs, and — since **1 January 2015** `[unverified]`, following the LVRG
-  [R13] — must state the ***Effektivkostenquote*** in the quotation. A German *Produktinformations-
-  blatt* for an FRV therefore normally shows, on two pages: the guaranteed benefits (which for
-  this product means the *Rentenfaktor* and little else), the *Abschluss- und Vertriebskosten* in
-  euro, the ongoing costs, the *Effektivkosten*, the *Rückkaufswerte* by year, and the
-  *Modellrechnung*. **No instance was located and no figure is established.**
+  [R13] — must state the ***Effektivkostenquote*** in the quotation. A German
+  *Produktinformations- blatt* for an FRV therefore normally shows, on two pages: the guaranteed
+  benefits (which for this product means the *Rentenfaktor* and little else), the *Abschluss- und
+  Vertriebskosten* in euro, the ongoing costs, the *Effektivkosten*, the *Rückkaufswerte* by year,
+  and the *Modellrechnung*. **No instance was located and no figure is established.**
 
 ### S17 — *Standmitteilung* (annual statement) — document-type entry
 
@@ -538,14 +541,14 @@ sibling delib research file**, that is stated and attributed.
     Satz 2 or Abs. 4 — and the cross-reference it makes into the *Versicherungsaufsichtsgesetz*
     are **`[unverified]`**; the *substance* is corroborated.
   - **What the *Zeitwert* branch removes.** For a pure unit-linked contract with no insurer-given
-    benefit guarantee, the *Zeitwert* is **the value of the units held** — there is no discounting,
-    no mortality basis, no *Rechnungszins* and no *Zillmerung* residue in it, because there is no
-    *Deckungskapital* in the general-account sense to compute. This is the single largest
-    modelling simplification in the delib library: **`Rückkaufswert(t) = Fondsguthaben(t)`**, less
-    a *Stornoabzug* if one is validly agreed.
+    benefit guarantee, the *Zeitwert* is **the value of the units held** — there is no
+    discounting, no mortality basis, no *Rechnungszins* and no *Zillmerung* residue in it, because
+    there is no *Deckungskapital* in the general-account sense to compute. This is the single
+    largest modelling simplification in the delib library: **`Rückkaufswert(t) =
+    Fondsguthaben(t)`**, less a *Stornoabzug* if one is validly agreed.
   - ***Abzug* (*Stornoabzug*).** Permissible **only if *vereinbart*, *beziffert* and
-    *angemessen*** — agreed, quantified in the contract, and appropriate. A deduction **for
-    *noch nicht getilgte Abschluss- und Vertriebskosten* is unwirksam**, which is what prevents an
+    *angemessen*** — agreed, quantified in the contract, and appropriate. A deduction **for *noch
+    nicht getilgte Abschluss- und Vertriebskosten* is unwirksam**, which is what prevents an
     insurer recovering through the deduction what the five-year spreading denies it.
   - **The open question for a fondsgebundene contract** is whether the *Mindestrückkaufswert*
     floor of the general rule reaches the *Zeitwert* branch at all, or whether the same protection
@@ -562,9 +565,9 @@ sibling delib research file**, that is stated and attributed.
 - Content: the policyholder of a life contract with recurring premiums may terminate **for the end
   of the current *Versicherungsperiode***, which on a monthly-premium contract is a short notice
   period rather than an annual one. Paired with the § 169 valuation rule [R1] it makes *Storno* on
-  a German unit-linked policy a **near-frictionless exit at fund value** — which is why unit-linked
-  lapse experience differs from conventional lapse experience, and why delib treats *Storno* and
-  *Beitragsfreistellung* as two decrements. **Paragraph number, notice period and any
+  a German unit-linked policy a **near-frictionless exit at fund value** — which is why
+  unit-linked lapse experience differs from conventional lapse experience, and why delib treats
+  *Storno* and *Beitragsfreistellung* as two decrements. **Paragraph number, notice period and any
   single-premium restriction are `[unverified]`.**
 
 ### R3 — VVG § 165, *Prämienfreie Versicherung* (*Beitragsfreistellung*)
@@ -610,11 +613,11 @@ sibling delib research file**, that is stated and attributed.
   unless profit participation is excluded by express agreement. **The application to a
   fondsgebundene contract is the point worth recording**: the investment result belongs to the
   policyholder already, by construction, so the *Überschussbeteiligung* of an FRV arises from the
-  **risk result and the cost result only**, and the *Bewertungsreserven* limb has almost nothing to
-  attach to because the assets backing the unit liability are the units themselves. In practice
+  **risk result and the cost result only**, and the *Bewertungsreserven* limb has almost nothing
+  to attach to because the assets backing the unit liability are the units themselves. In practice
   surplus on an FRV is credited as **additional units** or as a **reduction of charges**, plus a
-  *Schlussüberschuss* at *Rentenbeginn*. Whether an insurer may exclude participation altogether on
-  a unit-linked tariff, and on what conditions, is `[unverified]`.
+  *Schlussüberschuss* at *Rentenbeginn*. Whether an insurer may exclude participation altogether
+  on a unit-linked tariff, and on what conditions, is `[unverified]`.
 
 ### R6 — VVG § 152, *Widerruf*, and §§ 7–8 VVG (pre-contractual information)
 
@@ -653,9 +656,9 @@ sibling delib research file**, that is stated and attributed.
     treatment of *Kickbacks* credited back to the contract inside the calculation is
     `[unverified]` and is gap 8.
   - § 2 also requires a ***Modellrechnung*** — an illustration of the benefit at maturity on
-    prescribed assumed returns. The **number of assumed rates and their level** are `[unverified]`;
-    the German market convention of illustrating a fondsgebundene contract at three rates is
-    recorded in section 17 as market practice, not as a statutory requirement.
+    prescribed assumed returns. The **number of assumed rates and their level** are
+    `[unverified]`; the German market convention of illustrating a fondsgebundene contract at
+    three rates is recorded in section 17 as market practice, not as a statutory requirement.
 
 ### R8 — PRIIPs Regulation (EU) 1286/2014 and the RTS, Delegated Regulation (EU) 2017/653 as amended
 
@@ -663,15 +666,15 @@ sibling delib research file**, that is stated and attributed.
 - URL: not established (EUR-Lex is among the blocked hosts)
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: the regulation requiring a ***Basisinformationsblatt*** for every packaged retail and
-  insurance-based investment product, a fondsgebundene Rentenversicherung being the paradigm German
-  IBIP. **The regulation number 1286/2014, the RTS number 2017/653 and the amending regulation that
-  reworked the performance-scenario methodology from 1 January 2023 are all `[unverified]`** — they
-  are recalled, not searched. The document's **content** is not in doubt, because BaFin's own
-  explanation of it was corroborated in the sibling research [R9]. The RTS's **categorisation** —
-  a pure unit-linked contract in **Category 2** (linear unleveraged exposure, scenarios from the
-  underlying's own return history), a profit-participating or guarantee-bearing one in **Category
-  4** (values depending partly on factors not observed in the market) — is `[unverified]` as to the
-  numbers but corroborated as to Category 4's existence by [R18].
+  insurance-based investment product, a fondsgebundene Rentenversicherung being the paradigm
+  German IBIP. **The regulation number 1286/2014, the RTS number 2017/653 and the amending
+  regulation that reworked the performance-scenario methodology from 1 January 2023 are all
+  `[unverified]`** — they are recalled, not searched. The document's **content** is not in doubt,
+  because BaFin's own explanation of it was corroborated in the sibling research [R9]. The RTS's
+  **categorisation** — a pure unit-linked contract in **Category 2** (linear unleveraged exposure,
+  scenarios from the underlying's own return history), a profit-participating or guarantee-bearing
+  one in **Category 4** (values depending partly on factors not observed in the market) — is
+  `[unverified]` as to the numbers but corroborated as to Category 4's existence by [R18].
 
 ### R9 — BaFin *Fachartikel*, "PRIIPs-Verordnung: Wie Versicherer Verbraucher informieren" (2022)
 
@@ -680,16 +683,16 @@ sibling delib research file**, that is stated and attributed.
   — recorded in the sibling delib research on `kapitallebensversicherung` (its R19) as a search
   result; **not a search result of this file's own**
 - Retrieved: no — egress blocked; corroborated by search in the sibling file only
-- Content, as corroborated there: the supervisor's own statement of what a *Basisinformationsblatt*
-  must contain — a **total risk indicator**; the **possible maximum loss of invested capital**;
-  **suitable performance scenarios**; the **costs the investor bears**; and how and where to
-  complain. **Four graded scenarios — *Stress*, *pessimistisch*, *moderat*, *optimistisch* — must
-  be given as annualised average returns in per cent**, at **three time points: after one year,
-  after half the term, and at the end of the term**; **total costs and the *Reduction in Yield* per
-  year are shown at those same points**, split into **one-off and ongoing costs**. The
-  ***Effektivkosten* of a specimen contract must be stated in the BIB**, which must be **published
-  on the insurer's website** and **provided before conclusion**. This is the most precisely
-  established regulatory fact available to this file and it is the frame for section 17.
+- Content, as corroborated there: the supervisor's own statement of what a
+  *Basisinformationsblatt* must contain — a **total risk indicator**; the **possible maximum loss
+  of invested capital**; **suitable performance scenarios**; the **costs the investor bears**; and
+  how and where to complain. **Four graded scenarios — *Stress*, *pessimistisch*, *moderat*,
+  *optimistisch* — must be given as annualised average returns in per cent**, at **three time
+  points: after one year, after half the term, and at the end of the term**; **total costs and the
+  *Reduction in Yield* per year are shown at those same points**, split into **one-off and ongoing
+  costs**. The ***Effektivkosten* of a specimen contract must be stated in the BIB**, which must
+  be **published on the insurer's website** and **provided before conclusion**. This is the most
+  precisely established regulatory fact available to this file and it is the frame for section 17.
 
 ### R10 — BaFin, Merkblatt 01/2023 (VA) on *wohlverhaltensaufsichtliche Aspekte bei kapitalbildenden Lebensversicherungsprodukten*
 
@@ -697,8 +700,8 @@ sibling delib research file**, that is stated and attributed.
 - URL: `https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Merkblatt/VA/mb_01_2023_wohlverhaltensaufsichtliche_aspekte_va.html`
   — recorded in the sibling delib research (its R17); not a search result of this file's own
 - Retrieved: no — egress blocked; corroborated by search in the sibling file only
-- Content, as corroborated there, and it applies to this product with more force than to any
-  other in the library because this product's charges are its whole economics:
+- Content, as corroborated there, and it applies to this product with more force than to any other
+  in the library because this product's charges are its whole economics:
   - **Purpose**: to ensure that *kapitalbildende Lebensversicherungsprodukte* offer an appropriate
     ***Kundennutzen*** (customer value).
   - **Cost**: the *Effektivkosten* of different providers and products **differ considerably**;
@@ -720,9 +723,9 @@ sibling delib research file**, that is stated and attributed.
 - Retrieved: no — egress blocked; corroborated by search in the sibling file only
 - Content: establishes that **"Kosten von kapitalbildenden Lebensversicherungen" is a named focus
   risk in BaFin's 2026 risk agenda** — three years after the *Merkblatt* [R10], the supervisor
-  still treats the charge level of this product family as an open problem. **No text of the chapter
-  is established.** It is why delib treats charge levels as a **supervised** rather than a free
-  parameter and states its `[std]` stack as a design decision rather than an observation.
+  still treats the charge level of this product family as an open problem. **No text of the
+  chapter is established.** It is why delib treats charge levels as a **supervised** rather than a
+  free parameter and states its `[std]` stack as a design decision rather than an observation.
 
 ### R12 — DeckRV, *Deckungsrückstellungsverordnung* — *Höchstrechnungszins* and *Höchstzillmersatz*
 
@@ -731,20 +734,21 @@ sibling delib research file**, that is stated and attributed.
 - Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
   `kapitallebensversicherung` (its R7) and `klassische_rentenversicherung` (its R7).
 - Content, and its two quite different bearings on this product:
-  - **The *Höchstrechnungszins*** — the statutory maximum technical interest rate for new
-    business — was **1,00 % from 1 January 2025** `[unverified]`, raised from **0,25 %**, and the
-    DAV recommended the same 1,00 % for 2026. **On the accumulation phase of a pure fondsgebundene
+  - **The *Höchstrechnungszins*** — the statutory maximum technical interest rate for new business
+    — was **1,00 % from 1 January 2025** `[unverified]`, raised from **0,25 %**, and the DAV
+    recommended the same 1,00 % for 2026. **On the accumulation phase of a pure fondsgebundene
     contract this has no effect at all**, because there is no guaranteed accumulation rate to cap.
     It bears on the product **only** through the *Rentenfaktor*, which is priced with a
     *Rechnungszins*, and through hybrid designs whose guaranteed pot sits in the general account.
     That asymmetry is worth stating explicitly, because it is the reason unit-linked new business
     grew through the low-interest decade while classic new business collapsed.
   - **The *Höchstzillmersatz*** — the cap on acquisition costs that may be financed against future
-    premiums — is **25 ‰ (2,5 %) of the *Beitragssumme*** `[unverified]`, cut from 40 ‰ by the LVRG
-    2014 [R13]. The *Beitragssumme* is the sum of all premiums payable over the premium-paying
-    term. **This is the single most useful number in the file**: combined with the five-year
-    spreading rule of § 169 VVG [R1] it pins the shape *and* the maximum level of the acquisition
-    charge in a German unit-linked tariff, and section 4 builds the `[std]` charge on it.
+    premiums — is **25 ‰ (2,5 %) of the *Beitragssumme*** `[unverified]`, cut from 40 ‰ by the
+    LVRG 2014 [R13]. The *Beitragssumme* is the sum of all premiums payable over the
+    premium-paying term. **This is the single most useful number in the file**: combined with the
+    five-year spreading rule of § 169 VVG [R1] it pins the shape *and* the maximum level of the
+    acquisition charge in a German unit-linked tariff, and section 4 builds the `[std]` charge on
+    it.
 
 ### R13 — LVRG 2014, *Lebensversicherungsreformgesetz*
 
@@ -753,12 +757,12 @@ sibling delib research file**, that is stated and attributed.
   the retrieval-conditions section forbids.
 - Retrieved: no — egress blocked. Corroborated in outline by search in the sibling delib research.
 - Content: the 2014 reform package that, for this product, **cut the *Höchstzillmersatz* from 40 ‰
-  to 25 ‰** [R12], **introduced the *Effektivkosten* disclosure** in quotations from 1 January 2015
-  [R7], and changed the *Bewertungsreserven* rules. The sibling research also recorded an industry
-  study reporting that ***Abschlusskosten* fell by almost 8 % after the LVRG** `[unverified]`. All
-  dates and the 8 % are `[unverified]`; the 40 ‰ → 25 ‰ cut is corroborated only at the level of a
-  secondary consumer page in a sibling file, and the `[std]` acquisition charge rests on that and
-  nothing stronger.
+  to 25 ‰** [R12], **introduced the *Effektivkosten* disclosure** in quotations from 1 January
+  2015 [R7], and changed the *Bewertungsreserven* rules. The sibling research also recorded an
+  industry study reporting that ***Abschlusskosten* fell by almost 8 % after the LVRG**
+  `[unverified]`. All dates and the 8 % are `[unverified]`; the 40 ‰ → 25 ‰ cut is corroborated
+  only at the level of a secondary consumer page in a sibling file, and the `[std]` acquisition
+  charge rests on that and nothing stronger.
 
 ### R14 — MindZV, *Mindestzuführungsverordnung*
 
@@ -766,12 +770,12 @@ sibling delib research file**, that is stated and attributed.
 - URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
 - Retrieved: no — egress blocked. Corroborated in outline by search in the sibling delib research.
 - Content: fixes the **minimum share of each surplus source credited to policyholders**. For this
-  product the relevant sources are the ***Risikoergebnis*** and the ***übriges Ergebnis***, because
-  a unit-linked contract's investment result is the policyholder's by construction and never enters
-  the insurer's *Rohüberschuss*. The **minimum percentages — commonly given as 90 % of the risk
-  result and 50 % of the other result — are `[unverified]`.** An FRV's *Überschussbeteiligung* is a
-  second-order credit on a product whose first-order economics are fund return minus charges, and
-  delib does not project it (section 15).
+  product the relevant sources are the ***Risikoergebnis*** and the ***übriges Ergebnis***,
+  because a unit-linked contract's investment result is the policyholder's by construction and
+  never enters the insurer's *Rohüberschuss*. The **minimum percentages — commonly given as 90 %
+  of the risk result and 50 % of the other result — are `[unverified]`.** An FRV's
+  *Überschussbeteiligung* is a second-order credit on a product whose first-order economics are
+  fund return minus charges, and delib does not project it (section 15).
 
 ### R15 — VAG — *Sparteneinteilung*, asset congruence, and the *Zuwendungen* rules
 
@@ -799,11 +803,12 @@ sibling delib research file**, that is stated and attributed.
   generational character.
 - Content: the German annuity table, **generational** — mortality per birth cohort, including
   expected future improvement — with first-order (loaded) and second-order (best-estimate)
-  versions. It is **the table on which a *Rentenfaktor* is computed**, corroborated at one carrier:
-  the inception factor rests on "a recognised mortality table (currently DAV 2004 R)" at "currently
-  0 percent p.a." [S10]. **DAV tables are DAV property, are not public and are not redistributed by
-  this library** (house rules §6): delib ships a `[std]` proxy, cites the table by name, and states
-  what a replacement must preserve — a generational annuitant basis with a first-order margin.
+  versions. It is **the table on which a *Rentenfaktor* is computed**, corroborated at one
+  carrier: the inception factor rests on "a recognised mortality table (currently DAV 2004 R)" at
+  "currently 0 percent p.a." [S10]. **DAV tables are DAV property, are not public and are not
+  redistributed by this library** (house rules §6): delib ships a `[std]` proxy, cites the table
+  by name, and states what a replacement must preserve — a generational annuitant basis with a
+  first-order margin.
 
 ### R17 — DAV 2008 T, *Sterbetafel für Lebensversicherungen mit Todesfallcharakter*
 
@@ -813,9 +818,9 @@ sibling delib research file**, that is stated and attributed.
   `kapitallebensversicherung` (its R14), which located the DAV derivation document by title.
 - Content: the German mortality table for death-benefit business, with first- and second-order
   versions. It matters in one place: **the *Risikobeitrag* charged for a death benefit above the
-  *Fondsguthaben* is a death-risk charge and is priced on a death table**, not on the annuity table
-  used for the *Rentenfaktor*. **A German FRV therefore carries two mortality bases at once**, and
-  a model using one for both will misprice one of them. Cited, not shipped.
+  *Fondsguthaben* is a death-risk charge and is priced on a death table**, not on the annuity
+  table used for the *Rentenfaktor*. **A German FRV therefore carries two mortality bases at
+  once**, and a model using one for both will misprice one of them. Cited, not shipped.
 
 ### R18 — DAV, *Ergebnisbericht* — Standardverfahren PRIIP Kategorie 4 (1 July 2025)
 
@@ -855,24 +860,24 @@ sibling delib research file**, that is stated and attributed.
   `kapitallebensversicherung` (its R10) and `klassische_rentenversicherung` (its R6) as to the
   12/62 rule and the half-income method.
 - Content:
-  - Electing a **lump sum** instead of the annuity moves the contract from § 22 [R19] to § 20:
-    the taxable amount is **the excess of the payment over the premiums paid**, and where the
-    contract has run **at least 12 years and the payment is made after the completion of the 62nd
-    year of age**, **only half that gain is taxable** (the *Halbeinkünfteverfahren* /
+  - Electing a **lump sum** instead of the annuity moves the contract from § 22 [R19] to § 20: the
+    taxable amount is **the excess of the payment over the premiums paid**, and where the contract
+    has run **at least 12 years and the payment is made after the completion of the 62nd year of
+    age**, **only half that gain is taxable** (the *Halbeinkünfteverfahren* /
     *Hälftedifferenzmethode*). Otherwise the whole gain is taxable and subject to
     *Kapitalertragsteuer*.
   - Contracts concluded **before 1 January 2005** sit in a different regime; the German in-force
     book carries **two tax cohorts**.
   - **The provision specific to this product**: for a ***fondsgebundene*** contract a
-    ***Teilfreistellung*** applies to the fund income inside the wrapper — commonly stated as
-    **15 %** for equity-fund exposure `[unverified]` — reflecting the fund-level taxation of the
+    ***Teilfreistellung*** applies to the fund income inside the wrapper — commonly stated as **15
+    %** for equity-fund exposure `[unverified]` — reflecting the fund-level taxation of the
     *Investmentsteuergesetz* [R21]. The **sentence number within § 20 Abs. 1 Nr. 6, the percentage
     and the conditions are all `[unverified]`** and are gap 22.
   - **The accumulation-phase point, which is the product's principal commercial argument**: inside
-    the insurance wrapper there is **no annual taxation of fund income, no *Vorabpauschale*, and no
-    taxable disposal on a *Fondswechsel***. A direct fund holding is taxed on both. That deferral
-    is the reason the product exists in competition with an ETF *Sparplan*. Its statutory basis is
-    the same provision and is `[unverified]` in its detail.
+    the insurance wrapper there is **no annual taxation of fund income, no *Vorabpauschale*, and
+    no taxable disposal on a *Fondswechsel***. A direct fund holding is taxed on both. That
+    deferral is the reason the product exists in competition with an ETF *Sparplan*. Its statutory
+    basis is the same provision and is `[unverified]` in its detail.
 
 ### R21 — InvStG — *Investmentsteuergesetz* and the *Teilfreistellung*
 
@@ -909,8 +914,8 @@ sibling delib research file**, that is stated and attributed.
     changed only on the basis of § 163 VVG** [R4].
   - **The Landgericht Köln held that the low-interest phase is not a sufficient ground**, because
     it must be treated as entrepreneurial risk that cannot be passed on to policyholders. **The
-    case reference, decision date and parties were not established** in the sibling research either
-    — gap 15.
+    case reference, decision date and parties were not established** in the sibling research
+    either — gap 15.
   - Trade press of **4 February 2021** reports the market leader's position that customers could
     not successfully object to an adjustment — establishing that this was a **live commercial
     dispute at the largest German life insurer**, inside the window in which the current in-force
@@ -951,8 +956,8 @@ sibling delib research file**, that is stated and attributed.
 
 - Publisher: Gesamtverband der Deutschen Versicherer e. V.
 - URL: not established. The sibling delib research corroborated the existence of the series "Die
-  deutsche Lebensversicherung in Zahlen" and "Neugeschäft und Bestand der Lebensversicherer für die
-  letzten zehn Geschäftsjahre".
+  deutsche Lebensversicherung in Zahlen" and "Neugeschäft und Bestand der Lebensversicherer für
+  die letzten zehn Geschäftsjahre".
 - Retrieved: no — egress blocked; no search corroboration for any unit-linked breakdown
 - Content: the series that would establish **the share of German life new business written as
   fondsgebundene Rentenversicherung** — the market figure this file's opening asserts and cannot
@@ -963,16 +968,16 @@ sibling delib research file**, that is stated and attributed.
 ### R26 — BGH case law on *Rückkaufswert*, *Kostenverrechnung* and *Stornoabzug*
 
 - Publisher: Bundesgerichtshof
-- URL: not established. **No case number, decision date or docket is given for any decision in this
-  entry.**
+- URL: not established. **No case number, decision date or docket is given for any decision in
+  this entry.**
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: there is a long and well-known German line of authority on whether and how an insurer may
-  charge acquisition costs against the early values of a life contract — from decisions on
+- Content: there is a long and well-known German line of authority on whether and how an insurer
+  may charge acquisition costs against the early values of a life contract — from decisions on
   *Zillmerung* and on the transparency of *Rückkaufswert* clauses before the VVG 2008 reform,
   through decisions on the validity of *Stornoabzug* clauses, to decisions applying the post-2008
-  rules. **This file records that the line exists and cites no decision from it.** Any statement in
-  a delib document about what a court has held on a *Rückkaufswert* clause must carry `[unverified]`
-  and must not carry a docket number. Gap 16.
+  rules. **This file records that the line exists and cites no decision from it.** Any statement
+  in a delib document about what a court has held on a *Rückkaufswert* clause must carry
+  `[unverified]` and must not carry a docket number. Gap 16.
 
 ---
 
@@ -985,15 +990,15 @@ rationale or tagged `[unverified]`.**
 
 ### 1. Product structure and the unit-linked principle
 
-- A *fondsgebundene Rentenversicherung* is a **deferred private annuity whose accumulating value is
-  a holding of units in investment funds chosen by the policyholder**. The insurer administers the
-  contract, bears the biometric risk, and gives one financial guarantee — the *Rentenfaktor* — but
-  **does not guarantee the value of the fund holding at any point before *Rentenbeginn***.
+- A *fondsgebundene Rentenversicherung* is a **deferred private annuity whose accumulating value
+  is a holding of units in investment funds chosen by the policyholder**. The insurer administers
+  the contract, bears the biometric risk, and gives one financial guarantee — the *Rentenfaktor* —
+  but **does not guarantee the value of the fund holding at any point before *Rentenbeginn***.
 - The defining sentence of the product, and the one every German wording expresses in some form:
   **the insurer guarantees the number of *Anteileinheiten*, not their value.** Everything else
   follows from it. There is no *Rechnungszins* in the accumulation phase, no *Deckungskapital* in
-  the general-account sense, no *Zinsüberschuss*, no *Bewertungsreserven* worth speaking of, and no
-  investment mismatch between the insurer's assets and its unit liability [R15].
+  the general-account sense, no *Zinsüberschuss*, no *Bewertungsreserven* worth speaking of, and
+  no investment mismatch between the insurer's assets and its unit liability [R15].
 - **It is a distinct supervisory class**: Anlage 1 to the VAG lists *fonds- und indexgebundene
   Lebensversicherung* as its own *Versicherungssparte* [R15] `[unverified]` as to the item number,
   which is why German statistics and German insurers' accounts report it separately.
@@ -1002,18 +1007,19 @@ rationale or tagged `[unverified]`.**
   restriction on the payout form and no *Förderschädlichkeit* on surrender. The fondsgebundene
   forms of *Basisrente* and *Riester* carry all of those and are separate delib products.
 - **The contract is a life insurance contract, not a fund product**, and that has three
-  consequences the model must respect: the death benefit is an insurance benefit and is priced with
-  a *Risikobeitrag* (section 6); the conversion at *Rentenbeginn* is a **guaranteed** conversion at
-  a factor fixed at issue (section 9); and the accumulation phase is not taxed (section 16).
+  consequences the model must respect: the death benefit is an insurance benefit and is priced
+  with a *Risikobeitrag* (section 6); the conversion at *Rentenbeginn* is a **guaranteed**
+  conversion at a factor fixed at issue (section 9); and the accumulation phase is not taxed
+  (section 16).
 - **Legal wrapper**: an individual contract between the policyholder and the insurer. There is no
   German equivalent of the French group-with-voluntary-membership wrapper in the retail Schicht 3
   market; group forms belong to bAV, which is out of scope.
 
 ### 2. The unit / non-unit split
 
-- The policy's value is the ***Fondsguthaben***: the number of *Anteileinheiten* held in each fund,
-  multiplied by that fund's *Anteilspreis* at the *Bewertungsstichtag*. Formally, with `n_j(t)` the
-  units held in fund `j` and `P_j(t)` its unit price:
+- The policy's value is the ***Fondsguthaben***: the number of *Anteileinheiten* held in each
+  fund, multiplied by that fund's *Anteilspreis* at the *Bewertungsstichtag*. Formally, with
+  `n_j(t)` the units held in fund `j` and `P_j(t)` its unit price:
 
   ```
   Fondsguthaben(t) = sum_j n_j(t) x P_j(t)
@@ -1030,27 +1036,28 @@ rationale or tagged `[unverified]`.**
   simplification, which is the market norm.
 - **The *Bewertungsstichtag*** is the dealing date on which a premium buys units or a charge
   cancels them. Wordings typically fix it as the next fund valuation after the premium is received
-  or the event occurs. **On a monthly model grid this is the month boundary** and the timing detail
-  disappears; it is recorded because it is the reason a real policy's unit count and a model's
-  differ by a few days' price movement.
+  or the event occurs. **On a monthly model grid this is the month boundary** and the timing
+  detail disappears; it is recorded because it is the reason a real policy's unit count and a
+  model's differ by a few days' price movement.
 - **The non-unit side.** Everything that is not the unit holding is a cash flow in the insurer's
   own accounts: the charges it withholds or cancels, the *Risikobeitrag* it collects and the death
   benefits it pays, its expenses and its commission. **The delib model projects the non-unit cash
   flows and carries the unit fund only as the base on which they are computed**, which is the
-  right emphasis for a liability cash-flow model: the unit fund is the policyholder's money passing
-  through.
+  right emphasis for a liability cash-flow model: the unit fund is the policyholder's money
+  passing through.
 - **Multi-fund contracts are the norm** — the policyholder allocates the premium across several
   funds in stated percentages, and the *Fondsguthaben* is the sum over funds. The delib model uses
-  **one fund** `[std]`, because the number of funds changes nothing in the mechanics and multiplies
-  the state vector; the *Fondswechsel* mechanics of section 7 are still modelled, as a re-basing of
-  the single fund's assumed return.
+  **one fund** `[std]`, because the number of funds changes nothing in the mechanics and
+  multiplies the state vector; the *Fondswechsel* mechanics of section 7 are still modelled, as a
+  re-basing of the single fund's assumed return.
 
 ### 3. Premium and *Beitragsverrechnung*
 
-- **Premium form**: a level recurring *Beitrag*, most commonly **monthly** and paid by direct debit;
-  quarterly, half-yearly and annual frequencies exist, normally with a *Ratenzahlungszuschlag* for
-  paying more often than annually `[unverified]` as to level. **The delib model is monthly**
-  (`FRV_DE_S`), which matches the dominant frequency and makes the charge mechanics visible.
+- **Premium form**: a level recurring *Beitrag*, most commonly **monthly** and paid by direct
+  debit; quarterly, half-yearly and annual frequencies exist, normally with a
+  *Ratenzahlungszuschlag* for paying more often than annually `[unverified]` as to level. **The
+  delib model is monthly** (`FRV_DE_S`), which matches the dominant frequency and makes the charge
+  mechanics visible.
 - **The *Beitragsverrechnung* is the operative rule of the accumulation phase**: what is taken out
   of each gross premium, in what order, before the remainder buys units. The German market order,
   which the delib model follows:
@@ -1079,9 +1086,9 @@ rationale or tagged `[unverified]`.**
   percentage (commonly 3 % or 5 % `[unverified]`) or an index-linked step — with a corresponding
   increase in the *Beitragssumme* and therefore in the acquisition charge. The policyholder may
   normally decline individual increases, and the option lapses after a stated number of
-  consecutive declinations `[unverified]`. **The delib model carries `dynamik_rate` as a model-point
-  parameter with a `[std]` default of 0 %**, and section 4 records that a *Dynamik* increase
-  attracts its own acquisition charge on the increment.
+  consecutive declinations `[unverified]`. **The delib model carries `dynamik_rate` as a
+  model-point parameter with a `[std]` default of 0 %**, and section 4 records that a *Dynamik*
+  increase attracts its own acquisition charge on the increment.
 - ***Beitragspause* / *Stundung***: a temporary suspension of premium payment, usually for a
   limited period, after which the contract either resumes or becomes *beitragsfrei*. Not modelled;
   it is *Beitragsfreistellung* with a resumption option and the delib model treats it as one.
@@ -1116,9 +1123,9 @@ is German market practice; the **levels** were established nowhere in this corpu
   corroboration anywhere in the delib corpus.
 - **The spreading.** § 169 VVG requires the *angesetzte Abschluss- und Vertriebskosten* to be
   spread **evenly over the first five contract years** [R1]. In a unit-linked tariff this is
-  implemented in the *Beitragsverrechnung*: **only one fifth of the total acquisition charge may be
-  withheld in each of the first five years**, so units are bought from the start rather than not at
-  all.
+  implemented in the *Beitragsverrechnung*: **only one fifth of the total acquisition charge may
+  be withheld in each of the first five years**, so units are bought from the start rather than
+  not at all.
 - **The arithmetic, worked, because it is the shape the model reproduces.** Monthly premium 200 €,
   premium-paying term 30 years: *Beitragssumme* = 200 × 12 × 30 = **72 000,00 €**; acquisition
   charge at 2,5 % = **1 800,00 €**; spread over 60 months = **30,00 € per month for the first five
@@ -1139,8 +1146,8 @@ is German market practice; the **levels** were established nowhere in this corpu
   the *β*-Kosten.
 - ***Kapitalbezogene Verwaltungskosten*** are a **percentage per annum of the *Fondsguthaben***,
   taken monthly by cancelling units. The German market also calls them *Gammakosten* or
-  *Fondsguthabenkosten*. They **continue after premiums stop** and they are the charge that makes a
-  paid-up unit-linked policy decay. In a long contract they are the dominant component of the
+  *Fondsguthabenkosten*. They **continue after premiums stop** and they are the charge that makes
+  a paid-up unit-linked policy decay. In a long contract they are the dominant component of the
   *Effektivkosten*, because they compound against the whole accumulated fund.
 - ***Stückkosten*** are a **fixed euro amount per policy per month or per year**, sometimes
   indexed. They are regressive — trivial on a 500 € premium, material on a 25 € one — and they are
@@ -1153,16 +1160,17 @@ is German market practice; the **levels** were established nowhere in this corpu
   A model that charges it explicitly will double-count; a model that ignores it will overstate the
   policyholder's return. **The delib model handles it by netting it off the assumed gross fund
   return**, which is exactly what it is.
-- ***Kickback* / *Bestandsprovision***: the fund company pays the insurer a trail commission out of
-  the fund's TER. German practice is that the insurer **credits some or all of it back to the
+- ***Kickback* / *Bestandsprovision***: the fund company pays the insurer a trail commission out
+  of the fund's TER. German practice is that the insurer **credits some or all of it back to the
   contract** as additional units, so that the policyholder's effective fund cost is the TER less
   the credited rebate. The IDD-derived inducement rules bear on whether it may be retained [R15]
   `[unverified]`.
 - **The choice of fund is therefore a charge parameter.** A passive ETF has a low TER and pays no
-  *Kickback*; an active fund has a high TER and pays one. The two can produce similar net costs and
-  very different gross ones, and a PRIIPs cost disclosure that includes the fund's costs will show
-  it. The delib `[std]` uses **a passive fund: 0,45 % p.a. TER, no *Kickback***, on the ground that
-  it is the simpler and more transparent of the two and needs no assumption about rebate crediting.
+  *Kickback*; an active fund has a high TER and pays one. The two can produce similar net costs
+  and very different gross ones, and a PRIIPs cost disclosure that includes the fund's costs will
+  show it. The delib `[std]` uses **a passive fund: 0,45 % p.a. TER, no *Kickback***, on the
+  ground that it is the simpler and more transparent of the two and needs no assumption about
+  rebate crediting.
 
 ### 5. *Effektivkosten* — the metric that ties the stack together
 
@@ -1172,19 +1180,19 @@ is German market practice; the **levels** were established nowhere in this corpu
   *Basisinformationsblatt* at **three time points — one year, half the recommended holding period,
   and the end of it** [R9].
 - **It is the only single number that compares two unit-linked tariffs**, because it collapses a
-  premium-based charge, a fund-based charge, a fixed fee and the fund's TER onto one scale. That is
-  also its weakness: it depends on the assumed gross return, on the term and on the premium, so two
-  quoted RIYs are comparable only at the same model point.
-- **Supervisory context.** BaFin says *Effektivkosten* **differ considerably** between providers and
-  will **closely examine** undertakings whose costs are very high against industry norms [R10]; the
-  cost of *kapitalbildende Lebensversicherungen* is a **named focus risk for 2026** [R11]. **No
-  numerical threshold was established** in this corpus or in the sibling files.
+  premium-based charge, a fund-based charge, a fixed fee and the fund's TER onto one scale. That
+  is also its weakness: it depends on the assumed gross return, on the term and on the premium, so
+  two quoted RIYs are comparable only at the same model point.
+- **Supervisory context.** BaFin says *Effektivkosten* **differ considerably** between providers
+  and will **closely examine** undertakings whose costs are very high against industry norms
+  [R10]; the cost of *kapitalbildende Lebensversicherungen* is a **named focus risk for 2026**
+  [R11]. **No numerical threshold was established** in this corpus or in the sibling files.
 - **Order-of-magnitude check on the delib `[std]` stack**, given as arithmetic and not as an
   observation: on the section 4 levels at a 200 € monthly premium over 30 years, the premium-based
   charges take roughly 5,5 % of every premium plus the 15 % early instalment, and the fund-based
-  charges take about 0,75 % p.a. of the fund including the TER. The resulting reduction in yield is
-  **of the order of 1 % per annum**. The technical notes must compute it exactly from the model's
-  own output rather than quote this estimate.
+  charges take about 0,75 % p.a. of the fund including the TER. The resulting reduction in yield
+  is **of the order of 1 % per annum**. The technical notes must compute it exactly from the
+  model's own output rather than quote this estimate.
 - **Market levels are `[unverified]` in their entirety.** The commonly stated picture — that
   broker-sold commission tariffs sit materially above direct and net tariffs, and that the spread
   across the market is more than a percentage point of annual yield — is consistent with BaFin's
@@ -1199,9 +1207,9 @@ is German market practice; the **levels** were established nowhere in this corpu
      notified. **No net amount at risk, no *Risikobeitrag*.** The cheapest and, on a pure savings
      tariff, common.
   2. ***Beitragsrückgewähr*** — `max(Fondsguthaben, sum of premiums paid)`. **This is the shape
-     corroborated at DEVK** [S2] and the one delib adopts as representative. The net amount at risk
-     is positive only while the fund is below the premiums paid, i.e. **early, and after a market
-     fall** — which makes the risk charge small in aggregate but strongly path-dependent.
+     corroborated at DEVK** [S2] and the one delib adopts as representative. The net amount at
+     risk is positive only while the fund is below the premiums paid, i.e. **early, and after a
+     market fall** — which makes the risk charge small in aggregate but strongly path-dependent.
   3. **A percentage of the *Fondsguthaben*** — commonly quoted as 100 %, 105 % or 110 %
      `[unverified]`. A percentage above 100 creates a proportional net amount at risk that grows
      with the fund.
@@ -1225,13 +1233,13 @@ is German market practice; the **levels** were established nowhere in this corpu
   annuity table used for the *Rentenfaktor* [R16]. A German FRV carries two mortality bases at
   once. A model that prices the death charge on the annuity table will understate it, because an
   annuitant table's mortality is lighter by selection and by projection.
-- **The tax constraint that shapes the design.** German tax law imposes a **minimum death benefit**
-  on capital-forming life contracts concluded from 1 April 2009 `[unverified]` — the rule the
-  sibling delib research records as the "50 % rule" — under which a contract must provide a death
-  benefit of at least a stated proportion of the *Beitragssumme* to keep its favourable treatment.
-  **A pure *Rentenversicherung* without a *Kapitalwahlrecht* is outside that rule**, which is one
-  reason the annuity form dominates; a contract with a *Kapitalwahlrecht* is exposed to it. The
-  precise rule, threshold and date are `[unverified]` and are gap 21.
+- **The tax constraint that shapes the design.** German tax law imposes a **minimum death
+  benefit** on capital-forming life contracts concluded from 1 April 2009 `[unverified]` — the
+  rule the sibling delib research records as the "50 % rule" — under which a contract must provide
+  a death benefit of at least a stated proportion of the *Beitragssumme* to keep its favourable
+  treatment. **A pure *Rentenversicherung* without a *Kapitalwahlrecht* is outside that rule**,
+  which is one reason the annuity form dominates; a contract with a *Kapitalwahlrecht* is exposed
+  to it. The precise rule, threshold and date are `[unverified]` and are gap 21.
 - **After *Rentenbeginn*** the death benefit is whatever the annuity form provides — a
   *Rentengarantiezeit*, a *Beitragsrückgewähr in der Rentenphase*, or nothing. That is section 10.
 
@@ -1244,32 +1252,34 @@ is German market practice; the **levels** were established nowhere in this corpu
   comparable fund after notice.
 - ***Fondswechsel*** covers **two distinct operations**, and German wordings use the English words
   *Shift* and *Switch* for them:
-  - **reallocating the existing *Fondsguthaben*** from one fund to another — units are cancelled in
-    the old fund and bought in the new one at the same *Bewertungsstichtag*; and
+  - **reallocating the existing *Fondsguthaben*** from one fund to another — units are cancelled
+    in the old fund and bought in the new one at the same *Bewertungsstichtag*; and
   - **redirecting future premiums** to a different fund or a different split, leaving the existing
     holding where it is.
   - **Which English word denotes which operation is not consistent across German insurers**, and
     this file does not assert a mapping. Each AVB defines its own terms. **The delib documents use
-    the operations, not the labels**: `shift_existing` and `redirect_future` are the model's names,
-    and the technical notes say why. Gap 11.
+    the operations, not the labels**: `shift_existing` and `redirect_future` are the model's
+    names, and the technical notes say why. Gap 11.
 - **Free allowances.** Tariffs normally allow a number of free changes per year — commonly stated
   as a dozen, sometimes unlimited — and charge a flat fee beyond it `[unverified]`. The delib
-  `[std]` is **free within the modelled behaviour**, since the modelled behaviour makes at most one
-  reallocation per year.
+  `[std]` is **free within the modelled behaviour**, since the modelled behaviour makes at most
+  one reallocation per year.
 - **Neither operation is a taxable event** inside the insurance wrapper [R20]. This is the
   product's central commercial argument against holding the same funds directly, where a switch
   realises a gain.
 - ***Ablaufmanagement*** is **automatic phased de-risking in the run-up to *Rentenbeginn***: over
-  the last few years the *Fondsguthaben* is moved in tranches out of equity funds into money-market
-  or *Wertsicherungs* funds, or into the insurer's *Sicherungsvermögen*. It is normally **opt-in or
-  opt-out with a default**, and the number of years and the tranche schedule are tariff parameters
-  `[unverified]`. **A five-year monthly ramp is the shape most often described** `[unverified]`.
-- **Why *Ablaufmanagement* matters to a cash-flow model**: it changes the assumed fund return in the
-  final years, and therefore the *Fondsguthaben* at *Rentenbeginn*, and therefore the annuity. The
-  delib model implements it as a **deterministic glide on the assumed return** — a `[std]` linear
-  ramp from the equity assumption to a money-market assumption over the last 60 months, switchable
-  off — rather than as a fund-level reallocation, because with one fund and a deterministic return
-  the two are the same thing and the glide is the honest representation of what is known.
+  the last few years the *Fondsguthaben* is moved in tranches out of equity funds into
+  money-market or *Wertsicherungs* funds, or into the insurer's *Sicherungsvermögen*. It is
+  normally **opt-in or opt-out with a default**, and the number of years and the tranche schedule
+  are tariff parameters `[unverified]`. **A five-year monthly ramp is the shape most often
+  described** `[unverified]`.
+- **Why *Ablaufmanagement* matters to a cash-flow model**: it changes the assumed fund return in
+  the final years, and therefore the *Fondsguthaben* at *Rentenbeginn*, and therefore the annuity.
+  The delib model implements it as a **deterministic glide on the assumed return** — a `[std]`
+  linear ramp from the equity assumption to a money-market assumption over the last 60 months,
+  switchable off — rather than as a fund-level reallocation, because with one fund and a
+  deterministic return the two are the same thing and the glide is the honest representation of
+  what is known.
 
 ### 8. *Zuzahlungen*, *Teilentnahmen*, and the flexible *Rentenbeginn*
 
@@ -1281,24 +1291,25 @@ is German market practice; the **levels** were established nowhere in this corpu
   `[std]` default of none.**
 - ***Teilentnahme* / *Entnahme*** — a partial withdrawal of the *Fondsguthaben* during the
   *Aufschubzeit*. Subject to a minimum withdrawal, a minimum remaining *Fondsguthaben*, and
-  sometimes a fee `[unverified]`. It is a **partial surrender** and carries the tax consequences of
-  one [R20]. Modelled as a unit cancellation at the *Anteilspreis*; delib's `withdrawals(t)`
+  sometimes a fee `[unverified]`. It is a **partial surrender** and carries the tax consequences
+  of one [R20]. Modelled as a unit cancellation at the *Anteilspreis*; delib's `withdrawals(t)`
   publishes it, per the house naming rules.
 - ***Abrufphase* / flexible *Rentenbeginn*** — a window, commonly a few years either side of the
-  agreed *Rentenbeginn*, inside which the policyholder may bring the conversion forward or defer it
-  `[unverified]` as to width. **Deferring changes the *Rentenfaktor***, because the factor is
+  agreed *Rentenbeginn*, inside which the policyholder may bring the conversion forward or defer
+  it `[unverified]` as to width. **Deferring changes the *Rentenfaktor***, because the factor is
   age-dependent: a later start means a shorter expected payout and a higher factor. Whether the
   *guaranteed* factor is restated on deferral, or only the current one, is `[unverified]` and is
   gap 13. **The delib model fixes *Rentenbeginn*** and records the *Abrufphase* as an unmodelled
   option.
 - ***Kapitalwahlrecht*** — the option to take the *Fondsguthaben* as a lump sum instead of the
   annuity, normally exercisable up to a notice period before *Rentenbeginn* `[unverified]`. It is
-  the single most important behavioural assumption in the product and it has a tax driver
-  (section 16).
+  the single most important behavioural assumption in the product and it has a tax driver (section
+  16).
 
 ### 9. The *Rentenfaktor*
 
-**This is the product's only financial guarantee, and it is the reason the contract is insurance.**
+**This is the product's only financial guarantee, and it is the reason the contract is
+insurance.**
 
 - **Definition and arithmetic.** The *Rentenfaktor* is the **monthly annuity per 10 000 € of
   capital at *Rentenbeginn*** [R22]:
@@ -1309,8 +1320,8 @@ is German market practice; the **levels** were established nowhere in this corpu
 
   A capital of 100 000 € at a factor of 25 yields 250 € per month [R22] — **a teaching example,
   not a market level**.
-- **Guaranteed at inception, on the bases then in force.** The *garantierter Rentenfaktor* is fixed
-  in the contract documents and rests on the *Rechnungsgrundlagen* at the date of conclusion
+- **Guaranteed at inception, on the bases then in force.** The *garantierter Rentenfaktor* is
+  fixed in the contract documents and rests on the *Rechnungsgrundlagen* at the date of conclusion
   [R22]: a mortality table — **DAV 2004 R** [R16] — and a *Rechnungszins*. The insurer applies a
   ***Sicherheitsabschlag***, which is why the guaranteed factor is lower than the factor the same
   insurer would quote for an immediate annuity today.
@@ -1334,11 +1345,11 @@ is German market practice; the **levels** were established nowhere in this corpu
   for immediately beginning annuities**". **A model that applies only the guaranteed factor
   understates the benefit whenever the current tariff is richer.**
 - **On a fondsgebundene contract the guarantee bites differently than on a classic one.** On a
-  classic contract both the capital and the factor are guaranteed, so the annuity is guaranteed. On
-  this product **only the factor is** — the capital it multiplies is the market's. The guarantee is
-  therefore a guarantee about the *conversion terms*, not about the *pension*, and any product
-  document that implies otherwise is wrong. This is the sentence a delib `product-spec.md` must
-  carry.
+  classic contract both the capital and the factor are guaranteed, so the annuity is guaranteed.
+  On this product **only the factor is** — the capital it multiplies is the market's. The
+  guarantee is therefore a guarantee about the *conversion terms*, not about the *pension*, and
+  any product document that implies otherwise is wrong. This is the sentence a delib
+  `product-spec.md` must carry.
 - **Reduction of a guaranteed factor.** Historically by a ***Treuhänderklausel*** with an
   independent trustee's approval, on two triggers — an unexpectedly strong increase in life
   expectancy, and a sustainable reduction in capital-market returns [R22]. **Today the clause
@@ -1348,23 +1359,23 @@ is German market practice; the **levels** were established nowhere in this corpu
   a live dispute at the market leader in **February 2021** [R22].
 - **Modelling consequence**: the guaranteed *Rentenfaktor* is treated as **fixed for the life of
   the contract**, and § 163 VVG is recorded as a model risk rather than implemented.
-- **The `[std]` level, and how it is derived rather than guessed.** No market level was established
-  anywhere in this corpus (gap 4). Rather than invent one, delib derives it:
+- **The `[std]` level, and how it is derived rather than guessed.** No market level was
+  established anywhere in this corpus (gap 4). Rather than invent one, delib derives it:
 
   - At a *Rechnungszins* of **0 %** [S10], a monthly annuity of `R` per month payable for an
-    expected `T` years has present value `12 x T x R` per unit of capital, so
-    `Rentenfaktor = 10 000 / (12 x T)` before costs.
+    expected `T` years has present value `12 x T x R` per unit of capital, so `Rentenfaktor = 10
+    000 / (12 x T)` before costs.
   - On a **generational** annuitant table [R16] a 67-year-old of a cohort now in mid-career has an
     expected annuity duration materially longer than a period table implies; **taking `T` in the
     range 25 to 28 years** gives a pre-cost factor between **29,8 and 33,3** € per 10 000 €.
   - Deducting the payout-phase administration charge (section 4, 1,5 % of each payment) and a
-    further explicit margin for the *Sicherheitsabschlag* and for a *Rentengarantiezeit* brings the
-    **guaranteed** factor materially below that.
+    further explicit margin for the *Sicherheitsabschlag* and for a *Rentengarantiezeit* brings
+    the **guaranteed** factor materially below that.
   - **The delib `[std]` guaranteed *Rentenfaktor* is 25,00 € per month per 10 000 € of
-    *Fondsguthaben* at age 67**, chosen as a round number inside the band that arithmetic produces,
-    and matching the illustrative value the consumer literature uses [R22]. **It is a `[std]`
-    parameter with a derivation, not a market observation**, and the technical notes must say so
-    wherever it appears.
+    *Fondsguthaben* at age 67**, chosen as a round number inside the band that arithmetic
+    produces, and matching the illustrative value the consumer literature uses [R22]. **It is a
+    `[std]` parameter with a derivation, not a market observation**, and the technical notes must
+    say so wherever it appears.
   - **The `[std]` current factor at *Rentenbeginn*** is set equal to the guaranteed one, so that
     the `max()` is exercised in the model and is visible, but does not silently inject an
     unsourced uplift.
@@ -1377,19 +1388,19 @@ is German market practice; the **levels** were established nowhere in this corpu
   *Überschussrente* on top from the payout-phase surplus. **The unit-linked character of the
   contract ends at *Rentenbeginn***, which is the boundary of the delib model's scope: the payout
   phase's machinery belongs to `sofortrente`.
-- **A fund-linked payout phase exists** at some carriers — the annuity continues to be expressed in
-  units and varies with the fund — but it is a minority form `[unverified]` and delib does not
+- **A fund-linked payout phase exists** at some carriers — the annuity continues to be expressed
+  in units and varies with the fund — but it is a minority form `[unverified]` and delib does not
   model it.
 - ***Rentengarantiezeit***: a guaranteed payment period, commonly 5, 10 or 15 years
   `[unverified]`, during which instalments continue to the beneficiary if the annuitant dies. It
   reduces the *Rentenfaktor*, because it is a second benefit paid for out of the same capital.
 - ***Kapitalwahlrecht***: the option to take the *Fondsguthaben* as a lump sum at *Rentenbeginn*
   instead of the annuity, subject to a notice period `[unverified]`. **Its take-up is the largest
-  behavioural unknown in the product** and it is economically live, because the two tax regimes are
-  genuinely different (section 16). **No take-up rate was established** (gap 19); the delib `[std]`
-  runs the annuity path and carries the lump-sum path as a switch.
-- **A *Teilkapitalisierung*** — part lump sum, part annuity — is normally available and is modelled,
-  if at all, as a proportional blend.
+  behavioural unknown in the product** and it is economically live, because the two tax regimes
+  are genuinely different (section 16). **No take-up rate was established** (gap 19); the delib
+  `[std]` runs the annuity path and carries the lump-sum path as a switch.
+- **A *Teilkapitalisierung*** — part lump sum, part annuity — is normally available and is
+  modelled, if at all, as a proportional blend.
 
 ### 11. *Rückkaufswert* and *Storno*
 
@@ -1405,26 +1416,27 @@ is German market practice; the **levels** were established nowhere in this corpu
   computation on a second basis. It is the cleanest surrender rule of the ten delib products, and
   it is the reason this product is a good vehicle for demonstrating unit mechanics.
 - **The protection for the policyholder sits earlier, in the *Beitragsverrechnung***: because the
-  acquisition charge may only be taken over the first five years [R1], the *Fondsguthaben* is never
-  driven to zero by an up-front deduction, and the surrender value is positive from the first year.
-  **Whether the statutory *Mindestrückkaufswert* floor formally applies to the *Zeitwert* branch,
-  or whether the five-year spreading in the *Beitragsverrechnung* is what discharges the obligation,
-  is `[unverified]`** — gap 2. Both readings produce the same numbers on the delib design.
+  acquisition charge may only be taken over the first five years [R1], the *Fondsguthaben* is
+  never driven to zero by an up-front deduction, and the surrender value is positive from the
+  first year. **Whether the statutory *Mindestrückkaufswert* floor formally applies to the
+  *Zeitwert* branch, or whether the five-year spreading in the *Beitragsverrechnung* is what
+  discharges the obligation, is `[unverified]`** — gap 2. Both readings produce the same numbers
+  on the delib design.
 - ***Stornoabzug***: permissible **only if agreed, quantified and appropriate**, and **never for
   unamortised acquisition costs** [R1]. Many unit-linked tariffs therefore have **no *Stornoabzug*
   at all**. **The delib `[std]` is a zero *Stornoabzug***, with the parameter present and
   switchable, on the ground that a non-zero one would be an unsourced number attached to a
   contested clause.
-- **Early values are nevertheless poor, and for a structural reason worth stating**: at the section
-  4 levels, a contract surrendered in year 3 has had 15 % of every premium taken for acquisition
-  plus the ongoing charges, so the *Rückkaufswert* is well below premiums paid even with a flat
-  market. **That is not a penalty and there is no deduction** — it is the acquisition charge
-  already spent. The delib worked example must display the first five years explicitly, because
-  that is where the product's economics are least intuitive.
+- **Early values are nevertheless poor, and for a structural reason worth stating**: at the
+  section 4 levels, a contract surrendered in year 3 has had 15 % of every premium taken for
+  acquisition plus the ongoing charges, so the *Rückkaufswert* is well below premiums paid even
+  with a flat market. **That is not a penalty and there is no deduction** — it is the acquisition
+  charge already spent. The delib worked example must display the first five years explicitly,
+  because that is where the product's economics are least intuitive.
 - **Timing**: surrender is effective at the *Bewertungsstichtag*, and the policyholder's
   termination right is short-notice [R2], so a unit-linked *Storno* is close to a fund redemption.
-  **Lapse experience on this product is therefore market-sensitive** in a way conventional lapse is
-  not; nothing quantitative was established (gap 18).
+  **Lapse experience on this product is therefore market-sensitive** in a way conventional lapse
+  is not; nothing quantitative was established (gap 18).
 
 ### 12. *Beitragsfreistellung*
 
@@ -1434,9 +1446,9 @@ is German market practice; the **levels** were established nowhere in this corpu
   any *Stückkosten* charged by cancellation, and the *Risikobeitrag* continue to be taken by
   cancelling units**.
 - **The paid-up contract therefore decays** at the fund-based charge rate less the fund's return.
-  If the death benefit is a *garantierte Mindesttodesfallleistung*, the *Risikobeitrag* accelerates
-  the decay as the fund falls and the net amount at risk rises — a feedback the model reproduces
-  automatically and a real product risk.
+  If the death benefit is a *garantierte Mindesttodesfallleistung*, the *Risikobeitrag*
+  accelerates the decay as the fund falls and the net amount at risk rises — a feedback the model
+  reproduces automatically and a real product risk.
 - **Insurers set a minimum *Fondsguthaben* for paid-up status**, below which the contract is
   surrendered instead `[unverified]` as to level. `[std]` in delib.
 - ***Beitragsfreistellung* and *Storno* are two decrements, not one.** They have different
@@ -1451,18 +1463,21 @@ and because the vocabulary is a German market invention with no English equivale
 
 - ***Statisches Hybrid* (*Zwei-Topf-Hybrid*, static form).** The premium is split **once, at
   inception**, between the *Sicherungsvermögen* — where a guaranteed pot accretes at the
-  *Rechnungszins* to exactly the guaranteed amount at *Rentenbeginn* — and free funds. The split is
-  computed from the guarantee level, the term and the *Rechnungszins* and does not change. Simple,
-  transparent, and at a low *Rechnungszins* it consumes almost the whole premium for the guarantee.
+  *Rechnungszins* to exactly the guaranteed amount at *Rentenbeginn* — and free funds. The split
+  is computed from the guarantee level, the term and the *Rechnungszins* and does not change.
+  Simple, transparent, and at a low *Rechnungszins* it consumes almost the whole premium for the
+  guarantee.
 - ***Dynamisches Hybrid* (*Zwei-* or *Drei-Topf-Hybrid*).** The split is **recomputed
-  periodically**, normally monthly, so that the guarantee remains secured while as much as possible
-  sits in the funds. The **three-pot** form adds a middle pot — a ***Wertsicherungsfonds***, a fund
-  with a contractual limit on its loss over a defined period — between the *Sicherungsvermögen* and
-  the free funds, so that money can be moved out of equities in two steps rather than one.
-- ***i-CPPI*** — individual Constant Proportion Portfolio Insurance. The exposure to the risky fund
-  is set, **per policy and continuously**, as a multiplier times the cushion between the policy
-  value and the present value of the guarantee. Guarantees are secured by the algorithm rather than
-  by a static allocation. It is the most efficient of the three and the most path-dependent.
+  periodically**, normally monthly, so that the guarantee remains secured while as much as
+  possible sits in the funds. The **three-pot** form adds a middle pot — a
+  ***Wertsicherungsfonds***, a fund with a contractual limit on its loss over a defined period —
+  between the *Sicherungsvermögen* and the free funds, so that money can be moved out of equities
+  in two steps rather than one.
+- ***i-CPPI*** — individual Constant Proportion Portfolio Insurance. The exposure to the risky
+  fund is set, **per policy and continuously**, as a multiplier times the cushion between the
+  policy value and the present value of the guarantee. Guarantees are secured by the algorithm
+  rather than by a static allocation. It is the most efficient of the three and the most
+  path-dependent.
 - ***Beitragsgarantie* levels.** Schicht 3 contracts are sold at 100 %, 90 %, 80 %, 60 % and 0 %
   of premiums paid `[unverified]` as to any distribution; the market moved decisively toward lower
   guarantees during the low-interest decade, and **100 % remains statutory only for Riester**.
@@ -1474,8 +1489,8 @@ and because the vocabulary is a German market invention with no English equivale
   case the model is asserting a scenario it has no basis for. **delib therefore models the pure
   unit-linked chassis, states the guarantee variants here, and says what would have to be added**:
   a stochastic or at minimum multi-scenario asset model, a monthly reallocation rule, a guaranteed
-  pot accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is a different
-  model, and an honest reference implementation says so rather than gesturing at it.
+  pot accreting at a *Rechnungszins*, and a *Wertsicherungsfonds* return model. That is a
+  different model, and an honest reference implementation says so rather than gesturing at it.
 - **What the model *does* keep from the hybrid world**: the *Ablaufmanagement* glide (section 7),
   which is de-risking without a guarantee and is representable deterministically.
 
@@ -1510,34 +1525,36 @@ and because the vocabulary is a German market invention with no English equivale
   *Anteileinheiten*** bought for the contract; as a **reduction of the charges** taken; or
   accumulated and paid as a ***Schlussüberschuss*** at *Rentenbeginn*.
 - **Second-order in size, and delib does not project it.** The first-order economics of this
-  product are fund return minus charges; a risk-and-cost surplus on a contract whose death cover is
-  a *Beitragsrückgewähr* is small. The model omits it, states the omission, and records that the
-  omission biases the projected *Fondsguthaben* **downward** — the honest direction for a charge
-  demonstration.
+  product are fund return minus charges; a risk-and-cost surplus on a contract whose death cover
+  is a *Beitragsrückgewähr* is small. The model omits it, states the omission, and records that
+  the omission biases the projected *Fondsguthaben* **downward** — the honest direction for a
+  charge demonstration.
 - **The *Bewertungsreserven* limb of § 153 VVG** [R5] has almost nothing to attach to on a
   unit-linked contract, because the assets backing the unit liability are the units.
 
 ### 16. Taxation
 
-- **Accumulation phase: nothing is taxed.** No annual taxation of fund income, no *Vorabpauschale*,
-  and **no taxable disposal on a *Fondswechsel*** [R20]. This deferral is the product's principal
-  commercial argument against holding the same funds in a *Depot*, where both apply. It is also the
-  reason the *Effektivkosten* comparison against a direct ETF holding is not a like-for-like one.
+- **Accumulation phase: nothing is taxed.** No annual taxation of fund income, no
+  *Vorabpauschale*, and **no taxable disposal on a *Fondswechsel*** [R20]. This deferral is the
+  product's principal commercial argument against holding the same funds in a *Depot*, where both
+  apply. It is also the reason the *Effektivkosten* comparison against a direct ETF holding is not
+  a like-for-like one.
 - **Annuity: the *Ertragsanteil*** [R19]. Only the deemed interest component of each instalment is
   taxable, at a statutory percentage set by the annuitant's age at *Rentenbeginn* — **18 % at age
   65**, every other age `[unverified]`.
-- **Lump sum: § 20 EStG** [R20]. Taxable amount = payment less premiums paid; **half of it** if the
-  contract has run **at least 12 years and payment is after age 62**; otherwise all of it.
+- **Lump sum: § 20 EStG** [R20]. Taxable amount = payment less premiums paid; **half of it** if
+  the contract has run **at least 12 years and payment is after age 62**; otherwise all of it.
   ***Kapitalertragsteuer* is withheld by the insurer** `[unverified]` as to rate and surcharges.
 - ***Teilfreistellung*** for the fund income inside a fondsgebundene wrapper — commonly stated as
   **15 %** for equity exposure `[unverified]` [R20] [R21]. This is the provision that makes the
-  lump-sum route from a fondsgebundene contract more favourable than from a classic one, and it has
-  no counterpart in the sibling products.
-- **Two tax cohorts** exist in the German in-force book, split at **1 January 2005** `[unverified]`.
-- **The *Kapitalwahlrecht* is a real economic choice**, not a formality: 18 % of every instalment at
-  the marginal rate for life, against half of the total gain once, less a *Teilfreistellung*. The
-  delib documents state the comparison and do not model the election's tax consequences, since the
-  library publishes gross liability cash flows.
+  lump-sum route from a fondsgebundene contract more favourable than from a classic one, and it
+  has no counterpart in the sibling products.
+- **Two tax cohorts** exist in the German in-force book, split at **1 January 2005**
+  `[unverified]`.
+- **The *Kapitalwahlrecht* is a real economic choice**, not a formality: 18 % of every instalment
+  at the marginal rate for life, against half of the total gain once, less a *Teilfreistellung*.
+  The delib documents state the comparison and do not model the election's tax consequences, since
+  the library publishes gross liability cash flows.
 
 ### 17. Fund return assumptions, PRIIPs scenarios, and the *Modellrechnung*
 
@@ -1547,24 +1564,25 @@ and because the vocabulary is a German market invention with no English equivale
   by the insurer.
 - **What the *Basisinformationsblatt* shows instead** [R9]: **four scenarios — *Stress*,
   *pessimistisch*, *moderat*, *optimistisch* — as annualised average returns in per cent**, at
-  **one year, half the holding period, and the end of it**, with **total costs and the RIY** at the
-  same three points. For a fondsgebundene Rentenversicherung with a 30-year *Aufschubzeit* those
-  points are roughly year 1, year 15 and year 30.
+  **one year, half the holding period, and the end of it**, with **total costs and the RIY** at
+  the same three points. For a fondsgebundene Rentenversicherung with a 30-year *Aufschubzeit*
+  those points are roughly year 1, year 15 and year 30.
 - **Category matters.** A pure unit-linked contract's scenarios come from the funds' history
   (Category 2 `[unverified]`); a guarantee-bearing or profit-participating one from the DAV
   standard method for Category 4 [R18]. **Two BIBs for economically similar products can therefore
   show very different scenario returns**, and no scenario figure transfers between carriers or
   between products. This is why the delib documents cite **no** scenario return.
-- **The German *Modellrechnung*** required by the *VVG-InfoV* [R7] illustrates the maturity benefit
-  at prescribed assumed rates. **The number of rates and their levels are `[unverified]`**; the
-  market convention of illustrating a fondsgebundene contract at three graded rates is recorded as
-  convention, not as law. Gap 23.
-- **The delib `[std]` fund return** is a **single deterministic gross rate of 5,00 % p.a., less the
-  fund TER of 0,45 % p.a., giving 4,55 % p.a. net of fund costs**, applied monthly. Rationale: it
-  is a round, clearly-labelled assumption in the middle of the range a long-horizon equity-tilted
-  mixed fund is generally assumed to earn; it is **not** a PRIIPs scenario, is not attributed to any
-  document, and is a parameter the reader is expected to change. The `Ablaufmanagement` glide steps
-  it down to a `[std]` **1,50 % p.a.** money-market rate over the last 60 months when switched on.
+- **The German *Modellrechnung*** required by the *VVG-InfoV* [R7] illustrates the maturity
+  benefit at prescribed assumed rates. **The number of rates and their levels are
+  `[unverified]`**; the market convention of illustrating a fondsgebundene contract at three
+  graded rates is recorded as convention, not as law. Gap 23.
+- **The delib `[std]` fund return** is a **single deterministic gross rate of 5,00 % p.a., less
+  the fund TER of 0,45 % p.a., giving 4,55 % p.a. net of fund costs**, applied monthly. Rationale:
+  it is a round, clearly-labelled assumption in the middle of the range a long-horizon
+  equity-tilted mixed fund is generally assumed to earn; it is **not** a PRIIPs scenario, is not
+  attributed to any document, and is a parameter the reader is expected to change. The
+  `Ablaufmanagement` glide steps it down to a `[std]` **1,50 % p.a.** money-market rate over the
+  last 60 months when switched on.
 - **The projection is deterministic and the model says so.** Nothing in delib produces a
   distribution, so nothing in delib may be compared with a PRIIPs scenario.
 
@@ -1574,8 +1592,8 @@ and because the vocabulary is a German market invention with no English equivale
   (pays the *Rückkaufswert*, section 11), and *Beitragsfreistellung* (a change of state, not an
   exit, section 12). **Three states, not two.**
 - **No German unit-linked *Stornoquote* was established** (gap 18). What is structurally true and
-  worth stating: unit-linked lapse is **front-loaded** — highest in the first five years, where the
-  acquisition charge is being taken and the value is furthest below premiums paid — and is
+  worth stating: unit-linked lapse is **front-loaded** — highest in the first five years, where
+  the acquisition charge is being taken and the value is furthest below premiums paid — and is
   **market-sensitive**, because the exit is at fund value on short notice [R1] [R2].
 - **No *Beitragsfreistellung* rate and no *Kapitalwahlrecht* take-up rate was established** (gaps
   18, 19). All three behavioural assumptions in the delib documents are `[std]` and are labelled a
@@ -1592,27 +1610,29 @@ Every quantitative parameter of this product falls into one of three groups. The
 
 - **Group 1 — established from a document read for this file: nothing.** No document was read.
 - **Group 2 — corroborated in a sibling delib file and carried here with attribution**: the
-  *Beitragsrückgewähr* death benefit shape [S2]; the *Rentenfaktor* per 10 000 € arithmetic and the
-  *Treuhänder*/§ 163 story [R22]; the conversion basis DAV 2004 R at 0 % p.a. [S10]; the § 169 VVG
-  *Zeitwert* branch and the *Stornoabzug* rules [R1]; the five-year spreading [R1]; the 25 ‰
+  *Beitragsrückgewähr* death benefit shape [S2]; the *Rentenfaktor* per 10 000 € arithmetic and
+  the *Treuhänder*/§ 163 story [R22]; the conversion basis DAV 2004 R at 0 % p.a. [S10]; the § 169
+  VVG *Zeitwert* branch and the *Stornoabzug* rules [R1]; the five-year spreading [R1]; the 25 ‰
   *Höchstzillmersatz* [R12]; the BIB content and its three time points [R9]; the *Effektivkosten*
   disclosure duty [R7]; BaFin's cost supervision [R10] [R11]; the *Ertragsanteil* at 65 [R19]; the
   12/62 rule [R20].
 - **Group 3 — `[std]`, everything else.** Every charge level; the *Rentenfaktor* level; the fund
   return; the TER; all three behavioural rates; every minimum and maximum in the issue rules; the
-  *Ablaufmanagement* schedule; the *Stornoabzug*. **Each carries a rationale in section 4, 9, 17 or
-  18 above, and each appears in the gaps register with the kind of document that would replace it.**
+  *Ablaufmanagement* schedule; the *Stornoabzug*. **Each carries a rationale in section 4, 9, 17
+  or 18 above, and each appears in the gaps register with the kind of document that would replace
+  it.**
 
 ---
 
 ## Observed variation across insurers
 
-**Read the first sentence of this section before reading the tables.** Nothing carrier-specific was
-observed for this product. No AVB, no *Produktinformationsblatt*, no *Basisinformationsblatt* and
-no rate card was retrieved or searched. What follows is therefore **not** a table of observations;
-it is a table of the **dimensions along which German carriers are known to differ**, with the range
-argued from the mechanics and from the statutory bounds, and a companion table recording — honestly
-and mostly negatively — what is actually established about each named carrier.
+**Read the first sentence of this section before reading the tables.** Nothing carrier-specific
+was observed for this product. No AVB, no *Produktinformationsblatt*, no *Basisinformationsblatt*
+and no rate card was retrieved or searched. What follows is therefore **not** a table of
+observations; it is a table of the **dimensions along which German carriers are known to differ**,
+with the range argued from the mechanics and from the statutory bounds, and a companion table
+recording — honestly and mostly negatively — what is actually established about each named
+carrier.
 
 ### What is established, carrier by carrier
 
@@ -1658,10 +1678,10 @@ The representative delib contract is a **pure fondsgebundene Rentenversicherung 
 bought monthly out of the premium after an acquisition instalment spread over 60 months, a
 premium-based and a fund-based administration charge plus a monthly *Stückkosten*, a
 *Beitragsrückgewähr* death benefit whose net amount at risk is charged monthly by unit
-cancellation, a guaranteed *Rentenfaktor* applied at *Rentenbeginn* as the higher of the guaranteed
-and the current factor, a *Rückkaufswert* equal to the *Fondsguthaben* with no *Stornoabzug*, and
-*Fondswechsel*, *Zuzahlung*, *Teilentnahme*, *Ablaufmanagement* and *Beitragsfreistellung* as
-switchable options.
+cancellation, a guaranteed *Rentenfaktor* applied at *Rentenbeginn* as the higher of the
+guaranteed and the current factor, a *Rückkaufswert* equal to the *Fondsguthaben* with no
+*Stornoabzug*, and *Fondswechsel*, *Zuzahlung*, *Teilentnahme*, *Ablaufmanagement* and
+*Beitragsfreistellung* as switchable options.
 
 **Why that design and not another**, in four points, each of which is an argument rather than an
 observation because no observation was available:
@@ -1697,11 +1717,11 @@ they are enumerated next.
    *structure* below the source list is written from the author's knowledge of German insurance
    practice; every statement of *level* is `[std]` or `[unverified]`.
 
-2. **Whether the *Mindestrückkaufswert* floor reaches the *Zeitwert* branch is unresolved.**
-   § 169 VVG expresses the five-year spreading floor on the *Deckungskapital*, and separately sends
+2. **Whether the *Mindestrückkaufswert* floor reaches the *Zeitwert* branch is unresolved.** § 169
+   VVG expresses the five-year spreading floor on the *Deckungskapital*, and separately sends
    fondsgebundene contracts to a *Zeitwert* [R1]. The market implements the same protection inside
-   the *Beitragsverrechnung*. Which of the two the statute requires, and what happens where the two
-   diverge, was not established. Both readings give the same numbers on the delib design.
+   the *Beitragsverrechnung*. Which of the two the statute requires, and what happens where the
+   two diverge, was not established. Both readings give the same numbers on the delib design.
 
 3. **The internal paragraph structure of § 169 VVG is unverified.** Whether the *Zeitwert* rule is
    Abs. 3 Satz 2 or Abs. 4, and what it cross-refers to in the VAG since the 2016 recast, was not
@@ -1715,8 +1735,8 @@ they are enumerated next.
 
 5. **No *Basisinformationsblatt* for a fondsgebundene Rentenversicherung was located.** The one
    German PRIIP-BIB located anywhere in the delib corpus is for an endowment [S15]. Consequently
-   **no performance-scenario return, no total-cost figure and no RIY value** in this file comes from
-   an actual BIB. This is the single document that would close gaps 4, 6, 7 and 23 at once.
+   **no performance-scenario return, no total-cost figure and no RIY value** in this file comes
+   from an actual BIB. This is the single document that would close gaps 4, 6, 7 and 23 at once.
 
 6. **No charge level of any kind was established at any carrier.** Not one *Abschlusskostenquote*,
    not one *Verwaltungskostensatz* in either form, not one *Stückkosten* amount, not one
@@ -1725,72 +1745,74 @@ they are enumerated next.
    the level of a secondary consumer page in a sibling file.
 
 7. **BaFin's "differ considerably" is qualitative** [R10]. No numeric *Effektivkosten* threshold,
-   band, median or industry norm was established, in this file or in the sibling ones. The
-   "of the order of 1 % per annum" in section 5 is **arithmetic on delib's own `[std]` stack**, not
-   a market figure, and must never be quoted as one.
+   band, median or industry norm was established, in this file or in the sibling ones. The "of the
+   order of 1 % per annum" in section 5 is **arithmetic on delib's own `[std]` stack**, not a
+   market figure, and must never be quoted as one.
 
 8. **The treatment of *Kickbacks* is unresolved on two axes**: whether and on what conditions an
-   insurer may retain a *Bestandsprovision* under the IDD-derived inducement rules [R15], and how a
-   rebate credited back to the contract is treated inside the PRIIPs cost calculation [R7] [R8].
+   insurer may retain a *Bestandsprovision* under the IDD-derived inducement rules [R15], and how
+   a rebate credited back to the contract is treated inside the PRIIPs cost calculation [R7] [R8].
    delib sidesteps both by using a passive fund that pays no trail.
 
-9. **The *Ausgabeaufschlag* waiver is assumed, not established.** German insurers are understood to
-   buy policy units at the *Rücknahmepreis*; no wording confirming a full waiver was seen. delib
-   assumes a full waiver as `[std]`.
+9. **The *Ausgabeaufschlag* waiver is assumed, not established.** German insurers are understood
+   to buy policy units at the *Rücknahmepreis*; no wording confirming a full waiver was seen.
+   delib assumes a full waiver as `[std]`.
 
 10. **The *Bewertungsstichtag* convention was not established** for any carrier — how many dealing
-    days after premium receipt units are bought, and which price applies to a death, a surrender or
-    a switch. On a monthly grid this is immaterial; on a daily one it is not.
+    days after premium receipt units are bought, and which price applies to a death, a surrender
+    or a switch. On a monthly grid this is immaterial; on a daily one it is not.
 
 11. **The *Shift* / *Switch* terminology is not consistent across German insurers** and this file
     asserts no mapping between the English words and the two operations. Each AVB defines its own.
     delib names the operations, not the labels. Any delib document that asserts "Shift means X"
     without a wording in front of it is wrong.
 
-12. **Free-switch allowances, switch fees, *Zuzahlung* minima and maxima, *Teilentnahme* minima and
-    the minimum remaining *Fondsguthaben* were not established** at any carrier. All are `[std]`.
+12. **Free-switch allowances, switch fees, *Zuzahlung* minima and maxima, *Teilentnahme* minima
+    and the minimum remaining *Fondsguthaben* were not established** at any carrier. All are
+    `[std]`.
 
 13. **Whether deferring the *Rentenbeginn* inside the *Abrufphase* restates the guaranteed
     *Rentenfaktor* or only the current one was not established**, nor was the width of the
     *Abrufphase*. delib fixes the *Rentenbeginn* and records the option as unmodelled.
 
-14. ***Ablaufmanagement* parameters were not established**: whether it is opt-in or a default, over
-    how many years, in what tranches, and into what. The five-year monthly glide is `[std]`.
+14. ***Ablaufmanagement* parameters were not established**: whether it is opt-in or a default,
+    over how many years, in what tranches, and into what. The five-year monthly glide is `[std]`.
 
 15. **The Landgericht Köln *Rentenfaktor* decision could not be identified.** No case number, no
-    date, no parties — in this file or in the sibling one that reported it [R22]. Any delib document
-    that mentions it must do so without a docket.
+    date, no parties — in this file or in the sibling one that reported it [R22]. Any delib
+    document that mentions it must do so without a docket.
 
 16. **No BGH decision on *Rückkaufswert*, *Kostenverrechnung* or *Stornoabzug* is cited** [R26].
     The line of authority is well known and no case reference could be established without a
     search. Nothing in delib rests on a court holding.
 
-17. **The *Beitragsrückgewähr* fact is single-sourced**, and the source is a search summary read by
-    a sibling researcher, not by this one [S2]. It is the best-evidenced fact in the file and it is
-    still one summary of one carrier's document. The other three death-benefit shapes in section 6
-    are `[unverified]` in their entirety.
+17. **The *Beitragsrückgewähr* fact is single-sourced**, and the source is a search summary read
+    by a sibling researcher, not by this one [S2]. It is the best-evidenced fact in the file and
+    it is still one summary of one carrier's document. The other three death-benefit shapes in
+    section 6 are `[unverified]` in their entirety.
 
 18. **No lapse rate, no paid-up rate and no German unit-linked *Stornoquote* was established.**
     The front-loaded and market-sensitive character of unit-linked lapse is a structural inference
     from the exit terms [R1] [R2], not an observation. All behavioural rates are `[std]`.
 
 19. **No *Kapitalwahlrecht* take-up rate was established**, and it is the largest behavioural
-    unknown in the product. delib's base run takes the annuity, which is a modelling choice made to
-    exercise the *Rentenfaktor*, not an estimate of behaviour.
+    unknown in the product. delib's base run takes the annuity, which is a modelling choice made
+    to exercise the *Rentenfaktor*, not an estimate of behaviour.
 
 20. **The two-mortality-table statement is an inference from practice**, not from a wording: that
     the *Risikobeitrag* is priced on DAV 2008 T [R17] while the *Rentenfaktor* rests on DAV 2004 R
-    [R16] is how German tariffs are built, but no AVB confirming it was seen. The DAV 2004 R half is
-    corroborated at one carrier for the classic tariff [S10].
+    [R16] is how German tariffs are built, but no AVB confirming it was seen. The DAV 2004 R half
+    is corroborated at one carrier for the classic tariff [S10].
 
-21. **The tax *Mindesttodesfallschutz* rule was not established for this product.** The
-    "50 % rule" for contracts from 1 April 2009 is recorded in a sibling file for endowments; how it
+21. **The tax *Mindesttodesfallschutz* rule was not established for this product.** The "50 %
+    rule" for contracts from 1 April 2009 is recorded in a sibling file for endowments; how it
     applies to a *Rentenversicherung* with and without a *Kapitalwahlrecht* is `[unverified]`, and
     delib's death benefit is not designed to satisfy it.
 
-22. **The fondsgebunden *Teilfreistellung* is unverified in every particular** — the sentence within
-    § 20 Abs. 1 Nr. 6 EStG, the 15 % figure, the equity-quota conditions and the interaction with
-    the InvStG [R20] [R21]. The *Ertragsanteil* table is unverified except at age 65.
+22. **The fondsgebunden *Teilfreistellung* is unverified in every particular** — the sentence
+    within § 20 Abs. 1 Nr. 6 EStG, the 15 % figure, the equity-quota conditions and the
+    interaction with the InvStG [R20] [R21]. The *Ertragsanteil* table is unverified except at age
+    65.
 
 23. **The *Modellrechnung* requirement was not pinned down**: how many assumed rates the VVG-InfoV
     prescribes for a fondsgebundene contract and at what levels [R7]. The three-rate market
@@ -1811,11 +1833,11 @@ they are enumerated next.
 
 27. **The *Überschussbeteiligung* of a fondsgebundene contract is described structurally and not
     quantified.** No crediting mechanism was confirmed at any carrier, no declared rate was
-    established, and the MindZV percentages are `[unverified]` [R14] [R5]. delib omits the credit and
-    states the direction of the resulting bias.
+    established, and the MindZV percentages are `[unverified]` [R14] [R5]. delib omits the credit
+    and states the direction of the resulting bias.
 
 28. **Living texts.** VVG, VVG-InfoV, DeckRV, MindZV, VAG, EStG and InvStG all change; the PRIIPs
     RTS was reworked with effect from 1 January 2023 `[unverified]`; the *Höchstrechnungszins*
     changed on 1 January 2025 `[unverified]`; BaFin's focus-risk agenda is annual [R11]. **Every
-    paragraph number and every date in this file is `[unverified]`** and must be re-checked against
-    the instrument before anything in the delib product documents relies on it.
+    paragraph number and every date in this file is `[unverified]`** and must be re-checked
+    against the instrument before anything in the delib product documents relies on it.
