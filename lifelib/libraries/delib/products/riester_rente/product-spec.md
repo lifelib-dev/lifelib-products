@@ -16,7 +16,7 @@ frozen. **[std]** marks a standardization introduced for the reference implement
 range. [unverified] marks a claim no search result corroborated.
 
 **How this composite is built, and why it is built the other way round from `frlib`'s.** In
-`frlib/products/temporaire_deces` the representative design was the one carrier whose document
+`frlib/products/temporaire_deces` the representative design was the carrier whose document
 published the most. Here that is impossible and, unusually, largely unnecessary. **No
 carrier-specific parameter was established for any German Riester product, at any house, for any
 year** — not one AVB, tariff code, *Rechnungszins*, *Rentenfaktor*, charge or *Überschuss*
@@ -25,27 +25,25 @@ rather than a private annuity is **not a composite at all**: the Zulagen, the el
 the *Mindesteigenbeitrag*, the guarantee, the earliest payout age, the 30 % lump-sum cap, the
 five-year cost spreading, the *Wechselrecht* and the taxation are **statute, identical for every
 provider and every chassis** [R1] [R6] [R7] [R9] [R10] [R12] [R14] [REG-R42] [REG-R43]. The
-composite therefore takes **every statutory parameter as fact and makes every carrier parameter
-[std]**, anchored so that the model's own worked example reproduces exactly. Every representative
-choice below is argued in those terms.
+composite takes **every statutory parameter as fact and makes every carrier parameter [std]**,
+anchored so the model's own worked example reproduces exactly, and argues each choice in those
+terms.
 
 **Retrieval conditions, stated because a reader of this page alone must learn them here.** No
 document cited anywhere in this product's documentation was retrieved: direct HTTP egress is
-blocked by an organisation network policy, and the build session's `WebSearch` budget was
-exhausted before this product's research began. Three facts carry corroboration inherited from a
-sibling `delib` research session and say so at the point of use [S3] [S4] [S5]; the two recent
+blocked by an organisation network policy, and the session's `WebSearch` budget was exhausted
+before this product's research began. Three facts carry corroboration inherited from a sibling
+`delib` research session and say so at the point of use [S3] [S4] [S5]; the two recent
 *Höchstrechnungszins* values [R22] and the 2026 reform [REG-R44] likewise. Everything else rests
 on general knowledge of German pension law, disciplined by tagging every specific number. A
 `delib` citation is a **pointer, not a certificate**.
 
-**Out of scope, named so the boundary is explicit:** *Wohn-Riester* (the
-*Altersvorsorge-Eigenheimbetrag*, the certified *Darlehen*, the *Bausparvertrag* and the
-*Wohnförderkonto*) [R3] [R13] [R19] [S13]; the **Riester-Fondssparplan** and
-**Riester-Banksparplan** [S9]–[S12]; the **fondsgebundene** Riester wrapper [S1], whose chassis is
+**Out of scope, named so the boundary is explicit:** *Wohn-Riester* in both limbs [R3] [R13] [R19]
+[S13]; the **Riester-Fondssparplan** and **Riester-Banksparplan** [S9]–[S12]; the
+**fondsgebundene** Riester wrapper [S1], whose chassis is
 `products/fondsgebundene_rentenversicherung/`; the **Basisrente** of Schicht 1,
 `products/basisrente/`; Riester inside the *betriebliche Altersversorgung*; and
-*Gruppenversicherung*. Section *Variations across insurers* tabulates the four chassis so that a
-reader knows what was excluded and why.
+*Gruppenversicherung*.
 
 ---
 
@@ -121,36 +119,31 @@ commentary discusses whether to let an existing Riester contract lie dormant or 
 implies that contractual rights survive [REG-R44]. The enactment date is contradictory across
 summaries and neither the BGBl citation nor the promulgation date is established [REG-R44].
 
-**That changes what this specification is.** It describes a product **closed to new business from
-1 January 2027** with a very large in-force book whose contractual rights survive — which is
-exactly what a liability cash-flow model is for, and it is why the reference implementation's
-anchor cell is an **in-force** contract at a 1 January 2027 valuation date rather than a new
-policy. The product research file, written without a research channel, recorded the reform status
-as its single most important open question (gap 1); [REG-R44] closes it from the cross-product
-sweep, and this document follows [REG-R44] rather than the product file's gap.
+**That changes what this specification is.** It describes a product with a very large in-force
+book whose contractual rights survive — exactly what a liability cash-flow model is for — and it is
+why the reference implementation's anchor cell is an **in-force** contract at a 1 January 2027
+valuation date rather than a new policy. The product research file, written without a research
+channel, recorded the reform status as its most important open question (gap 1); [REG-R44] closes
+it from the cross-product sweep, and this document follows [REG-R44].
 
 **Scale.** Everything in this paragraph is `[unverified]` order-of-magnitude recollection: **no
 market figure was established**, the official series was neither retrieved nor searched, and gap 2
 qualifies all of it. Of the order of **15 to 16 million** certified Riester contracts existed in
 the mid-2020s, having peaked near **16,5 million** in the late 2010s; insurance contracts are
 roughly two thirds of the count, fund savings plans roughly a fifth, Wohn-Riester contracts a
-little over a tenth and bank savings plans the small remainder [R25]. **New business had
-effectively stopped before the statute closed it**, dating from the 0,25 % *Höchstrechnungszins*
-regime of 2022 [R22] [REG-R15], when the three large fund houses withdrew their savings plans and
-a substantial number of insurers followed. A large minority of the book — commonly reported at a
-fifth to a quarter, three to four million contracts — is ***beitragsfrei gestellt***: in force,
-certified, guaranteed on what was paid, and receiving nothing further [R25] [unverified]. There is
-**no official statistic for that last figure at all**, and it is nonetheless the most
-model-relevant market fact in this specification: ***Beitragsfreistellung*, not surrender, is this
-product's characteristic exit**, and a model carrying only a lapse rate has mis-specified the
-book.
-
-Two counting warnings follow. A contract counted as "Riester" in an official statistic **may be a
-mortgage** [R19] [S13], so the model's contract count is not comparable with a published Riester
-contract count without adjustment. And a Riester annuity of a given gross amount is worth
-materially **less** to the saver than a Schicht-3 annuity of the same gross amount, because the
-Riester one is taxed in full [R12] while the Schicht-3 one is taxed on the *Ertragsanteil*
-[REG-R41].
+little over a tenth and bank savings plans the remainder [R25]. **New business had effectively
+stopped before the statute closed it**, dating from the 0,25 % *Höchstrechnungszins* regime of 2022
+[R22] [REG-R15], when the three large fund houses withdrew their savings plans and a substantial
+number of insurers followed. A large minority of the book — commonly reported at a fifth to a
+quarter, three to four million contracts — is ***beitragsfrei gestellt***: in force, certified,
+guaranteed on what was paid, and receiving nothing further [R25] [unverified]. There is **no
+official statistic for that figure at all**, and it is nonetheless the most model-relevant market
+fact here: ***Beitragsfreistellung*, not surrender, is this product's characteristic exit**, and a
+model carrying only a lapse rate has mis-specified the book. Two counting warnings follow. A
+contract counted as "Riester" in an official statistic **may be a mortgage** [R19] [S13]. And a
+Riester annuity of a given gross amount is worth materially **less** to the saver than a Schicht-3
+annuity of the same gross amount, because it is taxed in full [R12] rather than on the
+*Ertragsanteil* [REG-R41].
 
 ---
 
@@ -465,14 +458,12 @@ Each subsection states an operative rule and what it does to the projection.
 
 A saver can be *unmittelbar* eligible in one year, *mittelbar* in the next and not eligible at all
 in a third, **without the contract changing** [R7]. Nothing happens to the policy when eligibility
-lapses: contributions may continue, they are simply unsubsidised, and they move into the second
-tax pool [R12]. The rule that decides the whole subsidy stream is therefore a property of the
-**person**, not of the contract, and it is one the insurer does not itself observe — the ZfA does
-[R11]. The reference implementation carries eligibility as a per-period flag on an external
-schedule with a **[std]** default of "*unmittelbar* eligible throughout", because the model is a
-mechanics demonstration and a stochastic eligibility path would obscure the mechanic it is
-demonstrating; a dedicated model point exercises a mid-term lapse of eligibility, which is the
-honest way to show that the mechanic exists.
+lapses: contributions may continue, they are simply unsubsidised, and they move into the second tax
+pool [R12]. The rule that decides the whole subsidy stream is therefore a property of the
+**person**, not of the contract, and one the insurer does not itself observe — the ZfA does [R11].
+The reference implementation carries eligibility as a per-period flag on an external schedule,
+**[std]** default "*unmittelbar* eligible throughout", with a dedicated model point exercising a
+mid-term lapse.
 
 ### The *Mindesteigenbeitrag*, and the proportional Kürzung
 
@@ -496,41 +487,37 @@ German book is full of the paths that discontinuity would misprice [R10] [REG-R4
 
 **Two distinct lags run in the subsidy chain and they are easy to collapse into one.** The
 entitlement for contribution year `t` is computed from income in `t − 1` [R10]; the **cash** for
-contribution year `t` arrives from the ZfA in `t + 1` [R11] [REG-R42]. The reference
-implementation carries both explicitly: `income_ref(t) = income(t − 1)` for the entitlement, and
-`zulage_credited(t) = zulage_granted(t − 1)` for the cash. The **[std]** one-year cash lag is a
-convention with a stated rationale — [R11] establishes that the ZfA pays the provider and that the
-application deadline runs to the end of the **second** calendar year after the contribution year,
-but not **when in the following year** the money arrives (gap 6).
+contribution year `t` arrives from the ZfA in `t + 1` [R11] [REG-R42]. The reference implementation
+carries both explicitly: `income_ref(t) = income(t − 1)` for the entitlement, and
+`zulage_credited(t) = zulage_granted(t − 1)` for the cash. The **[std]** one-year cash lag has a
+stated rationale — [R11] establishes that the ZfA pays the provider and that the application
+deadline runs to the end of the **second** calendar year after the contribution year, but not
+**when in the following year** the money arrives (gap 6).
 
 One consequence is load-bearing and is a numbered pitfall: **the Zulage for the final contribution
-year arrives after contributions have stopped.** On a contract whose last contribution year is the
-year before *Rentenbeginn*, that payment lands in the conversion year itself and must be credited,
-counted in the guarantee and included in the conversion capital **before** the guarantee is tested.
-An implementation that stops the Zulage stream when it stops the contribution stream silently drops
-a full year's subsidy out of both the account and the guarantee.
+year arrives after contributions have stopped**, landing in the conversion year itself, where it
+must be credited, counted in the guarantee and included in the conversion capital **before** the
+guarantee is tested. An implementation that stops the Zulage stream when it stops the contribution
+stream silently drops a full year's subsidy out of both.
 
 ### The § 10a *Sonderausgabenabzug* and the *Günstigerprüfung* — and why neither is a cash flow
 
 Contributions **together with the Zulagen credited** are deductible as *Sonderausgaben* up to
-**2 100 € a year** [R6] [REG-R42] `[unverified]`. The tax office performs the ***Günstigerprüfung***
-of its own motion: it computes the tax reduction the deduction would produce, compares it with the
-Zulagen entitlement, and grants the deduction only where it is the more favourable — adding the
-Zulagen back to the assessed tax so that the saver receives the **larger** of the two benefits and
-not their sum [R6] `[unverified]` on the mechanism's precise expression.
+**2 100 € a year** [R6] [REG-R42] `[unverified]`. The tax office performs the
+***Günstigerprüfung*** of its own motion, granting the deduction only where it beats the Zulagen
+entitlement and adding the Zulagen back to the assessed tax so that the saver receives the
+**larger** of the two benefits and not their sum [R6] `[unverified]` on the precise expression.
 
 **Only the Zulage is a contract cash flow. The *Günstigerprüfung* top-up is a personal tax refund
 and never touches the policy** [REG-R42]. That distinction is the single most important thing a
-model author must get right about the subsidy, and it is why this model publishes `zulagen` as a
-column of the cash flow statement and publishes nothing at all for the § 10a route. The Zulagen
-route dominates for low incomes and for households with children; the § 10a route dominates for
-high incomes with no children; **the crossover was not established** and no crossover figure
-appears anywhere in this library (gap 5). A *mittelbar* eligible spouse has no § 10a deduction of
-their own [R6] [R7] `[unverified]`.
-
-The deduction reaches the projection in exactly one indirect way: it is part of what is repaid on a
-*schädliche Verwendung* [R14], and therefore part of the reason a Riester lapse assumption should
-sit materially **below** a Schicht-3 one.
+model author must get right about the subsidy: the model publishes `zulagen` as a column of the
+cash flow statement and publishes nothing at all for the § 10a route. The Zulagen route dominates
+for low incomes and households with children, the § 10a route for high incomes with no children;
+**the crossover was not established** and no crossover figure appears anywhere in this library
+(gap 5). A *mittelbar* eligible spouse has no § 10a deduction of their own [R6] [R7]
+`[unverified]`. The deduction reaches the projection in one indirect way only: it is part of what
+is repaid on a *schädliche Verwendung* [R14], and therefore part of the reason a Riester lapse
+assumption should sit materially **below** a Schicht-3 one.
 
 ### The 100 % *Beitragsgarantie*
 
@@ -592,28 +579,25 @@ accumulation is `C × s̈(n, i)`, the guarantee is `C × n`, and the **headroom*
 | 30 years | **3.97 %** | 15.24 % | 17.11 % | 32.33 % | 43.82 % |
 | 35 years | **4.63 %** | 17.98 % | 20.22 % | 38.76 % | 53.06 % |
 
-On 1 200,00 € a year for thirty years — 36 000,00 € of contributions — the 0,25 % regime produces
-a guaranteed accumulation of **37 429,31 €**, a headroom of **1 429,31 €**; the 1,00 % regime
-produces **42 159,29 €**, a headroom of **6 159,29 €** `[std] derived`.
+On 1 200,00 € a year for thirty years — 36 000,00 € of contributions — the 0,25 % regime produces a
+guaranteed accumulation of **37 429,31 €**, a headroom of **1 429,31 €**; the 1,00 % regime
+produces **42 159,29 €**, a headroom of **6 159,29 €** `[std] derived`. So at 0,25 % a thirty-year
+contract had **under 4 % of contributions** to pay for acquisition, administration, risk and any
+margin — a multiple below typical German life charge levels, which made the guarantee not merely
+expensive but **arithmetically unfinanceable** on a normally charged tariff. It bites hardest on
+short terms and late money, so the product is structurally hostile to late entrants. It **dictates
+the asset allocation** rather than leaving it to the provider, since the equity share is bounded
+above by a headroom that is a function of `i` and `n` alone. And **a rate rise repairs it
+mechanically**: the move to 1,00 % on 1 January 2025 roughly quadrupled the thirty-year headroom,
+from 3,97 % to 17,11 % `[std] derived` — the arithmetic behind the GDV maintaining a 2025-vintage
+classic Riester model wording [S2].
 
-Four consequences, and they are the product's recent history. **At 0,25 % a thirty-year Riester
-contract had under 4 % of contributions to pay for acquisition, administration, risk and any
-margin** — a multiple below typical German life charge levels, so the guarantee was not merely
-expensive but **arithmetically unfinanceable** on a normally charged tariff. **The guarantee bites
-hardest on short terms and late money**, so the product is structurally hostile to late entrants,
-which is the opposite of what a supplementary pension usually wants. **The asset allocation is
-dictated, not chosen**: whatever chassis is used, the equity share is bounded above by a headroom
-that is a function of `i` and `n` and of nothing the provider controls. And **a rate rise repairs
-it mechanically** — the move to 1,00 % on 1 January 2025 roughly quadrupled the thirty-year
-headroom, from 3,97 % to 17,11 % `[std] derived`, which is the arithmetic behind the GDV
-maintaining a 2025-vintage classic Riester model wording [S2].
-
-One warning about reading the table. It is the arithmetic of the **guaranteed** accumulation — what
-the insurer must be able to promise. A **best-estimate** projection credits the declared *laufende
-Verzinsung*, which is materially above the *Rechnungszins*, so on a healthy contract the
-*Garantielücke* closes long before *Rentenbeginn*. **The guarantee's cost is a declared-rate
-question, not a *Rechnungszins* question**, and a model that confuses the two will report a
-guarantee cost of zero and conclude the mechanic does not matter.
+One warning about reading the table. It is the arithmetic of the **guaranteed** accumulation, which
+is what the insurer must be able to promise. A **best-estimate** projection credits the declared
+*laufende Verzinsung*, materially above the *Rechnungszins*, so on a healthy contract the
+*Garantielücke* closes long before *Rentenbeginn*. **The guarantee's realised cost is a
+declared-rate question, not a *Rechnungszins* question**, and a model that confuses the two reports
+a guarantee cost of zero and concludes the mechanic does not matter.
 
 ### The five-year cost spreading
 
@@ -726,31 +710,29 @@ natural place for an implementer to go wrong and it is a numbered pitfall.
 ## Riders and options
 
 **In scope, modelled or parameterized.** The ***Teilkapitalauszahlung***, a single lump-sum
-election at one date sized as a fraction of the conversion capital, capped at 30 % [R1]. The
-***Kleinbetragsrenten-Abfindung***, a switch on the anchor decrement whose trigger the model
-computes rather than assumes [R15]. The ***Rentengarantiezeit***, which changes the payment
-obligation but not the annuity amount and is the *förderunschädliche* route for an early death in
-payment [R1] [R14]. The ***Anbieterwechsel***, a full-value exit decrement distinct from surrender
-[R1]. ***Beitragsfreistellung***, carried as a per-model-point switch on the year contributions
-stop. **Unsubsidised over-ceiling contributions**, which prove the two-pool split is representable.
-And a **biometric rider premium**, carried **only** for its effect on the guarantee: the
-carve-out capped at 20 % of total contributions [REG-R43].
+election at one date, capped at 30 % [R1]. The ***Kleinbetragsrenten-Abfindung***, a switch on the
+anchor decrement whose trigger the model computes rather than assumes [R15]. The
+***Rentengarantiezeit***, which changes the payment obligation but not the annuity amount and is
+the *förderunschädliche* route for an early death in payment [R1] [R14]. The
+***Anbieterwechsel***, a full-value exit decrement distinct from surrender [R1].
+***Beitragsfreistellung***, carried as a per-model-point switch on the year contributions stop.
+**Unsubsidised over-ceiling contributions**, proving the two-pool split is representable. And a
+**biometric rider premium**, carried **only** for its effect on the guarantee — the carve-out
+capped at 20 % of total contributions [REG-R43].
 
-**Out of scope, and why.** The ***Berufsunfähigkeits-Zusatzversicherung*** itself — its liability is
+**Out of scope, and why.** The ***Berufsunfähigkeits-Zusatzversicherung*** itself: its liability is
 `products/berufsunfaehigkeit/`'s, its premium is not a cash flow of this model, and this model
-carries only the statutory carve-out its premium creates. The **survivor's annuity** rider, which
-needs a second life; its GDV model wording exists as a separate condition set [S3]. The
-***Auszahlungsplan mit Restverrentung***, which is the fund and bank chassis's payout topology
-[S9]–[S12] — worth naming because it is why a Riester fund savings plan still ends in an insurance
-annuity: **the insurance industry receives the *Restverrentung* capital of the fund industry's
-contracts**. ***Wohn-Riester*** in both its limbs [R13] [R19] [S13]: the *Wohnförderkonto* is a
-notional tax memorandum carrying **no cash whatsoever**, and the certified *Darlehen* is a banking
-liability with a repayment schedule and a credit exposure — neither produces an insurance liability
-cash flow. What the model *could* have represented, and deliberately does not, is the
-*Eigenheimbetrag* **withdrawal**, which from the insurer's side is simply an early and complete
-exit at full value. And **surplus in payment** in any of its German forms, because the AltZertG's
-constant-or-rising requirement constrains which systems are even available [R1] and no declaration
-level was established.
+carries only the statutory carve-out that premium creates. The **survivor's annuity** rider, which
+needs a second life and has its own GDV condition set [S3]. The ***Auszahlungsplan mit
+Restverrentung***, the fund and bank chassis's payout topology [S9]–[S12] — worth naming because it
+is why a Riester fund savings plan still ends in an insurance annuity: **the insurance industry
+receives the *Restverrentung* capital of the fund industry's contracts**. ***Wohn-Riester*** in
+both limbs [R13] [R19] [S13], because the *Wohnförderkonto* is a notional tax memorandum carrying
+**no cash whatsoever** and the certified *Darlehen* is a banking liability; what the model could
+have represented and deliberately does not is the *Eigenheimbetrag* **withdrawal**, which from the
+insurer's side is an early and complete exit at full value. And **surplus in payment**, because the
+constant-or-rising requirement constrains which systems are available [R1] and no declaration level
+was established.
 
 ---
 
@@ -834,62 +816,54 @@ has had to mark `[unverified]`.
 breath as they **reduced the future replacement rate of the statutory pension** — the pairing is
 the whole political logic of the product [R17]. The *Alterseinkünftegesetz* of 2004 created the
 three-layer taxonomy [R18] [REG-R38]. The *Eigenheimrentengesetz* of 2008 created Wohn-Riester and
-raised the *Kinderzulage* for children born from 2008 [R19]. The *Altersvorsorge-Verbesserungsgesetz*
-of 2013 introduced the standardised PIB, capped the *Wechsel* charge and closed the
-zero-contribution entitlement of a *mittelbar* eligible spouse [R20]. The
+raised the *Kinderzulage* for children born from 2008 [R19]. The
+*Altersvorsorge-Verbesserungsgesetz* of 2013 introduced the standardised PIB, capped the *Wechsel*
+charge and closed the zero-contribution entitlement of a *mittelbar* eligible spouse [R20]. The
 *Betriebsrentenstärkungsgesetz* of 2017 raised the *Grundzulage* to 175 €, brought the
 *Kleinbetragsrenten-Abfindung* under the *Fünftelregelung*, introduced a *Freibetrag* in the
-*Grundsicherung im Alter* so that a Riester annuity is no longer offset one-for-one against
-means-tested basic security, and removed the double *Krankenversicherung* charge on Riester
-annuities drawn from a **bAV** vehicle [R21]. **Every one of those was a repair to a criticism
-rather than an extension, and none of them changed the *Beitragsgarantie*** — which is precisely
-what the 2023 *Fokusgruppe* said had to change [R26], and what the 2026 reform did by replacing the
-product [REG-R44].
+*Grundsicherung im Alter* so that the annuity is no longer offset one-for-one against means-tested
+basic security, and removed the double *Krankenversicherung* charge on a Riester annuity drawn from
+a **bAV** vehicle [R21]. **Every one was a repair to a criticism rather than an extension, and none
+changed the *Beitragsgarantie*** — which is what the 2023 *Fokusgruppe* said had to change [R26],
+and what the 2026 reform did by replacing the product [REG-R44].
 
 **Prudential and reserving are cited, never specified.** The *Höchstrechnungszins* of § 2 DeckRV
 binds the rate at which the guarantee may be discounted and nothing else [R22] [REG-R14]
 [REG-R15]; § 4 DeckRV caps *Zillmerung* at 25 ‰ of the *Beitragssumme* [REG-R16]; § 5 Abs. 3 DeckRV
-drives the *Zinszusatzreserve* through the *Referenzzins* [REG-R17]; the MindZV puts an arithmetic
-floor under the transfer to the *Rückstellung für Beitragsrückerstattung* [REG-R18] [REG-R19]; and
-§ 153 VVG gives the individual entitlement to the *Überschussbeteiligung* and the *hälftige*
-participation in the *Bewertungsreserven* [REG-R24]. Above them sit the German statutory
-*Deckungsrückstellung* [REG-R54] and Solvabilität II as transposed by the VAG [REG-R5] [REG-R6].
-**None of these is computed here.** This library publishes gross, undiscounted, best-estimate-style
-liability cash flows and stops short of the discounting; every discount rate, asset return and
-declared rate in these documents is **[std]** rather than a citation.
+drives the *Zinszusatzreserve* [REG-R17]; the MindZV floors the transfer to the *Rückstellung für
+Beitragsrückerstattung* [REG-R18] [REG-R19]; § 153 VVG gives the individual entitlement to the
+*Überschussbeteiligung* and the *hälftige* participation in the *Bewertungsreserven* [REG-R24]; and
+above them sit the *Deckungsrückstellung* [REG-R54] and Solvabilität II as transposed by the VAG
+[REG-R5] [REG-R6]. **None is computed here.** This library publishes gross, undiscounted,
+best-estimate-style liability cash flows and stops short of the discounting, so every discount rate,
+asset return and declared rate in these documents is **[std]**.
 
 **Taxation, stated because it is context and not cash flow.** In: relief through the Zulagen [R9]
 or the § 10a deduction [R6], whichever the *Günstigerprüfung* favours. Out: **full** taxation as
-*sonstige Einkünfte* under § 22 Nr. 5, with no *Ertragsanteil*, to the extent the benefit derives
-from subsidised contributions [R12]; the *Werbungskosten-Pauschbetrag* for *sonstige Einkünfte* is
-**102 €** `[unverified]`. Social insurance is the asymmetry that can reverse the argument: a
-**private** Riester annuity is **not** a *Versorgungsbezug* and attracts **no** health or
-long-term-care contribution for a compulsorily insured pensioner, while a *freiwillig versichertes*
-member is assessed on the whole of their economic capacity, private annuities expressly included
-[REG-R46]. A Riester annuity drawn from a **bAV** vehicle was contributory, and the double charge
-was removed by [R21]. Death benefits carry no insurance-specific regime: a German
-*Todesfallleistung* to a named beneficiary is an ordinary *Erwerb von Todes wegen* under the ErbStG
-[REG-R46]. **The model publishes gross cash flows and computes none of this.**
+*sonstige Einkünfte* under § 22 Nr. 5, no *Ertragsanteil*, to the extent the benefit derives from
+subsidised contributions [R12]; the *Werbungskosten-Pauschbetrag* is **102 €** `[unverified]`.
+Social insurance is the asymmetry that can reverse the argument: a **private** Riester annuity is
+**not** a *Versorgungsbezug* and attracts no health or long-term-care contribution for a
+compulsorily insured pensioner, while a *freiwillig versichertes* member is assessed on their whole
+economic capacity, private annuities expressly included [REG-R46]. Death benefits carry no
+insurance-specific regime — a *Todesfallleistung* to a named beneficiary is an ordinary *Erwerb von
+Todes wegen* under the ErbStG [REG-R46]. **The model computes none of it.**
 
 **Conduct and disclosure.** The individual *Produktinformationsblatt* with its individually
 computed *Effektivkosten* is a **stronger** duty than the product-level VVG-InfoV figure [R4] [R5]
-[S14] [REG-R31] [REG-R43], and the *Chancen-Risiko-Klasse* is assigned by a public body from a
-model the insurer does not control — a feature with no counterpart in the four sister libraries.
-Alongside sit the IDD as transposed [REG-R33], the PRIIPs regime for the unit-linked chassis
-[REG-R32], BaFin's *Wohlverhaltensaufsicht* and its expectation of *angemessener Kundennutzen*
-[REG-R35], and the BGH line of authority on German life contracts, including its 2025 judgment
-striking down asymmetric unilateral reduction of a *Rentenfaktor* [REG-R36] — a holding that bears
-directly on the two-factor conversion this specification adopts.
+[S14] [REG-R31] [REG-R43]. Alongside sit the IDD as transposed [REG-R33], PRIIPs for the
+unit-linked chassis [REG-R32], BaFin's *Wohlverhaltensaufsicht* and its expectation of
+*angemessener Kundennutzen* [REG-R35], and the BGH line of authority — including its 2025 judgment
+striking down asymmetric unilateral reduction of a *Rentenfaktor* [REG-R36], which bears directly
+on the two-factor conversion adopted above.
 
 **The reform track, and what may and may not be said about it.** The *Fokusgruppe private
-Altersvorsorge*, convened by the finance ministry and reporting in 2023, recommended **relaxing or
-removing the 100 % *Beitragsgarantie***, admitting a securities-account product without an
-insurance wrapper, simplifying the Zulage into a proportional match and widening eligibility [R26]
-`[unverified]` on every element; a 2024 draft bill creating an *Altersvorsorgedepot* followed and
-did not become law in that parliamentary term [R26]. The product research file recorded the
-position as at its access date as unknown and its single most important gap (gap 1). The
-cross-product reference library closes it: the **Bundesrat approved the *Altersvorsorgereformgesetz*
-on 8 May 2026** and the replacement starts **1 January 2027**, with existing contracts implicitly
-grandfathered [REG-R44]. This specification therefore describes a **legacy** product. No document
-in this library may assert a promulgation date or a BGBl citation for that act, neither of which is
+Altersvorsorge* reported in 2023 recommending that the 100 % *Beitragsgarantie* be relaxed or
+removed, that a securities-account product without an insurance wrapper be admitted, that the
+Zulage be simplified into a proportional match and that eligibility be widened [R26] `[unverified]`
+on every element; a 2024 draft bill creating an *Altersvorsorgedepot* followed and did not become
+law in that term [R26]. The product research file recorded the position at its access date as
+unknown and as its most important gap (gap 1); the cross-product reference library closes it
+[REG-R44]. This specification therefore describes a **legacy** product, and no document in this
+library may assert a promulgation date or a BGBl citation for that act, neither of which is
 established [REG-R44].

@@ -65,55 +65,53 @@ siblings, and each changes the shape of the projected cash flows:
    page: the *Abschluss- und Vertriebskosten* must be disclosed **in euro**, the ongoing costs
    separately, and the ***Effektivkostenquote*** — all costs expressed as the annual percentage
    by which they reduce the contract's return — has been required in quotations since 1 January
-   2015 `[unverified]` [R7] [REG-R31]. On this product the first-order economics are *fund
-   return minus charges*, and nothing else.
+   2015 `[unverified]` [R7] [REG-R31]. The first-order economics are *fund return minus charges*.
 2. **The acquisition charge has a statutory cap and a statutory shape.** The *Höchstzillmersatz*
-   of § 4 DeckRV caps the acquisition cost that may be financed against future premiums at
-   **25 ‰ (2,5 %) of the *Beitragssumme***, cut from 40 ‰ by the LVRG 2014 [R12] [R13]
-   [REG-R16] [REG-R20]; and § 169 VVG requires the *angesetzte Abschluss- und Vertriebskosten*
-   to be spread **evenly over the first five contract years** [R1] [REG-R28]. In a unit-linked
-   tariff the two combine into one visible mechanic: a large early deduction from each premium
-   that stops abruptly at month 60. That step is the characteristic shape of a German
-   unit-linked contract's early values.
+   of § 4 DeckRV caps the acquisition cost financed against future premiums at **25 ‰ (2,5 %) of
+   the *Beitragssumme***, cut from 40 ‰ by the LVRG 2014 [R12] [R13] [REG-R16] [REG-R20]; § 169
+   VVG requires the *angesetzte Abschluss- und Vertriebskosten* to be spread **evenly over the
+   first five contract years** [R1] [REG-R28]. The two combine into one visible mechanic: a
+   large early deduction from each premium that stops abruptly at month 60, and that step is the
+   characteristic shape of a German unit-linked contract's early values.
 3. **The surrender value is the fund, and nothing else.** § 169 VVG sends *fondsgebundene
-   Versicherungen* to a ***Zeitwert*** rather than to a *Deckungskapital* [R1] [REG-R28]. For a
-   pure unit-linked contract with no insurer-given benefit guarantee the *Zeitwert* is the
-   *Fondsguthaben*: no discounting, no mortality basis, no *Rechnungszins*, no *Zillmerung*
-   residue, no second-basis *Mindestrückkaufswert* computation. It is the cleanest surrender
-   rule of the ten delib products.
+   Versicherungen* to a ***Zeitwert*** rather than to a *Deckungskapital* [R1] [REG-R28], and
+   for a pure unit-linked contract the *Zeitwert* is the *Fondsguthaben*: no discounting, no
+   mortality basis, no *Rechnungszins*, no *Zillmerung* residue, no second-basis
+   *Mindestrückkaufswert* computation. It is the cleanest surrender rule of the ten delib
+   products.
 4. **The only guarantee is about the conversion terms, not about the pension.** On a classic
    contract both the capital and the annuity factor are guaranteed, so the annuity is
    guaranteed. Here **only the factor is** — the capital it multiplies is the market's. Any
-   product document that implies otherwise is wrong, and this is the sentence a specification of
-   this product has to carry [R22].
+   product document implying otherwise is wrong, and this is the sentence a specification of this
+   product has to carry [R22].
 
-**Market role, and what can and cannot be said about it.** This is understood to be the
-dominant German new-business savings form, and the *Höchstrechnungszins* is the reason: a
-statutory maximum technical rate of **0,25 %** through the low-interest decade, raised to
-**1,00 % from 1 January 2025** `[unverified]` [R12] [REG-R14] [REG-R15], caps what a classic
-tariff may promise but **has no purchase at all on the accumulation phase of a pure
-fondsgebundene contract**, because there is no guaranteed accumulation rate to cap. It reaches
-this product only through the *Rentenfaktor* and through hybrid designs whose guaranteed pot
-sits in the general account. That asymmetry is why unit-linked new business grew while classic
-new business collapsed. **No GDV new-business split by *Versicherungsart* was established, so no
-market-share figure appears anywhere in this document** [R25] [REG-R53]; the claim of dominance
-is `[unverified]`. What *is* corroborated, at one remove through a sibling delib file, is the
-market-structure fact behind it: **Debeka, Germany's largest life mutual by policy count,
-discontinued its classic annuity tariff** [S14]. When the classic tariff closes, the
-new-business flow goes to the fondsgebundene and hybrid forms.
+**Market role, and what can and cannot be said about it.** This is understood to be the dominant
+German new-business savings form, and the *Höchstrechnungszins* is the reason: a statutory
+maximum technical rate of **0,25 %** through the low-interest decade, raised to **1,00 % from
+1 January 2025** `[unverified]` [R12] [REG-R14] [REG-R15], caps what a classic tariff may
+promise but **has no purchase at all on the accumulation phase of a pure fondsgebundene
+contract**, because there is no guaranteed accumulation rate to cap. It reaches this product only
+through the *Rentenfaktor* and through hybrid designs whose guaranteed pot sits in the general
+account. That asymmetry is why unit-linked new business grew while classic new business
+collapsed. **No GDV new-business split by *Versicherungsart* was established, so no market-share
+figure appears anywhere in this document** [R25] [REG-R53]; the claim of dominance is
+`[unverified]`. What *is* corroborated, at one remove, is the market-structure fact behind it:
+**Debeka, Germany's largest life mutual by policy count, discontinued its classic annuity
+tariff** [S14]. When the classic tariff closes, the new-business flow goes to the fondsgebundene
+and hybrid forms.
 
-**The supervisor is watching the charge level, and that is context a specification needs.**
-BaFin's *Merkblatt 01/2023 (VA)* requires *kapitalbildende Lebensversicherungsprodukte* to offer
-an ***angemessener Kundennutzen***, states that *Effektivkosten* between providers and products
-**differ considerably**, and says BaFin will closely examine undertakings whose *Effektivkosten*
-are very high in a sector comparison and whose *Aufwendungen für Versicherungsvermittler* are
-notably high; a retirement product must be likely to achieve a **real** investment success — a
-return after costs above a justified inflation expectation [R10] [REG-R35]. Three years later
-"Kosten von kapitalbildenden Lebensversicherungen" is still a named focus risk in BaFin's 2026
-agenda [R11]. **No numerical threshold, band, median or sector benchmark appears in any of that
-material**, and none is quoted here. The consequence for this document is that the charge stack
-is treated as a **supervised** rather than a free parameter, and the [std] stack below is
-presented as a design decision with an argued derivation rather than as an observation.
+**The supervisor is watching the charge level.** BaFin's *Merkblatt 01/2023 (VA)* requires
+*kapitalbildende Lebensversicherungsprodukte* to offer an ***angemessener Kundennutzen***, states
+that *Effektivkosten* between providers and products **differ considerably**, and says BaFin will
+closely examine undertakings whose *Effektivkosten* are very high in a sector comparison and
+whose *Aufwendungen für Versicherungsvermittler* are notably high; a retirement product must be
+likely to achieve a **real** investment success — a return after costs above a justified
+inflation expectation [R10] [REG-R35]. Three years later "Kosten von kapitalbildenden
+Lebensversicherungen" is still a named focus risk in BaFin's 2026 agenda [R11]. **No numerical
+threshold, band, median or sector benchmark appears in any of that material**, and none is quoted
+here. The charge stack below is therefore treated as a **supervised** rather than a free
+parameter, and is presented as a design decision with an argued derivation rather than as an
+observation.
 
 ---
 
@@ -170,49 +168,42 @@ because no carrier-level observation was available:
 Footnotes to **[std]** rows:
 
 1. **No AVB, *Produktinformationsblatt* or *Basisinformationsblatt* for any German
-   fondsgebundene Rentenversicherung was retrieved or searched.** The identity row therefore
-   states the product class, not a carrier's tariff. What the corpus does establish is that a
+   fondsgebundene Rentenversicherung was retrieved or searched.** The identity row states the
+   product class, not a carrier's tariff. What the corpus does establish is that a
    market-standard clause inventory exists — the GDV publishes *Musterbedingungen* from which
-   member insurers derive their own AVB, and the clause order is why insurer wordings are
-   structurally interchangeable [S1] [R23] [REG-R37].
-2. The *Einmalbeitrag* form is carried because it isolates the acquisition-charge mechanic: with
-   no future premiums there is nothing to zillmer against, the five-year spread has no work to
-   do, and the whole charge falls at inception. Its charge rate is **[std]** and equal to the
-   *Zuzahlungskosten* rate below.
+   member insurers derive their AVB, which is why insurer wordings are structurally
+   interchangeable [S1] [R23] [REG-R37].
+2. The *Einmalbeitrag* form isolates the acquisition-charge mechanic: with no future premiums
+   there is nothing to zillmer against, the five-year spread has no work to do, and the whole
+   charge falls at inception, at the *Zuzahlungskosten* rate **[std]**.
 3. **No entry-age, premium or term envelope was established at any carrier.** Entry ages roughly
    15/18 to the low 60s and minimum monthly premiums of 25 to 50 € are the shape the German
    market is understood to use `[unverified]`; the composite takes the wider end of each, and a
-   model point at entry age 60 with a two-year deferment is carried precisely to exercise the
-   boundary.
-4. *Rentenbeginn* at 67 matches the *Regelaltersgrenze* and is the round choice; 62 is a **tax**
-   floor rather than a product floor, because the half-income treatment of a lump sum under
-   § 20 Abs. 1 Nr. 6 EStG requires payment after completion of the 62nd year of life for
-   contracts concluded after 31 December 2011 and a term of at least twelve years [R20]
-   [REG-R45]. A model point whose configuration could not satisfy that test would not be
-   representative of a real sold contract, which is why the minimum deferment is set at twelve
-   years.
-5. **No age basis was established for any carrier.** Age last birthday is chosen because it is
-   the convention the shipped mortality proxy is indexed on and because on a monthly grid the
-   difference from age next birthday is a twelve-month shift of one lookup, quantified in the
-   technical notes' pitfalls.
-6. Real tariffs offer a *Fondsauswahl* running to hundreds of funds and the policyholder may
-   split the premium across several. With a deterministic return assumption a multi-fund split
-   is arithmetically identical to one composite fund at the weighted return, so the reference
-   implementation carries **one fund** and represents *Fondswechsel* and *Ablaufmanagement* as
-   changes to the assumed return rather than as reallocations. That is stated rather than
-   hidden, and its consequence — the model cannot show dispersion between funds — is a listed
-   model risk.
-7. German insurers are understood to deal with fund companies at institutional terms and to buy
-   policy units at the *Rücknahmepreis*, the policy's own acquisition charge taking the place of
-   the retail *Ausgabeaufschlag*. **No wording confirming a full waiver was seen**, and no
-   carrier's *Bewertungsstichtag* convention — how many dealing days after receipt units are
-   bought, which price applies to a death or a surrender — was established. On a monthly grid
-   both are immaterial; on a daily one neither is.
-8. Entry age 37 with a 30-year deferment and a 200,00 € monthly *Beitrag* is chosen so that the
-   *Beitragssumme* is exactly 72 000,00 €, the acquisition charge at the statutory cap is
-   exactly 1 800,00 €, and the five-year instalment is exactly **30,00 € per month — 15 % of
-   each of the first 60 premiums**. The characteristic shape of the product is then legible in
-   round numbers, and the cliff at month 60 is exact.
+   model point at entry age 60 with a two-year deferment exercises the boundary.
+4. *Rentenbeginn* at 67 matches the *Regelaltersgrenze*; 62 is a **tax** floor rather than a
+   product floor, because the half-income treatment of a lump sum under § 20 Abs. 1 Nr. 6 EStG
+   requires payment after completion of the 62nd year of life for contracts concluded after
+   31 December 2011, and a term of at least twelve years [R20] [REG-R45]. **A model point whose
+   configuration could not satisfy that test would not be representative of a real sold
+   contract**, which is why the minimum deferment is set at twelve years.
+5. **No age basis was established for any carrier.** Age last birthday is the convention the
+   shipped mortality proxy is indexed on; on a monthly grid the difference from age next birthday
+   is a twelve-month shift of one lookup, quantified in the technical notes.
+6. Real tariffs offer a *Fondsauswahl* running to hundreds of funds and the premium may be split
+   across several. With a deterministic return a multi-fund split is arithmetically identical to
+   one composite fund at the weighted return, so the composite carries **one fund** and
+   represents *Fondswechsel* and *Ablaufmanagement* as changes to the assumed return rather than
+   as reallocations. The consequence — the model cannot show dispersion between funds — is a
+   listed model risk.
+7. German insurers are understood to buy policy units at the *Rücknahmepreis*, the policy's own
+   acquisition charge taking the place of the retail *Ausgabeaufschlag*. **No wording confirming
+   a full waiver was seen**, and no carrier's *Bewertungsstichtag* convention was established. On
+   a monthly grid both are immaterial; on a daily one neither is.
+8. Entry age 37 with a 30-year deferment and a 200,00 € monthly *Beitrag* makes the
+   *Beitragssumme* exactly 72 000,00 €, the acquisition charge at the statutory cap exactly
+   1 800,00 €, and the five-year instalment exactly **30,00 € per month — 15 % of each of the
+   first 60 premiums**. The shape of the product is then legible in round numbers and the cliff
+   at month 60 is exact.
 
 ### Premiums
 
@@ -233,31 +224,28 @@ Footnotes to **[std]** rows:
    *Beitragsverrechnung* below makes sense: the deductions are taken from a premium that has
    arrived. The *Ratenzahlungszuschlag* is real — German tariffs price an annual premium below
    twelve monthly ones — but **no level was established at any carrier**, the plausible band
-   being 0–5 % of the annualised premium. Rather than invent one, the composite treats the
-   model point's premium as the **instalment the policy states**, which already contains
-   whatever loading the tariff applied. Applying a further loading to it is a listed pitfall.
-10. A premium term shorter than the deferment is common and is carried because it exposes an
-    edge in the statutory spreading rule: where the premium-paying term is shorter than five
-    years there are fewer than sixty premiums to spread the acquisition charge over. The
-    composite spreads it over `min(60, premium term in months)` instalments **[std]**, so that
-    the charge is fully taken and no instalment is charged against a premium that is not paid.
-11. *Beitragsdynamik* raises the premium, the *Anlagebeitrag* and the premium-based charge. Real
-    tariffs **re-zillmer each accepted increment over its own sixty months**, because an
+   being 0–5 % of the annualised premium. Rather than invent one, the composite treats the model
+   point's premium as the **instalment the policy states**, which already contains whatever
+   loading the tariff applied. Applying a further loading to it is a listed pitfall.
+10. A premium term shorter than the deferment exposes an edge in the statutory spreading rule:
+    where it is shorter than five years there are fewer than sixty premiums to spread the
+    acquisition charge over. The composite spreads it over `min(60, premium term in months)`
+    instalments **[std]**, so the charge is fully taken and no instalment is charged against a
+    premium that is not paid.
+11. Real tariffs **re-zillmer each accepted increment over its own sixty months**, because an
     increment is optional and cannot be assumed at inception. The composite therefore fixes the
-    *Beitragssumme* and the acquisition charge **on the initial premium level** and does not
-    re-zillmer increments; the direction of the resulting bias — the acquisition charge on a
-    dynamic contract is understated — is stated in the technical notes.
+    *Beitragssumme* and the acquisition charge **on the initial premium level**; the direction of
+    the bias — the acquisition charge on a dynamic contract is understated — is stated in the
+    technical notes.
 12. **No *Zuzahlung* minimum, annual maximum or charge rate was established at any carrier.** The
-    500,00 € minimum and the 2,5 % charge are **[std]**, the charge rate set equal to the
-    acquisition cap for the same reason the regular acquisition charge is.
-13. § 165 VVG gives the policyholder the right to demand a *beitragsfreie Versicherung*, and
-    § 166 converts the contract automatically where the insurer terminates for non-payment
-    [R3] [REG-R28]. On a unit-linked contract that conversion is trivial — nothing is
-    recomputed, the units simply stay — so the composite routes non-payment to
-    *Beitragsfreistellung* rather than to surrender, which is both the statutory default and the
-    economically correct one. Insurers set a **minimum *Fondsguthaben*** below which
-    *Beitragsfreistellung* is refused and the contract surrendered instead; **no level was
-    established** and the composite carries none.
+    500,00 € minimum and the 2,5 % charge are **[std]**.
+13. § 165 VVG gives the right to demand a *beitragsfreie Versicherung* and § 166 converts the
+    contract automatically where the insurer terminates for non-payment [R3] [REG-R28]. On a
+    unit-linked contract that conversion is trivial — nothing is recomputed, the units stay — so
+    the composite routes non-payment to *Beitragsfreistellung* rather than to surrender, which is
+    both the statutory default and the economically correct one. Insurers set a **minimum
+    *Fondsguthaben*** below which *Beitragsfreistellung* is refused; **no level was established**
+    and the composite carries none.
 
 ### Benefit provisions
 
@@ -278,36 +266,34 @@ Footnotes to **[std]** rows:
 
 14. **This is the single most consequential [std] in the document, and it is derived rather than
     guessed.** No *Rentenfaktor* level, range or time series was established — not for this
-    product, not for the classic one in the sibling delib file, not from the rating house whose
+    product, not for the classic one in a sibling delib file, not from the rating house whose
     article is titled with the question [R23]. The derivation: at a *Rechnungszins* of **0 %**
     [S10] a monthly annuity of `R` per 10 000 € payable for an expected `T` years has a present
     value of `12 × T × R` per 10 000 €, so the pre-cost factor is `10 000 / (12 × T)`. On a
     **generational** annuitant table [R16] [REG-R49] a 67-year-old of a cohort now in mid-career
-    has an expected annuity duration materially longer than a period table implies; `T` in the
-    range 25 to 28 years gives a pre-cost factor between **29,8 and 33,3**. Deducting the
-    payout-phase administration charge and an explicit margin for the *Sicherheitsabschlag* and
-    the *Rentengarantiezeit* brings the guaranteed factor materially below that, and the
-    composite takes **25,00 €**, a round number inside the band and the value the consumer
-    literature uses illustratively [R22]. Read the other way, 25,00 at a 0 % *Rechnungszins*
-    prices the guarantee as though the insurer will hold the capital for **33⅓ years** and earn
-    nothing on it — which is what a *Sicherheitsabschlag* on a thirty-year-forward promise looks
-    like when it is made concrete. The composite's factor **varies with the *Rentenbeginn*
-    age**, on the same arithmetic, so a contract converting at 62 or at 70 is priced
-    consistently.
+    has an expected annuity duration materially longer than a period table implies; `T` of 25 to
+    28 years gives a pre-cost factor between **29,8 and 33,3**. Deducting the payout-phase
+    administration charge and a margin for the *Sicherheitsabschlag* and the *Rentengarantiezeit*
+    brings the guaranteed factor materially below that, and the composite takes **25,00 €**, a
+    round number inside the band and the value the consumer literature uses illustratively [R22].
+    Read the other way, 25,00 at a 0 % *Rechnungszins* prices the guarantee as though the insurer
+    will hold the capital for **33⅓ years** and earn nothing on it — a *Sicherheitsabschlag* on a
+    thirty-year-forward promise made concrete. The composite's factor **varies with the
+    *Rentenbeginn* age** on the same arithmetic, so a contract converting at 62 or at 70 is
+    priced consistently.
 15. **No *Kapitalwahlrecht* take-up rate was established anywhere**, and it is the largest
-    behavioural unknown in the product, because the two tax regimes genuinely differ (see
-    *Regulatory context*). The base run takes the **annuity** with a take-up of 0 % **[std]** —
-    a modelling choice made so that the *Rentenfaktor*, the only guarantee the contract carries,
-    is the thing the worked example demonstrates. It is not an estimate of behaviour and must
-    not be read as one.
-16. On a fondsgebundene contract the investment result belongs to the policyholder by
-    construction, so it never enters the insurer's *Rohüberschuss* and the *Bewertungsreserven*
-    limb of § 153 VVG has almost nothing to attach to [R5] [REG-R9]. What is left is a risk and
-    cost surplus on a contract whose death cover is a *Beitragsrückgewähr* — second-order in
-    size. **No crediting mechanism was confirmed at any carrier, no declared rate was
-    established, and the MindZV percentages are `[unverified]`** [R14] [REG-R18]. The composite
-    omits the credit and records the direction of the bias: omitting it understates the
-    projected *Fondsguthaben*, which is the honest direction for a charge demonstration.
+    behavioural unknown in the product, because the two tax regimes genuinely differ. The base
+    run takes the **annuity** with a take-up of 0 % **[std]**, so that the *Rentenfaktor* — the
+    only guarantee the contract carries — is the thing the worked example demonstrates. It is not
+    an estimate of behaviour and must not be read as one.
+16. The investment result belongs to the policyholder by construction, so it never enters the
+    insurer's *Rohüberschuss* and the *Bewertungsreserven* limb of § 153 VVG has almost nothing
+    to attach to [R5] [REG-R9]. What is left is a risk and cost surplus on a contract whose death
+    cover is a *Beitragsrückgewähr* — second-order in size. **No crediting mechanism was
+    confirmed at any carrier, no declared rate was established, and the MindZV percentages are
+    `[unverified]`** [R14] [REG-R18]. The composite omits the credit and records the bias:
+    omitting it understates the projected *Fondsguthaben*, the honest direction for a charge
+    demonstration.
 
 ### Underwriting and rating
 
@@ -322,21 +308,20 @@ Footnotes to **[std]** rows:
 | Best-estimate basis | The second-order versions of the same tables; the wedge between first and second order **is** the *Risikoergebnis* | [REG-R47]; levels **[std]** (18) |
 | *Anzeigepflicht* / misstatement | §§ 19 and 157 VVG apply in the ordinary way; on a *Beitragsrückgewähr* design the remedy is immaterial because the sum at risk is small | [REG-R30]; immateriality **[std]** |
 
-17. **A German FRV carries two mortality bases at once**, and that is worth saying in an
-    underwriting section because it is where the two meet: the *Risikobeitrag* charged for a
-    death benefit above the *Fondsguthaben* is a death-risk charge priced on DAV 2008 T
-    [R17] [REG-R48], while the conversion guarantee rests on the generational annuitant table
-    DAV 2004 R [R16] [REG-R49]. The direction of prudence forks: a death cover is loaded by
-    assuming mortality **higher** than expected, an annuity by assuming it **lower** and
-    improving **faster** [REG-R47]. **A model that uses one table for both misprices one of
-    them**, and the statement that German tariffs are built this way is an inference from
-    practice — **no AVB confirming it was seen**.
+17. **A German FRV carries two mortality bases at once**, and an underwriting section is where
+    they meet: the *Risikobeitrag* for a death benefit above the *Fondsguthaben* is priced on
+    DAV 2008 T [R17] [REG-R48], while the conversion guarantee rests on the generational
+    annuitant table DAV 2004 R [R16] [REG-R49]. The direction of prudence forks — a death cover
+    is loaded by assuming mortality **higher** than expected, an annuity by assuming it **lower**
+    and improving **faster** [REG-R47] — so **a model that uses one table for both misprices one
+    of them**. That German tariffs are built this way is an inference from practice; **no AVB
+    confirming it was seen**.
 18. **DAV tables are the property of the Deutsche Aktuarvereinigung, are not public and are not
     redistributed by this library.** They are cited by name; the reference implementation ships
     **[std]** proxies with their anchors stated, and the technical notes say what a replacement
     must preserve — for DAV 2008 T an insured-lives death basis with selection and **no**
-    projected improvement, for DAV 2004 R a two-dimensional generational basis in attained age
-    and calendar year with safety in **both** level and trend [REG-R47] [REG-R48] [REG-R49].
+    projected improvement, for DAV 2004 R a two-dimensional generational basis with safety in
+    **both** level and trend [REG-R47] [REG-R48] [REG-R49].
 
 ### Charges
 
@@ -363,41 +348,38 @@ level of a secondary consumer page in a sibling delib file.
 | Annuity admin | *Rentenbezugskosten* | each annuity payment | in payment — **out of scope**, delib `sofortrente` | 1.5 % of each payment | 0 % to 3 % |
 
 **The acquisition charge is the one charge whose level has a real anchor, and the composite
-takes the cap.** § 4 DeckRV caps the *Zillmersatz* at 25 ‰ of the *Beitragssumme*, the rate an
-undertaking uses at conclusion applies for the whole term, and the cut from 40 ‰ took effect on
-1 January 2015 with the LVRG [R12] [R13] [REG-R16] [REG-R20]. The composite takes **the cap as
-the level**, on the stated ground that a reference implementation should demonstrate the binding
-constraint rather than a guessed interior point, and because the cap is the only acquisition-cost
-number with any corroboration anywhere in this library. A *Nettotarif* — the same contract with
-the *Abschluss- und Vertriebskosten* removed and the adviser paid a fee under a separate
-*Vergütungsvereinbarung* [S18] — is carried as a **charge variant on the same chassis**, not as a
-separate product, and it brackets the *Effektivkosten* range from below.
+takes the cap.** § 4 DeckRV caps the *Zillmersatz* at 25 ‰ of the *Beitragssumme*, the rate used
+at conclusion applies for the whole term, and the cut from 40 ‰ took effect on 1 January 2015
+with the LVRG [R12] [R13] [REG-R16] [REG-R20]. The composite takes **the cap as the level**,
+because a reference implementation should demonstrate the binding constraint rather than a
+guessed interior point and because the cap is the only acquisition-cost number with any
+corroboration anywhere in this library. A *Nettotarif* — the same contract with the *Abschluss-
+und Vertriebskosten* removed and the adviser paid a fee under a separate *Vergütungsvereinbarung*
+[S18] — is carried as a **charge variant on the same chassis**, not as a separate product, and it
+brackets the range from below.
 
 **The two *Verwaltungskosten* are named by their base, and the difference is load-bearing.**
 *Beitragsbezogene* charges are a percentage of each gross premium and **stop when premiums
 stop**. *Kapitalbezogene* charges are a percentage per annum of the *Fondsguthaben*, taken
-monthly by cancelling units, and **continue after premiums stop** — they are the charge that
-makes a paid-up unit-linked policy decay, and in a long contract they are the dominant component
-of the *Effektivkosten* because they compound against the whole accumulated fund.
+monthly by cancelling units, and **continue after premiums stop** — they make a paid-up policy
+decay, and in a long contract they dominate the *Effektivkosten* because they compound against
+the whole accumulated fund.
 
 **The fund's own TER is inside the unit price and is not a policy charge.** It never appears in
-the policy ledger. A model that charges it explicitly double-counts; a model that ignores it
-overstates the policyholder's return. The composite handles it by **netting it off the assumed
-gross fund return**, which is exactly what it is. The *Kickback* the fund company pays the
-insurer out of that TER is set to **zero** on the ground that the composite's fund is a passive
-one that pays no trail — which also sidesteps two unresolved questions: whether and on what
-conditions an insurer may retain a *Bestandsprovision* under the IDD-derived *Zuwendungen* rules
-[R15] [REG-R33], and how a rebate credited back to the contract is treated inside the PRIIPs
+the policy ledger: a model that charges it explicitly double-counts, one that ignores it
+overstates the policyholder's return, and the composite **nets it off the assumed gross return**,
+which is exactly what it is. The *Kickback* paid out of that TER is set to **zero** on the ground
+that the composite's fund is a passive one that pays no trail — which sidesteps two unresolved
+questions: whether an insurer may retain a *Bestandsprovision* under the IDD-derived
+*Zuwendungen* rules [R15] [REG-R33], and how a rebate credited back is treated inside the PRIIPs
 cost calculation [R7] [R8] [REG-R32].
 
-**Commission is an expense, not a charge, and the composite sets it equal to the charge.** The
-reference implementation pays acquisition commission of **2.50 % of the *Beitragssumme* at
-inception** — exactly the acquisition charge it will recover over sixty months — plus a fixed
-issue expense of 200,00 € and renewal commission of 1.5 % of each premium **[std]**. **No German
-commission scale was established at any carrier.** The equality is deliberate: it makes the
-model demonstrate, in one number, the financing problem that the *Höchstzillmersatz* and the
-five-year spread exist to regulate, and it produces the new-business strain the first month of
-the worked example shows.
+**Commission is an expense, not a charge, and the composite sets it equal to the charge:**
+acquisition commission of **2.50 % of the *Beitragssumme* at inception** — exactly the
+acquisition charge it will recover over sixty months — plus a 200,00 € issue expense and renewal
+commission of 1.5 % of each premium **[std]**. **No German commission scale was established at
+any carrier.** The equality is deliberate: it makes the model demonstrate, in one number, the
+financing problem the *Höchstzillmersatz* and the five-year spread exist to regulate.
 
 ### Termination and values
 
@@ -416,18 +398,17 @@ the worked example shows.
 
 19. **Many unit-linked tariffs have no *Stornoabzug* at all**, precisely because § 169 Abs. 5
     VVG makes a deduction for unamortised acquisition costs ineffective and puts the burden of
-    proof on the insurer [R1] [REG-R28] [REG-R36]. The composite sets it to zero, with the
-    parameter present and switchable, on the ground that a non-zero level would be an unsourced
-    number attached to a contested clause. **No BGH decision on *Rückkaufswert*,
-    *Kostenverrechnung* or *Stornoabzug* is cited anywhere in this document**: the line of
-    authority is well known and no case reference could be established [R26] [REG-R36].
-20. Whether the statutory *Mindestrückkaufswert* floor — the *Deckungskapital* that results when
-    the acquisition costs are spread evenly over the first five contract years — formally
-    reaches the *Zeitwert* branch at all, or whether the same protection operates through the
-    tariff by limiting the deduction to one fifth per year so that the units are never removed
-    in the first place, **was not established**. The market implements the second, and that is
-    what the composite models. **Both readings produce the same numbers on this design**, which
-    is why the ambiguity is recorded rather than resolved.
+    proof on the insurer [R1] [REG-R28] [REG-R36]. The composite sets it to zero, the parameter
+    present and switchable, because a non-zero level would be an unsourced number attached to a
+    contested clause. **No BGH decision on *Rückkaufswert*, *Kostenverrechnung* or *Stornoabzug*
+    is cited anywhere in this document**: the line of authority is well known and no case
+    reference could be established [R26] [REG-R36].
+20. Whether the statutory *Mindestrückkaufswert* floor formally reaches the *Zeitwert* branch at
+    all, or whether the same protection operates through the tariff by limiting the deduction to
+    one fifth per year so the units are never removed in the first place, **was not
+    established**. The market implements the second, and that is what the composite models.
+    **Both readings produce the same numbers on this design**, which is why the ambiguity is
+    recorded rather than resolved.
 
 ---
 
@@ -472,17 +453,15 @@ cancellation of units at a price on a date.
 Everything that is *not* the unit holding is a cash flow in the insurer's own accounts: the
 charges it withholds or cancels, the *Risikobeitrag* it collects, the excess of a death benefit
 over the fund it releases, its expenses and its commission. **The reference model projects the
-non-unit cash flows and carries the unit fund only as the base on which they are computed**,
-which is the right emphasis for a liability model, because the unit fund is the policyholder's
-money passing through. Every benefit — the death benefit up to the fund, the *Rückkaufswert*,
-the *Teilentnahme*, the capital converted at *Rentenbeginn* — is funded by cancelling the
-policyholder's own units, so a gross presentation would count the same money twice. The insurer's
-non-unit cost on a death is **exactly the *riskiertes Kapital***, and nothing else.
-
-The VAG makes this structural rather than a modelling convenience: assets covering unit-linked
-liabilities are held **in the corresponding units**, in a separate *Anlagestock* section of the
-*Sicherungsvermögen*, and not in the general pool [R15] [REG-R7]. **A unit-linked projection has
-no investment-mismatch term.**
+non-unit cash flows and carries the unit fund only as the base on which they are computed** —
+the right emphasis for a liability model, because the unit fund is the policyholder's money
+passing through. Every benefit — the death benefit up to the fund, the *Rückkaufswert*, the
+*Teilentnahme*, the capital converted at *Rentenbeginn* — is funded by cancelling the
+policyholder's own units, so a gross presentation would count the same money twice, and the
+insurer's non-unit cost on a death is **exactly the *riskiertes Kapital***. The VAG makes this
+structural rather than a modelling convenience: assets covering unit-linked liabilities are held
+**in the corresponding units**, in a separate *Anlagestock* section of the *Sicherungsvermögen*
+[R15] [REG-R7], so **a unit-linked projection has no investment-mismatch term**.
 
 ### *Abschluss- und Vertriebskosten* — the cap, the spread and the cliff
 
@@ -565,14 +544,13 @@ so that the `max()` actually bites.
 approval, on two triggers: an unexpectedly strong increase in life expectancy, and a sustainable
 reduction in capital-market returns. **The clause is now used only in older contracts; today the
 guaranteed factor can be changed only under § 163 VVG** [R4] [R22] [REG-R27]. The Landgericht
-Köln held that the low-interest phase is not a sufficient ground, being entrepreneurial risk
-that cannot be passed to policyholders — **the case reference, date and parties could not be
+Köln held that the low-interest phase is not a sufficient ground, being entrepreneurial risk that
+cannot be passed to policyholders — **the case reference, date and parties could not be
 established and no docket is given here**. Trade press of 4 February 2021 reports the market
-leader's position that customers could not successfully object to an adjustment, which places a
-live commercial dispute at the largest German life insurer inside the window in which the current
+leader's position that customers could not successfully object to an adjustment, placing a live
+commercial dispute at the largest German life insurer inside the window in which the current
 in-force unit-linked book was written [R22]. The composite treats the guaranteed factor as
-**fixed for the life of the contract** and records § 163 VVG as a model risk rather than
-implementing it.
+**fixed for the life of the contract** and records § 163 VVG as a model risk.
 
 ### *Rückkaufswert* — the *Zeitwert* branch, and what it removes
 
@@ -616,19 +594,18 @@ different cash flows, different subsequent projections. Conflating them is a lis
 cancelled in the old fund and bought in the new one at the same *Bewertungsstichtag*; and
 **redirecting future premiums** to a different fund or split, leaving the existing holding where
 it is. **Which English word denotes which operation is not consistent across German insurers,
-and this document asserts no mapping** — each AVB defines its own terms. The reference
+and this document asserts no mapping** — each AVB defines its own terms, and the reference
 implementation names the **operations**, not the labels. Free-switch allowances and switch fees
 were **not established** at any carrier.
 
-***Ablaufmanagement*** is automatic phased de-risking in the run-up to *Rentenbeginn*: over the
-last few years the *Fondsguthaben* is moved in tranches out of equity funds into money-market or
-*Wertsicherungs* funds, or into the insurer's *Sicherungsvermögen*. It is normally opt-in or
-opt-out with a default; **whether it is a default, over how many years, in what tranches and
-into what were all not established** `[unverified]`. A five-year ramp is the shape most often
-described. With one fund and a deterministic return, a reallocation and a change of assumed
-return are arithmetically the same thing, so the composite implements *Ablaufmanagement* as a
-**deterministic glide of the assumed gross return from the equity assumption to a money-market
-assumption over the last 60 months**, switchable off — which is the honest representation of
+***Ablaufmanagement*** is automatic phased de-risking in the run-up to *Rentenbeginn*: the
+*Fondsguthaben* is moved in tranches out of equity funds into money-market or *Wertsicherungs*
+funds, or into the insurer's *Sicherungsvermögen*. **Whether it is opt-in or a default, over how
+many years, in what tranches and into what were all not established** `[unverified]`; a five-year
+ramp is the shape most often described. With one fund and a deterministic return a reallocation
+and a change of assumed return are arithmetically the same thing, so the composite implements it
+as a **deterministic glide of the assumed gross return from the equity assumption to a
+money-market assumption over the last 60 months**, switchable off — the honest representation of
 what is known.
 
 ### *Zuzahlung*, *Teilentnahme* and the *Abrufphase*

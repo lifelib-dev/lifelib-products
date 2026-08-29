@@ -157,56 +157,51 @@ Footnotes to **[std]** rows:
 1. Tax law forces a floor on the death sum but not equality: for contracts concluded from **1 April
    2009** the *Todesfallleistung* must be **at least 50 % of all premiums payable over the whole
    term** — the *Mindesttodesfallschutz*, or "50 %-Regel" [R12] [REG-R45]. Equal sums satisfy that
-   comfortably at any realistic charge level; a savings-dominant design does not. The composite
-   therefore carries the ratio as an explicit parameter with the 50 %-of-*Beitragssumme* floor as a
-   design constraint on every model point, and one model point is deliberately written at
-   `death_ratio = 0.60` to exercise it. A **second** reported tax condition requires the death
-   benefit to exceed the *Deckungskapital* or *Zeitwert* by at least 10 %; the summary attaches the
-   words "after five years", which does not parse as a rule, so **the 10 % figure is recorded and
-   its base, its time profile and the qualifier are [unverified]** [R12].
+   comfortably at any realistic charge level; a savings-dominant design does not. The ratio is
+   therefore an explicit parameter with the 50 %-of-*Beitragssumme* floor as a design constraint on
+   every model point, and one point is deliberately written at `death_ratio = 0.60` to exercise it.
+   A **second** reported condition requires the death benefit to exceed the *Deckungskapital* or
+   *Zeitwert* by at least 10 %; the summary attaches the words "after five years", which does not
+   parse as a rule, so **the 10 % figure is recorded and its base, time profile and qualifier are
+   [unverified]** [R12].
 2. **No source states the range of abbreviated-payment options offered**, so the
-   *Beitragszahlungsdauer* is a free model-point parameter here. The single-premium point is
-   included because *Einmalbeitragsgeschäft* is now roughly 30 % of German life premium income and
-   growing an order of magnitude faster than regular premium [REG-R53]; the product's own corpus
-   says nothing about single-premium endowment specifically.
-3. **No entry age was established at all**, for any German carrier [S11] [S12] [S13] [S15] group.
-   25 to 60 is a modeller's envelope chosen so that a 25-year contract issued at the top of it still
-   matures before age 90 and one issued at the bottom still matures after the age-62 tax threshold.
+   *Beitragszahlungsdauer* is a free model-point parameter. The single-premium point is included
+   because *Einmalbeitragsgeschäft* is now roughly 30 % of German life premium income and growing an
+   order of magnitude faster than regular premium [REG-R53]; this product's own corpus says nothing
+   about single-premium endowment specifically.
+3. **No entry age was established at all**, for any German carrier. 25 to 60 is a modeller's
+   envelope chosen so a 25-year contract issued at the top of it still matures before age 90 and one
+   issued at the bottom still matures after the age-62 tax threshold.
 4. The corpus contains an internal contradiction: a "minimum term" of 12 years and one of 3 to 5
    years both appear in the same fused summary, together with the 2,500 / 5,000 EUR minimum sums
-   [S11] [S12] [S13] [S15] group. The second set most likely belongs to a *Sterbegeldversicherung*
+   [S11] [S12] [S13] [S15] group; the second set most likely belongs to a *Sterbegeldversicherung*
    or a short savings contract the same search matched. The honest reading is that the corpus
    supports **a long-term contract of the order of two to three decades and nothing finer**. Twelve
-   years is a hard floor because it is the condition of the half-income tax rule [R10] [REG-R45];
-   25 years is chosen for the composite so that the anchor cell matures exactly at the age-62
-   threshold.
-5. See footnote 4 on the provenance of the observed minima. **No maximum *Versicherungssumme* was
-   established** and no premium level of any kind. 50,000 EUR is a round mid-market figure chosen so
+   years is a hard floor because it is the condition of the half-income tax rule [R10] [REG-R45].
+5. See footnote 4 on the provenance of the observed minima. **No maximum *Versicherungssumme* and no
+   premium level of any kind was established.** 50,000 EUR is a round mid-market figure chosen so
    the *Beitragssumme* over 25 years is of the order of the sum insured, which is what makes the
    *Mindesttodesfallschutz* test [R12] visibly non-trivial and the *Zillmerung* visibly material.
-6. Four *Überschussverwendung* systems are named — *verzinsliche Ansammlung*, *Bonussystem*
-   (*Summenzuwachs*), *Beitragsverrechnung* and *Anlage in Fondsanteilen* — and the corpus says that
-   as a rule "either the *verzinsliche Ansammlung* or the *Bonussystem*" applies, **without saying
-   which is more common** [R28]. The fourth system was not established by any search result and is
-   [unverified]. Debeka's own mechanics — surplus declared as a percentage of, and booked into, the
-   *Deckungskapital* [S3] [S9] — are the reserve-crediting form, which is closest to *verzinsliche
-   Ansammlung*, and that is why it is the base case. **Any statement that one system is "the market
-   default" would be [unverified].**
+6. Four systems are named — *verzinsliche Ansammlung*, *Bonussystem* (*Summenzuwachs*),
+   *Beitragsverrechnung* and *Anlage in Fondsanteilen* — and the corpus says that as a rule "either
+   the *verzinsliche Ansammlung* or the *Bonussystem*" applies, **without saying which is more
+   common** [R28]; the fourth was not established by any search result and is [unverified]. Debeka's
+   own mechanics — surplus declared as a percentage of, and booked into, the *Deckungskapital* [S3]
+   [S9] — are the reserve-crediting form, closest to *verzinsliche Ansammlung*, and that is why it
+   is the base case. **Any statement that one system is "the market default" would be [unverified].**
 7. **No German endowment wording located states an age basis.** Age last birthday is the ordinary
-   German convention and is adopted here without a citation; the alternative worth naming is
-   *versicherungstechnisches Alter* (age at the nearest birthday, or the *Differenz der
-   Jahreszahlen* used in some tariffs). On an annual grid the choice moves the first-year risk
-   premium by up to one year of mortality and nothing else.
-8. **Nothing in the corpus establishes a waiting period for an underwritten German endowment.**
-   German *Wartezeit* constructions belong to *Sterbegeldversicherung* and to simplified-issue
-   covers. The only period the corpus does establish that operates like one is the **three-year
-   *Selbsttötung* window** of § 161 VVG [R4] [REG-R26], which is a benefit substitution rather than
-   an exclusion and is specified separately below.
+   German convention and is adopted without a citation; the alternative worth naming is
+   *versicherungstechnisches Alter*. On an annual grid the choice moves the first-year risk premium
+   by up to one year of mortality and nothing else.
+8. **Nothing in the corpus establishes a waiting period for an underwritten German endowment**;
+   German *Wartezeit* constructions belong to *Sterbegeldversicherung* and simplified-issue covers.
+   The only period that operates like one is the **three-year *Selbsttötung* window** of § 161 VVG
+   [R4] [REG-R26], which is a benefit substitution rather than an exclusion and is specified below.
 9. Issue age 37 with a 25-year term makes the *Ablauf* fall at attained age **62** — the age the
    half-income tax rule requires for contracts concluded after 31 December 2011 [R10] [REG-R45] —
-   and the term comfortably exceeds the twelve-year minimum, so the anchor cell is a contract a
-   German buyer would actually have been sold. Twenty-five rows is also a projection a reader can
-   check by hand, which is the second criterion the anchor has to meet.
+   and comfortably exceeds the twelve-year minimum, so the anchor cell is a contract a German buyer
+   would actually have been sold. Twenty-five rows is also a projection a reader can check by hand,
+   which is the second criterion the anchor has to meet.
 
 ### Premiums
 
@@ -224,29 +219,25 @@ Footnotes to **[std]** rows:
 10. **This is the sharpest contrast with the frlib corpus**, which contained one published
     attained-age rate card for its comparable product. Delib has none: not one German endowment
     premium rate table, underwriting grid or *Risikozuschlag* scale is public, for any carrier. Every
-    premium in this library is therefore computed by the model's own equivalence principle on
-    **[std]** first-order bases, and **no delib premium reproduces a published figure**. The pricing
-    equation and its parameters are set out in full in `technical-notes.md`.
-11. Whether the *Beitragssumme* that fixes the 25 ‰ acquisition-cost cap is measured before or after
-    the *Ratenzahlungszuschlag* **was not established**. Measuring it before is the conservative
-    reading — it gives the smaller cap — and is adopted.
+    premium here is therefore computed by the model's own equivalence principle on **[std]**
+    first-order bases, and **no delib premium reproduces a published figure**. The pricing equation
+    is set out in full in `technical-notes.md`.
+11. Whether the *Beitragssumme* that fixes the 25 ‰ cap is measured before or after the
+    *Ratenzahlungszuschlag* **was not established**. Measuring it before is the conservative reading
+    — it gives the smaller cap — and is adopted.
 12. The three loadings are the customary market levels reported for German life business generally
     [R28]; **no carrier document in this corpus publishes its own scale**, so they are used as a
-    cited market range and any single value chosen is **[std]**. The justification given is the
-    greater administrative effort of collecting and processing premiums twelve times rather than
-    once a year, with correspondingly higher dunning effort [R28]. The ***echte* / *unechte*
+    cited market range and any single value chosen is **[std]**. The ***echte* / *unechte*
     distinction is load-bearing**: a contract providing for sub-annual premiums **from the outset**,
-    with a *Versicherungsperiode* of one month, carries **no** *Ratenzahlungszuschlag*, and the
-    loading attaches only where an annual contract is paid in instalments [R28]. A model applying a
-    frequency loading to a genuinely monthly contract is wrong, and the composite carries the form as
-    a model-point column so that both are exercised.
-13. § 163 VVG permits an adjustment on three cumulative conditions — a not-merely-temporary and
-    unforeseeable change in the *Leistungsbedarf*, a newly set premium that is appropriate and
-    necessary, and confirmation by an *unabhängiger Treuhänder* — and expressly excludes an
-    adjustment to the extent the benefits were insufficiently calculated originally [REG-R27]. The
-    reference implementation treats the *Bruttobeitrag* as level and guaranteed and says so; a model
-    point running *Beitragsverrechnung* carries a *Zahlbeitrag* below it, and that gap is a
-    discretionary surplus rebate withdrawable without invoking § 163 at all [REG-R53].
+    with a *Versicherungsperiode* of one month, carries **no** *Ratenzahlungszuschlag*, the loading
+    attaching only where an annual contract is paid in instalments [R28]. A model applying a
+    frequency loading to a genuinely monthly contract is wrong, so the form is a model-point column
+    and both are exercised.
+13. § 163 VVG permits an adjustment on three cumulative conditions and expressly excludes one to the
+    extent the benefits were insufficiently calculated originally [REG-R27]. The reference
+    implementation treats the *Bruttobeitrag* as level and guaranteed and says so; a model point
+    running *Beitragsverrechnung* carries a *Zahlbeitrag* below it, and that gap is a discretionary
+    surplus rebate withdrawable without invoking § 163 at all [REG-R53].
 
 ### Benefit provisions
 
@@ -265,26 +256,25 @@ Footnotes to **[std]** rows:
     corpus establishes what a *Schlussüberschussanteil* is [S16], that it is declared as a percentage
     of the *Deckungskapital* at the allocation date [S3], and that the *Gesamtverzinsung* is the
     *laufende Verzinsung* plus the terminal component expressed as a rate [S16], but **not one
-    number**. The reference implementation therefore accrues a **[std]** terminal rate as a
-    percentage of the *Deckungskapital* and pays it at maturity and on death, and **any
-    *Gesamtverzinsung* printed anywhere in this library is a construction, not a citation**. That the
-    terminal share is **not** paid on surrender in the base run is likewise **[std]**: the corpus says
-    the terminal bonus is allocated at the *Ablauf* "or on some earlier exits" [S16] without saying
-    which, and paying nothing on surrender is the choice that does not invent an entitlement. The
-    parameter is exposed so a user can pay a share on surrender.
-15. The mechanism is established in full and **the amount is not established at all** — not the
-    amount distributed in any year, by any insurer [R1] [R8] [R23] [REG-R24] [REG-R9]. In the
-    sustained low-rate environment the *Sicherungsbedarf* has routinely exhausted the
-    *Bewertungsreserven*, so the exit half share has frequently been nil: for a contract written on a
-    3,25 % or 4,00 % *Höchstrechnungszins* the *Sicherungsbedarf* has for most of the last decade
-    exceeded the fixed-income valuation reserves outright [REG-R9]. The base run therefore sets the
-    participation to **zero**, exposes it as a parameter, and says exactly this. A ***Sockelbetrag***
-    — a floor participation calculated under the LVRG — is mentioned by one weak secondary source
-    only; its existence, base and size are [unverified] [R8].
+    number**. The implementation accrues a **[std]** terminal rate on the *Deckungskapital* and pays
+    it at maturity and on death, and **any *Gesamtverzinsung* printed anywhere in this library is a
+    construction, not a citation**. That the terminal share is **not** paid on surrender in the base
+    run is likewise **[std]**: the corpus says it is allocated at the *Ablauf* "or on some earlier
+    exits" [S16] without saying which, and paying nothing on surrender is the choice that does not
+    invent an entitlement. The parameter is exposed so a user can pay a share.
+15. The mechanism is established in full and **the amount is not established at all** — not for any
+    year, by any insurer [R1] [R8] [R23] [REG-R24] [REG-R9]. In the sustained low-rate environment
+    the *Sicherungsbedarf* routinely exhausted the *Bewertungsreserven*, so the exit half share has
+    frequently been nil: for a contract on a 3,25 % or 4,00 % *Höchstrechnungszins* the
+    *Sicherungsbedarf* has for most of the last decade exceeded the fixed-income valuation reserves
+    outright [REG-R9]. The base run sets the participation to **zero**, exposes it as a parameter,
+    and says exactly this. A ***Sockelbetrag*** — a floor participation calculated under the LVRG —
+    is mentioned by one weak secondary source only; its existence, base and size are [unverified]
+    [R8].
 16. § 165 VVG's practical note records that attached *Zusatzversicherungen* — a
     *Berufsunfähigkeits-Zusatzversicherung*, say — are **regularly lost** when the main contract is
-    made *beitragsfrei* [R3]. The delib *Berufsunfähigkeit* product models the *selbständige* form
-    (`products/berufsunfaehigkeit/`), and the rider form is out of scope here.
+    made *beitragsfrei* [R3]. The delib *Berufsunfähigkeit* product models the *selbständige* form,
+    and the rider form is out of scope here.
 
 ### Underwriting and rating
 
@@ -320,35 +310,33 @@ Footnotes to **[std]** rows:
 | *Stornoabzug* | A pre-declared schedule falling from 10% of the *Deckungskapital* in years 1–5 to 2.5% from year 16 | observed range 5% to 20% of the *Deckungskapital*, one carrier only [S3] [R30]; schedule **[std]** (22) |
 | *Effektivkosten* | Disclosed, not modeled. **No numerical value, range or supervisory threshold was established** | [R9] [R17] [R18] [R19] [REG-R31]; treatment **[std]** (23) |
 
-18. Sitting the composite at the statutory ceiling is a deliberate and conservative choice: it makes
-    the *Zillmerung* mechanics maximally visible, it makes the § 169 Abs. 3 floor bite where a real
-    contract's would, and it is the one acquisition-cost level in the whole corpus that has a
-    citation behind it — as a **ceiling**, not as an observed level. **No actual acquisition-cost
-    level was established for any German carrier.** The one market datum is that *Abschlusskosten*
-    are reported to have **fallen by almost 8 % after the LVRG**, with author, sample and base year
-    not established [R29]; and that Die Stuttgarter cut its *Abschlussprovision* to 25 ‰,
-    compensating brokers with *Bestandsprovision* [R29], which is evidence that the statutory ceiling
-    became an operative commercial ceiling.
-19. This is the one administration-cost form the corpus actually establishes: "it is customary in
-    life insurance that ongoing costs are charged annually as a percentage of the ongoing premium
-    and/or as a percentage of the *Vertragsguthaben*" [R28]. The **level** is not established, for
-    any carrier, in any document.
+18. Sitting the composite at the statutory ceiling is deliberate: it makes the *Zillmerung* mechanics
+    maximally visible, makes the § 169 Abs. 3 floor bite where a real contract's would, and is the
+    one acquisition-cost level in the corpus with a citation behind it — as a **ceiling**, not as an
+    observed level. **No actual acquisition-cost level was established for any German carrier.** The
+    market data are that *Abschlusskosten* are reported to have **fallen by almost 8 % after the
+    LVRG**, with author, sample and base year not established, and that Die Stuttgarter cut its
+    *Abschlussprovision* to 25 ‰, compensating brokers with *Bestandsprovision* [R29] — evidence
+    that the statutory ceiling became an operative commercial ceiling.
+19. This is the one administration-cost form the corpus establishes: "it is customary in life
+    insurance that ongoing costs are charged annually as a percentage of the ongoing premium and/or
+    as a percentage of the *Vertragsguthaben*" [R28]. The **level** is not established, for any
+    carrier, in any document.
 20. **This form was not confirmed by any search result** — gap 17. The two established bases are
     percentage of premium and percentage of the *Vertragsguthaben* [R28]. The composite uses a
-    per-mille-of-*Versicherungssumme* charge anyway, for a reason that is worth stating rather than
-    hiding: the alternative established base, the *Vertragsguthaben*, **is negative in the early
-    years on a *gezillmert* contract**, and a charge computed as a percentage of a negative fund is a
-    negative charge, which is nonsense. A sum-insured base is the smallest departure from the sourced
-    forms that produces a well-defined charge at every duration, and it is labelled **[std]**
-    accordingly. A user with a *Produktinformationsblatt* in hand should replace both loadings.
+    per-mille-of-*Versicherungssumme* charge anyway, for a reason worth stating rather than hiding:
+    the *Vertragsguthaben* **is negative in the early years on a *gezillmert* contract**, and a
+    percentage of a negative fund is a negative charge, which is nonsense. A sum-insured base is the
+    smallest departure from the sourced forms that is well defined at every duration. A user with a
+    *Produktinformationsblatt* in hand should replace both loadings.
 21. **No charge level of any kind was established** — not one *Effektivkosten* value, not one
     *Abschlusskostenquote* or *Verwaltungskostenquote* for any carrier, not one commission rate other
     than Die Stuttgarter's 25 ‰ [R29] (gap 7). The market aggregate that exists is a
-    *Verwaltungskostenquote* of **2,4 %** on one 2024 measurement and **2,19 %** on another, with a
-    market spread from under 2 % to over 4 % [REG-R53] — a whole-book ratio, not a tariff parameter.
-    The levels above are round-number placeholders sized so that the first-year acquisition outgo
-    (300 EUR plus 25 ‰ of the *Beitragssumme*) modestly exceeds what the *Zillmerung* recovers,
-    producing the new-business strain a real German endowment carries.
+    *Verwaltungskostenquote* of **2,4 %** on one 2024 measurement and **2,19 %** on another, spread
+    from under 2 % to over 4 % [REG-R53] — a whole-book ratio, not a tariff parameter. The levels
+    above are round-number placeholders sized so the first-year acquisition outgo (300 EUR plus 25 ‰
+    of the *Beitragssumme*) modestly exceeds what the *Zillmerung* recovers, producing the
+    new-business strain a real German endowment carries.
 22. **The only quantified *Stornoabzug* in the corpus belongs to one carrier and is sub judice.**
     Debeka applies a **standard 5 % deduction** plus a **kapitalmarktabhängige Stornogebühr** which
     can be **5 %, 10 % or 15 % of the *Deckungskapital*** — an observed total range of **5 % to
@@ -356,19 +344,17 @@ Footnotes to **[std]** rows:
     [R30], and the BGH, holding that it violated neither the *Bezifferung* requirement nor the
     *Transparenzgebot*, **remitted the *Angemessenheit* question rather than deciding it** [R22]. A
     single-carrier figure under challenge is not a market range. The composite's declining schedule
-    is **[std]**, chosen to sit inside the observed range and to decline with duration, which is what
-    the *Angemessenheit* requirement points towards and what the older BGH line — requiring the
+    is **[std]**, sitting inside the observed range and declining with duration, which is what the
+    *Angemessenheit* requirement points towards and what the older BGH line — requiring the
     deduction to be *eindeutig erkennbar* and pre-declared — makes possible [R24].
-23. The *Effektivkostenquote* (Reduction in Yield) discloses all costs — acquisition, ongoing and
-    investment — as the reduction they cause in the contract's annual yield; the legal basis is § 7
-    Abs. 2 und 3 VVG i. V. m. §§ 2 und 3 VVG-InfoV, it was introduced by the LVRG and has been
-    mandatory in quotations since 1 January 2015 [R9] [REG-R31], and under PRIIPs the
-    *Effektivkosten* of a specimen contract must appear in the *Basisinformationsblatt* with total
-    costs and RIY per year at three time points — after one year, after half the term and at maturity
-    — split into one-off and ongoing costs [R19] [REG-R32]. **Reproducing an *Effektivkosten* figure
-    exactly needs the PRIIPs Annex VI algorithm and a specified holding period, neither of which
-    delib implements**, so the figure is a validation target for a charge parameterisation and not an
-    input [REG-R31].
+23. The *Effektivkostenquote* (Reduction in Yield) discloses all costs as the reduction they cause in
+    the contract's annual yield; the legal basis is § 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3
+    VVG-InfoV, it was introduced by the LVRG and has been mandatory in quotations since 1 January
+    2015 [R9] [REG-R31], and under PRIIPs the *Effektivkosten* of a specimen contract must appear in
+    the *Basisinformationsblatt* with total costs and RIY at three time points, split into one-off
+    and ongoing costs [R19] [REG-R32]. **Reproducing one exactly needs the PRIIPs Annex VI algorithm
+    and a specified holding period, neither of which delib implements**, so the figure is a
+    validation target for a charge parameterisation and not an input [REG-R31].
 
 ### Termination and values
 
@@ -390,22 +376,21 @@ Footnotes to **[std]** rows:
 
 24. "Gleichmäßige Verteilung der angesetzten Abschluss- und Vertriebskosten auf die ersten fünf
     Vertragsjahre" [R2] admits two implementations: a **straight-line** amortisation of the charged
-    acquisition cost in five equal instalments, and a **five-year Zillmerung** in which the cost is
-    annuitised over a five-year premium-paying period. The composite takes the straight-line reading,
-    which is what the words literally say; the difference between the two is small and is stated in
-    `technical-notes.md`, where it is a listed pitfall.
+    acquisition cost in five equal instalments, and a **five-year Zillmerung** annuitising it over a
+    five-year premium-paying period. The composite takes the straight-line reading, which is what the
+    words literally say; the difference is small and is quantified in `technical-notes.md`, where it
+    is a listed pitfall.
 25. Neither the *Mindestversicherungsleistung* itself nor any carrier's level was established. The
-    2,500 EUR figure is the lower of the two minimum sums the fused consumer summary reports [S11]
-    [S12] [S13] [S15] group, used here only as an order of magnitude — and footnote 4 records that
-    those two figures probably belong to a different product. One model point is written so the test
-    **fails** and the paid-up election converts into a surrender, because that branch of § 165 is the
-    one an implementation forgets [R3].
-26. German lapse is therefore a **three-way decrement** — surrender, *Beitragsfreistellung* and
-    premium-default conversion — the last two keeping the policy in force with a reduced benefit and
-    a continuing expense loading [REG-R28]. The reference implementation models **surrender as a
-    decrement and *Beitragsfreistellung* as a scheduled contract-level election**, and models the
-    premium-default path not at all, because §§ 37 and 38 VVG were never researched (gap 20). What
-    that costs the projection is stated in `technical-notes.md`.
+    2,500 EUR figure is the lower of the two minimum sums the fused consumer summary reports, used
+    only as an order of magnitude — and footnote 4 records that those figures probably belong to a
+    different product. One model point is written so the test **fails** and the paid-up election
+    converts into a surrender, because that branch of § 165 is the one an implementation forgets [R3].
+26. German lapse is a **three-way decrement** — surrender, *Beitragsfreistellung* and premium-default
+    conversion — the last two keeping the policy in force with a reduced benefit and a continuing
+    expense loading [REG-R28]. The reference implementation models **surrender as a decrement and
+    *Beitragsfreistellung* as a scheduled contract-level election**, and the premium-default path not
+    at all, because §§ 37 and 38 VVG were never researched (gap 20). What that costs the projection
+    is stated in `technical-notes.md`.
 
 ---
 
@@ -429,15 +414,13 @@ contract's own reserve**: *Zinsüberschussanteile* and *Schlussüberschussanteil
 percentage of the *Deckungskapital* calculated at the allocation date [S3]. **The timing is the
 balance date**: during the accumulation phase the contract is allocated *Zinsüberschussanteile* at
 each *Bilanzstichtag*, being 31 December of the year, and again at the end of the phase, and the
-amounts are **booked into the contract's *Deckungskapital*** [S9]. **The entitlement starts
+amounts are **booked into the contract's *Deckungskapital*** [S9] — an annuity wording of the same
+carrier, and that provenance is stated wherever the rule is used. **The entitlement starts
 immediately** with the start of insurance cover, with no qualifying period [S9]. And **the level is
-discretionary and may be zero**: the level of future *Überschussbeteiligung* cannot be guaranteed,
-it is set annually, it depends on capital-market development and on the insurer's own results
-[S3], and it **"may also be zero euros"** [S9]. That last sentence is the cleanest sourced
-justification in the corpus for classifying the surplus rate as an insurer-discretionary current
-assumption rather than a contractual one.
-
-### The four surplus components, and where they come from
+discretionary and may be zero**: it cannot be guaranteed, it is set annually, it depends on
+capital-market development and on the insurer's own results [S3], and it **"may also be zero euros"**
+[S9] — the cleanest sourced justification in the corpus for classifying the surplus rate as an
+insurer-discretionary current assumption rather than a contractual one.
 
 Carriers and commentators alike decompose the surplus into four components [S16] [S15] [S17] [R28]:
 
@@ -453,16 +436,14 @@ applying the 90 % is the mechanism by which the guaranteed interest is taken off
 policyholder's interest share is struck** [R6] [REG-R18] — the guarantee is funded first and only
 the excess is shared. Second, **the framings differ and the MindZV's is the one to cite**: consumer
 sources say "half of the *Kostenüberschuss*" [S16] where the MindZV requires 50 % of the wider
-*übriges Ergebnis* [R6]; both are recorded and any statement that the cost surplus specifically
-carries a 50 % minimum is [unverified] (gap 6).
-
-**These are minimum allocations to a provision, not to a contract.** The *Rohüberschuss* reaches the
-*Rückstellung für Beitragsrückerstattung* before it reaches any policy [R6] [REG-R10] [REG-R18], the
-minimum is computed and complied with **separately for *Altbestand* and *Neubestand*** [R6]
-[REG-R11], and between the RfB and the policy sits the insurer's declaration policy, described
-throughout as annual and discretionary [S3] [S9]. A delib model projecting a declared rate projects
-the **output** of that policy, and **must not present the 90/90/50 quotas as if they determined
-it**.
+*übriges Ergebnis* [R6], so any statement that the cost surplus specifically carries a 50 % minimum
+is [unverified] (gap 6). And **these are minimum allocations to a provision, not to a contract**:
+the *Rohüberschuss* reaches the *Rückstellung für Beitragsrückerstattung* before it reaches any
+policy [R6] [REG-R10] [REG-R18], the minimum is computed separately for *Altbestand* and
+*Neubestand* [R6] [REG-R11], and between the RfB and the policy sits the insurer's declaration
+policy, described throughout as annual and discretionary [S3] [S9]. A delib model projecting a
+declared rate projects the **output** of that policy, and **must not present the 90/90/50 quotas as
+if they determined it**.
 
 ### Überschussverwendung — how the allocated surplus is applied
 
@@ -518,14 +499,12 @@ plausible — the same *Sicherungsvermögen* backs both — but **the corpus doe
 identity is [unverified]** (gap 2). The composite uses 2,70 % because it is the only rate in the
 corpus attached to a classic endowment book at all. Direction of travel for 2026: about **one in
 three** insurers raised the *Überschussbeteiligung*, **Allianz did not**, and the caution is
-attributed to remaining *stille Lasten* in the investment portfolios and to conservative interest
-forecasts [R25] [R26].
-
-For orientation, the § 154 VVG *Modellrechnung* must show the possible *Ablaufleistung* at three
-interest rates set by § 2 Abs. 3 VVG-InfoV — the *Höchstrechnungszins* multiplied by 1,67, and that
-rate plus and minus one percentage point [REG-R25]. At a *Höchstrechnungszins* of 1,00 % the
-statutory triple is therefore **1,67 % / 2,67 % / 0,67 %**, and the composite's declared 2,70 % sits
-a hair above the middle rate of a German insurer's own statutory illustration.
+attributed to remaining *stille Lasten* and to conservative interest forecasts [R25] [R26]. For
+orientation, the § 154 VVG *Modellrechnung* must show the possible *Ablaufleistung* at three rates
+set by § 2 Abs. 3 VVG-InfoV — the *Höchstrechnungszins* multiplied by 1,67, and that rate plus and
+minus one percentage point [REG-R25] — so at a *Höchstrechnungszins* of 1,00 % the statutory triple
+is **1,67 % / 2,67 % / 0,67 %**, and the composite's declared 2,70 % sits a hair above the middle
+rate of a German insurer's own statutory illustration.
 
 ### Beteiligung an den Bewertungsreserven
 
@@ -537,16 +516,15 @@ and pay out half of the amount then determined**; earlier allocation may be agre
 contracts with an interest guarantee, that need being the sum, over contracts with an *überhöhter
 Rechnungszins*, of the actuarially valued interest obligation less the *Deckungsrückstellung* [R8]
 [REG-R9]. The legal hinge is § 153 Abs. 3 Satz 3 VVG in its LVRG form, a *Vorbehalt
-aufsichtsrechtlicher Regelungen* [R1] [REG-R20], and the leading decision is **BGH, 20 January 2021,
-IV ZR 318/19**, which held the cut-back lawful [R23] [REG-R36]. The stated purpose is to counter the
-fear, fuelled by the prolonged low-interest period, that life insurers would no longer be able to
-meet the benefits they had guaranteed [R8].
-
-The reference implementation sets the participation to **zero** and exposes it as a parameter
-(footnote 15). The reason is not that the mechanism is unimportant but that it is **path- and
-balance-sheet-dependent in a way a gross liability cash flow model cannot reproduce** [REG-R24]: the
-half share is struck on a quantity determined from the insurer's whole asset portfolio at the
-termination date and then tested against a *Sicherungsbedarf* computed over the whole in-force book.
+aufsichtsrechtlicher Regelungen* [R1] [REG-R20]; the leading decision is **BGH, 20 January 2021,
+IV ZR 318/19**, which held the cut-back lawful [R23] [REG-R36]; and the stated purpose is to counter
+the fear, fuelled by the prolonged low-interest period, that insurers could no longer meet the
+benefits they had guaranteed [R8]. The reference implementation sets the participation to **zero**
+and exposes it as a parameter (footnote 15) — not because the mechanism is unimportant but because
+it is **path- and balance-sheet-dependent in a way a gross liability cash flow model cannot
+reproduce** [REG-R24]: the half share is struck on a quantity determined from the insurer's whole
+asset portfolio at the termination date and then tested against a *Sicherungsbedarf* computed over
+the whole in-force book.
 
 ### Deckungskapital, Zillmerung and the negative early reserve
 
@@ -567,15 +545,13 @@ value equals the present value of the insurance benefits **plus** the *zillmerf�
 Abschlusskosten*, carrying a cost loading that permits annuity-style amortisation of the costs
 incurred at conclusion [R28]. The *Deckungskapital* is correspondingly **reduced by the present
 value of the acquisition costs not yet recovered**, so **in the early years a negative
-*Deckungskapital* arises** [R28]. The reason the cost is incurred at once is that insurers
-"compensate their distribution partners with an *Abschlussprovision* as a share of the contractually
-agreed *Beitragssumme* at conclusion of the contract, **regardless of whether the customer has
-already paid that premium sum**" [R28-family].
-
-***Zillmerung is a per-tariff choice a German insurer makes and publishes***, not an invariant: die
-Bayerische publishes a *gezillmert* edition (B 520127) and a non-*gezillmert* edition (B 520136) of
-the **same** tariff [S9]. The reference implementation must therefore be able to run with
-*Zillmerung* off, and one model point does.
+*Deckungskapital* arises** [R28]. The cost is incurred at once because insurers "compensate their
+distribution partners with an *Abschlussprovision* as a share of the contractually agreed
+*Beitragssumme* at conclusion of the contract, **regardless of whether the customer has already paid
+that premium sum**" [R28-family]. And ***Zillmerung is a per-tariff choice a German insurer makes and
+publishes***, not an invariant: die Bayerische publishes a *gezillmert* edition (B 520127) and a
+non-*gezillmert* edition (B 520136) of the **same** tariff [S9], so the reference implementation must
+be able to run with *Zillmerung* off, and one model point does.
 
 ### Rückkaufswert — § 169 VVG
 
@@ -617,13 +593,12 @@ concrete euro amount at conclusion: **an unambiguous calculation procedure suffi
 leaves the insurer no *Ermessensspielraum* and is free of unilateral determination rights** [R22]. A
 capital-market-dependent *Stornoabzug* is therefore lawful in principle, so the deduction is not
 necessarily a constant. The docket reads as **IV ZR 184/24**, inferred from a URL slug, and both it
-and the decision date are [unverified].
-
-The **older line** required the deduction to be *eindeutig erkennbar* — capable of being quantified —
-and struck down clauses that failed to distinguish sufficiently clearly between the *Rückkaufswert*
-and the *Stornoabzug*, left the deduction to the insurer's discretion, or named it only after the
-*Kündigung*; the 2007 decision is specifically about the *Kapitallebensversicherung* [R24]. **This is
-the historical reason delib treats the *Stornoabzug* as a contractual, pre-declared schedule.**
+and the decision date are [unverified]. The **older line** required the deduction to be *eindeutig
+erkennbar* — capable of being quantified — and struck down clauses that failed to distinguish
+sufficiently clearly between the *Rückkaufswert* and the *Stornoabzug*, left the deduction to the
+insurer's discretion, or named it only after the *Kündigung*; the 2007 decision is specifically about
+the *Kapitallebensversicherung* [R24]. **This is the historical reason delib treats the *Stornoabzug*
+as a contractual, pre-declared schedule.**
 
 ### Beitragsfreistellung — § 165 VVG
 
@@ -637,17 +612,17 @@ test is wrong [R3].
 The ***beitragsfreie Versicherungssumme*** is calculated by recognised actuarial rules, on the
 *Rechnungsgrundlagen der Prämienkalkulation*, **on the basis of the *Rückkaufswert* under § 169
 Abs. 3 bis 5**, and **must be stated in the contract for each *Versicherungsjahr*** [R3] [REG-R28].
-Two structural consequences follow. The paid-up benefit is a **function of the surrender value** and
-therefore **inherits the five-year spreading floor**: the paid-up sum cannot be depressed below what
-the floored reserve will buy. And the schedule of paid-up sums by year is **contractual and tabulated
-at issue**, not computed at the time of election.
+Two structural consequences follow: the paid-up benefit is a **function of the surrender value** and
+therefore **inherits the five-year spreading floor**, so it cannot be depressed below what the
+floored reserve will buy; and the schedule of paid-up sums by year is **contractual and tabulated at
+issue**, not computed at the time of election.
 
 How it differs from *Kündigung*: both are struck at period end and run off the same *Rückkaufswert*
 base [R2] [R3], but *Beitragsfreistellung* **keeps the contract alive** with a reduced sum insured,
 keeps the policyholder participating in surplus, and pays nothing now, while *Kündigung* **ends** the
 contract, pays now, and — uniquely — attracts the *Mindestrückkaufswert* floor, which § 169 Abs. 3
 expresses for the *Kündigung* case [R2]. The paid-up route also **loses attached
-*Zusatzversicherungen*** [R3]. The reduction may be **in whole or in part** [S7]. And GDV's headline
+*Zusatzversicherungen*** [R3], and the reduction may be **in whole or in part** [S7]. GDV's headline
 *Stornoquote* **counts conversion to *beitragsfrei* as part of the lapse rate** [R20], so that figure
 is not a surrender rate.
 
