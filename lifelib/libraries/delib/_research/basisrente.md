@@ -880,7 +880,8 @@ for a cash-flow model.
 
 ### 4. Certification under § 5a AltZertG
 
-- Certification by the **Bundeszentralamt für Steuern** is a **condition of the relief**, not of the contract's validity [R3] [R9]; required for contracts concluded from 1 January 2010 `[unverified]`.
+- Certification by the **Bundeszentralamt für Steuern** is a **condition of the relief**, not of the
+  contract's validity [R3] [R9]; required from 1 January 2010 `[unverified]`.
 - Certification is a **formal conformity check** and expressly **not a quality mark** [R10]: it says
   nothing about charges, investment quality or the provider's strength, and every delib document
   mentioning it must repeat that.
@@ -1575,8 +1576,7 @@ corpus does not source — the *Rentenfaktor*, the charge levels, the minimum pr
     most recent and the least likely to be correctly recalled. The rounding convention is inferred.
 
 12. **A possible fourth asset form — an index-linked Basisrente — was not established** [S10]. If it
-    exists it is a bridge to delib product 4 and the product-spec should acknowledge the possibility
-    without asserting it.
+    exists it is a bridge to delib product 4; acknowledge the possibility without asserting it.
 
 13. **Whether a Basisrentenvertrag may be transferred to another provider was not resolved.** The
     market understanding is that a transfer to another Basisrentenvertrag of the same person is

@@ -29,7 +29,7 @@ BU market from beneath. *Dread-disease* / *schwere Krankheiten* cover, *Unfallve
 *Betriebliche Altersversorgung* in all five *Durchführungswege*, *Gruppenversicherung* (including
 the *Kollektiv-BU* and *bAV-BU* forms), *private Krankenversicherung* and the statutory
 *Erwerbsminderungsrente* itself are outside the delib library; the last of these is nevertheless
-described at length in section 25, because the German BU contract is designed as a top-up on it and
+described at length in section 24, because the German BU contract is designed as a top-up on it and
 its level is the reason the private product exists at all.
 
 These notes are the **citation ground truth** for the delib `berufsunfaehigkeit` product documents.
@@ -146,18 +146,14 @@ turns on:
 
 ## Primary sources
 
-Every entry below carries the same retrieval status, stated once here rather than repeated sixteen
-times: **Retrieved: no — direct HTTP egress blocked in the build environment; no search
-corroboration (session search budget exhausted).** Each entry is therefore a **known reference**:
-publisher, document type, and a statement of what that class of document contains and why this
-product needs it. Where a *Content* block records a specific parameter, that parameter is the
-author's recollection of German market practice and is tagged `[unverified]`; it is recorded here
-so that a later reader knows **which document to open to check it**, which is the whole function of
-this section under the delib retrieval conditions.
-
-Insurer names below are real German life insurers, all of which write BU business. **Tariff and
-product names are recalled, not confirmed**, and every one carries `[unverified]`; where the
-recollection is weak the entry says so and names only the insurer and the document type.
+Every entry carries the same retrieval status, stated once here rather than sixteen times:
+**Retrieved: no — direct HTTP egress blocked in the build environment; no search corroboration
+(session search budget exhausted).** Each entry is therefore a **known reference**: publisher,
+document type, and what that class of document contains and why this product needs it. Where a
+*Content* block records a specific parameter it is the author's recollection, tagged `[unverified]`,
+recorded so a later reader knows **which document to open to check it**. Insurer names are real
+German life insurers, all of which write BU; **tariff and product names are recalled, not
+confirmed**, and every one carries `[unverified]`.
 
 ### S1 — GDV, *Allgemeine Bedingungen für die selbständige Berufsunfähigkeitsversicherung* (unverbindliche Musterbedingungen)
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV), Berlin
@@ -188,7 +184,7 @@ recollection is weak the entry says so and names only the insurer and the docume
   correspondingly reduced or extinguished rider. Needed here because delib's `basisrente` product
   (product 5) and `klassische_rentenversicherung` (product 2) may both carry this rider, and because
   the tax treatment of a BUZ inside a *Basisrente* is materially different from that of an SBU
-  (section 24).
+  (section 23).
 
 ### S3 — Allianz Lebensversicherungs-AG, AVB for the *selbständige Berufsunfähigkeitsversicherung*, with the associated *Produktinformationsblatt*
 - Publisher: Allianz Lebensversicherungs-AG, Stuttgart — the largest German life insurer
@@ -506,7 +502,7 @@ numbering it encodes is itself part of what is unverified.
   (reduction in yield); **for a pure risk contract there is no yield to reduce**, so a BU
   *Produktinformationsblatt* discloses costs only through the *Brutto* / *Zahlbeitrag* pair and not
   as a percentage figure. That absence is why the delib BU charge assumptions are entirely `[std]`
-  (section 20) while the delib endowment's are not.
+  (section 19) while the delib endowment's are not.
 
 ### R13 — Deckungsrückstellungsverordnung (DeckRV) — *Höchstrechnungszins* and *Höchstzillmersatz*
 - Publisher: Bundesministerium der Finanzen
@@ -636,13 +632,13 @@ numbering it encodes is itself part of what is unverified.
   participating insurers, plus the firm's ratings of BU *Bedingungen*
 - URL: not established
 - Content: **the usual publisher of the German *Anerkennungsquote***, and the reference this file's
-  section 26 points at. The study reports, per participating insurer and in aggregate: the
+  section 25 points at. The study reports, per participating insurer and in aggregate: the
   proportion of decided BU claims accepted; the breakdown of declines by reason (BU degree not
   reached, *Anzeigepflichtverletzung*, *Anfechtung*, failure to co-operate, claim withdrawn); the
   average duration of a claims decision; the proportion of decisions reached without a medical
   examination; and the proportion of disputes. It also rates BU wordings clause by clause, which is
   where the market's ranking of *Verweisung*, *AU-Klausel* and *Nachversicherungsgarantie* terms
-  comes from. Every figure in section 26 attributed to an *Anerkennungsquote* should be checked
+  comes from. Every figure in section 25 attributed to an *Anerkennungsquote* should be checked
   against this study.
 
 ### R22 — Morgen & Morgen, *M&M Rating Berufsunfähigkeit* and the annual causes analysis
@@ -650,7 +646,7 @@ numbering it encodes is itself part of what is unverified.
 - Doc type: annual rating of BU tariffs and an accompanying analysis of the **causes of BU**
 - URL: not established
 - Content: **the usual publisher of the German causes-of-BU distribution** — the percentages in
-  section 26. The analysis groups causes into roughly six classes (*Nervenkrankheiten* including
+  section 25. The analysis groups causes into roughly six classes (*Nervenkrankheiten* including
   psychiatric conditions; *Erkrankungen des Skelett- und Bewegungsapparates*; *Krebs und andere
   bösartige Geschwülste*; *Unfälle*; *Erkrankungen des Herzens und des Gefäßsystems*; *sonstige
   Erkrankungen*) and publishes the split annually, so the series shows the long rise of the
@@ -727,7 +723,7 @@ numbering it encodes is itself part of what is unverified.
     *sonstige Einkünfte* at the cohort *Besteuerungsanteil* — a far heavier taxation of the benefit
     in exchange for a far larger deduction of the premium.
   All specific figures here are `[unverified]`, and the *Ertragsanteil* table is reproduced in
-  section 24 with the same tag.
+  section 23 with the same tag.
 
 ### R28 — BMF-Schreiben on the *Basisrente* and the conditions for a BU component
 - Publisher: Bundesministerium der Finanzen
@@ -790,11 +786,10 @@ numbering it encodes is itself part of what is unverified.
 
 ## Extracted facts, organised by mechanic
 
-This is the section the `product-spec.md` and `technical-notes.md` are written from. Under the
-retrieval conditions of this build it is also the section that carries the file's weight: the
-**mechanics** of the German BU contract are well established and are set out here in full, and the
-`[S#]` / `[R#]` tags name the document each statement must be checked against. Every **level** is
-either `[std]` with a rationale or `[unverified]` with a warning.
+This is the section `product-spec.md` and `technical-notes.md` are written from, and under this
+build's retrieval conditions it carries the file's weight: the **mechanics** are well established
+and set out in full, the `[S#]` / `[R#]` tags name the document each statement must be checked
+against, and every **level** is either `[std]` with a rationale or `[unverified]` with a warning.
 
 ### 1. Product structure and legal form
 
@@ -943,7 +938,7 @@ non-German modeller most often gets wrong.
   understating the timing but not the amount; delib takes that simplification and records it as a
   pitfall.
 - **Not every incepted BU becomes a paid claim.** The proportion accepted is the *Anerkennungsquote*
-  (section 26). For a projection model this is an **acceptance factor** applied to the inception
+  (section 25). For a projection model this is an **acceptance factor** applied to the inception
   rate, not a separate state.
 
 ### 6. Nachprüfung, Leistungsfreiheit and Reaktivierung (§ 174 VVG)
@@ -1170,7 +1165,7 @@ Two escalations, on different quantities, at different times, and routinely conf
   inside the host contract's premium, the *Beitragsbefreiung* covers the whole package, and the
   rider cannot outlive the host.
 - **Inside a *Rentenversicherung* or *Kapitallebensversicherung* (Schicht 3)** the tax treatment is
-  the same as an SBU's (section 24) and the rider is bought for the *Beitragsbefreiung* on the
+  the same as an SBU's (section 23) and the rider is bought for the *Beitragsbefreiung* on the
   savings premium.
 - **Inside a *Basisrente* (Schicht 1)** the economics change entirely. The whole premium — savings
   plus BU — is deductible as an *Altersvorsorgeaufwendung*, provided the BU component satisfies the

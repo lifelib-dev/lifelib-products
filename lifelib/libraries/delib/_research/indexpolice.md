@@ -702,10 +702,9 @@ level is either `[unverified]` or `[std]`.
 - **The delta is one clause set**: how the annually declared *Überschuss* is applied. In product 2 it
   is credited as interest to the *Deckungskapital*. In an Indexpolice the policyholder may elect,
   each year, to have it spent on a one-year index-linked payoff instead.
-- Legally the index participation is therefore a form of ***Überschussverwendung*** under § 153 VVG
-  [R1] and has **no independent statutory footing**. The policyholder's statutory right is to a
-  share of surplus; the contract says how the share is applied; the index formula is a contract
-  term, reviewable as such.
+- Legally it is a form of ***Überschussverwendung*** under § 153 VVG [R1] with **no independent
+  statutory footing**: the policyholder's statutory right is to a share of surplus, the contract says
+  how that share is applied, and the index formula is a contract term, reviewable as such.
 - The contract is a **conventional profit-participating contract** in regulation and accounting, not
   an *indexgebundene Lebensversicherung* in the balance-sheet sense, because the policyholder does
   not bear the investment risk [R15]. This classification decides how it is reserved, how it is
@@ -967,18 +966,15 @@ dominant one.
   | the index's dividend yield | falls | options are on the price index; a higher dividend yield lowers the forward |
   | the risk-free rate | rises, indirectly | it raises the investment return and hence the surplus available |
 
-- **Historical direction of travel**, stated qualitatively because no level is established: caps were
-  compressed hard through the low-interest decade to the early 2020s, as the surplus available to buy
-  them shrank with the *Höchstrechnungszins* and the run-off of high-yielding assets [R7]; the rise in
-  interest rates from 2022 and the increase of the *Höchstrechnungszins* to 1,00 % for 2025 [R18]
-  restored surplus and, with it, room in the caps. **No cap value for any named insurer in any named
-  year is established in this file**, and none is guessed. Gap 3.
-- **The plausible range, as a `[std]` band with a stated rationale**: monthly caps in this product
-  family have been observed in the market over the 2010s and 2020s between roughly **1,5 % and
-  5,0 %**, with the typical band around **2,5 % to 4,0 %** `[unverified]`. The delib reference
-  implementation uses **`Cap = 3,0 % per month` as a `[std]` parameter**, chosen as the midpoint of
-  that band, and the technical notes are required to run the worked example's sensitivity across the
-  band rather than presenting the midpoint as a fact.
+- **Historical direction of travel**, qualitative because no level is established: caps compressed
+  hard through the low-interest decade to the early 2020s as the surplus available to buy them shrank
+  [R7], then recovered room as rates rose from 2022 and the *Höchstrechnungszins* went to 1,00 % for
+  2025 [R18]. **No cap value for any named insurer in any named year is established here**, and none
+  is guessed. Gap 3.
+- **The plausible range, as a `[std]` band with a rationale**: monthly caps in this family have been
+  seen over the 2010s and 2020s between roughly **1,5 % and 5,0 %**, typically **2,5 % to 4,0 %**
+  `[unverified]`. delib uses **`Cap = 3,0 % per month`** as `[std]`, the midpoint, and the technical
+  notes must run the worked example across the band rather than present the midpoint as a fact.
 - **Announcement.** The Cap is communicated to the policyholder in the annual notification [S5] and
   in the *Standmitteilung* [S10]. Neither document class was located.
 - **Legal review.** The *Cap-Festlegung* is a unilateral determination of a contractual term,
@@ -1061,15 +1057,13 @@ dominant one.
   100 %** `[unverified]` — with 80 % or 90 % the recommended default. The arithmetic explains the
   whole design generation: **every euro of guarantee not promised is a euro that can back risk
   assets, and therefore a larger option budget.**
-- **The wrapper decides the floor** [R12]: a *Riester* index variant must guarantee 100 % of
-  contributions and allowances and therefore has the smallest option budget of the four wrappers; a
-  *Basisrente* or *Schicht 3* index variant may guarantee less; *Direktversicherung* under a
-  *Beitragszusage mit Mindestleistung* has its own statutory floor and is out of scope.
-- **`[std]` for delib**: *Garantieniveau* **90 % of *Beitragssumme***, on the reasoning that it is the
-  level at which a 1,00 % *Höchstrechnungszins* contract can still finance a visible option budget
-  over a 30-year term, and that it sits inside the observed 60–100 % band. The specification exposes
-  the level and the technical notes show the option budget as a function of it — that dependency is
-  the most instructive single sensitivity this product has.
+- **The wrapper decides the floor** [R12]: a *Riester* variant must guarantee 100 % of contributions
+  and allowances and so has the smallest option budget of the four; *Basisrente* and *Schicht 3* may
+  guarantee less; *Direktversicherung* has its own statutory floor and is out of scope.
+- **`[std]` for delib**: *Garantieniveau* **90 % of *Beitragssumme***, the level at which a 1,00 %
+  contract can still finance a visible option budget over a 30-year term, inside the observed
+  60–100 % band. The technical notes show the option budget as a function of it — the most
+  instructive single sensitivity this product has.
 - **Interaction with the lock-in.** The effective guarantee is
   `max( Beitragsgarantie, guaranteed capital including all locked-in index credits )`, the second
   term dominating after a few good years. A projection must carry both, and a test should assert that
@@ -1445,12 +1439,11 @@ this author's assessment of the plausible market band and is itself `[unverified
 | *Stornoquote* | 3 % per year, level | 1.2 % – 2.7 % market-wide | inherited `[std]`; no index-specific rate exists |
 | *Wahlrecht* election `w` | 1.00 (full index) every year | 0.00 – 1.00 | the product exists to demonstrate the index arm |
 
-- **The one parameter that cannot be chosen freely is the Cap**, because it is determined by the
-  budget (sections 3, 8 and 20). delib's 3,00 % is the headline; the calibrated value is what the
-  model must actually use, and the technical notes must publish both.
-- **The *Eintrittsalter*, the *Beitrag* and the term are pure `[std] `construction.** No
-  *Produktinformationsblatt* was located [S3][S11] and therefore no commercial envelope was
-  established. Gap 5.
+- **The one parameter that cannot be chosen freely is the Cap**, being determined by the budget
+  (sections 3, 8, 20): delib's 3,00 % is the headline, the calibrated value is what the model must
+  use, and the technical notes must publish both. **The *Eintrittsalter*, the *Beitrag* and the term
+  are pure `[std]` construction** — no *Produktinformationsblatt* was located [S3][S11], so no
+  commercial envelope was established. Gap 5.
 
 ### 23. Market context
 
@@ -1586,10 +1579,9 @@ working network knows exactly what to go and get, and in what order.
    because no *Produktinformationsblatt* was located [S3][S11].
 
 6. **No charge level of any kind was established**, and no PRIIP *Basisinformationsblatt* was located
-   [S4]. Every charge in delib is `[std]`. The index-specific give-ups — the option dealing spread
-   inside the Cap, the index-level fee inside a house index, the volatility-target drag — are
-   **structurally invisible in any disclosure**, which is a finding rather than a gap, but their
-   magnitude is a gap.
+   [S4]; every charge in delib is `[std]`. The index-specific give-ups — dealing spread inside the
+   Cap, index-level fee inside a house index, volatility-target drag — are **structurally invisible in
+   any disclosure**, which is a finding; their magnitude is the gap.
 
 7. **The AltZertG *Produktinformationsblatt* with the *Chancen-Risiko-Klasse* was not located**
    [S11][R12]. This is the most frustrating single absence, because it is the German market's one

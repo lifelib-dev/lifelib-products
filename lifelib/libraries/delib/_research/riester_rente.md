@@ -889,12 +889,10 @@ as to level and are disclosed rather than capped [R4] [R5].
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration.
 - Content: the secondary layer that, in a normal research pass, supplies the price points and the
-  observed spread across carriers that a representative composite is built from — *Effektivkosten*
-  comparisons, *Rentenfaktor* tables, guarantee-design ratings and the running commentary on
-  providers leaving the market. **Nothing from any of them is established in this file.** They are
-  named so that the gaps register can say precisely what a follow-up pass should read, and so that
-  no delib document mistakes their absence for their non-existence. Anything they would have
-  supplied is `[std]` downstream.
+  observed carrier spread a representative composite is built from — *Effektivkosten* comparisons,
+  *Rentenfaktor* tables, guarantee-design ratings, and the commentary on providers leaving the
+  market. **Nothing from any of them is established in this file.** They are named so the gaps
+  register can say what a follow-up pass should read. Anything they would have supplied is `[std]`.
 
 ---
 
@@ -1143,22 +1141,21 @@ they are these, with every specific `[unverified]`:
     frequently conflated in consumer material.
   - **Not the risk-cover premiums.** Contributions applied to a *Berufsunfähigkeits-* or
     survivor's-benefit rider are excluded, within a statutory share `[unverified]` [R1].
-- **Why it is compulsory.** Certification is unavailable without it [R1] [R2], and without
-  certification there is no subsidy. So the guarantee is not a competitive feature a provider may
-  drop; it is the entry ticket. That is the fact that makes the *Höchstrechnungszins* [R22] a
-  Riester-market variable rather than a pricing detail, and it is the whole content of section 19.
+- **Why it is compulsory.** Certification is unavailable without it [R1] [R2] and there is no subsidy
+  without certification, so the guarantee is not a competitive feature a provider may drop — it is
+  the entry ticket. That is what makes the *Höchstrechnungszins* [R22] a Riester-market variable
+  rather than a pricing detail, and it is the whole content of section 19.
 - **How an insurer meets it.** In the classic chassis, by holding the *Deckungskapital* in the
   general account and accumulating it at the guaranteed *Rechnungszins*; the guarantee then binds
   only if the cumulative charges exceed the cumulative guaranteed interest, which at a low
   *Rechnungszins* they easily do (section 19). In the unit-linked chassis, by a dynamic split
   between a guarantee asset and a risk asset (section 18). In the bank chassis, trivially [S12].
 - **Modelling it.** The guarantee is a **running accumulator** on contributions and Zulagen, not a
-  discounted quantity: `G(t) = G(t−1) + Eigenbeitrag(t) + Zulage(t)`, with `G(0) = 0`. The
-  conversion capital at `Rentenbeginn` is `max(AV(T), G(T))`, and the excess of `G(T)` over `AV(T)`
-  — the *Garantielücke* — is a **cost the insurer bears out of its own funds** in that scenario. A
-  model that never exhibits a positive *Garantielücke* on any model point has not demonstrated the
-  product's defining mechanic, and the delib model point set must contain at least one point on
-  which it bites.
+  discounted quantity: `G(t) = G(t−1) + Eigenbeitrag(t) + Zulage(t)`, `G(0) = 0`. The conversion
+  capital at `Rentenbeginn` is `max(AV(T), G(T))`, and the excess of `G(T)` over `AV(T)` — the
+  *Garantielücke* — is a **cost the insurer bears out of its own funds**. A model that never exhibits
+  a positive *Garantielücke* on any model point has not demonstrated the product's defining mechanic,
+  so the delib model point set must contain at least one point on which it bites.
 
 ### 9. The accumulation phase
 
@@ -1646,9 +1643,9 @@ private annuity — is not a composite at all.
     the earlier sequence used in the section 19 tables — 0,90 %, 1,75 %, 2,25 % — is `[unverified]`
     as to both levels and effective dates. **The arithmetic in section 19 is exact given those rates
     and is only as good as they are.**
-19. **This file had no research channel at all.** Direct HTTP egress was blocked and the session's
-    `WebSearch` budget was exhausted before the file was begun. Three items are inherited from
-    sibling delib sessions' searches and are attributed at the point of use [S3] [S4] [S5] [R22];
-    everything else rests on general knowledge of German pension law, disciplined by tagging every
-    specific number. **A reader should treat this file as a well-organised set of hypotheses about
-    what the documents say, not as a record of what they say.**
+19. **This file had no research channel at all.** Egress was blocked and the session's `WebSearch`
+    budget was exhausted before the file was begun. Items inherited from sibling delib sessions'
+    searches are attributed at the point of use [S3] [S4] [S5] [R22]; everything else rests on
+    general knowledge of German pension law, disciplined by tagging every specific number. **Treat
+    this file as a well-organised set of hypotheses about what the documents say, not a record of
+    what they say.**

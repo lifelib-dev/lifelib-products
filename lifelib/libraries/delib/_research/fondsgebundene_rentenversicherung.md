@@ -91,10 +91,10 @@ not one *Produktinformationsblatt*, not one *Verbraucherinformation* was opened.
 
 **Limit 2 — the session's `WebSearch` budget was already exhausted when this file was begun.** The
 budget of 200 calls was shared across the parallel researchers building the ten delib products and
-was consumed by the regulatory and contract-law research and by the two products written first.
-Every search attempted for this product returned the budget-exhausted response. **There was
-therefore no research channel of any kind for this file** — not the weak one (search summaries)
-that the `kapitallebensversicherung` and `klassische_rentenversicherung` files had.
+was consumed by the regulatory research and by the products written first. Every search attempted
+for this product returned the budget-exhausted response. **There was therefore no research channel
+of any kind for this file** — not even the weak one (search summaries) that the
+`kapitallebensversicherung` and `klassische_rentenversicherung` files had.
 
 What follows from that, exactly, and it is applied without exception below:
 
@@ -103,38 +103,31 @@ What follows from that, exactly, and it is applied without exception below:
    Where a document was corroborated by search **in a sibling delib research file**, that is said
    explicitly, with the sibling's own id, and the corroboration is attributed to that file rather
    than claimed here. **Never `Retrieved: yes`.**
-2. **No verbatim quotation is invented.** Nothing in this file is presented as the wording of an
-   instrument or of a *Bedingungswerk*. Where German wording appears it is a **term of art** —
-   *Fondsguthaben*, *Anteileinheiten*, *Beitragsverrechnung* — not a quotation, and the
-   terminology table below says so.
+2. **No verbatim quotation is invented.** Nothing here is presented as the wording of an instrument
+   or of a *Bedingungswerk*. Where German wording appears it is a **term of art**, not a quotation.
 3. **No URL, document number, edition, tariff code, page count or publication date is guessed.**
-   Where a URL is not available the entry says `URL: not established`. Where a canonical
-   `gesetze-im-internet.de` form of a statutory article is given it is marked `[unverified]`,
-   because no search in this session returned it. Two URLs below are exceptions and are labelled
-   as such: they were returned by searches run for the sibling files and are recorded there.
-4. **`[unverified]` is used generously and keeps its normal meaning.** It is applied to **every**
-   specific paragraph number, effective date, monetary amount, percentage, tariff level, product
-   name and market figure in this file. It is **not** applied to the general shape of a mechanic
-   that is common ground in German life-insurance practice — that the *Beitrag* is reduced by
-   charges before units are bought, that charges in force are taken by cancelling units, that a
-   *Rentenfaktor* converts capital into annuity — because tagging those would drown the signal.
-   The rule that separates the two: **the moment a claim becomes specific and numeric, it carries
+   Where a URL is not available the entry says `URL: not established`. A canonical
+   `gesetze-im-internet.de` form of a statutory article is marked `[unverified]`. The few URLs that
+   appear were returned by searches run for the sibling files and are attributed to them.
+4. **`[unverified]` is used generously.** It is applied to **every** specific paragraph number,
+   effective date, monetary amount, percentage, tariff level, product name and market figure. It is
+   **not** applied to the general shape of a mechanic that is common ground in German practice —
+   that the *Beitrag* is reduced by charges before units are bought, that charges in force are taken
+   by cancelling units, that a *Rentenfaktor* converts capital into annuity — because tagging those
+   would drown the signal. **The moment a claim becomes specific and numeric, it carries
    `[unverified]` or it becomes `[std]`.**
 5. **Uncertain numbers are `[std]` parameters, not citations.** Where the mechanic is certain and
    the level is not — an *Abschlusskostensatz*, a *Verwaltungskostensatz*, a *Rentenfaktor*, a
    *Stornoquote*, a fund return — this file ships a **`[std]` value with a stated rationale and an
    argued plausible range**, and says on what arithmetic the value rests. A `[std]` number is
-   honest. A `[S4]` number that no one read is not. Section 19 and the gaps register together
-   record every figure that had to be handled this way, and it is most of them.
+   honest; a `[S4]` number that no one read is not. The gaps register records every figure that had
+   to be handled this way, and it is most of them.
 
-**The consequence for the reader.** The **mechanics** in sections 1–18 are the part of this file
-that is load-bearing and the part that does not depend on having a PDF open: how a monthly premium
-becomes units, in what order the charges bite, how a *Risikobeitrag* is levied by cancellation,
-why the *Rückkaufswert* of a fondsgebundene policy is a *Zeitwert* and what that removes from the
-calculation, what the *Rentenfaktor* guarantee actually promises. Those are written long and
-precise, and they are correct as descriptions of German market practice. The **levels** are not
-sourced and are not presented as if they were. A delib citation is a pointer to the instrument a
-claim should be checked against; it is not a certificate that anyone checked it.
+**The consequence for the reader.** The **mechanics** in sections 1–18 are the load-bearing part of
+this file and the part that does not depend on having a PDF open. They are written long and precise
+and they are correct as descriptions of German market practice. The **levels** are not sourced and
+are not presented as if they were. A delib citation is a pointer to the instrument a claim should be
+checked against; it is not a certificate that anyone checked it.
 
 ---
 
@@ -217,16 +210,15 @@ result.
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted). The
   **document type** is established indirectly: the sibling delib research on
   `klassische_rentenversicherung` corroborated by search both the GDV *Musterbedingungen* service
-  index and a model-conditions set for the *Rentenversicherung mit aufgeschobener Rentenzahlung*.
-  A companion set for the **fondsgebundene** form is the ordinary structure of that index; **its
+  index and a model-conditions set for the *Rentenversicherung mit aufgeschobener Rentenzahlung*. A
+  companion set for the **fondsgebundene** form is the ordinary structure of that index; **its
   title, edition and clause numbering are `[unverified]`.**
 - Content: a GDV *Musterbedingung* is **the skeleton every German insurer's AVB for the line
   follows**, clause order included, which is why insurer wordings are structurally interchangeable
-  even where the numbers differ. The clauses a model needs, in their usual order: the benefits
-  (annuity from *Rentenbeginn*, death benefit before it); the *Beitragsverrechnung* and the
-  purchase of *Anteileinheiten* at the *Anteilspreis* on a *Bewertungsstichtag*; the determination
-  of the *Fondsguthaben*; death before and after *Rentenbeginn*; the *Rentenfaktor* and the
-  guaranteed-versus-current rule; *Fondswechsel*, *Zuzahlung*, *Teilentnahme*,
+  even where the numbers differ. The clauses a model needs, in their usual order: the benefits; the
+  *Beitragsverrechnung* and the purchase of *Anteileinheiten* at the *Anteilspreis* on a
+  *Bewertungsstichtag*; the determination of the *Fondsguthaben*; death before and after
+  *Rentenbeginn*; the *Rentenfaktor* rule; *Fondswechsel*, *Zuzahlung*, *Teilentnahme*,
   *Beitragsfreistellung* and *Kündigung*; the *Rückkaufswert* and any *Stornoabzug*; the
   *Überschussbeteiligung*; the *Anpassungsklausel*. **No clause text and no numeric parameter is
   established.** This entry stands for the existence of a market-standard clause inventory, not as
@@ -272,25 +264,22 @@ result.
 
 - Publisher: Zurich Deutscher Herold Lebensversicherung AG
 - Doc type: *Verbraucherinformation* — a consolidated pre-contractual information document issued
-  per product family and per *Fassung* (edition), typically 40–50 pages
-- URL: not established for the fondsgebundene series. The sibling delib research corroborated by
-  search the **companion** series, "Verbraucherinformation für **Konventionelle** Versicherungen —
-  Aufgeschobene Rentenversicherung", in four editions (*Fassung* 01/2021, 01/2022, 01/2026 and a
-  *Konsortial* variant), recorded there as its S4–S7.
+  per product family and per *Fassung*, typically 40–50 pages
+- URL: not established for the fondsgebundene series. The sibling delib research corroborated the
+  **companion** series, "Verbraucherinformation für **Konventionelle** Versicherungen —
+  Aufgeschobene Rentenversicherung", in four editions.
 - Retrieved: no — egress blocked; no search corroboration for the fondsgebundene series
-- Content: the title of the corroborated companion series — "für **Konventionelle**
-  Versicherungen" — is itself the evidence that a **parallel fondsgebundene series exists at the
-  same carrier**: a document that has to name itself "conventional" does so to distinguish itself
-  from the unit-linked one. That inference is recorded as an inference and the parallel document's
-  title, edition and content are `[unverified]`. The **value of the document type** is high and is
-  why it is listed: a *Verbraucherinformation* of that length is the one German document class
-  that states, in one place, the benefit definitions, the *Beitragsverrechnung*, the cost clauses,
-  the *Rentenfaktor* rule, the option catalogue and the *Rückkaufswert* rule — the exact inventory
-  a product-spec needs. The sibling file's corroborated Zurich material also establishes the
-  **conventional carrier's *Rentenfaktor* rule** — that at *Rentenbeginn* a second factor is
-  compared with the guaranteed one and **the higher of the two applies** — and that rule is
-  carried over here in section 9 as market practice, tagged to the sibling's evidence rather than
-  to a fondsgebundene document.
+- Content: the corroborated companion's title — "für **Konventionelle** Versicherungen" — is itself
+  the evidence that **a parallel fondsgebundene series exists at the same carrier**: a document that
+  has to name itself "conventional" does so to distinguish itself from the unit-linked one. That is
+  recorded as an inference; the parallel document's title, edition and content are `[unverified]`.
+  The **document type** is why the entry is here: a *Verbraucherinformation* of that length states
+  in one place the benefit definitions, the *Beitragsverrechnung*, the cost clauses, the
+  *Rentenfaktor* rule, the option catalogue and the *Rückkaufswert* rule — the exact inventory a
+  product-spec needs. The sibling's corroborated Zurich material also establishes the conventional
+  carrier's **factor rule at *Rentenbeginn*** — a second factor is compared with the guaranteed one
+  and **the higher of the two applies** — carried over in section 9 as market practice, tagged to
+  the sibling's evidence rather than to a fondsgebundene document.
 
 ### S5 — Alte Leipziger Lebensversicherung a. G., AVB for the fondsgebundene Rentenversicherung
 
@@ -473,7 +462,7 @@ result.
   is the delib model's state vector almost exactly.** The fondsgebundene model statement's
   existence is inferred from the corroborated endowment one and is `[unverified]`.
 
-### S18 — Nettotarife / Honorartarife — carrier-type entry (myLife and the net variants of full-range carriers)
+### S18 — Nettotarife / Honorartarife (myLife and the net variants of full-range carriers)
 
 - Publisher: myLife Lebensversicherung AG and the *Nettotarif* variants of full-range carriers
   ([S5], [S6], [S13] and others)
@@ -481,14 +470,14 @@ result.
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
 - Content: a *Nettotarif* (also *Honorartarif*, *Nettopolice*) is **the same unit-linked contract
-  with the *Abschluss- und Vertriebskosten* removed from the tariff**, the adviser being paid a
-  separate fee by the client under a *Vergütungsvereinbarung*. myLife Lebensversicherung AG is the
+  with the *Abschluss- und Vertriebskosten* removed from the tariff**, the adviser being paid a fee
+  by the client under a separate *Vergütungsvereinbarung*. myLife Lebensversicherung AG is the
   German carrier built entirely on that model `[unverified]`. The class matters here for one
-  reason only, and it is a modelling reason: **it isolates the acquisition-cost component of the
-  *Effektivkosten*.** The difference between a gross tariff's RIY and the same chassis's net RIY
-  *is* the acquisition-cost load, which is the parameter a delib worked example most needs and
-  which no document in this corpus supplies. **No net-tariff or gross-tariff RIY figure is
-  established**; the observation that the gap exists is structural, not numeric.
+  modelling reason: **it isolates the acquisition-cost component of the *Effektivkosten***. The
+  difference between a gross tariff's RIY and the same chassis's net RIY *is* the acquisition-cost
+  load — the parameter a delib worked example most needs and that no document in this corpus
+  supplies. **No net-tariff or gross-tariff RIY figure is established**; the observation that the
+  gap exists is structural, not numeric.
 
 ---
 
@@ -622,28 +611,23 @@ sibling delib research file**, that is stated and attributed.
   Versicherungsverträgen*)
 - URL: `https://www.gesetze-im-internet.de/vvg-infov/__2.html` `[unverified]`
 - Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
-  `kapitallebensversicherung` (its R9), which established the provision's heading, the statutory
-  basis and the introduction date of the *Effektivkosten*.
+  `kapitallebensversicherung` (its R9), which established the heading, the statutory basis and the
+  introduction date of the *Effektivkosten*.
 - Content, as corroborated there and applied here:
   - § 2 VVG-InfoV is headed *Informationspflichten bei der Lebensversicherung, der
     Berufsunfähigkeitsversicherung und der Unfallversicherung mit Prämienrückgewähr* — one
     provision covering all the savings-bearing personal lines, this product included.
-  - The legal basis for the cost disclosure is **§ 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3
-    VVG-InfoV**, requiring disclosure of the ***Abschluss- und Vertriebskosten* included in the
-    premium, in euro amounts** — not as a percentage, not netted into a yield.
-  - The ***Effektivkostenquote* (Reduction in Yield, RIY)** was introduced in quotations **with
-    effect from 1 January 2015** `[unverified]`, following the **LVRG of 2014** [R13]. It
-    discloses **all costs — acquisition, ongoing and investment — expressed as a reduction of the
-    contract's yield**.
-  - **For a fondsgebundene contract the *Effektivkosten* must include the fund's own costs**, not
-    only the policy-level charges. That is what makes the metric meaningful on this product and
-    what makes the fund's *TER* a policy parameter rather than a fund parameter. The precise
-    treatment of *Kickbacks* credited back to the contract inside the calculation is
-    `[unverified]` and is gap 8.
-  - § 2 also requires a ***Modellrechnung*** — an illustration of the benefit at maturity on
-    prescribed assumed returns. The **number of assumed rates and their level** are
-    `[unverified]`; the German market convention of illustrating a fondsgebundene contract at
-    three rates is recorded in section 17 as market practice, not as a statutory requirement.
+  - The legal basis is **§ 7 Abs. 2 und 3 VVG i. V. m. §§ 2 und 3 VVG-InfoV**, requiring disclosure
+    of the ***Abschluss- und Vertriebskosten* included in the premium, in euro amounts** — not as a
+    percentage, not netted into a yield.
+  - The ***Effektivkostenquote* (Reduction in Yield)** was introduced in quotations **from
+    1 January 2015** `[unverified]`, following the **LVRG 2014** [R13]. It discloses **all costs —
+    acquisition, ongoing and investment — as a reduction of the contract's yield**.
+  - **For a fondsgebundene contract the *Effektivkosten* must include the fund's own costs**, which
+    is what makes the fund's *TER* a policy parameter rather than a fund parameter. The treatment of
+    *Kickbacks* credited back to the contract inside the calculation is `[unverified]` (gap 8).
+  - § 2 also requires a ***Modellrechnung***. The **number of assumed rates and their level** are
+    `[unverified]`; the three-rate market convention is recorded in section 17 as convention.
 
 ### R8 — PRIIPs Regulation (EU) 1286/2014 and the RTS, Delegated Regulation (EU) 2017/653 as amended
 
@@ -837,32 +821,26 @@ sibling delib research file**, that is stated and attributed.
   the point: **the fund wrapper affects the accumulation phase's taxation, not the payout
   phase's**.
 
-### R20 — EStG § 20 Abs. 1 Nr. 6 — the *Kapitalwahlrecht*, the 12/62 rule and the fondsgebunden *Teilfreistellung*
+### R20 — EStG § 20 Abs. 1 Nr. 6 — the *Kapitalwahlrecht*, the 12/62 rule and the *Teilfreistellung*
 
 - Publisher: Bundesministerium der Justiz
 - URL: `https://www.gesetze-im-internet.de/estg/__20.html` `[unverified]`
-- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** on
-  `kapitallebensversicherung` (its R10) and `klassische_rentenversicherung` (its R6) as to the
+- Retrieved: no — egress blocked. **Corroborated by search in the sibling delib research** as to the
   12/62 rule and the half-income method.
 - Content:
   - Electing a **lump sum** instead of the annuity moves the contract from § 22 [R19] to § 20: the
-    taxable amount is **the excess of the payment over the premiums paid**, and where the contract
-    has run **at least 12 years and the payment is made after the completion of the 62nd year of
-    age**, **only half that gain is taxable** (the *Halbeinkünfteverfahren* /
-    *Hälftedifferenzmethode*). Otherwise the whole gain is taxable and subject to
-    *Kapitalertragsteuer*.
+    taxable amount is the **excess of the payment over the premiums paid**, and where the contract
+    has run **at least 12 years and payment is after the completion of the 62nd year of age**,
+    **only half that gain is taxable**. Otherwise the whole gain is taxable.
   - Contracts concluded **before 1 January 2005** sit in a different regime; the German in-force
     book carries **two tax cohorts**.
   - **The provision specific to this product**: for a ***fondsgebundene*** contract a
-    ***Teilfreistellung*** applies to the fund income inside the wrapper — commonly stated as **15
-    %** for equity-fund exposure `[unverified]` — reflecting the fund-level taxation of the
-    *Investmentsteuergesetz* [R21]. The **sentence number within § 20 Abs. 1 Nr. 6, the percentage
-    and the conditions are all `[unverified]`** and are gap 22.
-  - **The accumulation-phase point, which is the product's principal commercial argument**: inside
-    the insurance wrapper there is **no annual taxation of fund income, no *Vorabpauschale*, and
-    no taxable disposal on a *Fondswechsel***. A direct fund holding is taxed on both. That
-    deferral is the reason the product exists in competition with an ETF *Sparplan*. Its statutory
-    basis is the same provision and is `[unverified]` in its detail.
+    ***Teilfreistellung*** applies to the fund income inside the wrapper — commonly stated as
+    **15 %** for equity exposure `[unverified]` [R21]. The sentence number, the percentage and the
+    conditions are `[unverified]` (gap 22).
+  - **The accumulation-phase point, and the product's central commercial argument**: inside the
+    wrapper there is **no annual taxation of fund income, no *Vorabpauschale*, and no taxable
+    disposal on a *Fondswechsel***. A direct fund holding is taxed on both.
 
 ### R21 — InvStG — *Investmentsteuergesetz* and the *Teilfreistellung*
 
