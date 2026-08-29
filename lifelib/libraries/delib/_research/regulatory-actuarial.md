@@ -2024,3 +2024,399 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   the statutory two weeks.
 - Products: RLV, BU, PFL, KLV, RV load-bearing; the rest qualified.
 
+---
+
+## 6. Conduct, disclosure and distribution
+
+### R31. VVG §§ 6, 7, 1a, 7b, 7c and 214, with the VVG-InfoV — advice, information, cost disclosure and Effektivkosten
+- Publisher: Bundesamt für Justiz; mirrors at `dejure.org`, `juraforum.de`, `buzer.de`,
+  `lxgesetze.de`, `datenbank.nwb.de`, `ra.de`, `freirecht.de`, `anwalt.de`,
+  `sozialgesetzbuch-sgb.de`; three IHK guidance pages; Gabler; an **ifa Ulm** note on the
+  Effektivkosten amendment; an LMU/ifa *Value for Money* deck; the Versicherungsombudsmann's own
+  *Wir über uns* PDF. Doc type: statutory sections and the *VVG-Informationspflichtenverordnung*
+  of 18 December 2007.
+- URL: https://www.gesetze-im-internet.de/vvg_2008/__6.html, `__7.html`, `__7b.html`,
+  `__7c.html`, `__214.html`; https://www.gesetze-im-internet.de/vvg-infov/BJNR300400007.html,
+  `.../__2.html`, `.../__4.html` (all returned); § 1a at https://dejure.org/gesetze/VVG/1a.html
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (seven queries; nine
+  hosts on §§ 6/7, nine on §§ 7b/7c, eight on § 2 VVG-InfoV, nine on § 4, eight on § 214)
+- Content: **§ 6** — the insurer must **question and advise** so far as the difficulty of the
+  offer or the person and situation of the policyholder gives occasion, **state the reasons** and
+  **document** it; the duty continues after conclusion where there is a recognisable occasion; the
+  policyholder may **waive** it by a separate written declaration. **§ 7** — the contract terms
+  including the AVB and the information specified in the **VVG-InfoV** must be communicated **in
+  Textform and in good time before the policyholder makes the contract declaration**; § 7 Abs. 2
+  is the enabling provision for the VVG-InfoV. **§ 1a**, quoted by a summary: *"Der Versicherer
+  muss bei seiner Vertriebstätigkeit gegenüber Versicherungsnehmern stets ehrlich, redlich und
+  professionell in deren bestmöglichem Interesse handeln"*; **OLG Stuttgart** rejected the
+  argument that this obliges an insurer to **adapt or redesign its own products** — the limit that
+  keeps § 1a a conduct standard rather than a product-design mandate, and the counterweight to
+  BaFin's Merkblatt 01/2023 [R35]. **§ 7b** — for *Versicherungsanlageprodukte* within Art. 2
+  Abs. 1 Nr. 17 IDD, appropriate information about the **distribution** and **all costs and
+  charges** must be given in good time, including whether a periodic suitability assessment will
+  be provided and guidance and warnings on the risks. **§ 7c** — only products **geeignet** for
+  the policyholder and corresponding to their **risk tolerance and ability to bear losses** may be
+  recommended, and *Angemessenheit* must be examined in every case. **§ 214** — a privately
+  organised body may be recognised as a *Schlichtungsstelle* under § 24 VSBG; the
+  **Versicherungsombudsmann e.V.** has been a recognised VSBG body **since August 2016**.
+  **The VVG-InfoV settles three things for delib.** **(a) The cost disclosure, § 2 Abs. 1 Nr. 1**:
+  the insurer must disclose the **costs included in the premium** — *Abschlusskosten* as a
+  **single total amount**, the other included costs as a **percentage of the annual premium with
+  the duration stated**, and within those the *Verwaltungskosten* **separately**; a further
+  summary reports that the amounts under Nr. 1, 2, 4 and 5 **must be stated in euro**. **This is
+  why a German *Produktinformationsblatt* can be read as a source of actual charge levels in a way
+  a French *encadré* cannot**: the *encadré* discloses maxima, the German PIB the amounts in the
+  premium. **(b) The three Modellrechnung rates, § 2 Abs. 3** [R25]. **(c) The Effektivkosten**:
+  for life contracts covering a risk whose occurrence is certain, the insurer must disclose the
+  ***Minderung der Wertentwicklung durch Kosten in Prozentpunkten (Effektivkosten) bis zum Beginn
+  der Auszahlungsphase***, introduced by the LVRG in 2014 and a general information duty from
+  **January 2015**; the third-layer calculation was later aligned with the **total-cost-indicator
+  method of Annex VI to Delegated Regulation (EU) 2017/653** [R32], with exceptions for
+  *Altersvorsorge-* and *Basisrentenverträge* [R43]. **(d) The Produktinformationsblatt, § 4**,
+  now headed *Informationsblatt zu Versicherungsprodukten*, produced per **Commission Implementing
+  Regulation (EU) 2017/1469 of 11 August 2017**, with the sequence of information prescribed so
+  products can be compared. **For delib the Effektivkosten figure is a validation target for a
+  product's charge parameterisation, not an input**, and reproducing it exactly requires the
+  PRIIPs Annex VI algorithm and a specified holding period, neither of which delib implements.
+- Not established: **§ 1 VVG-InfoV — the general pre-contractual information list — was never
+  searched**, and the full item list of § 2 Abs. 1 was not retrieved. The summaries **disagree on
+  whether the *Abschlusskosten* are disclosed only as a single euro total or also as a
+  percentage**. The date and instrument of the amendment moving third-layer Effektivkosten onto
+  the PRIIPs Annex VI method is **not established**; the § 4 Abs. 5 Satz 3 citation rests on a
+  single summary. **§ 6a VVG was never returned by a direct search**; its heading and content are
+  **not established** and the "remuneration and incentives" framing comes from one summary that
+  named it only in a list. **§ 7d** (group contracts) was named by one summary and is otherwise
+  not established. **Art. 2 Abs. 1 Nr. 17 IDD's definition of *Versicherungsanlageprodukt* — which
+  decides whether FRV and IDX are in scope and whether a guaranteed KLV is — was not retrieved and
+  is the most consequential gap in this entry.** §§ 59–68 VVG were reached only through IHK
+  summaries; the § 60/§ 61 attributions are `[unverified]`.
+- Products: all ten. **No cash-flow consequence for any delib model** except through the charge
+  parameterisation the Effektivkosten validate.
+
+### R32. PRIIPs — Verordnung (EU) Nr. 1286/2014 and the delegated technical standards
+- Publisher: European Parliament and Council; European Commission. Doc type: regulation plus
+  Delegated Regulations **(EU) 2017/653** of 8 March 2017 and **(EU) 2021/2268**.
+- URL: https://eur-lex.europa.eu/legal-content/DE/ALL/?uri=CELEX:32017R0653 (returned);
+  https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32021R2268 (returned);
+  https://eur-lex.europa.eu/DE/legal-content/summary/key-information-about-investment-products.html
+  (returned). **A direct EUR-Lex landing page for Regulation (EU) 1286/2014 itself was not
+  returned by any search and is not established.**
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; four
+  independent sources agreeing on the 1 January 2023 application date)
+- Content: Regulation 1286/2014 introduced a standardised ***Basisinformationsblatt* (KID)** for
+  packaged retail investment products **and *Versicherungsanlageprodukte***. Uniform requirements
+  apply to delivery of the KID for **all** insurance-based investment products, **regardless of
+  whether the underlying investment options are themselves PRIIPs** — the rule that pulls a German
+  *fondsgebundene Rentenversicherung* with a fund menu wholly into scope. **2017/653** lays down
+  the RTS on presentation, content, review and revision; **2021/2268** amended them with
+  application from **1 January 2023**. Two content elements are corroborated: the
+  ***Gesamtrisikoindikator* (SRI)** with explanations **including a possible maximum loss**; and
+  **four performance scenarios** under the 2021/2268 regime — **optimistic, moderate, pessimistic
+  and stress**, the stress scenario showing significant adverse effects not captured by the
+  pessimistic one. The **total cost indicator method of Annex VI** is the method German
+  third-layer *Effektivkosten* are now aligned with [R31].
+- Not established: the **SRI 1–7 scale** is asserted in the market but **no search summary
+  returned the numbers 1 to 7**; the scale is `[unverified]`. The **recommended holding period**
+  rule, the **RIY presentation**, the **cost tables at 1 year / half the RHP / RHP** and the
+  **biometric-risk premium treatment** for insurance PRIIPs were all sought and **none was
+  returned** — all **not established**. Whether a *klassische* endowment or an *Indexpolice* with
+  a premium guarantee is a *Versicherungsanlageprodukt* turns on Art. 2 Abs. 1 Nr. 17 IDD, not
+  retrieved [R31], so **the scope boundary for KLV, RV and IDX is open**.
+- Products: FRV and IDX load-bearing; KLV, RV, BAS, RIE, SOF qualified.
+
+### R33. IDD — Richtlinie (EU) 2016/97, the transposition act of 20 July 2017 and § 34d GewO
+- Publisher: European Parliament and Council; Deutscher Bundestag / BGBl; Bundesamt für Justiz
+  for the GewO. Doc type: directive; transposing federal statute; trade-licensing provision.
+- URL: **not established** for the directive and the transposition act — **no search returned an
+  EUR-Lex page for 2016/97 or a BGBl page for the transposition**, and **no statutory page for
+  § 34d GewO was returned either**. Secondary sources returned:
+  https://kanzlei-michaelis.de/umsetzung-der-eu-vermittlerrichtlinie-2016-97-idd-in-deutsches-recht/ ;
+  https://www.bundestag.de/resource/blob/508714/jenssen.pdf ; three IHK pages on
+  *Versicherungsvermittler*.
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; eight
+  and nine **secondary** hosts, **no primary source for either instrument**; three secondary
+  sources agree on the 20 July 2017 enactment and 23 February 2018 entry into force)
+- Content: the IDD was transposed by the act of **20 July 2017**, in force **23 February 2018**
+  with exceptions; because the European roll-out slipped, Member States were free to apply the
+  directive from **1 October 2018** and several German provisions took effect then. The useful
+  part is the architecture: the transposition spreads the directive across **three statutes** —
+  **GewO** (licensing and conduct of intermediaries, § 34d), **VAG** (distribution, remuneration
+  and a **prohibition on passing commission through to the customer**, the
+  *Provisionsabgabeverbot*), and **VVG** (information duties, product assessment and standing
+  notices, via §§ 1a, 6a, 7a, 7b, 7c and 7d, [R31]). **§ 34d GewO**: anyone acting as a
+  *Versicherungsvermittler* or *Versicherungsberater* needs a trade licence, on four reported
+  conditions — proof of ***Sachkunde*** (normally the IHK *Sachkundeprüfung*),
+  *Zuverlässigkeit*, *geordnete Vermögensverhältnisse* and a
+  ***Berufshaftpflichtversicherung***; and § 34d Abs. 9 Satz 2 requires **15 hours of continuing
+  education per calendar year**. For delib this is background with **no cash-flow consequence**,
+  but it is the reason a German product's acquisition cost is structurally a **commission to a
+  § 34d intermediary that the customer cannot be rebated**, which in turn is why the
+  *Abschlusskosten* disclosure [R31] and the Zillmerung case law [R36] are as prominent as they
+  are.
+- Not established: the directive's own article numbering, the **IPID** requirement, the
+  **demands-and-needs test**, the **suitability and appropriateness** tests for IBIPs and the
+  **remuneration and conflicts** provisions were **never read** and are `[unverified]` — exactly
+  the gap frlib records for the DDA at its R32. The *Provisionsabgabeverbot*'s VAG paragraph
+  number is **not established**. A professional-indemnity minimum of **1,564,610 euro per claim**
+  was returned by a **single commercial training-provider page with no year attached**; it is
+  `[unverified]` and **must not be reproduced in a delib document**. The § 34d Abs. 9 Satz 2
+  citation rests on one source.
+- Products: all ten, as conduct background only.
+
+### R34. Unisex — EuGH C-236/09 (Test-Achats), and §§ 19, 20 and 33 AGG
+- Publisher: Court of Justice of the European Union; Bundesministerium der Justiz for the AGG;
+  Christian Armbrüster's monograph (Universität Bonn) and the Antidiskriminierungsstelle as
+  secondary. Doc type: judgment; federal statute.
+- URL: https://datenbank.nwb.de/Dokument/Anzeigen/443611/ (returned);
+  https://www.jura.uni-bonn.de/fileadmin/Fachbereich_Rechtswissenschaft/Einrichtungen/Sonstige/Zentrum_fuer_Europaeisches_Wirtschaftsrecht/Schriftenreihe/heft192armbruester.pdf
+  (returned); https://www.gesetze-im-internet.de/agg/__19.html and `__20.html` (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; six,
+  seven and eight hosts; **three independent sources give the 21 December 2012 date**)
+- Content: the ECJ held on **1 March 2011** in **C-236/09** that using sex as a risk factor in
+  insurance is incompatible with equality between men and women under **Articles 21 and 23 of the
+  Charter of Fundamental Rights**, and **invalidated the derogation in Article 5(2) of the Gender
+  Directive with effect from 21 December 2012**. From that date sex may **no longer** lead to
+  different premiums or benefits for **new** contracts; insurers must offer ***Unisex-Tarife***.
+  On the German side, **§ 19 AGG** carries the civil-law non-discrimination prohibition and
+  expressly names private insurance; **§ 20 AGG** permits objectively justified differential
+  treatment; and **§ 20 Abs. 2 Satz 1 AGG — the provision that allowed sex-differentiated pricing
+  where sex was a determining risk factor on relevant and accurate actuarial and statistical data
+  — was repealed**. Surviving in § 20 Abs. 2 in every account: **costs connected with pregnancy
+  and maternity may under no circumstances lead to different premiums or benefits**. **§ 33
+  Abs. 5 AGG** is the transitional: for insurance relationships concluded **before 21 December
+  2012** sex-differentiated treatment remains permissible on the same conditions, **except** for
+  pregnancy and maternity costs. **Model consequence, and it is a hard one: every delib model
+  prices unisex.** An RLV, BU or PFL model point may carry a `sex` attribute for **decrement**
+  purposes — the underlying DAV tables are sex-specific [R47] — but **must not** let sex enter the
+  premium. The standard market resolution is a **portfolio sex-mix assumption** applied to the
+  best-estimate decrements; that mix is a modeller's assumption and is `**[std]**`. Letting a sex
+  field leak into pricing reproduces a tariff unlawful in Germany since 2012 and is a numbered
+  pitfall.
+- Not established: **the amending instrument and date for the § 20 Abs. 2 Satz 1 repeal are
+  reported two ways** — "Bundestag and Bundesrat adopted the AGG amendment in late February 2013"
+  versus "made by the *SEPA-Begleitgesetz*, published 3 April 2013, with retroactive effect from
+  21 December 2012". They are reconcilable but **neither is confirmed**; both are recorded. The
+  Gender Directive's own number (**2004/113/EG**) was **not returned by any search** and is
+  `[unverified]`. Whether German insurers were required to apply unisex to **increases** on
+  pre-2012 contracts is **not established**. **No market sex-mix figure was returned**, so every
+  blend weight in delib is `**[std]**` [R47].
+- Products: all ten.
+
+### R35. BaFin Merkblatt 01/2023 (VA) — Wohlverhaltensaufsicht and angemessener Kundennutzen
+- Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht; a Bundestag Drucksache 20/14411 of
+  23 December 2024 and a Mannheim academic paper as secondary. Doc type: supervisory *Merkblatt*
+  with an FAQ and a consultation draft.
+- URL: https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Merkblatt/VA/mb_01_2023_wohlverhaltensaufsichtliche_aspekte_va.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Pressemitteilung/2023/pm_2023_05_08_Merkblatt_kapitalbildende_LV.html
+  (returned); https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/FAQ/faq_wohlverhalten.html
+  (returned);
+  https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Fachartikel/2024/bafin_fachartikel_wohlverhalten.html
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (one query, eight
+  hosts, **six of them BaFin's own**)
+- Content: BaFin **consulted on 31 October 2022** and **published in May 2023** a *Merkblatt zu
+  wohlverhaltensaufsichtlichen Aspekten bei kapitalbildenden Lebensversicherungsprodukten*
+  setting out what it expects so that such products offer an ***angemessener Kundennutzen*** and
+  distribution conflicts of interest are avoided. **Two supervisory tests are reported explicitly
+  and both are quantitative in kind if not in level.** **Cost**: BaFin will particularly examine
+  insurers whose **Effektivkosten** for *kapitalbildende* products are **very high in a sector
+  comparison**, and insurers whose **expenses for insurance intermediaries are noticeably high**.
+  **Return**: producers must **formulate a return target for the relevant target market**, and
+  for a retirement product to have appropriate customer benefit it must be **likely to achieve a
+  real investment success over its term — a return after costs above a justified inflation
+  rate**. BaFin reports outcomes: **some products offering no appropriate customer benefit were
+  taken off the market**, and **cost reductions in existing portfolios and retroactive
+  compensation measures** were achieved. For delib this is the German *Value for Money* regime and
+  it matters twice: a KLV, RV, FRV or IDX charge parameterisation should be **plausible against a
+  sector Effektivkosten distribution** rather than merely internally consistent, because the
+  supervisor now polices the level; and it explains why the German market moved to lower
+  guarantees and lower acquisition costs after 2023 — context a product specification's market-
+  role section needs.
+- Not established: **no Effektivkosten threshold, sector benchmark or numerical test appears in
+  any summary**; the "very high in sector comparison" standard is qualitative as reported.
+  Whether the Merkblatt applies to **fondsgebundene** and **indexgebundene** products as well as
+  classical ones is **not established** — the title says *kapitalbildende*, which conventionally
+  includes unit-linked savings, but no summary confirmed it. The Merkblatt's **legal basis is
+  contested**: the Mannheim paper is titled *"Wohlverhaltensaufsicht: Ihre Rechtsgrundlagen und
+  Grenzen"* and the OLG Stuttgart ruling on § 1a VVG [R31] points the other way; the tension is
+  real and **unresolved**. Whether the Merkblatt has been amended since 2023 is not established.
+- Products: KLV, RV, FRV, IDX load-bearing; RIE, BAS, SOF qualified.
+
+---
+
+## 7. The case law and the market's model conditions
+
+### R36. The BGH line of authority on German life contracts
+- Publisher: Bundesgerichtshof (press releases and case captions); Court of Justice of the
+  European Union for the 2013 § 5a VVG ruling; secondary reporting from Haufe, LTO,
+  beck-aktuell, Versicherungsbote, VersicherungsJournal, Pfefferminzia, Verbraucherzentrale
+  Hamburg and Baden-Württemberg, Bund der Versicherten, procontra, VdK, Bird & Bird and several
+  law firms. Doc type: judgments, reported through official press releases and case captions.
+- URL: https://www.bundesgerichtshof.de/SharedDocs/Pressemitteilungen/DE/2018/2018107.html
+  (returned, *Ermittlung der Bewertungsreserve*);
+  https://www.bundesgerichtshof.de/SharedDocs/Pressemitteilungen/DE/2025/2025227.html (returned,
+  the *Rentenfaktor* clause);
+  https://www.bundesgerichtshof.de/SharedDocs/Pressemitteilungen/DE/2026/2026050.html (returned,
+  the *kapitalmarktabhängiger Stornoabzug*);
+  http://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/document.py?Gericht=bgh&Art=pm&Datum=2013&nr=65268
+  (returned, PM 147/13);
+  https://epub.sub.uni-hamburg.de/epub/volltexte/2017/69954/pdf/vzhh_Zwischenbilanz_BGH_Lebensversicherungen_Aug2013.pdf
+  (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (**thirteen queries
+  across the six lines of authority**; the 2018, 2025 and 2026 decisions each corroborated by
+  nine, thirteen and seventeen hosts respectively **including the court's own press release**)
+- Content: six lines of authority, each of which changes what a delib model must do.
+  **(1) Zillmerung and the Mindestrückkaufswert.** **BGH 12 October 2005 — IV ZR 162/03** (with
+  the parallel IV ZR 245/03): clauses setting off *Abschlusskosten* against the first premiums
+  work an ***unangemessene Benachteiligung*** and are **invalid**, both for intransparency and for
+  substantive unfairness, because a policyholder terminating after a few years receives a minimal
+  or nil surrender value. **BGH 25 July 2012 — IV ZR 201/10**: the Zillmer set-off clause
+  ineffective again, and clauses that do not sufficiently clearly distinguish the *Rückkaufswert*
+  under § 176 Abs. 3 VVG a.F. from the *Stornoabzug* under § 176 Abs. 4 VVG a.F. are ineffective
+  for want of transparency under § 307 Abs. 1 Satz 2 BGB. **BGH 11 September 2013 — IV ZR 17/13
+  and IV ZR 114/13**: for contracts concluded **up to the end of 2007**, where the surrender-value
+  and cost-set-off clauses are ineffective, ***ergänzende Vertragsauslegung*** gives the
+  policyholder a **minimum which may not fall below half of the ungezillmertes Deckungskapital**
+  computed on the calculation bases of the premium calculation; the Court described this as
+  continuing its case law on the **1994–2001** tariff generation and extending it to contracts
+  written up to end-2007. **BGH IV ZR 216/13** applies the floor, with reported worked figures of
+  **15,694.12 euro paid against 29,587.75 euro of premiums paid**. **Why this matters even though
+  delib models new business**: the **half-of-the-ungezillmerte-Deckungskapital** floor and the
+  **five-year-spread** floor of § 169 Abs. 3 VVG [R28] are **different rules for different
+  vintages**, and a German book contains both — so a delib model point representing an in-force
+  pre-2008 contract carries the judicial floor, not the statutory one, and delib must not silently
+  apply § 169 Abs. 3 to a pre-2008 issue year.
+  **(2) The Widerrufsjoker.** Where the instruction on the right to withdraw was defective, the
+  period never started and therefore never ended. Its statutory home is **§ 5a VVG a.F.**, the
+  *Policenmodell*, in force **1 January 1995 – 31 December 2007**; in **2013** the ECJ held the
+  former § 5a incompatible with Union law, and the **BGH decided the question fundamentally on
+  7 May 2014, IV ZR 76/11**. Two later refinements bound the doctrine both ways: **BGH 15 March
+  2023 — IV ZR 40/21** (an instruction omitting any reference to the required **form** of the
+  declaration is not a merely minor error, and the policyholder may demand *Rückabwicklung*) and
+  **BGH — IV ZR 268/21** (no *Widerrufsjoker* where the policyholder's conduct is *treuwidrig*).
+  A successful *Widerspruch* unwinds the contract on **bereicherungsrechtlich** terms — premiums
+  back plus ***Nutzungen***, less risk cover consumed — a fundamentally different payout from
+  either a surrender or a maturity. **delib does not implement it**, and the notes say the
+  pre-2008 in-force book carries a legal option the model does not value.
+  **(3) Bewertungsreserven.** **BGH 27 June 2018 — IV ZR 201/17**: **§ 153 Abs. 3 Satz 3 VVG in
+  the LVRG version is not unconstitutional**. The legislature's stated reason, per the press
+  release summary, is that a prolonged low-interest environment would threaten insurers' ability
+  to deliver the interest guarantees promised. The claim was for payment of *Bewertungsreserven*
+  *aus abgetretenem Recht* after the maturity of a *kapitalbildende Lebensversicherung*. **For
+  delib this fixes the honest description**: the policyholder's statutory half is **conditional on
+  a portfolio-level test the model does not perform**, and the highest court has confirmed the
+  insurer may reduce it to zero — so a KLV or RV model either excludes the component explicitly or
+  carries it as a `**[std]**` scalar with this decision cited as the reason it is not a statutory
+  half.
+  **(4) The Rentenfaktor.** **BGH 10 December 2025 — IV ZR 34/25**: a clause in the AVB of a
+  *fondsgebundene Rentenversicherung* (here a Riester contract) entitling the insurer to **reduce
+  the *Rentenfaktor* named in the *Versicherungsschein*** — the monthly annuity per unit of
+  contract value, typically per **10,000 euro of Vertragsguthaben** — **without at the same time
+  obliging it to restore the reduction if circumstances improve** is **void** for breach of
+  **§ 308 Nr. 4 BGB** and **§ 307 Abs. 1 Satz 1 BGB**: the asymmetry passes negative developments
+  to the customer with no corresponding duty to pass on positive ones. The principles are reported
+  to apply **to all fondsgebundene Rentenversicherung contracts containing comparable clauses**,
+  not only the product examined; per the insurer's own reported statement, contracts concluded
+  **between July 2001 and June 2013** carry the clause and contracts from **July 2013** do not.
+  **This is the single most model-relevant German decision of the last year**: the *garantierter
+  Rentenfaktor* stated at outset is a **hard guarantee** unless the AVB gives a **symmetric**
+  adjustment right, so an FRV model that annuitises the fund at a fixed guaranteed *Rentenfaktor*
+  is not simplifying but implementing the legally correct default.
+  **(5) The Stornoabzug.** **BGH 18 March 2026 — IV ZR 184/24**, overturning **OLG Koblenz,
+  5 December 2024, 2 UKl 1/23**: clauses providing a **kapitalmarktabhängiger Stornoabzug** do
+  **not** infringe the *Bezifferung* requirement of § 169 Abs. 5 Satz 1 VVG and are not void for
+  intransparency under § 307 Abs. 1 Satz 2 BGB — the requirement that the deduction be
+  *vereinbart, beziffert und angemessen* **does not compel the insurer to agree a concrete amount
+  at conclusion**; it may specify a ***Berechnungsverfahren***. The clause mechanics, reported
+  consistently: a deduction of **up to 15 % of the Deckungskapital**, the amount depending on the
+  **Null-Kupon-Euro-Zinsswapsatz with a ten-year term published by the Deutsche Bundesbank**, which
+  the court accepts is suitable to protect the insured community against ***zinsinduzierte
+  Stornierungen***. **The case was remitted on the *Angemessenheit* of the clause, so that limb is
+  still open.** For delib this is directly parameterising: a rate-dependent *Stornoabzug* of that
+  shape is a real market clause with judicial recognition of its *Bezifferung*, and a KLV or RV
+  model may implement one citing this decision as the observed upper end — **while stating that
+  the appropriateness of a 15 % cap has not been decided**.
+  **(6) The Pflegestufe gap.** **BGH — IV ZR 126/23**, reported **30 April 2025**: the 2017 care
+  reform replaced three *Pflegestufen* with five *Pflegegrade*, older AVB still refer to
+  *Pflegestufen*, and that created an **unintended *Regelungslücke***; **Pflegegrad 2 may not
+  automatically be equated with Pflegestufe I**, because the reform **materially widened** the
+  definition of care need, in particular on **mental and cognitive** grounds. The insurer may not
+  retreat to the position that no *Pflegestufe* was established; the gap must be closed, and the
+  Court is reported to have said an **individual** examination, if necessary by medical
+  assessment, is in principle possible, **independently of the care fund's classification**
+  [R51].
+- Not established: the **date and Aktenzeichen of IV ZR 73/13** are contested across summaries
+  (16 July 2014 is the better-supported date but this is `[unverified]`); whether the 2005 and
+  2013 *hälftig* rules are the same rule or two successive formulations was not resolved; **no
+  BGHZ citation** was returned for the 2012 or 2013 decisions. **The ECJ case reference for the
+  2013 § 5a ruling was never established** — the commonly cited *Endress*, C-209/12 of
+  19 December 2013, was **not returned by any search** and must be carried as `[unverified]` or
+  omitted. The **date of IV ZR 268/21** is not established (only the Aktenzeichen, from a URL
+  slug), and the direction of the 2014 decision is reported inconsistently across headlines
+  ("BGH begrenzt Widerspruchsrecht" versus "BGH stärkt Widerrufsjoker" — almost certainly
+  different decisions, not disambiguated). For the 2025 *Rentenfaktor* decision, **whether a
+  symmetric adjustment clause survives is implied but not stated as a holding**, and **the remedy
+  — original level or *ergänzende Vertragsauslegung* — was not reported**; no *Rentenfaktor*
+  figures were reported. For the 2026 *Stornoabzug* decision, **the functional form linking the
+  swap rate to the deduction percentage is not established**, and whether the clause applies to
+  *Beitragsfreistellung* as well as *Kündigung* is not established. For IV ZR 126/23 the date
+  rests on a **single** summary and is `[unverified]`.
+- Products: KLV, RV, FRV, IDX, RIE and PFL load-bearing; BAS, SOF, RLV, BU qualified.
+
+### R37. GDV-Musterbedingungen and German Berufsunfähigkeit market practice
+- Publisher: Gesamtverband der Deutschen Versicherer e.V.; insurer and broker sources (Swiss Life
+  Deutschland, ERGO, Württembergische, NÜRNBERGER, CosmosDirekt) for the market practice; a
+  C. H. Beck commentary on the GDV *Musterklauseln* (Büchner, 1. Auflage 2025) and a Haufe
+  commentary section as secondary. Doc type: non-binding model conditions; market-practice
+  evidence.
+- URL: https://www.gdv.de/gdv/service/musterbedingungen (returned);
+  https://www.gdv.de/resource/blob/6348/5827a5492cca6aa1147852c30f10247b/allgemeine-bedingungen-fuer-die-kapitalbildende-lebensversicherung-0-pdf-data.pdf
+  (returned); https://www.swisslife.de/pk/versicherungen/berufsunfaehigkeitsversicherung/abstrakte-verweisung.html
+  and four further insurer pages (returned)
+- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; the
+  GDV index page and **two GDV-hosted PDFs of the Allgemeine Bedingungen für die kapitalbildende
+  Lebensversicherung**; the BU practice from seven hosts, **four of them insurers**, which is the
+  strongest form of market-practice evidence obtainable without a *Tarifblatt*)
+- Content: the GDV publishes ***unverbindliche Musterbedingungen*** — model conditions that are
+  **non-binding** for insurers and whose use is **purely optional**. Two facts about the BU models
+  are established: an earlier set was dated **28 April 2021**, and the current ones are
+  **MB BUV 22** and **MB BUZ 22**, dated **15 November 2022** — MB BUV the standalone
+  *selbständige* BU, MB BUZ the *Zusatzversicherung* rider form. The existence of a **2025
+  C. H. Beck commentary organised around the GDV *Musterklauseln*** is itself evidence that these
+  models are the market's reference wording. **For delib the Musterbedingungen are the natural
+  `[S#]` primary product source class** for a reference product — published, free, non-proprietary
+  and the thing most insurers' AVB derive from — provided a product specification that follows
+  them also says they are **non-binding** and that real AVB differ.
+  **BU market practice above the statutory floor** [R29]. ***Verweisung***: under an ***abstrakte
+  Verweisung*** the insured does not necessarily receive benefits merely because they cannot
+  perform their last occupation, provided they **could theoretically** perform another activity;
+  under a ***konkrete Verweisung*** the insurer examines whether the insured **actually performs**
+  another activity corresponding to their previous *Lebensstellung*. The reported market position:
+  **almost all new contracts waive the abstrakte Verweisung**, and nowadays almost all insurers
+  waive it **even in their basic tariffs**, retaining the konkrete Verweisung. ***The
+  thresholds***: a broker summary reports the practical test as being unable to perform the last
+  occupation **for at least six months** at **50 percent or more**. **Both numbers are AVB
+  conventions, not statute.** **Model consequences for BU, and these are the operative ones**:
+  the benefit is a **binary step at 50 %**, not a proportional payment, so a model must decide
+  whether it projects incidence of ≥50 % incapacity or a graded state; the **six-month
+  qualification** is a deferred period in cash-flow terms, so a monthly BU model needs an explicit
+  *Karenzzeit* parameter and the worked example must show whether the first payment is in month 7
+  and whether it is backdated; and with the abstrakte Verweisung waived, **reactivation is driven
+  only by konkrete Verweisung or recovery**, which materially raises expected claim duration
+  relative to a tariff that retains abstract referral.
+- Not established: **no clause text from any GDV model was retrieved.** The specific provisions a
+  delib model needs — the *Rückkaufswert* clause, the *Beitragsfreistellung* clause and its
+  *Mindestversicherungssumme*, the *Stornoabzug* clause, the BU six-month prognosis fiction and
+  the *Verweisung* wording — are **all not established**, and this is the **largest single gap in
+  the contract-law layer**. The date of the ALB model behind the two PDFs is not established, and
+  whether the two blob URLs are two versions or a duplicate is not established. The **six months**
+  and **50 percent** figures come from a **single broker summary**; they are ubiquitous in the
+  German market but on this evidence they are `[unverified]`. **Whether the six months operates as
+  a retroactive fiction (benefits backdated to the start of incapacity) or as a waiting period
+  (benefits from month 7) was not addressed by any summary, and the two produce materially
+  different cash flows** — this is the most important unresolved parameter for BU. No source gave
+  a market range for *Leistungsdauer*, *Karenzzeit* options or *Nachversicherungsgarantien*.
+- Products: KLV, RV, RLV, BU load-bearing; the rest qualified.
+

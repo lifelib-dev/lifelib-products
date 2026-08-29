@@ -118,6 +118,9 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 | *Leibrente* | life annuity: payable for as long as the annuitant lives, and not one day longer |
 | *Überschussrente* | the surplus-financed increment to the annuity in payment; declared, not guaranteed |
 | *Rentenfaktor* | annuity factor: monthly annuity per 10 000 € of capital. For an immediate annuity the market more often quotes *Rente je 100 000 € Einmalbeitrag* |
+| *vorschüssig* / *nachschüssig* | payable in advance / in arrears |
+| *Sicherheitszuschlag* | the prudential margin that turns a best-estimate basis into a first-order one |
+| *Trendfunktion* | the mortality-improvement function inside a generation table |
 | *Rentengarantiezeit* | annuity guarantee period: payments continue to survivors if the annuitant dies inside it |
 | *Kapitalrückgewähr* / *Beitragsrückgewähr* | refund on death of the *Einmalbeitrag* less the annuity instalments already paid |
 | *Hinterbliebenenrente* | survivor's annuity, payable to a named second life after the annuitant's death |
@@ -138,13 +141,12 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 ## Primary sources
 
 Fifteen entries. Only three are *documents whose existence and identity a search result actually
-returned* — [S2], [S4] and [S6], all three recorded by the sibling delib research file
-`_research/klassische_rentenversicherung.md` while search was still available, and all three
-carrying a URL that a search returned. The remaining twelve are **known references**: document
-classes and carriers that exist and are the right kind of thing to cite for this product, recorded
-so that a later build with a working retrieval channel knows exactly what to fetch and in what
-order. They carry no URL unless one was recorded by a sibling file, and nothing quantitative is
-cited from them. The order below is the order in which they should be fetched.
+returned* — [S2], [S4] and [S6], all recorded by the sibling file
+`_research/klassische_rentenversicherung.md` while search was still available, each with a URL a
+search returned. The remaining twelve are **known references**: document classes and carriers that
+exist and are the right kind of thing to cite here, recorded so a later build with a working
+retrieval channel knows what to fetch and in what order. They carry no URL unless a sibling file
+recorded one, and nothing quantitative is cited from them.
 
 ### S1 — GDV, "Musterbedingungen" service index, and the immediate-annuity model conditions
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV), Berlin
@@ -200,8 +202,8 @@ cited from them. The order below is the order in which they should be fetched.
   — recorded by the sibling file [S4 there] from a search result
 - Retrieved: no — egress blocked; content below is the sibling file's search record, reproduced
   with attribution
-- Content, and **why a deferred-annuity document is a primary source here**. Two of the three
-  payout-phase facts the delib corpus establishes at clause level come from this document:
+- Content: two of the three payout-phase facts the delib corpus establishes at clause level come
+  from this deferred-annuity document, which is why it is a primary source here:
   - **The two-factor rule at *Rentenbeginn*.** The guaranteed *Rentenfaktor* is described as
     carefully calculated, and **at the start of annuity payments a second *Rentenfaktor* is
     compared with it, the higher of the two being guaranteed for the annuity payment period**. The
@@ -226,13 +228,12 @@ cited from them. The order below is the order in which they should be fetched.
 - Retrieved: no — egress blocked; no search corroboration in this session; **document id
   corroborated, URL constructed, no clause content established**
 - Content: **the only insurer AVB in the corpus whose title names this product.** The sibling
-  file's search returned three members of the same NÜRNBERGER AVB family from one result set:
-  `gn331451_p` (deferred, *mit Rentengarantiezeit*, tariff NIR3301) [S5], `gn331530_p`
-  (*fondsgebunden*) and `gn331303_p` (*mit sofort beginnender Rentenzahlung*) — this document.
-  That the three sit in one numbered family establishes what [S1] could not: German insurers draft
-  the immediate annuity as **a member of the same AVB series as the deferred annuity**, not as a
-  separate product line. Nothing inside it was established. It is the first document a later build
-  should fetch after [S2].
+  file's search returned three members of one NÜRNBERGER AVB family: `gn331451_p` (deferred, *mit
+  Rentengarantiezeit*, NIR3301) [S5], `gn331530_p` (*fondsgebunden*) and `gn331303_p` — this
+  document. That they sit in one numbered family establishes what [S1] could not: German insurers
+  draft the immediate annuity as **a member of the same AVB series as the deferred one**, not as a
+  separate line. Nothing inside it was established; it is the first document a later build should
+  fetch after [S2].
 
 ### S5 — NÜRNBERGER Lebensversicherung AG, "Allgemeine Bedingungen für die Rentenversicherung mit aufgeschobener Rentenzahlung und Rentengarantiezeit nach Tarif NIR3301", document id `gn331451_p`
 - Publisher: NÜRNBERGER Lebensversicherung AG
@@ -240,15 +241,13 @@ cited from them. The order below is the order in which they should be fetched.
 - URL: `https://www.nuernberger.de/medien/4allportal/gn331451_p.pdf` — recorded by the sibling file
   [S9 there] from a search result
 - Retrieved: no — egress blocked; content below is the sibling file's search record
-- Content: recorded here for two reasons. First, it is the **only document in the delib corpus
-  whose title itself names the *Rentengarantiezeit***, which establishes the guarantee period as a
-  **tariff-level design feature carried in the product name**, not merely a rider bolted on — and
-  the guarantee period is a payout-phase mechanic, so the evidence belongs here as much as in the
-  deferred file. Second, its search summary established that **the contract value used for
-  annuitisation includes any *Überschussbeteiligung* and *Bewertungsreserven*, subject to a minimum
-  guaranteed contract value stated in the general contract data** — which is the deferred
-  contract's version of the *Einmalbeitrag* this product starts from. No paragraph numbering was
-  established.
+- Content: recorded for two reasons. It is the **only document in the delib corpus whose title
+  names the *Rentengarantiezeit***, establishing the guarantee period as a **tariff-level design
+  feature carried in the product name**, not a rider bolted on — and the guarantee period is a
+  payout-phase mechanic, so the evidence belongs here. And its summary established that **the
+  contract value used for annuitisation includes any *Überschussbeteiligung* and
+  *Bewertungsreserven*, subject to a minimum guaranteed contract value** — the deferred contract's
+  version of the *Einmalbeitrag* this product starts from. No paragraph numbering established.
 
 ### S6 — Cosmos Lebensversicherungs-AG (CosmosDirekt), "Allgemeine Bedingungen für die Rentenversicherung", tariff LA 904 A
 - Publisher: Cosmos Lebensversicherungs-AG, the direct-writing arm of Generali Deutschland
@@ -258,8 +257,8 @@ cited from them. The order below is the order in which they should be fetched.
   — recorded by the sibling file [S8 there] from a search result
 - Retrieved: no — egress blocked; content below is the sibling file's search record, reproduced
   with attribution
-- Content: **the most quantitatively load-bearing document in the whole delib annuity corpus, and
-  the only one that names a conversion basis.** A search summary returned the clause in terms:
+- Content: **the most quantitatively load-bearing document in the delib annuity corpus, and the
+  only one that names a conversion basis.** A search summary returned the clause in terms:
   **"The annuity factor determined at the beginning of the contract is calculated on the basis of
   a recognised mortality table (currently DAV 2004 R) and an underlying interest rate (currently 0
   percent p.a.)."** For this product that sentence establishes three things:
@@ -270,9 +269,9 @@ cited from them. The order below is the order in which they should be fetched.
      *Sicherheitszuschlag* made concrete on the interest side;
   3. the factor is fixed **at inception**, which for a *Sofortrente* means it is fixed once and
      never revisited, because inception and *Rentenbeginn* are the same date.
-- The same summary returned the carrier's standard surplus disclaimer: **"the amount of profit
-  sharing depends on many influences which are unpredictable and only limitedly controllable by
-  the company, with the most important influencing factor being capital-market developments."**
+- The same summary returned the standard surplus disclaimer: **"the amount of profit sharing
+  depends on many influences which are unpredictable and only limitedly controllable by the
+  company, with the most important influencing factor being capital-market developments."**
 - **The vintage of LA 904 A was not established**, and the clause is time-stamped by its own word
   *currently*. Siblings in the house numbering (LA 1204 A and LA 1201 A, both 11.22; LA 1005 A;
   LA 1311 A; LA 1100 A; LA 1081 A) make LA 904 the oldest number in the series, so the "0 percent"
@@ -335,43 +334,38 @@ cited from them. The order below is the order in which they should be fetched.
 ### S10 — Konzern Versicherungskammer, "Überschussverteilung 2026"
 - Publisher: Konzern Versicherungskammer, the Bavarian public-sector insurance group; the `BL_`
   path prefix indicates the Bayerische Landesbrandversicherung / Bayern-Versicherung life entity
-- Doc type: the annual ***Überschussverteilung*** document — the instrument by which a German life
-  insurer publishes its declared *Überschussanteilsätze* for a calendar year, separately for each
-  tariff generation and separately for the accumulation and payout phases
+- Doc type: the annual ***Überschussverteilung*** document — how a German life insurer publishes
+  its declared *Überschussanteilsätze* for a year, by tariff generation and by phase
 - URL: `https://www.konzern-versicherungskammer.de/dam/jcr:acf4c857-3b53-4521-a108-d1fb9b1cec67/BL_Ueberschussbeteiligung_2026.pdf`
   — recorded by the sibling file [S15 there] from a search result
 - Retrieved: no — egress blocked; **the title and the 2026 vintage are corroborated; nothing
   inside the document was established**
-- Content: this document class is **the** primary source for every surplus rate a projection of
-  this product needs — the *laufende Verzinsung*, the *Grundüberschussanteil*, the
-  *Zinsüberschussanteil* on the *Deckungsrückstellung* of annuities in payment, the
-  *Schlussüberschuss* where one applies, and the *Überschussrentensatz* that converts the declared
-  surplus into euros of monthly annuity. **No rate, no percentage and no component split was
-  established from it, for any carrier, for any year.** That is gap 4, and it is why every surplus
-  parameter downstream is `[std]` and labelled insurer-discretionary.
+- Content: **the** primary source class for every surplus rate a projection of this product needs —
+  the *laufende Verzinsung*, the *Grundüberschussanteil*, the *Zinsüberschussanteil* on the
+  *Deckungsrückstellung* of annuities in payment, and the *Überschussrentensatz* that converts
+  declared surplus into euros of monthly annuity. **No rate, no percentage and no component split
+  was established, for any carrier, for any year** — gap 4, and the reason every surplus parameter
+  downstream is `[std]`.
 
 ### S11 — *Produktinformationsblatt* (PIB) for a sofort beginnende Rentenversicherung — document class
 - Publisher: each insurer, individually
 - Doc type: the short pre-contractual product summary required by German insurance-distribution
-  law [R17]. For an annuity it is the document that states, on one or two pages, the
-  *Einmalbeitrag*, the *garantierte Rente*, the *Gesamtrente* including the currently declared
-  surplus, the *Rentengarantiezeit*, the death benefit, and the costs
+  law [R17]. For an annuity it states on one or two pages the *Einmalbeitrag*, the *garantierte
+  Rente*, the *Gesamtrente* including declared surplus, the *Rentengarantiezeit*, the death benefit
+  and the costs
 - URL: not established, for any carrier
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: **known reference only** — and the document class that would settle almost every
-  quantitative gap here at a stroke, because a PIB for a *Sofortrente* prints the guaranteed and
-  total annuity for a stated *Einmalbeitrag* and age, the exact figure section 4 must construct.
-  **Not one was located.** A later build should fetch three or four across carrier types before
-  writing any *Rentenhöhe* into the product-spec.
+- Content: **known reference only** — and the class that would settle almost every quantitative gap
+  here at a stroke, because a PIB for a *Sofortrente* prints the guaranteed and total annuity for a
+  stated *Einmalbeitrag* and age, the exact figure section 4 must construct. **Not one was
+  located**; a later build should fetch three or four across carrier types first.
 
 ### S12 — *Basisinformationsblatt* (PRIIP-KID) for a sofort beginnende Rentenversicherung — document class
 - Publisher: each insurer, individually
 - Doc type: the three-page key information document required by the PRIIPs Regulation for
-  insurance-based investment products, with the standard sections *Um welche Art von Produkt
-  handelt es sich?*, *Welche Risiken bestehen und was könnte ich im Gegenzug dafür bekommen?*
-  (with the *Risikoindikator* and four performance scenarios), *Was geschieht, wenn … nicht in der
-  Lage ist, die Auszahlung vorzunehmen?*, *Welche Kosten entstehen?* (with the
-  *Reduction in Yield* / *Renditeminderung* figures) and *Wie lange sollte ich die Anlage halten …?*
+  insurance-based investment products, with its standard sections — product description; risks and
+  return, carrying the *Risikoindikator* and four performance scenarios; issuer default; *Welche
+  Kosten entstehen?*, carrying the *Renditeminderung* figures; and the holding period
 - URL: not established, for any carrier
 - Retrieved: no — egress blocked; no search corroboration
 - Content: **known reference only, with a scope question attached.** Whether a classic
@@ -423,9 +417,9 @@ cited from them. The order below is the order in which they should be fetched.
 - URL: not established for the payout form; the sibling file records the GDV
   *Muster-Standmitteilung* for the **endowment** at `_research/kapitallebensversicherung.md`
 - Retrieved: no — egress blocked; no search corroboration
-- Content: **known reference only**, and the direct evidence of what a *Rentenanpassung* actually
-  does — up, flat or down — which is the question section 9 turns on. **No specimen was located and
-  no anniversary adjustment was established, at any carrier, for any year.**
+- Content: **known reference only**, and the direct evidence of what a *Rentenanpassung* does — up,
+  flat or down — the question section 9 turns on. **No specimen was located and no anniversary
+  adjustment was established, at any carrier, for any year.**
 
 ---
 
@@ -434,9 +428,8 @@ cited from them. The order below is the order in which they should be fetched.
 Twenty-five entries. The statutory ones carry the canonical `gesetze-im-internet.de` address where
 that form is unambiguous, marked `[unverified]` because no search in this session returned it; the
 professional and market ones carry a URL only where a sibling delib file recorded one. **None was
-retrieved.** Where a provision's *content* is stated below, it is stated as what the provision
-provides, in this file's own words, and the paragraph number carries `[unverified]` unless a
-sibling file's search corroborated it.
+retrieved.** A provision's *content* is stated as what it provides, in this file's own words, and
+its paragraph number carries `[unverified]` unless a sibling file's search corroborated it.
 
 ### R1 — VVG § 168, *Kündigung des Versicherungsnehmers* — and the rule that ends surrender at *Rentenbeginn*
 - Publisher: Bundesministerium der Justiz / juris
@@ -472,14 +465,12 @@ sibling file's search corroborated it.
   [R4 in the RV file, R1 in the KLV file] as returned by searches
 - Retrieved: no — egress blocked; content is the sibling files' search record
 - Content: the statutory right to participate in surplus. The policyholder is entitled to a share
-  of the *Überschuss* and of the *Bewertungsreserven* unless participation is excluded by express
-  agreement; the surplus must be determined by a method appropriate under recognised actuarial
-  principles; and **§ 153 Abs. 3 currently provides for equal (*hälftige*) participation in the
-  *Bewertungsreserven***, allocated at the times the contract specifies [S3]. Two consequences for
-  this product: participation is a **statutory right, not a marketing feature**, and it **does not
-  stop at *Rentenbeginn*** — [S3] states in terms that policyholders also participate during the
-  annuity payment period. The level of participation is entirely at the insurer's discretion within
-  the statutory minimum [R15], which is why every surplus figure downstream is `[std]`.
+  of the *Überschuss* and of the *Bewertungsreserven* unless excluded by express agreement; the
+  surplus must be determined by a method appropriate under recognised actuarial principles; and
+  **§ 153 Abs. 3 currently provides for equal (*hälftige*) participation in the *Bewertungsreserven***
+  [S3]. Two consequences: participation is a **statutory right, not a marketing feature**, and it
+  **does not stop at *Rentenbeginn*** [S3]. Its level is at the insurer's discretion within the
+  statutory minimum [R15], which is why every surplus figure downstream is `[std]`.
 
 ### R4 — VVG § 163, *Anpassung der Prämie oder der Vertragsbestimmungen*
 - Publisher: Bundesministerium der Justiz / juris
@@ -543,21 +534,20 @@ sibling file's search corroborated it.
   Prozent" and "Deutsche Aktuarvereinigung begrüßt Ministeriumsvorstoß zum Höchstrechnungszins
   2025"
 - Retrieved: no — egress blocked; titles corroborated by the sibling file's search record
-- Content: the profession's own recommendations, which the *Bundesministerium der Finanzen*
-  converts into the DeckRV figure. Establishes that **1,0 % was recommended for 2026** as well as
-  applying from 2025, so a contract written in 2026 is on the same interest basis as one written
-  in 2025 — which matters for a *Sofortrente*, where the tariff vintage and the contract vintage
-  are the same thing. The DAV's methodology, the *Referenzzins* it derives the recommendation
-  from, and any figure inside the releases are **not established**.
+- Content: the profession's recommendations, which the *Bundesministerium der Finanzen* converts
+  into the DeckRV figure. Establishes that **1,0 % was recommended for 2026** as well as applying
+  from 2025, so a contract written in 2026 sits on the same interest basis as one written in 2025 —
+  which matters here, where tariff vintage and contract vintage are the same thing. The DAV's
+  methodology and any figure inside the releases are **not established**.
 
 ### R9 — GDV media information on the *Höchstrechnungszins* increase
 - Publisher: GDV; and HDI, "Höchstrechnungszins in der Lebensversicherung steigt zum 01.01.2025"
 - URL: not established; titles recorded by the sibling files [R10, R11 there; R16 in the KLV file]
 - Retrieved: no — egress blocked
 - Content: the industry's framing of the 2025 increase as "eine angemessene Reaktion auf gestiegene
-  Zinsen" and a carrier's own customer-facing note of the same change. Corroborates the **1 January
-  2025** effective date and the direction of travel. **No figure for the effect on annuity levels
-  was established from either**, which is the figure this product most needs; see gap 5.
+  Zinsen", and a carrier's customer-facing note of the same change; both corroborate the
+  **1 January 2025** effective date. **No figure for the effect on annuity levels was established
+  from either** — the figure this product most needs; gap 5.
 
 ### R10 — DAV, "Herleitung der DAV-Sterbetafel 2004 R für Rentenversicherungen"
 - Publisher: Deutsche Aktuarvereinigung e. V.
@@ -826,10 +816,8 @@ marked `[std]` with its derivation printed.
   (*konventionell*) non-unit-linked form [S2] [S6]. It is not a banking product, not an investment
   fund and not a *Sparplan*, and the difference is the whole point: it transfers
   *Langlebigkeitsrisiko* to the insurer.
-- **Structure in one line:** one payment in, from the policyholder, at inception; a stream of
-  payments out, to the annuitant, from inception until death — subject to a floor supplied by the
-  *Rentengarantiezeit* or the *Kapitalrückgewähr*, and to an uplift supplied by the
-  *Überschussrente*.
+- **Structure in one line:** one payment in at inception; a stream of payments out until death,
+  floored by the *Rentengarantiezeit* or *Kapitalrückgewähr* and lifted by the *Überschussrente*.
 - **The parties.** The *Versicherungsnehmer* (policyholder) contracts and pays; the *versicherte
   Person* (annuitant) is the life the annuity depends on; a *mitversicherte Person* may be named
   for the *Hinterbliebenenrente* (section 7); a *Bezugsberechtigter* receives whatever falls due
@@ -840,9 +828,8 @@ marked `[std]` with its derivation printed.
   the product's tax logic, and the reason it is bought with money already taxed — an inheritance, a
   property sale, a matured endowment, a severance payment, or a *Kapitalwahlrecht* lump sum.
 - **Non-participating it is not.** The contract carries the statutory *Überschussbeteiligung* of
-  § 153 VVG [R3] throughout the payout phase, including participation in *Bewertungsreserven*
-  [S3] [R3]. A model that treats the annuity as a fixed guaranteed stream models less than half the
-  payment.
+  § 153 VVG [R3] throughout the payout phase, *Bewertungsreserven* included [S3]. A model treating
+  the annuity as a fixed guaranteed stream models less than half the payment.
 
 ### 2. The *Einmalbeitrag* and the issue rules
 
@@ -895,9 +882,8 @@ marked `[std]` with its derivation printed.
   survivors; and a *Beitragsrückgewähr* form refunding the *Einmalbeitrag* on death before
   *Rentenbeginn*, which is much the more common retail form. **Neither was established for this
   product**; the pairing carries over from the deferred-annuity file.
-- **Order of magnitude of the deferral effect**, computed on the `[std]` proxy basis of section 4
-  at 1,00 % interest, for a purchase at exact age 65 and an *Einmalbeitrag* of 100 000 €, monthly
-  annuity in advance:
+- **Order of magnitude of the deferral effect**, on the `[std]` proxy basis of section 4 at 1,00 %,
+  purchase at exact age 65, *Einmalbeitrag* 100 000 €, monthly annuity in advance:
 
   | Deferment | Annuity, no death benefit in deferment | Annuity, with full *Beitragsrückgewähr* in deferment |
   |---|---|---|
@@ -990,13 +976,12 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
 
 ### 5. *Rentengarantiezeit*
 
-- **Mechanic.** A *Rentengarantiezeit* is a guaranteed payment period running from *Rentenbeginn*.
-  If the annuitant dies inside it, **the annuity continues to be paid to the beneficiaries until
-  the agreed number of years has expired** — the sibling corpus's worked illustration is a 10-year
-  period with death after 6 years, the spouse receiving the remaining 4 years [R23]. If the
-  annuitant survives the period, it simply lapses and the annuity continues for life as before.
-  After the guarantee period nothing is payable on death unless a *Kapitalrückgewähr* (section 6)
-  or a *Hinterbliebenenrente* (section 7) was also bought.
+- **Mechanic.** A guaranteed payment period running from *Rentenbeginn*. If the annuitant dies
+  inside it, **the annuity continues to be paid to the beneficiaries until the agreed number of
+  years has expired** — the corpus's illustration is a 10-year period with death after 6 years, the
+  spouse receiving the remaining 4 [R23]. If the annuitant survives it, it lapses and the annuity
+  continues for life. Afterwards nothing is payable on death unless a *Kapitalrückgewähr* (section
+  6) or a *Hinterbliebenenrente* (section 7) was also bought.
 - **Durations offered**: **5, 10, 15, 20, 25 or more than 30 years**; **typical durations 15 years
   for retirement ages 61–70 and 10 years for 71 and above**; **most policyholders choose 10 to
   20 years** [R23]. It is carried in the tariff name at NÜRNBERGER, whose deferred AVB is titled
@@ -1040,11 +1025,10 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
 
 ### 6. *Kapitalrückgewähr* / *Beitragsrückgewähr* on death
 
-- **Mechanic.** On the annuitant's death the insurer refunds the *Einmalbeitrag* **less the annuity
-  instalments already paid**, floored at zero. The benefit therefore starts at the full
-  *Einmalbeitrag* and runs down to nothing over roughly the period in which the annuitant recovers
-  their capital in nominal terms — on the `[std]` basis of section 4, about **21,5 years** at age
-  65, i.e. to about age 86 `[std]` (4).
+- **Mechanic.** On death the insurer refunds the *Einmalbeitrag* **less the annuity instalments
+  already paid**, floored at zero — so the benefit starts at the full *Einmalbeitrag* and runs to
+  nothing over roughly the period in which the annuitant recovers the capital nominally: on the
+  `[std]` basis of section 4, about **21,5 years** at age 65, i.e. to about age 86 `[std]` (4).
 - Variants named in the German market: ***volle Beitragsrückgewähr*** (the full unconsumed
   *Einmalbeitrag*), and forms in which only a stated percentage is refunded or in which the refund
   is capped at a number of years' payments. **No carrier's variant was established.**
@@ -1070,7 +1054,7 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
   cost gets a different — and wrong — answer.
 - **Whether the refund counts the *guaranteed* or the *total* annuity paid** is a live contractual
   question, **not established** at any carrier, and the two readings diverge materially over twenty
-  years. A reference implementation uses the **guaranteed** annuity as `[std]`, on the argument
+  years. A reference implementation uses the **guaranteed** annuity as `[std]` (11), on the argument
   that a guaranteed benefit cannot be defined by reference to a discretionary quantity — a
   modeller's argument, not a carrier's. Gap 10.
 
@@ -1134,7 +1118,7 @@ sets a value at the start "composed of the *Garantierente* and a surplus share p
 whole annuity period" [R21], and only the guaranteed part is a promise.
 
 **The four forms.** Carriers offer a choice of ***Überschussverwendung*** for the payout phase, made
-at *Rentenbeginn* — for this product **at inception, once, irrevocably** `[unverified]`:
+at *Rentenbeginn* — here **at inception, once, irrevocably** `[unverified]` [R19]:
 
 | Form | Mechanic | Payment stream |
 |---|---|---|
@@ -1185,10 +1169,10 @@ at *Rentenbeginn* — for this product **at inception, once, irrevocably** `[unv
   - ***Kostenüberschuss*** — the excess of the loadings taken over the expenses actually incurred.
     Small in absolute terms for this product, because a *Sofortrente* has one acquisition event and
     then a long, cheap payment routine.
-- **The statutory floor.** MindZV fixes a minimum share of each of the three results that must be
-  credited to policyholders, computed separately on the *Kapitalanlageergebnis*, the
-  *Risikoergebnis* and the *übrige Ergebnis*, with a deduction for the *Sicherungsbedarf* arising
-  from legacy guarantees [R15] [R16]. **No percentage was established** and none appears here.
+- **The statutory floor.** MindZV fixes a minimum share of each result that must be credited to
+  policyholders — computed separately on the *Kapitalanlageergebnis*, the *Risikoergebnis* and the
+  *übrige Ergebnis*, with a *Sicherungsbedarf* deduction [R15] [R16]. **No percentage was
+  established** and none appears here.
 - **The competition for the same money.** The *Überschussrente* is paid from the same RfB that
   financed the *Zinszusatzreserve* [R16]. The ZZR build-up suppressed declarations across the
   market; its release as rates rose should work the other way. **Neither its size nor its release
@@ -1216,8 +1200,8 @@ at *Rentenbeginn* — for this product **at inception, once, irrevocably** `[unv
   reserves and **carry safety margins relative to the second-order ("realistic") probabilities in
   order to assess the risk prudently**; the second-order base tables represent the **best estimate
   of period mortality in 1999 for insured lives, as three-dimensional selection tables**. For an
-  annuity, prudent means **lighter** mortality: the *Sicherheitszuschlag* pushes `q` **down**, which
-  pushes the annuity value **up** and the annuity bought by a given *Einmalbeitrag* **down**. **The
+  annuity, prudent means **lighter** mortality: the *Sicherheitszuschlag* [R12] pushes `q` down,
+  the annuity value **up** and the annuity bought by a given *Einmalbeitrag* **down**. **The
   size of that margin was not established** — gap 12 — and it is one of the two numbers (with the
   *Rechnungszins*) that decide the whole tariff.
 - **Dates** [R10]: in use since **June 2004**, for new business from **2005**, the DAV document
@@ -1248,9 +1232,9 @@ at *Rentenbeginn* — for this product **at inception, once, irrevocably** `[unv
 
 - German life insurers build charges into the tariff and disclose them, if at all, in the
   *Produktinformationsblatt* [S11] or the *Basisinformationsblatt* [S12]. **No charge parameter for
-  this product was established at any carrier**: not the *Abschluss- und Vertriebskosten*, not the
-  administration loading on the annuity, not the *Effektivkosten*, not a *Renditeminderung*
-  figure. See gap 8.
+  this product was established at any carrier** [R18]: not the *Abschluss- und Vertriebskosten*,
+  not the administration loading on the annuity, not the *Effektivkosten*, not a
+  *Renditeminderung* figure. See gap 8.
 - **The three charge points a *Sofortrente* has**, fewer than most life products: (i) an
   **acquisition and distribution charge on the *Einmalbeitrag***, taken once — `alpha` in section
   4's formula, materially lower than the *Zillmerung* of a recurring-premium contract because there

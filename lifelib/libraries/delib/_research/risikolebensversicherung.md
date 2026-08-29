@@ -23,21 +23,20 @@ different product, and is covered because it changes the tax outcome and nothing
 
 - *Restschuldversicherung* / *Restkreditversicherung* — the single-premium, bank-sold, loan-linked
   group cover. It shares the falling sum insured of the *annuitätisch fallende* RLV and nothing else:
-  it is *Gruppenversicherung* sold through the lender, underwritten by a health declaration or not at
-  all, with its own charge structure and mis-selling history. Where this file names a falling sum, it
-  means a **standalone** RLV whose schedule shadows a loan.
+  *Gruppenversicherung* sold through the lender, underwritten by a health declaration or not at all,
+  with its own charge structure and mis-selling history. Where this file names a falling sum, it means
+  a **standalone** RLV whose schedule shadows a loan.
 - *Sterbegeldversicherung* — small-sum whole-of-life funeral cover with a *Wartezeit* and no
-  *Gesundheitsprüfung*; it builds a *Deckungskapital* and carries a *Rückkaufswert*, and is outside
-  the delib library entirely.
-- *Risikolebensversicherung mit Beitragsrückgewähr* — the variant returning premiums on survival. It
+  *Gesundheitsprüfung*; it builds a *Deckungskapital* and carries a *Rückkaufswert*.
+- *Risikolebensversicherung mit Beitragsrückgewähr* — the variant returning premiums on survival; it
   has a savings element by construction and is economically a *Kapitallebensversicherung* (delib
   product 1) with an unequal death and survival sum.
-- The *Berufsunfähigkeits-* and *Unfalltod-Zusatzversicherung* riders commonly attached to an RLV. The
-  standalone *Berufsunfähigkeitsversicherung* is delib product 9; the rider forms are described here
-  as options and neither is modelled.
+- The *Berufsunfähigkeits-* and *Unfalltod-Zusatzversicherung* riders commonly attached to an RLV; the
+  standalone *Berufsunfähigkeitsversicherung* is delib product 9, and the rider forms are described
+  here as options and not modelled.
 - *Betriebliche Altersversorgung* in all five *Durchführungswege*, *Gruppenversicherung* and
-  *Kollektivverträge*, which are outside the delib library; and Austrian and Swiss *Risikoversicherung*
-  documents, to which the VVG, DeckRV, MindZV and ErbStG do not apply.
+  *Kollektivverträge*; and Austrian and Swiss *Risikoversicherung* documents, to which the VVG, DeckRV,
+  MindZV and ErbStG do not apply.
 
 These notes are the **citation ground truth** for the delib `risikolebensversicherung` product
 documents — `product-spec.md`, `technical-notes.md`, `model.md` and `sources.md`. Source ids
@@ -117,38 +116,27 @@ English; the prose is English about German products.
 |---|---|
 | *Risikolebensversicherung* (RLV), *Risikoversicherung* | Term assurance: death cover for a fixed period, no survival benefit |
 | *Todesfallleistung* / *Versicherungssumme* (VS) | The death benefit / the sum insured; *konstant*, *linear fallend* or *annuitätisch fallend* |
-| *Versicherungsdauer* / *Beitragszahlungsdauer* | Cover period / premium-paying period; equal in the ordinary tariff |
-| *Eintrittsalter* / *Endalter* | Age at entry / age at which cover ends |
+| *Versicherungsdauer* / *Beitragszahlungsdauer* / *Eintrittsalter* / *Endalter* | Cover period / premium-paying period / age at entry / age at which cover ends |
 | *Bruttobeitrag*, *Tarifbeitrag* | The tariff premium: the **guaranteed maximum** the policyholder can ever be asked to pay |
 | *Zahlbeitrag*, *Nettobeitrag* (consumer sense) | The premium billed = *Bruttobeitrag* less the *Beitragsverrechnung*. **Not guaranteed** |
-| *Nettoprämie* (actuarial sense) | The risk premium before expense loadings. **A different quantity from the consumer *Nettobeitrag*** — mechanic 4 |
+| *Nettoprämie* (actuarial sense) | The risk premium before expense loadings — **a different quantity** from the consumer *Nettobeitrag* (mechanic 4) |
 | *Nettotarif*, *Honorartarif* (distribution sense) | A commission-free tariff sold through fee-based advice. **A third, unrelated sense of "netto"** |
 | *Beitragsverrechnung*, *Sofortverrechnung* | The *Überschussverwendung* form that nets declared surplus against the *Bruttobeitrag* |
 | *Überschussbeteiligung* / *Überschussanteile* / *Deklaration* | The statutory entitlement to share in surplus (§ 153 VVG) / the amounts allocated / the annual declaration of rates |
-| *Risikoüberschuss* / *Kostenüberschuss* / *Zinsüberschuss* | Mortality / expense / interest surplus. Here the first dominates and the third is negligible |
-| *Rückstellung für Beitragsrückerstattung* (RfB) | The provision through which surplus is held before allocation |
-| *Rechnungsgrundlagen erster / zweiter Ordnung* | First-order (prudent, tariff and reserving) / second-order (best-estimate) bases |
-| *Sicherheitszuschlag* | The prudential margin loaded onto the best-estimate decrement to give the first-order one |
+| *Risikoüberschuss* / *Kostenüberschuss* / *Zinsüberschuss* / RfB | Mortality / expense / interest surplus — here the first dominates and the third is negligible / the provision holding surplus before allocation |
+| *Rechnungsgrundlagen erster / zweiter Ordnung*, *Sicherheitszuschlag* | First-order (prudent, tariff and reserving) and second-order (best-estimate) bases / the prudential margin between them |
 | *Rechnungszins* / *Höchstrechnungszins* | The technical interest rate / its statutory maximum for new business |
-| *Deckungsrückstellung* / *Deckungskapital* | The balance-sheet actuarial provision / the reserve of one contract |
-| *Zillmerung* / *Höchstzillmersatz* | Financing acquisition costs through the reserve / the statutory cap on the amount so financed |
-| *Rückkaufswert* | Surrender value. **Absent on the ordinary RLV** — mechanic 11 |
-| *Beitragsfreistellung*, *prämienfreie Versicherung* | Making the contract paid-up; the resulting *beitragsfreie Versicherungssumme* |
-| *Gesundheitsprüfung* / *Gesundheitsfragen* | Medical underwriting / the health questions asked in the application |
-| *Vorvertragliche Anzeigepflicht* | The applicant's pre-contractual duty of disclosure (§ 19 VVG) |
-| *Risikozuschlag* / *Leistungsausschluss* | Extra-mortality premium loading / an exclusion written into the individual contract |
-| *Berufsgruppe* / *Raucher* / *Nichtraucher* | Occupation class used for rating / smoker / non-smoker |
-| *Nachversicherungsgarantie* | The right to raise the sum insured on a named life event **without a new *Gesundheitsprüfung*** |
-| *Dynamik*, *Beitragsdynamik* | Automatic annual escalation of premium and sum insured, with a right of *Widerspruch* |
-| *Verbundene Leben* | Two *versicherte Personen* on one contract, one payment on the first death |
-| *Über-Kreuz-Versicherung* | The cross-contracting structure: each partner is *Versicherungsnehmer* on the other's life and his own beneficiary |
+| *Deckungsrückstellung* / *Deckungskapital* / *Zillmerung* / *Höchstzillmersatz* | The balance-sheet provision / one contract's reserve / financing acquisition costs through it / the statutory cap on the amount so financed |
+| *Rückkaufswert* / *Beitragsfreistellung*, *prämienfreie Versicherung* | Surrender value, **absent on the ordinary RLV** (mechanic 11) / making the contract paid-up, and the *beitragsfreie Versicherungssumme* that results |
+| *Gesundheitsprüfung* / *Gesundheitsfragen* / *Vorvertragliche Anzeigepflicht* | Medical underwriting / the health questions asked / the applicant's pre-contractual duty of disclosure (§ 19 VVG) |
+| *Risikozuschlag* / *Leistungsausschluss* / *Berufsgruppe* / *Raucher*, *Nichtraucher* | Extra-mortality loading / an individually agreed exclusion / occupation rating class / smoker, non-smoker |
+| *Nachversicherungsgarantie* / *Dynamik* | The right to raise the sum insured on a named life event **without a new *Gesundheitsprüfung*** / automatic annual escalation of sum and premium, with a right of *Widerspruch* |
+| *Verbundene Leben* / *Über-Kreuz-Versicherung* | Two *versicherte Personen* on one contract, one payment on the first death / the cross-contracting structure in which each partner insures the other's life and is his own beneficiary |
 | *Versicherungsnehmer* (VN) / *versicherte Person* (vP) / *Bezugsberechtigter* | Policyholder / life insured / beneficiary — routinely three different roles here |
 | *Selbsttötung* / *Kriegsklausel* | Suicide (§ 161 VVG) / the war clause restricting the benefit where death is connected with war |
-| *Vorläufiger Versicherungsschutz* / *Wartezeit* | Provisional cover between application and acceptance / waiting period, **normally absent on an RLV** |
-| *Restschuldabsicherung*, *Darlehensabsicherung* | Cover shaped to a loan's outstanding balance |
+| *Vorläufiger Versicherungsschutz* / *Wartezeit* / *Restschuldabsicherung* | Provisional cover between application and acceptance / waiting period, **normally absent on an RLV** / cover shaped to a loan's outstanding balance |
 | *Erbschaftsteuer* / *Freibetrag* / *Steuerklasse* / *Erwerb von Todes wegen* | Inheritance tax / personal allowance / relationship class / the charging concept the *Über-Kreuz* structure avoids |
-| *Stornoquote* | Lapse rate |
-| *Allgemeine Versicherungsbedingungen* (AVB) / *Verbraucherinformation* / *Produktinformationsblatt* (PIB) | Policy conditions / consumer information pack / short pre-contractual product summary |
+| *Stornoquote* / AVB / *Verbraucherinformation* / *Produktinformationsblatt* (PIB) | Lapse rate / policy conditions / consumer information pack / short pre-contractual product summary |
 
 ---
 ## Primary sources
@@ -316,56 +304,54 @@ asserted, because nothing was read.**
 
 ### S14 — Comparison portals: Check24, Verivox, Tarifcheck — **secondary**
 
-- Doc type: price-comparison result pages and accompanying *Ratgeber* articles. URL: **not
-  established** for the term-assurance pages. The sibling research recorded Verivox *Ratgeber* pages
-  on `Kapitallebensversicherung`, `Überschussbeteiligung` and `Zillmerung` [inherited:
-  `kapitallebensversicherung.md` S15], which establishes that the portal publishes explanatory pages
-  of this kind and nothing about its term-assurance pages
+- Doc type: price-comparison result pages and accompanying *Ratgeber* articles. URL: **not established**
+  for the term-assurance pages. The sibling research recorded Verivox *Ratgeber* pages on
+  `Kapitallebensversicherung`, `Überschussbeteiligung` and `Zillmerung` [inherited:
+  `kapitallebensversicherung.md` S15], establishing that the portal publishes explanatory pages of this
+  kind and nothing about its term-assurance pages
 - Content: **these portals are the only public source of German RLV price points**, because no German
-  carrier publishes a rate card and the *Produktinformationsblatt* quotes only the individual
-  applicant's own premium. That is why the brief asked for several price points from them, and
-  **precisely why none could be obtained**: a comparison result is generated per query and is not a
-  published document, so it is unreachable without live egress in any event. **No price point of any
-  kind is recorded in this file from S14** (gap 1).
+  carrier publishes a rate card and the *Produktinformationsblatt* quotes only the applicant's own
+  premium. That is why the brief asked for several price points from them, and **precisely why none
+  could be obtained**: a comparison result is generated per query and is not a published document, so it
+  is unreachable without live egress in any event. **No price point of any kind is recorded in this file
+  from S14** (gap 1).
 
 ### S15 — Finanztip, "Risikolebensversicherung" — **secondary**
 
 - Doc type: consumer guide article with a periodically refreshed carrier recommendation. URL: **not
   established.** The sibling research recorded Finanztip articles on `Überschussbeteiligung
   Lebensversicherung` and `Steuer auf Lebensversicherung` [inherited: `kapitallebensversicherung.md`
-  S16], establishing the publisher's coverage of the subject area and nothing about this article
-- Content: named because Finanztip is the German consumer publication that most consistently makes the
+  S16], establishing coverage of the subject area and nothing about this article
+- Content: Finanztip is the German consumer publication that most consistently makes the
   ***Brutto*/*Zahlbeitrag* distinction the headline of its term-life advice** — the standing
-  recommendation being to compare the *Bruttobeitrag* and not only the *Zahlbeitrag*, because the
-  second is what you pay and the first is what you can be made to pay. **The existence of that
-  editorial line is asserted from knowledge; no figure, ranking or spread statistic is asserted**
-  (gap 1).
+  recommendation being to compare the *Bruttobeitrag* and not only the *Zahlbeitrag*, because the second
+  is what you pay and the first what you can be made to pay. **The existence of that editorial line is
+  asserted from knowledge; no figure, ranking or spread statistic is asserted** (gap 1).
 
 ### S16 — Stiftung Warentest / *Finanztest*, term-life comparison tests — **secondary**
 
-- Doc type: periodic comparison test of *Risikolebensversicherung* tariffs, published behind a paywall
-  with a free summary. URL: **not established**
-- Content: the German market's most influential comparison test for this product. Its test design is
-  why it matters here: *Finanztest* rates on the ***Zahlbeitrag* for defined model customers** — a
-  stated age, sum insured, term and smoking status — **and separately reports the *Bruttobeitrag***,
-  so a published test is the one German document type that would supply exactly the paired figures
-  this file lacks. **No edition, date, model-customer definition or premium figure is asserted**
-  (gap 1).
+- Doc type: periodic comparison test of RLV tariffs, paywalled with a free summary. URL: **not
+  established**
+- Content: the market's most influential comparison test for this product, and its design is why it
+  matters here: *Finanztest* rates on the ***Zahlbeitrag* for defined model customers** — a stated age,
+  sum insured, term and smoking status — **and separately reports the *Bruttobeitrag***, so a published
+  test is the one German document type that would supply exactly the paired figures this file lacks.
+  **No edition, date, model-customer definition or premium figure is asserted** (gap 1).
 
 ### S17 — Franke und Bornberg, MORGEN & MORGEN, ASSEKURATA — **secondary**
 
 - Doc type: tariff ratings (`FB-Unternehmensrating`, `M&M Rating Risikoleben`), market studies,
-  *Bedingungsanalysen*. URL: **not established** for any term-life rating. The sibling research
-  located Assekurata's "24. Marktstudie *Überschussbeteiligungen und Garantien 2026*" and Franke und
-  Bornberg commentary on *Basisinformationsblätter* [inherited: `kapitallebensversicherung.md` R25,
-  R27], establishing that these houses publish in this field and nothing about their term-life work
-- Content: the houses whose published criteria drive German RLV product design. Two of their criteria
-  are load-bearing for a representative specification and are asserted from market knowledge, **not
-  from any document**: the ***Brutto*/*Zahlbeitrag* spread is itself a rated criterion** — a wide
-  spread is marked down, because the spread measures the insurer's unilateral headroom to raise the
-  billed premium; and the ***Nachversicherungsgarantie* event list, caps and age limit are rated
-  criteria**, which is why the market has converged on a recognisable list (mechanic 8). Both
-  `[unverified]`, and neither is used as a numeric parameter anywhere.
+  *Bedingungsanalysen*. URL: **not established** for any term-life rating. The sibling research located
+  Assekurata's "24. Marktstudie *Überschussbeteiligungen und Garantien 2026*" and Franke und Bornberg
+  commentary on *Basisinformationsblätter* [inherited: `kapitallebensversicherung.md` R25, R27],
+  establishing that these houses publish in this field and nothing about their term-life work
+- Content: the houses whose published criteria drive German RLV product design. Two are load-bearing for
+  a representative specification and are asserted from market knowledge, **not from any document**: the
+  ***Brutto*/*Zahlbeitrag* spread is itself a rated criterion** — a wide spread is marked down, because
+  it measures the insurer's unilateral headroom to raise the billed premium; and the
+  ***Nachversicherungsgarantie* event list, caps and age limit are rated criteria**, which is why the
+  market has converged on a recognisable list (mechanic 8). Both `[unverified]`, and neither is used as
+  a numeric parameter anywhere.
 
 ---
 ## Regulatory and actuarial references
@@ -743,10 +729,10 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 - Publisher: Franke und Bornberg; MORGEN & MORGEN; ASSEKURATA — the same corpus as S17, seen from the
   product side. URL: **not established**
-- The reference class for two market-design facts no statute supplies: that the ***Brutto*/*Zahlbeitrag*
-  spread is a rated criterion**, and that the ***Nachversicherungsgarantie* event list, caps and age
-  limits are rated criteria**. Both `[unverified]` [S17]. **No rating, criterion weight or observed
-  distribution is asserted.**
+- The reference class for two market-design facts no statute supplies: that the
+  ***Brutto*/*Zahlbeitrag* spread is a rated criterion**, and that the ***Nachversicherungsgarantie*
+  event list, caps and age limits are rated criteria**. Both `[unverified]` [S17]. **No rating,
+  criterion weight or observed distribution is asserted.**
 
 ### R21 — HGB § 341f and RechVersV — statutory reserving for a term contract
 
@@ -763,23 +749,22 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 ### R22 — Solvency II and the German prudential layer
 
-- Publisher: EIOPA; BaFin. URL: **not established**
-- A pointer only, on the same posture as R21. Nothing product-specific for German term assurance was
-  located, and **no capital, risk-margin or stress figure appears anywhere in the delib
-  `risikolebensversicherung` documents.**
+- Publisher: EIOPA; BaFin. URL: **not established.** A pointer only, on the same posture as R21.
+  Nothing product-specific for German term assurance was located, and **no capital, risk-margin or
+  stress figure appears anywhere in the delib `risikolebensversicherung` documents.**
 
 ### R23 — German case law on *vorvertragliche Anzeigepflicht* and *Selbsttötung* in life insurance
 
-- Publisher: Bundesgerichtshof and the *Oberlandesgerichte*. URL: **not established.** **No decision
-  is cited by date or file number anywhere in this file, and none is invented**
-- A known reference class, not a source. German term-life litigation clusters on two questions:
-  whether the applicant's answers to the *Gesundheitsfragen* were complete and whether the insurer
-  complied with the § 19 Abs. 5 warning requirement [R4]; and whether a *Selbsttötung* inside the
-  three-year window was committed in a state excluding free will [R1]. The sibling research located
-  BGH authority on adjacent life-insurance questions — the *Stornoabzug* *Bezifferung* requirement and
-  the *Bewertungsreserven* judgment of **20 January 2021, IV ZR 318/19** [inherited:
-  `kapitallebensversicherung.md` R22, R23] — establishing that the court decides this area regularly
-  and nothing about term assurance. **No holding is asserted** (gap 20).
+- Publisher: Bundesgerichtshof and the *Oberlandesgerichte*. URL: **not established.** **No decision is
+  cited by date or file number anywhere in this file, and none is invented**
+- A known reference class, not a source. German term-life litigation clusters on two questions: whether
+  the applicant's answers to the *Gesundheitsfragen* were complete and whether the insurer complied with
+  the § 19 Abs. 5 warning requirement [R4]; and whether a *Selbsttötung* inside the three-year window
+  was committed in a state excluding free will [R1]. The sibling research located BGH authority on
+  adjacent life-insurance questions — the *Stornoabzug* *Bezifferung* requirement and the
+  *Bewertungsreserven* judgment of **20 January 2021, IV ZR 318/19** [inherited:
+  `kapitallebensversicherung.md` R22, R23] — establishing that the court decides this area regularly and
+  nothing about term assurance. **No holding is asserted** (gap 20).
 
 ---
 ## Extracted facts, organised by mechanic
@@ -791,235 +776,199 @@ carries an `[S#]` or `[R#]` tag, an inherited-corroboration note, `[unverified]`
 ### 1. Product structure and legal form
 
 - A German *Risikolebensversicherung* is a **life insurance contract under Chapter 5 of the VVG**
-  (*Lebensversicherung*, §§ 150–171), not an accident or health contract, even though it pays only on
-  death [R1] [R7] [R8]. Every general life-insurance provision of that chapter — the *Widerrufsfrist*
-  of § 152, the *Anzeigepflicht* of § 19, the *Selbsttötung* rule of § 161, the *Bezugsberechtigung*
-  of § 159 — applies to it unmodified [R1] [R4] [R7] [R8].
-- It is **individual business** (*Einzelversicherung*) in the delib scope: one contract, one
-  *Versicherungsnehmer*, one or two *versicherte Personen*. Group and occupational forms are out of
-  scope (opening section).
-- **Three roles, routinely three different people.** The *Versicherungsnehmer* owns the contract and
-  pays; the *versicherte Person* is the life at risk; the *Bezugsberechtigter* receives the benefit.
-  On a savings product these collapse into one or two people. On a term product they systematically
-  do not, and the tax outcome depends on **which** of them is which [R7] [R15] (mechanic 14).
-- Where the *Versicherungsnehmer* insures **another person's** life and the benefit exceeds ordinary
-  funeral costs, that person's ***schriftliche Einwilligung*** is required [R7] `[unverified]`. Every
-  *verbundene Leben* and every *Über-Kreuz* arrangement is built on that consent.
-- The product is ***überschussberechtigt*** — surplus-participating — as a matter of course, and the
-  participation is the mechanism through which the customer's bill is set (mechanic 5) [R5] [R9]
-  [S5]. A non-participating German term tariff is possible in law (§ 153 permits exclusion by express
-  agreement [R5]) and is **not the market form**; no such tariff was located `[unverified]`.
-- The contract documents delivered are the ***Allgemeine Versicherungsbedingungen***, the
-  ***Verbraucherinformation*** pack and the ***Produktinformationsblatt*** [S2] [R17]. There is
-  **no *Basisinformationsblatt***, because a pure protection contract has no investment component and
-  is not a PRIIP [R17] `[unverified]`. That is a structural absence, not a missing document.
+  (*Lebensversicherung*, §§ 150–171), not accident or health business, even though it pays only on
+  death. Every general life provision of that chapter applies unmodified — the 30-day *Widerrufsfrist*
+  of § 152, the *Anzeigepflicht* of § 19, the *Selbsttötung* rule of § 161, the *Bezugsberechtigung* of
+  § 159 [R1] [R4] [R7] [R8].
+- It is **individual business** (*Einzelversicherung*) in delib scope: one contract, one
+  *Versicherungsnehmer*, one or two *versicherte Personen*.
+- **Three roles, routinely three different people.** The *Versicherungsnehmer* owns and pays; the
+  *versicherte Person* is the life at risk; the *Bezugsberechtigter* receives the benefit. On a savings
+  product these collapse into one or two people; on a term product they systematically do not, and
+  **the tax outcome depends on which of them is which** [R7] [R15] (mechanic 14). Where the policyholder
+  insures **another** life and the benefit exceeds ordinary funeral costs, that person's
+  ***schriftliche Einwilligung*** is required [R7] `[unverified]` — the foundation of every *verbundene
+  Leben* and *Über-Kreuz* arrangement.
+- The product is ***überschussberechtigt*** as a matter of course, and the participation is the
+  mechanism through which the customer's bill is set (mechanic 5) [R5] [R9] [S5]. A non-participating
+  German term tariff is possible in law (§ 153 permits exclusion by express agreement [R5]) and is
+  **not the market form**; none was located `[unverified]`.
+- The documents delivered are the ***Allgemeine Versicherungsbedingungen***, the
+  ***Verbraucherinformation*** pack and the ***Produktinformationsblatt*** [S2] [R17]. There is **no
+  *Basisinformationsblatt***: a pure protection contract has no investment component and is not a PRIIP
+  [R17] `[unverified]`. That is a **structural absence, not a missing document**.
 
 ### 2. The benefit
 
-- **One benefit, one event.** The insurer pays the ***Versicherungssumme*** as a *Todesfallleistung*
-  if the *versicherte Person* dies within the *Versicherungsdauer*. If she survives it, **nothing is
-  paid and the contract simply ends** [R1] [R2] [S5] [S15]. There is no *Erlebensfallleistung*, no
-  maturity value, no return of premium and no conversion right into a savings contract in the base
-  design.
-- The benefit is a **lump sum**, paid to the *Bezugsberechtigter* directly and not through the estate
-  where the nomination is effective [R7]. Payment outside the estate is the practical point of the
-  *Bezugsberechtigung*: the beneficiary is paid without waiting for probate, and the sum is beyond
-  the reach of the estate's creditors in the ordinary case `[unverified]`.
-- Death **from any cause** is covered — accident or illness alike — subject only to the short
-  exclusion list of mechanic 13. **There is no *Wartezeit*** on a medically underwritten German RLV:
-  cover attaches from the agreed *Versicherungsbeginn* and the insurer's protection against
-  anti-selection is the *Gesundheitsprüfung*, not a deferral of cover `[unverified]` (mechanic 9).
-  This is a sharp contrast with the German *Sterbegeldversicherung*, which is written without
-  underwriting and therefore carries a *Wartezeit* of typically several years — and with the French
-  market, where two of the eight carriers in the frlib corpus impose a *délai d'attente* of 3 or 12
+- **One benefit, one event.** The insurer pays the ***Versicherungssumme*** as a *Todesfallleistung* if
+  the *versicherte Person* dies within the *Versicherungsdauer*; if she survives it, **nothing is paid
+  and the contract simply ends** [R1] [R2] [S5] [S15]. No *Erlebensfallleistung*, no maturity value, no
+  return of premium, no conversion right into a savings contract in the base design.
+- The benefit is a **lump sum** paid to the *Bezugsberechtigter* directly and not through the estate
+  where the nomination is effective [R7] — so the beneficiary is paid without waiting for probate and
+  the sum is beyond the estate's creditors in the ordinary case `[unverified]`.
+- Death **from any cause**, accident or illness alike, subject only to the short exclusion list of
+  mechanic 13. **There is no *Wartezeit*** on a medically underwritten German RLV: cover attaches from
+  the agreed *Versicherungsbeginn*, and the insurer's protection against anti-selection is the
+  *Gesundheitsprüfung*, not a deferral of cover `[unverified]`. That contrasts with the German
+  *Sterbegeldversicherung*, written without underwriting and therefore carrying a *Wartezeit*, and with
+  France, where two of the eight carriers in the frlib corpus impose a *délai d'attente* of 3 or 12
   months where medical formalities are waived [`frlib` S6, S9].
-- **No living benefits in the base design.** The German market does bolt them on as options
-  (mechanic 8) — an *Unfalltod-Zusatzversicherung* doubling the sum on accidental death, a
-  *Berufsunfähigkeits-Zusatzversicherung*, and a growing "vorgezogene Todesfallleistung" paying the
-  sum early on a diagnosis of terminal illness — but none of them is part of the core cover. There is
-  **no German equivalent of the French *PTIA* acceleration**, which in France is present in seven of
-  eight standalone contracts and is compulsorily attached to the death cover at one carrier
-  [`frlib` S1–S8]. **The absence of a standard acceleration is the second-largest structural
-  difference between the German and French term products** and it simplifies the German model
-  considerably: one decrement produces one benefit, and there is no interlock to get wrong.
+- **No living benefits in the base design.** Options are bolted on (mechanic 8), but **there is no
+  German equivalent of the French *PTIA* acceleration**, which is present in seven of eight French
+  standalone contracts and compulsorily attached at one [`frlib` S1–S8]. **The absence of a standard
+  acceleration is the second-largest structural difference between the German and French term
+  products**, and it simplifies the model considerably: one decrement produces one benefit, with no
+  interlock to get wrong.
 
 ### 3. *Versicherungssumme* shapes
 
 Three shapes are standard, and a German tariff normally offers all three on the same underwriting and
-the same *Rechnungsgrundlagen*. All three statements are `[unverified]` as to any carrier and are
-asserted from market knowledge; they are structural and are not numeric.
+the same *Rechnungsgrundlagen*. All are `[unverified]` as to any carrier, asserted from market
+knowledge, and structural rather than numeric.
 
-- ***Konstante Versicherungssumme*** — the sum insured is the same throughout the term. The default
-  and the majority form. Used for family protection, where the need does not amortise.
-- ***Linear fallende Versicherungssumme*** — the sum insured falls by a **fixed amount each year**,
-  normally the initial sum divided by the term, so that it reaches zero (or a stated residual) at
-  expiry. Cheap, simple, and a poor match to an annuity loan because a repayment loan's balance falls
-  slowly at first and quickly at the end, while a linear schedule does the opposite.
-- ***Annuitätisch fallende Versicherungssumme*** — the sum insured follows the **outstanding balance
-  of an annuity loan** at a stated nominal rate agreed at issue. This is the *Darlehensabsicherung*
-  or *Restschuldabsicherung* form of a standalone RLV. The agreed rate is a **contractual schedule
-  parameter, not the borrower's actual loan rate**: the schedule is fixed at issue and does not
-  follow the loan if the loan is refinanced, repaid early or rolled onto a new fixed rate. The
-  standard rates offered cluster in the low single digits; **no specific rate is asserted** (gap 15).
-- **The modelling consequence is that all three are one mechanic**: a *Versicherungssumme* schedule
-  `S(t) = S(0) × f(t)` with `f(0) = 1`, driven by an external table. `konstant` is `f(t) = 1`;
-  `linear fallend` is `f(t) = 1 − t/n`; `annuitätisch fallend` is the outstanding-balance factor of
-  an `n`-year annuity at the agreed rate. **A model that hard-codes a constant sum insured cannot
-  represent two of the three shapes the German market actually sells**, which is why the delib model
-  carries the schedule as a first-class input.
-- A fourth, **rising** shape exists and is a different mechanic: the ***Dynamik***, where the sum
-  insured **and the premium** rise together each year by an agreed percentage without a new
-  *Gesundheitsprüfung*, subject to a right of *Widerspruch* (mechanic 8).
-- German carriers price the falling shapes at a materially lower premium than the constant shape for
-  the same initial sum, because the expected claim is lower — mechanically, not as a discount. **No
-  ratio is asserted**; the model computes it from the schedule.
+- ***Konstante Versicherungssumme*** — the same sum throughout. The default and the majority form, used
+  for family protection, where the need does not amortise.
+- ***Linear fallende Versicherungssumme*** — the sum falls by a **fixed amount each year**, normally
+  reaching zero or a stated residual at expiry. Cheap and simple, and a poor match to an annuity loan,
+  whose balance falls slowly at first and quickly at the end while a linear schedule does the opposite.
+- ***Annuitätisch fallende Versicherungssumme*** — the sum follows the **outstanding balance of an
+  annuity loan** at a nominal rate agreed at issue. The *Darlehensabsicherung* form. The agreed rate is
+  a **contractual schedule parameter, not the borrower's actual loan rate**: it is fixed at issue and
+  does not follow the loan if it is refinanced, repaid early or rolled onto a new fixed rate. **No
+  specific rate is asserted** (gap 15).
+- **All three are one mechanic**: a schedule `S(t) = S(0) × f(t)` with `f(0) = 1`, driven by an external
+  table — `f(t) = 1` constant, `f(t) = 1 − t/n` linear, and the outstanding-balance factor of an
+  `n`-year annuity for the third. **A model that hard-codes a constant sum insured cannot represent two
+  of the three shapes the German market actually sells**, which is why the delib model carries the
+  schedule as a first-class input. German carriers price the falling shapes lower for the same initial
+  sum **mechanically, not as a discount**; the model computes the reduction from the schedule.
+- A fourth, **rising** shape is a different mechanic: the ***Dynamik***, where sum and premium rise
+  together each year without new underwriting, subject to a right of *Widerspruch* (mechanic 8).
 
 ### 4. The premium: a level *Bruttobeitrag*, and three unrelated meanings of "netto"
 
-- **The German term-life premium is level over the whole *Beitragszahlungsdauer***, struck at issue
-  from the entry age and held there. It does **not** step up with attained age. This is the largest
-  single structural difference from the French *temporaire décès*, where every one of the eight
-  carriers in the frlib corpus whose basis is stated prices on an **annually revisable attained-age**
-  basis and none prices level [`frlib` S1, S2, S3, S6, S7, S9, S10; `frlib` gap 1]. The German
-  contract is the one the Anglo-American reader expects; the French one is not. The statement that the
-  German level form is universal is `[unverified]` at carrier level, but it follows directly from the
-  existence of a guaranteed *Bruttobeitrag* [R6] and from the *Zillmerung* regime [R10], neither of
-  which makes sense on an annually repriced contract.
-- *Beitragszahlungsdauer* normally equals *Versicherungsdauer*. An ***abgekürzte
-  Beitragszahlungsdauer*** — premiums stopping before cover does — is offered by some tariffs and
-  raises the level premium correspondingly `[unverified]`.
-- **Three unrelated things are called "netto" in this market, and confusing them is the classic
-  implementation error.** They must be kept apart by name in every delib document:
+- **The German term-life premium is level over the whole *Beitragszahlungsdauer***, struck at issue from
+  the entry age and held there; it does **not** step up with attained age. This is the largest
+  structural difference from the French *temporaire décès*, where every carrier in the frlib corpus
+  whose basis is stated prices on an **annually revisable attained-age** basis and none prices level
+  [`frlib` S1, S2, S3, S6, S7, S9, S10 and gap 1]. The German contract is the one an Anglo-American
+  reader expects; the French one is not. Universality is `[unverified]` at carrier level but follows
+  from the existence of a guaranteed *Bruttobeitrag* [R6] and from the *Zillmerung* regime [R10],
+  neither of which makes sense on an annually repriced contract. An ***abgekürzte
+  Beitragszahlungsdauer*** — premiums stopping before cover does — is offered by some tariffs
+  `[unverified]`.
+- **Three unrelated things are called "netto", and confusing them is the classic implementation error.**
 
 | Term as used | Means | Where it appears |
 |---|---|---|
-| *Nettoprämie* / *Nettobeitrag* (**actuarial** sense) | The risk premium computed from the mortality basis and the interest rate, **before** expense loadings. The *Bruttobeitrag* is this quantity plus α, β and γ loadings | Actuarial texts, DAV material, the sibling delib glossary [inherited: `kapitallebensversicherung.md` terminology] |
-| *Nettobeitrag* / *Zahlbeitrag* (**consumer** sense) | The premium actually billed = *Bruttobeitrag* **less** the *Beitragsverrechnung* out of *Überschussanteile*. **This is the market's dominant usage for this product** | Insurer product pages, *Produktinformationsblätter*, comparison portals, consumer press [S5] [S14] [S15] [S16] |
-| *Nettotarif* / *Honorartarif* (**distribution** sense) | A **commission-free** tariff sold through fee-based advice, where the *Abschlussprovision* is stripped out of the premium and paid separately as a fee | Broker and fee-adviser market `[unverified]` |
+| *Nettoprämie* / *Nettobeitrag* (**actuarial**) | The risk premium from the mortality and interest bases, **before** expense loadings; the *Bruttobeitrag* is this plus α, β and γ | Actuarial texts, DAV material, the sibling delib glossary |
+| *Nettobeitrag* / *Zahlbeitrag* (**consumer**) | The premium billed = *Bruttobeitrag* **less** the *Beitragsverrechnung*. **The market's dominant usage for this product** | Insurer pages, *Produktinformationsblätter*, portals, consumer press [S5] [S14] [S15] [S16] |
+| *Nettotarif* / *Honorartarif* (**distribution**) | A **commission-free** tariff sold through fee-based advice, the *Abschlussprovision* stripped out and charged as a fee | Broker and fee-adviser market `[unverified]` |
 
   The delib documents use ***Zahlbeitrag*** for the consumer sense throughout and reserve
-  ***Nettoprämie*** for the actuarial sense, and say so once in each document. **The word
-  "*Nettobeitrag*" alone is never used as a delib parameter name.**
+  ***Nettoprämie*** for the actuarial sense, and say so once in each document. **The bare word
+  "*Nettobeitrag*" is never used as a delib parameter name.**
 
 ### 5. *Bruttobeitrag* → *Zahlbeitrag*: the *Überschussbeteiligung* as *Beitragsverrechnung*
 
 **This is the central mechanic of the German term product and the one an implementation gets wrong.**
 
-- **The tariff premium is the *Bruttobeitrag*.** It is computed on **first-order
-  *Rechnungsgrundlagen*** — a prudent mortality table with *Sicherheitszuschläge* [R12], the
-  *Rechnungszins* [R10], and the expense loadings — and it is **the amount the contract guarantees**.
-  It is the maximum the policyholder can ever be required to pay, and it does not change over the
-  term [R6].
-- **The customer is billed the *Zahlbeitrag*.** The insurer declares an *Überschussanteil* and
-  applies it as ***Beitragsverrechnung*** — netting it directly against the *Bruttobeitrag* before
-  billing, rather than crediting it to an account. Also marketed as *Sofortverrechnung* or
-  *Sofortrabatt*. The *Zahlbeitrag* is therefore
+- **The tariff premium is the *Bruttobeitrag*.** Computed on **first-order *Rechnungsgrundlagen*** — a
+  prudent mortality table with *Sicherheitszuschläge* [R12], the *Rechnungszins* [R10] and the expense
+  loadings — it is **what the contract guarantees**: the maximum the policyholder can ever be required
+  to pay, unchanged over the term [R6].
+- **The customer is billed the *Zahlbeitrag*.** The insurer declares an *Überschussanteil* and applies
+  it as ***Beitragsverrechnung*** — netting it against the *Bruttobeitrag* before billing rather than
+  crediting it to an account; also marketed as *Sofortverrechnung* or *Sofortrabatt*. So
 
   ```
-  Zahlbeitrag(t) = Bruttobeitrag × (1 − v(t))
+  Zahlbeitrag(t) = Bruttobeitrag × (1 − v(t)),   0 ≤ v(t) < 1
   ```
 
-  where `v(t)` is the declared *Beitragsverrechnungssatz* for the year, `0 ≤ v(t) < 1`. The mechanic
-  is corroborated in kind by a carrier's own guide page dedicated to the *Überschussbeteiligung* of
-  this product [S5] and follows directly from § 153 VVG's requirement of a
-  *verursachungsorientiert* allocation on a product with no reserve to credit [R5]. **The functional
-  form and the name are asserted; no value of `v` is asserted anywhere in this file** (gap 1).
-- **Only the *Bruttobeitrag* is guaranteed. The *Zahlbeitrag* is not, and the insurer may raise it up
-  to the *Bruttobeitrag*.** The *Überschussbeteiligung* is declared **annually** and is not
-  guaranteed for the future — the sibling research established that statement in a carrier's own
-  words for the endowment [inherited: `kapitallebensversicherung.md` S3], and § 153 VVG confers an
-  entitlement to *participate*, not an entitlement to a level [R5]. A reduction of `v` raises the
-  billed premium **without any § 163 procedure, without a *Treuhänder* and without a policyholder
-  right of objection**, because no guaranteed term of the contract has moved [R6]. **This asymmetry
-  is the whole reason the German market publishes both numbers, and it is what makes the spread a
-  rated criterion** [S17] [R20].
-- **The spread's economics, and why it is wide.** An RLV's technical result is almost entirely
-  *Risikoergebnis*, and the MindZV obliges the insurer to allocate at least **90 %** of that result to
-  policyholders [R9]. So:
-  1. the insurer prices on a prudent first-order mortality basis `q1 = (1 + m) · q2`, with `q2` the
-     best estimate for a medically selected portfolio and `m` the aggregate *Sicherheitszuschlag*
-     [R12];
-  2. the portfolio's actual claims run at roughly `q2`, so the mortality margin earned per annum is
-     `m/(1 + m)` of the *Bruttobeitrag*'s risk element;
-  3. **at least 90 % of that margin must go back**, and *Beitragsverrechnung* is the way it goes back
-     on a product with no account to credit.
-  A wide spread is therefore **evidence of a prudent first-order basis, not of a generous insurer**,
-  and a narrow spread is evidence of a basis struck close to expected experience. Both readings are
-  structurally sound; **neither is a quality judgement**, which is the nuance the consumer press
-  tends to lose [S15] [S17].
-- **The counter-intuitive consequence, and the most useful single result in this file.** Because
-  90 % of the extra margin is returned, **increasing the prudence of the first-order basis moves the
-  *Bruttobeitrag* a great deal and the *Zahlbeitrag* hardly at all.** Working the `[std]` calibration
-  of mechanic 16 through three levels of `m`, holding everything else fixed, at entry age 35, sum
-  insured 300,000 EUR, 25-year term:
+  with `v(t)` the declared *Beitragsverrechnungssatz* for the year. The mechanic is corroborated in kind
+  by a carrier's own guide page dedicated to the *Überschussbeteiligung* of this product [S5] and
+  follows from § 153 VVG's requirement of a *verursachungsorientiert* allocation on a product with no
+  reserve to credit [R5]. **The form and the name are asserted; no value of `v` is asserted anywhere in
+  this file** (gap 1).
+- **Only the *Bruttobeitrag* is guaranteed; the insurer may raise the *Zahlbeitrag* up to it.** The
+  *Überschussbeteiligung* is declared **annually** and is not guaranteed for the future, and § 153 VVG
+  confers an entitlement to *participate*, not to a level [R5]. A reduction of `v` raises the billed
+  premium **without any § 163 procedure, without a *Treuhänder* and without a policyholder right of
+  objection**, because no guaranteed term has moved [R6]. **This asymmetry is why the German market
+  publishes both numbers, and why the spread is a rated criterion** [S17] [R20].
+- **Why the spread is wide.** An RLV's technical result is almost entirely *Risikoergebnis*, and the
+  MindZV obliges the insurer to allocate at least **90 %** of it to policyholders [R9]. So: the insurer
+  prices on `q1 = (1 + m) · q2`, with `q2` the best estimate for a medically selected portfolio and `m`
+  the aggregate *Sicherheitszuschlag* [R12]; actual claims run at roughly `q2`, giving a margin of
+  `m/(1 + m)` of the *Bruttobeitrag*'s risk element; and **at least 90 % of that margin must go back**,
+  with *Beitragsverrechnung* the only route available on a product with no account to credit. **A wide
+  spread is therefore evidence of a prudent first-order basis, not of a generous insurer**, and a narrow
+  one of a basis struck close to expected experience. Both readings are structurally sound and
+  **neither is a quality judgement** — the nuance the consumer press tends to lose [S15] [S17].
+- **The counter-intuitive consequence, and the most useful single result in this file.** Because 90 % of
+  the extra margin is returned, **raising the prudence of the first-order basis moves the *Bruttobeitrag*
+  a great deal and the *Zahlbeitrag* hardly at all.** Working the `[std]` calibration of mechanic 16
+  through three levels of `m` at entry age 35, sum 300 000 €, 25-year term:
 
-| Sicherheitszuschlag `m` | First-order / best-estimate ratio | Bruttobeitrag p.a. | Zahlbeitrag p.a. | Zahl / Brutto |
+| Sicherheitszuschlag `m` | First-order / best-estimate | Bruttobeitrag p.a. | Zahlbeitrag p.a. | Zahl / Brutto |
 |---|---|---|---|---|
 | 1.00 | 2.00 | 1,180 EUR | 730 EUR | 0.62 |
 | 1.25 | 2.25 | 1,316 EUR | 753 EUR | 0.57 |
 | 1.50 | 2.50 | 1,451 EUR | 775 EUR | 0.53 |
 
-  The *Bruttobeitrag* moves by **23 %** across that range; the *Zahlbeitrag* moves by **6 %**. All
-  six figures are **[std]** constructions from mechanic 16 and are **not market observations**. The
-  result they demonstrate is not a construction: it follows from the MindZV 90 % rule [R9] and is the
-  reason two German carriers can quote nearly identical *Zahlbeiträge* on very different
-  *Bruttobeiträge*.
-- **Modelling ruling that follows.** The delib model **derives** the *Zahlbeitrag* from the
-  first-order premium and the MindZV allocation rather than treating `v` as a free input. The
-  *Beitragsverrechnungssatz* becomes an **output of the surplus mechanic**, which is exactly what it
-  is in the real product, and the model then publishes **both premium streams** — a guaranteed
-  `prem_gross` and a billed `prem_paid` — with `net_cf` built from the billed one and the guaranteed
-  one available as the stress. **A model that carries only one premium stream cannot represent this
-  product.**
+  The *Bruttobeitrag* moves by **23 %** across that range; the *Zahlbeitrag* by **6 %**. All six figures
+  are **[std]** constructions and are **not market observations**; the result they demonstrate is not a
+  construction — it follows from the MindZV 90 % rule [R9], and it is why two German carriers can quote
+  nearly identical *Zahlbeiträge* on very different *Bruttobeiträge*.
+- **Modelling ruling.** The delib model **derives** the *Zahlbeitrag* from the first-order premium and
+  the MindZV allocation rather than treating `v` as a free input, so the *Beitragsverrechnungssatz* is an
+  **output of the surplus mechanic** — which is what it is in the real product. The model publishes
+  **both premium streams**: a guaranteed `prem_gross` and a billed `prem_paid`, with `net_cf` built from
+  the billed one and the guaranteed one available as the stress. **A model carrying only one premium
+  stream cannot represent this product.**
 - **The observed range of `Zahl / Brutto` across the German market could not be established** (gap 1).
-  What can be said with confidence about its shape: it is **below 1 for essentially every
-  participating tariff**, it is **wider in the direct channel than in the tied-agent channel** because
-  less of the *Bruttobeitrag* is committed to acquisition costs [S3] [S12], and a small number of
-  tariffs are marketed on a deliberately **narrow** spread as a selling point [S17]. The delib
-  representative design uses the derived value of mechanic 16, **0.57**, tagged **[std]**.
+  What can be said: it is **below 1 for essentially every participating tariff**; it is **wider in the
+  direct channel than the tied-agent channel**, because less of the *Bruttobeitrag* is committed to
+  acquisition costs [S3] [S12]; and a few tariffs are marketed on a deliberately **narrow** spread as a
+  selling point [S17]. The representative design uses the derived **0.57**, tagged **[std]**.
 
 ### 6. Other *Überschussverwendung* forms
 
-The *Beitragsverrechnung* is the dominant form on this product but not the only one. Four forms are
-used in the German market for a death-benefit contract; all four statements are `[unverified]` as to
-prevalence and are asserted from market knowledge, with the four-component surplus vocabulary itself
-inherited from a carrier's own page about this product [S5].
+Four forms are used in the German market for a death-benefit contract; all statements are `[unverified]`
+as to prevalence, with the four-component surplus vocabulary itself inherited from a carrier's own page
+about this product [S5].
 
 | Form | Mechanic | Effect on the model |
 |---|---|---|
-| ***Beitragsverrechnung*** (*Sofortverrechnung*) | Surplus netted against the *Bruttobeitrag*; the customer pays less | Reduces `prem_paid`; sum insured unchanged. **The base design** |
-| ***Summenzuwachs*** / *Bonussumme* | Surplus buys additional **paid-up death cover**; the *Versicherungssumme* grows year by year | Raises the benefit; premium unchanged. A second benefit stream the model would have to carry |
-| ***Verzinsliche Ansammlung*** | Surplus accumulates with interest in a side account, paid **in addition** on death | Creates an account value on a product that otherwise has none |
-| ***Todesfallbonus*** | A declared bonus sum payable in addition to the *Versicherungssumme* on death | Raises the benefit only in the year of claim |
-- **Sources of surplus on this product, in order of size**: ***Risikoüberschuss*** first and by a
-  wide margin; ***Kostenüberschuss*** second and modest; ***Zinsüberschuss*** third and negligible,
-  because the contract's *Deckungskapital* is small and short-lived [R9] [R10]. That ordering is the
-  mirror image of the endowment, where the interest result dominates [inherited:
-  `kapitallebensversicherung.md` mechanics 3, 6]. The *Bewertungsreserven* share of § 153 Abs. 3 VVG
-  and § 139 VAG is, on this product, **economically empty** for the same reason [R5] [R11]
-  `[unverified]`.
-- **The delib model implements *Beitragsverrechnung* only**, and states in `model.md` that the other
-  three are off. `Summenzuwachs` is the one worth implementing next, because it is the only one that
-  changes the benefit rather than the premium.
+| ***Beitragsverrechnung*** | Surplus netted against the *Bruttobeitrag*; the customer pays less | Reduces `prem_paid`; sum unchanged. **The base design** |
+| ***Summenzuwachs*** / *Bonussumme* | Surplus buys additional **paid-up death cover**; the sum grows year by year | Raises the benefit; premium unchanged |
+| ***Verzinsliche Ansammlung*** | Surplus accumulates with interest and is paid **in addition** on death | Creates an account value on a product that otherwise has none |
+| ***Todesfallbonus*** | A declared bonus sum payable in addition on death | Raises the benefit only in the year of claim |
+
+- **Sources of surplus, in order of size**: ***Risikoüberschuss*** first and by a wide margin;
+  ***Kostenüberschuss*** second and modest; ***Zinsüberschuss*** third and negligible, the contract's
+  *Deckungskapital* being small and short-lived [R9] [R10]. That ordering is the **mirror image of the
+  endowment**, where the interest result dominates. The *Bewertungsreserven* share of § 153 Abs. 3 VVG
+  and § 139 VAG is economically empty here for the same reason [R5] [R11] `[unverified]`.
+- **The delib model implements *Beitragsverrechnung* only** and says so in `model.md`. *Summenzuwachs*
+  is the one worth implementing next, being the only one that changes the benefit rather than the
+  premium.
 
 ### 7. *Zahlweise* and the *Ratenzahlungszuschlag*
 
-- Premiums are payable **annually, half-yearly, quarterly or monthly**, annually in advance being the
-  actuarial base case and monthly by *SEPA-Lastschrift* being the market's normal choice
-  `[unverified]`.
-- Paying other than annually attracts a ***Ratenzahlungszuschlag***. The German market convention is
-  a loading on the annual premium of **2 % half-yearly, 3 % quarterly, 5 % monthly** — a figure the
-  sibling research recorded as a market convention with no carrier attribution [inherited:
-  `kapitallebensversicherung.md` R28]. It is carried here as **[std]** with that provenance, not as a
-  citation (gap 21).
-- The loading applies to the ***Zahlbeitrag*** as billed. Whether German carriers strike it on the
-  *Bruttobeitrag* or the *Zahlbeitrag* — a difference of a few euros a year but a real one for a
-  model that must reproduce a *Produktinformationsblatt* figure — was **not established**
-  `[unverified]`. The delib model applies it to the *Zahlbeitrag* and says so.
+- Premiums are payable **annually, half-yearly, quarterly or monthly** — annually in advance the
+  actuarial base case, monthly by *SEPA-Lastschrift* the market's normal choice `[unverified]`.
+- Paying other than annually attracts a ***Ratenzahlungszuschlag***: the German market convention is
+  **2 % half-yearly, 3 % quarterly, 5 % monthly**, recorded in the sibling research as a convention with
+  no carrier attribution. Carried here as **[std]** with that provenance, not as a citation (gap 21).
+  Whether German carriers strike it on the *Bruttobeitrag* or the *Zahlbeitrag* — a few euros a year,
+  but real for a model reproducing a *Produktinformationsblatt* figure — was **not established**
+  `[unverified]`; the delib model applies it to the *Zahlbeitrag* and says so.
 - The ***Versicherungsperiode*** follows the *Zahlweise*, and with it the policyholder's termination
-  right under § 168 VVG [R8]: a monthly-paying contract can be terminated monthly. **This is the
-  reason German term-life lapse is not concentrated at policy anniversaries** the way an annual-mode
-  book's is, and it is a caution for any model that assumes anniversary-only exits.
+  right under § 168 VVG [R8]: a monthly-paying contract is terminable monthly. **This is why German
+  term-life lapse is not concentrated at policy anniversaries** the way an annual-mode book's is — a
+  caution for any model assuming anniversary-only exits.
 - **No *Versicherungsteuer* is charged**: life insurance is exempt [R16] `[unverified]`. There is no
   premium-tax line anywhere in the delib model for this product.
 
@@ -1121,115 +1070,100 @@ inherited from a carrier's own page about this product [S5].
 
 ### 10. Charges, and the *Zillmerung* of a contract with almost no reserve
 
-- **German carriers do not disclose their charge structure for this product.** There is no
-  *Effektivkostenquote* for a term contract, because a reduction in yield presupposes a yield [R17];
-  there is no *Basisinformationsblatt* with a cost table, because the product is not a PRIIP [R17];
-  and the *Produktinformationsblatt* quotes premiums, not loadings [S2]. **The absence is structural**
-  and is the reason every charge parameter in the delib specification is `[std]` (gap 8).
-- The charge structure the *Bruttobeitrag* is built from is nevertheless the standard German
-  three-part one, and its shape is not in doubt:
-  - ***Abschluss- und Vertriebskosten*** (α) — acquisition and distribution, expressed as a per-mille
-    of the ***Beitragssumme*** (the sum of all premiums payable over the term). The
-    ***Höchstzillmersatz*** caps the amount that may be financed through the reserve at **25 ‰ of the
-    *Beitragssumme***, cut from 40 ‰ by the LVRG with effect from 1 January 2015 [inherited:
-    `kapitallebensversicherung.md` R7] [R10].
-  - ***Verwaltungskosten*** (β and γ) — administration, normally split between a percentage of each
-    premium and a per-policy or per-mille-of-sum annual amount `[unverified]`.
-  - **No level for any of them is public.** The delib model ships **[std]** values with the
-    calibration of mechanic 16 and an explicit statement that they are placeholders.
-- ***Zillmerung* on a term product is a peculiar thing and worth stating plainly.** The
-  *Höchstzillmersatz* is a fraction of the ***Beitragssumme***, which for a 25-year term contract is
-  25 times the annual premium — a large number. The contract's own *Deckungskapital*, by contrast,
-  is tiny: it exists only because the level premium exceeds the rising natural risk premium in the
-  early years (mechanic 11). **So the Zillmer charge is large relative to the reserve it is written
-  into, and the *gezillmerte Deckungsrückstellung* of a term contract is negative for a long stretch
-  of its term and never becomes large.** Whether a negative individual reserve must be floored at
-  zero for balance-sheet purposes — the *Nullstellung* question — was **not established** [R21]
+- **German carriers do not disclose their charge structure for this product**, and the absence is
+  **structural**: no *Effektivkostenquote*, because a reduction in yield presupposes a yield; no
+  *Basisinformationsblatt*, because the product is not a PRIIP; and the *Produktinformationsblatt*
+  quotes premiums, not loadings [R17]. Every charge parameter in the delib specification is `[std]`
+  (gap 8).
+- The structure the *Bruttobeitrag* is built from is the standard German three-part one and its shape is
+  not in doubt: ***Abschluss- und Vertriebskosten*** (α), expressed as a per-mille of the
+  ***Beitragssumme***, with the ***Höchstzillmersatz*** capping the amount financed through the reserve
+  at **25 ‰ of the *Beitragssumme***, cut from 40 ‰ by the LVRG with effect from 1 January 2015 [R10];
+  and ***Verwaltungskosten*** (β and γ), normally split between a percentage of each premium and a
+  per-policy or per-mille-of-sum annual amount `[unverified]`. **No level for any of them is public.**
+- ***Zillmerung* on a term product is a peculiar thing.** The cap is a fraction of the
+  ***Beitragssumme***, which for a 25-year contract is 25 times the annual premium — a large number.
+  The contract's *Deckungskapital*, by contrast, is tiny, existing only because the level premium
+  exceeds the rising natural risk premium early on (mechanic 11). **So the Zillmer charge is large
+  relative to the reserve it is written into, and the *gezillmerte Deckungsrückstellung* of a term
+  contract is negative for a long stretch and never becomes large.** Whether a negative individual
+  reserve must be floored at zero — the *Nullstellung* question — was **not established** [R21]
   (gap 11).
-- **The one charge consequence that reaches the cash flows**: acquisition cost is incurred at issue
-  and recovered over the term, so a lapse in the first years is a loss to the insurer. That is the
-  economic reason lapse matters on a product with no surrender value, and it is why the delib model
-  carries acquisition cost as a **year-0 outgo** rather than as an annualised loading (mechanic 17).
+- **The one charge consequence that reaches the cash flows**: acquisition cost is incurred at issue and
+  recovered over the term, so a lapse in the first years is a loss to the insurer. That is the economic
+  reason lapse matters on a product with no surrender value, and why the model carries acquisition cost
+  as a **year-0 outgo** rather than as an annualised loading (mechanic 17).
 
 ### 11. No *Rückkaufswert* — why, and what actually happens on *Kündigung*
 
-- **What every consumer source says.** Terminating a German *Risikolebensversicherung* returns
-  nothing: the cover ends and the premiums paid stay with the insurer [S5] [S15]. The French market
-  says the same thing about its own product, in its own words — "les cotisations versées restent
-  acquises à l'assureur", "le contrat ne comprend pas de faculté de rachat" [`frlib` S5, S9].
-- **Why, precisely.** Two reasons, and only the second is legal:
-  1. **There is almost nothing to pay out.** A *Risikolebensversicherung* has **no *Sparanteil*** in
-     the sense a *Kapitallebensversicherung* has: no part of the premium is set aside to build a sum
-     that will certainly be paid. But it is **not** true that nothing accumulates. A level premium
-     charged against a **rising** mortality rate necessarily overcharges in the early years and
-     undercharges in the late ones, and the difference is held as a *Deckungskapital* that builds,
-     peaks near the middle of the term and **runs off to exactly zero at expiry**. On the `[std]`
-     calibration of mechanic 16 that reserve peaks at a low single-digit percentage of the sum
-     insured. After *Zillmerung* (mechanic 10) it is **negative or nil through much of the term**.
-     **Stating "there is no *Sparanteil*, therefore no reserve" is wrong, and a model built on it
-     will fail its own closure check.** The correct statement is that the reserve exists, is small,
-     is fully consumed by expiry, and is often negative on a *gezillmert* basis.
-  2. **The statute does not require it to be paid out.** § 169 Abs. 1 VVG confines the
-     surrender-value duty to a life insurance whose insured event is **certain to occur**; a term
-     assurance's is not [R2]. **This scope limitation is `[unverified]` at the level of the statutory
-     wording and is the most consequential such tag in this file** (gap 2). Its practical result is
-     not in doubt.
+- **What every consumer source says.** Terminating a German RLV returns nothing: cover ends and the
+  premiums paid stay with the insurer [S5] [S15]. The French market says the same about its own product
+  — "les cotisations versées restent acquises à l'assureur", "le contrat ne comprend pas de faculté de
+  rachat" [`frlib` S5, S9].
+- **Why, precisely — two reasons, and only the second is legal:**
+  1. **There is almost nothing to pay out.** An RLV has **no *Sparanteil*** in the endowment's sense: no
+     part of the premium is set aside to build a sum that will certainly be paid. But it is **not** true
+     that nothing accumulates. A level premium charged against a **rising** mortality rate necessarily
+     overcharges early and undercharges late, and the difference is held as a *Deckungskapital* that
+     builds, peaks near the middle of the term and **runs off to exactly zero at expiry**. On the
+     `[std]` calibration of mechanic 16 that reserve peaks at a low single-digit percentage of the sum
+     insured, and after *Zillmerung* (mechanic 10) it is **negative or nil through much of the term**.
+     **Stating "there is no *Sparanteil*, therefore no reserve" is wrong, and a model built on it will
+     fail its own closure check.** The correct statement is that the reserve exists, is small, is fully
+     consumed by expiry, and is often negative on a *gezillmert* basis.
+  2. **The statute does not require it to be paid out.** § 169 Abs. 1 VVG confines the surrender-value
+     duty to a life insurance whose insured event is **certain to occur**; a term assurance's is not
+     [R2]. **This scope limitation is `[unverified]` at the level of the statutory wording and is the
+     most consequential such tag in this file** (gap 2); its practical result is not in doubt.
 - **What happens on *Kündigung*.** The policyholder may terminate at the end of the current
-  *Versicherungsperiode* under § 168 VVG [R8]; cover ends on that date; **nothing is paid**; and at
-  most an unearned fraction of a premium paid in advance is returned. On the model this is a **pure
-  decrement with no benefit attached**, and `claims_surr` is **structurally zero** — a fact worth
-  asserting in a test rather than leaving to prose.
-- **The *Beitragsfreistellung* question, answered.** § 165 VVG gives the right in form [R3]. On this
-  product it is empty in substance: the *beitragsfreie Versicherungssumme* the tiny (or negative)
-  reserve would buy fails the minimum-benefit test in most durations, and the statutory fallback is
-  payment of the *Rückkaufswert*, which is nil [R3] [R2]. **The same collapse happens on the
-  non-payment path**: § 166 VVG converts a lapsed life contract into a *prämienfreie Versicherung*
-  rather than ending it, **unless** the paid-up benefit falls below the minimum — which here it does,
-  so the contract simply ends [R8] `[unverified]`. German carriers answer the customer's real
-  question with something other than *Beitragsfreistellung*: a *Beitragsstundung*, a temporary
-  *Ruhen*, or a reduction of the *Versicherungssumme* `[unverified]` (gap 10).
-- **Consequence for the § 161 *Selbsttötung* rule.** The statutory substitution — *leistungsfrei*,
-  but pay the *Rückkaufswert* [R1] — substitutes **nil**. So the German three-year rule, which on an
-  endowment is a softening, is on a term contract **an exclusion in all but name** (mechanic 12).
+  *Versicherungsperiode* [R8]; cover ends; **nothing is paid**; at most an unearned fraction of a
+  prepaid premium is returned. On the model this is a **pure decrement with no benefit attached**, and
+  `claims_surr` is **structurally zero** — worth asserting in a test rather than leaving to prose.
+- **The *Beitragsfreistellung* question, answered.** § 165 VVG gives the right in form [R3]; on this
+  product it is empty in substance, because the tiny or negative reserve buys a *beitragsfreie
+  Versicherungssumme* that fails the minimum test in most durations, and the statutory fallback is
+  payment of a nil *Rückkaufswert* [R3] [R2]. **The same collapse happens on the non-payment path**:
+  § 166 VVG converts a lapsed life contract into a *prämienfreie Versicherung* rather than ending it —
+  **unless** the paid-up benefit falls below the minimum, which here it does, so the contract simply
+  ends [R8] `[unverified]`. Carriers answer the customer's real question with a *Beitragsstundung*, a
+  temporary *Ruhen*, or a reduction of the sum insured `[unverified]` (gap 10).
+- **Consequence for § 161.** The statutory substitution — *leistungsfrei*, but pay the *Rückkaufswert*
+  [R1] — substitutes **nil**. So the German three-year rule, a softening on an endowment, is on a term
+  contract **an exclusion in all but name** (mechanic 12).
 
 ### 12. *Selbsttötung* — § 161 VVG, and how it differs from the French rule
 
 - **The German rule** [R1], inherited corroboration: the insurer is ***leistungsfrei*** where the
   *versicherte Person* **intentionally takes her own life before three years have elapsed since
   conclusion of the contract**; **unless** the act was committed **in a state excluding free
-  determination of the will caused by a *krankhafte Störung der Geistestätigkeit***; the three-year
-  period **may be extended by agreement**; and where the insurer is *leistungsfrei* it must
-  nevertheless **pay the *Rückkaufswert*, including *Überschussanteile*, under § 169**.
-- **The French rule**, for contrast, from the frlib research where the article was retrieved in full
-  [`frlib` R1]: art. L. 132-7 of the Code des assurances makes the death cover "**de nul effet**" if
-  the insured takes his own life **in the first year of the contract**, and **requires** cover from
-  the second year; on an increase, the clock restarts **for the additional cover only**; there is no
-  surrender value to fall back on, because art. L. 132-23 forbids one on a temporaire décès
-  [`frlib` R3].
-- **The four differences that matter, side by side:**
+  determination of the will caused by a *krankhafte Störung der Geistestätigkeit***; the period **may be
+  extended by agreement**; and where *leistungsfrei* the insurer must nevertheless **pay the
+  *Rückkaufswert*, including *Überschussanteile*, under § 169**.
+- **The French rule**, from the frlib research where the article was retrieved in full [`frlib` R1]:
+  art. L. 132-7 of the Code des assurances makes the death cover "**de nul effet**" if the insured takes
+  his own life **in the first year**, and **requires** cover from the second; on an increase the clock
+  restarts **for the additional cover only**; and there is no surrender value to fall back on, art.
+  L. 132-23 forbidding one on a temporaire décès [`frlib` R3].
 
 | | Germany [R1] | France [`frlib` R1, R3] |
 |---|---|---|
 | Window | **Three years** from conclusion | **One year** from conclusion |
-| Legal effect inside the window | Insurer *leistungsfrei*; **pays the *Rückkaufswert* instead** | Cover "de nul effet" — **nothing is paid** |
-| What that substitution is worth on a term product | **Nil or nominal** — there is no surrender value (mechanic 11) | Nil by construction — the product may not have one |
-| Extension by agreement | **Expressly permitted** by the statute | Not provided for; the statutory minimum is the rule |
+| Effect inside the window | Insurer *leistungsfrei*; **pays the *Rückkaufswert* instead** | Cover "de nul effet" — **nothing is paid** |
+| What the substitution is worth on a term product | **Nil or nominal** — there is no surrender value (mechanic 11) | Nil by construction — the product may not have one |
+| Extension by agreement | **Expressly permitted** | Not provided for; the statutory minimum is the rule |
 
-  So the two systems reach **nearly the same economic answer by opposite routes**, and the German
-  answer applies for **three times as long**. A modeller porting a French term-life model to Germany
-  who changes only the window length has got the mechanic right by accident; one who ports the German
-  model to France and keeps the *Rückkaufswert* substitution has introduced a benefit that French law
-  forbids.
-- **The mental-illness exception is not a formality.** It is the ground on which German
-  *Selbsttötung* claims are actually litigated [R23], and it means the rule is not a clean
-  contractual switch: a claim inside the window is paid if the claimant establishes the excluded
-  state. **A best-estimate cash-flow model cannot represent that**, and delib does not try: the model
-  applies the rule as a benefit switch over the first three policy years and records the exception as
-  a known simplification.
-- **On an increase.** German AVB practice is understood to restart the three-year clock **for the
-  increment only**, as the French statute expressly does [`frlib` R1]. **This is `[unverified]` for
-  Germany** (gap 9) and matters because the *Nachversicherungsgarantie* (mechanic 8) makes increments
-  a routine event on this product.
+- So the two systems reach **nearly the same economic answer by opposite routes**, and the German answer
+  applies for **three times as long**. A modeller porting a French model to Germany who changes only the
+  window length has got the mechanic right by accident; one porting the German model to France and
+  keeping the *Rückkaufswert* substitution has introduced a benefit French law forbids.
+- **The mental-illness exception is not a formality** — it is the ground on which German *Selbsttötung*
+  claims are actually litigated [R23], so the rule is not a clean contractual switch: a claim inside the
+  window is paid if the claimant establishes the excluded state. **A best-estimate cash-flow model
+  cannot represent that**, and delib does not try: the rule is applied as a benefit switch over the
+  first three policy years, and the exception is recorded as a known simplification.
+- **On an increase**, German AVB practice is understood to restart the clock **for the increment only**,
+  as the French statute expressly does [`frlib` R1]. **`[unverified]` for Germany** (gap 9), and it
+  matters because the *Nachversicherungsgarantie* makes increments routine (mechanic 8).
 
 ### 13. Exclusions — the *Kriegsklausel*, and how short the German list is
 
@@ -1473,20 +1407,18 @@ Two different things that are routinely confused: the first is a **product form*
   [R18] (gap 13). This is the largest evidential hole in the file after the price points.
 - Structural rather than statistical: a term contract's **premium** is tiny relative to its **sum
   insured**, so the segment is far larger measured by risk carried than by premium earned, and any
-  market ranking by premium income systematically understates it. That is arithmetic, not an
-  observation.
-- **Distribution.** Germany runs a genuinely three-channel market in this product — tied agents and
-  bank branches [S8] [S9], independent brokers [S7] [S10] [S11], direct writers [S3] [S4] [S12] — and
-  the channel is visible in the ***Brutto*/*Zahlbeitrag* spread**, because acquisition cost is the
-  largest thing that differs between them (mechanic 5). **The Continentale / Europa pair is the
-  cleanest natural experiment available** [S12], and **it was not sampled** (gap 5).
-- **The comparison-portal layer is a market participant, not just an observer.** Because no German
-  carrier publishes a rate card, the portals [S14] are where price competition actually happens, and a
-  tariff's design is shaped by how it will rank in a portal's default query — which is a *Zahlbeitrag*
-  query. **That is a plausible structural explanation for why the *Zahlbeitrag* is marketed and the
-  *Bruttobeitrag* merely disclosed**, and it is `[unverified]`. The consumer-protection line runs the
-  other way: compare the *Bruttobeitrag*, because that is what you can be made to pay [S15] [S16]
-  [S17] [R20].
+  ranking by premium income systematically understates it. Arithmetic, not an observation.
+- **Distribution.** A genuinely three-channel market — tied agents and bank branches [S8] [S9],
+  independent brokers [S7] [S10] [S11], direct writers [S3] [S4] [S12] — and the channel is visible in
+  the ***Brutto*/*Zahlbeitrag* spread**, acquisition cost being the largest thing that differs between
+  them (mechanic 5). **The Continentale / Europa pair is the cleanest natural experiment available**
+  [S12], and **it was not sampled** (gap 5).
+- **The comparison-portal layer is a market participant, not just an observer.** With no published rate
+  card, the portals [S14] are where price competition happens, and a tariff's design is shaped by how
+  it ranks in a portal's default query — a *Zahlbeitrag* query. **That is a plausible structural
+  explanation for why the *Zahlbeitrag* is marketed and the *Bruttobeitrag* merely disclosed**, and it
+  is `[unverified]`. The consumer-protection line runs the other way: compare the *Bruttobeitrag*,
+  because that is what you can be made to pay [S15] [S16] [S17] [R20].
 
 ### 20. What a projection model needs, and what the corpus supplies
 
