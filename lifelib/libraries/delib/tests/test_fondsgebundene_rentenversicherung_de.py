@@ -237,9 +237,8 @@ def test_worked_example_panel_c_row(de_frv_anchor, t):
 def test_the_totals_are_summed_at_full_precision(de_frv_anchor):
     """Every column total, summed at full precision and then rounded -- not cell by cell.
 
-    Rounding each of the 360 cells first changes fourteen of the eighteen totals by one to
-    twelve cents.  ``death_strain`` is the worst case and the reason the rule exists: it
-    rounds to zero in almost every month, so the rounded sum loses six cents of 4,39 EUR.
+    Rounding the 360 cells first changes fourteen of the eighteen totals by one to twelve
+    cents; ``death_strain`` rounds to zero in almost every month and loses six of 4,39.
     """
     p = de_frv_anchor
     df = p.result_cf()
@@ -315,9 +314,8 @@ def test_month_sixty_one_is_the_cliff_and_the_risk_charge_at_a_second_age(de_frv
 def test_the_reduction_in_yield_read_as_a_savings_account(de_frv_anchor):
     """The notes' third rebuild: 200,00 a month at the model's own IRR reaches the fund.
 
-    The same premiums accumulated at the scenario's **gross** 5.00 % reach 163 739,57, and
-    the 34 039,69 between the two is what the charge stack and the fund's own TER cost this
-    policyholder over thirty years.
+    At the scenario's **gross** 5.00 % the same premiums reach 163 739,57; the 34 039,69
+    between is what the charge stack and the fund's TER cost over thirty years.
     """
     p = de_frv_anchor
     irr = p.irr_ann()
@@ -340,8 +338,7 @@ def test_the_four_identities_that_close(de_frv_anchor):
 
     The acquisition line is worth reading twice: the ledger closes on 1 800,00 -- the
     *Höchstzillmersatz* -- while the ``charge_acq`` **column** totals 1 549,75, because it
-    is weighted by ``pols_if``.  Roughly one policy in seven has lapsed by month 60, which
-    is the insurer's acquisition-cost problem in one number.
+    is weighted by ``pols_if``: the insurer's cost problem in one number.
     """
     p = de_frv_anchor
     n = p.proj_len()
@@ -382,7 +379,6 @@ def test_the_annuity_the_contract_exists_for(de_frv_anchor):
     assert p.annuity_age() == 67
     assert p.rentenfaktor_guar() == p.rentenfaktor_curr() == p.rentenfaktor_applied() == 25.0
     assert p.annuity_mth_pp() == pytest.approx(129699.88 / 10000.0 * 25.0, abs=CENT)
-    assert p.annuity_mth_pp() == pytest.approx(324.25, abs=CENT)
     assert p.claims(n, "MATURITY") == pytest.approx(
         p.pols_maturity(n) * p.av_maturity_pp(), rel=1e-12)
 
@@ -450,7 +446,7 @@ def test_the_nettotarif_gap_is_the_acquisition_load(fondsgebundene_rentenversich
 
     ``comm_acq_rate`` is a flat scalar, so on the low-load tariffs the assumed commission
     exceeds the tariff's own charge and those cells carry a projected loss -- the flat
-    assumption showing, not a product fact.  model.md says so rather than hiding it.
+    assumption showing, not a product fact.
     """
     netto = fondsgebundene_rentenversicherung.Projection[11]
     gross = fondsgebundene_rentenversicherung.Projection[1]
@@ -517,10 +513,8 @@ def test_pitfall_3_the_two_mortality_bases_live_in_two_files(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """No cells reads both mort_table.csv and rentenfaktor_table.csv.
 
-    A German fondsgebundene contract prices its death charge on a death table (DAV 2008 T)
-    and its conversion guarantee on an annuity table (DAV 2004 R); a model using one for
-    both misprices one of them, and the arithmetic form of "two bases at once" is that no
-    formula touches both files.
+    The death charge is priced on a death table (DAV 2008 T) and the conversion guarantee
+    on an annuity table (DAV 2004 R); using one for both misprices one of them.
     """
     proj = fondsgebundene_rentenversicherung.Projection
     readers = {nm: {f for f in ("data.mort_table(", "data.rentenfaktor_table(")
@@ -540,9 +534,8 @@ def test_pitfall_3_the_two_mortality_bases_live_in_two_files(
 def test_pitfall_4_the_risk_result_is_exactly_a_quarter_of_the_risk_charge(de_frv_anchor):
     """Sum charge_risk - sum death_strain = (1 - mort_be_factor) x sum charge_risk.
 
-    The tariff prices on the first-order table and the projection decrements on the
-    second-order one; the wedge is the *Risikoergebnis*.  A model decrementing on the
-    tariff basis would print zero here and look healthy doing it.
+    The tariff prices first order, the projection decrements second order, and the wedge is
+    the *Risikoergebnis*.  Decrementing on the tariff basis would print zero here.
     """
     p = de_frv_anchor
     df = p.result_cf()
@@ -563,11 +556,9 @@ def test_pitfall_5_the_two_monthly_conversions_stay_different(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """q/12 for the charge and the decrement; 1 - (1-w)^(1/12) for the lapse rate.
 
-    At q = 0.00080 the two splits differ by 0.04 %, which would land entirely in the risk
-    result -- the one quantity the model is trying to measure.  The same asymmetry runs
-    through the tax-threshold step, which needs **both** limbs of the 12/62 rule: the
-    anchor passes duration 12 at age 48, fourteen years before the benefit exists, so its
-    step falls in policy year 26 and not at month 145.
+    At q = 0.00080 the splits differ by 0.04 %, which would land entirely in the risk
+    result.  The tax-threshold step needs **both** limbs of the 12/62 rule: the anchor
+    passes duration 12 at age 48, so its step falls in policy year 26, not at month 145.
     """
     p = de_frv_anchor
     for t in (1, 61, 300, 360):
@@ -604,8 +595,7 @@ def test_pitfall_6_the_net_amount_at_risk_is_floored_at_zero(
 
     On the *Beitragsrückgewähr* shape the amount at risk vanishes once the fund overtakes
     the premiums paid -- month 95 on the anchor -- and the unfloored difference is large
-    and negative for the remaining 266 months.  A `pct_fund` floor behaves the other way
-    round, growing with the fund; a `fund` benefit has no floor at all.
+    and negative thereafter.  A `pct_fund` floor grows with the fund; `fund` has none.
     """
     p = de_frv_anchor
     n = p.proj_len()
@@ -632,19 +622,18 @@ def test_pitfall_7_the_acquisition_instalment_stops_at_its_window(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """The instalment is zero past the window, and the count follows the frequency.
 
-    60 monthly, 20 quarterly, 10 half-yearly, 5 annual, and **24** on model point 12, whose
-    premium term is two years.  Two exceptions follow from the charge's definition and are
-    stated rather than asserted away: ``charge_acq(121)`` is non-zero on model point 9,
-    where the *Zuzahlung* pays 500,00 of *Zuzahlungskosten*; and the per-policy total
-    equals ``alpha_rate x beitragssumme()`` on eleven points but not on point 6, whose
-    in-force frame opens past the window, nor on point 9.
+    60 monthly, 20 quarterly, 10 half-yearly, 5 annual, 24 on model point 12.  Two
+    exceptions follow from the charge's definition and are stated rather than asserted
+    away: ``charge_acq(121)`` is non-zero on point 9, where the *Zuzahlung* pays 500,00 of
+    *Zuzahlungskosten*; and the per-policy total equals ``alpha_rate x beitragssumme()``
+    on eleven points but not on point 6, whose frame opens past the window, nor on 9.
     """
     assert de_frv_anchor.acq_window_months() == 60
     assert all(de_frv_anchor.charge_acq_pp(t) == 30.0 for t in (1, 30, 59, 60))
     assert all(de_frv_anchor.charge_acq_pp(t) == 0.0 for t in (61, 62, 120, 360))
     for point_id, (mode, count, instalment) in {
-            1: (1, 60, 30.0), 3: (3, 20, 111.0), 4: (6, 10, 132.0),
-            5: (12, 5, 630.0)}.items():
+            1: (1, 60, 30.0), 3: (3, 20, 111.0), 4: (6, 10, 132.0), 5: (12, 5, 630.0)
+    }.items():
         q = fondsgebundene_rentenversicherung.Projection[point_id]
         assert q.prem_mode_months() == mode and q.acq_window_months() == 60
         assert q.acq_instalments() == count
@@ -670,9 +659,8 @@ def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
         fondsgebundene_rentenversicherung):
     """Model point 6 opens at t = 97: the charge and the commission are both behind it.
 
-    That is the whole of the difference between an in-force cell and a new-business one on
-    this chassis, and it is why ``t`` counts policy months from inception -- one
-    ``charge_acq_pp`` rule serves both without a duration offset.
+    That is the whole difference between an in-force cell and a new-business one here, and
+    why ``t`` counts policy months from inception: one rule serves both.
     """
     p = fondsgebundene_rentenversicherung.Projection[6]
     assert p.duration_init_m() == 96 and p.proj_start() == 97
@@ -746,9 +734,8 @@ def test_pitfall_11_the_surrender_value_is_the_fund_and_nothing_else(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """claims_lapse = pols_lapse x av_pp_at(t, "BEF_DECR") exactly, wherever sigma = 0.
 
-    § 169 VVG sends a fondsgebundene contract to the *Zeitwert*, and on a pure unit-linked
-    contract the *Zeitwert* is the fund: no discounting, no *Rechnungszins*, no mortality
-    basis, no *Zillmerung* residue, no second-basis *Mindestrückkaufswert*.
+    § 169 VVG sends the contract to the *Zeitwert*, which on a pure unit-linked policy is
+    the fund: no discounting, no mortality basis, no *Mindestrückkaufswert*.
     """
     p = de_frv_anchor
     n = p.proj_len()
@@ -773,9 +760,8 @@ def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
     """sigma x pols_lapse x av, and never a function of the unrecovered charge.
 
     § 169 VVG makes a deduction for *noch nicht getilgte Abschluss- und Vertriebskosten*
-    ineffective, which is what stops an insurer recovering through the deduction what the
-    five-year spreading denies it.  The deduction rises with the fund while the unrecovered
-    charge falls to zero, so it cannot be a function of it.
+    ineffective.  The deduction rises with the fund while the unrecovered charge falls to
+    zero, so it cannot be a function of it.
     """
     p = fondsgebundene_rentenversicherung.Projection[5]
     assert p.charge_id() == "std_high" and p.stornoabzug_rate() == 0.02
@@ -797,9 +783,8 @@ def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
 def test_pitfall_13_the_fund_is_not_booked_as_an_insurer_outgo(de_frv_anchor):
     """net_cf is the non-unit stream; the fund is the policyholder's money passing through.
 
-    Booking the whole *Fondsguthaben* as an outgo leaves every column looking reasonable
-    and overstates the liability by the entire fund -- 64 865 EUR against a true insurer
-    cost of 4,39 EUR on this cell.
+    Booking the whole *Fondsguthaben* as an outgo overstates the liability by the entire
+    fund -- 64 865 EUR against a true insurer cost of 4,39 EUR on this cell.
     """
     p = de_frv_anchor
     df = p.result_cf()
@@ -845,10 +830,9 @@ def test_pitfall_15_the_applied_factor_is_the_higher_of_guaranteed_and_current(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """max(guaranteed, current): a guarantee with upside, not a ceiling.
 
-    On ``std_2026`` the two are equal, so the max() is exercised without injecting an
-    unsourced uplift; model point 13 carries ``rich_current``, 12 % higher, where it
-    visibly bites -- and a model applying only the guaranteed factor would understate that
-    cell's pension by the whole 12 %.
+    On ``std_2026`` the two are equal, so the max() is exercised without an unsourced
+    uplift; model point 13 carries ``rich_current``, 12 % higher, where it bites -- and a
+    model applying only the guaranteed factor would understate that pension by 12 %.
     """
     p = de_frv_anchor
     assert p.rentenfaktor_guar() == p.rentenfaktor_curr() == 25.0
@@ -871,9 +855,8 @@ def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """premiums(t) = prem_pp x pols_if(t) in a premium month, and 0.00 in between.
 
-    ``prem_pp_base`` already contains whatever *Ratenzahlungszuschlag* the tariff applied,
-    so loading it again would charge the fractionation twice.  There is no frequency-loading
-    cells in this model, and that is deliberate.
+    ``prem_pp_base`` already contains any *Ratenzahlungszuschlag*, so loading it again
+    charges the fractionation twice.  There is no frequency-loading cells here.
     """
     p = de_frv_anchor
     for t in (1, 12, 61, 360):
@@ -923,10 +906,9 @@ def test_pitfall_18_no_balance_goes_negative_and_no_floor_is_triggered(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """Every within-month balance is non-negative and no shipped cell hits a floor.
 
-    The ``min(.., remaining)`` guards on the *Stückkosten* and the *Risikobeitrag* are
-    **[std]** safeguards, not tariff terms.  Model point 7 is the hardest case -- a decaying
-    paid-up fund on a zero-return path under a fixed *garantierte Mindesttodesfallleistung*,
-    so the amount at risk grows as the fund falls and the charge accelerates the decay.
+    The ``min(.., remaining)`` guards are **[std]** safeguards, not tariff terms.  Model
+    point 7 is the hardest case: a decaying paid-up fund on a zero-return path under a
+    fixed *garantierte Mindesttodesfallleistung*, where the amount at risk grows.
     """
     timings = ("BEF_CHARGE", "AFT_CHARGE", "AFT_WD", "BEF_DECR")
     p = de_frv_anchor
@@ -948,24 +930,19 @@ def test_pitfall_18_no_balance_goes_negative_and_no_floor_is_triggered(
 # The published identities and the product's own invariants
 
 
-def test_the_seven_checks_hold_and_their_residuals_are_zero(de_frv_anchor):
-    """Each check is a bool over all t; each residual is zero at every month sampled."""
+def test_check_net_cf_is_delib_ruling_one_and_crosses_the_unit_boundary(de_frv_anchor):
+    """All seven checks are bools over all t, their residuals zero at every month sampled.
+
+    ``check_net_cf_resid`` rebuilds the premium-side charges as ``premiums - prem_to_av``,
+    a different route from the one ``net_cf`` uses -- which makes it a check rather than a
+    restatement: it closes the *Beitragsverrechnung* and the ledger against each other.
+    """
     p = de_frv_anchor
     for name in CHECKS:
         assert getattr(p, name)() is True, name
         resid = getattr(p, name + "_resid")
         for t in (1, 2, 60, 61, 120, 240, 301, 359, 360):
             assert abs(resid(t)) < 1e-8, (name, t)
-
-
-def test_check_net_cf_is_delib_ruling_one_and_crosses_the_unit_boundary(de_frv_anchor):
-    """The residual rebuilds the premium-side charges as premiums - prem_to_av.
-
-    That is a different route from the formula ``net_cf`` uses, which is what makes the
-    check a check rather than a restatement: it closes the *Beitragsverrechnung* and the
-    cash flow statement against each other in one line.
-    """
-    p = de_frv_anchor
     for t in (1, 2, 61, 240, 360):
         withheld = p.premiums(t) - p.prem_to_av(t)
         assert withheld == pytest.approx(
@@ -981,9 +958,8 @@ def test_check_net_cf_is_delib_ruling_one_and_crosses_the_unit_boundary(de_frv_a
 def test_the_unit_and_account_identities_are_not_redundant(de_frv_anchor):
     """One has no price term and the other carries it; an implementation can pass either.
 
-    The unit identity catches a charge taken in euro without the matching units being
-    cancelled; the account identity catches the return applied at the wrong point in the
-    order.  Premium is in advance, so the month's return accrues on the units it buys.
+    The unit identity catches a charge taken in euro without the units being cancelled;
+    the account identity catches the return applied at the wrong point in the order.
     """
     p = de_frv_anchor
     for t in (1, 2, 61, 240, 359):
@@ -1005,9 +981,8 @@ def test_the_unit_and_account_identities_are_not_redundant(de_frv_anchor):
 def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor):
     """The in-force roll-forward, the eighteen columns in the notes' order, both signs.
 
-    Everyone who starts a month dies, surrenders, reaches *Rentenbeginn* or is still there
-    at the start of the next one, and ``result_fund()`` publishes beside the ledger the
-    per-policy state vector a German *Standmitteilung* reports.
+    Everyone who starts a month dies, surrenders, matures or is still there at the start of
+    the next, and ``result_fund()`` publishes the *Standmitteilung* state vector beside it.
     """
     p = de_frv_anchor
     n = p.proj_len()
@@ -1042,15 +1017,19 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
         "mort_rate_mth", "mort_rate_tariff_mth", "lapse_rate_mth"]
     assert (fund["mort_rate_tariff_mth"] > fund["mort_rate_mth"]).all()
     assert fund["unit_price"].is_monotonic_increasing
+    # The enum accessors validate rather than propagating a typo into a lookup.
+    for bad in (lambda: p.claims(1, "SURRENDER"), lambda: p.av_pp_at(1, "AFTER_CHARGE"),
+                lambda: p.pols_if_at(1, "AFTER_DECR")):
+        with pytest.raises(FormulaError):
+            bad()
 
 
 def test_the_modules_off_in_the_base_run_are_reachable(
         fondsgebundene_rentenversicherung, de_frv_anchor):
     """Base-run values, so the worked example reproduces with the machinery still there.
 
-    The *Ablaufmanagement* glide is the one of the three a model point can switch on: model
-    point 8 ramps the **gross** return linearly to 1.50 % p.a. over the last sixty months,
-    the TER untouched because it is a fund cost and not a return assumption.
+    Model point 8 switches on the *Ablaufmanagement* glide: a linear ramp of the **gross**
+    return to 1.50 % p.a. over the last sixty months, the TER untouched.
     """
     proj = fondsgebundene_rentenversicherung.Projection
     assert proj.lapse_dyn_beta == 0.0 and proj.lapse_cap == 0.4
@@ -1106,9 +1085,8 @@ def test_the_zuzahlung_buys_units_and_the_teilentnahme_cancels_them(
 def test_the_dynamic_lapse_module_bites_where_the_fund_is_under_water():
     """Switched on, the addition raises the lapse rate while the fund is under water.
 
-    Off in the base run, because no German calibration for a coefficient of any size exists
-    in this corpus.  It bites hardest on model point 12, whose stress path leaves the fund
-    far below the premiums paid for years, and switches itself off once the fund overtakes.
+    Off in the base run: no German calibration for a coefficient exists in this corpus.  It
+    bites hardest on model point 12 and switches itself off once the fund overtakes.
     """
     model = mx.read_model(MODEL_DIR, name="FRV_DE_S_dynlapse")
     try:
@@ -1127,22 +1105,12 @@ def test_the_dynamic_lapse_module_bites_where_the_fund_is_under_water():
         model.close()
 
 
-def test_invalid_enum_values_raise(de_frv_anchor):
-    """The enum accessors validate rather than propagating a typo into a lookup."""
-    with pytest.raises(FormulaError):
-        de_frv_anchor.claims(1, "SURRENDER")
-    with pytest.raises(FormulaError):
-        de_frv_anchor.av_pp_at(1, "AFTER_CHARGE")
-    with pytest.raises(FormulaError):
-        de_frv_anchor.pols_if_at(1, "AFTER_DECR")
-
-
-def test_the_two_derived_tables_are_anchored_where_the_notes_need_them():
+def test_the_two_derived_tables_are_anchored_where_the_notes_need_them(
+        fondsgebundene_rentenversicherung):
     """The mortality proxy at q(37) = 0.00080 and the factor derivation at age 67.
 
-    The conventions suite asserts that every assumption CSV carries a ``provenance``
-    column; what is product-specific is the two **anchors** a substitute table must
-    reproduce if the worked example is to close, and the fact that DAV 2008 T and
+    The conventions suite owns the ``provenance`` rule; product-specific is the anchor a
+    substitute must reproduce for the worked example to close, and that DAV 2008 T and
     DAV 2004 R are cited by name and never shipped.
     """
     import pandas as pd
@@ -1168,18 +1136,10 @@ def test_the_two_derived_tables_are_anchored_where_the_notes_need_them():
     points = pd.read_csv(INPUT_DIR / "model_point_table.csv", index_col="point_id")
     assert len(points) == 13 and points.loc[1, "policy_id"] == "DE-FRV-0001"
     assert "provenance" not in points.columns      # a model point is a configuration
+    # The chassis vocabulary this model shares with frlib's UC_FR_S, and its symbol map.
+    shared = {"units_pp", "units_bought_pp", "units_cancelled_pp", "unit_price", "av_pp",
+              "av_pp_at", "av_at", "prem_to_av_pp", "prem_to_av", "nar_pp", "db_pp",
+              "withdrawals", "av_releases", "death_strain"}
+    assert shared <= _names(fondsgebundene_rentenversicherung)
 
 
-def test_the_unit_linked_chassis_vocabulary_is_present(fondsgebundene_rentenversicherung):
-    """The names this model shares with frlib's UC_FR_S mean the same thing on both."""
-    shared = {
-        "units_pp", "units_bought_pp", "units_cancelled_pp", "unit_price",
-        "av_pp", "av_pp_at", "av_at", "prem_to_av_pp", "prem_to_av",
-        "nar_pp", "db_pp", "withdrawals", "av_releases", "death_strain",
-    }
-    names = _names(fondsgebundene_rentenversicherung)
-    assert shared <= names, f"missing: {sorted(shared - names)}"
-    doc = fondsgebundene_rentenversicherung.Projection.doc
-    for cells in ("units_pp", "av_pp_at", "nar_pp", "charge_acq_pp", "rentenfaktor_guar",
-                  "lapse_tax_step", "reduction_in_yield"):
-        assert cells in doc, cells

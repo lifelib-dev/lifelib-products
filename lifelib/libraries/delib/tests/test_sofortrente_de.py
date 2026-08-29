@@ -646,7 +646,11 @@ def test_the_cell_with_the_ueberschussrente_switched_off(sofortrente, de_sofort_
     for column, total in SURPLUS_OFF_TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
     on_df = on.result_cf()
+    # Summed at full precision and then rounded, like every other total here: the
+    # difference of the two *printed* totals is -10 617,38, half a cent the other side.
     assert (on_df["net_cf"].sum() - df["net_cf"].sum()) == pytest.approx(
+        -10617.3748, abs=CENT)
+    assert TOTALS["net_cf"] - SURPLUS_OFF_TOTALS["net_cf"] == pytest.approx(
         -10617.38, abs=CENT)
     # The surplus does not touch the decrements or the expense stream.
     assert (on_df["pols_if"] - df["pols_if"]).abs().max() == 0.0

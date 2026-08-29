@@ -21,35 +21,21 @@ balances.  Hence ``proj_len() = 121 - 50 = 71``: the accumulation phase is ``t =
 
 Because a life annuity is projected to exhaustion the frame is seventy-one rows long, so the
 notes print the **whole** accumulation phase and sample the payout at ``t = 18, 27, 28, 40, 55``
-and ``71``.  Every one of those twenty-three rows is asserted here, together with the totals,
-which the notes sum **at full precision and then round** — 23 485,03 EUR of annuity payments
-that way against 23 484,99 EUR if the seventy-one rounded cells are added.
+and ``71``.  All twenty-three rows are asserted here, with the totals, which the notes sum **at
+full precision and then round** — 23 485,03 EUR of annuity payments that way against
+23 484,99 EUR from the rounded cells.  The goldens are hard-coded rather than pickled so a
+reviewer can compare them with the notes by eye, at the precision the notes display: money to
+the cent, ``pols_if`` to six decimals.
 
-The golden values are hard-coded rather than pickled so that a reviewer can compare them
-against the notes by eye.  Tolerances follow the precision the notes display: money to the
-cent, ``pols_if`` to six decimals.
-
-Beyond the worked example this module asserts:
-
-* the notes' three independent rebuilds — policy year 1 from the tariff parameters alone, the
-  two credits summing to the declared rate to ten decimals, and the *Rentenbeginn* rebuilt from
-  the two account balances — and its two closure identities;
-* both documented variants: the *Einmalbeitrag* form (model point 2) and the 2,75 % legacy
-  vintage (model point 6), each row by row and in total;
-* all nine ``check_*`` identities and their per-``t`` residuals, on the anchor and on the six
-  model points that switch an option on — including ``check_net_cf()``, this library's first
-  ruling, which rebuilds ``net_cf`` from ``result_cf()``'s own published columns;
-* **one test per numbered modeling pitfall in the technical notes**, eighteen of them: the
-  declared rate containing the guarantee; the within-year order; ``max(garantierter, aktueller)``;
-  the *Rentengarantiezeit* weighting; *Beitragsfreistellung* against lapse; charges against
-  expenses; the § 169 Abs. 3 surrender floor; the *Stornoabzug*'s shape; the two mortality
-  bases; the generational surface; the zero net amount at risk; the unapplied payout charge; the
-  absent post-*Rentenbeginn* death benefit; the *Kapitalwahlrecht* leaving no account behind;
-  the guarantee vintage as a model-point attribute; unisex pricing; the *Beitragssumme*
-  surviving a *Beitragsfreistellung*; and the untruncated payout phase;
-* the frame's shape and sign convention, the enum accessors, the docstrings a reader relies on,
-  the shipped tables' own provenance, and that an input can be swapped without touching a
-  formula.
+Beyond the worked example this module asserts the notes' three independent rebuilds and its two
+closure identities; both documented variants, the *Einmalbeitrag* form (model point 2) and the
+2,75 % legacy vintage (model point 6), row by row and in total; all nine ``check_*`` identities
+and their per-``t`` residuals, on the anchor and on the six points that switch an option on,
+``check_net_cf()`` among them — this library's first ruling, which rebuilds ``net_cf`` from
+``result_cf()``'s own published columns; **one test per numbered modeling pitfall in the
+technical notes**, eighteen of them, each named for its pitfall; and the frame's shape and sign
+convention, the enum accessors, the docstrings a reader relies on, the shipped tables' own
+provenance, and that an input can be swapped without touching a formula.
 
 There is **no whole-model-point-table sweep here**: the conventions suite owns the single
 sweep, because a model point's first evaluation is the most expensive thing in the run.
@@ -151,47 +137,24 @@ ROUNDED_CELL_TOTALS = {
 
 # The notes' independent check 1 -- policy year 1 rebuilt from the tariff parameters alone.
 YEAR_ONE = {
-    "beitragssumme": 51000.00,
-    "alpha_total": 1275.00,
-    "beta": 120.00,
-    "gamma": 0.00,
-    "mort_rate_guar": 0.00145610,
-    "rho": 4.3683,
-    "charges_due": 1399.3683,
-    "prem_to_av": 1600.6317,
-    "int_credited": 16.0063,
-    "av_end": 1616.6380,
-    "mort_rate": 0.00167451,
-    "deaths": 0.00167451,
-    "lapses": 0.05989953,
-    "claims_death": 5.0235,
-    "spread_diff": 1030.2000,
-    "cv_floor": 2646.8380,
-    "cv_tariff": 1608.6189,
-    "claims_lapse": 158.5444,
-    "expenses": 452.3889,
+    "beitragssumme": 51000.00, "alpha_total": 1275.00, "beta": 120.00, "gamma": 0.00,
+    "mort_rate_guar": 0.00145610, "rho": 4.3683, "charges_due": 1399.3683,
+    "prem_to_av": 1600.6317, "int_credited": 16.0063, "av_end": 1616.6380,
+    "mort_rate": 0.00167451, "deaths": 0.00167451, "lapses": 0.05989953,
+    "claims_death": 5.0235, "spread_diff": 1030.2000, "cv_floor": 2646.8380,
+    "cv_tariff": 1608.6189, "claims_lapse": 158.5444, "expenses": 452.3889,
     "net_cf": 2384.0432,
 }
 
 # The notes' independent check 3 -- the Rentenbeginn rebuilt from the two balances.
 CONVERSION = {
-    "av_pp": 51070.4278,
-    "av_sur_pp": 7718.5532,
-    "capital_gross": 58788.9809,
-    "val_reserve": 881.8347,
-    "capital_conv": 59670.8156,
-    "rate_guar": 28.00,
-    "rate_curr": 32.00,
-    "rate_appl": 32.00,
-    "annuity_guar_mth": 190.9466,
-    "annuity_pp": 2566.3224,
-    "pols_surv_rb": 0.480205,
-    "pols_death_17": 0.002749,
-    "pols_lapse_17": 0.014852,
-    "commutations": 0.144061,
-    "claims_commutation": 8596.2645,
-    "annuitisations": 0.336143,
-    "annuity_payments_18": 862.6523,
+    "av_pp": 51070.4278, "av_sur_pp": 7718.5532, "capital_gross": 58788.9809,
+    "val_reserve": 881.8347, "capital_conv": 59670.8156,
+    "rate_guar": 28.00, "rate_curr": 32.00, "rate_appl": 32.00,
+    "annuity_guar_mth": 190.9466, "annuity_pp": 2566.3224,
+    "pols_surv_rb": 0.480205, "pols_death_17": 0.002749, "pols_lapse_17": 0.014852,
+    "commutations": 0.144061, "claims_commutation": 8596.2645,
+    "annuitisations": 0.336143, "annuity_payments_18": 862.6523,
 }
 
 # The notes' closure split, summed over all 71 years at full precision.
