@@ -3,48 +3,30 @@
 The golden values are the worked example in
 ``products/sofortrente/technical-notes.md`` ("Worked example"), which is a
 **configuration** rather than a scenario: a *sofortbeginnende private
-Rentenversicherung* bought with a single *Einmalbeitrag* of 100 000,00 EUR by a man
-aged 65 at *Vertragsbeginn* in 2025, born in 1960; no *Aufschubzeit*, so the annuity
-begins at once; a ten-year *Rentengarantiezeit*, so the first 120 monthly instalments
-are payable whether the annuitant is alive or not; no *Kapitalrückgewähr* and no
+Rentenversicherung* bought with one *Einmalbeitrag* of 100 000,00 EUR by a man aged 65 at
+*Vertragsbeginn* in 2025 and born in 1960; no *Aufschubzeit*, so the annuity begins at
+once; a ten-year *Rentengarantiezeit*, so the first 120 monthly instalments are payable
+whether the annuitant is alive or not; no *Kapitalrückgewähr* and no
 *Hinterbliebenenrente*; monthly instalments *vorschüssig*, the first at ``t = 0``; a
 tariff *Rechnungszins* of 1,00 %, the *Höchstrechnungszins* in force for 2025 business;
-*Überschussverwendung* **teildynamisch**, so the *Überschussrente* opens at a tenth of
-the *garantierte Rente* and steps up 1 % at each policy anniversary; the guaranteed
-annuity **derived by equivalence** rather than given; and one policy in force from
-``t = 0``.  Model point 1 is that cell.  ``proj_len() = 671``, so the notes' table is a
-**slice** of a 672-month projection rather than the whole of it, and this module asserts
-every row the notes print plus the totals at full precision.
+*Überschussverwendung* **teildynamisch**, so the *Überschussrente* opens at a tenth of the
+*garantierte Rente* and steps up 1 % at each policy anniversary; the guaranteed annuity
+**derived by equivalence** rather than given; and one policy in force from ``t = 0``.
+Model point 1 is that cell.  ``proj_len() = 671``, so the notes' table is a slice of a
+672-month projection rather than the whole of it, and every row it prints is asserted here
+along with the totals at full precision.
 
-Beyond the worked example it asserts:
-
-* the derived quantities — ``net_single_prem()``, the tariff annuity factor and the
-  market's ``a12`` beside it, ``refund_pv()``, and the *garantierte Rente* struck from
-  them — and the notes' three independent rebuilds: the instalment from the printed
-  factor by one division, month 1 rebuilt from the two rows of ``mort_table.csv``, and
-  month 0's expense and cash flow from the parameter list with no survival in either;
-* the notes' three closure identities — the decrements closing on 1.000000, the cash
-  flow statement summing to the printed ``net_cf`` total, and the *Rentengarantiezeit*
-  computed in closed form with no mortality table at all, against which the two
-  opposite-signed errors it guards are 7,13 % below and 92,87 % above;
-* the three variants the notes print in full: the same cell *nachschüssig* (model point
-  9), the in-force cell carrying a **given** annuity struck in 2012 (model point 10),
-  and the cell with the *Überschussrente* switched off (model point 14);
-* all nine ``check_*`` identities, including delib's mandatory ``check_net_cf`` and its
-  per-month residual;
-* **one test per numbered modeling pitfall** in the technical notes — eighteen of them:
-  projecting only the guarantee, decrementing the guaranteed instalments, adding the
-  certain floor instead of taking a ``max``, paying the survivor on top of it,
-  evaluating the *Kapitalrückgewähr* instead of solving it, measuring the refund against
-  the total annuity, indexing the mortality surface by projection year, shipping a
-  period proxy, applying the first-order margin to the level only, letting ``sex`` into
-  the tariff, counting the *Einmalbeitrag* on an in-force point, opening an in-force
-  point at ``t = 0``, getting the arrears offset wrong, compounding the
-  *Überschussrente* monthly, letting the total annuity fall, discounting at the tariff
-  *Rechnungszins*, inventing a lapse or a surrender value, and running past the
-  annuitant but not past the second life;
-* and the structural facts a reader relies on: the ``result_cf()`` column vocabulary,
-  both signs of the net flow, the docstrings, and the shipped tables' own provenance.
+Beyond the worked example it asserts: the derived quantities and the notes' three
+independent rebuilds — the instalment from the printed annuity factor by one division,
+month 1 from the two rows of ``mort_table.csv``, and month 0 from the parameter list; the
+closure identities, including the *Rentengarantiezeit* computed in closed form with no
+mortality table at all, against which the two opposite-signed errors it guards are 7,13 %
+below and 92,87 % above; the three variants the notes print in full — the same cell
+*nachschüssig*, the in-force cell carrying a **given** annuity, and the cell with the
+*Überschussrente* switched off; all nine ``check_*`` identities, delib's mandatory
+``check_net_cf`` and its residual among them; **one test per numbered modeling pitfall**,
+eighteen of them; and the structural facts a reader relies on — the ``result_cf()`` column
+vocabulary, both signs of the net flow, the docstrings and the shipped tables' provenance.
 
 The whole-model-point-table sweep belongs to ``test_model_conventions_de.py``, which is
 also where every ``check_*()`` is called on every point; this module does not repeat it.
@@ -65,20 +47,16 @@ SIX_DP = 0.0000005    # pols_if and the survival probabilities to 6 d.p.
 MODEL_DIR = LIB / MODELS["Sofort_DE_S"][0]
 
 INPUT_CSVS = {
-    "model_point_table.csv",
-    "mort_table.csv",
-    "improvement_table.csv",
-    "surplus_scale_table.csv",
-    "hoechstrechnungszins_table.csv",
+    "model_point_table.csv", "mort_table.csv", "improvement_table.csv",
+    "surplus_scale_table.csv", "hoechstrechnungszins_table.csv",
 }
 
 
 def model_files(folder):
     """The model's own file names, ignoring interpreter caches.
 
-    ``__pycache__`` appears inside a model folder as soon as anything *imports* it,
-    which is routine once the autodoc API pages have been built.  Those caches are not
-    part of the model and must not make a round-trip comparison fail.
+    ``__pycache__`` appears inside a model folder as soon as anything *imports* it, which
+    is routine once the autodoc API pages have been built.
     """
     return {p.name for p in folder.rglob("*")
             if p.is_file() and "__pycache__" not in p.parts}
@@ -88,12 +66,11 @@ def alt_model(tmp_path, name, edits):
     """A private copy of the model whose model point table carries ``edits``.
 
     ``edits`` maps ``point_id`` to a dict of column overrides.  The model folder and its
-    five CSVs are copied into ``tmp_path``, the model point table is rewritten there, and
-    the copy is read from the new location — so ``Data.input_dir()`` resolves to
-    ``tmp_path`` and the shipped files are never touched.  This is how the three pitfalls
-    that need *the same cell with one attribute changed* are asserted: no such pair
-    exists in the shipped table, and inventing one would put a model point in the
-    library whose only purpose is a test.
+    five CSVs are copied into ``tmp_path`` and the copy is read from there, so
+    ``Data.input_dir()`` resolves to ``tmp_path`` and the shipped files are never touched.
+    This is how the three pitfalls that need *the same cell with one attribute changed*
+    are asserted: no such pair exists in the shipped table, and inventing one would put a
+    model point in the library whose only purpose is a test.
     """
     import pandas as pd
 
@@ -114,7 +91,7 @@ def alt_model(tmp_path, name, edits):
 # The worked example's golden values, transcribed from technical-notes.md
 
 
-# The four numbers everything else follows from, plus the frame they live in.
+# The four numbers everything else follows from, and the frame they live in.
 DERIVED = {
     "net_single_prem": 97500.0000,
     "annuity_factor": 263.5711140230,
@@ -123,11 +100,8 @@ DERIVED = {
     "annuity_pp_derived": 362.6658241684,
     "annuity_surp_pp_0": 36.2665824168,
     "annuity_pp_0": 398.9324065852,
-    "first_pay_mth": 0,
-    "guar_end_mth": 120,
-    "t_start": 0,
-    "proj_len": 671,
-    "rows": 672,
+    "first_pay_mth": 0, "guar_end_mth": 120,
+    "t_start": 0, "proj_len": 671, "rows": 672,
 }
 
 # t: (pols_if, premiums, annuity_payments, claims_guarantee, claims_refund,
@@ -159,22 +133,15 @@ WORKED_EXAMPLE = {
 
 # The notes' Total row: summed over all 672 rows at full precision, then rounded.
 TOTALS = {
-    "pols_if": 258.921518,
-    "premiums": 100000.00,
-    "annuity_payments": 101091.33,
-    "claims_guarantee": 3428.03,
-    "claims_refund": 0.00,
-    "expenses": 4228.28,
-    "liability_cf": 8747.64,
-    "net_cf": -8747.64,
+    "pols_if": 258.921518, "premiums": 100000.00, "annuity_payments": 101091.33,
+    "claims_guarantee": 3428.03, "claims_refund": 0.00, "expenses": 4228.28,
+    "liability_cf": 8747.64, "net_cf": -8747.64,
 }
 
-# What the same columns come to if the 672 *rounded* cells are added instead. The notes
+# What the same columns come to if the 672 *rounded* cells are added instead.  The notes
 # state the divergence rather than hiding it, and this module asserts it exists.
 ROUNDED_CELL_SUMS = {
-    "annuity_payments": 101091.23,
-    "claims_guarantee": 3428.04,
-    "net_cf": -8747.47,
+    "annuity_payments": 101091.23, "claims_guarantee": 3428.04, "net_cf": -8747.47,
 }
 
 # t: (lives_if_1, certain_floor, payment_factor, annuity_guar_pp, annuity_surp_pp,
@@ -192,23 +159,16 @@ STATE = {
 
 # The notes' closed-form check on the Rentengarantiezeit, and the two errors it catches.
 GUARANTEE = {
-    "instalments_120R": 43519.8989002072,
-    "s_due_10": 10.4622125411,
-    "surplus_part": 4553.1443206206,
-    "total": 48073.0432208278,
-    "annuitant_leg_only": 44645.0162147316,
-    "additive_floor": 92718.0594355593,
+    "instalments_120R": 43519.8989002072, "s_due_10": 10.4622125411,
+    "surplus_part": 4553.1443206206, "total": 48073.0432208278,
+    "annuitant_leg_only": 44645.0162147316, "additive_floor": 92718.0594355593,
 }
 
 # Model point 9: the anchor cell nachschüssig, and nothing else changed.
 ARREARS_DERIVED = {
-    "annuity_factor": 262.6685503335,
-    "annuity_pp_derived": 363.9119916441,
-    "first_pay_mth": 1,
-    "guar_end_mth": 121,
-    "tariff_lives_120": 0.8923696956,
-    "factor_gap": 0.9025636895,
-    "certain_gain": 0.0974363105,
+    "annuity_factor": 262.6685503335, "annuity_pp_derived": 363.9119916441,
+    "first_pay_mth": 1, "guar_end_mth": 121, "tariff_lives_120": 0.8923696956,
+    "factor_gap": 0.9025636895, "certain_gain": 0.0974363105,
 }
 
 # t: (pols_if, premiums, annuity_payments, claims_guarantee, expenses, net_cf)
@@ -222,7 +182,6 @@ ARREARS = {
     121: (0.837965,      0.00, 338.63,  0.00,    6.32,  -344.95),
     240: (0.555887,      0.00, 226.98,  0.00,    4.87,  -231.84),
 }
-
 ARREARS_TOTALS = {
     "pols_if": 259.081684, "premiums": 100000.00, "annuity_payments": 101038.39,
     "claims_guarantee": 3504.53, "expenses": 4227.99, "net_cf": -8770.91,
@@ -238,7 +197,6 @@ INFORCE = {
     180: (0.918857, 0.00, 474.13,  0.00, 7.47, -481.60),
     240: (0.689197, 0.00, 355.63,  0.00, 6.03, -361.66),
 }
-
 INFORCE_TOTALS = {
     "pols_if": 135.648915, "premiums": 0.00, "annuity_payments": 69516.79,
     "claims_guarantee": 478.05, "expenses": 1192.84, "net_cf": -71187.68,
@@ -252,25 +210,18 @@ SURPLUS_OFF_TOTALS = {
 
 # Model point 3: the Kapitalrückgewähr cell, where R is solved and not evaluated.
 REFUND = {
-    "annuity_factor": 258.2307278976,
-    "annuity_pp_derived": 298.8347765669,
-    "refund_pv": 18788.3116885525,
-    "r_max_naive": 370.1659987267,
-    "refund_pv_at_r_max": 13546.3741961946,
-    "r_naive": 318.7361819732,
-    "refund_pp_0": 99701.1652234331,
-    "instalments_to_exhaust": 335,
+    "annuity_factor": 258.2307278976, "annuity_pp_derived": 298.8347765669,
+    "refund_pv": 18788.3116885525, "r_max_naive": 370.1659987267,
+    "refund_pv_at_r_max": 13546.3741961946, "r_naive": 318.7361819732,
+    "refund_pp_0": 99701.1652234331, "instalments_to_exhaust": 335,
 }
 
 # The two rows of mort_table.csv the notes rebuild month 1 from, and the anchor of the
-# shipped [std] proxy: the 0.45 / 0.55 unisex blend reproduces q_base(65).
+# shipped [std] proxy: the 0,45 / 0,55 unisex blend reproduces q_base(65).
 MORT = {
-    "first_m_65": 0.009857796019,
-    "first_f_65": 0.006273146506,
-    "unisex_first_65": 0.007886238787,
-    "q_base_65": 0.0078862368150,
-    "second_m_65": 0.011829355222,
-    "mort_rate_mth_0": 0.000991165035,
+    "first_m_65": 0.009857796019, "first_f_65": 0.006273146506,
+    "unisex_first_65": 0.007886238787, "q_base_65": 0.0078862368150,
+    "second_m_65": 0.011829355222, "mort_rate_mth_0": 0.000991165035,
     "lives_if_1": 0.999008834965,
 }
 
@@ -285,8 +236,7 @@ def test_worked_example_row(de_sofort_anchor, t):
 
     672 monthly rows is not a table anyone prints in full, so the notes show the first
     policy year, the two months either side of the guarantee's expiry and one row every
-    ten years to the horizon.  Each of those is asserted here cell by cell; the totals
-    below cover the 650 rows in between.
+    ten years; the totals below cover the 650 rows in between.
     """
     pols_if, prem, ann, guar, refund, exp, liab, net = WORKED_EXAMPLE[t]
     p = de_sofort_anchor
@@ -298,32 +248,17 @@ def test_worked_example_row(de_sofort_anchor, t):
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
     assert p.liability_cf(t) == pytest.approx(liab, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
-    # The frame publishes exactly what the cells return, in the notes' column order.
     row = de_sofort_anchor.result_cf().loc[t]
     assert row["annuity_payments"] == pytest.approx(ann, abs=CENT)
     assert row["net_cf"] == pytest.approx(net, abs=CENT)
 
 
-def test_the_frame_spans_the_whole_projection(de_sofort_anchor):
-    """672 rows, t = 0 ... 671, contiguous and indexed by t."""
-    p = de_sofort_anchor
-    df = p.result_cf()
-    assert p.t_start() == DERIVED["t_start"]
-    assert p.proj_len() == DERIVED["proj_len"]
-    assert len(df) == DERIVED["rows"]
-    assert list(df.index) == list(range(0, 672))
-    assert df.index.name == "t"
-    assert df.index[-1] == p.proj_len()
-    assert p.horizon_mths(1) == 12 * (p.omega_age - 65) == 672
-
-
 def test_the_worked_example_totals_are_summed_at_full_precision(de_sofort_anchor):
-    """The Total row is a full-precision sum then rounded -- not a sum of rounded cells.
+    """The Total row is a full-precision sum then rounded, not a sum of rounded cells.
 
     On this table the difference is visible: 672 half-cent roundings do not cancel, and
-    ``net_cf`` comes to -8 747,47 EUR from the rounded cells against -8 747,64 EUR at
-    full precision.  Seventeen cents, and a test that summed the printed table would
-    enshrine the wrong number.
+    ``net_cf`` comes to -8 747,47 EUR from the rounded cells against -8 747,64 EUR at full
+    precision.  A test that summed the printed table would enshrine the wrong number.
     """
     df = de_sofort_anchor.result_cf()
     for column, total in TOTALS.items():
@@ -331,14 +266,23 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_sofort_anchor
     for column, rounded in ROUNDED_CELL_SUMS.items():
         assert sum(round(v, 2) for v in df[column]) == pytest.approx(rounded, abs=CENT)
         assert abs(rounded - TOTALS[column]) > CENT, column
+    # And the statement closes: premiums less the four outgo columns is net_cf.
+    outgo = (df["annuity_payments"] + df["claims_guarantee"]
+             + df["claims_refund"] + df["expenses"])
+    assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
+        0.0, abs=1e-9)
+    assert df["annuity_payments"].sum() == pytest.approx(101091.3334710770, abs=1e-6)
+    assert df["claims_guarantee"].sum() == pytest.approx(3428.0270060962, abs=1e-6)
+    assert df["expenses"].sum() == pytest.approx(4228.2772978315, abs=1e-6)
+    assert df["net_cf"].sum() == pytest.approx(-8747.6377750047, abs=1e-6)
 
 
 def test_the_derived_quantities(de_sofort_anchor):
     """The four numbers the whole example follows from, and the market's own unit.
 
-    ``annuity_factor()`` is the notes' ``ä`` and is **not** the market's ``a12``: the
-    two differ by the payment frequency, so a reader comparing the research file's
-    ``a12`` with this model must divide by twelve first.
+    ``annuity_factor()`` is the notes' ``ä`` and is **not** the market's ``a12``: the two
+    differ by the payment frequency, so a reader comparing the research file's ``a12``
+    with this model must divide by twelve first.
     """
     p = de_sofort_anchor
     assert p.single_prem() == 100000.0
@@ -351,46 +295,48 @@ def test_the_derived_quantities(de_sofort_anchor):
     assert p.refund_pv() == DERIVED["refund_pv"]
     assert p.annuity_pp_derived() == pytest.approx(
         DERIVED["annuity_pp_derived"], abs=5e-10)
-    assert p.annuity_surp_pp(0) == pytest.approx(
-        DERIVED["annuity_surp_pp_0"], abs=5e-10)
+    assert p.annuity_surp_pp(0) == pytest.approx(DERIVED["annuity_surp_pp_0"], abs=5e-10)
     assert p.annuity_pp(0) == pytest.approx(DERIVED["annuity_pp_0"], abs=5e-10)
     assert p.first_pay_mth() == DERIVED["first_pay_mth"]
     assert p.guar_end_mth() == DERIVED["guar_end_mth"]
     assert p.max_tariff_int_rate() == 0.01 and p.tariff_int_rate() == 0.01
+    # The frame: 672 rows, t = 0 ... 671, contiguous and indexed by t.
+    df = p.result_cf()
+    assert (p.t_start(), p.proj_len(), len(df)) == (
+        DERIVED["t_start"], DERIVED["proj_len"], DERIVED["rows"])
+    assert list(df.index) == list(range(0, 672)) and df.index.name == "t"
+    assert df.index[-1] == p.proj_len()
+    assert p.horizon_mths(1) == 12 * (p.omega_age - 65) == 672
 
 
 def test_the_instalment_rebuilt_from_the_annuity_factor_alone(de_sofort_anchor):
     """The notes' first independent check: one division, from the printed factor.
 
-    The model builds ``ä`` by summing 672 discounted survival-weighted payment months.
-    A reader with the printed factor does ``97 500,00 / (263,5711140230 x 1,02)``, and
-    in the market's own unit ``100 000 x 0,975 / (12 x 21,9642595019 x 1,02)``.  The
-    opening total instalment is then ``R x 1,10``, the 1,10 being ``1 + u0`` with the
-    growth exponent still zero in policy year 0.
+    The model builds ``ä`` by summing 672 discounted survival-weighted payment months; a
+    reader does ``97 500,00 / (263,5711140230 x 1,02)``, and in the market's own unit
+    ``100 000 x 0,975 / (12 x 21,9642595019 x 1,02)``.  The opening total instalment is
+    then ``R x 1,10``, the 1,10 being ``1 + u0`` with the growth exponent still zero.
     """
     p = de_sofort_anchor
     r = DERIVED["net_single_prem"] / (DERIVED["annuity_factor"] * 1.02)
     assert r == pytest.approx(362.6658241684, abs=5e-9)
     assert p.annuity_pp_derived() == pytest.approx(r, abs=5e-9)
-    market = 100000.0 * 0.975 / (12 * DERIVED["a12"] * 1.02)
-    assert market == pytest.approx(362.67, abs=CENT)
+    assert 100000.0 * 0.975 / (12 * DERIVED["a12"] * 1.02) == pytest.approx(
+        362.67, abs=CENT)
     assert DERIVED["annuity_factor"] * 1.02 == pytest.approx(268.8425363035, abs=5e-10)
     assert p.surplus_init_pct() == 0.10 and p.surplus_growth() == 0.01
-    assert p.annuity_pp(0) == pytest.approx(
-        p.annuity_pp_derived() * 1.10, rel=1e-12)
+    assert p.annuity_pp(0) == pytest.approx(p.annuity_pp_derived() * 1.10, rel=1e-12)
 
 
 def test_month_one_rebuilt_from_the_mortality_table(de_sofort_anchor):
     """The notes' second independent check, and the shipped proxy's own anchor.
 
-    The annuitant is 65 and born in 1960, so the cohort exponent ``1960 + 65 - 2025`` is
-    zero and the generational surface returns the shipped rate unmodified.  From there
-    the month-1 split follows arithmetically, and the two legs add back to the whole
-    instalment exactly because ``payment_factor(1) = max(1, 0.999009) = 1``.
-
-    The unisex tariff rate at the same age comes off the same two rows and reproduces
-    the research file's ``q_base(65)`` to 2,5 x 10^-7 relative -- the anchor that lets
-    every annuity factor printed there be traced into this model.
+    The annuitant is 65 and born in 1960, so the cohort exponent is zero and the surface
+    returns the shipped rate unmodified; the month-1 split follows arithmetically, and the
+    two legs add back to the whole instalment because ``payment_factor(1) = 1``.  The
+    unisex tariff rate comes off the same two rows and reproduces the research file's
+    ``q_base(65)`` to 2,5 x 10^-7 relative -- the anchor that lets every annuity factor
+    printed there be traced into this model.
     """
     p = de_sofort_anchor
     assert p.mort_rate_at_age(65, "M", "FIRST") == MORT["first_m_65"]
@@ -408,7 +354,6 @@ def test_month_one_rebuilt_from_the_mortality_table(de_sofort_anchor):
         DERIVED["annuity_pp_0"] * MORT["mort_rate_mth_0"], abs=5e-9)
     assert p.annuity_payments(1) + p.claims(1, "GUARANTEE") == pytest.approx(
         p.annuity_pp(1), abs=1e-9)
-    # The unisex blend, and its 2,5e-7 relative agreement with the research file's law.
     blend = 0.45 * MORT["first_m_65"] + 0.55 * MORT["first_f_65"]
     assert blend == pytest.approx(MORT["unisex_first_65"], abs=5e-13)
     assert p.mort_rate_at_age(65, "U", "FIRST") == pytest.approx(blend, rel=1e-12)
@@ -418,11 +363,9 @@ def test_month_one_rebuilt_from_the_mortality_table(de_sofort_anchor):
 def test_month_zero_rebuilt_from_the_parameter_list(de_sofort_anchor):
     """The notes' third independent check: no survival enters either line.
 
-    ``expenses(0)`` is the acquisition charge plus one month's maintenance plus one
-    instalment run, and ``net_cf(0)`` is the whole *Einmalbeitrag* less the first
-    instalment less that expense.  The *Kostenüberschuss* the tariff is designed to earn
-    is visible in the same two lines: the acquisition **loading** takes 2 500,00 EUR and
-    the acquisition **expense** incurred is 2 200,00 EUR.
+    The *Kostenüberschuss* the tariff is designed to earn is visible in the same two
+    lines: the acquisition **loading** takes 2 500,00 EUR and the acquisition **expense**
+    incurred is 2 200,00 EUR.
     """
     p = de_sofort_anchor
     assert p.expense_acq_rate == 0.02 and p.expense_acq_fixed == 200.0
@@ -431,24 +374,17 @@ def test_month_zero_rebuilt_from_the_parameter_list(de_sofort_anchor):
     assert p.expenses(0) == pytest.approx(2000.00 + 200.00 + 5.00 + 1.50, abs=1e-9)
     assert p.expenses(0) == pytest.approx(2206.50, abs=CENT)
     assert p.premiums(0) == 100000.0
-    assert p.net_cf(0) == pytest.approx(
-        100000.00 - 398.93 - 0.00 - 2206.50, abs=CENT)
+    assert p.net_cf(0) == pytest.approx(100000.00 - 398.93 - 0.00 - 2206.50, abs=CENT)
     loading = p.expense_load_alpha * p.single_prem()
     incurred = p.expense_acq_rate * p.single_prem() + p.expense_acq_fixed
     assert loading - incurred == pytest.approx(300.00, abs=CENT)
-    # Months 1 to 11 carry maintenance and one payment run and nothing else.
     assert p.expenses(1) == pytest.approx(60.0 / 12 + 1.50, abs=1e-9)
     assert p.expenses(12) == pytest.approx((60.0 / 12 + 1.50) * 1.015, abs=1e-9)
 
 
 @pytest.mark.parametrize("t", sorted(STATE))
 def test_the_state_behind_the_cash_flows(de_sofort_anchor, t):
-    """The notes' second table: survival, the certain floor and the split instalment.
-
-    Two properties are visible in it and both are asserted again as pitfalls below:
-    ``annuity_surp_pp`` is flat across t = 0 ... 11 and steps at t = 12, and
-    ``payment_factor`` is exactly 1 up to t = 119 and equals ``lives_if_1`` from t = 120.
-    """
+    """The notes' second table: survival, the certain floor and the split instalment."""
     lives, floor, factor, guar, surp, total, cum = STATE[t]
     p = de_sofort_anchor
     assert p.lives_if(t, 1) == pytest.approx(lives, abs=SIX_DP)
@@ -467,7 +403,7 @@ def test_the_decrements_close(de_sofort_anchor):
 
     It closes to the last printed digit because ``q = 1`` at attained age 120 forces the
     survival path to zero inside the ``omega_age = 121`` horizon -- eleven months inside
-    it, in fact, which is why the horizon is an upper bound and not an equality.
+    it, which is why the horizon is an upper bound and not an equality.
     """
     p = de_sofort_anchor
     n = p.proj_len()
@@ -481,27 +417,13 @@ def test_the_decrements_close(de_sofort_anchor):
     assert p.mort_rate_at_age(120, "M", "SECOND") == 1.0
 
 
-def test_the_cash_flow_statement_closes(de_sofort_anchor):
-    """Premiums less the four outgo columns is net_cf, summed at full precision."""
-    df = de_sofort_anchor.result_cf()
-    outgo = (df["annuity_payments"] + df["claims_guarantee"]
-             + df["claims_refund"] + df["expenses"])
-    assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
-        0.0, abs=1e-9)
-    assert df["premiums"].sum() == pytest.approx(100000.0, abs=1e-9)
-    assert df["annuity_payments"].sum() == pytest.approx(101091.3334710770, abs=1e-6)
-    assert df["claims_guarantee"].sum() == pytest.approx(3428.0270060962, abs=1e-6)
-    assert df["expenses"].sum() == pytest.approx(4228.2772978315, abs=1e-6)
-    assert df["net_cf"].sum() == pytest.approx(-8747.6377750047, abs=1e-6)
-
-
 def test_the_guarantee_period_computed_in_closed_form(de_sofort_anchor):
     """The notes' third check, and the one worth having: no mortality table at all.
 
     Inside the *Rentengarantiezeit* the outgo does not depend on survival, so the first
-    ten years can be computed from ``R``, ``u0``, ``psi`` and an annuity-certain-due
-    alone.  The two errors this closes off are large and point in opposite directions,
-    which is exactly why the identity is worth writing down.
+    ten years follow from ``R``, ``u0``, ``psi`` and an annuity-certain-due alone.  The two
+    errors it closes off are large and point in opposite directions, which is why the
+    identity is worth writing down.
     """
     p = de_sofort_anchor
     r = p.annuity_pp_derived()
@@ -515,12 +437,9 @@ def test_the_guarantee_period_computed_in_closed_form(de_sofort_anchor):
 
     paid = sum(p.annuity_payments(t) + p.claims(t, "GUARANTEE") for t in range(0, 120))
     assert paid == pytest.approx(GUARANTEE["total"], abs=1e-8)
-    assert paid == pytest.approx(guaranteed + surplus, abs=1e-9)
-
     annuitant_only = sum(p.annuity_payments(t) for t in range(0, 120))
     assert annuitant_only == pytest.approx(GUARANTEE["annuitant_leg_only"], abs=CENT)
     assert annuitant_only / paid - 1 == pytest.approx(-0.0713, abs=5e-5)
-
     additive = sum(p.pols_if_init() * p.annuity_pp(t)
                    * (p.certain_floor(t) + p.lives_if(t, 1)) for t in range(0, 120))
     assert additive == pytest.approx(GUARANTEE["additive_floor"], abs=CENT)
@@ -550,10 +469,10 @@ def test_the_nachschuessig_factor_gap_is_checkable_in_one_line(
     """263,5711 - 262,6686 = 0,9026, and that difference has two named halves.
 
     Arrears does not pay the instalment at t = 0, worth 1; against that, its guarantee
-    window is 1 ... 120 rather than 0 ... 119, so the instalment at t = 120 is certain
-    for it and survival-contingent for advance, worth ``v^10 (1 - l~(120))``.  The
-    guaranteed annuity rises in exactly the inverse proportion -- 0,34 %, not the 5 % of
-    the research file, which is an annual-annuity identity applied to a monthly one.
+    window is 1 ... 120 rather than 0 ... 119, so the instalment at t = 120 is certain for
+    it and survival-contingent for advance, worth ``v^10 (1 - l~(120))``.  The guaranteed
+    annuity rises in exactly the inverse proportion -- 0,34 %, not the 5 % of the research
+    file, which is an annual-annuity identity applied to a monthly one.
     """
     adv, arr = de_sofort_anchor, sofortrente.Projection[9]
     assert arr.first_pay_mth() == ARREARS_DERIVED["first_pay_mth"]
@@ -562,7 +481,6 @@ def test_the_nachschuessig_factor_gap_is_checkable_in_one_line(
         ARREARS_DERIVED["annuity_factor"], abs=5e-10)
     assert arr.annuity_pp_derived() == pytest.approx(
         ARREARS_DERIVED["annuity_pp_derived"], abs=5e-10)
-
     gap = adv.annuity_factor() - arr.annuity_factor()
     assert gap == pytest.approx(ARREARS_DERIVED["factor_gap"], abs=5e-10)
     assert adv.tariff_lives(120, 1) == pytest.approx(
@@ -570,21 +488,15 @@ def test_the_nachschuessig_factor_gap_is_checkable_in_one_line(
     certain_gain = (1 / 1.01) ** 10 * (1 - adv.tariff_lives(120, 1))
     assert certain_gain == pytest.approx(ARREARS_DERIVED["certain_gain"], abs=5e-10)
     assert 1.0 - certain_gain == pytest.approx(gap, abs=1e-9)
-
     ratio = arr.annuity_pp_derived() / adv.annuity_pp_derived()
     assert ratio == pytest.approx(adv.annuity_factor() / arr.annuity_factor(), rel=1e-12)
     assert ratio - 1 == pytest.approx(0.0034, abs=5e-5)
-
-
-def test_the_nachschuessig_totals(sofortrente):
-    """Its first month is better by one instalment plus its running cost, and it repays
-    that over fifty-six years: -8 770,91 EUR of undiscounted net_cf against -8 747,64."""
-    p = sofortrente.Projection[9]
-    df = p.result_cf()
+    # Its first month is better by one instalment plus that instalment's running cost,
+    # and it repays the difference over the following fifty-six years.
+    df = arr.result_cf()
     for column, total in ARREARS_TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
-    assert p.net_cf(0) - 97394.5676 == pytest.approx(
-        398.93 + 1.50, abs=0.02)
+    assert arr.net_cf(0) - 97394.5676 == pytest.approx(398.93 + 1.50, abs=0.02)
     assert df["net_cf"].sum() < TOTALS["net_cf"]
 
 
@@ -593,8 +505,8 @@ def test_the_in_force_variant_row(sofortrente, t):
     """Model point 10 carries a given annuity and the model uses it rather than one.
 
     ``annuity_pp_init = 430,00`` struck in 2012 on a 1,75 % tariff, ``surplus_form =
-    konstant`` with zero growth, so the instalment is 430,00 + 20 % = 516,00 EUR and
-    stays there while only the expense inflation index moves.
+    konstant`` with zero growth, so the instalment is 430,00 + 20 % = 516,00 EUR and stays
+    there while only the expense inflation index moves.
     """
     pols_if, prem, ann, guar, exp, net = INFORCE[t]
     p = sofortrente.Projection[10]
@@ -615,8 +527,7 @@ def test_the_in_force_variant_totals_and_given_annuity(sofortrente):
     for column, total in INFORCE_TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
     assert p.annuity_pp_init() == 430.0
-    assert p.annuity_guar_pp(156) == 430.0
-    assert p.annuity_guar_pp(500) == 430.0
+    assert p.annuity_guar_pp(156) == 430.0 and p.annuity_guar_pp(500) == 430.0
     assert p.surplus_init_pct() == 0.20 and p.surplus_growth() == 0.0
     assert p.annuity_pp(156) == pytest.approx(516.00, abs=CENT)
     assert p.annuity_pp(400) == pytest.approx(516.00, abs=CENT)
@@ -630,29 +541,26 @@ def test_the_cell_with_the_ueberschussrente_switched_off(sofortrente, de_sofort_
     """Model point 14 derives the identical guaranteed instalment and nothing else.
 
     That is the arithmetic statement that ``ä`` does not depend on ``surplus_form``, the
-    *Überschussrente* being financed out of surplus actually earned rather than priced
-    into the guarantee.  The whole modelled surplus is 10 617,38 EUR undiscounted, and
-    it is what turns the sign of the undiscounted total.
+    *Überschussrente* being financed out of surplus actually earned rather than priced into
+    the guarantee.  The whole modelled surplus is 10 617,37 EUR undiscounted, and it is
+    what turns the sign of the undiscounted total.
     """
     off, on = sofortrente.Projection[14], de_sofort_anchor
     assert off.surplus_form() == "none"
     assert off.surplus_init_pct() == 0.0 and off.surplus_growth() == 0.0
     assert off.annuity_factor() == pytest.approx(on.annuity_factor(), rel=1e-15)
-    assert off.annuity_pp_derived() == pytest.approx(
-        on.annuity_pp_derived(), rel=1e-15)
+    assert off.annuity_pp_derived() == pytest.approx(on.annuity_pp_derived(), rel=1e-15)
     assert all(off.annuity_surp_pp(t) == 0.0 for t in (0, 12, 240, 671))
     assert all(off.annuity_pp(t) == off.annuity_guar_pp(t) for t in (0, 12, 240, 671))
-    df = off.result_cf()
+    df, on_df = off.result_cf(), on.result_cf()
     for column, total in SURPLUS_OFF_TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
-    on_df = on.result_cf()
-    # Summed at full precision and then rounded, like every other total here: the
+    # Summed at full precision and then rounded, like every other total here; the
     # difference of the two *printed* totals is -10 617,38, half a cent the other side.
     assert (on_df["net_cf"].sum() - df["net_cf"].sum()) == pytest.approx(
         -10617.3748, abs=CENT)
     assert TOTALS["net_cf"] - SURPLUS_OFF_TOTALS["net_cf"] == pytest.approx(
         -10617.38, abs=CENT)
-    # The surplus does not touch the decrements or the expense stream.
     assert (on_df["pols_if"] - df["pols_if"]).abs().max() == 0.0
     assert (on_df["expenses"] - df["expenses"]).abs().max() == 0.0
     assert df["net_cf"].sum() > 0.0 and on_df["net_cf"].sum() < 0.0
@@ -663,7 +571,12 @@ def test_the_cell_with_the_ueberschussrente_switched_off(sofortrente, de_sofort_
 
 
 def test_every_check_closes_on_the_anchor_cell(de_sofort_anchor):
-    """All nine, each a bool over all t, with the residuals zero where one exists."""
+    """All nine, each a bool over all t, with the residuals zero where one exists.
+
+    ``check_equivalence`` is the pricing identity ``SP_net == R x ä x (1 + beta) +
+    refund_pv()``, to ``roll_fwd_tol`` scaled by ``net_single_prem()``; it is rebuilt here
+    from the published parts rather than only called.
+    """
     p = de_sofort_anchor
     for name in ("check_net_cf", "check_lives_roll_fwd", "check_annuity_roll_fwd",
                  "check_refund_run_off", "check_payment_factor",
@@ -677,16 +590,22 @@ def test_every_check_closes_on_the_anchor_cell(de_sofort_anchor):
                  "check_payment_factor_resid", "check_guarantee_certain_resid"):
         for t in (0, 1, 11, 12, 119, 120, 240, 360, 671):
             assert getattr(p, name)(t) == pytest.approx(0.0, abs=1e-8), (name, t)
+    rebuilt = (p.annuity_pp_derived() * p.annuity_factor()
+               * (1 + p.expense_load_beta) + p.refund_pv())
+    assert rebuilt == pytest.approx(p.net_single_prem(), abs=1e-6)
+    assert p.check_equivalence_resid() == pytest.approx(0.0, abs=1e-6)
+    assert p.roll_fwd_tol == 1e-8
+    assert p.solve_tol == 1e-10 and p.solve_max_iter == 200
 
 
 def test_check_net_cf_rebuilds_the_statement_a_different_way(de_sofort_anchor):
     """delib's first ruling: net_cf reconciles in code, not only in prose.
 
     ``net_cf(t) == premiums(t) - 1{payment month} pols_if_init A(t) payment_factor(t)
-    - claims(t, "REFUND") - expenses(t)``.  It is **not** a restatement of the
-    definition: ``net_cf`` reaches the instalment outgo through the two published legs
-    while the identity rebuilds it through the single ``max()`` payment factor, so what
-    it asserts is that the split into those legs is exhaustive and non-overlapping.
+    - claims(t, "REFUND") - expenses(t)``.  It is **not** a restatement of the definition:
+    ``net_cf`` reaches the instalment outgo through the two published legs while the
+    identity rebuilds it through the single ``max()`` payment factor, so what it asserts is
+    that the split into those legs is exhaustive and non-overlapping.
     """
     p = de_sofort_anchor
     assert p.check_net_cf() is True
@@ -696,50 +615,28 @@ def test_check_net_cf_rebuilds_the_statement_a_different_way(de_sofort_anchor):
                    - p.claims(t, "REFUND") - p.expenses(t))
         assert p.net_cf(t) == pytest.approx(rebuilt, abs=1e-9), t
         assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9), t
-    # The two published legs and the max() factor are the same money, which is the
-    # thing the identity actually asserts.
     for t in (0, 60, 119, 120, 240):
         assert p.annuity_payments(t) + p.claims(t, "GUARANTEE") == pytest.approx(
             p.pols_if_init() * p.annuity_pp(t) * p.payment_factor(t), abs=1e-9)
 
 
-def test_check_equivalence_is_the_pricing_identity(de_sofort_anchor):
-    """SP_net == R x ä x (1 + beta) + refund_pv(), to a tolerance scaled by SP_net."""
-    p = de_sofort_anchor
-    assert p.check_equivalence() is True
-    rebuilt = (p.annuity_pp_derived() * p.annuity_factor()
-               * (1 + p.expense_load_beta) + p.refund_pv())
-    assert rebuilt == pytest.approx(p.net_single_prem(), abs=1e-6)
-    assert p.check_equivalence_resid() == pytest.approx(0.0, abs=1e-6)
-    assert p.roll_fwd_tol == 1e-8
-    assert p.solve_tol == 1e-10 and p.solve_max_iter == 200
+def test_the_two_configuration_checks(sofortrente, de_sofort_anchor):
+    """``check_tariff_int_rate`` is an inequality; ``check_death_option_xor`` an exclusion.
 
-
-def test_check_tariff_int_rate_is_an_inequality(sofortrente, de_sofort_anchor):
-    """A carrier may price below the cap, and one in the corpus is observed doing so.
-
-    Model point 13 is a 2022 vintage: its cap is 0,25 % and its tariff rate is 0,25 %,
-    at the cap.  Model point 10 is a 2012 vintage at 1,75 %.  Neither is above its own
-    vintage's cap, and the cap is read at the contract's own ``entry_year``.
+    A carrier may price below the *Höchstrechnungszins* and one in the corpus is observed
+    doing so, and the cap is read at the contract's own ``entry_year``: model point 13 is a
+    2022 vintage capped at 0,25 %, model point 10 a 2012 vintage at 1,75 %.  A point
+    combining a *Kapitalrückgewähr* with a *Rentengarantiezeit* or a *Hinterbliebenenrente*
+    would price a guarantee the refund solve does not see, so the shipped table has none.
     """
     assert de_sofort_anchor.check_tariff_int_rate() is True
     old = sofortrente.Projection[13]
     assert old.entry_year() == 2022
-    assert old.max_tariff_int_rate() == 0.0025
-    assert old.tariff_int_rate() == 0.0025
+    assert old.max_tariff_int_rate() == 0.0025 and old.tariff_int_rate() == 0.0025
     assert old.check_tariff_int_rate() is True
     legacy = sofortrente.Projection[10]
     assert legacy.max_tariff_int_rate() == 0.0175
     assert legacy.tariff_int_rate() <= legacy.max_tariff_int_rate()
-
-
-def test_check_death_option_xor_holds_on_every_shipped_point(sofortrente):
-    """The [std] exclusivity of the death-benefit families, asserted not assumed.
-
-    A model point combining a *Kapitalrückgewähr* with a *Rentengarantiezeit* or a
-    *Hinterbliebenenrente* would price a guarantee the refund solve does not see, so the
-    shipped table contains none.
-    """
     table = sofortrente.Data.model_point_table()
     for point_id, row in table.iterrows():
         both = (str(row["refund_form"]) != "none"
@@ -755,13 +652,8 @@ def test_check_death_option_xor_holds_on_every_shipped_point(sofortrente):
 
 def test_pitfall_1_the_ueberschussrente_is_a_projected_cash_flow(
         sofortrente, de_sofort_anchor):
-    """It is not guaranteed, but it **is** projected: a model publishing only the
-    *garantierte Rente* models less than the payment.
-
-    On the anchor cell the *Überschussrente* opens at a tenth of the guarantee and grows
-    with it, and over the whole frame it is 10 617,38 EUR of undiscounted outgo.  Model
-    point 14 switches it off and is the exact-equality case.
-    """
+    """Not guaranteed, but projected: publishing only the *garantierte Rente* models less
+    than the payment.  Model point 14 switches the surplus off and is the equality case."""
     p = de_sofort_anchor
     assert p.surplus_form() == "teildynamisch"
     for t in (0, 1, 11, 12, 119, 240, 671):
@@ -779,16 +671,14 @@ def test_pitfall_1_the_ueberschussrente_is_a_projected_cash_flow(
 
 
 def test_pitfall_2_the_guaranteed_instalments_are_not_decremented(de_sofort_anchor):
-    """Inside the *Rentengarantiezeit* the instalment is certain, so the two legs add
-    back to the whole of it at every one of the 120 payment months, exactly."""
+    """Inside the *Rentengarantiezeit* the instalment is certain, so the two legs add back
+    to the whole of it at every one of the 120 payment months, exactly."""
     p = de_sofort_anchor
     for t in range(0, p.guar_end_mth()):
         assert p.is_payment_mth(t)
-        whole = p.pols_if_init() * p.annuity_pp(t)
         assert p.annuity_payments(t) + p.claims(t, "GUARANTEE") == pytest.approx(
-            whole, abs=1e-9), t
+            p.pols_if_init() * p.annuity_pp(t), abs=1e-9), t
         assert p.pols_if(t) == 1.0, t
-    # And the moment it expires, the payment becomes survival-contingent.
     assert p.claims(120, "GUARANTEE") == 0.0
     assert p.annuity_payments(120) == pytest.approx(
         p.annuity_pp(120) * p.lives_if(120, 1), abs=1e-9)
@@ -815,14 +705,13 @@ def test_pitfall_3_the_certain_floor_is_a_max_and_not_a_sum(sofortrente,
         assert p.payment_factor(t) < p.certain_floor(t) + p.lives_if(t, 1) + 1e-12
     for t in (120, 240, 360):
         assert p.payment_factor(t) == pytest.approx(p.lives_if(t, 1), rel=1e-15)
-    n = p.proj_len()
-    assert max(p.payment_factor(t) for t in range(0, n + 1)) <= 1.0 + p.surv_pct()
+    assert max(p.payment_factor(t)
+               for t in range(0, p.proj_len() + 1)) <= 1.0 + p.surv_pct()
     assert p.check_guarantee_certain() is True
     joint = sofortrente.Projection[5]
     assert joint.surv_pct() == 1.0 and joint.guar_years() == 20
     assert joint.payment_factor(0) == 1.0
-    assert joint.payment_factor(120) == 1.0
-    assert joint.payment_factor(239) == 1.0
+    assert joint.payment_factor(120) == 1.0 and joint.payment_factor(239) == 1.0
     assert joint.check_guarantee_certain() is True
     assert max(joint.payment_factor(t)
                for t in range(0, joint.proj_len() + 1)) <= 1.0 + joint.surv_pct()
@@ -833,11 +722,9 @@ def test_pitfall_3_the_certain_floor_is_a_max_and_not_a_sum(sofortrente,
 
 
 def test_pitfall_4_the_survivor_leg_is_gated_inside_the_guarantee(sofortrente):
-    """Model point 5 has a 20-year guarantee and a 100 % *Hinterbliebenenrente*.
-
-    Inside the guarantee the full instalment already goes out, so the survivor's leg is
-    zero for every one of the first 240 months and only then comes into payment.
-    """
+    """Model point 5 has a 20-year guarantee and a 100 % *Hinterbliebenenrente*, so the
+    survivor's leg is zero for each of the first 240 months and only then comes into
+    payment; on the anchor cell, which buys no rider, it is zero everywhere."""
     p = sofortrente.Projection[5]
     assert p.guar_end_mth() == 240 and p.surv_pct() == 1.0
     for t in range(0, 240):
@@ -846,7 +733,6 @@ def test_pitfall_4_the_survivor_leg_is_gated_inside_the_guarantee(sofortrente):
     assert any(p.annuity_payments(t, "SURVIVOR") > 0.0 for t in range(240, 400))
     assert p.certain_floor(239) == 1.0 and p.certain_floor(240) == 0.0
     assert p.check_payment_factor() is True
-    # On the anchor cell, which buys no rider, the leg is zero everywhere.
     single = sofortrente.Projection[1]
     assert all(single.annuity_payments(t, "SURVIVOR") == 0.0
                for t in (0, 60, 120, 240, 671))
@@ -857,13 +743,12 @@ def test_pitfall_4_the_survivor_leg_is_gated_inside_the_guarantee(sofortrente):
 
 
 def test_pitfall_5_the_refund_is_solved_not_evaluated(sofortrente):
-    """The equation is implicit in R, and the naive answer is 6,2 % too high.
+    """The equation is implicit in R, and the naive answer is 6,7 % too high.
 
     The naive route computes the plain annuity ``R_max``, values the refund leg *at that
-    annuity*, and divides the remainder by ``ä (1 + beta)``.  That gives 318,7362 EUR
-    against the solved 298,8348 EUR -- and the refund leg at the solved annuity is
-    18 788,31 EUR against 13 546,37 EUR at ``R_max``, because a smaller annuity runs the
-    refund off more slowly.
+    annuity*, and divides the remainder by ``ä (1 + beta)``: 318,7362 EUR against the
+    solved 298,8348 EUR.  The refund leg at the solved annuity is 18 788,31 EUR against
+    13 546,37 EUR at ``R_max``, because a smaller annuity runs the refund off more slowly.
     """
     p = sofortrente.Projection[3]
     assert p.refund_form() == "full"
@@ -876,7 +761,6 @@ def test_pitfall_5_the_refund_is_solved_not_evaluated(sofortrente):
     load = 1.0 + p.expense_load_beta
     r_max = p.net_single_prem() / (p.annuity_factor() * load)
     assert r_max == pytest.approx(REFUND["r_max_naive"], abs=5e-9)
-
     # The refund leg valued at R_max, rebuilt here rather than read from the model.
     v = 1.0 / (1.0 + p.tariff_int_rate())
     per, fp, sp = p.pay_period_mths(), p.first_pay_mth(), p.single_prem()
@@ -896,7 +780,7 @@ def test_pitfall_5_the_refund_is_solved_not_evaluated(sofortrente):
     assert p.refund_pv() > pv_at_r_max
 
 
-def test_pitfall_5b_the_refund_runs_off_one_instalment_at_a_time(sofortrente):
+def test_the_refund_runs_off_one_instalment_at_a_time(sofortrente):
     """It opens at the *Einmalbeitrag* less the first instalment and reaches zero at
     ``ceil(SP / R)`` payments, counted directly rather than off the recursion."""
     p = sofortrente.Projection[3]
@@ -909,22 +793,20 @@ def test_pitfall_5b_the_refund_runs_off_one_instalment_at_a_time(sofortrente):
     n_req = math.ceil(p.single_prem() / r)
     assert n_req == REFUND["instalments_to_exhaust"]
     t_zero = p.first_pay_mth() + (n_req - 1) * p.pay_period_mths()
-    assert p.refund_pp(t_zero) == 0.0
-    assert p.refund_pp(t_zero - 1) > 0.0
+    assert p.refund_pp(t_zero) == 0.0 and p.refund_pp(t_zero - 1) > 0.0
     assert p.check_refund_run_off() is True
-    # Where none was bought the check asserts the stronger thing: identically zero.
     plain = sofortrente.Projection[1]
     assert plain.refund_form() == "none"
     assert all(plain.refund_pp(t) == 0.0 for t in (0, 120, 240, 671))
     assert plain.check_refund_run_off() is True
 
 
-def test_pitfall_5c_the_deferment_refunds_the_whole_einmalbeitrag(sofortrente):
-    """Model point 6 has a five-year *Aufschubzeit* and a *Beitragsrückgewähr*.
+def test_the_deferment_refunds_the_whole_einmalbeitrag(sofortrente):
+    """Model point 6: a five-year *Aufschubzeit* with a *Beitragsrückgewähr*.
 
     No instalment has been paid inside the window, so ``C(t) = 0`` and the refund is the
-    whole *Einmalbeitrag* -- the deferment death benefit falling out of the same
-    machinery without a second mechanic.
+    whole *Einmalbeitrag* -- the deferment death benefit falling out of the same machinery
+    without a second mechanic.
     """
     p = sofortrente.Projection[6]
     assert p.defer_mths() == 60 and p.first_pay_mth() == 60
@@ -943,12 +825,12 @@ def test_pitfall_5c_the_deferment_refunds_the_whole_einmalbeitrag(sofortrente):
 
 def test_pitfall_6_the_refund_is_netted_against_the_guaranteed_annuity(
         sofortrente, tmp_path):
-    """Compare model point 3 against a copy of it with the surplus switched off.
+    """Model point 3 against a copy of it with the surplus switched off.
 
     ``refund_pp`` must be **identical** in the two, because it accumulates
     ``annuity_guar_pp`` alone, while ``annuity_pp`` differs by the whole
-    *Überschussrente*.  A refund netted against the total annuity would retire the
-    capital sooner and the two series would part.
+    *Überschussrente*.  A refund netted against the total annuity would retire the capital
+    sooner and the two series would part.
     """
     base = sofortrente.Projection[3]
     alt = alt_model(tmp_path, "Sofort_DE_S_nosurp", {3: {"surplus_form": "none"}})
@@ -963,7 +845,6 @@ def test_pitfall_6_the_refund_is_netted_against_the_guaranteed_annuity(
                 base.cum_annuity_guar_pp(t), rel=1e-15), t
         for t in (0, 120, 240):
             assert off.annuity_pp(t) < base.annuity_pp(t), t
-        # The refund therefore runs off over the same number of instalments.
         assert math.ceil(off.single_prem() / off.annuity_guar_pp(0)) == (
             REFUND["instalments_to_exhaust"])
         assert off.check_refund_run_off() is True
@@ -972,17 +853,16 @@ def test_pitfall_6_the_refund_is_netted_against_the_guaranteed_annuity(
 
 
 # ---------------------------------------------------------------------------
-# Pitfalls 7 and 8 -- the generational surface
+# Pitfalls 7, 8 and 9 -- the generational surface and its first-order margin
 
 
 def test_pitfall_7_the_surface_is_indexed_by_birth_year_not_projection_year(
         sofortrente, de_sofort_anchor):
     """Two cells with the same entry age and different cohorts, at the same age.
 
-    Model point 1 is a 65-year-old born in 1960 and model point 10 a 65-year-old born in
-    1947.  A period-table implementation would give them the same rate at attained age
-    65; a generational one does not, and the earlier cohort reads **heavier** mortality
-    because its exponent is negative.
+    A period-table implementation would give a 65-year-old born in 1960 and one born in
+    1947 the same rate; a generational one does not, and the earlier cohort reads
+    **heavier** mortality because its exponent is negative and is not floored.
     """
     young, old = de_sofort_anchor, sofortrente.Projection[10]
     assert young.entry_age(1) == old.entry_age(1) == 65
@@ -996,17 +876,17 @@ def test_pitfall_7_the_surface_is_indexed_by_birth_year_not_projection_year(
     assert old.mort_rate(0, 1) == pytest.approx(
         old.mort_rate_at_age(65, "M", "SECOND") * (1 - lam) ** (1947 + 65 - 2025),
         rel=1e-12)
-    assert 1947 + 65 - 2025 == -13         # the exponent is negative and is not floored
+    assert 1947 + 65 - 2025 == -13
 
 
 def test_pitfall_8_a_period_proxy_would_be_a_different_model(de_sofort_anchor):
-    """The improvement lives inside the surface, and it is worth 5,1 % of the factor.
+    """The improvement lives inside the surface, and it is worth 4,9 % of the factor.
 
-    ``mort_rate_gen`` differs from the raw table wherever the cohort attains the age in
-    a year other than ``mort_base_year`` and the trend is positive.  Rebuilding the
-    annuity factor here with ``lambda == 0`` -- independently of the model, on its own
-    table -- gives 250,6755 against 263,5711, so the guaranteed annuity a period proxy
-    would strike is 381,32 EUR rather than 362,67 EUR.
+    ``mort_rate_gen`` differs from the raw table wherever the cohort attains the age in a
+    year other than ``mort_base_year`` and the trend is positive.  Rebuilding the annuity
+    factor here with ``lambda == 0`` -- independently of the model, on its own table --
+    gives 250,6755 against 263,5711, so the guaranteed annuity a period proxy would strike
+    is 381,32 EUR rather than 362,67 EUR.
     """
     p = de_sofort_anchor
     assert p.mort_base_year == 2025
@@ -1015,8 +895,6 @@ def test_pitfall_8_a_period_proxy_would_be_a_different_model(de_sofort_anchor):
     assert p.mort_rate_gen(70, "U", 1960, "FIRST") < p.mort_rate_at_age(70, "U", "FIRST")
     assert p.mort_rate_gen(65, "M", 1960, "SECOND") == pytest.approx(
         p.mort_rate_at_age(65, "M", "SECOND"), rel=1e-15)     # 1960 + 65 == 2025
-
-    # The factor with no improvement at all, rebuilt from mort_rate_at_age.
     v, lives, factor = 1.0 / 1.01, 1.0, 0.0
     for k in range(0, p.proj_len() + 1):
         if p.is_payment_mth(k):
@@ -1034,12 +912,10 @@ def test_pitfall_9_the_first_order_margin_reaches_the_trend(de_sofort_anchor):
 
     ``mort_rate_tariff`` is below ``mort_rate`` at every t, and the ratio falls from
     0,666667 at t = 0 to 0,638433 at t = 240 as the trend margin compounds.  A level-only
-    margin would hold it constant at the level ratio of 2/3 -- which is exactly what it
-    returns to once the *Trendfunktion* has tapered to zero at attained age 105, and that
-    return is itself a property of the shipped proxy worth pinning down.
+    margin would hold it constant at the level ratio of 2/3 -- which is what it returns to
+    once the *Trendfunktion* has tapered to zero at attained age 105.
     """
     p = de_sofort_anchor
-    n = p.proj_len()
     assert all(p.mort_rate_tariff(t, 1) < p.mort_rate(t, 1) for t in range(0, 400))
     assert p.improve_rate_at_age(65, "FIRST") == pytest.approx(
         1.25 * p.improve_rate_at_age(65, "SECOND"), rel=1e-12)
@@ -1047,12 +923,10 @@ def test_pitfall_9_the_first_order_margin_reaches_the_trend(de_sofort_anchor):
     assert ratios[0] == pytest.approx(0.6666668334, abs=5e-9)
     assert ratios[-1] == pytest.approx(0.6384325119, abs=5e-9)
     assert all(b < a for a, b in zip(ratios, ratios[1:])), "the ratio does not fall"
-    # Past age 105 the trend is zero, so only the level margin is left.
     assert p.improve_rate_at_age(105, "SECOND") == 0.0
     assert p.age(480, 1) == 105
     assert p.mort_rate_tariff(480, 1) / p.mort_rate(480, 1) == pytest.approx(
         2.0 / 3.0, abs=1e-6)
-    assert n == 671
 
 
 # ---------------------------------------------------------------------------
@@ -1063,23 +937,21 @@ def test_pitfall_10_the_tariff_is_unisex_and_the_decrement_is_not(
         de_sofort_anchor, tmp_path):
     """The anchor cell as a woman: the same annuity, a different survival path.
 
-    German new business has had to be unisex since 21 December 2012, so the tariff
-    factor is struck on the blended series and the model point's own ``sex`` reaches
-    only the projected decrement.  Letting it into ``ä`` would reproduce an unlawful
-    tariff -- and would look perfectly plausible in the output.
+    German new business has had to be unisex since 21 December 2012, so the tariff factor
+    is struck on the blended series and the model point's own ``sex`` reaches only the
+    projected decrement.  Letting it into ``ä`` would reproduce an unlawful tariff -- and
+    would look perfectly plausible in the output.
     """
     male = de_sofort_anchor
     alt = alt_model(tmp_path, "Sofort_DE_S_female", {1: {"sex": "F"}})
     try:
         female = alt.Projection[1]
         assert female.sex(1) == "F" and male.sex(1) == "M"
-        assert female.annuity_factor() == pytest.approx(
-            male.annuity_factor(), rel=1e-15)
+        assert female.annuity_factor() == pytest.approx(male.annuity_factor(), rel=1e-15)
         assert female.annuity_pp_derived() == pytest.approx(
             male.annuity_pp_derived(), rel=1e-15)
         assert female.mort_rate_tariff(0, 1) == pytest.approx(
             male.mort_rate_tariff(0, 1), rel=1e-15)
-        # The decrement, and everything downstream of it, does differ.
         assert female.mort_rate(0, 1) < male.mort_rate(0, 1)
         assert female.lives_if(120, 1) > male.lives_if(120, 1)
         assert female.result_cf()["annuity_payments"].sum() > (
@@ -1087,8 +959,7 @@ def test_pitfall_10_the_tariff_is_unisex_and_the_decrement_is_not(
     finally:
         alt.close()
     # The blend itself is computed, not a row of the CSV.
-    table = male.data.mort_table()
-    assert set(table.index.get_level_values("sex")) == {"M", "F"}
+    assert set(male.data.mort_table().index.get_level_values("sex")) == {"M", "F"}
     assert male.mix_male == 0.45
     assert male.mort_rate_at_age(70, "U", "FIRST") == pytest.approx(
         0.45 * male.mort_rate_at_age(70, "M", "FIRST")
@@ -1102,11 +973,10 @@ def test_pitfall_10_the_tariff_is_unisex_and_the_decrement_is_not(
 def test_pitfall_11_the_einmalbeitrag_is_not_counted_twice(sofortrente,
                                                            de_sofort_anchor):
     """An in-force point's frame contains no t = 0, so it collects nothing."""
-    inforce = sofortrente.Projection[10]
-    df = inforce.result_cf()
+    df = sofortrente.Projection[10].result_cf()
     assert (df["premiums"] == 0.0).all()
     assert df["premiums"].sum() == 0.0
-    assert all(inforce.premiums(t) == 0.0 for t in range(156, 672))
+    assert all(sofortrente.Projection[10].premiums(t) == 0.0 for t in range(156, 672))
     anchor_df = de_sofort_anchor.result_cf()
     assert anchor_df["premiums"].sum() == pytest.approx(
         de_sofort_anchor.single_prem() * de_sofort_anchor.pols_if_init(), abs=1e-9)
@@ -1118,18 +988,15 @@ def test_pitfall_12_an_in_force_point_opens_at_its_own_duration(sofortrente):
     nowhere in it -- it happened before the valuation date."""
     p = sofortrente.Projection[10]
     df = p.result_cf()
-    assert p.duration_mth_init() == 156
-    assert p.t_start() == 156
+    assert p.duration_mth_init() == 156 and p.t_start() == 156
     assert df.index[0] == 156
     assert p.pols_if(p.t_start()) == pytest.approx(p.pols_if_init(), rel=1e-12)
     assert p.lives_if(p.t_start(), 1) == 1.0
-    acq = p.expense_acq_rate * p.single_prem() + p.expense_acq_fixed
-    assert acq > 2000.0
-    assert df["expenses"].max() < 20.0                 # nothing of that size in the frame
+    assert p.expense_acq_rate * p.single_prem() + p.expense_acq_fixed > 2000.0
+    assert df["expenses"].max() < 20.0
     assert p.expenses(156) == pytest.approx(
         (60.0 / 12 + 1.50) * p.infl_factor(156), abs=1e-9)
-    assert p.duration_mth(156) == 156
-    assert p.policy_year(156) == 13
+    assert p.duration_mth(156) == 156 and p.policy_year(156) == 13
 
 
 # ---------------------------------------------------------------------------
@@ -1142,8 +1009,7 @@ def test_pitfall_13_the_arrears_offset_and_the_instalment_count(sofortrente,
     guarantee still covers ``G x m`` instalments -- at every frequency."""
     arr = sofortrente.Projection[9]
     assert arr.first_pay_mth() == 1
-    assert not arr.is_payment_mth(0)
-    assert arr.is_payment_mth(1)
+    assert not arr.is_payment_mth(0) and arr.is_payment_mth(1)
     assert arr.annuity_payments(0) == 0.0 and arr.claims(0, "GUARANTEE") == 0.0
     assert arr.annuity_payments(1) > 0.0
     counted = [sum(1 for t in range(0, q.proj_len() + 1)
@@ -1151,7 +1017,6 @@ def test_pitfall_13_the_arrears_offset_and_the_instalment_count(sofortrente,
                for q in (de_sofort_anchor, arr)]
     assert counted == [120, 120]
     assert arr.guar_end_mth() - arr.first_pay_mth() == 12 * arr.guar_years()
-    # The same identity at the other frequencies: G x m instalments, whatever m.
     for point_id in (7, 8, 11):
         q = sofortrente.Projection[point_id]
         n = sum(1 for t in range(0, q.proj_len() + 1)
@@ -1165,11 +1030,9 @@ def test_pitfall_13_the_arrears_offset_and_the_instalment_count(sofortrente,
 
 
 def test_pitfall_14_the_surplus_steps_only_at_the_policy_anniversary(de_sofort_anchor):
-    """Compounding an annual rate monthly is the obvious wrong reading on this grid.
-
+    """Compounding an annual rate monthly is the obvious wrong reading on this grid:
     ``annuity_surp_pp`` is flat across each block of twelve months and steps by exactly
-    ``1 + psi`` at every multiple of twelve.
-    """
+    ``1 + psi`` at every multiple of twelve."""
     p = de_sofort_anchor
     psi = p.surplus_growth()
     for t in range(1, 60):
@@ -1181,21 +1044,20 @@ def test_pitfall_14_the_surplus_steps_only_at_the_policy_anniversary(de_sofort_a
                 p.annuity_surp_pp(t - 1), rel=1e-15), t
         assert p.check_annuity_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-9), t
     assert len({round(p.annuity_surp_pp(t), 10) for t in range(0, 12)}) == 1
-    monthly = p.annuity_surp_pp(0) * (1 + psi) ** 12
-    assert p.annuity_surp_pp(12) < monthly       # the wrong reading is strictly larger
+    assert p.annuity_surp_pp(12) < p.annuity_surp_pp(0) * (1 + psi) ** 12
     assert p.annuity_surp_pp(12) == pytest.approx(
         p.annuity_surp_pp(0) * (1 + psi), rel=1e-12)
 
 
 def test_pitfall_15_the_total_annuity_ratchets(sofortrente, de_sofort_anchor):
     """The *Bonusrente* mechanic stated arithmetically: an increment, once bought as
-    paid-up annuity, does not come back off."""
+    paid-up annuity, does not come back off.  A constant form does not fall either; it
+    simply does not rise."""
     p = de_sofort_anchor
     n = p.proj_len()
     assert all(p.annuity_pp(t) >= p.annuity_pp(t - 1) for t in range(1, n + 1))
     assert p.annuity_pp(n) > p.annuity_pp(0)
     assert p.check_annuity_roll_fwd() is True
-    # A constant form does not fall either; it simply does not rise.
     konstant = sofortrente.Projection[10]
     assert konstant.surplus_form() == "konstant"
     assert all(konstant.annuity_pp(t) == konstant.annuity_pp(t - 1)
@@ -1209,18 +1071,15 @@ def test_pitfall_15_the_total_annuity_ratchets(sofortrente, de_sofort_anchor):
 
 def test_pitfall_16_the_tariff_rate_reaches_the_projection_only_through_the_factor(
         sofortrente, tmp_path):
-    """The published flows are undiscounted; ``i`` enters through ``ä`` and
-    ``refund_pv()`` and nowhere else.
+    """The published flows are undiscounted; ``i`` enters through ``ä`` and ``refund_pv()``
+    and nowhere else.
 
-    Model point 10 carries a **given** annuity, so neither of those two channels is
-    open on it -- and its whole cash flow frame is therefore invariant to the tariff
-    rate, to the last bit.  On a derived point the same change moves the annuity, which
-    is the one legitimate effect.
+    Model point 10 carries a **given** annuity, so neither channel is open on it and its
+    whole cash flow frame is invariant to the tariff rate, to the last bit.
     """
     base = sofortrente.Projection[10]
     before = base.result_cf()
-    alt = alt_model(tmp_path, "Sofort_DE_S_rate",
-                    {10: {"tariff_int_rate": 0.0050}})
+    alt = alt_model(tmp_path, "Sofort_DE_S_rate", {10: {"tariff_int_rate": 0.0050}})
     try:
         moved = alt.Projection[10]
         assert moved.tariff_int_rate() == 0.0050
@@ -1228,10 +1087,8 @@ def test_pitfall_16_the_tariff_rate_reaches_the_projection_only_through_the_fact
         after = moved.result_cf()
         assert list(after.columns) == list(before.columns)
         assert (after - before).abs().max().max() == 0.0
-        # On a derived point the rate does move the annuity, through ä alone.
-        derived_before = sofortrente.Projection[1].annuity_pp_derived()
         assert alt.Projection[1].annuity_pp_derived() == pytest.approx(
-            derived_before, rel=1e-15)     # point 1 was not edited
+            sofortrente.Projection[1].annuity_pp_derived(), rel=1e-15)
     finally:
         alt.close()
 
@@ -1245,8 +1102,8 @@ def test_pitfall_17_no_lapse_no_surrender_no_paid_up_anywhere(sofortrente,
     """Once the *Rentenbezug* has begun the contract cannot be terminated, so the model
     carries none of the machinery a reader arriving from a savings product would add.
 
-    The absent names are asserted rather than assumed: each of them is one somebody
-    would plausibly introduce, and every total would still look sane afterwards.
+    The absent names are asserted rather than assumed: each is one somebody would
+    plausibly introduce, and every total would still look sane afterwards.
     """
     names = set(sofortrente.Projection.cells) | set(sofortrente.Projection.refs)
     for absent in ("lapse_rate", "lapse_rate_mth", "lapse_table", "pols_lapse",
@@ -1255,14 +1112,17 @@ def test_pitfall_17_no_lapse_no_surrender_no_paid_up_anywhere(sofortrente,
                    "claims_surr", "asset_share", "mvr", "commuted_value",
                    "commute_amount", "premium_mth_pp", "prem_pp"):
         assert absent not in names, absent
-    with pytest.raises(FormulaError):
-        de_sofort_anchor.claims(1, "LAPSE")
-    with pytest.raises(FormulaError):
-        de_sofort_anchor.claims(1, "SURRENDER")
+    # The enum accessors validate, so a typo is an error and not a wrong lookup.
+    for bad in (lambda: de_sofort_anchor.claims(1, "LAPSE"),
+                lambda: de_sofort_anchor.claims(1, "SURRENDER"),
+                lambda: de_sofort_anchor.annuity_payments(0, "BENEFICIARY"),
+                lambda: de_sofort_anchor.entry_age(3),
+                lambda: de_sofort_anchor.sex(3)):
+        with pytest.raises(FormulaError):
+            bad()
     assert set(de_sofort_anchor.result_cf().columns) == {
         "pols_if", "premiums", "annuity_payments", "claims_guarantee",
         "claims_refund", "expenses", "liability_cf", "net_cf"}
-    # Death is the only decrement, and it closes -- on the joint-life cell too.
     joint = sofortrente.Projection[4]
     assert joint.check_lives_roll_fwd() is True
     for life in (1, 2):
@@ -1277,8 +1137,8 @@ def test_pitfall_17_no_lapse_no_surrender_no_paid_up_anywhere(sofortrente,
 
 
 def test_pitfall_18_proj_len_takes_the_second_lifes_horizon(sofortrente):
-    """Model point 4: annuitant 65, second life 62, so the frame runs three years past
-    the annuitant's own horizon and the survivor's tail is not truncated."""
+    """Model point 4: annuitant 65, second life 62, so the frame runs three years past the
+    annuitant's own horizon and the survivor's tail is not truncated."""
     p = sofortrente.Projection[4]
     assert p.surv_pct() == 0.60
     assert p.entry_age(1) == 65 and p.entry_age(2) == 62
@@ -1291,7 +1151,6 @@ def test_pitfall_18_proj_len_takes_the_second_lifes_horizon(sofortrente):
     assert p.annuity_payments(p.proj_len()) >= 0.0
     assert p.lives_if(672, 1) == 0.0 and p.lives_if(672, 2) > 0.0
     assert any(p.annuity_payments(t, "SURVIVOR") > 0.0 for t in range(600, 700))
-    # And a guarantee period alone can also set the frame's end where it is longest.
     long_guar = sofortrente.Projection[12]
     assert long_guar.guar_years() == 30 and long_guar.guar_end_mth() == 360
     assert long_guar.proj_len() == max(long_guar.horizon_mths(1) - 1,
@@ -1313,37 +1172,20 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_sofort_anchor):
         "pols_if", "premiums", "annuity_payments", "claims_guarantee",
         "claims_refund", "expenses", "liability_cf", "net_cf"]
     assert "claims" not in df.columns          # no subtotal beside its own parts
-    assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(
-        0.0, abs=1e-9)
+    assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(0.0, abs=1e-9)
     assert df["pols_if"].iloc[0] == de_sofort_anchor.pols_if_init()
     assert (df["pols_if"] >= 0.0).all()
-    # One positive month, then a decaying tail: the shape of a payout contract.
     assert df["net_cf"].iloc[0] == pytest.approx(97394.57, abs=CENT)
     assert (df["net_cf"].iloc[1:] <= 0.0).all()
-
-
-def test_result_pols_publishes_the_state_behind_the_cash_flows(de_sofort_anchor):
-    """The second frame, on the same index, with pols_if in both for comparison."""
+    # result_pols() is the state behind it, on the same index and with pols_if in both.
     dp = de_sofort_anchor.result_pols()
     assert list(dp.columns) == [
         "lives_if_1", "lives_if_2", "certain_floor", "payment_factor",
         "annuity_guar_pp", "annuity_surp_pp", "annuity_pp", "refund_pp",
         "cum_annuity_guar_pp", "pols_if"]
-    assert dp.index.name == "t"
-    assert list(dp.index) == list(de_sofort_anchor.result_cf().index)
-    assert (dp["pols_if"] - de_sofort_anchor.result_cf()["pols_if"]).abs().max() == 0.0
-    assert (dp["lives_if_2"] == 0.0).all()
-    assert (dp["refund_pp"] == 0.0).all()
-
-
-def test_the_enum_accessors_validate(de_sofort_anchor):
-    """A typo becomes an error rather than a silently wrong lookup."""
-    with pytest.raises(FormulaError):
-        de_sofort_anchor.annuity_payments(0, "BENEFICIARY")
-    with pytest.raises(FormulaError):
-        de_sofort_anchor.entry_age(3)
-    with pytest.raises(FormulaError):
-        de_sofort_anchor.sex(3)
+    assert dp.index.name == "t" and list(dp.index) == list(df.index)
+    assert (dp["pols_if"] - df["pols_if"]).abs().max() == 0.0
+    assert (dp["lives_if_2"] == 0.0).all() and (dp["refund_pp"] == 0.0).all()
 
 
 def test_docstrings_describe_the_current_structure(sofortrente):
@@ -1365,7 +1207,6 @@ def test_docstrings_describe_the_current_structure(sofortrente):
     for cells in ("input_dir", "model_point_table", "mort_table",
                   "improvement_table", "surplus_scale_table"):
         assert cells in data, cells
-    # The Data docstring must state the [std] proxy's anchor, per the house rules.
     assert "DAV 2004 R" in data and "not redistributed" in data
     # pols_if earns the conventions suite's payout exemption by docstring, not by list.
     assert "payment obligation remains" in sofortrente.Projection.cells["pols_if"].doc
@@ -1385,8 +1226,7 @@ def test_the_payout_annuity_chassis_vocabulary_is_present(sofortrente):
     assert shared <= names, f"missing: {sorted(shared - names)}"
     # And the names this product deliberately does not share, for stated reasons.
     assert "cum_annuity_pp" not in names        # it is cum_annuity_guar_pp here
-    assert "payment_surv_mth" not in names
-    assert "payment_factor_life" not in names
+    assert "payment_surv_mth" not in names and "payment_factor_life" not in names
 
 
 def test_the_shipped_tables_mark_their_own_provenance():
@@ -1416,8 +1256,8 @@ def test_the_shipped_tables_mark_their_own_provenance():
         assert float(mort.loc[("SECOND", sex, 120), "mort_rate"]) == 1.0
     blend = (0.45 * float(mort.loc[("FIRST", "M", 80), "mort_rate"])
              + 0.55 * float(mort.loc[("FIRST", "F", 80), "mort_rate"]))
-    ratio = blend / float(mort.loc[("FIRST", "M", 80), "mort_rate"]) * 1.25
-    assert ratio == pytest.approx(1.0, abs=1e-6)
+    assert blend / float(mort.loc[("FIRST", "M", 80), "mort_rate"]) * 1.25 == (
+        pytest.approx(1.0, abs=1e-6))
 
     impr = pd.read_csv(parent / "improvement_table.csv", index_col=["basis", "age"])
     assert all(p.startswith("[std]") for p in impr["provenance"])
@@ -1452,9 +1292,8 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     """What a production user does with a licensed DAV table or a company basis.
 
     Lighter mortality on an annuity means the annuitant lives longer, so the annuity a
-    given *Einmalbeitrag* buys is **smaller** and the projected instalments run further.
-    That direction is the opposite of a death-benefit product's, and getting it round
-    the right way is the whole point of asserting it.
+    given *Einmalbeitrag* buys is **smaller** -- the opposite direction to a death-benefit
+    product's, and getting it round the right way is the point of asserting it.
     """
     import pandas as pd
 
@@ -1477,8 +1316,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
         p = model.Projection[1]
         assert p.annuity_factor() > DERIVED["annuity_factor"]
         assert p.annuity_pp_derived() < base
-        assert p.check_equivalence() is True
-        assert p.check_net_cf() is True
+        assert p.check_equivalence() is True and p.check_net_cf() is True
     finally:
         model.close()
 
@@ -1491,23 +1329,19 @@ def test_round_trip_is_stable(tmp_path):
         mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
-
     for csv_path in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv_path, tmp_path / csv_path.name)
 
     reread = mx.read_model(dest, name="Sofort_DE_S_rt")
     try:
         p = reread.Projection[1]
-        assert p.annuity_factor() == pytest.approx(
-            DERIVED["annuity_factor"], abs=5e-10)
+        assert p.annuity_factor() == pytest.approx(DERIVED["annuity_factor"], abs=5e-10)
         for t, row in WORKED_EXAMPLE.items():
             assert p.annuity_payments(t) == pytest.approx(row[2], abs=CENT)
             assert p.claims(t, "GUARANTEE") == pytest.approx(row[3], abs=CENT)
             assert p.net_cf(t) == pytest.approx(row[7], abs=CENT)
         assert "Notes symbol" in reread.Projection.doc
-        assert p.check_net_cf() is True
-        assert p.check_lives_roll_fwd() is True
+        assert p.check_net_cf() is True and p.check_lives_roll_fwd() is True
     finally:
         reread.close()
-
     assert model_files(dest) == model_files(MODEL_DIR)

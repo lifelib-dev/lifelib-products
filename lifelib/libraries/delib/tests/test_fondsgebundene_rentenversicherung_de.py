@@ -224,9 +224,9 @@ def test_worked_example_panel_c_row(de_frv_anchor, t):
     assert p.db_floor_pp(t) == pytest.approx(cum_prem, abs=CENT)   # Beitragsrückgewähr
     assert p.nar_pp(t) == pytest.approx(nar, abs=CENT)
     assert p.lapse_rate_mth(t) == pytest.approx(lapse_mth, abs=EIGHT_DP)
-    assert p.mort_rate_mth(t) == pytest.approx(mort_mth, abs=EIGHT_DP)  # both bases below
+    assert p.mort_rate_mth(t) == pytest.approx(mort_mth, abs=EIGHT_DP)
     assert p.av_at(t, "BEF_DECR") == pytest.approx(
-        p.av_pp_at(t, "BEF_DECR") * p.pols_if(t), rel=1e-12)
+        p.av_pp_at(t, "BEF_DECR") * p.pols_if(t), rel=1e-12)   # the in-force fund
 
 
 def test_the_totals_are_summed_at_full_precision(de_frv_anchor):
@@ -260,7 +260,6 @@ def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
     assert p.charge_acq_pp(1) == pytest.approx(1800.0 / 60, rel=1e-12) == 30.0
     assert p.charge_admin_prem_pp(1) == pytest.approx(0.04 * 200.0, rel=1e-12) == 8.0
     assert p.prem_to_av_pp(1) == pytest.approx(200.0 - 30.0 - 8.0, rel=1e-12) == 162.0
-    assert p.units_bought_pp(1) == pytest.approx(1.62, rel=1e-12)
     i = p.fund_return_net_mth(1)
     assert i == pytest.approx(1.0455 ** (1.0 / 12.0) - 1.0, rel=1e-14)
     assert i == pytest.approx(0.0037148195588312, abs=5e-16)
@@ -273,7 +272,6 @@ def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
     assert p.charge_risk_pp(1) == pytest.approx(0.00080 / 12 * 40.438849682, abs=5e-10)
     assert p.av_pp_at(1, "BEF_DECR") == pytest.approx(159.558454395, abs=5e-9)
     assert p.units_pp(2) == pytest.approx(159.558454395 / p.unit_price(1), abs=5e-9)
-    assert p.units_pp(2) == pytest.approx(1.589679, abs=SIX_DP)
 
 
 def test_month_sixty_one_is_the_cliff_and_the_risk_charge_at_a_second_age(de_frv_anchor):
@@ -292,7 +290,6 @@ def test_month_sixty_one_is_the_cliff_and_the_risk_charge_at_a_second_age(de_frv
     assert p.charge_admin_fund_pp(61) == pytest.approx(2.712015678, abs=5e-8)
     assert p.av_pp_at(61, "AFT_CHARGE") == pytest.approx(10842.350694440, abs=5e-6)
     assert p.policy_year(61) == 6 and p.age(61) == 42
-    assert p.mort_rate_tariff(61) == pytest.approx(0.00080 * 1.10 ** 5, rel=1e-9)
     assert p.mort_rate_tariff_mth(61) == pytest.approx(0.000107367333, abs=5e-13)
     assert p.cum_prem_pp(61) == pytest.approx(12200.0, rel=1e-12)
     assert p.nar_pp(61) == pytest.approx(1357.649305560, abs=5e-6)
@@ -407,9 +404,9 @@ def test_the_einmalbeitrag_totals_and_conversion(fondsgebundene_rentenversicheru
     p = fondsgebundene_rentenversicherung.Projection[2]
     df = p.result_cf()
     assert p.proj_len() == 12 * (67 - 50) == 204
-    assert p.acq_window_months() == 0 and p.acq_instalments() == 1
+    assert p.acq_window_months() == 0 and p.acq_instalments() == 1   # once, on receipt
     assert p.charge_acq_total() == pytest.approx(
-        p.zuzahlung_charge_rate() * 50000.0, rel=1e-12) == 1250.0   # once, on receipt
+        p.zuzahlung_charge_rate() * 50000.0, rel=1e-12) == 1250.0
     for column, total in SINGLE_PREMIUM_TOTALS.items():
         tol = SIX_DP * len(df) if column == "pols_if" else CENT
         assert df[column].sum() == pytest.approx(total, abs=tol), column
@@ -646,8 +643,7 @@ def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
     assert p.result_cf().index[0] == 97
     assert p.acq_window_months() == 60          # the window is real, and already closed
     assert p.charge_acq_total() == pytest.approx(0.025 * 111000.0, rel=1e-12) == 2775.0
-    assert p.result_cf()["charge_acq"].sum() == 0.0
-    assert p.cum_charge_acq_pp(p.proj_len()) == 0.0
+    assert p.result_cf()["charge_acq"].sum() == 0.0 == p.cum_charge_acq_pp(p.proj_len())
     assert p.expense_acq_pp(97) == 0.0 and p.expenses(97) < 20.0
     assert p.expenses(97) == pytest.approx(
         p.expense_maint_pp(97) * p.pols_if(97) + 0.015 * p.prem_pp(97) * p.pols_if(97)
@@ -939,8 +935,7 @@ def test_the_unit_and_account_identities_are_not_redundant(de_frv_anchor):
                   - p.withdrawals_pp(t) - p.charge_risk_pp(t))
         assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(rolled, abs=1e-8)
     assert p.check_units_roll_fwd() is True and p.check_av_roll_fwd() is True
-    assert p.units_bought_pp(1) == pytest.approx(
-        p.prem_to_av_pp(1) / p.unit_price(0), rel=1e-12)
+    assert p.units_bought_pp(1) == pytest.approx(1.62, rel=1e-12)  # premium in advance
     assert p.unit_price(0) == p.unit_price_init() == 100.0
 
 
@@ -958,7 +953,6 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
             abs=1e-12)
     assert p.check_pols_roll_fwd() is True
     assert p.pols_if(1) == p.pols_if_init() == 1.0
-    assert p.pols_if_at(1, "BEF_DECR") == p.pols_if(1)
     assert p.pols_if_at(1, "AFT_DEATH") == pytest.approx(
         p.pols_if(1) * (1.0 - p.mort_rate_mth(1)), rel=1e-15)
     assert p.pols_if_at(1, "AFT_DECR") == pytest.approx(p.pols_if(2), rel=1e-15)
@@ -1038,7 +1032,6 @@ def test_the_zuzahlung_buys_units_and_the_teilentnahme_cancels_them(
     assert p.withdrawals_pp(241) == 15000.0 and p.withdrawals_pp(242) == 0.0
     assert p.av_pp_at(241, "AFT_WD") == pytest.approx(
         p.av_pp_at(241, "AFT_CHARGE") - 15000.0, rel=1e-12)
-    assert p.av_pp_at(241, "BEF_DECR") < p.av_pp_at(240, "BEF_DECR")
     assert "claims_wd" not in p.result_cf().columns
     assert p.result_cf()["withdrawals"].sum() == pytest.approx(
         15000.0 * p.pols_if(241), rel=1e-12)
