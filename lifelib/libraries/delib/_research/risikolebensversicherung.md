@@ -170,269 +170,218 @@ in English; the prose is English about German products. The terms this product t
 Every entry below carries the same retrieval status, stated once here rather than repeated
 seventeen times: **Retrieved: no — direct HTTP egress blocked in the build environment; no search
 corroboration (the session `WebSearch` budget was exhausted before this product's research began).**
-Where an entry inherits corroboration from a sibling delib research file, that is stated in the
-entry.
+Where an entry inherits corroboration from a sibling delib research file, the entry says so.
 
-The entries are ordered: GDV model wordings (S1–S2), carrier documents (S3–S13), then secondary
-consumer, comparison and rating material (S14–S17). **Every carrier named below sells a
-*Risikolebensversicherung* in Germany; that much is asserted from knowledge. Nothing about the
-content of any particular wording is asserted, because nothing was read.**
+Order: GDV model wordings (S1–S2), carrier documents (S3–S13), then secondary consumer, comparison
+and rating material (S14–S17). **Every carrier named below sells a *Risikolebensversicherung* in
+Germany; that much is asserted from knowledge. Nothing about the content of any particular wording is
+asserted, because nothing was read.**
 
 ### S1 — GDV, "Allgemeine Bedingungen für die Risikoversicherung" (*Musterbedingungen*)
 
-- Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV)
-- Doc type: *Musterbedingungen* — model AVB published by the industry association for member
-  undertakings to adopt, adapt or ignore
-- URL: **not established** for the term-assurance wording itself. The GDV *Musterbedingungen* index
-  at `https://www.gdv.de/gdv/service/musterbedingungen` was returned by a search during the sibling
-  research and is recorded there [inherited: `kapitallebensversicherung.md` S1]; the per-document
-  blob path for the *Risikoversicherung* wording is **not established** and is not guessed
+- Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. Doc type: *Musterbedingungen*
+  — model AVB published by the industry association for members to adopt, adapt or ignore
+- URL: **not established** for the term-assurance wording. The GDV *Musterbedingungen* index at
+  `https://www.gdv.de/gdv/service/musterbedingungen` was returned by a search during the sibling
+  research [inherited: `kapitallebensversicherung.md` S1]; **the per-document blob path for the
+  *Risikoversicherung* wording is not established and is not guessed**
 - Content — what this document is, and what weight an `[S1]` tag carries:
-  - The GDV maintains model conditions for the main German life lines, and the *Risikoversicherung*
-    is one of them. The model wordings address the customer in the second person with
-    question-headed sections ("Welche Leistungen erbringen wir?", "Wann beginnt Ihr
-    Versicherungsschutz?"), the style the GDV adopted for post-2008-VVG wordings [inherited:
-    `kapitallebensversicherung.md` S1].
-  - The GDV states its model conditions are ***unverbindlich*** for undertakings and their use
-    **purely optional** — a competition-law disclaimer that is load-bearing for citation weight
-    [inherited: `kapitallebensversicherung.md` S1]. **An `[S1]`-tagged fact is a market template,
-    weaker evidence about any carrier than the same fact taken from that carrier's own AVB.**
-  - **No article text of the term-assurance model wording was established.** Every benefit,
-    surplus, exclusion or termination rule attributed anywhere in this file to "the model
-    conditions" is attributed instead to the statute it implements [R1]–[R8] or is carried as
-    `[std]`, never to S1.
+  - The GDV maintains model conditions for the main German life lines and the *Risikoversicherung* is
+    one of them. The model wordings address the customer in the second person with question-headed
+    sections ("Welche Leistungen erbringen wir?"), the style adopted for post-2008-VVG wordings
+    [inherited: `kapitallebensversicherung.md` S1].
+  - The GDV states its model conditions are ***unverbindlich*** and their use **purely optional** — a
+    competition-law disclaimer that is load-bearing for citation weight [inherited:
+    `kapitallebensversicherung.md` S1]. **An `[S1]`-tagged fact is a market template, weaker evidence
+    about any carrier than the same fact taken from that carrier's own AVB.**
+  - **No article text of the term-assurance model wording was established.** Every benefit, surplus,
+    exclusion or termination rule attributed anywhere in this file to "the model conditions" is
+    attributed instead to the statute it implements [R1]–[R8] or is carried as `[std]`, never to S1.
 
 ### S2 — GDV, *Produktinformationsblatt* pattern for the *Risikoversicherung*
 
 - Publisher: GDV. Doc type: model *Produktinformationsblatt* (PIB) — the short pre-contractual
-  summary required for life products by the VVG-InfoV [R17]
-- URL: **not established**
-- Content: recorded at the level of identity only. The PIB is the German counterpart of the French
-  *document d'information sur le produit d'assurance*: a short document naming the product type, the
-  insured risk, the *Versicherungssumme*, the *Beitrag*, the exclusions and the term. For a
-  *Risikolebensversicherung* it is the natural place a carrier states the ***Bruttobeitrag* and the
-  *Zahlbeitrag* side by side**, which is why it matters here more than for any other delib product.
-  **No specimen was located and no field list is asserted**; the inference from the document's
-  purpose is `[unverified]` (gap 3).
+  summary required for life products by the VVG-InfoV [R17]. URL: **not established**
+- Content: identity only. The PIB is the German counterpart of the French *document d'information sur
+  le produit d'assurance*: product type, insured risk, *Versicherungssumme*, *Beitrag*, exclusions,
+  term. For a *Risikolebensversicherung* it is the natural place a carrier states the
+  ***Bruttobeitrag* and the *Zahlbeitrag* side by side**, which is why it matters here more than for
+  any other delib product. **No specimen was located and no field list is asserted**; the inference
+  from the document's purpose is `[unverified]` (gap 3).
 
-### S3 — CosmosDirekt (Cosmos Lebensversicherungs-AG), *Risikolebensversicherung* — AVB, *Verbraucherinformation* and product page
+### S3 — CosmosDirekt (Cosmos Lebensversicherungs-AG), *Risikolebensversicherung*
 
-- Publisher: Cosmos Lebensversicherungs-AG (Generali Deutschland group), the direct-writing arm
-- Doc type: *Allgemeine Bedingungen für die Risikoversicherung* plus the *Verbraucherinformation*
-  pack and the public product page
-- URL: **not established.** The carrier's AVB naming convention runs `LA <number> <letter>` — the
-  sibling research recorded `LA 904 A` for its *Rentenversicherung* wording [inherited:
-  `klassische_rentenversicherung.md` S8] — but **the term-assurance tariff code is not established
-  and is not guessed**
-- Content: named as the German market's highest-volume direct-written RLV and one of the two or
-  three carriers a German price comparison returns first. Relevant because the direct channel is
-  where the ***Brutto*/*Zahlbeitrag* spread is widest**: no *Abschlussprovision* is paid to an
-  intermediary, so more of the *Bruttobeitrag* is available for *Beitragsverrechnung*. **That
-  reasoning is structural, not sourced**, and the spread itself is `[std]` (mechanic 5).
+- Doc type: *Allgemeine Bedingungen für die Risikoversicherung*, *Verbraucherinformation* pack,
+  product page. URL: **not established.** The carrier's AVB naming convention runs `LA <number>
+  <letter>` — the sibling research recorded `LA 904 A` for its *Rentenversicherung* wording
+  [inherited: `klassische_rentenversicherung.md` S8] — but **the term-assurance tariff code is not
+  established and is not guessed**
+- Content: named as the German market's highest-volume direct-written RLV. Relevant because the direct
+  channel is where the ***Brutto*/*Zahlbeitrag* spread is widest**: no *Abschlussprovision* is paid to
+  an intermediary, so more of the *Bruttobeitrag* is available for *Beitragsverrechnung*. **That
+  reasoning is structural, not sourced**, and the spread is `[std]` (mechanic 5).
 
-### S4 — Hannoversche Lebensversicherung AG, *Risikolebensversicherung* — AVB and product page
+### S4 — Hannoversche Lebensversicherung AG (VHV group), *Risikolebensversicherung*
 
-- Publisher: Hannoversche Lebensversicherung AG (VHV group)
-- Doc type: AVB for the *Risikoversicherung*; *Verbraucherinformation*; product page
-- URL: **not established**
-- Content: the other long-standing German direct writer of term assurance, historically a fixture
-  near the top of consumer-magazine RLV rankings [S16]. Recorded for the same structural reason as
-  S3. **No wording, no tariff code, no rate and no edition date is asserted.**
+- Doc type: AVB, *Verbraucherinformation*, product page. URL: **not established**
+- Content: the other long-standing German direct writer of term assurance, historically a fixture near
+  the top of consumer-magazine rankings [S16]. Recorded for the same structural reason as S3. **No
+  wording, tariff code, rate or edition date is asserted.**
 
-### S5 — HUK-COBURG / HUK24, *Risikolebensversicherung* — product pages and the *Überschussbeteiligung* guide
+### S5 — HUK-COBURG / HUK24, *Risikolebensversicherung* and the *Überschussbeteiligung* guide
 
-- Publisher: HUK-COBURG-Lebensversicherung AG / HUK24 AG
-- Doc type: insurer guide page **about term assurance specifically**, plus the product pages
-- URL: `https://www.huk24.de/risikolebensversicherung/ratgeber-lebensversicherung/ueberschussbeteiligung`
-  — **this URL was returned by a search during the sibling research and is recorded there**
-  [inherited: `kapitallebensversicherung.md` S17]
+- Doc type: insurer guide page **about term assurance specifically**, plus the product pages. URL:
+  `https://www.huk24.de/risikolebensversicherung/ratgeber-lebensversicherung/ueberschussbeteiligung`
+  — **returned by a search during the sibling research** [inherited: `kapitallebensversicherung.md`
+  S17]
 - Content — **the single most useful inherited item in this file**, because it is a carrier's own
   account of the *Überschussbeteiligung* **in this product**, not in the endowment:
   - The page is titled "Überschussbeteiligung der Risikolebensversicherung", so the carrier itself
-    treats surplus participation as a **central feature of term assurance**, not as an endowment
-    peculiarity. That alone contradicts the intuition an Anglophone modeller brings to a "term life"
-    product [inherited: `kapitallebensversicherung.md` S17].
-  - The sibling entry records that the page sets out the **four-component surplus vocabulary**
-    — *Zins-*, *Risiko-*, *Kosten-* and *übrige Überschüsse* — and that this vocabulary is used
-    **by carriers themselves across product lines**, not only by journalists [inherited:
-    `kapitallebensversicherung.md` S17].
+    treats surplus participation as a **central feature of term assurance**. That alone contradicts
+    the intuition an Anglophone modeller brings to a "term life" product.
+  - The sibling entry records that it sets out the **four-component surplus vocabulary** —
+    *Zins-*, *Risiko-*, *Kosten-* and *übrige Überschüsse* — and that this vocabulary is used **by
+    carriers themselves across product lines**, not only by journalists.
   - **The sibling file took nothing endowment-specific from it and recorded no figures.** What is
-    inherited here is therefore: the existence of the page, its title, and the four-component
-    vocabulary. **No rate, no *Beitragsverrechnung* percentage and no *Brutto*/*Zahlbeitrag* ratio is
-    inherited**, and none is asserted (gap 1).
+    inherited is the existence of the page, its title and the vocabulary. **No rate, no
+    *Beitragsverrechnung* percentage and no spread ratio is inherited**, and none is asserted (gap 1).
 
 ### S6 — Debeka Lebensversicherungsverein a. G., *Bedingungswerk* for the *Risikoversicherung*
 
-- Publisher: Debeka Lebensversicherungsverein a. G.
 - Doc type: *Bedingungswerk* (Debeka's name for its AVB booklets), in the carrier's public
-  *Vertragsgrundlagen* library
-- URL: **not established.** The library's path pattern is
+  *Vertragsgrundlagen* library. URL: **not established.** The library's path pattern is
   `https://www.debeka.de/content/dam/de/webauftritt/vertragsgrundlagen/lebens-rentenversicherung/<code>.pdf`,
   established from the sibling research where three endowment wordings were located under it
-  [inherited: `kapitallebensversicherung.md` S3–S6]. **The term-assurance wording code is not
-  established and no path is guessed.**
-- Content: recorded because Debeka is the largest German life mutual by contract count and because
-  its *Vertragsgrundlagen* library is one of the few carrier document sets that is fully public and
-  indexed by product family [inherited: `kapitallebensversicherung.md` S6]. Two things inherited
-  from the sibling research bear on this product: Debeka maintains **several parallel wordings of
-  different vintages within one product family** [inherited: `kapitallebensversicherung.md` S3–S5],
-  and its *Überschussbeteiligung* clause numbering is **tariff-dependent**, so any specific section
-  number is `[unverified]` [inherited: `kapitallebensversicherung.md` S3]. Both cautions transfer
-  directly. **No Debeka term-assurance figure is asserted.**
+  [inherited: `kapitallebensversicherung.md` S3–S6]. **The term-assurance code is not established and
+  no path is guessed**
+- Content: recorded because Debeka is the largest German life mutual by contract count and its
+  *Vertragsgrundlagen* library is one of the few carrier document sets that is fully public and
+  indexed by product family. Two inherited cautions transfer directly: Debeka maintains **several
+  parallel wordings of different vintages within one product family**, and its *Überschussbeteiligung*
+  clause numbering is **tariff-dependent**, so any specific section number is `[unverified]`
+  [inherited: `kapitallebensversicherung.md` S3–S6]. **No Debeka term-assurance figure is asserted.**
 
-### S7 — Dialog Lebensversicherungs-AG, *Risikolebensversicherung* — AVB and product material
+### S7 — Dialog Lebensversicherungs-AG (Generali group), *Risikolebensversicherung*
 
-- Publisher: Dialog Lebensversicherungs-AG (Generali Deutschland group)
-- Doc type: AVB for the *Risikoversicherung*; *Verbraucherinformation*; broker-facing tariff
-  material
-- URL: **not established**
-- Content: named because Dialog positions itself in the German market as the **specialist term-life
-  carrier for the broker channel** — a monoline whose whole book is biometric risk. That matters for
-  this file in one specific way: a monoline's *Risikoergebnis* is its entire technical result, so the
-  MindZV minimum allocation from the *Risikoergebnis* [R9] binds its surplus policy directly rather
-  than being one of three competing calls on it. **The positioning is asserted from knowledge; no
-  wording, tariff, rate, *Berufsgruppen* table or surplus declaration is asserted** (gap 5).
+- Doc type: AVB, *Verbraucherinformation*, broker-facing tariff material. URL: **not established**
+- Content: named because Dialog positions itself as the German market's **specialist term-life carrier
+  for the broker channel** — a monoline whose whole book is biometric risk. That matters in one
+  specific way: a monoline's *Risikoergebnis* is its entire technical result, so the MindZV minimum
+  allocation from the *Risikoergebnis* [R9] binds its surplus policy directly rather than competing
+  with an investment result. **The positioning is asserted from knowledge; no wording, tariff, rate,
+  *Berufsgruppen* table or surplus declaration is asserted** (gap 5).
 
-### S8 — Allianz Lebensversicherungs-AG, *Risikolebensversicherung* — AVB and product page
+### S8 — Allianz Lebensversicherungs-AG, *Risikolebensversicherung*
 
-- Publisher: Allianz Lebensversicherungs-AG
-- Doc type: AVB for the *Risikoversicherung*; *Produktinformationsblatt*; product page
-- URL: **not established**
-- Content: the German market leader by premium income, and the natural reference point for the
-  **narrow-spread** end of the *Brutto*/*Zahlbeitrag* distribution — a large composite with a broker
-  and tied-agent distribution has less room to net surplus against the tariff premium than a direct
-  writer. **That is a structural argument, not an observation** (gap 1). One inherited fact bears on
-  the whole family of Allianz life wordings: the sibling research established Allianz's declared
-  *laufende Verzinsung* for 2026 at **2.70 %** for the classic book, above the market average
-  [inherited: `kapitallebensversicherung.md` S11] — a **savings-side** rate, of no direct use for an
-  RLV, where the *Zinsüberschuss* is negligible (mechanic 5).
+- Doc type: AVB, *Produktinformationsblatt*, product page. URL: **not established**
+- Content: the market leader by premium income and the natural reference for the **narrow-spread** end
+  of the *Brutto*/*Zahlbeitrag* distribution — a large composite with tied-agent and broker
+  distribution has less room to net surplus against the tariff premium than a direct writer. **That is
+  a structural argument, not an observation** (gap 1). One inherited fact bears on the family of
+  Allianz life wordings: a declared *laufende Verzinsung* for 2026 of **2.70 %** on the classic book,
+  above the market average [inherited: `kapitallebensversicherung.md` S11] — a **savings-side** rate,
+  of no direct use here, where the *Zinsüberschuss* is negligible (mechanic 6).
 
 ### S9 — R+V Lebensversicherung AG, *Risikolebensversicherung*
 
-- Publisher: R+V Lebensversicherung AG (cooperative banking group)
-- Doc type: AVB; *Produktinformationsblatt*; product page
-- URL: **not established**
-- Content: named as one of the largest German life carriers and the bank-channel comparator.
-  **Nothing about its term-assurance wording, rating structure or surplus declaration is asserted.**
+- Doc type: AVB, *Produktinformationsblatt*, product page. URL: **not established**
+- Content: one of the largest German life carriers and the cooperative-bank-channel comparator.
+  **Nothing about its wording, rating structure or surplus declaration is asserted.**
 
-### S10 — Nürnberger Lebensversicherung AG, *Risikolebensversicherung*
+### S10 — NÜRNBERGER Lebensversicherung AG, *Risikolebensversicherung*
 
-- Publisher: NÜRNBERGER Lebensversicherung AG
-- Doc type: AVB; *Verbraucherinformation*
-- URL: **not established.** The carrier's tariff-code convention is visible in the sibling research,
-  which recorded an annuity wording headed "…nach Tarif NIR3301" [inherited:
-  `klassische_rentenversicherung.md` S9]. **The term-assurance tariff code is not established.**
-- Content: named as a broker-channel carrier with a long biometric-risk book. Recorded for the
-  variations table only; **no parameter is asserted**.
+- Doc type: AVB, *Verbraucherinformation*. URL: **not established.** The carrier's tariff-code
+  convention is visible in the sibling research, which recorded an annuity wording headed "…nach Tarif
+  NIR3301" [inherited: `klassische_rentenversicherung.md` S9]; **the term-assurance code is not
+  established**
+- Content: a broker-channel carrier with a long biometric-risk book. Recorded for the variations table
+  only; **no parameter is asserted.**
 
 ### S11 — LV 1871 (Lebensversicherung von 1871 a. G.), *Risikolebensversicherung*
 
-- Publisher: Lebensversicherung von 1871 a. G. München
-- Doc type: AVB; *Produktinformationsblatt*
-- URL: **not established**
-- Content: named as a mutual with a broker distribution and a product range that emphasises
-  *Nachversicherungsgarantien* and occupational differentiation. **The emphasis is asserted from
-  market knowledge; no event list, no age cap, no increase cap and no *Berufsgruppen* table is
-  asserted** (gap 7).
+- Doc type: AVB, *Produktinformationsblatt*. URL: **not established**
+- Content: a mutual with broker distribution whose range emphasises *Nachversicherungsgarantien* and
+  occupational differentiation. **The emphasis is asserted from market knowledge; no event list, age
+  cap, increase cap or *Berufsgruppen* table is asserted** (gap 7).
 
-### S12 — Continentale Lebensversicherung AG and Europa Lebensversicherung AG, *Risikolebensversicherung*
+### S12 — Continentale Lebensversicherung a. G. and Europa Lebensversicherung AG, *Risikolebensversicherung*
 
-- Publisher: Continentale Lebensversicherung a. G. and Europa Lebensversicherung AG (same group)
-- Doc type: AVB; *Produktinformationsblatt*; product pages
-- URL: **not established**
+- Doc type: AVB, *Produktinformationsblatt*, product pages. URL: **not established**
 - Content: recorded as a **single entry deliberately**, because the pair is the clearest German
-  instance of one group running a broker-channel carrier and a low-cost direct-channel carrier side
-  by side in the same product. If a *Brutto*/*Zahlbeitrag* comparison were ever to be made from
-  public documents, this pair is where the channel effect would be visible with the underwriting and
-  the reserving basis held constant. **No such comparison was made and no figure is asserted.**
+  instance of one group running a broker-channel carrier and a low-cost direct carrier side by side in
+  the same product. If a *Brutto*/*Zahlbeitrag* comparison were ever made from public documents, this
+  pair is where the channel effect would be visible with underwriting and reserving basis held
+  constant. **No such comparison was made and no figure is asserted** (gap 5).
 
 ### S13 — Further carriers selling a *Risikolebensversicherung* in Germany (located as products, not as documents)
 
-- Publishers: Alte Leipziger Lebensversicherung a. G.; Volkswohl Bund Lebensversicherung a. G.;
-  Swiss Life Deutschland; Zurich Deutscher Herold Lebensversicherung AG; ERGO Vorsorge
-  Lebensversicherung AG; AXA Lebensversicherung AG; Barmenia Lebensversicherung a. G.;
-  Württembergische Lebensversicherung AG; Gothaer Lebensversicherung AG; Die Stuttgarter
-  Lebensversicherung a. G.; Baloise Lebensversicherung AG (Deutschland); uniVersa Lebensversicherung
-  a. G.; DEVK; SIGNAL IDUNA Lebensversicherung a. G.; Provinzial; Generali Deutschland; HDI
-  Lebensversicherung AG
-- Doc type: AVB and *Produktinformationsblätter* for the *Risikoversicherung*, one set per carrier
-- URL: **not established for any of them**
+- Publishers: Alte Leipziger; Volkswohl Bund; Swiss Life Deutschland; Zurich Deutscher Herold; ERGO
+  Vorsorge; AXA; Barmenia; Württembergische; Gothaer; Die Stuttgarter; Baloise (Deutschland);
+  uniVersa; DEVK; SIGNAL IDUNA; Provinzial; Generali Deutschland; HDI. Doc type: AVB and
+  *Produktinformationsblätter*, one set per carrier. URL: **not established for any of them**
 - Content: **this entry asserts one thing only — that each of these carriers offers an individual
-  *Risikolebensversicherung* in Germany.** It is recorded so that the variations table below can
-  state honestly that a market of this breadth exists and that **none of it was sampled**. Nothing
-  else is taken from S13, and no `[S13]` tag appears on any parameter anywhere in the delib library.
-  Two of these carriers appear in the sibling research with located documents in **other** product
-  families — Zurich Deutscher Herold with a *Verbraucherinformation* series for annuities
-  [inherited: `klassische_rentenversicherung.md` S4–S7] and Gothaer with an endowment AVB [inherited:
-  `kapitallebensversicherung.md` S7] — which establishes that their document libraries are public,
-  and nothing about their term-assurance wordings.
+  *Risikolebensversicherung* in Germany.** It exists so the variations table can state honestly that a
+  market of this breadth exists and that **none of it was sampled**. **No `[S13]` tag appears on any
+  parameter anywhere in the delib library.** Two of these carriers appear in the sibling research with
+  located documents in **other** product families — Zurich Deutscher Herold with an annuity
+  *Verbraucherinformation* series [inherited: `klassische_rentenversicherung.md` S4–S7] and Gothaer
+  with an endowment AVB [inherited: `kapitallebensversicherung.md` S7] — which establishes that their
+  document libraries are public and nothing about their term-assurance wordings.
 
-### S14 — Comparison portals: Check24, Verivox, Tarifcheck
+### S14 — Comparison portals: Check24, Verivox, Tarifcheck — **secondary**
 
-- Publisher: CHECK24 Vergleichsportal GmbH; Verivox GmbH; and comparable portals — **secondary**,
-  not product documents
-- Doc type: price-comparison result pages and accompanying *Ratgeber* articles
-- URL: **not established** for the term-assurance comparison pages. The sibling research recorded
-  Verivox *Ratgeber* pages on `Kapitallebensversicherung`, `Überschussbeteiligung` and `Zillmerung`
-  [inherited: `kapitallebensversicherung.md` S15], which establishes that the portal publishes
-  explanatory pages of this kind; it establishes nothing about its term-assurance pages
-- Content: **these portals are the only public source of German RLV price points**, because no
-  German carrier publishes a rate card for this product and the *Produktinformationsblatt* quotes
-  only the individual applicant's own premium. That is precisely why the brief asked for several
-  price points from them, and **precisely what could not be obtained**: a comparison result is
-  generated per query and is not a static document, so it cannot be reached without live egress in
-  any event. **No price point of any kind is recorded in this file from S14** (gap 1).
+- Doc type: price-comparison result pages and accompanying *Ratgeber* articles. URL: **not
+  established** for the term-assurance pages. The sibling research recorded Verivox *Ratgeber* pages
+  on `Kapitallebensversicherung`, `Überschussbeteiligung` and `Zillmerung` [inherited:
+  `kapitallebensversicherung.md` S15], which establishes that the portal publishes explanatory pages
+  of this kind and nothing about its term-assurance pages
+- Content: **these portals are the only public source of German RLV price points**, because no German
+  carrier publishes a rate card and the *Produktinformationsblatt* quotes only the individual
+  applicant's own premium. That is why the brief asked for several price points from them, and
+  **precisely why none could be obtained**: a comparison result is generated per query and is not a
+  published document, so it is unreachable without live egress in any event. **No price point of any
+  kind is recorded in this file from S14** (gap 1).
 
-### S15 — Finanztip, "Risikolebensversicherung"
+### S15 — Finanztip, "Risikolebensversicherung" — **secondary**
 
-- Publisher: Finanztip Verbraucherinformation gemeinnützige GmbH — **secondary**
-- Doc type: consumer guide article with a periodically refreshed carrier recommendation
-- URL: **not established** for the term-assurance article. The sibling research recorded Finanztip
-  articles on `Überschussbeteiligung Lebensversicherung` and `Steuer auf Lebensversicherung`
-  [inherited: `kapitallebensversicherung.md` S16], establishing the publisher's coverage of this
-  subject area and nothing about the term-assurance article
-- Content: named because Finanztip is the German consumer publication that most consistently makes
-  the ***Brutto*/*Zahlbeitrag* distinction the headline of its term-life advice** — the standing
+- Doc type: consumer guide article with a periodically refreshed carrier recommendation. URL: **not
+  established.** The sibling research recorded Finanztip articles on `Überschussbeteiligung
+  Lebensversicherung` and `Steuer auf Lebensversicherung` [inherited: `kapitallebensversicherung.md`
+  S16], establishing the publisher's coverage of the subject area and nothing about this article
+- Content: named because Finanztip is the German consumer publication that most consistently makes the
+  ***Brutto*/*Zahlbeitrag* distinction the headline of its term-life advice** — the standing
   recommendation being to compare the *Bruttobeitrag* and not only the *Zahlbeitrag*, because the
   second is what you pay and the first is what you can be made to pay. **The existence of that
-  editorial line is asserted from knowledge; no figure, no carrier ranking and no spread statistic
-  is asserted** (gap 1).
+  editorial line is asserted from knowledge; no figure, ranking or spread statistic is asserted**
+  (gap 1).
 
-### S16 — Stiftung Warentest / Finanztest, term-life comparison tests
+### S16 — Stiftung Warentest / *Finanztest*, term-life comparison tests — **secondary**
 
-- Publisher: Stiftung Warentest (*Finanztest*) — **secondary**
-- Doc type: periodic comparison test of *Risikolebensversicherung* tariffs, published behind a
-  paywall with a free summary
-- URL: **not established**
-- Content: named as the German market's most influential comparison test for this product. Its test
-  design is the reason it matters here: *Finanztest* rates on the **Zahlbeitrag for defined model
-  customers** (a stated age, sum insured, term and smoking status) **and separately reports the
-  *Bruttobeitrag***, so a published test is the one German document type that would supply exactly
-  the paired figures this file lacks. **No edition, no date, no model-customer definition and no
-  premium figure is asserted** (gap 1).
+- Doc type: periodic comparison test of *Risikolebensversicherung* tariffs, published behind a paywall
+  with a free summary. URL: **not established**
+- Content: the German market's most influential comparison test for this product. Its test design is
+  why it matters here: *Finanztest* rates on the ***Zahlbeitrag* for defined model customers** — a
+  stated age, sum insured, term and smoking status — **and separately reports the *Bruttobeitrag***,
+  so a published test is the one German document type that would supply exactly the paired figures
+  this file lacks. **No edition, date, model-customer definition or premium figure is asserted**
+  (gap 1).
 
-### S17 — Rating agencies and analysis houses: Franke und Bornberg, Morgen & Morgen, Assekurata
+### S17 — Franke und Bornberg, MORGEN & MORGEN, ASSEKURATA — **secondary**
 
-- Publisher: Franke und Bornberg GmbH; MORGEN & MORGEN GmbH; ASSEKURATA Assekuranz Rating-Agentur
-  GmbH — **secondary**
-- Doc type: tariff ratings (`FB-Unternehmensrating`, `M&M Rating Risikoleben`), market studies and
-  *Bedingungsanalysen*
-- URL: **not established** for any term-life rating. The sibling research located Assekurata's
-  "24. Marktstudie *Überschussbeteiligungen und Garantien 2026*" and Franke und Bornberg commentary
-  on *Basisinformationsblätter* [inherited: `kapitallebensversicherung.md` R25, R27], establishing
-  that these houses publish in this field and nothing about their term-life work
-- Content: named because these are the houses whose published criteria drive German RLV product
-  design. Two of their criteria are load-bearing for a representative specification and are asserted
-  from market knowledge, **not from any document**:
-  - the ***Brutto*/*Zahlbeitrag* spread is itself a rated criterion** — a tariff whose *Zahlbeitrag*
-    sits far below its *Bruttobeitrag* is marked down relative to one with a narrow spread, because
-    the spread measures the insurer's unilateral headroom to raise the billed premium;
-  - the ***Nachversicherungsgarantie* event list, its caps and its age limit are rated criteria**,
-    which is why the market has converged on a recognisable list (mechanic 8).
-  Both statements are `[unverified]`, and neither is used as a numeric parameter anywhere.
+- Doc type: tariff ratings (`FB-Unternehmensrating`, `M&M Rating Risikoleben`), market studies,
+  *Bedingungsanalysen*. URL: **not established** for any term-life rating. The sibling research
+  located Assekurata's "24. Marktstudie *Überschussbeteiligungen und Garantien 2026*" and Franke und
+  Bornberg commentary on *Basisinformationsblätter* [inherited: `kapitallebensversicherung.md` R25,
+  R27], establishing that these houses publish in this field and nothing about their term-life work
+- Content: the houses whose published criteria drive German RLV product design. Two of their criteria
+  are load-bearing for a representative specification and are asserted from market knowledge, **not
+  from any document**: the ***Brutto*/*Zahlbeitrag* spread is itself a rated criterion** — a wide
+  spread is marked down, because the spread measures the insurer's unilateral headroom to raise the
+  billed premium; and the ***Nachversicherungsgarantie* event list, caps and age limit are rated
+  criteria**, which is why the market has converged on a recognisable list (mechanic 8). Both
+  `[unverified]`, and neither is used as a numeric parameter anywhere.
 
 ---
-
 ## Regulatory and actuarial references
 
 Same retrieval status as the primary sources: **Retrieved: no — direct HTTP egress blocked; no

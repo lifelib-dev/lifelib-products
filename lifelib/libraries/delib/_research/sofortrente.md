@@ -208,20 +208,16 @@ cited from them. The order below is the order in which they should be fetched.
   it**
 - Content: **the single most important document to fetch for this product, and the only one whose
   identity is corroborated.** It is the immediate-annuity member of Zurich Deutscher Herold's
-  *Verbraucherinformation für Konventionelle Versicherungen* series, the same series whose deferred
-  annuity editions of 01/2021, 01/2022 and 01/2026 the sibling file records [S3]. "Konventionell"
-  is the German market's word for the general-account, non-unit-linked chassis, so the title alone
-  establishes that this is the classic product and not a *fondsgebundene Sofortrente*. Its
-  deferred-annuity siblings are structured as: *allgemeine Informationen*; the AVB; *Besondere
-  Bedingungen* for each option; *allgemeine steuerliche Hinweise*; and the rider conditions [S3].
-  The immediate-annuity edition should be expected to carry the same structure with the
-  accumulation-phase material removed and the *Rentengarantiezeit*, *Kapitalrückgewähr* and
-  *Hinterbliebenenrente* options in its place — **an expectation, not a finding**.
-- Vintage matters here. **Fassung 01/2022** places this edition inside the **0,25 %
-  *Höchstrechnungszins*** regime [R7], one year before the increase to 1,00 % took effect. Any
-  *Rentenhöhe* it contains is a 0,25 %-era figure and is not comparable with a current quotation.
-  Whether a 2025 or 2026 edition exists **was not established**; the deferred-annuity sibling
-  reached **Fassung 01/2026** [S3], so one probably does.
+  *Verbraucherinformation für Konventionelle Versicherungen* series, whose deferred-annuity
+  editions of 01/2021, 01/2022 and 01/2026 the sibling file records [S3]. "Konventionell" is the
+  market's word for the general-account, non-unit-linked chassis, so the title alone establishes
+  that this is the classic product and not a *fondsgebundene Sofortrente*. Its deferred siblings
+  are structured as *allgemeine Informationen*, the AVB, *Besondere Bedingungen* per option,
+  *allgemeine steuerliche Hinweise* and rider conditions [S3]; the immediate edition should carry
+  the same shape with the accumulation material removed — **an expectation, not a finding**.
+- **Fassung 01/2022** places this edition inside the **0,25 % *Höchstrechnungszins*** regime [R7],
+  so any *Rentenhöhe* in it is a 0,25 %-era figure not comparable with a current quotation. Whether
+  a 2025 or 2026 edition exists **was not established**.
 
 ### S3 — Zurich Deutscher Herold Lebensversicherung AG, "Verbraucherinformation für Konventionelle Versicherungen — Aufgeschobene Rentenversicherung", Fassung 01/2026
 - Publisher: Zurich Deutscher Herold Lebensversicherung AG
@@ -397,12 +393,11 @@ cited from them. The order below is the order in which they should be fetched.
   surplus, the *Rentengarantiezeit*, the death benefit, and the costs
 - URL: not established, for any carrier
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: **known reference only.** This is the document class that would settle almost every
-  quantitative gap in this file at a stroke, because a PIB for a *Sofortrente* prints the
-  guaranteed and total annuity for a stated *Einmalbeitrag* and a stated age — the exact figure
-  section 4 has to construct. **Not one PIB for this product was located.** A later build should
-  fetch three or four across carriers of different types (a large stock company, a mutual, a
-  direct writer, a public-sector insurer) before writing any *Rentenhöhe* into the product-spec.
+- Content: **known reference only** — and the document class that would settle almost every
+  quantitative gap here at a stroke, because a PIB for a *Sofortrente* prints the guaranteed and
+  total annuity for a stated *Einmalbeitrag* and age, the exact figure section 4 must construct.
+  **Not one was located.** A later build should fetch three or four across carrier types before
+  writing any *Rentenhöhe* into the product-spec.
 
 ### S12 — *Basisinformationsblatt* (PRIIP-KID) for a sofort beginnende Rentenversicherung — document class
 - Publisher: each insurer, individually
@@ -415,14 +410,11 @@ cited from them. The order below is the order in which they should be fetched.
 - URL: not established, for any carrier
 - Retrieved: no — egress blocked; no search corroboration
 - Content: **known reference only, with a scope question attached.** Whether a classic
-  *Sofortrente* falls inside PRIIPs at all was **not established** — an immediate annuity with a
-  guaranteed payment and a discretionary surplus is an insurance-based investment product on the
-  usual reading, but the *Sofortrente*'s payout-only character and the absence of a surrender value
-  after *Rentenbeginn* [R1] make the "recommended holding period" and "what you might get back"
-  sections awkward, and some carriers may rely on an exemption. If a BIB does exist for the
-  product it is the **only** public document that would give a cost figure in the standardised
-  *Renditeminderung* form, which is the single most useful charge datum a model could have. See
-  gap 8.
+  *Sofortrente* falls inside PRIIPs was **not established**: it looks like an insurance-based
+  investment product on the usual reading, but its payout-only character and the absence of a
+  surrender value after *Rentenbeginn* [R1] make the holding-period and "what you might get back"
+  sections awkward. If a BIB exists it is the **only** public document giving a cost figure in the
+  standardised *Renditeminderung* form — the most useful charge datum a model could have. Gap 8.
 
 ### S13 — Carriers writing the product, recorded without documents
 - Publishers: Allianz [S7]; R+V; Debeka [S8]; Generali and its direct arm CosmosDirekt [S6];
@@ -485,24 +477,17 @@ sibling file's search corroborated it.
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__168.html` — canonical form, `[unverified]`
 - Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: **the provision that decides the single most important modelling question about this
-  product.** § 168 VVG governs the policyholder's right to terminate a life insurance contract:
-  a contract with recurring premiums may be terminated at the end of the current insurance period,
-  and a single-premium contract on stated conditions. The paragraph that matters here is
-  **§ 168 Abs. 3 VVG**, which provides that **in the case of a *Rentenversicherung* without a
+- Content: **the provision that decides the most important modelling question about this product.**
+  § 168 VVG governs the policyholder's right to terminate a life contract. The paragraph that
+  matters is **§ 168 Abs. 3 VVG**, which provides that **in a *Rentenversicherung* without a
   *Kapitalwahlrecht* the right of termination exists only up to the start of the annuity payments**
-  `[unverified]` — after *Rentenbeginn* there is no right to terminate and therefore no
-  *Rückkaufswert* to pay. For a *Sofortrente*, whose *Rentenbeginn* is at or within weeks of
-  inception, the practical effect is that **the contract is irrevocable from the outset**: the
-  *Einmalbeitrag* is gone, and the only thing the policyholder holds thereafter is the annuity
-  itself and whatever death benefit was bought with it.
-- The paragraph number, the exact scope of the "*ohne Kapitalwahlrecht*" qualifier, and the
-  treatment of a contract that carries a *Kapitalwahlrecht* exercisable during a short
-  *Aufschubzeit* are all `[unverified]` here. The **substance** — no surrender in the
-  *Rentenbezug* — is not seriously in doubt: it is the uniform statement of the German consumer
-  literature [R21] [R23], it is the economic precondition for a life annuity to be writable at all
-  (a surrenderable annuity would be selected against by every annuitant in poor health), and it is
-  the exact rule French law states in the same words for the same reason. See gap 9.
+  `[unverified]` — after *Rentenbeginn* there is no right to terminate and so no *Rückkaufswert* to
+  pay. For a *Sofortrente*, whose *Rentenbeginn* is at or within weeks of inception, **the contract
+  is irrevocable from the outset**.
+- The paragraph number, the scope of the "*ohne Kapitalwahlrecht*" qualifier and the treatment of a
+  contract with a *Kapitalwahlrecht* exercisable during a short *Aufschubzeit* are `[unverified]`.
+  The **substance** is not seriously in doubt: it is the uniform statement of the consumer
+  literature [R21] [R23] and the economic precondition for writing life annuities at all. Gap 9.
 
 ### R2 — VVG § 169, *Rückkaufswert*
 - Publisher: Bundesministerium der Justiz / juris
@@ -591,13 +576,6 @@ sibling file's search corroborated it.
   2,75 %, 2,25 %, 1,75 %, 1,25 %, 0,90 %, 0,25 % — and every effective date in it is
   `[unverified]` here**; a model point carrying a legacy *Rechnungszins* must cite the delib
   cross-product reference library rather than this file.
-- **Why the rate is the whole product.** For a *Sofortrente* the *Höchstrechnungszins* is not a
-  background parameter; it is close to being the price. The annuity is the reciprocal of an
-  annuity value, and the annuity value at these ages and durations is dominated by the discount
-  rate. Section 4 computes the sensitivity on a stated proxy basis and finds that moving the
-  interest basis from 0,25 % to 1,00 % raises the annuity at age 65 by about **10 %** `[std]` —
-  a change of the same order as a decade of mortality improvement, delivered in one legislative
-  step on 1 January 2025.
 
 ### R8 — DAV recommendations on the *Höchstrechnungszins* for 2025 and 2026
 - Publisher: Deutsche Aktuarvereinigung e. V. (DAV), Cologne
@@ -647,11 +625,6 @@ sibling file's search corroborated it.
     That the profession was still maintaining DAV 2004 R in 2023 — nineteen years after first use,
     twenty-four years after its 1999 base year — is itself the evidence that **no successor annuity
     table has displaced it**.
-- **The table is not public and delib does not redistribute it.** It is the property of the DAV.
-  delib cites it by name, ships a `[std]` proxy anchored so its own worked example reproduces
-  exactly, and states the anchor in the model's `Data` docstring. A replacement must preserve the
-  **generational structure** (a `q(x, cohort)` surface, not a period table), the **first-order
-  margin over second order**, and the **age-adjustment convention**.
 
 ### R11 — DAV 2004 R-Bestand and the *Rentenbestandstafel* RBx
 - Publisher: Deutsche Aktuarvereinigung e. V.
@@ -698,9 +671,6 @@ sibling file's search corroborated it.
     the only value of the statutory table that any delib search corroborated.
   - The statutory address usually given for the table — **§ 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst.
     bb EStG** — was **not** confirmed by any search summary and is `[unverified]`.
-- The fraction is **fixed for life at the annuity's commencement age** and does not fall as the
-  annuitant ages, which is the feature that makes a deferred start economically attractive
-  (section 3) and is easy to model wrongly.
 
 ### R14 — EStG § 20 Abs. 1 Nr. 6 — the *Kapitalabfindung* regime, and its boundary
 - Publisher: Bundesministerium der Justiz / juris
@@ -850,34 +820,28 @@ sibling file's search corroborated it.
   recorded**, and none is given here
 - Retrieved: no — egress blocked; no search corroboration in this session
 - Content: **the class of source that would supply the price points this file lacks, and did not.**
-  A German *Sofortrente* comparison portal exists precisely to rank carriers by monthly annuity per
-  100 000 € for a stated age and set of options, and `vergleich-sofortrente.de` is by its domain
-  name dedicated to exactly that. **Nothing from it was established.** What the wider cluster did
-  establish, through the sibling file, is the definitional material this file relies on: the
-  *Rentenfaktor* arithmetic and the guaranteed/current distinction; the *Rentengarantiezeit*
-  mechanics, durations and cost illustration (section 5); the *Zinsüberschuss* hurdle-rate
-  definition; the *Bonusrente* mechanic; and the *Ertragsanteil*. Every fact drawn from the cluster
-  below is corroborated by at least two of its members in the sibling file's record, and none of
-  it is a price.
+  A German *Sofortrente* portal exists precisely to rank carriers by monthly annuity per 100 000 €
+  for a stated age and option set, and `vergleich-sofortrente.de` is by its domain name dedicated
+  to that. **Nothing from it was established.** What the wider cluster did establish, through the
+  sibling file, is this file's definitional material: the *Rentenfaktor* arithmetic and the
+  guaranteed/current distinction; the *Rentengarantiezeit* mechanics, durations and cost
+  illustration (section 5); the *Zinsüberschuss* definition; the *Bonusrente* mechanic; and the
+  *Ertragsanteil*. Every fact drawn from it is corroborated by at least two members, and none is a
+  price.
 
 ### R24 — The unisex rule: CJEU *Test-Achats* and its German application
 - Publisher: Court of Justice of the European Union; the German *Allgemeines
   Gleichbehandlungsgesetz* (AGG) and the VVG's implementing provisions
 - URL: not established
 - Retrieved: no — egress blocked; **no delib search touched this topic at all**
-- Content: **`[unverified]` in both directions and recorded as a known reference only.** The
-  established German market position is that life and annuity tariffs written for new business
-  from **21 December 2012** must be **unisex** — premiums and benefits may not differ by sex —
-  while the actuarial tables the profession publishes, DAV 2004 R among them, are constructed
-  **sex-distinctly**. Neither half of that sentence was corroborated by any delib search: no
-  summary confirmed that DAV 2004 R is published by sex, and no search reached the CJEU judgment,
-  its case number, or the German application date. The tension is real and this product is where
-  it bites hardest — a *Sofortrente* is the purest longevity bet in the German market, female
-  annuitants are materially longer-lived, and a unisex tariff on sex-distinct tables must
-  therefore be struck on an assumed **portfolio sex mix**, which is a pricing assumption the
-  insurer chooses and never publishes. The unisex rule belongs to the delib cross-product
-  reference library `references/regulatory-and-actuarial-references.md` and must be cited from
-  there, not from this file. See gap 13.
+- Content: **`[unverified]` in both directions, a known reference only.** The established German
+  position is that tariffs written from **21 December 2012** must be **unisex** while the
+  profession's tables, DAV 2004 R among them, are built **sex-distinctly**. Neither half was
+  corroborated by any delib search. The tension bites hardest on this product: a *Sofortrente* is
+  the purest longevity bet in the market, female annuitants are materially longer-lived, and a
+  unisex tariff on sex-distinct tables must be struck on an assumed **portfolio sex mix** no
+  insurer publishes. The rule belongs to
+  `references/regulatory-and-actuarial-references.md` and must be cited from there. Gap 13.
 
 ### R25 — GDV statistics on *Einmalbeiträge* and the German annuity market
 - Publisher: GDV
@@ -1002,10 +966,6 @@ marked `[std]` with its derivation printed.
   **not** any carrier's quotation. A five-year deferment raises the annuity by about **25 %** with
   a death benefit and **31 %** without, and the gap between the columns — 4,6 % at five years,
   11,1 % at ten — **is the price of the death benefit**, which is the honest way to show it.
-- **The deferral also lowers the tax.** The *Ertragsanteil* is fixed by the age at which the
-  annuity **starts**, not the age at which it is bought [R13], so deferring from 65 to 70 moves the
-  taxable fraction from 18 % to 15 % `[unverified]` (section 15) at the same time as it raises the
-  gross annuity. The two effects compound, and they are the reason the variant exists.
 
 ### 4. *Rentenhöhe*: how the annuity is determined, and how it moves with the *Höchstrechnungszins*
 
@@ -1097,9 +1057,6 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
   annuitant survives the period, it simply lapses and the annuity continues for life as before.
   After the guarantee period nothing is payable on death unless a *Kapitalrückgewähr* (section 6)
   or a *Hinterbliebenenrente* (section 7) was also bought.
-- **It is not an extra benefit bolted on; it is a re-shaping of the same annuity.** The contract
-  becomes `annuity-certain for n years + deferred life annuity from n`, which is worth more than a
-  plain life annuity, so the *Einmalbeitrag* buys less of it. There is no free guarantee.
 - **Durations offered**: **5, 10, 15, 20, 25 or more than 30 years**; **typical durations 15 years
   for retirement ages 61–70 and 10 years for 71 and above**; **most policyholders choose 10 to
   20 years** [R23]. It is carried in the tariff name at NÜRNBERGER, whose deferred AVB is titled
@@ -1209,10 +1166,6 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
   The proxy applies the same mortality to both lives and assumes independence, both of which are
   simplifications: real joint-life pricing uses sex-distinct or portfolio-mix bases (section 11)
   and a dependence allowance. **These are `[std]` illustrations, not tariff values.**
-- **A tax question this file cannot answer.** Whether the *Hinterbliebenenrente*, once in payment,
-  is taxed on the survivor's own *Ertragsanteil* computed at the survivor's age when it starts, or
-  continues on the original annuitant's fraction, **was not established** and is a real practical
-  question with a material answer. See gap 15.
 
 ### 8. Payment frequency and timing
 
@@ -1233,9 +1186,6 @@ further [R4]. Everything above the guaranteed annuity is the *Überschussrente* 
 - **The first payment date** falls at or within a month of inception; **whether the convention is
   the day the *Einmalbeitrag* is received or the first of the following month was not
   established**. A reference implementation pays the first instalment at `t = 0`, as `[std]`.
-- **Payment ceases at death.** Whether an instalment already paid for the period of death is
-  reclaimed or retained by the estate **was not established**; a reference implementation retains
-  it, the ordinary consequence of paying in advance.
 
 ### 9. *Überschussbeteiligung* in the *Rentenbezug* — the four *Überschussverwendung* forms
 
@@ -1430,12 +1380,6 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
   underwrite them (section 2, `[unverified]`), so the selection sits in the tariff's margin rather
   than in an individual assessment. A best-estimate projection that applies population mortality to
   an annuity book will overstate deaths and understate the liability, and by a wide margin.
-- **Proof of life.** Insurers verify survival periodically (a *Lebensbescheinigung* or an
-  equivalent register check) and recover overpayments made after an unnotified death. **No
-  carrier's frequency or procedure was established.** It is an expense item, not a cash-flow one,
-  and a reference implementation ignores it.
-- **No behavioural assumption in this file is evidenced by any source.** There is nothing to
-  evidence: the product removes the behaviours. That is a finding worth stating, not a gap.
 
 ### 15. Taxation — the *Ertragsanteil*
 
@@ -1511,9 +1455,6 @@ irrevocably** `[unverified]`. The four forms and what each does to the projected
   death is a poor outcome, while the *Bankauszahlplan* keeps every euro not yet drawn. The honest
   framing is that a *Sofortrente* is **insurance against outliving one's money**, priced like
   insurance: most buyers "lose" and the ones who need it are made whole.
-- **The nominal break-even.** `100 000 / (12 x 389.99) = 21.4` years, about **age 86** `[std]` (4)
-  — close to the life expectancy the tariff assumes, which is what a fairly priced annuity should
-  give and a useful sanity check on any quotation.
 - **No market comparison, no published payout-plan rate and no Stiftung Warentest side-by-side was
   established.** Every figure in this section is `[std]` arithmetic.
 

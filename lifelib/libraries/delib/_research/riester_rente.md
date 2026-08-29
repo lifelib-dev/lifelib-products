@@ -93,10 +93,10 @@ What follows from that, exactly, and it governs every line below:
    marked retrieved. The sources are listed as **known references** — documents that exist and are
    the right kind of document for this product — not as documents anyone consulted.
 2. **No URL, document number, edition, page count, publication date or *Zertifizierungsnummer* was
-   guessed.** Where a URL is not available the entry says `URL: not established`. Two URLs appear
-   in canonical `gesetze-im-internet.de` form and one `gdv.de` index URL appears; the statutory
-   ones are marked `[unverified]`, and the GDV index URL is the one a search returned in a **sibling
-   delib research session**, attributed as such.
+   guessed.** Where a URL is not available the entry says `URL: not established`. Exactly four URLs
+   appear: three in canonical `gesetze-im-internet.de` form, all marked `[unverified]`, and one
+   `gdv.de` index URL that a search returned in a **sibling delib research session**, attributed as
+   such.
 3. **No verbatim quotation of any document is given.** Where a German phrase appears in quotation
    marks it is a **term of art**, not a quotation from an instrument.
 4. **`[unverified]` is used generously.** Every paragraph number, effective date, monetary amount,
@@ -149,8 +149,7 @@ gloss. The vocabulary this product needs, beyond the shared Schicht-3 vocabulary
 | *Rentenbeginn* / *Beginn der Auszahlungsphase* | the boundary between accumulation and payout; the date the *Beitragsgarantie* is tested |
 | *Teilkapitalauszahlung* | the lump sum, capped at a statutory share of the capital, that may be taken at *Rentenbeginn* without losing the subsidy |
 | *Auszahlungsplan mit Restverrentung* | the non-insurance payout form: scheduled withdrawals, then a lifelong annuity bought with the remainder from a statutory age |
-| *Kleinbetragsrente* | an annuity too small to administer, which the provider may commute to a lump sum without *schädliche Verwendung* |
-| *Abfindung* | that commutation payment |
+| *Kleinbetragsrente* / *Abfindung* | an annuity too small to administer, which the provider may commute to a lump sum without *schädliche Verwendung*; the *Abfindung* is that lump sum |
 | *Fünftelregelung* | the spread-over-five-years tariff relief of § 34 EStG applied to such a commutation |
 | *nachgelagerte Besteuerung* | deferred taxation: contributions relieved, benefits taxed in full |
 | *schädliche Verwendung* | a use of the capital outside the permitted purposes, which triggers repayment of the subsidy |
@@ -559,9 +558,9 @@ as to level and are disclosed rather than capped [R4] [R5].
     Beschäftigte** who have waived the exemption from compulsory insurance `[unverified]` on the
     completeness and precise wording of the list.
   - ***Nicht* berechtigt** — the self-employed who are not compulsorily insured, and members of the
-    **berufsständische Versorgungswerke** (doctors, lawyers, architects and the like). This is the
-    single largest design criticism of the product and it is structural: the group with the weakest
-    statutory pension is the group the subsidy does not reach `[unverified]` as a characterisation.
+    **berufsständische Versorgungswerke** (doctors, lawyers, architects). The largest structural
+    criticism of the product: the group with the weakest statutory pension is the group the subsidy
+    does not reach `[unverified]` as a characterisation.
   - ***Mittelbar zulageberechtigt*** — the spouse or registered partner of an *unmittelbar*
     eligible person, where the couple are not permanently separated and both are resident in an
     EU/EEA state, **provided the *mittelbar* eligible person holds an own certified contract**. From

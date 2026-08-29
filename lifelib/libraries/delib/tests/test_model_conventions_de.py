@@ -54,6 +54,21 @@ that rule is enforced by review; in the input files it was, until here, enforced
 *configuration* rather than an assumption: its columns are the policy's own terms, and
 tagging them row by row would tag the same fact once per policy. That exemption is the
 only one.
+
+.. rubric:: This module was checked against a library it does not govern
+
+Before any delib model existed, this suite was run against two frlib models —
+``TD_FR_A`` and ``Euro_FR_A`` — through a throwaway registry pointing at them. The result
+was **50 passed, 2 skipped, 4 failed**, and all four failures were the intended
+differences: the ``_DE_`` country tag, twice, and ``check_net_cf``, twice. Everything else
+passed unchanged.
+
+That is worth recording for two reasons. It shows the general contract here is the same
+contract the sister libraries already meet, so a delib model that satisfies it is
+conforming rather than merely self-consistent. And it shows the second ruling asks for
+something already achievable: ``test_every_assumption_csv_carries_provenance`` passed on
+both frlib models, because frlib's input files already carry the column by convention.
+delib promotes that convention to a contract; it does not invent a new burden.
 """
 import csv
 import math

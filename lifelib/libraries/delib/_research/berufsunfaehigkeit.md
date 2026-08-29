@@ -33,7 +33,7 @@ described at length in section 24, because the German BU contract is designed as
 its level is the reason the private product exists at all.
 
 These notes are the **citation ground truth** for the delib `berufsunfaehigkeit` product documents.
-Source ids **S1..S16** and **R1..R30** below are **frozen — never renumber**; unused ids are simply
+Source ids **S1..S16** and **R1..R31** below are **frozen — never renumber**; unused ids are simply
 omitted downstream, leaving gaps, and `sources.md` records which are absent and why.
 Access date for all citations: **2026-08-29**.
 

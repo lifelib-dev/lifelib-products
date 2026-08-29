@@ -171,20 +171,19 @@ not from the document — and every specific number inside it carries `[unverifi
   refused the fetch.)
 - Retrieved: no — egress blocked; no search corroboration (budget exhausted).
 - Content — the chassis, and a finding about what is *not* in it:
-  - The GDV model wording for the deferred annuity supplies the clause skeleton every German
-    deferred annuity shares and which the Indexpolice inherits unchanged: the *Erlebensfall*
-    obligation at *Rentenbeginn*, the *Todesfallleistung* in the *Aufschubphase*, the
-    *Überschussbeteiligung* clause, *Rückkaufswert* and *Beitragsfreistellung*, the *Rentenphase*
-    clauses including *Rentengarantiezeit*, the duty of disclosure, and *Selbsttötung*.
+  - The GDV model wording supplies the clause skeleton every German deferred annuity shares and the
+    Indexpolice inherits unchanged: the *Erlebensfall* obligation at *Rentenbeginn*, the
+    *Todesfallleistung* in the *Aufschubphase*, the *Überschussbeteiligung* clause, *Rückkaufswert*
+    and *Beitragsfreistellung*, the *Rentenphase* clauses including *Rentengarantiezeit*, the duty of
+    disclosure, and *Selbsttötung*.
   - **The GDV publishes no *Musterbedingungen* for an index participation module.** The
-    *Indexbeteiligung* clause set is a carrier-specific construction throughout the market. This is
-    the structural reason why the wording varies more across insurers for this product than for any
-    other in the delib library, and why an "industry standard" formulation of the Cap mechanic does
-    not exist to be cited. `[unverified]` as to whether some later GDV model set has added one;
-    nothing in this author's knowledge indicates it has.
-  - Consequence for delib: the *Indexbeteiligung* clauses in the delib product specification are a
-    **composite** reconstructed from the market-wide mechanics in the extracted-facts sections
-    below, and are labelled as such, not attributed to any carrier.
+    *Indexbeteiligung* clause set is a carrier-specific construction throughout the market — the
+    structural reason the wording varies more across insurers here than for any other delib product,
+    and why no industry-standard formulation of the Cap mechanic exists to be cited. `[unverified]`
+    as to whether a later GDV model set has added one.
+  - Consequence: the *Indexbeteiligung* clauses in the delib product specification are a
+    **composite** reconstructed from the mechanics sections below, labelled as such and attributed to
+    no carrier.
 
 ### S2 — Allianz Lebensversicherungs-AG, *Allgemeine Versicherungsbedingungen* / *Bedingungswerk* for **Allianz IndexSelect**
 - Publisher: Allianz Lebensversicherungs-AG, Stuttgart
@@ -415,10 +414,9 @@ number is `[unverified]`.
 - Content: the policyholder may at any time demand conversion of the contract to a paid-up
   (*prämienfrei*) contract for the reduced insured benefit computed on recognised actuarial
   principles for the end of the current insurance period; the same *Stornoabzug* discipline applies.
-- Delta for this product: a paid-up Indexpolice **keeps its index participation** on the capital
-  already accumulated. The *Wahlrecht* survives *Beitragsfreistellung*. `[unverified]` at clause
-  level; the general rule follows from the fact that the participation attaches to the capital and
-  not to the premium.
+- Delta: a paid-up Indexpolice **keeps its index participation** on the capital already accumulated
+  and the *Wahlrecht* survives, because the participation attaches to the capital and not to the
+  premium. `[unverified]` at clause level.
 
 ### R4 — VVG § 163 (*Anpassung der Prämie*) and § 164 (*Ersetzung von Bedingungen*)
 - Publisher: Gesetze im Internet
@@ -457,10 +455,9 @@ number is `[unverified]`.
 - Content: where death is caused by suicide, the insurer is not liable on a death cover within
   **three years** of the conclusion (or reinstatement) of the contract; where the exclusion applies,
   the insurer owes the *Rückkaufswert*.
-- Relevance: inherited unchanged from products 1 and 2. It bites only on the death benefit in the
-  *Aufschubphase*, which for this product is normally a return of capital rather than a sum at risk,
-  so the clause is close to inoperative in economic terms. Recorded so the delib documents can say
-  so rather than leave it out.
+- Relevance: inherited unchanged from products 1 and 2, and close to inoperative in economic terms,
+  because the *Aufschubphase* death benefit is normally a return of capital rather than a sum at
+  risk. Recorded so the delib documents can say so rather than leave it out.
 
 ### R7 — *Deckungsrückstellungsverordnung* (DeckRV): *Höchstrechnungszins* and *Höchstzillmersatz*
 - Publisher: Gesetze im Internet
@@ -568,8 +565,8 @@ number is `[unverified]`.
   annuitant's age at *Rentenbeginn* and set out in a statutory table. Illustrative values from the
   table, all `[unverified]`: about 22 % at age 60, about 20 % at 63, about 18 % at 65, about 17 % at
   67.
-- Relevance: identical to product 2. The index mechanic does **not** change the tax treatment of the
-  annuity, because the credits have been absorbed into the capital before conversion.
+- Relevance: identical to product 2; the index mechanic does not change the annuity's tax treatment,
+  the credits having been absorbed into the capital before conversion.
 
 ### R14 — EStG § 20 Abs. 1 Nr. 6, taxation of a *Kapitalabfindung*, and the *Mindesttodesfallschutz*
 - Publisher: Gesetze im Internet
@@ -619,10 +616,10 @@ number is `[unverified]`.
 ### R17 — BaFin, *Risiken im Fokus* (annual risk report) and BaFin *Fachartikel* on costs and PRIIPs
 - Publisher: BaFin
 - URL: not established.
-- Content: BaFin's annual statement of supervisory focus risks; the sibling file establishes that
-  the cost of capital-forming life insurance is a named focus. The *Fachartikel* series has covered
-  how insurers discharge the PRIIPs information duties.
-- Relevance: context for the charge discussion in mechanics section 13, where every level is `[std]`.
+- Content: BaFin's annual statement of supervisory focus risks — the sibling file establishes that
+  the cost of capital-forming life insurance is a named focus — and the *Fachartikel* series on how
+  insurers discharge the PRIIPs information duties.
+- Relevance: context for the charge discussion in section 13, where every level is `[std]`.
 
 ### R18 — DAV recommendations on the *Höchstrechnungszins*
 - Publisher: Deutsche Aktuarvereinigung e. V.
@@ -630,9 +627,9 @@ number is `[unverified]`.
 - Content: the DAV recommends a *Höchstrechnungszins* to the Bundesfinanzministerium, which sets it
   by regulation. The sibling delib files establish the recommendation of **1,0 %** for 2025 and again
   for 2026.
-- Relevance: fixes the guarantee basis for a contract issued at the access date, and therefore the
-  split between the guaranteed and the discretionary component of the return — which for this
-  product is the split between the guaranteed capital and the option budget.
+- Relevance: fixes the guarantee basis for a contract issued at the access date, and so the split
+  between the guaranteed and discretionary components of the return — here, between the guaranteed
+  capital and the option budget.
 
 ### R19 — GDV statistics: *Die deutsche Lebensversicherung in Zahlen*, and the new-business and in-force series
 - Publisher: GDV
@@ -795,18 +792,15 @@ This is the mechanical core of the product and everything else follows from it.
   starts; the policyholder must elect before it starts. If the Cap is announced before the election
   deadline the choice is informed; if after, it is not. **Which prevails is not established**, and it
   is among the two or three most consequential unestablished facts in this file. Gap 11.
-- **Partial election.** Some tariffs permit the surplus to be split between the two arms — for
-  instance half to the index and half to the safe rate — rather than requiring an all-or-nothing
-  choice `[unverified]`. delib treats the election as a **fraction `w` in [0, 1]** of the surplus
-  directed to the index arm, which makes the all-or-nothing case `w ∈ {0, 1}` a special case and
-  costs nothing to implement.
-- **Index choice.** Where a carrier offers more than one index, the annual election is normally also
-  the occasion to switch between them `[unverified]`.
+- **Partial election.** Some tariffs permit the surplus to be split between the arms rather than
+  requiring an all-or-nothing choice `[unverified]`; delib treats the election as a **fraction `w` in
+  [0, 1]** directed to the index arm, making all-or-nothing the special case `w ∈ {0, 1}`. Where a
+  carrier offers more than one index, the annual election is normally also the occasion to switch
+  between them `[unverified]`.
 - **Survival of the right.** The *Wahlrecht* attaches to the capital, so it survives
-  *Beitragsfreistellung* [R3] and persists to *Rentenbeginn*. In the *Rentenphase* it normally
-  ceases, because the surplus is then applied to the annuity in payment by whichever of the payout
-  surplus systems the contract uses; **whether any carrier offers index participation in the payout
-  phase is not established** `[unverified]`. Gap 17.
+  *Beitragsfreistellung* [R3] and persists to *Rentenbeginn*; it normally ceases in the *Rentenphase*,
+  where surplus is applied to the annuity in payment. **Whether any carrier offers index
+  participation in the payout phase is not established** `[unverified]`. Gap 17.
 - **Modelling.** The *Wahlrecht* is a **policyholder election**, which in delib's three-way
   assumption split makes it a *behavioural* assumption, not a contractual or an insurer-discretionary
   one. The delib base run sets `w = 1` (full index participation every year) as a `[std]` choice,
@@ -864,7 +858,7 @@ to be stated in full and without hedging.**
   index — a 3 % cap gives away roughly **one percentage point of expected return per month**, twelve
   times a year, against an expected monthly return well under 1 %. Section 20 does the arithmetic.
 - **The floor is what makes it a life-insurance product rather than a bet**, and it is genuine: the
-  worst *Indexjahr* imaginable credits zero, and the capital is untouched.
+  worst imaginable *Indexjahr* credits zero and leaves the capital untouched.
 - **A trap for the modeller and the reader.** The `max(S, 0)` floor operates on the *sum*, not on
   each month, so it is **not** true that a year with more up-months than down-months credits
   something: it is perfectly ordinary for a year in which the index finished **higher** to credit
@@ -954,9 +948,8 @@ dominant one.
   and is then binding for its whole length.** It is not adjustable during the year, and a change in
   market conditions during the year does not change it.
 - **The determination is a pricing calculation, not a discretion in substance** (section 3): the Cap
-  is the level at which the option package costs the declared option budget. The inputs are the
-  option budget, the index's implied volatility, its dividend yield, the risk-free rate and the
-  dealing spread the insurer faces.
+  is the level at which the option package costs the option budget, given that budget, the index's
+  implied volatility and dividend yield, the risk-free rate and the insurer's dealing spread.
 - **The directions of movement follow from that, and they are the useful part**:
 
   | If this rises | the Cap | because |
@@ -985,17 +978,14 @@ dominant one.
 
 ### 9. The index — EURO STOXX 50, and the move to house multi-asset indices
 
-- **The classic underlying is the EURO STOXX 50**, the blue-chip index of the euro area, and it was
-  the underlying of the first German index-participation products. Two properties of it drive the
-  product's economics:
-  1. **It is quoted, and used, as a *price index*** — a *Kursindex*, from which dividends are
-     excluded. Options are written on the price index. The euro-area dividend yield, of the order of
-     **3 % per year** `[unverified]`, therefore never reaches the policyholder in any state of the
-     world. This is a permanent, structural give-up that sits on top of the cap and is invisible to a
-     purchaser comparing the product to "the index".
-  2. **It is volatile** — an annualised volatility of the order of 18 % to 22 % in ordinary
-     conditions `[unverified]` — which makes the monthly cap strip expensive and therefore forces the
-     Cap down.
+- **The classic underlying is the EURO STOXX 50**, the euro area's blue-chip index and the
+  underlying of the first German index-participation products. Two of its properties drive the
+  economics: (i) **it is quoted and used as a *price index*** (*Kursindex*), with dividends excluded,
+  and options are written on the price index — so the euro-area dividend yield, of the order of
+  **3 % per year** `[unverified]`, never reaches the policyholder in any state of the world, a
+  permanent structural give-up on top of the cap and invisible to a purchaser comparing the product
+  to "the index"; (ii) **it is volatile**, of the order of 18 % to 22 % annualised in ordinary
+  conditions `[unverified]`, which makes the monthly cap strip expensive and forces the Cap down.
 - **The shift to house indices.** From the mid-2010s a substantial part of the German market replaced
   the EURO STOXX 50 in these tariffs with **bespoke multi-asset indices** built for the insurer by an
   investment bank or index provider. Their common features: **multi-asset** composition (equities,
@@ -1072,14 +1062,14 @@ dominant one.
 ### 12. Premium
 
 - **Level *Beitrag*, payable monthly, quarterly, half-yearly or annually** over a
-  *Beitragszahlungsdauer* which may be shorter than the *Aufschubdauer*; single premium
-  (*Einmalbeitrag*) versions exist; *Zuzahlungen* (ad-hoc top-ups) are commonly permitted.
+  *Beitragszahlungsdauer* that may be shorter than the *Aufschubdauer*; *Einmalbeitrag* versions
+  exist and *Zuzahlungen* are commonly permitted.
 - A ***Ratenzahlungszuschlag*** applies for paying other than annually; the market convention
   recorded in the sibling delib file is of the order of **2 % half-yearly, 3 % quarterly, 5 %
   monthly** `[unverified]`, and delib carries it as `[std]`.
-- A ***Dynamik*** option (automatic annual premium increase, with a matching benefit increase, and a
-  right to decline) is normal on this chassis. It interacts with the guarantee: each increment is a
-  new tranche with its own guarantee basis `[unverified]`.
+- A ***Dynamik*** option — automatic annual premium increase with a matching benefit increase and a
+  right to decline — is normal on this chassis; each increment is a new tranche with its own
+  guarantee basis `[unverified]`.
 - **The premium does not enter the index formula.** Premiums build the capital `K`; the payoff is
   struck on `G`, the participating capital at the *start* of the *Indexjahr*, so on the natural
   reading premiums paid during a year participate only from the following one. **Whether carriers
@@ -1128,9 +1118,9 @@ established.
 - **A real behavioural incentive, and it belongs in the lapse discussion**: the product rewards
   surrendering just after an *Indexjahr* end and penalises surrendering just before one. An annual
   grid with exits at year end implicitly assumes the favourable convention; the notes must say so.
-- **Beitragsfreistellung** under § 165 VVG [R3] leaves the accumulated capital in place, continues the
-  index participation on it, and preserves the *Wahlrecht* (section 4). It converts the contract to a
-  reduced guaranteed benefit computed on recognised actuarial principles.
+- **Beitragsfreistellung** under § 165 VVG [R3] leaves the capital in place, continues the index
+  participation on it, preserves the *Wahlrecht* (section 4), and converts the contract to a reduced
+  guaranteed benefit computed on recognised actuarial principles.
 - **Stornoabzug** must be agreed, appropriate and quantified [R2]; the sibling KLV file records one
   carrier's structure of a **5 % base deduction plus a capital-market-dependent component of 5 %,
   10 % or 15 % of the *Deckungskapital*** `[unverified]`, established there by search. delib's
@@ -1146,11 +1136,10 @@ established.
 - **Index-specific point**: whether death mid-*Indexjahr* attracts a pro-rata index credit is the same
   unestablished question as for surrender (gap 12); the `[std]` treatment is the same, no credit in
   the year of exit.
-- Because the sum at risk is close to zero, the *Risikoüberschuss* on this product is small, the
-  underwriting is light (section 17), and § 161 VVG [R6] is close to inoperative.
-- The **50 % *Mindesttodesfallschutz*** condition of the tax rules [R14] bites on the *Kapitalwahlrecht*
-  treatment, not on the annuity, and is a reason some tariffs carry a death benefit above the plain
-  return of capital `[unverified]`.
+- Because the sum at risk is close to zero the *Risikoüberschuss* is small, underwriting is light
+  (section 17) and § 161 VVG [R6] is close to inoperative. The **50 % *Mindesttodesfallschutz***
+  condition of the tax rules [R14] bites on the *Kapitalwahlrecht* treatment, not on the annuity, and
+  is why some tariffs carry a death benefit above the plain return of capital `[unverified]`.
 
 ### 16. The *Rentenphase* — *Rentenfaktor* and *Kapitalwahlrecht*
 
@@ -1198,12 +1187,12 @@ Inherited wholesale from delib product 2; recorded here only as the delta.
 
 ### 18. Taxation
 
-- ***Schicht 3* annuity**: taxed on the *Ertragsanteil* only, by age at *Rentenbeginn* [R13] —
-  about 17 % of the annuity at age 67 `[unverified]`.
-- **Lump sum under the *Kapitalwahlrecht***: the excess of the payment over premiums paid is
-  investment income; if the contract has run twelve years and the payment falls after age 62, **half
-  the difference** is taxable at the personal rate, subject to the *Mindesttodesfallschutz*
-  condition for contracts from 1 April 2009 [R14]. All figures `[unverified]`.
+- ***Schicht 3* annuity**: taxed on the *Ertragsanteil* only, by age at *Rentenbeginn* [R13] — about
+  17 % of the annuity at age 67 `[unverified]`.
+- **Lump sum under the *Kapitalwahlrecht***: the excess over premiums paid is investment income, and
+  if the contract has run twelve years and the payment falls after age 62, **half the difference** is
+  taxable at the personal rate, subject to the *Mindesttodesfallschutz* condition for contracts from
+  1 April 2009 [R14]. All figures `[unverified]`.
 - **The index credits are not separately taxed**: they are absorbed into the capital as credited, so
   there is no annual tax event, no *Abgeltungsteuer* on the year's index gain and no
   *Teilfreistellung* under the *Investmentsteuergesetz* — the last because there is no fund. This
@@ -1646,7 +1635,7 @@ working network knows exactly what to go and get, and in what order.
 
 22. **The *Ersatzindex* clause's mechanics are unestablished** — whether a *Treuhänder* must confirm
     a substitution, and whether the policyholder gets a *Sonderkündigungsrecht* or an unscheduled
-    right to move to the *sichere Verzinsung* [R4][R10 discussion in section 10].
+    right to move to the *sichere Verzinsung* [R4]; section 10.
 
 23. **Nothing in this file is quoted.** There is no verbatim statutory or contractual wording
     anywhere in it, because no document was opened and no search summary was available to attribute
