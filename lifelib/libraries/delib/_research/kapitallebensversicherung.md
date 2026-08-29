@@ -1153,15 +1153,14 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   of the contractually agreed ***Beitragssumme*** at conclusion of the contract, **regardless of
   whether the customer has already paid that premium sum**" [R28 family]. That mismatch — cost
   incurred at once, premium received over decades — is what *Zillmerung* finances.
-- ***Zillmerung*** reduces the *Deckungskapital* **by the present value of the acquisition costs
-  not yet recovered**, so **a negative *Deckungskapital* arises in the early years** [R28]. The
-  ***gezillmerte Nettoprämie*** is the annual premium whose present value equals the present value
-  of the benefits **plus** the *zillmerfähige Abschlusskosten*, carrying a loading that permits
-  annuity-style amortisation of those costs [R28].
+- ***Zillmerung*** reduces the *Deckungskapital* **by the present value of the acquisition costs not
+  yet recovered**, so **a negative *Deckungskapital* arises in the early years** [R28]. The
+  ***gezillmerte Nettoprämie*** is the annual premium whose present value equals that of the benefits
+  **plus** the *zillmerfähige Abschlusskosten*, carrying a loading that permits annuity-style
+  amortisation of those costs [R28].
 - **The statutory cap.** The *Zillmersatz* **may not exceed 25 ‰ (2,5 %) of the *Beitragssumme***,
   cut from **40 ‰** by the LVRG with effect from **1 January 2015** [R7][S15][R29]; in the balance
-  sheet only 2,5 % of the *Beitragssumme* may be recognised as *Abschluss- und Vertriebskosten*
-  [S15].
+  sheet only 2,5 % may be recognised as *Abschluss- und Vertriebskosten* [S15].
 - **Market effect.** *Abschlusskosten* are reported to have **fallen by almost 8 % after the LVRG**
   [R29]; **Die Stuttgarter** cut its *Abschlussprovision* to **25 ‰**, compensating brokers with
   *Bestandsprovision* [R29]. ***Zillmerung* is a per-tariff choice**: die Bayerische publishes a
@@ -1186,11 +1185,11 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   own scale**, so the three are used as a cited market range and any single value chosen is `[std]`.
 - Justification: the greater administrative effort — premiums collected and processed **12 times
   rather than once** a year, with correspondingly higher dunning effort [R28].
-- **The *echte* / *unechte* distinction matters.** Contracts providing for sub-annual premiums
-  **from the outset** — a *Versicherungsperiode* of one month, say — carry **no**
-  *Ratenzahlungszuschlag*; these are ***echte unterjährige Beiträge***. The loading attaches only
-  to ***unechte*** ones, where an annual contract is paid in instalments [R28]. A model applying a
-  frequency loading to a genuinely monthly contract is wrong.
+- **The *echte* / *unechte* distinction matters.** Contracts providing for sub-annual premiums **from
+  the outset** — a *Versicherungsperiode* of one month, say — carry **no** *Ratenzahlungszuschlag*;
+  these are ***echte unterjährige Beiträge***, and the loading attaches only to ***unechte*** ones,
+  where an annual contract is paid in instalments [R28]. A model applying a frequency loading to a
+  genuinely monthly contract is wrong.
 - A consumer-law challenge on the ground that the loading is undisclosed credit requiring an
   effective-interest statement is reported by one weak source; **outcome not established**.
 
@@ -1282,8 +1281,8 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   actuarial rules, on the *Rechnungsgrundlagen der Prämienkalkulation*, **on the basis of the
   *Rückkaufswert* under § 169 Abs. 3 bis 5** [R3] — so it **inherits the five-year spreading
   floor**: the paid-up sum cannot be depressed below what the floored reserve will buy.
-- **It is tabulated in the contract**, **for each *Versicherungsjahr*** [R3] — contractual and known
-  at issue, not recomputed at election. ***Prämienrückstände* are netted** at the same date [R3].
+- **It is tabulated in the contract, for each *Versicherungsjahr*** [R3] — known at issue, not
+  recomputed at election. ***Prämienrückstände* are netted** at the same date [R3].
 - **How it differs from *Kündigung*.** Both are struck at period end and run off the same
   *Rückkaufswert* base [R2][R3]. But *Beitragsfreistellung* **keeps the contract alive** with a
   reduced sum insured, keeps the policyholder participating in surplus, and pays nothing now;
@@ -1292,15 +1291,14 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   **loses attached *Zusatzversicherungen*** [R3]. The reduction may be **in whole or in part**
   [S7] — partial paid-up is available.
 - **Statistical note**: GDV's main *Stornoquote* measure **counts conversion to *beitragsfrei* as
-  part of the lapse rate** [R20], so the headline figure is not a surrender rate.
+  part of the lapse rate** [R20], so that headline figure is not a surrender rate.
 
 ### 15. Underwriting
 
 - ***Gesundheitsprüfung*.** § 19 Abs. 1 Satz 1 VVG obliges the applicant to disclose the
-  *gefahrerhebliche Umstände* known to her **that the insurer has asked about in *Textform***
-  [R5] — a question-bounded duty. The provision is described as giving the insurer the right to put
-  health questions and decide whether to accept **with restrictions** or **only at an increased
-  premium** [R5].
+  *gefahrerhebliche Umstände* known to her **that the insurer has asked about in *Textform*** [R5] —
+  a question-bounded duty. The provision gives the insurer the right to put health questions and
+  decide whether to accept **with restrictions** or **only at an increased premium** [R5].
 - ***Risikozuschlag* and exclusion.** On a breach the insurer may **adjust the contract
   retrospectively** — **excluding the undisclosed risk** or **raising the premium by a
   *Risikozuschlag*** — instead of refusing to perform; for negligent breach this is the usual outcome
