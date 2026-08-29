@@ -134,11 +134,9 @@ much of it has no clean English equivalent because the German market invented th
 
 | Term | Gloss |
 |---|---|
-| *fondsgebunden* | unit-linked: the benefit is expressed in units of an investment fund, not in euro |
 | *Fondsguthaben* | fund credit — the euro value of the policy's units at a valuation date; the account value |
 | *Anteileinheiten* / *Anteile* | units; the quantity the insurer guarantees, as distinct from their value |
 | *Anteilspreis* / *Anteilwert* | unit price; the fund's *Rücknahmepreis* (redemption price) at the *Bewertungsstichtag* |
-| *Ausgabepreis* / *Ausgabeaufschlag* | offer price / front-end load charged by the fund company on purchase |
 | *Bewertungsstichtag* | valuation date on which units are bought, cancelled or valued |
 | *Beitragsverrechnung* | the allocation of a gross premium: which deductions are taken, in what order, before the remainder buys units |
 | *Anlagebeitrag* / *Sparbeitrag* | the part of the premium that actually buys units, after charges and the *Risikobeitrag* |
@@ -155,7 +153,6 @@ much of it has no clean English equivalent because the German market invented th
 | *Effektivkosten* / *Effektivkostenquote* | reduction in yield (RIY): all charges expressed as the annual percentage by which they reduce the contract's return |
 | *Basisinformationsblatt* (BIB) | the PRIIPs key information document (PRIIP-KID) |
 | *Modellrechnung* | the statutory illustration of maturity values at prescribed assumed returns |
-| *Todesfallleistung* | death benefit |
 | *Beitragsrückgewähr* | return of premiums: a death benefit of at least the premiums paid |
 | *garantierte Mindesttodesfallleistung* | a guaranteed minimum death benefit above the fund value |
 | *Aufschubzeit* / *Aufschubdauer* | deferment period, inception to *Rentenbeginn* |
@@ -493,15 +490,13 @@ sibling delib research file**, that is stated and attributed.
   delib research on `kapitallebensversicherung` (its R2) and on `klassische_rentenversicherung`
   (its R1)**, including the German wording of the calculation rule; it is not corroborated here.
 - Content, and this is the pivot of the whole product:
-  - **Scope.** The article governs the claim to a *Rückkaufswert* where the insurance ends, in
-    particular by *Kündigung*, *Rücktritt* or *Anfechtung*, and fixes the calculation principles,
-    the limits on payment, the deduction power and the insurer's information duties.
-  - **The general rule** (for a conventional contract) is that the *Rückkaufswert* is the
-    *Deckungskapital* computed by recognised actuarial rules on the ***Rechnungsgrundlagen der
-    Prämienkalkulation*** — the pricing basis, not a current or reserving basis — as at the end of
-    the current *Versicherungsperiode*; and on *Kündigung* it is floored by the
-    ***Mindestrückkaufswert***, the *Deckungskapital* that results when the *angesetzte Abschluss-
-    und Vertriebskosten* are **spread evenly over the first five contract years**.
+  - **Scope and general rule.** The article governs the claim to a *Rückkaufswert* where the
+    insurance ends, in particular by *Kündigung*, *Rücktritt* or *Anfechtung*. For a conventional
+    contract the value is the *Deckungskapital* computed by recognised actuarial rules on the
+    ***Rechnungsgrundlagen der Prämienkalkulation*** — the pricing basis — as at the end of the
+    current *Versicherungsperiode*, floored on *Kündigung* by the ***Mindestrückkaufswert***: the
+    *Deckungskapital* that results when the *angesetzte Abschluss- und Vertriebskosten* are
+    **spread evenly over the first five contract years**.
   - **The branch that governs delib product 3.** For ***fondsgebundene Versicherungen*** and other
     contracts providing benefits of the corresponding kind, the *Rückkaufswert* is instead **the
     *Zeitwert* of the insurance, computed by recognised actuarial rules**. The sibling's
@@ -519,12 +514,11 @@ sibling delib research file**, that is stated and attributed.
     *angemessen*** — agreed, quantified in the contract, and appropriate. A deduction **for *noch
     nicht getilgte Abschluss- und Vertriebskosten* is unwirksam**, which is what prevents an
     insurer recovering through the deduction what the five-year spreading denies it.
-  - **The open question for a fondsgebundene contract** is whether the *Mindestrückkaufswert*
-    floor of the general rule reaches the *Zeitwert* branch at all, or whether the same protection
-    operates instead through the tariff — by limiting the acquisition-cost deduction from premiums
-    to one fifth per year over the first five years, so that the units are simply never removed in
-    the first place. **The market implements the second**, and that implementation is what section
-    4 models. Which of the two the statute requires is **`[unverified]`** and is gap 2.
+  - **The open question** is whether the *Mindestrückkaufswert* floor reaches the *Zeitwert*
+    branch at all, or whether the same protection operates through the tariff — by limiting the
+    acquisition-cost deduction to one fifth per year over five years, so the units are never
+    removed in the first place. **The market implements the second**, and that is what section 4
+    models; which the statute requires is `[unverified]` and is gap 2.
 
 ### R2 — VVG § 168, *Kündigung* (the policyholder's termination right)
 
@@ -1460,13 +1454,12 @@ and because the vocabulary is a German market invention with no English equivale
 
 ## Observed variation across insurers
 
-**Read the first sentence of this section before reading the tables.** Nothing carrier-specific
-was observed for this product. No AVB, no *Produktinformationsblatt*, no *Basisinformationsblatt*
-and no rate card was retrieved or searched. What follows is therefore **not** a table of
-observations; it is a table of the **dimensions along which German carriers are known to differ**,
-with the range argued from the mechanics and from the statutory bounds, and a companion table
-recording — honestly and mostly negatively — what is actually established about each named
-carrier.
+**Read this first.** Nothing carrier-specific was observed for this product: no AVB, no
+*Produktinformationsblatt*, no *Basisinformationsblatt* and no rate card was retrieved or searched.
+What follows is therefore **not** a table of observations. It is a table of the **dimensions along
+which German carriers are known to differ**, with the range argued from the mechanics and the
+statutory bounds, and a companion table recording — honestly and mostly negatively — what is
+actually established about each named carrier.
 
 ### What is established, carrier by carrier
 
@@ -1554,9 +1547,9 @@ observation because no observation was available:
    the *Beitragsverrechnung*. Which of the two the statute requires, and what happens where the
    two diverge, was not established. Both readings give the same numbers on the delib design.
 
-3. **The internal paragraph structure of § 169 VVG is unverified.** Whether the *Zeitwert* rule is
-   Abs. 3 Satz 2 or Abs. 4, and what it cross-refers to in the VAG since the 2016 recast, was not
-   established. No delib document may cite a subsection number for it.
+3. **The internal paragraph structure of § 169 VVG is unverified** — whether the *Zeitwert* rule is
+   Abs. 3 Satz 2 or Abs. 4, and what it cross-refers to in the VAG since the 2016 recast. No delib
+   document may cite a subsection number for it.
 
 4. **No *Rentenfaktor* level, range or time series was established** — not for this product, not
    for the classic one in the sibling file, not from the rating house whose article is titled with

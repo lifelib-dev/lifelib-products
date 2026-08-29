@@ -648,11 +648,10 @@ number is `[unverified]`.
   market, established as existing by the sibling delib files, which take from it the 2026 market
   averages for the classic annuity and for *Neue Klassik*.
 - Relevance: the declared surplus rate **is** the option budget [R8], so an Assekurata declared-rate
-  series is the closest public proxy for the size of the option budget. The sibling file records a
-  *Neue Klassik* declared rate of the order of 2,65 % for 2026 and a classic annuity market average
-  of the order of 2,62 % `[unverified]` — figures established there by search and reproduced here as
-  cross-references, not as findings of this file. Whether Assekurata publishes cap levels as such is
-  **not established**.
+  series is the closest public proxy for its size. The sibling file records a *Neue Klassik* rate of
+  the order of 2,65 % for 2026 and a classic-annuity market average of about 2,62 % `[unverified]` —
+  established there by search and reproduced here as cross-references, not as findings of this file.
+  Whether Assekurata publishes cap levels as such is **not established**.
 
 ### R21 — Rating houses on *Indexpolicen*: Institut für Vorsorge und Finanzplanung (IVFP), Franke und Bornberg, Morgen & Morgen
 - Publisher: IVFP GmbH; Franke und Bornberg GmbH; MORGEN & MORGEN GmbH
