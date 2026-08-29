@@ -168,3 +168,259 @@ gloss. The vocabulary this product needs, beyond the shared Schicht-3 vocabulary
 | *Zentrale Zulagenstelle für Altersvermögen* (ZfA) | the authority that determines, pays and reclaims the Zulagen |
 | *Leistungsmitteilung* | the provider's annual statement of benefits paid, sent to the recipient and to the tax administration |
 
+---
+
+## Primary sources
+
+Sixteen known references. **None was retrieved and none was corroborated by a search run for this
+file** (three carry corroboration inherited from a sibling delib session and say so). They are
+listed because a research file's job is to name the documents a downstream claim must be checked
+against, and because the *kinds* of document that exist for a German Riester product are themselves
+a finding: unlike the French corpus, where a single *notice d'information* carries everything, the
+German Riester disclosure is split across four documents — the **AVB** (the contract terms), the
+**Produktinformationsblatt** (the statutory comparison sheet, with the *Effektivkosten* and the
+*Chancen-Risiko-Klasse*), the **Verbraucherinformation / vorvertragliche Information** (the VVG-InfoV
+pack) and the **jährliche Information** (the annual statement) [R4] [R5].
+
+Four families are represented: the **GDV model conditions** [S1] [S2] [S3], the shared drafting
+template; the **insurance wordings** [S4]–[S8] [S16], which are the product this model represents;
+the **fund and bank wordings** [S9]–[S12], which are the same subsidy on a different chassis; and
+the **Wohn-Riester** documents [S13], which are the boundary of scope. [S14] and [S15] are the two
+statutory disclosure artefacts that every one of the others carries.
+
+### S1 — GDV, "Allgemeine Bedingungen für die fondsgebundene Rentenversicherung nach dem Altersvorsorgeverträge-Zertifizierungsgesetz" (Musterbedingungen)
+- Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV), Berlin
+- Doc type: *Musterbedingungen* — model general policy conditions for a **unit-linked Riester
+  annuity**; the association's template wording, which individual insurers adopt, adapt or ignore.
+  The GDV's own standing disclaimer on this series is that the wording is **non-binding**, its use
+  optional [S3].
+- URL: not established
+- Retrieved: no — direct HTTP egress blocked in the build environment; existence and title family
+  established from a **sibling delib research session's** search of the GDV *Musterbedingungen*
+  index [S3]; no search corroboration in this session (budget exhausted).
+- Content: establishes that the GDV maintains a model condition set **specifically for the
+  Altersvorsorgevertrag under the AltZertG**, drafted as a *fondsgebundene Rentenversicherung*.
+  That the unit-linked variant is the one the association drafts first is itself the market's
+  statement of where Riester insurance business went: the guarantee is carried by the design, not
+  by the *Rechnungszins*. **No paragraph numbering, no clause text, no edition and no page count
+  are established, and none may be invented downstream.**
+
+### S2 — GDV, non-unit-linked ("klassische") Riester model conditions, "Stand: 21.07.2025"
+- Publisher: GDV
+- Doc type: *Musterbedingungen* for the **general-account** variant of the same AltZertG wrapper —
+  the direct template for the product this model represents.
+- URL: not established
+- Retrieved: no — egress blocked; the **"Stand: 21.07.2025"** date line was returned to a sibling
+  delib session's search of the GDV index [S3] and is recorded on that authority; no search
+  corroboration in this session.
+- Content: the existence of a **maintained 2025-vintage** classic Riester model wording is the
+  single most useful thing the GDV corpus gives this file. It fixes two things. First, the classic
+  Riester chassis was still being drafted by the industry association **after** the
+  *Höchstrechnungszins* rose to 1,00 % on 1 January 2025 [R22] — i.e. the guarantee became
+  financeable again at exactly the moment the model wording was refreshed. Second, it confirms that
+  the classic and unit-linked Riester wrappers are **separate condition sets**, so a delib model of
+  the classic form is modelling a real, separately drafted contract type and not a simplification.
+  No clause content is established.
+
+### S3 — GDV, "Musterbedingungen" service index
+- Publisher: GDV
+- Doc type: publisher index page listing the association's model-condition sets
+- URL: https://www.gdv.de/gdv/service/musterbedingungen — **this URL was returned by a search in a
+  sibling delib research session**, not by one run for this file
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the source of the German product taxonomy used in the scope note. The index establishes
+  that separate model conditions exist for (a) *Rentenversicherung mit aufgeschobener
+  Rentenzahlung* — the Schicht-3 deferred annuity; (b) *Rentenversicherung* under § 10 Abs. 1
+  Nr. 2 Buchstabe b Doppelbuchstabe aa EStG — the **Basisrente**; (c) a **fondsgebundene
+  Rentenversicherung nach dem Altersvorsorgeverträge-Zertifizierungsgesetz** — the Riester wrapper
+  [S1]; (d) a **non-unit-linked variant of the same, "Stand: 21.07.2025"** [S2]; and (e) the
+  *Hinterbliebenenrenten-Zusatzversicherung* rider. The taxonomy matters for this file in one
+  specific way: **the association names the Riester product by its certification statute, not by
+  its benefit** — the wrapper is defined by the AltZertG, and everything else about it is ordinary
+  annuity machinery.
+
+### S4 — Cosmos Lebensversicherungs-AG (CosmosDirekt), Riester-Rentenversicherung AVB, tariff **LA 1005 A**
+- Publisher: Cosmos Lebensversicherungs-AG, the direct-writing arm of Generali Deutschland
+- Doc type: *Allgemeine Bedingungen* (AVB) for a Riester annuity; tariff code **LA 1005 A**
+- URL: not established
+- Retrieved: no — egress blocked; the tariff code and its identification as the house's Riester
+  wording were returned to a **sibling delib session's** search of the Cosmos AVB series and are
+  recorded on that authority; no search corroboration in this session.
+- Content: the only Riester wording in the corpus that is identified by its **tariff code**. Its
+  siblings in the same series fix the house numbering — **LA 904 A** and **LA 1204 A / LA 1201 A
+  (11.22)** for the Schicht-3 annuity, **LA 1100 A** and **LA 1079 / 936 / 1099 A** for the
+  Basisrente, **LA 1311 A** for FlexInvest, **LA 1081 A** for the *Direktversicherung* — which
+  places the Riester wording as a **separate tariff family**, not a rider on the Schicht-3 tariff.
+  The sibling delib file establishes, for the **Schicht-3** wording of the same house, that the
+  guaranteed *Rentenfaktor* is struck at inception on a recognised mortality table (DAV 2004 R) and
+  a stated interest basis. **Whether LA 1005 A uses the same construction is not established** and
+  must not be asserted; it is the natural expectation and it is a gap (gap 9). No vintage, no page
+  count, no clause text.
+
+### S5 — Allianz Lebensversicherungs-AG, the *RiesterRente* product family
+- Publisher: Allianz Lebensversicherungs-AG, Stuttgart
+- Doc type: insurer product pages plus the associated *Verbraucherinformation* / AVB packs for the
+  Riester tariffs. The house has marketed the Riester contract under several names across vintages —
+  a **klassisch** general-account form, a **fondsgebunden** form, and a form built on the
+  *Sicherungsvermögen* with the house's own guarantee design. **The exact current product names,
+  their tariff codes and which of them remain open to new business are not established** (gap 12).
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the market-leader comparator. One quantitative item is inherited from a **sibling delib
+  session's** search: a third-party analysis of an Allianz specimen quotation reported, for the
+  *BasisRente* and *RiesterRente* variants of the house's current savings concept, **total costs
+  relative to the capital formed of at most 0,95 € per 100 €**, alongside an *Abschlussprovision*
+  of **1 575 €** on that specimen. Both figures come from third-party commentary rather than an
+  Allianz tariff sheet, both are `[unverified]` as market-representative levels, and the second is
+  not for a Riester contract at all. They are the **only** charge figures anywhere in the delib
+  Riester corpus, and they are not enough to found a charge basis — see gap 13.
+
+### S6 — Debeka Lebensversicherungsverein a. G., Riester-Rentenversicherung
+- Publisher: Debeka Lebensversicherungsverein a. G., Koblenz
+- Doc type: AVB and product documentation for a Riester annuity
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: Debeka is the German market's largest writer of **classically guaranteed** life business
+  and its membership is heavily weighted to *Beamte* (civil servants), who are *unmittelbar
+  zulageberechtigt* under the § 10a route [R6] [R7] and are therefore the single most natural
+  Riester constituency. A Debeka Riester wording is consequently the most likely place in the German
+  market to find the **classic** chassis still being written. Recorded as a known reference on that
+  reasoning alone: **no document, tariff code, vintage or clause is established**, and the sibling
+  delib file records that this house **withdrew its classic Schicht-3 annuity from sale**, which
+  says nothing either way about its Riester tariff.
+
+### S7 — R+V Lebensversicherung AG, Riester-Rentenversicherung
+- Publisher: R+V Lebensversicherung AG, Wiesbaden
+- Doc type: AVB and product documentation for a Riester annuity
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the cooperative-sector comparator. R+V distributes through the *Volks- und
+  Raiffeisenbanken*, the same network that distributes the cooperative fund house's Riester fund
+  savings plan [S9] — so this is the one group in the corpus whose Riester offering spans an
+  insurance and a fund chassis in the **same** distribution channel, which is why the two appear
+  side by side in section 17. **No document, tariff code, vintage or clause is established.**
+
+### S8 — Alte Leipziger Lebensversicherung a. G., Riester-Rentenversicherung
+- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel
+- Doc type: AVB and product documentation for a Riester annuity, in a classic and a unit-linked form
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the broker-market comparator; a house whose Riester tariffs are routinely present in
+  broker comparison tables. **No document, tariff code, vintage or clause is established.** The
+  product naming convention this house uses is `[unverified]` and is not reproduced here.
+
+### S9 — Union Investment, *UniProfiRente* and *UniProfiRente Select*
+- Publisher: Union Investment Privatfonds GmbH, Frankfurt am Main
+- Doc type: *Vertragsbedingungen* plus the statutory *Produktinformationsblatt* [S14] for a
+  **Riester-Fondssparplan**
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the cooperative sector's Riester fund savings plan and, historically, the largest single
+  Riester fund product in Germany. Its guarantee mechanism is the reason it belongs in this file:
+  a **rule-based reallocation between an equity fund and a bond fund** — the fund-industry answer
+  to the same 100 % *Beitragsgarantie* an insurer meets with its *Deckungskapital*. When the
+  guarantee's present value rises (falling rates, short remaining term), capital is moved out of the
+  equity fund; when it falls, capital is moved back. The pathology this creates — a contract locked
+  into the safe fund after a market fall and unable to participate in the recovery, the
+  **cash-lock** — is the fund-chassis form of the same problem section 19 describes for the insurer.
+  **The reallocation rule, the fund names, the fee levels and the current new-business status are
+  not established** (gaps 11 and 12).
+
+### S10 — DWS Investment GmbH, *DWS RiesterRente Premium* / *DWS TopRente*
+- Publisher: DWS Investment GmbH (Deutsche Bank group), Frankfurt am Main
+- Doc type: *Vertragsbedingungen* plus *Produktinformationsblatt* [S14] for a Riester-Fondssparplan
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the second of the three large Riester fund savings plans, on the same
+  guarantee-by-reallocation principle as [S9]. Recorded for the same reason and with the same
+  caveats. **No document, edition, fee level or new-business status is established.**
+
+### S11 — Deka, *DekaBonusRente*
+- Publisher: DekaBank Deutsche Girozentrale / Deka Investment GmbH, Frankfurt am Main
+- Doc type: *Vertragsbedingungen* plus *Produktinformationsblatt* [S14] for a Riester-Fondssparplan
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the third of the three, distributed through the *Sparkassen*. Same chassis, same
+  guarantee problem, same caveats.
+
+### S12 — Riester-Banksparplan *Vertragsbedingungen* (Sparkassen; Volks- und Raiffeisenbanken)
+- Publisher: individual *Sparkassen* and cooperative banks; there is no single national product
+- Doc type: deposit-contract terms for a certified Riester savings plan, typically paying a
+  reference-rate-linked interest with a bonus scale by duration
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the **structurally simplest** certified Riester product and the one for which the 100 %
+  *Beitragsgarantie* costs nothing at all: a deposit balance can never fall below the sum of
+  deposits, so the guarantee is satisfied by construction. That is exactly why the *Banksparplan*
+  is the analytical control case in section 19 — it isolates the guarantee's cost as the **return
+  forgone** rather than as a capital charge. Its historical drawback is the mirror image: a deposit
+  rate that has, over most of the product's life, been at or near zero. **No individual product,
+  rate scale, bonus scale or provider is established**, and the market is fragmented across
+  hundreds of institutions.
+
+### S13 — Wohn-Riester documents: Riester-*Bausparvertrag* and Riester-*Darlehen*
+- Publisher: the *Bausparkassen* — Bausparkasse Schwäbisch Hall, LBS, Wüstenrot, BHW and others
+- Doc type: *Allgemeine Bedingungen für Bausparverträge* (ABB) in a certified Riester form, and loan
+  agreements certified as an *Altersvorsorgevertrag* in the form of a *Darlehen*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the boundary of this file's scope. The AltZertG recognises an *Altersvorsorgevertrag* in
+  the form of a **loan**, and the *Tilgungsleistungen* (capital repayments) on such a loan count as
+  subsidised contributions in the same way a savings contribution does [R13] `[unverified]` at the
+  paragraph level. Two products result: a Riester *Bausparvertrag* that saves toward, then lends
+  for, an owner-occupied property, and a direct Riester *Darlehen* whose repayments draw the
+  Zulagen. Both feed the *Wohnförderkonto* (section 16). **No document, edition, rate or fee is
+  established.** They are named so that a reader knows the delib model's exclusion of Wohn-Riester
+  is an exclusion of **real, certified, subsidy-drawing products**, not of a curiosity.
+
+### S14 — *Produktinformationsblatt* under § 7 AltZertG, in the form prescribed by the *Altersvorsorge-Produktinformationsblattverordnung* (AltvPIBV)
+- Publisher: every certified provider must issue one; the **form** is prescribed by statute and
+  regulation, and the *Chancen-Risiko-Klasse* is assigned by the *Produktinformationsstelle
+  Altersvorsorge* (PIA)
+- Doc type: standardised two-page pre-contractual comparison sheet
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: **the most important primary-document type for this product, and the reason a German
+  Riester product is more transparently priced than a Schicht-3 one.** The sheet is standardised so
+  that competing products are comparable line by line, and it carries, for a set of prescribed model
+  cases: the product's **Chancen-Risiko-Klasse** on a 1-to-5 scale, the **Effektivkosten** (the
+  reduction in yield expressed as an annual percentage), the *Kosten* broken into acquisition,
+  administration and (where applicable) fund costs, and a projection of the benefit at
+  *Rentenbeginn*. It is the document any real parameterisation of the delib model's charge basis
+  would be read from. **No individual sheet was seen; no *Effektivkosten* figure, no CRK assignment
+  and no model-case specification is established** (gap 13). `[unverified]` at the level of § 7
+  AltZertG and the AltvPIBV as the governing instruments.
+
+### S15 — *Zertifizierungsbescheid* and *Zertifizierungsnummer*
+- Publisher: the certifying authority — the **Bundeszentralamt für Steuern** (BZSt), which took the
+  function over from the BaFin `[unverified]` as to the date of transfer
+- Doc type: the administrative decision certifying a contract type, whose number every certified
+  product carries in its documentation
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: the artefact that makes a contract a Riester contract. Two properties of it matter
+  downstream and both are structural rather than numeric. First, **certification attaches to the
+  contract type, not to the individual policy** — a provider certifies a tariff and then sells it.
+  Second, **certification is expressly not a quality judgement**: the authority confirms that the
+  terms meet the § 1 AltZertG criteria and makes no statement about the provider's financial
+  soundness, the product's cost, or its expected return [R2] `[unverified]` at paragraph level. A
+  delib document must therefore never describe a Riester product as "state-approved" in any sense
+  broader than that. **No individual certification number appears in this file and none may be
+  invented.**
+
+### S16 — The second tier of Riester insurance wordings
+- Publishers: Stuttgarter Lebensversicherung a. G.; NÜRNBERGER Lebensversicherung AG; Continentale
+  Lebensversicherung AG; HUK-COBURG-Lebensversicherung AG; Volkswohl Bund Lebensversicherung a. G.;
+  LV 1871; Hannoversche; Barmenia; Gothaer; Signal Iduna; Provinzial; DEVK; Universa; ERGO; AXA;
+  Swiss Life; Zurich Deutscher Herold; Baloise; Württembergische; HDI; Generali/Dialog
+- Doc type: AVB, *Verbraucherinformationen* and *Produktinformationsblätter* for Riester annuities
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration in this session.
+- Content: a single grouped known-reference entry, deliberately not split into per-carrier entries,
+  because **nothing carrier-specific was established for any of them**. They are named because the
+  brief asked for named insurers and because a downstream reader needs to know which houses' Riester
+  documents a real research pass would go to. **Which of these houses ever wrote Riester business,
+  which still do, and what their tariffs contain are all unestablished** (gap 12). No parameter in
+  the delib `riester_rente` documents may cite [S16] for a **level**; it may be cited only for the
+  proposition that a body of carrier wordings exists.
+

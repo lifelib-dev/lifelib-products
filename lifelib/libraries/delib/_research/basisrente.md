@@ -169,3 +169,232 @@ turns on:
 | *Kleinbetragsrente* | A trivially small annuity; commutable in Schicht 2, **not** in Schicht 1 |
 
 ---
+
+## Primary sources
+
+Every entry below carries the same retrieval status unless it says otherwise, stated once here
+rather than repeated sixteen times: **Retrieved: no — egress blocked; no search corroboration
+(session search budget exhausted).** Nothing in this section is quoted from a document. Where an
+entry establishes something, it says what and from where; where it establishes nothing beyond the
+document's existence and kind, it says that too, which is the honest majority case in this file.
+
+Two entries — [S1] and [S2] — are stronger than the rest, because their **identity** was
+established by search in a sibling delib research file while the budget was still available. They
+are the only carrier-level Basisrente artefacts anywhere in the delib corpus, and they are the two
+entries a checker should verify first.
+
+### S1 — Cosmos Lebensversicherungs-AG (CosmosDirekt), *Allgemeine Bedingungen* for the Basisrente — tariffs **LA 1100 A** and **LA 1079 A / LA 936 A / LA 1099 A**
+- Publisher: Cosmos Lebensversicherungs-AG, the direct-writing arm of Generali Deutschland
+- Doc type: *Allgemeine Versicherungsbedingungen* (AVB) for Basisrente tariffs, in the carrier's
+  `LA nnnn A` house numbering
+- URL: not established. The carrier's sibling Schicht-3 wording **LA 904 A** was returned at
+  `https://www.cosmosdirekt.de/resource/blob/89106/…/allgemeine-bedingungen-rentenversicherung-la-904-a--data.pdf`,
+  so the Basisrente wordings are expected to sit under the same `resource/blob` scheme; **no blob
+  path for a Basisrente wording was returned and none is guessed**
+- Retrieved: no — egress blocked; **no search corroboration in this file (budget exhausted)**;
+  document identity carried over from the sibling delib research file
+  `_research/klassische_rentenversicherung.md` [S8], which established the carrier's tariff-number
+  list from a search-result summary while search was still available
+- Content:
+  - **Four tariff codes are attributed to the Basisrente** in the carrier's own numbering —
+    **LA 1100 A**, **LA 1079 A**, **LA 936 A**, **LA 1099 A** — against LA 1005 A (Riester),
+    LA 1311 A (unit-linked *FlexInvest*), LA 1081 A (*Direktversicherung*) and LA 904 A / LA 1201 A
+    / LA 1204 A (Schicht-3 annuity). This is the single most useful structural fact the corpus
+    yields about the product's market form: **one direct writer maintains at least four parallel
+    Basisrente wordings**, which is what a tariff family looks like when *klassisch*, *fondsgebunden*
+    and vintage editions coexist.
+  - **No edition date, no page count and no clause text was established** for any of the four. The
+    numbers themselves are the whole of what this entry supports.
+  - The carrier's Schicht-3 sibling LA 904 A establishes the house's conversion convention — the
+    *garantierter Rentenfaktor* fixed at inception on **DAV 2004 R** and, at that document's
+    vintage, an interest basis of **0 % p.a.** [R17] — and that convention is almost certainly
+    shared with the Basisrente wordings, **but the inference is not evidence** and is `[unverified]`
+    as a Basisrente fact (gap 4).
+
+### S2 — Allianz Lebensversicherungs-AG, **BasisRente KomfortDynamik** — specimen *persönlicher Vorschlag*
+- Publisher: Allianz Lebensversicherungs-AG
+- Doc type: a distributed specimen quotation ("Berechnung BasisRente KomfortDyn"), hosted by a
+  broker rather than by the carrier, dated by its path to **February 2025** `[unverified]`; together
+  with the Allianz *Vorsorgekonzept KomfortDynamik* product page
+- URL: page `https://www.allianz.de/vorsorge/vorsorgekonzept/komfortdynamik/`; the specimen at
+  `privat.rh-insuranceservices.com/wp-content/uploads/2025/02/Berechnung-BasisRente-KomfortDyn.pdf`
+- Retrieved: no — egress blocked; **no search corroboration in this file (budget exhausted)**;
+  identity and the two figures below carried over from
+  `_research/klassische_rentenversicherung.md` [S13]
+- Content — **the only Basisrente-specific charge evidence in the delib corpus**:
+  - The **BasisRente is a variant of the KomfortDynamik chassis**, not a separate product line: the
+    same design is sold as PrivatRente (Schicht 3), BasisRente (Schicht 1) and RiesterRente
+    (Schicht 2). That is the German market's normal arrangement and it is worth stating plainly —
+    **the layer is a wrapper around a common chassis**, and an insurer's Basisrente shares its
+    fund range, its guarantee mechanics and its *Rentenfaktor* machinery with its Schicht-3 sibling.
+  - The chassis: premiums **split between the Allianz *Sicherungsvermögen* and a *Spezialfonds***;
+    selectable guarantee levels of **60 %, 80 % or 90 % of premiums paid** at *Rentenbeginn*, 80 %
+    standard `[unverified]`; at inception the customer is given only the premium-retention level and
+    a **minimum annuity** — a *garantierter Rentenfaktor* expressed as an amount.
+  - Two charge figures were returned by third-party commentary in the same result set: an
+    **Abschlussprovision of 1 575 €** on the specimen quotation, and, **in the BasisRente and
+    RiesterRente variants, total costs relative to the capital formed of at most 0,95 € per 100 €**
+    `[unverified]`. Both come from third-party analyses rather than an Allianz tariff sheet. The
+    second is the more useful: expressed as a reduction-in-yield-like ratio it is of the order of
+    **0,95 %** of the capital formed, which is consistent with the *Effektivkosten* band a
+    *Produktinformationsblatt* would show for a hybrid Basisrente [S13], and it is the only number
+    in this file that behaves like a charge level rather than a guess.
+
+### S3 — Allianz Lebensversicherungs-AG, the **BasisRente** product family
+- Publisher: Allianz Lebensversicherungs-AG
+- Doc type: AVB, *Produktinformationsblätter* and *Verbraucherinformationen* for the carrier's
+  Basisrente tariffs — marketed as **BasisRente Klassik**, **BasisRente Perspektive** (the
+  "Neue Klassik" design) and **BasisRente InvestFlex** (unit-linked) `[unverified]` as to the exact
+  current line-up
+- URL: not established
+- Content: **nothing established beyond the family's existence and the market position of its
+  publisher.** Named here because Allianz is the largest German life writer and its Basisrente
+  wordings are the single most consequential set of primary documents this file could not reach.
+  Any downstream statement about Allianz Basisrente terms must be sourced to [S2] or dropped.
+
+### S4 — Alte Leipziger Lebensversicherung a. G., **AL_RoyalBasisRente** (Klassik and Fonds)
+- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel
+- Doc type: AVB, *Produktinformationsblatt*, *Verbraucherinformation*
+- URL: not established
+- Content: **nothing established beyond existence.** Alte Leipziger is one of the carriers most
+  consistently placed at the top of independent Basisrente ratings [R24] and is the natural first
+  target for a checker with a working network. Product names are `[unverified]`.
+
+### S5 — NÜRNBERGER Lebensversicherung AG, **Basis-Rente** with **Berufsunfähigkeits-Zusatzversicherung**
+- Publisher: NÜRNBERGER Lebensversicherung AG
+- Doc type: AVB for the Basisrente main contract and separate AVB for the BUZ rider
+- URL: not established. The carrier's Schicht-3 wordings were returned in a sibling delib file under
+  `https://www.nuernberger.de/medien/4allportal/gn331451_p.pdf` and siblings `gn331530_p`,
+  `gn331303_p`, so its Basisrente wordings sit in the same `4allportal` document scheme; **no
+  Basisrente document id was returned and none is guessed**
+- Retrieved: no — egress blocked; no search corroboration; the `4allportal` scheme carried over from
+  `_research/klassische_rentenversicherung.md` [S9]
+- Content: **nothing established beyond existence and the document scheme.** Named because
+  NÜRNBERGER is one of the German market's principal *Berufsunfähigkeit* writers and therefore the
+  natural place to look for a **BUZ written inside a Basisrente** and for the 50 % *Beitragsanteil*
+  constraint expressed in contractual terms (mechanic 13). That wording is the single most valuable
+  document this file could not reach.
+
+### S6 — Volkswohl Bund Lebensversicherung a. G., **Basisrente**
+- Publisher: Volkswohl Bund Lebensversicherung a. G., Dortmund
+- Doc type: AVB, *Produktinformationsblatt*
+- URL: not established
+- Content: **nothing established beyond existence.** Named because Volkswohl Bund is a
+  broker-channel carrier with a large Basisrente book and is repeatedly named in rating
+  commentary [R24]; the broker channel is where this product is predominantly sold (mechanic 21).
+
+### S7 — LV 1871 (Lebensversicherung von 1871 a. G.), Basisrente
+- Publisher: Lebensversicherung von 1871 a. G., München
+- Doc type: AVB, *Produktinformationsblatt*. Marketed under the names **Golden Basic** and
+  **MeinPlan Basis** `[unverified]`
+- URL: not established
+- Content: **nothing established beyond existence.** Named because LV 1871's Basisrente is the
+  market's best-known example of a **fondsgebundene Basisrente with an open fund and ETF universe
+  and no *Beitragsgarantie*** `[unverified]` — the form mechanic 9 argues is the commercial default
+  of the modern Schicht-1 market, and therefore the form a checker should verify first.
+
+### S8 — Swiss Life Deutschland, Basisrente (**Swiss Life Maximo** family)
+- Publisher: Swiss Life AG, Niederlassung für Deutschland
+- Doc type: AVB, *Produktinformationsblatt*
+- URL: not established
+- Content: **nothing established beyond existence.** Named because Swiss Life is a large
+  broker-channel Schicht-1 writer and because its *Maximo* line is a hybrid with a selectable
+  guarantee level, i.e. the third of the three asset forms in mechanic 9. Product name
+  `[unverified]`.
+
+### S9 — Continentale Lebensversicherung AG, Basisrente (**Rente Invest Basis** family)
+- Publisher: Continentale Lebensversicherung AG, Dortmund
+- Doc type: AVB, *Produktinformationsblatt*
+- URL: not established
+- Content: **nothing established beyond existence.** Product name `[unverified]`.
+
+### S10 — Stuttgarter Lebensversicherung a. G., Basisrente
+- Publisher: Stuttgarter Lebensversicherung a. G.
+- Doc type: AVB, *Produktinformationsblatt*. Marketed in *performance-safe* and *index-safe*
+  variants `[unverified]`
+- URL: not established
+- Content: **nothing established beyond existence.** Named because the *index-safe* variant, if the
+  name is right, would be an **index-linked Basisrente** — a fourth asset form beyond the three of
+  mechanic 9, and a bridge to delib product 4 (`indexpolice`). That this could not be checked is
+  gap 12.
+
+### S11 — The carriers for which nothing whatever was established
+- Publishers: **Debeka**, **R+V**, **HDI**, **Gothaer**, **Zurich Deutscher Herold**, **ERGO**,
+  **AXA**, **Generali / Dialog**, **Barmenia**, **Universa**, **Württembergische**,
+  **Signal Iduna**, **Baloise**, **DEVK**, **Provinzial**, **HUK-Coburg**, **Hannoversche**,
+  **CosmosDirekt** (beyond [S1]), **die Bayerische**, **Condor**
+- Doc type: each of these carriers writes, or has written, a Basisrente and therefore publishes AVB,
+  a *Produktinformationsblatt* and a *Verbraucherinformation* for it
+- URL: not established for any of them
+- Content: **nothing.** This entry exists so that the corpus's coverage is stated as a fact rather
+  than implied by omission: **twenty named German life writers whose Basisrente documents exist were
+  not reached, and not one of them contributes a single fact to this file.** Naming them without
+  attaching claims is the honest form. See gap 1.
+
+### S12 — GDV, *Musterbedingungen* service index
+- Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV)
+- Doc type: the association's index of model conditions
+- URL: `https://www.gdv.de/gdv/service/musterbedingungen` — established in a sibling delib file
+- Retrieved: no — egress blocked; index URL carried over from
+  `_research/klassische_rentenversicherung.md` [S3]
+- Content: the GDV publishes *Musterbedingungen* for the deferred annuity and for the
+  *Riester* annuity (a sibling model condition set carrying "Stand: 21.07.2025" was seen in that
+  file). **Whether the GDV publishes a Basisrente model condition set at all was not established**
+  and must not be assumed (gap 5). Two things about GDV model conditions carry over regardless and
+  matter for how any such document would be weighted: they are expressly **unverbindlich** and their
+  use by member undertakings is **optional**, so a GDV-tagged fact is evidence about a market
+  template and weaker evidence about any particular carrier.
+
+### S13 — *Produktinformationsblatt* under § 7 AltZertG (the standardised PIB)
+- Publisher: each provider, on a form and a computational method prescribed by law and administered
+  by the **Produktinformationsstelle Altersvorsorge gGmbH (PIA)**, Kaiserslautern
+- Doc type: the mandatory two-page pre-sale document for a certified Basisrentenvertrag
+- URL: not established (there is no single URL; every provider publishes its own, per tariff and per
+  model point)
+- Content — **the document type a delib reader must understand even though none was opened**:
+  - It is **product-specific and quotation-specific**: the figures on it are computed for the
+    prospect's own age, term and contribution, not for the tariff in the abstract.
+  - It carries the three standardised comparators the German legislator built for this layer: the
+    ***Effektivkosten*** (reduction in yield — the annualised return give-up caused by all charges),
+    the ***Chancen-Risiko-Klasse*** (a standardised risk class computed by PIA on a common
+    capital-market model), and a set of **standardised projection scenarios** `[unverified]` as to
+    the exact current field list.
+  - It is the **only public document in the German market that states a Basisrente's total charge
+    burden as a single comparable number.** That is why gap 2 — that not one PIB was reached — is
+    the most consequential gap in this file: every charge parameter downstream is `[std]`.
+
+### S14 — *Basisinformationsblatt* (PRIIP key information document)
+- Publisher: each provider
+- Doc type: the PRIIPs KID for an insurance-based investment product
+- URL: not established
+- Content: **the document type exists for unit-linked and hybrid Basisrenten.** It carries a
+  summary risk indicator, performance scenarios and a cost table split into one-off, ongoing and
+  incidental costs, with *reduction in yield* figures at several holding periods. **How the PRIIPs
+  KID and the § 7 AltZertG *Produktinformationsblatt* interact for a certified Basisrentenvertrag —
+  whether both are required, or one substitutes for the other — was not established and is gap 6.**
+  Nothing downstream may assert either arrangement.
+
+### S15 — Annual statement to the policyholder (*jährliche Information*, § 7a AltZertG)
+- Publisher: each provider
+- Doc type: the statutory annual information for a certified contract
+- URL: not established
+- Content: the statute requires an annual statement to a Basisrente saver `[unverified]` as to the
+  precise paragraph. Its interest for delib is the same as the *Standmitteilung*'s for the endowment
+  chassis: it names, side by side, the state variables a projection model must carry — the
+  contributions paid in the year, the accumulated value, the guaranteed benefit and the projected
+  annuity. **The field list was not established.**
+
+### S16 — Consumer, comparison and rating material
+- Publishers: **Finanztip**, **Stiftung Warentest / Finanztest**, the **Verbraucherzentralen**,
+  **Verivox**, **CHECK24**, **Handelsblatt**, and the rating houses at [R24]
+- Doc type: consumer guides, comparison-portal pages, product ratings — **secondary in every case**,
+  and in frlib's convention they would still be S-numbered because they describe the product rather
+  than regulate it
+- URL: not established for any of them
+- Content: **nothing established.** These are the sources that in a normal research session would
+  supply price points, market variation and the buyer profile. **None was reached.** Every price
+  point, every market share and every buyer-profile statement in this file is therefore either
+  general knowledge marked `[unverified]` or a `[std]` construction, and is marked as such at the
+  point of use.
+
+---

@@ -388,3 +388,336 @@ not from the document — and every specific number inside it carries `[unverifi
   documented. **Not retrieved**; every figure that would have come from it is a gap.
 
 ---
+
+## Regulatory and actuarial references
+
+Same retrieval status as the primary sources, stated once: **Retrieved: no — direct HTTP egress
+blocked; no search corroboration (session search budget exhausted).** Where a URL is given it is the
+**canonical form** of the address on `gesetze-im-internet.de`, which this author is confident of for
+the German federal codes; every such URL is tagged `[unverified]` because no search returned it and
+no fetch confirmed it. Statutory content is described in this author's own words. Every paragraph
+number is `[unverified]`.
+
+### R1 — VVG § 153, *Überschussbeteiligung*
+- Publisher: Bundesministerium der Justiz / juris (Gesetze im Internet)
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__153.html` `[unverified]`
+- Content: the statutory hinge of this product. § 153 Abs. 1 gives the policyholder an entitlement
+  to participate in the surplus and in the *Bewertungsreserven* unless participation is excluded by
+  agreement. Abs. 2 requires the insurer to allocate the surplus by a **verursachungsorientiertes
+  Verfahren** — a causation-oriented procedure — or by another comparable appropriate method agreed
+  in the contract. Abs. 3 governs the *Bewertungsreserven*: they are determined annually, allocated
+  by a causation-oriented procedure, and half of the amount so determined is paid out on
+  termination, subject to a proviso for supervisory rules introduced by the LVRG.
+- Why it matters here, and it matters more than for any other delib product: **the index
+  participation is a form of *Überschussverwendung*, not a separate investment.** What the
+  policyholder is legally entitled to is a share of the insurer's surplus; the AVB then say how that
+  share is applied, and this product's AVB say it is applied by buying a bounded index-linked payoff
+  for one year. The *Wahlrecht* is therefore an *Überschussverwendungswahlrecht*, and the
+  *Indexbeteiligung* has no independent statutory footing — it stands or falls on the contract
+  clause. **This is the correct legal characterisation of the product and it is not in doubt.**
+  `[unverified]` as to the subsection numbering.
+- A consequence a model must respect: because the *Überschuss* is discretionary and may be zero
+  [R8][R16], the **option budget may be zero**, in which case the *Indexbeteiligung* for that year
+  buys nothing and the year's credit is necessarily zero regardless of what the index does.
+
+### R2 — VVG § 169, *Rückkaufswert*
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` `[unverified]`
+- Content: on termination by *Kündigung* the insurer owes the *Rückkaufswert*, computed as the
+  *Zeitwert* / the actuarial reserve on recognised actuarial principles; acquisition and
+  distribution costs must be spread over **at least the first five years** so that an early
+  surrender value cannot be extinguished by front-loaded costs (the *Mindestrückkaufswert*); a
+  *Stornoabzug* is permitted only if it is agreed, appropriate and **quantified in the contract**.
+- Delta for this product: the *Rückkaufswert* of an Indexpolice is a **general-account reserve**,
+  not a unit value. It includes any index credits already locked in, because those have become part
+  of the guaranteed capital. It does **not** include an accrued fraction of the current *Indexjahr*:
+  a mid-year surrender loses the running year's option payoff entirely, because the payoff is only
+  determined at the *Indexjahr* end. Whether the contract instead refunds the unspent option budget
+  is a carrier-level clause question and **is not established**. Gap 12.
+
+### R3 — VVG § 165, *Prämienfreie Versicherung*
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` `[unverified]`
+- Content: the policyholder may at any time demand conversion of the contract to a paid-up
+  (*prämienfrei*) contract for the reduced insured benefit computed on recognised actuarial
+  principles for the end of the current insurance period; the same *Stornoabzug* discipline applies.
+- Delta for this product: a paid-up Indexpolice **keeps its index participation** on the capital
+  already accumulated. The *Wahlrecht* survives *Beitragsfreistellung*. `[unverified]` at clause
+  level; the general rule follows from the fact that the participation attaches to the capital and
+  not to the premium.
+
+### R4 — VVG § 163 (*Anpassung der Prämie*) and § 164 (*Ersetzung von Bedingungen*)
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__163.html`, `.../__164.html` `[unverified]`
+- Content: § 163 permits an adjustment of the premium, or of the benefit at unchanged premium, for
+  life contracts where the calculation bases have changed in a way that is not merely temporary and
+  the change was unforeseeable, **with the confirmation of an independent trustee** (*unabhängiger
+  Treuhänder*). § 164 permits an ineffective clause to be replaced by a new one, again with the
+  trustee's confirmation, where the gap would otherwise not be closable.
+- Why it matters here: these are the two statutory channels through which anything about an
+  Indexpolice's terms can be changed against the policyholder's will after issue. **The annual
+  redetermination of the Cap is not one of them**: the Cap is not an adjustment of the contract, it
+  is the exercise of a discretion the contract itself confers, and it is therefore governed by
+  § 315 BGB [R22], not by § 163 VVG. Keeping those two apart is the single most important legal
+  distinction in this product and downstream documents must not blur it.
+- The *Treuhänder* does appear in this product in two other places: the *Ersatzindex* clause, where
+  some carriers require trustee confirmation for a substitution `[unverified]`, and the historic
+  *Treuhänderklausel* on the *Rentenfaktor*, inherited from product 2.
+
+### R5 — VVG § 154 (*Modellrechnung*) and VVG-InfoV § 2 (pre-contractual information)
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__154.html`;
+  `https://www.gesetze-im-internet.de/vvg-infov/__2.html` `[unverified]`
+- Content: § 154 requires, where the insurer quotes possible benefits beyond the contractually
+  agreed ones, a *Modellrechnung* on three prescribed interest assumptions, with a warning that it
+  is only a model and that the values are not guaranteed. VVG-InfoV § 2 sets out the catalogue of
+  pre-contractual information the insurer must supply, which for life insurance includes the
+  benefits and their guarantee status, the surrender and paid-up values, the costs, and — the item
+  that matters most for cost transparency — the ***Effektivkosten*** (reduction in yield).
+- Why it matters here: a *Modellrechnung* for an Indexpolice is intrinsically awkward, because the
+  product's return does not scale linearly with an assumed interest rate: the interest assumption
+  drives the **option budget**, which drives the **Cap**, which drives the payoff non-linearly. How
+  German carriers discharge § 154 for this product **is not established**. Gap 13.
+
+### R6 — VVG § 161, *Selbsttötung*
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__161.html` `[unverified]`
+- Content: where death is caused by suicide, the insurer is not liable on a death cover within
+  **three years** of the conclusion (or reinstatement) of the contract; where the exclusion applies,
+  the insurer owes the *Rückkaufswert*.
+- Relevance: inherited unchanged from products 1 and 2. It bites only on the death benefit in the
+  *Aufschubphase*, which for this product is normally a return of capital rather than a sum at risk,
+  so the clause is close to inoperative in economic terms. Recorded so the delib documents can say
+  so rather than leave it out.
+
+### R7 — *Deckungsrückstellungsverordnung* (DeckRV): *Höchstrechnungszins* and *Höchstzillmersatz*
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/deckrv_2016/` `[unverified]`
+- Content: the DeckRV caps the technical interest rate used in the *Deckungsrückstellung*, and hence
+  in practice the rate a new contract's guarantee may be priced on, and caps the acquisition costs
+  that may be zillmerised into the reserve (the *Höchstzillmersatz*, **25 ‰ of the *Beitragssumme***
+  `[unverified]`).
+- The rate history, **entirely `[unverified]` at the level of individual steps**, as this author
+  recalls it: 4,00 % to mid-2000; 3,25 %; 2,75 %; 2,25 %; 1,75 %; 1,25 %; 0,90 %; **0,25 % for
+  2022–2024**; **1,00 % from 1 January 2025**. The sibling delib research files establish the
+  0,25 % → 1,00 % move and the 1,00 % level for 2025 and 2026 from search evidence; the earlier
+  steps are recalled and tagged.
+- **Why the rate history is the reason this product exists.** At a *Höchstrechnungszins* of 0,25 %,
+  a conventional annuity credits a guaranteed 0,25 % and hands everything above it to the
+  policyholder as declared surplus — so the *guaranteed* component of the return is negligible and
+  the *discretionary* component is the whole story. An Indexpolice takes that same discretionary
+  component and, instead of paying it out as a modest and certain interest credit, converts it into
+  a bounded lottery on an equity index. **The product is a direct commercial response to a
+  near-zero guaranteed rate**, and the reason it was launched in the mid-2000s and grew through the
+  2010s. Correspondingly, the 2025 rise to 1,00 % raises the guaranteed component again and makes
+  the *sichere Verzinsung* arm of the *Wahlrecht* relatively more attractive `[unverified]` as to
+  whether that has shifted observed elections.
+
+### R8 — *Mindestzuführungsverordnung* (MindZV)
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
+- Content: prescribes the minimum share of each source of surplus that must be allocated to the
+  policyholders, through the *Rückstellung für Beitragsrückerstattung* (RfB). The shares, as
+  established in the sibling delib files: **90 % of the *anzurechnende Kapitalerträge*** after the
+  charge for discounting the *Deckungsrückstellung*; **90 % of the *Risikoergebnis***; and **50 % of
+  the *übriges Ergebnis***.
+- Why it matters here: **this is where the option budget comes from.** The insurer earns a return on
+  the *Sicherungsvermögen*; the MindZV forces at least 90 % of the excess over the guarantee into
+  the policyholders' share; the insurer declares an *Überschussanteilsatz* out of that; and for a
+  contract that has elected *Indexbeteiligung*, that declared amount is spent on options instead of
+  credited as interest. **The size of the option budget is therefore bounded by the same investment
+  performance and the same statutory minimum that bound a classic contract's declared rate** — an
+  Indexpolice does not have a bigger risk budget than a *Klassik* contract of the same vintage, it
+  spends the identical budget differently. This is the most under-appreciated fact about the product
+  and it belongs in the delib product specification's first page.
+
+### R9 — VAG § 139 (*Überschussbeteiligung*, *Sicherungsbedarf*), § 124 (*Anlagegrundsatz*), and the *Sicherungsvermögen* provisions
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/vag_2016/` `[unverified]`
+- Content: § 139 VAG governs the surplus participation from the supervisory side and contains the
+  *Sicherungsbedarf* rule that limits exiting policyholders' share of the *Bewertungsreserven* to
+  the excess over the reserve strengthening need on contracts with a high guaranteed rate. § 124
+  states the **prudent person** investment principle; the derivative provisions of the same part
+  permit derivatives that contribute to a reduction of risk or facilitate efficient portfolio
+  management `[unverified]` at section level.
+- Why it matters here: the insurer's purchase of index options to back an index-participation
+  obligation is the paradigm of a derivative used to **hedge a liability it has itself written** —
+  the liability and the hedge are matched by construction, month for month and cap for cap. That is
+  the supervisory frame in which the product is written, and it explains an important design fact:
+  the insurer does **not** take an equity view on the policyholder's behalf; it buys the exact
+  payoff it has promised, and the Cap is set at whatever level makes that purchase cost exactly the
+  option budget. Sections 3 and 8 develop this. `[unverified]` at section level; the substance is
+  standard practice and is not in doubt.
+
+### R10 — PRIIPs: Regulation (EU) No 1286/2014 and Delegated Regulation (EU) 2017/653
+- Publisher: EUR-Lex (the host refused the fetch)
+- URL: not established.
+- Content: requires a three-page *Basisinformationsblatt* for every packaged retail investment and
+  insurance-based investment product, with a prescribed structure: what the product is, the risk
+  indicator on a 1-to-7 scale, four performance scenarios (stress, unfavourable, moderate,
+  favourable), the costs over time and the composition of costs including the reduction in yield,
+  and the recommended holding period. The delegated regulation prescribes the methodology and the
+  **product categories** that determine how scenarios are computed.
+- Why it matters here: an Indexpolice is a **Category 4** PRIIP — a product whose values depend in
+  part on factors not observed in the market, namely the insurer's discretionary surplus
+  declaration — rather than a Category 3 derivative-based product `[unverified]` as to the category
+  assignment in any specific carrier's KID. The distinction is not academic: Category 4 permits the
+  use of the insurer's own model for the discretionary component, which is why two Indexpolicen with
+  similar mechanics can publish very different favourable scenarios.
+
+### R11 — DAV, *Ergebnisbericht* of the *Ausschuss Lebensversicherung* on the PRIIP Category 4 *Standardverfahren*
+- Publisher: Deutsche Aktuarvereinigung e. V. (DAV)
+- URL: not established (`aktuar.de` refused the fetch).
+- Content: the German actuarial profession's standard procedure for computing PRIIP performance
+  scenarios for Category 4 products — i.e. for exactly the discretionary-surplus component that makes
+  an Indexpolice a Category 4 product. Established as existing by the sibling `kapitallebensversicherung`
+  research file. **Its content for the index case is not established**, and it is the document a
+  serious attempt to model an Indexpolice's disclosed scenarios would have to start from. Gap 14.
+
+### R12 — *Altersvorsorgeverträge-Zertifizierungsgesetz* (AltZertG), and the *Produktinformationsstelle Altersvorsorge*
+- Publisher: Gesetze im Internet (statute); Produktinformationsstelle Altersvorsorge gGmbH (the
+  classification body)
+- URL: `https://www.gesetze-im-internet.de/altzertg/` `[unverified]`
+- Content: the AltZertG defines the criteria a *Riester* or *Basisrente* contract must satisfy to be
+  certified. For *Riester*, the decisive one is the ***Beitragserhaltungszusage***: the provider must
+  guarantee that at the start of the payout phase **at least the contributions paid in (including
+  the state allowances) are available** — a **100 % nominal guarantee** `[unverified]` as to the
+  subsection. For *Basisrente* there is no equivalent statutory guarantee requirement. The AltZertG
+  also mandates the standardised *Produktinformationsblatt* [S11], on which the PIA's
+  **Chancen-Risiko-Klasse** (1 to 5) appears.
+- Why it matters here, and it is the sharpest single fact in this file about guarantee levels:
+  **the guarantee level of an index product is set by its wrapper, not by its index module.** A
+  *Schicht 3* Indexpolice may be sold with an 80 % or 90 % *Beitragsgarantie*; a *Riester*
+  Indexpolice may not, because 100 % is statutory. That difference is the reason a *Riester* index
+  variant has a structurally smaller option budget than a *Schicht 3* one of the same vintage and
+  term. It is also the reason the *Riester* market effectively closed to new business when the
+  *Höchstrechnungszins* fell to 0,25 % in 2022: at that rate a 100 % nominal guarantee over a normal
+  term could not be calculated with room left for costs, let alone for an option budget
+  `[unverified]` as to the year and the extent of the withdrawal, though the episode itself is
+  well-established market history.
+
+### R13 — EStG § 22 Nr. 1 Satz 3, *Ertragsanteilsbesteuerung* of a *Leibrente*
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/estg/__22.html` `[unverified]`
+- Content: a *Leibrente* from a privately funded *Schicht 3* annuity is taxed only on its
+  ***Ertragsanteil*** — a fixed percentage of the annuity determined once and for all by the
+  annuitant's age at *Rentenbeginn* and set out in a statutory table. Illustrative values from the
+  table, all `[unverified]`: about 22 % at age 60, about 20 % at 63, about 18 % at 65, about 17 % at
+  67.
+- Relevance: identical to product 2. The index mechanic does **not** change the tax treatment of the
+  annuity, because the credits have been absorbed into the capital before conversion.
+
+### R14 — EStG § 20 Abs. 1 Nr. 6, taxation of a *Kapitalabfindung*, and the *Mindesttodesfallschutz*
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/estg/__20.html` `[unverified]`
+- Content: where the *Kapitalwahlrecht* is exercised, the difference between the payment and the sum
+  of premiums paid is investment income. If the contract has run at least **twelve years** and the
+  payment is taken after the policyholder's **62nd** birthday (60th for contracts concluded before
+  2012), **only half the difference is taxable** and it is taxed at the personal rate rather than by
+  final withholding `[unverified]` on the ages and the year boundary. For contracts concluded from
+  **1 April 2009** the favourable treatment additionally requires a minimum death cover
+  (*Mindesttodesfallschutz*) — in the standard formulation, a death benefit of at least **50 %** of
+  the premiums payable over the term `[unverified]`.
+- Relevance and delta: identical to product 2, with one wrinkle worth stating. The *twelve-year /
+  age-62* test interacts with the **annual *Wahlrecht***: exercising the *Wahlrecht* is not a change
+  of contract and does not restart the twelve-year clock `[unverified]`, but a *Vertragsänderung*
+  that materially alters the contract can. Nothing in the corpus settles where the line falls.
+
+### R15 — RechVersV and the VAG *Sparten*: what "indexgebundene Lebensversicherung" means in regulation
+- Publisher: Gesetze im Internet (RechVersV, VAG); BaFin (statistical classifications)
+- URL: not established.
+- Content, and this is a terminological trap that a careless downstream document will fall into:
+  in the regulatory and accounting vocabulary, **"Lebensversicherungen, bei denen das Anlagerisiko
+  vom Versicherungsnehmer getragen wird"** — the class that contains *fondsgebundene* and
+  *indexgebundene* life insurance in the balance-sheet sense — means contracts where the
+  **policyholder bears the investment risk**. An *Indexpolice* of the kind this file describes
+  **does not belong there**: the capital is in the *Sicherungsvermögen*, the guarantee is the
+  insurer's, and the policyholder's downside is limited to forgoing one year's surplus. It is booked
+  and reserved as a **conventional profit-participating contract**. In the Solvency II lines of
+  business the same distinction appears as *insurance with profit participation* versus
+  *index-linked and unit-linked insurance*, and an Indexpolice sits in the former `[unverified]` as
+  to the line-of-business numbering.
+- Consequence for delib: the market word *indexgebunden* and the regulatory word *indexgebunden*
+  denote different things. The delib documents use *Indexpolice* / *Indexbeteiligung* for the
+  product and reserve *indexgebunden* in its regulatory sense, and say so.
+
+### R16 — BaFin, *Merkblatt* 01/2023 (VA) on conduct-supervision aspects of capital-forming life insurance products
+- Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)
+- URL: not established (`bafin.de` refused the fetch).
+- Content: BaFin's statement of what it expects of the product-governance and value-for-money of
+  capital-forming life products — established as existing by the sibling `kapitallebensversicherung`
+  research file, where it supported the propositions that *Effektivkosten* differ considerably
+  across the market and that BaFin will examine outliers.
+- Relevance here: an Indexpolice is squarely within the *Merkblatt*'s scope, and the product raises
+  the *Kundennutzen* question in its sharpest form, because a design that returns zero in a
+  substantial fraction of years while charging a full acquisition-cost load is exactly the kind of
+  product a value-for-money supervision regime exists to interrogate. **Whether the *Merkblatt*
+  names index products specifically is not established.** Gap 15.
+
+### R17 — BaFin, *Risiken im Fokus* (annual risk report) and BaFin *Fachartikel* on costs and PRIIPs
+- Publisher: BaFin
+- URL: not established.
+- Content: BaFin's annual statement of supervisory focus risks; the sibling file establishes that
+  the cost of capital-forming life insurance is a named focus. The *Fachartikel* series has covered
+  how insurers discharge the PRIIPs information duties.
+- Relevance: context for the charge discussion in mechanics section 13, where every level is `[std]`.
+
+### R18 — DAV recommendations on the *Höchstrechnungszins*
+- Publisher: Deutsche Aktuarvereinigung e. V.
+- URL: not established.
+- Content: the DAV recommends a *Höchstrechnungszins* to the Bundesfinanzministerium, which sets it
+  by regulation. The sibling delib files establish the recommendation of **1,0 %** for 2025 and again
+  for 2026.
+- Relevance: fixes the guarantee basis for a contract issued at the access date, and therefore the
+  split between the guaranteed and the discretionary component of the return — which for this
+  product is the split between the guaranteed capital and the option budget.
+
+### R19 — GDV statistics: *Die deutsche Lebensversicherung in Zahlen*, and the new-business and in-force series
+- Publisher: GDV
+- URL: not established.
+- Content: the industry association's annual statistics — new business by *Beitragssumme* and APE,
+  in-force contracts, *Stornoquote*, and the split of new business across product families.
+- Relevance, and a limitation that must be stated: **the GDV product split does not isolate
+  Indexpolicen.** They are counted within conventional annuity business, because that is what they
+  are [R15]. There is therefore **no published figure for the size of the German index-participation
+  segment**, either from GDV or from anywhere else this author knows of. Gap 8.
+
+### R20 — Assekurata, *Marktstudie* on *Überschussbeteiligungen und Garantien*
+- Publisher: Assekurata Assekuranz Rating-Agentur GmbH
+- URL: not established.
+- Content: the annual survey of declared surplus rates and guarantee designs across the German life
+  market, established as existing by the sibling delib files, which take from it the 2026 market
+  averages for the classic annuity and for *Neue Klassik*.
+- Relevance: the declared surplus rate **is** the option budget [R8], so an Assekurata declared-rate
+  series is the closest public proxy for the size of the option budget. The sibling file records a
+  *Neue Klassik* declared rate of the order of 2,65 % for 2026 and a classic annuity market average
+  of the order of 2,62 % `[unverified]` — figures established there by search and reproduced here as
+  cross-references, not as findings of this file. Whether Assekurata publishes cap levels as such is
+  **not established**.
+
+### R21 — Rating houses on *Indexpolicen*: Institut für Vorsorge und Finanzplanung (IVFP), Franke und Bornberg, Morgen & Morgen
+- Publisher: IVFP GmbH; Franke und Bornberg GmbH; MORGEN & MORGEN GmbH
+- URL: not established.
+- Content: the three German houses that rate retirement-savings products. IVFP in particular
+  maintains a rating of index-linked annuities `[unverified]`, and a rating of that kind is the only
+  systematic public compilation this author is aware of that puts **cap levels and participation
+  rates for a panel of named carriers side by side**.
+- Relevance: this is the document class that would have closed gaps 2, 3 and 9 in one go — the
+  product-name inventory, the cap levels and the observed parameter ranges. **Nothing from it was
+  established.**
+
+### R22 — BGB § 315, *Bestimmung der Leistung durch eine Partei* (*billiges Ermessen*)
+- Publisher: Gesetze im Internet
+- URL: `https://www.gesetze-im-internet.de/bgb/__315.html` `[unverified]`
+- Content: where a contract leaves the determination of a term to one party, that party must in case
+  of doubt exercise the determination according to **reasonable discretion** (*billiges Ermessen*);
+  a determination made otherwise is not binding and, on application, is made by the court.
+- Why it matters here: the annual **Cap-Festlegung** is a unilateral determination by the insurer of
+  a term that decides the policyholder's return for the coming year. It is therefore reviewable
+  under § 315 BGB, and the standard the insurer must meet is that the Cap be set on the basis it
+  says it is set on — the option budget and the market price of the option package — rather than
+  arbitrarily. **No German decision on the Cap-Festlegung of an Indexpolice is known to this author,
+  and none was established.** Gap 16. The legal frame is nevertheless clear enough to state, and it
+  is the correct frame: § 315 BGB, not § 163 VVG [R4].
+
+---

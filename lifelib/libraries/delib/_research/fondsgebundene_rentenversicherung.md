@@ -209,3 +209,318 @@ much of it has no clean English equivalent because the German market invented th
 | *Teilfreistellung* | the partial exemption of fund income under the *Investmentsteuergesetz* |
 
 ---
+
+## Primary sources
+
+Eighteen known references to primary product documents. **None was retrieved and none was
+corroborated by a search run for this file** (see the retrieval-conditions section). Two entries —
+[S2] and [S4] — carry a URL that a search returned during the sibling delib research and that is
+recorded in that sibling file; those two are the only URLs in this section, and they are attributed
+to the sibling rather than claimed here. Every other entry says `URL: not established`.
+
+Each entry answers two questions honestly: **does a document of this kind exist for this product,
+and what does that kind of document establish?** Where a product name or tariff code is given it is
+tagged `[unverified]` — it is the author's recollection of the German market, not a search result.
+
+### S1 — GDV, Musterbedingungen for the fondsgebundene Rentenversicherung
+
+- Publisher: Gesamtverband der Deutschen Versicherer e. V. (GDV)
+- Doc type: *Musterbedingungen* — non-binding model policy conditions published by the industry
+  association for a line of business, from which member insurers derive their own *Allgemeine
+  Versicherungsbedingungen* (AVB)
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted). The
+  **existence and the document type** are established indirectly: the sibling delib research on
+  `klassische_rentenversicherung` corroborated by search both the GDV *Musterbedingungen* service
+  index and a specific model-conditions set for the *Rentenversicherung mit aufgeschobener
+  Rentenzahlung*, recorded there as S1–S3. A companion set for the **fondsgebundene** form is the
+  ordinary structure of that index; **its exact title, edition and clause numbering are
+  `[unverified]`**.
+- Content — what a GDV *Musterbedingung* for this line establishes, and why it is the right first
+  source: it is the **skeleton every German insurer's AVB for the product follows**, clause order
+  included, which is why insurer wordings across the market are structurally interchangeable even
+  where the numbers differ. The clauses a model needs are, in the order they normally appear:
+  what benefits are provided (annuity from *Rentenbeginn*, death benefit before it); how the
+  *Beitrag* is applied (*Beitragsverrechnung*, the deduction of costs, the purchase of
+  *Anteileinheiten* at the *Anteilspreis* on a *Bewertungsstichtag*); how the *Fondsguthaben* is
+  determined; what happens on death before and after *Rentenbeginn*; the *Rentenfaktor* and the
+  guaranteed-versus-current rule; the policyholder's rights to *Fondswechsel*, *Zuzahlung*,
+  *Teilentnahme*, *Beitragsfreistellung* and *Kündigung*; the *Rückkaufswert* and any
+  *Stornoabzug*; the *Überschussbeteiligung*; and the *Anpassungsklausel*. **No clause text and no
+  numeric parameter is established here.** The delib documents use this entry as the statement
+  that a market-standard clause inventory exists, not as authority for any clause's content.
+
+### S2 — DEVK, "Kundeninformation zur Fondsgebundenen Rentenversicherung", document 03101, edition 07/2024
+
+- Publisher: DEVK Lebensversicherungsverein a. G.
+- Doc type: *Kundeninformation* — the consolidated pre-contractual customer information document
+  for a unit-linked annuity, carrying the AVB, the *Produktinformationsblatt* content and the
+  consumer information in one file
+- URL: `https://medien.devk.de/assets/content/download/produkte/altersvorsorge-leben/devk-fondsrente-kundeninfo-03101-2024-07.pdf`
+  — **this URL was returned by a search run for the sibling delib research on
+  `klassische_rentenversicherung` and is recorded there as its S19.** It is not a search result of
+  this file's own.
+- Retrieved: no — egress blocked; corroborated by search **in the sibling file only**, not here.
+- Content: the **single best-evidenced fact in this whole corpus**, and it is exactly on point for
+  this product. The sibling research established from the search summary of this document that, on
+  death **before** *Rentenbeginn*, the benefit is **the fund value at the date of death but at
+  least the sum of the premiums paid** — the *Beitragsrückgewähr* form of the death benefit, in
+  its `max(Fondsguthaben, Summe der gezahlten Beiträge)` shape. That is one of the four death
+  benefit shapes catalogued in section 6, and it is the one delib adopts as representative,
+  precisely because it is the only one with corroboration anywhere in the delib corpus. The
+  document code **03101** and the edition **07/2024** come from the URL's own filename and are
+  recorded as such. **Nothing else about the DEVK contract — its charges, its *Rentenfaktor*, its
+  fund range, its option set, its entry ages — is established.**
+
+### S3 — Allianz Lebensversicherungs-AG, AVB and *Verbraucherinformation* for the fondsgebundene Rentenversicherung ("InvestFlex")
+
+- Publisher: Allianz Lebensversicherungs-AG, Stuttgart — the German market leader in life
+- Doc type: *Allgemeine Bedingungen für die fondsgebundene Rentenversicherung*, plus the matching
+  *Verbraucherinformation*, *Produktinformationsblatt* and *Basisinformationsblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: the market leader's unit-linked annuity is sold under the product name **"InvestFlex"**
+  `[unverified]`, within the *PrivatRente* family whose classic and index members the sibling
+  delib research covers (Allianz *KomfortDynamik* and *IndexSelect*). Recorded because **any
+  representative German FRV design has to be checkable against the largest writer's wording**, and
+  because Allianz is the carrier at which the *Treuhänderklausel* dispute over the *Rentenfaktor*
+  was publicly live in 2021 [R22]. **No clause, charge, factor or age limit of this contract is
+  established here**; every Allianz figure in the delib product documents is `[std]` or comes from
+  the sibling files' own corroborated entries.
+
+### S4 — Zurich Deutscher Herold Lebensversicherung AG, "Verbraucherinformation für Fondsgebundene Versicherungen"
+
+- Publisher: Zurich Deutscher Herold Lebensversicherung AG
+- Doc type: *Verbraucherinformation* — a consolidated pre-contractual information document issued
+  per product family and per *Fassung* (edition), typically 40–50 pages
+- URL: not established for the fondsgebundene series. The sibling delib research corroborated by
+  search the **companion** series, "Verbraucherinformation für **Konventionelle** Versicherungen —
+  Aufgeschobene Rentenversicherung", in four editions (*Fassung* 01/2021, 01/2022, 01/2026 and a
+  *Konsortial* variant), recorded there as its S4–S7.
+- Retrieved: no — egress blocked; no search corroboration for the fondsgebundene series
+- Content: the title of the corroborated companion series — "für **Konventionelle**
+  Versicherungen" — is itself the evidence that a **parallel fondsgebundene series exists at the
+  same carrier**: a document that has to name itself "conventional" does so to distinguish itself
+  from the unit-linked one. That inference is recorded as an inference and the parallel document's
+  title, edition and content are `[unverified]`. The **value of the document type** is high and is
+  why it is listed: a *Verbraucherinformation* of that length is the one German document class that
+  states, in one place, the benefit definitions, the *Beitragsverrechnung*, the cost clauses, the
+  *Rentenfaktor* rule, the option catalogue and the *Rückkaufswert* rule — the exact inventory a
+  product-spec needs. The sibling file's corroborated Zurich material also establishes the
+  **conventional carrier's *Rentenfaktor* rule** — that at *Rentenbeginn* a second factor is
+  compared with the guaranteed one and **the higher of the two applies** — and that rule is
+  carried over here in section 9 as market practice, tagged to the sibling's evidence rather than
+  to a fondsgebundene document.
+
+### S5 — Alte Leipziger Lebensversicherung a. G., AVB for the fondsgebundene Rentenversicherung
+
+- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel
+- Doc type: *Allgemeine Bedingungen für die fondsgebundene Rentenversicherung* plus *Tarifblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: Alte Leipziger is one of the carriers a German broker market treats as a reference point
+  for **fund range and option flexibility** in unit-linked pensions, and one of the few large
+  mutuals offering both a commission tariff and a **Nettotarif** (fee-based, *Abschlusskosten*
+  stripped out) on the same product chassis `[unverified]`. That pairing is the cleanest available
+  demonstration of what *Abschlusskosten* do to the *Effektivkosten*, which is why the carrier is
+  listed. **No tariff code, charge rate, fund list or factor is established.**
+
+### S6 — LV 1871 (Lebensversicherung von 1871 a. G.), AVB for the fondsgebundene Rentenversicherung ("MeinPlan")
+
+- Publisher: Lebensversicherung von 1871 a. G., München
+- Doc type: AVB, *Produktinformationsblatt*, *Basisinformationsblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: LV 1871 sells its unit-linked pension under the product name **"MeinPlan"**
+  `[unverified]`, a *Schicht 3* fondsgebundene Rentenversicherung with a *Fondsauswahl* including
+  ETFs and a *Nettotarif* variant `[unverified]`. Recorded as a mid-sized specialist comparator
+  for the **option catalogue** — *Zuzahlung*, *Teilentnahme*, flexible *Rentenbeginn* — which is
+  the dimension on which German unit-linked contracts differ most and the one section 8 has to
+  bound. **No parameter is established.**
+
+### S7 — Stuttgarter Lebensversicherung a. G., AVB for the fondsgebundene Rentenversicherung with guarantee ("FlexRente performance-safe")
+
+- Publisher: Stuttgarter Lebensversicherung a. G.
+- Doc type: AVB for a **hybrid** unit-linked annuity, plus *Basisinformationsblatt*
+- URL: not established for the fondsgebundene product. The sibling delib research corroborated by
+  search a different Stuttgarter document, "Allgemeine Informationen zu einem
+  Altersversorgungssystem" (its S18), which establishes only that the carrier publishes
+  pre-contractual information PDFs.
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: recorded as the **hybrid comparator**. The Stuttgarter markets its guarantee-bearing
+  unit-linked pension under the name **"FlexRente performance-safe"** `[unverified]`, a design
+  belonging to the *dynamische Hybride* family of section 13, in which the premium and the
+  accumulated capital are reallocated periodically between the *Sicherungsvermögen*, a
+  *Wertsicherungsfonds* and free funds so as to secure a chosen *Beitragsgarantie*. It is listed
+  to make the point that **the delib model's no-guarantee chassis is a real market form and not a
+  simplification of the only form available** — both are sold, and the guarantee is an option with
+  a price, not an inherent feature. **No reallocation rule, guarantee level or charge is
+  established.**
+
+### S8 — Volkswohl Bund Lebensversicherung a. G., AVB for the fondsgebundene Rentenversicherung
+
+- Publisher: Volkswohl Bund Lebensversicherung a. G., Dortmund
+- Doc type: AVB plus *Basisinformationsblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: a broker-channel carrier associated in the German market with **two-pot hybrid**
+  designs sold alongside a pure fondsgebundene tariff `[unverified]`. Listed as a second hybrid
+  comparator so that section 13's taxonomy rests on more than one named carrier. **No parameter is
+  established.**
+
+### S9 — WWK Lebensversicherung a. G., AVB for the fondsgebundene Rentenversicherung with i-CPPI guarantee
+
+- Publisher: WWK Lebensversicherung a. G., München
+- Doc type: AVB plus *Basisinformationsblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: WWK is the German carrier most closely identified with the **i-CPPI** (individual
+  Constant Proportion Portfolio Insurance) implementation of a unit-linked guarantee, marketed
+  under a *Protect* product name `[unverified]`. It is not on the insurer list in this file's own
+  brief and is named from general knowledge of the market rather than from any search result;
+  that is stated here rather than hidden. It is recorded because section 13 must be able to name
+  the three guarantee technologies — static hybrid, dynamic hybrid, i-CPPI — against a real
+  carrier each, and because the i-CPPI form is the one whose exclusion from the delib model needs
+  the most explicit justification. **No algorithm, multiplier, floor definition or charge is
+  established.**
+
+### S10 — Cosmos Lebensversicherungs-AG (CosmosDirekt), AVB for the fondsgebundene Rentenversicherung
+
+- Publisher: Cosmos Lebensversicherungs-AG (Generali group), Saarbrücken; sold direct as
+  CosmosDirekt
+- Doc type: *Allgemeine Bedingungen für die fondsgebundene Rentenversicherung*
+- URL: not established. The sibling delib research corroborated by search the **classic** Cosmos
+  AVB, tariff **LA 904 A** (its S8), together with that document's statement that the annuity
+  factor fixed at inception rests on a recognised mortality table (**currently DAV 2004 R**) and
+  an underlying interest rate of **currently 0 percent p.a.**
+- Retrieved: no — egress blocked; no search corroboration for the fondsgebundene tariff
+- Content: recorded for two reasons. First, as the **direct-writer cost comparator**: a
+  no-commission direct channel is the low end of the *Effektivkosten* range and bounds it from
+  below along with the *Nettotarife*. Second, because the sibling's corroborated statement of the
+  **conversion basis — DAV 2004 R at 0 % p.a.** — is the single most useful number in the delib
+  corpus for calibrating a *garantierter Rentenfaktor*, and section 9 uses it as the basis of the
+  `[std]` factor. That statement is about the carrier's **classic** tariff; applying it to the
+  fondsgebundene tariff is an inference, and it is tagged as one wherever it is used.
+
+### S11 — NÜRNBERGER Lebensversicherung AG, AVB for the fondsgebundene Rentenversicherung
+
+- Publisher: NÜRNBERGER Lebensversicherung AG
+- Doc type: AVB with a tariff code in the *NIR*/*N*-series, plus *Verbraucherinformation*
+- URL: not established. The sibling delib research corroborated by search the classic NÜRNBERGER
+  AVB for the *Rentenversicherung mit aufgeschobener Rentenzahlung und Rentengarantiezeit* under
+  **tariff NIR3301** (its S9), which establishes the carrier's document naming convention.
+- Retrieved: no — egress blocked; no search corroboration for the fondsgebundene tariff
+- Content: listed as a full-range carrier publishing per-tariff AVB, which is the German pattern
+  that makes tariff codes worth recording when they can be established and worth omitting when
+  they cannot. **No fondsgebundene tariff code is asserted here** — inventing one would be exactly
+  the failure mode the retrieval-conditions section forbids.
+
+### S12 — Continentale Lebensversicherung AG, AVB for the fondsgebundene Rentenversicherung ("Rente Invest")
+
+- Publisher: Continentale Lebensversicherung AG (Continentale Versicherungsverbund)
+- Doc type: AVB plus *Produktinformationsblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: a broker-channel mutual whose unit-linked pension is sold under a *Rente Invest* name
+  `[unverified]`. Recorded to widen the carrier set behind the variation table in section 20.
+  **No parameter is established.**
+
+### S13 — HDI Lebensversicherung AG, AVB for the fondsgebundene Rentenversicherung ("CleverInvest")
+
+- Publisher: HDI Lebensversicherung AG (Talanx group)
+- Doc type: AVB plus *Basisinformationsblatt*
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: HDI's unit-linked pension is sold under the name **"CleverInvest"** `[unverified]` and
+  is one of the tariffs the German broker market cites as a **low-cost, ETF-capable** fondsgebundene
+  Rentenversicherung `[unverified]`. Recorded as a second low-cost comparator alongside [S10] and
+  the *Nettotarife* of [S18]. **No charge level is established** — and the absence of any
+  corroborated charge level anywhere in this corpus is gap 6, the largest hole in the file.
+
+### S14 — Debeka Lebensversicherungsverein a. G., AVB for the fondsgebundene Rentenversicherung
+
+- Publisher: Debeka Lebensversicherungsverein a. G., Koblenz
+- Doc type: *Bedingungswerk* in the carrier's `B LV` series
+- URL: not established. The sibling delib research corroborated by search several Debeka
+  *Bedingungswerke* (**B LV 85**, **B LV 86**, **B LV 97**) and the trade-press report that Debeka
+  **discontinued its classic annuity tariff**.
+- Retrieved: no — egress blocked; no search corroboration for the fondsgebundene tariff
+- Content: recorded because the corroborated discontinuation of the classic tariff at Germany's
+  largest life mutual by policy count is **the market-structure fact that puts this product at the
+  centre of the library**: when the classic tariff closes, the new-business flow goes to the
+  fondsgebundene and hybrid forms. The Debeka fondsgebundene *Bedingungswerk* number, edition and
+  content are `[unverified]`.
+
+### S15 — *Basisinformationsblatt* (PRIIP-KID) for a fondsgebundene Rentenversicherung — document-type entry
+
+- Publisher: each insurer, for each *Anlageoption* / product variant
+- Doc type: *Basisinformationsblatt* under the PRIIPs Regulation [R8]; three pages, prescribed
+  order and prescribed headings
+- URL: not established for any fondsgebundene Rentenversicherung. The sibling delib research
+  located **one** German PRIIP-BIB PDF, for an **endowment** (its S10, a three-page BIB for a
+  regular-premium capital-forming product), which is the wrong product but the right document type
+  and confirms the three-page format.
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: this is the **document a delib product-spec would most want and does not have**. Its
+  prescribed content, established from the BaFin explanation corroborated in the sibling research
+  [R9], is: a **summary risk indicator**; the **possible maximum loss** of invested capital;
+  **four performance scenarios** — *Stress*, *pessimistisch*, *moderat*, *optimistisch* — expressed
+  as annualised average returns in per cent; the **costs the investor bears**; and complaint
+  information. The scenarios and the costs must be shown at **three time points — after one year,
+  after half the recommended holding period, and at the end of it** — and the cost disclosure
+  splits **one-off from ongoing costs** and states the ***Reduction in Yield* per year**. For an
+  FRV the recommended holding period is the *Aufschubzeit*, so those three points are typically
+  1 year, ~15 years and ~30 years. **No actual BIB for this product was located, so no scenario
+  return, no cost figure and no RIY value is established from one.** Gap 5.
+
+### S16 — *Produktinformationsblatt* / *Verbraucherinformation* — document-type entry
+
+- Publisher: each insurer
+- Doc type: the German pre-contractual information set required by § 7 VVG together with the
+  *VVG-Informationspflichtenverordnung* [R7]
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: the second document class a product-spec needs, and the one that carries the figures
+  PRIIPs does not. Established from the corroborated statutory material [R7]: the insurer must
+  disclose the ***Abschluss- und Vertriebskosten* included in the premium as a euro amount**, must
+  disclose the other costs, and — since **1 January 2015** `[unverified]`, following the LVRG
+  [R13] — must state the ***Effektivkostenquote*** in the quotation. A German *Produktinformations-
+  blatt* for an FRV therefore normally shows, on two pages: the guaranteed benefits (which for
+  this product means the *Rentenfaktor* and little else), the *Abschluss- und Vertriebskosten* in
+  euro, the ongoing costs, the *Effektivkosten*, the *Rückkaufswerte* by year, and the
+  *Modellrechnung*. **No instance was located and no figure is established.**
+
+### S17 — *Standmitteilung* (annual statement) for a fondsgebundene Rentenversicherung — document-type entry
+
+- Publisher: each insurer; GDV publishes a model
+- Doc type: *Jährliche Mitteilung zum Stand der Versicherung*
+- URL: not established. The sibling delib research corroborated by search a **GDV
+  Muster-Standmitteilung for the kapitalbildende Lebensversicherung, edition 02/2017** (its S2),
+  establishing that the GDV publishes model statements per line.
+- Retrieved: no — egress blocked; no search corroboration for the fondsgebundene model
+- Content: recorded because the *Standmitteilung* is the document that shows **what an in-force
+  German unit-linked policy actually reports**, and therefore what a model's state variables should
+  correspond to: the number of *Anteileinheiten* held per fund, the *Anteilspreis* at the statement
+  date, the resulting *Fondsguthaben*, the premiums paid in the year, the current *Rückkaufswert*,
+  and the projected benefit at *Rentenbeginn*. That list is the delib model's state vector almost
+  exactly. The **fondsgebundene** model statement's existence is inferred from the corroborated
+  endowment one and is `[unverified]`.
+
+### S18 — Nettotarife / Honorartarife — carrier-type entry (myLife and the net variants of full-range carriers)
+
+- Publisher: myLife Lebensversicherung AG and the *Nettotarif* variants of full-range carriers
+  ([S5], [S6], [S13] and others)
+- Doc type: AVB and *Basisinformationsblatt* of a commission-free tariff
+- URL: not established
+- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
+- Content: a *Nettotarif* (also *Honorartarif*, *Nettopolice*) is **the same unit-linked contract
+  with the *Abschluss- und Vertriebskosten* removed from the tariff**, the adviser being paid a
+  separate fee by the client under a *Vergütungsvereinbarung*. myLife Lebensversicherung AG is the
+  German carrier built entirely on that model `[unverified]`. The class matters here for one
+  reason only, and it is a modelling reason: **it isolates the acquisition-cost component of the
+  *Effektivkosten*.** The difference between a gross tariff's RIY and the same chassis's net RIY
+  *is* the acquisition-cost load, which is the parameter a delib worked example most needs and
+  which no document in this corpus supplies. **No net-tariff or gross-tariff RIY figure is
+  established**; the observation that the gap exists is structural, not numeric.
+
+---
