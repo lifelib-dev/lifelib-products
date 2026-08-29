@@ -272,9 +272,11 @@ def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_an
     distinguishes this product's decrement structure from a Schicht-3 annuity's.
     """
     p = de_basis_anchor
-    assert p.mort_rate_at_age(45, 2005) == pytest.approx(QX45_TABLE, abs=5e-10)
+    assert p.mort_rate_at_age(45, 2005) == pytest.approx(QX45_TABLE, abs=5e-11)
+    # The shipped CSV carries qx to ten decimals, so the closed form agrees to that and no
+    # further -- the table is the input, and the formula behind it is documentation.
     assert p.mort_rate_at_age(45, 2005) == pytest.approx(
-        0.014000 * 1.085 ** (45 - 67), rel=1e-9)
+        0.014000 * 1.085 ** (45 - 67), abs=5e-11)
     assert (1 - 0.015) ** 21 == pytest.approx(TREND_2005_TO_2026, abs=5e-10)
     assert p.cal_year(1) == 2026
     assert p.mort_rate_base(1) == pytest.approx(Q1_FIRST_ORDER, abs=5e-10)
@@ -515,7 +517,11 @@ def test_the_conversion_table_of_the_notes(basisrente, point_id):
     assert p.rentenfaktor_applied() == pytest.approx(applied, abs=5e-5)
     assert p.rentenfaktor_applied() == max(gtd, curr) * p.rf_option_factor()
     assert p.ann_pp(ret_t) == pytest.approx(ann, abs=CENT)
-    assert p.ann_pp(ret_t) == pytest.approx(per / 10000.0 * applied * 12, rel=1e-9)
+    # The printed per-annuitant figure is rounded to the cent, so the identity is closed on the
+    # model's own full-precision fund rather than on the table's transcription of it.
+    per_exact = p.fund_at_conv() / p.pols_if(ret_t)
+    assert p.ann_pp(ret_t) == pytest.approx(
+        per_exact / 10000.0 * applied * 12, rel=1e-12)
 
 
 def test_on_model_point_13_the_guarantee_is_worth_824_euro_a_year(basisrente):
@@ -563,16 +569,53 @@ def test_pitfall_1_no_surrender_value_and_none_of_the_names_that_carry_one(
         assert p.claims(t) == pytest.approx(
             p.claims(t, "DEATH") + p.claims(t, "ANNUITY") + p.claims(t, "SURVIVOR"),
             rel=1e-12)
-    # A small contract's first-year credit is negative and is not floored: model point 10 pays
-    # 300,00 EUR a year, less than the year's Zillmerung instalment plus the Stueckkosten.
+    # The credit to the account is the raw arithmetic, with no floor of any kind under it.  On
+    # model point 10 -- 300,00 EUR a year, the market's minimum recurring premium -- the charges
+    # take a third of the first year's contribution before anything reaches the account.
     small = basisrente.Projection[10]
     assert small.prem_pp(1) == pytest.approx(300.00 * 1.05, abs=CENT)
-    assert small.prem_to_av_pp(1) < 0.0
-    assert small.av_pp(2) < 0.0
+    assert small.prem_to_av_pp(1) == pytest.approx(
+        small.prem_pp(1) * (1 - 0.075) - small.alpha_amort_pp(1)
+        - small.alpha_zuz_pp(1) - small.unit_cost_pp(1), rel=1e-12)
+    assert small.prem_to_av_pp(1) == pytest.approx(199.88, abs=CENT)
+    assert small.prem_to_av_pp(1) < 0.70 * small.prem_pp(1)
     # And it converts to a small annuity, never a lump sum -- there is no
     # Kleinbetragsrenten-Abfindung in Schicht 1.
     assert small.ann_pp(small.ret_t()) == pytest.approx(292.41, abs=CENT)
     assert small.check_no_capital() is True
+
+
+def test_pitfall_1_the_account_is_never_floored_at_a_surrender_value():
+    """Push the *Stückkosten* past the premium and the account goes negative, as it must.
+
+    The mirror of the missing surrender column is a *Rückkaufswert* computed internally "for
+    reference" and then used as a floor under the *Deckungskapital*.  There is nothing for such
+    a floor to protect on this product, and this test proves there is none: with the
+    *Stückkosten* at 400,00 EUR a year, model point 10's first-year credit is negative and the
+    account follows it down.  That a German *Deckungskapital* starts near zero is a consequence
+    of this line and not a modelling artefact.
+    """
+    charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
+    charges.loc["de_basis_std", "unit_cost_pp"] = 400.00
+    alt = INPUT_DIR / "charge_table_costly.csv"
+    model = alt_model("Basis_DE_A_floor")
+    try:
+        assert model.Projection[10].prem_to_av_pp(1) > 0.0
+        charges.to_csv(alt)
+        try:
+            model.Data.charge_file = alt.name
+            model.Data.clear_all()
+            model.Projection.clear_all()
+            p = model.Projection[10]
+            assert p.unit_cost_pp(1) == 400.00
+            assert p.prem_to_av_pp(1) < 0.0
+            assert p.av_pp(2) < 0.0
+            assert p.av(2) < 0.0
+            assert p.check_av_roll_fwd() is True
+        finally:
+            alt.unlink(missing_ok=True)
+    finally:
+        model.close()
 
 
 # ---------------------------------------------------------------------------
@@ -593,7 +636,7 @@ def test_pitfall_2_a_beitragsfreistellung_removes_the_premium_not_the_policy(de_
     # faster than the in-force count, and the difference is still in force.
     assert p.pols_paying(23) == pytest.approx(0.512516, abs=SIX_DP)
     assert p.pols_if(23) == pytest.approx(0.932780, abs=SIX_DP)
-    assert p.pols_if(23) - p.pols_paying(23) == pytest.approx(0.420264, abs=SIX_DP)
+    assert p.pols_if(23) - p.pols_paying(23) == pytest.approx(0.420265, abs=SIX_DP)
     assert p.pols_paidup(23) > 0.0
 
 

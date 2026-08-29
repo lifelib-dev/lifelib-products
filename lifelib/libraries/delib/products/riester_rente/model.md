@@ -5,21 +5,21 @@
 implements is specified in [`product-spec.md`](product-spec.md); the sources both rest on
 are listed in [`sources.md`](sources.md).
 
-> **This is a mechanics demonstration, not a pricing or reserving result.** What is sourced
-> here is the *statute*: who is *zulageberechtigt* [R7]; the *Grundzulage*, *Kinderzulage*
-> and *Berufseinsteiger-Bonus* structure [R9]; the § 86 *Mindesteigenbeitrag* with its 4 %
-> rate, 2 100 € ceiling, 60 € *Sockelbeitrag* floor and **proportional** Kürzung [R10]; the
-> ZfA payment lag [R11]; the *Beitragserhaltungszusage*, the 30 % *Teilkapitalauszahlung*
-> cap, the five-year floor under acquisition-cost spreading and the *Wechselrecht* [R1]; the
-> *Kleinbetragsrenten-Abfindung* [R15]; and the *schädliche Verwendung* consequences of a
-> *Kündigung* [R14]. What is **not** sourced is everything a carrier chooses. **No
-> carrier-specific parameter was established for any German Riester product, at any house,
-> for any year** [S4] [S5] [S6] [S7] [S8] [S16] — no *Rechnungszins*, no declared rate, no
-> charge, no *Rentenfaktor*, no *Stornoquote* — so each of those is a **[std]**
-> standardization, and the DAV tables the decrements stand in for (DAV 2008 T, DAV 2004 R)
-> are the property of the Deutsche Aktuarvereinigung, are not public, and are cited by name
-> rather than shipped [REG-R47] [REG-R48] [REG-R49]. Replace the charge, surplus and
-> decrement tables with company data before drawing any conclusion from the numbers.
+> **This is a mechanics demonstration, not a pricing or reserving result.** What is sourced is
+> the *statute*: who is *zulageberechtigt* [R7]; the *Grundzulage*, *Kinderzulage* and
+> *Berufseinsteiger-Bonus* structure [R9]; the § 86 *Mindesteigenbeitrag* with its 4 % rate,
+> 2 100 € ceiling, 60 € *Sockelbeitrag* floor and **proportional** Kürzung [R10]; the ZfA
+> payment lag [R11]; the *Beitragserhaltungszusage*, the 30 % *Teilkapitalauszahlung* cap, the
+> five-year floor under acquisition-cost spreading and the *Wechselrecht* [R1]; the
+> *Kleinbetragsrenten-Abfindung* [R15]; and the consequences of a *Kündigung* [R14]. What is
+> **not** sourced is everything a carrier chooses: **no carrier-specific parameter was
+> established for any German Riester product, at any house, for any year** [S4] [S5] [S6] [S7]
+> [S8] [S16] — no *Rechnungszins*, no declared rate, no charge, no *Rentenfaktor*, no
+> *Stornoquote* — so each of those is a **[std]** standardization, and the DAV tables the
+> decrements stand in for (DAV 2008 T, DAV 2004 R) are the property of the Deutsche
+> Aktuarvereinigung, are not public, and are cited by name rather than shipped [REG-R47]
+> [REG-R48] [REG-R49]. Replace the charge, surplus and decrement tables with company data
+> before drawing any conclusion from the numbers.
 
 ## Run it
 
@@ -48,11 +48,10 @@ its two phases, `model.Projection.doc` maps the notes' symbols to the cells name
 
 The *Zulage* is paid by the *Zentrale Zulagenstelle für Altersvermögen* to the **provider**,
 credited to the contract, counted in the *Beitragsgarantie*, invested, and taxed at the end
-like any other contribution [R8] [R11]. It never reaches the saver's bank account. So
-`zulagen` is a positive income column of `result_cf()`, published **beside** `premiums` and
-never folded into it: on model point 5 the state pays 1 926,26 € against the saver's
-609,80 € over the whole projection — 76 % of the contribution — and a statement that netted
-the two could not say so.
+like any other contribution [R8] [R11]; it never reaches the saver's bank account. So `zulagen`
+is a positive income column of `result_cf()`, published **beside** `premiums` and never folded
+into it: on model point 5 the state pays 1 926,26 € against the saver's 609,80 € over the whole
+projection — 76 % of the contribution — and a statement that netted the two could not say so.
 
 Three cells carry the subsidy and they are three different amounts:
 
@@ -98,10 +97,10 @@ contribution carves out `0.20 × 1 200,00 = 240,00 €` and no more [REG-R43].
 
 **The guarantee is tested exactly once, at `t_conv()`**, where `capital_conv_pp()` is
 `max(account_conv_pp(), guar_pp(t_conv() + 1))`. On model point 11 — a seven-year deferral on
-the `low` declared-rate path — the account reaches 20 481,72 € against a 21 000,00 €
-guarantee, so **`garantieluecke_conv_pp() = 518,28 €`**, 2,5 % of the capital, funded out of
-the insurer's own resources. That is the product's signature output, and a Riester model on
-which it is never positive has demonstrated nothing.
+the `low` declared-rate path — the account reaches 20 481,72 € against a 21 000,00 € guarantee,
+so **`garantieluecke_conv_pp() = 518,28 €`**, 2,5 % of the capital, funded out of the insurer's
+own resources: the product's signature output, and a Riester model on which it is never
+positive has demonstrated nothing.
 
 `garantieluecke_pp(t)` is published at every `t` and is a **diagnostic**: the anchor opens
 358,94 € under water, peaks at 567,69 € and closes at `t = 7`, the normal state of a charged
@@ -127,10 +126,10 @@ int_credited_pp(t) = j(t) · (D(t) + S(t) + U(t))      exactly
 **`j` already includes `i`** [REG-R53]. Adding the declared rate to the guaranteed one is the
 German arithmetic error this arrangement makes impossible; setting `j = i` collapses the
 *Deckungskapital* leg of `int_surplus_pp` to zero, which is the check that they are not being
-added. `int_credited` is a `result_cf()` column and is **reported, not summed into
-`net_cf`** — it moves money inside the account, not across the insurer's boundary. On the
-anchor it totals 7 544,45 €; adding it would report the cell's undiscounted deficit as
-282,94 € instead of 7 827,39 €.
+added. `int_credited` is a `result_cf()` column and is **reported, not summed into `net_cf`**:
+it moves money inside the account, not across the insurer's boundary, and on the anchor it
+totals 7 544,45 € — adding it would report the cell's undiscounted deficit as 282,94 € instead
+of 7 827,39 €.
 
 ## Charges, and a *Sparbeitrag* that can go negative
 
@@ -191,12 +190,10 @@ from `t_conv() + 1` because it discharges the contract outright.
 
 The projection does not stop at *Rentenbeginn*: the account is extinguished there and the
 lifelong *Leibrente* runs to `omega_age = 110` on the **second-order** generational annuitant
-basis. A model that stopped at conversion would not have modelled the benefit the AltZertG
-requires [R1].
-
-The *Rentengarantiezeit* changes **who is paid**, never **how much**. `pols_annuity_pay(t)`
-is `pols_conv()` while `t − t_conv() < rentengarantie_years()` and `pols_if(t)` afterwards;
-`annuity_pp(t)` does not read `rentengarantie_years()` at all.
+basis, because a model that stopped at conversion would not have modelled the benefit the
+AltZertG requires [R1]. The *Rentengarantiezeit* changes **who is paid**, never **how much**:
+`pols_annuity_pay(t)` is `pols_conv()` while `t − t_conv() < rentengarantie_years()` and
+`pols_if(t)` afterwards, and `annuity_pp(t)` does not read `rentengarantie_years()` at all.
 
 | t | 18 | 19 | … | 27 | 28 | 29 |
 |---|---|---|---|---|---|---|
@@ -222,17 +219,16 @@ correction. `products/sofortrente/` runs monthly for exactly this reason.
 | `pols_transfer(t)` | `θ(t)` on the survivors of both | `max(0, A(t + 1) − 50,00 €)` | the flat 50,00 € |
 | the commuted cohort | — | `commutation_pp()` at `t_conv()` | none |
 
-A *Kündigung* and an *Anbieterwechsel* are **separate decrements, not two spellings of one**.
-The transfer pays the full account less a flat charge with no *Stornoabzug* and carries none
-of the *schädliche Verwendung* consequences a surrender does [R1] [R14], so `transfer_rate`
-sits **above** `lapse_rate` at every duration: over the anchor's projection 11,44 % of the
-cohort transfers out against 7,67 % that surrenders. Collapsing the two would apply a
-percentage charge where a flat one belongs and would attribute a repayment of every Zulage
-and every § 10a relief to an exit that has none. `exit_charge_pp(t)` is the residue that makes
-the account roll forward exactly — 1,48 € on the anchor at `t = 1` — because the account an
-exiting policy releases either leaves as a benefit or stays with the insurer; dropping it
-leaves exactly that residual in `check_av_roll_fwd_resid(1)`, and that is the usual way the
-identity fails.
+A *Kündigung* and an *Anbieterwechsel* are **separate decrements, not two spellings of one**. The
+transfer pays the full account less a flat charge with no *Stornoabzug* and carries none of the
+*schädliche Verwendung* consequences a surrender does [R1] [R14], so `transfer_rate` sits
+**above** `lapse_rate` at every duration: over the anchor's projection 11,44 % of the cohort
+transfers out against 7,67 % that surrenders. Collapsing the two would apply a percentage charge
+where a flat one belongs and would attribute a repayment of every Zulage and every § 10a relief
+to an exit that has none. `exit_charge_pp(t)` is the residue that makes the account roll forward
+exactly — 1,48 € on the anchor at `t = 1`, because the account an exiting policy releases either
+leaves as a benefit or stays with the insurer; dropping it leaves exactly that residual in
+`check_av_roll_fwd_resid(1)`, the usual way the identity fails.
 
 *Beitragsfreistellung* is **not** a decrement. It is the book's dominant exit [R25] and a
 **state change**: `pols_if` is continuous across it, the account keeps rolling, the guarantee
@@ -285,11 +281,11 @@ conventions suite counts the reads. `Data.input_dir()` resolves the location fro
 | `surplus_file` | `surplus_scenario()` | `surplus_scenario.csv` |
 | `freq_loading_file` | `freq_loading()` | `freq_loading.csv` |
 
-**The trade-off:** the model is not portable on its own — copy `Riester_DE_A/` without the
-CSVs and it reads fine, then fails on first evaluation. What you gain is a diff that shows
-logic changes only, and an input that can be swapped in place: point `Data.freq_loading_file`
-at another same-schema file and the projection follows with no formula change, which is how
-the frequency-loading invariance is tested.
+**The trade-off:** the model is not portable on its own — copy `Riester_DE_A/` without the CSVs
+and it reads fine, then fails on first evaluation. What you gain is a diff that shows logic
+changes only, and an input that can be swapped in place: point `Data.freq_loading_file` at
+another same-schema file and the projection follows with no formula change, which is how the
+frequency-loading invariance is tested.
 
 | File | Contents | Provenance |
 |---|---|---|
@@ -326,8 +322,8 @@ point.
 
 ## Modules that are off in the base run
 
-Everything the product carries is implemented; the anchor is deliberately the plain cell, so
-the worked example reproduces while the machinery stays visible and testable.
+Everything the product carries is implemented; the anchor is deliberately the plain cell, so the
+worked example reproduces while the machinery stays visible and testable.
 
 | Module | Switch | Off value on the anchor | On at |
 |---|---|---|---|
@@ -338,8 +334,7 @@ the worked example reproduces while the machinery stays visible and testable.
 | *Ratenzuschlag* — raises `premiums` by `E(t)(φ − 1)` and nothing else | `prem_freq` | `annual`, `φ = 1.0000` | points 3, 4, 6, 7, 10, 13 |
 | *Berufseinsteiger-Bonus* — the once-in-a-lifetime addition to the *Grundzulage* [R9] | the `bonus` column of `zulage_schedule.csv`, and `zulage_init_pp` | `0` | point 6, 200,00 € inside a 375,00 € opening credit |
 | The low declared-rate stress — the only lever deciding whether the guarantee costs anything | `scenario_id` | `base`, 2,30 % | point 11, `low` at 0,50 % |
-| *Teilkapitalauszahlung* election — **on** by default at the statutory cap | `teilkapital_share` | `0.30` | point 12, at 0.00 |
-| *Rentengarantiezeit* — pays on `pols_conv()` rather than `pols_if(t)` | `rentengarantie_years` | `10` | point 12, at 0 |
+| *Teilkapitalauszahlung* election, and the *Rentengarantiezeit* that pays on `pols_conv()` rather than `pols_if(t)` — both **on** by default | `teilkapital_share`, `rentengarantie_years` | `0.30`, `10` | point 12, at 0.00 and 0 |
 
 Two Space References are worth naming because a user will want to move them: `zulage_lag = 1`,
 the ZfA payment convention and the shortest lag consistent with the statute (gap 6); and
@@ -363,13 +358,13 @@ exactly, and both are columns of `result_cf()` so the identity is verifiable in 
 Solvency II best estimate is `Σ v(t) × liability_cf(t)` over the relevant risk-free term
 structure plus a risk margin [REG-R5] [REG-R6]; nothing in this library discounts.
 
-`expenses` and `commissions` are **separate** columns and `net_cf` subtracts each exactly once
-— frlib's reading, where `expenses` was the total and contained the commission, is not the
-reading here, because the notes' worked example prints both as parts. `int_credited` is a
-state movement and is in neither. The shape to expect on an in-force accumulation cell is a
-modest positive `net_cf` in every accumulation year — 1 505,37 € at `t = 1` — then
-−11 276,67 € in the conversion year as the *Teilkapitalauszahlung* leaves in one payment, then
-a long thin negative annuity tail, for an undiscounted total of −7 827,39 €.
+`expenses` and `commissions` are **separate** columns and `net_cf` subtracts each exactly once —
+frlib's reading, where `expenses` was the total and contained the commission, is not the reading
+here, because the notes' worked example prints both as parts; `int_credited` is a state movement
+and is in neither. The shape to expect on an in-force accumulation cell is a modest positive
+`net_cf` every accumulation year — 1 505,37 € at `t = 1` — then −11 276,67 € in the conversion
+year as the *Teilkapitalauszahlung* leaves in one payment, then a long thin annuity tail, for an
+undiscounted total of −7 827,39 €.
 
 ## Naming
 
@@ -412,8 +407,7 @@ all; the carrier half is entirely one, because nothing carrier-specific was esta
 | Annuity table, improvement scale and base year | `qx_base = 0.006000 × 1.115^(age − 65)`, improvement 1,8 % tapering to 0,2 %, base 2027, at factor 1.15 | DAV 2004 R is proprietary [REG-R49]. The generational structure is **not** optional; the anchor is `ann_factor() = 20.87222879` |
 | *Rechnungszins* | 0,25 % on the anchor, 0,90 % on point 3 | The *Höchstrechnungszins* caps the reserving rate, not what a policy may guarantee [REG-R14]; the cap of the vintage is the highest defensible value and makes the guarantee cheapest |
 | *Laufende Verzinsung* | `base` 2,30 %, `low` 0,50 %, level | No carrier declaration was established (gap 12); `low` is a stress, not a forecast |
-| *Risikoüberschuss*, *Kostenüberschuss* | zero | The accumulation risk result is nil by construction — the death benefit is the account value, so there is no sum at risk — and no cost result was established |
-| *Schlussüberschussanteil*; *Bewertungsreserven* share; and counting both toward the guarantee | 2,0 % of contributions credited; 1,0 % of the account | Levels unestablished, and **whether either may close a shortfall is unsettled** (gap 9); counting them is the provider-favourable reading |
+| *Risikoüberschuss* and *Kostenüberschuss*; *Schlussüberschussanteil*; *Bewertungsreserven* share, and counting the last two toward the guarantee | zero; 2,0 % of contributions credited; 1,0 % of the account | The accumulation risk result is nil by construction — the death benefit is the account value, so there is no sum at risk — and no cost result was established; the two terminal levels are unestablished and **whether either may close a shortfall is unsettled** (gap 9), so counting them is the provider-favourable reading |
 | Acquisition charge | 2,5 % of `beitragssumme` over five contract years | The five-year floor is statutory [R1]; the level is sized so the charge is of the same order as one year's contribution |
 | Administration charge **and its base** | 4,0 % of each contribution credited, Zulagen **included**, plus 12,00 € a year | **Whether German tariffs charge the Zulagen is unknown** (gap 14), and on the low-income cells they are the majority of the contribution — so the choice is stated rather than inferred from a formula |
 | Frequency loading, as a charge; *Stornoabzug*; transfer charge | 1.0000 / 1.0100 / 1.0200 / 1.0300; 2,0 % of the account; 50,00 € flat | No *Ratenzuschlag* scale was established, and the statutory cap on the transfer charge is unestablished (gap 8) |
@@ -422,7 +416,7 @@ all; the carrier half is entirely one, because nothing carrier-specific was esta
 | Zulage cash lag; income growth | one year; 2,0 % p.a. nominal | [R11] establishes the arrear but not the month (gap 6); the growth rate is a round real-plus-inflation number and decides when the 2 100 € ceiling binds |
 | Surrender and transfer rates | 0,8 / 0,6 / 0,4 % and 1,2 / 0,9 / 0,6 % by duration band | **No German Riester behavioural rate was established** (gap 16). The ordering is an argument from the statutory consequences, not from data |
 | *Teilkapitalauszahlung* take-up | 30 % on the anchor | German commentary reports the lump sum as usual, and **gap 10 records that this rests on nothing** |
-| Expenses and commission | 30,00 € maintenance inflating at 2,0 %; 24,00 € per annuitant; 80,00 € per claim; 150,00 € + 2,0 % of `beitragssumme` at issue; 2,5 % initial and 1,5 % renewal commission | No German insurer publishes a unit cost. The maintenance figure carries the Zulage administration — *Dauerzulageantrag*, annual ZfA exchange, *Leistungsmitteilung* — a real product-specific cost |
+| Expenses and commission, all of them | 30,00 € maintenance inflating at 2,0 %; 24,00 € per annuitant; 80,00 € per claim; 150,00 € + 2,0 % of `beitragssumme` at issue; 2,5 % initial and 1,5 % renewal commission | No German insurer publishes a unit cost. The maintenance figure carries the Zulage administration — *Dauerzulageantrag*, annual ZfA exchange, *Leistungsmitteilung* — a real product-specific cost |
 | Timing, processing order and decrement ordering | Contribution and Zulage at the start, interest at the end, decrements after crediting, conversion at the start of `t_conv()`; mortality, then surrender, then transfer | No source fixes the ordering inside a period, so it is stated to be compared line by line |
 | The monthly annuity on an annual grid | twelve instalments in one payment at the start of the payout year | The level is right because the factor carries the Woolhouse correction; the timing overstates by about `½ · q(x) · 12R` |
 | `omega_age = 110` with `q = 1` there; the opening balances and the model points themselves | — | The omega forces the decrement closure to be exact rather than approximate; the seeds are **[std]**, and the notes record that `guar_pp_init` and the account seeds were struck on different income paths, a 195,08 € discrepancy kept rather than papered over |
@@ -448,17 +442,17 @@ decrement closure to 1.00000000 — and the two variants, model point 11's bindi
 
 Beyond that it asserts **one test per numbered modeling pitfall**: the two subsidy lags kept
 apart; the final contribution year's Zulage credited at `t_conv()`; the § 86 Kürzung
-proportional; the Zulage as a separate positive income column; no *Günstigerprüfung* cells
-anywhere; both *Kinderzulage* rates at once; the guarantee tested only at *Rentenbeginn* with
-no benefit floored at it; the 20 % carve-out cap binding; unsubsidised contributions inside
-the guarantee; the declared rate including and not added to the *Rechnungszins*; the frequency
-loading charged and never credited; the acquisition charge spread over five contract years and
-continuing through a *Beitragsfreistellung*; transfer separated from surrender;
-*Beitragsfreistellung* as a state change; two mortality bases in opposite directions with a
-generational annuity table; the *Kleinbetragsrente* tested on the post-lump-sum annuity against
-a flat threshold; the *Rentengarantiezeit* changing the count and never the amount; and every
-benefit published gross of the *Rückzahlungsbetrag*. The whole-model-point-table sweep belongs
-to `tests/test_model_conventions_de.py`, which owns the library's single sweep.
+proportional; the Zulage as a separate positive income column; no *Günstigerprüfung* cells;
+both *Kinderzulage* rates at once; the guarantee tested only at *Rentenbeginn* and no benefit
+floored at it; the 20 % carve-out cap binding; unsubsidised contributions inside the guarantee;
+the declared rate including and not added to the *Rechnungszins*; the frequency loading charged
+and never credited; the acquisition charge spread over five contract years and continuing
+through a *Beitragsfreistellung*; transfer separated from surrender; *Beitragsfreistellung* as
+a state change; two mortality bases in opposite directions with a generational annuity table;
+the *Kleinbetragsrente* tested on the post-lump-sum annuity against a flat threshold; the
+*Rentengarantiezeit* changing the count and never the amount; and every benefit gross of the
+*Rückzahlungsbetrag*. The whole-model-point-table sweep belongs to
+`tests/test_model_conventions_de.py`, which owns the library's single sweep.
 
 ```bash
 python -m pytest lifelib/libraries/delib/tests/test_riester_rente_de.py -q

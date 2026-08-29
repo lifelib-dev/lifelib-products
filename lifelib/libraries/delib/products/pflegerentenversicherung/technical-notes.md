@@ -1027,11 +1027,17 @@ combinations — `check_esc_ledger()` asserts it — and diverges on point 8: at
 `esc_pg(480, 3) = 0.024913` against `pols_pg(480, 3) = 0.022576`, a factor of 1.1035 which is exactly
 the average escalation the lives then in grade 3 have accrued.
 
-**What the model stage changed in these notes.** The worked example above replaced a placeholder;
-model point 9 acquired a premium-paying term to age 65 for the reason given under *The fourteen model
-points*; and pitfalls 1, 2, 6, 10 and 14 carried numeric predictions the model contradicts and were
-rewritten to what the model actually produces. Nothing in the shipped tables was changed to make a
-prediction come true.
+**What the model stage changed in these notes.** Five things, listed so the diff is not silent. The
+worked example above replaced a placeholder. Model point 9 acquired a premium-paying term to age 65,
+for the reason given under *The fourteen model points*. Pitfalls 1, 2, 6, 10 and 14 carried numeric
+predictions the model contradicts and were rewritten to what the model actually produces —
+respectively the entry-mix rather than the stock-weighted mean percentage, the force rather than the
+rate multiple, the revival *flow* rather than a non-monotone stock, +14,4 % rather than "less than
+5 %", and the unisex-blended rather than the sex-specific incidence. `liability_cf` was added to the
+`result_cf()` column list as column 12, because the conventions suite verifies the sign convention in
+the frame. And two paragraphs duplicated in the draft — the *Currency, sign and rounding* bullet and
+steps 11 and 12 of the processing order — were reduced to one each. **Nothing in the shipped tables
+was changed to make a prediction come true.**
 
 ---
 

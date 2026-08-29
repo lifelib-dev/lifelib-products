@@ -313,8 +313,7 @@ it is a data error.
 `check_zillmer_cap()` and `check_surr_floor()` are separate on purpose. § 4 DeckRV caps
 **how much** may be zillmered — a cap on the *charge* — while § 169 Abs. 3 VVG fixes **how**
 the acquisition cost is spread for the surrender floor — a floor on the *value* [R2] [R7]
-[REG-R16] [REG-R28]. One search summary in the research corpus conflates them; delib keeps
-them apart in the code as well as in the prose.
+[REG-R16] [REG-R28]. One search summary in the corpus conflates them; delib does not.
 
 ## Modules that are off in the base run
 
