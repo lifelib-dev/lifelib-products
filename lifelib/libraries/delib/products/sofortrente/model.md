@@ -13,18 +13,17 @@ is specified in [`product-spec.md`](product-spec.md).
 > tariff-level feature carried in a carrier's own product name [S5] with a settable minimum
 > at another [S7]; the *Kapitalrückgewähr* refunds the *Einmalbeitrag* less the instalments
 > already paid [R23]; the *Hinterbliebenenrente* is a *Zusatzversicherung* with its own
-> condition set [S9]; the *Überschussbeteiligung* is a statutory entitlement that continues
-> through the payout phase, *Bewertungsreserven* included [S3] [R3 via REG-R24]; and there
-> is no *Rückkaufswert*, no lapse and no *Beitragsfreistellung* once the *Rentenbezug* has
-> begun [R1] [R2] [R5] [REG-R28]. **No level is sourced at all.** Direct HTTP egress was
-> blocked and the session's `WebSearch` budget was exhausted *before* this product was
-> researched, so no *Rentenhöhe*, no *Rentenfaktor*, no charge, no *Überschussanteilsatz*
-> and no portfolio sex mix was established at any carrier for any year [S10] [S11] [S12]
-> [S13] [R20] [R21] [R22] [R23]. Every number below is **[std]** with a stated rationale.
-> DAV 2004 R and DAV 2004 R-Bestand are the property of the Deutsche Aktuarvereinigung, are
-> not public and are **cited by name, never shipped** [R10] [R11] [REG-R47] [REG-R49].
-> Replace the decrement, charge and surplus tables with company data before drawing any
-> conclusion from the output.
+> condition set [S9]; the *Überschussbeteiligung* is a statutory entitlement continuing
+> through the payout phase, *Bewertungsreserven* included [S3] [REG-R24]; and there is no
+> *Rückkaufswert*, no lapse and no *Beitragsfreistellung* once the *Rentenbezug* has begun
+> [R1] [R2] [R5] [REG-R28]. **No level is sourced at all.** Direct HTTP egress was blocked
+> and the session's `WebSearch` budget was exhausted *before* this product was researched,
+> so no *Rentenhöhe*, no *Rentenfaktor*, no charge, no *Überschussanteilsatz* and no
+> portfolio sex mix was established at any carrier for any year [S10] [S11] [S12] [S13]
+> [R20] [R21] [R22] [R23]; every number below is **[std]** with a stated rationale. DAV
+> 2004 R and DAV 2004 R-Bestand are DAV property and are **cited by name, never shipped**
+> [R10] [R11] [REG-R47] [REG-R49]. Replace the decrement, charge and surplus tables with
+> company data before drawing any conclusion from the output.
 
 ## Run it
 
@@ -61,24 +60,22 @@ apply to [R1] [R2] [R5] [REG-R28]. The consequences reach further into a project
 than they look:
 
 - **No `lapse_rate`, `lapse_rate_mth`, `av_pp_at`, `cv_pp` or any surrender cells exists**,
-  at any duration. There is no *Rückkaufswert* table, no *Stornoabzug* and no five-year
-  cost-spreading rule to implement.
+  at any duration: no *Rückkaufswert* table, no *Stornoabzug*, no cost-spreading rule.
 - **The only decrement is death.** Where a *Hinterbliebenenrente* is in force there are two
   lives and the liability runs to the second death.
 - **Class (c) of the technical notes contains a basis and no behaviour.** Every other model
   in the library needs a lapse rate, a paid-up rate and an option take-up rate; this one
-  needs none, which makes it the cleanest of the ten to project and the one whose answer
-  depends most purely on the mortality basis and the surplus assumption.
-- **`premiums(t)` is the *Einmalbeitrag* at `t = 0` and nothing anywhere else.** There is no
-  premium stream, no *Beitragsdynamik* and no *Ratenzahlungszuschlag*. An in-force model
-  point's frame does not contain `t = 0`, so it collects nothing at all — the premium was
-  paid before the valuation date.
+  needs none, which makes it the one whose answer depends most purely on the mortality basis
+  and the surplus assumption.
+- **`premiums(t)` is the *Einmalbeitrag* at `t = 0` and nothing anywhere else.** An in-force
+  point's frame does not contain `t = 0`, so it collects nothing: the premium was paid before
+  the valuation date.
 
 The model's one structural fork is therefore not two premium forms but **derived against
 given**: `annuity_pp_init() == 0` strikes the *garantierte Rente* by equivalence, and a
-positive value takes an annuity struck years ago on a basis this model does not reproduce.
-`check_equivalence()` returns `True` on the second branch without asserting anything, and
-says so in its own docstring rather than passing silently.
+positive value takes an annuity struck years ago on a basis this model does not reproduce, on
+which `check_equivalence()` returns `True` without asserting anything and says so in its own
+docstring rather than passing silently.
 
 ## The *Rentengarantiezeit* is a certain floor, not a second stream
 
@@ -89,23 +86,20 @@ not** [R23], and the arithmetic that expresses this is a `max` and not a sum:
 payment_factor(t) = max(γ(t), l_a(t)) + δ (1 − l_a(t)) l_s(t) (1 − γ(t))
 ```
 
-Both errors this closes off are large and they point in opposite directions. On the anchor
-cell the guaranteed instalments over months 0 … 119 come to **48 073,0432 €**. A model that
-decremented them for survival — the annuitant's leg alone — would pay 44 645,0162 €,
-**7,13 % below**. A model that added the certain floor instead of taking the `max` would pay
-92 718,0594 €, **92,87 % above**, because `γ + l_a` pays `1 + l_a` for the whole ten years.
-The survivor's leg carries the `(1 − γ(t))` gate for the same reason: inside the guarantee
-the full instalment is already going out, and adding `δ` on top would pay `1 + δ`.
+Both errors this closes off are large and point in opposite directions. On the anchor cell
+the guaranteed instalments over months 0 … 119 come to **48 073,0432 €**; decrementing them
+for survival — the annuitant's leg alone — would pay 44 645,0162 €, **7,13 % below**, and
+adding the certain floor instead of taking the `max` would pay 92 718,0594 €, **92,87 %
+above**, because `γ + l_a` pays `1 + l_a` for the whole ten years. The survivor's leg carries
+the `(1 − γ(t))` gate for the same reason: inside the guarantee the full instalment is
+already going out, and adding `δ` on top would pay `1 + δ`.
 
-The split into *who* receives the instalment is published rather than netted.
+The split into *who* receives the instalment is published rather than netted:
 `annuity_payments(t, "ANNUITANT")` is paid on the strength of survival and
-`claims(t, "GUARANTEE")` on the strength of a death, so the two commonest errors show up in
-a **column** rather than in a total. `check_payment_factor()` asserts that the three legs
-partition the instalment exactly, and `check_guarantee_certain()` that the factor is exactly
-1 at every payment month inside the guarantee, whatever `δ` is. **Deliberately not
-implemented:** a commuted settlement of the *Restgarantiezeit*, which exists in the market
-and whose basis **was not established at any carrier** (research gap 10). The model pays the
-instalments, the form the corpus actually describes [R23].
+`claims(t, "GUARANTEE")` on the strength of a death, so the two commonest errors show up in a
+**column** rather than in a total. `check_payment_factor()` asserts that the three legs
+partition the instalment exactly, and `check_guarantee_certain()` that the factor is exactly 1
+at every payment month inside the guarantee, whatever `δ` is.
 
 ## The *Kapitalrückgewähr* is solved, not evaluated
 
@@ -134,15 +128,13 @@ it.
 
 During an *Aufschubzeit* no instalment has been paid, so `cum_annuity_guar_pp(t) = 0` and the
 refund is the whole *Einmalbeitrag*: the *Beitragsrückgewähr* on death before *Rentenbeginn*
-falls out of the same machinery without a second mechanic, which is what model point 6
-exercises.
-
-**The refund is measured against the *guaranteed* annuity, not the total one** [std],
-argued from the principle that a guaranteed benefit cannot be defined by reference to a
-discretionary quantity. Which reading a German carrier uses **was not established** and the
+falls out of the same machinery without a second mechanic, which model point 6 exercises.
+**The refund is measured against the *guaranteed* annuity, not the total one** [std], argued
+from the principle that a guaranteed benefit cannot be defined by reference to a
+discretionary quantity; which reading a German carrier uses **was not established** and the
 two diverge materially over twenty years (research gap 10). `check_refund_run_off()` closes
-the loop by counting the instalments needed to exhaust the refund directly — `⌈SP / R⌉`,
-335 on model point 3 — which is what catches a refund netted against the total annuity: the
+the loop by counting the instalments needed to exhaust the refund directly — `⌈SP / R⌉`, 335
+on model point 3 — which is what catches a refund netted against the total annuity: the
 *Überschussrente* would retire the capital sooner and the count would not match.
 
 ## The *Hinterbliebenenrente* is a gated leg, not a term in the benefit formula
@@ -152,15 +144,13 @@ own condition set, for which the GDV publishes model conditions [S9] — so it i
 gated leg here with its own insured life, and it is **off in the base run**. Switched on it
 makes the contract a joint-life last-survivor annuity: `proj_len()` takes the **maximum** of
 the annuitant's horizon, the guarantee's own end and the second life's horizon, and on model
-point 4 the second life is three years younger and the frame runs to `t = 707` — the
-survivor's horizon, three years past the annuitant's.
-
-`(1 − l_a(t)) l_s(t)` is the probability that the annuitant is dead and the second life alive
-at the payment instant, **assuming independence** [std]: real joint lives are positively
-dependent, so this overstates the joint-life annuity value and understates the rider's cost,
-and no delib source quantifies the dependence. The *Anwartschaft* lapsing on the second
-life's prior death needs no separate rule — `l_s(t)` is already zero in that state — and
-nothing is refunded, the cover having been consumed.
+point 4 the second life is three years younger and the frame runs to `t = 707`, three years
+past the annuitant's own horizon. `(1 − l_a(t)) l_s(t)` is the probability that the annuitant
+is dead and the second life alive at the payment instant, **assuming independence** [std]:
+real joint lives are positively dependent, so this overstates the joint-life annuity value
+and understates the rider's cost, and no delib source quantifies the dependence. The
+*Anwartschaft* lapsing on the second life's prior death needs no separate rule — `l_s(t)` is
+already zero in that state — and nothing is refunded, the cover having been consumed.
 
 ## The *Überschussrente* steps at the anniversary and ratchets
 
@@ -178,12 +168,11 @@ The four *Überschussverwendung* forms are a **profile**, not four mechanics: th
 form opens highest and is flat, the volldynamic form opens at nothing and rises with each
 declaration, the teildynamic form is intermediate on both axes, and the *Bonusrente* is the
 crediting mechanic underneath the rising ones. **The three market forms are not calibrated to
-equal present value in this implementation**, and a user who needs them to be must do that
-calibration; asserting equality would be a wrong test rather than a right one.
-
-The base run does not **reduce** a declared *Überschussrente*, which is what the consumer
-literature says happens to the *konstante* form when the insurer earns less than projected
-[R21] — the notes' sensitivity section prices that downside instead.
+equal present value here**, and a user who needs them to be must do that calibration;
+asserting equality would be a wrong test rather than a right one. Nor does the base run
+**reduce** a declared *Überschussrente*, which is what the consumer literature says happens
+to the *konstante* form when the insurer earns less than projected [R21] — the notes'
+sensitivity section prices that downside instead.
 
 On the anchor cell the whole modelled *Überschussrente* is **10 617,38 €** undiscounted over
 fifty-six years, against a guaranteed stream of 90 804,02 €. It is also what turns the sign
@@ -202,20 +191,19 @@ derived from the calendar [R10] [REG-R49]. The model builds
 `q(x, sex, cohort, basis) = q_table(x) (1 − λ(x))^(cohort + x − 2025)`, so the shipped tables
 are the period tables of 2025 and the exponent is the calendar year in which the life attains
 age `x`, less 2025. It may be **negative** — an in-force point issued in 2012 attains its ages
-before 2025 and reads correspondingly heavier mortality — and it is not floored. What that
-is worth: rebuilding the anchor's annuity factor with `λ ≡ 0` gives **250,6755** against
-263,5711, and the guaranteed annuity would then be 381,32 € rather than 362,67 €. A period
-proxy would overstate the annuity a given *Einmalbeitrag* buys by **5,1 %** on this basis
-alone, which dwarfs every other assumption in the model.
+before 2025 and reads heavier mortality — and it is not floored. Rebuilding the anchor's
+annuity factor with `λ ≡ 0` gives **250,6755** against 263,5711, so a period proxy would
+overstate the annuity a given *Einmalbeitrag* buys by **5,1 %** — 381,32 € rather than
+362,67 € — on that account alone, which dwarfs every other assumption in the model.
 
 **First order for pricing, second order for the projection.** `mort_rate_tariff` is
 first-order and unisex and is used only inside the pricing sums; `mort_rate` is second-order
 and sex-specific and drives the decrement. The *Sicherheitszuschlag* between them is
 **two-dimensional** — 20 % lighter in level (`SECOND = 1.20 × FIRST`) and improving 25 %
-faster (`λ_FIRST = 1.25 λ_SECOND`) — because prudence in an annuity table must reach the
-rate of improvement as well as its level [REG-R47]. The consequence is visible: the ratio
-`mort_rate_tariff / mort_rate` is 0,66667 at `t = 0` and 0,63843 at `t = 240`. A level-only
-margin would hold it constant, and collapsing the two bases destroys the systematic
+faster (`λ_FIRST = 1.25 λ_SECOND`) — because prudence in an annuity table must reach the rate
+of improvement as well as its level [REG-R47]. The consequence is visible: the ratio
+`mort_rate_tariff / mort_rate` is 0,66667 at `t = 0` and 0,63843 at `t = 240`, where a
+level-only margin would hold it constant. Collapsing the two bases destroys the systematic
 *Risikoüberschuss* the *Überschussrente* is largely financed from.
 
 **Unisex.** German new business has had to be unisex since 21 December 2012 [REG-R34], so
@@ -227,10 +215,10 @@ German carrier publishes a mix** (research gap 13).
 
 ## Payment frequency, timing and the *Aufschubzeit*
 
-Instalments are paid at the **start** of a payment month, and a payment is made if the payee
-is alive at that same instant — so the survival index of a payment is `t` under both timings
-and the two conventions differ **only in which months carry an instalment**. Under `advance`
-the first falls at `defer_mths()`; under `arrears` at `defer_mths() + 12/payment_freq`. A
+Instalments are paid at the **start** of a payment month and a payment is made if the payee
+is alive at that same instant, so the survival index of a payment is `t` under both timings
+and the two conventions differ **only in which months carry an instalment**: under `advance`
+the first falls at `defer_mths()`, under `arrears` at `defer_mths() + 12/payment_freq`. A
 `G`-year guarantee covers `G × m` instalments at every frequency and under both timings,
 which is why `guar_end_mth()` is `first_pay_mth() + 12 G` and not a frequency expression.
 
@@ -242,11 +230,10 @@ instalment at `t = 0`, worth 1; against that, its guarantee window is `1 … 120
 advance, worth `v¹⁰ (1 − l̃(120)) = 0,0974363`. The guaranteed annuity rises in exactly the
 inverse proportion, by **0,34 %** — not the 5 % of `_research/sofortrente.md` section 8,
 which is an annual-annuity identity applied to a monthly one. The research file is frozen and
-is not amended; the correction is recorded in the technical notes.
-
-The *Aufschubzeit* is implemented and off in the base run. All three of its effects fall out
-of the pricing sum without a second mechanic: interest accrues, mortality accrues so the
-survivors share the fund of those who died, and the annuity starts at an older age.
+is not amended; the correction is recorded in the technical notes. The *Aufschubzeit* is
+implemented and off in the base run, and all three of its effects fall out of the pricing sum
+without a second mechanic: interest accrues, mortality accrues so the survivors share the
+fund of those who died, and the annuity starts at an older age.
 
 ## Inputs are external files
 
@@ -330,14 +317,13 @@ scope); `check_annuity_roll_fwd` (the anniversary step and the *Bonusrente* ratc
 `check_refund_run_off` (one guaranteed instalment per payment month, non-increasing, zero by
 the end, and the independent `⌈SP/R⌉` count — identically zero where no refund was bought);
 `check_payment_factor` (the three legs partition the instalment); `check_guarantee_certain`
-(`payment_factor(t) == 1` inside the *Rentengarantiezeit*, whatever `δ`);
-`check_equivalence` (`SP_net == R ä (1 + β) + refund_pv()`, to `roll_fwd_tol` **scaled by
-`net_single_prem()`**, because the identity is an equality between euro amounts of order 10⁵
-and the refund solve converges on `R` rather than on the residual); `check_death_option_xor`
-(the **[std]** exclusivity of the refund against the guarantee and survivor options, asserted
-rather than assumed); and `check_tariff_int_rate` (an **inequality** against the cap of the
-contract's own vintage, because a carrier may price below it and one in the corpus is
-observed doing so [S6]).
+(`payment_factor(t) == 1` inside the *Rentengarantiezeit*, whatever `δ`); `check_equivalence`
+(`SP_net == R ä (1 + β) + refund_pv()`, to `roll_fwd_tol` **scaled by `net_single_prem()`**,
+the identity being an equality between euro amounts of order 10⁵ while the refund solve
+converges on `R` rather than on the residual); `check_death_option_xor` (the **[std]**
+exclusivity of the death-benefit families, asserted rather than assumed); and
+`check_tariff_int_rate` (an **inequality** against the cap of the contract's own vintage,
+because a carrier may price below it and one in the corpus is observed doing so [S6]).
 
 ## Modules that are off in the base run
 
@@ -355,12 +341,12 @@ once at inception and is thereafter a parameter rather than a decision.
 | *Überschussrente* | `surplus_form` | `none` on point 14 | `teildynamisch` on the anchor; `konstant` and `volldynamisch` elsewhere | Adds `R u₀ (1 + ψ)^k` from the first payment month, stepping at the anniversary and ratcheting |
 
 Two further constructions are described in the sources and are **not implemented**, each for
-a stated reason. A **commuted settlement of the *Restgarantiezeit*** exists in the market and
-**no carrier's commutation basis was established** (research gap 10), so implementing it
-would mean inventing the basis rather than modelling it. And the ***Bewertungsreserven***
-share continues in the payout phase [S3] [REG-R24] but is a function of the HGB balance sheet
-and the *Sicherungsbedarf* test [REG-R9], not of this policy's own path, so it belongs to a
-layer that consumes these cash flows rather than to the projection.
+a stated reason: a **commuted settlement of the *Restgarantiezeit***, whose basis was not
+established at any carrier (research gap 10), so implementing it would mean inventing the
+basis rather than modelling it; and the ***Bewertungsreserven*** share, which does continue
+in the payout phase [S3] [REG-R24] but is a function of the HGB balance sheet and the
+*Sicherungsbedarf* test [REG-R9] rather than of this policy's path, so it belongs to a layer
+that consumes these cash flows.
 
 ## Sign convention
 
@@ -370,12 +356,11 @@ outgo-positive, the technical notes' own orientation, with `net_cf(t) = −liabi
 exactly, and both are columns of `result_cf()` so the identity is verifiable in the frame
 rather than only in prose. A Solvency II best estimate is `Σ v(t) × liability_cf(t)` over
 whatever risk-free term structure the valuation layer supplies, plus a risk margin [REG-R1]
-[REG-R4] [REG-R6]; nothing in this library discounts.
-
-The shape to expect on a new-business point is one large positive month at `t = 0` — the
-whole *Einmalbeitrag* against a single instalment and the acquisition expense, 97 394,57 € on
-the anchor cell — and a long negative tail decaying with survival, which is what a
-*Deckungsrückstellung* is held against and which this model does not compute.
+[REG-R4] [REG-R6]; nothing in this library discounts. The shape to expect on a new-business
+point is one large positive month at `t = 0` — the whole *Einmalbeitrag* against a single
+instalment and the acquisition expense, 97 394,57 € on the anchor cell — and a long negative
+tail decaying with survival, which is what a *Deckungsrückstellung* is held against and which
+this model does not compute.
 
 `expenses` is the notes' total: acquisition at `t = 0`, maintenance on `pols_if(t)`, and the
 per-instalment cost on `payment_factor(t)` — the last is not a slip, because a survivor's
@@ -396,7 +381,11 @@ that, this model sits on the **payout-annuity chassis** the repository already h
 `frlib/rente_viagere/Rente_FR_S`: `duration_mth`, `horizon_mths`, `is_payment_mth`,
 `certain_floor`, `payment_factor`, `lives_if`, `lives_death`, `annuity_pp`,
 `annuity_payments`, `check_lives_roll_fwd` and `check_payment_factor` mean the same thing on
-all four, and `result_pols()` is the same second frame. Six cases needed care:
+all four, and `result_pols()` is the same second frame. `payment_surv_mth` and
+`payment_factor_life`, which those three carry to separate the survival index of a payment
+from the month it falls in, are **absent** here: the payment instant is the start of month
+`t` under both timings, so the two indices coincide and a second cells would only restate
+`lives_if`. Six cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
@@ -406,11 +395,6 @@ all four, and `result_pols()` is the same second frame. Six cases needed care:
 | `C(t)` | `cum_annuity_guar_pp` | Deliberately *not* `cum_annuity_pp`, the name `SPIA_US_S`, `PA_UK_S` and `Rente_FR_S` use, because it accumulates the **guaranteed** instalment alone. The longer name is the [std] refund-basis decision made visible at the point of use |
 | `ä` | `annuity_factor` | The notes' `ä`, and **not** the market's `a12`: `a12 = annuity_factor() / payment_freq()`, so the research file's `a12 = 20,426` is `annuity_factor() = 245,11`. `Rente_FR_S` carries the same name for the same quantity |
 | `l̃(k)` | `tariff_lives` | The first-order survival path, used only inside the pricing sums and running from inception whatever `t_start()` is. Kept apart from `lives_if` so that the equivalence stays acyclic |
-
-`payment_surv_mth` and `payment_factor_life`, which the three sister payout models carry, are
-**absent** here: both exist to separate the survival index of a payment from the month it
-falls in, and on this product the payment instant is the start of month `t` under both
-timings, so the two indices coincide and a second cells would only restate `lives_if`.
 
 ## Standardizations used
 
@@ -427,9 +411,8 @@ all** (research gap 1).
 | Closing row and cap | `q = 1` at attained age 120; every series capped at 1.0 | Forces the survival path to zero inside the `omega_age` horizon. The cap binds only on `SECOND/M` at ages 117–119, where `1.20 × FIRST` would stop being a probability |
 | *Trendfunktion* | `λ_SECOND = 1,5 %` to age 70, tapering linearly to 0 at 105 | A plausible German annuitant improvement shape; DAV 2004 R's own trend is not public [R10] [R12] |
 | First-order trend margin | `λ_FIRST = 1.25 × λ_SECOND` | Prudence for an annuity must reach the **rate** of improvement, not only its level [REG-R47]. The size is the modeller's view |
-| `mort_base_year` | 2025 | Makes the shipped tables the period tables of 2025, so the anchor's cohort exponent at age 65 is exactly zero and the worked example reads the table unmodified |
-| `omega_age` | 121 | An upper bound, not an observation; the proxy reaches zero survival before it |
-| Monthly rates | `1 − (1 − q)^(1/12)` | A uniform force of mortality across the policy year, the convention under which twelve monthly survivals compound back to the annual one exactly |
+| `mort_base_year`, `omega_age` | 2025; 121 | The base year makes the shipped tables the period tables of 2025, so the anchor's cohort exponent at 65 is exactly zero; the limiting age is an upper bound the proxy reaches zero survival before |
+| Monthly rates | `1 − (1 − q)^(1/12)` | A uniform force of mortality across the policy year, under which twelve monthly survivals compound back to the annual one exactly |
 | `mix_male` ρ_M | 0.45 | A **direction with no magnitude**: a unisex tariff on sex-distinct tables favours women, so a voluntary annuitant portfolio's female share exceeds the population share [REG-R34]. No carrier publishes a mix (research gap 13) |
 | `expense_load_alpha` α | 2,5 % of `SP` | A single-premium annuity's acquisition cost is one commission plus an issue expense, with no premium stream to amortise against. **No charge parameter was established at any carrier** (research gap 8) |
 | `expense_load_beta` β | 2,0 % of the annuity value | Covers a payment run whose per-policy cost is roughly constant in euros — right on 100 000 €, too small on 25 000 €, which is itself why minimum *Einmalbeiträge* exist |
@@ -438,43 +421,33 @@ all** (research gap 1).
 | `expense_infl` | 1,5 % p.a., stepping at the **policy anniversary** | Every step in this product falls on an anniversary; nothing happens on 31 December |
 | Surplus scale | `konstant` 20 %/0 %; `teildynamisch` 10 %/1,0 %; `volldynamisch` 0 %/2,0 % | The corpus gives the *shape* and no level [R20] [R21] [R23]. The 20 % opening share sits mid-way in the [unverified] 15–25 % gap between guaranteed and total annuity; the growth rates are round numbers consistent with a *Zinsüberschuss* of one to two points over a 1,00 % *Rechnungszins*. **Not calibrated to equal present value** |
 | Surplus increase date | The policy anniversary | No specimen *Rentenanpassungsmitteilung* was located at any carrier for any year [S15] (research gap 16) |
-| Refund basis | Netted against the **guaranteed** instalments | A guaranteed benefit cannot be defined by reference to a discretionary quantity. A modeller's argument, not a carrier's clause (research gap 10) |
+| Refund basis | Netted against the **guaranteed** instalments | A guaranteed benefit cannot be defined by reference to a discretionary quantity — a modeller's argument, not a carrier's clause (research gap 10) |
 | Death-benefit exclusivity | Refund **xor** (guarantee period, survivor's annuity) | Which carriers permit the combination was not established (research gap 10), and the refund's implicit equation is written against a plain annuity leg |
 | Payment timing | *vorschüssig*, first instalment at `t = 0` | **No source in the corpus states the convention**, for this product or the deferred one (research gap 11). Model point 9 measures the alternative at 0,34 % |
 | Joint-life dependence | Independent lives | Real joint lives are positively dependent, so this **overstates** the joint-life annuity value and understates the rider's cost. No delib source quantifies it |
 | Age basis | `entry_age + t // 12`, with `entry_year == birth_year + entry_age` on every shipped point | An internal-consistency convention, not a contract fact; a real book carries a fractional offset of up to a year |
 | *Höchstrechnungszins* split years | 1994 and 2000 assigned to the 1 January rate | The statutory steps fall mid-year and a model point carries one vintage [REG-R15] |
-| Annuitant selection | **No** adjustment factor on top of the first-order table | DAV 2004 R is an annuitant-experience table understood to carry *Selektionsfaktoren* already [REG-R49], so the effect belongs inside the basis rather than beside it |
-| Proof of life | Not modelled | A failed certificate suspends payment until it arrives — a timing effect on an unchanged obligation |
+| Annuitant selection, proof of life | No adjustment factor on the first-order table; suspension not modelled | DAV 2004 R is an annuitant-experience table understood to carry *Selektionsfaktoren* already [REG-R49], so selection belongs inside the basis; a failed life certificate is a timing effect on an unchanged obligation |
 | Tolerances | `roll_fwd_tol = 1e-8`; `solve_tol = 1e-10`; `solve_max_iter = 200` | The refund solve is the only numerical solve in the model, so `solve_tol` is a change of answer rather than of runtime |
-| Commercial envelope | Entry ages 60–85; *Einmalbeitrag* 25 000–500 000 € around 100 000 € | The market's quoting unit is the euro per 100 000 €. No entry-age or ticket-size limit was established at any carrier (research gap 7) |
-| The model points | Fourteen cells | The anchor is the technical notes' worked example; the rest exercise one mechanic each |
+| Commercial envelope and model points | Entry ages 60–85; *Einmalbeitrag* 25 000–500 000 € around 100 000 €; fourteen cells | The market's quoting unit is the euro per 100 000 €, and no entry-age or ticket-size limit was established at any carrier (research gap 7). The anchor is the notes' worked example; the rest exercise one mechanic each |
 
-The only quantities in this model that are **not** standardizations are structural: that the
-annuity is converted once at inception on a table named DAV 2004 R and a rate at or below the
-statutory cap [S6] [REG-R14] [REG-R15]; that the guaranteed annuity is thereafter immutable
-[REG-R27]; that the guarantee period pays regardless of survival [R23]; that the refund is
-the *Einmalbeitrag* less instalments paid [R23]; that the survivor's annuity is a rider [S9];
-that surplus participation continues through the payout phase [S3] [REG-R24]; and that there
-is no surrender, lapse or paid-up state at any duration [R1] [R2] [R5] [REG-R28].
+The only quantities in this model that are **not** standardizations are structural: the
+conversion at inception on a table named DAV 2004 R at a rate at or below the statutory cap
+[S6] [REG-R14] [REG-R15]; the guaranteed annuity's immutability thereafter [REG-R27]; the
+guarantee period paying regardless of survival [R23]; the refund being the *Einmalbeitrag*
+less instalments paid [R23]; the survivor's annuity being a rider [S9]; surplus participation
+continuing through the payout phase [S3] [REG-R24]; and the absence of any surrender, lapse
+or paid-up state at any duration [R1] [R2] [R5] [REG-R28].
 
 ## Tests
 
 `tests/test_sofortrente_de.py` asserts the technical notes' worked example — every printed
 row of the anchor cell's 672-month frame to the cent, `pols_if` to six decimals, and the
-totals summed at full precision rather than from the rounded cells (which differ by 17 cents
-on `net_cf`, and the test asserts that too) — the derived quantities and the annuity factor
+totals summed at full precision rather than from the rounded cells, which differ by 17 cents
+on `net_cf` and which the test asserts too — the derived quantities and the annuity factor
 behind them, the notes' three independent rebuilds and its two closure identities, the
-*nachschüssig*, in-force and surplus-off variants, and **one test per listed modeling
-pitfall**: the *Überschussrente* projected as well as the guarantee, the guaranteed
-instalments not decremented, the certain floor taken as a `max` and not a sum, the survivor's
-leg gated inside the guarantee, the refund solved rather than evaluated, the refund measured
-against the guaranteed annuity, the surface indexed by birth cohort, the improvement inside
-the table rather than beside it, the first-order margin reaching the trend, the tariff
-unisex, the *Einmalbeitrag* not recounted on an in-force point, the in-force frame opening at
-its own duration, the arrears offset, the surplus stepping only at anniversaries, the annuity
-ratcheting, the tariff rate reaching the projection only through `ä`, the absence of any
-lapse or surrender machinery, and `proj_len()` taking the second life's horizon.
+*nachschüssig*, in-force and surplus-off variants, every `check_*` identity with its residual,
+and **one test per listed modeling pitfall**, eighteen of them.
 
 The single sweep over the whole model point table belongs to
 `tests/test_model_conventions_de.py`, which is also where every `check_*()` is called on
