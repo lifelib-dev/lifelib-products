@@ -69,17 +69,15 @@ replacement for the cover the state withdrew, and it is **paid in addition to** 
 pension rather than offset against it — offsetting designs exist at the margin `[unverified]` and
 are not modelled.
 
-**Market size.** The GDV publishes the industry aggregates in its *Statistisches Taschenbuch* and
-*Die deutsche Lebensversicherung in Zahlen* [R20]. An order of magnitude often quoted is roughly
-**17 million** BU contracts in force in Germany, counting standalone and rider forms together,
-against a working population of about 45 million `[unverified] on both figures and on the year` —
-i.e. cover reaches well under half the people who need it, which is the market's own framing of the
-product. The GDV's own taxonomy does not help: BU sold as a rider falls under *Zusatzversicherungen*
-while the *selbständige* form does not appear as a separate line at all, so **the SBU/BUZ split of
-German new business is not established** [REG-R53], and delib's choice of the standalone form as
-product 9 rests on the argument in *Riders and options* below rather than on a market share. For
-scale on the parent market: German life premium income (life insurers, *Pensionskassen* and
-*Pensionsfonds* together) was **€94.6 bn in 2024**, on a contract count of **80.3 million**, down
+**Market size.** The GDV publishes the industry aggregates [R20]. An order of magnitude often
+quoted is roughly **17 million** BU contracts in force, standalone and rider forms together, against
+a working population of about 45 million `[unverified] on both figures and the year` — cover reaches
+well under half the people who need it, which is the market's own framing of the product. The GDV
+taxonomy does not help: rider BU falls under *Zusatzversicherungen* while the *selbständige* form is
+not a separate line at all, so **the SBU/BUZ split of German new business is not established**
+[REG-R53], and delib's choice of the standalone form rests on the argument in *Riders and options*
+below rather than on a market share. For scale, German life premium income (life insurers,
+*Pensionskassen* and *Pensionsfonds*) was **€94.6 bn in 2024** on **80.3 million** contracts, down
 1.4 % [REG-R53].
 
 **What the market competes on.** The core definition is close to uniform, because it descends from
@@ -127,48 +125,44 @@ anchor model cell is defined in the last row of the first table and argued in fo
 Footnotes to **[std]** rows:
 
 1. **Wrapper is a tax and packaging variable, not a liability one.** The BU risk, the definition,
-   the *Leistungsprüfung*, the *Nachprüfung* and the *Beitragsbefreiung* are identical in the
-   standalone and the rider forms [S1] [S2]. Two things differ. In a BUZ the *Beitragsbefreiung*
-   waives the **whole** premium of the host contract, not only the rider premium, which is the
-   rider form's main attraction [S2]; and inside a *Basisrente* the whole premium becomes
-   deductible while the *BU-Rente* becomes fully taxable [R27] [R28]. The composite takes the
-   standalone form because it isolates the BU liability from a savings chassis delib already models
-   four times over, and because the standalone form's cash flows are the rider's cash flows plus
-   nothing.
+   the *Leistungsprüfung*, the *Nachprüfung* and the *Beitragsbefreiung* are identical in the two
+   forms [S1] [S2]. Two things differ: in a BUZ the *Beitragsbefreiung* waives the **whole**
+   premium of the host contract, which is the rider form's main attraction [S2]; and inside a
+   *Basisrente* the whole premium becomes deductible while the *BU-Rente* becomes fully taxable
+   [R27] [R28]. The composite takes the standalone form because it isolates the BU liability from a
+   savings chassis delib already models four times over, and because the standalone form's cash
+   flows are the rider's cash flows plus nothing.
 2. **Both premium forms are real German designs.** The base sale is a level *Bruttobeitrag*
-   guaranteed for the term. The *Beitragsdynamik* option escalates the premium and the insured
-   *BU-Rente* together each year, commonly at **3 % or 5 %**, with menus recalled from 1 % to 10 %,
-   and lapses permanently if two or three consecutive increases are declined `[unverified]` on
-   every figure. The composite ships the level form as the base and carries `dynamik` as a
-   model-point form at **3 %** **[std]**, chosen as the lower of the two commonly quoted rates.
-3. Observed entry-age envelopes could not be compared carrier by carrier. What is established is
-   the shape: pupils and students are insurable and are classified by the occupation trained for,
-   which is the market's principal argument for buying young, and entry closes somewhere around
-   50 `[unverified]`. The composite issues from 15 to 50 and does not model an entry-age decline.
+   guaranteed for the term. The *Beitragsdynamik* option escalates premium and insured *BU-Rente*
+   together each year, commonly at **3 % or 5 %**, menus recalled from 1 % to 10 %, lapsing
+   permanently if two or three consecutive increases are declined `[unverified]` on every figure.
+   The composite ships the level form as the base and carries `dynamik` at **3 % [std]**, the lower
+   of the two commonly quoted rates.
+3. Entry-age envelopes could not be compared carrier by carrier. What is established is the shape:
+   pupils and students are insurable and are classified by the occupation trained for — the
+   market's principal argument for buying young — and entry closes somewhere around 50
+   `[unverified]`. The composite issues from 15 to 50 and models no entry-age decline.
 4. **The two ages are separate columns because they are separate contractual terms.** The
    *Versicherungsdauer* is the period in which a BU may incept and be covered; the *Leistungsdauer*
-   is the period over which benefit is paid. In the market standard both end at the same *Endalter*
-   [S1]; where they differ the *Leistungsdauer* is the shorter one `[unverified]`. A model carrying
-   one age cannot express that design at all, and the composite therefore carries `cover_end_age`
-   and `benefit_end_age` and sets them equal in eleven of its thirteen model points.
-   **67 rather than 65** because 67 is the statutory retirement age for cohorts born from 1964
-   `[unverified]` and anything earlier leaves a gap between the end of the *BU-Rente* and the start
-   of the old-age pension — the point on which consumer advice is most insistent [S16].
-5. German life practice is an *Eintrittsalter* convention rather than an age-nearest one; the
-   precise rounding rule varies by carrier and none could be retrieved, so the composite uses age
-   last birthday advancing at the policy anniversary and marks it **[std]**. On a monthly grid the
-   convention is worth at most one year of the inception curve, which at the anchor age is about
-   6 % of the inception rate.
+   the period over which benefit is paid. In the market standard both end at the same *Endalter*
+   [S1]; where they differ the *Leistungsdauer* is the shorter `[unverified]`. A model carrying one
+   age cannot express that design at all, so the composite carries both and sets them equal in
+   eleven of its thirteen model points. **67 rather than 65** because 67 is the statutory retirement
+   age for cohorts born from 1964 `[unverified]` and anything earlier leaves a gap between the end
+   of the *BU-Rente* and the start of the old-age pension [S16].
+5. German practice uses an *Eintrittsalter* convention rather than an age-nearest one; the rounding
+   rule varies by carrier and none was retrieved, so the composite uses age last birthday advancing
+   at the policy anniversary **[std]**. On a monthly grid it is worth at most one year of the
+   inception curve, about 6 % of the rate at the anchor age.
 6. **The anchor is the German market's central sale.** Entry age 30 is inside the 25–35 mass
    market; a 37-year term to 67 exercises the entire inception curve including the expensive last
-   decade that dominates the liability; an office class keeps the premium in a range a reader can
-   sanity-check against published price points; and 1 500 € a month is the level the consumer press
-   uses in its illustrations, above the recalled 1 000–1 200 € average new-business *BU-Rente*
-   because that average is itself evidence of systematic underinsurance against the market's own
-   70–80 %-of-net advice [R22] [S15] [S16] `[unverified]`. The *Leistungsdynamik* of 2 % is the
-   midpoint of the recalled 1–3 % menu **[std]**; carrying it in the base run is deliberate,
-   because a BU model without in-claim escalation misses the product's dominant long-duration
-   sensitivity.
+   decade that dominates the liability; an office class keeps the premium where a reader can
+   sanity-check it against published price points; and 1 500 € a month is the level the consumer
+   press illustrates with, above the recalled 1 000–1 200 € average new-business *BU-Rente* because
+   that average is itself evidence of underinsurance against the market's own 70–80 %-of-net advice
+   [R22] [S15] [S16] `[unverified]`. The *Leistungsdynamik* of 2 % is the midpoint of the recalled
+   1–3 % menu **[std]**, carried in the base run because a BU model without in-claim escalation
+   misses the product's dominant long-duration sensitivity.
 
 ### Premiums
 
@@ -188,25 +182,22 @@ Footnotes to **[std]** rows:
 | *Stundung* and *Anwartschaft* | Most tariffs allow deferral of the premium or a dormant *Anwartschaft* for parental leave, unemployment or study, preserving insurability without full cover | [S1] `[unverified]`; not modelled |
 
 7. **This is the most consequential single gap in the whole corpus.** The
-   *Produktinformationsblatt* [S13] is the one public German document that routinely prints a
-   *Bruttobeitrag* and a *Zahlbeitrag* on the same page for a named age, occupation and *BU-Rente*,
-   and none was retrieved. 0,70 is the midpoint of the recalled 0,60–0,75 common band and is a
-   construction, not a measurement. Its consequence is direct and large: **a model projecting only
-   the *Bruttobeitrag* overstates collected premium by 1/0,70 − 1 = 42,9 %**, and one projecting
-   only the *Zahlbeitrag* silently assumes the *Beitragsverrechnung* is permanent when the whole
-   point of the pair is that it is not. The reference implementation projects **both** streams and
-   makes the difference an explicit cash-flow line.
+   *Produktinformationsblatt* [S13] is the one public German document that routinely prints both
+   figures on the same page for a named age, occupation and *BU-Rente*, and none was retrieved.
+   0,70 is the midpoint of the recalled 0,60–0,75 common band: a construction, not a measurement.
+   Its consequence is direct and large — **a model projecting only the *Bruttobeitrag* overstates
+   collected premium by 1/0,70 − 1 = 42,9 %**, and one projecting only the *Zahlbeitrag* silently
+   assumes the *Beitragsverrechnung* is permanent when the whole point of the pair is that it is not.
 8. **No German BU rate card of any kind was obtained** — no tariff table, no occupational factor
    set, no age curve. Unlike frlib's `temporaire_deces`, where one carrier published a complete
    attained-age grid the model reproduces exactly, **this model can reproduce nothing external**.
    The honest response is to make the premium an *output* of a stated first-order basis rather than
-   an unsourced input, so that the number is at least internally derivable and its sensitivity to
-   each assumption is visible. The technical notes state the equivalence in full. The recalled
-   price points above are then a **plausibility check on the construction, not its source**.
+   an unsourced input, so the number is internally derivable and its sensitivity to each assumption
+   is visible. The recalled price points above are then a **plausibility check on the construction,
+   not its source**.
 9. The 5 % / 3 % / 2 % ladder is the convention the German market is generally understood to use;
-   no retrieved document states it, and it is carried as **[std]** with the observation that the
-   loading applies to the tariff premium and therefore scales the *Bruttobeitrag* and the
-   *Beitragsverrechnung* together.
+   no retrieved document states it. It loads the tariff premium, so it scales the *Bruttobeitrag*
+   and the *Beitragsverrechnung* together.
 
 ### Benefit provisions
 
@@ -261,24 +252,21 @@ Footnotes to **[std]** rows:
 | ***Vorvertragliche Anzeigepflicht*** | § 19 VVG: disclosure of risk circumstances the insurer asked about in *Textform*; on breach, *Rücktritt*, contract amendment, *Kündigung* or *Anfechtung* graded by fault. Remedies lapse after **five years**, ten on intent or fraud | [R7] [REG-R30] |
 | ***Anerkennungsquote*** | About **75 % – 80 %** of decided claims accepted, roughly half of the declines because the 50 % degree is not reached | [R21] [R20] `[unverified]`; enters the model as **[std]** (13) |
 
-12. **A five-class cut with a 1,00 / 3,00 anchor.** The research supports the *shape* of a German
+12. **A five-class cut with a 1,00 / 3,00 anchor.** The corpus supports the *shape* of a German
     *Berufsgruppenverzeichnis* — academic and office at the top, heavy manual at the bottom — and a
     manual-to-office premium ratio recalled at 2× to 4×, centred near 3×. It supports no carrier's
-    class count and no factor. The composite adopts five classes because that sits inside the
-    recalled 4–6 band while leaving room for the heaviest insurable trades, and anchors BG1 at 1,00
-    and BG4 at 3,00 exactly as the research file's own representative design directs. BG2, BG3 and
-    BG5 are interpolated and extrapolated on a roughly geometric progression. **These are
-    constructions inside an argued range, not sourced figures**, and a user with a real
-    *Berufsgruppenverzeichnis* should replace the whole table. The mechanic they implement — one
-    base inception table with multiplicative occupational loadings — **is** how German BU pricing
-    works [S6], and that much is not a construction.
+    class count and no factor. Five classes sits inside the recalled 4–6 band while leaving room
+    for the heaviest insurable trades; BG1 at 1,00 and BG4 at 3,00 are the research file's own
+    representative anchors, and BG2, BG3 and BG5 are interpolated on a roughly geometric
+    progression. **These are constructions inside an argued range, not sourced figures.** The
+    mechanic they implement — one base inception table with multiplicative occupational loadings —
+    **is** how German BU pricing works [S6], and that much is not a construction.
 13. The *Anerkennungsquote* enters as an **acceptance factor of 0,80 [std] on the inception rate**,
     applied to the transition rather than to the benefit, because a declined claim generates no
-    annuity at all rather than a smaller one. **This interacts with the decrement table and the
-    interaction is a trap**: the shipped inception proxy is **gross of declinature** by
-    construction, so the acceptance factor belongs on top of it; a user substituting a table that
-    is already net of declinature must set the factor to 1,00 or the effect is counted twice
-    [REG-R53].
+    annuity at all rather than a smaller one. **The interaction with the decrement table is a
+    trap**: the shipped inception proxy is **gross of declinature** by construction, so the factor
+    belongs on top of it, and a user substituting a table already net of declinature must set it to
+    1,00 or the effect is counted twice [REG-R53].
 
 ### Charges
 
@@ -299,24 +287,22 @@ this table is therefore **[std]** or a statutory ceiling.
 | Expense inflation | **None.** German loadings are fixed at inception for the term | **[std]** (15) |
 | Premium tax | None | [R31] `[unverified]` |
 
-14. **The only sourced ceiling in the entire charge structure** is the *Höchstzillmersatz*, and it
-    is itself `[unverified]` as to its own figure — the reference library records three different
-    renderings of what the 25 ‰ applies to [REG-R16]. The composite sits **at** the cap, because
-    German level-premium risk business generally does and because a cap is at least a sourced
-    ceiling rather than an invented number. On the anchor cell the *Beitragssumme* over 37 years is
-    large in absolute terms even though the annual premium is modest, so this single parameter is
-    the biggest expense item in the contract.
-15. Levels are round-number constructions sized so that first-year outgo is of the same order as
+14. **The only sourced ceiling in the entire charge structure** is the *Höchstzillmersatz*, itself
+    `[unverified]` as to its own figure — the reference library records three different renderings
+    of what the 25 ‰ applies to [REG-R16]. The composite sits **at** the cap, because German
+    level-premium risk business generally does and because a cap is at least a sourced ceiling. The
+    *Beitragssumme* over 37 years is large in absolute terms even though the annual premium is
+    modest, so this is the biggest expense item in the contract.
+15. Levels are round-number constructions sized so first-year outgo is of the same order as
     first-year premium income, which is the shape a level-premium risk product has. Holding the
-    flat component level in euro rather than inflating it is deliberate and is the German practice:
-    a *Verwaltungskostenzuschlag* is fixed in the tariff at conclusion, not indexed.
+    flat component level in euro rather than inflating it is the German practice: a
+    *Verwaltungskostenzuschlag* is fixed in the tariff at conclusion, not indexed.
 16. ***Leistungsbearbeitungskosten* are the charge a modeller from a term-life background will
-    forget, and on this product they are material.** A BU claim is expensive to assess — medical
-    reports, an analysis of the occupation as actually exercised, for the self-employed an analysis
-    of the business, and sometimes litigation — and expensive to maintain, because the
-    *Nachprüfung* recurs annually or biennially [R21]. Splitting them into a one-off assessment
-    cost and a recurring per-month-in-payment cost is the minimum structure that reflects that;
-    both levels are constructions.
+    forget, and here they are material.** A BU claim is expensive to assess — medical reports, an
+    analysis of the occupation as actually exercised, for the self-employed an analysis of the
+    business, sometimes litigation — and expensive to maintain, because the *Nachprüfung* recurs
+    annually or biennially [R21]. A one-off assessment cost plus a recurring per-month-in-payment
+    cost is the minimum structure reflecting that; both levels are constructions.
 
 ### Termination and values
 
@@ -335,12 +321,12 @@ this table is therefore **[std]** or a statutory ceiling.
 
 17. **A gross benefit-and-premium projection has no place to put a surrender value**, and inventing
     one would be worse than omitting it: the *Rückkaufswert* is the release of a reserve this model
-    deliberately does not compute. The omission is a **scope limitation stated here rather than
-    left to be discovered**, and its direction is known — a model that pays nothing on lapse
-    overstates net cash flow by the surrender values it never pays, and understates it by the
-    reserve it never releases. Likewise the two-week *Mahnung* period means a monthly model
-    applying the lapse decrement in the month of the missed premium is early by at least one month
-    [REG-R30]; the composite applies lapse at end of month and accepts the offset.
+    deliberately does not compute. The omission is a **scope limitation stated here rather than left
+    to be discovered**, and its direction is known — a model paying nothing on lapse overstates net
+    cash flow by the surrender values it never pays and understates it by the reserve it never
+    releases. Likewise the two-week *Mahnung* period means a monthly model applying lapse in the
+    month of the missed premium is early by at least one month [REG-R30]; the composite applies
+    lapse at end of month and accepts the offset.
 
 ---
 
@@ -409,15 +395,13 @@ unable the insured is to do her own job, because almost anyone can be pointed at
 theoretically available occupation. **The market standard is now to waive it**: essentially every
 quality tariff sold today contains a *Verzicht auf die abstrakte Verweisung*, and a tariff retaining
 it is not sold in the broker channel [S1] [S3]–[S12] [REG-R37]. The waiver is a competitive
-standard, not a legal requirement, and legacy books still carry the clause, which is why the point
-still generates litigation.
-
-The *konkrete Verweisung* is **retained**, on both sides of the claim: at the initial claim, if the
-insured has already taken up such an occupation she is not *berufsunfähig*; and in the
-*Nachprüfung*, if she takes one up later, the insurer may end the benefit — subject to the
-three-month run-off [R3]. The limit is *Lebensstellung*: the new occupation must correspond in
-**income and social standing**, with a working market threshold of about a **20 %** income drop
-`[unverified]`, a rule of thumb from lower-court practice rather than a BGH figure [R29].
+standard, not a legal requirement, and legacy books still carry the clause. The *konkrete
+Verweisung* is **retained**, on both sides of the claim: at the initial claim, if the insured has
+already taken up such an occupation she is not *berufsunfähig*; and in the *Nachprüfung*, if she
+takes one up later, the insurer may end the benefit — subject to the three-month run-off [R3]. The
+limit is *Lebensstellung*: the new occupation must correspond in **income and social standing**,
+with a working market threshold of about a **20 %** income drop `[unverified]`, a rule of thumb from
+lower-court practice rather than a BGH figure [R29].
 
 **Model consequence, and it is a design decision rather than a simplification.** *Konkrete
 Verweisung* is **not a separate decrement**. In a cash-flow model it is indistinguishable from
@@ -458,23 +442,23 @@ and some do, by contracting for a longer run-off or by waiving the *Nachprüfung
 benefit duration [R4] `[unverified]`.
 
 **What the insurer must show** is a *change* relative to the state on which the *Anerkenntnis*
-rested: either a medical improvement lifting the insured above the 50 % threshold in her old
-occupation, or a new occupation actually taken up satisfying *konkrete Verweisung*. A
-re-assessment of the same facts, or correction of the insurer's own earlier error, does not
-suffice, and an *Einstellungsmitteilung* that does not set the comparison out intelligibly is
-ineffective — so the three-month period never starts to run [R29].
+rested: a medical improvement lifting the insured above the 50 % threshold in her old occupation,
+or a new occupation actually taken up satisfying *konkrete Verweisung*. A re-assessment of the same
+facts, or correction of the insurer's own earlier error, does not suffice, and an
+*Einstellungsmitteilung* that does not set the comparison out intelligibly is ineffective — so the
+three-month period never starts to run [R29].
 
 **What it does to the cash flows, and this is the most model-relevant number in the statutory
-frame.** A recovery does **not** stop the annuity on the day it happens. It stops it three months
+frame.** A recovery does **not** stop the annuity on the day it happens; it stops it three months
 later, measured from a notice. Every claim termination other than death is therefore followed by
 **three further monthly payments**, and because reactivation is concentrated in the first one to
-two years of a claim, that tail is a real cash-flow effect rather than a rounding detail.
+two years of a claim that tail is a real cash-flow effect rather than a rounding detail.
 
 ***Reaktivierung*** is the other half. The insured recovers and **the cover revives**: the contract
-does not end, the *Beitragsbefreiung* stops, the premium resumes **at the same *Zahlbeitrag*** —
-the insured has not aged into a higher tariff, because the tariff is level — and a fresh BU may be
-claimed later. This bidirectional structure is what makes BU a genuine multi-state model rather
-than a decrement model, and it is the most important structural difference from delib's
+does not end, the *Beitragsbefreiung* stops, the premium resumes **at the same *Zahlbeitrag*** — she
+has not aged into a higher tariff, because the tariff is level — and a fresh BU may be claimed
+later. This bidirectional structure is what makes BU a genuine multi-state model rather than a
+decrement model, and is the most important structural difference from delib's
 `risikolebensversicherung`.
 
 ### Beitragsbefreiung
@@ -762,21 +746,21 @@ liability cash flows, undiscounted, and names the valuation layers rather than r
 
 **Taxation, and why the same liability is sold in two wrappers.** For a **standalone SBU
 (Schicht 3)** the premium is a *sonstige Vorsorgeaufwendung* under § 10 Abs. 1 Nr. 3a EStG,
-deductible only inside an annual ceiling recalled as **1 900 €** for employees and civil servants
-and **2 800 €** for the self-employed `[unverified]` — in practice already consumed by statutory
-health and long-term-care contributions, so **the effective deduction for most buyers is nil**. The
-*BU-Rente* is then an *abgekürzte Leibrente* taxed on its ***Ertragsanteil*** under § 22 Nr. 1 EStG,
-read from a table keyed on the annuity's **remaining term at the start of payment** rather than on
-the recipient's age — recalled at about 5 % for 5 years remaining, 12 % for 10, 16 % for 15, 21 %
-for 20, 26 % for 25 and 30 % for 30, all `[unverified]` [R27] [REG-R41]. For **BU inside a
-*Basisrente* (Schicht 1)** the whole premium is an *Altersvorsorgeaufwendung* deductible within the
-much larger *Basisrente* ceiling, provided the BU benefit is paid as an annuity, does not run beyond
-the host's deferment, and accounts for **no more than 49 %** of the total premium `[unverified]`; in
-exchange the *BU-Rente* is fully taxable at the cohort *Besteuerungsanteil* [R27] [R28] [REG-R38]
-[REG-R39]. The trade is not obviously favourable, and the 49 % rule forces a large savings premium
-alongside the cover, which is why the standalone SBU remains the dominant retail form. **delib
-projects gross, pre-tax cash flows in every product**, so nothing in the model depends on any of
-these figures and nothing here asserts them.
+deductible only inside an annual ceiling recalled as **1 900 €** (employees, civil servants) or
+**2 800 €** (self-employed) `[unverified]` — in practice already consumed by statutory health and
+long-term-care contributions, so **the effective deduction for most buyers is nil**. The *BU-Rente*
+is then an *abgekürzte Leibrente* taxed on its ***Ertragsanteil*** under § 22 Nr. 1 EStG, read from
+a table keyed on the annuity's **remaining term at the start of payment** rather than on the
+recipient's age — recalled at about 5 % for 5 years remaining, 12 % for 10, 16 % for 15, 21 % for
+20, 26 % for 25 and 30 % for 30, all `[unverified]` [R27] [REG-R41]. For **BU inside a *Basisrente*
+(Schicht 1)** the whole premium is an *Altersvorsorgeaufwendung* deductible within the much larger
+*Basisrente* ceiling, provided the benefit is an annuity, does not run beyond the host's deferment,
+and is **no more than 49 %** of the total premium `[unverified]`; in exchange the *BU-Rente* is
+fully taxable at the cohort *Besteuerungsanteil* [R27] [R28] [REG-R38] [REG-R39]. The trade is not
+obviously favourable, and the 49 % rule forces a large savings premium alongside the cover, which is
+why the standalone SBU remains the dominant retail form. **delib projects gross, pre-tax cash flows
+in every product**, so nothing in the model depends on any of these figures and nothing here asserts
+them.
 
 **Case law.** Four settled BGH lines govern the claim in practice, each recalled in substance and
 `[unverified]` in every detail, with **no docket number given anywhere in this library** because

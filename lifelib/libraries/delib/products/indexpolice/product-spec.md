@@ -19,16 +19,16 @@ Values marked **[std]** are standardizations introduced for the reference implem
 **[std]** table row carries a numbered footnote giving the rationale and, where one could be assessed,
 the plausible market band. Claims no retrieval and no search corroborated are flagged [unverified].
 
-**Read this before reading any number below.** delib was built with **direct HTTP egress blocked**
-and, for this product, **with the session's `WebSearch` budget already exhausted**. No AVB, no
+**Read this before reading any number below.** delib was built with **direct HTTP egress blocked** and,
+for this product, **with the session's `WebSearch` budget already exhausted**. No AVB, no
 *Produktinformationsblatt*, no *Basisinformationsblatt*, no statutory text and no index rulebook was
-opened, and no search summary was available either. **A delib `indexpolice` citation is a pointer, not
-a certificate**, and the consequence is unusually heavy here: **not one cap level, participation rate,
+opened, and no search summary was available either. **A delib `indexpolice` citation is a pointer, not a
+certificate**, and the consequence is unusually heavy here: **not one cap level, participation rate,
 charge level, entry-age band or minimum premium was established for any German carrier**, so the
-commercial envelope below is **[std] throughout**. What *is* established, and is not in dispute, is
-the **mechanics** — the financing identity between declared surplus and option budget, the
+commercial envelope below is **[std] throughout**. What *is* established, and not in dispute, is the
+**mechanics** — the financing identity between declared surplus and option budget, the
 sum-of-capped-monthly-returns payoff with uncapped negative months, the annual floor at zero, the
-permanent lock-in, and the annual election — and this document puts its weight there. Three carrier
+permanent lock-in and the annual election — and this document puts its weight there. Three carrier
 products are named — **Allianz IndexSelect** [S2], **R+V-IndexInvest** [S7] and **Stuttgarter
 index-safe** [S8] — all [unverified], and no fourth is added.
 
@@ -36,25 +36,21 @@ index-safe** [S8] — all [unverified], and no fourth is added.
 
 ## Product overview and market role
 
-An *Indexpolice* is an **aufgeschobene Rentenversicherung**: a deferred annuity on a single life,
-with an *Aufschubphase* running from inception to *Rentenbeginn* and a *Rentenphase* paying a
-lifelong *Leibrente* thereafter [S1] [S9]. Premium, reserve, death benefit before *Rentenbeginn*,
-*Rückkaufswert*, *Beitragsfreistellung*, *Rentenfaktor*, *Kapitalwahlrecht* and *Rentengarantiezeit*
-are the chassis of a *klassische Rentenversicherung* and are documented for that product
-(`products/klassische_rentenversicherung/`). **The delta is one clause set**: how the annually
-declared *Überschuss* is applied.
+An *Indexpolice* is an **aufgeschobene Rentenversicherung**: a deferred annuity on a single life, with
+an *Aufschubphase* running from inception to *Rentenbeginn* and a *Rentenphase* paying a lifelong
+*Leibrente* thereafter [S1] [S9]. Premium, reserve, death benefit before *Rentenbeginn*,
+*Rückkaufswert*, *Beitragsfreistellung*, *Rentenfaktor*, *Kapitalwahlrecht* and *Rentengarantiezeit* are
+the chassis of a *klassische Rentenversicherung* and are documented for that product. **The delta is one
+clause set**: how the annually declared *Überschuss* is applied. Three facts decide everything else, and
+the first two are the ones secondary descriptions usually get wrong.
 
-Three facts decide everything else about the product, and the first two are the ones secondary
-descriptions of it usually get wrong.
-
-**1. The capital is in the general account, not in a fund.** The accumulated *Deckungskapital* sits
-in the *Sicherungsvermögen* [REG-R7], exactly as a classic annuity's does. There is no *Anlagestock*,
-no unit account and no policy-level asset allocation. The policyholder owns a **claim on the insurer
-measured in euros**, not a number of units; the reserve rolls forward by a recursion, not by a unit
-price; and the *Rückkaufswert* is a reserve, not a *Zeitwert* of units [R2] [REG-R28]. **What the
-index does is define a payoff, not an investment.** The policyholder is never invested in the index
-at any moment; the insurer buys the option package that hedges the payoff it has itself written
-[R9] [REG-R7], and the policyholder never holds it.
+**1. The capital is in the general account, not in a fund.** The accumulated *Deckungskapital* sits in
+the *Sicherungsvermögen* [REG-R7], exactly as a classic annuity's does: no *Anlagestock*, no unit
+account, no policy-level asset allocation. The policyholder owns a **claim on the insurer measured in
+euros**, not a number of units; the reserve rolls forward by a recursion, not by a unit price; and the
+*Rückkaufswert* is a reserve, not a *Zeitwert* of units [R2] [REG-R28]. **What the index does is define
+a payoff, not an investment** — the policyholder is never invested in the index at any moment, and the
+insurer buys the option package that hedges the payoff it has itself written [R9] [REG-R7].
 
 A terminological trap follows. In regulatory and accounting vocabulary, *"Lebensversicherungen, bei
 denen das Anlagerisiko vom Versicherungsnehmer getragen wird"* — the balance-sheet class containing
@@ -71,13 +67,13 @@ financed out of declared surplus and payable in euros from the cover pool is not
 
 **2. The index participation is a form of *Überschussverwendung*, with no independent statutory
 footing.** § 153 VVG gives the policyholder a right to participate in the surplus and in the
-*Bewertungsreserven* unless participation is excluded, and requires the insurer to allocate by a
-*verursachungsorientiertes Verfahren* or another comparable appropriate method [R1] [REG-R24]. What
-the policyholder is legally entitled to is a **share of surplus**; the AVB then say how that share is
-applied, and this product's AVB say it is applied by buying a bounded index-linked payoff for one
-year. The *Wahlrecht* is therefore an *Überschussverwendungswahlrecht*, and the *Indexbeteiligung*
-stands or falls on the contract clause. **This is the correct legal characterisation and it is not in
-doubt** [R1], [unverified] only as to subsection numbering.
+*Bewertungsreserven* unless participation is excluded, and requires allocation by a
+*verursachungsorientiertes Verfahren* or another comparable appropriate method [R1] [REG-R24]. What the
+policyholder is legally entitled to is a **share of surplus**; the AVB then say how that share is
+applied, and this product's AVB say it is applied by buying a bounded index-linked payoff for one year.
+The *Wahlrecht* is therefore an *Überschussverwendungswahlrecht*, and the *Indexbeteiligung* stands or
+falls on the contract clause. **That is the correct legal characterisation and it is not in doubt**
+[R1], [unverified] only as to subsection numbering.
 
 **3. The option budget is the declared surplus, and nothing more.** The insurer earns a return on the
 *Sicherungsvermögen*; the MindZV forces a minimum share of each result source to the policyholders —
@@ -152,14 +148,13 @@ argued against the plausible band in *Variations across insurers*.
 Footnotes to **[std]** rows:
 
 1. **No index AVB was obtained** [S2] [S7] [S8], and the GDV publishes no model clause for the module
-   [S1]. The clause set in *Contractual mechanics* below is reconstructed from the mechanics the
-   research file establishes, is attributed to **no carrier**, and is labelled a composite wherever it
-   is used.
+   [S1]. The clause set in *Contractual mechanics* below is reconstructed from the mechanics the research
+   file establishes, is attributed to **no carrier**, and is labelled a composite wherever used.
 2. **No *Produktinformationsblatt* was located** [S3] [S11] [S15], so no entry-age band, minimum
-   premium, term band or maximum sum was established for any carrier. The envelope is a **[std]**
-   construction chosen to be uncontroversial: 25–55 is the mid-career segment this product is sold
-   into; 67 is the German statutory retirement age; the 12-year minimum is the tax threshold of
-   § 20 Abs. 1 Nr. 6 EStG [R14] [REG-R45] rather than a product limit.
+   premium, term band or maximum sum was established for any carrier. The envelope is an uncontroversial
+   **[std]** construction: 25–55 is the mid-career segment this product is sold into, 67 is the German
+   statutory retirement age, and the 12-year minimum is the tax threshold of § 20 Abs. 1 Nr. 6 EStG
+   [R14] [REG-R45] rather than a product limit.
 3. The German market's own *Eintrittsalter* convention is frequently the calendar year of inception
    less the year of birth, which steps on 1 January rather than on the birthday. delib runs **age last
    birthday** across all ten products, the registry fixing one age basis for the library; on an annual
@@ -170,12 +165,11 @@ Footnotes to **[std]** rows:
    *Risikoüberschuss* is small and § 161 VVG (*Selbsttötung*, three years) is close to inoperative
    [R6] [REG-R26].
 5. Through the 0,90 % and 0,25 % years carriers offered a **choice of *Garantieniveau*** — commonly
-   60 %, 80 %, 90 % or 100 % [unverified] — because **every euro of guarantee not promised is a euro
-   that can back risk assets, and therefore a larger option budget**. 90 % is the level at which a
-   1,00 % contract can still finance a visible option budget over a 30-year term. **The wrapper decides
-   the floor**: a *Riester* variant must guarantee 100 % of contributions and allowances under the
-   AltZertG *Beitragserhaltungszusage*, and so has the smallest option budget of the four wrappers
-   [R12] [REG-R43].
+   60 %, 80 %, 90 % or 100 % [unverified] — because **every euro of guarantee not promised is a euro that
+   can back risk assets, and therefore a larger option budget**. 90 % is the level at which a 1,00 %
+   contract can still finance a visible option budget over a 30-year term. **The wrapper decides the
+   floor**: a *Riester* variant must guarantee 100 % of contributions and allowances under the AltZertG
+   *Beitragserhaltungszusage* and so has the smallest option budget of the four [R12] [REG-R43].
 6. *Eintrittsalter* 40 with *Rentenbeginn* 67 gives a 27-year *Aufschubdauer*, long enough for the
    ratchet to compound visibly and short enough to print in one table. The 2 400,00 € *Jahresbeitrag*
    is the research file's 200,00 € per month, taken on the **annual** mode so the anchor is free of the
@@ -238,45 +232,43 @@ level is **[std]**.
     Cap out of the same budget, which makes this a calibration question rather than a detail. delib
     aligns the *Indexjahr* with the policy year and reads closing levels, an annual-grid model having
     no other defensible alignment.
-12. **No cap level, for any insurer, in any year, was established. Not one.** The documents carrying
-    real cap levels are the annual customer notification [S5], the *Standmitteilung* [S10] and the
-    rating-house compilations [R21], none of which was reachable. The band quoted throughout —
-    **1,5 % to 5,0 % per month, typically 2,5 % to 4,0 %** — is the research file's assessment and is
-    [unverified]; 3,00 % is its midpoint. **The Cap is not a free parameter**: given the budget, the
-    index's forward, its implied volatility, its dividend yield and the risk-free rate, there is
-    exactly one Cap at which the capped-sum payoff costs the budget, and the technical notes must
-    publish the consistency check between the two.
+12. **No cap level, for any insurer, in any year, was established. Not one.** The documents carrying real
+    cap levels are the annual customer notification [S5], the *Standmitteilung* [S10] and the
+    rating-house compilations [R21], none of which was reachable. The band quoted throughout — **1,5 % to
+    5,0 % per month, typically 2,5 % to 4,0 %** — is the research file's assessment and is [unverified];
+    3,00 % is its midpoint. **The Cap is not a free parameter**: given the budget, the index's forward,
+    its implied volatility, its dividend yield and the risk-free rate, there is exactly one Cap at which
+    the capped-sum payoff costs the budget, and the technical notes must publish that consistency check.
 13. 50–80 % on a broad equity price index and 80–120 % on a volatility-targeted house index are the
     research file's assessment and are [unverified]. The Cap design is the base because it is the
     design the product's reputation and its criticism both rest on; the *Quote* is a switchable variant.
-14. Three readings of the base are possible — the whole *Deckungskapital* at the year's start, a
-    defined index-participating sub-account, or the accumulated *Überschussguthaben* alone — and
-    **none was established**. delib takes the whole capital at the start of the *Indexjahr*, **before**
-    that year's premium, the natural reading of a payoff struck on a level observed at the
-    *Indexstichtag*. A different reading rescales every credit in the model, which is why it is a named
-    model risk.
+14. Three readings of the base are possible — the whole *Deckungskapital* at the year's start, a defined
+    index-participating sub-account, or the accumulated *Überschussguthaben* alone — and **none was
+    established**. delib takes the whole capital at the start of the *Indexjahr*, **before** that year's
+    premium, the natural reading of a payoff struck on a level observed at the *Indexstichtag*. A
+    different reading rescales every credit in the model, which is why it is a named model risk.
 15. The declared rate **is** the option budget [R8]. 2,50 % is consistent with the 2026 market
     averages above [R20] [REG-R53] and sits inside a 2,0–3,0 % band. It is **exogenous** in the
     reference implementation: the feedback from the *Garantieniveau* through the asset mix to the
     declared rate is real, is the whole design logic of *Neue Klassik*, and is **not modeled**.
-16. Whether a carrier permits a split election or requires an all-or-nothing choice was not
-    established. delib treats the election as a fraction `w`, making all-or-nothing the special case
-    `w ∈ {0, 1}`. The notice period, and — far more consequentially — **whether the Cap is announced
-    before the election deadline**, were both unestablished; delib assumes it is.
+16. Whether a carrier permits a split election or requires an all-or-nothing choice was not established.
+    delib treats the election as a fraction `w`, making all-or-nothing the special case `w ∈ {0, 1}`. The
+    notice period, and — far more consequentially — **whether the Cap is announced before the election
+    deadline**, were both unestablished; delib assumes it is.
 17. These are different promises: a *Mindest-Cap* bounds the Cap given a budget, a minimum budget
     bounds the budget — and a *Mindest-Cap* is worthless in a year in which no surplus is declared
     [R1] [R8]. **Neither is established for any carrier**, and delib assumes neither.
-18. Whether a mid-year exit attracts a pro-rata credit, a refund of the unspent budget, or nothing,
-    **was not established**. delib's **[std]** is nothing — the simple treatment and, on the research
-    file's understanding, the usual one. It has a behavioural consequence: **the product rewards
-    surrendering just after an *Indexjahr* end and penalises surrendering just before one**, and an
-    annual grid with exits at year end implicitly assumes the favourable convention.
+18. Whether a mid-year exit attracts a pro-rata credit, a refund of the unspent budget, or nothing, **was
+    not established**. delib's **[std]** is nothing — the simple treatment and, on the research file's
+    understanding, the usual one. It has a behavioural consequence: **the product rewards surrendering
+    just after an *Indexjahr* end and penalises surrendering just before one**, so an annual grid with
+    exits at year end implicitly assumes the favourable convention.
 19. Whether any carrier offers index participation in the payout phase was not established; delib
     assumes not, and that payout-phase surplus is applied to the annuity in payment.
 20. **No German house multi-asset index is named anywhere in delib**, because none could be named with
     confidence and a wrong name would be worse than none. The model parameterises the underlying by an
     explicit table of monthly returns with a stated drift and volatility, shipping an equity case, a
-    low-volatility house-index case and an all-zero case side by side.
+    low-volatility house case and an all-zero case.
 21. Whether substitution requires an *unabhängiger Treuhänder*'s confirmation, and whether the
     policyholder gets a *Sonderkündigungsrecht* or an unscheduled right to move to the *sichere
     Verzinsung*, were both unestablished; the legal frame is under *Contractual mechanics*.
@@ -302,12 +294,12 @@ level is **[std]**.
     of the Deutsche Aktuarvereinigung, **not public and not redistributed here**. delib ships **[std]**
     proxies and states what a replacement must preserve.
 23. The standard *Todesfallleistung* on this chassis is a return of the accumulated capital [S9]. The
-    50 % floor is a **[std]** representative choice with a statutory reason: for contracts concluded
-    from 1 April 2009 the favourable half-income treatment of a *Kapitalabfindung* requires a
-    *Mindesttodesfallschutz* of at least **50 % of all premiums payable over the term**, failing which
-    the earnings are taxed in full under the *Abgeltungsteuer* [R14] [REG-R45]. **A model point that
-    would fail the German tax test is not representative of a sold contract**, so the floor is on in the
-    base run and switched off on one model point to keep the plain return-of-capital form testable.
+    50 % floor is a **[std]** representative choice with a statutory reason: for contracts concluded from
+    1 April 2009 the favourable half-income treatment of a *Kapitalabfindung* requires a
+    *Mindesttodesfallschutz* of at least **50 % of all premiums payable over the term**, failing which the
+    earnings are taxed in full under the *Abgeltungsteuer* [R14] [REG-R45]. **A model point that would
+    fail the German tax test is not representative of a sold contract**, so the floor is on in the base
+    run and off on one model point, keeping the plain return-of-capital form testable.
 24. The *Bewertungsreserven* leg is path- and balance-sheet-dependent in a way a gross liability
     cash-flow model cannot reproduce, and the *Sicherungsbedarf* test [REG-R9] [REG-R18] has for most of
     the last decade reduced the payable half to zero on high-guarantee portfolios. delib models the
@@ -315,8 +307,8 @@ level is **[std]**.
 
 ### Charges
 
-Nothing about the charge structure of an Indexpolice is special; **nothing about its levels was
-established for any German index product**, and every charge below is **[std]**.
+Nothing about the charge structure is special; **nothing about its levels was established for any
+German index product**, and every charge below is **[std]**.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
@@ -333,11 +325,11 @@ established for any German index product**, and every charge below is **[std]**.
 | *Effektivkosten* | Required to be disclosed as the *Minderung der Wertentwicklung* to the start of the payout phase; a validation target, not a model input | [R5] [REG-R31] |
 
 25. **Two different rules with two different functions, and delib keeps them apart: the DeckRV governs
-    what the insurer may *reserve*** (the *Höchstzillmersatz*, 25 ‰) [REG-R16], while **§ 169 Abs. 3
-    VVG governs what it must *pay*** — the *Rückkaufswert* is at least the *Deckungskapital* obtained by
-    spreading acquisition and distribution costs evenly over the first five contract years [REG-R28].
-    delib's charge profile uses the five-year spread, so the § 169 floor is satisfied by construction;
-    the floor is nevertheless computed and applied, so a user who shortens the spread sees it bite.
+    what the insurer may *reserve*** (the *Höchstzillmersatz*, 25 ‰) [REG-R16], while **§ 169 Abs. 3 VVG
+    governs what it must *pay*** — at least the *Deckungskapital* obtained by spreading acquisition and
+    distribution costs evenly over the first five contract years [REG-R28]. delib's charge profile uses
+    the five-year spread, so the floor is satisfied by construction; it is nevertheless computed and
+    applied, so a user who shortens the spread sees it bite.
 26. Inherited **[std]** from the sibling delib endowment and classic-annuity products; no charge level
     of any kind was established here [S3] [S4] [S11]. The market frame: the 2024
     *Verwaltungskostenquote* was **2,4 %** on one measurement and **2,19 %** on another, spread **from
@@ -367,49 +359,48 @@ established for any German index product**, and every charge below is **[std]**.
 | *Kündigung* | At any time for the end of the current insurance period where *laufende Prämien* are payable | [REG-R28] |
 | Expiry | There is none — the *Aufschubphase* ends at *Rentenbeginn* with a benefit, not with a lapse | mechanic firm |
 
-29. **German lapse is a three-way decrement** — surrender, *Beitragsfreistellung*, and premium-default
+29. **German lapse is a three-way decrement** — surrender, *Beitragsfreistellung* and premium-default
     conversion — and the last two keep the policy in force with a reduced benefit and a continuing
-    expense loading [REG-R28]. **The reference implementation models surrender only**, because a
-    paid-up population's per-policy account diverges from the premium-paying one from the moment of
-    conversion and tracking it needs a conversion-cohort ledger. The technical notes say so, state
-    what the paid-up path would do, and expose a shortened *Beitragszahlungsdauer* as a model-point
-    column so that the deterministic version of the same effect — premiums stop, capital and index
-    participation continue — is exercised and tested.
+    expense loading [REG-R28]. **The reference implementation models surrender only**, because a paid-up
+    population's per-policy account diverges from the premium-paying one from the moment of conversion
+    and tracking it needs a conversion-cohort ledger. The technical notes say so, state what the paid-up
+    path would do, and expose a shortened *Beitragszahlungsdauer* as a model-point column, so the
+    deterministic form of the same effect is exercised and tested.
 
 ---
 
 ## Contractual mechanics
 
 Each subsection states the operative rule, in this document's own words, and says what it does to the
-projection. **No sentence below is a quotation from any carrier's AVB**; none was obtained.
+projection. **No sentence below quotes any carrier's AVB**; none was obtained.
 
 ### The *Überschuss* as an option budget — the financing identity
 
 Each year the insurer declares an *Überschussanteilsatz* out of the surplus its results and the MindZV
-permit [R8] [REG-R18]. In the *sichere Verzinsung* arm that declared rate is credited to the
-*Deckungskapital* as interest, on top of the guaranteed *Rechnungszins*. In the *Indexbeteiligung* arm
-**the same amount is not credited — it is spent**, becoming the ***Optionsbudget*** with which the
-insurer buys, for the coming *Indexjahr*, the option package that replicates the promised payoff. With
-`G` the participating capital at the start of the *Indexjahr* and `b` the declared rate:
+permit [R8] [REG-R18]. In the *sichere Verzinsung* arm that rate is credited to the *Deckungskapital* as
+interest, on top of the guaranteed *Rechnungszins*. In the *Indexbeteiligung* arm **the same amount is
+not credited — it is spent**, becoming the ***Optionsbudget*** with which the insurer buys, for the
+coming *Indexjahr*, the option package replicating the promised payoff. With `G` the participating
+capital at the start of the *Indexjahr* and `b` the declared rate:
 
     option budget                       =  b × G
     price of the promised payoff on G   =  b × G      ← the Cap (or the Quote) is set to make this hold
 
 **The Cap is not a marketing parameter. It is the solution of a pricing equation** — which is why caps
 move from year to year with no change in the contract. Two corollaries: an Indexpolice does **not** have
-a larger risk budget than a *Klassik* contract of the same vintage; and, priced risk-neutrally, the
-index arm is worth exactly what the safe arm is worth, the whole difference between them being the
-equity risk premium earned on the option package's delta, less dealing costs. **The product is a
-redistribution of one year's surplus across states of the world, not extra return.** And the budget can
-be zero: if no surplus is declared there is nothing to buy an option with, and the *Indexbeteiligung*
-for that year is worthless whatever the index does [R1] [R8].
+a larger risk budget than a *Klassik* contract of the same vintage; and, priced risk-neutrally, the index
+arm is worth exactly what the safe arm is worth, the whole difference being the equity risk premium
+earned on the option package's delta, less dealing costs. **The product is a redistribution of one year's
+surplus across states of the world, not extra return.** And the budget can be zero: if no surplus is
+declared there is nothing to buy an option with, and the year credits nothing whatever the index does
+[R1] [R8].
 
 ### The annual *Wahlrecht*
 
-The policyholder elects, once a year and for the coming *Indexjahr* only, between *Indexbeteiligung*
-and *sichere Verzinsung*. The election is a contractual right, exercisable without the insurer's
-consent, without medical evidence and without charge; a policyholder who does nothing stays in the arm
-they were in.
+The policyholder elects, once a year and for the coming *Indexjahr* only, between *Indexbeteiligung* and
+*sichere Verzinsung*. The election is a contractual right, exercisable without the insurer's consent,
+without medical evidence and without charge; doing nothing leaves the policyholder in the arm they were
+in.
 
 | Arm | The year's surplus is | Outcome |
 |---|---|---|
@@ -520,23 +511,21 @@ in the § 163 / § 164 VVG world. **No decided German case on the *Cap-Festlegun
 The classic underlying is the **EURO STOXX 50**, and two of its properties drive the economics. It is
 quoted and used as a ***Kursindex*** — a price index, dividends excluded — and options are written on
 the price index, so the euro-area dividend yield, of the order of 3 % a year [unverified], **never
-reaches the policyholder in any state of the world**: a permanent structural give-up on top of the
-cap, invisible to a purchaser comparing the product to "the index". And it is volatile, of the order
-of 18–22 % annualised [unverified], which makes the monthly cap strip expensive and forces the Cap
-down.
+reaches the policyholder in any state of the world**: a permanent structural give-up on top of the cap,
+invisible to a purchaser comparing the product to "the index". And it is volatile, of the order of
+18–22 % annualised [unverified], which makes the monthly cap strip expensive and forces the Cap down.
 
-From the mid-2010s a substantial part of the market replaced it with **bespoke multi-asset indices**.
-Their common features: multi-asset composition, so volatility is structurally lower than an equity
-index's; **volatility targeting**, a rule scaling exposure to hold realised volatility at a target
-often around 5 % [unverified] — the decisive engineering step, because at a 5 % target the option
-package costs a fraction of what it costs on a 20 %-volatility index, so the same budget buys a
-participation rate near or above 100 %; an **excess-return construction with an embedded fee**, of the
-order of 0,5–1,5 % a year [unverified], which reduces the return without appearing in any cost
-disclosure; and a short live history behind a long backtest. **The honest summary of the shift**: it
-moved the give-up from somewhere the purchaser can see — a 55 % participation rate, a 3 % cap — to
-somewhere they cannot. Headline numbers improved; expected outcomes did not necessarily improve with
-them, because the financing identity still binds. **No specific German house index is named anywhere
-in delib**, and none may be added.
+From the mid-2010s a substantial part of the market replaced it with **bespoke multi-asset indices**,
+whose common features are: multi-asset composition, so volatility is structurally lower than an equity
+index's; **volatility targeting**, a rule scaling exposure to hold realised volatility at a target often
+around 5 % [unverified] — the decisive engineering step, because at a 5 % target the option package
+costs a fraction of what it costs on a 20 %-volatility index, so the same budget buys a participation
+rate near or above 100 %; an **excess-return construction with an embedded fee** of the order of
+0,5–1,5 % a year [unverified], which reduces the return without appearing in any cost disclosure; and a
+short live history behind a long backtest. **The honest summary**: the shift moved the give-up from
+somewhere the purchaser can see — a 55 % participation rate, a 3 % cap — to somewhere they cannot.
+Headline numbers improved; expected outcomes did not necessarily improve with them, because the
+financing identity still binds. **No specific German house index is named anywhere in delib.**
 
 ### The guarantee at *Rentenbeginn* — *Neue Klassik*
 
@@ -614,11 +603,11 @@ product in delib (`products/berufsunfaehigkeit/`); the *Schlussüberschussanteil
 
 ## Variations across insurers
 
-**An honest variations table for this product is very largely a record of what could not be compared.**
-No carrier document was retrieved and no search corroborated any carrier-level term. What follows is
-the *structure* of the comparison a later researcher must fill in, with delib's **[std]** in the last
-column. Three product names are given and all three are [unverified]; **no downstream document may
-present one as established, and none may add a fourth**.
+**An honest variations table here is very largely a record of what could not be compared.** No carrier
+document was retrieved and no search corroborated any carrier-level term, so what follows is the
+*structure* of the comparison a later researcher must fill in, with delib's **[std]** in the last
+column. Three product names are given, all [unverified]; **no downstream document may present one as
+established, and none may add a fourth**.
 
 | Feature | Allianz [S2] [S3] [S4] [S5] | R+V [S7] | Die Stuttgarter [S8] | Anyone else | delib **[std]** |
 |---|---|---|---|---|---|
@@ -730,15 +719,14 @@ notes [REG-R45].
 **The criticism, stated fairly, because a specification that omits it is not a specification.** The
 cap's effect on the expected credit is large and is not disclosed in a usable form: the purchaser is
 told the cap, is not told the volatility, and cannot do the calculation. Negative months are uncapped,
-which is genuinely counter-intuitive. Against a direct index investment the product loses on every
-axis but two — it gives up the dividends of a price index, gives up the tail of every good month, and
-adds acquisition, administration and possibly index-level costs — but **what it gives back is real**:
-the capital cannot fall, credits lock in permanently, the guarantee is the insurer's, and the
-accumulation is tax-deferred with a favourable exit. The Cap is redetermined annually at the insurer's
-discretion, constrained in principle by § 315 BGB and by no decided case [R22]; the move to house
-indices moved the give-up out of sight; and complexity is itself a defect in a retail product. **The
-counter-argument, fairly stated**: the relevant benchmark for most purchasers is not an index fund but
-the *sichere Verzinsung* arm of the same contract, and against that the index arm has a higher expected
-value, cannot do worse than zero in any year, costs nothing extra, and can be abandoned at any
-anniversary. The reference implementation exists to let a reader run that comparison rather than
-assert it.
+which is genuinely counter-intuitive. Against a direct index investment the product loses on every axis
+but two — it gives up the dividends of a price index and the tail of every good month, and adds
+acquisition, administration and possibly index-level costs — but **what it gives back is real**: the
+capital cannot fall, credits lock in permanently, the guarantee is the insurer's, and the accumulation
+is tax-deferred with a favourable exit. The Cap is redetermined annually at the insurer's discretion,
+constrained in principle by § 315 BGB and by no decided case [R22]; the move to house indices moved the
+give-up out of sight; and complexity is itself a defect in a retail product. **The counter-argument,
+fairly stated**: the relevant benchmark for most purchasers is not an index fund but the *sichere
+Verzinsung* arm of the same contract, and against that the index arm has a higher expected value, cannot
+do worse than zero in any year, costs nothing extra, and can be abandoned at any anniversary. The
+reference implementation exists to let a reader run that comparison rather than assert it.

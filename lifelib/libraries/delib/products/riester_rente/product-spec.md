@@ -74,20 +74,17 @@ supplementary provision, relieved on the way in and taxed **in full** on the way
 § 22 Nr. 5 EStG [R12], with no *Ertragsanteil*. Schicht 1 (*Basisrente*) is relieved more
 generously and is completely illiquid; Schicht 3 is unrelieved and liquid. Riester sits between
 them on both axes, and is in the German market's own description the layer designed for the
-employed household of modest income with children.
-
-**The subsidy is the product.** Stripped of the Zulagen and the § 10a deduction, a Riester annuity
-is a *worse* Schicht-3 annuity: the same general-account chassis, more constraints, full taxation
-instead of the *Ertragsanteil*. Every economic argument for the product runs through the subsidy,
-and every criticism of it runs through the cost of the constraints the subsidy buys.
+employed household of modest income with children. **The subsidy is the product**: stripped of the
+Zulagen and the § 10a deduction, a Riester annuity is a *worse* Schicht-3 annuity — the same
+general-account chassis, more constraints, full taxation instead of the *Ertragsanteil*.
 
 **Certification is not endorsement, and no document in this library may suggest otherwise.** The
 certifying authority — the *Bundeszentralamt für Steuern*, which took the function over from the
 BaFin [unverified] as to the date — confirms only that a contract's **terms** satisfy the § 1
-criteria. It says nothing about the provider's financial standing, the product's cost or its
+criteria, and says nothing about the provider's financial standing, the product's cost or its
 expected return [R2] [S15] [REG-R43]. The state pays a subsidy and certifies the terms; the
-*Beitragsgarantie* is the **provider's own**, and the provider's ability to honour it is an
-ordinary solvency question under the VAG [REG-R5] [REG-R6].
+*Beitragsgarantie* is the **provider's own**, and its ability to honour it is an ordinary solvency
+question under the VAG [REG-R5] [REG-R6].
 
 ### The four certified chassis, and which one this is
 
@@ -235,23 +232,18 @@ subtracted from it.**
 | D — two children born from 2008 | 20,000.00 | 775.00 | 800.00 | 25.00 → floor 60.00 | 60.00 | 835.00 | 92.81 % |
 | E — *mittelbar* eligible spouse | not applicable | 175.00 | not applicable | 60.00 | 60.00 | 235.00 | 74.47 % |
 
-Three consequences, each of which the model must reproduce and a test must assert.
-
-**At the *Mindesteigenbeitrag* the Zulagen do not raise the amount invested; they lower the amount
-the saver pays.** Where the saver pays exactly the § 86 minimum, the total into the contract is
-`min(4 % × income, 2 100 €)` and the Zulagen are a **substitute** for the saver's own money, not
-an addition to it. This is the single most misunderstood feature of the product.
-
-**The *Sockelbeitrag* stops binding at an income of `(60 € + Zulagen) / 4 %`** `[std] derived`:
-**5 875 €** for a childless single, **10 500 €** with one pre-2008 child, **13 375 €** with one
-post-2008 child, **20 875 €** with two post-2008 children. Below those incomes the contribution is
-a flat 60 € plus the Zulagen and does not vary with income at all. Case D is the product's
-political case and its actuarial oddity at once: a household paying **60,00 €** of its own money
-draws **775,00 €** of Zulagen, a multiple of **12,92×** `[std] derived`.
-
-**The ceiling binds at `2 100 € / 4 % = 52 500 €`** `[std] derived`. Above it the total
-contribution is frozen at 2 100 € regardless of earnings, so the product's subsidy value falls
-monotonically with income once the cap is reached.
+Three consequences, each of which the model must reproduce and a test must assert. **At the
+*Mindesteigenbeitrag* the Zulagen do not raise the amount invested; they lower the amount the saver
+pays** — the total into the contract is `min(4 % × income, 2 100 €)` and the Zulagen are a
+**substitute** for the saver's own money, which is the single most misunderstood feature of the
+product. **The *Sockelbeitrag* stops binding at an income of `(60 € + Zulagen) / 4 %`**
+`[std] derived`: **5 875 €** for a childless single, **10 500 €** with one pre-2008 child,
+**13 375 €** with one post-2008 child, **20 875 €** with two post-2008 children; below those
+incomes the contribution is a flat 60 € plus the Zulagen and does not vary with income at all. Case
+D is the product's political case and its actuarial oddity at once — a household paying **60,00 €**
+of its own money draws **775,00 €** of Zulagen, a multiple of **12,92×** `[std] derived`. And **the
+ceiling binds at `2 100 € / 4 % = 52 500 €`** `[std] derived`, above which the total contribution
+is frozen regardless of earnings, so the product's subsidy value falls monotonically with income.
 
 ### The Zulagen
 
@@ -269,27 +261,25 @@ reference library's own second-hand entry [REG-R42], which reports the same figu
 | *Kinderzulage*, child born **from** 1 Jan 2008 | **300.00** | 2008 | per child, while *Kindergeld* is drawn |
 | *Kinderzulage*, phase-in | 46.00 / 92.00 / 138.00 | 2002–03 / 2004–05 / 2006–07 | [R17] |
 
-**The two *Kinderzulage* rates are a permanent birth-cohort split, not a transition** [R9] [R19].
-A household with a child born in 2006 and one born in 2009 draws 185,00 € and 300,00 €
-simultaneously. A model treating the *Kinderzulage* as a single rate misprices every family model
-point that straddles the 2008 boundary, and that is a numbered pitfall in the technical notes.
-
-**The *Kinderzulage* is credited to the mother's contract** unless the parents jointly elect
-otherwise `[unverified]` [R9] [REG-R42], and it **stops when *Kindergeld* stops** — normally at
-the child's 18th birthday, later during education `[unverified]`. So the Zulage stream on a family
-contract is a **step function that falls**, typically two or three times, over a contract running
-thirty or forty years, and it is a function of a household variable the insurance contract does
-not observe. That is the most awkward fact in the whole product for a per-policy projection, and
-it is why the reference implementation carries the Zulage entitlement as an **external schedule
-keyed by model point and projection year** rather than as a scalar.
+**The two *Kinderzulage* rates are a permanent birth-cohort split, not a transition** [R9] [R19]:
+a household with a child born in 2006 and one born in 2009 draws 185,00 € and 300,00 €
+simultaneously, and a model treating the *Kinderzulage* as a single rate misprices every family
+model point that straddles the 2008 boundary. It is **credited to the mother's contract** unless
+the parents jointly elect otherwise `[unverified]` [R9] [REG-R42], and it **stops when *Kindergeld*
+stops** — normally at the child's 18th birthday, later during education `[unverified]`. So the
+Zulage stream on a family contract is a **step function that falls**, typically two or three times
+over a contract running thirty or forty years, driven by a household variable the insurance
+contract does not observe. That is the most awkward fact in the whole product for a per-policy
+projection, and it is why the reference implementation carries the Zulage entitlement as an
+**external schedule keyed by model point and projection year** rather than as a scalar.
 
 **The Zulage arrives late.** The saver applies through the provider, normally once, by a
 *Dauerzulageantrag*; the ZfA matches the provider's contribution data against the pension
-insurance's earnings data and the *Kindergeld* data and **pays the provider**, who credits the
-contract [R11]. The Zulage for contribution year `t` is therefore a cash inflow in a **later**
-period, conventionally `t + 1` [REG-R42], and it is **provisional** until the data match settles —
-where entitlement later proves wrong the ZfA reclaims and the provider debits the contract.
-Neither the payment month nor the reversal frequency is established (gap 6).
+insurance's earnings and *Kindergeld* data and **pays the provider**, who credits the contract
+[R11]. The Zulage for contribution year `t` is therefore a cash inflow in a **later** period,
+conventionally `t + 1` [REG-R42], and it is **provisional** until the data match settles — where
+entitlement later proves wrong the ZfA reclaims and the provider debits the contract. Neither the
+payment month nor the reversal frequency is established (gap 6).
 
 ### Benefit provisions
 
@@ -298,7 +288,7 @@ Neither the payment month nor the reversal frequency is established (gap 6).
 | **Beitragsgarantie** | At the beginning of the payout phase, the capital available for the benefit is **at least the sum of the *Altersvorsorgebeiträge* paid in** — own contributions **plus** Zulagen credited | [R1] [REG-R43] |
 | Guarantee carve-out | Contributions securing *Erwerbsminderung*, *Berufsunfähigkeit* or *Hinterbliebene* are left out of account, up to **20 % of total contributions** | [REG-R43] |
 | What the guarantee is **not** | Not a value at any other date; not a floor on the surrender value; not preserved in real terms; not a guarantee of the *annuity*, only of the *capital*; and not extended to the rider premiums | [R1]; see *Contractual mechanics* |
-| Conversion capital | `max( Deckungskapital + Überschussguthaben + Schlussüberschussanteil + Bewertungsreserven-Anteil , Σ Eigenbeiträge + Σ Zulagen − carve-out )` | [R1] [S9-style construction]; which surplus components count **[std]** (6) |
+| Conversion capital | `max( Deckungskapital + Überschussguthaben + Schlussüberschussanteil + Bewertungsreserven-Anteil , Σ Eigenbeiträge + Σ Zulagen − carve-out )` | [R1]; which surplus components count **[std]** (6) |
 | *Teilkapitalauszahlung* | Up to **30 %** of the capital available at the start of the payout phase, as a lump sum, **without** *schädliche Verwendung*. The remainder must be annuitised | [R1] [REG-R43] `[unverified]` on the percentage |
 | Representative election | **30 %** taken | **[std]** (7) |
 | Annuity | Lifelong monthly *Leibrente*, paid **monthly in advance**, constant or rising | [R1]; monthly-in-advance `[unverified]` |
@@ -321,46 +311,41 @@ Neither the payment month nor the reversal frequency is established (gap 6).
    provider-favourable reading, and says so. The alternative — counting only the vested
    *Deckungskapital* and *Überschussguthaben* — raises the projected guarantee cost, and the
    technical notes carry it as a named sensitivity rather than leaving it implicit.
-7. German consumer commentary consistently reports the 30 % lump sum as the usual choice
-   `[unverified]`, and **gap 10 records that this rests on nothing**: no take-up rate was
-   established. 30 % is adopted for the anchor because it exercises the option at its statutory
-   maximum, and because the decision is genuinely non-obvious for the saver — the lump sum is
-   taxed **in full in the year it is paid, with no *Fünftelregelung***, which is available only for
-   the *Kleinbetragsrenten-Abfindung* [R12] [R15]. Model point 12 takes none.
-8. **No *Rentenfaktor* level, at any carrier, for any year, was established** (gap 9). Both the
+7. German consumer commentary reports the 30 % lump sum as the usual choice `[unverified]`, and
+   **gap 10 records that this rests on nothing**. 30 % is adopted for the anchor because it
+   exercises the option at its statutory maximum and because the decision is genuinely non-obvious:
+   the lump sum is taxed **in full in the year it is paid, with no *Fünftelregelung***, which is
+   available only for the *Kleinbetragsrenten-Abfindung* [R12] [R15]. Model point 12 takes none.
+8. **No *Rentenfaktor* level, at any carrier, for any year, was established** (gap 9), so both the
    guaranteed factor and the construction that compares it with the current one are **[std]**. The
    sibling `delib` Schicht-3 file establishes the two-factor construction for the German market
-   from that session's searches, and establishes for one house that a guaranteed factor is
-   computed on a recognised mortality table and a stated interest basis — with that interest basis
-   at **0 % per annum**, which is the *Sicherheitsabschlag* made concrete. Whether Riester tariffs
-   use the same construction is the natural expectation and is **not established**.
-9. The DAV tables are the property of the *Deutsche Aktuarvereinigung*, are distributed to members
-   and licensees rather than published, and are **not redistributable**. `delib` ships none of
-   them and quotes no `q(x)` from any of them [REG-R47] [REG-R49]. The shipped table is a **[std]
-   proxy** anchored so the worked example reproduces exactly; what a replacement must preserve is
-   set out in the technical notes and in `sources.md`. The one structural property that is not
+   from that session's searches, and for one house that a guaranteed factor is computed on a
+   recognised mortality table and a stated interest basis — that basis being **0 % per annum**,
+   which is the *Sicherheitsabschlag* made concrete. Whether Riester tariffs use the same
+   construction is the natural expectation and is not established.
+9. The DAV tables are the property of the *Deutsche Aktuarvereinigung*, distributed to members and
+   licensees rather than published, and **not redistributable**. `delib` ships none of them and
+   quotes no `q(x)` from any of them [REG-R47] [REG-R49]. The shipped table is a **[std] proxy**
+   anchored so the worked example reproduces exactly. The one structural property that is not
    optional is that the annuity basis is a ***Generationentafel*** — two-dimensional in attained
-   age and calendar year — because a period-table proxy priced at an annuitisation twenty years
-   out understates the liability by a margin that dwarfs every other assumption in the model
-   [REG-R49].
+   age and calendar year — because a period-table proxy priced at an annuitisation twenty years out
+   understates the liability by a margin that dwarfs every other assumption in the model [REG-R49].
 10. No *Rentengarantiezeit* length and no payout-phase surplus system was established at any
-    carrier (gaps 11, 12). Ten years is the common German market length `[unverified]`. A constant
+    carrier (gaps 11, 12); ten years is the common German market length `[unverified]`. A constant
     annuity is the base run because the AltZertG constrains which surplus systems are available
-    [R1] and because no declaration level was established; model point 12 switches the guarantee
-    period off, which makes its effect testable by difference.
+    [R1]; model point 12 switches the guarantee period off, making its effect testable by
+    difference.
 11. The corpus establishes three death-benefit designs for the German deferred-annuity chassis —
     *Beitragsrückgewähr*, payment of the accumulated capital, and a *Hinterbliebenenrente* — and
     does not establish which a Riester tariff uses. The composite pays **the accumulated capital**,
     because the *Beitragsgarantie* is tested **only at *Rentenbeginn*** [R1] and importing it into
-    the death benefit would create a guarantee the statute does not require. The
-    *Beitragsrückgewähr* variant is named as a variation and is not implemented.
+    the death benefit would create a guarantee the statute does not require.
 12. The two readings of the *Kleinbetragsrente* threshold are irreconcilable and both are recorded
-    [REG-R42]. The composite takes **1 %, 39,55 € per month**, and prints the alternative, because
+    [REG-R42]. The composite takes **1 %, 39,55 € per month** and prints the alternative, because
     it is the **lower** trigger: fewer contracts commute, more of the book stays a lifelong annuity,
-    and the projected liability is the longer-tailed and therefore the more prudent of the two.
-    Whether commutation is the provider's right, the saver's right or automatic is a contract term
-    that **was not established at any carrier** (gap 7); the composite makes it the provider's, and
-    exercises it whenever the test trips.
+    and the projected liability is the longer-tailed and therefore more prudent. Whether commutation
+    is the provider's right, the saver's right or automatic **was not established at any carrier**
+    (gap 7); the composite makes it the provider's and exercises it whenever the test trips.
 
 ### Underwriting and rating
 
@@ -404,33 +389,31 @@ specimen, not a Riester one [S5]. **Every charge below is [std].**
 | Disclosed cost measure | ***Effektivkosten*** — the reduction in yield, computed **individually for each contract offer**, on the statutory *Produktinformationsblatt* | [R4] [R5] [S14] [REG-R43]; **no value established** (gap 13) |
 | Risk/return class | ***Chancen-Risiko-Klasse*** 1 to 5, assigned by the *Produktinformationsstelle Altersvorsorge* from a common stochastic model the insurer does not control | [R4] [S14] [REG-R43]; **not implemented, not reproducible** (18) |
 
-14. Round-number placeholders. The acquisition rate is set at the § 4 DeckRV cap [REG-R16], which
-    is a **cap and not a level**, on the argument that the binding constraint on this product is
-    not the *Höchstzillmersatz* but the AltZertG's five-year spreading [R1] — so a tariff that
-    zillmers to the cap and then spreads it is the honest worst case for the policyholder and the
-    clearest demonstration of the rule. No observed range exists for any of these numbers.
-15. **The charge base for the Zulagen is unknown** (gap 14) and it matters more than it looks:
-    in the low-income cases of the § 86 table the Zulagen are the great **majority** of the
-    contribution, so charging them or not moves the account value by tens of per cent on exactly
-    the model points the product was designed for. The composite charges them, states that it does
-    so, and the technical notes carry a pitfall for the alternative rather than letting the choice
-    be inferred from a formula.
-16. This is a real product fact, not a simplification: with a death benefit equal to the
-    accumulated capital there is no positive sum at risk in the accumulation phase and therefore
-    no *Risikobeitrag* [REG-R47]. A *Beitragsrückgewähr* floor **would** create one, and that is
-    one reason the composite does not adopt it (footnote 11).
-17. German market *Rentenfaktoren* are materially below the actuarially fair factor implied by any
+14. Round-number placeholders; **no observed range exists for any of them**. The acquisition rate
+    is set at the § 4 DeckRV cap [REG-R16], which is a **cap and not a level**, on the argument
+    that what binds this product is not the *Höchstzillmersatz* but the AltZertG's five-year
+    spreading [R1] — so a tariff that zillmers to the cap and then spreads it is the honest worst
+    case for the policyholder and the clearest demonstration of the rule.
+15. **The charge base for the Zulagen is unknown** (gap 14) and it matters more than it looks: in
+    the low-income cases of the § 86 table the Zulagen are the **majority** of the contribution, so
+    charging them or not moves the account value by tens of per cent on exactly the model points
+    the product was designed for. The composite charges them and says so; the technical notes carry
+    a pitfall for the alternative rather than letting the choice be inferred from a formula.
+16. A real product fact, not a simplification: with a death benefit equal to the accumulated
+    capital there is no positive sum at risk in the accumulation phase and therefore no
+    *Risikobeitrag* [REG-R47]. A *Beitragsrückgewähr* floor **would** create one, which is one
+    reason the composite does not adopt it (footnote 11).
+17. German market *Rentenfaktoren* sit materially below the actuarially fair factor implied by any
     plausible annuitant basis, because they carry the *Sicherheitsabschlag* of a guarantee given
-    decades ahead **and** the payout phase's own cost loading. Rather than deduct a percentage from
-    each annuity payment **and** apply a conservative factor — which double-counts — the composite
-    puts the whole loading in one place, in the factor, and takes the insurer's real payout-phase
-    administration as a per-policy expense cash flow.
-18. The *Produktinformationsblatt* regime is the most distinctive feature of German subsidised-
-    pension regulation and has **no counterpart in `uslib`, `uklib`, `jplib` or `frlib`**: a public
-    body assigns a risk class using a stochastic model the provider does not control [REG-R43].
-    `delib` does not implement the PIA simulation. A specification may **report** a published CRK
-    and *Effektivkosten* as [S#] facts; reproducing either needs the PIA's scenario set, which is
-    neither public nor in scope.
+    decades ahead **and** the payout phase's cost loading. Deducting a percentage from each annuity
+    payment **and** applying a conservative factor double-counts, so the composite puts the whole
+    loading in one place — the factor — and takes the insurer's real payout-phase administration as
+    a per-policy expense cash flow.
+18. The *Produktinformationsblatt* regime has **no counterpart in `uslib`, `uklib`, `jplib` or
+    `frlib`**: a public body assigns a risk class using a stochastic model the provider does not
+    control [REG-R43]. `delib` does not implement the PIA simulation. A specification may **report**
+    a published CRK and *Effektivkosten* as [S#] facts; reproducing either needs the PIA's scenario
+    set, which is neither public nor in scope.
 
 ### Termination and values
 
@@ -542,30 +525,26 @@ point table carries a low-declared-rate cell on which it bites.
 - **Not a floor on surrender.** A saver who terminates for cash gets the *Rückkaufswert*, which the
   guarantee does not floor, **and** loses the subsidy [R14].
 - **Not preserved on transfer.** A saver exercising the *Wechselrecht* transfers the capital as it
-  stands; whether the guarantee is preserved, restarted or lost on transfer is a design question of
-  the **receiving** contract and is **not established** (gap 8). If the receiving contract's
-  guarantee runs only on the transferred sum rather than on the original contributions, the
-  *Wechselrecht* is materially less valuable than it appears, and this library cannot say which is
-  right.
-- **Not real.** It is a **nominal** guarantee. Over a thirty-year contract at even moderate
-  inflation the guaranteed floor is worth a fraction of the contributions in real terms, which is
-  the substance of the most serious criticism of the product's design.
-- **Not a guarantee of the annuity.** It is on the **capital**. What that capital buys is a
-  separate guarantee — the *garantierter Rentenfaktor* — and the two are routinely conflated in
-  consumer material.
-- **Not extended to the risk-cover premiums**, within the statutory 20 % share [R1] [REG-R43].
-  That is why a Riester contract can carry a *Berufsunfähigkeits-Zusatzversicherung* without the
-  guarantee having to reproduce its premiums, and why raising a rider premium must never enlarge
-  the guarantee.
+  stands; whether the guarantee survives is a design question of the **receiving** contract and is
+  **not established** (gap 8). If the receiving contract's guarantee runs only on the transferred
+  sum rather than on the original contributions, the *Wechselrecht* is materially less valuable
+  than it appears, and this library cannot say which is right.
+- **Not real.** It is **nominal**. Over a thirty-year contract at even moderate inflation the floor
+  is worth a fraction of the contributions in real terms — the substance of the most serious
+  criticism of the product's design.
+- **Not a guarantee of the annuity.** It is on the **capital**; what that capital buys is a
+  separate guarantee, the *garantierter Rentenfaktor*, and the two are routinely conflated.
+- **Not extended to the risk-cover premiums**, within the statutory 20 % share [R1] [REG-R43] —
+  which is why a Riester contract can carry a *Berufsunfähigkeits-Zusatzversicherung* without the
+  guarantee reproducing its premiums, and why raising a rider premium must never enlarge it.
 
 ### Why the guarantee is the mechanical heart
 
-The guarantee is a **nominal sum, due at a fixed future date, on money paid in over decades**. Its
-cost is therefore an interest-rate quantity and nothing else: **to guarantee one euro payable in
-`n` years an insurer must immobilise `(1 + i)^−n` of it now**, where `i` is the rate at which it
-may discount the guarantee, bounded by the *Höchstrechnungszins* [R22] [REG-R14]. What is left,
-`1 − (1 + i)^−n`, is the entire budget for risk assets **and** for every charge the contract will
-levy.
+The guarantee is a **nominal sum, due at a fixed future date, on money paid in over decades**, so
+its cost is an interest-rate quantity and nothing else: **to guarantee one euro payable in `n`
+years an insurer must immobilise `(1 + i)^−n` of it now**, where `i` is bounded by the
+*Höchstrechnungszins* [R22] [REG-R14]. What is left, `1 − (1 + i)^−n`, is the entire budget for
+risk assets **and** for every charge the contract will levy.
 
 Stated on the whole contract: for level contributions in advance over `n` years the guaranteed
 accumulation is `C × s̈(n, i)`, the guarantee is `C × n`, and the **headroom** is

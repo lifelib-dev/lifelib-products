@@ -6,40 +6,35 @@
 liability cash-flow modeling of a German **fondsgebundene Rentenversicherung** (FRV) — the
 unit-linked deferred private annuity in which the accumulating capital is a holding of
 *Anteileinheiten* (units) in *Investmentfonds* chosen by the policyholder, so that the insurer
-guarantees the **number** of units and not their value, and in which the single hard financial
-guarantee given at inception is the *Rentenfaktor* applied to whatever the fund is worth at
-*Rentenbeginn*. **It does not describe any single insurer's product**, and it must not be read
-as one. Facts carrying a source tag — [S#] (primary product documents: *Allgemeine
+guarantees the **number** of units and not their value, and whose single hard financial guarantee
+is the *Rentenfaktor* applied at *Rentenbeginn* to whatever the fund is then worth. **It does not
+describe any single insurer's product.** [S#] tags are primary product documents (*Allgemeine
 Versicherungsbedingungen*, *Produktinformationsblatt*, *Basisinformationsblatt*,
-*Verbraucherinformation*, *Kundeninformation*) and [R#] (product-specific
-regulatory/actuarial references), both numbered per
-`_research/fondsgebundene_rentenversicherung.md` and resolved in `sources.md` (same directory;
-numbering frozen, never renumbered), and [REG-R#] (the cross-product reference library
-`references/regulatory-and-actuarial-references.md`, whose own R-numbering is distinct) —
-name the instrument the claim should be checked against. Values marked **[std]** are
-standardizations introduced for the reference implementation; each carries a rationale and,
-where the research file recorded one, the argued range across the German market. Claims flagged
-[unverified] could not be confirmed against any retrieved document or search result.
+*Verbraucherinformation*) and [R#] product-specific regulatory and actuarial references, both
+numbered per `_research/fondsgebundene_rentenversicherung.md` and resolved in `sources.md` (same
+directory; numbering frozen, never renumbered); [REG-R#] tags the cross-product reference library
+`references/regulatory-and-actuarial-references.md`, whose R-numbering is distinct. **[std]**
+marks a standardization introduced for the reference implementation, each with a rationale and,
+where the research recorded one, the argued range across the German market; [unverified] marks a
+claim no retrieved document or search result confirmed.
 
-**Read this before reading anything else.** Two limits applied at full strength to this product.
-Direct HTTP egress was blocked by an organisation network policy, so **no document cited
-anywhere in this specification was retrieved** — not one *Bedingungswerk*, not one
-*Basisinformationsblatt*, not one *Produktinformationsblatt*. And the session's `WebSearch`
-budget was exhausted before this product's research began, so **no search was run for it
-either**; the few facts corroborated at one remove were corroborated by searches run for sibling
-delib products and are attributed to those siblings wherever they appear. A delib citation is
-therefore **a pointer, not a certificate**. The **mechanics** below are common ground in German
-practice and are written without hedging. The **levels** are almost entirely **[std]**: not one
-*Abschlusskostenquote*, not one *Verwaltungskostensatz*, not one *Stückkosten* amount, not one
-*Effektivkostenquote* and not one *Rentenfaktor* was established at any carrier.
+**Read this before anything else.** Two limits applied at full strength to this product. Direct
+HTTP egress was blocked by an organisation network policy, so **no document cited anywhere in
+this specification was retrieved** — not one *Bedingungswerk*, not one *Basisinformationsblatt*,
+not one *Produktinformationsblatt*. And the session's `WebSearch` budget was exhausted before
+this product's research began, so **no search was run for it either**; the few facts corroborated
+at one remove come from searches run for sibling delib products and are attributed to them. A
+delib citation is therefore **a pointer, not a certificate**. The **mechanics** below are common
+ground in German practice and are written without hedging; the **levels** are almost entirely
+**[std]**, because not one *Abschlusskostenquote*, not one *Verwaltungskostensatz*, not one
+*Stückkosten* amount, not one *Effektivkostenquote* and not one *Rentenfaktor* was established at
+any carrier.
 
-Out of scope, named so the boundary is explicit: **hybrid and guarantee designs** (*statische*
-and *dynamische Hybride*, *Zwei-* und *Drei-Topf-Hybride*, i-CPPI, *Wertsicherungsfonds*), which
-are this same chassis wrapped in a path-dependent reallocation rule and are discussed but
-deliberately not specified (see *Riders and options*); **indexgebundene Rentenversicherung**
-(delib `indexpolice`); the **fondsgebundene Basisrente** and **fondsgebundene Riester-Rente**
-(delib `basisrente`, `riester_rente`); the **payout phase**, which belongs to delib
-`sofortrente`; and **bAV** in all its forms.
+Out of scope: **hybrid and guarantee designs** (*statische* and *dynamische Hybride*, *Zwei-* und
+*Drei-Topf-Hybride*, i-CPPI, *Wertsicherungsfonds*), discussed but deliberately not specified
+(see *Riders and options*); **indexgebundene Rentenversicherung** (delib `indexpolice`); the
+**fondsgebundene Basisrente** and **Riester-Rente** (delib `basisrente`, `riester_rente`); the
+**payout phase** (delib `sofortrente`); and **bAV** in all its forms.
 
 ---
 
@@ -302,26 +297,23 @@ Footnotes to **[std]** rows:
 | Medical evidence | None on the representative design. A *Beitragsrückgewähr* death benefit puts almost no capital at risk, so a *Gesundheitsprüfung* is not normally required | mechanic [S1]; **[std]** (17) |
 | When underwriting appears | Where the death benefit is a *garantierte Mindesttodesfallleistung* or a percentage of the fund materially above 100 %, the excess is death cover and is underwritten | mechanic [S1]; thresholds `[unverified]` |
 | Rating factors | Attained age (through the *Risikobeitrag*) and the *Rentenbeginn* age (through the *Rentenfaktor*). **Sex may not be one** | [REG-R34]; [R16] [R17] |
-| Occupation, smoker | Not rating factors on a savings tariff | **[std]** (17) |
-| Mortality basis for the death charge | **DAV 2008 T**, first order — a death-benefit table, *not* the annuity table | [R17] [REG-R48] |
-| Mortality basis for the *Rentenfaktor* | **DAV 2004 R**, generational, first order | [R16] [S10] [REG-R49] |
+| Occupation, smoker | Not rating factors on a savings tariff | **[std]** |
+| Mortality basis for the death charge | **DAV 2008 T**, first order — a death-benefit table, *not* the annuity table | [R17] [REG-R48] (17) |
+| Mortality basis for the *Rentenfaktor* | **DAV 2004 R**, generational, first order | [R16] [S10] [REG-R49] (17) |
 | Best-estimate basis | The second-order versions of the same tables; the wedge between first and second order **is** the *Risikoergebnis* | [REG-R47]; levels **[std]** (18) |
 | *Anzeigepflicht* / misstatement | §§ 19 and 157 VVG apply in the ordinary way; on a *Beitragsrückgewähr* design the remedy is immaterial because the sum at risk is small | [REG-R30]; immateriality **[std]** |
 
-17. **A German FRV carries two mortality bases at once**, and an underwriting section is where
-    they meet: the *Risikobeitrag* for a death benefit above the *Fondsguthaben* is priced on
-    DAV 2008 T [R17] [REG-R48], while the conversion guarantee rests on the generational
-    annuitant table DAV 2004 R [R16] [REG-R49]. The direction of prudence forks — a death cover
-    is loaded by assuming mortality **higher** than expected, an annuity by assuming it **lower**
-    and improving **faster** [REG-R47] — so **a model that uses one table for both misprices one
-    of them**. That German tariffs are built this way is an inference from practice; **no AVB
-    confirming it was seen**.
+17. **A German FRV carries two mortality bases at once**, and this is where they meet. The
+    direction of prudence forks — a death cover is loaded by assuming mortality **higher** than
+    expected, an annuity by assuming it **lower** and improving **faster** [REG-R47] — so **a
+    model that uses one table for both misprices one of them**. That German tariffs are built
+    this way is an inference from practice; **no AVB confirming it was seen**.
 18. **DAV tables are the property of the Deutsche Aktuarvereinigung, are not public and are not
     redistributed by this library.** They are cited by name; the reference implementation ships
     **[std]** proxies with their anchors stated, and the technical notes say what a replacement
     must preserve — for DAV 2008 T an insured-lives death basis with selection and **no**
-    projected improvement, for DAV 2004 R a two-dimensional generational basis with safety in
-    **both** level and trend [REG-R47] [REG-R48] [REG-R49].
+    projected improvement, for DAV 2004 R a generational basis with safety in **both** level and
+    trend [REG-R47] [REG-R48] [REG-R49].
 
 ### Charges
 
@@ -655,26 +647,21 @@ as an election at *Rentenbeginn* that changes the tax treatment and not the amou
 ***Rentenfaktor*** rule, with both the guaranteed and the current factor as inputs so the `max()`
 is exercised; and the ***Stornoabzug***, present at zero and switchable.
 
-**Described and deliberately not implemented — the guarantee technologies.** German insurers
-wrap three distinct guarantee designs around this same unit-linked chassis, and a reader of the
-reference model must know what the model is *not* doing.
+**Described and deliberately not implemented — the guarantee technologies.** German insurers wrap
+three distinct guarantee designs around this same unit-linked chassis. A ***statisches Hybrid***
+(*Zwei-Topf-Hybrid*) splits the premium **once, at inception**, between the *Sicherungsvermögen*
+— where a guaranteed pot accretes at the *Rechnungszins* to exactly the guaranteed amount at
+*Rentenbeginn* — and free funds; simple, transparent, and at a low *Rechnungszins* it consumes
+almost the whole premium for the guarantee. A ***dynamisches Hybrid*** recomputes the split
+**periodically**, normally monthly, and its three-pot form inserts a ***Wertsicherungsfonds*** —
+a fund with a contractual limit on its loss over a defined period — between the
+*Sicherungsvermögen* and the free funds, so money can move out of equities in two steps rather
+than one [S7] [S8]. ***i-CPPI*** sets the exposure to the risky fund **per policy and
+continuously**, as a multiplier times the cushion between the policy value and the present value
+of the guarantee: the most efficient of the three and the most path-dependent [S9].
 
-- A ***statisches Hybrid* (*Zwei-Topf-Hybrid*, static form)** splits the premium **once, at
-  inception**, between the *Sicherungsvermögen* — where a guaranteed pot accretes at the
-  *Rechnungszins* to exactly the guaranteed amount at *Rentenbeginn* — and free funds. Simple,
-  transparent, and at a low *Rechnungszins* it consumes almost the whole premium for the
-  guarantee.
-- A ***dynamisches Hybrid* (*Zwei-* oder *Drei-Topf-Hybrid*)** recomputes the split
-  **periodically**, normally monthly, so that the guarantee stays secured while as much as
-  possible sits in the funds. The three-pot form inserts a ***Wertsicherungsfonds*** — a fund
-  with a contractual limit on its loss over a defined period — between the *Sicherungsvermögen*
-  and the free funds, so money can move out of equities in two steps rather than one [S7] [S8].
-- ***i-CPPI*** sets the exposure to the risky fund **per policy and continuously**, as a
-  multiplier times the cushion between the policy value and the present value of the guarantee.
-  The most efficient of the three and the most path-dependent [S9].
-
-**Why none is implemented.** Each is a rule for reallocating between a guaranteed pot and a
-risky pot **along a path**, and its entire content is what it does when the risky pot falls. A
+**Why none is implemented.** Each is a rule for reallocating between a guaranteed pot and a risky
+pot **along a path**, and its entire content is what it does when the risky pot falls. A
 deterministic projection has one path and it is a smooth one, so a guarantee mechanism modelled
 inside it either never triggers — dead code presented as a feature — or triggers on a hand-chosen
 shock, which asserts a scenario the model has no basis for. What would have to be added is a
@@ -688,9 +675,8 @@ representable deterministically.
 
 **Out of scope entirely.** Attached biometric riders (*Berufsunfähigkeits-Zusatzversicherung*,
 *Unfall-Zusatzversicherung*, *Hinterbliebenenrente*, *Pflegeoption*), which are separate delib
-products or separate covers on their own bases; the **payout phase**, including the
-*Überschussrente*, the *Rentengarantiezeit* and any *Beitragsrückgewähr im Rentenbezug*, which
-belong to delib `sofortrente`; and the *Abrufphase*.
+products or separate covers on their own bases; the **payout phase** (delib `sofortrente`); and
+the *Abrufphase*.
 
 ---
 
@@ -761,104 +747,96 @@ model instead of looking for it in a document that was not retrieved.
 requires the *angesetzte Abschluss- und Vertriebskosten* to be spread evenly over the first five
 contract years for the purpose of the minimum surrender value, and permits a *Stornoabzug* only
 where it is *vereinbart*, *beziffert* and *angemessen*, with a deduction for untilgte acquisition
-costs expressly ineffective and the burden of proof on the insurer [R1] [REG-R28]. **§ 168**
-lets the policyholder terminate at any time for the end of the current *Versicherungsperiode*,
-which on a monthly-premium contract is a short notice period — paired with § 169 it makes
-*Storno* a near-frictionless exit at fund value, which is why unit-linked lapse experience
-differs from conventional lapse experience [R2] [REG-R28]. **§ 165** gives the right to a
-*prämienfreie Versicherung* [R3] [REG-R28]. **§ 163** is the only remaining route by which a
-guaranteed *Rentenfaktor* may be reduced, and only with an independent trustee's confirmation
-[R4] [R22] [REG-R27]. **§ 153** entitles the policyholder to a share of the surplus unless
-participation is excluded by express agreement, and on this product that share can only come
-from the risk and cost results [R5] [REG-R9] [REG-R24]. §§ 7–8 and § 152 govern pre-contractual
-information and the 30-day *Widerruf* [R6] [REG-R23] [REG-R31].
+costs expressly ineffective and the burden of proof on the insurer [R1] [REG-R28]. **§ 168** lets
+the policyholder terminate at any time for the end of the current *Versicherungsperiode*, which
+on a monthly-premium contract is a short notice period — paired with § 169 it makes *Storno* a
+near-frictionless exit at fund value, which is why unit-linked lapse experience differs from
+conventional lapse experience [R2] [REG-R28]. **§ 165** gives the right to a *prämienfreie
+Versicherung* [R3] [REG-R28]. **§ 163** is the only remaining route by which a guaranteed
+*Rentenfaktor* may be reduced, and only with an independent trustee's confirmation [R4] [R22]
+[REG-R27]. **§ 153** entitles the policyholder to a share of the surplus unless excluded by
+express agreement, and here that share can only come from the risk and cost results [R5]
+[REG-R9] [REG-R24]. §§ 7–8 and § 152 govern pre-contractual information and the 30-day *Widerruf*
+[R6] [REG-R23] [REG-R31].
 
 **Prudential — the VAG and the reserving regulations.** Anlage 1 to the VAG lists *fonds- und
 indexgebundene Lebensversicherung* as a *Versicherungssparte* in its own right, which is why
 German statistics and insurers' accounts report it separately [R15] [REG-R5]. § 125 VAG requires
 a separate section of the *Sicherungsvermögen* — the ***Anlagestock*** — for each *Anlageart*
-where benefits are provided in units of an open fund, so the unit assets and the unit liability
-move together exactly [R15] [REG-R7]. § 138 VAG requires premiums to be calculated on prudent
-assumptions and to treat like policyholders alike [REG-R8]. The **DeckRV** supplies the two
-numbers that matter: the *Höchstrechnungszins*, which does **not** bind the accumulation phase of
-this product, and the *Höchstzillmersatz* of 25 ‰, which does [R12] [REG-R14] [REG-R15]
-[REG-R16]. The **MindZV** fixes the minimum share of each surplus source credited to
-policyholders — here the *Risikoergebnis* and the *übrige Ergebnis* only, because a unit-linked
-contract's investment result never enters the *Rohüberschuss*; **the percentages are
-`[unverified]`** [R14] [REG-R18]. Above all of it sits Solvency II through the VAG: technical
-provisions as a best estimate plus a risk margin [REG-R1] [REG-R2] [REG-R6], with EIOPA
-publishing the curves [REG-R4] and Directive (EU) 2025/2 first applying on 30 January 2027
+where benefits are provided in units of an open fund, so unit assets and unit liability move
+together exactly [R15] [REG-R7]. § 138 VAG requires premiums to be calculated on prudent
+assumptions [REG-R8]. The **DeckRV** supplies the two numbers that matter: the
+*Höchstrechnungszins*, which does **not** bind this product's accumulation phase, and the
+*Höchstzillmersatz* of 25 ‰, which does [R12] [REG-R14] [REG-R15] [REG-R16]. The **MindZV** fixes
+the minimum share of each surplus source credited to policyholders — here the *Risikoergebnis*
+and the *übrige Ergebnis* only, because a unit-linked contract's investment result never enters
+the *Rohüberschuss*; **the percentages are `[unverified]`** [R14] [REG-R18]. Above it sits
+Solvency II through the VAG: a best estimate plus a risk margin [REG-R1] [REG-R2] [REG-R6], with
+EIOPA publishing the curves [REG-R4] and Directive (EU) 2025/2 first applying on 30 January 2027
 [REG-R3]. **Nothing in this library implements a 2027 basis.**
 
 **Disclosure and conduct.** The PRIIPs Regulation requires a ***Basisinformationsblatt*** for
 every packaged retail and insurance-based investment product, and a fondsgebundene
-Rentenversicherung is the paradigm German IBIP: uniform delivery requirements apply regardless
-of whether the underlying investment options are themselves PRIIPs, which pulls a contract with a
-fund menu wholly into scope [R8] [REG-R32]. BaFin's own account of what the document must contain
-is the most precisely established regulatory fact available for this product: a **summary risk
+Rentenversicherung is the paradigm German IBIP: uniform delivery requirements apply regardless of
+whether the underlying investment options are themselves PRIIPs, which pulls a contract with a
+fund menu wholly into scope [R8] [REG-R32]. BaFin's own account of the required content is the
+most precisely established regulatory fact available for this product: a **summary risk
 indicator**; the **possible maximum loss** of invested capital; **four performance scenarios** —
 *Stress*, *pessimistisch*, *moderat*, *optimistisch* — as annualised average returns in per cent;
-the **costs the investor bears**; and complaint information — with the scenarios and the costs
-shown at **three time points**, after one year, after half the recommended holding period, and at
-the end of it, and the cost disclosure split into **one-off and ongoing costs** with the
-***Reduction in Yield* per year** stated [R9] [REG-R32]. For an FRV the recommended holding period
-is the *Aufschubzeit*, so those points are typically year 1, year 15 and year 30. **No actual
+the **costs the investor bears**; and complaint information — the scenarios and the costs shown at
+**three time points**, after one year, after half the recommended holding period and at the end of
+it, with the cost disclosure split into **one-off and ongoing costs** and the ***Reduction in
+Yield* per year** stated [R9] [REG-R32]. For an FRV the recommended holding period is the
+*Aufschubzeit*, so those points are typically year 1, year 15 and year 30. **No actual
 *Basisinformationsblatt* for a fondsgebundene Rentenversicherung was located**, so **no scenario
 return, no cost figure and no reduction-in-yield value in this document comes from one**. The
 categorisation matters and is `[unverified]`: a pure unit-linked contract's scenarios come from
-the funds' own return history, while a guarantee-bearing or profit-participating one comes from
-the DAV's standard method for **PRIIP Kategorie 4** [R18] — which is why two documents for
-economically similar products can show very different scenario returns, and why this
-specification cites **no** scenario return. Alongside PRIIPs, § 2 VVG-InfoV requires the
-*Abschluss- und Vertriebskosten* included in the premium to be disclosed **in euro**, the other
-costs separately, and a ***Modellrechnung***; **how many assumed rates the regulation prescribes
-for a fondsgebundene contract, and at what levels, was not pinned down** [R7] [REG-R25]
-[REG-R31]. The IDD-derived *Zuwendungen* rules govern whether a *Kickback* may be retained
-[R15] [REG-R33], and BaFin's *Merkblatt 01/2023 (VA)* supplies the German *Value for Money*
-regime described in the overview [R10] [REG-R35].
+the funds' own return history, a guarantee-bearing or profit-participating one from the DAV's
+standard method for **PRIIP Kategorie 4** [R18] — which is why two documents for economically
+similar products can show very different scenario returns, and why this specification cites **no**
+scenario return. Alongside PRIIPs, § 2 VVG-InfoV requires the *Abschluss- und Vertriebskosten*
+included in the premium to be disclosed **in euro**, the other costs separately, and a
+***Modellrechnung***; **how many assumed rates it prescribes for a fondsgebundene contract, and at
+what levels, was not pinned down** [R7] [REG-R25] [REG-R31]. The IDD-derived *Zuwendungen* rules
+govern whether a *Kickback* may be retained [R15] [REG-R33], and BaFin's *Merkblatt 01/2023 (VA)*
+supplies the German *Value for Money* regime described in the overview [R10] [REG-R35].
 
-**Taxation, and why it drives behaviour.** Three regimes meet on this contract and the
+**Taxation, and why it drives behaviour.** Three regimes meet on this contract, and the
 differences between them are the product's commercial argument and its strongest behavioural
-driver.
+driver. In the **accumulation phase nothing is taxed** — no annual taxation of fund income inside
+the wrapper, no *Vorabpauschale*, and **no taxable disposal on a *Fondswechsel*** [R20] [R21]
+[REG-R45] — while a direct fund holding is taxed on both, which is why a cost comparison against
+a *Depot* is not like-for-like. On the **annuity** only the ***Ertragsanteil*** is taxable, at a
+statutory percentage set **once** by the annuitant's completed age at *Rentenbeginn* and never
+changed, so every later increase is taxed at the same light rate: **at age 65 the figure is
+18 %**, **every other age is `[unverified]`** and no table is reproduced here [R19] [REG-R41]. On
+a **lump sum**, § 20 Abs. 1 Nr. 6 EStG taxes the ***Unterschiedsbetrag*** between the payment and
+the premiums paid, and where the contract has run **at least twelve years** and payment falls
+after completion of the **62nd** year of life (60th for contracts concluded before 1 January
+2012), **only half** the gain is taxable, § 32d Abs. 2 Nr. 2 EStG putting that half into the
+personal marginal rate rather than the flat *Abgeltungsteuer* [R20] [REG-R45]. A
+***Teilfreistellung*** applies to the fund income inside the wrapper, commonly stated as **15 %**
+for equity exposure — **the sentence, the percentage and the conditions are all `[unverified]`**
+[R20] [R21] [REG-R45].
 
-- **Accumulation phase: nothing is taxed.** No annual taxation of fund income inside the
-  wrapper, no *Vorabpauschale*, and **no taxable disposal on a *Fondswechsel*** [R20] [R21]
-  [REG-R45]. A direct fund holding is taxed on both, which is the principal argument for the
-  wrapper and the reason a cost comparison against a *Depot* is not a like-for-like one.
-- **Annuity: the *Ertragsanteil*.** Only the deemed interest component of each instalment is
-  taxable, at a statutory percentage set **once**, by the annuitant's completed age at
-  *Rentenbeginn*, and never changed — so every later increase, including every increase in the
-  *Überschussrente*, is taxed at the same light rate. **At age 65 the figure is 18 %**; **every
-  other age is `[unverified]`** and no table is reproduced here [R19] [REG-R41].
-- **Lump sum: § 20 Abs. 1 Nr. 6 EStG.** The taxable amount is the ***Unterschiedsbetrag***
-  between the payment and the premiums paid; where the contract has run **at least twelve years**
-  and payment falls after completion of the **62nd** year of life (60th for contracts concluded
-  before 1 January 2012), **only half** the gain is taxable, and § 32d Abs. 2 Nr. 2 EStG puts
-  that half into the personal marginal rate rather than the flat *Abgeltungsteuer* [R20]
-  [REG-R45]. A ***Teilfreistellung*** applies to the fund income inside a fondsgebundene wrapper,
-  commonly stated as **15 %** for equity exposure — **the sentence, the percentage and the
-  conditions are all `[unverified]`** [R20] [R21] [REG-R45].
+**The behavioural consequence, and the reason this is not merely context.** The twelve-year and
+age-62 conditions create a **double threshold** that policyholders wait for: surrenders are
+suppressed as it approaches and spike once both limbs are met, and the annuitise-or-commute
+election at *Rentenbeginn* is a **tax election**, not a preference. A German Schicht-3 lapse
+assumption that is flat in duration has ignored the strongest single driver of German surrender
+behaviour [REG-R45]. The reference implementation models it as a duration-and-age-dependent lapse
+shape with the threshold named and the level **[std]** — the treatment frlib gives the eight-year
+threshold in French *assurance vie*. And the **50 % *Mindesttodesfallschutz* rule** for contracts
+concluded from 1 April 2009 is a model-point design constraint rather than a footnote: **how it
+applies to a *Rentenversicherung* with and without a *Kapitalwahlrecht* was not established**
+`[unverified]` [REG-R45], and the composite's death benefit is not designed to satisfy it.
 
-**The behavioural consequence, and it is the reason this section is not merely context.** The
-twelve-year and age-62 conditions create a **double threshold** that policyholders wait for:
-surrenders are suppressed as it approaches and spike once both limbs are met, and the
-annuitise-or-commute election at *Rentenbeginn* is a **tax election**, not a preference. A German
-Schicht-3 lapse assumption that is flat in duration has ignored the strongest single driver of
-German surrender behaviour [REG-R45]. The reference implementation models it as a
-duration-and-age-dependent lapse shape with the threshold named and the level **[std]** — the
-same treatment frlib gives the eight-year threshold in French *assurance vie*. And the **50 %
-*Mindesttodesfallschutz* rule** for contracts concluded from 1 April 2009 is a model-point design
-constraint rather than a footnote: **how it applies to a *Rentenversicherung* with and without a
-*Kapitalwahlrecht* was not established** `[unverified]` [REG-R45], and the composite's
-*Beitragsrückgewähr* death benefit is not designed to satisfy it.
-
-**Accounting and professional standards.** German statutory reporting runs under HGB
-§§ 341–341o and the *RechVersV*, where unit-linked business is reported separately from the
-general account [REG-R54]. Under IFRS 17 a fondsgebundene contract is the archetypal
-direct-participating contract and would be measured under the **variable fee approach**; the VFA
-mechanics were not read and are `[unverified]` [REG-R55]. Actuarial work sits under the DAV's
-*Fachgrundsätze*, and the responsible actuary's certifications under §§ 141–143 VAG
-[REG-R11] [REG-R56].
+**Accounting and professional standards.** German statutory reporting runs under HGB §§ 341–341o
+and the *RechVersV*, where unit-linked business is reported separately from the general account
+[REG-R54]. Under IFRS 17 a fondsgebundene contract is the archetypal direct-participating
+contract and would be measured under the **variable fee approach**; the VFA mechanics were not
+read and are `[unverified]` [REG-R55]. Actuarial work sits under the DAV's *Fachgrundsätze* and
+the responsible actuary's certifications under §§ 141–143 VAG [REG-R11] [REG-R56].
 
 **Living texts.** VVG, VVG-InfoV, DeckRV, MindZV, VAG, EStG and InvStG all change; the PRIIPs
 RTS was reworked with effect from 1 January 2023 `[unverified]`; the *Höchstrechnungszins*
