@@ -35,26 +35,23 @@ python products/pflegerentenversicherung/run.py 12     # an in-force policy alre
 
 ```python
 import modelx as mx
-model = mx.read_model("products/pflegerentenversicherung/Pflege_DE_S")
-model.Projection[1].result_cf()
+mx.read_model("products/pflegerentenversicherung/Pflege_DE_S").Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell. `result_cf()`
 returns a tidy `DataFrame` indexed by **policy month** `t` carrying `pols_if` first, the three-way
 split of it a reader follows the projection with, and one column per cash flow line;
 `result_states()` publishes the five *Pflegegrad* ledgers, the *Karenz* ledger, the flows between
-them and the four annual rates beside it. `model.Projection.doc` holds the full mapping from the
-notes' symbols to the cells names, and `model.Data.doc` says what a replacement for each shipped
-table must preserve.
+them and the four annual rates beside it. `model.Projection.doc` holds the full symbol mapping and
+`model.Data.doc` says what a replacement for each shipped table must preserve.
 
-The grid is **monthly** and `t` is **0-based**. `t = 0` is the month of issue;
+The grid is **monthly** and `t` is **0-based**: `t = 0` is the month of issue and
 `age(t) = age_at_entry + t // 12`, so the attained age steps at the policy anniversary. The frame
 **starts** at `duration_mth_init()` — `0` for new business, the elapsed duration for an in-force
 point — and `proj_len()` is the **last** projected index, `12 × (110 − 45) − 1 = 779` on the anchor
-cell: 780 rows, attained ages 45 to 109, in about seven seconds. `proj_len()` depends on the entry
-age and the terminal age alone, so an in-force point publishes a **shorter** frame ending at the
-same index; reading it as a row count, or as a horizon that `duration_mth_init` shifts, is a listed
-pitfall.
+cell: 780 rows, attained ages 45 to 109, in about seven seconds. It depends on the entry age and
+the terminal age alone, so an in-force point publishes a **shorter** frame ending at the same
+index; reading it as a row count, or as a horizon `duration_mth_init` shifts, is a listed pitfall.
 
 ## Nine states, and only two of them absorbing
 
@@ -74,59 +71,49 @@ on an event:
 The model carries the *Pflegegrad* **explicitly**, in `pols_pg(t, g)` for `g = 1 … 5`, with a
 second ledger `pols_karenz(t, g, z)` for lives inside a deferred period and a third, `pols_act(t)`,
 for active lives. Every transition inside that picture is **internal to `pols_if`**: lives leave
-the in-force population only by death or by surrender, which is exactly what
-`check_pols_roll_fwd()` asserts and what `check_states()` asserts a second, independent way.
-
-Two structural consequences drive the whole implementation.
+the in-force population only by death or by surrender, which `check_pols_roll_fwd()` asserts and
+`check_states()` asserts a second, independent way. Two consequences drive the implementation.
 
 **The paying state has three exits and only death is absorbing.** A life in *Pflegegrad* `g` can
 die, deteriorate to `g + 1` or be downgraded to `g − 1`; out of grade 1 the downgrade is a
 *Reaktivierung* back to the active state, where the life resumes paying its *Beitrag* and becomes
 exposed to lapse again. A model that lets the paying state be exited only by death **overstates**
-the liability; one that treats every downgrade as a termination **understates** it. Both errors
+the liability; one that treats every downgrade as a termination **understates** it, and both errors
 produce a plausible-looking frame. On the anchor cell the *Reaktivierung* flow is 0,013768 of a
 policy over the whole projection and the *Herabstufung* flow out of grade 2 — the flow that ends an
-annuity and revives a premium on the `delib_std` grid — is 0,020835, both small and both non-zero,
+annuity and revives a premium on the `delib_std` grid — is 0,020835: both small, both non-zero,
 which is why the tests assert the **flow** and never a non-monotone stock.
 
 **The transitions are allocated, not added.** Every shipped rate is annual; every month is stepped
 with **forces held constant over the month**, the competing transitions sharing one survival
-probability in proportion to their forces:
-
-```
-p_stay = exp(−(μ_1 + … + μ_k)/12)        p_j = (μ_j / Σμ) × (1 − p_stay)
-```
-
-so `p_stay + Σ p_j = 1` **exactly, by construction**. That is what makes `check_states()` an
-identity rather than an approximation, and it is why `p_pg_stay`, `p_pg_death`, `p_pg_worse` and
-`p_pg_better` are published as four cells rather than folded into the recursion. Adding monthly
-rates instead, or applying `q/12`, gives different answers wherever the forces are large — which on
-this product is exactly where the money is.
+probability in proportion to their forces — `p_stay = exp(−Σμ/12)` and
+`p_j = (μ_j / Σμ) × (1 − p_stay)` — so `p_stay + Σ p_j = 1` **exactly, by construction**. That is
+what makes `check_states()` an identity rather than an approximation, and why `p_pg_stay`,
+`p_pg_death`, `p_pg_worse` and `p_pg_better` are published as four cells rather than folded into
+the recursion. Adding monthly rates instead, or applying `q/12`, gives different answers wherever
+the forces are large — which on this product is exactly where the money is.
 
 ## Grade and mortality are correlated, and the highest-paying state is the shortest-lived
 
 In-care mortality is **not tabulated**. `mort_force_care(t, g)` is `mort_mult(g)` times the
 **force** of active mortality at the same age — 1,5 at *Pflegegrad* 1 rising to 9,0 at grade 5 —
-and `mort_rate_care(t, g)` is `1 − exp(−mort_force_care(t, g))`.
-
-The multiple is on the force and not on the rate, and that choice is load-bearing rather than
-cosmetic. On forces the ratio is exactly `mort_mult(g)` at every age below the limiting one; on
-rates it compresses towards 1 as the rate saturates — at grade 5 the *rate* ratio falls from 8,972
-at age 45 to 6,854 at 85, 4,308 at 95 and exactly 1,000 at the limiting age. That compression is
-the scale, not the basis, and a model that states its LTC mortality loading as a rate multiple has
-a different basis at every age.
+and `mort_rate_care(t, g)` is `1 − exp(−mort_force_care(t, g))`. The multiple is on the force and
+not on the rate, and that is load-bearing rather than cosmetic: on forces the ratio is exactly
+`mort_mult(g)` at every age below the limiting one, while on rates it compresses towards 1 as the
+rate saturates — at grade 5 the *rate* ratio falls from 8,972 at age 45 to 6,854 at 85, 4,308 at 95
+and exactly 1,000 at the limiting age. That compression is the scale, not the basis, and a model
+stating its LTC mortality loading as a rate multiple has a different basis at every age.
 
 What it buys is the product's central fact: **the annuity in payment is short**, three to five
 years rather than the fifteen to twenty a healthy-life annuity would run at the same age, so
 pricing it on an annuity table — DAV 2004 R is built to be prudent about people living *longer*
-[R16] [REG-R49] — would be prudent in exactly the wrong direction. And because the two are
-correlated, `claims(t, "ANNUITY")` is a **grade-by-grade sum**, `R × Σ_g π_g × esc_pg(t, g)`, and
-never an average benefit percentage applied to an average survival curve. The size of that error is
-worth stating: applying the entry-mix mean percentage of 0.3815 to `Σ_t pols_care(t) = 24.241784`
-gives 9 248,24 € against the model's 13 200,11 €, a **30 % understatement of the whole benefit**
-that no total in the frame would reveal. The substitution is *exact* at `t = 1`, where the stock
-still is the entry mix; the error opens as deterioration moves the stock up the schedule to a
-stock-weighted mean of 0.544519.
+[R16] [REG-R49] — would be prudent in exactly the wrong direction. And because grade and mortality
+are correlated, `claims(t, "ANNUITY")` is a **grade-by-grade sum**, `R × Σ_g π_g × esc_pg(t, g)`,
+and never an average benefit percentage on an average survival curve. Applying the entry-mix mean
+percentage of 0.3815 to `Σ_t pols_care(t) = 24.241784` gives 9 248,24 € against the model's
+13 200,11 €, a **30 % understatement of the whole benefit** that no total in the frame would
+reveal. The substitution is *exact* at `t = 1`, where the stock still is the entry mix; the error
+opens as deterioration moves the stock to a stock-weighted mean of 0.544519.
 
 ## The *Wartezeit* and the *Karenzzeit* are different devices
 
@@ -134,7 +121,7 @@ They are routinely conflated in consumer material and they are implemented in tw
 
 The ***Wartezeit*** runs from **inception** and denies cover: `inc_force(t)` is exactly zero while
 `t < wartezeit_months()`, and `inc_rate(t)` is left alone so it stays the tariff-comparable table
-rate at every age. It is a gate on the force, one line, no ledger.
+rate at every age. A gate on the force, one line, no ledger.
 
 The ***Karenzzeit*** runs from **onset** and defers an admitted claim, so it is a clock **per
 onset** rather than a gate on the aggregate — which is why it needs its own ledger dimension,
@@ -142,14 +129,12 @@ onset** rather than a gate on the aggregate — which is why it needs its own le
 served life: they die, deteriorate and recover exactly as if the annuity were running, they simply
 are not paid, and the clock is **discarded on reactivation**, because a recovered life who relapses
 starts a new onset. Where `karenz_months() == 0` the ledger is empty and `pols_grad` degenerates to
-`pols_entry`, which is the base run.
-
-The cost of the device is the gap between the two: summed over model point 7's projection,
-graduations are 0.228177 against entries of 0.253723, **89,9 %** — the shortfall being deaths and
-recoveries recorded *inside* the six-month deferral. That is larger than six months of a four-year
-spell suggests, because mortality is highest immediately after onset. The model uses an aggregate
-in-care mortality with no select period after onset, so **it understates how much a *Karenzzeit*
-removes**, and point 7's reduction is a floor rather than an estimate.
+`pols_entry`, which is the base run. The cost of the device is the gap between the two: over model
+point 7's projection graduations are 0.228177 against entries of 0.253723, **89,9 %**, the
+shortfall being deaths and recoveries recorded *inside* the six-month deferral — larger than six
+months of a four-year spell suggests, because mortality is highest immediately after onset. The
+model uses an aggregate in-care mortality with no select period after onset, so **it understates
+how much a *Karenzzeit* removes**, and point 7's reduction is a floor rather than an estimate.
 
 ## The waiver runs with the *Leistungsstaffel*, not with the diagnosis
 
@@ -168,24 +153,21 @@ Wiring the waiver to membership of the care ledger instead gets all three wrong 
 closes every count. `check_waiver()` asserts the split — `pols_prem + pols_waived = pols_in_term` —
 and is arithmetically trivial while `pols_prem` is a difference; it is published because the
 failure it guards is not a slip in the subtraction but a disagreement about who belongs on which
-side, and it is read together with the tests that assert the membership itself.
-
-The waiver is also **in the price**, through `tar_pols_prem(t)`, and not only in the projection. On
-a contract issued at 45 and claiming at 82 it removes the remaining premium stream for the whole
-paying period — of the order of four years of *Beitrag*, the same order as one year of benefit —
-and that cost sits inside the level premium.
+side, and it is read together with the tests that assert the membership itself. The waiver is also
+**in the price**, through `tar_pols_prem(t)`: on a contract issued at 45 and claiming at 82 it
+removes the remaining premium stream for the whole paying period, of the order of four years of
+*Beitrag*, and that cost sits inside the level premium.
 
 ## Two ledgers for one population: `pols_pg` and `esc_pg`
 
 `esc_pg(t, g)` is the **escalation-weighted** counterpart of `pols_pg(t, g)`: the identical
 recursion with one extra factor of `(1 + d)^(1/12)` on the surviving weights, entrants joining at
 weight 1. Carrying the *Leistungsdynamik* as a **value ledger** rather than as a
-duration-since-onset cohort dimension is what keeps the model `O(n)` instead of `O(n²)`; the price
-is that it reports only the aggregate escalation, which is all the cash flow needs.
-
-The annuity is weighted on `esc_pg` and **never** on `pols_pg`. Using the head count would silently
-drop the escalation on every model point that carries one, and no total in the frame would look
-wrong. With `leistungsdynamik = 0` the two ledgers are identical at every `t` and `g`, which
+duration-since-onset cohort dimension keeps the model `O(n)` instead of `O(n²)`; the price is that
+it reports only the aggregate escalation, which is all the cash flow needs. The annuity is weighted
+on `esc_pg` and **never** on `pols_pg` — using the head count would silently drop the escalation on
+every model point that carries one, and no total in the frame would look wrong. With
+`leistungsdynamik = 0` the two ledgers are identical at every `t` and `g`, which
 `check_esc_ledger()` asserts as an exact equality on the base run and as a domination
 (`esc_pg ≥ pols_pg`) wherever the dynamic is positive.
 
@@ -202,28 +184,19 @@ spell, where the escalation factor is largest.
 The library publishes **undiscounted** cash flows. The *Beitrag* is nevertheless a *priced*
 quantity, so the model carries a second, self-contained actuarial-value engine — the `tar_*` cells
 — whose only output is `premium_mth_pp()`. **That engine discounts; the projection does not**, and
-`rechnungszins()` and `disc_factor(t)` are read by nothing else.
-
-Where `premium_mth` is positive on the model point that is the premium and the engine is never
-consulted, which is how model points 10, 11 and 12 carry the premium they were actually sold at.
-Where it is `0.0` — a sentinel, not a free contract — `P` is struck by equivalence on the
+`rechnungszins()` and `disc_factor(t)` are read by nothing else. Where `premium_mth` is positive on
+the model point that is the premium and the engine is never consulted, which is how model points
+10, 11 and 12 carry the premium they were actually sold at. Where it is `0.0` — a sentinel, not a
+free contract — `P` is struck by equivalence on the
 **first-order** (*erster Ordnung*) bases: every rate multiplied by its prudence margin, the sexes
 blended at `unisex_mix_male = 0.50` because sex may not enter a German premium [REG-R34], and **no
 lapse at all**. The absence of lapse is both German first-order practice and what keeps the model
-acyclic — a pricing quantity must not depend on a behavioural assumption that depends on the path
-that depends on the premium.
-
-Everything on the benefit side that scales with `P` is linear in it, so
+acyclic. Everything on the benefit side that scales with `P` is linear in it, so
 
 ```
-P·U = A + P·D1 + P·a1 + β·P·U + G + C      →      P = (A + G + C) / [U(1 − β) − D1 − a1]
-```
-
-solves in closed form. On the anchor cell:
-
-```
-P = (17,789.761930 + 892.884210 + 69.389246) / (313.500018 × 0.970 − 12.000000)
-  = 18,752.035386 / 292.095018 = 64.198409 EUR a month
+P·U = A + P·D1 + P·a1 + β·P·U + G + C   →   P = (A + G + C) / [U(1 − β) − D1 − a1]
+    = (17,789.761930 + 892.884210 + 69.389246) / (313.500018 x 0.970 − 12.000000)
+    = 18,752.035386 / 292.095018 = 64.198409 EUR a month
 ```
 
 `prem_net_level_pp() = A / U = 56.745649`, so the whole expense loading is **13,13 %**, of which
@@ -237,11 +210,9 @@ rate into one leg, dropping the *Zillmerung* term, forgetting the waiver in `tar
 valuing the annuity on `tar_pols_pg` instead of `tar_esc_pg` all make the sum miss zero. Individual
 months are large and of both signs, so only the **sum** is the identity; on the anchor cell it is
 −9,3e−12 against a premium leg of 20 125 €. Where the model point supplies its own *Beitrag* no
-equivalence was struck and the residual is zero by construction.
-
-The *Risikozuschlag* multiplies the **gross** premium and never the benefit, so `claims` is
-invariant to it: model point 13 prices at 283,130286 € against an unrated 188,753524 €, exactly
-1,50 ×, with an identical claim stream.
+equivalence was struck and the residual is zero by construction. The *Risikozuschlag* multiplies
+the **gross** premium and never the benefit, so `claims` is invariant to it: model point 13 prices
+at 283,130286 € against an unrated 188,753524 €, exactly 1,50 ×, on an identical claim stream.
 
 **There is no published German rate card for this product to reproduce** — the single largest
 difference between this model and frlib's `TD_FR_A`, which reproduces a real attained-age grid. The
@@ -257,12 +228,10 @@ A lifelong-premium contract has no finite *Beitragssumme* without a convention, 
 `P × 12 × (min(prem_end_age, 85) − age_at_entry)`, and the *Einmalbeitrag* itself where there is
 one. On the anchor cell that is 30 815,24 € and a charge of 770,38 €, all of it at `t = 0`.
 Charging the per-mille on an *annual* premium instead understates it by a factor of the paying term
-— here forty-fold — and is a listed pitfall.
-
-Because the charge falls at `t = 0` only, an **in-force model point never incurs it**: its frame
-opens at `duration_mth_init() > 0` and the cost was incurred before the valuation date. That is
-correct and it is worth knowing before comparing an in-force point's first row with a new-business
-point's.
+— here forty-fold — and is a listed pitfall. Because the charge falls at `t = 0` only, an
+**in-force model point never incurs it**: its frame opens at `duration_mth_init() > 0` and the cost
+was incurred before the valuation date, which is worth knowing before comparing an in-force point's
+first row with a new-business point's.
 
 ## Inputs are external files
 
@@ -279,12 +248,11 @@ its own cells cache; readers placed there would re-read every file for every pol
 instead in an unparameterized **`Data`** Space that `Projection` reaches through a `data`
 Reference, so each file is read once per model however many policies are projected, and a test
 counts the reads against a registered file set. `Data.input_dir()` resolves the location from
-`_model.path.parent` when the model is read, so it works from any checkout.
-
-**The trade-off:** the model is not portable on its own — copy `Pflege_DE_S/` without the CSVs and
-it reads fine, then fails on first evaluation. What you gain is that a diff of the model shows
-logic changes only, and an input can be swapped in place: point `Data.mort_table_file` at another
-same-schema file and the projection follows, with no formula change.
+`_model.path.parent` when the model is read, so it works from any checkout. **The trade-off:** the
+model is not portable on its own — copy `Pflege_DE_S/` without the CSVs and it reads fine, then
+fails on first evaluation. What you gain is that a diff of the model shows logic changes only, and
+an input can be swapped in place: point `Data.mort_table_file` at another same-schema file and the
+projection follows, with no formula change.
 
 | Reference | Cells | File | Contents and provenance |
 |---|---|---|---|
@@ -318,8 +286,7 @@ Six `check_*()` cells, each a no-argument `bool` over all `t` with a per-`t` res
 Every term of that is a **column of `result_cf()`**, and the residual re-derives the headline number
 from the three `claims` **kinds** separately rather than from their subtotal, so a benefit that
 stops being included in `claims(t)`, or a column added to the frame without being subtracted, fails
-here instead of silently changing the answer. The largest residual anywhere in the anchor cell's
-frame is 1,4e−14.
+here instead of silently changing the answer. The largest residual in the anchor frame is 1,4e−14.
 
 | Check | Identity |
 |---|---|
@@ -334,9 +301,8 @@ telescope over the three ledgers' own recursions; the second is assembled by **d
 with no reference to the recursion that produced any of them, so it catches a wrong seeding of an
 in-force point, a life counted in two grades at once, an entrant into care who never leaves the
 active ledger and a *Karenz* cohort that graduates twice. Because `mort_rate` is forced to 1,0 at
-the limiting age it also closes at the far end: on the anchor cell
-`pols_dead_cum(780) = 0.493968` and `pols_lapse_cum(780) = 0.506032` sum to 1,000000000000 with
-`pols_if(780) = 1,5e−23`.
+the limiting age it also closes at the far end: `pols_dead_cum(780) = 0.493968` and
+`pols_lapse_cum(780) = 0.506032` sum to 1,000000000000 with `pols_if(780) = 1,5e−23`.
 
 ## Modules that are off in the base run
 
@@ -356,10 +322,10 @@ at a *Rechnungszins* of 1,00 % a gross return of nominal premiums on a death for
 close to the whole premium, and written with a lifelong *Beitragszahlungsdauer* the equivalence's
 denominator collapses to 3,6 of 313,5 units. The point therefore pays to age 65, which is how the
 German market writes such a tariff, and its premium is **622,92 € a month — 9,7 times the
-anchor's**. The implemented form is the **gross** one, with no offset for annuity already paid: the
-market's more common form nets the annuity off, but that netting is floored at zero *per life* and
-these ledgers are aggregates, so netting at the aggregate level would let a life that received a
-large annuity subsidise one that received none. The option therefore overstates the death benefit
+anchor's**. The implemented form is the **gross** one, with no offset for annuity already paid:
+the market's more common form nets the annuity off, but that netting is floored at zero *per life*
+and these ledgers are aggregates, so netting in aggregate would let a life that received a large
+annuity subsidise one that received none. The option therefore overstates the death benefit
 relative to the market-standard form, and that is stated rather than hidden.
 
 Four constructions the notes describe are **not** implemented, each for a stated reason. No
@@ -374,13 +340,12 @@ action conditional on emerging experience rather than a projected assumption.
 ## Sign convention
 
 `net_cf` is **income positive** — *Beitrag* in, *Pflegerente*, *Rückkaufswert*, any
-*Beitragsrückgewähr* and both expense lines out — which is the notes' own orientation and the
-library-wide sign. `liability_cf` publishes the same stream outgo-positive,
-`liability_cf(t) = −net_cf(t)` exactly, and both are columns of `result_cf()` so the identity is
-verifiable in the frame rather than only in prose. A Solvency II best estimate is
-`Σ v(t) × liability_cf(t)` over the relevant risk-free term structure, plus a risk margin
-[REG-R1] [REG-R2] [REG-R4]; **nothing in this library discounts**, and `rechnungszins` appears only
-inside the equivalence.
+*Beitragsrückgewähr* and both expense lines out — the notes' own orientation and the library-wide
+sign. `liability_cf` publishes the same stream outgo-positive, `liability_cf(t) = −net_cf(t)`
+exactly, and both are columns of `result_cf()` so the identity is verifiable in the frame rather
+than only in prose. A Solvency II best estimate is `Σ v(t) × liability_cf(t)` over the relevant
+risk-free term structure, plus a risk margin [REG-R1] [REG-R2] [REG-R4]; **nothing in this library
+discounts**, and `rechnungszins` appears only inside the equivalence.
 
 The shape to expect on the anchor cell is the product's whole economic story in three phases. Month
 0 is **−710,11 €**, almost all of it the 25 ‰ *Zillmerung* allowance charged in one go —
@@ -392,16 +357,15 @@ margin decays from 59,93 € to 3,45 € by age 65. **`net_cf` crosses zero betw
 Undiscounted the contract collects 15 857,95 € and pays 17 385,60 € of benefit and expense, for
 **−1 527,65 €** — not a loss but the consequence of publishing an *undiscounted* stream whose income
 falls thirty years before its outgo. That crossing is where the *Deckungskapital* this model does
-not compute peaks, and it is the whole economic content of an ageing reserve carried on a
-life-assurance chassis.
+not compute peaks, and it is the whole economic content of an ageing reserve on a life chassis.
 
 `expenses` is acquisition and administration only. The *Leistungsbearbeitungskosten* are
 `claim_expenses`, a separate column because they scale with **annuity payments made** rather than
 with policies: a *Pflegegrad* 1 life on `delib_std` generates none, and neither does a life inside
-its *Karenzzeit*. The level is set low, and that is a product fact rather than an optimistic
-assumption — the *Pflegegrad* is determined by the *Medizinischer Dienst* or by MEDICPROOF and not
-by the insurer [R6], so the *Nachprüfung* is a documentation exercise rather than the adversarial
-re-assessment that drives a *Berufsunfähigkeitsrente*'s claims cost [REG-R29].
+its *Karenzzeit*. Its level is set low, and that is a product fact rather than optimism — the
+*Pflegegrad* is determined by the *Medizinischer Dienst* or by MEDICPROOF and not by the insurer
+[R6], so the *Nachprüfung* is a documentation exercise rather than the adversarial re-assessment
+that drives a *Berufsunfähigkeitsrente*'s claims cost [REG-R29].
 
 ## Naming
 
@@ -410,10 +374,9 @@ have an analogue: `pols_*` for policy counts, plural nouns for cash flows, `*_ra
 rates with `*_rate_mth` for their monthly equivalents, `*_pp` for per-policy amounts,
 `claims(t, kind)` with an uppercase `kind` string, `pols_if_at(t, timing)` for the end-of-month
 read, and `check_*()` / `check_*_resid(t)` for the identities. The technical notes use compact
-actuarial symbols; the full mapping lives in the `Projection` Space docstring.
-
-The **monthly multi-state biometric chassis** is shared with frlib's `Dep_FR_S` (*assurance
-dépendance*) and, inside this library, with `BU_DE_S`. The three are not interchangeable and the
+actuarial symbols; the full mapping lives in the `Projection` Space docstring. The **monthly
+multi-state biometric chassis** is shared with frlib's `Dep_FR_S` (*assurance dépendance*) and,
+inside this library, with `BU_DE_S` — three models that are not interchangeable, and whose
 differences are worth naming rather than glossing:
 
 | This model | `Dep_FR_S` | `BU_DE_S` | Note |
@@ -437,12 +400,12 @@ Five names needed care:
 | `pols_entry` vs `pols_grad` | `pols_entry(t, g)` / `pols_grad(t, g)` | Onsets and graduations out of the *Karenz* ledger. Equal when `K = 0`; their gap **is** the cost of a *Karenzzeit* |
 
 `policy_id`, `duration_mth(t)` and `pols_if_init()` drive little or nothing in the base
-parameterization and are exposed as documented cells rather than dropped: a silently missing column
-is worse than an inert one.
+parameterization and are exposed as documented cells rather than dropped: a silently missing
+column is worse than an inert one.
 
 ## Standardizations used
 
-Everything in this table is **[std]**. The product is unusually **[std]**-heavy and that is the
+Everything in this table is **[std]**. The product is unusually **[std]**-heavy, which is the
 correct outcome rather than a defect: the *mechanics* are well established and cited in the
 blockquote above, and it is only the *levels* that no retrievable document supplies.
 
@@ -484,12 +447,12 @@ charge sits at [REG-R16], and the 1,00 % *Höchstrechnungszins* [REG-R14] [REG-R
 example to the cent and the policy counts to six decimals, the full-precision totals against the
 sum-of-rounded-cells the notes also print, the equivalence premium of 64,198409 € reached two
 independent ways from `A`, `U`, `G` and `C`, month 0 rebuilt term by term with a calculator, the
-first month's decrements from the annual rates through the forces, the first annuity payment
-grade by grade, the closure identity, the male twin's ten printed rows and totals, the four-cell
-variant table, the six `check_*` identities with their residuals, and **one test per numbered
-modeling pitfall** — seventeen of them. The whole-model-point-table sweep is **not** here:
-`tests/test_model_conventions_de.py` owns the library's single sweep, because a model point's
-first evaluation is the most expensive thing in the run.
+first month's decrements from the annual rates through the forces, the first annuity payment grade
+by grade, the closure identity, the male twin's ten printed rows and totals, the four-cell variant
+table, the six `check_*` identities with their residuals, and **one test per numbered modeling
+pitfall** — seventeen of them. The whole-model-point-table sweep is **not** here:
+`tests/test_model_conventions_de.py` owns the library's single sweep, because a model point's first
+evaluation is the most expensive thing in the run.
 
 ```bash
 python -m pytest lifelib/libraries/delib/tests/test_pflegerentenversicherung_de.py -q

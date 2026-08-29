@@ -3,11 +3,11 @@
 The golden values are the worked example in
 ``products/kapitallebensversicherung/technical-notes.md`` ("Worked example"), which is a
 **configuration** rather than a scenario: the classic German *kapitalbildende
-Lebensversicherung* — the *gemischte Versicherung auf den Todes- und Erlebensfall* — on a
+Lebensversicherung* -- the *gemischte Versicherung auf den Todes- und Erlebensfall* -- on a
 male aged 37 last birthday at issue, non-smoker, written in 2026 as new business
 (``duration_init = 0``, so the frame opens at ``t = 1`` on one policy). The
 *Versicherungsdauer* is 25 years and the *Beitragszahlungsdauer* the same 25, so the
-contract is premium-paying to the *Ablauf*, which falls at attained age **62** — the age
+contract is premium-paying to the *Ablauf*, which falls at attained age **62** -- the age
 the income-tax half-income rule requires of a contract concluded after 31 December 2011.
 The *Versicherungssumme* is 50 000 EUR with ``death_ratio = 1.00``, so the guaranteed death
 sum equals the guaranteed survival sum. The *Beitrag* is annual and ``unterjaehrig_form``
@@ -15,46 +15,35 @@ is ``unecht``, so the *Ratenzahlungszuschlag* is 1.000 and inert. The *Rechnungs
 1.00 %, the *Höchstrechnungszins* for new business from 1 January 2025; the contract is
 *gezillmert* at the 25 permille ceiling; the *Überschussverwendung* is ``ansammlung`` and
 the declared-rate path is ``base``, a *laufende Verzinsung* of 2.70 % held level. There is
-no *Risikozuschlag*, no opening *Überschussguthaben* and no *Beitragsfreistellung*.
-Because ``proj_len() = policy_term = 25``, the notes' table is the **entire** projection
-rather than a slice of one, so every one of its twenty-five rows is asserted here.
+no *Risikozuschlag*, no opening *Überschussguthaben* and no *Beitragsfreistellung*. Because
+``proj_len() = policy_term = 25``, the notes' table is the **entire** projection rather
+than a slice of one, so every one of its twenty-five rows is asserted here.
 
 The goldens are hard-coded rather than pickled so a reviewer can compare them against the
 notes by eye. Tolerances follow the precision the notes display: money to the cent,
-``pols_if`` to six decimals, and the totals at full precision — 33 365,26 EUR of premium
+``pols_if`` to six decimals, and the totals at full precision -- 33 365,26 EUR of premium
 that way against 33 365,24 EUR if the twenty-five rounded cells are added.
 
-Beyond the worked example this module asserts:
-
-* the ten printed rows of the notes' state table — the *Deckungskapital*, the surplus base
-  and credit, the *Überschussguthaben*, the accrued *Schlussüberschussanteil* and the
-  *Rückkaufswert*;
-* the derived tariff — *Bruttobeitrag*, *Beitragssumme*, ``alpha_cost``, ``P^n`` and
-  ``P^Z`` — and the notes' four independent rebuilds: the premium from the equivalence
-  principle, the first anniversary's reserve by the Fackler recursion computed forwards,
-  the year-2 surplus credit and the *Ansammlung* it builds, and the year-12 surrender
-  payment from its three parts;
-* the closure identity — deaths, surrenders and maturities summing to exactly one policy;
-* the *Einmalbeitrag* variant (model point 2) and the three *Überschussverwendung* systems
-  (model points 1, 8 and 9);
-* all nine ``check_*()`` cells, their per-``t`` residuals and their shape, including
-  ``check_net_cf()``, this library's first ruling;
-* the shape of ``result_cf()``, both signs of the net flow, and the shipped tables'
-  provenance;
-* and **one test per numbered modeling pitfall** in the technical notes: the declared rate
-  is a total and the interest surplus is derived by subtraction; the surplus base is the
-  *Deckungskapital* at the allocation date; the base is floored at zero, shown on a
-  pre-2015 40 permille cohort where the guard actually bites; the product has three
-  reserves and the § 169 floor normally binds; the § 4 DeckRV cap and the § 169 Abs. 3
-  spreading are different rules; the *Stornoabzug* spares the *Überschussguthaben*; § 161
-  VVG substitutes the *Rückkaufswert* rather than forfeiting the benefit;
-  *Beitragsfreistellung* is tested against the *Mindestversicherungsleistung* and becomes a
-  surrender when it fails; a paid-up policy stays in ``pols_if``; the lapse table is [std]
-  and not calibrated to GDV's *Stornoquote*; the premium-cessation rule is applied once;
-  the *Risikozuschlag* reaches the pricing death leg and nothing else; one first-order
-  table serves both legs; the first- and second-order bases are not crossed; the two
-  surplus systems do not give the same benefits; the *Zahlbeitrag* is not guaranteed;
-  ``sex`` never reaches the premium; and the *Ablauf* year carries no surrender.
+Beyond the worked example this module asserts: the ten printed rows of the notes' state
+table; the derived tariff and the notes' four independent rebuilds -- the premium from the
+equivalence principle, the first anniversary's reserve by the Fackler recursion computed
+forwards, the year-2 surplus credit, and the year-12 surrender payment from its three
+parts; the closure identity; the *Einmalbeitrag* variant and the three
+*Überschussverwendung* systems; all nine ``check_*()`` cells and their residuals, including
+``check_net_cf()``, this library's first ruling; the shape of ``result_cf()``, both signs
+of the net flow, and the shipped tables' provenance; and **one test per numbered modeling
+pitfall** in the technical notes -- the declared rate derived by subtraction, the surplus
+base being the *Deckungskapital* at the allocation date, the zero floor on that base shown
+on a pre-2015 40 permille cohort where it actually bites, three reserves rather than one,
+the § 4 DeckRV cap and the § 169 Abs. 3 spreading asserted separately, the *Stornoabzug*
+sparing the *Überschussguthaben*, § 161 VVG substituting rather than forfeiting,
+*Beitragsfreistellung* succeeding and failing the *Mindestversicherungsleistung* test, a
+paid-up policy staying in ``pols_if``, the lapse table being [std] and not GDV's
+*Stornoquote*, the premium-cessation rule applied once, the *Risikozuschlag* reaching the
+pricing death leg and nothing else, one first-order table serving both legs, the two
+mortality bases kept apart, the surplus systems' maturity/death asymmetry, the
+*Zahlbeitrag* not being guaranteed, ``sex`` never reaching the premium, and the *Ablauf*
+year carrying no surrender.
 
 The whole-model-point-table sweep lives in ``test_model_conventions_de.py``, which owns the
 library's single sweep; this module touches individual model points by name only.
@@ -120,7 +109,7 @@ TOTALS = {
     "commissions": 1722.94, "net_cf": -11048.31,
 }
 
-# The three columns where adding the *printed* cells gives a different answer, and what it
+# The four columns where adding the *printed* cells gives a different answer, and what it
 # gives. The notes say so in as many words; this is that sentence as an assertion.
 ROUNDED_CELL_TOTALS = {
     "pols_if": 16.648982, "premiums": 33365.24, "claims_death": 2506.86,
@@ -176,8 +165,8 @@ EINMALBEITRAG_TOTALS = {
     "commissions": 1081.83, "net_cf": -22733.97,
 }
 
-# The notes' Überschussverwendung comparison: point -> (maturity benefit per policy,
-# death benefit per policy at t = 5, premiums collected, net_cf total).
+# The notes' Überschussverwendung comparison: point -> (surplus_use, maturity benefit per
+# policy, death benefit per policy at t = 5, premiums collected, net_cf total).
 SURPLUS_SYSTEMS = {
     1: ("ansammlung",          65227.99, 50460.89, 33365.26, -11048.31),
     8: ("bonus",               63562.77, 50532.10, 33365.26,  -8987.04),
@@ -186,12 +175,7 @@ SURPLUS_SYSTEMS = {
 
 
 def model_files(folder):
-    """The model's own file names, ignoring interpreter caches.
-
-    ``__pycache__`` appears inside a model folder as soon as anything *imports* it, which
-    is routine once the autodoc API pages have been built. Those caches are not part of
-    the model and must not make a round-trip comparison fail.
-    """
+    """The model's own file names, ignoring ``__pycache__``, which is not part of it."""
     return {p.name for p in folder.rglob("*")
             if p.is_file() and "__pycache__" not in p.parts}
 
@@ -199,17 +183,13 @@ def model_files(folder):
 def variant_model(tmp_path, name, edits):
     """A copy of the whole product directory with its CSVs rewritten, read as a model.
 
-    Three of the pitfalls are about behaviour the *shipped* parameters deliberately do not
-    exhibit -- the negative-reserve guard, which is inert at the post-2015 25 permille
-    ceiling, and the two invariances that need an otherwise-identical model point. Editing
-    the shipped CSVs in place would leave the product directory dirty if a test failed
-    mid-way and would race the conventions suite's own reads, so the whole directory is
-    copied to ``tmp_path`` first: inputs are external, so a copy of the parent is a
-    complete model.
-
-    ``edits`` is a sequence of ``(filename, old, new)`` text substitutions, each asserted
-    to match, so a CSV edited upstream fails loudly here instead of silently testing
-    nothing.
+    Three pitfalls are about behaviour the *shipped* parameters deliberately do not exhibit
+    -- the negative-reserve guard, inert at the post-2015 25 permille ceiling, and two
+    invariances that need an otherwise-identical model point. Editing the shipped CSVs in
+    place would leave the product directory dirty if a test failed mid-way, so the whole
+    directory is copied first: inputs are external, so a copy of the parent is a complete
+    model. Each ``(filename, old, new)`` substitution is asserted to match, so a CSV edited
+    upstream fails loudly here instead of silently testing nothing.
     """
     dest = tmp_path / PRODUCT_DIR.name
     shutil.copytree(PRODUCT_DIR, dest,
@@ -252,9 +232,9 @@ def test_worked_example_row(de_klv_anchor, t):
 def test_the_worked_example_frame_matches_the_cells(de_klv_anchor):
     """result_cf() publishes the same numbers the cells do, row for row.
 
-    Asserted separately from the row test because ``check_net_cf()`` reads the *frame* and
-    not the cells: a column dropped, renamed or mis-signed on the way into the DataFrame
-    would leave every cells assertion above passing.
+    Asserted separately because ``check_net_cf()`` reads the *frame*: a column dropped,
+    renamed or mis-signed on the way into the DataFrame would leave every cells assertion
+    above passing.
     """
     df = de_klv_anchor.result_cf()
     assert list(df.index) == list(range(1, 26))
@@ -272,10 +252,10 @@ def test_the_worked_example_frame_matches_the_cells(de_klv_anchor):
 def test_the_worked_example_totals_are_summed_at_full_precision(de_klv_anchor):
     """The notes' Total row is a full-precision sum, then rounded -- not a sum of cells.
 
-    On this cell the two differ in three of the eight columns and in ``pols_if``, by one
-    or two cents: the accumulation of twenty-five roundings of at most half a cent each.
-    The notes say so and name the figures; both are asserted, because "totals are summed
-    at full precision" is a convention a reader can only check against the alternative.
+    On this cell the two differ in three columns and in ``pols_if``, by one or two cents:
+    twenty-five roundings of at most half a cent each. Both are asserted, because "totals
+    are summed at full precision" is a convention a reader can only check against the
+    alternative.
     """
     df = de_klv_anchor.result_cf()
     for column, total in TOTALS.items():
@@ -299,7 +279,7 @@ def test_the_state_behind_the_cash_flows(de_klv_anchor, t):
     """The notes' state table: the reserve, the surplus and what a surrender would pay.
 
     ``res_pp(t)`` is the guaranteed *Deckungskapital* at the **start** of year ``t``;
-    ``surplus_base_pp(t)`` is the same reserve at the **end** of that year, which is the
+    ``surplus_base_pp(t)`` is the same reserve at the **end** of it, which is the
     *Deckungskapital* "at the allocation date" the declared rate multiplies.
     """
     res, base, credit, av, term, surr = STATE[t]
@@ -310,7 +290,6 @@ def test_the_state_behind_the_cash_flows(de_klv_anchor, t):
     assert p.av_pp(t) == pytest.approx(av, abs=CENT)
     assert p.term_bonus_pp(t) == pytest.approx(term, abs=CENT)
     assert p.surr_value_pp(t) == pytest.approx(surr, abs=CENT)
-    # The same numbers reach result_surplus(), which is the frame a reader reads.
     row = p.result_surplus().loc[t]
     assert row["res_pp"] == pytest.approx(res, abs=CENT)
     assert row["surplus_base_pp"] == pytest.approx(base, abs=CENT)
@@ -341,8 +320,7 @@ def test_the_derived_tariff(de_klv_anchor):
         tol = CENT if abs(value) > 100 else 5e-7
         assert got == pytest.approx(value, abs=max(tol, abs(value) * 1e-9)), name
     assert "prem_gross_pp" not in p.model_point().index
-    assert p.beitragssumme() == pytest.approx(
-        p.prem_gross_pp() * p.prem_term(), rel=1e-12)
+    assert p.beitragssumme() == pytest.approx(p.prem_gross_pp() * p.prem_term(), rel=1e-12)
     # The two annuities coincide because the premium term is the whole cover.
     assert p.ann_due_prem_1st() == pytest.approx(p.ann_due_term_1st(), rel=1e-15)
 
@@ -351,12 +329,10 @@ def test_the_bruttobeitrag_rebuilt_from_the_equivalence(de_klv_anchor):
     """The notes' first independent check, in arithmetic a reader can follow.
 
     Numerator 39 266,981067 + 0,0015 x 50 000 x 21,680698 = 40 893,033435; denominator
-    0,97 x 21,680698 - 0,025 x 25 = 20,405277; the quotient is 2 004,0420 EUR. The two
-    reserving premiums then follow without touching the projection at all.
-
-    The rebuild is done on the notes' **printed** figures rather than on the model's own,
-    which is the point of it -- so the tolerances here are those of a six-figure annuity
-    factor carried through a multiplication, not the model's.
+    0,97 x 21,680698 - 0,025 x 25 = 20,405277; the quotient is 2 004,0420 EUR. The rebuild
+    runs on the notes' **printed** figures rather than on the model's own, which is the
+    point of it -- so the tolerances are those of a six-figure annuity factor carried
+    through a multiplication, not the model's.
     """
     p = de_klv_anchor
     numerator = 39266.981067 + 0.0015 * 50000 * 21.680698
@@ -373,14 +349,12 @@ def test_the_bruttobeitrag_rebuilt_from_the_equivalence(de_klv_anchor):
 
 
 def test_the_first_anniversary_reserve_by_fackler(de_klv_anchor):
-    """The notes' second independent check: the reserve rebuilt forwards, not backwards.
+    """The notes' second check: the reserve rebuilt forwards, not as a present value.
 
-    ``res_pp(2)`` = 570,75 EUR is a *prospective* present value. Rebuild it
-    retrospectively: (-1 252,5263 + 1 868,9208) x 1,01 = 622,5584; deduct the year's death
-    outgo 0,001048144253 x 50 000 = 52,4072; divide the remaining 570,1512 by the
-    survivors 0,998951856. That is what ``check_res_roll_fwd()`` asserts at every ``t``,
-    and it holds only if the premium, the first-order mortality, the *Rechnungszins* and
-    the prospective formula are mutually consistent.
+    (-1 252,5263 + 1 868,9208) x 1,01 = 622,5584; deduct the year's death outgo
+    0,001048144253 x 50 000 = 52,4072; divide the remaining 570,1512 by the survivors
+    0,998951856. It holds only if the premium, the first-order mortality, the
+    *Rechnungszins* and the prospective formula are mutually consistent.
     """
     p = de_klv_anchor
     q1 = p.mort_rate_at_age(37)
@@ -396,11 +370,11 @@ def test_the_first_anniversary_reserve_by_fackler(de_klv_anchor):
 
 
 def test_the_year_two_surplus_credit_and_the_ansammlung_it_builds(de_klv_anchor):
-    """The notes' third independent check: 1,70 pp on the year's *closing* reserve.
+    """The notes' third check: 1,70 pp on the year's *closing* reserve.
 
-    2,70 % declared less a 1,00 % guarantee is 1,70 pp -- **derived by subtraction, never
-    added on top**. 0,017 x 2 410,101960 = 40,9717 EUR. The balance then compounds at
-    ``ans_rate``, and the terminal share accrues on the same base.
+    2,70 % declared less a 1,00 % guarantee is 1,70 pp -- derived by subtraction, never
+    added on top. 0,017 x 2 410,101960 = 40,9717 EUR; the balance then compounds at
+    ``ans_rate`` and the terminal share accrues on the same base.
     """
     p = de_klv_anchor
     assert p.decl_rate(2) == 0.0270
@@ -417,13 +391,12 @@ def test_the_year_two_surplus_credit_and_the_ansammlung_it_builds(de_klv_anchor)
 
 
 def test_the_year_twelve_surrender_payment_from_its_three_parts(de_klv_anchor):
-    """The notes' fourth independent check: the one row where all three rules bite.
+    """The notes' fourth check: the one row where all three rules bite at once.
 
     Count: 0,675431 in force, less the year's mortality, times the 6,0 % spike at the
     twelve-year tax threshold. Amount: the § 169 value is the **floor** ``res_min_pp(13)``
-    = 22 413,4564 EUR, which exceeds the Zillmer reserve by 691,06 EUR; the 5 %
-    *Stornoabzug* applies to that and to nothing else; the *Überschussguthaben* is added
-    **undeducted**.
+    = 22 413,4564 EUR, exceeding the Zillmer reserve by 691,06 EUR; the 5 % *Stornoabzug*
+    applies to that and nothing else; the *Überschussguthaben* is added **undeducted**.
     """
     p = de_klv_anchor
     count = 0.675431 * (1.0 - 0.00226204) * 0.06
@@ -447,13 +420,11 @@ def test_the_year_twelve_surrender_payment_from_its_three_parts(de_klv_anchor):
 def test_the_cash_flow_statement_closes_row_by_row(de_klv_anchor):
     """The notes rebuild net_cf(12) from the six flow columns; check_net_cf() does it at every t."""
     p = de_klv_anchor
-    rebuilt = (1353.591433 - 80.960814 - 0.0 - 960.522126
-               - 42.019865 - 20.303871)
+    rebuilt = 1353.591433 - 80.960814 - 0.0 - 960.522126 - 42.019865 - 20.303871
     assert rebuilt == pytest.approx(249.784756, abs=5e-6)
     assert p.net_cf(12) == pytest.approx(249.784756, abs=5e-6)
     assert p.check_net_cf() is True
-    assert all(p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9)
-               for t in range(1, 26))
+    assert all(p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9) for t in range(1, 26))
 
 
 def test_the_decrements_close_three_ways(de_klv_anchor):
@@ -461,8 +432,8 @@ def test_the_decrements_close_three_ways(de_klv_anchor):
 
     There is no fourth term: the *Ablauf* falls at the end of policy year ``n``, so the
     survivors of that year's mortality all leave as a maturity and nothing is carried past
-    it. ``check_decrement_closure()`` builds the same sum by direct summation over the
-    exit cells, with no reference to the recursion that produced ``pols_if``.
+    it. ``check_decrement_closure()`` builds the same sum by direct summation over the exit
+    cells, with no reference to the recursion that produced ``pols_if``.
     """
     p = de_klv_anchor
     n = p.proj_len()
@@ -484,12 +455,7 @@ def test_the_decrements_close_three_ways(de_klv_anchor):
 
 @pytest.mark.parametrize("t", sorted(EINMALBEITRAG))
 def test_the_einmalbeitrag_variant_row(kapitallebensversicherung, t):
-    """Model point 2 is the anchor cell with prem_term = 1 and nothing else.
-
-    ``ann_due_prem_1st`` collapses to exactly 1, the *Beitragssumme* becomes the single
-    premium itself, and the 25 permille *Zillmersatz* then buys only 1 081,83 EUR of
-    zillmered cost against 1 252,53 EUR on the level-premium form.
-    """
+    """Model point 2 is the anchor cell with prem_term = 1 and nothing else."""
     pols_if, prem, cd, cm, cl, exp, comm, net = EINMALBEITRAG[t]
     p = kapitallebensversicherung.Projection[2]
     assert p.prem_term() == 1
@@ -508,9 +474,10 @@ def test_the_einmalbeitrag_reverses_the_reserve_ordering(kapitallebensversicheru
     """On a single premium the § 169 floor is **slack** from the first anniversary.
 
     39 648,80 EUR of Zillmer reserve against a 38 783,34 EUR floor -- the reverse of the
-    level-premium ordering, because a single premium leaves almost nothing to amortise.
-    That is the correct answer, not a degenerate case, and it is why the model publishes
-    all three constructions rather than assuming which one wins.
+    level-premium ordering, a single premium leaving almost nothing to amortise. That is
+    the correct answer, not a degenerate case, and it is why the model publishes all three
+    constructions rather than assuming which one wins. The two forms' undiscounted totals
+    are *not* comparable: the equivalence holds in present value on tariff survivorship.
     """
     p = kapitallebensversicherung.Projection[2]
     assert p.beitragssumme() == pytest.approx(p.prem_gross_pp(), rel=1e-12)
@@ -524,10 +491,6 @@ def test_the_einmalbeitrag_reverses_the_reserve_ordering(kapitallebensversicheru
     for column, total in EINMALBEITRAG_TOTALS.items():
         tol = SIX_DP if column == "pols_if" else CENT
         assert df[column].sum() == pytest.approx(total, abs=tol), column
-    # The surrender outflow is far larger throughout, every policy carrying a reserve
-    # built in year 1; the maturity benefit is much higher; and the two forms' undiscounted
-    # net_cf totals are *not* comparable -- the equivalence holds in present value on
-    # tariff survivorship, not over a lapsing cohort.
     assert p.benefit_maturity_pp(25) == pytest.approx(80699.89, abs=CENT)
     assert df["claims_lapse"].sum() > 2.4 * TOTALS["claims_lapse"]
 
@@ -555,10 +518,9 @@ def test_the_interest_surplus_is_derived_by_subtraction(kapitallebensversicherun
     """The *laufende Verzinsung* **is** the guarantee plus the interest surplus.
 
     A declared 2,70 % on a 1,00 % guarantee is a **1,70 pp** credit and never 2,70 pp on
-    top of 1,00 pp -- the single most common way to get this product wrong, and the reason
-    ``zins_ueberschuss_rate`` is derived and never an input. The outer ``max`` is the other
-    half: on the ``nil`` path the declared rate falls **below** the guarantee, which the
-    reserve roll-forward still meets in full, so the surplus is zero rather than negative.
+    top of 1,00 pp. The outer ``max`` is the other half: on the ``nil`` path the declared
+    rate falls **below** the guarantee, which the reserve roll-forward still meets in full,
+    so the surplus is zero rather than negative.
     """
     p = de_klv_anchor
     for t in range(1, 26):
@@ -566,17 +528,12 @@ def test_the_interest_surplus_is_derived_by_subtraction(kapitallebensversicherun
             max(0.0, p.decl_rate(t) - p.rechnungszins()), abs=1e-15)
     assert p.zins_ueberschuss_rate(1) == pytest.approx(0.017, abs=1e-15)
     assert p.zins_ueberschuss_rate(1) != pytest.approx(0.027, abs=1e-6)
-    names = set(kapitallebensversicherung.Projection.cells) | set(
-        kapitallebensversicherung.Projection.refs)
-    assert "zins_ueberschuss_rate" in names
 
     nil = kapitallebensversicherung.Projection[14]
     assert nil.scenario_id() == "nil"
-    assert nil.decl_rate(1) == 0.0
-    assert nil.rechnungszins() == 0.01
+    assert nil.decl_rate(1) == 0.0 and nil.rechnungszins() == 0.01
     assert all(nil.zins_ueberschuss_rate(t) == 0.0 for t in range(1, 13))
     assert all(nil.surplus_credit_pp(t) == 0.0 for t in range(1, 13))
-    # The guarantee is still met in full: the reserve rolls forward at rechnungszins.
     assert nil.check_res_roll_fwd() is True
     assert nil.res_pp(13) == pytest.approx(nil.sum_assured(), abs=1e-6)
 
@@ -588,10 +545,10 @@ def test_the_interest_surplus_is_derived_by_subtraction(kapitallebensversicherun
 def test_the_surplus_base_is_the_reserve_at_the_allocation_date(de_klv_anchor):
     """A percentage of the *Deckungskapital* calculated at the allocation date.
 
-    Applying the same rate to ``sum_assured`` would credit 850,00 EUR in policy year 1
-    instead of 9,70 EUR, and to the *Bruttobeitrag* 34,07 EUR -- two orders of magnitude
-    apart in the early durations and converging only at the *Ablauf*, which is exactly why
-    a wrong base is invisible in a late-duration spot check.
+    The same rate on ``sum_assured`` would credit 850,00 EUR in policy year 1 instead of
+    9,70 EUR, and on the *Bruttobeitrag* 34,07 EUR -- two orders of magnitude apart early
+    and converging only at the *Ablauf*, which is why a wrong base is invisible in a
+    late-duration spot check.
     """
     p = de_klv_anchor
     for t in range(1, 26):
@@ -602,8 +559,6 @@ def test_the_surplus_base_is_the_reserve_at_the_allocation_date(de_klv_anchor):
     assert p.surplus_credit_pp(1) == pytest.approx(9.7027, abs=5e-5)
     assert p.zins_ueberschuss_rate(1) * p.sum_assured() == pytest.approx(850.0, abs=CENT)
     assert p.zins_ueberschuss_rate(1) * p.prem_gross_pp() == pytest.approx(34.07, abs=CENT)
-    # ... and at the Ablauf the base really is the sum insured, which is the coincidence
-    # that makes a late-duration check useless for telling the three apart.
     assert p.surplus_base_pp(25) == pytest.approx(p.sum_assured(), abs=CENT)
 
 
@@ -615,12 +570,10 @@ def test_the_negative_reserve_guard(de_klv_anchor, tmp_path):
     """A positive rate on a negative base would credit a **negative** surplus.
 
     On the shipped 25 permille basis the guard is **inert**: the base is the *closing*
-    reserve and it is already +570,75 EUR in policy year 1 against an opening
-    -1 252,53 EUR, so the set of years where it bites is empty and asserting it on the
-    anchor cell alone would be vacuous. The notes say so, and this test therefore also
-    exercises the guard directly, on the pre-2015 **40 permille** ceiling where the closing
-    reserve of year 1 really is negative -- -190,22 EUR, credit nil, and the *Ablauf* still
-    fully funded.
+    reserve and is already +570,75 EUR in policy year 1 against an opening -1 252,53 EUR,
+    so asserting it on the anchor cell alone would be vacuous. The notes say so, and this
+    test therefore exercises the guard directly on the pre-2015 **40 permille** ceiling,
+    where the closing reserve of year 1 really is negative.
     """
     p = de_klv_anchor
     assert all(p.surplus_base_pp(t) >= 0.0 for t in range(1, 26))
@@ -639,7 +592,7 @@ def test_the_negative_reserve_guard(de_klv_anchor, tmp_path):
         assert q.res_pp_at(1, "AFT_INT") == pytest.approx(-190.22, abs=CENT)
         assert q.surplus_base_pp(1) == 0.0
         assert q.surplus_credit_pp(1) == 0.0
-        assert q.zins_ueberschuss_rate(1) > 0.0      # the rate is positive; the base is not
+        assert q.zins_ueberschuss_rate(1) > 0.0     # the rate is positive; the base is not
         assert [t for t in range(1, 26) if q.res_pp_at(t, "AFT_INT") < 0.0] == [1]
         assert q.check_res_roll_fwd() is True
         assert q.check_zillmer_cap() is True
@@ -657,10 +610,10 @@ def test_the_product_has_three_reserves_and_the_floor_normally_binds(
     """``res_guar_pp`` is the maximum of the two constructions and of zero.
 
     On a long *gezillmert* contract the § 169 Abs. 3 floor binds at **every** duration but
-    0 and ``m``: ``ann_due_prem_fut / ann_due_prem_1st`` falls roughly linearly over 25
-    years while ``max(0, 1 - k/5)`` reaches zero after five. A model publishing only the
-    Zillmer reserve as the surrender value understates it essentially everywhere. With
-    ``zillmer_on = 0`` all three coincide and the floor is slack -- the invariance test.
+    0 and ``m``, so a model publishing only the Zillmer reserve as the surrender value
+    understates it essentially everywhere. With ``zillmer_on = 0`` all three coincide and
+    the floor is slack -- the invariance test -- and the price is unchanged, because
+    ``zillmer_on`` decides where the cost sits in the reserve and not whether it is charged.
     """
     p = de_klv_anchor
     strictly_binding = 0
@@ -672,7 +625,7 @@ def test_the_product_has_three_reserves_and_the_floor_normally_binds(
             strictly_binding += 1
     assert strictly_binding >= 20, "the § 169 floor should bind at almost every duration"
     assert p.res_min_pp(2) > p.res_zill_pp(2)
-    assert p.res_min_pp(1) == pytest.approx(p.res_zill_pp(1), rel=1e-12)   # duration 0
+    assert p.res_min_pp(1) == pytest.approx(p.res_zill_pp(1), rel=1e-12)    # duration 0
     assert p.res_min_pp(26) == pytest.approx(p.res_zill_pp(26), rel=1e-12)  # duration m
     assert p.check_surr_floor() is True
 
@@ -681,8 +634,6 @@ def test_the_product_has_three_reserves_and_the_floor_normally_binds(
     for t in (1, 2, 3, 6, 25, 26):
         assert flat.res_zill_pp(t) == pytest.approx(flat.res_net_pp(t), rel=1e-12)
         assert flat.res_min_pp(t) == pytest.approx(flat.res_net_pp(t), rel=1e-12)
-    # Same price either way: zillmer_on decides where the cost sits in the reserve, not
-    # whether it is charged, which is why one carrier publishes two editions of one tariff.
     assert flat.prem_gross_pp() == pytest.approx(p.prem_gross_pp(), rel=1e-12)
     assert flat.check_surr_floor() is True
 
@@ -697,22 +648,20 @@ def test_the_zillmer_cap_and_the_surrender_floor_are_asserted_separately(
 
     One search summary in the research corpus states the five-year spreading and the 2,5 %
     ceiling as though both came from § 169 Abs. 3. They do not, they do different work, and
-    the model asserts them through two different cells against two different quantities.
+    the model asserts them through two cells against two quantities. A 2012 cohort carries
+    the *pre-LVRG* ceiling for its whole term, so the cap is a cohort fact and the floor is
+    not.
     """
     p = de_klv_anchor
-    # The cap: a rate against the cohort ceiling, and an amount against the Beitragssumme.
     assert p.alpha_rate() == 0.025 and p.zillmer_max() == 0.025
     assert p.alpha_cost() == pytest.approx(0.025 * p.beitragssumme(), rel=1e-12)
     assert p.check_zillmer_cap() is True
     assert p.check_zillmer_cap_resid(1) == pytest.approx(0.0, abs=1e-9)
-    # The floor: a five-year straight-line schedule on the *value*, independent of the cap.
     for t in range(1, 27):
         assert p.res_min_pp(t) == pytest.approx(
             p.res_net_pp(t) - p.alpha_cost() * max(0.0, 1.0 - (t - 1) / 5.0), rel=1e-12)
     assert p.res_min_pp(6) == pytest.approx(p.res_net_pp(6), rel=1e-12)   # k = 5
     assert p.check_surr_floor() is True
-    # A 2012 cohort carries the *pre-LVRG* ceiling for its whole term: the two rules move
-    # independently, and the cap is a cohort fact while the floor is not.
     inforce = kapitallebensversicherung.Projection[10]
     assert inforce.issue_year() == 2012
     assert inforce.zillmer_max() == 0.040 and inforce.hrz_max() == 0.0175
@@ -727,10 +676,10 @@ def test_the_zillmer_cap_and_the_surrender_floor_are_asserted_separately(
 def test_the_stornoabzug_spares_the_ueberschussguthaben(de_klv_anchor):
     """The only published deduction in the corpus is a percentage of the *Deckungskapital*.
 
-    So the accumulated *Überschussguthaben* passes through **undeducted**, and by
-    construction the surrender value less that balance is exactly the deducted guaranteed
-    value. ``term_surr_share = 0`` in the base run, so the accrued terminal share is not
-    paid on surrender at all.
+    So the accumulated *Überschussguthaben* passes through **undeducted**: the surrender
+    value less that balance is exactly the deducted guaranteed value. Had the deduction
+    been taken on the whole payment, year 12 would pay 123,12 EUR less.
+    ``term_surr_share = 0``, so the accrued terminal share is not paid on surrender at all.
     """
     p = de_klv_anchor
     for t in range(1, 26):
@@ -738,11 +687,9 @@ def test_the_stornoabzug_spares_the_ueberschussguthaben(de_klv_anchor):
             p.res_guar_pp(t) * (1.0 - p.storno_rate(t)), rel=1e-12)
     assert p.storno_rate(1) == 0.10 and p.storno_rate(12) == 0.05
     assert p.storno_rate(20) == 0.025
-    # Had the deduction been taken on the whole payment, year 12 would pay 118,12 EUR less.
     whole = (p.res_guar_pp(12) + p.av_pp_at(12, "AFT_CREDIT")) * (1.0 - 0.05)
     assert p.surr_value_pp(12) - whole == pytest.approx(0.05 * 2462.4255, abs=CENT)
     assert p.surr_value_pp(12) > whole
-    # And the terminal share is not in there at all.
     assert p.term_bonus_pp(13) > 0.0
     assert p.surr_value_pp(12) == pytest.approx(
         p.res_guar_pp(12) * 0.95 + p.av_pp_at(12, "AFT_CREDIT"), rel=1e-12)
@@ -756,10 +703,9 @@ def test_a_suicide_inside_three_years_is_paid_the_rueckkaufswert(de_klv_anchor):
     """The insurer is *leistungsfrei* **and** must pay the *Rückkaufswert* under § 169.
 
     A benefit **substitution**, not a forfeiture -- materially unlike art. L. 132-7 of the
-    French code, where the cover is of no effect in the first year and there is no
-    surrender value to fall back on. In policy year 1 the substituted amount is only
-    708,73 EUR against a full benefit of 50 011,99 EUR, so the effect is visible in the
-    numbers and not only in the cells list.
+    French code, where the cover is of no effect in the first year and there is no surrender
+    value to fall back on. In policy year 1 the substituted amount is only 708,73 EUR
+    against a full benefit of 50 011,99 EUR, so the effect is visible in the numbers.
     """
     p = de_klv_anchor
     assert p.suicide_share == 0.02
@@ -771,7 +717,6 @@ def test_a_suicide_inside_three_years_is_paid_the_rueckkaufswert(de_klv_anchor):
     assert p.benefit_full_pp(1) == pytest.approx(50011.99, abs=CENT)
     assert p.surr_value_pp(1) == pytest.approx(708.73, abs=CENT)
     assert p.benefit_death_pp(1) == pytest.approx(49025.92, abs=CENT)
-    # Not nil, and not the full sum either: the whole point of the German rule.
     assert 0.0 < p.benefit_death_pp(1) < p.benefit_full_pp(1)
     assert p.benefit_death_pp(1) > 0.9 * p.sum_assured()
 
@@ -785,10 +730,11 @@ def test_beitragsfreistellung_succeeds_on_one_point_and_fails_on_another(
     """§ 165 VVG: below the minimum the election **becomes a surrender**.
 
     Model point 11 elects at the end of year 10 on a 50 000 EUR contract and succeeds: the
-    contract runs to the *Ablauf* with no further premium and a reduced sum insured. Model
-    point 12 elects at the end of year 3 on a 6 000 EUR contract, buys only 897,49 EUR of
-    paid-up sum against a 2 500 EUR minimum, and the projection terminates there with a
-    ``claims_lapse`` payment and nothing after it.
+    contract runs to the *Ablauf* with no further premium and a reduced sum insured, the
+    paid-up sum bought at exactly the § 169 value -- which is what makes the reserve
+    roll-forward still close in the election year. Model point 12 elects at the end of year
+    3 on a 6 000 EUR contract, buys only 897,49 EUR against a 2 500 EUR minimum, and the
+    projection terminates there with a ``claims_lapse`` payment and nothing after it.
     """
     ok = kapitallebensversicherung.Projection[11]
     assert ok.bfz_year() == 10
@@ -801,8 +747,6 @@ def test_beitragsfreistellung_succeeds_on_one_point_and_fails_on_another(
     assert list(df_ok.index) == list(range(1, 26))
     assert df_ok.loc[25, "claims_maturity"] > 0.0
     assert ok.benefit_maturity_pp(25) == pytest.approx(31621.11, abs=CENT)
-    # The paid-up sum was bought at exactly the § 169 value -- which is what makes the
-    # reserve roll-forward still close in the election year rather than being switched off.
     assert ok.bfz_si_pp() * ok.pu_single_prem(11) == pytest.approx(
         ok.res_guar_pp(10), rel=1e-12)
     assert ok.bfz_uplift_pp(10) == pytest.approx(779.31, abs=CENT)
@@ -844,7 +788,6 @@ def test_a_paid_up_policy_is_not_removed_from_the_in_force(kapitallebensversiche
     assert ok.pols_maturity(25) == pytest.approx(p.pols_maturity(25), rel=1e-12)
     assert ok.result_cf()["premiums"].sum() < p.result_cf()["premiums"].sum()
     assert ok.benefit_maturity_pp(25) < p.benefit_maturity_pp(25)
-    # A paid-up contract's guaranteed death leg is the reduced sum, not sum_assured.
     assert ok.benefit_full_pp(12) < p.benefit_full_pp(12)
     assert ok.check_pols_roll_fwd() is True
     assert ok.check_decrement_closure() is True
@@ -858,7 +801,7 @@ def test_the_lapse_decrement_is_std_and_not_the_gdv_stornoquote(de_klv_anchor):
     """GDV's headline measure counts conversions to *beitragsfrei* **as well as** surrenders.
 
     So it is not a surrender rate, and a second GDV measure gives an irreconcilable 1,2 %
-    for the same year. Every rate in ``lapse_table.csv`` is therefore [std], and the file
+    for the same year. Every rate in ``lapse_table.csv`` is therefore [std] and the file
     says so on every row; only the *shape* -- suppressed approaching duration 12 and
     spiking at it, on the twelve-year income-tax threshold -- is what the evidence supports.
     """
@@ -872,7 +815,6 @@ def test_the_lapse_decrement_is_std_and_not_the_gdv_stornoquote(de_klv_anchor):
                     (11, 0.02), (12, 0.06), (13, 0.025), (24, 0.025)):
         assert float(table.loc[t, "lapse_rate"]) == rate, t
         assert p.lapse_rate(t) == rate, t
-    # The shape: a trough before the threshold and a spike at it.
     assert p.lapse_rate(12) > 2.0 * p.lapse_rate(11)
     assert p.lapse_rate(11) < p.lapse_rate(1)
     assert p.lapse_rate(13) < p.lapse_rate(12)
@@ -895,8 +837,6 @@ def test_the_premium_cessation_rule_is_applied_once(de_klv_anchor):
     twice = p.prem_paid_pp(1) * p.pols_if(1) * (1.0 - p.mort_rate(1))
     assert p.premiums(1) - twice == pytest.approx(2004.0420 * 0.0009, abs=CENT)
     assert p.premiums(1) - twice == pytest.approx(1.80, abs=CENT)
-    # The premium really does stop at the end of the Beitragszahlungsdauer, on the point
-    # where that is shorter than the cover: 15 years of premium, 25 of cover.
     assert p.prem_charged_pp(25) > 0.0
 
 
@@ -904,16 +844,15 @@ def test_an_abgekuerzte_beitragszahlungsdauer_stops_the_premium_and_not_the_cove
         kapitallebensversicherung):
     """Model point 3 pays for 15 years and is covered for 25, on the ``low`` scenario.
 
-    Once the premium stops, ``ann_due_prem_fut`` is zero and the reserve rolls forward on
-    interest and mortality alone -- which is exactly what ``check_res_roll_fwd()`` is
-    testing when it reads ``prem_zill_pp`` only while ``t <= prem_term``.
+    Once the premium stops ``ann_due_prem_fut`` is zero and the reserve rolls forward on
+    interest and mortality alone -- which is what ``check_res_roll_fwd()`` is testing when
+    it credits ``prem_zill_pp`` only while ``t <= prem_term``.
     """
     p = kapitallebensversicherung.Projection[3]
     assert p.prem_term() == 15 and p.policy_term() == 25 and p.proj_len() == 25
     assert p.prem_charged_pp(15) > 0.0 and p.prem_charged_pp(16) == 0.0
     assert p.ann_due_prem_fut(16) == 0.0
-    assert p.scenario_id() == "low"
-    assert p.decl_rate(1) == 0.012
+    assert p.scenario_id() == "low" and p.decl_rate(1) == 0.012
     assert p.zins_ueberschuss_rate(1) == pytest.approx(0.002, abs=1e-15)
     assert p.result_cf()["premiums"].sum() == pytest.approx(36089.52, abs=CENT)
     assert p.check_res_roll_fwd() is True
@@ -928,10 +867,11 @@ def test_the_risikozuschlag_reaches_the_price_and_not_the_benefit(
         kapitallebensversicherung, tmp_path):
     """``rating_factor`` loads the first-order mortality in the **death leg** of the pricing.
 
-    Model point 14 carries 1.50 on the ``nil`` scenario. Compared with the same point at
-    1.00 it prices 80,55 EUR a year dearer -- and ``pv_death_1st`` is exactly 1.5 times as
-    large -- while the best-estimate decrement, the number of deaths and what a death claim
-    pays are all untouched. A *Risikozuschlag* buys the same cover at a higher price.
+    Model point 14 carries 1.50 on the ``nil`` scenario. Against the same point at 1.00 it
+    prices 80,55 EUR a year dearer -- ``pv_death_1st`` exactly 1.5 times as large -- while
+    the survivorship, the best-estimate decrement and what a death claim pays are all
+    untouched. Inside the § 161 window the *claim* does move, and correctly so: the
+    substituted amount is the *Rückkaufswert*, whose reserve carries the loading.
     """
     rated = kapitallebensversicherung.Projection[14]
     assert rated.rating_factor() == 1.5 and rated.smoker() == "S"
@@ -947,20 +887,13 @@ def test_the_risikozuschlag_reaches_the_price_and_not_the_benefit(
         assert std.prem_gross_pp() == pytest.approx(2530.8989, abs=5e-4)
         assert rated.prem_gross_pp() > std.prem_gross_pp()
         assert rated.pv_death_1st() == pytest.approx(1.5 * std.pv_death_1st(), rel=1e-12)
-        # Never the survivorship: the survival leg is identical, so the loading raises the
-        # price without shortening the life the maturity benefit is priced on.
         assert rated.pv_maturity_1st() == pytest.approx(std.pv_maturity_1st(), rel=1e-12)
         assert rated.tpx_1st(12) == pytest.approx(std.tpx_1st(12), rel=1e-12)
-        # Never a best-estimate rate, and never the benefit.
         assert rated.mort_rate(1) == pytest.approx(std.mort_rate(1), rel=1e-15)
         assert rated.pols_death(1) == pytest.approx(std.pols_death(1), rel=1e-15)
         assert rated.benefit_full_pp(5) == pytest.approx(std.benefit_full_pp(5), rel=1e-12)
-        assert rated.benefit_death_pp(5) == pytest.approx(
-            std.benefit_death_pp(5), rel=1e-12)
+        assert rated.benefit_death_pp(5) == pytest.approx(std.benefit_death_pp(5), rel=1e-12)
         assert rated.claims(5, "DEATH") == pytest.approx(std.claims(5, "DEATH"), rel=1e-12)
-        # Inside the § 161 window the death benefit does move with it, and correctly so:
-        # the substituted amount is the *Rückkaufswert*, and the reserve behind it carries
-        # the loading. That is the reserve moving, not the benefit.
         assert rated.claims(1, "DEATH") != pytest.approx(std.claims(1, "DEATH"), rel=1e-9)
         assert rated.benefit_full_pp(1) == pytest.approx(std.benefit_full_pp(1), rel=1e-12)
         assert rated.check_res_roll_fwd() is True and std.check_res_roll_fwd() is True
@@ -976,8 +909,8 @@ def test_one_first_order_table_serves_both_legs(kapitallebensversicherung, de_kl
     """The direction of prudence forks, and the model uses one table anyway -- visibly.
 
     A death benefit wants mortality assumed higher than expected and a survival benefit
-    lower, so no single first-order table is prudent for both. German practice resolves
-    that in the tariff rather than in the table. Both legs are rebuilt here from
+    lower, so no single first-order table is prudent for both; German practice resolves that
+    in the tariff rather than in the table. Both legs are rebuilt here from
     ``mort_table.csv`` on the same unisex blend, so the compromise is asserted rather than
     described.
     """
@@ -1001,7 +934,6 @@ def test_one_first_order_table_serves_both_legs(kapitallebensversicherung, de_kl
     assert survive == pytest.approx(p.tpx_1st(25), rel=1e-12)
     # And there is no second table hiding anywhere: one file, one column of rates.
     assert set(table.columns) == {"mort_rate_1st", "provenance"}
-    assert "mort_rate_2nd" not in table.columns
 
 
 # ---------------------------------------------------------------------------
@@ -1012,10 +944,10 @@ def test_the_two_mortality_bases_are_not_crossed(kapitallebensversicherung, de_k
     """``mort_rate_at_age`` prices and reserves; ``mort_rate`` projects.
 
     ``mort_rate(t) = mort_rate_base(t) x 0.75``, so the first-order table carries a 33 %
-    safety loading. The wedge is the *Sicherheitszuschlag* whose systematic release **is**
-    the *Risikoüberschuss*; a model that reserved on the best estimate would have thrown it
-    away. So ``res_pp`` must be invariant to ``mort_be_factor`` while ``pols_death`` moves
-    with it.
+    safety loading. That wedge is the *Sicherheitszuschlag* whose systematic release **is**
+    the *Risikoüberschuss*, which a model reserving on the best estimate would have thrown
+    away -- so ``res_pp`` and the price must be invariant to ``mort_be_factor`` while
+    ``pols_death`` moves with it.
     """
     p = de_klv_anchor
     assert kapitallebensversicherung.Projection.mort_be_factor == 0.75
@@ -1034,11 +966,9 @@ def test_the_two_mortality_bases_are_not_crossed(kapitallebensversicherung, de_k
         model.Projection.clear_all()
         q = model.Projection[1]
         assert q.mort_rate(1) == pytest.approx(0.001200 * 0.90, rel=1e-12)
-        # The reserve and the price are first-order quantities and must not move.
         assert [q.res_pp(t) for t in (1, 5, 12, 25)] == reserves
         assert q.prem_gross_pp() == premium
         assert q.mort_rate_at_age(37) == p.mort_rate_at_age(37)
-        # The projection is second-order and must.
         assert q.pols_death(5) > deaths
         assert q.result_cf()["claims_death"].sum() > TOTALS["claims_death"]
         assert q.check_res_roll_fwd() is True
@@ -1058,7 +988,7 @@ def test_the_ansammlung_pays_more_at_maturity_and_the_bonus_more_on_death(
     Model points 1 and 8 differ in ``surplus_use`` alone, and the asymmetry is arithmetic:
     the *Ansammlung* compounds at ``ans_rate`` = 2,70 % while bonus sum insured accumulates
     at ``rechnungszins`` = 1,00 %, but the bonus is **paid-up insurance** whose whole face
-    amount falls due at once on death. A model that set the two rates equal would lose the
+    amount falls due at once on death. A model setting the two rates equal loses the
     distinction, correctly.
     """
     ans = de_klv_anchor
@@ -1066,15 +996,12 @@ def test_the_ansammlung_pays_more_at_maturity_and_the_bonus_more_on_death(
     assert ans.surplus_use() == "ansammlung" and bonus.surplus_use() == "bonus"
     assert ans.ans_rate(1) == 0.027 and ans.rechnungszins() == 0.01
     assert ans.ans_rate(1) > ans.rechnungszins()
-    # Same premium, same reserve, same declared credit -- only the destination differs.
     assert bonus.prem_gross_pp() == pytest.approx(ans.prem_gross_pp(), rel=1e-12)
     for t in (1, 5, 12, 25):
         assert bonus.surplus_credit_pp(t) == pytest.approx(
             ans.surplus_credit_pp(t), rel=1e-12)
-    # Maturity: the Ansammlung wins by 1 665,22 EUR.
     assert ans.benefit_maturity_pp(25) - bonus.benefit_maturity_pp(25) == pytest.approx(
         1665.22, abs=CENT)
-    # Early death: the Bonussystem wins by 71,21 EUR.
     assert bonus.benefit_death_pp(5) - ans.benefit_death_pp(5) == pytest.approx(
         71.21, abs=CENT)
     assert bonus.av_pp(26) == 0.0 and ans.av_pp(26) > 0.0
@@ -1090,11 +1017,11 @@ def test_the_zahlbeitrag_is_not_guaranteed_under_beitragsverrechnung(
         kapitallebensversicherung, de_klv_anchor, tmp_path):
     """The policyholder pays the *Bruttobeitrag* less a **discretionary** surplus offset.
 
-    On model point 9 last year's declared surplus reduces this year's *Zahlbeitrag*, while
-    ``prem_charged_pp`` -- the tariff premium -- is unchanged from the anchor. The renewal
-    commission is charged on the tariff premium and not on what was paid: the intermediary
-    is paid on the price, the offset being a rebate. On the ``nil`` scenario the offset is
-    zero and the two coincide, which is what "discretionary" means in cash.
+    On model point 9 last year's declared surplus reduces this year's *Zahlbeitrag* while
+    ``prem_charged_pp`` -- the tariff premium -- is unchanged from the anchor, and the
+    renewal commission reads the tariff premium: the intermediary is paid on the price, the
+    offset being a rebate. On the ``nil`` scenario the offset is zero and the two coincide,
+    which is what "discretionary" means in cash.
     """
     bv = kapitallebensversicherung.Projection[9]
     p = de_klv_anchor
@@ -1107,7 +1034,6 @@ def test_the_zahlbeitrag_is_not_guaranteed_under_beitragsverrechnung(
         assert bv.prem_charged_pp(t) == pytest.approx(p.prem_charged_pp(t), rel=1e-12)
     assert bv.prem_offset_pp(5) == pytest.approx(104.3370, abs=5e-4)
     assert bv.prem_paid_pp(5) == pytest.approx(1899.7051, abs=5e-4)
-    # The commission reads prem_charged_pp, not prem_paid_pp.
     assert bv.commissions(5) == pytest.approx(
         0.015 * bv.prem_charged_pp(5) * bv.pols_if(5), rel=1e-12)
     assert bv.commissions(5) > 0.015 * bv.prem_paid_pp(5) * bv.pols_if(5)
@@ -1115,14 +1041,14 @@ def test_the_zahlbeitrag_is_not_guaranteed_under_beitragsverrechnung(
         TOTALS["commissions"], abs=CENT)
 
     model = variant_model(tmp_path, "KLV_DE_A_bv_nil", [
-        ("model_point_table.csv", ",beitragsverrechnung,base,", ",beitragsverrechnung,nil,")])
+        ("model_point_table.csv",
+         ",beitragsverrechnung,base,", ",beitragsverrechnung,nil,")])
     try:
         nil = model.Projection[9]
         assert nil.scenario_id() == "nil"
         assert all(nil.prem_offset_pp(t) == 0.0 for t in range(1, 26))
         assert all(nil.prem_paid_pp(t) == nil.prem_charged_pp(t) for t in range(1, 26))
-        assert nil.result_cf()["premiums"].sum() > (
-            bv.result_cf()["premiums"].sum())
+        assert nil.result_cf()["premiums"].sum() > bv.result_cf()["premiums"].sum()
         assert nil.check_surplus_roll_fwd() is True
     finally:
         model.close()
@@ -1136,11 +1062,11 @@ def test_the_tariff_is_unisex_while_the_decrement_is_not(kapitallebensversicheru
                                                          de_klv_anchor):
     """New business has been unisex since 21 December 2012, so ``sex`` may not price.
 
-    Model points 1 and 7 differ in ``sex`` (and in payment frequency), and both price at
+    Model points 1 and 7 differ in ``sex`` (and in payment frequency) and both price at
     2 004,0420 EUR before the *Ratenzahlungszuschlag*. What ``sex`` does reach is the
-    **decrement**: the female rate is 0,000672 against 0,000900 in year 1. Pricing off the
-    policy's own row instead of the fixed unisex blend is silent, and it moved the anchor
-    cell's premium by 9,15 EUR when the model was first written that way.
+    **decrement**: 0,000672 against 0,000900 in year 1. Pricing off the policy's own row
+    instead of the fixed unisex blend is silent, and it moved this premium by 9,15 EUR when
+    the model was first written that way.
     """
     male, female = de_klv_anchor, kapitallebensversicherung.Projection[7]
     assert male.sex() == "M" and female.sex() == "F"
@@ -1149,13 +1075,11 @@ def test_the_tariff_is_unisex_while_the_decrement_is_not(kapitallebensversicheru
     assert female.pv_death_1st() == pytest.approx(male.pv_death_1st(), rel=1e-15)
     assert female.res_pp(5) == pytest.approx(male.res_pp(5), rel=1e-15)
     assert female.res_guar_pp(5) == pytest.approx(male.res_guar_pp(5), rel=1e-15)
-    # The decrement, and only the decrement, differs.
     assert female.mort_rate(1) == pytest.approx(0.00067221637875, abs=5e-13)
     assert male.mort_rate(1) == pytest.approx(0.000900, abs=5e-13)
     assert female.mort_rate(1) < male.mort_rate(1)
     assert female.pols_if(10) > male.pols_if(10)
     assert female.result_cf()["claims_death"].sum() < TOTALS["claims_death"]
-    # The blend itself: half the male row and half the female one, and [std].
     blend = kapitallebensversicherung.Data.mort_table()
     expected = 0.5 * float(blend.loc[("M", 37), "mort_rate_1st"]) + 0.5 * float(
         blend.loc[("F", 37), "mort_rate_1st"])
@@ -1182,10 +1106,8 @@ def test_nothing_runs_past_the_ablauf_and_the_last_year_has_no_surrender(
     assert n == p.policy_term() == 25
     df = p.result_cf()
     assert list(df.index) == list(range(1, 26))
-    assert df.index.name == "t"
-    assert df.index[-1] == n
-    assert p.lapse_rate(n) == 0.0
-    assert p.lapse_rate(n - 1) == 0.025
+    assert df.index.name == "t" and df.index[-1] == n
+    assert p.lapse_rate(n) == 0.0 and p.lapse_rate(n - 1) == 0.025
     assert p.pols_lapse(n) == 0.0
     assert df.loc[n, "claims_lapse"] == 0.0
     assert p.pols_maturity(n) == pytest.approx(
@@ -1193,7 +1115,6 @@ def test_nothing_runs_past_the_ablauf_and_the_last_year_has_no_surrender(
     assert p.pols_maturity(n) == pytest.approx(p.pols_if_at(n, "AFT_MORT"), rel=1e-12)
     assert p.pols_if(n + 1) == pytest.approx(p.pols_maturity(n), rel=1e-12)
     assert p.pols_if(n + 2) == 0.0
-    # The two exits pay different amounts, which is what makes the convention load-bearing.
     assert p.surr_value_pp(n) == pytest.approx(61549.01, abs=CENT)
     assert p.benefit_maturity_pp(n) == pytest.approx(65227.99, abs=CENT)
     assert p.benefit_maturity_pp(n) > p.surr_value_pp(n)
@@ -1232,8 +1153,7 @@ def test_every_check_closes_on_the_anchor_cell(kapitallebensversicherung, de_klv
         value = getattr(p, name)()
         assert isinstance(value, bool), name
         assert value is True, name
-        resid = cells[name + "_resid"]
-        assert resid.parameters == ("t",), name
+        assert cells[name + "_resid"].parameters == ("t",), name
         for t in (1, 12, 25):
             assert getattr(p, name + "_resid")(t) == pytest.approx(0.0, abs=1e-8), (name, t)
 
@@ -1241,10 +1161,10 @@ def test_every_check_closes_on_the_anchor_cell(kapitallebensversicherung, de_klv
 def test_the_reserve_roll_forward_is_the_strongest_check(de_klv_anchor):
     """Fackler, computed retrospectively on the left and prospectively on the right.
 
-    ``(V(t) + P^Z + uplift)(1 + i1) = f q1(t) SD + (1 - q1(t)) V(t+1)``. It fails on a
-    *Risikozuschlag* applied to the survivorship, a Zillmer premium amortised over the
-    wrong annuity, a reserve read at the wrong duration, and a premium that keeps being
-    credited after the *Beitragszahlungsdauer* has ended.
+    ``(V(t) + P^Z)(1 + i1) = q1(t) SD + (1 - q1(t)) V(t+1)`` on the anchor cell, where the
+    *Risikozuschlag* is 1.00. It fails on a loading applied to the survivorship, a Zillmer
+    premium amortised over the wrong annuity, a reserve read at the wrong duration, and a
+    premium still credited after the *Beitragszahlungsdauer* has ended.
     """
     p = de_klv_anchor
     for t in (1, 2, 12, 24, 25):
@@ -1284,17 +1204,16 @@ def test_the_deckrv_cohort_ceilings_are_parameter_invariants(kapitallebensversic
 
 
 # ---------------------------------------------------------------------------
-# The in-force model point
+# The in-force model point and the payment frequencies
 
 
 def test_the_in_force_point_opens_where_it_should(kapitallebensversicherung):
     """Model point 10 is a 2012 cohort valued at duration 14, with an opening balance.
 
-    The frame opens at ``t_start() = 15``, ``pols_if`` opens at ``pols_if_init()``
-    exactly, and neither the acquisition expense nor the initial commission is charged:
-    both were incurred at conclusion, long before the frame opens. The expense inflation
-    is nevertheless measured from **issue**, so the maintenance expense opens already
-    inflated.
+    The frame opens at ``t_start() = 15``, ``pols_if`` opens at ``pols_if_init()`` exactly,
+    and neither the acquisition expense nor the initial commission is charged: both were
+    incurred at conclusion, long before the frame opens. Expense inflation is nevertheless
+    measured from **issue**, so the maintenance expense opens already inflated.
     """
     p = kapitallebensversicherung.Projection[10]
     assert p.duration_init() == 14 and p.t_start() == 15 and p.proj_len() == 30
@@ -1313,18 +1232,14 @@ def test_the_in_force_point_opens_where_it_should(kapitallebensversicherung):
         assert getattr(p, name)() is True, name
 
 
-# ---------------------------------------------------------------------------
-# The Ratenzahlungszuschlag
-
-
 def test_the_frequency_loading_applies_to_an_unechte_zahlweise_only(
         kapitallebensversicherung, de_klv_anchor):
     """Model points 4 and 5 are the same monthly contract under the two readings.
 
-    ``unecht`` means the *Versicherungsperiode* stays the year and the monthly payment is
-    an **instalment** of an annual premium, which is what the loading compensates.
-    ``echt`` means the period is genuinely monthly, and then no loading applies at all --
-    a distinction entirely lost on a model that treats frequency as a single multiplier.
+    ``unecht`` means the *Versicherungsperiode* stays the year and the monthly payment is an
+    **instalment** of an annual premium, which is what the loading compensates. ``echt``
+    means the period is genuinely monthly, and then no loading applies at all -- a
+    distinction entirely lost on a model that treats frequency as a single multiplier.
     """
     unecht = kapitallebensversicherung.Projection[4]
     echt = kapitallebensversicherung.Projection[5]
@@ -1341,7 +1256,6 @@ def test_the_frequency_loading_applies_to_an_unechte_zahlweise_only(
     assert (unecht.result_cf()["claims_death"]
             - echt.result_cf()["claims_death"]).abs().max() < 1e-9
     assert unecht.beitragssumme() == pytest.approx(echt.beitragssumme(), rel=1e-15)
-    # The other two frequencies, and the annual mode where the loading is 1.000.
     half = kapitallebensversicherung.Projection[6]
     quarterly = kapitallebensversicherung.Projection[7]
     assert half.prem_freq_load() == 1.02 and half.instalments() == 2
@@ -1356,10 +1270,10 @@ def test_the_frequency_loading_applies_to_an_unechte_zahlweise_only(
 def test_result_cf_shape_and_both_signs_of_the_net_flow(de_klv_anchor):
     """The notes' eight columns plus ``liability_cf``, the notes' own outgo orientation.
 
-    The six flow columns sum to ``net_cf`` because ``expenses`` excludes commission. A
-    model on the frlib convention, where the expense column carries the commission, must
-    not subtract both -- and publishing ``claims`` beside its own parts would have the
-    same effect from the other direction.
+    The six flow columns sum to ``net_cf`` because ``expenses`` excludes commission. A model
+    on the frlib convention, where the expense column carries the commission, must not
+    subtract both -- and publishing ``claims`` beside its own parts would do the same damage
+    from the other direction.
     """
     df = de_klv_anchor.result_cf()
     assert list(df.columns) == [
@@ -1445,14 +1359,13 @@ def test_the_endowment_chassis_vocabulary_is_present(kapitallebensversicherung):
 def test_the_shipped_tables_mark_their_own_provenance():
     """Seven CSVs beside run.py, and each says what it is -- especially what it is not.
 
-    The mortality table is a **[std]** proxy: DAV 2008 T is cited by name and never
-    shipped, and the anchor a substitute must preserve is the male rate at age 37. The
-    surplus table's only sourced number is the 2,70 % declared rate, and the cost table
-    carries first- and second-order parameters on one row because the difference between
-    them *is* the *Kostenüberschuss*.
+    The mortality table is a **[std]** proxy: DAV 2008 T is cited by name and never shipped,
+    and the anchor a substitute must preserve is the male rate at age 37. The surplus
+    table's only sourced number is the 2,70 % declared rate, and the cost table carries
+    first- and second-order parameters on one row because the difference between them *is*
+    the *Kostenüberschuss*.
     """
-    on_disk = {p.name for p in PRODUCT_DIR.iterdir() if p.suffix == ".csv"}
-    assert on_disk == INPUT_CSVS
+    assert {p.name for p in PRODUCT_DIR.iterdir() if p.suffix == ".csv"} == INPUT_CSVS
 
     mort = pd.read_csv(PRODUCT_DIR / "mort_table.csv")
     assert set(mort.columns) == {"sex", "age", "mort_rate_1st", "provenance"}
@@ -1510,28 +1423,25 @@ def test_the_behaviour_modules_are_off_and_reachable(kapitallebensversicherung,
     proj = kapitallebensversicherung.Projection
     assert proj.beta_shock == 0.0
     assert proj.lapse_gap_a == 0.0 and proj.ref_rate == 0.03
-    assert proj.bwr_rate == 0.0
-    assert proj.term_surr_share == 0.0
+    assert proj.bwr_rate == 0.0 and proj.term_surr_share == 0.0
     assert proj.roll_fwd_tol == 1e-10
     p = de_klv_anchor
-    # bwr_rate off: the maturity benefit is the guaranteed sum plus the three balances and
-    # nothing else, so no Bewertungsreserven share leaks into it.
+    # bwr_rate off: no Bewertungsreserven share leaks into the maturity benefit.
     assert p.benefit_maturity_pp(25) == pytest.approx(
-        p.sum_assured() + p.av_pp(26) + p.bonus_si_pp(26) + p.term_bonus_pp(26),
-        rel=1e-12)
+        p.sum_assured() + p.av_pp(26) + p.bonus_si_pp(26) + p.term_bonus_pp(26), rel=1e-12)
     # term_surr_share off: the accrued terminal share is not paid on surrender.
     assert p.surr_value_pp(24) == pytest.approx(
         p.res_guar_pp(24) * (1.0 - p.storno_rate(24)) + p.av_pp_at(24, "AFT_CREDIT"),
         rel=1e-12)
 
 
-def test_the_bewertungsreserven_switch_is_reachable(tmp_path):
+def test_the_bewertungsreserven_switch_is_reachable():
     """``bwr_rate`` is exposed so the reasoning behind the zero is visible and reversible.
 
     § 153 Abs. 3 VVG allocates half the *Bewertungsreserven* determined on termination, but
     § 139 VAG permits participation only to the extent they exceed the *Sicherungsbedarf*,
-    and that need has routinely exhausted them -- which is a fact about the market, not
-    about the contract, so the parameter stays rather than the branch being deleted.
+    and that need has routinely exhausted them -- a fact about the market rather than about
+    the contract, so the parameter stays rather than the branch being deleted.
     """
     model = mx.read_model(MODEL_DIR, name="KLV_DE_A_bwr")
     try:
@@ -1553,6 +1463,8 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     """This is what a production user does with a company or licensed mortality basis.
 
     Inputs are external, so the swap is a filename Reference and not a formula change.
+    Lighter first-order mortality is a cheaper death leg and a dearer survival leg on an
+    endowment, so the premium moves -- which a term model's would not.
     """
     lighter = pd.read_csv(PRODUCT_DIR / "mort_table.csv")
     lighter["mort_rate_1st"] = lighter["mort_rate_1st"] * 0.5
@@ -1572,8 +1484,6 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
             swapped = model.Projection[1]
             assert swapped.mort_rate_base(1) == pytest.approx(0.0006, abs=5e-13)
             assert swapped.result_cf()["claims_death"].sum() < base
-            # Lighter first-order mortality is a cheaper death leg and a dearer survival
-            # leg on an endowment; the premium moves, which a term model's would not.
             assert swapped.prem_gross_pp() != pytest.approx(
                 TARIFF["prem_gross_pp"], abs=5e-4)
             assert swapped.check_res_roll_fwd() is True
@@ -1587,8 +1497,8 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
 def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set.
 
-    Inputs are external, so they must travel with the model: the CSVs are copied to the
-    new parent before re-reading. That is exactly the trade-off this layout makes, and the
+    Inputs are external, so they must travel with the model: the CSVs are copied to the new
+    parent before re-reading. That is exactly the trade-off this layout makes, and the
     reason it is worth asserting in both directions.
     """
     model = mx.read_model(MODEL_DIR, name="KLV_DE_A_rt_src")
