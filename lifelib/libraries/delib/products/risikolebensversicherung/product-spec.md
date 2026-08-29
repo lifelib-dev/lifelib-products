@@ -21,25 +21,21 @@ corroborated are flagged [unverified].
 **Retrieval conditions — read this before relying on a number.** **No document named anywhere in
 this specification was retrieved**: direct HTTP egress from the build environment is blocked by an
 organisation network policy, and `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
-`dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org` were all tried and all refused.
-**The session's `WebSearch` budget was exhausted before this product's research began**, so unlike
-the two sibling delib products this one had *zero* searches of its own. What evidence there is
-arrives by one route: **inherited corroboration**, where an instrument this product turns on —
-§§ 161, 169, 165, 153 and 19 VVG, the MindZV, the DeckRV, § 139 VAG and the DAV 2008 T
-*Richtlinie* — was search-corroborated for a sibling delib product while budget remained, and the
-finding is carried across with the sibling named. **A delib citation is a pointer, not a
-certificate.** Where a mechanic is certain and its level is not, this document ships a **[std]**
-parameter with its arithmetic shown rather than a plausible-looking figure with a source tag it has
-not earned.
-
-**What that costs, said plainly.** `frlib`'s counterpart could put eight French carriers side by
-side because eight *notices d'information* were downloaded and read. **This document can put none
-side by side.** No German carrier's AVB was opened; no *Produktinformationsblatt* was seen; **not
-one *Bruttobeitrag* or *Zahlbeitrag* anywhere in this library is a market observation.** The
-variations section states what a variations table would have contained and records that every cell
-is empty. That is a weaker document than its French sibling, it is weaker in a way visible on every
-page, and the alternative — a confident-looking specification full of invented figures — would have
-been worse.
+`dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org` were all tried and all refused. **The
+session's `WebSearch` budget was exhausted before this product's research began**, so unlike the two
+sibling delib products this one had *zero* searches of its own. What evidence there is arrives by one
+route: **inherited corroboration**, where an instrument this product turns on — §§ 161, 169, 165, 153
+and 19 VVG, the MindZV, the DeckRV, § 139 VAG and the DAV 2008 T *Richtlinie* — was
+search-corroborated for a sibling delib product while budget remained, and the finding is carried
+across with the sibling named. **A delib citation is a pointer, not a certificate.** `frlib`'s
+counterpart could put eight French carriers side by side because eight *notices d'information* were
+downloaded and read; **this document can put none side by side.** No German carrier's AVB was opened,
+no *Produktinformationsblatt* was seen, and **not one *Bruttobeitrag* or *Zahlbeitrag* anywhere in
+this library is a market observation.** Where a mechanic is certain and its level is not, this
+document ships a **[std]** parameter with its arithmetic shown rather than a plausible-looking figure
+with a source tag it has not earned. That is a weaker document than its French sibling, it is weaker
+in a way visible on every page, and the alternative — a confident-looking specification full of
+invented figures — would have been worse.
 
 **Out of scope, and said so where it matters.** *Restschuldversicherung* /
 *Restkreditversicherung*, the single-premium bank-sold loan-linked group cover, which shares the
@@ -79,13 +75,13 @@ changes the shape of the projected cash flows.
    the single most important legal fact about the German term-life premium, and a model carrying
    only one premium stream cannot represent this product.
 2. **There is no cash value at any duration, and the reason is not that nothing accumulates.** A
-   level premium charged against a rising death rate overcharges early and undercharges late, and
-   the difference is held as a *Deckungskapital* that builds, peaks near the middle of the term and
-   runs off to exactly zero at expiry. It is small, and after *Zillmerung* negative or nil through
-   much of the term. What removes the payout is § 169 Abs. 1 VVG, which confines the surrender-value
-   duty to a life insurance whose insured event is **certain to occur**; a term assurance's is not
-   [R2] [REG-R28]. **"There is no *Sparanteil*, therefore there is no reserve" is wrong, and a model
-   built on it fails its own closure check.**
+   level premium against a rising death rate overcharges early and undercharges late, and the
+   difference is a *Deckungskapital* that builds, peaks mid-term and runs off to exactly zero at
+   expiry — small, and after *Zillmerung* negative or nil through much of the term. What removes the
+   payout is § 169 Abs. 1 VVG, which confines the surrender-value duty to a life insurance whose
+   insured event is **certain to occur**; a term assurance's is not [R2] [REG-R28]. **"There is no
+   *Sparanteil*, therefore there is no reserve" is wrong, and a model built on it fails its own
+   closure check.**
 3. **The exclusion list is remarkably short.** Beyond the statutory three-year *Selbsttötung* window
    [R1] and the forfeitures of § 162 VVG [R7], a German RLV wording carries essentially one
    substantive exclusion — the *Kriegsklausel* — plus a nuclear/ABC clause. **There is no list of
@@ -97,9 +93,9 @@ changes the shape of the projected cash flows.
    a coverage question.
 4. **There is no living-benefit acceleration in the base design.** Germany has no counterpart to the
    French *perte totale et irréversible d'autonomie*, present in seven of the eight standalone
-   contracts in the `frlib` corpus. One decrement pays one benefit; there is no interlock to get
-   wrong. What Germany has instead is a *vorgezogene Todesfallleistung* triggered by a terminal
-   **prognosis**, and disability is sold as a rider or as `products/berufsunfaehigkeit/`.
+   `frlib` contracts: one decrement pays one benefit and there is no interlock to get wrong. What
+   Germany has instead is a *vorgezogene Todesfallleistung* triggered by a terminal **prognosis**,
+   and disability is sold as a rider or as `products/berufsunfaehigkeit/`.
 
 **Where it sits in the market.** The GDV taxonomy — the vocabulary any German market figure arrives
 in — puts this product in ***Risikoversicherungen***, alongside *Kapitalversicherungen*,
@@ -119,17 +115,16 @@ tightly than it binds any savings product.
 **Distribution is genuinely three-channel** — tied agents and bank branches [S8] [S9], independent
 brokers [S7] [S10] [S11], direct writers [S3] [S4] [S12] — and the channel is visible in the
 *Brutto*/*Zahlbeitrag* spread, acquisition cost being the largest thing that differs between them.
-The cleanest natural experiment available anywhere in German life insurance sits in this product:
-one group runs a broker-channel carrier and a low-cost direct carrier side by side on the same
-underwriting and reserving basis [S12]. **It was not sampled** (research gap 5). And because no
-German carrier publishes a rate card, **the comparison portals are a market participant rather than
-an observer**: [S14] is where price competition happens, and a tariff's design is shaped by how it
-ranks in a portal's default query — a *Zahlbeitrag* query. That is a plausible structural
-explanation for why the *Zahlbeitrag* is marketed and the *Bruttobeitrag* merely disclosed, and it
-is [unverified]; the consumer-protection line runs the other way [S15] [S16] [S17] [R20]. A portal
-result is generated per query rather than published, so it would have been unreachable without live
-egress in any event — which is why **not one price point appears anywhere in this library**
-(research gap 1).
+The cleanest natural experiment in German life insurance sits in this product: one group runs a
+broker-channel carrier and a low-cost direct carrier side by side on the same underwriting and
+reserving basis [S12]. **It was not sampled** (research gap 5). And because no German carrier
+publishes a rate card, **the comparison portals are a market participant rather than an observer**
+[S14]: a tariff's design is shaped by how it ranks in a portal's default query, which is a
+*Zahlbeitrag* query — a plausible structural explanation, [unverified], for why the *Zahlbeitrag* is
+marketed and the *Bruttobeitrag* merely disclosed, the consumer-protection line running the other way
+[S15] [S16] [S17] [R20]. A portal result is generated per query rather than published, so it would
+have been unreachable without live egress in any event — which is why **not one price point appears
+anywhere in this library** (gap 1).
 
 ---
 
@@ -566,29 +561,29 @@ death rate for **medically selected** lives, separable into smoker and non-smoke
 sex-distinct as raw material, and separable into first- and second-order levels.
 
 **Three structural reasons the effective first-order margin on a contract written today is large**,
-none of them a criticism of the insurer: the table was derived on 2006–2008 experience and German
-mortality has improved since, an eighteen-year drift on a table used for pricing today; it is applied
-to a **medically selected** portfolio in its early durations, where selection is strongest and the
-table's own selection allowance is generic; and the *Sicherheitszuschläge* sit on top of both. A
-first-order to second-order ratio **in the region of two** is therefore entirely plausible. **The
-ratio is [std]; the reasoning is not numeric.** A death-cover basis also carries **no projected
-mortality improvement**, improvement being favourable to the insurer — the exact opposite of the
-annuity tables [REG-R49], and the reason a single "German mortality table" does not exist.
+none a criticism of the insurer: the table was derived on 2006–2008 experience and German mortality
+has improved since, an eighteen-year drift on a table used for pricing today; it is applied to a
+**medically selected** portfolio in its early durations, where selection is strongest and the table's
+own allowance is generic; and the *Sicherheitszuschläge* sit on top of both. A first-order to
+second-order ratio **in the region of two** is therefore entirely plausible. **The ratio is [std];
+the reasoning is not numeric.** A death-cover basis also carries **no projected mortality
+improvement**, improvement being favourable to the insurer — the exact opposite of the annuity tables
+[REG-R49], and the reason a single "German mortality table" does not exist.
 
-**Unisex.** New business from 21 December 2012 may not rate on sex [R13] [REG-R34]. But DAV 2008 T is
+**Unisex.** New business from 21 December 2012 may not rate on sex [R13] [REG-R34], but DAV 2008 T is
 sex-distinct, so every German unisex term tariff is a **blend at a mixing ratio the carrier chooses
 from its own expected new-business mix** — proprietary, unpublished, periodically re-estimated. The
 implementation blends **50/50 for the tariff and projects on the model point's own sex**, the only
 arrangement consistent with both § 138 VAG and the fact that a book's actual mortality depends on who
-bought it. ***Rechnungszins*: 1,00 % for new business from 1 January 2025** [R10] [REG-R15] — and **on
-this product it barely matters**, the *Deckungskapital* being small and short-lived, which is a
-genuine difference from every other delib product and is stated so a reader does not expect a
-*Zinszusatzreserve* discussion that does not apply. ***Lapse is not a pricing basis element***:
-German first-order bases are mortality, interest and expenses [unverified]. And **no German insurer
-publishes its own basis** — the AVB say the calculation follows *die anerkannten Regeln der
-Versicherungsmathematik* and stop there [unverified]. `frlib` reached the same position for France
-with one difference: a French carrier published a complete attained-age gross rate card [`frlib` S3],
-and **no German carrier publishes anything comparable** (gap 1).
+bought it. ***Rechnungszins*: 1,00 % from 1 January 2025** [R10] [REG-R15] — and **on this product it
+barely matters**, the *Deckungskapital* being small and short-lived, a genuine difference from every
+other delib product stated so a reader does not expect a *Zinszusatzreserve* discussion that does not
+apply. ***Lapse is not a pricing basis element***: German first-order bases are mortality, interest
+and expenses [unverified]. And **no German insurer publishes its own basis** — the AVB say the
+calculation follows *die anerkannten Regeln der Versicherungsmathematik* and stop there [unverified].
+`frlib` reached the same position for France with one difference: a French carrier published a
+complete attained-age gross rate card [`frlib` S3], and **no German carrier publishes anything
+comparable** (gap 1).
 
 ### *Verbundene Leben*, the *Über-Kreuz-Versicherung*, and the decrements
 
@@ -601,24 +596,23 @@ people who no longer want a joint benefit and cannot halve it, and where the car
 conversion into two single contracts without a new *Gesundheitsprüfung*, the only exit is termination
 with nothing back [unverified].
 
-***Über-Kreuz-Versicherung*** is **two contracts, crossed**: A is *Versicherungsnehmer* and
-*Bezugsberechtigter* of a contract on **B's** life and vice versa, each paying on **his own** contract
-out of **his own** funds. **The cover is identical to two ordinary single contracts, and the model is
-indifferent to the structure** — worth saying so a reader does not go looking for a mechanic that is
-not there. **The tax outcome is not identical, and that is the whole point.** Under the ordinary
-structure the benefit is an ***Erwerb von Todes wegen*** under § 3 Abs. 1 Nr. 4 ErbStG, charged
-against the beneficiary's *Freibetrag* [R15] [REG-R46]; under the crossed structure A receives a
-payment under a contract A owns and paid for, nothing passes from B's estate, and there is **no
-*Erwerb von Todes wegen***. Two conditions, both [unverified]: premiums paid **from the surviving
-partner's own funds, verifiably** — a joint account fed by one income exposes the arrangement to
-recharacterisation as a gift — and the § 150 written consent [R7]. **Who needs it:** on 300 000 €
-paid to a **spouse**, the 500 000 € *Freibetrag* absorbs it and the tax is nil; paid to an **unmarried
-partner**, the *Freibetrag* is 20 000 €, *Steuerklasse* III applies from 30 %, and the liability is on
-the order of **84 000 € — 28 % of the sum insured** [R15] [unverified]. **So the structure is close to
-compulsory for unmarried couples and close to pointless for married ones below the spousal
-allowance**, which is why a real German RLV book contains a large share of cross-owned policies
-[REG-R46]. **Every figure in that arithmetic is [unverified]** (gap 18); the structural conclusion
-does not depend on the exact numbers.
+***Über-Kreuz-Versicherung*** is **two contracts, crossed**: A owns and is beneficiary of a contract
+on **B's** life and vice versa, each paying on **his own** contract out of **his own** funds. **The
+cover is identical to two ordinary single contracts, and the model is indifferent to the structure**
+— worth saying so a reader does not go looking for a mechanic that is not there. **The tax outcome is
+not identical, and that is the whole point.** Under the ordinary structure the benefit is an
+***Erwerb von Todes wegen*** under § 3 Abs. 1 Nr. 4 ErbStG, charged against the beneficiary's
+*Freibetrag* [R15] [REG-R46]; under the crossed structure A receives a payment under a contract A
+owns and paid for, nothing passes from B's estate, and there is **no *Erwerb von Todes wegen***. Two
+conditions, both [unverified]: premiums paid **from the surviving partner's own funds, verifiably** —
+a joint account fed by one income invites recharacterisation as a gift — and the § 150 consent [R7].
+**Who needs it:** on 300 000 € to a **spouse** the 500 000 € *Freibetrag* absorbs it and the tax is
+nil; to an **unmarried partner** the *Freibetrag* is 20 000 €, *Steuerklasse* III applies from 30 %,
+and the liability is on the order of **84 000 € — 28 % of the sum insured** [R15] [unverified]. **So
+the structure is close to compulsory for unmarried couples and close to pointless for married ones
+below the spousal allowance**, which is why a real German RLV book contains a large share of
+cross-owned policies [REG-R46]. **Every figure in that arithmetic is [unverified]** (gap 18); the
+structural conclusion does not depend on the exact numbers.
 
 **Two decrements only: death and lapse** — no disability acceleration, no surrender benefit, no
 paid-up state, no partial withdrawal, the simplest decrement structure of the ten delib products. A

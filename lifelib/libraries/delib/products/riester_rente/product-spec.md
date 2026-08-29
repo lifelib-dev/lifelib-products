@@ -171,23 +171,20 @@ nothing carrier-specific was established (gap 12). Amounts in prose use German n
 
 Footnotes to **[std]** rows:
 
-1. No entry-age envelope was established at any carrier (gap 12). The envelope is bounded below by
-   nothing statutory and above by the arithmetic: at a 0,25 % *Rechnungszins* a contract with a
-   short remaining term has almost no room for charges at all (see *Why the guarantee is the
-   mechanical heart*), so late entry is a real but structurally hostile case, and the model point
-   table carries one.
-2. German practice sets *Rentenbeginn* at or near the saver's statutory retirement age
-   [unverified]. Whether any statutory **upper** bound applies to the start of the payout phase —
-   as distinct from the age-85 bound on the *Restverrentung* — was **not established** (gap 10).
-   67 is used because it is the current statutory retirement age for the cohorts that hold this
-   book.
-3. The anchor is an **in-force** cell for three reasons. The product is closed to new business
-   from 1 January 2027 [REG-R44], so an in-force cell is what the book actually contains. A
-   **2024-vintage** tariff carries a *Rechnungszins* of **0,25 %** [R22] [REG-R15], the regime the
-   whole guarantee argument turns on. And at duration 3 the contract is still inside the statutory
-   **five-year** acquisition-cost spreading window [R1], so the anchor exercises the AltZertG
-   charge rule rather than only describing it. Model point 2 is the *same contract projected from
-   its own inception*, which reconciles the anchor's opening balances.
+1. No entry-age envelope was established at any carrier (gap 12). Nothing statutory bounds it
+   below; the arithmetic bounds it above, since at 0,25 % a short remaining term leaves almost no
+   room for charges — so late entry is real but structurally hostile, and the model point table
+   carries one.
+2. German practice sets *Rentenbeginn* at or near the statutory retirement age [unverified].
+   Whether any statutory **upper** bound applies to the start of the payout phase, as distinct from
+   the age-85 bound on the *Restverrentung*, was **not established** (gap 10).
+3. The anchor is an **in-force** cell for three reasons. The product is closed to new business from
+   1 January 2027 [REG-R44], so an in-force cell is what the book contains. A **2024-vintage**
+   tariff carries a *Rechnungszins* of **0,25 %** [R22] [REG-R15], the regime the whole guarantee
+   argument turns on. And at duration 3 the contract is still inside the statutory **five-year**
+   acquisition-cost spreading window [R1], so the anchor exercises the AltZertG charge rule rather
+   than only describing it. Model point 2 is the *same contract projected from its own inception*,
+   which reconciles the anchor's opening balances.
 
 ### Contributions
 
@@ -713,44 +710,36 @@ the carrier table is empty is not only the failed research: **this product varie
 far less than any other in `delib`**, because most of what a French *temporaire décès* leaves to
 the insurer, German statute fixes for everyone.
 
-### What does not vary, because statute fixes it
+### The observed range, parameter by parameter
 
-| Parameter | Set by | Variation across carriers and chassis |
+| Parameter | Set by | Observed variation |
 |---|---|---|
-| Zulagen amounts; eligibility; *Mindesteigenbeitrag*; *Sockelbeitrag*; the proportional Kürzung | [R9] [R10] [REG-R42] | **none — identical for every provider and every chassis** |
-| § 10a ceiling and the *Günstigerprüfung* | [R6] [REG-R42] | **none** |
-| Earliest payout age; lifelong-annuity requirement; 30 % *Teilkapitalauszahlung*; five-year cost spreading; *Wechselrecht*; unisex; the 20 % biometric carve-out | [R1] [R23] [REG-R43] | **none** |
-| The 100 % *Beitragsgarantie* | [R1] [REG-R43] | **none in level**; the *mechanism* varies by chassis |
-| Taxation of the benefit; *schädliche Verwendung*; the *Rückzahlungsbetrag* | [R12] [R14] [REG-R42] | **none** |
-| *Kleinbetragsrente* threshold | [R15] [REG-R42] | **none in level**; whether commutation is mandatory, optional or the saver's right is a contract term — **not established** |
-| Disclosure: the PIB, *Effektivkosten*, the *Chancen-Risiko-Klasse* | [R4] [R5] [S14] [REG-R43] | **format none**; the disclosed values vary and **none was established** |
-
-### What varies, and what was established about it
-
-| Parameter | Set by | What is known |
-|---|---|---|
-| *Rechnungszins* | carrier, capped by [R22] [REG-R14] | Only the cap: 0,25 % from 2022, 1,00 % from 2025 [REG-R15]. **No carrier's own choice established** (gap 12) |
-| *Garantierter Rentenfaktor* | carrier | **Not established at any house, for any year** (gap 9). The two-factor construction is documented for the German Schicht-3 market in a sibling `delib` file and is the natural expectation here |
-| Charges: acquisition, administration, payout-phase, *Effektivkosten* | carrier | **No figure exists in this corpus** (gap 13). The single inherited datum — at most **0,95 € per 100 €** of capital formed in an Allianz *RiesterRente* variant, from third-party analysis of a specimen quotation [S5] — is not from a tariff sheet |
-| Charge base for the **Zulagen** | carrier | **Not established** (gap 14), and material: in the low-income cases the Zulagen are the majority of the contribution |
-| *Überschussbeteiligung* declarations and surplus system | carrier | **Not established** (gap 12) |
-| Guarantee **mechanism** | carrier and chassis | The taxonomy is established — general account; *statisches* and *dynamisches Hybridmodell*; i-CPPI; rule-based fund reallocation — but **no carrier's design** |
-| Rider inventory (BUZ, survivor's benefit, *Rentengarantiezeit*) | carrier | **Not established** (gap 11) |
-| Whether the tariff is open to new business | carrier, and now statute | Statutorily closed to new business from 1 January 2027 [REG-R44]. Which houses had already withdrawn, and when, is **not established** |
+| Zulagen amounts; eligibility; *Mindesteigenbeitrag*; *Sockelbeitrag*; the proportional Kürzung | statute [R9] [R10] [REG-R42] | **none — identical for every provider and every chassis** |
+| § 10a ceiling and the *Günstigerprüfung* | statute [R6] [REG-R42] | **none** |
+| Earliest payout age; lifelong-annuity requirement; 30 % lump-sum cap; five-year cost spreading; *Wechselrecht*; unisex; the 20 % biometric carve-out | statute [R1] [R23] [REG-R43] | **none** |
+| Taxation of the benefit; *schädliche Verwendung*; the *Rückzahlungsbetrag* | statute [R12] [R14] [REG-R42] | **none** |
+| The 100 % *Beitragsgarantie* | statute [R1] [REG-R43] | **none in level**; the *mechanism* varies by chassis |
+| *Kleinbetragsrente* threshold | statute [R15] [REG-R42] | **none in level**; whether commutation is mandatory, optional or the saver's right is a contract term — **not established** |
+| Disclosure: PIB, *Effektivkosten*, CRK | statute [R4] [R5] [S14] [REG-R43] | **format none**; the disclosed values vary and **none was established** |
+| *Rechnungszins* | carrier, capped by [R22] [REG-R14] | only the cap is known: 0,25 % from 2022, 1,00 % from 2025 [REG-R15]. **No carrier's choice established** (gap 12) |
+| *Garantierter Rentenfaktor* | carrier | **not established at any house, for any year** (gap 9); the two-factor construction is documented for the German Schicht-3 market in a sibling `delib` file and is the natural expectation here |
+| Charges: acquisition, administration, payout-phase, *Effektivkosten*; and the charge base for the Zulagen | carrier | **no figure exists in this corpus** (gaps 13, 14). The single inherited datum — at most **0,95 € per 100 €** of capital formed in an Allianz *RiesterRente* variant [S5] — is third-party commentary on a specimen quotation, not a tariff sheet |
+| *Überschussbeteiligung* declarations and surplus system | carrier | **not established** (gap 12) |
+| Guarantee **mechanism** | carrier and chassis | the taxonomy is established — general account; *statisches* and *dynamisches Hybridmodell*; i-CPPI; rule-based fund reallocation — but **no carrier's design** |
+| Rider inventory (BUZ, survivor's benefit, *Rentengarantiezeit*) | carrier | **not established** (gap 11) |
+| Whether the tariff is open to new business | carrier, and now statute | closed to new business from 1 January 2027 [REG-R44]; which houses had already withdrawn, and when, is **not established** |
 
 ### The carriers named, and what naming them does and does not assert
 
 | Carrier or provider | Chassis | What is established |
 |---|---|---|
-| GDV *Musterbedingungen* [S1] [S2] [S3] | both insurance forms | That a **unit-linked** AltZertG model wording exists [S1], that a **non-unit-linked** one exists at "Stand: 21.07.2025" [S2], and that they are **separate condition sets**. Inherited from a sibling session's search [S3]. **No clause, paragraph, edition or page count** |
-| CosmosDirekt (Cosmos Lebensversicherungs-AG) [S4] | classic insurance | That the house's Riester wording is tariff **LA 1005 A**, a **separate tariff family** from its Schicht-3 annuity (LA 904 A, LA 1204 A / LA 1201 A) and its Basisrente (LA 1100 A). Inherited [S4]. **No clause content** |
-| Allianz Lebensversicherungs-AG [S5] | classic and unit-linked | The market-leader comparator, and the source of the corpus's only cost datum [unverified]. **Product names, tariff codes and new-business status not established** (gap 12) |
-| Debeka Lebensversicherungsverein a. G. [S6] | classic insurance | Germany's largest writer of classically guaranteed life business, membership weighted to *Beamte* — who are *unmittelbar* eligible and are therefore the most natural Riester constituency. **No document, tariff code or vintage** |
-| R+V Lebensversicherung AG [S7] | classic insurance | The cooperative-sector comparator; the one group whose Riester offering spans an insurance and a fund chassis in the **same** distribution network as [S9]. **No document** |
-| Alte Leipziger Lebensversicherung a. G. [S8] | classic and unit-linked | The broker-market comparator. **No document** |
-| Union Investment [S9], DWS [S10], Deka [S11] | Riester-Fondssparplan | The three large fund savings plans, all meeting the same guarantee by **rule-based reallocation** between an equity and a bond fund, all sharing the **cash-lock** pathology. **No reallocation rule, fund name, fee or new-business status** (gaps 11, 12) |
-| *Sparkassen*; *Volks- und Raiffeisenbanken* [S12] | Riester-Banksparplan | The structurally simplest certified product, and the one for which the guarantee costs **nothing at all** — a deposit balance cannot fall below its deposits. It is the analytical control case: it isolates the guarantee's cost as **return forgone** rather than as a capital charge. Fragmented across hundreds of institutions; **no product, rate or bonus scale** |
-| Twenty-plus further life offices [S16] | classic and unit-linked | Named so that a follow-up research pass has a list. **Nothing carrier-specific is known for any of them**, and no parameter anywhere in this library may cite [S16] for a **level** |
+| GDV *Musterbedingungen* [S1] [S2] [S3] | both insurance forms | That a **unit-linked** AltZertG model wording exists [S1], that a **non-unit-linked** one exists at "Stand: 21.07.2025" [S2], and that they are **separate condition sets**. Inherited from a sibling session's search [S3]. **No clause, edition or page count** |
+| CosmosDirekt [S4] | classic insurance | That the house's Riester wording is tariff **LA 1005 A**, a **separate tariff family** from its Schicht-3 annuity (LA 904 A, LA 1204 A / LA 1201 A) and its Basisrente (LA 1100 A). Inherited [S4]. **No clause content** |
+| Allianz Lebensversicherungs-AG [S5] | classic and unit-linked | The market-leader comparator and the source of the corpus's only cost datum [unverified]. **Product names, tariff codes and new-business status not established** (gap 12) |
+| Debeka [S6]; R+V [S7]; Alte Leipziger [S8] | classic (and unit-linked at [S8]) | Why each is the right place to look: Debeka is Germany's largest writer of classically guaranteed life business with a membership weighted to *Beamte*, the most natural Riester constituency; R+V is the one group whose Riester offering spans an insurance and a fund chassis in the **same** distribution network as [S9]; Alte Leipziger is the broker-market comparator. **No document, tariff code or vintage for any of them** |
+| Union Investment [S9], DWS [S10], Deka [S11] | Riester-Fondssparplan | The three large fund savings plans, all meeting the same guarantee by **rule-based reallocation** between an equity and a bond fund and all sharing the **cash-lock** pathology. **No reallocation rule, fund name, fee or new-business status** (gaps 11, 12) |
+| *Sparkassen*; *Volks- und Raiffeisenbanken* [S12] | Riester-Banksparplan | The structurally simplest certified product and the one for which the guarantee costs **nothing at all**, since a deposit balance cannot fall below its deposits — the analytical control case, isolating the guarantee's cost as **return forgone** rather than as a capital charge. **No product, rate or bonus scale** |
+| Twenty-plus further life offices [S16] | classic and unit-linked | Named so a follow-up research pass has a list. **Nothing carrier-specific is known for any of them**, and no parameter anywhere in this library may cite [S16] for a **level** |
 
 ---
 
@@ -784,10 +773,10 @@ has had to mark `[unverified]`.
 *Altersvermögensergänzungsgesetz* of 2001 created it for contribution years from 2002, in the same
 breath as they **reduced the future replacement rate of the statutory pension** — the pairing is
 the whole political logic of the product [R17]. The *Alterseinkünftegesetz* of 2004 created the
-three-layer taxonomy [R18] [REG-R38]. The *Eigenheimrentengesetz* of 2008 created Wohn-Riester and
-raised the *Kinderzulage* for children born from 2008 [R19]. The
+three-layer taxonomy [R18] [REG-R38]; the *Eigenheimrentengesetz* of 2008 created Wohn-Riester and
+raised the *Kinderzulage* for children born from 2008 [R19]; the
 *Altersvorsorge-Verbesserungsgesetz* of 2013 introduced the standardised PIB, capped the *Wechsel*
-charge and closed the zero-contribution entitlement of a *mittelbar* eligible spouse [R20]. The
+charge and closed the zero-contribution entitlement of a *mittelbar* eligible spouse [R20]; and the
 *Betriebsrentenstärkungsgesetz* of 2017 raised the *Grundzulage* to 175 €, brought the
 *Kleinbetragsrenten-Abfindung* under the *Fünftelregelung*, introduced a *Freibetrag* in the
 *Grundsicherung im Alter* so that the annuity is no longer offset one-for-one against means-tested
@@ -796,43 +785,35 @@ a **bAV** vehicle [R21]. **Every one was a repair to a criticism rather than an 
 changed the *Beitragsgarantie*** — which is what the 2023 *Fokusgruppe* said had to change [R26],
 and what the 2026 reform did by replacing the product [REG-R44].
 
-**Prudential and reserving are cited, never specified.** The *Höchstrechnungszins* of § 2 DeckRV
-binds the rate at which the guarantee may be discounted and nothing else [R22] [REG-R14]
+**Prudential, reserving and tax are cited, never specified.** The *Höchstrechnungszins* of § 2
+DeckRV binds the rate at which the guarantee may be discounted and nothing else [R22] [REG-R14]
 [REG-R15]; § 4 DeckRV caps *Zillmerung* at 25 ‰ of the *Beitragssumme* [REG-R16]; § 5 Abs. 3 DeckRV
 drives the *Zinszusatzreserve* [REG-R17]; the MindZV floors the transfer to the *Rückstellung für
 Beitragsrückerstattung* [REG-R18] [REG-R19]; § 153 VVG gives the individual entitlement to the
 *Überschussbeteiligung* and the *hälftige* participation in the *Bewertungsreserven* [REG-R24]; and
 above them sit the *Deckungsrückstellung* [REG-R54] and Solvabilität II as transposed by the VAG
-[REG-R5] [REG-R6]. **None is computed here.** This library publishes gross, undiscounted,
-best-estimate-style liability cash flows and stops short of the discounting, so every discount rate,
-asset return and declared rate in these documents is **[std]**.
+[REG-R5] [REG-R6]. On the tax side the benefit is *sonstige Einkünfte* taxed in full under § 22
+Nr. 5 to the extent it derives from subsidised contributions [R12], with a
+*Werbungskosten-Pauschbetrag* of **102 €** `[unverified]`; a **private** Riester annuity is **not**
+a *Versorgungsbezug* and attracts no health or long-term-care contribution for a compulsorily
+insured pensioner, while a *freiwillig versichertes* member is assessed on their whole economic
+capacity, private annuities expressly included [REG-R46]. **None of it is computed here.** This
+library publishes gross, undiscounted, best-estimate-style liability cash flows and stops short of
+the discounting, so every discount rate, asset return and declared rate in these documents is
+**[std]**.
 
-**Taxation, stated because it is context and not cash flow.** In: relief through the Zulagen [R9]
-or the § 10a deduction [R6], whichever the *Günstigerprüfung* favours. Out: **full** taxation as
-*sonstige Einkünfte* under § 22 Nr. 5, no *Ertragsanteil*, to the extent the benefit derives from
-subsidised contributions [R12]; the *Werbungskosten-Pauschbetrag* is **102 €** `[unverified]`.
-Social insurance is the asymmetry that can reverse the argument: a **private** Riester annuity is
-**not** a *Versorgungsbezug* and attracts no health or long-term-care contribution for a
-compulsorily insured pensioner, while a *freiwillig versichertes* member is assessed on their whole
-economic capacity, private annuities expressly included [REG-R46]. Death benefits carry no
-insurance-specific regime — a *Todesfallleistung* to a named beneficiary is an ordinary *Erwerb von
-Todes wegen* under the ErbStG [REG-R46]. **The model computes none of it.**
-
-**Conduct and disclosure.** The individual *Produktinformationsblatt* with its individually
-computed *Effektivkosten* is a **stronger** duty than the product-level VVG-InfoV figure [R4] [R5]
-[S14] [REG-R31] [REG-R43]. Alongside sit the IDD as transposed [REG-R33], PRIIPs for the
-unit-linked chassis [REG-R32], BaFin's *Wohlverhaltensaufsicht* and its expectation of
+**Conduct, disclosure and the reform track.** The individual *Produktinformationsblatt* with its
+individually computed *Effektivkosten* is a **stronger** duty than the product-level VVG-InfoV
+figure [R4] [R5] [S14] [REG-R31] [REG-R43]; alongside sit the IDD as transposed [REG-R33], PRIIPs
+for the unit-linked chassis [REG-R32], BaFin's *Wohlverhaltensaufsicht* and its expectation of
 *angemessener Kundennutzen* [REG-R35], and the BGH line of authority — including its 2025 judgment
-striking down asymmetric unilateral reduction of a *Rentenfaktor* [REG-R36], which bears directly
-on the two-factor conversion adopted above.
-
-**The reform track, and what may and may not be said about it.** The *Fokusgruppe private
-Altersvorsorge* reported in 2023 recommending that the 100 % *Beitragsgarantie* be relaxed or
-removed, that a securities-account product without an insurance wrapper be admitted, that the
-Zulage be simplified into a proportional match and that eligibility be widened [R26] `[unverified]`
-on every element; a 2024 draft bill creating an *Altersvorsorgedepot* followed and did not become
-law in that term [R26]. The product research file recorded the position at its access date as
-unknown and as its most important gap (gap 1); the cross-product reference library closes it
-[REG-R44]. This specification therefore describes a **legacy** product, and no document in this
-library may assert a promulgation date or a BGBl citation for that act, neither of which is
-established [REG-R44].
+striking down asymmetric unilateral reduction of a *Rentenfaktor* [REG-R36], which bears directly on
+the two-factor conversion adopted above. The *Fokusgruppe private Altersvorsorge* reported in 2023
+recommending that the 100 % *Beitragsgarantie* be relaxed or removed, that a securities-account
+product without an insurance wrapper be admitted, that the Zulage be simplified into a proportional
+match and that eligibility be widened [R26] `[unverified]` on every element; a 2024 draft bill
+creating an *Altersvorsorgedepot* followed and did not become law in that term [R26]. The product
+research file recorded the position at its access date as unknown and as its most important gap
+(gap 1); the cross-product reference library closes it [REG-R44]. This specification therefore
+describes a **legacy** product, and no document in this library may assert a promulgation date or a
+BGBl citation for that act, neither of which is established [REG-R44].

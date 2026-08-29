@@ -157,27 +157,26 @@ nothing; modelling them once, cleanly, is the point of this product.
 Footnotes to **[std]** rows:
 
 1. **All three asset forms are sold**, and the absence of a statutory *Beitragsgarantie* is what makes
-   the third one optional rather than mandatory [R9] [R10] [REG-R43] — the sharpest structural
-   contrast with Riester. A fourth form, an **index-linked Basisrente**, is plausible from the naming
-   of one carrier's tariff family [S10] but **was not established** (gap 12).
-2. **No carrier's entry-age range or permitted *Rentenbeginn* range was established** (gap 8). Twenty
-   named German life writers publish this in their AVB and *Produktinformationsblätter* and none was
-   reached [S11]. The envelope stated is the market shape, not an observation.
+   the third optional rather than mandatory [R9] [R10] [REG-R43] — the sharpest structural contrast
+   with Riester. A fourth form, an **index-linked Basisrente**, is plausible from one carrier's tariff
+   naming [S10] but **was not established** (gap 12).
+2. **No carrier's entry-age or permitted *Rentenbeginn* range was established** (gap 8): twenty named
+   German life writers publish this and none was reached [S11]. The envelope is the market shape, not
+   an observation.
 3. The commissioning brief for the research file stated the pre-2012 floor as **63**; the research
-   file resolved it against **60** and this document adopts that. Both figures are [unverified] in
-   the sense that no source in this session confirmed them, but the 60/62 split is settled German
-   practice and 63 corresponds to no threshold in this statute. **Note that the § 851c ZPO age
-   condition is 60, not 62** [R12] [REG-R40]: two genuinely different provisions with different
-   histories, and a reader must not merge them (gap 10).
-4. Age 67 sits above both statutory floors, matches the *Regelaltersgrenze* the buyer's other
-   provision is built around, and gives a 22-year deferment from the anchor's entry age — long enough
-   for the *Zillmerung*, the *Beitragsdynamik* and the compounded surplus to be visible at once.
+   file resolved it against **60** and this document adopts that. Both figures are [unverified] — no
+   source in this session confirmed them — but the 60/62 split is settled German practice and 63
+   corresponds to no threshold in this statute. **The § 851c ZPO age condition is 60, not 62** [R12]
+   [REG-R40]: different provisions, different histories, and a reader must not merge them (gap 10).
+4. Age 67 sits above both statutory floors, matches the *Regelaltersgrenze*, and gives a 22-year
+   deferment from the anchor's entry age — long enough for the *Zillmerung*, the *Beitragsdynamik* and
+   the compounded surplus to be visible at once.
 5. Argued in full under *Worked example* in `technical-notes.md`. In outline: entry at 45 is the
    research's own reading of the buyer's age distribution [unverified]; 6 000 € plus a 4 000 €
-   *Zuzahlung* is about a third of the 2026 *Höchstbetrag* of 30 826 € [R2] [unverified]; 1,00 % is
-   the *Höchstrechnungszins* for new business [R16] [REG-R15]; and the guaranteed *Rentenfaktor* is
+   *Zuzahlung* is about a third of the 2026 *Höchstbetrag* [R2] [unverified]; 1,00 % is the
+   *Höchstrechnungszins* for new business [R16] [REG-R15]; and the guaranteed *Rentenfaktor* is
    **[std]** because **no *Rentenfaktor* level, range or time series exists anywhere in the delib
-   corpus, for this or any other product** (gap 4).
+   corpus** (gap 4).
 
 ### Premiums
 
@@ -199,12 +198,10 @@ Footnotes to **[std]** rows:
 
 6. **No carrier's actual offering was established.** ***Beitragsflexibilität* is the product's
    defining commercial feature** and the reason it fits a self-employed income: a small mandatory
-   recurring premium with an open capacity for *Zuzahlungen* up to the year's *Höchstbetrag*. In a
-   good year the buyer tops up to the ceiling; in a bad year the buyer pays the minimum, or suspends.
+   recurring premium with an open capacity for *Zuzahlungen* up to the year's *Höchstbetrag*.
 7. The delib Schicht-3 annuity carries a level premium. **A Basisrente model that offers only a level
    regular premium models the wrong product** [REG-R39]: the year-end *Zuzahlung* sized to the
-   remaining headroom is the mechanism the tax ceiling creates and a reason the contract is bought.
-   The 60 / 40 split is **[std]**.
+   remaining headroom is the mechanism the tax ceiling creates. The 60 / 40 split is **[std]**.
 8. **No carrier's frequency loading was established.** The 2 % / 3 % / 5 % ladder is carried from the
    sibling delib corpus as a German market convention and is **[std]** throughout the library. It
    loads the *laufender Beitrag*; a *Zuzahlung* is a single payment and carries none.
@@ -212,14 +209,13 @@ Footnotes to **[std]** rows:
    because **there is no *Kleinbetragsrenten-Abfindung* in Schicht 1**. No threshold was established.
 10. **The series is arithmetic, not evidence.** Each line reproduces itself from its own inputs —
     107 400 × 24,7 % = 26 527,80 → 26 528; 111 600 × 24,7 % = 27 565,20 → 27 566; 118 800 × 24,7 % =
-    29 343,60 → 29 344; 124 800 × 24,7 % = 30 825,60 → 30 826 — and the rounding convention (up to the
-    next full euro) is inferred from that arithmetic and is itself [unverified]. **The 2026 line is
-    the least secure** (gap 11). From 2025 the ceilings are uniform across the former East and West
-    [R20] [unverified].
-11. The *Beitragsdynamik* appears here as on every German life contract but with **a rationale it
-    lacks elsewhere**: the *Höchstbetrag* itself rises every year with the *knappschaftliche* BBG
-    [R2] [R20], so a static premium loses relief capacity each year. 2 % p.a. is **[std]**, sized to
-    the drift of the ceiling series above rather than to any carrier's offering.
+    29 343,60 → 29 344; 124 800 × 24,7 % = 30 825,60 → 30 826 — and the rounding convention is
+    inferred from that arithmetic and is itself [unverified]. **The 2026 line is the least secure**
+    (gap 11). From 2025 the ceilings are uniform across the former East and West [R20] [unverified].
+11. The *Beitragsdynamik* appears as on every German life contract but with **a rationale it lacks
+    elsewhere**: the *Höchstbetrag* rises every year with the *knappschaftliche* BBG [R2] [R20], so a
+    static premium loses relief capacity annually. 2 % p.a. is **[std]**, sized to the drift of the
+    ceiling series rather than to any carrier's offering.
 
 ### Benefit provisions
 
@@ -383,22 +379,18 @@ The regime also carries the § 7 AltZertG pre-sale obligations [R11] [REG-R43]: 
 **quotation-specific** *Produktinformationsblatt* carrying the ***Effektivkosten*** and a
 ***Chancen-Risiko-Klasse*** from **CRK 1 to CRK 5**, computed by the *Produktinformationsstelle
 Altersvorsorge* on a common capital-market model the insurer does not control. **delib does not
-implement the PIA simulation**, and reproducing a CRK would need a scenario set that is neither public
-nor in scope. The document's current field list and scenario set were not established (gap 7), and how
-the PIB interacts with the PRIIPs *Basisinformationsblatt* on a unit-linked Basisrente is unresolved
-(gap 6) and must not be asserted [S13] [S14] [REG-R32].
+implement the PIA simulation.** The document's current field list and scenario set were not
+established (gap 7), and how the PIB interacts with the PRIIPs *Basisinformationsblatt* on a
+unit-linked Basisrente is unresolved (gap 6) and must not be asserted [S13] [S14] [REG-R32].
 
-### The Höchstbetrag, the knappschaftliche peg, and the shared ceiling
+### The Höchstbetrag, the knappschaftliche peg, and the employee reductions
 
 The rule: contributions under § 10 Abs. 1 Nr. 2 **letters a and b together** — statutory pension,
 *Versorgungswerk*, *Alterskasse* **and** Basisrente — are deductible up to a **single annual
-*Höchstbetrag***, doubled for spouses assessed jointly [R2] [REG-R39]. Since 2015:
-
-    Hoechstbetrag(year) = BBG_knappschaftlich(year) x Beitragssatz_knappschaftlich(year)
-
-The *knappschaftliche* branch is used rather than the general one because it has both a higher
-*Beitragsbemessungsgrenze* and a higher contribution rate, so the ceiling sits materially above the
-general BBG contribution. The inputs come from the annual
+*Höchstbetrag***, doubled for spouses assessed jointly [R2] [REG-R39]. Since 2015
+`Hoechstbetrag(year) = BBG_knappschaftlich(year) x Beitragssatz_knappschaftlich(year)`: the
+*knappschaftliche* branch is used rather than the general one because it has both a higher
+*Beitragsbemessungsgrenze* and a higher contribution rate. The inputs come from the annual
 *Sozialversicherungsrechengrößen-Verordnung* [R20], **which has to be re-read every year for this
 product in a way that is not true of any other delib product**.
 
@@ -409,14 +401,10 @@ the **genuinely non-insured self-employed person**. And **the ceiling moves ever
 premium should too** — which is why *Beitragsdynamik* and year-end *Zuzahlungen* are far more
 prominent here than on a Schicht-3 annuity, and why the representative premium is a stream.
 
-### The employee reductions — two mechanisms that must not be conflated
-
-The rule: two distinct mechanisms operate on an employee [R2] [REG-R39] and they are routinely
-confused. **The GRV contributions consume the ceiling**: employee **and** employer contributions both
-count toward the same *Höchstbetrag*, and a Basisrente contribution is deductible only inside the
-headroom left. **The tax-free employer share is then subtracted from the deductible amount**, because
-it was never taxed in the employee's hands and may not be relieved twice. In model notation, for one
-calendar year:
+**Two further mechanisms operate on an employee and are routinely conflated** [R2] [REG-R39]. **The
+GRV contributions consume the ceiling**: employee **and** employer contributions both count toward
+the same *Höchstbetrag*. **The tax-free employer share is then subtracted from the deductible
+amount**, because it was never taxed in the employee's hands and may not be relieved twice:
 
     base       = min( GRV_employee + GRV_employer + Basisrente_contribution , Hoechstbetrag )
     deductible = base x 1.00                      # 100 % from 2023  [R7]
@@ -424,13 +412,11 @@ calendar year:
 
 **A third reduction applies to taxpayers with a non-contributory entitlement** — *Beamte*, judges,
 soldiers, controlling shareholder-directors with a *Pensionszusage* — whose ceiling is reduced by a
-**notional** total contribution to the general statutory scheme computed on their remuneration,
-leaving very little headroom [R2] [unverified]. That is why the product is effectively closed to
-*Beamte* even though nothing forbids them buying it.
-
-**None of this is a liability cash flow.** The relief accrues to the policyholder through the tax
-system, never through the insurer. Its place in a delib model is **upstream of the model point**: it
-determines how large the premium is and why it is shaped the way it is.
+**notional** contribution computed on their remuneration, leaving very little headroom [R2]
+[unverified], which is why the product is effectively closed to *Beamte*. **None of this is a
+liability cash flow**: the relief accrues to the policyholder through the tax system, never through
+the insurer, and its place in a delib model is **upstream of the model point** — it determines how
+large the premium is and why it is shaped the way it is.
 
 ### Premium flexibility — the operative shape of the contribution stream
 
@@ -562,14 +548,13 @@ no Schicht-1 equivalent**: § 10 Abs. 1 Nr. 2 Buchst. b forbids capitalisation w
 and admits **no de-minimis exception whatever** [R1]. A Basisrente entitlement of two euros a month is
 paid as two euros a month, for life.
 
-What the market does instead — every item [unverified], because no carrier document was reached:
-**minimum premiums**, so a contract cannot easily reach *Rentenbeginn* with a trivial capital;
-**minimum annuity thresholds in the AVB**, below which the insurer may pay quarterly or annually
-instead of monthly, whose compatibility with the statutory requirement of a *monatliche* annuity lives
-in the BMF guidance and **was not established** (gap 19); and **consolidation before *Rentenbeginn***
-into one contract, which depends on the unresolved transfer question (gap 13). **The modelling
-consequence is direct**: no commutation option anywhere, and a model point representing a small
-paid-up contract must project a small annuity rather than a lump sum.
+What the market does instead — every item [unverified]: **minimum premiums**, so a contract cannot
+easily reach *Rentenbeginn* with a trivial capital; **minimum annuity thresholds in the AVB**, below
+which the insurer may pay quarterly or annually instead of monthly, whose compatibility with the
+statutory requirement of a *monatliche* annuity **was not established** (gap 19); and
+**consolidation** before *Rentenbeginn*, which depends on the unresolved transfer question (gap 13).
+**The modelling consequence is direct**: no commutation option anywhere, and a model point
+representing a small paid-up contract must project a small annuity rather than a lump sum.
 
 ### Pfändungsschutz, insolvency and means-testing
 
@@ -582,16 +567,16 @@ excluded**; and **no capital payment other than on death has been agreed** [R12]
 **aggregate ceiling of 340 000 €** [REG-R40] [unverified].
 
 **The four requirements of § 851c Abs. 1 are the same four features § 10 Abs. 1 Nr. 2 Buchst. b
-demands** — three instruments, one product description. Two cautions. The **age condition in § 851c
+demands** — three instruments, one product description. Two cautions: the **age condition in § 851c
 is 60, not 62**, so a contract written to the EStG standard clears § 851c with room to spare, but the
-two are genuinely different provisions and must not be merged (gap 10). And **the annual savings
-allowances are contradicted across summaries** — a two-band 6 000 € / 7 000 € ladder reported as
-current law since 1 January 2022 against a 2 000 € – 9 000 € age-graded ladder reported as pre-2022
-[REG-R40] — so this document states the **shape** and **prints no annual band** (gap 9).
-**§ 12 SGB II and § 90 SGB XII** exempt from means-testing old-age provision whose realisation is
-contractually excluded [R13]; taken with § 851c that is the market's *insolvenzfest* and
-*Hartz-IV-fest* claim, and the principal non-tax reason a self-employed person buys the product. All
-three paragraph addresses are [unverified]; the **direction** is not in doubt.
+two are different provisions and must not be merged (gap 10); and **the annual savings allowances are
+contradicted across summaries** — a two-band 6 000 € / 7 000 € ladder reported as current law since
+1 January 2022 against a 2 000 € – 9 000 € age-graded ladder reported as pre-2022 [REG-R40] — so this
+document states the **shape** and **prints no annual band** (gap 9). **§ 12 SGB II and § 90 SGB XII**
+exempt from means-testing old-age provision whose realisation is contractually excluded [R13]; taken
+with § 851c that is the market's *insolvenzfest* and *Hartz-IV-fest* claim, and the principal non-tax
+reason a self-employed person buys the product. All three addresses are [unverified]; the
+**direction** is not in doubt.
 
 ---
 
@@ -690,15 +675,14 @@ survivor-cover forms, BUZ terms, *Effektivkosten*, guarantee levels beyond one c
 *Mindestversicherungsleistung*, fund universes. Twenty named German life writers whose Basisrente
 documents exist were not reached and **not one contributes a single fact** [S11] (gap 1). They are
 named so a checker knows where to go, with nothing attached beyond what each is named for: **Alte
-Leipziger** (*AL_RoyalBasisRente*, repeatedly placed at the top of independent ratings) [S4] [R24];
+Leipziger** (*AL_RoyalBasisRente*, repeatedly at the top of independent ratings) [S4] [R24];
 **NÜRNBERGER** (a principal *Berufsunfähigkeit* writer, and so the natural place to look for a **BUZ
-written inside a Basisrente** and for the 50 % constraint in contractual terms — **the single most
-valuable document this corpus could not reach**) [S5]; **Volkswohl Bund** [S6]; **LV 1871** (the
-best-known ***fondsgebundene* Basisrente with an open fund and ETF universe and no
-*Beitragsgarantie***, and so the form a checker should verify first) [S7] [unverified]; **Swiss Life**
-(a hybrid with a selectable guarantee level) [S8]; **Continentale** [S9]; **Stuttgarter** (whose
-*index-safe* naming, if right, would be an **index-linked Basisrente**; gap 12) [S10]; and the
-carriers of [S11], for which **nothing whatever** was established.
+written inside a Basisrente** — **the single most valuable document this corpus could not reach**)
+[S5]; **Volkswohl Bund** [S6]; **LV 1871** (the best-known ***fondsgebundene* Basisrente with an open
+fund and ETF universe and no *Beitragsgarantie***) [S7] [unverified]; **Swiss Life** (a hybrid with a
+selectable guarantee level) [S8]; **Continentale** [S9]; **Stuttgarter** (whose *index-safe* naming, if
+right, would be an **index-linked Basisrente**; gap 12) [S10]; and the carriers of [S11], for which
+**nothing whatever** was established.
 
 **What varies, on the reasoning rather than the evidence.** Four dimensions can be stated as ranges
 because they follow from the statute and the market's structure rather than from a comparison:

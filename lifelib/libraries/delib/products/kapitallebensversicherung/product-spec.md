@@ -397,29 +397,26 @@ Footnotes to **[std]** rows:
 
 § 153 Abs. 1 VVG gives the policyholder a **right** to participate in the *Überschuss* and in the
 *Bewertungsreserven*, and permits exclusion only by express agreement and only for the whole of the
-participation [R1] [REG-R24]. § 153 Abs. 2 requires the insurer to operate the participation by a
-***verursachungsorientiertes Verfahren***, or by other comparable appropriate distribution
-principles [R1]. The statute **names the principle and does not prescribe the algorithm**, which is
-exactly why the declared rates are insurer-discretionary and why every level in delib is **[std]**
-unless a *Tarifblatt* supplies one; the BGH tied that Absatz to the equal-treatment rule of § 138
-Abs. 2 VAG in IV ZR 436/22 of 18 September 2024 [REG-R24] [REG-R8]. A model that allocates surplus
-**in proportion to each contract's own reserve** is implementing a causation-oriented procedure and
-can say so.
+participation; § 153 Abs. 2 requires the insurer to operate it by a ***verursachungsorientiertes
+Verfahren***, or by other comparable appropriate distribution principles [R1] [REG-R24]. The statute
+**names the principle and does not prescribe the algorithm**, which is exactly why the declared rates
+are insurer-discretionary and why every level in delib is **[std]** unless a *Tarifblatt* supplies
+one; the BGH tied that Absatz to the equal-treatment rule of § 138 Abs. 2 VAG in IV ZR 436/22 of
+18 September 2024 [REG-R24] [REG-R8]. A model that allocates surplus **in proportion to each
+contract's own reserve** is implementing a causation-oriented procedure and can say so.
 
 Two clauses fix the timing and the base, and both come from named carriers. **The base is the
 contract's own reserve**: *Zinsüberschussanteile* and *Schlussüberschussanteile* are each fixed as a
 percentage of the *Deckungskapital* calculated at the allocation date [S3]. **The timing is the
-balance date**: during the accumulation phase the contract is allocated *Zinsüberschussanteile* at
-each *Bilanzstichtag*, being 31 December of the year, and again at the end of the phase, and the
-amounts are **booked into the contract's *Deckungskapital*** [S9] — an annuity wording of the same
-carrier, and that provenance is stated wherever the rule is used. **The entitlement starts
-immediately** with the start of insurance cover, with no qualifying period [S9]. And **the level is
-discretionary and may be zero**: it cannot be guaranteed, it is set annually, it depends on
-capital-market development and on the insurer's own results [S3], and it **"may also be zero euros"**
-[S9] — the cleanest sourced justification in the corpus for classifying the surplus rate as an
-insurer-discretionary current assumption rather than a contractual one.
-
-Carriers and commentators alike decompose the surplus into four components [S16] [S15] [S17] [R28]:
+balance date**: the contract is allocated *Zinsüberschussanteile* at each *Bilanzstichtag*, being
+31 December, and again at the end of the accumulation phase, and the amounts are **booked into the
+contract's *Deckungskapital*** [S9] — an annuity wording of the same carrier, and that provenance is
+stated wherever the rule is used. **The entitlement starts immediately** with the start of cover, with
+no qualifying period [S9]. And **the level is discretionary and may be zero**: it cannot be
+guaranteed, it is set annually, it depends on capital-market development and the insurer's own results
+[S3], and it **"may also be zero euros"** [S9] — the cleanest sourced justification in the corpus for
+classifying the surplus rate as an insurer-discretionary current assumption rather than a contractual
+one. Carriers and commentators decompose the surplus into four components [S16] [S15] [S17] [R28]:
 
 | Component | Arises when | Minimum policyholder share |
 |---|---|---|
@@ -455,12 +452,11 @@ Four systems are named and the system is fixed at conclusion, the precise rules 
 2. ***Bonussystem* (*Summenzuwachs*)** — the surplus buys **additional paid-up insurance**, so the
    sum insured itself grows. The corpus does not spell out the purchase mechanics but states the
    consequence precisely: **"compared with the *Bonussystem*, the *verzinsliche Ansammlung* leads to
-   a higher payment at maturity, while the *Bonussystem* produces higher death benefits"** [R28].
-   That asymmetry is the discriminating test between the two in a projection.
-3. ***Beitragsverrechnung*** — the allocation is set off against the premium: the policyholder pays
-   only part of the premium due, the remainder being met out of the surplus [R28]. In a projection
-   this **reduces the premium cash flow rather than raising the benefit**, which changes the sign of
-   the surplus in the cash flow statement.
+   a higher payment at maturity, while the *Bonussystem* produces higher death benefits"** [R28] —
+   the discriminating test between the two in a projection.
+3. ***Beitragsverrechnung*** — the allocation is set off against the premium, so the policyholder
+   pays only part of it [R28]. In a projection this **reduces the premium cash flow rather than
+   raising the benefit**, which changes the sign of the surplus in the cash flow statement.
 4. ***Anlage in Fondsanteilen*** — investment of the surplus in fund units. **Not established by any
    search result**; [unverified], and not implemented.
 
@@ -475,7 +471,7 @@ two as model-point variants.
 This is the commonest arithmetic error in describing a German contract and it is a numbered pitfall
 in every affected delib product. The ***laufende Verzinsung*** is the *Garantieverzinsung* **plus**
 the *laufende Zinsüberschussbeteiligung*, so a declared 2,70 % on a 1,00 % guarantee implies a
-**1,70 pp** surplus credit, not 2,70 pp on top of 1,00 pp [REG-R53]. The declared rates the research
+**1,70 pp** surplus credit, not 2,70 pp on top of 1,00 pp [REG-R53]. The rates the research
 established, each with its year:
 
 | Basis | Rate | Year | Tag |
@@ -655,16 +651,15 @@ Bewertungsreserven***, as a parameter set to zero in the base run [R1] [R8].
 **Out of scope, and said so.** The ***Berufsunfähigkeits-Zusatzversicherung*** and every other
 *Zusatzversicherung*, which are separate covers with their own decrements and which § 165 VVG's
 practical note records are **regularly lost on *Beitragsfreistellung*** [R3]; the delib
-*Berufsunfähigkeit* product models the *selbständige* form. The ***Unfall-Zusatzversicherung***,
-which no located German endowment wording describes. The ***Kapitalwahlrecht* / annuitisation option
-at the *Ablauf***, because no located endowment wording sets one out and no *Rentenfaktor* for an
-endowment was established; the annuity chassis is `products/klassische_rentenversicherung/`. The
-***Anlage in Fondsanteilen*** *Überschussverwendung* system, which no source in this corpus mentions
-[unverified]. ***Dynamik*** (index-linked increases of sum and premium together), which no located
-German endowment wording describes and which would reprice both sides on an exogenous index. The
-***Beleihung*** (policy loan) and the ***Abtretung***, which no located wording describes. And the
-***Vorwegabzug*** of the *Bewertungsreserven* before termination, which § 153 Abs. 3 permits by
-agreement [R1] and no carrier document evidences.
+*Berufsunfähigkeit* product models the *selbständige* form. The ***Unfall-Zusatzversicherung***, the
+***Beleihung*** (policy loan) and the ***Abtretung***, none of which any located German endowment
+wording describes. The ***Kapitalwahlrecht* / annuitisation option at the *Ablauf***, because no
+located wording sets one out and no *Rentenfaktor* for an endowment was established; the annuity
+chassis is `products/klassische_rentenversicherung/`. The ***Anlage in Fondsanteilen***
+*Überschussverwendung* system, which no source in this corpus mentions [unverified]. ***Dynamik***
+(index-linked increases of sum and premium together), which would reprice both sides on an exogenous
+index. And the ***Vorwegabzug*** of the *Bewertungsreserven* before termination, which § 153 Abs. 3
+permits by agreement [R1] and no carrier document evidences.
 
 ---
 

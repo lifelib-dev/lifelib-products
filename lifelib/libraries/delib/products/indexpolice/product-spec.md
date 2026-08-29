@@ -93,7 +93,10 @@ return is negligible and the discretionary component is the whole story. An Inde
 same discretionary component and, instead of crediting it as a modest certain amount, converts it
 into a bounded lottery on an index. **The product is a direct commercial response to a near-zero
 guaranteed rate**, and the 2025 rise makes the *sichere Verzinsung* arm relatively more attractive
-again; whether observed elections have shifted is [unverified] [R7].
+again; whether observed elections have shifted is [unverified] [R7]. Qualitatively, and not in doubt:
+the family emerged in the second half of the 2000s, grew through the low-interest decade as the
+guaranteed component shrank towards nothing [R7], became a standard offering across the large and
+mid-sized carriers, and was one of the main vehicles of the ***Neue Klassik*** generation [S6] [REG-R53].
 
 **Market size.** There is none to quote: **no published figure for the German index-participation
 segment exists**. GDV counts these contracts within conventional annuity business, because that is what
@@ -106,11 +109,6 @@ to 80,3 Mio.**; on the BaFin basis, life-segment *verdiente Bruttobeiträge* wer
 market rate is the declared one: for 2025 the average *laufende Verzinsung* was **2,53 % Klassik /
 2,58 % Neue Klassik**, and the 2026 surveyed averages are mutually incompatible — 2,6–2,7 %, 2,87 % and
 2,54 % [R20] [REG-R53]. That declared rate **is** the option budget [R8].
-
-Qualitatively, and not in doubt: the family emerged in the second half of the 2000s, grew through the
-low-interest decade as the guaranteed component shrank towards nothing [R7], became a standard
-offering across the large and mid-sized carriers, and was one of the main vehicles of the ***Neue
-Klassik*** generation [S6] [REG-R53].
 
 **The same index module is written on four chassis** — *Schicht 3* private annuity (this document),
 *Basisrente*, *Riester* and *Direktversicherung* in *bAV* (outside delib). The wrapper changes the
@@ -134,8 +132,7 @@ argued against the plausible band in *Variations across insurers*.
 | Design type | Single-life *aufgeschobene Rentenversicherung*, *Schicht 3*, profit-participating, general account; *Neue Klassik* guarantee architecture | [S1] [S6] [R15] |
 | Where the capital sits | *Sicherungsvermögen*; no *Anlagestock*, no units, no policy-level asset allocation | [R15] [REG-R7]; reading argued above |
 | *Überschussverwendung* | *Indexbeteiligung* or *sichere Verzinsung*, at the policyholder's **annual** election | [R1]; clause-level wording **[std]** (1) |
-| Lives basis | Single life; no joint-life form in this family | [S1] |
-| Sex as a rating factor | **Prohibited**. Unisex since 21 December 2012 | [REG-R34] |
+| Lives basis | Single life; no joint-life form in this family. Sex may not be a rating factor — unisex since 21 December 2012 | [S1]; [REG-R34] |
 | *Eintrittsalter* | 25 to 55 | **[std]** (2) |
 | *Rentenbeginn* age | 62 to 70; 67 representative | **[std]** (2) |
 | *Aufschubdauer* | 12 to 40 years; 12 is the tax minimum | **[std]** (2); [R14] [REG-R45] |
@@ -155,15 +152,13 @@ Footnotes to **[std]** rows:
    **[std]** construction: 25–55 is the mid-career segment this product is sold into, 67 is the German
    statutory retirement age, and the 12-year minimum is the tax threshold of § 20 Abs. 1 Nr. 6 EStG
    [R14] [REG-R45] rather than a product limit.
-3. The German market's own *Eintrittsalter* convention is frequently the calendar year of inception
-   less the year of birth, which steps on 1 January rather than on the birthday. delib runs **age last
-   birthday** across all ten products, the registry fixing one age basis for the library; on an annual
-   grid the two differ by at most one year of age, and mortality here is a **timing** assumption rather
-   than an amount assumption, so the choice moves very little.
-4. No underwriting rule of any carrier was established; the reasoning is structural. The
-   *Aufschubphase* death benefit is a return of capital rather than a sum at risk, so the
-   *Risikoüberschuss* is small and § 161 VVG (*Selbsttötung*, three years) is close to inoperative
-   [R6] [REG-R26].
+3. The German market's own *Eintrittsalter* convention is frequently the calendar year of inception less
+   the year of birth, stepping on 1 January rather than on the birthday. delib runs **age last birthday**
+   across all ten products, the registry fixing one age basis for the library; on an annual grid the two
+   differ by at most one year, and mortality here is a **timing** rather than an amount assumption.
+4. No underwriting rule of any carrier was established; the reasoning is structural. The *Aufschubphase*
+   death benefit is a return of capital rather than a sum at risk, so the *Risikoüberschuss* is small and
+   § 161 VVG (*Selbsttötung*, three years) is close to inoperative [R6] [REG-R26].
 5. Through the 0,90 % and 0,25 % years carriers offered a **choice of *Garantieniveau*** — commonly
    60 %, 80 %, 90 % or 100 % [unverified] — because **every euro of guarantee not promised is a euro that
    can back risk assets, and therefore a larger option budget**. 90 % is the level at which a 1,00 %
@@ -181,12 +176,10 @@ Footnotes to **[std]** rows:
 |---|---|---|
 | Premium form | *Laufender Beitrag*, level, over a *Beitragszahlungsdauer* that may be shorter than the *Aufschubdauer*; an *Einmalbeitrag* form exists and *Zuzahlungen* are commonly permitted | [unverified] as to any carrier's menu; form **[std]** |
 | Representative premium | **2 400,00 € per year** (200,00 € per month), payable throughout the *Aufschubdauer* | **[std]** (7) |
-| Payment frequency | Annual, half-yearly, quarterly or monthly | [unverified]; menu **[std]** |
-| *Ratenzahlungszuschlag* | Half-yearly **2 %**, quarterly **3 %**, monthly **5 %**; annual none | **[std]** (8) |
+| Payment frequency and *Ratenzahlungszuschlag* | Annual (no load), half-yearly **2 %**, quarterly **3 %**, monthly **5 %** | menu [unverified]; levels **[std]** (8) |
 | *Beitragssumme* | Sum of the premiums payable over the *Beitragszahlungsdauer*, on the **annual-mode** premium — the *Ratenzahlungszuschlag* is a charge for instalments and is not part of it | **[std]** (9) |
 | *Dynamik* | Automatic annual increase with a matching benefit increase and a right to decline; each increment is a new tranche with its own guarantee basis | [unverified]; not modeled **[std]** (10) |
 | Premium cessation | On death, on surrender, on *Beitragsfreistellung*, and at the end of the *Beitragszahlungsdauer* | [S1] [R3] [REG-R28] |
-| Premium default | § 38 VVG: the insurer's termination converts the contract to *prämienfrei* rather than voiding it | [REG-R28] [REG-R30] |
 
 7. No minimum or maximum premium was established for any carrier [S3] [S15]. 200,00 € a month is a
    plausible mass-market monthly savings premium and is the research file's own **[std]**; the plausible
@@ -210,12 +203,11 @@ level is **[std]**.
 |---|---|---|
 | *Indexjahr* | Twelve months, aligned in the model to the policy year | mechanic [S2] [S5]; alignment **[std]** (11) |
 | Observation | The index level is read at thirteen *Beobachtungstage* — one at the start and one per month — and month `m`'s return is `I(m)/I(m−1) − 1` | mechanic firm; convention **[std]** (11) |
-| Payoff design | **Cap**: each month's return capped above at `C`, **not floored below**; the twelve summed; the sum floored at zero | mechanic firm; level **[std]** (12) |
+| Payoff design | **Cap**: each month's return capped above at `C`, **not floored below**; the twelve summed; the sum floored at zero, never the month | mechanic firm |
 | Monthly Cap `C` | **3,00 % per month** | **[std]** (12) |
 | *Partizipationsquote* variant | `max(q × (year's index movement), 0)`, no monthly cap | mechanic firm; level **[std]** (13) |
 | *Partizipationsquote* `q` | **60 %** on an equity price index; **100 %** on a low-volatility house multi-asset index | **[std]** (13) |
 | Base of the participation `G` | The accumulated capital at the **start** of the *Indexjahr*, before that year's premium | **[std]** (14) |
-| Floor | `max(·, 0)` on the **year**, never on the month | mechanic firm |
 | *Höchststandsicherung* | Whatever is credited is permanently added to the guaranteed capital and enters the base of every later *Indexjahr* | mechanic firm |
 | Declared surplus rate `b` (= the option budget) | **2,50 % per year** of `G` | **[std]** (15) |
 | *Wahlrecht* | Annual election between the two arms, exercisable without the insurer's consent, without medical evidence and without charge; election as a fraction `w ∈ [0, 1]` of the surplus directed to the index arm | mechanic firm; `w` form **[std]** (16) |
@@ -282,7 +274,6 @@ level is **[std]**.
 | Guaranteed *Rentenfaktor* | **25,00 € per month per 10 000 € of capital** at *Rentenbeginn* 67 | **[std]** (22) |
 | *Kapitalwahlrecht* | Lump sum instead of the annuity, exercisable in a window before *Rentenbeginn* | chassis fact; window [unverified] |
 | Death benefit in the *Aufschubphase* | The accumulated capital **excluding the running *Indexjahr***, floored at **50 % of the *Beitragssumme*** | [S9] chassis; floor **[std]** (23) |
-| *Rentengarantiezeit* | Available; not modeled — it belongs to the payout contract | scope **[std]** |
 | *Selbsttötung* | No liability on a death cover within three years of conclusion or reinstatement; the *Rückkaufswert* is then owed | [R6] [REG-R26] |
 | *Schlussüberschussanteil* / *Bewertungsreserven* | Half of the *Bewertungsreserven* determined at termination, subject to the *Sicherungsbedarf* restriction | [R1] [REG-R9] [REG-R24]; **not modeled** (24) |
 
@@ -312,8 +303,7 @@ German index product**, and every charge below is **[std]**.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| *Abschluss- und Vertriebskosten* | **2,5 % of the *Beitragssumme***, financed by *Zillmerung* | **[std]** (25) |
-| *Höchstzillmersatz* | **25 ‰ of the *Beitragssumme*** — the DeckRV § 4 ceiling, cut from 40 ‰ on 1 January 2015 | [R7] [REG-R16] [REG-R20] |
+| *Abschluss- und Vertriebskosten* | **2,5 % of the *Beitragssumme***, financed by *Zillmerung*, against a DeckRV § 4 *Höchstzillmersatz* of **25 ‰**, cut from 40 ‰ on 1 January 2015 | **[std]** (25); ceiling [R7] [REG-R16] [REG-R20] |
 | Acquisition-cost spread | Over the **first five years** | **[std]** (25); [REG-R28] |
 | *Verwaltungskosten*, premium-based `β` | **3 % of each gross premium** | **[std]** (26) |
 | *Verwaltungskosten*, reserve-based `γ` | **0,25 % of the *Deckungskapital* per year** | **[std]** (26) |
@@ -330,21 +320,20 @@ German index product**, and every charge below is **[std]**.
     distribution costs evenly over the first five contract years [REG-R28]. delib's charge profile uses
     the five-year spread, so the floor is satisfied by construction; it is nevertheless computed and
     applied, so a user who shortens the spread sees it bite.
-26. Inherited **[std]** from the sibling delib endowment and classic-annuity products; no charge level
-    of any kind was established here [S3] [S4] [S11]. The market frame: the 2024
-    *Verwaltungskostenquote* was **2,4 %** on one measurement and **2,19 %** on another, spread **from
-    under 2 % to over 4 %** [REG-R53], and BaFin's *Merkblatt* 01/2023 (VA) makes cost a supervisory
-    test [R16] [REG-R35] — so a charge parameterisation should be plausible against a sector
-    distribution rather than merely internally consistent.
+26. Inherited **[std]** from the sibling delib endowment and classic-annuity products; no charge level of
+    any kind was established here [S3] [S4] [S11]. The market frame: the 2024 *Verwaltungskostenquote* was
+    **2,4 %** on one measurement and **2,19 %** on another, spread **from under 2 % to over 4 %**
+    [REG-R53], and BaFin's *Merkblatt* 01/2023 (VA) makes cost a supervisory test [R16] [REG-R35] — so a
+    charge parameterisation should be plausible against a sector distribution, not merely self-consistent.
 27. § 169 Abs. 5 VVG permits a deduction **only if it is agreed, quantified and appropriate**, with the
     burden of proof on the insurer and a deduction for unredeemed acquisition costs expressly
     ineffective [R2] [REG-R28]. The sibling endowment research records one carrier's 5 % base deduction
     plus a capital-market component of 5 %, 10 % or 15 % [unverified]; delib's flat 2 % is a
     conservative **[std]** inside a 0–20 % band.
-28. **These three are the index-specific give-ups, and none of them appears in any charge table**, so
-    the disclosed *Effektivkosten* **understate** the economic give-up relative to holding the index by
-    an amount disclosed nowhere. That is a structural fact about the product class, not a claim about
-    any carrier, and it is the most substantive fair-criticism point in this specification.
+28. **These three are the index-specific give-ups, and none appears in any charge table**, so the
+    disclosed *Effektivkosten* **understate** the economic give-up relative to holding the index by an
+    amount disclosed nowhere — a structural fact about the product class, not a claim about any carrier,
+    and the most substantive fair-criticism point in this specification.
 
 ### Termination and values
 
@@ -355,8 +344,7 @@ German index product**, and every charge below is **[std]**.
 | The running *Indexjahr* | **Not** inside it — the payoff exists only at the year end | **[std]** (18) |
 | *Beitragsfreistellung* | Conversion to a paid-up contract at any time for the end of the current insurance period, on the same § 169 value; the index participation continues on the capital and the *Wahlrecht* survives | [R3] [REG-R28]; **not modeled** (29) |
 | Premium-default conversion | The insurer's termination converts to *prämienfrei* automatically | [REG-R28] [REG-R30] |
-| *Widerruf* | 30 days for life insurance | [REG-R23] |
-| *Kündigung* | At any time for the end of the current insurance period where *laufende Prämien* are payable | [REG-R28] |
+| *Widerruf* / *Kündigung* | 30 days' *Widerruf* for life insurance; *Kündigung* at any time for the end of the current insurance period where *laufende Prämien* are payable | [REG-R23]; [REG-R28] |
 | Expiry | There is none — the *Aufschubphase* ends at *Rentenbeginn* with a benefit, not with a lapse | mechanic firm |
 
 29. **German lapse is a three-way decrement** — surrender, *Beitragsfreistellung* and premium-default
@@ -582,15 +570,15 @@ model and belongs to `products/sofortrente/`.
 
 ## Riders and options
 
-**In scope (modeled or parameterized).** The **annual *Wahlrecht***, as a per-year election fraction
-`w`, with four shipped paths — always index, always safe, a constant half-and-half split, and a switch
-from the index arm to the safe arm mid-term. The **payoff design**, Cap or *Partizipationsquote*, as a
+**In scope (modeled or parameterized).** The **annual *Wahlrecht***, as a per-year election fraction `w`,
+with four shipped paths — always index, always safe, a constant half-and-half split, and a switch from
+the index arm to the safe arm mid-term. The **payoff design**, Cap or *Partizipationsquote*, as a
 model-point column, so the two can be compared on an identical index path. The **choice of underlying**,
-as a model-point key into an external monthly-return table, with an equity case, a low-volatility
-house-index case and an all-zero case. The ***Kapitalwahlrecht***, deciding whether the terminal capital
-is reported as a lump sum or as the annuity it buys. The ***Stornoabzug*** and the **50 %
-death-benefit floor**, as model-point switches. And the **shortened *Beitragszahlungsdauer***, which is
-the deterministic form of *Beitragsfreistellung*.
+as a model-point key into an external monthly-return table, with an equity case, a low-volatility house
+case and an all-zero case. The ***Kapitalwahlrecht***, deciding whether the terminal capital is reported
+as a lump sum or as the annuity it buys. The ***Stornoabzug*** and the **50 % death-benefit floor**, as
+model-point switches. And the **shortened *Beitragszahlungsdauer***, the deterministic form of
+*Beitragsfreistellung*.
 
 **Out of scope, and said so.** ***Beitragsfreistellung*** as a stochastic decrement (footnote 29);
 ***Dynamik*** (footnote 10); *Zuzahlungen*; the ***Rentengarantiezeit*** and every other payout-phase
@@ -638,7 +626,7 @@ many **[std]** rows.
 | *Verwaltungskostenquote*, 2024 | under 2 % to over 4 %, market average 2,19–2,4 % | market-wide [REG-R53] |
 | *Ratenzahlungszuschlag* | 2 % half-yearly / 3 % quarterly / 5 % monthly | market convention [unverified] |
 | *Stornoabzug* | 0 % – 20 % of the *Deckungskapital* | one carrier's structure [unverified] |
-| *Stornoquote*, market-wide | 1,2 % – 2,7 % on two irreconcilable measures | no index-specific rate exists |
+| *Stornoquote*, market-wide | 1,2 % – 2,7 % on two irreconcilable measures | no index-specific rate exists [R19] |
 
 **What does not vary.** Four things are firm across the family, and they are the reason a composite is
 possible at all: the surplus finances the participation rather than sitting beside it; monthly returns
@@ -693,12 +681,12 @@ cost tables is required [R10] [REG-R32]. It is a **Category 4** PRIIP, part of i
 factor not observed in the market — the discretionary surplus declaration — for which the DAV has
 published a *Standardverfahren* [R11]; Category 4 permits the insurer's own model for that component,
 which is why two Indexpolicen with similar mechanics can publish very different favourable scenarios.
-**No *Basisinformationsblatt* for any German index product was located**, so neither a charge level nor
-a modelled return distribution reached this specification [S4]. The *Effektivkosten* duty [REG-R31] and
+**No *Basisinformationsblatt* for any German index product was located**, so neither a charge level nor a
+modelled return distribution reached this specification [S4]. The *Effektivkosten* duty [REG-R31] and
 **BaFin's *Merkblatt* 01/2023 (VA)** on *angemessener Kundennutzen* [R16] [REG-R35] complete the frame;
-whether the *Merkblatt* names index products was not established, though the product raises the
-*Kundennutzen* question in its sharpest form — a design that credits zero in a substantial fraction of
-years while carrying a full acquisition-cost load is what a value-for-money regime exists to interrogate.
+whether the *Merkblatt* names index products was not established, though a design that credits zero in a
+substantial fraction of years while carrying a full acquisition-cost load is exactly what a
+value-for-money regime exists to interrogate.
 
 **Taxation** — context, not a cash flow; delib publishes gross cash flows and computes no tax. A
 *Schicht 3* *Leibrente* is taxed only on its ***Ertragsanteil***, a percentage fixed once and for all by

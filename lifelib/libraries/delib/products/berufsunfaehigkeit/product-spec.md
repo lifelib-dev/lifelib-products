@@ -45,16 +45,14 @@ file.
 
 A German SBU is **life-assurance business**, written by a *Lebensversicherungsunternehmen* and
 governed by §§ 172–177 VVG for its own mechanics and, through the cross-reference in § 176, by the
-general life provisions §§ 150–170 VVG for everything else [R1] [R5] [REG-R29]. It is neither
-health nor accident business, even though its trigger is a health event, and it carries no premium
-tax [R31] `[unverified]`.
-
-Structurally it is a **pure risk contract with a substantial reserve**. It returns nothing if the
-insured stays healthy, yet the level *Bruttobeitrag* charged against an
+general life provisions §§ 150–170 VVG for everything else [R1] [R5] [REG-R29]. It is neither health
+nor accident business, even though its trigger is a health event, and it carries no premium tax
+[R31] `[unverified]`. Structurally it is a **pure risk contract with a substantial reserve**: it
+returns nothing if the insured stays healthy, yet the level *Bruttobeitrag* charged against an
 *Invalidisierungswahrscheinlichkeit* that rises far more steeply with age than mortality does
-produces a real *Deckungsrückstellung* [R9] [REG-R28]. That combination — no savings intent, a
-large risk reserve — is the structural fact separating this product from every other in delib, and
-it is why the contract has a *Rückkaufswert* and a *Beitragsfreistellung* right at all.
+produces a real *Deckungsrückstellung* [R9] [REG-R28]. That combination — no savings intent, a large
+risk reserve — separates this product from every other in delib, and is why the contract has a
+*Rückkaufswert* and a *Beitragsfreistellung* right at all.
 
 **Why the product exists at all is a matter of statute.** The 2001 pension reform closed the
 statutory *Berufsunfähigkeitsrente* to everyone born on or after 2 January 1961 `[unverified]`;
@@ -513,12 +511,11 @@ is sold.
 **The rule.** § 153 VVG, applied to BU through § 176, entitles the policyholder to a share of the
 *Überschuss* and of the *Bewertungsreserven* unless participation is expressly excluded, allocated
 by a *verursachungsorientiertes Verfahren* [R10] [R5] [REG-R24]. The MindZV prescribes the minimum
-share of *Rohüberschuss* that must be allocated to the *Rückstellung für Beitragsrückerstattung*,
-separately by source; the **risk-result minimum** is the one that governs BU and is recalled at
-**90 %** `[unverified]` [R14] [REG-R18]. § 138 VAG requires premiums calculated on actuarial
-principles sufficient to meet the obligations permanently, and requires equal treatment of equal
-risks — the principle that legitimises *Berufsgruppen* and forbids differentiation by sex [R15]
-[REG-R8].
+share of *Rohüberschuss* allocated to the *Rückstellung für Beitragsrückerstattung* by source; the
+**risk-result minimum** governs BU and is recalled at **90 %** `[unverified]` [R14] [REG-R18].
+§ 138 VAG requires premiums sufficient to meet the obligations permanently and equal treatment of
+equal risks — the principle that legitimises *Berufsgruppen* and forbids differentiation by sex
+[R15] [REG-R8].
 
 **What it does — the mechanic with no counterpart in the US, UK or French products in this
 repository.** A German BU tariff is quoted as **two numbers**. The *Bruttobeitrag* is computed on
@@ -531,7 +528,7 @@ relative to the premium — has been credited immediately against the premium by
 **The gap is large and it is a risk to the buyer, and that is the point.** If risk experience
 deteriorates or expense surplus falls, the insurer may reduce the *Beitragsverrechnung* and raise
 the *Zahlbeitrag* — up to the *Bruttobeitrag* and no further. A buyer who chose on *Zahlbeitrag*
-alone can face an increase of 40 % or more with no change in cover and no right to complain. That
+alone can face an increase of 40 % or more with no change in cover and no right to complain, which
 is why consumer advice says to compare *Bruttobeiträge* [S16] and why the ratings score
 *Beitragsverrechnung* stability [R22] [R23]. **The empirical frequency and size of such increases
 is not established** and is a named gap.
@@ -659,16 +656,15 @@ this corpus does not have.
 **What the composite is, in one paragraph.** A single-life individual standalone SBU on a monthly
 grid; the market-standard definition — last occupation, 50 %, six-month prognosis with the
 six-month fiction, *abstrakte Verweisung* waived, *konkrete Verweisung* retained; a level
-*Bruttobeitrag* guaranteed for the term with a *Zahlbeitrag* of 0,70 × *Bruttobeitrag* **[std]**
-representing the *Beitragsverrechnung*, so that the *Brutto*/*Zahl* gap **is** the modelled
-*Überschussbeteiligung* and no surplus account is needed; a monthly *BU-Rente* paid in advance from
-onset with no *Karenzzeit* and a *Leistungsdynamik* of 2 % **[std]**; full *Beitragsbefreiung*
-while in claim; benefit ending at the *Leistungsendalter*, on death, or on a *Nachprüfung*
-termination followed by the statutory three-month run-off; *Reaktivierung* returning the life to
-the premium-paying state with a *Wiedereingliederungshilfe* of six monthly *Renten* **[std]**; an
-acceptance factor of 0,80 **[std]** on the inception rate; occupational rating as a multiplicative
-factor on that rate, 1,00 for the office class and 3,00 for the reference manual class **[std]**;
-and no surrender or paid-up cash flow modelled.
+*Bruttobeitrag* guaranteed for the term with a *Zahlbeitrag* of 0,70 × *Bruttobeitrag* **[std]**,
+so the *Brutto*/*Zahl* gap **is** the modelled *Überschussbeteiligung* and no surplus account is
+needed; a monthly *BU-Rente* in advance from onset, no *Karenzzeit*, *Leistungsdynamik* 2 %
+**[std]**; full *Beitragsbefreiung* in claim; benefit ending at the *Leistungsendalter*, on death,
+or on a *Nachprüfung* termination followed by the statutory three-month run-off; *Reaktivierung*
+returning the life to the premium-paying state with a *Wiedereingliederungshilfe* of six monthly
+*Renten* **[std]**; an acceptance factor of 0,80 **[std]** on the inception rate; occupational
+rating as a multiplicative factor on that rate, 1,00 office and 3,00 reference manual **[std]**; and
+no surrender or paid-up cash flow modelled.
 
 ---
 
@@ -718,31 +714,31 @@ BU is persistently over-represented relative to its premium share `[unverified]`
 
 **Actuarial bases.** The German BU standard is the **DAV 1997 family** — **DAV 1997 I** for
 *Invalidisierungswahrscheinlichkeiten*, **DAV 1997 RI** for *Reaktivierungswahrscheinlichkeiten* by
-age at disablement and duration since disablement, and **DAV 1997 TI** for
+age at disablement and duration since disablement, **DAV 1997 TI** for
 *Sterbewahrscheinlichkeiten der Invaliden* — with a *Todesfall*-character active-lives table,
 **DAV 2008 T** [R16] [R17] [REG-R50] [REG-R48]. **These are the property of the Deutsche
 Aktuarvereinigung, are not public, and are not redistributed by delib.** Three findings belong on
-the record. The **naming is itself uncertain**: reading "TI" as the reactivation table would leave
-disabled-life mortality unspecified, which no multi-state BU model can do, and the three-table
-reading is `[unverified]` [REG-R50]. **Whether a successor to DAV 1997 I exists in general market
-use could not be established** [R16] [R18]. And **the age of the basis is a finding in itself**:
-tables built in 1997 on older experience, against a population whose causes mix has moved decisively
-towards psychiatric diagnoses and whose incentives changed when the statutory
-*Berufsunfähigkeitsrente* closed to the post-1960 cohorts, carry a heavy safety loading — which is
-**why the German BU market runs a large and persistent *Bruttobeitrag*/*Zahlbeitrag* gap**
-[REG-R50] [REG-R37]. The two-basis structure this implies — *erster Ordnung* for the tariff and the
-*Deckungsrückstellung*, *zweiter Ordnung* for what actually happens, with the *Sicherheitszuschlag*
-between them released as *Risikoüberschuss* — is set out at [REG-R47], and the direction of prudence
-for a disability product is **higher incidence and lower reactivation**.
+the record: the **naming is itself uncertain**, since reading "TI" as the reactivation table would
+leave disabled-life mortality unspecified, which no multi-state BU model can do [REG-R50];
+**whether a successor to DAV 1997 I exists in general market use could not be established** [R16]
+[R18]; and **the age of the basis is a finding in itself** — tables built in 1997 on older
+experience, against a population whose causes mix has moved decisively towards psychiatric diagnoses
+and whose incentives changed when the statutory *Berufsunfähigkeitsrente* closed to the post-1960
+cohorts, carry a heavy safety loading, which is **why the German BU market runs a large and
+persistent *Bruttobeitrag*/*Zahlbeitrag* gap** [REG-R50] [REG-R37]. The two-basis structure this
+implies — *erster Ordnung* for the tariff and the *Deckungsrückstellung*, *zweiter Ordnung* for what
+actually happens, with the *Sicherheitszuschlag* between them released as *Risikoüberschuss* — is
+set out at [REG-R47], and the direction of prudence for a disability product is **higher incidence
+and lower reactivation**.
 
 **Reserving and prudential.** A BU book carries **two reserves, not one**: a *Deckungsrückstellung*
 for **active** lives, the prospective difference between future benefits and future premiums; and a
 *Leistungsrückstellung* — a *Deckungsrückstellung für laufende Renten* — for **claims in payment**,
-the present value of the remaining annuity on disabled-lives bases, which is much the larger per
-life [R9] [R21]. Above them sit the German statutory accounts under §§ 341–341o HGB and the
-RechVersV [REG-R54], Solvency II best estimate plus risk margin [REG-R1] [REG-R2] [REG-R4], and
-IFRS 17 [REG-R55]. **delib computes none of them**: the library publishes gross best-estimate-style
-liability cash flows, undiscounted, and names the valuation layers rather than reproducing them.
+the present value of the remaining annuity on disabled-lives bases, much the larger per life [R9]
+[R21]. Above them sit the statutory accounts under §§ 341–341o HGB and the RechVersV [REG-R54],
+Solvency II best estimate plus risk margin [REG-R1] [REG-R2] [REG-R4], and IFRS 17 [REG-R55].
+**delib computes none of them**: it publishes gross undiscounted liability cash flows and names the
+valuation layers rather than reproducing them.
 
 **Taxation, and why the same liability is sold in two wrappers.** For a **standalone SBU
 (Schicht 3)** the premium is a *sonstige Vorsorgeaufwendung* under § 10 Abs. 1 Nr. 3a EStG,
