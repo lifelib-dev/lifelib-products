@@ -96,7 +96,11 @@ MODELS = {
 # ``tools/`` in the repository root — but it is committed, because a generated-at-run-time
 # expectation would assert nothing at all.
 INPUT_FILES = {
-    "Basis_DE_A": set(),
+    "Basis_DE_A": {
+        "model_point_table.csv", "mort_table.csv", "surplus_table.csv",
+        "rentenfaktor_table.csv", "charge_table.csv", "behaviour_table.csv",
+        "option_table.csv",
+    },
     "BU_DE_S": {
         "model_point_table.csv",
         "inception_table.csv",

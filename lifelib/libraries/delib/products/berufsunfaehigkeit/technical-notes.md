@@ -730,7 +730,216 @@ constant **[std]**. *Ratenzahlungszuschlag* **1,05** for the monthly mode **[std
 *Leistungsdynamik* **2 % a year** on each anniversary of onset **[std]**. No *Beitragsdynamik*, no
 *Risikozuschlag*, no premium-shock lapse, no lapse selection, no *Nachversicherungsgarantie*.
 
-<!-- WORKED EXAMPLE TABLE -- filled by the model stage from the model's own output -->
+**The *Bruttobeitrag* the equivalence produces.** No rate card exists, so the premium is an
+output. The first-order shadow ledgers — inception × 1,30, reactivation × 0,70, disabled-lives
+mortality × 0,80, active-lives mortality × 0,80, no lapse, discounted at 1,00 % — give, per
+1 EUR p.a. of *Bruttobeitrag* and per policy at inception:
+
+    PV_prem  =     29.0716529817      PV_rente = 24,452.4895291302
+    PV_wgh   =    531.1897520089      PV_cost  =    335.6805156244
+    PV_admin =    544.5174674852      BS_unit  =         37.0000000000
+
+    P = (24,452.4895291302 + 531.1897520089 + 335.6805156244 + 544.5174674852)
+        / (29.0716529817 x 0.91 - 0.025 x 37)
+      = 25,863.8772130176 / 25.5302042134
+      = 1,013.0697368527 EUR p.a.
+
+so the annual *Bruttobeitrag* is **1 013,07 €**, the monthly instalment
+`P x 1.05 / 12 = 88.6436019746` → **88,64 €**, and the *Zahlbeitrag* actually billed
+`0.70 x 88.6436019746 = 62.0505213822` → **62,05 €**. The *Beitragssumme* is
+`P x 37 = 37 483,58 €` and the acquisition charge 2,5 % of it. The figures are carried
+**unrounded** through the projection; every displayed row below is stable at two decimals under
+either treatment.
+
+That instalment sits inside the 55 – 90 € monthly band the research recalls for an office
+occupation at these terms `[unverified]` [S15], which is a plausibility check on the whole
+construction and not a calibration: every input to it is **[std]**.
+
+**The projection.** `pols_actv(t) = pols_if(t) − pols_dis(t) − pols_runoff(t)` and, because the
+anchor cell has `karenz_months = 0`, `pols_prem(t) = pols_actv(t)` at every `t`; both are columns
+of `result_cf()` and are omitted here for width. `claims_lapse(t) = 0.00` at every `t` — there is
+no surrender or paid-up cash flow in this model — and is likewise a required column of
+`result_cf()` omitted for width. `liability_cf(t) = −net_cf(t)` exactly. Amounts in euros,
+`pols_*` to six decimals, cash flows to the cent. The table shows 18 of the 444 monthly rows;
+the **Total** row covers all of them.
+
+| t | age | pols_if | pols_dis | pols_runoff | premiums | surplus_credit | claims_bu_rente | claims_reintegration | expenses | claim_expenses | net_cf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 30 | 1.000000 | 0.000000 | 0.000000 | 88.64 | 26.59 | 0.00 | 0.00 | 946.57 | 0.06 | −884.58 |
+| 1 | 30 | 0.996575 | 0.000073 | 0.000000 | 88.33 | 26.50 | 0.11 | 0.00 | 9.44 | 0.06 | 52.22 |
+| 2 | 30 | 0.993162 | 0.000144 | 0.000002 | 88.02 | 26.41 | 0.22 | 0.00 | 9.41 | 0.06 | 51.93 |
+| 3 | 30 | 0.989760 | 0.000213 | 0.000005 | 87.72 | 26.31 | 0.33 | 0.00 | 9.38 | 0.06 | 51.63 |
+| 4 | 30 | 0.986371 | 0.000281 | 0.000010 | 87.41 | 26.22 | 0.44 | 0.02 | 9.35 | 0.06 | 51.33 |
+| 5 | 30 | 0.982994 | 0.000346 | 0.000015 | 87.10 | 26.13 | 0.54 | 0.03 | 9.31 | 0.06 | 51.02 |
+| 6 | 30 | 0.979628 | 0.000409 | 0.000020 | 86.80 | 26.04 | 0.64 | 0.05 | 9.28 | 0.06 | 50.73 |
+| 11 | 30 | 0.962974 | 0.000701 | 0.000042 | 85.30 | 25.59 | 1.11 | 0.11 | 9.12 | 0.07 | 49.29 |
+| 12 | 31 | 0.959678 | 0.000755 | 0.000046 | 85.00 | 25.50 | 1.20 | 0.13 | 9.09 | 0.07 | 49.01 |
+| 59 | 34 | 0.841342 | 0.002980 | 0.000098 | 74.31 | 22.29 | 4.77 | 0.30 | 7.95 | 0.10 | 38.90 |
+| 119 | 39 | 0.758020 | 0.005878 | 0.000124 | 66.66 | 20.00 | 9.71 | 0.38 | 7.14 | 0.15 | 29.29 |
+| 179 | 44 | 0.682155 | 0.009149 | 0.000151 | 59.64 | 17.89 | 15.66 | 0.46 | 6.39 | 0.20 | 19.04 |
+| 239 | 49 | 0.612199 | 0.013550 | 0.000218 | 53.05 | 15.91 | 23.89 | 0.67 | 5.69 | 0.30 | 6.58 |
+| 299 | 54 | 0.546787 | 0.020491 | 0.000347 | 46.62 | 13.99 | 36.69 | 1.06 | 5.02 | 0.47 | −10.61 |
+| 359 | 59 | 0.484038 | 0.030671 | 0.000541 | 40.14 | 12.04 | 55.29 | 1.66 | 4.34 | 0.73 | −33.92 |
+| 419 | 64 | 0.420930 | 0.044223 | 0.000811 | 33.32 | 10.00 | 79.84 | 2.48 | 3.63 | 1.08 | −63.71 |
+| 442 | 66 | 0.395646 | 0.050038 | 0.000931 | 30.55 | 9.17 | 90.30 | 2.85 | 3.34 | 1.25 | −76.36 |
+| 443 | 66 | 0.394543 | 0.050263 | 0.000936 | 30.44 | 9.13 | 90.71 | 2.87 | 3.33 | 1.25 | −76.85 |
+| **Total** | | **286.977233** | **7.397640** | **0.134049** | **24,771.06** | **7,431.32** | **13,151.35** | **409.61** | **3,596.95** | **182.61** | **−0.79** |
+
+**The Total row is summed at full precision and then rounded**, which is not the same as adding
+the rounded cells, and on a 444-row frame the difference is visible rather than notional. Adding
+the 444 already-rounded cells instead gives premiums 24 770,99 €, *Beitragsverrechnung*
+7 431,29 €, *BU-Rente* 13 151,28 €, *Wiedereingliederungshilfe* 409,65 €, expenses 3 596,99 €,
+claim expense 182,64 € and `net_cf` −0,85 € — a discrepancy of up to 7 cents on a single column,
+and of 6 cents on `net_cf`, which at that magnitude is 8 % of the number itself. The same holds
+for the state columns: `pols_dis` sums to 7.397640 at full precision and to 7.397656 from the
+rounded cells. **Assert the full-precision totals.**
+
+Three features of the shape are worth naming. **Month 0 carries the whole acquisition charge** —
+946,57 € of expense against an 88,64 € instalment — so `net_cf(0)` is −884,58 € and nothing else
+in the projection is remotely like it. **The margin decays and then inverts**: `net_cf` runs from
++52,22 € in month 1 down through zero between months 264 and 265 (attained age 52) to
+−76,85 € in the last month, which is the level *Bruttobeitrag* meeting an inception rate
+that rises 13 % per year of age after 45. That crossing is the *Deckungsrückstellung* this model does not compute being
+built and then run down, and it is why a level-premium BU contract has a real reserve where a
+term-life contract of the same length has a small one [R9] [REG-R28]. And **the projection very
+nearly breaks even undiscounted**: total cash collected — premiums less the
+*Beitragsverrechnung* — is 17 339,74 € against 17 340,53 € of claims and expense, a residue of
+0,79 €. That is not an identity and must not be read as one: the equivalence is struck
+**discounted at 1 %** on **first-order** bases with **no lapse**, and this total is
+**undiscounted** on best-estimate bases **with** lapse. The near-cancellation of those three
+differences against the 30 % *Beitragsverrechnung* is a property of the shipped [std] parameters,
+and moving any of them moves it.
+
+**Checks.**
+
+*Month 0, rebuilt with a calculator.* The instalment is `1,013.0697368527 × 1.05 / 12 =
+88.6436019746`. The *Zahlbeitrag* is `0.70 ×` that `= 62.0505213822` and the
+*Beitragsverrechnung* the remaining `0.30 ×` that `= 26.5930805924`; the two add back to the
+instalment, which is the `check_prem_split` identity in one line. Expense is
+`0.025 × 1,013.0697368527 × 37 = 937.0895065887` of acquisition, plus
+`0.09 × 88.6436019746 = 7.9779241777` of proportional administration, plus `18 / 12 = 1.50` of
+flat administration — **946.5674307664**, the table's 946,57 €. Claim expense is
+`800 × 0.000073111651 = 0.0584893204`. So
+`88.6436019746 − 26.5930805924 − 0 − 946.5674307664 − 0.0584893204 = −884.5753987046`, the
+table's −884,58 €. Every term of `net_cf(0)` is accounted for and none of it is the model's own
+`net_cf` formula restated.
+
+*The first inception and the first *BU-Rente*, from the annual rates.* The composed inception
+rate at age 30 is `0.001100 × 1.00 × 0.80 × 1.00 = 0.000880` — table rate, *Berufsgruppe*,
+*Anerkennungsquote*, *AU-Klausel*, and nothing else. Converting the three annual rates to monthly:
+
+    i_m   = 1 − (1 − 0.000880)^(1/12) = 0.000073362928
+    q^a_m = 1 − (1 − 0.000350)^(1/12) = 0.000029171347
+    w_m   = 1 − (1 − 0.040000)^(1/12) = 0.003396053199
+
+and taking them in the model's order — mortality, then lapse on the survivors, then incidence on
+the survivors of both:
+
+    pols_inception(0) = (1 − 0.000029171347)(1 − 0.003396053199) × 0.000073362928
+                      = 0.000073111651
+
+which is `pols_dis(1)` in the table (0.000073), so `claims_bu_rente(1) = 1,500 × 0.000073111651 =
+0.1096674758` → 0,11 €, and `claim_expenses(0) = 800 × 0.000073111651 = 0.0584893204`. The order
+matters and is testable: taking incidence first would give 0.000073362928, a 0,34 % difference in
+month 1 that compounds over 444 months. Note also what does **not** appear — the *Karenzzeit* is
+zero, so the first *BU-Rente* falls in the month **after** an onset and not six months after it;
+the six-month *Prognosezeitraum* is part of the definition of *Berufsunfähigkeit* and never
+defers a payment.
+
+*The § 174 run-off, three months wide.* The month-1 disabled cohort sits at duration `z = 1`, so
+its disabled-lives mortality carries the first claim year's select factor and its reactivation
+the first claim year's rate:
+
+    q^i_m(1,1) = 1 − (1 − 0.00140 × 3.0)^(1/12) = 0.000350675563
+    r_m(1)     = 1 − (1 − 0.250)^(1/12)         = 0.023688424223
+    pols_recovery(1) = 0.000073111651 × (1 − 0.000350675563) × 0.023688424223
+                     = 0.00000173129246
+
+and that is exactly `pols_runoff(2)` in the table (0.000002 displayed), because a claim that ends
+at the end of month 1 enters run-off slot 1 at the start of month 2 rather than returning to
+`pols_actv`. It is still paid: `claims_bu_rente(2) = 1,500 × (pols_dis(2) + pols_runoff(2)) =
+1,500 × (0.000144210608 + 0.000001731292) = 0.2189128510` → 0,22 €. Three months later the
+survivors complete the run-off and are paid the *Wiedereingliederungshilfe*:
+`claims_reintegration(4) = 6 × 1,500 × pols_runoff_slot(4,3) × (1 − q^a_m) = 0.0155802686` →
+0,02 €, the first non-zero cell in that column. A model that returned a recovery straight to the
+active ledger would show a zero column there and three missing monthly *Renten* per recovery.
+
+*Closure: the decrements sum to one.* Death and lapse are the only exits, so summing the two over
+all 444 months and adding the survivors must return the policy:
+
+    deaths    0.069864886996
+    lapses    0.536693205531
+    survivors 0.393441907473   ( = pols_if_at(443, "END") )
+    ----------------------------
+    total     1.000000000000
+
+Inception, recovery and reactivation are **absent from that identity**, and that is the point:
+they are transfers between the three ledgers, not exits, and a model that lists them there has
+already lost mass. Over the whole projection 6,99 % of the cohort dies, 53,67 % lapses and
+39,34 % survives to the *Endalter* with nothing payable — the lapse figure being large because
+2 % a year compounds over 37 years, not because German BU lapse is high.
+
+*The *Brutto* / *Zahl* ratio survives aggregation.* `Σ premiums / Σ (premiums − surplus_credit)
+= 24,771.0595905881 / 17,339.7417134117 = 1.428571428571429`, which is `1 / 0.70` to fifteen
+figures. It has to be, because `freq_load` scales the *Bruttobeitrag* and the
+*Beitragsverrechnung* together and `beitragsverrechnung` is constant — and a model that carried
+only one of the two premium streams would have no way to show it.
+
+**The *Beitragsdynamik* variant.** Model point 4 is the second premium form: `entry_age = 25`,
+`berufsgruppe = BG2` (`occ_factor` 1,40), `bu_rente_mth = 1 200,00 €`, `premium_form = dynamik`
+with `beitragsdyn_rate = 0,03`, and **annual** payment (`prem_mode_months = 12`,
+`freq_load = 1,00`). Everything else is the anchor's. Hence `proj_len() = 12 × (67 − 25) − 1 =
+503`, `BS_unit = Σ_{y=1..42} 1,03^(y−1) = 82.0231964511`, and the equivalence gives
+`P = 1 162,07 €` — the *Bruttobeitrag* of the **first** year, not of the contract.
+
+Two things this table shows that the anchor's cannot. **The premium falls in months 0, 12, 24, …
+and nowhere else**, the whole policy year's *Bruttobeitrag* in one instalment and with no
+*Ratenzahlungszuschlag* on it: in the eleven months between, `premiums` and `surplus_credit` are
+exactly zero while claims and the flat administration charge run on. That is why the grid is
+monthly and the frequency a parameter rather than a smoothing. And **the insured *BU-Rente* and
+the annual *Bruttobeitrag* escalate by exactly 1,03 on each policy anniversary and on nothing
+else**: `1,236.00 / 1,200.00 = 1.03` and `1,196.932758 / 1,162.070639 = 1.03` to fourteen
+figures, and both are flat within a policy year.
+
+| t | age | prem_gross_ann_pp | bu_rente_pp | pols_if | premiums | surplus_credit | claims_bu_rente | claims_reintegration | expenses | claim_expenses | net_cf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 25 | 1,162.07 | 1,200.00 | 1.000000 | 1,162.07 | 348.62 | 0.00 | 0.00 | 2,489.01 | 0.06 | −1,675.62 |
+| 1 | 25 | 1,162.07 | 1,200.00 | 0.996585 | 0.00 | 0.00 | 0.09 | 0.00 | 1.49 | 0.06 | −1.65 |
+| 11 | 25 | 1,162.07 | 1,200.00 | 0.963088 | 0.00 | 0.00 | 0.93 | 0.09 | 1.44 | 0.07 | −2.54 |
+| 12 | 26 | 1,196.93 | 1,236.00 | 0.959802 | 1,147.82 | 344.34 | 1.01 | 0.11 | 104.74 | 0.07 | 697.54 |
+| 13 | 26 | 1,196.93 | 1,236.00 | 0.956526 | 0.00 | 0.00 | 1.09 | 0.12 | 1.43 | 0.07 | −2.71 |
+| 24 | 27 | 1,232.84 | 1,273.08 | 0.921229 | 1,133.87 | 340.16 | 1.86 | 0.18 | 103.43 | 0.08 | 688.16 |
+| 60 | 30 | 1,347.16 | 1,391.13 | 0.840209 | 1,127.48 | 338.24 | 4.35 | 0.27 | 102.73 | 0.11 | 681.77 |
+| 120 | 35 | 1,561.73 | 1,612.70 | 0.758279 | 1,174.26 | 352.28 | 9.63 | 0.40 | 106.82 | 0.16 | 704.97 |
+| 240 | 45 | 2,098.83 | 2,167.33 | 0.615689 | 1,262.94 | 378.88 | 27.34 | 0.79 | 114.59 | 0.29 | 741.05 |
+| 360 | 55 | 2,820.65 | 2,912.71 | 0.494025 | 1,314.17 | 394.25 | 73.12 | 2.41 | 119.02 | 0.65 | 724.71 |
+| 480 | 65 | 3,790.72 | 3,914.45 | 0.379086 | 1,220.31 | 366.09 | 200.78 | 7.37 | 110.40 | 1.43 | 534.24 |
+| 503 | 66 | 3,904.44 | 4,031.88 | 0.355361 | 0.00 | 0.00 | 238.26 | 8.88 | 0.53 | 1.53 | −249.20 |
+| **Total** | | | | **312.698320** | **51,825.40** | **15,547.62** | **28,702.79** | **1,000.94** | **7,516.25** | **242.02** | **−1,184.22** |
+
+Again the **Total** row is the full-precision sum rounded; adding the 504 rounded cells gives
+premiums 51 825,44 €, *BU-Rente* 28 702,67 € and `net_cf` −1 184,20 €, and the largest
+single-column discrepancy is 12 cents. The month-0 acquisition charge is
+`0.025 × 1,162.0706385124 × 82.0231964511 = 2 382,92 €`, which is the whole of the 2 489,01 € in
+that row bar the 9 % proportional loading on the year's premium and one month of the flat charge:
+a 42-year escalating *Beitragssumme* is 82 times the first year's premium, not 42 times it, so
+the *Zillmerung* base grows with the escalation rate as well as with the term [R13] [REG-R16].
+
+**What the two options cost.** Model point 12 is the anchor with both escalations off —
+`leistungsdyn_rate = 0,00` and `wiedereingliederung_months = 0`, everything else identical — and
+its equivalence gives `P = 865,95 €` against the anchor's 1 013,07 €. The *Leistungsdynamik* and
+the *Wiedereingliederungshilfe* together are therefore worth **147,12 € p.a.**, 14,5 % of the
+anchor's *Bruttobeitrag*, and the split between them is not additive because both are paid out of
+the same claim population.
+
+**One thing was changed in these notes.** The disabled-lives mortality column of
+`mortality_table.csv` is shipped as **exactly 4,00 × the (nine-decimal) active column** rather
+than as the independently rounded `0,00140 × 1,095^(x−30)`. The two agree to nine decimals and
+the difference is immaterial to every figure above; what it buys is that
+`mort_rate_dis(t, z) / mort_rate(t)` is exactly `4.00 × s(z)` — 12,0 at claim duration 1 and 4,8
+ultimately — at every age, so pitfall 3 can be asserted as an exact identity instead of to a
+tolerance. The formula stated above is the construction of the active column; the disabled column
+is defined from it.
 
 ---
 

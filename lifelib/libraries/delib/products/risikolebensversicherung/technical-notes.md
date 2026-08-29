@@ -793,7 +793,215 @@ discounting of any published cash flow.
 euros; `pols_if` to six decimals; cash flows to the cent. The **Total** row is summed at full
 precision and then rounded, which can differ in the last cent from adding the displayed cells.
 
-<!-- WORKED EXAMPLE TABLE -- filled by the model stage from the model's own output -->
+| t | age | pols_if | prem_gross | premiums | prem_rebate | claims_death | expenses | commissions | net_cf |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 35 | 1.000000 | 1,275.41 | 733.01 | 542.40 | 183.24 | 271.57 | 637.71 | −359.51 |
+| 2 | 36 | 0.939408 | 1,198.13 | 688.60 | 509.54 | 188.49 | 107.06 | 6.89 | 386.16 |
+| 3 | 37 | 0.901210 | 1,149.41 | 660.60 | 488.82 | 198.01 | 104.37 | 6.61 | 351.61 |
+| 4 | 38 | 0.864508 | 1,102.60 | 633.69 | 468.91 | 214.42 | 101.76 | 6.34 | 311.18 |
+| 5 | 39 | 0.837880 | 1,068.64 | 614.18 | 454.47 | 227.56 | 100.24 | 6.14 | 280.24 |
+| 6 | 40 | 0.812008 | 1,035.64 | 595.21 | 440.43 | 241.48 | 98.74 | 5.95 | 249.03 |
+| 7 | 41 | 0.786867 | 1,003.58 | 576.78 | 426.80 | 256.23 | 97.27 | 5.77 | 217.51 |
+| 8 | 42 | 0.762432 | 972.41 | 558.87 | 413.54 | 271.86 | 95.81 | 5.59 | 185.60 |
+| 9 | 43 | 0.738680 | 942.12 | 541.46 | 400.66 | 288.42 | 94.38 | 5.41 | 153.25 |
+| 10 | 44 | 0.715587 | 912.67 | 524.53 | 388.13 | 305.94 | 92.96 | 5.25 | 120.39 |
+| 11 | 45 | 0.693130 | 884.03 | 508.07 | 375.95 | 324.49 | 91.56 | 5.08 | 86.94 |
+| 12 | 46 | 0.671287 | 856.17 | 492.06 | 364.11 | 344.12 | 90.17 | 4.92 | 52.85 |
+| 13 | 47 | 0.650036 | 829.06 | 476.48 | 352.58 | 364.89 | 88.79 | 4.76 | 18.04 |
+| 14 | 48 | 0.629355 | 802.69 | 461.32 | 341.36 | 386.84 | 87.43 | 4.61 | −17.56 |
+| 15 | 49 | 0.609224 | 777.01 | 446.57 | 330.44 | 410.04 | 86.09 | 4.47 | −54.02 |
+| 16 | 50 | 0.589621 | 752.01 | 432.20 | 319.81 | 434.55 | 84.75 | 4.32 | −91.42 |
+| 17 | 51 | 0.570527 | 727.66 | 418.20 | 309.45 | 460.42 | 83.42 | 4.18 | −129.82 |
+| 18 | 52 | 0.551923 | 703.93 | 404.57 | 299.36 | 487.72 | 82.10 | 4.05 | −169.30 |
+| 19 | 53 | 0.533788 | 680.80 | 391.27 | 289.53 | 516.51 | 80.78 | 3.91 | −209.93 |
+| 20 | 54 | 0.516105 | 658.25 | 378.31 | 279.94 | 546.84 | 79.47 | 3.78 | −251.78 |
+| 21 | 55 | 0.498853 | 636.24 | 365.67 | 270.58 | 578.77 | 78.17 | 3.66 | −294.93 |
+| 22 | 56 | 0.482016 | 614.77 | 353.32 | 261.45 | 612.36 | 76.86 | 3.53 | −339.44 |
+| 23 | 57 | 0.465576 | 593.80 | 341.27 | 252.53 | 647.67 | 75.56 | 3.41 | −385.37 |
+| 24 | 58 | 0.449515 | 573.32 | 329.50 | 243.82 | 684.73 | 74.25 | 3.29 | −432.78 |
+| 25 | 59 | 0.433815 | 553.29 | 317.99 | 235.30 | 723.59 | 72.94 | 3.18 | −481.72 |
+| **Total** | | | **21,303.65** | **12,243.75** | **9,059.91** | **9,899.20** | **2,396.51** | **752.81** | **−804.77** |
+
+`claims_lapse(t)` and `claims_maturity(t)` are 0.00 at every `t` and are omitted for width; both are
+required columns of `result_cf()` and `check_no_cash_value()` asserts them. `liability_cf(t) =
+−net_cf(t)` is omitted for the same reason — it is the last column with its sign turned over.
+
+The **Total** row is summed **at full precision, then rounded**, which is not the same as adding the
+twenty-five displayed cells: `prem_gross` 21 303,65 € against 21 303,64 €, `premiums` 12 243,75 €
+against 12 243,73 €, `claims_death` 9 899,20 € against 9 899,19 €, `expenses` 2 396,51 € against
+2 396,50 €, `net_cf` −804,77 € against −804,78 €. Only `prem_rebate` and `commissions` agree.
+**Assert the full-precision totals**; a test that adds the rounded rows tests the rounding.
+
+### Independent checks
+
+Three cells rebuilt a different way, and three closure identities. Every figure below is arithmetic a
+reader can follow with a calculator from the tagged assumptions above; none of it reads a cell of the
+model.
+
+***1. The premium engine, from the equivalence rather than the closed form.*** The equivalence is
+`G·ä = A + z·k·G + β·G·ä + γ·Γ`, and at `G = 1 275,411882 €` its two sides are
+
+    G·ä    = 1 275,411882 × 21,6374941 = 27 596,717080
+    A                                  = 23 472,374330
+    z·k·G  = 0,025 × 25 × 1 275,411882 =    797,132426
+    β·G·ä  = 0,05 × 27 596,717080      =  1 379,835854
+    γ·Γ    = 0,00030 × 6 491 248,23    =  1 947,374470   sum = 27 596,717080
+
+The *Beitragsverrechnungssatz* then follows from the *Zahlbeitrag* section's one-line identity
+**without forming `G` at all**: the risk share of the gross premium is
+`1 − 0,05 − 2 744,506896/27 596,717080 = 0,85054952`, so
+`v_d = 0,90 × (1,25/2,25) × 0,85054952 = 0,50 × 0,85054952 = 0,42527476`, the model's
+`beitragsverrechnung_rate()` to eight decimals, and
+`prem_paid_pp(1) = 0,57472476 × 1 275,411882 = 733,011403 €`. Two things follow. The surplus share
+and the margin fraction multiply to exactly one half, so on this calibration the *Zahlbeitrag* is
+"the *Bruttobeitrag* less half its risk element". And the derivation runs on `m`, `β`, `γ`, `z` and
+`k` and never touches the mortality **level** — which is why moving the level moves both premiums
+together and leaves the ratio nearly still.
+
+***2. Year 1, rebuilt from the table rate up.*** At attained age 35,
+`q₂(1) = 0,00040 × 1,095⁵ = 0,00040 × 1,57423874 = 0,00062969550`. Policy year 1 is inside the § 161
+window, so a claim pays `0,97 × 300 000 = 291 000 €`, giving
+`claims_death(1) = 291 000 × 1,000000 × 0,00062969550 = 183,241389` (table: 183.24). The expense
+line is four numbers and only one of them is large:
+
+    acquisition net of commission  (0,025 − 0,020) × 25 × 1 275,411882 = 159,426485
+    sum-related admin              0,00030 × 300 000 × 1,02⁰           =  90,000000
+    collection                     0,03 × 733,011403                   =  21,990342
+    claim expense                  250 × 0,00062969550                 =   0,157424   = 271,574251
+
+with `commissions(1) = 0,020 × 25 × 1 275,411882 = 637,705941 €` on its own line, and
+`733,011403 − 183,241389 − 271,574251 − 637,705941 = −359,510179 €`. **The year-one strain is the
+initial commission**: alone it is 87 % of the year's billed premium, which is why an early lapse
+hurts on a contract that pays nothing on lapse.
+
+***3. Year 3, rebuilt through two decrement steps***, reading nothing from the recursion:
+`l(2) = 1 × (1 − 0,00062969550) × (1 − 0,06) = 0,93940809`; `q₂(2) = 0,00040 × 1,095⁶ =
+0,00068951657`; `l(3) = 0,93940809 × (1 − 0,00068951657) × (1 − 0,04) = 0,90120993`, matching the
+table. With `q₂(3) = 0,00040 × 1,095⁷ = 0,00075502064` and the switch still on,
+`claims_death(3) = 291 000 × 0,90120993 × 0,00075502064 = 198,005742` (table: 198.01). Using the
+contractual 300 000 € here gives 204,13 € — a 3 % overstatement that runs for three years and then
+disappears, the kind of error a totals-only test misses.
+
+***Closure 1 — the decrements account for the whole policy.*** Over the twenty-five years: deaths
+**0,03305608**, lapses **0,53554078**, expiries **0,43140314**, total **1,00000000** =
+`pols_if_init()`, and `pols_if(26) = 0` exactly, which is what lets `result_cf()` stop at
+`proj_len()`. The split between the last two is what `w(25) = 0` decides — at the table's own 3 %
+they would read 0,54848 and 0,41846 — and **no cash flow moves either way**.
+
+***Closure 2 — the § 161 wedge is the only thing between claim events and claim amounts.*** Expected
+claim events at the contractual sum are `300 000 × 0,03305608 = 9 916,822736 €` against claims paid
+of `9 899,201951 €`. The difference is **17,620785 €**, which is exactly
+`0,03 × 300 000 × (0,00062969550 + 0,00064773744 + 0,00068043210) = 9 000 × 0,00195786504 =
+17,620785 €`, the deaths of policy years 1 to 3. So the *Selbsttötung* switch is the **only** thing
+standing between events and amounts on this cell — no lapse pays, no expiry pays, the schedule is
+flat. An implementation applying the switch to every year, or to a lapse, or over the wrong window
+breaks this while leaving every total plausible.
+
+***Closure 3 — the cash flow statement, which is `check_net_cf()`.*** At full precision,
+`12 243,747304 − 9 899,201951 − 2 396,505040 − 752,813300 = −804,772987 €`. Note which columns are
+**not** in it: `prem_gross` is the guaranteed stream and does not enter, and `prem_rebate` is the
+difference between the two premium columns and must not be subtracted again. That ambiguity is why
+delib requires `check_net_cf()` of every model.
+
+***And the reserve mechanic 11 says a naive implementation gets wrong.***
+`res_pp_at(1,"BEF_PREM") = −3,6e-12`, `res_pp_at(26,"BEF_PREM") = 0` exactly, and the interior peaks
+at **7 553,29 €** at `t = 16` — **2,52 % of the sum insured**. The Thiele step at the peak:
+`(7 553,290695 + 1 084,800958) × 1,01 = 8 724,472569` against
+`0,00414558817 × 300 000 + (1 − 0,00414558817) × 7 511,937517 = 8 724,472569`. The *gezillmerte*
+companion opens at `−797,132426 € = −z·k·G`: negative from the first day.
+
+***What the sign of the total means, and what it does not.*** `net_cf` sums to **−804,77 €** here
+and to **+4 158,46 €** on model point 2, the same cell with `sex = F`. Neither is a profit measure —
+the stream is undiscounted, the tariff was struck at 1,00 % on no-lapse survivorship, and no reserve
+is held against the later years — but the *difference* is the unisex cross-subsidy the law requires:
+the tariff prices a 50/50 blend, the declaration returns 90 % of the margin measured against that
+blend, and a male life then claims about a third more than the tariff's own best estimate while
+paying, to the cent, the same premium as a female one. The book average is positive; the anchor
+alone is not, and the model is meant to show that rather than hide it.
+
+### Variant — the declaration withdrawn (`decl_scale = 0`)
+
+The product's largest policyholder risk, and the one § 163 VVG does **not** govern. Selected rows of
+model point 1, with the **Total** row covering all twenty-five years:
+
+| t | age | pols_if | prem_gross | premiums | prem_rebate | claims_death | expenses | commissions | net_cf |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 35 | 1.000000 | 1,275.41 | 1,275.41 | 0.00 | 183.24 | 287.85 | 637.71 | 166.62 |
+| 2 | 36 | 0.939408 | 1,198.13 | 1,198.13 | 0.00 | 188.49 | 122.34 | 11.98 | 875.32 |
+| 3 | 37 | 0.901210 | 1,149.41 | 1,149.41 | 0.00 | 198.01 | 119.04 | 11.49 | 820.88 |
+| 13 | 47 | 0.650036 | 829.06 | 829.06 | 0.00 | 364.89 | 99.37 | 8.29 | 356.51 |
+| 24 | 58 | 0.449515 | 573.32 | 573.32 | 0.00 | 684.73 | 81.57 | 5.73 | −198.71 |
+| 25 | 59 | 0.433815 | 553.29 | 553.29 | 0.00 | 723.59 | 80.00 | 5.53 | −255.84 |
+| **Total** | | | **21,303.65** | **21,303.65** | **0.00** | **9,899.20** | **2,668.30** | **837.99** | **7,898.16** |
+
+`pols_if`, `claims_death` and `prem_gross` are **identical to the last bit** at every `t`. What moves
+is `premiums`, 12 243,75 € → 21 303,65 €, a **74,0 % increase in the customer's bill for no change
+whatever in cover**, and with it the two flows that scale with the billed premium: `expenses`
++271,80 € (collection at 3 %) and `commissions` +85,18 € (renewal at 1 %). `net_cf` goes from
+−804,77 € to +7 898,16 €. **No § 163 procedure, no *Treuhänder*, no right of objection**, because no
+guaranteed term has moved — and it is a one-Reference change. The stress runs with the
+premium-shock lapse module **off**, so the table shows the mechanical effect alone; switching
+`shock_lapse_lambda` on is what a stress of this shape should carry, and its omission is why the
+base run's `λ_s = 0` is stated rather than assumed.
+
+### Variant — the second premium form (`einmal`, model point 7)
+
+The same engine at `k = 1`: 50 M N, 100 000 € `konstant`, ten years' cover, a single
+*Einmalbeitrag*, annual mode, participating. With `ä = 1` exactly the equivalence collapses to
+`G = (A + γ·Γ)/(1 − β − z) = (5 895,894609 + 280,265049)/0,925 = 6 676,929360 €`, and
+`Gn = A/ä = A = 5 895,894609 €`; `v_d = 0,44151243`, so the customer pays 3 728,98 € once:
+
+| t | age | pols_if | prem_gross | premiums | prem_rebate | claims_death | expenses | commissions | net_cf |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 50 | 1.000000 | 6,676.93 | 3,728.98 | 2,947.95 | 238.29 | 175.87 | 133.54 | 3,181.28 |
+| 2 | 51 | 0.937691 | 0.00 | 0.00 | 0.00 | 244.67 | 29.32 | 0.00 | −274.00 |
+| 3 | 52 | 0.897762 | 0.00 | 0.00 | 0.00 | 256.51 | 28.68 | 0.00 | −285.19 |
+| 4 | 53 | 0.859312 | 0.00 | 0.00 | 0.00 | 277.16 | 28.05 | 0.00 | −305.21 |
+| 5 | 54 | 0.830845 | 0.00 | 0.00 | 0.00 | 293.44 | 27.71 | 0.00 | −321.15 |
+| 6 | 55 | 0.803073 | 0.00 | 0.00 | 0.00 | 310.58 | 27.38 | 0.00 | −337.95 |
+| 7 | 56 | 0.775968 | 0.00 | 0.00 | 0.00 | 328.60 | 27.04 | 0.00 | −355.64 |
+| 8 | 57 | 0.749502 | 0.00 | 0.00 | 0.00 | 347.55 | 26.70 | 0.00 | −374.24 |
+| 9 | 58 | 0.723645 | 0.00 | 0.00 | 0.00 | 367.44 | 26.35 | 0.00 | −393.79 |
+| 10 | 59 | 0.698372 | 0.00 | 0.00 | 0.00 | 388.29 | 26.01 | 0.00 | −414.30 |
+| **Total** | | | **6,676.93** | **3,728.98** | **2,947.95** | **3,052.53** | **423.11** | **133.54** | **119.80** |
+
+Only `net_cf` drifts against its rounded cells, by one cent (119,80 € against 119,81 €). Three things
+this form shows that the level form does not. **The shape inverts** — one large inflow then nine
+years of pure outgo, against a level-premium cell that is thin and positive early and thin and
+negative late. **The renewal commission and the collection cost stop with the premium**, so
+`commissions(t) = 0` from `t = 2` while `claims_death(t)` runs to expiry — the arrangement
+`check_prem_split()` also guards on model point 6, where an *abgekürzte Beitragszahlungsdauer* stops
+the premium at `t = 12` against twenty years of cover. **And `v_d` is higher, 0,44151243 against
+0,42527476**, because with one premium instead of twenty-five the Zillmer charge is 25 ‰ of a much
+smaller *Beitragssumme*, so the risk share of the gross premium is larger.
+
+The form is a **[std]** construction and no German standalone RLV in the corpus is written on it (the
+out-of-scope *Restschuldversicherung* is, and it is a different product sold a different way). It is
+here because it exercises the premium engine at `k = 1`, **not** as evidence of a market form.
+
+### What the model stage changed in these notes
+
+Six corrections, each made because the built model disagreed with a sentence written before it
+existed, and in each case the model was right. Nothing in the model was changed to fit a sentence.
+
+1. **Pitfall 1's ordering was inverted.** It asked for `prem_net_level_pp() < prem_paid_pp(1)/φ`; the
+   model gives 1 084,80 € against 733,01 €, the other way round, because `Gn` is struck on the
+   **loaded** first-order rate and 90 % of that loading comes back as *Beitragsverrechnung*.
+2. **`mort_rate_tar / mort_rate` is 1,6875 for a male and 3,375 for a female**, not 1,5 and 3,0: the
+   unisex blend of a proxy whose female rate is half the male one is `0,75 × q̃(M)`. Corrected in
+   *The two-order split* and in pitfall 7.
+3. **`result_cf()` publishes eleven columns**, `liability_cf` added: the conventions suite reads
+   `net_cf(t) = −liability_cf(t)` off the frame, so publishing the cells without the column fails.
+4. **The `decl_scale = 0` uplift is 74,0 %**, not "roughly 75 %".
+5. **The smoker premium ratio is 2,007** on the built model against the research file's 2,04, and the
+   *Bruttobeitrag* 1 275,41 € against that scale's 1 316 € — both because the research construction
+   used a zero *Rechnungszins* and the model uses the real 1,00 %. Both figures stand.
+6. **Pitfall 5's `res_zill_pp_at(1,"BEF_PREM") == −z·k·G` is a 1e-9 assertion**, not an exact one.
+
+The sensitivity the notes predicted before the model existed came out of it unaltered: moving `m`
+from 1,0 to 1,5 moves the *Bruttobeitrag* 1 146,33 € → 1 404,05 €, **+22,5 %**, and the
+*Zahlbeitrag* 711,63 € → 754,34 €, **+6,0 %** — mechanic 5's 23 % and 6 %, reproduced from the
+mechanic rather than assumed.
 
 ---
 
