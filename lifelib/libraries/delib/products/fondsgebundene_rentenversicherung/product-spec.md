@@ -148,10 +148,8 @@ because no carrier-level observation was available:
 | Minimum *Aufschubzeit* | 12 years, so the contract can reach the § 20 EStG twelve-year threshold | [R20] [REG-R45]; level **[std]** (4) |
 | Minimum premium | 25,00 EUR per month, or 5,000.00 EUR as an *Einmalbeitrag* | **[std]** (3) |
 | Age basis | Age last birthday at inception, stepping at each policy anniversary | **[std]** (5) |
-| Sex as a rating factor | **Not permitted.** Unisex tariffs are mandatory for contracts concluded from 21 December 2012 | [REG-R34] |
 | Fund range | One fund in the reference implementation; real tariffs offer 50–300 *Investmentfonds* and ETFs | one fund **[std]** (6); range `[unverified]` [S6] [S13] |
-| *Anteilspreis* basis | Units bought and cancelled at the fund's *Rücknahmepreis* (redemption price), the *Ausgabeaufschlag* waived in full | waiver **[std]** (7) |
-| *Bewertungsstichtag* | The month boundary; on a monthly grid the dealing-lag convention disappears | **[std]** (7) |
+| *Anteilspreis* and *Bewertungsstichtag* | Units bought and cancelled at the fund's *Rücknahmepreis* (redemption price), the *Ausgabeaufschlag* waived in full, at the month boundary — on a monthly grid the dealing-lag convention disappears | **[std]** (7) |
 | Anchor model cell | Entry age 37, *Rentenbeginn* 67, monthly *Beitrag* 200,00 €, premium term 30 years, *Beitragsrückgewähr*, no options | **[std]** (8) |
 
 Footnotes to **[std]** rows:
@@ -207,7 +205,6 @@ Footnotes to **[std]** rows:
 | *Zuzahlung* | Additional single premium into an existing contract, minimum 500,00 EUR, subject to its own acquisition charge; raises the *Beitragssumme* | mechanic [S6]; minimum and maximum `[unverified]`; **[std]** (12) |
 | Premium cessation | On death, on *Storno*, on *Beitragsfreistellung* and at *Rentenbeginn* | [S1] [R3] [REG-R28] |
 | Non-payment path | *Mahnung* and, on continued default, conversion to a *beitragsfreie Versicherung* rather than termination, because the contract has a positive value from the first month | [R3] [REG-R28]; treatment **[std]** (13) |
-| Premium holiday | Not a separate mechanic; the contract is made *beitragsfrei* and reactivated | mechanic [S6]; `[unverified]` |
 
 9. Premiums in advance is the German norm and the only convention under which the
    *Beitragsverrechnung* below makes sense: the deductions are taken from a premium that has
@@ -249,8 +246,6 @@ Footnotes to **[std]** rows:
 | *Todesfallleistung* before *Rentenbeginn* | `max(Fondsguthaben, Summe der gezahlten Beiträge)` — the *Beitragsrückgewähr* form | [S2] |
 | Alternative death-benefit shapes | (i) *Fondsguthaben* alone; (ii) 100/105/110 % of the *Fondsguthaben*; (iii) a *garantierte Mindesttodesfallleistung* fixed at issue | (i)–(iii) mechanic [S1]; percentages `[unverified]`; all four carried as a model-point parameter |
 | *Risikobeitrag* | Levied monthly by cancelling units, on the *riskiertes Kapital* = `max(Todesfallleistung − Fondsguthaben, 0)`, priced on a **death** table | mechanic [S1]; basis DAV 2008 T [R17] [REG-R48]; level **[std]** |
-| Death after *Rentenbeginn* | Governed by the *Rentengarantiezeit* and any *Beitragsrückgewähr im Rentenbezug*; out of scope — delib `sofortrente` | [S1] |
-| Survival to *Rentenbeginn* without election | The annuity begins automatically; the *Kapitalwahlrecht* must be exercised | [S1]; `[unverified]` |
 | *Überschussbeteiligung* | Arises from the *Risikoergebnis* and the *übrige Ergebnis* only; credited as additional units, as a charge reduction or as a *Schlussüberschuss* | [R5] [R14] [REG-R9] [REG-R18]; **not projected** (16) |
 
 14. **This is the single most consequential [std] in the document, and it is derived rather than
@@ -295,7 +290,6 @@ Footnotes to **[std]** rows:
 | Mortality basis for the death charge | **DAV 2008 T**, first order — a death-benefit table, *not* the annuity table | [R17] [REG-R48] (17) |
 | Mortality basis for the *Rentenfaktor* | **DAV 2004 R**, generational, first order | [R16] [S10] [REG-R49] (17) |
 | Best-estimate basis | The second-order versions of the same tables; the wedge between first and second order **is** the *Risikoergebnis* | [REG-R47]; levels **[std]** (18) |
-| *Anzeigepflicht* / misstatement | §§ 19 and 157 VVG apply in the ordinary way; on a *Beitragsrückgewähr* design the remedy is immaterial because the sum at risk is small | [REG-R30]; immateriality **[std]** |
 
 17. **A German FRV carries two mortality bases at once**, and this is where they meet. The
     direction of prudence forks — a death cover is loaded by assuming mortality **higher** than
@@ -378,9 +372,7 @@ financing problem the *Höchstzillmersatz* and the five-year spread exist to reg
 | Protection for the policyholder | Sits **earlier**, in the *Beitragsverrechnung*: because the acquisition charge may only be taken over the first five years, units are bought from the first month and the value is positive from the start | [R1] [REG-R28] (20) |
 | *Beitragsfreistellung* | Premiums stop, units stay, premium-based charges stop with the premium, fund-based charges and the *Risikobeitrag* continue by unit cancellation — so the contract **decays** | [R3] [REG-R28] |
 | *Widerruf* | 30 days for a life contract; the amount repayable is tied to the **unit value at the date of cancellation**, so it is not a full premium refund after a market fall | [R6] [REG-R23]; rule `[unverified]`; **not projected** |
-| Expiry | There is none. The contract does not lapse at a term; it converts at *Rentenbeginn* | [S1] |
 | *Teilentnahme* | A partial withdrawal during the *Aufschubzeit*, subject to a minimum and to a minimum remaining *Fondsguthaben* | mechanic [S6]; levels `[unverified]`; **[std]** |
-| Unclaimed benefits, prescription | Ordinary VVG and BGB rules; not modelled | [REG-R22] |
 
 19. **Many unit-linked tariffs have no *Stornoabzug* at all**, precisely because § 169 Abs. 5
     VVG makes a deduction for unamortised acquisition costs ineffective and puts the burden of
@@ -708,14 +700,14 @@ bounds.
 | Distribution model | commission tariff, direct writer, *Nettotarif* / *Honorartarif* | commission tariff, with a *Nettotarif* charge variant on the same chassis | [S10] [S13] [S18] |
 
 **The one dimension worth isolating.** A *Nettotarif* is the same unit-linked contract with the
-*Abschluss- und Vertriebskosten* removed from the tariff, the adviser being paid a fee by the
-client under a separate *Vergütungsvereinbarung* [S18]. It matters here for one modelling
-reason: **the difference between a gross tariff's reduction in yield and the same chassis's net
-reduction in yield *is* the acquisition-cost load** — the single parameter this specification
-most needs and that no document in the corpus supplies. **No net-tariff or gross-tariff figure
-is established**; the observation that the gap exists is structural, not numeric. It is carried
-as a charge variant in the shipped tables precisely so a reader can read the difference off the
-model instead of looking for it in a document that was not retrieved.
+*Abschluss- und Vertriebskosten* removed from the tariff, the adviser being paid a fee under a
+separate *Vergütungsvereinbarung* [S18]. It matters for one modelling reason: **the difference
+between a gross tariff's reduction in yield and the same chassis's net reduction in yield *is*
+the acquisition-cost load** — the single parameter this specification most needs and that no
+document in the corpus supplies. **No net-tariff or gross-tariff figure is established**; the
+observation that the gap exists is structural, not numeric. It is carried as a charge variant in
+the shipped tables so that a reader can read the difference off the model instead of looking for
+it in a document that was not retrieved.
 
 ---
 
@@ -765,20 +757,19 @@ indicator**; the **possible maximum loss** of invested capital; **four performan
 the **costs the investor bears**; and complaint information — the scenarios and the costs shown at
 **three time points**, after one year, after half the recommended holding period and at the end of
 it, with the cost disclosure split into **one-off and ongoing costs** and the ***Reduction in
-Yield* per year** stated [R9] [REG-R32]. For an FRV the recommended holding period is the
-*Aufschubzeit*, so those points are typically year 1, year 15 and year 30. **No actual
-*Basisinformationsblatt* for a fondsgebundene Rentenversicherung was located**, so **no scenario
+Yield* per year** stated [R9] [REG-R32]. For an FRV those points are typically year 1, year 15 and
+year 30. **No actual *Basisinformationsblatt* for this product was located**, so **no scenario
 return, no cost figure and no reduction-in-yield value in this document comes from one**. The
-categorisation matters and is `[unverified]`: a pure unit-linked contract's scenarios come from
-the funds' own return history, a guarantee-bearing or profit-participating one from the DAV's
-standard method for **PRIIP Kategorie 4** [R18] — which is why two documents for economically
-similar products can show very different scenario returns, and why this specification cites **no**
-scenario return. Alongside PRIIPs, § 2 VVG-InfoV requires the *Abschluss- und Vertriebskosten*
-included in the premium to be disclosed **in euro**, the other costs separately, and a
-***Modellrechnung***; **how many assumed rates it prescribes for a fondsgebundene contract, and at
-what levels, was not pinned down** [R7] [REG-R25] [REG-R31]. The IDD-derived *Zuwendungen* rules
-govern whether a *Kickback* may be retained [R15] [REG-R33], and BaFin's *Merkblatt 01/2023 (VA)*
-supplies the German *Value for Money* regime described in the overview [R10] [REG-R35].
+categorisation matters and is `[unverified]`: a pure unit-linked contract's scenarios come from the
+funds' own return history, a guarantee-bearing one from the DAV's standard method for **PRIIP
+Kategorie 4** [R18] — which is why two documents for economically similar products can show very
+different scenario returns, and why this specification cites **no** scenario return. Alongside
+PRIIPs, § 2 VVG-InfoV requires the *Abschluss- und Vertriebskosten* included in the premium to be
+disclosed **in euro**, the other costs separately, and a ***Modellrechnung***; **how many assumed
+rates it prescribes for a fondsgebundene contract, and at what levels, was not pinned down** [R7]
+[REG-R25] [REG-R31]. The IDD-derived *Zuwendungen* rules govern whether a *Kickback* may be
+retained [R15] [REG-R33], and BaFin's *Merkblatt 01/2023 (VA)* supplies the German *Value for
+Money* regime described in the overview [R10] [REG-R35].
 
 **Taxation, and why it drives behaviour.** Three regimes meet on this contract, and the
 differences between them are the product's commercial argument and its strongest behavioural

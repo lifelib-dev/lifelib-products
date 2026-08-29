@@ -55,17 +55,16 @@ this one too, **subject to** three AltZertG overrides. Those three overrides are
 
 1. **Money comes in from the state, as a contribution rather than a benefit** [R8] [R9]. The
    *Zulage* is paid by the *Zentrale Zulagenstelle für Altersvermögen* (ZfA) **to the provider**,
-   credited to the contract, counted in the guarantee, invested, and taxed at the end like any
-   other contribution [R11]. It never reaches the saver's bank account.
-2. **A guarantee is compulsory.** The provider must undertake that at the beginning of the payout
-   phase **at least the sum of the *Altersvorsorgebeiträge* paid in** — the saver's own
-   contributions **plus** the Zulagen credited — is available for the benefit [R1] [REG-R43]. A
-   contract without it cannot be certified, and without certification there is no subsidy, so the
-   *Beitragsgarantie* is not a competitive feature a provider may drop: it is the entry ticket.
+   credited to the contract, counted in the guarantee, invested, and taxed at the end like any other
+   contribution [R11]. It never reaches the saver's bank account.
+2. **A guarantee is compulsory**: at the beginning of the payout phase **at least the sum of the
+   *Altersvorsorgebeiträge* paid in** — own contributions **plus** Zulagen credited — must be
+   available for the benefit [R1] [REG-R43]. A contract without it cannot be certified and without
+   certification there is no subsidy, so the *Beitragsgarantie* is not a feature a provider may
+   drop: it is the entry ticket.
 3. **The exit is closed.** Surrender is permitted by contract law and punished by tax law: a
-   *schädliche Verwendung* triggers repayment of **all Zulagen credited and all § 10a tax
-   reductions granted**, and the investment return on the subsidised part becomes taxable [R14]
-   [REG-R42].
+   *schädliche Verwendung* triggers repayment of **all Zulagen credited and all § 10a tax reductions
+   granted**, and the return on the subsidised part becomes taxable [R14] [REG-R42].
 
 In the *Alterseinkünftegesetz* taxonomy [R18] [REG-R38] this is **Schicht 2** — subsidised
 supplementary provision, relieved on the way in and taxed **in full** on the way out under
@@ -152,9 +151,7 @@ nothing carrier-specific was established (gap 12). Amounts in prose use German n
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Design type | Single-life **klassische Riester-Rentenversicherung**: deferred general-account annuity, certified as an *Altersvorsorgevertrag*, participating (*Überschussbeteiligung*) | [R1] [R2] [S2] [REG-R43] |
-| Legal wrapper | Individual insurance contract under the VVG; certification is an administrative act on the **tariff**, not on the policy | [R2] [S15] [REG-R22] [REG-R43] |
-| Layer | **Schicht 2** — *Zusatzversorgung*, relieved in, taxed in full out | [R12] [R18] [REG-R38] |
+| Design type and wrapper | Single-life **klassische Riester-Rentenversicherung**: a deferred general-account annuity, participating (*Überschussbeteiligung*), written as an individual insurance contract under the VVG and certified as an *Altersvorsorgevertrag* — certification being an administrative act on the **tariff**, not on the policy. Layer: **Schicht 2**, relieved in and taxed in full out | [R1] [R2] [R12] [R18] [S2] [S15] [REG-R22] [REG-R38] [REG-R43] |
 | Eligibility (a saver attribute, not a policy attribute) | *unmittelbar zulageberechtigt* — compulsorily insured in the *gesetzliche Rentenversicherung*, *Beamte* and equivalent office-holders, farmers, *Arbeitslosengeld* recipients, parents in *Kindererziehungszeiten*, full *Erwerbsminderungs-* and *Dienstunfähigkeitsrentner*, and *geringfügig Beschäftigte* who waived the exemption. *mittelbar* — the spouse of an eligible person, holding an **own** certified contract and paying the *Sockelbeitrag* | [R7] [R10] [R20] [REG-R42] `[unverified]` |
 | Not eligible | The self-employed outside compulsory insurance, and members of the *berufsständische Versorgungswerke* — who are directed to the **Basisrente** instead. The two subsidised products are **complements addressed to different people, not competitors** | [R7] [REG-R42] |
 | Entry ages | 16 to the low sixties in practice; no statutory ceiling, but the accumulation must end at or after the earliest payout age | envelope **[std]** (1) |
@@ -162,8 +159,7 @@ nothing carrier-specific was established (gap 12). Amounts in prose use German n
 | Representative *Rentenbeginn* | Attained age **67**, at or near the statutory retirement age | **[std]** (2) |
 | Sex as a rating factor | **Prohibited.** Riester contracts have been **unisex** since **1 January 2006** — six years before *Test-Achats* reached the general German market on 21 December 2012 | [R1] [R23] [REG-R34] `[unverified]` on the 2006 date |
 | Lives basis | Single life. A survivor's benefit is a rider, not a second life in the base design | [R1] [S16] |
-| Benefit form | **Lifelong** *Leibrente* with **constant or rising** monthly payments. A falling annuity is not certifiable; nor is a pure drawdown with no lifelong element | [R1] [REG-R43] |
-| Alternative payout topology | *Auszahlungsplan* with *Restverrentung* from at the latest the **85th** year of life — the fund and bank chassis's form, **not implemented here** | [R1] [REG-R43] `[unverified]` |
+| Benefit form | **Lifelong** *Leibrente* with **constant or rising** monthly payments — a falling annuity is not certifiable, nor is a pure drawdown with no lifelong element. The alternative topology, an *Auszahlungsplan* with *Restverrentung* from at the latest the **85th** year of life, is the fund and bank chassis's form and is **not implemented here** | [R1] [REG-R43] `[unverified]` on the age |
 | New business | **Closed from 1 January 2027**; in-force contracts grandfathered | [REG-R44] |
 | Anchor model cell | In force at 1 January 2027: female, entry age 47 in 2024, attained age 50, duration 3, *Rentenbeginn* 67, *Rechnungszins* 0,25 %, one child born 2010, full *Mindesteigenbeitrag*, 30 % *Teilkapitalauszahlung*, 10-year *Rentengarantiezeit* | **[std]** (3) |
 
@@ -194,14 +190,12 @@ subtracted from it.**
 | Parameter | Representative value | Basis |
 |---|---|---|
 | *Mindesteigenbeitrag* | `min(4 % × previous calendar year's beitragspflichtige Einnahmen, 2 100 €) − Zulagenanspruch`, floored at the *Sockelbeitrag* | [R10] [REG-R42] `[unverified]` on all three inputs |
-| Percentage | **4 %**, from contribution year 2008. Phased in at 1 % (2002–03), 2 % (2004–05), 3 % (2006–07) | [R10] [R17] `[unverified]` |
-| Cap on the base | **2 100 €** — the same ceiling as the § 10a *Sonderausgabenabzug*, and **not raised since 2008** | [R6] [R10] [REG-R42] `[unverified]` |
-| *Sockelbeitrag* | **60 €** per year | [R10] [REG-R42] `[unverified]` |
+| Percentage | **4 %**, from contribution year 2008; phased in at 1 % (2002–03), 2 % (2004–05), 3 % (2006–07) | [R10] [R17] `[unverified]` |
+| Cap on the base; floor on the result | **2 100 €**, the same ceiling as the § 10a *Sonderausgabenabzug* and **not raised since 2008**; *Sockelbeitrag* **60 €** per year | [R6] [R10] [REG-R42] `[unverified]` |
 | Reference income | The **previous** calendar year's — so the entitlement for contribution year `t` is a function of income in `t − 1` | [R10] [REG-R42] |
 | Under-payment | **Proportional, not a cliff.** Pay half the *Mindesteigenbeitrag* and receive **half** the Zulagen | [R10] [REG-R42] |
 | Contribution form (model-point parameter) | (i) `mindest` — the § 86 amount recomputed every year; (ii) `fixed` — a level contractual contribution the saver chose, varied at will | (i) [R10]; (ii) practice [unverified]; both **[std]** (4) |
-| Payment frequency | Annual, half-yearly, quarterly or monthly, normally by SEPA direct debit | practice [unverified]; loading **[std]** (5) |
-| Fractionation loading | Annual 1.0000; half-yearly 1.0100; quarterly 1.0200; monthly 1.0300 | **[std]** (5) |
+| Payment frequency and its loading | Annual, half-yearly, quarterly or monthly, normally by SEPA direct debit; fractionation loading 1.0000 / 1.0100 / 1.0200 / 1.0300 | practice [unverified]; loading **[std]** (5) |
 | Contribution movements | Three are routine and all three must be representable: an increase restoring the *Mindesteigenbeitrag* after a pay rise; a reduction to the *Sockelbeitrag*; and a complete stop (*Beitragsfreistellung*) | [R10] [R14] [REG-R28] |
 | Unsubsidised contributions | Money paid **above** the § 10a ceiling, or in a year of ineligibility, may be paid into the same contract. It enters the account **and the guarantee**, draws **no** Zulage, and is taxed on the *Ertragsanteil* rather than in full | [R12] [REG-R41] |
 
@@ -248,13 +242,10 @@ reference library's own second-hand entry [REG-R42], which reports the same figu
 
 | Component | Amount per year | From | Condition |
 |---|---|---|---|
-| *Grundzulage* | **175.00** | contribution year 2018 | one per eligible saver, own contract |
-| *Grundzulage*, previous level | 154.00 | 2008–2017 | raised by the *Betriebsrentenstärkungsgesetz* [R21] |
-| *Grundzulage*, phase-in | 38.00 / 76.00 / 114.00 | 2002–03 / 2004–05 / 2006–07 | [R17] |
+| *Grundzulage* | **175.00** (154.00 in 2008–2017; phased in at 38.00 / 76.00 / 114.00 over 2002–07) | contribution year 2018 | one per eligible saver, own contract; raised by [R21], phased in by [R17] |
 | *Berufseinsteiger-Bonus* | **200.00**, **once in a lifetime** | contribution year 2008 | *unmittelbar* eligible, 25th year of life not completed at the start of the contribution year, first year a Zulage is claimed |
-| *Kinderzulage*, child born **before** 1 Jan 2008 | **185.00** | 2008 | per child, while *Kindergeld* is drawn |
+| *Kinderzulage*, child born **before** 1 Jan 2008 | **185.00** (phased in at 46.00 / 92.00 / 138.00) | 2008 | per child, while *Kindergeld* is drawn |
 | *Kinderzulage*, child born **from** 1 Jan 2008 | **300.00** | 2008 | per child, while *Kindergeld* is drawn |
-| *Kinderzulage*, phase-in | 46.00 / 92.00 / 138.00 | 2002–03 / 2004–05 / 2006–07 | [R17] |
 
 **The two *Kinderzulage* rates are a permanent birth-cohort split, not a transition** [R9] [R19]:
 a household with a child born in 2006 and one born in 2009 draws 185,00 € and 300,00 €
@@ -284,20 +275,15 @@ payment month nor the reversal frequency is established (gap 6).
 | Guarantee carve-out | Contributions securing *Erwerbsminderung*, *Berufsunfähigkeit* or *Hinterbliebene* are left out of account, up to **20 % of total contributions** | [REG-R43] |
 | What the guarantee is **not** | Not a value at any other date; not a floor on the surrender value; not preserved in real terms; not a guarantee of the *annuity*, only of the *capital*; and not extended to the rider premiums | [R1]; see *Contractual mechanics* |
 | Conversion capital | `max( Deckungskapital + Überschussguthaben + Schlussüberschussanteil + Bewertungsreserven-Anteil , Σ Eigenbeiträge + Σ Zulagen − carve-out )` | [R1]; which surplus components count **[std]** (6) |
-| *Teilkapitalauszahlung* | Up to **30 %** of the capital available at the start of the payout phase, as a lump sum, **without** *schädliche Verwendung*. The remainder must be annuitised | [R1] [REG-R43] `[unverified]` on the percentage |
-| Representative election | **30 %** taken | **[std]** (7) |
+| *Teilkapitalauszahlung* | Up to **30 %** of the capital available at the start of the payout phase, **without** *schädliche Verwendung*; the remainder must be annuitised. Representative election **30 % taken** | [R1] [REG-R43] `[unverified]` on the percentage; election **[std]** (7) |
 | Annuity | Lifelong monthly *Leibrente*, paid **monthly in advance**, constant or rising | [R1]; monthly-in-advance `[unverified]` |
-| Conversion basis | The **guaranteed *Rentenfaktor*** struck at inception is compared at *Rentenbeginn* with the carrier's then-current factor, and the **higher** applies | construction documented for the German Schicht-3 market in a sibling `delib` file; **not established for any Riester tariff** — **[std]** (8), gap 9 |
-| *Rentenfaktor* definition | Euros of **monthly** annuity per **10 000 €** of capital converted | [REG-R43-adjacent market usage]; level **[std]** (8) |
-| Mortality basis for the annuity | The German annuitant table family — **DAV 2004 R**, generational, in its unisex application. **Proprietary, not public, not redistributed here** | [R21-adjacent]; [REG-R47] [REG-R49]; proxy **[std]** (9) |
-| *Rentengarantiezeit* | Permitted and common; compatible with the "constant or rising" requirement, and the *förderunschädliche* route for an early death in payment | [R1] [R14] |
-| Representative *Rentengarantiezeit* | **10 years** | **[std]** (10) |
-| Surplus in payment | Permitted, but the AltZertG's **constant-or-rising** requirement constrains which surplus system a Riester contract may use: a system whose declared component can be reduced would make the total annuity fall | [R1]; legal reading `[unverified]` |
-| Representative surplus in payment | **None in the base run** — a constant annuity | **[std]** (10) |
+| Conversion basis | The **guaranteed *Rentenfaktor*** struck at inception — euros of **monthly** annuity per **10 000 €** of capital converted — is compared at *Rentenbeginn* with the carrier's then-current factor, and the **higher** applies | construction documented for the German Schicht-3 market in a sibling `delib` file; **not established for any Riester tariff** — **[std]** (8), gap 9 |
+| Mortality basis for the annuity | The German annuitant table family — **DAV 2004 R**, generational, in its unisex application. **Proprietary, not public, not redistributed here** | [REG-R47] [REG-R49]; proxy **[std]** (9) |
+| *Rentengarantiezeit* | Permitted and common; compatible with the constant-or-rising requirement, and the *förderunschädliche* route for an early death in payment. Representative length **10 years** | [R1] [R14]; length **[std]** (10) |
+| Surplus in payment | Permitted, but the constant-or-rising requirement constrains which surplus system a Riester contract may use: a system whose declared component can be reduced would make the total annuity fall. Base run **none** — a constant annuity | [R1]; legal reading `[unverified]`; base run **[std]** (10) |
 | Death before *Rentenbeginn* | The accumulated capital. Transfer to a **surviving spouse's own certified contract** is *förderunschädlich*; payment to any other heir is *schädlich* and the *Rückzahlungsbetrag* is deducted before payment | [R14]; benefit design `[unverified]`; **[std]** (11) |
 | Death after *Rentenbeginn* | Continuation to a spouse under a survivor's option, or payments for the remainder of a *Rentengarantiezeit*. A lump-sum death benefit outside those forms is **not certifiable** | [R1] [R14] |
-| *Kleinbetragsrente* | Where the monthly annuity would not exceed a percentage of the *monatliche Bezugsgröße* of § 18 SGB IV, the provider may commute the whole capital to a lump sum **without** *schädliche Verwendung*, taxed under the *Fünftelregelung* of § 34 EStG since 2018 | [R15] [R21] [REG-R42] |
-| *Kleinbetragsrente* threshold | **1 % of the monthly Bezugsgröße — 39,55 € per month on a 2026 figure of 3 955 €**. A competing account gives **1,5 % from June 2026 — 59,33 €**. They cannot both be right | [REG-R42] [REG-R46] `[unverified]`; choice **[std]** (12), gap 7 |
+| *Kleinbetragsrente* | Where the monthly annuity would not exceed a percentage of the *monatliche Bezugsgröße* of § 18 SGB IV the provider may commute the whole capital to a lump sum **without** *schädliche Verwendung*, taxed under the *Fünftelregelung* since 2018. Threshold **1 % — 39,55 € per month** on a 2026 *Bezugsgröße* of 3 955 €; a competing account gives **1,5 % from June 2026 — 59,33 €**, and they cannot both be right | [R15] [R21] [REG-R42] [REG-R46] `[unverified]`; choice **[std]** (12), gap 7 |
 
 6. **Which surplus components may be counted toward satisfying the *Beitragsgarantie* was not
    established for any Riester tariff** (gap 9), and in particular whether a
@@ -346,13 +332,10 @@ payment month nor the reversal frequency is established (gap 6).
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Health evidence for the savings contract | **None.** A deferred annuity with a death benefit equal to the accumulated capital carries no positive sum at risk, so there is nothing to underwrite | design consequence; **[std]** |
-| Health evidence for a rider | A *Berufsunfähigkeits-Zusatzversicherung* or a survivor's benefit is separately underwritten on the rider's own basis | [REG-R29]; rider inventory not established (gap 11) |
+| Health evidence | **None for the savings contract** — a deferred annuity whose death benefit is the accumulated capital carries no positive sum at risk, so there is nothing to underwrite. A *Berufsunfähigkeits-Zusatzversicherung* or survivor's benefit is separately underwritten on the rider's own basis | design consequence **[std]**; [REG-R29]; rider inventory not established (gap 11) |
 | Rating factors | **Entry age and *Rentenbeginn* only.** Sex may not be used [R23] [REG-R34]; smoker status, occupation and health do not enter a savings tariff | [R1] [R23] |
-| Eligibility check | Performed by the **ZfA**, not by the insurer: the provider transmits contribution data and the ZfA determines entitlement against the pension insurance's earnings data | [R11] |
-| Consequence of losing eligibility | **Nothing happens to the contract.** Contributions may continue, but they are **unsubsidised** and fall into the second tax pool | [R7] [R12] |
-| *Rechnungszins* | Chosen by the carrier at or below the *Höchstrechnungszins* in force at conclusion: **0,25 %** from 1 January 2022, **1,00 %** from 1 January 2025 | [R22] [REG-R14] [REG-R15]; carrier's own choice not established (gap 12) |
-| Representative *Rechnungszins* | **0,25 %** for the anchor (a 2024-vintage tariff) | **[std]** (13) |
+| Eligibility check | Performed by the **ZfA**, not by the insurer: the provider transmits contribution data and the ZfA determines entitlement against the pension insurance's earnings data. Losing eligibility does nothing to the contract — contributions may continue, **unsubsidised**, into the second tax pool | [R7] [R11] [R12] |
+| *Rechnungszins* | Chosen by the carrier at or below the *Höchstrechnungszins* in force at conclusion: **0,25 %** from 1 January 2022, **1,00 %** from 1 January 2025. Representative value **0,25 %** for the anchor, a 2024-vintage tariff | [R22] [REG-R14] [REG-R15]; carrier's choice not established (gap 12); representative value **[std]** (13) |
 
 13. The *Höchstrechnungszins* is a **cap on the reserving rate**, not the rate a policy guarantees
     [REG-R14] — a tariff may guarantee less. Nothing was established about any carrier's own
@@ -371,11 +354,9 @@ specimen, not a Riester one [S5]. **Every charge below is [std].**
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Acquisition and distribution costs | Must be **spread over at least five years** — the statutory cap on *Zillmerung* aimed at this product specifically, and materially tighter than anything the VVG imposes on a Schicht-3 contract | [R1] [REG-R43] `[unverified]` on the period |
-| *Höchstzillmersatz* | **25 ‰** of the *Beitragssumme* under § 4 DeckRV since 1 January 2015 | [REG-R16] |
-| Representative acquisition charge | **2,5 % of the *Beitragssumme*, levied in five equal instalments in contract years 1 to 5** | **[std]** (14) |
-| Administration charge on contributions | **4,0 %** of each contribution credited | **[std]** (14) |
-| Fixed policy fee | **12,00 € per year**, deducted from the *Sparbeitrag* while contributions are paid and from the *Deckungskapital* while the contract is *beitragsfrei* | **[std]** (14) |
+| Acquisition and distribution costs | Must be **spread over at least five years** — the statutory cap on *Zillmerung* aimed at this product specifically, and materially tighter than anything the VVG imposes on a Schicht-3 contract. The *Höchstzillmersatz* is **25 ‰** of the *Beitragssumme* under § 4 DeckRV since 1 January 2015 | [R1] [REG-R16] [REG-R43] `[unverified]` on the period |
+| Representative acquisition charge | **2,5 % of the *Beitragssumme*, in five equal instalments in contract years 1 to 5** | **[std]** (14) |
+| Administration charge | **4,0 %** of each contribution credited, plus a fixed policy fee of **12,00 € per year** taken from the *Sparbeitrag* while contributions are paid and from the *Deckungskapital* while the contract is *beitragsfrei* | **[std]** (14) |
 | Charge base for the **Zulagen** | The Zulagen are charged **on the same basis as the *Eigenbeitrag*** | **[std]** (15), gap 14 |
 | *Risikobeitrag* | **Zero.** The death benefit is the account value, so the sum at risk is nil by construction | design consequence; **[std]** (16) |
 | Payout-phase loading | Carried **inside the *Rentenfaktor*** as a margin of **30 %** on the actuarially fair factor, not as a separate deduction from each annuity payment | **[std]** (17) |
@@ -418,8 +399,7 @@ specimen, not a Riester one [S5]. **Every charge below is [std].**
 | ***Anbieterwechsel*** | A **statutory** right: terminate and have the accumulated capital transferred directly to another certified contract. **Not** a *schädliche Verwendung*, no tax consequence | [R1] [R14] [REG-R43] |
 | Notice period and transfer-charge cap | Stated as a period to a quarter end, with the ceding provider's charge capped at a fixed euro amount — **neither established** (gap 8) | [R1] [R20] `[unverified]` |
 | ***Kündigung*** with payment of the *Rückkaufswert* | Permitted by the VVG and punished by the EStG: the saver receives the surrender value **less** the *Rückzahlungsbetrag* — **all** Zulagen credited and **all** § 10a relief granted — and the growth on the subsidised part becomes taxable | [R14] [REG-R28] [REG-R42] |
-| *Rückkaufswert* floor | § 169 VVG floors the surrender value at the *Deckungskapital* computed with acquisition and distribution costs spread evenly over the **first five contract years** | [REG-R28] |
-| Interaction worth naming | The AltZertG's own five-year spreading [R1] means the § 169 VVG floor is **satisfied by construction** on a certified contract: the statutory product rule has already done what the contract-law rule would have had to force | [R1] [REG-R28] |
+| *Rückkaufswert* floor | § 169 VVG floors the surrender value at the *Deckungskapital* computed with acquisition and distribution costs spread evenly over the **first five contract years** — which the AltZertG's own five-year spreading [R1] already produces, so on a certified contract the § 169 floor is **satisfied by construction** | [R1] [REG-R28] |
 | Early-duration reality | The surrender value can be, and in the early years of a charged contract usually **is**, **below** the contributions paid. The *Beitragsgarantie* does not floor it — it is tested **once**, at *Rentenbeginn* | [R1] |
 | *Versorgungsausgleich* on divorce | Internal or external division, transfer to the other spouse's certified contract, *förderunschädlich* | [R14] `[unverified]` |
 | Wohn-Riester withdrawal | An *Altersvorsorge-Eigenheimbetrag* is *förderunschädlich* and, from the insurer's side, an early and complete exit terminating the annuity liability. **Not implemented** | [R13] [R19] |
@@ -432,34 +412,31 @@ specimen, not a Riester one [S5]. **Every charge below is [std].**
 
 Each subsection states an operative rule and what it does to the projection.
 
-### Eligibility is annual, and it is an attribute of the saver
+### Eligibility, the *Mindesteigenbeitrag* and the proportional Kürzung
 
-A saver can be *unmittelbar* eligible in one year, *mittelbar* in the next and not eligible at all
-in a third, **without the contract changing** [R7]. Nothing happens to the policy when eligibility
-lapses: contributions may continue, they are simply unsubsidised, and they move into the second tax
-pool [R12]. The rule that decides the whole subsidy stream is therefore a property of the
+**Eligibility is annual and is an attribute of the saver.** A saver can be *unmittelbar* eligible in
+one year, *mittelbar* in the next and not eligible at all in a third, **without the contract
+changing** [R7]; contributions may continue, they are simply unsubsidised, and they move into the
+second tax pool [R12]. The rule that decides the whole subsidy stream is therefore a property of the
 **person**, not of the contract, and one the insurer does not itself observe — the ZfA does [R11].
-The reference implementation carries eligibility as a per-period flag on an external schedule,
-**[std]** default "*unmittelbar* eligible throughout", with a dedicated model point exercising a
-mid-term lapse.
+The reference implementation carries it as a per-period flag on an external schedule, **[std]**
+default "*unmittelbar* eligible throughout", with a dedicated model point exercising a mid-term
+lapse.
 
-### The *Mindesteigenbeitrag*, and the proportional Kürzung
-
-The operative rule [R10] [REG-R42], written as the model implements it:
+The contribution rule [R10] [REG-R42], written as the model implements it:
 
     mindesteigenbeitrag(t) = max( 60 € ,
                                   min( 4 % × income(t − 1), 2 100 € ) − zulage_entitlement(t) )
     eigenbeitrag(t)        = contrib_ratio × mindesteigenbeitrag(t)
     zulage_granted(t)      = zulage_entitlement(t) × min( 1, contrib_ratio )
 
-Three features of the statute drive behaviour and each is a distinct way to get the model wrong.
-The base is the **previous** calendar year's contribution-liable earnings, so the entitlement for
-contribution year `t` looks back one year. The **Zulage is subtracted** from the base, so a larger
-subsidy reduces the saver's own payment rather than increasing what the contract receives. And the
-sanction for under-payment is **proportional, not a cliff**: the Zulage is reduced in the ratio of
-the contribution actually paid to the *Mindesteigenbeitrag*, so an implementation that treats the
-minimum as all-or-nothing produces a discontinuity that does not exist in the statute — and the
-German book is full of the paths that discontinuity would misprice [R10] [REG-R42].
+Three features of the statute drive behaviour and each is a distinct way to get the model wrong. The
+base is the **previous** calendar year's contribution-liable earnings. The **Zulage is subtracted**
+from it, so a larger subsidy reduces the saver's own payment rather than increasing what the
+contract receives. And the sanction for under-payment is **proportional, not a cliff** — an
+implementation that treats the minimum as all-or-nothing produces a discontinuity that does not
+exist in the statute, and the German book is full of the paths that discontinuity would misprice
+[R10] [REG-R42].
 
 ### The one-year Zulage lag, and the second lag behind it
 
@@ -469,8 +446,8 @@ contribution year `t` arrives from the ZfA in `t + 1` [R11] [REG-R42]. The refer
 carries both explicitly: `income_ref(t) = income(t − 1)` for the entitlement, and
 `zulage_credited(t) = zulage_granted(t − 1)` for the cash. The **[std]** one-year cash lag has a
 stated rationale — [R11] establishes that the ZfA pays the provider and that the application
-deadline runs to the end of the **second** calendar year after the contribution year, but not
-**when in the following year** the money arrives (gap 6).
+deadline runs to the end of the **second** calendar year after the contribution year, but not **when
+in the following year** the money arrives (gap 6).
 
 One consequence is load-bearing and is a numbered pitfall: **the Zulage for the final contribution
 year arrives after contributions have stopped**, landing in the conversion year itself, where it
@@ -513,25 +490,21 @@ insurer bears out of its own funds**, and it is the product's signature output. 
 which the guarantee never binds on any model point has demonstrated nothing, which is why the model
 point table carries a low-declared-rate cell on which it bites.
 
-**Six things the guarantee is not**, each of them load-bearing:
-
-- **Not a value at any other date.** It is tested **once**. Before *Rentenbeginn* the surrender
-  value can be, and in the early years usually is, below the contributions paid.
-- **Not a floor on surrender.** A saver who terminates for cash gets the *Rückkaufswert*, which the
-  guarantee does not floor, **and** loses the subsidy [R14].
-- **Not preserved on transfer.** A saver exercising the *Wechselrecht* transfers the capital as it
-  stands; whether the guarantee survives is a design question of the **receiving** contract and is
-  **not established** (gap 8). If the receiving contract's guarantee runs only on the transferred
-  sum rather than on the original contributions, the *Wechselrecht* is materially less valuable
-  than it appears, and this library cannot say which is right.
-- **Not real.** It is **nominal**. Over a thirty-year contract at even moderate inflation the floor
-  is worth a fraction of the contributions in real terms — the substance of the most serious
-  criticism of the product's design.
-- **Not a guarantee of the annuity.** It is on the **capital**; what that capital buys is a
-  separate guarantee, the *garantierter Rentenfaktor*, and the two are routinely conflated.
-- **Not extended to the risk-cover premiums**, within the statutory 20 % share [R1] [REG-R43] —
-  which is why a Riester contract can carry a *Berufsunfähigkeits-Zusatzversicherung* without the
-  guarantee reproducing its premiums, and why raising a rider premium must never enlarge it.
+**Six things the guarantee is not**, each of them load-bearing. **Not a value at any other date** —
+it is tested once, and before *Rentenbeginn* the surrender value can be, and in the early years
+usually is, below the contributions paid. **Not a floor on surrender**: a saver who terminates for
+cash gets the *Rückkaufswert*, which the guarantee does not floor, **and** loses the subsidy [R14].
+**Not preserved on transfer** — whether the guarantee survives a *Wechsel* is a design question of
+the **receiving** contract and is **not established** (gap 8); if the receiving contract's guarantee
+runs only on the transferred sum rather than on the original contributions the *Wechselrecht* is
+materially less valuable than it appears, and this library cannot say which is right. **Not real**:
+it is nominal, and over thirty years at even moderate inflation the floor is worth a fraction of the
+contributions in real terms, which is the substance of the most serious criticism of the design.
+**Not a guarantee of the annuity** — it is on the **capital**, and what that capital buys is a
+separate guarantee, the *garantierter Rentenfaktor*, with which it is routinely conflated. And **not
+extended to the risk-cover premiums**, within the statutory 20 % share [R1] [REG-R43], which is why
+a Riester contract can carry a *Berufsunfähigkeits-Zusatzversicherung* without the guarantee
+reproducing its premiums, and why raising a rider premium must never enlarge it.
 
 ### Why the guarantee is the mechanical heart
 
