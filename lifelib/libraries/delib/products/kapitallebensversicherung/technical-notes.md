@@ -28,11 +28,11 @@ are English `lower_snake_case`; German terms of art keep their German form in pr
   contract's *Deckungskapital* — the amount that should be held — not the balance-sheet quantity of
   § 341f HGB [REG-R54]. No *Zinszusatzreserve* [REG-R17], no RfB stock [REG-R10] [REG-R19], no MindZV
   allocation [R6] [REG-R18], no P&L, no Solvency II technical provision, risk margin, SCR or MCR
-  [REG-R1] [REG-R2] [REG-R6]. No *Beteiligung an den Bewertungsreserven* in the base run — the
-  parameter exists and is zero [R1] [R8]. No tax: delib publishes gross benefits, and the tax rules
-  enter only as design constraints. No premium-default path, §§ 37 and 38 VVG never having been
-  researched (gap 20); no supervisory write-down under § 222 or § 314 VAG [REG-R12]; no
-  *Zusatzversicherungen*, *Kapitalwahlrecht*, *Dynamik* or *Beleihung*.
+  [REG-R1] [REG-R2] [REG-R6]. No *Beteiligung an den Bewertungsreserven* in the base run — the parameter
+  exists and is zero [R1] [R8]. No tax: delib publishes gross benefits and the tax rules enter only as
+  design constraints. No premium-default path, §§ 37 and 38 VVG never having been researched (gap 20);
+  no § 222 or § 314 VAG write-down [REG-R12]; no *Zusatzversicherungen*, *Kapitalwahlrecht*, *Dynamik*
+  or *Beleihung*.
 - **Projection frequency.** **Annual grid**, which is the contract's own operative clock: the surplus
   is declared once a year and allocated at the *Bilanzstichtag* [S9], the *Rückkaufswert* is struck at
   the end of the current *Versicherungsperiode* [R2], the *beitragsfreie Versicherungssumme* is
@@ -61,10 +61,10 @@ are English `lower_snake_case`; German terms of art keep their German form in pr
   timing shift of up to one year in the surplus credit, stated rather than hidden.
 - **Age basis.** Age last birthday at issue, stepping at the policy anniversary **[std]** — no located
   German endowment wording states one (`product-spec.md`, footnote 6).
-- **Unisex pricing is a hard constraint.** `sex` is carried and drives the **decrement** lookup, but
+- **Unisex pricing is a hard constraint.** `sex` is carried and drives the **decrement** lookup but
   **must not enter the premium**: § 20 Abs. 2 Satz 1 AGG was repealed and new business has been unisex
-  since 21 December 2012 [REG-R34]. The pricing basis is a fixed portfolio blend, and letting `sex`
-  leak into `prem_gross_pp` reproduces a tariff unlawful in Germany since 2012 (pitfall 17).
+  since 21 December 2012 [REG-R34]. The pricing basis is a fixed portfolio blend; letting `sex` leak
+  into `prem_gross_pp` reproduces a tariff unlawful in Germany since 2012 (pitfall 17).
 - **No account value in the unit-linked sense.** The house vocabulary's `prem_to_av_pp` has **no
   counterpart here** and is not published: a *Beitrag* funds the *Deckungskapital* through the tariff,
   not a policyholder account, and the only true account is the *Überschussguthaben*, which receives
@@ -313,8 +313,8 @@ row per `cost_id`, because the difference between them **is** the *Kostenübersc
 placeholders sized so the first-year acquisition outgo — 300 EUR plus 2,5 % of the *Beitragssumme* —
 modestly exceeds what the *Zillmerung* recovers, so the anchor carries the new-business strain a real
 German endowment carries. **The *Effektivkosten* they produce is a validation target, not an input**:
-reproducing one needs the PRIIPs Annex VI algorithm and a specified holding period, neither of which
-delib implements [R9] [R19] [REG-R31] [REG-R32].
+reproducing one needs the PRIIPs Annex VI algorithm and a holding period, neither of which delib
+implements [R9] [R19] [REG-R31] [REG-R32].
 
 **Suicide share `suicide_share` = 0.02 [std].** § 161 VVG substitutes the *Rückkaufswert* for the sum
 insured on the suicide sub-cause of death in the first three policy years [R4] [REG-R26]. No source
@@ -393,9 +393,7 @@ prem_net_level_pp = pv_benefit_1st / ann_due_prem_1st
 prem_zill_pp      = prem_net_level_pp + alpha_cost / ann_due_prem_1st
 ```
 
-**Single premium.** `prem_term = 1` gives `ann_due_prem_1st = 1`, `BS = B`, and a *Beitragssumme*
-equal to the single premium — so the 25 ‰ *Zillmersatz* buys almost nothing and the § 169 floor is
-slack from the first anniversary. That is the correct answer, not a degenerate case.
+**Single premium.** `prem_term = 1` gives `ann_due_prem_1st = 1` and `BS = B`, so the 25 ‰ *Zillmersatz* buys almost nothing and the § 169 floor is slack from the first anniversary. That is the correct answer, not a degenerate case.
 
 ### The Deckungskapital
 
@@ -551,8 +549,7 @@ flow, and are therefore kept out of `result_cf()`.
 
 ### Published identities
 
-Nine `check_*()` cells, each taking no argument, returning a `bool` over all `t` and carrying a per-`t`
-residual at `check_*_resid(t)`. The conventions suite calls every one on every model point.
+Nine `check_*()` cells, each taking no argument, returning a `bool` over all `t` and carrying a per-`t` residual at `check_*_resid(t)`. The conventions suite calls every one on every model point.
 
 | Identity | What it asserts |
 |---|---|
@@ -832,13 +829,7 @@ The valuation layers consume them and are **cited, never reproduced**.
   **[std]** [REG-R2]. Under **IFRS 17** this is the archetypal direct-participating contract, measured
   under the variable fee approach on this same fulfilment-cash-flow engine; grouping, CSM and risk
   adjustment are out of scope [REG-R55].
-- **The guarantee is an option.** A guaranteed sum insured plus a guaranteed *Rechnungszins* is a
-  written put on the *Sicherungsvermögen*, and the deterministic path above prices none of it; a
-  stochastic-on-deterministic run is what a time-value-of-options-and-guarantees calculation consumes.
-  The outer boundary is the *Sicherungsfonds*: a fund-level 5 % haircut under § 222 VAG and an
-  uncapped reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit the
-  *Rückkauf*** [REG-R12]. **A mass-surrender run here produces the values the contract owes, not the
-  ones that would be paid if § 314 were in force.**
+- **The guarantee is an option.** A guaranteed sum insured plus a guaranteed *Rechnungszins* is a written put on the *Sicherungsvermögen*, and the deterministic path above prices none of it; a stochastic-on-deterministic run is what a time-value-of-options-and-guarantees calculation consumes. The outer boundary is the *Sicherungsfonds*: a fund-level 5 % haircut under § 222 VAG and an uncapped reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit the *Rückkauf*** [REG-R12]. **A mass-surrender run here produces the values the contract owes, not the ones that would be paid if § 314 were in force.**
 
 ---
 
