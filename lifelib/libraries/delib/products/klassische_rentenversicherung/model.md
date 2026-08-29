@@ -47,9 +47,8 @@ cells names, and `model.Data.doc` says what each input file is and, for the thre
 what it is *not*.
 
 `t` counts **policy years**, 1-based, and `proj_len() = omega_age() − issue_age` is the
-**last** projected year: 71 on the anchor cell, running to attained age 120. A life annuity
-has no term, so the horizon is the age at which the annuitant cannot survive further rather
-than a fixed number of years.
+**last** projected year — 71 on the anchor cell, running to attained age 120. A life annuity
+has no term, so the horizon is the age at which the annuitant cannot survive further.
 
 ## The declared rate contains the guarantee — the German delta
 
@@ -105,10 +104,6 @@ conversion capital moves by −0,8 %. The vintage error is a **misallocation bet
 accounts**, not a hole in the total — which is exactly why it survives a reasonableness
 check on the headline figure and has to be caught by construction instead.
 
-The same reading is what makes `calendar_year(t) = issue_year + t − 1` load-bearing: one
-generational mortality surface and one declared-rate path serve a book of mixed vintages
-because every model point brings its own calendar.
-
 ## The within-year order, which no source fixes
 
 Premium in advance, then the charges, then the *Rechnungszins* on what is left:
@@ -163,10 +158,10 @@ binding at `t = 5`. The alternative reading, in which the floor also carries the
 duration.
 
 The *Stornoabzug* is a **flat percentage of the pre-deduction value with no duration term**,
-which is the shape § 169 Abs. 5 allows: a deduction is permitted only if agreed, quantified
-and appropriate, and one in respect of not-yet-amortised *Abschluss- und Vertriebskosten* is
-void [R1]. A duration-graded deduction unwinding over the first years would be exactly the
-void kind. Whatever it is set to, `cv_pp` cannot fall below `cv_floor_pp`.
+the shape § 169 Abs. 5 allows: a deduction is permitted only if agreed, quantified and
+appropriate, and one for not-yet-amortised *Abschluss- und Vertriebskosten* is void [R1] — a
+duration-graded deduction unwinding over the first years would be exactly the void kind.
+Whatever it is set to, `cv_pp` cannot fall below `cv_floor_pp`.
 
 ## *Beitragsfreistellung* is an election, not a decrement
 
@@ -188,15 +183,15 @@ and both are exercised:
   through the surrender decrement.
 
 `pup_uplift(t)` is booked in the **transition** year `t = pup_year − 1`, weighted by
-`pols_if(pup_year)`, because that is the row whose roll-forward needs it. It is real money —
-28,39 € on point 7 — and publishing it is what lets `check_av_roll_fwd()` close at that `t`.
+`pols_if(pup_year)`, because that is the row whose roll-forward needs it; it is real money —
+28,39 € on point 7 — and publishing it is what lets `check_av_roll_fwd()` close there.
 
-A *Beitragsfreistellung* is **not** a lapse. The paid-up contract keeps its guarantee
-vintage and its guaranteed *Rentenfaktor* and pays a reduced benefit; the surrendered one is
-gone for cash. On point 7 the conversion itself moves no policy: `pols_lapse(9)` is the
-ordinary duration-9 table rate of 3,5 %, not 1. What is **not** true is that surrender
-ceases — a *beitragsfrei* contract keeps its § 168 VVG *Kündigung* right, so `claims_lapse`
-stays positive after `pup_year`, 764,12 € at `t = 10`.
+A *Beitragsfreistellung* is **not** a lapse: the paid-up contract keeps its guarantee vintage
+and its guaranteed *Rentenfaktor* and pays a reduced benefit, while the surrendered one is
+gone for cash. On point 7 the conversion itself moves no policy — `pols_lapse(9)` is the
+ordinary duration-9 table rate of 3,5 %, not 1. What is **not** true is that surrender ceases:
+a *beitragsfrei* contract keeps its § 168 VVG *Kündigung* right, so `claims_lapse` stays
+positive after `pup_year`, 764,12 € at `t = 10`.
 
 ## The *Rentenbeginn*: three things at one instant
 
@@ -212,12 +207,11 @@ annuity_guar_mth_pp = capital_conv_pp / 10 000 × annuity_rate_appl
 On the anchor cell that is `max(0,00; 58 788,98 + 881,83) = 59 670,82 €` converted at
 `max(28,00; 32,00) = 32,00` into a *garantierte Rente* of 190,9466 € a month.
 
-The applied factor is a **written option on the insurer's own future annuity tariff**, and
-the deterministic path does not price it. Both branches ship: the current factor wins on the
-anchor cell, and the guarantee binds on point 13, whose `guar_capital_pp` floor of
-60 000,00 € binds at the same time over a `low` *Rentenfaktor* scenario. A model applying
-the guaranteed factor alone understates the anchor cell's annuity by 12,5 %, the annuity
-scaling linearly in `f`.
+The applied factor is a **written option on the insurer's own future annuity tariff**, and the
+deterministic path does not price it. Both branches ship: the current factor wins on the anchor
+cell, and on point 13 the guarantee binds over a `low` scenario while its `guar_capital_pp`
+floor of 60 000,00 € binds at the same time. A model applying the guaranteed factor alone
+understates the anchor's annuity by 12,5 %, the annuity scaling linearly in `f`.
 
 `val_reserve_pp` is the *Bewertungsreserven* crystallisation, which § 153 Abs. 3 VVG makes
 *hälftig* and for which the transition to annuity payment is a key point [S4] [R4]; the
@@ -242,9 +236,9 @@ year's outgo is 862,65 € and not the 798,21 € a survivor weighting would giv
 year more, in each of the ten guaranteed years.
 
 `check_annuity_guarantee()` states the identity as
-`pols_annuity(t) = max(pols_if(t), 1{n < t ≤ n+m} × pols_annuitization(n))`, which holds
-because `pols_if(t) ≤ pols_annuitization(n)` throughout the payout phase. Stating it that
-way is what makes the check independent of the definition it is checking.
+`pols_annuity(t) = max(pols_if(t), 1{n < t ≤ n+m} × pols_annuitization(n))`, which holds because
+`pols_if(t) ≤ pols_annuitization(n)` throughout the payout phase — and stating it that way is
+what makes the check independent of the definition it checks.
 
 ## No death benefit after the *Rentenbeginn*
 
@@ -252,11 +246,10 @@ way is what makes the check independent of the definition it is checking.
 Rentenbezugsphase* — the refund of premiums less instalments received on death after the
 *Rentenbeginn* — **was not established by any source in this product's corpus** and is
 therefore not asserted. What the corpus does establish for post-*Rentenbeginn* death is the
-*Rentengarantiezeit*, which is modelled, and the survivor's-annuity rider, which is a
-separate GDV condition set [S10] and is off.
-
-Deaths still *happen* in the payout phase: they move `pols_if`, they end the annuity outside
-the guarantee window, and they carry an `expense_claim_pp` settlement cost. They pay no benefit.
+*Rentengarantiezeit*, which is modelled, and the survivor's-annuity rider, a separate GDV
+condition set [S10] which is off. Deaths still *happen* in the payout phase: they move
+`pols_if`, they end the annuity outside the guarantee window, and they carry an
+`expense_claim_pp` settlement cost. They pay no benefit.
 
 ## Inputs are external files
 
@@ -265,22 +258,11 @@ folder. `RV_DE_A/` holds nothing but formulas:
 
 ```
 products/klassische_rentenversicherung/
-  model_point_table.csv        <- inputs live here
-  mort_table.csv
-  decl_rate_table.csv
-  rentenfaktor_table.csv
-  charge_table.csv
-  lapse_table.csv
-  freq_load_table.csv
-  param_table.csv
-  run.py
-  model.md
-  product-spec.md              <- the documents this model implements
-  technical-notes.md
-  sources.md
+  model_point_table.csv  mort_table.csv  decl_rate_table.csv   <- inputs live here,
+  rentenfaktor_table.csv  charge_table.csv  lapse_table.csv       beside run.py and
+  freq_load_table.csv  param_table.csv  run.py                    the four documents
   RV_DE_A/                     <- formulas only
-    __init__.py                   (model docstring)
-    _system.json
+    __init__.py  _system.json     (model docstring)
     Data/__init__.py              (reads the CSVs, once per model)
     Projection/__init__.py        (the by-policy projection)
 ```
@@ -312,19 +294,17 @@ it works wherever the repository is checked out.
 | `freq_load_file` | `freq_load_table()` | `freq_load_table.csv` | The *Ratenzahlungszuschlag*: 1,000 / 1,020 / 1,030 / 1,050 **[std]**, and `n_instalments` for documentation |
 | `param_file` | `param_table()` | `param_table.csv` | Every scalar that is neither a charge nor a rate table — the four expense levels and their inflation, `mort_be_factor`, `mort_base_year`, `omega_age`, `val_reserve_rate`, the three *Überschussrente* parameters and `roll_fwd_tol`. They live in a file rather than in References so that each carries its own provenance tag, which a Reference cannot |
 
-**The trade-off:** the model is not portable on its own. Copy `RV_DE_A/` without the CSVs and
-it will read fine, then fail on first evaluation. What you gain is that a diff of the model
-shows logic changes only, and an input can be swapped in place — point `Data.mort_file` at
-another same-schema file and the projection follows, with no formula change.
-
-Every file but the model point table carries a per-row `provenance` column, this library's
-second ruling: an assumption says on its own row where it came from, and the conventions
-suite checks it.
+**The trade-off:** the model is not portable on its own — copy `RV_DE_A/` without the CSVs and
+it reads fine, then fails on first evaluation. What you gain is that a diff of the model shows
+logic changes only, and an input can be swapped in place: point `Data.mort_file` at another
+same-schema file and the projection follows, with no formula change. Every file but the model
+point table carries a per-row `provenance` column, this library's second ruling — an
+assumption says on its own row where it came from, and the conventions suite checks it.
 
 ## The published identities
 
-Nine `check_*` cells travel with the model. Each takes no argument and returns a `bool` over
-all `t`; each has a per-`t` companion `check_*_resid(t)`.
+Nine `check_*` cells travel with the model, each returning a `bool` over all `t` beside a
+per-`t` residual `check_*_resid(t)`.
 
 **`check_net_cf()` — delib's first ruling, the identity in one line:**
 
@@ -364,27 +344,24 @@ number ever stop being the same arithmetic, which is the failure it exists to ca
 Not implemented at all, and named here rather than left to be discovered: no *Bonusrente*
 ledger; no *Zuzahlung* (gap 15); no survivor's-annuity or BU rider [S10]; no § 163 VVG
 adjustment of the guaranteed *Rentenfaktor*, recorded as a model risk instead [R3] [R17]; no
-dynamic surrender, because the surrendering policyholder forfeits a guaranteed *Rentenfaktor*
-struck on old bases and a rate-gap formula does not capture that; no premium-default path,
-although § 166 VVG makes German lapse a three-way decrement in reality; no
-*Wiederinkraftsetzung*; no continuing *Bewertungsreserven* participation in the payout phase;
-and **no tax**, so the *Ertragsanteil* [R5] and the *Halbeinkünfteverfahren* under the 12/62
-rule [R6] appear in the documents and not in the model.
+dynamic surrender, because the surrenderer forfeits a guaranteed *Rentenfaktor* struck on old
+bases and a rate-gap formula does not capture that; no premium-default path, although § 166 VVG
+makes German lapse a three-way decrement in reality; no *Wiederinkraftsetzung*; no continuing
+*Bewertungsreserven* participation in the payout phase; and **no tax**, so the *Ertragsanteil*
+[R5] and the *Halbeinkünfteverfahren* [R6] appear in the documents and not in the model.
 
 ## Sign convention
 
-`net_cf` is **income positive** — premiums in, benefits, annuity instalments and expenses
-out — which is the notes' own orientation and the library-wide sign. `liability_cf`
-publishes the same stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both
-are columns of `result_cf()` so the identity is verifiable in the frame rather than only in
-prose. A Solvency II best estimate is `Σ v(t) × liability_cf(t)` over the relevant risk-free
-term structure, plus a risk margin [REG-R1] [REG-R4]; nothing in this library discounts.
+`net_cf` is **income positive** — premiums in, benefits, annuity instalments and expenses out —
+which is the notes' own orientation and the library-wide sign. `liability_cf` publishes the same
+stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are columns of
+`result_cf()` so the identity is verifiable in the frame. A Solvency II best estimate is
+`Σ v(t) × liability_cf(t)` plus a risk margin [REG-R1] [REG-R4]; nothing here discounts.
 
 `av`, `av_sur`, `prem_to_av`, `int_credited` and `bonus_credited` are **state movements
-reported, not cash flows summed**: the *Sparbeitrag* and the two credits move money inside
-the contract and never cross the boundary. The six that do are `premiums`, the three
-`claims_*`, `annuity_payments` and `expenses`, and those six are exactly what
-`check_net_cf()` reconciles.
+reported, not cash flows summed**: they move money inside the contract and never cross the
+boundary. The six that do are `premiums`, the three `claims_*`, `annuity_payments` and
+`expenses` — exactly what `check_net_cf()` reconciles.
 
 ## Naming
 
@@ -402,17 +379,16 @@ symbols; the full mapping lives in the `Projection` Space docstring. Four cases 
 | `V(t)`, `A(t)` | `av_pp` / `av_sur_pp` | Two accounts, not one balance split in two. The *Deckungskapital* carries the guarantee and is credited at `int_rate_guar()`; the *Ansammlungsguthaben* is the *verzinsliche Ansammlung* side account, credited at `decl_rate(t)` on its own balance plus `bonus_rate(t)` on the *Deckungskapital*'s post-premium base. Each has its own roll-forward check |
 | `l(t)`, `a(t)` | `pols_if` / `pols_annuity` | They differ inside the *Rentengarantiezeit* and nowhere else. `pols_if(t)` is the start-of-year count and the weight on every accumulation-phase cash flow of the same row; `pols_annuity(t)` is the count the instalment is *paid on* |
 
-**The chassis this model shares.** `KLV_DE_A`
-(`products/kapitallebensversicherung`) is the same *Überschussbeteiligung* and
-*Deckungskapital* machinery with a maturity benefit where this one has a conversion, and it
-is the primary home of the four-component surplus decomposition. `Sofort_DE_S`
-(`products/sofortrente`) is this model's payout phase as a product in its own right — which
-is why an immediate-annuity document is direct evidence for a deferred contract's conversion
-basis [S13] [S16]. `Index_DE_A` and `FRV_DE_S` replace the crediting mechanic and keep the
-conversion. Names that mean the same thing across all of them: `model_point`, `proj_len`,
-`age`, `calendar_year`, `pols_if`, `pols_if_at`, `pols_death`, `pols_lapse`, `mort_rate`,
-`lapse_rate`, `prem_pp`, `premiums`, `av_pp`, `av_pp_at`, `prem_to_av_pp`, `claims`,
-`expenses`, `net_cf`, `liability_cf`, `result_cf`.
+**The chassis this model shares.** `KLV_DE_A` (`products/kapitallebensversicherung`) is the
+same *Überschussbeteiligung* and *Deckungskapital* machinery with a maturity benefit where
+this one has a conversion, and is the primary home of the four-component surplus split.
+`Sofort_DE_S` (`products/sofortrente`) is this model's payout phase as a product in its own
+right — which is why an immediate-annuity document is direct evidence for a deferred
+contract's conversion basis [S13] [S16]. `Index_DE_A` and `FRV_DE_S` replace the crediting
+mechanic and keep the conversion. Names that mean the same thing across all of them:
+`model_point`, `proj_len`, `age`, `calendar_year`, `pols_if`, `pols_if_at`, `pols_death`,
+`pols_lapse`, `mort_rate`, `lapse_rate`, `prem_pp`, `premiums`, `av_pp`, `av_pp_at`,
+`prem_to_av_pp`, `claims`, `expenses`, `net_cf`, `liability_cf`, `result_cf`.
 
 ## Standardizations used
 
@@ -421,8 +397,7 @@ vary, are proprietary, or are silent. Nothing in it is a market figure.
 
 | [std] | Value | Rationale |
 |---|---|---|
-| Mortality proxy | Gompertz `q_base(M, 50) = 0.002000 × 1.09^(age−50)`, female `0.001300`, terminal `q = 1` at 120 | DAV 2004 R is DAV property and is not redistributable [R12] [R13]. The proxy keeps the **generational** structure, which is the part that matters, and none of the values |
-| Mortality improvement | 1,5 % a year below age 60, grading to 0,5 % at 100 and zero at 110 | A deliberate simplification of the *Starttrend* / *Zieltrend* construction, documented as one rather than presented as a replication |
+| Mortality proxy | Gompertz `q_base(M, 50) = 0.002000 × 1.09^(age−50)`, female `0.001300`, terminal `q = 1` at 120; improvement 1,5 % a year below age 60 grading to 0,5 % at 100 and zero at 110 | DAV 2004 R is DAV property and is not redistributable [R12] [R13]. The proxy keeps the **generational** structure, which is the part that matters, and none of the values; the improvement shape is a deliberate simplification of the *Starttrend* / *Zieltrend* construction, documented as one rather than presented as a replication |
 | `mort_be_factor` | 1.15, **above one on purpose** | For an annuity, prudence means assuming mortality *lower* than expected, so the first-order table sits below best estimate. Only the level margin is reproduced; the real one runs in level and trend |
 | *Rentenfaktor* paths | `base` 32,00 € at age 67, `low` 25,50 €, `high` 35,00 €, +2,5 % per year of age | **No market level was established at any carrier for any year** (gap 3). The anchors are chosen so both branches of `max(garantierter, aktueller)` are exercised by the shipped points |
 | Declared rate paths | `base` 2,55 %, `low` 1,50 %, level | Inside the only public pair the library has for 2025; a market average, not a carrier's declaration, and a scenario rather than a forecast (gap 4) |
@@ -440,36 +415,33 @@ vary, are proprietary, or are silent. Nothing in it is a market figure.
 | Within-year order and charge incidence | premium, then charges, then interest; `γ` and `ρ` on start-of-year balances; charges from the premium first, then from the account | No document in the corpus fixes the sequence. Start-of-year incidence keeps the recursion acyclic; premium-first incidence is what makes a paid-up contract pay for itself |
 | § 169 Abs. 3 floor scope | the *Deckungskapital* **alone**, and no *Stornoabzug* on the paid-up route | Profit shares sit on top of the statutory minimum, the reading § 165 Abs. 2 supports; the alternative is named and not implemented. Abs. 5 is drafted for a payout on *Kündigung*, and on the paid-up route the contract continues |
 | Annuity timing | twelve monthly instalments paid at the **start** of the policy year | Neither the payment timing nor the in-advance / in-arrears basis was established (gap 19). This is generous to the payout phase by roughly half a year's interest on one year's annuity |
-| *Kapitalabfindung* amount | `capital_conv_pp`, the same capital annuitants convert | The corpus gives no basis for paying commuters less |
-| Decrement order | deaths at the end of the year, then surrenders | No source fixes it; it decides which population the surrender rate applies to |
+| *Kapitalabfindung* amount, decrement order | `capital_conv_pp`, the same capital annuitants convert; deaths at the end of the year, then surrenders | The corpus gives no basis for paying commuters less. No source fixes the decrement order either, and it decides which population the surrender rate applies to |
 | *Beitragsfreistellung* | a deterministic election on the model point | A scalar account cannot carry two sub-populations, and no rate is established |
 | `kapitalwahl_rate` | 30 % base | The real decision is a tax comparison and this model computes no tax, so the rate stands in for a calculation it does not perform (gap 20) |
-| `omega_age` | 121 | The proxy's terminal age; it fixes `proj_len` and lets the closure identity reach exactly zero |
-| `roll_fwd_tol` | 1e-9 relative | A float comparison tolerance, not an actuarial assumption |
-| The model points | all fourteen | Configurations chosen to exercise the mechanics, not observed policies |
+| `omega_age`, `roll_fwd_tol`, the model points | 121; 1e-9 relative; all fourteen | The terminal age fixes `proj_len` and lets the closure identity reach exactly zero; the tolerance is a float comparison, not an actuarial assumption; the model points are configurations chosen to exercise the mechanics, not observed policies |
 
-The only quantities in the model that are **not** standardizations are the structural rules
-and two charge parameters: the *Höchstzillmersatz* ceilings themselves [REG-R16], the
-five-year spread of acquisition costs [REG-R28], the 2005 mortality base year [R13], and the
-mechanics — the *Deckungskapital* recursion [S11], `max(garantierter, aktueller)` [S4] [R24],
-the conversion capital including surplus and *Bewertungsreserven* [S9], the § 165 branches
-[R2], the § 169 floor and the *Stornoabzug* conditions [R1], the three death-benefit forms
-[S1] [S19] [R24], and the *Rentengarantiezeit* [R17] [R24].
+The only quantities that are **not** standardizations are the *Höchstzillmersatz* ceilings
+[REG-R16], the five-year spread of acquisition costs [REG-R28], the 2005 mortality base year
+[R13], and the structural rules: the *Deckungskapital* recursion [S11],
+`max(garantierter, aktueller)` [S4] [R24], the conversion capital including surplus and
+*Bewertungsreserven* [S9], the § 165 branches [R2], the § 169 floor and *Stornoabzug*
+conditions [R1], the three death-benefit forms [S1] [S19] [R24], and the *Rentengarantiezeit*
+[R17] [R24].
 
 ## Tests
 
 `tests/test_klassische_rentenversicherung_de.py` asserts the notes' worked example — all
-seventeen accumulation rows and the six sampled payout rows, money to the cent and `pols_if`
-to six decimals — the totals at full precision against the rounded-cell sums, the three
-independent rebuilds below the table, the closure split, both documented variants (the
-*Einmalbeitrag* form and the 2,75 % legacy vintage), all nine `check_*` identities with their
-residuals, and **one test per listed modeling pitfall**: the declared rate containing the
-guarantee, the within-year order, `max(garantierter, aktueller)`, the *Rentengarantiezeit*
-weighting, *Beitragsfreistellung* against lapse, charges against expenses, the § 169 Abs. 3
-floor, the *Stornoabzug*'s shape, the two mortality bases, the generational surface, the zero
-net amount at risk, the unapplied payout charge, the absent post-*Rentenbeginn* death benefit,
-the *Kapitalwahlrecht* leaving no account behind, the guarantee vintage, unisex pricing, the
-*Beitragssumme* surviving a *Beitragsfreistellung*, and the untruncated payout phase.
+seventeen accumulation rows and the six sampled payout rows, money to the cent and `pols_if` to
+six decimals — the totals at full precision against the rounded-cell sums, the three independent
+rebuilds below the table, the closure split, both documented variants (the *Einmalbeitrag* form
+and the 2,75 % legacy vintage), all nine `check_*` identities with their residuals, and **one
+test per listed modeling pitfall**: the declared rate containing the guarantee, the within-year
+order, `max(garantierter, aktueller)`, the *Rentengarantiezeit* weighting, *Beitragsfreistellung*
+against lapse, charges against expenses, the § 169 Abs. 3 floor, the *Stornoabzug*'s shape, the
+two mortality bases, the generational surface, the zero net amount at risk, the unapplied payout
+charge, the absent post-*Rentenbeginn* death benefit, the *Kapitalwahlrecht* leaving no account
+behind, the guarantee vintage, unisex pricing, the *Beitragssumme* surviving a
+*Beitragsfreistellung*, and the untruncated payout phase.
 
 The whole-model-point-table sweep is **not** here: the conventions suite owns the single
 sweep, because a model point's first evaluation is the most expensive thing in the run.
