@@ -119,24 +119,23 @@ valuation date rather than a new policy. The product research file, written with
 channel, recorded the reform status as its most important open question (gap 1); [REG-R44] closes
 it from the cross-product sweep, and this document follows [REG-R44].
 
-**Scale.** Everything in this paragraph is `[unverified]` order-of-magnitude recollection: **no
-market figure was established**, the official series was neither retrieved nor searched, and gap 2
-qualifies all of it. Of the order of **15 to 16 million** certified Riester contracts existed in
-the mid-2020s, having peaked near **16,5 million** in the late 2010s; insurance contracts are
-roughly two thirds of the count, fund savings plans roughly a fifth, Wohn-Riester contracts a
-little over a tenth and bank savings plans the remainder [R25]. **New business had effectively
-stopped before the statute closed it**, dating from the 0,25 % *Höchstrechnungszins* regime of 2022
-[R22] [REG-R15], when the three large fund houses withdrew their savings plans and a substantial
-number of insurers followed. A large minority of the book — commonly reported at a fifth to a
-quarter, three to four million contracts — is ***beitragsfrei gestellt***: in force, certified,
-guaranteed on what was paid, and receiving nothing further [R25] [unverified]. There is **no
-official statistic for that figure at all**, and it is nonetheless the most model-relevant market
-fact here: ***Beitragsfreistellung*, not surrender, is this product's characteristic exit**, and a
-model carrying only a lapse rate has mis-specified the book. Two counting warnings follow. A
-contract counted as "Riester" in an official statistic **may be a mortgage** [R19] [S13]. And a
-Riester annuity of a given gross amount is worth materially **less** to the saver than a Schicht-3
-annuity of the same gross amount, because it is taxed in full [R12] rather than on the
-*Ertragsanteil* [REG-R41].
+**Scale.** Everything here is `[unverified]` order-of-magnitude recollection: **no market figure
+was established**, the official series was neither retrieved nor searched, and gap 2 qualifies all
+of it. Of the order of **15 to 16 million** certified contracts existed in the mid-2020s, having
+peaked near **16,5 million** in the late 2010s — insurance contracts roughly two thirds of the
+count, fund savings plans roughly a fifth, Wohn-Riester a little over a tenth, bank savings plans
+the remainder [R25]. **New business had effectively stopped before the statute closed it**, dating
+from the 0,25 % *Höchstrechnungszins* regime of 2022 [R22] [REG-R15], when the three large fund
+houses withdrew their savings plans and a substantial number of insurers followed. A large minority
+of the book — commonly reported at a fifth to a quarter, three to four million contracts — is
+***beitragsfrei gestellt***: in force, certified, guaranteed on what was paid, receiving nothing
+further [R25] [unverified]. There is **no official statistic for that figure at all**, and it is
+nonetheless the most model-relevant market fact here: ***Beitragsfreistellung*, not surrender, is
+this product's characteristic exit**, and a model carrying only a lapse rate has mis-specified the
+book. Two counting warnings follow: a contract counted as "Riester" in an official statistic **may
+be a mortgage** [R19] [S13]; and a Riester annuity of a given gross amount is worth materially
+**less** to the saver than a Schicht-3 annuity of the same amount, being taxed in full [R12] rather
+than on the *Ertragsanteil* [REG-R41].
 
 ---
 
@@ -476,17 +475,14 @@ assumption should sit materially **below** a Schicht-3 one.
 
 **What is guaranteed** is that at the beginning of the payout phase the capital available for the
 benefit is at least the sum of the *Altersvorsorgebeiträge* paid in — own contributions **plus**
-Zulagen credited, less the biometric carve-out of up to 20 % of total contributions [R1]
-[REG-R43]. In model terms it is a **running accumulator**, not a discounted quantity:
-
-    guar(t + 1) = guar(t) + eigenbeitrag(t) + zulage(t) − carve_out(t),    guarantee frozen once
-                                                                          contributions stop
-
-and at *Rentenbeginn* the conversion capital is `max( account and its surplus components,
-guar(T) )`. The excess of `guar(T)` over the account — the ***Garantielücke*** — is a **cost the
-insurer bears out of its own funds**, and it is the product's signature output. A Riester model in
-which the guarantee never binds on any model point has demonstrated nothing, which is why the model
-point table carries a low-declared-rate cell on which it bites.
+Zulagen credited, less the biometric carve-out of up to 20 % of total contributions [R1] [REG-R43].
+In model terms it is a **running accumulator**, not a discounted quantity —
+`guar(t + 1) = guar(t) + eigenbeitrag(t) + zulage(t) − carve_out(t)`, frozen once contributions stop
+— and at *Rentenbeginn* the conversion capital is `max(account and its surplus components,
+guar(T))`. The excess of `guar(T)` over the account, the ***Garantielücke***, is a **cost the
+insurer bears out of its own funds** and is the product's signature output. A Riester model in which
+the guarantee never binds on any model point has demonstrated nothing, which is why the model point
+table carries a low-declared-rate cell on which it bites.
 
 **Six things the guarantee is not**, each of them load-bearing. **Not a value at any other date** —
 it is tested once, and before *Rentenbeginn* the surrender value can be, and in the early years
@@ -525,19 +521,18 @@ accumulation is `C × s̈(n, i)`, the guarantee is `C × n`, and the **headroom*
 | 35 years | **4.63 %** | 17.98 % | 20.22 % | 38.76 % | 53.06 % |
 
 On 1 200,00 € a year for thirty years — 36 000,00 € of contributions — the 0,25 % regime produces a
-guaranteed accumulation of **37 429,31 €**, a headroom of **1 429,31 €**; the 1,00 % regime
-produces **42 159,29 €**, a headroom of **6 159,29 €** `[std] derived`. So at 0,25 % a thirty-year
-contract had **under 4 % of contributions** to pay for acquisition, administration, risk and any
-margin — a multiple below typical German life charge levels, which made the guarantee not merely
-expensive but **arithmetically unfinanceable** on a normally charged tariff. It bites hardest on
-short terms and late money, so the product is structurally hostile to late entrants. It **dictates
-the asset allocation** rather than leaving it to the provider, since the equity share is bounded
-above by a headroom that is a function of `i` and `n` alone. And **a rate rise repairs it
-mechanically**: the move to 1,00 % on 1 January 2025 roughly quadrupled the thirty-year headroom,
-from 3,97 % to 17,11 % `[std] derived` — the arithmetic behind the GDV maintaining a 2025-vintage
-classic Riester model wording [S2].
+guaranteed accumulation of **37 429,31 €**, a headroom of **1 429,31 €**; the 1,00 % regime produces
+**42 159,29 €**, a headroom of **6 159,29 €** `[std] derived`. So at 0,25 % a thirty-year contract
+had **under 4 % of contributions** to pay for acquisition, administration, risk and any margin — a
+multiple below typical German life charge levels, which made the guarantee not merely expensive but
+**arithmetically unfinanceable** on a normally charged tariff. It bites hardest on short terms and
+late money, so the product is structurally hostile to late entrants; it **dictates the asset
+allocation**, since the equity share is bounded above by a headroom that is a function of `i` and
+`n` alone; and **a rate rise repairs it mechanically** — the move to 1,00 % on 1 January 2025
+roughly quadrupled the thirty-year headroom, from 3,97 % to 17,11 % `[std] derived`, which is the
+arithmetic behind the GDV maintaining a 2025-vintage classic model wording [S2].
 
-One warning about reading the table. It is the arithmetic of the **guaranteed** accumulation, which
+One warning about reading the table: it is the arithmetic of the **guaranteed** accumulation, which
 is what the insurer must be able to promise. A **best-estimate** projection credits the declared
 *laufende Verzinsung*, materially above the *Rechnungszins*, so on a healthy contract the
 *Garantielücke* closes long before *Rentenbeginn*. **The guarantee's realised cost is a
@@ -704,24 +699,22 @@ fixes for everyone.
 ## Regulatory context
 
 **Two statutes doing different jobs.** The **AltZertG** says what a contract must contain to be
-certifiable; the **EStG** says who gets what subsidy and how the benefit is taxed. A *product* rule
-is in the first, a *money* rule in the second, and confusing the two is the commonest error in
-secondary writing about this product. § 1 AltZertG fixes the payout age, the
-*Beitragserhaltungszusage*, the payout shape, the 30 % lump-sum cap, the five-year cost spreading,
-the *Wechselrecht*, the unisex rule, the information duties and the non-assignability [R1]
-[REG-R43]; §§ 2, 3 and 5 make certification an administrative act of the **BZSt** on the **contract
-type**, expressly not a statement about the provider or the product's cost [R2] [S15] [REG-R43];
-§ 1 Abs. 1a extends certification to a **loan** [R3]; and §§ 7 ff. with the **AltvPIBV** carry the
-disclosure regime [R4] [R5] [S14] [REG-R43]. The subsidy machinery is EStG Abschnitt XI: § 79
-(entitlement) [R7], §§ 82–83 (*Altersvorsorgebeiträge* and the *Altersvorsorgezulage*) [R8],
-§§ 84–85 (the amounts) [R9], §§ 86–87 (the *Mindesteigenbeitrag* and multiple contracts) [R10],
-§§ 89–91 (the ZfA) [R11], §§ 92a–92b (Wohn-Riester and the *Wohnförderkonto*) [R13], §§ 93–95
-(*schädliche Verwendung*) [R14] and § 97 (non-transferability) [R16], with § 10a carrying the
-deduction and the *Günstigerprüfung* [R6] and § 22 Nr. 5 the taxation of the benefit [R12] — all
-consolidated for practitioners in the BMF *Anwendungsschreiben* [R24], **whose date, reference
-number and content are not established** (gap 3). **Every statutory paragraph number in this
-library is `[unverified]`** (gap 4): not one was confirmed against the statute, and no `delib`
-document may quote a paragraph as though it had been read.
+certifiable; the **EStG** says who gets what subsidy and how the benefit is taxed — a *product* rule
+in the first, a *money* rule in the second, and confusing them is the commonest error in secondary
+writing about this product. § 1 AltZertG fixes the payout age, the *Beitragserhaltungszusage*, the
+payout shape, the 30 % lump-sum cap, the five-year cost spreading, the *Wechselrecht*, the unisex
+rule, the information duties and the non-assignability [R1] [REG-R43]; §§ 2, 3 and 5 make
+certification an administrative act of the **BZSt** on the **contract type** [R2] [S15] [REG-R43];
+§ 1 Abs. 1a extends it to a **loan** [R3]; and §§ 7 ff. with the **AltvPIBV** carry the disclosure
+regime [R4] [R5] [S14] [REG-R43]. The subsidy machinery is EStG Abschnitt XI — § 79 (entitlement)
+[R7], §§ 82–83 (contributions and the Zulage) [R8], §§ 84–85 (the amounts) [R9], §§ 86–87 (the
+*Mindesteigenbeitrag*) [R10], §§ 89–91 (the ZfA) [R11], §§ 92a–92b (Wohn-Riester) [R13], §§ 93–95
+(*schädliche Verwendung*) [R14], § 97 (non-transferability) [R16] — with § 10a carrying the
+deduction [R6] and § 22 Nr. 5 the taxation of the benefit [R12], all consolidated for practitioners
+in the BMF *Anwendungsschreiben* [R24], **whose date, reference number and content are not
+established** (gap 3). **Every statutory paragraph number in this library is `[unverified]`**
+(gap 4): none was confirmed against the statute, and no `delib` document may quote one as though it
+had been read.
 
 **The statutes that shaped the product.** The *Altersvermögensgesetz* and
 *Altersvermögensergänzungsgesetz* of 2001 created it for contribution years from 2002, in the same
@@ -733,10 +726,10 @@ raised the *Kinderzulage* for children born from 2008 [R19]; the
 charge and closed the zero-contribution entitlement of a *mittelbar* eligible spouse [R20]; and the
 *Betriebsrentenstärkungsgesetz* of 2017 raised the *Grundzulage* to 175 €, brought the
 *Kleinbetragsrenten-Abfindung* under the *Fünftelregelung*, introduced a *Freibetrag* in the
-*Grundsicherung im Alter*, and removed the double *Krankenversicherung* charge on a Riester annuity
-drawn from a **bAV** vehicle [R21]. **Every one was a repair to a criticism rather than an
-extension, and none changed the *Beitragsgarantie*** — which is what the 2023 *Fokusgruppe* said had
-to change [R26], and what the 2026 reform did by replacing the product [REG-R44].
+*Grundsicherung im Alter* and removed the double *Krankenversicherung* charge on a bAV-sourced
+Riester annuity [R21]. **Every one was a repair to a criticism rather than an extension, and none
+changed the *Beitragsgarantie*** — what the 2023 *Fokusgruppe* said had to change [R26], and what
+the 2026 reform did by replacing the product [REG-R44].
 
 **Prudential, reserving and tax are cited, never specified.** The *Höchstrechnungszins* of § 2
 DeckRV binds the rate at which the guarantee may be discounted and nothing else [R22] [REG-R14]
@@ -755,17 +748,15 @@ publishes gross, undiscounted, best-estimate-style liability cash flows and stop
 discounting, so every discount rate, asset return and declared rate in these documents is **[std]**.
 
 **Conduct, disclosure and the reform track.** The individual *Produktinformationsblatt* with its
-individually computed *Effektivkosten* is a **stronger** duty than the product-level VVG-InfoV
-figure [R4] [R5] [S14] [REG-R31] [REG-R43]; alongside sit the IDD as transposed [REG-R33], PRIIPs
-for the unit-linked chassis [REG-R32], BaFin's *Wohlverhaltensaufsicht* and its expectation of
-*angemessener Kundennutzen* [REG-R35], and the BGH line of authority — including its 2025 judgment
-striking down asymmetric unilateral reduction of a *Rentenfaktor* [REG-R36], which bears directly on
-the two-factor conversion adopted above. The *Fokusgruppe private Altersvorsorge* reported in 2023
-recommending that the 100 % *Beitragsgarantie* be relaxed or removed, that a securities-account
-product be admitted, that the Zulage be simplified into a proportional match and that eligibility be
-widened [R26] `[unverified]` on every element; a 2024 draft bill creating an *Altersvorsorgedepot*
-followed and did not become law in that term [R26]. The product research file recorded the position
-at its access date as unknown and as its most important gap (gap 1); the cross-product reference
-library closes it [REG-R44]. This specification therefore describes a **legacy** product, and no
-document in this library may assert a promulgation date or a BGBl citation for that act, neither of
-which is established [REG-R44].
+individually computed *Effektivkosten* is a **stronger** duty than the product-level VVG-InfoV figure
+[R4] [R5] [S14] [REG-R31] [REG-R43]; alongside sit the IDD as transposed [REG-R33], PRIIPs for the
+unit-linked chassis [REG-R32], BaFin's *Wohlverhaltensaufsicht* and its expectation of *angemessener
+Kundennutzen* [REG-R35], and the BGH line of authority — including its 2025 judgment striking down
+asymmetric unilateral reduction of a *Rentenfaktor* [REG-R36], which bears directly on the
+two-factor conversion adopted above. The *Fokusgruppe private Altersvorsorge* reported in 2023
+recommending that the 100 % *Beitragsgarantie* be relaxed or removed, a securities-account product
+admitted, the Zulage simplified into a proportional match and eligibility widened [R26]
+`[unverified]` on every element; a 2024 draft bill creating an *Altersvorsorgedepot* followed and
+did not become law in that term [R26]. This specification therefore describes a **legacy** product,
+and no document in this library may assert a promulgation date or a BGBl citation for the 2026 act,
+neither of which is established [REG-R44].

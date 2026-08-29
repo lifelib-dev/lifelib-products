@@ -68,10 +68,10 @@ sentence, and three consequences change the shape of the projected cash flows:
    **everything paid to a survivor must be paid as an annuity**.
 
 **The layer is a tax wrapper, not a chassis.** [S2] is the direct evidence: one large insurer sells
-the same design — the same premium split between the *Sicherungsvermögen* and a *Spezialfonds*, the
-same selectable guarantee levels, the same *Rentenfaktor* machinery — as PrivatRente (Schicht 3),
-BasisRente (Schicht 1) and RiesterRente (Schicht 2), differing only in the wrapper. A Basisrente
-model should therefore reuse the Schicht-3 chassis with the constraint set bolted on.
+the same design — the same premium split, the same selectable guarantee levels, the same
+*Rentenfaktor* machinery — as PrivatRente (Schicht 3), BasisRente (Schicht 1) and RiesterRente
+(Schicht 2), differing only in the wrapper. A Basisrente model should therefore reuse the Schicht-3
+chassis with the constraint set bolted on.
 
 **What the buyer is buying** is three things at once, and the model point makes no sense without all
 three. The ***Sonderausgabenabzug***: from the assessment period 2023 the capped contribution is
@@ -88,13 +88,12 @@ contract illiquid for the owner makes it invisible to the owner's creditors.
 no compulsory scheme** — the buyer the product was designed for: the entire *Höchstbetrag* is free,
 the *Pfändungsschutz* matters as much as the relief, and the income is volatile, which is what the
 *Zuzahlung* structure is for. And the **high-earning employee or partner using residual headroom** as
-a late-career deferral vehicle, frequently by *Einmalbeitrag* in a high-income year, entering at 50
-or later with a short deferment. In both cases the entry age is **materially higher than for a
-Riester or Schicht-3 contract** — the mid-forties rather than the early thirties [unverified] —
-because the product only makes sense once income is high enough for the relief to be worth the
-illiquidity. **The commercial problem** follows and should be stated rather than engineered away: the
-relief is real and large, but **the contract is irreversible**. That is not a defect; it is the
-consideration for the *Pfändungsschutz* and the relief.
+a late-career deferral vehicle, frequently by *Einmalbeitrag*, entering at 50 or later with a short
+deferment. In both cases the entry age is **materially higher than for a Riester or Schicht-3
+contract** — the mid-forties rather than the early thirties [unverified] — because the product only
+makes sense once income is high enough for the relief to be worth the illiquidity. **The commercial
+problem** follows: the relief is real and large, but **the contract is irreversible**. That is not a
+defect; it is the consideration for the *Pfändungsschutz* and the relief.
 
 **Market size — the weakest material in this document.** No statistic from the GDV, the BMF or any
 consumer or comparison source was established [R22] [S16] (gap 3). The orders of magnitude, every one
@@ -120,14 +119,12 @@ no *Teilkapitalauszahlung*, no *Kleinbetragsrenten-Abfindung*, no *Rückkaufswer
 no assignment**.
 
 **Why *klassisch* rather than *fondsgebunden*.** The market's centre of gravity has moved decisively
-to *fondsgebundene* Basisrenten since the *Höchstrechnungszins* fell below 1 % [R16] [REG-R15], and
-on a Schicht-1 contract nothing stops a writer selling a pure unit-linked policy — because
-§ 5a AltZertG **does not import the Riester *Beitragserhaltungsgarantie*** [R9] [R10] [REG-R43]. That
-judgement is [unverified] general knowledge unsupported by any figure in this corpus (gap 3). The
-composite nevertheless models the *klassisch* form: **the Schicht-1 constraints are the subject of
-this product and they are clearest against a general-account chassis whose reserve recursion the
-library already has**, while the unit-linked machinery is carried by delib product 3 and the hybrid
-guarantee mechanics by delib product 4.
+to *fondsgebundene* Basisrenten since the *Höchstrechnungszins* fell below 1 % [R16] [REG-R15] — a
+judgement that is [unverified] general knowledge unsupported by any figure in this corpus (gap 3).
+The composite nevertheless models the *klassisch* form: **the Schicht-1 constraints are the subject of
+this product and are clearest against a general-account chassis whose reserve recursion the library
+already has**, while the unit-linked machinery is carried by delib product 3 and the hybrid guarantee
+mechanics by delib product 4.
 
 ### Product identity and issue rules
 
@@ -143,7 +140,6 @@ guarantee mechanics by delib product 4.
 | Earliest *Rentenbeginn* | Completion of the **62nd** year of life for contracts concluded **after 31 December 2011**; the **60th** for contracts concluded on or before that date | [R1] [R8] [REG-R39]; both [unverified] (3) |
 | Latest and representative *Rentenbeginn* | **No statutory ceiling**; contracts commonly allow deferral past the statutory retirement age. Representative attained age **67** | [R1]; **[std]** (2) (4) |
 | Annuity form | **Monthly, lifelong, on the taxpayer's own life.** No term-certain annuity, no *Auszahlungsplan* of the Riester type, no annuity on any other single life | [R1] [REG-R39] |
-| Unisex pricing | Mandatory for contracts concluded from **21 December 2012**; sex is carried for reporting only and must not enter pricing | [REG-R34] |
 | Anchor model cell | Entry age 45, *Rentenbeginn* 67, conclusion year 2026, *laufender Beitrag* 6 000,00 € p.a. annual in advance with a 2 % *Beitragsdynamik*, *Zuzahlung* 4 000,00 € p.a., *Rechnungszins* 1,00 %, guaranteed *Rentenfaktor* 28,00 €, no riders | **[std]** (5) |
 
 Footnotes to **[std]** rows:
@@ -184,8 +180,7 @@ Footnotes to **[std]** rows:
 | Deductible share of the capped contribution | **100 %** from the assessment period **2023**, brought forward from 2025; 94 % in 2021 and 96 % in 2022 | [R7]; [unverified] |
 | ***Beitragsdynamik*** | Contractual annual escalation with a right to decline individual increases; representative **2 % p.a.** | mechanics [R2] [R20]; rate **[std]** (11) |
 | Maximum *Zuzahlung* | Not established for any carrier; in practice bounded by the year's remaining *Höchstbetrag* headroom | gap 8; **[std]** |
-| Suspension and resumption | Suspension is a *Beitragsfreistellung* [R14]; resumption is a *Wiederinkraftsetzung* within a stated window, possibly with renewed underwriting where a BUZ is attached. **No window was established** | [R14]; gap 8 |
-| Premium cessation | At *Rentenbeginn*, at death, and on *Beitragsfreistellung* | [R1] [R14] |
+| Suspension, resumption, cessation | Suspension is a *Beitragsfreistellung*; resumption is a *Wiederinkraftsetzung* within a stated window (**not established**, gap 8). Premiums cease at *Rentenbeginn*, at death and on *Beitragsfreistellung* | [R1] [R14]; gap 8 |
 | Misstatement and payment default | §§ 19, 37, 38, 157 and 158 VVG apply as to any German life contract | [REG-R30] |
 
 6. **No carrier's actual offering was established.** ***Beitragsflexibilität* is the product's
@@ -247,7 +242,7 @@ Footnotes to **[std]** rows:
 |---|---|---|
 | Underwriting of the main contract | **None in substance.** A deferred annuity with no death benefit carries no anti-selection the insurer needs to underwrite; the annuity risk runs the other way | [R17]; **[std]** |
 | Underwriting of the riders | A *Hinterbliebenenabsicherung* and, decisively, a **BUZ** are fully underwritten, under the §§ 19 ff. VVG *Anzeigepflicht* regime | [R1] [REG-R29] [REG-R30] |
-| Rating factors, main contract | Entry age, deferment term, premium form and frequency, chosen *Rentenbeginn*, option set. **Sex may not be a rating factor** | [R1]; unisex [REG-R34] |
+| Rating factors, main contract | Entry age, deferment term, premium form and frequency, chosen *Rentenbeginn*, option set. **Sex may not be a rating factor** for contracts concluded from 21 December 2012 and is carried for reporting only | [R1]; unisex [REG-R34] |
 | Mortality basis | **DAV 2004 R**, a ***Generationentafel*** — mortality by birth cohort, with the improvement trend inside the table rather than applied on top of it. First-order probabilities carry prudential margins and price the contract and the guaranteed *Rentenfaktor*; second order is the best estimate | [R17] [REG-R47] [REG-R49] |
 | Selection | **Lighter than a comparable Schicht-3 portfolio**, because the contract cannot be surrendered or commuted, so a policyholder in poor health has no exit and nobody leaves the annuitant pool. **No evidence for this was found**; the direction is arguable from the product's own structure, but no German experience study was reached, so it is a stated model risk rather than a parameter this document asserts | [R17]; **[std]** view |
 | Table availability | The DAV tables are the property of the **Deutsche Aktuarvereinigung**, are **not public and are not redistributed by delib** | [R17] [REG-R47] [REG-R49] |
@@ -256,8 +251,8 @@ Footnotes to **[std]** rows:
 
 ### Charges
 
-**The charge structure is that of any German life contract and is not modified by the layer.** Two
-Basisrente-specific points sit on top of it.
+**The charge structure is that of any German life contract and is not modified by the layer**, with
+two Basisrente-specific points on top of it.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
@@ -292,14 +287,14 @@ Basisrente-specific points sit on top of it.
 
 ### Termination and values
 
-**There is no exit that pays money.** That is the operative summary and it is the first sentence of
+**There is no exit that pays money.** That is the operative summary, and it is the first sentence of
 this section for a reason.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | ***Rückkaufswert*** | **None, at any duration.** § 169 VVG is inoperative because the entitlement may not be capitalised. There is a *Deckungskapital*; there is no duration at which any part of it is payable as capital | [R1] [R14] [REG-R28] [REG-R39] |
 | *Stornoabzug* | **Not applicable** — no surrender payment exists for a deduction to be made from | [R14] [REG-R28] |
-| ***Kündigung*** | § 168 VVG's termination right formally survives, but **termination produces no payment**; in practice it is administered as a *Beitragsfreistellung* | [R14] [REG-R28]; AVB wording [unverified] |
+| ***Kündigung*** | § 168 VVG's termination right survives, but **produces no payment**; in practice it is administered as a *Beitragsfreistellung* | [R14] [REG-R28]; AVB wording [unverified] |
 | ***Beitragsfreistellung*** | Exercisable **at any time**, effective at the end of the current premium period; converts to a **premium-free entitlement to a reduced annuity** computed from the *Deckungskapital* reached | [R14] [REG-R28] |
 | *Mindestversicherungsleistung* | The reduced benefit must reach a threshold agreed in the contract. **No carrier's threshold was established** | [R14]; gap 8; **[std]** |
 | Status of a paid-up contract | **Still a Basisrente**: still certified, still protected, still taxed on the *Besteuerungsanteil*, still payable only as an annuity from the statutory floor age | [R1] [R9] [R14] |
@@ -307,8 +302,7 @@ this section for a reason.
 | Assignment, sale, secondary market | **Prohibited** — *nicht übertragbar*, *nicht veräußerbar*. The German life secondary market, which exists for Schicht-3 endowments, cannot touch this product | [R1] [REG-R39] |
 | Transfer to another provider | **Unresolved.** The market understanding is that a transfer to another *Basisrentenvertrag of the same person* is tax-neutral, but the conditions live in the BMF guidance and could not be established | [R18]; gap 13; **must not be asserted** |
 | *Versorgungsausgleich* | The **one permitted transfer**: on divorce, pension-sharing law splits entitlements acquired during the marriage, and the receiving spouse's entitlement remains subject to the same prohibitions. The mechanism was not established and delib does not model it | [R1]; gap 14 |
-| *Widerruf* | The 30-day life-assurance withdrawal right applies as to any German life contract | [REG-R23] |
-| Expiry | **There is none.** The contract runs from conclusion to the death of the annuitant; no maturity date, no maturity value | [R1] |
+| *Widerruf* and expiry | The 30-day life-assurance withdrawal right applies as to any German life contract [REG-R23]. **There is no expiry**: the contract runs from conclusion to the death of the annuitant, with no maturity date and no maturity value | [REG-R23]; [R1] |
 
 ---
 
@@ -316,7 +310,6 @@ this section for a reason.
 
 Each subsection states one operative rule in this document's own words — **nothing here is quoted
 from an instrument** — and says what it does to a cash-flow model.
-
 ### The five prohibitions, taken one at a time
 
 The rule: the entitlements arising under the contract must be **not inheritable, not transferable,
@@ -332,11 +325,11 @@ not chargeable as security, not saleable and not convertible into capital** [R1]
 
 **The prohibitions bind the insurer's product design, not merely the policyholder's rights.** A
 contract offering any of these features is not a *Basisrentenvertrag*, cannot be certified [R9], and
-attracts no relief [R3] — a condition of the tax status of the whole contract rather than a
-contractual restriction, which is why the model carries these as **structural absences** rather than
-as switched-off options. **What *nicht vererblich* does not mean**: it does not forbid a payment on
-death; it means the entitlement is not part of the estate and may not be directed by will. A death
-benefit is permitted inside the narrow channel below, **provided it is itself paid as an annuity**.
+attracts no relief [R3] — a condition of the tax status of the whole contract, which is why the model
+carries these as **structural absences** rather than switched-off options. **What *nicht vererblich*
+does not mean**: it does not forbid a payment on death, only that the entitlement is not part of the
+estate and may not be directed by will. A death benefit is permitted inside the narrow channel below,
+**provided it is itself paid as an annuity**.
 
 ### Certification under § 5a AltZertG, and what it does not import
 
@@ -376,10 +369,9 @@ product in a way that is not true of any other delib product**.
 
 **The ceiling is shared, and that is the constraint that bites.** A *Freiberufler* in a
 *Versorgungswerk*, or a *Handwerker* with compulsory GRV membership, has most of it consumed under
-letter a before any Basisrente contribution is considered; the buyer with the whole ceiling free is
-the **genuinely non-insured self-employed person**. And **the ceiling moves every year, so the
-premium should too** — which is why *Beitragsdynamik* and year-end *Zuzahlungen* are far more
-prominent here than on a Schicht-3 annuity, and why the representative premium is a stream.
+letter a; the buyer with the whole ceiling free is the **genuinely non-insured self-employed person**.
+And **the ceiling moves every year, so the premium should too** — which is why *Beitragsdynamik* and
+year-end *Zuzahlungen* are far more prominent here than on a Schicht-3 annuity.
 
 **Two further mechanisms operate on an employee and are routinely conflated** [R2] [REG-R39]. **The
 GRV contributions consume the ceiling**: employee **and** employer contributions both count toward
