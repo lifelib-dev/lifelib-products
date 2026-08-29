@@ -117,6 +117,7 @@ turns on:
 | *Neue Klassik* | Post-2013 conventional products with a modified guarantee, contrasted with *Klassik* |
 
 ---
+
 ## Primary sources
 
 Every entry below carries the same retrieval status, stated once here rather than repeated
@@ -141,8 +142,8 @@ search-result summary and not of the document.
   for a composite specification:
   - It is a **GDV *Musterbedingung***, and the GDV states its model conditions are **unverbindlich**
     for undertakings and their use **purely optional**. That competition-law disclaimer matters: an
-    S1-tagged fact is a *market template*, weaker evidence about any particular carrier than the
-    same fact taken from that carrier's own AVB.
+    S1-tagged fact is a *market template*, weaker evidence about a carrier than the same fact taken
+    from that carrier's own AVB.
   - The AVB address the customer in the second person, in the question-headed style the GDV adopted
     for post-2008 VVG wordings. **§ 1 is headed "Welche Leistungen erbringen wir?"** — the benefit
     clause; the remaining section numbering was **not** established.
@@ -158,18 +159,18 @@ search-result summary and not of the document.
   specific to the kapitalbildende Lebensversicherung**, edition **02/2017**, headed "Jährliche
   Mitteilung zum Stand Ihrer Versicherung". Its interest for delib is that it is the document in
   which the guaranteed *Versicherungssumme*, the accumulated *Überschussguthaben*, the current
-  *Rückkaufswert* and the current *beitragsfreie Versicherungssumme* are reported side by side —
-  i.e. it names exactly the four state variables the projection model has to carry. **The field
-  list itself was not established**; that inference rests on the document's title and subject, and
-  any statement about its actual contents is `[unverified]`.
+  *Rückkaufswert* and the current *beitragsfreie Versicherungssumme* are reported side by side — it
+  names exactly the four state variables the projection model has to carry. **The field list itself
+  was not established**; that inference rests on the title and subject, and any statement about its
+  actual contents is `[unverified]`.
 
 ### S3 — Debeka Lebensversicherungsverein a. G., Bedingungswerk **B LV 85** (edition 01.07.2026)
 - Publisher: Debeka Lebensversicherungsverein a. G. Doc type: AVB for a kapitalbildende
   Lebensversicherung tariff, **21 pages** (the running header "B LV 85 (01.07.2026) Seite 1 von 21"
   was reproduced in the search result)
 - URL: https://www.debeka.de/content/dam/de/webauftritt/vertragsgrundlagen/lebens-rentenversicherung/BLV85.pdf
-- Content — the **most recent** German endowment wording located anywhere in this research, and the
-  only carrier document with quantified terms:
+- Content — the **most recent** German endowment wording located in this research, and the only
+  carrier document with quantified terms:
   - Edition date **1 July 2026**, current as at the access date, 21 pages.
   - It sits in Debeka's *Vertragsgrundlagen* library under the heading **Kapitalbildende
     Lebensversicherung** [S6], so its product classification is not inferred.
@@ -179,11 +180,11 @@ search-result summary and not of the document.
     fact in the corpus: the declared rate multiplies a reserve, not a sum insured and not a premium.
   - **The level of future *Überschussbeteiligung* cannot be guaranteed**; it is set **annually** and
     depends on capital-market development and on the insurer's own results.
-  - *Stornoabzug*: a **standard 5 % deduction** and, in addition, a **kapitalmarktabhängige
-    Stornogebühr** whose size follows the capital-market situation and **can be 5 %, 10 % or 15 % of
-    the *Deckungskapital***. Reported consistently by consumer bodies and the legal press
-    [R22][R30]; **which Debeka wording carries which figure was not established**, so the figures
-    are attributed to "the Debeka endowment wordings" rather than to B LV 85 specifically.
+  - *Stornoabzug*: a **standard 5 % deduction** plus a **kapitalmarktabhängige Stornogebühr** whose
+    size follows the capital-market situation and **can be 5 %, 10 % or 15 % of the
+    *Deckungskapital***. Reported consistently by consumer bodies and the legal press [R22][R30];
+    **which Debeka wording carries which figure was not established**, so the figures are attributed
+    to "the Debeka endowment wordings" rather than to B LV 85 specifically.
   - The *Überschussbeteiligung* clause numbering is **tariff-dependent**: the summary reported
     sections 28, 30, 33, 36, 38, 42 and 46 across the Debeka *Bedingungswerke* without saying which
     belongs to which. Treat any specific section number as `[unverified]`.
@@ -275,11 +276,11 @@ search-result summary and not of the document.
 - URL: https://www.oesa.de/export/sites/oesa/_resources/download/privat/service/bib/OeSA-StarthilfePlus_laufend_20.pdf
 - Content: the **only actual PRIIP-BIB PDF for a German capital-forming life product located in this
   research**. Established: it is a *Basisinformationsblatt*, three pages, for a regular-premium
-  ("laufend") variant of a product named *StarthilfePlus*, served from the insurer's own BIB
-  download directory. **Whether *StarthilfePlus* is an endowment, an annuity or a children's savings
-  contract was not established**, and none of its risk-indicator, performance-scenario or cost
-  figures were established. Recorded so a later session with search budget has one concrete BIB to
-  start from; what a BIB must contain is recorded from the regulatory side at [R19] instead.
+  ("laufend") variant of a product named *StarthilfePlus*, served from the insurer's own BIB download
+  directory. **Whether *StarthilfePlus* is an endowment, an annuity or a children's savings contract
+  was not established**, and none of its risk-indicator, performance-scenario or cost figures were.
+  Recorded so a later session with budget has one concrete BIB to start from; what a BIB must contain
+  is recorded from the regulatory side at [R19] instead.
 
 ### S11 — Allianz, "Kapitallebensversicherung: Ihr umfassender Ratgeber", with "Lebensversicherung: Arten im Überblick" and "Lebensversicherung Auszahlung: Ablauf & Steuer"
 - Publisher: Allianz Lebensversicherungs-AG (German consumer site). Doc type: insurer product/guide
@@ -287,8 +288,8 @@ search-result summary and not of the document.
 - URLs: https://www.allianz.de/vorsorge/kapitallebensversicherung/ ·
   https://www.allianz.de/vorsorge/lebensversicherung/ ·
   https://www.allianz.de/vorsorge/lebensversicherung/auszahlung/
-- Content — the largest German life insurer describing the product in its own words, and the one
-  place a **current declared rate for a classic endowment book** was established:
+- Content — the largest German life insurer describing the product in its own words, and the one place
+  a **current declared rate for a classic endowment book** was established:
   - The *klassisch* variant "combines a guaranteed interest rate, a savings component and death
     cover in one product" — the three-part description delib's overview mirrors.
   - **For 2026 Allianz credits its classic customers a *laufende Verzinsung* of 2,7 %** — a 2026
@@ -332,26 +333,25 @@ search-result summary and not of the document.
 - URLs: https://www.verivox.de/kapitallebensversicherung/ ·
   https://www.verivox.de/lebensversicherung/themen/ueberschussbeteiligung/ ·
   https://www.verivox.de/lebensversicherung/themen/zillmerung/
-- Content: secondary throughout, but the *Zillmerung* page is one of the two independent statements
-  of the **Höchstzillmersatz** rule: the LVRG cut the maximum *Zillmersatz* **from 40 ‰ to 25 ‰**,
-  and **since 1 January 2015 it may not exceed 25 ‰ — 2,5 % — of the *Beitragssumme***; in the
-  balance sheet the undertaking may accordingly recognise only 2,5 % of the premium sum as
-  *Abschluss- und Vertriebskosten*. The *Überschussbeteiligung* page contributes to the
-  four-component split at section 3 and the *Überschussverwendung* systems at section 4.
+- Content: secondary throughout, but the *Zillmerung* page is one of the two independent statements of
+  the **Höchstzillmersatz** rule: the LVRG cut the maximum *Zillmersatz* **from 40 ‰ to 25 ‰**, and
+  **since 1 January 2015 it may not exceed 25 ‰ — 2,5 % — of the *Beitragssumme***; in the balance
+  sheet the undertaking may accordingly recognise only 2,5 % of the premium sum as *Abschluss- und
+  Vertriebskosten*. The *Überschussbeteiligung* page contributes to the four-component split at
+  section 3 and the *Überschussverwendung* systems at section 4.
 
 ### S16 — Finanztip, "Überschussbeteiligung Lebensversicherung: Arten & Höhe" and "Steuer auf Lebensversicherung"
 - Publisher: Finanztip Verbraucherinformation gGmbH. Doc type: two consumer-journalism explainers
 - URLs: https://www.finanztip.de/lebensversicherung/ueberschussbeteiligung-lebensversicherung/ ·
   https://www.finanztip.de/lebensversicherung-versteuern/
-- Content: the clearest secondary statement of the **four-component surplus split and the
-  distribution quotas**: a *Zinsüberschuss* arises when the insurer earns more on the invested
-  premiums than the guaranteed rate; a *Risikoüberschuss* when insureds die otherwise than as
-  priced; a *Kostenüberschuss* when the book is administered more cheaply than loaded; and a
+- Content: the clearest secondary statement of the **four-component surplus split and the distribution
+  quotas**: a *Zinsüberschuss* arises when the insurer earns more on the invested premiums than the
+  guaranteed rate; a *Risikoüberschuss* when insureds die otherwise than as priced; a
+  *Kostenüberschuss* when the book is administered more cheaply than loaded; and a
   *Schlussüberschussanteil* from long-run results not fully allocated during the term. **At least
   90 % of the *Zins-* and *Risikoüberschuss* must be passed to policyholders, and half of the
-  *Kostenüberschuss***. Those quotas are corroborated independently from the MindZV at [R6], where
-  the third component is the wider *übriges Ergebnis* — see section 7 and gap 6. The tax page
-  contributes to section 17.
+  *Kostenüberschuss***. Those quotas are corroborated independently from the MindZV at [R6], where the
+  third component is the wider *übriges Ergebnis* — section 7 and gap 6. The tax page feeds section 17.
 
 ### S17 — HUK24, "Überschussbeteiligung der Risikolebensversicherung"
 - Publisher: HUK24 AG (HUK-COBURG group). Doc type: insurer guide page — **about term life, not
@@ -371,6 +371,9 @@ search-result summary and not of the document.
   *Verbraucherinformationen* — the German counterpart of the French *conditions générales* +
   *notice d'information* pair, and the vocabulary delib's `sources.md` document-type field should
   use. **Nothing substantive is cited from S18**; the issuing insurer is `[unverified]`.
+
+---
+
 ## Regulatory and actuarial references
 
 Every entry below carries the same retrieval status and it is stated once here rather than
@@ -1448,6 +1451,7 @@ Attribution is to the group, and this is the weakest section in the file.
 | Premium rates | **none public** | gap 16 |
 
 ---
+
 ## Observed variation across insurers
 
 The corpus is thin enough that an honest variations table is mostly a record of what could not be

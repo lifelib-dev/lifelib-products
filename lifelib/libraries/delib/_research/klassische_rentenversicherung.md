@@ -26,22 +26,22 @@ statutory options (*Rückkaufswert*, *Beitragsfreistellung*, *Kapitalwahlrecht*,
   annuity against single premium under tariff 970 — a Schicht-2 vehicle, not this product. Neither
   is used as a source for Schicht-3 mechanics here.
 - **Fondsgebundene Rentenversicherung** (unit-linked, delib `fondsgebundene_rentenversicherung`)
-  and **indexgebundene / "Neue Klassik"** hybrids (delib `indexpolice`). These are referenced only
-  where a document covers both and the classic mechanics are visible through the contrast — the
-  *Rentenfaktor* literature in particular is dominated by unit-linked marketing material [R16]
-  [R19] [R24], because in a unit-linked contract the *Rentenfaktor* is the **only** guarantee, and
-  the DEVK and Zurich unit-linked wordings [S19] are used solely for that contrast.
+  and **indexgebundene / "Neue Klassik"** hybrids (delib `indexpolice`), referenced only where a
+  document covers both and the classic mechanics show through the contrast — the *Rentenfaktor*
+  literature is dominated by unit-linked material [R16] [R19] [R24], because in a unit-linked
+  contract the *Rentenfaktor* is the **only** guarantee, and the DEVK wording [S19] is used solely
+  for that contrast.
 - **Sofortbeginnende Rentenversicherung** (immediate annuity, delib `sofortrente`). The payout
   phase of this product and the whole of that one are the same machinery; the Zurich *sofort
   beginnende Rentenversicherung* consumer information [S16] is recorded here because German
   insurers derive the *aktueller Rentenfaktor* of a deferred contract from the tariff they are
   then writing for immediate annuities [S13] [R23], which makes the immediate-annuity document the
   direct evidence for the deferred contract's conversion basis.
-- **Kapitalbildende Lebensversicherung** (endowment, delib `kapitallebensversicherung`). It shares
-  the entire *Überschussbeteiligung* chassis and the entire *Deckungskapital* / *Rückkaufswert*
-  chassis with this product; the difference is only what happens at the end of the accumulation
-  phase. Facts that belong to the shared chassis are recorded here anyway, because this file must
-  stand alone, but the endowment file is the primary home for the four surplus components.
+- **Kapitalbildende Lebensversicherung** (endowment, delib `kapitallebensversicherung`), which
+  shares the entire *Überschussbeteiligung* and *Deckungskapital* / *Rückkaufswert* chassis; the
+  difference is only what happens at the end of the accumulation phase. Shared-chassis facts are
+  recorded here anyway so this file stands alone, but the endowment file is the primary home for
+  the four surplus components.
 - **Gruppenversicherung**, **private Krankenversicherung**, **Sterbegeldversicherung** and
   institutional pension-risk transfer.
 
@@ -600,7 +600,6 @@ its procedural requirements (trustee review, notice) were not established** — 
   earlier, pre-legislation release; the higher (176848) follows the decision. Together they
   corroborate [R7] on the increase and its rationale. No figure beyond the 1,0 % was established.
 
-
 ### R11 — HDI, "Höchstrechnungszins in der Lebensversicherung steigt zum 01.01.2025"
 - Publisher: HDI Lebensversicherung AG (press/blog)
 - URL: https://pm.hdi.de/blog/h%C3%B6chstrechnungszins-in-der-lebensversicherung-steigt-zum-01.01.2025
@@ -618,16 +617,15 @@ its procedural requirements (trustee review, notice) were not established** — 
 - URL: https://aktuar.de/content/PDF/Fachwissen/2023-06-28_DAV-Richtlinie_Herleitung_DAV2004R.pdf
 - Retrieved: no — egress blocked; established from search-result summaries.
 - Content: the profession's derivation document for the table this product is priced on. The
-  summaries establish the **component structure**: a **base table of second order**, a **base
+  summaries establish the **component structure** — a **base table of second order**, a **base
   table of first order**, a **mortality trend of second order**, a **mortality trend of first
-  order**, and an **age adjustment (*Altersverschiebung*) with a base table**. They further
-  establish that **first-order probabilities carry safety margins relative to the second-order
-  ("realistic", best-estimate) probabilities, in order to assess the risk prudently**, and that
-  **the second-order base tables represent the best estimate of period mortality in 1999 for
-  insured lives, as three-dimensional selection tables**. The 2023 reissue date is significant on
-  its own: DAV 2004 R was still the profession's maintained annuity basis **twenty years after its
-  base year**, which is the fact behind the longevity trigger of the § 163 VVG adjustment right
-  [R3].
+  order**, and an **age adjustment (*Altersverschiebung*) with a base table** — and that
+  **first-order probabilities carry safety margins relative to the second-order ("realistic")
+  probabilities, in order to assess the risk prudently**, the **second-order base tables
+  representing the best estimate of period mortality in 1999 for insured lives, as
+  three-dimensional selection tables**. The 2023 reissue date is significant on its own:
+  DAV 2004 R was still the profession's maintained annuity basis **twenty years after its base
+  year** — the fact behind the longevity trigger of the § 163 VVG adjustment right [R3].
 
 ### R13 — DAV, "DAV 2004 R: Stand 22.02.2005"
 - Publisher: DAV
@@ -636,13 +634,12 @@ its procedural requirements (trustee review, notice) were not established** — 
   and published (or re-posted) on 14 September 2005**.
 - URL: https://aktuar.de/content/PDF/Fachwissen/2005-09-14-DAV_2004_R.pdf
 - Retrieved: no — egress blocked; established from search-result summaries.
-- Content: **DAV 2004 R is a *Generationentafel* (generation table) used for annuity insurance
-  calculations in Germany.** Generation tables **contain mortality by birth cohort, including the
-  expected future change in mortality** — the improvement is built into the table rather than
-  applied on top of it. **The table was intended to be used for new business from 2005 onwards,
-  and has been in use since June 2004.** The table's numeric content is **not** in this file: the
-  DAV tables are the property of the Deutsche Aktuarvereinigung, are not public, and are **not
-  redistributed by delib**.
+- Content: **DAV 2004 R is a *Generationentafel* used for annuity insurance calculations in
+  Germany**; generation tables **contain mortality by birth cohort, including the expected future
+  change in mortality** — the improvement is built into the table rather than applied on top of it.
+  **It was intended for new business from 2005 onwards and has been in use since June 2004.** The
+  numeric content is **not** in this file: the DAV tables are the property of the Deutsche
+  Aktuarvereinigung, are not public, and are **not redistributed by delib**.
 
 ### R14 — Contemporaneous expositions of DAV 2004 R (DGVFM, Gen Re, qx-Club)
 - Publishers: Deutsche Gesellschaft für Versicherungs- und Finanzmathematik, in *Blätter der
@@ -656,14 +653,11 @@ its procedural requirements (trustee review, notice) were not established** — 
   - https://www.qx-club.de/.cm4all/uproc.php/0/Vortr%C3%A4ge/vortrag_helmert_14092004.pdf?_=173ca294dfb&cdp=a
 - Retrieved: no — egress blocked; established from search-result summaries.
 - Content: the peer-reviewed publication of the derivation, plus three practitioner accounts from
-  **August to October 2004** — that is, between the table's June 2004 first use and its 2005
-  general application [R13]. They date the market's adoption. The Helmert presentation is titled
+  **August to October 2004** — between the table's June 2004 first use and its 2005 general
+  application [R13] — which date the market's adoption. The Helmert presentation is titled
   **"DAV 2004 R und RBx"**, RBx being the *Rentenbestandstafel* for the **existing annuity book**
-  as against new business: this is the only evidence in the corpus that DAV 2004 R comes with a
-  **companion in-force table**, and it is why the extracted facts distinguish the new-business
-  basis from the in-force basis. Slide and abstract content were not established.
-
-
+  as against new business: the only evidence in the corpus that DAV 2004 R has a **companion
+  in-force table**. Slide and abstract content were not established.
 
 ### R15 — Wikipedia (German), "Sterbetafel"
 - Publisher: Wikimedia Foundation
@@ -730,7 +724,6 @@ its procedural requirements (trustee review, notice) were not established** — 
   **No *Rentenfaktor* level, range or table was returned by the summary** — the very question the
   first title asks was not answered by anything the search returned. This is gap 3, the largest
   quantitative hole in the file.
-
 
 ### R20 — Finanztip, "Überschussbeteiligung Lebensversicherung: Arten & Höhe" and "Steuer auf Lebensversicherung"
 - Publisher: Finanztip Verbraucherinformation gemeinnützige GmbH
@@ -887,22 +880,21 @@ its procedural requirements (trustee review, notice) were not established** — 
 
 ### 3. Premium
 
-- Two premium forms exist in the German market for this product: a **laufender Beitrag** (level
-  recurring premium over the *Aufschubzeit*) and an **Einmalbeitrag** (single premium). The
-  recurring form is the one the accumulation mechanics in [S11] describe. **No search result in
-  this session established the market split between the two, the minimum or maximum premium at any
-  carrier, or the permitted range of the *Aufschubdauer*** — see gap 13.
+- Two premium forms exist: a **laufender Beitrag** (level recurring premium over the
+  *Aufschubzeit*) and an **Einmalbeitrag** (single premium); the recurring form is the one the
+  accumulation mechanics in [S11] describe. **No search result established the market split, the
+  minimum or maximum premium at any carrier, or the permitted range of the *Aufschubdauer*** — see
+  gap 13.
 - The premium is decomposed, in the insurer's own words, into the portion **required for risk and
   expense cover** and the remainder, the ***Sparbeitrag***, which is what accumulates: the
   *Deckungskapital* is "the sum of the contributions accumulated at the *Rechnungszins*, **insofar
-  as these are not intended for risk and cost coverage**" [S11]. This one sentence fixes the
-  premium decomposition and the reserve recursion together.
-- Debeka's current-generation wording states the same split in the other direction: **"from the
-  savings portion, Debeka forms a *Deckungskapital* for the guaranteed benefits"** [S12].
+  as these are not intended for risk and cost coverage**" [S11] — one sentence fixing the premium
+  decomposition and the reserve recursion together. Debeka states the same split in the other
+  direction: **"from the savings portion, Debeka forms a *Deckungskapital* for the guaranteed
+  benefits"** [S12].
 - **Payment frequency and the *Ratenzahlungszuschlag*.** German life tariffs load the annual
-  premium for monthly, quarterly or half-yearly payment. **No loading percentage was established
-  by any search in this session, at any carrier** — gap 14. Any figure a delib document uses will
-  be `[std]`.
+  premium for monthly, quarterly or half-yearly payment; **no loading percentage was established at
+  any carrier** (gap 14), so any figure a delib document uses will be `[std]`.
 - ***Zuzahlung*** — an ad-hoc additional single premium into a running contract — is a standard
   German option, but **nothing in the eighteen search results named it**; it is recorded as a gap,
   not a fact (gap 15).
@@ -963,11 +955,10 @@ its procedural requirements (trustee review, notice) were not established** — 
   The ordering of premium credit, charge deduction and interest accrual within a period is **not
   established by any source in this corpus** and is a `[std]` decision for the delib
   implementation, stated explicitly in the processing order of `technical-notes.md`.
-- **The *Deckungskapital* is the quantity that everything else in the contract is defined off**:
-  it is the death benefit in one of the two common designs (section 7), it is the basis of the
-  *Rückkaufswert* (section 12), it is the base of the *beitragsfreie Versicherungsleistung*
-  (section 13), and it is — with surplus and *Bewertungsreserven* added — the capital that the
-  *Rentenfaktor* is applied to at *Rentenbeginn* (section 8).
+- **The *Deckungskapital* is the quantity everything else is defined off**: the death benefit in
+  one of the two common designs (section 7), the basis of the *Rückkaufswert* (section 12) and of
+  the *beitragsfreie Versicherungsleistung* (section 13), and — with surplus and
+  *Bewertungsreserven* added — the capital the *Rentenfaktor* applies to (section 8).
 - The conversion input is stated cleanly by NÜRNBERGER: **the contract value used for
   annuitisation includes any *Überschussbeteiligung* and *Bewertungsreserven*, subject to a
   minimum guaranteed contract value stated in the general contract data** [S9]. In model terms:
@@ -1485,7 +1476,6 @@ Every number in that design that is not tagged above is `[std]`, for one reason:
 establishes the mechanics of this product thoroughly and its levels barely at all.**
 
 ---
-
 
 ## Gaps and caveats
 
