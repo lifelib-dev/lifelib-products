@@ -319,7 +319,7 @@ with the unit liability added at market value. Both are columns of :func:`result
 the identity is verifiable in the frame rather than only in prose.
 
 The shape to expect is a large negative ``net_cf`` in month 1 — on the anchor cell
--1 958,17 €, because the 2.50 % acquisition commission and the issue expense both fall
+-1 966,22 €, because the 2.50 % acquisition commission and the issue expense both fall
 there while the acquisition charge that funds them arrives over sixty months — then a
 thin positive margin that grows with the fund as the *kapitalbezogene* charge compounds
 against it.
@@ -1550,6 +1550,15 @@ def expense_acq_pp(t):
     No German commission scale was established, so any other level would be an unsourced
     number pretending to be an observation.
 
+    ``comm_acq_rate`` is a **flat scalar**, so that equality holds on ``std_gross`` and
+    fails on the two low-load tariffs: on ``std_netto`` and ``std_low`` the assumed
+    commission exceeds the tariff's own acquisition charge and those cells carry a
+    projected loss.  That is the flat assumption showing, not a product fact — a real
+    *Nettotarif* pays **no** acquisition commission at all, the adviser being paid a fee
+    by the client under a separate *Vergütungsvereinbarung*.  It is left flat because the
+    alternative is a second unsourced commission scale, and it is said here rather than
+    left to be discovered in a negative ``net_cf`` total.
+
     It falls at ``t = 1`` and only there, so an in-force model point whose frame opens at
     ``t = 97`` never incurs it.
     """
@@ -1593,7 +1602,7 @@ def net_cf(t):
     therefore absent from this line; what the insurer earns is the charge stack and what it
     bears is its own expenses and the net amount at risk.
 
-    On the anchor cell month 1 is **-1 958,17 EUR** — the acquisition commission and the
+    On the anchor cell month 1 is **-1 966,22 EUR** — the acquisition commission and the
     issue expense both fall there while the acquisition charge that funds them arrives over
     sixty months — after which the margin turns positive and grows with the fund.
     """

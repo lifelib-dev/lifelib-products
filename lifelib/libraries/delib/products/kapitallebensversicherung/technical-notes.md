@@ -21,9 +21,9 @@ are English `lower_snake_case`; German terms of art keep their German form in pr
 
 - **Purpose.** Project **gross best-estimate liability cash flows, undiscounted** — *Beiträge* in;
   *Todesfallleistungen*, *Erlebensfallleistungen* and *Rückkaufswerte* out; insurer expenses and
-  commission — for a single-policy model point on an expected basis, with the three state variables
-  that make the product what it is: the guaranteed *Deckungskapital*, the accumulated
-  *Überschussguthaben* and the accrued *Schlussüberschussanteil*.
+  commission — for a single-policy model point on an expected basis, with the three state variables that
+  make the product what it is: the guaranteed *Deckungskapital*, the accumulated *Überschussguthaben*
+  and the accrued *Schlussüberschussanteil*.
 - **Out of scope, and said so.** No discounting. **No *Deckungsrückstellung***: the model projects the
   contract's *Deckungskapital* — the amount that should be held — not the balance-sheet quantity of
   § 341f HGB [REG-R54]. No *Zinszusatzreserve* [REG-R17], no RfB stock [REG-R10] [REG-R19], no MindZV
@@ -46,10 +46,9 @@ are English `lower_snake_case`; German terms of art keep their German form in pr
 - **Where the frame starts, and `proj_len()`.** `proj_len() = policy_term`: the **last projected period
   index**, the policy year in which the *Ablauf* falls and the *Erlebensfallleistung* is paid. The frame
   runs `t = t_start() … proj_len()` contiguously with `t_start() = duration_init + 1`, so a
-  new-business point opens at `t = 1` and an in-force point at the duration the policy has already run.
-  Hence `result_cf().index[-1] == proj_len()` on every model point, `result_cf().index[0] == t_start()`
-  and `pols_if(t_start()) == pols_if_init()`. **There is no `t = proj_len() + 1` row**: the contract
-  ends when the maturity benefit is paid.
+  new-business point opens at `t = 1` and an in-force point at the duration already run. Hence
+  `result_cf().index[-1] == proj_len()`, `result_cf().index[0] == t_start()` and
+  `pols_if(t_start()) == pols_if_init()` on every model point. **There is no `t = proj_len() + 1` row.**
 - **Timing conventions [std].** *Beiträge* at the **start** of the policy year (annual in advance);
   acquisition expense and initial commission at issue; maintenance expense and renewal commission at
   the start of the year on the in-force; the guaranteed *Deckungskapital* rolling forward over the year
@@ -57,10 +56,9 @@ are English `lower_snake_case`; German terms of art keep their German form in pr
   reserve; death and maturity claims at the **end** of the year; surrender at the end of the year,
   **after** the mortality decrement and **after** the surplus credit.
 - **The Bilanzstichtag becomes the policy anniversary [std].** The sources put the allocation at the
-  *Bilanzstichtag*, 31 December [S9]; on a policy-year grid that date falls inside a policy year for
-  every contract not written on 1 January, so the model allocates at the **policy-year end**. The
-  effect is a timing shift of up to one year in the surplus credit relative to a real book, stated
-  rather than hidden; a calendar-year model would need a two-part first year.
+  *Bilanzstichtag*, 31 December [S9]; on a policy-year grid that falls inside a policy year for every
+  contract not written on 1 January, so the model allocates at the **policy-year end**. The effect is a
+  timing shift of up to one year in the surplus credit, stated rather than hidden.
 - **Age basis.** Age last birthday at issue, stepping at the policy anniversary **[std]** — no located
   German endowment wording states one (`product-spec.md`, footnote 6).
 - **Unisex pricing is a hard constraint.** `sex` is carried and drives the **decrement** lookup, but
@@ -109,16 +107,15 @@ Every column of `model_point_table.csv` is published as a cells of the same name
 | `bonus_si_init` | EUR | Bonus sum insured already bought (*Bonussystem*, in force) | — |
 | `bfz_year` | int | Policy year at whose end *Beitragsfreistellung* is elected; 0 = never; ≤ `duration_init` = already paid-up | 11 (10), 12 (3) |
 
-`sum_assured` and `death_ratio` are the two halves of the *gemischte Versicherung*: the guaranteed
-survival sum is `sum_assured`, the guaranteed death sum is `sum_assured × death_ratio`, and the
-*Mindesttodesfallschutz* [R12] [REG-R45] requires the latter to be at least 50 % of the *Beitragssumme*
-— a **model-point design constraint**, checked when the table is built, not a model formula. And
-`rechnungszins` is a contract term, not a market rate: fixed at conclusion and carried for the whole
-term [REG-R14], which is why the in-force point carries 1,75 % while new business carries 1,00 %.
+`sum_assured` and `death_ratio` are the two halves of the *gemischte Versicherung*, and the
+*Mindesttodesfallschutz* [R12] [REG-R45] requires the death sum to be at least 50 % of the
+*Beitragssumme* — a **model-point design constraint**, checked when the table is built, not a model
+formula. `rechnungszins` is a contract term, not a market rate: fixed at conclusion and carried for the
+whole term [REG-R14], which is why the in-force point carries 1,75 % and new business 1,00 %.
 
-**The fourteen model points.** Model point 1 is the worked example's anchor cell; the other thirteen
-exist to exercise something the anchor does not. Every one satisfies the *Mindesttodesfallschutz*
-[R12] [REG-R45] and carries a `rechnungszins` at or below its cohort's ceiling [REG-R15].
+**The fourteen model points.** Point 1 is the worked example's anchor; the other thirteen each exercise
+something it does not. Every one satisfies the *Mindesttodesfallschutz* [R12] [REG-R45] and carries a
+`rechnungszins` at or below its cohort's ceiling [REG-R15].
 
 | # | What it adds | Key columns |
 |---|---|---|
@@ -161,8 +158,8 @@ confirms the separation from the other direction: the *Deckungsrückstellung* is
 
 **The external CSVs.** Every input is a plain UTF-8 CSV in the model folder's **parent**, read once per
 model by a reader cells in `Data` — the `annuallife/TradLife_A` layout, not `basiclife/BasicTerm_S`'s
-embedded IOSpec. Every file but `model_point_table.csv` carries a final **`provenance`** column, one
-tag per row, which is delib's second ruling and is machine-checked.
+embedded IOSpec. Every file but `model_point_table.csv` carries a final **`provenance`** column, one tag
+per row: delib's second ruling, machine-checked.
 
 | File | Index columns | Value columns |
 |---|---|---|
@@ -206,16 +203,14 @@ distributing the wedge between them.
 | Surplus allocation base and timing | A percentage of the *Deckungskapital* at the allocation date [S3]; allocated at the *Bilanzstichtag* and booked into the *Deckungskapital* [S9]; entitlement from inception [S9] | [S3] [S9] [R1] |
 | *Beteiligung an den Bewertungsreserven* | Half of the amount determined on termination, but only to the extent it exceeds the *Sicherungsbedarf*. **Zero in the base run** | [R1] [R8] [REG-R9] [REG-R24]; zero **[std]** |
 
-1. The published history splits 1994 and 2000 mid-year [REG-R15] and a year-keyed table cannot. Both
-   split years take the **higher** of the two rates — 4,00 % — which makes `check_rechnungszins_cap()`
-   permissive rather than strict in exactly the two years where the model cannot know which half of
-   the year a contract was written in. Years after 2026 carry 1,00 %, the DAV having recommended it
-   for 2026 [R15], held flat thereafter **[std]**.
-2. § 169 Abs. 3 VVG's "gleichmäßige Verteilung … auf die ersten fünf Vertragsjahre" [R2] is
-   implemented as a **straight-line** amortisation of `alpha_cost` in five equal instalments. The
-   alternative reading — a five-year *Zillmerung*, annuitising the cost over a five-year premium
-   period — gives a slightly lower floor at durations 1 to 4 and the same value from duration 5, and
-   is pitfall 5.
+1. The published history splits 1994 and 2000 mid-year [REG-R15] and a year-keyed table cannot, so both
+   split years take the **higher** of the two rates — 4,00 % — making `check_rechnungszins_cap()`
+   permissive rather than strict in exactly the two years where the model cannot know which half of the
+   year a contract was written in. Years after 2026 carry 1,00 %, held flat **[std]** [R15].
+2. § 169 Abs. 3 VVG's "gleichmäßige Verteilung … auf die ersten fünf Vertragsjahre" [R2] is implemented
+   as a **straight-line** amortisation of `alpha_cost` in five equal instalments; the alternative
+   reading — a five-year *Zillmerung* — gives a slightly lower floor at durations 1 to 4 and the same
+   value from duration 5, and is pitfall 5.
 
 ### (b) Insurer-discretionary current elements (snapshot; revisable annually, and may be zero)
 
@@ -228,20 +223,18 @@ distributing the wedge between them.
 | *Stornoabzug* `storno_rate` | 10% of the guaranteed value in years 1–5, 7.5% in 6–10, 5% in 11–15, 2.5% from 16 | observed range 5%–20% of the *Deckungskapital*, **one carrier, sub judice** [S3] [R22] [R30]; schedule **[std]** |
 | *Bewertungsreserven* rate `bwr_rate` | **0.00%** | [R1] [R8] [REG-R9]; zero **[std]** |
 
-3. Level for the whole projection is a modelling choice, not a forecast. The corpus supports a
+3. Level for the whole projection is a modelling choice, not a forecast: the corpus supports a
    **direction** — about one in three insurers raised the rate for 2026, Allianz did not, the caution
-   being attributed to remaining *stille Lasten* [R25] [R26] — and no path. Two alternative paths ship
-   as scenarios so the sensitivity is exercisable rather than argued.
+   attributed to remaining *stille Lasten* [R25] [R26] — and no path, so two alternative paths ship as
+   scenarios and the sensitivity is exercisable rather than argued.
 4. **Nothing in the corpus fixes a terminal-bonus level, for any insurer, in any year** (gap 1). 0.40 %
-   p.a. on the *Deckungskapital* is sized so the terminal share is a visible but clearly secondary part
-   of the maturity benefit; the base run pays it at the *Ablauf* and on death and **not** on surrender,
-   which is the choice that does not invent an entitlement the sources do not describe (`product-spec.md`,
-   footnote 12).
-5. Setting `ans_rate = decl_rate` is a market convention rather than a sourced fact. It matters for one
-   reason and the notes state it: because `ans_rate > rechnungszins`, **the *verzinsliche Ansammlung*
-   out-accumulates the *Bonussystem* at maturity while the *Bonussystem* pays more on an early death**
-   — exactly the asymmetry [R28] records, and the discriminating test between the two systems
-   (pitfall 15). Setting `ans_rate = rechnungszins` would destroy it.
+   p.a. on the *Deckungskapital* makes the terminal share a visible but clearly secondary part of the
+   maturity benefit; paying it at the *Ablauf* and on death and **not** on surrender is the choice that
+   does not invent an entitlement the sources do not describe (`product-spec.md`, footnote 12).
+5. Setting `ans_rate = decl_rate` is a market convention rather than a sourced fact, and it matters for
+   one reason: because `ans_rate > rechnungszins`, **the *verzinsliche Ansammlung* out-accumulates the
+   *Bonussystem* at maturity while the *Bonussystem* pays more on an early death** — exactly the
+   asymmetry [R28] records (pitfall 15). Setting `ans_rate = rechnungszins` would destroy it.
 
 ### (c) Behavioural / experience assumptions (the modeller's view)
 
@@ -277,11 +270,11 @@ early deaths here than a real one — stated rather than corrected by a second u
 DAV 2008 T R / NR are **not suitable for business written without a *Gesundheitsprüfung*** [R14], so
 the whole basis presupposes the underwriting the composite specifies.
 
-**One table for two legs — and why that is a compromise.** The death leg wants a prudent basis with
-mortality *higher* than expected and the survival leg wants one *lower*, so the direction of prudence
-forks and a single first-order table cannot be prudent for both [REG-R47] [REG-R48]. German practice
-resolves this in the tariff rather than the table, and the model follows: one first-order table applied
-to both legs, the compromise named here and asserted as pitfall 13 rather than papered over.
+**One table for two legs — a compromise.** The death leg wants a prudent basis with mortality *higher*
+than expected and the survival leg one *lower*, so the direction of prudence forks and a single
+first-order table cannot be prudent for both [REG-R47] [REG-R48]. German practice resolves this in the
+tariff rather than the table and the model follows: one first-order table for both legs, the compromise
+named here and asserted as pitfall 13 rather than papered over.
 
 **Lapse [std].** The decrement is **surrender only**. `lapse_table.csv`:
 
@@ -318,10 +311,10 @@ row per `cost_id`, because the difference between them **is** the *Kostenübersc
 
 **No charge level of any kind was established for any German carrier** (gap 7). The levels are
 placeholders sized so the first-year acquisition outgo — 300 EUR plus 2,5 % of the *Beitragssumme* —
-modestly exceeds what the *Zillmerung* recovers, so the anchor cell carries the new-business strain a
-real German endowment carries. **The *Effektivkosten* they produce is a validation target, not an
-input**: reproducing one exactly needs the PRIIPs Annex VI algorithm and a specified holding period,
-neither of which delib implements [R9] [R19] [REG-R31] [REG-R32].
+modestly exceeds what the *Zillmerung* recovers, so the anchor carries the new-business strain a real
+German endowment carries. **The *Effektivkosten* they produce is a validation target, not an input**:
+reproducing one needs the PRIIPs Annex VI algorithm and a specified holding period, neither of which
+delib implements [R9] [R19] [REG-R31] [REG-R32].
 
 **Suicide share `suicide_share` = 0.02 [std].** § 161 VVG substitutes the *Rückkaufswert* for the sum
 insured on the suicide sub-cause of death in the first three policy years [R4] [REG-R26]. No source
@@ -483,9 +476,9 @@ on the base is load-bearing**: the *gezillmerte Deckungskapital* is negative in 
 positive rate on a negative base would credit a negative surplus (pitfall 3). It follows that a
 *gezillmert* contract earns **no** interest surplus in its first years even though § 153 entitlement
 runs from inception [S9] — economically right, because there is no fund to earn on, and worth saying
-because it looks like a bug. **The `max(0, ·)` on the rate** is the other half: in the `nil` scenario
-the declared rate is below the guarantee, which is still met in full by the reserve roll-forward, so
-the surplus is zero and not negative (pitfall 1).
+because it looks like a bug. **The `max(0, ·)` on the rate** is the other half: in the `nil` scenario the
+declared rate is below the guarantee, which the reserve roll-forward still meets in full, so the surplus
+is zero and not negative (pitfall 1).
 
 Then the three *Überschussverwendung* systems:
 
@@ -612,9 +605,8 @@ For `t = t_start() … proj_len()`, in this order:
 
 The order of steps 6, 7 and 9 is the one thing a reader should check first. The surplus is declared on
 the reserve **after** the year's interest and **before** the decrements, so a policy dying at the end of
-year `t` receives year `t`'s declared surplus. That follows the sources — the allocation is made at the
-*Bilanzstichtag* to the contracts then in force [S9] — and is the generous reading; allocating after
-the decrements would deny the year's surplus to a decedent.
+year `t` receives year `t`'s declared surplus — which follows the sources, the allocation being made at
+the *Bilanzstichtag* to the contracts then in force [S9], and is the generous reading.
 
 ### Known modeling pitfalls
 
@@ -723,16 +715,15 @@ All formulas are **[std]**; no German calibration evidence exists for any of the
   Modelling it as a scheduled election keeps the unsourced number out of the base run; what that costs
   is stated — a real book converts a material, duration-dependent share to *beitragsfrei*, and this
   model shows that path only where a model point elects it.
-- **Premium-shock lapse [std] (optional module, off in the base run).** Inert on the base contract,
-  whose *Bruttobeitrag* is level, but live under *Beitragsverrechnung*, where a fall in the declared
-  rate raises the *Zahlbeitrag*: `M_shock(t) = 1 + β_shock · max(0, prem_paid_pp(t)/prem_paid_pp(t−1)
-  − 1 − g0)` with `g0 = 0.05` and `β_shock = 1.5` **[std]**; base run `β_shock = 0`.
-- **Rate-gap lapse [std] (optional module, off in the base run).** German surrender behaviour on a
-  savings contract keys on the gap between the declared rate and what is available elsewhere:
-  `lapse_add(t) = a · max(0, ref_rate − decl_rate(t) − tol)` with `a = 3.0`, `tol = 0.5 pp` and
-  `ref_rate` a model Reference **[std]**; base run `a = 0`. **No German calibration of any of these
-  numbers exists in the corpus**, which is why the module ships off. **Selective lapsation is not
-  modelled** either: surrenders on an endowment are wealth- and tax-driven rather than health-driven.
+- **Two dynamic modules, both [std] and both off in the base run.** *Premium-shock lapse* is inert on
+  the base contract, whose *Bruttobeitrag* is level, but live under *Beitragsverrechnung*, where a fall
+  in the declared rate raises the *Zahlbeitrag*: `M_shock(t) = 1 + β_shock · max(0,
+  prem_paid_pp(t)/prem_paid_pp(t−1) − 1 − g0)`, `g0 = 0.05`, `β_shock = 1.5`, base run `β_shock = 0`.
+  *Rate-gap lapse* keys on the gap between the declared rate and what is available elsewhere:
+  `lapse_add(t) = a · max(0, ref_rate − decl_rate(t) − tol)`, `a = 3.0`, `tol = 0.5 pp`, `ref_rate` a
+  model Reference, base run `a = 0`. **No German calibration of any of these numbers exists in the
+  corpus**, which is why both ship off. **Selective lapsation is not modelled** either: surrenders on
+  an endowment are wealth- and tax-driven rather than health-driven.
 - **What the model deliberately does not do.** No premium-default path (§§ 37/38 VVG unresearched, gap
   20); no *Widerruf* decrement (§ 152 VVG unresearched); no dynamic *Beitragsverrechnung* take-up; and
   no management action on the declared rate — the rate is a scenario, and the RfB and its
@@ -822,15 +813,14 @@ The valuation layers consume them and are **cited, never reproduced**.
   below a contract's tariff rate, financed out of the result and, under § 140 VAG's second escape hatch,
   out of the free RfB [REG-R10] [REG-R17]. It exists in no other jurisdiction in this repository and
   **this model does not compute it**, but it matters here: the ZZR is how a high-guarantee cohort
-  consumes the surplus that would otherwise be declared, which is why a delib path is a scenario and
-  not a forecast.
+  consumes the surplus that would otherwise be declared, which is why a delib path is a scenario.
 - **The RfB, the *Schlussüberschussanteilfonds* and the MindZV.** The surplus this model credits is the
   **output** of the insurer's declaration policy, not the MindZV minimum, which is a transfer to the RfB
-  — 90 % of the *Kapitalanlageergebnis* after deducting the *Rechnungszinsen*, 90 % of the
-  *Risikoergebnis*, 50 % of the *übriges Ergebnis*, *Direktgutschrift* deducted, *Alt-* and *Neubestand*
-  separate [R6] [REG-R18] — with the RfB [REG-R10], its collective part [REG-R19] and the
+  — 90 % of the *Kapitalanlageergebnis* after the *Rechnungszinsen*, 90 % of the *Risikoergebnis*, 50 %
+  of the *übriges Ergebnis*, *Direktgutschrift* deducted, *Alt-* and *Neubestand* separate [R6]
+  [REG-R18] — with the RfB [REG-R10], its collective part [REG-R19] and the
   *Schlussüberschussanteilfonds* of § 28 RechVersV [REG-R54] between it and the policy. **None of that
-  is modelled**, and a delib document must not present the quotas as if they determined a declared rate.
+  is modelled.**
 - **Solvabilität II.** Technical provisions are a best estimate — the probability-weighted average of
   future cash flows discounted at the relevant risk-free term structure — plus a risk margin [REG-R1]
   [REG-R2] [REG-R6], with EIOPA publishing the curves monthly and § 83 VAG making their use binding
@@ -856,45 +846,49 @@ The valuation layers consume them and are **cited, never reproduced**.
 
 In rough order of leverage on this product.
 
-1. **The declared-rate path.** `decl_rate` sets `zins_ueberschuss_rate` one-for-one above the guarantee,
-   and the credit compounds at `ans_rate` for up to twenty-five years, so it dominates the maturity
-   benefit and every surrender value after the early durations. The base run is **one carrier's 2026
-   rate held level forever** [S11]; the `low` and `nil` scenarios exist so the range is exercisable.
-   And the base rate is for an **endowment** book while the only market averages available are for the
-   **annuity** [R25] — the identity of the two is plausible and [unverified] (gap 2).
+1. **The declared-rate path.** `decl_rate` sets `zins_ueberschuss_rate` one-for-one above the
+   guarantee, and the credit compounds at `ans_rate` for up to twenty-five years, so it dominates
+   the maturity benefit and every surrender value after the early durations. The base run is **one
+   carrier's 2026 rate held level forever** [S11]; the `low` and `nil` scenarios exist so the range
+   is exercisable. And the base rate is for an **endowment** book while the only market averages
+   available are for the **annuity** [R25] — the identity of the two is plausible and [unverified]
+   (gap 2).
 2. **The *Zillmerung* and the § 169 floor together.** `alpha_rate` at the 25 ‰ ceiling drives the
    negative early reserve, the whole early-duration surrender-value profile, the year-one strain and
    the duration at which the contract first earns any interest surplus at all. The ceiling is cited
    [R7] [REG-R16]; **the level is [std] and no German carrier's actual acquisition cost is public**
-   (gap 7). Halving it moves the first five surrender values by more than any other single parameter.
-3. **The mortality basis, in two directions at once.** The proxy's level and slope are both unsourced,
-   and the same table serves a death leg and a survival leg whose directions of prudence are opposite
-   [REG-R47] [REG-R48]. The survival leg dominates a twenty-five-year endowment's reserve, so a level
-   error matters less than on a term cover — but `mort_be_factor` moves the *Risikoüberschuss* the model
-   does **not** compute, so the sensitivity is understated by construction, and the proxy carries **no
-   selection**, which overstates early deaths on newly written business.
-4. **The lapse shape.** Cumulative surrender over twenty-five years removes a large part of the cohort
-   before the *Ablauf*, and on an endowment the late years are the profitable ones, so the assumption
-   governs how much of the loaded tail is collected. The duration-12 spike is the one feature the
-   evidence supports [R10] [REG-R45]; **the levels are unsourced**, the market aggregates are not
-   surrender rates [R20], and a user with experience data should replace the table.
-5. **The terminal bonus, and the *Überschussverwendung* choice.** `term_rate = 0.40%` has **no source at
-   all** (gap 1), accrues on the reserve for the whole term, and its payability on surrender — zero here
-   — is a second unsourced choice that would move surrender values most. And switching `ansammlung` →
-   `bonus` moves benefit **between** death and maturity without changing the surplus credited, while
-   `→ beitragsverrechnung` moves it out of the benefit stream into the premium stream; the corpus does
-   not establish which system the market uses [R28] (gap 4), so this is a structural rather than a
-   parametric sensitivity.
+   (gap 7). Halving it moves the first five surrender values by more than any other single
+   parameter.
+3. **The mortality basis, in two directions at once.** The proxy's level and slope are both
+   unsourced, and the same table serves a death leg and a survival leg whose directions of prudence
+   are opposite [REG-R47] [REG-R48]. The survival leg dominates a twenty-five-year endowment's
+   reserve, so a level error matters less than on a term cover — but `mort_be_factor` moves the
+   *Risikoüberschuss* the model does **not** compute, so the sensitivity is understated by
+   construction, and the proxy carries **no selection**, which overstates early deaths on newly
+   written business.
+4. **The lapse shape.** Cumulative surrender over twenty-five years removes a large part of the
+   cohort before the *Ablauf*, and on an endowment the late years are the profitable ones, so the
+   assumption governs how much of the loaded tail is collected. The duration-12 spike is the one
+   feature the evidence supports [R10] [REG-R45]; **the levels are unsourced**, the market
+   aggregates are not surrender rates [R20], and a user with experience data should replace the
+   table.
+5. **The terminal bonus, and the *Überschussverwendung* choice.** `term_rate = 0.40%` has **no
+   source at all** (gap 1), accrues on the reserve for the whole term, and its payability on
+   surrender — zero here — is a second unsourced choice that would move surrender values most. And
+   switching `ansammlung` → `bonus` moves benefit **between** death and maturity without changing
+   the surplus credited, while `→ beitragsverrechnung` moves it out of the benefit stream into the
+   premium stream; the corpus does not establish which system the market uses [R28] (gap 4), so this
+   is a structural rather than a parametric sensitivity.
 6. **Two unmodelled paths: the *Beitragsfreistellung* take-up, and the balance-sheet levers.** The
    paid-up election is deterministic because no take-up rate exists in the corpus, yet a real German
    book converts a material share [R20] [REG-R28], and a projection showing none overstates future
-   premium income and future benefits together. Alongside it, the *Bewertungsreserven* share is set to
-   zero on the reasoning that the *Sicherungsbedarf* has routinely exhausted it [R8] [REG-R9], and the
-   ZZR — how a high-guarantee cohort depresses the declared rate for everyone [REG-R17] — is not
-   computed. All three would move the answer and none is a gross liability cash flow.
+   premium income and future benefits together. Alongside it, the *Bewertungsreserven* share is set
+   to zero on the reasoning that the *Sicherungsbedarf* has routinely exhausted it [R8] [REG-R9],
+   and the ZZR — how a high-guarantee cohort depresses the declared rate for everyone [REG-R17] — is
+   not computed. All three would move the answer and none is a gross liability cash flow.
 7. **Data provenance.** Every charge level, every behavioural rate, the terminal bonus, the
-   *Ansammlungszinssatz*, the *Stornoabzug* schedule, the entry age, the sum insured and the mortality
-   proxy are **[std]**; the corpus's only quantified carrier terms are Debeka's *Stornoabzug*, sub
-   judice [S3] [R22] [R30], and Allianz's declared rate [S11]. **A calibration pass against a
-   *Produktinformationsblatt*, a PRIIP-*Basisinformationsblatt* and a named insurer's § 28 RechVersV
-   *Anhang* disclosure [REG-R54] is required before any quantitative use.**
+   *Ansammlungszinssatz*, the *Stornoabzug* schedule, the entry age, the sum insured and the
+   mortality proxy are **[std]**; the corpus's only quantified carrier terms are Debeka's
+   *Stornoabzug*, sub judice [S3] [R22] [R30], and Allianz's declared rate [S11]. **A calibration
+   pass against a *Produktinformationsblatt*, a PRIIP-*Basisinformationsblatt* and a named insurer's
+   § 28 RechVersV *Anhang* disclosure [REG-R54] is required before any quantitative use.**
