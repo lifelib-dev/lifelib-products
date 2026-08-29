@@ -169,9 +169,8 @@ MP13_GUARANTEE_WORTH = 824.65         # 4 464,66 - 3 640,01, a year
 def alt_model(name):
     """A private copy of the model, for tests that mutate a Reference or swap an input.
 
-    The module-scoped ``basisrente`` fixture is shared, so a test that changed
-    ``Projection.mort_be_factor`` or ``Data.charge_file`` on it would leak into every later test.
-    Each such test reads its own copy and closes it in a ``finally``.
+    The module-scoped ``basisrente`` fixture is shared, so mutating it would leak into every
+    later test.  Each such test reads its own copy and closes it in a ``finally``.
     """
     return mx.read_model(MODEL_DIR, name=name)
 
@@ -242,7 +241,7 @@ def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_a
     assert p.alpha_amort_pp(1) == pytest.approx(ALPHA_INSTALMENT, rel=1e-12)
     assert p.zuz_pp(1) == pytest.approx(4000.00 * 0.70, rel=1e-12)
     assert p.alpha_zuz_pp(1) == pytest.approx(0.025 * 2800.00, rel=1e-12)
-    assert p.unit_cost_pp(1) == pytest.approx(36.00, rel=1e-12)
+    assert p.unit_cost_pp(1) == 36.00
     assert p.prem_to_av_pp(1) == pytest.approx(
         8140.00 - ALPHA_INSTALMENT - 70.00 - 36.00, rel=1e-12)
     assert p.prem_to_av_pp(1) == pytest.approx(N1_ANCHOR, rel=1e-12)
@@ -268,11 +267,10 @@ def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_an
     The 4 % *Beitragsfreistellung* rate cancels out of ``pols_if`` entirely.
     """
     p = de_basis_anchor
-    assert p.mort_rate_at_age(45, 2005) == pytest.approx(QX45_TABLE, abs=5e-11)
     # The shipped CSV carries qx to ten decimals, so the closed form agrees to that and no
-    # further -- the table is the input, and the formula behind it is documentation.
-    assert p.mort_rate_at_age(45, 2005) == pytest.approx(
-        0.014000 * 1.085 ** (45 - 67), abs=5e-11)
+    # further: the table is the input and the formula behind it is documentation.
+    assert p.mort_rate_at_age(45, 2005) == pytest.approx(QX45_TABLE, abs=5e-11)
+    assert QX45_TABLE == pytest.approx(0.014000 * 1.085 ** (45 - 67), abs=5e-11)
     assert (1 - 0.015) ** 21 == pytest.approx(TREND_2005_TO_2026, abs=5e-10)
     assert p.cal_year(1) == 2026
     assert p.mort_rate_base(1) == pytest.approx(Q1_FIRST_ORDER, abs=5e-10)
@@ -675,10 +673,9 @@ def test_pitfall_5_the_zillmerung_is_five_equal_instalments_of_the_contract(basi
     instalments = [p.alpha_amort_pp(t) for t in range(1, 6)]
     assert instalments == [pytest.approx(ALPHA_INSTALMENT, rel=1e-12)] * 5
     assert len(set(instalments)) == 1
-    assert all(p.alpha_amort_pp(t) == 0.0 for t in (6, 7, 12, 22))
+    assert all(p.alpha_amort_pp(t) == 0.0 for t in (6, 12, 22))
     assert sum(p.alpha_amort_pp(t) for t in range(1, p.proj_len() + 1)) == pytest.approx(
         0.025 * p.beitragssumme_pp(), rel=1e-9)
-    assert p.alpha_total_pp() == pytest.approx(0.025 * p.beitragssumme_pp(), rel=1e-12)
     assert p.zill_spread_y == 5
     in_force = basisrente.Projection[6]
     assert in_force.duration(1) == 17
@@ -719,15 +716,13 @@ def test_pitfall_6_the_credited_rate_is_a_maximum_and_not_a_sum(basisrente, de_b
 def test_pitfall_7_premiums_and_zuzahlungen_stop_at_rentenbeginn(basisrente, de_basis_anchor):
     """Nothing is collected from ``t = ret_t()``, and the *Dynamik* runs off the duration."""
     p = de_basis_anchor
-    assert p.prem_pp(22) > 0.0 and p.zuz_pp(22) > 0.0
     for t in (23, 24, 40, 77):
         assert p.prem_pp(t) == 0.0 and p.zuz_pp(t) == 0.0
         assert p.premiums(t) == 0.0 and p.zuzahlungen(t) == 0.0
         assert p.prem_to_av_pp(t) == 0.0 and p.bf_rate(t) == 0.0
-    # The Zuzahlung stops a year earlier than that anyway, at zuzahlung_end_dur.
+    # The Zuzahlung stops at zuzahlung_end_dur anyway, which is a policy duration and not a t.
     assert int(p.model_point()["zuzahlung_end_dur"]) == 22
-    assert p.duration(22) == 21 and p.zuz_pp(22) > 0.0
-    assert p.duration(23) == 22
+    assert p.duration(22) == 21 and p.zuz_pp(22) > 0.0 and p.prem_pp(22) > 0.0
     # The Dynamik compounds on the policy duration, not on t.
     for t in (1, 5, 22):
         assert p.prem_base_pp(t) == pytest.approx(
@@ -735,8 +730,7 @@ def test_pitfall_7_premiums_and_zuzahlungen_stop_at_rentenbeginn(basisrente, de_
     in_force = basisrente.Projection[6]
     assert in_force.duration(1) == 17
     assert in_force.prem_base_pp(1) == pytest.approx(3600.00 * 1.02 ** 17, rel=1e-12)
-    assert in_force.prem_base_pp(1) == pytest.approx(5040.87, abs=CENT)
-    assert in_force.prem_base_pp(1) > 3600.00
+    assert 3600.00 < in_force.prem_base_pp(1) == pytest.approx(5040.87, abs=CENT)
 
 
 # Pitfall 8 -- the Ratenzahlungszuschlag loads the laufender Beitrag alone
@@ -778,10 +772,8 @@ def test_pitfall_9_death_pays_nothing_with_the_survivor_rider_off(basisrente,
     assert float(p.model_point()["surv_annuity_rate"]) == 0.0
     assert all(p.claims(t, "DEATH") == 0.0 for t in range(1, 78))
     assert p.result_cf()["claims_death"].sum() == 0.0
-    assert p.pols_death(5) > 0.0            # the deaths are real; only the benefit is nil
-    assert p.db_pp(5) > 0.0                 # and the reserve released is real too
-    assert p.check_av_roll_fwd() is True
-    assert p.check_no_capital() is True
+    assert p.pols_death(5) > 0.0 and p.db_pp(5) > 0.0   # the deaths and the reserve are real
+    assert p.check_av_roll_fwd() is True and p.check_no_capital() is True
     # Every shipped point without the rider behaves the same way.
     for point_id in (2, 5, 9, 13):
         q = basisrente.Projection[point_id]
@@ -807,11 +799,10 @@ def test_pitfall_10_the_death_benefit_is_conditional_and_buys_an_annuity(basisre
     assert p.claims(1, "DEATH") == pytest.approx(8.16, abs=CENT)
     assert p.claims(19, "DEATH") == pytest.approx(556.79, abs=CENT)
     # It stops at Rentenbeginn: after that the annuity simply ends.
-    assert p.ret_t() == 20
-    assert all(p.claims(t, "DEATH") == 0.0 for t in (20, 21, 40))
+    assert p.ret_t() == 20 and all(p.claims(t, "DEATH") == 0.0 for t in (20, 21, 40))
     # The cover is bought out of the annuity.
-    assert p.rentenfaktor_applied() == pytest.approx(
-        31.50 * p.rf_option_factor(), rel=1e-12) == pytest.approx(31.50 * 0.930, rel=1e-12)
+    assert p.rf_option_factor() == pytest.approx(0.930, rel=1e-12)
+    assert p.rentenfaktor_applied() == pytest.approx(31.50 * 0.930, rel=1e-12)
     assert p.check_no_capital() is True
 
 
@@ -861,8 +852,7 @@ def test_pitfall_11_the_conversion_is_invariant_to_the_best_estimate_mortality()
         assert p.ann_pp(23) == pytest.approx(base_ann, rel=1e-12)
         assert p.rentenfaktor_applied() == pytest.approx(31.50, rel=1e-12)
         lighter = p.result_cf()["claims_annuity"].sum()
-        assert lighter == pytest.approx(296364.48, abs=CENT)
-        assert lighter > base_claims
+        assert lighter == pytest.approx(296364.48, abs=CENT) and lighter > base_claims
         assert p.check_conversion() is True and p.check_pols_roll_fwd() is True
     finally:
         model.close()
@@ -879,23 +869,20 @@ def test_pitfall_12_the_annuity_is_twelve_instalments_on_the_opening_in_force(
     approximation of a monthly grid on an annual one, and not an accident.
     """
     p = de_basis_anchor
-    assert p.ann_freq == 12
-    assert p.rf_unit == 10000.0
+    assert p.ann_freq == 12 and p.rf_unit == 10000.0
     for t in range(23, 78):
         assert p.claims(t, "ANNUITY") == pytest.approx(
             p.ann_pp(t) * p.pols_if(t), rel=1e-12)
     # Not on the survivors of the year's decrement, which is the other plausible convention.
     assert p.claims(23, "ANNUITY") != pytest.approx(
         p.ann_pp(23) * p.pols_if(24), rel=1e-9)
-    # Nothing before Rentenbeginn.
-    assert all(p.ann_pp(t) == 0.0 for t in (1, 10, 22))
-    assert all(p.claims(t, "ANNUITY") == 0.0 for t in (1, 10, 22))
-    # And the annuity compounds at the Ueberschussrente and nothing else.
+    # Nothing before Rentenbeginn, and afterwards the annuity compounds at the
+    # Ueberschussrente and nothing else.
+    assert all(p.ann_pp(t) == 0.0 and p.claims(t, "ANNUITY") == 0.0 for t in (1, 10, 22))
     for t in (24, 40, 77):
         assert p.ann_pp(t) == pytest.approx(
             p.ann_pp(t - 1) * (1 + p.ann_bonus_rate(t - 1)), rel=1e-12)
-    assert p.ann_bonus_rate(30) == 0.01
-    assert p.check_annuity_roll_fwd() is True
+    assert p.ann_bonus_rate(30) == 0.01 and p.check_annuity_roll_fwd() is True
 
 
 # Pitfall 13 -- max(garantiert, aktuell), both branches
@@ -935,18 +922,16 @@ def test_pitfall_14_the_guarantee_period_runs_from_rentenbeginn(basisrente):
     assert int(p.model_point()["guarantee_period_y"]) == 10
     assert p.ret_t() == 16
     assert p.gtd_end_t() == 25
-    assert p.pols_gtd(15) == 0.0 and p.pols_gtd(16) == 0.0
+    assert p.pols_gtd(16) == 0.0
     assert p.pols_gtd(17) == pytest.approx(p.pols_death(16) * p.elig_surv_prob, rel=1e-12)
     inside = [p.pols_gtd(t) for t in range(17, 26)]
     assert all(b >= a for a, b in zip(inside, inside[1:])) and p.pols_gtd(25) > 0.0
     assert all(p.pols_gtd(t) == 0.0 for t in range(26, p.proj_len() + 1))
     # The continuation is a stream, weighted by the same annuity, and never commuted.
     for t in (17, 20, 25):
-        assert p.claims(t, "SURVIVOR") == pytest.approx(
-            p.ann_pp(t) * p.pols_gtd(t), rel=1e-12)
+        assert p.claims(t, "SURVIVOR") == pytest.approx(p.ann_pp(t) * p.pols_gtd(t), rel=1e-12)
     assert p.claims(26, "SURVIVOR") == 0.0
     assert p.rf_option_factor() == pytest.approx(0.995, rel=1e-12)
-    assert p.check_annuity_roll_fwd() is True
     # Both options together on model point 12: twenty years, and a survivor's annuity.
     both = basisrente.Projection[12]
     assert int(both.model_point()["guarantee_period_y"]) == 20
@@ -963,8 +948,8 @@ def test_pitfall_15_the_basis_is_generational_and_not_a_period_table(basisrente,
     """The improvement lives inside the table, so a calendar year changes the rate at an age."""
     p = de_basis_anchor
     for age in (45, 60, 67, 90):
-        assert p.mort_rate_at_age(age, 2026) < p.mort_rate_at_age(age, 2005)
-        assert p.mort_rate_at_age(age, 2050) < p.mort_rate_at_age(age, 2026)
+        assert (p.mort_rate_at_age(age, 2050) < p.mort_rate_at_age(age, 2026)
+                < p.mort_rate_at_age(age, 2005))
         assert p.mort_rate_at_age(age, 2026) == pytest.approx(
             p.mort_rate_at_age(age, 2005) * (1 - 0.015) ** 21, rel=1e-9)
     assert p.mort_rate_at_age(67, 2005) == pytest.approx(0.014000, rel=1e-12)

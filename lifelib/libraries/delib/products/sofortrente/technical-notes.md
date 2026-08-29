@@ -1035,9 +1035,9 @@ priced into the guarantee. Everything else differs:
 | `annuity_payments` | 101,091.33 | 90,804.02 | 10,287.32 |
 | `claims_guarantee` | 3,428.03 | 3,097.97 | 330.06 |
 | `expenses` | 4,228.28 | 4,228.28 | 0.00 |
-| `net_cf` | −8,747.64 | **+1,869.74** | −10,617.38 |
+| `net_cf` | −8,747.64 | **+1,869.74** | −10,617.37 |
 
-The whole modelled *Überschussrente* is **10 617,38 €** undiscounted, and **none of it is
+The whole modelled *Überschussrente* is **10 617,37 €** undiscounted, and **none of it is
 guaranteed**. It is also what turns the sign of the undiscounted total: on the guaranteed annuity
 alone the anchor cell collects 1 869,74 € more than it pays out over fifty-six years, and with the
 surplus it pays out 8 747,64 € more than it collects. Neither figure is an economic result — these
@@ -1047,7 +1047,8 @@ distribute, and pricing it is what a sensitivity on this product is for.
 
 ### Corrections made to these notes when the model was built
 
-Six, all in this document, none in `product-spec.md`, `sources.md` or the frozen research file.
+Seven, all in this document, none in `product-spec.md`, `sources.md` or the frozen research
+file.
 Each is recorded because a reader comparing an earlier draft with this one should not have to
 guess which side moved.
 
@@ -1080,6 +1081,14 @@ guess which side moved.
    further. Model points 1 and 9 measure it directly at **0,34 %**, and the sensitivity list now
    says so. The research file is frozen and is not amended; the discrepancy is recorded here
    instead, and it is a real error in that file's section 8 rather than a difference of basis.
+7. **The *Überschussrente* total of the surplus-off comparison is 10 617,37 €, not
+   10 617,38 €.** The difference column of that table was formed by subtracting the two
+   **printed** totals — `−8 747,64 − 1 869,74` — where every other total in this document is
+   summed at full precision and then rounded. At full precision the difference is
+   `−8 747,637775 − 1 869,737028 = −10 617,374803`, which rounds to −10 617,37. The
+   `annuity_payments` and `claims_guarantee` cells of the same row were already right; only
+   `net_cf` fell on the wrong side of a half-cent. `tests/test_sofortrente_de.py` asserts the
+   full-precision figure.
 
 ---
 

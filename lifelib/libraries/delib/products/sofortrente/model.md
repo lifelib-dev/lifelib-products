@@ -167,7 +167,7 @@ asserting equality would be a wrong test rather than a right one. Nor does the b
 to the *konstante* form when the insurer earns less than projected [R21] — the notes'
 sensitivity section prices that downside instead.
 
-On the anchor cell the whole modelled *Überschussrente* is **10 617,38 €** undiscounted over
+On the anchor cell the whole modelled *Überschussrente* is **10 617,37 €** undiscounted over
 fifty-six years, against a guaranteed stream of 90 804,02 €. It is also what turns the sign
 of the undiscounted total: model point 14 is the anchor with the surplus switched off and
 collects 1 869,74 € more than it pays, where the anchor pays out 8 747,64 € more than it

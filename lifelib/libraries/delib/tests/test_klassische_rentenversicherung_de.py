@@ -250,11 +250,7 @@ CHECKS = ("check_net_cf", "check_pols_roll_fwd", "check_decrement_closure",
           "check_av_roll_fwd", "check_av_sur_roll_fwd", "check_prem_split",
           "check_cv_floor", "check_annuity_conv", "check_annuity_guarantee")
 
-
-# ---------------------------------------------------------------------------
-# The worked example
-
-
+# --- The worked example
 @pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE))
 def test_worked_example_row(de_rv_anchor, t):
     """Every cell of the notes' twenty-three-row table, to the displayed precision."""
@@ -441,11 +437,7 @@ def test_the_rentengarantiezeit_costs_what_the_notes_say(de_rv_anchor):
     assert p.annuity_payments(27) - survivor_weighted == pytest.approx(64.44, abs=CENT)
     assert p.pols_annuity(28) == pytest.approx(p.pols_if(28), rel=1e-12)
 
-
-# ---------------------------------------------------------------------------
-# Variant A -- the Einmalbeitrag form (model point 2)
-
-
+# --- Variant A -- the Einmalbeitrag form (model point 2)
 @pytest.mark.parametrize("t", sorted(EINMAL))
 def test_einmalbeitrag_variant_row(klassische_rentenversicherung, t):
     """The notes' variant A table: a 55-year-old woman, one premium, twelve-year deferment."""
@@ -491,11 +483,7 @@ def test_the_einmalbeitrag_variant_reads_as_the_notes_say(klassische_rentenversi
     assert float(p.model_point()["kapitalwahl_rate"]) == 0.0
     assert df["claims_commutation"].sum() == 0.0
 
-
-# ---------------------------------------------------------------------------
-# Variant B -- the 2,75 % legacy vintage (model point 6)
-
-
+# --- Variant B -- the 2,75 % legacy vintage (model point 6)
 @pytest.mark.parametrize("t", sorted(LEGACY))
 def test_legacy_vintage_variant_row(klassische_rentenversicherung, t):
     """The notes' variant B table, including the two crediting columns whose ratio is the point."""
@@ -545,11 +533,7 @@ def test_the_legacy_vintage_variant_reads_as_the_notes_say(klassische_rentenvers
     assert p.cv_floor_pp(21) < p.cv_tariff_pp(21)               # inoperative twenty years in
     assert p.alpha_total_pp() == pytest.approx(0.040 * 64800.00, abs=CENT)
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 1 -- adding the declared rate on top of the guarantee
-
-
+# --- Pitfall 1 -- adding the declared rate on top of the guarantee
 def test_pitfall_1_the_declared_rate_is_not_added_on_top_of_the_guarantee(
         klassische_rentenversicherung, de_rv_anchor, tmp_path):
     """``bonus_rate = max(0, decl_rate - int_rate_guar)``, on the same base as the guarantee.
@@ -584,11 +568,7 @@ def test_pitfall_1_the_declared_rate_is_not_added_on_top_of_the_guarantee(
     assert all(legacy.bonus_rate(t) == 0.0 for t in range(21, 26))
     assert all(legacy.int_credited_pp(t) > 0.0 for t in range(21, 26))
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 2 -- the within-year order
-
-
+# --- Pitfall 2 -- the within-year order
 def test_pitfall_2_the_within_year_order_is_premium_then_charges_then_interest(de_rv_anchor):
     """Interest is credited on the post-premium, post-charge balance and on nothing else.
 
@@ -620,11 +600,7 @@ def test_pitfall_2_the_within_year_order_is_premium_then_charges_then_interest(d
     assert p.nar_pp(2) == pytest.approx(
         max(0.0, p.db_base_pp(2) - p.av_pp(2)), rel=1e-12)
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 3 -- the applied Rentenfaktor
-
-
+# --- Pitfall 3 -- the applied Rentenfaktor
 def test_pitfall_3_the_applied_rentenfaktor_is_the_higher_of_two(
         klassische_rentenversicherung, de_rv_anchor):
     """``max(garantierter, aktueller)``, with both branches shipped and both exercised."""
@@ -648,11 +624,7 @@ def test_pitfall_3_the_applied_rentenfaktor_is_the_higher_of_two(
         assert q.annuity_rate_appl() >= q.annuity_rate_guar()
         assert q.check_annuity_conv() is True
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 4 -- weighting the guaranteed annuity by survivors
-
-
+# --- Pitfall 4 -- weighting the guaranteed annuity by survivors
 def test_pitfall_4_the_guaranteed_annuity_is_not_weighted_by_survivors(
         klassische_rentenversicherung, de_rv_anchor):
     """Inside the *Rentengarantiezeit* the instalment is due whether the annuitant lives or not."""
@@ -684,11 +656,7 @@ def test_pitfall_4_the_guaranteed_annuity_is_not_weighted_by_survivors(
                for t in range(n9 + 1, n9 + 6))
     assert none_rgz.check_annuity_guarantee() is True
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 5 -- treating Beitragsfreistellung as a lapse
-
-
+# --- Pitfall 5 -- treating Beitragsfreistellung as a lapse
 def test_pitfall_5_beitragsfreistellung_is_not_a_lapse(klassische_rentenversicherung):
     """The conversion moves no policy; the contract keeps its vintage and its factor.
 
@@ -735,11 +703,7 @@ def test_pitfall_5_beitragsfreistellung_is_not_a_lapse(klassische_rentenversiche
     assert cash.pols_if(3) == 0.0
     assert cash.result_cf().loc[3:].abs().sum().sum() == 0.0
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 6 -- booking the Kostenbeitrag as an expense
-
-
+# --- Pitfall 6 -- booking the Kostenbeitrag as an expense
 def test_pitfall_6_the_kostenbeitrag_is_not_an_expense(de_rv_anchor, tmp_path):
     """``expenses`` is invariant to ``beta_rate`` and ``gamma_rate``; ``av_pp(t+1)`` is not.
 
@@ -776,11 +740,7 @@ def test_pitfall_6_the_kostenbeitrag_is_not_an_expense(de_rv_anchor, tmp_path):
     finally:
         model.close()
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 7 -- computing the surrender value off the zillmered reserve
-
-
+# --- Pitfall 7 -- computing the surrender value off the zillmered reserve
 def test_pitfall_7_the_surrender_value_is_floored_at_the_spread_reserve(de_rv_anchor):
     """The Sec. 169(3) floor binds through t = 4 on the anchor cell and stops binding at t = 5.
 
@@ -814,11 +774,7 @@ def test_pitfall_7_the_surrender_value_is_floored_at_the_spread_reserve(de_rv_an
         (p.cv_floor_pp(2) - p.cv_tariff_pp(2)) * p.pols_lapse(2), rel=1e-9)
     assert p.check_cv_floor() is True
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 8 -- letting the Stornoabzug recover acquisition costs
-
-
+# --- Pitfall 8 -- letting the Stornoabzug recover acquisition costs
 def test_pitfall_8_the_stornoabzug_cannot_recover_acquisition_costs(de_rv_anchor, tmp_path):
     """A flat percentage of the pre-deduction value, with no duration term, and never below
     the floor however large it is set.
@@ -860,11 +816,7 @@ def test_pitfall_8_the_stornoabzug_cannot_recover_acquisition_costs(de_rv_anchor
     finally:
         model.close()
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 9 -- using one mortality basis where the product uses two
-
-
+# --- Pitfall 9 -- using one mortality basis where the product uses two
 def test_pitfall_9_the_product_uses_two_mortality_bases(de_rv_anchor):
     """First order fixes the risk charge and the guarantees; second order drives the projection.
 
@@ -896,11 +848,7 @@ def test_pitfall_9_the_product_uses_two_mortality_bases(de_rv_anchor):
     assert p.mort_rate_guar(71) == 1.0                  # closed at omega_age - 1
     assert p.mort_rate(71) == 1.0                       # and capped, not 1.15
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 10 -- using a period mortality table
-
-
+# --- Pitfall 10 -- using a period mortality table
 def test_pitfall_10_the_mortality_surface_is_generational_not_period(de_rv_anchor):
     """``mort_rate_guar`` depends on ``calendar_year(t)`` as well as ``age(t)``.
 
@@ -926,11 +874,7 @@ def test_pitfall_10_the_mortality_surface_is_generational_not_period(de_rv_ancho
     assert p.mort_rate_guar(1) < p.mort_rate_at_age(50)
     assert p.mort_rate_guar(40) < p.mort_rate_at_age(p.age(40))
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 11 -- charging the risk premium on a zero net amount at risk
-
-
+# --- Pitfall 11 -- charging the risk premium on a zero net amount at risk
 def test_pitfall_11_no_risk_premium_on_a_zero_net_amount_at_risk(
         klassische_rentenversicherung, de_rv_anchor):
     """With ``death_benefit_form = deckungskapital`` the benefit **is** the reserve.
@@ -962,11 +906,7 @@ def test_pitfall_11_no_risk_premium_on_a_zero_net_amount_at_risk(
     # The risk charge is zero after the Rentenbeginn on every design.
     assert all(p.charge_risk_pp(t) == 0.0 for t in (18, 30, 71))
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 12 -- deducting the payout-phase administration charge from the annuity
-
-
+# --- Pitfall 12 -- deducting the payout-phase administration charge from the annuity
 def test_pitfall_12_the_payout_administration_charge_is_not_deducted(de_rv_anchor):
     """``annuity_admin_rate`` ships in the charge table at 1,5 % and is never applied.
 
@@ -1000,11 +940,7 @@ def test_pitfall_12_the_payout_administration_charge_is_not_deducted(de_rv_ancho
     assert all(p.annuity_sur_mth_pp(t) == pytest.approx(p.annuity_sur_mth_pp(18), rel=1e-12)
                for t in (27, 40, 60))
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 13 -- paying a death benefit after the Rentenbeginn
-
-
+# --- Pitfall 13 -- paying a death benefit after the Rentenbeginn
 def test_pitfall_13_no_death_benefit_after_the_rentenbeginn(klassische_rentenversicherung):
     """*Beitragsrückgewähr in der Rentenbezugsphase* was established by no source, so it is
     not asserted anywhere: ``claims_death(t) = 0`` for every ``t > n``, on every model point.
@@ -1029,11 +965,7 @@ def test_pitfall_13_no_death_benefit_after_the_rentenbeginn(klassische_rentenver
                    "pols_survivor", "hinterbliebenenrente_pp"):
         assert absent not in names, absent
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 14 -- letting the Kapitalwahlrecht leave the account behind
-
-
+# --- Pitfall 14 -- letting the Kapitalwahlrecht leave the account behind
 def test_pitfall_14_the_kapitalwahlrecht_leaves_no_account_behind(
         klassische_rentenversicherung, de_rv_anchor):
     """Commuters receive ``capital_conv_pp``, the same capital the annuitants convert."""
@@ -1060,11 +992,7 @@ def test_pitfall_14_the_kapitalwahlrecht_leaves_no_account_behind(
     assert full.result_cf().loc[n9 + 1:].abs().sum().sum() == 0.0
     assert full.check_decrement_closure() is True
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 15 -- forgetting that the guarantee vintage is a model-point attribute
-
-
+# --- Pitfall 15 -- forgetting that the guarantee vintage is a model-point attribute
 def test_pitfall_15_the_guarantee_vintage_is_a_model_point_attribute(
         klassische_rentenversicherung, tmp_path):
     """Three vintages credit three rates in one run, from the same tables.
@@ -1115,11 +1043,7 @@ def test_pitfall_15_the_guarantee_vintage_is_a_model_point_attribute(
     finally:
         model.close()
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 16 -- letting sex reach the tariff
-
-
+# --- Pitfall 16 -- letting sex reach the tariff
 def test_pitfall_16_sex_never_reaches_the_tariff(klassische_rentenversicherung, tmp_path):
     """Unisex has been compulsory since 21 December 2012: ``sex`` reaches the mortality basis
     and nothing else.
@@ -1174,11 +1098,7 @@ def test_pitfall_16_sex_never_reaches_the_tariff(klassische_rentenversicherung, 
     finally:
         model.close()
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 17 -- amortising against a shrunken Beitragssumme
-
-
+# --- Pitfall 17 -- amortising against a shrunken Beitragssumme
 def test_pitfall_17_the_beitragssumme_survives_a_beitragsfreistellung(
         klassische_rentenversicherung, de_rv_anchor):
     """The Sec. 4 DeckRV base is the premiums payable **as written**, not what is left.
@@ -1209,11 +1129,7 @@ def test_pitfall_17_the_beitragssumme_survives_a_beitragsfreistellung(
     # And on the anchor, where there is neither, the base is the plain product.
     assert de_rv_anchor.beitragssumme_pp() == pytest.approx(51000.00, abs=CENT)
 
-
-# ---------------------------------------------------------------------------
-# Pitfall 18 -- truncating the payout phase
-
-
+# --- Pitfall 18 -- truncating the payout phase
 def test_pitfall_18_the_payout_phase_is_not_truncated(de_rv_anchor):
     """``proj_len() = omega_age - issue_age``, and the frame ends there with no survivors.
 
@@ -1240,11 +1156,7 @@ def test_pitfall_18_the_payout_phase_is_not_truncated(de_rv_anchor):
     assert p.pols_if(71) < SIX_DP
     assert abs(p.net_cf(71)) < CENT
 
-
-# ---------------------------------------------------------------------------
-# The published identities
-
-
+# --- The published identities
 def test_every_check_identity_holds_on_the_anchor(de_rv_anchor):
     """All nine ``check_*`` cells return True, and their residuals are zero at every t."""
     p = de_rv_anchor
@@ -1302,11 +1214,7 @@ def test_the_check_identities_hold_where_an_option_is_switched_on(
     assert not df.isna().any().any()
     assert (df["pols_if"] >= -1e-12).all()
 
-
-# ---------------------------------------------------------------------------
-# Structure, documentation and inputs
-
-
+# --- Structure, documentation and inputs
 def test_result_cf_shape_and_both_signs_of_the_net_flow(de_rv_anchor):
     """The fifteen published columns, the two account balances among them, and the sign."""
     df = de_rv_anchor.result_cf()
