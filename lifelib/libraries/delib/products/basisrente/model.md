@@ -76,7 +76,7 @@ removes the *premium*, not the *policy*: the contract stays certified, stays pro
 being credited and still converts at *Rentenbeginn*. So the model carries **two ledgers** and
 `pols_if(t + 1) = pols_if(t) × (1 − mort_rate(t))` with `bf_rate` **absent from the identity**.
 On the anchor the two series come apart completely: by `t = 23` the in-force count has fallen
-only to 0,932780 while the premium-paying count has fallen to 0,512516, and the 0,441765
+only to 0,932780 while the premium-paying count has fallen to 0,512516, and the 0,420265
 difference is a cohort still in force, still credited and still converting.
 `check_pols_roll_fwd()` asserts both limbs — that the ledgers sum to `pols_if` and that
 `pols_if` decrements on mortality alone. The two ledgers carry **different account values**, and that asymmetry is the whole economic

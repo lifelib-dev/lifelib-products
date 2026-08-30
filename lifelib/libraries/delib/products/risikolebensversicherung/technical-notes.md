@@ -852,7 +852,7 @@ The *Beitragsverrechnungssatz* then follows from the *Zahlbeitrag* section's one
 `1 − 0,05 − 2 744,506896/27 596,717080 = 0,85054952`, so
 `v_d = 0,90 × (1,25/2,25) × 0,85054952 = 0,50 × 0,85054952 = 0,42527476`, the model's
 `beitragsverrechnung_rate()` to eight decimals, and
-`prem_paid_pp(1) = 0,57472476 × 1 275,411882 = 733,011403 €`. Two things follow. The surplus share
+`prem_paid_pp(1) = 0,57472524 × 1 275,411882 = 733,011403 €`. Two things follow. The surplus share
 and the margin fraction multiply to exactly one half, so on this calibration the *Zahlbeitrag* is
 "the *Bruttobeitrag* less half its risk element". And the derivation runs on `m`, `β`, `γ`, `z` and
 `k` and never touches the mortality **level** — which is why moving the level moves both premiums

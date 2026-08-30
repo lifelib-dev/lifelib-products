@@ -421,7 +421,6 @@ and 9.
 [R21]: #delib-sofortrente-r21
 [R22]: #delib-sofortrente-r22
 [R23]: #delib-sofortrente-r23
-[R24]: #delib-reg-r24
 [R25]: #delib-sofortrente-r25
 [R4]: #delib-sofortrente-r4
 [R5]: #delib-sofortrente-r5

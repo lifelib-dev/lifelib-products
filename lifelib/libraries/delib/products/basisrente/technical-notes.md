@@ -844,9 +844,9 @@ Four things in the frame are worth reading before the checks below.
   7,5 % premium charge would otherwise have bought.
 - **`pols_paying` falls far faster than `pols_if`.** By `t = 23` the in-force count has fallen only
   to 0,932780 while the premium-paying count has fallen to 0,512516: 0,441765 of the cohort has
-  passed through a *Beitragsfreistellung* into the premium-free ledger, where it is still in force,
-  still credited and still converts. Not one policy has left through a surrender, there being none
-  to leave through.
+  passed through a *Beitragsfreistellung* by then, and the 0,420265 of it that has not since died
+  is sitting in the premium-free ledger, where it is still in force, still credited and still
+  converts. Not one policy has left through a surrender, there being none to leave through.
 - **The `av` column ends at `t = 23` and does not taper.** The whole fund converts in one step;
   from `t = 24` there is no *Deckungskapital* in this model, only an annuity obligation that a
   *Deckungsrückstellung* stands behind and that delib does not compute.

@@ -918,9 +918,12 @@ month's survivors are `pols_maturity`, not lapses, and no cash flow depends on w
 risk-result line is a quarter of the charge exactly, and only because `mort_be_factor` is
 flat; a model decrementing on the tariff basis would print zero there and look healthy doing
 it. The acquisition line closes on the *Höchstzillmersatz*, and the `charge_acq` **column**
-totals 1,549.75 rather than 1,800.00 because it is weighted by `pols_if` — roughly one policy
-in seven has lapsed by month 60, which is the insurer's acquisition-cost problem in one
-number: it pays 1,800.00 at inception and collects 1,549.75. The last line is the one that
+totals 1,549.75 rather than 1,800.00 because it is weighted by `pols_if` — the sixty
+instalments are collected on an average of 0.860971 of a policy, so roughly one in seven of
+them is never collected at all, which is the insurer's acquisition-cost problem in one number:
+it pays 1,800.00 at inception and collects 1,549.75. The shortfall is an average over the
+sixty months and not the attrition at the end of them: by month 60 `pols_if` is 0.735054, so
+about one policy in four has already gone. The last line is the one that
 matters most: **64,869.36 of benefits against 40,586.28 of premiums, and only 4.39 of it an
 insurer cost** — the rest is the policyholder's own units coming back.
 
