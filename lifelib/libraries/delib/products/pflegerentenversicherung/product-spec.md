@@ -387,6 +387,7 @@ statutory *ceiling* is known, and only [unverified].
     supplies no take-up split. The model records the bias: the omitted paths would move policies into a
     reduced-benefit ledger that still pays claims, so **the model understates late-duration claims and
     overstates surrender outgo**.
+
 ---
 
 ## Contractual mechanics

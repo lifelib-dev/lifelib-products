@@ -878,7 +878,7 @@ The shape is a long positive accumulation phase, a −8 148,86 € spike at `t =
 *Kapitalabfindung* falls on 30 % of the survivors, and a negative annuity tail running another
 fifty-four years. Undiscounted, the cell collects 35 986,30 € and pays out 45 460,68 €.
 
-#### Independent checks
+### Independent checks
 
 These rebuild table cells a **different way** — from the tariff parameters rather than from the
 recursion — in arithmetic a reader can follow with a calculator.
