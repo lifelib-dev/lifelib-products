@@ -1627,19 +1627,27 @@ def liability_cf(t):
 def check_net_cf_resid(t):
     """The cash flow statement's own reconciliation residual in period t; zero everywhere.
 
-    ``net_cf(t)`` less ``premiums + zulagen`` less the six ``claims_*`` less ``expenses``
-    less ``commissions``, each read from the same published cells :func:`result_cf` prints.
+    ``net_cf`` **as published in** :func:`result_cf`, less that same frame's own
+    ``premiums + zulagen`` less its six ``claims_*`` columns less ``expenses`` less
+    ``commissions`` — every term read **from the frame** rather than from the cells behind
+    it, which is what makes this a reconciliation of what the model publishes rather than a
+    restatement of :func:`net_cf`'s own expression.
+
     What it catches is a column that is in the frame but not in the total, or in the total
     twice: dropping ``zulagen`` from the sum, folding ``commissions`` into ``expenses`` and
-    subtracting both, or summing ``int_credited`` into the net — the last being the most
-    tempting, because interest is the largest number on the row.
+    subtracting both, a ``claims_*`` column that has drifted from the kind behind it, or
+    summing ``int_credited`` into the net — the last being the most tempting, because
+    interest is the largest number on the row.  ``pols_if`` and ``pols_annuity_pay`` are
+    counts and ``int_credited`` is a state movement, and all three are excluded from the
+    identity by construction.
     """
-    return net_cf(t) - (
-        premiums(t) + zulagen(t)
-        - claims(t, "DEATH") - claims(t, "LAPSE") - claims(t, "TRANSFER")
-        - claims(t, "LUMPSUM") - claims(t, "COMMUTATION")
-        - claims(t, "ANNUITY")
-        - expenses(t) - commissions(t))
+    row = result_cf().loc[t]
+    rebuilt = (row["premiums"] + row["zulagen"]
+               - row["claims_death"] - row["claims_lapse"] - row["claims_transfer"]
+               - row["claims_lumpsum"] - row["claims_commutation"]
+               - row["claims_annuity"]
+               - row["expenses"] - row["commissions"])
+    return float(row["net_cf"] - rebuilt)
 
 
 def check_net_cf():

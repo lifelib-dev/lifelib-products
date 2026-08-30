@@ -1402,8 +1402,17 @@ def liability_cf(t):
 def check_net_cf_resid(t):
     """The cash-flow-statement residual in policy year t; zero everywhere.
 
-    ``net_cf(t) - premiums(t) + claims(t) + expenses(t) + commissions(t)``, rebuilt from
-    the columns :func:`result_cf` actually publishes.
+    ``net_cf`` **as published in** :func:`result_cf`, less that same frame's own
+
+        ``premiums - claims_death - claims_lapse - claims_maturity - expenses
+        - commissions``
+
+    — read from the frame rather than from the cells behind it, and reached by a different
+    route from :func:`net_cf`'s own, which subtracts the kind-less ``claims(t)`` subtotal.
+    So the identity crosses two boundaries rather than restating a formula: the
+    cells-to-frame boundary, where a column can be dropped, renamed or mis-signed on the
+    way in, and the ``claims(t, kind)`` dispatch, where a benefit kind can exist in the
+    model and not in the subtotal.
 
     This is **delib's first ruling**: every model in the library reconstructs its headline
     number from its own published parts, in code and not only in prose, so that the one
@@ -1414,8 +1423,10 @@ def check_net_cf_resid(t):
     time — and the commission convention, which is a column of its own here and part of
     the expense total in ``frlib.TD_FR_A``.
     """
-    return (net_cf(t) - premiums(t) + claims(t)
-            + expenses(t) + commissions(t))
+    row = result_cf().loc[t]
+    rebuilt = (row["premiums"] - row["claims_death"] - row["claims_lapse"]
+               - row["claims_maturity"] - row["expenses"] - row["commissions"])
+    return float(row["net_cf"] - rebuilt)
 
 
 def check_net_cf():
