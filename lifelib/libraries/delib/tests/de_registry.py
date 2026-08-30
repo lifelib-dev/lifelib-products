@@ -112,8 +112,9 @@ INPUT_FILES = {
         "index_return_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv", "surplus_rate_table.csv"},
     "KLV_DE_A": {
-        "cost_table.csv", "freq_loading_table.csv", "lapse_table.csv",
-        "model_point_table.csv", "mort_table.csv", "surplus_rate_table.csv"},
+        "cost_table.csv", "deckrv_table.csv", "freq_loading_table.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "surplus_rate_table.csv"},
     "Pflege_DE_S": {
         "basis_table.csv", "benefit_scale_table.csv", "care_table.csv",
         "expense_table.csv", "incidence_table.csv", "lapse_table.csv",
@@ -130,8 +131,8 @@ INPUT_FILES = {
         "lapse_table.csv", "model_point_table.csv", "mort_table_accum.csv",
         "surplus_scenario.csv", "zulage_schedule.csv"},
     "Sofort_DE_S": {
-        "improvement_table.csv", "model_point_table.csv", "mort_table.csv",
-        "surplus_scale_table.csv"},
+        "hoechstrechnungszins_table.csv", "improvement_table.csv",
+        "model_point_table.csv", "mort_table.csv", "surplus_scale_table.csv"},
 }
 
 
