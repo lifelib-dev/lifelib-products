@@ -52,6 +52,14 @@ def files_read(registry, name):
     life and catches the reads its formulas trigger, not only the ones the reader cells
     make on the way in.  The log is filtered to the model's own input directory, so a
     reader that reaches outside it is visible as an absence rather than being miscounted.
+
+    **The sweep here must be the sweep the conventions suite performs, not a subset of
+    it.**  ``test_every_model_point_projects`` calls ``result_cf()`` *and* every
+    ``check_*()`` cells on every model point, and a check can reach an input the cash flow
+    statement never touches -- ``KLV_DE_A``'s ``deckrv_table.csv``, read by the reserve
+    check and by nothing in ``result_cf()``, is the case that found this.  A generator that
+    projected the frame alone under-recorded the set, and the map it wrote then failed the
+    very test it exists to feed.  So the checks are called here too.
     """
     import modelx as mx
     import pandas as pd
@@ -68,8 +76,13 @@ def files_read(registry, name):
     try:
         model = mx.read_model(folder, name=f"{name}_inputs")
         try:
+            checks = [c for c in model.Projection.cells
+                      if c.startswith("check_") and not c.endswith("_resid")]
             for point_id in model.Data.model_point_table().index:
-                model.Projection[point_id].result_cf()
+                proj = model.Projection[point_id]
+                proj.result_cf()
+                for check in checks:
+                    getattr(proj, check)()
         finally:
             model.close()
     finally:
