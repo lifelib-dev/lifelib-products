@@ -713,8 +713,13 @@ The specific ways an implementation of *this* product looks right and is wrong. 
    `p_pg_stay + p_pg_death + p_pg_worse + p_pg_better == 1` to 1e-12 for every `t` and `g`, and the
    same for the three active-state probabilities.
 8. **Dividing an annual rate by twelve.** Assert `mort_rate_mth(t) == 1 - (1 - mort_rate(t))**(1/12)`
-   and the same form for lapse, and that twelve times the monthly rate is strictly below the annual
-   rate wherever that is positive.
+   and the same form for lapse; that the monthly rate is strictly **below** the annual one wherever
+   that is positive, which is the house convention; and that `q/12` is strictly below
+   `1 - (1 - q)^(1/12)`, so **dividing by twelve understates the monthly decrement**. The direction
+   is worth stating because it is the opposite of the intuition: twelve monthly rates *added*
+   overshoot the annual rate (`12 x 0.00006499 = 0.00077984` against `q_A(45) = 0.00077956`), while
+   twelve of them *compounded* reproduce it exactly. An earlier draft of these notes asserted the
+   overshoot the wrong way round; the model contradicted it and the model is right.
 9. **Treating the *Karenzzeit* as a benefit gate on the aggregate.** It is a deferral clock per
    onset. On point 7 assert `Σ_t Σ_g pols_grad(t,g) < Σ_t Σ_g pols_entry(t,g)` strictly, the
    shortfall equalling deaths and recoveries recorded inside the *Karenz* ledger.
@@ -1027,13 +1032,17 @@ combinations — `check_esc_ledger()` asserts it — and diverges on point 8: at
 `esc_pg(480, 3) = 0.024913` against `pols_pg(480, 3) = 0.022576`, a factor of 1.1035 which is exactly
 the average escalation the lives then in grade 3 have accrued.
 
-**What the model stage changed in these notes.** Five things, listed so the diff is not silent. The
-worked example above replaced a placeholder. Model point 9 acquired a premium-paying term to age 65,
-for the reason given under *The fourteen model points*. Pitfalls 1, 2, 6, 10 and 14 carried numeric
-predictions the model contradicts and were rewritten to what the model actually produces —
-respectively the entry-mix rather than the stock-weighted mean percentage, the force rather than the
-rate multiple, the revival *flow* rather than a non-monotone stock, +14,4 % rather than "less than
-5 %", and the unisex-blended rather than the sex-specific incidence. `liability_cf` was added to the
+**What the model and test stages changed in these notes.** Six things, listed so the diff is not
+silent. The worked example above replaced a placeholder. Model point 9 acquired a premium-paying term
+to age 65, for the reason given under *The fourteen model points*. Pitfalls 1, 2, 6, 10 and 14
+carried numeric predictions the model contradicts and were rewritten to what the model actually
+produces — respectively the entry-mix rather than the stock-weighted mean percentage, the force
+rather than the rate multiple, the revival *flow* rather than a non-monotone stock, +14,4 % rather
+than "less than 5 %", and the unisex-blended rather than the sex-specific incidence. **Pitfall 8
+asserted an inequality in the wrong direction** — that twelve times the monthly rate is below the
+annual rate — and was rewritten when the test module put it to the model: twelve monthly rates
+*added* overshoot, and it is `q/12` that falls short. The count of sub-cent `claims_annuity` cells
+above was 108 in the draft and is **107** in the frame. `liability_cf` was added to the
 `result_cf()` column list as column 12, because the conventions suite verifies the sign convention in
 the frame. And two paragraphs duplicated in the draft — the *Currency, sign and rounding* bullet and
 steps 11 and 12 of the processing order — were reduced to one each. **Nothing in the shipped tables
