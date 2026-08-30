@@ -67,11 +67,16 @@ Access date for all citations: **2026-08-29**.
 
 ## Citation discipline and retrieval conditions
 
-**No document listed in this file was retrieved, and no web search was run for it.** Two
-independent limits applied, and both must be stated plainly because a reader who picks up this
-document alone has to learn them from it.
+This section has two halves, and a reader who picks up this document alone has to learn both from
+it: the conditions the research was **done** under on 2026-08-29, and what the **re-verification** of
+2026-08-30 established. The first is kept because it is why the entries below read as they do. The
+second is recorded in *Gap status after the 2026-08-30 provenance pass* at the foot of this file and,
+document by document, in `products/riester_rente/sources.md`.
 
-**Limit 1 — direct HTTP egress is blocked.** An organisation network policy refuses `WebFetch` and
+**No document listed in this file was retrieved when it was written, and no web search was run for
+it.** Two independent limits applied, and both must be stated plainly.
+
+**Limit 1 — direct HTTP egress was blocked.** An organisation network policy refuses `WebFetch` and
 `curl` with HTTP 403 at the egress gateway for every host outside a short package-registry
 allowlist. The hosts that matter for this product were all refused in the delib build session:
 `gesetze-im-internet.de` (the AltZertG and the EStG), `bundesfinanzministerium.de` (the BMF
@@ -83,15 +88,19 @@ insurer, fund-house and bank host named below. **Nothing was downloaded, opened 
 **Limit 2 — the session's `WebSearch` budget was exhausted before this file was started.** The
 budget of 200 calls was shared across the parallel delib researchers and was spent on the
 prudential and contract-law files; every search attempted for this product returned the
-budget-exhausted message. **This file therefore had no research channel at all** — neither
-retrieval nor search.
+budget-exhausted message. **This file therefore had no research channel at all while it was
+drafted** — neither retrieval nor search. Its first draft rested on the authoring model's own
+knowledge of German pension law, disciplined by the rules that follow.
 
-What follows from that, exactly, and it governs every line below:
+What followed from that, exactly, and it governed every line of the draft:
 
 1. **Every source entry records `Retrieved: no — direct HTTP egress blocked in the build
-   environment; no search corroboration (session search budget exhausted)`.** Nothing here is
-   marked retrieved. The sources are listed as **known references** — documents that exist and are
-   the right kind of document for this product — not as documents anyone consulted.
+   environment; no search corroboration (session search budget exhausted)`.** The sources were
+   listed as **known references** — documents that exist and are the right kind of document for
+   this product — not as documents anyone consulted. **These lines were never rewritten, and they
+   still read `no` on all 43 entries below**; the pass of 2026-08-30 is recorded in the two places
+   named at the head of this section instead, and where it and an entry's line disagree, the pass
+   governs.
 2. **No URL, document number, edition, page count, publication date or *Zertifizierungsnummer* was
    guessed.** Where a URL is not available the entry says `URL: not established`. Exactly four URLs
    appear: three in canonical `gesetze-im-internet.de` form, all marked `[unverified]`, and one
@@ -121,6 +130,27 @@ point of use.
 number — the *Mindesteigenbeitrag* worked cases, the guarantee-headroom tables, the income thresholds
 at which the *Sockelbeitrag* binds — the inputs are tagged and the derivation shown. Derived numbers
 are marked `[std] derived` and are exact given their inputs.
+
+**The re-verification of 2026-08-30.** The network policy was lifted and the citations were checked
+against the primary documents. Library-wide, all fifteen German instruments delib cites were read as
+canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950 statutory
+section references were checked and 950 were correct, and insurer AVB, *Verbraucherinformationen* and
+*Produktinformationsblätter* were retrieved as PDFs and read; **501 of the library's 805 source
+entries, 62 %, now read `Retrieved: yes`.** For this product the pass read **fifteen instruments as
+canonical statutory XML and eight documents as PDFs or HTML**, including two carrier AVB in full —
+CosmosDirekt LA 1005 A and Debeka B LV 94 — and the certified *Produktinformationsblätter* at [S15].
+**The per-entry provenance is in `products/riester_rente/sources.md`, where 26 of the 42 entries now
+read `Retrieved: yes`, 14 read `no` and two are partial**; that file is the more current of the two on retrieval and
+this one defers to it on detail. The entries below were deliberately left at their drafted status so
+that the register's numbering and its account of what was known when keep their meaning.
+
+**What a citation now means.** Where `sources.md` records a document as retrieved, it was opened and
+the passage relied on was read, with the statute's `Stand` or the document's edition recorded. Where
+it does not, the citation is still **a pointer rather than a certificate**: it names the instrument
+a claim must be checked against, not a document anyone checked. **The re-verification changed
+things** — three findings contradict what this library says and two of them are rules the model
+implements, and the gap-status table at the foot of this file sets out all three. Treat a claim here
+as sound where `sources.md` says the document was retrieved, and as provisional where it does not.
 
 ---
 
@@ -170,7 +200,11 @@ gloss. The vocabulary this product needs, beyond the shared Schicht-3 vocabulary
 ## Primary sources
 
 Sixteen known references. **None was retrieved and none was corroborated by a search run for this
-file** (three carry corroboration inherited from a sibling delib session and say so). They are
+file when it was drafted** (three carry corroboration inherited from a sibling delib session and say
+so), and the `Retrieved:` lines below are left at that drafted status. **Nine of the sixteen were
+opened in the pass of 2026-08-30** — [S1] to [S4], [S6], [S9], [S10], [S14] and the certification
+records at [S15] — and `products/riester_rente/sources.md` carries what each yielded, edition by
+edition. They are
 listed because a research file's job is to name the documents a downstream claim must be checked
 against, and because the *kinds* of document that exist here are themselves a finding: the German
 Riester disclosure is split across four — the **AVB**, the **Produktinformationsblatt** (the
@@ -419,11 +453,16 @@ subsidy on a different chassis; and the **Wohn-Riester** documents [S13], the bo
 
 ## Regulatory and actuarial references
 
-Twenty-seven known references. The same retrieval statement applies to every one: **no document was
-retrieved and no search was run for this file.** The statutory URLs given in canonical
-`gesetze-im-internet.de` form are marked `[unverified]` — they are the form the host uses, not a link
-anyone followed. The **content blocks state what the instrument provides, in this file's own words,
-from general knowledge of German pension law**, with every paragraph number, date and figure tagged.
+Twenty-seven known references. **As drafted, the same retrieval statement applied to every one: no
+document was retrieved and no search was run for this file**, and the `Retrieved:` lines below still
+say so. The statutory URLs given in canonical `gesetze-im-internet.de` form are marked `[unverified]`
+— they are the form the host uses, not a link the drafting followed. The **content blocks state what
+the instrument provides, in this file's own words, from general knowledge of German pension law**,
+with every paragraph number, date and figure tagged. **The pass of 2026-08-30 read the AltZertG, the
+AltvPIBV, the EStG, the ZPO, the VVG and the DeckRV as canonical XML with each law's `Stand`, and
+checked every paragraph number in this file against them; three were wrong and are named in the
+gap-status table at the foot.** Which reference that pass reached, and at what `Stand`, is recorded
+in `products/riester_rente/sources.md`, which governs where it and an entry below disagree.
 
 Two structural points, stated once. **The product is defined by two statutes doing different jobs**:
 the AltZertG says what a contract must contain to be certifiable, the EStG says who gets what
@@ -1642,12 +1681,15 @@ private annuity — is not a composite at all.
     the earlier sequence used in the section 19 tables — 0,90 %, 1,75 %, 2,25 % — is `[unverified]`
     as to both levels and effective dates. **The arithmetic in section 19 is exact given those rates
     and is only as good as they are.**
-19. **This file had no research channel at all.** Egress was blocked and the session's `WebSearch`
-    budget was exhausted before the file was begun. Items inherited from sibling delib sessions'
-    searches are attributed at the point of use [S3] [S4] [S5] [R22]; everything else rests on
-    general knowledge of German pension law, disciplined by tagging every specific number. **Treat
-    this file as a well-organised set of hypotheses about what the documents say, not a record of
-    what they say.**
+19. **This file had no research channel at all when it was written, and the pass of 2026-08-30 gave
+    it one.** Egress was blocked and the session's `WebSearch` budget was exhausted before the file
+    was begun. Items inherited from sibling delib sessions' searches are attributed at the point of
+    use [S3] [S4] [S5] [R22]; everything else in the drafted text rests on general knowledge of
+    German pension law, disciplined by tagging every specific number. **As drafted, this file was a
+    well-organised set of hypotheses about what the documents say rather than a record of what they
+    say.** Fifteen instruments and eight documents have since been read, and the status line for
+    this item in the table below says what that left standing. Where `products/riester_rente/sources.md`
+    records no retrieval, this item still governs.
 
 ---
 

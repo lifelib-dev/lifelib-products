@@ -71,12 +71,16 @@ Access date for all citations: **2026-08-29**.
 ## Citation discipline and retrieval conditions
 
 Read this section before reading anything else in the file. It is the difference between what this
-document is and what a reader will assume it is.
+document is and what a reader will assume it is. It has two halves. The first records how the
+research was **done**, on 2026-08-29, under a policy that blocked all egress; the second records
+what the **re-verification** of 2026-08-30 established once that policy was lifted. The first half
+is not withdrawn — it is why the entries below read as they do — and the second is what a reader
+should weigh them by.
 
-**No document listed in this file was retrieved, and no web search was run for it.** Two
-independent limits applied, and both were absolute rather than partial.
+**No document listed in this file was retrieved when it was drafted, and no web search was run for
+it.** Two independent limits applied, and both were absolute rather than partial.
 
-**Limit 1 — direct HTTP egress is blocked.** An organisation network policy refuses `WebFetch` and
+**Limit 1 — direct HTTP egress was blocked.** An organisation network policy refuses `WebFetch` and
 `curl` with HTTP 403 at the egress gateway for every host outside a short package-registry
 allowlist. Every host that matters for this product was tried in the course of building this
 library and every one was refused: `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
@@ -93,11 +97,13 @@ of any kind for this file** — not even the weak one (search summaries) that th
 
 What follows from that, exactly, and it is applied without exception below:
 
-1. **Every source entry is a *known reference*, not a citation of a read document.** Each records
+1. **Every source entry was a *known reference*, not a citation of a read document.** Each recorded
    `Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)`.
    Where a document was corroborated by search **in a sibling delib research file**, that is said
    explicitly, with the sibling's own id, and the corroboration is attributed to that file rather
-   than claimed here. **Never `Retrieved: yes`.**
+   than claimed here. **No entry read `Retrieved: yes` as drafted.** Three do now, and the rest of
+   what the pass opened is recorded in the section that closes this file; see *What the
+   re-verification established* below.
 2. **No verbatim quotation is invented.** Nothing here is presented as the wording of an instrument
    or of a *Bedingungswerk*. Where German wording appears it is a **term of art**, not a quotation.
 3. **No URL, document number, edition, tariff code, page count or publication date is guessed.**
@@ -118,11 +124,35 @@ What follows from that, exactly, and it is applied without exception below:
    honest; a `[S4]` number that no one read is not. The gaps register records every figure that had
    to be handled this way, and it is most of them.
 
+**What the re-verification established.** The policy was lifted, and on **2026-08-30** the citations
+were checked against the primary documents. Library-wide, all fifteen German instruments delib cites
+were read as canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded,
+950 statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read; **501 of
+the library's 805 source entries, 62 %, now read `Retrieved: yes`.** For this product the pass is
+recorded in full in ***Retrieval pass, 2026-08-30*** at the foot of this file: the DEVK
+*Kundeninformation* and the sixteen *Basisinformationsblätter* bound into it, VVG, VVG-InfoV,
+DeckRV, MindZV, VAG and EStG as canonical XML, two BaFin publications and a DAV *Ergebnisbericht*.
+**Read that section with the entries, because the two do not yet agree.** Only three of the 44
+entries below had their own `Retrieved:` line rewritten — [S2] and [S15] to **yes**, [S16] to
+**partly** — and the remaining 41 still carry the drafted `Retrieved: no` even where the pass table
+records the document as read. **Where they conflict the pass section governs and the entry's line
+does not.**
+
+**What an entry now means.** A **`Retrieved: yes`** line, or a row in the pass table, means the
+document was opened and the passage the entry rests on was read. Everywhere else the citation is
+still **a pointer rather than a certificate**: it names the instrument a claim should be checked
+against, not a document anyone checked. **The re-verification changed things** — seventeen findings
+that contradict the drafted text are listed under *What a retrieved document contradicted*, and
+they include the mortality basis, the guaranteed *Rentenfaktor* level and the PRIIPs category.
+Treat a claim in this file as sound where a retrieved document backs it, and as provisional where
+none does.
+
 **The consequence for the reader.** The **mechanics** in sections 1–18 are the load-bearing part of
-this file and the part that does not depend on having a PDF open. They are written long and precise
-and they are correct as descriptions of German market practice. The **levels** are not sourced and
-are not presented as if they were. A delib citation is a pointer to the instrument a claim should be
-checked against; it is not a certificate that anyone checked it.
+this file and the part that never depended on having a PDF open. They are written long and precise
+and they are correct as descriptions of German market practice, subject to the corrections the pass
+recorded. The **levels** were not sourced at drafting and are not presented as if they were; the
+pass supplied a few and the gaps register says which.
 
 ---
 
@@ -184,8 +214,8 @@ much of it has no clean English equivalent because the German market invented th
 
 Eighteen known references to primary product documents. **As originally drafted, none was
 retrieved and none was corroborated by a search run for this file** (see the retrieval-conditions
-section, which describes the conditions this file was written under and is left as written). **A
-retrieval pass on 2026-08-30 changed that for three of the eighteen** — [S2] and, inside it,
+section, which carries both the conditions this file was written under and what the re-verification
+established). **A retrieval pass on 2026-08-30 changed that for three of the eighteen** — [S2] and, inside it,
 [S15] and the *Verbraucherinformation* limb of [S16] — and opened a marketing page for [S3]. The
 per-entry notes below are annotated where the pass changed what an entry establishes, and the
 full result is set out in *"Retrieval pass, 2026-08-30"* at the end of this file. The remaining
@@ -917,7 +947,8 @@ sibling delib research file**, that is stated and attributed.
 - Content: the secondary literature in which German consumers meet this product, and normally the
   only public place where **price points** appear — a monthly premium, an *Effektivkosten*
   percentage, a *Rentenfaktor*, a tariff comparison at a stated model point. **Nothing from any of
-  them is cited in this file**, because nothing was retrieved or searched. Recorded so a later
+  them is cited in this file**, because none of these pages was retrieved, then or in the pass of
+  2026-08-30 — the Finanztip *Rentenfaktor* material that was read is carried at [R22]. Recorded so a later
   reader knows where to look first and so the gaps register can name the document that would close
   each gap.
 
@@ -1462,12 +1493,17 @@ and because the vocabulary is a German market invention with no English equivale
 
 ## Observed variation across insurers
 
-**Read this first.** Nothing carrier-specific was observed for this product: no AVB, no
-*Produktinformationsblatt*, no *Basisinformationsblatt* and no rate card was retrieved or searched.
-What follows is therefore **not** a table of observations. It is a table of the **dimensions along
-which German carriers are known to differ**, with the range argued from the mechanics and the
-statutory bounds, and a companion table recording — honestly and mostly negatively — what is
-actually established about each named carrier.
+**Read this first, and read it against the retrieval pass of 2026-08-30.** When this table was
+written nothing carrier-specific had been observed for this product: no AVB, no
+*Produktinformationsblatt*, no *Basisinformationsblatt* and no rate card had been retrieved or
+searched. The pass changed that for **one** carrier — DEVK's full AVB and the sixteen
+*Basisinformationsblätter* bound into its *Kundeninformation* [S2] [S15] — and for one product page
+at Allianz [S3]; **no *Produktinformationsblatt* and no rate card was obtained at any carrier**, so
+the table below is still **not** a table of observations across the market. It is a table of the
+**dimensions along which German carriers are known to differ**, with the range argued from the
+mechanics and the statutory bounds, and a companion table recording — honestly and mostly
+negatively — what is actually established about each named carrier. Where the pass put a real
+number against a dimension, the pass section says so and the number there governs.
 
 ### What is established, carrier by carrier
 
@@ -1548,12 +1584,18 @@ observation because no observation was available:
 > are left as written because they record what was and was not known at drafting, which is the
 > point of a research file.
 
-1. **No document was retrieved and no search was run for this product.** Both limits applied at
-   full strength: HTTP egress was blocked for every relevant host, and the session's 200-call
-   `WebSearch` budget was already exhausted before this file was begun. This file is therefore
-   **weaker than its two delib siblings**, which at least had search summaries. Every statement of
-   *structure* below the source list is written from the author's knowledge of German insurance
-   practice; every statement of *level* is `[std]` or `[unverified]`.
+1. **Superseded in part. No document was retrieved and no search was run for this product while it
+   was written.** Both limits applied at full strength: HTTP egress was blocked for every relevant
+   host, and the session's 200-call `WebSearch` budget was already exhausted before this file was
+   begun. As drafted this file was therefore **weaker than its two delib siblings**, which at least
+   had search summaries, and every statement of *structure* below the source list rests on the
+   authoring model's knowledge of German insurance practice while every statement of *level* is
+   `[std]` or `[unverified]`. **The pass of 2026-08-30 lifted that for the statutory spine and for
+   one carrier**: fifteen instruments were read as canonical XML and DEVK's complete AVB and
+   *Basisinformationsblätter* were read, which is what closed or narrowed the gaps listed in the
+   note above. It did not lift it for the market: no rate card, no *Produktinformationsblatt* and
+   no second carrier's clause text was obtained, so every *level* in this file that the pass did
+   not reach is still `[std]` or `[unverified]`.
 
 2. **Whether the *Mindestrückkaufswert* floor reaches the *Zeitwert* branch is unresolved.** § 169
    VVG expresses the five-year spreading floor on the *Deckungskapital*, and separately sends
@@ -1687,9 +1729,10 @@ observation because no observation was available:
 The network policy under which this file was written no longer applies. Every URL the file cites
 was tried; fifteen German statutes were read as canonical XML from gesetze-im-internet; and
 documents that could not be reached at a cited address were looked for once on the publisher's own
-site. **The "Citation discipline and retrieval conditions" section above is left as written** — it
-records the conditions of the original research, and rewriting it would misdescribe how the
-entries below were first arrived at. This section records what changed.
+site. **The "Citation discipline and retrieval conditions" section above now carries both halves** —
+the conditions of the original research, which are kept because rewriting them away would
+misdescribe how the entries below were first arrived at, and a summary of this pass, which defers
+to this section on detail. This section is the operative record of what changed.
 
 ### Entries that moved to `Retrieved: yes`
 

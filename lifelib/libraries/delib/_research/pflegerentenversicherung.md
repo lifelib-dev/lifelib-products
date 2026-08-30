@@ -52,10 +52,15 @@ Access date for all citations: **2026-08-29**.
 
 ## Retrieval conditions and citation discipline
 
-**No document in this file was retrieved.** Direct HTTP egress from this build environment is
-blocked by an organisation network policy. `WebFetch` and `curl` are refused with HTTP 403 at the
-egress gateway for every host outside a short package-registry allowlist. The hosts that matter for
-this product were all tried and all refused:
+This section has two halves. The first records the conditions the research was **done** under on
+2026-08-29; the second records what the **re-verification** of 2026-08-30 established. The first is
+kept because it is how this file came to say what it says, and the second is set out entry by entry
+in *Provenance pass of 2026-08-30* at the foot of this file, which is the operative record.
+
+**No document in this file had been retrieved when it was written.** Direct HTTP egress from the
+build environment was blocked by an organisation network policy. `WebFetch` and `curl` were refused with HTTP 403 at
+the egress gateway for every host outside a short package-registry allowlist. The hosts that mattered
+for this product were all tried and all refused:
 
 Every host that would have supplied a document for this product was tried and refused with HTTP
 403: `gesetze-im-internet.de` (SGB XI, VVG, VAG, EStG, SGB XII, DeckRV, KVAV), `bafin.de`,
@@ -67,19 +72,20 @@ Not one *Bedingungswerk*, not one *Produktinformationsblatt*, not one *Basisinfo
 one statutory text, not one DAV paper and not one statistical release was opened.
 
 **The session `WebSearch` budget was already exhausted when this product was started.** The session
-shares a hard cap of 200 `WebSearch` calls across all delib work, and the cap had been reached
-before the first query for this product could be issued. **This file therefore has no research
-channel at all** — neither retrieval nor search. It is written from the author's own knowledge of
-German insurance law and German actuarial practice, under the discipline that house rule 3 imposes
-for exactly this case.
+shared a hard cap of 200 `WebSearch` calls across all delib work, and the cap had been reached
+before the first query for this product could be issued. **This file therefore had no research
+channel at all while it was drafted** — neither retrieval nor search. Its first draft rested on the
+authoring model's own knowledge of German insurance law and German actuarial practice, under the
+discipline that house rule 3 imposes for exactly this case.
 
-What that discipline means here, concretely:
+What that discipline meant here, concretely:
 
-1. **Every source entry is a *known reference*, never a read document.** Each records
+1. **Every source entry was a *known reference*, never a read document.** Each recorded
    `Retrieved: no — direct HTTP egress blocked in the build environment; no search corroboration
    (session search budget exhausted)`, names a publisher and a document type that exist and are
-   the right kind of document for this product, and asserts nothing about any particular edition,
-   document number, page count or date, because none was checked.
+   the right kind of document for this product, and asserted nothing about any particular edition,
+   document number, page count or date, because none had been checked. **This is the rule the
+   re-verification changed**, and the pass section at the foot of this file records how far.
 2. **No URL is invented and no instrument is quoted.** Where a canonical form is well known —
    `.../sgb_11/__15.html` for § 15 SGB XI — it is given and marked `[unverified]`; elsewhere the
    entry says `URL: not established`. There is not one German sentence in quotation marks
@@ -98,9 +104,29 @@ What that discipline means here, concretely:
    open. The source list is thinner in its claims than an frlib source list, and the gaps register
    at the foot is longer.
 
-**A delib citation is a pointer, not a certificate.** `[R2]` beside a statement about § 15 SGB XI
-means *this is the instrument the statement should be checked against*. It does not mean anyone
-checked it.
+**What the re-verification established.** The policy was lifted, and on **2026-08-30** every source
+in this file was tried again and the citations were checked against the primary documents.
+Library-wide, all fifteen German instruments delib cites were read as canonical XML from
+`gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950 statutory section
+references were checked and 950 were correct, and insurer AVB, *Verbraucherinformationen* and
+*Produktinformationsblätter* were retrieved as PDFs and read; **501 of the library's 805 source
+entries, 62 %, now read `Retrieved: yes`.** For this product the record is the table in *Provenance
+pass of 2026-08-30* below, not a line on each entry: the entries and their numbering are frozen and
+are left as drafted, and the table records **thirty of the forty as read**, of which [S5] and [S10] only
+in part; **eight as not retrieved with the reason** — [S3], [S6], [S8], [S9], [S13], [S15], [R16]
+and [R17] — and two amending acts, [R9] and [R10], as not opened as acts. The per-entry `Retrieved`
+lines in `products/pflegerentenversicherung/sources.md` carry the same result document by document
+and are the more current of the two files on retrieval.
+
+**What a citation now means.** Where the pass table records a document as read, it was opened and
+the passage relied on was read, with the statute's `Stand` or the document's edition and page count
+recorded. Everywhere else **a delib citation is still a pointer, not a certificate**: `[R2]` beside
+a statement about § 15 SGB XI means *this is the instrument the statement should be checked
+against*, and it does not mean anyone checked it. **The re-verification changed things** — eight
+statements in this file are contradicted by a document retrieved on 2026-08-30, four gaps are closed
+and two narrowed, and all of that is set out in the pass section rather than folded back into the
+text above. Treat a claim here as sound where the pass records the document as read, and as
+provisional where it does not.
 
 ---
 
@@ -146,11 +172,16 @@ turns on:
 
 ## Primary sources
 
-Every entry below carries the same retrieval status, stated once here rather than repeated sixteen
-times: **Retrieved: no — direct HTTP egress blocked in the build environment; no search
-corroboration (session search budget exhausted).** Each names a document that exists and is the
-right kind of document for this product; nothing asserts that a particular edition, document
-number, page count or date is correct.
+**The blanket retrieval status these entries were drafted under no longer holds, and no entry below
+carries a per-entry line to replace it.** As drafted, all sixteen read **Retrieved: no — direct HTTP
+egress blocked in the build environment; no search corroboration (session search budget
+exhausted)**, and each named a document that exists and is the right kind of document for this
+product without asserting that a particular edition, document number, page count or date was
+correct. **Ten of the sixteen were opened on 2026-08-30** — [S1], [S2], [S4], [S5], [S7], [S10],
+[S11], [S12], [S14] and [S16] — and what each yielded, with its edition and page count, is in
+*Provenance pass of 2026-08-30* at the foot of this file and entry by entry in
+`products/pflegerentenversicherung/sources.md`. The other six were not, and for them the drafted
+status stands. **Where the pass and an entry below disagree, the pass governs.**
 
 ### S1 — PKV-Verband, *Musterbedingungen für die private Pflegepflichtversicherung* (MB/PPV)
 - Publisher: Verband der Privaten Krankenversicherung e. V. (PKV-Verband), Köln
@@ -325,8 +356,9 @@ number, page count or date is correct.
   URL: not established
 - Content: the only public sources that produce a premium for a named age, benefit and option set
   on demand, and therefore the natural corroboration for section 23's premium band. **None was
-  queried** (no egress, no search), so that band rests on the arithmetic set out there and is
-  `[std]`, not `[S13]`. Portals cover *Pflegetagegeld* far more thoroughly than *Pflegerente*;
+  queried** — no egress and no search when this file was drafted, and deliberately not queried in
+  the pass of 2026-08-30 either, a portal quotation being generated per enquiry rather than
+  published — so that band rests on the arithmetic set out there and is `[std]`, not `[S13]`. Portals cover *Pflegetagegeld* far more thoroughly than *Pflegerente*;
   whether either portal quotes *Pflegerente* at all was not established (gap 5).
 
 ### S14 — Ratings agencies: Morgen & Morgen, Franke und Bornberg, Assekurata
@@ -369,8 +401,14 @@ number, page count or date is correct.
 
 ## Regulatory and actuarial references
 
-Same retrieval status as the primary sources. Canonical URLs are given where the form is well known
-and marked `[unverified]`; elsewhere `URL: not established`.
+Same drafting conditions as the primary sources, and the same two-stage record: the entries are
+left as written, and the pass of 2026-08-30 is recorded at the foot of this file. **Twenty of the
+twenty-four were read on that date** — SGB XI, VVG and VVG-InfoV, VAG and HGB, DeckRV, KVAV, EStG
+and SGB XII as canonical XML with each law's `Stand`, and the DAV, Destatis, vdek, PKV and GDV
+material as PDFs or HTML. [R16] and [R17] were not; [R9] and [R10] are amending acts that were not
+opened as acts. Canonical URLs are given where the form is well known and marked `[unverified]`;
+elsewhere `URL: not established`. **Where a retrieved document contradicts an entry, the pass
+section says so and governs.**
 
 ### R1 — SGB XI, *Elftes Buch Sozialgesetzbuch — Soziale Pflegeversicherung*
 - Publisher: Bundesministerium der Justiz / juris, via `gesetze-im-internet.de`
@@ -1642,12 +1680,16 @@ premium level and every transition rate — carry the observed or argued range b
     policyholder, and a lapse after 60 forfeits the whole accumulated position — but nothing in this
     corpus describes the shape. Every lapse assumption in delib is `[std]`.
 
-21. **No search corroboration exists for anything in this file.** The other two delib research
-    files, written before the budget ran out, record per fact what a search summary established;
-    this one cannot. Everything above rests on the author's knowledge of German insurance law and
-    practice under the discipline of house rule 3, and the `[unverified]` tags are the honest
-    record of that. A reader with a working network should treat this file as a **checklist of what
-    to verify**, in the order the gaps are numbered.
+21. **Overtaken by the provenance pass, and left standing as the record of the drafting.** No search
+    corroboration existed for anything in this file when it was written: the other two delib
+    research files, written before the budget ran out, record per fact what a search summary
+    established, and this one could not. Everything above rested on the authoring model's knowledge
+    of German insurance law and practice under the discipline of house rule 3, and the
+    `[unverified]` tags are the honest record of that. **The checklist this item asked a reader to
+    work through has since been worked through**: thirty of the forty entries were opened on
+    2026-08-30, eight statements above are contradicted by what was read, and the results are in
+    *Provenance pass of 2026-08-30* below and in `products/pflegerentenversicherung/sources.md`.
+    Where an entry was not opened, this item still governs it.
 
 ---
 

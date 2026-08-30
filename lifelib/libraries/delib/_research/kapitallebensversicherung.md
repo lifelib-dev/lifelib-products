@@ -37,31 +37,38 @@ Access date for all citations: **2026-08-29**.
 
 ## Retrieval conditions and citation discipline
 
-**No document in this file was retrieved.** Direct HTTP egress from this build environment is
-blocked by an organisation network policy: `WebFetch` and `curl` are refused (HTTP 403 at the egress
-gateway) for every host outside a short package-registry allowlist. The hosts that matter for this
+This section has two halves. The first records how the research was **done**, on 2026-08-29, when
+egress was blocked and everything rested on search summaries; the second records what the
+**re-verification** of 2026-08-30 established once the policy was lifted. The first is kept because
+it explains why so much of this file is written the way it is; the second is what a reader should
+weigh each entry by.
+
+**No document in this file had been retrieved when it was written.** Direct HTTP egress from the
+build environment was blocked by an organisation network policy: `WebFetch` and `curl` were refused
+(HTTP 403 at the egress gateway) for every host outside a short package-registry allowlist. The hosts that matter for this
 product were all tried and all refused — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
 `aktuar.de`, `bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de` and
 `de.wikipedia.org`. Not one PDF of a *Bedingungswerk*, not one *Basisinformationsblatt*, not one
 statutory text and not one BaFin *Merkblatt* was opened.
 
-**Everything below rests on `WebSearch` result summaries.** The tool returns titles, URLs and a
-search-engine summary of the matched pages — real evidence that does return substantive content
-(several long German sentences of statutory text reproduced below came back that way), but a
-*secondary summary*, never a retrieved document. Two consequences follow, stated on every source
-block:
+**Everything in the first draft rested on `WebSearch` result summaries.** The tool returns titles,
+URLs and a search-engine summary of the matched pages — real evidence that does return substantive
+content (several long German sentences of statutory text reproduced below came back that way), but a
+*secondary summary*, never a retrieved document. Two consequences followed, stated on every source
+block as drafted:
 
-1. Every source records `Retrieved: no — direct HTTP egress blocked in the build environment;
-   established from search-result summaries`. Where a German sentence appears in quotation marks,
-   **the quotation is of the search-result summary, not of the instrument**: it is not a verbatim
-   reading of § 169 VVG, it is what the summary reported § 169 VVG to say.
+1. Every source recorded `Retrieved: no — direct HTTP egress blocked in the build environment;
+   established from search-result summaries`. Where a German sentence appeared in quotation marks,
+   **the quotation was of the search-result summary, not of the instrument**: it was not a verbatim
+   reading of § 169 VVG, it was what the summary reported § 169 VVG to say. **This is the rule the
+   re-verification changed**, and the entries now say per block which of the two a quotation is.
 2. The tool **fuses several result pages into one prose summary and does not attribute each sentence
    to the URL it came from**. Where a fact could not be pinned to one document, the entry says so
    and the extracted fact carries every candidate tag. This is the single biggest quality difference
    between this file and `frlib/_research/temporaire-deces.md`, where the PDFs themselves were
    downloaded and read.
 
-**The search budget was exhausted.** This session shares a hard cap of 200 `WebSearch` calls across
+**The search budget was exhausted.** The session shared a hard cap of 200 `WebSearch` calls across
 all its work, and the cap was reached after **24 searches** on this product — against a brief that
 anticipated thirty to eighty. The consequence is not evenly spread. The statutory core (§§ 153, 161,
 165, 169 VVG; MindZV; DeckRV; § 139 VAG; VVG-InfoV; EStG § 20 Abs. 1 Nr. 6), the supervisory material
@@ -76,6 +83,27 @@ independent search results agree on is **not** `[unverified]`; a paragraph numbe
 or a figure that no search result confirmed **is**. Every URL below is one a search result actually
 returned, or the obvious canonical form of one (`.../vvg_2008/__153.html` for § 153 VVG). Where there
 is no URL the entry says `URL: not established` rather than guessing.
+
+**The re-verification of 2026-08-30.** The policy was lifted and the citations were checked against
+the primary documents. Library-wide, all fifteen German instruments delib cites were read as
+canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950
+statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read; **501
+of the library's 805 source entries, 62 %, now read `Retrieved: yes`.** In this file the pass
+reached **43 of the 49 entries, and those 43 carry a `Retrieved (2026-08-30):` line: 38 say yes, two
+say no ([S8], a 404; [R24], HTTP 429) and three are partial ([R11], [R19], [R26])**. The remaining
+six — [S12] to [S16] and [R31] — carry no such line, nothing was opened for them, and they still
+rest on the search summaries described above.
+
+**What an entry now means.** A **`Retrieved (2026-08-30): yes`** line means the document was opened
+and the passage the entry rests on was read; the line records the PDF's page count and edition or
+the law's `Stand`, and a German sentence quoted under it is a quotation **of the instrument**.
+Everywhere else the citation is still **a pointer rather than a certificate**, and a quoted German
+sentence is still a quotation of a summary. **The re-verification changed things, and in this file
+it changed a lot**: nine extracted facts did not survive retrieval, six of them fusion artefacts of
+the search summaries, and the corrections are written into the blocks and into the correction block
+at the head of *Extracted facts*. Treat a claim here as sound where its entry says `Retrieved: yes`,
+and as provisional where it does not.
 
 ---
 
@@ -567,10 +595,14 @@ case a quoted German sentence is a quotation of the summary and not of the docum
 
 ## Regulatory and actuarial references
 
-Every entry below carries the same retrieval status and it is stated once here rather than
-repeated thirty-one times: **Retrieved: no — direct HTTP egress blocked in the build environment;
-established from search-result summaries.** Where a German sentence is quoted, the quotation is
-of the search-result summary and not of the instrument.
+**The blanket retrieval status these entries once carried no longer holds**, and it is no longer
+stated once for the section: **every entry below carries its own `Retrieved (2026-08-30):` line**
+saying what was opened, with the law's `Stand` for a statute and the edition for a publication.
+As drafted the section read *"Retrieved: no — direct HTTP egress blocked in the build environment;
+established from search-result summaries"*, thirty-one times over, and that is still the status of
+[R31], which has no line of its own. Where an entry's line says yes, a German sentence quoted in it
+is a quotation **of the instrument**; where there is no line, or the line says no or partly, a
+quoted German sentence is still a quotation of a search-result summary and the entry says so.
 
 ### R1 — VVG § 153, *Überschussbeteiligung*
 - Publisher: Bundesministerium der Justiz (Gesetze im Internet); mirrored by dejure.org, buzer.de,

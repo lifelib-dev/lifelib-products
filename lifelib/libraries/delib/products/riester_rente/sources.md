@@ -13,40 +13,58 @@ is where a normal research pass would have found the *Effektivkosten* comparison
 and **R1–R26** — is cited. Access date for all sources: **2026-08-29**. No sources were newly added
 at drafting. Cross-product [REG-R#] tags are listed in their own section at the end.
 
-**Retrieval conditions — read this before relying on a single line below.** Two independent limits
-applied while this library was built, and they are stated plainly here because a reader who picks up
-this file alone has to learn them from it.
+**Retrieval conditions — read this before relying on a single line below.** This library was
+*drafted* under one set of conditions and *verified* under another, and a reader who picks up this
+file alone has to learn both from it.
 
-**1. Direct HTTP egress is blocked by an organisation network policy.** `WebFetch` and `curl` are
-refused with HTTP 403 at the egress gateway for every host outside a short package-registry
-allowlist. Every host that matters for this product was tried and refused:
-`gesetze-im-internet.de` (the AltZertG and the EStG), `bundesfinanzministerium.de` (the BMF
-*Anwendungsschreiben* and the *Fokusgruppe* report), `bmas.de` (the quarterly Riester contract
-statistics), `deutsche-rentenversicherung.de` (the ZfA), `bzst.de` (the certifying authority),
-`bafin.de`, `gdv.de`, `aktuar.de`, `destatis.de`, `dejure.org`, `de.wikipedia.org`, and every
-insurer, fund-house and bank host named below. **No document listed in this file was retrieved.
-Nothing was downloaded, opened or read.**
+**1. How it was drafted: with no research channel at all.** Direct HTTP egress was blocked by an
+organisation network policy — `WebFetch` and `curl` were refused with HTTP 403 at the egress gateway
+for every host outside a short package-registry allowlist, and every host that matters for this
+product was tried and refused: `gesetze-im-internet.de` (the AltZertG and the EStG),
+`bundesfinanzministerium.de` (the BMF *Anwendungsschreiben* and the *Fokusgruppe* report), `bmas.de`
+(the quarterly Riester contract statistics), `deutsche-rentenversicherung.de` (the ZfA), `bzst.de`
+(the certifying authority), `bafin.de`, `gdv.de`, `aktuar.de`, `destatis.de`, `dejure.org`,
+`de.wikipedia.org`, and every insurer, fund-house and bank host named below. The session's
+`WebSearch` budget — 200 calls, shared across the parallel delib researchers — was exhausted before
+this product's research file was begun, so every search attempted for this product returned the
+budget-exhausted message. The first draft therefore rested on the authoring model's own knowledge of
+German pension and insurance law, disciplined by tagging every specific number **[std]** or
+`[unverified]`, plus four items inherited from a **sibling delib research session's** searches which
+say so at the point of use — the GDV *Musterbedingungen* index and its taxonomy [S3], the
+"Stand: 21.07.2025" date line on the classic Riester model wording [S2], the CosmosDirekt tariff code
+**LA 1005 A** [S4], and a third-party cost figure on an Allianz specimen quotation [S5]. **That
+account is provenance and is kept here deliberately.** It is no longer the retrieval condition.
 
-**2. The session's `WebSearch` budget — 200 calls, shared across the parallel delib researchers —
-was exhausted before this product's research file was begun.** Every search attempted for this
-product returned the budget-exhausted message, so **this product had no research channel at all**:
-neither retrieval nor search. Four items below are inherited from a **sibling delib research
-session's** searches and say so at the point of use — the GDV *Musterbedingungen* index and its
-taxonomy [S3], the "Stand: 21.07.2025" date line on the classic Riester model wording [S2], the
-CosmosDirekt tariff code **LA 1005 A** [S4], and a third-party cost figure on an Allianz specimen
-quotation [S5]. Everything else rests on general knowledge of German pension law, disciplined by
-tagging every specific number.
+**2. How it was verified: against the primary documents.** The egress policy has since been lifted
+and the citations re-checked. Across delib, all fifteen German instruments the library cites were
+read as canonical XML from `gesetze-im-internet.de` with each law's amendment status (*Stand*)
+recorded; 950 statutory section references were checked and 950 were correct; and insurer *AVB*,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read. **Across
+the library, 501 of 805 source entries — 62 % — now record `Retrieved: yes`.** This file sits at the
+same proportion: of the **42 entries below, 26 record `Retrieved: yes` (62 %)**, two are
+part-retrieved [R23] [R26], and **14 remain `Retrieved: no`**.
 
-**What follows from that.** Every entry records `Retrieved: no`, with the reason; **no entry
-anywhere in this library says `Retrieved: yes`**. No URL, document number, edition, page count or
-*Zertifizierungsnummer* was guessed: where none is available the entry says `URL: not established`,
-and the three canonical `gesetze-im-internet.de` forms that do appear are marked `[unverified]`
-because they are the form the host uses, not a link anyone followed. No verbatim quotation of any
-document is given; German phrases in quotation marks are **terms of art**, not quotations. And
-`[unverified]` is used generously in the product documents: every paragraph number, effective date,
-monetary amount, percentage and threshold there is a claim no search corroborated. **A delib
-citation is a pointer, not a certificate.** It names the instrument a claim should be checked
-against; it does not assert that anyone checked it.
+**What the fourteen are.** None of them is a paywall, a subscription login or a consent wall. Every
+one is a document that could not be **located**, or that has no single identifiable text to fetch:
+six carrier, fund, bank and *Wohn-Riester* wordings that were not found on their publisher's own
+site [S5] [S7] [S8] [S11] [S12] [S13], and one second-tier insurer list with no single document
+behind it to fetch [S16]; five *Bundesgesetzblatt* amending acts whose effect is
+visible in the consolidated statutes but whose own text was not opened [R17]–[R21]; and the BMF
+*Anwendungsschreiben* [R24] and the Riester contract statistics [R25], neither identified. Each entry
+says so in its own words.
+
+**What follows from that, entry by entry.** A `Retrieved: yes` entry means **the document was opened
+and the passage the entry rests on was read**; it records the form, the size or page count, the
+edition line or *Stand*, and the read date. A `Retrieved: no` entry is still **a pointer, not a
+certificate** — it names the instrument a claim should be checked against and does not assert that
+anyone checked it — and it is marked as one at the point of use. Nothing is guessed either way: where
+no URL, document number, edition or *Zertifizierungsnummer* is available the entry says `URL: not
+established`. Verbatim quotation is now given where a retrieved document supports it; German phrases
+in quotation marks in an unretrieved entry are **terms of art**, not quotations. And `[unverified]`
+keeps its meaning in the product documents, over a much smaller set than before: it now marks the
+carrier levels, the market figures, the behavioural rates and the historic dates and vintages that
+this pass could not corroborate against a document, rather than every number on the page. **Treat a
+claim as sound where its entry says `Retrieved: yes`, and as provisional where it does not.**
 
 ---
 
@@ -219,12 +237,19 @@ Information**.
 
 ## Regulatory and actuarial references (product research numbering)
 
-Twenty-six known references, [R1]–[R26]. The same retrieval statement applies to every one: **no
-document was retrieved and no search was run for this product.** The statutory URLs given in
-canonical `gesetze-im-internet.de` form are marked `[unverified]` — they are the form the host uses,
-not a link anyone followed. The content each entry supports is stated in the product documents in
-this library's own words, from general knowledge of German pension law, with every paragraph number,
-date and figure tagged `[unverified]`.
+Twenty-six known references, [R1]–[R26]. **Seventeen of them record `Retrieved: yes`** — the
+consolidated statutes and regulations [R1]–[R16] and [R22], every one read as canonical XML from
+`gesetze-im-internet.de` with the *Stand* the XML carries quoted at the entry — and **two more are
+part-retrieved on their statutory limb** [R23] [R26]. The canonical per-section URLs are no longer
+marked `[unverified]`: every one tried in this pass returned the full text of its section. What each
+entry supports is therefore stated in the product documents from the instrument itself, and the
+paragraph numbers were checked one by one — three were wrong and are corrected at the entries.
+**Seven entries stay `Retrieved: no`**: the five *Bundesgesetzblatt* amending acts [R17]–[R21],
+whose effect the consolidated texts show but whose own wording was not opened, and the BMF
+*Anwendungsschreiben* [R24] and the contract statistics [R25], neither of which was identified.
+**Historic rates, vintages and phase-in dates keep their `[unverified]` tags for exactly that
+reason**, because a consolidated statute shows the rule in force and never the sequence that
+produced it.
 
 Two structural points, stated once. **The product is defined by two statutes doing different jobs**:
 the AltZertG says what a contract must contain to be certifiable, the EStG says who gets what
@@ -478,9 +503,11 @@ surplus are unregulated as to level and are disclosed rather than capped [R4] [R
 
 [REG-R#] tags resolve against the cross-product German reference library
 `references/regulatory-and-actuarial-references.md` (its own R-numbering, R1–R56, frozen; research
-provenance in `_research/regulatory-actuarial.md`). **Every entry on that page records `Fetched:
-no`** for the reasons given above; where an entry was corroborated by a search run while the budget
-lasted, that page says so per fact. Entries cited by the Riester documents:
+provenance in `_research/regulatory-actuarial.md`). That page went through the same re-verification
+as this one: **its fifty-six entries now carry their own per-entry `Retrieved:` lines, the large
+majority of them `yes`**, and it records per entry what was read and what was corrected. The
+statement it used to carry here — that every entry on it records `Fetched: no` — is withdrawn.
+Entries cited by the Riester documents:
 
 - **REG-R5** — VAG 2016, the statute and its Anlage 1: the supervisory frame the provider sits in, and the *Sparte* this contract is written in.
 - **REG-R6** — VAG §§ 74–110 and § 40: the best-estimate-plus-risk-margin structure the published `liability_cf` feeds, and the SFCR that reports it. Nothing here discounts.
@@ -526,8 +553,9 @@ the product documents are written from, and the nineteen-item gaps-and-caveats r
 used here.
 
 **This paragraph was rewritten in the 2026-08-30 provenance pass and its predecessor is no longer
-accurate.** What follows is the state of the entries above after that pass; the standing retrieval
-caveat at the head of this file is older than the entries and is due to be rewritten centrally.
+accurate.** What follows is the state of the entries above after that pass. The retrieval-conditions
+block at the head of this file has since been rewritten to match, so the two now agree; if they ever
+disagree again, the per-entry `Retrieved:` lines are the record and the header is the summary.
 
 **What is now read.** Of the 42 entries above, **26 carry `Retrieved: yes`** and two more are part-retrieved; 14 remain `Retrieved: no`, in three groups — five *Bundesgesetzblatt* amending acts whose effect is visible in the consolidated statutes but whose own text was not opened [R17]–[R21], seven documents that could not be located on their publisher's own site [S5] [S7] [S8] [S11] [S12] [S13] [S16], and two where no single identifiable document exists to fetch [R24] [R25]. The **statutory half of the product is
 documented end to end** from canonical XML with the law's *Stand* attached: AltZertG §§ 1, 1a, 2a, 3,
@@ -609,5 +637,4 @@ that fill them remain **[std]** with their rationale stated where each is used.
 [REG-R5]: #delib-reg-r5
 [REG-R6]: #delib-reg-r6
 [std]: #delib-std
-[unverified]: #delib-unverified
 <!-- END generated citation links -->

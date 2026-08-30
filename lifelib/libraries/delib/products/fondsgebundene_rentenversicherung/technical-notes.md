@@ -1,6 +1,6 @@
 # Technical Notes
 
-**Status:** Draft, 2026-08-29 (all sources accessed 2026-08-29).
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`FRV_DE_S`**, **monthly** grid — for the standardized composite German *fondsgebundene
@@ -16,11 +16,19 @@ them — *Rentenfaktor*, *Beitragssumme*, *Stornoabzug* — keep it in the cells
 each names a quantity with a statutory definition and no English equivalent that would not
 mislead.
 
-**The retrieval condition, once, because it governs every number below.** No document cited here
-was retrieved, and no web search was run for this product; the few facts corroborated at one
-remove come from searches run for sibling delib products and are attributed to them. The
-**mechanics** are common ground in German practice. The **levels** are almost entirely **[std]**:
-not one charge rate, not one *Rentenfaktor* and not one lapse rate was established at any carrier.
+**The retrieval condition, once, because it governs every number below.** delib was **drafted**
+with all HTTP egress blocked and this product's search budget already spent, so nothing cited here
+was retrieved and the first draft rested on the authoring model's own knowledge of German practice,
+disciplined by [std] and [unverified]. The citations have since been **re-verified against the
+primary documents**: **eighteen of the forty-four entries in `sources.md` now say `Retrieved: yes`**
+— one carrier's complete *Bedingungswerk* and its *Basisinformationsblätter* [S2] [S15] and the
+statutory core in canonical text among them — two say `partly`, and twenty-four still say `no`,
+most of those because no address for the document was ever established. Treat a claim as sound
+where its entry says `Retrieved: yes`, and as a pointer rather than a certificate — an instrument
+named, not one anybody checked — where it does not. The **mechanics** are common ground in German
+practice and several are now read in a real wording. The **levels** are almost entirely **[std]**:
+no lapse rate was established anywhere, and outside the one carrier that could be read not one
+charge rate and not one *Rentenfaktor* was established at any carrier.
 
 ---
 
@@ -1115,7 +1123,9 @@ grid. The valuation layers consume them and are cited, not reproduced.
   added at market value. **The contract boundary is an open question on this product and this
   library does not resolve it**: the *Beitragsdynamik* is optional at each anniversary and the
   insurer's charge scale is revisable in some tariffs, both of which bear on where the boundary
-  falls, and **no boundary rule in this library was read from a retrieved instrument** [REG-R2].
+  falls, and **no boundary rule in this library rests on an article anybody read**: the Delegated
+  Regulation was retrieved for the re-verification pass, but only Artt. 37–39, the risk-margin
+  articles, were read from it, and the contract-boundary articles were not [REG-R2].
 - **The *Rentenfaktor* is an option and this model does not value it.** A guaranteed conversion
   rate applied thirty years forward to an unknown capital is a written option on longevity and on
   interest rates, and a deterministic projection prices none of it. The `max(guaranteed, current)`

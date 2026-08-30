@@ -2,12 +2,15 @@
 
 **Status:** Draft, 2026-08-29 (access date for every citation: 2026-08-29).
 
-**Retrieval conditions.** **No document cited in these notes was retrieved.** Direct HTTP egress from
-the build environment is blocked and the session's `WebSearch` budget was exhausted before this
-product was reached, so a delib citation is a **pointer, not a certificate** — it names the instrument
-a claim must be checked against, not a document anyone read. Nothing here is quoted from a German
-statutory or contractual text, and every specific number carries [unverified] or **[std]**. See
-`product-spec.md` for the full statement.
+**Retrieval conditions.** These notes were **drafted with nothing retrieved** — egress from the
+build environment was blocked and the session's `WebSearch` budget was exhausted before this product
+was reached — and their citations have **since been re-verified against the primary documents**: the
+statutes are read as canonical XML with their *Stand* recorded, the carrier wordings and
+*Produktinformationsblätter* as PDFs. Where an entry in `sources.md` says `Retrieved: yes` the
+document was opened and the passage the entry rests on was read; where it says `Retrieved: no` —
+thirteen of the forty entries — the citation is still a **pointer, not a certificate**, naming the
+instrument a claim must be checked against rather than a document anyone read, and the number it
+carries keeps its [unverified] or **[std]** tag. See `product-spec.md` for the full statement.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`Basis_DE_A`**, **annual** grid — for the standardized composite German *Basisrente* defined in
@@ -1156,10 +1159,12 @@ In rough order of leverage for a German Schicht-1 block:
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-basisrente-r1
+[R10]: #delib-basisrente-r10
 [R14]: #delib-basisrente-r14
 [R15]: #delib-basisrente-r15
 [R16]: #delib-basisrente-r16
 [R17]: #delib-basisrente-r17
+[R18]: #delib-basisrente-r18
 [R2]: #delib-basisrente-r2
 [R20]: #delib-basisrente-r20
 [R23]: #delib-basisrente-r23

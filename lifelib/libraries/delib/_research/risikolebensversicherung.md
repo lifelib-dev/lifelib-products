@@ -49,12 +49,13 @@ Access date for all citations: **2026-08-29**.
 
 ## Retrieval conditions and citation discipline
 
-Stated in the same terms as every other delib document. A reader who picks up only this file must
-learn the two limits from this file.
+Stated in the same terms as every other delib document, and in two halves: the two limits the
+research was **done** under on 2026-08-29, and what the **re-verification** of 2026-08-30 established.
+A reader who picks up only this file must learn both from this file.
 
-**No document named here was retrieved.** Direct HTTP egress from this build environment is blocked by
-an organisation network policy: `WebFetch` and `curl` are refused (HTTP 403 at the egress gateway) for
-every host outside a short package-registry allowlist. The hosts that matter for this product were
+**No document named here had been retrieved when it was written.** Direct HTTP egress from the build
+environment was blocked by an organisation network policy: `WebFetch` and `curl` were refused
+(HTTP 403 at the egress gateway) for every host outside a short package-registry allowlist. The hosts that matter for this product were
 tried and refused — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
 `bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org`. Not one
 AVB PDF, *Produktinformationsblatt*, *Verbraucherinformation*, statutory text or comparison-portal
@@ -68,13 +69,15 @@ message. That is materially worse than the position of the two sibling files, wh
 search-result summaries, and worse again than `frlib/_research/temporaire-deces.md`, where the French
 *notices d'information* were downloaded and read in full.
 
-**What this file therefore is.** A statement of German term-assurance law, product structure and
-market practice written from the author's own knowledge, disciplined in three ways:
+**What this file therefore was as drafted.** A statement of German term-assurance law, product
+structure and market practice written from the authoring model's own knowledge, disciplined in three
+ways:
 
-1. **Documents are named as known references, not as evidence.** Each `S#` and `R#` entry names a
-   document that **exists and is the right kind of document** for the claim beside it. Each carries
+1. **Documents were named as known references, not as evidence.** Each `S#` and `R#` entry names a
+   document that **exists and is the right kind of document** for the claim beside it. Each carried
    `Retrieved: no — direct HTTP egress blocked; no search corroboration (session search budget
-   exhausted)` unless it inherits corroboration through point 2. **No document number, edition date,
+   exhausted)` unless it inherited corroboration through point 2. **This is the rule the
+   re-verification changed**, and the paragraph after this list says how far. **No document number, edition date,
    page count or *Bundesgesetzblatt* citation is stated unless inherited**; where a URL is unknown the
    entry says `URL: not established`, and a canonical form given from confident knowledge is marked
    `[unverified]`.
@@ -95,8 +98,34 @@ market practice written from the author's own knowledge, disciplined in three wa
 **`[unverified]` keeps its normal meaning and is used generously**: any specific paragraph number,
 effective date, monetary amount, percentage, price point or market figure that no search confirmed. It
 is **not** applied to the general shape of a well-established mechanic — that would drown the signal —
-but the moment a claim becomes specific and numeric it carries either an inherited corroboration or
-the tag.
+but the moment a claim becomes specific and numeric it carries either an inherited corroboration, a
+retrieval, or the tag.
+
+**The re-verification of 2026-08-30.** The policy was lifted and the citations were checked against
+the primary documents. Library-wide, all fifteen German instruments delib cites were read as canonical
+XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950 statutory section
+references were checked and 950 were correct, and insurer AVB, *Verbraucherinformationen* and
+*Produktinformationsblätter* were retrieved as PDFs and read; **501 of the library's 805 source
+entries, 62 %, now read `Retrieved: yes`.** In this file the pass reached **23 of the 40 entries
+below, and those 23 now carry their own `Retrieved:` line: 22 say yes and one says no ([R12])**. They
+are the statutory spine — VVG, VVG-InfoV, MindZV, DeckRV, VAG, AGG, EStG, ErbStG, HGB and VersStG,
+each read as canonical XML at a recorded `Stand`, with the load-bearing rules now quoted exactly in
+German — and the GDV model wordings and carrier AVB at [S1] to [S5]. The other seventeen entries carry
+no per-entry line, nothing was opened for them, and the drafted status above still governs them:
+[S6]–[S17] are the carrier and comparison material, and [R18]–[R20], [R22] and [R23] the DAV,
+rating-agency and statistical material.
+
+**What an entry now means.** A **`Retrieved: yes`** line means the document was opened and the passage
+the entry rests on was read, at the `Stand` or edition the line records. Where there is a
+`Retrieved: no` line or no line at all, the citation is still **a pointer rather than a certificate**:
+it names the instrument a claim must be checked against and does not assert that anyone checked it.
+Note the one trap the pass exposed: the `.../<slug>/__<n>.html` addresses printed below are
+**human-facing links only** — they answer 200 with a frameset of a few kilobytes and no statutory text
+— so a section cited only through one of them is not retrieved. **The re-verification changed things**:
+paragraph numbering is no longer `[unverified]` for any provision that was read, and where a reading
+corrected an entry the entry says so. What it did not reach is the whole **quantitative** side — no
+rate card, no *Produktinformationsblatt*, no price point, no DAV table — so every `[std]` level in
+this file stands exactly where it did.
 
 **What is not in this file, and would be in a properly researched one**: no insurer's AVB text, no
 *Produktinformationsblatt*, no published *Bruttobeitrag* / *Zahlbeitrag* pair, no comparison-portal
@@ -139,9 +168,13 @@ English; the prose is English about German products.
 ---
 ## Primary sources
 
-Every entry below carries the same retrieval status, stated once here rather than repeated
-seventeen times: **Retrieved: no — direct HTTP egress blocked in the build environment; no search
-corroboration (the session `WebSearch` budget was exhausted before this product's research began).**
+**The blanket retrieval status this section once declared no longer holds in full.** As drafted,
+every entry carried **Retrieved: no — direct HTTP egress blocked in the build environment; no search
+corroboration (the session `WebSearch` budget was exhausted before this product's research began)**,
+stated once here rather than repeated seventeen times. **Five of the seventeen were opened on
+2026-08-30** — the two GDV model wordings [S1] [S2] and the carrier documents at [S3], [S4] and [S5]
+— and each of those five now carries its **own** `Retrieved:` line with the edition it was read at.
+The other twelve carry no line, nothing was opened for them, and the status above is still theirs.
 Where an entry inherits corroboration from a sibling delib research file, the entry says so.
 
 Order: GDV model wordings (S1–S2), carrier documents (S3–S13), then secondary consumer, comparison
@@ -1411,8 +1444,10 @@ Two different things that are routinely confused: the first is a **product form*
   from comparison portals, on the correct ground that these are the only public German price data for
   this product. They could not be obtained.** No German carrier publishes a rate card [S3]–[S13]; the
   *Produktinformationsblatt* quotes the applicant's own premium [S2]; and a portal result is generated
-  per query rather than published [S14], so it is unreachable without live egress in any event. **Not
-  one price point appears in this file** (gap 1).
+  per query rather than published [S14], so it is unreachable in any event. **The retrieval pass of
+  2026-08-30 did not change this**: it opened the GDV model wordings and three carrier documents and
+  found no rate card in any of them, and [S14] was not queried. **Not one price point appears in this
+  file** (gap 1).
 - **What is shipped instead is an explicit `[std]` construction**, given in full so that a reviewer can
   replace any part and re-derive the rest. **Every number below is `[std]`. None is a market
   observation, and none may be cited downstream as one.**

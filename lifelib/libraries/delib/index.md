@@ -74,25 +74,39 @@ material are never silently mixed with assumptions made to complete a model.
 
 (delib-provenance)=
 
-```{admonition} Read this before citing anything in this library
-:class: danger
+```{admonition} How much of this library has been checked against the documents it cites
+:class: important
 
-**No document cited anywhere in delib was retrieved.** The build environment blocks direct
-HTTP egress to every host outside a package-registry allowlist — `gesetze-im-internet.de`,
-`bafin.de`, `aktuar.de`, `gdv.de`, `bundesfinanzministerium.de`, `destatis.de`,
-`dejure.org` and `eur-lex.europa.eu` were each tried and each refused at the gateway — and
-the session's web-search budget was exhausted partway through the regulatory research.
+**delib was drafted blind and has since been re-verified.** The two conditions are worth
+keeping apart, because a reader's confidence in any one claim depends on which applies to it.
 
-The consequence is stated plainly rather than buried: **a delib citation is a pointer, not
-a certificate.** It names the instrument a claim should be checked against; it does not
-assert that anyone read it. The prudential and contract-law research files record, per
-fact, what a search corroborated; the rest rests on the authoring model's own knowledge of
-German insurance law and practice, and every specific paragraph number, effective date,
-monetary amount and market figure that no search confirmed carries **[unverified]**.
+**Drafted blind.** The build environment blocked direct HTTP egress to every host outside a
+package-registry allowlist — `gesetze-im-internet.de`, `bafin.de`, `aktuar.de`, `gdv.de`,
+`destatis.de`, `dejure.org` and `eur-lex.europa.eu` were each tried and each refused at the
+gateway — and the session's web-search budget ran out partway through the regulatory
+research. The first draft therefore rested on the authoring model's own knowledge of German
+insurance law and practice, disciplined by **[std]** and **[unverified]** tags.
 
-This is a weaker provenance than the sister libraries have — frlib could read Légifrance in
-full, and says so — and it is the first thing to fix if this library is developed further.
-**Re-verify every factual claim against the cited instrument before relying on it.**
+**Then re-verified.** The policy was lifted and every citation re-checked against the
+document it names. All fifteen German instruments the library cites were read as canonical
+XML from gesetze-im-internet, each with its amendment status (*Stand*) recorded, and
+**950 statutory section references were checked: 950 were correct**. Insurer *AVB*,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read.
+
+**Where that leaves each claim.** Of 969 source entries, **613 now read `Retrieved: yes`**,
+37 were reached in part, and 319 could not be opened — 404 at the cited address, a consent
+or JavaScript wall, a paywall, a subscription login, or an address that was never
+established. So **two entries in three rest on a document someone opened**; the rest remain
+**pointers rather than certificates**, and say so individually.
+
+Read a claim against its own entry. Coverage is uneven by design of the sources rather than
+of the library: the statutory core is near-complete, and the products whose primary sources
+are carrier wordings behind a document portal are thinnest.
+
+**The re-verification changed things**, which is the strongest argument for reading the
+entries. It corrected sourcing, figures and attributions across every product — in one case
+retiring a sentence the drafted text had leaned on that does not exist in the document it
+was attributed to. Each product's `sources.md` records what changed.
 ```
 
 ```{admonition} These are mechanics demonstrations, not pricing or reserving results
@@ -509,11 +523,12 @@ rationale and, where available, the observed range across insurers.
 
 (delib-unverified)=
 
-**[unverified]** — a claim from general knowledge or a secondary snippet that could **not**
-be confirmed against a retrieved document. Treat it as a to-verify item, not an established
-fact. Under this library's [retrieval conditions](#delib-provenance) the tag does more work
-than it does in the sister libraries, and it is applied to every specific paragraph number,
-effective date, monetary amount and market figure that no web search corroborated.
+**[unverified]** — a claim that **no retrieved document confirms**. Treat it as a to-verify
+item, not an established fact. The tag was applied at drafting to every specific paragraph
+number, effective date, monetary amount and market figure, because at that point nothing had
+been read; the [re-verification](#delib-provenance) then discharged it wherever a document
+was opened and supported the claim, so a tag that survives now means the document was
+consulted and did not settle the point — or could not be opened at all.
 
 The hard rule throughout: **every quantitative parameter is either source-tagged or marked
 [std]**. In this library that rule does most of its work on the biometric bases, which are
@@ -574,20 +589,30 @@ no`**.
 Aggregated from the per-product research; each product's documents carry the full list, and
 each `_research/<slug>.md` closes with its own numbered register.
 
-- **No document cited anywhere in this library was retrieved, and the search budget ran out
-  partway through.** Direct HTTP egress is blocked by an organisation network policy:
-  `gesetze-im-internet.de`, `bafin.de`, `aktuar.de`, `gdv.de`, `bundesfinanzministerium.de`,
-  `destatis.de`, `dejure.org`, `eur-lex.europa.eu` and `de.wikipedia.org` were each tried and
-  each refused with HTTP 403 at the gateway. Not one statutory text, BaFin circular, DAV table,
-  BGH judgment or statistical release was opened. The only research channel was `WebSearch`,
-  whose 200-call budget was spent on a prudential sweep of roughly 35 German-language queries
-  and a contract-law and conduct sweep of roughly 45; **the tax sweep and the biometric sweep
-  each ran zero successful searches**, and **eight of the ten product research files record that
-  no search was available to them at all** — only `kapitallebensversicherung` and
-  `klassische_rentenversicherung` carry search summaries, the second on eighteen queries against
-  the thirty to eighty its brief anticipated. So a delib citation is a **pointer, not a
-  certificate**: it names the instrument a claim should be checked against and does not assert
-  that anyone read it. Re-verify before relying on any of it.
+- **The library was drafted blind, then re-verified; coverage of that re-verification is
+  uneven.** Direct HTTP egress was blocked while delib was written — `gesetze-im-internet.de`,
+  `bafin.de`, `aktuar.de`, `gdv.de`, `destatis.de`, `dejure.org`, `eur-lex.europa.eu` and
+  `de.wikipedia.org` each refused with HTTP 403 at the gateway — and the 200-call `WebSearch`
+  budget was spent on a prudential sweep and a contract-law sweep, leaving **the tax and
+  biometric sweeps and eight of the ten product files with no research channel at all**. That
+  first draft rested on the authoring model's own knowledge. The policy has since been lifted
+  and the citations re-checked: **613 of 969 source entries now read `Retrieved: yes`**, 37 were
+  reached in part, and **319 could not be opened** — 404 at the cited address, a consent or
+  JavaScript wall, a paywall, a subscription login, or an address that was never established.
+  The statutory core is near-complete; the thinnest products are those whose primary sources are
+  carrier wordings behind a document portal, `fondsgebundene_rentenversicherung` most of all at
+  25 of 51. **An entry that still reads `Retrieved: no` is a pointer, not a certificate.**
+- **The re-verification corrected the drafted text, so the drafted text was wrong in places.**
+  Sourcing, figures and attributions moved in every product. The sharpest case: the
+  `klassische_rentenversicherung` corpus had leaned on CosmosDirekt LA 904 A citing *DAV 2004 R*
+  at *0 percent p.a.*, and the retrieved document contains neither — it states *"der tarifliche
+  Garantiesatz von 0,90 Prozent p. a."*, which is its 2017 vintage's cap. Both facts are now
+  sourced to documents that carry them. Elsewhere: DAV 2008 T observes **2001–2004**, not
+  2006–2008; the GDV *Stornoquote* is **2,56 % for 2023**; three `kapitallebensversicherung`
+  sources cited as endowment wordings are annuity wordings. Each product's `sources.md` records
+  its own corrections. **Findings that reach a modelled rate or rule were reported and not
+  acted on** — a model change moves the worked example and its golden tests — and each product's
+  `model.md` or `sources.md` names them.
 - **The DAV tables are proprietary, so every biometric basis here is a [std] proxy.** DAV 2008 T,
   DAV 2004 R and DAV 2004 R-Bestand, DAV 1997 I / RI / TI and DAV 2008 P are the property of the
   Deutsche Aktuarvereinigung, are not public, and are cited by name and never redistributed

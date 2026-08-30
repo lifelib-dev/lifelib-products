@@ -1,12 +1,14 @@
 # Implementation Notes
 
-**Status:** Draft, 2026-08-29. Built from
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents
+2026-08-30. Built from
 [`products/risikolebensversicherung/technical-notes.md`](technical-notes.md); the product
 it implements is specified in [`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
-> *mechanics* are sourced, though only ever through corroboration inherited from a sibling
-> delib research file: the *Bruttobeitrag* is guaranteed for the term and the *Zahlbeitrag*
+> *mechanics* are sourced — at drafting only through corroboration inherited from a sibling
+> delib research file, and since the 2026-08-30 re-verification from the instruments and
+> wordings themselves: the *Bruttobeitrag* is guaranteed for the term and the *Zahlbeitrag*
 > is not [R5] [R6] [REG-R24] [REG-R27]; the MindZV obliges an insurer to allocate at least
 > **90 % of the *Risikoergebnis***, which on a term product is essentially the whole
 > technical result [R9] [REG-R18]; § 161 VVG makes the insurer *leistungsfrei* for an
@@ -21,15 +23,22 @@ it implements is specified in [`product-spec.md`](product-spec.md).
 > **ceilings the composite adopts as rates**, and a retrieved carrier prices at 0,25 %
 > [R10] [REG-R14] [REG-R16] [S3].
 >
-> **No level is sourced at all.** Direct HTTP egress was blocked and the session's
-> `WebSearch` budget was exhausted **before** this product was researched, so not one
-> *Bruttobeitrag*, *Zahlbeitrag*, spread ratio, smoker ratio, charge, commission scale or
-> lapse rate was established for any German carrier [S3]–[S13] [S14] [S16] [R17] [R18].
-> Every price, charge, margin and behavioural level here is therefore **[std]** with a
-> stated rationale, and the DAV tables — **DAV 2008 T**, with its *NR* and *R* variants —
-> are the property of the Deutsche Aktuarvereinigung, are cited by name and are **never
-> shipped** [R12] [REG-R48]. Replace the decrement and charge tables with company data
-> before drawing any conclusion from the output.
+> **Almost no level is sourced, and none is adopted.** This model was drafted with direct
+> HTTP egress blocked and the session's `WebSearch` budget exhausted **before** this product
+> was researched, so every level rested on the authoring model's own knowledge. The
+> citations have since been re-verified against the primary documents — **22 of the 40
+> entries in `sources.md` now read `Retrieved: yes` and 18 still read `no`**. On *levels* it
+> reached exactly one carrier: [S2]'s published model case gives a *Tarifbeitrag*, a
+> *Zahlbeitrag*, an α of **2,41 %** and a **0,25 %** *Rechnungszins*, which the
+> standardization table below records **as checks and not as inputs**. The cost-disclosure
+> duty is owed to the applicant and not to the public [R17], so there is still no rate card,
+> and no spread ratio, smoker ratio, commission scale or lapse rate was established for any
+> German carrier [S3]–[S13] [S14] [S16] [R18]. Every price, charge, margin and behavioural
+> level here is therefore still **[std]** with a stated rationale, and the DAV tables —
+> **DAV 2008 T**, with its *NR* and *R* variants — are the property of the Deutsche
+> Aktuarvereinigung, are cited by name and are **never shipped** [R12] [REG-R48]. Replace
+> the decrement and charge tables with company data before drawing any conclusion from the
+> output.
 
 ## Run it
 

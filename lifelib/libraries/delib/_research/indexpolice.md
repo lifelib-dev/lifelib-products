@@ -47,11 +47,13 @@ Access date for all citations: **2026-08-29**.
 ## Retrieval conditions and citation discipline
 
 Read this before reading anything else in the file, because it changes what every citation below
-means.
+means. It has two halves: the conditions the research was **done** under on 2026-08-29, and what the
+**re-verification** of 2026-08-30 established. The first is kept because it is how this file came to
+say what it says; the second is what a reader should weigh each entry by.
 
-**No document in this file was retrieved.** Direct HTTP egress from this build environment is
-blocked by an organisation network policy: `WebFetch` and `curl` are refused with HTTP 403 at the
-egress gateway for every host outside a short package-registry allowlist. The hosts that matter for
+**No document in this file had been retrieved when it was written.** Direct HTTP egress from the
+build environment was blocked by an organisation network policy: `WebFetch` and `curl` were refused
+with HTTP 403 at the egress gateway for every host outside a short package-registry allowlist. The hosts that matter for
 this product were tried and refused: `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
 `bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de`, `de.wikipedia.org`. No
 *Bedingungswerk*, no *Produktinformationsblatt*, no *Basisinformationsblatt*, no statutory text, no
@@ -60,20 +62,22 @@ BaFin *Merkblatt* and no index rulebook was opened.
 **The session's `WebSearch` budget was exhausted before this product was researched.** The library
 shares a hard cap of 200 search calls; the cap had been reached during the regulatory and
 contract-law research and during products 1 and 2. Every search attempted for this product returned
-the budget-exhausted message. **This file therefore had no research channel at all**: it was written
-from the author's own knowledge of German insurance law, German life-insurance product design and
-German market practice, disciplined by the rules below.
+the budget-exhausted message. **This file therefore had no research channel at all while it was
+drafted**: its first draft rested on the authoring model's own knowledge of German insurance law,
+German life-insurance product design and German market practice, disciplined by the rules below.
 
-What that means for every claim here:
+What that meant for every claim in the draft:
 
-1. **Source entries are known references, not evidence.** Each `S#` and `R#` below names a document
+1. **Source entries were known references, not evidence.** Each `S#` and `R#` below names a document
    that exists and is the right kind of document for this product — an insurer's *Allgemeine
    Versicherungsbedingungen*, a *Produktinformationsblatt*, a PRIIP *Basisinformationsblatt*, a
    statutory instrument, a supervisory *Merkblatt*. The entry records publisher and document type,
    says `URL: not established` unless the canonical form is one this author is confident of, and
-   records `Retrieved: no — direct HTTP egress blocked; no search corroboration (session search
-   budget exhausted)`. **No document number, edition date, page count or publication date is
-   asserted anywhere in this file**, because none could be established, and none is guessed.
+   recorded `Retrieved: no — direct HTTP egress blocked; no search corroboration (session search
+   budget exhausted)`. **No document number, edition date, page count or publication date was
+   asserted anywhere in the drafted file**, because none could be established, and none was guessed.
+   **This is the rule the re-verification overtook**: the entries now carry editions, `Stand` lines
+   and page counts for the documents that were opened, and only for those.
 2. **No verbatim quotation appears anywhere in this file.** Statutory and contractual content is
    described in this author's own words as *what the instrument provides*; no sentence is placed in
    quotation marks and attributed to any *Bedingungswerk*, statute or supervisory document, because
@@ -95,16 +99,38 @@ What that means for every claim here:
    recalled from general market knowledge and tagged `[unverified]`; gap 2 records this as the
    file's largest single defect. **No downstream document may present one as established.**
 
-The consequence, stated plainly: a delib `indexpolice` citation is a **pointer, not a certificate**.
-It names the instrument a claim should be checked against. It does not assert that anyone checked
-it. Where this file is more confident than that, it says so in the sentence itself.
+**What the re-verification established.** The policy was lifted, and on **2026-08-30** the citations
+were checked against the primary documents. Library-wide, all fifteen German instruments delib cites
+were read as canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded,
+950 statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read; **501
+of the library's 805 source entries, 62 %, now read `Retrieved: yes`.** For this product: **32 of
+the 38 entries below read `Retrieved: yes`, five read `no` ([S3], [S5], [S13], [S15], [R21]) and one
+is mixed ([R10])** — the best-served file of the eleven. Two carrier *Bedingungswerke* were read in
+full, which is what this file had called its central gap, together with a PRIIP KID, a *Neue
+Klassik* comparator's KID, the GDV chassis wording and its *Muster-Standmitteilung*, an AltZertG
+*Produktinformationsblatt* and a Zurich *Verbraucherinformation*. The five that stayed shut say
+which wall they hit: a paywalled *Finanztest* [S13], comparison portals answering HTTP 403 [S15],
+rating results kept behind the houses' own paid tools with the cited addresses answering HTTP 404
+[R21], a document class that no one publishes at all [S5], and one entry naming a document class
+that does not exist for this product [S3].
 
-**What the file is nevertheless worth.** The mechanics of an *Indexpolice* are not in doubt and do
+**What an entry now means.** A **`Retrieved: yes`** line means the document was opened and the
+passage the entry rests on was read, and the line records the edition, page count or statutory
+`Stand`. Where the line says **no**, a delib `indexpolice` citation is still a **pointer, not a
+certificate**: it names the instrument a claim should be checked against and does not assert that
+anyone checked it. **The re-verification changed things** — the gaps register below is
+re-adjudicated item by item against the retrieved documents, and where a document contradicted the
+drafted text the contradiction is stated rather than smoothed over. Treat a claim here as sound
+where its entry says `Retrieved: yes`, and as provisional where it does not.
+
+**What the file was nevertheless worth before any of that.** The mechanics of an *Indexpolice* are not in doubt and do
 not depend on having a PDF open: the financing identity between declared surplus and option budget,
 the sum-of-capped-monthly-returns payoff with uncapped negative months, the zero floor, the annual
 lock-in, the annual *Wahlrecht*, and the way each lands in a cash-flow projection. The weight of the
 file is deliberately in the extracted-facts-by-mechanic sections and the two constructed worked
-examples, which is where a research file written under these conditions earns its place.
+examples, which is where a research file written under those conditions earned its place — and it is
+those sections the retrieved wordings were then checked against.
 
 ---
 
@@ -1979,9 +2005,11 @@ That way the mechanic is reproduced exactly rather than approximated; the worked
 19 becomes the anchor cell and is asserted cell by cell; the Example B pitfall (index up, credit
 zero) becomes a test rather than a remark; every unestablished level stays a visible `[std]`
 parameter instead of being buried in an assumed credit rate; and the volatility sensitivity of
-section 20 is demonstrable by swapping the CSV. That is the strongest thing a research file written
-with no research channel can hand downstream: not the numbers it could not obtain, but the exact
-arithmetic those numbers would have gone into.
+section 20 is demonstrable by swapping the CSV. That was the strongest thing this file could hand
+downstream while it had no research channel: not the numbers it could not obtain, but the exact
+arithmetic those numbers would have gone into. The retrieval pass of 2026-08-30 has since supplied
+two carriers' clause wording and two published parameter sets for that arithmetic to be run
+against; it did not supply a monthly index series, so the CSV design stands.
 
 ---
 

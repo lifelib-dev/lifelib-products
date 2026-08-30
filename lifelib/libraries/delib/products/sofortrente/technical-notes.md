@@ -1,6 +1,7 @@
 # Technical Notes
 
-**Status:** Draft, 2026-08-29 (all sources dated 2026-08-29; **none was retrieved**).
+**Status:** Drafted 2026-08-29 with no document retrieved; **re-verified against the primary
+documents on 2026-08-30**, when 19 of this product's 32 source entries were opened and read.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`Sofort_DE_S`**, **monthly** grid — for the representative composite German *sofortbeginnende
@@ -10,14 +11,20 @@ immediate annuity — [S4], [S2], [S6] and the GDV template [S1]. [S#] and [R#] 
 `sources.md` (numbering carried from `_research/sofortrente.md`; frozen); [REG-R#] tags the
 cross-product reference library `references/regulatory-and-actuarial-references.md` (its own frozen
 R1–R56 numbering). **[std]** marks standardizations introduced for the reference implementation;
-[unverified] marks claims no search corroborated. Parameter values are identical to those in
-`product-spec.md`. Cells names, model-point columns and CSV headers are English `lower_snake_case`;
+[unverified] marks claims no retrieved document corroborates. Parameter values are identical to
+those in `product-spec.md`. Cells names, model-point columns and CSV headers are English `lower_snake_case`;
 German terms of art keep their German form in prose.
 
-**Retrieval conditions.** Direct HTTP egress was blocked and the session's `WebSearch` budget was
-exhausted before work on this product began, so **not one search was run for the *Sofortrente***.
-Every level in class (b) and class (c) below is therefore **[std]**, and several in class (a) are
-too. That is stated once here and tagged at every occurrence rather than repeated in prose.
+**Retrieval conditions.** These notes were **drafted** under a policy that blocked all egress, with
+the `WebSearch` budget exhausted before work on this product began, so **not one search was run for
+the *Sofortrente*** and the draft rested on the authoring model's own knowledge of German practice.
+The citations have since been **re-verified against the primary documents**: 19 of the 32 entries in
+`sources.md` read `Retrieved: yes` and 12 read `no`, and the clause-level mechanics below are now
+quoted from documents that were opened and read. The **levels** are not. One carrier's guaranteed
+annuity scale [S8] and one carrier group's surplus declaration [S10] reached the corpus, neither was
+used to fit anything, and every level in class (b) and class (c) below is therefore still **[std]**,
+as are several in class (a). That is stated once here and tagged at every occurrence rather than
+repeated in prose.
 
 ---
 

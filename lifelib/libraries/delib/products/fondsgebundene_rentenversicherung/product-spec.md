@@ -1,6 +1,6 @@
 # Product Specification
 
-**Status:** Draft, 2026-08-29 (all sources accessed 2026-08-29).
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling of a German **fondsgebundene Rentenversicherung** (FRV) — the
@@ -18,17 +18,36 @@ marks a standardization introduced for the reference implementation, each with a
 where the research recorded one, the argued range across the German market; [unverified] marks a
 claim no retrieved document or search result confirmed.
 
-**Read this before anything else.** Two limits applied at full strength to this product. Direct
-HTTP egress was blocked by an organisation network policy, so **no document cited anywhere in
-this specification was retrieved** — not one *Bedingungswerk*, not one *Basisinformationsblatt*,
-not one *Produktinformationsblatt*. And the session's `WebSearch` budget was exhausted before
-this product's research began, so **no search was run for it either**; the few facts corroborated
-at one remove come from searches run for sibling delib products and are attributed to them. A
-delib citation is therefore **a pointer, not a certificate**. The **mechanics** below are common
-ground in German practice and are written without hedging; the **levels** are almost entirely
-**[std]**, because not one *Abschlusskostenquote*, not one *Verwaltungskostensatz*, not one
-*Stückkosten* amount, not one *Effektivkostenquote* and not one *Rentenfaktor* was established at
-any carrier.
+**Read this before relying on a citation, because the conditions changed after it was written.**
+delib was **drafted** under an organisation network policy that blocked all HTTP egress from the
+build environment, and on this product the shared `WebSearch` budget was exhausted before its
+research began, so the first draft rested on the authoring model's own knowledge of German
+insurance law and practice, disciplined by the [std] and [unverified] tags; the few facts
+corroborated at one remove came from searches run for sibling delib products and are attributed
+to them. **That policy has since been lifted and the citations re-verified against the primary
+documents on 2026-08-30.** For this product, **eighteen of the forty-four entries in `sources.md`
+now say `Retrieved: yes` — 41 %** — two more say `partly`, and twenty-four still say `no`; across
+delib as a whole 501 of 805 entries (62 %) are retrieved, and this product sits below that
+because of its carrier sweep, not its statutory core. What came in carries most of what changed
+here: one complete German unit-linked *Bedingungswerk* read end to end, DEVK's 195-page
+*Kundeninformation* with its *Tarifbestimmungen*, its *Rechnungsgrundlagen* and sixteen
+*Basisinformationsblätter* [S2] [S15]; the statutory core as canonical XML from
+`gesetze-im-internet.de` with each instrument's amendment status (`Stand`) recorded — the VVG,
+the DeckRV, the MindZV, the VAG and the EStG [R1] [R12] [R14] [R15] [R20], the VVG-InfoV in HTML
+beside them [R7]; and BaFin's *Merkblatt* and cost survey [R10] [R11] with the DAV's PRIIPs
+*Ergebnisbericht* [R18]. What did not come in is the rest of the carrier sweep: for ten named
+carriers no address for a *Bedingungswerk* was ever established, the one HDI address tried is a
+soft 404, the DAV tables are not public, and the PRIIPs Regulation, the LVRG, the rating studies,
+the GDV statistics and the BGH line were never opened. **Where an entry says `Retrieved: yes`,
+treat the claim it carries as sound; where it does not, the citation is still a pointer, not a
+certificate** — it names the instrument a claim should be checked against, not one anybody
+checked. Re-verification was not a formality: it contradicted the death table this document
+names, reversed the PRIIPs category, and put a real guaranteed *Rentenfaktor* below the one
+modelled, each correction marked where it stands. The **mechanics** below are common ground in
+German practice, several of them now read in a real wording, and are written without hedging; the
+**levels** are almost entirely **[std]** still, because outside the one carrier that could be
+read not one *Abschlusskostenquote*, not one *Verwaltungskostensatz*, not one *Stückkosten*
+amount, not one *Effektivkostenquote* and not one *Rentenfaktor* was established at any carrier.
 
 Out of scope: **hybrid and guarantee designs** (*statische* and *dynamische Hybride*, *Zwei-* und
 *Drei-Topf-Hybride*, i-CPPI, *Wertsicherungsfonds*), discussed but deliberately not specified

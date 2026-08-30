@@ -1,6 +1,6 @@
 # Product Specification
 
-**Status:** Draft, 2026-08-29 (all cited sources accessed 2026-08-29).
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** This is a *standardized composite specification* assembled for reference liability
 cash-flow modeling of the German **kapitalbildende Lebensversicherung** — the classic endowment, the
@@ -16,16 +16,28 @@ frozen) — name the instrument a claim should be checked against. **[std]** mar
 introduced for the reference implementation, each with a numbered footnote giving the rationale and,
 where one was established, the observed range; [unverified] marks a claim no search corroborated.
 
-**Read this before relying on a citation.** No document cited anywhere in this library was retrieved:
-direct HTTP egress from the build environment is blocked by an organisation network policy, and every
-host that matters here — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `dejure.org`,
-`de.wikipedia.org` — was tried and refused. Everything below was established from `WebSearch` result
-summaries, and that channel's budget was exhausted after twenty-four searches on this product. **A
-delib citation is a pointer, not a certificate.** The consequence is uneven: the statutory core and
-the surplus mechanics are researched to a usable depth, while the insurer-by-insurer parameter sweep
-is not — of twenty-six carriers, six produced a document and **one** produced quantified terms. Where
-a level could not be established it is a **[std]** parameter with a stated rationale rather than a
-citation, because a `[std]` number is honest and a wrong `[S#]` number is not.
+**Read this before relying on a citation.** delib was **drafted** under an organisation network
+policy that blocked all direct HTTP egress from the build environment — `gesetze-im-internet.de`,
+`bafin.de`, `gdv.de`, `aktuar.de`, `dejure.org` and `de.wikipedia.org` were tried and refused — so no
+document was retrieved and the first draft rested on `WebSearch` result summaries, a budget exhausted
+after twenty-four searches on this product, and on the authoring model's own knowledge of German
+insurance law and practice, disciplined by the [std] and [unverified] tags. **That policy has since
+been lifted and the citations re-verified against the primary documents.** For this product,
+**forty-five of the forty-seven entries in `sources.md` now rest on a document that was opened and
+read — 96 %**: the statutory core as canonical XML from `gesetze-im-internet.de` with each
+instrument's amendment status (`Stand`) recorded, and the carrier material as PDF, six
+*Bedingungswerke* among it. **Two entries were not retrieved at all** — [S8], HTTP 404 at the cited
+die Bayerische URL, and [R24], a rechtsportal.de report of the older BGH line answering HTTP 429 —
+and several more were retrieved only in part; every entry says which it is. **Where an entry says
+`Retrieved: yes`, treat the claim it carries as sound; where it does not, the citation is still a
+pointer, not a certificate** — it names the instrument a claim should be checked against and does not
+assert that anyone checked it. Re-verification also changed this document: it corrected the surplus
+base read from Debeka [S3], the Debeka edition dates, the *Standmitteilung* field list [S2] and the
+lapse figures [R20], and each correction is marked where it stands. What it did not change is the
+thinness of the insurer-by-insurer parameter sweep — of twenty-six named carriers, seven produced a
+document and **three** produced quantified terms. Where a level could not be established it is a
+**[std]** parameter with a stated rationale rather than a citation, because a `[std]` number is
+honest and a wrong `[S#]` number is not.
 
 **Composite base.** The seven carriers that produced a document are set out in *Variations across
 insurers* below: Debeka [S3] [S4] [S5] [S6], Gothaer [S7], die Bayerische [S8] [S9], VPV [S18],
@@ -370,7 +382,7 @@ Footnotes to **[std]** rows:
 | *Beitragsfreie Versicherungssumme* | Computed by recognised actuarial rules, on the *Rechnungsgrundlagen der Prämienkalkulation*, **on the basis of the *Rückkaufswert* under § 169 Abs. 3 bis 5** — so it **inherits the five-year spreading floor** — and **stated in the contract for each *Versicherungsjahr***; *Prämienrückstände* are netted at the same date | [R3] [REG-R28] |
 | *Mindestversicherungsleistung* level | 2,500 EUR | **not established**; **[std]** (22) |
 | Insurer termination for arrears | Where the insurer terminates, the insurance is **automatically converted to *prämienfrei***, and in the § 38 Abs. 2 premium-default case the insurer owes what it would have owed had the contract been paid-up at the claim date. German lapse is therefore a **three-way decrement** — surrender, *Beitragsfreistellung* and premium-default conversion — and the implementation models the first as a decrement, the second as a scheduled election and the third **not at all**, §§ 37 and 38 VVG never having been researched (gap 20) | [REG-R28] [REG-R30]; **not modeled** |
-| Not researched, and therefore not asserted | **§ 168 VVG** (the *Kündigung* right and its timing), **§ 152 VVG** (the 30-day *Widerruf*) and **§§ 37/38 VVG** (arrears). What the corpus does establish is that the value is struck **at the end of the current *Versicherungsperiode*** | gap 20; [R2] |
+| Not researched, and therefore not asserted | **§ 152 VVG** (the 30-day *Widerruf*) and **§§ 37/38 VVG** (arrears). **§ 168 VVG** (the *Kündigung* right and its timing) was read in the re-verification pass with the rest of VVG Kapitel 5, but nothing here is drawn from it. What the corpus does establish is that the value is struck **at the end of the current *Versicherungsperiode*** | gap 20, narrowed; [R2] |
 | Supervisory override | Guarantees sit under two write-down powers: a fund-level **5 %** cap under § 222 VAG and an uncapped reduction under § 314 VAG, which also lets the supervisor **temporarily prohibit the *Rückkauf*** | [REG-R12]; **not modeled** |
 
 21. "Gleichmäßige Verteilung der angesetzten Abschluss- und Vertriebskosten auf die ersten fünf
@@ -722,9 +734,12 @@ retrospective adjustment as the usual remedy and five- and ten-year limits) [R5]
 them **§ 154** requires a *Modellrechnung* at three interest rates and **§ 155** an annual
 *Standmitteilung* in *Textform* disclosing to what extent the profit participation is guaranteed
 [REG-R25] — which is why a published *Standmitteilung* specimen is a legitimate primary-source class
-here [S2]. **Four provisions the product depends on were never researched**, the search budget having
-been exhausted: **§ 168**, **§ 152**, **§§ 37 and 38** and **§ 150**. **Nothing is asserted about any
-of them anywhere in delib** (gap 20).
+here [S2]. **Three provisions the product depends on were never researched** — **§ 152**,
+**§§ 37 and 38** and **§ 150** — the drafting pass having reached them with no retrieval channel and
+an exhausted search budget, and the re-verification pass having recorded only the sections the
+specification cites. **Nothing is asserted about any of the three anywhere in delib**; § 168,
+the fourth on that list when it was written, has since been read with the rest of Kapitel 5 and
+nothing rests on it either (gap 20, narrowed).
 
 **Prudential — the VAG and the two ministerial regulations.** BaFin supervises German life insurers
 under Solvabilität II as transposed into the **VAG**, with no second national supervisor [REG-R5]

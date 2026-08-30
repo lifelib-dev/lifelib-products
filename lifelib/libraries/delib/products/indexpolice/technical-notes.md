@@ -1,6 +1,7 @@
 # Technical Notes
 
-**Status:** Draft, 2026-08-29 (access date for every citation below).
+**Status:** Draft, 2026-08-29 (sources assembled); citations re-verified against the primary
+documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`Index_DE_A`**, **annual** grid — for the standardized composite German *Indexpolice* defined in
@@ -8,17 +9,21 @@
 the source list in `sources.md` (numbering carried from `_research/indexpolice.md`; frozen); [REG-R#]
 tags refer to the cross-product reference library `references/regulatory-and-actuarial-references.md`
 (its own frozen numbering). **[std]** marks standardizations introduced for the reference
-implementation; [unverified] marks claims no retrieval and no search corroborated. Parameter values are
+implementation; [unverified] marks claims that no retrieved document corroborates. Parameter values are
 identical to those in `product-spec.md`. Cells names, model-point columns and CSV headers are English
 `lower_snake_case`; German terms of art keep their German form in prose.
 
-**The retrieval conditions govern these notes as they govern the specification.** Direct HTTP egress
-was blocked and the session's search budget was exhausted before this product was researched. **No cap
-level, participation rate, charge level or commercial-envelope parameter was established for any German
-carrier**, so class (b) and class (c) below are **[std] throughout**, and class (a) is cited to statutes
-rather than to contracts. What the model reproduces exactly is the **mechanics**, and the two
-constructed *Indexjahre* of the research file are wired into the shipped index path so that the
-mechanics are asserted against them cell by cell.
+**The retrieval conditions govern these notes as they govern the specification.** They were drafted
+with direct HTTP egress blocked and the session's search budget exhausted, from the authoring model's
+own knowledge of German practice; the citations have since been re-verified against the primary
+documents, and **32 of the 38 entries in `sources.md` now read `Retrieved: yes`**. Cap and quota
+levels, charge levels and parts of the commercial envelope are now established **for individual
+carriers but not for the market**, and no shipped level has been changed on the strength of one, so
+class (b) and class (c) below remain **[std] throughout** — three of them now known to sit off the
+retrieved evidence, as `model.md` records — while class (a) is cited to statutes read as canonical
+XML and, for the index clauses, to two AVB read in full [S2] [S7]. What the model reproduces exactly
+is the **mechanics**, and the two constructed *Indexjahre* of the research file are wired into the
+shipped index path so that the mechanics are asserted against them cell by cell.
 
 ---
 
@@ -205,7 +210,8 @@ is a three-way decrement [REG-R28] and the reference implementation models surre
 Three classes are distinguished. **(a)** is contractual or statutory and is cited; **(b)** is the
 insurer's current discretionary scale, redetermined annually; **(c)** is the modeller's view of
 experience. On this product classes (b) and (c) carry almost the whole result, and **every entry in
-both is [std]** — that is the honest summary of what the research could establish.
+both is [std]** — not because retrieval established nothing, but because no shipped level was
+changed on the strength of what it established; `model.md` records each comparison.
 
 ### (a) Contractual / guaranteed elements (cited)
 

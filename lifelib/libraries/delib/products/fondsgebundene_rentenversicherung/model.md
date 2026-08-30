@@ -1,7 +1,7 @@
 # Implementation Notes
 
-**Status:** Draft, 2026-08-29. Built from
-[`products/fondsgebundene_rentenversicherung/technical-notes.md`](technical-notes.md);
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
+Built from [`products/fondsgebundene_rentenversicherung/technical-notes.md`](technical-notes.md);
 the product it implements is specified in [`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing, reserving or disclosure result.** The
@@ -12,12 +12,17 @@ the product it implements is specified in [`product-spec.md`](product-spec.md).
 > the *Beitragsrückgewähr* death benefit [S2], the *Zeitwert* *Rückkaufswert* and the
 > conditions on a *Stornoabzug* [R1] [REG-R36], the survival of the fund-based charges into a
 > *beitragsfrei* contract [R3], the `max(guaranteed, current)` *Rentenfaktor* rule [S4] [R22],
-> and the unisex tariff [REG-R34]. The **levels** are almost entirely **[std]**: **no charge
-> rate, no *Rentenfaktor*, no lapse rate and no expense loading was established at any
-> carrier**, and **no document cited anywhere in this library was retrieved** — direct HTTP
-> egress was blocked and the session's search budget was exhausted before this product's
-> research began. The DAV tables behind both mortality bases — DAV 2008 T for the
-> *Risikobeitrag* [R17] [REG-R48], DAV 2004 R behind the *Rentenfaktor* [R16] [REG-R49] — are
+> and the unisex tariff [REG-R34]. delib was drafted with HTTP egress blocked and nothing
+> retrieved; the citations have since been re-verified against the primary documents, and
+> **eighteen of the forty-four entries in `sources.md` now record a document that was opened
+> and read**, twenty-four record none. **That verifies mechanics of the kind cited above and
+> none of the levels below.** The **levels** are almost entirely **[std]**: **no lapse rate
+> and no expense or commission scale was established anywhere**, and outside the single
+> carrier whose rates could be read [S2] [S15] **no charge rate and no *Rentenfaktor* was
+> established at any carrier** — that one tariff is a comparator the *Standardizations* table
+> below measures the shipped levels against, not their source. The DAV tables behind both
+> mortality bases — DAV 2008 T for the *Risikobeitrag* [R17] [REG-R48], DAV 2004 R behind
+> the *Rentenfaktor* [R16] [REG-R49] — are
 > Deutsche Aktuarvereinigung property and are **cited by name, never shipped**. Replace the
 > charge scale, the decrement tables and the fund path with a real tariff and company data
 > before drawing any conclusion from a number. Nothing here is an *Effektivkostenquote* and
@@ -466,12 +471,15 @@ python -m pytest lifelib/libraries/delib/tests -q
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-fondsgebundene_rentenversicherung-r1
+[R10]: #delib-fondsgebundene_rentenversicherung-r10
+[R11]: #delib-fondsgebundene_rentenversicherung-r11
 [R12]: #delib-fondsgebundene_rentenversicherung-r12
 [R13]: #delib-fondsgebundene_rentenversicherung-r13
 [R14]: #delib-fondsgebundene_rentenversicherung-r14
 [R15]: #delib-fondsgebundene_rentenversicherung-r15
 [R16]: #delib-fondsgebundene_rentenversicherung-r16
 [R17]: #delib-fondsgebundene_rentenversicherung-r17
+[R18]: #delib-fondsgebundene_rentenversicherung-r18
 [R19]: #delib-fondsgebundene_rentenversicherung-r19
 [R2]: #delib-fondsgebundene_rentenversicherung-r2
 [R20]: #delib-fondsgebundene_rentenversicherung-r20

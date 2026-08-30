@@ -15,14 +15,21 @@ is specified in [`product-spec.md`](product-spec.md).
 > MindZV minimum that bounds a classic contract's declared rate [R8]; the *Rückkaufswert* is a
 > reserve floored by the five-year acquisition-cost spread of § 169 VVG [R2]; and the annual
 > *Cap-Festlegung* is a unilateral determination reviewable under § 315 BGB [R22], not an
-> adjustment of the contract under § 163 VVG [R4]. **No level is sourced at all.** Direct HTTP
-> egress was blocked and the session's `WebSearch` budget was exhausted before this product was
-> researched, so no Cap, no *Partizipationsquote*, no declared surplus rate, no charge, no lapse
-> rate and no commercial-envelope parameter was established for any German carrier [S2] [S3]
-> [S4] [S5] [S7] [S8] [R21]. Every number here is therefore **[std]** with a stated rationale,
-> and the DAV tables (DAV 2008 T, DAV 2004 R) are proprietary, are cited by name and are never
-> shipped [REG-R48] [REG-R49]. Replace the decrement, charge and index tables with company data
-> before drawing any conclusion from the output.
+> adjustment of the contract under § 163 VVG [R4]. **Every number here was chosen as a [std] with
+> a stated rationale, and none was fitted to a market observation.** The library was drafted under
+> a blocked-egress policy with an exhausted `WebSearch` budget; that policy has since been lifted
+> and the citations re-verified against the primary documents, and **32 of this product's 38 source
+> entries now read `Retrieved: yes`**. Retrieval produced carrier levels the shipped parameters can
+> be judged against but were not built from — Allianz's illustrative Cap of 3,2 % with a 75,00 %
+> *Partizipationssatz* [S2] [S5], Stuttgarter's published *Partizipationsquote* of 70 % and
+> *sichere Verzinsung* of 2,16 % [S8], Assekurata's 2026 index-segment declared average of 3,07 %
+> [R20], and two carriers' cost disclosures [S4] [S11] — and **nothing here has been changed on the
+> strength of them**: the standardization table below records, row by row, what each retrieved
+> figure does to each value. What retrieval did not supply is a market panel of cap levels [R21] or
+> any published entry-age band or minimum premium [S3] [S15]; and the DAV tables (DAV 2008 T, DAV
+> 2004 R) are proprietary, are cited by name and are never shipped [REG-R48] [REG-R49]. Replace
+> the decrement, charge and index tables with company data before drawing any conclusion from the
+> output.
 
 ## Run it
 

@@ -1,6 +1,7 @@
 # Product Specification
 
-**Status:** Draft, 2026-08-29 (access date for every citation below).
+**Status:** Draft, 2026-08-29 (sources assembled); citations re-verified against the primary
+documents 2026-08-30.
 
 **Scope note.** This is a *standardized composite specification* assembled for reference liability
 cash-flow modeling of a German **indexgebundene Rentenversicherung** — the *Indexpolice*: a deferred
@@ -17,20 +18,32 @@ cross-product reference library `references/regulatory-and-actuarial-references.
 R-numbering is distinct and also frozen) — name the instrument the claim should be checked against.
 Values marked **[std]** are standardizations introduced for the reference implementation; each
 **[std]** table row carries a numbered footnote giving the rationale and, where one could be assessed,
-the plausible market band. Claims no retrieval and no search corroborated are flagged [unverified].
+the plausible market band. Claims that no retrieved document corroborates are flagged [unverified].
 
-**Read this before reading any number below.** delib was built with **direct HTTP egress blocked** and,
-for this product, **with the session's `WebSearch` budget already exhausted**. No AVB, no
-*Produktinformationsblatt*, no *Basisinformationsblatt*, no statutory text and no index rulebook was
-opened, and no search summary was available either. **A delib `indexpolice` citation is a pointer, not a
-certificate**, and the consequence is unusually heavy here: **not one cap level, participation rate,
-charge level, entry-age band or minimum premium was established for any German carrier**, so the
-commercial envelope below is **[std] throughout**. What *is* established, and not in dispute, is the
-**mechanics** — the financing identity between declared surplus and option budget, the
-sum-of-capped-monthly-returns payoff with uncapped negative months, the annual floor at zero, the
-permanent lock-in and the annual election — and this document puts its weight there. Three carrier
-products are named — **Allianz IndexSelect** [S2], **R+V-IndexInvest** [S7] and **Stuttgarter
-index-safe** [S8] — all [unverified], and no fourth is added.
+**Read this before reading any number below.** delib was **drafted** with **direct HTTP egress
+blocked** and, for this product, with the session's `WebSearch` budget already exhausted: no AVB, no
+*Basisinformationsblatt*, no statutory text and no index rulebook was opened, so the first draft
+rested on the authoring model's own knowledge of German insurance law and practice, disciplined by
+[std] and [unverified] tags. **That policy has since been lifted and this product's citations
+re-verified against the primary documents.** Of the 38 entries in `sources.md`, **32 now read
+`Retrieved: yes`**, one reads `partly`, and **five read `no`**: a *Produktinformationsblatt* class
+that does not exist for a *Schicht 3* contract [S3], the annual parameter notice insurers send to
+policyholders and never publish [S5], *Finanztest* behind its paywall [S13], the comparison portals
+behind a bot wall [S15], and the rating houses behind their subscription tools [R21]. **A
+`Retrieved: yes` entry means the document was opened and the passage it rests on read; anything else
+is a pointer rather than a certificate**, and each entry says which it is.
+
+The re-verification moved this document. Two carrier *Bedingungswerke* were read in full [S2] [S7],
+so the *Indexbeteiligung* clause set below is quoted rather than reconstructed; the death-benefit
+rule was cited to the wrong carrier series and is corrected (footnote 23); and rows that read "not
+established" now carry carrier figures. But the **commercial envelope stays [std] throughout** — no
+entry-age band and no minimum premium is published by any of the three carriers, so the model points
+remain construction. What was never in dispute is the **mechanics** — the financing identity between
+declared surplus and option budget, the sum-of-capped-monthly-returns payoff with uncapped negative
+months, the annual floor at zero, the permanent lock-in and the annual election — and this document
+puts its weight there. Three carrier products are named — **Allianz Zukunftsrente IndexSelect** [S2],
+**R+V-PrivatRente IndexInvest** [S7] and **Stuttgarter index-safe** [S8] — all three now
+**established** from the carriers' own documents, and no fourth is added.
 
 ---
 

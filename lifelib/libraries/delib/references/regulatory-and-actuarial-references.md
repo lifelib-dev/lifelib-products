@@ -22,72 +22,115 @@ and why. Within this page, plain `[R#]` refers to the same entries. All URLs acc
 from a product-specific regulatory or actuarial reference in that same file; `[REG-R#]` a fact from this page. **[std]** marks a
 standardization introduced for the reference implementation — a parameter or convention chosen where sources vary, are proprietary or
 are silent, each carrying a rationale and, where one could be established, the observed range across insurers. **[unverified]** marks
-a claim from general knowledge or a secondary snippet that no search result corroborated. The hard rule the library runs on: **every
+a claim from general knowledge or a secondary source that **no retrieved document confirms**. The hard rule the library runs on: **every
 quantitative parameter is either source-tagged or marked [std]. No number anywhere in `delib` is untagged.**
 
 ---
 
 ## Retrieval conditions — read this before relying on a single line below
 
-This section is stated first, in full, and prominently, because it is the single most important thing about this page and it is unlike
-anything the sister libraries `uslib`, `uklib`, `jplib` and `frlib` had to record. Two independent limits applied while `delib` was
-built.
+This section is stated first, in full, and prominently, because a reader needs it before using a single citation below — and because
+**the statement that used to stand here has been overtaken**. `delib` was drafted with no document retrieval at all, and this page
+said so on its first screen. The citations have since been **re-verified against the primary documents**, and **44 of the 56 entries
+below now open with `Retrieved: yes`**: the document was fetched, opened and read, and the entry's own line records what was read, in
+what format and how much of it. The twelve that do not are named at the end of this section, each with its reason. **The per-entry
+`Retrieved:` lines are the authority for any single claim; this section only summarises them.**
 
-**1. Direct HTTP egress is blocked by an organisation network policy.** `WebFetch` and `curl` are refused with **HTTP 403 at the
-egress gateway** for every host outside a short package-registry allowlist. The hosts that matter for German life insurance were all
-tried and all refused:
+**1. How this page was drafted, and why that stays on the record.** `delib` was built under a **default-deny network policy that
+blocked all egress**. `WebFetch` and `curl` were refused with **HTTP 403 at the egress gateway** for every host outside a short
+package-registry allowlist, and the hosts that matter for German life insurance — `gesetze-im-internet.de`, `bafin.de`, `aktuar.de`,
+`gdv.de`, `bundesfinanzministerium.de`, `destatis.de`, `dejure.org`, `eur-lex.europa.eu` — were tried and refused without exception.
+Not one statutory text, not one BaFin circular, not one DAV table, not one BGH judgment and not one statistical release was opened
+while this page was written. The only research channel was `WebSearch`, which returns titles, URLs and a search-engine summary of the
+matched pages rather than the pages, and **its 200-call budget was exhausted during the build**: roughly 35 German-language queries
+went to the prudential and supervisory sweep, roughly 45 to contract law and conduct, the remainder to the ten per-product sweeps, and
+**the tax sweep and the biometric sweep each ran zero successful searches**. The first draft of this page therefore rested on **the
+authoring model's own knowledge of German insurance law and practice**, disciplined by the `[std]` and `[unverified]` tags and
+corroborated where it could be by those secondary summaries. That account is kept here, and stays kept, because **it is this page's
+provenance**: it is why `[std]` carries so much of the library's arithmetic, why the tax and biometric blocks began weaker than the
+rest, and what the re-verification was verifying against. It is no longer a description of how to read the page.
 
-| Host | What it would have served | Result |
-|---|---|---|
-| `gesetze-im-internet.de` | VAG, VVG, DeckRV, MindZV, RfBV, RechVersV, BerVersV, HGB, EStG, AltZertG, ZPO, SGB V/XI | refused, HTTP 403 |
-| `bafin.de` | Rundschreiben, Auslegungsentscheidungen, Merkblätter, Erstversicherungsstatistik | refused, HTTP 403 |
-| `aktuar.de` | DAV press releases, Zinsberichte, Fachwissen fact sheets | refused, HTTP 403 |
-| `gdv.de` | *Die deutsche Lebensversicherung in Zahlen*, statistics pages, Musterbedingungen | refused, HTTP 403 |
-| `bundesfinanzministerium.de` | Referentenentwürfe, BMF-Schreiben, Muster-Produktinformationsblatt | refused, HTTP 403 |
-| `destatis.de` | Sterbetafeln, Generationensterbetafeln, Pflegestatistik | refused, HTTP 403 |
-| `dejure.org` | statute mirrors, BGBl citations, case-law cross-references | refused, HTTP 403 |
-| `eur-lex.europa.eu` | Solvency II, the Delegated Regulation, PRIIPs, the IDD | refused, HTTP 403 |
-| `de.wikipedia.org` | general-reference corroboration | refused, HTTP 403 |
+**2. What the re-verification established.** The egress policy has since been lifted, and the citations were re-verified against the
+primary documents in the pass of **2026-08-30**.
 
-Not one statutory text, not one BaFin circular, not one DAV table, not one BGH judgment and not one statistical release was opened.
-**No document cited anywhere on this page was retrieved, and every entry below records `Fetched: no` for that reason.**
+- **The fifteen German instruments this page cites were read as canonical XML from `gesetze-im-internet.de`, with each law's amendment
+  status (`Stand`) recorded** on the entry that cites it: VAG, VVG, VVG-InfoV, DeckRV, MindZV, RfBV, RechVersV, HGB, EStG, EStDV,
+  AltZertG, ZPO, ErbStG, SGB V and SGB XI — with § 34d GewO and the AGG read the same way alongside them. The `Stand` is written out
+  in each entry, so that a reader can tell which vintage of the statute the entry is a statement about.
+- **The European instruments were read as Official Journal text**: the consolidated German Solvabilität II directive [R1], the
+  Delegated Regulation as a 797-page PDF [R2], the PRIIPs regulation with its two delegated acts as three PDFs [R32], and the IDD as
+  a 41-page PDF (R33).
+- **The supervisory, professional, statistical and market material was read as the publications themselves**: BaFin's *Merkblatt*
+  01/2023 (VA) in full with its marginal numbers [R35], the DAV press release and *Fachwissen* fact sheet behind the
+  *Höchstrechnungszins* [R56], the GDV endowment *Musterbedingungen* as a 20-page PDF, *Stand 21.07.2025* [R37], Destatis's
+  methodology and headline results [R52], and the GDV, Assekurata and map-report market publications [R53].
+- Across `delib` as a whole the same pass **checked 950 statutory section references and found 950 of them correct**, and retrieved
+  insurer *AVB*, *Verbraucherinformationen* and *Produktinformationsblätter* as PDFs for the ten product corpora. **Library-wide, 501
+  of `delib`'s 805 source entries — 62 % — now read `Retrieved: yes`.** This page, at **44 of 56**, is the best-covered part of the
+  library, for the plain reason that statutes are served in canonical form and insurer documents mostly are not.
 
-**2. The only research channel was `WebSearch`, and its 200-call budget was exhausted during the build.** `WebSearch` returns titles,
-URLs and a search-engine summary of the matched pages. That is real evidence — several long German sentences of statutory wording
-reached this library that way — but it is a *secondary summary*, never a retrieved document. The budget was consumed by a prudential
-and supervisory sweep of roughly 35 German-language queries, a contract-law and conduct sweep of roughly 45, and the ten per-product
-sweeps. **The tax sweep and the biometric sweep each ran zero successful searches**; both of their opening queries were refused for
-budget, as was a confirming query issued while compiling this page and a further query issued while writing it.
+**What a `Retrieved:` line means.** `Retrieved: yes` means **the document was opened and the passage the entry rests on was read** —
+not that the whole document was read, and not that everything in the entry is in it; the line names the sections that were read. An
+entry that is not `Retrieved: yes` is **a pointer rather than a certificate**: it names the instrument a claim should be checked
+against without asserting that anyone checked it, and it is marked as one. Treat a claim on this page as sound where its entry says
+`Retrieved: yes`, and as provisional where it does not.
 
-**The consequence, stated plainly: every entry on this page was established from search-result summaries, and a reader must re-verify
-against the instrument itself before relying on any of it.** A `delib` citation is a **pointer, not a certificate**. It names the
-instrument a claim should be checked against; it does not assert that anyone checked it. That is a weaker thing than an `frlib`
-citation, where Légifrance served in full, and the difference is stated here rather than glossed.
+**The re-verification changed things — it did not merely confirm the draft.** § 138 VAG turns out to have no Absätze beyond 1 and 2,
+and the *verursachungsorientiert* charging rule turns out not to be in § 138 at all but in § 140 Abs. 1 Satz 3 VAG [R8] [R10]; the
+average declared rates this page reported for 2025 and 2026 were **not retrieved and have been dropped**, replaced by the observed
+per-insurer range [R53]; the administration-cost spread the page gave was far too narrow and has been replaced by map-report's own
+distribution [R53]; and the largest gap the page recorded — that no clause text from the GDV *Musterbedingungen* had ever been read —
+is closed [R37]. Each entry states its own corrections under **Resolved in this pass** and its residue under **Still unverified**.
 
-What follows from it, exactly:
+What follows from all of that, exactly:
 
-- **No verbatim quotation on this page is attributed to an instrument.** Where a German sentence appears in quotation marks, the
-  quotation is **of a search-result summary**, and the entry says so. What an instrument *provides* is written in the compiler's own
-  words.
-- **No URL on this page is fabricated.** A URL appears only where a search result actually returned it — which is true of the great
-  majority of the URLs in R1–R37 — or where it is the obvious canonical `gesetze-im-internet.de` section form
-  `https://www.gesetze-im-internet.de/<slug>/__<section>.html`, whose pattern dozens of returned pages confirm, in which case it is
-  marked `[unverified canonical form]`. Where neither holds, the entry says **not established**. No Bundesgesetzblatt citation,
-  document reference number or page count is invented anywhere.
-- **`[unverified]` is used generously and means what it says.** It is applied to every specific paragraph number, effective date,
-  monetary amount, percentage and market figure that no search result confirmed. It is *not* applied to the general shape of a
-  well-established mechanic, because that would drown the signal — but the moment a claim becomes *specific and numeric* it carries
-  either a corroborated source or the tag.
-- **The five domains of this page are not equally supported and must not be read as if they were.** Prudential and supervisory
-  (R1–R21) rests on ~35 German queries, with statutory titles corroborated across five to ten independent publishers and substance
-  across one to three. Contract law and conduct (R22–R37) is the strongest block, on ~45 queries, several of whose summaries reproduce
-  statutory wording. **Tax and the three layers (R38–R46) and biometric bases and market statistics (R47–R53) rest on zero successful
-  searches**: what corroboration they carry is second-hand from the two sweeps above, named per entry, and everything else is general
-  knowledge. Accounting and professional standards (R54–R56) is partial — HGB, RechVersV, BerVersV and IFRS 17 came from the
-  prudential sweep; the DAV standards did not.
-- **Where a figure is needed by a reference implementation and cannot be confirmed, the honest form downstream is a [std] parameter
-  with a stated rationale and an argued plausible range — not a [REG-R#] citation.** A `[std]` number is honest; a wrong `[REG-R#]`
-  number is not.
+- **Quotation is first-hand wherever the entry says the document was opened.** A German sentence in quotation marks under a
+  `Retrieved: yes` entry is quoted from the instrument or the publication itself, not from a summary of it. The claims that still rest
+  on a search-result summary say so where they sit — the clearest is the BGH decision of 18 September 2024 (IV ZR 436/22) tying § 138
+  Abs. 2 VAG to § 153 Abs. 2 VVG, which was **not** retrieved and stays `[unverified]` [R8].
+- **No URL on this page is fabricated, and the URLs have now been exercised.** Where a cited URL does not serve, the entry says so and
+  the URL is replaced or the claim withdrawn: BaFin's life-statistics download returns **HTTP 404** [R53], the English MaGo page
+  returns **HTTP 404** [R21], and the `juris` document server refused the BGH judgments with **HTTP 403** [R36]. The
+  `[unverified canonical form]` marker the draft used for `gesetze-im-internet.de` section URLs it had never followed **no longer
+  appears on any entry**: the text behind those URLs was read from the canonical XML the same host serves.
+- **`[unverified]` now means something narrower, and is used precisely rather than generously.** It marks a specific paragraph number,
+  effective date, monetary amount, percentage or market figure that **no retrieved document confirms** — it is no longer the standing
+  condition of the whole page. Where it survives, the entry names what would settle it: an amending act visible only as a consolidated
+  text's footnote, an administrative determination not opened, a judgment not served.
+- **The five domains of this page are still not equally supported and must not be read as if they were.** Prudential and supervisory
+  (R1–R21) stands at **18 of 21** entries retrieved; contract law and conduct (R22–R37) at **14 of 16**; tax and the three layers
+  (R38–R46) at **8 of 9** — the block that was written on zero successful searches is the most changed on the page, its statutes now
+  read in full, including both § 22 EStG tables and the § 55 EStDV table; accounting and professional standards (R54–R56) at **2 of
+  3**; and biometric bases and market statistics (R47–R53) at **2 of 7**. **The biometric block is the weak one, and network access
+  cannot fix it** — see the structural warning below.
+- **Where a figure is needed by a reference implementation and cannot be confirmed, the honest form downstream is still a [std]
+  parameter** with a stated rationale and an argued plausible range — not a [REG-R#] citation. A `[std]` number is honest; a wrong
+  `[REG-R#]` number is not. In several places this pass **widened** such a range rather than replacing it with a citation [R53].
+
+**3. The twelve entries that are not `Retrieved: yes`.** Seven of them record that **the instrument the entry is named for was not
+opened at all**.
+
+| Entry | What was not retrieved, and why |
+|---|---|
+| **R3** — Richtlinie (EU) 2025/2 | The amending directive itself was not opened on EUR-Lex in this pass. What the entry reports is an actuarial consultancy's commentary, which *was* read in full — a statement about what a commentator says of the instrument, not about what the instrument says. |
+| **R36** — the BGH line of authority | **One of the six lines** was retrieved: the press release on IV ZR 201/17. For the other five, no judgment text and no press release was opened, and the `juris` document server refused with **HTTP 403**. They are kept as known references with their captions. |
+| **R38** — AltEinkG | No BGBl text and no Bundestag drucksache for the Act was located. The two transitions it created were read instead from the EStG canonical XML, at R39 and R41. |
+| **R48** — DAV 2008 T | **Not published.** This is not a network limit: `aktuar.de` serves and was opened; the DAV distributes its tables to members and licensees. |
+| **R49** — DAV 2004 R and DAV 2004 R-Bestand | Not published, and for the same reason — the DAV's distribution model, not a network limit. |
+| **R50** — DAV 1997 I / RI / TI | Not published, for the same reason. |
+| **R55** — IFRS 17 | IFRS Foundation copyright: the standard is not freely served, and the EU endorsement regulation was not opened either. Three commentaries were read in its place. |
+
+**Five more record that the entry's principal document was opened while a named part of it was not.** **R20** — the LVRG's BGBl
+citation record and the government bill (BT-Drs. 18/1772) were read; the Act's own *Regelungstext* was not, because dejure serves the
+citation record and not the text. **R21** — five BaFin documents were opened; the MaGo circular itself was not. **R33** — the IDD was
+opened as a document and § 34d GewO read in full from the canonical XML, but the directive's conduct articles were not read line by
+line. **R47** — the DAV site was opened; no DAV table, and no document describing a table's construction, was retrieved, because none
+is published. **R51** — §§ 15, 36, 37 and 43 SGB XI were read in full; DAV 2008 P itself is not published.
+
+**And seven entries that do open with `Retrieved: yes` still name a component that was not read**: the BU model conditions behind R37,
+the AltvPIBV and the BMF *Muster*-Produktinformationsblatt behind R43, the Act's own text behind R44, Destatis's `.xlsx` tables behind
+R52, BaFin's own life statistics behind R53, the BerVersV beyond its table of contents behind R54, and the DAV *Zinsbericht für 2026*
+behind R56. **Read the entry, not this summary, before relying on a specific line.**
 
 **One structural warning that governs the whole biometric section.** The five tables at the centre of German life pricing — **DAV 2008
 T**, **DAV 2004 R**, **DAV 2004 R-Bestand**, **DAV 1997 I / RI / TI** and **DAV 2008 P** — are the property of the Deutsche
@@ -2856,20 +2899,21 @@ recursion, the *Zinszusatzreserve*, the RfB stock and the CSM layer belong to a 
 two statutory bases and one international standard from a single projection, and the reason every product document says so in its own
 scope note.
 
-**And one last time, because it governs every line above.** **The retrieval position has changed and each entry now states its own.**
+**And one last time, because it governs every line above.** **The retrieval position has changed, and each entry now states its own.**
 Forty-four of the fifty-six entries were opened and read in the pass of **2026-08-30** and say so on a `Retrieved:` line that records
 what was read — the canonical statutory XML with the law's `Stand` for the fifteen German instruments, the Official Journal text for
-the European ones, and the publication itself for BaFin, the DAV, the GDV, Destatis and the survey houses. Twelve entries record
-`Retrieved: no` with a specific reason: the five DAV tables are not published at all, the Solvency II review directive and the IFRS 17
-standard were not opened, five of the six BGH lines were not opened, and the AltEinkG's own text was not located. **Where an entry
-still carries `[unverified]`, it now says precisely why**, and the distinction between "not retrievable", "retrievable but not opened
-in this pass" and "opened and silent on the point" is drawn per claim rather than asserted page-wide.
+the European ones, and the publication itself for BaFin, the DAV, the GDV, Destatis and the survey houses. **Twelve entries fall short
+of that**, each with a specific reason rather than a blanket one: three are a flat `no` — R48, R49 and R50, because the DAV tables
+they name are not published at all — and the other nine say exactly what was missing, from the Solvency II review directive and the
+IFRS 17 standard, through five of the six BGH lines and the AltEinkG's own text, to the MaGo circular and the LVRG's *Regelungstext*.
+**Where an entry still carries `[unverified]`, it now says precisely why**, and the distinction between "not retrievable",
+"retrievable but not opened in this pass" and "opened and silent on the point" is drawn per claim rather than asserted page-wide.
 
-**The `Retrieval conditions` section at the head of this page has deliberately not been updated in this pass**: it is rewritten
-centrally once the per-entry work across the whole library is complete, so that no page overclaims ahead of its own entries. Until
-that rewrite lands, **the per-entry `Retrieved:` lines are authoritative and the header is not**. And the standing advice survives the
-change unaltered: **re-verify against the instrument before relying on anything here** — a citation tells you what to check, and this
-pass has made the checking possible rather than made it unnecessary.
+**The `Retrieval conditions` section at the head of this page now carries that position instead of the drafting-time one**, and the
+two agree: 44 of 56, with the twelve named and a reason given for each. The drafting conditions are kept there as provenance — this
+library was first written under blocked egress and an exhausted search budget, and that is part of what it is — but they no longer
+describe how to read it. And the standing advice survives the change unaltered: **re-verify against the instrument before relying on
+anything here** — a citation tells you what to check, and this pass has made the checking possible rather than made it unnecessary.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-reg-r1
@@ -2886,6 +2930,8 @@ pass has made the checking possible rather than made it unnecessary.
 [R2]: #delib-reg-r2
 [R20]: #delib-reg-r20
 [R21]: #delib-reg-r21
+[R22]: #delib-reg-r22
+[R23]: #delib-reg-r23
 [R24]: #delib-reg-r24
 [R25]: #delib-reg-r25
 [R26]: #delib-reg-r26
@@ -2907,7 +2953,9 @@ pass has made the checking possible rather than made it unnecessary.
 [R41]: #delib-reg-r41
 [R42]: #delib-reg-r42
 [R43]: #delib-reg-r43
+[R44]: #delib-reg-r44
 [R45]: #delib-reg-r45
+[R46]: #delib-reg-r46
 [R47]: #delib-reg-r47
 [R48]: #delib-reg-r48
 [R49]: #delib-reg-r49

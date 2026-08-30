@@ -13,31 +13,56 @@ for all sources: **2026-08-29**; the retrieval pass recorded per entry ran on **
 Cross-product [REG-R#] tags are listed in their own section at the end.
 
 **Retrieval conditions — read this before relying on a single entry below.** They are the
-conditions of house-rules section 3 and they are stated plainly, in the same terms, every time:
+conditions of house-rules section 3, and they are not what they were when this file was written:
 
-1. **Direct HTTP egress from the build environment is blocked by an organisation network
-   policy.** `WebFetch` and `curl` are refused with HTTP 403 at the egress gateway for every
-   host outside a short package-registry allowlist. The hosts that matter for this product were
-   tried and every one was refused: `gesetze-im-internet.de` (EStG § 10 and § 22, AltZertG,
-   ZPO § 851c, VVG, DeckRV), `bafin.de`, `gdv.de`, `aktuar.de`, `bundesfinanzministerium.de`,
-   `bzst.de` — the authority that certifies *Basisrentenverträge* — and `de.wikipedia.org`.
-   **Not one *Bedingungswerk*, not one *Produktinformationsblatt*, not one
-   *Basisinformationsblatt*, not one statutory text and not one BMF-Schreiben was opened.**
-2. **There was no search channel either.** The session's `WebSearch` budget — a hard cap of 200
-   calls shared across all delib work — was **exhausted before this product was reached**. Two
-   sibling delib research files consumed it. So this product's research was written with **no
-   fetch, no search, no snippet and no summary**, which is a materially weaker evidential
-   position than either sibling and is stated on every entry rather than glossed.
+1. **This file was drafted with no retrieval at all.** Direct HTTP egress from the build
+   environment was blocked by an organisation network policy: `WebFetch` and `curl` were refused
+   with HTTP 403 at the egress gateway for every host outside a short package-registry
+   allowlist, and every host that matters here was tried and refused —
+   `gesetze-im-internet.de` (EStG § 10 and § 22, AltZertG, ZPO § 851c, VVG, DeckRV),
+   `bafin.de`, `gdv.de`, `aktuar.de`, `bundesfinanzministerium.de`, `bzst.de`, the authority
+   that certifies *Basisrentenverträge*, and `de.wikipedia.org`. **There was no search channel
+   either**: the session's `WebSearch` budget — a hard cap of 200 calls shared across all delib
+   work — was **exhausted before this product was reached**, two sibling delib research files
+   having consumed it. So the first draft of every entry below rested on the authoring model's
+   own knowledge of German insurance law and practice, with no fetch, no search, no snippet and
+   no summary behind it, disciplined by [std] and [unverified] tags rather than by a document.
+2. **That policy has since been lifted and the citations were re-verified against the primary
+   documents.** On **2026-08-30** the German statutes and regulations this product turns on were
+   read as canonical XML at `gesetze-im-internet.de`, each with its amendment status (*Stand*)
+   recorded on its entry and the sections it is cited for read; two carriers' *Allgemeine
+   Versicherungsbedingungen*, the GDV *Musterbedingungen*, filled-in
+   *Muster-Produktinformationsblätter*, the consolidated BMF-Schreiben, a BFH judgment and an
+   independent *Effektivkosten* study were retrieved as PDF or HTML and read. The same pass
+   across the whole library read all fifteen German instruments delib cites as canonical XML
+   and checked 950 statutory section references, of which 950 were correct; **62 % of delib's
+   source entries now say `Retrieved: yes`**.
+3. **Where this file ends the pass.** Of the **forty** entries below — S1–S16 and R1–R24 —
+   **twenty answer `Retrieved: yes`**, **seven** record part of what they cite as
+   read and the rest as not, and **thirteen are still `Retrieved: no`**. Those thirteen name what
+   happened, and none of them is a paywall or a subscription login: **four** are amending acts
+   (R5, R6, R7, R8) that have no consolidated page of their own at `gesetze-im-internet.de`, and
+   for three of the four the effect is read instead in the consolidated law; **one** is the DAV
+   2004 R table [R17], which delib has never seen and which is not published free of charge;
+   **five** are carrier document sets — an index whose links are injected by script and resolve
+   to no PDF [S3], a host that answers HTTP 403 to this build environment [S8], two carriers of
+   which nothing was opened [S6] [S10], and the residual list for which nothing was searched
+   [S11]; and **three** are market and supervisory material — a BaFin document not found at the
+   address recorded [R21], the GDV and BMF stock and new-business statistics, of which not one
+   was opened, and rating pages that answer 200 with navigation and marketing copy and no rating
+   table [R24].
 
-**A delib citation is a pointer, not a certificate.** An [R1] tag on a sentence about
-§ 10 Abs. 1 Nr. 2 Buchst. b EStG means *this is the instrument that claim must be checked
-against*. It does not mean anyone read it. **`Retrieved: yes` appears nowhere in this file**,
-nothing below is quoted from a German statutory or contractual text, and no URL, document
-number, edition, page count or publication date has been invented: where a canonical
-`gesetze-im-internet.de` form is obvious it is offered and marked [unverified], and everywhere
-else the entry says `URL: not established`. A small number of entries carry a stronger
-retrieval line because their **identity** was established in a sibling delib research file
-while search was still available; those say so and name the file.
+**A `Retrieved: yes` entry is a certificate; a `Retrieved: no` entry is still a pointer.** Where
+the line says yes, the document was opened and the passage the entry rests on was read, and the
+edition, *Stand*, page count or quoted wording on the entry comes from the document itself. Where
+it says no, an [R1] tag on a sentence about § 10 Abs. 1 Nr. 2 Buchst. b EStG means only *this is
+the instrument that claim must be checked against*; it does not mean anyone read it, the URL is
+either a canonical form offered and marked [unverified] or the entry says `URL: not established`,
+and no document number, edition, page count or publication date has been invented anywhere in this
+file. **The re-verification changed things, and the changes are on the entries themselves**: the
+conversion basis of the guaranteed *Rentenfaktor* [S1] [R17], one carrier's product name [S4] and
+the *Kleinbetragsrente* threshold [R23] are corrections to what the drafted text said, not
+confirmations of it.
 
 ---
 
@@ -503,24 +528,31 @@ anything here.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-basisrente-r1
+[R10]: #delib-basisrente-r10
 [R11]: #delib-basisrente-r11
 [R12]: #delib-basisrente-r12
 [R14]: #delib-basisrente-r14
 [R15]: #delib-basisrente-r15
+[R16]: #delib-basisrente-r16
 [R17]: #delib-basisrente-r17
+[R18]: #delib-basisrente-r18
 [R19]: #delib-basisrente-r19
 [R2]: #delib-basisrente-r2
 [R20]: #delib-basisrente-r20
 [R21]: #delib-basisrente-r21
+[R22]: #delib-basisrente-r22
 [R23]: #delib-basisrente-r23
 [R24]: #delib-basisrente-r24
 [R4]: #delib-basisrente-r4
 [R5]: #delib-basisrente-r5
 [R6]: #delib-basisrente-r6
 [R7]: #delib-basisrente-r7
+[R8]: #delib-basisrente-r8
 [R9]: #delib-basisrente-r9
+[REG-R25]: #delib-reg-r25
 [REG-R40]: #delib-reg-r40
 [REG-R42]: #delib-reg-r42
+[REG-R44]: #delib-reg-r44
 [std]: #delib-std
 [unverified]: #delib-unverified
 <!-- END generated citation links -->

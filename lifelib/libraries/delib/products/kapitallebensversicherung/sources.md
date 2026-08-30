@@ -8,25 +8,52 @@ nothing in the product documents rests on it) and **R31** (the EUROPA Lebensvers
 Deutsche Lebensversicherungs-AG *Geschäftsberichte* 2024 — recorded in the research file as
 locatable primary sources of per-undertaking *Stornoquoten* and cost ratios, with **no content
 established**) are **not cited** by `product-spec.md`, `technical-notes.md` or `model.md` and are
-therefore absent below. Access date for all sources: **2026-08-29**. No sources were newly added
-at drafting. Cross-product [REG-R#] tags are listed in their own section at the end.
+therefore absent below. Access date at drafting: **2026-08-29**; the re-verification pass read on
+**2026-08-30**, and each entry carries its own read date. No sources were newly added at drafting.
+Cross-product [REG-R#] tags are listed in their own section at the end.
 
-**The retrieval conditions, stated plainly, because they are unlike the sister libraries'.** Two
-independent limits applied while this library was built, and both bear on every entry below.
-First, **direct HTTP egress is blocked by an organisation network policy**: `WebFetch` and `curl`
-are refused (HTTP 403 at the egress gateway) for every host outside a short package-registry
-allowlist, and `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
-`bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org` were
-all tried and all refused. **Not one document listed here was retrieved** — not a *Bedingungswerk*,
-not a *Basisinformationsblatt*, not a statutory text, not a BaFin *Merkblatt*. Everything rests on
-`WebSearch` result summaries: real evidence, sometimes reproducing several sentences of a page,
-but a **secondary summary and never a retrieved document**. Second, the session's shared
-`WebSearch` budget of 200 calls was exhausted after **24 searches** on this product, which is why
-the statutory and supervisory core is researched to a usable depth and the insurer-by-insurer
-parameter sweep is not. A delib citation is therefore a **pointer, not a certificate**: it names
-the instrument a claim should be checked against; it does not assert that anyone checked it.
-Where a German sentence appears in a source entry, the quotation is of the **search-result
-summary** and not of the instrument. Every URL below was returned by a search or is the obvious
+**The retrieval conditions, stated plainly, because they changed after this file was first
+written.** delib was **drafted** under two limits, and both shaped every entry below. First,
+**direct HTTP egress was blocked by an organisation network policy**: `WebFetch` and `curl` were
+refused (HTTP 403 at the egress gateway) for every host outside a short package-registry allowlist,
+and `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `bundesfinanzministerium.de`,
+`dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org` were all tried and all refused, so
+not one document listed here was retrieved — not a *Bedingungswerk*, not a
+*Basisinformationsblatt*, not a statutory text, not a BaFin *Merkblatt*. Second, the session's
+shared `WebSearch` budget of 200 calls was exhausted after **24 searches** on this product. The
+first draft therefore rested on search-result summaries and on the authoring model's own knowledge
+of German insurance law and practice, disciplined by the [std] and [unverified] tags — which is
+why the statutory and supervisory core was researched to a usable depth and the insurer-by-insurer
+parameter sweep was not.
+
+**That policy has since been lifted, and these citations were re-verified against the primary
+documents on 2026-08-30.** Of the forty-seven entries below, **forty-five now rest on a document
+that was opened and read — 96 %** — and **two do not**. The statutory core arrives as canonical
+XML from `gesetze-im-internet.de`, each instrument with its amendment status recorded: the VVG
+[R1] to [R5], the MindZV [R6], the DeckRV [R7], the VAG [R8], the VVG-InfoV [R9] and the EStG
+[R10]. The carrier material arrives as PDF — six *Bedingungswerke*, the GDV *Musterbedingungen*
+[S1] and *Muster-Standmitteilung* [S2], the *Verbraucherinformationen* bound into the VPV wording
+[S18] and one PRIIP-*Basisinformationsblatt* [S10] — and the consumer, trade-press and supervisory
+material as HTML. Several entries cover a group of documents and record one of the group as
+missing — [R11] a subscription login, [R19] a 404 on one article of three, [R26] a paywall, [R10]
+the *Einkommensteuer-Handbuch* behind a bot interstitial, [R17] a press release — and the
+`Retrieved:` line always names which. **The two failures are [S8]**, HTTP 404 at the cited die Bayerische URL with
+no replacement found on that carrier's script-loaded document index, **and [R24]**, whose
+rechtsportal.de report of the 2001–2007 BGH line answers HTTP 429; both are kept as known
+references and nothing quantitative rests on either.
+
+**So read a `Retrieved:` line before you rely on the entry above it.** `Retrieved: yes` means the
+document was opened and the passage the entry rests on was read; a German sentence quoted in such
+an entry is quoted from the instrument. Anything else leaves the entry a **pointer, not a
+certificate** — it names the instrument a claim should be checked against, it does not assert that
+anyone checked it — and a German sentence quoted there is quoted from a **search-result summary**.
+Re-verification was not a formality: several entries below record a claim the drafted text got
+wrong and now correct, among them the surplus base at [S3], the Debeka edition dates at [S4] and
+[S5], the *Standmitteilung* field list at [S2] and the lapse figures at [R20]. Across delib as a
+whole the coverage is materially thinner than it is here — roughly three entries in five are
+`Retrieved: yes`, the rest naming what happened: a 404, a consent or JavaScript wall, a paywall, a
+subscription login — so this product is one of the better-covered ones, and each sibling gives its
+own count. Every URL below was retrieved directly, returned by a search, or is the obvious
 canonical form of one; where there is none, the entry says `URL: not established` rather than
 guessing.
 
@@ -539,6 +566,7 @@ nothing anywhere in delib is cited to it (gap 24).
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-kapitallebensversicherung-r1
 [R10]: #delib-kapitallebensversicherung-r10
+[R11]: #delib-kapitallebensversicherung-r11
 [R12]: #delib-kapitallebensversicherung-r12
 [R13]: #delib-kapitallebensversicherung-r13
 [R14]: #delib-kapitallebensversicherung-r14

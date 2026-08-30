@@ -20,10 +20,15 @@ specified in [`product-spec.md`](product-spec.md), and the sources are in
 > *Rentenfaktor* and an *Effektivkosten* figure [S1] [S4] [S12] [S13] — but **no level in this model
 > was re-calibrated against them in this pass**, because a change to a level moves the worked example
 > and its golden tests with it. Where a retrieved figure and a shipped level diverge it is recorded
-> at the end of *Standardizations used*. **No carrier's declared-rate history was reached.** The DAV tables (DAV 2004 R here) are the property
+> at the end of *Standardizations used*. **No carrier's declared-rate history was reached.**
+> The DAV tables (DAV 2004 R here) are the property
 > of the Deutsche Aktuarvereinigung, are not public, and are cited by name and never
 > redistributed [R17] [REG-R47] [REG-R49]. Replace the decrement, charge and surplus tables
-> with company data before drawing any conclusion from the numbers.
+> with company data before drawing any conclusion from the numbers. **On provenance:** delib was
+> drafted under a policy that blocked all egress, on the authoring model's own knowledge
+> disciplined by [std] and [unverified] tags, and its citations have **since been re-verified
+> against the primary documents**; `sources.md` records per entry what was opened and what was
+> not, twenty of its forty entries carrying `Retrieved: yes` and thirteen still `Retrieved: no`.
 
 ## Run it
 
@@ -474,10 +479,13 @@ python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-basisrente-r1
+[R10]: #delib-basisrente-r10
 [R14]: #delib-basisrente-r14
 [R15]: #delib-basisrente-r15
 [R16]: #delib-basisrente-r16
 [R17]: #delib-basisrente-r17
+[R18]: #delib-basisrente-r18
+[R23]: #delib-basisrente-r23
 [REG-R1]: #delib-reg-r1
 [REG-R14]: #delib-reg-r14
 [REG-R15]: #delib-reg-r15

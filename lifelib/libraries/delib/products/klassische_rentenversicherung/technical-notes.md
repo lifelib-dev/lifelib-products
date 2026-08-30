@@ -1,6 +1,7 @@
 # Technical Notes
 
-**Status:** Draft, 2026-08-29 (all cited sources accessed 2026-08-29).
+**Status:** Draft, 2026-08-29 (sources accessed 2026-08-29); citations re-verified against the
+primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`RV_DE_A`**, **annual** grid — for the standardized composite German *klassische aufgeschobene
@@ -9,18 +10,25 @@ insurer's contract. [S#]/[R#] tags refer to the source list in `sources.md` (num
 `_research/klassische_rentenversicherung.md`; frozen); [REG-R#] tags refer to the cross-product
 reference library `references/regulatory-and-actuarial-references.md` (its own frozen numbering).
 **[std]** marks standardizations introduced for the reference implementation; [unverified] marks
-claims no search result corroborated. Parameter values are identical to those in `product-spec.md`.
+claims no retrieved document confirms. Parameter values are identical to those in `product-spec.md`.
 Cells names, model-point columns and CSV headers are English `lower_snake_case`; German terms of art
 keep their German form in prose.
 
-**Retrieval conditions.** No document cited here was retrieved — direct HTTP egress from the build
-environment is blocked and everything rests on `WebSearch` result summaries, whose budget was
-exhausted after eighteen queries on this product. The consequence for these notes is specific and
-large: **the corpus establishes this product's mechanics thoroughly and its levels barely at all.**
-No *Rentenfaktor*, no declared surplus rate, no charge parameter and no behavioural rate was
-established at any German carrier for any year, so **every number in assumption classes (b) and (c)
-below, and most of class (a)'s levels, is [std]**. What the citations do establish is the shape of
-each recursion, and that is what this file is for.
+**Retrieval conditions.** These notes were drafted with direct HTTP egress from the build
+environment blocked, on `WebSearch` result summaries alone and a budget exhausted after eighteen
+queries on this product; that policy has since been lifted and the citations were re-verified
+against the primary documents on 2026-08-30. **Thirty-six of the forty-three entries in
+`sources.md` now read `Retrieved: yes`** — including every VVG, EStG and DeckRV section these notes
+rest on, read as canonical XML with its amendment *Stand* recorded, and the carrier wordings whose
+§ numbers appear below. Four entries were reached only in part and three not at all, and each says
+which it is: treat a citation here as sound where its entry says `Retrieved: yes`, and as a pointer
+to the instrument rather than a certificate where it does not. The consequence for these notes is
+unchanged, and still specific and large: **the corpus establishes this product's mechanics
+thoroughly and its levels barely at all.** No charge parameter and no behavioural rate was
+established at any German carrier for any year, and the *Rentenfaktor* range [R19] [R24] and the
+declared rate [S15] the pass did establish are not the levels this model ships, so **every number
+in assumption classes (b) and (c) below, and most of class (a)'s levels, is [std]**. What the
+citations do establish is the shape of each recursion, and that is what this file is for.
 
 ---
 

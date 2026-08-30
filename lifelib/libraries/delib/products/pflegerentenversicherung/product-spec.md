@@ -10,16 +10,28 @@ describes **no single insurer's product**, and it must not be read as one.
 
 **How this composite differs from its frlib counterpart.**
 `frlib/products/temporaire_deces/product-spec.md` is a composite of eight retrieved carriers, seven
-of whose contracts were read in full. **Nothing was retrieved for this product.** Direct HTTP egress
-from the build environment is blocked by an organisation network policy, and the session's
-`WebSearch` budget was already exhausted when work on this product began, so there was neither a
-retrieval channel nor a search channel: not one *Bedingungswerk*, not one *Produktinformationsblatt*,
-not one *Tarifblatt* and not one statutory text was opened. The composite below is assembled from
-**document classes that exist and are the right kind of document for this product**, and from the
-mechanics of German insurance law and actuarial practice, under the discipline house rule 3 imposes
-for exactly this case. **A delib citation is a pointer, not a certificate:** `[R2]` beside a
-statement about § 15 SGB XI names the instrument the statement should be checked against; it does
-not assert that anyone checked it.
+of whose contracts were read in full. **This one was drafted with nothing retrieved at all.** Direct
+HTTP egress from the build environment was blocked by an organisation network policy, and the
+session's `WebSearch` budget was already exhausted when work on this product began, so there was
+neither a retrieval channel nor a search channel: the composite below was assembled from **document
+classes that exist and are the right kind of document for this product**, and from the mechanics of
+German insurance law and actuarial practice as the authoring model knew them, under the discipline
+house rule 3 imposes for exactly that case.
+
+**That is how it was drafted, and not where it now stands.** The policy has since been lifted and the
+citations re-verified against the primary documents on 2026-08-30. Every statute cited here was read
+as canonical XML from gesetze-im-internet with its amendment status (`Stand`) recorded; one carrier's
+complete *Bedingungswerk* and *Produktbeschreibung* were read as PDFs, and so were the PKV
+*Musterbedingungen* for both the compulsory and the top-up cover, the DAV's own derivation and
+*Pflegegrad* reports, and the Destatis, vdek, GDV and Assekurata material. **Twenty-seven of this
+product's thirty-six source entries now read `Retrieved: yes`, five read `no`, and four are partial**;
+`sources.md` names each and says what stopped it. What has **not** changed is the shape of this file:
+one contract is not eight, so the variation table below remains a market-range reconstruction rather
+than a survey, and every level in it is still a standardization. What has changed is that the
+re-verification corrected claims the drafted text got wrong, each marked where it occurs.
+**Read the `Retrieved` line before relying on a tag:** where it says `yes` the document was opened and
+the passage read; where it does not, `[R2]` beside a statement about § 15 SGB XI names the instrument
+the statement should be checked against and asserts nothing more — a pointer, not a certificate.
 
 Facts carrying a source tag — [S#] (primary product document classes: *Musterbedingungen*, AVB,
 *Produktinformationsblatt*, *Basisinformationsblatt*, *Verbraucherinformation*, *Tarifblatt*) and

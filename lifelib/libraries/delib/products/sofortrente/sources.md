@@ -26,36 +26,60 @@ document from the same publisher — the GDV's immediate-annuity model condition
 entry rather than given a new id. Cross-product [REG-R#] tags are listed in their own section
 at the end.
 
-**Retrieval conditions — read before any entry below.** Two independent limits applied, and
-this product was the worst-served of the ten. **(1) Direct HTTP egress is blocked** by an
-organisation network policy: `WebFetch` and `curl` are refused with HTTP 403 at the egress
-gateway for every host outside a short package-registry allowlist. `gesetze-im-internet.de`,
-`bafin.de`, `gdv.de`, `aktuar.de`, `bundesfinanzministerium.de`, `destatis.de`, `dejure.org`,
-`eur-lex.europa.eu`, `de.wikipedia.org` and every insurer host named below were tried across
-the delib build and all refused. **No document cited anywhere in this file was retrieved.**
-**(2) The session's `WebSearch` budget — 200 calls, shared across the library — was exhausted
-*before* work on the *Sofortrente* began.** Not one search was run for this product, against a
-brief that anticipated thirty to eighty.
+**Retrieval conditions — read before any entry below.** They changed between the two dates
+above, and both halves belong in the record.
 
-What follows from that, stated plainly. **A delib citation is a pointer, not a certificate**:
-it names the instrument a claim should be checked against and does not assert that anyone
-checked it. Where an entry below carries corroboration, that corroboration was recorded by a
-**sibling delib research file** whose searches ran earlier in the session — principally
-`_research/klassische_rentenversicherung.md`, which shares this product's *Rechnungsgrundlagen*
-and, at two carriers, its tariff — and the entry says so and names the sibling file's own
-source id. That is a traceable provenance chain and still one step weaker than a retrieval.
-Every entry's `Retrieved` line says `no`. **No document number, URL, edition, page count or
-publication date was guessed**: a URL recorded by a sibling file from a search result is
-reproduced with attribution, the canonical `gesetze-im-internet.de` form of a statutory
-provision is given and marked `[unverified]`, and everywhere else the entry reads `URL: not
-established`. **Nothing is quoted except where a sibling file recorded the phrase from a search
-summary**, and such a phrase is attributed to that summary rather than to the document. Every
-specific paragraph number, date, amount and percentage that no search confirmed carries
-`[unverified]`. Uncertain numbers became **[std]** parameters rather than citations, and
-`model.md`'s standardization table lists every one — for this product that table is longer than
-for any other in the library, because **the entire commercial character of a *Sofortrente* is a
-number, the euros per month per 100 000 € of *Einmalbeitrag*, and that number could not be
-established at any carrier for any year**.
+**(1) How this file was drafted.** On 2026-08-29 a default-deny network policy blocked all
+egress: `WebFetch` and `curl` were refused with HTTP 403 at the egress gateway for every host
+outside a short package-registry allowlist — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
+`aktuar.de`, `bundesfinanzministerium.de`, `destatis.de`, `dejure.org`, `eur-lex.europa.eu`,
+`de.wikipedia.org` and every insurer host named below were tried across the delib build and all
+refused — and the session's `WebSearch` budget, 200 calls shared across the library, was
+exhausted *before* work on the *Sofortrente* began, against a brief that anticipated thirty to
+eighty searches. **Not one search was run for this product**, which was the worst-served of the
+ten. The draft therefore rested on the authoring model's own knowledge of German insurance law
+and practice, disciplined by **[std]** and `[unverified]` tags, and on facts carried over with
+attribution from a **sibling delib research file** whose searches had run earlier in the session
+— principally `_research/klassische_rentenversicherung.md`, which shares this product's
+*Rechnungsgrundlagen* and, at two carriers, its tariff. Where an entry below still rests on that
+chain it says so and names the sibling file's own source id: traceable provenance, and one step
+weaker than a retrieval. **No document number, URL, edition, page count or publication date was
+ever guessed**, then or now.
+
+**(2) How it was re-verified.** The policy was lifted, and on **2026-08-30** the citations were
+checked against the primary documents. Library-wide, all fifteen German instruments delib cites
+were read as canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand`
+recorded, 950 statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read;
+**501 of the library's 805 source entries, 62 %, now read `Retrieved: yes`.** For this product:
+**19 of the 32 entries below read `Retrieved: yes` and 12 read `no`**, one ([R20]) being mixed —
+61 % of the thirty-one that resolve either way. Every insurer document in the S section was
+opened, as was every statutory provision carried under this file's own [R#] ids.
+
+**What that means for a reader of an entry.** **A `Retrieved: yes` line means the document was
+opened and the passage the entry rests on was read**, and the line records the edition, page
+count or statutory `Stand` of what was read. **A `Retrieved: no` line means the entry is still a
+pointer, not a certificate**: it names the instrument a claim should be checked against and does
+not assert that anyone checked it, and it says so in those terms. The twelve name what happened,
+and not one of them is a dead link — this file's only HTTP 404 sits inside the mixed entry
+[R20]. Three are document classes with no public specimen: the *Produktinformationsblatt* [S11]
+and the *Basisinformationsblatt* [S12], of which no carrier publishes an instance, and the
+*Standmitteilung* [S15], which an insurer sends to a policyholder rather than publishes. Four
+are DAV material that is not on the open web at all: the *Höchstrechnungszins* recommendations
+[R8], the derivations of DAV 2004 R and of its *Bestand* companion [R10] [R11], and the
+conference and seminar expositions of them [R12]. One is sold rather than published, Assekurata's
+market study [R22], and two are publisher series that were not located at any address, BaFin's
+[R18] and the GDV's statistics [R25]. The last two, [S13] and [R23], are research artefacts — a
+carrier census and a comparison-portal cluster — with no single document behind them at all.
+Where an entry was not retrieved it reads `URL: not established` or attributes its URL to the
+sibling file that recorded it, and every paragraph number, date, amount and percentage that no
+document confirms still carries `[unverified]`. **The re-verification changed things**: it
+corrected claims the drafted text got wrong, and those corrections are recorded in the entries
+themselves and in the provenance note at the end rather than summarised away here. What it did
+not change is why `model.md`'s standardization table is longer for this product than for any
+other in the library — **the entire commercial character of a *Sofortrente* is a number, the
+euros per month per 100 000 € of *Einmalbeitrag*, and one carrier's scale at one vintage [S8] is
+the whole of that number the corpus holds**.
 
 ---
 
@@ -392,8 +416,8 @@ correction is recorded in the entry above and in `technical-notes.md`, not in th
 file. What follows is what the entries above now support, and it is materially different from
 what the same note said before the documents were opened.
 
-**Fifteen of the twenty-four cited documents were retrieved and read**, including every insurer
-document in the S section. Of the two entries whose titles name the immediate annuity, **both
+**Nineteen of this file's thirty-two entries now read `Retrieved: yes` and twelve read `no`**,
+one being mixed; the retrieved set includes every insurer document in the S section. Of the two entries whose titles name the immediate annuity, **both
 now yield clauses**: [S4] is NÜRNBERGER's AVB for tariff NR3303 in full, and [S2] is Zurich
 Deutscher Herold's *Verbraucherinformation* — though the retrieval showed that entry's recorded
 title and vintage to be wrong, and the pack to be a Schicht-2 *Direktversicherung* wrapper. The
@@ -458,6 +482,7 @@ and that correction, recorded at 0,34 % from model points 1 and 9, stands.
 [R1]: #delib-sofortrente-r1
 [R10]: #delib-sofortrente-r10
 [R11]: #delib-sofortrente-r11
+[R12]: #delib-sofortrente-r12
 [R13]: #delib-sofortrente-r13
 [R14]: #delib-sofortrente-r14
 [R18]: #delib-sofortrente-r18

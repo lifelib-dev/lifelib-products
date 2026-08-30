@@ -1,6 +1,7 @@
 # Product Specification
 
-**Status:** Draft, 2026-08-29 (all cited sources accessed 2026-08-29).
+**Status:** Draft, 2026-08-29 (sources accessed 2026-08-29); citations re-verified against the
+primary documents 2026-08-30.
 
 **Scope note.** This is a *standardized composite specification* assembled for reference liability
 cash-flow modeling of a German **klassische aufgeschobene private Rentenversicherung** — the classic
@@ -17,19 +18,41 @@ references), both numbered per `_research/klassische_rentenversicherung.md` and 
 library, whose own numbering is separate and also frozen) — are attributed to the cited document.
 Values marked **[std]** are standardizations introduced for the reference implementation, each with
 a numbered footnote giving the rationale and, where the research file recorded one, the observed
-range. Claims no search result corroborated are flagged [unverified].
+range. Claims no retrieved document confirms are flagged [unverified].
 
-**Retrieval conditions — read this before relying on a single number below.** Direct HTTP egress
-from the build environment is blocked by an organisation network policy: `WebFetch` and `curl` are
-refused with HTTP 403 for `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de` and every
-insurer host named here. **No document cited anywhere in this file was retrieved.** Everything rests
-on `WebSearch` result summaries, and the session's shared budget was exhausted after eighteen
-queries on this product. A delib citation is a **pointer, not a certificate**: it names the
-instrument a claim should be checked against; it does not assert that anyone checked it. The
-consequence is concentrated — **the corpus establishes the mechanics of this product thoroughly and
-its levels barely at all.** No *Rentenfaktor* level, no declared surplus rate, no charge parameter,
-no issue envelope and no behavioural rate was established at any carrier for any year; every one of
-those is **[std]** below and none is presented as a market rate.
+**Retrieval conditions — read this before relying on a single number below.** This specification
+was **drafted** under an organisation network policy that blocked direct HTTP egress from the build
+environment: `WebFetch` and `curl` were refused with HTTP 403 for `gesetze-im-internet.de`,
+`bafin.de`, `gdv.de`, `aktuar.de` and every insurer host named here, the only channel was
+`WebSearch` result summaries, and the session's shared budget was exhausted after eighteen queries
+on this product. The first draft therefore rested on the authoring model's own knowledge of German
+insurance law and practice, tagged **[std]** wherever it standardized a level and [unverified]
+wherever it could not confirm a specific. **That policy has since been lifted, and the citations
+were re-verified against the primary documents on 2026-08-30.** Of the forty-three entries in
+`sources.md`, **thirty-six now read `Retrieved: yes`** — the VVG, EStG and DeckRV sections read as
+canonical XML with each law's amendment *Stand* recorded, and the AVB, *Verbraucherinformationen*,
+*Kundeninformationen* and one *Überschussdeklaration* read as PDFs with their § numbering intact.
+Four entries were reached only in part: the two DAV documents under a transfer cap and a defective
+character mapping [R12] [R13], and two multi-URL entries where one link of each failed [R14] [R19].
+Three could not be opened at all: a Zurich product page that answers with an empty body [S17], a
+DEVK asset path that refuses with HTTP 403 [S19], and a paywalled trade-press article [R23].
+**Read every claim below against its own entry**: where the entry says `Retrieved: yes` the
+citation is a document that someone opened at the passage cited; where it does not, the citation
+remains a **pointer, not a certificate** — it names the instrument the claim should be checked
+against without asserting that anyone checked it. **The re-verification changed things**, and the
+entries record what: the annuity-factor basis once attributed to [S8] is not in that document, the
+living URL at [S11] now serves a successor design, [S1] leaves the pre-annuity death benefit blank,
+and [S4] carries a *Beitragsrückgewähr während der Rentenzahlungszeit* the library had recorded as
+unmentioned by any source. Each is stated on its entry in `sources.md`, and `model.md` lists where
+the shipped model diverges from a retrieved document. **One of those retractions has not been
+carried into the body of this file**: the CosmosDirekt conversion-basis sentence under *The
+guarantee is a rate* below still quotes a search summary the retrieved AVB does not contain [S8].
+What has **not** changed is the asymmetry this file is built around — **the corpus establishes the
+mechanics of this product thoroughly and its levels barely at all.** No charge parameter, no issue
+envelope and no behavioural rate was established at any carrier for any year; every one of those is
+**[std]** below and none is presented as a market rate. The *Rentenfaktor* levels [R19] [R24] and
+the declared surplus rate [S15] the pass did establish are market observations the model does not
+adopt, and are labelled as such where they appear.
 
 **The composite draws on ten carriers and one industry body** — the GDV [S1] [S2] [S3] [S10],
 Zurich [S4]–[S7] [S16] [S17], CosmosDirekt [S8], NÜRNBERGER [S9], Debeka [S11] [S12], Allianz [S13],
@@ -69,9 +92,11 @@ flows.
    then stays with the contract for its whole term** [REG-R14]. A German life book is a layered
    stack of guarantee vintages — 4,00 % for 07/1994–06/2000 down to 0,25 % for 2022–2024 and back
    to 1,00 % from 2025 [REG-R15] — so the *Rechnungszins* is a **model-point attribute, not a
-   global assumption**. An insurer may also guarantee less than the cap, and does: CosmosDirekt's
-   conversion basis is "an underlying interest rate (currently 0 percent p.a.)" [S8]; Debeka's
-   safest post-2016 variant guarantees 0,5 % [R22].
+   global assumption**. The retrieved wordings show both halves of that. CosmosDirekt's LA 904 A,
+   an **01.17** tariff, states *"der tarifliche Garantiesatz von 0,90 Prozent p. a."* [S8] — which
+   is exactly the 2017–2021 cap, and so is a contract carrying its own vintage rather than today's.
+   An insurer may also guarantee **less** than its vintage cap, and does: Debeka's safest post-2016
+   variant guarantees 0,5 % [R22].
 3. **The *Rentenfaktor* is a guarantee with upside, not a fixed conversion rate.** It is fixed at
    inception on the *Rechnungsgrundlagen* then in force [R24]; at *Rentenbeginn* a second, current
    factor is computed and **the higher of the two is guaranteed for the annuity payment period**

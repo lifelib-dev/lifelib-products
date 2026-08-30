@@ -4,48 +4,97 @@ Source ids [S#]/[R#] are carried verbatim from `_research/risikolebensversicheru
 citation ground truth for this product) and are **frozen — never renumber**. **No id is absent
 from this file and the numbering has no gaps**: all seventeen primary sources **S1–S17** and all
 twenty-three product-level references **R1–R23** are cited by `product-spec.md`, eighteen of the
-R-entries again by `technical-notes.md`, and sixteen again by `model.md`. That completeness is not
-evidential strength but its opposite. Under the retrieval conditions below **no document here was
-opened**, so nothing could be dropped for saying too little: every entry is cited for what it
-*would* settle and for the fact that it did not. Where a sibling library's `sources.md` records
-omitted ids — frlib drops three for returning nothing citable — this one records absences of a
-different kind, in each entry's `Retrieved` line and in the closing register. Access date for all
-sources: **2026-08-29**. No sources were newly added at drafting. Cross-product [REG-R#] tags are
+R-entries again by `technical-notes.md`, and sixteen again by `model.md`. When these entries were
+first written that completeness was not evidential strength but its opposite: **no document among
+them had been opened**, so nothing could be dropped for saying too little, and every entry was
+cited for what it *would* settle and for the fact that it did not. Twenty-two of the forty now
+settle it. Where a sibling library's `sources.md` records omitted ids — frlib drops three for
+returning nothing citable — this one records absences of a different kind, in each entry's
+`Retrieved` line and in the closing register. Access dates: **2026-08-29** at drafting, when this
+list was assembled without opening a document, and **2026-08-30** for the re-verification pass
+each entry below records. No sources were newly added at drafting. Cross-product [REG-R#] tags are
 listed in their own section at the end.
 
-**Retrieval conditions — read before any entry below.** Two independent limits applied, and this
-product sits at the worse end of both. **(1) Direct HTTP egress is blocked** by an organisation
-network policy: `WebFetch` and `curl` are refused with HTTP 403 at the egress gateway for every
-host outside a short package-registry allowlist. `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
-`aktuar.de`, `bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de` and
-`de.wikipedia.org` were all tried and all refused. **No document cited anywhere in this file was
-retrieved** — no AVB, no *Produktinformationsblatt*, no *Verbraucherinformation*, no statutory
-text, no rate card, no comparison-portal result. **(2) The session's `WebSearch` budget — 200
-calls, shared across the library — was exhausted *before* this product's research began**, during
-the regulatory and contract-law work and during delib products 1 and 2. Every search attempted for
-this product returned the budget-exhausted message, so it had **no research channel at all**.
+**Retrieval conditions — read before any entry below.** This file was drafted under one set of
+conditions and re-verified under another. Both belong in the record, and this product sat at the
+worse end of the first.
 
-What follows from that, stated plainly. **A delib citation is a pointer, not a certificate**: it
-names the instrument a claim should be checked against and does not assert that anyone checked it.
-Every entry below is a **known reference** — a document that exists and is the right kind of
-document for the claim beside it — with `URL: not established` unless the canonical form is one
-this author is confident of, and with a `Retrieved` line that says `no`. **No entry asserts an
-edition, a tariff code, a document number, a page count or a publication date**, because none
-could be established and none is guessed. **Nothing anywhere in this product's documents is
-quoted**: every description of a statute or a clause is a paraphrase and every paragraph number is
-`[unverified]`.
+1. **How it was drafted.** Two independent limits applied. **Direct HTTP egress was blocked** by an
+   organisation network policy: `WebFetch` and `curl` were refused with HTTP 403 at the egress
+   gateway for every host outside a short package-registry allowlist, and `gesetze-im-internet.de`,
+   `bafin.de`, `gdv.de`, `aktuar.de`, `bundesfinanzministerium.de`, `dejure.org`, `buzer.de`,
+   `destatis.de` and `de.wikipedia.org` were all tried and all refused. And **the session's
+   `WebSearch` budget — 200 calls, shared across the library — was exhausted *before* this
+   product's research began**, during the regulatory and contract-law work and during delib
+   products 1 and 2, so every search attempted for this product returned the budget-exhausted
+   message and it had **no research channel at all**. **Not one document listed here had been
+   opened when these entries were first written** — no AVB, no *Produktinformationsblatt*, no
+   *Verbraucherinformation*, no statutory text, no rate card, no comparison-portal result. The
+   draft rested instead on the authoring model's own knowledge of German insurance law and
+   practice, disciplined by **[std]** on every level it standardized and `[unverified]` on every
+   specific it could not confirm. Nothing was invented under that regime: no edition, tariff code,
+   document number, page count or publication date was guessed, and an entry read
+   `URL: not established` wherever the canonical form was not one this author was confident of.
 
-One thing here *is* evidence, and it is second-hand. Several instruments this product turns on
-were **search-corroborated for the two sibling products while budget remained**, and their
-findings are recorded in `_research/kapitallebensversicherung.md` and
+2. **How it stands now.** That policy has been lifted and the citations were re-verified against
+   the primary documents on 2026-08-30. **Twenty-two of the forty entries below read
+   `Retrieved: yes` and eighteen read `no` — 55 %**, against 501 of delib's 805 source entries
+   (62 %) library-wide, where all fifteen German instruments the library cites were read as
+   canonical XML with each law's amendment status (`Stand`) recorded and, of 950 statutory section
+   references checked, 950 were correct. `Retrieved: yes` means one thing exactly: **the document
+   was opened and the passage the entry rests on was read.** Here that is ten instruments — the
+   VVG, the MindZV, the DeckRV, the VAG, the AGG, the EStG, the ErbStG, the VVG-InfoV and the HGB
+   as canonical XML from `gesetze-im-internet.de`, each entry carrying the `Stand` it was read at,
+   and the VersStG 2021 from one of the few per-section pages that serves text rather than a
+   frameset — together with three wordings and two premium specimens as PDFs: the GDV
+   *Musterbedingungen*, Stand 21.07.2025; CosmosDirekt **LA 803 A (04.26)** with its *Besondere
+   Bedingungen*; Hannoversche **T25**, Stand 09/2025, in a 32-page pack; the two Cosmos
+   *Informationsblatt* specimens; and one carrier surplus guide in HTML.
+
+3. **What the eighteen `no` entries are.** They are the carrier sweep and the secondary
+   literature, and most name their own failure on their own line. **HTTP 404 at the cited URL** and a
+   **JavaScript wall** behind it: [S6], where the Debeka path this library carried is gone and the
+   replacement *Vertragsgrundlagen* library injects its document links client-side, so no PDF
+   address is in the served HTML — the same wall that leaves [S8] and [S11] with a product page
+   and no conditions file, the wording being reached through a quote flow. **A distribution-channel
+   wall**: [S7], whose wordings sit behind the broker channel, which is itself the fact that entry
+   records. **Not searched for in this pass**: [S9], [S10], [S12] and [S13], once [S1], [S3] and
+   [S4] had settled the clause questions they would have been read for; [S13] is cited for nothing
+   beyond the existence of the carriers it names. **Paywall and subscription**: [S16], *Finanztest*,
+   published with a free summary and the test itself paid; [S17] and [R20], the rating houses'
+   *Bedingungsanalysen*. **Nothing published to retrieve**: [S14], where a comparison result is
+   generated per query and is not a document at all. **Located but not read**: [R12], whose four
+   DAV addresses were opened on 2026-08-30 and confirmed live, public and of the size and kind the
+   entry describes, but whose text was not read, so its substantive claims stay inherited. **Nothing
+   product-specific found**: [R18] and [R19], no GDV term-segment series and no BaFin item reaching
+   a pure protection contract; [R22]; and [R23], where **no decision is cited by date or file
+   number anywhere in this product's documents**. The four secondary entries [S14] to [S17] still
+   carry the drafting-time reason on their `Retrieved` lines, and none of them was given a URL.
+
+What follows from that, stated plainly, and it now cuts two ways. Where an entry says
+`Retrieved: yes`, the § numbers, editions, page counts and quoted German sentences below were
+transcribed from the document itself, and the claim the entry carries can be treated as sound.
+Where it says `no`, **a delib citation is still a pointer, not a certificate**: it names the
+instrument a claim should be checked against and does not assert that anyone checked it, the entry
+is a **known reference** — a document that exists and is the right kind of document for the claim
+beside it — and it says so. **Re-verification was not a formality.** It overturned this product's
+flat denial of any *Rückkaufswert*, corrected the claim that German term-life charge levels are
+structurally undisclosed, replaced a guessed *Nachversicherung* event list with a carrier's own and
+re-titled § 163 VVG; the closing register records each correction and which document forced it.
+
+One thing here was evidence before any document was opened, and it is second-hand. Several
+instruments this product turns on were **search-corroborated for the two sibling products while
+budget remained**, and their findings are recorded in `_research/kapitallebensversicherung.md` and
 `_research/klassische_rentenversicherung.md`. Where an entry below says **"inherited
 corroboration"**, someone checked something — for the sibling's purpose, not for this one. That
 chain covers §§ 161, 169, 165, 19 and 153 VVG, the MindZV percentages, the DeckRV rate history and
-the DAV 2008 T *Richtlinie*, and it is the strongest thing in this file. **Everything not so marked
-has none.** Uncertain numbers became **[std]** parameters rather than citations: not one
-*Bruttobeitrag*, *Zahlbeitrag*, spread ratio, smoker ratio, charge, commission scale or lapse rate
-in this product's documents is an observation, and `model.md`'s standardization table lists every
-one.
+the DAV 2008 T *Richtlinie*, and at drafting it was the strongest thing in this file. It now sits
+**behind** the instruments themselves everywhere the XML settled the point, and it remains the only
+support the file has for [R12], which was located but not read. **Levels, though, are still not
+observed.** Uncertain numbers became **[std]** parameters rather than citations: apart from one
+direct writer's published model case [S2], not one *Bruttobeitrag*, *Zahlbeitrag*, spread ratio,
+smoker ratio, charge, commission scale or lapse rate in this product's documents is an observation,
+and `model.md`'s standardization table lists every one.
 
 ---
 
@@ -390,10 +439,11 @@ that were not read are still marked `[unverified]`.
 
 [REG-R#] tags resolve against the cross-product German reference library
 `references/regulatory-and-actuarial-references.md` (its own R-numbering, R1–R56, frozen; research
-provenance in `_research/regulatory-actuarial.md`). **Every entry in that library carries the same
-retrieval status as this file**: no document was fetched, and each entry records per fact whether a
-web search corroborated it before the budget was exhausted. Entries cited by the
-`risikolebensversicherung` documents:
+provenance in `_research/regulatory-actuarial.md`). **That library was drafted under the same
+blocked-egress conditions as this file and re-verified in the same pass**: its head still carries
+the drafting account, and each entry now records its own retrieval status on its own line, most of
+them `Retrieved: yes` from the canonical XML. Entries cited by the `risikolebensversicherung`
+documents:
 
 - **REG-R1** — Directive 2009/138/EC (Solvency II): the best-estimate-plus-risk-margin frame the projected cash flows feed. Nothing here computes it.
 - **REG-R2** — Delegated Regulation (EU) 2015/35: contract boundaries and management actions. Cited to record that this product's boundary is *easier* than frlib's revisable one — the *Bruttobeitrag* is guaranteed for the term.
@@ -443,7 +493,8 @@ Extraction details — which fact would be settled by which document, the twenty
 the product documents are actually written from, the `[std]` premium-scale construction of
 mechanic 16 with its arithmetic shown, and the twenty-three-item gaps-and-caveats register — live
 in `_research/risikolebensversicherung.md`. That file is the citation ground truth for the S# and
-R# numbering used here, and it states these same retrieval conditions at its head.
+R# numbering used here; its head records the blocked-egress conditions the research was done under,
+and its entries record the same 2026-08-30 re-verification these do.
 
 The caveats that most constrain what these product documents can claim, in order of how much they
 constrain the model. **Four of the nine were closed or overturned by this pass and are marked so.**
@@ -512,6 +563,7 @@ constrain the model. **Four of the nine were closed or overturned by this pass a
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-risikolebensversicherung-r1
+[R10]: #delib-risikolebensversicherung-r10
 [R11]: #delib-risikolebensversicherung-r11
 [R12]: #delib-risikolebensversicherung-r12
 [R13]: #delib-risikolebensversicherung-r13
@@ -523,6 +575,7 @@ constrain the model. **Four of the nine were closed or overturned by this pass a
 [R2]: #delib-risikolebensversicherung-r2
 [R20]: #delib-risikolebensversicherung-r20
 [R21]: #delib-risikolebensversicherung-r21
+[R22]: #delib-risikolebensversicherung-r22
 [R23]: #delib-risikolebensversicherung-r23
 [R3]: #delib-risikolebensversicherung-r3
 [R4]: #delib-risikolebensversicherung-r4

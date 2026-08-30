@@ -58,12 +58,15 @@ Access date for all citations: **2026-08-29**.
 ## Retrieval conditions and citation discipline
 
 Read this before reading anything else in the file. It is what separates a delib citation from an
-frlib one.
+frlib one. It has two halves, because the conditions changed after the file was drafted: how the
+research was **done** on 2026-08-29, and what the **re-verification** of 2026-08-30 established. Both
+belong in the record, and neither replaces the other.
 
-**No document in this file was retrieved.** Direct HTTP egress from this build environment is
-blocked by an organisation network policy. `WebFetch` and `curl` are refused at the egress gateway
-for every host outside a short package-registry allowlist. The hosts that matter for this product
-were tried again while writing this file and every one of them was refused with the identical
+**How this file was drafted.** **No document in this file was retrieved when it was written.** Direct
+HTTP egress from the build environment was blocked by an organisation network policy. `WebFetch` and
+`curl` were refused at the egress gateway for every host outside a short package-registry
+allowlist. The hosts that matter for this product were tried again while writing this file and
+every one of them was refused with the identical
 error — `curl: (56) CONNECT tunnel failed, response 403`: **`gesetze-im-internet.de`** (EStG § 10
 and § 22, AltZertG, ZPO § 851c, VVG, DeckRV), **`bafin.de`**, **`gdv.de`**, **`aktuar.de`**,
 **`bundesfinanzministerium.de`**, **`bzst.de`** — the authority that certifies Basisrentenverträge —
@@ -79,14 +82,15 @@ consumed it. This file was therefore written with **no research channel of any k
 search, no snippet, no summary. That is a materially weaker evidential position than either sibling
 file, and it is stated on every source entry rather than glossed.
 
-What follows from that, exactly, and it is applied without exception below:
+What followed from that, exactly, and it was applied without exception when this file was written:
 
-1. **Every source entry carries the honest retrieval line.** The standard line in this file is
+1. **Every source entry carried the honest retrieval line.** The standard line was
    `Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)`. A
-   small number of entries carry a stronger line because their **identity** was established in a
+   small number of entries carried a stronger line because their **identity** was established in a
    sibling delib research file while search was still available; those say so and name the file.
-   **`Retrieved: yes` appears nowhere in this document.**
-2. **Nothing is quoted.** Not one sentence of German statutory or contractual wording appears here
+   `Retrieved: yes` appeared nowhere in the drafted document. **It does now, and rule 1 is the one
+   rule below that the re-verification overtook** — see *What the re-verification changed*.
+2. **Nothing was quoted.** Not one sentence of German statutory or contractual wording appears here
    in quotation marks as though it were read. Where the substance of a provision is given, it is
    given in English, in this file's own words, as *what the provision does*. A reader who needs the
    wording must go to the instrument.
@@ -108,9 +112,27 @@ What follows from that, exactly, and it is applied without exception below:
 6. **The weight of the file is in the mechanics.** Sections 1 to 22 below do not depend on having a
    PDF open and are written long and precise; the source blocks are correspondingly short.
 
-**A delib citation is a pointer, not a certificate.** An `[R1]` tag on a sentence about
-§ 10 Abs. 1 Nr. 2 Buchst. b EStG means *this is the instrument this claim must be checked against*.
-It does not mean anyone read it. Downstream documents must not upgrade that.
+**What the re-verification changed.** The network policy was lifted, and on **2026-08-30** the
+citations were checked against the primary documents. Library-wide, all fifteen German instruments
+delib cites were read as canonical XML from `gesetze-im-internet.de` with each law's amendment
+`Stand` recorded, 950 statutory section references were checked and 950 were correct, and insurer
+AVB, *Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read;
+**501 of the library's 805 source entries, 62 %, now read `Retrieved: yes`.** In this file the pass
+reached **21 of the 40 entries below, and those 21 now carry their own `Retrieved:` line: 17 say
+yes, three say no with the reason ([S2], [S5], [R7]) and one is mixed ([S14])**. The other nineteen
+carry no per-entry line at all, and for those the drafted position above still governs: they were
+not opened, then or since. What was read is set out at the head of *Primary sources* and of
+*Regulatory and actuarial references*, and item by item in the gaps register.
+
+**What an entry now means.** A **`Retrieved: yes`** line means the document was opened and the
+passage the entry rests on was read; the line records the edition, page count or statutory `Stand`
+of what was read, and where the document contradicted the drafted text the entry says so. Where
+there is a `Retrieved: no` line or no line at all, **the citation is still a pointer, not a
+certificate**: an `[R1]` tag on a sentence about § 10 Abs. 1 Nr. 2 Buchst. b EStG means *this is the
+instrument this claim must be checked against*, not that anyone read it, and downstream documents
+must not upgrade that. **The re-verification also changed things** — it corrected claims the drafted
+text got wrong, in the entries themselves and in the register at the foot of this file. Treat a
+claim here as sound where its entry says `Retrieved: yes`, and as provisional where it does not.
 
 ---
 
@@ -1904,9 +1926,15 @@ than deleted so that the history of the reading stays legible. The items still o
     conditions of July 2025 and reads 1,5 % in the statute as amended in 2026 [R23]. Check all of
     them, and every paragraph number in this file, before relying on anything here.
 
-25. **This file had no research channel at all.** Egress was blocked and the session's `WebSearch`
-    budget was already exhausted when the product was reached. Two sibling delib research files,
-    written while search was available, supplied [S1], [S2], and the carried-over material in [R14]
-    through [R17] and [R21]; everything else rests on general knowledge, disciplined by the tagging
-    rules in the retrieval-conditions section and by this register. **A reader who needs any figure
-    in this file to be right must check it against the instrument named beside it.**
+25. **Narrowed — this file had no research channel while it was written, and has had one since.**
+    Egress was blocked and the session's `WebSearch` budget was already exhausted when the product
+    was reached. Two sibling delib research files, written while search was available, supplied
+    [S1], [S2], and the carried-over material in [R14] through [R17] and [R21]; everything else in
+    the drafted text rested on general knowledge, disciplined by the tagging rules in the
+    retrieval-conditions section and by this register. **The pass of 2026-08-30 reached 21 of the 40
+    entries and 17 of those now read `Retrieved: yes`** — every statute and regulation the product
+    turns on, four carrier wordings and two *Muster*-PIBs — which is what closed or narrowed the
+    fourteen items above. The nineteen entries with no `Retrieved:` line were not reached, and for
+    them this item stands unaltered. **A reader who needs a figure in this file to be right must
+    still check it against the instrument named beside it wherever the entry does not say
+    `Retrieved: yes`.**

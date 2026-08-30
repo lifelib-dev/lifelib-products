@@ -135,20 +135,30 @@ Each country section is built in three passes:
    consistency), then a cross-product consistency pass (shared terminology, shared
    base-chassis mechanics, link and tag integrity).
 
-**The Germany library is the exception to pass 1, and says so on every page it touches.**
-`delib` was built in an environment whose network policy blocks direct HTTP egress to every
-host outside a package-registry allowlist, so **no document cited anywhere in `delib` was
-retrieved** — `gesetze-im-internet.de`, `bafin.de`, `aktuar.de`, `gdv.de`, `destatis.de` and
-`eur-lex.europa.eu` were each tried and each refused at the gateway — and the session's
-web-search budget was exhausted partway through the regulatory research, so the later product
-files had no research channel at all. A `delib` citation is therefore a **pointer, not a
-certificate**: it names the instrument a claim should be checked against without asserting
-that anyone read it. Uncertain figures are carried as **[std]** parameters of the reference
-implementation with a stated rationale rather than as citations, and every specific paragraph
-number, date, amount and market figure that no search corroborated carries **[unverified]**.
-The library index, every `sources.md` header and every `_research/` header states this before
-its first entry. It is the one substantive respect in which `delib` is weaker than its four
-siblings, and it is the first thing to fix if the library is developed further.
+**The Germany library was drafted blind, then re-verified, and says so on every page it
+touches.** `delib` was first built in an environment whose network policy blocked direct HTTP
+egress to every host outside a package-registry allowlist — `gesetze-im-internet.de`,
+`bafin.de`, `aktuar.de`, `gdv.de`, `destatis.de` and `eur-lex.europa.eu` were each tried and
+each refused at the gateway — and the session's web-search budget was exhausted partway
+through the regulatory research, so the later product files had no research channel at all.
+That first draft rested on the authoring model's own knowledge of German insurance law and
+practice, disciplined by **[std]** and **[unverified]** tags.
+
+The policy was later lifted and **every citation re-checked against the document it names**.
+All fifteen German instruments the library cites were read as canonical XML from
+gesetze-im-internet with each law's *Stand* recorded, and **950 statutory section references
+were checked, of which 950 were correct**; insurer *AVB*, *Verbraucherinformationen* and
+*Produktinformationsblätter* were retrieved as PDFs and read. Of 969 source entries, **613 now
+read `Retrieved: yes`**, 37 were reached in part, and 319 could not be opened — a 404, a
+consent or JavaScript wall, a paywall, a subscription login, or an address never established.
+An entry that still reads `Retrieved: no` remains a **pointer, not a certificate**.
+
+The re-verification corrected the drafted text in every product, which is the strongest reason
+to read a claim against its own entry rather than trusting the library as a whole. Coverage is
+uneven, and unevenly by source type rather than by effort: the statutory core is near-complete,
+while products whose primary sources are carrier wordings behind a document portal are
+thinnest. Findings that reach a **modelled** rate or rule were recorded and deliberately not
+acted on, since a model change moves the worked example and its golden tests with it.
 
 ## Coverage
 

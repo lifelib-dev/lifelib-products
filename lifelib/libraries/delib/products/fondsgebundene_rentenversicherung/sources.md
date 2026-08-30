@@ -4,44 +4,85 @@ Source ids [S#]/[R#] are carried verbatim from `_research/fondsgebundene_rentenv
 (the citation ground truth for this product) and are **frozen — never renumber**. Unused ids
 are normally omitted, leaving gaps; **this product has none.** All eighteen primary sources
 S1–S18 and all twenty-six product-specific references R1–R26 are cited at least once by
-`product-spec.md` or `technical-notes.md`, so the numbering below is unbroken. That is a
-property of a small, deliberately-assembled corpus and not a sign of thoroughness: the reason
-nothing was dropped is that nothing in the list is a document anyone read, so no entry failed
-on inspection. Access date for all sources: **2026-08-29**. No sources were newly added at
-drafting. Cross-product [REG-R#] tags are listed in their own section at the end.
+`product-spec.md` or `technical-notes.md`, so the numbering below is unbroken. At drafting that
+was a property of a small, deliberately-assembled corpus and no sign of thoroughness: nothing
+had been dropped because nothing in the list was a document anyone had read, so no entry could
+fail on inspection. The forty-four entries have since been put to exactly that test, and the
+numbering still holds — none was withdrawn — but several are corrected below and two are now
+known to have described this product wrongly [R8] [R9]. Access date at drafting: **2026-08-29**;
+the re-verification pass read on **2026-08-30**, and every entry carries its own result. No
+sources were newly added at drafting. Cross-product [REG-R#] tags are listed in their own
+section at the end.
 
-**Retrieval conditions — read this before relying on a single line below.** Two limits applied
-to this product at full strength, and both were absolute rather than partial.
+**Retrieval conditions — read this before relying on a single line below, because they changed
+after this file was written.**
 
-1. **Direct HTTP egress is blocked by an organisation network policy.** `WebFetch` and `curl`
-   are refused with HTTP 403 at the egress gateway for every host outside a short
-   package-registry allowlist. `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
-   `bundesfinanzministerium.de`, `dejure.org`, `eur-lex.europa.eu`, `de.wikipedia.org` and
-   every insurer host named below were tried in the course of building this library and every
-   one was refused. **Not one *Bedingungswerk*, not one *Basisinformationsblatt*, not one
-   *Produktinformationsblatt*, not one *Verbraucherinformation* was opened.**
-2. **The session's `WebSearch` budget — 200 calls, shared across the ten delib products — was
-   already exhausted when this product's research began.** Every search attempted for it
-   returned the budget-exhausted response, so there was **no research channel of any kind**
-   for this file: not even the weak one, search summaries, that the `kapitallebensversicherung`
-   and `klassische_rentenversicherung` files had.
+1. **delib was drafted with direct HTTP egress blocked by an organisation network policy.**
+   `WebFetch` and `curl` were refused with HTTP 403 at the egress gateway for every host
+   outside a short package-registry allowlist. `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
+   `aktuar.de`, `bundesfinanzministerium.de`, `dejure.org`, `eur-lex.europa.eu`,
+   `de.wikipedia.org` and every insurer host named below were tried in the course of building
+   this library and every one was refused. **Not one *Bedingungswerk*, not one
+   *Basisinformationsblatt*, not one *Produktinformationsblatt*, not one
+   *Verbraucherinformation* was opened.**
+2. **There was no search channel either.** The session's `WebSearch` budget — 200 calls, shared
+   across the ten delib products — was already exhausted when this product's research began.
+   Every search attempted for it returned the budget-exhausted response, so there was **no
+   research channel of any kind** for this file: not even the weak one, search summaries, that
+   the `kapitallebensversicherung` and `klassische_rentenversicherung` files had. The first
+   draft therefore rested on the authoring model's own knowledge of German insurance law and
+   practice, disciplined by the [std] and [unverified] tags, and the handful of facts
+   corroborated at one remove came from searches run for **sibling** delib research files and
+   are attributed to the sibling rather than claimed here.
+3. **That policy has since been lifted, and these citations were re-verified against the primary
+   documents on 2026-08-30.** Of the forty-four entries below, **eighteen — 41 % — now say
+   `Retrieved: yes`**, **two say `partly`**, and **twenty-four say `no`**. What arrived is worth
+   more than the ratio: one complete German unit-linked *Bedingungswerk* read end to end,
+   DEVK's 195-page *Kundeninformation* 03101/07/2024 with its *Tarifbestimmungen*, its
+   *Rechnungsgrundlagen* and sixteen *Basisinformationsblätter* [S2] [S15], which is the only
+   clause text in this file; the statutory core as canonical XML from `gesetze-im-internet.de`
+   with each instrument's amendment status (`Stand`) recorded — the VVG at [R1] to [R6], the
+   DeckRV [R12], the MindZV [R14], the VAG [R15] and the EStG [R19] [R20], with the VVG-InfoV
+   read as complete section text in HTML [R7]; and BaFin's *Merkblatt* 01/2023 [R10], its
+   *Risiken im Fokus 2026* cost survey [R11], the DAV's PRIIPs *Ergebnisbericht* [R18] and the
+   Finanztip *Rentenfaktor* material [R22], each read in full.
+4. **What the twenty-four failures are**, because their shape matters more than the count.
+   **Nineteen are addresses that were never established**: for ten named carriers no address for
+   a fondsgebundene wording could be found on the publisher's own site [S4]–[S12] [S14], and the
+   same is true of the GDV *Musterbedingungen* [S1] and *Muster-Standmitteilung* [S17], the
+   *Nettotarif* wordings [S18], the PRIIPs Regulation and its RTS at EUR-Lex [R8], the LVRG
+   [R13], the rating studies [R23], the consumer bodies and comparison portals beyond Finanztip
+   [R24], the GDV new-business split [R25] and the BGH line on the *Rückkaufswert* [R26]. **Two
+   are 404s**: the one HDI address tried answers 200 with the site's own 404 page [S13], and the
+   BaFin *Fachartikel* is a hard 404 that BaFin's search index still lists [R9]. **Two are
+   documents that are not public at all** — the DAV mortality tables [R16] [R17], which are
+   Deutsche Aktuarvereinigung property, cited by name and never shipped. **One was opened only
+   at its contents page**, so no section of it was read [R21]. No paywall and no consent wall is
+   among them. The two `partly` entries name their own halves: Allianz's product page was read,
+   but `goa-eportale.allianz.de` answers HTTP 403 to the *Bedingungswerk*, so no clause text
+   comes from Allianz [S3]; and the *Verbraucherinformation* limb of [S16] arrived bound into
+   [S2] while the *Produktinformationsblatt* limb was not located.
 
-What follows, and it is applied without exception below: **every entry records
-`Retrieved: no`**, with the reason. Where a document was corroborated by a search run for a
-**sibling** delib research file, that is said explicitly and the corroboration is attributed to
-the sibling rather than claimed here. No verbatim quotation is invented; German wording that
-appears is a term of art, not a quotation. No URL, document number, edition, tariff code, page
-count or publication date is guessed — where a URL is not available the entry says `URL: not
-established`, and a canonical `gesetze-im-internet.de` form of a statutory paragraph is marked
-`[unverified]`. The five URLs that do appear were returned by searches run for sibling files
-and are attributed to them.
+**So read the `Retrieved:` line before relying on the entry above it.** `Retrieved: yes` means
+the document was opened and the passage the entry rests on was read; a German sentence quoted
+in such an entry is quoted from the instrument. **Anything else leaves the entry a pointer, not
+a certificate** — it names the instrument a claim should be checked against; it does not assert
+that anyone checked it. No verbatim quotation is invented, and no URL, document number,
+edition, tariff code, page count or publication date is guessed: where no address was
+established the entry says `URL: not established`, and a canonical `gesetze-im-internet.de`
+form that was never opened stays `[unverified]`. Re-verification was not a formality — it
+contradicted the death table this library names [R17], reversed the PRIIPs category assignment
+[R8] [R9], put a real guaranteed *Rentenfaktor* about 9 % below the one shipped [S15], and gave
+the composite's charge stack a market comparator it had never had [R11]. Across delib as a
+whole **501 of 805 entries — 62 % — are now `Retrieved: yes`**; this product sits below that,
+and the carrier sweep rather than the statutory core is the reason.
 
-**A delib citation is therefore a pointer, not a certificate.** It names the instrument a claim
-should be checked against; it does not assert that anyone checked it. The **mechanics** in the
-product documents are common ground in German practice and are written without hedging. The
-**levels** are almost entirely **[std]**: not one *Abschlusskostenquote*, not one
-*Verwaltungskostensatz*, not one *Stückkosten* amount, not one *Effektivkostenquote* and not
-one *Rentenfaktor* was established at any carrier.
+**What is still almost entirely `[std]` is the levels.** Outside the one carrier that could be
+read, not one *Abschlusskostenquote*, not one *Verwaltungskostensatz*, not one *Stückkosten*
+amount, not one *Effektivkostenquote* and not one *Rentenfaktor* was established at any
+carrier, and no German unit-linked *Stornoquote* was established anywhere. The **mechanics** in
+the product documents are common ground in German practice, several of them now read in a real
+wording, and are written without hedging.
 
 ---
 
@@ -549,13 +590,27 @@ the instrument, but it can now be re-checked against a text this library has act
 [R12]: #delib-fondsgebundene_rentenversicherung-r12
 [R13]: #delib-fondsgebundene_rentenversicherung-r13
 [R14]: #delib-fondsgebundene_rentenversicherung-r14
+[R15]: #delib-fondsgebundene_rentenversicherung-r15
+[R16]: #delib-fondsgebundene_rentenversicherung-r16
+[R17]: #delib-fondsgebundene_rentenversicherung-r17
+[R18]: #delib-fondsgebundene_rentenversicherung-r18
+[R19]: #delib-fondsgebundene_rentenversicherung-r19
 [R20]: #delib-fondsgebundene_rentenversicherung-r20
+[R21]: #delib-fondsgebundene_rentenversicherung-r21
 [R22]: #delib-fondsgebundene_rentenversicherung-r22
 [R23]: #delib-fondsgebundene_rentenversicherung-r23
+[R24]: #delib-fondsgebundene_rentenversicherung-r24
 [R25]: #delib-fondsgebundene_rentenversicherung-r25
-[R4]: #delib-fondsgebundene_rentenversicherung-r4
+[R26]: #delib-fondsgebundene_rentenversicherung-r26
+[R3]: #delib-fondsgebundene_rentenversicherung-r3
 [R5]: #delib-fondsgebundene_rentenversicherung-r5
+[R6]: #delib-fondsgebundene_rentenversicherung-r6
 [R7]: #delib-fondsgebundene_rentenversicherung-r7
 [R8]: #delib-fondsgebundene_rentenversicherung-r8
+[R9]: #delib-fondsgebundene_rentenversicherung-r9
+[REG-R25]: #delib-reg-r25
+[REG-R36]: #delib-reg-r36
+[REG-R5]: #delib-reg-r5
 [std]: #delib-std
+[unverified]: #delib-unverified
 <!-- END generated citation links -->

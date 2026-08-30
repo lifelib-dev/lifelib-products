@@ -12,12 +12,16 @@
 > only on the narrow § 163 VVG route and never under § 203 VVG [R11] [REG-R27], the 1,00 %
 > *Höchstrechnungszins* and 25 ‰ *Höchstzillmersatz* of the DeckRV [R13] [REG-R14] [REG-R16], the
 > § 169 VVG *Rückkaufswert* with its five-year cost spread and its *Stornoabzug* conditions
-> [R11] [REG-R28], and the unisex pricing rule [REG-R34]. **Every level is a standardization.** No
-> *Bedingungswerk*, no *Produktinformationsblatt*, no *Basisinformationsblatt*, no
-> *Verbraucherinformation*, no *Tarifblatt* and no premium quotation for any German
-> *Pflegerentenversicherung* was retrieved for this library, and the session's search budget was
-> exhausted before this product was researched; **DAV 2008 P**, the German market's standard
-> multi-state *Pflegetafel*, is the property of the Deutsche Aktuarvereinigung, is not public and is
+> [R11] [REG-R28], and the unisex pricing rule [REG-R34]. **Every level is a standardization.** This
+> model was drafted with nothing retrieved — egress from the build environment was blocked and the
+> session's search budget was exhausted before the product was researched — and its sources have since
+> been re-verified against the primary documents: one carrier's *Bedingungswerk* and
+> *Produktbeschreibung* were read in full [S4], as were the statutes and the DAV's own reports, and
+> 27 of the 36 entries in `sources.md` now read `Retrieved: yes`. **What was not retrieved is the one
+> thing that would fix a level**: no *Tarifblatt* and no premium quotation for any German
+> *Pflegerentenversicherung*, because none is published [S9] [S13]. **DAV 2008 P**, the German
+> market's standard multi-state *Pflegetafel*, is published by the Deutsche Aktuarvereinigung — the
+> earlier statement here that it is not public was wrong — but it is the DAV's property and is
 > **not redistributed here** [R15] [REG-R51], and neither is DAV 2008 T or DAV 2004 R
 > [R16] [REG-R48] [REG-R49]. So **every biometric rate, every charge, every lapse rate and the
 > premium itself is [std]**, and the premium is an output of a stated first-order basis rather than

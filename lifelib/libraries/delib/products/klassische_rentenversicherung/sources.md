@@ -6,38 +6,71 @@ omitted downstream, leaving gaps; **this product has none.** All nineteen primar
 **S1–S19** and all twenty-four product-specific references **R1–R24** are cited by
 `product-spec.md`, and the subset the model itself rests on is cited again in
 `technical-notes.md` and `model.md`, so the numbering below runs unbroken. No source was newly
-added at drafting. Access date for all sources: **2026-08-29**. Cross-product [REG-R#] tags are
-listed in their own section at the end.
+added at drafting. Access dates: **2026-08-29** at drafting, when this list was assembled without
+opening a document, and **2026-08-30** for the re-verification pass each entry below records.
+Cross-product [REG-R#] tags are listed in their own section at the end.
 
-**Retrieval conditions — read this before reading anything below.** Two independent limits
-applied while this library was built, and they are stated here rather than glossed.
+**Retrieval conditions — read this before reading anything below.** This file was drafted under
+one set of conditions and re-verified under another. Both belong in the record and both are
+stated here rather than glossed.
 
-1. **Direct HTTP egress is blocked by an organisation network policy.** `WebFetch` and `curl`
-   are refused with HTTP 403 at the egress gateway for every host outside a short
-   package-registry allowlist. Every host that matters for this product —
-   `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `dejure.org`,
+1. **How it was drafted.** Direct HTTP egress from the build environment was blocked by an
+   organisation network policy: `WebFetch` and `curl` were refused with HTTP 403 at the egress
+   gateway for every host outside a short package-registry allowlist, and every host that matters
+   for this product — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `dejure.org`,
    `de.wikipedia.org`, and every insurer host named below (`zurich.de`, `cosmosdirekt.de`,
-   `nuernberger.de`, `debeka.de`, `allianz.de`) — was tried and refused. **No document listed
-   here was retrieved.** Every entry therefore reads
-   `Retrieved: no — direct HTTP egress blocked in the build environment`.
-2. **The only research channel was `WebSearch`**, which returns titles, URLs and search-engine
-   summaries, and its session budget — shared across fourteen parallel researchers — was
-   **exhausted after eighteen queries on this product**. A search summary is real evidence and
-   several of the load-bearing facts below came back as near-verbatim renderings of a
-   document's own sentences, but it is a *secondary summary*, never a retrieved document.
+   `nuernberger.de`, `debeka.de`, `allianz.de`) — was tried and refused. The only research channel
+   was `WebSearch`, which returns titles, URLs and search-engine summaries: real evidence, and
+   several of the load-bearing facts below first came back as near-verbatim renderings of a
+   document's own sentences, but a *secondary summary* and never the document itself. Its session
+   budget, shared across fourteen parallel researchers, was **exhausted after eighteen queries on
+   this product**. **Not one document listed here had been opened when these entries were first
+   written**, and the draft rested on the authoring model's own knowledge of German insurance law
+   and practice, disciplined by `[std]` on every level it standardized and `[unverified]` on every
+   specific it could not confirm.
+2. **How it stands now.** That policy has been lifted and the citations were re-verified against
+   the primary documents on 2026-08-30. **Thirty-six of the forty-three entries below read
+   `Retrieved: yes`**, which means one thing exactly: the document was opened and the passage the
+   entry rests on was read — the AVB, *Verbraucherinformationen*, *Kundeninformationen* and the
+   surplus declaration as PDFs with their § numbering, page counts, document codes and *Fassungen*
+   intact, and the statutes [R1]–[R7] as canonical XML from gesetze-im-internet with each law's
+   amendment *Stand* recorded on the entry. **Four entries were reached only in part.** [R12] and
+   [R13], the DAV *Sterbetafel* documents, came through a 3 MB transfer cap and a defective
+   character mapping, so their structure is read and nothing is quoted from them; [R14] holds four
+   URLs, of which two conference decks were retrieved while a Springer article answered with a
+   bot-challenge page and a qx-Club PDF failed TLS host verification; [R19] holds two, of which
+   the second answers HTTP 404. **Three could not be opened at all**: [S17], a Zurich product page
+   that answers HTTP 200 with a 212-byte shell and no page body; [S19], a DEVK asset path that
+   answers HTTP 403 to the cited URL and to a retry; and [R23], a VersicherungsJournal article
+   whose body sits behind a premium paywall. All seven are kept as known references, and each
+   states its own failure on its own line.
 
-What follows from that: **a delib citation is a pointer, not a certificate.** It names the
-instrument a claim should be checked against; it does not assert that anyone checked it. No
-quotation anywhere in these documents was invented — where a short phrase appears in quotation
-marks it is a phrase a search summary itself returned, attributed to the summary. No URL, no
-document reference number, no paragraph number and no figure was guessed; where a URL was not
-returned it reads `URL: not established`. `[unverified]` is used generously and keeps its normal
-meaning: a specific paragraph number, effective date, tariff level or market figure that no
-search result confirmed. And **every quantitative parameter of the reference implementation that
-the corpus did not establish is a `[std]` standardization with a stated rationale**, never a
-number attributed to a source that does not carry it. The corpus establishes the *mechanics* of
-this product thoroughly and its *levels* barely at all, which is why `model.md`'s standardization
-table is as long as it is.
+Library-wide, the same pass leaves **501 of delib's 805 source entries (62 %) at `Retrieved:
+yes`**; all fifteen German instruments the library cites were read as canonical XML with their
+*Stand* recorded, and of 950 statutory section references checked across delib, 950 were correct.
+This product's share of that is forty of its forty-three entries reached in whole or in part.
+
+What follows from it cuts two ways. Where an entry reads `Retrieved: yes`, the § numbers,
+*Fassungen*, page counts and quoted sentences below were transcribed from the document itself.
+Where it does not, **a delib citation is still a pointer, not a certificate**: it names the
+instrument a claim should be checked against and does not assert that anyone checked it, and the
+entry says so. Nothing was invented under either regime — no URL, no document reference number, no
+paragraph number and no figure was guessed; where a URL was not established the entry reads
+`URL: not established`; and where a phrase appears in quotation marks it is either transcribed
+from a retrieved document or attributed to the search summary that returned it. **The
+re-verification changed things**, and the entries record what it changed: [S8] does not contain
+the DAV 2004 R sentence the corpus once leaned on hardest, [S11]'s living URL now serves a
+successor design rather than the classic chassis, [S1] leaves the pre-annuity death benefit blank,
+and [S4] carries a post-*Rentenbeginn* death benefit the library had recorded as unmentioned by
+any source. `[unverified]` keeps its meaning and is now the narrower claim: a specific paragraph
+number, effective date, tariff level or market figure that no retrieved document confirms. And
+**every quantitative parameter of the reference implementation that the corpus did not establish
+is a `[std]` standardization with a stated rationale**, never a number attributed to a source that
+does not carry it. The corpus still establishes the *mechanics* of this product far more
+thoroughly than its *levels* — the pass added *Rentenfaktor* ranges [R19] [R24] and one carrier's
+declaration [S15], and no charge, expense or behavioural level at all — which is why `model.md`'s
+standardization table is as long as it is, and why `model.md` now also records where the shipped
+levels diverge from what was read.
 
 ---
 
@@ -465,8 +498,10 @@ table is as long as it is.
 [REG-R#] tags resolve against the cross-product German reference library
 `references/regulatory-and-actuarial-references.md` (its own R-numbering, R1–R56, frozen;
 research provenance in `_research/regulatory-actuarial.md`). Every entry in that library carries
-its own retrieval status, and the same two limits of house-rules section 3 apply there. Entries
-cited by the klassische-Rentenversicherung documents, and what each gave them:
+**its own** retrieval status, recorded there; that library was drafted under the same
+blocked-egress conditions as this file, so read each REG-R entry's status where it stands rather
+than carrying this file's tally across. Entries cited by the klassische-Rentenversicherung
+documents, and what each gave them:
 
 - **REG-R1** — Richtlinie 2009/138/EG (Solvabilität II): the framework the undiscounted cash flows feed, named and not implemented.
 - **REG-R2** — Delegierte Verordnung (EU) 2015/35: contract boundaries and the best-estimate definition, in the valuation pointers.
@@ -575,13 +610,12 @@ actually read; where a gap has closed it says so, and where it stands it says wh
 [R11]: #delib-klassische_rentenversicherung-r11
 [R12]: #delib-klassische_rentenversicherung-r12
 [R13]: #delib-klassische_rentenversicherung-r13
+[R14]: #delib-klassische_rentenversicherung-r14
 [R16]: #delib-klassische_rentenversicherung-r16
 [R17]: #delib-klassische_rentenversicherung-r17
-[R18]: #delib-klassische_rentenversicherung-r18
 [R19]: #delib-klassische_rentenversicherung-r19
 [R2]: #delib-klassische_rentenversicherung-r2
 [R20]: #delib-klassische_rentenversicherung-r20
-[R21]: #delib-klassische_rentenversicherung-r21
 [R22]: #delib-klassische_rentenversicherung-r22
 [R23]: #delib-klassische_rentenversicherung-r23
 [R24]: #delib-klassische_rentenversicherung-r24
@@ -594,8 +628,6 @@ actually read; where a gap has closed it says so, and where it stands it says wh
 [R9]: #delib-klassische_rentenversicherung-r9
 [REG-R16]: #delib-reg-r16
 [REG-R18]: #delib-reg-r18
-[REG-R28]: #delib-reg-r28
 [REG-R47]: #delib-reg-r47
 [REG-R49]: #delib-reg-r49
-[unverified]: #delib-unverified
 <!-- END generated citation links -->

@@ -1,6 +1,7 @@
 # Product Specification
 
-**Status:** Draft, 2026-08-29 (all sources dated 2026-08-29; **none retrieved** — see below).
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30
+(22 of the 40 entries in `sources.md` now read `Retrieved: yes` — see below).
 
 **Scope note.** This is a *standardized composite specification* assembled for reference
 liability cash-flow modeling of a German **Risikolebensversicherung** (RLV) — the standalone term
@@ -18,24 +19,55 @@ introduced for the reference implementation; each **[std]** table row carries a 
 giving the rationale and, where one can be argued, a plausible range. Claims that no search
 corroborated are flagged [unverified].
 
-**Retrieval conditions — read this before relying on a number.** **No document named anywhere in
-this specification was retrieved**: direct HTTP egress from the build environment is blocked by an
-organisation network policy, and `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
-`dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org` were all tried and all refused. **The
-session's `WebSearch` budget was exhausted before this product's research began**, so unlike the two
-sibling delib products this one had *zero* searches of its own. What evidence there is arrives by one
-route: **inherited corroboration**, where an instrument this product turns on — §§ 161, 169, 165, 153
-and 19 VVG, the MindZV, the DeckRV, § 139 VAG and the DAV 2008 T *Richtlinie* — was
-search-corroborated for a sibling delib product while budget remained, and the finding is carried
-across with the sibling named. **A delib citation is a pointer, not a certificate.** `frlib`'s
-counterpart could put eight French carriers side by side because eight *notices d'information* were
-downloaded and read; **this document can put none side by side.** No German carrier's AVB was opened,
-no *Produktinformationsblatt* was seen, and **not one *Bruttobeitrag* or *Zahlbeitrag* anywhere in
-this library is a market observation.** Where a mechanic is certain and its level is not, this
-document ships a **[std]** parameter with its arithmetic shown rather than a plausible-looking figure
-with a source tag it has not earned. That is a weaker document than its French sibling, it is weaker
-in a way visible on every page, and the alternative — a confident-looking specification full of
-invented figures — would have been worse.
+**Retrieval conditions — read this before relying on a number, because they changed after it was
+written.** This specification was **drafted** with direct HTTP egress from the build environment
+blocked by an organisation network policy — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
+`aktuar.de`, `dejure.org`, `buzer.de`, `destatis.de` and `de.wikipedia.org` were all tried and all
+refused — and with **the session's shared `WebSearch` budget exhausted before this product's
+research began**, so unlike the two sibling delib products this one had *zero* searches of its own.
+The first draft therefore rested on the authoring model's own knowledge of German insurance law and
+practice, disciplined by **[std]** on every level it standardized and [unverified] on every specific
+it could not confirm, with **inherited corroboration** — an instrument search-corroborated for a
+sibling delib product while budget remained, carried across with the sibling named — as its only
+second-hand evidence.
+
+**That policy has since been lifted and the citations re-verified against the primary documents on
+2026-08-30.** In `sources.md`, **22 of this product's 40 entries now read `Retrieved: yes` and 18
+still read `no` — 55 %**, against 501 of 805 entries (62 %) across delib as a whole. What came in is
+the statutory core and three wordings: the VVG, the MindZV, the DeckRV, the VAG, the AGG, the EStG,
+the ErbStG, the VVG-InfoV and the HGB read as canonical XML from `gesetze-im-internet.de` with each
+law's amendment status (`Stand`) recorded, the VersStG 2021 in HTML beside them; the GDV
+*Musterbedingungen* of 21.07.2025, CosmosDirekt's AVB **LA 803 A (04.26)** and Hannoversche's **T25**
+as PDFs; two carrier *Informationsblatt* specimens that print a premium and its costs in euro; and
+one carrier's surplus guide. `frlib`'s counterpart could put eight French carriers side by side
+because eight *notices d'information* were downloaded and read; where an earlier draft of this
+passage said **this document can put none side by side**, it can now put **two, in full, and the
+industry template they are both variations on.**
+
+The 18 that did not come in are the carrier sweep and the secondary literature, and they failed in
+named ways: Debeka's cited path now answers **HTTP 404**, and the replacement library injects its
+document links client-side so nothing is in the served HTML [S6]; Allianz and LV 1871 publish a
+product page with no conditions file, the wording reached through a quote flow [S8] [S11]; Dialog
+keeps its wordings behind the broker channel [S7]; R+V, NÜRNBERGER, Continentale/Europa and the
+seventeen further carriers were not searched for at all once the three wordings had settled the
+clause questions [S9] [S10] [S12] [S13]; *Finanztest* publishes a free summary and sells the test,
+and the rating houses sell theirs [S16] [S17] [R20]; a comparison-portal result is generated per
+query and is not a published document at all [S14], and no address was ever established for the
+consumer guide beside it [S15]; and the GDV statistics, the BaFin material, the Solvency II
+texts, the case law and the DAV *Sterbetafel* papers — whose four addresses were opened and
+confirmed live, but whose text was not read — remain pointers [R12] [R18] [R19] [R22] [R23].
+
+**Where an entry in `sources.md` says `Retrieved: yes`, treat the claim it carries as sound; where it
+says `no`, a delib citation is still a pointer, not a certificate** — it names the instrument a claim
+should be checked against and does not assert that anyone checked it. Re-verification was not a
+formality: it overturned this document's flat denial of any *Rückkaufswert*, corrected the claim that
+German term-life charges are structurally undisclosed, replaced a guessed *Nachversicherung* event
+list with a carrier's own, and re-titled § 163 VVG. What has **not** changed is that levels are not
+observed: apart from one direct writer's published model case [S2], **not one *Bruttobeitrag* or
+*Zahlbeitrag* anywhere in this library is a market observation**, and that one case is recorded as a
+check rather than adopted as a parameter. Where a mechanic is certain and its level is not, this
+document still ships a **[std]** parameter with its arithmetic shown rather than a plausible-looking
+figure with a source tag it has not earned.
 
 **Out of scope, and said so where it matters.** *Restschuldversicherung* /
 *Restkreditversicherung*, the single-premium bank-sold loan-linked group cover, which shares the
@@ -125,9 +157,10 @@ publishes a rate card, **the comparison portals are a market participant rather 
 [S14]: a tariff's design is shaped by how it ranks in a portal's default query, which is a
 *Zahlbeitrag* query — a plausible structural explanation, [unverified], for why the *Zahlbeitrag* is
 marketed and the *Bruttobeitrag* merely disclosed, the consumer-protection line running the other way
-[S15] [S16] [S17] [R20]. A portal result is generated per query rather than published, so it would
-have been unreachable without live egress in any event — which is why **not one price point appears
-anywhere in this library** (gap 1).
+[S15] [S16] [S17] [R20]. A portal result is generated per query rather than published, so none was
+obtained once egress was restored either — which is why **the only German premium figures anywhere in
+this library are the ones a carrier prints in its own *Informationsblatt* specimen** [S2], one model
+case at one carrier and not a market (gap 1).
 
 ---
 

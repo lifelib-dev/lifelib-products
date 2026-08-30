@@ -1,6 +1,7 @@
 # Product Specification
 
-**Status:** Draft, 2026-08-29 (all sources dated 2026-08-29; **none was retrieved**).
+**Status:** Drafted 2026-08-29 with no document retrieved; **re-verified against the primary
+documents on 2026-08-30**, when 19 of this product's 32 source entries were opened and read.
 
 **Scope note.** A *representative composite specification* assembled for reference liability
 cash-flow modeling of a German **sofortbeginnende private Rentenversicherung** — the *Sofortrente*:
@@ -15,25 +16,42 @@ references, both numbered per `_research/sofortrente.md` and resolved in `source
 renumbered); [REG-R#] tags the cross-product library
 `references/regulatory-and-actuarial-references.md`, whose R1–R56 numbering is separately frozen.
 **[std]** marks a standardization introduced for the reference implementation, each with a numbered
-footnote giving its rationale and, where one exists, the observed range; claims no search
-corroborated are flagged [unverified]. German terms of art stay in German, italicised on first use.
+footnote giving its rationale and, where one exists, the observed range; claims no retrieved
+document corroborates are flagged [unverified]. German terms of art stay in German, italicised on
+first use.
 
-**Retrieval conditions, stated first because they govern every line below.** Direct HTTP egress is
-blocked by an organisation network policy: `WebFetch` and `curl` are refused with HTTP 403 for
-`gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `destatis.de`, `eur-lex.europa.eu` and
-every insurer host named here; and the session's 200-call `WebSearch` budget was **exhausted before
-work on this product began**, so **not one search was run for the *Sofortrente***. Every source is
-therefore either a **known reference** — a document class and carrier that exists and is the right
-kind of thing to cite — or a fact carried over with attribution from a sibling delib research file
-whose searches ran earlier, principally `_research/klassische_rentenversicherung.md`, which shares
+**Retrieval conditions, stated first because they govern every line below.** This file was
+**drafted under a policy that blocked all egress**: `WebFetch` and `curl` were refused with HTTP 403
+for `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `destatis.de`, `eur-lex.europa.eu`
+and every insurer host named here, and the session's 200-call `WebSearch` budget was **exhausted
+before work on this product began**, so **not one search was run for the *Sofortrente***. The first
+draft therefore rested on the authoring model's own knowledge of German insurance law and practice,
+disciplined by **[std]** and [unverified] tags and by facts carried over with attribution from a
+sibling delib research file, principally `_research/klassische_rentenversicherung.md`, which shares
 this product's *Rechnungsgrundlagen* (calculation bases), its surplus chassis and, at two carriers,
-its tariff. **A delib citation is a pointer, not a certificate.** The consequence: the corpus
-establishes this product's **mechanics** well and its **levels** hardly at all, *no annuity rate,
-charge, envelope, option menu or surplus declaration having been observed at any German carrier for
-any year*. There is therefore **no insurer-level quantitative comparison anywhere below**, the
-variations section is structural rather than numeric, and every euro and percentage describing the
-representative design is either **[std]** with its derivation printed or tagged to a cross-product
-reference.
+its tariff. **That policy has since been lifted and these citations re-verified against the primary
+documents.** On 2026-08-30 the insurer condition sets and pre-contractual packs [S2] [S3] [S4] [S5]
+[S6] [S8] [S14], one carrier group's *Überschussverteilung* [S10], the GDV's model conditions [S1]
+and its survivor's-annuity rider set [S9] were retrieved as PDFs and read, and every statutory
+provision this file cites under its own [R#] ids was read as canonical XML from
+`gesetze-im-internet.de` with the instrument's amendment *Stand* recorded. **Of the 32 source
+entries in `sources.md`, 19 now read `Retrieved: yes` and 12 read `no`**, one ([R20]) being mixed.
+The twelve that failed are of four kinds, set out entry by entry there: two pre-contractual classes
+of which no carrier publishes a specimen [S11] [S12], plus the *Standmitteilung* an insurer sends to
+a policyholder rather than publishes [S15]; DAV material that is not on the open web at all [R8]
+[R10] [R11] [R12]; one paywalled market study [R22] and two publisher series not located at any
+address [R18] [R25]; and two research artefacts with no single document behind them [S13] [R23].
+**A `Retrieved: yes` citation means the document was opened and the passage read; a `Retrieved: no`
+citation is still a pointer, not a certificate**, and is marked as one. The re-verification changed
+this specification — it withdrew claims the draft got wrong, and each correction is recorded where
+it bites rather than gathered here. What it did not change is the shape of the evidence: the corpus
+establishes this product's **mechanics** at clause level and its **levels** hardly at all, exactly
+one carrier's guaranteed-annuity scale having been located [S8], *no charge parameter and no total
+annuity including declared surplus having been established at any German carrier for any year*.
+There is therefore still **no insurer-level quantitative comparison anywhere below**, the variations
+section is structural rather than numeric, and every euro and percentage describing the
+representative design is either **[std]** with its derivation printed, or tagged to a document that
+was read, or tagged to a cross-product reference.
 
 **Out of scope.** The **accumulation phase** of a deferred annuity is the separate delib product
 `klassische_rentenversicherung`; premium accumulation, the *Deckungskapital* recursion, the
@@ -891,6 +909,7 @@ per model point, income-positive and **undiscounted**, and the discounting, the 
 [R1]: #delib-sofortrente-r1
 [R10]: #delib-sofortrente-r10
 [R11]: #delib-sofortrente-r11
+[R12]: #delib-sofortrente-r12
 [R13]: #delib-sofortrente-r13
 [R14]: #delib-sofortrente-r14
 [R18]: #delib-sofortrente-r18

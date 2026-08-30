@@ -5,11 +5,15 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`Pflege_DE_S`**, **monthly** grid — for the standardized composite German
 *Pflegerentenversicherung* defined in `product-spec.md` (same directory). This is not any single
-insurer's product, and **no product document of any kind was retrieved for it**: direct HTTP egress
-from the build environment is blocked and the session's `WebSearch` budget was exhausted before work
-on this product began. [S#] / [R#] tags refer to the source list in `sources.md` (numbering carried
-from `_research/pflegerentenversicherung.md`; frozen); [REG-R#] tags refer to the cross-product
-reference library `references/regulatory-and-actuarial-references.md` (its own R-numbering).
+insurer's product, and it was **drafted with no product document of any kind retrieved for it**:
+direct HTTP egress from the build environment was blocked and the session's `WebSearch` budget was
+exhausted before work on this product began. The citations have since been re-verified against the
+primary documents, so that **27 of the 36 source entries in `sources.md` read `Retrieved: yes`, five
+read `no` and four are partial** — a tag below is a record of a document read where its entry says
+`yes`, and a pointer to be checked where it does not. [S#] / [R#] tags refer to the source list in
+`sources.md` (numbering carried from `_research/pflegerentenversicherung.md`; frozen); [REG-R#] tags
+refer to the cross-product reference library
+`references/regulatory-and-actuarial-references.md` (its own R-numbering).
 **[std]** marks standardizations introduced for the reference implementation; [unverified] marks
 claims no source could corroborate. On this product **every biometric rate, every charge, every
 lapse rate and the premium itself is [std]** — a fact stated here once and repeated at each
@@ -1180,8 +1184,8 @@ In rough order of leverage for a German *Pflegerente* block.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R11]: #delib-pflegerentenversicherung-r11
-[R13]: #delib-pflegerentenversicherung-r13
 [R12]: #delib-pflegerentenversicherung-r12
+[R13]: #delib-pflegerentenversicherung-r13
 [R14]: #delib-pflegerentenversicherung-r14
 [R15]: #delib-pflegerentenversicherung-r15
 [R16]: #delib-pflegerentenversicherung-r16

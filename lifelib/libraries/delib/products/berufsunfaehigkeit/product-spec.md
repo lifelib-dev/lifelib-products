@@ -16,18 +16,36 @@ never renumbered), and [REG-R#] (the cross-product reference library
 `references/regulatory-and-actuarial-references.md`, whose own R-numbering is distinct) — name the
 document the claim must be checked against. **[std]** marks a standardization introduced for the
 reference implementation, each with a rationale and, where the research file recorded one, the
-observed range; [unverified] marks a claim no search corroborated.
+observed range; [unverified] marks a claim no retrieved document corroborates.
 
-**Read this before any number below.** Under this build's retrieval conditions **no document cited
-in this specification was retrieved, and none was corroborated by a web search**. Direct HTTP egress
-was refused by an organisation network policy for every relevant host — `gesetze-im-internet.de`,
-`bafin.de`, `gdv.de`, `aktuar.de`, `deutsche-rentenversicherung.de`, `bundesfinanzministerium.de` —
-and the session's `WebSearch` budget was exhausted before this product was reached. A delib citation
-is therefore a **pointer, not a certificate**: it names the instrument a claim should be checked
-against; it does not assert that anyone read it. That is the correct outcome rather than a defect —
-the **mechanics** of the German BU contract are well established and set out here in full, and only
-the **levels** could not be sourced. Those are **[std]** with a stated construction or [unverified]
-with a warning, and there is not one invented `[S#]` figure anywhere in this file.
+**Read this before any number below.** This specification was **drafted with nothing retrieved**.
+Direct HTTP egress was refused by an organisation network policy for every relevant host —
+`gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `deutsche-rentenversicherung.de`,
+`bundesfinanzministerium.de` — and the session's `WebSearch` budget was exhausted before this
+product was reached, so the first draft rested on the authoring model's own knowledge of German
+insurance law and market practice, disciplined by **[std]** and [unverified] tags rather than by a
+document. **That policy has since been lifted and the citations were re-verified against the primary
+documents.** On 2026-08-30 the statutes and statutory instruments this product turns on were read as
+the canonical XML gesetze-im-internet publishes for each law, each law's amendment status (*Stand*)
+recorded on its entry; the GDV *Musterbedingungen* for the SBU, the BUZ and the BU-with-AU variant
+and five carrier document sets were retrieved as PDFs and read. Of the **43** entries in
+`sources.md`, **26 now answer `Retrieved: yes`** — twenty-five outright, and [S12] for three of the
+documents it names out of eighteen carriers — and **17 still answer `no`**: 60 % of this product's
+entries retrieved.
+**The re-verification changed things**, and the corrections are marked where they fall: the six
+months belongs to the *Sechs-Monats-Fiktion* and not to the *Prognosezeitraum*, which the GDV model
+conditions leave blank [S1] [S12]; § 177 VVG extends the BU rules only to cover of a *dauerhafte*
+impairment [R6]; § 161 VVG's three-year suicide window is a death-cover rule the market's AVB do not
+apply to self-inflicted impairment at all [R11]; and the drafted claim that no German insurer
+discloses its BU costs was wrong — VVG-InfoV § 2 requires the disclosure in euro [R12], and a
+carrier's own AVB points the customer to it [S6]. **Read a claim as sound where its entry says
+`Retrieved: yes` and as provisional where it does not**: there a delib citation is still a
+**pointer, not a certificate**, naming the instrument a claim should be checked against without
+asserting that anyone read it. What stayed out of reach is overwhelmingly **price and level** — no
+rate card, no *Berufsgruppenverzeichnis*, no DAV table, no *Produktinformationsblatt* — so the
+**mechanics** of the German BU contract are set out here from documents that were read, while the
+**levels** are **[std]** with a stated construction or [unverified] with a warning, and there is not
+one invented `[S#]` figure anywhere in this file.
 
 **Scope boundaries.** The *Berufsunfähigkeits-Zusatzversicherung* (BUZ) — the same cover written as
 a rider on a *Renten-*, *Kapitallebens-* or *Basisrentenversicherung* [S2] — carries an identical

@@ -55,13 +55,16 @@ Access date for all citations: **2026-08-29**.
 
 ## Citation discipline and retrieval conditions
 
-A delib citation is a weaker object than a citation in the four sister libraries, and the
-difference is stated rather than glossed.
+A delib citation was a weaker object than a citation in the four sister libraries, and the
+difference is stated rather than glossed. This section has two halves: the conditions this file was
+**drafted** under on 2026-08-29, and what the **re-verification** of 2026-08-30 established. The
+first is kept because it is why every entry below reads as it does; the second is recorded document
+by document in `products/sofortrente/sources.md`, which is the operative record for this product.
 
-**No document listed in this file was retrieved.** Direct HTTP egress from this build environment
-is blocked by an organisation network policy. `WebFetch` and `curl` are refused with HTTP 403 at
-the egress gateway for every host outside a short package-registry allowlist. The hosts that
-matter for this product were all tried across the delib build and all refused:
+**No document listed in this file was retrieved when it was drafted.** Direct HTTP egress from the
+build environment was blocked by an organisation network policy. `WebFetch` and `curl` were refused with HTTP 403
+at the egress gateway for every host outside a short package-registry allowlist. The hosts that
+mattered for this product were all tried across the delib build and all refused:
 `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`, `bundesfinanzministerium.de`,
 `destatis.de`, `dejure.org`, `eur-lex.europa.eu`, `de.wikipedia.org`, and every insurer host named
 below (`zurich.de`, `cosmosdirekt.de`, `nuernberger.de`, `debeka.de`, `allianz.de`,
@@ -70,12 +73,16 @@ below (`zurich.de`, `cosmosdirekt.de`, `nuernberger.de`, `debeka.de`, `allianz.d
 **A second, independent limit applied to this product.** The session's `WebSearch` budget — 200
 calls, shared across the parallel delib researchers — was **already exhausted before work on this
 product began**. Not one search was run for the *Sofortrente*, against a brief that anticipated
-thirty to eighty. This is gap 1 and everything in this file follows from it.
+thirty to eighty; it was the worst-served of the ten. This is gap 1 and everything drafted in this
+file follows from it.
 
-What that means, exactly, and it is applied without exception below:
+What that meant, exactly, and it was applied without exception below:
 
 1. **Every source entry records `Retrieved: no — egress blocked; no search corroboration (session
-   search budget exhausted)`.** Nothing here is marked retrieved. Where an entry *does* carry
+   search budget exhausted)`.** Nothing in *this* file is marked retrieved, then or now: these
+   lines were left at their drafted status and the pass of 2026-08-30 is recorded in
+   `products/sofortrente/sources.md` instead. **Where that file and an entry's line here disagree,
+   that file governs.** Where an entry *does* carry
    corroboration it is corroboration recorded by a **sibling delib research file** whose searches
    ran earlier in the session — principally `_research/klassische_rentenversicherung.md`, which
    shares this product's *Rechnungsgrundlagen*, its surplus chassis and, at two carriers, its
@@ -102,6 +109,31 @@ What that means, exactly, and it is applied without exception below:
 Where the corpus establishes a mechanic and not its level — the normal case here — the mechanic is
 written long and the level is `[std]` with an argued range. The gaps register at the end is a
 substantial part of this file's value, and a reader who needs a market figure should start there.
+
+**The re-verification of 2026-08-30.** The network policy was lifted and the citations were checked
+against the primary documents. Library-wide, all fifteen German instruments delib cites were read as
+canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950 statutory
+section references were checked and 950 were correct, and insurer AVB, *Verbraucherinformationen* and
+*Produktinformationsblätter* were retrieved as PDFs and read; **501 of the library's 805 source
+entries, 62 %, now read `Retrieved: yes`.** For this product the per-entry record is
+`products/sofortrente/sources.md`, **where 19 of the 32 entries read `Retrieved: yes`, 12 read `no`
+and one is mixed** — every insurer document in its S section was opened, as was every statutory
+provision carried under its own `[R#]` ids. The twelve that stayed shut name what happened, and none
+of them is a dead link: three are document classes with no public specimen, four are DAV material
+that is not on the open web, one is sold rather than published, two are publisher series that were
+not located, and two are research artefacts with no single document behind them.
+
+**What a citation now means.** Where `sources.md` records a document as retrieved, it was opened and
+the passage the entry rests on was read, with the edition, page count or statutory `Stand` recorded.
+Where it does not, the citation is still **a pointer rather than a certificate**: it names the
+instrument a claim must be checked against and does not assert that anyone checked it. **The
+re-verification changed things** — it corrected claims this drafted text got wrong, the largest being
+that the GDV publishes no model conditions for an immediate annuity, which the retrieved GDV index
+refutes — and every correction is recorded at the entry in `sources.md` and in that file's provenance
+note. What it did not change is the hole at the centre of the product: **one carrier's annuity scale
+at one vintage is still the whole of the euros-per-month-per-100 000 € the corpus holds**, so section
+4's construction and its `[std]` labels stand. Treat a claim here as sound where `sources.md` records
+a retrieval, and as provisional where it does not.
 
 ---
 
@@ -140,13 +172,18 @@ gloss. The vocabulary this product needs, beyond the shared annuity vocabulary o
 
 ## Primary sources
 
-Fifteen entries. Only three are *documents whose existence and identity a search result actually
-returned* — [S2], [S4] and [S6], all recorded by the sibling file
-`_research/klassische_rentenversicherung.md` while search was still available, each with a URL a
-search returned. The remaining twelve are **known references**: document classes and carriers that
-exist and are the right kind of thing to cite here, recorded so a later build with a working
-retrieval channel knows what to fetch and in what order. They carry no URL unless a sibling file
-recorded one, and nothing quantitative is cited from them.
+Fifteen entries, and the `Retrieved:` lines below record their **drafted** status. Only three were
+then *documents whose existence and identity a search result actually returned* — [S2], [S4] and
+[S6], all recorded by the sibling file `_research/klassische_rentenversicherung.md` while search was
+still available, each with a URL a search returned. The remaining twelve were **known references**:
+document classes and carriers that exist and are the right kind of thing to cite here, recorded so a
+later build with a working retrieval channel would know what to fetch and in what order. They carry
+no URL unless a sibling file recorded one, and nothing quantitative is cited from them here.
+**That later build ran on 2026-08-30**: eleven of these fifteen were opened, and
+`products/sofortrente/sources.md` carries what each yielded, with its edition and page count. The
+four that were not are the *Produktinformationsblatt* [S11], the *Basisinformationsblatt* [S12], the
+*Standmitteilung* [S15] — three document classes of which no carrier publishes a specimen — and the
+carrier census at [S13], which has no single document behind it.
 
 ### S1 — GDV, "Musterbedingungen" service index, and the immediate-annuity model conditions
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV), Berlin
@@ -425,11 +462,16 @@ recorded one, and nothing quantitative is cited from them.
 
 ## Regulatory and actuarial references
 
-Twenty-five entries. The statutory ones carry the canonical `gesetze-im-internet.de` address where
-that form is unambiguous, marked `[unverified]` because no search in this session returned it; the
-professional and market ones carry a URL only where a sibling delib file recorded one. **None was
-retrieved.** A provision's *content* is stated as what it provides, in this file's own words, and
-its paragraph number carries `[unverified]` unless a sibling file's search corroborated it.
+Twenty-five entries, and as above the `Retrieved:` lines record their **drafted** status. The
+statutory ones carry the canonical `gesetze-im-internet.de` address where that form is unambiguous,
+marked `[unverified]` because no search in this session returned it; the professional and market ones
+carry a URL only where a sibling delib file recorded one. **None had been retrieved when this section
+was written.** A provision's *content* is stated as what it provides, in this file's own words, and
+its paragraph number carries `[unverified]` unless a sibling file's search corroborated it. **The
+pass of 2026-08-30 read every statutory provision this product turns on as canonical XML at a
+recorded `Stand`**, and `products/sofortrente/sources.md` says which; what it could not reach is the
+DAV material, which is distributed to members rather than published, and the ratings and statistical
+series. Where that file records a reading, the paragraph number is no longer `[unverified]`.
 
 ### R1 — VVG § 168, *Kündigung des Versicherungsnehmers* — and the rule that ends surrender at *Rentenbeginn*
 - Publisher: Bundesministerium der Justiz / juris
@@ -1419,10 +1461,13 @@ product; the levels are not established at all, and every one of them is `[std]`
 
 ## Observed variation across insurers
 
-**This file supports no numeric variation table.** No search was run for this product (gap 1), so
-no carrier's *Rentenhöhe*, charge, envelope, option menu or surplus rate was observed, and a table
-with a column per carrier would be fabrication. What the corpus supports is a **structural** table
-and an honest statement of the parameters whose range is unknown.
+**This file supports no numeric variation table.** No search was run for this product while it was
+drafted (gap 1), so no carrier's *Rentenhöhe*, charge, envelope, option menu or surplus rate was
+observed here, and a table with a column per carrier would have been fabrication. What this file
+supports is a **structural** table and an honest statement of the parameters whose range is unknown.
+**The pass of 2026-08-30 opened the carrier documents and added one annuity scale at one vintage
+[S8], and no second observation of it** — so the parameters below still have no range, and
+`products/sofortrente/sources.md` is where the one observation and its limits are recorded.
 
 ### Carriers in the corpus
 
@@ -1499,9 +1544,10 @@ for the reference implementation where the corpus is silent; none is any carrier
 
 ## Gaps and caveats
 
-1. **No search was run for this product at all.** The session's 200-call `WebSearch` budget, shared
-   across the parallel delib researchers, was **exhausted before work on the *Sofortrente* began**,
-   and direct HTTP egress was blocked throughout. The brief anticipated thirty to eighty
+1. **No search was run for this product at all while it was drafted, and the pass of 2026-08-30
+   supplied the documents instead.** The session's 200-call `WebSearch` budget, shared across the
+   parallel delib researchers, was **exhausted before work on the *Sofortrente* began**, and direct
+   HTTP egress was blocked throughout. The brief anticipated thirty to eighty
    German-language queries: insurer AVB and *Versicherungsbedingungen*; *Produktinformationsblätter*
    and *Basisinformationsblätter*; *Rentenhöhe* per 100 000 € from Verivox, CHECK24 and
    `vergleich-sofortrente.de`; Stiftung Warentest's and Finanztip's *Sofortrente* comparisons;
@@ -1511,7 +1557,12 @@ for the reference implementation where the corpus is silent; none is any carrier
    DAV 2004 R-Bestand. **None was run.** Every source entry here is therefore either a known
    reference or a fact carried over with attribution from a sibling delib research file whose
    searches ran earlier in the session. Nothing was written to fill the hole, and no URL, figure,
-   paragraph number or document code was guessed.
+   paragraph number or document code was guessed, then or since. **What the pass then reached is in
+   `products/sofortrente/sources.md`: 19 of its 32 entries read `Retrieved: yes`.** It closed the
+   documentary half of this gap — insurer AVB, the GDV model conditions and the statutory spine were
+   all read — and left the quantitative half open, because comparison portals generate a quotation
+   per enquiry rather than publish one and the ratings are sold rather than published. Gap 2 below
+   is the part that stands.
 
 2. **No insurer-level quantitative comparison exists in this file.** Twenty-eight carriers are
    named [S13] and not one has a *Rentenhöhe*, a charge, an envelope, an option menu or a surplus

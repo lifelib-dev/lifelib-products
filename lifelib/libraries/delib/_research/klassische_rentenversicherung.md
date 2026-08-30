@@ -56,27 +56,32 @@ Access date for all citations: **2026-08-29**.
 
 ## Citation discipline and retrieval conditions
 
-**No document listed in this file was retrieved.** Direct HTTP egress from this build environment
-is blocked by an organisation network policy. `WebFetch` and `curl` are refused with HTTP 403 at
-the egress gateway for every host outside a short package-registry allowlist. The hosts that
-matter for this product — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
+This section has two halves: how the research was **done**, on 2026-08-29, and what the
+**re-verification** of 2026-08-30 established. The first half is kept because it is the record of
+how the file came to say what it says; the second is what a reader should weigh each entry by.
+
+**No document listed in this file had been retrieved when it was written.** Direct HTTP egress from
+the build environment was blocked by an organisation network policy. `WebFetch` and `curl` were refused with HTTP 403
+at the egress gateway for every host outside a short package-registry allowlist. The hosts that
+mattered for this product — `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
 `bundesfinanzministerium.de`, `dejure.org`, `de.wikipedia.org`, and every insurer host named below
 (`zurich.de`, `cosmosdirekt.de`, `nuernberger.de`, `debeka.de`, `allianz.de`) — are all refused.
 
 The **only** research channel available was the `WebSearch` tool, which returns titles, URLs and
-search-engine summaries. Everything in this file rests on those summaries. They are real evidence
+search-engine summaries. Everything in the drafted file rested on those summaries. They are real evidence
 and they do return substantive content — several of the most load-bearing facts below (the
 CosmosDirekt conversion basis, the Zurich two-factor comparison, the § 165 VVG paid-up formula)
 came back as near-verbatim renderings of the document's own sentences — but a search summary is a
 *secondary summary*, never a retrieved document.
 
-This changes exactly two things:
+That changed exactly two things in the draft:
 
-1. **Every source entry records `Retrieved: no — direct HTTP egress blocked in the build
-   environment; established from search-result summaries`.** Nothing here is marked retrieved. No
-   quotation is invented. Where a short phrase is given in quotation marks, it is a phrase the
-   search summary itself returned, and it is attributed to the summary rather than to the
-   document.
+1. **Every source entry recorded `Retrieved: no — direct HTTP egress blocked in the build
+   environment; established from search-result summaries`.** Nothing was marked retrieved. No
+   quotation was invented. Where a short phrase was given in quotation marks, it was a phrase the
+   search summary itself returned, attributed to the summary rather than to the document. **This is
+   the rule the re-verification changed**: every entry now carries its own `Retrieved:` line, and
+   where that line says yes the entry also quotes the document itself.
 
 2. **`[unverified]` keeps its normal meaning** — a claim that no search result corroborated. It is
    not applied to everything. A fact that several independent search results agree on is not
@@ -97,6 +102,31 @@ areas the brief asked for — current *Rentenfaktor* market levels, charge level
 premium envelopes, the 2025/2026 *Überschussbeteiligung* declarations, the *Kapitalwahlrecht*
 notice period, the *Zuzahlung* mechanics, the unisex rule — are recorded as **gaps, not as
 facts**. Nothing was written to fill them.
+
+**The re-verification of 2026-08-30.** The policy was lifted and the citations were checked against
+the primary documents. Library-wide, all fifteen German instruments delib cites were read as
+canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950
+statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read; **501
+of the library's 805 source entries, 62 %, now read `Retrieved: yes`.** For this product: **36 of
+the 43 entries below read `Retrieved: yes`, three read `no` ([S17], [S19], [R23]) and four are
+partial ([R12], [R13], [R14], [R19])**. What stayed shut names its wall per entry: HTTP 200 with a
+212-byte shell and no page body ([S17]), HTTP 403 at the cited URL and on a direct retry ([S19]), a
+paywall body in place of the article ([R23]), and, inside the partials, an HTTP 404 on the second of
+two addresses ([R19]) and DAV and industry PDFs opened only at their front matter ([R12], [R13],
+[R14]).
+
+**What an entry now means.** A **`Retrieved: yes`** line means the document was opened and the
+passage the entry rests on was read; the line records the PDF's page count and *Stand* or the law's
+amendment status, and a German sentence quoted beneath it is a quotation **of the document**. A
+**`Retrieved: no`** line means the entry is still **a pointer rather than a certificate**, and a
+quoted phrase there is still a phrase a search summary returned. **The re-verification changed
+things**: fifteen of the twenty-six gaps below are closed, five of them by a retrieved document
+**contradicting** what the gap or its entry had said, and the register states the contradictions
+rather than smoothing them over. What the budget still determines is the *market* material — current
+*Rentenfaktor* levels, charge levels, the envelopes and the declarations — which no document
+supplied. Treat a claim here as sound where its entry says `Retrieved: yes`, and as provisional
+where it does not.
 
 ---
 

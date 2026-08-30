@@ -21,12 +21,15 @@ is specified in [`product-spec.md`](product-spec.md).
 > *Bewertungsreserven* included and *hälftig* [S2] [S3] [S10] [REG-R24]; and there is no
 > *Rückkaufswert*, no lapse and no *Beitragsfreistellung* once the *Rentenbezug* has begun
 > [S1] [S2] [S4] [R1] [R2] [R5] [REG-R28]. **Almost no level is sourced, and none of the few
-> that are has been used to calibrate anything here.** The library was built under a blocked
-> egress policy with an exhausted `WebSearch` budget, so every number below was chosen as a
-> **[std]** with a stated rationale and none was fitted to market data. Retrieval has since
-> produced four benchmarks the model can be judged against but was not built from: one
-> carrier's guaranteed annuity scale, 151 € a month at 65 on 50 000 € with a 20-year guarantee
-> [S8] — about 16 % below this model's [std] construction on the same case; one carrier group's
+> that are has been used to calibrate anything here.** The library was **drafted** under a
+> policy that blocked all egress, with an exhausted `WebSearch` budget, so every number below
+> was chosen as a **[std]** with a stated rationale out of the authoring model's own knowledge
+> and none was fitted to market data. The citations have since been **re-verified against the
+> primary documents** — 19 of this product's 32 source entries read `Retrieved: yes`, 12 still
+> read `no` — and that pass produced four benchmarks the model can be judged against but was
+> not built from: one carrier's guaranteed annuity scale, 151 € a month at 65 on 50 000 € with
+> a 20-year guarantee [S8] — about 16 % below this model's [std] construction on the same case;
+> one carrier group's
 > payout-phase *Zinsüberschussanteil*, 3,35 % less the *Rechnungszins* for 2026 [S10]; market
 > *Rentenfaktoren* of 29,09 € and 25,97 € per 10 000 € for 2021 and 2022 [R20]; and five
 > carriers' *laufende Verzinsung* for 2026 [R21]. **No charge parameter and no portfolio sex
@@ -399,9 +402,12 @@ from the month it falls in, are **absent** here: the payment instant is the star
 ## Standardizations used
 
 Everything in this table is **[std]**: a parameter or convention chosen for the reference
-implementation where the corpus is silent. None is any carrier's value, and for this product
-that list is longer than for any other in the library, because **no search was run for it at
-all** (research gap 1).
+implementation where the corpus is silent. None is any carrier's value, and for this product the
+list is longer than for any other in the library. The drafting pass ran **no search for it at
+all** (research gap 1); the 2026-08-30 re-verification then opened 19 of this product's 32
+sources and reached its mechanics and almost none of its levels — one carrier's annuity scale
+[S8], one carrier group's surplus declaration [S10], and no charge parameter anywhere — so the
+table stands.
 
 | [std] | Value | Rationale |
 |---|---|---|

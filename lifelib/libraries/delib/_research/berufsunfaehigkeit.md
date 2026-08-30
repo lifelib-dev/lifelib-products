@@ -41,10 +41,15 @@ Access date for all citations: **2026-08-29**.
 
 ## Retrieval conditions and citation discipline
 
-**No document in this file was retrieved. Not one.** Two independent limits applied while it was
-written, and they compound.
+This section has two halves. The first records the conditions the research was **done** under on
+2026-08-29; the second records what the **re-verification** of 2026-08-30 established. The first is
+not withdrawn — it is how this file came to say what it says — and the second is what a reader
+should now weigh each entry by.
 
-**Limit 1 — direct HTTP egress is blocked.** An organisation network policy refuses `WebFetch` and
+**No document in this file had been retrieved when it was written. Not one.** Two independent limits
+applied while it was drafted, and they compounded.
+
+**Limit 1 — direct HTTP egress was blocked.** An organisation network policy refuses `WebFetch` and
 `curl` (HTTP 403 at the egress gateway) for every host outside a short package-registry allowlist.
 The hosts that matter here were all tried and all refused: `gesetze-im-internet.de` (VVG, VAG,
 SGB VI, EStG, DeckRV, MindZV, IfSG), `bafin.de`, `gdv.de`, `aktuar.de`,
@@ -54,18 +59,19 @@ SGB VI, EStG, DeckRV, MindZV, IfSG), `bafin.de`, `gdv.de`, `aktuar.de`,
 and no BaFin publication was opened.
 
 **Limit 2 — the session's `WebSearch` budget was already exhausted before this product was
-reached.** The 200-call cap is shared across the whole delib build and was consumed by the
+reached.** The 200-call cap was shared across the whole delib build and was consumed by the
 regulatory research and by the two products written before this one. **This file therefore had no
-research channel at all — neither retrieval nor search.** It is written from the author's own
-knowledge of German insurance law and market practice, under the discipline the delib house rules
-impose for exactly this case.
+research channel at all while it was drafted — neither retrieval nor search.** Its first draft was
+written from the authoring model's own knowledge of German insurance law and market practice, under
+the discipline the delib house rules impose for exactly this case.
 
-What follows, and it governs every line below:
+What followed, and it governed every line of the draft:
 
-1. **An `[S#]` or `[R#]` tag here is a pointer, not a certificate.** It names the document a claim
-   must be checked against before it is relied on. It does **not** assert that anyone read that
-   document. Every source entry carries `Retrieved: no — direct HTTP egress blocked in the build
-   environment; no search corroboration (session search budget exhausted)`, and none says otherwise.
+1. **An `[S#]` or `[R#]` tag was a pointer, not a certificate.** It named the document a claim must
+   be checked against before it is relied on. It did **not** assert that anyone had read that
+   document. Every source entry carried `Retrieved: no — direct HTTP egress blocked in the build
+   environment; no search corroboration (session search budget exhausted)`, and none said otherwise.
+   **This is the rule the re-verification changed**; the paragraph after the list says how far.
 2. **There are no quotations.** Not one German sentence in this file is presented as verbatim
    statutory or contractual wording, because no wording was read. Substance is given in the author's
    own words, in English, with the terms of art kept in German.
@@ -84,11 +90,38 @@ What follows, and it governs every line below:
    ships a `[std]` value with a rationale and an argued range. A `[std]` number is honest about
    being a construction; a guessed `[S4]` number is not, and there are none.
 
-**Consequence for the downstream documents.** `product-spec.md` and `technical-notes.md` will be
-unusually `[std]`-heavy and unusually explicit about it. That is the correct outcome, not a defect:
-the *mechanics* of the German BU contract are well established and are set out below in full, and it
-is only the *levels* — rating factors, charge loadings, decrement tables, market statistics — that
-this file cannot source. The gaps register at the foot should be read before any figure is used.
+**The re-verification of 2026-08-30.** The policy was lifted and the citations were checked against
+the primary documents. Library-wide, all fifteen German instruments delib cites were read as
+canonical XML from `gesetze-im-internet.de` with each law's amendment `Stand` recorded, 950
+statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read; **501
+of the library's 805 source entries, 62 %, now read `Retrieved: yes`.** For this product: **26 of
+the 47 entries below read `Retrieved: yes` and 21 read `no`.** Eight documents were opened — the GDV
+model conditions for the SBU, the BUZ and the BU-with-AU variant, and carrier wordings from Alte
+Leipziger, NÜRNBERGER, VOLKSWOHL BUND, Debeka and CosmosDirekt — and every statute and statutory
+instrument the product turns on was read as canonical XML. What stayed shut is named per entry, and
+the reasons are not all the same kind: a carrier page that resolves but serves no document link
+([S3], [S5], [S8]); a document generated per quotation, so that no specimen is published ([S13]);
+DAV tables that are the association's property and appear at no public address ([R16], [R17]) — the
+one status no network can change; a study or series that was not located on the publisher's site
+([R18], [R20], [R21]); and, for the rest, an entry the pass did not attempt because nothing in this
+product is asserted from it. Rule 1 above is superseded exactly that far and no further.
+
+**What an entry now means.** A **`Retrieved: yes`** line means the document was opened and the
+passage the entry rests on was read, and the line records the edition, page count or statutory
+`Stand`. A **`Retrieved: no`** line means the entry is still **a pointer rather than a certificate**,
+and it is marked as one. **The re-verification changed things**: it corrected claims the drafted
+text got wrong, and the corrections sit in the entries themselves, in the *Observed variation*
+table and in the gaps register. Treat a claim in this file as sound where its entry says
+`Retrieved: yes`, and as provisional where it does not.
+
+**Consequence for the downstream documents.** `product-spec.md` and `technical-notes.md` are
+unusually `[std]`-heavy and unusually explicit about it, and the pass did not change that: what
+remains unretrieved is every **quantitative** source — no price, no rate card, no occupational
+table, no DAV table. That is the correct outcome, not a defect: the *mechanics* of the German BU
+contract are well established and are set out below in full, and it is only the *levels* — rating
+factors, charge loadings, decrement tables, market statistics — that this file cannot source. The
+gaps register at the foot should be read before any figure is used.
 
 ## German terminology
 
@@ -858,10 +891,12 @@ non-statutory entries (R16–R23, R26, R28, R29) were not read and say why.
 
 ## Extracted facts, organised by mechanic
 
-This is the section `product-spec.md` and `technical-notes.md` are written from, and under this
-build's retrieval conditions it carries the file's weight: the **mechanics** are well established
-and set out in full, the `[S#]` / `[R#]` tags name the document each statement must be checked
-against, and every **level** is either `[std]` with a rationale or `[unverified]` with a warning.
+This is the section `product-spec.md` and `technical-notes.md` are written from, and it carries the
+file's weight: the **mechanics** are well established and set out in full, the `[S#]` / `[R#]` tags
+name the document each statement must be checked against — and, since the re-verification of
+2026-08-30, name a document that was actually opened wherever the entry says `Retrieved: yes` — and
+every **level** is either `[std]` with a rationale or `[unverified]` with a warning. The levels are
+where the pass reached least, so this section is still read against the gaps register.
 
 ### 1. Product structure and legal form
 
@@ -1641,7 +1676,8 @@ supplies.
    remains unretrieved is every **quantitative** source — no price, no rate card, no occupational
    table, no DAV table, no rating-agency or consumer-press figure — and the DAV tables cannot be
    retrieved at all, being unpublished. The retrieval-conditions statement at the head of this file
-   still describes the conditions under which the file was **written**, and is rewritten separately.
+   now carries both halves: the conditions the file was **written** under, and what the pass
+   established — 26 of the 47 entries read `Retrieved: yes` and 21 read `no`.
 
 2. **No insurer *Bedingungswerk* was opened, so no carrier-level parameter is attributed.** The
    variations table above records market positions, not carriers. Sixteen named German life

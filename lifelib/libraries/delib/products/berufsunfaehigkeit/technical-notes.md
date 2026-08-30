@@ -9,20 +9,28 @@ single insurer's product. [S#] / [R#] tags refer to the source list in `sources.
 carried from `_research/berufsunfaehigkeit.md`; frozen); [REG-R#] tags refer to the cross-product
 reference library `references/regulatory-and-actuarial-references.md` (its own R-numbering).
 **[std]** marks a standardization introduced for the reference implementation; [unverified] marks a
-claim no search corroborated. Parameter values are identical to those in `product-spec.md`. Cells
+claim no retrieved document corroborates. Parameter values are identical to those in `product-spec.md`. Cells
 names, model-point columns and CSV headers are English `lower_snake_case`; German terms of art keep
 their German form in prose.
 
-**Retrieval conditions.** **No document cited here was retrieved and none was corroborated by a web
-search** — direct HTTP egress was blocked and the session's search budget was exhausted before this
-product was reached. A citation is a **pointer, not a certificate**. The practical consequence for
-these notes is unusual and is stated once, here: **every biometric level in this model is [std]**,
-because the DAV 1997 family and DAV 2008 T are the property of the Deutsche Aktuarvereinigung, are
-not public and are not redistributed by delib [R16] [R17] [REG-R50] [REG-R48]; **every charge level
-is [std]**, because no German insurer publishes a BU charge structure and a pure risk contract
-carries no *Effektivkosten* disclosure [R12] [S14]; and **the premium itself is [std]**, because no
-German BU rate card of any kind was obtained. The *mechanics* below are not [std]. They are the
-established German ones, and each carries the instrument it must be checked against.
+**Retrieval conditions.** These notes were **drafted with nothing retrieved** — direct HTTP egress
+was blocked by an organisation network policy and the session's `WebSearch` budget was exhausted
+before this product was reached — and their citations have **since been re-verified against the
+primary documents**: the statutes and statutory instruments as canonical XML with each law's *Stand*
+recorded, the GDV *Musterbedingungen* and five carrier document sets as PDFs. Of the 43 entries in
+`sources.md`, **26 now say `Retrieved: yes` and 17 still say `no`**; where an entry says yes the
+document was opened and the passage the entry rests on was read, and where it says no the citation
+is still a **pointer, not a certificate** and the number resting on it keeps its [unverified] or
+**[std]** tag. The practical consequence for these notes is unusual and is stated once, here:
+**every biometric level in this model is [std]**, because the DAV 1997 family and DAV 2008 T are the
+property of the Deutsche Aktuarvereinigung, are not public and are not redistributed by delib
+[R16] [R17] [REG-R50] [REG-R48]; **every charge level is [std]**, because no
+*Produktinformationsblatt* was obtained — not because the disclosure does not exist, which is what
+the first draft said and got wrong: VVG-InfoV § 2 requires a German BU insurer to state its
+acquisition and administration costs in euro, and it is only the *Effektivkosten* figure that a pure
+risk contract does not carry [R12] [S14]; and **the premium itself is [std]**, because no German BU
+rate card of any kind was obtained. The *mechanics* below are not [std]. They are the established
+German ones, and each now carries a document that was read.
 
 ---
 

@@ -12,14 +12,18 @@ are listed in [`sources.md`](sources.md).
 > payment lag [R11]; the *Beitragserhaltungszusage*, the 30 % *Teilkapitalauszahlung* cap, the
 > five-year floor under acquisition-cost spreading and the *Wechselrecht* [R1]; the
 > *Kleinbetragsrenten-Abfindung* [R15]; and the consequences of a *Kündigung* [R14]. What is
-> **not** sourced is everything a carrier chooses: **no carrier-specific parameter was
-> established for any German Riester product, at any house, for any year** [S4] [S5] [S6] [S7]
-> [S8] [S16] — no *Rechnungszins*, no declared rate, no charge, no *Rentenfaktor*, no
-> *Stornoquote* — so each of those is a **[std]** standardization, and the DAV tables the
-> decrements stand in for (DAV 2008 T, DAV 2004 R) are the property of the Deutsche
-> Aktuarvereinigung, are not public, and are cited by name rather than shipped [REG-R47]
-> [REG-R48] [REG-R49]. Replace the charge, surplus and decrement tables with company data
-> before drawing any conclusion from the numbers.
+> **not** sourced is what a carrier chooses. Every statutory citation above was read in the
+> canonical XML in the 2026-08-30 provenance pass — this library was drafted with no retrieval
+> available at all and re-verified against the primary documents afterwards — but on the carrier
+> side that pass found wordings, not levels: **no declared rate, no *Rentenfaktor* level, no charge
+> scale representative of the market and no *Stornoquote* was established at any house for any
+> year** [S5] [S7] [S8] [S16]. Two *Rechnungszinsen* and one full numbered charge basis are now in
+> hand from single tariffs [S4] [S6], and the *Standardizations used* table below says at each row
+> where the composite differs from them; one tariff is not a market, so every carrier level here
+> stays a **[std]** standardization. The DAV tables the decrements stand in for (DAV 2008 T,
+> DAV 2004 R) are the property of the Deutsche Aktuarvereinigung, are not public, and are cited by
+> name rather than shipped [REG-R47] [REG-R48] [REG-R49]. Replace the charge, surplus and decrement
+> tables with company data before drawing any conclusion from the numbers.
 
 ## Run it
 
@@ -408,7 +412,9 @@ itself being `[unverified]` — its **absence** from every formula is the assert
 ## Standardizations used
 
 Everything in this list is **[std]**. The statutory half of this product is not a composite at
-all; the carrier half is entirely one, because nothing carrier-specific was established.
+all; the carrier half still is one, because the re-verification pass established carrier
+*structure* and almost no carrier *level* — the rows below say, one by one, which of them a
+retrieved document has since confirmed, contradicted or left untouched.
 
 | Standardization | Value | Rationale |
 |---|---|---|
@@ -501,5 +507,4 @@ python -m pytest lifelib/libraries/delib/tests/test_riester_rente_de.py -q
 [REG-R53]: #delib-reg-r53
 [REG-R6]: #delib-reg-r6
 [std]: #delib-std
-[unverified]: #delib-unverified
 <!-- END generated citation links -->

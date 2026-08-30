@@ -22,11 +22,15 @@ what is proprietary and therefore not shippable.
 ## Retrieval conditions — read this before using a single line below
 
 This is the most important section in the file and it is unlike anything the sister libraries `uslib`, `uklib`, `jplib` and
-`frlib` had to record. Two independent limits applied while `delib` was built, and both are stated here without softening.
+`frlib` had to record. It has two halves, and both belong in the record. **Half one** is how this library was *built*, on
+2026-08-29, under two limits that are stated here without softening. **Half two** is what the *re-verification* of 2026-08-30
+established once the first of those limits was lifted. Half one is not withdrawn: it is why the entries below read as they do,
+and why some of them still read as they do.
 
-**1. No document cited anywhere in this file was retrieved.** Direct HTTP egress from this build environment is blocked by an
-organisation network policy: `WebFetch` and `curl` are refused with **HTTP 403 at the egress gateway** for every host outside a
-short package-registry allowlist. The hosts that matter for German life insurance were all tried and all refused:
+**1. No document cited anywhere in this file had been retrieved when it was written.** Direct HTTP egress from the build
+environment was blocked by an organisation network policy: `WebFetch` and `curl` were refused with **HTTP 403 at the egress
+gateway** for every host outside a short package-registry allowlist. The hosts that matter for German life insurance were all
+tried and all refused:
 
 | Host | What it would have served | Result |
 |---|---|---|
@@ -41,9 +45,10 @@ short package-registry allowlist. The hosts that matter for German life insuranc
 | `de.wikipedia.org` | general-reference corroboration | refused, HTTP 403 |
 
 Not one statutory text, not one BaFin circular, not one DAV table, not one BGH judgment and not one statistical release was
-opened. **A delib citation is a pointer, not a certificate.** It names the instrument a claim should be checked against; it does
-not assert that anyone checked it. That is a weaker thing than an frlib citation, where Légifrance served in full, and the
-difference is stated rather than glossed.
+opened while the library was drafted. **A delib citation was then a pointer, not a certificate**: it named the instrument a
+claim should be checked against without asserting that anyone had checked it — a weaker thing than an frlib citation, where
+Légifrance served in full, and the difference was stated rather than glossed. **That is the statement the re-verification
+changed**, and paragraph 3 below says how far.
 
 **2. The only research channel was `WebSearch`, and its budget ran out mid-build.** The session carries a 200-call `WebSearch`
 budget. `WebSearch` returns titles, URLs and a search-engine summary of the matched pages — real evidence, which does return
@@ -61,10 +66,11 @@ summary*, never a retrieved document. The budget was consumed as follows and was
 
 **What follows, exactly, and it applies to every entry below.**
 
-- **Every entry records its retrieval status honestly.** The form is `Retrieved: no — direct HTTP egress blocked in the build
-  environment`, followed by `; corroborated by web search` with the query and publisher counts where a sweep recorded them, or
-  `; no search corroboration (session search budget exhausted)` where none exists. **No entry in this library records a
-  successful retrieval, and none ever will while this network policy stands.**
+- **Every entry records its retrieval status honestly.** As drafted the form was `Retrieved: no — direct HTTP egress blocked in
+  the build environment`, followed by `; corroborated by web search` with the query and publisher counts where a sweep recorded
+  them, or `; no search corroboration (session search budget exhausted)` where none exists. No entry recorded a successful
+  retrieval while that network policy stood. **Every entry now carries a `Retrieved:` line of its own written on 2026-08-30**,
+  and it is that line, not this paragraph, that says what was opened.
 - **No verbatim quotation below is attributed to an instrument.** Where a German sentence appears in quotation marks, the
   quotation is **of a search-result summary**, not of the statute, and the entry says so. What an instrument *provides* is
   written in the compiler's own words.
@@ -87,10 +93,11 @@ summary*, never a retrieved document. The budget was consumed as follows and was
   confirmed, the honest form downstream is a `**[std]**` parameter with a stated rationale and, where possible, an argued
   plausible range — **not** a `[REG-R#]` citation. A `[std]` number is honest; a wrong `[REG-R#]` number is not.
 
-**The uneven evidence base, stated once.** The five domains of this file are **not** equally supported, and the reference
-library must not present them as if they were:
+**The uneven evidence base as this file was drafted, stated once.** The five domains were **not** equally supported by the
+search phase, and the reference library must not present them as if they were. Each entry's own `Retrieved:` line says what the
+pass of 2026-08-30 then added to the domain:
 
-| Domain | Entries | Evidence behind it |
+| Domain | Entries | Evidence behind it at drafting |
 |---|---|---|
 | Prudential and supervisory | R1–R21 | ~35 German queries; statutory titles across 5–10 publishers; substance across 1–3 |
 | Contract law and conduct | R22–R37 | ~45 German queries; the strongest block in the library, with several summaries reproducing statutory wording |
@@ -98,8 +105,29 @@ library must not present them as if they were:
 | Biometric bases and market statistics | R47–R53 | **zero successful searches**; the market aggregates are second-hand from the prudential sweep, the tables are general knowledge |
 | Accounting and professional standards | R54–R56 | partial: HGB/RechVersV/BerVersV and IFRS 17 came from the prudential sweep; the DAV standards did not |
 
-The **tax layer and the biometric layer are the least-verified parts of `delib`**, and every product document that touches them
-says so in its own header.
+The **tax layer and the biometric layer were the least-verified parts of `delib` as drafted**, and every product document that
+touches them says so in its own header. The re-verification below reached them: R38–R46 and R47–R53 were opened on 2026-08-30
+like the rest, and the four entries in this file that are still `Retrieved: no` sit in those two blocks. What the pass could not
+mend is the *table* problem set out in the structural warning below, which is a licensing fact and not a network one.
+
+**3. The re-verification of 2026-08-30.** The network policy was lifted and the citations were checked against the primary
+documents. Library-wide, all fifteen German instruments delib cites were read as canonical XML from `gesetze-im-internet.de`
+with each law's amendment `Stand` recorded, 950 statutory section references were checked and 950 were correct, and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read; **501 of the library's 805 source
+entries, 62 %, now read `Retrieved: yes`.** In this file: **43 of the 56 entries read `Retrieved: yes`, four read `no` —
+[R38], [R48], [R49] and [R50] — and nine are partial**, opening one limb of a multi-document entry and naming what stopped the
+other. The four are of two kinds and both are stated at the entry: an act whose own *Regelungstext* was not located at any
+address ([R38]), and **the DAV tables, which are the association's property and are not published at all** ([R48], [R49],
+[R50]) — `aktuar.de` was browsed on 2026-08-30 and serves, but the tables are not on it. That is the one status no network
+policy can change.
+
+**What an entry now means.** A **`Retrieved: yes`** line means the document was opened and the passage the entry rests on was
+read, and the line records the law's `Stand` for a statute and the edition for a publication. **Where an entry quotes German in
+its `Read in the 2026-08-30 pass` bullet, that quotation is from the instrument**; where it quotes German elsewhere, the older
+caveat holds and it is a quotation of a search summary. A **`Retrieved: no`** line means the entry is still **a pointer rather
+than a certificate**, and is marked as one. **The re-verification changed things**: eleven of the twenty-two items in the gaps
+register were closed by it, several by a retrieved document contradicting what the entry had said, and the register names each.
+Treat a claim in this library as sound where its entry says `Retrieved: yes`, and as provisional where it does not.
 
 **One structural warning that governs the whole biometric section.** The five tables at the centre of German life pricing —
 **DAV 2008 T**, **DAV 2004 R**, **DAV 2004 R-Bestand**, **DAV 1997 I / RI / TI** and **DAV 2008 P** — are the property of the
@@ -375,9 +403,10 @@ inside R7 so that no delib author misapplies an AnlV quota, and it carries no id
 ## 1. Prudential — the European layer
 
 The Solvency II layer reaches German life business **through the VAG**, not directly. That is why delib cites VAG sections
-throughout and directive articles only where the European layer is itself the point, and it is why **no Solvency II article
-number in this library was read from the instrument**: `eur-lex.europa.eu` is refused at the egress gateway, and the article
-numbers below come from secondary summaries.
+throughout and directive articles only where the European layer is itself the point. **No Solvency II article number in this
+library was read from the instrument while it was drafted**: `eur-lex.europa.eu` was refused at the egress gateway, and the
+article numbers below came from secondary summaries. The pass of 2026-08-30 reached EUR-Lex, and each entry's own `Retrieved:`
+line says which of these articles was read there and which was not.
 
 ### R1. Richtlinie 2009/138/EG — Solvabilität II
 - Publisher: European Parliament and Council (EUR-Lex); German mirrors at `lexparency.de` and `kpmg-lexlinks.de`
@@ -3378,13 +3407,16 @@ This section is the most reliable part of the file and should be read before any
 could establish, where results disagreed, which figures are vintage-sensitive, and which material is proprietary and therefore
 not shippable.
 
-### A. The retrieval limit, restated because it governs everything above
+### A. The retrieval limit as the file was built, kept because it governs how everything above was written
 
-1. **No document cited in this file was retrieved.** Direct HTTP egress is blocked by an organisation network policy; `WebFetch`
-   and `curl` are refused with HTTP 403 at the egress gateway for every external host. `gesetze-im-internet.de`, `bafin.de`,
-   `aktuar.de`, `gdv.de`, `bundesfinanzministerium.de`, `destatis.de`, `dejure.org`, `eur-lex.europa.eu` and `de.wikipedia.org`
-   were all tried and all refused. Every entry rests on **search-result summaries**, and every German phrase in quotation marks
-   is a quotation **of a summary**, not of an instrument.
+Points 1 to 4 are the position on **2026-08-29** and are left in the words they were written in; point 5 records what the pass
+of 2026-08-30 did to them, and it is point 5 and the per-entry `Retrieved:` lines that describe the file as it now stands.
+
+1. **No document cited in this file had been retrieved.** Direct HTTP egress was blocked by an organisation network policy;
+   `WebFetch` and `curl` were refused with HTTP 403 at the egress gateway for every external host. `gesetze-im-internet.de`,
+   `bafin.de`, `aktuar.de`, `gdv.de`, `bundesfinanzministerium.de`, `destatis.de`, `dejure.org`, `eur-lex.europa.eu` and
+   `de.wikipedia.org` were all tried and all refused. Every entry rested on **search-result summaries**, and every German phrase
+   in quotation marks was a quotation **of a summary**, not of an instrument.
 2. **The session's 200-call `WebSearch` budget was exhausted mid-build.** The prudential sweep (~35 German queries) and the
    contract sweep (~45) ran while search was available and record, per fact, what a search corroborated. **The tax sweep and the
    biometric sweep each ran zero successful searches**, and the query issued while compiling this file was likewise refused.
@@ -3400,13 +3432,13 @@ not shippable.
    retrieval, not search.
 
 5. **Superseded on 2026-08-30, and left standing above as the record of how the file was built.** Points 1 to 4 describe the
-   build of 2026-08-29. In the pass of **2026-08-30** the network policy no longer applied: **forty of the fifty-six entries were
-   opened and read**, and each carries a `Retrieved:` line saying what was read, with the law's `Stand` for statutes and the
-   edition for publications. **Where an entry quotes German in the `Read in the 2026-08-30 pass` bullet, that quotation is from the
-   instrument**; where it quotes German elsewhere, the older caveat holds and it is a quotation of a summary. The
-  `Retrieval conditions` header at the head of this file is **deliberately not updated in this pass** — it is rewritten centrally
-   once the per-entry work across the library is complete — so **the per-entry `Retrieved:` lines are authoritative and the header
-   is not**.
+   build of 2026-08-29. In the pass of **2026-08-30** the network policy no longer applied and every entry was tried again: each
+   now carries a `Retrieved:` line saying what was read, with the law's `Stand` for statutes and the edition for publications.
+   **Forty-three of the fifty-six read `yes`, four read `no` ([R38], [R48], [R49], [R50]) and nine are partial.** **Where an entry
+   quotes German in the `Read in the 2026-08-30 pass` bullet, that quotation is from the instrument**; where it quotes German
+   elsewhere, the older caveat holds and it is a quotation of a summary. The `Retrieval conditions` header at the head of this
+   file now carries both halves — how the library was built and what the pass established — and **the per-entry `Retrieved:`
+   lines remain authoritative on any entry the two describe differently**.
 
 ### B. What no search could establish, in priority order
 

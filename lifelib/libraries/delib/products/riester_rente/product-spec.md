@@ -17,10 +17,15 @@ range. [unverified] marks a claim no search result corroborated.
 
 **How this composite is built, and why it is built the other way round from `frlib`'s.** In
 `frlib/products/temporaire_deces` the representative design was the carrier whose document published
-the most; here that is impossible and, unusually, largely unnecessary. **No carrier-specific
-parameter was established for any German Riester product, at any house, for any year** — not one
-AVB, tariff code, *Rechnungszins*, *Rentenfaktor*, charge or *Überschuss* declaration (gaps 12, 13,
-14). But the half of this product that makes it a *Riester* contract rather than a private annuity
+the most; here that was impossible when this page was drafted and is, unusually, largely
+unnecessary. **The carrier evidence is now thin rather than absent**: three wordings were retrieved
+and read — the classic GDV *Musterbedingungen* [S2] and two insurer AVB, CosmosDirekt's LA 1005 A
+[S4] and Debeka's B LV 94 [S6] — so one full numbered charge basis, two carrier *Rechnungszinsen*
+and one *Rentenfaktor* construction are now in hand, while **no *Überschuss* declaration and no
+market-wide level was established at any house for any year** (gaps 12, 13). One observation is not
+a market, so the composite's levels stay **[std]** and say where they differ from the one tariff in
+hand. But the
+half of this product that makes it a *Riester* contract rather than a private annuity
 is **not a composite at all**: the Zulagen, the eligibility rules, the *Mindesteigenbeitrag*, the
 guarantee, the earliest payout age, the 30 % lump-sum cap, the five-year cost spreading, the
 *Wechselrecht* and the taxation are **statute, identical for every provider and every chassis** [R1]
@@ -28,14 +33,20 @@ guarantee, the earliest payout age, the 30 % lump-sum cap, the five-year cost sp
 statutory parameter as fact and makes every carrier parameter [std]**, anchored so the worked
 example reproduces exactly.
 
-**Retrieval conditions, stated because a reader of this page alone must learn them here.** No
-document cited anywhere in this product's documentation was retrieved: direct HTTP egress is
-blocked by an organisation network policy, and the session's `WebSearch` budget was exhausted
-before this product's research began. Three facts carry corroboration inherited from a sibling
-`delib` research session and say so at the point of use [S3] [S4] [S5]; the two recent
-*Höchstrechnungszins* values [R22] and the 2026 reform [REG-R44] likewise. Everything else rests on
-general knowledge of German pension law, disciplined by tagging every specific number. A `delib`
-citation is a **pointer, not a certificate**. **Out of scope**, named so the boundary is explicit:
+**Retrieval conditions, stated because a reader of this page alone must learn them here.** This page
+was **drafted** with no research channel at all — direct HTTP egress was blocked by an organisation
+network policy and the session's `WebSearch` budget was exhausted before this product's research
+began — so its first draft rested on the authoring model's own knowledge of German pension and
+insurance law, disciplined by tagging every specific number, with a handful of facts inherited from a
+sibling `delib` research session [S3] [S4] [S5] [R22] [REG-R44]. It has since been **re-verified
+against the primary documents**: the statutes were read as canonical XML with each law's *Stand*
+recorded, and the GDV model wordings, two insurer AVB and four statutory
+*Produktinformationsblätter* were retrieved as PDFs and read. Of the forty-two source entries behind
+this product, **twenty-six now record `Retrieved: yes`** (62 %), two are part-retrieved and fourteen
+are not — those fourteen being documents that could not be located rather than documents behind a
+paywall, and `sources.md` names each. So a `delib` citation here is a **certificate where its entry
+says `Retrieved: yes`, and a pointer where it does not**: treat the statutory half of this page as
+read and the carrier levels as provisional. **Out of scope**, named so the boundary is explicit:
 *Wohn-Riester* in both limbs [R3] [R13] [R19] [S13]; the **Riester-Fondssparplan** and
 **Riester-Banksparplan** [S9]–[S12]; the **fondsgebundene** Riester wrapper [S1], whose chassis is
 `products/fondsgebundene_rentenversicherung/`; the **Basisrente** of Schicht 1,
@@ -132,7 +143,7 @@ recorded the reform status as its most important open question (gap 1); [REG-R44
 the cross-product sweep, and this document follows [REG-R44].
 
 **Scale.** Everything here is `[unverified]` order-of-magnitude recollection: **no market figure
-was established**, the official series was neither retrieved nor searched, and gap 2 qualifies all
+was established** — the official series was not located in either pass — and gap 2 qualifies all
 of it. Of the order of **15 to 16 million** certified contracts existed in the mid-2020s, having
 peaked near **16,5 million** in the late 2010s — insurance contracts roughly two thirds of the
 count, fund savings plans roughly a fifth, Wohn-Riester a little over a tenth, bank savings plans

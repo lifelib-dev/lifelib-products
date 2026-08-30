@@ -14,12 +14,18 @@
 > [S1] [R8] [R9]. The six months is the *Fiktion*'s period, not the *Prognosezeitraum*'s: the
 > latter is set by each carrier and the GDV model conditions leave it blank. **Every level is a standardization.** The DAV 1997 family and DAV 2008 T
 > are the property of the Deutsche Aktuarvereinigung, are not public and are **not
-> redistributed here** [R16] [R17] [REG-R50] [REG-R48]; no German insurer publishes a BU
-> charge structure, and a pure risk contract carries no *Effektivkosten* disclosure
-> [R12] [S14]; and **no German BU rate card of any kind was obtained**, so the
-> *Bruttobeitrag* is an output of a stated first-order basis rather than a table lookup.
-> Replace the decrement, charge and premium bases with company data before drawing any
-> conclusion from the numbers.
+> redistributed here** [R16] [R17] [REG-R50] [REG-R48]; no *Produktinformationsblatt* was
+> obtained, so no carrier's BU charge structure is on the record here — the disclosure
+> itself exists, VVG-InfoV § 2 requiring it in euro, and it is only the *Effektivkosten*
+> figure that a pure risk contract does not carry [R12] [S14]; and **no German BU rate card
+> of any kind was obtained**, so the *Bruttobeitrag* is an output of a stated first-order
+> basis rather than a table lookup. Replace the decrement, charge and premium bases with
+> company data before drawing any conclusion from the numbers. **On provenance:** delib was
+> drafted under a policy that blocked all egress, on the authoring model's own knowledge
+> disciplined by **[std]** and `[unverified]` tags, and its citations have **since been
+> re-verified against the primary documents**; `sources.md` records per entry what was
+> opened and what was not, 26 of this product's 43 entries carrying `Retrieved: yes` and 17
+> still `Retrieved: no`.
 
 ## Run it
 

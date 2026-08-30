@@ -4,36 +4,67 @@ Source ids [S#]/[R#] are carried verbatim from `_research/indexpolice.md` (the c
 truth for this product) and are **frozen — never renumber**. **No id is absent from this file, and
 the numbering has no gaps**: all sixteen primary sources **S1–S16** and all twenty-two
 product-level references **R1–R22** are cited by `product-spec.md`, and thirteen of them again by
-`technical-notes.md`. That is not evidential strength but its opposite. Under the retrieval
-conditions below **no document here was opened**, so nothing could be dropped for saying too
-little: every entry is cited for what it *would* settle and for the fact that it did not. Where a
+`technical-notes.md`. That completeness was not evidential strength when it was written: under the
+drafting conditions below **no document here had been opened**, so nothing could be dropped for
+saying too little, and every entry was cited for what it *would* settle and for the fact that it did
+not. **Most of them have since been opened**, and each entry's `Retrieved` line says which. Where a
 sibling library's `sources.md` records omitted ids, this one records absences of a different kind,
-in each entry's `Retrieved` line. Access date for all sources: **2026-08-29**. No sources were
-newly added at drafting. Cross-product [REG-R#] tags are listed in their own section at the end.
+in that same place. Sources were assembled on **2026-08-29** and retrieved on **2026-08-30**; each
+`Retrieved` line records the edition, page count or statutory `Stand` of what was read. No source id
+was added or renumbered at either date. Cross-product [REG-R#] tags are listed in their own section
+at the end.
 
-**Retrieval conditions — read before any entry below.** Two independent limits applied, and both
-bound this product hardest. **(1) Direct HTTP egress is blocked** by an organisation network
-policy: `WebFetch` and `curl` are refused with HTTP 403 at the egress gateway for every host
-outside a short package-registry allowlist. `gesetze-im-internet.de`, `bafin.de`, `gdv.de`,
-`aktuar.de`, `bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de`,
-`eur-lex.europa.eu` and `de.wikipedia.org` were all tried and all refused. **No document cited
-anywhere in this file was retrieved** — no *Bedingungswerk*, no *Produktinformationsblatt*, no
-*Basisinformationsblatt*, no statutory text, no BaFin *Merkblatt*, no index rulebook. **(2) The
-session's `WebSearch` budget — 200 calls, shared across the library — was exhausted before this
-product was researched**, during the regulatory and contract-law work and during delib products 1
-and 2. Every search attempted here returned the budget-exhausted message, so this product had **no
-research channel at all**.
+**Retrieval conditions — read before any entry below.** They have two halves, a drafting half and
+a verification half, and both belong in the record.
 
-What follows from that, stated plainly. **A delib citation is a pointer, not a certificate**: it
-names the instrument a claim should be checked against and does not assert that anyone checked it.
-Every entry below is a **known reference** — a document that exists and is the right kind of
-document — with `URL: not established` unless the canonical form is one this author is confident
-of, and with a `Retrieved` line that says `no`. **No entry asserts an edition, a document number, a
-page count or a publication date**, because none could be established and none is guessed.
-**Nothing anywhere in this product's documents is quoted**: every description of a statute or a
-clause is a paraphrase, and every paragraph number is `[unverified]`. Uncertain numbers became
-**[std]** parameters rather than citations — `indexpolice` carries a higher proportion of them than
-any other delib product, and `model.md`'s standardization table lists every one.
+**How this file was drafted.** Two independent limits applied, and both bound this product hardest.
+**(1) Direct HTTP egress was blocked** by an organisation default-deny network policy: `WebFetch`
+and `curl` were refused with HTTP 403 at the egress gateway for every host outside a short
+package-registry allowlist. `gesetze-im-internet.de`, `bafin.de`, `gdv.de`, `aktuar.de`,
+`bundesfinanzministerium.de`, `dejure.org`, `buzer.de`, `destatis.de`, `eur-lex.europa.eu` and
+`de.wikipedia.org` were all tried and all refused, so **not one document cited in this file had been
+opened** — no *Bedingungswerk*, no *Produktinformationsblatt*, no *Basisinformationsblatt*, no
+statutory text, no BaFin *Merkblatt*, no index rulebook. **(2) The session's `WebSearch` budget —
+200 calls, shared across the library — was exhausted before this product was researched**, during
+the regulatory and contract-law work and during delib products 1 and 2. Every search attempted here
+returned the budget-exhausted message, so the first draft had **no research channel at all**: it
+rested on the authoring model's own knowledge of German insurance law and actuarial practice,
+disciplined by **[std]** tags on constructed levels and `[unverified]` tags on uncorroborated
+claims. That is how this product's documents were written, and it is part of their provenance.
+
+**How it was verified.** That policy has since been lifted and the citations re-verified against the
+primary documents. Across delib, all fifteen German instruments the library cites were read as
+**canonical XML** from `gesetze-im-internet.de`, each law's amendment `Stand` recorded; **950
+statutory section references were checked and 950 were correct**; and insurer AVB,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read.
+**Across the library, 501 of 805 source entries — 62 % — now read `Retrieved: yes`**, and the rest
+name what stopped them: an HTTP 404 at the cited URL, a consent or JavaScript wall, a paywall, or a
+subscription login.
+
+**In this file, 32 of the 38 entries below read `Retrieved: yes`**, one — [R10], the PRIIPs
+delegated regulation — reads `partly`, its landing pages read but the Anhang II categorisation only
+at second hand, and **five read `no`**. The five are not one failure repeated. [S3] is a document
+class that **does not exist** for a *Schicht 3* Indexpolice, and the retrieved VVG-InfoV § 4 Abs. 3
+is what says so; [S5] is the annual parameter notice, which insurers send to policyholders and do
+not publish; [S13] (*Finanztest*) is behind the publisher's paywall; [S15] (Verivox, Check24) is
+bot-blocked; and [R21] (the rating houses) publishes behind its own tools and paid reports. Two of
+the five are therefore unpublishable rather than merely unreached, and each of the five is kept at
+its frozen number as the record of what could not be had.
+
+What follows from that, stated plainly. **A `Retrieved: yes` line means the document was opened and
+the passage the entry rests on was read** — with its edition, page count or statutory `Stand`
+recorded beside it, and where the entry quotes, the quotation is exact. **Any other `Retrieved` line
+means the entry is still a pointer, not a certificate**: it names the instrument a claim should be
+checked against and does not assert that anyone checked it. Every entry says which of the two it is,
+so read the line before relying on the claim. **The re-verification changed things.** It closed this
+file's central gap — two carrier AVB read in full [S2] [S7], with a third carrier's published
+parameters beside them [S8]; it corrected a death-benefit claim that had been attributed to the
+wrong carrier series [S9]; and it settled the base of the participation and the mid-year exit
+treatment, which stop being standardizations in `model.md`. It did not verify everything. The
+cap-level band, the entry-age bands, the minimum premiums and the house indices' volatility targets
+and index-level fees remain unestablished; uncertain numbers are still **[std]** parameters rather
+than citations, `indexpolice` carrying a higher proportion of them than any other delib product; and
+`model.md`'s standardization table lists every one, with what the retrieved evidence does to it.
 
 ---
 
@@ -412,7 +443,7 @@ Extraction details — which fact would be settled by which document, the mechan
 product documents are actually written from, the two constructed *Indexjahre*, the expected-value
 arithmetic behind the cap, and the twenty-four-item gaps-and-caveats register — live in
 `_research/indexpolice.md`. That file is the citation ground truth for the S# and R# numbering used
-here, and it states these same retrieval conditions at its head.
+here, and it states at its head the blocked-egress conditions this product was researched under.
 
 The caveats that most constrain what these product documents can claim, in order of how much they
 constrain the model:

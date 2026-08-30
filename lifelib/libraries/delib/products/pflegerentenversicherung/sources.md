@@ -20,24 +20,27 @@ grid is not among them**: § 127 SGB XI fixes no percentage schedule, only a ben
 not a statutory one — see [R8]. **R17** (BaFin supervisory material on
 life and LTC business) is absent because **nothing product-specific to *Pflegerentenversicherung*
 was located at BaFin**, so no BaFin statement of any kind is cited; the supervisor enters the
-product documents only through the cross-product entry [REG-R35]. Access date for
-all sources: **2026-08-29**. No sources were newly added at drafting. Cross-product [REG-R#] tags
+product documents only through the cross-product entry [REG-R35]. Access date at
+drafting: **2026-08-29**; the re-verification pass that set the `Retrieved` lines below read the
+documents on **2026-08-30**. No sources were newly added in either pass. Cross-product [REG-R#] tags
 are listed in their own section at the end.
 
-**Retrieval conditions, stated plainly.** Two independent limits applied while this library was
-built, and this product was reached after both had bitten. This is the one product in `delib`
-for which **neither** research channel was available.
+**Retrieval conditions, stated plainly.** They changed between the drafting of this product and the
+state of the file you are reading, and both halves belong in the record.
 
-1. **Direct HTTP egress is blocked by an organisation network policy.** `WebFetch` and `curl` are refused with HTTP 403 at the egress gateway for every host outside a short package-registry allowlist. Every host that would have supplied a document for this product was tried and refused: `gesetze-im-internet.de` (SGB XI, VVG, VAG, EStG, SGB XII, DeckRV, KVAV), `bafin.de`, `gdv.de`, `aktuar.de` (the DAV 2008 P derivation), `pkv.de` (the PKV-Verband statistics and the MB/EPV), `destatis.de` (the *Pflegestatistik*), `bundesgesundheitsministerium.de`, `vdek.com` (the *Eigenanteil* series) and `de.wikipedia.org`. **No document cited anywhere in this file was retrieved** — not one *Bedingungswerk*, not one *Produktinformationsblatt*, not one *Basisinformationsblatt*, not one statutory text, not one DAV paper and not one statistical release.
-2. **The session's `WebSearch` budget — 200 calls, shared across the whole `delib` build — was exhausted before this product was started.** Every query attempted for `pflegerentenversicherung` returned the budget-exhausted message. **This product therefore had no research channel at all**: the research file was written from the author's own knowledge of German insurance law and German actuarial practice, under the discipline the house brief imposes for exactly that case.
+1. **How this product was drafted.** `delib` was written under a default-deny network policy. Direct HTTP egress from the build environment was refused with HTTP 403 at the gateway for every host outside a short package-registry allowlist — `gesetze-im-internet.de` (SGB XI, VVG, VAG, EStG, SGB XII, DeckRV, KVAV), `bafin.de`, `gdv.de`, `aktuar.de`, `pkv.de`, `destatis.de`, `bundesgesundheitsministerium.de` and `vdek.com` among them — and the session's shared `WebSearch` budget was exhausted before this product was started. This was therefore the one product in `delib` reached with **neither** research channel open: its first draft rested on the authoring model's own knowledge of German insurance law and German actuarial practice, disciplined by the `[std]` and `[unverified]` tags the house brief imposes for exactly that case. That is how the file came to exist and it is not deleted here.
+2. **What has since been done.** The policy was lifted and the citations were re-verified against the primary documents on **2026-08-30**. Every German instrument cited below was read as canonical XML from `gesetze-im-internet.de`, with each law's amendment status (`Stand`) recorded on its entry; insurer *AVB*, *Verbraucherinformationen* and the *Produktinformationsblatt* class were pursued as PDFs and read where they are published. Across `delib` as a whole the pass ends with **501 of 805 source entries (62 %) marked `Retrieved: yes`**, the rest naming what stopped them — HTTP 404 at the cited URL, a consent or JavaScript wall, a paywall, or a subscription login.
+3. **Where this product ends up.** Of the **thirty-six** [S#] and [R#] entries below, **twenty-seven read `Retrieved: yes`** and **five read `Retrieved: no`**. The remaining four are partial and say so on their own lines: **S5** and **S10** (part of the document read, part behind an offer or a paywall), **R6** (statute yes, the *Begutachtungs-Richtlinien* no) and **R9** (the act itself not opened, its citation and effect read in two documents that recite them). Counting only the entries that resolve cleanly one way or the other, **27 of 32 — 84 % — are retrieved.**
+4. **The five still marked `no`, and why.** Not one of them is a network failure; every one is a property of the document. **S9** — no German *Pflegerenten* rate card is published at all, the carriers publishing conditions and withholding the tariff. **S13** — the comparison portals were deliberately not queried, a quotation being generated per enquiry and not a document that can be cited. **S8** — no *Standmitteilung* specimen is public, the statement being issued to a named policyholder; the § 155 VVG field list is read instead. **R10** — the PUEG was not opened as an act, its operative content being read where it now lives, in SGB XI as consolidated. **R16** — the DAV 2008 T derivation was located but not opened and nothing was located for DAV 2004 R, and this product uses neither table.
 
 What follows, and it governs every entry below:
 
-- **A delib citation is a pointer, not a certificate.** `[R2]` beside a statement about § 15 SGB XI means *this is the instrument the statement should be checked against*. It does **not** assert that anyone checked it. Every `Retrieved` line says `no`, and none says otherwise.
-- **Every entry is a *known reference*** — a document that exists and is the right kind of document for this product — with a publisher, a document type, `URL: not established` unless the canonical form is one this author is confident of, and both reasons on the `Retrieved` line. **No entry asserts an edition, a document number, a *Bundesgesetzblatt* citation, a page count or a publication date**, because none was checked.
-- **Nothing in this chain is quoted.** There is not one German sentence in quotation marks attributed to a statute or to a *Bedingungswerk* anywhere in this product's documents; statutory rules are described in English, in the author's own words, as *what the instrument provides*.
-- **`[unverified]` is used generously** in the product documents: every paragraph number, effective date, amount, percentage, threshold and market figure carries it unless it is a structural fact not in dispute.
-- **Uncertain levels became `[std]` parameters rather than citations.** Every biometric rate, every charge, every lapse rate, the *Leistungsstaffel* levels, the *Stornoabzug* and the premium itself are **[std]**, each listed with its rationale in `model.md`. A `[std]` number is honest about being a construction; a fabricated `[S9]` premium would not be, and there is none.
+- **A `Retrieved: yes` entry is a record; a `Retrieved: no` entry is still a pointer, not a certificate.** Where the line says `yes`, the document was opened and the passage the entry rests on was read on the stated date. Where it does not, `[R2]` beside a statement about § 15 SGB XI means *this is the instrument the statement should be checked against*, and asserts nothing more. **Read the `Retrieved` line before relying on the tag**: treat a claim as sound where its entry says `yes`, and as provisional where it does not.
+- **The re-verification changed things, and the changes are reported rather than quietly applied.** It corrected claims the drafted text got wrong — the `bahr` *Leistungsstaffel* lost its statutory citation, the *Stornoabzug* market range was out by a factor of five, the § 155 VVG field list is five items and not four, the grade-1 residential *Zuschuss* is 131 € and not 125 € — and each is written up in the provenance note and in the findings section at the end of this file.
+- **Retrieved entries now carry an edition, a `Stand`, a page count and a read date.** Entries still marked `no` carry `URL: not established` unless the canonical form is one this author is confident of, and they assert **no edition, no document number, no *Bundesgesetzblatt* citation and no publication date**, because none was checked.
+- **German is quoted only out of documents that were opened.** Where a statute or a *Bedingungswerk* is quoted in this product's documents the quotation comes from the retrieved text and the entry says which; elsewhere the rule is described in English, in the author's own words, as *what the instrument provides*.
+- **`[unverified]` is still used generously** in the product documents, and has been lifted only where a retrieved document carries the fact. Every remaining paragraph number, effective date, amount, percentage, threshold and market figure keeps the tag unless a `Retrieved: yes` entry supports it or it is a structural fact not in dispute.
+- **Uncertain levels remain `[std]` parameters rather than citations.** Every biometric rate, every charge, every lapse rate, the *Leistungsstaffel* levels, the *Stornoabzug* and the premium itself are **[std]**, each listed with its rationale in `model.md`. A `[std]` number is honest about being a construction; a fabricated `[S9]` premium would not be, and there is none.
 
 ---
 
@@ -412,12 +415,13 @@ cited by the *Pflegerentenversicherung* documents:
 Extraction details — which fact was recorded from which document class, the twenty-three sections
 of extracted mechanics, and the twenty-one-item gaps-and-caveats register — live in
 `_research/pflegerentenversicherung.md`, which is the citation ground truth for the S# and R#
-numbering used here and states these same retrieval conditions at its head.
+numbering used here and records at its head the blocked-egress conditions the research was done
+under, and the re-verification that followed.
 
 The caveats that most affect what these product documents can claim, in the order in which they
 constrain the model:
 
-1. **Most of this file has now been read.** Of the twenty-nine [S#] and [R#] entries, **twenty-two record a document opened and read** on 2026-08-30 — every statute as canonical XML with its `Stand`, one carrier's complete *Bedingungswerk* and product description, the PKV *Musterbedingungen* for both compulsory and top-up cover, the DAV's own derivation and *Pflegegrad* reports, Destatis, vdek, GDV, Assekurata and two consumer bodies. **Six are still not retrieved**, each for a stated and different reason: **S9** (no German *Pflegerenten* rate card is published at all), **S13** (a portal quotation is not a document), **S5** in part (the *Informationsblatt* is issued with an offer, so no euro cost figure is retrieved), **S8** in part (no *Standmitteilung* specimen is public — the statutory field list is), **S10** in part (the test scores are paywalled), **R16** (not needed, and not opened). The old note that this product had no research channel at all is superseded.
+1. **Most of this file has now been read.** Of the **thirty-six** [S#] and [R#] entries, **twenty-seven record a document opened and read** on 2026-08-30 — every statute as canonical XML with its `Stand`, one carrier's complete *Bedingungswerk* and product description, the PKV *Musterbedingungen* for both compulsory and top-up cover, the DAV's own derivation and *Pflegegrad* reports, Destatis, vdek, GDV, Assekurata and two consumer bodies. **Five are still `Retrieved: no`**, each for a stated and different reason, and none of them an environment limit: **S9** (no German *Pflegerenten* rate card is published at all), **S13** (a portal quotation is not a document, and was deliberately not run), **S8** (no *Standmitteilung* specimen is public — the § 155 VVG field list is), **R10** (the PUEG not opened as an act; its operative content read in SGB XI as consolidated), **R16** (neither DAV table is used here, and the derivation was located but not opened). **Four more are partial** and say so on their own lines: **S5** (the *Informationsblatt* is issued with an offer, so no euro cost figure is retrieved), **S10** (the test scores are paywalled), **R6** (the statute yes, the *Begutachtungs-Richtlinien* no) and **R9** (read at second hand, in two documents that recite it). The old note that this product had no research channel at all describes how it was drafted; as a description of where the file now stands it is superseded.
 2. **DAV 2008 P is public, and the *Pflegegrad* break has been worked by the profession** [R15] [REG-R51]. Both halves of the old caveat were wrong: the DAV publishes the derivation with the bases in its appendices, and a companion *Ergebnisbericht* re-derives first-order bases **for the *Pflegegrade***. The residual risk is real but narrower and better described: the DAV's own bases are derived from *Pflegestufen* experience by transition, not observed — *"fehlt naturgemäß jegliche statistische Information"* — and its structure is a ***Stufenmodell*** ("at least grade *g*"), not the five-state chain `Pflege_DE_S` implements. The BGH has since held that no inference runs from *Pflegegrad* 2 back to *Pflegestufe* I [REG-R36]. **Every transition rate in `care_table.csv`, `incidence_table.csv` and `mort_table.csv` is still a `[std]` proxy** with a stated shape and anchor — but it is now a proxy for something published, which a user could replace, and that is a different statement from the one this file used to make.
 3. **No rate card was found, and none appears to be published** [S9]. `Pflege_DE_S` still reproduces nothing external: its *Beitrag* is an **output** of a stated first-order basis, and the argued 50,00–100,00 € band remains derived arithmetic tagged `[std]` that **must never be cited as a market figure**. What the band now has is two external checks it did not have: the GDV's in-force average of about **61 € a month** across 242 000 contracts [R22], and Assekurata's *Pflegetagegeld* premiums for the same benefit scale [S14] against the consumer bodies' *"etwa zwei- bis dreimal so hoch"* multiplier for the annuity form [S11]. Both are consistent with the band; neither is a citation for it.
 4. **No charge level of any kind was established** [S5] [S7], and this gap survives the pass. Not one *Abschlusskostensatz*, administration rate, *Ratenzahlungszuschlag* or *Effektivkosten* value for any *Pflegerenten* tariff: the retrieved wording refers every one of them to an *Informationsblatt zu Versicherungsprodukten* that is issued with a quotation and is not published. Two things did change. The statutory **25 ‰ ceiling** and its base are read verbatim in DeckRV § 4 Abs. 1 and confirmed in the carrier's own § 17 as *"2,5 % der … zu zahlenden Beiträge"* [R13] [S4], so the one cited quantity in `expense_table.csv` is now genuinely cited. And the retrieved wording charges post-annuity administration as a **percentage of the annuity paid**, where delib charges a euro amount per payment — a structural difference worth knowing when the placeholder is replaced.
@@ -476,21 +480,20 @@ and the gap that opens between a pinned private definition and the moving social
 [R13]: #delib-pflegerentenversicherung-r13
 [R14]: #delib-pflegerentenversicherung-r14
 [R15]: #delib-pflegerentenversicherung-r15
+[R16]: #delib-pflegerentenversicherung-r16
 [R18]: #delib-pflegerentenversicherung-r18
 [R19]: #delib-pflegerentenversicherung-r19
+[R2]: #delib-pflegerentenversicherung-r2
 [R20]: #delib-pflegerentenversicherung-r20
 [R21]: #delib-pflegerentenversicherung-r21
 [R22]: #delib-pflegerentenversicherung-r22
 [R23]: #delib-pflegerentenversicherung-r23
-[R2]: #delib-pflegerentenversicherung-r2
-[R5]: #delib-pflegerentenversicherung-r5
-[R16]: #delib-pflegerentenversicherung-r16
 [R3]: #delib-pflegerentenversicherung-r3
 [R4]: #delib-pflegerentenversicherung-r4
+[R5]: #delib-pflegerentenversicherung-r5
 [R6]: #delib-pflegerentenversicherung-r6
 [R8]: #delib-pflegerentenversicherung-r8
 [R9]: #delib-pflegerentenversicherung-r9
-[REG-R8]: #delib-reg-r8
 [REG-R14]: #delib-reg-r14
 [REG-R15]: #delib-reg-r15
 [REG-R16]: #delib-reg-r16
@@ -507,5 +510,6 @@ and the gap that opens between a pinned private definition and the moving social
 [REG-R49]: #delib-reg-r49
 [REG-R51]: #delib-reg-r51
 [REG-R53]: #delib-reg-r53
+[REG-R8]: #delib-reg-r8
 [std]: #delib-std
 <!-- END generated citation links -->

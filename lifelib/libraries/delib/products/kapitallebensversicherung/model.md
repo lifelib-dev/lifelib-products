@@ -26,9 +26,12 @@ the product it implements is specified in
 > this library contain none of them [S3] [S4] [S5] [S7] [S9] [S18] [S11] [S12] [S13] — and
 > the DAV tables — **DAV 2008 T** here — are the property of the Deutsche
 > Aktuarvereinigung, are not public and are cited by name rather than redistributed [R14]
-> [REG-R47] [REG-R48]. **No document cited anywhere in this library was retrieved**: direct
-> HTTP egress is blocked and every citation rests on a search-result summary. Replace the
-> decrement, surplus and expense tables with company data before using any number here.
+> [REG-R47] [REG-R48]. delib was drafted with HTTP egress blocked and nothing
+> retrieved; the citations have since been re-verified, and forty-five of the forty-seven
+> entries in `sources.md` now record a document that was opened and read. **That verifies
+> the mechanics cited above and none of the levels below**, which no retrieved document
+> supplies. Replace the decrement, surplus and expense tables with company data before
+> using any number here.
 
 ## Run it
 

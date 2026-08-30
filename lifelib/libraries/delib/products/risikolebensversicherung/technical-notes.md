@@ -1,6 +1,6 @@
 # Technical Notes
 
-**Status:** Draft, 2026-08-29 (all sources dated 2026-08-29; **none retrieved**).
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`RLV_DE_A`**, **annual** grid — for the standardized composite German *Risikolebensversicherung*
@@ -13,11 +13,17 @@ corroborated. Parameter values are identical to those in `product-spec.md`. Cell
 model-point columns and CSV headers are English `lower_snake_case`; German terms of art keep their
 German form in prose.
 
-**Retrieval conditions.** **No document cited anywhere in these notes was retrieved**: direct HTTP
-egress from the build environment is blocked, and the session's `WebSearch` budget was exhausted
-before this product's research began. The only evidence in the file is **inherited corroboration**
-from sibling delib research files, named where it applies. **A delib citation is a pointer, not a
-certificate**, and **every price, charge, margin and behavioural level below is [std]**.
+**Retrieval conditions.** These notes were **drafted** with direct HTTP egress from the build
+environment blocked and the session's `WebSearch` budget already exhausted, so nothing cited in them
+had been opened and the text rested on the authoring model's own knowledge of German insurance law
+and practice, with **inherited corroboration** from sibling delib research files as its only
+second-hand evidence. **The citations have since been re-verified against the primary documents
+(2026-08-30): 22 of the 40 entries in `sources.md` now read `Retrieved: yes` and 18 still read
+`no`** — the statutes as canonical XML carrying each law's `Stand`, three AVB and two premium
+specimens as PDFs, against a carrier sweep and a secondary literature that stayed shut. Where an
+entry says `no`, **a delib citation is still a pointer, not a certificate**; and **every price,
+charge, margin and behavioural level below is still [std]**, one direct writer's published model
+case [S2] being a check on them and not an input.
 
 **One vocabulary decision, made once and used throughout.** Three unrelated things are called
 "netto" in this product, and confusing them is the classic implementation error [mechanic 4]:
@@ -270,8 +276,11 @@ Thin, but decisive — on this product the discretion **is** the customer's bill
 ### (c) Behavioural / experience assumptions (the modeller's view)
 
 **Every input in this class is [std].** No German insurer publishes a mortality table, a
-*Sicherheitszuschlag*, a best-estimate factor, an expense loading, a commission scale or a lapse rate
-for this product, and none was retrieved [S3]–[S13] [R12] [R17].
+*Sicherheitszuschlag*, a best-estimate factor, a commission scale or a lapse rate for this product,
+and none was retrieved [S3]–[S13] [R12]. Expense loadings are the one exception, and only per
+contract: § 2 VVG-InfoV makes the insurer give the applicant its acquisition and administration
+costs in euro [R17], and one carrier's published specimen prints them [S2] — a model case, not a
+rate card, and not adopted here.
 
 **Mortality.** The regulatory basis is **DAV 2008 T** with its *R* and *NR* variants [R12]
 [REG-R48], which is **cited by name and never shipped** — the tables are the property of the

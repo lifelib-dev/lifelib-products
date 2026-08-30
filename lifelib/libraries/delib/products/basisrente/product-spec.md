@@ -2,16 +2,28 @@
 
 **Status:** Draft, 2026-08-29 (access date for every citation: 2026-08-29).
 
-**Retrieval conditions — read this first.** **No document cited anywhere in this specification was
-retrieved.** Direct HTTP egress from the build environment is blocked by an organisation network
-policy, and the session's `WebSearch` budget was exhausted before this product was reached, so this
-document rests on a research file (`_research/basisrente.md`) written with **no research channel of
-any kind**. A delib citation is a **pointer, not a certificate**: an [R1] tag names the instrument a
-claim must be checked against; it does not assert that anyone read it. Nothing below is quoted from a
-German statutory or contractual text. Every specific paragraph number, date, amount, percentage and
-market figure carries [unverified] unless a sibling delib research file corroborated it by search
-while search was still available. Where a mechanic is certain and its level is not, this document
-ships a **[std]** parameter with its rationale rather than a fabricated source tag.
+**Retrieval conditions — read this first.** This specification was **drafted with no document
+retrieval of any kind**: direct HTTP egress from the build environment was blocked by an
+organisation network policy, and the session's `WebSearch` budget was exhausted before this product
+was reached, so the first draft rested on a research file (`_research/basisrente.md`) written with
+**no research channel** — the authoring model's own knowledge of German insurance law and practice,
+disciplined by [std] and [unverified] tags. **That policy has since been lifted and the citations
+were re-verified against the primary documents.** On 2026-08-30 the statutes and regulations this
+product turns on were read as canonical XML at `gesetze-im-internet.de`, each with its amendment
+status (*Stand*) recorded, and carrier *Allgemeine Versicherungsbedingungen*,
+*Verbraucherinformationen* and *Produktinformationsblätter* were retrieved as PDFs and read. Of the
+forty entries in `sources.md`, **twenty now answer `Retrieved: yes`**, seven record
+part of what they cite as read and the rest as not, and **thirteen are still `Retrieved: no`** —
+amending acts with no consolidated page of their own, a mortality table that is not published, two
+carrier sites that answered with a script-injected index or an HTTP 403, and market statistics and
+ratings that were not obtained. **The re-verification changed things**: the conversion basis of the
+guaranteed *Rentenfaktor*, two carriers' product names and the *Kleinbetragsrenten-Abfindung*
+threshold are corrections to what the drafted text said, and they are marked where they fall. **Read
+a claim as sound where its entry says `Retrieved: yes` and as provisional where it does not** — there
+a delib citation is still a **pointer, not a certificate**: an [R1] tag names the instrument the
+claim must be checked against and does not assert that anyone read it, and the figure keeps its
+[unverified] tag. Where a mechanic is certain and its level is not, this document ships a **[std]**
+parameter with its rationale rather than a fabricated source tag.
 
 **Scope note.** This is a *standardized composite specification* assembled for reference liability
 cash-flow modelling of a German **Basisrente** (*Rürup-Rente*) — the *Basisrentenvertrag* of

@@ -1,6 +1,6 @@
 # Technical Notes
 
-**Status:** Draft, 2026-08-29 (all cited sources accessed 2026-08-29).
+**Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`KLV_DE_A`**, **annual** grid — for the standardized composite German *kapitalbildende
@@ -9,11 +9,14 @@ product.** [S#] / [R#] tags refer to the source list in `sources.md` (numbering 
 `_research/kapitallebensversicherung.md`; frozen); [REG-R#] tags refer to the cross-product library
 `references/regulatory-and-actuarial-references.md` (its own frozen R1–R56 numbering). **[std]** marks
 a standardization introduced for the reference implementation; [unverified] marks a claim no search
-result corroborated. Parameter values are identical to those in `product-spec.md`. **No document cited
-anywhere in this library was retrieved** — direct HTTP egress is blocked and everything rests on
-`WebSearch` result summaries — so a delib citation names the instrument a claim should be checked
-against and does not assert that anyone checked it. Cells names, model-point columns and CSV headers
-are English `lower_snake_case`; German terms of art keep their German form in prose.
+result corroborated. Parameter values are identical to those in `product-spec.md`. delib was
+drafted with all HTTP egress blocked and no document retrieved; the citations have since been
+re-verified against the primary documents, and **forty-five of the forty-seven entries in
+`sources.md` now record a document that was opened and read**, the two exceptions being [S8] (404)
+and [R24] (429). Treat a claim as sound where its entry says `Retrieved: yes`, and as a pointer
+rather than a certificate — an instrument named, not one anybody checked — where it does not.
+Cells names, model-point columns and CSV headers are English `lower_snake_case`; German terms of art
+keep their German form in prose.
 
 ---
 

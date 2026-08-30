@@ -5,12 +5,17 @@
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
 **`Riester_DE_A`**, **annual** grid — for the standardized composite German **klassische
 Riester-Rentenversicherung** defined in `product-spec.md` (same directory). This is not any single
-insurer's product; **no carrier-specific parameter was established for any German Riester product,
-at any house, for any year**, so every carrier parameter below is **[std]** and every statutory one
-is cited. [S#]/[R#] tags refer to the source list in `sources.md` (numbering carried from
-`_research/riester_rente.md`; frozen); [REG-R#] tags refer to the cross-product reference library
-`references/regulatory-and-actuarial-references.md` (its own frozen R1–R56 numbering). [unverified]
-marks a claim no search result corroborated. Parameter values are identical to those in
+insurer's product; **no carrier level was established at any house for any year** — three retrieved
+wordings now fix the *shapes* [S2] [S4] [S6], but one tariff is not a market — so every carrier
+parameter below is **[std]** and every statutory one is cited. **These notes were drafted with no
+retrieval and no search available and have since been re-verified against the primary documents**:
+every statutory citation below was checked against the canonical XML, and twenty-six of the
+forty-two entries in `sources.md` now record `Retrieved: yes`. [S#]/[R#] tags refer to that source
+list (numbering carried from `_research/riester_rente.md`; frozen); [REG-R#] tags refer to the
+cross-product reference library `references/regulatory-and-actuarial-references.md` (its own frozen
+R1–R56 numbering). [unverified] now marks a claim this re-verification did **not** reach — a carrier
+level, a market figure, a behavioural rate, a historic vintage. Parameter values are identical to
+those in
 `product-spec.md`. Cells names, model-point columns and CSV headers are English `lower_snake_case`;
 German terms of art keep their German form in prose.
 
@@ -1167,13 +1172,18 @@ grid. The valuation layers consume them and are **cited, never reproduced**.
   sensitivity, not a distribution.
 - **Solvabilität II.** Best estimate plus risk margin under the Directive as transposed by
   §§ 74–110 VAG [REG-R5] [REG-R6], with EIOPA publishing the curves. `BEL = Σ_t v(t) ·
-  liability_cf(t)` over the recursion above. **No risk-free curve value, volatility adjustment,
-  cost-of-capital rate or standard-formula shock in this library was read from a retrieved
-  instrument**, so every such figure would be **[std]**.
+  liability_cf(t)` over the recursion above. The **6 % cost-of-capital rate** is now read from the
+  instrument — Art. 39 of the Delegierte Verordnung (EU) 2015/35, one sentence, retrieved and quoted
+  in full in the cross-product reference library — but **no risk-free curve value, volatility
+  adjustment or
+  standard-formula shock in this library was read from a retrieved instrument**, so every such figure
+  would still be **[std]**.
 - **Contract boundary.** A Riester contract's future contributions are not unilaterally variable by
   the insurer, and the *Wechselrecht* is the policyholder's [R1] — but whether the Solvency II
-  boundary extends to the whole future contribution stream **could not be determined** here, because
-  the Delegated Regulation's boundary rules were not retrievable. The model's posture is to project
+  boundary extends to the whole future contribution stream **is still not determined** here. The
+  Delegated Regulation itself was retrieved in the re-verification pass, but only its risk-margin
+  articles were read; its contract-boundary articles were not, and no delib document states a figure
+  from them. The model's posture is to project
   the full stream and publish it; a boundary-truncated view is obtained by truncating `result_cf()`.
 - **The surplus regulations.** The MindZV puts an arithmetic floor under the transfer to the
   *Rückstellung für Beitragsrückerstattung* [REG-R18] [REG-R19] and § 153 VVG gives the individual
