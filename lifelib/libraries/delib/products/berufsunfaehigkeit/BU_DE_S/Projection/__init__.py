@@ -120,7 +120,7 @@ L_p(t)                     pols_prem(t)                    Premium-paying count
 (none)                     pols_reactivation(t)            Run-off completions to aktiv
 (none)                     pols_death(t)                   Deaths out of all three ledgers
 (none)                     pols_lapse(t)                   Lapses, from pols_actv only
-(the shadow ledgers)       *_first                         The first-order pricing run
+(the shadow ledgers)       \*_first                        The first-order pricing run
 premiums(t)                premiums(t)                     Gross Bruttobeitrag income
 surplus_credit(t)          surplus_credit(t)               Beitragsverrechnung returned
 claims_bu_rente etc.       claims(t, kind)                 Benefit outgo by kind
@@ -713,7 +713,7 @@ def inc_rate_at_age(x):
     """i(x): the table *Invalidisierungswahrscheinlichkeit* at attained age x, per year.
 
     A lookup into *inception_table.csv*, clamped to the table's range 18-66.  **[std]**
-    and **gross of declinature**: :func:`accept_factor` sits on top of it, and a
+    and **gross of declinature**: ``accept_factor`` sits on top of it, and a
     replacement table already net of declinature must be used with that factor at 1.00 or
     the *Anerkennungsquote* is counted twice.
     """
@@ -1072,7 +1072,7 @@ def prem_gross_level_pp():
     """P: the **level annual** *Bruttobeitrag* per policy, in euros.
 
     ``risk_factor()`` times either the model point's ``gross_prem_ann`` override or, where
-    that is zero, the premium the equivalence produces:
+    that is zero, the premium the equivalence produces::
 
         P = (pv_rente_first() + pv_wiedereingl_first() + pv_claim_cost_first()
              + pv_admin_first())

@@ -201,9 +201,11 @@ there.
 
 .. rubric:: What surrender pays, and what it does not
 
-    surr_value_pp(t) = res_guar_pp(t) * (1 - storno_rate(t))
+A surrender at duration ``t`` pays::
+
+    surr_value_pp(t) = res_guar_pp(t) x (1 - storno_rate(t))
                        + av_pp_at(t, "AFT_CREDIT")
-                       + term_surr_share * term_bonus_pp(t + 1)
+                       + term_surr_share x term_bonus_pp(t + 1)
 
 Three rules ride on that line. The ***Stornoabzug* bites on the guaranteed value only** — the
 published deduction is a percentage of the *Deckungskapital* — so the accumulated

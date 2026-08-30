@@ -210,12 +210,12 @@ three move :func:`net_cf` only through the smaller annuity the smaller fund buys
 .. rubric:: The conversion at Rentenbeginn
 
 At the start of projection year ``T = ret_t()`` the whole fund carried out of year
-``T - 1``, grossed up by the *Schlussüberschussanteil*, converts:
+``T - 1``, grossed up by the *Schlussüberschussanteil*, converts::
 
-    ``fund_at_conv()  = av_at(T, "BEF_PREM") x (1 + terminal_bonus_rate)``
+    fund_at_conv()  = av_at(T, "BEF_PREM") x (1 + terminal_bonus_rate)
 
-    ``ann_pp(T)       = fund_at_conv() / pols_if(T) / rf_unit
-                        x rentenfaktor_applied() x ann_freq``
+    ann_pp(T)       = fund_at_conv() / pols_if(T) / rf_unit
+                      x rentenfaktor_applied() x ann_freq
 
 There is no lump sum, no election and no notice period — this is the one date in the
 contract's life at which anything happens, and nothing happens at it that the
@@ -1427,14 +1427,14 @@ def check_pols_roll_fwd_resid(t):
     """The policy-ledger residual in projection year t; zero everywhere.
 
     A **non-negative** residual, because it closes two identities at once and a signed sum
-    could let them cancel:
+    could let them cancel.  The first term says the two ledgers exhaust the in-force
+    count; the second and third say the in-force count decrements on **mortality alone**,
+    the last of them saying in code that the *Beitragsfreistellung* leaves the total
+    untouched::
 
-        ``|pols_paying(t) + pols_paidup(t) - pols_if(t)|``
-            the two ledgers exhaust the in-force count, and
-        ``|pols_if(t + 1) - pols_if_at(t, "AFT_FREEZE")|`` and
-        ``|pols_if_at(t, "AFT_FREEZE") - pols_if(t) x (1 - mort_rate(t))|``
-            the in-force count decrements on **mortality alone**, the second term saying
-            in code that the *Beitragsfreistellung* leaves the total untouched.
+        |pols_paying(t) + pols_paidup(t) - pols_if(t)|
+        |pols_if(t + 1) - pols_if_at(t, "AFT_FREEZE")|
+        |pols_if_at(t, "AFT_FREEZE") - pols_if(t) x (1 - mort_rate(t))|
 
     The second is the one to stare at: ``bf_rate`` does not appear in it.  A
     *Beitragsfreistellung* is a transfer between the ledgers and not an exit, so a model

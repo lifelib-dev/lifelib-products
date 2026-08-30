@@ -1757,7 +1757,7 @@ def check_net_cf_resid(t):
 
     **delib's first ruling.**  ``net_cf(t)`` must be reconstructible from the parts
     :func:`result_cf` publishes, so that the headline number of a cash flow model is not
-    the one quantity nothing checks.  The identity is
+    the one quantity nothing checks.  The identity is::
 
         net_cf = charge_acq + charge_admin_prem + charge_admin_fund
                  + charge_policy_fee + charge_risk + stornoabzug
