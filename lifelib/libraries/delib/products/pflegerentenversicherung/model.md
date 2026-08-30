@@ -164,7 +164,7 @@ it reports only the aggregate escalation, which is all the cash flow needs. The 
 on `esc_pg` and **never** on `pols_pg` — using the head count would silently drop the escalation on
 every model point that carries one, and no total in the frame would look wrong. With
 `leistungsdynamik = 0` the two ledgers are identical at every `t` and `g`, which
-`check_esc_ledger()` asserts as an exact equality on the base run and as a domination
+`check_esc_ledger()` asserts as an equality on the base run and as a domination
 (`esc_pg ≥ pols_pg`) wherever the dynamic is positive.
 
 The dynamic costs more than a four-year spell suggests. On model point 8, `d = 2 %` raises the
@@ -284,7 +284,7 @@ here instead of silently changing the answer. The largest residual in the anchor
 | `check_pols_roll_fwd` | `pols_if(t+1) = pols_if(t) − pols_death(t) − pols_lapse(t)`: lives leave the in-force population **only** by death or surrender, and every *Pflegegrad* transition is internal to it |
 | `check_states` | `pols_act(t) + Σ_{g,z} pols_karenz(t,g,z) + Σ_g pols_pg(t,g) + pols_dead_cum(t) + pols_lapse_cum(t) = pols_if_init()`: the three live ledgers and the two absorbing counts partition the initial cohort at every `t` |
 | `check_waiver` | `pols_prem(t) + pols_waived(t) = pols_in_term(t)`: the *Beitragsbefreiung* splits the in-term population and neither loses nor creates a policy |
-| `check_esc_ledger` | `esc_pg(t,g) ≥ pols_pg(t,g)` for every `t, g`, with **exact equality** when `leistungsdynamik = 0` |
+| `check_esc_ledger` | `esc_pg(t,g) ≥ pols_pg(t,g)` for every `t, g`, with **equality** when `leistungsdynamik = 0` |
 | `check_prem_equiv` | `Σ_t check_prem_equiv_resid(t) ≈ 0`: the gross premium closes the first-order equivalence, re-assembled from the tariff ledgers rather than from the closed form |
 
 `check_pols_roll_fwd` and `check_states` are not one statement made twice: the first telescopes the

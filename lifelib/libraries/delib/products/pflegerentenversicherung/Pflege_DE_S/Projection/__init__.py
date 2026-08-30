@@ -628,8 +628,11 @@ def mort_rate_mth(t):
     """The monthly active-life death rate, ``1 - (1 - mort_rate(t))**(1/12)``.
 
     Published because it is the quantity a reader checks the monthly step against, and
-    because the error it guards is dividing an annual rate by twelve: twelve times this
-    rate is strictly **below** ``mort_rate(t)`` wherever that is positive.  The projection
+    because the error it guards is dividing an annual rate by twelve: ``mort_rate(t)/12``
+    is strictly **below** this rate wherever the annual rate is positive, so dividing by
+    twelve understates the monthly decrement.  Twelve of these rates *compounded* return
+    the annual rate exactly, while twelve of them *added* overshoot it — the direction is
+    the opposite of the intuition, which is why the pair is published.  The projection
     itself does not use it — it works in forces, through :func:`mort_force` — but the two
     agree by construction, ``1 - exp(-mort_force(t)/12)`` being this same number.
     """

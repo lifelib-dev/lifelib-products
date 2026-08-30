@@ -24,22 +24,19 @@ notes by eye.  Tolerances follow the precision the notes display: money to the c
 ``pols_*`` ledgers to six decimals, and the totals at **full precision** -- 13 200,11 EUR
 of *Pflegerente* that way against 13 200,02 EUR if the 780 rounded cells are added, and
 -1 527,65 EUR of ``net_cf`` against -1 527,51 EUR.  The notes print both, and both are
-asserted, together with the reason the gap does not cancel: 107 of the 780
-``claims_annuity`` cells are positive amounts below half a cent and every one of them
-rounds down.
+asserted, with the reason the gap does not cancel: 107 of the 780 ``claims_annuity`` cells
+are positive amounts below half a cent and every one of them rounds down.
 
-What this module asserts, beyond the fourteen printed rows and the totals: the
-equivalence premium reached two independent ways from ``A``, ``U``, ``G`` and ``C``;
-month 0 rebuilt term by term with a calculator; the first month's decrements rebuilt from
-the two annual rates through the forces, in the model's declared processing order with
-lapse acting **last**; the first *Pflegerente* payment rebuilt grade by grade; the
-closure identity at the limiting age; the sign pattern and where ``net_cf`` crosses zero;
-the male twin's ten printed rows, its totals and the unisex cross-subsidy between them;
-the four-cell variant table (anchor, male twin, ``bahr`` grid, *Leistungsdynamik*); the
-six published ``check_*`` identities with their per-``t`` residuals, ``check_net_cf`` --
-delib's first ruling -- among them; and **one test per numbered modeling pitfall** in the
-technical notes, seventeen of them, from applying an average benefit percentage to an
-average survival curve to using the *Pflegegrad* stock distribution as the entry mix.
+What this module asserts, beyond the fourteen printed rows and the totals: the equivalence
+premium reached two independent ways from ``A``, ``U``, ``G`` and ``C``; month 0 rebuilt
+term by term with a calculator; the first month's decrements rebuilt from the two annual
+rates through the forces, in the declared processing order with lapse acting **last**; the
+first *Pflegerente* payment rebuilt grade by grade; the closure identity at the limiting
+age; the sign pattern and where ``net_cf`` crosses zero; the male twin's ten printed rows
+and the unisex cross-subsidy; the four-cell variant table (anchor, male twin, ``bahr``
+grid, *Leistungsdynamik*); the six published ``check_*`` identities with their per-``t``
+residuals, ``check_net_cf`` -- delib's first ruling -- among them; and **one test per
+numbered modeling pitfall** in the technical notes, seventeen of them.
 
 The whole-model-point-table sweep is deliberately **not** here: the conventions suite owns
 the library's single sweep, because a model point's first evaluation is by far the most
