@@ -510,15 +510,26 @@ one model point in the shipped table is configured so that the `max()` actually 
 **Reduction of a guaranteed factor.** Insurers could previously change guaranteed
 *Rentenfaktoren* under a *Treuhänderklausel*, with an independent external *Treuhänder*'s
 approval, on two triggers: an unexpectedly strong increase in life expectancy, and a sustainable
-reduction in capital-market returns. **The clause is now used only in older contracts; today the
-guaranteed factor can be changed only under § 163 VVG** [R4] [R22] [REG-R27]. The Landgericht
-Köln held that the low-interest phase is not a sufficient ground, being entrepreneurial risk that
-cannot be passed to policyholders — **the case reference, date and parties could not be
-established and no docket is given here**. Trade press of 4 February 2021 reports the market
-leader's position that customers could not successfully object to an adjustment, placing a live
-commercial dispute at the largest German life insurer inside the window in which the current
-in-force unit-linked book was written [R22]. The composite treats the guaranteed factor as
-**fixed for the life of the contract** and records § 163 VVG as a model risk.
+reduction in capital-market returns. **That route is now closed wherever the clause is drafted
+asymmetrically.** In **BGH, Urteil vom 10. Dezember 2025 — IV ZR 34/25** a clause in the AVB of a
+*fondsgebundene Rentenversicherung* letting the insurer reduce the *Rentenfaktor* named in the
+*Versicherungsschein* — the monthly annuity per 10 000 € of *Vertragsguthaben* — **without a
+corresponding duty to restore it if circumstances improve** was held **void** under § 308 Nr. 4
+BGB and § 307 Abs. 1 Satz 1 BGB, on principles reported to reach all comparable clauses
+[REG-R36]. The rule is therefore not that the guaranteed factor is "changeable only under
+§ 163 VVG": it is that **a *garantierter Rentenfaktor* is a hard guarantee unless the AVB confers
+a *symmetric* adjustment right**, with § 163 VVG the residual statutory route, on its own much
+narrower conditions, where the tariff's calculation bases themselves fail [R4] [R22] [REG-R27].
+Below that line the Landgericht Köln had already held that the low-interest phase is not a
+sufficient ground, being entrepreneurial risk that cannot be passed to policyholders — **that
+decision's reference, date and parties could not be established and no docket is given for it**.
+Trade press of 4 February 2021 reports the market leader's position that customers could not
+successfully object to an adjustment, placing a live commercial dispute at the largest German
+life insurer inside the window in which the current in-force unit-linked book was written [R22].
+The composite treats the guaranteed factor as **fixed for the life of the contract**, and after
+IV ZR 34/25 that is **the legally correct default rather than a modelling simplification**
+[REG-R36]. What remains a model risk is the narrow residue: a § 163 VVG adjustment, and an AVB
+that does confer a symmetric right.
 
 ### *Rückkaufswert* — the *Zeitwert* branch, and what it removes
 

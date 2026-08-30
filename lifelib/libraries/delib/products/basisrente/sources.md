@@ -352,11 +352,11 @@ and every paragraph number, date and figure that rests on them is [unverified].
 
 (delib-basisrente-r23)=
 
-### R23 — EStG § 93 Abs. 3 — the Kleinbetragsrente, and its absence from Schicht 1
+### R23 — EStG § 93 Abs. 3 — the Kleinbetragsrente, and its reach into Schicht 1
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provision
 - URL: `https://www.gesetze-im-internet.de/estg/__93.html` — canonical form, [unverified]
 - Retrieved: no — egress blocked; no search corroboration (budget exhausted)
-- Used for: **its non-application.** Riester permits commutation of a *Kleinbetragsrente* at the start of the payout phase, at a threshold expressed as 1 % of the monthly *Bezugsgröße* of § 18 SGB IV [unverified]; **Schicht 1 has no counterpart and admits no de-minimis whatever** [R1]. The modelling consequence is direct and is asserted in the test module: a model point representing a trivially small contract — model point 10, at 300,00 € a year — projects a small annuity and never a lump sum
+- Used for: **the de-minimis exception to the *Kapitalisierungsverbot*.** Riester permits commutation of a *Kleinbetragsrente* at the start of the payout phase, at a threshold expressed as a percentage of the monthly *Bezugsgröße* of § 18 SGB IV — 1 % against a competing 1,5 %, both [unverified]. **Schicht 1 is not excluded from it**: § 10 Abs. 1 Nr. 2 Satz 3 EStG makes an *Abfindung* on the § 93 Abs. 3 Satz 2 and 3 mechanics harmless to a *Basisrentenvertrag*'s Schicht-1 status [R1] [REG-R42] [unverified]. **An earlier drafting of this product recorded the opposite — that Schicht 1 admitted no de-minimis exception whatever — and that reading is withdrawn**; [REG-R42] had the correct position throughout. The modelling consequence is now a **[std]** decision rather than a deduction from the statute: `Basis_DE_A` does not implement the commutation branch, because the threshold level is contested, no carrier's AVB was reached to establish whether an *Abfindung* is offered at all (gap 19), and `Riester_DE_A` already carries the mechanic. What the test module asserts is that decision — model point 10, at 300,00 € a year, projects a small annuity and no lump sum — and the unimplemented branch is a named model risk
 
 (delib-basisrente-r24)=
 
@@ -411,6 +411,7 @@ the Basisrente documents:
 - **REG-R39** — **EStG § 10 Abs. 1 Nr. 2 Buchst. b and Abs. 3**: the cross-product entry for the five prohibitions and the ceiling, and the **best-corroborated fact in the tax section** because [REG-R40] reaches the same product shape from a different statute in a different research sweep. It is the entry that says in terms that a Basisrente model offering only a level regular premium models the wrong product.
 - **REG-R40** — ZPO §§ 850b and 851c: the *Pfändungsschutz* conditions, the **340 000 € aggregate ceiling** [unverified], and the record that the annual savings bands are **contradicted across summaries** — which is why no delib document prints one.
 - **REG-R41** — EStG § 22 Nr. 1 Satz 3 Buchst. a and § 55 EStDV: the *Besteuerungsanteil*, the *Rentenfreibetrag* and the *Ertragsanteil* comparator, beside [R4].
+- **REG-R42** — EStG § 10a and Abschnitt XI (§§ 79–99): cited here for one thing only — its record that the *Kleinbetragsrenten-Abfindung* of § 93 Abs. 3 is available **for Riester and Basisrente alike**, and that both products need a commutation test at annuitisation. It is the entry that corrects this product's earlier reading, beside [R23]; the Riester subsidy machinery itself belongs to `Riester_DE_A`.
 - **REG-R43** — AltZertG, the BZSt, the AltvPIBV and the PIA: certification, the *Produktinformationsblatt* and the CRK scale, beside [R9] and [R11].
 - **REG-R44** — the Altersvorsorgereformgesetz 2026: the reform that closes Riester to new business from 1 January 2027 and **leaves the Basisrente untouched** — the one piece of forward-looking context in `product-spec.md`.
 - **REG-R45** — EStG § 20 Abs. 1 Nr. 6: the *Unterschiedsbetrag* and the 12/62 rule — Schicht-3 mechanics that **reach a Basisrente at no point in its life**.
@@ -476,6 +477,7 @@ paragraph number in these documents, before relying on anything here.
 [R7]: #delib-basisrente-r7
 [R9]: #delib-basisrente-r9
 [REG-R40]: #delib-reg-r40
+[REG-R42]: #delib-reg-r42
 [std]: #delib-std
 [unverified]: #delib-unverified
 <!-- END generated citation links -->

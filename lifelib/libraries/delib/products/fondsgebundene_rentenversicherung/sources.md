@@ -439,7 +439,7 @@ was retrieved either. Entries cited by the fondsgebundene Rentenversicherung doc
 - **REG-R33** — IDD and § 34d GewO: the inducement rules behind the *Kickback* question.
 - **REG-R34** — Unisex, EuGH C-236/09 (Test-Achats) and the AGG: why `sex` reaches neither the tariff nor the *Rentenfaktor*.
 - **REG-R35** — BaFin Merkblatt 01/2023, *angemessener Kundennutzen*: the cross-product carrier of the supervisory cost agenda.
-- **REG-R36** — the BGH line of authority: the cross-product carrier for the *Stornoabzug* prohibition, cited without a docket.
+- **REG-R36** — the BGH line of authority: the cross-product carrier for the *Stornoabzug* prohibition, cited without a docket, and for **BGH 10 December 2025 — IV ZR 34/25**, which voids an asymmetric *Rentenfaktor*-Anpassungsklausel under § 308 Nr. 4 BGB and § 307 Abs. 1 Satz 1 BGB and is the authority for this model's fixed guaranteed *Rentenfaktor*.
 - **REG-R37** — GDV-Musterbedingungen and market practice: why insurer wordings are structurally interchangeable.
 - **REG-R41** — EStG § 22 and § 55 EStDV, *Ertragsanteil*: the payout-phase tax treatment the *Kapitalwahlrecht* is compared against.
 - **REG-R45** — **EStG § 20 Abs. 1 Nr. 6, the 12/62 rule: the reference library's statement that the tax threshold is the strongest single driver of German surrender behaviour, which is why `lapse_tax_step` exists.**

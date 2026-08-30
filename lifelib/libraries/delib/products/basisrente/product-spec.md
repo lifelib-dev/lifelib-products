@@ -114,8 +114,11 @@ Basisrentenvertrag on an annual grid**, certified under § 5a AltZertG, with a l
 Beitrag* plus an annual *Zuzahlung*, priced and reserved at the current *Höchstrechnungszins* on a
 DAV 2004 R first-order basis, *gezillmert* toward the 25 ‰ cap, converting at *Rentenbeginn* into a
 monthly lifelong annuity at `max(garantierter, aktueller) Rentenfaktor`, with **no *Kapitalwahlrecht*,
-no *Teilkapitalauszahlung*, no *Kleinbetragsrenten-Abfindung*, no *Rückkaufswert*, no policy loan and
-no assignment**.
+no *Teilkapitalauszahlung*, no *Rückkaufswert*, no policy loan and no assignment**. The one
+commutation Schicht 1 does permit — the *Kleinbetragsrenten-Abfindung* [REG-R42] — is **left out of
+the base run as a stated standardization** (**[std]**), not as a prohibition; the distinction is drawn
+out under *The ban on capitalisation* below, because an earlier reading of this product had it as a
+prohibition and that was wrong.
 
 **Why *klassisch* rather than *fondsgebunden*.** The market's centre of gravity has moved decisively
 to *fondsgebundene* Basisrenten since the *Höchstrechnungszins* fell below 1 % [R16] [REG-R15] — a
@@ -187,8 +190,10 @@ Footnotes to **[std]** rows:
 8. **No carrier's frequency loading was established.** The 2 % / 3 % / 5 % ladder is carried from the
    sibling delib corpus as a German market convention and is **[std]** throughout the library. It
    loads the *laufender Beitrag*; a *Zuzahlung* is a single payment and carries none.
-9. Minimum premiums exist partly to stop a contract reaching *Rentenbeginn* with a trivial capital,
-   because **there is no *Kleinbetragsrenten-Abfindung* in Schicht 1**. No level was established.
+9. Minimum premiums exist partly to stop a contract reaching *Rentenbeginn* with a capital too small
+   to administer as a lifelong annuity. A *Kleinbetragsrenten-Abfindung* **is** available in Schicht 1
+   [REG-R42], but only at the start of the payout phase and only below a threshold whose level is
+   contested, so the minimum premium is still doing work. No level was established.
 10. **The series is arithmetic, not evidence.** Each line reproduces itself from its own inputs —
     107 400 × 24,7 % = 26 527,80 → 26 528; 111 600 × 24,7 % = 27 565,20 → 27 566; 118 800 × 24,7 % =
     29 343,60 → 29 344; 124 800 × 24,7 % = 30 825,60 → 30 826 — and the rounding convention is
@@ -306,7 +311,7 @@ not chargeable as security, not saleable and not convertible into capital** [R1]
 | ***nicht übertragbar*** | Assignment to a third party | No assignment decrement, no third-party interest; the only permitted transfer is the *Versorgungsausgleich* |
 | ***nicht beleihbar*** | Pledge, mortgage, borrowing against | **No policy loan** — delib's retired name `loan_bal` must not reappear on this product |
 | ***nicht veräußerbar*** | Sale of the contract | No secondary market, no sale decrement |
-| ***nicht kapitalisierbar*** | Turning the entitlement into capital | **No *Rückkaufswert*, no *Kapitalwahlrecht*, no *Teilkapitalauszahlung*, no *Kleinbetragsrenten-Abfindung*** |
+| ***nicht kapitalisierbar*** | Turning the entitlement into capital | **No *Rückkaufswert*, no *Kapitalwahlrecht*, no *Teilkapitalauszahlung***. The prohibition has **one express statutory exception**, the *Kleinbetragsrenten-Abfindung* of § 10 Abs. 1 Nr. 2 Satz 3 EStG [REG-R42], which this model does not implement (**[std]**) |
 
 **The prohibitions bind the insurer's product design, not merely the policyholder's rights.** A
 contract offering any of these features is not a *Basisrentenvertrag*, cannot be certified [R9], and
@@ -482,20 +487,45 @@ sum at the start of the payout phase [R23] [REG-R43] [unverified]; a Schicht-3 c
 never engages** — the *Unterschiedsbetrag* and the 12/62 rule [REG-R45] are Schicht-3 mechanics that
 reach a Basisrente at no point in its life.
 
-**And there is no *Kleinbetragsrenten-Abfindung*** — recorded because the interesting fact is the
-**non-application**. For a **Riester** contract § 93 Abs. 3 EStG permits **commutation of a
-*Kleinbetragsrente*** at the start of the payout phase without loss of the subsidy, where the monthly
-annuity would fall below **1 % of the monthly *Bezugsgröße* of § 18 SGB IV** [R23] [unverified] — a
-de-minimis rule that exists because administering a trivially small lifelong annuity costs more than
-it pays. **There is no Schicht-1 equivalent**: § 10 Abs. 1 Nr. 2 Buchst. b forbids capitalisation
-without qualification and admits **no de-minimis exception whatever** [R1]. A Basisrente entitlement
-of two euros a month is paid as two euros a month, for life. What the market does instead is
-[unverified] throughout: **minimum premiums**; **minimum annuity thresholds in the AVB**, below which
-the insurer may pay quarterly or annually rather than monthly, whose compatibility with the statutory
-requirement of a *monatliche* annuity **was not established** (gap 19); and **consolidation** before
-*Rentenbeginn*, which depends on the unresolved transfer question (gap 13). **The modelling
-consequence is direct**: no commutation option anywhere, and a model point representing a small
-paid-up contract must project a small annuity rather than a lump sum.
+**The *Kleinbetragsrente* is the one de-minimis exception the ban carries, and Schicht 1 has it.**
+For a **Riester** contract § 93 Abs. 3 EStG permits **commutation of a *Kleinbetragsrente*** at the
+start of the payout phase without loss of the subsidy, where the monthly annuity would fall below a
+threshold expressed as a percentage of the monthly *Bezugsgröße* of § 18 SGB IV [R23] [REG-R42]
+[unverified] — a de-minimis rule that exists because administering a trivially small lifelong annuity
+costs more than it pays. **Schicht 1 is not excluded from it.** The *Kapitalisierungsverbot* of
+§ 10 Abs. 1 Nr. 2 Buchst. b EStG is qualified by **§ 10 Abs. 1 Nr. 2 Satz 3 EStG**, which makes an
+*Abfindung* of a *Kleinbetragsrente* out of a *Basisrentenvertrag* — on the § 93 Abs. 3 Satz 2 and 3
+EStG mechanics — harmless to the contract's Schicht-1 status, so a certified tariff may pay one at the
+start of the payout phase without forfeiting relief; since the *Wachstumschancengesetz* the relief
+reaches, in addition, an annuity pushed below the threshold **during** the payout phase by a
+*Versorgungsausgleich* [R1] [REG-R42] [unverified]. **Both the Satz numbering and the amending statute
+are [unverified]** — no search corroborated either — and the threshold's level is contested in the
+same way it is for Riester: 1 % of the monthly *Bezugsgröße* against 1,5 % [REG-R42] [unverified].
+An earlier reading of this product asserted the opposite, that Schicht 1 admitted no de-minimis
+exception whatever; that reading is withdrawn and this section is the correction. It follows that
+**"a Basisrente entitlement of two euros a month is paid as two euros a month, for life" is wrong as a
+statement of law**, though it remains true of contracts whose AVB offers no *Abfindung*.
+
+The rest of what the market does is [unverified] throughout: **minimum premiums**; **minimum annuity
+thresholds in the AVB**, below which the insurer may pay quarterly or annually rather than monthly,
+whose compatibility with the statutory requirement of a *monatliche* annuity **was not established**
+(gap 19); and **consolidation** before *Rentenbeginn*, which depends on the unresolved transfer
+question (gap 13).
+
+**The modelling consequence is a decision rather than a deduction, and is [std].** The reference
+implementation **does not implement the commutation branch**: at *Rentenbeginn* every model point,
+model point 10 included, converts its whole capital into an annuity. Three reasons, in order of
+weight. The threshold level is contested and no Basisrente-specific figure was established, so a
+commutation test would turn on an invented number. **Whether any German Basisrente AVB actually
+offers the *Abfindung*, and whether it is the insurer's election or the policyholder's, was not
+established at any carrier** (gap 19) — and the *Abfindung* is a contract term, not an automatic
+statutory consequence. And the mechanic is already carried once in this library, on `Riester_DE_A`,
+where the § 93 Abs. 3 threshold is native, is computed rather than assumed, and a model point trips
+it. **This is a named model risk, not a claim about the law**: a Basisrente model asked to value a
+book of very small contracts needs the branch, and a delib user adding it should take
+`Riester_DE_A`'s `is_kleinbetrag()` / `commutation_pp()` pair as the pattern. Model point 10 — 300,00 €
+a year, the market's minimum recurring premium — is the boundary case that would trip it, and in the
+base run it projects a small annuity.
 
 ### Pfändungsschutz, insolvency and means-testing
 
@@ -578,9 +608,12 @@ companion cover. **No carrier's BUZ wording was reached** [S5] (gap 18).
 the base run, because they are the shape of the product's premium.
 
 **Out of scope.** Everything a Schicht-3 or Riester contract offers and this one may not: the
-*Kapitalwahlrecht*, the *Teilkapitalauszahlung*, the *Kleinbetragsrenten-Abfindung*, the policy loan,
-assignment, the secondary-market sale, and any death lump sum. These are not switched-off options;
-they are **structural absences**, and the model carries no cells for them.
+*Kapitalwahlrecht*, the *Teilkapitalauszahlung*, the policy loan, assignment, the secondary-market
+sale, and any death lump sum. These are not switched-off options; they are **structural absences**,
+and the model carries no cells for them. **The *Kleinbetragsrenten-Abfindung* is deliberately not in
+that list**: Schicht 1 has it [REG-R42], and its absence from the model is a **[std]** decision
+recorded in `model.md` rather than a prohibition. It is the one absence in this model that German law
+does not compel, and it is labelled that way everywhere it appears.
 
 ---
 
@@ -770,6 +803,7 @@ Check both, and every paragraph number in this document, before relying on anyth
 [REG-R39]: #delib-reg-r39
 [REG-R40]: #delib-reg-r40
 [REG-R41]: #delib-reg-r41
+[REG-R42]: #delib-reg-r42
 [REG-R43]: #delib-reg-r43
 [REG-R44]: #delib-reg-r44
 [REG-R45]: #delib-reg-r45
