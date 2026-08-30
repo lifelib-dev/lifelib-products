@@ -122,8 +122,11 @@ Each country section is built in three passes:
    its 施行規則, the FSA 告示 and 監督指針, 日本アクチュアリー会's standard tables, and the
    公的 statistical series (患者調査, 全国がん登録, 介護保険事業状況報告) for Japan; and the Code
    des assurances on Légifrance, the ACPR, the *arrêtés* homologating TH 00-02 / TF 00-02
-   and TGH05 / TGF05, INSEE, DREES / CNSA and France Assureurs for France. Everything
-   lands in `_research/` with per-source fact extraction and explicit fetch-failure notes.
+   and TGH05 / TGF05, INSEE, DREES / CNSA and France Assureurs for France; and the VAG,
+   VVG, DeckRV and MindZV, the BaFin *Merkblätter*, the DAV table families, the *Drei-Schichten*
+   provisions of the EStG and the AltZertG, and GDV and Destatis statistics for Germany.
+   Everything lands in `_research/` with per-source fact extraction and explicit
+   fetch-failure notes.
 2. **Drafting** — write the product spec and technical notes from the research files
    under the citation discipline above, choosing and justifying a representative
    design where insurers differ.
@@ -131,6 +134,21 @@ Each country section is built in three passes:
    research files, recomputation of all formulas and worked examples, internal
    consistency), then a cross-product consistency pass (shared terminology, shared
    base-chassis mechanics, link and tag integrity).
+
+**The Germany library is the exception to pass 1, and says so on every page it touches.**
+`delib` was built in an environment whose network policy blocks direct HTTP egress to every
+host outside a package-registry allowlist, so **no document cited anywhere in `delib` was
+retrieved** — `gesetze-im-internet.de`, `bafin.de`, `aktuar.de`, `gdv.de`, `destatis.de` and
+`eur-lex.europa.eu` were each tried and each refused at the gateway — and the session's
+web-search budget was exhausted partway through the regulatory research, so the later product
+files had no research channel at all. A `delib` citation is therefore a **pointer, not a
+certificate**: it names the instrument a claim should be checked against without asserting
+that anyone read it. Uncertain figures are carried as **[std]** parameters of the reference
+implementation with a stated rationale rather than as citations, and every specific paragraph
+number, date, amount and market figure that no search corroborated carries **[unverified]**.
+The library index, every `sources.md` header and every `_research/` header states this before
+its first entry. It is the one substantive respect in which `delib` is weaker than its four
+siblings, and it is the first thing to fix if the library is developed further.
 
 ## Coverage
 
