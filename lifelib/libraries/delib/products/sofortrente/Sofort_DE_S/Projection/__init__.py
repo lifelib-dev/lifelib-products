@@ -51,61 +51,61 @@ uppercase ``kind`` string, ``check_*()`` returning one bool over all ``t`` with 
 per-period residual at ``check_*_resid(t)``. The technical notes use compact actuarial
 symbols instead. The mapping is:
 
-=========================  ================================  ==================================
-Notes symbol               Cells                             Meaning
-=========================  ================================  ==================================
-(none)                     model_point()                     The selected model point row
-t0                         t_start()                         First projected month index
-n                          proj_len()                        Last projected month index
-(none)                     horizon_mths(life)                12 (omega_age - entry age)
-(none)                     duration_mth(t)                   Months elapsed since inception
-(none)                     policy_year(t)                    Completed policy years, t // 12
-x_a(t), x_s(t)             age(t, life)                      Attained age of each life
-(none)                     calendar_year(t)                  Calendar year of month t
-SP                         single_prem()                     The Einmalbeitrag
-SP_net                     net_single_prem()                 SP (1 - alpha)
-alpha                      expense_load_alpha                Acquisition loading in the tariff
-beta                       expense_load_beta                 Loading on the annuity value
-i                          tariff_int_rate()                 Tariff Rechnungszins
-(cap)                      max_tariff_int_rate()             Hoechstrechnungszins at entry_year
-m                          payment_freq()                    Instalments per year
-p = 12/m                   pay_period_mths()                 Months between instalments
-D                          defer_mths()                      Aufschubzeit in months
-(none)                     first_pay_mth()                   Month of the first instalment
-G                          guar_years()                      Rentengarantiezeit in years
-(none)                     guar_end_mth()                    First month after the guarantee
-gamma(t)                   certain_floor(t)                  1 inside the guarantee, else 0
-(none)                     is_payment_mth(t)                 Whether an instalment falls at t
-delta                      surv_pct()                        Hinterbliebenenrente percentage
-(table)                    mort_rate_at_age(x, s, b)         Table rate; s = M, F or U
-lambda(x)                  improve_rate_at_age(x, b)         Improvement rate at age x
-q(x, s, g, b)              mort_rate_gen(x, s, g, b)         The generational surface
-q2(t)                      mort_rate(t, life)                Annual second-order rate
-(none)                     mort_rate_mth(t, life)            Its monthly equivalent
-q1(t)                      mort_rate_tariff(t, life)         Annual first-order unisex rate
-(none)                     mort_rate_tariff_mth(t, life)     Its monthly equivalent
-l_a(t), l_s(t)             lives_if(t, life)                 Second-order survival to start of t
-d_a(t), d_s(t)             lives_death(t, life)              Deaths during month t
-l~(k)                      tariff_lives(k, life)             First-order survival, pricing only
-a-double-dot               annuity_factor()                  Value at t=0 of one unit of instalment
-(refund leg)               refund_pv()                       PV of the Kapitalrueckgewaehr
-R                          annuity_pp_derived()              Instalment struck by equivalence
-R                          annuity_guar_pp(t)                The garantierte Rente in force
-u0, psi                    surplus_init_pct(), surplus_growth()   Opening surplus share, growth
-U(t)                       annuity_surp_pp(t)                The Ueberschussrente instalment
-A(t)                       annuity_pp(t)                     Total instalment, R + U(t)
-C(t)                       cum_annuity_guar_pp(t)            Guaranteed instalments paid to t
-K(t)                       refund_pp(t)                      max(SP - C(t), 0)
-F(t)                       payment_factor(t)                 Expected instalments payable at t
-(none)                     pols_if(t)                        Probability an obligation remains
-(none)                     premiums(t)                       The Einmalbeitrag, at t = 0 only
-(none)                     annuity_payments(t, kind)         ANNUITANT / SURVIVOR instalments
-(none)                     claims(t, kind)                   GUARANTEE / REFUND death outgo
-(none)                     infl_factor(t)                    Expense inflation factor
-c_e, c_p, pi               expenses(t)                       Maintenance, per-instalment, acquisition
-liability_cf(t)            liability_cf(t)                   The stream, outgo positive
-net_cf(t)                  net_cf(t)                         The same stream, income positive
-=========================  ================================  ==================================
+===============  ====================================  ========================================
+Notes symbol     Cells                                 Meaning
+===============  ====================================  ========================================
+(none)           model_point()                         The selected model point row
+t0               t_start()                             First projected month index
+n                proj_len()                            Last projected month index
+(none)           horizon_mths(life)                    12 (omega_age - entry age)
+(none)           duration_mth(t)                       Months elapsed since inception
+(none)           policy_year(t)                        Completed policy years, t // 12
+x_a(t), x_s(t)   age(t, life)                          Attained age of each life
+(none)           calendar_year(t)                      Calendar year of month t
+SP               single_prem()                         The Einmalbeitrag
+SP_net           net_single_prem()                     SP (1 - alpha)
+alpha            expense_load_alpha                    Acquisition loading in the tariff
+beta             expense_load_beta                     Loading on the annuity value
+i                tariff_int_rate()                     Tariff Rechnungszins
+(cap)            max_tariff_int_rate()                 Hoechstrechnungszins at entry_year
+m                payment_freq()                        Instalments per year
+p = 12/m         pay_period_mths()                     Months between instalments
+D                defer_mths()                          Aufschubzeit in months
+(none)           first_pay_mth()                       Month of the first instalment
+G                guar_years()                          Rentengarantiezeit in years
+(none)           guar_end_mth()                        First month after the guarantee
+gamma(t)         certain_floor(t)                      1 inside the guarantee, else 0
+(none)           is_payment_mth(t)                     Whether an instalment falls at t
+delta            surv_pct()                            Hinterbliebenenrente percentage
+(table)          mort_rate_at_age(x, s, b)             Table rate; s = M, F or U
+lambda(x)        improve_rate_at_age(x, b)             Improvement rate at age x
+q(x, s, g, b)    mort_rate_gen(x, s, g, b)             The generational surface
+q2(t)            mort_rate(t, life)                    Annual second-order rate
+(none)           mort_rate_mth(t, life)                Its monthly equivalent
+q1(t)            mort_rate_tariff(t, life)             Annual first-order unisex rate
+(none)           mort_rate_tariff_mth(t, life)         Its monthly equivalent
+l_a(t), l_s(t)   lives_if(t, life)                     Second-order survival to start of t
+d_a(t), d_s(t)   lives_death(t, life)                  Deaths during month t
+l~(k)            tariff_lives(k, life)                 First-order survival, pricing only
+a-double-dot     annuity_factor()                      Value at t=0 of one unit of instalment
+(refund leg)     refund_pv()                           PV of the Kapitalrueckgewaehr
+R                annuity_pp_derived()                  Instalment struck by equivalence
+R                annuity_guar_pp(t)                    The garantierte Rente in force
+u0, psi          surplus_init_pct(), surplus_growth()  Opening surplus share, growth
+U(t)             annuity_surp_pp(t)                    The Ueberschussrente instalment
+A(t)             annuity_pp(t)                         Total instalment, R + U(t)
+C(t)             cum_annuity_guar_pp(t)                Guaranteed instalments paid to t
+K(t)             refund_pp(t)                          max(SP - C(t), 0)
+F(t)             payment_factor(t)                     Expected instalments payable at t
+(none)           pols_if(t)                            Probability an obligation remains
+(none)           premiums(t)                           The Einmalbeitrag, at t = 0 only
+(none)           annuity_payments(t, kind)             ANNUITANT / SURVIVOR instalments
+(none)           claims(t, kind)                       GUARANTEE / REFUND death outgo
+(none)           infl_factor(t)                        Expense inflation factor
+c_e, c_p, pi     expenses(t)                           Maintenance, per-instalment, acquisition
+liability_cf(t)  liability_cf(t)                       The stream, outgo positive
+net_cf(t)        net_cf(t)                             The same stream, income positive
+===============  ====================================  ========================================
 
 Five names needed care.
 

@@ -58,83 +58,83 @@ cash flows, ``*_rate`` for rates, ``*_pp`` for per-policy amounts, ``claims(t, k
 an uppercase ``kind`` string, ``*_at(t, timing)`` for the within-year reads. The technical
 notes use compact actuarial symbols instead. The mapping is:
 
-=========================  ==============================  ==========================
-Notes symbol               Cells                           Meaning
-=========================  ==============================  ==========================
-(none)                     model_point()                   The selected model point row
-n                          proj_len()                      Last policy year = policy_term
-(none)                     t_start()                       First projected policy year
-m                          prem_term()                     Beitragszahlungsdauer
-x(t)                       age(t)                          Attained age in year t
-k = t - 1                  duration(t)                     Completed policy years
-SE                         sum_assured()                   Guaranteed Erlebensfallleistung
-SD                         sum_death()                     Guaranteed Todesfallleistung
-i1                         rechnungszins()                 First-order interest rate
-v1^k                       disc_factor_1st(k)              First-order discount factor
-kpx                        tpx_1st(k)                      First-order survival from issue
-q1(x)                      mort_rate_at_age(x)             First-order tariff rate at age
+==================  =====================================  ====================================
+Notes symbol        Cells                                  Meaning
+==================  =====================================  ====================================
+(none)              model_point()                          The selected model point row
+n                   proj_len()                             Last policy year = policy_term
+(none)              t_start()                              First projected policy year
+m                   prem_term()                            Beitragszahlungsdauer
+x(t)                age(t)                                 Attained age in year t
+k = t - 1           duration(t)                            Completed policy years
+SE                  sum_assured()                          Guaranteed Erlebensfallleistung
+SD                  sum_death()                            Guaranteed Todesfallleistung
+i1                  rechnungszins()                        First-order interest rate
+v1^k                disc_factor_1st(k)                     First-order discount factor
+kpx                 tpx_1st(k)                             First-order survival from issue
+q1(x)               mort_rate_at_age(x)                    First-order tariff rate at age
                                                            x - the unisex blend, which
                                                            prices and reserves
-(table)                    mort_rate_base(t)               Sex-specific table rate in year t
-q(t)                       mort_rate(t)                    Best-estimate mortality
-f                          rating_factor()                 Risikozuschlag on the death leg
-alpha, beta, gamma         alpha_rate(), beta_rate(),      Zillmersatz; premium loading;
-                           gamma_rate()                    sum-insured loading
-phi                        prem_freq_load()                Ratenzahlungszuschlag
-(none)                     instalments()                   Payments a year
-(pricing)                  pv_death_1st(), pv_maturity_1st(),  The equivalence's parts
-                           pv_benefit_1st(), ann_due_prem_1st(),
-                           ann_due_term_1st()
-B                          prem_gross_pp()                 Annual Bruttobeitrag before phi
-BS                         beitragssumme()                 Beitragssumme = B x m
-A                          alpha_cost()                    Zillmered acquisition cost
-P^n                        prem_net_level_pp()             Net level premium
-P^Z                        prem_zill_pp()                  Zillmer premium
-(prospective)              pv_benefit_fut(t),              The reserve's parts
-                           ann_due_prem_fut(t)
-V^n, V^Z, V^min            res_net_pp(t), res_zill_pp(t),  The three constructions
-                           res_min_pp(t)
-V(t)                       res_pp(t)                       Deckungskapital at start of t
-(within year)              res_pp_at(t, timing)            BEF_PREM / AFT_PREM / AFT_INT
-G(t)                       res_guar_pp(t)                  Section 169 value at end of t
-RK(t)                      surr_value_pp(t)                Rueckkaufswert payable
-(unit paid-up)             pu_single_prem(t)               Single premium for one unit
-(none)                     bfz_si_pp()                     Beitragsfreie Versicherungssumme
-(none)                     bfz_uplift_pp(t)                Section 169 uplift on election
-(none)                     is_paid_up(t)                   Whether the contract is beitragsfrei
-d(t)                       decl_rate(t)                    Declared laufende Verzinsung
-z(t)                       zins_ueberschuss_rate(t)        Interest surplus rate
-s(t)                       term_rate(t)                    Schlussueberschussanteilsatz
-a(t)                       ans_rate(t)                     Ansammlungszinssatz
-(base)                     surplus_base_pp(t)              Deckungskapital at allocation
-C(t)                       surplus_credit_pp(t)            Surplus allocated for year t
-S(t)                       term_bonus_pp(t)                Accrued Schlussueberschussanteil
-U(t)                       av_pp(t)                        Ueberschussguthaben per policy
-(within year)              av_pp_at(t, timing)             BEF_INT / AFT_INT / AFT_CREDIT
-(aggregate)                av(t), av_at(t, timing)         The same, times pols_if(t)
-Z(t)                       bonus_si_pp(t)                  Bonus sum insured
-(offset)                   prem_offset_pp(t)               Beitragsverrechnung offset
-B phi                      prem_charged_pp(t)              Zahlbeitrag before the offset
-(none)                     prem_paid_pp(t)                 Zahlbeitrag actually paid
-(none)                     premiums(t)                     Premium income
-w(t)                       lapse_rate(t)                   Surrender rate
-sigma(t)                   storno_rate(t)                  Stornoabzug rate
-l(t)                       pols_if(t)                      In force at the start of year t
-(within year)              pols_if_at(t, timing)           BEF_DECR / AFT_MORT / AFT_LAPSE
-(exits)                    pols_death(t), pols_lapse(t),   Expected exits in year t
-                           pols_maturity(t)
-(none)                     benefit_full_pp(t)              Full death benefit before 161
-(none)                     benefit_death_pp(t)             What a death claim pays
-(none)                     benefit_maturity_pp(t)          What the Ablauf pays
-claims_*                   claims(t, kind)                 DEATH / MATURITY / LAPSE
-(none)                     inflation_factor(t)             Expense inflation factor
-(none)                     claim_expenses(t)               Claim handling expense
-(none)                     expenses_pp(t)                  Per-policy expense
-E(t)                       expenses(t)                     Expense outgo, no commission
-(none)                     commissions(t)                  Commission outgo
-net_cf(t)                  net_cf(t)                       Net cash flow, income positive
-liability_cf(t)            liability_cf(t)                 The same stream, outgo positive
-=========================  ==============================  ==========================
+(table)             mort_rate_base(t)                      Sex-specific table rate in year t
+q(t)                mort_rate(t)                           Best-estimate mortality
+f                   rating_factor()                        Risikozuschlag on the death leg
+alpha, beta, gamma  alpha_rate(), beta_rate(),             Zillmersatz; premium loading;
+                    gamma_rate()                           sum-insured loading
+phi                 prem_freq_load()                       Ratenzahlungszuschlag
+(none)              instalments()                          Payments a year
+(pricing)           pv_death_1st(), pv_maturity_1st(),     The equivalence's parts
+                    pv_benefit_1st(), ann_due_prem_1st(),
+                    ann_due_term_1st()
+B                   prem_gross_pp()                        Annual Bruttobeitrag before phi
+BS                  beitragssumme()                        Beitragssumme = B x m
+A                   alpha_cost()                           Zillmered acquisition cost
+P^n                 prem_net_level_pp()                    Net level premium
+P^Z                 prem_zill_pp()                         Zillmer premium
+(prospective)       pv_benefit_fut(t),                     The reserve's parts
+                    ann_due_prem_fut(t)
+V^n, V^Z, V^min     res_net_pp(t), res_zill_pp(t),         The three constructions
+                    res_min_pp(t)
+V(t)                res_pp(t)                              Deckungskapital at start of t
+(within year)       res_pp_at(t, timing)                   BEF_PREM / AFT_PREM / AFT_INT
+G(t)                res_guar_pp(t)                         Section 169 value at end of t
+RK(t)               surr_value_pp(t)                       Rueckkaufswert payable
+(unit paid-up)      pu_single_prem(t)                      Single premium for one unit
+(none)              bfz_si_pp()                            Beitragsfreie Versicherungssumme
+(none)              bfz_uplift_pp(t)                       Section 169 uplift on election
+(none)              is_paid_up(t)                          Whether the contract is beitragsfrei
+d(t)                decl_rate(t)                           Declared laufende Verzinsung
+z(t)                zins_ueberschuss_rate(t)               Interest surplus rate
+s(t)                term_rate(t)                           Schlussueberschussanteilsatz
+a(t)                ans_rate(t)                            Ansammlungszinssatz
+(base)              surplus_base_pp(t)                     Deckungskapital at allocation
+C(t)                surplus_credit_pp(t)                   Surplus allocated for year t
+S(t)                term_bonus_pp(t)                       Accrued Schlussueberschussanteil
+U(t)                av_pp(t)                               Ueberschussguthaben per policy
+(within year)       av_pp_at(t, timing)                    BEF_INT / AFT_INT / AFT_CREDIT
+(aggregate)         av(t), av_at(t, timing)                The same, times pols_if(t)
+Z(t)                bonus_si_pp(t)                         Bonus sum insured
+(offset)            prem_offset_pp(t)                      Beitragsverrechnung offset
+B phi               prem_charged_pp(t)                     Zahlbeitrag before the offset
+(none)              prem_paid_pp(t)                        Zahlbeitrag actually paid
+(none)              premiums(t)                            Premium income
+w(t)                lapse_rate(t)                          Surrender rate
+sigma(t)            storno_rate(t)                         Stornoabzug rate
+l(t)                pols_if(t)                             In force at the start of year t
+(within year)       pols_if_at(t, timing)                  BEF_DECR / AFT_MORT / AFT_LAPSE
+(exits)             pols_death(t), pols_lapse(t),          Expected exits in year t
+                    pols_maturity(t)
+(none)              benefit_full_pp(t)                     Full death benefit before 161
+(none)              benefit_death_pp(t)                    What a death claim pays
+(none)              benefit_maturity_pp(t)                 What the Ablauf pays
+claims_*            claims(t, kind)                        DEATH / MATURITY / LAPSE
+(none)              inflation_factor(t)                    Expense inflation factor
+(none)              claim_expenses(t)                      Claim handling expense
+(none)              expenses_pp(t)                         Per-policy expense
+E(t)                expenses(t)                            Expense outgo, no commission
+(none)              commissions(t)                         Commission outgo
+net_cf(t)           net_cf(t)                              Net cash flow, income positive
+liability_cf(t)     liability_cf(t)                        The same stream, outgo positive
+==================  =====================================  ====================================
 
 .. rubric:: The declared rate is a total, not an add-on
 
