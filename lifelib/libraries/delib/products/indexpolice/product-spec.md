@@ -718,3 +718,58 @@ retail product. **The counter-argument, fairly stated**: the relevant benchmark 
 not an index fund but the *sichere Verzinsung* arm of the same contract, and against that the index arm
 has a higher expected value, cannot do worse than zero in any year, costs nothing extra, and can be
 abandoned at any anniversary. The reference implementation lets a reader run that comparison.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-indexpolice-r1
+[R10]: #delib-indexpolice-r10
+[R11]: #delib-indexpolice-r11
+[R12]: #delib-indexpolice-r12
+[R13]: #delib-indexpolice-r13
+[R14]: #delib-indexpolice-r14
+[R15]: #delib-indexpolice-r15
+[R16]: #delib-indexpolice-r16
+[R17]: #delib-indexpolice-r17
+[R18]: #delib-indexpolice-r18
+[R19]: #delib-indexpolice-r19
+[R2]: #delib-indexpolice-r2
+[R20]: #delib-indexpolice-r20
+[R21]: #delib-indexpolice-r21
+[R22]: #delib-indexpolice-r22
+[R3]: #delib-indexpolice-r3
+[R4]: #delib-indexpolice-r4
+[R5]: #delib-indexpolice-r5
+[R6]: #delib-indexpolice-r6
+[R7]: #delib-indexpolice-r7
+[R8]: #delib-indexpolice-r8
+[R9]: #delib-indexpolice-r9
+[REG-R1]: #delib-reg-r1
+[REG-R10]: #delib-reg-r10
+[REG-R13]: #delib-reg-r13
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R25]: #delib-reg-r25
+[REG-R26]: #delib-reg-r26
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R41]: #delib-reg-r41
+[REG-R43]: #delib-reg-r43
+[REG-R45]: #delib-reg-r45
+[REG-R49]: #delib-reg-r49
+[REG-R53]: #delib-reg-r53
+[REG-R7]: #delib-reg-r7
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

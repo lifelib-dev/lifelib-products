@@ -438,3 +438,30 @@ the *Kleinbetragsrente* tested on the post-lump-sum annuity against a flat thres
 ```bash
 python -m pytest lifelib/libraries/delib/tests/test_riester_rente_de.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-riester_rente-r1
+[R10]: #delib-riester_rente-r10
+[R11]: #delib-riester_rente-r11
+[R12]: #delib-riester_rente-r12
+[R13]: #delib-riester_rente-r13
+[R14]: #delib-riester_rente-r14
+[R15]: #delib-riester_rente-r15
+[R23]: #delib-riester_rente-r23
+[R25]: #delib-riester_rente-r25
+[R6]: #delib-riester_rente-r6
+[R7]: #delib-riester_rente-r7
+[R8]: #delib-riester_rente-r8
+[R9]: #delib-riester_rente-r9
+[REG-R14]: #delib-reg-r14
+[REG-R42]: #delib-reg-r42
+[REG-R43]: #delib-reg-r43
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R53]: #delib-reg-r53
+[REG-R6]: #delib-reg-r6
+[std]: #delib-std
+<!-- END generated citation links -->

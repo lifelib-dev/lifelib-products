@@ -720,3 +720,71 @@ tariff's design**. The IDD conduct layer applies in any event [REG-R33], as does
 *Höchstrechnungszins* recommendation [REG-R56]; IFRS 17 applies to IFRS reporters with no German
 carve-out [REG-R55]; the statutory accounts run on HGB §§ 341–341o, the RechVersV and the BerVersV
 [REG-R54].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-pflegerentenversicherung-r1
+[R10]: #delib-pflegerentenversicherung-r10
+[R11]: #delib-pflegerentenversicherung-r11
+[R12]: #delib-pflegerentenversicherung-r12
+[R13]: #delib-pflegerentenversicherung-r13
+[R14]: #delib-pflegerentenversicherung-r14
+[R15]: #delib-pflegerentenversicherung-r15
+[R16]: #delib-pflegerentenversicherung-r16
+[R18]: #delib-pflegerentenversicherung-r18
+[R19]: #delib-pflegerentenversicherung-r19
+[R2]: #delib-pflegerentenversicherung-r2
+[R20]: #delib-pflegerentenversicherung-r20
+[R21]: #delib-pflegerentenversicherung-r21
+[R22]: #delib-pflegerentenversicherung-r22
+[R23]: #delib-pflegerentenversicherung-r23
+[R24]: #delib-pflegerentenversicherung-r24
+[R3]: #delib-pflegerentenversicherung-r3
+[R4]: #delib-pflegerentenversicherung-r4
+[R5]: #delib-pflegerentenversicherung-r5
+[R6]: #delib-pflegerentenversicherung-r6
+[R7]: #delib-pflegerentenversicherung-r7
+[R8]: #delib-pflegerentenversicherung-r8
+[R9]: #delib-pflegerentenversicherung-r9
+[REG-R1]: #delib-reg-r1
+[REG-R10]: #delib-reg-r10
+[REG-R11]: #delib-reg-r11
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R25]: #delib-reg-r25
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R3]: #delib-reg-r3
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R41]: #delib-reg-r41
+[REG-R45]: #delib-reg-r45
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R51]: #delib-reg-r51
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[REG-R6]: #delib-reg-r6
+[REG-R8]: #delib-reg-r8
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

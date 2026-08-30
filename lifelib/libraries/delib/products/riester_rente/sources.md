@@ -492,3 +492,28 @@ hypotheses about what the documents say, not a record of what they say.** The st
 product — the half that makes this a Riester contract rather than a private annuity — is stated from
 general knowledge of German pension law and is not a composite; the carrier half is entirely
 **[std]**, and each such parameter carries its rationale where it is used.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-riester_rente-r1
+[R10]: #delib-riester_rente-r10
+[R11]: #delib-riester_rente-r11
+[R12]: #delib-riester_rente-r12
+[R13]: #delib-riester_rente-r13
+[R15]: #delib-riester_rente-r15
+[R16]: #delib-riester_rente-r16
+[R18]: #delib-riester_rente-r18
+[R19]: #delib-riester_rente-r19
+[R2]: #delib-riester_rente-r2
+[R22]: #delib-riester_rente-r22
+[R23]: #delib-riester_rente-r23
+[R26]: #delib-riester_rente-r26
+[R3]: #delib-riester_rente-r3
+[R4]: #delib-riester_rente-r4
+[R5]: #delib-riester_rente-r5
+[R6]: #delib-riester_rente-r6
+[R7]: #delib-riester_rente-r7
+[R9]: #delib-riester_rente-r9
+[REG-R15]: #delib-reg-r15
+[REG-R44]: #delib-reg-r44
+[std]: #delib-std
+<!-- END generated citation links -->

@@ -438,3 +438,25 @@ whole-model-point sweep belongs to the conventions suite and is not repeated her
 python -m pytest lifelib/libraries/delib/tests/test_indexpolice_de.py -q
 python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Index_DE_A
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-indexpolice-r1
+[R12]: #delib-indexpolice-r12
+[R14]: #delib-indexpolice-r14
+[R15]: #delib-indexpolice-r15
+[R18]: #delib-indexpolice-r18
+[R19]: #delib-indexpolice-r19
+[R2]: #delib-indexpolice-r2
+[R20]: #delib-indexpolice-r20
+[R21]: #delib-indexpolice-r21
+[R22]: #delib-indexpolice-r22
+[R4]: #delib-indexpolice-r4
+[R7]: #delib-indexpolice-r7
+[R8]: #delib-indexpolice-r8
+[REG-R1]: #delib-reg-r1
+[REG-R2]: #delib-reg-r2
+[REG-R4]: #delib-reg-r4
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[std]: #delib-std
+<!-- END generated citation links -->

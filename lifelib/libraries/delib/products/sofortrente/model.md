@@ -437,3 +437,30 @@ every point, so this module does not repeat it.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-sofortrente-r1
+[R10]: #delib-sofortrente-r10
+[R11]: #delib-sofortrente-r11
+[R12]: #delib-reg-r12
+[R2]: #delib-sofortrente-r2
+[R20]: #delib-sofortrente-r20
+[R21]: #delib-sofortrente-r21
+[R22]: #delib-sofortrente-r22
+[R23]: #delib-sofortrente-r23
+[R5]: #delib-sofortrente-r5
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R24]: #delib-reg-r24
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R34]: #delib-reg-r34
+[REG-R4]: #delib-reg-r4
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R6]: #delib-reg-r6
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

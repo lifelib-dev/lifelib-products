@@ -437,3 +437,22 @@ constrain the model:
 7. **The *AU-Klausel*'s effect on inception is unquantified** [S8]. The clause ships switched on with an uplift of exactly 1,00 rather than with an invented loading.
 8. **Every statutory paragraph number is `[unverified]`** [R1]–[R6]. The two items most at risk are the exact range of sections § 176 imports — on which the surrender value, the paid-up right and the *Überschussbeteiligung* all depend — and the wording of § 173 on the *befristetes Anerkenntnis*.
 9. **The VVG, VAG, SGB VI, EStG, DeckRV, MindZV and IfSG are living texts**, and the *Höchstrechnungszins* changes by instrument [R13]. No version date is asserted anywhere. Check every provision against the current consolidated text before relying on it. **A delib citation is a pointer, not a certificate.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-berufsunfaehigkeit-r1
+[R10]: #delib-berufsunfaehigkeit-r10
+[R11]: #delib-berufsunfaehigkeit-r11
+[R12]: #delib-berufsunfaehigkeit-r12
+[R13]: #delib-berufsunfaehigkeit-r13
+[R16]: #delib-berufsunfaehigkeit-r16
+[R17]: #delib-berufsunfaehigkeit-r17
+[R24]: #delib-berufsunfaehigkeit-r24
+[R25]: #delib-berufsunfaehigkeit-r25
+[R29]: #delib-berufsunfaehigkeit-r29
+[R3]: #delib-berufsunfaehigkeit-r3
+[R6]: #delib-berufsunfaehigkeit-r6
+[R8]: #delib-berufsunfaehigkeit-r8
+[R9]: #delib-berufsunfaehigkeit-r9
+[REG-R32]: #delib-reg-r32
+[std]: #delib-std
+<!-- END generated citation links -->

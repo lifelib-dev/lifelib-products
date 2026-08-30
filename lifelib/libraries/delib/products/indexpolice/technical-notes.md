@@ -1067,3 +1067,42 @@ In rough order of leverage for this product.
     yield of a price index is forgone entirely. The model represents all three **only** through the
     level of the Cap or the *Quote* it is given, so a user who raises the Cap without asking what the
     insurer could actually buy has silently removed them.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-indexpolice-r1
+[R11]: #delib-indexpolice-r11
+[R12]: #delib-indexpolice-r12
+[R14]: #delib-indexpolice-r14
+[R15]: #delib-indexpolice-r15
+[R16]: #delib-indexpolice-r16
+[R18]: #delib-indexpolice-r18
+[R19]: #delib-indexpolice-r19
+[R2]: #delib-indexpolice-r2
+[R20]: #delib-indexpolice-r20
+[R6]: #delib-indexpolice-r6
+[R7]: #delib-indexpolice-r7
+[R8]: #delib-indexpolice-r8
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R2]: #delib-reg-r2
+[REG-R24]: #delib-reg-r24
+[REG-R26]: #delib-reg-r26
+[REG-R28]: #delib-reg-r28
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R4]: #delib-reg-r4
+[REG-R45]: #delib-reg-r45
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R7]: #delib-reg-r7
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

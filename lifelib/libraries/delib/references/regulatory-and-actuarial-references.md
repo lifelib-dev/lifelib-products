@@ -1887,3 +1887,58 @@ scope note.
 blocked by organisation network policy, every host in the table above refused with HTTP 403, and the `WebSearch` budget that supplied
 every summary behind these fifty-six entries was exhausted before the biometric and tax sweeps could run at all. **Re-verify against
 the instrument before relying on anything here.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-reg-r1
+[R10]: #delib-reg-r10
+[R11]: #delib-reg-r11
+[R12]: #delib-reg-r12
+[R13]: #delib-reg-r13
+[R14]: #delib-reg-r14
+[R15]: #delib-reg-r15
+[R16]: #delib-reg-r16
+[R17]: #delib-reg-r17
+[R18]: #delib-reg-r18
+[R19]: #delib-reg-r19
+[R2]: #delib-reg-r2
+[R20]: #delib-reg-r20
+[R21]: #delib-reg-r21
+[R24]: #delib-reg-r24
+[R25]: #delib-reg-r25
+[R26]: #delib-reg-r26
+[R27]: #delib-reg-r27
+[R28]: #delib-reg-r28
+[R29]: #delib-reg-r29
+[R3]: #delib-reg-r3
+[R30]: #delib-reg-r30
+[R31]: #delib-reg-r31
+[R32]: #delib-reg-r32
+[R34]: #delib-reg-r34
+[R35]: #delib-reg-r35
+[R36]: #delib-reg-r36
+[R37]: #delib-reg-r37
+[R38]: #delib-reg-r38
+[R39]: #delib-reg-r39
+[R4]: #delib-reg-r4
+[R40]: #delib-reg-r40
+[R41]: #delib-reg-r41
+[R42]: #delib-reg-r42
+[R43]: #delib-reg-r43
+[R45]: #delib-reg-r45
+[R47]: #delib-reg-r47
+[R48]: #delib-reg-r48
+[R49]: #delib-reg-r49
+[R5]: #delib-reg-r5
+[R51]: #delib-reg-r51
+[R52]: #delib-reg-r52
+[R53]: #delib-reg-r53
+[R54]: #delib-reg-r54
+[R55]: #delib-reg-r55
+[R56]: #delib-reg-r56
+[R6]: #delib-reg-r6
+[R7]: #delib-reg-r7
+[R8]: #delib-reg-r8
+[R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

@@ -502,3 +502,29 @@ carriers produced no document at all**, so the variations table is six carriers 
 the six is quantified (gap 22). One Austrian wording was returned by a search and is **excluded**:
 the VVG, the DeckRV and the MindZV do not apply to it, and nothing anywhere in delib is cited to it
 (gap 24).
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-kapitallebensversicherung-r1
+[R10]: #delib-kapitallebensversicherung-r10
+[R12]: #delib-kapitallebensversicherung-r12
+[R13]: #delib-kapitallebensversicherung-r13
+[R14]: #delib-kapitallebensversicherung-r14
+[R15]: #delib-kapitallebensversicherung-r15
+[R17]: #delib-kapitallebensversicherung-r17
+[R18]: #delib-kapitallebensversicherung-r18
+[R19]: #delib-kapitallebensversicherung-r19
+[R2]: #delib-kapitallebensversicherung-r2
+[R22]: #delib-kapitallebensversicherung-r22
+[R23]: #delib-kapitallebensversicherung-r23
+[R24]: #delib-kapitallebensversicherung-r24
+[R27]: #delib-kapitallebensversicherung-r27
+[R3]: #delib-kapitallebensversicherung-r3
+[R4]: #delib-kapitallebensversicherung-r4
+[R5]: #delib-kapitallebensversicherung-r5
+[R6]: #delib-kapitallebensversicherung-r6
+[R7]: #delib-kapitallebensversicherung-r7
+[R8]: #delib-kapitallebensversicherung-r8
+[R9]: #delib-kapitallebensversicherung-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

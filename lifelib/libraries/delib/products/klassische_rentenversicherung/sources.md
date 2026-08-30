@@ -484,3 +484,28 @@ The caveats that most affect what these product documents can claim, in the orde
   2004 R derivation guideline was reissued 28 June 2023; Zurich's pack is Fassung 01/2026 and a
   Debeka AVB sibling is dated 1 July 2026. **Check every article number and every figure for later
   amendment before relying on it.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #delib-klassische_rentenversicherung-r10
+[R11]: #delib-klassische_rentenversicherung-r11
+[R12]: #delib-klassische_rentenversicherung-r12
+[R13]: #delib-klassische_rentenversicherung-r13
+[R17]: #delib-klassische_rentenversicherung-r17
+[R18]: #delib-klassische_rentenversicherung-r18
+[R19]: #delib-klassische_rentenversicherung-r19
+[R20]: #delib-klassische_rentenversicherung-r20
+[R21]: #delib-klassische_rentenversicherung-r21
+[R22]: #delib-klassische_rentenversicherung-r22
+[R24]: #delib-klassische_rentenversicherung-r24
+[R3]: #delib-klassische_rentenversicherung-r3
+[R4]: #delib-klassische_rentenversicherung-r4
+[R5]: #delib-klassische_rentenversicherung-r5
+[R6]: #delib-klassische_rentenversicherung-r6
+[R7]: #delib-klassische_rentenversicherung-r7
+[R8]: #delib-klassische_rentenversicherung-r8
+[R9]: #delib-klassische_rentenversicherung-r9
+[REG-R28]: #delib-reg-r28
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

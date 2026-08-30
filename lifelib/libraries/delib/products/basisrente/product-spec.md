@@ -718,3 +718,75 @@ is 30 826 € [unverified]; the deductible share has been 100 % since 2023; the 
 2058. **Every one of those moves** — the *Höchstbetrag* annually with the
 *Sozialversicherungsrechengrößen-Verordnung* [R20], the *Besteuerungsanteil* annually by construction.
 Check both, and every paragraph number in this document, before relying on anything here.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-basisrente-r1
+[R10]: #delib-basisrente-r10
+[R11]: #delib-basisrente-r11
+[R12]: #delib-basisrente-r12
+[R13]: #delib-basisrente-r13
+[R14]: #delib-basisrente-r14
+[R15]: #delib-basisrente-r15
+[R16]: #delib-basisrente-r16
+[R17]: #delib-basisrente-r17
+[R18]: #delib-basisrente-r18
+[R19]: #delib-basisrente-r19
+[R2]: #delib-basisrente-r2
+[R20]: #delib-basisrente-r20
+[R21]: #delib-basisrente-r21
+[R22]: #delib-basisrente-r22
+[R23]: #delib-basisrente-r23
+[R24]: #delib-basisrente-r24
+[R3]: #delib-basisrente-r3
+[R4]: #delib-basisrente-r4
+[R5]: #delib-basisrente-r5
+[R6]: #delib-basisrente-r6
+[R7]: #delib-basisrente-r7
+[R8]: #delib-basisrente-r8
+[R9]: #delib-basisrente-r9
+[REG-R10]: #delib-reg-r10
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R20]: #delib-reg-r20
+[REG-R22]: #delib-reg-r22
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R25]: #delib-reg-r25
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R38]: #delib-reg-r38
+[REG-R39]: #delib-reg-r39
+[REG-R40]: #delib-reg-r40
+[REG-R41]: #delib-reg-r41
+[REG-R43]: #delib-reg-r43
+[REG-R44]: #delib-reg-r44
+[REG-R45]: #delib-reg-r45
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R50]: #delib-reg-r50
+[REG-R52]: #delib-reg-r52
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[REG-R6]: #delib-reg-r6
+[REG-R7]: #delib-reg-r7
+[REG-R8]: #delib-reg-r8
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

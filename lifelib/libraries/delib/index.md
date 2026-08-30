@@ -344,3 +344,8 @@ products/pflegerentenversicherung/index
 
 references/regulatory-and-actuarial-references
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

@@ -718,3 +718,70 @@ of a **demonstrated change** rather than a re-decision; *Lebensstellung* as the 
 business can be reorganised so she can continue within her remaining capacity — but only where that
 is economically sensible and does not cost her a substantial part of her income or her leading
 position [R29] [REG-R36].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-berufsunfaehigkeit-r1
+[R10]: #delib-berufsunfaehigkeit-r10
+[R11]: #delib-berufsunfaehigkeit-r11
+[R12]: #delib-berufsunfaehigkeit-r12
+[R13]: #delib-berufsunfaehigkeit-r13
+[R14]: #delib-berufsunfaehigkeit-r14
+[R15]: #delib-berufsunfaehigkeit-r15
+[R16]: #delib-berufsunfaehigkeit-r16
+[R17]: #delib-berufsunfaehigkeit-r17
+[R18]: #delib-berufsunfaehigkeit-r18
+[R19]: #delib-berufsunfaehigkeit-r19
+[R2]: #delib-berufsunfaehigkeit-r2
+[R20]: #delib-berufsunfaehigkeit-r20
+[R21]: #delib-berufsunfaehigkeit-r21
+[R22]: #delib-berufsunfaehigkeit-r22
+[R23]: #delib-berufsunfaehigkeit-r23
+[R24]: #delib-berufsunfaehigkeit-r24
+[R25]: #delib-berufsunfaehigkeit-r25
+[R27]: #delib-berufsunfaehigkeit-r27
+[R28]: #delib-berufsunfaehigkeit-r28
+[R29]: #delib-berufsunfaehigkeit-r29
+[R3]: #delib-berufsunfaehigkeit-r3
+[R30]: #delib-berufsunfaehigkeit-r30
+[R31]: #delib-berufsunfaehigkeit-r31
+[R4]: #delib-berufsunfaehigkeit-r4
+[R5]: #delib-berufsunfaehigkeit-r5
+[R6]: #delib-berufsunfaehigkeit-r6
+[R7]: #delib-berufsunfaehigkeit-r7
+[R8]: #delib-berufsunfaehigkeit-r8
+[R9]: #delib-berufsunfaehigkeit-r9
+[REG-R1]: #delib-reg-r1
+[REG-R11]: #delib-reg-r11
+[REG-R14]: #delib-reg-r14
+[REG-R16]: #delib-reg-r16
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R37]: #delib-reg-r37
+[REG-R38]: #delib-reg-r38
+[REG-R39]: #delib-reg-r39
+[REG-R4]: #delib-reg-r4
+[REG-R41]: #delib-reg-r41
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R50]: #delib-reg-r50
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R8]: #delib-reg-r8
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

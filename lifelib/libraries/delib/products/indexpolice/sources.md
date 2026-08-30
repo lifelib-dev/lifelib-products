@@ -442,3 +442,24 @@ constrain the model:
    *Höchstrechnungszins* is reset by regulation. Every date, rate and paragraph number must be
    re-checked against the instrument before it is relied on. **A delib citation is a pointer, not a
    certificate.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-indexpolice-r1
+[R10]: #delib-indexpolice-r10
+[R11]: #delib-indexpolice-r11
+[R12]: #delib-indexpolice-r12
+[R13]: #delib-indexpolice-r13
+[R14]: #delib-indexpolice-r14
+[R15]: #delib-indexpolice-r15
+[R16]: #delib-indexpolice-r16
+[R2]: #delib-indexpolice-r2
+[R21]: #delib-indexpolice-r21
+[R22]: #delib-indexpolice-r22
+[R3]: #delib-indexpolice-r3
+[R4]: #delib-indexpolice-r4
+[R5]: #delib-indexpolice-r5
+[R6]: #delib-indexpolice-r6
+[R8]: #delib-indexpolice-r8
+[REG-R43]: #delib-reg-r43
+[std]: #delib-std
+<!-- END generated citation links -->

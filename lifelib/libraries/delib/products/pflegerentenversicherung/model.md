@@ -444,3 +444,36 @@ seventeen of them. The whole-model-point-table sweep is **not** here:
 python -m pytest lifelib/libraries/delib/tests/test_pflegerentenversicherung_de.py -q
 python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Pflege_DE_S
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R11]: #delib-pflegerentenversicherung-r11
+[R13]: #delib-pflegerentenversicherung-r13
+[R15]: #delib-pflegerentenversicherung-r15
+[R16]: #delib-pflegerentenversicherung-r16
+[R18]: #delib-pflegerentenversicherung-r18
+[R2]: #delib-pflegerentenversicherung-r2
+[R20]: #delib-pflegerentenversicherung-r20
+[R3]: #delib-pflegerentenversicherung-r3
+[R4]: #delib-pflegerentenversicherung-r4
+[R6]: #delib-pflegerentenversicherung-r6
+[R8]: #delib-pflegerentenversicherung-r8
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R34]: #delib-reg-r34
+[REG-R4]: #delib-reg-r4
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R51]: #delib-reg-r51
+[REG-R8]: #delib-reg-r8
+[std]: #delib-std
+<!-- END generated citation links -->

@@ -723,3 +723,68 @@ variable fee approach [REG-R55]; actuarial work sits under the DAV *Fachgrundsä
 *Verantwortlicher Aktuar*, a role the MaGo keeps distinct from the *versicherungsmathematische
 Funktion* [REG-R56] [REG-R11] [REG-R21]; policyholder protection in a failure runs through
 **Protektor** under §§ 221–236 VAG [REG-R12].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-klassische_rentenversicherung-r1
+[R10]: #delib-klassische_rentenversicherung-r10
+[R11]: #delib-klassische_rentenversicherung-r11
+[R12]: #delib-klassische_rentenversicherung-r12
+[R13]: #delib-klassische_rentenversicherung-r13
+[R14]: #delib-klassische_rentenversicherung-r14
+[R15]: #delib-klassische_rentenversicherung-r15
+[R16]: #delib-klassische_rentenversicherung-r16
+[R17]: #delib-klassische_rentenversicherung-r17
+[R18]: #delib-klassische_rentenversicherung-r18
+[R19]: #delib-klassische_rentenversicherung-r19
+[R2]: #delib-klassische_rentenversicherung-r2
+[R20]: #delib-klassische_rentenversicherung-r20
+[R21]: #delib-klassische_rentenversicherung-r21
+[R22]: #delib-klassische_rentenversicherung-r22
+[R23]: #delib-klassische_rentenversicherung-r23
+[R24]: #delib-klassische_rentenversicherung-r24
+[R3]: #delib-klassische_rentenversicherung-r3
+[R4]: #delib-klassische_rentenversicherung-r4
+[R5]: #delib-klassische_rentenversicherung-r5
+[R6]: #delib-klassische_rentenversicherung-r6
+[R7]: #delib-klassische_rentenversicherung-r7
+[R8]: #delib-klassische_rentenversicherung-r8
+[R9]: #delib-klassische_rentenversicherung-r9
+[REG-R10]: #delib-reg-r10
+[REG-R11]: #delib-reg-r11
+[REG-R12]: #delib-reg-r12
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R20]: #delib-reg-r20
+[REG-R21]: #delib-reg-r21
+[REG-R22]: #delib-reg-r22
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R25]: #delib-reg-r25
+[REG-R26]: #delib-reg-r26
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R38]: #delib-reg-r38
+[REG-R41]: #delib-reg-r41
+[REG-R45]: #delib-reg-r45
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R52]: #delib-reg-r52
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[REG-R6]: #delib-reg-r6
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

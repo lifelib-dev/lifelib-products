@@ -438,3 +438,35 @@ never reaching the premium, and the *Ablauf* year having no surrender.
 ```bash
 python -m pytest tests/test_kapitallebensversicherung_de.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-kapitallebensversicherung-r1
+[R10]: #delib-kapitallebensversicherung-r10
+[R14]: #delib-kapitallebensversicherung-r14
+[R15]: #delib-kapitallebensversicherung-r15
+[R2]: #delib-kapitallebensversicherung-r2
+[R20]: #delib-kapitallebensversicherung-r20
+[R22]: #delib-kapitallebensversicherung-r22
+[R28]: #delib-kapitallebensversicherung-r28
+[R29]: #delib-kapitallebensversicherung-r29
+[R3]: #delib-kapitallebensversicherung-r3
+[R30]: #delib-kapitallebensversicherung-r30
+[R4]: #delib-kapitallebensversicherung-r4
+[R5]: #delib-kapitallebensversicherung-r5
+[R7]: #delib-kapitallebensversicherung-r7
+[R8]: #delib-kapitallebensversicherung-r8
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R2]: #delib-reg-r2
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R34]: #delib-reg-r34
+[REG-R45]: #delib-reg-r45
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R53]: #delib-reg-r53
+[REG-R6]: #delib-reg-r6
+[std]: #delib-std
+<!-- END generated citation links -->

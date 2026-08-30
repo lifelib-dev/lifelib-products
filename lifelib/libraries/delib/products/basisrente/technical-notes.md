@@ -1141,3 +1141,43 @@ In rough order of leverage for a German Schicht-1 block:
     Every parameter that would normally be sourced to a carrier is **[std]**. A calibration pass
     against a real *Produktinformationsblatt*, a real *Bedingungswerk* and a real declared-rate history
     is required before any quantitative use of this model.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-basisrente-r1
+[R14]: #delib-basisrente-r14
+[R15]: #delib-basisrente-r15
+[R16]: #delib-basisrente-r16
+[R17]: #delib-basisrente-r17
+[R2]: #delib-basisrente-r2
+[R20]: #delib-basisrente-r20
+[R23]: #delib-basisrente-r23
+[R4]: #delib-basisrente-r4
+[R6]: #delib-basisrente-r6
+[R7]: #delib-basisrente-r7
+[R8]: #delib-basisrente-r8
+[R9]: #delib-basisrente-r9
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R34]: #delib-reg-r34
+[REG-R39]: #delib-reg-r39
+[REG-R4]: #delib-reg-r4
+[REG-R40]: #delib-reg-r40
+[REG-R41]: #delib-reg-r41
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R6]: #delib-reg-r6
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

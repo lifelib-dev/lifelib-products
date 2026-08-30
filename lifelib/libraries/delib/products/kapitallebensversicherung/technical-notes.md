@@ -1128,3 +1128,58 @@ In rough order of leverage on this product.
    *Stornoabzug*, sub judice [S3] [R22] [R30], and Allianz's declared rate [S11]. **A calibration
    pass against a *Produktinformationsblatt*, a PRIIP-*Basisinformationsblatt* and a named insurer's
    § 28 RechVersV *Anhang* disclosure [REG-R54] is required before any quantitative use.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-kapitallebensversicherung-r1
+[R10]: #delib-kapitallebensversicherung-r10
+[R12]: #delib-kapitallebensversicherung-r12
+[R14]: #delib-kapitallebensversicherung-r14
+[R15]: #delib-kapitallebensversicherung-r15
+[R19]: #delib-kapitallebensversicherung-r19
+[R2]: #delib-kapitallebensversicherung-r2
+[R20]: #delib-kapitallebensversicherung-r20
+[R22]: #delib-kapitallebensversicherung-r22
+[R24]: #delib-kapitallebensversicherung-r24
+[R25]: #delib-kapitallebensversicherung-r25
+[R26]: #delib-kapitallebensversicherung-r26
+[R28]: #delib-kapitallebensversicherung-r28
+[R29]: #delib-kapitallebensversicherung-r29
+[R3]: #delib-kapitallebensversicherung-r3
+[R30]: #delib-kapitallebensversicherung-r30
+[R4]: #delib-kapitallebensversicherung-r4
+[R5]: #delib-kapitallebensversicherung-r5
+[R6]: #delib-kapitallebensversicherung-r6
+[R7]: #delib-kapitallebensversicherung-r7
+[R8]: #delib-kapitallebensversicherung-r8
+[R9]: #delib-kapitallebensversicherung-r9
+[REG-R1]: #delib-reg-r1
+[REG-R10]: #delib-reg-r10
+[REG-R12]: #delib-reg-r12
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R24]: #delib-reg-r24
+[REG-R26]: #delib-reg-r26
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R34]: #delib-reg-r34
+[REG-R4]: #delib-reg-r4
+[REG-R45]: #delib-reg-r45
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R52]: #delib-reg-r52
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R6]: #delib-reg-r6
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

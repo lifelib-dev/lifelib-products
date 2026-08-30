@@ -457,3 +457,25 @@ Two items are living texts and move on their own schedule (gap 24): the *Höchst
 every year with the *Sozialversicherungsrechengrößen-Verordnung* [R20], and the
 *Besteuerungsanteil* changes every year by construction [R4] [R6]. Check both, and every
 paragraph number in these documents, before relying on anything here.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-basisrente-r1
+[R11]: #delib-basisrente-r11
+[R12]: #delib-basisrente-r12
+[R14]: #delib-basisrente-r14
+[R15]: #delib-basisrente-r15
+[R17]: #delib-basisrente-r17
+[R19]: #delib-basisrente-r19
+[R2]: #delib-basisrente-r2
+[R20]: #delib-basisrente-r20
+[R21]: #delib-basisrente-r21
+[R24]: #delib-basisrente-r24
+[R4]: #delib-basisrente-r4
+[R5]: #delib-basisrente-r5
+[R6]: #delib-basisrente-r6
+[R7]: #delib-basisrente-r7
+[R9]: #delib-basisrente-r9
+[REG-R40]: #delib-reg-r40
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

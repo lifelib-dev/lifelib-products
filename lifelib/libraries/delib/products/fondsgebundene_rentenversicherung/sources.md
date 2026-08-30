@@ -484,3 +484,21 @@ EStG and InvStG all change, the PRIIPs RTS was reworked with effect from 1 Janua
 `[unverified]`, and the *Höchstrechnungszins* changed on 1 January 2025 `[unverified]` — so
 every paragraph number and every date must be re-checked against the instrument before anything
 in these documents is relied on.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-fondsgebundene_rentenversicherung-r1
+[R10]: #delib-fondsgebundene_rentenversicherung-r10
+[R11]: #delib-fondsgebundene_rentenversicherung-r11
+[R12]: #delib-fondsgebundene_rentenversicherung-r12
+[R13]: #delib-fondsgebundene_rentenversicherung-r13
+[R14]: #delib-fondsgebundene_rentenversicherung-r14
+[R20]: #delib-fondsgebundene_rentenversicherung-r20
+[R22]: #delib-fondsgebundene_rentenversicherung-r22
+[R23]: #delib-fondsgebundene_rentenversicherung-r23
+[R25]: #delib-fondsgebundene_rentenversicherung-r25
+[R4]: #delib-fondsgebundene_rentenversicherung-r4
+[R5]: #delib-fondsgebundene_rentenversicherung-r5
+[R7]: #delib-fondsgebundene_rentenversicherung-r7
+[R8]: #delib-fondsgebundene_rentenversicherung-r8
+[std]: #delib-std
+<!-- END generated citation links -->

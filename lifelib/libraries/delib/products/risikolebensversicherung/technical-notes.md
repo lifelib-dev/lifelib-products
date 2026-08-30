@@ -1107,3 +1107,51 @@ In rough order of leverage for a German term-life block.
    research file gives no basis on which to split a German term tariff's expense result [R9]
    [REG-R18]. Each is a stated choice, and each is stated here rather than left to be discovered from
    a number that looks wrong.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-risikolebensversicherung-r1
+[R10]: #delib-risikolebensversicherung-r10
+[R11]: #delib-risikolebensversicherung-r11
+[R12]: #delib-risikolebensversicherung-r12
+[R13]: #delib-risikolebensversicherung-r13
+[R15]: #delib-risikolebensversicherung-r15
+[R16]: #delib-risikolebensversicherung-r16
+[R17]: #delib-risikolebensversicherung-r17
+[R18]: #delib-risikolebensversicherung-r18
+[R2]: #delib-risikolebensversicherung-r2
+[R21]: #delib-risikolebensversicherung-r21
+[R22]: #delib-risikolebensversicherung-r22
+[R23]: #delib-risikolebensversicherung-r23
+[R3]: #delib-risikolebensversicherung-r3
+[R5]: #delib-risikolebensversicherung-r5
+[R6]: #delib-risikolebensversicherung-r6
+[R8]: #delib-risikolebensversicherung-r8
+[R9]: #delib-risikolebensversicherung-r9
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R26]: #delib-reg-r26
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R3]: #delib-reg-r3
+[REG-R34]: #delib-reg-r34
+[REG-R46]: #delib-reg-r46
+[REG-R48]: #delib-reg-r48
+[REG-R52]: #delib-reg-r52
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[REG-R6]: #delib-reg-r6
+[REG-R8]: #delib-reg-r8
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

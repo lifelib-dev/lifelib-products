@@ -718,3 +718,69 @@ the EIOPA curve plus a risk margin [REG-R6]. IFRS 17 is a third, group-reporting
 **`delib` computes none of them:** the models publish gross best-estimate-style liability cash flows
 per model point, income-positive and **undiscounted**, and the discounting, the margins, the
 *Deckungsrückstellung* recursion, the ZZR, the RfB stock and the CSM belong to a layer above.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-sofortrente-r1
+[R10]: #delib-sofortrente-r10
+[R11]: #delib-sofortrente-r11
+[R13]: #delib-sofortrente-r13
+[R14]: #delib-sofortrente-r14
+[R18]: #delib-sofortrente-r18
+[R19]: #delib-sofortrente-r19
+[R2]: #delib-sofortrente-r2
+[R20]: #delib-sofortrente-r20
+[R21]: #delib-sofortrente-r21
+[R22]: #delib-sofortrente-r22
+[R23]: #delib-sofortrente-r23
+[R25]: #delib-sofortrente-r25
+[R4]: #delib-sofortrente-r4
+[R5]: #delib-sofortrente-r5
+[R8]: #delib-sofortrente-r8
+[REG-R1]: #delib-reg-r1
+[REG-R10]: #delib-reg-r10
+[REG-R11]: #delib-reg-r11
+[REG-R12]: #delib-reg-r12
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R22]: #delib-reg-r22
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R25]: #delib-reg-r25
+[REG-R26]: #delib-reg-r26
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R3]: #delib-reg-r3
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R37]: #delib-reg-r37
+[REG-R38]: #delib-reg-r38
+[REG-R4]: #delib-reg-r4
+[REG-R41]: #delib-reg-r41
+[REG-R45]: #delib-reg-r45
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R52]: #delib-reg-r52
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[REG-R6]: #delib-reg-r6
+[REG-R7]: #delib-reg-r7
+[REG-R8]: #delib-reg-r8
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

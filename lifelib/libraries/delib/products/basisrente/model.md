@@ -437,3 +437,27 @@ carried as a premium share that reaches no cash flow.
 python -m pytest lifelib/libraries/delib/tests/test_basisrente_de.py -q
 python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Basis_DE_A
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-basisrente-r1
+[R14]: #delib-basisrente-r14
+[R15]: #delib-basisrente-r15
+[R16]: #delib-basisrente-r16
+[R17]: #delib-basisrente-r17
+[REG-R1]: #delib-reg-r1
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R34]: #delib-reg-r34
+[REG-R39]: #delib-reg-r39
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R6]: #delib-reg-r6
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

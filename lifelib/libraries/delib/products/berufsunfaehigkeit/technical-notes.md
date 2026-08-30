@@ -1037,3 +1037,49 @@ In rough order of leverage for a German BU block:
     and everything in the premium that generates them. At 1,00 % over a 37-year contract it is a
     material lever on `prem_gross_level_pp()`, and both the rate and its effective date are
     `[unverified]` [R13] [REG-R15].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-berufsunfaehigkeit-r1
+[R10]: #delib-berufsunfaehigkeit-r10
+[R12]: #delib-berufsunfaehigkeit-r12
+[R13]: #delib-berufsunfaehigkeit-r13
+[R14]: #delib-berufsunfaehigkeit-r14
+[R15]: #delib-berufsunfaehigkeit-r15
+[R16]: #delib-berufsunfaehigkeit-r16
+[R17]: #delib-berufsunfaehigkeit-r17
+[R2]: #delib-berufsunfaehigkeit-r2
+[R20]: #delib-berufsunfaehigkeit-r20
+[R21]: #delib-berufsunfaehigkeit-r21
+[R23]: #delib-berufsunfaehigkeit-r23
+[R29]: #delib-berufsunfaehigkeit-r29
+[R3]: #delib-berufsunfaehigkeit-r3
+[R31]: #delib-berufsunfaehigkeit-r31
+[R5]: #delib-berufsunfaehigkeit-r5
+[R8]: #delib-berufsunfaehigkeit-r8
+[R9]: #delib-berufsunfaehigkeit-r9
+[REG-R1]: #delib-reg-r1
+[REG-R11]: #delib-reg-r11
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R18]: #delib-reg-r18
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R30]: #delib-reg-r30
+[REG-R34]: #delib-reg-r34
+[REG-R37]: #delib-reg-r37
+[REG-R4]: #delib-reg-r4
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R50]: #delib-reg-r50
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

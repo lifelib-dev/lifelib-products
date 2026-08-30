@@ -483,3 +483,27 @@ constrain the model:
    *Höchstrechnungszins* is reset by regulation. Every date, rate and paragraph number must be
    re-checked against the instrument before it is relied on. **A delib citation is a pointer, not
    a certificate.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-risikolebensversicherung-r1
+[R11]: #delib-risikolebensversicherung-r11
+[R12]: #delib-risikolebensversicherung-r12
+[R13]: #delib-risikolebensversicherung-r13
+[R14]: #delib-risikolebensversicherung-r14
+[R15]: #delib-risikolebensversicherung-r15
+[R17]: #delib-risikolebensversicherung-r17
+[R18]: #delib-risikolebensversicherung-r18
+[R19]: #delib-risikolebensversicherung-r19
+[R2]: #delib-risikolebensversicherung-r2
+[R20]: #delib-risikolebensversicherung-r20
+[R21]: #delib-risikolebensversicherung-r21
+[R23]: #delib-risikolebensversicherung-r23
+[R3]: #delib-risikolebensversicherung-r3
+[R4]: #delib-risikolebensversicherung-r4
+[R5]: #delib-risikolebensversicherung-r5
+[R6]: #delib-risikolebensversicherung-r6
+[R7]: #delib-risikolebensversicherung-r7
+[R8]: #delib-risikolebensversicherung-r8
+[R9]: #delib-risikolebensversicherung-r9
+[std]: #delib-std
+<!-- END generated citation links -->

@@ -718,3 +718,63 @@ admitted, the Zulage simplified into a proportional match and eligibility widene
 did not become law in that term [R26]. This specification therefore describes a **legacy** product,
 and no document in this library may assert a promulgation date or a BGBl citation for the 2026 act,
 neither of which is established [REG-R44].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-riester_rente-r1
+[R10]: #delib-riester_rente-r10
+[R11]: #delib-riester_rente-r11
+[R12]: #delib-riester_rente-r12
+[R13]: #delib-riester_rente-r13
+[R14]: #delib-riester_rente-r14
+[R15]: #delib-riester_rente-r15
+[R16]: #delib-riester_rente-r16
+[R17]: #delib-riester_rente-r17
+[R18]: #delib-riester_rente-r18
+[R19]: #delib-riester_rente-r19
+[R2]: #delib-riester_rente-r2
+[R20]: #delib-riester_rente-r20
+[R21]: #delib-riester_rente-r21
+[R22]: #delib-riester_rente-r22
+[R23]: #delib-riester_rente-r23
+[R24]: #delib-riester_rente-r24
+[R25]: #delib-riester_rente-r25
+[R26]: #delib-riester_rente-r26
+[R3]: #delib-riester_rente-r3
+[R4]: #delib-riester_rente-r4
+[R5]: #delib-riester_rente-r5
+[R6]: #delib-riester_rente-r6
+[R7]: #delib-riester_rente-r7
+[R8]: #delib-riester_rente-r8
+[R9]: #delib-riester_rente-r9
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R22]: #delib-reg-r22
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R38]: #delib-reg-r38
+[REG-R40]: #delib-reg-r40
+[REG-R41]: #delib-reg-r41
+[REG-R42]: #delib-reg-r42
+[REG-R43]: #delib-reg-r43
+[REG-R44]: #delib-reg-r44
+[REG-R45]: #delib-reg-r45
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R54]: #delib-reg-r54
+[REG-R6]: #delib-reg-r6
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

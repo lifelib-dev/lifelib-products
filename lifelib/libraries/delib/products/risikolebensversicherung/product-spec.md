@@ -828,4 +828,67 @@ is invented** [R23] (gap 20). The BGH's adjacent life-insurance authority — th
 is recorded in the cross-product library [REG-R36] and establishes that the court decides this area
 regularly and nothing about term assurance.
 
-
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-risikolebensversicherung-r1
+[R10]: #delib-risikolebensversicherung-r10
+[R11]: #delib-risikolebensversicherung-r11
+[R12]: #delib-risikolebensversicherung-r12
+[R13]: #delib-risikolebensversicherung-r13
+[R14]: #delib-risikolebensversicherung-r14
+[R15]: #delib-risikolebensversicherung-r15
+[R16]: #delib-risikolebensversicherung-r16
+[R17]: #delib-risikolebensversicherung-r17
+[R18]: #delib-risikolebensversicherung-r18
+[R19]: #delib-risikolebensversicherung-r19
+[R2]: #delib-risikolebensversicherung-r2
+[R20]: #delib-risikolebensversicherung-r20
+[R21]: #delib-risikolebensversicherung-r21
+[R22]: #delib-risikolebensversicherung-r22
+[R23]: #delib-risikolebensversicherung-r23
+[R3]: #delib-risikolebensversicherung-r3
+[R4]: #delib-risikolebensversicherung-r4
+[R5]: #delib-risikolebensversicherung-r5
+[R6]: #delib-risikolebensversicherung-r6
+[R7]: #delib-risikolebensversicherung-r7
+[R8]: #delib-risikolebensversicherung-r8
+[R9]: #delib-risikolebensversicherung-r9
+[REG-R1]: #delib-reg-r1
+[REG-R10]: #delib-reg-r10
+[REG-R11]: #delib-reg-r11
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R2]: #delib-reg-r2
+[REG-R20]: #delib-reg-r20
+[REG-R22]: #delib-reg-r22
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R26]: #delib-reg-r26
+[REG-R27]: #delib-reg-r27
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R3]: #delib-reg-r3
+[REG-R30]: #delib-reg-r30
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R33]: #delib-reg-r33
+[REG-R34]: #delib-reg-r34
+[REG-R35]: #delib-reg-r35
+[REG-R36]: #delib-reg-r36
+[REG-R45]: #delib-reg-r45
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R56]: #delib-reg-r56
+[REG-R6]: #delib-reg-r6
+[REG-R8]: #delib-reg-r8
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

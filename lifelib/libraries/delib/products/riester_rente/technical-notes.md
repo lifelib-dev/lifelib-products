@@ -1164,3 +1164,48 @@ In rough order of leverage on a German Riester block.
    arithmetic — rest on general knowledge corroborated only at one remove [REG-R42]. A calibration
    pass against the statute and against a real *Produktinformationsblatt* [S14] is required before
    any quantitative use of this model.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-riester_rente-r1
+[R10]: #delib-riester_rente-r10
+[R11]: #delib-riester_rente-r11
+[R12]: #delib-riester_rente-r12
+[R13]: #delib-riester_rente-r13
+[R14]: #delib-riester_rente-r14
+[R15]: #delib-riester_rente-r15
+[R16]: #delib-riester_rente-r16
+[R19]: #delib-riester_rente-r19
+[R20]: #delib-riester_rente-r20
+[R22]: #delib-riester_rente-r22
+[R23]: #delib-riester_rente-r23
+[R25]: #delib-riester_rente-r25
+[R4]: #delib-riester_rente-r4
+[R6]: #delib-riester_rente-r6
+[R8]: #delib-riester_rente-r8
+[R9]: #delib-riester_rente-r9
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R17]: #delib-reg-r17
+[REG-R18]: #delib-reg-r18
+[REG-R19]: #delib-reg-r19
+[REG-R20]: #delib-reg-r20
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R34]: #delib-reg-r34
+[REG-R40]: #delib-reg-r40
+[REG-R42]: #delib-reg-r42
+[REG-R43]: #delib-reg-r43
+[REG-R44]: #delib-reg-r44
+[REG-R46]: #delib-reg-r46
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R5]: #delib-reg-r5
+[REG-R53]: #delib-reg-r53
+[REG-R54]: #delib-reg-r54
+[REG-R55]: #delib-reg-r55
+[REG-R6]: #delib-reg-r6
+[std]: #delib-std
+[unverified]: #delib-unverified
+<!-- END generated citation links -->

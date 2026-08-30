@@ -438,3 +438,37 @@ the run.
 python -m pytest lifelib/libraries/delib/tests/test_berufsunfaehigkeit_de.py -q
 python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k BU_DE_S
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-berufsunfaehigkeit-r1
+[R10]: #delib-berufsunfaehigkeit-r10
+[R12]: #delib-berufsunfaehigkeit-r12
+[R13]: #delib-berufsunfaehigkeit-r13
+[R14]: #delib-berufsunfaehigkeit-r14
+[R15]: #delib-berufsunfaehigkeit-r15
+[R16]: #delib-berufsunfaehigkeit-r16
+[R17]: #delib-berufsunfaehigkeit-r17
+[R2]: #delib-berufsunfaehigkeit-r2
+[R20]: #delib-berufsunfaehigkeit-r20
+[R21]: #delib-berufsunfaehigkeit-r21
+[R29]: #delib-berufsunfaehigkeit-r29
+[R3]: #delib-berufsunfaehigkeit-r3
+[R5]: #delib-berufsunfaehigkeit-r5
+[R8]: #delib-berufsunfaehigkeit-r8
+[R9]: #delib-berufsunfaehigkeit-r9
+[REG-R1]: #delib-reg-r1
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R18]: #delib-reg-r18
+[REG-R2]: #delib-reg-r2
+[REG-R23]: #delib-reg-r23
+[REG-R24]: #delib-reg-r24
+[REG-R28]: #delib-reg-r28
+[REG-R29]: #delib-reg-r29
+[REG-R34]: #delib-reg-r34
+[REG-R4]: #delib-reg-r4
+[REG-R48]: #delib-reg-r48
+[REG-R50]: #delib-reg-r50
+[REG-R53]: #delib-reg-r53
+[std]: #delib-std
+<!-- END generated citation links -->

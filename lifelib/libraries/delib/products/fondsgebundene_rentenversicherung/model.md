@@ -439,3 +439,38 @@ model point sweep and the round trip — is asserted separately, once, in
 ```bash
 python -m pytest lifelib/libraries/delib/tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #delib-fondsgebundene_rentenversicherung-r1
+[R12]: #delib-fondsgebundene_rentenversicherung-r12
+[R13]: #delib-fondsgebundene_rentenversicherung-r13
+[R14]: #delib-fondsgebundene_rentenversicherung-r14
+[R15]: #delib-fondsgebundene_rentenversicherung-r15
+[R16]: #delib-fondsgebundene_rentenversicherung-r16
+[R17]: #delib-fondsgebundene_rentenversicherung-r17
+[R19]: #delib-fondsgebundene_rentenversicherung-r19
+[R2]: #delib-fondsgebundene_rentenversicherung-r2
+[R20]: #delib-fondsgebundene_rentenversicherung-r20
+[R22]: #delib-fondsgebundene_rentenversicherung-r22
+[R3]: #delib-fondsgebundene_rentenversicherung-r3
+[R5]: #delib-fondsgebundene_rentenversicherung-r5
+[R7]: #delib-fondsgebundene_rentenversicherung-r7
+[R8]: #delib-fondsgebundene_rentenversicherung-r8
+[R9]: #delib-fondsgebundene_rentenversicherung-r9
+[REG-R16]: #delib-reg-r16
+[REG-R18]: #delib-reg-r18
+[REG-R28]: #delib-reg-r28
+[REG-R31]: #delib-reg-r31
+[REG-R32]: #delib-reg-r32
+[REG-R34]: #delib-reg-r34
+[REG-R36]: #delib-reg-r36
+[REG-R41]: #delib-reg-r41
+[REG-R45]: #delib-reg-r45
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R6]: #delib-reg-r6
+[REG-R7]: #delib-reg-r7
+[REG-R9]: #delib-reg-r9
+[std]: #delib-std
+<!-- END generated citation links -->
