@@ -918,8 +918,11 @@ covers all 27 years, not only the six displayed:
 | 27 | 66 | 0.430446 | 1,033.07 | 538.84 | 0.00 | 41,875.02 | 22.82 | 419.94 | 0.00 | 41,097.09 | −41,403.61 |
 | **Total** | | | **42,474.94** | **4,636.36** | **14,723.29** | **41,875.02** | **2,376.60** | **6,712.41** | **16,521.86** | — | **−21,136.33** |
 
-Summed at full precision and then rounded, as above; `claims_death`, `expenses` and `net_cf` again
-differ from the sum of the rounded cells, here by two cents, one cent and one cent.
+Summed at full precision and then rounded, as above; here **four** of the eight totals differ from
+the sum of the twenty-seven rounded cells rather than three: `claims_death` by two cents
+(4 636,36 € against 4 636,34 €), and `expenses`, `index_credit` and `net_cf` by one cent each
+(2 376,60 € against 2 376,59 €, 16 521,86 € against 16 521,85 €, and −21 136,33 € against
+−21 136,34 €). `index_credit` agrees at the cent on the Cap design and does not here.
 
 The single most instructive row is `t = 10`. On the Cap design that year credits **nothing**; on the
 *Quote* design the same twelve returns credit `max(0,60 × 6,4402 %, 0) = 3,8641 %` of `G(10)`, which is

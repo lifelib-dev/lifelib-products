@@ -923,9 +923,9 @@ instalments are collected on an average of 0.860971 of a policy, so roughly one 
 them is never collected at all, which is the insurer's acquisition-cost problem in one number:
 it pays 1,800.00 at inception and collects 1,549.75. The shortfall is an average over the
 sixty months and not the attrition at the end of them: by month 60 `pols_if` is 0.735054, so
-about one policy in four has already gone. The last line is the one that
-matters most: **64,869.36 of benefits against 40,586.28 of premiums, and only 4.39 of it an
-insurer cost** — the rest is the policyholder's own units coming back.
+about one policy in four has already gone. The last line is the one that matters most:
+**64,869.36 of benefits against 40,586.28 of premiums, and only 4.39 of it an insurer cost** —
+the rest is the policyholder's own units coming back.
 
 **The annuity the contract exists for.** The *Fondsguthaben* at *Rentenbeginn* is
 **129,699.88 EUR**. The *Rentenfaktor* is read at `annuity_age = 67`, not at `age(360) = 66`;
