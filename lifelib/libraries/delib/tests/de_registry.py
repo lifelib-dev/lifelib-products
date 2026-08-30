@@ -96,49 +96,42 @@ MODELS = {
 # ``tools/`` in the repository root — but it is committed, because a generated-at-run-time
 # expectation would assert nothing at all.
 INPUT_FILES = {
-    "Basis_DE_A": {
-        "model_point_table.csv", "mort_table.csv", "surplus_table.csv",
-        "rentenfaktor_table.csv", "charge_table.csv", "behaviour_table.csv",
-        "option_table.csv",
-    },
     "BU_DE_S": {
-        "model_point_table.csv",
-        "inception_table.csv",
-        "claim_duration_table.csv",
-        "mortality_table.csv",
-        "occupation_table.csv",
-        "lapse_table.csv",
-        "freq_loading_table.csv",
-    },
-    "FRV_DE_S": set(),
-    "Index_DE_A": set(),
+        "claim_duration_table.csv", "freq_loading_table.csv", "inception_table.csv",
+        "lapse_table.csv", "model_point_table.csv", "mortality_table.csv",
+        "occupation_table.csv"},
+    "Basis_DE_A": {
+        "behaviour_table.csv", "charge_table.csv", "model_point_table.csv",
+        "mort_table.csv", "option_table.csv", "rentenfaktor_table.csv",
+        "surplus_table.csv"},
+    "FRV_DE_S": {
+        "charge_table.csv", "fund_scenario_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv"},
+    "Index_DE_A": {
+        "election_table.csv", "freq_load_table.csv", "index_param_table.csv",
+        "index_return_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv", "surplus_rate_table.csv"},
     "KLV_DE_A": {
-        "model_point_table.csv",
-        "mort_table.csv",
-        "lapse_table.csv",
-        "surplus_rate_table.csv",
-        "cost_table.csv",
-        "freq_loading_table.csv",
-        "deckrv_table.csv",
-    },
+        "cost_table.csv", "freq_loading_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "surplus_rate_table.csv"},
     "Pflege_DE_S": {
-        "model_point_table.csv",
-        "benefit_scale_table.csv",
-        "mort_table.csv",
-        "incidence_table.csv",
-        "care_table.csv",
-        "lapse_table.csv",
-        "surrender_table.csv",
-        "expense_table.csv",
-        "basis_table.csv",
-    },
-    "RLV_DE_A": set(),
-    "RV_DE_A": set(),
-    "Riester_DE_A": set(),
+        "basis_table.csv", "benefit_scale_table.csv", "care_table.csv",
+        "expense_table.csv", "incidence_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "surrender_table.csv"},
+    "RLV_DE_A": {
+        "benefit_schedule.csv", "freq_loading_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "nvg_schedule.csv"},
+    "RV_DE_A": {
+        "charge_table.csv", "decl_rate_table.csv", "freq_load_table.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv", "param_table.csv",
+        "rentenfaktor_table.csv"},
+    "Riester_DE_A": {
+        "annuity_mort_table.csv", "freq_loading.csv", "income_schedule.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_table_accum.csv",
+        "surplus_scenario.csv", "zulage_schedule.csv"},
     "Sofort_DE_S": {
-        "model_point_table.csv", "mort_table.csv", "improvement_table.csv",
-        "surplus_scale_table.csv", "hoechstrechnungszins_table.csv",
-    },
+        "improvement_table.csv", "model_point_table.csv", "mort_table.csv",
+        "surplus_scale_table.csv"},
 }
 
 

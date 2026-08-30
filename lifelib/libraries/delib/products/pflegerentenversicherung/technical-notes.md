@@ -866,7 +866,7 @@ is omitted rather than printed as 780 zeros. The equivalence premium is
 **The Total row is summed over all 780 rows at full precision and then rounded**, not summed from the
 rounded cells, and here the two visibly differ: summing the rounded cells gives premiums 15,857.92,
 `claims_annuity` 13,200.02, `claims_lapse` 2,191.67, expenses 1,941.02, `claim_expenses` 52.58 and
-`net_cf` -1,527.51 — the last of these 0,14 € away. The gap is not noise that cancels. **108 of the
+`net_cf` -1,527.51 — the last of these 0,14 € away. The gap is not noise that cancels. **107 of the
 780 `claims_annuity` cells are positive amounts below half a cent**, and every one of them rounds
 down to 0.00, so the error accumulates in one direction; `claim_expenses` does the same, its 1,50 €
 per payment falling on a paying population of the order of 1e-5 for the first two decades.
