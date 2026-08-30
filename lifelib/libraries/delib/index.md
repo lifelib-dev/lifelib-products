@@ -219,7 +219,7 @@ for *Pflege* — and those tables are the DAV's property, are not published open
 [REG-R49] [REG-R50] [REG-R51]. What ships beside each model is a construction, anchored so
 that the model's own worked example reproduces exactly, with the anchor named in the `Data`
 docstring: `mort_rate_1st(M, 37) = 0.001200` on `KLV_DE_A`, `q_base(M, 50) = 0.002000` on
-`RV_DE_A`, `q(37) = 0.00080` on `FRV_DE_S`, `qx(67) = 0.014000` on `Basis_DE_A`,
+`RV_DE_A`, `qx_tariff(37) = 0.00080` on `FRV_DE_S`, `qx(67) = 0.014000` on `Basis_DE_A`,
 `ann_factor() = 20.87222879` on `Riester_DE_A`, `inc_rate(30) = 0.001100` on `BU_DE_S`. Each
 `model.md` also states what a replacement must **preserve** rather than what it must equal —
 that DAV 2004 R's surface is *generational*, so it is read at attained age and birth cohort
@@ -343,16 +343,24 @@ restating it, and each pointer states what it inherits and where it deviates:
   *Bruttobeitrag* / *Zahlbeitrag* split is derived in. It does **not** extend to the two
   biometric models: `BU_DE_S` and `Pflege_DE_S` are monthly multi-state projections and share no
   recursion with it at all.
-- **`BU_DE_S` and `Pflege_DE_S` share the monthly cohort-vector multi-state chassis**, and share
+- **`BU_DE_S` and `Pflege_DE_S` share the monthly multi-state chassis**, and share
   it with frlib's [assurance dépendance](../frlib/products/dependance/index.md). `dis_cohorts`
   and `dep_cohorts`, `pols_dis_dur(t, z)` against `pols_pg(t, g)` against `pols_part` /
-  `pols_tot`, and `cohort_len`, `pols_prem`, `pols_recovery`, `check_states` and
-  `check_pols_roll_fwd` mean the same thing on all three. Each `model.md` tabulates where they
-  part: the **ledger dimension** differs — a claim-duration cohort in BU, a *Pflegegrad* in the
-  LTC annuity, a two-level French severity in `Dep_FR_S` — and only the German LTC model's is a
-  benefit *schedule*. `BU_DE_S`'s `pols_runoff_slot` is the counterpart of `Dep_FR_S`'s
-  `pols_red`: a small holding ledger a naive implementation omits, and a first-order error in
-  both.
+  `pols_tot`, and `pols_prem`, `check_states` and `check_pols_roll_fwd` mean the same thing on
+  all three. That is the whole of the shared vocabulary, and the two names a reader might
+  expect beside them are worth naming as **absent**. `cohort_len` truncates a claim-duration
+  cohort vector and so exists only where there is one — `BU_DE_S` and `Dep_FR_S`;
+  `Pflege_DE_S`'s ledger is graded rather than aged and carries no such name. And the
+  return-to-active transition is named three ways because it is not one transition:
+  `Dep_FR_S`'s `pols_recovery` returns a life to autonomy, `Pflege_DE_S`'s `pols_reactiv`
+  returns a *Pflegegrad* 1 life to `pols_act` paying and exposed to lapse in the same month,
+  while `BU_DE_S`'s `pols_recovery` returns no one — it ends the benefit into a three-month
+  run-off out of which the life reappears as `pols_reactivation`. Each `model.md` tabulates
+  the rest of where they part: the **ledger dimension** differs — a claim-duration cohort in
+  BU, a *Pflegegrad* in the LTC annuity, a two-level French severity in `Dep_FR_S` — and only
+  the German LTC model's is a benefit *schedule*. `BU_DE_S`'s `pols_runoff_slot` is the
+  counterpart of `Dep_FR_S`'s `pols_red`: a small holding ledger a naive implementation omits,
+  and a first-order error in both.
 - **`FRV_DE_S` shares the unit-linked chassis with frlib's
   [unités de compte](../frlib/products/assurance_vie_uc/index.md) contract**, `UC_FR_S`, and the
   shared names mean the same thing on both: `av_pp` / `av_pp_at` for the fund at its named
@@ -550,7 +558,7 @@ with the RechVersV and BerVersV, IFRS 17 and the Variable Fee Approach, and the 
 The product-relevance matrix runs the fifty-six entries against the ten products in three
 states — load-bearing, qualified or background, and not relevant — so a reader can see at a
 glance that R51 (DAV 2008 P and the *Pflegegrad* break) is load-bearing for one product and
-background for two, while R34 (unisex) and R47 (the first- and second-order bases) are
+background for three, while R34 (unisex) and R47 (the first- and second-order bases) are
 load-bearing for all ten. One instrument is deliberately **absent** from the matrix and carries
 no id: BaFin's *Kapitalanlagerundschreiben* and the *Anlageverordnung* it interprets bind small
 insurers under §§ 212–217 VAG and domestic *Pensionskassen* and *Pensionsfonds*, not the
@@ -622,11 +630,19 @@ each `_research/<slug>.md` closes with its own numbered register.
   every factor in the library is a construction with its derivation printed beside it: 32,00 € at
   age 67 on `RV_DE_A`, 25,00 € on `FRV_DE_S` derived as `10 000 / (12 · T_eff)` at a 0 %
   *Rechnungszins* rather than observed, 31,50 € on `Basis_DE_A`, 29,00 € guaranteed on
-  `Riester_DE_A`, 25,00 € on `Index_DE_A`. Each is anchored so that **both** branches of
-  `max(garantierter, aktueller)` are exercised by a shipped model point, which is the point of
-  choosing them, and none may be quoted as a market rate. `Index_DE_A` and `RV_DE_A` additionally
-  record that their [std] *Rentenfaktor* and their [std] annuity table are **not calibrated to
-  each other**, which is why the annuity there is reported and not computed.
+  `Riester_DE_A`, 25,00 € on `Index_DE_A`. **Both** branches of `max(garantierter, aktueller)`
+  are exercised by a shipped model point on `RV_DE_A` and `Basis_DE_A` — the anchor cell
+  converts at the current factor on each and model point 13 at the guarantee — and that is the
+  point of choosing those two levels. On the other three the base run does not separate the
+  branches: `Riester_DE_A`'s guaranteed 29,00 € wins on all
+  thirteen points, and the current factor is lifted above it only by a test that substitutes a
+  doubled annuitant mortality table; `FRV_DE_S` ships the two equal on twelve points and the
+  current factor above the guarantee on point 13, so its guarantee never strictly binds; and
+  `Index_DE_A`'s two factors are `Projection` References both fixed at 25,00 € rather than
+  model-point columns, so neither branch is distinguished anywhere in the shipped run. None may
+  be quoted as a market rate. `Index_DE_A` and `RV_DE_A` additionally record that their [std]
+  *Rentenfaktor* and their [std] annuity table are **not calibrated to each other**, which is
+  why the annuity there is reported and not computed.
 - **No behavioural rate is sourced, on any product.** No German *Stornoquote* was established for
   any of the ten at any duration; the two GDV market-wide measures for 2024 — 2,72 % and 1,2 % —
   are irreconcilable from the search evidence, neither is product-specific or by duration, and
