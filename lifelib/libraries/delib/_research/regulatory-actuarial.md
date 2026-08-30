@@ -333,7 +333,7 @@ blank = not relevant.
 | R27 | VVG § 163 — Prämien- und Leistungsänderung | (x) | (x) | | | | | | (x) | x | x |
 | R28 | VVG §§ 165–170 — paid-up, surrender, Rückkaufswert | x | x | x | x | (x) | x | (x) | (x) | x | x |
 | R29 | VVG §§ 172–177 — Berufsunfähigkeitsversicherung | (x) | (x) | | | (x) | | | (x) | x | (x) |
-| R30 | VVG §§ 19, 37, 38, 157, 158 | x | x | (x) | (x) | (x) | (x) | (x) | x | x | x |
+| R30 | VVG §§ 19, 21, 37, 38, 157, 158 | x | x | (x) | (x) | (x) | (x) | (x) | x | x | x |
 | R31 | VVG §§ 6, 7, 1a, 7b, 7c, 214 and the VVG-InfoV | x | x | x | x | x | x | x | x | x | x |
 | R32 | PRIIPs — VO (EU) 1286/2014 and the RTS | (x) | (x) | x | x | (x) | (x) | (x) | | | |
 | R33 | IDD — RL (EU) 2016/97, transposition, § 34d GewO | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
@@ -1478,7 +1478,7 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   insurance" wording was reported by one summary only.
 - Products: BU load-bearing; PFL qualified and contested; KLV, RV, RLV, BAS qualified (rider forms).
 
-### R30. VVG §§ 19, 37, 38, 157 and 158 — Anzeigepflicht, Zahlungsverzug, Altersangabe, Gefahränderung
+### R30. VVG §§ 19, 21, 37, 38, 157 and 158 — Anzeigepflicht, Zahlungsverzug, Altersangabe, Gefahränderung
 - Publisher: Bundesamt für Justiz; mirrors at `buzer.de`, `dejure.org`, `juraforum.de` and practitioner PDFs including a
   *Versicherer im Raum der Kirchen* leaflet and an Allrecht *VVG-Belehrung § 19* tariff document; a Bavarian consumer-portal
   page for §§ 37/38. Doc type: statutory sections plus two live market instruction texts.

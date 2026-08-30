@@ -2,9 +2,12 @@
 
 Source ids [S#]/[R#] are carried verbatim from `_research/sofortrente.md` (the citation ground
 truth for this product) and are **frozen — never renumber**. All fifteen primary sources
-**S1–S15** are cited by `product-spec.md` or `technical-notes.md` and appear below. Nine of the
-twenty-five product-level references are **not** cited by either document and are therefore
-absent, leaving gaps in the R numbering: **R3** (VVG § 153, *Überschussbeteiligung*), **R7**
+**S1–S15** are cited by `product-spec.md` or `technical-notes.md` and appear below. An entry appears
+here if **any** document or shipped input file of this product cites it, which is why the R section
+also carries **R12**: no specification document cites it, but `model.md` does and so does every row
+of `improvement_table.csv`. Eight of the twenty-five product-level references are cited by no
+document and no input file and are therefore absent, leaving gaps in the R numbering: **R3**
+(VVG § 153, *Überschussbeteiligung*), **R7**
 (DeckRV § 2, the *Höchstrechnungszins*), **R15** (MindZV), **R16** (VAG §§ 138–140 and the
 *Zinszusatzreserve*), **R17** (VVG-InfoV and the PRIIPs Regulation) and **R24** (the unisex
 rule) are each carried by the cross-product reference library under a frozen [REG-R#] id — as
@@ -12,12 +15,9 @@ rule) are each carried by the cross-product reference library under a frozen [RE
 [REG-R32] and [REG-R34] respectively — and the product documents cite them from there, because
 library-wide numbering is what lets a reader compare ten products against one instrument;
 **R6** (VVG §§ 150, 159, 160, the *Bezugsberechtigung*) is likewise carried at [REG-R26], and
-the beneficiary is in any event a pass-through that no cell in the model reads; **R9** (GDV and
-HDI media items on the 2025 rate increase) supported no claim the two documents make that
-[REG-R15] does not carry with a statutory instrument behind it; and **R12** (the DGVFM,
-General Re and *qx-Club* expositions of DAV 2004 R) established **no content at all**, only
-three presentation dates, and is cited in `model.md` alone, beside [R10], to record what a
-later build should fetch to substantiate the first-order margin. Access date for all sources:
+the beneficiary is in any event a pass-through that no cell in the model reads; and **R9** (GDV
+and HDI media items on the 2025 rate increase) supported no claim the two documents make that
+[REG-R15] does not carry with a statutory instrument behind it. Access date for all sources:
 **2026-08-29**. No sources were newly added at drafting. Cross-product [REG-R#] tags are
 listed in their own section at the end.
 
@@ -192,7 +192,7 @@ established at any carrier for any year**.
 
 ### R2 — VVG § 169, *Rückkaufswert*
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provision
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` — recorded by the sibling file [R1 there](#delib-sofortrente-r1) as returned by a search
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` — returned by a search and recorded as R1 in the sibling file `_research/klassische_rentenversicherung.md`
 - Retrieved: no — egress blocked; the content used is the sibling file's search record; the paragraph structure and the five-year spreading rule are `[unverified]`
 - Used for: **its boundary, which is the point.** § 169 is displaced by § 168 Abs. 3 [R1] the moment the *Rentenbezug* begins, so `Sofort_DE_S` publishes **no surrender-value cells, no *Stornoabzug* and no five-year cost-spreading rule** — a specification rather than an omission, stated in that form in both documents and asserted by the test module's absent-names check
 
@@ -201,21 +201,21 @@ established at any carrier for any year**.
 ### R4 — VVG § 163, *Anpassung der Prämie oder der Vertragsbestimmungen*
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provision, with commentary
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__163.html` — canonical form, `[unverified]`
-- Retrieved: no — egress blocked; established at commentary level only, through the sibling file [R3, R17 there](#delib-reg-r3)
+- Retrieved: no — egress blocked; established at commentary level only, through R3 and R17 of the sibling file `_research/klassische_rentenversicherung.md`
 - Used for: the **immutability of the *garantierte Rente***. Both documents cite it, with [REG-R27], for § 163 being the only channel by which a German insurer could change the guaranteed annuity after conclusion, for that channel being narrow, and for the Landgericht Köln having narrowed it further by holding a low-interest phase to be entrepreneurial risk that cannot be passed to policyholders — **the case reference, date and parties were not established**. The model treats `annuity_guar_pp(t)` as level for life and records § 163 as a model risk
 
 (delib-sofortrente-r5)=
 
 ### R5 — VVG § 165, *Prämienfreie Versicherung*, and § 166, *Kündigung des Versicherers*
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provisions
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` — recorded by the sibling file [R2 there](#delib-sofortrente-r2) as returned by a search
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` — returned by a search and recorded as R2 in the sibling file `_research/klassische_rentenversicherung.md`
 - Retrieved: no — egress blocked
 - Used for: **a boundary again.** § 165 gives the policyholder of a contract with recurring premiums the right to convert it to a premium-free one; a *Sofortrente* is bought with a single *Einmalbeitrag*, so **there is no future premium to cease and § 165 has no application to this product at all.** Both documents cite it for the absence of a `Beitragsfreistellung` decrement being a specification rather than a simplification
 
 (delib-sofortrente-r8)=
 
 ### R8 — DAV recommendations on the *Höchstrechnungszins* for 2025 and 2026
-- Publisher / doc type: Deutsche Aktuarvereinigung e. V. (DAV), Cologne; press items, recorded by the sibling file [R8, R9 there](#delib-sofortrente-r8) by title
+- Publisher / doc type: Deutsche Aktuarvereinigung e. V. (DAV), Cologne; press items, recorded by title as R8 and R9 in the sibling file `_research/klassische_rentenversicherung.md`
 - URL: not established
 - Retrieved: no — egress blocked; the two titles are the sibling file's search record
 - Used for: the single point that a contract written in 2026 sits on the **same interest basis** as one written in 2025, the DAV having recommended 1,0 % for both — which matters here because tariff vintage and contract vintage are the same date. Cited in `product-spec.md` beside [REG-R15] and [REG-R56]; the closing row of `hoechstrechnungszins_table.csv` carries it in its `provenance` tag
@@ -224,7 +224,7 @@ established at any carrier for any year**.
 
 ### R10 — DAV, "Herleitung der DAV-Sterbetafel 2004 R für Rentenversicherungen"
 - Publisher / doc type: Deutsche Aktuarvereinigung e. V.; *DAV-Richtlinie*, the profession's derivation guideline for the annuity table. In use since June 2004, for new business from 2005, the DAV document dated 22 February 2005, the derivation guideline reissued 28 June 2023
-- URL: not established; the document and its 2023 reissue are recorded by the sibling file [R12 there](#delib-reg-r12)
+- URL: not established; the document and its 2023 reissue are recorded as R12 in the sibling file `_research/klassische_rentenversicherung.md`
 - Retrieved: no — egress blocked; the content used is the sibling file's search record. **DAV 2004 R is DAV property, is not public and is not redistributed by delib**
 - Used for: **the mortality basis of this product, structurally.** Four claims rest on it and each shapes the model. That DAV 2004 R is a ***Generationentafel***, mortality given per birth cohort with the expected improvement **inside** the table — which is why `birth_year` is a model point attribute, why `mort_rate_gen` takes a cohort, and why a period proxy is pitfall 8. That its component structure carries a **mortality trend in both a first- and a second-order version** — which is why the shipped proxy's first-order margin reaches the trend as well as the level and why collapsing them is pitfall 9. That first-order probabilities carry safety margins relative to the second-order realistic ones, and that for an annuity prudent means **lighter** mortality. And that the table carries an *Altersverschiebung* whose **convention was not established**, which `technical-notes.md` records as a condition on any replacement table (research gap 12)
 
@@ -232,15 +232,23 @@ established at any carrier for any year**.
 
 ### R11 — DAV 2004 R-Bestand and the *Rentenbestandstafel* RBx
 - Publisher / doc type: Deutsche Aktuarvereinigung e. V.; the companion table for the existing annuity book, paired with the new-business table in a 2004 presentation titled "DAV 2004 R und RBx"
-- URL: not established; the pairing is recorded by the sibling file [R14 there](#delib-sofortrente-r14)
+- URL: not established; the pairing is recorded as R14 in the sibling file `_research/klassische_rentenversicherung.md`
 - Retrieved: no — egress blocked
 - Used for: **the pairing and nothing else.** `product-spec.md` cites it for the fact that a *Sofortrente* is priced on the new-business table at inception and then spends thirty years in the *Bestand* to which the other table applies, and — explicitly — for the disclosure that **the difference in level, in trend, in age range and in application rule between the two was not established**, so nothing about it is asserted downstream (research gap 12). `mort_table.csv`'s `provenance` names both tables as cited-not-shipped
+
+(delib-sofortrente-r12)=
+
+### R12 — Contemporaneous expositions of DAV 2004 R (DGVFM, General Re, *qx-Club*)
+- Publisher / doc type: Deutsche Gesellschaft für Versicherungs- und Finanzmathematik (DGVFM); General Reinsurance AG; the *qx-Club* actuarial seminar series — the profession's own explanation of the table to practitioners, where the *Sicherheitszuschlag* structure and the trend construction were set out
+- URL: not established. `_research/sofortrente.md` records, from the sibling file `_research/klassische_rentenversicherung.md` (R14 there), presentations of **16 August 2004** and **14 September 2004** and a reinsurer's exposition of **27 October 2004**; all three dates are `[unverified]`
+- Retrieved: no — egress blocked; no search corroboration in this session (budget exhausted). **No content was established beyond the existence of the presentations and their dates**
+- Used for: **nothing affirmative, and that is the whole of its role here.** It is the entry the documents point at where they say what could *not* be established, and it is cited only outside the two specification documents: `model.md` names it beside [R10] at the two places where the shipped *Trendfunktion* is declared **[std]** — in the input-file table and in the standardization table — and `improvement_table.csv` carries it in the `provenance` tag of every row, to record that **DAV 2004 R's own trend is not public** and that these are the documents a later build should fetch to substantiate the first-order margin. No number in this library rests on it
 
 (delib-sofortrente-r13)=
 
 ### R13 — EStG § 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst. bb — the *Ertragsanteil* table
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provision
-- URL: `https://www.gesetze-im-internet.de/estg/__22.html` — recorded by the sibling file [R5 there](#delib-sofortrente-r5) as **returned directly by a search**
+- URL: `https://www.gesetze-im-internet.de/estg/__22.html` — **returned directly by a search** and recorded as R5 in the sibling file `_research/klassische_rentenversicherung.md`
 - Retrieved: no — egress blocked; the general content is the sibling file's search record; the statutory address usually given for the table is itself `[unverified]`, and the schedule reproduced in `product-spec.md` is `[unverified]` in its entirety
 - Used for: the product's tax logic, which is its main commercial argument. Both documents cite it for the annuity being taxed on the ***Ertragsanteil*** — the interest element deemed contained in the payment, a flat statutory percentage fixed by the annuitant's age at *Rentenbeginn* and never changed — and for the **one corroborated value, 18 % at age 65**, which is why the anchor cell's entry age is 65. The whole of the rest of the schedule carries `[unverified]` (research gap 15). Taxation falls on the annuitant and **is not a cash flow in this model** [REG-R41]
 
@@ -248,14 +256,14 @@ established at any carrier for any year**.
 
 ### R14 — EStG § 20 Abs. 1 Nr. 6 — the *Kapitalabfindung* regime, and its boundary
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provision
-- URL: `https://www.gesetze-im-internet.de/estg/__20.html` — recorded by the sibling file [R6 there](#delib-reg-r6)
+- URL: `https://www.gesetze-im-internet.de/estg/__20.html` — recorded as R6 in the sibling file `_research/klassische_rentenversicherung.md`
 - Retrieved: no — egress blocked; the content used is the sibling file's search record
 - Used for: **a sharp boundary.** The *Halbeinkünfteverfahren* applies only to lump sums and payout-plan withdrawals and requires the 12/62 rule; a *Sofortrente* pays no lump sum and could not satisfy the twelve-year test in any event, so `product-spec.md` cites it, with [R13] and [REG-R45], for the whole of this product's cash flow being taxed under § 22 and **none of it under § 20** — which is precisely the arbitrage against a *Bankauszahlplan* the product is sold on
 
 (delib-sofortrente-r18)=
 
 ### R18 — BaFin material on life-insurance product oversight
-- Publisher / doc type: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin); *Merkblatt* 01/2023 (VA) on conduct supervision, the *Risiken im Fokus* cost section and the *Fachartikel* series, all recorded by the sibling KLV file [R17–R19 there](#delib-reg-r17)
+- Publisher / doc type: Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin); *Merkblatt* 01/2023 (VA) on conduct supervision, the *Risiken im Fokus* cost section and the *Fachartikel* series, all recorded as R17–R19 in the sibling file `_research/kapitallebensversicherung.md`
 - URL: not established
 - Retrieved: no — egress blocked
 - Used for: one disclosure only. All of the supervisor's *Wohlverhaltensaufsicht* material in the corpus is addressed to *kapitalbildende* products, i.e. the accumulation side, and **whether BaFin has published anything on payout annuities, or scrutinises *Rentenhöhe* or surplus declarations for value, was not established** — which is what `product-spec.md` cites at the point where it would otherwise have reported a value-for-money expectation for this product [REG-R35]
@@ -264,7 +272,7 @@ established at any carrier for any year**.
 
 ### R19 — GDV / dieversicherer.de, "Private Rentenversicherung: Auszahlmöglichkeiten"
 - Publisher / doc type: GDV under its consumer brand *Die Versicherer*; consumer article
-- URL: `https://www.dieversicherer.de/versicherer/altersvorsorge/news/auszahlung-private-rentenversicherung-141750` — recorded by the sibling file [R21 there](#delib-sofortrente-r21) from a search result
+- URL: `https://www.dieversicherer.de/versicherer/altersvorsorge/news/auszahlung-private-rentenversicherung-141750` — recorded as R21 in the sibling file `_research/klassische_rentenversicherung.md` from a search result
 - Retrieved: no — egress blocked; the content used is the sibling file's search record
 - Used for: the industry association's own account of a private annuity's payout options, cited with [R20], [R21] and [R23] in both documents for the ***Überschussverwendung* taxonomy** — konstant, teildynamisch, volldynamisch and the *Bonusrente* — and for the election being made once, at *Rentenbeginn*, which for this product is inception. **No rate and no envelope was established from it**
 
@@ -272,7 +280,7 @@ established at any carrier for any year**.
 
 ### R20 — Franke und Bornberg, "Altersvorsorge: Überschüsse im Rentenbezug — Teil 1: Die Qual der Wahl", and "Was bedeutet der Rentenfaktor und wie hoch ist er?"
 - Publisher / doc type: Franke und Bornberg GmbH, Hannover — independent product-rating house; two blog articles, the second dated by its slug to 2021/2022
-- URL: `https://www.franke-bornberg.de/blog/altersvorsorge-ueberschuesse-im-rentenbezug-teil-1-die-qual-der-wahl` and `https://www.franke-bornberg.de/de/blog/was-bedeutet-rentenfaktor-wie-hoch-2021-2022` — recorded by the sibling file [R19 there](#delib-sofortrente-r19) from search results
+- URL: `https://www.franke-bornberg.de/blog/altersvorsorge-ueberschuesse-im-rentenbezug-teil-1-die-qual-der-wahl` and `https://www.franke-bornberg.de/de/blog/was-bedeutet-rentenfaktor-wie-hoch-2021-2022` — recorded as R19 in the sibling file `_research/klassische_rentenversicherung.md` from search results
 - Retrieved: no — egress blocked; the content used is the sibling file's search record
 - Used for: the professional treatment of the choice between the *Überschussverwendung* forms — the documents' statement that all four distribute the same expected surplus and differ only in *when*, so there is no dominant answer, is cited to its title "Die Qual der Wahl" — and for the disclosure that the rating house's own article asking *how high* a *Rentenfaktor* is **returned no level, no range and no table** (research gap 5). It also stands behind `surplus_scale_table.csv`'s `provenance` tags
 
@@ -280,14 +288,14 @@ established at any carrier for any year**.
 
 ### R21 — Consumer-organisation material on the *Sofortrente*
 - Publisher / doc type: Finanztip Verbraucherinformation gemeinnützige GmbH; Stiftung Warentest (*Finanztest*); the *Verbraucherzentralen*
-- URL: `https://www.finanztip.de/lebensversicherung/ueberschussbeteiligung-lebensversicherung/` and `https://www.finanztip.de/lebensversicherung-versteuern/` — recorded by the sibling file [R20 there](#delib-sofortrente-r20). **The *Sofortrente*-specific pages of all three publishers were not located and no URL for them is given**
+- URL: `https://www.finanztip.de/lebensversicherung/ueberschussbeteiligung-lebensversicherung/` and `https://www.finanztip.de/lebensversicherung-versteuern/` — recorded as R20 in the sibling file `_research/klassische_rentenversicherung.md`. **The *Sofortrente*-specific pages of all three publishers were not located and no URL for them is given**
 - Retrieved: no — egress blocked; the content used is the sibling file's search record
 - Used for: **the single most important qualitative claim in this product's documents** — that the *konstante Überschussrente* is constant **in intention only**, and that the annuity is reduced if the insurer earns less than projected. Both documents cite it for the *Überschussrente* being declared, non-guaranteed and **reducible**, for the [unverified] 15–25 % share of the payment that is at risk, and for the base run's decision to project a central estimate while the sensitivity section prices the downside. `product-spec.md` also records that **Stiftung Warentest's periodic *Sofortrente* comparison is the single most valuable unlocated document for this product**, whose existence is itself `[unverified]`
 
 (delib-sofortrente-r22)=
 
 ### R22 — Assekurata, "Marktstudie Überschussbeteiligungen und Garantien"
-- Publisher / doc type: Assekurata Assekuranz Rating-Agentur GmbH, Cologne; the market's annual survey of declared surplus rates, in its **24th edition, 2026**, per the sibling KLV file's search record [R25 there](#delib-sofortrente-r25)
+- Publisher / doc type: Assekurata Assekuranz Rating-Agentur GmbH, Cologne; the market's annual survey of declared surplus rates, in its **24th edition, 2026**, per the search record at R25 in the sibling file `_research/kapitallebensversicherung.md`
 - URL: not established
 - Retrieved: no — egress blocked; the title and edition number are the sibling file's search record
 - Used for: the disclosure, made wherever the documents state that every surplus parameter is **[std]**, that the study which aggregates what [S10] publishes carrier by carrier yielded **no rate, no average, no range and no payout-phase breakdown** (research gap 4). Locating it is named as the third-highest-value action for a later build
@@ -295,7 +303,7 @@ established at any carrier for any year**.
 (delib-sofortrente-r23)=
 
 ### R23 — Comparison-portal and broker cluster specific to the *Sofortrente*
-- Publisher / doc type: `vergleich-sofortrente.de`; `lifefinance.de`; Verivox; CHECK24; and the German broker-blog cluster the sibling file records as [R24] there. **No individual page URL was recorded for any member** and none is given here
+- Publisher / doc type: `vergleich-sofortrente.de`; `lifefinance.de`; Verivox; CHECK24; and the German broker-blog cluster recorded as R24 in the sibling file `_research/klassische_rentenversicherung.md`. **No individual page URL was recorded for any member** and none is given here
 - URL: not established
 - Retrieved: no — egress blocked; no search corroboration in this session; every fact drawn from the cluster is corroborated by at least two of its members through the sibling file, and **none of them is a price**
 - Used for: most of this product's **definitional mechanics**, which is why it is cited more often than any other reference. The *Rentengarantiezeit*: that the instalments continue to the beneficiaries until the agreed term expires, the durations offered (5 / 10 / 15 / 20 / 25 / 30+), the typical choices (15 years to retirement age 70, 10 years thereafter, most policyholders choosing 10 to 20), and the illustration of a 10-year period with death after 6. The *Kapitalrückgewähr* as the *Einmalbeitrag* less the instalments already paid. The *Bonusrente* ratchet — surplus buying a permanent paid-up increment — and the *Zinsüberschuss* definition. That the annuity is monthly [S7]. And the *Ertragsanteil* framing [R13]. **No price point, no *Rentenhöhe* and no charge was established from it** (research gap 5)
@@ -303,7 +311,7 @@ established at any carrier for any year**.
 (delib-sofortrente-r25)=
 
 ### R25 — GDV statistics on *Einmalbeiträge* and the German annuity market
-- Publisher / doc type: GDV; "Die deutsche Lebensversicherung in Zahlen" and the statistical series "Neugeschäft und Bestand der Lebensversicherer für die letzten zehn Geschäftsjahre", recorded by the sibling KLV file [R20, R21 there](#delib-sofortrente-r20)
+- Publisher / doc type: GDV; "Die deutsche Lebensversicherung in Zahlen" and the statistical series "Neugeschäft und Bestand der Lebensversicherer für die letzten zehn Geschäftsjahre", recorded as R20 and R21 in the sibling file `_research/kapitallebensversicherung.md`
 - URL: not established
 - Retrieved: no — egress blocked
 - Used for: the disclosure that there is **no sourced number anywhere in this product's documents for the size of the German *Sofortrente* market, the contracts in force, the average *Einmalbeitrag* or the average purchase age** (research gap 7). `product-spec.md` cites it with the reason that matters: the GDV series separates *Einmalbeiträge* from *laufende Beiträge*, but that line aggregates *Sofortrenten* with single-premium endowments, bAV contributions and *Zuzahlungen*, so **even a retrieved figure would not isolate this product**

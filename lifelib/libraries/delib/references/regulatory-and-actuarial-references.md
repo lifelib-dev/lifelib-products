@@ -421,7 +421,8 @@ and §§ 74–88 for the balance sheet, and why the two rarely appear in the sam
   German *Überschussbeteiligung* is **discretionary in level but not in method**: an insurer may set the declaration, but the split
   between *Abrechnungsverbände* must follow causation. **Unverified:** the Absätze beyond 1 and 2; **whether the
   *verursachungsorientiert* charging rule sits in § 138 or in § 140 is ambiguous across the summaries**, so a delib document
-  attributes the causation principle to § 153 Abs.
+  attributes the causation principle to § 153 Abs. 2 VVG and § 138 Abs. 2 VAG **jointly**, as the BGH did, rather than to a
+  single Absatz.
 
 (delib-reg-r9)=
 
@@ -586,7 +587,11 @@ picture and every delib document keeps it: an insurer carries **two liability me
   not from BaFin. Two structural facts a delib document needs: the rate applies **at the time of contract conclusion** and then
   **stays with the contract for its whole term**, which is why the German in-force book is a stack of cohorts [R15] and why the ZZR
   exists at all. **Unverified:** **the wording of § 2 was not read**; whether § 2 caps the reserving rate only or the guaranteed rate
-  directly is inference from § 88 Abs.
+  directly is inference from § 88 Abs. 3 VAG's wording and not retrieval; and whether § 2 states a single rate or a rate plus
+  qualifications. The **section titles disagree between publishers** — `buzer.de` titles § 2 *"Höchstzinssatz"* where BaFin, the
+  BMF and the DAV all say *Höchstrechnungszins*; delib writes *Höchstrechnungszins* and cites § 2 DeckRV. The regulation's full
+  section list was not established, and a summary attributing a 60 %/85 % yield cap to "§ 3 DeckRV" must be the **pre-2016**
+  regulation and must not be carried forward [R56].
 
 (delib-reg-r15)=
 
@@ -858,7 +863,9 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   *Bewertungsreserven* leg is path- and balance-sheet-dependent in a way a gross liability cash flow model cannot reproduce, so the
   reference implementations model the declared *laufende Überschussbeteiligung* and the *Schlussüberschussanteil* explicitly and treat
   the *Bewertungsreserven* share as an explicitly excluded component, saying so. **Unverified:** the Absatz/Satz numbering of the
-  entitlement and the method was inferred from the ordering in the summaries and from the BGH's citation of "§ 153 Abs.
+  entitlement and the method was inferred from the ordering in the summaries and from the BGH's citation of "§ 153 Abs. 3 Satz
+  3", so **the Abs. 1 and Abs. 2 attributions are `[unverified]`**; and the VAG cross-references in Satz 3, which come from a
+  single summary and are `[unverified]` as a list.
 
 (delib-reg-r25)=
 
@@ -971,7 +978,13 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   zu einem Abzug … nur berechtigt, wenn er vereinbart, beziffert und angemessen ist"*, with a deduction for untilgte acquisition costs
   expressly ineffective and the **burden of proof on the insurer**. A delib model carrying an acquisition charge implements the
   **five-year floor as a `max()` against the tariff surrender value** and is tested on points that surrender where the floor binds and
-  where it does not. **Unverified:** only Abs. 3 and Abs.
+  where it does not. **Unverified:** only Abs. 3 and Abs. 5 are corroborated by quoted text and Abs. 4 by the Abs. 5
+  cross-reference, so **the Absatz numbering for the § 169 base measure and for the disclosure duty is `[unverified]`**; § 166's
+  Absatz structure, and whether a paid-up conversion may carry an *Abzug* of its own separate from Abs. 5; and **whether § 168
+  Abs. 2 gives a single-premium immediate annuity in payment a termination right**, where the market answer is no, no search
+  confirmed it, and SOF's specification rests on it. **No market range for *Stornoabzug* levels and none for the
+  *vereinbarte Mindestversicherungsleistung* was returned**, so every such percentage and threshold is `**[std]**` apart from
+  the one figure the BGH Debeka decision puts in the record [R36].
 
 (delib-reg-r29)=
 
@@ -1027,7 +1040,11 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   reminder with a two-week period → expiry → conversion to paid-up, so a monthly model applying a lapse decrement in the month of the
   missed premium is off by at least one month and applies the wrong benefit basis. The **five-year contestability window of § 21 Abs. 3** is a real
   first-duration mortality and morbidity effect a model may fold into a select period, provided it says so. **Unverified:** the § 19
-  Absatz numbering; whether § 38 Abs.
+  Absatz numbering, which is the standard account but was not confirmed Absatz by Absatz; whether § 38 Abs. 3 also gives a right
+  to terminate without notice once the deadline passes, which no search returned; and whether the ten-year period runs from
+  conclusion or from the breach, on which the summaries differed in emphasis. **§ 23 VVG (*Gefahrerhöhung*)**, cross-referenced
+  by § 158, and **§ 33 VVG (*Fälligkeit*)** were never searched, and no result addressed market practice on grace periods beyond
+  the statutory two weeks.
 
 ---
 
@@ -1129,7 +1146,12 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   attribute for **decrement** purposes — the underlying DAV tables are sex-specific [R47] — but **must not** let sex enter the
   premium. The standard market resolution is a **portfolio sex-mix assumption** applied to the best-estimate decrements; that mix is a
   modeller's assumption and is `**[std]**`. Letting a sex field leak into pricing reproduces a tariff unlawful in Germany since 2012
-  and is a numbered pitfall. **Unverified:** the amending instrument and date for the § 20 Abs.
+  and is a numbered pitfall. **Unverified:** the amending instrument and date for the § 20 Abs. 2 Satz 1 repeal, **reported two
+  ways** — that the Bundestag and Bundesrat adopted the AGG amendment in late February 2013, and that it was made by the
+  *SEPA-Begleitgesetz* published 3 April 2013 with retroactive effect from 21 December 2012. The two are reconcilable, **neither
+  is confirmed**, and both are recorded here rather than one being chosen. The Gender Directive's own number (**2004/113/EG**)
+  was **not returned by any search**, and whether German insurers had to apply unisex to **increases** on pre-2012 contracts is
+  **not established**. **No market sex-mix figure was returned**, so every blend weight in delib is `**[std]**` [R47].
 
 (delib-reg-r35)=
 
@@ -1436,7 +1458,16 @@ The entries with real second-hand corroboration are **R39**, **R43**, **R44** an
   model the insurer does not control.** **delib does not implement the PIA simulation**; a RIE or BAS specification may **report** a
   published CRK and Effektivkosten as `[S#]` facts and must say that reproducing either requires the PIA's scenario set, which is
   neither public nor in scope. **Unverified:** **the text of § 5a AltZertG was never retrieved by any sweep** — only its existence and
-  its § 168 Abs.
+  its § 168 Abs. 3 VVG cross-reference [R28] are established, while its conditions, its relationship to § 1 and whether it
+  imposes cost-disclosure duties of its own are **not established**. The act's date (reported 26 June 2001), the **1 July 2010**
+  BaFin→BZSt transfer and the reported **1 January 2010** start of compulsory *Basisrente* certification are `[unverified]`, and
+  the **20 %** biometric carve-out rests on one summary. **Whether the *Beitragsgarantie* covers the *Zulagen* as well as the
+  contributions is not settled** — one summary says yes, another implies it, and the statutory text obtained does not decide it.
+  That is **the single most material unresolved ambiguity here for a delib model**: for a two-child model point it moves the
+  guarantee floor by thousands of euro over thirty years, so RIE makes it a `**[std]**` choice and prints both readings. The
+  **150 € *Wechselkosten* cap, the 50 % rule, the five-year spreading and the three-month notice** are all `[unverified]`; the
+  **definitions of r\* and r_k and the CRK class boundaries** are not established; whether the PIA *Allgemeinverfügung* of 2022
+  is the operative determination is ambiguous; and the BMF *Muster*-PIB, dated 14 March 2019, may have been superseded.
 
 (delib-reg-r44)=
 

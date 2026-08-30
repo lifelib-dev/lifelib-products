@@ -116,9 +116,8 @@ DAV 2004 R first-order basis, *gezillmert* toward the 25 ‰ cap, converting at 
 monthly lifelong annuity at `max(garantierter, aktueller) Rentenfaktor`, with **no *Kapitalwahlrecht*,
 no *Teilkapitalauszahlung*, no *Rückkaufswert*, no policy loan and no assignment**. The one
 commutation Schicht 1 does permit — the *Kleinbetragsrenten-Abfindung* [REG-R42] — is **left out of
-the base run as a stated standardization** (**[std]**), not as a prohibition; the distinction is drawn
-out under *The ban on capitalisation* below, because an earlier reading of this product had it as a
-prohibition and that was wrong.
+the base run as a stated standardization** (**[std]**), not as a prohibition; the distinction is
+drawn out under *The ban on capitalisation* below.
 
 **Why *klassisch* rather than *fondsgebunden*.** The market's centre of gravity has moved decisively
 to *fondsgebundene* Basisrenten since the *Höchstrechnungszins* fell below 1 % [R16] [REG-R15] — a
@@ -479,8 +478,8 @@ to the Basisrente was established** (gap 3).
 
 ### The ban on capitalisation — Kapitalwahl, Teilkapital and the Kleinbetragsrente
 
-The rule: *nicht kapitalisierbar* forbids a capital election outright [R1] [REG-R39]. **There is no
-*Kapitalwahlrecht*** — the policyholder has no election at *Rentenbeginn*. **There is no
+The rule: *nicht kapitalisierbar* forbids a capital election outright, subject to the one de-minimis
+exception set out at the end of this section [R1] [REG-R39]. **There is no *Kapitalwahlrecht*** — the policyholder has no election at *Rentenbeginn*. **There is no
 *Teilkapitalauszahlung* either**: a Riester contract may pay up to **30 %** of the capital as a lump
 sum at the start of the payout phase [R23] [REG-R43] [unverified]; a Schicht-3 contract may pay
 100 %; a Basisrente may pay **nothing**. A third absence follows: **the § 20 Abs. 1 Nr. 6 EStG regime
@@ -501,10 +500,10 @@ reaches, in addition, an annuity pushed below the threshold **during** the payou
 *Versorgungsausgleich* [R1] [REG-R42] [unverified]. **Both the Satz numbering and the amending statute
 are [unverified]** — no search corroborated either — and the threshold's level is contested in the
 same way it is for Riester: 1 % of the monthly *Bezugsgröße* against 1,5 % [REG-R42] [unverified].
-An earlier reading of this product asserted the opposite, that Schicht 1 admitted no de-minimis
-exception whatever; that reading is withdrawn and this section is the correction. It follows that
-**"a Basisrente entitlement of two euros a month is paid as two euros a month, for life" is wrong as a
-statement of law**, though it remains true of contracts whose AVB offers no *Abfindung*.
+Reading Buchst. b alone gives the opposite answer — that Schicht 1 admits no de-minimis exception
+whatever — and that answer is wrong, because Buchst. b is not the whole of Nr. 2. So a Basisrente
+entitlement of two euros a month need not be paid as two euros a month for life; it is paid that way
+only where the AVB offers no *Abfindung*.
 
 The rest of what the market does is [unverified] throughout: **minimum premiums**; **minimum annuity
 thresholds in the AVB**, below which the insurer may pay quarterly or annually rather than monthly,
@@ -538,7 +537,9 @@ excluded**; and **no capital payment other than on death has been agreed** [R12]
 **aggregate ceiling of 340 000 €** [REG-R40] [unverified].
 
 **The four requirements of § 851c Abs. 1 are the same four features § 10 Abs. 1 Nr. 2 Buchst. b
-demands** — three instruments, one product description. Two cautions: the **age condition in § 851c
+demands** — three instruments, one product description. **Whether a *Kleinbetragsrenten-Abfindung*
+clause disturbs § 851c Abs. 1's "no capital payment other than on death" condition was not
+established** [unverified]; nothing in this model turns on it, because the model has no such clause. Two cautions: the **age condition in § 851c
 is 60, not 62** (gap 10); and **the annual savings allowances are contradicted across summaries** — a
 two-band 6 000 € / 7 000 € ladder reported as current law since 1 January 2022 against a
 2 000 € – 9 000 € age-graded ladder reported as pre-2022 [REG-R40] — so this document states the
