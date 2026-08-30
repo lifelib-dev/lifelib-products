@@ -109,9 +109,9 @@ a(t)                ans_rate(t)                            Ansammlungszinssatz
 (base)              surplus_base_pp(t)                     Deckungskapital at allocation
 C(t)                surplus_credit_pp(t)                   Surplus allocated for year t
 S(t)                term_bonus_pp(t)                       Accrued Schlussueberschussanteil
-U(t)                av_pp(t)                               Ueberschussguthaben per policy
-(within year)       av_pp_at(t, timing)                    BEF_INT / AFT_INT / AFT_CREDIT
-(aggregate)         av(t), av_at(t, timing)                The same, times pols_if(t)
+U(t)                av_sur_pp(t)                           Ueberschussguthaben per policy
+(within year)       av_sur_pp_at(t, timing)                BEF_INT / AFT_INT / AFT_CREDIT
+(aggregate)         av_sur(t), av_sur_at(t, timing)        The same, times pols_if(t)
 Z(t)                bonus_si_pp(t)                         Bonus sum insured
 (offset)            prem_offset_pp(t)                      Beitragsverrechnung offset
 B phi               prem_charged_pp(t)                     Zahlbeitrag before the offset
@@ -204,7 +204,7 @@ there.
 A surrender at duration ``t`` pays::
 
     surr_value_pp(t) = res_guar_pp(t) x (1 - storno_rate(t))
-                       + av_pp_at(t, "AFT_CREDIT")
+                       + av_sur_pp_at(t, "AFT_CREDIT")
                        + term_surr_share x term_bonus_pp(t + 1)
 
 Three rules ride on that line. The ***Stornoabzug* bites on the guaranteed value only** — the
@@ -236,7 +236,7 @@ behind its own.
 
 .. rubric:: The three Überschussverwendung systems
 
-``ansammlung`` accumulates the credit at ``ans_rate`` in :func:`av_pp` and raises the maturity
+``ansammlung`` accumulates the credit at ``ans_rate`` in :func:`av_sur_pp` and raises the maturity
 benefit; ``bonus`` buys paid-up sum insured at first-order rates in :func:`bonus_si_pp`,
 raising the **death** benefit immediately by the full bonus sum but accumulating only at
 ``rechnungszins``; ``beitragsverrechnung`` carries last year's credit forward as this year's
@@ -478,7 +478,7 @@ def cost_id():
 def surplus_use():
     """The *Überschussverwendung*: ``ansammlung``, ``bonus`` or ``beitragsverrechnung``.
 
-    *Verzinsliche Ansammlung* accumulates the credit in :func:`av_pp` at ``ans_rate``; the
+    *Verzinsliche Ansammlung* accumulates the credit in :func:`av_sur_pp` at ``ans_rate``; the
     *Bonussystem* buys paid-up sum insured in :func:`bonus_si_pp` at first-order rates; the
     *Beitragsverrechnung* carries the credit forward as next year's premium offset.  Because
     ``ans_rate > rechnungszins``, the first pays more at maturity and the second more on an
@@ -512,7 +512,7 @@ def rating_factor():
     return float(model_point()["rating_factor"])
 
 
-def av_pp_init():
+def av_sur_pp_init():
     """The *Überschussguthaben* per policy carried at ``t_start()``, in euros.
 
     Zero for new business; model point 10 opens at duration 14 with 6 000 € already
@@ -520,7 +520,7 @@ def av_pp_init():
     provision *excluding verzinslich angesammelte Überschussanteile*, and the separation is
     the reason this balance is a cells of its own rather than part of :func:`res_pp`.
     """
-    return float(model_point()["av_pp_init"])
+    return float(model_point()["av_sur_pp_init"])
 
 
 def bonus_si_init():
@@ -1010,7 +1010,7 @@ def res_pp(t):
 
     This is the model's contribution to the § 341f HGB *Deckungsrückstellung* line and is
     **not** floored at zero as the balance sheet would floor it, so the negative early
-    *gezillmert* values stay visible.  ``av_pp(t)`` is explicitly not part of it.
+    *gezillmert* values stay visible.  ``av_sur_pp(t)`` is explicitly not part of it.
     """
     if is_paid_up(t):
         return bfz_si_pp() * pu_single_prem(t)
@@ -1233,64 +1233,72 @@ def term_bonus_pp(t):
     return term_bonus_pp(t - 1) + term_rate(t - 1) * surplus_base_pp(t - 1)
 
 
-def av_pp(t):
+def av_sur_pp(t):
     """U(t): the *Überschussguthaben* per policy at the start of policy year t, in euros.
 
     The *verzinsliche Ansammlung* balance: it receives declared surplus and **never premium**.
     There is no unit fund and no policyholder account fed by contributions in this product, so
     the house vocabulary's ``prem_to_av_pp`` has no counterpart here and is not published.
 
+    **Named ``av_sur_*`` and not ``av_*``.**  Across delib ``av_pp`` / ``av_pp_at`` / ``av`` /
+    ``av_at`` is the *principal* account balance — the *Deckungskapital* on ``RV_DE_A``,
+    ``Index_DE_A`` and ``Basis_DE_A``, the *Fondsguthaben* on ``FRV_DE_S`` — and ``av_sur_*``
+    is the *verzinsliche Ansammlung* side account beside it, which is ``RV_DE_A``'s spelling
+    on the one model that carries both.  This product's principal balance is a **reserve**
+    rather than an account and is published as ``res_pp`` / ``res_zill_pp``, so ``KLV_DE_A``
+    publishes the ``av_sur_*`` half of the pair and no ``av_pp``.
+
     It is explicitly **not** part of the *Deckungsrückstellung*: § 341f HGB forms that
     provision *excluding verzinslich angesammelte Überschussanteile*.
     """
     if t <= t_start():
-        return av_pp_init()
-    return av_pp_at(t - 1, "AFT_CREDIT")
+        return av_sur_pp_init()
+    return av_sur_pp_at(t - 1, "AFT_CREDIT")
 
 
-def av_pp_at(t, timing):
+def av_sur_pp_at(t, timing):
     """The *Überschussguthaben* per policy at a point inside policy year t.
 
     ``"BEF_INT"``
-        the opening balance, ``av_pp(t)``.
+        the opening balance, ``av_sur_pp(t)``.
 
     ``"AFT_INT"``
-        after the year's *Ansammlungszins*, ``av_pp(t) * (1 + ans_rate(t))``.  The
+        after the year's *Ansammlungszins*, ``av_sur_pp(t) * (1 + ans_rate(t))``.  The
         balance earns its own interest whatever the current *Überschussverwendung* is.
 
     ``"AFT_CREDIT"``
         after this year's declared surplus has been added, which happens **only** under
-        ``ansammlung``.  This is the closing balance ``av_pp(t + 1)``, and it is what a
+        ``ansammlung``.  This is the closing balance ``av_sur_pp(t + 1)``, and it is what a
         death, maturity or surrender at the end of year t is paid on top of the
         guaranteed benefit.
     """
     if timing == "BEF_INT":
-        return av_pp(t)
+        return av_sur_pp(t)
     if timing == "AFT_INT":
-        return av_pp(t) * (1.0 + ans_rate(t))
+        return av_sur_pp(t) * (1.0 + ans_rate(t))
     if timing == "AFT_CREDIT":
         credit = (surplus_credit_pp(t)
                   if surplus_use() == "ansammlung" else 0.0)
-        return av_pp_at(t, "AFT_INT") + credit
+        return av_sur_pp_at(t, "AFT_INT") + credit
     raise ValueError("invalid timing")
 
 
-def av(t):
+def av_sur(t):
     """The *Überschussguthaben* of the whole model point at the start of year t, in euros.
 
-    ``av_pp(t) * pols_if(t)``: the per-policy balance weighted by the in-force count, which is
+    ``av_sur_pp(t) * pols_if(t)``: the per-policy balance weighted by the in-force count, which is
     the quantity a portfolio roll-up consumes.
     """
-    return av_pp(t) * pols_if(t)
+    return av_sur_pp(t) * pols_if(t)
 
 
-def av_at(t, timing):
+def av_sur_at(t, timing):
     """The aggregate *Überschussguthaben* at a point inside policy year t.
 
-    ``av_pp_at(t, timing) * pols_if(t)``, on the same start-of-year weight as every cash flow
-    of that ``result_cf()`` row.  The timings are :func:`av_pp_at`'s.
+    ``av_sur_pp_at(t, timing) * pols_if(t)``, on the same start-of-year weight as every cash flow
+    of that ``result_cf()`` row.  The timings are :func:`av_sur_pp_at`'s.
     """
-    return av_pp_at(t, timing) * pols_if(t)
+    return av_sur_pp_at(t, timing) * pols_if(t)
 
 
 def bonus_si_pp(t):
@@ -1504,7 +1512,7 @@ def benefit_full_pp(t):
     ``sum_death()``.
     """
     si = bfz_si_pp() if is_paid_up(t) else sum_assured()
-    return (si * death_ratio() + av_pp(t + 1)
+    return (si * death_ratio() + av_sur_pp(t + 1)
             + bonus_si_pp(t + 1) + term_bonus_pp(t + 1))
 
 
@@ -1545,14 +1553,14 @@ def benefit_maturity_pp(t):
     if t != proj_len():
         return 0.0
     si = bfz_si_pp() if is_paid_up(t) else sum_assured()
-    return (si + av_pp(t + 1) + bonus_si_pp(t + 1) + term_bonus_pp(t + 1)
+    return (si + av_sur_pp(t + 1) + bonus_si_pp(t + 1) + term_bonus_pp(t + 1)
             + bwr_rate * res_guar_pp(t))                              # noqa: F821
 
 
 def surr_value_pp(t):
     """RK(t): the *Rückkaufswert* payable per policy on a surrender at the end of year t.
 
-    ``res_guar_pp(t) * (1 - storno_rate(t)) + av_pp_at(t, "AFT_CREDIT")
+    ``res_guar_pp(t) * (1 - storno_rate(t)) + av_sur_pp_at(t, "AFT_CREDIT")
     + term_surr_share * term_bonus_pp(t + 1)``.
 
     The ***Stornoabzug* bites on the guaranteed value alone**: the published deduction is a
@@ -1566,7 +1574,7 @@ def surr_value_pp(t):
     *Beitragsfreistellung* election is paid under § 165 VVG.
     """
     return (res_guar_pp(t) * (1.0 - storno_rate(t))
-            + av_pp_at(t, "AFT_CREDIT")
+            + av_sur_pp_at(t, "AFT_CREDIT")
             + term_surr_share * term_bonus_pp(t + 1))                 # noqa: F821
 
 
@@ -1647,6 +1655,12 @@ def expenses(t):
     expense column and is published beside it: here :func:`commissions` is a separate line, so
     the six flow columns of :func:`result_cf` sum to :func:`net_cf` rather than double-counting
     the commission.  Whichever convention a model takes, taking both at once is the error.
+
+    This is the rule on **every delib model that has a commission to publish** —
+    ``Basis_DE_A``, ``Riester_DE_A``, ``RLV_DE_A`` and ``FRV_DE_S`` — so ``expenses`` means
+    the same quantity across the library.  ``BU_DE_S`` is the one model that names no
+    commission at all: its acquisition cost is a single **[std]** ``acq_rate`` with nothing
+    inside it to separate, and its docstring says so rather than implying a split.
     """
     return expenses_pp(t) * pols_if(t) + claim_expenses(t)
 
@@ -1825,7 +1839,7 @@ def check_res_roll_fwd():
 def check_surplus_roll_fwd_resid(t):
     """The active *Überschussverwendung* ledger's residual in policy year t; zero everywhere.
 
-    Under ``ansammlung``, ``av_pp(t+1) - [av_pp(t) (1 + a(t)) + C(t)]``; under ``bonus``,
+    Under ``ansammlung``, ``av_sur_pp(t+1) - [av_sur_pp(t) (1 + a(t)) + C(t)]``; under ``bonus``,
     ``bonus_si_pp(t+1) - [bonus_si_pp(t) + C(t) / pu_single_prem(t+1)]``; under
     ``beitragsverrechnung``, ``prem_offset_pp(t) - min(prem_charged_pp(t), C(t-1))``.
 
@@ -1834,8 +1848,8 @@ def check_surplus_roll_fwd_resid(t):
     paying it twice.
     """
     if surplus_use() == "ansammlung":
-        return (av_pp(t + 1)
-                - (av_pp(t) * (1.0 + ans_rate(t)) + surplus_credit_pp(t)))
+        return (av_sur_pp(t + 1)
+                - (av_sur_pp(t) * (1.0 + ans_rate(t)) + surplus_credit_pp(t)))
     if surplus_use() == "bonus":
         return (bonus_si_pp(t + 1)
                 - (bonus_si_pp(t)
@@ -2002,7 +2016,7 @@ def result_surplus():
     """Result table of the surplus machinery and the reserves, indexed by policy year t.
 
     ``decl_rate``, ``zins_ueberschuss_rate``, ``surplus_base_pp``, ``surplus_credit_pp``,
-    ``res_pp``, ``av_pp``, ``term_bonus_pp`` and ``surr_value_pp`` are **state**, not cash
+    ``res_pp``, ``av_sur_pp``, ``term_bonus_pp`` and ``surr_value_pp`` are **state**, not cash
     flow, which is why they are published here rather than in :func:`result_cf`: a cash flow
     statement whose columns do not all sum to its bottom line is a statement a reader has to
     know which columns to skip.
@@ -2022,7 +2036,7 @@ def result_surplus():
             "surplus_base_pp": [surplus_base_pp(t) for t in ts],
             "surplus_credit_pp": [surplus_credit_pp(t) for t in ts],
             "res_pp": [res_pp(t) for t in ts],
-            "av_pp": [av_pp(t) for t in ts],
+            "av_sur_pp": [av_sur_pp(t) for t in ts],
             "term_bonus_pp": [term_bonus_pp(t) for t in ts],
             "surr_value_pp": [surr_value_pp(t) for t in ts],
         },

@@ -464,7 +464,7 @@ kapitalbildende Lebensversicherung documents:
 - **REG-R48** — DAV 2008 T and its predecessors: the cross-product statement of [R14], including the selection factors the shipped proxy does **not** carry.
 - **REG-R52** — Destatis *Sterbetafeln* and the reuse licence: the population benchmark an insured-lives replacement table must sit below.
 - **REG-R53** — the German life market in numbers (GDV, BaFin, Assekurata, Map-Report, Franke und Bornberg): the source of the statement that the *laufende Verzinsung* **is** the guarantee plus the interest surplus, which is pitfall 1 and the single most load-bearing line in the model.
-- **REG-R54** — HGB §§ 341–341o, RechVersV and BerVersV: § 341f forming the *Deckungsrückstellung* **excluding verzinslich angesammelte Überschussanteile**, which is why `av_pp` is a cells of its own and not part of `res_pp`; and § 28 RechVersV naming the declared rate as a published quantity.
+- **REG-R54** — HGB §§ 341–341o, RechVersV and BerVersV: § 341f forming the *Deckungsrückstellung* **excluding verzinslich angesammelte Überschussanteile**, which is why `av_sur_pp` is a cells of its own and not part of `res_pp`; and § 28 RechVersV naming the declared rate as a published quantity.
 - **REG-R55** — IFRS 17 and the Variable Fee Approach: named as the other measurement basis these cash flows feed.
 - **REG-R56** — DAV *Fachgrundsätze* and the annual *Höchstrechnungszins* recommendation: the professional standard this documentation sits under, and the frame for [R15].
 

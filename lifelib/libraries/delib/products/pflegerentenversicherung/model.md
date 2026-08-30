@@ -306,7 +306,7 @@ reproduces the worked example while the machinery stays visible and testable.
 | *Karenzzeit* | `karenz_months` | `0` | point 7 (6) | Populates `pols_karenz(t, g, z)`. With `K = 0` the ledger is empty and `pols_grad` degenerates to `pols_entry` |
 | *Leistungsdynamik* | `leistungsdynamik` | `0.00` | point 8 (0.02) | Escalates the annuity **in payment** at `(1 + d)^(1/12)` a month through `esc_pg`. Not a *Beitragsdynamik*, which is not modelled at all |
 | *Beitragsrückgewähr* | `beitragsrueckgewaehr` | `False` | point 9 (`True`) | Makes `claims(t,"DEATH") = cum_prem_max_pp(t) × pols_death(t)`, structurally zero otherwise, and adds the `D1` leg to the equivalence |
-| *Stornoabzug* | `stornoabzug` | `0.00` | point 10 (0.05) | Reduces the *Rückkaufswert* by a contractual fraction. Zero in the base run because a deduction is admissible only if agreed, appropriate and **quantified in the contract** [R11] [REG-R28], and no level for any German *Pflegerenten* tariff was established |
+| *Stornoabzug* | `stornoabzug_rate` | `0.00` | point 10 (0.05) | Reduces the *Rückkaufswert* by a contractual fraction. Zero in the base run because a deduction is admissible only if agreed, appropriate and **quantified in the contract** [R11] [REG-R28], and no level for any German *Pflegerenten* tariff was established |
 
 Model point 9 is the option worth reading twice. At a *Rechnungszins* of 1,00 % a gross return of
 nominal premiums on a death forty years away is close to the whole premium, and with a lifelong
@@ -377,7 +377,7 @@ differences are worth naming rather than glossing:
 | `mort_force_care(t, g)` | `mort_rate_partial` / `mort_rate_total` | `mort_rate_dis(t, z)` | Impaired-life mortality by state; only this model states it as a multiple of the active **force**. `pols_prem` — in force less waived — means the same on all three |
 | `check_net_cf`, `check_pols_roll_fwd`, `check_states` | same names | same names | The three identities mean the same thing on all three models |
 
-Five names needed care:
+Six names needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
@@ -386,6 +386,7 @@ Five names needed care:
 | `q_A(x)` vs `q_g(x)` | `mort_rate` / `mort_rate_care(t, g)` | The active-life table rate and the in-care rate derived from its force. Publishing one rate for both states is the error the pair exists to prevent |
 | `i(x)` vs `ι(t)` | `inc_rate` / `inc_force` | The table rate, which stays tariff-comparable at every age, and the force the *Wartezeit* gates to zero |
 | `pols_entry` vs `pols_grad` | `pols_entry(t, g)` / `pols_grad(t, g)` | Onsets and graduations out of the *Karenz* ledger. Equal when `K = 0`; their gap **is** the cost of a *Karenzzeit* |
+| `σ` | `stornoabzug_rate()` | The *Stornoabzug* is a **fraction** here, so it takes the `*_rate` name the library gives every rate — the spelling `RV_DE_A`, `FRV_DE_S` and `Riester_DE_A` already use for it. Bare `stornoabzug` is `FRV_DE_S`'s euro cash flow and its `result_cf()` column, a different quantity, and the two must not share a name |
 
 `policy_id`, `duration_mth(t)` and `pols_if_init()` drive little or nothing here and are exposed as
 documented cells rather than dropped: a silently missing column is worse than an inert one.

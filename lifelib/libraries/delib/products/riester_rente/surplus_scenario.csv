@@ -1,4 +1,4 @@
-scenario_id,t,laufende_verz,provenance
+scenario_id,t,decl_rate,provenance
 base,1,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,2,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,3,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]

@@ -81,10 +81,14 @@ here is one line:
 
 ```
 net_cf = charge_acq + charge_admin_prem + charge_admin_fund + charge_policy_fee
-         + charge_risk + stornoabzug − expenses − death_strain
+         + charge_risk + stornoabzug − expenses − commissions − death_strain
 ```
 
-Charges in, the insurer's own expenses and the death strain out, and nothing else.
+Charges in, the insurer's own expenses, its commission and the death strain out, and nothing
+else. `expenses` **excludes** commission and `commissions` is its own cells and its own
+`result_cf()` column — the delib convention, stated the same way on `KLV_DE_A`, `Basis_DE_A`,
+`Riester_DE_A` and `RLV_DE_A`, and the opposite of the frlib chassis, where commission sits
+inside the expense total. Taking both conventions at once double-counts the commission.
 `check_net_cf_resid(t)` does not restate that formula: it rebuilds the first two terms **by a
 different route**, as `premiums − prem_to_av`, which is what the *Beitragsverrechnung* leaves
 behind — so the check crosses the unit / non-unit boundary rather than asserting the code
@@ -157,9 +161,10 @@ increment over its own sixty months, and an increment cannot be assumed at incep
 bias that leaves is stated rather than hidden. Letting `S` follow the premiums actually paid
 would make the acquisition charge a function of the lapse assumption — wrong, and circular.
 An **in-force** model point opens after the window has closed: model point 6 starts at
-`t = 97`, so `charge_acq(t)` is zero at every projected month **and** `expenses(97)` carries
-no acquisition commission, `expense_acq_pp` falling at `t = 1` and only there. That is the
-whole of the difference between an in-force cell and a new-business one on this chassis.
+`t = 97`, so `charge_acq(t)` is zero at every projected month **and** `commissions(97)`
+carries no *Abschlussprovision*, `comm_acq_pp` and `expense_acq_pp` both falling at `t = 1`
+and only there. That is the whole of the difference between an in-force cell and a
+new-business one on this chassis.
 
 ## The *Beitragsrückgewähr*, and two mortality bases at once
 
@@ -331,22 +336,26 @@ established**, so the base run annuitises.
 
 ## Sign convention
 
-`net_cf` is **income positive** — charges in, expenses and the death strain out — the notes'
-own orientation and the library-wide sign. `liability_cf` publishes the same stream
-outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are `result_cf()` columns so
-the identity is verifiable in the frame rather than only in prose. A Solvency II best estimate
-of the non-unit liability is `Σ v(t) × liability_cf(t)` over the relevant risk-free term
-structure, with the unit liability — the *Fondsguthaben* itself, backed one-for-one by the
-*Anlagestock* — added at market value [R15] [REG-R6] [REG-R7]. Nothing here discounts.
+`net_cf` is **income positive** — charges in, expenses, commission and the death strain
+out — the notes' own orientation and the library-wide sign. `liability_cf` publishes the
+same stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are
+`result_cf()` columns so the identity is verifiable in the frame rather than only in prose.
+A Solvency II best estimate of the non-unit liability is `Σ v(t) × liability_cf(t)` over the
+relevant risk-free term structure, with the unit liability — the *Fondsguthaben* itself,
+backed one-for-one by the *Anlagestock* — added at market value [R15] [REG-R6] [REG-R7].
+Nothing here discounts.
 
-`expenses` is the notes' **total** and **includes commission**: the acquisition commission and
-issue expense at `t = 1`, the inflating monthly maintenance expense, the renewal commission on
-each gross *Beitrag*, and the per-event expenses of a death, a surrender and an annuitisation.
-Commission is a *part* of that column, not a further line, so subtracting both from the charge
-income would charge it twice. The worked example fixes the reading:
-`expenses(1) = 1 800,00 + 200,00 + 4,00 + 3,00 + 0,0075 + 0,2571 = 2 007,26 €`. Expect on a
-new-business cell a large negative `net_cf` in month 1 — −1 966,22 € on the anchor, commission
-and issue expense falling there while the charge that funds them arrives over sixty months —
+`expenses` **excludes commission**: it is the issue expense at `t = 1`, the inflating monthly
+maintenance expense, and the per-event expenses of a death, a surrender and an annuitisation.
+The *Abschluss-* and *Bestandsprovision* are `commissions`, their own column, and `net_cf`
+subtracts each once — the delib convention, and the opposite of the frlib chassis, where
+commission sits inside the expense total; taking both at once charges the commission twice.
+The worked example fixes the reading:
+`expenses(1) = 200,00 + 4,00 + 0,0075 + 0,2571 = 204,26 €` and
+`commissions(1) = 1 800,00 + 3,00 = 1 803,00 €`, together the 2 007,26 € of acquisition and
+first-month cash. Expect on a new-business cell a large negative `net_cf` in month 1 —
+−1 966,22 € on the anchor, commission and issue expense falling there while the charge that
+funds them arrives over sixty months —
 then a thin positive margin growing with the fund. On the *Einmalbeitrag* cell the sign
 reverses: month 1 is **+1 060,45 €**, the 3 250,00 € withheld at inception more than covering
 the acquisition cost with no recovery to wait for.
@@ -372,9 +381,11 @@ shared names mean the same thing on both:
 Three German terms of art keep their German form in the cells names, each naming a quantity
 with a statutory definition and no English equivalent that would not mislead:
 `beitragssumme()`, the base of the *Höchstzillmersatz* and not "total premiums";
-`stornoabzug()`, a deduction whose validity conditions are statutory and not a "surrender
-charge"; and the three `rentenfaktor_*()`, euro per 10 000 € and not an annuity factor. Four
-further cases needed care:
+`stornoabzug(t)`, a deduction whose validity conditions are statutory and not a "surrender
+charge" — the euro amount retained, with the fraction it is struck at as `stornoabzug_rate()`,
+which is the spelling `RV_DE_A` and `Riester_DE_A` use for that rate too; and the three
+`rentenfaktor_*()`, euro per 10 000 € and not an annuity factor. Five further cases needed
+care:
 
 | Notes | Cells | Why |
 |---|---|---|
@@ -382,6 +393,7 @@ further cases needed care:
 | `w(t)` | `lapse_rate_base` / `lapse_tax_step` / `lapse_dyn_add` / `lapse_rate` / `lapse_rate_mth` | The library requires an annual `lapse_rate` beside the monthly one; the table rate, the tax multiplier and the dynamic addition are separate cells so each is testable alone |
 | `α(t)` | `charge_acq_pp` / `cum_charge_acq_pp` / `charge_acq_total` | The instalment, the ledger and the total the ledger must reach — `check_acq_charge` needs all three |
 | `D(t)` | `db_floor_pp` / `db_pp` | The guaranteed floor and what a death actually pays; keeping them apart makes `death_strain` exactly the net amount at risk |
+| (expense / commission) | `expense_acq_pp` / `comm_acq_pp`, `expenses` / `commissions` | Two lines, not one. `expenses` is the insurer's own outgo **excluding** commission and `commissions` is the *Abschluss-* and *Bestandsprovision*, which is what those two names mean on every delib model that has a commission to publish |
 
 `sex` and `kapitalwahl` drive no formula — the tariff is unisex from 21 December 2012
 [REG-R34] and the capital option is a reporting split — but both are exposed as documented
@@ -408,7 +420,7 @@ Every entry is **[std]**, and the rationale is what makes it honest.
 | *Kickback* credited back, and the *Ausgabeaufschlag* | 0.00 % p.a.; fully waived | A passive fund pays no trail, sidestepping two unresolved questions: whether an insurer may retain a *Bestandsprovision* [R15], and how a credited rebate enters the PRIIPs cost calculation [R7] [R8]. German insurers are understood to buy at the *Rücknahmepreis*, though no wording confirming a waiver was seen |
 | Guaranteed *Rentenfaktor* | 25,00 € per 10 000 € at 67, from `10 000/(12 T_eff)` | **Derived arithmetic, not a market observation.** A 0 % *Rechnungszins* [S10] on a generational annuitant basis [R16] is the *Sicherheitsabschlag* made concrete |
 | Current *Rentenfaktor* | equal to guaranteed (`std_2026`); +12 % (`rich_current`) | Exercises the `max()` without an unsourced uplift, and makes it visibly bite on one cell |
-| Expenses and commission | acquisition commission 2.50 % of `S` + 200,00 € issue; 4,00 €/month at 2 % inflation; renewal 1.5 %; 150 / 50 / 100 € per event | **No German commission scale was established.** The acquisition commission equals the acquisition charge, so the model shows the financing problem the *Höchstzillmersatz* and the five-year spread exist to regulate. `comm_acq_rate` is a flat scalar, so on `std_netto` and `std_low` the assumed commission exceeds the tariff's own charge and those cells carry a projected loss — the flat assumption showing, not a product fact |
+| Expenses and commission (`expenses` excludes commission; `commissions` is its own column) | acquisition commission 2.50 % of `S` + 200,00 € issue; 4,00 €/month at 2 % inflation; renewal 1.5 %; 150 / 50 / 100 € per event | **No German commission scale was established.** The acquisition commission equals the acquisition charge, so the model shows the financing problem the *Höchstzillmersatz* and the five-year spread exist to regulate. `comm_acq_rate` is a flat scalar, so on `std_netto` and `std_low` the assumed commission exceeds the tariff's own charge and those cells carry a projected loss — the flat assumption showing, not a product fact |
 | Timing, processing order and the negative-fund safeguards | premium in advance, return, fund charges, *Teilentnahme*, *Risikobeitrag*, deaths before lapses; `min(.., remaining)` on the *Stückkosten* and the *Risikobeitrag* | The *Bewertungsstichtag* lag disappears on a monthly grid; observing the amount at risk before the charge that prices it makes `death_strain` exactly the *riskiertes Kapital*. The floors are safeguards, not tariff terms, and **no shipped model point triggers one** |
 | *Beitragsfreistellung* as an election | `pup_month`, no cohort paid-up rate | A cohort rate needs one sub-cohort per paid-up month for a second-order effect; the **[std]** 1 % p.a. is recorded, not implemented, and the omission biases charge income upward |
 | Modules off in the base run | `lapse_dyn_beta = 0`, `ablauf_flag = False`, no *Überschuss* credit | Base-run values, so the worked example reproduces with the machinery still there |
@@ -425,7 +437,8 @@ the survival of the fund-based charges into a *beitragsfrei* contract [R3], the 
 ## Tests
 
 `tests/test_fondsgebundene_rentenversicherung_de.py` asserts the notes' worked example — all
-seventeen printed rows of Panel A to the cent and `pols_if` to six decimals, Panel B's benefit
+seventeen printed rows of Panel A to the cent and `pols_if` to six decimals, its
+`expenses` and `commissions` columns among them, Panel B's benefit
 columns, Panel C's per-policy unit side, and every column total at full precision — the notes'
 three independent rebuilds (month 1 from the tariff alone, month 61 at the cliff, the
 reduction in yield as a savings account), the four closure identities, the *Einmalbeitrag*

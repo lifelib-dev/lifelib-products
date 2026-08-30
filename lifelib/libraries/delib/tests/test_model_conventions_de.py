@@ -462,6 +462,11 @@ RETIRED_NAMES = {
     ),
     "check_cf_ledger": "check_net_cf, which this library requires of every model",
     "check_cf_ledger_resid": "check_net_cf_resid",
+    # Settled in delib's own cross-model naming review.
+    "laufende_verz": (
+        "decl_rate — the declared laufende Verzinsung is one quantity under one "
+        "definition, and KLV_DE_A, RV_DE_A and Basis_DE_A already spelled it decl_rate"
+    ),
 }
 
 RETIRED_COLUMNS = {

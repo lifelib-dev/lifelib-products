@@ -100,7 +100,7 @@ German terms of art keep their German form in prose.
 | `karenz_months` | int | *Karenzzeit* from onset, in months | 7 (6) |
 | `leistungsdynamik` | float | Annual escalation of the annuity in payment; `0.0` = off | 8 (0.02) |
 | `beitragsrueckgewaehr` | bool | *Beitragsrückgewähr* death benefit on/off | 9 (True) |
-| `stornoabzug` | float | Deduction from the *Rückkaufswert*, as a fraction; `0.0` = off | 10 (0.05) |
+| `stornoabzug_rate` | float | Deduction from the *Rückkaufswert*, as a fraction; `0.0` = off | 10 (0.05) |
 | `pols_if_init` | float | Policy count at the frame's first `t`; `1.0` everywhere here | all |
 
 **The three attributes most easily got wrong**, each a numbered pitfall: `sex` is a *projection*
@@ -120,7 +120,7 @@ and `duration_mth_init` shifts where the frame **starts** without changing `proj
 | 7 | M, entry 50, `wartezeit_months = 36`, `karenz_months = 6`, monthly | Both waiting devices, and the *Karenz* ledger |
 | 8 | F, entry 45, `leistungsdynamik = 0.02`, monthly | The escalation ledger; `esc_pg` diverges from `pols_pg` |
 | 9 | M, entry 45, `beitragsrueckgewaehr = True`, premiums to age 65, monthly | The death-benefit stream, `claims_death` non-zero |
-| 10 | F, entry 48, `premium_mth = 75.00`, `stornoabzug = 0.05` | A supplied premium instead of a derived one; a non-zero *Stornoabzug* |
+| 10 | F, entry 48, `premium_mth = 75.00`, `stornoabzug_rate = 0.05` | A supplied premium instead of a derived one; a non-zero *Stornoabzug* |
 | 11 | M, entry 42, `duration_mth_init = 240`, aktiv, monthly | An in-force point opening at `t = 240` with 20 years run |
 | 12 | F, entry 55, `duration_mth_init = 336`, `status = pg3` | An in-force point **in claim**: waived premium and a paying state at the frame's first row |
 | 13 | **Boundary.** M, entry 65 (top of the observed band), 1 500 €/mth, `rating_factor = 1.50` | Shortest pre-claim period, highest premium, a *Risikozuschlag* |
@@ -524,7 +524,7 @@ It is a **deterministic** quantity, not a ledger, and it is what both the *Rück
 
 with
 
-    rkw_pp(t) = rkw_prem_ratio(min(y(t), 40)) * cum_prem_max_pp(t) * (1 - stornoabzug)
+    rkw_pp(t) = rkw_prem_ratio(min(y(t), 40)) * cum_prem_max_pp(t) * (1 - stornoabzug_rate)
     brg_pp(t) = cum_prem_max_pp(t)   if beitragsrueckgewaehr else 0.0
 
 Note what `claims(t, "ANNUITY")` is weighted on: `E_g(t)`, the escalation ledger, **not** `ℓ_g(t)` —
@@ -809,7 +809,7 @@ for any of them exists in this corpus** (research gap 20).
 due in every month of the term; `premium_mth = 0.00`, the sentinel that makes the model strike the
 *Beitrag* by equivalence; `rating_factor = 1.00`, standard rates; `wartezeit_months = 0`;
 `karenz_months = 0`; `leistungsdynamik = 0.00`; `beitragsrueckgewaehr = False`;
-`stornoabzug = 0.00`; `pols_if_init = 1.0`. Hence `proj_len() = 12 × (110 − 45) − 1 = 779`, the
+`stornoabzug_rate = 0.00`; `pols_if_init = 1.0`. Hence `proj_len() = 12 × (110 − 45) − 1 = 779`, the
 frame runs from `t = 0` to `t = 779`, and the projection covers attained ages 45 to 109 — 780
 monthly rows, of which the table below shows a representative selection together with the
 full-precision totals.
@@ -827,7 +827,7 @@ recovery rates damped by `exp(−0.10 × max(0, x − 75))` **[std]**. In-care m
 6.0 / 5.0 / 4.0 / 3.5 / 3.0 % in policy years 1 to 5, 2.5 % in years 6–10, 2.0 % in 11–20 and 1.5 %
 from year 21 **[std]**, converted by `1 − (1 − q)^(1/12)`. *Rückkaufswert*
 0.00 / 0.00 / 0.05 / 0.12 / 0.20 of premiums paid in policy years 1 to 5, rising to 0.42 by year 10
-and 0.70 by year 40 **[std]**, with `stornoabzug = 0`. Expenses **[std]**: acquisition
+and 0.70 by year 40 **[std]**, with `stornoabzug_rate = 0`. Expenses **[std]**: acquisition
 `25 ‰ × Beitragssumme` at `t = 0`, the *Beitragssumme* being `P × 12 × (85 − 45) = 480 P`;
 administration 3.0 % of each *Beitrag* collected plus 2.00 € per policy in force per month;
 claim expense 1.50 € per annuity payment; expense inflation 1.5 % a year. First-order margins

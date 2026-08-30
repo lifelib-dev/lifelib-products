@@ -56,7 +56,10 @@ account value, ``*_pp`` for per-policy amounts, ``claims(t, kind)`` with an uppe
 within-month reads. Three German terms of art keep their German form in the cells names
 too — ``beitragssumme``, ``stornoabzug``, ``rentenfaktor`` — because each names a
 quantity with a statutory or contractual definition and no English equivalent that would
-not mislead. The technical notes use compact actuarial symbols. The mapping is:
+not mislead. ``expenses`` is the insurer's own outgo **excluding commission** and
+``commissions`` is its own cells and its own :func:`result_cf` column, which is what
+``expenses`` means on every delib model that has a commission to publish. The technical
+notes use compact actuarial symbols. The mapping is:
 
 =========================  ===============================  =========================
 Notes symbol               Cells                            Meaning
@@ -119,13 +122,19 @@ presentation would count the same money twice::
 
     net_cf(t) = charge_acq(t) + charge_admin_prem(t) + charge_admin_fund(t)
                 + charge_policy_fee(t) + charge_risk(t) + stornoabzug(t)
-                - expenses(t) - death_strain(t)
+                - expenses(t) - commissions(t) - death_strain(t)
 
-Charges in, expenses and the death strain out. The **death strain** is the whole of the
-insurer's cost per death: the death benefit is observed *before* that month's
-*Risikobeitrag*, so what the insurer funds out of its own pocket is exactly the
-*riskiertes Kapital* ``nar_pp(t)`` and nothing else. Everything that moves through the
-unit fund — ``premiums``, ``prem_to_av``, ``claims_death``, ``claims_lapse``,
+Charges in, expenses, commission and the death strain out. ``expenses`` **excludes**
+commission, which is :func:`commissions` and its own :func:`result_cf` column: that is the
+library-wide split, stated on ``KLV_DE_A``, ``Basis_DE_A``, ``Riester_DE_A`` and
+``RLV_DE_A`` too, and the opposite of the frlib chassis, where commission sits inside the
+expense total. Whichever convention a model takes, taking both at once double-counts the
+commission.
+
+The **death strain** is the whole of the insurer's cost per death: the death benefit is
+observed *before* that month's *Risikobeitrag*, so what the insurer funds out of its own
+pocket is exactly the *riskiertes Kapital* ``nar_pp(t)`` and nothing else. Everything that
+moves through the unit fund — ``premiums``, ``prem_to_av``, ``claims_death``, ``claims_lapse``,
 ``claims_maturity``, ``withdrawals``, ``av_releases`` — is published as a
 :func:`result_cf` column and is **excluded** from ``net_cf``, and
 :func:`check_benefit_funding` asserts that those columns net exactly::
@@ -206,10 +215,11 @@ own sixty months, and an increment cannot be assumed at inception. The bias that
 an understated acquisition charge on a dynamic contract, is stated rather than hidden.
 
 An **in-force** model point opens after the window has closed. Model point 6 starts at
-``t = 97``, so ``charge_acq(t)`` is zero at every projected month **and** ``expenses(97)``
-carries no acquisition commission: the acquisition expense falls at ``t = 1`` and only
-there, and ``t = 1`` is not in that model point's frame. That is the whole of the
-difference between an in-force cell and a new-business one on this chassis.
+``t = 97``, so ``charge_acq(t)`` is zero at every projected month **and**
+``commissions(97)`` carries no *Abschlussprovision*: the acquisition commission and the
+issue expense fall at ``t = 1`` and only there, and ``t = 1`` is not in that model point's
+frame. That is the whole of the difference between an in-force cell and a new-business one
+on this chassis.
 
 .. rubric:: The Beitragsrückgewähr, and why cum_prem_pp is a state variable
 
@@ -1538,10 +1548,26 @@ def death_strain(t):
 
 
 def expense_acq_pp(t):
-    """Acquisition cost per policy issued: commission plus the issue expense, at t = 1.
+    """The issue expense per policy issued, at t = 1: ``expense_issue``, 200,00 EUR.
 
-    ``comm_acq_rate x beitragssumme() + expense_issue`` — on the anchor cell 1 800,00 +
-    200,00 = **2 000,00 EUR**, and zero at every other month.
+    The insurer's own acquisition cost **excluding the commission**, which is
+    :func:`comm_acq_pp` — the split :func:`expenses` and :func:`commissions` publish
+    separately, and which is why this cells is not the whole 2 000,00 EUR of acquisition
+    cash that leaves at inception.
+
+    It falls at ``t = 1`` and only there, so an in-force model point whose frame opens at
+    ``t = 97`` never incurs it.
+    """
+    if t != 1:
+        return 0.0
+    return expense_issue                                             # noqa: F821
+
+
+def comm_acq_pp(t):
+    """The *Abschlussprovision* per policy issued, at t = 1: ``comm_acq_rate x S``.
+
+    On the anchor cell 2.50 % of a 72 000,00 EUR *Beitragssumme* = **1 800,00 EUR**, and
+    zero at every other month.
 
     The commission is set **equal to the acquisition charge** deliberately, both at 2.50 %
     of the *Beitragssumme*: the insurer pays it at inception and recovers exactly that,
@@ -1564,7 +1590,7 @@ def expense_acq_pp(t):
     """
     if t != 1:
         return 0.0
-    return comm_acq_rate * beitragssumme() + expense_issue           # noqa: F821
+    return comm_acq_rate * beitragssumme()                           # noqa: F821
 
 
 def expense_maint_pp(t):
@@ -1578,29 +1604,44 @@ def expense_maint_pp(t):
 
 
 def expenses(t):
-    """Total insurer expense in month t, **including commission**.
+    """Total insurer expense in month t, **excluding commission**.
 
-    Six components: the acquisition commission and issue expense at ``t = 1``; the
-    inflating monthly maintenance expense; the renewal commission on each gross *Beitrag*;
-    and the per-event expenses of a death, a surrender and an annuitisation.  Commission is
-    a *part* of this total and is not a further line, so subtracting both from the charge
-    income would charge it twice.
+    Five components: the issue expense at ``t = 1``; the inflating monthly maintenance
+    expense; and the per-event expenses of a death, a surrender and an annuitisation.
+
+    Commission is **not** in here.  It is :func:`commissions`, its own
+    :func:`result_cf` column, and :func:`net_cf` subtracts the two separately — the delib
+    convention, and the opposite of the frlib chassis, where commission sits inside the
+    expense total.  Folding it back in while leaving the ``commissions`` column in the
+    frame would charge it twice.
     """
     return (expense_acq_pp(t) * pols_if(t)
             + expense_maint_pp(t) * pols_if(t)
-            + comm_renew_rate * prem_pp(t) * pols_if(t)              # noqa: F821
             + expense_claim * pols_death(t)                          # noqa: F821
             + expense_surr * pols_lapse(t)                           # noqa: F821
             + expense_annuitisation * pols_maturity(t))              # noqa: F821
 
 
+def commissions(t):
+    """Commission outgo in month t, published beside :func:`expenses`.
+
+    The *Abschlussprovision* at ``t = 1`` — :func:`comm_acq_pp` on the count in force in
+    that month, and nil on an in-force model point whose frame opens later, the commission
+    being sunk — plus the *Bestandsprovision* ``comm_renew_rate x prem_pp(t)`` on every
+    gross *Beitrag* collected.  Both **[std]**: no German unit-linked commission scale was
+    established.
+    """
+    return (comm_acq_pp(t) * pols_if(t)
+            + comm_renew_rate * prem_pp(t) * pols_if(t))             # noqa: F821
+
+
 def net_cf(t):
     """The **non-unit** net cash flow in month t, income positive.
 
-    ``charges collected + stornoabzug - expenses - death_strain``.  Every benefit paid
-    before *Rentenbeginn* is funded by cancelling the policyholder's own units and is
-    therefore absent from this line; what the insurer earns is the charge stack and what it
-    bears is its own expenses and the net amount at risk.
+    ``charges collected + stornoabzug - expenses - commissions - death_strain``.  Every
+    benefit paid before *Rentenbeginn* is funded by cancelling the policyholder's own units
+    and is therefore absent from this line; what the insurer earns is the charge stack and
+    what it bears is its own expenses, its commission and the net amount at risk.
 
     On the anchor cell month 1 is **-1 966,22 EUR** — the acquisition commission and the
     issue expense both fall there while the acquisition charge that funds them arrives over
@@ -1608,7 +1649,7 @@ def net_cf(t):
     """
     return (charge_acq(t) + charge_admin_prem(t) + charge_admin_fund(t)
             + charge_policy_fee(t) + charge_risk(t) + stornoabzug(t)
-            - expenses(t) - death_strain(t))
+            - expenses(t) - commissions(t) - death_strain(t))
 
 
 def liability_cf(t):
@@ -1761,7 +1802,7 @@ def check_net_cf_resid(t):
 
         net_cf = charge_acq + charge_admin_prem + charge_admin_fund
                  + charge_policy_fee + charge_risk + stornoabzug
-                 - expenses - death_strain
+                 - expenses - commissions - death_strain
 
     and this residual rebuilds the first two terms **by a different route** — as
     ``premiums - prem_to_av``, which is what the *Beitragsverrechnung* leaves behind —
@@ -1772,7 +1813,7 @@ def check_net_cf_resid(t):
     rebuilt = (premiums(t) - prem_to_av(t)
                + charge_admin_fund(t) + charge_policy_fee(t)
                + charge_risk(t) + stornoabzug(t)
-               - expenses(t) - death_strain(t))
+               - expenses(t) - commissions(t) - death_strain(t))
     return net_cf(t) - rebuilt
 
 
@@ -1949,8 +1990,10 @@ def result_cf():
     unit fund.  The six ``charge_*`` columns plus ``stornoabzug`` are what the insurer
     keeps.  ``claims_*``, ``withdrawals`` and ``av_releases`` are the unit fund paying
     itself out, and are **excluded from** ``net_cf`` — only ``death_strain``, the net
-    amount at risk the insurer funds, crosses over.  ``liability_cf`` is ``net_cf`` outgo
-    positive, published so the sign convention is verifiable in the frame.
+    amount at risk the insurer funds, crosses over.  ``expenses`` and ``commissions`` are
+    two columns and not one: ``expenses`` excludes commission on every delib model that
+    has a commission to publish.  ``liability_cf`` is ``net_cf`` outgo positive, published
+    so the sign convention is verifiable in the frame.
     """
     ts = list(range(proj_start(), proj_len() + 1))
     return pd.DataFrame(                                             # noqa: F821
@@ -1971,6 +2014,7 @@ def result_cf():
             "av_releases": [av_releases(t) for t in ts],
             "death_strain": [death_strain(t) for t in ts],
             "expenses": [expenses(t) for t in ts],
+            "commissions": [commissions(t) for t in ts],
             "net_cf": [net_cf(t) for t in ts],
             "liability_cf": [liability_cf(t) for t in ts],
         },

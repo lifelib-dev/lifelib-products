@@ -46,7 +46,7 @@ rows = [t for t in (proj.proj_start(), proj.proj_start() + 1, proj.proj_start() 
         if proj.proj_start() <= t <= proj.proj_len()]
 cols = ["pols_if", "premiums", "prem_to_av", "charge_acq", "charge_admin_prem",
         "charge_admin_fund", "charge_policy_fee", "charge_risk", "claims_death",
-        "claims_lapse", "claims_maturity", "expenses", "net_cf"]
+        "claims_lapse", "claims_maturity", "expenses", "commissions", "net_cf"]
 print(df.loc[sorted(set(rows)), cols].round(2).to_string())
 print()
 
@@ -57,10 +57,12 @@ print("totals over {} months: premiums {:,.2f}  prem_to_av {:,.2f}  "
           + df["charge_admin_fund"].sum() + df["charge_policy_fee"].sum()
           + df["charge_risk"].sum() + df["stornoabzug"].sum()))
 print("                     claims {:,.2f}  withdrawals {:,.2f}  "
-      "death strain {:,.2f}  expenses {:,.2f}  net_cf {:,.2f}".format(
+      "death strain {:,.2f}  expenses {:,.2f}  commissions {:,.2f}  "
+      "net_cf {:,.2f}".format(
           df["claims_death"].sum() + df["claims_lapse"].sum()
           + df["claims_maturity"].sum(), df["withdrawals"].sum(),
-          df["death_strain"].sum(), df["expenses"].sum(), df["net_cf"].sum()))
+          df["death_strain"].sum(), df["expenses"].sum(),
+          df["commissions"].sum(), df["net_cf"].sum()))
 print()
 
 print("Rentenbeginn: Fondsguthaben {:,.2f} EUR  Rentenfaktor {:.2f} "

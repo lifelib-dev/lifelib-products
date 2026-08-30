@@ -171,7 +171,7 @@ which is the honest arrangement: averaging the two cohorts' reserves is pitfall 
 | 7 | **In-force and already *beitragsfrei*** | concluded 2014, `duration_init = 12`, `paidup_at_init = 1`, `gtd_rate = 1,75 %` |
 | 8 | **In-force and already in payment** — opens in the *Rentenphase*, `ret_t() ≤ 0` | concluded 2006, `entry_age = 48`, `duration_init = 20`, `ret_age = 65`, `ann_pp_init > 0` |
 | 9 | **Boundary — the whole *Höchstbetrag*** | 50 → 67, 30 826 € p.a. annual [R2] [unverified] |
-| 10 | **Boundary — the *Kleinbetragsrente* that may not be commuted** | 30 → 67, 300 € p.a. monthly (25 €/month) |
+| 10 | **Boundary — a *Kleinbetragsrente* this model annuitises rather than commutes** | 30 → 67, 300 € p.a. monthly (25 €/month) |
 | 11 | **Boundary — the 50 % rule** | 42 → 67, quarterly, `buz_prem_share = 0.49` |
 | 12 | Deferral to 70 with **both options on** | 55 → 70, monthly, `surv_annuity_rate = 0.60`, `guarantee_period_y = 20` |
 | 13 | **Boundary — the guaranteed *Rentenfaktor* binds** | 46 → 67, `rentenfaktor_gtd = 34.00`, `rf_scenario_id = low` |
@@ -731,10 +731,15 @@ any of them, and the research file records the absence as gap 3.
   which argues for **lighter** mortality than a comparable Schicht-3 portfolio, where the
   *Kapitalwahlrecht* lets an impaired life leave [R17]. **No evidence for this was found**; it is a
   **[std]** view and a stated model risk, and `mort_be_factor` is the single lever that would carry it.
-- **No dynamic annuitisation behaviour, because there is none to model**: no *Kapitalwahlrecht*, no
-  *Teilkapitalauszahlung*, no *Kleinbetragsrenten-Abfindung*, no election of any kind at *Rentenbeginn*
-  [R1] [R23]. The Schicht-3 chassis needs a take-up assumption and a declaration window; this product
-  needs neither, which is the cleanest simplification the layer buys. Deferral of *Rentenbeginn* is
+- **Almost no annuitisation behaviour, and what remains is not modelled**: no *Kapitalwahlrecht* and
+  no *Teilkapitalauszahlung* at any duration [R1] [R23]. The one election Schicht 1 does admit is the
+  *Kleinbetragsrenten-Abfindung* of § 10 Abs. 1 Nr. 2 Satz 3 EStG [REG-R42] [unverified], and this
+  model does not implement it **[std]** — the threshold is contested, no carrier's AVB treatment was
+  established, and `Riester_DE_A` already carries the machinery (`is_kleinbetrag()`,
+  `commutation_pp()`) for a reader who wants it. Model point 10 is a small enough contract to reach
+  it, and this model annuitises it. The Schicht-3 chassis needs a take-up assumption and a declaration
+  window for a *Kapitalwahlrecht*; this product needs neither, which is the cleanest simplification the
+  layer buys. Deferral of *Rentenbeginn* is
   likewise a model-point input rather than a behaviour: no carrier's permitted range was established
   (gap 8), and model point 12 exercises a deferral to 70 as a configuration.
 
@@ -1172,6 +1177,7 @@ In rough order of leverage for a German Schicht-1 block:
 [REG-R4]: #delib-reg-r4
 [REG-R40]: #delib-reg-r40
 [REG-R41]: #delib-reg-r41
+[REG-R42]: #delib-reg-r42
 [REG-R47]: #delib-reg-r47
 [REG-R49]: #delib-reg-r49
 [REG-R54]: #delib-reg-r54

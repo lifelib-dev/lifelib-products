@@ -1,4 +1,4 @@
-point_id,policy_id,sex,smoker,issue_year,issue_age,duration_init,pols_if_init,policy_term,prem_term,sum_assured,death_ratio,prem_freq,unterjaehrig_form,rechnungszins,zillmer_on,cost_id,surplus_use,scenario_id,rating_factor,av_pp_init,bonus_si_init,bfz_year
+point_id,policy_id,sex,smoker,issue_year,issue_age,duration_init,pols_if_init,policy_term,prem_term,sum_assured,death_ratio,prem_freq,unterjaehrig_form,rechnungszins,zillmer_on,cost_id,surplus_use,scenario_id,rating_factor,av_sur_pp_init,bonus_si_init,bfz_year
 1,DE-KLV-0001,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
 2,DE-KLV-0002,M,N,2026,37,0,1.0,25,1,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,base,1.0,0.0,0.0,0
 3,DE-KLV-0003,M,N,2026,37,0,1.0,25,15,50000.0,1.0,annual,unecht,0.01,1,std_2026,ansammlung,low,1.0,0.0,0.0,0

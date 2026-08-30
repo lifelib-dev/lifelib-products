@@ -63,33 +63,33 @@ def _names(model):
 
 # Panel A -- the non-unit ledger; stornoabzug and withdrawals are 0.00 throughout, so the
 # notes omit them.  t: (pols_if, premiums, prem_to_av, charge_acq, charge_admin_prem,
-# charge_admin_fund, charge_policy_fee, charge_risk, expenses, net_cf)
+# charge_admin_fund, charge_policy_fee, charge_risk, expenses, commissions, net_cf)
 PANEL_A = {
-    1:   (1.000000, 200.00, 162.00, 30.00, 8.00, 0.04, 3.00, 0.00, 2007.26, -1966.22),
-    2:   (0.994807, 198.96, 161.16, 29.84, 7.96, 0.08, 2.98, 0.01,    7.23,    33.64),
-    3:   (0.989641, 197.93, 160.32, 29.69, 7.92, 0.12, 2.97, 0.01,    7.20,    33.49),
-    4:   (0.984502, 196.90, 159.49, 29.54, 7.88, 0.16, 2.95, 0.01,    7.17,    33.35),
-    5:   (0.979390, 195.88, 158.66, 29.38, 7.84, 0.20, 2.94, 0.01,    7.14,    33.21),
-    6:   (0.974304, 194.86, 157.84, 29.23, 7.79, 0.24, 2.92, 0.02,    7.11,    33.08),
-    12:  (0.944340, 188.87, 152.98, 28.33, 7.55, 0.46, 2.83, 0.03,    6.93,    32.26),
-    24:  (0.887098, 177.42, 143.71, 26.61, 7.10, 0.88, 2.66, 0.05,    6.58,    30.69),
-    59:  (0.738908, 147.78, 119.70, 22.17, 5.91, 1.93, 2.22, 0.10,    5.67,    26.58),
-    60:  (0.735054, 147.01, 119.08, 22.05, 5.88, 1.95, 2.21, 0.10,    5.64,    26.47),
-    61:  (0.731221, 146.24, 140.39,  0.00, 5.85, 1.98, 2.19, 0.11,    5.52,     4.53),
-    120: (0.625891, 125.18, 120.17,  0.00, 5.01, 4.02, 1.88, 0.00,    5.01,     5.89),
-    240: (0.459656,  91.93,  88.25,  0.00, 3.68, 7.71, 1.38, 0.00,    4.19,     8.58),
-    300: (0.385184,  77.04,  73.96,  0.00, 3.08, 9.16, 1.16, 0.00,    3.76,     9.64),
-    301: (0.384018,  76.80,  73.73,  0.00, 3.07, 9.19, 1.15, 0.00,    3.83,     9.58),
-    359: (0.304251,  60.85,  58.42,  0.00, 2.43, 9.82, 0.91, 0.00,    3.18,     9.98),
-    360: (0.303239,  60.65,  58.22,  0.00, 2.43, 9.84, 0.91, 0.00,   33.44,   -20.27),
+    1:   (1.000000, 200.00, 162.00, 30.00, 8.00, 0.04, 3.00, 0.00,  204.26, 1803.00, -1966.22),
+    2:   (0.994807, 198.96, 161.16, 29.84, 7.96, 0.08, 2.98, 0.01,    4.25,    2.98,    33.64),
+    3:   (0.989641, 197.93, 160.32, 29.69, 7.92, 0.12, 2.97, 0.01,    4.23,    2.97,    33.49),
+    4:   (0.984502, 196.90, 159.49, 29.54, 7.88, 0.16, 2.95, 0.01,    4.22,    2.95,    33.35),
+    5:   (0.979390, 195.88, 158.66, 29.38, 7.84, 0.20, 2.94, 0.01,    4.20,    2.94,    33.21),
+    6:   (0.974304, 194.86, 157.84, 29.23, 7.79, 0.24, 2.92, 0.02,    4.19,    2.92,    33.08),
+    12:  (0.944340, 188.87, 152.98, 28.33, 7.55, 0.46, 2.83, 0.03,    4.10,    2.83,    32.26),
+    24:  (0.887098, 177.42, 143.71, 26.61, 7.10, 0.88, 2.66, 0.05,    3.92,    2.66,    30.69),
+    59:  (0.738908, 147.78, 119.70, 22.17, 5.91, 1.93, 2.22, 0.10,    3.45,    2.22,    26.58),
+    60:  (0.735054, 147.01, 119.08, 22.05, 5.88, 1.95, 2.21, 0.10,    3.44,    2.21,    26.47),
+    61:  (0.731221, 146.24, 140.39,  0.00, 5.85, 1.98, 2.19, 0.11,    3.33,    2.19,     4.53),
+    120: (0.625891, 125.18, 120.17,  0.00, 5.01, 4.02, 1.88, 0.00,    3.14,    1.88,     5.89),
+    240: (0.459656,  91.93,  88.25,  0.00, 3.68, 7.71, 1.38, 0.00,    2.81,    1.38,     8.58),
+    300: (0.385184,  77.04,  73.96,  0.00, 3.08, 9.16, 1.16, 0.00,    2.60,    1.16,     9.64),
+    301: (0.384018,  76.80,  73.73,  0.00, 3.07, 9.19, 1.15, 0.00,    2.68,    1.15,     9.58),
+    359: (0.304251,  60.85,  58.42,  0.00, 2.43, 9.82, 0.91, 0.00,    2.27,    0.91,     9.98),
+    360: (0.303239,  60.65,  58.22,  0.00, 2.43, 9.84, 0.91, 0.00,   32.53,    0.91,   -20.27),
 }
 
 # The notes' Total row, summed at full precision and then rounded.
 PANEL_A_TOTALS = {
     "pols_if": 202.931416, "premiums": 40586.28, "prem_to_av": 37413.08,
     "charge_acq": 1549.75, "charge_admin_prem": 1623.45, "charge_admin_fund": 2033.18,
-    "charge_policy_fee": 608.79, "charge_risk": 5.85, "expenses": 3728.76,
-    "net_cf": 2087.87,
+    "charge_policy_fee": 608.79, "charge_risk": 5.85, "expenses": 1319.97,
+    "commissions": 2408.79, "net_cf": 2087.87,
 }
 
 # Panel B -- the benefits, and what funds them.  Only death_strain crosses the unit /
@@ -133,21 +133,23 @@ PANEL_C = {
 
 # The Einmalbeitrag variant, model point 2: 50 000,00 EUR at 50, proj_len() = 204, a `fund`
 # death benefit so charge_risk is 0.00 everywhere.  t: (pols_if, premiums, prem_to_av,
-# charge_acq, charge_admin_prem, charge_admin_fund, charge_policy_fee, expenses, net_cf, av)
+# charge_acq, charge_admin_prem, charge_admin_fund, charge_policy_fee, expenses,
+# commissions, net_cf, av)
 SINGLE_PREMIUM = {
-    1:   (1.000000, 50000.00, 46750.00, 1250.00, 2000.00, 11.73, 3.00, 2204.28, 1060.45, 46908.94),
-    2:   (0.994685,     0.00,     0.00,    0.00,    0.00, 11.71, 2.98,    4.27,   10.43, 47068.42),
-    3:   (0.989399,     0.00,     0.00,    0.00,    0.00, 11.69, 2.97,    4.25,   10.40, 47228.46),
-    12:  (0.943067,     0.00,     0.00,    0.00,    0.00, 11.48, 2.83,    4.11,   10.20, 48694.00),
-    60:  (0.728611,     0.00,     0.00,    0.00,    0.00, 10.45, 2.19,    3.43,    9.20, 57329.28),
-    120: (0.611558,     0.00,     0.00,    0.00,    0.00, 10.76, 1.83,    3.09,    9.50, 70347.78),
-    204: (0.457239,     0.00,     0.00,    0.00,    0.00, 10.72, 1.37,   48.30,  -36.21, 93766.43),
+    1:   (1.000000, 50000.00, 46750.00, 1250.00, 2000.00, 11.73, 3.00,  204.28, 2000.00, 1060.45, 46908.94),
+    2:   (0.994685,     0.00,     0.00,    0.00,    0.00, 11.71, 2.98,    4.27,    0.00,   10.43, 47068.42),
+    3:   (0.989399,     0.00,     0.00,    0.00,    0.00, 11.69, 2.97,    4.25,    0.00,   10.40, 47228.46),
+    12:  (0.943067,     0.00,     0.00,    0.00,    0.00, 11.48, 2.83,    4.11,    0.00,   10.20, 48694.00),
+    60:  (0.728611,     0.00,     0.00,    0.00,    0.00, 10.45, 2.19,    3.43,    0.00,    9.20, 57329.28),
+    120: (0.611558,     0.00,     0.00,    0.00,    0.00, 10.76, 1.83,    3.09,    0.00,    9.50, 70347.78),
+    204: (0.457239,     0.00,     0.00,    0.00,    0.00, 10.72, 1.37,   48.30,    0.00,  -36.21, 93766.43),
 }
 
 SINGLE_PREMIUM_TOTALS = {
     "pols_if": 136.171795, "premiums": 50000.00, "prem_to_av": 46750.00,
     "charge_acq": 1250.00, "charge_admin_prem": 2000.00, "charge_admin_fund": 2206.15,
-    "charge_policy_fee": 408.52, "expenses": 2911.63, "net_cf": 2953.04,
+    "charge_policy_fee": 408.52, "expenses": 911.63, "commissions": 2000.00,
+    "net_cf": 2953.04,
 }
 
 # The reduction in yield across the four shipped charge scales.  The cells differ in premium
@@ -174,7 +176,8 @@ BENEFIT_FUNDING = 64869.355293
 @pytest.mark.parametrize("t", sorted(PANEL_A))
 def test_worked_example_panel_a_row(de_frv_anchor, t):
     """Every printed row of the notes' non-unit ledger, to the displayed precision."""
-    (pols_if, prem, to_av, acq, admin_prem, admin_fund, fee, risk, exp, net) = PANEL_A[t]
+    (pols_if, prem, to_av, acq, admin_prem, admin_fund, fee, risk,
+     exp, comm, net) = PANEL_A[t]
     p = de_frv_anchor
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
@@ -185,6 +188,7 @@ def test_worked_example_panel_a_row(de_frv_anchor, t):
     assert p.charge_policy_fee(t) == pytest.approx(fee, abs=CENT)
     assert p.charge_risk(t) == pytest.approx(risk, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
+    assert p.commissions(t) == pytest.approx(comm, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
     assert p.stornoabzug(t) == 0.0 and p.withdrawals(t) == 0.0
 
@@ -357,7 +361,10 @@ def test_the_four_identities_that_close(de_frv_anchor):
                                         "charge_admin_fund", "charge_policy_fee",
                                         "charge_risk", "stornoabzug"))
     assert charges == pytest.approx(5821.018511, abs=5e-6)
-    assert charges - df["expenses"].sum() - strain == pytest.approx(2087.866187, abs=5e-6)
+    assert df["expenses"].sum() == pytest.approx(1319.970596, abs=5e-6)
+    assert df["commissions"].sum() == pytest.approx(2408.794247, abs=5e-6)
+    assert (charges - df["expenses"].sum() - df["commissions"].sum()
+            - strain) == pytest.approx(2087.866187, abs=5e-6)
 
 
 def test_the_annuity_the_contract_exists_for(de_frv_anchor):
@@ -382,7 +389,7 @@ def test_the_einmalbeitrag_variant_row(fondsgebundene_rentenversicherung, t):
     """Model point 2: the charges are taken once at the front and the sign reverses -- month
     1 carries a ``net_cf`` of **+1 060,45** where the anchor's is -1 966,22, the 3 250,00
     withheld at inception more than covering the 2 204,28 of acquisition cost."""
-    (pols_if, prem, to_av, acq, admin_prem, admin_fund, fee, exp, net,
+    (pols_if, prem, to_av, acq, admin_prem, admin_fund, fee, exp, comm, net,
      av) = SINGLE_PREMIUM[t]
     p = fondsgebundene_rentenversicherung.Projection[2]
     assert p.prem_form() == "einmal" and p.charge_risk(t) == 0.0
@@ -394,6 +401,7 @@ def test_the_einmalbeitrag_variant_row(fondsgebundene_rentenversicherung, t):
     assert p.charge_admin_fund(t) == pytest.approx(admin_fund, abs=CENT)
     assert p.charge_policy_fee(t) == pytest.approx(fee, abs=CENT)
     assert p.expenses(t) == pytest.approx(exp, abs=CENT)
+    assert p.commissions(t) == pytest.approx(comm, abs=CENT)
     assert p.net_cf(t) == pytest.approx(net, abs=CENT)
     assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(av, abs=CENT)
 
@@ -432,8 +440,8 @@ def test_the_reduction_in_yield_across_the_four_charge_scales(
     assert p.reduction_in_yield() == pytest.approx(riy, abs=5e-7)
     assert p.av_maturity_pp() == pytest.approx(av, abs=CENT)
     assert p.gross_return_ref() == pytest.approx(0.05, abs=1e-9)
-    assert p.expense_acq_pp(1) == pytest.approx(
-        0.025 * p.beitragssumme() + 200.0, rel=1e-12)
+    assert p.expense_acq_pp(1) == 200.0
+    assert p.comm_acq_pp(1) == pytest.approx(0.025 * p.beitragssumme(), rel=1e-12)
     if charge_id == "std_netto":
         assert p.alpha_rate() == 0.0 and p.charge_acq_total() == 0.0
         assert p.result_cf()["charge_acq"].sum() == 0.0
@@ -644,10 +652,13 @@ def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
     assert p.acq_window_months() == 60          # the window is real, and already closed
     assert p.charge_acq_total() == pytest.approx(0.025 * 111000.0, rel=1e-12) == 2775.0
     assert p.result_cf()["charge_acq"].sum() == 0.0 == p.cum_charge_acq_pp(p.proj_len())
-    assert p.expense_acq_pp(97) == 0.0 and p.expenses(97) < 20.0
+    assert p.expense_acq_pp(97) == 0.0 and p.comm_acq_pp(97) == 0.0
+    assert p.expenses(97) < 20.0
     assert p.expenses(97) == pytest.approx(
-        p.expense_maint_pp(97) * p.pols_if(97) + 0.015 * p.prem_pp(97) * p.pols_if(97)
+        p.expense_maint_pp(97) * p.pols_if(97)
         + 150.0 * p.pols_death(97) + 50.0 * p.pols_lapse(97), rel=1e-12)
+    assert p.commissions(97) == pytest.approx(
+        0.015 * p.prem_pp(97) * p.pols_if(97), rel=1e-12)
     # It opens with a live fund, a real Beitragsrückgewähr base and a live risk charge.
     assert p.av_pp(97) == pytest.approx(190.0 * 118.4, rel=1e-12) == 22496.0
     assert p.cum_prem_init() == 24000.0 and p.cum_prem_pp(96) == 24000.0
@@ -759,7 +770,7 @@ def test_pitfall_13_the_fund_is_not_booked_as_an_insurer_outgo(de_frv_anchor):
     for t in (1, 61, 240, 360):
         rebuilt = (p.charge_acq(t) + p.charge_admin_prem(t) + p.charge_admin_fund(t)
                    + p.charge_policy_fee(t) + p.charge_risk(t) + p.stornoabzug(t)
-                   - p.expenses(t) - p.death_strain(t))
+                   - p.expenses(t) - p.commissions(t) - p.death_strain(t))
         assert p.net_cf(t) == pytest.approx(rebuilt, rel=1e-12, abs=1e-9)
         funded = (p.claims(t, "DEATH") + p.claims(t, "LAPSE") + p.claims(t, "MATURITY")
                   + p.withdrawals(t) + p.stornoabzug(t))
@@ -911,7 +922,7 @@ def test_check_net_cf_is_delib_ruling_one_and_crosses_the_unit_boundary(de_frv_a
             p.charge_acq(t) + p.charge_admin_prem(t), abs=1e-9)
         rebuilt = (withheld + p.charge_admin_fund(t) + p.charge_policy_fee(t)
                    + p.charge_risk(t) + p.stornoabzug(t)
-                   - p.expenses(t) - p.death_strain(t))
+                   - p.expenses(t) - p.commissions(t) - p.death_strain(t))
         assert p.check_net_cf_resid(t) == pytest.approx(p.net_cf(t) - rebuilt, abs=1e-12)
         assert abs(p.check_net_cf_resid(t)) < 1e-9
     assert p.check_net_cf() is True and p.check_prem_split() is True
@@ -964,7 +975,8 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
         "pols_if", "premiums", "prem_to_av", "charge_acq", "charge_admin_prem",
         "charge_admin_fund", "charge_policy_fee", "charge_risk", "stornoabzug",
         "withdrawals", "claims_death", "claims_lapse", "claims_maturity",
-        "av_releases", "death_strain", "expenses", "net_cf", "liability_cf"]
+        "av_releases", "death_strain", "expenses", "commissions", "net_cf",
+        "liability_cf"]
     assert list(df.index) == list(range(1, 361)) and df.index[-1] == n
     assert "claims" not in df.columns          # no subtotal beside its own parts
     assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(0.0, abs=1e-12)

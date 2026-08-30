@@ -208,9 +208,13 @@ Cells Descriptions
 
 .. autofunction:: expense_acq_pp
 
+.. autofunction:: comm_acq_pp
+
 .. autofunction:: expense_maint_pp
 
 .. autofunction:: expenses
+
+.. autofunction:: commissions
 
 .. autofunction:: net_cf
 

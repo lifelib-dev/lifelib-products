@@ -27,9 +27,9 @@ print("t = 1 .. {}, conversion at t = {} (age {}, calendar {}), "
           proj.proj_len(), proj.t_conv(), proj.age(proj.t_conv()),
           proj.calendar_year(proj.t_conv()), proj.rechnungszins(),
           proj.scenario_id()))
-print("opening: av_pp = {:,.2f}  guar_pp = {:,.2f}  "
+print("opening: av_total_pp = {:,.2f}  guar_pp = {:,.2f}  "
       "garantieluecke_pp = {:,.2f}".format(
-          proj.av_pp(1), proj.guar_pp(1), proj.garantieluecke_pp(1)))
+          proj.av_total_pp(1), proj.guar_pp(1), proj.garantieluecke_pp(1)))
 print()
 print("conversion: account {:,.2f}  guarantee {:,.2f}  capital {:,.2f}  "
       "Garantieluecke {:,.2f}".format(

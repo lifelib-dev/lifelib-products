@@ -52,7 +52,7 @@ German terms of art keep their German form in prose.
   contribution at the start; interest is credited at the **end** of the year on the account plus the
   year's *Sparbeitrag*; decrements act at the **end** of the year, **after** crediting, so an
   exiting policy takes the full year's interest; and death, surrender and transfer benefits are
-  struck on `av_pp(t + 1)`. Conversion happens at the **start** of `t_conv()`, after the final
+  struck on `av_total_pp(t + 1)`. Conversion happens at the **start** of `t_conv()`, after the final
   Zulage has been credited and before any payout-phase mortality. Annuity instalments are paid at the
   **start** of each payout year.
 - **The monthly annuity on an annual grid [std].** The contract pays a monthly *Leibrente* in
@@ -97,7 +97,7 @@ reaches it through a `data` Reference and holds no `*_file` Reference and no `in
 | `lapse_table.csv` | `duration` (1–60) | `lapse_rate`, `transfer_rate`, `provenance` |
 | `zulage_schedule.csv` | `zulage_id`, `t` | `unmittelbar`, `n_kinder_pre2008`, `n_kinder_post2008`, `bonus`, `provenance` |
 | `income_schedule.csv` | `income_id`, `t` | `income`, `provenance` |
-| `surplus_scenario.csv` | `scenario_id`, `t` | `laufende_verz`, `provenance` |
+| `surplus_scenario.csv` | `scenario_id`, `t` | `decl_rate`, `provenance` |
 | `freq_loading.csv` | `prem_freq` | `load`, `provenance` |
 
 **Every file except `model_point_table.csv` carries a per-row `provenance` column**, delib's second
@@ -118,8 +118,8 @@ exactly; what a replacement must preserve is stated in assumption class (c) and 
 `duration`, `calendar_year`, `t_conv`, `is_accum`, `is_payout`; `income_ref`,
 `zulage_entitlement_pp`, `zulage_granted_pp`, `zulage_pp`, `zulage_cum_pp`,
 `mindesteigenbeitrag_pp`, `eigenbeitrag_pp`, `eigenbeitrag_paid_pp`, `contrib_total_pp`;
-`acq_charge_pp`, `admin_charge_pp`, `prem_to_av_pp`; `dk_pp`, `surplus_acct_pp`, `av_pp`,
-`av_pp_at`, `av_at`, `int_guar_pp`, `int_surplus_pp`, `int_credited_pp`, `laufende_verz`;
+`acq_charge_pp`, `admin_charge_pp`, `prem_to_av_pp`; `dk_pp`, `surplus_acct_pp`, `av_total_pp`,
+`av_total_pp_at`, `av_total_at`, `int_guar_pp`, `int_surplus_pp`, `int_credited_pp`, `decl_rate`;
 `guar_pp`, `guar_carve_out_pp`, `garantieluecke_pp`, `pool_gefoerdert_pp`, `pool_ungefoerdert_pp`;
 `slueb_pp`, `bewres_pp`, `account_conv_pp`, `capital_conv_pp`, `garantieluecke_conv_pp`,
 `ann_factor`, `rentenfaktor_curr`, `rentenfaktor_applied`, `annuity_month_pp`, `is_kleinbetrag`,
@@ -166,7 +166,7 @@ value; the thirteen points are described under *Worked example*.
 | `teilkapital_share` | float | Elected *Teilkapitalauszahlung*, 0 to the statutory 0.30 [R1] | 12 (0.00) |
 | `rentenfaktor_guar` | float | Guaranteed *Rentenfaktor*, € of monthly annuity per 10 000 € of capital, struck at inception | all |
 | `rentengarantie_years` | int | *Rentengarantiezeit*; payments continue to beneficiaries for this many years from *Rentenbeginn* | 12 (0) |
-| `scenario_id` | str | Key into `surplus_scenario.csv`; names the `laufende_verz` path | 11 (`low`) |
+| `scenario_id` | str | Key into `surplus_scenario.csv`; names the `decl_rate` path | 11 (`low`) |
 
 Three of these are the ones a reader from another market is most likely to mis-set. `zulage_init_pp`
 exists **only** because the Zulage arrives a year late [R11], so an in-force point opens owing one;
@@ -214,10 +214,10 @@ contract carries, an at-issue point beside the in-force ones, and four boundary 
 | `zulage_entitlement_pp(t)`, `zulage_granted_pp(t)`, `zulage_pp(t)` | Full § 84/85 entitlement; entitlement after the § 86 proportional Kürzung; the amount actually **credited** in year `t`, which is the previous year's grant | annual (lag 1) |
 | `mindesteigenbeitrag_pp(t)`, `eigenbeitrag_pp(t)`, `eigenbeitrag_paid_pp(t)` | The § 86 minimum; the contribution before the frequency loading; the amount actually collected | annual |
 | `prem_to_av_pp(t)` | The *Sparbeitrag* — the part of the contribution credited to the account, after charges. **May be negative** in a *beitragsfrei* year | annual |
-| `dk_pp(t)`, `surplus_acct_pp(t)`, `av_pp(t)` | *Deckungskapital*, *Überschussguthaben*, and their sum at the start of year `t` | annual recursion |
-| `av_pp_at(t, timing)`, `av_at(t, timing)` | `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_INT"`; the second form is the first times `pols_if(t)` | within year |
+| `dk_pp(t)`, `surplus_acct_pp(t)`, `av_total_pp(t)` | *Deckungskapital*, *Überschussguthaben*, and their sum at the start of year `t` | annual recursion |
+| `av_total_pp_at(t, timing)`, `av_total_at(t, timing)` | `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_INT"`; the second form is the first times `pols_if(t)` | within year |
 | `int_guar_pp(t)`, `int_surplus_pp(t)`, `int_credited_pp(t)` | Guaranteed interest at the *Rechnungszins*, declared surplus above it, and their sum | annual |
-| `guar_pp(t)`, `guar_carve_out_pp(t)`, `garantieluecke_pp(t)` | The *Beitragsgarantie* accumulator; the biometric carve-out capped at 20 %; the running shortfall `max(0, guar_pp(t) − av_pp(t))`, a **diagnostic**, since the guarantee is tested only at *Rentenbeginn* | annual |
+| `guar_pp(t)`, `guar_carve_out_pp(t)`, `garantieluecke_pp(t)` | The *Beitragsgarantie* accumulator; the biometric carve-out capped at 20 %; the running shortfall `max(0, guar_pp(t) − av_total_pp(t))`, a **diagnostic**, since the guarantee is tested only at *Rentenbeginn* | annual |
 | `pool_gefoerdert_pp(t)`, `pool_ungefoerdert_pp(t)` | Cumulative subsidised and unsubsidised contributions credited. **Contributions only** — the model does not apportion investment return between the pools and says so | annual |
 | `zulage_cum_pp(t)` | Cumulative Zulagen credited: the ZfA-reclaimable limb of the *Rückzahlungsbetrag*. A diagnostic, never netted from a benefit | annual |
 | `capital_conv_pp()`, `garantieluecke_conv_pp()` | Conversion capital and the *Garantielücke* the insurer funds at *Rentenbeginn* — the product's signature output | once, at `t_conv()` |
@@ -269,7 +269,7 @@ consequential, because the declared rate is what decides whether the guarantee c
 | Input | Value | Basis |
 |---|---|---|
 | *Rechnungszins* | **0,25 %** on the anchor, a 2024-vintage tariff; 0,90 % on one older point | cap [R22] [REG-R14] [REG-R15]; carrier's own choice **not established** (gap 12) — **[std]** (3) |
-| *Laufende Verzinsung* `laufende_verz(t)` | Scenario path in `surplus_scenario.csv`: `base` **2,30 %** level, `low` **0,50 %** level | **[std]** (4) |
+| *Laufende Verzinsung* `decl_rate(t)` | Scenario path in `surplus_scenario.csv`: `base` **2,30 %** level, `low` **0,50 %** level | **[std]** (4) |
 | Surplus system in accumulation | *Verzinsliche Ansammlung*: declared surplus accrues in a **second account** beside the *Deckungskapital* and bears the declared rate | market practice; level **[std]** (4) |
 | *Risikoüberschuss* and *Kostenüberschuss* | **Zero** in the base run | **[std]** (5) |
 | *Schlussüberschussanteil* | **2,0 %** of contributions credited, declared at *Rentenbeginn*, and **counted toward the guarantee** | **[std]** (6), gap 9 |
@@ -363,8 +363,8 @@ not from data.
 | `C(t)` | `contrib_total_pp(t)` | `E(t) + Z(t) + contrib_extra_pp` while in accumulation |
 | `K_a(t)`, `K_v(t)` | `acq_charge_pp`, `admin_charge_pp` | Acquisition and administration charges |
 | `S(t)` | `prem_to_av_pp(t)` | The *Sparbeitrag*, `C(t) − K_a(t) − K_v(t)`; **may be negative** |
-| `D(t)`, `U(t)`, `A(t)` | `dk_pp`, `surplus_acct_pp`, `av_pp` | *Deckungskapital*, *Überschussguthaben*, and `A = D + U` |
-| `i`, `j(t)` | `rechnungszins`, `laufende_verz(t)` | Guaranteed rate; declared *laufende Verzinsung*, with `j ≥ i` |
+| `D(t)`, `U(t)`, `A(t)` | `dk_pp`, `surplus_acct_pp`, `av_total_pp` | *Deckungskapital*, *Überschussguthaben*, and `A = D + U` |
+| `i`, `j(t)` | `rechnungszins`, `decl_rate(t)` | Guaranteed rate; declared *laufende Verzinsung*, with `j ≥ i` |
 | `G(t)`, `κ(t)` | `guar_pp`, `guar_carve_out_pp` | The *Beitragsgarantie* accumulator; the biometric carve-out |
 | `Λ` | `garantieluecke_conv_pp()` | The *Garantielücke* funded at *Rentenbeginn* |
 | `V` | `capital_conv_pp()` | The conversion capital |
@@ -430,8 +430,8 @@ The split is **guarantee accounting, not two investment strategies**: the whole 
 arithmetic error this prevents is adding the declared *laufende Verzinsung* **to** the
 *Rechnungszins*: `j` already **includes** `i`, and `j − i` is the *laufende
 Zinsüberschussbeteiligung* [REG-R53] (pitfall 10). Within-year points are
-`av_pp_at(t, "BEF_PREM") = A(t)`, `av_pp_at(t, "AFT_PREM") = A(t) + S(t)` and
-`av_pp_at(t, "AFT_INT") = A(t + 1)`, with `av_at(t, timing) = av_pp_at(t, timing) · l(t)`.
+`av_total_pp_at(t, "BEF_PREM") = A(t)`, `av_total_pp_at(t, "AFT_PREM") = A(t) + S(t)` and
+`av_total_pp_at(t, "AFT_INT") = A(t + 1)`, with `av_total_at(t, timing) = av_total_pp_at(t, timing) · l(t)`.
 
 ### The *Beitragsgarantie* accumulator
 
@@ -559,7 +559,7 @@ the product is about.
 | Check | Identity |
 |---|---|
 | **`check_net_cf()`** (delib ruling 1) | On `result_cf()` row `t`: `net_cf` equals `premiums + zulagen` less the six `claims_*` less `expenses` less `commissions`, every term read from the **published frame** rather than from the cells behind it, for every `t`; residual at `check_net_cf_resid(t)`. `int_credited` is outside the identity |
-| `check_av_roll_fwd()` | `av(t+1) = av(t) + prem_to_av(t) + int_credited(t) − claims_death − claims_lapse − claims_transfer − exit_charge(t)` for `t < t_conv()`, and `av_pp(t) = 0` for `t > t_conv()` |
+| `check_av_roll_fwd()` | `av_total_at(t+1, "BEF_PREM") = av_total_at(t, "BEF_PREM") + prem_to_av_pp(t)·l(t) + int_credited(t) − claims_death − claims_lapse − claims_transfer − exit_charge(t)` for `t < t_conv()`, and `av_total_pp(t) = 0` for `t > t_conv()` |
 | `check_guar_roll_fwd()` | `guar_pp(t+1) = guar_pp(t) + eigenbeitrag_pp(t) + zulage_pp(t) + contrib_extra_pp − guar_carve_out_pp(t)` while `t ≤ t_conv()`, frozen thereafter, and `guar_carve_out_pp(t) ≤ 0.20 ×` total contributions |
 | `check_pols_roll_fwd()` | The decrement recursion closes each year, and `Σ(pols_death + pols_lapse + pols_transfer) + pols_conv()·1{is_kleinbetrag()} + pols_if(proj_len()+1) = pols_if_init()`. The commuted cohort is a fourth exit: a *Kleinbetragsrenten-Abfindung* discharges the contract, so `pols_if(t_conv()+1) = 0` without any decrement having removed the population |
 | `check_conversion()` | `capital_conv_pp() = max(account_conv_pp(), guar_pp(t_conv()+1))`; `capital_conv_pp() = teilkapital_pp() + annuity_capital_pp() + commutation_pp()`; and `rentenfaktor_curr() · 12 · ann_factor() = (1 − rentenfaktor_margin) · 10 000`, the identity that ties the current factor to the annuity basis whether or not it is the factor applied |
@@ -584,18 +584,18 @@ and it is stated here so that an implementation can be compared against it line 
 3. **Credit the Zulage earned last year**: `Z(t) = zulage_init_pp` at `t = 1`, else `Ẑ(t − 1)`. This
    happens **before** anything else touches the account, and it happens in the conversion year too.
 4. Form `C(t)`, deduct `K_a(t)` and `K_v(t)`, and credit the *Sparbeitrag* `S(t)` to the account:
-   `av_pp_at(t, "AFT_PREM") = A(t) + S(t)`. Collect `premiums(t)` and `zulagen(t)` on `l(t)`.
+   `av_total_pp_at(t, "AFT_PREM") = A(t) + S(t)`. Collect `premiums(t)` and `zulagen(t)` on `l(t)`.
 5. Roll the guarantee accumulator: `G(t + 1) = G(t) + E(t) + Z(t) + contrib_extra_pp − κ(t)`, and
    the two contribution pools alongside it.
 6. Charge start-of-year expenses and commission on the in-force, plus the acquisition expense and
    initial commission at `t = 1` on a point issued at the valuation date.
 7. **If `t = t_conv()`**: strike `account_conv_pp()`, `V`, `Λ`; compute `ä`, `R_c`, `R`; apply the
    *Kleinbetragsrente* test; pay `claims_lumpsum` or `claims_commutation` on `pols_conv()`; and fix
-   the annuity `a(t)`. The account is extinguished — `av_pp(t) = 0` for `t > t_conv()`. **Nothing in
+   the annuity `a(t)`. The account is extinguished — `av_total_pp(t) = 0` for `t > t_conv()`. **Nothing in
    steps 8 and 9 applies to the account after this point.**
 8. **Accumulation only, end of year.** Credit interest: `int_guar_pp(t)` at `i` and
    `int_surplus_pp(t)` at `j(t) − i` on `D(t) + S(t)`, plus `j(t)` on `U(t)`;
-   `av_pp_at(t, "AFT_INT") = A(t + 1)`.
+   `av_total_pp_at(t, "AFT_INT") = A(t + 1)`.
 9. **Accumulation only, end of year.** Apply the decrements to `l(t)`: mortality first, then
    surrender on the survivors, then transfer on the survivors of both. Strike `claims_death`,
    `claims_lapse` and `claims_transfer` on `A(t + 1)`, and retain `exit_charge_pp(t)`.
@@ -647,7 +647,7 @@ becomes a test in `tests/test_riester_rente_de.py`.
    *Altersvorsorgebeiträge* paid in and does not distinguish the pools [R1]. Assert on model
    point 8 that `guar_pp(t + 1) − guar_pp(t)` includes `contrib_extra_pp`, while
    `zulage_entitlement_pp(t)` is unaffected by it.
-10. **Adding the declared rate to the guaranteed rate.** `laufende_verz` **includes** the
+10. **Adding the declared rate to the guaranteed rate.** `decl_rate` **includes** the
     *Rechnungszins* [REG-R53]. Assert `int_credited_pp(t) = j(t) · (D(t) + S(t)) + j(t) · U(t)`
     exactly, and that setting `j = i` makes `int_surplus_pp(t)` zero on the *Deckungskapital* leg.
 11. **Crediting the frequency loading to the account.** The *Ratenzuschlag* is a charge. Assert that
@@ -662,7 +662,7 @@ becomes a test in `tests/test_riester_rente_de.py`.
     `cv_pp(t) = 0.98 · A(t + 1)`, and that the two decrements are separate columns.
 14. **Treating *Beitragsfreistellung* as a termination.** It is a state change [R14] [REG-R28].
     Assert on model point 10 that `pols_if(t)` is **continuous** across `bfs_year`, that `guar_pp`
-    freezes, that `zulage_pp` goes to zero, and that `av_pp` keeps rolling.
+    freezes, that `zulage_pp` goes to zero, and that `av_total_pp` keeps rolling.
 15. **Using one mortality table for both phases, or a period table for the annuity.** The direction
     of prudence forks by product [REG-R47], and DAV 2004 R is generational [REG-R49]. Assert that
     `mort_rate(t)` switches basis at `t_conv()`, that `annuity_mort_rate(x, τ)` depends on **both**
@@ -730,7 +730,7 @@ guarantee carries no carve-out; `income_id = grow2` and `income_init = 42,000.00
 the entitlement is 475,00 € in contribution years 2027 and 2028 and 175,00 € thereafter;
 `zulage_init_pp = 475.00`, the Zulage earned in 2026 and credited in projection year 1;
 `prem_freq = annual`, so `prem_freq_load = 1.0000`; `bfs_year = 0`; `dk_pp_init = 3,860.50`;
-`surplus_pp_init = 150.48`, so `av_pp(1) = 4,010.98`; `guar_pp_init = 4,369.92` — three
+`surplus_pp_init = 150.48`, so `av_total_pp(1) = 4,010.98`; `guar_pp_init = 4,369.92` — three
 *Eigenbeiträge* on the same income path plus the two Zulagen of 475,00 € credited in 2025 and 2026 —
 which is **above** the account, so the anchor opens with a positive `garantieluecke_pp(1)` of
 358,94 €;
@@ -1063,7 +1063,7 @@ Six, each because the model and the notes as drafted disagreed and the model was
 6. **Model point 2 reconciles the anchor's account seeds and not its guarantee seed.** Projected
    from its own inception on the contract-clock income path `grow2_pre`, it reproduces
    `dk_pp_init` as 3 860,499285 € against 3 860,50 €, `surplus_pp_init` as 150,483132 € against
-   150,48 € and `av_pp(1)` as 4 010,982418 € against 4 010,98 €, and from its `t = 4` onward every
+   150,48 € and `av_total_pp(1)` as 4 010,982418 € against 4 010,98 €, and from its `t = 4` onward every
    per-policy quantity coincides with the anchor's from `t = 1`. Its guarantee accumulator at the
    same point is **4 565,00 €** against the seed's 4 369,92 €. The two seeds were struck on
    different income paths — the account seed on earnings level at 42 000 € over the three
@@ -1113,7 +1113,7 @@ grid. The valuation layers consume them and are **cited, never reproduced**.
 - **The surplus regulations.** The MindZV puts an arithmetic floor under the transfer to the
   *Rückstellung für Beitragsrückerstattung* [REG-R18] [REG-R19] and § 153 VVG gives the individual
   entitlement and the *hälftige* participation in the *Bewertungsreserven* [REG-R24]. This model
-  takes `laufende_verz` as an **exogenous management action** and does not derive it from a
+  takes `decl_rate` as an **exogenous management action** and does not derive it from a
   distributable surplus; `frlib/products/assurance_vie_euro/` derives its credited rate from a
   statutory account, and the difference between the two treatments is a real difference between the
   two jurisdictions' surplus law, not a modelling shortcut.

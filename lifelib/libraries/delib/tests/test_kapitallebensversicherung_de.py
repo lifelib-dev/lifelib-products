@@ -116,7 +116,7 @@ ROUNDED_CELL_TOTALS = {
 }
 
 # The notes' state table at the ten durations it prints:
-# t -> (res_pp, surplus_base_pp, surplus_credit_pp, av_pp, term_bonus_pp, surr_value_pp).
+# t -> (res_pp, surplus_base_pp, surplus_credit_pp, av_sur_pp, term_bonus_pp, surr_value_pp).
 STATE = {
     1:  (-1252.53,   570.75,   9.70,     0.00,    0.00,   708.73),
     2:  (  570.75,  2410.10,  40.97,     9.70,    2.28,  2590.38),
@@ -267,12 +267,12 @@ def test_the_state_behind_the_cash_flows(de_klv_anchor, t):
     ``surplus_base_pp(t)`` is the same reserve at the **end** of it, which is the
     *Deckungskapital* "at the allocation date" the declared rate multiplies.
     """
-    res, base, credit, av, term, surr = STATE[t]
+    res, base, credit, av_sur, term, surr = STATE[t]
     p = de_klv_anchor
     assert p.res_pp(t) == pytest.approx(res, abs=CENT)
     assert p.surplus_base_pp(t) == pytest.approx(base, abs=CENT)
     assert p.surplus_credit_pp(t) == pytest.approx(credit, abs=CENT)
-    assert p.av_pp(t) == pytest.approx(av, abs=CENT)
+    assert p.av_sur_pp(t) == pytest.approx(av_sur, abs=CENT)
     assert p.term_bonus_pp(t) == pytest.approx(term, abs=CENT)
     assert p.surr_value_pp(t) == pytest.approx(surr, abs=CENT)
     row = p.result_surplus().loc[t]
@@ -364,8 +364,8 @@ def test_the_year_two_surplus_credit_and_the_ansammlung_it_builds(de_klv_anchor)
     assert p.surplus_base_pp(2) == pytest.approx(2410.101960, abs=5e-5)
     assert p.surplus_credit_pp(2) == pytest.approx(0.017 * 2410.101960, abs=5e-5)
     assert p.surplus_credit_pp(2) == pytest.approx(40.9717, abs=5e-5)
-    assert p.av_pp(3) == pytest.approx(9.702741 * 1.027 + 40.971733, abs=5e-5)
-    assert p.av_pp(3) == pytest.approx(50.9364, abs=5e-4)
+    assert p.av_sur_pp(3) == pytest.approx(9.702741 * 1.027 + 40.971733, abs=5e-5)
+    assert p.av_sur_pp(3) == pytest.approx(50.9364, abs=5e-4)
     assert p.term_bonus_pp(3) == pytest.approx(2.282998 + 0.004 * 2410.101960, abs=5e-5)
     assert p.term_bonus_pp(3) == pytest.approx(11.9234, abs=5e-4)
     assert p.check_surplus_roll_fwd() is True
@@ -390,7 +390,7 @@ def test_the_year_twelve_surrender_payment_from_its_three_parts(de_klv_anchor):
     assert p.res_min_pp(13) - p.res_zill_pp(13) == pytest.approx(691.06, abs=CENT)
     assert p.res_guar_pp(12) == pytest.approx(22413.4564, abs=CENT)
     assert 22413.4564 * 0.95 == pytest.approx(21292.7836, abs=CENT)
-    assert p.av_pp_at(12, "AFT_CREDIT") == pytest.approx(2462.4255, abs=CENT)
+    assert p.av_sur_pp_at(12, "AFT_CREDIT") == pytest.approx(2462.4255, abs=CENT)
     assert p.surr_value_pp(12) == pytest.approx(21292.7836 + 2462.4255, abs=CENT)
     assert p.surr_value_pp(12) == pytest.approx(23755.2091, abs=CENT)
     assert p.claims(12, "LAPSE") == pytest.approx(0.04043417 * 23755.2091, abs=CENT)
@@ -641,15 +641,15 @@ def test_the_stornoabzug_spares_the_ueberschussguthaben(de_klv_anchor):
     """
     p = de_klv_anchor
     for t in range(1, 26):
-        assert p.surr_value_pp(t) - p.av_pp_at(t, "AFT_CREDIT") == pytest.approx(
+        assert p.surr_value_pp(t) - p.av_sur_pp_at(t, "AFT_CREDIT") == pytest.approx(
             p.res_guar_pp(t) * (1.0 - p.storno_rate(t)), rel=1e-12)
     assert p.storno_rate(1) == 0.10 and p.storno_rate(12) == 0.05
     assert p.storno_rate(20) == 0.025
-    whole = (p.res_guar_pp(12) + p.av_pp_at(12, "AFT_CREDIT")) * (1.0 - 0.05)
+    whole = (p.res_guar_pp(12) + p.av_sur_pp_at(12, "AFT_CREDIT")) * (1.0 - 0.05)
     assert p.surr_value_pp(12) - whole == pytest.approx(0.05 * 2462.4255, abs=CENT)
     assert p.surr_value_pp(12) > whole and p.term_bonus_pp(13) > 0.0
     assert p.surr_value_pp(12) == pytest.approx(
-        p.res_guar_pp(12) * 0.95 + p.av_pp_at(12, "AFT_CREDIT"), rel=1e-12)
+        p.res_guar_pp(12) * 0.95 + p.av_sur_pp_at(12, "AFT_CREDIT"), rel=1e-12)
 
 
 # --- Pitfall 7: § 161 VVG substitutes, it does not forfeit --------------------
@@ -931,7 +931,7 @@ def test_the_ansammlung_pays_more_at_maturity_and_the_bonus_more_on_death(
         1665.22, abs=CENT)
     assert bonus.benefit_death_pp(5) - ans.benefit_death_pp(5) == pytest.approx(
         71.21, abs=CENT)
-    assert bonus.av_pp(26) == 0.0 and ans.av_pp(26) > 0.0
+    assert bonus.av_sur_pp(26) == 0.0 and ans.av_sur_pp(26) > 0.0
     assert bonus.bonus_si_pp(26) > 0.0 and ans.bonus_si_pp(26) == 0.0
     assert bonus.check_surplus_roll_fwd() is True
 
@@ -1130,7 +1130,7 @@ def test_the_in_force_point_opens_where_it_should(kapitallebensversicherung):
     df = p.result_cf()
     assert list(df.index) == list(range(15, 31))
     assert df["pols_if"].iloc[0] == p.pols_if_init() == 1.0
-    assert p.av_pp(15) == p.av_pp_init() == 6000.0
+    assert p.av_sur_pp(15) == p.av_sur_pp_init() == 6000.0
     assert p.commissions(15) == 0.0 and p.commissions(16) > 0.0
     assert p.expenses_pp(15) == pytest.approx(45.0 * 1.018 ** 14, rel=1e-12)
     assert p.inflation_factor(15) == pytest.approx(1.018 ** 14, rel=1e-12)
@@ -1206,7 +1206,7 @@ def test_invalid_enum_values_raise(de_klv_anchor):
     with pytest.raises(FormulaError):
         de_klv_anchor.res_pp_at(1, "AFTER_PREMIUM")
     with pytest.raises(FormulaError):
-        de_klv_anchor.av_pp_at(1, "AFTER_INTEREST")
+        de_klv_anchor.av_sur_pp_at(1, "AFTER_INTEREST")
     with pytest.raises(FormulaError):
         de_klv_anchor.pols_if_at(1, "AFTER_LAPSE")
 
@@ -1223,7 +1223,7 @@ def test_docstrings_describe_the_current_structure(kapitallebensversicherung):
     proj = kapitallebensversicherung.Projection.doc
     assert "Notes symbol" in proj
     for cells in ("proj_len", "model_point", "res_pp", "res_guar_pp", "surr_value_pp",
-                  "av_pp_at", "bfz_si_pp", "zins_ueberschuss_rate", "storno_rate",
+                  "av_sur_pp_at", "bfz_si_pp", "zins_ueberschuss_rate", "storno_rate",
                   "mort_rate_at_age", "liability_cf"):
         assert cells in proj, cells
     data = kapitallebensversicherung.Data.doc
@@ -1247,7 +1247,7 @@ def test_the_endowment_chassis_vocabulary_is_present(kapitallebensversicherung):
         "res_pp", "res_pp_at", "res_net_pp", "res_zill_pp", "res_min_pp",
         "res_guar_pp", "surr_value_pp", "decl_rate", "zins_ueberschuss_rate",
         "term_rate", "ans_rate", "surplus_base_pp", "surplus_credit_pp",
-        "term_bonus_pp", "av_pp", "av_pp_at", "av", "av_at", "bonus_si_pp",
+        "term_bonus_pp", "av_sur_pp", "av_sur_pp_at", "av_sur", "av_sur_at", "bonus_si_pp",
         "benefit_death_pp", "benefit_maturity_pp", "claims", "claim_expenses",
         "expenses", "commissions", "inflation_factor", "net_cf", "liability_cf",
         "result_cf", "result_surplus"}
@@ -1324,10 +1324,10 @@ def test_the_behaviour_modules_are_off_and_reachable(kapitallebensversicherung,
     p = de_klv_anchor
     # bwr_rate off: no Bewertungsreserven share leaks into the maturity benefit.
     assert p.benefit_maturity_pp(25) == pytest.approx(
-        p.sum_assured() + p.av_pp(26) + p.bonus_si_pp(26) + p.term_bonus_pp(26), rel=1e-12)
+        p.sum_assured() + p.av_sur_pp(26) + p.bonus_si_pp(26) + p.term_bonus_pp(26), rel=1e-12)
     # term_surr_share off: the accrued terminal share is not paid on surrender.
     assert p.surr_value_pp(24) == pytest.approx(
-        p.res_guar_pp(24) * (1.0 - p.storno_rate(24)) + p.av_pp_at(24, "AFT_CREDIT"),
+        p.res_guar_pp(24) * (1.0 - p.storno_rate(24)) + p.av_sur_pp_at(24, "AFT_CREDIT"),
         rel=1e-12)
 
 

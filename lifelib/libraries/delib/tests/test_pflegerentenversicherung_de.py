@@ -999,7 +999,7 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     # first two policy years are zero, the Zillmerung allowance being unamortised.
     storno = pflegerentenversicherung.Projection[10]
     surrender = pflegerentenversicherung.Data.surrender_table()
-    assert storno.stornoabzug() == 0.05 and p.stornoabzug() == 0.0
+    assert storno.stornoabzug_rate() == 0.05 and p.stornoabzug_rate() == 0.0
     assert storno.policy_year(60) == 6
     assert storno.rkw_pp(60) == pytest.approx(
         float(surrender.at[6, "rkw_prem_ratio"])

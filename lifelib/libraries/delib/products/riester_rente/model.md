@@ -110,7 +110,7 @@ between a *Garantielücke* of zero and one of 506,56 €.
 
 ## The account is two balances and one credited rate
 
-`dk_pp` is the *Deckungskapital*, `surplus_acct_pp` the *Überschussguthaben*, `av_pp` their
+`dk_pp` is the *Deckungskapital*, `surplus_acct_pp` the *Überschussguthaben*, `av_total_pp` their
 sum. The split is **guarantee accounting, not two investment strategies**: the whole account
 grows at the declared `j(t)` and `D` is carved out of it as the part `i` guarantees.
 
@@ -285,7 +285,7 @@ frequency-loading invariance is tested.
 | `lapse_table.csv` | `lapse_rate` and `transfer_rate` by contract duration 1–60 | **[std]**, and **no observed range exists** (gap 16). Transfer above surrender at every duration, and that ordering is itself the assertion |
 | `zulage_schedule.csv` | `unmittelbar`, `n_kinder_pre2008`, `n_kinder_post2008`, `bonus` by schedule id and `t` | [R9] [REG-R42]. Exogenous because *Kindergeld* is a household fact the contract does not observe — the most awkward feature of this product for a per-policy model |
 | `income_schedule.csv` | Contribution-liable earnings by schedule id and `t` | **[std]** 2 % nominal growth paths plus a `zero` path for the *mittelbar* eligible spouse. It decides when the 2 100 € ceiling binds |
-| `surplus_scenario.csv` | `laufende_verz` by scenario id and `t`: `base` 2,30 %, `low` 0,50 % | **[std]**, the **largest single lever in the model** and the least supported (gap 12). The rate **includes** the *Rechnungszins* [REG-R53] |
+| `surplus_scenario.csv` | `decl_rate` by scenario id and `t`: `base` 2,30 %, `low` 0,50 % | **[std]**, the **largest single lever in the model** and the least supported (gap 12). The rate **includes** the *Rechnungszins* [REG-R53] |
 | `freq_loading.csv` | The *Ratenzuschlag* multiplier by payment frequency | **[std]** 1.0000 / 1.0100 / 1.0200 / 1.0300, a charge and never a credit |
 
 ## The identities the model checks
@@ -366,15 +366,16 @@ undiscounted total of −7 827,39 €.
 Cells follow lifelib's `basiclife/BasicTerm_S` where that model has an analogue and
 `savings/CashValue_SE` for the account-value chassis: `pols_*` for policy counts, plural nouns
 for cash flows, `*_rate` for rates, `*_pp` for per-policy amounts, `claims(t, kind)` with an
-uppercase `kind`, `pols_if_at(t, timing)` and `av_pp_at(t, timing)` for the within-year reads,
-`prem_to_av_pp` for the contribution credited to the account. The full symbol map lives in the
-`Projection` docstring. Six cases needed care:
+uppercase `kind`, `pols_if_at(t, timing)` and `av_total_pp_at(t, timing)` for the within-year
+reads, `prem_to_av_pp` for the contribution credited to the account. The full symbol map lives
+in the `Projection` docstring. Seven cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
 | `Z*(t)`, `Ẑ(t)`, `Z(t)`; `C(t)` | `zulage_entitlement_pp` / `zulage_granted_pp` / `zulage_pp`; `contrib_total_pp` | Three subsidy amounts and the product turns on the difference between them; and the notes' `C` is the contribution *credited* while the cells is the cash **received**, so it carries the *Ratenzuschlag* that `admin_charge_pp` takes back out |
 | `S(t)` | `prem_to_av_pp` | The lifelib name for the premium credited to an account value. **May be negative**, which is the point of model point 10 |
 | `D`, `U` | `dk_pp` / `surplus_acct_pp` | Guarantee accounting, not two strategies. Kept apart because `check_av_roll_fwd` needs both and because `j ≥ i` is only visible when they are |
+| `A(t) = D(t) + U(t)` | `av_total_pp`, `av_total_pp_at`, `av_total_at` | **Not `av_pp`.** Library-wide `av_pp` is the *principal* balance on its own — `RV_DE_A`'s and `Basis_DE_A`'s *Deckungskapital*, `FRV_DE_S`'s *Fondsguthaben* — with the *verzinsliche Ansammlung* beside it as `av_sur_pp`. What this product's death, surrender and transfer benefits are struck on is the **sum** of the two, a third quantity, so it is named apart rather than reusing the column name `RV_DE_A` gives to one half of it |
 | `G(t)`, `Λ` | `guar_pp` / `garantieluecke_conv_pp` | An accumulator tested once, and the shortfall it produces. `garantieluecke_pp(t)` is the *running* gap, a diagnostic no benefit reads |
 | `l(t)` in payout | `pols_if` / `pols_annuity_pay` | Inside the *Rentengarantiezeit* the instalment is paid on a count that is not the in-force |
 

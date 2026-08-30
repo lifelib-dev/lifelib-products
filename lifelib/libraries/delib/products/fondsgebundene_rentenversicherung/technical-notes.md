@@ -34,8 +34,11 @@ not one charge rate, not one *Rentenfaktor* and not one lapse rate was establish
   Every benefit this contract pays before *Rentenbeginn* — the death benefit up to the fund, the
   *Rückkaufswert*, the *Teilentnahme*, the capital released at *Rentenbeginn* — is funded by
   cancelling the policyholder's own units, so a gross presentation would count the same money
-  twice. `net_cf(t)` is therefore **charges collected, less insurer expenses, less the death
-  strain**. The gross flows are still published — `premiums`, `prem_to_av`, `claims_death`,
+  twice. `net_cf(t)` is therefore **charges collected, less insurer expenses, less commission,
+  less the death strain**. `expenses` **excludes** commission, which is published as its own
+  `commissions` cells and column — the delib convention, stated the same way on `KLV_DE_A`,
+  `Basis_DE_A`, `Riester_DE_A` and `RLV_DE_A`, and the opposite of the frlib chassis. The
+  gross flows are still published — `premiums`, `prem_to_av`, `claims_death`,
   `claims_lapse`, `claims_maturity`, `withdrawals` and `av_releases` are all `result_cf()`
   columns — and `check_benefit_funding()` asserts that they net exactly. This is the same
   decomposition `frlib/products/assurance_vie_uc` uses for a French *unités de compte* contract;
@@ -468,23 +471,26 @@ composite it is the *Fondsguthaben* exactly, and `claims_lapse` is then the whol
     premiums(t)  = ( B(t) + Z(t) ) · l(t)
     prem_to_av(t)= A(t) · l(t)
     charge_*(t)  = charge_*_pp(t) · l(t)                       for the four unit-side charges
-    expenses(t)  = ( comm_acq_rate · S + expense_issue ) · l(1) · 1{t = 1}
+    expenses(t)  = expense_issue · l(1) · 1{t = 1}
                    + expense_maint_pp(t) · l(t)
-                   + comm_renew_rate · B(t) · l(t)
                    + expense_claim · pols_death(t)
                    + expense_surr  · pols_lapse(t)
                    + expense_annuitisation · pols_maturity(t)
+    commissions(t) = comm_acq_rate · S · l(1) · 1{t = 1}
+                   + comm_renew_rate · B(t) · l(t)
 
     net_cf(t) = charge_acq(t) + charge_admin_prem(t) + charge_admin_fund(t)
                 + charge_policy_fee(t) + charge_risk(t) + stornoabzug(t)
-                − expenses(t) − death_strain(t)
+                − expenses(t) − commissions(t) − death_strain(t)
 
     liability_cf(t) = − net_cf(t)
 
-`net_cf` is **income-positive**, as it is in every model in this library. The acquisition expense
-falls at `t = 1` and **only** at `t = 1`, so an in-force model point whose frame opens at
-`t = 97` never incurs it — which is correct, and which is the same reason its `charge_acq(t)` is
-zero at every projected month.
+`net_cf` is **income-positive**, as it is in every model in this library. `expenses` and
+`commissions` are two lines and not one, each subtracted once, which is what `expenses` means on
+every delib model that has a commission to publish. The acquisition commission and the issue
+expense fall at `t = 1` and **only** at `t = 1`, so an in-force model point whose frame opens at
+`t = 97` never incurs either — which is correct, and which is the same reason its
+`charge_acq(t)` is zero at every projected month.
 
 **Three amounts that move on this contract are not insurer cash flow.** The *Anlagebeitrag* and
 every account-value benefit are the policyholder's money passing through the unit fund; the fund's
@@ -545,7 +551,7 @@ delib's own [std] stack and **must never be quoted as a market figure** [R10] [R
 
     pols_if, premiums, prem_to_av, charge_acq, charge_admin_prem, charge_admin_fund,
     charge_policy_fee, charge_risk, stornoabzug, withdrawals, claims_death, claims_lapse,
-    claims_maturity, av_releases, death_strain, expenses, net_cf, liability_cf
+    claims_maturity, av_releases, death_strain, expenses, commissions, net_cf, liability_cf
 
 `pols_if` is first and `pols_if(proj_start()) == pols_if_init()` exactly. Every flow on row `t` is
 weighted by that row's `pols_if`, so dividing a flow by it recovers the per-policy amount; the
@@ -557,7 +563,7 @@ Seven `check_*()` cells are published, each a `bool` over all `t` with a per-`t`
 
 | Check | Identity |
 |---|---|
-| `check_net_cf()` | **delib ruling 1.** `net_cf = charge_acq + charge_admin_prem + charge_admin_fund + charge_policy_fee + charge_risk + stornoabzug − expenses − death_strain` |
+| `check_net_cf()` | **delib ruling 1.** `net_cf = charge_acq + charge_admin_prem + charge_admin_fund + charge_policy_fee + charge_risk + stornoabzug − expenses − commissions − death_strain` |
 | `check_prem_split()` | `premiums = prem_to_av + charge_acq + charge_admin_prem` — the *Beitragsverrechnung* closes |
 | `check_units_roll_fwd()` | `units_pp(t+1) = units_pp(t) + units_bought_pp(t) − units_cancelled_pp(t)` — no price term |
 | `check_av_roll_fwd()` | `F_BEF_DECR(t) = (F(t) + A(t))·(1 + i(t)) − charges − W(t)` — the price term, once |
@@ -642,8 +648,9 @@ one becomes a test.
    which is pitfall 8), nor on point 9, where the *Zuzahlungskosten* make it 3,380.00 against
    2,880.00.
 8. **Charging an in-force model point again for acquisition.** Model point 6 opens at `t = 97`.
-   Assert `charge_acq(t) = 0` at every projected `t` **and** that `expenses(97)` contains no
-   acquisition commission — the whole of the difference between it and a new-business cell.
+   Assert `charge_acq(t) = 0` at every projected `t` **and** that `commissions(97)` contains no
+   *Abschlussprovision* and `expenses(97)` no issue expense — the whole of the difference
+   between it and a new-business cell.
 9. **Letting the *Beitragssumme* follow the premiums actually paid.** `S` is the sum of premiums
    **payable**, at the **initial** level; it does not shrink on lapse or *Beitragsfreistellung*
    and does not grow with a *Beitragsdynamik* increment [R12] [REG-R16]. Assert `beitragssumme()`
@@ -794,26 +801,26 @@ of this cell — the composite tariff has no *Stornoabzug* and this model point 
 *Teilentnahme* — and are omitted here, though still published as columns, because a zero
 column states a product fact where a missing one would hide it.
 
-| t | pols_if | premiums | prem_to_av | charge_acq | charge_admin_prem | charge_admin_fund | charge_policy_fee | charge_risk | expenses | net_cf |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 1.000000 | 200.00 | 162.00 | 30.00 | 8.00 | 0.04 | 3.00 | 0.00 | 2,007.26 | -1,966.22 |
-| 2 | 0.994807 | 198.96 | 161.16 | 29.84 | 7.96 | 0.08 | 2.98 | 0.01 | 7.23 | 33.64 |
-| 3 | 0.989641 | 197.93 | 160.32 | 29.69 | 7.92 | 0.12 | 2.97 | 0.01 | 7.20 | 33.49 |
-| 4 | 0.984502 | 196.90 | 159.49 | 29.54 | 7.88 | 0.16 | 2.95 | 0.01 | 7.17 | 33.35 |
-| 5 | 0.979390 | 195.88 | 158.66 | 29.38 | 7.84 | 0.20 | 2.94 | 0.01 | 7.14 | 33.21 |
-| 6 | 0.974304 | 194.86 | 157.84 | 29.23 | 7.79 | 0.24 | 2.92 | 0.02 | 7.11 | 33.08 |
-| 12 | 0.944340 | 188.87 | 152.98 | 28.33 | 7.55 | 0.46 | 2.83 | 0.03 | 6.93 | 32.26 |
-| 24 | 0.887098 | 177.42 | 143.71 | 26.61 | 7.10 | 0.88 | 2.66 | 0.05 | 6.58 | 30.69 |
-| 59 | 0.738908 | 147.78 | 119.70 | 22.17 | 5.91 | 1.93 | 2.22 | 0.10 | 5.67 | 26.58 |
-| 60 | 0.735054 | 147.01 | 119.08 | 22.05 | 5.88 | 1.95 | 2.21 | 0.10 | 5.64 | 26.47 |
-| 61 | 0.731221 | 146.24 | 140.39 | 0.00 | 5.85 | 1.98 | 2.19 | 0.11 | 5.52 | 4.53 |
-| 120 | 0.625891 | 125.18 | 120.17 | 0.00 | 5.01 | 4.02 | 1.88 | 0.00 | 5.01 | 5.89 |
-| 240 | 0.459656 | 91.93 | 88.25 | 0.00 | 3.68 | 7.71 | 1.38 | 0.00 | 4.19 | 8.58 |
-| 300 | 0.385184 | 77.04 | 73.96 | 0.00 | 3.08 | 9.16 | 1.16 | 0.00 | 3.76 | 9.64 |
-| 301 | 0.384018 | 76.80 | 73.73 | 0.00 | 3.07 | 9.19 | 1.15 | 0.00 | 3.83 | 9.58 |
-| 359 | 0.304251 | 60.85 | 58.42 | 0.00 | 2.43 | 9.82 | 0.91 | 0.00 | 3.18 | 9.98 |
-| 360 | 0.303239 | 60.65 | 58.22 | 0.00 | 2.43 | 9.84 | 0.91 | 0.00 | 33.44 | -20.27 |
-| **Total** | **202.931416** | **40,586.28** | **37,413.08** | **1,549.75** | **1,623.45** | **2,033.18** | **608.79** | **5.85** | **3,728.76** | **2,087.87** |
+| t | pols_if | premiums | prem_to_av | charge_acq | charge_admin_prem | charge_admin_fund | charge_policy_fee | charge_risk | expenses | commissions | net_cf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 1.000000 | 200.00 | 162.00 | 30.00 | 8.00 | 0.04 | 3.00 | 0.00 | 204.26 | 1,803.00 | -1,966.22 |
+| 2 | 0.994807 | 198.96 | 161.16 | 29.84 | 7.96 | 0.08 | 2.98 | 0.01 | 4.25 | 2.98 | 33.64 |
+| 3 | 0.989641 | 197.93 | 160.32 | 29.69 | 7.92 | 0.12 | 2.97 | 0.01 | 4.23 | 2.97 | 33.49 |
+| 4 | 0.984502 | 196.90 | 159.49 | 29.54 | 7.88 | 0.16 | 2.95 | 0.01 | 4.22 | 2.95 | 33.35 |
+| 5 | 0.979390 | 195.88 | 158.66 | 29.38 | 7.84 | 0.20 | 2.94 | 0.01 | 4.20 | 2.94 | 33.21 |
+| 6 | 0.974304 | 194.86 | 157.84 | 29.23 | 7.79 | 0.24 | 2.92 | 0.02 | 4.19 | 2.92 | 33.08 |
+| 12 | 0.944340 | 188.87 | 152.98 | 28.33 | 7.55 | 0.46 | 2.83 | 0.03 | 4.10 | 2.83 | 32.26 |
+| 24 | 0.887098 | 177.42 | 143.71 | 26.61 | 7.10 | 0.88 | 2.66 | 0.05 | 3.92 | 2.66 | 30.69 |
+| 59 | 0.738908 | 147.78 | 119.70 | 22.17 | 5.91 | 1.93 | 2.22 | 0.10 | 3.45 | 2.22 | 26.58 |
+| 60 | 0.735054 | 147.01 | 119.08 | 22.05 | 5.88 | 1.95 | 2.21 | 0.10 | 3.44 | 2.21 | 26.47 |
+| 61 | 0.731221 | 146.24 | 140.39 | 0.00 | 5.85 | 1.98 | 2.19 | 0.11 | 3.33 | 2.19 | 4.53 |
+| 120 | 0.625891 | 125.18 | 120.17 | 0.00 | 5.01 | 4.02 | 1.88 | 0.00 | 3.14 | 1.88 | 5.89 |
+| 240 | 0.459656 | 91.93 | 88.25 | 0.00 | 3.68 | 7.71 | 1.38 | 0.00 | 2.81 | 1.38 | 8.58 |
+| 300 | 0.385184 | 77.04 | 73.96 | 0.00 | 3.08 | 9.16 | 1.16 | 0.00 | 2.60 | 1.16 | 9.64 |
+| 301 | 0.384018 | 76.80 | 73.73 | 0.00 | 3.07 | 9.19 | 1.15 | 0.00 | 2.68 | 1.15 | 9.58 |
+| 359 | 0.304251 | 60.85 | 58.42 | 0.00 | 2.43 | 9.82 | 0.91 | 0.00 | 2.27 | 0.91 | 9.98 |
+| 360 | 0.303239 | 60.65 | 58.22 | 0.00 | 2.43 | 9.84 | 0.91 | 0.00 | 32.53 | 0.91 | -20.27 |
+| **Total** | **202.931416** | **40,586.28** | **37,413.08** | **1,549.75** | **1,623.45** | **2,033.18** | **608.79** | **5.85** | **1,319.97** | **2,408.79** | **2,087.87** |
 
 **Panel B — the benefits, and what funds them.** All of these are paid by cancelling the
 policyholder's own units, so none enters `net_cf`; only `death_strain` — the *riskiertes
@@ -856,7 +863,7 @@ to zero for the rest of the contract. Balances have no total, being balances.
 | 360 | 379.945333 | 340.950641 | 129,063.16 | 129,735.32 | 129,699.88 | 129,699.88 | 72,000.00 | 0.00 | 0.00000000 | 0.00079315 |
 
 **Where the totals differ from summing the rounded cells.** Rounding each of the 360 cells
-to the cent and then adding changes fourteen of the eighteen column totals, by one to twelve
+to the cent and then adding changes fourteen of the nineteen column totals, by one to twelve
 cents: `av_releases` 64,864.85 against 64,864.97, `charge_admin_prem` 1,623.35 against
 1,623.45, `death_strain` 4.33 against 4.39, `net_cf` 2,087.84 against 2,087.87, `pols_if`
 202.931410 against 202.931416. The gap is worst where the cells are smallest — `death_strain`
@@ -908,8 +915,8 @@ as a yield. It is a delib measure on delib's own **[std]** stack and **is not** 
     decrements     deaths 0.04377181 + lapses 0.65322937 + maturity 0.30299882 = 1.00000000
     risk result    charge_risk 5.849973 - death_strain 4.387480 = 1.462493 = 0.25 x 5.849973
     acquisition    60 x 30.00 = 1,800.00 = 2.50 % x 72,000.00 = cum_charge_acq_pp(360)
-    net_cf         charges 5,821.018511 - expenses 3,728.764844 - strain 4.387480
-                                                              = 2,087.866187
+    net_cf         charges 5,821.018511 - expenses 1,319.970596
+                   - commissions 2,408.794247 - strain 4.387480    = 2,087.866187
     benefit funding  3,047.802205 + 22,522.641344 + 39,298.911744 = 64,869.355293
                      av_releases 64,864.967813 + strain 4.387480 = 64,869.355293
 
@@ -943,21 +950,21 @@ every month** — and the same `std_gross` scale and `base` fund otherwise. Ther
 charge is the *Zuzahlungskosten* levied **once on receipt**, 2.50 % x 50,000.00 =
 **1,250.00**, beside a premium admin charge of 4.00 % x 50,000.00 = **2,000.00**, also once.
 
-| t | pols_if | premiums | prem_to_av | charge_acq | charge_admin_prem | charge_admin_fund | charge_policy_fee | expenses | net_cf | av BEF_DECR |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 1.000000 | 50,000.00 | 46,750.00 | 1,250.00 | 2,000.00 | 11.73 | 3.00 | 2,204.28 | 1,060.45 | 46,908.94 |
-| 2 | 0.994685 | 0.00 | 0.00 | 0.00 | 0.00 | 11.71 | 2.98 | 4.27 | 10.43 | 47,068.42 |
-| 3 | 0.989399 | 0.00 | 0.00 | 0.00 | 0.00 | 11.69 | 2.97 | 4.25 | 10.40 | 47,228.46 |
-| 12 | 0.943067 | 0.00 | 0.00 | 0.00 | 0.00 | 11.48 | 2.83 | 4.11 | 10.20 | 48,694.00 |
-| 60 | 0.728611 | 0.00 | 0.00 | 0.00 | 0.00 | 10.45 | 2.19 | 3.43 | 9.20 | 57,329.28 |
-| 120 | 0.611558 | 0.00 | 0.00 | 0.00 | 0.00 | 10.76 | 1.83 | 3.09 | 9.50 | 70,347.78 |
-| 204 | 0.457239 | 0.00 | 0.00 | 0.00 | 0.00 | 10.72 | 1.37 | 48.30 | -36.21 | 93,766.43 |
-| **Total** | **136.171795** | **50,000.00** | **46,750.00** | **1,250.00** | **2,000.00** | **2,206.15** | **408.52** | **2,911.63** | **2,953.04** | — |
+| t | pols_if | premiums | prem_to_av | charge_acq | charge_admin_prem | charge_admin_fund | charge_policy_fee | expenses | commissions | net_cf | av BEF_DECR |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 1.000000 | 50,000.00 | 46,750.00 | 1,250.00 | 2,000.00 | 11.73 | 3.00 | 204.28 | 2,000.00 | 1,060.45 | 46,908.94 |
+| 2 | 0.994685 | 0.00 | 0.00 | 0.00 | 0.00 | 11.71 | 2.98 | 4.27 | 0.00 | 10.43 | 47,068.42 |
+| 3 | 0.989399 | 0.00 | 0.00 | 0.00 | 0.00 | 11.69 | 2.97 | 4.25 | 0.00 | 10.40 | 47,228.46 |
+| 12 | 0.943067 | 0.00 | 0.00 | 0.00 | 0.00 | 11.48 | 2.83 | 4.11 | 0.00 | 10.20 | 48,694.00 |
+| 60 | 0.728611 | 0.00 | 0.00 | 0.00 | 0.00 | 10.45 | 2.19 | 3.43 | 0.00 | 9.20 | 57,329.28 |
+| 120 | 0.611558 | 0.00 | 0.00 | 0.00 | 0.00 | 10.76 | 1.83 | 3.09 | 0.00 | 9.50 | 70,347.78 |
+| 204 | 0.457239 | 0.00 | 0.00 | 0.00 | 0.00 | 10.72 | 1.37 | 48.30 | 0.00 | -36.21 | 93,766.43 |
+| **Total** | **136.171795** | **50,000.00** | **46,750.00** | **1,250.00** | **2,000.00** | **2,206.15** | **408.52** | **911.63** | **2,000.00** | **2,953.04** | — |
 
 Read against the anchor, that is the whole of what the *Beitragsverrechnung* does. The
 charges are taken **once, at the front**, so month 1 carries a `net_cf` of **+1,060.45**
 where the anchor's is -1,966.22: the 3,250.00 withheld at inception more than covers the
-2,204.28 of acquisition cost, and there is no sixty-month recovery to wait for. From month 2
+2,204.28 of acquisition cost — 2,000.00 of `commissions` and 204.28 of `expenses`, and there is no sixty-month recovery to wait for. From month 2
 the ledger is nothing but the two fund-based charges running down a fund growing faster than
 they take. The *Fondsguthaben* reaches **93,766.43 EUR** and buys **234.42 EUR** a month at
 the same 25.00 *Rentenfaktor*; the reduction in yield is **1.2320 % p.a.**, a little below
@@ -987,9 +994,10 @@ yield is the acquisition load**, the parameter this library most needs and canno
 Three places where the notes as drafted disagreed with the model that implements them, and
 in each the model was right:
 
-1. **`result_cf()` publishes `liability_cf` as an eighteenth column**, after `net_cf`. The
+1. **`result_cf()` publishes `liability_cf` as a nineteenth column**, after `net_cf`. The
    column list above named seventeen while the recursion defined `liability_cf(t) =
-   -net_cf(t)` beside them; the conventions suite asserts that identity **on the frame**, so
+   -net_cf(t)` beside them, and the cross-model naming review then split `commissions` out of
+   `expenses` as an eighteenth; the conventions suite asserts that identity **on the frame**, so
    the cells has to be a column or the sign convention is unverifiable.
 2. **Pitfall 7's two assertions were too broad.** `charge_acq(t) = 0` for `t > 60` fails on
    model point 9, whose *Zuzahlung* in month 121 pays 500.00 of *Zuzahlungskosten* that the

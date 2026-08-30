@@ -58,9 +58,14 @@ freq_loading_file          data.freq_loading()                    freq_loading.c
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue — ``pols_*`` for policy counts, plural nouns for
 cash flows, ``*_rate`` for rates, ``*_pp`` for per-policy amounts, ``claims(t, kind)``
-with an uppercase ``kind`` string, ``pols_if_at(t, timing)`` and ``av_pp_at(t, timing)``
-for the within-year reads, ``prem_to_av_pp`` for the part of the contribution credited to
-the account. The technical notes use compact actuarial symbols instead. The mapping is:
+with an uppercase ``kind`` string, ``pols_if_at(t, timing)`` and
+``av_total_pp_at(t, timing)`` for the within-year reads, ``prem_to_av_pp`` for the part of
+the contribution credited to the account. This model publishes **no** ``av_pp``: delib
+spells the *principal* account balance ``av_pp`` and the *verzinsliche Ansammlung* beside
+it ``av_sur_pp`` (``RV_DE_A``, the chassis this model inherits the two-balance recursion
+from), and the quantity this product's benefits are struck on is neither of them but their
+**sum**, so it is named apart as ``av_total_pp``. The technical notes use compact actuarial
+symbols instead. The mapping is:
 
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
@@ -100,11 +105,11 @@ K_v(t)                     admin_charge_pp(t)              Administration charge
 S(t)                       prem_to_av_pp(t)                Sparbeitrag; MAY BE NEGATIVE
 D(t)                       dk_pp(t)                        Deckungskapital
 U(t)                       surplus_acct_pp(t)              Ueberschussguthaben
-A(t) = D(t) + U(t)         av_pp(t)                        Account value per policy
-A(t), A(t)+S(t), A(t+1)    av_pp_at(t, timing)             BEF_PREM / AFT_PREM / AFT_INT
-A(t) l(t)                  av_at(t, timing)                The same, aggregated
+A(t) = D(t) + U(t)         av_total_pp(t)                  Account value per policy; D + U
+A(t), A(t)+S(t), A(t+1)    av_total_pp_at(t, timing)       BEF_PREM / AFT_PREM / AFT_INT
+A(t) l(t)                  av_total_at(t, timing)          The same, aggregated
 i                          rechnungszins()                 Guaranteed rate
-j(t)                       laufende_verz(t)                Declared rate; INCLUDES i
+j(t)                       decl_rate(t)                    Declared rate; INCLUDES i
 i (D+S)                    int_guar_pp(t)                  Guaranteed interest
 (j-i)(D+S) + j U           int_surplus_pp(t)               Declared surplus above it
 (none)                     int_credited_pp(t)              Their sum
@@ -981,7 +986,7 @@ def prem_to_av_pp(t):
 # === the account: two balances, one credited rate
 
 
-def laufende_verz(t):
+def decl_rate(t):
     """j(t): the declared *laufende Verzinsung* of period t, from *surplus_scenario.csv*.
 
     It **includes** the *Rechnungszins*: ``j - i`` is the *laufende
@@ -994,7 +999,7 @@ def laufende_verz(t):
     if not is_accum(t):
         return 0.0
     return float(data.surplus_scenario().at[(scenario_id(), t),      # noqa: F821
-                                            "laufende_verz"])
+                                            "decl_rate"])
 
 
 def int_guar_pp(t):
@@ -1020,9 +1025,9 @@ def int_surplus_pp(t):
     """
     if not is_accum(t):
         return 0.0
-    return ((laufende_verz(t) - rechnungszins())
+    return ((decl_rate(t) - rechnungszins())
             * (dk_pp(t) + prem_to_av_pp(t))
-            + laufende_verz(t) * surplus_acct_pp(t))
+            + decl_rate(t) * surplus_acct_pp(t))
 
 
 def int_credited_pp(t):
@@ -1062,18 +1067,26 @@ def surplus_acct_pp(t):
     return surplus_acct_pp(t - 1) + int_surplus_pp(t - 1)
 
 
-def av_pp(t):
-    """A(t) = D(t) + U(t): the account value per policy at the start of period t.
+def av_total_pp(t):
+    """A(t) = D(t) + U(t): the total account value per policy at the start of period t.
 
     The death benefit, the base of the *Rückkaufswert* and of the transfer value, and the
     quantity the *Beitragsgarantie* is compared with at *Rentenbeginn*.  **Zero for
     ``t > t_conv()``**: the account is extinguished at conversion, which is why a death in
     the payout phase pays nothing outside the *Rentengarantiezeit*.
+
+    **Named ``av_total_pp`` and not ``av_pp``.**  Across delib ``av_pp`` is the *principal*
+    balance alone — the *Deckungskapital* on ``RV_DE_A``, ``Index_DE_A`` and ``Basis_DE_A``,
+    the *Fondsguthaben* on ``FRV_DE_S`` — with the *verzinsliche Ansammlung* beside it as
+    ``av_sur_pp``.  This model's two balances are :func:`dk_pp` and :func:`surplus_acct_pp`,
+    and what the benefits are struck on is their **sum**, which is a third quantity: giving
+    it the name ``av_pp`` would make ``result_cf()``'s account column mean one thing here
+    and another on the model this one inherits the recursion from.
     """
     return dk_pp(t) + surplus_acct_pp(t)
 
 
-def av_pp_at(t, timing):
+def av_total_pp_at(t, timing):
     """The account value per policy at a point inside period t.
 
     ``"BEF_PREM"``
@@ -1090,22 +1103,22 @@ def av_pp_at(t, timing):
         interest.
     """
     if timing == "BEF_PREM":
-        return av_pp(t)
+        return av_total_pp(t)
     if timing == "AFT_PREM":
-        return av_pp(t) + prem_to_av_pp(t)
+        return av_total_pp(t) + prem_to_av_pp(t)
     if timing == "AFT_INT":
-        return av_pp(t + 1)
+        return av_total_pp(t + 1)
     raise ValueError("invalid timing")
 
 
-def av_at(t, timing):
-    """The aggregate account value at a point inside period t: ``av_pp_at(t, timing) x l(t)``.
+def av_total_at(t, timing):
+    """The aggregate account value inside period t: ``av_total_pp_at(t, timing) x l(t)``.
 
     Weighted on the **start-of-period** count, which is the weight on that
     :func:`result_cf` row's cash flows; the roll-forward in :func:`check_av_roll_fwd`
     compares this with the next period's opening aggregate and the exits in between.
     """
-    return av_pp_at(t, timing) * pols_if(t)
+    return av_total_pp_at(t, timing) * pols_if(t)
 
 
 # === the Beitragsgarantie accumulator and the two pools
@@ -1162,7 +1175,7 @@ def garantieluecke_pp(t):
     pitfall and would misstate every early-duration exit.  It is published so that a reader
     sees the fact rather than infers it.
     """
-    return max(0.0, guar_pp(t) - av_pp(t))
+    return max(0.0, guar_pp(t) - av_total_pp(t))
 
 
 def pool_gefoerdert_pp(t):
@@ -1403,8 +1416,8 @@ def annuity_pp(t):
 def db_pp(t):
     """The death benefit per policy in period t, **gross** of the *Rückzahlungsbetrag*.
 
-    The account value after the year's interest, ``av_pp_at(t, "AFT_INT")``, so there is no
-    sum at risk and no *Risikobeitrag* anywhere in the accumulation.  Zero in payout, the
+    The account value after the year's interest, ``av_total_pp_at(t, "AFT_INT")``, so there
+    is no sum at risk and no *Risikobeitrag* anywhere in the accumulation.  Zero in payout, the
     account having become an annuity.  It is **not** floored at :func:`guar_pp`: the
     *Beitragsgarantie* is tested at *Rentenbeginn* and nowhere else.  On death without a
     transfer to a surviving spouse's own certified contract the provider withholds the
@@ -1413,26 +1426,26 @@ def db_pp(t):
     """
     if not is_accum(t):
         return 0.0
-    return av_pp_at(t, "AFT_INT")
+    return av_total_pp_at(t, "AFT_INT")
 
 
 def cv_pp(t):
     """The *Rückkaufswert* per policy in period t, gross of the *Rückzahlungsbetrag*.
 
-    ``av_pp_at(t, "AFT_INT") x (1 - stornoabzug_rate)``.  The statutory floor is the
+    ``av_total_pp_at(t, "AFT_INT") x (1 - stornoabzug_rate)``.  The statutory floor is the
     *Deckungskapital* computed on at least five-year cost spreading, which is satisfied by
     construction here because the acquisition charge is spread over exactly five years.
     Not floored at the guarantee.
     """
     if not is_accum(t):
         return 0.0
-    return av_pp_at(t, "AFT_INT") * (1.0 - stornoabzug_rate)         # noqa: F821
+    return av_total_pp_at(t, "AFT_INT") * (1.0 - stornoabzug_rate)         # noqa: F821
 
 
 def transfer_value_pp(t):
     """The *Anbieterwechsel* transfer value per policy in period t.
 
-    ``max(0, av_pp_at(t, "AFT_INT") - transfer_charge)``: the full account less a flat
+    ``max(0, av_total_pp_at(t, "AFT_INT") - transfer_charge)``: the full account less a flat
     charge, with **no** *Stornoabzug*.  That is the whole economic difference between a
     transfer and a surrender, and collapsing the two into one decrement is a listed
     pitfall — it would apply a percentage charge where a flat one belongs and, far worse,
@@ -1441,7 +1454,7 @@ def transfer_value_pp(t):
     """
     if not is_accum(t):
         return 0.0
-    return max(0.0, av_pp_at(t, "AFT_INT") - transfer_charge)        # noqa: F821
+    return max(0.0, av_total_pp_at(t, "AFT_INT") - transfer_charge)        # noqa: F821
 
 
 def exit_charge_pp(t):
@@ -1455,7 +1468,7 @@ def exit_charge_pp(t):
     """
     if not is_accum(t):
         return 0.0
-    a = av_pp_at(t, "AFT_INT")
+    a = av_total_pp_at(t, "AFT_INT")
     return (stornoabzug_rate * a * pols_lapse(t)                     # noqa: F821
             + min(transfer_charge, a) * pols_transfer(t))            # noqa: F821
 
@@ -1676,12 +1689,12 @@ def check_av_roll_fwd_resid(t):
     released.
 
     From ``t_conv()`` the identity becomes the assertion that the account is **gone**: the
-    residual is ``av_pp(t + 1)``, which is zero because conversion extinguishes it.
+    residual is ``av_total_pp(t + 1)``, which is zero because conversion extinguishes it.
     """
     if t >= t_conv():
-        return av_pp(t + 1)
-    return (av_at(t + 1, "BEF_PREM")
-            - (av_at(t, "BEF_PREM") + prem_to_av_pp(t) * pols_if(t)
+        return av_total_pp(t + 1)
+    return (av_total_at(t + 1, "BEF_PREM")
+            - (av_total_at(t, "BEF_PREM") + prem_to_av_pp(t) * pols_if(t)
                + int_credited(t)
                - claims(t, "DEATH") - claims(t, "LAPSE")
                - claims(t, "TRANSFER") - exit_charge_pp(t)))
@@ -1898,7 +1911,7 @@ def result_acct():
             "int_credited_pp": [int_credited_pp(t) for t in ts],
             "dk_pp": [dk_pp(t) for t in ts],
             "surplus_acct_pp": [surplus_acct_pp(t) for t in ts],
-            "av_pp": [av_pp(t) for t in ts],
+            "av_total_pp": [av_total_pp(t) for t in ts],
             "guar_pp": [guar_pp(t) for t in ts],
             "garantieluecke_pp": [garantieluecke_pp(t) for t in ts],
         },

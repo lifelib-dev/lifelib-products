@@ -194,7 +194,7 @@ def surplus_scenario():
     Read from *surplus_scenario.csv*.  Two paths ship: ``base`` at 2,30 % level and
     ``low`` at 0,50 % level.  The declared rate **includes** the *Rechnungszins* — adding
     the two is the German arithmetic error this model is built to make visible — so
-    ``laufende_verz - rechnungszins`` is the *laufende Zinsüberschussbeteiligung* and is
+    ``decl_rate - rechnungszins`` is the *laufende Zinsüberschussbeteiligung* and is
     what accrues in the *Überschussguthaben*.  It is the largest single lever in the model
     and the least supported: no declared rate at any carrier was established.
     """

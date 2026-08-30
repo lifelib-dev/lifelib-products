@@ -40,7 +40,7 @@ Cells Descriptions
 
 .. autofunction:: beitragsrueckgewaehr
 
-.. autofunction:: stornoabzug
+.. autofunction:: stornoabzug_rate
 
 .. autofunction:: pols_if_init
 

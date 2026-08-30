@@ -122,7 +122,7 @@ Cells Descriptions
 
 .. autofunction:: prem_to_av_pp
 
-.. autofunction:: laufende_verz
+.. autofunction:: decl_rate
 
 .. autofunction:: int_guar_pp
 
@@ -134,11 +134,11 @@ Cells Descriptions
 
 .. autofunction:: surplus_acct_pp
 
-.. autofunction:: av_pp
+.. autofunction:: av_total_pp
 
-.. autofunction:: av_pp_at
+.. autofunction:: av_total_pp_at
 
-.. autofunction:: av_at
+.. autofunction:: av_total_at
 
 .. autofunction:: guar_carve_out_pp
 

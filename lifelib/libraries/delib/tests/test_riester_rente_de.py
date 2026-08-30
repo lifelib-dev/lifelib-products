@@ -309,7 +309,7 @@ def test_projection_year_one_rebuilt_from_the_statute_up(de_riester_anchor):
     assert p.prem_to_av_pp(1) == approx(1680.00 - 168.00 - 79.20, abs=CENT)
     assert p.int_credited_pp(1) == approx(0.023 * (3860.50 + 1432.80 + 150.48), abs=CENT)
     assert p.int_credited_pp(1) == approx(125.206940, abs=CENT)
-    assert p.av_pp(2) == approx(5568.986940, abs=CENT)
+    assert p.av_total_pp(2) == approx(5568.986940, abs=CENT)
     # The decrements at attained age 50, contract duration 4, applied in the stated order.
     assert p.mort_rate(1) == approx(0.001500 * 0.80, rel=1e-12)
     assert p.lapse_rate(1) == 0.008 and p.transfer_rate(1) == 0.012
@@ -384,19 +384,19 @@ def test_the_account_rolls_forward_and_the_exit_charge_closes_it(de_riester_anch
     1,48 EUR in year 1, which is exactly the usual way this identity fails.
     """
     p = de_riester_anchor
-    opening_next = p.av_at(2, "BEF_PREM")
+    opening_next = p.av_total_at(2, "BEF_PREM")
     assert opening_next == approx(5451.592054, abs=CENT)
     charge = p.exit_charge_pp(1)
     assert charge == approx(0.02 * 5568.98694 * 0.0079904 + 50.0 * 0.0118897152, abs=CENT)
     assert charge == approx(1.484454, abs=CENT)
-    rebuilt = (p.av_at(1, "BEF_PREM") + p.prem_to_av_pp(1) * p.pols_if(1)
+    rebuilt = (p.av_total_at(1, "BEF_PREM") + p.prem_to_av_pp(1) * p.pols_if(1)
                + p.int_credited(1) - p.claims(1, "DEATH") - p.claims(1, "LAPSE")
                - p.claims(1, "TRANSFER") - charge)
     assert rebuilt == approx(opening_next, abs=1e-9)
     assert p.check_av_roll_fwd_resid(1) == approx(0.0, abs=1e-9)
     assert rebuilt + charge - opening_next == approx(1.48, abs=CENT)
     # From the conversion year on, the identity asserts that the account is *gone*.
-    assert all(p.av_pp(t) == 0.0 for t in (19, 20, 40, 61))
+    assert all(p.av_total_pp(t) == 0.0 for t in (19, 20, 40, 61))
     assert p.check_av_roll_fwd() is True
 
 
@@ -693,9 +693,9 @@ def test_the_guarantee_is_tested_only_at_rentenbeginn(de_riester_anchor):
     assert p.garantieluecke_pp(1) == approx(358.94, abs=CENT)
     assert p.garantieluecke_pp(3) == approx(567.69, abs=CENT)
     assert p.garantieluecke_pp(7) == 0.0
-    assert p.guar_pp(1) > p.av_pp(1)
+    assert p.guar_pp(1) > p.av_total_pp(1)
     for t in (1, 2, 3):
-        a = p.av_pp_at(t, "AFT_INT")
+        a = p.av_total_pp_at(t, "AFT_INT")
         assert p.db_pp(t) == approx(a, rel=1e-12)
         assert p.cv_pp(t) == approx(0.98 * a, rel=1e-12)
         assert p.transfer_value_pp(t) == approx(a - 50.0, rel=1e-12)
@@ -771,7 +771,7 @@ def test_the_declared_rate_includes_and_is_not_added_to_the_guaranteed_rate(
     """
     p = de_riester_anchor
     for t in (1, 5, 10, 17):
-        j, i = p.laufende_verz(t), p.rechnungszins()
+        j, i = p.decl_rate(t), p.rechnungszins()
         assert j == approx(0.023, rel=1e-12) and i == approx(0.0025, rel=1e-12)
         base, u = p.dk_pp(t) + p.prem_to_av_pp(t), p.surplus_acct_pp(t)
         assert p.int_guar_pp(t) == approx(i * base, rel=1e-12)
@@ -794,15 +794,15 @@ def test_setting_the_declared_rate_to_the_guaranteed_rate_empties_the_surplus_le
     alt = None
     try:
         scenario = pd.read_csv(model.Data.input_dir() / "surplus_scenario.csv")
-        scenario.loc[scenario["scenario_id"] == "base", "laufende_verz"] = 0.0025
+        scenario.loc[scenario["scenario_id"] == "base", "decl_rate"] = 0.0025
         alt = model.Data.input_dir() / "surplus_scenario_flat.csv"
         scenario.to_csv(alt, index=False)
         model.Data.surplus_file = alt.name
         model.Data.clear_all()
         model.Projection.clear_all()
         p = model.Projection[1]
-        assert p.laufende_verz(1) == approx(p.rechnungszins(), rel=1e-12)
-        assert p.int_surplus_pp(1) == approx(p.laufende_verz(1) * p.surplus_acct_pp(1),
+        assert p.decl_rate(1) == approx(p.rechnungszins(), rel=1e-12)
+        assert p.int_surplus_pp(1) == approx(p.decl_rate(1) * p.surplus_acct_pp(1),
                                              rel=1e-12)
         assert p.int_credited_pp(1) == approx(p.int_guar_pp(1) + p.int_surplus_pp(1),
                                               rel=1e-12)
@@ -934,7 +934,7 @@ def test_a_transfer_is_a_separate_decrement_from_a_surrender(riester_rente,
     """
     p = de_riester_anchor
     for t in (1, 5, 12, 17):
-        a = p.av_pp_at(t, "AFT_INT")
+        a = p.av_total_pp_at(t, "AFT_INT")
         assert p.cv_pp(t) == approx(0.98 * a, rel=1e-12)
         assert p.transfer_value_pp(t) == approx(a - 50.0, rel=1e-12)
         assert p.transfer_value_pp(t) > p.cv_pp(t)
@@ -948,7 +948,7 @@ def test_a_transfer_is_a_separate_decrement_from_a_surrender(riester_rente,
     assert df["claims_lapse"].sum() == approx(1481.42, abs=CENT)
     # The charge the insurer retains differs in kind: a percentage against a flat fee.
     assert p.exit_charge_pp(1) == approx(
-        0.02 * p.av_pp_at(1, "AFT_INT") * p.pols_lapse(1) + 50.0 * p.pols_transfer(1),
+        0.02 * p.av_total_pp_at(1, "AFT_INT") * p.pols_lapse(1) + 50.0 * p.pols_transfer(1),
         rel=1e-12)
 
 
@@ -974,7 +974,7 @@ def test_beitragsfreistellung_is_a_state_change(riester_rente):
     assert all(p.zulage_pp(t) == 0.0 for t in range(b + 1, p.t_conv() + 1))
     frozen = p.guar_pp(b + 1)
     assert all(p.guar_pp(t) == approx(frozen, abs=CENT) for t in (b + 2, 10, p.t_conv() + 1))
-    assert p.av_pp(b + 2) > 0.0 and p.av_pp(p.t_conv()) > p.av_pp(b)
+    assert p.av_total_pp(b + 2) > 0.0 and p.av_total_pp(p.t_conv()) > p.av_total_pp(b)
     assert p.check_guar_roll_fwd() is True
 
 
@@ -1099,9 +1099,9 @@ def test_benefits_are_published_gross_of_the_rueckzahlungsbetrag(riester_rente,
     cells = riester_rente.Projection.cells
     for t in (1, 5, 17):
         assert p.claims(t, "DEATH") == approx(
-            p.av_pp_at(t, "AFT_INT") * p.pols_death(t), rel=1e-12)
+            p.av_total_pp_at(t, "AFT_INT") * p.pols_death(t), rel=1e-12)
         assert p.claims(t, "LAPSE") == approx(
-            0.98 * p.av_pp_at(t, "AFT_INT") * p.pols_lapse(t), rel=1e-12)
+            0.98 * p.av_total_pp_at(t, "AFT_INT") * p.pols_lapse(t), rel=1e-12)
         assert p.db_pp(t) > p.zulage_cum_pp(t)      # nothing has been netted out
     assert p.zulage_cum_pp(1) == approx(475.00, abs=CENT)
     assert p.zulage_cum_pp(18) == approx(4050.00, abs=CENT)
@@ -1210,17 +1210,17 @@ def test_the_accessors_validate_and_the_within_year_reads_are_consistent(
     with pytest.raises(FormulaError):
         p.pols_if_at(1, "AFTER_LAPSE")
     with pytest.raises(FormulaError):
-        p.av_pp_at(1, "AFT_DECR")
+        p.av_total_pp_at(1, "AFT_DECR")
     for t in (1, 5, 17):
         assert p.pols_if_at(t, "BEF_DECR") == approx(p.pols_if(t), rel=1e-12)
         assert p.pols_if_at(t, "AFT_DECR") == approx(p.pols_if(t + 1), rel=1e-12)
-        assert p.av_pp_at(t, "BEF_PREM") == approx(p.av_pp(t), rel=1e-12)
-        assert p.av_pp_at(t, "AFT_PREM") == approx(p.av_pp(t) + p.prem_to_av_pp(t),
+        assert p.av_total_pp_at(t, "BEF_PREM") == approx(p.av_total_pp(t), rel=1e-12)
+        assert p.av_total_pp_at(t, "AFT_PREM") == approx(p.av_total_pp(t) + p.prem_to_av_pp(t),
                                                    rel=1e-12)
-        assert p.av_pp_at(t, "AFT_INT") == approx(p.av_pp(t + 1), rel=1e-12)
-        assert p.av_at(t, "BEF_PREM") == approx(p.av_pp(t) * p.pols_if(t), rel=1e-12)
-    assert p.av_pp(1) == approx(p.dk_pp_init() + p.surplus_pp_init(), rel=1e-12)
-    assert p.av_pp(1) == approx(4010.98, abs=CENT)
+        assert p.av_total_pp_at(t, "AFT_INT") == approx(p.av_total_pp(t + 1), rel=1e-12)
+        assert p.av_total_at(t, "BEF_PREM") == approx(p.av_total_pp(t) * p.pols_if(t), rel=1e-12)
+    assert p.av_total_pp(1) == approx(p.dk_pp_init() + p.surplus_pp_init(), rel=1e-12)
+    assert p.av_total_pp(1) == approx(4010.98, abs=CENT)
 
 
 def test_the_model_point_is_read_and_sex_reaches_no_rate(riester_rente, de_riester_anchor):
@@ -1278,8 +1278,8 @@ def test_the_savings_chassis_vocabulary_is_present(riester_rente):
         "model_point", "proj_len", "age", "duration", "calendar_year", "pols_if",
         "pols_if_init", "pols_if_at", "pols_death", "pols_lapse", "mort_rate",
         "lapse_rate", "claims", "expenses", "commissions", "net_cf", "liability_cf",
-        "result_cf", "av_pp", "av_pp_at", "av_at", "prem_to_av_pp", "dk_pp",
-        "surplus_acct_pp", "rechnungszins", "laufende_verz", "t_conv", "is_accum",
+        "result_cf", "av_total_pp", "av_total_pp_at", "av_total_at", "prem_to_av_pp", "dk_pp",
+        "surplus_acct_pp", "rechnungszins", "decl_rate", "t_conv", "is_accum",
         "is_payout", "ann_factor", "rentenfaktor_guar", "rentenfaktor_applied",
         "annuity_pp", "check_net_cf", "check_net_cf_resid",
     }
@@ -1331,8 +1331,8 @@ def test_the_shipped_tables_mark_their_own_provenance():
 
     surplus = pd.read_csv(INPUT_DIR / "surplus_scenario.csv")
     assert set(surplus["scenario_id"]) == {"base", "low"}
-    assert set(surplus.loc[surplus["scenario_id"] == "base", "laufende_verz"]) == {0.023}
-    assert set(surplus.loc[surplus["scenario_id"] == "low", "laufende_verz"]) == {0.005}
+    assert set(surplus.loc[surplus["scenario_id"] == "base", "decl_rate"]) == {0.023}
+    assert set(surplus.loc[surplus["scenario_id"] == "low", "decl_rate"]) == {0.005}
     assert all(p.startswith("[std]") for p in surplus["provenance"])
     assert all("Rechnungszins" in p
                for p in surplus.loc[surplus["scenario_id"] == "base", "provenance"])

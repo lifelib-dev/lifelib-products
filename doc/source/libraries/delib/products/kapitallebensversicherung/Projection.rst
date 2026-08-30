@@ -46,7 +46,7 @@ Cells Descriptions
 
 .. autofunction:: rating_factor
 
-.. autofunction:: av_pp_init
+.. autofunction:: av_sur_pp_init
 
 .. autofunction:: bonus_si_init
 
@@ -144,13 +144,13 @@ Cells Descriptions
 
 .. autofunction:: term_bonus_pp
 
-.. autofunction:: av_pp
+.. autofunction:: av_sur_pp
 
-.. autofunction:: av_pp_at
+.. autofunction:: av_sur_pp_at
 
-.. autofunction:: av
+.. autofunction:: av_sur
 
-.. autofunction:: av_at
+.. autofunction:: av_sur_at
 
 .. autofunction:: bonus_si_pp
 

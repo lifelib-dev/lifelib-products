@@ -138,7 +138,7 @@ made at exactly the § 169 value.
 
 ```
 surr_value_pp(t) = res_guar_pp(t) * (1 - storno_rate(t))
-                   + av_pp_at(t, "AFT_CREDIT")
+                   + av_sur_pp_at(t, "AFT_CREDIT")
                    + term_surr_share * term_bonus_pp(t + 1)
 ```
 
@@ -170,7 +170,7 @@ One `surplus_credit_pp(t)` and three destinations, exactly one live per model po
 
 | `surplus_use` | Ledger | Maturity benefit | Death benefit at `t` = 5 |
 |---|---|---:|---:|
-| `ansammlung` (point 1) | `av_pp(t+1) = av_pp(t) (1 + a(t)) + C(t)` | **65 227,99 €** | 50 460,89 € |
+| `ansammlung` (point 1) | `av_sur_pp(t+1) = av_sur_pp(t) (1 + a(t)) + C(t)` | **65 227,99 €** | 50 460,89 € |
 | `bonus` (point 8) | `bonus_si_pp(t+1) = bonus_si_pp(t) + C(t) / pu_single_prem(t+1)` | 63 562,77 € | **50 532,10 €** |
 | `beitragsverrechnung` (point 9) | `prem_offset_pp(t) = min(prem_charged_pp(t), C(t−1))` | 52 428,98 € | 50 085,64 € |
 
@@ -366,7 +366,7 @@ symbols; the full mapping lives in the `Projection` Space docstring. Six cases n
 | `V(t)` | `res_pp` / `res_net_pp` / `res_zill_pp` / `res_min_pp` / `res_guar_pp` | One symbol, five amounts. `res_pp` is what the contract holds; the middle three are constructions; `res_guar_pp` is the § 169 value at the **end** of the year |
 | `B`, `P^n`, `P^Z` | `prem_gross_pp` / `prem_net_level_pp` / `prem_zill_pp` | The *Bruttobeitrag* and two **pricing quantities that never become cash flows**. `premium_net_pp` is a retired name; `prem_net_level_pp` is the one that won |
 | (charged / paid) | `prem_charged_pp` / `prem_paid_pp` | The *Zahlbeitrag* before and after the *Beitragsverrechnung* offset. The renewal commission reads the first |
-| `U(t)` | `av_pp`, `av_pp_at`, `av` | The house account-value vocabulary, on the *Überschussguthaben* — which receives surplus and **never premium**, so `prem_to_av_pp` has no counterpart here and is not published. `withdrawals` is likewise absent: no located wording gives a classic endowment a partial-withdrawal right |
+| `U(t)` | `av_sur_pp`, `av_sur_pp_at`, `av_sur`, `av_sur_at` | The **surplus** half of the house account-value pair, on the *Überschussguthaben* — which receives surplus and **never premium**, so `prem_to_av_pp` has no counterpart here and is not published. Library-wide `av_pp` is the *principal* balance (`RV_DE_A`'s and `Basis_DE_A`'s *Deckungskapital*, `FRV_DE_S`'s *Fondsguthaben*) and `av_sur_pp` the *verzinsliche Ansammlung* beside it, which is `RV_DE_A`'s spelling on the one model carrying both; this product's principal balance is a **reserve**, `res_pp`, so there is no `av_pp` here. `withdrawals` is likewise absent: no located wording gives a classic endowment a partial-withdrawal right |
 | `w(t)`, `σ(t)` | `lapse_rate` / `storno_rate` | A decrement and a deduction, in one CSV and easy to confuse. `lapse_rate` is annual, per the library convention; there is no `lapse_rate_mth`, the grid being the contract's own annual one |
 
 **The sister models that share this chassis.** `KLV_DE_A` is the *Überschussbeteiligung*

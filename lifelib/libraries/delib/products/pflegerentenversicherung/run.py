@@ -27,7 +27,7 @@ print("premium: mode = {} (m = {}), to age {}, model point value {:,.2f}, "
 print("options: Wartezeit {} m, Karenzzeit {} m, Leistungsdynamik {:.2%}, "
       "Beitragsrueckgewaehr {}, Stornoabzug {:.2%}".format(
           proj.wartezeit_months(), proj.karenz_months(), proj.leistungsdynamik(),
-          proj.beitragsrueckgewaehr(), proj.stornoabzug()))
+          proj.beitragsrueckgewaehr(), proj.stornoabzug_rate()))
 print("Beitrag {:,.6f} EUR/month   net level premium {:,.6f} EUR/month   "
       "Beitragssumme {:,.2f} EUR   acquisition charge {:,.2f} EUR".format(
           proj.premium_mth_pp(), proj.prem_net_level_pp(), proj.beitragssumme(),

@@ -231,7 +231,7 @@ the *Wartezeit* (``wartezeit_months = 0``), the *Karenzzeit* (``karenz_months = 
 which case the ledger is empty and a life graduates in the month it enters), the
 *Leistungsdynamik* (``leistungsdynamik = 0``, in which case ``esc_pg == pols_pg``), the
 *Beitragsrückgewähr* (``beitragsrueckgewaehr = False``, in which case ``claims_death`` is
-structurally zero) and the *Stornoabzug* (``stornoabzug = 0``). Model points 7, 8, 9 and
+structurally zero) and the *Stornoabzug* (``stornoabzug_rate = 0``). Model points 7, 8, 9 and
 10 switch them on one at a time.
 
 Four further constructions are described in the technical notes and **not** implemented,
@@ -484,7 +484,7 @@ def beitragsrueckgewaehr():
     return bool(model_point()["beitragsrueckgewaehr"])
 
 
-def stornoabzug():
+def stornoabzug_rate():
     """The deduction from the *Rückkaufswert*, as a fraction; ``0.0`` in the base run.
 
     Admissible only if agreed, appropriate and **quantified in the contract**, and a
@@ -492,8 +492,14 @@ def stornoabzug():
     *Stornoabzug* for any German *Pflegerenten* tariff was established, so the base run
     ships zero — a non-zero deduction requires a contractual quantification this corpus
     cannot supply — and model point 10 carries 5 % as a **[std]** illustration.
+
+    **Named ``stornoabzug_rate`` and not ``stornoabzug``.**  It is a fraction, and the
+    library gives every rate the ``*_rate`` suffix; ``RV_DE_A``, ``FRV_DE_S`` and
+    ``Riester_DE_A`` all spell this rate the same way.  Bare ``stornoabzug`` is
+    ``FRV_DE_S``'s *euro amount* retained from surrenders and one of its ``result_cf()``
+    columns — a different quantity, which is why the two do not share a name.
     """
-    return float(model_point()["stornoabzug"])
+    return float(model_point()["stornoabzug_rate"])
 
 
 def pols_if_init():
@@ -1252,7 +1258,7 @@ def premiums(t):
 def rkw_pp(t):
     """The *Rückkaufswert* per surrendering policy at the end of month ``t``.
 
-    ``rkw_prem_ratio(min(y(t), 40)) x cum_prem_max_pp(t) x (1 - stornoabzug())`` — the
+    ``rkw_prem_ratio(min(y(t), 40)) x cum_prem_max_pp(t) x (1 - stornoabzug_rate())`` — the
     guaranteed surrender value as a fraction of premiums paid to date, which is the
     scale-free form a German contract states, less any contractual *Stornoabzug*.
 
@@ -1265,7 +1271,7 @@ def rkw_pp(t):
     """
     ratio = float(data.surrender_table().at[                         # noqa: F821
         min(policy_year(t), 40), "rkw_prem_ratio"])
-    return ratio * cum_prem_max_pp(t) * (1.0 - stornoabzug())
+    return ratio * cum_prem_max_pp(t) * (1.0 - stornoabzug_rate())
 
 
 def brg_pp(t):
