@@ -53,7 +53,7 @@ and *nicht kapitalisierbar* [R1] [REG-R39] — arithmetically:
 
 | Limb | What the model does **not** have |
 |---|---|
-| *nicht kapitalisierbar* | No `cv_pp`, no `surr_value_pp`, no `claims_lapse` column, no *Kapitalwahlrecht* switch, no *Teilkapitalauszahlung*, no *Kleinbetragsrenten-Abfindung* |
+| *nicht kapitalisierbar* | No `cv_pp`, no `surr_value_pp`, no `claims_lapse` column, no *Kapitalwahlrecht* switch, no *Teilkapitalauszahlung*. The *Kleinbetragsrenten-Abfindung* is **not** on this list: § 10 Abs. 1 Nr. 2 Satz 3 EStG permits it in Schicht 1 [REG-R42] and the model leaves it out by choice — see *Modules that are off in the base run* |
 | *nicht veräußerbar* | No surrender decrement and no `surr_rate`; § 169 VVG and its *Stornoabzug* are inoperative [R14] [REG-R28] |
 | *nicht beleihbar* | No `loan_pp`, no `loan_bal` — a name delib's retired-name register bars in any case |
 | *nicht übertragbar* | No assignment decrement; the *Versorgungsausgleich* is the one permitted transfer and is not modelled |
@@ -332,6 +332,20 @@ is ever found. Three further constructions are **not** implemented and each abse
 decision: the *Wiederinkraftsetzung* (no window was established), a provider transfer (gap 13)
 and the *Versorgungsausgleich* (gap 14).
 
+**A fourth is not implemented and is the one that is easy to misread as a prohibition: the
+*Kleinbetragsrenten-Abfindung*.** German law permits it in Schicht 1 — § 10 Abs. 1 Nr. 2 Satz 3
+EStG carries an express de-minimis exception to the *Kapitalisierungsverbot*, on the
+§ 93 Abs. 3 Satz 2 and 3 EStG mechanics [REG-R42] [unverified] — so its absence here is a
+**[std]** decision and not a consequence of *nicht kapitalisierbar*. The reasons: the threshold
+level is contested (1 % against 1,5 % of the monthly *Bezugsgröße*) and no Basisrente-specific
+figure was established; whether a German Basisrente AVB offers the *Abfindung* at all, and on
+whose election, was not established at any carrier (gap 19); and `Riester_DE_A` already carries
+the mechanic, computing the test rather than assuming it. So every model point here annuitises
+its whole capital, model point 10 — 300,00 € a year — included. **`check_no_capital()` is
+therefore a statement about this implementation and not about German law**, and a user who needs
+the branch should copy `Riester_DE_A`'s `is_kleinbetrag()` / `commutation_pp()` pair. This is a
+named model risk.
+
 ## Sign convention
 
 `net_cf` is **income positive** — *laufende Beiträge* and *Zuzahlungen* in, death benefits,
@@ -372,8 +386,9 @@ beneficiary designation — and `KLV_DE_A` carries the *Überschussbeteiligung* 
 inherit. The survivor's single premium this model books and does not project is an immediate
 annuity, `Sofort_DE_S`; the BUZ it carries only as a premium share is `BU_DE_S`; the asset
 forms it does not model are `FRV_DE_S` and `Index_DE_A`. `Riester_DE_A` is the other certified
-layer and the useful contrast: a statutory *Beitragserhaltungsgarantie*, a permitted 30 %
-*Teilkapitalauszahlung* and a *Kleinbetragsrenten* commutation, of which this product has none.
+layer and the useful contrast: a statutory *Beitragserhaltungsgarantie* and a permitted 30 %
+*Teilkapitalauszahlung*, neither of which this product has, and a *Kleinbetragsrenten*
+commutation, which it **does** have in law [REG-R42] and does not have in this model.
 The model point's `policy_id` and `sex` drive no formula — pricing is unisex for contracts
 concluded from 21 December 2012 [REG-R34] — and are exposed rather than dropped, because a
 silently missing column is worse than an inert one.
@@ -404,13 +419,16 @@ proprietary or unreachable. Nothing here is a market observation.
 | Annuity timing | Twelve instalments booked at the **start** of the payout year on `pols_if(t)` | A monthly annuity on an annual grid; generous to the year of death by up to a full year's annuity, concentrated in the tail. No German *vorschüssig*/*nachschüssig* convention was established (gap 21) |
 | Processing order and age basis | Premiums in advance, interest at year end, death after interest, freeze after death; age last birthday at conclusion, stepping on the anniversary | The order is declared once and asserted, because every roll-forward identity depends on it. No German age convention was established, and mortality here drives the annuity's duration rather than a benefit amount, so a half-year offset is second order |
 | The thirteen model points | — | Configurations, not observations: no carrier's entry ages, premium minima, permitted *Rentenbeginn* range or option terms were established (gap 1, gap 8) |
+| The *Kleinbetragsrenten-Abfindung* left unimplemented | — | Schicht 1 permits the commutation [REG-R42]; the model omits it because the threshold is contested, no AVB was reached to say whether it is offered, and `Riester_DE_A` carries the mechanic. The only absence in this model that German law does not compel |
 
 The only quantities that are **not** standardizations are the 25 ‰ and 40 ‰ *Höchstzillmersätze*
 [R16] [REG-R16] [REG-R20], the `gtd_rate` ladder of *Höchstrechnungszins* vintages [R16]
 [REG-R14] [REG-R15], and the structural rules — the five prohibitions and the absences they
 impose, the *Beitragsfreistellung* right, the closed list of permitted survivors, the
-annuity-only payout, the `max` conversion, the single-date terminal bonus and the 50 % BUZ
-ceiling.
+annuity-only payout **as this model implements it**, the `max` conversion, the single-date
+terminal bonus and the 50 % BUZ ceiling. The annuity-only payout is the one item on that list
+that law only *mostly* compels: the *Kleinbetragsrenten-Abfindung* is the exception, and leaving
+it out is the **[std]** row above.
 
 ## Tests
 
@@ -455,6 +473,7 @@ python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -
 [REG-R28]: #delib-reg-r28
 [REG-R34]: #delib-reg-r34
 [REG-R39]: #delib-reg-r39
+[REG-R42]: #delib-reg-r42
 [REG-R47]: #delib-reg-r47
 [REG-R49]: #delib-reg-r49
 [REG-R6]: #delib-reg-r6

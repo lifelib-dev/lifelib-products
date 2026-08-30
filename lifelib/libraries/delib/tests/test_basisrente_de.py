@@ -505,8 +505,10 @@ def test_pitfall_1_no_surrender_value_and_none_of_the_names_that_carry_one(
         - small.alpha_zuz_pp(1) - small.unit_cost_pp(1), rel=1e-12)
     assert small.prem_to_av_pp(1) == pytest.approx(199.88, abs=CENT)
     assert small.prem_to_av_pp(1) < 0.70 * small.prem_pp(1)
-    # And it converts to a small annuity, never a lump sum -- there is no
-    # Kleinbetragsrenten-Abfindung in Schicht 1.
+    # And it converts to a small annuity rather than a lump sum.  That is a property of this
+    # model, not of German law: Schicht 1 does permit a Kleinbetragsrenten-Abfindung
+    # (EStG s 10 Abs. 1 Nr. 2 Satz 3, on the s 93 Abs. 3 mechanics), and model.md records why
+    # the base run leaves the commutation branch out.
     assert small.ann_pp(small.ret_t()) == pytest.approx(292.41, abs=CENT)
     assert small.check_no_capital() is True
 

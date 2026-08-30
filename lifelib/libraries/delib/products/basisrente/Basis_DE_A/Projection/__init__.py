@@ -147,9 +147,11 @@ pitfall.
 The entitlement under a *Basisrentenvertrag* is *nicht vererblich*, *nicht übertragbar*,
 *nicht beleihbar*, *nicht veräußerbar* and *nicht kapitalisierbar*. Arithmetically that
 means there is **no surrender value at any duration**, no *Kapitalwahlrecht*, no
-*Teilkapitalauszahlung*, no commutation of a *Kleinbetragsrente*, and no lump sum of any
-kind at any date. § 169 VVG — the *Rückkaufswert*, the *Mindestrückkaufswert*, the
-*Stornoabzug* — is inoperative on this contract.
+*Teilkapitalauszahlung* and no lump sum of any kind at any date. The one commutation
+Schicht 1 does allow — the *Kleinbetragsrenten-Abfindung* of § 10 Abs. 1 Nr. 2 Satz 3
+EStG — is left out of this model by choice and not by prohibition; ``model.md`` gives the
+reasons. § 169 VVG — the *Rückkaufswert*, the *Mindestrückkaufswert*, the *Stornoabzug* —
+is inoperative on this contract.
 
 So this model has **no ``lapse_rate``, no ``surr_rate``, no ``cv_pp``, no ``loan_pp``,
 no ``withdrawals`` and no ``claims_lapse`` column**. Those are structural absences, not
@@ -1532,10 +1534,12 @@ def check_no_capital_resid(t):
       the ninth pitfall.
     * ``|claims(t) - claims(t, "DEATH") - claims(t, "ANNUITY") - claims(t, "SURVIVOR")|``,
       which asserts that there is **no fourth kind of payment**.  No surrender value, no
-      *Rückkaufswert*, no *Kapitalwahlrecht*, no *Teilkapitalauszahlung*, no
-      *Kleinbetragsrenten-Abfindung* and no commutation of a *Rentengarantiezeit* exist on
-      this product, so the only things this model can pay are an annuity instalment, a
-      guarantee continuation and a survivor's single premium.
+      *Rückkaufswert*, no *Kapitalwahlrecht*, no *Teilkapitalauszahlung* and no commutation
+      of a *Rentengarantiezeit* exist on this product, so the only things this model can
+      pay are an annuity instalment, a guarantee continuation and a survivor's single
+      premium.  The *Kleinbetragsrenten-Abfindung* is absent too, but by standardization
+      rather than by prohibition — Schicht 1 does permit it — so this residual records a
+      property of **this implementation** and not of the statute.
 
     The absence of a ``claims_lapse`` column, a ``cv_pp`` cells and a ``lapse_rate`` cells
     is asserted in the product's own test module, because it is an absence and cannot be

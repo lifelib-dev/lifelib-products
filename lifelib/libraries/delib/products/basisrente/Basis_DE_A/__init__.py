@@ -16,8 +16,11 @@ annuity written on the general account, with an accumulation phase that builds a
 **The product is defined by prohibitions, and the model is too.** The entitlement is
 *nicht vererblich*, *nicht übertragbar*, *nicht beleihbar*, *nicht veräußerbar* and
 *nicht kapitalisierbar*, so there is **no surrender value at any duration, no
-*Rückkaufswert*, no *Kapitalwahlrecht*, no *Teilkapitalauszahlung* and no commutation of
-a *Kleinbetragsrente*** anywhere in this model. There is no ``lapse_rate``, no
+*Rückkaufswert*, no *Kapitalwahlrecht* and no *Teilkapitalauszahlung*** anywhere in this
+model. There is no commutation of a *Kleinbetragsrente* either, but that one is a
+**standardization and not a prohibition**: § 10 Abs. 1 Nr. 2 Satz 3 EStG permits the
+*Abfindung* of a *Kleinbetragsrente* out of a *Basisrentenvertrag*, and ``model.md``
+gives the reasons this model leaves it out. There is no ``lapse_rate``, no
 ``surr_rate``, no ``cv_pp``, no ``loan_pp`` and no ``claims_lapse`` column: these are
 structural absences rather than switched-off options, and :func:`~.Basis_DE_A.Projection.check_no_capital`
 asserts them in code rather than in prose. A modeller arriving from the endowment or the
@@ -98,7 +101,8 @@ before drawing any conclusion from the output.
 all three in-force shapes (accumulating, *beitragsfrei*, already in payment), the
 survivor's annuity and the *Rentengarantiezeit* separately and together, both age-floor
 cohorts, four guarantee vintages, and four boundary cases — the whole *Höchstbetrag*, a
-*Kleinbetragsrente* that may not be commuted, the 50 % BUZ rule at 0.49, and a guaranteed
+*Kleinbetragsrente* this model annuitises rather than commuting, the 50 % BUZ rule at
+0.49, and a guaranteed
 *Rentenfaktor* that binds over the current one. Model point 1 is the anchor cell of the
 worked example in the technical notes.
 

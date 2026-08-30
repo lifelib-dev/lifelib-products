@@ -470,6 +470,7 @@ paragraph number in these documents, before relying on anything here.
 [R2]: #delib-basisrente-r2
 [R20]: #delib-basisrente-r20
 [R21]: #delib-basisrente-r21
+[R23]: #delib-basisrente-r23
 [R24]: #delib-basisrente-r24
 [R4]: #delib-basisrente-r4
 [R5]: #delib-basisrente-r5
