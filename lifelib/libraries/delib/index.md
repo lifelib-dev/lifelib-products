@@ -726,6 +726,23 @@ references/regulatory-and-actuarial-references
 ```
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[REG-R14]: #delib-reg-r14
+[REG-R15]: #delib-reg-r15
+[REG-R16]: #delib-reg-r16
+[REG-R18]: #delib-reg-r18
+[REG-R24]: #delib-reg-r24
+[REG-R27]: #delib-reg-r27
+[REG-R39]: #delib-reg-r39
+[REG-R42]: #delib-reg-r42
+[REG-R43]: #delib-reg-r43
+[REG-R45]: #delib-reg-r45
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
+[REG-R50]: #delib-reg-r50
+[REG-R51]: #delib-reg-r51
+[REG-R53]: #delib-reg-r53
+[REG-R9]: #delib-reg-r9
 [std]: #delib-std
 [unverified]: #delib-unverified
 <!-- END generated citation links -->
