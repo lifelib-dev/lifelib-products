@@ -832,7 +832,7 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   so the § 169 floor [R28] reaches into the withdrawal window. For delib it fixes a **first-duration decrement legally distinct from
   lapse**, and a model that lumps the two into one lapse rate must say so. **Unverified:** the Absatz structure of § 8 is partly
   contradictory across summaries, so **the Absatz-to-rule mapping inside § 8 is `[unverified]`** while the substantive rules are
-  corroborated; **§ 9 VVG (Rückabwicklung) was never searched** and the *Fernabsatz* interaction is not established.
+  corroborated; **§ 9 VVG (*Rechtsfolgen des Widerrufs*) was never searched** and the *Fernabsatz* interaction is not established.
 
 (delib-reg-r24)=
 

@@ -280,7 +280,7 @@ and every paragraph number, date and figure that rests on them is [unverified].
 
 (delib-basisrente-r14)=
 
-### R14 — VVG § 165 (Beitragsfreistellung), § 168 (Kündigung), § 169 (Rückkaufswert)
+### R14 — VVG § 165 *Prämienfreie Versicherung* (the *Beitragsfreistellung*), § 168 *Kündigung des Versicherungsnehmers*, § 169 *Rückkaufswert*
 - Publisher / doc type: Bundesministerium der Justiz / juris; statutory provisions
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html`, `.../__168.html`, `.../__169.html` — canonical forms, [unverified]
 - Retrieved: **no** — egress blocked. §§ 165 and 169 were established at a higher level of detail in the sibling delib research files `_research/kapitallebensversicherung.md` and `_research/klassische_rentenversicherung.md`, which corroborated them by search while search was still available; no search corroboration in this product's research
