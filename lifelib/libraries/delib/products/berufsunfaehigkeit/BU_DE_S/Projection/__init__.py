@@ -120,7 +120,7 @@ L_p(t)                     pols_prem(t)                    Premium-paying count
 (none)                     pols_reactivation(t)            Run-off completions to aktiv
 (none)                     pols_death(t)                   Deaths out of all three ledgers
 (none)                     pols_lapse(t)                   Lapses, from pols_actv only
-(the shadow ledgers)       \*_first                        The first-order pricing run
+(the shadow ledgers)       ``*_first``                      The first-order pricing run
 premiums(t)                premiums(t)                     Gross Bruttobeitrag income
 surplus_credit(t)          surplus_credit(t)               Beitragsverrechnung returned
 claims_bu_rente etc.       claims(t, kind)                 Benefit outgo by kind

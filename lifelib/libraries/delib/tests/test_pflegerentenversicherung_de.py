@@ -276,11 +276,9 @@ def test_worked_example_row(de_pflege_anchor, t):
 def test_the_worked_example_totals_are_summed_at_full_precision(de_pflege_anchor):
     """The notes' Total row is a full-precision sum, then rounded -- not a sum of cells.
 
-    Here the two visibly differ, and the notes print both because the gap is not noise
-    that cancels: **107 of the 780 ``claims_annuity`` cells are positive amounts below
-    half a cent**, every one of them rounds down to 0.00, and the error therefore
-    accumulates in one direction.  ``claim_expenses`` does the same, its 1,50 EUR per
-    payment falling on a paying population of the order of 1e-5 for the first two decades.
+    The notes print both, because the gap does not cancel: **107 of the 780
+    ``claims_annuity`` cells are positive amounts below half a cent**, and every one of
+    them rounds down.  ``claim_expenses`` does the same on a 1e-5 paying population.
     """
     df = de_pflege_anchor.result_cf()
     for column, total in TOTALS.items():
@@ -317,12 +315,10 @@ def test_the_frame_spans_the_whole_projection(de_pflege_anchor):
 def test_the_equivalence_premium_is_reached_two_independent_ways(de_pflege_anchor):
     """P = (A + G + C) / [ U (1 - beta) - a1 ], and P also equals ``premium_mth_pp()``.
 
-    The premium is not read off a rate card -- **there is no published German rate card
-    for this product to reproduce** -- so the four actuarial values that determine it are
-    published as cells and the closed form is recomputed here from them.  Two by-products
-    the notes read off the same numbers: ``U`` is 26,13 years' worth of discounted
-    premium, and the whole expense loading over the net level premium is 13,13 %, of which
-    the *Zillmerung* allowance alone is 2,53 EUR a month.
+    There is **no published German rate card for this product to reproduce**, so the four
+    actuarial values are published as cells and the closed form is recomputed from them.
+    ``U`` is 26,13 years' worth of discounted premium and the expense loading over the net
+    level premium is 13,13 %, of which the *Zillmerung* allowance alone is 2,53 EUR.
     """
     p = de_pflege_anchor
     assert p.premium_mth() == 0.0            # the sentinel: derive by equivalence
@@ -330,29 +326,24 @@ def test_the_equivalence_premium_is_reached_two_independent_ways(de_pflege_ancho
     assert p.epv_prem_units() == pytest.approx(U_EPV_PREM_UNITS, abs=5e-6)
     assert p.epv_admin() == pytest.approx(G_EPV_ADMIN, abs=5e-6)
     assert p.epv_claim_expense() == pytest.approx(C_EPV_CLAIM_EXPENSE, abs=5e-6)
-
     numerator = A_EPV_BENEFITS + G_EPV_ADMIN + C_EPV_CLAIM_EXPENSE
     denominator = U_EPV_PREM_UNITS * (1.0 - ADMIN_PREM_PCT) - ZILLMER_UNITS
     assert numerator == pytest.approx(18752.035386, abs=5e-6)
     assert denominator == pytest.approx(292.095018, abs=5e-6)
     assert numerator / denominator == pytest.approx(PREMIUM_MTH_PP, abs=5e-6)
     assert p.premium_mth_pp() == pytest.approx(PREMIUM_MTH_PP, abs=5e-6)
-
-    # The net level premium, and the loading the gap between the two represents.
     assert p.prem_net_level_pp() == pytest.approx(PREM_NET_LEVEL_PP, abs=5e-6)
     assert p.prem_net_level_pp() == pytest.approx(
         p.epv_benefits() / p.epv_prem_units(), rel=1e-12)
     assert p.premium_mth_pp() / p.prem_net_level_pp() == pytest.approx(
         1.131336, abs=5e-6)
     assert p.epv_prem_units() / 12.0 == pytest.approx(26.13, abs=0.006)
-
     # Strike the Zillmerung allowance out of the denominator and the premium falls.
     without_a1 = numerator / (U_EPV_PREM_UNITS * (1.0 - ADMIN_PREM_PCT))
     assert without_a1 == pytest.approx(61.665, abs=0.001)
     assert p.premium_mth_pp() - without_a1 == pytest.approx(2.53, abs=0.006)
-
-    # And it lands in the lower half of the argued 50,00-100,00 EUR band, which is a
-    # sanity check on the bases and never a market observation.
+    # It lands in the lower half of the argued 50,00-100,00 EUR band, which is a sanity
+    # check on the bases and never a market observation.
     assert 50.0 < p.premium_mth_pp() < 100.0
 
 
@@ -386,13 +377,10 @@ def test_month_zero_rebuilt_with_a_calculator(de_pflege_anchor):
 def test_the_first_months_decrements_from_the_annual_rates(de_pflege_anchor):
     """Check 2 of the notes, which needs nothing but the two CSV rates and a calculator.
 
-    Read ``q_A(45)`` and ``i(45)`` for a woman, convert both to forces, allocate one
-    month's exits between them in proportion to the forces, then apply the monthly lapse
-    probability **to the survivors of both insured decrements** -- which is where the
-    model's declared processing order puts it.  Applying lapse to the opening cohort
-    instead moves ``pols_lapse(0)`` by 6,2e-7 of a policy in the first month alone, and
-    materially more once the decrements are large.  Both orderings close
-    ``check_pols_roll_fwd()``, which is exactly why the order has to be declared.
+    Convert ``q_A(45)`` and ``i(45)`` to forces, allocate one month's exits in proportion,
+    then apply the monthly lapse probability **to the survivors of both insured
+    decrements**, which is where the declared processing order puts it.  Both orderings
+    close ``check_pols_roll_fwd()`` -- which is exactly why the order has to be declared.
     """
     p = de_pflege_anchor
     f = FIRST_MONTH
@@ -402,13 +390,11 @@ def test_the_first_months_decrements_from_the_annual_rates(de_pflege_anchor):
     assert p.inc_force(0) == pytest.approx(f["inc_force"], abs=5e-8)
     assert p.mort_force(0) + p.inc_force(0) == pytest.approx(
         f["force_total"], abs=5e-8)
-
     assert p.p_act_stay(0) == pytest.approx(f["p_act_stay"], abs=5e-8)
     assert p.p_act_death(0) == pytest.approx(f["p_act_death"], abs=5e-8)
     assert p.p_act_care(0) == pytest.approx(f["p_act_care"], abs=5e-8)
     assert p.p_act_stay(0) + p.p_act_death(0) + p.p_act_care(0) == pytest.approx(
         1.0, abs=1e-15)
-
     assert p.lapse_rate(0) == 0.06
     assert p.lapse_rate_mth(0) == pytest.approx(f["lapse_rate_mth"], abs=5e-8)
     assert p.pols_act(1) == pytest.approx(f["pols_act_1"], abs=5e-8)
@@ -420,10 +406,8 @@ def test_the_first_months_decrements_from_the_annual_rates(de_pflege_anchor):
     assert p.pols_if(1) == pytest.approx(f["pols_if_1"], abs=5e-8)
     assert p.pols_if(1) == pytest.approx(
         1.0 - p.pols_death(0) - p.pols_lapse(0), abs=1e-15)
-
     # Lapse falls on the survivors, not on the opening cohort -- and the gap is real.
-    on_opening_cohort = p.lapse_rate_mth(0)
-    assert on_opening_cohort - p.pols_lapse(0) == pytest.approx(
+    assert p.lapse_rate_mth(0) - p.pols_lapse(0) == pytest.approx(
         LAPSE_ORDER_GAP, rel=0.02)
 
 
@@ -474,13 +458,11 @@ def test_the_decrements_close_at_the_limiting_age(de_pflege_anchor):
 def test_the_sign_pattern_is_the_products_economic_story(de_pflege_anchor):
     """Strain, then thirty years of margin, then a long run-off -- and where it crosses.
 
-    Month 0 is a 710,11 EUR strain, almost all of it the *Zillmerung* allowance charged in
-    one go.  From ``t = 1`` the level *Beitrag* runs far above the risk premium and the
-    monthly margin decays; ``net_cf`` turns negative at ``t = 252``, attained age 66,
-    which is where the incidence curve overtakes it and where the *Deckungskapital* this
-    model does not compute peaks.  Undiscounted the contract collects 15 857,95 EUR and
-    pays 17 385,60 EUR -- not a loss, but the consequence of publishing an *undiscounted*
-    stream whose income falls thirty years before its outgo.
+    Month 0 is a 710,11 EUR strain, almost all *Zillmerung*.  ``net_cf`` turns negative at
+    ``t = 252``, attained age 66, where the incidence curve overtakes the level *Beitrag*
+    and where the *Deckungskapital* this model does not compute peaks.  Undiscounted the
+    contract collects 15 857,95 EUR and pays 17 385,60 EUR -- not a loss, but the
+    consequence of publishing a stream whose income falls thirty years before its outgo.
     """
     p = de_pflege_anchor
     df = p.result_cf()
@@ -492,7 +474,6 @@ def test_the_sign_pattern_is_the_products_economic_story(de_pflege_anchor):
     assert first_negative == NET_CF_FIRST_NEGATIVE_T
     assert p.net_cf(1) == pytest.approx(59.93, abs=CENT)
     assert p.net_cf(240) == pytest.approx(3.45, abs=CENT)
-
     peak_t, peak_v = ANNUITY_PEAK
     assert df["claims_annuity"].idxmax() == peak_t
     assert df["claims_annuity"].max() == pytest.approx(peak_v, abs=CENT)
@@ -501,7 +482,6 @@ def test_the_sign_pattern_is_the_products_economic_story(de_pflege_anchor):
     assert df["pols_care"].idxmax() == care_t
     assert df["pols_care"].max() == pytest.approx(care_v, abs=SIX_DP)
     assert p.age(care_t) == 79
-
     outgo = (df["claims_annuity"].sum() + df["claims_lapse"].sum()
              + df["claims_death"].sum() + df["expenses"].sum()
              + df["claim_expenses"].sum())
@@ -532,13 +512,11 @@ def test_the_male_twin_totals_and_the_unisex_cross_subsidy(
         pflegerentenversicherung, de_pflege_anchor):
     """Priced identically, projecting differently -- the unisex tension, quantified.
 
-    The male cell's ``claims_annuity`` total is 52,5 % of the female cell's and its
-    ``net_cf`` total is +4 442,33 EUR against -1 527,65 EUR.  That 5 969,98 EUR gap **is**
-    the cross-subsidy the unisex rule requires, priced on a 50 / 50 mix; a book written
-    60 / 40 female against this price carries a tenth of it unfunded.  Two drivers pull in
-    opposite directions and incidence wins: male active mortality is higher at every age,
-    so fewer men survive to claim, and male incidence is lower, so fewer of the survivors
-    claim.
+    The male cell's annuity total is 52,5 % of the female cell's and its ``net_cf`` total
+    is +4 442,33 EUR against -1 527,65 EUR.  That 5 969,98 EUR gap **is** the cross-subsidy
+    the unisex rule requires, priced on a 50 / 50 mix.  Two drivers pull opposite ways and
+    incidence wins: male mortality is higher, so fewer men survive to claim, and male
+    incidence is lower, so fewer of the survivors claim.
     """
     male = pflegerentenversicherung.Projection[2]
     female = de_pflege_anchor
@@ -546,13 +524,11 @@ def test_the_male_twin_totals_and_the_unisex_cross_subsidy(
     for column, total in MALE_TOTALS.items():
         tol = SIX_DP if column.startswith("pols_") else CENT
         assert df[column].sum() == pytest.approx(total, abs=tol), column
-
     assert male.premium_mth_pp() == pytest.approx(female.premium_mth_pp(), rel=1e-15)
     assert MALE_TOTALS["claims_annuity"] / TOTALS["claims_annuity"] == pytest.approx(
         0.525, abs=0.001)
     assert MALE_TOTALS["net_cf"] - TOTALS["net_cf"] == pytest.approx(
         UNISEX_CROSS_SUBSIDY, abs=CENT)
-
     mort = pflegerentenversicherung.Data.mort_table()
     inc = pflegerentenversicherung.Data.incidence_table()
     for (sex, age, kind), value in SEX_RATES.items():
@@ -587,12 +563,11 @@ def test_the_bahr_grid_is_not_simply_a_cheaper_contract(pflegerentenversicherung
                                                         de_pflege_anchor):
     """Model point 5 insures *Pflegegrad* 1, and the effect surfaces in claim expenses.
 
-    On the statutory 10 / 20 / 30 / 40 / 100 % grid the middle steps are roughly two
-    thirds of ``delib_std``'s, but grade 1 is insured for the first time -- so a grade-1
-    life now generates an annuity payment and therefore a per-payment cost.
-    ``claim_expenses`` is **higher** on point 5 (57,74 EUR) than on the anchor
-    (52,67 EUR) despite a frame sixty months shorter.  The same life is also **waived** on
-    ``bahr`` and **pays** on ``delib_std``.
+    The middle steps are roughly two thirds of ``delib_std``'s, but grade 1 is insured, so
+    a grade-1 life generates an annuity payment and a per-payment cost: ``claim_expenses``
+    is **higher** on point 5 (57,74 EUR) than on the anchor (52,67 EUR) despite a frame
+    sixty months shorter.  The same life is **waived** on ``bahr`` and **pays** on
+    ``delib_std``.
     """
     bahr = pflegerentenversicherung.Projection[5]
     assert bahr.staffel_id() == "bahr"
@@ -617,12 +592,9 @@ def test_pitfall_01_the_annuity_is_a_grade_by_grade_sum(de_pflege_anchor):
 
     ``claims(t, "ANNUITY")`` is ``R x sum_g pi_g esc_pg(t, g)``.  Replacing it by
     ``pi_bar x R x pols_care(t)`` with the **entry-mix** mean 0.3815 understates the
-    projected annuity total by 30 % -- 9 248,24 EUR against 13 200,11 EUR.  The trap is
-    that the substitution is *exact* at ``t = 1``, where the stock still is the entry mix;
-    the error opens as deterioration moves the stock up the schedule to a stock-weighted
-    mean of 0.544519.  Substituting the **stock**-weighted mean instead reproduces the
-    total by construction and tests nothing, which is why it is asserted here as an
-    identity rather than offered as a fix.
+    annuity total by 30 % -- 9 248,24 EUR against 13 200,11 EUR -- and the trap is that the
+    substitution is *exact* at ``t = 1``, opening only as deterioration moves the stock to
+    a stock-weighted mean of 0.544519, which reproduces the total by construction.
     """
     p = de_pflege_anchor
     n = p.proj_len()
@@ -630,20 +602,17 @@ def test_pitfall_01_the_annuity_is_a_grade_by_grade_sum(de_pflege_anchor):
         rebuilt = p.rente_mth() * sum(
             p.benefit_pct(g) * p.esc_pg(t, g) for g in range(1, 6))
         assert p.claims(t, "ANNUITY") == pytest.approx(rebuilt, rel=1e-12)
-
     entry_mean = sum(p.benefit_pct(g) * p.inc_share(g) for g in range(1, 6))
     assert entry_mean == pytest.approx(ENTRY_MIX_MEAN_PCT, abs=5e-7)
     # Exact at t = 1, because the stock there is the entry mix.
     assert entry_mean * p.rente_mth() * p.pols_care(1) == pytest.approx(
         p.claims(1, "ANNUITY"), rel=1e-12)
-
     exposure = sum(p.pols_care(t) for t in range(0, n + 1))
     assert exposure == pytest.approx(TOTALS["pols_care"], abs=SIX_DP)
     naive = entry_mean * p.rente_mth() * exposure
     assert naive == pytest.approx(NAIVE_ANNUITY_TOTAL, abs=CENT)
     actual = p.result_cf()["claims_annuity"].sum()
     assert naive / actual == pytest.approx(0.70, abs=0.005)
-
     stock_mean = sum(
         p.benefit_pct(g) * sum(p.pols_pg(t, g) for t in range(0, n + 1))
         for g in range(1, 6)) / exposure
@@ -655,12 +624,10 @@ def test_pitfall_01_the_annuity_is_a_grade_by_grade_sum(de_pflege_anchor):
 def test_pitfall_02_in_care_mortality_is_a_multiple_of_the_force(de_pflege_anchor):
     """The multiple is on the **force** and is exactly ``mort_mult(g)`` at every age.
 
-    On *rates* the same multiple compresses towards 1 as the rate saturates: at grade 5
-    the rate ratio falls from 8,97 at age 45 to 6,85 at 85, 4,31 at 95 and exactly 1,00 at
-    the limiting age.  That compression is the scale, not the basis, and a model stating
-    its LTC mortality loading as a rate multiple has a different basis at every age.
-    Pricing this benefit on DAV 2004 R -- a table built to be prudent about people living
-    *longer* -- would be prudent in exactly the wrong direction.
+    On *rates* the same multiple compresses towards 1 as the rate saturates: at grade 5 it
+    falls from 8,97 at age 45 to 6,85 at 85, 4,31 at 95 and 1,00 at the limiting age.  That
+    compression is the scale, not the basis.  Pricing this benefit on DAV 2004 R -- built
+    to be prudent about people living *longer* -- would be prudent the wrong way round.
     """
     p = de_pflege_anchor
     for t in (0, 120, 360, 480, 600):
@@ -674,7 +641,6 @@ def test_pitfall_02_in_care_mortality_is_a_multiple_of_the_force(de_pflege_ancho
             assert p.mort_rate_care(t, g) >= p.mort_rate(t)
             assert p.mort_rate_care(t, g) > previous
             previous = p.mort_rate_care(t, g)
-
     for age, ratio in CARE_RATE_RATIO_PG5.items():
         t = (age - 45) * 12
         assert p.age(t) == age
@@ -689,12 +655,10 @@ def test_pitfall_02_in_care_mortality_is_a_multiple_of_the_force(de_pflege_ancho
 def test_pitfall_03_the_paying_state_has_three_exits(de_pflege_anchor):
     """Death, deterioration and *Herabstufung* compete out of every *Pflegegrad*.
 
-    Only death is absorbing.  Recovery out of grade 1 is a *Reaktivierung* back to the
-    active state, where the life resumes paying its *Beitrag* and becomes exposed to lapse
-    again; out of the higher grades it moves the life **down** the schedule.  Both flows
-    are small and both are non-zero, which is why the tests assert the flow and never a
-    non-monotone stock.  Suppressing recovery altogether raises the projected annuity
-    total by about 5 %, which is the size of the error the pitfall describes.
+    Only death is absorbing.  Recovery out of grade 1 is a *Reaktivierung* to the active
+    state, where the life pays its *Beitrag* again and is exposed to lapse again; out of
+    the higher grades it moves the life **down** the schedule.  Both flows are small and
+    both non-zero, which is why the tests assert the flow and never a non-monotone stock.
     """
     p = de_pflege_anchor
     n = p.proj_len()
@@ -718,7 +682,6 @@ def test_pitfall_03b_suppressing_recovery_raises_the_liability():
     substitutes a licensed or company basis.
     """
     import pandas as pd
-
     care = pd.read_csv(MODEL_DIR.parent / "care_table.csv", index_col="pflegegrad")
     care["rec_rate"] = 0.0
     alt_name = "care_table_no_recovery.csv"
@@ -799,20 +762,17 @@ def test_pitfall_05_the_waiver_runs_with_the_leistungsstaffel(
 def test_pitfall_06_the_premium_revives_and_it_is_a_flow(de_pflege_anchor):
     """Assert the *flow* out of the lowest insured grade, never a non-monotone stock.
 
-    Lives leaving grade 2 downward on ``delib_std`` stop being paid and start paying
-    again; that flow is 0,020835 of a policy over the projection.  ``pols_prem(t)`` is
-    therefore at least ``pols_act(t)`` at every ``t``, strictly wherever a grade-1
-    population exists, because an uninsured-grade life still pays.  The **stock** is
-    nevertheless monotone decreasing on every shipped model point -- attrition dominates
-    the revival flow by three orders of magnitude -- so a test asserting non-monotonicity
-    would be asserting a coincidence rather than the mechanic.
+    Lives leaving grade 2 downward stop being paid and start paying again; that flow is
+    0,020835 of a policy.  ``pols_prem(t)`` is therefore at least ``pols_act(t)``, strictly
+    wherever a grade-1 population exists.  The **stock** is nevertheless monotone
+    decreasing here -- attrition dominates the revival flow by three orders of magnitude --
+    so a test asserting non-monotonicity would assert a coincidence, not the mechanic.
     """
     p = de_pflege_anchor
     n = p.proj_len()
     revival = sum(p.pols_pg(t, 2) * p.p_pg_better(t, 2) for t in range(0, n + 1))
     assert revival == pytest.approx(HERABSTUFUNG_OUT_OF_PG2, abs=5e-7)
     assert revival > 0.0
-
     assert all(p.pols_prem(t) >= p.pols_act(t) - 1e-15 for t in range(0, n + 1))
     for t in (1, 120, 360, 600):
         assert p.pols_pg(t, 1) > 0.0
@@ -858,11 +818,10 @@ def test_pitfall_07_one_survival_is_allocated_not_several_added(de_pflege_anchor
 def test_pitfall_08_the_monthly_rates_are_compounded_not_divided(de_pflege_anchor):
     """``q_mth = 1 - (1 - q)**(1/12)``, and ``q/12`` is strictly **below** it.
 
-    The house convention is that ``*_rate`` is annual and ``*_rate_mth`` is its monthly
-    equivalent, and the monthly one is smaller.  The pitfall's own direction is the one
-    worth asserting, because it is the opposite of the intuition: dividing by twelve
-    **understates** the monthly decrement, so twelve monthly rates *added* overshoot the
-    annual rate while twelve of them *compounded* reproduce it exactly.
+    The house convention is that ``*_rate`` is annual and ``*_rate_mth`` monthly, the
+    monthly one smaller.  The pitfall's direction is the opposite of the intuition:
+    dividing by twelve **understates** the monthly decrement, so twelve monthly rates
+    *added* overshoot the annual rate while twelve *compounded* reproduce it exactly.
     """
     p = de_pflege_anchor
     for t in (0, 12, 240, 480, 600):
@@ -915,7 +874,6 @@ def test_pitfall_09_the_karenzzeit_is_a_deferral_clock_per_onset(
         assert p.pols_waived(t) == pytest.approx(
             sum(p.pols_pg(t, g) for g in range(2, 6)), rel=1e-12)
     assert p.check_states() is True and p.check_waiver() is True
-
     # The base run is the degenerate case, and the two cells then coincide exactly.
     base = de_pflege_anchor
     assert base.karenz_months() == 0
@@ -924,18 +882,9 @@ def test_pitfall_09_the_karenzzeit_is_a_deferral_clock_per_onset(
             assert base.pols_grad(t, g) == pytest.approx(
                 base.pols_entry(t, g), rel=1e-15)
             assert base.pols_karenz(t, g, 1) == 0.0
-
-
-def test_pitfall_09b_the_wartezeit_gates_the_force_and_not_the_table_rate(
-        pflegerentenversicherung):
-    """The *Wartezeit* runs from inception and denies cover; ``inc_rate`` is left alone.
-
-    Zeroing ``inc_force`` rather than ``inc_rate`` keeps the published incidence the
-    tariff-comparable table rate at every age -- the two devices live in two different
-    places, and conflating them is the routine consumer-material error.
-    """
-    p = pflegerentenversicherung.Projection[7]
-    assert p.wartezeit_months() == 36
+    # The Wartezeit is the other device: it runs from inception and denies cover, and it
+    # gates the *force* so that inc_rate stays the tariff-comparable table rate at every
+    # age.  Conflating the two is the routine consumer-material error.
     assert all(p.inc_force(t) == 0.0 for t in range(0, 36))
     assert all(p.inc_rate(t) > 0.0 for t in range(0, 36))
     assert all(p.p_act_care(t) == 0.0 for t in range(0, 36))
@@ -948,26 +897,22 @@ def test_pitfall_10_the_leistungsdynamik_costs_more_than_a_short_spell_suggests(
         pflegerentenversicherung, de_pflege_anchor):
     """+14,4 % on the annuity total and +12,2 % on the premium, not "less than 5 %".
 
-    An earlier draft of the notes predicted the smaller figure from a four-year spell; the
-    model contradicts it and the model is right on the shipped basis, because the
-    escalation compounds over elapsed time in **care** -- *Pflegegrad* 1 months included,
-    where nothing is paid -- and because deterioration puts the largest benefit
-    percentages at the end of a spell, where the escalation factor is largest.
-    ``ln(1.144) / ln(1.02) = 6,8`` years of payment-weighted elapsed duration against a
-    mean spell in an insured grade of 5,5 years.
+    An earlier draft of the notes predicted the smaller figure from a four-year spell and
+    the model contradicts it: the escalation compounds over elapsed time in **care**,
+    *Pflegegrad* 1 months included where nothing is paid, and deterioration puts the
+    largest benefit percentages at the end of a spell.  ``ln(1.144) / ln(1.02) = 6,8``
+    years of payment-weighted duration against a mean insured spell of 5,5 years.
     """
     dyn = pflegerentenversicherung.Projection[8]
     base = de_pflege_anchor
     assert dyn.leistungsdynamik() == 0.02 and base.leistungsdynamik() == 0.0
     assert dyn.age_at_entry() == base.age_at_entry() and dyn.sex() == base.sex()
-
     dyn_annuity = dyn.result_cf()["claims_annuity"].sum()
     assert dyn_annuity == pytest.approx(VARIANTS[8]["claims_annuity"], abs=CENT)
     assert dyn_annuity / TOTALS["claims_annuity"] - 1.0 == pytest.approx(
         DYNAMIK_ANNUITY_UPLIFT, abs=0.0005)
     assert dyn.premium_mth_pp() / base.premium_mth_pp() - 1.0 == pytest.approx(
         DYNAMIK_PREMIUM_UPLIFT, abs=0.0005)
-
     # The head count is identical -- only the value ledger moves.
     for t in (120, 480):
         assert dyn.pols_care(t) == pytest.approx(base.pols_care(t), rel=1e-12)
@@ -975,7 +920,6 @@ def test_pitfall_10_the_leistungsdynamik_costs_more_than_a_short_spell_suggests(
             assert dyn.pols_pg(t, g) == pytest.approx(base.pols_pg(t, g), rel=1e-12)
     assert dyn.esc_pg(480, 3) / dyn.pols_pg(480, 3) == pytest.approx(1.1035, abs=5e-5)
     assert dyn.check_esc_ledger() is True
-
     # On the anchor the two ledgers agree at every t and g.  The two recursions add
     # their terms in a different order, so the agreement is to floating-point rounding
     # rather than bit for bit; the largest difference anywhere in the frame is 1e-17.
@@ -992,11 +936,10 @@ def test_pitfall_11_the_beitragsrueckgewaehr_is_paid_gross(pflegerentenversicher
     """``claims_death = cum_prem_max_pp(t) x pols_death(t)`` on point 9, and 0 on point 1.
 
     The market's commoner form nets the annuity already paid off the return of premiums,
-    but that netting is floored at zero **per life** and these ledgers are aggregates, so
-    netting in aggregate would let a life that received a large annuity subsidise one that
-    received none.  The model pays the **gross** form and the option therefore overstates
-    the death benefit, which is stated rather than hidden.  The option's price is the
-    other half of the point: 622,92 EUR a month against the anchor's 64,20 EUR.
+    but that netting is floored at zero **per life** while these ledgers are aggregates, so
+    netting in aggregate would let one life subsidise another.  The model pays the
+    **gross** form and so overstates the benefit, which is stated rather than hidden.  The
+    option's price is the other half of the point: 622,92 EUR against the anchor's 64,20.
     """
     brg = pflegerentenversicherung.Projection[9]
     assert brg.beitragsrueckgewaehr() is True
@@ -1012,7 +955,6 @@ def test_pitfall_11_the_beitragsrueckgewaehr_is_paid_gross(pflegerentenversicher
     assert brg.cum_prem_max_pp(300) == pytest.approx(brg.cum_prem_max_pp(600), rel=1e-15)
     assert brg.result_cf()["claims_death"].sum() > 80000.0
     assert brg.check_net_cf() is True and brg.check_prem_equiv() is True
-
     # Structurally zero on the base run, and published rather than dropped.
     base = de_pflege_anchor
     assert base.beitragsrueckgewaehr() is False
@@ -1025,16 +967,13 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     """Lapse acts on the active state only, and stops with the premium term.
 
     A claimant with a waived premium has no premium to default on and a live annuity to
-    forfeit.  Model point 12 is the boundary case that makes the statement testable: it
-    opens with its whole cohort in *Pflegegrad* 3 and no active lives at all, so the
-    surrender decrement and the surrender benefit are both exactly zero there.  Model
-    point 4 is the other boundary: once the *Beitragszahlungsdauer* ends at 65 the
-    contract is paid up, ``lapse_rate`` is zero and no *Rückkaufswert* is ever paid again.
+    forfeit.  Model point 12 opens with its whole cohort in *Pflegegrad* 3 and no active
+    lives, so both the surrender decrement and the surrender benefit are exactly zero
+    there; model point 4 is the other boundary, paid up at 65 with ``lapse_rate`` zero.
     """
     p = de_pflege_anchor
     n = p.proj_len()
     assert all(p.pols_lapse(t) <= p.pols_act(t) for t in range(0, n + 1))
-
     in_claim = pflegerentenversicherung.Projection[12]
     assert in_claim.status_init() == "pg3"
     assert in_claim.duration_mth_init() == 336
@@ -1045,7 +984,6 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     assert in_claim.claims(336, "ANNUITY") == pytest.approx(500.0, abs=CENT)
     assert in_claim.premiums(336) == 0.0
     assert in_claim.pols_waived(336) == 1.0
-
     paid_up = pflegerentenversicherung.Projection[4]
     assert paid_up.prem_end_age() == 65
     first_paid_up = 12 * (65 - paid_up.age_at_entry())
@@ -1057,29 +995,23 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     assert paid_up.premiums(first_paid_up) == 0.0
     assert paid_up.pols_in_term(first_paid_up) == 0.0
     assert paid_up.pols_if(first_paid_up) > 0.0      # the cover runs on
-
-
-def test_pitfall_12b_the_stornoabzug_reduces_the_rueckkaufswert(
-        pflegerentenversicherung):
-    """Model point 10 carries a 5 % deduction; the base run carries none.
-
-    A *Stornoabzug* is admissible only if agreed, appropriate and **quantified in the
-    contract**, and no level for any German *Pflegerenten* tariff was established, which is
-    why the shipped value is zero and the option lives on one model point.
-    """
-    p = pflegerentenversicherung.Projection[10]
-    assert p.stornoabzug() == 0.05
+    # And what is paid where a surrender does happen: the guaranteed ratio on premiums
+    # paid, less any contractual Stornoabzug.  Model point 10 carries 5 %; the base run
+    # carries none, because a deduction is admissible only if agreed, appropriate and
+    # quantified in the contract and no German Pflegerenten level was established.  The
+    # first two policy years are zero, the Zillmerung allowance being unamortised.
+    storno = pflegerentenversicherung.Projection[10]
     surrender = pflegerentenversicherung.Data.surrender_table()
-    ratio = float(surrender.at[6, "rkw_prem_ratio"])
-    assert p.policy_year(60) == 6
-    assert p.rkw_pp(60) == pytest.approx(
-        ratio * p.cum_prem_max_pp(60) * 0.95, rel=1e-12)
-    assert p.rkw_pp(60) == pytest.approx(1060.485, abs=CENT)
-    # The first two years are zero: the Zillmerung allowance is unamortised.
+    assert storno.stornoabzug() == 0.05 and p.stornoabzug() == 0.0
+    assert storno.policy_year(60) == 6
+    assert storno.rkw_pp(60) == pytest.approx(
+        float(surrender.at[6, "rkw_prem_ratio"])
+        * storno.cum_prem_max_pp(60) * 0.95, rel=1e-12)
+    assert storno.rkw_pp(60) == pytest.approx(1060.485, abs=CENT)
     assert float(surrender.at[1, "rkw_prem_ratio"]) == 0.0
     assert float(surrender.at[2, "rkw_prem_ratio"]) == 0.0
     assert float(surrender.at[3, "rkw_prem_ratio"]) > 0.0
-    assert p.rkw_pp(0) == 0.0
+    assert storno.rkw_pp(0) == 0.0
 
 
 # Pitfall 13 -- charging the Zillmerung on the wrong base
@@ -1087,12 +1019,10 @@ def test_pitfall_13_the_zillmerung_is_charged_on_the_beitragssumme(
         pflegerentenversicherung, de_pflege_anchor):
     """25 permille of the *Beitragssumme*, at ``t = 0`` only -- not of the annual premium.
 
-    ``beitragssumme_cap_age = 85`` is the convention that gives a lifelong-premium
-    contract a finite *Beitragssumme*; what is cited is the § 4 DeckRV ceiling the
-    per-mille sits exactly at.  Charging the per-mille on an annual premium instead would
-    understate it by a factor of the paying term -- here forty-fold.  Because the charge
-    falls once, an **in-force model point never incurs it**: its frame opens after the
-    cost was incurred.
+    ``beitragssumme_cap_age = 85`` is the convention that gives a lifelong-premium contract
+    a finite *Beitragssumme*; what is cited is the § 4 DeckRV ceiling the per-mille sits
+    exactly at.  Charging it on an annual premium instead understates it by a factor of the
+    paying term -- forty-fold here -- and an **in-force point never incurs the charge**.
     """
     p = de_pflege_anchor
     expected = 0.025 * p.premium_mth_pp() * 12.0 * (min(110, 85) - 45)
@@ -1106,7 +1036,6 @@ def test_pitfall_13_the_zillmerung_is_charged_on_the_beitragssumme(
         admin = (2.0 * p.expense_infl_factor(t) * p.pols_if(t)
                  + 0.03 * p.premiums(t))
         assert p.expenses(t) == pytest.approx(admin, rel=1e-12)
-
     in_force = pflegerentenversicherung.Projection[11]
     assert in_force.duration_mth_init() == 240
     assert in_force.result_cf().index[0] == 240
@@ -1121,19 +1050,17 @@ def test_pitfall_13_the_zillmerung_is_charged_on_the_beitragssumme(
 def test_pitfall_14_the_premium_is_struck_on_the_first_order_basis(de_pflege_anchor):
     """The tariff ledgers carry margins, blend the sexes, and carry **no lapse at all**.
 
-    ``tar_inc_rate`` exceeds the **unisex-blended** best-estimate incidence by exactly
-    ``inc_margin`` at every age below the cap.  Against the anchor cell's own *female*
-    incidence the ratio is 1.128 at age 45 and 1.089 at 85, **not** 1.25: the blend and
-    the margin are two separate operations and only the second is prudence.  Prudence also
-    forks by risk -- lower active mortality (more lives survive to claim), lower in-care
-    mortality (longer annuities), more incidence, faster deterioration, fewer recoveries.
+    ``tar_inc_rate`` exceeds the **unisex-blended** best estimate by exactly ``inc_margin``;
+    against the anchor's own *female* incidence the ratio is 1.128 at 45, **not** 1.25,
+    because the blend and the margin are two operations and only the second is prudence.
+    Prudence forks by risk: fewer deaths before claim, longer annuities, more incidence,
+    faster deterioration, fewer recoveries.
     """
     p = de_pflege_anchor
     assert p.check_prem_equiv() is True
     assert p.check_prem_equiv_resid(0) != 0.0            # individual months are large
     total = sum(p.check_prem_equiv_resid(t) for t in range(0, p.proj_len() + 1))
     assert total == pytest.approx(0.0, abs=1e-9)
-
     # Margins, and their directions.  For an active life prudence means *lower*
     # mortality -- a life that survives is a life that can claim -- so the margin is
     # 0.90 and not 1.10; for a life in care it means lower mortality too, because that
@@ -1169,7 +1096,6 @@ def test_pitfall_14c_the_premium_is_invariant_to_every_lapse_rate():
     deal: fewer surrenders mean less *Rückkaufswert* paid and far more annuity.
     """
     import pandas as pd
-
     lapse = pd.read_csv(MODEL_DIR.parent / "lapse_table.csv", index_col="policy_year")
     lapse["lapse_rate"] = lapse["lapse_rate"] * 0.5
     alt_name = "lapse_table_half.csv"
@@ -1233,7 +1159,6 @@ def test_pitfall_16_instalments_fall_on_due_months_only(pflegerentenversicherung
     monthly = de_pflege_anchor
     assert monthly.prem_mode_months() == 1
     assert all(monthly.premium_due(t) for t in range(0, 24))
-
     for point_id, m in ((3, 3), (4, 6), (5, 12)):
         p = pflegerentenversicherung.Projection[point_id]
         assert p.prem_mode_months() == m
@@ -1247,7 +1172,6 @@ def test_pitfall_16_instalments_fall_on_due_months_only(pflegerentenversicherung
             else:
                 assert p.premium_pp(t) == 0.0
                 assert p.premiums(t) == 0.0
-
     single = pflegerentenversicherung.Projection[6]
     assert single.prem_mode() == "single"
     assert single.prem_mode_months() == 0
@@ -1268,7 +1192,6 @@ def test_pitfall_17_entrants_are_not_the_stock(de_pflege_anchor):
     assert sum(p.inc_share(g) for g in range(1, 6)) == pytest.approx(1.0, abs=1e-12)
     for g, share in ENTRY_SHARE.items():
         assert p.inc_share(g) == pytest.approx(share, rel=1e-12)
-
     exposure = sum(p.pols_care(t) for t in range(0, n + 1))
     for g in range(1, 6):
         share = sum(p.pols_pg(t, g) for t in range(0, n + 1)) / exposure
@@ -1302,9 +1225,8 @@ def test_check_net_cf_is_delib_ruling_one(de_pflege_anchor):
 
     Every term is a **column of** ``result_cf()``, and the residual re-derives the headline
     number from the three ``claims`` **kinds** separately rather than from their subtotal,
-    so a benefit that stops being included in ``claims(t)``, or a column added to the frame
-    without being subtracted, fails here instead of silently changing the answer.  The
-    largest residual anywhere in the anchor frame is of the order of 1e-14.
+    so a benefit dropped from ``claims(t)``, or a column added without being subtracted,
+    fails here instead of silently changing the answer.  The largest residual is 1e-14.
     """
     p = de_pflege_anchor
     n = p.proj_len()
@@ -1324,11 +1246,9 @@ def test_check_states_is_not_the_roll_forward_made_twice(de_pflege_anchor):
     """One telescopes the ledgers' recursions; the other sums them independently.
 
     ``check_pols_roll_fwd`` says lives leave the in-force population only by death or
-    surrender, so every *Pflegegrad* transition is internal to it.  ``check_states`` is
-    assembled by direct summation over the three live ledgers and the two absorbing
-    counts, with no reference to the recursion that produced any of them -- which is what
-    catches a wrong seeding, a life counted in two grades at once, or a *Karenz* cohort
-    that graduates twice.  Neither is trivially zero: the partition really does move.
+    surrender.  ``check_states`` is assembled by direct summation over the three live
+    ledgers and the two absorbing counts, with no reference to the recursions -- which
+    catches a wrong seeding, a life in two grades at once, or a double graduation.
     """
     p = de_pflege_anchor
     for t in (0, 120, 360, 600):
@@ -1395,15 +1315,10 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_pflege_anchor):
     assert (df["pols_prem"] <= df["pols_if"] + 1e-12).all()
     assert (df["pols_if"] >= 0.0).all()
     assert df["pols_if"].iloc[0] == de_pflege_anchor.pols_if_init()
-
-
-def test_pols_if_is_a_start_of_period_count(de_pflege_anchor):
-    """``pols_if_at(t, "END")`` is where end-of-period state lives, not ``pols_if(t+1)``."""
-    p = de_pflege_anchor
+    # pols_if is a start-of-period count; end-of-period state lives in pols_if_at.
     for t in (0, 120, 480):
-        assert p.pols_if_at(t, "BEG") == p.pols_if(t)
-        assert p.pols_if_at(t, "END") == p.pols_if(t + 1)
-    assert p.pols_if_at(0, "BEG") == p.pols_if_init() == 1.0
+        assert de_pflege_anchor.pols_if_at(t, "BEG") == de_pflege_anchor.pols_if(t)
+        assert de_pflege_anchor.pols_if_at(t, "END") == de_pflege_anchor.pols_if(t + 1)
 
 
 def test_invalid_enum_values_raise(de_pflege_anchor):
@@ -1435,13 +1350,11 @@ def test_docstrings_describe_the_current_structure(pflegerentenversicherung):
     assert "Data" in doc and "Projection" in doc
     assert "DAV 2008 P" in doc and "not redistributed here" in doc
     assert "Beitragsbefreiung" in doc
-
     proj = pflegerentenversicherung.Projection.doc
     assert "Notes symbol" in proj
     for cells in ("proj_len", "model_point", "pols_pg", "esc_pg", "pols_karenz",
                   "mort_force_care", "waiver_flag", "check_prem_equiv", "pols_if_at"):
         assert cells in proj, cells
-
     data = pflegerentenversicherung.Data.doc
     assert "TradLife_A" in data
     for cells in ("input_dir", "model_point_table", "care_table", "incidence_table",
@@ -1497,18 +1410,15 @@ def test_the_shipped_tables_mark_their_own_provenance():
     """Nine CSVs beside run.py, and each says what it is -- especially what it is not.
 
     Every file but ``model_point_table.csv`` carries a ``provenance`` column, one tag per
-    row: delib's second ruling, and the only exemption is the model point table, because a
+    row -- delib's second ruling, the model point table being the only exemption because a
     model point is a configuration rather than an assumption.  The decrement tables are
-    **[std]** proxies -- DAV 2008 P, DAV 2008 T and DAV 2004 R are cited by name and never
-    shipped -- and the anchors a substitute must preserve are asserted here.
+    **[std]** proxies, and the anchors a substitute must preserve are asserted here.
     """
     import pandas as pd
-
     assert INPUT_CSVS == {p.name for p in MODEL_DIR.parent.iterdir()
                           if p.suffix == ".csv"}
     assert not any(p.suffix == ".csv" for p in MODEL_DIR.rglob("*"))
     assert model_files(MODEL_DIR) == {"__init__.py", "_system.json"}
-
     mort = pd.read_csv(MODEL_DIR.parent / "mort_table.csv", index_col=["sex", "age"])
     assert all(p.startswith("[std]") for p in mort["provenance"])
     assert all("not redistributed" in mort.at[(s, a), "provenance"]
@@ -1522,14 +1432,12 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert float(mort.at[("M", 109), "mort_rate"]) == 1.0
     assert float(mort.at[("F", 109), "mort_rate"]) == 1.0
     assert mort["mort_rate"].max() <= 1.0
-
     inc = pd.read_csv(MODEL_DIR.parent / "incidence_table.csv",
                       index_col=["sex", "age"])
     assert all(p.startswith("[std]") for p in inc["provenance"])
     assert float(inc.at[("F", 65), "inc_rate"]) == pytest.approx(0.0110, rel=1e-9)
     assert float(inc.at[("M", 65), "inc_rate"]) == pytest.approx(0.0085, rel=1e-9)
     assert inc["inc_rate"].max() == 0.5           # the inc_cap shape device
-
     care = pd.read_csv(MODEL_DIR.parent / "care_table.csv", index_col="pflegegrad")
     assert list(care.index) == [1, 2, 3, 4, 5]
     assert care["entry_share"].sum() == pytest.approx(1.0, abs=1e-12)
@@ -1537,7 +1445,6 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert float(care.at[5, "det_rate"]) == 0.0   # grade 5 has nowhere to go
     assert all(care.at[g, "det_rate"] > care.at[g, "rec_rate"] for g in (1, 2, 3, 4))
     assert "FORCE" in care.at[1, "provenance"]
-
     scale = pd.read_csv(MODEL_DIR.parent / "benefit_scale_table.csv",
                         index_col=["staffel_id", "pflegegrad"])
     assert [float(scale.at[("delib_std", g), "benefit_pct"]) for g in range(1, 6)] == [
@@ -1545,32 +1452,27 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert [float(scale.at[("bahr", g), "benefit_pct"]) for g in range(1, 6)] == [
         0.10, 0.20, 0.30, 0.40, 1.0]
     assert all("[R8]" in scale.at[("bahr", g), "provenance"] for g in range(1, 6))
-
     expense = pd.read_csv(MODEL_DIR.parent / "expense_table.csv", index_col="item")
     assert float(expense.at["acq_permille", "value"]) == 25.0
     assert "Hoechstzillmersatz" in expense.at["acq_permille", "provenance"]
     assert all(p.startswith("[std]") for p in expense["provenance"])
-
     basis = pd.read_csv(MODEL_DIR.parent / "basis_table.csv", index_col="param")
     assert float(basis.at["rechnungszins", "value"]) == 0.01
     assert basis.at["rechnungszins", "provenance"].startswith("[REG-R14]")
     assert float(basis.at["omega_age", "value"]) == 110.0
     assert float(basis.at["unisex_mix_male", "value"]) == 0.5
     assert float(basis.at["beitragssumme_cap_age", "value"]) == 85.0
-
     lapse = pd.read_csv(MODEL_DIR.parent / "lapse_table.csv", index_col="policy_year")
     assert list(lapse.index) == list(range(1, 41))
     assert float(lapse.at[1, "lapse_rate"]) == 0.06
     assert float(lapse.at[40, "lapse_rate"]) == 0.015
     assert all(p.startswith("[std]") for p in lapse["provenance"])
     assert "no lapse rate for a German Pflegerente" in lapse.at[1, "provenance"]
-
     surrender = pd.read_csv(MODEL_DIR.parent / "surrender_table.csv",
                             index_col="policy_year")
     assert float(surrender.at[1, "rkw_prem_ratio"]) == 0.0
     assert float(surrender.at[40, "rkw_prem_ratio"]) == 0.70
     assert surrender["rkw_prem_ratio"].is_monotonic_increasing
-
     points = pd.read_csv(MODEL_DIR.parent / "model_point_table.csv",
                          index_col="point_id")
     assert "provenance" not in points.columns    # the one exemption
@@ -1585,13 +1487,11 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     no formula changes, and the model reads the replacement once per model as before.
     """
     import pandas as pd
-
     lighter = pd.read_csv(MODEL_DIR.parent / "mort_table.csv",
                           index_col=["sex", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
     lighter.loc[("M", 109), "mort_rate"] = 1.0
     lighter.loc[("F", 109), "mort_rate"] = 1.0
-
     model = mx.read_model(MODEL_DIR, name="Pflege_DE_S_swap")
     try:
         alt_name = "mort_table_light.csv"
@@ -1617,17 +1517,14 @@ def test_an_input_can_be_swapped_without_touching_formulas():
 def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
-
     model = mx.read_model(MODEL_DIR, name="Pflege_DE_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
     finally:
         model.close()
-
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
-
     reread = mx.read_model(dest, name="Pflege_DE_S_rt")
     try:
         p = reread.Projection[1]
@@ -1642,5 +1539,4 @@ def test_round_trip_is_stable(tmp_path):
         assert p.check_states() is True
     finally:
         reread.close()
-
     assert model_files(dest) == model_files(MODEL_DIR)
