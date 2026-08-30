@@ -517,10 +517,23 @@ the contract from the *Ertragsanteil* regime of § 22 EStG [R5] [REG-R41] to § 
 payment after completion of the 62nd year of life — **only half the *Unterschiedsbetrag* between the
 *Versicherungsleistung* and the premiums paid is taxable**, at the **personal marginal rate** under
 § 32d Abs. 2 Nr. 2 EStG, and the *Halbeinkünfteverfahren* applies **only to lump sums and
-payout-plan withdrawals, not to monthly annuity payments** [R6] [REG-R45]. Contracts concluded before
-1 January 2005 retain the half-income treatment while annuity payments continue on the
-*Ertragsanteil* basis [R6], so a German in-force book carries **two tax cohorts** divided by the
-*Alterseinkünftegesetz* watershed [REG-R38]. On the annuity side, **at age 65 the *Ertragsanteil* is
+payout-plan withdrawals, not to monthly annuity payments** [R6] [REG-R45]. The age limb is **60** for
+contracts concluded up to **31 December 2011** and **62** for those concluded after it [R6] [REG-R45].
+
+**Contracts concluded before 1 January 2005 are not in the *Halbeinkünfteverfahren* at all**, and
+saying that they "retain" it understates their position rather than overstating it. The
+§ 20 Abs. 1 Nr. 6 EStG regime in its *Alterseinkünftegesetz* recast does not reach them; under the
+predecessor regime, where the pre-AltEinkG conditions are met — a term of at least twelve years,
+premiums paid for at least five, and a minimum death cover — the *rechnungsmäßige und
+außerrechnungsmäßige Zinsen* contained in a *Kapitalabfindung* are **entirely free of income tax**
+[R6] [REG-R45]. **Those conditions were not established and are asserted nowhere in delib**
+[unverified]; the exemption itself is what makes an *Altvertrag*'s surrender and commutation rates
+close to nil, and it is why the reference model does not represent that cohort. Annuity payments run
+on the *Ertragsanteil* basis in every cohort. A German in-force book therefore carries **at least
+three tax cohorts** — pre-2005, 2005–2011 with the age test at 60, and 2012 onwards with it at 62 —
+cut by the *Alterseinkünftegesetz* watershed of 1 January 2005 and the 31 December 2011 line
+[REG-R38] [REG-R45], and **delib's composite is a post-2011 contract**: `issue_year` is 2026 on the
+anchor and the pre-2005 cohort appears nowhere in the model point table. On the annuity side, **at age 65 the *Ertragsanteil* is
 18 %** [R5] [S12] — the only value of the statutory table any search established (gap 8) — and,
 unlike the Schicht-1 *Rentenfreibetrag*, **the percentage is what is frozen**, so surplus increases
 are taxed at the same light rate [REG-R41].

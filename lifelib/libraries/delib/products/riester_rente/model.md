@@ -291,15 +291,21 @@ frequency-loading invariance is tested.
 ## The identities the model checks
 
 `check_net_cf()` — **delib's first ruling** — is the cash flow statement's own reconciliation,
-in one line:
+in one line, on `result_cf()` row `t`:
 
 ```
-net_cf(t) = premiums(t) + zulagen(t) − claims_death − claims_lapse − claims_transfer
-            − claims_lumpsum − claims_commutation − claims_annuity − expenses(t) − commissions(t)
+net_cf = premiums + zulagen − claims_death − claims_lapse − claims_transfer
+         − claims_lumpsum − claims_commutation − claims_annuity − expenses − commissions
 ```
 
-with `int_credited` deliberately outside it. Five more sit beside it, each a `bool` over all `t`
-with a `check_*_resid(t)` companion, and the conventions suite calls all six on every model point.
+Every term is read **from the published frame**, not from the cells behind it, which is what
+makes it a reconciliation of what the model publishes rather than a restatement of `net_cf`'s
+own expression: a column that is in the frame and not in the total, or in the total twice, or
+that has drifted from the kind behind it, leaves a residual here. `int_credited` is
+deliberately outside the identity — it moves money inside the account, not across the
+insurer's boundary — and adding it is the tempting error, because it is the largest number on
+an accumulation row. Five more checks sit beside it, each a `bool` over all `t` with a
+`check_*_resid(t)` companion, and the conventions suite calls all six on every model point.
 
 | Check | What it catches |
 |---|---|

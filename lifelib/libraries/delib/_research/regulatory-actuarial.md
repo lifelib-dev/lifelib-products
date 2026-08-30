@@ -1489,9 +1489,10 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - Content: **§ 19** — the policyholder must disclose, up to making the contract declaration, the risk circumstances known to
   them for which the insurer has **asked in Textform**. On breach the insurer may **rescind**; rescission is **excluded** where
   the breach was neither intentional nor grossly negligent, in which case the insurer may **terminate on one month's notice**;
-  and the obligation to perform falls away where the breach was ***arglistig***. The rights to rescind, terminate and adjust
-  **lapse five years after conclusion**, extended to **ten years** where the breach was intentional or fraudulent; the lapse
-  does not apply to insured events occurring before the period expires. **§ 157** — where the **age of the insured person was
+  and the obligation to perform falls away where the breach was ***arglistig***. **The limitation period is not in § 19 but in § 21 Abs. 3**, under which the rights to
+  rescind, terminate and adjust conferred by § 19 Abs. 2 to 4 **lapse five years after conclusion**, extended to **ten years**
+  where the breach was intentional or fraudulent; the lapse does not apply to insured events occurring before the period
+  expires. The section attribution is `[unverified]` — the search summaries gave the periods without naming the section. **§ 157** — where the **age of the insured person was
   misstated**, the insurer's benefit **changes in the ratio of the premium corresponding to the true age to the agreed
   premium**, and the right to rescind exists only if the insurer would not have concluded the contract at the true age. **§
   158** — an **increase in risk** counts as such **only where it has been expressly agreed to count as one**, in Textform, and

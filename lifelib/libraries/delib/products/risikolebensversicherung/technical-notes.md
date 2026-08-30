@@ -585,7 +585,7 @@ Five, each with a per-`t` residual companion `check_*_resid(t)`, each returning 
 
 | Check | Identity | Why it earns its place |
 |---|---|---|
-| `check_net_cf()` | `net_cf(t) = premiums(t) − claims(t) − expenses(t) − commissions(t)` | delib's first ruling: the headline number is reconciled in code, not only in prose |
+| `check_net_cf()` | On `result_cf()` row `t`: `net_cf = premiums − claims_death − claims_lapse − claims_maturity − expenses − commissions`, every term read from the published frame | delib's first ruling: the headline number is reconciled in code, not only in prose — and by a different route from `net_cf`'s own, which subtracts the kind-less `claims(t)` subtotal, so the check crosses both the cells-to-frame boundary and the `claims(t, kind)` dispatch |
 | `check_pols_roll_fwd()` | `pols_if(t+1) = pols_if(t) − pols_death(t) − pols_lapse(t) − pols_maturity(t)`, and the three exits sum to `pols_if_init()` | The decrement roll-forward and its closure |
 | `check_prem_split()` | `prem_gross_pp(t) = prem_paid_pp(t) + prem_rebate_pp(t)`, with `0 ≤ prem_rebate_pp(t) < prem_gross_pp(t)` where a premium is due and all three zero where none is | The product's signature identity, at every `t` and every *Zahlweise* |
 | `check_res_roll_fwd()` | The Thiele recursion above, plus `res_pp_at(1) = 0` and `res_pp_at(n+1) = 0` | The reserve mechanic 11 says a naive implementation gets wrong |

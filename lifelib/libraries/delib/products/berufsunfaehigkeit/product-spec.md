@@ -635,8 +635,9 @@ lasting impairment of working capacity [R1]–[R6] [REG-R29]. **§ 176 is load-b
 reach is a named gap**: it is the authority for an *Überschussbeteiligung* (§ 153) [R10] [REG-R24],
 a *prämienfreie Versicherung* (§ 165) [R8], a *Kündigung* right and a *Rückkaufswert* (§§ 168–169)
 [R9] [REG-R28] and the *Selbsttötung* rule (§ 161) [R11] — five consequences resting on a range of
-sections that was not read. Outside it, § 19 governs the *vorvertragliche Anzeigepflicht* and its
-five- and ten-year windows, § 157 the misstatement of age, and § 158 the rule that **an increase in
+sections that was not read. Outside it, § 19 governs the *vorvertragliche Anzeigepflicht* and the
+insurer's remedies for a breach of it while **§ 21 Abs. 3** — not § 19 — extinguishes those remedies
+after five years, ten on intent or fraud [unverified], § 157 the misstatement of age, and § 158 the rule that **an increase in
 risk counts as such only where expressly agreed to** — which is why a German BU contract carries no
 general occupation-change clause and why this model needs no reunderwriting state [R7] [REG-R30].
 

@@ -273,9 +273,14 @@ Five `check_*` cells, each a `bool` over all `t` with a per-`t` residual compani
 `check_*_resid(t)`, and all five called on **every** model point by the conventions suite.
 The first is delib's own ruling and is stated here in one line:
 
-**`check_net_cf()`:  `net_cf(t) = premiums(t) − claims(t) − expenses(t) − commissions(t)`.**
+**`check_net_cf()`:  `result_cf()` row `t` satisfies `net_cf = premiums − claims_death − claims_lapse − claims_maturity − expenses − commissions`.**
 
-Which columns are *not* in it is the whole point of publishing it: `prem_gross` is the
+It is rebuilt **from the frame's own published columns**, and by a different route from
+`net_cf`'s own, which subtracts the kind-less `claims(t)` subtotal. So it crosses the
+cells-to-frame boundary — a column dropped, renamed or mis-signed on the way into
+`result_cf()` fails here — and the `claims(t, kind)` dispatch, where a benefit kind can
+exist in the model and not in the subtotal. Which columns are *not* in it is the other
+half of publishing it: `prem_gross` is the
 guaranteed stream and does not enter, and `prem_rebate` is the difference between the two
 premium columns and must not be subtracted again. `expenses` here **excludes**
 `commissions` — the opposite convention from `frlib.TD_FR_A`, whose notes fold commission
@@ -284,7 +289,7 @@ thing; this identity settles the reading.
 
 | Check | Identity |
 |---|---|
-| `check_net_cf()` | `net_cf(t) = premiums(t) − claims(t) − expenses(t) − commissions(t)` |
+| `check_net_cf()` | On `result_cf()` row `t`: `net_cf = premiums − claims_death − claims_lapse − claims_maturity − expenses − commissions` |
 | `check_pols_roll_fwd()` | `pols_if(t+1) = pols_if(t) − pols_death(t) − pols_lapse(t) − pols_maturity(t)`, and the three exits sum to `pols_if_init()` |
 | `check_prem_split()` | `prem_gross_pp(t) = prem_paid_pp(t) + prem_rebate_pp(t)`, with `0 ≤ prem_rebate_pp < prem_gross_pp` where a premium is due and all three zero where none is |
 | `check_res_roll_fwd()` | The Thiele step `(res + Gn·1{t≤k})(1+i) = q₁·B + (1−q₁)·res(t+1)`, plus `res_pp_at(1) = 0` and `res_pp_at(n+1) = 0` |

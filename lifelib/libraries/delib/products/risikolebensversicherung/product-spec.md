@@ -284,7 +284,7 @@ Footnotes to **[std]** rows:
 | Hazardous pursuits | Parachuting, technical diving, motorsport, mountaineering, combat sports, extended stays in high-risk regions — handled by a *Risikozuschlag* or an individually agreed exclusion at underwriting, **not** by a standing clause | mechanics 9, 13 [unverified] |
 | Underwriting outcomes | Accept at standard rates; accept with a *Risikozuschlag* and/or an individually agreed *Leistungsausschluss*, subject to the applicant's acceptance; defer; decline | [R4]; mechanic 9 |
 | *Anzeigepflicht* remedies | On a breach the insurer may **adjust the contract retrospectively** — writing in the *Risikozuschlag* or exclusion that would have applied — instead of refusing to perform, and for simple or gross negligence this is the usual outcome | [R4] [REG-R30]; inherited corroboration |
-| Time limits on those remedies | **Five years** from conclusion for negligent breach; **ten years** for intentional or *arglistig* breach. *Anfechtung wegen arglistiger Täuschung* is preserved alongside | [R4]; five/ten inherited, § 22 [unverified] |
+| Time limits on those remedies | **Five years** from conclusion for negligent breach; **ten years** for intentional or *arglistig* breach — the periods sit in **§ 21 Abs. 3**, not in § 19, which carries the duty and the remedies and no period. *Anfechtung wegen arglistiger Täuschung* under § 22 is preserved alongside | [R4] [REG-R30]; five/ten inherited, §§ 21 Abs. 3 and 22 [unverified] |
 | *Vorläufiger Versicherungsschutz* | Provisional cover between application and acceptance, capped in amount and duration and sometimes limited to accidental causes | mechanic 8 [unverified]; French analogue [`frlib` S2] [`frlib` S3] |
 
 12. **No published smoker/non-smoker ratio was obtained** (gap 1). The market's rule of thumb is
@@ -736,8 +736,8 @@ excludes it. **§ 152** gives a 30-day *Widerrufsfrist* [R8] [REG-R23]; **§ 153
 [R7]; **§ 161** the *Selbsttötung* rule [R1]; **§ 162** the forfeitures [R7]; and **§§ 165–169** the
 paid-up right, the *Kündigung* right, the *Beitragsverzug* machinery and the *Rückkaufswert* [R2]
 [R3] [R8] [REG-R28] — all of which, on this product, terminate in nil. **§ 19**'s question-bounded
-duty and five-/ten-year remedy windows are the whole of the claims-risk story on a term contract [R4]
-[REG-R30], and **§ 163**'s near-total absence from this product's practice is the point [R6]
+duty, together with the five-/ten-year extinction of the insurer's remedies under it in **§ 21 Abs. 3**
+[unverified], is the whole of the claims-risk story on a term contract [R4] [REG-R30], and **§ 163**'s near-total absence from this product's practice is the point [R6]
 [REG-R27].
 
 **Supervisory law — the VAG.** **§ 138 Abs. 1** requires premiums to be set **high enough** that the

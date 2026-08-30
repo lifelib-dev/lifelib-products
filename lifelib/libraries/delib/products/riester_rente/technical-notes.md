@@ -558,7 +558,7 @@ the product is about.
 
 | Check | Identity |
 |---|---|
-| **`check_net_cf()`** (delib ruling 1) | `net_cf(t)` equals `premiums + zulagen` less the six `claims_*` less `expenses` less `commissions`, for every `t`; residual at `check_net_cf_resid(t)` |
+| **`check_net_cf()`** (delib ruling 1) | On `result_cf()` row `t`: `net_cf` equals `premiums + zulagen` less the six `claims_*` less `expenses` less `commissions`, every term read from the **published frame** rather than from the cells behind it, for every `t`; residual at `check_net_cf_resid(t)`. `int_credited` is outside the identity |
 | `check_av_roll_fwd()` | `av(t+1) = av(t) + prem_to_av(t) + int_credited(t) − claims_death − claims_lapse − claims_transfer − exit_charge(t)` for `t < t_conv()`, and `av_pp(t) = 0` for `t > t_conv()` |
 | `check_guar_roll_fwd()` | `guar_pp(t+1) = guar_pp(t) + eigenbeitrag_pp(t) + zulage_pp(t) + contrib_extra_pp − guar_carve_out_pp(t)` while `t ≤ t_conv()`, frozen thereafter, and `guar_carve_out_pp(t) ≤ 0.20 ×` total contributions |
 | `check_pols_roll_fwd()` | The decrement recursion closes each year, and `Σ(pols_death + pols_lapse + pols_transfer) + pols_conv()·1{is_kleinbetrag()} + pols_if(proj_len()+1) = pols_if_init()`. The commuted cohort is a fourth exit: a *Kleinbetragsrenten-Abfindung* discharges the contract, so `pols_if(t_conv()+1) = 0` without any decrement having removed the population |

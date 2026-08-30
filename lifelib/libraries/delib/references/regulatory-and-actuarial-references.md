@@ -193,7 +193,7 @@ berufsunfaehigkeit · `PFL` = pflegerentenversicherung.
 | R27 | VVG § 163 — Prämien- und Leistungsänderung | (x) | (x) | | | | | | (x) | x | x |
 | R28 | VVG §§ 165–170 — paid-up, surrender, Rückkaufswert | x | x | x | x | (x) | x | (x) | (x) | x | x |
 | R29 | VVG §§ 172–177 — Berufsunfähigkeitsversicherung | (x) | (x) | | | (x) | | | (x) | x | (x) |
-| R30 | VVG §§ 19, 37, 38, 157, 158 | x | x | (x) | (x) | (x) | (x) | (x) | x | x | x |
+| R30 | VVG §§ 19, 21, 37, 38, 157, 158 | x | x | (x) | (x) | (x) | (x) | (x) | x | x | x |
 | R31 | VVG §§ 6, 7, 1a, 7b, 7c, 214 and the VVG-InfoV | x | x | x | x | x | x | x | x | x | x |
 | R32 | PRIIPs — VO (EU) 1286/2014 and the RTS | (x) | (x) | x | x | (x) | (x) | (x) | | | |
 | R33 | IDD — RL (EU) 2016/97, transposition, § 34d GewO | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
@@ -1002,7 +1002,7 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
 
 (delib-reg-r30)=
 
-### R30. VVG §§ 19, 37, 38, 157 and 158 — Anzeigepflicht, Zahlungsverzug, Altersangabe, Gefahränderung
+### R30. VVG §§ 19, 21, 37, 38, 157 and 158 — Anzeigepflicht, Zahlungsverzug, Altersangabe, Gefahränderung
 
 - **Publisher:** Bundesamt für Justiz
 - **URL:** https://www.gesetze-im-internet.de/vvg_2008/__19.html (returned); some section pages only in `[unverified canonical form]`
@@ -1012,7 +1012,9 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
 - **Annotation:** **§ 19** — the policyholder must disclose the risk circumstances known to them for which the insurer has **asked in
   Textform**; on breach the insurer may **rescind**, rescission being **excluded** where the breach was neither intentional nor
   grossly negligent (termination on one month's notice instead), and the obligation to perform falls away where the breach was
-  ***arglistig***. The rights **lapse five years after conclusion**, extended to **ten years** on intent or fraud. **§ 157** — where
+  ***arglistig***. **§ 19 carries the duty and the remedies and no limitation period; the periods are in § 21 Abs. 3**, under
+  which the insurer's rights under § 19 Abs. 2 to 4 **lapse five years after conclusion**, extended to **ten years** where the
+  policyholder breached the duty intentionally or fraudulently — the section attribution is `[unverified]`. **§ 157** — where
   the **age of the insured person was misstated**, the benefit **changes in the ratio of the premium corresponding to the true age to
   the agreed premium**. **§ 158** — an **increase in risk** counts as such **only where it has been expressly agreed to count as
   one**, in Textform. **§ 37** — the insurer is not liable if the insured event occurs while the first premium is unpaid, but only if
@@ -1023,7 +1025,7 @@ each of §§ 8, 152, 153, 154, 155, 161, 163, 165, 168, 169, 171 and 172.
   risk-increase consequence unless expressly agreed** — is why German life and BU contracts carry no general occupation-change clause
   and why a delib BU model needs no mid-term reunderwriting state; and **German lapse is not instantaneous**: due date → qualified
   reminder with a two-week period → expiry → conversion to paid-up, so a monthly model applying a lapse decrement in the month of the
-  missed premium is off by at least one month and applies the wrong benefit basis. The **five-year contestability window** is a real
+  missed premium is off by at least one month and applies the wrong benefit basis. The **five-year contestability window of § 21 Abs. 3** is a real
   first-duration mortality and morbidity effect a model may fold into a select period, provided it says so. **Unverified:** the § 19
   Absatz numbering; whether § 38 Abs.
 
