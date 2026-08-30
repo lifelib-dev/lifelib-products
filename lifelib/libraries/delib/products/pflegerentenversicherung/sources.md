@@ -419,7 +419,6 @@ constrain the model:
 [REG-R14]: #delib-reg-r14
 [REG-R15]: #delib-reg-r15
 [REG-R16]: #delib-reg-r16
-[REG-R21]: #delib-reg-r21
 [REG-R25]: #delib-reg-r25
 [REG-R28]: #delib-reg-r28
 [REG-R31]: #delib-reg-r31

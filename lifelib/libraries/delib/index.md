@@ -118,7 +118,30 @@ and `savings/CashValue_SE` are the monthly ones. `S` carries a second sense in l
 scalar, one model point at a time, as against the vectorized `_M` models — and that is true
 of all ten here, whether or not they carry the letter.
 
-<!-- PRODUCT TABLES -->
+**Kapitalbildende Lebensversicherung und private Rentenversicherung (Schicht 3)**
+
+| Product | Model | Grid | Representative design |
+|---|---|---|---|
+| [Kapitallebensversicherung](products/kapitallebensversicherung/index.md) | `KLV_DE_A` | annual | The library's *Überschussbeteiligung* chassis, and the place the German crediting arithmetic is settled: the declared *laufende Verzinsung* **contains** the *Rechnungszins*, so the interest surplus is `max(0, decl_rate − rechnungszins)` — 1,70 pp on a 2,70 % declaration against a 1,00 % guarantee, never 2,70 pp on top of 1,00 — and it is struck on the closing *Deckungskapital*, not on the sum insured and not on the premium. Three reserve constructions travel together and the customer gets the third: the *gezillmerte Deckungskapital*, the § 169 Abs. 3 VVG floor that spreads acquisition cost evenly over the first five contract years, and their maximum. On a long *gezillmert* contract the floor normally binds — 691,06 € at duration 12 on the anchor cell, which a model publishing the Zillmer reserve alone as the surrender value would take from the policyholder. All three *Überschussverwendung* systems ship, and the *Bonussystem*'s higher death benefit against the *verzinsliche Ansammlung*'s higher maturity is arithmetic rather than coincidence |
+| [Klassische Rentenversicherung](products/klassische_rentenversicherung/index.md) | `RV_DE_A` | annual | The same chassis with a conversion where the endowment has a maturity, projected to attained age 120 rather than stopped at *Rentenbeginn*. Two accounts, not one balance split in two: the *Deckungskapital* credited at the contract's **own** guarantee vintage and the *Ansammlungsguthaben* at the declared rate, so one run carries 1,00 %, 2,75 % and 0,90 % cohorts at once — and forcing them onto a single rate misallocates between the two accounts while barely moving the total, which is why that error survives a reasonableness check on the headline. Three things happen at the *Rentenbeginn* instant: the *Bewertungsreserven* crystallise, the capital converts at `max(garantierter, aktueller) Rentenfaktor` — applying the guaranteed factor alone understates the anchor's annuity by 12,5 % — and the *Rentengarantiezeit* begins paying on the **annuitised** count rather than on survivors, 64,44 € a year more in each of the ten guaranteed years |
+| [Fondsgebundene Rentenversicherung](products/fondsgebundene_rentenversicherung/index.md) | `FRV_DE_S` | monthly | The insurer guarantees the **number** of *Anteileinheiten* and not their value, so there is no *Rechnungszins*, no *Deckungskapital*, and — the *Anlagestock* being a segregated § 125 VAG asset pool held in the very units the liability is denominated in — no investment-mismatch term anywhere in the model. `net_cf` is the non-unit stream alone; booking the whole *Fondsguthaben* as insurer outgo is the first-order failure mode, and the scale of it on the anchor is 64 869,36 € of benefits against 4,39 € that is actually an insurer cost. The acquisition charge is the 25 ‰ *Höchstzillmersatz* spread over sixty monthly instalments, and the cliff at month 61 where the *Anlagebeitrag* steps from 162,00 € to 192,00 € is why this model is monthly — an annual grid cannot place month 60. Two mortality bases sit in one contract and **no cells reads both files**: DAV 2008 T behind the *Risikobeitrag* on the *Beitragsrückgewähr* amount at risk, DAV 2004 R behind the guaranteed *Rentenfaktor* |
+| [Indexpolice](products/indexpolice/index.md) | `Index_DE_A` | annual | A conventional profit-participating contract with the capital in the *Sicherungsvermögen* and **no unit account, unit price or fund value anywhere**: the index participation is a form of *Überschussverwendung* under § 153 VVG with no independent statutory footing, and the declared *Überschussanteilsatz* **is** the option budget — spent on the option package or credited as interest, and allocated exactly once, which is what `check_surplus_alloc()` says. The payoff is a sum of monthly returns each capped and none floored, floored once at the year: the shipped path reproduces the *Indexjahr* in which the index rose 6,4402 % and the credit was nothing, and four plausible-looking misreadings — flooring each month, compounding the capped returns, flooring the compounded raw return, applying the *Partizipationsquote* to it — each print a different wrong number. The *Höchststandsicherung* ratchets the **ledger of credits**, not the balance, which falls in a year that credits nothing wherever the reserve charge sits at or above the guaranteed rate |
+
+**Geförderte Altersvorsorge (Schicht 1 und Schicht 2)**
+
+| Product | Model | Grid | Representative design |
+|---|---|---|---|
+| [Basisrente](products/basisrente/index.md) | `Basis_DE_A` | annual | Schicht 1 is a list of prohibitions — *nicht vererblich*, *nicht übertragbar*, *nicht beleihbar*, *nicht veräußerbar*, *nicht kapitalisierbar* — and the model is one too: no `cv_pp`, no `claims_lapse`, no *Kapitalwahlrecht*, no surrender decrement at any duration, and § 169 VVG with its *Stornoabzug* simply inoperative. The absences **are** the product, so the test module asserts the name list, a missing cells having no formula to check. The only behavioural exit is § 165 VVG, which removes the *premium* and not the *policy*, so two ledgers run side by side carrying different account values and `pols_if` decrements on mortality alone: by `t = 23` the in-force count has fallen only to 0,932780 while the premium-paying count is 0,512516, and the difference is a cohort still in force, still credited and still converting. Everything paid to a survivor must be paid as an annuity, so the death benefit is the reserve leaving as the single premium of an immediate annuity this model does not project, and the cover is priced through a reduction in the *Rentenfaktor* rather than by scaling the benefit |
+| [Riester-Rente](products/riester_rente/index.md) | `Riester_DE_A` | annual | The *Zulage* is a **contribution, not a rebate**: the ZfA pays it to the provider, it is credited, counted in the guarantee, invested and taxed at the end like any other *Beitrag*, and on one shipped cell the state pays 76 % of the whole contribution — so it is a published positive income column beside `premiums` and is never folded into it. **Two different lags apply and one offset used twice reproduces neither**: § 86 strikes the *Mindesteigenbeitrag* on the previous *calendar* year's earnings while the cash arrives one *projection* year late, which is why the anchor's Zulage falls between `t = 3` and `t = 4` while its premium rises — a Zulage that stops is a contribution the saver must make good. The statutory 100 % *Beitragserhaltungszusage* accumulates contributions **without interest** and is tested exactly once, at *Rentenbeginn*: on the `low` declared-rate cell the account reaches 20 481,72 € against a 21 000,00 € guarantee, and that 518,28 € *Garantielücke*, funded from the insurer's own resources, is the product's signature output — a Riester model on which it is never positive has demonstrated nothing |
+
+**Biometrie und Rentenbezug**
+
+| Product | Model | Grid | Representative design |
+|---|---|---|---|
+| [Sofortrente](products/sofortrente/index.md) | `Sofort_DE_S` | monthly | The payout chassis, and the one model in the library with **no behaviour at all**: § 168 Abs. 3 VVG displaces the right of termination once the *Rentenbezug* has begun, so there is no `lapse_rate`, no *Rückkaufswert*, no *Stornoabzug* and no paid-up state at any duration, and the answer rests more purely on the mortality basis than anywhere else in delib. The *Rentengarantiezeit* is a `max` and not a sum, and both errors it closes off are large and opposite: decrementing the guaranteed instalments for survival pays 7,13 % too little, adding the certain floor pays 92,87 % too much, because `γ + l_a` pays `1 + l_a` for the whole window. The *Kapitalrückgewähr* makes the pricing equation implicit in the annuity and is **solved**, not evaluated — striking the plain annuity and subtracting a refund cost gives 318,7362 € against the correct 298,8348 €, which is not a rounding. The surface is generational and read at (attained age, birth cohort), never at (age, projection year): a period proxy overstates the annuity a given *Einmalbeitrag* buys by 5,1 % |
+| [Risikolebensversicherung](products/risikolebensversicherung/index.md) | `RLV_DE_A` | annual | The protection chassis, and where the *Bruttobeitrag* / *Zahlbeitrag* pair is **derived rather than assumed**: the guaranteed gross premium is struck once by first-order equivalence on tariff survivorship, and the billed premium follows from the surplus mechanic — the MindZV's 90 % minimum allocation of the *Risikoergebnis*, times the tariff's own mortality margin — reaching a ratio of 0,574725 out of the arithmetic. Setting `decl_scale` to zero raises the bill by 74,0 % with no change to any benefit, decrement or guaranteed term, and so with no § 163 procedure, no *Treuhänder* and no remedy: the largest policyholder risk in the product, and a one-Reference change. There is no cash value at any duration — § 169 Abs. 1 VVG reaches only a contract whose insured event is certain to occur — and yet a *Deckungskapital* builds to 7 553,29 € at duration 16 and runs off to exactly zero, so "no *Sparanteil*, therefore no reserve" fails the Thiele check. The § 161 three-year suicide window is a benefit switch on death claims only, applied tranche by tranche, so each *Nachversicherungsgarantie* increment carries its own clock |
+| [Berufsunfähigkeitsversicherung](products/berufsunfaehigkeit/index.md) | `BU_DE_S` | monthly | A multi-state model with a **return arc**, not a decrement model: *aktiv*, *leistungspflichtig*, and a three-month run-off ledger that is § 174 VVG in arithmetic — where the insurer establishes that its liability has ceased it must still pay to the end of the third month after the notice reaches the policyholder, so a recovery does not stop the annuity in the month it happens, and the tail is 1,6 % of all benefit on the anchor cell. Death and lapse are the only exits; inception, recovery and reactivation are **internal transfers**, and putting them into the in-force recursion is how a multi-state model loses mass invisibly. The *Beitragsbefreiung* is not a benefit but the absence of a premium, and it falls out only if the premium is weighted by `pols_prem` rather than `pols_if` — the classic German BU implementation error, which leaves every total looking plausible, and the reason `check_net_cf()` rebuilds the premium leg from the *Zahlbeitrag* actually billed. Two escalations run on two clocks: the *Beitragsdynamik* on the policy anniversary, the *Leistungsdynamik* on the anniversary of each onset |
+| [Pflegerentenversicherung](products/pflegerentenversicherung/index.md) | `Pflege_DE_S` | monthly | Nine states and only two absorbing: five *Pflegegrade* with deterioration and *Herabstufung* between them, a *Karenz* ledger per onset, and the trigger being the statutory *Pflegegrad* of §§ 14, 15 SGB XI rather than a definition the insurer writes. Every grade transition is internal to `pols_if`, and the monthly step holds the forces constant so the competing exits share one survival probability in proportion to them — `p_stay + Σ p_j = 1` exactly, which is what makes the state identity an identity rather than an approximation. Grade and mortality are correlated and the loading is stated on the **force** of active mortality, 1,5 at *Pflegegrad* 1 rising to 9,0 at grade 5, so the highest-paying state is the shortest-lived and pricing this annuity on DAV 2004 R would be prudent in exactly the wrong direction; the benefit is a grade-by-grade sum, and applying the entry-mix mean to the aggregate care population understates the whole benefit by 30 %. The *Wartezeit* runs from inception and gates the incidence force, the *Karenzzeit* runs from onset and needs its own ledger dimension — routinely conflated, and implemented in two different places |
 
 (delib-one-shape)=
 
@@ -186,11 +209,189 @@ pointer next to the number.
 
 ### What is German about these models
 
-<!-- GERMANY SPECIFIC -->
+Five things recur across the set and are worth knowing before reading any one of them.
+
+**Every biometric basis shipped here is a [std] proxy.** German insurers price and reserve on
+the tables of the **Deutsche Aktuarvereinigung** — DAV 2008 T for death cover, DAV 2004 R and
+its *Bestand* variants for annuities, DAV 1997 I / RI / TI for *Berufsunfähigkeit*, DAV 2008 P
+for *Pflege* — and those tables are the DAV's property, are not published openly, and are
+**cited by name throughout this library and never redistributed** [REG-R47] [REG-R48]
+[REG-R49] [REG-R50] [REG-R51]. What ships beside each model is a construction, anchored so
+that the model's own worked example reproduces exactly, with the anchor named in the `Data`
+docstring: `mort_rate_1st(M, 37) = 0.001200` on `KLV_DE_A`, `q_base(M, 50) = 0.002000` on
+`RV_DE_A`, `q(37) = 0.00080` on `FRV_DE_S`, `qx(67) = 0.014000` on `Basis_DE_A`,
+`ann_factor() = 20.87222879` on `Riester_DE_A`, `inc_rate(30) = 0.001100` on `BU_DE_S`. Each
+`model.md` also states what a replacement must **preserve** rather than what it must equal —
+that DAV 2004 R's surface is *generational*, so it is read at attained age and birth cohort
+and a period proxy overstates `Sofort_DE_S`'s annuity by 5,1 %; that disabled-lives mortality
+must exceed active-lives mortality state by state and never be one rate for both; that a
+*Pflegetafel* must carry incidence by grade of entry, deterioration dominating recovery above
+75, and transition probabilities that sum with the stay probability to one. **This is the
+single largest gap between these models and a production one**, and it is why every
+`model.md` opens by saying the model is a mechanics demonstration rather than a pricing or
+reserving result.
+
+**The declared rate contains the guarantee, and the surplus it credits is a constrained
+allocation rather than an assumption.** The German *laufende Verzinsung* **is** the
+*Garantieverzinsung* plus the *laufende Zinsüberschussbeteiligung* [REG-R53], so the interest
+surplus is a subtraction — `max(0, decl_rate(t) − rechnungszins())` — and never a rate paid on
+top of a rate. A model that credits 1,00 % and then a further 2,55 % puts 56,82 € into
+`RV_DE_A`'s first year instead of 40,82 € and reaches 63 768,69 € at *Rentenbeginn* against the
+correct 58 788,98 €, with the whole error sitting in one of the two accounts. The rate itself
+is an **output of a constrained allocation**: § 153 VVG makes participation an entitlement and
+the MindZV puts an arithmetic floor under it — at least 90 % of the investment result, 90 % of
+the *Risikoergebnis* and 50 % of the *übriges Ergebnis* [REG-R18] [REG-R24] — with § 139 VAG's
+*Sicherungsbedarf* test cutting back the *Bewertungsreserven* share [REG-R9]. `KLV_DE_A`
+carries the machinery and `RV_DE_A`, `Index_DE_A`, `Basis_DE_A` and `Riester_DE_A` consume a
+declared rate from it, `Index_DE_A` spending it as an option budget instead of crediting it.
+The guarantee inside that rate is a **cohort fact fixed at conclusion**: an existing contract
+keeps the *Höchstrechnungszins* in force when it was written [REG-R14] [REG-R15], the rate
+stepped from **0,25 % to 1,00 % on 1 January 2025** — the first increase since 1994 — and a
+German book is therefore a layered stack of vintages rather than one rate. Four models carry
+the vintage on the model point (`RV_DE_A` runs 1,00 %, 2,75 % and 0,90 % cells in one run;
+`Basis_DE_A` runs four vintages; `Index_DE_A` reaches back to 0,25 %; `KLV_DE_A` ships both
+DeckRV ceilings in a cohort-keyed table and asserts them), and `Sofort_DE_S` prices each
+*Einmalbeitrag* against the cap of its own vintage as an **inequality**, because a carrier may
+price below it and one in the corpus is observed doing so.
+
+**The *Bruttobeitrag* and the *Zahlbeitrag* are two different numbers, and only the first is
+guaranteed.** This is the German protection signature and it has no counterpart in the sister
+libraries: the contract guarantees a gross premium as the maximum the policyholder can ever be
+required to pay, and bills a lower net one obtained by crediting anticipated surplus in advance
+[REG-R24] [REG-R27]. `RLV_DE_A` **derives** the split from the mechanic rather than assuming it
+— the *Sicherheitszuschlag*'s actuarial value at issue, times the MindZV's 90 % minimum
+allocation, times the risk share of the gross premium, giving 0,574725 — and publishes
+`prem_gross`, `premiums` and `prem_rebate` as three separate columns so the gap is visible in
+the frame. `BU_DE_S` publishes the same pair as `premiums` and `surplus_credit`, holding the
+ratio at 0,70 and calling that its largest discretionary assumption. The consequence is a real
+policyholder exposure and both models make it a one-parameter stress: withdrawing the credit
+entirely raises `RLV_DE_A`'s bill by 74,0 % and `BU_DE_S`'s by 42,86 %, with **no change to any
+benefit, decrement or guaranteed term**, and therefore no § 163 VVG procedure, no *Treuhänder*
+and no remedy. A model carrying one premium column cannot represent the product, and a model
+carrying only the billed one has silently assumed the credit is permanent.
+
+**The tax layer is model structure, not a parameter.** Which of the *Drei Schichten* a contract
+sits in decides what the model may contain, and delib implements the constraints as absences
+and mechanics rather than as flags. In **Schicht 1** the five prohibitions of § 10 Abs. 1
+Nr. 2 Buchst. b EStG [REG-R39] mean `Basis_DE_A` has no surrender value at any duration, no
+lapse decrement, no `cv_pp`, no *Kapitalwahlrecht* and no lump sum to anyone at any date, and
+that everything paid to a survivor is paid as an **annuity** — so a death benefit there is the
+released reserve leaving as the single premium of a new contract rather than a payment to a
+beneficiary. In **Schicht 2** the AltZertG's 100 % *Beitragserhaltungszusage* is a nominal
+accumulator tested once at *Rentenbeginn* [REG-R43], the *Zulage* is a real cash flow paid by
+the ZfA to the provider on a statutory lag [REG-R42], the acquisition charge must be spread over
+at least five years — tighter than anything the VVG imposes on a Schicht-3 contract — and the
+30 % *Teilkapitalauszahlung* cap and the *Kleinbetragsrenten-Abfindung* are computed rather
+than assumed. **Schicht 3** imposes none of that and instead leaves a behavioural fingerprint:
+the twelve-year and age-62 conditions of § 20 Abs. 1 Nr. 6 EStG [REG-R45] put a step in four
+models' surrender tables at the duration the threshold is crossed, and `FRV_DE_S` keys it on
+age as well as duration because keying it on duration alone fires fourteen years early on its
+anchor cell.
+
+**Scope limits are stated rather than faked.** Where a mechanic could not be established, or a
+deterministic run cannot reach it, the models say so instead of shipping a number. `Index_DE_A`
+carries **no** optimal-election rule, inertia model or within-year switching for the annual
+*Wahlrecht*, because none is established for the product family and a switching rule would put
+an unevidenced behavioural assumption at the centre of the result; its base run at `w = 1` is
+declared a modelling choice made so the model demonstrates the index arm, with model point 11
+shipped as the `RV_DE_A` comparison. `FRV_DE_S` implements none of the hybrid and guarantee
+designs — *statisches* and *dynamisches Hybrid*, *Zwei-* and *Drei-Topf-Hybride*, i-CPPI,
+*Wertsicherungsfonds* — because each is a reallocation rule along a path and a deterministic
+projection has one smooth path, so the rule either never triggers or triggers on a hand-chosen
+shock; what would have to be added is named instead. `BU_DE_S` ships the *AU-Klausel* switch
+**on** at an uplift of exactly 1,00 on one model point, because no source quantifies what six
+months of certified *Arbeitsunfähigkeit* adds to incidence and an inert switch is honest where
+an invented loading is not. `RV_DE_A` records a payout-phase administration charge and never
+applies it, the *Rentenfaktor* being exogenous and already carrying the tariff's payout
+loading. And where a simplification runs one way, the direction is stated: `FRV_DE_S`'s omitted
+surplus credit biases the projected *Fondsguthaben* **downward**, its unimplemented paid-up
+cohort biases charge income **upward**, `Sofort_DE_S`'s independent joint lives **overstate**
+the joint-life annuity, and `Pflege_DE_S`'s aggregate in-care mortality **understates** what a
+*Karenzzeit* removes.
 
 ### Chassis relationships
 
-<!-- CHASSIS -->
+Products that share machinery point at the file where it is specified rather than silently
+restating it, and each pointer states what it inherits and where it deviates:
+
+- **`KLV_DE_A` is the *Überschussbeteiligung* chassis.** The
+  [Kapitallebensversicherung technical notes](products/kapitallebensversicherung/technical-notes.md)
+  are the primary home of the declared-rate arithmetic, the four-component German surplus split,
+  the three *Überschussverwendung* systems, the *Zillmerung* and the § 169 Abs. 3 VVG floor.
+  `RV_DE_A` is the same *Deckungskapital* and surplus machinery with a conversion where the
+  endowment has a maturity, and carries the split by pointer rather than by restatement — only
+  the *Zinsüberschuss* was established for the annuity, and inventing the other three would be
+  inventing three rates. `Basis_DE_A` and `Riester_DE_A` add a tax wrapper and, in the second
+  case, a state *Zulage* to the same accumulation; `Index_DE_A` keeps the chassis and **spends**
+  the declared surplus on an index participation instead of crediting it, so model point 11,
+  electing the *sichere Verzinsung* arm at `w = 0`, is an `RV_DE_A` comparison run inside the
+  index model. **`FRV_DE_S` deliberately does not sit on it**: a unit-linked *Rückkaufswert* is
+  a *Zeitwert* of fund units and not a *Deckungskapital*, and the contract has no
+  *Rechnungszins* to declare a rate above.
+- **`RV_DE_A` is the accumulation-and-conversion chassis the two subsidised layers inherit.**
+  `Basis_DE_A` states its deltas against it — the same deferred annuity with the Schicht-1
+  prohibitions imposed on top — and `Riester_DE_A` points at it for the
+  `dk_pp` / `surplus_acct_pp` recursion and for § 169 VVG, adding the Schicht-2 apparatus the
+  classic contract has none of. Read in the other direction, `Basis_DE_A` and `Riester_DE_A`
+  are the useful contrast with each other: a statutory *Beitragsgarantie*, a permitted 30 %
+  *Teilkapitalauszahlung* and a *Kleinbetragsrenten* commutation on one, and none of the three
+  on the other.
+- **`RLV_DE_A` is the protection chassis**, and it reaches less far inside delib than a reader
+  might expect, which is worth saying rather than leaving to be discovered. It shares the
+  *Überschussbeteiligung* machinery with `KLV_DE_A` in a different *Überschussverwendung* form —
+  surplus netted against the premium rather than credited to a reserve — and it is the file the
+  *Bruttobeitrag* / *Zahlbeitrag* split is derived in. It does **not** extend to the two
+  biometric models: `BU_DE_S` and `Pflege_DE_S` are monthly multi-state projections and share no
+  recursion with it at all.
+- **`BU_DE_S` and `Pflege_DE_S` share the monthly cohort-vector multi-state chassis**, and share
+  it with frlib's [assurance dépendance](../frlib/products/dependance/index.md). `dis_cohorts`
+  and `dep_cohorts`, `pols_dis_dur(t, z)` against `pols_pg(t, g)` against `pols_part` /
+  `pols_tot`, and `cohort_len`, `pols_prem`, `pols_recovery`, `check_states` and
+  `check_pols_roll_fwd` mean the same thing on all three. Each `model.md` tabulates where they
+  part: the **ledger dimension** differs — a claim-duration cohort in BU, a *Pflegegrad* in the
+  LTC annuity, a two-level French severity in `Dep_FR_S` — and only the German LTC model's is a
+  benefit *schedule*. `BU_DE_S`'s `pols_runoff_slot` is the counterpart of `Dep_FR_S`'s
+  `pols_red`: a small holding ledger a naive implementation omits, and a first-order error in
+  both.
+- **`FRV_DE_S` shares the unit-linked chassis with frlib's
+  [unités de compte](../frlib/products/assurance_vie_uc/index.md) contract**, `UC_FR_S`, and the
+  shared names mean the same thing on both: `av_pp` / `av_pp_at` for the fund at its named
+  within-month timings, the unit count and its two movements, and the net amount at risk floored
+  at zero — `nar_pp` here against the *garantie plancher* there — as the only part of a death
+  benefit the insurer funds. Its `model.md` tabulates the correspondence in both directions,
+  including the three German terms of art that keep their German form in the cells names because
+  each names a quantity with a statutory definition: `beitragssumme()`, `stornoabzug()` and the
+  three `rentenfaktor_*()`.
+- **Across markets — the payout core.** `Sofort_DE_S` shares the payout-annuity core with
+  [uslib's SPIA](../uslib/products/immediate_annuity/index.md),
+  [uklib's pension annuity](../uklib/products/pension_annuity/index.md) and
+  [frlib's rente viagère](../frlib/products/rente_viagere/index.md): `duration_mth`,
+  `horizon_mths`, `is_payment_mth`, `certain_floor`, `payment_factor`, `lives_if`,
+  `lives_death`, `annuity_pp`, `annuity_payments`, `check_lives_roll_fwd` and
+  `check_payment_factor` mean the same thing on all four, and `result_pols()` is the same second
+  frame. Two names the other three carry are **absent** here and the absence is argued rather
+  than accidental: `payment_surv_mth` and `payment_factor_life` separate the survival index of a
+  payment from the month it falls in, and in this model the payment instant is the start of
+  month `t` under both timings, so the two indices coincide and a second cells would only
+  restate `lives_if`. Inside delib, `Sofort_DE_S` is `RV_DE_A`'s payout phase as a product in
+  its own right — which is why an immediate-annuity document is direct evidence for a deferred
+  contract's conversion basis — it is the survivor's single premium `Basis_DE_A` books and does
+  not project, and it is the contract `Riester_DE_A`'s second phase compresses onto an annual
+  grid.
+- **Across markets — the rest.** `KLV_DE_A` copies lifelib's `annuallife/TradLife_A`
+  external-input layout, which the whole library then follows, and its nearest conceptual
+  relative is frlib's [fonds en euros](../frlib/products/assurance_vie_euro/index.md), the same
+  idea under a different statute — with the difference that a French *fonds euros* credits a
+  rate to an account **balance** while a German endowment credits it to a **reserve**.
+  `RLV_DE_A` and frlib's [temporaire décès](../frlib/products/temporaire_deces/index.md) are the
+  same product in two markets, and three differences are named so a reader does not carry one
+  across: the French *cotisation* is revisable at attained age and the German *Bruttobeitrag* is
+  level; the French product accelerates the death capital on PTIA and the German one has no
+  living benefit at all; and `expenses` includes commission there and excludes it here.
+  `Index_DE_A`'s nearest relatives are uslib's `FIA_US_S` and `RILA_US_S`, which share the
+  cap and participation-rate vocabulary and the annual reset but **not** the German financing
+  identity: an FIA's index budget is the insurer's option budget on a fixed-annuity chassis,
+  while here it is the declared *Überschuss* and is bounded below by the MindZV.
 
 ## How to use the library
 
@@ -313,11 +514,190 @@ premium levels, because German pricing is quote-driven and no public rate card e
 
 ## Regulatory and actuarial reference library
 
-<!-- REFERENCE LIBRARY PARAGRAPH -->
+The [reference library](references/regulatory-and-actuarial-references.md) is the curated
+cross-product bibliography — frozen numbering **R1–R56**, cited as `[REG-R#]` — with a
+product-relevance matrix. It spans the prudential frame in two layers, the European one
+(Solvabilität II, the *Delegierte Verordnung* (EU) 2015/35, the 2025 review directive and the
+EIOPA risk-free term structures) and the *Versicherungsaufsichtsgesetz* it reaches German life
+business through (VAG 2016 and its Anlage 1, the §§ 74–110 balance sheet and SCR/MCR, the
+§§ 124–125 *Anlagegrundsätze* with the *Sicherungsvermögen* and the *Anlagestock*, § 138 on
+*Prämienkalkulation*, § 139 on the *Überschussbeteiligung* and the *Sicherungsbedarf* test,
+the RfB provisions of §§ 140 and 145, the *Verantwortlicher Aktuar* and the 1994 deregulation,
+Protektor and the supervisor's crisis powers, and the Solvency II transitionals); the reserving
+regulation and its rates (DeckRV § 2 and the *Höchstrechnungszins*, the rate history and the
+*Sechste Verordnung* of 19 July 2024, § 4's *Höchstzillmersätze*, and § 5 Abs. 3's *Referenzzins*,
+*Zinszusatzreserve* and *Korridormethode*); the surplus regulations (the MindZV's 90/90/50
+minima, the RfBV, the LVRG 2014, and BaFin's MaGo and *Auslegungsentscheidungen*); the contract
+law of the VVG (the statute and § 171's *halbzwingende Vorschriften*, the two *Widerrufsrechte*,
+§ 153 and the *hälftige Beteiligung an den Bewertungsreserven*, the *Modellrechnung* and
+*Standmitteilung*, the *Selbsttötung* and beneficiary sections, § 163's *Prämien- und
+Leistungsänderung*, §§ 165–170 on the paid-up right, the *Rückkaufswert* and the *Stornoabzug*,
+and Kapitel 6's §§ 172–177 on *Berufsunfähigkeit*); conduct and disclosure (the VVG-InfoV and
+*Effektivkosten*, PRIIPs, the IDD, *Test-Achats* with the AGG, and the 2023 *Wohlverhaltensaufsicht*
+Merkblatt); the BGH line of authority and the GDV *Musterbedingungen*; the tax architecture of
+the *Drei-Schichten-Modell* (the AltEinkG, the Basisrente deduction and its five prohibitions,
+the ZPO *Pfändungsschutz* that shapes them, the *Ertragsanteil* and *Besteuerungsanteil*, the
+Riester machinery of § 10a and §§ 79–99, the AltZertG with the BZSt and the
+Produktinformationsstelle, the 2026 reform and the *Altersvorsorgedepot*, the 12/62 rule and the
+*Mindesttodesfallschutz*, and the ErbStG with the SGB V contributions on an annuity in payment);
+the biometric bases and market statistics (*Rechnungsgrundlagen erster und zweiter Ordnung* and
+the DAV as owner of the tables, DAV 2008 T, DAV 2004 R and DAV 2004 R-Bestand, the DAV 1997
+*Berufsunfähigkeit* family, DAV 2008 P with the § 15 SGB XI *Pflegegrad* break, Destatis, and
+the market-in-numbers entry); and the accounting and professional standards (HGB §§ 341–341o
+with the RechVersV and BerVersV, IFRS 17 and the Variable Fee Approach, and the DAV
+*Fachgrundsätze* with the annual *Höchstrechnungszins* recommendation).
+
+The product-relevance matrix runs the fifty-six entries against the ten products in three
+states — load-bearing, qualified or background, and not relevant — so a reader can see at a
+glance that R51 (DAV 2008 P and the *Pflegegrad* break) is load-bearing for one product and
+background for two, while R34 (unisex) and R47 (the first- and second-order bases) are
+load-bearing for all ten. One instrument is deliberately **absent** from the matrix and carries
+no id: BaFin's *Kapitalanlagerundschreiben* and the *Anlageverordnung* it interprets bind small
+insurers under §§ 212–217 VAG and domestic *Pensionskassen* and *Pensionsfonds*, not the
+Solvency II life insurers that write these ten products, which are governed by the qualitative
+§ 124 VAG prudent person principle — German market writing routinely cites AnlV quotas as
+though they bound everyone, and the circular is discussed inside R7 so that no delib author
+misapplies one. Read the page's own retrieval-conditions section first: it is stated in full at
+the head, before the first entry, and **every one of the fifty-six entries records `Fetched:
+no`**.
 
 ## Known gaps and caveats
 
-<!-- GAPS -->
+Aggregated from the per-product research; each product's documents carry the full list, and
+each `_research/<slug>.md` closes with its own numbered register.
+
+- **No document cited anywhere in this library was retrieved, and the search budget ran out
+  partway through.** Direct HTTP egress is blocked by an organisation network policy:
+  `gesetze-im-internet.de`, `bafin.de`, `aktuar.de`, `gdv.de`, `bundesfinanzministerium.de`,
+  `destatis.de`, `dejure.org`, `eur-lex.europa.eu` and `de.wikipedia.org` were each tried and
+  each refused with HTTP 403 at the gateway. Not one statutory text, BaFin circular, DAV table,
+  BGH judgment or statistical release was opened. The only research channel was `WebSearch`,
+  whose 200-call budget was spent on a prudential sweep of roughly 35 German-language queries
+  and a contract-law and conduct sweep of roughly 45; **the tax sweep and the biometric sweep
+  each ran zero successful searches**, and **eight of the ten product research files record that
+  no search was available to them at all** — only `kapitallebensversicherung` and
+  `klassische_rentenversicherung` carry search summaries, the second on eighteen queries against
+  the thirty to eighty its brief anticipated. So a delib citation is a **pointer, not a
+  certificate**: it names the instrument a claim should be checked against and does not assert
+  that anyone read it. Re-verify before relying on any of it.
+- **The DAV tables are proprietary, so every biometric basis here is a [std] proxy.** DAV 2008 T,
+  DAV 2004 R and DAV 2004 R-Bestand, DAV 1997 I / RI / TI and DAV 2008 P are the property of the
+  Deutsche Aktuarvereinigung, are not public, and are cited by name and never redistributed
+  [REG-R47] [REG-R48] [REG-R49] [REG-R50] [REG-R51]. Each shipped table is anchored so the
+  model's worked example reproduces exactly and each `Data` docstring says what a replacement
+  must preserve, which is the honest form of the claim — but no delib decrement rate is a market
+  observation. Two further problems are specific rather than general: **no public German BU or
+  *Pflege* decrement table exists in any form**, so `BU_DE_S`'s inception, reactivation and
+  disabled-mortality bases and `Pflege_DE_S`'s whole transition matrix are constructions whose
+  *shapes* are argued and whose *levels* are invented; and **DAV 2008 P was built on the
+  superseded *Pflegestufen***, which the 2017 *Pflegegrad* reform replaced in a way that widened
+  the insured population — the largest basis risk in that product, and one a licensed copy of the
+  table would not by itself remove. Whether a successor to DAV 1997 I exists could not be
+  established, and the DAV table *names* used in the BU file are themselves marked [unverified].
+- **There is no public German rate card, and no price point of any kind, for any of the ten
+  products.** frlib had one published attained-age grid that `TD_FR_A` reproduces exactly; delib
+  has none. Every premium in this library is computed by the model's own equivalence principle on
+  [std] bases and **no delib premium reproduces a published figure**. The single highest-value
+  missing datum is named in the term-life register: one published *Bruttobeitrag* / *Zahlbeitrag*
+  pair at a known age, sum insured and term would pin the *Sicherheitszuschlag* directly and
+  re-derive the rest of the scale. The document class that would supply it — a
+  *Produktinformationsblatt* — was not located for any product, in specimen or model form, and
+  the one PRIIP *Basisinformationsblatt* anywhere in the corpus is for an endowment and its
+  figures were not established.
+- **Charge levels are [std] throughout, and on one product they are structurally undisclosed
+  rather than merely unretrieved.** Not one *Effektivkosten* value, *Abschlusskostenquote*,
+  *Verwaltungskostenquote* or commission rate was established for any carrier on any product; the
+  only commission figure in the whole corpus is one carrier's 25 ‰, and BaFin's statement that
+  *Effektivkosten* "differ considerably" and that it will examine outliers is qualitative. On
+  term life the levels would have been missing even with full egress: there is no
+  *Effektivkostenquote* because there is no yield, no *Basisinformationsblatt* because the product
+  is not a PRIIP, and the *Produktinformationsblatt* quotes premiums rather than loadings. Every
+  model therefore sits its acquisition charge **exactly at** the § 4 DeckRV *Höchstzillmersatz* of
+  25 ‰ of the *Beitragssumme* [REG-R16], which demonstrates the binding constraint instead of
+  inventing an interior point — and which may well be wrong for a slim direct-channel tariff, as
+  the term-life register says in terms.
+- **No *Rentenfaktor* level, range or time series exists anywhere in the corpus** — for any
+  product, at any carrier, in any year. The rating house's own article titled with the question
+  returned no level, and the *Rentenfaktor-Check* titled as data and analysis returned none. So
+  every factor in the library is a construction with its derivation printed beside it: 32,00 € at
+  age 67 on `RV_DE_A`, 25,00 € on `FRV_DE_S` derived as `10 000 / (12 · T_eff)` at a 0 %
+  *Rechnungszins* rather than observed, 31,50 € on `Basis_DE_A`, 29,00 € guaranteed on
+  `Riester_DE_A`, 25,00 € on `Index_DE_A`. Each is anchored so that **both** branches of
+  `max(garantierter, aktueller)` are exercised by a shipped model point, which is the point of
+  choosing them, and none may be quoted as a market rate. `Index_DE_A` and `RV_DE_A` additionally
+  record that their [std] *Rentenfaktor* and their [std] annuity table are **not calibrated to
+  each other**, which is why the annuity there is reported and not computed.
+- **No behavioural rate is sourced, on any product.** No German *Stornoquote* was established for
+  any of the ten at any duration; the two GDV market-wide measures for 2024 — 2,72 % and 1,2 % —
+  are irreconcilable from the search evidence, neither is product-specific or by duration, and
+  `RLV_DE_A` deliberately declines to use either. Every lapse table ships with its **shape**
+  argued from structure and its **levels** invented: the § 20 Abs. 1 Nr. 6 EStG twelve-year
+  threshold puts a visible step at duration 12 on four models, `FRV_DE_S` keys the same step on
+  age as well as duration because keying it on duration alone fires fourteen years early, and
+  `BU_DE_S`'s unusually low level is a product fact rather than optimism, cover being
+  unreplaceable once health has changed. Nor is any take-up rate established: no
+  *Beitragsfreistellung* rate, no *Zuzahlung* utilisation, no *Kapitalwahlrecht* or
+  *Teilkapitalauszahlung* take-up, no *Nachversicherungsgarantie* exercise pattern, and no
+  election distribution for `Index_DE_A`'s annual *Wahlrecht* in either direction. Where a rate
+  was needed the mechanic is carried as a **deterministic model-point election** instead, and each
+  model says so.
+- **Two products rest on no carrier document at all.** For the *Indexpolice*, no
+  *Bedingungswerk* for any index tariff was obtained — the file's own central defect — so the
+  *Indexjahr* definition, the observation dates, the payoff wording, the base of the
+  participation, the *Wahlrecht* timing and any *Mindest-Cap* are all written from knowledge of
+  the design family; **no cap level for any insurer in any year was established**, and **no
+  documented worked *Indexjahr* was found**, so the two the model reproduces are constructed,
+  labelled [std] in every cell and wired into the shipped return path precisely so the mechanic
+  is asserted rather than described. For the *Pflegerentenversicherung*, no PIB, IPID or BIB, no
+  premium, no charge level, no lapse rate, no rating-agency wording analysis and no count of
+  contracts in force was obtained — the GDV life series does not carve the product out and the
+  PKV series excludes it by construction, it being life business.
+- **Every statutory paragraph number in this library is unverified.** `gesetze-im-internet.de`
+  was refused at the gateway, so **no *Fassung* line was ever seen**: every statutory statement
+  here is current in substance as reported in August 2026 and none is version-pinned. The
+  specifically open items are named rather than smoothed over — whether § 169 Abs. 1 VVG's
+  certain-event limitation is the route by which a term assurance has no surrender value; the
+  internal paragraph structure of § 169 for the *Zeitwert* branch, so that no delib document
+  cites a subsection for it; § 168 Abs. 3 VVG's ending of the termination right at *Rentenbeginn*,
+  on which the whole `Sofort_DE_S` specification rests; the MindZV section numbers, where the
+  three percentages are used and **no section number is cited anywhere**; the exact range of
+  sections § 176 VVG imports, on which the BU surrender value, paid-up right and
+  *Überschussbeteiligung* all depend; and whether a pure-risk *Pflegerente* falls inside § 169 at
+  all. Four VVG provisions the endowment depends on — §§ 37, 38, 150 and 152 — were never
+  searched at all, and nothing is asserted about any of them anywhere in the library.
+- **Two source errors are recorded rather than quietly applied, and one document is excluded.**
+  A search summary in the corpus conflates § 169 Abs. 3 VVG's five-year spreading of acquisition
+  cost with the DeckRV's 2,5 % *Höchstzillmersatz*: they are different rules with different
+  functions — a floor on the **value** against a cap on the **charge** — and `KLV_DE_A` asserts
+  them in two separate checks for that reason. The `sofortrente` research file puts the
+  *nachschüssig* effect at about 5 %; it is **0,34 %** on a monthly annuity, the 5 % being an
+  annual-annuity identity applied to a monthly one — the research file is frozen and never
+  amended, so the correction lives in that product's technical notes. And an Austrian ERGO AVB
+  returned by a German AVB search is excluded and recorded: the VVG, the DeckRV and the MindZV
+  do not apply to it, and the same caution applies to any `.at` or `.ch` document a later search
+  returns.
+- **Market figures are qualitative throughout, and one legal position could not be determined.**
+  No endowment-specific new-business or in-force series and no time series showing the effect of
+  the 2005 tax change; no size for the index-participation segment, which GDV counts inside
+  conventional annuity business and for which probably no separate figure exists; no Riester
+  contract count, chassis split or new-business series, and **no official statistic for
+  *ruhende Verträge* at all**; no *Sofortrente* volume, average *Einmalbeitrag* or purchase-age
+  distribution; no LTC-annuity contract count. Nineteen of the twenty-six carriers named in the
+  endowment brief produced no document of any kind, and the variations tables across the library
+  are records of absence rather than of variation. The status of the *private Altersvorsorge*
+  reform as at the access date could not be established beyond a 2024 draft creating an
+  *Altersvorsorgedepot* that did not become law in that parliamentary term, so nothing in this
+  library asserts the current legal position on it.
+- **[unverified] items remain wherever a claim could not be corroborated by any search result**,
+  and under these retrieval conditions the tag does more work than it does in the sister
+  libraries. It sits on the intermediate *Höchstrechnungszins* history between 1994 and 2025 and
+  on every effective date in it; on the DeckRV amendment's *Bundesgesetzblatt* year, inferred
+  from the surrounding chronology and carrying no BGBl citation, none having been returned and
+  none being invented; on every *Ertragsanteil* value but the 18 % at age 65; on the § 851c ZPO
+  protected amounts, which the Basisrente file states the **shape** of and prints not one level
+  of; on the Landgericht Köln *Rentenfaktor* decision, which is reported with no case number,
+  date, parties or appeal history, so no delib document gives it a docket; and on the 2025
+  statutory *Pflege* benefit amounts, whose 2026 position is unknown.
 
 ```{toctree}
 :hidden:
