@@ -236,7 +236,7 @@ in the documents that cite it, and all statutory content is described in this au
 
 ### R8 — *Mindestzuführungsverordnung* (MindZV)
 - Publisher / doc type: Gesetze im Internet; federal regulation
-- URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html` — the form recorded as **returned by a search** in `references/regulatory-and-actuarial-references.md`, which is the corroborated address for this instrument library-wide
 - Retrieved: **no** — egress blocked; no search corroboration
 - Used for: **where the option budget comes from**, which the specification puts on its first page: the minimum share of each source of surplus allocated to policyholders through the RfB — 90 % of the *anzurechnende Kapitalerträge* after the charge for discounting the *Deckungsrückstellung*, 90 % of the *Risikoergebnis*, 50 % of the *übrige Ergebnis*, as established in the sibling delib files. From it both product documents take the corollary that **an Indexpolice has exactly the same risk budget as a classic contract of the same vintage and spends it differently**, and the model takes its stated limitation: it consumes a **declared** rate and does not close the MindZV loop, so changing an expense assumption moves `net_cf` without moving what the policyholder receives
 
@@ -361,7 +361,8 @@ in the documents that cite it, and all statutory content is described in this au
 provenance in `_research/regulatory-actuarial.md`). **Every entry in that library carries the same
 retrieval status as this file**: no document was fetched, and each entry records per fact whether a
 web search corroborated it before the budget was exhausted. Entries cited by the `indexpolice`
-documents:
+documents, or by the `provenance` column of a shipped input file — which is why [REG-R47] is
+listed although no prose in this product cites it:
 
 - **REG-R1** — Directive 2009/138/EC (Solvency II): the best-estimate-plus-risk-margin frame the projected cash flows feed.
 - **REG-R2** — Delegated Regulation (EU) 2015/35: contract boundaries, future discretionary benefits and management actions — none read from a retrieved text, so every such figure would be `[unverified]`.
@@ -390,6 +391,7 @@ documents:
 - **REG-R41** — EStG § 22 Nr. 1 Satz 3 Buchst. a: *Besteuerungsanteil* and *Ertragsanteil*, behind [R13].
 - **REG-R43** — AltZertG, the BZSt, the AltvPIBV and the Produktinformationsstelle Altersvorsorge: the entry behind [R12] and [S11], and the source of the statutory 100 % *Riester* guarantee.
 - **REG-R45** — EStG § 20 Abs. 1 Nr. 6: the *Unterschiedsbetrag*, the 12/62 rule and the *Mindesttodesfallschutz*, behind [R14] and behind `death_min_rate = 0,50`.
+- **REG-R47** — *Rechnungsgrundlagen erster und zweiter Ordnung*, and the DAV as owner of the tables: the licensing reason no DAV table is redistributed here, and the distinction that says what the shipped **[std]** Gompertz proxy *is* — a single **second-order** best-estimate basis, since this model prices no mortality guarantee of its own and takes the *Rentenfaktor* as an input. It is cited only in the `provenance` column of `mort_table.csv`, on every row, beside [REG-R48] and [REG-R49]; no prose claim in this product rests on it.
 - **REG-R48** — DAV 2008 T: the death-benefit mortality basis, **cited by name and never shipped**.
 - **REG-R49** — DAV 2004 R and DAV 2004 R-Bestand: the generational annuity tables, **cited by name and never shipped** — and why the *Rentenfaktor* is a **[std]** input rather than a computed quantity.
 - **REG-R53** — the German life market in numbers (GDV, BaFin, Assekurata, Map-Report, Morgen & Morgen, Franke und Bornberg): the 2026 declared-rate averages behind `surplus_rate = 2,50 %`, the sector *Verwaltungskostenquote* band, and the *Neue Klassik* context.
@@ -461,5 +463,8 @@ constrain the model:
 [R6]: #delib-indexpolice-r6
 [R8]: #delib-indexpolice-r8
 [REG-R43]: #delib-reg-r43
+[REG-R47]: #delib-reg-r47
+[REG-R48]: #delib-reg-r48
+[REG-R49]: #delib-reg-r49
 [std]: #delib-std
 <!-- END generated citation links -->

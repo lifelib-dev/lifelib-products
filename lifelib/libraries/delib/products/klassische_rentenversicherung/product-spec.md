@@ -223,8 +223,8 @@ substandard loading anywhere in the model. The *Berufsunfähigkeits-Zusatzversic
 same pre-contractual pack has its own special conditions and its own underwriting [S4]. Rating runs
 on entry age and *Aufschubdauer* through the tariff, and **sex may not be a rating factor** for
 contracts concluded from 21 December 2012 [REG-R34]. Four statutory rules reach the contract without
-being tariff parameters: the *Anzeigepflicht* of § 19 VVG, whose remedies lapse five years after
-conclusion and ten on intent or fraud; § 157 VVG, under which an age misstatement changes the benefit
+being tariff parameters: the *Anzeigepflicht* of § 19 VVG, whose remedies § 21 Abs. 3 VVG
+extinguishes five years after conclusion and ten on intent or fraud [unverified]; § 157 VVG, under which an age misstatement changes the benefit
 in the ratio of the premium for the true age to the agreed premium; § 150 VVG, requiring the written
 consent of the insured where a policy is on another person's death above ordinary funeral costs; and
 § 161 VVG, excluding intentional suicide within three years while still requiring payment of the

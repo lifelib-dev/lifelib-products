@@ -303,7 +303,7 @@ one *Rentenfaktor* was established at any carrier.
 
 ### R14 — MindZV, *Mindestzuführungsverordnung*
 - Publisher: Bundesministerium der Finanzen
-- URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html` — the form recorded as **returned by a search** in `references/regulatory-and-actuarial-references.md`, which is the corroborated address for this instrument library-wide
 - Retrieved: **no** — egress blocked; corroborated in outline by search in the sibling delib research
 - Used for: the minimum share of each surplus source credited to policyholders, and specifically that for a unit-linked contract the relevant sources are the ***Risikoergebnis*** and the ***übriges Ergebnis*** only, the investment result never entering the insurer's *Rohüberschuss*. With [R5] it is the authority behind the model's decision to compute the risk result and credit none of it back. **The minimum percentages are `[unverified]`** and none is quoted.
 

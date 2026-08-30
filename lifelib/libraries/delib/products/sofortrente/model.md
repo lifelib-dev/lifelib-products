@@ -407,7 +407,7 @@ all** (research gap 1).
 | Payment timing | *vorschüssig*, first instalment at `t = 0` | **No source in the corpus states the convention**, for this product or the deferred one (research gap 11). Model point 9 measures the alternative at 0,34 % |
 | Joint-life dependence | Independent lives | Real joint lives are positively dependent, so this **overstates** the joint-life annuity value and understates the rider's cost. No delib source quantifies it |
 | Age basis | `entry_age + t // 12`, with `entry_year == birth_year + entry_age` on every shipped point | An internal-consistency convention, not a contract fact; a real book carries a fractional offset of up to a year |
-| *Höchstrechnungszins* split years | 1994 and 2000 assigned to the 1 January rate | The statutory steps fall mid-year and a model point carries one vintage [REG-R15] |
+| *Höchstrechnungszins* split years | 1994 and 2000 assigned to the 1 January rate | The statutory steps fall mid-year and a model point carries one vintage [REG-R15]. `kapitallebensversicherung/deckrv_table.csv` resolves the same two years to the **higher** of the pair instead, so the two tables agree on 2000 and differ on 1994 — 3,50 % here, 4,00 % there. Neither is derivable from [REG-R15], so the divergence is recorded here and in this file's `provenance` column rather than silently reconciled. No delib model point in either product carries a 1994 vintage — the earliest anywhere in the library is 2005 — so no shipped number turns on it |
 | Annuitant selection, proof of life | No adjustment factor on the first-order table; suspension not modelled | DAV 2004 R is an annuitant-experience table understood to carry *Selektionsfaktoren* already [REG-R49], so selection belongs inside the basis; a failed life certificate is a timing effect on an unchanged obligation |
 | Tolerances | `roll_fwd_tol = 1e-8`; `solve_tol = 1e-10`; `solve_max_iter = 200` | The refund solve is the only numerical solve in the model, so `solve_tol` is a change of answer rather than of runtime |
 | Commercial envelope and model points | Entry ages 60–85; *Einmalbeitrag* 25 000–500 000 € around 100 000 €; fourteen cells | The market's quoting unit is the euro per 100 000 €, and no entry-age or ticket-size limit was established at any carrier (research gap 7). The anchor is the notes' worked example; the rest exercise one mechanic each |
@@ -442,7 +442,7 @@ python -m pytest tests -q
 [R1]: #delib-sofortrente-r1
 [R10]: #delib-sofortrente-r10
 [R11]: #delib-sofortrente-r11
-[R12]: #delib-reg-r12
+[R12]: #delib-sofortrente-r12
 [R2]: #delib-sofortrente-r2
 [R20]: #delib-sofortrente-r20
 [R21]: #delib-sofortrente-r21

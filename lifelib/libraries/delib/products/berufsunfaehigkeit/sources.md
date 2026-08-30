@@ -24,7 +24,7 @@ built, and this product was reached after both had bitten.
 What follows, and it governs every entry below:
 
 - **A delib citation is a pointer, not a certificate.** It names the instrument a claim should be checked against; it does **not** assert that anyone checked it. Every `Retrieved` line says `no` and none says otherwise.
-- **Every entry is a *known reference*** — a document that exists and is the right kind of document — with publisher, doc type, `URL: not established` unless the canonical form is one this author is confident of, and both reasons on the `Retrieved` line. **No entry asserts an edition, document number, *Bundesgesetzblatt* citation, page count or publication date.**
+- **Every entry is a *known reference*** — a document that exists and is the right kind of document — with publisher, doc type, `URL: not established` unless the canonical form is one this author is confident of, and both reasons on the `Retrieved` line. Two addresses are stronger than that and say so: DeckRV [R13] and MindZV [R14] carry the forms `references/regulatory-and-actuarial-references.md` records as **returned by a search** during the cross-product regulatory sweep, which ran while search was still available. The address is inherited; **no content is**. **No entry asserts an edition, document number, *Bundesgesetzblatt* citation, page count or publication date.**
 - **Nothing in this chain is quoted.** No verbatim statutory or contractual wording appears here or in the documents that cite it; every description is a paraphrase.
 - **`[unverified]` is used generously** in the product documents: every paragraph number, effective date, amount, percentage, table name and market figure carries it unless it is a structural fact not in dispute.
 - **Uncertain levels became `[std]` parameters rather than citations.** Every biometric level, every charge level and the premium itself is **[std]**, each listed with its rationale in `model.md`. A `[std]` number is honest about being a construction; a fabricated `[S4]` number is not, and there are none.
@@ -245,16 +245,16 @@ is given it is the canonical form of a `gesetze-im-internet.de` address and is m
 
 ### R13 — Deckungsrückstellungsverordnung (DeckRV) — *Höchstrechnungszins* and *Höchstzillmersatz*
 - Publisher / doc type: Bundesministerium der Finanzen; statutory instrument.
-- URL: `https://www.gesetze-im-internet.de/deckrv/` `[unverified]`
-- Retrieved: **no** — egress blocked; no search corroboration.
+- URL: `https://www.gesetze-im-internet.de/deckrv_2016/BJNR076700016.html` — the form recorded as **returned by a search** in `references/regulatory-and-actuarial-references.md`, which is the corroborated address for this instrument library-wide
+- Retrieved: **no** — egress blocked; no search corroboration in this product's research. Only the address is inherited; **no content of the instrument was established here**.
 - Used for: two model parameters. The *Höchstrechnungszins*, recalled as **1,00 %** for contracts written from 1 January 2025 `[unverified]` on both figure and date, is the `rechnungszins` used inside the premium equivalence and nowhere else; the *Höchstzillmersatz* of **25 ‰ of the *Beitragssumme*** `[unverified]` is the ceiling `acq_rate` sits at — the only sourced number in the whole charge structure, and even it carries the tag.
 
 (delib-berufsunfaehigkeit-r14)=
 
 ### R14 — Mindestzuführungsverordnung (MindZV)
 - Publisher / doc type: Bundesministerium der Finanzen; statutory instrument on the minimum allocation of surplus to policyholders.
-- URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
-- Retrieved: **no** — egress blocked; no search corroboration.
+- URL: `https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html` — the form recorded as **returned by a search** in `references/regulatory-and-actuarial-references.md`, which is the corroborated address for this instrument library-wide
+- Retrieved: **no** — egress blocked; no search corroboration in this product's research. Only the address is inherited; **no content of the instrument was established here**.
 - Used for: the **risk-result minimum allocation** that governs a BU book, recalled as 90 % of the risk result `[unverified]`. It is the quantitative link between claims experience and the *Zahlbeitrag* charged, and sits behind `beitragsverrechnung` as the reason the credit is large and is expected to persist.
 
 (delib-berufsunfaehigkeit-r15)=
@@ -381,7 +381,7 @@ is given it is the canonical form of a `gesetze-im-internet.de` address and is m
 
 ### R31 — Versicherungsteuergesetz (VersStG) § 4 — exemption of life and BU premiums
 - Publisher / doc type: Bundesministerium der Justiz; statute.
-- URL: `https://www.gesetze-im-internet.de/versstg/` `[unverified]`
+- URL: not established. No search in this or any sibling delib research returned an address for this statute, and the house rules prefer that to a guess. `products/risikolebensversicherung/sources.md` prints a differently-spelled canonical form at its R16 marked `[unverified]`; the two do not agree and neither is corroborated, so nothing here should be read as confirming that one
 - Retrieved: **no** — egress blocked; no search corroboration.
 - Used for: the single statement that **the BU premium carries no premium tax**, unlike a German non-life premium — recorded so a modeller from a non-life background does not look for the tax line. The paragraph and precise scope are `[unverified]` and should be confirmed before use.
 
@@ -444,6 +444,7 @@ constrain the model:
 [R11]: #delib-berufsunfaehigkeit-r11
 [R12]: #delib-berufsunfaehigkeit-r12
 [R13]: #delib-berufsunfaehigkeit-r13
+[R14]: #delib-berufsunfaehigkeit-r14
 [R16]: #delib-berufsunfaehigkeit-r16
 [R17]: #delib-berufsunfaehigkeit-r17
 [R24]: #delib-berufsunfaehigkeit-r24
