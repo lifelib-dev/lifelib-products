@@ -1,0 +1,6 @@
+pflegegrad,entry_share,det_rate,rec_rate,mort_mult,provenance
+1,0.2,0.28,0.0,1.5,[std] entrants skew lower than the 9/44/27/14/6% stock [R18]; det dominates rec; mort_mult is a multiple on the FORCE of active mortality [R15] [REG-R51]
+2,0.38,0.24,0.0,2.5,[std] the modal grade of entry; mort_mult 2.5 carries the research file's 'two to three times an active life at grade 2' [unverified] [R15]
+3,0.24,0.2,0.0,3.5,[std] direct entry at grade 3 after a stroke or a fracture; a replacement table must keep incidence by grade of entry [R15] [REG-R51]
+4,0.13,0.16,0.0,6.0,[std] direct entry at grade 4; mort_mult 6.0 on the active force [unverified]
+5,0.05,0.0,0.0,9.0,[std] no deterioration above grade 5; mort_mult 9.0 carries 'five to ten times at grade 5' [unverified] [R15]
