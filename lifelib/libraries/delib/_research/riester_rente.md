@@ -1648,3 +1648,51 @@ private annuity — is not a composite at all.
     general knowledge of German pension law, disciplined by tagging every specific number. **Treat
     this file as a well-organised set of hypotheses about what the documents say, not a record of
     what they say.**
+
+---
+
+## Gap status after the 2026-08-30 provenance pass
+
+The nineteen items above are the register **as this file was written**, and the numbering is frozen:
+downstream documents cite gaps by number and the register must keep saying what each number meant.
+What changed is recorded here instead. The pass read fifteen instruments as canonical statutory XML
+and eight documents as PDFs or HTML; entry-by-entry provenance, with every *Stand* and edition line,
+is in `products/riester_rente/sources.md`, which is now the more current of the two files on
+retrieval and which this section defers to on detail.
+
+| Gap | Status | What settled it |
+|---|---|---|
+| 1 — pAV reform status | **largely closed** | The AltZertG's *Stand* line names amendments by Art. 5, 6 and 7 of a **G v. 26.5.2026 I Nr. 156**, the VVG's by Art. 12 of the same act; AltZertG § 5 now certifies against § 1 "in der ab dem **1. Januar 2027** geltenden Fassung", and EStG § 93 Abs. 3 Satz 2 Nr. 2 adds a limb "ab dem 1. Januar 2027". The act's own **title** was not read and may still not be given, and the consolidation is incomplete — § 5 refers to § 1 paragraphs 1b–1d the text does not carry |
+| 2 — market figures | **open, and now the largest gap** | Neither the BMAS series nor a GDV statistics page was located. Every market figure keeps its tag |
+| 3 — BMF *Anwendungsschreiben* | **open** | Not identified. Its practical weight has fallen: three of the four mechanics it was needed for were read directly in §§ 10a, 22 Nr. 5 and 93–95 EStG |
+| 4 — statutory paragraph numbers | **closed** | Every number was checked against the canonical XML. **Three were wrong**: the 60th-year *Rentenbeginn* is AltZertG § 14 Abs. 2, not § 1; the *Pfändungsschutz* is ZPO § 851 Abs. 1, not EStG § 97, which carries non-transferability only; and *Effektivkosten* is an **AltvPIBV § 8 Nr. 3** term that appears nowhere in the AltZertG |
+| 5 — *Günstigerprüfung* crossover | **open** | Still a function of the *Einkommensteuertarif*, which was not read. The **mechanism** is now read: § 10a Abs. 2 grants the deduction and adds the Zulage back to the assessed tax, *von Amts wegen* |
+| 6 — Zulage payment timing | **closed** | AltvPIBV § 9 Abs. 3: every disclosure calculation assumes crediting "am **15. Mai** nach dem Beitragsjahr". Reversals are settled **quarterly**, EStG § 90 Abs. 3, within a two-year recognition window. Only the *rate* of reversal is unestablished, and that is experience data (gap 16) |
+| 7 — *Kleinbetragsrente* | **two of three limbs closed, one of them against the model** | The threshold is **1,5 %** of the monthly *Bezugsgröße*, EStG § 93 Abs. 3 Satz 2 Nr. 1 — the model implements 1 %. Commutation is the **provider's option** in both retrieved wordings. The *Bezugsgröße* for a given year is still unestablished, SGB IV not being among the cached instruments |
+| 8 — *Wechselrecht* parameters | **three of four limbs closed** | Notice: three months to a quarter end or to the start of the payout phase, AltZertG § 1 Abs. 1 Satz 1 Nr. 10 Buchst. b. Ceding charge: **at most 150 Euro**, Satz 3. Receiving provider: at most **50 %** of the transferred subsidised capital in its acquisition-cost base, Satz 4. **Whether the guarantee accumulator survives the transfer intact is still not established** |
+| 9 — conversion basis | **the construction is established for one Riester tariff; no level is** | Debeka B LV 94 (01.01.2025) § 4 Abs. 3 defines a guaranteed *Rentenfaktor* per 10 000 € monthly on a 0,1 % *Rechnungszins* and its own unisex table, compared with the current factor, higher paid. **But the design is not universal**: neither the GDV model wording nor the CosmosDirekt wording has a *Rentenfaktor* at all. The surplus-components limb is **still open** — AltZertG § 1 Abs. 5 lists them for the *transfer* value, and the guarantee clause names none |
+| 10 — lump-sum take-up; upper age bound | **half closed** | No take-up rate. On the age bound: **no statutory ceiling** was found, but carriers set one — a *flexible Altersgrenze* of 62 to **70** at CosmosDirekt, a payout window ending at the **83rd** birthday at a DWS fund plan |
+| 11 — rider regime | **partly closed** | The carve-out share is statutory and read: "bis zu **20 Prozent** der Gesamtbeiträge", AltZertG § 1 Abs. 1 Satz 1 Nr. 3, and the GDV wording drafts the clause. No carrier's rider **inventory** was established |
+| 12 — carrier specifics | **partly closed** | Two AVB were read in full — CosmosDirekt LA 1005 A (01.15) and Debeka B LV 94 (01.01.2025) — yielding two real *Rechnungszinsen* (**1,25 %** and **0,9 %**), a named annuitant table (**UNI 2004 R**), a named house table, one complete charge basis and one *Stornoabzug* design. **Nothing was established for any other house**, and no declared *laufende Verzinsung* anywhere |
+| 13 — charge figures | **closed on disclosure, one observation on tariff** | CosmosDirekt § 11 gives a complete numbered basis; Union Investment discloses *Effektivkosten* of **1,45** and **1,33 Prozentpunkte** and CRK **4** and **2**, with *Zertifizierungsnummern* 006403 and 006407. **One tariff is not a range**, so every charge level downstream stays `[std]` |
+| 14 — charge base for the Zulagen | **closed** | The Zulagen **are** charged — in the GDV model wording, at Debeka, at Union Investment and at CosmosDirekt, which puts a number on it: **6,0 %** of each Zulage against **2,1 %** of each *Eigenbeitrag*. Acquisition cost on a Zulage is taken **once at inflow**, the AltZertG's five-year spreading applying only "soweit sie nicht als Prozentsatz von den Altersvorsorgebeiträgen abgezogen werden" |
+| 15 — § 95 emigration | **closed** | §§ 93 and 94 apply correspondingly where residence is outside the EU/EEA "**ab Beginn der Auszahlungsphase**". The historic end-of-unlimited-liability trigger is gone from the text |
+| 16 — behavioural rates | **open** | No *Stornoquote*, no *Beitragsfreistellung* rate, no transfer-out rate, no commutation take-up. Unchanged |
+| 17 — unisex chronology | **rule closed, dates open** | AltZertG § 1 Abs. 1 Satz 1 Nr. 2 requires an "unabhängig vom Geschlecht berechnete" benefit and all three retrieved wordings implement it. A consolidated statute shows the rule and never the date it entered, so 1 January 2006, 21 December 2012 and C-236/09 keep their tags |
+| 18 — *Höchstrechnungszins* series | **current point closed, history open** | DeckRV § 2 Abs. 1, headed ***Höchstzinssatz***, reads "auf **1 Prozent** festgesetzt", *Stand* zuletzt geändert durch Art. 1 V v. 19.7.2024. Abs. 2 fixes the rate used at conclusion for the contract's whole term. The 0,25 %, 0,90 %, 1,75 % and 2,25 % points are not in the consolidated text and stay `[unverified]` |
+| 19 — no research channel | **superseded** | The pass had one. What it did not reach is listed at the entries themselves |
+
+**Three findings contradict what this library says, and two of them are rules the model implements.**
+The *Kleinbetragsrente* threshold is 1,5 % and the model uses 1 %. The commutation test belongs on
+the annuity **before** an elected *Teilkapitalauszahlung* — "Eine Abfindung erfolgt nicht, wenn die
+Leistung nur aufgrund einer Teilkapitalauszahlung … auf eine Kleinbetragsrente sinkt" — and the model
+applies it after. And the Zulagen are charged at a materially **higher** rate than own contributions
+at the one carrier observed, where the model charges both alike. None was applied to the model in a
+provenance pass; all three are set out under *Model-relevant contradictions* in
+`products/riester_rente/technical-notes.md`.
+
+**Nine entries also changed identity, not merely status**, and `sources.md` is authoritative on all
+of them: [S1] and [S2] were retrieved at "Stand: 21.07.2025" and [S1]'s recorded title was wrong;
+[S4]'s "tariff LA 1005 A" is a **document number**, the tariff being **R1-A**; [S6], [S9], [S10] and
+[S14] were retrieved; [S15] now has real certification numbers; and [S5] no longer carries the
+corpus's only charge datum.

@@ -71,11 +71,21 @@ the library's retired-names register.
   the projection step. Germany has no counterpart to the French *différence de millésime*, where the
   rating age steps on 1 January irrespective of birth month; on a real-date implementation the offset
   here is at most a few months **[std]**.
-- **No cash value anywhere.** § 169 Abs. 1 VVG confines the surrender-value duty to a life insurance
-  whose insured event is certain to occur, which a term assurance's is not [R2] [REG-R28]. The model
-  therefore has **no account value, no `av_pp_at`, no surrender cells and no paid-up state**, and
-  `claims(t, "LAPSE")` and `claims(t, "MATURITY")` are structurally zero at every `t` — asserted by
-  a published `check_no_cash_value()` rather than left to prose.
+- **No cash value in the model — and, in the market, a cash value that is nil or nominal.** § 169
+  Abs. 1 VVG confines the surrender-value **duty on *Kündigung*** to a policy insuring a risk "bei dem
+  der Eintritt der Verpflichtung des Versicherers gewiss ist", which a term assurance's is not, and
+  that wording is now read rather than inferred [R2] [REG-R28]. **But it does not follow that no
+  wording pays one, and the retrieved wordings show that two of three do**: the GDV model conditions
+  and the Hannoversche AVB convert the contract into a *beitragsfreie Versicherung* on *Kündigung*
+  and pay a *Rückkaufswert* under § 169, less a *Stornoabzug*, where the paid-up sum fails a minimum
+  [S1] § 13 Abs. 8, [S4] § 13; Cosmos pays nothing [S3] § 15 Abs. 10. What is uniform is the size:
+  the *Kostenverrechnung* leaves "keine oder nur geringe Mittel" [S1] § 14 Abs. 4, [S3] § 16 Abs. 4.
+  The model therefore has **no account value, no `av_pp_at`, no surrender cells and no paid-up
+  state**, and `claims(t, "LAPSE")` and `claims(t, "MATURITY")` are **0.00 at every `t`** — asserted
+  by a published `check_no_cash_value()` rather than left to prose. **Read that check as pinning a
+  best-estimate approximation of a nil-or-nominal amount, not as a statement that German term
+  assurance cannot carry a surrender value.** The cash flow is right either way: a *Beitragsfreistellung*
+  pays nothing at the time in any wording — it converts.
 - **What is deliberately not modelled**, each stated so a reader does not go looking for it: the
   *Kriegsklausel* and the ABC clause, which are catastrophe-scenario provisions rather than
   best-estimate ones; the § 162 VVG forfeitures; the mental-illness exception to § 161; selective
@@ -217,18 +227,18 @@ paid-up state. That is a statutory fact about the product, not a modelling simpl
 |---|---|---|
 | Death benefit | `benefit_pp(t)`, from any cause, subject only to the § 161 window | [R1] [R2] [S5] [S15] |
 | Survival benefit | **None.** Nothing is paid at expiry | [R1] [R2] [S5] [S15] |
-| Surrender / paid-up value | **None**, by the scope of § 169 Abs. 1 VVG; § 165 and § 166 both terminate in nil through the minimum-benefit test | [R2] [R3] [R8] [REG-R28]; scope [unverified] |
+| Surrender / paid-up value | **Nil or nominal, and modelled as nil.** No § 169 Abs. 1 duty attaches on *Kündigung* (the *gewiss* test, now read verbatim); § 165 carries no such limitation and its paid-up right is live on a constant sum insured — [S3] ends the contract only below a 300 € paid-up sum, [S4] below 2 500 €, and on a falling sum insured no *Deckungskapital* is built at all. Where a wording pays, it pays the *Deckungskapital* less a *Stornoabzug* — 60 % at [S4] | [R2] [R3] [R8] [S1] [S3] [S4] [REG-R28] |
 | Premium form | A **level *Bruttobeitrag*** over the *Beitragszahlungsdauer*, guaranteed for the term as the maximum the policyholder can ever be required to pay | [R6] [R10] [REG-R27] |
 | What is billed | The *Zahlbeitrag* = *Bruttobeitrag* less the declared *Beitragsverrechnung*. **Not guaranteed**; § 153 confers an entitlement to participate, not to a level | [R5] [R6] [R9] [S5] [REG-R24] |
-| Minimum surplus allocation | **90 % of the *Risikoergebnis***, from the MindZV. **No section number is cited**, the numbering being unsettled between the sibling research and the reference library | [R9] [REG-R18]; inherited corroboration; gap 4 |
-| Equal treatment | *Bei gleichen Voraussetzungen dürfen Prämien und Leistungen nur nach gleichen Grundsätzen bemessen werden* — one declared rate per tariff generation and rating cell | [R11] [REG-R8] |
-| *Selbsttötung* | Insurer *leistungsfrei* where the *versicherte Person* intentionally takes her own life **within three years of conclusion**, unless in a state excluding free determination of the will; extendable by agreement; the substitute payment is the *Rückkaufswert*, which here is **nil** | [R1] [REG-R26]; inherited corroboration |
+| Minimum surplus allocation | **90 % of the *Risikoergebnis***, **MindZV § 7** — the section number the file previously refused to guess, now read (gap 4 closed). § 8 gives 50 % of the *übriges Ergebnis* and § 6 Abs. 1 gives 90 % of the *anzurechnende Kapitalerträge* "abzüglich der rechnungsmäßigen Zinsen"; each is floored at zero. Both carrier wordings state the same three [S3] § 3 Abs. 1 a, [S4] § 20 | [R9] [REG-R18] [S3] [S4] |
+| Equal treatment | VAG § 138 Abs. 2, verbatim: "Bei gleichen Voraussetzungen dürfen Prämien und Leistungen nur nach gleichen Grundsätzen bemessen werden." The unit of "gleiche Voraussetzungen" is the ***Bestandsgruppe*** and, inside it, the ***Gewinnverband*** — [S1] § 2 Abs. 2–3, with [S3] naming *Bestandsgruppe 112* for its term book. One declared rate per *Gewinnverband*, and [S2] shows it holding across two product variants to three decimal places | [R11] [REG-R8] [S1] [S2] [S3] |
+| *Selbsttötung* | Insurer *leistungsfrei* where the *versicherte Person* intentionally takes her own life "vor Ablauf von drei Jahren nach Abschluss des Versicherungsvertrags", unless in a state excluding free determination of the will; extendable by *Einzelvereinbarung* (Abs. 2); the substitute payment is the *Rückkaufswert* nach § 169 (Abs. 3), which here is nil or nominal. **The clock restarts for an increased or reinstated part** — not from § 161, which is silent, but from all three retrieved wordings | [R1] [REG-R26] [S1] [S3] [S4] |
 | Premium cessation | On death, and at the end of the *Beitragszahlungsdauer* | mechanics 4, 17 |
-| *Rechnungszins* | **1,00 %** for new business from 1 January 2025, from the *Sechste Verordnung* of 19 July 2024 | [R10] [REG-R14] [REG-R15] |
-| *Höchstzillmersatz* | **25 ‰ of the *Beitragssumme***, cut from 40 ‰ with effect from 1 January 2015; the rate at conclusion applies for the whole term | [R10] [REG-R16] [REG-R20] |
+| *Rechnungszins* | **1,00 %** — but that is the DeckRV ***Höchstzinssatz***, the ceiling, read at the amending regulation itself (Art. 1 V v. 19.7.2024). **A carrier need not price at it and one does not**: [S3]'s AVB states its *Rechnungsgrundlagen* as "einem Rechnungszins in Höhe von **0,25 Prozent**". The model uses the ceiling; see the pitfalls | [R10] [REG-R14] [REG-R15] [S3] |
+| *Höchstzillmersatz* | **25 ‰**, DeckRV § 4 Abs. 1: "Der Zillmersatz darf 25 Promille der Summe aller Prämien nicht überschreiten"; cut from 40 ‰ with effect from 1 January 2015, and the rate at conclusion applies for the whole term (Abs. 4). **It caps the *zillmerbare* part only** — both wordings spread the remaining acquisition cost over the premium-paying period [S1] § 14 Abs. 3, [S3] § 16 Abs. 3 — and the GDV model carries the clause only "bei der Verwendung des Zillmerverfahrens", so it is optional on this line | [R10] [REG-R16] [REG-R20] [S1] [S3] |
 | Unisex | Sex may not enter the premium for contracts concluded from 21 December 2012 | [R13] [REG-R34] |
 | Mortality table family | DAV 2008 T, with *R* and *NR* variants, **suitable for premium calculation** but not without a *Gesundheitsprüfung*; **values proprietary, not redistributed** | [R12] [REG-R48]; inherited corroboration |
-| Premium tax | **None** — life insurance is exempt from *Versicherungsteuer*, so there is no premium-tax line | [R16] [unverified] |
+| Premium tax | **None** — VersStG 2021 § 4 Abs. 1 Nr. 5 Buchst. a exempts a contract creating claims "im Fall des Todes", so there is no premium-tax line | [R16] |
 
 ### (b) Insurer-discretionary current elements
 
@@ -242,7 +252,7 @@ Thin, but decisive — on this product the discretion **is** the customer's bill
 | Cap on the declared rate `v_max` | **0.95** — a rebate may not exceed the premium | **[std]** (2) |
 | *Kostenüberschuss* | **Not returned.** The tariff's β is 5,0 % and the modelled collection cost 3,0 %, so a cost result emerges in `net_cf` and stays there | **[std]** (3) |
 | *Summenzuwachs*, *verzinsliche Ansammlung*, *Todesfallbonus* | **Off.** Only *Beitragsverrechnung* is implemented | mechanic 6; **[std]** |
-| § 163 premium adjustment | **Off.** The *Bruttobeitrag* is fixed for the term | [R6] [REG-R27]; non-use [unverified] |
+| § 163 premium adjustment | **Off.** The *Bruttobeitrag* is fixed for the term — [S3]: "bleibt Ihre Absicherung sowie der vereinbarte Bruttobeitrag über die gesamte Versicherungsdauer unverändert" | [R6] [REG-R27] [S3]; non-use in practice still [unverified] |
 
 1. **Modelling the statutory minimum is the conservative choice for the *Zahlbeitrag***, and it is
    the only level any instrument fixes: no German carrier publishes a declaration for this product,
@@ -351,12 +361,18 @@ rather than buried.
 | Best-estimate mortality factor `mort_be_factor` | **1.00** | **[std]** (6) |
 | *Ratenzahlungszuschlag* `prem_freq_load` | 1.000 annual · **1.02** half-yearly · **1.03** quarterly · **1.05** monthly | convention **[std]** (7) |
 
-4. **German term-life charge levels are structurally undisclosed, not merely unretrieved** (research
-   gap 8): no *Effektivkostenquote*, because a reduction in yield presupposes a yield; no
-   *Basisinformationsblatt*, because the product is not a PRIIP [R17]; and the
-   *Produktinformationsblatt* quotes premiums, not loadings. The only figure any instrument fixes is
-   the 25 ‰ Zillmer **ceiling**, and the composite **assumes a term tariff runs at the cap** — which
-   **may well be wrong**, a slim direct-channel acquisition cost sitting far below it [S3] [S12].
+4. **German term-life charge levels are not published as a rate card — but they are disclosed**
+   (research gap 8, corrected). There is no *Effektivkostenquote*, and § 2 Abs. 1 Nr. 9 VVG-InfoV
+   gives the reason in terms, confining the duty to a contract "bei dem der Eintritt der Verpflichtung
+   des Versicherers gewiss ist"; and no *Basisinformationsblatt*, the product not being a PRIIP [R17].
+   **But § 2 Abs. 1 Nr. 1 with Abs. 2, and § 4 Abs. 2, require the acquisition and administration
+   costs to be given to the applicant in euro**, and both retrieved wordings point him there [S1]
+   § 14 Abs. 1, [S3] § 16 Abs. 1. One carrier's published specimen shows **α = 2,41 % of the
+   *Tarifbeitragssumme***, other annual costs of 48,52 € of which 35,20 € administration [S2] — so the
+   composite's assumption that a term tariff runs at the 25 ‰ ceiling is **close to right for that
+   carrier**, though the ceiling is mis-typed: DeckRV § 4 caps only the *zillmerbare* part, the rest
+   being spread over the premium term [S1] § 14 Abs. 3, [S3] § 16 Abs. 3. **The parameters are
+   unchanged** — one model case is not a market [S3] [S12].
    This is the single [std] charge most likely to be overstated, and the notes say so rather than
    letting a reader discover it from a sensitivity.
 5. Inflating the modelled γ while the tariff's γ is level means the cost result narrows over a long
@@ -478,7 +494,7 @@ contractual mechanics).
 
 The base cover's three-year window runs from issue, so it bites at `t ≤ 3`. A
 *Nachversicherungsgarantie* increment granted at the start of policy year `t_j` carries **its own**
-three-year window, `t_j ≤ t < t_j + 3` [R1] [unverified] (research gap 9). With
+three-year window, `t_j ≤ t < t_j + 3` [R1] [S1] [S3] [S4] — **market practice, not a modelling choice** (research gap 9, closed): "Wenn unsere Leistungspflicht durch eine Änderung des Vertrages erweitert wird ..., beginnt die Dreijahresfrist bezüglich des geänderten ... Teils neu". With
 `Δu(t) = u(t) − u(t − 1)` and `u(0) = 0`, the effective benefit is
 
     benefit_paid_pp(t) = S0 · f(t) · Σ_{j : t_j ≤ t} Δu(t_j) · σ_j(t)
@@ -653,17 +669,26 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
    that setting `decl_scale = 0` raises `premiums` to `prem_gross` at every `t` and changes **no**
    claim, no decrement and no expense other than the collection cost that scales with the billed
    premium.
-4. **Inventing a *Rückkaufswert*.** There is none [R2] [R3] [R8]. Assert
-   `claims(t,"LAPSE") == 0.0` and `claims(t,"MATURITY") == 0.0` at every `t` and every model point,
-   that `check_no_cash_value()` is `True`, and that no `av_pp_at`, `surr_value` or paid-up cells
-   exists in `Projection`.
+4. **Inventing a *Rückkaufswert* — and the narrower point that replaced it.** This model pays none,
+   and asserts so: `claims(t,"LAPSE") == 0.0` and `claims(t,"MATURITY") == 0.0` at every `t` and
+   every model point, `check_no_cash_value()` is `True`, and no `av_pp_at`, `surr_value` or paid-up
+   cells exist in `Projection`. **What that check does *not* license is the sentence "a German term
+   assurance has no surrender value".** No § 169 Abs. 1 duty attaches on *Kündigung* — the *gewiss*
+   test, read verbatim [R2] — but the GDV model wording and the Hannoversche AVB both convert to a
+   *beitragsfreie Versicherung* and pay a *Rückkaufswert* under § 169, less a *Stornoabzug*, where
+   the paid-up sum fails a minimum [S1] [S4]; only Cosmos pays nothing [S3]. The amount is nil or
+   nominal in all of them, which is why the model's zero is defensible — as an approximation of a
+   small number, not as an identity [R2] [R3] [R8] [S1] [S3] [S4].
 5. **Concluding there is no *Deckungskapital*.** A level premium against a rising death rate builds
    one (mechanic 11). Assert `res_pp_at(1,"BEF_PREM") == 0` and `res_pp_at(n+1,"BEF_PREM") == 0` to
    1e-9, that `res_pp_at(t,"BEF_PREM") > 0` at some interior `t` on the anchor, that
    `res_zill_pp_at(1,"BEF_PREM") == −z·k·G` to 1e-9 (the two are formed by different summations
    and agree to about 4e-12 on the anchor, not to the last bit), and that `check_res_roll_fwd()`
    is `True`.
-6. **Letting `sex` into the price.** Unlawful in Germany since 21 December 2012 [R13] [REG-R34].
+6. **Letting `sex` into the price.** Unlawful in Germany for contracts concluded from 21 December
+   2012 — AGG § 33 Abs. 5 confines the derogation to *Versicherungsverhältnisse* "die vor dem
+   21. Dezember 2012 begründet werden", and § 20 Abs. 2 leaves no actuarial justification open for
+   sex at all [R13] [REG-R34].
    Model points 1 and 2 differ **only** in `sex`: assert their `prem_gross_pp(t)`,
    `prem_paid_pp(t)` and `beitragsverrechnung_rate()` are identical to 1e-12, while their
    `claims_death` totals differ by a factor near two.
@@ -676,7 +701,9 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
    `suicide_factor(t) == 1 − suicide_share` exactly for `t ∈ {1,2,3}` and `== 1` for `t ≥ 4` on model
    point 1; that it is `1` at every projected `t` on the in-force point 8 (`t0 = 13`); and that it
    touches neither `claims_lapse` nor `claims_maturity`, both of which are zero anyway.
-9. **Forgetting that the clock restarts for a *Nachversicherungsgarantie* increment.** On model
+9. **Forgetting that the clock restarts for a *Nachversicherungsgarantie* increment.** All three
+   retrieved wordings restart it "bezüglich des geänderten oder wiederhergestellten Teils" [S1] [S3]
+   [S4], so this is the market's rule and not a modelling convenience. On model
    point 9, in the year of and the two years after each increase, assert
    `1 − suicide_share < benefit_paid_pp(t)/benefit_pp(t) < 1` strictly — the base tranche out of its
    window and the increment inside it.
@@ -770,10 +797,12 @@ table below is the **entire** projection.
 `mort_be_factor = 1.00` **[std]**. *Tariff mortality*: the unisex 50/50 blend
 `0.00030 × 1.095^(x − 30)` **[std]** loaded by `1 + m` with `sicherheitszuschlag_m = 1.25`
 **[std]**, and `sex_mix_male = 0.50` **[std]** [R13] [REG-R34]. *Interest*:
-`rechnungszins = 1,00 %` **[R10] [REG-R14] [REG-R15]**, used only in the premium equivalence and
-the first-order reserve and **never** to discount a published cash flow. *Loadings*:
-`zillmer_rate = 0.025` of the *Beitragssumme* at the *Höchstzillmersatz* ceiling **[R10] [REG-R16]**,
-level **[std]**; `comm_rate_init = 0.020` of the *Beitragssumme* **[std]**;
+`rechnungszins = 1,00 %` — the DeckRV ***Höchstzinssatz***, a **ceiling the model adopts as the
+rate**; a retrieved carrier prices its term tariff at 0,25 % instead **[R10] [REG-R14] [REG-R15]
+[S3]** — used only in the premium equivalence and the first-order reserve and **never** to discount
+a published cash flow. *Loadings*: `zillmer_rate = 0.025` of the *Beitragssumme* at the
+*Höchstzillmersatz* ceiling **[R10] [REG-R16]**, which bounds the *zillmerbare* part rather than the
+whole acquisition cost **[S1] [S3]**, level **[std]**; `comm_rate_init = 0.020` of the *Beitragssumme* **[std]**;
 `beta_tariff = 0.05` of each *Bruttobeitrag* **[std]**; `gamma_rate = 0.00030` of the
 *Versicherungssumme* a year **[std]**. *Surplus*: `surplus_share = 0.90`, the MindZV minimum
 allocation from the *Risikoergebnis* **[R9] [REG-R18]** with the choice of the minimum **[std]**;
@@ -1011,12 +1040,21 @@ This library projects **gross best-estimate-style liability cash flows, undiscou
 grid. The valuation layers consume them and are **cited, never reproduced**.
 
 - **The German statutory *Deckungsrückstellung*.** HGB § 341f requires it to be computed
-  prospectively on the bases used to determine the premium, with a prudent margin, including a
-  provision for future administration costs where the premium-paying period is shorter than the cover
-  period — which is exactly model point 6's situation; the RechVersV governs presentation [R21]
-  [REG-R54]. The DeckRV caps the *Rechnungszins* at the *Höchstrechnungszins* in force at conclusion
-  (**1,00 %** from 1 January 2025) and the *Zillmersatz* at **25 ‰ of the *Beitragssumme***, the rate
-  at conclusion applying for the whole term [R10] [REG-R14] [REG-R15] [REG-R16]. The model's
+  prospectively — HGB § 341f Abs. 1 requires the *Deckungsrückstellung* "in Höhe ihres
+  versicherungsmathematisch errechneten Wertes ... und nach Abzug des versicherungsmathematisch
+  ermittelten Barwerts der künftigen Beiträge (prospektive Methode)", and Abs. 2 adds the
+  interest-guarantee test. **The rest of what this paragraph used to attribute to § 341f is not in
+  it**: the requirement to use the premium bases with a prudent margin is DeckRV § 5 Abs. 1, whose
+  terms are worth having — "Die Ableitung von Rechnungsgrundlagen auf der Basis eines besten
+  Schätzwertes genügt nicht" — and the provision for future administration costs where the
+  premium-paying period is shorter than the cover period, which is exactly model point 6's situation,
+  belongs to the RechVersV, which was **not retrieved** and stays `[unverified]` [R21] [R10]
+  [REG-R54]. [S4] gives the carrier-side chain: the reserve is computed "nach § 88 VAG und § 341e und
+  § 341f HGB sowie den dazu erlassenen Rechtsverordnungen". The DeckRV caps the *Rechnungszins* at
+  the ***Höchstzinssatz*** in force at conclusion (**1,00 %** from 1 January 2025) — a ceiling, not a
+  rate: [S3] prices its term tariff at **0,25 %** — and the *Zillmersatz* at **25 ‰ of the *Summe
+  aller Prämien***, the rate at conclusion applying for the whole term [R10] [REG-R14] [REG-R15]
+  [REG-R16] [S3]. The model's
   `res_pp_at` is the **net, ungezillmert, first-order** reserve and is a **pricing diagnostic**: it is
   not floored, not *gezillmert* and not a statutory provision. The *Nullstellung* question — whether
   a negative individual reserve must be floored at zero — was **not established** (research gap 11),

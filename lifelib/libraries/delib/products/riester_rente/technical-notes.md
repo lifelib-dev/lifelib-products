@@ -238,53 +238,68 @@ consequential, because the declared rate is what decides whether the guarantee c
 
 | Input | Value | Basis |
 |---|---|---|
-| *Grundzulage* | **175.00** per year | [R9] [REG-R42] `[unverified]` |
-| *Kinderzulage* | **185.00** for a child born before 1 Jan 2008; **300.00** for one born on or after | [R9] [R19] [REG-R42] `[unverified]` |
-| *Berufseinsteiger-Bonus* | **200.00**, once in a lifetime, in the first subsidised year | [R9] [REG-R42] `[unverified]` |
-| *Mindesteigenbeitrag* rate, ceiling, floor | **4 %** of the previous year's contribution-liable earnings, capped at **2 100.00**, less the entitlement, floored at the **60.00** *Sockelbeitrag* | [R10] [REG-R42] `[unverified]` |
+| *Grundzulage* | **175.00** per year — § 84 Satz 1 EStG, "ab dem Beitragsjahr 2018 jährlich 175 Euro" | [R9] [REG-R42] |
+| *Kinderzulage* | **185.00** for a child born before 1 Jan 2008; **300.00** for one born on or after — § 85 Abs. 1 Sätze 1 and 2, keyed to *Kindergeld* being *festgesetzt* | [R9] [R19] [REG-R42] |
+| *Berufseinsteiger-Bonus* | **200.00**, "einmalig", 25th year not completed at the start of the contribution year, first year a Zulage is claimed — § 84 Sätze 2 and 3 | [R9] [REG-R42] |
+| *Mindesteigenbeitrag* rate, ceiling, floor | **4 %** of the previous year's contribution-liable earnings, capped at the § 10a Abs. 1 Satz 1 *Höchstbetrag* of **2 100.00**, less the entitlement, floored at the **60.00** *Sockelbeitrag* — § 86 Abs. 1 Sätze 2, 4 and 5 | [R10] [REG-R42] |
 | Proportional Kürzung | The Zulage is reduced in the ratio of the contribution paid to the *Mindesteigenbeitrag* — never lost outright | [R10] [REG-R42] |
-| Zulage cash lag | Contribution year `t` is credited by the ZfA in `t + 1` | [R11] [REG-R42]; one-year convention **[std]** (1) |
-| *Beitragsgarantie* | At *Rentenbeginn*, at least contributions plus Zulagen credited must be available | [R1] [REG-R43] |
-| Guarantee carve-out | Biometric-rider contributions excluded, up to **20 %** of total contributions | [REG-R43] |
-| Earliest *Rentenbeginn* | Completed 62nd year for contracts from 1 Jan 2012, 60th before | [R1] [REG-R43] `[unverified]` |
-| *Teilkapitalauszahlung* cap | **30 %** of the conversion capital | [R1] [REG-R43] `[unverified]` |
-| Acquisition-cost spreading | At least **five years** | [R1] [REG-R43] `[unverified]`; *Höchstzillmersatz* 25 ‰ [REG-R16] |
-| *Kleinbetragsrente* threshold | **39.55** per month — 1 % of a 2026 monthly *Bezugsgröße* of 3 955.00. The competing reading is 1,5 % from June 2026, **59.33**; both are printed and one is chosen | [R15] [REG-R42] [REG-R46] `[unverified]`; choice **[std]** (2) |
-| *Rückkaufswert* floor | The *Deckungskapital* on five-year cost spreading — satisfied by construction here | [REG-R28] |
-| Annuity form | Lifelong, monthly, constant or rising; a falling annuity is not certifiable | [R1] [REG-R43] |
-| Unisex | No sex-distinct rate anywhere, including the *Rentenfaktor* | [R23] [REG-R34] |
+| Zulage cash lag | Contribution year `t` is credited by the ZfA in `t + 1`; AltvPIBV § 9 Abs. 3 prescribes **15 May of `t + 1`** for every disclosure calculation | [R5] [R11] [REG-R42]; the annual-grid compression **[std]** (1) |
+| *Beitragsgarantie* | At *Rentenbeginn*, at least "die bis dahin gezahlten Beiträge und die uns zugeflossenen staatlichen Zulagen" must be available for the agreed benefits — statutory as to the test, **contractual as to the Zulagen** | [R1] [REG-R43] for the test; [S2] § 1 Abs. 10, [S4] § 1 Abs. 2, [S6] for the Zulagen limb |
+| Guarantee carve-out | Biometric-rider contributions excluded, "bis zu **20 Prozent** der Gesamtbeiträge" — AltZertG § 1 Abs. 1 Satz 1 Nr. 3, drafted at [S2] § 1 Abs. 10 | [R1] [REG-R43] [S2] |
+| Earliest *Rentenbeginn* | Completed **62nd** year — § 1 Abs. 1 Satz 1 Nr. 2. The **60th** for contracts concluded before 1 Jan 2012 is the transitional rule of **§ 14 Abs. 2**, not § 1 | [R1] [REG-R43] |
+| *Teilkapitalauszahlung* cap | **30 %** of "des zu Beginn der Auszahlungsphase zur Verfügung stehenden Kapitals" — § 1 Abs. 1 Satz 1 Nr. 4 Buchst. a | [R1] [REG-R43] |
+| Acquisition-cost spreading | "gleichmäßig mindestens auf die ersten **fünf Vertragsjahre** …, soweit sie nicht als Prozentsatz von den Altersvorsorgebeiträgen abgezogen werden" — § 1 Abs. 1 Satz 1 Nr. 8. The qualifier is why the charge on a Zulage is taken once at inflow in every retrieved wording | [R1] [REG-R43] [S2] [S4] [S6]; *Höchstzillmersatz* 25 ‰, DeckRV § 4 Abs. 1 [REG-R16] |
+| *Kleinbetragsrente* threshold | **The statutory rate is 1,5 %**, not 1 %: § 93 Abs. 3 Satz 2 Nr. 1 EStG, aggregated across the saver's contracts at that provider (Satz 3). On the 3 955.00 monthly *Bezugsgröße* used here that is **59.33**. `kleinbetrag_threshold_mth` is **39.55** and is therefore **too low**; the model is unchanged | [R15] [REG-R42] [REG-R46]; the *Bezugsgröße* `[unverified]`; see (2) |
+| *Rückkaufswert* floor | "mindestens der Betrag des Deckungskapitals, das sich bei gleichmäßiger Verteilung der angesetzten Abschluss- und Vertriebskosten auf die ersten fünf Vertragsjahre ergibt" — § 169 Abs. 3 VVG; satisfied by construction here, and both retrieved wordings compute it that way | [REG-R28] [S2] [S4] |
+| Annuity form | Lifelong, monthly, "gleich bleiben oder steigen" over the whole payout phase; up to twelve monthly payments may be combined into one | [R1] [REG-R43] |
+| Unisex | "eine lebenslange und **unabhängig vom Geschlecht berechnete** Altersversorgung" — § 1 Abs. 1 Satz 1 Nr. 2, and in the wordings at [S2] § 1 Abs. 1, [S4] § 1 Abs. 1 and a "geschlechtsunabhängige Sterbetafel" at [S6]. The **dates** — 1 Jan 2006 for Riester, 21 Dec 2012 for the general market — are `[unverified]` | [R1] [R23] [REG-R34] |
 
-1. [R11] establishes that the ZfA pays the **provider** and that the application deadline runs to the
-   end of the **second** calendar year after the contribution year, but not **when in the following
-   year** the money lands, nor how often an entitlement is later reversed (gap 6). One year is the
-   shortest lag consistent with the statute and is the convention [REG-R42] itself reports.
-2. The two readings cannot both be right [REG-R42]. The model takes the **lower** trigger, so fewer
-   contracts commute, more of the book stays a lifelong annuity, and the projected liability is the
-   longer-tailed of the two. The threshold is held **flat in nominal terms** at its 2026 value; the
-   *Bezugsgröße* is reset annually, so holding it flat **understates** the commutation rate on a
-   long deferral, and that direction is stated rather than hidden (sensitivity 7).
+1. **Gap 6 is closed and this footnote's premise no longer holds.** § 90 Abs. 2 EStG has the ZfA pay
+   the **provider**, who "hat die erhaltenen Zulagen unverzüglich den begünstigten Verträgen
+   gutzuschreiben"; § 89 Abs. 1 and Abs. 3 put the application and the provider's data transmission
+   in the year after the contribution year at the earliest; and **AltvPIBV § 9 Abs. 3 fixes the
+   crediting date for every disclosure calculation at 15 May of that year** [R5]. Reversals are
+   settled **quarterly** — § 90 Abs. 3, remittance "bis zum zehnten Tag des dem Kalendervierteljahr
+   folgenden Monats" — within a two-year recognition window. What remains **[std]** is only the
+   compression of a mid-May credit onto a start-of-year annual grid; the *frequency* of reversals is
+   established, their *rate* is experience data and is not (gap 16).
+2. **The statute settles it, and against the model.** § 93 Abs. 3 Satz 2 Nr. 1 EStG defines a
+   *Kleinbetragsrente* as one that "**1,5 Prozent** der monatlichen Bezugsgröße nach § 18 des Vierten
+   Buches Sozialgesetzbuch nicht übersteigt" [R15]. On the *Bezugsgröße* this file uses the threshold
+   is **59,33 €**, and `kleinbetrag_threshold_mth = 39.55` is a third of the way below it. Raising it
+   would make **more** contracts commute and shorten the liability, so the direction of the error is
+   toward a longer tail. **This is a model change and has not been made** (see the note under
+   *Model-relevant contradictions* below). Two further points stand unchanged: the threshold is held
+   **flat in nominal terms** while the *Bezugsgröße* is reset annually, which understates the
+   commutation rate on a long deferral (sensitivity 7); and the test is applied **after** the elected
+   lump sum, which the GDV model wording forbids [S2] — also a model change, also deferred. What is
+   now settled in the model's favour is that commutation is the **provider's option** [S2] [S4].
 
 ### (b) Insurer-discretionary current elements (snapshot; revisable annually)
 
 | Input | Value | Basis |
 |---|---|---|
-| *Rechnungszins* | **0,25 %** on the anchor, a 2024-vintage tariff; 0,90 % on one older point | cap [R22] [REG-R14] [REG-R15]; carrier's own choice **not established** (gap 12) — **[std]** (3) |
+| *Rechnungszins* | **0,25 %** on the anchor, a 2024-vintage tariff; 0,90 % on one older point | cap [R22] [REG-R14] [REG-R15]. **Two carrier choices are now established** — 1,25 % on a 01.15 tariff [S4], **0,9 %** on a 01.01.2025 tariff [S6] — but neither is the anchor's vintage, so the level stays **[std]** (3) |
 | *Laufende Verzinsung* `decl_rate(t)` | Scenario path in `surplus_scenario.csv`: `base` **2,30 %** level, `low` **0,50 %** level | **[std]** (4) |
 | Surplus system in accumulation | *Verzinsliche Ansammlung*: declared surplus accrues in a **second account** beside the *Deckungskapital* and bears the declared rate | market practice; level **[std]** (4) |
 | *Risikoüberschuss* and *Kostenüberschuss* | **Zero** in the base run | **[std]** (5) |
 | *Schlussüberschussanteil* | **2,0 %** of contributions credited, declared at *Rentenbeginn*, and **counted toward the guarantee** | **[std]** (6), gap 9 |
 | *Bewertungsreserven* share | **1,0 %** of the account at *Rentenbeginn*, the *hälftige* participation of § 153 Abs. 3 VVG | [REG-R24]; level **[std]** (6) |
-| Acquisition charge | **2,5 %** of `beitragssumme`, in five equal instalments in contract years 1 to 5, **whether or not contributions are paid** | [R1] [REG-R16]; level **[std]** (7) |
-| Administration charge | **4,0 %** of each contribution credited, Zulagen **included**, plus a fixed **12,00** per year | **[std]** (7), gap 14 |
-| Frequency loading | 1.0000 / 1.0100 / 1.0200 / 1.0300 for annual / half-yearly / quarterly / monthly, treated as a **charge** and never credited to the account | **[std]** (7) |
+| Acquisition charge | **2,5 %** of `beitragssumme`, in five equal instalments in contract years 1 to 5, **whether or not contributions are paid** | [R1] [REG-R16]; level **[std]** (7) — against **1,0 % of the *Eigenbeiträge*** at the one carrier now in hand [S4] |
+| Administration charge | **4,0 %** of each contribution credited, Zulagen **included**, plus a fixed **12,00** per year | Charging the Zulagen is **confirmed** [S2] [S4] [S6] [S9], gap 14 closed; the **rate** is contradicted — 2,1 % on contributions against **6,0 % on Zulagen** at [S4] — and the levels stay **[std]** (7) |
+| Frequency loading | 1.0000 / 1.0100 / 1.0200 / 1.0300 for annual / half-yearly / quarterly / monthly, treated as a **charge** and never credited to the account | **[std]** (7). One scale is now observed and has a different **mechanic**: +1,0 / +2,0 / +3,0 percentage points on the administration **rate** for half-yearly / quarterly / monthly [S4] |
 | *Risikobeitrag* | **Zero** — the death benefit is the account value, so there is no sum at risk | design consequence **[std]** |
-| *Stornoabzug*; transfer charge | **2,0 %** of the account on surrender; **50,00** flat on an *Anbieterwechsel*, with **no** *Stornoabzug* | [REG-R28]; [R1] [R20] cap the transfer charge, level not established (gap 8) — **[std]** (7) |
-| *Rentenfaktor* margin | **30 %** off the actuarially fair factor, carrying the *Sicherheitsabschlag* and the whole payout-phase loading | **[std]** (8) |
+| *Stornoabzug*; transfer charge | **2,0 %** of the account on surrender; **50,00** flat on an *Anbieterwechsel*, with **no** *Stornoabzug* | § 169 Abs. 5 VVG requires a deduction to be "vereinbart, **beziffert** und angemessen" [REG-R28]. **The transfer-charge ceiling is 150,00 and gap 8 closes** — AltZertG § 1 Abs. 1 Satz 3 [R1]; 50,00 is what one fund provider charges [S9] and one insurer charges nothing [S4]. Levels **[std]** (7) |
+| *Rentenfaktor* margin | **30 %** off the actuarially fair factor, carrying the *Sicherheitsabschlag* and the whole payout-phase loading | **[std]** (8). The construction — per 10 000 €, monthly, higher of guaranteed and current — is now established in a Riester wording [S6]; the **margin** is not |
 | Annuitisation interest basis | **1,00 %**, the *Höchstrechnungszins* in force from 1 January 2025 | [REG-R15]; use of the cap **[std]** (8) |
 
-3. The *Höchstrechnungszins* caps the **reserving** rate, not the rate a policy guarantees [REG-R14];
-   a tariff may guarantee less. Using the cap of the vintage is the highest defensible value and so
-   makes the guarantee **cheapest**; a lower tariff rate widens the *Garantielücke*.
+3. The *Höchstzinssatz* caps the rate at which the **Deckungsrückstellung** is computed, not the rate
+   a policy guarantees [R22] [REG-R14]; a tariff may guarantee less, and DeckRV § 2 Abs. 2 fixes
+   whatever rate was used at conclusion "für die gesamte Laufzeit des Vertrages", which is why
+   `rechnungszins` is a model point attribute. **A retrieved wording now proves the "may guarantee
+   less" limb**: Debeka's 1 January 2025 Riester tariff uses **0,9 %** where the cap of that vintage
+   is 1,00 % [S6]. Using the cap of the vintage remains the highest defensible value and so makes the
+   guarantee **cheapest**; a lower tariff rate widens the *Garantielücke*.
 4. **No declared rate was established for any Riester tariff at any carrier** (gap 12). 2,30 % is a
    round number in the region German life insurers declared in the mid-2020s [REG-R53]
    `[unverified]`, and 0,50 % is a stress, not a forecast. This is the single most consequential
@@ -294,23 +309,60 @@ consequential, because the declared rate is what decides whether the guarantee c
 5. The accumulation-phase risk result is nil by construction here (no sum at risk), and no cost
    result was established. Setting both to zero keeps the surplus mechanic to the one component the
    corpus does establish, the *Zinsüberschuss*, and states the omission rather than burying it.
-6. **Which surplus components may close a guarantee shortfall was not established** (gap 9). The
-   model counts all of them, the provider-favourable reading. Counting only the vested
-   *Deckungskapital* and *Überschussguthaben* raises the projected guarantee cost, and that variant
-   is sensitivity 4.
-7. **No charge figure exists anywhere in this corpus** (gap 13); the one inherited datum [S5] is
-   third-party commentary on a specimen quotation and is not a tariff sheet. Every level here is a
-   round-number placeholder, sized so that the acquisition charge on the anchor is of the same order
-   as one year's contribution and so that the total charge load is broadly consistent with the
-   *Effektivkosten* a certified product must disclose [R4] [S14].
-8. German market *Rentenfaktoren* sit materially below the actuarially fair factor. Rather than
-   deduct a percentage from each annuity payment **and** apply a conservative factor, which
-   double-counts, the whole loading sits in the factor, and the insurer's real payout-phase
-   administration is a per-policy expense cash flow. The consequence to check is that
-   `rentenfaktor_curr()` and the annuity table are **consistent by construction**, while
-   `rentenfaktor_guar` is an independent contract term — so the model states which is authoritative
-   when they disagree: the **higher** applies, which is the German market's own construction and is
-   **[std]** here because it was not established for any Riester tariff (gap 9).
+6. **Which surplus components may close a guarantee shortfall is still not established** (gap 9),
+   and this pass can now say precisely why rather than merely that. AltZertG § 1 Abs. 5 does define
+   the *gebildetes Kapital* for an insurance contract as the *Deckungskapital* "zuzüglich bereits
+   zugeteilter Überschussanteile, des übertragungsfähigen Werts aus Schlussüberschussanteilen sowie
+   der nach § 153 Abs. 1 und 3 des Versicherungsvertragsgesetzes zuzuteilenden Bewertungsreserven"
+   [R1] — but that definition governs the **transfer** value, and the guarantee of § 1 Abs. 1 Satz 1
+   Nr. 3 speaks only of what must "für die Leistungserbringung zur Verfügung stehen". The GDV model
+   wording repeats the guarantee without naming components [S2] § 1 Abs. 10, and uses the § 1 Abs. 5
+   list only for the transfer value at its own § 11 Abs. 2. So the retrieved documents are **silent
+   on the point** rather than absent, which is a different and more useful kind of gap. The model
+   counts all of them, the provider-favourable reading; counting only the vested *Deckungskapital*
+   and *Überschussguthaben* raises the projected guarantee cost, and that variant is sensitivity 4.
+7. **Charge figures now exist, and this footnote's premise is withdrawn.** One complete tariff basis
+   is in hand — CosmosDirekt LA 1005 A § 11 [S4]: acquisition **1,0 % of the *Eigenbeiträge*** spread
+   over at least five years; administration **2,1 %** of each *Eigenbeitrag*, **2,1 %** of capital
+   transferred in and **6,0 % of each Zulage**; a sub-annual loading of +3,0 / +2,0 / +1,0 percentage
+   points; **0,13 %** of the accumulated *Beitragssumme* taken monthly pro rata from the
+   *Deckungskapital*, also when paid up; **1,5 %** of the annual annuity in payment; and **nil**
+   *Stornoabzug* and **nil** transfer charge. Two disclosed totals are in hand too — *Effektivkosten*
+   of **1,45** and **1,33 Prozentpunkte** at a fund house [S9]. Every level in this table nonetheless
+   stays **[std]**, for a changed reason: **one tariff is not a range**, and the one observation
+   differs from the composite in level, in base and in mechanic. It is recorded here so that the next
+   calibration starts from a document rather than from a round number.
+8. German market *Rentenfaktoren* sit materially below the actuarially fair factor — a proposition
+   the 0,1 % interest basis behind Debeka's guaranteed factor makes concrete [S6]. Rather than deduct
+   a percentage from each annuity payment **and** apply a conservative factor, which double-counts,
+   the whole loading sits in the factor, and the insurer's real payout-phase administration is a
+   per-policy expense cash flow — **which is not what the market does**: AltZertG § 2a Satz 1 Nr. 1
+   Buchst. f permits a charge as a percentage of the benefit paid and one carrier levies 1,5 % of the
+   annual annuity [S4]. The consequence to check is unchanged: `rentenfaktor_curr()` and the annuity
+   table are **consistent by construction** while `rentenfaktor_guar` is an independent contract
+   term, and the **higher** applies when they disagree. **That rule is no longer [std] by default** —
+   Debeka drafts it in terms, "Die höhere Rente wird ausgezahlt (Günstigerprüfung)" [S6] — but the
+   **level** of both factors is, and the design is not universal: neither the GDV model wording nor
+   the CosmosDirekt wording uses a *Rentenfaktor* at all [S2] [S4] (gap 9).
+
+### Model-relevant contradictions found in the 2026-08-30 provenance pass
+
+**Three retrieved documents contradict rules this model implements. None of them has been applied,
+because each is a model change: it moves the worked example below and the golden tests with it.**
+They are set out here so that a reader of the anchor's numbers knows which of them rest on a rule the
+documents now show to be wrong.
+
+| What the model does | What the retrieved document says | Direction of the error |
+|---|---|---|
+| `kleinbetrag_threshold_mth = 39.55`, being **1 %** of the monthly *Bezugsgröße* | § 93 Abs. 3 Satz 2 Nr. 1 EStG: "eine monatliche Rente …, die **1,5 Prozent** der monatlichen Bezugsgröße nach § 18 des Vierten Buches Sozialgesetzbuch nicht übersteigt" [R15]. On the 3 955,00 € used here, **59,33 €** | The threshold is **a third too low**, so **too few** model points commute and the projected liability is **too long-tailed**. Model points 4, 5, 10 and 13 already commute; on a 59,33 € threshold others would join them |
+| `is_kleinbetrag()` tests the annuity payable **after** the elected *Teilkapitalauszahlung* | [S2] § 1 Abs. 3: "**Eine Abfindung erfolgt nicht, wenn die Leistung nur aufgrund einer Teilkapitalauszahlung gemäß Absatz 4 auf eine Kleinbetragsrente sinkt.**" The test belongs on the annuity the whole conversion capital would buy | The test trips **less often** than the wording allows, in the same direction as the threshold error and compounding it on any point that elects the 30 % lump sum |
+| Administration charge of **4,0 %** applied to the *Eigenbeitrag* and the Zulage **at the same rate** | [S4] § 11 Abs. 2: **2,1 %** of each *Eigenbeitrag* and **6,0 %** of each Zulage — the Zulagen charged at nearly three times the rate | The composite **undercharges** the Zulagen relative to the one tariff observed, which matters most on the low-income cells where the Zulagen are the majority of the contribution |
+
+Two further differences are **not** contradictions but are worth recording beside them: the model's
+frequency loading is a multiplicative factor on the contribution where the observed one is an
+addition to a charge rate [S4]; and the model's flat 2,0 % *Stornoabzug* cannot express the
+interest-linked market-value adjustment one carrier uses [S6]. Both are **[std]** choices whose
+mechanic, not only whose level, now has an observed alternative.
 
 ### (c) Behavioural and experience assumptions (the modeller's view)
 
@@ -324,13 +376,13 @@ not from data.
 | Accumulation mortality `mort_table_accum.csv` | **[std]** proxy standing in for **DAV 2008 T** [REG-R48], applied with `mort_be_factor = 0.80` | The DAV tables are proprietary and **not redistributed** [REG-R47]. A death-benefit basis carries **no** improvement projection, because for death cover improvement favours the insurer |
 | Annuity mortality `annuity_mort_table.csv` | **[std]** **generational** proxy standing in for **DAV 2004 R** [REG-R49]: `q(x, τ) = qx_base(x) · (1 − improvement(x))^(τ − 2027)`, applied with `annuity_mort_be_factor = 1.15` | The one structural property that is **not optional** is that the basis is two-dimensional in age and calendar year; a period-table proxy understates a twenty-year-deferred annuitisation by a margin that dwarfs every other assumption [REG-R49] |
 | Why two factors, in opposite directions | 0.80 on the death basis, 1.15 on the annuity basis | The direction of prudence **forks by product** [REG-R47]: a first-order death table assumes mortality **higher** than expected, a first-order annuity table **lower**. The best estimate therefore sits below the one and above the other |
-| Surrender `lapse_rate(t)` | **0,8 %** p.a. at contract durations 1–5, **0,6 %** at 6–10, **0,4 %** from 11 | Materially **below** a Schicht-3 rate, because a *Kündigung* repays all Zulagen and all § 10a relief and taxes the growth [R14] [REG-R42], and because the subsidised capital is protected from execution [R16] [REG-R40] |
-| Transfer out `transfer_rate(t)` | **1,2 %** p.a. at durations 1–5, **0,9 %** at 6–10, **0,6 %** from 11 | Set **above** surrender, because the *Wechselrecht* is free of subsidy consequences [R1] and is therefore the rational exit; a model carrying only a lapse rate has mis-specified the book |
+| Surrender `lapse_rate(t)` | **0,8 %** p.a. at contract durations 1–5, **0,6 %** at 6–10, **0,4 %** from 11 | Materially **below** a Schicht-3 rate, because a *Kündigung* repays all Zulagen and all § 10a relief (§ 93 Abs. 1 Satz 1) and taxes the growth (§ 22 Nr. 5 Satz 3) [R14] [REG-R42], and because EStG § 97 makes the subsidised capital non-transferable and ZPO § 851 Abs. 1 therefore unattachable [R16] [REG-R40] |
+| Transfer out `transfer_rate(t)` | **1,2 %** p.a. at durations 1–5, **0,9 %** at 6–10, **0,6 %** from 11 | Set **above** surrender, because the *Wechselrecht* is free of subsidy consequences (§ 93 Abs. 2 Satz 1 EStG) [R1] [R14] and is therefore the rational exit; the ceding provider may charge at most 150,00 € for it and one retrieved insurer charges nothing [S4]. A model carrying only a lapse rate has mis-specified the book |
 | *Beitragsfreistellung* | A **model-point switch** (`bfs_year`), not a decrement | (9) |
 | Income growth | **2,0 %** p.a. on the anchor's `income_schedule` path | A round real-plus-inflation number; it decides when the 2 100 € ceiling binds and so the shape of the contribution stream |
 | Commutation take-up | **Computed, not assumed** — the model tests the annuity against the threshold | The one behavioural quantity here that does not need a rate |
 | *Teilkapitalauszahlung* take-up | **30 %** on the anchor, 0 % on model point 12 | German commentary reports the lump sum as usual `[unverified]`; **gap 10 records that this rests on nothing** |
-| Expenses `expense_maint`, `expense_annuity`, `expense_claim`, `expense_acq` | **30.00** p.a. per in-force policy inflating at **2,0 %**; **24.00** p.a. per annuitant; **80.00** per claim; **150.00 + 2,0 %** of `beitragssumme` at issue | No German insurer publishes a unit cost. The per-policy maintenance figure carries the Zulage administration — the *Dauerzulageantrag*, the annual data exchange with the ZfA and the *Leistungsmitteilung* [R11] [R12] — which is a real and product-specific cost |
+| Expenses `expense_maint`, `expense_annuity`, `expense_claim`, `expense_acq` | **30.00** p.a. per in-force policy inflating at **2,0 %**; **24.00** p.a. per annuitant; **80.00** per claim; **150.00 + 2,0 %** of `beitragssumme` at issue | No German insurer publishes a unit cost. The per-policy maintenance figure carries the Zulage administration — the *Dauerzulageantrag* (§ 89 Abs. 1a), the annual data transmission (§ 89 Abs. 3), the quarterly reclaim remittance (§ 90 Abs. 3), the *Leistungsmitteilung* (§ 22 Nr. 5 Satz 7, due on first receipt and on change rather than annually) and the separate annual information duty of AltZertG § 7a [R4] [R11] [R12] — which is a real and product-specific cost |
 | Commission | **2,5 %** of `beitragssumme` at issue, **1,5 %** of contributions thereafter | The initial rate is set at the *Höchstzillmersatz* [REG-R16] [REG-R20]. **The cash leaves at issue while the charge is recovered over five years** [R1]; that gap is the new-business strain and it is carried by the insurer |
 
 9. ***Beitragsfreistellung* is the German Riester book's dominant exit** [R25], and the model
@@ -410,8 +462,14 @@ independent of `φ`, which is what pitfall 11 asserts. An earlier draft of these
 deducted the loading twice; see *Changes the model stage made to these notes*. `K_a` continues for its five contract years **whether or not contributions are paid**,
 so on a *beitragsfrei* contract `S(t)` is negative and the *Deckungskapital* falls — which is the
 mechanic model point 10 exists to show. The administration charge falls on the **Zulagen as well as
-the *Eigenbeitrag*** [std]; whether German tariffs do that **was not established** (gap 14) and it
-is material, because in the low-income cases the Zulagen are the majority of `C(t)`.
+the *Eigenbeitrag***, and **gap 14 is closed**: German tariffs do charge them. The GDV model wording
+permits a charge on "jeder Zulage und Zuzahlung" and takes the acquisition-cost element "einmalig zum
+Zeitpunkt des Zuflusses" [S2]; Debeka drafts the same [S6]; Union Investment discloses acquisition
+cost as a percentage "der eingezahlten Beiträge (inkl. Zulagen)" [S9]; and CosmosDirekt puts a number
+on it, **6,0 %** of each Zulage against **2,1 %** of each *Eigenbeitrag* [S4]. **The model charges
+both at the same rate, which that one observation contradicts** — see *Model-relevant contradictions*
+above. It is material for the reason the note always gave: in the low-income cases the Zulagen are
+the majority of `C(t)`. The model's **[std]** is now a level, not a structural guess.
 
 ### The account: two balances, one credited rate
 
@@ -477,9 +535,11 @@ that a reader should see — but it is a diagnostic: **the guarantee is tested o
 basis, `annuity_mort_rate(x, τ) · annuity_mort_be_factor`. The wedge between them is the
 *Risikoüberschuss* in payment [REG-R47], which this model does not distribute (assumption class (b),
 footnote 5). The commutation test is applied to the annuity **actually payable after the elected
-lump sum**, which is a **[std]** reading of a statute that does not settle the point (gap 7); the
-alternative — testing the annuity the whole capital would buy — trips less often and is sensitivity
-6. If the contract commutes there is **no** *Teilkapitalauszahlung*: the whole capital is one
+lump sum**. The statute does not settle the point, but **the GDV model wording does, and against this
+reading**: "Eine Abfindung erfolgt nicht, wenn die Leistung nur aufgrund einer Teilkapitalauszahlung
+gemäß Absatz 4 auf eine Kleinbetragsrente sinkt" [S2] § 1 Abs. 3. The alternative — testing the
+annuity the whole capital would buy — is therefore the drafted rule rather than merely a variant, and
+it remains sensitivity 6 because changing it is a model change (gap 7). If the contract commutes there is **no** *Teilkapitalauszahlung*: the whole capital is one
 payment.
 
 ### Decrements
@@ -758,7 +818,8 @@ own choice **[std]**. *Laufende Verzinsung* **2,30 %** level on the `base` scena
 33 600,00 € *Beitragssumme* — 840,00 €, in five equal instalments of **168,00 €** in contract years
 1 to 5, so projection years 1 and 2 carry it and years 3 onward do not — [R1] [REG-R16], level
 **[std]**. Administration charge **4,0 %** of each contribution credited, Zulagen **included**
-`[std]` (gap 14), plus a fixed **12,00 €** a year **[std]**. Frequency loading **1.0000** (annual)
+`[std]` — charging them is now established [S2] [S4] [S6] [S9] and only the rate is standardized —
+plus a fixed **12,00 €** a year **[std]**. Frequency loading **1.0000** (annual)
 **[std]**. *Risikobeitrag* **zero**, the death benefit being the account value. *Schlussüberschuss*
 **2,0 %** of contributions credited and *Bewertungsreserven* share **1,0 %** of the account, both at
 *Rentenbeginn*, both counted toward the guarantee — [REG-R24], levels and the counting convention
@@ -769,10 +830,12 @@ at `mort_be_factor = 0.80`. Annuity mortality: the shipped **[std]** **generatio
 `ann_factor()`. Annuitisation interest **1,00 %** [REG-R15] **[std]**, with the Woolhouse
 `−11/24` correction **[std]**; *Rentenfaktor* margin **30 %** **[std]**; guaranteed *Rentenfaktor*
 **29,00 €** per 10 000 € per month **[std]** (gap 9). *Kleinbetragsrente* threshold **39,55 €** per
-month **[std]** [REG-R42] [REG-R46], the competing 59,33 € reading printed and not used. Surrender
+month **[std]** [REG-R42] [REG-R46] — **below the 59,33 € the statute implies** [R15], a discrepancy
+recorded under *Model-relevant contradictions* and deliberately not fixed here. Surrender
 **0,8 % / 0,6 % / 0,4 %** and transfer out **1,2 % / 0,9 % / 0,6 %** by duration band, both
-**[std]**; *Stornoabzug* **2,0 %** [REG-R28] **[std]**; transfer charge **50,00 €** **[std]**
-(gap 8). Expenses **[std]**: maintenance 30,00 € per in-force policy per year inflating at **2,0 %**,
+**[std]**; *Stornoabzug* **2,0 %** [REG-R28] **[std]**; transfer charge **50,00 €** **[std]**,
+now known to sit inside a statutory ceiling of **150,00 €** [R1] and to be the figure one fund
+provider actually charges [S9] (gap 8 closed). Expenses **[std]**: maintenance 30,00 € per in-force policy per year inflating at **2,0 %**,
 annuity administration 24,00 € per annuitant per year, claim expense 80,00 € per death, surrender or
 transfer; no acquisition expense and no initial commission, because `duration_init = 3` puts them in
 the past. Renewal commission **1,5 %** of the contributions credited **[std]**. `omega_age = 110`
@@ -909,7 +972,8 @@ the first-order generational basis is `ä = 20,8722287915`, so the current *Rent
 guaranteed 29,00, and the guaranteed factor applies. The lump sum is
 `0,30 × 45 756,383140 = 13 726,914942 €`, leaving 32 029,468198 € to annuitise; the monthly
 instalment is `32 029,468198 / 10 000 × 29,00 = 92,885458 €`, comfortably above the 39,55 €
-*Kleinbetragsrente* threshold, so the contract annuitises and the annual annuity is
+*Kleinbetragsrente* threshold the model uses — and above the 59,33 € the statute implies, so this
+cell is unaffected by that error — so the contract annuitises and the annual annuity is
 `12 × 92,885458 = 1 114,625493 €`. Weighted on `pols_conv() = 0,7675876849`, that is
 `claims_lumpsum(18) = 10 536,61 €` and `claims_annuity(18) = 855,57 €` — the table's row 18.
 
@@ -1024,7 +1088,8 @@ The saver pays 609,80 € over the whole projection and the state pays 1 926,26 
 is 76 % of the contribution**, which is why a statement that folded `zulagen` into `premiums`
 would be describing a different product. The contract never produces an annuity: at `t = 12` the
 capital is 4 537,217342 €, and the annuity after the elected 30 % lump sum would be
-`0,70 × 4 537,217342 / 10 000 × 29,00 = 9,21 €` a month against a 39,55 € threshold, so the
+`0,70 × 4 537,217342 / 10 000 × 29,00 = 9,21 €` a month against the model's 39,55 € threshold — and
+it would fail the statutory 59,33 € threshold too, so this cell is likewise unaffected — so the
 *Kleinbetragsrente* test commutes it and the whole capital is paid as an *Abfindung*,
 `3 828,31 € = 4 537,217342 × 0,84375772`. There is **no** *Teilkapitalauszahlung* beside it,
 `pols_if` is zero from `t = 13` because the *Abfindung* discharges the contract outright — an
@@ -1133,10 +1198,15 @@ In rough order of leverage on a German Riester block.
    the `low` scenario's 0,50 % is the difference between a guarantee that costs nothing and one that
    binds — model point 11 exists to show it. **No declared rate at any carrier was established**
    (gap 12).
-2. **The charge basis, and whether the Zulagen are charged.** Every charge is **[std]** (gap 13), and
-   the **charge base for the Zulagen is unknown** (gap 14). On the low-income model points the
-   Zulagen are the majority of the contribution, so this one unestablished convention moves the
-   account value by tens of per cent on exactly the cells the product was designed for.
+2. **The charge basis, and the rate the Zulagen are charged at.** Every charge **level** is still
+   **[std]**, but the question has narrowed. **Gap 14 is closed**: the Zulagen are charged, in the
+   GDV model wording and at three carriers [S2] [S4] [S6] [S9]. What is now in doubt is the *rate*,
+   and the one tariff in hand charges the Zulagen at **6,0 %** against **2,1 %** on the *Eigenbeitrag*
+   [S4] where the model charges both at 4,0 %. On the low-income model points the Zulagen are the
+   majority of the contribution, so the gap between 4,0 % and 6,0 % moves the account value on
+   exactly the cells the product was designed for — and the gap between the composite's 2,5 %
+   acquisition charge on a Zulagen-inclusive *Beitragssumme* and the observed 1,0 % on *Eigenbeiträge*
+   alone moves it further. A calibration against [S4] is the highest-value next step in this file.
 3. **The annuity basis and its generational structure.** A twenty-year deferral means the conversion
    happens on `τ = 2044` mortality. The improvement function, not the base table's level, is what
    decides the annuity factor, and it is entirely **[std]** [REG-R49]. The `rentenfaktor_margin` of
@@ -1149,21 +1219,30 @@ In rough order of leverage on a German Riester block.
    represented as a per-model-point switch. A book projection built from these model points will
    therefore over-state future contributions and Zulagen unless the point weights carry the paid-up
    share — and **there is no official statistic for that share at all** (gap 2).
-6. **The *Kleinbetragsrente* test.** Two things are unestablished: the threshold itself, where two
-   irreconcilable readings exist [REG-R42], and whether the test applies before or after the elected
-   lump sum (gap 7). The model takes the lower threshold and the post-lump-sum reading, both of
-   which push toward **fewer** commutations and a longer-tailed liability.
+6. **The *Kleinbetragsrente* test — now a known error rather than an open question.** The threshold
+   is **1,5 %** of the monthly *Bezugsgröße*, § 93 Abs. 3 Satz 2 Nr. 1 EStG [R15], and the model uses
+   a 1 % figure; and the test belongs on the annuity **before** the elected lump sum, the GDV model
+   wording excluding a commutation caused only by the *Teilkapitalauszahlung* [S2]. **Both of the
+   model's choices push toward fewer commutations and a longer-tailed liability, and both are
+   wrong in that direction.** Neither has been changed here — see *Model-relevant contradictions* —
+   so this remains the largest single correction outstanding against the model.
 7. **Holding the *Kleinbetragsrente* threshold flat in nominal terms.** The *Bezugsgröße* is reset
    annually; on a seventeen-year deferral a flat threshold **understates** the commutation rate, and
    the direction of the error is stated rather than hidden.
 8. **The monthly annuity on an annual grid.** The model pays a full year to a life that dies in the
    payout year, overstating the annuity outgo by roughly `½ · q(x) · 12R` a year. It is small at 67
    and grows with attained age; `products/sofortrente/` runs monthly for that reason.
-9. **Everything statutory is `[unverified]` at the paragraph level** (gap 4), and the two most
-   consequential figures in the whole subsidy — the 175 €/300 € Zulagen and the 4 % / 2 100 € / 60 €
-   arithmetic — rest on general knowledge corroborated only at one remove [REG-R42]. A calibration
-   pass against the statute and against a real *Produktinformationsblatt* [S14] is required before
-   any quantitative use of this model.
+9. **This risk is retired. Gap 4 is closed.** Every statutory paragraph number in this file was
+   checked against the canonical XML on 2026-08-30, with the instrument's *Stand* recorded at each
+   entry in `sources.md`, and the two most consequential figures in the whole subsidy — the
+   175 € / 185 € / 300 € Zulagen and the 4 % / 2 100 € / 60 € arithmetic — are read verbatim in
+   §§ 84, 85, 86 and 10a EStG rather than corroborated at one remove [R6] [R9] [R10]. Three citations
+   were **wrong** and are corrected: the 60th-year *Rentenbeginn* is AltZertG § 14 Abs. 2 and not
+   § 1; the *Pfändungsschutz* is ZPO § 851 Abs. 1 and not EStG § 97; the *Effektivkosten* are
+   AltvPIBV § 8 Nr. 3 and not the AltZertG, which never uses the word. What still requires a
+   calibration pass before quantitative use is the **carrier** half: the charge levels, the declared
+   rate and the *Rentenfaktor*, for which one tariff [S4] and one disclosed cost total [S9] now exist
+   where none did.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-riester_rente-r1
@@ -1175,11 +1254,11 @@ In rough order of leverage on a German Riester block.
 [R15]: #delib-riester_rente-r15
 [R16]: #delib-riester_rente-r16
 [R19]: #delib-riester_rente-r19
-[R20]: #delib-riester_rente-r20
 [R22]: #delib-riester_rente-r22
 [R23]: #delib-riester_rente-r23
 [R25]: #delib-riester_rente-r25
 [R4]: #delib-riester_rente-r4
+[R5]: #delib-riester_rente-r5
 [R6]: #delib-riester_rente-r6
 [R8]: #delib-riester_rente-r8
 [R9]: #delib-riester_rente-r9

@@ -180,9 +180,11 @@ lands **after** the decrements and goes to the survivors, so:
 | surrender | `max(av_pp_at(t, "AFT_GUAR"), min_surr_pp(t))` less the *Stornoabzug* | no |
 | maturity | `av_pp(n+1)`, floored at `guar_cap_pp(n+1)` | **yes** |
 
-A mid-year exit forfeits the running *Indexjahr* **[std]**: the payoff exists only at the year
-end, and whether a carrier pro-rates it, refunds the unspent option budget or keeps it **was not
-established** [R2]. The annual grid also silently gives every exit the *favourable* date — the
+A mid-year exit forfeits the running *Indexjahr*, and that is the rule in both retrieved AVB
+rather than a standardization: the participation is credited only "zu Beginn des folgenden
+→Indexjahres" ([S2] Ziffer 3.3, [S7] § 3 Ziffer 5), no unspent budget is refunded, and on
+surrender Allianz adds only a pro-rata *Schlussüberschussanteil* and *Sockelbetrag* [S2]
+Ziffer 9.2 Absatz 4 [R2]. The annual grid also silently gives every exit the *favourable* date — the
 product rewards surrendering just after an *Indexjahr* ends — and that is a stated model risk
 rather than a neutral convention. `av_released(t)` is the account the exits carry **out of the
 fund**, deliberately not what they are *paid*: the death floor pays more than the account
@@ -279,8 +281,8 @@ assumption, and that exemption is the library's only one.
 |---|---|---|
 | `model_point_table.csv` | Thirteen model points. **Point 1 is the worked-example anchor cell** (M40 → 67, 2 400,00 € a year for 27 years, Cap design, `eqidx_vol17`, `always_index`, 90 % *Beitragsgarantie* at `i_g = 1,00 %`). Points 2–13 exercise the *Quote* design, the house index, all four payment frequencies, a single premium, two in-force cells, the flat path where the guarantee binds, all four election paths, both *Kapitalwahlrecht* elections, both *Stornoabzug* settings and four *Rechnungszins* cohorts | anchor cell **[std]**, the technical notes' worked example |
 | `index_return_table.csv` | Twelve monthly returns per `(index_id, t)`, 40 years, three paths | **[std]**. `eqidx_vol17` from `default_rng(20260829).normal(0.0060, 0.0500, size=(40, 12))` rounded to 4 dp, **with `t = 9` and `t = 10` overwritten by the research file's Examples A and B**; `houseidx_vol5` from `default_rng(20260830).normal(0.0025, 0.0144, …)`; `zero_path` all zeros. The anchors a substitute must preserve are the two example rows: `t = 9` must sum, capped at 3 %, to **+8,90 %** and `t = 10` to **−2,60 %** on a compounded raw return of **+6,4402 %** |
-| `index_param_table.csv` | `cap` and `quote` by `(index_id, t)` | **[std]**, 3,00 % monthly and 60 % on the equity path, 6,00 % and 100 % on the house path. **No cap level for any German carrier in any year was established** [S5] [R21]; 3,00 % is the midpoint of an argued 1,5–5,0 % band. Per year because the insurer redetermines them each *Indexjahr*; level here only because nothing else could be established |
-| `surplus_rate_table.csv` | The declared *Überschussanteilsatz* by `t` | **[std]** 2,50 % level, consistent with the 2026 market averages recorded at [R20]. **This rate is the option budget**; the model consumes a declared rate and does not derive one from an investment result under the MindZV minimum [R8] |
+| `index_param_table.csv` | `cap` and `quote` by `(index_id, t)` | **[std]**, 3,00 % monthly and 60 % on the equity path, 6,00 % and 100 % on the house path; 3,00 % is the midpoint of an argued 1,5–5,0 % band. **Two carrier figures are now on record and neither is a market panel** [R21]: Allianz's worked illustration runs at a Cap of **3,2 %** with a *Partizipationssatz* of 75,00 % [S2] [S5], and Stuttgarter **publishes** a *Partizipationsquote* of **70 %** on its house multi-asset index for 1.2.2026–31.1.2027 [S8] — below the 100 % this file ships on the house path. Per year because the insurer redetermines them each *Indexjahr*; level here only because nothing else could be established |
+| `surplus_rate_table.csv` | The declared *Überschussanteilsatz* by `t` | **[std]** 2,50 % level — **below the 2026 evidence**, Assekurata's survey giving *Indexpolicen* an average declared 3,07 % and classic private annuities 2,62 % [R20], and Stuttgarter publishing 2,16 % for its own safe arm [S8]. **This rate is the option budget**; the model consumes a declared rate and does not derive one from an investment result under the MindZV minimum [R8] |
 | `election_table.csv` | `w` by `(elect_id, t)`, four paths | **[std]** and **behavioural**. No election distribution for this product family is established, in either direction |
 | `mort_table.csv` | `qx` by sex and attained age 20–100 | **[std]** Gompertz proxy `0.001200 × 1.095^(age − 40)` with `qx(F) = 0.65 × qx(M)`. **Not** DAV 2008 T or DAV 2004 R: those are proprietary, are cited by name and are never shipped [REG-R48] [REG-R49]. **The anchor a replacement must preserve is `qx(M, 40) = 0.001200`.** It is a period table with no selection effect, and here mortality is a *timing* assumption rather than an amount one — but both properties matter greatly to the *Rentenfaktor*, which is why that is an input and not a computed quantity |
 | `lapse_table.csv` | Base surrender by policy year: 5 % in years 1–2, 3 % in 3–11, **6 % in year 12**, 2 % from 13 | **[std]**. The year-12 step is the § 20 Abs. 1 Nr. 6 EStG threshold [R14] and is the shape's whole point; **no index-specific *Stornoquote* exists**, and the two market-wide GDV measures are irreconcilable [R19] |
@@ -386,33 +388,41 @@ chassis, while here it is the **declared *Überschuss*** and is bounded by the M
 
 ## Standardizations used
 
-Every quantity below is **[std]** — a standardization introduced for the reference
-implementation, chosen because no German carrier document could be reached. This product
-carries a higher proportion of them than any other in the library, and the list is complete.
+Every quantity below was introduced as a **[std]** — a standardization for the reference
+implementation, chosen when no German carrier document could be reached. Carrier documents can
+now be reached, and the Rationale column records for each row what the retrieved evidence does
+to it: **two rows are no longer standardizations at all** (the base `G` of the participation
+and the mid-year exit treatment, both of which turn out to be the rule in the two retrieved
+AVB), **three are confirmed at their shipped value** (the acquisition charge, the
+*Garantieniveau* and the *Rentenfaktor*), and **three are now known to sit off the evidence**
+(the declared surplus rate, low; the equity *Partizipationsquote*, low; the house-index
+*Partizipationsquote*, high). **No value in this table has been changed** — every one is a
+shipped input backing a worked example and a golden test, and moving one is a decision to take
+deliberately, not a side effect of a provenance pass. The list is complete.
 
 | Standardization | Value | Rationale |
 |---|---|---|
-| Monthly Cap | 3,00 % on `eqidx_vol17`, 6,00 % on `houseidx_vol5` | Midpoint of an argued 1,5–5,0 % market band; **no carrier level in any year was established** [S5] [R21]. The house-index cap is higher because a low-volatility underlying is cheap to buy options on |
-| *Partizipationsquote* | 60 % equity, 100 % house index | Midpoints of argued 50–80 % and 80–120 % bands; a rate near 100 % is not generosity but what the same budget buys on an engineered underlying |
-| Declared surplus rate `b` | 2,50 % a year, level | Consistent with the 2026 market averages recorded at [R20]; held level and exogenous, the model's largest single simplification |
+| Monthly Cap | 3,00 % on `eqidx_vol17`, 6,00 % on `houseidx_vol5` | Midpoint of an argued 1,5–5,0 % market band, and now beside one carrier figure: Allianz's own worked illustration runs at **3,2 %** [S2] [S5]. **No market panel of cap levels was found** [R21]. The house-index cap is higher because a low-volatility underlying is cheap to buy options on |
+| *Partizipationsquote* | 60 % equity, 100 % house index | Midpoints of argued 50–80 % and 80–120 % bands. The retrieved figures sit differently: Allianz illustrates **75,00 %** on the EURO STOXX 50 [S2], and Stuttgarter **publishes 70 %** on its house multi-asset index for 1.2.2026–31.1.2027 [S8] — so the shipped equity rate is low and the shipped house rate is high against the one published house figure |
+| Declared surplus rate `b` | 2,50 % a year, level | **Below the 2026 evidence**, which now reports the index segment separately: Assekurata gives *Indexpolicen* an average declared 3,07 % against 2,62 % for classic private annuities [R20], and Stuttgarter publishes 2,16 % for its own safe arm [S8]. Reported, not changed — see *What a retrieved document would change* below. Held level and exogenous, the model's largest single simplification |
 | Guaranteed rate `i_g` | 1,00 % (0,90 % and 0,25 % on the in-force points) | The *Höchstrechnungszins* for 2025–2026 and two earlier cohorts [R7] [R18] |
-| *Garantieniveau* | 90 % of *Beitragssumme* (60 %, 80 %, 100 % on other points) | Inside the observed 60–100 % menu; 100 % is statutory only for *Riester* [R12] |
-| Index paths | three, constructed and reproducible from their seeds | No documented *Indexjahr* was located at all; the two example rows are wired in so the mechanic is asserted rather than described |
-| Base `G` of the participation | the whole *Deckungskapital* at the year start | **The largest unquantified uncertainty in the product file.** Whether the base is the whole capital, a sub-account or the accumulated *Überschussguthaben* was not established, and a different reading rescales every credit |
-| *Indexjahr* alignment | aligned with the policy year | The *Indexstichtag* need not fall on the anniversary; an annual-grid model has no other defensible alignment |
-| Mid-year exit treatment | no credit in the year of exit | The usual treatment on this author's understanding; the alternative is a real cash-flow difference [R2] |
+| *Garantieniveau* | 90 % of *Beitragssumme* (60 %, 80 %, 100 % on other points) | **90 % is the modal retrieved level**: Allianz IndexSelect 90 % and IndexSelect Plus 80 % [S4], R+V 90 % [S7] § 1 Ziffer 2, Stuttgarter *BasisRente index-safe* 85 % [S11]. 100 % is statutory only for *Riester* [R12]; 60 % is unretrieved recollection |
+| Index paths | three, constructed and reproducible from their seeds | Still constructed. **Two documented *Indexjahre* were located** — Allianz's published 2020/2021 and 2021/2022 tables at Cap 3,2 % [S2] — and they confirm the mechanic the two wired-in example rows assert, but they are not shipped: the golden tests are anchored on the research file's Examples A and B |
+| Base `G` of the participation | the whole *Deckungskapital* at the year start | **No longer a standardization — it is the rule in both retrieved AVB.** "Bezugsgröße für die →Indexpartizipation ist der →Policenwert zu Beginn des →Indexjahres" [S2] Ziffer 3.3 Absatz 2 e), and [S7] § 3 Ziffer 2 likewise, both excluding that year's premiums. The sub-account and *Überschussguthaben* readings are withdrawn |
+| *Indexjahr* alignment | aligned with the policy year | R+V's rule exactly ([S7] § 3 Ziffer 3), and a simplification against the other two: Allianz contemplates an *Indexjahr* that does not start with a *Versicherungsjahr* [S2] Ziffer 3.5, and Stuttgarter runs a common 1.2.–31.1. window for all contracts [S8]. An annual-grid model has no other defensible alignment |
+| Mid-year exit treatment | no credit in the year of exit | **No longer a standardization.** Both retrieved AVB credit the participation only at the start of the following *Indexjahr* and refund no unspent budget; on surrender Allianz adds a pro-rata *Schlussüberschussanteil* and *Sockelbetrag* only [S2] Ziffer 3.3 and 9.2, [S7] § 3 Ziffer 5 [R2] |
 | Election path | `w = 1` in the base run | A modelling choice so the model demonstrates the index arm, not a claim about behaviour |
 | Mortality | Gompertz proxy anchored at `qx(M, 40) = 0.001200` | DAV 2008 T and DAV 2004 R are proprietary and are never shipped [REG-R48] [REG-R49] |
 | Surrender | 5 / 5 / 3 … 6 (year 12) / 2 %, zero in the final year | No index-specific rate exists; the year-12 step is the EStG threshold [R14], and the terminal zero is a convention that moves real money here |
 | Decrement order | death, then surrender on the survivors of death | Sequential rather than competing rates; declared rather than assumed |
-| *Abschlusskosten* | 2,5 % of `BS`, zillmerised over 5 years | At the DeckRV *Höchstzillmersatz* of 25 ‰ [R7] |
-| *Verwaltungskosten* | `β = 3 %` of premium, `γ = 0,25 %` of the account a year | Inherited from delib products 1 and 2; no charge level for this product is established |
+| *Abschlusskosten* | 2,5 % of `BS`, zillmerised over 5 years | At the DeckRV § 4 Abs. 1 ceiling ("25 Promille der Summe aller Prämien") [R7] — **and equal to both retrieved carrier disclosures**: Allianz's *Einstiegskosten* of "2,5% der kumulierten Anlagen" [S4] and Stuttgarter's *Abschluss- und Vertriebskosten* of 2,50 % of premiums [S11] |
+| *Verwaltungskosten* | `β = 3 %` of premium, `γ = 0,25 %` of the account a year | Inherited from delib products 1 and 2, and **below both retrieved comparators**: Allianz charges 3,5 % of the annual payment plus 1,0 % of value a year plus 0,1 % transaction costs, and a second entry charge of 1,5 % of the payment from year 6 [S4]; Stuttgarter 9,00 % of premiums plus 0,04 % of capital monthly [S11]. Total disclosed cost is 1,6 % a year and 1,80 points respectively |
 | Acquisition expense | 2,5 % of `BS` at inception | Set equal to the charge, so the *Zillmer* strain is visible in `net_cf` rather than assumed away |
 | Maintenance expense | 36,00 € a year inflating at 1,5 % | *Stückkosten*, inflated from **issue** so an in-force point carries its accumulated inflation |
 | *Stornoabzug* | 2 % of the floored base | Deliberately mild inside an observed 0–20 % band [R2] |
 | *Ratenzahlungszuschlag* | 1,000 / 1,020 / 1,030 / 1,050 | Market convention; no carrier tariff established |
-| *Mindesttodesfallschutz* | 50 % of `BS` | The standard formulation of the EStG condition for contracts from 1 April 2009 [R14] |
-| *Rentenfaktor* | 25,00 € per 10 000 € per month, guaranteed = current | Inherited from delib product 2; **not** mutually calibrated with the mortality proxy, which is why the annuity is reported and not computed |
+| *Mindesttodesfallschutz* | 50 % of `BS` | The EStG condition applies to contracts concluded after 31 March 2009 (§ 52 Abs. 28 Satz 8) — **but § 20 Abs. 1 Nr. 6 Satz 6 Buchst. a states it for a *Kapitallebensversicherungsvertrag***, so reading its 50 % across to a *Rentenversicherung mit Kapitalwahlrecht* is an inference, not the statute [R14]. R+V's own floor is 90 % of premiums [S7] § 1 Ziffer 5 |
+| *Rentenfaktor* | 25,00 € per 10 000 € per month, guaranteed = current | Inherited from delib product 2, and **within 3 % of a published index-tariff figure**: Stuttgarter discloses a guaranteed 25,74 € per 10.000 € on a 30-year age-37-to-67 case [S11]. Still **not** mutually calibrated with the mortality proxy, which is why the annuity is reported and not computed. R+V prices its guaranteed factor at a *Rechnungszins* of 0,1 % p. a. on a company table derived from DAV 2004 R [S7] § 1 Ziffer 3 |
 | The thirteen model points | — | Pure construction: no *Produktinformationsblatt* was located, so no commercial envelope was established at all [S3] [S11] |
 
 The only things in this model that are **not** standardizations are the structural rules —
@@ -420,7 +430,32 @@ the payoff formula and its three separable features, the annual floor and the lo
 one-budget allocation, the guarantee falling due at *Rentenbeginn*, the § 169 Abs. 3
 five-year spread under the surrender value, the *Stornoabzug*'s quantification requirement,
 and the election being a right of the policyholder exercisable each year without the
-insurer's consent.
+insurer's consent — to which the retrieved AVB add the base of the participation and the
+mid-year exit treatment.
+
+### What a retrieved document would change, and has not
+
+Three findings from the retrieved carrier documents bear on **modelled** facts. They are
+recorded and **not acted on**, because each would move the worked example and the golden tests
+with it.
+
+1. **The declared surplus rate is low.** `surplus_rate = 2,50 %` against an Assekurata 2026
+   index-segment average of **3,07 %** [R20]. Because the rate *is* the option budget, every
+   index credit in the model scales with it.
+2. **The option budget is defined more widely in both AVB than in the model.** It is the
+   declared surplus **plus** the year's minimum share of the *Bewertungsreserven*, and at
+   Allianz net of *Verwaltungskosten* ([S2] Ziffer 3.3 Absatz 1, [S7] § 3 Ziffer 9).
+   `check_surplus_alloc()` asserts `opt_budget_pp(t) + surplus_credit_pp(t) = surplus_rate(t) ·
+   index_base_pp(t)`, which is the model's own identity and stays true; it is the *mapping* to
+   the contractual budget that is incomplete.
+3. **The Cap form cannot express the Allianz tariff.** Allianz applies a monthly Cap **and** a
+   *Partizipationssatz* to the capped sum — `X = q · max(S, 0) · G` [S2] Ziffer 3.3 Absatz 2 —
+   while `payoff_form = "cap"` has no `q` (its `w` is the election share) and
+   `payoff_form = "quote"` has no cap. A `cap` arm with a participation factor would be a small
+   change to `index_credit_rate` and a large change to every printed row.
+
+None of these is a defect in the arithmetic the tests assert; each is a statement about what
+the shipped parameters and the shipped payoff form represent.
 
 ## Tests
 

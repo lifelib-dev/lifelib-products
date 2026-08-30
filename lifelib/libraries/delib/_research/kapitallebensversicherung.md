@@ -119,10 +119,12 @@ turns on:
 
 ## Primary sources
 
-Every entry below carries the same retrieval status, stated once here rather than repeated
-eighteen times: **Retrieved: no — direct HTTP egress blocked in the build environment; established
-from search-result summaries.** Where a German sentence is quoted, the quotation is of the
-search-result summary and not of the document.
+**Retrieval status is now recorded per entry, not once for the section.** Each block below carries
+a `Retrieved (2026-08-30)` line saying what was actually opened, and where the retrieved document
+contradicts what the original search summary reported, the correction is written into the block and
+marked. Where an entry has no such line, nothing was opened and the material still rests on the
+search-result summary described in *Retrieval conditions and citation discipline* above — in which
+case a quoted German sentence is a quotation of the summary and not of the document.
 
 ### S1 — GDV, "Allgemeine Bedingungen für die kapitalbildende Lebensversicherung" (Musterbedingungen)
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV). Doc type:
@@ -137,6 +139,19 @@ search-result summary and not of the document.
   presented as the same document:
   http://www.vbed.de/wp-content/uploads/Allgemeine-Bedingungen-Kapitalbildende-Lebensversicherung.pdf
   and a `silo.tips` copy under the same title
+- **Retrieved (2026-08-30): yes.** PDF, 20 pp., `Stand: 21.07.2025`. The whole model wording arrives
+  as clause text, so the note below that "no article text beyond the § 1 heading was returned" is
+  superseded. What the retrieved edition adds: § 2 on the *Überschussbeteiligung* (RfB, MindZV,
+  *verursachungsorientiertes Verfahren*, *Gewinnverbände*, *Bewertungsreserven*, and Abs. 7 "Die Höhe
+  der künftigen Überschussbeteiligung kann also nicht garantiert werden. Sie kann auch Null Euro
+  betragen."); § 5 on *Selbsttötung* at three years paying the *Rückkaufswert* without the *Abzug*;
+  § 12 restating § 169 VVG including the five-year floor; § 13 computing the *beitragsfreie
+  Versicherungssumme* on that value; and § 14 applying "das Verrechnungsverfahren nach § 4 der
+  Deckungsrückstellungsverordnung" capped at "2,5 % der von Ihnen während der Laufzeit des Vertrages
+  zu zahlenden Beiträge". **Every quantitative field is an ellipsis for the undertaking to fill** —
+  the *Abzug*, the minimum sums, and (footnote 6) the *Wartezeit*, the *Bemessungsgrößen* and the
+  *Rechnungsgrundlagen* — so the original conclusion holds unchanged: **no level in delib is
+  attributed to S1**, only clause shape.
 - Content — the closest thing the German market has to a canonical wording, and the natural spine for
   a composite specification:
   - It is a **GDV *Musterbedingung***, and the GDV states its model conditions are **unverbindlich**
@@ -153,20 +168,54 @@ search-result summary and not of the document.
 ### S2 — GDV, "Jährliche Mitteilung zum Stand Ihrer Versicherung" (Muster-Standmitteilung, kapitalbildende Lebensversicherung, 02/2017)
 - Publisher: GDV. Doc type: model *Standmitteilung* — the annual statement sent to the policyholder
 - URL: https://www.gdv.de/resource/blob/6302/890c551440e2d065eba74180437f6970/5-gdv-muster-standmitteilung-kapitalbildende-lebensversicherung-02-2017-data.pdf
-- Content: established at the level of identity — the GDV publishes a **model annual statement
-  specific to the kapitalbildende Lebensversicherung**, edition **02/2017**, headed "Jährliche
-  Mitteilung zum Stand Ihrer Versicherung". Its interest for delib is that it is the document in
-  which the guaranteed *Versicherungssumme*, the accumulated *Überschussguthaben*, the current
-  *Rückkaufswert* and the current *beitragsfreie Versicherungssumme* are reported side by side — it
-  names exactly the four state variables the projection model has to carry. **The field list itself
-  was not established**; that inference rests on the title and subject, and any statement about its
-  actual contents is `[unverified]`.
+- **Retrieved (2026-08-30): yes.** PDF, 7 pp., **dated 22 March 2018 in the document body** and
+  headed "Anlage 5", although the GDV file name carries "02-2017".
+- Content, **corrected against the retrieved document**. The field list is now established and it is
+  **not** the four quantities inferred from the title. The statement rolls the *Garantiertes Kapital*
+  forward — opening balance, plus *Beiträge*, plus *Erträge*, less the year's *Abschluss- und
+  Vertriebskosten* and *Verwaltungskosten* — then adds a "Für die Zukunft nicht garantierter
+  Schlussüberschuss" and a "Für die Zukunft nicht garantierte Beteiligung an Bewertungsreserven" to
+  reach a *Gesamtkapital*. Four further blocks give the benefit at *Versicherungsablauf*, at death,
+  at *Beitragsfreistellung* and at *vorzeitige Vertragsbeendigung*, each split into "Garantierte
+  einmalige Zahlung", "Bisher erreichte einmalige Zahlung aus laufender Überschussbeteiligung", the
+  *Schlussüberschuss* and the *Bewertungsreserven* share; the maturity block adds a three-column
+  sensitivity at the current declaration and at ±1 percentage point. **There is no line called
+  *Rückkaufswert* and none called *beitragsfreie Versicherungssumme***. Two findings beyond the field
+  list: the glossary defines the *Schlussüberschuss* as assigned bindingly only at *Rentenbeginn* or
+  at the end of the contract and redetermined annually; and the statement provides for a
+  ***Sockelbeteiligung an Bewertungsreserven***, which is the first of three independent
+  corroborations of the *Sockelbetrag* left `[unverified]` at R8.
 
 ### S3 — Debeka Lebensversicherungsverein a. G., Bedingungswerk **B LV 85** (edition 01.07.2026)
 - Publisher: Debeka Lebensversicherungsverein a. G. Doc type: AVB for a kapitalbildende
   Lebensversicherung tariff, **21 pages** (the running header "B LV 85 (01.07.2026) Seite 1 von 21"
   was reproduced in the search result)
 - URL: https://www.debeka.de/content/dam/de/webauftritt/vertragsgrundlagen/lebens-rentenversicherung/BLV85.pdf
+- **Retrieved (2026-08-30): yes.** PDF, 21 pp., edition 01.07.2026. **The document is not an
+  endowment wording.** Its title is "Allgemeine Bedingungen für eine Rentenversicherung mit
+  aufgeschobener Rentenzahlung und Fondskomponenten nach Tarif CA2I (ABAR-IT 07/2026)" — a deferred
+  annuity with a *garantiebasierter* and a *fondsgebundener Baustein* — and Debeka's own library files
+  it under *Aufgeschobene Rentenversicherung* [S6]. Three consequences for the notes below.
+  **(a) The surplus claim is contradicted.** § 30 Abs. 1 b sets *Zinsüberschussanteile*
+  **monthly**, "in Prozent des Deckungskapitals" struck at the start of the month excluding the
+  premium then due, and **first for the third *Versicherungsjahr***; § 30 Abs. 2 sets
+  *Schlussüberschussanteile* not on the reserve but "in Prozent der Summe der während der
+  Aufschubzeit für den Erwerb von Fondsanteilen verwendeten Zinsüberschussanteile". The allocated
+  surplus is invested in a fund, not booked into the *Deckungskapital*. So "each fixed as a
+  percentage of the *Deckungskapital* at the allocation date", "annually", and the "single most
+  useful mechanical fact" reading below are all wrong as stated; the endowment evidence for the
+  reserve base is at S7 and S18.
+  **(b) The *Stornoabzug* is confirmed and completed.** § 34 imposes two deductions in percent of the
+  *Deckungskapital*: an *Ausgleich für die Veränderungen der Ertragslage des Versichertenkollektivs*
+  keyed to the 10-year zero-coupon euro swap rate less its own ten-year average — "Kapitalmarkt-
+  situation 1 (Differenz von weniger als 0,5 Prozentpunkte): kein Abzug", 2: 5 %, 3: 10 %, 4: 15 % —
+  and a flat *Ausgleich für kollektiv gestelltes Risikokapital* of 5 %. **Both fall linearly to 0 %
+  over the last ten years of the *Aufschubzeit***, and both lapse on a *Kündigung* in the last five
+  years once the life has passed 62 and the contract has run twelve years. The range therefore starts
+  at nil, not at 5 %.
+  **(c) The clause numbering question is answered**: the *Überschussbeteiligung* clauses are §§ 4, 30
+  and 34 in this wording, and the numbers reported by the search summary belonged to several
+  documents at once.
 - Content — the **most recent** German endowment wording located in this research, and the only
   carrier document with quantified terms:
   - Edition date **1 July 2026**, current as at the access date, 21 pages.
@@ -191,20 +240,39 @@ search-result summary and not of the document.
 - Doc type: AVB for a kapitalbildende Lebensversicherung tariff, **19 pages** ("B LV 86
   (01.01.2025) Seite 1 von 19")
 - URL: https://www.debeka.de/content/dam/de/webauftritt/vertragsgrundlagen/lebens-rentenversicherung/BLV86.pdf
-- Content: identity, edition date **1 January 2025** and page count established. Substantive content
-  is the family material at S3 and is not separately attributable here. Its value is as evidence
-  that **one insurer maintains at least three parallel endowment wordings of different vintages**.
+- **Retrieved (2026-08-30): yes.** PDF, 19 pp. — and the **edition is 01.07.2026, not 01.01.2025**:
+  the URL is a current-version path whose content has rolled forward. The title is "Allgemeine
+  Bedingungen für eine Rentenversicherung mit aufgeschobener Rentenzahlung und Fondskomponenten nach
+  Tarif CA6I (ABAR-IG 07/2026)" — again an annuity, not an endowment.
+- Content: identity and page count established. **The "three parallel endowment wordings of different
+  vintages" reading is contradicted**: the three are annuity wordings, they carry the *same* edition
+  date, and they differ by tariff — CA2I regular premium (S3), CA6I (S4), CA2IE single premium (S5).
+  The cohort argument the vintage spread was cited for is carried instead by DeckRV § 2 Abs. 2 and
+  § 4 Abs. 4, which fix the *Rechnungszins* and the *Zillmersatz* used at conclusion for the whole
+  term (R7), and by the 4 % clause in the 2011 Gothaer wording (S7).
 
 ### S5 — Debeka, Bedingungswerk **B LV 97** (edition 01.01.2025)
 - Doc type: AVB for a kapitalbildende Lebensversicherung tariff, **18 pages** ("B LV 97
   (01.01.2025) Seite 1 von 18")
 - URL: https://www.debeka.de/content/dam/de/webauftritt/vertragsgrundlagen/lebens-rentenversicherung/BLV97.pdf
-- Content: identity, edition date and page count established; substance as S3. The 85 / 86 / 97
-  triple, at 21, 19 and 18 pages, fixes a German endowment wording at **roughly 18–21 pages**.
+- **Retrieved (2026-08-30): yes.** PDF, 18 pp., edition **01.07.2026** (not 01.01.2025, for the same
+  reason as S4). Title: "Allgemeine Bedingungen für eine Rentenversicherung mit aufgeschobener
+  Rentenzahlung und Fondskomponenten gegen Einmalbeitrag nach Tarif CA2IE (ABAR-IT-E 07/2026)".
+- Content: identity and page count established; the single-premium sibling of S3. The 18–21 page
+  observation is about **annuity** wordings, not endowment ones. The two endowment wordings actually
+  retrieved run to 12 pp. (S7) and 26 pp. including the *Verbraucherinformationen* (S18), so the
+  page-count range is wider than recorded and not a useful invariant.
 
 ### S6 — Debeka, "Vertragsgrundlagen und weitere Informationen (Bedingungswerke, Tarifbedingungen, IPID etc.)" — Kapitalbildende Lebensversicherung
 - Doc type: insurer document-library index page
 - URL: https://www.debeka.de/service/bedingungen/Lebensversicherung___Rentenversicherung/Lebensversicherung/Kapitalbildende_Lebensversicherung/index.html
+- **Retrieved (2026-08-30): yes.** The cited path redirects to Debeka's single document library at
+  `https://www.debeka.de/service/vertragsgrundlagen.html`. The retrieved index confirms the category
+  and adds the finding that matters most in this file: under the live heading **Kapitalbildende
+  Lebensversicherung** Debeka lists **no AVB at all** — only a *Steuermerkblatt*, a
+  *Kirchensteuerinformationsblatt* and the AVB for a *Sterbegeldversicherung*. The three
+  *Bedingungswerke* at S3–S5 are filed under **Aufgeschobene Rentenversicherung**, which is what
+  settles their product classification against them.
 - Content: establishes that **"Kapitalbildende Lebensversicherung" is a live product category in a
   major German insurer's own taxonomy** as at the access date, with its own branch of the
   contract-documents tree. The page title lists the document types published per product:
@@ -218,10 +286,41 @@ search-result summary and not of the document.
 - URL: https://partner.gothaer.de/StreamingServlet/app/dvz/DocumentDownload/215401?scope=makler_scope
   — a broker-portal streaming endpoint with a `scope` parameter, so it may not resolve for a public
   reader even without the egress block.
+- **Retrieved (2026-08-30): yes.** PDF, 12 pp., "Version: 05.12.2011", stamp `215401 - 01.12`; the
+  broker endpoint serves it to a public reader. **This is one of the two genuine endowment wordings
+  in the corpus** (with S18) and, being pre-LVRG, the only one written under the old ceilings. The
+  fusion warning below is discharged: the document can now be read on its own, and three of the
+  reported statements need correcting.
+  **(a) The maturity payment is conditional on survival** in the ordinary form: § 3 I (3) "Zum Ablauf
+  zahlen wir die Versicherungssumme, wenn die versicherte Person diesen Termin erlebt." The
+  unconditional reading belongs to variant II, the *Kapitalversicherung auf festen Termin*.
+  **(b) "No further premiums are due on death" likewise belongs to variant II** — "Bei Tod der
+  versicherten Person vor dem Ablauftermin werden keine Beiträge mehr fällig" appears only there,
+  because that is the one variant the death does not terminate. In variants I, III and IV "Mit der
+  Auszahlung endet der Vertrag", so the premium stops because the contract does.
+  **(c) The *Selbsttötung* window is two years**, not three: § 4 Abs. 1 limits liability to the
+  *Rückkaufswert* on suicide "innerhalb von zwei Jahren nach Vertragsbeginn". § 161 Abs. 2 VVG allows
+  only an increase, but § 171 makes § 161 *halbzwingend*, so a shorter period is lawful as more
+  favourable to the policyholder.
+  **What the wording adds.** § 5 II (4): "Es werden Jahresanteile zugewiesen. Diese bestehen aus
+  einem Risikoanteil in Promille der Versicherungssumme und in Prozent des Risikobeitrags sowie einem
+  Ertragsanteil in Prozent des maßgeblichen Deckungskapitals" — the reserve as the interest-surplus
+  base, from an endowment wording, which is what S3 turned out not to supply. § 5 II (3) allocates
+  annually at the *Stammtag*; § 5 II (5) defers the first allocation by three years for tariff group
+  A. § 5 II (6) names the four *Überschussverwendung* systems — *Verzinsliche Ansammlung*,
+  *Barauszahlung*, *Gewinnsystem BE* which "vor allem die Leistung Ihrer Versicherung im Erlebensfall
+  verstärkt", and *Gewinnsystem BS*. § 5 II (7) makes the *Schlussgewinnanteil* depend on the maturity
+  sum and the accumulated surplus, reduced on surrender and death. § 5 III (3) allocates the
+  *Bewertungsreserven* "zur Hälfte" on termination, subject to a declared *Mindestbetrag*. § 6 Abs. 2
+  applies the *Zillmerverfahren* with the amortisable amount limited "auf **4 %** der von Ihnen
+  während der Laufzeit des Vertrags zu zahlenden Beiträge" — the pre-LVRG 40 ‰ ceiling in a carrier
+  wording. § 7 restates § 169 VVG with the five-year floor; § 8 gives the paid-up right with a
+  **1.500 EUR** minimum below which the surrender value is paid instead, which quantifies the § 165
+  VVG *Mindestversicherungsleistung* branch.
 - Content: the summary returned three clause-level statements for the group of documents it had
   matched, **without separating Gothaer's wording from the others in that group** (which also
   contained an Austrian ERGO document, S8's Bavarian AVB and the GDV model). Recorded with that
-  warning:
+  warning, and now superseded by the retrieved text above:
   1. Payment of the agreed *Versicherungssumme* at the *Ablauftermin* named in the
      *Versicherungsschein*, described as due "regardless of whether the insured person reaches that
      date" — the pure-endowment reading in which the sum falls due at maturity to the survivor **or**
@@ -236,6 +335,11 @@ search-result summary and not of the document.
 ### S8 — die Bayerische, "Allgemeine Bedingungen für die kapitalbildende Lebensversicherung", document **B 510121**
 - Publisher: BL die Bayerische Lebensversicherung AG. Doc type: AVB for a *Kapital-Lebensversicherung*
 - URL: https://www.diebayerische.de/dam/jcr:e5f5f192-0edc-49b1-9be8-18c3cc503ae3/510121_avb_kapital-lebensversicherung.pdf
+- **Retrieved (2026-08-30): no.** HTTP 404 at the cited URL. The publisher's own site was searched
+  once for a current path — the `diebayerische.de` root and its `formular-download` pages — and no
+  replacement was found, the document index being script-loaded. The entry stays a known reference:
+  the 404 shows only that the *cited* URL is dead, not that no such document exists, and its
+  availability remains `[unverified]`.
 - Content: **the existence of this document is contested within the search evidence and the
   contradiction is recorded rather than resolved.** A general search for endowment AVB returned this
   exact URL under the title "Allgemeine Bedingungen für die kapitalbildende ...". A narrower search
@@ -253,6 +357,30 @@ search-result summary and not of the document.
   transferable surplus-allocation rule
 - URLs: https://www.diebayerische.de/dam/jcr:0936fd6c-71b9-453d-83f6-57ec76a76697/520136_avb_klassikrente.pdf ·
   https://www.diebayerische.de/dam/jcr:0dcd832e-9107-44b4-a967-5e504c5c6fce/520127_avb_gezillmert_klassikrente.pdf
+- **Retrieved (2026-08-30): yes.** Two PDFs, 14 pp. each. **They are not a *gezillmert* /
+  non-*gezillmert* pair.** Both are "Allgemeine Bedingungen für die moderne klassische
+  Rentenversicherung (KlassikRente)" — B 520136 is edition 01/2025 (internal reference 25L03) and
+  B 520127 edition 01/2022 (22L03), the same tariff two years apart — and **both are zillmered**:
+  § 15 Abs. 2 is word-identical in the two, applying "das Verrechnungsverfahren nach § 4 der
+  Deckungsrückstellungsverordnung" capped at "2,5 % der von Ihnen während der Laufzeit des Vertrages
+  zu zahlenden Beiträge". The word *gezillmert* occurs only in the file name of 520127. The last
+  bullet below — that the pair is direct evidence of *Zillmerung* as a published per-tariff choice —
+  is therefore **contradicted and withdrawn**.
+  What the retrieved text confirms and refines. *Anlage 1* (Stand 01/2025): "Der Anspruch auf
+  Überschussbeteiligung beginnt sofort mit dem Versicherungsschutz"; "Während der ANSPARPHASE erhält
+  Ihr Vertrag an jedem Bilanztermin (31.12. des Jahres) und zum Ablauf der ANSPARPHASE
+  Zinsüberschussanteile zugeteilt und in das DECKUNGSKAPITAL des Vertrages gebucht (laufende
+  Zinsüberschussanteile)"; and, new, the allocation is **annual but accrues monthly** — "dabei ist
+  Zinsträger jeweils das am Anfang des Monats vorhandene DECKUNGSKAPITAL (inklusive eines ggf.
+  fälligen Beitrags, abzüglich der zum Monatsbeginn fälligen Kosten)". The *Schlussüberschussanteil*
+  "bemisst sich monatlich nach einem Prozentsatz der maßgebenden Größe für den Zinsüberschuss" and may
+  be redetermined for past years or dropped. § 2 Abs. 1: "Die Leistung aus der Überschussbeteiligung
+  kann auch Null Euro betragen." The glossary defines the *Deckungskapital* as "die verzinsten
+  Sparbeiträge des Vertrags und die zugeführten laufenden Überschussanteile", and provides a
+  *Mindestbeteiligung* at the *Bewertungsreserven* — the second corroboration of the *Sockelbetrag*.
+  *Anlage 2* quantifies the deduction: "Der Abzug beträgt 50 EUR plus 0,15 %" of the premiums fallen
+  due to the cancellation date multiplied by the years remaining to the original
+  *Rentenzahlungsbeginn* — a second quantified carrier *Stornoabzug*, on a base unlike Debeka's.
 - Content, and why it earns an entry despite being the wrong product:
   - **The right to *Überschussbeteiligung* begins immediately with the start of insurance cover** —
     no waiting period.
@@ -272,13 +400,26 @@ search-result summary and not of the document.
 - Publisher: ÖSA Versicherungen. Doc type: **PRIIP-Basisinformationsblatt (BIB)**, **3 pages**
   ("Seite 1 von 3")
 - URL: https://www.oesa.de/export/sites/oesa/_resources/download/privat/service/bib/OeSA-StarthilfePlus_laufend_20.pdf
-- Content: the **only actual PRIIP-BIB PDF for a German capital-forming life product located in this
-  research**. Established: it is a *Basisinformationsblatt*, three pages, for a regular-premium
-  ("laufend") variant of a product named *StarthilfePlus*, served from the insurer's own BIB download
-  directory. **Whether *StarthilfePlus* is an endowment, an annuity or a children's savings contract
-  was not established**, and none of its risk-indicator, performance-scenario or cost figures were.
-  Recorded so a later session with budget has one concrete BIB to start from; what a BIB must contain
-  is recorded from the regulatory side at [R19] instead.
+- **Retrieved (2026-08-30): yes.** PDF, 3 pp., `Stand Basisinformationsblatt 01.01.2024`, issued by
+  the Öffentliche Lebensversicherung Sachsen-Anhalt.
+- Content: the **only PRIIP-BIB for a German capital-forming life product in this corpus**, and the
+  open questions are now answered. **Product type**: "Art: Versicherungsanlageprodukt in Form einer
+  **Kapitallebensversicherung** mit garantierter Verzinsung nach deutschem Recht" — so the label is
+  endowment, though the benefit is a time-limited annuity from *Rentenbeginn*, the death scenario pays
+  **0,00 €** at every horizon, and death before *Rentenbeginn* continues the contract premium-free.
+  It is a savings contract with a premium waiver rather than the composite delib models, and it should
+  be cited as an example of BIB *content*, not of endowment *terms*.
+  **Figures**, on the BIB's model case of a 47-year-old, 1.000 € annual premium, 20 years: risk
+  indicator **3 of 7**; premium split "Durchschnittliche Versicherungsprämie für das abgesicherte
+  Risiko: 9,40 % (94,05 €)" against "Durchschnittlicher Anlagebetrag: 90,60 % (905,95 €)", the risk
+  premium reducing the return by 1,0 %; four performance scenarios at 1, 10 and 20 years (*Stress*
+  12.610 €, *pessimistisch* 13.370 €, *mittleres* 15.070 €, *optimistisch* 17.110 € at 20 years,
+  against 20.000 € invested); **total costs 468 € / 3.342 € / 6.216 €** with an annual cost impact of
+  **5,3 % pro Jahr** at 20 years and a return "voraussichtlich 2,4 % vor Kosten und -2,9 % nach
+  Kosten"; entry costs 2,2 % and ongoing administration 28,5 % "der Summe aller Anlagebeträge"; and
+  the Protektor statement that a shortfall can produce "Abschlägen von bis zu 5 %". **This is the only
+  product-level cost disclosure in the corpus** and materially narrows gap 7 without closing it: one
+  product, one public-sector insurer, one model case.
 
 ### S11 — Allianz, "Kapitallebensversicherung: Ihr umfassender Ratgeber", with "Lebensversicherung: Arten im Überblick" and "Lebensversicherung Auszahlung: Ablauf & Steuer"
 - Publisher: Allianz Lebensversicherungs-AG (German consumer site). Doc type: insurer product/guide
@@ -286,8 +427,24 @@ search-result summary and not of the document.
 - URLs: https://www.allianz.de/vorsorge/kapitallebensversicherung/ ·
   https://www.allianz.de/vorsorge/lebensversicherung/ ·
   https://www.allianz.de/vorsorge/lebensversicherung/auszahlung/
-- Content — the largest German life insurer describing the product in its own words, and the one place
-  a **current declared rate for a classic endowment book** was established:
+- **Retrieved (2026-08-30): yes**, all three pages. **The declared rate is not on any of them.** The
+  only rate the Allianz pages state is the *Garantiezins*: "Das Bundesfinanzministerium hat den
+  Garantiezins für Neuverträge seit dem 1. Januar 2025 auf 1,00 Prozent festgelegt", said twice. The
+  2,7 % below is real but belongs to [R26] — procontra reporting Allianz holding the *laufende
+  Verzinsung* "für die klassischen Lebens- **und** Rentenversicherungen konstant bei 2,7 Prozent" for
+  **2025**, a combined book and the wrong year. The *Rückkaufswert*-below-premiums statement is also
+  not on these pages; what is there is "Allerdings schmälern Storno- und Verwaltungskosten den
+  Rückkaufswert". [S12] carries that statement in full instead.
+  What the pages do carry: the market-role sentence, verbatim — "Die kapitalbildende
+  Lebensversicherung wird heute **nur noch selten angeboten**. Viele Versicherungsunternehmen haben
+  sie durch moderne private Rentenversicherungen ersetzt." — the tax summary "nur die Hälfte des
+  Ertrags versteuert, sofern Ihr Vertrag mindestens 12 Jahre gelaufen ist und Sie bei Auszahlung
+  mindestens 62 Jahre alt sind", the death benefit paid free of income tax, the death cover payable
+  in full "schon ab der ersten Beitragszahlung", and the judgement that the classic form "eignet sich
+  allerdings nur noch, wenn Sie im Alter unbedingt eine einmalige Kapitalauszahlung wünschen".
+- Content — the largest German life insurer describing the product in its own words. **The bullets
+  below are the original search-summary reading; the two struck through in substance by retrieval are
+  marked above:**
   - The *klassisch* variant "combines a guaranteed interest rate, a savings component and death
     cover in one product" — the three-part description delib's overview mirrors.
   - **For 2026 Allianz credits its classic customers a *laufende Verzinsung* of 2,7 %** — a 2026
@@ -354,20 +511,57 @@ search-result summary and not of the document.
 - Publisher: HUK24 AG (HUK-COBURG group). Doc type: insurer guide page — **about term life, not
   endowment**. URL:
   https://www.huk24.de/risikolebensversicherung/ratgeber-lebensversicherung/ueberschussbeteiligung
-- Content: a carrier's own account of the four surplus components in the neighbouring product,
-  corroborating that the four-component vocabulary is used **across product lines by carriers
-  themselves**, not only by journalists. **No endowment-specific statement is taken from it.**
+- **Retrieved (2026-08-30): yes.** HTML. **The four-component reading is contradicted.** The page
+  does not use the names *Zins-*, *Risiko-*, *Kosten-* and *Schlussüberschuss* at all. It names three
+  drivers — "Höhe der am Kapitalmarkt erwirtschafteten Gewinne", "Kostenstruktur des Versicherers",
+  "Zahl der während der Vertragslaufzeit verstorbenen Versicherten" — restates the statutory duty to
+  participate "verursachungsorientiert und angemessen", and then describes the two term-life
+  application forms, *Todesfallbonus* and *Sofortrabatt*.
+- Content: a carrier's own account of the three **sources** of surplus in the neighbouring product,
+  corroborating that the interest / cost / mortality decomposition is carrier vocabulary and not only
+  journalism. The four *names* rest instead on the wordings that use them — S7, S9, S18 — and on S16.
+  **No endowment-specific statement is taken from it.**
 
 ### S18 — "Bedingungen und Verbraucherinformationen für die Kapital bildende Lebensversicherung" (third-party contract-clause mirror)
-- Publisher: not established; hosted on `lawinsider.com`, a contract-clause database, in its
-  German-language section. Doc type: mirror of an unnamed German insurer's *Bedingungen und
-  Verbraucherinformationen*
-- URL: https://lawinsider.com/de/contracts/duGC9LpAVlC
-- Content: **only the title was established.** Recorded for one reason: the title names the document
-  pair the German market actually delivers to a customer — *Bedingungen* **and**
-  *Verbraucherinformationen* — the German counterpart of the French *conditions générales* +
-  *notice d'information* pair, and the vocabulary delib's `sources.md` document-type field should
-  use. **Nothing substantive is cited from S18**; the issuing insurer is `[unverified]`.
+- Publisher: **VPV Lebensversicherungs-AG** (Vereinigte Postversicherung) — established by
+  retrieval; the `lawinsider.com` record is an index stub that hosts no text and names the document's
+  real location. Doc type: the customer document set for an endowment, **26 pp.**, stamp
+  `2.MP.0401 01.2019 ZU`
+- URL: https://www.deteassekuranz.de/wp-content/uploads/2021/05/Bedingungen-SterbegeldV-VPV.pdf
+  (index record, title only: https://lawinsider.com/de/contracts/duGC9LpAVlC). **The file name says
+  *SterbegeldV* and is wrong** for the document it serves
+- **Retrieved (2026-08-30): yes.** PDF, 26 pp., edition 01.2019. Contents: AVB für die Kapital
+  bildende Lebensversicherung (01.2019), AVB vorläufiger Versicherungsschutz, AVB
+  Unfalltod-Zusatzversicherung, Besondere Bedingungen Nachversicherungsgarantie, *Steuerinformationen*,
+  *Allgemeine Verbraucherinformationen*, and the *Satzung* of the Vereinigte Postversicherung VVaG.
+- Content: **the second genuine endowment wording in the corpus** (with S7) and the most explicit on
+  surplus, so this entry changes from "nothing substantive is cited" to one of the load-bearing ones.
+  - § 2 Abs. 3 (a): "Sämtliche Verträge erhalten einen Zinsüberschussanteil. Dessen Höhe ermitteln wir
+    wie folgt: **Das um ein Jahr mit dem Rechnungszins abgezinste Deckungskapital wird mit dem
+    deklarierten Zinsüberschussanteilsatz multipliziert.**" Premium-paying contracts additionally get
+    a *Risikoüberschussanteil* = declared rate × *Risikojahresbeitrag*. This is the clearest statement
+    in the corpus that the interest surplus multiplies the **reserve**, and it pins the base to an
+    opening rather than a closing balance.
+  - The same clause imposes a **one-year *Wartezeit*** and allocates "jeweils zu Beginn des
+    Versicherungsjahres", accumulating the amounts with interest — against S9's no-waiting-period rule
+    and S7's and S3's three-year deferrals. **Carriers differ, and delib says so.**
+  - § 2 Abs. 3 (b): a *Schlussüberschusskonto* fed by an annual *Schlussüberschussanteil* on "der für
+    den Zinsüberschuss maßgeblichen Bezugsgröße", itself bearing a declared *Schlussüberschusszinssatz*,
+    redeterminable for past years and able to fall to nil. That is the terminal-bonus accrual shape,
+    from a wording.
+  - § 2 Abs. 5 restates the *Sicherungsbedarf* cut-back in a carrier's own words: "Bewertungsreserven
+    auf festverzinsliche Anlagen sind gemäß derzeitiger aufsichtsrechtlicher Regelung (vgl. § 139
+    Abs. 3 VAG) nur insoweit zu berücksichtigen, als sie einen ggf. vorhandenen Sicherungsbedarf
+    (vgl. § 139 Abs. 4 VAG) übersteigen." § 2 Abs. 6 provides a *Mindestbeteiligung an den
+    Bewertungsreserven* — the third corroboration of the *Sockelbetrag* at R8.
+  - § 12 Abs. 3 restates § 169 VVG with the five-year floor; § 12 Abs. 4 gives a **third quantified
+    *Stornoabzug***, on yet another base: "ein Stornoabzug in Höhe von 100 € für erhöhte
+    Verwaltungsaufwendungen. Zusätzlich erfolgt ein Stornoabzug in Höhe von 0,2 % der Differenz
+    zwischen Versicherungssumme und dem Rückkaufswert nach Abs. 3". § 14 Abs. 2 applies the § 4 DeckRV
+    method capped at 2,5 %.
+  - And the original point stands: the title names the document pair the German market delivers —
+    *Bedingungen* **and** *Verbraucherinformationen* — the German counterpart of the French
+    *conditions générales* + *notice d'information* pair.
 
 ---
 
@@ -383,6 +577,16 @@ of the search-result summary and not of the instrument.
   sozialgesetzbuch-sgb.de, juraforum.de, gesetze-in-app.de
 - URLs: https://www.gesetze-im-internet.de/vvg_2008/__153.html (canonical form) ·
   https://dejure.org/gesetze/VVG/153.html · https://www.buzer.de/153_VVG.htm
+- **Retrieved (2026-08-30): yes**, as canonical XML from `gesetze-im-internet.de/vvg_2008/xml.zip`,
+  `Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156`. The `__153.html` page is a ~5 kB frameset shell with no
+  statutory text and is kept as the human-facing link only. The reading below is confirmed absatz by
+  absatz and is now **version-pinned**, which closes gap 15 for this section. Two additions from the
+  text: Abs. 2 Satz 2 leaves § 268 Abs. 8 HGB amounts out of account, and **Satz 3 of Abs. 3 now
+  names its provisions** — "Aufsichtsrechtliche Regelungen zur Sicherstellung der dauernden
+  Erfüllbarkeit der Verpflichtungen aus den Versicherungen, insbesondere die §§ 89, 124 Absatz 1,
+  § 139 Absatz 3 und 4 und die §§ 140 sowie 214 des Versicherungsaufsichtsgesetzes bleiben
+  unberührt" — so the wording left unestablished below is established. Abs. 4, which moves the
+  reference date to the end of the *Ansparphase* for annuities, does not apply to this product.
 - Content, absatz by absatz as the summaries report it:
   **Abs. 1** — the policyholder is entitled to a share **in the surplus and in the
   *Bewertungsreserven*** (together the *Überschussbeteiligung*), **unless the participation is
@@ -414,8 +618,15 @@ of the search-result summary and not of the instrument.
 - **Scope.** The article governs the claim to a *Rückkaufswert* where the insurance ends, **in
   particular by *Kündigung*, *Rücktritt* or *Anfechtung***, and fixes the calculation principles, the
   limits on payment, the deduction and reduction powers and the insurer's information duties.
-- **Abs. 3, the calculation rule.** The summary returned this German sentence, quoted here **as
-  the summary reported it**:
+- **Retrieved (2026-08-30): yes**, canonical XML, `Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156`; `__169.html`
+  is a 7 kB shell. The Abs. 3 sentence below, quoted from a search summary when it was written, is
+  **word-for-word correct against the statute** and is now a quotation of the instrument. Two
+  additions: Abs. 2 caps the payable *Rückkaufswert* at the benefit that would fall due on a claim at
+  the cancellation date and directs the remainder to a *prämienfreie Versicherung* — a branch delib
+  does not model; and Abs. 7 requires the already-allocated *Überschussanteile* and the
+  *Schlussüberschussanteil* provided for on *Kündigung* to be paid **in addition**, which is why the
+  *Überschussguthaben* is outside the *Stornoabzug* base.
+- **Abs. 3, the calculation rule**, quoted from the retrieved instrument:
   > "Der Rückkaufswert ist das nach anerkannten Regeln der Versicherungsmathematik mit den
   > Rechnungsgrundlagen der Prämienkalkulation zum Schluss der laufenden Versicherungsperiode
   > berechnete Deckungskapital der Versicherung, bei einer Kündigung des Versicherungsverhält-
@@ -439,6 +650,13 @@ of the search-result summary and not of the instrument.
   came from § 169 Abs. 3. **They do not**: the 2,5 % is the DeckRV *Höchstzillmersatz* [R7]. Gap 5.
 
 ### R3 — VVG § 165, *Prämienfreie Versicherung*
+- **Retrieved (2026-08-30): yes**, canonical XML, `Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156`;
+  `__165.html` is a 4 kB shell. Every limb below is confirmed verbatim, including Abs. 2's "im
+  Vertrag für jedes Versicherungsjahr anzugeben" and Abs. 3's netting of *Prämienrückstände*. The
+  *Mindestversicherungsleistung* is quantified in two retrieved wordings — **1.500 EUR** of sum
+  insured at S7 § 8, and a monthly **25 EUR** guaranteed minimum annuity at S9 § 14 — which was
+  previously unobserved. The note that *Zusatzversicherungen* are regularly lost on paid-up is
+  commentary and is **not** in § 165.
 - Publisher: Bundesministerium der Justiz; mirrored by buzer.de, LexMea, dejure.org, freiRecht.de,
   NWB, sozialgesetzbuch-sgb.de
 - URLs: https://www.gesetze-im-internet.de/vvg_2008/__165.html ·
@@ -460,6 +678,12 @@ of the search-result summary and not of the instrument.
   are **regularly lost** when the main contract is made paid-up.
 
 ### R4 — VVG § 161, *Selbsttötung*
+- **Retrieved (2026-08-30): yes**, canonical XML, `Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156`;
+  `__161.html` is a 4 kB shell. Confirmed in all three Absätze. One refinement: Abs. 2 permits the
+  three-year period to be **increased** ("erhöht") by individual agreement and says nothing about
+  shortening it — but § 171 makes § 161 *halbzwingend*, so a shorter window is lawful as more
+  favourable to the policyholder, and S7 § 4 Abs. 1 writes **two** years. The three years are a
+  ceiling on the insurer's relief, not a market constant.
 - Publisher: Bundesministerium der Justiz; mirrored by dejure.org, lxgesetze.de, buzer.de,
   rewis.io, juraforum.de, NWB, gesetze-in-app.de, Haufe
 - URLs: https://www.gesetze-im-internet.de/vvg_2008/__161.html ·
@@ -477,6 +701,13 @@ of the search-result summary and not of the instrument.
   effet" in the first year and there is no surrender value to fall back on. Located in **Chapter 5**.
 
 ### R5 — VVG § 19, *Vorvertragliche Anzeigepflicht*
+- **Retrieved (2026-08-30): yes**, canonical XML, `Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156`;
+  `__19.html` is a 6 kB shell. Confirmed. Two points the summaries did not carry: Abs. 5 makes every
+  one of the insurer's rights conditional on a separate *Textform* warning, and Abs. 6 gives the
+  policyholder an immediate right to cancel where a retrospective contract change raises the premium
+  by more than **10 Prozent** or excludes the undisclosed risk. **The five- and ten-year limits
+  recorded below are in § 21 Abs. 3 VVG, not § 19**; § 21 was not retrieved and the exact locus stays
+  `[unverified]`.
 - Publisher: Bundesministerium der Justiz; commentary from ra-zn.de, fairtest.de,
   versicherungsrechtsiegen.de, Kanzlei Johannsen
 - URLs: https://www.gesetze-im-internet.de/vvg_2008/__19.html (canonical form) ·
@@ -493,6 +724,17 @@ of the search-result summary and not of the instrument.
   negligent breach and **ten years** for **intentional or *arglistig*** breach.
 
 ### R6 — MindZV, *Verordnung über die Mindestbeitragsrückerstattung in der Lebensversicherung*
+- **Retrieved (2026-08-30): yes**, canonical XML from `gesetze-im-internet.de/mindzv_2016/xml.zip`,
+  `Stand: Zuletzt geändert durch Art. 1 V v. 7.7.2020 I 1688`; the consolidated `BJNR083100016.html`
+  page is itself substantive. The three quotas are confirmed and located: § 6 Abs. 1 for the
+  *Kapitalanlageergebnis*, § 7 for the *Risikoergebnis* (90 %), § 8 for the *übriges Ergebnis*
+  (50 %), with § 4 Abs. 1 defining all three by *Versicherungsberichterstattungs-Verordnung* line
+  items and requiring "Alt- und Neubestand ... getrennt betrachtet". **One correction.** What § 6
+  Abs. 1 deducts before the 90 % is struck is the ***rechnungsmäßige Zinsen*** — "90 Prozent der nach
+  § 3 Absatz 1 anzurechnenden Kapitalerträge abzüglich der rechnungsmäßigen Zinsen" — not the
+  *Aufwand für die Diskontierung der Deckungsrückstellung* recorded below. The economic reading is
+  unaffected: the guarantee is taken off the top before the policyholder's interest share is struck.
+  § 6 Abs. 2 adds a 90 % minimum for the collective part of the RfB under § 140 Abs. 4 VAG.
 - Publisher: Bundesministerium der Justiz; mirrored by lxgesetze.de, buzer.de, freirecht.de;
   explained by Wikipedia and ASCORE
 - URLs: https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html ·
@@ -514,6 +756,19 @@ of the search-result summary and not of the instrument.
   canonical URL indicate the **2016 consolidation**.
 
 ### R7 — DeckRV, *Deckungsrückstellungsverordnung* — *Höchstrechnungszins* and *Höchstzillmersatz*
+- **Retrieved (2026-08-30): yes** — the DeckRV as canonical XML (`Stand: Zuletzt geändert durch
+  Art. 1 V v. 19.7.2024 I Nr. 250`) and the buzer.de amendment history as HTML. § 2 Abs. 1 Satz 1:
+  "wird der Höchstzinssatz für die Berechnung der Deckungsrückstellungen auf **1 Prozent**
+  festgesetzt". § 4 Abs. 1 Satz 2: "Der Zillmersatz darf **25 Promille der Summe aller Prämien**
+  nicht überschreiten" — note the statutory base is the *Summe aller Prämien*, which the market calls
+  the *Beitragssumme*. **The cohort keying is itself statutory**, which was an inference before:
+  § 2 Abs. 2 Satz 1 fixes the *Rechnungszins* used at conclusion "für die gesamte Laufzeit des
+  Vertrages" and § 4 Abs. 4 does the same for the *Zillmersatz*. **The dating tag is
+  discharged and the date corrected**: buzer's *Fassung* line reads "Artikels 1 Sechste Verordnung zur
+  Änderung von Verordnungen nach dem Versicherungsaufsichtsgesetz V. v. **19. Juli 2024** BGBl. 2024
+  I Nr. 250 **m.W.v. 1. Januar 2025**" — 19 July, not 24 July, and the 1 January 2025 effective date
+  is confirmed. The pre-2025 rate history and the 2015 date of the 25 ‰ cut are not in the current
+  consolidated text and still rest on S15, R15, R29 and REG-R15.
 - Publisher: Bundesministerium der Justiz; buzer.de carries the amendment history
 - URL: https://www.buzer.de/gesetz/12006/index.htm
 - **Höchstrechnungszins** raised **from 0,25 % to 1,00 % with effect from 1 January 2025**; the
@@ -531,6 +786,18 @@ of the search-result summary and not of the instrument.
   *Abschluss- und Vertriebskosten*. Corroborated by [S15] and [R29].
 
 ### R8 — VAG § 139, *Überschussbeteiligung*, and the *Sicherungsbedarf*
+- **Retrieved (2026-08-30): yes**, canonical XML from `gesetze-im-internet.de/vag_2016/xml.zip`,
+  `Stand: Zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81`; the dejure.org mirror was read
+  too. Abs. 3 and Abs. 4 confirm the *Sicherungsbedarf* rule, and **narrow it**: the cut-back bites
+  on "Bewertungsreserven aus direkt oder indirekt vom Versicherungsunternehmen gehaltenen
+  **festverzinslichen Anlagen und Zinsabsicherungsgeschäften**", not on the whole of the
+  *Bewertungsreserven*. Abs. 4 defines the *Sicherungsbedarf* as the sum over contracts whose
+  *maßgeblicher Rechnungszins* exceeds the *Bezugszins* of the actuarially valued interest obligation
+  less the *Deckungsrückstellung*. **The *Sockelbetrag* tag is discharged and the fact relocated**:
+  it is not in § 139 at all, but three retrieved documents carry it as a contractual and declaratory
+  minimum — the "Sockelbeteiligung an Bewertungsreserven" of the GDV Muster-Standmitteilung (S2), the
+  *Mindestbeteiligung* in *Anlage 1* to S9, and S18 § 2 Abs. 6. Its **existence** is established; its
+  **size** is not, and all three say it can fall away.
 - Publisher: Bundesministerium der Justiz; summary obtained through dejure.org
 - URL: https://dejure.org/gesetze/VAG/139.html
 - Policyholders are **in principle to share in the *Bewertungsreserven* to the extent of one
@@ -546,6 +813,20 @@ of the search-result summary and not of the instrument.
   weak secondary source only; its existence, base and size are `[unverified]` (gap 8).
 
 ### R9 — VVG-InfoV § 2, and the *Effektivkosten* disclosure
+- **Retrieved (2026-08-30): yes** — § 2 VVG-InfoV in full from
+  `gesetze-im-internet.de/vvg-infov/__2.html`, which for this small instrument serves the norm text
+  rather than a frameset, plus the buzer.de mirror. Abs. 1 Nr. 1 requires the *einkalkulierte
+  Abschlusskosten* "als einheitlicher Gesamtbetrag" and the other costs, *Verwaltungskosten*
+  separately, as a share of the annual premium with the term; Abs. 2 puts Nr. 1, 2, 4 and 5 **in
+  Euro**. Abs. 1 Nr. 4 to 6 require the *Rückkaufswerte*, the *Mindestversicherungsbetrag* for a
+  conversion, and the extent to which both are guaranteed — the statutory origin of the
+  *Garantiewerttabelle* that S7 and S18 refer the reader to. Abs. 1 Nr. 9 defines the *Effektivkosten*
+  as "die Minderung der Wertentwicklung durch Kosten in Prozentpunkten ... bis zum Beginn der
+  Auszahlungsphase", and **Abs. 6 fixes the method**: they "werden berechnet wie der
+  Gesamtkostenindikator nach Anhang VI der Delegierten Verordnung (EU) 2017/653". Abs. 3, new to this
+  entry, quantifies the § 154 VVG *Modellrechnung*: "dem Höchstrechnungszinssatz, multipliziert mit
+  1,67", and that rate ± one percentage point. **The date the *Effektivkosten* duty was introduced is
+  still not established from the instrument** and remains `[unverified]`.
 - Publisher: Bundesministerium der Justiz; mirrored by buzer.de and freiRecht.de; explained by the
   Institut für Finanz- und Aktuarwissenschaften (ifa Ulm)
 - URLs: https://www.gesetze-im-internet.de/vvg-infov/__2.html ·
@@ -563,6 +844,15 @@ of the search-result summary and not of the instrument.
   expressed as a reduction of the contract's yield**.
 
 ### R10 — EStG § 20 Abs. 1 Nr. 6, and the *Einkommensteuer-Handbuch* annex
+- **Retrieved (2026-08-30): yes for the statute, no for the handbook.** §§ 20 and 52 EStG were read
+  as canonical XML, `Stand: zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197`; the Haufe
+  commentary was read as HTML. The *Einkommensteuer-Handbuch* URL answers 200 with a Radware
+  interstitial ("Verifying your browser before proceeding") and no document body, so **the annex
+  itself is not retrieved**. Satz 1 and Satz 2 are confirmed word for word. **The `[unverified]` on
+  the age-62 locus is resolved and the citation corrected**: it is **§ 52 Absatz 28 Satz 7** EStG —
+  "§ 20 Absatz 1 Nummer 6 Satz 2 ist für Vertragsabschlüsse nach dem 31. Dezember 2011 mit der
+  Maßgabe anzuwenden, dass die Versicherungsleistung nach Vollendung des 62. Lebensjahres des
+  Steuerpflichtigen ausgezahlt wird" — not § 52 Abs. 36 Satz 9.
 - Publisher: Bundesministerium der Finanzen (amtliches Einkommensteuer-Handbuch); commentary from
   NWB, IWW, smartsteuer, Haufe, Gonze & Schüttler
 - URLs: https://esth.bundesfinanzministerium.de/esth/2024/C-Anhaenge/Anhang-22a/I/inhalt.html ·
@@ -584,6 +874,15 @@ of the search-result summary and not of the instrument.
   reading is recorded as the summary put it; the mechanism is `[unverified]`.
 
 ### R11 — BMF-Schreiben of 1 October 2009, IV C 1 - S 2252/07/0001
+- **Retrieved (2026-08-30): partly.** The NWB record page was read; the Randnummern are behind a
+  subscription login and **no paragraph of the text is established**. What the record adds: the
+  *Bundessteuerblatt* citation **BStBl 2009 I S. 1172**, the official subject "Besteuerung von
+  Versicherungserträgen im Sinne des § 20 Absatz 1 Nummer 6 EStG", and the full *Gliederung* I to
+  XIV — including "IV. Kapitalversicherung mit Sparanteil / 1. Kapitalversicherung auf den Todes- und
+  Erlebensfall (klassische Kapital-Lebensversicherung)", "IV. 4. Kapitalversicherung mit festem
+  Auszahlungszeitpunkt (Termfixversicherung)" and "X. Hälftiger Unterschiedsbetrag / 6.
+  Mindesttodesfallschutz". The guidance is therefore located precisely and the relevant section
+  confirmed to exist; **nothing is quoted from it anywhere in delib**.
 - Publisher: Bundesministerium der Finanzen. Doc type: *BMF-Schreiben*, binding administrative
   guidance to the tax offices
 - URL: https://datenbank.nwb.de/Dokument/351401/ (NWB database record)
@@ -593,6 +892,20 @@ of the search-result summary and not of the instrument.
   of its text was established.**
 
 ### R12 — *Mindesttodesfallschutz*: the 50 %-rule for contracts concluded from 1 April 2009
+- **Retrieved (2026-08-30): yes** for both commentaries — **and the rule itself is now read in the
+  statute**, § 20 Abs. 1 Nr. 6 Satz 6 EStG, which supersedes them as the authority. The statutory
+  form is narrower than the summaries: the halving is disapplied only where **both** limbs hold —
+  (a) "in einem Kapitallebensversicherungsvertrag **mit vereinbarter laufender Beitragszahlung in
+  mindestens gleichbleibender Höhe** bis zum Zeitpunkt des Erlebensfalls die vereinbarte Leistung bei
+  Eintritt des versicherten Risikos **weniger als 50 Prozent der Summe der für die gesamte
+  Vertragsdauer zu zahlenden Beiträge** beträgt", and (b) that benefit does not exceed the
+  *Deckungskapital* or *Zeitwert* "**spätestens fünf Jahre nach Vertragsabschluss** ... um mindestens
+  10 Prozent des Deckungskapitals, des Zeitwerts oder der Summe der gezahlten Beiträge". **The
+  tag on the second limb is discharged in full**: its base is any of the three named, its
+  time profile is the five-year point, and the trailing words that would not parse are its own second
+  sentence — "Dieser Prozentsatz darf bis zum Ende der Vertragslaufzeit in jährlich gleichen Schritten
+  auf Null sinken." § 52 Abs. 28 Satz 8 applies the provision to contracts concluded after 31 March
+  2009 **or whose first premium was paid after that date**, an alternative the summaries omitted.
 - Publisher: Haufe (Haufe Finance Office Premium) and IWW (*Wirtschaftsberatung aktuell*)
 - URLs:
   https://www.haufe.de/finance/haufe-finance-office-premium/kapitallebensversicherungen-einkommensteuer-312-mindesttodesfallschutz-bei-lebensversicherungen_idesk_PI20354_HI8459274.html ·
@@ -609,6 +922,14 @@ of the search-result summary and not of the instrument.
   halving; meeting it opens the half-income rule subject to the conditions of [R10].
 
 ### R13 — The pre-2005 regime and the 2004/2005 boundary
+- **Retrieved (2026-08-30): yes** for the Haufe and Bund-der-Steuerzahler pages. The 2005 boundary is
+  now read in the statute itself — § 20 Abs. 1 Nr. 6 Satz 1 applies "wenn der Vertrag nach dem
+  31. Dezember 2004 abgeschlossen worden ist" [R10]. **The conditions of the pre-2005 regime remain
+  `[unverified]`**: the current statute knows the old regime only through transitional provisions, and
+  the retrieved commentary states the conditions only in outline. S12 gives the outline a carrier's
+  voice — a pre-2005 death benefit is tax-free only where the contract met "die damaligen
+  Voraussetzungen einer steuerbegünstigten Kapitallebensversicherung ... (Mindestlaufzeit 12 Jahre,
+  laufende Beitragszahlung, Mindesttodesfallschutz)" — and nothing in delib asserts them.
 - Publisher: Haufe; Bund der Steuerzahler; happe.de; firmenabc.com; VLH; smartsteuer
 - URLs:
   https://www.haufe.de/steuern/steuerwissen-tipps/nach-dem-31122004-abgeschlossene-lebensversicherungen_170_448252.html ·
@@ -626,6 +947,26 @@ of the search-result summary and not of the instrument.
   endowment book carries at least three tax cohorts.
 
 ### R14 — DAV, "Herleitung der Sterbetafel DAV 2008 T für Lebensversicherungen mit Todesfallcharakter"
+- **Retrieved (2026-08-30): yes.** Both PDFs — the 2008 derivation paper and the *Richtlinie* of
+  29 November 2022, 49 pp. **The table values themselves are not redistributed anywhere in delib.**
+  Two corrections and one answer.
+  **(a) The observation period is 2001 to 2004**, not 2006–2008: "Als Beobachtungszeitraum werden die
+  Jahre 2001 bis 2004 zu Grunde gelegt." 2006–2008 is when the DAV working group did the work, which
+  the *Richtlinie* states separately — the two were conflated. The data are the pooled portfolios of
+  Gen Re, Münchener Rück, Swiss Re and the Verband öffentlicher Versicherer, **47 undertakings** and
+  more than **100 million *Bestandsjahre***, read against the *Sterbetafeln des Statistischen
+  Bundesamts*.
+  **(b) The 60 % coverage is confirmed exactly**: "Nach dieser Bereinigung weisen die untersuchten
+  Versichertendaten eine Abdeckung von 60% des deutschen Versicherungsmarktes im Bereich der
+  Kapitallebensversicherungen auf; im Bereich der Risikolebensversicherungen sind es sogar 70%."
+  **(c) The open question is answered: there is no separate endowment table.** DAV 2008 T is a single
+  *Schlusstafel* derived from data from the sixth policy year onwards to eliminate selection; about
+  91 % of the observations come from *Kapitallebensversicherungen*, and endowment mortality from the
+  sixth year is 101 % of the all-tariff level. The *Sicherheitszuschläge* method is confirmed —
+  *Schwankungs-*, *Irrtums-* and *Änderungsrisiko*, with the *Schwankungszuschlag* struck on a model
+  portfolio of 200.000 lives aged 20 to 65 — and the suitability limit reads, verbatim: "Die
+  Sterbetafel DAV 2008 T ist grundsätzlich auch für die Beitragskalkulation von Lebensversicherungen
+  mit Todesfallcharakter, **ausgenommen Tarife ohne Gesundheitsprüfung**, geeignet"
 - Publisher: Deutsche Aktuarvereinigung e. V. (DAV). Doc type: *Fachgrundsatz* / *DAV-Richtlinie*,
   with a 2008 derivation paper and a 2022 restatement
 - URLs:
@@ -648,6 +989,7 @@ of the search-result summary and not of the instrument.
   for endowment business specifically **was not established** — gap 14.
 
 ### R15 — DAV recommendations on the *Höchstrechnungszins* for 2025 and 2026
+- **Retrieved (2026-08-30): yes**, both newsroom items as HTML. Nothing below is contradicted.
 - Publisher: Deutsche Aktuarvereinigung e. V.
 - URLs:
   https://aktuar.de/de/newsroom/detail/deutsche-aktuarvereinigung-empfiehlt-auch-fuer-2026-einen-hoechstrechnungszins-in-hoehe-von-1-prozent/ ·
@@ -659,6 +1001,7 @@ of the search-result summary and not of the instrument.
   professional recommendation was adopted in both cycles evidenced here.
 
 ### R16 — GDV, "Höchstrechnungszins-Erhöhung ist eine 'angemessene Reaktion auf gestiegene Zinsen'"
+- **Retrieved (2026-08-30): yes**, HTML. Adds no independent figure, as recorded.
 - Publisher: GDV (Medieninformation)
 - URLs:
   https://www.gdv.de/gdv/medien/medieninformationen/hoechstrechnungszins-erhoehung-ist-eine-angemessene-reaktion-auf-gestiegene-zinsen--176848 ·
@@ -667,6 +1010,22 @@ of the search-result summary and not of the instrument.
   reaction to risen interest rates. Corroborates [R7] and [R15]; adds no independent figure.
 
 ### R17 — BaFin, Merkblatt 01/2023 (VA), *zu wohlverhaltensaufsichtlichen Aspekten bei kapitalbildenden Lebensversicherungsprodukten*
+- **Retrieved (2026-08-30): yes** for the *Merkblatt*, whose full text (Rn. 1 ff., sections A to D) is
+  served on the page; **no** for the press release, which is HTTP 404 at the cited URL. The reading
+  confirms that **the *Merkblatt* states no numerical threshold of any kind** — the "über vier
+  Prozent" figure belongs to R18 and is a survey finding, not a limit. What the text adds: Rn. 2
+  defines *kapitalbildende Lebensversicherungsprodukte* as classic and unit-linked life products with
+  a savings component, including *Direktversicherungen* and AltZertG contracts; Rn. 15 requires
+  undertakings to formulate *Renditeziele* consistent with the target market and to consider "nicht
+  nur eine positive Rendite nach Kosten, sondern auch eine positive Rendite nach Kosten und Inflation",
+  with the ECB medium-term inflation target as a candidate benchmark and attainment tested "mit
+  geeigneten stochastischen Analysen"; Rn. 18 names the *Effektivkosten* under § 2 Abs. 1 Nr. 9
+  i. V. m. § 2 Abs. 6 VVG-InfoV as the cost measure; Rn. 23 addresses *Storno*; and Rn. 52 suggests
+  tying a high *Abschlussprovision* to the intermediary's own *Stornoquote*. **One qualification.**
+  The *Renditeziel* duty is not flat: Rn. 16 and 17 provide that for a *sicherheitsorientiert* target
+  market the value of the guarantee may take precedence and "die Formulierung eines Renditeziels ...
+  ist dann gegebenenfalls entbehrlich", naming "klassische Lebensversicherungsprodukte ohne
+  fondsgebundene Komponenten" — this product — as the paradigm case.
 - Publisher: BaFin. Doc type: supervisory *Merkblatt*, published **May 2023**
 - URLs:
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Merkblatt/VA/mb_01_2023_wohlverhaltensaufsichtliche_aspekte_va.html ·
@@ -687,6 +1046,20 @@ of the search-result summary and not of the instrument.
   for the real return. Any figure attributed to the *Merkblatt* would be an invention. Gap 7.
 
 ### R18 — BaFin, *Risiken im Fokus 2026* — "Kosten von kapitalbildenden Lebensversicherungen"
+- **Retrieved (2026-08-30): yes**, the full chapter text as HTML — so the note below that "no text of
+  the chapter was established" is superseded, and this becomes the only source of supervisory
+  quantities in the corpus. Market size: "Im Jahr 2024 gab es hierzulande rund **59 Millionen**
+  kapitalbildende Lebensversicherungen. **2,4 Millionen** Verträge wurden in dem Jahr neu
+  abgeschlossen" — on the *Merkblatt*'s broad definition, so classic and unit-linked together. Costs:
+  a 2022 survey of first-half-2021 new business found "**In Einzelfällen beliefen sich die
+  Effektivkosten auf über vier Prozent**"; a repeat survey in 2025 covering 2024 new business found
+  them falling since 2021, "vor allem bei den verkaufsstarken langen Laufzeiten war im oberen Viertel
+  ein Rückgang der Effektivkosten um mehr als 0,4 Prozentpunkte zu beobachten". Lapse: "Einige
+  Lebensversicherungsprodukte sind mit sehr hohen Stornoquoten aufgefallen – speziell in den ersten
+  Jahren nach Vertragsabschluss, in denen ein großer Teil der Kosten anfällt", high early lapse being
+  treated as evidence of an inadequate *Kundennutzen*. Enforcement: products withdrawn, cost
+  reductions in the in-force book, retrospective compensation, and *Verwarnungen* to individual
+  *Geschäftsleiter*.
 - Publisher: BaFin. Doc type: annual supervisory risk-focus publication, 2026 edition,
   consumer-protection chapter
 - URLs:
@@ -697,6 +1070,10 @@ of the search-result summary and not of the instrument.
   product's charge level as an open problem. **No text of the chapter was established.**
 
 ### R19 — BaFin *Fachartikel*: "Wenn Lebensversicherungen zu viel kosten" (2022), "PRIIPs-Verordnung: Wie Versicherer Verbraucher informieren" (2022), "Kundennutzen im Fokus" (2024)
+- **Retrieved (2026-08-30): partly.** The 2022 *Effektivkosten* article and the 2024 *Kundennutzen*
+  article were read as HTML; **the PRIIPs *Surfday* article is HTTP 404** at the cited URL. With it
+  gone, the BIB content list below is better evidenced by the retrieved BIB itself at S10, which
+  prints every one of those fields.
 - Publisher: BaFin (BaFinJournal / Fachartikel)
 - URLs:
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Fachartikel/2022/fa_bj_2203_Effektivkosten_Versicherer.html ·
@@ -713,18 +1090,43 @@ of the search-result summary and not of the instrument.
   before conclusion**. The 2022 cost and 2024 conduct articles corroborate [R17] without new figures.
 
 ### R20 — GDV, "Die deutsche Lebensversicherung in Zahlen 2024" and the Jahresmedienkonferenz page
+- **Retrieved (2026-08-30): yes.** PDF, 40 pp., *Redaktionsschluss* 27.06.2024; the
+  Jahresmedienkonferenz page as HTML. **Both *Stornoquote* figures below are corrected.** The
+  publication titled *2024* reports the **2023** financial year and gives **one** measure, not two:
+  "Die Stornoquote (**Anzahl**) stieg im Jahr 2023 leicht auf **2,56 %** (Vorjahr: 2,51 %)." So
+  2,56 % is the **count** measure, and the 2,72 % attributed to 2024 and the separate 1,2 % count
+  measure are **not in this document** and are not established anywhere in the corpus. Gap 10 is
+  restated rather than closed: there are not two irreconcilable measures, there is one unsuitable
+  one — a headline count over all life business, not endowment-specific and not split by duration.
+  **Retrieval also supplies the endowment-specific figures the corpus lacked.** In force at
+  31 December 2023 by annual premium: "Der Anteil der Kapitalversicherungen (klassisch) lag Ende 2023
+  bei **15,7 %** (Vorjahr: 17,0 %)", against 61,8 % for annuity and pension business. New
+  regular-premium business 2023: klassische Kapitalversicherungen **158 Mio. Euro**, a **3,9 %**
+  share, up 8,2 %. Single premiums 2023: 1,1 Mrd. Euro of 24,5 Mrd. total. APE 8,9 Mrd. Euro
+  (−1,1 %); *Beitragssumme des Neugeschäfts* 175,4 Mrd. Euro (2022: 170,6). And the count series for
+  *eingelöster Neuzugang* of klassische Kapitalversicherungen — **1.954,9 Tsd. (26,8 %) in 2000 →
+  1.354,2 (18,5 %) 2005 → 742,1 (12,1 %) 2010 → 527,2 (10,3 %) 2015 → 392,3 (8,4 %) 2020 → 325,3
+  (7,4 %) 2023** — which is the quantification of the post-2005 collapse that R21 records as
+  missing.
 - Publisher: GDV
 - URLs:
   https://www.gdv.de/resource/blob/180978/b8ae8eb0b1bf4b15e7cc3354bc231af9/die-deutsche-lebensversicherung-in-zahlen-2024-publikation-pdf-data.pdf ·
   https://www.gdv.de/gdv/statistik/jahresmedienkonferenz-zahlen-und-daten/lebensversicherung-2024-165748
-- The industry statistical annual. The figure established through it is the ***Stornoquote*: 2,72 %
-  in 2024 against 2,56 % in 2023**, on the measure counting contracts **terminated early,
-  surrendered, or converted to *beitragsfrei*, as a percentage of the *Bestand***. A **second GDV
-  measure, by number of contracts, gives 1,2 %** for the same year, covering *Rückkäufe* and other
-  early terminations. **The two are not reconcilable from the search evidence and both are recorded**
-  (gap 10). No endowment-specific split of either was established.
+- The industry statistical annual. **Superseded by retrieval — see the `Retrieved` line above.** The
+  figure the publication actually gives is "Die Stornoquote (**Anzahl**) stieg im Jahr **2023** leicht
+  auf **2,56 %** (Vorjahr: 2,51 %)": one **count** measure, not two, and for 2023, not 2024. The
+  2,72 %/2024 and 1,2 % figures recorded here before this pass are withdrawn. What remains true is
+  that the measure covers all German life business and is **neither endowment-specific nor split by
+  duration** (gap 10).
 
 ### R21 — GDV statistics, "Neugeschäft und Bestand der Lebensversicherer für die letzten zehn Geschäftsjahre"
+- **Retrieved (2026-08-30): yes** for the HTML index of the series; the series themselves are
+  download links and the figures used in delib come from R20, the same publisher's annual, which was
+  retrieved in full. **The statement below that no endowment-specific new-business or in-force figure
+  was established is withdrawn** — see R20. R20 also gives the two definitions verbatim: the APE adds
+  10 % of single premiums to the annual premium assuming a ten-year term, while the *Beitragssumme*
+  weights regular premiums by their payment term and adds the whole single premium, and is therefore
+  "sehr viel größer als das APE".
 - Publisher: GDV
 - URLs:
   https://www.gdv.de/gdv/statistik/statistiken-zur-deutschen-versicherungswirtschaft-uebersicht/lebensversicherung/neugeschaeft-und-bestand-der-lebensversicherer-fuer-die-letzten-zehn-geschaeftsjahre-137804 ·
@@ -737,6 +1139,18 @@ of the search-result summary and not of the instrument.
   post-2005 collapse of endowment new business**. Gap 3.
 
 ### R22 — BGH on the Debeka *Stornoabzug*: the *Bezifferung* requirement
+- **Retrieved (2026-08-30): yes**, both reports as HTML. **Both tags are discharged**:
+  LTO gives the citation in full — "Urt. v. **18.03.2026**, Az. **IV ZR 184/24**" — so the docket is
+  no longer an inference from a URL slug and the decision date is established. The holding: the
+  clause meets "die im Versicherungsvertragsgesetz (VVG) festgelegten Anforderungen an die
+  Bezifferung des Abzugs gem. § 169 Abs. 5 S. 1 VVG" and does not offend § 307 Abs. 1 Satz 2 BGB;
+  "Die Vorschrift verlange nicht, dass der Abzug bereits zu Vertragsschluss als konkreter Betrag
+  vereinbart werde. 'Vielmehr kann der Versicherer auch auf die Regelung eines Berechnungsverfahrens
+  für den Stornoabzug zurückgreifen.'" The BGH set aside the OLG Koblenz judgment and remitted, the
+  *Angemessenheit* never having been examined below. **The rider that the procedure must leave the
+  insurer no *Ermessensspielraum* is not in either retrieved report and is dropped rather than
+  attributed.** The vzbv collective action covers contracts concluded after 2007 and cancelled from
+  1 May 2022; about 500 people had joined at the date of the report.
 - Publisher: Bundesgerichtshof; reported by LTO, LTMK, t-online, Cash.
 - URLs:
   https://www.lto.de/recht/nachrichten/n/bgh-ivzr18424-debeka-stornogebuehr-transparenz-zurueckverweisung-olg-angemessen ·
@@ -755,6 +1169,9 @@ of the search-result summary and not of the instrument.
   **inferred from the slug**; the decision date was not established. Both `[unverified]`.
 
 ### R23 — BGH, judgment of 20 January 2021, IV ZR 318/19 — *Bewertungsreserven* after the LVRG
+- **Retrieved (2026-08-30): yes**, the full judgment text from rewis.io. The disposition of the
+  parallel constitutional challenge to § 153 Abs. 3 Satz 3 VVG is still **not established** and
+  remains `[unverified]`.
 - Publisher: Bundesgerichtshof; reported by rewis.io, NWB, RWS-Verlag, DATEV magazin, AssCompact
 - URLs: https://rewis.io/urteile/urteil/e7b-20-01-2021-iv-zr-31819/ ·
   https://datenbank.nwb.de/Dokument/847241/ ·
@@ -767,6 +1184,9 @@ of the search-result summary and not of the instrument.
   established.**
 
 ### R24 — The older BGH line on *Rückkaufswert* and *Stornoabzug* clauses (2001–2007)
+- **Retrieved (2026-08-30): no.** The cited rechtsportal.de page answers **HTTP 429** (rate limited),
+  and no alternative locus for the 2001–2007 line was retrieved. The entry is kept as a known
+  reference and everything below still rests on the search summaries.
 - Publisher: Bundesgerichtshof; reported by verbraucherrecht.at, rechtsportal.de, 123recht.de,
   VorsorgeBote
 - URLs:
@@ -781,6 +1201,17 @@ of the search-result summary and not of the instrument.
   the *Stornoabzug* as a **contractual, pre-declared schedule**.
 
 ### R25 — Assekurata, 24. Marktstudie "Überschussbeteiligungen und Garantien 2026"
+- **Retrieved (2026-08-30): yes**, the March 2026 press release for the 24th edition as HTML. **The
+  critical caveat is confirmed by the text rather than merely suspected**: the figures are stated to
+  be "in der klassischen privaten Rentenversicherung", so they are annuity averages, and that an
+  endowment book shares the rate remains `[unverified]`. Verbatim: "In der klassischen privaten
+  Rentenversicherung erhöht sich die laufende Verzinsung für 2026 im Branchendurchschnitt auf
+  **2,62 %** (Vorjahr: 2,53 %). Inklusive Schlussüberschüssen liegt die in Aussicht gestellte
+  Gesamtverzinsung bei durchschnittlich **3,23 %** (Vorjahr: 3,19 %)", with *Neue Klassik* at 2,65 %
+  laufend and 3,32 % total. Two additions: the caution is attributed to "weiterhin vorhandene stille
+  Lasten in den Kapitalanlagen sowie vorsichtige Prognosen zur Zinsentwicklung", and "nur noch **elf**
+  der untersuchten Gesellschaften [bieten] überhaupt klassische private Rentenversicherungen im
+  Neugeschäft an".
 - Publisher: Assekurata Assekuranz Rating-Agentur GmbH; reported by finanzwelt
 - URLs: https://www.assekurata-rating.de/2026/03/04/assekurata-marktstudie-zu-ueberschussbeteiligungen-und-garantien-2026/ ·
   https://www.assekurata-rating.de/2026/01/29/ueberschussdeklaration/ ·
@@ -795,6 +1226,17 @@ of the search-result summary and not of the instrument.
   the two rates is plausible — the same *Sicherungsvermögen* backs both — but `[unverified]` (gap 2).
 
 ### R26 — Trade-press reporting on the 2026 declarations and the market position of *Klassik*
+- **Retrieved (2026-08-30): partly.** Both procontra articles were read in full as HTML; **the
+  VersicherungsJournal piece is paywalled** — its body is reserved to premium subscribers, so only
+  the headline "Etwa jeder dritte Lebensversicherer erhöht die Überschussbeteiligung" and the
+  standfirst of 27 January 2026, which records a survey of "fast 50 Anbieter mit rund 87 Prozent
+  Marktanteil", were read. **This entry now carries the declared rate the composite runs on**, since
+  S11 turned out not to: procontra reports Allianz holding the *laufende Verzinsung* "für die
+  klassischen Lebens- **und** Rentenversicherungen konstant bei **2,7 Prozent**", with *Perspektive*
+  at 2,8 % — a **2025** declaration for a combined book. The same piece gives Alte Leipziger at
+  2,25 % laufend / 2,45 % total and LVM at 2,4 % / 3,1 %. The "Klassik wird zur Nische" article
+  carries Assekurata's 2,62 % average for 2026. **The description of the 2024 *Stornoquote* as an
+  eight-year high is not in either retrieved article and is not established.**
 - Publisher: VersicherungsJournal, procontra, Versicherungsbote, Biallo, Versicherungsmonitor
 - URLs:
   https://www.versicherungsjournal.de/markt-und-politik/etwa-jeder-dritte-lebensversicherer-erhoeht-die-ueberschussbeteiligung-154961.php ·
@@ -811,6 +1253,13 @@ of the search-result summary and not of the instrument.
   thin new business**.
 
 ### R27 — DAV, *Ergebnisbericht des Ausschusses Lebensversicherung* — Standardverfahren PRIIP Kategorie 4 (1 July 2025); Franke und Bornberg on *Basisinformationsblätter*
+- **Retrieved (2026-08-30): yes.** PDF, 30 pp., Köln, 1 July 2025; the Franke und Bornberg blog post
+  as HTML. The report's preamble states its own standing — "Dieser Bericht stellt im Sinne des
+  Anhangs II der RTS zu PRIIP einen 'robusten, anerkannten Branchen- oder Regulierungsstandard' dar"
+  — and its scope, "ein geeignetes Standardverfahren für PRIIP der Kategorie 4 zur Ermittlung des
+  Marktrisikomaßes (MRM) und der Performance-Szenarien". **One caveat retrieval adds**: it names
+  *Rentenversicherungen der 3. Schicht* as the products principally in view, so its application to an
+  endowment is by analogy. No figure is taken from the Franke und Bornberg piece.
 - Publisher: Deutsche Aktuarvereinigung e. V.; Franke und Bornberg GmbH
 - URLs:
   https://aktuar.de/content/PDF/Fachwissen/2025-07-01_DAV_Ergebnisbericht_LV_Standardverfahren_PRIIP_Kategorie_4.pdf ·
@@ -825,6 +1274,9 @@ of the search-result summary and not of the instrument.
   them**.
 
 ### R28 — Actuarial and lexicon reference works on *Deckungskapital*, *Zillmerung* and *Überschussverwendung*
+- **Retrieved (2026-08-30): yes** — the DGVFM Band 4 teaching PDF and the three lexicon pages. **No
+  formula is copied from them into delib**: the prospective reserve is standard actuarial content,
+  used as a `[std]` construction and cited to no source, exactly as recorded below.
 - Publisher: various — DGVFM/DAV teaching series; Universität zu Köln; Universität Heidelberg;
   Deutsche Nationalbibliothek; Gabler Versicherungslexikon; VersWiki; Wikipedia
 - URLs:
@@ -861,6 +1313,23 @@ of the search-result summary and not of the instrument.
     ***Ratenzahlungszuschlag*** with its *echte* / *unechte* distinction, at section 10.
 
 ### R29 — LVRG legislative and market-impact material
+- **Retrieved (2026-08-30): yes** for the Pfefferminzia and Versicherungsbote reports and the
+  Bundestag *Stellungnahme* PDF. **The "almost 8 %" study is now attributed**: it is the **LV-Check of
+  the magazine Procontra**, which "seit 2009 die Bilanzen der relevantesten deutschen
+  Lebensversicherer im engeren Sinne untersucht", reported 20 July 2016, and the figure is **7,9 %**
+  — against a *Beitragssumme des Neuzugangs* down only 5,7 % over the same period, so the fall is not
+  a volume effect. **No *Stornohaftung* period was established** and none is asserted.
+  **Two corrections, one consequential.** (a) Versicherungsbote states the 40 ‰ predecessor in the
+  form the model needs — "In der Bilanz kann der Versicherer somit von ursprünglich **4,0 Prozent**
+  nur noch 2,5 Prozent der Beitragssumme als Vertriebs- und Abschlusskosten geltend machen" — and then
+  adds "**Eine Deckelung der Provisionen ist gesetzlich nicht vorgesehen.** Höhere Provisionen können
+  daher von den Versicherern gezahlt werden, sind jedoch aus anderen Töpfen zu nehmen." The LVRG caps
+  what may be zillmered and recognised, **not what may be paid**. (b) **The Die Stuttgarter figure is
+  not in either retrieved article.** The only carrier named is **ERGO**, and only qualitatively: a
+  stepwise redistribution in which "eine höhere Bestandsprovision dann eine geringere
+  Abschlussprovision ausgleicht". There is therefore **no named-carrier commission figure anywhere in
+  this corpus**, and `comm_init_rate` and `comm_renew_rate` are `[std]` with no observation behind
+  them.
 - Publisher: Deutscher Bundestag (GDV *Stellungnahme*); Pfefferminzia; Versicherungsbote;
   AssCompact; Versicherungsjournal
 - URLs:
@@ -873,13 +1342,26 @@ of the search-result summary and not of the instrument.
   *Höchstzillmersatz* cut took effect **1 January 2015** [R7] [S15].
 - **Market effect on charges**: an industry study is reported to have found ***Abschlusskosten* fell
   by almost 8 % after the LVRG**; author, sample and base year **not established**.
-- **Distribution response**: **Die Stuttgarter** is reported to have **cut its *Abschlussprovision* to
-  25 ‰** and compensated brokers with ***Bestandsprovision*** — the only named-carrier commission
-  figure in the corpus, and evidence that the 25 ‰ statutory ceiling became an operative commercial
-  ceiling. The GDV lobbied for amendments on ***Stornohaftung*** and on *Abschlusskosten*; **no
-  *Stornohaftung* period was established.**
+- **Distribution response**: **withdrawn by retrieval.** The Die Stuttgarter 25 ‰ figure is in
+  neither retrieved article; the only carrier named is **ERGO**, and only qualitatively — a stepwise
+  redistribution in which "eine höhere Bestandsprovision dann eine geringere Abschlussprovision
+  ausgleicht". **There is no named-carrier commission figure in this corpus.** Versicherungsbote adds
+  the point that matters most for the model: "**Eine Deckelung der Provisionen ist gesetzlich nicht
+  vorgesehen.** Höhere Provisionen können daher von den Versicherern gezahlt werden, sind jedoch aus
+  anderen Töpfen zu nehmen" — the 25 ‰ ceiling constrains what may be zillmered, not what may be paid.
+  The GDV lobbied for amendments on ***Stornohaftung*** and on *Abschlusskosten*; **no *Stornohaftung*
+  period was established.**
 
 ### R30 — Verbraucherzentrale material on the Debeka *Stornoabzug* collective action
+- **Retrieved (2026-08-30): yes**, both pages as HTML, and the figures now match the wording read at
+  S3. The vzbv FAQ states it exactly: "Neben dem üblichen Stornoabzug von 5 Prozent wurde eine
+  zusätzliche Stornogebühr erhoben. Ihre Höhe richtete sich nach der jeweiligen Kapitalmarktsituation
+  und konnte 5, 10 oder 15 Prozent des Deckungskapitals betragen." The cohort question is settled: the
+  class action covers policyholders who took out a Debeka life or annuity contract **after 2007** and
+  cancelled, "besonders betroffen" being those cancelling from **1 May 2022**. **What the consumer
+  bodies omit and S3 supplies**: a fourth *Kapitalmarktsituation* carrying no deduction at all, and
+  both components running linearly to nil over the last ten years before maturity — so the schedule's
+  floor is 0 %, not 5 %.
 - Publisher: Verbraucherzentrale Bundesverband and its Land bodies (Hamburg, Niedersachsen)
 - URLs: https://www.verbraucherzentrale.de/verfahren/debeka/faq ·
   https://www.vzhh.de/themen/versicherungen/lebens-rentenversicherung/urteil-stornoabzug-der-debeka ·
@@ -907,6 +1389,39 @@ of the search-result summary and not of the instrument.
 ---
 
 ## Extracted facts, organised by mechanic
+
+> **Corrections from retrieval, 2026-08-30 — read before using anything in this section.** The
+> documents behind these extracts have since been opened (see the `Retrieved` line on each source
+> block). Nine extracted facts did not survive, and the sections below are the *pre-retrieval*
+> record, kept for provenance rather than for use:
+>
+> 1. **The surplus base and timing at [S3].** B LV 85 is a deferred annuity with fund components, not
+>    an endowment. Its *Zinsüberschussanteile* are set **monthly**, on the start-of-month reserve,
+>    **from the third policy year**, and its *Schlussüberschussanteile* are a percentage of the
+>    accumulated interest surplus used to buy fund units, **not** of the *Deckungskapital*. The
+>    reserve-as-surplus-base fact is carried instead by the two endowment wordings, [S7] and [S18].
+> 2. **The Debeka triple as three endowment wordings of different vintages** [S3][S4][S5]. All three
+>    are annuity wordings and all three carry the same edition date, 01.07.2026; they differ by
+>    tariff, not by vintage. Debeka publishes **no** endowment AVB [S6].
+> 3. **The *gezillmert* / non-*gezillmert* pair at [S9].** Both die Bayerische documents are the same
+>    tariff two years apart and **both are zillmered** at 2,5 %. There is no published pair.
+> 4. **Premium cessation on death as an endowment rule [S7].** The express clause belongs to the
+>    *Termfixversicherung*; in the ordinary endowment the contract ends with the death payment.
+> 5. **The four-component surplus vocabulary at [S17].** HUK24 names three *drivers*, not four
+>    components, and does not use the four names.
+> 6. **Allianz's 2,7 % as a 2026 endowment rate [S11].** Not on any Allianz page; it is [R26]'s report
+>    of a **2025** declaration for a combined classic life-**and-annuity** book.
+> 7. **The GDV *Stornoquote* figures [R20].** The retrieved annual gives **2,56 % for 2023** on a
+>    **count** measure; the 2,72 %/2024 and 1,2 % figures are not in it.
+> 8. **Die Stuttgarter's 25 ‰ *Abschlussprovision* [R29].** Not in either retrieved article; the only
+>    carrier named is ERGO, qualitatively. **No carrier commission figure exists in this corpus.**
+> 9. **DAV 2008 T derived over 2006–2008 [R14].** The observation period is **2001 to 2004**;
+>    2006–2008 is when the working group did the work.
+>
+> Four claims previously `[unverified]` are now **established**: the § 52 Abs. 28 Satz 7 locus of the
+> age-62 rule; the second limb of the *Mindesttodesfallschutz*, § 20 Abs. 1 Nr. 6 Satz 6 b EStG; the
+> BGH citation IV ZR 184/24 of 18 March 2026; and the existence of the *Sockelbetrag*, corroborated
+> by [S2], [S9] and [S18].
 
 ### 1. Product structure and legal form
 
@@ -1040,7 +1555,10 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   **only to the extent that the *Bewertungsreserven* exceed the *Sicherungsbedarf* from contracts
   with an interest guarantee**, that need being the sum over contracts with an **überhöhter
   Rechnungszins** of the **actuarially valued interest obligation less the *Deckungsrückstellung***
-  [R8].
+  [R8]. **Read in the instrument for the 2026-08-30 pass, § 139 Abs. 3 VAG confines the cut-back to
+  "Bewertungsreserven aus ... festverzinslichen Anlagen und Zinsabsicherungsgeschäften"** — not to the
+  whole of the *Bewertungsreserven* — and [S18] § 2 Abs. 5 restates exactly that in a carrier's
+  wording.
 - **The legal hinge** is § 153 Abs. 3 Satz 3 VVG in its **LVRG (1 August 2014)** form, a *Vorbehalt
   aufsichtsrechtlicher Regelungen* [R1], challenged as unconstitutional before the BGH [R1]; the
   leading post-LVRG decision is **BGH 20 January 2021, IV ZR 318/19** [R23].
@@ -1076,9 +1594,12 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   declared rate, but **the corpus does not say so** and the identity is `[unverified]` (gap 2). The
   Allianz 2,7 % is explicitly for **classic customers** and is the only rate in the corpus attached
   to a classic savings book by its manufacturer.
-- **Direction of travel, 2026**: about **one in three insurers raised** the *Überschussbeteiligung*;
-  **Allianz did not** [R26]. The caution is attributed to remaining ***stille Lasten*** and to
-  conservative rate forecasts [R25].
+- **Direction of travel, 2026**: about **one in three insurers raised** the *Überschussbeteiligung*
+  [R26]. The caution is attributed to "weiterhin vorhandene ***stille Lasten*** in den Kapitalanlagen
+  sowie vorsichtige Prognosen zur Zinsentwicklung" [R25], and only **eleven** of the companies
+  Assekurata surveys still write classic private annuities as new business [R25]. **The 2,7 % figure
+  is Allianz's 2025 declaration for its combined classic life-and-annuity book, reported by procontra
+  [R26] — it is not on any Allianz page and it is not a 2026 rate.**
 - **No *Schlussüberschuss* rate of any kind was established**, so **no *Gesamtverzinsung* figure is
   available** (gap 1). Any *Gesamtverzinsung* printed in delib is the *laufende Verzinsung* above plus
   a `[std]` terminal component with its rationale stated.
@@ -1111,7 +1632,8 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   guaranteed rates from **4 %** down to **0,25 %** and back to **1 %**, and the *Sicherungsbedarf*
   mechanism exists precisely because of the top of that range [R8].
 - **Mortality.** The reference family for death-benefit business is **DAV 2008 T**, derived from
-  2006–2008 studies on insurers' own policy data and German population statistics, the cleansed
+  studies carried out 2006–2008 on **observation years 2001 to 2004** of insurers' own policy data
+  and on German population statistics [R14], the cleansed
   insured data covering **60 % of the German market in the *Kapitallebensversicherung* segment**
   [R14]. Variants **DAV 2008 T R / NR** support smoker differentiation but are **not suitable for
   business written without a *Gesundheitsprüfung*** [R14]. The *Richtlinie* also fixes the method
@@ -1129,7 +1651,10 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   [S15] group — the three-way split delib's technical notes publish per period.
 - The premium is **level** over the *Beitragszahlungsdauer*, which may be shorter than the
   *Versicherungsdauer*; **no source states the range of abbreviated-payment options offered**, so any
-  such option in delib is `[std]`. **The premium stops on death** [S7] and **on
+  such option in delib is `[std]`. **The premium stops on death** because the death payment ends the
+  contract — "Mit der Auszahlung endet der Vertrag" [S7] § 3 I (5); the express clause "Bei Tod der
+  versicherten Person vor dem Ablauftermin werden keine Beiträge mehr fällig" belongs to the
+  *Termfixversicherung* [S7] § 3 II, the one variant death does **not** terminate. And **on
   *Beitragsfreistellung*** [R3].
 - ***Beitragssumme*** — the total of all premiums payable over the agreed term — is the **reference
   base** for the acquisition-cost cap [R7][S15] and for the tax *Mindesttodesfallschutz* test [R12],
@@ -1334,7 +1859,8 @@ as the `[std]` base case and carries *Beitragsverrechnung* and the *Bonussystem*
   and after twelve years from conclusion** → **only half the *Unterschiedsbetrag*** is taxable,
   § 20 Abs. 1 Nr. 6 Satz 2 EStG [R10].
 - **The age-62 tightening**: for contracts concluded **after 31 December 2011** the required age is
-  **completion of the 62nd year** [R10] (cited to § 52 Abs. 36 Satz 9 EStG; current locus
+  **completion of the 62nd year**, **§ 52 Abs. 28 Satz 7 EStG** as read in the statute for the 2026-08-30
+  pass [R10] (recorded here before as § 52 Abs. 36 Satz 9 EStG; current locus
   `[unverified]`).
 - **Rate**: where the halving applies and the benefit accrues **from 1 January 2009**, the flat
   *Abgeltungsteuer* does **not** apply; the **personal marginal rate** applies to the half amount,
@@ -1409,7 +1935,10 @@ Attribution is to the group, and this is the weakest section in the file.
 | *Stornoquote* by number of contracts (surrenders and other early terminations) | 1.2 % | 2024 | [R20] |
 | Insurers raising the *Überschussbeteiligung* | about one in three | 2026 | [R26] |
 
-- The 2,72 % measure **counts contracts terminated early, surrendered, or converted to
+- **Superseded by retrieval**: the GDV publishes one figure, "Die Stornoquote (Anzahl) ... 2,56 %"
+  for 2023 [R20], a **count** measure over all life business. The two-measure account below rests on
+  the pre-retrieval summaries and is kept only for provenance. The 2,72 % measure was said to **count
+  contracts terminated early, surrendered, or converted to
   *beitragsfrei*, as a percentage of the *Bestand*** [R20]; the 1,2 % measure counts contracts and
   covers surrenders and other early terminations [R20]. **The two are not reconcilable from the
   search evidence** and both are recorded (gap 10). The 2024 figure is described as an **eight-year
@@ -1425,10 +1954,10 @@ Attribution is to the group, and this is the weakest section in the file.
 | Model input | Status | Tag |
 |---|---|---|
 | Guaranteed *Rechnungszins* | established, 1.00 % for new business from 2025 | [R7][R15] |
-| Declared *laufende Verzinsung* | established, 2.62 %–2.7 % for 2026, but for the **annuity** except Allianz's classic book | [R25][S11] |
-| *Schlussüberschuss* rate | **not established** | gap 1 |
-| Surplus allocation base | established: percentage of *Deckungskapital* at allocation date | [S3] |
-| Surplus allocation timing | established: annual, at the 31 December *Bilanzstichtag* | [S9] |
+| Declared *laufende Verzinsung* | 2.62 % annuity market average for 2026 [R25]; 2.25 %–2.80 % at named carriers for **2025** [R26]. **No endowment-specific rate exists** | [R25][R26] |
+| *Schlussüberschuss* rate | **not established**; mechanism established [S7][S18] | gap 1 |
+| Surplus allocation base | established: percentage of the *Deckungskapital*, in four wordings | [S7][S18][S9][S3] |
+| Surplus allocation timing | **varies**: 31 December *Bilanztermin* [S9]; policy *Stammtag* [S7]; start of policy year [S18]; monthly [S3] | [S7][S9][S18][S3] |
 | Surplus application system | four named; **market default not established** | [R28], gap 4 |
 | *Bewertungsreserven* share | mechanism established; **amount not established** | [R1][R8], gap 8 |
 | Mortality basis | family and provenance established; **table values not public** | [R14] |
@@ -1438,7 +1967,7 @@ Attribution is to the group, and this is the weakest section in the file.
 | Administration-cost level | **not established** | gap 7 |
 | *Ratenzahlungszuschlag* | established as a market range 2/3/5 % | [R28] |
 | Surrender-value rule | established in full | [R2] |
-| *Stornoabzug* level | one carrier only, 5 % + 5/10/15 % | [S3][R30], gap 18 |
+| *Stornoabzug* level | **three carriers, three bases**: 0–20 % of the *Deckungskapital* [S3][R30]; 50 € + 0,15 % of premiums × years remaining [S9]; 100 € + 0,2 % of (sum insured − reserve) [S18] | gap 18 |
 | Paid-up rule | established in full | [R3] |
 | Suicide rule | established in full | [R4] |
 | Lapse rate | market aggregate only, two irreconcilable measures | [R20], gap 10 |
@@ -1460,7 +1989,7 @@ compared: six carriers produced a document, and only one produced quantified ter
 | Surplus timing published | no | no | no | **yes** — 31 December *Bilanzstichtag* | no | no |
 | Declared 2026 *laufende Verzinsung* | not established | **2.7 %** | not established | not established | not established | not established |
 | *Stornoabzug* published | **yes** — 5 % + 5/10/15 % of *Deckungskapital* | no | no | no | no | no |
-| *Zillmerung* choice visible | no | no | no | **yes** — gezillmert and non-gezillmert editions of one tariff | no | no |
+| *Zillmersatz* visible | no | no | **yes — 4 %**, the pre-LVRG ceiling | yes — 2,5 %, **both** editions zillmered | no | no |
 | Paid-up clause visible | no | no | **yes** — full or partial reduction to the *beitragsfreie Versicherungssumme* | no | no | no |
 | Premium ceases on death | no | no | **yes** | no | no | no |
 | PRIIP-BIB located | no | no | no | no | no | **yes** |
@@ -1470,10 +1999,10 @@ Parameter ranges, where more than one observation exists:
 | Parameter | Observed range | Who sits where | Tag |
 |---|---|---|---|
 | *Höchstrechnungszins* by cohort | 0.25 % – 4.00 %, currently 1.00 % | market-wide, by year of issue | [R7] |
-| Declared *laufende Verzinsung*, 2026 | 2.62 % (annuity market average) – 2.70 % (Allianz classic) | Allianz above the annuity market average; "Neue Klassik" at 2.65 % | [R25][S11] |
-| *Höchstzillmersatz* | 25 ‰ statutory ceiling; Die Stuttgarter's *Abschlussprovision* set at 25 ‰ | ceiling and one carrier at the ceiling | [R7][R29] |
+| Declared *laufende Verzinsung* | 2.25 %–2.80 % at named carriers (2025) [R26]; 2.62 % annuity market average (2026) [R25] | Allianz 2.70 % at the top of the named range, Alte Leipziger 2.25 % at the bottom | [R25][R26] |
+| *Höchstzillmersatz* by cohort | 40 ‰ (4 %) before 2015, 25 ‰ (2,5 %) from 1 January 2015 | Gothaer's 2011 wording at 4 %, die Bayerische and VPV at 2,5 % | [R7][S7][S9][S18] |
 | *Ratenzahlungszuschlag* | 2 % half-yearly / 3 % quarterly / 5 % monthly | market convention, no carrier attribution | [R28] |
-| *Stornoabzug* | 5 % to 20 % of *Deckungskapital* | Debeka only | [S3][R30] |
+| *Stornoabzug* | three incompatible bases: 0–20 % of *Deckungskapital*; 50 € + 0,15 % of premiums × years remaining; 100 € + 0,2 % of (sum insured − reserve) | Debeka, die Bayerische, VPV | [S3][S9][S18][R30] |
 | Contract term as sold | 12 years (tax minimum) to 40 years | market-wide | [R10] + consumer group |
 | *Stornoquote* | 1.2 % (per contract) to 2.72 % (per the main GDV measure), 2024 | market-wide | [R20] |
 
@@ -1495,20 +2024,27 @@ the charge levels, the entry age, the sum insured, the *Stornoabzug* and the lap
 
 ## Gaps and caveats
 
-1. **No *Schlussüberschuss* rate of any kind was established.** The corpus establishes what a
-   *Schlussüberschussanteil* is [S16], that it is declared as a percentage of the *Deckungskapital*
-   at the allocation date [S3], and that the *Gesamtverzinsung* is the *laufende Verzinsung* plus the
-   terminal component [S16] — but **not one number**, for any insurer, in any year. Any
-   *Schlussüberschuss* assumption in delib is `[std]`, and any *Gesamtverzinsung* printed in the
-   library is a construction, not a citation.
+**Status after the retrieval pass of 2026-08-30 is noted on each gap.**
 
-2. **The declared-rate figures are for the annuity, not the endowment.** Assekurata's 2,62 % /
-   2,53 % / 2,65 % are for the *klassische private Rentenversicherung* and the *Neue Klassik* [R25].
-   Only Allianz's 2,7 % is attached to a classic **endowment** book, and it is one carrier's page
-   [S11]. **That the endowment and the deferred annuity share a declared rate is `[unverified]`** —
-   plausible, because the same *Sicherungsvermögen* backs both, but not sourced.
+1. **No *Schlussüberschuss* rate of any kind was established.** *(open, better founded.)* The
+   *mechanism* is now read in two endowment wordings: a *Schlussüberschusskonto* fed by an annual
+   share of the interest-surplus base and itself bearing a declared rate, redeterminable for past
+   years and able to fall to nil [S18]; and a *Schlussgewinnanteil* at maturity depending on the
+   maturity sum and the accumulated surplus, reduced on surrender and death [S7]. **Still not one
+   number**, for any insurer, in any year. Any *Schlussüberschuss* assumption in delib is `[std]`,
+   and any *Gesamtverzinsung* printed in the library is a construction, not a citation.
 
-3. **The post-2005 collapse of endowment new business is not quantified.** GDV publishes
+2. **The declared-rate figures are for the annuity, not the endowment.** *(open, and worse than
+   recorded.)* Assekurata states its own scope — "in der klassischen privaten Rentenversicherung"
+   [R25]. **And the endowment counter-example has gone**: Allianz's pages carry no declared rate at
+   all, and the 2,7 % is [R26]'s report of a **2025** declaration for a combined classic life-and-
+   annuity book. So **no endowment-specific declared rate exists in the corpus**, and that the two
+   products share a rate is `[unverified]`.
+
+3. **The post-2005 collapse of endowment new business is not quantified.** *(**closed** by the
+   retrieval of [R20]: the count of newly issued classic endowments runs 1.954,9 Tsd. in 2000 →
+   1.354,2 in 2005 → 742,1 in 2010 → 527,2 in 2015 → 392,3 in 2020 → 325,3 in 2023, and the in-force
+   share by annual premium was 15,7 % at end-2023.)* GDV publishes
    new-business *Beitragssumme* and APE series [R21], but **no endowment-specific new-business or
    in-force figure, and no time series showing the effect of the 2005 tax change, was established.**
    delib's market-role argument rests on Allianz's statement [S11] and the trade characterisation
@@ -1534,44 +2070,63 @@ the charge levels, the entry age, the sum insured, the *Stornoabzug* and the lap
    MindZV framing is the one to cite**, and any statement that the cost surplus specifically carries
    a 50 % minimum is `[unverified]`.
 
-7. **No charge level of any kind was established.** Not one *Effektivkosten* value, range or
-   supervisory threshold; not one *Abschlusskostenquote* or *Verwaltungskostenquote* for any carrier;
-   not one commission rate other than Die Stuttgarter's 25 ‰ [R29]. BaFin says *Effektivkosten*
+7. **No charge level of any kind was established.** *(materially narrowed, not closed.)* Two cost
+   observations now exist: BaFin's finding that in individual cases 2021 new business carried
+   *Effektivkosten* "über vier Prozent", falling by more than 0,4 pp in the upper quartile at long
+   durations by 2024 [R18]; and the ÖSA *Basisinformationsblatt*, which on its own model case shows
+   total costs of 6.216 €, an annual cost impact of **5,3 %** at twenty years, entry costs of 2,2 %
+   and ongoing administration of 28,5 % of the sum of all investment amounts [S10]. **What remains
+   unestablished** is any *Abschlusskostenquote* or *Verwaltungskostenquote* for a named carrier, and
+   **any commission rate at all** — the Die Stuttgarter 25 ‰ recorded here is not in the retrieved
+   [R29] articles and is withdrawn. BaFin says *Effektivkosten*
    "differ considerably" and that it will examine outliers [R17], and makes cost a 2026 focus risk
    [R18], **without publishing a number in anything the searches returned**. **Every charge level in
    delib is `[std]`.** The fix is a PRIIP-BIB or a *Produktinformationsblatt*; [S10] is the one BIB
    located and its figures were not established.
 
 8. **The *Bewertungsreserven* participation is established as a mechanism and not as an amount.**
-   The half share [R1][R8], the *Sicherungsbedarf* cut-back [R8] and the leading case [R23] are
-   established; **the amount actually distributed in any year, by any insurer, is not.** The
-   ***Sockelbetrag*** reported by one weak secondary source has **no primary or supervisory
-   corroboration** and its existence, base and size are `[unverified]`.
+   *(open as to amount; the *Sockelbetrag* limb is closed.)* The half share [R1][R8], the
+   *Sicherungsbedarf* cut-back [R8] — which § 139 Abs. 3 VAG confines to fixed-income and
+   interest-hedging reserves — and the leading case [R23] are established; **the amount actually
+   distributed in any year, by any insurer, is not.** The ***Sockelbetrag*** now has **three
+   independent witnesses**: the GDV Muster-Standmitteilung's "Sockelbeteiligung an
+   Bewertungsreserven" [S2], die Bayerische's *Mindestbeteiligung* [S9], and [S18] § 2 Abs. 6. Its
+   existence is established, it is contractual and declaratory rather than statutory, and **its size
+   remains unobserved** — all three say it can fall away.
 
 9. **No German *Produktinformationsblatt* or IPID for a kapitalbildende Lebensversicherung was
-   located.** Debeka's index names IPID as a published document type [S6] and the regulatory content
-   requirements are established [R9][R19], but **not one instance of either document was found** —
-   the single most valuable missing document class, since a PIB or IPID would have supplied entry
-   age, sum-insured band, term band, charge levels and the *Effektivkosten* on one page.
+   located.** *(open; partly substituted.)* Debeka's index names IPID as a published document type
+   [S6] and the regulatory content requirements are established [R9][R19], but **not one instance of
+   either document was found**. The retrieved PRIIP-BIB at [S10] is the nearest substitute and does
+   supply the fields a PIB would have carried — risk indicator, four performance scenarios, total
+   costs, the annual cost impact and the premium split — but for a different product of one
+   public-sector insurer, so entry age, sum-insured band, term band and charge levels for a classic
+   endowment remain unobserved.
 
-10. **The two GDV *Stornoquote* measures are irreconcilable from the search evidence.** 2,72 % for
-    2024 on the measure counting early terminations, surrenders and conversions to *beitragsfrei* as
-    a share of the *Bestand*; 1,2 % for the same year counting contracts [R20]. The first is almost
-    certainly premium- or sum-weighted and the second head-count, but **the definitions were not
-    established** and the reconciliation is `[unverified]`. Neither is endowment-specific or by
-    duration.
+10. **The GDV *Stornoquote* is one unsuitable measure, not two irreconcilable ones.** *(restated by
+    retrieval.)* The retrieved annual reports for **2023**: "Die Stornoquote (**Anzahl**) stieg im
+    Jahr 2023 leicht auf **2,56 %** (Vorjahr: 2,51 %)" [R20]. It is a **count** measure over all
+    German life business. The 2,72 %/2024 figure and the separate 1,2 % count measure recorded here
+    before this pass are **not in the publication** and are withdrawn. The gap that remains is the
+    one that matters: the measure is **not endowment-specific and not split by duration**, and BaFin's
+    finding that lapse concentrates "in den ersten Jahren nach Vertragsabschluss" [R18] is exactly
+    what an annual average cannot express.
 
-11. **The second *Mindesttodesfallschutz* condition is garbled in the source.** The 10 % excess over
-    the *Deckungskapital* or *Zeitwert* is reported with the trailing words "after five years",
-    which does not parse as a rule [R12]. The provision is generally understood to contain an
-    **age-graded percentage schedule** rather than a flat 10 %, but **no source in this corpus says
-    so**. The 10 % figure is recorded; **its base, its time profile and the five-year qualifier are
-    `[unverified]`.**
+11. **The second *Mindesttodesfallschutz* condition.** *(**closed** by reading § 20 Abs. 1 Nr. 6
+    Satz 6 EStG.)* The provision reads: the halving is disapplied where, in addition to the 50 %
+    limb, the benefit on the insured event does not exceed the *Deckungskapital* or *Zeitwert*
+    "**spätestens fünf Jahre nach Vertragsabschluss** ... um mindestens 10 Prozent des
+    Deckungskapitals, des Zeitwerts oder der Summe der gezahlten Beiträge", and "Dieser Prozentsatz
+    darf bis zum Ende der Vertragslaufzeit in jährlich gleichen Schritten auf Null sinken." So the
+    base is any of the three named, the time profile is the five-year point, the trailing words are
+    the linear run-off to zero, and there is **no age-graded schedule**. The two limbs are cumulative,
+    joined by "und".
 
-12. **The DeckRV amendment date is only half-established.** The increase to 1,00 % effective
-    1 January 2025 was "announced in the *Bundesgesetzblatt* on 24 July" [R7]. **The year is inferred
-    to be 2024** from the surrounding chronology (DAV recommendation November 2023, BMF adoption
-    late April 2024) and is `[unverified]`. No BGBl citation was returned and none is invented.
+12. **The DeckRV amendment date.** *(**closed**, and the date corrected.)* buzer's *Fassung* line
+    reads "Artikels 1 Sechste Verordnung zur Änderung von Verordnungen nach dem
+    Versicherungsaufsichtsgesetz V. v. **19. Juli 2024** BGBl. **2024 I Nr. 250** **m.W.v. 1. Januar
+    2025**" [R7]. The announcement date is 19 July 2024, not 24 July; the year is no longer inferred;
+    and the BGBl citation is established.
 
 13. **The pre-2005 tax regime's conditions were not established.** The 1 January 2005 boundary and
     the taxation of the *Unterschiedsbetrag* on post-2004 contracts are established [R13][R10]. The
@@ -1579,18 +2134,23 @@ the charge levels, the entry age, the sum insured, the *Stornoabzug* and the lap
     percentage of the *Beitragssumme*** the old regime required are **general knowledge, not sourced
     here**, and are `[unverified]`. delib models a post-2011 contract and does not assert them.
 
-14. **No endowment-specific mortality table was identified.** DAV 2008 T is a **death-benefit** table
-    [R14] whose study used *Kapitallebensversicherung* data for 60 % of its market coverage, but
-    **whether a separate first-order table exists for endowment as against pure term business was not
-    established**, nor was the *Sicherheitszuschlag* level. The delib decrement CSV is a `[std]` proxy
+14. **No endowment-specific mortality table exists.** *(**answered** by reading the derivation paper
+    and the *Richtlinie*.)* DAV 2008 T is a single *Schlusstafel* for death-benefit business built
+    from observation years **2001 to 2004** on data from 47 undertakings; about 91 % of the
+    observations are endowment data and endowment mortality from the sixth policy year is 101 % of
+    the all-tariff level, so **there is no separate endowment table and no need for one** [R14]. The
+    *Sicherheitszuschlag* **method** is established — *Schwankungs-*, *Irrtums-* and *Änderungsrisiko*,
+    on a model portfolio of 200.000 lives aged 20 to 65 — but not its **level**. The delib decrement CSV is a `[std]` proxy
     that names DAV 2008 T and says what a replacement must preserve.
 
-15. **No statutory version dates were established.** Not for § 153, § 161, § 165, § 169 or § 19 VVG;
-    not for the MindZV beyond the `mindzv_2016` identifier; not for the DeckRV beyond the 2025
-    amendment; not for § 139 VAG. `gesetze-im-internet.de` was refused at the egress gateway, so no
-    *Fassung* line was ever seen. **Every statutory statement in this file is "current in substance
-    as reported in August 2026" and none is version-pinned.** A later session must re-check before
-    relying on a paragraph number.
+15. **No statutory version dates were established.** *(**closed**.)* Every statute the product turns
+    on has since been read as canonical XML with its `Stand` attached: **§§ 19, 153, 161, 165, 168 and
+    171 VVG** — *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*; **§ 139 VAG** —
+    Art. 25 G v. 25.3.2026 I Nr. 81; **§§ 20 and 52 EStG** — Art. 7 G v. 29.6.2026 I Nr. 197; the
+    **MindZV** — Art. 1 V v. 7.7.2020 I 1688; the **DeckRV** — Art. 1 V v. 19.7.2024 I Nr. 250, in
+    force 1 January 2025. The `gesetze-im-internet.de/<law>/__NNN.html` pages are frameset shells with
+    no statutory text and are kept as human-facing links only. The statutory statements in this file
+    are now version-pinned.
 
 16. **No premium rate table, no underwriting grid and no *Risikozuschlag* scale is public**, for any
     German endowment, from any carrier. This mirrors the frlib finding with one difference: frlib had
@@ -1604,22 +2164,29 @@ the charge levels, the entry age, the sum insured, the *Stornoabzug* and the lap
     fixed per-policy *Stückkosten* charge. Both are standard in German practice as far as general
     knowledge goes, but **neither is sourced here**; if delib uses either it is `[std]`.
 
-18. **The only *Stornoabzug* schedule in the corpus belongs to one carrier and is sub judice.**
-    Debeka's 5 % plus 5/10/15 % of *Deckungskapital* [S3][R30] is a single observation, it is the
-    subject of a live Verbraucherzentrale collective action [R30], and the BGH remitted the
-    *Angemessenheit* question rather than deciding it [R22]. **A single-carrier figure under
-    challenge is not a market range.** The delib base value is `[std]` with Debeka's figures cited as
-    the one observation.
+18. **Three *Stornoabzug* schedules, on three incompatible bases.** *(superseded.)* Debeka: 5 % of
+    the *Deckungskapital* plus 0/5/10/15 % by *Kapitalmarktsituation*, both decaying linearly to nil
+    over the last ten years [S3][R30] — sub judice, a live Verbraucherzentrale collective action and
+    a BGH remittal on *Angemessenheit* [R22]. Die Bayerische: 50 EUR plus 0,15 % of premiums paid
+    times the years remaining to the original maturity [S9]. VPV: 100 € plus 0,2 % of the difference
+    between the sum insured and the *Rückkaufswert* [S18]. **Three figures on three bases are not a
+    market range either**, and no two of them can be averaged. The delib base value stays `[std]`, a
+    declining percentage of the reserve, which matches one of the three shapes.
 
-19. **No *Wartezeit* was established for an underwritten German endowment.** The only period the
-    corpus establishes that behaves like one is the three-year *Selbsttötung* window [R4]. Any waiting
-    period in delib is `[std]`, and the specification should say so explicitly.
+19. **The surplus *Wartezeit* varies by carrier and delib takes the shortest.** *(answered, and the
+    answer is that there is no market convention.)* The retrieved wordings give three: **none** —
+    "Der Anspruch auf Überschussbeteiligung beginnt sofort mit dem Versicherungsschutz" [S9]; **one
+    year**, allocated at the start of the policy year [S18]; and **three years**, for Gothaer's tariff
+    group A [S7] and for Debeka's *Zinsüberschussanteile* [S3]. `surplus_credit_pp` running from
+    inception is therefore a `[std]` choice among three observed conventions, not a sourced fact, and
+    the specification says so. The separate three-year *Selbsttötung* window [R4] is unrelated.
 
-20. **Four statutory provisions the product depends on were never searched**, because the session's
-    shared `WebSearch` budget was exhausted: **§ 168 VVG** (the policyholder's right of *Kündigung*
-    and its timing), **§ 152 VVG** (the 30-day *Widerruf* right), **§§ 37 and 38 VVG** (non-payment,
+20. **Three statutory provisions the product depends on were never separately researched.**
+    *(narrowed.)* **§ 152 VVG** (the 30-day *Widerruf* right), **§§ 37 and 38 VVG** (non-payment,
     *Mahnverfahren* and termination for arrears), and **§ 150 VVG** (insurance on the life of
-    another, and the consent requirement). Nothing is asserted about any of them anywhere in delib.
+    another, and the consent requirement). **§ 168 VVG has since been read** — the *Kündigung* right
+    for the end of the current *Versicherungsperiode*, extended to single-premium contracts by
+    Abs. 2 and excluded for certain retirement contracts by Abs. 3 — and is recorded at [R2]. Nothing is asserted about any of them anywhere in delib.
     They are named here so a later session knows exactly where the hole is.
 
 21. **The typical-parameter section rests on one fused, unattributed summary and contains an
@@ -1629,19 +2196,27 @@ the charge levels, the entry age, the sum insured, the *Stornoabzug* and the lap
     established at all.** The delib model point is a `[std]` construction and the product
     specification says so in the table itself.
 
-22. **Nineteen of the twenty-six named carriers produced nothing.** R+V, Generali/Dialog, HDI, Alte
+22. **Nineteen of the twenty-six named carriers produced nothing, and most of what the other seven
+    produced is not an endowment wording.** *(restated by retrieval: the corpus has **two** endowment
+    wordings, [S7] and [S18]; [S3]–[S5] and [S9] are annuity wordings; [S8] is a 404.)* R+V,
+    Generali/Dialog, HDI, Alte
     Leipziger, LV 1871, Continentale, Nürnberger, Swiss Life, Zurich, AXA, Barmenia, Hannoversche,
     CosmosDirekt (beyond a glossary page), Württembergische, Volkswohl Bund, Baloise, Universa, DEVK,
     Signal Iduna, Provinzial and HUK-Coburg (beyond a term-life page) yielded **no endowment
     document**. The search budget ran out before their document libraries could be located, and **no
-    URL was guessed for any of them.** delib's variations table is six carriers wide against frlib's
-    eight, and only one of the six is quantified.
+    URL was guessed for any of them.** delib's variations table is seven carriers wide against
+    frlib's eight, and three of the seven publish quantified terms — Debeka, die Bayerische and
+    VPV, each on a different *Stornoabzug* base.
 
 23. **The search summaries fuse sources and do not attribute sentences** — a systematic limitation,
-    not a per-entry one. Where a fact carries several tags it is because the summary matched several
-    pages and named none. Sections 19 and 21, and the parts of section 10 tagged to the "R28 family",
-    are where this bites hardest. A later session that can fetch documents should re-derive those
-    sections from the documents rather than trusting the attributions here.
+    not a per-entry one, and **the retrieval pass of 2026-08-30 shows how badly it bit**: of the nine
+    extracted facts that did not survive retrieval (see the correction block at the head of
+    *Extracted facts*), six were fusion artefacts — clauses of one document attributed to another,
+    a *Termfixversicherung* rule read as an endowment rule, an annuity wording read as an endowment
+    wording, a trade-press rate attributed to a manufacturer's page. Where a fact still carries
+    several tags and no `Retrieved` line resolves it, it is because the summary matched several pages
+    and named none. Sections 19 and 21, and the parts of section 10 tagged to the "R28 family",
+    are where this still bites; those sections have not been re-derived from documents.
 
 24. **One Austrian document was returned and is excluded.** ERGO Versicherung AG's AVB "K119 Kapital
     und Rente" (`https://ergo-versicherung.at/fileadmin/user_upload/pdf/Versicherungsbedingungen/

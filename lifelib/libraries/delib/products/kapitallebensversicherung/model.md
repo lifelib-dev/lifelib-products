@@ -7,20 +7,24 @@ the product it implements is specified in
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the surplus declared as a percentage of the
-> *Deckungskapital* at the allocation date [S3] and allocated at the *Bilanzstichtag*
-> [S9], entitlement running from inception [S9] and the declared level being revisable
-> annually and capable of being zero [S3] [S9]; the *Rückkaufswert* as the
-> *Deckungskapital* on the *Rechnungsgrundlagen der Prämienkalkulation* struck at the end
-> of the current *Versicherungsperiode* and floored by the five-year spreading [R2]; the
-> *Stornoabzug* as a percentage of the *Deckungskapital*, *vereinbart*, *beziffert* and
-> *angemessen* [R2] [S3] [R22] [R30]; the § 165 VVG *Mindestversicherungsleistung* test
-> and the paid-up sum bought with the § 169 value [R3]; the § 161 VVG substitution of the
-> *Rückkaufswert* for the sum insured on a suicide inside three years [R4]; the cessation
-> of premiums on death [S7]; and both DeckRV cohort ceilings [R7] [REG-R15] [REG-R16].
+> *Deckungskapital*, in four carrier wordings that agree on the base and differ on the
+> timing and the waiting period [S7] [S18] [S9] [S3], booked into the *Deckungskapital* at
+> the *Bilanztermin* [S9], the declared level being revisable annually and capable of being
+> zero [S1] [S9]; the *Rückkaufswert* as the *Deckungskapital* on the *Rechnungsgrundlagen
+> der Prämienkalkulation* struck at the end of the current *Versicherungsperiode* and
+> floored by the five-year spreading [R2], restated verbatim in the model wording [S1] and
+> in three carrier wordings [S7] [S18] [S3]; the *Stornoabzug* as *vereinbart*, *beziffert*
+> and *angemessen* [R2] [R22], quantified on three different bases by three carriers
+> [S3] [S9] [S18] [R30]; the § 165 VVG *Mindestversicherungsleistung* test and the paid-up
+> sum bought with the § 169 value [R3] [S1] [S7]; the § 161 VVG substitution of the
+> *Rückkaufswert* for the sum insured on a suicide inside three years [R4] [S1]; the ending
+> of the contract, and so of the premium, with the death payment [S7]; and both DeckRV
+> cohort ceilings, each fixed at conclusion for the whole term [R7] [REG-R15] [REG-R16].
 > **Every behavioural and experience assumption is a [std] standardization.** No German
 > insurer publishes a mortality basis, an expense loading, a commission scale, a
-> terminal-bonus rate or a lapse rate for this product [S3] [S4] [S5] [S7] [S8] [S11]
-> [S12] [S13], and the DAV tables — **DAV 2008 T** here — are the property of the Deutsche
+> terminal-bonus rate or a lapse rate for this product — the six carrier documents read for
+> this library contain none of them [S3] [S4] [S5] [S7] [S9] [S18] [S11] [S12] [S13] — and
+> the DAV tables — **DAV 2008 T** here — are the property of the Deutsche
 > Aktuarvereinigung, are not public and are cited by name rather than redistributed [R14]
 > [REG-R47] [REG-R48]. **No document cited anywhere in this library was retrieved**: direct
 > HTTP egress is blocked and every citation rests on a search-result summary. Replace the
@@ -58,8 +62,9 @@ mortality table, what it is *not*.
 This is the one thing about the product a reader arriving from a US or UK participating
 model will get wrong, and it is a subtraction rather than an addition. The *laufende
 Verzinsung* **is** the *Garantieverzinsung* plus the *laufende Zinsüberschussbeteiligung*
-[REG-R53], so on the anchor cell a declared 2,70 % [S11] against a 1,00 % guarantee
-[R7] [R15] is a **1,70 pp** credit and never 2,70 pp on top of 1,00 pp:
+[REG-R53], so on the anchor cell a declared 2,70 % — Allianz's 2025 rate for its combined
+classic life-and-annuity book, as reported by the trade press [R26] — against a 1,00 %
+guarantee [R7] [R15] is a **1,70 pp** credit and never 2,70 pp on top of 1,00 pp:
 
 ```
 zins_ueberschuss_rate(t) = max(0, decl_rate(t) - rechnungszins())
@@ -70,7 +75,8 @@ are load-bearing. The outer `max` is what keeps the `nil` scenario honest: the d
 rate is then below the guarantee, which the reserve roll-forward still meets in full, so
 the surplus is zero rather than negative. Model point 14 runs that path.
 
-The base it multiplies is the ***Deckungskapital* at the allocation date** [S3] —
+The base it multiplies is the ***Deckungskapital*** — "in Prozent des maßgeblichen
+Deckungskapitals" [S7], the reserve "um ein Jahr mit dem Rechnungszins abgezinst" [S18] —
 `surplus_base_pp(t) = max(res_pp_at(t, "AFT_INT"), 0)` — the **closing** guaranteed
 reserve of the year, not the sum insured and not the premium. The inner `max` guards the
 other end: a *gezillmerte Deckungskapital* is negative at issue, and a positive rate on a
@@ -108,8 +114,9 @@ slack, which is the invariance test; model point 2 (`prem_term = 1`) reverses th
 from the first anniversary, a single premium leaving almost nothing to amortise. Both are
 the right answer rather than degenerate cases. Note that the acquisition cost is charged
 in the **premium** either way: `zillmer_on` enters `alpha_cost`, a *reserving* quantity,
-and not the pricing equation — which is why one carrier can publish a *gezillmerte* and a
-non-*gezillmerte* edition of the same tariff at the same price [S9].
+and not the pricing equation. `zillmer_on = 0` is a **[std]** switch, not an observed
+market option: § 4 DeckRV sets a ceiling rather than a mandate [R7], and every carrier
+wording read here applies the *Verrechnungsverfahren* [S7] [S9] [S18].
 
 ## Beitragsfreistellung is not a lapse, and it can fail
 
@@ -142,9 +149,11 @@ surr_value_pp(t) = res_guar_pp(t) * (1 - storno_rate(t))
                    + term_surr_share * term_bonus_pp(t + 1)
 ```
 
-The ***Stornoabzug* bites on the guaranteed value alone**: the only published deduction in
-the corpus is a percentage of the *Deckungskapital* [S3] [R30], so the accumulated
-*Überschussguthaben* passes through undeducted. `term_surr_share = 0` in the base run — the
+The ***Stornoabzug* bites on the guaranteed value alone**: two of the three published
+deductions are struck on the *Deckungskapital* or on the gap between the sum insured and it
+[S3] [S18] [R30], and none of the three reaches the accumulated *Überschussguthaben*, which
+§ 169 Abs. 7 VVG in any case makes payable in addition to the § 169 Abs. 3 to 6 amount
+[R2]. So the *Überschussguthaben* passes through undeducted. `term_surr_share = 0` in the base run — the
 accrued *Schlussüberschussanteil* is paid at the *Ablauf* and on death and **not** on
 surrender, the choice that does not invent an entitlement the sources do not describe; the
 parameter is exposed rather than hard-coded because it is what would move surrender values
@@ -394,25 +403,27 @@ quantitative parameter is either source-tagged or marked here.
 | Age basis | Age last birthday at issue, stepping at the anniversary | **No located German endowment wording states one** |
 | `alpha_rate` | 25 ‰ of the *Beitragssumme* | The § 4 DeckRV **ceiling** is cited [R7] [REG-R16]; sitting at it is the choice, no carrier's actual acquisition cost being public (gap 7) |
 | `beta_rate`, `gamma_rate` | 3,0 % of premium; 1,5 ‰ of `sum_assured` p.a. | The *form* of the premium loading is established [R28]; the *form* of the sum-insured loading is **not** (gap 17). Neither level is |
-| Expense basis | 300 € acquisition; 45 € maintenance at 1,8 % p.a.; 120 € per claim | **No charge level of any kind was established for any German carrier** (gap 7). Sized so the first-year acquisition outgo modestly exceeds what the *Zillmerung* recovers |
-| Commission | 2,5 % of the *Beitragssumme* initial; 1,5 % renewal | Anchored to the 25 ‰ ceiling and to the one reported carrier figure [R29]; the levels are not published |
-| `decl_rate` held level | 2,70 % for the whole projection | The **level** is [S11]; holding it level is a modelling choice, not a forecast. `low` and `nil` ship so the sensitivity is exercisable |
+| Expense basis | 300 € acquisition; 45 € maintenance at 1,8 % p.a.; 120 € per claim | **No carrier charge level is established** (gap 7). The one product-level cost disclosure in the corpus is a PRIIP-BIB for a different product, showing a 5,3 % annual cost impact over twenty years on its own model case [S10]. Sized so the first-year acquisition outgo modestly exceeds what the *Zillmerung* recovers |
+| Commission | 2,5 % of the *Beitragssumme* initial; 1,5 % renewal | Set at the 25 ‰ *zillmering* ceiling [R7], which is **not** a commission cap [R29]. **No carrier commission rate is established anywhere in the corpus** |
+| `decl_rate` held level | 2,70 % for the whole projection | The **level** is [R26]'s report of Allianz's **2025** declaration for a combined classic life-and-annuity book — no carrier publishes an endowment rate — and holding it level is a modelling choice, not a forecast. `low` and `nil` ship so the sensitivity is exercisable |
 | `term_rate` | 0,40 % p.a. of the *Deckungskapital* | **No terminal-bonus rate of any kind was established, for any insurer, in any year** (gap 1) |
 | `ans_rate` | 2,70 %, equal to `decl_rate` | A market convention. It matters because `ans_rate > rechnungszins` is what produces the maturity/death asymmetry between the two surplus systems [R28] |
 | `term_surr_share`, `bwr_rate` | 0.0 | Not inventing an entitlement the sources do not describe; and the *Sicherungsbedarf* has routinely exhausted the *Bewertungsreserven* [R1] [R8] |
-| `storno_rate` schedule | 10 / 7,5 / 5 / 2,5 % by duration band | Against an observed 5 %–20 % of the *Deckungskapital* at **one** carrier, under collective action and a BGH remittal [S3] [R22] [R30]. A single-carrier figure under challenge is not a market range |
+| `storno_rate` schedule | 10 / 7,5 / 5 / 2,5 % by duration band | Against **three** carrier schedules on three incompatible bases — 0–20 % of the *Deckungskapital* decaying to nil over the last ten years, under collective action and a BGH remittal [S3] [R22] [R30]; 50 € + 0,15 % of premiums × years remaining [S9]; 100 € + 0,2 % of (sum insured − reserve) [S18]. Three figures on three bases are not a market range; a declining percentage of the reserve matches one of the three and is the only shape the model's state variables express |
 | `lapse_rate` schedule | 5 / 3,5 / 2 / 6 / 2,5 %, and **0** in the final year | The **shape** follows the twelve-year tax threshold [R10] [REG-R45]; the **levels** are not sourced (gap 10). The final-year zero is what makes the survivors leave as a maturity |
 | `suicide_share` | 0.02 | § 161 VVG's rule is sourced [R4]; **no source gives a suicide share of deaths at any age** |
 | `bfz_min_si` | 2 500 € | § 165 VVG's test is sourced [R3]; no carrier's *Mindestversicherungsleistung* was located |
 | Five-year spreading read as straight-line | `max(0, 1 − k/5)` | § 169 Abs. 3's *gleichmäßige Verteilung* [R2] admits a five-year *Zillmerung* reading too, which gives a slightly lower floor at durations 1–4 and the same value from 5 |
-| *Bilanzstichtag* → policy-year end | — | The sources put the allocation at 31 December [S9]; on a policy-year grid that falls inside a policy year for every contract not written on 1 January. The effect is a timing shift of up to one year |
+| *Bilanztermin* → policy-year end | — | Die Bayerische allocates at 31 December [S9]; on a policy-year grid that falls inside a policy year for every contract not written on 1 January. Gothaer instead allocates at the policy's own *Stammtag* [S7] and VPV at the start of the policy year [S18], so the policy-year convention is one of the observed ones. The effect against a calendar-year allocation is a timing shift of up to one year |
+| `zillmer_on = 0` (model point 13) | switch | § 4 DeckRV sets a **ceiling**, not a mandate [R7], but every carrier wording read applies the *Verrechnungsverfahren* at 2,5 % or, pre-2015, 4 % [S7] [S9] [S18]. The un-zillmered point exercises the invariance, not an observed market option |
+| Surplus *Wartezeit* = none | — | The wordings give three answers: none [S9], one year [S18], three years [S7] tariff group A and [S3]. The model takes the shortest |
 | DeckRV split years | 1994 and 2000 take the **higher** rate; 2027+ hold 1,00 % | The published history splits both years mid-year and a year-keyed table cannot [REG-R15], so `check_rechnungszins_cap()` is permissive in exactly those two years |
 | `prem_freq_load` values | 1,000 / 1,020 / 1,030 / 1,050 | The 2 / 3 / 5 % market range is cited [R28]; **no carrier publishes its own scale** |
 | Behaviour modules off | `beta_shock = 0`, `lapse_gap_a = 0` | No German calibration of either exists |
 | The fourteen model points | — | No entry age, premium level or sum-insured band was established (gap 21); the anchor is a construction from the term band plus the twelve-year tax minimum |
 
 The quantities that are **not** standardizations are the two DeckRV ceilings [R7]
-[REG-R15] [REG-R16], the 2,70 % declared rate itself [S11], and the structural rules — the
+[REG-R15] [REG-R16], the 2,70 % declared rate itself [R26], and the structural rules — the
 surplus base and timing, the § 169 calculation and floor, the *Stornoabzug* biting on the
 guaranteed value, the § 165 test, the § 161 substitution, premium cessation on death, and
 the *echte* / *unechte* distinction.
@@ -447,6 +458,7 @@ python -m pytest tests/test_kapitallebensversicherung_de.py -q
 [R2]: #delib-kapitallebensversicherung-r2
 [R20]: #delib-kapitallebensversicherung-r20
 [R22]: #delib-kapitallebensversicherung-r22
+[R26]: #delib-kapitallebensversicherung-r26
 [R28]: #delib-kapitallebensversicherung-r28
 [R29]: #delib-kapitallebensversicherung-r29
 [R3]: #delib-kapitallebensversicherung-r3

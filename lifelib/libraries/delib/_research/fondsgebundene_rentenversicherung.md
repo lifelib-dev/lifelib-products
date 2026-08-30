@@ -182,16 +182,19 @@ much of it has no clean English equivalent because the German market invented th
 
 ## Primary sources
 
-Eighteen known references to primary product documents. **None was retrieved and none was
-corroborated by a search run for this file** (see the retrieval-conditions section). Two entries —
-[S2] and [S4] — carry a URL that a search returned during the sibling delib research and that is
-recorded in that sibling file; those two are the only URLs in this section, and they are
-attributed to the sibling rather than claimed here. Every other entry says `URL: not established`.
+Eighteen known references to primary product documents. **As originally drafted, none was
+retrieved and none was corroborated by a search run for this file** (see the retrieval-conditions
+section, which describes the conditions this file was written under and is left as written). **A
+retrieval pass on 2026-08-30 changed that for three of the eighteen** — [S2] and, inside it,
+[S15] and the *Verbraucherinformation* limb of [S16] — and opened a marketing page for [S3]. The
+per-entry notes below are annotated where the pass changed what an entry establishes, and the
+full result is set out in *"Retrieval pass, 2026-08-30"* at the end of this file. The remaining
+fourteen still say `URL: not established`, and for those the entry's original wording stands.
 
 Each entry answers two questions honestly: **does a document of this kind exist for this product,
-and what does that kind of document establish?** Where a product name or tariff code is given it
-is tagged `[unverified]` — it is the author's recollection of the German market, not a search
-result.
+and what does that kind of document establish?** Where a product name or tariff code is given
+without a retrieval note it is tagged `[unverified]` — the author's recollection of the German
+market, not a search result.
 
 ### S1 — GDV, Musterbedingungen for the fondsgebundene Rentenversicherung
 
@@ -226,17 +229,23 @@ result.
   — **this URL was returned by a search run for the sibling delib research on
   `klassische_rentenversicherung` and is recorded there as its S19.** It is not a search result of
   this file's own.
-- Retrieved: no — egress blocked; corroborated by search **in the sibling file only**, not here.
-- Content: the **single best-evidenced fact in this whole corpus**, and it is exactly on point for
-  this product. The sibling research established from the search summary of this document that, on
-  death **before** *Rentenbeginn*, the benefit is **the fund value at the date of death but at
-  least the sum of the premiums paid** — the *Beitragsrückgewähr* form of the death benefit, in
-  its `max(Fondsguthaben, Summe der gezahlten Beiträge)` shape. That is one of the four death
-  benefit shapes catalogued in section 6, and it is the one delib adopts as representative,
-  precisely because it is the only one with corroboration anywhere in the delib corpus. The
-  document code **03101** and the edition **07/2024** come from the URL's own filename and are
-  recorded as such. **Nothing else about the DEVK contract — its charges, its *Rentenfaktor*, its
-  fund range, its option set, its entry ages — is established.**
+- Retrieved: **yes, on 2026-08-30** (PDF, 195 pp.). *As drafted:* "no — egress blocked;
+  corroborated by search in the sibling file only, not here." The `medien.devk.de` address above
+  answers **HTTP 403** from its object store; the same file is served under the publisher's own
+  path at
+  `https://www.devk.de/media/content/download/produkte/altersvorsorge/DEVK-Fondsrente-Kundeninfo-03101-2024-07.pdf`,
+  and that is where it was read.
+- Content: **this is now the load-bearing document of the whole corpus, and the single fact it was
+  cited for is confirmed verbatim.** § 2 Abs. 7 AVB: *"Die Todesfallleistung ist das zum Stichtag
+  bei Tod … vorhandene Fondsguthaben, mindestens aber die ➜ Summe der gezahlten Beiträge
+  (Beitragsrückgewähr)."* The document code **03101** and the edition **07/2024** are confirmed on
+  the document itself, together with the tariff **L/N FR1**, the product name **"DEVK-Fondsrente
+  vario"**, the AVB *Stand* January 2024 and the *Tarifbestimmungen* *Stand* July 2023. The
+  sentence "Nothing else about the DEVK contract … is established" is **no longer true**: the
+  charges, the *Rentenfaktor* values, the fund range, the option set and the entry rules are all
+  in the file, and the *Basisinformationsblätter* are bound into it at pp. 71–119. The full
+  extraction is set out at *"Retrieval pass, 2026-08-30"*, and the product documents' citations
+  to it are the operative record.
 
 ### S3 — Allianz Lebensversicherungs-AG, AVB and *Verbraucherinformation* for the fondsgebundene Rentenversicherung ("InvestFlex")
 
@@ -409,35 +418,50 @@ result.
   located **one** German PRIIP-BIB PDF, for an **endowment** (its S10, a three-page BIB for a
   regular-premium capital-forming product), which is the wrong product but the right document type
   and confirms the three-page format.
-- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: this is the **document a delib product-spec would most want and does not have**. Its
-  prescribed content, established from the BaFin explanation corroborated in the sibling research
-  [R9], is: a **summary risk indicator**; the **possible maximum loss** of invested capital;
-  **four performance scenarios** — *Stress*, *pessimistisch*, *moderat*, *optimistisch* —
-  expressed as annualised average returns in per cent; the **costs the investor bears**; and
-  complaint information. The scenarios and the costs must be shown at **three time points — after
-  one year, after half the recommended holding period, and at the end of it** — and the cost
-  disclosure splits **one-off from ongoing costs** and states the ***Reduction in Yield* per
-  year**. For an FRV the recommended holding period is the *Aufschubzeit*, so those three points
-  are typically 1 year, ~15 years and ~30 years. **No actual BIB for this product was located, so
-  no scenario return, no cost figure and no RIY value is established from one.** Gap 5.
+- Retrieved: **yes, on 2026-08-30** — sixteen sheets for the DEVK-Fondsrente vario, bound into
+  [S2] at pp. 71–119, with the option-specific documents from p. 120. *As drafted:* "no — egress
+  blocked; no search corroboration."
+- Content: **this was the document a delib product-spec most wanted and did not have; it now has
+  sixteen of them.** Confirmed against the retrieved sheets: the summary risk indicator (graded
+  *"Risikoklasse 2 bis 5"* here, a range because the class follows the chosen fund); the statement
+  that the product carries no protection against market falls; the costs the investor bears, split
+  into *Einstiegskosten*, *laufende Kosten* and *Transaktionskosten*; and the reduction in yield —
+  *"Jährliche Auswirkungen der Kosten"* — at **exactly three time points, 1 year, half the
+  recommended holding period and the end of it**, which on the 30-year sheet is years **1, 15 and
+  30**, as this entry predicted. Two parts of the prediction are **wrong for this product**.
+  **(a)** The four graded scenarios do not appear: under *"Performance-Szenarien"* the generic
+  sheet for a fund-menu product states only that performance follows the chosen funds and refers
+  to the option-specific documents — the multi-option treatment under the RTS. The [R9] article
+  that described the four-scenario table is itself now a 404. **(b)** No cost or RIY value was
+  established here **and now several are**: at the model point matching delib's anchor cell —
+  a 37-year-old, thirty annual instalments, *Aufschubzeit* 30 years — the guaranteed *Rentenfaktor*
+  is **22,91 €** per 10 000 € and the reduction in yield at 30 years is **1,4 %–3,4 % p.a.**
+  Gap 5 is closed for one carrier; see *"Retrieval pass, 2026-08-30"*.
 
 ### S16 — *Produktinformationsblatt* / *Verbraucherinformation* — document-type entry
 
 - Publisher: each insurer
 - Doc type: the German pre-contractual information set required by § 7 VVG together with the
   *VVG-Informationspflichtenverordnung* [R7]
-- URL: not established
-- Retrieved: no — egress blocked; no search corroboration (session search budget exhausted)
-- Content: the second document class a product-spec needs, and the one that carries the figures
-  PRIIPs does not. Established from the corroborated statutory material [R7]: the insurer must
-  disclose the ***Abschluss- und Vertriebskosten* included in the premium as a euro amount**, must
-  disclose the other costs, and — since **1 January 2015** `[unverified]`, following the LVRG
-  [R13] — must state the ***Effektivkostenquote*** in the quotation. A German
-  *Produktinformations- blatt* for an FRV therefore normally shows, on two pages: the guaranteed
-  benefits (which for this product means the *Rentenfaktor* and little else), the *Abschluss- und
-  Vertriebskosten* in euro, the ongoing costs, the *Effektivkosten*, the *Rückkaufswerte* by year,
-  and the *Modellrechnung*. **No instance was located and no figure is established.**
+- URL: the *Verbraucherinformationen* limb at
+  `https://www.devk.de/media/content/download/produkte/altersvorsorge/DEVK-Fondsrente-Kundeninfo-03101-2024-07.pdf`,
+  pp. 4–8. No *Produktinformationsblatt* URL was established.
+- Retrieved: **partly, on 2026-08-30** — the *Verbraucherinformation* limb yes; the
+  *Produktinformationsblatt* limb (DEVK calls it the *Informationsblatt zu
+  Versicherungsprodukten*) **no**, and § 18 Abs. 1 AVB refers the charge levels precisely to it.
+- Content: the second document class a product-spec needs. The statutory duties are read at [R7]:
+  § 2 Abs. 1 Nr. 1 with Abs. 2 VVG-InfoV requires the *einkalkulierte Abschlusskosten* **in euro
+  as a single total amount** and the other costs as a share of the annual premium; Nr. 7 adds a
+  fondsgebundene-specific duty to describe the underlying funds and their asset types; Nr. 9 with
+  Abs. 6 defines the ***Effektivkosten*** — the statute's term, not *Effektivkostenquote* —
+  computed *"wie der Gesamtkostenindikator nach Anhang VI der Delegierten Verordnung (EU)
+  2017/653"*. The 1 January 2015 introduction remains `[unverified]`, being absent from the
+  regulation's text [R13]. **What the retrieved instance actually shows is thinner than this entry
+  assumed**: the standing *Verbraucherinformation* names the cost categories and then refers the
+  euro amounts to the personalised quotation, and it carries **no *Effektivkosten* figure and no
+  *Rückkaufswert* table**. It does establish that *"Ausgabeaufschläge und Depotkosten fallen nicht
+  an"* and prices two events at 40 € each. And the ***Modellrechnung* is not owed on this product
+  at all** — § 154 Abs. 1 Satz 2 VVG excludes contracts of the § 124 Abs. 2 Satz 2 VAG kind.
 
 ### S17 — *Standmitteilung* (annual statement) — document-type entry
 
@@ -1517,6 +1541,13 @@ observation because no observation was available:
 
 ## Gaps and caveats
 
+> **Read with the retrieval pass of 2026-08-30**, recorded at the end of this file. That pass
+> closed or narrowed gaps **2, 3, 5, 9, 10, 11, 12, 13, 14, 15, 22, 23, 24, 25** and part of
+> **4, 6, 7, 8, 17, 20, 27**, and it left **16, 18, 19, 21, 26** untouched. Where a gap below
+> says a thing could not be established and the pass established it, the pass governs; the gaps
+> are left as written because they record what was and was not known at drafting, which is the
+> point of a research file.
+
 1. **No document was retrieved and no search was run for this product.** Both limits applied at
    full strength: HTTP egress was blocked for every relevant host, and the session's 200-call
    `WebSearch` budget was already exhausted before this file was begun. This file is therefore
@@ -1648,3 +1679,106 @@ observation because no observation was available:
     changed on 1 January 2025 `[unverified]`; BaFin's focus-risk agenda is annual [R11]. **Every
     paragraph number and every date in this file is `[unverified]`** and must be re-checked against
     the instrument before anything in the delib product documents relies on it.
+
+---
+
+## Retrieval pass, 2026-08-30
+
+The network policy under which this file was written no longer applies. Every URL the file cites
+was tried; fifteen German statutes were read as canonical XML from gesetze-im-internet; and
+documents that could not be reached at a cited address were looked for once on the publisher's own
+site. **The "Citation discipline and retrieval conditions" section above is left as written** — it
+records the conditions of the original research, and rewriting it would misdescribe how the
+entries below were first arrived at. This section records what changed.
+
+### Entries that moved to `Retrieved: yes`
+
+| Entry | What was read |
+|---|---|
+| **[S2]** | DEVK *Kundeninformation* 03101/07/2024, tariff **L/N FR1**, "DEVK-Fondsrente vario" — PDF, 195 pp., at `www.devk.de/media/...` after the cited `medien.devk.de` address returned 403. *Verbraucherinformationen*, *Tarifbestimmungen*, the full AVB (§§ 1–27), the *Anhang* with the calculation bases, the tax notes and the glossary |
+| **[S15]** | Sixteen *Basisinformationsblätter* bound into [S2] at pp. 71–119 (L FR1 and N FR1 × 1 000 € annual / 10 000 € single × 12 / 20 / 30 / 40 years), plus the option-specific sheets from p. 120 |
+| **[S16]**, in part | The *Verbraucherinformationen* limb of [S2]; the *Produktinformationsblatt* limb remains unlocated |
+| **[R1] [R2] [R3] [R4] [R5] [R6]** | VVG §§ 169, 168, 165, 163, 153, 152 and 7, canonical XML, *Stand* zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156. §§ 154 and 155 read for [REG-R25] |
+| **[R7]** | VVG-InfoV § 2, complete text — unlike the VVG per-section pages, this one carries it |
+| **[R10]** | BaFin *Merkblatt 01/2023 (VA)*, complete, dated **08.05.2023** |
+| **[R11]** | BaFin *Risiken im Fokus 2026*, "Kosten von kapitalbildenden Lebensversicherungen", complete; and the 2022 BaFinJournal survey article it refers back to, "Wenn Lebensversicherungen zu viel kosten" |
+| **[R12]** | DeckRV §§ 1–6, canonical XML, *Stand* Art. 1 V v. 19.7.2024 I Nr. 250 |
+| **[R14]** | MindZV §§ 1, 3, 4, 6, 7, 8, canonical XML, *Stand* Art. 1 V v. 7.7.2020 I 1688 |
+| **[R15]** | VAG §§ 124, 125, 138, 139 and Anlage 1, canonical XML |
+| **[R18]** | DAV *Ergebnisbericht*, PRIIP Kategorie 4, 1 July 2025 — PDF, 30 pp.; preamble, scope and section 1 |
+| **[R19] [R20]** | EStG § 22 including the *Ertragsanteil* table, § 20 Abs. 1 Nr. 6 including Satz 9, and § 52 Abs. 28 |
+| **[R22]** | Finanztip *Rentenfaktor* and both versicherungenmitkopf pages |
+
+[S3] is partial: the Allianz **InvestFlex product page** was read and settles the product name and
+the design menu, but the *Bedingungswerk* host answers 403, so **no Allianz clause text** was
+obtained. [R21] is contents-page only.
+
+### Entries that stay `Retrieved: no`, with the reason
+
+**404 at the cited URL:** [R9] — BaFin's 2022 PRIIPs *Fachartikel* is gone from the address the
+sibling research recorded, though BaFin's own index still lists it; no replacement was found.
+**403 from the document host:** the Allianz *Bedingungswerk* behind [S3].
+**Soft 404 on the publisher's site:** the one HDI address tried for [S13].
+**No URL was ever established, so nothing was opened:** [S1], [S4]–[S12], [S14], [S17], [S18],
+[R13], [R16], [R17], [R23]–[R26]. For [R16] and [R17] that is by nature — DAV tables are not
+public — though the *use* of DAV 2004 R and of a DAV 1994 T derivative on this product is now
+established from [S2].
+
+### What a retrieved document contradicted
+
+1. **The *Risikobeitrag* mortality basis.** This file has DAV 2008 T [R17]. DEVK prices it on
+   *"einer mit 65 Prozent gewichteten geschlechtsunabhängigen Ausscheideordnung auf Basis der
+   Sterbetafel DAV 1994 T"*, and uses DAV 2008 T for its underwritten *Risiko-Zusatzversicherung*.
+   The two-basis structure holds; the identification does not.
+2. **The guaranteed *Rentenfaktor* level and shape.** Gap 4 assumed no level existed. At delib's
+   own anchor cell the real figure is **22,91 €** against the derived 25,00 €, and the real factor
+   falls with the deferment (25,22 / 24,12 / 22,91 / 21,83 € at 12 / 20 / 30 / 40 years to age 67)
+   where delib's is flat in it. **A model fact; not changed in this pass.**
+3. **The *Modellrechnung*.** [R7] treats it as owed. § 154 Abs. 1 Satz 2 VVG excludes unit-linked
+   contracts from it entirely.
+4. **The PRIIPs category.** [R8] assumed a pure unit-linked contract is Category 2 with scenarios
+   from the funds' own history. The DAV treats Schicht-3 annuities as **Kategorie 4**, because
+   cost deductions and biometric components make the pots inseparable.
+5. **The *Sparte* name.** VAG Anlage 1 Nr. 21 is *"Fondsgebundene Lebensversicherung"*, not
+   *"fonds- und indexgebundene Lebensversicherung"*.
+6. **The *Anlagestock*.** § 125 Abs. 5 VAG makes it *"eine Abteilung des Sicherungsvermögens"* —
+   inside the *Sicherungsvermögen*, not outside it.
+7. **The five-year spreading.** It is § 169 **Abs. 3**, on the *Deckungskapital* branch; Abs. 4
+   sends a unit-linked contract to the *Zeitwert* and applies Abs. 3 only *"im Übrigen"*. And a
+   real tariff spreads only **part** of its acquisition cost over five years, taking the rest as a
+   percentage of every premium for the whole term — so the month-60 cliff is delib's, not the
+   market's.
+8. **"BaFin says *Effektivkosten* differ considerably between providers."** That sentence is in
+   *Risiken im Fokus* [R11], not in the *Merkblatt* [R10], whose "erheblich" passage is about
+   *Stückkosten* making the *Effektivkosten* vary with premium size.
+9. **"No numerical threshold, band, median or sector benchmark appears."** [R11] gives a
+   distribution at delib's own model point: **1,90 %** weighted mean at entry age 37 over 30
+   years, quartiles **1,30 / 1,64 / 2,35 %**, insurers above **4 %** at every age-and-term
+   combination.
+10. **The *Kickback* range.** delib argues 0 %–0,50 % p.a.; the observed weighted mean is just
+    over 0,30 % and the top of the range is **over 1,20 %**.
+11. **The *Widerruf* repayment.** § 152 Abs. 3 Nr. 2 can return the first year's premiums where
+    that is more favourable — not, as this file said, simply the unit value at cancellation.
+12. **"No crediting mechanism was confirmed at any carrier"** (gap 27). DEVK credits a
+    premium-based *Grundüberschussanteil* as units before *Rentenbeginn*, and the MindZV minima
+    are 90 % / 90 % / 50 %.
+13. **The 50–300 fund range.** DEVK offers **nine** funds from one house, minimum 10 % each, at
+    most five per contract.
+14. **The *Rentengarantiezeit* menu.** Not 0/5/10/15; DEVK's runs **5 to 25 years**.
+15. **The *Beitragsgarantie* menu.** Not 0/60/80/90/100 %; Allianz's runs **10 % to 90 % in
+    10-point steps**.
+16. **"The LG Köln decision could not be identified"** (gap 24 / [R26]). It is **LG Köln, Urteil
+    vom 8. Februar 2023, Az. 26 O 12/22**, against Zurich, reported as *rechtskräftig*.
+17. **The dominance claim** (gap 25). BaFin states it: *"die im Neugeschäft dominierenden
+    fondsgebundenen Produkte"*, in a market of about 59 million contracts with 2,4 million written
+    in 2024.
+
+### Standing gaps this pass did not close
+
+No *Produktinformationsblatt* for any carrier, so no carrier's charge rates were read from the
+document that is supposed to carry them — the rates in hand come from *Basisinformationsblätter*
+instead. No lapse rate, paid-up rate or *Kapitalwahlrecht* take-up anywhere. No clause text from
+any carrier but DEVK. No DAV table. No BGH *Rückkaufswert* decision. No GDV new-business split by
+*Versicherungsart*. And, for the LVRG [R13], no Bundesgesetzblatt citation and no confirmation of
+the 40 ‰ → 25 ‰ history or the 1 January 2015 date, both of which live in amending instruments
+rather than in the consolidated texts read here.

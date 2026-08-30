@@ -75,7 +75,9 @@ German terms of art keep their German form in prose.
   being an open question [R23] [REG-R41]. No select mortality after onset of care — the shipped
   in-care mortality is an aggregate, and the consequence is pitfall 9 and model risk 9. No
   *Pflege-Bahr* *Zulage*, statutorily unavailable [R8]. And no three-month *Nachprüfung* notice tail:
-  whether § 174 VVG reaches a *Pflegerente* through § 177 was not established [REG-R29] [unverified].
+  whether § 174 VVG reaches a *Pflegerente* through § 177 was not established [REG-R29] [unverified];
+  § 176 VVG extends §§ 150–170 *entsprechend* to the *Berufsunfähigkeitsversicherung* only, which is
+  a point against the extension but not a decision on it.
 ## Model point attributes
 
 `model_point_table.csv` is indexed by `point_id` and is the **only** input file without a
@@ -213,25 +215,29 @@ entering as data (product spec, footnote 21).
 |---|---|---|
 | Benefit | A monthly *Pflegerente*, paid in advance, equal to `benefit_pct(g) × rente_mth` for the insured's current *Pflegegrad* `g` | [S4] |
 | *Leistungsstaffel* `delib_std` | 0 / 30 / 50 / 75 / 100 % across grades 1 to 5 | **[std]**, product spec footnote 12 |
-| *Leistungsstaffel* `bahr` | 10 / 20 / 30 / 40 / 100 % — the statutory *Pflege-Bahr* minimum grid, the only *Leistungsstaffel* fixed by German statute | [R8] [unverified] |
-| Trigger | The statutory *Pflegegrad* of §§ 14, 15 SGB XI, determined by the *Medizinischer Dienst* or MEDICPROOF, not by the insurer | [R2] [R6]; [REG-R51] |
+| *Leistungsstaffel* `bahr` | 10 / 20 / 30 / 40 / 100 % — the *Pflege-Bahr* grid **as the market writes it, not as the statute fixes it**. § 127 Abs. 2 Nr. 4 SGB XI requires only a *Geldleistung* at every *Pflegegrad*, at least 600 € at grade 5, capped at the SGB XI benefit level; the percentage schedule belongs to the PKV-Verband's *brancheneinheitliche Vertragsmuster* under Abs. 2 Satz 2, which this library has not retrieved | shape **[std]**; [R8] for what the statute fixes |
+| Trigger | The statutory *Pflegegrad* of §§ 14, 15 SGB XI, determined by the *Medizinischer Dienst* or by an independent assessor under § 18 Abs. 1, not by the insurer. Wordings commonly **pin** the statutory text to an edition date or copy it into the conditions rather than tracking the live statute | [R2] [R6]; [S1] [S2] [S4]; [REG-R51] |
 | Care setting | Irrelevant to the benefit; the same annuity is payable at home and in a *Pflegeheim* | **[std]**, product spec footnote 1 |
-| *Beitragsbefreiung* | **Full**, from the first month in which any annuity is payable; revived on exit from the paying grades | [S4]; detail **[std]** |
+| *Beitragsbefreiung* | **Full**, from the first month in which any annuity is payable; revived on exit from the paying grades. The one retrieved wording waives on the same trigger but makes the waiver **permanent** after twelve months' continuous annuity at grade 4 or 5 | [S4]; detail **[std]** |
 | Premium form | Level monthly *Beitrag*, guaranteed for the life of the contract, adjustable only on the § 163 VVG route | [R11]; [REG-R27] |
-| Premium cessation | On death; on the start of an insured annuity; at `prem_end_age` | [S4] [unverified] |
+| Premium cessation | On death; on the start of an insured annuity; at `prem_end_age` | [S4] |
 | Equivalence principle | The gross premium is struck so that, on the first-order bases at the *Rechnungszins*, the expected present value of premiums equals that of benefits plus expenses | [REG-R8] [REG-R47] |
-| *Rechnungszins* | **1,00 %** p.a. — the *Höchstrechnungszins* of § 2 DeckRV for new business from 1 January 2025, which stays with the contract for its whole term | [REG-R14] [REG-R15] |
-| *Höchstzillmersatz* | **25 ‰ (2,5 %) of the *Beitragssumme***, § 4 DeckRV, cut from 40 ‰ by the LVRG from 1 January 2015 | [REG-R16] [REG-R20] |
+| *Rechnungszins* | **1,00 %** p.a. — § 2 Abs. 1 DeckRV for new business from 1 January 2025; Abs. 2 keeps the rate used at conclusion for the contract's whole term | [R13]; [REG-R14] [REG-R15] |
+| *Höchstzillmersatz* | **25 ‰ of the *Summe aller Prämien***, § 4 Abs. 1 DeckRV, cut from 40 ‰ by the LVRG from 1 January 2015; the retrieved wording applies exactly this, at *"2,5 % der … zu zahlenden Beiträge"* | [R13]; [S4]; [REG-R16] [REG-R20] |
 | *Rückkaufswert* | The *Deckungskapital* on the premium bases, floored by the value that results from spreading acquisition and distribution costs evenly over the first **five** contract years | [REG-R28] |
-| *Stornoabzug* | Admissible only if agreed, quantified and appropriate; a deduction for unamortised acquisition costs is expressly ineffective | [REG-R28] |
+| *Stornoabzug* | Admissible only if agreed, quantified and appropriate (§ 169 Abs. 5 VVG); a deduction for unamortised acquisition costs is expressly ineffective. **The one retrieved *Pflegerenten* wording agrees 25 %**, rising to 50 % after a partial withdrawal — see the model-risk note at the end of this file | [R11] [REG-R28]; [S4] |
 | Unisex | Sex may not enter the premium for contracts concluded from 21 December 2012 | [REG-R34] |
-| *Wartezeit* / *Karenzzeit* | Contractual, both **0** in the base run; the *Pflege-Bahr* statutory maximum *Wartezeit* is five years | [R8] [unverified]; base **[std]** |
+| *Wartezeit* / *Karenzzeit* | Contractual, both **0** in the base run, and the one retrieved underwritten tariff also has *Wartezeit* **keine**; § 127 Abs. 2 Nr. 6 SGB XI caps a *Pflege-Bahr Wartezeit* at *"höchstens fünf Jahre"* | [R8]; [S5]; base **[std]** |
 
-**What is *not* in this table.** There is **no cited premium**, no cited charge, no cited transition
-rate and no cited *Rückkaufswert* level anywhere in this corpus, so this class is unusually thin
+**What is *not* in this table.** There is still **no cited premium**, no cited charge, no cited
+transition rate and no cited *Rückkaufswert* level for this product, so this class is unusually thin
 beside `frlib/products/temporaire_deces`, which could tabulate a published rate card. Everything
 numeric that is missing here appears in class (c) as **[std]**, and that displacement is the single
-most important thing to know about this model.
+most important thing to know about this model. **What changed in the provenance pass of 2026-08-30**
+is that three of those gaps now have published comparators rather than nothing at all — the DAV's
+first-order bases and prudence loadings for *Pflegegrade*, the GDV's in-force average premium, and
+one carrier's *Stornoabzug* — and every one of them is recorded in `sources.md` and **not**
+implemented. See "What the retrieved documents say about the shipped model" there.
 
 ### (b) Insurer-discretionary current elements
 
@@ -261,14 +267,22 @@ rebate** [REG-R27]. There is no bonus rate, no crediting rate and no charge scal
    That is the sharpest modelling difference between `Pflege_DE_S` and `BU_DE_S`.
 ### (c) Behavioural / experience assumptions (the modeller's view)
 
-**Every input in this class is [std].** No German source in this corpus publishes a
-*Pflegewahrscheinlichkeit*, a deterioration or recovery rate, an in-care mortality multiple, an
-expense loading, a commission scale, a lapse rate or a surrender-value table for this product
-(research gaps 2, 3, 10, 15, 19, 20). The proxies below reproduce the *mechanics* the research file
-establishes; they are **not** calibrations, and none is a proxy for DAV 2008 P — that table is DAV
-property, is not public, **is not redistributed by this library**, and was built on the pre-2017
-*Pflegestufen*, which the BGH will not map to the *Pflegegrade* [R15] [REG-R36] [REG-R51], so a
-*Pflegegrad*-shaped table is not a proxy for it even in principle. **A replacement must preserve four
+**Every input in this class is [std].** No German source publishes an expense loading, a commission
+scale, a lapse rate or a surrender-value table for **this product** (research gaps 2, 3, 19, 20).
+The proxies below reproduce the *mechanics* the research file establishes; they are **not**
+calibrations, and none is a proxy for DAV 2008 P.
+
+**Two statements this section used to make about DAV 2008 P are wrong and are corrected here.** The
+table is **not** unpublished: the DAV issues the derivation as a free *Ergebnisbericht* with the
+bases in Anhänge 1 to 3, and a companion report that re-derives them **for the *Pflegegrade***
+[R15]. And a *Pflegegrad*-shaped basis therefore does exist — the profession built one rather than
+mapping the scales, which is what the BGH has since held cannot be done [REG-R36] [REG-R51]. **delib
+still redistributes none of it and reproduces no value from it**; that is this library's own choice.
+Three things about the published bases matter to anyone replacing the tables below: they are a
+***Stufenmodell*** (*"mindestens Pflegegrad g ist erreicht"*), **not** a five-state per-grade chain;
+they are transitions from *Pflegestufen* experience rather than *Pflegegrad* observations, the DAV
+saying so in terms; and they come with published prudence loadings, which the margins at the end of
+this section do not match. **A replacement must preserve four
 properties**: (a) incidence by attained age, sex and *grade of entry*, because a stroke or a fracture
 enters directly at grade 3 or 4; (b) deterioration dominating recovery above age 75; (c) mortality in
 care as a grade-increasing multiple of active mortality; and (d) transition probabilities out of each
@@ -290,11 +304,15 @@ docstring states them.
     inc_rate(sex, x) = min(I0_sex * exp(g_sex * (x - 65)), inc_cap)
 
 `I0_F = 0.0110`, `g_F = 0.1400`, `I0_M = 0.0085`, `g_M = 0.1380`, `inc_cap = 0.50`. The slope is
-anchored to the one shape the research file states with confidence — **prevalence roughly doubles
-every five years of age above 75** [R18] [unverified], a growth rate of `ln 2 / 5 = 0.1386` — and the
-level so that the model's own probability of reaching an insured grade before death, from the anchor
-cell's entry age, is of the order of the **45 %** the research file argues, with a mean age at first
-insured grade in the low eighties [unverified]. The female parameters are the higher pair, which is
+anchored to **prevalence roughly doubling every five years of age above 75**, a growth rate of
+`ln 2 / 5 = 0.1386`, and the level so that the model's own probability of reaching an insured grade
+before death, from the anchor cell's entry age, is of the order of the **45 %** the research file
+argues, with a mean age at first insured grade in the low eighties [unverified]. **The anchor is now
+measurable and it is softer than 0.1386.** The observed *Pflegequoten* for 2023 rise by factors of
+1,80 · 1,88 · 1,74 · 1,49 · 1,18 across the five-year bands from 70–75 to 95+ [R18] — about
+`ln 1.8 / 5 = 0.117` over the range where this model earns its claims, and flattening sharply above
+90 where the `inc_cap` of 0.50 does not yet bind. **The shipped slope is left where it is** and the
+divergence is reported: changing it moves the worked example and the golden tests. The female parameters are the higher pair, which is
 the sex differential the whole unisex tension turns on. The cap is a shape device: without it the
 exponential exceeds one before age 100.
 
@@ -308,9 +326,14 @@ exponential exceeds one before age 100.
 | 4 | 0.13 | 0.16 | 0.02 | 6.0 |
 | 5 | 0.05 | 0.00 | 0.01 | 9.0 |
 
-`entry_share` sums to 1.00 and is deliberately **not** the stock distribution of about
-9 / 44 / 27 / 14 / 6 % [R18] [unverified]: entrants skew lower than the stock because deterioration
-moves people up over a spell, and using the stock as the entry mix is pitfall 17. `mort_mult` is a
+`entry_share` sums to 1.00 and is deliberately **not** the stock distribution, which the Destatis
+table for end-2023 puts at **13,8 / 40,4 / 29,6 / 11,8 / 4,3 %** [R18] — not the 9 / 44 / 27 / 14 /
+6 % this file previously quoted. Entrants skew lower than the stock because deterioration moves
+people up over a spell, and using the stock as the entry mix is pitfall 17; the corrected stock,
+with 54,2 % rather than 53 % in the two lowest grades, does not disturb that argument. **What no
+source supplies is the entry mix itself, or the time spent at each grade** — Assekurata states in
+terms that no information exists on how long people remain in each *Pflegegrad*, the grades dating
+only from 2017 [S14] — so `entry_share` stays **[std]**. `mort_mult` is a
 multiple on the **force** of active mortality at the same age, carrying the research file's most
 load-bearing biometric statement — the mortality of a *Pflegebedürftiger* is **of the order of two to
 three times an active life's at grade 2 and five to ten times at grade 5** [unverified]. Recovery is
@@ -319,7 +342,11 @@ with `rec_age_ref = 75` and `rec_age_decay = 0.10` **[std]**, which is what make
 dominate recovery above 75 — property (b) of a replacement table.
 
 Three consequences follow, all three pitfalls. **The annuity in payment is short**, of the order of
-three to five years, not the fifteen to twenty of a healthy-life pension at the same age — so pricing
+three to five years, not the fifteen to twenty of a healthy-life pension at the same age — and this
+is now checkable: the *BARMER-Pflegereport 2024*, via [S14], puts mean duration of
+*Pflegebedürftigkeit* at about **five years** where care begins after 60, **4,0 for men and 5,7 for
+women**, against about **25 months** mean stay in a *Pflegeheim*. The model's implied spell sits at
+the low end of that for women — so pricing
 it on DAV 2004 R would be prudent in exactly the wrong direction [R16] [REG-R49]. **Grade and
 mortality are correlated**, so the highest-paying state is the shortest-lived. And **a deferred
 period bites harder than its length suggests**, because a material share of new claimants die inside
@@ -381,9 +408,16 @@ that survives is a life that can claim:
 | `care_mort_margin` | 0.85 | in-care mortality | longer annuities |
 | `act_mort_margin` | 0.90 | active mortality | more lives survive to claim |
 
-All five are **[std]**: only the *direction* is cited, no German source here gives a
-*Sicherheitszuschlag* level for a *Pflegetafel*, and the responsible actuary's judgment sets it in
-practice [REG-R11] [REG-R56]. The **first-order basis carries no lapse at all**, which is both
+All five are **[std]** and the responsible actuary's judgment sets them in practice [REG-R11]
+[REG-R56]. **This file used to add that no German source gives a *Sicherheitszuschlag* level for a
+*Pflegetafel*. The DAV does** [R15] [REG-R8], by minimum *Pflegegrad*: a *Gesamtzuschlag* on
+incidence of **24,5 / 21,4 / 20,5 / 24,0 / 31,2 %**, a *Gesamtabschlag* on *Invalidensterblichkeit*
+of **28,5 / 24,2 / 24,2 / 24,3 / 25,7 %**, and **13,6 %** on *Aktivensterblichkeit*. Against those,
+`inc_margin` 1.25 sits inside the published range and `act_mort_margin` 0.90 is close to 0.864; but
+`care_mort_margin` 0.85 is **materially less prudent** than the published 0.715–0.758, and
+`det_margin` and `rec_margin` have no published counterpart because the *Stufenmodell* has no
+per-grade transitions. **Nothing here was changed**: these are pricing bases, and moving one moves
+the worked example and the golden tests. The **first-order basis carries no lapse at all**, which is both
 German practice and what keeps the model acyclic. Pricing blends the sexes at
 `unisex_mix_male = 0.50` **[std]** while the projection uses the point's own sex; "pricing unisex on
 a 50 / 50 mix while writing 60 / 40" is model risk 7 [REG-R34].
@@ -534,7 +568,7 @@ is in care, counted in `pols_if`, pays its premium and receives no annuity.
 
 **The *Beitragsrückgewähr* implemented here is the gross form** — return of premiums payable to date,
 with **no** offset for annuity already paid. The market's more common form nets the annuity off
-[S4] [unverified]; the model does not, because the netting is floored at zero **per life** and the
+[S4]; the model does not, because the netting is floored at zero **per life** and the
 ledgers are aggregates, so netting at the aggregate level would let a life that received a large
 annuity subsidise one that received none. The consequence — the option overstates the death benefit
 relative to the market-standard form — is stated rather than hidden, and pitfall 11 asserts it.
@@ -756,8 +790,8 @@ The specific ways an implementation of *this* product looks right and is wrong. 
 16. **Collecting a premium in a month that is not a due date.** Assert `premiums(t) == 0` at every
     non-due `t` on points 3, 4 and 5, and `premium_pp(t) == premium_mth_pp() × prem_mode_months()` at
     every due `t`.
-17. **Using the *Pflegegrad* stock distribution as the entry mix.** The stock is about
-    9 / 44 / 27 / 14 / 6 % [R18]; entrants are not. Assert `Σ_g entry_share(g) == 1.0` and that the
+17. **Using the *Pflegegrad* stock distribution as the entry mix.** The stock is
+    13,8 / 40,4 / 29,6 / 11,8 / 4,3 % at end-2023 [R18]; entrants are not. Assert `Σ_g entry_share(g) == 1.0` and that the
     model's own stock share at grades 4 and 5 over the whole projection **exceeds** `entry_share`.
 
 Two further errors are worth naming because they are the ones a *user* will make. **Reading a
@@ -819,7 +853,8 @@ engine [REG-R14] [REG-R15]. Active-life mortality
 `mort_rate(F, x) = 1 − exp(−4.76290e−06 × 1.119962^x)` **[std]**, anchored at
 `q(65) = 0.75 %` and `q(85) = 7.0 %`, with `mort_rate(F, 109) = 1.0` by the limiting-age convention
 **[std]**. Incidence `inc_rate(F, x) = min(0.0110 × exp(0.1400 × (x − 65)), 0.50)` **[std]**,
-anchored on prevalence doubling every five years of age above 75 [R18] [unverified]. Entry mix
+anchored on prevalence doubling every five years of age above 75 — an anchor the retrieved
+*Pflegequoten* put nearer a factor of 1,8 over 70–90 [R18], reported and not changed. Entry mix
 0.20 / 0.38 / 0.24 / 0.13 / 0.05 across grades 1 to 5 **[std]**. Deterioration
 0.28 / 0.24 / 0.20 / 0.16 / 0.00 and recovery 0.10 / 0.06 / 0.04 / 0.02 / 0.01 a year **[std]**, the
 recovery rates damped by `exp(−0.10 × max(0, x − 75))` **[std]**. In-care mortality multiples
@@ -1080,7 +1115,9 @@ grid. The valuation layers consume them and are cited, not reproduced.
   guaranteed, adjustable only on the narrow § 163 route [REG-R27], so the insurer has no unilateral
   right to reprice the individual contract — the usual trigger for a boundary at the next repricing
   date. The whole projected stream is therefore inside the boundary on the natural reading; a
-  *Pflegetagegeld* under § 203 VVG is the opposite case [R14]. The point is [unverified].
+  *Pflegetagegeld* under § 203 VVG is the opposite case [R14] — MB/EPV § 8b recalculates every
+  premium in an observation unit on a breach [S2]. The boundary point itself is still [unverified];
+  no Solvency II instrument was retrieved for this product.
 - **Surplus, IFRS 17 and professional standards.** The *Risikoergebnis* — the release of the
   first-order margins as experience emerges — is the dominant surplus source here [REG-R47],
   distributed under the MindZV and the RfBV [REG-R10] [REG-R18] [REG-R19]; the model produces the
@@ -1096,25 +1133,38 @@ grid. The valuation layers consume them and are cited, not reproduced.
 In rough order of leverage for a German *Pflegerente* block.
 
 1. **Duration in care — the in-care mortality multiples.** The direct multiplier on the liability and
-   the weakest-evidenced quantity in the corpus (gap 19); the research file's own arithmetic shows a
-   mean spell moving from four years to five changing the premium by about a quarter. The shipped
-   multiples are **[std]** order-of-magnitude reasoning, and they carry the product.
-2. **Incidence level and slope.** The slope is anchored to one qualitative statement — prevalence
-   doubling every five years above 75 [R18] [unverified] — and compounds over sixty-five years, so it
-   is the more dangerous of the two: ±0.01 on `g` moves incidence at 90 by about a third.
-3. **The *Pflegegrad* definitional break.** DAV 2008 P was built on the *Pflegestufen*, the BGH will
-   not map the scales [REG-R36] [REG-R51], and the 2017 reform widened the insured population [R9].
-   **This is the largest basis risk in the product**, it is not a parameter, and no sensitivity here
-   captures it.
+   still the weakest-evidenced quantity in the model (gap 19); the research file's own arithmetic
+   shows a mean spell moving from four years to five changing the premium by about a quarter. The
+   shipped multiples are **[std]** order-of-magnitude reasoning, and they carry the product. **The
+   overall spell is now sourced** — about five years where care begins after 60, 4,0 for men and 5,7
+   for women [S14] — which puts the model's implied three-to-five years at the low end for women and
+   makes this sensitivity, if anything, sharper. **The per-grade sojourn times are not sourced and
+   apparently cannot be**, the *Pflegegrade* dating only from 2017.
+2. **Incidence level and slope.** The slope is anchored to prevalence doubling every five years above
+   75 and compounds over sixty-five years, so it is the more dangerous of the two: ±0.01 on `g` moves
+   incidence at 90 by about a third. **The anchor is now measured and is softer than assumed**: the
+   observed five-year prevalence ratios are 1,80 · 1,88 · 1,74 · 1,49 · 1,18 from 70–75 upward,
+   about `ln 1.8 / 5 = 0.117` against the shipped 0.1386 [R18]. Shipped unchanged, reported here.
+3. **The *Pflegegrad* definitional break.** DAV 2008 P was built on the *Pflegestufen*, the BGH has
+   held that no inference runs from a *Pflegegrad* back to a *Pflegestufe* [REG-R36] [REG-R51], and
+   the 2017 reform widened the insured population [R9]. **This is still the largest basis risk in the
+   product**, it is not a parameter, and no sensitivity here captures it — but it is now a risk with
+   a published response: the DAV's re-derivation of the bases for *Pflegegrade*, on a *Stufenmodell*
+   rather than a per-grade chain, and from *Pflegestufen* data rather than observations [R15].
 4. **The *Rechnungszins*.** Benefits fall on average some thirty-five years after issue, so this is
    the **most interest-sensitive product in delib**. It is also the one pricing assumption that is
    genuinely cited [REG-R14] [REG-R15].
 5. **The middle steps of the *Leistungsstaffel*.** The time-weighted average benefit over a spell is
    about half the top step, so two tariffs with the same 100 % top step differ by more than the
    headline suggests. Compare model point 1 with model point 5.
-6. **Lapse.** Nothing supports any level (gap 20). Here lapse is *profitable* — an early lapser paid
-   for years and never reached the risk period — so the usual protection intuition is inverted, and
-   the pricing basis deliberately excludes it.
+6. **Lapse and the *Stornoabzug*.** Nothing supports any lapse level (gap 20). Here lapse is
+   *profitable* — an early lapser paid for years and never reached the risk period — so the usual
+   protection intuition is inverted, and the pricing basis deliberately excludes it. **The
+   *Stornoabzug* is a separate and newly quantified risk**: the model ships 0 % with a 5 % model
+   point, while the one *Pflegerenten* wording retrieved agrees **25 %**, rising to 50 % after a
+   partial withdrawal, justified as compensating the change in the residual book's risk profile
+   [S4] [REG-R28]. On a lapse-heavy block the difference between 0 % and 25 % is a first-order
+   effect on surrender outgo, and it is **not** implemented here.
 7. **The unisex mix.** Pricing blends 50 / 50 while the projection runs on the point's own sex; a
    book written 60 / 40 female against a 50 / 50 price is under-priced by the whole mismatch, and the
    mix is endogenous to the price [REG-R34].
@@ -1130,6 +1180,7 @@ In rough order of leverage for a German *Pflegerente* block.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R11]: #delib-pflegerentenversicherung-r11
+[R13]: #delib-pflegerentenversicherung-r13
 [R12]: #delib-pflegerentenversicherung-r12
 [R14]: #delib-pflegerentenversicherung-r14
 [R15]: #delib-pflegerentenversicherung-r15

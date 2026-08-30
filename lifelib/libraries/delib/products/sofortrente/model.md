@@ -6,24 +6,34 @@ is specified in [`product-spec.md`](product-spec.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result**, and on this
 > product the two are further apart than the arithmetic makes them look, because the whole
-> answer rests on a mortality table nobody may ship. The *mechanics* are cited: the guaranteed
-> annuity is struck once at inception by converting the *Einmalbeitrag* at a factor calculated
-> on DAV 2004 R at an interest rate at or below the statutory *Höchstrechnungszins* [S6] [R10]
-> [REG-R14] [REG-R15]; the *Rentengarantiezeit* is a
-> tariff-level feature carried in a carrier's own product name [S5] with a settable minimum
-> at another [S7]; the *Kapitalrückgewähr* refunds the *Einmalbeitrag* less the instalments
-> already paid [R23]; the *Hinterbliebenenrente* is a *Zusatzversicherung* with its own
-> condition set [S9]; the *Überschussbeteiligung* is a statutory entitlement continuing
-> through the payout phase, *Bewertungsreserven* included [S3] [REG-R24]; and there is no
+> answer rests on a mortality table nobody may ship. The *mechanics* are cited, and since
+> 2026-08-30 they are cited to clause text rather than to search records: the guaranteed
+> annuity is struck once at inception by converting the *Einmalbeitrag* at a factor
+> calculated on a first-order annuitant table — DAV 2004R (Aggregattafel) at one carrier
+> [S2] [S3], "NÜRNBERGER Tafel 2013 R" at another [S4] — at an interest rate at or below the
+> statutory *Höchstrechnungszins*, every retrieved tariff pricing **at** its vintage's cap
+> [S2] [S4] [S6] [REG-R14] [REG-R15]; the *Rentengarantiezeit* is a tariff-level feature
+> carried in a carrier's own product name for the immediate form as well as the deferred one
+> [S4] [S5]; the *Kapitalrückgewähr* refunds the *Einmalbeitrag* less the **guaranteed**
+> instalments already paid [S2] [S6]; the *Hinterbliebenenrente* is a *Zusatzversicherung*
+> with its own condition set, beginning only after any guarantee period expires [S1] [S9];
+> the *Überschussbeteiligung* is a statutory entitlement continuing through the payout phase,
+> *Bewertungsreserven* included and *hälftig* [S2] [S3] [S10] [REG-R24]; and there is no
 > *Rückkaufswert*, no lapse and no *Beitragsfreistellung* once the *Rentenbezug* has begun
-> [R1] [R2] [R5] [REG-R28]. **No level is sourced at all.** Direct HTTP egress was blocked
-> and the session's `WebSearch` budget was exhausted *before* this product was researched,
-> so no *Rentenhöhe*, no *Rentenfaktor*, no charge, no *Überschussanteilsatz* and no
-> portfolio sex mix was established at any carrier for any year [S10] [S11] [S12] [S13]
-> [R20] [R21] [R22] [R23]; every number below is **[std]** with a stated rationale. DAV
-> 2004 R and DAV 2004 R-Bestand are DAV property and are **cited by name, never shipped**
-> [R10] [R11] [REG-R47] [REG-R49]. Replace the decrement, charge and surplus tables with
-> company data before drawing any conclusion from the output.
+> [S1] [S2] [S4] [R1] [R2] [R5] [REG-R28]. **Almost no level is sourced, and none of the few
+> that are has been used to calibrate anything here.** The library was built under a blocked
+> egress policy with an exhausted `WebSearch` budget, so every number below was chosen as a
+> **[std]** with a stated rationale and none was fitted to market data. Retrieval has since
+> produced four benchmarks the model can be judged against but was not built from: one
+> carrier's guaranteed annuity scale, 151 € a month at 65 on 50 000 € with a 20-year guarantee
+> [S8] — about 16 % below this model's [std] construction on the same case; one carrier group's
+> payout-phase *Zinsüberschussanteil*, 3,35 % less the *Rechnungszins* for 2026 [S10]; market
+> *Rentenfaktoren* of 29,09 € and 25,97 € per 10 000 € for 2021 and 2022 [R20]; and five
+> carriers' *laufende Verzinsung* for 2026 [R21]. **No charge parameter and no portfolio sex
+> mix was established at any carrier for any year** [S11] [S12] [S13] [R22] [R23]. DAV 2004 R
+> and DAV 2004 R-Bestand are DAV property and are **cited by name, never shipped** [R10] [R11]
+> [REG-R47] [REG-R49]. Replace the decrement, charge and surplus tables with company data
+> before drawing any conclusion from the output.
 
 ## Run it
 
@@ -148,16 +158,23 @@ already zero in that state — and nothing is refunded, the cover having been co
 ## The *Überschussrente* steps at the anniversary and ratchets
 
 The annuity paid is `garantierte Rente + Überschussrente`, and **only the first is a
-promise** [S6] [R21]. The second is declared out of surplus actually earned, and the model
-carries two properties of it that are easy to get wrong on a monthly grid:
+promise**: in payment the RfB-funded part supports "eine lebenslang zahlbare Rente, deren Höhe
+jedoch nicht garantiert ist. Die hieraus gezahlten Renten sind jeweils nur für ein
+Versicherungsjahr zugesagt" [S2], and it may be reduced [S6] [R21]. The second is declared out
+of surplus actually earned, and the model carries two properties of it that are easy to get
+wrong on a monthly grid:
 
-- **It steps at the policy anniversary and nowhere else** [S15]. Compounding an annual rate
-  monthly is the obvious wrong reading; `check_annuity_roll_fwd_resid(t)` leaves a residual
-  at every `t` that is not a multiple of twelve if you do.
-- **It ratchets.** An increment bought as paid-up annuity under the *Bonusrente* mechanic
-  does not come back off [R23], so `annuity_pp(t) ≥ annuity_pp(t − 1)` at every `t`.
+- **It steps at the policy anniversary and nowhere else** — "erstmals zum Ende des ersten
+  Versicherungsjahres" [S4], "am Ende des Versicherungsjahres" [S10], [S15]. Compounding an
+  annual rate monthly is the obvious wrong reading; `check_annuity_roll_fwd_resid(t)` leaves a
+  residual at every `t` that is not a multiple of twelve if you do.
+- **It ratchets.** An increment bought as paid-up annuity under the *Bonusrente* mechanic does
+  not come back off — "Die jeweils erreichte Rentenhöhe kann nicht mehr sinken" [S4] — so
+  `annuity_pp(t) ≥ annuity_pp(t − 1)` at every `t`. **The model's ratchet is a modelling
+  choice, not a universal**: it holds for the dynamic form, whereas the constant and
+  teildynamic forms may be reduced [S2] [S6] [R19], which the base run does not project.
 
-The four *Überschussverwendung* forms are a **profile**, not four mechanics: the constant
+The *Überschussverwendung* forms are a **profile**, not separate mechanics: the constant
 form opens highest and is flat, the volldynamic form opens at nothing and rises with each
 declaration, the teildynamic form is intermediate on both axes, and the *Bonusrente* is the
 crediting mechanic underneath the rising ones. **The three market forms are not calibrated to
@@ -261,8 +278,8 @@ conventions suite counts the reads and asserts the file set.
 |---|---|---|
 | `model_point_table.csv` | `model_point_file` / `model_point_table()` | Fourteen points. **Point 1 is the worked-example anchor cell** (100 000 €, M65 born 1960, 2025 vintage, 10-year *Rentengarantiezeit*, monthly *vorschüssig*, `i = 1,00 %`, *teildynamisch*), **[std]**; points 2–14 exercise the plain *Leibrente*, each death-benefit option, a joint-life cell, all four frequencies, both timings, all four surplus forms, a five-year *Aufschubzeit*, an in-force cell with a given annuity, a 0,25 %-era vintage, both ends of the age envelope and the surplus switched off. The only file without a `provenance` column: a model point is a configuration, not an assumption |
 | `mort_table.csv` | `mort_table_file` / `mort_table()` | Annual death rates by `(basis, sex, age)` in four series, `{FIRST, SECOND} × {M, F}`, ages 50–120. A **[std]** Gompertz–Makeham proxy and **not DAV 2004 R**, which is DAV property and is cited by name, never shipped [R10] [REG-R49]. **The anchor a replacement must preserve** is that the `mix_male = 0.45` blend of the FIRST series reproduces the research file's own `q_base(x)` — to 2,5 × 10⁻⁷ relative, the female factor being a six-decimal rounding of `0.4375/0.55` |
-| `improvement_table.csv` | `improvement_file` / `improvement_table()` | The *Trendfunktion* `λ(x)` by `(basis, age)`: **[std]** 1,5 % a year to age 70 on the second-order basis, tapering linearly to zero at 105, with the first-order basis improving 25 % faster. DAV 2004 R's own trend is not public [R10] [R12] |
-| `surplus_scale_table.csv` | `surplus_scale_file` / `surplus_scale_table()` | `surplus_init_pct` and `surplus_growth` for the four *Überschussverwendung* forms. **[std]**, and **no observed range exists**: no *Überschussanteilsatz* was established at any carrier for any year [S10] [R22] (research gap 4). The corpus gives the *shape* and nothing else [R20] [R21] [R23] |
+| `improvement_table.csv` | `improvement_file` / `improvement_table()` | The *Trendfunktion* `λ(x)` by `(basis, age)`: **[std]** 1,5 % a year to age 70 on the second-order basis, tapering linearly to zero at 105, with the first-order basis improving 25 % faster. DAV 2004 R's own trend is **not public and was not reachable** — the DAV derivation and the contemporaneous expositions are members' and conference materials with no open address [R10] [R12] |
+| `surplus_scale_table.csv` | `surplus_scale_file` / `surplus_scale_table()` | `surplus_init_pct` and `surplus_growth` for the *Überschussverwendung* forms. **[std]** and **uncalibrated**: one carrier group's payout-phase declaration is now in the corpus — 3,35 % less the *Rechnungszins* for 2026, interest surplus only [S10] — and one carrier's realised increase, 0,75 % for 2024 [S8], but neither was used to set these values and the shipped two-component shape does not match either. The corpus still gives no range [R21] [R22] (research gap 4 narrows) |
 | `hoechstrechnungszins_table.csv` | `hoechstrechnungszins_file` / `hoechstrechnungszins_table()` | The statutory rate history by vintage band [REG-R14] [REG-R15]; the two mid-year steps of 1994 and 2000 are assigned **[std]** to the rate in force on 1 January of the split year |
 
 Every file but the model point table carries a final `provenance` column, one tag per row, per
@@ -304,7 +321,9 @@ the identity being an equality between euro amounts of order 10⁵ while the ref
 converges on `R` rather than on the residual); `check_death_option_xor` (the **[std]**
 exclusivity of the death-benefit families, asserted rather than assumed); and
 `check_tariff_int_rate` (an **inequality** against the cap of the contract's own vintage,
-because a carrier may price below it and one in the corpus is observed doing so [S6]).
+because § 2 DeckRV sets a maximum and not a rate [REG-R14]; every tariff retrieved for this
+product in fact prices **at** its vintage's cap [S2] [S4] [S6], so the inequality is the right
+test for the right reason and not because below-cap pricing was observed).
 
 ## Modules that are off in the base run
 
@@ -386,7 +405,7 @@ all** (research gap 1).
 
 | [std] | Value | Rationale |
 |---|---|---|
-| Mortality proxy | `q_base(x) = 1 − exp(−(A + B c^x (c−1)/ln c))`, `A = 0.0002`, `B = 1.5e-5`, `c = 1.10` | The research file's own printed law, life expectancy 24,29 years at 65 — a **prudent annuitant** shape of the right order for a German first-order basis. DAV 2004 R is DAV property and is not shipped [R10] [REG-R49] |
+| Mortality proxy | `q_base(x) = 1 − exp(−(A + B c^x (c−1)/ln c))`, `A = 0.0002`, `B = 1.5e-5`, `c = 1.10` | The research file's own printed law, life expectancy 24,29 years at 65 — a **prudent annuitant** shape of the right order for a German first-order basis. DAV 2004 R is DAV property and is not shipped [R10] [REG-R49]. **Measurably lighter than a real tariff basis**: on the one carrier quotation now in the corpus the constructed annuity is about **16 % high** [S8], and the model is not refitted to it here |
 | Sex split | `FIRST/M = 1.250000 q_base`, `FIRST/F = 0.795455 q_base` | Chosen so the `mix_male` blend reproduces `q_base` itself, which is what lets every annuity factor printed in the research file be traced into this model. Exact to 2,5 × 10⁻⁷ relative |
 | First-order level margin | `SECOND = 1.20 × FIRST` | The direction is established — prudent means *lighter* for an annuity [R10] [REG-R47] — and the size was not (research gap 12) |
 | Closing row and cap | `q = 1` at attained age 120; every series capped at 1.0 | Forces the survival path to zero inside the `omega_age` horizon. The cap binds only on `SECOND/M` at ages 117–119, where `1.20 × FIRST` would stop being a probability |
@@ -398,27 +417,29 @@ all** (research gap 1).
 | `expense_load_alpha` α | 2,5 % of `SP` | A single-premium annuity's acquisition cost is one commission plus an issue expense, with no premium stream to amortise against. **No charge parameter was established at any carrier** (research gap 8) |
 | `expense_load_beta` β | 2,0 % of the annuity value | Covers a payment run whose per-policy cost is roughly constant in euros — right on 100 000 €, too small on 25 000 €, which is itself why minimum *Einmalbeiträge* exist |
 | Acquisition expense | 2,0 % of `SP` + 200 € | Sized so the tariff over-recovers modestly, which is the right direction and the source of the modelled *Kostenüberschuss* — 2 500 € taken against 2 200 € incurred on the anchor cell |
-| Maintenance / payment expense | 60 € a year on `pols_if`; 1,50 € per instalment | The two running costs a payout annuity actually has: the annual *Standmitteilung* and proof-of-life routine, and the payment run itself [S15] |
+| Maintenance / payment expense | 60 € a year on `pols_if`; 1,50 € per instalment | The two running costs a payout annuity actually has: the annual *Standmitteilung* and proof-of-life routine, and the payment run itself. Both fall on the insurer by the AVB — "Vor jeder Rentenzahlung können wir **auf unsere Kosten** einen amtlichen Lebensnachweis … verlangen" [S4] [S2] — so the direction is sourced; **the levels are not** [S15] |
 | `expense_infl` | 1,5 % p.a., stepping at the **policy anniversary** | Every step in this product falls on an anniversary; nothing happens on 31 December |
-| Surplus scale | `konstant` 20 %/0 %; `teildynamisch` 10 %/1,0 %; `volldynamisch` 0 %/2,0 % | The corpus gives the *shape* and no level [R20] [R21] [R23]. The 20 % opening share sits mid-way in the [unverified] 15–25 % gap between guaranteed and total annuity; the growth rates are round numbers consistent with a *Zinsüberschuss* of one to two points over a 1,00 % *Rechnungszins*. **Not calibrated to equal present value** |
-| Surplus increase date | The policy anniversary | No specimen *Rentenanpassungsmitteilung* was located at any carrier for any year [S15] (research gap 16) |
-| Refund basis | Netted against the **guaranteed** instalments | A guaranteed benefit cannot be defined by reference to a discretionary quantity — a modeller's argument, not a carrier's clause (research gap 10) |
+| Surplus scale | `konstant` 20 %/0 %; `teildynamisch` 10 %/1,0 %; `volldynamisch` 0 %/2,0 % | The corpus gives the *shape* [R19] [R21] and the 20 % opening share sits mid-way in the 15–25 % gap between guaranteed and total annuity, which **no retrieved document quantifies** and which stays [unverified]. The growth rates are round numbers consistent with a *Zinsüberschuss* of one to two points over a 1,00 % *Rechnungszins* — a shape [S10]'s declared 2,35 % for 2026 supports without validating these numbers, which were **not derived from it**. **Not calibrated to equal present value, and not calibrated to any carrier's declaration** |
+| Surplus increase date | The policy anniversary | No specimen *Rentenanpassungsmitteilung* was located [S15], but the rule is now read at four sources: "erstmals zum Ende des ersten Versicherungsjahres" [S4], "am Ende des Versicherungsjahres" and "für den Monat vor dem Jahrestag der Versicherung" [S10], "jedem Versicherungsjahrestag" [S6]. **No longer a standardization in substance**, only in the absence of a specimen |
+| Refund basis | Netted against the **guaranteed** instalments | **No longer a standardization**: two AVB state it — "bereits gezahlte Renten werden nur in der Höhe der zu Vertragsbeginn garantierten Renten abgezogen" [S2], "abzgl. der bis zum Todeszeitpunkt gezahlten garantierten Renten" [S6]. The modeller's argument turned out to be the market's rule |
 | Death-benefit exclusivity | Refund **xor** (guarantee period, survivor's annuity) | Which carriers permit the combination was not established (research gap 10), and the refund's implicit equation is written against a plain annuity leg |
-| Payment timing | *vorschüssig*, first instalment at `t = 0` | **No source in the corpus states the convention**, for this product or the deferred one (research gap 11). Model point 9 measures the alternative at 0,34 % |
+| Payment timing | *vorschüssig*, first instalment at `t = 0` | **Contradicted by the retrieved market and retained anyway.** Two AVB pay in arrears — "Die erste Rente wird einen Monat nach dem vereinbarten Versicherungsbeginn gezahlt" [S4], and one payment period after inception at [S6]; the GDV template does not settle it [S1]. Moving the default moves the worked example and the golden tests, so it is reported rather than changed (`technical-notes.md`, correction 6). Model point 9 measures the alternative at 0,34 % |
 | Joint-life dependence | Independent lives | Real joint lives are positively dependent, so this **overstates** the joint-life annuity value and understates the rider's cost. No delib source quantifies it |
 | Age basis | `entry_age + t // 12`, with `entry_year == birth_year + entry_age` on every shipped point | An internal-consistency convention, not a contract fact; a real book carries a fractional offset of up to a year |
 | *Höchstrechnungszins* split years | 1994 and 2000 assigned to the 1 January rate | The statutory steps fall mid-year and a model point carries one vintage [REG-R15]. `kapitallebensversicherung/deckrv_table.csv` resolves the same two years to the **higher** of the pair instead, so the two tables agree on 2000 and differ on 1994 — 3,50 % here, 4,00 % there. Neither is derivable from [REG-R15], so the divergence is recorded here and in this file's `provenance` column rather than silently reconciled. No delib model point in either product carries a 1994 vintage — the earliest anywhere in the library is 2005 — so no shipped number turns on it |
 | Annuitant selection, proof of life | No adjustment factor on the first-order table; suspension not modelled | DAV 2004 R is an annuitant-experience table understood to carry *Selektionsfaktoren* already [REG-R49], so selection belongs inside the basis; a failed life certificate is a timing effect on an unchanged obligation |
 | Tolerances | `roll_fwd_tol = 1e-8`; `solve_tol = 1e-10`; `solve_max_iter = 200` | The refund solve is the only numerical solve in the model, so `solve_tol` is a change of answer rather than of runtime |
-| Commercial envelope and model points | Entry ages 60–85; *Einmalbeitrag* 25 000–500 000 € around 100 000 €; fourteen cells | The market's quoting unit is the euro per 100 000 €, and no entry-age or ticket-size limit was established at any carrier (research gap 7). The anchor is the notes' worked example; the rest exercise one mechanic each |
+| Commercial envelope and model points | Entry ages 60–85; *Einmalbeitrag* 25 000–500 000 € around 100 000 €; fourteen cells | One carrier's limits are now read and the envelope is **not** moved to them: Allianz takes a *Mindesteinmalbeitrag* of **3 000 €** and a *Höchsteintrittsalter* of **85** [S7], so the age ceiling matches and the ticket floor is an order of magnitude conservative. No upper ticket limit and no lower entry age was established anywhere (research gap 7). The anchor is the notes' worked example; the rest exercise one mechanic each |
 
-The only quantities in this model that are **not** standardizations are structural: the
-conversion at inception on a table named DAV 2004 R at a rate at or below the statutory cap
-[S6] [REG-R14] [REG-R15]; the guaranteed annuity's immutability thereafter [REG-R27]; the
-guarantee period paying regardless of survival [R23]; the refund being the *Einmalbeitrag*
-less instalments paid [R23]; the survivor's annuity being a rider [S9]; surplus participation
-continuing through the payout phase [S3] [REG-R24]; and the absence of any surrender, lapse
-or paid-up state at any duration [R1] [R2] [R5] [REG-R28].
+The only quantities in this model that are **not** standardizations are structural, and each
+is now carried by clause text: the conversion at inception on a first-order annuitant table at
+a rate at or below the statutory cap [S2] [S4] [REG-R14] [REG-R15]; the guaranteed annuity's
+immutability thereafter [REG-R27]; the guarantee period paying regardless of survival [S1]
+[S4]; the refund being the *Einmalbeitrag* less the **guaranteed** instalments paid [S2] [S6];
+the survivor's annuity being a rider that begins after any guarantee period [S1] [S9]; surplus
+participation continuing through the payout phase, *Bewertungsreserven* *hälftig* [S2] [S3]
+[S10] [REG-R24]; the anniversary as the only step date [S4] [S6] [S10]; and the absence of any
+surrender, lapse or paid-up state at any duration [S1] [S2] [S4] [R1] [R2] [R5] [REG-R28].
 
 ## Tests
 
@@ -443,6 +464,7 @@ python -m pytest tests -q
 [R10]: #delib-sofortrente-r10
 [R11]: #delib-sofortrente-r11
 [R12]: #delib-sofortrente-r12
+[R19]: #delib-sofortrente-r19
 [R2]: #delib-sofortrente-r2
 [R20]: #delib-sofortrente-r20
 [R21]: #delib-sofortrente-r21

@@ -6,12 +6,13 @@
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The *mechanics*
 > are the established German ones and each carries the instrument it must be checked
-> against — the *Berufsunfähigkeit* definition and its 50 % / six-month concretisation
-> [S1] [R1], the *Anerkenntnis* and *Nachprüfung* frame with its three-month run-off
+> against — the *Berufsunfähigkeit* definition, its 50 % degree and its *Sechs-Monats-Fiktion*
+> [S1] [S12] [R1], the *Anerkenntnis* and *Nachprüfung* frame with its three-month run-off
 > [R2] [R3], the *Beitragsbefreiung* as core cover rather than an option [S1] [S2], the
-> *Brutto* / *Zahlbeitrag* pair and the *Beitragsverrechnung* behind it [R10] [R14] [S13],
-> the unisex rule [R15], and the absence of any death, maturity or surrender cash flow
-> [S1] [R8] [R9]. **Every level is a standardization.** The DAV 1997 family and DAV 2008 T
+> *Brutto* / *Zahlbeitrag* pair and the *Beitragsverrechnung* behind it [R10] [R14] [S6] [S12],
+> the unisex rule [REG-R34], and the absence of any death, maturity or surrender cash flow
+> [S1] [R8] [R9]. The six months is the *Fiktion*'s period, not the *Prognosezeitraum*'s: the
+> latter is set by each carrier and the GDV model conditions leave it blank. **Every level is a standardization.** The DAV 1997 family and DAV 2008 T
 > are the property of the Deutsche Aktuarvereinigung, are not public and are **not
 > redistributed here** [R16] [R17] [REG-R50] [REG-R48]; no German insurer publishes a BU
 > charge structure, and a pure risk contract carries no *Effektivkosten* disclosure
@@ -166,9 +167,10 @@ plausible, and it is why `check_net_cf()` rebuilds the premium leg from
 A life inside the *Karenzzeit* is *berufsunfähig*, is **not** yet paid, and **still pays
 premium** **[std]** — the waiver runs with the benefit. On the anchor `karenz_months = 0`, so
 `pols_prem(t) == pols_actv(t)` everywhere; on model point 5 (`K = 6`) they differ at 323 of 324
-months. The *Karenzzeit* is **not** the six-month *Prognosezeitraum*, which is part of the
-*definition* of BU: with `K = 0` the first *BU-Rente* falls in the month **after** an onset —
-`claims(1, "BU_RENTE") = 0,11 €`.
+months. The *Karenzzeit* is **not** the *Prognosezeitraum* and **not** the *Sechs-Monats-Fiktion*;
+both of those are part of the *definition* of BU, and the *Karenzzeit* defers the pension alone —
+"Die Karenzzeit gilt nur für die Rente" [S4]. With `K = 0` the first *BU-Rente* falls in the month
+**after** an onset — `claims(1, "BU_RENTE") = 0,11 €`.
 
 ## Two escalations, two clocks
 
@@ -232,10 +234,15 @@ rather than to the payment. The alternative reading is defensible and is named.
 - **No death benefit.** An SBU pays nothing on death, before or during a claim [S1], so
   `pols_death(t)` is a decrement and never a cash flow, and there is no `claims_death` column.
 - **No maturity benefit.** Survival to the *Endalter* pays nothing; a claim still in payment at
-  the horizon simply stops.
-- **No cash value.** § 169 VVG through § 176 gives this contract a real *Rückkaufswert* and
-  § 165 a real *beitragsfreie BU-Rente* [R8] [R9] [R5] [REG-R28] — both the release of a reserve
-  this model deliberately does not compute. `claims(t, "LAPSE")` therefore exists, returns zero
+  the horizon simply stops. That is true of the GDV model conditions and of the modelled product;
+  it is **not** universal — one retrieved carrier's AVB grants a surplus-financed *Schlusszahlung*
+  at expiry where no BU arose [S12]. That is a surplus application, not a guarantee, and this model
+  carries no surplus account to fund one.
+- **No cash value.** § 169 VVG through § 176 gives this contract a *Rückkaufswert* — the AVB pay it
+  "entsprechend § 169 des Versicherungsvertragsgesetzes (VVG)" [S1] — and § 165 a *beitragsfreie
+  BU-Rente* [R8] [R9] [R5] [REG-R28]; both are the release of a reserve this model deliberately does
+  not compute, and both are **small**, the conditions themselves warning that the premium parts
+  available to build it are "sehr gering" against premiums paid [S6]. `claims(t, "LAPSE")` therefore exists, returns zero
   at every `t` and is published as a zero column; there is no `av_pp_at`, no surrender cells and
   no paid-up state. The zero states the scope; a missing column would hide it.
 - **No acknowledged state.** § 173's once-only *befristetes Anerkenntnis* would justify one
@@ -308,7 +315,7 @@ arriving in another, or arrives in two. The first fixes the definition, the seco
 
 | Module | Switch | Off value | What it does |
 |---|---|---|---|
-| *AU-Klausel* | `au_uplift`, gated by `au_klausel` | `1.00` | Multiplies the inception rate. Model point 10 has the clause **on** with the uplift at 1,00, so the switch is demonstrably inert: no source in this corpus quantifies what six months of certified *Arbeitsunfähigkeit* adds to the incidence, and shipping a number would be an invention |
+| *AU-Klausel* | `au_uplift`, gated by `au_klausel` | `1.00` | Multiplies the inception rate. Model point 10 has the clause **on** with the uplift at 1,00, so the switch is demonstrably inert. The **clause** is documented — six months of continuous certified *Arbeitsunfähigkeit*, or four plus a specialist prognosis; the AU pension equal to the *BU-Rente*; a cap of 24 months per contract at one carrier and up to 36 at another; set off against a later BU award [S4] [S6] [S8] [S12]. What no retrieved source quantifies is the **loading** it puts on incidence, so shipping a number would still be an invention |
 | *Beitragsdynamik* | `beitragsdyn_rate`, gated by `premium_form` | `0.00` on the `level` form | Escalates the insured *BU-Rente* and the annual *Bruttobeitrag* together on each policy anniversary; 3 % on model point 4 |
 | *Wiedereingliederungshilfe* | `wiedereingliederung_months` | `6`, and `0` on model point 12 | Monthly *Renten* paid on each **completed** run-off |
 | *Leistungsdynamik* | `leistungsdyn_rate` | `0.02`, and `0.00` on model point 12 | In-claim escalation on each onset anniversary |
@@ -388,7 +395,7 @@ only the *levels* that no retrievable document supplies.
 | Standardization | Value | Rationale |
 |---|---|---|
 | Inception table | `0.00110 × 1.06^(min(x,45)−30) × 1.13^(max(x,45)−45)`, anchored at `i(30) = 0.001100` | DAV 1997 I is not public and is not shipped [R16]. The **shape** is what the research establishes — flat to 30, moderate through the forties, sharply accelerating after — and the level is anchored so the worked example reproduces exactly |
-| Occupational loadings | BG1 1,00 … BG5 4,50 | One base table with occupational loadings is how German BU pricing works [S6]; the 1,00 / 3,00 anchors sit inside the recalled 2×–4× manual/office band, the rest interpolated geometrically. No *Berufsgruppenverzeichnis* was retrievable |
+| Occupational loadings | BG1 1,00 … BG5 4,50 | One base table with occupational loadings is how German BU pricing works; the 1,00 / 3,00 anchors sit inside the recalled 2×–4× manual/office band, the rest interpolated geometrically. **No retrieved document supports the classification**: the NÜRNBERGER AVB was read in full for the 2026-08-30 pass and never uses the word *Berufsgruppe*, and no *Berufsgruppenverzeichnis* is published at a public address [S6] |
 | Reactivation table | 0,250 → 0,006 by claim year | DAV 1997 RI is not shipped [R16]. Front-loading is the established shape; the levels are construction, and there is **no age-at-disablement dimension**, which the real table has |
 | Active-lives mortality | `0.00035 × 1.095^(age−30)` | DAV 2008 T is not shipped [R17]. An insured-lives *Todesfall*-character shape, not a population table |
 | Disabled-lives mortality | exactly **4,00 ×** the active column, times select factors 3,0 / 2,0 / 1,6 / 1,4 / 1,3 / 1,2 | DAV 1997 TI is not shipped [R16]. Defining the column *from* the active one rather than rounding its own formula independently makes `mort_rate_dis(t,z) / mort_rate(t)` exactly 12,0 at claim duration 1 and 4,8 ultimately at every age, so "never one rate for both states" is an exact identity instead of a tolerance |
@@ -398,13 +405,13 @@ only the *levels* that no retrievable document supplies.
 | Monthly conversion | `p_m = 1 − (1 − p)^(1/12)` on every annual rate | One convention applied uniformly to `i`, `r`, `q^a`, `q^i` and `w` |
 | Processing order | mortality → lapse → inception; then disabled deaths → terminations; then the run-off | Taking incidence first gives `0.000073362928` against `0.000073111651` in month 0 — 0,34 %, compounding over 444 months |
 | First-order loads | 1,30 / 0,70 / 0,80 / 0,80, **no lapse** | Prudence for a disability product forks: higher incidence, lower reactivation, lower disabled and active mortality, and no anticipation of a favourable decrement |
-| `rechnungszins` | **1,00 % p.a.** | The *Höchstrechnungszins* for contracts written from 1 January 2025, both figure and date `[unverified]` [R13] [REG-R15]. Used only in the equivalence |
-| `acq_rate` | **2,5 % of the *Beitragssumme***, once at issue | Sits **at** the § 4 DeckRV *Höchstzillmersatz* of 25 ‰ [REG-R16] — the only sourced number in the whole charge structure is that ceiling, and the level is a choice to sit at it |
-| `admin_prem_rate` | **9 % of the *Bruttobeitrag*** | No German insurer publishes a BU charge structure and a pure risk contract carries no *Effektivkosten* disclosure [R12] [S14] |
+| `rechnungszins` | **1,00 % p.a.** | The *Höchstrechnungszins*. **The figure is sourced**: DeckRV § 2 Abs. 1 fixes it "auf 1 Prozent", and § 2 Abs. 2 makes the rate used at conclusion apply for the whole term [R13]. **The 1 January 2025 commencement is not in the consolidated text and stays `[unverified]`** [REG-R15]. Used only in the equivalence |
+| `acq_rate` | **2,5 % of the *Beitragssumme***, once at issue | Sits **at** the § 4 DeckRV *Höchstzillmersatz*: "Der Zillmersatz darf 25 Promille der Summe aller Prämien nicht überschreiten" [R13] [REG-R16], restated by both retrieved AVB as 2,5 % of the premiums payable over the term [S1] [S6]. The ceiling is the only sourced number in the charge structure, and the level is a choice to sit at it |
+| `admin_prem_rate` | **9 % of the *Bruttobeitrag*** | A construction, and **not** because the disclosure does not exist: VVG-InfoV § 2 Abs. 1 Nr. 1 with Abs. 2 and Abs. 4 requires a German BU insurer to state the calculated acquisition costs and the administration costs in euro, and one AVB points the customer to the *Produktinformationsblatt* for them [R12] [S6]. **No PIB was obtained** [S13], so the level here is a choice. A pure risk contract does separately lack an *Effektivkosten* figure, § 2 Abs. 1 Nr. 9 confining that to contracts whose obligation is certain [S14] |
 | `admin_flat_ann` | **18,00 € p.a.**, charged 1/12 monthly, **uninflated** | A German *Verwaltungskostenzuschlag* is fixed in the tariff at conclusion |
 | `claim_assess_cost` / `claim_maint_cost_mth` | **800,00 €** per inception / **12,00 €** per month in payment | The BU-specific charge a modeller from a term-life background forgets. Flat euro amounts, which is why a heavier class carries a premium below the ratio of its inception rates |
-| `freq_load` | 1,00 / 1,02 / 1,03 / 1,05 | The recalled German *Ratenzahlungszuschlag* ladder `[unverified]`; it scales *Brutto* and *Beitragsverrechnung* together |
-| `beitragsverrechnung` | **0,70**, held constant | Midpoint of the recalled 0,60–0,75 common range inside a 0,50–0,80 band `[unverified]`. **The largest single parameter uncertainty in the model**, and holding it constant its largest discretionary assumption |
+| `freq_load` | 1,00 / 1,02 / 1,03 / 1,05 | The recalled German *Ratenzahlungszuschlag* ladder `[unverified]` — the retrieved AVB name the frequencies (single, monthly, quarterly, half-yearly, annual) but no loading [S1]; it scales *Brutto* and *Beitragsverrechnung* together |
+| `beitragsverrechnung` | **0,70**, held constant | Midpoint of the recalled 0,60–0,75 common range inside a 0,50–0,80 band `[unverified]` — **no retrieved document gives a ratio**, though two now state the mechanic in their own words [S6] [S12]. **The largest single parameter uncertainty in the model**, and holding it constant its largest discretionary assumption |
 | `leistungsdyn_rate` | **2 % p.a.** | Midpoint of the recalled 1–3 % menu. A BU model without in-claim escalation misses the product's dominant long-duration sensitivity |
 | `wiedereingliederung_months` | **6**, paid on the **completed** run-off | Recalled range 3–12 monthly *Renten*. Paying it on every recovery instead overstates it by exactly the run-off's own mortality — 418,79 € against 409,61 € on the anchor cell |
 | Run-off values not escalated | no *Leistungsdynamik* inside the three months | Three months is inside one onset anniversary in every realistic case, and it removes a second duration dimension |
@@ -412,13 +419,15 @@ only the *levels* that no retrievable document supplies.
 | *Leistungsendalter* premium | **not** resumed after it | The waiver is read as keyed to the **state**. The alternative reading is defensible and is named |
 | Age basis | age last birthday advancing at the **policy anniversary** | The model carries no dates; a date-based implementation carries a fractional offset of at most one year |
 | `dynamik` pricing | one equivalence at inception on the whole escalating stream | Internally consistent, acyclic, and **not** the market's annual-repricing practice — recorded rather than corrected |
-| The thirteen model points | — | Configuration rather than observation: no rate card, no commercial envelope and no *Berufsgruppenverzeichnis* was obtained |
+| The thirteen model points | — | Configuration rather than observation: no rate card, no commercial envelope and no *Berufsgruppenverzeichnis* was obtained. One envelope datum did arrive: a retrieved AVB caps total BU, EU and *Grundfähigkeit* entitlement at 60 % of regular annual gross income [S9], which the anchor's 1 500 €/month is well inside |
 
 The only quantities in the model that are **not** standardizations are the structural rules: the
 three-month run-off [R3], the *Beitragsbefreiung* while the *BU-Rente* is in payment [S1] [S2],
 the *Brutto* / *Zahlbeitrag* pair and its immediate credit [R10] [R14], the unisex rule [R15],
 the zero lapse benefit and the absence of a death and a maturity benefit [S1] [R8] [R9], and the
-§ 4 DeckRV ceiling the acquisition charge sits at [REG-R16].
+§ 4 DeckRV ceiling the acquisition charge sits at [R13] [REG-R16]. Each of those is now backed by a
+document that was read: the statutes as canonical XML, the contractual rules in the GDV model
+conditions and four carrier AVB — see `sources.md`.
 
 ## Tests
 

@@ -80,11 +80,14 @@ flows.
 4. **The classic tariff is the market's reference chassis rather than a live new-business
    product.** Debeka, Allianz, Zurich and Generali are all reported to have stopped distributing the
    classic form, Debeka replacing it from 1 July 2016 with five "Chance" variants and Allianz with
-   the KomfortDynamik premium-guarantee hybrid [R22] [S12] [S13] [R23] — yet Zurich still publishes a
+   the KomfortDynamik premium-guarantee hybrid [R22] [S12] [S13] — yet Zurich publishes a
    *Verbraucherinformation für Konventionelle Versicherungen* for the deferred annuity in the
-   **Fassung 01/2026** [S4] and CosmosDirekt still publishes AVB whose *Rentenfaktor* is struck on
-   DAV 2004 R [S8]. **The two statements are in tension and this file does not resolve them**
-   (gap 9). That is exactly why the right unit of description is a **composite of a chassis**, and it
+   **Fassung 01/2026**, on DAV 2004R at a *Rechnungszins* of 1,00 %, having published the same
+   wording in Fassung 07/2015 and 01/2025 [S4] [S5] [S7] [S16]. **The tension resolves once the
+   distinction between distribution and maintenance is drawn**: what [R22] reports, in 2016, is that
+   the carriers stopped *selling* the classic form actively — of Allianz it says only that it would
+   offer it *"wenn dies ausdrücklich vom Kunden gewünscht werde"* — while a wording reissued across
+   three vintages is plainly still maintained (gap 9, narrowed). That is exactly why the right unit of description is a **composite of a chassis**, and it
    is the role a lifelib reference model is for: the in-force book still runs on this design.
 
 **Market size.** German life insurers, *Pensionskassen* and *Pensionsfonds* together took premium
@@ -175,41 +178,45 @@ wording [S1] [R24], conversion at `max(garantierter, aktueller Rentenfaktor)` [S
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Payment timing | Monthly **in advance**. **Whether the market pays in advance or in arrears was not established** (gap 19), and this is a first-order modelling parameter | **[std]** (8) |
+| Payment timing | Monthly **in advance** — *"Wir zahlen die Rente monatlich, jeweils zum Monatsersten"* [S9] § 1 Abs. 1. The GDV wording leaves the frequency to agreement, yearly to monthly [S1] § 1 Abs. 1 | [S9]; annual-grid compression **[std]** (8) |
 | Conversion capital | The contract value used for annuitisation **includes any *Überschussbeteiligung* and *Bewertungsreserven*, subject to a minimum guaranteed contract value stated in the general contract data** | [S9] |
-| *Rentenfaktor* applied | `max(garantierter, aktueller)` — at the start of annuity payments a second factor is compared with the guaranteed one and **the higher of the two is guaranteed for the annuity payment period** | [S4]; restated from the other side by [R24] |
-| *garantierter Rentenfaktor* | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a *Sicherheitsabschlag* making it lower than the current factor. Representative 28,00 € per month per 10 000 € at *Rentenbeginn* 67 | mechanic [R24] [S8]; **level [std]** (9) |
-| Its interest basis | **0 % p.a.** at one carrier — a deliberate prudential margin below the *Höchstrechnungszins* | [S8]; vintage unestablished (gap 5) |
-| *aktueller Rentenfaktor* | The carrier's **then-current immediate-annuity tariff**: the bases at *Rentenbeginn* "relate to the interest rate and mortality table that the company uses at that time for immediately beginning annuities" | [S13]; [R24]; **level [std]** (9) |
-| Annuity in payment | The sum of a *garantierte Rente* and an *Überschussrente*; only the guaranteed part is a promise | [R20] |
-| *Überschussverwendung* in payment | Policyholder's choice of *konstante*, *teildynamische* or *volldynamische Rente* | [R19] [R20] [R24] |
-| *Bewertungsreserven* in payment | Participation **continues during the annuity payment period** | [S4] [R4] |
+| *Rentenfaktor* applied | `max(garantierter, aktueller)` — the annuity computed on the bases current at *Rentenbeginn* is compared with the *garantierte Mindestrente* and the higher is paid. At NÜRNBERGER the comparison is made **at every monthly instalment**, not once: *"Wir prüfen bei jeder Monatsrente einzeln … und zahlen immer den höheren Betrag"* | [S9] § 1 Abs. 1; [S14] § 2 Abs. 3 and 6; [S18]; restated by [R24] |
+| *garantierter Rentenfaktor* | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a *Sicherheitsabschlag* making it lower than the current factor. Representative 28,00 € per month per 10 000 € at *Rentenbeginn* 67 | mechanic [S11] § 52, [S14] § 2 Abs. 6, [R24]; **level [std]** (9), against a 2025 market average of 24,33–27,18 by term [R24] |
+| Its interest basis | **0,1 % p.a.** at one carrier, on that carrier's own annuity table *Debeka 07/16 R (RF)*, against a tariff *Rechnungszins* of 1 % for the guaranteed benefits — a deliberate prudential margin below the *Höchstrechnungszins* | [S11] § 52 Abs. 1 against § 28 Abs. 2 |
+| *aktueller Rentenfaktor* | The carrier's **then-current immediate-annuity tariff**: *"maßgeblich sind Rechnungszins und Sterbetafel in der Beitragskalkulation vergleichbarer, dann bei uns zum Verkauf geöffneter Rentenversicherungen mit sofort beginnender Rentenzahlung"*, with a most-favourable rule where several comparables exist and a *Treuhänder* review of the factor | [S9] § 1 Abs. 1; [S14] § 2 Abs. 5; **level [std]** (9), against a 2025 market average of 27,27–30,40 by term [R24] |
+| Annuity in payment | The sum of a *garantierte Rente* and an *Überschussrente*; only the guaranteed part is a promise — for the RfB-financed part *"wird die Rentenhöhe jeweils nur für ein Versicherungsjahr zugesagt"* | [S4] § 3 Abs. 7; [R20] |
+| *Überschussverwendung* in payment | Policyholder's choice of *konstante*, *teildynamische* or *volldynamische Rente*, elected before the *Rentenbeginn* and not changeable after it. Carrier names: *Garantie-PLUS-Rente* / *Bonus-PLUS-Rente* / *Bonusrente* [S4] § 3 Abs. 7; *teildynamische Bonusrente* / *dynamische Überschussrente* [S9] § 2 Abs. 5 c); *Bonusrente* / *Überschussrente* [S15] | [S4] [S9] [S15]; [R20] [R21] [R24] |
+| *Bewertungsreserven* in payment | Participation **continues during the annuity payment period**, allotted at each policy year end from the first — a contractual promise, not a § 153 rule | [S4] § 3 Abs. 2; [S9] § 2 Abs. 5 c); [S15] |
 | *Rentengarantiezeit* | 10 years representative; 5, 10, 15, 20, 25 or 30+ offered; typically 15 years for retirement ages 61–70 and 10 for 71 and above; most choose 10 to 20 | [R24]; in the tariff name at NÜRNBERGER [S9]; selectable with a floor at Allianz [S13] |
-| Death benefit before *Rentenbeginn* | ***Beitragsrückgewähr*** — the insurer refunds all premiums paid — in the premiums-only form. Two documented alternatives: premiums **plus the attributable *Überschussbeteiligung***, which "can be agreed"; and payment of the accumulated *Deckungskapital* | [S1] names the term in the model wording; three forms [R24] |
-| A `max(...)` death benefit | Established for the **unit-linked** sibling — "the fund value at the date of death but at least the sum of the premiums paid (*Beitragsrückgewähr*)" — its classic analogue is **[unverified]** | [S19]; classic form **[std]** (10) |
-| Death benefit timing | **Not established** — whether it falls at the date of death or at the next anniversary, and whether the with-surplus form includes the whole *Ansammlungsguthaben* | gap 18 |
-| Death after *Rentenbeginn* | Nothing beyond the *Rentengarantiezeit* and the survivor's-annuity rider. ***Beitragsrückgewähr in der Rentenbezugsphase*** **was not established by any source and must not be asserted** | gap 18; [R24] [S10] |
+| Death benefit before *Rentenbeginn* | ***Beitragsrückgewähr*** — *"die eingezahlten Beiträge (Beitragsrückgewähr) ohne Zinsen und ohne die Beiträge etwa eingeschlossener Zusatzversicherungen"* — in the premiums-only form. Documented alternatives: premiums **plus the attributable *Überschussbeteiligung***; the accumulated *Deckungskapital*; the greater of the two; and no benefit at all, which is the GDV base case where no extension is bought | [S8] § 1 Abs. 1; [S4] § 1 Abs. 2–3; [S9] § 1 Abs. 3; three forms [R24]. The GDV model wording leaves § 1 Abs. 3 blank for the carrier to fill [S1] |
+| A `max(...)` death benefit | **Established for the classic product**: the contract value plus final surplus and *Bewertungsreserven*, *"mindestens jedoch die sogenannte Beitragsrückgewähr"*. The same clause warns the refund need not equal premiums actually paid — rider premiums are excluded and later contract changes re-base it | [S9] § 1 Abs. 3; hybrid form [S14] § 2 Abs. 9 a) |
+| Death benefit timing | Payable on death, with the *Bewertungsreserven* measured for the month of, or before, notification [S15]. Whether the with-surplus form includes the whole *Ansammlungsguthaben* is carrier-specific: at Zurich the *verzinsliche Ansammlung* is paid out on death, surrender or commutation | [S4] § 3 Abs. 6; [S15] § 1.2–1.3 |
+| Death after *Rentenbeginn* | Three documented mechanics, and the policyholder chooses among them: the *Rentengarantiezeit*; the survivor's-annuity rider, which begins only **after** any guarantee period expires; and ***Beitragsrückgewähr in der Rentenbezugsphase***, offered **as an alternative to** the *Rentengarantiezeit* — premiums paid less rider premiums less annuities already received at their inception-guaranteed level, the claim lapsing once instalments exceed premiums. **The reference model implements only the *Rentengarantiezeit***; the refund is a known omission, not an absent one | [S4] § 1 Abs. 4–5; [S10] § 1 Abs. 3; [R24] |
 | *Kapitalwahlrecht* | The policyholder may take the accumulated capital as a lump sum instead of the annuity at *Rentenbeginn* | [S12] [R6] [R21] |
-| Its notice period | **Not established at any carrier**, including from the GDV's own consumer page on payout options | gap 11; **[std]** (11) |
+| Its notice period | Established, and carrier-specific: **three years** before the *Rentenbeginn* where the payout phase carries no death cover, otherwise not before the twelfth policy year or five months before the first annuity date [S4] § 2 Abs. 2–3; after twelve years, five months before at a twelve-year term [S8] § 1 Abs. 2; **two months** [S14] § 2 Abs. 7. The model treats the election as a decision at one known date with no notice mechanic | [S4] [S8] [S14]; simplification **[std]** (11) |
 
-8. Every source describes the annuity as monthly [S13] [R24]; **none states whether it is payable
-   in advance or in arrears** (gap 19). The choice is worth about half a month's interest on the
+8. Every source describes the annuity as monthly, and one states the timing: *"Wir zahlen die Rente
+   monatlich, jeweils zum Monatsersten"* — **monthly in advance** [S9] § 1 Abs. 1. The choice is worth about half a month's interest on the
    annuity's present value and shifts every payout cash flow by one period, so it is adopted
    explicitly: **monthly in advance**, compressed onto the annual grid as one payment at the start
    of each policy year.
-9. **No *Rentenfaktor* level, range or time series was established — at any carrier, for any year**
-   (gap 3); the only figure in the corpus is a teaching illustration, 100 000 € at a factor of 25
-   giving 250 € a month [R24], and the rating house's own article "wie hoch ist er?" returned no
-   level [R19]. The values used here — guaranteed 28,00 €; current 32,00 € base, 25,50 € low,
-   35,00 € high, all at *Rentenbeginn* 67 — are **anchors chosen so the worked example reproduces
-   exactly and the `max()` rule is exercised in both directions**, not market rates.
-10. The `max` form is offered as a model-point value because it is the shape the unit-linked wording
-    uses [S19], and because a German contract is not eligible for the § 20 Abs. 1 Nr. 6 half-income
-    treatment unless the *Todesfallleistung* meets the *Mindesttodesfallschutz* test [REG-R45]. **No
-    classic document states it**, so the base case is the plain *Beitragsrückgewähr* [S1].
-11. No document named a *Kapitalwahlrecht* notice period at any carrier (gap 11). The election takes
-    effect **at** *Rentenbeginn* with no notice modelling, because on an annual grid a notice period
-    inside the last policy year moves nothing.
+9. **Market levels are established and the model's are not them.** [R24] gives 2025 averages of
+   24,33–27,18 guaranteed and 27,27–30,40 current, by deferment term to age 67, and [R19] gives a
+   current-factor average of 29,09 for 2021 falling to 25,97 for 2022. The values used here —
+   guaranteed 28,00 €; current 32,00 € base, 25,50 € low, 35,00 € high, all at *Rentenbeginn* 67 —
+   remain **anchors chosen so the worked example reproduces exactly and the `max()` rule is exercised
+   in both directions**, not market rates, and the `base` current factor sits above every observed
+   average. `model.md` records the divergence; the tables are unchanged.
+10. The `max` form is offered as a model-point value because **a classic AVB states it** — the
+    contract value plus final surplus and *Bewertungsreserven*, *"mindestens jedoch die sogenannte
+    Beitragsrückgewähr"* [S9] § 1 Abs. 3 — and because a German contract is not eligible for the
+    § 20 Abs. 1 Nr. 6 half-income treatment unless the *Todesfallleistung* meets the
+    *Mindesttodesfallschutz* test [REG-R45]. The base case stays the plain *Beitragsrückgewähr* [S8].
+11. Notice periods are documented and range from two months to three years [S4] [S8] [S14]. The
+    election is still modelled as taking effect **at** *Rentenbeginn* with no notice mechanic; on an
+    annual grid a notice period inside the last policy year moves nothing, but Zurich's three-year
+    requirement does not fit inside one year, so this is now a stated simplification rather than a
+    consequence of the grid.
 
 ### Underwriting and rating
 
@@ -224,13 +231,19 @@ same pre-contractual pack has its own special conditions and its own underwritin
 on entry age and *Aufschubdauer* through the tariff, and **sex may not be a rating factor** for
 contracts concluded from 21 December 2012 [REG-R34]. Four statutory rules reach the contract without
 being tariff parameters: the *Anzeigepflicht* of § 19 VVG, whose remedies § 21 Abs. 3 VVG
-extinguishes five years after conclusion and ten on intent or fraud [unverified]; § 157 VVG, under which an age misstatement changes the benefit
+extinguishes *"nach Ablauf von fünf Jahren nach Vertragsschluss"*, ten years where the duty was
+breached intentionally or fraudulently, and not at all for insured events occurring inside the
+period — confirmed at article level, *Stand: Art. 12 G v. 26.5.2026*; § 157 VVG, under which an age misstatement changes the benefit
 in the ratio of the premium for the true age to the agreed premium; § 150 VVG, requiring the written
 consent of the insured where a policy is on another person's death above ordinary funeral costs; and
 § 161 VVG, excluding intentional suicide within three years while still requiring payment of the
-*Rückkaufswert* including profit shares [REG-R26] [REG-R30]. **No source applies the suicide rule to
-a *Beitragsrückgewähr***, where the benefit is the premiums back rather than a sum at risk; its
-application here is [unverified] and it is not modeled.
+*Rückkaufswert* including profit shares under § 169 [REG-R26] [REG-R30]. **The model wordings do
+apply the rule to this product, and cap it against the death benefit**: [S1] § 5 Abs. 2 pays the
+surrender value computed for the date of death, without the *Abzug*, *"allerdings nicht mehr als eine
+für den Todesfall vereinbarte Kapitalleistung"* — so in a *Beitragsrückgewähr* design the premium
+refund is the ceiling, and the exclusion can only reduce the benefit, never inflate it. [S4] § 6 and
+[S8] § 11 do the same. The mechanic is therefore established and is **not modelled**, because a
+single deterministic decrement carries no cause of death.
 
 ### Charges
 
@@ -241,17 +254,25 @@ in any form, the *Ratenzahlungszuschlag*, the payout-phase administration charge
 (PRIIP-KID) for a classic deferred annuity appears in the corpus at all. The two figures it does
 contain — an *Abschlussprovision* of **1 575 €** on an Allianz specimen quotation, and total costs
 relative to the capital formed of **at most 0,95 € per 100 €** — come from third-party analyses of
-**Schicht-1 and Schicht-2** variants and are [unverified] as Schicht-3 levels [S13] [R23].
+**Schicht-1 and Schicht-2** variants and are [unverified] as Schicht-3 levels; neither survived the
+2026-08-30 retrieval pass, because [R23] is paywalled and [S13] does not carry them, so they now rest
+on search summaries alone [R23]. What the retrieved AVB do establish is the **charging mechanism**
+rather than any level: four carriers state the *Zillmerverfahren* under § 4 DeckRV with the cap in
+identical words, *"auf 2,5 % der … zu zahlenden Beiträge beschränkt"*, the balance of the acquisition
+costs spread over the premium-paying term and the other costs over the whole contract [S1] § 14,
+[S4] § 11, [S8] § 8, [S9] § 16. Every carrier refers the actual amounts to the *Kostenausweis nach
+§ 2 VVG-InfoV* or the *Persönlicher Vorschlag*, neither of which is a public document — which is why
+this gap is structural and will not close from published wording.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Charge structure | **Premium-based deductions, not asset-based ones**, in the classic chassis: a portion of the premium is "intended for risk and cost coverage" and is deducted before the *Sparbeitrag* | [S11] |
+| Charge structure | **Premium-based deductions, not asset-based ones**, in the classic chassis: costs and the *Risikobeitrag* come out of the premium and the *Sparanteil* forms the *Deckungskapital* — *"die eingezahlten Beiträge abzüglich der tariflichen Kosten und Risikobeiträge"* | [S8] § 1 Abs. 2; [S11] § 27 Abs. 1 |
 | *Abschluss- und Vertriebskosten* (α) | **25 ‰ of the *Beitragssumme***, zillmered — charged against the earliest premiums until exhausted | cap [REG-R16]; use of the cap **[std]** (12) |
 | Legacy α vintage | **40 ‰** for contracts concluded before 1 January 2015; the rate used at conclusion applies for the whole term | [REG-R16] [REG-R20] |
 | *Verwaltungskosten* on premium (β) | 4,0 % of each gross premium | **[std]** (12) |
 | *Verwaltungskosten* on the reserve (γ) | 0,20 % p.a. of the *Deckungskapital* | **[std]** (12) |
-| *Risikobeitrag* (ρ) | The tariff mortality rate on the net amount at risk, `max(0, death benefit − Deckungskapital)` | structure [S11]; level follows the table |
-| *Stornoabzug* | 2,0 % of the computed surrender value. A deduction is permitted **only if agreed, quantified (*beziffert*) and appropriate (*angemessen*)**, and **a deduction for not-yet-amortised acquisition and distribution costs is void** | [R1] [REG-R28]; level **[std]** (12) |
+| *Risikobeitrag* (ρ) | The tariff mortality rate on the net amount at risk, `max(0, death benefit − Deckungskapital)` | structure [S8] § 1 Abs. 2, [S11] § 27 Abs. 1; level follows the table |
+| *Stornoabzug* | 2,0 % of the computed surrender value. A deduction is permitted **only if agreed, quantified (*beziffert*) and appropriate (*angemessen*)**, and **a deduction for not-yet-amortised acquisition and distribution costs is void**. Observed market forms: none at all [S8] § 7 Abs. 10, [S9] § 14 Abs. 4; a flat **250 EUR**, waived at attained age 62 or after twenty years [S4] § 10 Abs. 3; **5 % of the *Deckungskapital*** for collectively provided risk capital plus 0/5/10/15 % keyed to the ten-year swap spread, **both tapering linearly to nil over the last ten years of the *Aufschubzeit*** [S11] § 34 Abs. 4–5 | [R1] [REG-R28]; level and flat shape **[std]** (12) |
 | Payout-phase administration | 1,5 % of each annuity instalment | **[std]** (12) |
 | *Effektivkosten* | Required by the German disclosure regime; **no value established for this product** | gap 14 |
 
@@ -261,7 +282,11 @@ kind: the α rate is the **statutory ceiling** of § 4 DeckRV — 25 ‰ of the 
 modelling choice; and the *Stornoabzug* is a percentage because § 169 Abs. 5 requires it to be
 *beziffert* and *angemessen* [R1] [REG-R28] and forbids it from recovering unamortised acquisition
 costs, which is what makes the § 169 Abs. 3 floor rather than the deduction the operative constraint
-on early surrender values. The β, γ and annuity-administration rates have no anchor at all and are
+on early surrender values. The retrieved wordings show that neither the percentage form nor the
+absence of a duration term follows from the statute: two of four carriers levy nothing, one levies a
+flat euro amount and one levies percentages that taper to nil. A flat, duration-free rate is
+therefore a **modelling simplification** of a documented spread, and calling it a reading of
+§ 169 Abs. 5 was wrong. The β, γ and annuity-administration rates have no anchor at all and are
 sized so the total load is of the order the one Schicht-1/2 figure implies (0,95 € per 100 € [S13]
 [R23]).
 
@@ -270,23 +295,24 @@ sized so the total load is of the order the one Schicht-1/2 figure implies (0,95
 | Parameter | Representative value | Basis |
 |---|---|---|
 | *Kündigung* / *Rückkaufswert* | Available at any time for the end of the current insurance period while recurring premiums are payable. The base measure is the *Deckungskapital* computed by recognised actuarial rules **on the calculation bases of the premium calculation** | [R1] [REG-R28] |
-| **The statutory floor** | § 169 Abs. 3 VVG: **at least the *Deckungskapital* that results from spreading the charged acquisition and distribution costs evenly over the first five contract years** — a floor on the value, not a cap on the charge, and independent of the supervisory *Zillmer* rules | [REG-R28]; at article level [unverified] here (gap 12) |
+| **The statutory floor** | § 169 Abs. 3 VVG, at article level: *"bei einer Kündigung des Versicherungsverhältnisses jedoch mindestens der Betrag des Deckungskapitals, das sich bei gleichmäßiger Verteilung der angesetzten Abschluss- und Vertriebskosten auf die ersten fünf Vertragsjahre ergibt; die aufsichtsrechtlichen Regelungen über Höchstzillmersätze bleiben unberührt"* — a floor on the value, not a cap on the charge, and expressly independent of the supervisory *Zillmer* rules. Restated by five carriers | [R1]; [S1] § 12 Abs. 3, [S4] § 10 Abs. 3, [S8] § 7 Abs. 3, [S9] § 16 Abs. 4, [S11] § 34 Abs. 2; [REG-R28] |
 | *Stornoabzug* | Permitted only if agreed, quantified and appropriate; a deduction for unamortised acquisition costs is void; the burden of proof is on the insurer | [R1] [REG-R28] |
 | § 169 Abs. 6 | The insurer may in defined cases reduce surrender values to be paid out — a solvency valve, **not modeled** | [R1] |
 | Surrender in the payout phase | **None.** § 168 Abs. 1 gives the right where *laufende Prämien* are payable, Abs. 2 on a single premium where the occurrence of the obligation is certain; a life annuity already in payment is neither | [REG-R28]; reading **[std]** (13) |
 | *Beitragsfreistellung* | The policyholder may **at any time, for the end of the current insurance period**, demand conversion into a premium-free insurance, **provided the agreed *Mindestversicherungsleistung* is reached** | [R2] [REG-R28] |
 | Its value | Calculated by recognised actuarial principles **on the calculation basis of the premium calculation, on the basis of the *Rückkaufswert* under § 169 Abs. 3 to 5**, and **stated in the contract for each insurance year** | [R2] [REG-R28] |
 | Below the minimum | The insurer must instead pay the surrender value attributable to the insurance, **including profit shares**, under § 169 — a small contract cannot be made paid-up; it is cashed out | [R2] |
-| The *Mindestversicherungsleistung* | **Not established at any carrier.** Representative threshold: a guaranteed annuity of 30,00 € a month | gap 22; **[std]** (14) |
+| The *Mindestversicherungsleistung* | Contractual, not statutory. Three carrier levels: **25,00 € a month** [S4] footnote 1 and [S9] § 1 Abs. 1; **600,00 € a year** for a partial surrender [S8] § 7 Abs. 2. Representative threshold: a guaranteed annuity of **30,00 € a month** | [S4] [S8] [S9]; level **[std]** (14) |
 | Premium-default conversion | § 166 VVG converts automatically to *prämienfrei* rather than terminating cover — German lapse is a **three-way** decrement | [REG-R28] [REG-R30] |
 
 13. No German source says whether a deferred annuity in payment may be surrendered; the reading
 follows from § 168 VVG as recorded in the cross-product library
 [REG-R28] and from the fact that the insurer's obligation in the payout phase has already occurred,
 and the implementation acts on it by setting the lapse rate to zero from *Rentenbeginn*.
-14. § 165 VVG makes the paid-up right conditional on a *Mindestversicherungsleistung* [R2] and **no carrier's
-threshold was returned** (gap 22); 30,00 € a month is chosen so one model point trips it and is
-cashed out instead of being made paid-up — the branch the statute cares about.
+14. § 165 VVG makes the paid-up right conditional on a *Mindestversicherungsleistung* [R2], which the
+contract fixes; two carriers set it at 25,00 € a month [S4] [S9]. The model's 30,00 € is chosen so one
+model point trips it and is cashed out instead of being made paid-up — the branch the statute cares
+about — and stays **[std]** because it is picked for that purpose rather than observed.
 
 ---
 
@@ -328,18 +354,32 @@ else is defined off: the death benefit in one of the two designs, the basis of t
 
 ### The *Rechnungszins* and the guarantee-vintage stack
 
-The *Rechnungszins* is the rate at which the *Sparbeitrag* is guaranteed to accumulate [S11], capped
-for new business by the *Höchstrechnungszins* of § 2 DeckRV [R7] [R11] [REG-R14] — the rate market
-language calls the *Garantiezins*, although the two are not legally identical, because § 2 caps the
-**reserving** rate while the rate a policy guarantees is a tariff decision that may be lower
-[REG-R14]. **From 1 January 2025 the rate is 1,00 %**, raised from **0,25 %** by the *Sechste
+The *Rechnungszins* is the rate at which the *Sparbeitrag* is guaranteed to accumulate — *"indem wir
+die eingezahlten Beiträge abzüglich der tariflichen Kosten und Risikobeiträge mit dem tariflichen
+Garantiesatz von 0,90 Prozent p. a. verzinsen"* [S8] § 1 Abs. 2 — capped for new business by the
+*Höchstrechnungszins* of § 2 DeckRV [R7] [R11] [REG-R14]. **The cap and the *Garantiezins* are not
+the same thing**, and the GDV says so in terms: *"Der Höchstrechnungszins ist eine Obergrenze für den
+maximal zulässigen Rechnungszins, den Lebensversicherer bei der Berechnung ihrer Rückstellungen
+nutzen dürfen. Er ist nicht mit dem Garantiezins gleichzusetzen, den Lebensversicherer individuell
+auf ihre Produkte gewähren"* [R10]. A carrier may and does guarantee less: 0,5 % at Debeka's safest
+2016 variant against a 1,25 % cap [R22], and 0,1 % on Debeka's current *Rentenfaktor* against its own
+tariff rate of 1 % [S11] § 52 Abs. 1. **From 1 January 2025 the rate is 1,00 %**, raised from **0,25 %** by the *Sechste
 Verordnung zur Änderung von Verordnungen nach dem Versicherungsaufsichtsgesetz* of 19 July 2024,
-BGBl. 2024 I Nr. 250 [REG-R15], announced in the *Bundesgesetzblatt* on 24 July [R7] [R10] [R11].
-**This was the first increase since 1994**, and the DAV recommends 1,0 % for 2026 as well [R8]. The
-mechanism is standing — DAV recommends, BMF legislates, with a lead time of about fourteen months
-[R9] — which makes the *Rechnungszins* of a tariff a parameter known well before it binds. The full
-rate history is in the cross-product library [REG-R15]; only its two most recent points were
-corroborated in this product's own research (gap 7).
+BGBl. 2024 I Nr. 250 [REG-R15], announced in the *Bundesgesetzblatt* on 24 July [R7] [R10] [R11]. The
+ordinance itself now reads *"wird der Höchstzinssatz für die Berechnung der Deckungsrückstellungen
+auf 1 Prozent festgesetzt"* at a *Stand* of Art. 1 V v. 19.7.2024 [R7]. **This was the first increase
+since 1994**, the rate having fallen from 4 % in 1994 to 0,25 % in 2022 [R11], and the DAV recommends
+1,0 % for 2026 as well [R8]. The mechanism is standing — DAV recommends, BMF legislates, with a lead
+time of about eight months from the November 2023 recommendation to the July 2024 ordinance and
+fourteen to effect [R9] — which makes the *Rechnungszins* of a tariff a parameter known well before
+it binds. The full rate history is in the cross-product library [REG-R15]; the endpoints and the two
+most recent points are corroborated here (gap 7).
+
+**The vintage lock is statutory, not merely customary.** § 2 Abs. 2 Satz 1 DeckRV: *"Bei
+Versicherungsverträgen mit Zinsgarantie gilt der von einem Versicherungsunternehmen zum Zeitpunkt des
+Vertragsabschlusses verwendete Rechnungszins für die Berechnung der Deckungsrückstellung für die
+gesamte Laufzeit des Vertrages."* [R7] One carrier's own packs show the stack forming: DAV 2004R with
+**1,25 %** in Fassung 07/2015 [S5] [S6] and **1,00 %** in Fassung 01/2025 and 01/2026 [S7] [S16] [S4].
 
 **The modelling consequence is that the *Rechnungszins* is a model-point attribute, not a global
 assumption**, and that a model assuming the guaranteed rate equals the statutory cap is wrong in the
@@ -352,15 +392,21 @@ same direction at every carrier (overview, point 2).
 unpredictable and only limitedly controllable by the company, with the most important influencing
 factor being capital-market developments" [S8]. **That disclaimer is why surplus is modelled as a
 declaration — an insurer-discretionary current assumption — and never as a guarantee.** The
-declaration instrument is an annual document: the Konzern Versicherungskammer publishes its
-*"Überschussverteilung 2026"* as a standalone PDF [S15] and every German life insurer publishes an
-equivalent. **No rate from any such document was established** (gap 4).
+declaration instrument is an annual document: Bayern-Versicherung, in the Konzern Versicherungskammer
+group, publishes its *"Überschussverteilung 2026"* as a standalone 145-page PDF [S15] and every German
+life insurer publishes an equivalent. **Rates from that document are now established**, and their form
+is itself the point: the *Zinsüberschussanteil* on annuity business of tariff generations 2015–2025 is
+declared as **"3 % abzüglich Rechnungszins"** before the *Rentenbeginn* and **"3,35 % abzüglich
+Rechnungszins"** during the *Rentenbezug* for 2026, against 2,25 % and 2,5 % for 2025 [S15]. The total
+interest credited is therefore 3,00 %, whatever guarantee the contract carries — the German
+construction the next paragraph sets out, written into a declaration.
 
 The *Zinsüberschuss* arises **when investment income exceeds the *Rechnungszins***: "when investment
 income exceeds the calculation rate, the insurance company generates surpluses in the form of
 interest gains" [R24]. That is the direct statement that the *Rechnungszins* is the **hurdle rate**
 of the surplus mechanism, and it is the fact behind the commonest arithmetic error in describing a
-German contract. The declared ***laufende Verzinsung*** is the *Garantieverzinsung* **plus** the
+German contract. [S15] states it as an arithmetic operation rather than a description: the declared
+*Zinsüberschussanteil* is a figure **less the *Rechnungszins***. The declared ***laufende Verzinsung*** is the *Garantieverzinsung* **plus** the
 *laufende Zinsüberschussbeteiligung*, **not a surplus rate on top of the guarantee** [REG-R53]. On
 the 1,00 % vintage a declared 2,55 % means a surplus credit of 1,55 %; on the 2,75 % vintage of 2004
 the same declaration means a surplus credit of **nothing at all**, and the contract simply receives
@@ -377,8 +423,9 @@ buys **additional premium-free annuity** with the declared surplus [R24]; it is 
 would double the accumulation-phase state for a choice no source quantifies. **Investment of surplus
 in an internal fund** is the Debeka successor design, a variation rather than the representative one
 [S12]. ***Beitragsverrechnung*** is the fourth system the German market uses and **no source in this
-corpus named it for this product** (gap 16) — a gap in the corpus, not evidence that it does not
-exist. The **four-component decomposition** is only one quarter established here (gap 17), is the
+corpus named it for this product** at drafting; it is now established at Zurich, where the surpluses
+are set against the premium due and any excess paid out in cash, available only within a
+*Rückdeckungsversicherung* [S4] § 3 Abs. 6 (gap 16 closed). The **four-component decomposition** is only one quarter established here (gap 17), is the
 primary subject of the delib `kapitallebensversicherung` file, and has the MindZV's 90 / 90 / 50
 minima under it [REG-R18]; the implementation models the credited outcome, not the source
 decomposition.
@@ -401,54 +448,77 @@ after the death" — with an optional extension, "repayment of the premiums plus
 *Überschussbeteiligung* attributable to them can be agreed", so the choice between a bare and a
 with-surplus form is contractual; **payment of the accumulated *Deckungskapital***; and a
 ***Hinterbliebenenrente***, which has its own GDV model condition set [S10] and is properly a rider.
-**The term *Beitragsrückgewähr* is named in the GDV model conditions for this product** [S1] — the
-model wording's own word. The `max(...)` form is established for the **unit-linked sibling and not
-for the classic product**: DEVK gives the fund value at death "but at least the sum of the premiums
-paid (*Beitragsrückgewähr*)" [S19]; no classic document in this corpus states the analogue, so any
-design adopting it must tag it [std].
+**The term *Beitragsrückgewähr* appears in the GDV model conditions** [S1], but only in the footnotes:
+§ 1 Abs. 3, the death benefit before the *Rentenzahlungsbeginn*, is left blank — *"zahlen wir …"* —
+for the carrier to complete, so the model wording names the concept without specifying the benefit.
+The carrier wordings do specify it, and a fourth design has to be added to the three above: **no
+benefit at all**, which is the GDV base case and Zurich's, where death before the *Rentenzahlungs­
+beginn* simply extinguishes the contract unless an extension was bought [S4] § 1 Abs. 2. The
+`max(...)` form is **established for the classic product**, not only for the unit-linked sibling:
+NÜRNBERGER pays the contract value plus final surplus and *Bewertungsreserven*, *"mindestens jedoch
+die sogenannte Beitragsrückgewähr"* [S9] § 1 Abs. 3, and the same clause warns that the refund need
+not equal premiums actually paid, since rider premiums are excluded and later contract changes
+re-base it. CosmosDirekt's is the bare form, *"die eingezahlten Beiträge (Beitragsrückgewähr) ohne
+Zinsen"* [S8] § 1 Abs. 1.
 
 **What the death benefit is not:** there is no separate sum insured anywhere in this product — the
 structural difference from delib's `kapitallebensversicherung` and `risikolebensversicherung`, and
-why this product carries no underwriting and no rating factor [S19] [R24]. **Whether the benefit
-falls at the date of death or at the next policy anniversary, and whether the with-surplus form
-includes the *Ansammlungsguthaben* in full, were not established** (gap 18); the implementation pays
-at the end of the policy year of death and offers the surplus inclusion as a model-point switch.
+why this product carries no underwriting and no rating factor [S19] [R24]. The benefit falls **on death**, with the *Bewertungsreserven* struck for the month of or before
+notification [S15], and at Zurich the *verzinsliche Ansammlung* is paid out with it [S4] § 3 Abs. 6;
+the implementation pays at the end of the policy year of death, which is a **grid** simplification,
+and offers the surplus inclusion as a model-point switch.
 
 ### The *Rentenfaktor*, and the narrow channel for reducing it
 
 This is the mechanic the whole product turns on and the best-evidenced thing in the corpus. The
 factor determines how much monthly annuity is received per 10 000 € of accumulated capital [R24];
-the corpus's illustration is 100 000 € at a factor of 25 yielding 250 € a month [R24], where the 25
-is a **teaching example, not a market level** (gap 3):
+and three carrier wordings state it in those terms — *"wie viel Rente wir Ihnen monatlich je
+10.000 Euro des zum Rentenbeginn zur Verfügung stehenden Fondsguthabens zahlen"* [S11] § 52 Abs. 1,
+and likewise [S14] § 2 Abs. 5 and [S18]. The teaching illustration is 100 000 € at a factor of 25
+yielding 250 € a month [R24], where the 25 is an **example, not a market level**; for market levels
+see below:
 
     monthly_annuity = Kapital(Rentenbeginn) / 10 000 x Rentenfaktor
 
 **Guaranteed at inception.** The *garantierter Rentenfaktor* is fixed in the contract documents on
 the *Rechnungsgrundlagen* as at the date of conclusion [R24] — a guarantee given at issue about a
 conversion decades later — with a ***Sicherheitsabschlag*** that makes it lower than the current
-factor [R24]. **The margin is quantifiable from one carrier**: CosmosDirekt's factor is computed "on
-the basis of a recognised mortality table (currently DAV 2004 R) and an underlying interest rate
-(currently 0 percent p.a.)" [S8]. A zero-percent interest basis, against a *Höchstrechnungszins*
-positive throughout, is the *Sicherheitsabschlag* made concrete: the guaranteed factor is priced as
-though the insurer will earn nothing on the annuity fund. Allianz expresses the same guarantee as "a
-minimum annuity" available at inception [S13].
+factor [R24]. **The margin is quantifiable from one carrier**: Debeka computes its guaranteed factor
+on *"einen Rechnungszins von 0,1 % p. a. und die unternehmenseigene geschlechtsunabhängige
+Sterbetafel „Debeka 07/16 R (RF)""* [S11] § 52 Abs. 1, while the guaranteed benefits of the same
+contract run on a *Rechnungszins* of 1 % with the tables *Debeka 01/17 TL* and *Debeka 01/21 R*
+[S11] § 28 Abs. 2. A tenth of the tariff rate is the *Sicherheitsabschlag* made concrete: the
+guaranteed factor is priced as though the insurer will earn almost nothing on the annuity fund.
+Across the market the same margin is visible in the levels — the 2025 average guaranteed factor is
+24,33 at a forty-year term against an average current factor of 27,27, about 11 % [R24].
 
 **Current, and the comparison.** The *aktueller Rentenfaktor* is recomputed on the bases in force
-when quoted, and Allianz says what "current" means operationally: the bases at *Rentenbeginn* relate
-to "the interest rate and mortality table that the company uses **at that time for immediately
-beginning annuities**" [S13] — which is why an immediate-annuity document [S16] belongs in this
-product's source list. **The rule at *Rentenbeginn* is a maximum of two factors.** Zurich: at the
-start of annuity payments a second factor is compared with the guaranteed one, **the higher of the
-two being guaranteed for the annuity payment period** [S4]; the consumer literature states the same
-rule from the other side [R24].
+when quoted, and NÜRNBERGER says what "current" means operationally: *"maßgeblich sind Rechnungszins
+und Sterbetafel in der Beitragskalkulation vergleichbarer, dann bei uns zum Verkauf geöffneter
+Rentenversicherungen mit sofort beginnender Rentenzahlung"*, with a definition of comparability, a
+named comparable tariff, a rule taking **the highest** factor where several comparables exist, and an
+independent *Treuhänder* review of the factor's appropriateness [S9] § 1 Abs. 1. Mecklenburgische
+says the same [S14] § 2 Abs. 5. That is why an immediate-annuity document [S16] belongs in this
+product's source list — and [S16] shows the two tariffs sharing one basis at one carrier, DAV 2004R
+at 1,00 %. **The rule at *Rentenbeginn* is a maximum of two factors**, and NÜRNBERGER states it as an
+instalment-by-instalment test: *"Wir prüfen bei jeder Monatsrente einzeln, ob die rechnungsmäßige
+Rente samt den in der Aufschubdauer und im Rentenbezug entstandenen Überschüssen höher ist als die
+garantierte Mindestrente und zahlen immer den höheren Betrag"* [S9] § 1 Abs. 1; Mecklenburgische puts
+it as a floor, *"Wenn die so berechnete Rente geringer ist als die garantierte Mindestrente …, zahlen
+wir die garantierte Mindestrente"* [S14] § 2 Abs. 3.
 
     Rentenfaktor_applied = max( Rentenfaktor_garantiert, Rentenfaktor_aktuell(Rentenbeginn) )
 
 This is a **guarantee with upside**, and it is the mechanic an implementation is most likely to get
 wrong in the direction that understates the liability. The factor moves with the *Rechnungszins* and
-with the mortality basis, because those are the two things it is computed from [S8] [S13] [R24] — but
-**the magnitude was not established**: no search returned a level, a range or a time series, not even
-from the rating house whose article asks "wie hoch ist er?" [R19].
+with the mortality basis, because those are the two things it is computed from [S9] [S11] [S14].
+**Market levels are established** and are lower than a modeller might guess. fragfina's 2025 analysis,
+all to attained age 67, gives an average **current** factor of 27,27 at a forty-year deferment rising
+to 30,40 at fifteen, and an average **guaranteed** factor of 24,33 rising to 27,18, with a lowest
+guaranteed observation of 17,72 [R24]. Franke und Bornberg's comparison of the current factor across
+carriers gives an average of **29,09 in 2021** falling to **25,97 in 2022**, a drop of 10,73 %, with a
+highest of 26,61 and a lowest of 20,43 in 2022 [R19]. **The reference model's factors are `[std]` and
+are not these numbers**; `model.md` records the divergence.
 
 **Reducing a guaranteed factor.** Historically, insurers could change guaranteed *Rentenfaktoren* on
 a ***Treuhänderklausel*** with an independent *Treuhänder*'s approval, on two triggers: an
@@ -460,14 +530,15 @@ set premium that is appropriate and necessary to secure permanent fulfilment; an
 Treuhänder* who has confirmed both [REG-R27]. Adjustment is **excluded** where the benefits were
 insufficiently calculated originally and a diligent actuary should have recognised it — **the insurer
 may not reprice its way out of its own mispricing** — and the article permits a **reduction of the
-benefit** instead of a premium increase [REG-R27]. **The courts have narrowed it further**: the
-Landgericht Köln held the low-interest phase **not** a sufficient ground, being entrepreneurial risk
-that cannot be passed to policyholders [R17], and consumer press reports that a reduction **can be
-unlawful** [R16]; **the case reference and decision date were not established** (gap 10) and no
-citation beyond "a Landgericht Köln decision reported by [R17]" may be made. It was a live dispute at
-the market leader in February 2021 [R18], and the BGH struck down asymmetric unilateral reduction
-clauses in 2025 [REG-R36]. **The implementation treats the guaranteed factor as fixed and records
-§ 163 VVG as a model risk.**
+benefit** instead of a premium increase [REG-R27]. **The courts have narrowed it to vanishing point.** The Landgericht Köln held the low-interest phase
+**not** a sufficient ground, being entrepreneurial risk that cannot be passed to policyholders —
+***LG Köln, 08.02.2023, Az. 26 O 12/22***, against Zurich [R17] [R16] — and the Bundesgerichtshof held
+the clause Allianz relied on to reduce a guaranteed *Rentenfaktor* ineffective, ***BGH, 10.12.2025,
+Az. IV ZR 34/25*** [R16] [REG-R36]. The scale of what was at stake is on the record: Allianz reduced
+guaranteed factors in existing contracts for **about 750 000 policyholders** in 2021, having used the
+clause before in **2005 and 2017** [R18]. **The implementation treats the guaranteed factor as fixed
+and records § 163 VVG as a model risk** — a treatment the 2025 decision supports rather than merely
+approximates.
 
 ### The *Rentenphase* and the *Rentengarantiezeit*
 
@@ -491,11 +562,16 @@ annuity is set from a **projection**, and if the insurer earns less than project
 [R20].
 
 The ***Rentengarantiezeit*** is a guaranteed payment period beginning at *Rentenbeginn*: if the
-annuitant dies inside it, **the annuity continues to be paid to the survivors until the agreed years
-have expired** [R17] [R24] — the corpus's illustration being a 10-year period with death after 6
-years and the spouse receiving the remaining 4. Durations, typical choices and cost are in the
-benefit-provisions table above; it is selectable with a floor at Allianz [S13] and carried in the
-product name at NÜRNBERGER, tariff NIR3301 [S9].
+annuitant dies inside it, **the annuity continues to be paid until the agreed years have expired**.
+Both GDV model wordings and NÜRNBERGER's AVB carry the same worked illustration: a ten-year guarantee
+with death after three years leaves seven years of instalments payable [S1] § 1 Abs. 4, [S9] § 1
+Abs. 5. Two refinements the clause text adds. The remaining instalments may be **commuted to a lump
+sum** at the beneficiaries' request — Zurich gives three months and computes the present value at the
+payout-phase *Rechnungszins* [S4] § 10 Abs. 14, NÜRNBERGER on application and excluding future
+increases [S9] § 1 Abs. 5 — and where a survivor's-annuity rider is also in force the commutation is
+not available [S4] § 10 Abs. 15 and the survivor's annuity begins only **after** the guarantee period
+expires [S10] § 1 Abs. 3. Durations, typical choices and cost are in the benefit-provisions table
+above; the period is carried in the product name at NÜRNBERGER, tariff NIR3301 [S9].
 
 **Its modelling consequence is a decrement-weighting one and it is the pitfall this product hides
 best.** Inside the guarantee period the payment obligation does not depend on survival: the
@@ -508,8 +584,17 @@ that looks wrong.
 ### The *Kapitalwahlrecht*
 
 The right to take **the accumulated capital as a lump sum instead of the lifelong annuity** at
-*Rentenbeginn* [S12] [R6] [R21], and the third of the three things that happen at that boundary.
-**The notice period was not established at any carrier** (gap 11).
+*Rentenbeginn* [S1] § 1 Abs. 2, [S4] § 2, [S8] § 1 Abs. 2, and the third of the three things that
+happen at that boundary. **Notice periods are established and are long.** Zurich requires the
+application *"wenigstens drei Jahre vor Rentenzahlungsbeginn"* where the payout phase carries no death
+cover, and otherwise not before the twelfth policy year, or, at exactly a twelve-year *Aufschubzeit*,
+not earlier than five months before the first annuity date [S4] § 2 Abs. 2–3. CosmosDirekt ties it to
+the same twelve-year tax line [S8] § 1 Abs. 2; Mecklenburgische asks two months [S14] § 2 Abs. 7. The
+GDV model wording leaves the period blank for the carrier and notes that § 309 Nr. 13 BGB forbids
+requiring more than *Textform* [S1] § 1 Abs. 2. **Partial commutation is also documented** — Zurich
+requires the residual annuity to clear the *Mindestrente* and the payout to be at least 2 500 EUR
+[S4] § 2 Abs. 4. The reference model treats the election as a decision at one known date and models
+no notice mechanic, which is now a simplification of a documented rule.
 
 **The tax consequence of electing it is total, and it is the established part.** The lump sum moves
 the contract from the *Ertragsanteil* regime of § 22 EStG [R5] [REG-R41] to § 20 Abs. 1 Nr. 6 EStG
@@ -517,15 +602,20 @@ the contract from the *Ertragsanteil* regime of § 22 EStG [R5] [REG-R41] to § 
 payment after completion of the 62nd year of life — **only half the *Unterschiedsbetrag* between the
 *Versicherungsleistung* and the premiums paid is taxable**, at the **personal marginal rate** under
 § 32d Abs. 2 Nr. 2 EStG, and the *Halbeinkünfteverfahren* applies **only to lump sums and
-payout-plan withdrawals, not to monthly annuity payments** [R6] [REG-R45]. The age limb is **60** for
-contracts concluded up to **31 December 2011** and **62** for those concluded after it [R6] [REG-R45].
+payout-plan withdrawals, not to monthly annuity payments** — § 20 Abs. 1 Nr. 6 Satz 1 reaches the
+difference *"soweit nicht die lebenslange Rentenzahlung gewählt und erbracht wird"* [R6] [REG-R45].
+The age limb is **60** in the enacted text of Satz 2 and becomes **62** only through § 52 Abs. 28
+Satz 7 EStG, *"für Vertragsabschlüsse nach dem 31. Dezember 2011"* — so the familiar "12/62 rule" is
+precisely § 20 Abs. 1 Nr. 6 Satz 2 read with § 52 Abs. 28 Satz 7, and it is 12/60 for a 2005–2011
+contract [R6] [REG-R45].
 
 **Contracts concluded before 1 January 2005 are not in the *Halbeinkünfteverfahren* at all.** The
 § 20 Abs. 1 Nr. 6 EStG regime in its *Alterseinkünftegesetz* recast does not reach them; under the
-predecessor regime, where the pre-AltEinkG conditions are met — a term of at least twelve years,
-premiums paid for at least five, and a minimum death cover — the *rechnungsmäßige und
-außerrechnungsmäßige Zinsen* contained in a *Kapitalabfindung* are **entirely free of income tax**
-[R6] [REG-R45]. That is a better outcome than taxing half the *Unterschiedsbetrag*, not the same
+predecessor regime — preserved by § 52 Abs. 28 Satz 5 EStG, which keeps § 20 Abs. 1 Nr. 6 *"in der am
+31. Dezember 2004 geltenden Fassung"* in force for those contracts *"auch in allen offenen Fällen"* —
+and where the pre-AltEinkG conditions are met (a term of at least twelve years, premiums paid for at
+least five, and a minimum death cover) the *rechnungsmäßige und außerrechnungsmäßige Zinsen* contained
+in a *Kapitalabfindung* are **entirely free of income tax** [R6] [REG-R45]. That is a better outcome than taxing half the *Unterschiedsbetrag*, not the same
 one, and it is what makes an *Altvertrag*'s surrender and commutation rates close to nil. **The
 pre-2005 conditions themselves were not established and are asserted nowhere in delib**
 [unverified], which is why the reference model does not represent that cohort. Annuity payments run
@@ -537,10 +627,14 @@ the age test at 60, and 2012 onwards with it at 62 — cut by the *Alterseinkün
 contract**: `issue_year` is 2026 on the anchor, the table's earliest vintage is 2005, and the
 pre-2005 cohort appears in it nowhere.
 
-On the annuity side, **at age 65 the *Ertragsanteil* is 18 %** [R5] [S12] — the only value of the
-statutory table any search established (gap 8) — and,
-unlike the Schicht-1 *Rentenfreibetrag*, **the percentage is what is frozen**, so surplus increases
-are taxed at the same light rate [REG-R41].
+On the annuity side the whole statutory table is now on the record, at **§ 22 Nr. 1 Satz 3 Buchst. a
+Doppelbuchst. bb EStG** — the address [S4]'s own tax notes use. Read off the age completed at the
+start of the annuity: 22 % at 60–61, 21 % at 62, 20 % at 63, 19 % at 64, **18 % at 65–66**, 17 % at
+67, 16 % at 68, 15 % at 69–70, 14 % at 71, falling to 1 % from 97 [R5]. And, unlike the Schicht-1
+*Rentenfreibetrag*, **the percentage is what is frozen**, so surplus increases are taxed at the same
+light rate [REG-R41]. [S4] adds two consequences the model does not compute but a reader should know:
+returns earned during the *Aufschubzeit* are not taxable at all, and annuities continuing to survivors
+under a *Rentengarantiezeit* stay on the *Ertragsanteil* basis.
 
 **The two regimes are why the election is economically live** rather than a formality. **delib
 computes no tax anywhere** [REG-R38], so the implementation carries the election as a **take-up
@@ -551,8 +645,12 @@ rate** and says explicitly that the rate stands in for a tax comparison the mode
 The surrender right exists and its value is governed by § 169 VVG [R1] [REG-R28]. The base measure is
 the ***Deckungskapital*** computed by recognised actuarial rules **on the calculation bases of the
 premium calculation** [REG-R28]. The *Zeitwert* rule of Abs. 4 is the boundary rather than the rule
-here, because the classic contract's benefit is guaranteed [R1], and **what the classic surrender
-value is computed as was not established at article level in this product's own research** (gap 12).
+here, because the classic contract's benefit is guaranteed [R1]. **The article-level text is now
+read** (gap 12 closed): Abs. 3 Satz 1 defines the surrender value as *"das nach anerkannten Regeln
+der Versicherungsmathematik mit den Rechnungsgrundlagen der Prämienkalkulation zum Schluss der
+laufenden Versicherungsperiode berechnete Deckungskapital der Versicherung"*, and five carrier
+wordings restate it verbatim [S1] § 12 Abs. 3, [S4] § 10 Abs. 3, [S8] § 7 Abs. 3, [S9] § 16 Abs. 4,
+[S11] § 34 Abs. 2.
 
 **The floor is the operative constraint, and it is not the *Stornoabzug*.** § 169 Abs. 3 requires at
 least the *Deckungskapital* that results from **spreading the charged acquisition and distribution
@@ -565,8 +663,16 @@ value in year two is not simply zero. **The *Stornoabzug*** may then be deducted
 **agreed, quantified (*beziffert*) and appropriate (*angemessen*)** — three cumulative conditions,
 the burden of proof on the insurer — while **a deduction in respect of not-yet-amortised *Abschluss-
 und Vertriebskosten* is void** [R1] [REG-R28]: the statutory answer to *Zillmerung*, which may not
-be recovered from the surrendering policyholder as a named deduction. **No *Stornoabzug* percentage,
-surrender-value table or charge-recovery schedule was established at any carrier** (gap 12).
+be recovered from the surrendering policyholder as a named deduction. **Four carrier practices are
+now on the record** and they do not agree: none at CosmosDirekt [S8] § 7 Abs. 10 and NÜRNBERGER
+[S9] § 14 Abs. 4, both saying so expressly; a flat **250 EUR** at Zurich, waived at attained age 62
+or after twenty years, plus a further 10 % of any excess of the surrender value over the death
+benefit [S4] § 10 Abs. 3 and 6; and at Debeka **5 % of the *Deckungskapital*** for collectively
+provided risk capital together with a 0 / 5 / 10 / 15 % element keyed to the spread between the
+ten-year euro zero-coupon swap rate and its own ten-year average, **both falling linearly to nil over
+the last ten years of the *Aufschubzeit*** [S11] § 34 Abs. 4–5. The GDV wording leaves the amount
+blank [S1] § 12 Abs. 4. **No surrender-value table or charge-recovery schedule is published** — every
+wording refers them to the *Persönlicher Vorschlag* or the *Versicherungsschein*.
 
 ### *Beitragsfreistellung* under § 165 VVG
 
@@ -589,7 +695,11 @@ a high legacy *Rechnungszins*, that difference is worth a great deal, and it is 
 conversion and lapse **must be separate decrements**; German lapse is in fact three-way, § 166 VVG
 converting automatically to *prämienfrei* on the insurer's termination and in the § 38
 premium-default case rather than ending cover [REG-R28] [REG-R30]. **The
-*Mindestversicherungsleistung* threshold was not established at any carrier** (gap 22).
+*Mindestversicherungsleistung* is contractual and three carrier levels are established**: 25,00 € a
+month at Zurich and NÜRNBERGER, 600,00 € a year for a partial surrender at CosmosDirekt [S4] [S8]
+[S9]. Two carriers also **waive the *Stornoabzug* on the paid-up route** although § 165 Abs. 2 refers
+to § 169 Abs. 3 **to 5** — *"Bei der Beitragsfreistellung wird kein Abzug erhoben"* [S4] § 10 Abs. 9,
+and likewise [S8] § 7 Abs. 7 — which is what the model does.
 
 ---
 
@@ -608,8 +718,10 @@ set attaching to this contract** [S10] — it needs a second life and no model p
 ***Berufsunfähigkeits-Zusatzversicherung***, a named section with its own conditions in the same
 pack [S4] and delib's `berufsunfaehigkeit` product in standalone form. ***Zuzahlung***: **no source
 in this corpus named it** (gap 15), the one option the research brief asked for that the corpus does
-not support at all. ***Bonusrente*** [R24] and ***Beitragsverrechnung*** (gap 16) as
-accumulation-phase surplus systems, and surplus **invested in an internal fund** [S12]. The § 163 VVG
+not support at all. ***Bonusrente*** [S4] [S15] [R24] and ***Beitragsverrechnung*** / ***Barausschüttung*** — the latter
+now established, at Zurich, and restricted there to *Rückdeckungsversicherungen* [S4] § 3 Abs. 6, so
+gap 16 is closed — as accumulation-phase surplus systems, and surplus **invested in an internal
+fund** [S11] [S12]. The § 163 VVG
 / *Treuhänderklausel* adjustment of the guaranteed *Rentenfaktor* [R3] [R17] [REG-R27], and § 169
 Abs. 6 **reduction of surrender values** [R1] — both supervised or contested channels with no
 published trigger a deterministic model could key off.
@@ -618,31 +730,34 @@ published trigger a deterministic model could key off.
 
 ## Variations across insurers
 
-The corpus supports **structural** variation tables but **not** quantitative range tables for the
-parameters that matter most — *Rentenfaktor* levels, charges, entry ages, premium envelopes and
-surplus rates — because no search in this session returned a number for any of them at any carrier.
-Where a row reads "not established", that is the finding.
+The corpus supports **structural** variation tables throughout. After the 2026-08-30 retrieval pass it
+also supports **quantitative** statements on two of the parameters that matter most — *Rentenfaktor*
+levels [R19] [R24] and declared surplus rates [S15] — while charges, entry ages, premium envelopes and
+behavioural rates remain unestablished. Where a row reads "not established", that is the finding.
 
 | Carrier | Documents | Status of the classic deferred annuity |
 |---|---|---|
-| GDV (industry model wording) | [S1] [S2] [S3] [S10] | Model conditions maintained; a 2021 edition seen; **expressly non-binding** — "Diese Bedingungen sind unverbindlich" [S2], use optional [S3] |
-| Zurich Deutscher Herold | [S4] [S5] [S6] [S7] [S16] [S17] | *Verbraucherinformation* published 2021, 2022 and **Fassung 01/2026** [S4]; but reported among the carriers that stopped [R22] — **unresolved**, gap 9 |
-| CosmosDirekt (Cosmos Leben, Generali) | [S8] | AVB **LA 904 A** published; vintage not established (gap 5); Generali reported among those that stopped [R22] |
+| GDV (industry model wording) | [S1] [S2] [S3] [S10] | Model conditions maintained, **Stand 21.07.2025** for the deferred annuity and 14.11.2019 for the survivor's-annuity rider; **expressly non-binding** — *"Diese Bedingungen sind für die Versicherer unverbindlich; ihre Verwendung ist rein fakultativ"* [S1] |
+| Zurich Deutscher Herold | [S4] [S5] [S6] [S7] [S16] [S17] | *Verbraucherinformation* published in Fassung **07/2015** [S5] [S6], **01/2025** [S7] [S16] and **01/2026** [S4], on DAV 2004R at 1,25 % then 1,00 %; reported in 2016 among the carriers that had stopped **distributing** the classic product [R22]. A maintained and reissued wording, not a withdrawn one |
+| CosmosDirekt (Cosmos Leben, Generali) | [S8] | AVB **LA 904 A (01.17)**; *Beitragsrückgewähr ohne Zinsen* in the *Aufschubzeit*, *Garantiesatz* 0,90 % p. a., **no *Stornoabzug***; Generali reported among those that stopped distributing [R22] |
 | NÜRNBERGER | [S9] | AVB for tariff **NIR3301**, *mit Rentengarantiezeit* in the title |
-| Debeka | [S11] [S12] | **Withdrawn.** Replaced from 1 July 2016 by five "Chance" variants, the safest guaranteeing **0,5 %** and the riskiest nothing [R22] [S12] |
+| Debeka | [S11] [S12] | **Withdrawn.** Replaced from 1 July 2016 by five "Chance" variants, the safest guaranteeing **0,5 %** and the riskiest nothing [R22]. The successor is on the record as **B LV 85 (01.07.2026), Tarif CA2I**: a *garantiebasierter* and a *fondsgebundener Baustein*, guaranteed benefits on 1 % and a guaranteed *Rentenfaktor* on 0,1 % [S11] [S12] |
 | Allianz | [S13] | **Withdrawn.** Replaced by KomfortDynamik: **60 %, 80 % or 90 % of the premiums paid** guaranteed at *Rentenbeginn*, selectable, 80 % standard [S13] [R22] [R23] |
-| Mecklenburgische | [S14] | *Vertragsinformationen* for "Rente flex"; the distinguishing feature is not established |
-| Konzern Versicherungskammer | [S15] | Annual *Überschussverteilung 2026* published; **no rate established** |
-| Stuttgarter | [S18] | *Allgemeine Informationen* pack dated 2020 |
-| DEVK | [S19] | Unit-linked only; used here for the death-benefit contrast |
+| Mecklenburgische | [S14] | *Vertragsinformationen* **Version 07.2025** for *Private Rentenversicherung mit flexiblem Fondsanteil (Hybrid)*, B Privat-Rente Flex — a hybrid, not a classic chassis |
+| Konzern Versicherungskammer (Bayern-Versicherung) | [S15] | *Überschussverteilung 2026*, 145 pp.: annuity *Zinsüberschussanteil* **3 % less the *Rechnungszins*** before the *Rentenbeginn* and 3,35 % during it for 2026 (2,25 % / 2,5 % for 2025); *Bewertungsreserven* allotted *zur Hälfte* |
+| Stuttgarter | [S18] | *Allgemeine Informationen* pack dated 2020, for tariffs written before 2021; **Schicht 2**, a *Direktversicherung* under § 3 Nr. 63 EStG |
+| DEVK | [S19] | Unit-linked only; **not retrievable** (HTTP 403), kept as a known reference |
 
 | Design item | Observed variation | Source |
 |---|---|---|
-| Death benefit | *Beitragsrückgewähr* premiums-only, named in the GDV wording; premiums **plus attributable surplus**, which "can be agreed"; the accumulated *Deckungskapital*; or a *Hinterbliebenenrente* as a rider. `max(fund, premiums)` is **unit-linked wording**, its classic analogue [unverified] | [S1] [S10] [R24]; [S19] |
-| Guaranteed *Rentenfaktor* basis | DAV 2004 R at a **0 % interest basis** — one carrier, at an unestablished vintage | [S8]; gap 5 |
+| Death benefit before *Rentenbeginn* | **None at all** unless an extension is bought — the GDV and Zurich base case; *Beitragsrückgewähr* premiums-only *ohne Zinsen*; premiums **plus attributable surplus**; the accumulated *Deckungskapital*; **the greater of contract value and refund**; or a *Hinterbliebenenrente* as a rider | [S1] § 1 Abs. 3 (left blank), [S4] § 1 Abs. 2–3, [S8] § 1 Abs. 1, [S9] § 1 Abs. 3, [S10], [R24] |
+| Guaranteed *Rentenfaktor* basis | **0,1 % p. a.** on a carrier's own unisex annuity table, against a tariff *Rechnungszins* of 1 % in the same contract | [S11] § 52 Abs. 1 and § 28 Abs. 2 |
 | *Rentengarantiezeit* | 5, 10, 15, 20, 25, 30+ years offered; typically 15 at retirement ages 61–70 and 10 at 71+; most choose 10–20; cost 3 € / 15 € / 46 € a month at 10 / 20 / 30 years on a 573 € base | [R24] [S9] [S13] |
-| Accumulation surplus system | *Verzinsliche Ansammlung*, *Bonusrente* and internal-fund investment all established; *Beitragsverrechnung* **not established** | [R24] [S12]; gap 16 |
-| *Rentenfaktor* levels, declared surplus rates, charge levels, issue envelopes, behavioural rates | **Not established at any carrier for any year** | gaps 3, 4, 13, 14, 20 |
+| Accumulation surplus system | *Verzinsliche Ansammlung*, *Bonusrente*, internal-fund investment **and *Beitragsverrechnung* / *Barausschüttung*** all established — the last at Zurich, restricted to *Rückdeckungsversicherungen*; also *Erlebensfallbonus* and *Bonussumme* at [S15]. Gap 16 closed | [S4] § 3 Abs. 6; [S15]; [R24] [S12] |
+| *Rentenfaktor* levels | 2025 market averages 24,33–27,18 guaranteed and 27,27–30,40 current by deferment term, all to age 67; 2022 current average 25,97 against 29,09 in 2021 | [R24] [R19] |
+| Declared surplus rate | One carrier, 2026: total credited interest **3,00 %** before the *Rentenbeginn*, 3,35 % during it | [S15] |
+| *Stornoabzug* | None at two carriers; a flat **250 EUR** at a third; **5 % of the *Deckungskapital*** plus a 0–15 % capital-market element, both tapering to nil over the last ten years, at a fourth | [S8] [S9] [S4] [S11] |
+| Charge levels, issue envelopes, behavioural rates | **Not established at any carrier for any year** — every carrier refers the amounts to the *Kostenausweis* or the *Persönlicher Vorschlag*, neither public | gaps 13, 14, 20 |
 
 **What does not vary.** Three things are the same everywhere in the corpus and all three are legal
 rather than commercial facts: the **two-phase structure with a fixed *Rentenbeginn*** is definitional
@@ -650,10 +765,14 @@ rather than commercial facts: the **two-phase structure with a fixed *Rentenbegi
 statutory and *halbzwingend*, §§ 165 to 170 VVG not being variable to the policyholder's detriment
 under § 171 VVG [REG-R22] [REG-R28]; and the **unisex tariff** has been compulsory since 21 December
 2012 [REG-R34], which is why sex appears nowhere in the pricing of this composite even though the
-annuity tables behind it are sex-specific raw material [REG-R47] [REG-R49]. Against that, **two limbs
-of the composite's core rest on a single carrier each**: the *Rentenfaktor* comparison rule [S4],
-restated only by secondary material [R24], and the conversion basis [S8], at a vintage that document
-itself marks as time-dependent and that the corpus could not date (gap 5).
+annuity tables behind it are sex-specific raw material [REG-R47] [REG-R49]. Against that, **the
+composite's core is now multiply attested**: the *Rentenfaktor* comparison rule is in the AVB of
+NÜRNBERGER [S9], Mecklenburgische [S14] and Stuttgarter [S18]; the conversion input including surplus
+and *Bewertungsreserven*, floored at the guaranteed contract value, is [S9] § 1 Abs. 1; the
+accumulation recursion is [S8] § 1 Abs. 2; and the five-year surrender floor is restated by five
+carriers. What still rests thinly is the **level** side — the declared rate on one carrier's
+declaration [S15], the *Rentenfaktor* range on two analyst compilations [R19] [R24], and no charge
+level at all.
 
 ---
 ## Regulatory context

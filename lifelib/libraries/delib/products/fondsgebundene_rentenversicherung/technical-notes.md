@@ -210,23 +210,50 @@ declared rate.
 | *Ablaufmanagement* | A linear glide of the **gross** return from the scenario's rate to `mmkt_return_ann` = 1.50 % p.a. over the last 60 months; off unless `ablauf_flag` | **[std]** (4) |
 | *Überschuss* credit | **None.** Omitting it biases the projected *Fondsguthaben* **downward** | [R5] [R14]; omission **[std]** |
 
-1. **No charge level of any kind was established at any carrier** — not one
-   *Abschlusskostenquote*, not one *Verwaltungskostensatz* in either form, not one *Stückkosten*
-   amount [S3]–[S14] [S16] [S18] [R23] [R24]. The only anchor in the stack is the 25 ‰
-   *Höchstzillmersatz* [R12] [REG-R16], and the composite takes **the cap** rather than a guessed
-   interior point. `std_high` and `std_low` are the ends of the argued range in the product
-   specification's variation table; `std_netto` is the commission-free tariff [S18], and the
-   difference between its reduction in yield and `std_gross`'s **is** the acquisition load — the
-   parameter this library most needs and cannot source.
-2. Whether an insurer may retain a *Bestandsprovision* under the IDD-derived *Zuwendungen* rules,
-   and how a credited rebate is treated inside the PRIIPs cost calculation, are both unresolved
-   [R15] [R7] [R8] [REG-R32] [REG-R33]. A passive fund sidesteps both.
+1. **Every level here is still [std], and it can now be calibrated against one real tariff and
+   one market distribution.** The anchor is the 25 ‰ *Höchstzillmersatz* — *"Der Zillmersatz darf
+   25 Promille der Summe aller Prämien nicht überschreiten"*, § 4 Abs. 1 Satz 2 DeckRV [R12]
+   [REG-R16] — and the composite takes **the cap**. The observed comparators, from DEVK's
+   *Basisinformationsblätter* for a 1 000 € annual premium [S15]: acquisition **2,50 % der
+   kumulierten Anlage** (equal to `std_gross`'s α), *Verwaltungskosten* **6,90 % der jeweils
+   eingezahlten Anlage** (against β = 4,00 %), **0,42 % des Werts Ihrer Anlage pro Jahr** (against
+   γ = 0,30 %), and **18 EUR pro Jahr** (against a 3,00 €/month fee, i.e. 36 €/yr). **`std_gross`
+   is therefore a cheap tariff, not an average one** — its implied reduction in yield of roughly
+   1 % p.a. sits below the market's lower quartile of 1,30 % at exactly this model point, where
+   the weighted mean is **1,90 %** and insurers above 4 % exist at every age-and-term combination
+   [R11], and where the DEVK sheet reports **1,4 %–3,4 %** over 30 years [S15]. Every observed
+   level falls inside the argued range that `std_high` and `std_low` bracket. Nine of the ten
+   other named carriers still supply no level [S3]–[S14] [S16] [S18] [R23] [R24]. `std_netto` is
+   the commission-free tariff [S18], and the difference between its reduction in yield and
+   `std_gross`'s **is** the acquisition load; note that a *real* net tariff's published
+   *Effektivkosten* excludes the client's separate adviser fee [R10], so the delib gap is cleaner
+   than a market comparison would be.
+2. **Both questions this footnote called unresolved now have answers, and the zero is a choice
+   rather than an evasion.** BaFin establishes that insurers receive *Rückvergütungen* out of the
+   fund's *Verwaltungsvergütung*, must test them for *Fehlanreize*, and must consider passing them
+   back through reduced calculated costs, an RfB allocation above the MindZV minimum, a
+   *Kostenüberschussanteil* or a dedicated *Überschussanteil* [R10] [R15] [REG-R33]; one carrier's
+   AVB uses them *"zur Deckung etwaiger Verwaltungskostenverluste"* and puts the remainder into
+   the RfB [S2]; and the market levels are known — rebates on about a third of new business at a
+   weighted mean just over **0,30 % p.a. of the *Fondsguthaben***, up to over **1,20 %**, of which
+   about 52 % is returned on average, with a further 19 % of business carrying rebates paid
+   directly to the intermediary at about 0,50 % [R11]. So `0.00 %` models the cheap end of a real
+   and material flow, and the composite's argued 0 %–0,50 % range understates the observed one.
+   How a credited rebate enters the PRIIPs cost calculation is the one limb still open [R7] [R8]
+   [REG-R32].
 3. Setting the current factor equal to the guaranteed one keeps the base run reproducible from
    the derivation alone while still exercising the `max()`. The 12 % uplift on `rich_current` is a
-   round figure chosen so the `max()` visibly bites; **it is not a market observation**.
-4. **No *Ablaufmanagement* parameter was established** — not whether it is opt-in or a default,
-   not the number of years, not the tranches, not the destination [unverified]. A five-year ramp
-   is the shape most often described.
+   round figure chosen so the `max()` visibly bites; **it is not a market observation** — and the
+   consumer literature suggests a much wider real spread, guaranteed factors of 50–70 % of the
+   current one being described as common `[unverified]` [R22], so `std_2026` is the conservative
+   end and `rich_current` is nowhere near the generous one.
+4. **The *Ablaufmanagement* parameters are established at two carriers, and they disagree** —
+   which is why the module is switchable. DEVK runs it as an **opt-out default**, over the **last
+   five years**, in **monthly** tranches on an explicit 1/60, 1/59, 1/58 … schedule, into a
+   low-risk target fund, free of charge and with fund switching suspended while it runs [S2];
+   Allianz offers it as an **option** over the **last three years** [S3]. The composite's 60-month
+   linear glide matches the observed default at one carrier in span and destination; the tranche
+   schedule differs, since 1/60 of a shrinking balance is not a linear glide of the return.
 
 ### (c) Behavioral / experience assumptions (modeler's view)
 
@@ -234,10 +261,18 @@ declared rate.
 *Kapitalwahlrecht* take-up or expense loading was established anywhere in this corpus.
 
 **Mortality — two bases, and the wedge between them is the product.** The tariff prices the
-*Risikobeitrag* on a **first-order death table**, DAV 2008 T [R17] [REG-R48]; the projection
-decrements on the **second-order** best estimate [REG-R47]. DAV tables are the property of the
-Deutsche Aktuarvereinigung, are not public and are **not redistributed by this library**. The
-shipped `mort_table.csv` is a **[std] Gompertz-form proxy** of the first-order table:
+*Risikobeitrag* on a **first-order death table**; the projection decrements on the
+**second-order** best estimate [REG-R47]. **That two-basis structure is confirmed in a real
+tariff** — DEVK uses *"Sterbetafel DAV 2004 R"* for the annuity and a separate order for the
+*Risikobeiträge* [S2] — **but the table this library names for the risk charge is not the one
+that tariff uses.** DEVK prices the monthly *Risikobeiträge* on *"einer mit 65 Prozent gewichteten
+geschlechtsunabhängigen Ausscheideordnung auf Basis der Sterbetafel DAV 1994 T"*, and keeps
+DAV 2008 T [R17] [REG-R48] for its underwritten *Risiko-Zusatzversicherung*. On an unwritten
+*Beitragsrückgewähr* cover, a first-order basis can be an old heavy table scaled **down** as
+easily as a modern table loaded **up**; the shipped proxy stands for either. Both orders are
+**unisex**, which is [REG-R34] showing in a real *Rechnungsgrundlage*. DAV tables are the property
+of the Deutsche Aktuarvereinigung, are not public and are **not redistributed by this library**.
+The shipped `mort_table.csv` is a **[std] Gompertz-form proxy** of the first-order table:
 
     mort_rate_tariff_at_age(x) = 0.00080 × 1.10^(x − 37),   ages 18–100
 
@@ -281,6 +316,9 @@ approaches and spike when both limbs are met [R20] [REG-R45].
     lapse_tax_step(t)  = 2.5  in the twelve months of the policy year in which
                               BOTH duration 12 is complete AND attained age 62 is reached;
                               1.0 otherwise                                        [std]
+    # the 12/62 threshold itself is statutory: EStG § 20 Abs. 1 Nr. 6 Satz 2 with
+    # § 52 Abs. 28 (62 for contracts concluded after 31 December 2011; 60 before).
+    # Its magnitude, 2.5, is [std].
     lapse_rate(t)      = min( lapse_cap, lapse_rate_base(t) × lapse_tax_step(t) + lapse_dyn_add(t) )
     lapse_rate_mth(t)  = 1 − (1 − lapse_rate(t))^(1/12)
     lapse_rate_mth(proj_len()) = 0                                                 [std]
@@ -507,18 +545,41 @@ that exclusion visible rather than merely asserted.
     av_maturity_pp() = F_BEF_DECR(n)
     annuity_mth_pp() = av_maturity_pp() / 10 000 × R
 
-The shipped `rentenfaktor_table.csv` is **[std] and derived, not observed**. At a *Rechnungszins*
-of 0 % [S10] a monthly annuity of `R` per 10 000 € for an expected `T` years has present value
-`12·T·R`, so `R = 10 000 / (12·T)`; the table sets
+The shipped `rentenfaktor_table.csv` is **[std] and derived, not observed**. The 0 %
+*Rechnungszins* it rests on is no longer an inference from a classic tariff: a fondsgebundene AVB
+states it — *"bei der Kalkulation der zu Vertragsbeginn garantierten Rentenfaktoren … einen
+Zinssatz von 0,0 Prozent"*, on DAV 2004 R [S2] [S10] [R16] [REG-R49]. At 0 % a monthly annuity of
+`R` per 10 000 € for an expected `T` years has present value `12·T·R`, so `R = 10 000 / (12·T)`;
+the table sets
 
     T_eff(x) = 33.3333 − 0.75 · (x − 67),     ages 60–75,
     rentenfaktor_guar(x) = 10 000 / (12 · T_eff(x))
 
-which gives exactly **25.00** at age 67, 22.47 at 62 and 26.81 at 70. Read the other way, 25.00
-at a 0 % *Rechnungszins* prices the guarantee as though the insurer holds the capital for 33⅓
-years and earns nothing on it — the *Sicherheitsabschlag* made concrete [R16] [R22] [REG-R49].
-`rentenfaktor_curr` equals `rentenfaktor_guar` on `std_2026` and is 12 % higher on
-`rich_current`. **This model stops here**: the annuity is published, not projected.
+which gives exactly **25.00** at age 67, 22.47 at 62 and 26.81 at 70.
+
+**Observed values are now available, and the table does not reproduce them.** At the same
+*Rentenbeginn* age of 67 and the same 0 % rate, one carrier's guaranteed factors are **25,22 /
+24,12 / 22,91 / 21,83 €** for deferments of 12 / 20 / 30 / 40 years [S15]. Two consequences:
+
+- **Level.** At delib's anchor cell — a 37-year-old with a 30-year deferment — the observed
+  factor is **22,91** against the table's **25.00**, so the shipped table is about **9 %
+  generous** there. It is close at short deferments (25,22 at twelve years) and generous at long
+  ones.
+- **Shape.** The observed factor **falls with the deferment at a fixed *Rentenbeginn* age**, which
+  is the generational DAV 2004 R showing through: a later birth cohort lives longer at 67. The
+  shipped table is a function of `annuity_age` **alone** and is flat in the deferment, so it
+  cannot reproduce that gradient at all — the entry-age-60 and long-deferment model points are
+  priced on the same factor when a real tariff would separate them.
+
+**Neither is changed here.** `rentenfaktor_table.csv` feeds `annuity_mth_pp()`, the worked example
+and the golden tests, and moving it moves all three; that is a deliberate decision, not a
+provenance fix. Read the other way, 25.00 at a 0 % *Rechnungszins* prices the guarantee as though
+the insurer holds the capital for 33⅓ years and earns nothing on it; the market's own answer at
+the anchor cell is 36⅜ years — the *Sicherheitsabschlag* made concrete, and slightly deeper in
+reality than in the model [R16] [R22] [REG-R49]. `rentenfaktor_curr` equals `rentenfaktor_guar` on
+`std_2026` and is 12 % higher on `rich_current`; consumer sources describe real guaranteed factors
+at 50–70 % of the current one `[unverified]` [R22], so both settings are conservative.
+**This model stops here**: the annuity is published, not projected.
 
 ### Reduction in yield
 
@@ -752,8 +813,11 @@ nothing from month 61**.
 
 **Assumptions, each tagged.** *Charges*, from row `std_gross` of `charge_table.csv`, every level
 **[std]** except where noted: acquisition rate `alpha_rate = 2.50 %` of the *Beitragssumme*, which
-is the *Höchstzillmersatz* [R12] [REG-R16], spread over `alpha_spread_months = 60` [R1]
-[REG-R28]; premium-based admin `beta_rate = 4.00 %` of each gross *Beitrag*; fund-based admin
+is the *Höchstzillmersatz* [R12] [REG-R16] and, as it happens, the rate one real tariff charges
+[S15], spread over `alpha_spread_months = 60` — the statutory five-year shape of § 169 Abs. 3 VVG
+[R1] [REG-R28], which a real tariff applies to only *part* of its acquisition cost, taking the
+rest as a percentage of every premium for the whole term [S2]; premium-based admin
+`beta_rate = 4.00 %` of each gross *Beitrag*, against 6,90 % observed [S15]; fund-based admin
 `gamma_rate_ann = 0.30 % p.a.`, taken monthly as `gamma_rate_mth = 0.30 %/12 = 0.025 %` of the
 *Fondsguthaben*; *Stückkosten* `policy_fee_mth = 3.00 €` per month, taken by cancelling units;
 *Zuzahlungskosten* `zuzahlung_charge_rate = 2.50 %` (not exercised on this cell);
@@ -761,8 +825,10 @@ is the *Höchstzillmersatz* [R12] [REG-R16], spread over `alpha_spread_months = 
 `fund_scenario_table.csv`: gross return `5.00 % p.a.` **[std]**, fund `TER = 0.45 % p.a.`
 **[std]**, so `fund_return_net_ann = 4.55 % p.a.` and `fund_return_net_mth = (1.0455)^(1/12) − 1
 = 0.371482 % per month`; *Kickback* credited back `0.00 %` **[std]**; no *Ablaufmanagement* glide.
-*Mortality*: the tariff basis is the **[std]** DAV 2008 T proxy `mort_rate_tariff_at_age(x) =
-0.00080 × 1.10^(x − 37)`, anchored at `q(37) = 0.00080` [R17] [REG-R48], so
+*Mortality*: the tariff basis is a **[std]** first-order death proxy `mort_rate_tariff_at_age(x) =
+0.00080 × 1.10^(x − 37)`, anchored at `q(37) = 0.00080`. It stands for whichever first-order death
+table a carrier uses — DAV 2008 T is the modern one [R17] [REG-R48]; the one fondsgebundene tariff
+whose bases could be read prices its *Risikobeiträge* on 65 % of DAV 1994 T [S2] — so
 `mort_rate_tariff(1) = 0.00080` and `mort_rate_tariff_mth(1) = 0.00080/12 = 0.00006667`; the
 best-estimate decrement is `mort_be_factor = 0.75` **[std]** times it, so `mort_rate(1) = 0.00060`
 and `mort_rate_mth(1) = 0.00005`. *Lapse*, all **[std]**: `lapse_rate_base` 6.0 % p.a. in policy
@@ -983,11 +1049,17 @@ one number that puts four tariffs on one scale. All four levels are **[std]**:
 
 The four cells differ in premium and term as well as in tariff, so this is not a controlled
 experiment and must not be read as one. What it shows is that the charge scale moves the
-reduction in yield by **a factor of five** across the argued range — which is why BaFin calls
-the market spread considerable [R10] [R11] and why this library quotes no level. Model point
-11 is the *Nettotarif* and 1 the commission tariff; **the gap between their reduction in
-yield is the acquisition load**, the parameter this library most needs and cannot source
-[S18].
+reduction in yield by **a factor of five** across the argued range — a spread the supervisor has
+since quantified rather than merely called considerable: *"Die Effektivkosten der verschiedenen
+Anbieter und Produkte unterscheiden sich erheblich"*, with a weighted mean of 1,90 % p.a. at
+entry age 37 over 30 years, quartiles at 1,30 / 1,64 / 2,35 %, and insurers above 4 % at every
+age-and-term combination [R10] [R11]. **The delib figures below are still delib's own**, computed
+on delib's `[std]` stack and not on Annex VI, and must not be quoted as market figures; the point
+of setting them beside the survey is to show that `std_gross` sits below the market's lower
+quartile. Model point 11 is the *Nettotarif* and 1 the commission tariff; **the gap between their
+reduction in yield is the acquisition load**, the parameter this library most needs and cannot
+source at a carrier [S18] — and note that a real net tariff's published *Effektivkosten* excludes
+the adviser fee the client pays separately [R10], so the delib gap is the cleaner comparison.
 
 ### What the model stage changed in these notes
 
@@ -1021,16 +1093,21 @@ grid. The valuation layers consume them and are cited, not reproduced.
   itself, backed one-for-one by the *Anlagestock* [R15] [REG-R7], and a **non-unit reserve** for
   the future administration and risk cash flows the charges are supposed to cover. This model
   produces the second stream and does not discount it. The *Höchstrechnungszins* of the DeckRV
-  does **not** bind the accumulation phase [R12] [REG-R14] [REG-R15]; the *Höchstzillmersatz*
-  does, and it is a parameter of the model rather than of the valuation [R12] [REG-R16]. The
-  *Zinszusatzreserve* has nothing to attach to on the unit side [REG-R17].
-- **§ 169 VVG is a payment floor, not a reserve.** The five-year spreading rule governs what the
-  insurer must **pay** on *Kündigung*; § 4 DeckRV governs what it may **reserve** [R1] [R12]
+  does **not** bind the accumulation phase — § 2 Abs. 1 applies only *"[b]ei Versicherungsverträgen
+  **mit Zinsgarantie**"*, and a pure unit-linked contract has none [R12] [REG-R14] [REG-R15]; the
+  *Höchstzillmersatz* does, and it is a parameter of the model rather than of the valuation [R12]
+  [REG-R16]. The *Zinszusatzreserve* has nothing to attach to on the unit side [REG-R17].
+- **§ 169 VVG is a payment floor, not a reserve — and on this contract the floor is Abs. 4's
+  *Zeitwert*, not Abs. 3's five-year rule.** Abs. 3 carries the five-year spreading as a minimum
+  on the *Deckungskapital* branch and reaches a unit-linked contract only *"im Übrigen"*, that is
+  to the extent a benefit is guaranteed; § 4 DeckRV governs what the insurer may **reserve** [R1] [R12]
   [REG-R16] [REG-R28]. On this design the two do not conflict, because the tariff takes the
   acquisition charge in exactly the sixty instalments the payment floor implies, so the
   *Rückkaufswert* is the *Fondsguthaben* at every duration and no `max()` against a floor is
-  needed. **Whether the statutory floor formally reaches the *Zeitwert* branch at all was not
-  established**, and both readings give the same numbers here.
+  needed. **The statute now answers the question this bullet left open**: on a contract with no
+  guaranteed benefit there is no Abs. 3 floor to reach, and the protection operates through the
+  tariff's *Kostenverrechnung* clause instead — which is what a real wording does [S2] § 18
+  Abs. 2. Both readings still give the same numbers here.
 - **Solvency II.** Technical provisions are a best estimate — the probability-weighted average of
   future cash flows discounted at the relevant risk-free term structure — plus a risk margin
   [REG-R1] [REG-R2] [REG-R6], with EIOPA publishing the curves monthly [REG-R4].
@@ -1042,9 +1119,15 @@ grid. The valuation layers consume them and are cited, not reproduced.
 - **The *Rentenfaktor* is an option and this model does not value it.** A guaranteed conversion
   rate applied thirty years forward to an unknown capital is a written option on longevity and on
   interest rates, and a deterministic projection prices none of it. The `max(guaranteed, current)`
-  rule makes it explicitly one-sided [S4] [R22]. A stochastic run — the same recursion with a
-  scenario-dependent unit price and a scenario-dependent current factor — is what a
-  time-value-of-options-and-guarantees calculation consumes.
+  rule makes it explicitly one-sided, and that rule is now read in a wording rather than inferred:
+  *"Der tatsächliche Rentenfaktor ist der höhere Wert aus dem zu Rentenbeginn aktuellen
+  Rentenfaktor und dem zu Vertragsbeginn garantierten Rentenfaktor"* [S2] [S4] [R22]. A stochastic
+  run — the same recursion with a scenario-dependent unit price and a scenario-dependent current
+  factor — is what a time-value-of-options-and-guarantees calculation consumes. The supervisor
+  treats the conversion terms as a *Kundennutzen* parameter in their own right, the reference
+  point being *"das Verhältnis zwischen dem am Ende der Ansparphase zur Verfügung stehenden
+  Kapital und den vom Kunden voraussichtlich bezogenen Rentenleistungen"* [R10], so a valuation
+  layer is not the only reason to care what the factor is.
 - **IFRS 17 and professional standards.** A fondsgebundene contract is the archetypal
   direct-participating contract and would be measured under the **variable fee approach**; the VFA
   mechanics were not read and are `[unverified]` [REG-R55]. German statutory reporting runs under
@@ -1067,14 +1150,24 @@ In rough order of leverage for a German unit-linked block:
    is worth.
 2. **The charge stack, and the acquisition charge above all.** Every level is **[std]** and the
    whole first-order economics of the product is *return minus charges*. The `std_netto` variant
-   on the same chassis isolates the acquisition load — the parameter this library most needs and
-   cannot source — and BaFin has said the market spread is "considerable" without publishing a
-   number [R10] [R11] [REG-R35].
-3. **The guaranteed *Rentenfaktor*.** 25.00 at age 67 is **derived arithmetic, not a market
-   observation** (gap 4 of the research file). It is linear in the annuity, so a 10 % error in the
-   factor is a 10 % error in the pension the model reports, and it interacts with the annuity age
-   through `T_eff`. A reader who needs a market level must go to a current
-   *Produktinformationsblatt* or a rating-house comparison [R23]; none was available here.
+   on the same chassis isolates the acquisition load. **The stack can now be located in the
+   market, and it sits low**: BaFin's survey puts the *Effektivkosten* of the most-sold
+   fondsgebundene products at a weighted mean of **1,90 % p.a.** at entry age 37 over 30 years —
+   this model's anchor cell — with quartiles at **1,30 / 1,64 / 2,35 %** and insurers above 4 % at
+   every age-and-term combination [R11] [REG-R35], and one real tariff reports **1,4 %–3,4 %** over
+   the same term [S15]. `std_gross`'s implied ~1 % p.a. is **below the observed lower quartile**.
+   Any statement that starts "a German unit-linked contract costs…" and ends in a delib number is
+   therefore describing a cheap tariff, not a typical one.
+3. **The guaranteed *Rentenfaktor* — and this is the largest known error in the model.** 25.00 at
+   age 67 is **derived arithmetic**, and at the anchor cell the observed value is **22,91**
+   [S15], so the shipped table is about **9 % generous** there. It is linear in the annuity, so
+   that is a 9 % overstatement of the pension the model reports. Worse, the shipped table is flat
+   in the deferment where a real one falls with it — 25,22 / 24,12 / 22,91 / 21,83 at 12 / 20 /
+   30 / 40 years to the same age 67 — so the error grows with the term and the model prices short
+   and long deferments alike. **The table is not changed in this pass**, because
+   `rentenfaktor_table.csv`, the worked example and the golden tests move together. A reader who
+   needs a market level should take the observed values above rather than the shipped ones, or go
+   to a current *Basisinformationsblatt* [S15] [R23].
 4. **The lapse shape.** No German unit-linked *Stornoquote* was established. On this product the
    direction of the exposure is the opposite of a protection block's: lapses in the first five
    years remove policies **before** the insurer has recovered the commission it paid at inception,
@@ -1093,16 +1186,32 @@ In rough order of leverage for a German unit-linked block:
    and not implemented: their whole content is what they do on paths this projection does not
    generate.
 7. **The unmodelled *Überschussbeteiligung*.** A unit-linked contract's surplus arises from the
-   risk and cost results only [R5] [R14] [REG-R9] [REG-R18], and the model computes the risk
-   result but credits none of it back. The projected *Fondsguthaben* is therefore biased
-   **downward** — the honest direction for a charge demonstration, and the direction a reader
-   should keep in mind when comparing the reduction in yield with a published *Effektivkostenquote*.
-8. **Provenance.** Every paragraph number, every date and every level in this file is either
-   **[std]** or `[unverified]`. The three facts with any corroboration at all — the
-   *Beitragsrückgewähr* death benefit [S2], the `max(guaranteed, current)` factor rule [S4] and
-   the 25 ‰ *Höchstzillmersatz* [R12] [REG-R16] — reach this file at one remove, through searches
-   run for sibling delib products. A calibration pass against a real *Produktinformationsblatt*
-   and a real *Basisinformationsblatt* is required before any quantitative use of this model.
+   risk and cost results only, because MindZV § 3 Abs. 1 computes the creditable investment income
+   *"ohne die der Lebensversicherung für Rechnung und Risiko der Versicherungsnehmer zuzuordnenden
+   Erträge und Aufwendungen"*, and § 3 Abs. 5 of a real AVB confirms that *"[v]or Rentenbeginn …
+   keine Bewertungsreserven"* arise [R5] [R14] [S2] [REG-R9] [REG-R18]. The statutory minima are
+   **90 %** of the *Risikoergebnis* and **50 %** of the *übriges Ergebnis*. The model computes the
+   risk result and credits none of it back, so the projected *Fondsguthaben* is biased
+   **downward** — the honest direction for a charge demonstration, and the direction to keep in
+   mind when comparing the reduction in yield with a published *Effektivkosten* figure. Two facts
+   limit the size of the omission: a real pre-*Rentenbeginn* credit is a premium-based
+   *Grundüberschussanteil* that a paid-up or single-premium contract does not receive at all [S2],
+   and BaFin found in 2025 that more than half of German life insurers declare no
+   *Risikoüberschussbeteiligung* even on adequately priced new products [R11].
+8. **Provenance, restated after the pass of 2026-08-30.** The mechanics of this model are no
+   longer uncited. Read verbatim in a German fondsgebundene AVB [S2]: the *Beitragsverrechnung*
+   split, the *Beitragsrückgewähr* death benefit, the `max(guaranteed, current)` factor rule, the
+   *Zeitwert* *Rückkaufswert*, the *Stückkosten* taken by unit cancellation, the decay of a
+   paid-up contract, the *Rücknahmepreis* and waived *Ausgabeaufschlag*, and the 0 %
+   *Rechnungszins* on DAV 2004 R behind the *Rentenfaktor*. Read in the canonical statutes: the
+   25 ‰ cap (DeckRV § 4 Abs. 1), the *Zeitwert* branch (VVG § 169 Abs. 4), the *Stornoabzug*
+   conditions (Abs. 5), the termination right (§ 168), the paid-up right (§ 165), the 12/62 rule
+   and the 15 % *Teilfreistellung* (EStG § 20 Abs. 1 Nr. 6 with § 52 Abs. 28), and the MindZV
+   percentages. **The levels remain [std]**, and two are now known to be wrong against the one
+   tariff that could be read: the guaranteed *Rentenfaktor* (item 3) and the death table behind
+   `q_tariff` [R17]. A calibration pass against a real *Produktinformationsblatt* — the document
+   that carries a carrier's charge rates, and the one limb of [S16] still missing — remains
+   required before any quantitative use of this model.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-fondsgebundene_rentenversicherung-r1

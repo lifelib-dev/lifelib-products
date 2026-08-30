@@ -170,7 +170,7 @@ which is the honest arrangement: averaging the two cohorts' reserves is pitfall 
 | 6 | **In-force, pre-2012 cohort, at the 60 age floor** | concluded 2009, `duration_init = 17`, `ret_age = 60`, `gtd_rate = 2,25 %` |
 | 7 | **In-force and already *beitragsfrei*** | concluded 2014, `duration_init = 12`, `paidup_at_init = 1`, `gtd_rate = 1,75 %` |
 | 8 | **In-force and already in payment** — opens in the *Rentenphase*, `ret_t() ≤ 0` | concluded 2006, `entry_age = 48`, `duration_init = 20`, `ret_age = 65`, `ann_pp_init > 0` |
-| 9 | **Boundary — the whole *Höchstbetrag*** | 50 → 67, 30 826 € p.a. annual [R2] [unverified] |
+| 9 | **Boundary — the whole *Höchstbetrag*** | 50 → 67, 30 826 € p.a. annual [R2] [R20] — 124 800 € × 24,7 %, rounded up under § 10 Abs. 3 Satz 1 EStG |
 | 10 | **Boundary — a *Kleinbetragsrente* this model annuitises rather than commutes** | 30 → 67, 300 € p.a. monthly (25 €/month) |
 | 11 | **Boundary — the 50 % rule** | 42 → 67, quarterly, `buz_prem_share = 0.49` |
 | 12 | Deferral to 70 with **both options on** | 55 → 70, monthly, `surv_annuity_rate = 0.60`, `guarantee_period_y = 20` |
@@ -222,14 +222,14 @@ class (c) is the modeller's view of experience.
 | Input | Value | Basis |
 |---|---|---|
 | Annuity form | Monthly, lifelong, on the taxpayer's own life; **no lump sum of any kind at any date** | [R1] [REG-R39] |
-| Earliest *Rentenbeginn* | Completion of the 62nd year for contracts concluded after 31 December 2011; the 60th for earlier ones | [R1] [R8] [REG-R39]; both [unverified] |
+| Earliest *Rentenbeginn* | Completion of the 62nd year for contracts concluded after 31 December 2011; the 60th for earlier ones | [R1] [R8] [REG-R39] — § 10 Abs. 1 Nr. 2 Buchst. b aa and § 10 Abs. 6 EStG, both read |
 | Surrender value | **None at any duration.** § 169 VVG inoperative; no *Stornoabzug* | [R1] [R14] [REG-R28] |
 | *Beitragsfreistellung* | Exercisable at any time for the end of the current premium period; converts to a premium-free entitlement to a reduced annuity | [R14] [REG-R28] |
 | Death benefit, base design | **Nothing** before *Rentenbeginn*; the annuity simply ends after it | [R1] [REG-R39] |
 | Death benefit, rider on | The *Deckungskapital*, payable **only where an eligible survivor exists**, and applied as the single premium of a survivor's annuity | [R1] |
 | Permitted survivors | Spouse or registered partner; children while *Kindergeld* or the *Kinderfreibetrag* runs | [R1] [REG-R39] |
 | *Rentengarantiezeit* | Remaining instalments to the end of the guaranteed period, **only to an eligible survivor**, **never commutable** | [R1] |
-| BUZ premium share | Supplementary covers strictly **below 50 %** of the total contribution | [R1]; address [unverified] |
+| BUZ premium share | Supplementary covers strictly **below 50 %** of the total contribution | **not [R1]** — the statute requires only that the cover be *ergänzend*. The 50 % test is BMF-Schreiben v. 24.05.2017 Rz. 38, measured on the actual total premium payable [R18], and is a contract term in the GDV BUZ model conditions § 9 Abs. 2 [S12] |
 | Conversion rule | `ann_pp = fund / 10 000 × max(rentenfaktor_gtd, rf_curr) × 12`, reduced by the option factors | [R17] [S1] |
 | *Rechnungszins* (`gtd_rate`) | The cohort's *Höchstrechnungszins*: 1,00 % from 1 January 2025; 0,25 % 2022–2024; 0,90 % 2017–2021; 1,25 % 2015–2016; 1,75 % 2012–2014; 2,25 % 2007–2011; 2,75 % 2004–2006. **Fixed at conclusion for the whole term** | [R16] [REG-R14] [REG-R15] |
 | *Höchstzillmersatz* (`zill_rate`) | **25 ‰ of the *Beitragssumme***, from 1 January 2015 (40 ‰ before) | [R16] [REG-R16] [REG-R20] |
@@ -264,9 +264,12 @@ trigger — while the 4,0 % level is **[std]** with nothing behind it.
 (iv) A *volldynamische Rente* would consume the whole first-order margin released in the payout phase
 and a *konstante Rente* none; 1,0 % is deliberately in between, and it decides how much of the
 conversion-basis wedge (see *Key sensitivities*) is given back.
-(v) **No *Rentenfaktor* level, range or time series exists anywhere in the delib corpus** (gap 4). The
-base scenario is set **above** the guaranteed factor so `max(gtd, curr)` is visibly operative, and the
-`low` scenario below it so model point 13 exercises the other branch.
+(v) **One guaranteed *Rentenfaktor* level now exists in the corpus and no range or time series does**
+(gap 4). NÜRNBERGER's *Muster*-PIB gives a guaranteed **24,94 €** per month per 10 000 € at 67 on a
+2025 fund-linked contract [S13]; the shipped guaranteed factors are 28,00 € at the anchor and 34,00 €
+at model point 13, i.e. above it, and were **not re-calibrated in this pass** — see `model.md`. The
+base *current*-factor scenario is set **above** the guaranteed factor so `max(gtd, curr)` is visibly
+operative, and the `low` scenario below it so model point 13 exercises the other branch.
 (vi) Anchored on the sibling corpus's Schicht-3 illustration — a 10-year *Rentengarantiezeit* at about
 0,5 % of the annuity, 20 years at 2,6 %, 30 years at 8,0 % — **[unverified] and explicitly not
 transferable** to Schicht 1. The survivor factor has no anchor at all.
@@ -285,12 +288,12 @@ best-estimate factor for a Basisrente, and the research file records the absence
 | *Zuzahlung* take-up `zuz_take_up(dur)` | **0.70** at durations 1–5, **0.85** at 6–15, **0.90** at 16+ | The *Zuzahlung* is paid out of a profit not known until the year end, so it is behavioural, not contractual. Rising with duration because the contract and the habit bed in |
 | Eligible-survivor probability `elig_surv_prob` | **0.55** | The probability that a spouse or registered partner, or a *Kindergeld*-eligible child, exists at the moment of death [R1]. On a contract taken at 45 and running to 67 the child channel has usually closed, so this is in substance a marriage-survival probability. **One of the most consequential [std] numbers in the whole delib library** |
 | Acquisition expense `acq_expense_pp` | **250,00 €** at inception | Round-number placeholder |
-| Initial commission `comm_init_rate` | **2,5 % of `beitragssumme_pp`**, paid at inception | Sized to the *Zillmerung* cap [R16], the German design in which what the insurer pays out is what it may write into the reserve. [S2]'s 1 575 € specimen *Abschlussprovision* is the corpus's only datum and is [unverified] |
+| Initial commission `comm_init_rate` | **2,5 % of `beitragssumme_pp`**, paid at inception | Sized to the *Zillmerung* cap [R16], the German design in which what the insurer pays out is what it may write into the reserve. **A carrier's published figure now matches it exactly**: NÜRNBERGER's *Muster*-PIB puts *Abschluss- und Vertriebskosten* at "*2,50 % der vereinbarten Beiträge*", 900,00 € on a 36 000 € *Beitragssumme* [S13] — that is the cost, not the commission, but on the German design they are the same lever. [S2]'s 1 575 € specimen *Abschlussprovision* stays [unverified] |
 | Renewal commission `comm_renew_rate` | **1,5 %** of premiums plus *Zuzahlungen* from year 2 | Market convention; no level established |
 | Maintenance expense `maint_expense_pp` | **60,00 €** per in-force policy p.a., inflating | Placeholder |
 | Annuity administration `annuity_admin_pp` | **36,00 €** per annuitant p.a., inflating | Placeholder; the payout phase is administratively cheaper than the accumulation phase |
 | Expense inflation `expense_infl` | **1,5 %** p.a. | Placeholder |
-| *Zillmerung* spread `zill_spread_y` | **5** years | The LVRG-era German market shape; **whether the AltZertG's five-year spreading reaches Basisrentenverträge was not established** (gap 8) |
+| *Zillmerung* spread `zill_spread_y` | **5** years | **Cited, not [std] — gap 8 is closed.** The AltZertG's own five-year rule (§ 1 Abs. 1 Satz 1 Nr. 8) sits in the *Altersvorsorgevertrag* definition and § 5a does not import it [R10]; but **VVG § 165 Abs. 2** computes the premium-free benefit on the *Rückkaufswert* of § 169 Abs. 3, whose floor is the reserve "*bei gleichmäßiger Verteilung der angesetzten Abschluss- und Vertriebskosten auf die ersten fünf Vertragsjahre*" [R14] — and a *Beitragsfreistellung* is the only exit this product has. Two retrieved wordings state it directly: GDV model conditions § 10 Abs. 1 (with the shorter premium term as the alternative) and CosmosDirekt LA 1079 A § 8 Abs. 1 [S12] [S1] |
 
 **No decrement other than death and the *Beitragsfreistellung* transition exists in this model.** No
 surrender, no assignment, no provider transfer, no commutation. That is the product [R1] [REG-R39]
@@ -733,9 +736,13 @@ any of them, and the research file records the absence as gap 3.
   **[std]** view and a stated model risk, and `mort_be_factor` is the single lever that would carry it.
 - **Almost no annuitisation behaviour, and what remains is not modelled**: no *Kapitalwahlrecht* and
   no *Teilkapitalauszahlung* at any duration [R1] [R23]. The one election Schicht 1 does admit is the
-  *Kleinbetragsrenten-Abfindung* of § 10 Abs. 1 Nr. 2 Satz 3 EStG [REG-R42] [unverified], and this
-  model does not implement it **[std]** — the threshold is contested, no carrier's AVB treatment was
-  established, and `Riester_DE_A` already carries the machinery (`is_kleinbetrag()`,
+  *Kleinbetragsrenten-Abfindung* of § 10 Abs. 1 Nr. 2 Satz 3 EStG, which permits commutation of a
+  *Kleinbetragsrente* "*im Sinne von § 93 Absatz 3 Satz 2 oder 4*" [R1] [R23] [REG-R42], and this
+  model does not implement it **[std]**. **Two of the three reasons it gave have since fallen**: the
+  threshold is settled at 1,5 % of the monthly *Bezugsgröße* [R23], and a carrier's AVB treatment is
+  now known — one offers the *Abfindung* [S1] and the GDV model conditions make it the **insurer's**
+  right, not the policyholder's [S12], which is itself a reason a projection cannot assume take-up.
+  The remaining reason stands: `Riester_DE_A` already carries the machinery (`is_kleinbetrag()`,
   `commutation_pp()`) for a reader who wants it. Model point 10 is a small enough contract to reach
   it, and this model annuitises it. The Schicht-3 chassis needs a take-up assumption and a declaration
   window for a *Kapitalwahlrecht*; this product needs neither, which is the cleanest simplification the
@@ -782,7 +789,7 @@ trigger [R15]; `ann_bonus_rate(t) = 1.0 %` p.a. compounding **[std]**, a *teildy
 **[std]**, so `rentenfaktor_applied() = max(28.00, 31.50) × 1.000 = 31.50` — the **current** factor
 binds on this cell, and model point 13 exercises the other branch [R17] [S1]. *Charges*:
 `zill_rate = 25 ‰` of the *Beitragssumme* [R16] [REG-R16] [REG-R20], amortised over
-`zill_spread_y = 5` years **[std]**; `alpha_zuz_rate = 2.5 %` of each *Zuzahlung* **[std]**;
+`zill_spread_y = 5` years, now cited rather than **[std]** [R14] [S1] [S12]; `alpha_zuz_rate = 2.5 %` of each *Zuzahlung* **[std]**;
 `beta_prem = 7.5 %` **[std]**; `gamma_av = 0.35 %` p.a. **[std]**; `unit_cost_pp = 36.00 €` p.a.
 inflating at `expense_infl = 1.5 %` **[std]**. *Insurer expense and commission*, all **[std]**:
 `acq_expense_pp = 250.00 €` at inception; `comm_init_rate = 2.5 %` of `beitragssumme_pp()` at

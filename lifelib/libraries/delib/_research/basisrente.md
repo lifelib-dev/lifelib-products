@@ -156,29 +156,34 @@ turns on:
 
 ## Primary sources
 
-Every entry below carries the same retrieval status unless it says otherwise, stated once here
-rather than repeated sixteen times: **Retrieved: no — egress blocked; no search corroboration
-(session search budget exhausted).** Nothing in this section is quoted from a document. Where an
-entry establishes something, it says what and from where; where it establishes nothing beyond the
-document's existence and kind, it says that too, which is the honest majority case in this file.
+**A retrieval pass was run over this section on 2026-08-30, after the network policy that shaped
+the file was lifted.** Each entry now carries its own `Retrieved:` line saying what was opened and
+what was not; where an entry still says no, it says why. The blanket status the section opened with
+— "egress blocked; no search corroboration" — no longer applies to the entries that were upgraded,
+and the per-entry line governs. Where an entry establishes something, it says what and from where;
+where it establishes nothing beyond the document's existence and kind, it says that too.
 
-Two entries — [S1] and [S2] — are stronger than the rest, because their **identity** was
-established by search in a sibling delib research file while the budget was still available. They
-are the only carrier-level Basisrente artefacts anywhere in the delib corpus, and they are the two
-entries a checker should verify first.
+What was opened: **[S1]** two of CosmosDirekt's Basisrente wordings and both of its *Muster*-PIBs;
+**[S4]** one Alte Leipziger wording; **[S12]** the GDV's Basisrente and BUZ *Musterbedingungen* and
+a *Muster-Standmitteilung*, which the file had recorded as possibly not existing at all; **[S13]**
+two carriers' filled-in *Muster-Produktinformationsblätter*; **[S16]** an independent
+*Effektivkosten* study; and product pages at **[S2]**, **[S7]** and **[S9]**. What was not: any
+*Verbraucherinformation*, any individual PIB, any AVB of the carriers at [S3], [S5], [S6], [S8],
+[S10] or [S11], and anything at all from Swiss Life, whose host refuses this environment.
 
 ### S1 — Cosmos Lebensversicherungs-AG (CosmosDirekt), *Allgemeine Bedingungen* for the Basisrente — tariffs **LA 1100 A** and **LA 1079 A / LA 936 A / LA 1099 A**
 - Publisher: Cosmos Lebensversicherungs-AG, the direct-writing arm of Generali Deutschland
 - Doc type: *Allgemeine Versicherungsbedingungen* (AVB) for Basisrente tariffs, in the carrier's
   `LA nnnn A` house numbering
-- URL: not established. The carrier's sibling Schicht-3 wording **LA 904 A** was returned at
-  `https://www.cosmosdirekt.de/resource/blob/89106/…/allgemeine-bedingungen-rentenversicherung-la-904-a--data.pdf`,
-  so the Basisrente wordings are expected to sit under the same `resource/blob` scheme; **no blob
-  path for a Basisrente wording was returned and none is guessed**
-- Retrieved: no — egress blocked; **no search corroboration in this file (budget exhausted)**;
-  document identity carried over from the sibling delib research file
-  `_research/klassische_rentenversicherung.md` [S8], which established the carrier's tariff-number
-  list from a search-result summary while search was still available
+- URL: **established 2026-08-30.** LA 1079 A (*klassisch*) at
+  `https://www.cosmosdirekt.de/resource/blob/88924/af678e39611b9b44f5dfb3b0cebb895c/allgemeine-bedingungen-basisrente-la-1079-a--data.pdf`
+  and LA 1100 A (*fondsgebunden*) at
+  `https://www.cosmosdirekt.de/resource/blob/88926/1c398c12d5d98869dc0f23218bf20bf3/allgemeine-bedingungen-fondsgebundene-basisrente-la-1100-a--data.pdf`,
+  under the expected `resource/blob` scheme. Also under it: LA 1080 A (*Hinterbliebenen-Zusatz­
+  versicherung*, blob 89028) and the two *Muster*-PIBs (blobs 89376 and 89378). **LA 936 A and
+  LA 1099 A were not located**
+- Retrieved: **yes** — LA 1079 A and LA 1100 A (PDF, 7 pp. each, both edition (10.15)), read in
+  full 2026-08-30, together with the *klassisch* *Muster*-PIB (4 pp., 06.2016)
 - Content:
   - **Four tariff codes are attributed to the Basisrente** in the carrier's own numbering —
     **LA 1100 A**, **LA 1079 A**, **LA 936 A**, **LA 1099 A** — against LA 1005 A (Riester),
@@ -187,13 +192,26 @@ entries a checker should verify first.
     yields about the product's market form: **one direct writer maintains at least four parallel
     Basisrente wordings**, which is what a tariff family looks like when *klassisch*, *fondsgebunden*
     and vintage editions coexist.
-  - **No edition date, no page count and no clause text was established** for any of the four. The
-    numbers themselves are the whole of what this entry supports.
-  - The carrier's Schicht-3 sibling LA 904 A establishes the house's conversion convention — the
-    *garantierter Rentenfaktor* fixed at inception on **DAV 2004 R** and, at that document's
-    vintage, an interest basis of **0 % p.a.** [R17] — and that convention is almost certainly
-    shared with the Basisrente wordings, **but the inference is not evidence** and is `[unverified]`
-    as a Basisrente fact (gap 4).
+  - **Two of the four wordings were located and read**, both edition (10.15), 7 pp. each. LA 936 A
+    and LA 1099 A were not found, and the entry no longer asserts that four exist — two do.
+  - **Clause content now established from LA 1079 A**: the 50 % rule stated to the customer ("*In
+    jedem Fall ist sichergestellt, dass mehr als 50 Prozent der von Ihnen geleisteten Beiträge für
+    Ihre Altersversorgung aufgewendet werden*"); tariffs RBA/RBAE without a death benefit beside
+    RBH/RBHE with a spouse or registered-partner annuity funded from the *garantiertes
+    Deckungskapital*; § 1 Abs. 11 "*Ein Kapitalwahlrecht existiert nicht*"; § 1 Abs. 2's
+    *Kleinbetragsrenten-Abfindung*; § 1 Abs. 3's flexible *Rentenbeginn*, forward by up to ten years
+    but never before 62 and deferrable once by five; § 2's surplus system (*Zins-* and
+    *Grund-Überschussanteil*, a *Bonussumme* in the *Aufschubzeit*, *Schluss-Überschussanteil* and
+    *Bewertungsreserven* on the *Bonus-Deckungskapital*, *dynamische Rente* or *Zusatzrente* after
+    *Rentenbeginn*); § 7's *Kündigung* that converts to paid-up with no *Rückkaufswert*, the
+    single-premium contract that is "*auf Grund der gesetzlichen Restriktionen ... nicht kündbar*",
+    and a **free transfer to another § 10 Abs. 1 Nr. 2 b) contract** on three months' notice;
+    and § 8's five-year cost spreading and administration-charge shape.
+  - **The 0 % conversion basis is wrong for this product and is withdrawn.** It came from the
+    carrier's Schicht-3 sibling LA 904 A. The Basisrente wording itself says the guaranteed
+    *Rentenfaktor* is computed "*auf Grundlage einer anerkannten Sterbetafel (DAV 2004R) sowie des
+    tariflichen Garantiesatzes (Rechnungszins) von **1,25 Prozent p. a.***" — the tariff's own rate,
+    which for a 10.15 wording is that year's *Höchstrechnungszins* [R16] [R17] (gap 4).
 
 ### S2 — Allianz Lebensversicherungs-AG, **BasisRente KomfortDynamik** — specimen *persönlicher Vorschlag*
 - Publisher: Allianz Lebensversicherungs-AG
@@ -314,53 +332,100 @@ entries a checker should verify first.
 ### S12 — GDV, *Musterbedingungen* service index
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV)
 - Doc type: the association's index of model conditions
-- URL: `https://www.gdv.de/gdv/service/musterbedingungen` — established in a sibling delib file
-- Retrieved: no — egress blocked; index URL carried over from
-  `_research/klassische_rentenversicherung.md` [S3]
-- Content: the GDV publishes *Musterbedingungen* for the deferred annuity and for the
-  *Riester* annuity (a sibling model condition set carrying "Stand: 21.07.2025" was seen in that
-  file). **Whether the GDV publishes a Basisrente model condition set at all was not established**
-  and must not be assumed (gap 5). Two things about GDV model conditions carry over regardless and
-  matter for how any such document would be weighted: they are expressly **unverbindlich** and their
-  use by member undertakings is **optional**, so a GDV-tagged fact is evidence about a market
-  template and weaker evidence about any particular carrier.
+- URL: `https://www.gdv.de/gdv/service/musterbedingungen`, from which four Basisrente documents
+  resolve under `gdv.de/resource/blob/…`: the Basisrente AVB (blob 6292), the BUZ zur Basisrente
+  (blob 6330), the Hinterbliebenenrenten-Zusatzversicherung zur Basisrente (blob 6338) and the
+  *Muster-Standmitteilungen* for a *Basisrentenversicherung (klassisch)* (blob 6314) and *(mit BUZ)*
+  (blob 6310)
+- Retrieved: **yes** — the index (HTML, ~94 kB), the Basisrente AVB (PDF, 18 pp., **Stand:
+  21.07.2025**), the BUZ AVB (PDF, 11 pp., **Stand: 15.11.2022**) and the *klassisch*
+  *Muster-Standmitteilung* (PDF, 8 pp.), all read 2026-08-30
+- Content: **gap 5 is closed, and in the affirmative.** The GDV does publish a Basisrente model
+  condition set, titled *Allgemeine Bedingungen für die Rentenversicherung gemäß § 10 Absatz 1
+  Nr. 2 Buchstabe b Doppelbuchstabe aa EStG (Basisrente-Alter)*, and a matching BUZ set. Between
+  them they supply: the payout shape and the 62 floor (§ 1 Abs. 1); the combination of **up to
+  twelve monthly annuities into one payment** below an agreed amount (§ 1 Abs. 2); the
+  *Kleinbetragsrente* commutation as the **insurer's** right — "*Wir sind allerdings berechtigt*" —
+  at a threshold the July 2025 text still gives as **1 %** of the monthly *Bezugsgröße* (§ 1
+  Abs. 3); "*Bei Ihrem Tod erbringen wir keine Leistung, und der Vertrag endet*" as the base design
+  (§ 1 Abs. 5); a *Kündigung*, whole or partial, that converts to paid-up and pays no
+  *Rückkaufswert*, with a single-premium contract simply continuing (§ 9); the paid-up benefit
+  computed on a **five-year spreading of acquisition and distribution costs**, or the premium term
+  if shorter (§ 10 Abs. 1); the closed charge menu of AltZertG § 2a with the DeckRV § 4
+  *Verrechnungsverfahren* capped at "*2,5 % der ... zu zahlenden Beiträge*" (§ 11); the annual
+  information field list (§ 14); and, in the BUZ set, **"*Die Zusatzversicherung ist so gestaltet,
+  dass stets mehr als 50 % der Beiträge auf Ihre Hauptversicherung entfallen*"** (§ 9 Abs. 2), which
+  is gap 18's missing document. Two things about GDV model conditions still matter for weighting:
+  they are expressly **unverbindlich** and their use is **optional**, so a GDV-tagged fact is
+  evidence about a market template and weaker evidence about any particular carrier.
 
 ### S13 — *Produktinformationsblatt* under § 7 AltZertG (the standardised PIB)
 - Publisher: each provider, on a form and a computational method prescribed by law and administered
   by the **Produktinformationsstelle Altersvorsorge gGmbH (PIA)**, Kaiserslautern
 - Doc type: the mandatory two-page pre-sale document for a certified Basisrentenvertrag
-- URL: not established (there is no single URL; every provider publishes its own, per tariff and per
-  model point)
-- Content — **the document type a delib reader must understand even though none was opened**:
-  It is **quotation-specific** — the figures are computed for the prospect's own age, term and
-  contribution, not for the tariff in the abstract — and it carries the three standardised
-  comparators the legislator built for this layer: the ***Effektivkosten*** (reduction in yield, the
-  annualised return give-up caused by all charges), the ***Chancen-Risiko-Klasse*** (a risk class
-  computed by PIA on a common capital-market model) and standardised projection scenarios,
-  `[unverified]` as to the exact current field list. It is the **only public document in the German
-  market that states a Basisrente's total charge burden as a single comparable number**, which is
-  why gap 2 is the most consequential gap in this file: every charge parameter downstream is
-  `[std]`.
+- URL: the *individual* PIB is quotation-specific and never public, but § 7 Abs. 4 AltZertG
+  requires a ***Muster*-PIB** for assumed terms of **12, 20, 30 and 40 years** on each provider's own
+  site. Two were retrieved: NÜRNBERGER `https://www.nuernberger.de/medien/4allportal/lv052_030_p.pdf`
+  and WWK
+  `https://www.wwk.de/medien/dokumente/produktinformationsblaetter/basisrente-invest-protect-50/fvg22_eb_lz20_50bg.pdf`
+- Retrieved: **yes, two *Muster*-PIBs** (NÜRNBERGER, 2 pp., certification number 006590, Stand
+  01.01.2025; WWK, 2 pp., certification number 006421, Stand 03.01.2024), read 2026-08-30. **No
+  individual PIB was obtained and none can be**
+- Content — **gap 2 and gap 7 are both closed.** The individual PIB is quotation-specific; the
+  *Muster*-PIB is the same form on stylised data. The **CRK scale is 1 to 5**; the *Effektivkosten*
+  are the reduction in yield in percentage points against a reference gross return fixed by the CRK
+  (2 / 3 / 4 / 5 / 6 % for CRK 1–5), and the benefit scenarios run on four returns per CRK (for
+  CRK 4: −1 %, 2 %, 5 % and 6 %) — AltvPIBV §§ 5, 8 and 10 [R11].
+  **The NÜRNBERGER sheet is the corpus's first quantified Basisrente.** *Musterkunde* born 1988,
+  30 years to 67, 100 € a month, 36 000 € paid, CRK 4. ***Effektivkosten* 1,77 percentage points**
+  (5,00 % → 3,23 %). *Garantiertes Kapital für Verrentung* 18 000,00 €; **garantierte monatliche
+  Altersleistung 44,89 €** at a **guaranteed *Rentenfaktor* of 24,94 € per 10 000 €** — the first
+  *Rentenfaktor* level anywhere in this corpus, which is gap 4. Charges: *Abschluss- und
+  Vertriebskosten* **900,00 € = 2,50 % der vereinbarten Beiträge** and 2,50 % per *Zuzahlung*;
+  *Verwaltungskosten* **7,00 % der eingezahlten Beiträge**, up to **3,80 % p.a. of the fund**
+  (fund charges included; current burden 1,10 %), **1,50 % of the annuity p.a.** in the payout
+  phase; *Versorgungsausgleich* up to 500,00 €; "*Ein Anbieterwechsel ist bei diesem Produkt
+  ausgeschlossen*". The WWK sheet — 20 years, single premium, 50 % *Beitragsgarantie*, CRK 4 —
+  gives *Effektivkosten* of **4,95 percentage points** and likewise excludes an *Anbieterwechsel*.
+  **Read a *Muster*-PIB figure as a ceiling**: it is computed on maximum permitted charges, and the
+  study at [S16] puts realistic figures for the same product class at 1 – 1,5 pp.
 
 ### S14 — *Basisinformationsblatt* (PRIIP key information document)
 - Publisher: each provider
 - Doc type: the PRIIPs KID for an insurance-based investment product
-- URL: not established
-- Content: **the document type exists for unit-linked and hybrid Basisrenten.** It carries a
-  summary risk indicator, performance scenarios and a cost table split into one-off, ongoing and
-  incidental costs, with *reduction in yield* figures at several holding periods. **How the PRIIPs
-  KID and the § 7 AltZertG *Produktinformationsblatt* interact for a certified Basisrentenvertrag —
-  whether both are required, or one substitutes for the other — was not established and is gap 6.**
-  Nothing downstream may assert either arrangement.
+- URL: not established **for a Basisrente**. A carrier's *Basisinformationsblatt* index was reached
+  (`https://www.lv1871.de/service/kundenservice/basisinformationsblaetter/`) and one KID was
+  retrieved in full — NÜRNBERGER `https://www.nuernberger.de/medien/4allportal/gn339322_p.pdf`,
+  tariff NR3361DV, Stand 01.01.2026 — but **that document is a Schicht-3 contract with a
+  *Kapitalwahlrecht*, not a Basisrente**
+- Retrieved: **one specimen of the document type, yes; none for a Basisrente, no**
+- Content: the retrieved specimen establishes the form — purpose statement, product type,
+  recommended holding period, a **summary risk indicator on a scale of 1 to 7**, performance
+  scenarios and a cost table. **Gap 6 is narrowed, not closed.** § 7 Abs. 2 AltZertG establishes
+  that the individual PIB "*ersetzt das Informationsblatt zu Versicherungsprodukten nach § 4 der
+  VVG-Informationspflichtenverordnung*" and that **no § 154 VVG *Modellrechnung* is to be performed
+  or attached** for a certified contract [R11] — so it displaces at least one neighbouring
+  disclosure. Whether it also displaces the PRIIPs KID is **still not established**: no Basisrente
+  KID was found at any carrier, which is consistent with the product sitting outside PRIIPs but does
+  not prove it. Nothing downstream may assert either arrangement.
 
 ### S15 — Annual statement to the policyholder (*jährliche Information*, § 7a AltZertG)
 - Publisher: each provider
 - Doc type: the statutory annual information for a certified contract
-- URL: not established
-- Content: the statute requires an annual statement to a Basisrente saver `[unverified]` as to the
-  paragraph. Its interest for delib is that it names, side by side, the state variables a projection
-  model must carry — contributions paid in the year, accumulated value, guaranteed benefit and
-  projected annuity. **The field list was not established.**
+- URL: the statute itself, `https://www.gesetze-im-internet.de/altzertg/__7a.html`; the GDV
+  *Muster-Standmitteilung* for a *Basisrentenversicherung (klassisch)* at [S12]
+- Retrieved: **yes** — § 7a AltZertG as canonical XML (Stand: zuletzt geändert durch Art. 5 G v.
+  25.10.2023 I Nr. 294) and the GDV *Muster-Standmitteilung* (PDF, 8 pp.), read 2026-08-30. **The
+  paragraph address § 7a is correct**
+- Content: **the field list is established and is the statute's own.** § 7a Abs. 1 requires annual
+  information on (1) the use made of the contributions paid, (2) the amount of capital built up,
+  (3) the actual costs incurred in the past contribution year, (4) the investment return earned and
+  (5), until the payout phase begins, the capital expected at its start after costs — projected on
+  the contributions actually paid and the *Wertentwicklungen* of the individual PIB — plus a
+  statement on ethical, social and environmental considerations. The GDV model conditions restate it
+  at § 14 and add that the capital figure is a *Gesamtkapital* including allocated surplus,
+  non-guaranteed *Schlussüberschüsse* and the non-guaranteed *Bewertungsreserven*-share. That is the
+  same state-variable list `result_pols()` publishes.
 
 ### S16 — Consumer, comparison and rating material
 - Publishers: **Finanztip**, **Stiftung Warentest / Finanztest**, the **Verbraucherzentralen**,
@@ -379,15 +444,30 @@ entries a checker should verify first.
 
 ## Regulatory and actuarial references
 
-Same retrieval status throughout: **Retrieved: no — egress blocked; no search corroboration
-(session search budget exhausted).** The content blocks state what each instrument provides, in
-this file's own words, from general knowledge of German law and practice. **They are pointers to be
-checked, not readings.** Every paragraph number, date and figure below is `[unverified]` unless the
-entry says otherwise, and the register at the foot of the file lists what that leaves open.
+**Retrieval pass, 2026-08-30.** Every German statute and regulation in this section was retrieved as
+canonical XML from gesetze-im-internet with the law's *Stand* attached and read at the section the
+entry relies on — EStG §§ 10, 22 and 93; AltZertG §§ 1, 2, 2a, 5a, 7 and 7a with the AltvPIBV; VVG
+§§ 153, 165, 168 and 169; ZPO §§ 851c and 851d; DeckRV §§ 2 and 4; and the
+*Sozialversicherungsrechengrößen-Verordnungen* for 2025 and 2026. The consolidated BMF-Schreiben
+[R18] and one of the 2021 BFH judgments [R19] were also retrieved. **Two cautions.** The per-section
+HTML page `gesetze-im-internet.de/<law>/__NNN.html` is a ~5 kB frameset shell carrying **no
+statutory text**; it is kept below as the human-facing link and is not what was read. And the entries
+that are **not** consolidated instruments — the amending acts at [R5]–[R8], the BaFin material at
+[R21] and the statistics at [R22] — were **not** retrieved and say so individually. Where a figure
+is still `[unverified]` the entry now says why.
 
 ### R1 — EStG § 10 Abs. 1 Nr. 2 Buchst. b — the definition of a Basisrentenvertrag
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/estg/__10.html` — canonical form, `[unverified]`
+- Retrieved: **yes** (canonical XML, Stand: neugefasst durch Bek. v. 8.10.2009 I 3366, 3862, zuletzt
+  geändert durch Art. 7 G v. 29.6.2026 I Nr. 197; § 10 read in full 2026-08-30). The five prohibitions
+  are Satz 2 verbatim — "*Die Ansprüche nach Buchstabe b dürfen nicht vererblich, nicht übertragbar,
+  nicht beleihbar, nicht veräußerbar und nicht kapitalisierbar sein.*" — the payout shape and the 62
+  floor are Doppelbuchst. aa, and **the 60/62 split is § 10 Abs. 6**, so both floors and their boundary
+  date are confirmed. Satz 3 carries the twelve-payment combination and the *Kleinbetragsrente*
+  commutation; Satz 5 shuts the door on any other payout form. **Correction: the 50 % majority test is
+  not in this section** — the statute requires only that a supplementary cover be *ergänzend*, and the
+  50 % test is administrative, at [R18] Rz. 38
 - Content — **the single most important instrument for this product, and the source of every
   constraint in it**:
   - The provision makes deductible, as *Sonderausgaben*, the taxpayer's own contributions **to
@@ -422,6 +502,12 @@ entry says otherwise, and the register at the foot of the file lists what that l
 ### R2 — EStG § 10 Abs. 3 — the Höchstbetrag, its peg, and the reductions for employees
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/estg/__10.html` — canonical form, `[unverified]`
+- Retrieved: **yes** (canonical XML, same *Stand* as [R1]; § 10 Abs. 3 read 2026-08-30). Satz 1 and 2
+  verbatim: "*Vorsorgeaufwendungen nach Absatz 1 Nummer 2 sind bis zu dem Höchstbeitrag zur
+  knappschaftlichen Rentenversicherung, aufgerundet auf einen vollen Betrag in Euro, zu berücksichtigen.
+  Bei zusammenveranlagten Ehegatten verdoppelt sich der Höchstbetrag.*" — which confirms the peg, the
+  doubling **and** the rounding convention the *Höchstbetrag* series depends on. The employee reductions
+  are Satz 3, the tax-free employer share is Satz 5, and the phase-in is Sätze 4 and 6
 - Content:
   - Contributions under § 10 Abs. 1 Nr. 2 — **letters a and b together**, i.e. statutory pension,
     *Versorgungswerk*, *Alterskasse* **and** Basisrente — are deductible up to a **single annual
@@ -467,6 +553,12 @@ entry says otherwise, and the register at the foot of the file lists what that l
 ### R4 — EStG § 22 Nr. 1 Satz 3 Buchst. a Doppelbuchst. aa — the Besteuerungsanteil
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/estg/__22.html` — canonical form, `[unverified]`
+- Retrieved: **yes** (canonical XML, same *Stand* as [R1]; § 22 Nr. 1 Satz 3 Buchst. a read in full,
+  including the statutory cohort table, 2026-08-30). **Every percentage in the delib schedule matches
+  the statute**: 2020 80,0; 2021 81,0; 2022 82,0; 2023 82,5; 2024 83,0; 2025 83,5; 2026 84,0; 2040
+  91,0; 2058 100,0. The *Rentenfreibetrag* is Sätze 4–7, and Satz 7 is the one that matters for the
+  payout-phase surplus system: "*Regelmäßige Anpassungen des Jahresbetrags der Rente führen nicht zu
+  einer Neuberechnung und bleiben bei einer Neuberechnung außer Betracht*"
 - Content — **the payout-side rule, and the second defining feature of the layer**:
   - Annuities and other benefits from a Basisrentenvertrag, and from the statutory scheme and the
     *Versorgungswerke*, are *sonstige Einkünfte* taxed on a ***Besteuerungsanteil*** — a percentage
@@ -516,9 +608,15 @@ entry says otherwise, and the register at the foot of the file lists what that l
 ### R7 — Jahressteuergesetz 2022 — the full Sonderausgabenabzug from 2023
 - Publisher: Deutscher Bundestag / Bundesgesetzblatt
 - URL: not established
+- Retrieved: **no** as to the amending act; **its effect was read in § 10 Abs. 3 EStG** on
+  2026-08-30 — Satz 4 sets 2013 at 76 %, and Satz 6 reads "*Der Prozentsatz in Satz 4 erhöht sich in
+  den folgenden Kalenderjahren bis zum Kalenderjahr 2022 um je 2 Prozentpunkte je Kalenderjahr; ab
+  dem Kalenderjahr 2023 beträgt er 100 Prozent*"
 - Content: brought forward the **100 % deductibility of Schicht-1 contributions** from the scheduled
-  2025 to the assessment period **2023**, two years early. Before it, the deductible share was
-  94 % in 2021 and 96 % in 2022 `[unverified]`. Same motive as [R6]: closing the double-taxation
+  2025 to the assessment period **2023**, two years early. **Correction:** this entry read "94 % in
+  2021 and 96 % in 2022"; on the statutory schedule the shares are **92 % in 2021 and 94 % in 2022**
+  (76 % in 2013 plus two points a year). The old pair was the original schedule's 2023 and 2024
+  values shifted two years. Same motive as [R6]: closing the double-taxation
   gap from the contribution side. **For any delib model point written at 2023 or later, the
   deductible share is 100 % of the capped contribution and no phase-in factor is needed** — which
   is a genuine simplification of the product-spec's tax section relative to how it would have had
@@ -537,6 +635,14 @@ entry says otherwise, and the register at the foot of the file lists what that l
 ### R9 — AltZertG § 5a — certification of Basisrentenverträge
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/altzertg/__5a.html` — canonical form, `[unverified]`
+- Retrieved: **yes** (canonical XML, Stand: zuletzt geändert durch Art. 5 G v. 25.10.2023 I Nr. 294;
+  §§ 5a, 2 and 2a read 2026-08-30). § 5a in full: "*Die Zertifizierungsstelle erteilt die Zertifizierung
+  nach § 2 Abs. 3, wenn ihr die nach diesem Gesetz erforderlichen Angaben und Unterlagen vorliegen sowie
+  die Vertragsbedingungen des Basisrentenvertrags dem § 2 Absatz 1 oder Absatz 1a sowie dem § 2a
+  entsprechen und der Anbieter den Anforderungen des § 2 Absatz 2 entspricht.*" **So the imported
+  conditions are § 2 Abs. 1/1a and § 2a only**, and the Riester *Beitragserhaltungsgarantie* of § 1
+  Abs. 1 Satz 1 Nr. 3 is demonstrably not among them. **The 1 January 2010 start date is not in the
+  retrieved text and stays `[unverified]`**
 - Content:
   - **§ 5a is the Basisrente's certification provision.** The *Altersvorsorgeverträge-
     Zertifizierungsgesetz* was written for Riester; § 5a was inserted later to bring Basisrenten-
@@ -557,6 +663,13 @@ entry says otherwise, and the register at the foot of the file lists what that l
 ### R10 — AltZertG § 1 and § 2 Abs. 2 — what certification is, and the Riester guarantee it does not extend
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/altzertg/__1.html` — canonical form, `[unverified]`
+- Retrieved: **yes** (canonical XML, same *Stand* as [R9]; §§ 1, 2 and 2a read 2026-08-30). The
+  *Beitragserhaltungsgarantie* is **§ 1 Abs. 1 Satz 1 Nr. 3** and the five-year cost spreading is
+  **§ 1 Abs. 1 Satz 1 Nr. 8** — "*die vorsieht, dass die angesetzten Abschluss- und Vertriebskosten
+  gleichmäßig mindestens auf die ersten fünf Vertragsjahre verteilt werden*" — both in the
+  *Altersvorsorgevertrag* definition, and **§ 5a reaches neither**. § 2a is the closed charge menu that
+  a Basisrentenvertrag may use. Note that the entry's heading is imprecise: what certification *is* is
+  defined in **§ 2 Abs. 3**, not § 2 Abs. 2, which is the list of permitted providers
 - Content:
   - § 1 lists the conditions a **Riester** *Altersvorsorgevertrag* must satisfy, including the
     **Beitragserhaltungsgarantie** (nominal preservation of contributions and *Zulagen* at the start
@@ -573,6 +686,13 @@ entry says otherwise, and the register at the foot of the file lists what that l
 - Publisher: Bundesministerium der Justiz / juris; Produktinformationsstelle Altersvorsorge gGmbH
   (PIA), Kaiserslautern
 - URL: `https://www.gesetze-im-internet.de/altzertg/__7.html` — canonical form, `[unverified]`
+- Retrieved: **yes** — § 7 and § 7a AltZertG (canonical XML, same *Stand* as [R9]) and the implementing
+  **AltvPIBV** (`https://www.gesetze-im-internet.de/altvpibv/BJNR141300015.html`), read 2026-08-30.
+  § 7 Abs. 1 lists fifteen mandatory PIB fields; § 7 Abs. 4 requires a ***Muster*-PIB at 12, 20, 30 and
+  40 years** published on the provider's own site; § 7 Abs. 2 adds that the PIB replaces the VVG-InfoV
+  sheet and that **no § 154 VVG *Modellrechnung* is to be performed or attached**. AltvPIBV § 5 puts the
+  contract in **CRK 1 to 5**; § 8 Nr. 3 defines the *Effektivkosten*; § 10 fixes the reference returns —
+  2/3/4/5/6 % by CRK for the *Effektivkosten*, and four scenarios per CRK for the projections
 - Content: the pre-sale information regime for certified contracts. It requires the provider to hand
   over a **standardised *Produktinformationsblatt*** before conclusion [S13], on a common form, so
   that products can be compared across providers and across product types. The **PIA** computes and
@@ -586,6 +706,13 @@ entry says otherwise, and the register at the foot of the file lists what that l
 ### R12 — ZPO § 851c — Pfändungsschutz bei Altersrenten
 - Publisher: Bundesministerium der Justiz / juris
 - URL: `https://www.gesetze-im-internet.de/zpo/__851c.html` — canonical form, `[unverified]`
+- Retrieved: **yes** (canonical XML, Stand: neugefasst durch Bek. v. 5.12.2005 I 3202, zuletzt geändert
+  Art. 2 G v. 22.12.2025 I Nr. 349; §§ 851c and 851d read 2026-08-30). Abs. 1's four conditions are
+  confirmed verbatim, including "*nicht vor Vollendung des 60. Lebensjahres*". **Abs. 2 now yields the
+  amounts this file declined to print**: **6 000 €** a year to the completed 27th year of life and
+  **7 000 €** to the completed 67th, an aggregate ceiling of **340 000 €**, three tenths of any excess
+  *Rückkaufswert* protected on top, and a five-yearly re-set on 1 July — which is why the practitioner
+  ladders contradicted each other (gap 9, closed)
 - Content — **the third leg of the product, alongside the tax relief and the prohibitions**:
   - The provision gives **attachment protection to private pension entitlements** that satisfy a
     set of conditions closely modelled on the § 10 EStG definition: the benefit must be payable
@@ -625,11 +752,10 @@ entry says otherwise, and the register at the foot of the file lists what that l
 
 ### R14 — VVG § 165 (Beitragsfreistellung), § 168 (Kündigung), § 169 (Rückkaufswert)
 - Publisher: Bundesministerium der Justiz / juris
-- URLs: `https://www.gesetze-im-internet.de/vvg_2008/__165.html`,
-  `.../__168.html`, `.../__169.html` — canonical forms, `[unverified]`. § 165 and § 169 were
-  established at a higher level of detail in the sibling delib files
-  `_research/kapitallebensversicherung.md` [R2] [R3] and `_research/klassische_rentenversicherung.md`
-  [R1] [R2], which corroborated them by search
+- URLs: `https://www.gesetze-im-internet.de/vvg_2008/__165.html`, `.../__168.html`, `.../__169.html`
+  — human-facing links only; §§ 165 and 153 answer as ~5 kB frameset shells with no statutory text
+- Retrieved: **yes** (canonical XML, Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156;
+  §§ 153, 163, 165, 168, 169 and 171 read 2026-08-30)
 - Content — **the provisions that would give an ordinary German life contract its exits, and what
   becomes of them here**:
   - **§ 165 — *Beitragsfreistellung*.** The policyholder of a contract with periodic premiums may at
@@ -637,18 +763,29 @@ entry says otherwise, and the register at the foot of the file lists what that l
     contract with a reduced benefit**, provided the reduced benefit reaches a
     *Mindestversicherungsleistung* agreed in the contract. **This right survives intact in a
     Basisrente** and is the product's only real exit (mechanic 17).
-  - **§ 168 — *Kündigung*.** The policyholder may terminate a contract with periodic premiums for
-    the end of the current premium period. **The right survives, but it has nothing to pay out**:
-    because the contract may not be capitalised [R1], termination cannot produce a
-    *Rückkaufswert*, and in practice a purported *Kündigung* of a Basisrente operates as a
-    *Beitragsfreistellung*. `[unverified]` as to how individual AVB word this; the outcome is
-    settled and universal.
+  - **§ 168 — *Kündigung*. Corrected: the right does not survive.** This entry read "the right
+    survives, but it has nothing to pay out". § 168 Abs. 3 as retrieved says otherwise: "*Die Absätze
+    1 und 2 sind nicht auf einen für die Altersvorsorge bestimmten Versicherungsvertrag anzuwenden,
+    1. wenn die Vertragsparteien bei einem nach § 5a des Altersvorsorgeverträge-Zertifizierungsgesetzes
+    zertifizierten Basisrentenvertrag die Verwertung der Ansprüche gemäß § 10 Absatz 1 Nummer 2 Satz 1
+    Buchstabe b des Einkommensteuergesetzes ausgeschlossen haben*". The **outcome** the file describes
+    is nonetheless what happens, because carriers grant a *contractual* termination and word it as a
+    conversion: GDV model conditions § 9 Abs. 3 and CosmosDirekt LA 1079 A § 7 Abs. 1 both convert to
+    paid-up and pay no *Rückkaufswert* [S12] [S1]. Where the statutory disapplication shows on the
+    face of a contract is the single-premium case, which LA 1079 A § 7 Abs. 2 declares "*auf Grund
+    der gesetzlichen Restriktionen ... über die gesamte Vertragsdauer nicht kündbar*". **No longer
+    `[unverified]` as to AVB wording** — two were read, and both also allow a *partial* termination
+    or premium-freeze above an agreed minimum annuity.
   - **§ 169 — *Rückkaufswert*.** The statutory surrender-value regime — the *Zeitwert* rule, the
-    *Mindestrückkaufswert* computed with acquisition costs spread over five years, the requirement
-    that a *Stornoabzug* be agreed, appropriate and quantified. **It is inoperative on this product.**
-    A Basisrente has a *Deckungskapital* but no *Rückkaufswert* cash flow at any duration. This is
-    the single most important thing a modeller coming from the delib endowment or Schicht-3 chassis
-    has to unlearn (mechanic 17).
+    *Mindestrückkaufswert* "*bei gleichmäßiger Verteilung der angesetzten Abschluss- und
+    Vertriebskosten auf die ersten fünf Vertragsjahre*" (Abs. 3), the requirement that a *Stornoabzug*
+    be agreed, appropriate and quantified (Abs. 5). **It is inoperative on this product as a
+    payment.** A Basisrente has a *Deckungskapital* but no *Rückkaufswert* cash flow at any duration.
+    **But Abs. 3 is very much operative as a *measure*, and that is what closes gap 8**: § 165 Abs. 2
+    computes the premium-free benefit "*unter Zugrundelegung des Rückkaufswertes nach § 169 Abs. 3 bis
+    5*", so the five-year spreading binds this product through the only exit it has. The distinction —
+    inoperative as a payment, operative as a yardstick — is the thing a modeller coming from the delib
+    endowment or Schicht-3 chassis has to learn rather than merely unlearn (mechanic 17).
 
 ### R15 — VVG § 153 — Überschussbeteiligung
 - Publisher: Bundesministerium der Justiz / juris
@@ -664,8 +801,15 @@ entry says otherwise, and the register at the foot of the file lists what that l
 
 ### R16 — Deckungsrückstellungsverordnung (DeckRV) — Höchstrechnungszins and Höchstzillmersatz
 - Publisher: Bundesministerium der Justiz / juris; amendment by the Bundesministerium der Finanzen
-- URL: not established. No delib session established a `gesetze-im-internet.de` address for the
-  DeckRV and none is guessed
+- URL: **established 2026-08-30**: `https://www.gesetze-im-internet.de/deckrv_2016/`
+- Retrieved: **yes** (canonical XML, Stand: zuletzt geändert durch Art. 1 V v. 19.7.2024 I Nr. 250;
+  §§ 2 and 4 read). § 2 Abs. 1: "*wird der Höchstzinssatz für die Berechnung der
+  Deckungsrückstellungen auf 1 Prozent festgesetzt*". § 2 Abs. 2 Satz 1: "*Bei Versicherungsverträgen
+  mit Zinsgarantie gilt der von einem Versicherungsunternehmen zum Zeitpunkt des Vertragsabschlusses
+  verwendete Rechnungszins ... für die gesamte Laufzeit des Vertrages*". § 4 Abs. 1 Satz 2: "*Der
+  Zillmersatz darf 25 Promille der Summe aller Prämien nicht überschreiten*". **What the retrieved
+  text does not carry, and so stays `[unverified]`:** the 1 January 2025 effective date, the DAV's
+  2026 recommendation, the pre-2015 40 ‰ and the full vintage ladder
 - Content, carried over from `_research/klassische_rentenversicherung.md` [R7]–[R11], where it was
   corroborated across five independent search results:
   - The ***Höchstrechnungszins*** — the maximum rate a German life insurer may guarantee on the
@@ -704,21 +848,51 @@ entry says otherwise, and the register at the foot of the file lists what that l
 
 ### R18 — BMF-Schreiben on the income-tax treatment of Vorsorgeaufwendungen and Altersbezüge
 - Publisher: Bundesministerium der Finanzen
-- URL: not established. **No BMF file number is given, because none could be confirmed.**
-- Content: the Federal Finance Ministry maintains a consolidated administrative circular — the
-  practitioner's "Rentenerlass" — on the deduction of *Vorsorgeaufwendungen* under § 10 EStG and the
-  taxation of *Altersbezüge* under § 22 EStG. It is where the operational detail of this product
-  lives that the statute does not spell out: how the 50 % majority test for supplementary covers is
-  computed, what happens on a change of provider, how the *Rentenfreibetrag* is fixed, and what
-  administrative tolerances exist for very small annuities. **Not one of those points could be
-  established.** It is the single most valuable document a checker with a working network should
-  retrieve, after the statute itself. See gaps 8, 13 and 19.
+- URL: `https://amtliche-handbuecher.bundesfinanzministerium.de/esth/2024/C-Anhaenge/Anhang-01a/II/inhalt.html`
+  — the circular as reproduced in the *Amtliches Einkommensteuer-Handbuch* 2024, Anhang 1a II. The
+  `esth.` and `ao.` mirrors answer with a bot-check page and are unusable
+- Identity: **BMF vom 24.05.2017 (BStBl I S. 820), IV C 3 – S 2221/16/10001 :004 – 2017/0392623**,
+  *Einkommensteuerrechtliche Behandlung von Vorsorgeaufwendungen*, as amended by BMF v. 06.11.2017
+  (BStBl I S. 1455), v. 28.09.2021 (BStBl I S. 1833), v. 16.12.2021 (BStBl I 2022 S. 155) and
+  v. 28.12.2023 (BStBl I 2024 S. 209)
+- Retrieved: **yes** (HTML, ~1,15 MB, read 2026-08-30; Rz. 16–34 and the *ergänzende Absicherung*
+  block read closely)
+- Content: the practitioner's circular on the deduction of *Vorsorgeaufwendungen* under § 10 EStG. It
+  is where the operational detail lives that the statute does not spell out, and **three of the four
+  points this entry listed as unestablished are now read**:
+  - **The 50 % test and how it is computed** (Rz. 38): "*Die ergänzende Absicherung ist nur dann
+    unschädlich, wenn mehr als 50 % der Beiträge auf die eigene Altersversorgung des Steuerpflichtigen
+    entfallen. Für das Verhältnis der Beitragsanteile zueinander ist regelmäßig auf den konkret vom
+    Steuerpflichtigen zu zahlenden (Gesamt‑)Beitrag abzustellen. Dabei dürfen die Überschussanteile
+    aus den entsprechenden Risiken die darauf entfallenden Beiträge mindern.*" Rz. 42 requires the
+    old-age cover and the supplementary covers to sit in **one contract**; Rz. 39 assigns a
+    *Beitragsbefreiung* on disability to the old-age side; Rz. 41 does the same for a survivor's
+    annuity funded solely out of the residual old-age capital.
+  - **A change of provider** (Rz. 29): permitted if the contract allows it, only within the same
+    product group, tax-free under § 3 Nr. 55d EStG, and the transferred capital is not a fresh
+    contribution. Gap 13.
+  - **The administrative tolerance for a small annuity** (Rz. 16): up to twelve monthly payments may
+    be combined into one; with the *Kleinbetragsrente* commutation at Rz. 34, available only from the
+    start of the payout phase and no earlier than the age floor. Gap 19.
+  - Also read: Rz. 18's prohibition on a planned decline in the annuity, with the floor set by the
+    annuity computed at the start of the payout phase on guaranteed capital plus irrevocably allocated
+    surplus; Rz. 19's requirement that the contract oblige the provider to fix the mortality table and
+    the interest factor before *Rentenbeginn*; and Rz. 21–22, which exclude an *Auszahlungsplan*, and
+    an *Auszahlungsplan* followed by partial annuitisation, from being a lifelong annuity at all.
+  - **Still not read: the *Rentenfreibetrag* mechanics**, which are in a different circular on § 22.
 
 ### R19 — BFH, 19 May 2021 — the Doppelbesteuerung judgments
 - Publisher: Bundesfinanzhof
-- URL: not established
-- Content: two decisions of the same day, commonly cited as **X R 33/19** and **X R 20/19**
-  `[unverified]` as to both file numbers, in which the court accepted **in principle** that a
+- URL: `https://www.bundesfinanzhof.de/en/entscheidungen/entscheidungen-online/decision-detail/STRE202110106/`
+  for X R 33/19; the companion at `.../STRE202110105/`
+- Retrieved: **yes** for X R 33/19 (HTML, ~130 kB, *Leitsätze* and grounds read 2026-08-30;
+  ECLI:DE:BFH:2021:U.190521.XR33.19.0); the companion was located but only its file number taken.
+  **Both file numbers and the date are confirmed.** The appeal was dismissed as unfounded and the
+  appellant was a *Freiberufler* who had paid at the ceiling since 1984 — this product's own buyer.
+  **One qualification**: the proposition that later cohorts will be caught is *not* in the
+  *Leitsätze*; it is the court's press framing of what its method implies
+- Content: two decisions of the same day, **X R 33/19** and **X R 20/19**,
+  in which the court accepted **in principle** that a
   double taxation of pensions is unconstitutional where the contributions were made from taxed
   income and the benefits are taxed again, and set out a **nominal-value comparison method** for
   testing it: the sum of the tax-free parts of the expected benefits against the sum of the
@@ -726,13 +900,24 @@ entry says otherwise, and the register at the foot of the file lists what that l
   but it identified the transition schedule as capable of producing one for later cohorts —
   particularly for **self-employed taxpayers whose contributions during the phase-in were only
   partly deductible**, which is precisely the Basisrente's own buyer. The legislative response was
-  [R7] and [R6]. **The case numbers, the date and the method are `[unverified]`**; the substance —
-  that a court-driven concern about double taxation is why the schedule was twice softened — is the
-  correct framing for the product-spec's tax section.
+  [R7] and [R6]. **The case numbers, the date and the method are confirmed** from the retrieved
+  judgment; what is *not* in the *Leitsätze* is the later-cohorts proposition, which is the court's
+  press framing of what its method implies. The substance — that a court-driven concern about double
+  taxation is why the schedule was twice softened — is the correct framing for the product-spec's tax
+  section.
 
 ### R20 — Sozialversicherungsrechengrößen-Verordnung — the BBG series
 - Publisher: Bundesministerium für Arbeit und Soziales, with the consent of the Bundesrat
-- URL: not established
+- URL: **established 2026-08-30** — `https://www.gesetze-im-internet.de/svbezgrv_2026/BJNR1160A0025.html`
+  and `https://www.gesetze-im-internet.de/svbezgrv_2025/BJNR16D0A0024.html`
+- Retrieved: **yes**, both. § 3 Abs. 1 of the 2026 regulation sets the *Beitragsbemessungsgrenze*
+  "*in der knappschaftlichen Rentenversicherung auf **124 800 Euro** jährlich; umgerechnet auf den
+  Monat ergeben sich 10 400 Euro*"; the 2025 regulation gives **118 800 Euro**. With the 24,7 %
+  *knappschaftlicher Beitragssatz* and the statutory rounding-up of § 10 Abs. 3 Satz 1 EStG those give
+  the 2025 and 2026 *Höchstbeträge* of **29 344 €** and **30 826 €** exactly. The 2023 and 2024 inputs
+  were not retrieved. **That the ceilings are uniform across the former East and West from 2025 is not
+  in the retrieved sections and stays `[unverified]`** — they give one national figure for the
+  *knappschaftliche* branch, which is consistent with it but does not say it
 - Content: the annual regulation that sets the *Beitragsbemessungsgrenzen* and other social-insurance
   parameters for the following calendar year, made in the autumn of the preceding year. It is the
   instrument that moves the Basisrente *Höchstbetrag* [R2], and it therefore has to be re-read every
@@ -764,24 +949,29 @@ entry says otherwise, and the register at the foot of the file lists what that l
 
 ### R23 — EStG § 93 Abs. 3 — the Kleinbetragsrente, and its reach into Schicht 1
 - Publisher: Bundesministerium der Justiz / juris
-- URL: `https://www.gesetze-im-internet.de/estg/__93.html` — canonical form, `[unverified]`
-- Content — **corrected on review; the first drafting of this entry recorded the opposite and was
-  wrong**:
-  - For a **Riester** contract, the provision permits the **commutation of a *Kleinbetragsrente***
-    at the start of the payout phase without loss of the subsidy, where the monthly annuity would
-    fall below a threshold expressed as **1 % of the monthly *Bezugsgröße* of § 18 SGB IV**
-    `[unverified]` as to the fraction and the reference — the cross-product entry [REG-R42] records
-    a competing **1,5 %**. It is a de-minimis rule that exists because administering a trivially
-    small lifelong annuity costs more than it pays.
-  - **Schicht 1 has the same relief.** The *Kapitalisierungsverbot* of § 10 Abs. 1 Nr. 2 Buchst. b
-    [R1] is qualified by **§ 10 Abs. 1 Nr. 2 Satz 3 EStG**, which makes an *Abfindung* of a
-    *Kleinbetragsrente* out of a *Basisrentenvertrag*, on the § 93 Abs. 3 Satz 2 and 3 mechanics,
-    harmless to the contract's Schicht-1 status; since the *Wachstumschancengesetz* it also covers
-    an annuity pushed below the threshold **during** the payout phase by a *Versorgungsausgleich*.
-    **The Satz numbering, the amending statute and the threshold are all `[unverified]`** — there
-    was no search channel when this product was researched. [REG-R42], written while search was
-    still available, states the Riester/Basisrente parity directly and is the better authority of
-    the two. Mechanic 19 works through the consequence.
+- URL: `https://www.gesetze-im-internet.de/estg/__93.html` — human-facing link only
+- Retrieved: **yes** (canonical XML, same *Stand* as [R1]; § 93 Abs. 3 read 2026-08-30)
+- Content — **corrected on review, and now read**:
+  - § 93 Abs. 3 Satz 1: "*Auszahlungen zur Abfindung einer Kleinbetragsrente zu Beginn der
+    Auszahlungsphase gelten nicht als schädliche Verwendung.*" Satz 2 Nr. 1 defines the threshold:
+    an annuity which, on an even annuitisation of the whole capital available at the start of the
+    payout phase, "*eine monatliche Rente ergibt, die **1,5 Prozent** der monatlichen Bezugsgröße
+    nach § 18 des Vierten Buches Sozialgesetzbuch nicht übersteigt*", aggregating all of the
+    taxpayer's contracts at that provider (Satz 3). **The 1 % / 1,5 % contest is resolved in favour
+    of 1,5 %, and both readings were right at different times**: the GDV model conditions of
+    21 July 2025 still print 1 % [S12], and the 2026 amendment that raised it also added the
+    *Auszahlungsplan* limb of Satz 2 Nr. 2 for payouts from 1 January 2027 [REG-R44].
+  - **Schicht 1 has the same relief, and the cross-reference is corrected.** § 10 Abs. 1 Nr. 2
+    Satz 3 EStG permits the commutation of "*eine Kleinbetragsrente im Sinne von § 93 Absatz 3
+    Satz 2 **oder 4***" — **not "Satz 2 and 3"**, which is what this entry said. The older form
+    survives in the documents that pin an earlier version: BMF Rz. 34 says "*in Anlehnung an § 93
+    Absatz 3 Satz 2 und 3 EStG*" [R18], and CosmosDirekt's 2015 wording pins "*die im Jahr 2009
+    geltende Fassung*" [S1]. § 93 Abs. 3 Satz 4 extends the treatment to an annuity pushed below the
+    threshold **during** the payout phase by a *Versorgungsausgleich*; **which amending statute did
+    that was not established** and stays `[unverified]`. Two further points from the retrieved
+    documents: the commutation is available only from the start of the payout phase and no earlier
+    than the age floor (BMF Rz. 34), and the GDV model conditions draft it as the **insurer's** right
+    and not the policyholder's [S12]. Mechanic 19 works through the consequence.
   - **This entry originally read "there is no Schicht-1 equivalent ... admits no de-minimis".** That
     is withdrawn. It was reasoned from the unqualified wording of Buchst. b alone, and Buchst. b is
     not the whole of Nr. 2.
@@ -1094,9 +1284,12 @@ for a cash-flow model.
   ```
 
 - The ***garantierter Rentenfaktor*** is fixed at inception on the *Rechnungsgrundlagen* then in
-  force, with a deliberate prudential margin: the sibling corpus's one quantified example is a
-  carrier computing it on **DAV 2004 R at an interest basis of 0 % p.a.** [S1] [R17]
-  `[unverified]` as a Basisrente fact. The ***aktueller Rentenfaktor*** is the carrier's
+  force, with a deliberate prudential margin. **Corrected:** the 0 % interest basis this section
+  carried was a Schicht-3 observation. The carrier's own **Basisrente** wording computes the factor
+  "*auf Grundlage einer anerkannten Sterbetafel (DAV 2004R) sowie des tariflichen Garantiesatzes
+  (Rechnungszins) von 1,25 Prozent p. a.*" — the tariff's own rate, which moves with the guarantee
+  vintage [S1] [R16] [R17]. **One market level now exists**: a guaranteed 24,94 € per 10 000 € at 67
+  on a 2025 fund-linked contract [S13]. The ***aktueller Rentenfaktor*** is the carrier's
   then-current immediate-annuity tariff, and the **higher of the two applies** — a guarantee with
   upside.
 - **Nothing in Schicht 1 changes this.** The tax layer does not touch the conversion. What it does
@@ -1312,11 +1505,14 @@ for a cash-flow model.
 
 - **There is no exit that pays money.** That is the operative summary and it should be the first
   sentence of the product-spec's termination section.
-- ***Kündigung*.** § 168 VVG's termination right formally survives [R14], but termination of a
-  Basisrente produces **no payment**, because the entitlement may not be capitalised [R1]. In
-  practice a purported termination is administered as a *Beitragsfreistellung*, and the contract
-  continues as a paid-up entitlement to a reduced annuity from *Rentenbeginn*. `[unverified]` as to
-  how individual AVB word this; the outcome is not in doubt.
+- ***Kündigung*. Corrected: the statutory right does not survive.** § 168 Abs. 3 Nr. 1 VVG
+  disapplies Abs. 1 and 2 to a certified *Basisrentenvertrag* whose *Verwertung* is excluded [R14].
+  Carriers nonetheless grant a **contractual** termination and word it as a conversion: the GDV model
+  conditions and CosmosDirekt's LA 1079 A both turn the contract paid-up and pay no *Rückkaufswert*
+  [S12] [S1], so the outcome this file describes is what happens. Where the statutory disapplication
+  shows on the face of a contract is the single-premium case, which LA 1079 A § 7 Abs. 2 declares not
+  terminable at all. **No longer `[unverified]` as to AVB wording**: two were read, and both also allow
+  a *partial* termination or premium-freeze above an agreed minimum annuity.
 - ***Rückkaufswert*.** § 169 VVG is inoperative [R14] [R1]. There is a *Deckungskapital* — the
   contract has a reserve like any other — but **there is no duration at which any part of it is
   payable to the policyholder as capital**. A delib model of this product publishes no surrender
@@ -1376,11 +1572,14 @@ what the answer actually is. It is:
   is withdrawn; it is recorded here rather than deleted because it propagated into
   `product-spec.md`, `sources.md`, `model.md`, the model docstrings and a test comment, all of
   which have been corrected.
-- **The contrast is one of threshold, not of availability.** Riester's commutation right sits at
-  § 93 Abs. 3 EStG [R23] with the threshold set at **1 % of the monthly *Bezugsgröße* of
-  § 18 SGB IV** `[unverified]`, against a competing **1,5 %** [REG-R42]; **no Basisrente-specific
-  threshold was established at all**, and no carrier's AVB was reached to say whether a German
-  Basisrente actually offers the *Abfindung*, or on whose election.
+- **The contrast is not one of threshold either: the same threshold governs both.** § 93 Abs. 3
+  Satz 2 Nr. 1 EStG as retrieved sets it at **1,5 % of the monthly *Bezugsgröße* of § 18 SGB IV**,
+  and § 10 Abs. 1 Nr. 2 Satz 3 imports it for a *Basisrentenvertrag* without variation [R1] [R23].
+  The **1 %** this file carried is the older figure and still stands in the GDV model conditions of
+  July 2025 [S12]. And a carrier's AVB **does** offer the *Abfindung* — CosmosDirekt LA 1079 A § 1
+  Abs. 2 [S1] — while the GDV model conditions make it the **insurer's** election, not the
+  policyholder's [S12], which is the answer to "on whose election" and the reason a projection model
+  cannot assume take-up.
 - **What the market does instead** — and every item here is `[unverified]`, because no carrier
   document was reached:
   - **Minimum premiums**, so that a contract cannot easily reach *Rentenbeginn* with a trivial
@@ -1505,16 +1704,17 @@ rich table here would be a fabrication, so what follows is the real state of the
 
 | Feature | CosmosDirekt [S1] | Allianz [S2] [S3] | The other 19 carriers [S4]–[S11] |
 |---|---|---|---|
-| Basisrente wording located | **yes — four tariff codes**, LA 1100 A, LA 1079 A, LA 936 A, LA 1099 A | no; the chassis is evidenced by a broker-hosted specimen and a product page | **no** |
-| Edition date | not established | specimen dated by its path to 02/2025 [unverified] | not established |
-| Asset form | not established | hybrid: *Sicherungsvermögen* plus *Spezialfonds* | not established |
-| Guarantee level published | no | **yes** — 60 / 80 / 90 % of premiums paid, 80 % standard [unverified] | no |
-| *Rentenfaktor* basis published | not for the Basisrente; the Schicht-3 sibling names DAV 2004 R at 0 % p.a. | expressed as a minimum annuity | no |
-| Charge figure published | no | **yes** — 1 575 € *Abschlussprovision*; ≤ 0,95 € per 100 € of capital formed [unverified] | no |
+| Basisrente wording located | **yes — and read**: LA 1079 A (*klassisch*), LA 1100 A (*fondsgebunden*); LA 936 A and LA 1099 A were not located | no; the product page was read, the broker-hosted specimen was not re-found | **one read**: Alte Leipziger pm 2401, Tarif FR70 [S4] |
+| Edition date | **10.15** for both | product page read 2026-08-30; specimen dated by its path to 02/2025 [unverified] | pm 2401 – 06.2026 |
+| Asset form | **both** — general account and *Anlagestöcke* | hybrid: *Sicherungsvermögen* plus *Spezialfonds* | *fondsgebunden* |
+| Guarantee level published | no | **yes** — 60 / 80 / 90 % of premiums paid, 80 % standard, quoted from the carrier's own page | 80 % on the variants named at [S16] |
+| *Rentenfaktor* basis published | **yes** — DAV 2004 R at the tariff's *Rechnungszins*, 1,25 % p.a. on the 10.15 wording | expressed as a minimum annuity | a guaranteed factor of 24,94 € at 67 on NÜRNBERGER's *Muster*-PIB [S13] |
+| Charge figure published | ***Muster*-PIB yes; its levels are template placeholders** | **yes** — 1 575 € *Abschlussprovision*; ≤ 0,95 € per 100 € of capital formed [unverified] | **yes** — NÜRNBERGER's full schedule and *Effektivkosten* of 1,77 pp [S13] |
 | Layer sold on a common chassis | not established | **yes** — PrivatRente / BasisRente / RiesterRente are one design | not established |
-| *Produktinformationsblatt* obtained | no | no | no |
+| *Produktinformationsblatt* obtained | *Muster*-PIB yes, individual PIB no | no | *Muster*-PIB yes for NÜRNBERGER and WWK [S13] |
 
-A range table needs two observations of one parameter and the corpus supplies exactly one:
+A range table needs two observations of one parameter, and after the retrieval pass the corpus has
+two or three of several. What it had when this table was drafted was one:
 **at least four Basisrente tariff wordings maintained in parallel at one carrier** [S1]
 `[unverified]`. Everything else a variations table would normally carry — entry ages, minimum premiums, maximum
 *Zuzahlung*, permitted *Rentenbeginn* range, *Rentengarantiezeit* durations, survivor-cover forms,
@@ -1543,18 +1743,27 @@ corpus does not source — the *Rentenfaktor*, the charge levels, the minimum pr
 
 ## Gaps and caveats
 
-1. **Not one carrier's Basisrente contract terms were established.** Twenty named German life
-   writers [S11] publish AVB, *Produktinformationsblätter* and *Verbraucherinformationen* for this
-   product and none was reached. The two carriers that contribute anything [S1] [S2] contribute
-   four tariff codes and two third-party charge figures between them. **Every parameter in the delib
-   `basisrente` product-spec that would normally be sourced to a carrier is therefore `[std]`**, and
-   the variations table above is a record of absence rather than of variation.
+**Status after the retrieval pass of 2026-08-30.** Ten of the twenty-five items below were closed by
+a retrieved document and four narrowed; each says so in its own words, and the item is kept rather
+than deleted so that the history of the reading stays legible. The items still open are 12, 14, 15,
+20, 21 and the parts of 1, 3, 6, 8, 11 and 23 that each identifies.
 
-2. **No *Effektivkosten* figure and no charge schedule was obtained.** The § 7 AltZertG
-   *Produktinformationsblatt* [S13] [R11] exists precisely to publish a comparable total-charge
-   number for this product, per quotation, and not one was reached. The only charge evidence in the
-   corpus is third-party commentary on one carrier's specimen [S2]. The whole charge table in
-   mechanic 20 is `[std]` with argued ranges.
+1. **Narrowed — four wordings now read, sixteen carriers still unreached.** Twenty named German life
+   writers [S11] publish AVB, *Produktinformationsblätter* and *Verbraucherinformationen* for this
+   product and **none of those twenty was reached**. What has been read since is two carriers'
+   Basisrente AVB [S1] [S4], the GDV's Basisrente and BUZ *Musterbedingungen* [S12] and two
+   filled-in *Muster*-PIBs [S13]. **No *Verbraucherinformation* of any carrier was opened.** Every
+   parameter in the delib `basisrente` product-spec that would normally be sourced to a carrier is
+   still `[std]` — the retrieval pass recorded evidence, it did not re-calibrate levels — and the
+   variations table above is now a thin record of variation rather than a record of absence.
+
+2. **Closed.** An *Effektivkosten* figure and a full charge schedule were both obtained. NÜRNBERGER's
+   *Muster*-PIB gives *Effektivkosten* of **1,77 percentage points** and a complete charge schedule;
+   WWK's gives **4,95** [S13]; and the Fraunhofer ITWM study puts realistic *Effektivkosten* for five
+   large carriers' fund-linked Basisrenten at **1,0 – 1,5 pp** without a guarantee and **1 – 2,3 pp**
+   with an 80 % one, against *Muster*-PIB figures of **3,0 – 4,6** [S16]. The distinction between the
+   two — the *Muster*-PIB is computed on maximum permitted charges — is the substance of this item
+   now. The charge table in mechanic 20 remains `[std]` because it was not re-derived.
 
 3. **No market statistic of any kind was established.** Contract stock, new business, average
    contribution, the *klassisch*/*fondsgebunden* split, the *Beitragsfreistellung* rate, the buyer's
@@ -1562,53 +1771,67 @@ corpus does not source — the *Rentenfaktor*, the charge levels, the minimum pr
    mechanics 9 and 21, given as orders of magnitude. **Nothing downstream may cite a delib figure
    for the size of the Basisrente market.**
 
-4. **No *Rentenfaktor* level, range or time series exists anywhere in the delib corpus**, for this
-   or any other product. The delib worked example must choose one and it will be `[std]`. The one
-   quantified conversion basis in the corpus — DAV 2004 R at 0 % p.a. interest — is a **Schicht-3**
-   observation at one carrier [S1] and its transfer to the Basisrente is `[unverified]`.
+4. **Closed as to existence, open as to range.** One guaranteed *Rentenfaktor* level now exists in
+   the corpus: **24,94 €** of monthly annuity per 10 000 € of capital at 67, on a 2025 fund-linked
+   contract [S13]. No range and no time series exists, for this or any other delib product, so the
+   worked example's choice stays `[std]`. **The 0 % conversion basis is withdrawn**: it was a
+   Schicht-3 observation, and this carrier's own Basisrente wording strikes the factor on DAV 2004 R
+   at the **tariff's** *Rechnungszins*, 1,25 % p.a. on the 10.15 edition [S1].
 
-5. **Whether the GDV publishes Basisrente model conditions was not established** [S12]. A GDV
-   *Musterbedingung* would have been the natural spine for a composite specification, as it was for
-   the delib endowment file. Nothing downstream may assume one exists.
+5. **Closed, in the affirmative.** The GDV publishes *Allgemeine Bedingungen für die
+   Rentenversicherung gemäß § 10 Absatz 1 Nr. 2 Buchstabe b Doppelbuchstabe aa EStG
+   (Basisrente-Alter)*, Stand 21.07.2025, a matching BUZ set and two *Muster-Standmitteilungen*, and
+   all were retrieved [S12]. They are the spine this file was written without.
 
-6. **The interaction of the § 7 AltZertG *Produktinformationsblatt* with the PRIIPs
-   *Basisinformationsblatt* was not established** [S13] [S14]. Whether both are required for a
-   unit-linked Basisrente, or one substitutes for the other, is unresolved and must not be asserted.
+6. **Narrowed, not closed.** § 7 Abs. 2 AltZertG establishes that the individual PIB replaces the
+   VVG-InfoV product information sheet and that **no § 154 VVG *Modellrechnung* is to be performed or
+   attached** for a certified contract [R11]. Whether it also displaces the PRIIPs
+   *Basisinformationsblatt* is **still not established**: no Basisrente KID was found at any carrier,
+   which is consistent with the product sitting outside PRIIPs but does not prove it [S14].
 
-7. **The *Produktinformationsblatt*'s current field list, its scenario set and the number of
-   *Chancen-Risiko-Klassen* were not established** [R11]. Any statement about what the document
-   shows beyond "*Effektivkosten* and a risk class" is `[unverified]`.
+7. **Closed.** § 7 Abs. 1 AltZertG lists fifteen mandatory PIB fields and § 7 Abs. 4 requires a
+   *Muster*-PIB at 12, 20, 30 and 40 years; AltvPIBV § 5 puts the contract in **CRK 1 to 5** and § 10
+   fixes the returns — 2/3/4/5/6 % for the *Effektivkosten* by CRK, and four scenarios per CRK for
+   the projections (CRK 4: −1 %, 2 %, 5 %, 6 %) [R11]. Two filled-in sheets confirm the layout [S13].
 
-8. **Several tariff-level parameters that a model needs are entirely unsourced**: the minimum
-   recurring premium, the maximum *Zuzahlung*, whether *Zuzahlungen* enter the *Beitragssumme* for
-   the 25 ‰ *Zillmerung* cap, the *Mindestversicherungsleistung* that gates *Beitragsfreistellung*,
-   the *Wiederinkraftsetzung* window, the permitted *Rentenbeginn* range, and whether the five-year
-   spreading of acquisition costs in the AltZertG reaches Basisrentenverträge [R10]. All `[std]`.
+8. **Narrowed.** **Whether the five-year spreading reaches a Basisrentenvertrag is answered**: the
+   AltZertG's own rule (§ 1 Abs. 1 Satz 1 Nr. 8) does not reach it, but VVG § 165 Abs. 2 with § 169
+   Abs. 3 does, and two wordings state it [R10] [R14] [S1] [S12] — with the qualification that a
+   premium term shorter than five years shortens the spread. Still unsourced: the minimum recurring
+   premium, the maximum *Zuzahlung*, whether *Zuzahlungen* enter the *Beitragssumme* for the 25 ‰
+   cap, the *Mindestversicherungsleistung* that gates *Beitragsfreistellung*, the
+   *Wiederinkraftsetzung* window and the permitted *Rentenbeginn* range. All `[std]`.
 
-9. **The § 851c ZPO protected amounts were deliberately not reproduced.** Practitioner sources give
-   a six-band age-graduated annual allowance and an overall ceiling; **this file could not confirm a
-   single one of those numbers and therefore prints none of them** [R12]. The product-spec may state
-   the shape — age-graduated annual allowance, overall cap — and must not state a level. The
-   § 12 SGB II and § 90 SGB XII conditions are likewise unestablished [R13].
+9. **Closed.** § 851c Abs. 2 ZPO as retrieved has **two** bands, not six: **6 000 €** a year to the
+   completed 27th year of life and **7 000 €** to the completed 67th, with an aggregate ceiling of
+   **340 000 €** and three tenths of any excess *Rückkaufswert* protected on top [R12]. The
+   practitioner ladders contradicted each other because the graduated ladder was replaced by these
+   two bands; the amounts are re-set every fifth year on 1 July, so any printed figure has a shelf
+   life. The § 12 SGB II and § 90 SGB XII conditions are **still** unestablished [R13].
 
-10. **The § 851c ZPO age condition (60) and the § 10 EStG age floor (62) are different provisions
-    and this file could confirm neither.** Both are `[unverified]`. A reader must not assume the two
-    were harmonised, and a downstream document must not merge them into one age.
+10. **Confirmed, and the caution stands.** § 851c Abs. 1 Nr. 1 ZPO reads "*nicht vor Vollendung des
+    60. Lebensjahres*"; § 10 Abs. 1 Nr. 2 Buchst. b aa EStG reads "*nicht vor Vollendung des 62.
+    Lebensjahres*", with § 10 Abs. 6 giving 60 for pre-2012 contracts [R1] [R12]. Different
+    provisions, different histories; a downstream document must not merge them into one age.
 
-11. **The *Höchstbetrag* series is arithmetic, not evidence.** Every BBG, contribution rate and
-    resulting ceiling in mechanic 6 is `[unverified]`; the table's only corroboration is that it
-    reproduces itself from its own inputs. **The 2026 line (124 800 € × 24,7 % = 30 826 €) is the
-    least secure**, because the relevant *Sozialversicherungsrechengrößen-Verordnung* [R20] is the
-    most recent and the least likely to be correctly recalled. The rounding convention is inferred.
+11. **Narrowed.** The 2025 and 2026 *knappschaftliche* ceilings were read off the
+    *Sozialversicherungsrechengrößen-Verordnungen* — **118 800 €** and **124 800 €** [R20] — and the
+    rounding convention is the statute's own, § 10 Abs. 3 Satz 1 EStG's "*aufgerundet auf einen
+    vollen Betrag in Euro*" [R2]. **The 2026 line is now the best-attested, not the least secure.**
+    The 2023 and 2024 inputs were not retrieved and those two lines are still arithmetic alone.
 
 12. **A possible fourth asset form — an index-linked Basisrente — was not established** [S10]. If it
     exists it is a bridge to delib product 4; acknowledge the possibility without asserting it.
 
-13. **Whether a Basisrentenvertrag may be transferred to another provider was not resolved.** The
-    market understanding is that a transfer to another Basisrentenvertrag of the same person is
-    tax-neutral, but the conditions live in the BMF guidance [R18] and could not be established.
-    Downstream this must not be asserted, and the transfer decrement in mechanic 12 stays flagged as
-    "possibly".
+13. **Closed.** BMF-Schreiben v. 24.05.2017 Rz. 29: "*Der Vertrag **darf zulassen**, dass die
+    Ansprüche des Leistungsempfängers aus dem Vertrag unmittelbar auf einen nach § 5a AltZertG
+    zertifizierten Vertrag ... des Leistungsempfängers auch bei einem anderen Unternehmen übertragen
+    werden. Dabei ist lediglich die Übertragung innerhalb der jeweiligen Produktgruppe ... zulässig.
+    Dieser Vorgang ist steuerfrei nach § 3 Nummer 55d EStG*" [R18]. So a transfer is **permitted but
+    not compulsory**, tax-free, confined to the same product group, and the transferred capital is
+    not a fresh contribution. Both market answers were observed: CosmosDirekt grants it free of charge
+    on three months' notice [S1]; NÜRNBERGER and WWK exclude it on their PIBs [S13]. **It is a
+    contract term, and downstream must say so rather than asserting a right.**
 
 14. **The *Versorgungsausgleich* mechanism was not established** [R1]. Whether the division on
     divorce is effected by *interne* or *externe Teilung*, and what happens to the receiving
@@ -1618,25 +1841,33 @@ corpus does not source — the *Rentenfaktor*, the charge levels, the minimum pr
     the conduct-supervision perimeter for capital-forming life products, and the supervisory
     material carried over from a sibling delib file is about the endowment chassis, not this layer.
 
-16. **The taxation of a BU annuity paid out of a Basisrentenvertrag is `[unverified]`** [R4]. The
-    position stated in mechanic 13 — full cohort *Besteuerungsanteil* rather than the *Ertragsanteil*
-    of an *abgekürzte Leibrente* — is the settled market understanding and is the whole substance of
-    the BUZ-versus-standalone-SBU comparison, so its being unconfirmed matters.
+16. **Closed on the reading, open on nothing that matters.** § 22 Nr. 1 Satz 3 Buchst. a
+    Doppelbuchst. aa EStG applies to "*Rentenversicherungen im Sinne des § 10 Absatz 1 Nummer 2
+    Buchstabe b*" without distinguishing Doppelbuchst. aa from bb, so a *BU-Rente* out of a
+    *Basisrentenvertrag* is on the full cohort *Besteuerungsanteil*, not the *Ertragsanteil* of an
+    *abgekürzte Leibrente* [R4]. That is the substance of the BUZ-versus-standalone-SBU comparison.
 
-17. **No carrier's *Überschussverwendung* option list for a Basisrente was established** [R15]. The
-    argument in mechanic 11 that *verzinsliche Ansammlung* and *Bonusrente* are the natural forms,
-    because cash-paying systems sit awkwardly with *nicht kapitalisierbar*, is this file's own
-    inference and is not sourced.
+17. **Closed by observation.** The inference in mechanic 11 is now an observation at one carrier:
+    CosmosDirekt's LA 1079 A applies the annual surplus to a *Bonussumme* through the whole
+    *Aufschubzeit*, offers no cash-paying system before *Rentenbeginn*, and offers exactly two
+    payout-phase systems — *jährliche Rentensteigerung (dynamische Rente)* and *Zusatzrente (flexible
+    Rente)* [S1]. VVG § 153 Abs. 4 adds the statutory reason the terminal component falls at the end
+    of the accumulation phase [R15].
 
-18. **No BUZ wording was reached** [S5]. The 50 % rule is stated in mechanic 13 as substance, but
-    what it looks like in a contract — how the premium split is disclosed, what happens if the split
-    drifts over time, whether the disability cover ends at *Rentenbeginn* — is entirely unsourced.
+18. **Closed — by the model conditions rather than by a carrier.** The GDV's BUZ *Musterbedingungen*
+    for a Basisrente were retrieved [S12]. § 9 Abs. 2: "*Die Zusatzversicherung ist so gestaltet,
+    dass stets mehr als 50 % der Beiträge auf Ihre Hauptversicherung entfallen*". § 9 Abs. 1: the
+    rider forms a unit with the main contract and "*Spätestens mit dem vereinbarten
+    Rentenzahlungsbeginn endet die Zusatzversicherung*". § 9 Abs. 3: a BUZ *Rückkaufswert* is never
+    paid out but raises the main contract's benefits. **No carrier's own BUZ wording was reached.**
 
-19. **Whether a small Basisrente annuity may be paid at longer than monthly intervals was not
-    established** [R18]. The statute requires a *monatliche* annuity [R1]; the administrative
-    tolerance the market is understood to rely on is `[unverified]`. Nor was **any Basisrente
-    *Kleinbetragsrente* threshold, or any carrier's willingness to pay an *Abfindung* at all**,
-    established — the two open questions left by the corrected answer in mechanic 19.
+19. **Closed.** § 10 Abs. 1 Nr. 2 Satz 3 EStG expressly permits a contract to provide that "*bis zu
+    zwölf Monatsleistungen in einer Auszahlung zusammengefasst werden*"; BMF Rz. 16 repeats it; the
+    GDV model conditions § 1 Abs. 2 implement it as an insurer's right below an agreed monthly amount
+    [R1] [R18] [S12]. The *Kleinbetragsrente* threshold is **1,5 % of the monthly *Bezugsgröße* of
+    § 18 SGB IV** in the statute as amended in 2026, against the **1 %** the GDV text of July 2025
+    still prints [R23] [S12] — both readings were right at different times. And a carrier does offer
+    the *Abfindung*: CosmosDirekt LA 1079 A § 1 Abs. 2 [S1].
 
 20. **Two further payout-side tax questions are unresolved** [R4]: the taxation of a
     *Hinterbliebenenrente* in the survivor's hands, including which cohort year fixes its
@@ -1655,19 +1886,23 @@ corpus does not source — the *Rentenfaktor*, the charge levels, the minimum pr
     split is settled German practice and 63 corresponds to no threshold in this statute. Recorded
     explicitly so that the discrepancy is resolved once, here, rather than propagating.
 
-23. **Two statutory instruments are cited entirely without identifiers.** No *Bundesgesetzblatt*
-    citation appears for the *Alterseinkünftegesetz* [R5], the *Wachstumschancengesetz* [R6], the
-    *Jahressteuergesetz 2022* [R7] or the *Jahressteuergesetz 2007* [R8], and no file number appears
-    for the BMF circular [R18] or for the 2021 BFH judgments [R19] beyond two `[unverified]` case
-    references. None was confirmed and none was guessed.
+23. **Half closed.** The BMF circular is identified: **BMF vom 24.05.2017 (BStBl I S. 820), IV C 3 –
+    S 2221/16/10001 :004 – 2017/0392623**, as amended by BMF v. 06.11.2017, 28.09.2021, 16.12.2021
+    and 28.12.2023 [R18]. The BFH judgments are identified: **X R 33/19**
+    (ECLI:DE:BFH:2021:U.190521.XR33.19.0) and **X R 20/19**, both of 19 May 2021 [R19]. **No
+    *Bundesgesetzblatt* citation appears for the *Alterseinkünftegesetz* [R5], the
+    *Wachstumschancengesetz* [R6], the *Jahressteuergesetz 2022* [R7] or the *Jahressteuergesetz
+    2007* [R8]** — those are amending acts with no consolidated page of their own, none was retrieved,
+    and none is guessed. Their **effects** are all now read in the consolidated law instead.
 
-24. **Living texts.** The *Höchstrechnungszins* is 1,00 % for 2025 and recommended at 1,00 % for
-    2026 [R16]; the *Besteuerungsanteil* for a 2026 cohort is 84,0 % `[unverified]` [R4]; the
-    *Höchstbetrag* for 2026 is 30 826 € `[unverified]` [R2]; the deductible share has been 100 %
-    since 2023 [R7]; the full-taxation year is 2058 [R6]. **Every one of those moves.** The
-    *Höchstbetrag* moves annually with the *Sozialversicherungsrechengrößen-Verordnung* [R20] and the
-    *Besteuerungsanteil* moves annually by construction. Check both, and every paragraph number in
-    this file, before relying on anything here.
+24. **Living texts.** DeckRV § 2 Abs. 1 as retrieved reads **1 Prozent** [R16]; the
+    *Besteuerungsanteil* for a 2026 cohort is **84,0 %** from the statutory table [R4]; the
+    *Höchstbetrag* for 2026 is **30 826 €** from the *Sozialversicherungsrechengrößen-Verordnung 2026*
+    [R2] [R20]; the deductible share has been 100 % since 2023 on § 10 Abs. 3 Satz 6 [R7]; the
+    full-taxation year is 2058 [R4]. **Every one of those moves.** A third mover was caught in the act
+    by this pass: the *Kleinbetragsrente* threshold of § 93 Abs. 3 EStG stood at 1 % in model
+    conditions of July 2025 and reads 1,5 % in the statute as amended in 2026 [R23]. Check all of
+    them, and every paragraph number in this file, before relying on anything here.
 
 25. **This file had no research channel at all.** Egress was blocked and the session's `WebSearch`
     budget was already exhausted when the product was reached. Two sibling delib research files,

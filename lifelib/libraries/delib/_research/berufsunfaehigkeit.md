@@ -146,10 +146,14 @@ turns on:
 
 ## Primary sources
 
-Every entry carries the same retrieval status, stated once here rather than sixteen times:
-**Retrieved: no — direct HTTP egress blocked in the build environment; no search corroboration
-(session search budget exhausted).** Each entry is therefore a **known reference**: publisher,
-document type, and what that class of document contains and why this product needs it. Where a
+**The blanket retrieval status these entries once carried no longer holds.** On 2026-08-30 the
+documents were tried again and eight were read: the GDV model conditions for the SBU, the BUZ and
+the BU-with-AU variant (S1, S2, and the AU variant cited at S8), and carrier wordings from Alte
+Leipziger (S4), NÜRNBERGER (S6), VOLKSWOHL BUND (S9), Debeka and CosmosDirekt (S12). Each entry
+below now carries its **own** `Retrieved` line and, where one was found, its URL; where the line
+still says *no*, it says why. An entry that was not read remains a **known reference**: publisher,
+document type, and what that class of document contains and why this product needs it. The
+per-entry lines in `products/berufsunfaehigkeit/sources.md` carry the clause detail read from each. Where a
 *Content* block records a specific parameter it is the author's recollection, tagged `[unverified]`,
 recorded so a later reader knows **which document to open to check it**. Insurer names are real
 German life insurers, all of which write BU; **tariff and product names are recalled, not
@@ -159,15 +163,20 @@ confirmed**, and every one carries `[unverified]`.
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. (GDV), Berlin
 - Doc type: *unverbindliche Musterbedingungen* — non-binding model conditions circulated to member
   undertakings, which most German insurers use as the drafting skeleton for their own AVB
-- URL: not established
+- URL: `https://www.gdv.de/gdv/service/musterbedingungen` (index) → the SBU model conditions PDF given on the `Retrieved` line
+- Retrieved: **yes** — PDF, 25 pp., *Stand: 21.07.2025*, read 2026-08-30 at `https://www.gdv.de/resource/blob/6326/f89f31db43116561321679a5a3b29682/01-allgemeine-bedingungen-fur-die-berufsunfahigkeits-versicherung-0-pdf-data.pdf`, linked from the GDV's own *Musterbedingungen* index
 - Content: the single most important document for this product, and the one whose absence hurts
   most. The GDV maintains model AVB for the standalone BU cover; individual insurers depart from
   them in the direction of the policyholder (waiving the *abstrakte Verweisung*, shortening the
   *Prognosezeitraum*, adding an *AU-Klausel*) and rarely against. The model conditions are the
   reason the German BU market is structurally uniform: the definition of *Berufsunfähigkeit*, the
-  50 % threshold, the six-month *Prognosezeitraum*, the six-month retrospective fiction, the
   *Anerkenntnis* and *Nachprüfung* clauses, the *Mitwirkungspflichten* and the exclusion list all
-  read alike across carriers because they descend from a common model text. **Note carefully**: the
+  read alike across carriers because they descend from a common model text. **Read on 2026-08-30
+  (Stand 21.07.2025), which corrects two things recorded here.** The model text leaves **both** the
+  degree and the prognosis period blank, footnoted "Unternehmensindividuell zu ergänzen", so neither
+  the 50 % nor any period descends from it — carriers fill them, and one large carrier's prognosis
+  period is three years, not six months. And the six months belongs to the **retrospective fiction**
+  of § 2 Abs. 2, which is a separate clause from the prognosis limb of § 2 Abs. 1. **Note carefully**: the
   GDV model conditions are *unverbindlich* — non-binding — precisely because binding recommended
   conditions would be a cartel; every insurer's own AVB is the operative document, and a claim made
   from the model text alone is `[unverified]` against any particular contract.
@@ -175,7 +184,8 @@ confirmed**, and every one carries `[unverified]`.
 ### S2 — GDV, *Allgemeine Bedingungen für die Berufsunfähigkeits-Zusatzversicherung* (Muster-BUZ)
 - Publisher: GDV
 - Doc type: *unverbindliche Musterbedingungen* for the rider form
-- URL: not established
+- URL: as S1's index → the BUZ model conditions PDF given on the `Retrieved` line
+- Retrieved: **yes** — PDF, 15 pp., *Stand: 15.11.2022*, read 2026-08-30 at `https://www.gdv.de/resource/blob/6328/f54c89730c9ba9043d8e8f023f38824a/02-allgemeine-bedingungen-fuer-die-berufsunfaehigkeits-zusatzversicherung-0-pdf-data.pdf`
 - Content: the rider counterpart of S1. The substantive BU definition, *Anerkenntnis* and
   *Nachprüfung* clauses are the same; the rider text adds the interaction with the host contract —
   that the *Beitragsbefreiung* covers the **whole** premium of the host contract and not merely the
@@ -189,6 +199,7 @@ confirmed**, and every one carries `[unverified]`.
 ### S3 — Allianz Lebensversicherungs-AG, AVB for the *selbständige Berufsunfähigkeitsversicherung*, with the associated *Produktinformationsblatt*
 - Publisher: Allianz Lebensversicherungs-AG, Stuttgart — the largest German life insurer
 - Doc type: AVB (*Bedingungswerk*) plus *Produktinformationsblatt*; URL: not established
+- Retrieved: **no** — the Allianz BU product page resolves on 2026-08-30 and points to a document index at `https://www.allianz.de/service/dokumente/#berufsunfaehigkeits-versicherung`, which serves no BU *Bedingungswerk* in its HTML: its per-product sections are assembled client-side
 - Content: the most widely read BU wording in the market. Expected to contain the standard
   50 % / six-month definition, waiver of the *abstrakte Verweisung*, a *Nachversicherungsgarantie*
   on a defined event list, a *Beitragsdynamik* option, occupational classification into a small
@@ -197,7 +208,8 @@ confirmed**, and every one carries `[unverified]`.
   or parameter from any Allianz document is asserted anywhere in this file.**
 
 ### S4 — Alte Leipziger Lebensversicherung a. G., AVB and *Tarifbestimmungen* for its BU range
-- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel; URL: not established
+- Publisher: Alte Leipziger Lebensversicherung a. G., Oberursel; URL: `https://www.alte-leipziger.de/privatkunden/einkommensschutz/berufsunfaehigkeitsversicherung`, the product page that links the AVB and the AU-clause sheet
+- Retrieved: **yes** — AVB, PDF, 33 pp., document mark *pm 2300*, at `https://www.alte-leipziger.de/-/media/druckstuecke/allgemeine-bedingungen/pm/2300/bedingungenallgemeinebedingungenberufsunfaehigkeitsversicherungpm2300pdf/bedingungen-allgemeine-bedingungen-berufsunfaehigkeitsversicherung-pm2300.pdf`, and the AU-clause sheet *pv 483.02-12.2025*, PDF, 2 pp.; both read 2026-08-30. The *Tarifbestimmungen* were not found at a public address
 - Content: one of the small group of carriers the German broker market treats as BU specialists,
   alongside Nürnberger, LV 1871, Swiss Life, HDI and Volkswohl Bund. The tariff family is recalled
   as carrying a `BV` prefix `[unverified]`. This is the class of document that would settle the
@@ -205,7 +217,8 @@ confirmed**, and every one carries `[unverified]`.
   *Verlängerungsoption* window and the *Karenzzeit* menu — none of which this file can source.
 
 ### S5 — LV 1871 (Lebensversicherung von 1871 a. G. München), AVB and PIB for its BU range
-- Publisher: Lebensversicherung von 1871 a. G. München; URL: not established
+- Publisher: Lebensversicherung von 1871 a. G. München; URL: `https://www.lv1871.de/berufsunfaehigkeitsversicherung/` resolves but serves no document
+- Retrieved: **no** — `https://www.lv1871.de/berufsunfaehigkeitsversicherung/` resolves on 2026-08-30 and serves no document link; the *Bedingungen* sit behind the broker portal
 - Content: LV 1871 markets a BU range under a "Golden BU" family name `[unverified]`, with tiers
   differing chiefly in the option set (*Nachversicherungsgarantie* breadth, *AU-Klausel*,
   *Leistungsdynamik*) rather than in the core definition. Recorded because a tiered range on one
@@ -213,7 +226,8 @@ confirmed**, and every one carries `[unverified]`.
   and treat the enhancements as switchable options.
 
 ### S6 — NÜRNBERGER Lebensversicherung AG, AVB, *Tarifbestimmungen* and *Berufsgruppenverzeichnis*
-- Publisher: NÜRNBERGER Lebensversicherung AG, Nürnberg; URL: not established
+- Publisher: NÜRNBERGER Lebensversicherung AG, Nürnberg; URL: `https://www.nuernberger.de/beruf-vorsorge/existenzsicherung/berufsunfaehigkeitsversicherung/`, the product page that links the AVB and the *Kundeninformation*
+- Retrieved: **yes** for the AVB — PDF, 28 pp., document mark *GN331072_202607*, at `https://www.nuernberger.de/medien/4allportal/gn331072_p.pdf`, and the *Kundeninformation* *LV005_565_202607*, PDF, 3 pp.; both read 2026-08-30. **The *Berufsgruppenverzeichnis* was not retrieved** and the AVB never uses the word *Berufsgruppe*
 - Content: historically one of the largest BU books in Germany `[unverified]`. The document class
   that matters most here is the ***Berufsgruppenverzeichnis*** — the occupational classification
   list, running to hundreds of named occupations mapped to rating classes. No German insurer's full
@@ -222,26 +236,30 @@ confirmed**, and every one carries `[unverified]`.
 
 ### S7 — Swiss Life AG, Niederlassung für Deutschland, AVB and PIB for its BU range
 - Publisher: Swiss Life AG, Niederlassung für Deutschland, München; URL: not established
+- Retrieved: **no** — not attempted; nothing in this product is asserted from Swiss Life
 - Content: regarded in the broker market as a wording-quality benchmark `[unverified]`, in
   particular on the *Verweisung* clauses and on the treatment of the self-employed
   (*Umorganisationspflicht*) — the most product-specific part of the German BU definition and the
   part least visible from consumer material.
 
 ### S8 — HDI Lebensversicherung AG, AVB and PIB for its BU range
-- Publisher: HDI Lebensversicherung AG, Köln (Talanx group); URL: not established
+- Publisher: HDI Lebensversicherung AG, Köln (Talanx group); URL: `https://www.hdi.de/versicherungen/einkommensschutz/berufsunfaehigkeitsversicherung/` resolves but serves no document
+- Retrieved: **no** — `https://www.hdi.de/versicherungen/einkommensschutz/berufsunfaehigkeitsversicherung/` resolves on 2026-08-30 and serves no document link. The *AU-Klausel*'s parameters were instead established from S4 and S12, and the GDV model conditions for the BU-with-AU variant were read (PDF, 27 pp., at `https://www.gdv.de/resource/blob/29838/8be269e678c792295c1ac6881f1c800b/allgemeine-bedingungen-fuer-die-berufsunfaehigkeits-versicherung-mit-zusaetzlicher-absicherung-bei-arbeitsunfaehigkeit-data.pdf`)
 - Content: HDI markets its BU under an "EGO" family name `[unverified]`, with a tier structure and a
   strong academic/office proposition. Recorded as one of the carriers whose wording would settle the
   *AU-Klausel* parameters — the certified duration required, the maximum benefit period under the
   clause, and whether payment under it is set off against a later BU recognition (section 11).
 
 ### S9 — VOLKSWOHL BUND Lebensversicherung a. G., AVB and *Tarifbestimmungen*
-- Publisher: VOLKSWOHL BUND Lebensversicherung a. G., Dortmund; URL: not established
+- Publisher: VOLKSWOHL BUND Lebensversicherung a. G., Dortmund; URL: `https://www.volkswohl-bund.de/einkommenssicherung/berufsunfaehigkeit/`, the product page that links the AVB
+- Retrieved: **yes** — PDF, 22 pp., document mark *BED.SBU.0126*, tariffs SBU, SBUJ, SBU+, SBUJ+, read 2026-08-30 at `https://druckstuecke.volkswohl-bund.de/api/products/1574/documents/Allgemeine_Bedingungen_für_die_Selbstständige_Berufsunfähigkeits-Versicherung.pdf`
 - Content: a broker-channel BU specialist. Recorded because its range is one of those that prints a
   *Bruttobeitrag* and a *Zahlbeitrag* side by side in the quotation — the practice this file needs
   documented (section 18) and which no retrieved document confirms.
 
 ### S10 — Barmenia Lebensversicherung a. G., AVB and PIB for its standalone BU cover
 - Publisher: Barmenia Lebensversicherung a. G., Wuppertal (Barmenia Gothaer group); URL: not established
+- Retrieved: **no** — not attempted; nothing in this product is asserted from Barmenia
 - Content: Barmenia has sold standalone BU under a "SoloBU" name `[unverified]`. Recorded chiefly as
   the carrier most associated with the standalone rather than the rider form, and as a reminder that
   the German word for the standalone contract — *selbständige* BU — is itself a product name in some
@@ -250,6 +268,7 @@ confirmed**, and every one carries `[unverified]`.
 ### S11 — Dialog Lebensversicherungs-AG (Generali Deutschland), AVB and *Tarifbestimmungen*
 - Publisher: Dialog Lebensversicherungs-AG, Augsburg — the Generali group's broker-channel
   biometric-risk carrier; URL: not established
+- Retrieved: **no** — not attempted; nothing in this product is asserted from Dialog
 - Content: the German market's clearest example of a carrier writing **only** biometric risk —
   *Risikolebensversicherung* and BU — with no savings business. That makes its
   *Überschussbeteiligung* pure risk and expense surplus with no interest component, which is the
@@ -266,7 +285,8 @@ confirmed**, and every one carries `[unverified]`.
   Lebensversicherung a. G.); universa Lebensversicherung a. G.; DEVK; SIGNAL IDUNA
   Lebensversicherung a. G.; Provinzial; HUK-COBURG-Lebensversicherung AG
 - Doc type: AVB, *Tarifbestimmungen*, *Produktinformationsblätter*, *Berufsgruppenverzeichnisse*
-- URL: not established for any of them
+- URL: `https://www.debeka.de/service/vertragsgrundlagen.html` for the Debeka documents; `https://www.cosmosdirekt.de/berufsunfaehigkeitsversicherung/` for CosmosDirekt. Not established for the other sixteen carriers
+- Retrieved: **yes, in part** — Debeka *ABBV 01/2026* (PDF, 12 pp., mark *B LV 19 (01.01.2026)*) and its BU *Steuermerkblatt* *3 L/103 (01.01.2026)* under `https://www.debeka.de/content/dam/de/webauftritt/vertragsgrundlagen/Berufsunfähigkeit/`, and CosmosDirekt *BF SBU (10.25)* (PDF, 3 pp.); all read 2026-08-30. **No** for the other sixteen carriers named here
 - Content: recorded as a class so that the breadth of the German market is on the record and so that
   a later researcher has the target list. The commercially significant split inside this list is
   **channel**, not wording: the direct writers (CosmosDirekt, Hannoversche, HUK-COBURG) and the
@@ -280,6 +300,7 @@ confirmed**, and every one carries `[unverified]`.
 - Publisher: each insurer, for each tariff. Doc type: the short pre-contractual information sheet
   required by the *VVG-Informationspflichtenverordnung* (VVG-InfoV) `[unverified]` as to the precise
   article; URL: not established
+- Retrieved: **no** — a PIB is generated per quotation for a named age, occupation, term and *BU-Rente*, and no carrier publishes a specimen with figures at a public address. Its **content** is established from R12 and S6 instead
 - Content: the German retail life market's standard two-page disclosure. For a BU tariff it states
   the contract type, the insured risk (naming the 50 % and six-month criteria in a sentence), the
   *BU-Rente* and its escalation, **the *Bruttobeitrag* and the *Zahlbeitrag*** with an explicit
@@ -291,6 +312,7 @@ confirmed**, and every one carries `[unverified]`.
 
 ### S14 — *Basisinformationsblatt* (PRIIP-KID) — and why an SBU normally does not have one
 - Publisher: each insurer, where the product is in scope; URL: not established
+- Retrieved: **no** — nothing to retrieve; the premise of the entry is that the document is not produced for this product, and R12 now sources the boundary
 - Content: recorded as a **negative** finding of substance. PRIIPs covers *insurance-based
   investment products* — contracts offering a maturity or surrender value exposed to market
   fluctuations — so a pure biometric protection contract falls outside it. A standalone SBU is
@@ -306,6 +328,7 @@ confirmed**, and every one carries `[unverified]`.
 - Publishers: Verivox; CHECK24; Finanztip; Stiftung Warentest / *Finanztest*; Handelsblatt;
   MORGEN & MORGEN; Franke und Bornberg; ASSEKURATA. Doc type: comparison pages, consumer guides,
   periodical product tests and ratings — **secondary throughout**; URL: not established
+- Retrieved: **no** — not attempted; the class is secondary and its figures are unusable under the house rule against reproducing a recalled number
 - Content: this class is where every published German BU **price point** and every published
   **wording-quality rating** lives, and it is the class this file most needed and least could reach.
   It would supply indicative *Zahlbeiträge* by age, occupation, *BU-Rente* and *Endalter* across
@@ -318,6 +341,7 @@ confirmed**, and every one carries `[unverified]`.
 ### S16 — Verbraucherzentrale material on the *Berufsunfähigkeitsversicherung*
 - Publisher: the *Verbraucherzentralen* and the *Verbraucherzentrale Bundesverband* (vzbv). Doc
   type: consumer-advice pages and brochures — **secondary**; URL: not established
+- Retrieved: **no** — not attempted; secondary, and the behavioural claims it supports are not modelled parameters
 - Content: the consumer-protection view: that the statutory *Erwerbsminderungsrente* is not a
   substitute (section 24); that incomplete *Gesundheitsfragen* are the commonest reason a claim
   later fails; that a *Risikovoranfrage* should precede any application; that **the *Bruttobeitrag*
@@ -329,16 +353,22 @@ confirmed**, and every one carries `[unverified]`.
 
 ## Regulatory and actuarial references
 
-Same retrieval status throughout: **Retrieved: no — direct HTTP egress blocked in the build
-environment; no search corroboration (session search budget exhausted).** Where a URL is given it is
-the canonical form of a `gesetze-im-internet.de` address and is marked `[unverified]`; the paragraph
-numbering it encodes is itself part of what is unverified.
+**The blanket retrieval status these entries once carried no longer holds.** On 2026-08-30 every
+statute and statutory instrument in this section that gesetze-im-internet publishes was read as its
+**canonical XML** (`https://www.gesetze-im-internet.de/<slug>/xml.zip`), which carries the law's
+*Stand*: VVG, VVG-InfoV, VAG, DeckRV, MindZV, AGG, SGB VI, EStG, EStDV, IfSG and VersStG. The
+`__NNN.html` addresses printed below are the human-facing links and are **not** what was read —
+those per-section pages answer 200 with a frameset of a few kilobytes containing no statutory text.
+Each entry now carries its own `Retrieved` line; the paragraph numbering is no longer `[unverified]`
+for any provision that was read, and where a reading corrected the entry the entry says so. The
+non-statutory entries (R16–R23, R26, R28, R29) were not read and say why.
 
 ### R1 — VVG § 172, *Leistung des Versicherers* (the statutory definition of *Berufsunfähigkeit*)
 - Publisher: Bundesministerium der Justiz / Bundesamt für Justiz, via `gesetze-im-internet.de`
 - Doc type: statute — *Gesetz über den Versicherungsvertrag* (VVG) of 2008, Kapitel 5, Teil 2,
   Abschnitt 3 (*Berufsunfähigkeitsversicherung*)
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__172.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__172.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: the anchor provision of the whole product. Three limbs, recalled and `[unverified]` as to
   numbering and wording:
   1. **Abs. 1** obliges the insurer to render the agreed benefits for a *Berufsunfähigkeit* arising
@@ -364,7 +394,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R2 — VVG § 173, *Anerkenntnis*
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__173.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__173.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: on a *Leistungsantrag*, the insurer must declare in *Textform*, when the claim falls due,
   whether it acknowledges its liability. The second limb restricts the **time-limited
   acknowledgement** (*befristetes Anerkenntnis*): the acknowledgement may be limited in time **only
@@ -377,7 +408,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R3 — VVG § 174, *Leistungsfreiheit* (the *Nachprüfung* and its notice period)
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__174.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__174.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: where the insurer establishes that the conditions of its liability have ceased, it
   remains obliged to pay **only to the end of the third month following receipt by the policyholder
   of the notice** to that effect. The three-month run-off is the single most model-relevant number
@@ -390,7 +422,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R4 — VVG § 175, *Abweichende Vereinbarungen*
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__175.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__175.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: §§ 173 and 174 are *halbzwingend* — no departure to the disadvantage of the policyholder
   is effective. This is why the *Anerkenntnis* and *Nachprüfung* mechanics are uniform across the
   market: they are not a competitive variable. Insurers may only improve on them, and some do (for
@@ -399,7 +432,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R5 — VVG § 176, *Anzuwendende Vorschriften*
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__176.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__176.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: applies the life-assurance provisions of the VVG **mutatis mutandis** to the
   *Berufsunfähigkeitsversicherung*. The range is recalled as **§§ 150 to 170** `[unverified]`. This
   single cross-reference is what makes an SBU a life contract in everything but its trigger, and it
@@ -411,23 +445,37 @@ numbering it encodes is itself part of what is unverified.
   - § 168 *Kündigung* and § 169 *Rückkaufswert* [R9] — hence a surrender value, and hence a
     *Deckungsrückstellung* that is genuinely material for a level-premium BU contract;
   - § 169 Abs. 3's five-year spreading of acquisition costs, and the *Mindestrückkaufswert*.
-  The verification task here is precise: **confirm the range of sections § 176 imports**, because
-  every one of the five bullets above depends on it.
+  The verification task here was precise — **confirm the range of sections § 176 imports** — and it
+  is **done**. Read 2026-08-30 in the canonical XML (Stand: zuletzt geändert durch Art. 12 G v.
+  26.5.2026 I Nr. 156): "Die §§ 150 bis 170 sind auf die Berufsunfähigkeitsversicherung entsprechend
+  anzuwenden, soweit die Besonderheiten dieser Versicherung nicht entgegenstehen." The recalled range
+  is correct. Two of the five bullets need qualifying against that reservation: § 169 Abs. 1 confers
+  the surrender right only where "der Eintritt der Verpflichtung des Versicherers gewiss ist", which
+  a pure SBU is not, and § 161 is a **death-cover** rule whose three-year window has no application
+  to a self-inflicted impairment — the market's AVB exclude deliberate self-harm outright instead,
+  with no window at all. And the *Deckungsrückstellung* is **not** "genuinely material": a carrier's
+  own AVB records that the premium parts available to build it are "sehr gering" against premiums
+  paid and that it is always exhausted by expiry.
 
 ### R6 — VVG § 177, *Ähnliche Versicherungsverträge*
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__177.html` `[unverified]`
-- Content: extends the *Anerkenntnis* / *Nachprüfung* frame of §§ 173–176 to cover of **reduced
-  earning capacity** (*verminderte Erwerbsfähigkeit*) and of *Arbeitsunfähigkeit*, and to accident
-  covers that pay for a lasting impairment of the ability to work `[unverified]` as to the exact
-  enumeration. Recorded because it is the provision under which an *AU-Klausel* benefit (section 11)
-  and a *Grundfähigkeitsversicherung* inherit the same procedural protections, and because it marks
-  the outer boundary of the delib product: everything § 177 reaches is a neighbouring product, not
-  this one.
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__177.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
+- Content: **read 2026-08-30 in the canonical XML, and the reading corrects this entry twice.**
+  Abs. 1: "Die §§ 173 bis 176 sind auf alle Versicherungsverträge, bei denen der Versicherer für eine
+  **dauerhafte** Beeinträchtigung der Arbeitsfähigkeit eine Leistung verspricht, entsprechend
+  anzuwenden." So it reaches cover of a *lasting* impairment — *Grundfähigkeits-* and
+  *Erwerbsunfähigkeitsversicherung* — and **not** cover of temporary *Arbeitsunfähigkeit*: an
+  *AU-Klausel* benefit (section 11) does not inherit these protections through § 177, but through
+  §§ 172 ff. applying directly to the BU contract it sits inside. Abs. 2 expressly **excludes**
+  accident insurance and health-insurance contracts covering impaired working capacity, so it does
+  not extend the frame to accident cover either. It still marks the outer boundary of the delib
+  product: everything § 177 reaches is a neighbouring product, not this one.
 
 ### R7 — VVG §§ 19–22, *Vorvertragliche Anzeigepflicht* and its consequences
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__19.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__19.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: the applicant must disclose the risk circumstances known to her which the insurer has
   asked about in *Textform*. Breach gives the insurer, graded by fault: *Rücktritt* (rescission) for
   intent or gross negligence; contract amendment (retroactive imposition of the terms the insurer
@@ -443,7 +491,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R8 — VVG § 165, *Prämienfreie Versicherung* (applied via § 176)
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: the policyholder may at any time require the contract to be converted to a paid-up
   contract; the insurer computes a reduced sum insured on recognised actuarial principles, with the
   costs of the conversion deductible. For BU the reduced benefit is a **beitragsfreie BU-Rente**,
@@ -454,7 +503,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R9 — VVG § 169, *Rückkaufswert* (applied via § 176)
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: on termination by notice the insurer must pay the surrender value, computed as the
   *Deckungsrückstellung* calculated on recognised actuarial principles; **acquisition and
   distribution costs must be spread over at least the first five years** for the purpose of the
@@ -469,7 +519,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R10 — VVG § 153, *Überschussbeteiligung* (applied via § 176)
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__153.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__153.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: the policyholder is entitled to a share of the *Überschuss* and of the
   *Bewertungsreserven* unless participation is expressly excluded; the allocation must follow a
   *verursachungsorientiertes Verfahren* (a method oriented to the origin of the surplus). For BU the
@@ -482,7 +533,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R11 — VVG § 161, *Selbsttötung* (applied via § 176)
 - Publisher: as R1
-- URL: `https://www.gesetze-im-internet.de/vvg_2008/__161.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg_2008/__161.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg_2008/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156*. The `__NNN.html` address above is a frameset shell and carries no statutory text
 - Content: in a life contract the insurer is free of liability where the insured takes her own life
   within **three years** of conclusion `[unverified]`, unless the act was committed in a state of
   pathological mental disturbance excluding free determination of will; in that case the
@@ -495,7 +547,8 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: Bundesministerium der Justiz
 - Doc type: statutory instrument prescribing pre-contractual information duties, including the
   *Produktinformationsblatt*
-- URL: `https://www.gesetze-im-internet.de/vvg-infov/` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/vvg-infov/` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vvg-infov/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 13 G v. 26.5.2026 I Nr. 156*. § 2 read in full
 - Content: prescribes what must be given to the applicant before conclusion and mandates the
   *Produktinformationsblatt* [S13] for life and BU contracts, in a prescribed order and at a
   prescribed brevity. For a savings contract it also mandates the disclosure of *Effektivkosten*
@@ -507,7 +560,8 @@ numbering it encodes is itself part of what is unverified.
 ### R13 — Deckungsrückstellungsverordnung (DeckRV) — *Höchstrechnungszins* and *Höchstzillmersatz*
 - Publisher: Bundesministerium der Finanzen
 - Doc type: statutory instrument
-- URL: `https://www.gesetze-im-internet.de/deckrv/` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/deckrv/` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/deckrv_2016/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 1 V v. 19.7.2024 I Nr. 250*. §§ 2, 4, 5a and 6 read; the consolidated HTML at `https://www.gesetze-im-internet.de/deckrv_2016/BJNR076700016.html` was also retrieved
 - Content: sets the maximum technical interest rate for the *Deckungsrückstellung* of new German life
   business — and, in practice, for pricing — and caps the acquisition costs that may be zillmered
   into the reserve at **25 ‰ (2,5 %) of the *Beitragssumme*** `[unverified]`. The
@@ -523,7 +577,8 @@ numbering it encodes is itself part of what is unverified.
 ### R14 — Mindestzuführungsverordnung (MindZV)
 - Publisher: Bundesministerium der Finanzen
 - Doc type: statutory instrument on the minimum allocation of surplus to policyholders
-- URL: `https://www.gesetze-im-internet.de/mindzv/` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/mindzv/` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/mindzv_2016/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 1 V v. 7.7.2020 I 1688*. §§ 4, 6, 7 and 8 read
 - Content: prescribes the minimum share of *Rohüberschuss* that must be allocated to the
   *Rückstellung für Beitragsrückerstattung*, separately by source — interest, risk and expense. The
   **risk-result minimum allocation** is the one that governs BU, and it is recalled as **90 % of the
@@ -535,7 +590,8 @@ numbering it encodes is itself part of what is unverified.
 ### R15 — VAG §§ 138, 139, 141 — *Gleichbehandlung*, *Überschussbeteiligung*, *Verantwortlicher Aktuar*
 - Publisher: Bundesministerium der Justiz
 - Doc type: statute — *Versicherungsaufsichtsgesetz*
-- URL: `https://www.gesetze-im-internet.de/vag_2016/` `[unverified]` as to the section numbers
+- URL: `https://www.gesetze-im-internet.de/vag_2016/` as to the section numbers — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/vag_2016/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81*. §§ 138, 139 and 141 read; all three section numbers are correct. **Unisex is not in the VAG** — AGG § 33 Abs. 5 was read for it and confirms the 21 December 2012 date
 - Content: § 138 requires premiums to be calculated on actuarial principles sufficient to meet the
   obligations permanently and requires **equal treatment of equal risks**; § 139 governs the
   *Überschussbeteiligung* on the supervisory side and is the counterpart of § 153 VVG; § 141 places
@@ -555,6 +611,7 @@ numbering it encodes is itself part of what is unverified.
 ### R16 — DAV 1997 I, DAV 1997 RI and DAV 1997 TI — the *Rechnungsgrundlagen* for BU
 - Publisher: Deutsche Aktuarvereinigung e. V. (DAV), Köln. Doc type: actuarial tables and the
   accompanying *Herleitung* report of the DAV working party on BU bases; URL: not established
+- Retrieved: **no** — DAV property, not published at a public address. This is the one entry here whose status cannot change however good the network is
 - Content: the German BU pricing and reserving standard, and — critically — **not public**. The
   package as recalled comprises three tables, `[unverified]` on the names:
   - **DAV 1997 I** — *Invalidisierungswahrscheinlichkeiten*: probability that an active life aged x
@@ -585,6 +642,7 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: Deutsche Aktuarvereinigung e. V.
 - Doc type: mortality table for contracts with death-benefit character, with its *Herleitung* report
 - URL: not established
+- Retrieved: **no** — DAV property, not published at a public address
 - Content: the first-order mortality table for German risk business. Relevant to BU as the **active
   state's** mortality decrement: an active life leaves the model by becoming BU, by lapsing, or by
   dying, and the last of these uses a *Todesfall*-character table. Not public; delib ships a `[std]`
@@ -596,6 +654,7 @@ numbering it encodes is itself part of what is unverified.
   biometric bases (*AG Biometrische Rechnungsgrundlagen*) and on *Berufsunfähigkeit*
 - Doc type: *Ergebnisberichte* (results reports) and *Fachgrundsätze* (professional standards)
 - URL: not established
+- Retrieved: **no** — no BU-specific *Ergebnisbericht* was located on the association's site on 2026-08-30
 - Content: the DAV publishes results reports on the derivation and periodic review of biometric
   bases, on the treatment of *Reaktivierung*, on *Storno* in biometric products, and on the
   best-estimate assumptions used for Solvency II technical provisions. These are the documents that
@@ -607,6 +666,7 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: Bundesanstalt für Finanzdienstleistungsaufsicht
 - Doc type: *Merkblätter*, *Rundschreiben*, *BaFinJournal* articles, *Risiken im Fokus*
 - URL: not established (`bafin.de` refused)
+- Retrieved: **no** — not attempted; nothing quantitative is cited from BaFin anywhere in this product
 - Content: BaFin supervises the *Leistungsprüfung* practice of German BU insurers as a conduct
   matter (*Wohlverhaltensaufsicht*) and has published on the duration of claims decisions, on the
   quality of *Nachprüfung* notices, and on the *Brutto*/*Zahlbeitrag* disclosure. It also collects
@@ -618,6 +678,7 @@ numbering it encodes is itself part of what is unverified.
 - Doc type: *Statistisches Taschenbuch der Versicherungswirtschaft*, *Die deutsche
   Lebensversicherung in Zahlen*, and GDV press material on BU
 - URL: not established
+- Retrieved: **no** — the general *Die deutsche Lebensversicherung in Zahlen* series is reachable on `gdv.de`; no BU-specific series was located or read, and no figure is taken from it
 - Content: the source that would give the **size of the German BU market** — number of in-force
   contracts, new business, premium income, and the industry-wide *Anerkennungsquote*, which the GDV
   began publishing in recent years `[unverified]` as to the year and the figure. An order of
@@ -631,6 +692,7 @@ numbering it encodes is itself part of what is unverified.
 - Doc type: recurring market study of BU claims practice, based on data supplied and audited at
   participating insurers, plus the firm's ratings of BU *Bedingungen*
 - URL: not established
+- Retrieved: **no** — the publisher's blog is reachable, the *BU-Leistungspraxis* study itself was not located at a public address on 2026-08-30
 - Content: **the usual publisher of the German *Anerkennungsquote***, and the reference this file's
   section 25 points at. The study reports, per participating insurer and in aggregate: the
   proportion of decided BU claims accepted; the breakdown of declines by reason (BU degree not
@@ -645,6 +707,7 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: MORGEN & MORGEN GmbH, Hofheim am Taunus
 - Doc type: annual rating of BU tariffs and an accompanying analysis of the **causes of BU**
 - URL: not established
+- Retrieved: **no** — not attempted
 - Content: **the usual publisher of the German causes-of-BU distribution** — the percentages in
   section 25. The analysis groups causes into roughly six classes (*Nervenkrankheiten* including
   psychiatric conditions; *Erkrankungen des Skelett- und Bewegungsapparates*; *Krebs und andere
@@ -658,6 +721,7 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: ASSEKURATA Assekuranz Rating-Agentur GmbH, Köln
 - Doc type: annual market studies and insurer ratings
 - URL: not established
+- Retrieved: **no** — not attempted
 - Content: ASSEKURATA's annual study of declared *Überschussbeteiligung* is the standard reference
   for German surplus declarations. For BU the relevant content is the **stability of the
   *Beitragsverrechnung***: which insurers have had to raise the *Zahlbeitrag* toward the
@@ -667,7 +731,8 @@ numbering it encodes is itself part of what is unverified.
 ### R24 — SGB VI § 43, *Rente wegen Erwerbsminderung*
 - Publisher: Bundesministerium der Justiz
 - Doc type: statute — *Sozialgesetzbuch, Sechstes Buch*
-- URL: `https://www.gesetze-im-internet.de/sgb_6/__43.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/sgb_6/__43.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/sgb_6/xml.zip`, read 2026-08-30; *Stand: zuletzt geändert durch Art. 2a G v. 24.7.2026 I Nr. 228*
 - Content: the statutory disability pension the private BU contract sits on top of. Two tiers, both
   measured against the **general labour market** (*allgemeiner Arbeitsmarkt*) rather than the
   insured's own occupation:
@@ -682,7 +747,8 @@ numbering it encodes is itself part of what is unverified.
 
 ### R25 — SGB VI § 240 — the abolished statutory *Berufsunfähigkeitsrente*
 - Publisher: as R24
-- URL: `https://www.gesetze-im-internet.de/sgb_6/__240.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/sgb_6/__240.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML, same source and *Stand* as R24. Abs. 1 Nr. 1 reads "vor dem 2. Januar 1961 geboren", confirming the cohort date
 - Content: the transitional provision preserving a *Rente wegen teilweiser Erwerbsminderung bei
   Berufsunfähigkeit* for insured persons **born before 2 January 1961** `[unverified]`. For everyone
   born on or after that date the statutory scheme contains **no occupational-disability pension at
@@ -696,6 +762,7 @@ numbering it encodes is itself part of what is unverified.
 - Doc type: *Rentenversicherung in Zahlen*, *Rentenzugangsstatistik*, and the annual press material
   on new *Erwerbsminderungsrenten*
 - URL: not established (`deutsche-rentenversicherung.de` refused)
+- Retrieved: **no** — not attempted; no DRV statistic is printed anywhere in this product
 - Content: the source for the **average level** of the statutory disability pension — the figure
   that quantifies the *Versorgungslücke* the private product fills — and for the number of new
   awards per year, the average age at award, and the distribution of awards by diagnosis. The DRV's
@@ -707,7 +774,8 @@ numbering it encodes is itself part of what is unverified.
 ### R27 — EStG § 10 and § 22 — deductibility of the premium and taxation of the *BU-Rente*
 - Publisher: Bundesministerium der Justiz
 - Doc type: statute — *Einkommensteuergesetz*
-- URL: `https://www.gesetze-im-internet.de/estg/__10.html` and `.../__22.html` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/estg/__10.html` and `.../__22.html` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — EStG canonical XML at `https://www.gesetze-im-internet.de/estg/xml.zip` and EStDV at `https://www.gesetze-im-internet.de/estdv_1955/xml.zip` (*Stand: zuletzt geändert durch Art. 2 V v. 19.12.2025 I Nr. 372*), read 2026-08-30. § 10 Abs. 1 Nr. 3a, § 10 Abs. 4, § 22 Nr. 1 Satz 3 Buchst. a and EStDV § 55 Abs. 2 read; corroborated by a carrier's own tax leaflet (S12)
 - Content: two distinct regimes, and the difference between them is the main reason to write BU as a
   *Basisrente* rider rather than standalone:
   - **Standalone SBU (Schicht 3).** The premium is a *sonstige Vorsorgeaufwendung* under
@@ -730,6 +798,7 @@ numbering it encodes is itself part of what is unverified.
 - Doc type: administrative circular (*BMF-Schreiben*) on the tax treatment of *Altersvorsorge* and
   *Basisrenten* contracts
 - URL: not established (`bundesfinanzministerium.de` refused)
+- Retrieved: **no** — the circular itself was not sought on `bundesfinanzministerium.de` in this pass. The **statutory** side was read: EStG § 10 Abs. 1 Nr. 2 Buchst. b admits both a BU rider inside a *Basisrente* (Doppelbuchst. aa) and a standalone first-layer BU annuity for an event occurring up to age 67 (Doppelbuchst. bb). The 49 % premium-share cap is administrative and is **not** in that text
 - Content: the instrument that sets the conditions a BU rider must satisfy for the whole premium to
   qualify as an *Altersvorsorgeaufwendung*. The recalled conditions are: the BU benefit must be paid
   **as an annuity**, not a lump sum; it must run at most to the end of the host contract's deferment;
@@ -743,6 +812,7 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: Bundesgerichtshof, IV. Zivilsenat (the insurance senate). Doc type: judgments.
   URL: not established; **no docket number is given anywhere in this file**, because none could be
   confirmed and inventing one is barred
+- Retrieved: **no** — no judgment text was read and none is cited by number. Two of the four lines are recited in retrieved conditions: the *Lebensstellung* limit with a 20 % pay-reduction tolerance, and the self-employed insured's *Umorganisationspflicht* (S1, S12)
 - Content: four settled lines, each recalled in substance and `[unverified]` in every detail:
   1. **Binding effect of the *Anerkenntnis*.** It binds the insurer, which may free itself only by
      the *Nachprüfung* route and only prospectively; it cannot re-decide the original claim.
@@ -762,7 +832,8 @@ numbering it encodes is itself part of what is unverified.
 ### R30 — Infektionsschutzgesetz (IfSG) — the basis of the *Infektionsklausel*
 - Publisher: Bundesministerium der Justiz
 - Doc type: statute
-- URL: `https://www.gesetze-im-internet.de/ifsg/` `[unverified]`
+- URL: `https://www.gesetze-im-internet.de/ifsg/` — the human-facing link; the text was read as canonical XML (see `Retrieved`)
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/ifsg/xml.zip`, read 2026-08-30; *Stand: Zuletzt geändert durch Art. 3 Abs. 1 G v. 4.3.2026 I Nr. 60*. The provision is **§ 31, *Berufliches Tätigkeitsverbot***
 - Content: empowers the competent authority to impose a *Tätigkeitsverbot* — a prohibition on
   practising — on a person who is infected, is suspected of being infected or is a carrier, where
   practising would risk transmission. For medical, dental, nursing and laboratory occupations such a
@@ -775,6 +846,7 @@ numbering it encodes is itself part of what is unverified.
 - Publisher: Bundesministerium der Justiz
 - Doc type: statute
 - URL: `https://www.gesetze-im-internet.de/versstg/` `[unverified]`
+- Retrieved: **yes** — canonical XML at `https://www.gesetze-im-internet.de/versstg/xml.zip`, read 2026-08-30; *VersStG 2021, Neugefasst durch Bek. v. 27.4.2021 I 874*. The slug `versstg` is confirmed by retrieval, and the paragraph is **§ 4 Abs. 1 Nr. 5 Buchst. b**
 - Content: German insurance premium tax exempts life-assurance premiums, and the exemption extends
   to *Berufsunfähigkeitsversicherung* written by a life insurer `[unverified]` as to the paragraph
   and the precise scope. The practical consequence for the model is simply that **the BU premium
@@ -1512,11 +1584,13 @@ retail market and must be re-established before use.
 
 ## Observed variation across insurers
 
-**An honest variations table here is mostly a record of what could not be compared.** No insurer
-document was retrieved and no search corroborated any carrier-level parameter, so the table below
-records, per feature, **what the German market does** and **where the genuine variation lies** —
-not who sits where. Attributing a parameter to a named carrier would require a document this file
-does not have.
+**This table records where the variation lies, not who sits where.** When it was written no insurer
+document had been retrieved. Five were read on 2026-08-30 — Alte Leipziger (S4), NÜRNBERGER (S6),
+VOLKSWOHL BUND (S9), Debeka and CosmosDirekt (S12) — together with the GDV model conditions (S1, S2
+and the AU variant at S8), and the per-entry `Retrieved` lines above and the corresponding table in
+`products/berufsunfaehigkeit/product-spec.md` carry what those wordings say. **No price, tariff
+table, occupational factor or *Brutto*/*Zahlbeitrag* pair was obtained from any of them**, so no row
+here compares carriers on cost.
 
 | Feature | Market position | Where carriers genuinely differ | Tag |
 |---|---|---|---|
@@ -1561,10 +1635,13 @@ supplies.
 
 ## Gaps and caveats
 
-1. **Nothing was retrieved and nothing was searched.** This file has no primary evidence of any
-   kind. Every `[S#]` and `[R#]` is a pointer to a document that exists and is the right kind of
-   document; none is a record of a document read. That is stated at the head of the file and it
-   qualifies every line of it.
+1. **This caveat has been overtaken by the retrieval pass of 2026-08-30 and is superseded by the
+   per-entry `Retrieved` lines above.** It was written when nothing had been read. Eight documents
+   and nineteen statutory provisions have since been read and are recorded entry by entry; what
+   remains unretrieved is every **quantitative** source — no price, no rate card, no occupational
+   table, no DAV table, no rating-agency or consumer-press figure — and the DAV tables cannot be
+   retrieved at all, being unpublished. The retrieval-conditions statement at the head of this file
+   still describes the conditions under which the file was **written**, and is rewritten separately.
 
 2. **No insurer *Bedingungswerk* was opened, so no carrier-level parameter is attributed.** The
    variations table above records market positions, not carriers. Sixteen named German life

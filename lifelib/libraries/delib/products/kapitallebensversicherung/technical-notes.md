@@ -98,7 +98,7 @@ Every column of `model_point_table.csv` is published as a cells of the same name
 | `prem_freq` | enum {annual, half_yearly, quarterly, monthly} | Payment frequency | 4–7 |
 | `unterjaehrig_form` | enum {echt, unecht} | Whether the sub-annual premium is a genuine sub-annual *Versicherungsperiode* (**no** loading) or an instalment of an annual one (loaded) [R28] | 4 / 5 |
 | `rechnungszins` | rate | The contract's own guaranteed technical rate, fixed at conclusion [REG-R14] | 10 (1.75%) |
-| `zillmer_on` | 0/1 | Whether the *Deckungskapital* is *gezillmert* [S9] | 13 (0) |
+| `zillmer_on` | 0/1 | Whether the *Deckungskapital* is *gezillmert*. **[std]** — § 4 DeckRV sets a ceiling, not a mandate [R7], and no retrieved carrier wording is un-zillmered | 13 (0) |
 | `cost_id` | str | Key into `cost_table.csv`: the tariff loadings and the expense basis | all |
 | `surplus_use` | enum {ansammlung, bonus, beitragsverrechnung} | *Überschussverwendung* [R28] | 8, 9 |
 | `scenario_id` | str | Key into `surplus_rate_table.csv`: the declared-rate path | 3 (low), 14 (nil) |
@@ -131,7 +131,7 @@ something it does not. Every one satisfies the *Mindesttodesfallschutz* [R12] [R
 | 10 | **In force**, a 2012 cohort on a 1,75 % guarantee, opening at `t_start()` = 15 with an *Überschussguthaben* | issue 2012, M 40, term 30, `duration_init` 14, `rechnungszins` **1.75%**, `av_sur_pp_init` 6,000 |
 | 11 | ***Beitragsfreistellung*** succeeding: premiums cease at the end of year 10, the contract stays in force | as 1 with `bfz_year` = **10** |
 | 12 | **Boundary.** *Beitragsfreistellung* **failing** the *Mindestversicherungsleistung*, so the election becomes a surrender at `t` = 3 [R3] | M 45, term 20, SI **6,000**, `bfz_year` = **3** |
-| 13 | **Non-*gezillmert*** — the § 169 floor is then slack and the three reserves coincide [S9] | as 1 with `zillmer_on` = **0** |
+| 13 | **Non-*gezillmert*** — the § 169 floor is then slack and the three reserves coincide. **[std]**: all four retrieved wordings that state a method apply § 4 DeckRV *Zillmerung* [S7] [S9] [S18], so this point exercises the ceiling being a maximum rather than a market option anyone was observed taking | as 1 with `zillmer_on` = **0** |
 | 14 | **Boundary.** Unequal sums, old entry, a *Risikozuschlag*, and zero declared surplus | M 55 smoker, term 12, SI 30,000, ratio **0.60**, `rating_factor` **1.50**, `scenario_id` **nil** |
 
 ---
@@ -200,7 +200,7 @@ distributing the wedge between them.
 | *Rückkaufswert* | The *Deckungskapital* on the *Rechnungsgrundlagen der Prämienkalkulation*, at the **end of the current *Versicherungsperiode***, floored on *Kündigung* by the five-year-spread *Mindestrückkaufswert*, less a *vereinbart*, *beziffert* and *angemessen* *Stornoabzug*, plus the *Überschussguthaben* | [R2] [R22] [R24] [REG-R28]; even-spread reading **[std]** (2) |
 | *Beitragsfreistellung* | At the end of the current *Versicherungsperiode*, **if** the *Mindestversicherungsleistung* is reached; otherwise the insurer pays the § 169 value and the election **becomes a surrender**. The paid-up sum is computed on the § 169 value | [R3] [REG-R28] |
 | *Selbsttötung* | Within three years of conclusion the insurer is *leistungsfrei* but **must pay the *Rückkaufswert* including *Überschussanteile*** — a benefit **substitution**, not a forfeiture | [R4] [REG-R26] |
-| Surplus allocation base and timing | A percentage of the *Deckungskapital* at the allocation date [S3]; allocated at the *Bilanzstichtag* and booked into the *Deckungskapital* [S9]; entitlement from inception [S9] | [S3] [S9] [R1] |
+| Surplus allocation base and timing | A percentage of the *Deckungskapital* — "in Prozent des maßgeblichen Deckungskapitals" [S7], the reserve "um ein Jahr mit dem Rechnungszins abgezinst" [S18], booked into the *Deckungskapital* at each *Bilanztermin*, 31 December [S9]. **Entitlement timing varies across carriers**: none at [S9], a one-year *Wartezeit* at [S18], three years at [S7] tariff group A and [S3]; the model takes the shortest, which is **[std]** | [S7] [S18] [S9] [S3] [R1] |
 | *Beteiligung an den Bewertungsreserven* | Half of the amount determined on termination, but only to the extent it exceeds the *Sicherungsbedarf*. **Zero in the base run** | [R1] [R8] [REG-R9] [REG-R24]; zero **[std]** |
 
 1. The published history splits 1994 and 2000 mid-year [REG-R15] and a year-keyed table cannot, so both
@@ -216,11 +216,11 @@ distributing the wedge between them.
 
 | Input | Base value | Basis |
 |---|---|---|
-| Declared *laufende Verzinsung* `decl_rate` | **2.70% p.a., level**, whence the derived `zins_ueberschuss_rate = max(0, decl_rate − rechnungszins)` = 1.70% on the anchor cell — **never an input and never added on top of the guarantee** (pitfall 1) | Allianz's 2026 rate for its classic book, the only declared rate in the corpus attached to a classic **endowment** book by its manufacturer [S11]; level-forever **[std]** (3); derivation [REG-R53] |
+| Declared *laufende Verzinsung* `decl_rate` | **2.70% p.a., level**, whence the derived `zins_ueberschuss_rate = max(0, decl_rate − rechnungszins)` = 1.70% on the anchor cell — **never an input and never added on top of the guarantee** (pitfall 1) | Allianz's **2025** declaration for "die klassischen Lebens- und Rentenversicherungen", i.e. a combined book, reported by the trade press [R26] — **the three Allianz pages state no declared rate at all** [S11], and no carrier in this corpus publishes one for an endowment book; the retrieved named-carrier band is 2.25%–2.80% [R26]; level-forever **[std]** (3); derivation [REG-R53] |
 | *Schlussüberschussanteilsatz* `term_rate` | **0.40% p.a.** of the *Deckungskapital*, accrued and paid at the *Ablauf* and on death | **[std]** (4) — **no rate of any kind was established** (gap 1) |
 | *Ansammlungszinssatz* `ans_rate` | **2.70% p.a.**, equal to the declared rate | mechanism [R28]; the § 28 RechVersV disclosure names the rate as a published quantity [REG-R54]; the level **[std]** (5) |
 | Scenarios `low` / `nil` | `low`: `decl_rate` 1.20%, `term_rate` 0.10%, `ans_rate` 1.20%. `nil`: all three **0.00%** | `nil` rests on the sourced statement that the surplus "may also be zero euros" [S9]; both scenarios **[std]** |
-| *Stornoabzug* `storno_rate` | 10% of the guaranteed value in years 1–5, 7.5% in 6–10, 5% in 11–15, 2.5% from 16 | observed range 5%–20% of the *Deckungskapital*, **one carrier, sub judice** [S3] [R22] [R30]; schedule **[std]** |
+| *Stornoabzug* `storno_rate` | 10% of the guaranteed value in years 1–5, 7.5% in 6–10, 5% in 11–15, 2.5% from 16 | **three carrier schedules on three bases**: 0–20% of the *Deckungskapital*, decaying to nil over the last ten years, sub judice [S3] [R22] [R30]; 50 € + 0,15% of premiums × years remaining [S9]; 100 € + 0,2% of (sum insured − reserve) [S18]; schedule **[std]** |
 | *Bewertungsreserven* rate `bwr_rate` | **0.00%** | [R1] [R8] [REG-R9]; zero **[std]** |
 
 3. Level for the whole projection is a modelling choice, not a forecast: the corpus supports a
@@ -264,8 +264,15 @@ systematic release **is** the *Risikoüberschuss* [REG-R47] — the model does n
 from it, but the two must not be confused, and using one basis where the other belongs is pitfall 14.
 
 The table this proxy stands in for is **DAV 2008 T**, the market-standard first-order basis for German
-death-benefit business, derived over 2006–2008 from insurers' own policy data, the cleansed insured
-data covering **60 % of the German market in the *Kapitallebensversicherung* segment** [R14]. **It is
+death-benefit business, derived from insurers' own policy data over the observation years **2001 to
+2004** — the derivation paper was read for this pass and says so; 2006–2008, recorded here before,
+is when the DAV working group did the work — pooled from Gen Re, Münchener Rück, Swiss Re and the
+Verband öffentlicher Versicherer across 47 undertakings and more than 100 million *Bestandsjahre*, the
+cleansed insured data covering **60 % of the German market in the *Kapitallebensversicherung*
+segment** [R14]. It is a single **Schlusstafel** built from data from the sixth policy year onwards to
+strip out selection, and there is **no separate endowment table**: about 91 % of the observations
+behind it are endowment data, and endowment mortality from the sixth year is 101 % of the all-tariff
+level [R14]. **It is
 the property of the Deutsche Aktuarvereinigung, is not public and is not redistributed here** [R14]
 [REG-R47] [REG-R48]. A replacement must preserve four things: an **insured-lives**, not population,
 level, materially lighter than Destatis at the working ages [REG-R52]; **sex-specific** base tables,
@@ -274,8 +281,10 @@ because for a death cover improvement favours the insurer [REG-R48]; and an expl
 *Sicherheitszuschlag* directed *upward* for the death leg. **The proxy carries no selection factors**,
 which DAV 2008 T is understood to have [REG-R48], so a book of newly underwritten lives shows more
 early deaths here than a real one — stated rather than corrected by a second unsourced factor. And
-DAV 2008 T R / NR are **not suitable for business written without a *Gesundheitsprüfung*** [R14], so
-the whole basis presupposes the underwriting the composite specifies.
+the *Richtlinie* states the suitability limit in terms — "Die Sterbetafel DAV 2008 T ist grundsätzlich
+auch für die Beitragskalkulation von Lebensversicherungen mit Todesfallcharakter, **ausgenommen Tarife
+ohne Gesundheitsprüfung**, geeignet" [R14] — so the whole basis presupposes the underwriting the
+composite specifies.
 
 **One table for two legs — a compromise.** The death leg wants a prudent basis with mortality *higher*
 than expected and the survival leg one *lower*, so the direction of prudence forks and a single
@@ -292,10 +301,13 @@ named here and asserted as pitfall 13 rather than papered over.
 The **shape** is the one thing the evidence supports: the half-income tax rule needs twelve years and
 age 60 or 62 [R10] [REG-R45], so surrenders are suppressed approaching duration 12 and spike at it,
 exactly as the eight-year threshold drives French *assurance vie* [REG-R45]. **The levels are not
-sourced.** The only German lapse data are market aggregates — 2,72 % on the GDV headline measure for
-2024 and 1,2 % on its head-count measure, irreconcilable and neither endowment-specific nor by
-duration [R20] — and **the headline measure counts conversions to *beitragsfrei* as well as
-surrenders**, so calibrating a surrender decrement to it double-counts (pitfall 10). In the **final
+sourced.** The only German lapse datum is a market aggregate: "Die Stornoquote (Anzahl) stieg im Jahr
+2023 leicht auf **2,56 %** (Vorjahr: 2,51 %)" [R20] — one **count** measure over all life business,
+neither endowment-specific nor split by duration, so it cannot be a surrender decrement (pitfall 10).
+The 2,72 % for 2024 and the second 1,2 % measure recorded here before this pass are not in the
+retrieved GDV publication and are withdrawn. What the supervisor adds is directional rather than
+numerical: some products show "sehr hohen Stornoquoten ... speziell in den ersten Jahren nach
+Vertragsabschluss", which is the shape of the first two rows above [R18]. In the **final
 policy year the rate is zero**: the end of policy year `n` is the *Ablauf*, so the survivors leave as a
 maturity. Unlike frlib's term product this is not a bookkeeping split — a year-`n` surrender would pay
 the § 169 value while a maturity pays the sum insured plus surplus — so it decides a real payment, and
@@ -310,7 +322,7 @@ row per `cost_id`, because the difference between them **is** the *Kostenübersc
 | `beta_rate` | 3.0% of the *Bruttobeitrag*, over the *Beitragszahlungsdauer* | first order | form [R28]; level **[std]** |
 | `gamma_rate` | 1.5 ‰ of the *Versicherungssumme* p.a., over the *Versicherungsdauer* | first order | form **not established**, gap 17; **[std]** |
 | `acq_expense` | 300 EUR per policy at issue | second order | **[std]** |
-| `comm_init_rate` | 2.5% of the *Beitragssumme* at conclusion | second order | anchored to the 25 ‰ ceiling and Die Stuttgarter's reported 25 ‰ [R7] [R29]; **[std]** |
+| `comm_init_rate` | 2.5% of the *Beitragssumme* at conclusion | second order | set at the 25 ‰ *zillmering* ceiling [R7], which is **not** a commission cap — "Eine Deckelung der Provisionen ist gesetzlich nicht vorgesehen" [R29]; **no carrier commission rate is established**, so **[std]** with no observation behind it |
 | `comm_renew_rate` | 1.5% of the *Bruttobeitrag* from year 2 (*Bestandsprovision*) | second order | mechanism [R29]; level **[std]** |
 | `maint_expense` | 45 EUR per in-force policy p.a. | second order | **[std]** |
 | `expense_infl` | 1.8% p.a. | second order | **[std]** |
@@ -388,8 +400,8 @@ B · ann_due_prem_1st = pv_benefit_1st + α · B · m
 `check_equivalence()` asserts that identity closes. **Note that the acquisition cost `α · BS` is in
 the premium whether or not the contract is zillmered**: *Zillmerung* decides where the cost sits in the
 **reserve**, not whether it is charged (`zillmer_on` enters `alpha_cost`, not the pricing equation).
-That is why die Bayerische can publish two editions of one tariff [S9] and why the two editions do not
-differ in price. The risk element carries the *Risikozuschlag*: `rating_factor` multiplies `q₁` in the
+That is why `zillmer_on` moves the reserve profile and the surrender values without moving
+`prem_gross_pp` at all. The risk element carries the *Risikozuschlag*: `rating_factor` multiplies `q₁` in the
 **death** leg of `pv_death_1st` only, never the survival leg, never the benefit, and never a
 best-estimate rate (pitfall 12).
 
@@ -473,8 +485,8 @@ closes in the election year.
 
 ### The Überschussbeteiligung
 
-Declared annually, as a percentage of the *Deckungskapital* at the allocation date [S3], allocated at
-the period end [S9]:
+Declared annually, as a percentage of the *Deckungskapital*, allocated at the period end [S7] [S18]
+[S9]:
 
 ```
 zins_ueberschuss_rate(t) = max( 0, decl_rate(t) − rechnungszins )
@@ -484,11 +496,18 @@ term_bonus_pp(t+1)       = term_bonus_pp(t) + term_rate(t) · surplus_base_pp(t)
 ```
 
 `res_pp_at(t, "AFT_INT")` is the closing guaranteed reserve of policy year `t`, before this year's
-surplus is applied — the *Deckungskapital* "calculated at the allocation date" [S3]. **The `max(0, ·)`
+surplus is applied. That is a **[std]** reading of a base the wordings state three ways: Gothaer's
+"maßgebliches Deckungskapital" is undefined in the wording [S7]; VPV takes the reserve "um ein Jahr mit
+dem Rechnungszins abgezinst", i.e. an opening rather than a closing balance [S18]; and die Bayerische
+accrues monthly on "das am Anfang des Monats vorhandene DECKUNGSKAPITAL (inklusive eines ggf. fälligen
+Beitrags, abzüglich der zum Monatsbeginn fälligen Kosten)" [S9]. On a one-year grid the closing
+balance is the natural annual analogue of a monthly accrual over the year, and the difference against
+VPV's opening balance is one year's interest on the base. **The `max(0, ·)`
 on the base is load-bearing**: the *gezillmerte Deckungskapital* is negative in the early years, and a
 positive rate on a negative base would credit a negative surplus (pitfall 3). It follows that a
 *gezillmert* contract earns **no** interest surplus in its first years even though § 153 entitlement
-runs from inception [S9] — economically right, because there is no fund to earn on, and worth saying
+runs from inception where the wording grants it from inception [S9] — economically right, because
+there is no fund to earn on, and worth saying
 because it looks like a bug. **The `max(0, ·)` on the rate** is the other half: in the `nil` scenario the
 declared rate is below the guarantee, which the reserve roll-forward still meets in full, so the surplus
 is zero and not negative (pitfall 1).
@@ -677,13 +696,21 @@ a test in `tests/test_kapitallebensversicherung_de.py`.
    a reduced sum insured [R3] [S7]; only a *Kündigung* removes it. Assert `pols_if(t)` is unaffected by
    `bfz_year` on model point 11 relative to the anchor, while `prem_paid_pp` and
    `benefit_maturity_pp` both fall.
-10. **Calibrating the surrender decrement to GDV's headline *Stornoquote*.** The 2,72 % measure counts
-    contracts terminated early, surrendered **or converted to *beitragsfrei***; a second GDV measure by
-    contract count gives 1,2 % for the same year, and the two are irreconcilable [R20]. Neither is a
-    surrender rate, endowment-specific or by duration. Assert that `lapse_rate` comes from
-    `lapse_table.csv` and that its provenance column says [std], not [R20].
+10. **Calibrating the surrender decrement to GDV's headline *Stornoquote*.** The GDV publishes one
+    figure, "Die Stornoquote (Anzahl) stieg im Jahr 2023 leicht auf 2,56 % (Vorjahr: 2,51 %)" [R20]:
+    a **count** measure over all German life business, not a surrender rate, not endowment-specific
+    and not split by duration. It is the wrong quantity in three ways at once, and duration is the one
+    that bites hardest — BaFin's finding is that lapse is concentrated "speziell in den ersten Jahren
+    nach Vertragsabschluss" [R18], which no single annual average can express. Assert that
+    `lapse_rate` comes from `lapse_table.csv` and that its provenance column says [std], not [R20].
 11. **Double-counting the premium-cessation rule.** Premiums are in advance and decrements are at the
-    period end, so a decedent has already paid the year's premium [S7]. Assert
+    period end, so a decedent has already paid the year's premium. The rule behind this is contract
+    termination, not a special clause: in the ordinary endowment the death payment ends the contract
+    ("Mit der Auszahlung endet der Vertrag") and no further premium can fall due [S7] § 3 I (5). The
+    express stipulation "Bei Tod der versicherten Person vor dem Ablauftermin werden keine Beiträge
+    mehr fällig" belongs to the *Termfixversicherung* [S7] § 3 II, where the benefit is payable at the
+    fixed date irrespective of survival and the contract does **not** end on death — the one variant
+    where premium cessation has to be said. Assert
     `premiums(t) == prem_paid_pp(t) · pols_if(t)` with **no** `(1 − q)` factor; multiplying by it again
     understates premium income by about one year's mortality.
 12. **Letting the *Risikozuschlag* reach the wrong quantity.** `rating_factor` scales the first-order
@@ -787,16 +814,19 @@ corpus establishes [R28], the level **[std]**. Sum loading `gamma_rate = 1.5 ‰
 17) and both form and level are **[std]**. *Ratenzahlungszuschlag* `prem_freq_load = 1.000` on the
 annual mode [R28].
 
-*Insurer-discretionary.* Declared *laufende Verzinsung* `decl_rate = 2.70%` p.a. level — Allianz's 2026
-rate for its classic endowment book [S11], the only such rate in the corpus, the level-forever
-assumption **[std]**; hence `zins_ueberschuss_rate = max(0, 2.70% − 1.00%) = 1.70%`, **derived and
+*Insurer-discretionary.* Declared *laufende Verzinsung* `decl_rate = 2.70%` p.a. level — Allianz's
+**2025** declaration for its combined classic life-and-annuity book as reported by the trade press
+[R26], the nearest thing in the corpus to a manufacturer figure touching an endowment book, the
+level-forever assumption **[std]**; hence `zins_ueberschuss_rate = max(0, 2.70% − 1.00%) = 1.70%`, **derived and
 never added on top of the guarantee** [REG-R53]. *Schlussüberschussanteilsatz* `term_rate = 0.40%` p.a.
 of the *Deckungskapital*, accrued and paid at the *Ablauf* and on death, **not** on surrender
 (`term_surr_share = 0`) — **[std]**, no rate of any kind having been established (gap 1).
 *Ansammlungszinssatz* `ans_rate = 2.70%`, equal to the declared rate — **[std]**. *Stornoabzug*
 `storno_rate` 10% of the guaranteed value in policy years 1–5, 7.5% in 6–10, 5% in 11–15 and 2.5% from
-16 — **[std]**, against an observed range of 5% to 20% of the *Deckungskapital* from **one carrier**,
-under collective action and a BGH remittal [S3] [R22] [R30]. *Bewertungsreserven* `bwr_rate = 0.00%` —
+16 — **[std]**, against three observed carrier schedules on three incompatible bases: 0–20 % of the
+*Deckungskapital*, decaying to nil over the last ten years, at Debeka and under collective action
+after a BGH remittal [S3] [R22] [R30]; 50 € + 0,15 % of premiums paid times the years remaining at die
+Bayerische [S9]; and 100 € + 0,2 % of the gap between sum insured and *Rückkaufswert* at VPV [S18]. *Bewertungsreserven* `bwr_rate = 0.00%` —
 **[std]** [R1] [R8] [REG-R9].
 
 *Second order.* Mortality `mort_rate(t) = mort_rate_base(t) × 0.75` on this policy's own
@@ -808,8 +838,8 @@ year — all **[std]**, no endowment-specific or duration-specific German lapse 
 established (gap 10). Suicide share `suicide_share = 0.02` for policy years 1 to 3, with the
 *Rückkaufswert* substituted for the sum insured on that share [R4] [REG-R26] — the share **[std]**.
 Expenses **[std]** throughout: `acq_expense = 300.00 EUR` at issue, `comm_init_rate = 2.5%` of the
-*Beitragssumme* at issue — anchored to the 25 ‰ ceiling and Die Stuttgarter's reported 25 ‰ [R7]
-[R29] — `maint_expense = 45.00 EUR` per in-force policy p.a. inflating at `expense_infl = 1.8%` p.a.,
+*Beitragssumme* at issue — set at the 25 ‰ *zillmering* ceiling [R7], which does not cap commission
+[R29], and with **no carrier commission rate established anywhere in the corpus** — `maint_expense = 45.00 EUR` per in-force policy p.a. inflating at `expense_infl = 1.8%` p.a.,
 `comm_renew_rate = 1.5%` of the *Bruttobeitrag* from year 2, and `claim_expense = 120.00 EUR` per
 death, maturity or surrender claim. No behaviour modules: `β_shock = 0`, `a = 0`.
 
@@ -1088,9 +1118,12 @@ In rough order of leverage on this product.
 1. **The declared-rate path.** `decl_rate` sets `zins_ueberschuss_rate` one-for-one above the
    guarantee, and the credit compounds at `ans_rate` for up to twenty-five years, so it dominates
    the maturity benefit and every surrender value after the early durations. The base run is **one
-   carrier's 2026 rate held level forever** [S11]; the `low` and `nil` scenarios exist so the range
-   is exercisable. And the base rate is for an **endowment** book while the only market averages
-   available are for the **annuity** [R25] — the identity of the two is plausible and [unverified] (gap 2).
+   carrier's 2025 rate held level forever**, and that rate is trade-press reporting of a declaration
+   covering "die klassischen Lebens- **und** Rentenversicherungen" jointly [R26]; the `low` and `nil`
+   scenarios exist so the range is exercisable. **No endowment-specific declared rate exists in the
+   corpus at all** — the market averages are stated by Assekurata to be for the *klassische private
+   Rentenversicherung* [R25], and the base rate is for a mixed book, so that an endowment shares the
+   annuity's declaration remains [unverified] (gap 2).
 2. **The *Zillmerung* and the § 169 floor together.** `alpha_rate` at the 25 ‰ ceiling drives the
    negative early reserve, the whole early-duration surrender-value profile, the year-one strain and
    the duration at which the contract first earns any interest surplus at all. The ceiling is cited
@@ -1135,6 +1168,7 @@ In rough order of leverage on this product.
 [R12]: #delib-kapitallebensversicherung-r12
 [R14]: #delib-kapitallebensversicherung-r14
 [R15]: #delib-kapitallebensversicherung-r15
+[R18]: #delib-kapitallebensversicherung-r18
 [R19]: #delib-kapitallebensversicherung-r19
 [R2]: #delib-kapitallebensversicherung-r2
 [R20]: #delib-kapitallebensversicherung-r20

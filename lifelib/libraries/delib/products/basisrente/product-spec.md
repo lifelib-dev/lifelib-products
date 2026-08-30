@@ -16,10 +16,13 @@ ships a **[std]** parameter with its rationale rather than a fabricated source t
 **Scope note.** This is a *standardized composite specification* assembled for reference liability
 cash-flow modelling of a German **Basisrente** (*Rürup-Rente*) — the *Basisrentenvertrag* of
 § 10 Abs. 1 Nr. 2 Buchst. b EStG, the privately written, funded member of *Schicht 1* of the German
-three-layer retirement architecture. **It does not describe any single insurer's product**, and here
-that disclaimer is stronger than usual: the corpus contains **two** carrier artefacts, neither of
-them a *Bedingungswerk*, so the composite is built from the **statute and the market's settled
-mechanics** rather than from a comparison of contracts. [S#] tags mark primary product documents and
+three-layer retirement architecture. **It does not describe any single insurer's product.** The
+composite was built from the **statute and the market's settled mechanics** rather than from a
+comparison of contracts, because when it was drafted the corpus held two carrier artefacts and neither
+was a *Bedingungswerk*. It now holds four wordings — two carriers' Basisrente AVB, the GDV's Basisrente
+and BUZ *Musterbedingungen* — and two filled-in *Muster*-PIBs, and the entries in `sources.md` say per
+document what was read. **The composite's parameters were not re-derived from them in this pass**;
+where a retrieved document and a shipped level diverge, the entry and `model.md` say so. [S#] tags mark primary product documents and
 [R#] product-specific regulatory and actuarial references, both numbered per
 `_research/basisrente.md` and resolved in `sources.md` (numbering frozen); [REG-R#] refers to the
 cross-product reference library `references/regulatory-and-actuarial-references.md`, whose own
@@ -59,8 +62,10 @@ sentence, and three consequences change the shape of the projected cash flows:
    to unlearn.
 2. ***Beitragsfreistellung* is the only exit, and it is not a lapse.** § 165 VVG's right to convert
    to a premium-free contract with a reduced benefit survives intact [R14]; § 168 VVG's termination
-   right survives too but **produces no payment**. The policyholder facing a cash crisis has exactly
-   one lever, and the paid-up cohort is a **large permanent part of the book, not a residue**.
+   right is **disapplied by § 168 Abs. 3 Nr. 1**, and the contractual termination carriers grant in
+   its place **produces no payment** and turns the contract paid-up. The policyholder facing a cash
+   crisis has exactly one lever, and the paid-up cohort is a **large permanent part of the book, not
+   a residue**.
 3. **Death before *Rentenbeginn* pays nothing in the base design.** *Nicht vererblich* means the
    entitlement forms no part of the estate and may not be directed by will [R1]; with no
    *Hinterbliebenenabsicherung* the reserve is released to the *Versichertengemeinschaft* as a
@@ -78,8 +83,9 @@ three. The ***Sonderausgabenabzug***: from the assessment period 2023 the capped
 deductible **in full** [R7] [REG-R39], inside an annual ceiling — the ***Höchstbetrag*** — pegged
 since 2015 to the maximum contribution to the *knappschaftliche Rentenversicherung* [R2] [R20].
 ***Pfändungsschutz***: a compliant entitlement is attachable only on the scale that applies to
-earnings, and the fund is protected up to an age-graduated annual allowance subject to an **aggregate
-ceiling of 340 000 €** [R12] [REG-R40] [unverified]. And ***nachgelagerte Besteuerung*** on the way
+earnings, and savings into it are protected up to **6 000 € a year to the completed 27th year of life
+and 7 000 € thereafter to the completed 67th**, subject to an **aggregate ceiling of 340 000 €**
+[R12] [REG-R40]. And ***nachgelagerte Besteuerung*** on the way
 out [R4] [REG-R41]. **The protection is a by-product of the prohibitions, not an added feature** —
 there is nothing to attach because there is nothing to realise.
 
@@ -132,11 +138,11 @@ mechanics by delib product 4.
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Design type and wrapper | Individual single-life deferred annuity, general account (*klassisch*), profit-participating, certified *Basisrentenvertrag*; the policyholder and the insured life are the **same person**, because the annuity must be on the taxpayer's own life | [R1] [R9] [R15] [REG-R39]; form choice **[std]** (1) |
-| Certification | *Zertifizierungsnummer* issued by the **Bundeszentralamt für Steuern** under § 5a AltZertG, required for contracts concluded from **1 January 2010**. A **formal conformity check**, expressly **not a quality mark**: it says nothing about charges, investment quality or the provider's strength | [R9] [R10] [REG-R43]; date [unverified] |
-| Asset form | (i) `klassisch` — general account, modelled; (ii) `fondsgebunden ohne Garantie`; (iii) `fondsgebunden mit Beitragsgarantie` (hybrid) | (i) **[std]** (1); (ii) [S7] [unverified]; (iii) [S2] [S8] |
+| Certification | *Zertifizierungsnummer* issued by the **Bundeszentralamt für Steuern** under § 5a AltZertG, required for contracts concluded from **1 January 2010**. A **formal conformity check** against § 2 Abs. 1 or 1a and § 2a AltZertG and nothing else, expressly **not a quality mark**: it says nothing about charges, investment quality or the provider's strength. The number appears on the *Produktinformationsblatt* under § 7 Abs. 1 Satz 2 Nr. 3 | [R9] [R10] [R11] [REG-R43]; **1 January 2010 date [unverified]** — not in the retrieved text |
+| Asset form | (i) `klassisch` — general account, modelled; (ii) `fondsgebunden ohne Garantie`; (iii) `fondsgebunden mit Beitragsgarantie` (hybrid) | (i) **[std]** (1); (ii) [S7] [S16] — observed at five carriers; (iii) [S2] [S16] |
 | Lives basis | Single life. A second life may enter only through the permitted *Hinterbliebenenabsicherung* | [R1] |
 | Entry ages | 18 to the low sixties; no statutory floor or ceiling on entry, only on *Rentenbeginn* | **[std]** (2) |
-| Earliest *Rentenbeginn* | Completion of the **62nd** year of life for contracts concluded **after 31 December 2011**; the **60th** for contracts concluded on or before that date | [R1] [R8] [REG-R39]; both [unverified] (3) |
+| Earliest *Rentenbeginn* | Completion of the **62nd** year of life for contracts concluded **after 31 December 2011**; the **60th** for contracts concluded on or before that date | [R1] [R8] [REG-R39] — § 10 Abs. 1 Nr. 2 Buchst. b aa and § 10 Abs. 6 EStG (3) |
 | Latest and representative *Rentenbeginn* | **No statutory ceiling**; contracts commonly allow deferral past the statutory retirement age. Representative attained age **67** | [R1]; **[std]** (2) (4) |
 | Annuity form | **Monthly, lifelong, on the taxpayer's own life.** No term-certain annuity, no *Auszahlungsplan* of the Riester type, no annuity on any other single life | [R1] [REG-R39] |
 | Anchor model cell | Entry age 45, *Rentenbeginn* 67, conclusion year 2026, *laufender Beitrag* 6 000,00 € p.a. annual in advance with a 2 % *Beitragsdynamik*, *Zuzahlung* 4 000,00 € p.a., *Rechnungszins* 1,00 %, guaranteed *Rentenfaktor* 28,00 €, no riders | **[std]** (5) |
@@ -151,10 +157,12 @@ Footnotes to **[std]** rows:
    German life writers publish this and none was reached [S11]. The envelope is the market shape, not
    an observation.
 3. The commissioning brief for the research file stated the pre-2012 floor as **63**; the research
-   file resolved it against **60** and this document adopts that. Both figures are [unverified] — no
-   source in this session confirmed them — but the 60/62 split is settled German practice and 63
-   corresponds to no threshold in this statute. **The § 851c ZPO age condition is 60, not 62** [R12]
-   [REG-R40]: different provisions, different histories, and a reader must not merge them (gap 10).
+   file resolved it against **60**, and **§ 10 Abs. 6 EStG settles it**: "*Absatz 1 Nummer 2 Buchstabe b
+   Doppelbuchstabe aa ist für Vertragsabschlüsse vor dem 1. Januar 2012 mit der Maßgabe anzuwenden,
+   dass der Vertrag die Zahlung der Leibrente nicht vor der Vollendung des 60. Lebensjahres vorsehen
+   darf*" [R1]. 63 corresponds to no threshold in this statute. **The § 851c ZPO age condition is 60,
+   not 62** [R12] [REG-R40] — "*nicht vor Vollendung des 60. Lebensjahres*" — different provisions,
+   different histories, and a reader must not merge them (gap 10).
 4. Age 67 sits above both statutory floors, matches the *Regelaltersgrenze*, and gives a 22-year
    deferment from the anchor's entry age — long enough for the *Zillmerung*, the *Beitragsdynamik* and
    the compounded surplus to be visible at once.
@@ -162,20 +170,21 @@ Footnotes to **[std]** rows:
    research's own reading of the buyer's age distribution [unverified]; 6 000 € plus a 4 000 €
    *Zuzahlung* is about a third of the 2026 *Höchstbetrag* [R2] [unverified]; 1,00 % is the
    *Höchstrechnungszins* for new business [R16] [REG-R15]; and the guaranteed *Rentenfaktor* is
-   **[std]** because **no *Rentenfaktor* level, range or time series exists anywhere in the delib
-   corpus** (gap 4).
+   **[std]**, because although **one** guaranteed level now exists in the corpus — 24,94 € per month
+   per 10 000 € of capital at 67, on a 2025 contract, from one carrier's *Muster*-PIB [S13] — a single
+   point is not a range and no time series exists for this or any delib product (gap 4).
 
 ### Premiums
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Premium forms | (i) ***laufender Beitrag*** — a level recurring premium; (ii) ***Zuzahlung*** — a one-off top-up into an existing contract; (iii) ***Einmalbeitrag*** — a single-premium contract. All three are common and all three are modelled | [S1] [R2]; offering [unverified] (6) |
+| Premium forms | (i) ***laufender Beitrag*** — a level recurring premium; (ii) ***Zuzahlung*** — a one-off top-up into an existing contract; (iii) ***Einmalbeitrag*** — a single-premium contract. All three are common and all three are modelled | [S1] — all three appear in the retrieved CosmosDirekt wording (§§ 6 and 7); [R2] (6) |
 | Representative form | A **level base *Beitrag* plus an annual *Zuzahlung***, split 60 / 40 at the anchor; the market minimum recurring premium is of the order of **25 € per month** [unverified] | **[std]** (7) (9) |
 | Payment frequency | Annual, half-yearly, quarterly or monthly; annual in advance is the base case | **[std]** (8) |
 | *Ratenzahlungszuschlag* | Annual 0 %; half-yearly **2 %**; quarterly **3 %**; monthly **5 %**, as a multiplier on the *laufender Beitrag* only | **[std]** (8) |
 | Maximum contribution and maximum *Zuzahlung* | Not a contractual limit but a tax one: the **shared annual *Höchstbetrag*** of § 10 Abs. 3 EStG, `BBG_knappschaftlich × Beitragssatz_knappschaftlich`, doubled on joint assessment. No carrier's *Zuzahlung* ceiling was established (gap 8) | [R2] [R20] [REG-R39]; **[std]** |
-| *Höchstbetrag*, single / joint | 2023 **26 528 / 53 056 €**; 2024 **27 566 / 55 132 €**; 2025 **29 344 / 58 688 €**; 2026 **30 826 / 61 652 €** | [R2] [R20]; every figure [unverified] (10) |
-| Deductible share of the capped contribution | **100 %** from the assessment period **2023**, brought forward from 2025; 94 % in 2021 and 96 % in 2022 | [R7]; [unverified] |
+| *Höchstbetrag*, single / joint | 2023 **26 528 / 53 056 €**; 2024 **27 566 / 55 132 €**; 2025 **29 344 / 58 688 €**; 2026 **30 826 / 61 652 €** | [R2] [R20] — 2025 and 2026 reproduced from the retrieved *Sozialversicherungsrechengrößen-Verordnung*; 2023 and 2024 [unverified] (10) |
+| Deductible share of the capped contribution | **100 %** from the assessment period **2023**, brought forward from 2025; **92 % in 2021 and 94 % in 2022** | [R7] — § 10 Abs. 3 Sätze 4 and 6 EStG: 76 % in 2013 rising two points a year to 2022, then 100 % |
 | ***Beitragsdynamik*** | Contractual annual escalation with a right to decline individual increases; representative **2 % p.a.**, sized to the drift of the ceiling series rather than to any carrier's offering, because the *Höchstbetrag* rises annually with the *knappschaftliche* BBG so a static premium loses relief capacity each year | mechanics [R2] [R20]; rate **[std]** |
 | Suspension, resumption, cessation | Suspension is a *Beitragsfreistellung*; resumption is a *Wiederinkraftsetzung* within a stated window (**not established**, gap 8). Premiums cease at *Rentenbeginn*, at death and on *Beitragsfreistellung* | [R1] [R14]; gap 8 |
 | Misstatement and payment default | §§ 19, 37, 38, 157 and 158 VVG apply as to any German life contract | [REG-R30] |
@@ -191,20 +200,28 @@ Footnotes to **[std]** rows:
    loads the *laufender Beitrag*; a *Zuzahlung* is a single payment and carries none.
 9. Minimum premiums exist partly to stop a contract reaching *Rentenbeginn* with a capital too small
    to administer as a lifelong annuity. A *Kleinbetragsrenten-Abfindung* **is** available in Schicht 1
-   [REG-R42], but only at the start of the payout phase and only below a threshold whose level is
-   contested, so the minimum premium is still doing work. No level was established.
-10. **The series is arithmetic, not evidence.** Each line reproduces itself from its own inputs —
-    107 400 × 24,7 % = 26 527,80 → 26 528; 111 600 × 24,7 % = 27 565,20 → 27 566; 118 800 × 24,7 % =
-    29 343,60 → 29 344; 124 800 × 24,7 % = 30 825,60 → 30 826 — and the rounding convention is
-    inferred from that arithmetic and is itself [unverified]. **The 2026 line is the least secure**
-    (gap 11). From 2025 the ceilings are uniform across the former East and West [R20] [unverified].
+   [R23] [REG-R42], but only at the start of the payout phase, no earlier than the age floor, and only
+   below **1,5 % of the monthly *Bezugsgröße* of § 18 SGB IV** — and it is drafted as the insurer's
+   right, not the policyholder's [S12]. So the minimum premium is still doing work. No carrier's
+   minimum premium level was established.
+10. **The series is arithmetic, and for the last two years the arithmetic's inputs are now evidence.**
+    Each line reproduces itself from its own inputs — 107 400 × 24,7 % = 26 527,80 → 26 528;
+    111 600 × 24,7 % = 27 565,20 → 27 566; 118 800 × 24,7 % = 29 343,60 → 29 344;
+    124 800 × 24,7 % = 30 825,60 → 30 826 — and the **rounding convention is the statute's own**:
+    § 10 Abs. 3 Satz 1 EStG says the *Höchstbeitrag* is taken "*aufgerundet auf einen vollen Betrag in
+    Euro*" [R2]. The 2025 and 2026 *knappschaftliche* ceilings of **118 800 €** and **124 800 €** are
+    read off the *Sozialversicherungsrechengrößen-Verordnungen* for those years [R20], so **the 2026
+    line is now the best-attested, not the least secure**; the 2023 and 2024 inputs were not retrieved
+    and those two lines are still arithmetic alone (gap 11). That the ceilings are uniform across the
+    former East and West from 2025 is **[unverified]**: the retrieved sections give one national figure
+    for the *knappschaftliche* branch, which is consistent with it but does not say it [R20].
 
 ### Benefit provisions
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Old-age benefit | A **monthly lifelong annuity** on the taxpayer's own life, from *Rentenbeginn* until death, paid **in advance** — no German market convention on *vorschüssig* against *nachschüssig* was established (gap 21). Conversion rule: `monthly_annuity = Kapital(Rentenbeginn) / 10 000 × Rentenfaktor`, `Rentenfaktor_applied = max(garantierter, aktueller)` | [R1] [R17] [S1] [REG-R39]; timing **[std]** |
-| ***Garantierter Rentenfaktor*** | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a deliberate prudential margin — one carrier's Schicht-3 sibling wording computes it on **DAV 2004 R at an interest basis of 0 % p.a.**, [unverified] as a Basisrente fact (gap 4). Representative **28,00 €** per month per 10 000 € at age 67 | mechanics [R17] [S1]; level **[std]** (11) |
+| ***Garantierter Rentenfaktor*** | Fixed at inception on the *Rechnungsgrundlagen* then in force, with a deliberate prudential margin. One carrier's **Basisrente** wording computes it "*auf Grundlage einer anerkannten Sterbetafel (DAV 2004R) sowie des tariflichen Garantiesatzes (Rechnungszins) von 1,25 Prozent p. a.*" — the tariff's own rate, which moves with the guarantee vintage, **not an interest basis of 0 %**, which was a Schicht-3 observation and is withdrawn. One market level exists: **24,94 €** per month per 10 000 €, guaranteed, at 67 on a 2025 fund-linked contract. Representative here **28,00 €** at age 67 | mechanics [R17] [S1]; level **[std]** (11), above the one observed level [S13] |
 | ***Aktueller Rentenfaktor*** | The carrier's then-current immediate-annuity tariff at *Rentenbeginn*; the **higher of the two applies** — a guarantee with upside | [R17]; level **[std]** (11) |
 | ***Schlussüberschussanteil*** | Allocated **only at *Rentenbeginn***, because the contract has no surrender and therefore no early-exit trigger — a cleaner single-date cash flow than anywhere else in delib | [R15] [REG-R24]; level **[std]** |
 | Death benefit, *Aufschubphase*, base design | **Nothing.** The reserve is released as a mortality profit | [R1] [REG-R39] |
@@ -249,18 +266,21 @@ two Basisrente-specific points on top of it.
 | Parameter | Representative value | Basis |
 |---|---|---|
 | *Abschluss- und Vertriebskosten* | Financed by ***Zillmerung***, capped at **25 ‰ (2,5 %) of the *Beitragssumme*** by § 4 DeckRV, reduced from 40 ‰ with effect from 1 January 2015 by the LVRG. The rate used at conclusion applies for the whole term | [R16] [REG-R16] [REG-R20]; level **[std]** (13) |
-| Acquisition-cost amortisation | Charged to the *Deckungskapital* in **five equal annual instalments** over the first five premium-paying years; a *Zuzahlung* carries its own percentage charge in the year it is paid | **[std]** (14); gap 8 |
+| Acquisition-cost amortisation | Charged to the *Deckungskapital* in **five equal annual instalments** over the first five premium-paying years, or over the premium-paying term if shorter; a *Zuzahlung* carries its own percentage charge in the year it is paid | [R10] [R14] [S1] [S12] — VVG § 165 Abs. 2 with § 169 Abs. 3, restated in the GDV model conditions § 10 Abs. 1 and in one carrier's wording at § 8 Abs. 1 (14); **gap 8 closed** |
 | *Verwaltungskosten*, % of premium (β) | Representative **7,5 %**; argued band 5 % – 10 % | **[std]** (13) |
 | *Verwaltungskosten*, % of the *Deckungskapital* (γ) | Representative **0,35 % p.a.**; argued band 0,2 % – 0,6 % | **[std]** (13) |
 | *Stückkosten* | A fixed euro amount per policy per year, inflating | **[std]** (13) |
 | Annuity administration | A per-annuitant amount in the *Rentenphase* | **[std]** (13) |
-| ***Effektivkosten***, *klassisch* | Argued band **0,6 % – 1,2 % p.a.** | **[std]** (13) (15) |
-| *Effektivkosten*, other forms | *fondsgebunden* with commission **1,0 % – 1,8 % p.a.**; *Nettotarif* (fee-based) **0,3 % – 0,8 % p.a.**, a real and growing segment on this product | **[std]** (13) |
-| The one charge datum in the corpus | Total costs relative to the capital formed of **at most 0,95 € per 100 €** in one carrier's BasisRente and RiesterRente variants, and an ***Abschlussprovision* of 1 575 €** on a specimen quotation | [S2]; both [unverified], both from third-party commentary rather than a tariff sheet |
+| ***Effektivkosten***, *klassisch* | Argued band **0,6 % – 1,2 % p.a.** | **[std]** (13) (15) — no *klassisch* figure was retrieved |
+| *Effektivkosten*, other forms | *fondsgebunden* with commission **1,0 % – 1,8 % p.a.**; *Nettotarif* (fee-based) **0,3 % – 0,8 % p.a.**, a real and growing segment on this product | the *fondsgebunden* band is now **corroborated**: an independent study puts realistic *Effektivkosten* for the fund-linked Basisrenten of five large carriers at **1,0 – 1,5 pp** without a guarantee and **1 – 2,3 pp** with an 80 % one [S16]. Read a *Muster*-PIB's figure as a ceiling instead: on maximum charges the same products show **3,0 – 4,6 pp**, and one retrieved *Muster*-PIB gives **1,77 pp** and another **4,95 pp** [S13]. The *Nettotarif* band is **[std]** (13) |
+| Charge data now in the corpus | **One carrier's full published schedule** [S13]: *Abschluss- und Vertriebskosten* **2,50 % der vereinbarten Beiträge** (900,00 € on 36 000 €) plus 2,50 % on each *Zuzahlung*; *Verwaltungskosten* **7,00 % der eingezahlten Beiträge**, up to **3,80 % p.a. of the fund** including fund charges with a current burden of **1,10 %**, and **1,50 % of the annuity p.a.** in the payout phase; *Versorgungsausgleich* up to 500,00 €. Beside it, the two older figures — ≤ 0,95 € per 100 € of capital formed and an ***Abschlussprovision* of 1 575 €** | the schedule is retrieved [S13]; the two older figures are [S2] and remain **[unverified]**, from third-party commentary rather than a tariff sheet |
 
-13. **Every charge level in this document is [std].** No *Effektivkosten* figure and no charge
-    schedule was obtained for any carrier (gap 2), the most consequential gap in the corpus: the
-    § 7 AltZertG *Produktinformationsblatt* exists **precisely** to publish a comparable total-charge
+13. **Every charge level in this document is [std], and none was re-calibrated in this pass.** A
+    charge schedule and an *Effektivkosten* figure **have** since been obtained — see [S13] and [S16]
+    — so gap 2 is closed as a gap; what remains is that the model's levels were constructed before
+    those figures existed and have not been moved to meet them. Where they diverge is recorded in
+    `model.md`. The § 7 AltZertG *Produktinformationsblatt* exists **precisely** to publish a
+    comparable total-charge
     number for this product, per quotation, and not one was reached. The bands are the reference
     implementation's parameter set with its reasoning attached, **not a market survey**.
 14. **Whether the AltZertG's five-year spreading of acquisition costs reaches *Basisrentenverträge*
@@ -284,7 +304,7 @@ this section for a reason.
 |---|---|---|
 | ***Rückkaufswert*** | **None, at any duration.** § 169 VVG is inoperative because the entitlement may not be capitalised. There is a *Deckungskapital*; there is no duration at which any part of it is payable as capital | [R1] [R14] [REG-R28] [REG-R39] |
 | *Stornoabzug* | **Not applicable** — no surrender payment exists for a deduction to be made from | [R14] [REG-R28] |
-| ***Kündigung*** | § 168 VVG's termination right survives, but **produces no payment**; in practice it is administered as a *Beitragsfreistellung* | [R14] [REG-R28]; AVB wording [unverified] |
+| ***Kündigung*** | **§ 168 Abs. 1 and 2 VVG do not apply** to a certified *Basisrentenvertrag* whose *Verwertung* is excluded (§ 168 Abs. 3 Nr. 1). Carriers nonetheless grant a contractual termination and word it as a conversion: it **produces no payment** and turns the contract premium-free. A **single-premium** contract is not terminable at all | [R14] [REG-R28]; wording read in two documents [S1] [S12] |
 | ***Beitragsfreistellung*** | Exercisable **at any time**, effective at the end of the current premium period; converts to a **premium-free entitlement to a reduced annuity** computed from the *Deckungskapital* reached | [R14] [REG-R28] |
 | *Mindestversicherungsleistung* | The reduced benefit must reach a threshold agreed in the contract. **No carrier's threshold was established** | [R14]; gap 8; **[std]** |
 | Status of a paid-up contract | **Still a Basisrente**: still certified, still protected, still taxed on the *Besteuerungsanteil*, still payable only as an annuity from the statutory floor age | [R1] [R9] [R14] |
@@ -446,9 +466,11 @@ The rule: benefits from a *Basisrentenvertrag* are *sonstige Einkünfte* taxed o
 percentage [R4] [REG-R41]. The schedule: 50 % for annuities beginning in or before 2005, rising **two
 points per cohort year to 80 % for 2020**, **one point per year for 2021 and 2022**, and **half a
 point per year from 2023** after the *Wachstumschancengesetz* [R6], reaching **100 % for 2058**.
-Selected values, **every one [unverified]**: 2023 **82,5 %**; 2024 **83,0 %**; 2025 **83,5 %**; 2026
-**84,0 %**; 2040 **91,0 %**; 2058 **100,0 %** — internally consistent, since 82,5 + 35 × 0,5 = 100,0
-and 82,5 + 17 × 0,5 = 91,0, which is the only corroboration this library can offer.
+Selected values, **every one now read off the statutory table in § 22 Nr. 1 Satz 3 Buchst. a
+Doppelbuchst. aa Satz 3 EStG** [R4]: 2023 **82,5 %**; 2024 **83,0 %**; 2025 **83,5 %**; 2026
+**84,0 %**; 2040 **91,0 %**; 2058 **100,0 %**. The table is in the statute itself, not in an
+administrative schedule, and the whole of it was read; the internal consistency check —
+82,5 + 35 × 0,5 = 100,0 and 82,5 + 17 × 0,5 = 91,0 — is no longer the only corroboration available.
 
 ***Der Rentenfreibetrag ist ein Euro-Betrag.*** The untaxed complement is computed **once**, in the
 first full calendar year of receipt, and is then **frozen for life** [R4] [REG-R41]. So **every
@@ -464,9 +486,21 @@ The rule: § 165 VVG gives the policyholder of a contract with periodic premiums
 time, for the end of the current premium period, to demand conversion into a **premium-free contract
 with a reduced benefit**, provided the reduced benefit reaches a *Mindestversicherungsleistung* agreed
 in the contract [R14] [REG-R28]. **This right survives intact and is the product's only real exit.**
-§ 168 VVG's termination right survives too **but has nothing to pay out**: because the contract may
-not be capitalised [R1], termination cannot produce a *Rückkaufswert*, and a purported *Kündigung*
-operates as a *Beitragsfreistellung*. The AVB wording is [unverified]; the outcome is settled.
+**§ 168 VVG's termination right does not survive** — an earlier drafting of this document said it did,
+and the statute contradicts it. § 168 Abs. 3 Nr. 1 reads: "*Die Absätze 1 und 2 sind nicht auf einen
+für die Altersvorsorge bestimmten Versicherungsvertrag anzuwenden, 1. wenn die Vertragsparteien bei
+einem nach § 5a des Altersvorsorgeverträge-Zertifizierungsgesetzes zertifizierten Basisrentenvertrag
+die Verwertung der Ansprüche gemäß § 10 Absatz 1 Nummer 2 Satz 1 Buchstabe b des
+Einkommensteuergesetzes ausgeschlossen haben*" [R14]. **The outcome the documents describe is
+nonetheless what happens**, because carriers grant a *contractual* termination and word it as a
+conversion: the GDV model conditions say a *Kündigung* "*wandelt sich der Vertrag ganz oder teilweise
+in einen beitragsfreien Vertrag mit herabgesetzter Rente um ... Ein Anspruch auf die Auszahlung eines
+Rückkaufswerts besteht nicht*" (§ 9 Abs. 3) [S12], and one carrier's wording says the same at § 7
+Abs. 1 [S1]. Where the statutory disapplication shows on the face of a contract is the single-premium
+case, which that carrier declares "*auf Grund der gesetzlichen Restriktionen ... über die gesamte
+Vertragsdauer nicht kündbar*". **The AVB wording is no longer [unverified]** — two were read — and both
+also allow a **partial** termination or premium-freeze above an agreed minimum annuity, which this
+model does not carry.
 
 **Why this matters more here than anywhere else in delib.** Elsewhere *Kündigung* and
 *Beitragsfreistellung* are two exits competing for the same policyholder; here **there is only one**.
@@ -481,7 +515,8 @@ to the Basisrente was established** (gap 3).
 The rule: *nicht kapitalisierbar* forbids a capital election outright, subject to the one de-minimis
 exception set out at the end of this section [R1] [REG-R39]. **There is no *Kapitalwahlrecht*** — the policyholder has no election at *Rentenbeginn*. **There is no
 *Teilkapitalauszahlung* either**: a Riester contract may pay up to **30 %** of the capital as a lump
-sum at the start of the payout phase [R23] [REG-R43] [unverified]; a Schicht-3 contract may pay
+sum at the start of the payout phase [R23] [REG-R43] [unverified] — that 30 % is an AltZertG condition
+that was not read; a Schicht-3 contract may pay
 100 %; a Basisrente may pay **nothing**. A third absence follows: **the § 20 Abs. 1 Nr. 6 EStG regime
 never engages** — the *Unterschiedsbetrag* and the 12/62 rule [REG-R45] are Schicht-3 mechanics that
 reach a Basisrente at no point in its life.
@@ -489,35 +524,51 @@ reach a Basisrente at no point in its life.
 **The *Kleinbetragsrente* is the one de-minimis exception the ban carries, and Schicht 1 has it.**
 For a **Riester** contract § 93 Abs. 3 EStG permits **commutation of a *Kleinbetragsrente*** at the
 start of the payout phase without loss of the subsidy, where the monthly annuity would fall below a
-threshold expressed as a percentage of the monthly *Bezugsgröße* of § 18 SGB IV [R23] [REG-R42]
-[unverified] — a de-minimis rule that exists because administering a trivially small lifelong annuity
-costs more than it pays. **Schicht 1 is not excluded from it.** The *Kapitalisierungsverbot* of
-§ 10 Abs. 1 Nr. 2 Buchst. b EStG is qualified by **§ 10 Abs. 1 Nr. 2 Satz 3 EStG**, which makes an
-*Abfindung* of a *Kleinbetragsrente* out of a *Basisrentenvertrag* — on the § 93 Abs. 3 Satz 2 and 3
-EStG mechanics — harmless to the contract's Schicht-1 status, so a certified tariff may pay one at the
-start of the payout phase without forfeiting relief; since the *Wachstumschancengesetz* the relief
-reaches, in addition, an annuity pushed below the threshold **during** the payout phase by a
-*Versorgungsausgleich* [R1] [REG-R42] [unverified]. **Both the Satz numbering and the amending statute
-are [unverified]** — no search corroborated either — and the threshold's level is contested in the
-same way it is for Riester: 1 % of the monthly *Bezugsgröße* against 1,5 % [REG-R42] [unverified].
-Reading Buchst. b alone gives the opposite answer — that Schicht 1 admits no de-minimis exception
-whatever — and that answer is wrong, because Buchst. b is not the whole of Nr. 2. So a Basisrente
-entitlement of two euros a month need not be paid as two euros a month for life; it is paid that way
-only where the AVB offers no *Abfindung*.
+threshold expressed as a percentage of the monthly *Bezugsgröße* of § 18 SGB IV [R23] [REG-R42] — a
+de-minimis rule that exists because administering a trivially small lifelong annuity costs more than
+it pays. **The threshold is 1,5 %**: § 93 Abs. 3 Satz 2 Nr. 1 EStG defines a *Kleinbetragsrente* as one
+which, on an even annuitisation of the whole capital available at the start of the payout phase,
+"*eine monatliche Rente ergibt, die 1,5 Prozent der monatlichen Bezugsgröße nach § 18 des Vierten
+Buches Sozialgesetzbuch nicht übersteigt*", aggregating all of the taxpayer's contracts at that
+provider. The 1 % that competed with it in an earlier drafting is the **older** figure and still
+stands in the GDV model conditions of July 2025 [S12]; the statute as amended in 2026 reads 1,5 %
+[R23]. **Schicht 1 is not excluded from it.** The *Kapitalisierungsverbot* of § 10 Abs. 1 Nr. 2
+Buchst. b EStG is qualified by **§ 10 Abs. 1 Nr. 2 Satz 3 EStG**, which permits the combination of up
+to twelve monthly payments into one **and** the commutation of "*eine Kleinbetragsrente im Sinne von
+§ 93 Absatz 3 Satz 2 oder 4*" — **Satz 2 oder 4, not Satz 2 and 3**, which is what an earlier drafting
+of this document said; the older cross-reference survives in the BMF-Schreiben [R18] and in a 2015 AVB
+that pins the 2009 text [S1]. So a certified tariff may pay one at the start of the payout phase, no
+earlier than the age floor, without forfeiting relief, and § 93 Abs. 3 Satz 4 extends the same
+treatment to an annuity pushed below the threshold **during** the payout phase by a
+*Versorgungsausgleich*. Which amending statute made that extension was not established and stays
+**[unverified]**. Reading Buchst. b alone gives the opposite answer — that Schicht 1 admits no
+de-minimis exception whatever — and that answer is wrong, because Buchst. b is not the whole of Nr. 2.
+So a Basisrente entitlement of two euros a month need not be paid as two euros a month for life. Two
+retrieved wordings show both halves of the market practice: one carrier's AVB offers an *Abfindung*
+[S1], and the GDV model conditions draft it as the **insurer's** right and not the policyholder's, and
+separately allow up to twelve monthly annuities to be combined into one payment where the annuity is
+small [S12].
 
-The rest of what the market does is [unverified] throughout: **minimum premiums**; **minimum annuity
-thresholds in the AVB**, below which the insurer may pay quarterly or annually rather than monthly,
-whose compatibility with the statutory requirement of a *monatliche* annuity **was not established**
-(gap 19); and **consolidation** before *Rentenbeginn*, which depends on the unresolved transfer
-question (gap 13).
+Two of the three things this section used to leave open are now settled. **Combining monthly
+payments is expressly permitted**: § 10 Abs. 1 Nr. 2 Satz 3 EStG allows a contract to provide that "*bis
+zu zwölf Monatsleistungen in einer Auszahlung zusammengefasst werden*", the BMF-Schreiben repeats it at
+Rz. 16, and the GDV model conditions implement it as an insurer's right below an agreed monthly amount
+[R1] [R18] [S12] — so the compatibility question of gap 19 is answered and the answer is yes.
+**Consolidation before *Rentenbeginn* is possible** where the contract allows it: a direct transfer to
+another certified contract within the same product group is tax-free under § 3 Nr. 55d EStG [R18], one
+carrier grants it free of charge on three months' notice [S1], and two others exclude it on their PIBs
+[S13] — so it is a contract term, not a right. **Minimum premiums remain [unverified]**: no carrier's
+minimum was retrieved.
 
 **The modelling consequence is a decision rather than a deduction, and is [std].** The reference
 implementation **does not implement the commutation branch**: at *Rentenbeginn* every model point,
 model point 10 included, converts its whole capital into an annuity. Three reasons, in order of
-weight. The threshold level is contested and no Basisrente-specific figure was established, so a
-commutation test would turn on an invented number. **Whether any German Basisrente AVB actually
-offers the *Abfindung*, and whether it is the insurer's election or the policyholder's, was not
-established at any carrier** (gap 19) — and the *Abfindung* is a contract term, not an automatic
+weight — and **the first two have since been answered, so the decision now stands on the third alone.**
+The threshold level is no longer contested: § 93 Abs. 3 Satz 2 Nr. 1 EStG puts it at 1,5 % of the
+monthly *Bezugsgröße* [R23]. Whether a Basisrente AVB offers the *Abfindung*, and on whose election, is
+no longer unestablished either: one carrier's wording offers it [S1] and the GDV model conditions draft
+it as the **insurer's** right, not the policyholder's [S12] — which is itself a reason a projection
+model cannot simply assume it is taken. The *Abfindung* remains a contract term, not an automatic
 statutory consequence. And the mechanic is already carried once in this library, on `Riester_DE_A`,
 where the § 93 Abs. 3 threshold is native, is computed rather than assumed, and a model point trips
 it. **This is a named model risk, not a claim about the law**: a Basisrente model asked to value a
@@ -533,21 +584,29 @@ where all of the following hold — the benefit is granted at **regular interval
 before the completion of the 60th year of age**, or only on *Berufsunfähigkeit*; the claims **may not
 be disposed of**; the **designation of third parties other than survivors as beneficiaries is
 excluded**; and **no capital payment other than on death has been agreed** [R12] [REG-R40].
-§ 851c Abs. 2 protects amounts saved under such a contract, subject to annual limits and an
-**aggregate ceiling of 340 000 €** [REG-R40] [unverified].
+§ 851c Abs. 2 protects amounts saved under such a contract up to **6 000 € a year for a debtor from
+18 to the completed 27th year of life and 7 000 € from 28 to the completed 67th**, subject to an
+**aggregate ceiling of 340 000 €**, with three tenths of any excess *Rückkaufswert* protected on top
+[R12] [REG-R40]. Those amounts are re-set every fifth year on 1 July in the
+*Pfändungsfreigrenzenbekanntmachung*, which is why any printed figure has a shelf life — and why the
+practitioner ladders this library found contradicting each other did so.
 
 **The four requirements of § 851c Abs. 1 are the same four features § 10 Abs. 1 Nr. 2 Buchst. b
 demands** — three instruments, one product description. **Whether a *Kleinbetragsrenten-Abfindung*
 clause disturbs § 851c Abs. 1's "no capital payment other than on death" condition was not
 established** [unverified]; nothing in this model turns on it, because the model has no such clause. Two cautions: the **age condition in § 851c
-is 60, not 62** (gap 10); and **the annual savings allowances are contradicted across summaries** — a
-two-band 6 000 € / 7 000 € ladder reported as current law since 1 January 2022 against a
-2 000 € – 9 000 € age-graded ladder reported as pre-2022 [REG-R40] — so this document states the
-**shape** and **prints no annual band** (gap 9). **§ 12 SGB II and § 90 SGB XII** exempt from
+is 60, not 62** (gap 10); and **the annual savings allowances can now be printed**, because the statute
+was read: § 851c Abs. 2 Satz 1 gives **6 000 €** to the completed 27th year of life and **7 000 €** to
+the completed 67th, with the 340 000 € aggregate ceiling [R12]. The two-band and age-graded ladders the
+summaries disagreed about are the current and the superseded forms of the same provision; the amounts
+are re-set every fifth year, which is why no printed figure keeps (gap 9, closed). **§ 12 SGB II and § 90 SGB XII** exempt from
 means-testing old-age provision whose realisation is contractually excluded [R13]; taken with § 851c
 that is the market's *insolvenzfest* and *Hartz-IV-fest* claim, and the principal non-tax reason a
-self-employed person buys the product. All three addresses are [unverified]; the **direction** is not
-in doubt.
+self-employed person buys the product. **§ 851d ZPO was retrieved and is not what this document assumed**
+— it makes monthly benefits out of *steuerlich gefördertes Altersvorsorgevermögen* attachable as
+earnings, the Riester counterpart of § 851c, and reaches a Basisrente only through VVG § 168 Abs. 3
+Nr. 2 [R13] [R14]. **The two SGB addresses stay [unverified]** — neither book was retrieved — and so
+does the ~18 % social-insurance figure (gap 21); the **direction** is not in doubt.
 
 ---
 
@@ -556,7 +615,9 @@ in doubt.
 **In scope and parameterized in the model, off in the base run.**
 ***Hinterbliebenenabsicherung* (survivor's annuity)**: the permitted beneficiaries are closed to the
 **spouse or registered partner** and to **children while *Kindergeld* or the *Kinderfreibetrag* runs**
-— in practice to the 18th year, or the 25th while in education [R1] [unverified] on the ages. And
+— in practice to the 18th year, or the 25th while in education [R1] [unverified] on the ages, which are
+§ 32 EStG's and were not retrieved; what § 10 Abs. 1 Nr. 2 Buchst. b aa Satz 3 does say, and was read,
+is that the orphan's annuity may run only for as long as the child qualifies under § 32. And
 **everything paid to a survivor must be paid as an annuity** [R1], which converts the two familiar
 German death-benefit designs into something different:
 
@@ -585,8 +646,17 @@ permits, inside the same contract, cover against *Berufsunfähigkeit* and agains
 Erwerbsfähigkeit* [R1] [REG-R29], and the premium for it is deductible **inside the Schicht-1
 *Höchstbetrag*** at 100 % [R2] [R7]. **The 50 % rule**: the contributions qualify only if **more than
 half of the total contribution is attributable to the old-age provision**, so the supplementary covers
-together must stay **below 50 %** of the total [R1] [unverified] as to the statutory address, settled
-as substance. Hence **a standalone Basisrenten-BU does not exist**, the rule **caps the achievable
+together must stay **below 50 %** of the total. **The statutory address is settled, and it is not
+§ 10 Abs. 1 Nr. 2 Buchst. b**: the statute requires only that the cover be *ergänzend*, and the 50 %
+test is administrative — BMF-Schreiben v. 24.05.2017 Rz. 38, "*Die ergänzende Absicherung ist nur dann
+unschädlich, wenn mehr als 50 % der Beiträge auf die eigene Altersversorgung des Steuerpflichtigen
+entfallen*", measured on the actual total premium payable, with rider surplus allowed to reduce the
+rider's share [R18]. The GDV's BUZ model conditions carry it as a contract term: "*Die
+Zusatzversicherung ist so gestaltet, dass stets mehr als 50 % der Beiträge auf Ihre Hauptversicherung
+entfallen*" [S12]. Two allocation rules follow from the same circular and matter to a model point: a
+*Beitragsbefreiung* on disability counts to the old-age side (Rz. 39), and so does a survivor's annuity
+funded solely out of the residual old-age capital (Rz. 41) — the design one retrieved carrier wording
+uses [S1]. Hence **a standalone Basisrenten-BU does not exist**, the rule **caps the achievable
 disability annuity** for a given total premium — exactly the legislator's intention — and it is a
 **hard constraint on a model point**, `buz_prem_share < 0.50` being an invariant the test module
 asserts.
@@ -601,9 +671,13 @@ is deductible in full inside a much larger ceiling. **The counterweight is the t
 [unverified] (gap 16). **The buyer is trading relief now for a heavily taxed benefit later, at a
 moment — disability — when income has collapsed and the marginal rate may be low.** That is the whole
 of the BUZ-versus-SBU argument, stated here as a trade rather than an advantage. Further constraints,
-[unverified] in every particular: the cover ends at the latest at the main contract's *Rentenbeginn*;
-the *BU-Rente* is itself subject to the non-capitalisation rule; a premium waiver is the normal
-companion cover. **No carrier's BUZ wording was reached** [S5] (gap 18).
+**now read in the GDV's BUZ model conditions** [S12]: the rider forms a unit with the main contract and
+cannot be continued without it, and "*Spätestens mit dem vereinbarten Rentenzahlungsbeginn endet die
+Zusatzversicherung*" (§ 9 Abs. 1); a *Rückkaufswert* out of the rider is never paid to the policyholder
+but raises the main contract's benefits (§ 9 Abs. 3); and the rider can be made premium-free only
+together with the main contract and only above a minimum annuity (§ 9 Abs. 5). A premium waiver is the
+normal companion cover, and the BMF-Schreiben allocates its premium to the old-age side [R18].
+**No carrier's own BUZ wording was reached** [S5]; **gap 18 is closed by the model conditions instead.**
 
 ***Beitragsdynamik*** and ***Zuzahlung*** are contractual options rather than riders and are **on** in
 the base run, because they are the shape of the product's premium.
@@ -626,17 +700,18 @@ table here would be a fabrication, so what follows is the real state of the evid
 
 | Feature | CosmosDirekt [S1] | Allianz [S2] [S3] | The other nineteen carriers [S4]–[S11] |
 |---|---|---|---|
-| Basisrente wording located | **yes — four tariff codes**, LA 1100 A, LA 1079 A, LA 936 A, LA 1099 A | no; the chassis is evidenced by a broker-hosted specimen and a product page | **no** |
-| Edition date | not established | specimen dated by its path to 02/2025 [unverified] | not established |
-| Asset form | not established | hybrid: *Sicherungsvermögen* plus *Spezialfonds* | not established |
-| Guarantee level published | no | **yes** — 60 / 80 / 90 % of premiums paid, 80 % standard [unverified] | no |
-| *Rentenfaktor* basis published | not for the Basisrente; the Schicht-3 sibling names DAV 2004 R at 0 % p.a. | expressed as a minimum annuity amount | no |
-| Charge figure published | no | **yes** — 1 575 € *Abschlussprovision*; ≤ 0,95 € per 100 € of capital formed [unverified] | no |
+| Basisrente wording located | **yes — and read**: LA 1079 A (*klassisch*) and LA 1100 A (*fondsgebunden*); LA 936 A and LA 1099 A were not located | no; the chassis is evidenced by a product page, the specimen quotation was not re-found | **one read**: Alte Leipziger pm 2401, Tarif FR70 [S4] |
+| Edition date | **10.15** for both wordings | specimen dated by its path to 02/2025 [unverified]; the product page was read 2026-08-30 | pm 2401 – 06.2026 |
+| Asset form | **both**: general account and *Anlagestöcke* | hybrid: *Sicherungsvermögen* plus *Spezialfonds* | *fondsgebunden* |
+| Guarantee level published | no | **yes** — 60 / 80 / 90 % of premiums paid, 80 % standard, quoted from the carrier's own page | 80 % on the guarantee variants named at [S16] |
+| *Rentenfaktor* basis published | **yes** — DAV 2004 R at the tariff's *Rechnungszins*, 1,25 % p.a. on the 10.15 wording | expressed as a minimum annuity amount | a guaranteed *Rentenfaktor* of 24,94 € at 67 is on NÜRNBERGER's *Muster*-PIB [S13] |
+| Charge figure published | **the *Muster*-PIBs, yes; the levels are template placeholders** | **yes** — 1 575 € *Abschlussprovision*; ≤ 0,95 € per 100 € of capital formed [unverified] | **yes** — NÜRNBERGER's *Muster*-PIB carries a full schedule and *Effektivkosten* of 1,77 pp [S13] |
 | Layer sold on a common chassis | not established | **yes** — PrivatRente / BasisRente / RiesterRente are one design | not established |
-| *Produktinformationsblatt* obtained | no | no | no |
+| *Produktinformationsblatt* obtained | *Muster*-PIB yes, individual PIB no | no | *Muster*-PIB yes for NÜRNBERGER and WWK [S13] |
 
-**A range table needs two observations of one parameter and this corpus supplies exactly one:** at
-least **four Basisrente tariff wordings maintained in parallel at one carrier** [S1] [unverified] —
+**A range table needs two observations of one parameter, and this corpus now has two or three of
+several.** What the drafted version had was one: at least **two Basisrente tariff wordings maintained
+in parallel at one carrier** [S1] —
 what a tariff family looks like when *klassisch*, *fondsgebunden* and vintage editions coexist.
 **Everything else a variations table would normally carry has no observation at all**: entry ages,
 minimum premiums, maximum *Zuzahlung*, permitted *Rentenbeginn* range, *Rentengarantiezeit* durations,
@@ -648,17 +723,18 @@ Leipziger** (*AL_RoyalBasisRente*, repeatedly at the top of independent ratings)
 **NÜRNBERGER** (a principal *Berufsunfähigkeit* writer, and so the natural place to look for a **BUZ
 written inside a Basisrente** — **the single most valuable document this corpus could not reach**)
 [S5]; **Volkswohl Bund** [S6]; **LV 1871** (the best-known ***fondsgebundene* Basisrente with an open
-fund and ETF universe and no *Beitragsgarantie***) [S7] [unverified]; **Swiss Life** [S8];
-**Continentale** [S9]; **Stuttgarter** (whose *index-safe* naming, if right, would be an
-**index-linked Basisrente**; gap 12) [S10]; and the carriers of [S11], for which **nothing whatever**
-was established.
+fund and ETF universe and no *Beitragsgarantie***, marketed as *MeinPlan Basisrente*) [S7];
+**Swiss Life**, whose host refuses this environment [S8]; **Continentale**, whose fund-linked tariff is
+*BasisRente Invest* [S9]; **Stuttgarter**, whose tariff is *BasisRente performance+* — **no *index-safe*
+Basisrente tariff was found, so the index-linked possibility of gap 12 now has no tariff name behind it
+at all** [S10]; and the carriers of [S11], for which **nothing whatever** was established.
 
 **What varies, on the reasoning rather than the evidence.** Four dimensions can be stated as ranges
 because they follow from the statute and the market's structure rather than from a comparison:
 
 | Dimension | Range the market is understood to show | Status |
 |---|---|---|
-| Asset form | *klassisch* · *fondsgebunden ohne Garantie* · *fondsgebunden mit Beitragsgarantie* at 60 / 80 / 90 % of premiums paid · possibly index-linked | [S2] [S7] [S8] [S10]; the distribution across them is [unverified] (gap 3) |
+| Asset form | *klassisch* · *fondsgebunden ohne Garantie* · *fondsgebunden mit Beitragsgarantie* at 60 / 80 / 90 % of premiums paid · possibly index-linked | [S2] [S7] [S16] — all three forms observed, the fund-linked pair at five carriers at once; **the distribution across them is still [unverified]** (gap 3) |
 | Guarantee vintage in force | 2,75 % down to 0,25 % and back to 1,00 %, by conclusion year | [REG-R15]; a structural certainty, not a carrier variation |
 | Distribution | Predominantly **brokers and independent advisers**; the fee-based ***Nettotarif*** segment is more developed here than on most German life products | [unverified] |
 | Charge level | The *Effektivkosten* bands of the charge table above | **[std]**, argued not observed (gap 2) |
@@ -691,12 +767,15 @@ confirmed** (gap 23).
 point to **half a point**, retrospectively for the **2023** cohort — which is why 2023 is 82,5 % and
 not 83 % — and moved the 100 % year from **2040 to 2058** [R6] [REG-R41]. Both answered the
 ***Doppelbesteuerung*** litigation: two Bundesfinanzhof decisions of 19 May 2021, commonly cited as
-**X R 33/19** and **X R 20/19** [unverified] as to both file numbers, which accepted **in principle**
-that double taxation is unconstitutional where contributions were made from taxed income and benefits
-taxed again, found none on the facts, but identified the transition schedule as capable of producing
-one for later cohorts — **particularly for self-employed taxpayers whose phase-in contributions were
-only partly deductible**, precisely this product's own buyer [R19]. **It is a slowing of the
-transition, not a change of principle.**
+**X R 33/19** and **X R 20/19**, both file numbers now confirmed, which held the system change and the
+architecture of the transition constitutional but accepted that a taxpayer who **proves** double
+taxation in his own case may have a constitutional claim to relief — "*Eine solche doppelte Besteuerung
+ist nicht gegeben, wenn die Summe der voraussichtlichen steuerfrei bleibenden Rentenzuflüsse mindestens
+ebenso hoch ist wie die Summe der aus versteuertem Einkommen aufgebrachten Altersvorsorgeaufwendungen*",
+on the *Nominalwertprinzip*. On the facts the appeal failed, and the appellant was a *Freiberufler* who
+had paid at the ceiling since 1984 — this product's own buyer [R19]. **The proposition that later
+cohorts will be caught is not in the *Leitsätze*** but follows from the method the court fixed;
+it is used here on that footing. **It is a slowing of the transition, not a change of principle.**
 
 **Tax — the remaining pieces, none of them a liability cash flow.** A *Hinterbliebenenrente* is taxed
 in the survivor's hands on the same cohort basis, with the cohort year determined by the start of that
@@ -711,10 +790,14 @@ the listed provisions may not be varied to the policyholder's detriment. The ope
 **§§ 165, 168 and 169** (*Beitragsfreistellung*, *Kündigung*, *Rückkaufswert* — the last inoperative
 here) [R14] [REG-R28]; **§ 163** [REG-R27]; **§§ 154 and 155** [REG-R25]; **§§ 8 and 152**
 (*Widerruf*) [REG-R23]; **§§ 19, 37, 38, 157 and 158** [REG-R30]; and **§§ 172–177** for a BUZ
-[REG-R29]. Certified contracts carry an **annual statement** under § 7a AltZertG [S15] [unverified]
-as to the paragraph, whose interest for delib is that it names side by side the state variables a
-projection model must carry — contributions paid in the year, accumulated value, guaranteed benefit
-and projected annuity. **The field list was not established.**
+[REG-R29]. Certified contracts carry an **annual statement** under § 7a AltZertG [S15], whose interest
+for delib is that it names side by side the state variables a projection model must carry.
+**The field list is now established** and is the statute's own: the use made of the contributions paid,
+the capital built up, the actual costs incurred in the past contribution year, the investment return
+earned, and — until the payout phase begins — the capital expected at its start after costs, projected
+on the contributions actually paid and the *Wertentwicklungen* of the individual PIB. The GDV model
+statement adds that the capital figure is a *Gesamtkapital* including allocated surplus, non-guaranteed
+*Schlussüberschüsse* and the non-guaranteed *Bewertungsreserven*-share [S12].
 
 **Prudential.** The insurer is a Solvency II undertaking supervised under the VAG [REG-R5] [REG-R6],
 writing in the *Lebensversicherung* Sparte, with the *Sicherungsvermögen* and the prudent-person
@@ -747,11 +830,13 @@ best-known Basisrente rating — but **not one rating, score, ranking or figure 
 no downstream document may invent one.
 
 **Living texts.** The *Höchstrechnungszins* is 1,00 % for 2025 and recommended at 1,00 % for 2026
-[R16]; the *Besteuerungsanteil* for a 2026 cohort is 84,0 % [unverified]; the *Höchstbetrag* for 2026
-is 30 826 € [unverified]; the deductible share has been 100 % since 2023; the full-taxation year is
-2058. **Every one of those moves** — the *Höchstbetrag* annually with the
+[R16]; the *Besteuerungsanteil* for a 2026 cohort is 84,0 % [R4]; the *Höchstbetrag* for 2026 is
+30 826 € [R2] [R20]; the deductible share has been 100 % since 2023 [R7]; the full-taxation year is
+2058 [R4]. **Every one of those moves** — the *Höchstbetrag* annually with the
 *Sozialversicherungsrechengrößen-Verordnung* [R20], the *Besteuerungsanteil* annually by construction.
-Check both, and every paragraph number in this document, before relying on anything here.
+A third has been seen moving: the *Kleinbetragsrente* threshold of § 93 Abs. 3 EStG read 1 % in
+model conditions of July 2025 and reads 1,5 % in the statute as amended in 2026 [R23].
+Check all three, and every paragraph number in this document, before relying on anything here.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-basisrente-r1

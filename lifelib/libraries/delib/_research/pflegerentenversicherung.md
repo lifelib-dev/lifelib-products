@@ -1648,3 +1648,92 @@ premium level and every transition rate — carry the observed or argued range b
     practice under the discipline of house rule 3, and the `[unverified]` tags are the honest
     record of that. A reader with a working network should treat this file as a **checklist of what
     to verify**, in the order the gaps are numbered.
+
+---
+
+## Provenance pass of 2026-08-30 — what was retrieved, and what it contradicts
+
+The network policy that produced the retrieval conditions above was lifted, and every source in this
+file was tried again on **2026-08-30**. **The entries and their numbering are frozen and are left as
+written**; this section records, per entry, what was opened and what the opened document says. Where
+a document contradicts a fact stated above, the correction is carried into
+`products/pflegerentenversicherung/sources.md`, which is the operative record for the product
+documents. Nothing in the model was changed.
+
+**Retrieved and read** (statutes as canonical XML with the law's `Stand`; documents as PDF or HTML):
+
+| Entry | Document | Note |
+|---|---|---|
+| S1 | *AVB/PPV* with MB/PPV 2026, 56 pp., pkv.de | § 1 Abs. 2 and Abs. 6 **copy** §§ 14, 15 SGB XI into the conditions |
+| S2 | *MB/EPV 2017*, Stand Nov. 2022, 15 pp., pkv.de | § 1a writes its own trigger; § 8b is the annual *Beitragsanpassung* comparison |
+| S4 | IDEAL *PflegeRente Exklusiv*, conditions **AB-IPR-2022A** + 4 *EB*, 67 pp., ideal-versicherung.de | the first carrier wording read for this product |
+| S5 | IDEAL *Produktbeschreibung* `pb_ipr_1124`, 4 pp. | the *Informationsblatt* itself is quotation-specific and stays unretrieved |
+| S7 | *Versicherer- und Verbraucherinformationen* inside the S4 pack; VVG-InfoV § 2 as XML | § 2 Abs. 1 Nr. 9 confines *Effektivkosten* to covers where the obligation is certain |
+| S10 | test.de landing page for the *Pflegetagegeld* comparison | 70 tariffs, 24 health insurers, Stand Mai 2023; **scores paywalled** |
+| S11 | verbraucherzentrale.de, *Ist eine Pflegezusatzversicherung sinnvoll?* | *"etwa zwei- bis dreimal so hoch"* for the annuity form |
+| S12 | finanztip.de, *Pflegezusatzversicherung* | level premium against re-ratable premium, in consumer terms |
+| S14 | Assekurata, *Wege zur Pflegevollversicherung*, 45 pp., April 2026, via pkv.de | market counts, durations, *Pflegetagegeld* premiums |
+| S16 | PKV *Zahlenbericht 2024*; the association's *Pflegezusatzversicherung* page | taxonomy has no annuity line |
+| R1–R8 | SGB XI, canonical XML, Stand 24.7.2026 | §§ 14, 15, 17, 18, 23, 30, 36, 37, 39, 42a, 43, 43c, 45b, 126–130, 140 |
+| R9 | not opened as an act; its citation and effect recited by the BGH and by the DAV | *vom 21.12.2015, BGBl. I S. 2424* |
+| R11 | VVG and VVG-InfoV, canonical XML, Stand 26.5.2026 | §§ 7, 19, 21, 152, 153, 155, 163, 165, 169, 176 |
+| R12 | VAG (Stand 25.3.2026) and HGB, canonical XML | §§ 138, 139, 146 VAG; § 341f HGB |
+| R13 | DeckRV, canonical XML, Stand 19.7.2024 | § 2 Abs. 1 and Abs. 2; § 4 Abs. 1 |
+| R14 | KVAV, canonical XML, 32 sections | |
+| R15 | DAV *Ergebnisberichte* of 15 Jan. 2025, 122 pp. and 75 pp., aktuar.de | derivation **and** the *Pflegegrad* re-derivation, both free |
+| R18 | Destatis press release PD24_478_224 and the *Pflegegrade* table (Stand 18.12.2024); *Pflegequoten* by age via GENESIS | |
+| R19 | Destatis press release PD23_124_12, *Pflegevorausberechnung 2023* | |
+| R20 | vdek press release of 22 Jan. 2026, 4 pp. | *Eigenanteil* as at 1.1.2026 |
+| R21 | via S14, cited there to the PKV-Verband | |
+| R22 | GDV, *Die deutsche Lebensversicherung in Zahlen 2024* | |
+| R23 | EStG, canonical XML | § 3 Nr. 1a; § 10 Abs. 1 Nr. 3a and Abs. 4 |
+| R24 | SGB XII, canonical XML, Stand 24.7.2026, 197 sections | §§ 61, 61a, 64, 66 |
+| REG-R36 | BGH, *Urteil vom 30. April 2025 — IV ZR 126/23*, 19 pp. | on the *Pflegestufen*/*Pflegegrade* break in a *Pflegerenten* promise |
+
+**Not retrieved, with the reason** — S3, S6, S9, S13, S15, R16, R17, and the *Informationsblatt* half
+of S5, the *Standmitteilung* specimen at S8 and the scored half of S10. Two of those reasons changed:
+**S9** is now known to be unretrievable because no German insurer publishes a *Pflegerenten* rate
+card, not because the network refused; **S13** was deliberately not queried, a portal quotation being
+generated per enquiry rather than published.
+
+**Eight statements in this file are contradicted by a document retrieved on 2026-08-30.** Each is
+corrected in `products/pflegerentenversicherung/sources.md` at the entry named.
+
+1. **§ 127 SGB XI fixes no 10 / 20 / 30 / 40 / 100 % *Pflege-Bahr* grid** (section 6, R8, S15, gap
+   register). Abs. 2 Nr. 4 requires a *Geldleistung* at every *Pflegegrad*, at least 600 € at grade 5,
+   capped at the SGB XI benefit level; the percentage schedule belongs to the PKV-Verband's
+   *brancheneinheitliche Vertragsmuster* under Abs. 2 Satz 2. Nor does § 127 say *Pflegetagegeld*:
+   the eligibility test is § 146 Abs. 1 Nrn. 1 and 2 VAG, i.e. health business with an
+   *Alterungsrückstellung*. The conclusion that a *Pflegerente* cannot be a *geförderter Tarif*
+   survives on that ground.
+2. **The GDV reports *Pflegerentenversicherungen* as its own product family** (R22, gap 12):
+   242 000 stand-alone contracts in force at 31.12.2023 with 177 Mio. € of annual premium, plus
+   762 400 written as riders, and 5 499 new policies in 2023.
+3. **DAV 2008 P is published, and has been re-derived for the *Pflegegrade*** (R15, gap 10). The
+   derivation carries the bases in Anhänge 1 to 3; a companion *Ergebnisbericht* adjusts the
+   *Ausscheidewahrscheinlichkeiten* to the new *Pflegebedürftigkeitsbegriff*, on a *Stufenmodell*
+   structure, and publishes prudence loadings for the risk (gap: "no *Sicherheitszuschlag* level was
+   established" is withdrawn).
+4. **§ 43 Abs. 3 SGB XI sets the grade-1 residential *Zuschuss* at 131 €, not 125 €** (section 3).
+5. **The *Pflegegrad* stock distribution is 13,8 / 40,4 / 29,6 / 11,8 / 4,3 %**, not 9 / 44 / 27 /
+   14 / 6 %, and the age-specific *Pflegequoten* are materially higher than section 21 records —
+   16,4 % at 75–80, 30,8 % at 80–85, 53,7 % at 85–90, 80,2 % at 90–95 (R18).
+6. **§ 169 Abs. 1 VVG is a positive scope test, not an exception for death-only covers** (R11,
+   gap 9): the value is owed where *"der Eintritt der Verpflichtung des Versicherers gewiss ist"*.
+   The same test governs the *Effektivkosten* duty of § 2 Abs. 1 Nr. 9 VVG-InfoV.
+7. **The market *Stornoabzug* is not "nil to about 5 %"** (section 15): the one *Pflegerenten*
+   wording read agrees **25 %**, rising to 50 % after a partial withdrawal.
+8. **Definition risk is hedgeable and is hedged** (section 2, section 8): MB/PPV and MB/EPV copy the
+   statutory test into the conditions, and AB-IPR-2022A pins it to *"den Stand vom 28.03.2021"*.
+   What is unhedged is drift in assessment practice under a fixed text.
+
+**Four gaps are closed and two are narrowed.** Closed: gap 8 (the 2026 position — § 30 SGB XI
+uprated on 1.1.2025 and next uprates on 1.1.2028, so the 2025 amounts stood through 2026); gap 12
+(the *Pflegerente* count); gap 15 (the *Eigenanteil*, now read from the vdek evaluation as at
+1.1.2026 — 3 245 € in the first year of a stay, of which EEE 1 685 €, *Unterkunft und Verpflegung*
+1 046 € and *Investitionskosten* 514 €); and the *Sicherheitszuschlag* limb of gap 10. Narrowed:
+gap 19, the overall spell now sourced at about five years for onset after 60 — 4,0 for men and 5,7
+for women — while the **per-grade** sojourn times remain unavailable, Assekurata saying in terms that
+no such information exists; and gap 14, one carrier's wording read where none had been. Gaps 1 to 7,
+11, 13, 16 to 18, 20 and 21 stand, and gap 3 (no premium) is now known to reflect market practice
+rather than a retrieval failure.

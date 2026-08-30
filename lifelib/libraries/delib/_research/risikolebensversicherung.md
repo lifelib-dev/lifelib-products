@@ -149,74 +149,140 @@ and rating material (S14–S17). **Every carrier named below sells a *Risikolebe
 Germany; that much is asserted from knowledge. Nothing about the content of any particular wording is
 asserted, because nothing was read.**
 
-### S1 — GDV, "Allgemeine Bedingungen für die Risikoversicherung" (*Musterbedingungen*)
+### S1 — GDV, "Allgemeine Bedingungen für die Risikolebensversicherung" (*Musterbedingungen*)
 
 - Publisher: Gesamtverband der Deutschen Versicherungswirtschaft e. V. Doc type: *Musterbedingungen*
   — model AVB published by the industry association for members to adopt, adapt or ignore
-- URL: **not established** for the term-assurance wording. The GDV *Musterbedingungen* index at
-  `https://www.gdv.de/gdv/service/musterbedingungen` was returned by a search during the sibling
-  research [inherited: `kapitallebensversicherung.md` S1]; **the per-document blob path for the
-  *Risikoversicherung* wording is not established and is not guessed**
+- URL: `https://www.gdv.de/resource/blob/6324/13d86b44ff6f4d6800e9ddeb7bc17476/allgemeine-bedingungen-fur-die-risikolebensversicherung-data.pdf`, reached from the index at
+  `https://www.gdv.de/gdv/service/musterbedingungen`. **Its own title is *Allgemeine Bedingungen für
+  die Risikolebensversicherung***, not "für die Risikoversicherung"
+- **Retrieved: yes** — PDF, 18 pp., **Stand: 21.07.2025**, read 2026-08-30
 - Content — what this document is, and what weight an `[S1]` tag carries:
   - The GDV maintains model conditions for the main German life lines and the *Risikoversicherung* is
     one of them. The model wordings address the customer in the second person with question-headed
     sections ("Welche Leistungen erbringen wir?"), the style adopted for post-2008-VVG wordings
     [inherited: `kapitallebensversicherung.md` S1].
-  - The GDV states its model conditions are ***unverbindlich*** and their use **purely optional** — a
-    competition-law disclaimer that is load-bearing for citation weight [inherited:
-    `kapitallebensversicherung.md` S1]. **An `[S1]`-tagged fact is a market template, weaker evidence
-    about any carrier than the same fact taken from that carrier's own AVB.**
-  - **No article text of the term-assurance model wording was established.** Every benefit, surplus,
-    exclusion or termination rule attributed anywhere in this file to "the model conditions" is
-    attributed instead to the statute it implements [R1]–[R8] or is carried as `[std]`, never to S1.
+  - The disclaimer is on the first line of the document, verbatim: "Diese Bedingungen sind für die
+    Versicherer unverbindlich; ihre Verwendung ist rein fakultativ. Abweichende Bedingungen können
+    vereinbart werden." **An `[S1]`-tagged fact is a market template, weaker evidence about any
+    carrier than the same fact taken from that carrier's own AVB** — which is why every clause below
+    is cited beside [S3] or [S4] where those carry it too.
+  - **The article text is now established.** Four clauses carry weight downstream. **§ 5 Abs. 3**:
+    "Wenn unsere Leistungspflicht durch eine Änderung des Vertrages erweitert wird oder der Vertrag
+    wiederhergestellt wird, beginnt die Dreijahresfrist bezüglich des geänderten oder
+    wiederhergestellten Teils neu" — gap 9, closed. **§ 13 Abs. 4 and Abs. 8**: *Kündigung* converts
+    the contract into a *beitragsfreie Versicherung*, and where the paid-up sum fails a carrier-set
+    minimum the policyholder receives "den Rückkaufswert entsprechend § 169 des
+    Versicherungsvertragsgesetzes (VVG)", less an *Abzug* — **which contradicts this file's claim
+    that a German RLV pays nothing on termination**. **§ 14 Abs. 2–3**: the § 4 DeckRV
+    *Verrechnungsverfahren* at 2,5 %, with "die restlichen Abschluss- und Vertriebskosten ... über
+    die gesamte Beitragszahlungsdauer verteilt" — so 25 ‰ bounds the zillmered part, not the whole α;
+    footnote 28 adds that the clause belongs in a wording only "bei der Verwendung des
+    Zillmerverfahrens". **§ 2 Abs. 2–3**: surplus allocated *verursachungsorientiert* by
+    ***Bestandsgruppe*** and ***Gewinnverband***.
 
 ### S2 — GDV, *Produktinformationsblatt* pattern for the *Risikoversicherung*
 
-- Publisher: GDV. Doc type: model *Produktinformationsblatt* (PIB) — the short pre-contractual
-  summary required for life products by the VVG-InfoV [R17]. URL: **not established**
-- Content: identity only. The PIB is the German counterpart of the French *document d'information sur
-  le produit d'assurance*: product type, insured risk, *Versicherungssumme*, *Beitrag*, exclusions,
-  term. For a *Risikolebensversicherung* it is the natural place a carrier states the
-  ***Bruttobeitrag* and the *Zahlbeitrag* side by side**, which is why it matters here more than for
-  any other delib product. **No specimen was located and no field list is asserted**; the inference
-  from the document's purpose is `[unverified]` (gap 3).
+- Publisher: GDV. Doc type: model *Produktinformationsblatt* (PIB). **The name has moved on**: since
+  the IDD implementation the document § 4 VVG-InfoV requires is the ***Informationsblatt zu
+  Versicherungsprodukten*** (IPID, Durchführungsverordnung (EU) 2017/1469) [R17]. **The GDV publishes
+  no model PIB for this line** — its *Musterbedingungen* index carries model *Bedingungen* and
+  *Standmitteilungen* only
+- URL: carrier specimens stand in its place —
+  `https://www.cosmosdirekt.de/resource/blob/15750/ce3439de3bbf09d3d5fee7889a3cd235/vib-crc-risikolebensversicherung-data.pdf`
+  and
+  `https://www.cosmosdirekt.de/resource/blob/89394/91ebf9428a54446bc0e61e17723c3332/pib-risiko-lebensversicherung-data.pdf`
+- **Retrieved: yes** — PDF, 2 pp., *Muster-VIB CR_CRC (12.20)*; PDF, 5 pp., *PIB_CRB/CRCB_Berechnung
+  (01.2018)*; both read 2026-08-30
+- Content: **the inference was right and the document delivers more than expected.** It does state the
+  ***Bruttobeitrag* and the *Zahlbeitrag* side by side**, and it also states the charges, because
+  § 2 Abs. 1 Nr. 1 and § 4 Abs. 2 VVG-InfoV require them in euro. For a model case of **Eintrittsalter
+  41, Vertragsdauer 19 Jahre, Bankkaufmann, Versicherungssumme 100 000 €**:
+
+  | Edition | Tariff | *Tarifbeitrag* / month | *Zahlbeitrag* year 1 | ratio | α, euro | α, % of *Tarifbeitragssumme* |
+  |---|---|---|---|---|---|---|
+  | Muster-VIB (12.20) | CRB2 Basis | 18,21 € | 8,20 € | 0,4503 | 99,98 € | 2,41 % |
+  | Muster-VIB (12.20) | CRCB2 Comfort | 23,68 € | 10,66 € | 0,4502 | 129,97 € | 2,41 % |
+  | PIB (01.2018) | CRB2 Basis | 19,75 € | 8,89 € | 0,4501 | — | — |
+  | PIB (01.2018) | CRCB2 Comfort | 25,68 € | 11,55 € | 0,4498 | — | — |
+
+  Other annual costs 48,52 € (Basis) and 63,08 € (Comfort), of which 35,20 € and 45,76 €
+  *Verwaltungskosten*, taken over the 19-year premium term; paid-up administration 1,50 € per 100 €
+  of paid-up sum insured. **The ratio is the same to three decimals across two tariffs and two
+  editions** — § 138 VAG's *Gleichbehandlung* visible in the numbers. Gap 1 and gap 8 close for this
+  carrier; **no figure here is promoted to a model parameter** (gap 3 closed as to the field list).
 
 ### S3 — CosmosDirekt (Cosmos Lebensversicherungs-AG), *Risikolebensversicherung*
 
-- Doc type: *Allgemeine Bedingungen für die Risikoversicherung*, *Verbraucherinformation* pack,
-  product page. URL: **not established.** The carrier's AVB naming convention runs `LA <number>
-  <letter>` — the sibling research recorded `LA 904 A` for its *Rentenversicherung* wording
-  [inherited: `klassische_rentenversicherung.md` S8] — but **the term-assurance tariff code is not
-  established and is not guessed**
-- Content: named as the German market's highest-volume direct-written RLV. Relevant because the direct
-  channel is where the ***Brutto*/*Zahlbeitrag* spread is widest**: no *Abschlussprovision* is paid to
-  an intermediary, so more of the *Bruttobeitrag* is available for *Beitragsverrechnung*. **That
-  reasoning is structural, not sourced**, and the spread is `[std]` (mechanic 5).
+- Doc type: *Allgemeine Bedingungen für die Risiko-Lebensversicherung* and *Besondere Bedingungen*.
+  The `LA <number> <letter>` convention held: the term-assurance codes are **LA 803 A** and
+  **LA 804 A**
+- URL: `https://www.cosmosdirekt.de/resource/blob/7944/7b400325610aa816ee0ed2e1deda323d/allgemeine-bedingungen-risikoversicherung-la-803-a--data.pdf`
+  and `https://www.cosmosdirekt.de/resource/blob/611396/6d70b9698c9fc73321e55cb81a98c9e1/besondere-bedingungen-fuer-die-risiko-lebensversicherung-la-804-a--data.pdf`,
+  from the carrier's library at `https://www.cosmosdirekt.de/services/vertragsservice/vertragsservice-versicherungsbedingungen/`
+- **Retrieved: yes** — PDF, 11 pp., **LA 803 A (04.26)**; PDF, 6 pp., **LA 804 A (04.26)**; read
+  2026-08-30
+- Content: the primary carrier wording of this product. **§ 3 Abs. 2 b** states the central mechanic:
+  "Die Überschussanteile (Sofortrabatt) werden **in Prozent des Bruttobeitrags** festgesetzt und mit
+  den laufenden Beiträgen verrechnet." **§ 3 Abs. 1 a** gives the MindZV percentages (90 / 50 / 90)
+  and says the premiums leave "keine oder allenfalls geringfügige Beträge" for capital, so **no
+  *Bewertungsreserven* arise at all** (Abs. 1 c). **§ 2** gives the *Selbsttötung* clock with its
+  per-increment restart, the *Kriegsklausel* as an **exclusion** (not a *Deckungskapital*
+  substitution), the ABC clause gated on 1 000 lives and a *Treuhänder*, and a terrorism exclusion.
+  **§ 13** gives the *Nachversicherungsgarantie* in full (gap 7). **§ 15** gives the paid-up right on
+  a constant sum insured with a 300 € minimum, its impossibility on a falling sum insured, and
+  *Kündigung* "zum Ende des laufenden Monats" with "kein Rückkaufswert". **§ 16** applies § 4 DeckRV
+  at 2,5 % and spreads the remainder. **§ 18** gives the twelve-month smoker qualifying period and
+  treats a later switch as a *Gefahrerhöhung* (gap 22). And the *Rechnungsgrundlagen* preamble states
+  a ***Rechnungszins* of 0,25 Prozent** and "einer unternehmenseigenen Sterbetafel auf Basis der
+  DAV 2008T" — **the model prices at the 1,00 % DeckRV ceiling instead**. The direct-channel spread
+  argument remains structural, and the spread stays `[std]` (mechanic 5).
 
 ### S4 — Hannoversche Lebensversicherung AG (VHV group), *Risikolebensversicherung*
 
-- Doc type: AVB, *Verbraucherinformation*, product page. URL: **not established**
-- Content: the other long-standing German direct writer of term assurance, historically a fixture near
-  the top of consumer-magazine rankings [S16]. Recorded for the same structural reason as S3. **No
-  wording, tariff code, rate or edition date is asserted.**
+- Doc type: *Bedingungen und Informationen — Risikoversicherung*, a pack containing the *Allgemeine
+  Bedingungen für die Risikoversicherung / **T25***, the BUZ and UZ riders, *Steuer-Informationen*, a
+  *Lexikon* and the *Merkblatt zur Anzeigepflichtverletzung*
+- URL: `https://www.hannoversche.de/dam/risiko/bedingungen/bedingungen-risikolebensversicherung-aktuell.pdf`
+- **Retrieved: yes** — PDF, 32 pp., document 700.0005.35, **Stand 09/2025**, read 2026-08-30
+- Content: the second carrier wording, and the one that disproves this file's strongest claim.
+  **§ 20 Abs. 3 b** corroborates S3 independently — the *Jahresgewinnanteil* is "in Prozent des
+  **Tarifbeitrags**" and credited as a *Sofortgutschrift* — and Abs. 4 adds that it "kann auch **Null
+  Euro** betragen". **§ 19** is the [S1] *Selbsttötung* clause word for word, restart included.
+  **§ 13** is the problem: *Kündigung* "zum Ende des laufenden Monats" **converts the contract into a
+  *beitragsfreie Versicherung*** (minimum 2 500 €), and below that minimum "wird das Deckungskapital
+  abzüglich des oben beschriebenen Abzugs ausgezahlt und der Vertrag erlischt" — the *Abzug* being
+  **60 % des Deckungskapitals** — with a *Rückkaufswerte* table annexed to the *Versicherungsschein*
+  for every tariff **except T3 and T4**, the falling-sum tariffs that build no *Deckungskapital*.
+  **So a German term assurance can carry a surrender value**, and the "no cash value, market-wide"
+  claim in this file is wrong as to design, right as to magnitude. It also cites § 88 VAG and
+  §§ 341e, 341f HGB as the *Deckungsrückstellung* basis, which is [R21] from the contract side.
 
 ### S5 — HUK-COBURG / HUK24, *Risikolebensversicherung* and the *Überschussbeteiligung* guide
 
 - Doc type: insurer guide page **about term assurance specifically**, plus the product pages. URL:
   `https://www.huk24.de/risikolebensversicherung/ratgeber-lebensversicherung/ueberschussbeteiligung`
-  — **returned by a search during the sibling research** [inherited: `kapitallebensversicherung.md`
-  S17]
-- Content — **the single most useful inherited item in this file**, because it is a carrier's own
-  account of the *Überschussbeteiligung* **in this product**, not in the endowment:
+- **Retrieved: yes** — HTML, ~66 kB, read 2026-08-30
+- Content — a carrier's own account of the *Überschussbeteiligung* **in this product**, not in the
+  endowment:
   - The page is titled "Überschussbeteiligung der Risikolebensversicherung", so the carrier itself
     treats surplus participation as a **central feature of term assurance**. That alone contradicts
     the intuition an Anglophone modeller brings to a "term life" product.
-  - The sibling entry records that it sets out the **four-component surplus vocabulary** —
-    *Zins-*, *Risiko-*, *Kosten-* and *übrige Überschüsse* — and that this vocabulary is used **by
-    carriers themselves across product lines**, not only by journalists.
-  - **The sibling file took nothing endowment-specific from it and recorded no figures.** What is
-    inherited is the existence of the page, its title and the vocabulary. **No rate, no
-    *Beitragsverrechnung* percentage and no spread ratio is inherited**, and none is asserted (gap 1).
+  - **Correction to the inherited note.** The sibling entry recorded a **four-component surplus
+    vocabulary** — *Zins-*, *Risiko-*, *Kosten-* und *übrige Überschüsse* — and this file carried it
+    forward to the term product. **The page uses no such vocabulary.** It names **three** factors:
+    the capital-market result, the insurer's cost structure and the number of deaths — which is the
+    MindZV three [R9] and the three [S1], [S3] and [S4] all use. The four-component form belongs to
+    the endowment file and has been removed from the product documents here.
+  - **What the page does establish, and it is better.** The two surplus forms used on this line:
+    "In der Praxis bieten Versicherer bei Risikolebensversicherungen für die Überschussbeteiligung
+    wiederum meist eines von zwei Modellen an: den **Todesfallbonus** und den **Sofortrabatt**" —
+    and [S1], [S3] and [S4] all carry exactly that pair, *Sofortrabatt* while premiums are paid and
+    *Todesfallbonus* once paid up. And the asymmetry, stated by the carrier: the *Tarifbeitrag* "ist
+    der **maximal zu leistende Versicherungsbeitrag**", and where surplus falls "steigt der Beitrag
+    für den Versicherten höchstens bis zu dieser Höhe an".
+  - **No rate, no *Beitragsverrechnung* percentage and no spread ratio is on this page**; those come
+    from [S2] instead.
 
 ### S6 — Debeka Lebensversicherungsverein a. G., *Bedingungswerk* for the *Risikoversicherung*
 
@@ -307,12 +373,12 @@ asserted, because nothing was read.**
   `Kapitallebensversicherung`, `Überschussbeteiligung` and `Zillmerung` [inherited:
   `kapitallebensversicherung.md` S15], establishing that the portal publishes explanatory pages of this
   kind and nothing about its term-assurance pages
-- Content: **these portals are the only public source of German RLV price points**, because no German
-  carrier publishes a rate card and the *Produktinformationsblatt* quotes only the applicant's own
-  premium. That is why the brief asked for several price points from them, and **precisely why none
-  could be obtained**: a comparison result is generated per query and is not a published document, so it
-  is unreachable without live egress in any event. **No price point of any kind is recorded in this file
-  from S14** (gap 1).
+- Content: **this entry's central claim was wrong and is withdrawn.** It said the portals are "the only
+  public source of German RLV price points". They are not. § 2 Abs. 1 Nr. 1 and § 4 Abs. 2 VVG-InfoV
+  put the premium and the costs on the pre-contractual *Informationsblatt* in euro, and carriers
+  publish ***Muster*** specimens of it — which is how gap 1 was closed, at [S2], without a portal.
+  What survives is the narrower and still true point: **a comparison result is generated per query
+  and is not a published document**, so no portal price point is recorded here (gap 1).
 
 ### S15 — Finanztip, "Risikolebensversicherung" — **secondary**
 
@@ -354,14 +420,28 @@ asserted, because nothing was read.**
 ---
 ## Regulatory and actuarial references
 
-Same retrieval status as the primary sources: **Retrieved: no — direct HTTP egress blocked; no
-search corroboration (session budget exhausted)**, except where an entry states an **inherited
-corroboration** from a sibling delib research file. Canonical `gesetze-im-internet.de` URLs are given
-in the form `.../vvg_2008/__<n>.html`, which the sibling research confirmed the host uses; where such
-a URL was **not** itself returned by a search it is marked `[unverified]`.
+**Retrieval status, revised.** The statutes below were read from the **canonical XML** each
+instrument publishes at `gesetze-im-internet.de/<slug>/xml.zip`, which carries the law's `Stand`;
+each entry now records the `Stand` it was read at. Sections read this way: **VVG** §§ 12, 19, 21, 22,
+38, 150, 152, 153, 159, 161, 162, 163, 165, 166, 168, 169, 171 (Stand: zuletzt geändert durch Art. 12
+G v. 26.5.2026 I Nr. 156); **MindZV** §§ 4, 6, 7, 8 (Art. 1 V v. 7.7.2020 I 1688); **DeckRV** §§ 1–5
+(Art. 1 V v. 19.7.2024 I Nr. 250); **VAG** §§ 138, 140 (Art. 25 G v. 25.3.2026 I Nr. 81); **AGG**
+§§ 19, 20, 33 (Art. 15 G v. 22.12.2023 I Nr. 414); **EStG** §§ 10, 20, 52 (Art. 7 G v. 29.6.2026 I
+Nr. 197); **ErbStG** §§ 3, 15, 16, 19 (Art. 10 G v. 22.6.2026 I Nr. 192); **HGB** § 341f (Art. 4 G v.
+4.2.2026 I Nr. 33); **VVG-InfoV** §§ 1, 2, 4 (Art. 13 G v. 26.5.2026 I Nr. 156). **VersStG 2021 § 4**
+was read from its per-section HTML page, which serves text rather than a frameset.
+
+Two things follow. First, the `.../<slug>/__<n>.html` addresses are kept as **human-facing links
+only**: they answer 200 with a frameset of a few kilobytes and **no statutory text**, so a section
+cited only through one of them is not retrieved. Second, where a rule is load-bearing the entry now
+**quotes it exactly, in German**; everything else is still paraphrase, and what was not read is still
+marked `[unverified]`. **Not retrieved and unchanged**: the RechVersV, the PRIIPs Regulation, the
+Gender Directive and CJEU C-236/09 (the German implementation was read instead), the DAV papers'
+substance (the files themselves are reachable), and every item at [R18]–[R20], [R22] and [R23].
 
 ### R1 — VVG § 161, *Selbsttötung*
 
+- **Retrieved: yes** — canonical XML, Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156, read 2026-08-30. Every clause below is confirmed verbatim. The one thing § 161 does **not** say is anything about increases: Abs. 1 runs the clock from *Abschluss des Versicherungsvertrags*, and the per-increment restart of gap 9 comes from the wordings [S1] [S3] [S4], not from the statute.
 - Publisher: Bundesministerium der Justiz (Versicherungsvertragsgesetz 2008). URL:
   `https://www.gesetze-im-internet.de/vvg_2008/__161.html` — **returned by a search during the
   sibling research** [inherited: `kapitallebensversicherung.md` R4]
@@ -384,6 +464,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 ### R2 — VVG § 169, *Rückkaufswert*
 
+- **Retrieved: yes** — canonical XML, same Stand, read 2026-08-30. **Abs. 1's *gewiss* limitation is confirmed word for word** (gap 2). **But the inference that nothing is therefore ever paid is contradicted**: § 169 defines the *Rückkaufswert* and §§ 152 Abs. 2, 161 Abs. 3 and 165 Abs. 1 Satz 2 route a term contract to it; [S1] and [S4] pay it where the paid-up minimum fails, [S3] does not. Abs. 3's five-year spread and Abs. 5's *Abzug* test — including "Die Vereinbarung eines Abzugs für noch nicht getilgte Abschluss- und Vertriebskosten ist unwirksam" — are confirmed.
+
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__169.html` — returned by a search during the
   sibling research [inherited: `kapitallebensversicherung.md` R2]
 - **Inherited corroboration**: the section governs the surrender value payable on the policyholder's
@@ -395,13 +477,19 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   to a life insurance whose insured event is **certain to occur** — the German formulation turns on
   whether the *Eintritt der Leistungspflicht* is *gewiss*. An endowment, an annuity and a
   whole-of-life cover satisfy it; **a *Risikolebensversicherung* does not**, because the insured may
-  survive the term and the insurer may never owe anything. **The consequence is that the RLV has no
-  statutory *Rückkaufswert*.** This limitation is asserted from knowledge of the section's structure
-  and **no search returned that wording**: it is `[unverified]` and is **the most consequential such
-  tag in this file** (gap 2). Its practical result — nothing is paid on *Kündigung* — is corroborated
-  by uniform market practice and is not in doubt.
+  survive the term and the insurer may never owe anything. **The consequence is that no § 169 Abs. 1
+  duty attaches to an RLV on *Kündigung*.** **That limitation is now read verbatim from the canonical
+  XML and the tag is removed** (gap 2 closed). **What does not follow, and what this file wrongly
+  said did, is that nothing is ever paid.** § 169 defines the *Rückkaufswert*; §§ 152 Abs. 2, 161
+  Abs. 3 and 165 Abs. 1 Satz 2 route a term contract to it; and the market wordings pay it — [S1]
+  § 13 Abs. 8 and [S4] § 13 convert the contract into a *beitragsfreie Versicherung* and pay the
+  *Rückkaufswert*, less a *Stornoabzug*, where the paid-up sum fails a carrier-set minimum, only [S3]
+  § 15 Abs. 10 paying nothing. **"Corroborated by uniform market practice" was wrong: the practice is
+  not uniform.** The amount, however, is nil or nominal in all of them.
 
 ### R3 — VVG § 165, *Prämienfreie Versicherung* (*Beitragsfreistellung*)
+
+- **Retrieved: yes** — canonical XML, same Stand, read 2026-08-30. **§ 165 carries no *gewiss* limitation of its own**, so the paid-up right is live on a term contract; Abs. 2 computes the paid-up benefit "unter Zugrundelegung des Rückkaufswertes nach § 169 Abs. 3 bis 5", which is where the *Stornoabzug* enters by reference. On the wordings the right is real on a constant sum insured (minimum 300 € at [S3], 2 500 € at [S4]) and impossible on a falling one, "kalkulationsbedingt kein Deckungskapital" [S3] § 15 Abs. 4.
 
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__165.html` — returned by a search during the
   sibling research [inherited: `kapitallebensversicherung.md` R3]
@@ -420,6 +508,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   is `[unverified]` (gap 10).
 
 ### R4 — VVG §§ 19–22, *Vorvertragliche Anzeigepflicht* and *Anfechtung*
+
+- **Retrieved: yes** for §§ 19, 21, 22 — canonical XML, same Stand, read 2026-08-30; § 20 was not read and is not relied on. The question-bounded duty ("nach denen der Versicherer in Textform gefragt hat"), the Abs. 5 warning requirement, § 21 Abs. 2's causation defence and § 21 Abs. 3's five/ten years are all confirmed. **Correction**: § 19 does not confer a right to accept on restricted terms — pre-contractual underwriting rests on freedom of contract; Abs. 4 Satz 2 gives the **retrospective** route after a breach. **Addition**: Abs. 6 gives a one-month termination right where such a change raises the premium by more than 10 %.
 
 - URLs: `https://www.gesetze-im-internet.de/vvg_2008/__19.html` — returned by a search during the
   sibling research [inherited: `kapitallebensversicherung.md` R5]; the `__20`, `__21`, `__22` forms
@@ -441,6 +531,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 ### R5 — VVG § 153, *Überschussbeteiligung*
 
+- **Retrieved: yes** — canonical XML, same Stand, read 2026-08-30. Confirmed, with one new fact: exclusion of the *Überschussbeteiligung* requires an *ausdrückliche Vereinbarung* and "kann nur insgesamt" be done — an all-or-nothing switch, which is what `surplus_form = keine` implements. Both wordings open their surplus clause citing the section [S3] § 3, [S4] § 20 Abs. 1. **The *Bewertungsreserven* point is stronger than assumed**: on this product none arise at all, "daher entstehen dem Grunde nach keine Bewertungsreserven" [S3] § 3 Abs. 1 c.
+
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__153.html` — returned by a search during the
   sibling research [inherited: `kapitallebensversicherung.md` R1]
 - **Inherited corroboration**: the policyholder is **entitled to share in the surplus and in the
@@ -455,7 +547,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   (mechanic 5). Participation in *Bewertungsreserven* is **structurally negligible** here, because the
   attributable amount scales with a *Deckungsrückstellung* that is nil or nominal `[unverified]`.
 
-### R6 — VVG § 163, *Anpassung der Prämie* (the *Treuhänder* clause)
+### R6 — VVG § 163, *Prämien- und Leistungsänderung* (the *Treuhänder* clause)
+
+- **Retrieved: yes** — canonical XML, same Stand, read 2026-08-30. **The entry's title was wrong**: the section is ***Prämien- und Leistungsänderung***. Abs. 1's three cumulative conditions turn on a change in the ***Leistungsbedarf***; Abs. 2 gives the policyholder a right to a benefit reduction instead; Abs. 4 drops the *Treuhänder* where supervisory approval is required. That the route is not used in practice on RLV *Bruttobeiträge* is still `[unverified]` — no retrieved document reports practice — but the premise is confirmed from the contract side: [S3] guarantees the *Bruttobeitrag* for the term and [S5] calls the *Tarifbeitrag* "der maximal zu leistende Versicherungsbeitrag".
 
 - URL: `https://www.gesetze-im-internet.de/vvg_2008/__163.html` `[unverified]`. The sibling research
   recorded the section as governing premium and condition adjustment in life insurance and located
@@ -473,7 +567,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   single most important legal fact about the German term-life premium** (mechanic 5). That § 163 is
   not used in practice on RLV *Bruttobeiträge* is `[unverified]`.
 
-### R7 — VVG §§ 150, 159, 162 — *versicherte Person*, *Bezugsberechtigung*, *Herbeiführung des Versicherungsfalles*
+### R7 — VVG §§ 150, 159, 162 — *Versicherte Person*, *Bezugsberechtigung*, *Tötung durch Leistungsberechtigten*
+
+- **Retrieved: yes** — canonical XML, same Stand, read 2026-08-30. § 150 Abs. 2's *schriftliche Einwilligung* above *gewöhnliche Beerdigungskosten* is confirmed verbatim, with an exception for *betriebliche Altersversorgung* and a special rule in Abs. 3 for a parent insuring a minor child. § 159 Abs. 2–3 fix when the beneficiary's right arises. **The entry's title for § 162 was wrong**: it is ***Tötung durch Leistungsberechtigten***; *Herbeiführung des Versicherungsfalles* is § 81.
 
 - URLs: `.../vvg_2008/__150.html`, `__159.html`, `__162.html`, canonical forms, all `[unverified]`
 - Asserted from knowledge, `[unverified]` throughout:
@@ -489,7 +585,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 - All three are structural on a product where *Versicherungsnehmer*, *versicherte Person* and
   *Bezugsberechtigter* are routinely three different people — the normal case here, not the exception.
 
-### R8 — VVG § 152 (*Widerruf*), § 166 (*Beitragsverzug*), § 168 (*Kündigung*)
+### R8 — VVG § 152 (*Widerruf des Versicherungsnehmers*), § 166 (*Kündigung des Versicherers*), § 168 (*Kündigung des Versicherungsnehmers*)
+
+- **Retrieved: yes** for §§ 12, 38, 152, 166, 168, 171 — canonical XML, same Stand, read 2026-08-30. **Two errors found.** § 166 is titled ***Kündigung des Versicherers*** and does not impose a demand procedure; it says only that the insurer's termination converts the contract into a *prämienfreie Versicherung*. The *Textform* demand is **§ 38 Abs. 1** and its minimum is **two weeks, not a month**. Confirmed: § 152 Abs. 1's 30 days; § 168 Abs. 1's termination at the end of the *Versicherungsperiode*, with § 12 making that period follow the *Zahlweise*; § 171's *halbzwingend* range. Worth recording: § 168 Abs. 2 confines the single-premium termination right to a *gewiss* risk. The carriers give more than the statute — termination "zum Ende des laufenden Monats" [S3] [S4].
 
 - URLs: `.../vvg_2008/__152.html`, `__166.html`, `__168.html`, canonical forms, all `[unverified]`
 - Asserted from knowledge, `[unverified]` throughout:
@@ -509,6 +607,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   policy anniversaries.
 
 ### R9 — MindZV, *Verordnung über die Mindestbeitragsrückerstattung in der Lebensversicherung*
+
+- **Retrieved: yes** — canonical XML, Stand: zuletzt geändert durch Art. 1 V v. 7.7.2020 I 1688, read 2026-08-30. **§ 6 Abs. 1**, **§ 7**, **§ 8** carry the three percentages; gap 4 is closed and the section numbers may be cited. Each is floored at zero.
 
 - URLs: `https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html` ·
   `https://www.buzer.de/gesetz/12013/a198221.htm` — both returned by a search during the sibling
@@ -534,6 +634,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 ### R10 — DeckRV, *Deckungsrückstellungsverordnung* — *Höchstrechnungszins* and *Höchstzillmersatz*
 
+- **Retrieved: yes** — canonical XML, Stand: zuletzt geändert durch Art. 1 V v. **19.7.2024** I Nr. 250, so the current rate is read at the instrument that set it; read 2026-08-30. § 2 Abs. 1 fixes the ***Höchstzinssatz*** at 1 %; § 4 Abs. 1 caps the *Zillmersatz* at "25 Promille der Summe aller Prämien" and applies to term business (gap 11, first half). **§ 5 Abs. 1 is new to this file and is load-bearing**: "Die Ableitung von Rechnungsgrundlagen auf der Basis eines besten Schätzwertes genügt nicht" — the statutory reason a *Sicherheitszuschlag* must exist. **A retrieved carrier prices its term tariff at a *Rechnungszins* of 0,25 %**, not at the ceiling [S3].
+
 - URL: `https://www.buzer.de/gesetz/12006/index.htm` — returned by a search during the sibling
   research, which used it for the amendment history [inherited: `kapitallebensversicherung.md` R7]
 - **Inherited corroboration**: the ***Höchstrechnungszins*** was raised **from 0,25 % to 1,00 % with
@@ -550,6 +652,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   established** `[unverified]` (gap 11).
 
 ### R11 — VAG §§ 138–140 — *Gleichbehandlung*, *Überschussbeteiligung*, RfB
+
+- **Retrieved: yes** for §§ 138 and 140 — canonical XML, Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81, read 2026-08-30; § 139 was not re-read. § 138 Abs. 2 in full: "Bei gleichen Voraussetzungen dürfen Prämien und Leistungen nur nach gleichen Grundsätzen bemessen werden." **The unit of "gleiche Voraussetzungen" is now known**: the *Bestandsgruppe* and, inside it, the *Gewinnverband* [S1] § 2 Abs. 2–3 — [S3] names *Bestandsgruppe 112*, [S4] *Bestandsgruppe G*. § 140 Abs. 1 confirms the RfB use restriction, which both wordings reproduce.
 
 - URL: `https://dejure.org/gesetze/VAG/139.html` — returned by a search during the sibling research
   [inherited: `kapitallebensversicherung.md` R8]; the § 138 and § 140 forms are `[unverified]`
@@ -569,6 +673,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   and a declared rate.
 
 ### R12 — DAV, "Herleitung der Sterbetafel DAV 2008 T für Lebensversicherungen mit Todesfallcharakter"
+
+- **Retrieved: no**, on this file's own bar — all four addresses are live and were opened on 2026-08-30 (landing page ~53 kB; `20080708_DAV_2008_T.pdf` 1,09 MB; `2022-11-29_DAV-Richtlinie_Herleitung_DAV2008T.pdf` 1,14 MB; `..._R_NR.pdf` 1,67 MB), **but their text was not read**, so everything below remains inherited corroboration. Reading them would close gaps 6 and 12. **One carrier-side corroboration is new**: [S3]'s AVB states its bases as "einer unternehmenseigenen Sterbetafel **auf Basis der DAV 2008T**", and DeckRV § 5 Abs. 1 now supplies the legal reason a *Sicherheitszuschlag* must exist [R10].
+
 
 - Publisher: Deutsche Aktuarvereinigung e. V. Doc type: *DAV-Richtlinie* / *Fachgrundsatz*, with a
   2008 derivation paper and a 2022 restatement. URLs, all returned by a search during the sibling
@@ -601,6 +708,7 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
 
 ### R13 — Unisex pricing: the EU Gender Directive, CJEU C-236/09 (*Test-Achats*), AGG § 20
 
+- **Retrieved: yes** for the German implementation, AGG §§ 19, 20, 33 — canonical XML, Stand: zuletzt geändert durch Art. 15 G v. 22.12.2023 I Nr. 414, read 2026-08-30. **§ 33 Abs. 5 fixes the date in the German statute**: the derogation survives only for "Versicherungsverhältnisse, die **vor dem 21. Dezember 2012** begründet werden". § 20 Abs. 2 preserves a risk-adequate-calculation justification for religion, disability, age and sexual identity — **sex is absent from the list**. The Directive and CJEU C-236/09 were **not** retrieved; nothing is asserted from either.
 - Publisher: Court of Justice of the European Union; Bundesministerium der Justiz. URL: **not
   established** for any of them
 - Asserted from knowledge, `[unverified]` except the date: the judgment struck down the derogation
@@ -618,6 +726,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   the largest single sources of unexplained spread between German carriers' rates.
 
 ### R14 — EStG § 20 Abs. 1 Nr. 6 and § 10 Abs. 1 Nr. 3a — income tax on the benefit, deductibility of the premium
+
+- **Retrieved: yes** — canonical XML, Stand: neugefasst durch Bek. v. 8.10.2009 I 3366, 3862, zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197, read 2026-08-30. Gaps 16 and 17 both close; see the register.
 
 - URL: `https://www.gesetze-im-internet.de/estg/__20.html` — returned by a search during the sibling
   research [inherited: `kapitallebensversicherung.md` R10]
@@ -641,6 +751,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   statements `[unverified]`; **no ceiling figure is stated in this file** (gap 17).
 
 ### R15 — ErbStG §§ 3, 15, 16, 19 — the *Erbschaftsteuer* treatment of the death benefit
+
+- **Retrieved: yes** — canonical XML, Stand: neugefasst durch Bek. v. 27.2.1997 I 378, zuletzt geändert durch Art. 10 G v. 22.6.2026 I Nr. 192, read 2026-08-30. Gap 18 closes and every figure in it was right; see the register.
 
 - URL: `https://www.gesetze-im-internet.de/erbstg_1974/` `[unverified]`; per-section forms **not
   established**
@@ -666,7 +778,9 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   specification must document a contracting structure alongside the cash flows. **The arithmetic is
   arithmetic; its inputs are `[unverified]`.**
 
-### R16 — VersStG § 4 — *Versicherungsteuer* exemption for life insurance
+### R16 — VersStG 2021 § 4 Abs. 1 Nr. 5 — *Versicherungsteuer* exemption for life insurance
+
+- **Retrieved: yes** — HTML, ~12 kB, read 2026-08-30. `versstg`, not `verststg`; the law is cited as **VersStG 2021** and the exempting limb is **§ 4 Abs. 1 Nr. 5 Buchst. a**. Gap 19 closes.
 
 - URL: `https://www.gesetze-im-internet.de/verststg_1996/__4.html` `[unverified]`
 - Asserted and `[unverified]`: the *Versicherungsteuer* — at a general rate of 19 % for most non-life
@@ -675,6 +789,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   recorded here so a reader does not conclude it was forgotten (gap 19).
 
 ### R17 — VVG-InfoV, and the PRIIP boundary for a pure protection product
+
+- **Retrieved: yes** — canonical XML, Stand: zuletzt geändert durch Art. 13 G v. 26.5.2026 I Nr. 156, read 2026-08-30. **Two claims confirmed and one overturned.** § 2 Abs. 1 Nr. 9 confines the *Effektivkosten* duty to a contract "bei dem der Eintritt der Verpflichtung des Versicherers gewiss ist" — the same test as § 169 Abs. 1 — and § 4 Abs. 3 disapplies the *Informationsblatt* regime for PRIIPs. **But § 2 Abs. 1 Nr. 1 with Abs. 2, and § 4 Abs. 2 Satz 2, require the acquisition and administration costs to be disclosed to the applicant in euro**, so the charge levels are not "structurally undisclosed" (gap 8). The PRIIPs Regulation itself was **not** retrieved, so the exclusion of death-only contracts from its scope remains `[unverified]`.
 
 - URL: `https://www.gesetze-im-internet.de/vvg-infov/` `[unverified]`. The sibling research recorded
   § 2 VVG-InfoV as the source of the pre-contractual information duties and of the *Effektivkosten*
@@ -731,6 +847,8 @@ a URL was **not** itself returned by a search it is marked `[unverified]`.
   criterion weight or observed distribution is asserted.**
 
 ### R21 — HGB § 341f and RechVersV — statutory reserving for a term contract
+
+- **Retrieved: yes** for HGB § 341f — canonical XML, Stand: zuletzt geändert durch Art. 4 G v. 4.2.2026 I Nr. 33, read 2026-08-30; the RechVersV was **not** read. **The entry over-attributed to § 341f**: Abs. 1 requires the prospective method and Abs. 2 the interest-guarantee test, and that is all. The premium bases with a prudent margin are DeckRV § 5 Abs. 1 [R10]; the administration-cost provision where the premium term is shorter than the cover term belongs to the RechVersV and stays `[unverified]`. [S4] gives the carrier-side chain: § 88 VAG and §§ 341e, 341f HGB with the regulations under them.
 
 - URL: `https://www.gesetze-im-internet.de/hgb/__341f.html` `[unverified]`
 - Asserted and `[unverified]`: § 341f requires the *Deckungsrückstellung* to be computed prospectively
@@ -926,12 +1044,21 @@ knowledge, and structural rather than numeric.
   direct channel than the tied-agent channel**, because less of the *Bruttobeitrag* is committed to
   acquisition costs [S3] [S12]; and a few tariffs are marketed on a deliberately **narrow** spread as a
   selling point [S17]. The representative design uses the derived **0.57**, tagged **[std]**.
+  **One observation now exists against it**: a direct writer's published model case gives
+  **0,450**, the same to three decimals across two tariffs and two editions [S2] — at the bottom of the
+  argued 0,45–1,00 range, and wider than this design produces. **The design is unchanged**: one model
+  case is not a market, and recalibrating would move the worked example and its golden tests.
 
 ### 6. Other *Überschussverwendung* forms
 
-Four forms are used in the German market for a death-benefit contract; all statements are `[unverified]`
-as to prevalence, with the four-component surplus vocabulary itself inherited from a carrier's own page
-about this product [S5].
+Four forms are used in the German market for a death-benefit contract. **Correction:** an earlier draft
+attributed a four-component surplus vocabulary — *Zins-*, *Risiko-*, *Kosten-* und *übrige Überschüsse*
+— to the carrier page at [S5]. The page uses no such vocabulary; it names **three** sources, as do
+MindZV §§ 6–8 [R9] and all three retrieved wordings [S1] [S3] [S4]. **What [S5] does establish** is
+that the German term market runs on two of the four forms below: "meist eines von zwei Modellen ... den
+**Todesfallbonus** und den **Sofortrabatt**" — and every retrieved wording carries exactly that pair,
+*Sofortrabatt* while premiums are paid and *Todesfallbonus* once paid up [S3] § 3 Abs. 2 b and d, [S4]
+§ 20 Abs. 3 b. Prevalence beyond that pair is `[unverified]`.
 
 | Form | Mechanic | Effect on the model |
 |---|---|---|
@@ -1421,7 +1548,7 @@ Two different things that are routinely confused: the first is a **product form*
 | Berufsgruppen structure | rating factor established; **no class list or loading established** | gap 22 |
 | Risikozuschlag scale | mechanism established; **no scale is public in Germany or France** | **[std]** 1.00, mechanic 9 |
 | Rechnungszins; Höchstzillmersatz | established — 1.00 % for new business from 2025 (immaterial here); 25 permille of the Beitragssumme | [R10] inherited |
-| Acquisition and admin cost levels; Ratenzahlungszuschlag | **levels not established, structurally undisclosed**; loading a market convention at 2 / 3 / 5 % | **[std]**, gaps 8 and 21 |
+| Acquisition and admin cost levels; Ratenzahlungszuschlag | **levels not established; disclosed per contract in euro under § 2 VVG-InfoV but never published as a rate card — one specimen gives α = 2,41 % of the *Tarifbeitragssumme* [S2]**; loading a market convention at 2 / 3 / 5 % | **[std]**, gaps 8 and 21 |
 | Rückkaufswert; Beitragsfreistellung | **none** — established in substance, `[unverified]` in statutory wording; the paid-up right exists and collapses to nil | [R2] [R3] [R8], gap 2 |
 | Selbsttötung window; clock on an increment | window established in full — three years, benefit substitution; **behaviour on an increment not established** | [R1] inherited, gap 9 |
 | Kriegsklausel; Nachversicherungsgarantie parameters | shapes established structurally; **no wording, caps, window or age limit established** | mechanic 13, gap 7 |
@@ -1432,7 +1559,10 @@ Two different things that are routinely confused: the first is a **product form*
 
 ## Observed variation across insurers
 
-**The honest headline: no carrier was sampled.** frlib could put eight carriers side by side because
+**The honest headline, revised: two carriers were sampled, and the industry model wording.** The GDV
+model conditions [S1], the Cosmos AVB and *Besondere Bedingungen* [S3] and the Hannoversche pack [S4]
+were read in full, and Cosmos's premium and cost specimens [S2] with them. **Two carriers are not a
+market**, and every range below is still argued rather than observed. frlib could put eight carriers side by side because
 eight *notices d'information* were read; the sibling delib endowment file could put six side by side,
 thinly, from search-result summaries. **This file can put none side by side.** What follows states what
 a variations table would have contained and records that every cell is empty.
@@ -1443,7 +1573,7 @@ a variations table would have contained and records that every cell is empty.
 |---|---|---|---|---|
 | CosmosDirekt [S3] | asserted | no | no | no |
 | Hannoversche [S4] | asserted | no | no | no |
-| HUK-COBURG / HUK24 [S5] | asserted | no | **one guide-page URL inherited**; title and four-component surplus vocabulary only | no |
+| HUK-COBURG / HUK24 [S5] | **yes** | no | **guide page retrieved** — the two surplus forms (*Todesfallbonus*, *Sofortrabatt*) and the *Tarifbeitrag* as billing ceiling; **no four-component vocabulary on it** | no |
 | Debeka [S6] | asserted | no — library path pattern inherited only | no | no |
 | Dialog [S7] | asserted | no | no | no |
 | Allianz [S8] | asserted | no | no | no |
@@ -1513,30 +1643,46 @@ having been read.
 
 ## Gaps and caveats
 
-1. **No price point of any kind was obtained — the largest gap in the file.** No German carrier
-   publishes a rate card [S3]–[S13]; the *Produktinformationsblatt* quotes the applicant's own premium
-   [S2]; a portal result is generated per query rather than published [S14]; and no search or fetch was
-   available. **Not one *Bruttobeitrag*, *Zahlbeitrag*, spread ratio or smoker ratio in this file is an
-   observation**; the whole premium scale of mechanic 16 is a `[std]` construction. **One published
-   *Bruttobeitrag* / *Zahlbeitrag* pair at a known age, sum and term would pin the *Sicherheitszuschlag*
-   directly and re-derive the rest**, and is the highest-value datum a later researcher could add.
+1. ~~**No price point of any kind was obtained.**~~ **CLOSED for one carrier.** The gap said "one
+   published *Bruttobeitrag* / *Zahlbeitrag* pair at a known age, sum and term would pin the
+   *Sicherheitszuschlag* directly", and one was found: a carrier's *Muster-Informationsblatt* and
+   *Produktinformationsblatt*, which § 2 Abs. 1 Nr. 1 and § 4 Abs. 2 VVG-InfoV require to carry the
+   premium and the costs in euro. At **age 41, 19 years, 100 000 €**: *Tarifbeitrag* **18,21 €/month**
+   against a first-year *Zahlbeitrag* of **8,20 €**, ratio **0,450**, and the same ratio to three
+   decimals in three further specimens across two tariffs and two editions [S2]. No German carrier
+   still publishes a **rate card** [S3]–[S13], and a portal result is still generated per query rather
+   than published [S14]. **The premium scale of mechanic 16 is unchanged and remains a `[std]`
+   construction** — one direct writer's model case is not a market — and the observed 0,450 is
+   recorded as a check against it, sitting at the bottom of the argued 0,45–1,00 range.
 
-2. **The statutory basis for the absence of a *Rückkaufswert* is `[unverified]`.** That § 169 Abs. 1
-   VVG confines the surrender-value duty to a life insurance whose insured event is **certain to
-   occur**, and so does not reach a term assurance, is asserted from knowledge of the section's
-   structure [R2]; **no search returned that wording**. The practical result — nothing is paid on
-   *Kündigung* — is corroborated by uniform market practice and is not in doubt; the route to it is. The
-   same tag applies to whether § 165 carries the same limitation [R3].
+2. **VERIFIED — and the conclusion drawn from it OVERTURNED.** § 169 Abs. 1 does confine the duty to
+   a policy insuring "ein Risiko ..., bei dem der Eintritt der Verpflichtung des Versicherers **gewiss**
+   ist", word for word, so no statutory surrender duty attaches on *Kündigung* [R2]; and § 165 carries
+   **no** such limitation, so the paid-up right is live [R3]. **But the sentence "nothing is paid on
+   *Kündigung* is corroborated by uniform market practice" is wrong.** The GDV model wording converts
+   the contract into a *beitragsfreie Versicherung* on *Kündigung* and pays "den Rückkaufswert
+   entsprechend § 169 des Versicherungsvertragsgesetzes (VVG)" where the paid-up sum fails a
+   carrier-set minimum [S1] § 13 Abs. 4, Abs. 8; Hannoversche does the same at a 2 500 € minimum, less
+   an *Abzug* of **60 % des Deckungskapitals**, with a *Rückkaufswerte* table annexed to the
+   *Versicherungsschein* [S4] § 13; only Cosmos pays nothing [S3] § 15 Abs. 10. **The amount is nil or
+   nominal in every wording — "keine oder nur geringe Mittel" [S1] [S3] — but the design is not
+   uniform.** This is the most consequential finding of the provenance pass and the one open item that
+   reaches the model: `claims_lapse = 0` is now carried as a best-estimate approximation, not as a
+   structural identity.
 
-3. **No *Produktinformationsblatt* was located, in specimen or model form** [S2] — the one German
-   document type that routinely shows the *Bruttobeitrag* and *Zahlbeitrag* side by side, so its absence
-   is the direct cause of gap 1. Its field list is inferred from purpose and is `[unverified]`.
+3. ~~**No *Produktinformationsblatt* was located.**~~ **CLOSED.** Two carrier specimens were read
+   [S2], and the field list inferred from purpose was right — with one correction of nomenclature: the
+   document § 4 VVG-InfoV requires is the ***Informationsblatt zu Versicherungsprodukten*** (IPID);
+   "Produktinformationsblatt" is the market's older name and survives in file naming. **No GDV model PIB
+   exists** for this line; the association publishes model *Bedingungen* and *Standmitteilungen* only.
 
-4. **MindZV section numbering is unsettled.** The three percentages — **90 % of the *Risikoergebnis*,
-   90 % of the investment result, 50 % of the *übriges Ergebnis*** — are inherited from a
-   search-corroborated sibling entry and are used [R9]; **the section numbers are not**, the sibling
-   file and the author's recollection disagreeing. No MindZV section number is cited anywhere in the
-   delib `risikolebensversicherung` documents.
+4. ~~**MindZV section numbering is unsettled.**~~ **CLOSED.** The three percentages sit in three
+   consecutive sections of the canonical text: **§ 6 Abs. 1** — 90 % of the *anzurechnende
+   Kapitalerträge* "abzüglich der rechnungsmäßigen Zinsen"; **§ 7** — "beträgt **90 Prozent** des ...
+   Risikoergebnisses"; **§ 8** — 50 % of the *übriges Ergebnis*. § 4 Abs. 1 and § 7 Satz 2 confirm the
+   separate *Alt-*/*Neubestand* computation, and each of the three is **floored at zero**, so the 90 %
+   is a one-way minimum [R9]. Both carrier wordings state the same three percentages [S3] § 3 Abs. 1 a,
+   [S4] § 20. **MindZV section numbers may now be cited.**
 
 5. **The Continentale / Europa natural experiment was not run** [S12]: one group runs a broker-channel
    and a direct-channel carrier on the same product with the same underwriting and reserving basis — the
@@ -1548,34 +1694,61 @@ having been read.
    *Brutto*/*Zahlbeitrag* spread almost by itself (mechanic 5) and is shipped as **[std] `m = 1.25`**
    with its calibration and sensitivity stated in full.
 
-7. **No *Nachversicherungsgarantie* parameters were established** [S11] [S17]. The nine recurring event
-   families of mechanic 8 are `[unverified]`; **no exercise window, per-event cap, cumulative cap or
-   maximum age comes from any document.** The option is off in the base run, so the gap does not affect
-   the reference implementation's numbers — but the specification's option section is entirely `[std]`.
+7. ~~**No *Nachversicherungsgarantie* parameters were established.**~~ **CLOSED** by a carrier
+   wording [S3] § 13. The event list: marriage; birth (multiple birth counting once) or adoption;
+   financing from 50 000 €, purchase or start of construction of an owner-occupied home; first
+   permanent employment after study or after vocational training; first chamber-regulated
+   self-employment providing the main income; a permanent rise of at least 10 % in gross monthly basic
+   pay; first crossing of the *Beitragsbemessungsgrenze*; exemption from statutory pension insurance as
+   a self-employed craftsman. **Neither divorce nor loss of other cover is on it**, though both were in
+   the guessed nine. Window **twelve months** from the event; per-event cap **20 % of the original sum
+   insured, at most 50 000 €**, minimum 5 000 €; each event once, birth or adoption twice, **five
+   occasions in all**; right ends **above age 50**, rests while the contract is not premium-paying, and
+   is barred once a *schwere Krankheit* benefit is claimed. Increments are priced at the attained
+   *rechnungsmäßiges Alter*, the recorded occupation, the remaining term and any agreed *Risikozuschlag*
+   (Abs. 5). **`nvg_schedule.csv` is unchanged**: it is a mechanics demonstration, off in the base run,
+   and its 1.2 / 1.4 steps sit inside the carrier's caps but assume full take-up of two events.
 
-8. **German term-life charge levels are structurally undisclosed, not merely unretrieved.** There is no
-   *Effektivkostenquote* because there is no yield, no *Basisinformationsblatt* because the product is
-   not a PRIIP, and the *Produktinformationsblatt* quotes premiums, not loadings [R17]. Charge levels
-   would have been missing even with full egress, so every charge parameter is **[std]** (mechanic 16).
-   **The `[std]` α at the 25 ‰ Zillmer ceiling assumes a term tariff runs at the cap, and may well be
-   wrong**: a slim direct-channel acquisition cost would sit far below it.
+8. **WRONG as stated, and corrected.** There is indeed no *Effektivkostenquote* — and § 2 Abs. 1
+   Nr. 9 VVG-InfoV gives the reason in terms, confining the duty to a contract "bei dem der Eintritt
+   der Verpflichtung des Versicherers gewiss ist" — and no *Basisinformationsblatt*, the product not
+   being a PRIIP [R17]. **But German term-life charge levels are not undisclosed.** § 2 Abs. 1 Nr. 1
+   requires the *Abschlusskosten* as a single total and the other costs as a share of the annual
+   premium, with the *Verwaltungskosten* separately again; § 2 Abs. 2 requires them **in Euro**; § 4
+   Abs. 2 puts them on the *Informationsblatt* under "Prämie; Kosten"; and both wordings point the
+   customer there [S1] § 14 Abs. 1, [S3] § 16 Abs. 1. What is missing is a **published rate card**.
+   The specimen gives, for its model case, **99,98 € acquisition cost = 2,41 % of the
+   *Tarifbeitragssumme***, other annual costs **48,52 €** of which **35,20 €** administration, and
+   **1,50 € per 100 €** of paid-up sum while paid up [S2]. So the `[std]` α at the 25 ‰ ceiling is
+   **close to right for this carrier and mis-typed**: DeckRV § 4 caps only the *zillmerbare* part, and
+   both wordings spread "die restlichen Abschluss- und Vertriebskosten ... über die gesamte
+   Beitragszahlungsdauer" [S1] § 14 Abs. 3, [S3] § 16 Abs. 3. **Every charge parameter stays [std]**
+   (mechanic 16): one model case is not a market.
 
-9. **Whether the § 161 three-year clock restarts on an increase is not established** [R1]. The French
-   statute expressly restarts its one-year clock for the increment [`frlib` R1]; German AVB practice is
-   understood to do the same, and **no wording was seen**. It matters because the
-   *Nachversicherungsgarantie* makes increments routine (mechanic 8).
+9. ~~**Whether the § 161 three-year clock restarts on an increase is not established.**~~ **CLOSED.**
+   § 161 is silent — it runs from *Abschluss des Versicherungsvertrags* — but all three retrieved
+   wordings say the same thing in near-identical words: "Wenn unsere Leistungspflicht durch eine
+   Änderung des Vertrages erweitert wird oder der Vertrag wiederhergestellt wird, beginnt die
+   Dreijahresfrist bezüglich des geänderten oder wiederhergestellten Teils neu" [S1] § 5 Abs. 3, [S3]
+   § 2 Abs. 4, [S4] § 19 Abs. 3. **The model's per-increment restart is market practice**, and the
+   French statute restarts its one-year clock the same way [`frlib` R1].
 
 10. **What German carriers offer in place of *Beitragsfreistellung* was not established** [R3]:
     *Beitragsstundung*, a temporary *Ruhen* and a reduction of the sum insured are asserted from market
     knowledge and are `[unverified]`. The analysis that §§ 165 and 166 both collapse to nil on this
     product [R3] [R8] is structural and does not depend on the gap.
 
-11. **The *Zillmerung* treatment of a term contract is only half established.** The 25 ‰ cap on the
-    *Beitragssumme* is inherited and firm [R10]; **whether it applies to a *Risikoversicherung* in the
-    same way as to a savings contract was not established**, and neither was the *Nullstellung*
-    question — whether a negative individual *Deckungsrückstellung* must be floored at zero for
-    balance-sheet purposes [R21]. Both matter here because a *gezillmert* term contract sits below zero
-    for a long stretch (mechanic 10). The model publishes no reserve, so neither reaches its cash flows.
+11. **Half closed.** DeckRV § 4 Abs. 1 reads "Der Zillmersatz darf **25 Promille der Summe aller
+    Prämien** nicht überschreiten" and draws **no distinction between product types**; both [S1] § 14
+    Abs. 2 and [S3] § 16 Abs. 2 apply "das Verrechnungsverfahren nach § 4 der
+    Deckungsrückstellungsverordnung" to a term contract at 2,5 % — so the cap does reach a
+    *Risikoversicherung* [R10]. Two refinements: § 4 Abs. 1 also caps the offset at the "höchstmöglichen
+    Prämienteile", the parts needed neither for benefits nor for running costs, which binds harder on a
+    term product; and [S1] footnote 28 records that the clause belongs in a wording only "bei der
+    Verwendung des Zillmerverfahrens", so **Zillmerung is optional on this line**. The
+    ***Nullstellung*** question is **still not established** — neither DeckRV § 4 nor HGB § 341f
+    addresses it [R21] — and matters here because a *gezillmert* term contract sits below zero for a
+    long stretch (mechanic 10). The model publishes no reserve, so neither reaches its cash flows.
 
 12. **The DAV 2008 T data coverage for the term-assurance segment is not established.** The sibling
     research established coverage of **60 % of the German market in the *Kapitallebensversicherung*
@@ -1600,28 +1773,42 @@ having been read.
     affects the **[std]** schedule table only. The same applies to the *verbundene Leben* premium
     relative to two single contracts.
 
-16. **The non-application of § 20 Abs. 1 Nr. 6 EStG to a pure death benefit is `[unverified]`** [R14].
-    It is asserted from the section's own subject matter — an *Unterschiedsbetrag* on a survival or
-    surrender payment — and corroborated indirectly by the existence of the *Mindesttodesfallschutz*
-    rule, which exists to stop savings contracts posing as death covers. **No search confirmed it
-    directly.**
+16. ~~**The non-application of § 20 Abs. 1 Nr. 6 EStG is `[unverified]`.**~~ **CLOSED, and the section
+    fails on both limbs.** Satz 1 taxes the *Unterschiedsbetrag* "**im Erlebensfall oder bei Rückkauf
+    des Vertrags** bei Rentenversicherungen mit Kapitalwahlrecht ... und bei **Kapitalversicherungen
+    mit Sparanteil**, wenn der Vertrag nach dem 31. Dezember 2004 abgeschlossen worden ist" [R14]. A
+    pure *Risikolebensversicherung* pays on death, not on survival or surrender, and has no
+    *Sparanteil*. The half-income rule of Satz 2 is confirmed at the 60th year, raised to the **62nd**
+    by § 52 for contracts concluded after 31 December 2011; the **50 % *Mindesttodesfallschutz*** of
+    Satz 6 is confirmed verbatim and applies, per § 52, to contracts concluded after **31 March 2009**.
 
-17. **The *Sonderausgaben* ceiling figures are deliberately omitted** [R14]. The classification of RLV
-    premiums among the *sonstige Vorsorgeaufwendungen* under § 10 Abs. 1 Nr. 3a EStG, and the practical
-    result that the ceiling is already consumed by health and long-term-care contributions, are
-    `[unverified]`. **No ceiling amount is stated anywhere in this file**, because the amounts differ by
-    taxpayer category and none could be confirmed.
+17. ~~**The *Sonderausgaben* ceiling figures are deliberately omitted.**~~ **CLOSED, and the claim
+    confirmed.** § 10 Abs. 1 Nr. 3a EStG names this product expressly, among contributions "zu
+    **Risikoversicherungen, die nur für den Todesfall eine Leistung vorsehen**". § 10 Abs. 4 sets the
+    combined ceiling for Nr. 3 and Nr. 3a at **2 800 Euro** a year, or **1 900 Euro** for a taxpayer
+    whose health cover is wholly or partly paid for by another — most employees and pensioners — and
+    Satz 4 settles the practical result: where the Nr. 3 health and long-term-care contributions already
+    exceed the ceiling they are deducted in full and "ein Abzug von Vorsorgeaufwendungen im Sinne des
+    Absatzes 1 Nummer 3a **scheidet aus**" [R14]. **The ceiling figures may now be stated.**
 
-18. **Every *Erbschaftsteuer* figure is `[unverified]`** [R15]: the *Freibeträge* (500 000 / 400 000 /
-    200 000 / 100 000 / 20 000 €), the three *Steuerklassen*, and the rates beginning at 7 % in class I
-    and 30 % in class III. **The 84 000 € illustration of mechanic 14 is arithmetic performed on
-    unverified inputs**, carried downstream as a `[std]` illustration and never as a citation. The
-    *structural* conclusion — that an unmarried partner faces a large charge a spouse does not, and that
-    this is why the *Über-Kreuz* structure exists — does not depend on the exact figures.
+18. ~~**Every *Erbschaftsteuer* figure is `[unverified]`.**~~ **CLOSED, and every figure was right**
+    [R15]. § 16 Abs. 1: 500 000 € spouse or *Lebenspartner*, 400 000 € children, 200 000 € grandchildren,
+    100 000 € the rest of class I, 20 000 € classes II and III. § 15 Abs. 1: an unmarried partner falls
+    in "alle übrigen Erwerber", class III. § 19 Abs. 1: 7 % at the foot of class I, 30 % flat to
+    600 000 € in class III. § 3 Abs. 1 Nr. 4 catches the benefit without naming insurance — "jeder
+    Vermögensvorteil, der auf Grund eines vom Erblasser geschlossenen Vertrags bei dessen Tode von einem
+    Dritten unmittelbar erworben wird". **The 84 000 € illustration checks out to the euro**:
+    (300 000 − 20 000) × 30 %. The figures remain `[std]` illustrations downstream and are never model
+    parameters.
 
-19. **The *Versicherungsteuer* exemption's statutory location is `[unverified]`** [R16]. That German
-    life premiums bear no insurance premium tax is not in doubt; the section reference is not confirmed.
-    The model carries no premium-tax line and states why.
+19. ~~**The *Versicherungsteuer* exemption's statutory location is `[unverified]`.**~~ **CLOSED, with
+    the citation sharpened and a URL corrected.** The consolidated law is **VersStG 2021**, at
+    `https://www.gesetze-im-internet.de/versstg/__4.html` — the `verststg_1996` slug this file carried
+    is a typo and 404s. § 4 is titled *Ausnahmen von der Besteuerung*, and the exempting limb is
+    **Abs. 1 Nr. 5 Buchst. a**: a contract creating claims to capital, annuity or other benefits "im
+    **Fall des Todes**, des Erlebens oder des Alters". Satz 2 of that number matters for riders — the
+    exemption "gilt nicht für die Unfallversicherung, die Haftpflichtversicherung und sonstige
+    Sachversicherungen" [R16]. The model carries no premium-tax line and states why.
 
 20. **No case law is cited by name anywhere in this file** [R23]. German term-life litigation clusters
     on the completeness of the *Gesundheitsfragen* answers, on the § 19 Abs. 5 warning requirement and
@@ -1633,12 +1820,18 @@ having been read.
     *Bruttobeitrag* or the *Zahlbeitrag* was not established; the model applies it to the *Zahlbeitrag*
     and says so (mechanic 7).
 
-22. **No underwriting parameter was established at any level**: health-question look-back periods; the
-    sum above which a medical examination is required; the sum below which a simplified question set
-    applies; the smoker qualifying period; the *Berufsgruppen* count and their loadings; the entry-age
-    and cover-age envelopes; the minimum and maximum sums insured (mechanic 9). Every one is **[std]**.
-    This is the second largest evidential hole after the price points, and the one a **single retrieved
-    AVB** would close almost entirely.
+22. **Partly closed — and the prediction that "a single retrieved AVB would close it almost entirely"
+    was too optimistic.** Three AVBs were read and they settle **one** of the seven: the **smoker
+    qualifying period is twelve months** before application, no smoking or vaping, nicotine-containing
+    or not, with a parallel *Nicht-Nikotinkonsument* class — and, a fact the file did not have, the
+    classification is **continuing**: a later switch is a *Gefahrerhöhung* the policyholder must notify,
+    the insurer may charge a higher premium retroactively at an unchanged sum insured, and above a 10 %
+    increase the policyholder may terminate within a month [S3] § 18. **Still not established**:
+    health-question look-back periods, the medical-examination threshold, the simplified-question
+    threshold, the *Berufsgruppen* count and loadings, the entry-age and cover-age envelopes, and the
+    minimum and maximum sums insured (mechanic 9). All remain **[std]**. The reason the AVBs do not
+    settle them is structural: those parameters live in the *Antrag* and the carrier's underwriting
+    manual, not in the conditions.
 
 23. **Comparison with the sister libraries, stated so the difference is not glossed.** `frlib`'s
     term-life file rests on eight *notices d'information* and five Légifrance articles **downloaded and

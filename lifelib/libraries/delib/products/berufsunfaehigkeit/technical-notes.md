@@ -195,17 +195,18 @@ month it happens, it releases it three months later [R3].
 | Input | Value | Basis |
 |---|---|---|
 | Benefit | The agreed monthly *BU-Rente*, paid **monthly in advance** while *berufsunfähig*, to the *Leistungsendalter* | [S1] [R1] |
-| Trigger | Inability to exercise the last occupation as arranged, **to at least 50 %**, **prospectively for at least six months** — an AVB convention, **not statute** | [S1] [REG-R37]; statutory limbs [R1] |
-| Degree | **All-or-nothing at 50 %.** The modelled object is the incidence of a ≥ 50 % incapacity, not a severity distribution | [S1] [REG-R37] |
+| Trigger | Inability to exercise the last occupation as arranged, **to at least 50 %**, expected to last for the contractual *Prognosezeitraum* — both AVB conventions, **not statute**, and both left blank in the GDV model conditions. The statute says only "ganz oder teilweise voraussichtlich auf Dauer"; the *Prognosezeitraum* is set per carrier and reaches three years in one retrieved wording | [S1] [S12] [REG-R37]; statutory limbs [R1] |
+| Degree | **All-or-nothing at 50 %.** The modelled object is the incidence of a ≥ 50 % incapacity, not a severity distribution. Confirmed at carrier level: "Bei einem geringeren Grad der Berufsunfähigkeit besteht kein Anspruch auf eine Leistung" | [S1] [S12] [REG-R37] |
+| *Sechs-Monats-Fiktion* | A **second and distinct route** to the same benefit: six months of actual continuous inability to that degree, after which "gilt die Fortdauer dieses Zustandes als Berufsunfähigkeit" with no prognosis. The six months belongs here and **not** to the *Prognosezeitraum* | [S1] [S12] |
 | *Beitragsbefreiung* | Full waiver of the premium while the *BU-Rente* is in payment, including through the run-off | [S1] [S2] |
 | End of benefit | At `benefit_end_age`; on death; or on a *Nachprüfung* termination followed by the **three-month run-off** of § 174 — the insurer remains liable to the end of the third month after the notice reaches the policyholder | [S1] [R3] [REG-R29] |
 | *Reaktivierung* | The cover revives: the *Beitragsbefreiung* stops, the premium resumes **at the same *Zahlbeitrag***, and a fresh BU may be claimed later | [S1] |
-| *Karenzzeit* | An agreed deferment of **payment** on a BU already established — **not** the six-month prognosis period | [S1] |
+| *Karenzzeit* | An agreed deferment of **payment** on a BU already established — **not** the prognosis period and not the *Fiktion* period. It defers the pension only: "Die Karenzzeit gilt nur für die Rente", the *Beitragsbefreiung* running from the month after onset regardless | [S1] [S4] [S9] |
 | *Bruttobeitrag* | The contractually **guaranteed maximum** premium, computed on first-order bases; level for the term on the `level` form | [R10] [S13] [S16] |
 | *Zahlbeitrag* | *Bruttobeitrag* less the *Beitragsverrechnung* — the anticipated surplus credited against the premium in advance under § 153 VVG through § 176, with the MindZV risk-result minimum behind it | [R10] [R14] [R5] [REG-R24] [REG-R18] |
-| Death benefit, maturity value, surrender value | **All none** as modelled cash flows | [S1]; scope **[std]** |
-| Unisex | Sex may not enter premiums or benefits for contracts written from 21 December 2012 | [R15] [REG-R34] |
-| Premium tax | None | [R31] `[unverified]` |
+| Death benefit, maturity value, surrender value | **All none** as modelled cash flows. None appears in the GDV model conditions either; one retrieved carrier grants a surplus-financed *Schlusszahlung* at expiry where no BU arose, which is a surplus application and not a guarantee | [S1]; carrier variant [S12]; scope **[std]** |
+| Unisex | Sex may not enter premiums or benefits for contracts written from 21 December 2012. The rule is in the AGG, not the VAG: § 33 Abs. 5 AGG permits sex-differentiated premiums only "Bei Versicherungsverhältnissen, die vor dem 21. Dezember 2012 begründet werden" | [REG-R34]; [R15] for the *Gleichbehandlung* principle |
+| Premium tax | None — § 4 Abs. 1 Nr. 5 Buchst. b VersStG exempts the premium where the benefit serves the insured's or her relatives' provision | [R31] |
 
 ### (b) Insurer-discretionary current elements
 
@@ -214,10 +215,10 @@ Thin, and on this product the discretion bites in exactly one place — but that
 
 | Input | Snapshot value | Basis |
 |---|---|---|
-| *Beitragsverrechnung* ratio | **0,70**, held **constant for the whole projection** **[std]** (1) | recalled range 0,50 – 0,80, most commonly 0,60 – 0,75 `[unverified]`; mechanic [R10] [R14] |
-| *Zahlbeitrag* re-rating | **None in the base run** — the ratio does not drift **[std]** (1) | the insurer may reduce the *Beitragsverrechnung* up to the *Bruttobeitrag* and no further [S13] [S16]; frequency and size **not established** [R23] |
+| *Beitragsverrechnung* ratio | **0,70**, held **constant for the whole projection** **[std]** (1) | recalled range 0,50 – 0,80, most commonly 0,60 – 0,75 `[unverified]` — no retrieved document gives a ratio; the **mechanic** is now quoted from two carrier AVB, one of them in the exact terms *Tarifbeitrag (Bruttobeitrag)* against *ermäßigter Nettobeitrag* [S6] [S12], with [R10] [R14] behind it |
+| *Zahlbeitrag* re-rating | **None in the base run** — the ratio does not drift **[std]** (1) | the insurer may reduce the *Beitragsverrechnung* up to the *Bruttobeitrag* and no further [S13] [S16], and the conditions say so themselves — the surplus "kann auch Null Euro betragen" and the rates are redeclared annually by the board on the *Verantwortlicher Aktuar*'s proposal [S1] [S12]; frequency and size **not established** [R23] |
 | Alternative *Überschussverwendungen* | **Not modelled**: no *Bonusrente*, no *verzinsliche Ansammlung*, no *Überschussrente im Leistungsfall* | `[unverified]` market shares; *Beitragsverrechnung* is dominant |
-| Surplus account, RfB, declaration mechanic | **None.** Correct for BU, because the surplus is applied immediately rather than accumulated | [R10] [R14] |
+| Surplus account, RfB, declaration mechanic | **None.** Correct for BU, because the surplus is applied immediately rather than accumulated — which is what both retrieved carrier wordings do. *Bewertungsreserven* are near-inert here for a stated reason: before a claim "keine oder allenfalls geringfügige Beträge zur Verfügung stehen, um Kapital zu bilden" [S1] | [R10] [R14] [S1] [S6] [S12] |
 | *Nachprüfung* intensity | Folded into the reactivation assumption rather than modelled as a review cycle | [R3] `[unverified]` frequency |
 | *Anerkennungsquote* | **0,80**, as an acceptance factor on the inception rate **[std]** (2) | recalled 75 – 80 % [R21] [R20] `[unverified]` |
 
@@ -299,7 +300,7 @@ basis does not anticipate them. The loads are **[std]**:
 | `mort_dis_load_first` | **0,80** | disabled-lives mortality — longer claims |
 | `mort_actv_load_first` | **0,80** | active-lives mortality — fewer premium-paying lives lost |
 | lapse | **0** | no lapse in the first-order basis |
-| `rechnungszins` | **1,00 % p.a.** | the *Höchstrechnungszins* for contracts written from 1 January 2025 `[unverified]` [R13] [REG-R14] [REG-R15] |
+| `rechnungszins` | **1,00 % p.a.** | the *Höchstrechnungszins*: DeckRV § 2 Abs. 1 fixes it "auf 1 Prozent" and § 2 Abs. 2 makes the rate used at conclusion apply for the whole term [R13]. **The figure is sourced; the 1 January 2025 commencement is not** — the consolidated text carries no commencement date for it, so that date stays `[unverified]` [REG-R14] [REG-R15] |
 
 **Lapse — *Stornoquote*.** Annual, by policy year, from `lapse_table.csv` **[std]**:
 
@@ -606,8 +607,11 @@ is a test.
 6. **Treating recovery and *konkrete Verweisung* as two decrements.** They end the benefit the same
    way, through the same *Nachprüfung*, with the same run-off, and no public data separates them
    [R3] [R29]. Assert the model publishes exactly one claim-termination-other-than-death rate.
-7. **Confusing the *Karenzzeit* with the six-month prognosis period.** The prognosis is part of the
-   *definition* of BU; the *Karenzzeit* defers *payment* on a BU already established [S1]. On the
+7. **Confusing the *Karenzzeit* with the prognosis period or with the *Sechs-Monats-Fiktion*.**
+   Three different things, and the retrieved wordings keep them in three different clauses: the
+   *Prognosezeitraum* and the *Fiktion* are both part of the **definition** of BU (§ 2 Abs. 1 and
+   Abs. 2 of the conditions), while the *Karenzzeit* defers **payment** on a BU already established
+   and defers the pension only — "Die Karenzzeit gilt nur für die Rente" [S1] [S4] [S12]. On the
    anchor (`K = 0`) the first *BU-Rente* falls in the month **after** an onset, not six months
    after: assert `claims(t, "BU_RENTE") > 0` at the first `t` with `pols_dis(t) > 0`.
 8. **Waiving the premium during the *Karenzzeit*.** The *Beitragsbefreiung* runs with the benefit,
@@ -689,7 +693,9 @@ for any of them, and the two that would matter most are the two no source suppli
 - **No dynamic reactivation behaviour.** Reactivation depends on claim duration alone here. In
   reality it depends on the insured's incentive to return to work, which depends on the ratio of the
   *BU-Rente* to her former income — the reason insurers cap the insurable *BU-Rente* at an
-  *Angemessenheitsgrenze* of 60–70 % of gross [S1] [S16] `[unverified]`. Modelling that feedback
+  *Angemessenheitsgrenze* on income. One retrieved AVB fixes that ceiling: total BU, EU and
+  *Grundfähigkeit* entitlement, other private and occupational entitlements included, may not exceed
+  "60 % des regelmäßigen jährlichen Bruttoeinkommens", and 25 % for *Beamte* [S9]. Modelling that feedback
   would need a replacement-ratio elasticity no source supplies.
 
 ---
@@ -843,8 +849,8 @@ which is `pols_dis(1)` in the table (0.000073), so `claims_bu_rente(1) = 1,500 �
 matters and is testable: taking incidence first would give 0.000073362928, a 0,34 % difference in
 month 1 that compounds over 444 months. Note also what does **not** appear — the *Karenzzeit* is
 zero, so the first *BU-Rente* falls in the month **after** an onset and not six months after it;
-the six-month *Prognosezeitraum* is part of the definition of *Berufsunfähigkeit* and never
-defers a payment.
+the prognosis period and the *Sechs-Monats-Fiktion* are both part of the definition of
+*Berufsunfähigkeit* [S1] [S12] and neither defers a payment.
 
 *The § 174 run-off, three months wide.* The month-1 disabled cohort sits at duration `z = 1`, so
 its disabled-lives mortality carries the first claim year's select factor and its reactivation
@@ -1030,13 +1036,16 @@ In rough order of leverage for a German BU block:
    the two-week *qualifizierte Mahnung* period is not modelled, so lapse falls about a month early
    [REG-R30].
 9. **The charge basis.** Every level is **[std]** and the only sourced number in it is a ceiling
-   [R13] [REG-R16]. Acquisition cost at the cap on a 37-year *Beitragssumme* is the largest single
+   [R13] [REG-R16] — DeckRV § 4 Abs. 1: "Der Zillmersatz darf 25 Promille der Summe aller Prämien
+   nicht überschreiten", with the base settled as the sum of all premiums, and both retrieved AVB
+   restating it as 2,5 % of the premiums payable over the term [S1] [S6]. Acquisition cost at the cap on a 37-year *Beitragssumme* is the largest single
    expense item and is charged entirely in month 0, so it dominates the first-year `net_cf` and
    nothing else in the projection.
 10. **The *Rechnungszins*.** It touches nothing in the published cash flows — they are undiscounted —
     and everything in the premium that generates them. At 1,00 % over a 37-year contract it is a
-    material lever on `prem_gross_level_pp()`, and both the rate and its effective date are
-    `[unverified]` [R13] [REG-R15].
+    material lever on `prem_gross_level_pp()`. The **rate** is now read from DeckRV § 2 Abs. 1 — "auf
+    1 Prozent festgesetzt" — and its `[unverified]` is removed; the **effective date** is not in the
+    consolidated text and keeps its tag [R13] [REG-R15].
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #delib-berufsunfaehigkeit-r1

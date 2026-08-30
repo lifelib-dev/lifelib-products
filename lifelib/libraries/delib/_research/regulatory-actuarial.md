@@ -149,13 +149,15 @@ routinely mistranslated.
   depends on keeping the two apart: an insurer carries **two liability measures**, and the *Überschussbeteiligung*, the
   *Zinszusatzreserve* and the *Bewertungsreserven* test all run on the **HGB** side.
 - ***Deckungskapital*** — the contract-level reserve, the base measure of the *Rückkaufswert* under § 169 VVG (R28).
-- ***Höchstrechnungszins*** — the maximum rate at which the *Deckungsrückstellung* may be discounted, fixed in § 2 DeckRV (R14).
-  Market language calls it the *Garantiezins*; the two are not legally identical, because § 2 caps the **reserving** rate and
-  the guaranteed rate a policy carries is a tariff decision that may be lower.
+- ***Höchstzinssatz*** — the maximum rate at which the *Deckungsrückstellung* may be discounted, **the statute's own term** and
+  the heading of § 2 DeckRV, fixed at 1 Prozent by § 2 Abs. 1 Satz 1 (R14). ***Höchstrechnungszins*** is the same rate under the name
+  BaFin, the BMF and the DAV use, and delib writes *Höchstzinssatz* when citing § 2 and *Höchstrechnungszins* when reporting the
+  market (R15). Neither is the *Garantiezins*: § 2 caps the **reserving** rate and the guaranteed rate a policy carries is a tariff
+  decision that may be lower — a distinction the DAV states in terms (R56).
 - ***Rechnungszins*** — the rate a particular tariff actually uses, at or below the cap; it stays with the contract for its
   whole term, which is why a German in-force book is a stack of cohorts (R15).
-- ***Zillmerung*** — offsetting a contract's one-off acquisition costs against its first premiums, capped at **25 ‰** of the
-  *Beitragssumme* by § 4 DeckRV since 1 January 2015 (R16).
+- ***Zillmerung*** — offsetting a contract's one-off acquisition costs against its first premiums, the *Zillmersatz* capped by
+  § 4 Abs. 1 Satz 2 DeckRV at **25 Promille der Summe aller Prämien** — the *Beitragssumme* of market language (R16).
 - ***Zinszusatzreserve (ZZR)*** — the additional HGB reserve that arises when the § 5 Abs. 3 DeckRV *Referenzzins* falls below a
   contract's tariff rate (R17). It exists in no other jurisdiction in this repository.
 - ***Rechnungsgrundlagen erster / zweiter Ordnung*** — first-order (prudent, pricing and reserving) and second-order
@@ -267,7 +269,7 @@ The join is tighter than a list suggests, and three joins in particular are wher
    the low-rate decade that chain reduced the payable half to **zero** for many portfolios, and the BGH held the rule
    constitutional in 2018 [R36].
 3. **§ 4 DeckRV ∥ § 169 Abs. 3 VVG.** The DeckRV governs what the insurer may **reserve** for acquisition costs (25 ‰ of the
-   *Beitragssumme*); § 169 governs what it must **pay** on surrender (the value on a five-year even spread of the charged
+   *Summe aller Prämien*, the statute's own phrase); § 169 governs what it must **pay** on surrender (the value on a five-year even spread of the charged
    costs). They are independent constraints and the tighter one binds. A model that applies only one of them has an early-
    duration surrender curve that is wrong in a way a German reviewer will see immediately.
 
@@ -317,8 +319,8 @@ blank = not relevant.
 | R11 | VAG §§ 141–143; Altbestand/Neubestand 1994 | x | x | x | x | x | x | x | x | x | x |
 | R12 | VAG §§ 221–236 and § 314; Protektor | x | x | x | x | x | x | x | x | x | x |
 | R13 | VAG §§ 351–353 — Übergangsmaßnahmen | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
-| R14 | DeckRV and § 2 — the Höchstrechnungszins provision | x | x | (x) | x | x | x | x | x | x | x |
-| R15 | Höchstrechnungszins history; Sechste VO 19.07.2024 | x | x | (x) | x | x | x | x | x | x | x |
+| R14 | DeckRV and § 2 — the Höchstzinssatz provision | x | x | (x) | x | x | x | x | x | x | x |
+| R15 | Höchstzinssatz rate history; Sechste VO 19.07.2024 | x | x | (x) | x | x | x | x | x | x | x |
 | R16 | DeckRV § 4 — Höchstzillmersätze | x | x | x | x | x | x | | x | x | x |
 | R17 | DeckRV § 5 Abs. 3 — Referenzzins, ZZR, Korridor | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
 | R18 | MindZV — the 90/90/50 minima and §§ 11–13 | x | x | (x) | x | x | x | x | x | x | x |
@@ -343,11 +345,11 @@ blank = not relevant.
 | R37 | GDV-Musterbedingungen; BU market practice | x | x | (x) | (x) | (x) | (x) | (x) | x | x | (x) |
 | R38 | AltEinkG and the Drei-Schichten-Modell | x | x | x | x | x | x | x | (x) | (x) | (x) |
 | R39 | EStG § 10 Abs. 1 Nr. 2 b and Abs. 3 — Basisrente | | | | | x | (x) | | (x) | (x) | |
-| R40 | ZPO §§ 850b and 851c — Pfändungsschutz | (x) | (x) | (x) | | x | (x) | | | x | (x) |
+| R40 | ZPO §§ 850b, 851c and 851d — Pfändungsschutz | (x) | (x) | (x) | | x | (x) | | | x | (x) |
 | R41 | EStG § 22 Nr. 1 S. 3 a and § 55 EStDV | (x) | x | x | x | x | (x) | x | | x | (x) |
 | R42 | EStG § 10a and §§ 79–99 — the Riester machinery | | | (x) | | (x) | x | | | | |
 | R43 | AltZertG, BZSt, AltvPIBV and the PIA | | (x) | (x) | (x) | x | x | | | | |
-| R44 | Altersvorsorgereformgesetz 2026; Altersvorsorgedepot | | (x) | (x) | | (x) | x | | | | |
+| R44 | Altersvorsorge-Reformgesetz 2026; Altersvorsorgedepot | | (x) | (x) | | (x) | x | | | | |
 | R45 | EStG § 20 Abs. 1 Nr. 6 — 12/62, Mindesttodesfallschutz | x | x | x | x | | (x) | (x) | (x) | | |
 | R46 | ErbStG and SGB V §§ 226, 229, 240 | x | (x) | (x) | (x) | (x) | x | (x) | x | (x) | (x) |
 | R47 | Rechnungsgrundlagen 1./2. Ordnung; the DAV tables | x | x | x | x | x | x | x | x | x | x |
@@ -355,7 +357,7 @@ blank = not relevant.
 | R49 | DAV 2004 R and DAV 2004 R-Bestand | (x) | x | x | x | x | x | x | | | (x) |
 | R50 | DAV 1997 I / RI / TI | (x) | | | | | | | (x) | x | (x) |
 | R51 | DAV 2008 P, § 15 SGB XI and the Pflegegrad break | (x) | (x) | | | | | | | (x) | x |
-| R52 | Destatis — Sterbetafeln, Generationentafeln, Pflege | x | x | x | x | x | x | x | x | x | x |
+| R52 | Destatis — Perioden- und Kohortensterbetafeln, Pflege | x | x | x | x | x | x | x | x | x | x |
 | R53 | The German life market in numbers | x | x | x | x | x | x | x | x | x | x |
 | R54 | HGB §§ 341–341o, RechVersV, BerVersV | x | x | (x) | x | x | x | x | (x) | (x) | (x) |
 | R55 | IFRS 17 and the Variable Fee Approach | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) | (x) |
@@ -383,20 +385,33 @@ numbers below come from secondary summaries.
 - URL: https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32009L0138 (returned by search); consolidated PDF
   https://eur-lex.europa.eu/legal-content/DE/TXT/PDF/?uri=CELEX:02009L0138-20190113 (returned);
   https://lexparency.de/eu/32009L0138/ (returned)
-- Retrieved: **no** — direct HTTP egress blocked in the build environment; corroborated by web search (one query, four
-  independent publishers, two with substantive summaries that agree)
+- Retrieved: **yes** — the consolidated German text at
+  https://eur-lex.europa.eu/legal-content/DE/TXT/HTML/?uri=CELEX:02009L0138-20250117 (2.28 MB, current consolidated version
+  17/01/2025), read **2026-08-30**. Artt. 37, 76, 77, 77a–77e and 101 were read in full. **Note the retrieval mechanic:** the
+  `legal-content/.../TXT/?uri=CELEX:32009L0138` landing page serves only the recitals, and the `TXT/PDF/` form truncates at the
+  sweep's byte cap; the ELI form `eur-lex.europa.eu/eli/<type>/<year>/<n>/oj/deu/pdfa1b` delivers the complete Official Journal text.
 - Content: the directive Germany transposes into the VAG. The substance established from the summaries: **the value of technical
   provisions equals the sum of a best estimate and a risk margin, calculated separately**; the relevant risk-free yield curve
   for the best estimate is that of **Article 77(2)** — a reference independently confirmed by BaFin's own interpretive decision
   on capital-market models [R21] — and the **risk margin of Article 77(5)** is calculated excluding any capital add-on.
-  **Article 76** appears in the search results in its usual role as the article cited for the best-estimate-plus-risk-margin
-  rule. For a delib model the operative point is the boundary: all ten models publish gross, undiscounted liability cash flows
+  **Article 76** appeared in the search results in the role of the article cited for the best-estimate-plus-risk-margin rule —
+  **which the 2026-08-30 retrieval shows to be wrong: that rule is Article 77(1), and Article 76 is *Allgemeine Bestimmungen*.**
+  For a delib model the operative point is the boundary: all ten models publish gross, undiscounted liability cash flows
   and stop short of the measurement this directive prescribes.
 - Not established: **no article number here was read from the instrument itself** and all are therefore `[unverified]`. The
   three-pillar structure, the **99.5 % one-year VaR** confidence level and the directive's adoption date are commonly reported
   but were **not returned by any search in this sweep** and are `[unverified]`. One secondary source states that Solvency II
   stress scenarios are calibrated to a **0.5 % probability of occurrence**, which is consistent with the 99.5 % VaR but is a
   secondary restatement, not the directive.
+- Read in the 2026-08-30 pass — **one correction and three resolutions.** **Correction:** the
+  best-estimate-plus-risk-margin rule is **Article 77(1)** (*"Der Wert der versicherungstechnischen Rückstellungen hat der Summe aus
+  einem „besten Schätzwert“ und einer Risikomarge ... zu entsprechen"*), **not Article 76**, which is *Allgemeine Bestimmungen* and
+  states the transfer-value and market-consistency principles; the separate-calculation rule is Article 77(4). **Resolved:** the
+  directive is *"vom 25. November 2009"*, ABl. L 335 vom 17.12.2009, S. 1–155; **Article 101(3)** fixes the SCR at *"dem Value-at-Risk
+  der Basiseigenmittel ... zu einem Konfidenzniveau von 99,5 % über den Zeitraum eines Jahres"*; and **Article 37(5)** confirms that a
+  *Kapitalaufschlag* is excluded from the Article 77(5) risk margin. Article 77(2) as the risk-free-curve reference is confirmed.
+  Articles 77a–77e are the extrapolation, matching adjustment, its calculation, the volatility adjustment and EIOPA's technical
+  information — the articles VAG §§ 80–83 transpose one for one [R6].
 - Products: all ten (cited-not-specified).
 
 ### R2. Delegierte Verordnung (EU) 2015/35
@@ -404,16 +419,20 @@ numbers below come from secondary summaries.
 - Doc type: Level 2 delegated regulation, directly applicable
 - URL: https://eur-lex.europa.eu/legal-content/DE/TXT/PDF/?uri=CELEX:32015R0035&from=DE (returned);
   https://lexparency.de/eu/32015R0035/ (returned); https://gesetze.legal/eu/vo_eu_2015_35 (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries, four independent publishers, two
-  substantive summaries on the risk-margin articles)
+- Retrieved: **yes** — the complete Official Journal text at
+  https://eur-lex.europa.eu/eli/reg_del/2015/35/oj/deu/pdfa1b (PDF, 797 pp., ABl. L 12 vom 17.1.2015), read **2026-08-30**;
+  Artt. 37, 38 and 39 read in full. **The URL this entry previously led with,
+  `legal-content/DE/TXT/PDF/?uri=CELEX:32015R0035&from=DE`, answers 200 but truncates at 3 MB and the truncated PDF does not open —
+  it is not a retrieval.** `lexparency.de` refused with a connection reset; `gesetze.legal/eu/vo_eu_2015_35` serves and its
+  per-article pages (`/vo_eu_2015_35/39`) were used as a cross-check.
 - Content: where the operative Solvency II detail lives, which is why a German modeller looking for contract boundaries, expense
   rules or standard-formula stresses reads this rather than the VAG. Established from summaries: **Art. 37** governs the
   calculation of the risk margin, which rests on the assumption that the **entire portfolio of obligations is transferred to
   another undertaking**; **Art. 38** defines that hypothetical *Referenzunternehmen*; **Art. 39** sets the *Kapitalkostensatz*.
   The instrument's own title carries its adoption date of **10 October 2014**.
-- Not established: **the 6 % cost-of-capital rate was never confirmed from any text.** One search summary explicitly notes the
-  figure did not appear in the returned results; the only support is the 2025 review's "reduced from 6 to 4.75 per cent" wording
-  [R3], so 6 % is **corroborated only indirectly** and is `[unverified]`. **Art. 18 (Vertragsgrenzen / contract boundaries)
+- Not established **as at the original build; the first point is resolved by the 2026-08-30 pass below.** The 6 % cost-of-capital
+  rate was not confirmed from any text at build time — the only support was the 2025 review's "reduced from 6 to 4.75 per cent"
+  wording [R3] — and it **is now read from Art. 39 of the regulation itself**. **Still not established: Art. 18 (Vertragsgrenzen / contract boundaries)
   returned nothing** and its content is entirely `[unverified]`. The **life underwriting sub-modules (Art. 136 ff.)** —
   mortality, longevity, disability, lapse, mass lapse, expense, revision and catastrophe — and their calibrations, **including
   the 40 % mass-lapse shock**, were **not established**; the query that would have addressed them was cut by the exhausted
@@ -421,6 +440,15 @@ numbers below come from secondary summaries.
   expenses as the material SCR drivers for German business. The publication date of **17 January 2015** was not returned in this
   sweep. Consequence for delib: **no cost-of-capital rate, no contract-boundary rule and no lapse or expense stress in this
   library rests on a retrieved text**, and any such figure in a product document is `**[std]**` or `[unverified]`.
+- Read in the 2026-08-30 pass — **the 6 % is settled from the instrument.** Art. 39 in full:
+  *"Es wird davon ausgegangen, dass der in Artikel 77 Absatz 5 der Richtlinie 2009/138/EG genannte Kapitalkostensatz 6 % beträgt."*
+  Art. 37(1) gives the risk-margin formula $RM = CoC\cdot\sum_{t\ge0} SCR(t)/(1+r(t+1))^{t+1}$ with $SCR(t)$ the reference
+  undertaking's SCR after $t$ years and $r(t+1)$ the basic risk-free rate, chosen in the reporting currency, and Art. 37(3) requires
+  allocation to the Article 80 lines of business; Art. 38(1) sets the transfer assumption and provides that the reference undertaking
+  *"hat vor der Übertragung weder Versicherungs- oder Rückversicherungsverpflichtungen noch Eigenmittel"*. The publication date
+  **17 January 2015** is confirmed from the OJ page headers. **Art. 18 (Vertragsgrenzen) and the life underwriting sub-modules
+  (Art. 136 ff.), including the mass-lapse shock, were still not read** — the document was opened but those articles were not, and
+  they remain `[unverified]`.
 - Products: all ten (cited-not-specified).
 
 ### R3. Richtlinie (EU) 2025/2 — the Solvency II review
@@ -432,8 +460,11 @@ numbers below come from secondary summaries.
   (returned);
   https://klardenker.kpmg.de/financialservices-hub/regulatory-update/ueberarbeitete-solvency-ii-richtlinie-im-eu-amtsblatt-veroeffentlicht/
   (returned); https://aktuare.de/de/presse/pressemitteilungen/2682-pm-risikomarge-solvencyii.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries, five independent
-  professional-services analyses agreeing on the title, the date, the first application and the cost-of-capital cut)
+- Retrieved: **partly.** The **MSK commentary** at
+  https://aktuare.de/de/presse/pressemitteilungen/2682-pm-risikomarge-solvencyii.html was read (HTML, 25 kB, **2026-08-30**);
+  `bdo.de` refused with HTTP 403; the KPMG *klardenker* page serves. **The amending directive itself was not opened** — no attempt was
+  made on `eur-lex.europa.eu/eli/dir/2025/2/oj/deu/pdfa1b` in this pass — so every date and number below is a consultancy's report of
+  the instrument, not the instrument.
 - Content: the amending directive from the 2019–2021 review, **dated 27 November 2024** and **published in the Official Journal
   on 8 January 2025**. **The new rules apply for the first time on 30 January 2027**, two years after entry into force, and
   Member States must transpose within those two years — so German transposition into the VAG is due before that date. What
@@ -462,8 +493,10 @@ numbers below come from secondary summaries.
   (returned); the *Report on the Calculation of the UFR for 2026*, **EIOPA-BoS-25-114**, at
   https://www.eiopa.europa.eu/document/download/16f852f9-919d-49fe-a691-b9eb9e3285bd_en?filename=EIOPA-BoS-25-114-Report+on+the+Calculation+of+the+UFR+for+2026.pdf
   (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; EIOPA's own pages plus three
-  independent secondary commentaries agreeing on the monthly cadence and the 2026 UFR)
+- Retrieved: **yes** — EIOPA's landing page (HTML, 258 kB), the **UFR 2026 release of 31 March 2025** (HTML, 90 kB) and the
+  **reference-portfolio update of 9 December 2025** (HTML, 93 kB), read **2026-08-30**. The monthly technical-information packages
+  and the RFR Technical Documentation PDF were located on the page but **not opened**, so no curve point and no VA value was
+  extracted.
 - Content: EIOPA **publishes the relevant risk-free interest-rate term structures monthly**, and **§ 83 VAG makes their use
   binding on German undertakings** [R6] — which is the hook by which a European technical publication becomes German law.
   Established specifics: updated technical documentation published **24 September 2024**, taking effect **1 January 2025**, with
@@ -479,6 +512,13 @@ numbers below come from secondary summaries.
   `[unverified]` against EIOPA's own documentation. For delib: **no curve value is used in any model**; the models publish
   undiscounted cash flows and a reader wanting a market-consistent valuation applies a curve from this source. Any discount rate
   in a delib document is `**[std]**`.
+- Read in the 2026-08-30 pass. *"Publication is done on a monthly basis"*, confirming the monthly cadence.
+  The UFR release states: *"The UFR does not change for any of the relevant currencies compared to this year. This means an applicable
+  UFR of 3.30% as of 1 January 2026 for the euro."* The VA update of 9 December 2025 says EIOPA *"will begin using these updated
+  representative portfolios for the end-March 2026 VA calculation"*, published at the beginning of April 2026, with annual revisions
+  under Article 11.1.3 of the RFR Technical Documentation. **Correction:** the technical documentation is **not** the 24 September
+  2024 edition — the page lists 10 December 2024, 23 June 2025, 16 October 2025, 9 December 2025 and, most recently,
+  **26 May 2026 (Solvency II Review)**.
 - Products: all ten (discounting, cited-not-specified); most materially the long-duration guaranteed books — RV, SOF, BAS, RIE,
   KLV, IDX, PFL.
 
@@ -500,8 +540,9 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
 - URL: https://www.gesetze-im-internet.de/vag_2016/BJNR043410015.html (returned); full text PDF
   https://www.gesetze-im-internet.de/vag_2016/VAG.pdf (returned); Anlage 1
   https://www.gesetze-im-internet.de/vag_2016/anlage_1.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (multiple queries; **eight independent publishers**
-  carry the same section titles)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; **Anlage 1** and **§ 294** read in full. The
+  `BJNR043410015.html` index page also serves (1.3 MB) and the `VAG.pdf` download serves (1.0 MB); the per-section HTML pages are
+  frameset shells and `anlage_1.html` answered with a connection reset, which is why the XML is the citable route.
 - Content: *Gesetz über die Beaufsichtigung der Versicherungsunternehmen*, in the version in force since **1 January 2016** —
   the Solvency II transposition. **Anlage 1** to the Act is the *Einteilung der Risiken nach Sparten*, and it decides which
   supervisory regime a product sits in and which undertakings must join the *Sicherungsfonds* [R12]. The life-relevant *Sparten*
@@ -519,17 +560,24 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   classification of a stand-alone *selbständige Berufsunfähigkeitsversicherung* and of a *Pflegerentenversicherung* — whether
   they are Sparte 19 business or fall to the health regime — was not established**; the query was cut by the exhausted budget,
   and it is an open question for BU and PFL.
+- Read in the 2026-08-30 pass — **two resolutions.** **Anlage 1** reads *"19. Leben (soweit nicht unter den
+  Nummern 20 bis 24 aufgeführt) 20. Heirats- und Geburtenversicherung 21. Fondsgebundene Lebensversicherung 22. Tontinengeschäfte
+  23. Kapitalisierungsgeschäfte 24. Geschäfte der Verwaltung von Versorgungseinrichtungen 25. Pensionsfondsgeschäfte"* — so the
+  Sparte 24 title is established and the list runs to 25, which the Nummer-19 exclusion does not reach. **§ 294 Abs. 1:**
+  *"Hauptziel der Beaufsichtigung ist der Schutz der Versicherungsnehmer und der Begünstigten von Versicherungsleistungen."*, with
+  Abs. 4 making the *Finanzaufsicht* watch over the *dauernde Erfüllbarkeit*. The statute's *Ausfertigung* is **1 April 2015**.
 - Products: all ten.
 
-### R6. VAG §§ 74–110 and § 40 — valuation, best estimate, risk margin, the LTG measures, SCR/MCR and the SFCR
+### R6. VAG §§ 74–110, §§ 122–123 and § 40 — valuation, best estimate, risk margin, the LTG measures, SCR/MCR and the SFCR
 - Publisher: Bundesamt für Justiz; mirrors at `dejure.org`, `buzer.de`, `lxgesetze.de`, `freirecht.de`, `juraforum.de`,
   `haufe.de`, `datenbank.nwb.de`, `sozialgesetzbuch-sgb.de`. Doc type: statutory sections.
 - URL: https://www.gesetze-im-internet.de/vag_2016/__88.html ; https://dejure.org/gesetze/VAG/78.html ; .../82.html ;
   .../80.html ; .../96.html ; .../40.html ; https://freirecht.de/g/VAG:75 ; https://freirecht.de/g/VAG:100 ;
   https://www.haufe.de/id/norm/versicherungsaufsichtsgesetz-96-110-unterabschnitt-2-solvabilitaetskapitalanforderung-HI7709851.html
   (all returned). §§ 74 and 77 in the canonical `__74.html` / `__77.html` form `[unverified]`.
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; the section titles from four to
-  seven independent publishers; the § 88 Abs. 3 summary in near-identical form from two)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; §§ 40, 74, 76, 77, 78, 80, 81, 82, 83, 88, 96, 122 and 123 read in full.
+  `dejure.org/gesetze/VAG/78.html`, `freirecht.de/g/VAG:75` and `freirecht.de/g/VAG:100` also serve and were used as
+  cross-checks; `gesetze-im-internet.de/vag_2016/__88.html` answered with a connection reset.
 - Content: **§ 74** is the market-consistent valuation rule that makes the *Solvabilitätsübersicht* a different object from the
   HGB accounts: assets at the amount for which they could be exchanged, and liabilities at the amount for which they could be
   transferred or settled, **between knowledgeable, willing and independent business partners**, with — quoted from the summary —
@@ -566,6 +614,15 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   Verordnung of 19 July 2024 [R15], were **not established**. The Solvency II article numbers §§ 76–78 transpose are
   `[unverified]` [R1]. **No German volatility-adjustment value was established for any date**, and which German life insurers
   use the matching adjustment (reportedly none) was not established.
+- Read in the 2026-08-30 pass — **the MCR sections are established and § 74 Abs. 3 is quotable.**
+  **§ 122 *Bestimmung der Mindestkapitalanforderung; Verordnungsermächtigung*** and **§ 123 *Berechnungsturnus; Meldepflichten***
+  are the MCR provisions, so delib may now cite them by section; § 124 begins the next Kapitel, which is why "§§ 122–124" was always
+  going to fail. § 74 Abs. 3 Satz 2 verbatim: *"Eine Berichtigung der Bewertung, um die Bonität des Versicherungsunternehmens zu
+  berücksichtigen, findet nicht statt."* — note the wording, which is not the *"eine Anpassung der Bewertung zur Berücksichtigung
+  der Bonität ..."* form the earlier summary reproduced. § 78 Abs. 2 Satz 3 defers to any Commission cost-of-capital rate under
+  Art. 86(d) of the directive, which is the 6 % of [R2]. § 88 Abs. 3 Satz 1 Nr. 1 empowers the BMF to fix *"bei
+  Versicherungsverträgen mit Zinsgarantie einen oder mehrere Höchstwerte für den Rechnungszins"* — the recital the Sechste Verordnung
+  cites [R15]. §§ 80 and 82 confirm the mutual exclusion of the matching and volatility adjustments in both directions.
 - Products: all ten (cited-not-specified — the models publish the cash flows this block would be applied to, and perform no § 74
   valuation, no SCR and no MCR).
 
@@ -579,8 +636,9 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   11/2017 (VA)** at
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Rundschreiben/2017/rs_1711_hinweise_anlage_sicherungsvermoegen_va.html
   (all returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; five independent publishers on each
-  section plus BaFin's own page, with two agreeing substantive summaries per section)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; §§ 124 and 125 read in full. BaFin *Rundschreiben 11/2017 (VA)*
+  also read (HTML, 298 kB). `gesetze-im-internet.de/vag_2016/__124.html` serves in full (9.7 kB); the BaFin *Prudent Person
+  Principle* article page returns HTTP 404 and is dropped.
 - Content: **§ 124** — since 1 January 2016 a Solvency II undertaking has **no quantitative investment limits**; the qualitative
   standard requires that all assets be invested so that the **security, quality, liquidity and profitability of the portfolio as
   a whole** are ensured and their location guarantees availability; that assets covering technical provisions be invested
@@ -606,6 +664,16 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   rule rests on one summary**; the *Mindestumfang* definition. **The AnlV's own content — the *Anlageformen*, the *Mischungs-*
   and *Streuungsquoten* — was not established and nothing in delib may state an AnlV quota.** Whether German index products are
   written inside an *Anlagestock* or in the general account was **not established** and is an open question for IDX.
+- Read in the 2026-08-30 pass — **the Anlagestock Absatz is fixed and the IDX question is reframed.**
+  The *Anlagestock* rule is **§ 125 Abs. 5**: *"Für jede Anlageart ist eine Abteilung des Sicherungsvermögens (Anlagestock) zu
+  bilden"* where a life contract provides benefits in units of an open fund under § 1 Abs. 4 KAGB, in units issued by an investment
+  company, in old § 2 Abs. 4 InvG assets, or binds them *"direkt an einen Aktienindex oder andere Bezugswerte"* (Nr. 4). **§ 125
+  Abs. 2** defines the *Mindestumfang* as the sum of named balance-sheet items, so that gap closes too, and Abs. 4 requires separate
+  administration and custody within the Member or Contracting States. **§ 124 Abs. 2 is the unit-linked carve-out**: Abs. 1 Nr. 5 to 8
+  do not apply where the policyholder bears the investment risk, the provisions must be replicated by the units or by the units
+  representing the reference value, and where such benefits carry a guarantee Nr. 5 to 8 apply again to the assets backing the
+  additional provisions. **For IDX the statute supplies a test, not an answer:** an *Anlagestock* is required only where the linkage
+  is *direct*, so whether a given German *Indexpolice* needs one turns on product design. § 124 fixes no quantitative limit anywhere.
 - Products: FRV and IDX load-bearing; KLV, RV, BAS, RIE, SOF load-bearing on § 124 and the general *Sicherungsvermögen*; RLV,
   BU, PFL qualified.
 
@@ -616,8 +684,9 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
 - URL: https://www.gesetze-im-internet.de/vag_2016/__138.html (returned); https://dejure.org/gesetze/VAG/138.html (returned);
   https://lxgesetze.de/vag/138 (returned);
   https://www.juraforum.de/gesetze/vag/138-praemienkalkulation-in-der-lebensversicherung-gleichbehandlung (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; eight independent publishers on the
-  title, three with substantive summaries that agree on both Absätze)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; § 138 read in full. `dejure.org/gesetze/VAG/138.html`,
+  `lxgesetze.de/vag/138` and `juraforum.de` also serve; `gesetze-im-internet.de/vag_2016/__138.html` is a 4.4 kB frameset shell with
+  no statutory text.
 - Content: **Absatz 1** is the pricing-sufficiency rule and the reason a German tariff is priced on **prudent, not
   best-estimate, bases**: premiums in life insurance must be calculated *auf der Grundlage angemessener
   versicherungsmathematischer Annahmen* and set **high enough** that the undertaking can meet all its obligations and in
@@ -639,6 +708,16 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
 - Not established: the number and content of the Absätze beyond 1 and 2. **Whether the *verursachungsorientiert* charging rule
   sits in § 138 or in § 140 is ambiguous across the two summaries and is `[unverified]`**; a delib document should attribute the
   causation principle to § 153 Abs. 2 VVG and § 138 Abs. 2 VAG **jointly**, as the BGH did, rather than to a single Absatz.
+- Read in the 2026-08-30 pass — **one resolution and one correction.** **§ 138 has exactly two Absätze**,
+  so the "Absätze beyond 1 and 2" caveat is closed. Abs. 1 verbatim: *"Die Prämien in der Lebensversicherung müssen unter
+  Zugrundelegung angemessener versicherungsmathematischer Annahmen kalkuliert werden und so hoch sein, dass das
+  Lebensversicherungsunternehmen allen seinen Verpflichtungen nachkommen und insbesondere für die einzelnen Verträge ausreichende
+  Deckungsrückstellungen bilden kann. Hierbei kann der Finanzlage des Versicherungsunternehmens Rechnung getragen werden, ohne dass
+  planmäßig und auf Dauer Mittel eingesetzt werden dürfen, die nicht aus Prämienzahlungen stammen."* Abs. 2 in full: *"Bei gleichen
+  Voraussetzungen dürfen Prämien und Leistungen nur nach gleichen Grundsätzen bemessen werden."* **Correction:** the
+  *verursachungsorientiert* rule is **not in § 138**; it is **§ 140 Abs. 1 Satz 3 VAG** and it is about charging RfB draw-downs back
+  to the sub-portfolios that caused them, not a general surplus-allocation principle. The general causation principle is § 153 Abs. 2
+  VVG [R24].
 - Products: all ten; qualified only for FRV, whose investment result is the policyholder's, so that only the risk and cost
   results are shared.
 
@@ -650,9 +729,9 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   https://lxgesetze.de/vag/139 (returned); https://www.buzer.de/139_VAG.htm (returned);
   https://www.juraforum.de/gesetze/vag/139-ueberschussbeteiligung (returned); https://gesatz.de/link.aspx?lnk=31094 (returned,
   carrying the Abs. 3/4 text)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; nine independent publishers on the
-  title; the Absatz 1 sentence quoted back verbatim by one and paraphrased identically by two more; the Abs. 3/4 content from
-  two independent sources)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; § 139 read in full. `dejure.org/gesetze/VAG/139.html`,
+  `buzer.de/139_VAG.htm`, `lxgesetze.de/vag/139` and `gesatz.de` also serve; the `gesetze-im-internet.de` per-section page is a
+  6.0 kB frameset shell.
 - Content: **Absatz 1**, quoted by a search summary: *"Die für die Überschussbeteiligung der Versicherten bestimmten Beträge
   sind, soweit sie den Versicherten nicht unmittelbar zugeteilt wurden, in der Bilanz in eine Rückstellung für
   Beitragsrückerstattung einzustellen."* This is the structural fact behind the whole German surplus chassis: **surplus
@@ -676,6 +755,13 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   `[unverified]`. **A correction carried from the prudential sweep and stated here so it is not repeated:** § 139 VAG is
   *Überschussbeteiligung*, **not** the *Rückkaufswert* and **not** the Zillmerung cap; the *Rückkaufswert* is § 169 VVG [R28]
   and the *Höchstzillmersatz* is § 4 DeckRV [R16].
+- Read in the 2026-08-30 pass. **§ 139 has exactly four Absätze**, so the "Absätze 2 and 5 onwards" caveat
+  is closed and Abs. 2 is read: for *Versicherungsaktiengesellschaften* the *Vorstand* fixes the amounts with the *Aufsichtsrat*'s
+  consent, amounts not owed as of right only so far as a **dividend of at least 4 per cent of the Grundkapital** can still be paid,
+  and no balance-sheet profit may be distributed beyond a *Sicherungsbedarf*. Abs. 1, Abs. 3 and Abs. 4 are confirmed word for word,
+  including *"deren maßgeblicher Rechnungszins über dem maßgeblichen Euro-Zinsswapsatz zum Zeitpunkt der Ermittlung der
+  Bewertungsreserven (Bezugszins) liegt"*. **§ 56a VAG a.F. remains `[unverified]`** — the repealed statute is not part of the
+  consolidated text.
 - Products: KLV, RV, BAS, RIE, IDX, SOF load-bearing; RLV, BU, PFL qualified (the risk and cost results are shared, and the
   *Bewertungsreserven* rule reaches them only where the tariff carries a savings element); FRV qualified — see BaFin's
   interpretive decision on minimum allocation in unit-linked business [R21].
@@ -689,25 +775,27 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   https://www.haufe.de/id/norm/versicherungsaufsichtsgesetz-140-rueckstellung-fuer-beitragsrueckerstattung-HI7710187_p140.html
   (returned); https://dejure.org/gesetze/VAG/145.html (returned); https://www.buzer.de/gesetz/11544/b28432.htm (returned, the
   Abschnitt 1 *Lebensversicherung* table of contents)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; seven independent publishers on §
-  140 with two substantive summaries that agree closely; § 145 multi-source on the title and **single-source on its content**)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; §§ 140 and 145 read in full. `dejure.org/gesetze/VAG/140.html`,
+  `buzer.de/140_VAG.htm`, `lxgesetze.de/vag/140`, `haufe.de` and `dejure.org/gesetze/VAG/145.html` also serve; the
+  `gesetze-im-internet.de` per-section page is a 7.9 kB frameset shell.
 - Content: **§ 140 — the use restriction.** Amounts allocated to the RfB may be used **only** for the *Überschussbeteiligung* of
   the insured, **including the participation in Bewertungsreserven prescribed by § 153 VVG** [R24]. That is a hard ring fence:
-  RfB money cannot be released to shareholders. **The two escape hatches**, both requiring the supervisor's consent and both
-  confined to the part of the RfB **not** attributable to already-declared profit shares (*soweit sie nicht auf bereits
-  festgelegte Überschussanteile entfällt*): the RfB may be drawn on **in the interest of the policyholders** (1) to offset
-  **unforeseen losses from profit-participating contracts arising from general changes in circumstances**, and (2) to **increase
-  the Deckungsrückstellung where the calculation bases must be adjusted because of an unforeseen and not merely temporary change
-  in circumstances**. **Escape hatch (2) is the statutory route by which the German industry financed the *Zinszusatzreserve*
+  RfB money cannot be released to shareholders. **The three escape hatches** — the number is corrected below from the statute —
+  all require the supervisor's consent and are all confined to the part of the RfB **not** attributable to already-declared profit
+  shares (*soweit sie nicht auf bereits festgelegte Überschussanteile entfällt*): the RfB may be drawn on **in the interest of the
+  policyholders** (1) to avert an impending *Notstand*, (2) to offset **unforeseen losses from profit-participating contracts
+  arising from general changes in circumstances**, and (3) to **increase the Deckungsrückstellung where the calculation bases must
+  be adjusted because of an unforeseen and not merely temporary change in circumstances**. **Escape hatch (3) is the statutory
+  route by which the German industry financed the *Zinszusatzreserve*
   out of the free RfB during the low-rate decade** [R17], and it is why a German life insurer's RfB stock and its ZZR stock move
   against each other. When such a measure is taken, the policyholders' *Bestände* are charged *verursachungsorientiert*.
   **Supervisory plans.** The supervisor may require a **Zuführungsplan** where the allocation to the RfB does not meet the
-  minimum requirements (the MindZV, [R18]) and a **Verteilungsplan** where the *ungebundener* part of the RfB exceeds the
-  maximum amount (the RfBV cap, [R19]). **The collective part.** § 140 Abs. 1 Satz 2 permits a life insurer to establish within
+  minimum requirements (the MindZV, [R18]) and an **Ausschüttungsplan** where the *ungebundener* part of the RfB exceeds the
+  maximum amount (the **MindZV § 13** cap, [R18]). **The collective part.** § 140 **Abs. 4** permits a life insurer to establish within
   the RfB **einen kollektiven Teil oder mehrere kollektive Teile**, assigned to all profit-participating contracts collectively
   rather than to a *Teilbestand*; the RfBV governs it [R19]. **§ 145 *Verordnungsermächtigung*** empowers the Bundesministerium
   der Finanzen to make regulations concerning the **Zuführung zur Rückstellung für Beitragsrückerstattung in der
-  Lebensversicherung**. It is therefore the statutory root of the **MindZV** [R18] and, with § 140 Abs. 1 Satz 2, of the
+  Lebensversicherung**. It is therefore the statutory root of the **MindZV** [R18] and, with § 140 Abs. 4, of the
   **RfBV** [R19] — the pair that turns § 139's "put it in the RfB" and § 140's "use it only for policyholders" into an
   arithmetic minimum. Recording the chain **§ 145 VAG → MindZV** correctly matters because delib product documents cite the
   MindZV percentages constantly and a reader needs to know why a ministry may set them.
@@ -719,6 +807,17 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   established**, and whether § 145 also underpins the RfBV or the RfBV rests on § 140 alone is `[unverified]`. **A correction
   carried forward:** § 145 VAG is a *Verordnungsermächtigung*, **not** the *Sicherungsvermögen*; the *Sicherungsvermögen* is §
   125 VAG [R7].
+- Read in the 2026-08-30 pass — **three corrections, all from the statutory text.** **(1) There are three
+  escape hatches, not two.** § 140 Abs. 1 Satz 2 permits the RfB to be drawn on, in exceptional cases, with the supervisor's consent
+  and in the policyholders' interest, to *"1. einen drohenden Notstand abzuwenden, 2. unvorhersehbare Verluste aus den
+  überschussberechtigten Versicherungsverträgen auszugleichen, die auf allgemeine Änderungen der Verhältnisse zurückzuführen sind,
+  oder 3. die Deckungsrückstellung zu erhöhen, wenn die Rechnungsgrundlagen auf Grund einer unvorhersehbaren und nicht nur
+  vorübergehenden Änderung der Verhältnisse angepasst werden müssen"*, and Satz 3 adds *"Bei Maßnahmen nach Satz 2 Nummer 2 oder 3
+  sind die Versichertenbestände verursachungsorientiert zu belasten."* **(2) The second plan is an *Ausschüttungsplan*, not a
+  *Verteilungsplan*** (§ 140 Abs. 3 Nr. 2). **(3) The *kollektiver Teil* is § 140 Abs. 4**, not Abs. 1 Satz 2. **Resolved:** the term
+  ***ungebunden*** is statutory — § 140 Abs. 2 Nr. 2 and Abs. 3 Nr. 2 — and the § 145 mapping is exact: **Abs. 1 → MindZV §§ 10–12,
+  Abs. 2 → MindZV §§ 4–9, Abs. 3 → MindZV § 13, Abs. 4 → the certification wording, Abs. 6 (with § 140 Abs. 4) → RfBV.** **The cap on
+  the *ungebundener Teil* is therefore MindZV § 13, not the RfBV** [R18] [R19].
 - Products: KLV, RV, BAS, RIE, IDX, SOF load-bearing; RLV, BU, PFL, FRV qualified.
 
 ### R11. VAG §§ 141–143 — Verantwortlicher Aktuar, Treuhänder, Anzeigepflichten, and the deregulation of 29 July 1994
@@ -728,8 +827,9 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
 - URL: https://www.gesetze-im-internet.de/vag_2016/__142.html ; `__143.html` ; https://dejure.org/gesetze/VAG/141.html ;
   https://lxgesetze.de/vag/141 ; https://freirecht.de/g/VAG:128 ; https://de.wikipedia.org/wiki/Neubestand ;
   https://www.versicherungsmagazin.de/lexikon/altbestand-1944472.html (all returned); `__141.html` `[unverified canonical form]`
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; seven independent publishers on the
-  § 141–143 titles; **the 29 July 1994 date from four independent sources agreeing**)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; §§ 141, 142 and 143 read in full.
+  `dejure.org/gesetze/VAG/141.html`, `lxgesetze.de/vag/141` and `freirecht.de/g/VAG:128` also serve, as do the
+  *Altbestand*/*Neubestand* lexicon pages; the `gesetze-im-internet.de` per-section page for § 142 is a 4.3 kB frameset shell.
 - Content: **§ 141 *Verantwortlicher Aktuar*.** Every life insurer must appoint one, *zuverlässig und fachlich geeignet*,
   **sufficient experience regularly assumed at three years' actuarial activity**, appointed and dismissed by the *Aufsichtsrat*.
   The duties that matter: an ***Erläuterungsbericht zur versicherungsmathematischen Bestätigung*** and an
@@ -758,6 +858,17 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   connection to §§ 341e–341h HGB is inferred [R54], not read. The one-day gap between § 142's "after **28** July 1994" and the
   deregulation date of **29** July 1994 is real in the sources and unexplained; both dates are given as found. § 157 VAG's
   content was not established, nor whether DAV standards bind the *Verantwortlicher Aktuar* as a matter of law [R56].
+- Read in the 2026-08-30 pass. § 141 Abs. 1 Satz 4: *"Eine ausreichende Berufserfahrung ist regelmäßig
+  anzunehmen, wenn eine mindestens dreijährige Tätigkeit als Versicherungsmathematiker nachgewiesen wird."*; Abs. 3 puts appointment
+  and dismissal with the *Aufsichtsrat*; Abs. 5 Nr. 4 has the actuary propose the *Überschussbeteiligung* **to the Vorstand**, and
+  **Abs. 6 Nr. 3** makes the *Vorstand* submit it to the supervisor and notify any departure, *"die Gründe für die Abweichung sind der
+  Aufsichtsbehörde schriftlich oder elektronisch mitzuteilen"*. § 142 in full confirms the *"nach dem 28. Juli 1994 geschlossenen"*
+  boundary and that the trustee step falls away where supervisory approval is needed. § 143 confirms the *Anzeigepflicht* wording.
+  **The *Altbestand* definition is now available from a retrieved instrument**, though not from the VAG: **§ 2 Nr. 3 RfBV** ties it to
+  § 336 VAG and Art. 16 § 2 Satz 2 of the Drittes Durchführungsgesetz/EWG zum VAG of 21 July 1994, extending it to contracts concluded
+  between 1 January 1995 and 31 December 1997 that matched an *Altbestand* tariff and were settled with it until 12 April 2008 [R19].
+  **Still `[unverified]`:** the claim that the whole pre-1994 RfB was allocated to the *Altbestand* at deregulation — market history,
+  not statute.
 - Products: all ten; § 143 load-bearing for every product's `sources.md` provenance discussion.
 
 ### R12. VAG §§ 221–236 and § 314, with Protektor — the Sicherungsfonds and the supervisor's crisis powers
@@ -769,9 +880,10 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   https://www.gesetze-im-internet.de/sichlvfinv_2016/BJNR082800016.html ;
   https://www.protektor-ag.de/de/sicherungsfonds/dokumente ;
   https://www.bundestag.de/resource/blob/412602/04b5e6635cb5cdea18c3b7bcd94dbcac/WD-4-256-12-pdf.pdf (all returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (six queries; §§ 221 and 222 from nine and ten
-  independent publishers, the § 222 five-per-cent rule quoted back in near-identical wording by two; § 314 from five with one
-  detailed summary; the Mannheimer chronology from three independent sources with dates that agree)
+- Retrieved: **yes** for the VAG — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; §§ 221, 222, 226 and 314 read in full.
+  `gesetze-im-internet.de/vag_2016/__222.html` serves in full (8.5 kB) and `dejure.org/gesetze/VAG/221.html` serves.
+  **The SichLVV index page is a 6.1 kB shell**; the SichLVFinV serves (26 kB); the Protektor documents page serves (88 kB) but
+  **no Protektor document was opened**, so the Mannheimer chronology remains `[unverified]`.
 - Content: **§ 221 *Pflichtmitgliedschaft*.** Undertakings authorised to write the business of **Sparten 19 to 23 of Anlage 1**
   [R5] **must belong to a Sicherungsfonds** protecting the claims of policyholders, insured persons and beneficiaries.
   **Pensions- und Sterbekassen are excepted** — exactly the vehicles delib puts out of scope. **§ 222 — the five-per-cent
@@ -811,6 +923,16 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   established and must not be asserted.** A draft **VSAAG** surfaced on the DAV site and would change the resolution framework;
   its content and status are `[unverified]`. **A correction carried forward:** § 146 VAG is **not** the Sicherungsfonds — it
   concerns substitutive Krankenversicherung, out of delib scope.
+- Read in the 2026-08-30 pass — **one correction and several precisions.** **Correction:** the § 222
+  five-per-cent step is a **duty, not a discretion** — § 222 Abs. 5: *"setzt die Aufsichtsbehörde bei Lebensversicherungsverträgen
+  die Verpflichtungen aus den Verträgen um maximal 5 Prozent der vertraglich garantierten Leistungen herab"* — and the section is
+  titled *Aufrechterhaltung der Versicherungsverträge*, its Abs. 2 ordering the whole portfolio transferred to the fund with
+  *dingliche Wirkung*. § 221 confirms Sparten 19 bis 23 and the *Pensions- und Sterbekassen* exception. § 226 confirms the
+  **0,2 Promille** annual contribution on the §§ 341e–341h HGB net technical provisions (Abs. 5 Satz 2), and adds the **1 Promille**
+  target for the fund's assets (Abs. 4) and **1 Promille** maximum *Sonderbeiträge* (Abs. 5 Satz 5). § 314 Abs. 1 and Abs. 2 confirm
+  both write-down powers verbatim, including *"Die Pflicht der Versicherungsnehmer, die Versicherungsentgelte in der bisherigen Höhe
+  weiterzuzahlen, wird durch die Herabsetzung nicht berührt."* and the ability to proceed unequally; **Abs. 3** allows both powers to
+  be confined to a *selbständige Abteilung des Sicherungsvermögens*.
 - Products: all ten (the outer boundary of every guarantee in the library).
 
 ### R13. VAG §§ 351–353 — the Solvency II transitional measures and the 2024 recalculation
@@ -823,8 +945,9 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
   (returned);
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Fachartikel/2024/fa_bj_0702_Solvency_II_Uebergangsmassnahmen.html
   (returned — BaFin *Fachartikel* "Neu rechnen, bitte!")
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; the three section titles from four
-  independent publishers; the sixteen-year linear run-off from one summary, consistent with the 2016/2032 dates two others give)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 25 G v. 25.3.2026 I Nr. 81**, read **2026-08-30**; §§ 351, 352 and 353 read in full.
+  `dejure.org/gesetze/VAG/351.html`, `/352.html`, `/353.html` and `buzer.de/352_VAG.htm` serve, as do BaFin's
+  *Übergangsmaßnahmen* pages and its *Neu rechnen, bitte!* article; the map-report 939 press release was read (HTML, 94 kB).
 - Content: **§ 352** is the *Rückstellungstransitional*: a deduction that temporarily reduces technical provisions on the
   Solvency II balance sheet, and thereby raises eligible own funds, for business written before the regime began. **The maximum
   deductible portion falls linearly from 100 per cent in the year beginning 2016 to 0 per cent on 1 January 2032** — a
@@ -842,6 +965,15 @@ mechanics and §§ 74–88 for the balance sheet, and why the two rarely appear 
 - Not established: **the legal instrument by which BaFin "ordered" the recalculation** — a general administrative act,
   individual orders, or an interpretation of § 352 itself — was **not established**. How many undertakings held a § 351
   transitional as opposed to a § 352 one was not established. The exact wording of the § 352 linear formula was not read.
+- Read in the 2026-08-30 pass — **the legal basis of the 2024 recalculation is established.** **§ 352
+  Abs. 3**: the amounts used to compute the deduction *"dürfen mit Genehmigung oder müssen auf Verlangen der Aufsichtsbehörde alle
+  24 Monate oder, wenn sich das Risikoprofil des Unternehmens wesentlich verändert, häufiger neu berechnet werden"* — so BaFin's
+  order is an exercise of its *Verlangen* under § 352 Abs. 3, not a new power. The linear run-off is verbatim: *"Der maximal
+  abzugsfähige Anteil sinkt am Ende jedes Kalenderjahres linear von 100 Prozent während des Jahres ab 2016 auf 0 Prozent am
+  1. Januar 2032."*, with § 351 Abs. 2 Satz 2 identical for the rate transitional, the two mutually exclusive (§ 351 Abs. 4 Nr. 2,
+  § 352 Abs. 5). § 353 Abs. 2 confirms the **two-month** plan deadline and Abs. 3 adds twelve-monthly progress reports and revocation
+  where compliance becomes unrealistic. map-report confirms the market effect and notes that *"von der Aufsicht keine pauschale
+  Abschaffung des Rückstellungstransitionals angeordnet"* wurde.
 - Products: all ten (cited-not-specified).
 
 ---
@@ -853,7 +985,7 @@ The DeckRV is made under § 88 Abs. 3 VAG [R6] and fixes the *Rechnungsgrundlage
 reserving picture and every delib document keeps it: an insurer carries **two liability measures**, and the
 *Überschussbeteiligung*, the *Zinszusatzreserve* and the § 139 VAG *Bewertungsreserven* test all run on the **HGB** side.
 
-### R14. DeckRV — the reserving regulation and its § 2, the Höchstrechnungszins
+### R14. DeckRV — the reserving regulation and its § 2, the Höchstzinssatz
 - Publisher: Bundesamt für Justiz; mirrored by `buzer.de`, `umwelt-online.de`, `jurawelt.com`, `gesatz.de`, `de.wikipedia.org`;
   BaFin for the FAQ that states the 2025 change
 - Doc type: Rechtsverordnung of **18 April 2016**, and its § 2
@@ -861,8 +993,10 @@ reserving picture and every delib document keeps it: an insurer carries **two li
   https://www.gesetze-im-internet.de/deckrv_2016/DeckRV.pdf (returned); https://www.gesetze-im-internet.de/deckrv_2016/__2.html
   (returned); https://www.buzer.de/gesetz/12006/a198101.htm (returned);
   https://www.bafin.de/SharedDocs/FAQs/DE/VA/Pensionskassen/01_Frage.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (five queries; the instrument's title and 18 April
-  2016 date from three independent publishers; the 2025 rate change from BaFin's own FAQ title)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 1 V v. 19.7.2024 I Nr. 250**, read **2026-08-30**; §§ 1, 2, 3, 4, 5 and 5a read in full — the whole regulation.
+  The `BJNR076700016.html` index page serves (20 kB) and `DeckRV.pdf` serves (58 kB); `buzer.de/gesetz/12006/a198101.htm` and BaFin's
+  Pensionskassen FAQ were read as cross-checks; the `gesetze-im-internet.de/deckrv_2016/__2.html` per-section page is a 5.5 kB
+  frameset shell.
 - Content: *Verordnung über Rechnungsgrundlagen für die Deckungsrückstellungen*. The sections that matter to delib are **§ 2**
   (the *Höchstrechnungszins*), **§ 4** (*Höchstzillmersätze und versicherungsmathematische Berechnungsmethode*, [R16]) and **§
   5**, whose **Absatz 3** carries the *Referenzzins* that generates the *Zinszusatzreserve* [R17]. **§ 2 fixes the maximum
@@ -876,16 +1010,28 @@ reserving picture and every delib document keeps it: an insurer carries **two li
   contract conclusion** and then **stays with the contract for its whole term**, which is why the German in-force book is a
   stack of cohorts [R15] and why the *Zinszusatzreserve* exists at all; and the same rate applies to Pensionskassen, which delib
   puts out of scope, so the FAQ is cited for the life rate only.
-- Not established: the **wording of § 2 was not read**; whether it states a single rate or a rate plus qualifications is
-  `[unverified]`. Whether § 2 caps the reserving rate only, or the guaranteed rate directly, is **inference from § 88 Abs. 3
-  VAG's wording, not retrieval**. The **section titles disagree between publishers** — `buzer.de` titles § 2 *"Höchstzinssatz"*
-  while BaFin, the BMF and the DAV all speak of the *Höchstrechnungszins*; delib writes *Höchstrechnungszins* and cites § 2
-  DeckRV. The full section list of the DeckRV (§ 1, § 3, § 6 and beyond) was **not established**; one summary attributes a
-  historic 60 %/85 % yield cap to "§ 3 DeckRV", which must be the **pre-2016** regulation and must not be carried forward [R56].
+- Not established **as at the original build; all four points are resolved by the 2026-08-30 pass below.** The wording of § 2,
+  whether it states a single rate or a rate plus qualifications, the reserving-versus-guarantee question, the publisher disagreement
+  over the section title, and the section list were all open; the § 3 note — that a 60 %/85 % yield cap "must be the pre-2016
+  regulation" — was **wrong**. **What remains open:** the historic **60 %** ceiling is not in the DeckRV 2016 at all; its home was
+  the repealed Article 20 of Directive 2002/83/EC, which was not retrieved [R56].
+- Read in the 2026-08-30 pass — **two corrections and the full section list.** **(1) The statute's term is
+  *Höchstzinssatz*.** The § 2 heading is *"Höchstzinssatz"* and Abs. 1 Satz 1 reads *"... wird der Höchstzinssatz für die Berechnung
+  der Deckungsrückstellungen auf 1 Prozent festgesetzt"*. `buzer.de` was right; BaFin, the BMF and the DAV use *Höchstrechnungszins*,
+  which is the market name for the same rate. **(2) § 3 *Ausnahmen* is live law, not a pre-2016 residue** — the earlier note that an
+  85 % yield cap "must be the pre-2016 regulation" is wrong. § 3 Abs. 1 caps the *Rechnungszins* for **single-premium contracts with a
+  term up to eight years** at **85 per cent of the last month-end *Umlaufrendite der Anleihen der öffentlichen Hand*** of matching
+  residual maturity, measured at the premium date; § 3 Abs. 2 applies the same 85 per cent cap to **annuity contracts without a
+  surrender value**, for the eight years from annuity commencement and for the part of the reserve attributable to the annuity in
+  payment, against the mean of the last month-end values for one-to-eight-year maturities. **That bears directly on `sofortrente` and
+  on single-premium points in KLV and RV.** **Section list:** § 1 Geltungsbereich, § 2 Höchstzinssatz, § 3 Ausnahmen, § 4
+  Höchstzillmersätze und versicherungsmathematische Berechnungsmethode, § 5 Versicherungsmathematische Rechnungsgrundlagen,
+  § 5a Übergangsregelung, § 6 Inkrafttreten. § 2 Abs. 2 Satz 1 fixes the cohort rule; § 1 Abs. 2 confines the regulation to contracts
+  without an approved tariff, i.e. the *Neubestand*.
 - Products: all ten; qualified for FRV, where it bites on the *Rentenphase* and any guarantee component rather than on the unit
   fund.
 
-### R15. The Höchstrechnungszins rate history and the Sechste Verordnung of 19 July 2024
+### R15. The Höchstzinssatz / Höchstrechnungszins rate history and the Sechste Verordnung of 19 July 2024
 - Publisher: Bundesministerium der Justiz / `recht.bund.de` for the BGBl; Bundesministerium der Finanzen for the
   Referentenentwurf; Deutsche Aktuarvereinigung for the fact sheet; VPV, Wikipedia, cecu.de, bavprofis.de and ihre-vorsorge.de
   for the rate table
@@ -895,9 +1041,13 @@ reserving picture and every delib document keeps it: an insurer carries **two li
   https://de.wikipedia.org/wiki/H%C3%B6chstrechnungszins (returned);
   https://www.bundesfinanzministerium.de/Content/DE/Gesetzestexte/Gesetze_Gesetzesvorhaben/Abteilungen/Abteilung_VII/20_Legislaturperiode/2024-06-27-Sechste-VO-VAG/1-Referentenentwurf.pdf?__blob=publicationFile&v=2
   (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; the BGBl citation from two
-  independent sources; the rate table returned in full by one source and corroborated at the endpoints 4.00 %, 0.25 % and 1.00 %
-  by four others)
+- Retrieved: **yes** — the ***Regelungstext*** of the Sechste Verordnung at
+  https://www.recht.bund.de/bgbl/1/2024/250/regelungstext.pdf?__blob=publicationFile&v=1 (PDF, 2 pp.), and the **DAV *Fachwissen*
+  fact sheet** *Höchstrechnungszins in der Lebensversicherung* at
+  https://aktuar.de/content/PDF/Fachwissen/H%C3%B6chstrechnungszins_in_der_Lebensversicherung.pdf (PDF, 2 pp.), both read
+  **2026-08-30**. **The `VO.html` page carries only the metadata** — publication 24.07.2024, *Ausfertigung* 19.07.2024, FNA
+  7631-11-5/-10/-12 — and the text is in the linked `regelungstext.pdf`. The BMF *Referentenentwurf* PDF returns HTTP 404 and is
+  dropped. The Siebte (BGBl. 2024 I Nr. 414) and Achte (BGBl. 2025 I Nr. 31) Verordnung announcement pages serve.
 - Content: **the full rate history**, as returned by the search summary of the rate table. Every figure carries its period:
 
   | Period | Höchstrechnungszins |
@@ -915,7 +1065,10 @@ reserving picture and every delib document keeps it: an insurer carries **two li
 
 Two facts about the table are load-bearing and separately corroborated: the **1994 move was an increase**, from 3.50 % to 4.00
 %, and the summary states the rate "only increased in 1994 … and has only been reduced since then"; and the **2025 move to 1.00
-% is the first increase in about thirty years**, described in the sources as the first since deregulation in 1994 [R11]. **The
+% is the first increase in about thirty years**, described in the sources as the first since deregulation in 1994 [R11].
+  **Both readings need one correction from the retrieved DAV table below: the 1987 step from 3,00 % to 3,50 % was also an increase**,
+  so the series has three increases in total — 1987, 1994 and 2025 — and the 2025 move is the first in thirty and a half years,
+  counting from July 1994. **The
 instrument.** The Bundesministerium der Finanzen amended the DeckRV by the **Sechste Verordnung zur Änderung von Verordnungen
 nach dem Versicherungsaufsichtsgesetz of 19 July 2024**, published as **BGBl. 2024 I Nr. 250**, setting the
 *Höchstrechnungszins* at **1.00 % with effect from 1 January 2025**; the DeckRV amendment is Article 1 of that regulation, and a
@@ -929,6 +1082,17 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   the **Siebte Verordnung** (`https://www.recht.bund.de/bgbl/1/2024/414/VO.html`, returned) and the **Achte Verordnung**
   (`https://www.recht.bund.de/bgbl/1/2025/31/VO.html`, returned); their content is `[unverified]` and either could have moved
   the rate again.
+- Read in the 2026-08-30 pass — **the rate table and the amending instrument are both first-hand now.**
+  The DAV fact sheet publishes the series from 1903: **1903–1922 3,50 %; 1923–1941 4,00 %; 1942–1986 3,00 %; 1987–06/1994 3,50 %;
+  07/1994–06/2000 4,00 %; 07/2000–2003 3,25 %; 2004–2006 2,75 %; 2007–2011 2,25 %; 2012–2014 1,75 %; 2015–2016 1,25 %; 2017–2021
+  0,90 %; 2022–2024 0,25 %; 2025 1,00 %** — every row previously carried is confirmed and three earlier cohorts are added. The
+  Verordnung's Artikel 1: *"In § 2 Absatz 1 Satz 1 der Deckungsrückstellungsverordnung vom 18. April 2016 (BGBl. I S. 767), die
+  zuletzt durch Artikel 1 der Verordnung vom 22. April 2021 (BGBl. I S. 842) geändert worden ist, wird die Angabe „0,25 Prozent“
+  durch die Angabe „1 Prozent“ ersetzt."*; Artikel 4: *"Diese Verordnung tritt vorbehaltlich des Satzes 2 am 1. Januar 2025 in Kraft.
+  Artikel 2 tritt am Tag nach der Verkündung in Kraft."* **The MCR absolute floors are established:** Artikel 2 raises § 1 Abs. 2
+  KapAusstV from 2,5 to **2,7 Mio. Euro**, from 3,7 to **4 Mio. Euro** (twice), from 3,6 to **3,9 Mio. Euro** and from 1,2 to
+  **1,3 Mio. Euro**. **Caveat on the source:** the DAV fact sheet as served is a mixed edition — its prose still says
+  *"Aktuell liegt er bei 0,25 Prozent"* while its table already carries the 2025 row.
 - Products: all ten.
 
 ### R16. DeckRV § 4 — Höchstzillmersätze
@@ -938,8 +1102,9 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
 - URL: https://www.gesetze-im-internet.de/deckrv_2016/__4.html (returned);
   https://www.verivox.de/lebensversicherung/themen/zillmerung/ (returned);
   https://ivwkoeln.web.th-koeln.de/versicherungslexikon/2015/08/11/zillmerung/ (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; the 25 ‰ figure and the 40 ‰ → 25 ‰
-  cut effective 1 January 2015 from four independent sources)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 1 V v. 19.7.2024 I Nr. 250**, read **2026-08-30**; § 4 read in full. The
+  `gesetze-im-internet.de/deckrv_2016/__4.html` per-section page is a 6.2 kB frameset shell; the *Zillmerung* lexicon pages at
+  `verivox.de` and `ivwkoeln.web.th-koeln.de` serve and were used only as background.
 - Content: *Zillmerung* is the mechanism by which an insurer offsets a contract's one-off acquisition costs against its first
   premiums, which is why a German endowment or annuity has a very low surrender value in its early years. **§ 4 DeckRV caps it:
   the *Zillmersatz* may not exceed 25 per mille (25 ‰, i.e. 2.5 %) of the *Beitragssumme***, the sum of all premiums payable
@@ -960,6 +1125,17 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   mechanism beyond "25 ‰ of the Beitragssumme" is `[unverified]`. Whether the cap applies to single-premium contracts, and how
   the *Beitragssumme* is defined for them, was not established. The statement that the § 169 five-year spread and the 25 ‰ cap
   are **independent constraints** is the compiler's inference; no source says so explicitly.
+- Read in the 2026-08-30 pass — **the three-way conflict this entry recorded is resolved, because all
+  three renderings are partial views of one sentence.** § 4 Abs. 1 in full: *"Im Wege der Zillmerung werden die Forderungen auf Ersatz
+  der geleisteten, einmaligen Abschlusskosten einzelvertraglich bis zur Höhe des Zillmersatzes ab Versicherungsbeginn aus den
+  höchstmöglichen Prämienteilen gedeckt, die nach den verwendeten Berechnungsgrundsätzen in dem Zeitraum, für den die Prämie gezahlt
+  wird, weder für Leistungen im Versicherungsfall noch zur Deckung von Kosten für den Versicherungsbetrieb bestimmt sind. Der
+  Zillmersatz darf 25 Promille der Summe aller Prämien nicht überschreiten."* — **note *Summe aller Prämien*, not *Beitragssumme***,
+  which is the market term. Abs. 2 ties the uncovered part to the § 15 Abs. 1 RechVersV receivable and deducts it from the present
+  value of future premiums; Abs. 3 carves out contracts where § 25 Abs. 2 RechVersV forces a higher reserve; **Abs. 4** fixes the
+  cohort rule: *"Der von einem Versicherungsunternehmen zum Zeitpunkt des Vertragsabschlusses verwendete Zillmersatz ... gilt für die
+  gesamte Laufzeit des Vertrages."* **Still `[unverified]`:** the 40 ‰ → 25 ‰ step and its 1 January 2015 date — the consolidated text
+  shows only 25 ‰ and the amending instrument was not read.
 - Products: every regular-premium product load-bearing — KLV, RV, BAS, RIE, FRV, IDX, RLV, BU, PFL. Not relevant to SOF, a
   single-premium payout annuity that is not zillmered in this sense.
 
@@ -974,9 +1150,11 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   https://www.cash-online.de/a/zinszusatzreserve-korridormethode-bringt-zehn-milliarden-euro-entlastung-allein-2018-430796/ ;
   https://www.versicherungsbote.de/id/4939216/Zinszusatzreserve-2024-Milliarden-fliessen-zurueck---und-vieles-bleibt-offen/ (all
   returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (five queries; the corridor reform date and
-  mechanism from four independent sources; the 2018 counterfactual from two; the 1.57 % reference rate from three for three
-  different dates; the 2024 turn from three outlets)
+- Retrieved: **yes** for the regulation — canonical XML, **Stand: zuletzt geändert durch Art. 1 V v. 19.7.2024 I Nr. 250**, read **2026-08-30**; §§ 5 and 5a read in full. The
+  `gesetze-im-internet.de/deckrv_2016/__5.html` per-section page does serve (8.3 kB), as does `buzer.de/gesetz/12006/a198104.htm`;
+  **BaFin's *Auslegungsentscheidung* on the projection of the *Referenzzins* was read** (HTML, 82 kB).
+  `heistermannconsulting.de` returns HTTP 404. **The ZZR quantum figures below come from trade press that was not re-opened in this
+  pass and stay `[unverified]`.**
 - Content: **What the ZZR is.** The ***Zinszusatzreserve*** is the additional German statutory reserve arising when the discount
   rate applicable under § 5 DeckRV must be reduced below a contract's tariff rate, producing a **higher *Deckungsrückstellung*
   than the tariff rate alone would give**. It is an **HGB** reserve, financed out of the result and, under § 140 VAG's second
@@ -1009,6 +1187,20 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   largest) that no source reconciles, as are the €4 bn realised and €5 bn capacity figures for 2025. Every ZZR figure quoted
   from this entry in a delib document is attributed to the trade press; the BaFin *Erstversicherungsstatistik* [R53] would carry
   the audited aggregate.
+- Read in the 2026-08-30 pass — **the corridor is not a corridor, and this entry described it too
+  loosely.** § 5 Abs. 3 builds the *Referenzzins* from the Bundesbank's month-end ten-year zero-coupon euro swap rates published under
+  § 7 RückAbzinsV: the annual mean for each of the nine preceding calendar years, rounded up to two decimals, **with 2009 to 2013
+  fixed by the regulation at 3,81, 3,13, 3,15, 2,14 und 1,96 Prozent**; the mean of the first nine months for the current year; and
+  their sum divided by ten. Then **two** differences are formed, each rounded up: (1) that ten-year mean less last year's
+  *Referenzzins*, and (2) **9 per cent of the current-year mean less 9 per cent of last year's *Referenzzins***. Satz 7: *"Haben die
+  Differenzen aus Satz 6 Nummer 1 und 2 das gleiche Vorzeichen, ergibt sich der Referenzzins des Kalenderjahres dadurch, dass der
+  Referenzzins des vorherigen Kalenderjahres um die Differenz, die den kleineren Absolutbetrag hat, angepasst wird."* Satz 8:
+  *"Andernfalls bleibt der Referenzzins gegenüber dem vorherigen Kalenderjahr unverändert."* Satz 9: *"Der Referenzzins des
+  Kalenderjahres 2017 beträgt 2,21 Prozent."* — **so the 2.21 % anchor is statutory, and the rate can stand still for years when the
+  two signals disagree in sign.** § 5 Abs. 4 is the ZZR test itself, comparing the *Referenzzins* with *"dem höchsten in den nächsten
+  15 Jahren für einen Vertrag maßgeblichen Rechnungszins"*; § 5a dates the corridor version from the financial year beginning after
+  31 December 2017, i.e. the version in force from **23 October 2018**. § 5 Abs. 1 also supplies the prudence rule quoted at [R47]:
+  *"Die Ableitung von Rechnungsgrundlagen auf der Basis eines besten Schätzwertes genügt nicht."*
 - Products: KLV, RV, BAS, RIE, SOF, IDX load-bearing; BU and PFL qualified (annuities in payment carry a tariff rate and
   therefore a ZZR); RLV and FRV background. **Cited-not-specified: no delib model builds a ZZR.**
 
@@ -1022,9 +1214,9 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
 - URL: https://www.gesetze-im-internet.de/mindzv_2016/BJNR083100016.html ; `.../__4.html` ; `.../__6.html` ; `.../__11.html` ;
   https://www.buzer.de/gesetz/12013/a198221.htm ; https://lxgesetze.de/mindzv/11 ; https://freirecht.de/g/MindZV:11 (all
   returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; **the 90 / 90 / 50 split returned by
-  two independent queries with identical percentages and identical assignment to the three result sources**; § 6's wording from
-  one source in near-statutory form; § 11's title from five publishers)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 1 V v. 7.7.2020 I 1688**, read
+  **2026-08-30**; §§ 4, 6, 7, 8, 11, 12 and 13 read in full. The `BJNR083100016.html` index page serves (53 kB), as do
+  `buzer.de/gesetz/12013/a198221.htm`, `lxgesetze.de/mindzv/11` and `freirecht.de/g/MindZV:11`.
 - Content: *Verordnung über die Mindestbeitragsrückerstattung in der Lebensversicherung* — the arithmetic floor under the German
   *Überschussbeteiligung*, applying to life insurers **except Pensionskassen**, which have their own § 5. **The three result
   sources and their minimum shares.** **§ 6 *Kapitalanlageergebnis* — 90 %**: the minimum allocation from investment income for
@@ -1056,6 +1248,19 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   *Direktgutschrift*) was not retrieved; whether the 50 % applies symmetrically to a negative cost result was not established.
   **§ 13 was not retrieved** and is `[unverified]`; the **valuation formula in § 12** was not returned; the
   *Rückstellungsabzinsungsverordnung* was not researched beyond the cross-reference.
+- Read in the 2026-08-30 pass — **the 90 / 90 / 50 split, the assembly rule and the § 13 cap are all
+  first-hand.** § 6 Abs. 1: *"90 Prozent der nach § 3 Absatz 1 anzurechnenden Kapitalerträge abzüglich der rechnungsmäßigen Zinsen"*,
+  with two asymmetries this entry did not carry — a contractual share above 90 per cent **raises** the minimum (Satz 4), and where the
+  creditable investment income falls short of the *rechnungsmäßige Zinsen* the minimum is **100 per cent** of the shortfall rather
+  than zero (Sätze 5–6). § 7: 90 per cent of the *Risikoergebnis*; § 8: 50 per cent of the *übriges Ergebnis*; both floored at zero
+  and computed separately for *Alt-* and *Neubestand*. § 4 Abs. 1 defines the three sources **by named lines and columns of
+  *Nachweisung 213* of the BerVersV** and Abs. 2 deducts the *Direktgutschrift* and replaces a negative result by zero. § 11 confirms
+  the *Bezugszins* as the ten-year zero-coupon euro swap rate *"am Ende desjenigen Monats ..., der dem Zeitpunkt der Ermittlung der
+  Bewertungsreserven vorangeht"* — a **single month-end spot**, materially different from the ZZR's damped ten-year average [R17];
+  § 12 confirms the fifteen-year comparison. **§ 13 is the cap on the *ungebundener Teil*, and it lives here, not in the RfBV**:
+  the sum of the § 28 Abs. 8 Nr. 2 Buchst. h RechVersV *ungebundener Teil* and any part already fixed beyond the following year may
+  not exceed **0,8 × SP + 2 × (FR + DG) + Max{0; (1 − DNZ / 0,05) × SP}**, with SP the KapAusstV capital requirement, FR next year's
+  fixed declared shares, DG next year's expected *Direktgutschrift* and DNZ the three-year average net investment return.
 - Products: KLV, RV, BAS, RIE, IDX, SOF load-bearing; RLV, BU, PFL load-bearing **on the risk result** — the 90 % share of the
   *Risikoergebnis* funds a German term, BU or Pflege tariff's *Beitragsrückerstattung*; FRV qualified [R21].
 
@@ -1067,8 +1272,11 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   (returned); https://dejure.org/BGBl/2015/BGBl._I_S._300 (returned);
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Auslegungsentscheidung/VA/ae_110419_mindestzufuehrung_rfb_va.html
   (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; three independent publishers plus the
-  Bundesrat papers, with one substantive summary of §§ 2 and 3 that reads close to the statutory wording)
+- Retrieved: **yes** — canonical XML, **Stand: geändert durch Art. 1 V v. 19.7.2017 I 3037**, read
+  **2026-08-30**; *Eingangsformel* and §§ 1–5 read in full — the whole regulation.
+  `gesetze-im-internet.de/rfbv/BJNR030000015.html` answered with a connection reset and `/rfbv/__3.html` is a 6.7 kB shell, which is
+  why the XML is the citable route; `dejure.org/BGBl/2015/BGBl._I_S._300` serves for the citation and BaFin's
+  *Teilkollektivierung* interpretive decision was read (HTML, 89 kB).
 - Content: implements § 140 Abs. 1 Satz 2 VAG [R10]. It applies to life insurers **except Sterbekassen and regulierte
   Pensionskassen**. **§ 2 — the cap on the *ungebundene* RfB.** On establishing a *kollektiver Teil*, the undertaking must set
   an ***Obergrenze* for the ungebundene Rückstellung für Beitragsrückerstattung of the *Teilbestände*, expressed as a
@@ -1087,6 +1295,17 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   100", which appears to describe **§ 2**, not § 3 — **the two are conflated in the summaries and the conflation is not
   resolved**. § 1 (*Geltungsbereich*) and any further sections were not retrieved. **Whether the German market actually uses the
   collective part, and how large it is, was not established.**
+- Read in the 2026-08-30 pass — **the section attribution in this entry was off by one, and the percentage
+  bases are now established.** **§ 2 is *Begriffsbestimmungen***; **§ 3 Abs. 2** sets the *Obergrenze* for the *ungebundene* RfB of
+  the *Teilbestände* as a percentage **of the declared profit shares fixed for allocation in the following year plus the expected
+  following-year cost of the declared *Direktgutschrift***, *"Der Prozentsatz beträgt mindestens 100, ist für alle Teilbestände
+  identisch und darf gegenüber dem Vorjahr nur mit Zustimmung der Aufsichtsbehörde geändert werden."*; **§ 3 Abs. 3** sets the ceiling
+  on the collective part as a percentage of the KapAusstV amount, *"Der Prozentsatz beträgt höchstens 60"*, with returns to the
+  *Teilbestände* distributed by share of *Rohüberschuss* (with or without *Direktgutschrift*), or by another
+  *verursachungsorientierter Verteilungsschlüssel* with consent, the same key for all. **The *Eingangsformel* shows the regulation was
+  made under § 56b Abs. 2 Satz 2 VAG a.F.**, inserted by Art. 6 Nr. 6 of the Act of 3 April 2013, and it now operates on **§ 140
+  Abs. 4 VAG**, not § 140 Abs. 1 Satz 2. § 2 also supplies the *Altbestand* / *Neubestand* / *Teilbestand* definitions [R11].
+  **Still `[unverified]`:** whether the German market actually uses the collective part, and how large it is.
 - Products: KLV, RV, BAS, RIE, IDX, SOF load-bearing for the surplus chassis; the other four qualified.
 
 ### R20. LVRG 2014 — the Lebensversicherungsreformgesetz
@@ -1097,8 +1316,10 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   https://www.haufe.de/steuern/gesetzgebung-politik/aenderungen-im-ueberblick-das-neue-lebensversicherungsreformgesetz_168_265064.html
   (returned); https://wirtschaftslexikon.gabler.de/definition/lebensversicherungsreformgesetz-54407 (returned);
   https://www.dia-vorsorge.de/wp-content/uploads/2019/07/150519_DIA_Studie_final_LVRG.pdf (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; the three headline changes from
-  four independent sources with identical figures and dates)
+- Retrieved: **partly.** The **BGBl citation record** at `dejure.org/BGBl/2014/BGBl._I_S._1330` was read (HTML, 46 kB) and
+  the **government bill BT-Drs. 18/1772 of 18.06.2014** at `dserver.bundestag.de/btd/18/017/1801772.pdf` was read (PDF, 40 pp.), both
+  **2026-08-30**; the Haufe, Gabler and DIA commentaries also serve. **The Act's own *Regelungstext* was not retrieved** — dejure
+  serves the citation record, and the consolidated statutes carry the result without naming the amending article.
 - Content: *Gesetz zur Absicherung stabiler und fairer Leistungen für Lebensversicherte* — the reform that reshaped the German
   *Überschussbeteiligung* for the low-rate era. Three of its changes are load-bearing for delib. **(1) Bewertungsreserven
   restricted**: the distribution restriction applies **only to valuation reserves from festverzinsliche Wertpapiere**, and
@@ -1114,6 +1335,18 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   2016 VAG sections was not established**; delib cites the current sections and describes the LVRG as the reform that introduced
   the rules, not as the current legal source. Whether the LVRG also introduced a commission cap (*Provisionsdeckel*) — trade
   press in the results discusses one as a later, separate proposal — was **not established and is not asserted**.
+- Read in the 2026-08-30 pass. The citation record gives *"Bundesgesetzblatt Jahrgang 2014 Teil I Nr. 38,
+  ausgegeben am 06.08.2014, Seite 1330"* for the *"Gesetz zur Absicherung stabiler und fairer Leistungen für Lebensversicherte
+  (Lebensversicherungsreformgesetz – LVRG) vom 01.08.2014"*. The bill states the three changes in its own words:
+  *"insbesondere müssen die Versicherten künftig mit mindestens 90 Prozent (statt wie bislang 75 Prozent) an den Risikoüberschüssen
+  beteiligt werden"*; *"Der Höchstzillmersatz für die bilanzielle Anrechnung von Abschlusskosten wird gesenkt"*; and
+  *"Die Regelungen zur Beteiligung an den Bewertungsreserven werden dahingehend angepasst, dass die Ausschüttung von
+  Bewertungsreserven an die ausscheidenden Versicherten begrenzt wird"*, its draft § 56a VAG a.F. text being word for word what
+  § 139 Abs. 3 VAG now says. **The 7 August 2014 entry into force is confirmed from a different source in this pass** — the BGH press
+  release on IV ZR 201/17 says *"in der Fassung des Lebensversicherungsreformgesetzes vom 1. August 2014, in Kraft getreten am
+  7. August 2014"* [R36]. **Still `[unverified]`:** the 1 January 2015 date for the *Höchstzillmersatz*, the numeric 40 ‰ → 25 ‰ step
+  (the bill says only that the rate is lowered), the mapping from the old VAG sections onto the 2016 VAG, and any *Provisionsdeckel*
+  — the bill's summary mentions none.
 - Products: all ten; most materially RLV, BU and PFL (the 90 % risk-result share) and KLV, RV, BAS, RIE (the
   *Bewertungsreserven* restriction and the Zillmerung cut).
 
@@ -1128,9 +1361,11 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   the slugs `ae_151204_wechselwirkung_ueberschussbeteiligung_neugeschaeft_va`, `ae_160610_beteiligung_an_bewertungsreserven`,
   `ae_091222_mzffglv_va`, `ae_110419_mindestzufuehrung_rfb_va`, `ae_161111_kapitalmarktmodelle_va`,
   `ae_160222_latente_steuern_auf_versicherungstechnische_rueckstellungen` (all returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; BaFin's own pages plus five
-  independent secondary sources on the institution and the MaGo; **the interpretive decisions returned as URLs with one or two
-  sentences of summary each**)
+- Retrieved: **partly.** The **FinDAG** (HTML, 265 kB), BaFin's **Auslegungsentscheidung index** (156 kB), the
+  ***Zusammenwirken von Mindestzuführung zur RfB und Teilkollektivierung*** decision (89 kB), the ***Projektion des Referenzzinses
+  gemäß § 5 Abs. 3 DeckRV*** decision (82 kB), the **MaGo consultation 05/2025** page (89 kB) and BaFin's *Versicherungsaufsicht*
+  overview (93 kB) were all read **2026-08-30**. **The MaGo circular itself was not opened** — the English page cited here returns
+  HTTP 404 — and **six of the eight Auslegungsentscheidungen were not opened individually.**
 - Content: **The institution.** BaFin was created in **2002** by the *Finanzdienstleistungsaufsichtsgesetz of 22 May 2002*,
   merging the three predecessor *Bundesaufsichtsämter* into a single *Allfinanzaufsicht*; the merger was organisational and
   **created no new competences**. BaFin is under the *Rechts- und Fachaufsicht* of the Bundesministerium der Finanzen (§ 2
@@ -1165,6 +1400,11 @@ all ten products' `**[std]**` guaranteed rates are anchored to this table.
   established, nor whether any has been withdrawn. The four Solvency II **Schlüsselfunktionen** are named only generically;
   their individual names and VAG sections were **not established**. Whether the 2025 MaGo revision is in force, or applies from
   a stated date, was not established.
+- Read in the 2026-08-30 pass. The supervisory objective is now quoted from the statute rather than from
+  BaFin's own pages: **§ 294 Abs. 1 VAG** makes the *Hauptziel* the protection of policyholders and beneficiaries and **§ 294 Abs. 4**
+  puts the *dauernde Erfüllbarkeit* at the centre of the *Finanzaufsicht* [R5]. **Still `[unverified]`:** the MaGo's publication and
+  in-force dates of 25 January and 1 February 2017 and the 14 July 2025 revision; and the content of the six unopened interpretive
+  decisions, whose captions are kept as known references.
 - Products: FRV load-bearing (item 3); KLV, RV, BAS, RIE, IDX, SOF for items 1, 2, 4, 5; all ten for the institutional context
   and items 6 and 7.
 
@@ -1185,20 +1425,23 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   force from 1 January 2008.
 - URL: https://www.gesetze-im-internet.de/vvg_2008/BJNR263110007.html (returned);
   https://www.gesetze-im-internet.de/vvg_2008/__170.html and `__171.html` (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (the act's index page plus every single-paragraph
-  query below; **§ 171's enumeration returned as quoted German text**; § 170 from ten hosts including a
-  Schwintowski/Brömmelmeyer *Praxiskommentar* section)
+- Retrieved: **yes** — canonical XML, **VVG 2008, ausgefertigt 23. November 2007, Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 170 and 171 read in full, and the whole of Kapitel 5 and
+  Kapitel 6 across [R23]–[R29]. The `BJNR263110007.html` index page serves (421 kB) and `vvg_2008/anlage.html` serves (41 kB);
+  `vvg_2008/__170.html` answered with a connection reset and most other per-section pages are 4–6 kB frameset shells, which is why
+  the XML is the citable route throughout this block.
 - Content: the VVG 2008 replaced the VVG of 1908 with effect from 1 January 2008. Structure, as confirmed repeatedly: **Teil 1**
   general provisions (§§ 1–73, including the advice and information duties §§ 6, 7, 7a–7d, the withdrawal right § 8,
   pre-contractual disclosure §§ 19–22, premium default §§ 33, 37, 38 and the intermediary rules §§ 59–68); **Teil 2** the
   individual branches, of which **Kapitel 5 Lebensversicherung** runs §§ 150–171 and **Kapitel 6
   Berufsunfähigkeitsversicherung** §§ 172–177; **Teil 3** final provisions including § 214. A *single* statute therefore
   supplies the death-cover rules, the savings-contract rules and the disability-income rules, and **§ 176 imports §§ 150–170
-  into the BU chapter *entsprechend*** [R29]. **§ 171**, quoted by a summary: *"Von § 152 Abs. 1 und 2 und den §§ 153 bis 155,
-  157, 158, 161 und 163 bis 170 kann nicht zum Nachteil des Versicherungsnehmers, der versicherten Person oder des
-  Eintrittsberechtigten abgewichen werden."* A *halbzwingende* provision may be varied in the policyholder's favour; a variation
-  to their detriment is not void as such, but **the insurer may not rely on it**. Note what is **not** in the list: §§ 150, 156,
-  159, 160, 162 and 171 itself — so beneficiary designation and the consent rule are freely variable. **§ 170
+  into the BU chapter *entsprechend*** [R29]. **§ 171 Satz 1**, as read from the statute on 2026-08-30 — the
+  summary version this entry carried gave "§ 152 Abs. 1 und 2": *"Von § 152 Absatz 1 **bis 4** und den §§ 153 bis 155, 157, 158, 161
+  und 163 bis 170 kann nicht zum Nachteil des Versicherungsnehmers, der versicherten Person oder des Eintrittsberechtigten abgewichen
+  werden."*, with Satz 2 permitting the Schrift- or Textform to be agreed for a § 165 conversion request and a § 168 termination.
+  A *halbzwingende* provision may be varied in the policyholder's favour; a variation to their detriment is not void as such, but
+  **the insurer may not rely on it**. Note what is **not** in the list: §§ 150, 151, 156, 159, 160, 162, **§ 152 Abs. 5** and § 171
+  itself — so beneficiary designation, the consent rule and the first premium's due date are freely variable. **§ 170
   *Eintrittsrecht***: where the claim is attached or insolvency is opened over the policyholder's assets, the **namentlich
   bezeichnete Bezugsberechtigte** may, with the policyholder's consent, step into the contract, satisfying the executing
   creditors or the estate **up to the amount the policyholder could have demanded on termination**, i.e. up to the
@@ -1212,6 +1455,15 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   all of which appear in the case law [R36] — was confirmed only through case-law summaries, not from a text. **§ 156 VVG was
   never searched.** Whether the § 170 one-month period is an *Ausschlussfrist* was not stated; the § 170 Absatz numbering is
   `[unverified]`.
+- Read in the 2026-08-30 pass — **§ 171 was misquoted and is now exact.** *"Von § 152 Absatz 1 **bis 4** und
+  den §§ 153 bis 155, 157, 158, 161 und 163 bis 170 kann nicht zum Nachteil des Versicherungsnehmers, **der versicherten Person oder
+  des Eintrittsberechtigten** abgewichen werden. Für das Verlangen des Versicherungsnehmers auf Umwandlung nach § 165 und für seine
+  Kündigung nach § 168 kann die Schrift- oder die Textform vereinbart werden."* The earlier version read "§ 152 Abs. 1 und 2" and
+  named only the policyholder. What is **not** listed: §§ 150, 151, 156, 159, 160, 162 and **§ 152 Abs. 5**. § 170 confirms the
+  *Eintrittsrecht*, the creditor-satisfaction ceiling at the termination value, the spouse/children fallback and the **one-month**
+  notice running from knowledge of the attachment or the opening of insolvency. § 176 imports §§ 150–170 into the BU chapter
+  *"soweit die Besonderheiten dieser Versicherung nicht entgegenstehen"*. **§ 160 exists and is now read** [R26]; **§ 156 was still
+  not opened.**
 - Products: all ten.
 
 ### R23. VVG §§ 8 and 152 — the 14-day and 30-day Widerrufsrechte
@@ -1220,9 +1472,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   Doc type: statutory sections plus the statutory *Anlage* (Muster für die Widerrufsbelehrung).
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__8.html (returned); https://www.gesetze-im-internet.de/vvg_2008/anlage.html
   (returned); https://www.gesetze-im-internet.de/vvg_2008/__152.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (five queries; nine independent hosts on § 8, ten
-  across the two § 152 queries, with both § 152 summaries agreeing independently on the 30-day period, the 24-month long stop,
-  the Rückkaufswert consequence and the deferred first premium)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 8 and 152 read in full. `vvg_2008/__8.html` serves in full
+  (8.7 kB); `vvg_2008/__152.html` is a 5.8 kB shell.
 - Content: **§ 8** — the policyholder may withdraw within **14 days**, in *Textform*, without reasons, and **timely dispatch
   suffices**. The period begins on conclusion but **does not begin** before the policyholder has received, in Textform, the
   *Versicherungsschein*, the contract terms including the AVB, and the information required by the VVG-InfoV [R31]. A summary
@@ -1244,6 +1495,16 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   3 as the no-withdrawal list and Abs. 5 as the *Verordnungsermächtigung*; **the Absatz-to-rule mapping inside § 8 is
   `[unverified]`** while the substantive rules are corroborated. The content of **§ 9 VVG (Rückabwicklung)** was never searched.
   The *Fernabsatz* interaction is **not established**.
+- Read in the 2026-08-30 pass — **the Absatz mapping inside § 152 was wrong.** **Abs. 2** applies where
+  cover began before the end of the period **and** the § 9 Abs. 2 Satz 1 Nr. 1 condition is met: the insurer owes the premium part
+  after receipt of the withdrawal **and** *"den Rückkaufswert einschließlich der Überschussanteile nach § 169"*. **Abs. 3 is the case
+  where that condition is not met** — same premium part, plus the § 169 value *"oder, wenn dies für den Versicherungsnehmer günstiger
+  ist, die für das erste Jahr gezahlten Prämien"*. **The due-date rule is Abs. 5**, not Abs. 3. Abs. 1 confirms the 30 days and the
+  24-months-and-30-days long-stop; Abs. 4 disapplies § 9 Abs. 2 bis 4. § 8 Abs. 4 Satz 2 confirms *"zwölf Monate und 14 Tage nach dem
+  Vertragsschluss"* **and Satz 3 disapplies it where the policyholder was never instructed** — the statutory root of the
+  *Widerrufsjoker* [R36]. § 8 Abs. 2 adds that the period does not start before a PRIIPs or PEPP *Basisinformationsblatt* has been
+  provided and puts the burden of proving receipt on the insurer. **Still `[unverified]`:** § 9 VVG, whose Abs. 2 Satz 1 Nr. 1
+  condition switches between § 152 Abs. 2 and Abs. 3, was not opened.
 - Products: all ten.
 
 ### R24. VVG § 153 — Überschussbeteiligung and the hälftige Beteiligung an den Bewertungsreserven
@@ -1252,8 +1513,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__153.html `[unverified canonical form]`;
   https://dejure.org/gesetze/VVG/153.html (returned); https://www.buzer.de/153_VVG.htm (returned);
   https://rewis.io/gesetze/vvg/p/153-vvg/ (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries, nine and eight hosts respectively,
-  with the BGH press release [R36] and a general-reference article corroborating the Abs. 3 mechanics independently)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; § 153 read in full. `dejure.org/gesetze/VVG/153.html`,
+  `buzer.de/153_VVG.htm` and `rewis.io/gesetze/vvg/p/153-vvg/` also serve; `vvg_2008/__153.html` is a 4.9 kB shell.
 - Content: the article the whole KLV/RV/IDX chassis hangs on. **(1) The entitlement.** The policyholder has a **right** to
   participate in the *Überschuss* and in the *Bewertungsreserven* **unless participation is excluded by express agreement**, and
   such an exclusion **can only be made for the whole of the profit participation** — there is no partial opt-out. This is the
@@ -1277,6 +1538,13 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - Not established: the **Absatz/Satz numbering** of the entitlement (Abs. 1) and the method (Abs. 2) was inferred from the
   ordering in the summaries and from the BGH's citation of "§ 153 Abs. 3 Satz 3"; **the Abs. 1 and Abs. 2 attributions are
   `[unverified]`**. The VAG cross-references in Satz 3 come from a **single summary** and are `[unverified]` as a list.
+- Read in the 2026-08-30 pass — **the Abs. 1 / Abs. 2 attributions are confirmed, the Satz 3 cross-reference
+  list is established, and Abs. 4 is new to this library.** Abs. 3 Satz 3 in the version now in force reserves *"die §§ 89, 124
+  Absatz 1, § 139 Absatz 3 und 4 und die §§ 140 sowie 214 des Versicherungsaufsichtsgesetzes"*. **Abs. 4:** *"Bei
+  Rentenversicherungen ist die Beendigung der Ansparphase der nach Absatz 3 Satz 2 maßgebliche Zeitpunkt."* — so for an annuity
+  contract the half-share of *Bewertungsreserven* falls due **at the end of the accumulation phase**, which fixes the timing for RV,
+  FRV, IDX, BAS and RIE. Abs. 2 Satz 2 also excludes the § 268 Abs. 8 HGB amounts. **Still `[unverified]`:** BGH IV ZR 436/22 of
+  18 September 2024, which was not opened.
 - Products: KLV, RV, FRV, IDX, BAS, RIE, SOF load-bearing; RLV, BU, PFL qualified.
 
 ### R25. VVG §§ 154 and 155 — Modellrechnung and Standmitteilung
@@ -1285,8 +1553,9 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   Standmitteilung*. Doc type: statutory sections.
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__154.html (returned); https://www.gesetze-im-internet.de/vvg_2008/__155.html
   (returned); https://www.gesetze-im-internet.de/vvg-infov/__2.html (returned, for the three rates)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; eight and nine hosts; the three
-  interest rates located in **§ 2 Abs. 3 VVG-InfoV**, not in § 154, by a second query)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 154 and 155 read in full, with **§ 2 VVG-InfoV**
+  (canonical XML, Stand: zuletzt geändert durch Art. 13 G v. 26.5.2026 I Nr. 156) for the three rates.
+  `gesetze-im-internet.de/vvg-infov/__2.html` serves in full (10 kB); the VVG per-section pages are shells.
 - Content: **§ 154 *Modellrechnung*.** Where the insurer, in connection with the offer or conclusion of a life contract, makes
   **quantified statements about possible benefits beyond the contractually guaranteed benefits**, it must give the policyholder
   a *Modellrechnung* showing the possible *Ablaufleistung* computed **on the calculation bases used for the premium
@@ -1315,6 +1584,15 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   Unterrichtung* → *Standmitteilung* rename (almost certainly the LVRG) is **not established**. One query explicitly sought
   published criticism of the 1.67 multiplier at a 1 % ceiling and returned **nothing**; the observation that the multiplier is
   now nearly inert is the compiler's inference, not a sourced claim.
+- Read in the 2026-08-30 pass — **the § 124 Abs. 2 Satz 2 VAG carve-out is confirmed and the quotation of the
+  three rates is corrected.** § 154 Abs. 1 Satz 2: *"Dies gilt nicht für Risikoversicherungen und Verträge, die Leistungen der in
+  § 124 Absatz 2 Satz 2 des Versicherungsaufsichtsgesetzes bezeichneten Art vorsehen."* — **unit-linked and index-linked contracts owe
+  no *Modellrechnung***. § 2 Abs. 3 VVG-InfoV in full: *"1. dem Höchstrechnungszinssatz, multipliziert mit 1,67, 2. dem Zinssatz nach
+  Nummer 1 zuzüglich eines Prozentpunktes und 3. dem Zinssatz nach Nummer 1 abzüglich eines Prozentpunktes."* — numbered 1./2./3., and
+  *Prozentpunktes*, where this entry previously carried a)/b)/c) and *Prozentpunkts*. § 155 now has **three Absätze and a five-item
+  list in Abs. 1 Satz 3** — the claim benefit plus profit participation, the maturity benefit plus **guaranteed** profit participation
+  on continuation and on a paid-up basis, **the payout on the policyholder's termination**, and **the sum of premiums paid** for
+  contracts from 1 July 2018 — so BaFin's 2016 decision citing "§ 155 Satz 1" refers to what is now **§ 155 Abs. 1 Satz 1** [R21].
 - Products: KLV, RV, IDX, BAS, RIE load-bearing; FRV, SOF, BU, PFL qualified; not relevant to RLV (a pure *Risikoversicherung*
   is outside § 154).
 
@@ -1325,8 +1603,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__150.html `[unverified canonical form]`;
   https://www.gesetze-im-internet.de/vvg_2008/__159.html and `__161.html`, `__162.html` (returned); `__160.html` `[unverified
   canonical form]` — **§ 160 was not returned at all**
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; nine or ten hosts on §§ 150, 159,
-  161 and 162; **zero** on § 160)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 150, 159, **160**, 161 and 162 read in full.
+  The per-section pages for §§ 150 and 159 are 4.8 kB and 4.0 kB frameset shells.
 - Content: **§ 150** — where a policy is taken out **on the death of another person** and the agreed benefit **exceeds the
   amount of ordinary funeral costs** (*gewöhnliche Beerdigungskosten*), the **written consent** of that person is required for
   validity. It does not apply to *betriebliche Altersversorgung*, which delib excludes anyway. Two refinements from the summary:
@@ -1358,14 +1636,23 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   revocable unless stated otherwise is implied by § 159's structure but was not stated by any summary and is `[unverified]`.
   Whether the three-year suicide clock restarts on reinstatement or on an increase in sum assured is the general understanding
   and is `[unverified]`; no summary gave typical AVB wording.
+- Read in the 2026-08-30 pass — **§ 160 is retrieved and the gap this entry recorded is closed.**
+  § 160 Abs. 1: several beneficiaries without stated shares take equally and a share not acquired accrues to the others; Abs. 2: a
+  designation of the *Erben* means, in case of doubt, those called as heirs at the time of death in proportion to their shares, and
+  *"Eine Ausschlagung der Erbschaft hat auf die Berechtigung keinen Einfluss"*; Abs. 3: a right not acquired falls to the
+  policyholder; Abs. 4: the *Fiskus* as heir has no benefit right. **Three further precisions.** § 150 Abs. 2 excepts
+  *betriebliche Altersversorgung* from the written-consent requirement, and **§ 150 Abs. 4** provides that where the supervisor has
+  fixed a maximum for *gewöhnliche Beerdigungskosten* that maximum governs — **the statute names a mechanism, not a figure**, so any
+  euro threshold in delib stays `[std]`. § 161 Abs. 2 allows the three-year suicide period to be extended **only *durch
+  Einzelvereinbarung***, not in the AVB. § 162 Abs. 1 applies only where the policy is on another person's life.
 - Products: RLV and KLV load-bearing; the other eight qualified.
 
 ### R27. VVG § 163 — Prämien- und Leistungsänderung
 - Publisher: Bundesamt für Justiz; mirrors at ten hosts including two Haufe commentary sections and Gabler's
   *Beitragsanpassung*. Doc type: statutory section.
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__163.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (one query, ten hosts, with the three cumulative
-  conditions reported consistently)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; § 163 read in full — four Absätze.
+  `vvg_2008/__163.html` is a 5.6 kB frameset shell.
 - Content: the insurer may adjust the agreed premium where **three cumulative conditions** are met: (1) the **Leistungsbedarf**
   has changed in a way that is **not merely temporary and was not foreseeable** relative to the calculation bases of the agreed
   premium; (2) the **newly set premium**, on the corrected bases, is **appropriate and necessary** to secure the permanent
@@ -1384,6 +1671,15 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   **was not settled by any summary**. The interaction with the *Zahlbeitrag*/*Bruttobeitrag* mechanism — which operates through
   § 153 rather than § 163 — is the compiler's synthesis and is `[unverified]` as to its legal characterisation. No trustee-
   appointment procedure or VAG cross-reference was returned.
+- Read in the 2026-08-30 pass — **one correction and one addition.** **Correction: the benefit-reduction
+  alternative is the *policyholder's* right** — § 163 Abs. 2 Satz 1: *"Der Versicherungsnehmer kann verlangen, dass an Stelle einer
+  Erhöhung der Prämie nach Absatz 1 die Versicherungsleistung entsprechend herabgesetzt wird."* — and only *"Bei einer prämienfreien
+  Versicherung"* is the **insurer** entitled to reduce (Satz 2). **Addition: § 163 Abs. 3 is a timing rule** — the re-set or the
+  reduction *"werden zu Beginn des zweiten Monats wirksam, der auf die Mitteilung der Neufestsetzung oder der Herabsetzung und der
+  hierfür maßgeblichen Gründe an den Versicherungsnehmer folgt"*, so a monthly model has a defined effective date and a minimum
+  one-month lag. The three cumulative conditions and the mispricing bar are confirmed verbatim, and Abs. 4 confirms that the trustee
+  step falls away where supervisory approval is required. **Still `[unverified]`:** whether § 163 bites on *kapitalbildende* premiums
+  in practice — **the statute draws no branch line at all**, so this is a question about practice, not text.
 - Products: BU and PFL load-bearing; KLV, RV, RLV qualified.
 
 ### R28. VVG §§ 165–170 — prämienfreie Versicherung, Kündigung, Rückkaufswert and the Stornoabzug
@@ -1392,9 +1688,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   sections.
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__165.html ; `__166.html` ; `__168.html` ; `__169.html` (returned);
   `__167.html` `[unverified canonical form]`
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (**nine queries touched this block**; ten hosts
-  each for §§ 165, 166 and 168, six independent passes on § 169, with **§ 169 Abs. 3 and Abs. 5 returned as quoted German
-  text**)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 165, 166, 167, 168 and 169 read in full.
+  `vvg_2008/__165.html` is a 4.5 kB shell and `vvg_2008/__170.html` answered with a connection reset.
 - Content: **§ 165 *Prämienfreie Versicherung*.** The policyholder may **at any time, for the end of the current insurance
   period, demand conversion into a prämienfreie Versicherung**, provided the agreed ***Mindestversicherungsleistung*** is
   reached; if not, the insurer must **pay the Rückkaufswert including surplus shares under § 169**. The paid-up benefit is
@@ -1417,12 +1712,14 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   dated by one summary to an amendment of **26 August 2022 in force 1 January 2023** (the *Bürgergeld-Gesetz*). **Model
   consequence, the sharpest product distinction in delib: BAS has no surrender value and no lapse-to-surrender decrement.** **§
   169 *Rückkaufswert*.** The base measure is the ***Deckungskapital*** computed by recognised actuarial rules **on the
-  calculation bases of the premium calculation**, at the **end of the current insurance period**. **The floor — Abs. 3**, quoted
-  from the summary: *"bei Kündigung des Vertrags mindestens der Betrag des Deckungskapitals, der sich bei gleichmäßiger
-  Verteilung der angesetzten Abschluss- und Vertriebskosten auf die ersten fünf Vertragsjahre ergibt"*, with **supervisory rules
-  on maximum Zillmer rates remaining unaffected** [R16] — **a floor on the value, not a cap on the charge**. **Abs. 4**: where
-  the benefit is not guaranteed at a fixed amount the *Rückkaufswert* is the ***Zeitwert***, the contract able to prescribe the
-  method. **Abs. 5 — the Stornoabzug**, quoted: *"Der Versicherer ist zu einem Abzug von dem nach Absatz 3 oder 4 berechneten
+  calculation bases of the premium calculation**, at the **end of the current insurance period**. **The floor — Abs. 3**, and the statutory
+  wording read on 2026-08-30 differs from the summary this entry carried in three places: *"bei **einer** Kündigung des
+  **Versicherungsverhältnisses jedoch** mindestens der Betrag des Deckungskapitals, **das** sich bei gleichmäßiger Verteilung der
+  angesetzten Abschluss- und Vertriebskosten auf die ersten fünf Vertragsjahre ergibt"*, with **supervisory rules on maximum Zillmer
+  rates remaining unaffected** [R16] — **a floor on the value, not a cap on the charge**. **Abs. 4 is narrower than this entry said:**
+  the *Zeitwert* measure applies to *fondsgebundene Versicherungen* and other § 124 Abs. 2 Satz 2 VAG contracts *"soweit nicht der
+  Versicherer eine bestimmte Leistung garantiert; im Übrigen gilt Absatz 3"*, the calculation principles to be stated in the
+  contract — the trigger is the **product class**, not the absence of a fixed guarantee. **Abs. 5 — the Stornoabzug**, quoted: *"Der Versicherer ist zu einem Abzug von dem nach Absatz 3 oder 4 berechneten
   Betrag nur berechtigt, wenn er vereinbart, beziffert und angemessen ist"*, and *"Die Vereinbarung eines Abzugs für noch nicht
   getilgte Abschluss- und Vertriebskosten ist unwirksam"*, with the **burden of proof on the insurer**. The *Rückkaufswert* and
   the extent to which it is guaranteed must be **communicated before the policyholder makes the contract declaration**. A delib
@@ -1437,6 +1734,27 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   annuity in payment a termination right was not resolved** — the market answer is no, **no search confirmed it**, and it is
   `[unverified]`. The § 12 Abs. 2 Nr. 3 SGB II amounts are not established, and whether Abs. 3 limb (b) requires an irrevocable
   exclusion at inception was reported inconsistently. No conversion mechanics or cost figure for § 167 was returned.
+- Read in the 2026-08-30 pass — **the block this library leans on hardest, and the pass changed it most.**
+  **§ 169 Abs. 3 verbatim, because the summary quotation this entry carried got three words wrong:** *"Der Rückkaufswert ist das nach
+  anerkannten Regeln der Versicherungsmathematik mit den Rechnungsgrundlagen der Prämienkalkulation zum Schluss der laufenden
+  Versicherungsperiode berechnete Deckungskapital der Versicherung, bei einer Kündigung des Versicherungsverhältnisses jedoch
+  mindestens der Betrag des Deckungskapitals, das sich bei gleichmäßiger Verteilung der angesetzten Abschluss- und Vertriebskosten auf
+  die ersten fünf Vertragsjahre ergibt; die aufsichtsrechtlichen Regelungen über Höchstzillmersätze bleiben unberührt."* **Abs. 3
+  Satz 2 is the disclosure duty** (before the policyholder's declaration, detail left to the VVG-InfoV). **Abs. 4 is narrower than
+  this entry said:** the *Zeitwert* measure applies to *fondsgebundene Versicherungen* and other § 124 Abs. 2 Satz 2 VAG contracts
+  *"soweit nicht der Versicherer eine bestimmte Leistung garantiert; im Übrigen gilt Absatz 3"* — the trigger is the **product class**,
+  not the absence of a fixed guarantee. **Abs. 5** confirms *"vereinbart, beziffert und angemessen"* and the ineffectiveness of a
+  deduction for untilgte acquisition costs — **but contains no burden-of-proof rule**, which is case law and, in the GDV model
+  conditions, an express clause [R37]. **Abs. 6 is new to this library:** the insurer may reduce the Abs. 3 amount *"angemessen ...
+  soweit dies erforderlich ist, um eine Gefährdung der Belange der Versicherungsnehmer ... auszuschließen"*, *"jeweils auf ein Jahr
+  befristet"*. **Abs. 7** is the surplus limb behind every *"Rückkaufswert einschließlich der Überschussanteile"* cross-reference.
+  **§ 168 Abs. 2 answers the SOF question against the market convention:** *"Bei einer Versicherung, die Versicherungsschutz für ein
+  Risiko bietet, bei dem der Eintritt der Verpflichtung des Versicherers gewiss ist, steht das Kündigungsrecht dem Versicherungsnehmer
+  auch dann zu, wenn die Prämie in einer einmaligen Zahlung besteht."*, and Abs. 3 carves out only certified *Basisrenten* and
+  irrevocably restricted § 851c/§ 851d ZPO contracts. **This is reported, not acted on: no delib model is changed in this pass.**
+  § 165 Abs. 2 confirms the paid-up computation *"unter Zugrundelegung des Rückkaufswertes nach § 169 Abs. 3 bis 5"* and the duty to
+  state it for each insurance year; § 166 has four Absätze including a two-month employer-cover limb; § 167 puts the conversion costs
+  on the policyholder.
 - Products: KLV, RV, FRV, IDX, RIE, BU, PFL load-bearing; BAS qualified (§ 165 yes, §§ 168–169 no); SOF and RLV qualified.
 
 ### R29. VVG §§ 172–177 — Kapitel 6, Berufsunfähigkeitsversicherung
@@ -1446,8 +1764,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   *Abweichende Vereinbarungen*; § 176 *Anzuwendende Vorschriften*; § 177 *Ähnliche Versicherungsverträge*).
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__172.html, `__176.html`, `__177.html` (returned); `__173.html`,
   `__174.html`, `__175.html` `[unverified canonical form]`
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; **the § 172 Abs. 2 definition and
-  the § 177 text returned as quoted German** from nine and five hosts respectively; §§ 173/174 from eight hosts)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 172, 173, 174, 175, 176 and 177 read in full — the whole
+  chapter. `vvg_2008/__172.html` is a 4.3 kB shell; `swisslife.de` refused with HTTP 403.
 - Content: **§ 172 Abs. 1** — the insurer is obliged to render the agreed benefits for a *Berufsunfähigkeit* that arose **after
   the start of the insurance**. **§ 172 Abs. 2 — the statutory definition**, quoted by the summary: *"Berufsunfähig ist, wer
   seinen zuletzt ausgeübten Beruf, so wie er ohne gesundheitliche Beeinträchtigung ausgestaltet war, infolge Krankheit,
@@ -1476,6 +1794,14 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   *"VVG-Regeln zu LV gelten bei Grundfähigkeits- und Schwere-Krankheiten-Policen nicht"*, which points against for
   non-work-capacity triggers. This is **the main open legal question for PFL**. § 172 Abs. 1's "after the start of the
   insurance" wording was reported by one summary only.
+- Read in the 2026-08-30 pass. § 172 Abs. 2 is confirmed word for word against the summary this entry
+  carried. **§ 177 Abs. 1 is the sentence that matters for PFL, and its wording does not obviously reach a *Pflegerente*:**
+  *"Die §§ 173 bis 176 sind auf alle Versicherungsverträge, bei denen der Versicherer für eine dauerhafte Beeinträchtigung der
+  Arbeitsfähigkeit eine Leistung verspricht, entsprechend anzuwenden."*, with Abs. 2 excluding accident insurance and health-insurance
+  contracts covering that risk. A *Pflegerentenversicherung* pays on *Pflegebedürftigkeit*, not on impaired *Arbeitsfähigkeit* —
+  so whether Kapitel 6 reaches it is a live question the text does not answer in the product's favour, and delib treats the PFL
+  claims-process rules as AVB conventions [R51]. § 174 Abs. 2 confirms the **three-month** cessation lag and § 173 Abs. 2 the
+  once-only time limitation of the *Anerkenntnis*; § 175 makes §§ 173 and 174 semi-mandatory.
 - Products: BU load-bearing; PFL qualified and contested; KLV, RV, RLV, BAS qualified (rider forms).
 
 ### R30. VVG §§ 19, 21, 37, 38, 157 and 158 — Anzeigepflicht, Zahlungsverzug, Altersangabe, Gefahränderung
@@ -1484,8 +1810,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   page for §§ 37/38. Doc type: statutory sections plus two live market instruction texts.
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__19.html, `__37.html`, `__157.html`, `__158.html` (returned); `__38.html`
   `[unverified canonical form]`
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; ten hosts across §§ 157/158 and
-  across §§ 37/38)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 19, 21, 37, 38, 157 and 158 read in full.
+  `vvg_2008/__19.html` is a 5.8 kB shell.
 - Content: **§ 19** — the policyholder must disclose, up to making the contract declaration, the risk circumstances known to
   them for which the insurer has **asked in Textform**. On breach the insurer may **rescind**; rescission is **excluded** where
   the breach was neither intentional nor grossly negligent, in which case the insurer may **terminate on one month's notice**;
@@ -1516,6 +1842,19 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   **§ 23 VVG (Gefahrerhöhung)**, cross-referenced by § 158, and **§ 33 VVG (Fälligkeit)**, cross-referenced by § 152 Abs. 3,
   were never searched. Whether the ten-year period runs from conclusion or from the breach differed in emphasis between
   summaries. No search result addressed market practice on grace periods beyond the statutory two weeks.
+- Read in the 2026-08-30 pass — **four resolutions and one attribution correction.** **(1)** The § 19 Absatz
+  numbering is confirmed: Abs. 1 duty on Textform questions, Abs. 2 *Rücktritt*, Abs. 3 exclusion where neither intentional nor
+  grossly negligent plus a one-month termination right, Abs. 4 exclusion where the insurer would have concluded anyway, Abs. 5 the
+  separate Textform warning, **Abs. 6** a policyholder termination right without notice within one month where a contract change
+  raises the premium *"um mehr als 10 Prozent"* or excludes the risk. **(2) The *arglistig* forfeiture is § 21 Abs. 2 Satz 2, not
+  § 19.** **(3)** § 21 Abs. 3 in full: *"Die Rechte des Versicherers nach § 19 Abs. 2 bis 4 erlöschen nach Ablauf von fünf Jahren nach
+  Vertragsschluss; dies gilt nicht für Versicherungsfälle, die vor Ablauf dieser Frist eingetreten sind. Hat der Versicherungsnehmer
+  die Anzeigepflicht vorsätzlich oder arglistig verletzt, beläuft sich die Frist auf zehn Jahre."* — **both periods run from
+  *Vertragsschluss***, and claims inside the window stay contestable afterwards; Abs. 1 adds a one-month written exercise deadline.
+  **(4)** **§ 38 Abs. 3 does give a right to terminate without notice after expiry**, combinable with the deadline and defeated by
+  payment within one month. § 157 and § 158 are confirmed verbatim, § 158 Abs. 2 adding five-year and ten-year limits on relying on a
+  risk increase. **Still `[unverified]`:** §§ 23 and 33 VVG were not opened, and no retrieved document addresses grace-period market
+  practice.
 - Products: RLV, BU, PFL, KLV, RV load-bearing; the rest qualified.
 
 ---
@@ -1530,8 +1869,9 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - URL: https://www.gesetze-im-internet.de/vvg_2008/__6.html ; `__7.html` ; `__7b.html` ; `__7c.html` ; `__214.html` ;
   https://www.gesetze-im-internet.de/vvg-infov/BJNR300400007.html ; `.../__2.html` ; `.../__4.html` ;
   https://dejure.org/gesetze/VVG/1a.html (all returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (seven queries; nine hosts on §§ 6/7, nine on §§
-  7b/7c, eight on § 2 VVG-InfoV, nine on § 4, eight on § 214)
+- Retrieved: **yes** — canonical XML, **Stand: zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156**, read **2026-08-30**; §§ 1a, 6, 7, 7b, 7c and 214 read in full, with the
+  **VVG-InfoV** (canonical XML, Stand: zuletzt geändert durch Art. 13 G v. 26.5.2026 I Nr. 156), §§ 2 and 4 read in full.
+  The VVG-InfoV index page serves (34 kB) and `vvg-infov/__2.html` serves in full; `dejure.org/gesetze/VVG/1a.html` serves.
 - Content: **§ 6** — the insurer must **question and advise** so far as the offer or the policyholder's situation gives
   occasion, **state the reasons** and **document** it; the duty continues after conclusion where there is a recognisable
   occasion; the policyholder may **waive** it by a separate written declaration. **§ 7** — the contract terms including the AVB
@@ -1567,6 +1907,20 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   *Versicherungsanlageprodukt* — which decides whether FRV and IDX are in scope and whether a guaranteed KLV is — was not
   retrieved and is the most consequential gap in this entry.** §§ 59–68 VVG were reached only through IHK summaries and the §
   60/§ 61 attributions are `[unverified]`.
+- Read in the 2026-08-30 pass — **one correction and three additions.** **Correction: § 214 does not
+  recognise the *Versicherungsombudsmann*.** It empowers the **Bundesamt für Justiz** to recognise privately organised bodies as
+  *Schlichtungsstelle* on the § 24 VSBG conditions, requires them to answer every complaint and to report harmful business practices
+  to BaFin. The *Versicherungsombudsmann* is recognised **under** § 214, and the "since August 2016" date is `[unverified]`.
+  **Additions.** **§ 6 Abs. 6** disapplies the whole advice-and-documentation regime where a *Versicherungsmakler* arranges the
+  contract. **§ 2 Abs. 6 VVG-InfoV** gives the Effektivkosten method — *"wie der Gesamtkostenindikator nach Anhang VI der Delegierten
+  Verordnung (EU) 2017/653"* [R32], always on that Annex's pre-cost return, carrying its biometric cost component only where the
+  product guarantees **at least a 90 per cent** participation in *Risikoüberschüsse* — **and Satz 4 excludes the whole method from
+  *Altersvorsorgeverträge* and *Basisrentenverträge*** under §§ 1 and 2 AltZertG, which are governed by the AltvPIBV instead [R43].
+  **§ 4 Abs. 3 VVG-InfoV** disapplies the IPID for PRIIPs *Versicherungsanlageprodukte* and for PEPP, so the IPID and the KID are
+  alternatives. § 2 Abs. 1 Nr. 1 and Abs. 2 confirm the cost-disclosure structure and the euro requirement; § 2 Abs. 4 extends it to
+  BU with the warning that the AVB's BU concept differs from the social-law one. § 1a Abs. 1 Satz 1 in full: *"Der Versicherer muss
+  bei seiner Vertriebstätigkeit gegenüber Versicherungsnehmern stets ehrlich, redlich und professionell in deren bestmöglichem
+  Interesse handeln."*
 - Products: all ten. **No cash-flow consequence for any delib model** except through the charge parameterisation the
   Effektivkosten validate.
 
@@ -1577,8 +1931,11 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX:32021R2268 (returned);
   https://eur-lex.europa.eu/DE/legal-content/summary/key-information-about-investment-products.html (returned). **A direct
   EUR-Lex landing page for Regulation (EU) 1286/2014 itself was not returned by any search and is not established.**
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; four independent sources agreeing on
-  the 1 January 2023 application date)
+- Retrieved: **yes** — the Official Journal texts at
+  https://eur-lex.europa.eu/eli/reg/2014/1286/oj/deu/pdfa1b (Level 1, PDF, 23 pp.),
+  https://eur-lex.europa.eu/eli/reg_del/2017/653/oj/deu/pdfa1b (the RTS, PDF, 52 pp., ABl. L 100 vom 12.4.2017) and
+  https://eur-lex.europa.eu/eli/reg_del/2021/2268/oj/deu/pdfa1b (the amendment, PDF, 57 pp., ABl. L 455 I vom 20.12.2021), all read
+  **2026-08-30**. The `legal-content/DE/ALL/?uri=CELEX:32017R0653` and `.../32021R2268` landing pages also serve.
 - Content: Regulation 1286/2014 introduced a standardised ***Basisinformationsblatt* (KID)** for packaged retail investment
   products **and *Versicherungsanlageprodukte***. Uniform requirements apply to delivery of the KID for **all** insurance-based
   investment products, **regardless of whether the underlying investment options are themselves PRIIPs** — the rule that pulls a
@@ -1594,6 +1951,17 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   all **not established**. Whether a *klassische* endowment or an *Indexpolice* with a premium guarantee is a
   *Versicherungsanlageprodukt* turns on Art. 2 Abs. 1 Nr. 17 IDD, not retrieved [R31], so **the scope boundary for KLV, RV and
   IDX is open**.
+- Read in the 2026-08-30 pass — **the SRI scale and the scenario names are established.** Art. 3(2)(a) of
+  Delegated Regulation (EU) 2017/653: *"Höhe des mit dem PRIIP verbundenen Risikos in Form einer Risikoklasse unter Anwendung eines
+  Gesamtrisikoindikators mit einer numerischen Skala von 1 bis 7"*, and Annex III supplies the wording *"Wir haben dieses Produkt auf
+  einer Skala von 1 bis 7 in die Risikoklasse [1/2/3/4/5/6/7] eingestuft"*. Annex IV as replaced by (EU) 2021/2268, Nr. 1:
+  *"a) optimistisches Szenario; b) mittleres Szenario; c) pessimistisches Szenario; d) Stressszenario."* — **mittleres**, not
+  "moderates", and Nr. 3 adds a fifth element specific to insurance: *"Ein zusätzliches Szenario für Versicherungsanlageprodukte beruht
+  auf dem ... mittleren Szenario, sofern die Wertentwicklung in Bezug auf die Rendite der Anlage relevant ist."*, with Nr. 4 requiring
+  the minimum investment return to be shown. Level 1 Art. 8(3)(d) confirms the *Gesamtrisikoindikator*, the possible maximum loss and
+  the performance scenarios as KID content, and the *Gesamtkostenindikator* of Annex VI is the method § 2 Abs. 6 VVG-InfoV points at
+  [R31]. **Still `[unverified]`:** the recommended-holding-period rule, the cost tables at 1 year / half the RHP / RHP, and the
+  biometric-risk premium treatment inside Annex VI — located but not read line by line.
 - Products: FRV and IDX load-bearing; KLV, RV, BAS, RIE, SOF qualified.
 
 ### R33. IDD — Richtlinie (EU) 2016/97, the transposition act of 20 July 2017 and § 34d GewO
@@ -1603,9 +1971,11 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   BGBl page for the transposition**, and **no statutory page for § 34d GewO was returned either**. Secondary sources returned:
   https://kanzlei-michaelis.de/umsetzung-der-eu-vermittlerrichtlinie-2016-97-idd-in-deutsches-recht/ ;
   https://www.bundestag.de/resource/blob/508714/jenssen.pdf ; three IHK pages on *Versicherungsvermittler*.
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; eight and nine **secondary** hosts,
-  **no primary source for either instrument**; three secondary sources agree on the 20 July 2017 enactment and 23 February 2018
-  entry into force)
+- Retrieved: **partly.** The **directive** at https://eur-lex.europa.eu/eli/dir/2016/97/oj/deu/pdfa1b was opened
+  (PDF, 41 pp., read **2026-08-30**) and **its title, date and structure were read; its conduct articles were not.** **§ 34d GewO**
+  was read in full from the canonical XML (**Stand: zuletzt geändert durch Art. 1 G v. 20.7.2026 I Nr. 215**). The Kanzlei Michaelis
+  transposition account (155 kB) and the Bundestag Jenssen paper (PDF, 1.0 MB) also serve; the `jura.uni-bonn.de` PDF returns
+  HTTP 404.
 - Content: the IDD was transposed by the act of **20 July 2017**, in force **23 February 2018** with exceptions; because the
   European roll-out slipped, Member States were free to apply the directive from **1 October 2018** and several German
   provisions took effect then. The useful part is the architecture: the transposition spreads the directive across **three
@@ -1624,6 +1994,15 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   is **not established**. A professional-indemnity minimum of **1,564,610 euro per claim** was returned by a **single commercial
   training-provider page with no year attached**; it is `[unverified]` and **must not be reproduced in a delib document**. The §
   34d Abs. 9 Satz 2 citation rests on one source.
+- Read in the 2026-08-30 pass. The instrument is ***Richtlinie (EU) 2016/97 des Europäischen Parlaments und
+  des Rates vom 20. Januar 2016 über Versicherungsvertrieb (Neufassung)***. **§ 34d GewO's four conditions are refusal grounds**
+  (Abs. 5 Satz 1): lack of *Zuverlässigkeit* (Nr. 1), *"ungeordnete Vermögensverhältnisse"* (Nr. 2), no
+  *Berufshaftpflichtversicherung* or equivalent (Nr. 3), no IHK *Sachkunde* examination (Nr. 4). **The commission point becomes a
+  citation:** § 34d Abs. 1 Satz 6 — *"Einem Versicherungsvermittler ist es untersagt, Versicherungsnehmern, versicherten Personen oder
+  Bezugsberechtigten aus einem Versicherungsvertrag Sondervergütungen zu gewähren oder zu versprechen."* **Still `[unverified]`:** the
+  **15 hours** of continuing education — § 34d Abs. 9 Satz 2 imposes the duty and § 34e empowers a regulation, but the hours are in
+  the VersVermV, which was not retrieved; and the directive's article numbering, the IPID requirement, the demands-and-needs test and
+  the IBIP suitability and remuneration provisions, none of which was read.
 - Products: all ten, as conduct background only.
 
 ### R34. Unisex — EuGH C-236/09 (Test-Achats), and §§ 19, 20 and 33 AGG
@@ -1632,8 +2011,9 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - URL: https://datenbank.nwb.de/Dokument/Anzeigen/443611/ (returned);
   https://www.jura.uni-bonn.de/fileadmin/Fachbereich_Rechtswissenschaft/Einrichtungen/Sonstige/Zentrum_fuer_Europaeisches_Wirtschaftsrecht/Schriftenreihe/heft192armbruester.pdf
   (returned); https://www.gesetze-im-internet.de/agg/__19.html and `__20.html` (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; six, seven and eight hosts; **three
-  independent sources give the 21 December 2012 date**)
+- Retrieved: **yes** — the **judgment** as reproduced at `datenbank.nwb.de/Dokument/Anzeigen/443611/` (HTML,
+  64 kB) and the **AGG** from the canonical XML (**Stand: zuletzt geändert durch Art. 15 G v. 22.12.2023 I Nr. 414**), §§ 19, 20 and
+  33 read in full, both **2026-08-30**. `gesetze-im-internet.de/agg/__19.html` is a 5.8 kB frameset shell.
 - Content: the ECJ held on **1 March 2011** in **C-236/09** that using sex as a risk factor in insurance is incompatible with
   equality between men and women under **Articles 21 and 23 of the Charter of Fundamental Rights**, and **invalidated the
   derogation in Article 5(2) of the Gender Directive with effect from 21 December 2012**. From that date sex may **no longer**
@@ -1655,6 +2035,20 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   Gender Directive's own number (**2004/113/EG**) was **not returned by any search** and is `[unverified]`. Whether German
   insurers were required to apply unisex to **increases** on pre-2012 contracts is **not established**. **No market sex-mix
   figure was returned**, so every blend weight in delib is `**[std]**` [R47].
+- Read in the 2026-08-30 pass — **the Gender Directive's number is established and one AGG provision is new
+  to this library.** The judgment names *"Art. 5 Abs. 2 der Richtlinie 2004/113/EG des Rates vom 13. Dezember 2004"* and holds it
+  *"ab dem 21.12.2012 ungültig"* for incompatibility with Artt. 21 and 23 of the Charter. **§ 20 Abs. 2 Satz 1 is now the maternity
+  rule** — *"Kosten im Zusammenhang mit Schwangerschaft und Mutterschaft dürfen auf keinen Fall zu unterschiedlichen Prämien oder
+  Leistungen führen."* — confirming that the old sentence permitting sex-differentiated pricing is gone. **§ 20 Abs. 2 Satz 2 is the
+  statutory permission for age-rated tariffs:** differential treatment on religion, disability, age or sexual identity in private
+  insurance is lawful *"nur ..., wenn diese auf anerkannten Prinzipien risikoadäquater Kalkulation beruht, insbesondere auf einer
+  versicherungsmathematisch ermittelten Risikobewertung unter Heranziehung statistischer Erhebungen"*. § 33 Abs. 5 preserves
+  sex-differentiated treatment for pre-21 December 2012 relationships where sex is *"ein bestimmender Faktor"* on accurate actuarial
+  data. **A structural signal on later changes, short of an answer:** §§ 33 Abs. 2, 3 and 4 each disapply their transitional to
+  *"spätere Änderungen von Dauerschuldverhältnissen"* and **Abs. 5 does not** — but no authority on that reading was retrieved, so it
+  stays `[unverified]`. **Also new:** § 1 Abs. 1 Nr. 2 AltZertG independently requires a certified Riester contract to provide
+  *"eine lebenslange und unabhängig vom Geschlecht berechnete Altersversorgung"* [R43]. **Still `[unverified]`:** the amending
+  instrument and date for the § 20 Abs. 2 repeal, reported two ways, both recorded.
 - Products: all ten.
 
 ### R35. BaFin Merkblatt 01/2023 (VA) — Wohlverhaltensaufsicht and angemessener Kundennutzen
@@ -1666,8 +2060,8 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Pressemitteilung/2023/pm_2023_05_08_Merkblatt_kapitalbildende_LV.html
   (returned); https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/FAQ/faq_wohlverhalten.html (returned);
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Fachartikel/2024/bafin_fachartikel_wohlverhalten.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (one query, eight hosts, **six of them BaFin's
-  own**)
+- Retrieved: **yes** — the full *Merkblatt* text with its marginal numbers (HTML, 162 kB), BaFin's **FAQ** on it (85 kB)
+  and its ***Kundennutzen im Fokus*** article (88 kB), all read **2026-08-30**. The 2023 press release page returns HTTP 404.
 - Content: BaFin **consulted on 31 October 2022** and **published in May 2023** a *Merkblatt zu wohlverhaltensaufsichtlichen
   Aspekten bei kapitalbildenden Lebensversicherungsprodukten* setting out what it expects so that such products offer an
   ***angemessener Kundennutzen*** and distribution conflicts of interest are avoided. **Two supervisory tests are reported
@@ -1688,6 +2082,20 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   Mannheim paper is titled *"Wohlverhaltensaufsicht: Ihre Rechtsgrundlagen und Grenzen"* and the OLG Stuttgart ruling on § 1a
   VVG [R31] points the other way; the tension is real and **unresolved**. Whether the Merkblatt has been amended since 2023 is
   not established.
+- Read in the 2026-08-30 pass — **the scope question is answered and one modality is corrected.** Footnote 2:
+  *"Als kapitalbildende Lebensversicherungsprodukte werden hier (klassische und fondsgebundene) Lebensversicherungsprodukte mit
+  Sparkomponente bezeichnet. Darunter fallen Versicherungsanlageprodukte sowie weitere Lebensversicherungsprodukte mit Sparkomponente
+  (insbesondere ... Direktversicherungen sowie Altersvorsorgeverträge ...)"*, and the body addresses *"die fondsgebundene
+  Lebensversicherung (einschließlich statische und dynamische Hybride)"* separately — **so the Merkblatt reaches KLV, RV, FRV, the
+  hybrid shapes IDX belongs to, Riester and Basisrente.** **Correction:** the real-return test is a *sollten*, not a *müssen* —
+  Rn. 15 says insurers *"sollten ... auch prüfen, ob die Angehörigen des Zielmarktes nicht nur eine positive Rendite nach Kosten,
+  sondern auch eine positive Rendite nach Kosten und Inflation anstreben"* (*"realer Anlageerfolg"*, benchmarkable against the ECB's
+  medium-term target). What is mandatory is the probability test: *"Ein angemessener Kundennutzen setzt voraus, dass das formulierte
+  Renditeziel mit hinreichender Wahrscheinlichkeit erreicht wird. Dies ist im Rahmen der Produktprüfung mit geeigneten stochastischen
+  Analysen zu prüfen."*, and where the target market is guarantee-oriented a return target may be dispensable. The *Effektivkosten*
+  are named as *"eine geeignete Größe zur Messung der insgesamt anfallenden Kosten"*. **Still `[unverified]`, and the finding is that
+  the document is deliberately non-numeric:** no Effektivkosten threshold, sector benchmark or numerical test appears anywhere in it;
+  and the reported consultation and publication dates and BaFin's reported enforcement outcomes are not in the *Merkblatt* text.
 - Products: KLV, RV, FRV, IDX load-bearing; RIE, BAS, SOF qualified.
 
 ---
@@ -1701,9 +2109,10 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
 - URL: https://www.bundesgerichtshof.de/SharedDocs/Pressemitteilungen/DE/2018/2018107.html ; .../2025/2025227.html ;
   .../2026/2026050.html ;
   http://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/document.py?Gericht=bgh&Art=pm&Datum=2013&nr=65268 (all returned)
-- Retrieved: **no** — direct HTTP egress blocked in the build environment; corroborated by web search (thirteen queries; the
-  2018, 2025 and 2026 decisions corroborated by nine, thirteen and seventeen hosts respectively, **including the court's own
-  press release** in each case)
+- Retrieved: **one of the six lines.** The **BGH press release on IV ZR 201/17** was read in full (HTML, 36 kB,
+  **2026-08-30**). **The other five lines were not retrieved:** no judgment text and no press release for them was opened, and the
+  `juris` document server refused with HTTP 403. Their captions are kept as known references and every statement about them is
+  `[unverified]`.
 - Content: six lines of authority, each of which changes what a delib model must do. **(1) Zillmerung and the
   Mindestrückkaufswert.** **BGH 12 October 2005 — IV ZR 162/03** (with IV ZR 245/03): clauses setting off *Abschlusskosten*
   against the first premiums are an *unangemessene Benachteiligung* and **invalid**, for intransparency and for substantive
@@ -1758,6 +2167,17 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   holding, and **the remedy was not reported**; no *Rentenfaktor* figures were given. For IV ZR 184/24, **the functional form
   linking the swap rate to the percentage is not established**, nor whether the clause reaches *Beitragsfreistellung*. The 30
   April 2025 date for IV ZR 126/23 rests on a **single** summary.
+- Read in the 2026-08-30 pass — **line (3) now carries the court's own words and a worked figure.** The Senate
+  held *"dass die Neuregelung zur Beteiligung des Versicherungsnehmers an Bewertungsreserven ... gemäß § 153 Absatz 3 Satz 3 des
+  Versicherungsvertragsgesetzes (VVG) in der Fassung des Lebensversicherungsreformgesetzes vom 1. August 2014, **in Kraft getreten am
+  7. August 2014**, nicht verfassungswidrig ist"* — **which independently settles the LVRG's entry-into-force date** [R20]. The facts:
+  a *kapitalbildende Lebensversicherung* of 1 September 1999 maturing 1 September 2014, pre-announced on 1 July 2014 at
+  **50.274,17 €** including **2.821,35 €** of *Bewertungsreserven*, finally paid at **47.601,77 €** with only **148,95 €** of
+  *Bewertungsreserven* after the insurer applied its *Sicherungsbedarf*. The press release also reproduces § 153 Abs. 3 Satz 3 in its
+  then-current form, cross-referring to §§ 53c, 54 Abs. 1 und 2, 56a Abs. 3 und 4 und 81c Abs. 1 und 3 VAG a.F., where the provision
+  now in force cites §§ 89, 124 Abs. 1, 139 Abs. 3 und 4, 140 und 214 VAG [R24]. **The BGH quashed and remitted**, the appellate court
+  having made no findings on whether the ordinary conditions for the reduction were met — so the decision settles the constitutional
+  question, not the case.
 - Products: KLV, RV, FRV, IDX, RIE and PFL load-bearing; BAS, SOF, RLV, BU qualified.
 
 ### R37. GDV-Musterbedingungen and German Berufsunfähigkeit market practice
@@ -1769,9 +2189,9 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   https://www.gdv.de/resource/blob/6348/5827a5492cca6aa1147852c30f10247b/allgemeine-bedingungen-fuer-die-kapitalbildende-lebensversicherung-0-pdf-data.pdf
   (returned); https://www.swisslife.de/pk/versicherungen/berufsunfaehigkeitsversicherung/abstrakte-verweisung.html and four
   further insurer pages (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (three queries; the GDV index page and **two
-  GDV-hosted PDFs of the Allgemeine Bedingungen für die kapitalbildende Lebensversicherung**; the BU practice from seven hosts,
-  **four of them insurers**, which is the strongest form of market-practice evidence obtainable without a *Tarifblatt*)
+- Retrieved: **yes** for the index and the endowment set. The **GDV *Musterbedingungen* index** (HTML, 94 kB) and
+  the ***Allgemeine Bedingungen für die kapitalbildende Lebensversicherung*** (PDF, 20 pp., **Stand: 21.07.2025**) were read
+  **2026-08-30**. **The BU model conditions were not opened**, only their titles from the index.
 - Content: the GDV publishes ***unverbindliche Musterbedingungen*** — model conditions that are **non-binding** for insurers and
   whose use is **purely optional**. Two facts about the BU models are established: an earlier set was dated **28 April 2021**,
   and the current ones are **MB BUV 22** and **MB BUZ 22**, dated **15 November 2022** — MB BUV the standalone *selbständige*
@@ -1802,6 +2222,23 @@ independent publishers returning each of §§ 8, 152, 153, 154, 155, 161, 163, 1
   month 7) was not addressed by any summary, and the two produce materially different cash flows** — this is the most important
   unresolved parameter for BU. No source gave a market range for *Leistungsdauer*, *Karenzzeit* options or
   *Nachversicherungsgarantien*.
+- Read in the 2026-08-30 pass — **the largest gap this file recorded is closed: clause text has been
+  retrieved.** The index states the status in the GDV's own words: *"Diese Bedingungen sowie die Muster-Standmitteilungen für
+  Lebensversicherungen sind für die Versicherungsunternehmen unverbindlich. Die Verwendung ist rein fakultativ."* — and it lists the
+  full life catalogue: four BU sets, the endowment set, five annuity sets plus three AltZertG variants, *Risikolebensversicherung*,
+  *Restkreditlebensversicherung*, the *Hinterbliebenenrenten-Zusatzversicherung* forms, and **nine *Muster-Standmitteilungen*** — a
+  source class this file had not recorded and one that maps directly onto § 155 VVG [R25]. **There is no model set for an
+  *Indexpolice*.** From the endowment set: **§ 12 Abs. 3** reproduces § 169 Abs. 3 VVG and adds a refinement the statute lacks —
+  *"Ist die vereinbarte Beitragszahlungsdauer kürzer als fünf Jahre, verteilen wir diese Kosten auf die Beitragszahlungsdauer."*;
+  **§ 12 Abs. 4** is the *Abzug* clause and **leaves the level blank** — *"nehmen wir einen Abzug in Höhe von ...¹² vor"*, footnote 12
+  *"Unternehmensindividuell zu ergänzen."* — justified by the change in the remaining portfolio's risk position and by compensation
+  for collectively provided risk capital, with appropriateness *"im Zweifel von uns nachzuweisen"*, **which is where the
+  burden-of-proof rule lives** [R28]; **§ 12 Abs. 5** carries § 169 Abs. 6 VVG; **§ 13** shows that a *Beitragsfreistellung* carries
+  **its own separate *Abzug***, also blank; **§ 14 Abs. 2** states *"Wir wenden auf Ihren Vertrag das Verrechnungsverfahren nach § 4
+  der Deckungsrückstellungsverordnung an"* with the amortised amount *"auf 2,5 % der von Ihnen während der Laufzeit des Vertrages zu
+  zahlenden Beiträge beschränkt"* [R16]. **Corrections:** the "MB BUV 22 / MB BUZ 22, dated 15 November 2022" naming **does not appear
+  on the GDV index**, which dates its life section 13.09.2022 and the endowment set 21.07.2025; the short names and the November date
+  are dropped. **Still `[unverified]`:** all BU clause text, the *Verweisung* wording and the six-month / 50 % thresholds.
 - Products: KLV, RV, RLV, BU load-bearing; the rest qualified.
 
 ---
@@ -1825,10 +2262,9 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   operative content lives in the EStG, so it has no standing `gesetze-im-internet.de` page.
 - URL: **not established.** A BGBl citation commonly reported as *vom 5. Juli 2004, BGBl. I S. 1427* is `[unverified]` and is
   recorded as a lead, not a citation.
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration by the tax sweep (session search budget
-  exhausted)**. The act's *name* and its role as the **1 January 2005** boundary are corroborated at second hand by the KLV
-  product sweep, where multiple secondary hosts identify that date as *the Alterseinkünftegesetz cut-off* for the taxation of
-  endowment proceeds.
+- Retrieved: **no for the act.** No BGBl text and no Bundestag drucksache for the AltEinkG was located or opened in
+  this pass. **The two transitions it created were read**, from the EStG canonical XML, **Stand: zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197**, on **2026-08-30** — § 10 Abs. 3 at [R39] and
+  § 22 Nr. 1 Satz 3 Buchst. a at [R41].
 - Content: with effect from **1 January 2005** the act replaced *vorgelagerte* taxation of pensions with a ***nachgelagerte***
   system — qualifying contributions deducted during accumulation, the pension taxed as income in payment — and, because a
   wholesale switch would have doubly taxed the cohorts in the middle, introduced **two long linear transitions running in
@@ -1851,6 +2287,11 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   label (the statutory term *Basisrentenvertrag* arrives in the AltZertG only later, [R43]); the **Rürup-Kommission**'s report
   and date; and **every element of the BVerfG citation** — docket number, date, deadline and constitutional article are general
   knowledge and `[unverified]`.
+- Read in the 2026-08-30 pass — **one correction with consequences downstream.** **The
+  contribution-deduction transition has ended.** § 10 Abs. 3 Satz 4 sets 76 per cent for 2013, Satz 6 raises it two points a year
+  *"bis zum Kalenderjahr 2022; ab dem Kalenderjahr 2023 beträgt er 100 Prozent"* — so only **one** of the two long transitions is
+  still running, the *Besteuerungsanteil* path of § 22, which reaches 100 per cent for the **2058** cohort [R41]. This entry
+  previously said both were still running.
 - Products: KLV, RV, FRV, IDX, BAS, RIE, SOF load-bearing as architecture; RLV, BU, PFL qualified.
 
 ### R39. EStG § 10 Abs. 1 Nr. 2 Buchst. b and § 10 Abs. 3 — the Basisrente deduction, the ceiling and the five prohibitions
@@ -1858,11 +2299,8 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   secondary. Doc type: statutory section.
 - URL: https://www.gesetze-im-internet.de/estg/__10.html — **returned in the contract sweep**, alongside the BMF
   *Einkommensteuer-Handbuch* and the Haufe commentary.
-- Retrieved: **no** — direct HTTP egress blocked; **second-hand corroboration**: the contract sweep records **three queries**
-  touching this provision, returning the statutory page, the BZSt certification page, the BMF handbook, a Haufe commentary and
-  four provider pages, and reproduces the five-prohibition formula as a summary quotation. **The prohibitions are the
-  best-corroborated fact in the tax section**, because [R40] reaches the same product shape from a different statute in a
-  different sweep.
+- Retrieved: **yes** — EStG canonical XML, **Stand: zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197**, read **2026-08-30**; § 10 Abs. 1 Nr. 2 and § 10 Abs. 3 read in full.
+  `gesetze-im-internet.de/estg/__10.html` serves in full (41 kB).
 - Content: **Buchst. a** covers the compulsory systems — statutory pension, *landwirtschaftliche Alterskassen* and
   *berufsständische Versorgungseinrichtungen*. delib does not model those, but they **consume the same ceiling a Basisrente
   contribution competes for**, which is the single most important behavioural fact about Basisrente demand. **Buchst. b**
@@ -1896,6 +2334,19 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   BU rider. Whether *Erwerbsminderungs-Basisrenten* are a separate *Produktgruppe* for transfer purposes is not established.
   Whether the **Öffnungsklausel** reaches a private Basisrente is **not established** and is material for high-contribution
   model points. **The whole ceiling series should be treated as `[std]` input candidates, not citations.**
+- Read in the 2026-08-30 pass — **the five prohibitions are now a verbatim statutory quotation and the
+  product shape is more detailed than this entry had it.** *"Die Ansprüche nach Buchstabe b dürfen nicht vererblich, nicht
+  übertragbar, nicht beleihbar, nicht veräußerbar und nicht kapitalisierbar sein."* Doppelbuchst. aa requires *"nur die Zahlung einer
+  monatlichen, auf das Leben des Steuerpflichtigen bezogenen lebenslangen Leibrente nicht vor Vollendung des 62. Lebensjahres"*, with
+  optional BU, EMI and survivor cover, survivors being the spouse and *Kindergeld*-eligible children. **Two qualifications on
+  *nicht kapitalisierbar*:** up to twelve monthly instalments may be paid together, and a *Kleinbetragsrente* under § 93 Abs. 3 EStG
+  may be commuted, contracts at one provider being aggregated for that test; and *"Neben den genannten Auszahlungsformen darf kein
+  weiterer Anspruch auf Auszahlungen bestehen."* **Doppelbuchst. bb is a second qualifying shape** — a stand-alone BU/EMI contract
+  paying a lifelong monthly annuity for an insured event occurring up to completion of **age 67**, with benefit cessation on medically
+  justified recovery and an age-dependent benefit permitted from age 55. **The ceiling, § 10 Abs. 3 Satz 1:** *"bis zu dem
+  Höchstbeitrag zur knappschaftlichen Rentenversicherung, aufgerundet auf einen vollen Betrag in Euro"*, doubled for jointly assessed
+  spouses. **Still `[unverified]`:** the age 60 for pre-2012 contracts — that transitional is in § 52, which was not read for this
+  provision — and the euro value of the *Höchstbeitrag* for any year [R46].
 - Products: BAS load-bearing; RIE, RLV, BU qualified — by contrast, for what is *not* deductible [R46].
 
 ### R40. ZPO §§ 850b and 851c — Pfändungsschutz and the shape it imposes on a Basisrente
@@ -1903,8 +2354,9 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   commentary on Haufe as secondary. Doc type: statutory sections.
 - URL: https://www.gesetze-im-internet.de/zpo/__850b.html and `__851c.html` (returned);
   https://www.buzer.de/gesetz/7030/al162722-0.htm (returned, the pre-2022 version of § 851c)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the contract sweep** (three queries; eight
-  hosts on § 851c and nine on § 850b; the 340,000 € cap from two independent summaries)
+- Retrieved: **yes** — ZPO canonical XML, **Stand: zuletzt geändert Art. 2 G v. 22.12.2025 I Nr. 349**, read
+  **2026-08-30**; §§ 850b, 851c and **851d** read in full. `gesetze-im-internet.de/zpo/__850b.html` is a 5.3 kB frameset shell;
+  `buzer.de` serves the pre-2022 § 851c version, which is what the conflicting figures came from.
 - Content: **§ 851c Abs. 1** — claims to benefits may be attached **only as earnings from employment** where **all** of the
   following hold: the benefit is granted **at regular intervals, for life, and not before the completion of the 60th year of
   age, or only on the occurrence of Berufsunfähigkeit**; the claims **may not be disposed of**; the **designation of third
@@ -1926,6 +2378,17 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   reported as pre-2022. Both are recorded, **both `[unverified]` on the precise bands**; the 340,000 € aggregate is agreed. The
   amending instrument is reported only as "*geändert durch Artikel 1 G. v. 07.05.2021 BGBl. I S. 850*" in a URL title. **§ 851d
   ZPO** (the payout-phase counterpart) was named and never searched.
+- Read in the 2026-08-30 pass — **the contested savings bands are settled.** § 851c Abs. 2 Satz 1: the amounts
+  are unattachable so far as they do not annually exceed **6 000 Euro** for a debtor from 18 to the completed 27th year and
+  **7 000 Euro** from 28 to the completed 67th, and do not exceed **340 000 Euro** in aggregate. **So the 6 000 / 7 000 two-band
+  ladder is current law and the 2 000–9 000 age-graded ladder is the superseded version.** Two further rules: the amounts are re-set
+  every fifth year on 1 July in the *Pfändungsfreigrenzenbekanntmachung*, and where the *Rückkaufwert* exceeds the unattachable amount
+  **three tenths of the excess** are unattachable, except above three times 340 000 Euro. § 851c Abs. 1's four conditions are confirmed
+  verbatim. **§ 851d**, new to this entry, makes monthly benefits from **tax-subsidised** retirement assets attachable *"wie
+  Arbeitseinkommen"*. **Correction:** § 850b Abs. 1 Nr. 1 covers *"Renten, die wegen einer Verletzung des Körpers oder der Gesundheit
+  zu entrichten sind"* and **does not name private *Berufsunfähigkeitsversicherung*** — that inclusion is case law and stays
+  `[unverified]`. § 850b Abs. 1 Nr. 4 adds a figure: death-only life insurance claims are conditionally attachable where the sum
+  assured does not exceed **5 400 Euro**.
 - Products: BAS and BU load-bearing; RIE, KLV, RV, FRV, PFL qualified.
 
 ### R41. EStG § 22 Nr. 1 Satz 3 Buchst. a and § 55 EStDV — Besteuerungsanteil, Rentenfreibetrag and Ertragsanteil
@@ -1933,8 +2396,10 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
 - URL: https://www.gesetze-im-internet.de/estg/__22.html and https://www.gesetze-im-internet.de/estdv_1955/__55.html — **both
   `[unverified canonical form]`**; the `/estg/__NN.html` pattern is evidenced by the sibling return of `__10.html`, the EStDV
   slug is a guess and is **the least reliable URL in this file**.
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (session search budget exhausted)**. **Every figure
-  in this entry is `[unverified]` and both tables are reconstructions.**
+- Retrieved: **yes** — EStG canonical XML, **Stand: zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197** and EStDV 1955 canonical XML (**Stand: zuletzt geändert durch Art. 2 V v.
+  19.12.2025 I Nr. 372**), read **2026-08-30**; § 22 Nr. 1 Satz 3 Buchst. a read in full **including both statutory tables**, and
+  § 55 EStDV read in full **including its table**. Both per-section pages serve (48 kB and 21 kB). **This entry was previously a
+  reconstruction with no corroboration at all.**
 - Content: **Doppelbuchst. aa — the Schicht-1 rule.** Three mechanics, and the third is the one models and product documents get
   wrong. **(1) The *Besteuerungsanteil* is fixed by the year the pension starts, not by the year of receipt**, and one cohort
   table applies to the gesetzliche Rente, a Versorgungswerk pension and a private Basisrente alike. The reported path: **50 %
@@ -1967,6 +2432,20 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   statute or an annex is not established. **delib publishes gross cash flows and computes no tax**; what the BAS, SOF and BU
   notes owe the reader is the statement that the *tax* profile of the published stream is **not flat**, and that any net-of-tax
   analysis must apply a **frozen euro allowance** in Schicht 1 and a **frozen percentage** in Schicht 3.
+- Read in the 2026-08-30 pass — **both tables are now the statute's own.** **Besteuerungsanteil by year of
+  *Rentenbeginn*:** bis 2005 **50,0**; 2006 52,0; 2007 54,0; 2008 56,0; 2009 58,0; 2010 **60,0**; 2011 62,0; 2012 64,0; 2013 66,0;
+  2014 68,0; 2015 70,0; 2016 72,0; 2017 74,0; 2018 76,0; 2019 78,0; 2020 **80,0**; 2021 81,0; 2022 82,0; **2023 82,5** and half-point
+  steps thereafter — 2024 83,0; 2025 83,5; 2026 84,0; … 2030 86,0; … — to **2058 100,0**. The reported shape, including the flattening
+  from the 2023 cohort and the 2058 endpoint, is confirmed exactly; the attribution to the *Wachstumschancengesetz* is not in the
+  consolidated text and stays `[unverified]`. **The *Rentenfreibetrag* mechanics are more qualified than this entry said:** Satz 5
+  freezes the tax-free part *"ab dem Jahr, das dem Jahr des Rentenbeginns folgt, für die gesamte Laufzeit"*, but **Satz 6** adjusts it
+  proportionally on a change in the annual amount and **Satz 7** provides *"Regelmäßige Anpassungen des Jahresbetrags der Rente führen
+  nicht zu einer Neuberechnung und bleiben bei einer Neuberechnung außer Betracht."* — so "every increase is fully taxable" holds for
+  *regelmäßige Anpassungen*, and whether a surplus-driven increase is one is `[unverified]`. **Ertragsanteil:** the table is keyed to
+  the *"Bei Beginn der Rente **vollendetes Lebensjahr**"*, which answers the open question; it runs 59 % at ages 0–1 down to 1 % from
+  97, with **65–66 → 18 %** and **60–61 → 22 %** confirmed and neighbours 62 → 21, 63 → 20, 64 → 19, 67 → 17, 68 → 16, 69–70 → 15.
+  **§ 55 Abs. 2 EStDV** supplies the *abgekürzte Leibrenten* table keyed to the remaining term, 97 % at three years down to 2 % at 59,
+  with a third column falling back to the § 22 age table.
 - Products: RV, FRV, IDX, BAS, SOF, BU load-bearing; KLV, RIE, PFL qualified.
 
 ### R42. EStG § 10a and Abschnitt XI (§§ 79–99) — the Riester subsidy machinery
@@ -1975,9 +2454,9 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
 - URL: https://www.gesetze-im-internet.de/estg/__10a.html ; `__79.html` ; `__84.html` ; `__85.html` ; `__86.html` ; `__93.html`
   — **all `[unverified canonical form]`**; the contract sweep records explicitly that **no `/estg/__93.html` page was returned**
   by either of its two *Kleinbetragsrente* queries, twelve secondary hosts being returned instead.
-- Retrieved: **no** — direct HTTP egress blocked; **no first-hand search corroboration (session search budget exhausted)**;
-  second-hand only for the *Kleinbetragsrente* carve-out (contract sweep: two queries, twelve secondary hosts). **Every euro
-  figure below is `[unverified]`.**
+- Retrieved: **yes** — EStG canonical XML, **Stand: zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197**, read **2026-08-30**; §§ 10a, 79, 82, 83, 84, 85, 86 and 93 read in full.
+  `gesetze-im-internet.de/estg/__10a.html` serves in full (17 kB). **Every euro figure in this entry was previously
+  `[unverified]`.**
 - Content: **§ 10a — the deduction and the *Günstigerprüfung*.** Contributions to a certified *Altersvorsorgevertrag*, **plus
   the Zulagen credited to it**, are deductible as *Sonderausgaben* up to **2,100 € a year**, reportedly unchanged since 2008.
   The tax office computes both the tax saved and the *Zulagenanspruch* of its own motion and grants the better; if the deduction
@@ -2028,6 +2507,20 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   procedure, the § 34 treatment, the **2026 Bezugsgröße of 3,955 €/month** (two secondary sources, neither official, and
   unsettled as between the bundeseinheitliche and the West figure), and every Wohn-Riester parameter. **§ 93 EStG's statutory
   text was never returned by any sweep.**
+- Read in the 2026-08-30 pass — **every figure is now statutory, and the contested *Kleinbetragsrente*
+  threshold is settled.** § 10a Abs. 1 Satz 1: *"Altersvorsorgebeiträge (§ 82) zuzüglich der dafür nach Abschnitt XI zustehenden
+  Zulage jährlich bis zu **2 100 Euro** als Sonderausgaben abziehen"*. § 84 Satz 1: *"diese beträgt ab dem Beitragsjahr 2018 jährlich
+  **175 Euro**"*, Satz 2 adding *"einmalig **200 Euro**"* for those under 25 at the start of the *Beitragsjahr*. § 85 Abs. 1:
+  **185 Euro** per child, **300 Euro** for a child born after 31 December 2007, allocated to the mother by default (Abs. 2). § 79
+  Satz 2 Nr. 4: the *mittelbar* entitled spouse must pay **at least 60 Euro** into their own contract. § 86 Abs. 1 Satz 2: 4 per cent
+  of the prior year's income *"jedoch nicht mehr als der in § 10a Absatz 1 Satz 1 genannte Höchstbetrag, vermindert um die Zulage nach
+  den §§ 84 und 85"*, Satz 4 the **60 Euro** *Sockelbetrag*, and **Satz 6 settles the proportionality trap in one sentence:**
+  *"Die Kürzung der Zulage ermittelt sich nach dem Verhältnis der Altersvorsorgebeiträge zum Mindesteigenbeitrag."* **§ 93 Abs. 3
+  Satz 2 Nr. 1** defines a *Kleinbetragsrente* by **1,5 Prozent der monatlichen Bezugsgröße nach § 18 SGB IV**, and Nr. 2 adds an
+  *Auszahlungsplan* variant **ab dem 1. Januar 2027 on the same 1,5 per cent** — **so 1.5 per cent is the rate in force now and the
+  2027 date attaches to the payout-plan variant, not to the rate.** **§ 82 Abs. 1** defines *geförderte Altersvorsorgebeiträge* as
+  contributions *"die der Zulageberechtigte ... leistet"*, which is the definition the *Beitragsgarantie* question at [R43] turns on.
+  **Still `[unverified]`:** the euro *Bezugsgröße* for any year [R46], and the *t+1* Zulage crediting convention.
 - Products: RIE load-bearing; FRV and BAS qualified.
 
 ### R43. AltZertG, the BZSt, the AltvPIBV and the Produktinformationsstelle Altersvorsorge
@@ -2044,9 +2537,13 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Weitere_Steuerthemen/Altersvorsorge/2019-03-14-Produktinformationsblatt-AltZertG-Muster-gemaess-AltvPIBV.pdf?__blob=publicationFile&v=4
   (returned, the BMF *Muster-Produktinformationsblatt* of 14 March 2019). `.../altzertg/__5a.html` is **`[unverified canonical
   form]`** and was **not** returned.
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the contract and prudential sweeps** (six
-  queries, thirteen hosts, including **two BZSt commentary PDFs**, the BMF Muster PIB and the PIA's own *Allgemeinverfügung*;
-  the five CRK classes and the 1 January 2017 start from three independent sources)
+- Retrieved: **yes for the statute** — AltZertG canonical XML, **Stand: zuletzt geändert durch Art. 5 G v.
+  25.10.2023 I Nr. 294**, with Artt. 5–7 G v. 26.5.2026 I Nr. 156 recorded as *textlich nachgewiesen, dokumentarisch noch nicht
+  abschließend bearbeitet* [R44]; §§ 1, 2, 2a and 5a read in full, **2026-08-30**. The `BJNR132200001.html` index page serves
+  (100 kB) and `buzer.de/gesetz/2399/a182166.htm` serves for § 2a. **Not retrieved:** the AltvPIBV beyond its section list
+  (`altvpibv/__5.html` is a 7.5 kB shell), the **BZSt commentary PDF** (which does serve, 1.25 MB, but was not read), the
+  **BMF *Muster*-PIB** (which does serve, 1.10 MB, but was not read) and any **PIA determination** (`produktinformationsstelle.de`
+  serves, 36 kB, but no *Allgemeinverfügung* was opened).
 - Content: Riester and Basisrente are **certified product categories under a statute of their own**, and certification is a
   *product* approval, not a *tax* ruling. The AltZertG defines what an *Altersvorsorgevertrag* (§ 1) and a *Basisrentenvertrag*
   (§ 5a) must contain; the **BZSt** issues the certificate — reported to have moved from BaFin to the BZSt on **1 July 2010** —
@@ -2092,6 +2589,25 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   CRK class boundaries are not established**; whether the PIA *Allgemeinverfügung* of 2022 is the operative determination is
   ambiguous; the BMF Muster PIB is dated 14 March 2019 and may have been superseded. Whether the PIB regime reaches Schicht-3
   products is not established — the sources describe it as *geförderte*-only.
+- Read in the 2026-08-30 pass — **one correction and five confirmations.** **Correction: § 5a is not the
+  definition of a *Basisrentenvertrag*.** It is a one-sentence procedural provision — *"Die Zertifizierungsstelle erteilt die
+  Zertifizierung nach § 2 Abs. 3, wenn ihr die nach diesem Gesetz erforderlichen Angaben und Unterlagen vorliegen sowie die
+  Vertragsbedingungen des Basisrentenvertrags dem § 2 Absatz 1 oder Absatz 1a sowie dem § 2a entsprechen und der Anbieter den
+  Anforderungen des § 2 Absatz 2 entspricht."* **The substantive definition is § 2**, whose Abs. 1 simply incorporates § 10 Abs. 1
+  Nr. 2 Buchst. b Doppelbuchst. aa EStG, and whose **Abs. 1a defines the Basisrente-Erwerbsminderung** with a twelve-month prognosis,
+  six-hour and three-hour thresholds, at least half the benefit on partial incapacity, backdating capped at 36 months, interest-free
+  premium deferral during claims assessment, and a waiver of the § 19 Abs. 3 Satz 2 and Abs. 4 VVG rights. **Confirmed:** the
+  *Beitragsgarantie* of § 1 Abs. 1 Nr. 3 on *"die eingezahlten Altersvorsorgebeiträge"* with *"bis zu 20 Prozent der Gesamtbeiträge"*
+  left out where used for biometric cover; **age 62** and the statutory unisex requirement in § 1 Abs. 1 Nr. 2; the payout shape of
+  § 1 Abs. 1 Nr. 4 Buchst. a — lifelong annuity or *Auszahlungsplan* with *Teilkapitalverrentung* from at latest age 85, benefits that
+  *"müssen während der gesamten Auszahlungsphase gleich bleiben oder steigen"*, up to twelve instalments combinable, a
+  *Kleinbetragsrente* commutable with a **four-week** deferral right, and *"bis zu 30 Prozent des zu Beginn der Auszahlungsphase zur
+  Verfügung stehenden Kapitals"* payable outside the monthly benefits; and the § 2a enumeration of permitted cost types, which applies
+  to **both** contract types. **On the *Zulagen* question the pass narrows without closing:** § 1 Abs. 1 Nr. 3 guarantees
+  *Altersvorsorgebeiträge*, and § 82 Abs. 1 EStG defines those as contributions *"die der Zulageberechtigte ... leistet"* [R42] —
+  which on its face excludes the state *Zulagen* — but the AltZertG does not cross-refer to § 82 EStG and no authority was retrieved,
+  so it stays the section's most material `[std]` choice. **Still `[unverified]`:** the act's date, the BaFin→BZSt transfer, the
+  AltvPIBV's content, the CRK scale and boundaries, and the *Wechselkosten* cap.
 - Products: RIE and BAS load-bearing; RV, FRV, IDX qualified for cost-disclosure contrast.
 
 ### R44. The Altersvorsorgereformgesetz 2026 and the Altersvorsorgedepot
@@ -2103,10 +2619,9 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
       https://www.deutsche-rentenversicherung.de/DRV/DE/Ueber-uns-und-Presse/Presse/Meldungen/2026/260508-bundesrat-reform-private-altersvorsorge
       (returned); https://www.bundesfinanzministerium.de/Content/DE/FAQ/reform-der-privaten-altersvorsorge.html (returned);
       https://www.bundesregierung.de/breg-de/aktuelles/reform-private-altersvorsorge-2400072 (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the contract sweep** (two queries, nine hosts,
-  **four of them official** — Bundestag ×2, DRV, BMF, Bundesregierung; the 8 May 2026 Bundesrat date and the 1 January 2027
-  start each from two independent sources). **This is the strongest external corroboration available anywhere in the tax
-  section.**
+- Retrieved: **yes for the official explanatory material** — the **DRV release of 8 May 2026** (HTML, 148 kB), the
+  **BMF FAQ** (313 kB), the **Bundesregierung Q&A** (123 kB), the **Bundestag text archive** entry (508 kB) and the **Bundestag
+  drucksache 21/4088** (PDF, 1.25 MB), all read **2026-08-30**. **The Act's own text was not retrieved.**
 - Content: **Riester is closed.** The **Bundesrat approved the *Altersvorsorgereformgesetz* on 8 May 2026**, so it entered into
   force on publication in the Bundesgesetzblatt, and **the new state-subsidised private provision starts on 1 January 2027**.
   From 2027 the Riester-Rente is **replaced by a new subsidised model**, described by the Federal Government as more flexible,
@@ -2124,6 +2639,20 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   **not established** beyond an inference from one provider page. The earlier stages (a BMF *Fokusgruppe private Altersvorsorge*
   reporting in 2023 and a lapsed 2024 *pAV-Reformgesetz* Referentenentwurf) and the reported design of a proportional subsidy
   are general knowledge and `[unverified]`. The **Frühstart-Rente** discussed in the same debate was never searched.
+- Read in the 2026-08-30 pass — **the enactment contradiction is resolved, from two directions.** The DRV
+  states *"Der Bundesrat hat am 8. Mai 2026 dem Gesetz zur Reform der steuerlich geförderten privaten Altersvorsorge
+  (Altersvorsorge-Reformgesetz) zugestimmt"*, and **the consolidated statutes give the promulgation**: the VVG's `Stand` reads
+  *"zuletzt geändert durch Art. 12 G v. 26.5.2026 I Nr. 156"* and the AltZertG carries Artt. 5–7 of the same act — so the Bundesrat
+  consented on **8 May 2026** and the Act is the **Gesetz vom 26. Mai 2026, BGBl. 2026 I Nr. 156**. The two dates were never in
+  conflict. **The new regime's shape:** free choice between a lifelong annuity and an *Entnahmeplan*; products with an **80 % or a
+  100 % *Beitragsgarantie*** or a standard product; ***Altersvorsorgedepots* without guarantees and without a lifelong payout**, with
+  a **20-year payout phase from age 65** ending at 85; and eligibility extended to the **self-employed and members of
+  *Versorgungswerke***. **The new subsidy formula:** a *Grundzulage* of **50 cent per euro up to 360 Euro**, then **25 cent per euro
+  on a further 1 440 Euro**, so **up to 540 Euro**; a *Kinderzulage* of **1 Euro per euro up to 300 Euro per child**; and a
+  *Sonderausgabenabzug* of at most **1 800 Euro plus the Zulagenanspruch**. **Grandfathering is explicit:** *"Bestehende
+  Riester-Verträge laufen weiter! Es gibt einen Bestandsschutz für diese Verträge."*, with an optional switch by declaration and no
+  clawback — but taking out a new contract alongside an old one applies the new rules to the old one automatically. **Still
+  `[unverified]`:** the Act's text and article structure, and every transitional date beyond 1 January 2027.
 - Products: RIE load-bearing; BAS, RV, FRV qualified.
 
 ### R45. EStG § 20 Abs. 1 Nr. 6 — the Unterschiedsbetrag, the 12/62 rule and the Mindesttodesfallschutz
@@ -2137,10 +2666,10 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   (returned);
   https://www.iww.de/wvm/archiv/kapitallebensversicherungen-neuer-mindesttodesfallschutz-fuer-ab-dem-1-april-2009-abgeschlossene-vertraege-f14610
   (returned). The statutory page `https://www.gesetze-im-internet.de/estg/__20.html` is **`[unverified canonical form]`**.
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the KLV product sweep** (the
-  *Unterschiedsbetrag* base, the half-income rule, the 60→62 tightening and the § 32d Abs. 2 Nr. 2 interaction from the BMF
-  handbook annex plus five commentary hosts; the 50 % rule and the 1 April 2009 date from **two independent sources**, with a
-  third naming it the *"50 %-Regel"*)
+- Retrieved: **yes** — EStG canonical XML, **Stand: zuletzt geändert durch Art. 7 G v. 29.6.2026 I Nr. 197**, read **2026-08-30**; § 20 Abs. 1 Nr. 6 read in full (nine Sätze) together with the
+  relevant sentences of § 52 Abs. 28. `gesetze-im-internet.de/estg/__20.html` serves in full (33 kB). The BMF handbook annex at
+  `esth.bundesfinanzministerium.de` returns a Radware interstitial rather than the annex and is **not** a retrieval; the Haufe, IWW
+  and NWB commentaries serve.
 - Content: the tax rule that decides when a German endowment or unit-linked contract is cashed in, and therefore the shape of
   every Schicht-3 lapse assumption in delib. **The base**: the taxable amount is the ***Unterschiedsbetrag* between the
   *Versicherungsleistung* and the sum of the *Beiträge* paid on it** — a gain measure, taking no account of inflation. **The
@@ -2178,6 +2707,20 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   gains attributable to equity-fund units inside a *fondsgebundene* contract, giving a composite taxable share of about **42.5
   %**, is **general knowledge throughout, uncorroborated, and the weakest claim in this section**; an FRV specification may name
   it only with the tag.
+- Read in the 2026-08-30 pass — **the twelve-year start point, the 60→62 transitional and the second limb of
+  the *Mindesttodesfallschutz* are all resolved.** Satz 2: *"Wird die Versicherungsleistung nach Vollendung des 60. Lebensjahres des
+  Steuerpflichtigen und nach Ablauf von zwölf Jahren **seit dem Vertragsabschluss** ausgezahlt, ist die Hälfte des
+  Unterschiedsbetrags anzusetzen."* — **so the twelve years run from *Vertragsschluss***. **§ 52 Abs. 28 Satz 7:** *"§ 20 Absatz 1
+  Nummer 6 Satz 2 ist für Vertragsabschlüsse nach dem 31. Dezember 2011 mit der Maßgabe anzuwenden, dass die Versicherungsleistung
+  nach Vollendung des 62. Lebensjahres des Steuerpflichtigen ausgezahlt wird."* — 12/60 for 2005–2011 contracts, 12/62 from 2012.
+  **Satz 6 is a two-limbed cumulative test**, and the "reported second condition" this entry could not parse is limb (b): Satz 2 is
+  disapplied where **(a)** the death benefit is *"weniger als 50 Prozent der Summe der für die gesamte Vertragsdauer zu zahlenden
+  Beiträge"* **and (b)** it does not exceed the *Deckungskapital* or *Zeitwert* *"spätestens fünf Jahre nach Vertragsabschluss ... um
+  mindestens 10 Prozent"* of the *Deckungskapital*, the *Zeitwert* or the premiums paid, that 10 per cent being allowed to fall to
+  zero in equal annual steps. **§ 52 Abs. 28 Satz 8** dates Satz 6 to contracts *"die nach dem 31. März 2009 abgeschlossen werden"*.
+  **Two sentences new to this entry:** Satz 5 treats a *vermögensverwaltender Versicherungsvertrag* as transparent, and **Satz 9**
+  makes **15 per cent of the *Unterschiedsbetrag* tax-free for *fondsgebundene Lebensversicherungen*** so far as it stems from
+  *Investmenterträge*. **Still `[unverified]`:** the § 32d Abs. 2 Nr. 2 interaction, which was not read.
 - Products: KLV, RV, FRV, IDX load-bearing; RIE, SOF, RLV qualified. **All delib benefit cash flows are gross of
   *Kapitalertragsteuer*, *Solidaritätszuschlag* and *Kirchensteuer*; the models compute no tax and no withholding**, and every
   Schicht-3 `technical-notes.md` says so in one line.
@@ -2189,9 +2732,10 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
 - URL: **not established** for any of them. `https://www.gesetze-im-internet.de/erbstg_1974/__3.html` and
   `https://www.gesetze-im-internet.de/sgb_5/__229.html` are **`[unverified canonical form]`** and the ErbStG slug is itself a
   guess.
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (session search budget exhausted)**, except the
-  **2026 monthly *Bezugsgröße* of 3,955 €**, which the contract sweep records from **two secondary sources, neither official**.
-  **Every figure is `[unverified]`.**
+- Retrieved: **yes** — ErbStG canonical XML (**Stand: zuletzt geändert durch Art. 10 G v. 22.6.2026 I Nr. 192**),
+  § 3 read in full, and **SGB V**, fetched and indexed in this pass (canonical XML, **Stand: zuletzt geändert durch Art. 1 G v.
+  26.6.2026 I Nr. 195**), §§ 226, 229 and 240 read in full, both **2026-08-30**. `gesetze-im-internet.de/erbstg_1974/__3.html` serves
+  (8.5 kB); `sgb_5/__229.html` is a 6.9 kB frameset shell, which is why the XML is the citable route.
 - Content: **Germany has no insurance-specific death-benefit tax regime.** Unlike France, where CGI arts. 990 I and 757 B carve
   life insurance out of ordinary succession, a German *Todesfallleistung* paid to a named beneficiary is simply an ***Erwerb von
   Todes wegen*** under § 3 Abs. 1 Nr. 4 ErbStG — a benefit acquired under a contract for the benefit of a third party — and
@@ -2236,6 +2780,20 @@ queries, two BZSt PDFs), **R44** (the 2026 reform — nine hosts, four official)
   self-employed and **1,900 €** for employees — a ceiling that basic health and care contributions alone normally exhaust, so
   that **a German risk-protection premium is in practice not deductible at all**, the exact opposite of the Schicht-1 position
   and the reason the market sells **BU cover inside a Basisrente**.
+- Read in the 2026-08-30 pass — **three claims confirmed, two corrected, one base established.**
+  **Confirmed:** § 3 Abs. 1 Nr. 4 ErbStG covers *"jeder Vermögensvorteil, der auf Grund eines vom Erblasser geschlossenen Vertrags bei
+  dessen Tode von einem Dritten unmittelbar erworben wird"*. § 229 Abs. 1 lists the five *Versorgungsbezüge* classes and excludes
+  *"Leistungen aus Altersvorsorgevermögen im Sinne des § 92 des Einkommensteuergesetzes"* from the bAV class, so a private Riester
+  annuity, a Basisrente and every Schicht-3 annuity are outside it. **§ 226 Abs. 2 gives the *Freibetrag* base this entry could not
+  state:** contributions are payable only where the monthly total exceeds *"ein Zwanzigstel der monatlichen Bezugsgröße nach § 18 des
+  Vierten Buches"*, and a *Freibetrag* of the same one-twentieth is then deducted from the § 229 Abs. 1 Satz 1 Nr. 5 income.
+  **Corrections. (1)** A ***Versorgungswerk*** pension **is** a *Versorgungsbezug* — § 229 Abs. 1 Nr. 3, *"Renten der Versicherungs-
+  und Versorgungseinrichtungen, die für Angehörige bestimmter Berufe errichtet sind"* — so the Schicht-1 exemption does not extend to
+  the compulsory professional schemes. **(2) § 240 does not itself name private annuities**; it requires that
+  *"die Beitragsbelastung die gesamte wirtschaftliche Leistungsfähigkeit des freiwilligen Mitglieds berücksichtigt"*, and the express
+  inclusion is in the GKV-Spitzenverband's *Beitragsverfahrensgrundsätze Selbstzahler*, which was not retrieved. **The "full rate borne
+  entirely by the pensioner" claim is § 248 SGB V, which was not read, and is dropped from this entry.** **Still `[unverified]`:**
+  § 7 ErbStG, § 248 SGB V, the *Über-Kreuz-Versicherung* and gift structuring practices, and the 2026 monthly *Bezugsgröße*.
 - Products: KLV, RLV and RIE load-bearing; the rest qualified.
 
 ---
@@ -2254,8 +2812,10 @@ stands in for and says what a replacement must preserve.
   HGB [R54] and the DAV *Fachgrundsätze* [R56]. Doc type: market terminology and professional practice, not a document.
 - URL: `https://aktuar.de/` — the host and the path shapes `content/PDF/Fachwissen/` and `de/newsroom/detail/` were **returned
   in the prudential sweep**; **no table-specific path is established**.
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration by the biometric sweep (budget exhausted)**; the
-  host and path shapes are second-hand from the prudential sweep.
+- Retrieved: **the DAV website yes, the tables no.** `aktuar.de` was browsed on **2026-08-30** — the home page
+  (HTML, 130 kB), the *Wissen* index and the *Regularien* page — and **no page offering or describing any of the five tables was
+  found.** This is not a network limitation: the site serves, and the DAV distributes its tables to members and licensees.
+  **The prudence rule behind the two-basis structure was retrieved** from § 5 Abs. 1 DeckRV and § 138 Abs. 1 VAG.
 - Content: the DAV occupies a position with **no equivalent in frlib, uklib or uslib**: it is at once the professional body
   whose members sign the statutory certifications [R11], the standard-setter whose *Fachgrundsätze* bind them [R56], **the body
   that derives and owns the market's biometric tables**, and the body that makes the annual *Höchstrechnungszins* recommendation
@@ -2294,15 +2854,22 @@ stands in for and says what a replacement must preserve.
   DGVFM*, continued from 2010 as the *European Actuarial Journal* — even though the tables themselves are not freely
   available**, which is the right place to send a reader who wants to improve on a delib proxy; but **no specific derivation
   paper was identified for any of the five tables**, and volume numbers, years, authors and titles are all **not established**.
+- Read in the 2026-08-30 pass — **the prudence requirement is now a regulation, not a convention.** § 5 Abs. 1
+  DeckRV [R17]: *"Die Ableitung von Rechnungsgrundlagen auf der Basis eines besten Schätzwertes genügt nicht. Die Abschätzung künftiger
+  Verhältnisse muss eine nachteilige Abweichung der relevanten Faktoren von den getroffenen, aus den Statistiken abgeleiteten Annahmen
+  beinhalten."*, with § 138 Abs. 1 VAG requiring *angemessene versicherungsmathematische Annahmen* [R8] and § 143 VAG making the
+  insurer's own choice supervisor-visible but not public [R11]. **Neither instrument names a table**, which is what makes the DAV
+  tables a market default rather than a legal mandate. **Everything about the tables themselves remains unretrieved**, per
+  [R48]–[R51].
 - Products: all ten.
 
 ### R48. DAV 2008 T and its predecessors — the death-benefit mortality basis
 - Publisher: Deutsche Aktuarvereinigung e.V., 2008 `[unverified]`. Doc type: proprietary actuarial table. **Not public, not
   redistributable; delib ships no version of it.**
 - URL: **not established.**
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (budget exhausted)**. The table's *name* is
-  corroborated only at one remove, from the commissioning brief and the prudential sweep's gap register, not from an independent
-  search hit.
+- Retrieved: **no — DAV 2008 T is not published.** `aktuar.de` serves and was browsed on **2026-08-30** (home page, *Wissen*
+  index, *Regularien*); no page offers or describes the table. The obstacle is the DAV's distribution model, not network access, and
+  it did not change in this pass.
 - Content: the market-standard first-order mortality basis for **German death-benefit business** — *Risikolebensversicherung*,
   the death component of a *Kapitallebensversicherung*, death cover in a deferred annuity's accumulation phase, and the
   *Beitragsrückgewähr* death benefit of a BAS or RIE contract. It succeeded **DAV 1994 T** and is understood to derive from
@@ -2334,8 +2901,9 @@ stands in for and says what a replacement must preserve.
 - Publisher: Deutsche Aktuarvereinigung e.V., 2004 `[unverified]`. Doc type: proprietary actuarial tables. **Not public, not
   redistributable; delib ships no version of them.**
 - URL: **not established.**
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration**; the two queries the biometric sweep was permitted
-  to attempt were both aimed at this table and both were refused.
+- Retrieved: **no — DAV 2004 R is not published.** `aktuar.de` serves and was browsed on **2026-08-30** (home page, *Wissen*
+  index, *Regularien*); no page offers or describes the table. The obstacle is the DAV's distribution model, not network access, and
+  it did not change in this pass.
 - Content: the market-standard first-order basis for **every German annuity promise** — RV and SOF directly, and FRV, IDX, BAS
   and RIE through annuitisation of the accumulated fund. Its defining property is that it is a ***Generationentafel***: a
   two-dimensional basis $q(x,\tau)$ in attained age and calendar year, **not a period table**. That is the one structural fact a
@@ -2372,7 +2940,9 @@ stands in for and says what a replacement must preserve.
 - Publisher: Deutsche Aktuarvereinigung e.V., 1997 `[unverified]`. Doc type: proprietary actuarial tables. **Not public, not
   redistributable; delib ships no version of them.**
 - URL: **not established.**
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (budget exhausted)**.
+- Retrieved: **no — the DAV 1997 family is not published.** `aktuar.de` serves and was browsed on **2026-08-30** (home page, *Wissen*
+  index, *Regularien*); no page offers or describes the table. The obstacle is the DAV's distribution model, not network access, and
+  it did not change in this pass.
 - Content: **a correction to the commissioning brief, recorded as a question rather than a correction.** The brief names "DAV
   1997 I and DAV 1997 TI (Eintritts- und Reaktivierungswahrscheinlichkeiten)". On this compiler's understanding that pairing is
   incomplete: a German BU model needs **three** decrements and the market names a family of **three** tables — **I** for
@@ -2408,9 +2978,9 @@ stands in for and says what a replacement must preserve.
   type: proprietary actuarial table; statutory sections.
 - URL: table **not established**; https://dejure.org/gesetze/SGB_XI/15.html (returned in the contract sweep);
   `https://www.gesetze-im-internet.de/sgb_11/__37.html` and `__43.html` `[unverified canonical form]`.
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration for the table**; the **five Pflegegrade, § 15 SGB XI
-  as their home and the NBA points assessment are corroborated at one remove by the contract sweep (three independent
-  sources)**.
+- Retrieved: **the statute yes, the table no.** **SGB XI** canonical XML (**Stand: zuletzt geändert durch Art. 2c G
+  v. 24.7.2026 I Nr. 228**), §§ 15, 36, 37 and 43 read in full, **2026-08-30**; `dejure.org/gesetze/SGB_XI/15.html` and
+  `gesetze-im-internet.de/sgb_11/__37.html` also serve. **DAV 2008 P is not published**, as at [R48].
 - Content: **DAV 2008 P** is the market-standard first-order basis for private long-term-care business —
   *Pflegerentenversicherung*, and in the health sector *Pflegetagegeld* and *Pflegekosten* cover, which delib treats as out of
   scope. It is understood to supply, by age and sex, **transition probabilities into care**, **mortality of people in care** and
@@ -2445,13 +3015,30 @@ stands in for and says what a replacement must preserve.
   recorded as **out of scope but instructive**: it is the clearest illustration in the German market of anti-selection risk, so
   **delib's PFL incidence assumption is an underwritten-lives assumption and is not transferable to a guaranteed-issue tariff**;
   every Pflege-Bahr parameter here is `[unverified]`.
+- Read in the 2026-08-30 pass — **the statutory side of the Pflegegrad break is now quantified.** § 15 Abs. 2
+  weights the six modules ***Mobilität* 10 %**, ***kognitive und kommunikative Fähigkeiten sowie Verhaltensweisen und psychische
+  Problemlagen* together 15 %**, ***Selbstversorgung* 40 %**, ***Bewältigung von ... krankheits- oder therapiebedingten Anforderungen*
+  20 %** and ***Gestaltung des Alltagslebens und sozialer Kontakte* 15 %**, modules 2 and 3 contributing **one** weighted score, the
+  higher. § 15 Abs. 3 maps the total: **Pflegegrad 1 ab 12,5 bis unter 27; 2 ab 27 bis unter 47,5; 3 ab 47,5 bis unter 70; 4 ab 70 bis
+  unter 90; 5 ab 90 bis 100**, with Abs. 4 allowing grade 5 below 90 in *besondere Bedarfskonstellationen*. **The social benefit
+  ladder is read rather than described:** § 37 Abs. 1 *Pflegegeld* per month **347 € (PG 2), 599 € (3), 800 € (4), 990 € (5)**;
+  § 43 Abs. 2 *vollstationär* **805 €, 1 319 €, 1 855 €, 2 096 €**; and §§ 36, 37 and 43 all open at *"Pflegebedürftige der Pflegegrade
+  2 bis 5"*, confirming that **Pflegegrad 1 receives none of the three**. A points instrument weighting cognition at 15 % and self-care
+  at 40 % is a **different state space** from the three *Pflegestufen*, not a rescaling. **Still `[unverified]`:** everything about
+  DAV 2008 P, and the *Zweites Pflegestärkungsgesetz* as the amending instrument — the consolidated text shows the result.
 - Products: PFL load-bearing; BU, KLV and RV qualified.
 
-### R52. Destatis — Sterbetafeln, Generationensterbetafeln, Pflegestatistik and the reuse licence
+### R52. Destatis — Periodensterbetafeln, Kohortensterbetafeln, Pflegestatistik and the reuse licence
 - Publisher: Statistisches Bundesamt (Destatis), Wiesbaden; the *Datenlizenz Deutschland* is issued by the German administration
   `[unverified]`. Doc type: official statistical publications and datasets.
 - URL: **not established** for any of them; no Destatis path was returned to any sweep.
-- Retrieved: **no** — direct HTTP egress blocked; **no search corroboration (budget exhausted)**.
+- Retrieved: **yes for the methodology and headline results**, and the URLs are now established where this entry had
+  none. Destatis's *Entwicklung der Lebenserwartung* page
+  (`destatis.de/DE/Themen/Gesellschaft-Umwelt/Bevoelkerung/Sterbefaelle-Lebenserwartung/sterbetafel.html`, 86 kB), its
+  *Kohortensterbetafeln* page (`.../kohortensterbetafeln.html`, 90 kB) and its *Impressum* were read **2026-08-30**. The tables
+  themselves — `.../Publikationen/Downloads-Sterbefaelle/statistischer-bericht-sterbetafeln-5126207237005.xlsx` and
+  `.../statistischer-bericht-kohortensterbetafeln-5126101239005.xlsx` — were **located but not opened**, so **no $q_x$ value is
+  quoted anywhere**. The *Pflegestatistik* was not opened.
 - Content: the **free, redistributable, population-level German mortality basis**, and therefore the raw material behind every
   `**[std]**` decrement CSV delib ships — exactly the role INSEE plays in frlib. **Two distinct products, and confusing them is
   a real error**: the *Sterbetafel 20xx/20yy* is a **period table** computed annually from three years of deaths and population,
@@ -2491,6 +3078,17 @@ stands in for and says what a replacement must preserve.
   German longevity — has an **unestablished current edition, base year and variant set**. **HMD** (long, methodologically
   consistent historical series, the right basis for fitting an improvement trend, requiring registration and carrying its own
   terms) and **Eurostat** are recorded as the other free routes; their coverage and licence terms are not established.
+- Read in the 2026-08-30 pass — **the vocabulary this entry used was Destatis's older one, and the licence
+  question is answered.** Destatis publishes ***Periodensterbetafeln*** — three calendar years of deaths and population,
+  *"eine Momentaufnahme der Sterblichkeitsverhältnisse der gesamten Bevölkerung"* with no future assumption, the current edition being
+  the **Sterbetafel 2023/2025** — and ***Kohortensterbetafeln***, **not *Generationensterbetafeln***. The cohort tables rest on
+  projections *"in Anlehnung an die Annahmen zur Entwicklung der Lebenserwartung der 15. koordinierten Bevölkerungsvorausberechnung"*
+  and come in **two variants, Variante 1 on the low and Variante 2 on the high life-expectancy assumption** — the same
+  two-dimensional, multi-variant shape DAV 2004 R has [R49]. Two anchors for a proxy's level: on the Sterbetafel 2023/2025 a
+  65-year-old man has **18,0** further years and a woman **21,1**; the 2023 birth cohort is projected at roughly **81 to 90 years for
+  boys and 85 to 93 for girls** depending on variant. **The licence:** Destatis's *Impressum* states for GENESIS-Online
+  *"© Statistisches Bundesamt (Destatis), 2026 — Datenlizenz Deutschland – Namensnennung – Version 2.0"*, an attribution licence.
+  **Still `[unverified]`:** every $q_x$ value, and the *Pflegestatistik*'s 2017 definitional break.
 - Products: all ten (the base of every `[std]` proxy).
 
 ### R53. The German life market in numbers — GDV, BaFin, Assekurata, Map-Report, Morgen & Morgen and Franke und Bornberg
@@ -2504,13 +3102,16 @@ stands in for and says what a replacement must preserve.
   https://www.franke-bornberg.de/blog/map-report-verwaltungskostenquote-2023-lebensversicherer ;
   https://www.franke-bornberg.de/fb-news/pressemitteilungen/map-report-939-solvabilitaet-im-vergleich-2015-bis-2024 (all
   returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **in the prudential sweep** (six queries; the GDV
-  aggregates from two independent reports of the same publication; the statistics series from BaFin's own pages; the solvency
-  figures from two secondary analyses that agree on direction and outliers but **disagree on the aggregate**; the declared rates
-  from **four sources that disagree**)
+- Retrieved: **yes**, and one cited URL is dead. The **GDV *Die deutsche Lebensversicherung in Zahlen 2025***
+  (PDF, reporting business year 2024) at
+  `gdv.de/resource/blob/188374/dde4d81192e583ac43e7e80a84aa6ac6/die-deutsche-lebensversicherung-in-zahlen-2025-publikation-pdf-data.pdf`,
+  the **2024 edition** (reporting 2023) at blob/180978, **Assekurata's *Überschussdeklaration 2026*** of 29.01.2026 (HTML, 194 kB),
+  **map-report 939** (94 kB) and the map-report ***Verwaltungskostenquote*** article (102 kB) were all read **2026-08-30**.
+  **`bafin.de/.../dl_st_24_erstvu_lv_va.html` returns HTTP 404**, so the BaFin life-segment figure of €90.4 bn is dropped.
 - Content: **Volumes, 2024, GDV basis** (Lebensversicherer, Pensionskassen and Pensionsfonds together): premium income **+2.8 %
   to €94.6 bn**; *laufende Beiträge* **€66.3 bn**, roughly flat; *Einmalbeitragsgeschäft* about **+10 % to €28 bn**; composition
-  **63.9 % / 29.5 % / 6.7 %** (laufende / Einmal / Zusatzversicherungen); **contract count −1.4 % to 80.3 m**; new business
+  **63.9 % / 29.5 % / 6.7 %** (laufende / Einmal / Zusatzversicherungen); **contract count −1.4 % to 80.3 m** — **the level is wrong
+  and is corrected to 84.3 m by the 2026-08-30 pass below**; new business
   *laufender Beitrag* **€6.6 bn (+2.8 %)** and *Einmalbeitragsgeschäft* **+10.8 % to €27.2 bn**. The operative reading is the
   **Einmalbeitrag shift**: single premium is now roughly 30 % of income and growing an order of magnitude faster than regular
   premium, which is why SOF is a live product and why KLV and RV model point tables include single-premium points. **Volumes,
@@ -2559,6 +3160,22 @@ stands in for and says what a replacement must preserve.
   *Erwerbsminderungsrente* amount or threshold. **IDX is statistically invisible** — no public series isolates index-linked
   business, which is itself a finding the IDX documentation must state. Nothing in the BaFin statistics themselves was read; the
   number of German life insurers and the aggregate *Deckungsrückstellung* were not established.
+- Read in the 2026-08-30 pass — **one figure was wrong, and two ranges replace three disputed averages.**
+  **Correction: the contract stock at end-2024 is 84,3 Mio. Verträge** (start of 2024: 85,5 Mio.), a fall of 1.4 per cent — this entry
+  gave the correct percentage against the wrong level of 80.3 m. The other 2024 volumes are confirmed and sharpened: premium income
+  **+2,8 % auf 94,6 Mrd. €**, *Einmalbeitrag* **+9,8 % auf 28,3 Mrd. €**, *laufende Beiträge* **66,3 Mrd. €**, benefits paid
+  **+2,8 % auf 101,8 Mrd. €**, new-business sum insured from 323 to about **329 Mrd. €**, more than **46 Mio.** annuity contracts,
+  **8,8 Mio.** *Direktversicherungen* and **9,7 Mio. Riester-Verträge (−3,5 %)** with Riester new business down **26,0 %** — the
+  numbers behind [R44]. **Declared rates:** Assekurata publishes the *laufende Verzinsung* **per insurer** for 2024–2026 and states
+  *"Diese setzt sich aus der Garantieverzinsung und der laufenden Zinsüberschussbeteiligung zusammen."*, confirming the
+  never-add-on-top rule. The 2026 column runs from about **2,10 %** to **3,50 %** — Allianz 2,70 (2,80), Axa 3,00, EUROPA 2,90 (3,20),
+  Continentale 2,60 (2,90), Alte Leipziger 2,40 (2,50), Gothaer 2,45 (2,70) — and **that observed range, not an average, is what a
+  `[std]` credited-rate parameter should be argued against**; the three conflicting averages this entry carried were not retrieved and
+  are dropped. **Cost ratios: the spread given here was far too narrow.** map-report reports the industry *Verwaltungskostenquote* at
+  **2,46 % for 2023** against **2,34 % for 2022**, with a per-insurer range from **0,79 %** (Europa) to **11,29 %** (Targo) — an
+  order of magnitude, not "under 2 % to over 4 %". **Solvency:** 340,3 % including transitionals at end-2024 against 663,6 % at
+  end-2023, base ratio **308,6 %**, three insurers below 100 % without *Hilfs- und Übergangsmaßnahmen*, per-insurer spread 103,9 % to
+  716,4 %, transitionals running out in 2032. **Still `[unverified]`:** the BU claims-practice studies, neither of which was opened.
 - Products: all ten (market context, and the observed ranges behind every `[std]` choice).
 
 ---
@@ -2573,9 +3190,12 @@ stands in for and says what a replacement must preserve.
   (returned, §§ 341f–341h); https://www.gesetze-im-internet.de/rechversv/BJNR337800994.html, `.../formblatt_1.html`,
   `.../__28.html` (returned); https://www.gesetze-im-internet.de/berversv_2017/BJNR285800017.html (returned);
   https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Aufsichtsrecht/Verordnung/begruendung_berversv_va.html (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (four queries; seven independent publishers on §
-  341f with two substantive summaries that agree closely; six on § 28 RechVersV with one detailed summary of Abs. 8; four plus
-  BaFin's memorandum on the BerVersV)
+- Retrieved: **mostly.** The **HGB** (canonical XML, **Stand: zuletzt geändert durch Art. 4 G v. 4.2.2026 I Nr. 33**),
+  §§ 341e and 341f read in full, and the **RechVersV** (canonical XML, **Stand: zuletzt geändert durch Art. 69 G v. 10.8.2021 I
+  3436**), §§ 15, 25 and 28 read in full, both **2026-08-30**; `dejure.org/gesetze/HGB/341f.html` and `gesatz.de` also serve.
+  **The BerVersV was retrieved only as its table of contents** — the index page serves (515 kB) and confirms § 10 as *Zusätzliche
+  formgebundene Erläuterungen der Lebensversicherungsunternehmen*, but **its Anlagen, where the *Nachweisungen* live, were not
+  opened.** BaFin's *Begründung zur Versicherungsberichterstattungs-Verordnung* serves (112 kB) and was not read.
 - Content: **§ 341e — the standard of prudence.** Insurers must form technical provisions **to the extent necessary according to
   reasonable commercial judgement (*nach vernünftiger kaufmännischer Beurteilung*) to ensure the *dauernde Erfüllbarkeit* of the
   obligations** — the same standard § 138 Abs. 1 VAG imposes on premiums [R8] and BaFin states as its supervisory objective
@@ -2617,6 +3237,23 @@ stands in for and says what a replacement must preserve.
   section (§ 5), not from § 4, and must not be assumed to be the same for life insurers**. Whether the returns are public was
   not established (they are generally understood not to be). The RechVersV's own dates — **8 November 1994, BGBl. I S. 3378**,
   last amended **10 August 2021, BGBl. I S. 3436** — were returned by the search summaries and are recorded as such.
+- Read in the 2026-08-30 pass. § 341e Abs. 1 Satz 1 verbatim: *"Versicherungsunternehmen haben
+  versicherungstechnische Rückstellungen auch insoweit zu bilden, wie dies nach vernünftiger kaufmännischer Beurteilung notwendig ist,
+  um die dauernde Erfüllbarkeit der Verpflichtungen aus den Versicherungsverträgen sicherzustellen."*, Satz 2 subordinating it to the
+  supervisory rules on the *Rechnungsgrundlagen einschließlich des dafür anzusetzenden Rechnungszinsfußes*. § 341f Abs. 1 gives the
+  prospective method in the statute's own words, and **§ 341f Abs. 2 is the ZZR root:** *"Bei der Bildung der Deckungsrückstellung
+  sind auch gegenüber den Versicherten eingegangene Zinssatzverpflichtungen zu berücksichtigen, sofern die derzeitigen oder zu
+  erwartenden Erträge der Vermögenswerte des Unternehmens für die Deckung dieser Verpflichtungen nicht ausreichen."* [R17].
+  **Two RechVersV sections close loops elsewhere:** **§ 25 Abs. 1** requires *"angemessene Sicherheitszuschläge"* and permits
+  Zillmerung, and **§ 25 Abs. 2** raises the reserve to the guaranteed *Rückkaufswert* where § 341f HGB would give less — **which is
+  where the § 169 Abs. 3 VVG floor enters the balance sheet** [R28] and what DeckRV § 4 Abs. 3 refers back to [R16]; **§ 15 Abs. 1**
+  defines the receivable DeckRV § 4 Abs. 2 caps. **§ 28 Abs. 8 Nr. 2 is now read item by item**, its Buchstabe h defining
+  *"den ungebundenen Teil (Rückstellung für Beitragsrückerstattung ohne die Buchstaben a bis g)"* — the definition the RfBV and
+  MindZV § 13 both borrow [R18] [R19] — with (e)–(g) the three *Schlussüberschussanteilfonds* tranches, Nr. 3 the per-*Abrechnungs­
+  verband* declared shares and *Ansammlungszinssatz*, and Nr. 4 the *Schlussüberschussanteilfonds* method and bases. **Still
+  `[unverified]` at that level of detail:** the *Nachweisungen 213–219* and the F.213.01–F.219.01 form names, **though the substance is
+  confirmed from the other side**, MindZV § 4 Abs. 1 defining the three result sources by named lines and columns of *Nachweisung 213*
+  [R18].
 - Products: all ten as the source of published insurer data; load-bearing for KLV, RV, BAS, RIE, IDX and SOF.
 
 ### R55. IFRS 17 — Versicherungsverträge and the Variable Fee Approach
@@ -2627,8 +3264,9 @@ stands in for and says what a replacement must preserve.
   https://www.deloitte.com/de/de/services/audit-assurance/perspectives/versicherungsvertraege-ifrs-17.html (returned);
   https://www.haufe.de/id/kommentar/joerg-baetgepeter-wollmerthans-juergen-kirschpeter-oser-2-variable-fee-approach-vfa-HI16462224.html
   (returned)
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search (two queries; the endorsement regulation number and
-  the 2023 effective date from two independent sources; the VFA description from three)
+- Retrieved: **the commentary yes, the standard no.** The DRSC project page (HTML, 485 kB), the Deloitte overview
+  (326 kB) and the Haufe VFA commentary (152 kB) were read **2026-08-30**. **IFRS 17 itself is IFRS Foundation copyright and is not
+  freely served; the EU endorsement regulation was not opened either.**
 - Content: the EU published **Verordnung (EU) 2021/2036 in November 2021**, taking IFRS 17 into EU law; the application date had
   been **deferred by one year to 1 January 2023**, and the standard applies **for financial years beginning on or after 1
   January 2023**. **Scope**: insurance contracts, reinsurance contracts and **investment contracts with discretionary
@@ -2649,6 +3287,14 @@ stands in for and says what a replacement must preserve.
   endorsement regulation appears in one summary as "Verordnung (EG) Nr. 2021/2036" and in another as "Verordnung (EU)
   2021/2036"; **EU** is correct for a 2021 instrument and the "EG" rendering is treated as a transcription error, but **that
   judgment is inference**.
+- Read in the 2026-08-30 pass — **and the pass *removed* a date this entry asserted.** The DRSC project page as
+  served is **out of date**: it still gives the original first application *"für Geschäftsjahre, die am oder nach dem 1. Januar 2021
+  beginnen"* and reports the deferral as *"um ein Jahr auf 2022"*. **So the 1 January 2023 application date and *Verordnung (EU)
+  2021/2036* as the endorsement instrument were not confirmed by anything retrieved here and are now `[unverified]`.** What is
+  confirmed is the standard's issue date of **18 May 2017** and the VFA's scope, in the Haufe commentary's words: *"Der Variable Fee
+  Approach findet ausschließlich auf solche Versicherungsverträge Anwendung, die durch eine direkte Überschussbeteiligung ...
+  gekennzeichnet sind"* and *"Der VFA ist verpflichtend für die im Standard spezifizierten Versicherungsverträge mit direkter
+  Überschussbeteiligung anzusetzen"*, reinsurance being excluded and measured under the general model or the PAA.
 - Products: all ten (qualified — group reporting context).
 
 ### R56. DAV Fachgrundsätze and the annual Höchstrechnungszins recommendation
@@ -2660,9 +3306,10 @@ stands in for and says what a replacement must preserve.
   https://aktuar.de/content/PDF/Fachwissen/2024-11-22_Zinsbericht_f%C3%BCr_2026.pdf (returned);
   https://blogs.pwc.de/de/insurance-news/article/252092/dav-empfiehlt-beibehaltung-des-hoechstrechnungszinses-in-der-lebensversicherung-bei-1-0-prozent-fuer-2027
   (returned). **No URL for the *Fachgrundsätze* index or for any individual standard was returned.**
-- Retrieved: **no** — direct HTTP egress blocked; corroborated by web search **for the recommendation** (four queries; the
-  mechanism described consistently by three independent sources and the 2026 and 2027 recommendations each by two); **no search
-  corroboration for the Fachgrundsätze** (the subject was flagged as belonging to a researcher whose queries never ran)
+- Retrieved: **yes** — the newsroom item (HTML, 51 kB), the **DAV press release of 26.11.2025**
+  (`aktuar.de/content/PDF/News/Pressemeldungen/2025_11_26_DAV_PM_H%C3%B6chstrechnungszins.pdf`, PDF, 3 pp.), the ***Fachwissen* fact
+  sheet** *Höchstrechnungszins in der Lebensversicherung* (PDF, 2 pp.) and the DAV ***Regularien*** page, all read **2026-08-30**.
+  The ***Zinsbericht für 2026*** (PDF, 551 kB) serves but **was not read**; the PwC commentary serves.
 - Content: **The recommendation and its method.** The *Höchstrechnungszins* is set by the Bundesministerium der Finanzen as the
   DeckRV's *Verordnungsgeber* [R14]; **the DAV submits an annual proposal**, and **the ministry has in the past mostly followed
   it** — a soft-law channel with no statutory anchoring any search result identified, so delib describes it as **practice rather
@@ -2706,6 +3353,21 @@ stands in for and says what a replacement must preserve.
   2004 R, DAV 1997 I or DAV 2008 P has been published **is not known**, so **delib's formulation everywhere is "the DAV table
   conventionally used for this product is X"** — a statement about market convention that survives a successor being published —
   rather than "the current DAV table is X", which does not.
+- Read in the 2026-08-30 pass — **the method and the professional-standards definition are now the DAV's own
+  words, and one asserted hierarchy is withdrawn.** On the method: *"Die abschließende Entscheidung über den Höchstrechnungszins
+  obliegt dem Bundesministerium für Finanzen durch eine Änderung der Deckungsrückstellungsverordnung."*; a representative
+  new-money portfolio is modelled with the equity and property leg valued *"analog zum Vorgehen der Produktinformationsstelle
+  Altersvorsorge (PIA)"* [R43]; *"Zur weiteren Glättung wird außerdem das arithmetische Mittel dieser Renditen über die vergangenen
+  fünf Jahre gebildet."*; *"Zusätzlich wird ein 40-prozentiger Abschlag als Sicherheitspuffer eingerechnet, so wie ihn der Gesetzgeber
+  bis zur Einführung von Solvency II verlangt hat."*; **and a floor this entry did not carry** — *"auch in Tiefzinsphasen [muss] der
+  Sicherheitsabschlag immer mindestens 0,4 Prozentpunkte betragen."* The 2027 recommendation is confirmed from the press release of
+  26 November 2025. **On the standards:** the *Regularien* page defines *Fachgrundsätze* as publications of DAV and IVS which, with
+  the *Standesregeln*, lay down the principles of proper practice, characterised by addressing actuarial technical questions, being of
+  fundamental and practice-relevant importance, being **legitimated by a *Feststellungsverfahren* open to all members** and being
+  **secured by a *Disziplinarverfahren***, and expressly distinguishes them from non-binding ***Ergebnisberichte***.
+  **The three-tier *Grundsätze / Richtlinien / Hinweise* naming this entry asserted does not appear there and is withdrawn to
+  `[unverified]`.** **Still `[unverified]`:** Article 17 of the Third Life Directive and Article 20 of Directive 2002/83/EC, the
+  source of the 60 % ceiling, neither of which was retrieved.
 - Products: all ten.
 
 ---
@@ -2737,117 +3399,170 @@ not shippable.
    and **not at all** for BaFin circulars and interpretive decisions, whose pages return a title and one sentence — those need
    retrieval, not search.
 
+5. **Superseded on 2026-08-30, and left standing above as the record of how the file was built.** Points 1 to 4 describe the
+   build of 2026-08-29. In the pass of **2026-08-30** the network policy no longer applied: **forty of the fifty-six entries were
+   opened and read**, and each carries a `Retrieved:` line saying what was read, with the law's `Stand` for statutes and the
+   edition for publications. **Where an entry quotes German in the `Read in the 2026-08-30 pass` bullet, that quotation is from the
+   instrument**; where it quotes German elsewhere, the older caveat holds and it is a quotation of a summary. The
+  `Retrieval conditions` header at the head of this file is **deliberately not updated in this pass** — it is rewritten centrally
+   once the per-entry work across the library is complete — so **the per-entry `Retrieved:` lines are authoritative and the header
+   is not**.
+
 ### B. What no search could establish, in priority order
 
-The first six block `[REG-R#]`-grade statements in a product document; the rest are improvements.
+**Restated on 2026-08-30.** Eleven of the twenty-two items below were closed by the retrieval pass; each says so and names what
+closed it. The rest stand, with a sharper reason than "no search returned it".
 
-1. **The width of the ZZR corridor** (§ 5 Abs. 3 DeckRV, [R17]). The mechanism, the 2018 reform date and the counterfactual are
-   established; **the bound is not**. This is the single most important missing figure in the prudential layer.
-2. **Clause text from any GDV *Musterbedingung*** ([R37]) — the *Rückkaufswert*, *Beitragsfreistellung*, *Stornoabzug*,
-   *Verweisung* and six-month clauses. The largest gap in the contract layer; it blocks `[S#]` sourcing for six products.
-3. **Whether the BU six-month rule is a retroactive fiction or a waiting period** ([R37]). The two produce materially different
-   monthly cash flows and the choice is currently `**[std]**`.
-4. **The § 15 SGB XI point bands** separating Pflegegrade 1 to 5 ([R51]) — sought in two sweeps, returned by neither. Without
-   them the PFL grade ladder rests on nothing but `[std]`.
-5. **Whether the Riester *Beitragsgarantie* covers the *Zulagen*** ([R43]). One summary says yes, another implies it, the
-   statutory text obtained does not decide it. For a two-child model point this moves the guarantee floor by thousands of euro
+1. **CLOSED 2026-08-30 — and the question was wrongly framed.** There is **no corridor width** in § 5 Abs. 3 DeckRV [R17]. The
+   rule forms two differences — the ten-year mean less last year's *Referenzzins*, and 9 per cent of the current-year mean less
+   9 per cent of last year's — and adjusts by **the smaller in absolute value where the signs agree**, leaving the rate
+   **unchanged where they disagree**. There is no bound to find, and § 5 Abs. 3 Satz 9 anchors the recursion at **2,21 Prozent for
+   2017**.
+2. **CLOSED 2026-08-30 for the endowment set.** The GDV *Allgemeine Bedingungen für die kapitalbildende Lebensversicherung*
+   (Stand 21.07.2025) were read [R37]: the *Rückkaufswert* clause (§ 12 Abs. 3), the *Abzug* clause (§ 12 Abs. 4, **level left
+   blank, "Unternehmensindividuell zu ergänzen"**), the § 169 Abs. 6 reduction (§ 12 Abs. 5), the surplus components (§ 12
+   Abs. 6), the *Beitragsfreistellung* clause with **its own separate *Abzug*** (§ 13) and the cost clause (§ 14 Abs. 2).
+   **Still open for BU:** the *Verweisung* and six-month clauses — the BU model conditions were not opened.
+3. **OPEN.** Whether the BU six-month rule is a retroactive fiction or a waiting period ([R37]). The two produce materially
+   different monthly cash flows and the choice is currently `**[std]**`.
+4. **CLOSED 2026-08-30.** § 15 Abs. 3 SGB XI [R51]: **Pflegegrad 1 ab 12,5 bis unter 27; 2 ab 27 bis unter 47,5; 3 ab 47,5 bis
+   unter 70; 4 ab 70 bis unter 90; 5 ab 90 bis 100** Gesamtpunkte, with § 15 Abs. 2 giving the module weights 10 / 15 / 40 / 20 /
+   15 per cent and modules 2 and 3 contributing only the higher of the two.
+5. **NARROWED, not closed.** § 1 Abs. 1 Nr. 3 AltZertG guarantees *"die eingezahlten Altersvorsorgebeiträge"*, and § 82 Abs. 1
+   EStG defines *Altersvorsorgebeiträge* as contributions *"die der Zulageberechtigte ... leistet"* [R42] [R43] — which on its face
+   excludes the state *Zulagen*. **But the AltZertG does not cross-refer to § 82 EStG and no authority was retrieved**, so this
+   stays the section's most material `[std]` choice. For a two-child model point it moves the guarantee floor by thousands of euro
    over thirty years.
 6. **The two consolidated BMF-Schreiben** on *Rentenbesteuerung* and on the *Riester/bAV* subsidy. They are the operative
    authority for [R39], [R41] and [R42] and would resolve more of the tax section than any other two documents; **neither's
    title, date, reference number nor URL is established** and none is guessed.
-7. **The Delegated Regulation's life-underwriting sub-modules** (Art. 136 ff., [R2]) and their calibrations, including the 40 %
-   mass-lapse shock; **Art. 18 contract boundaries** returned nothing; and **the 6 % cost-of-capital rate was never confirmed
-   from a text**.
-8. **The MCR section numbers in the VAG and the MCR's absolute euro floors** ([R6], [R15]).
-9. **No EIOPA curve value, no German volatility adjustment for any date** ([R4]). Only the euro **UFR of 3.30 % from 1 January
-   2026** is established.
-10. **§ 5a AltZertG** ([R43]) — never retrieved by any sweep; only its existence and its § 168 Abs. 3 VVG cross-reference are
-    established.
-11. **§ 93 EStG's statutory text** ([R42]) — never returned; twelve secondary hosts instead.
-12. **§ 160 VVG and § 156 VVG** ([R26], [R22]) — never returned by any search.
+7. **PARTLY CLOSED 2026-08-30.** **The 6 % cost-of-capital rate is read from Art. 39 of the regulation** [R2] —
+   *"Es wird davon ausgegangen, dass der in Artikel 77 Absatz 5 der Richtlinie 2009/138/EG genannte Kapitalkostensatz 6 % beträgt."*
+   — as are the Art. 37 formula and the Art. 38 reference-undertaking assumptions. **Still open:** Art. 18 (Vertragsgrenzen) and
+   the life-underwriting sub-modules of Art. 136 ff. including the mass-lapse shock; the document was opened, those articles were
+   not read.
+8. **CLOSED 2026-08-30.** The MCR provisions are **§ 122 *Bestimmung der Mindestkapitalanforderung; Verordnungsermächtigung*** and
+   **§ 123 *Berechnungsturnus; Meldepflichten*** VAG [R6]; the absolute euro floors are in § 1 Abs. 2 KapAusstV as amended by
+   Artikel 2 of the Sechste Verordnung [R15] — **2,7 / 4 / 4 / 3,9 / 1,3 Mio. Euro** from 25 July 2024.
+9. **OPEN by choice.** No EIOPA curve value and no German volatility adjustment for any date was extracted ([R4]) — the monthly
+   packages are Excel workbooks and delib takes no curve point from them. The euro **UFR of 3.30 % from 1 January 2026** is
+   confirmed from EIOPA's release of 31 March 2025.
+10. **CLOSED 2026-08-30, and it corrects an assumption.** § 5a AltZertG is read [R43] and is **purely procedural**; the
+    substantive *Basisrentenvertrag* definition is **§ 2**, with § 2 Abs. 1a defining the Basisrente-Erwerbsminderung.
+11. **CLOSED 2026-08-30.** § 93 EStG is read [R42], including Abs. 3's *Kleinbetragsrente* definition at **1,5 Prozent der
+    monatlichen Bezugsgröße**.
+12. **§ 160 VVG CLOSED 2026-08-30** — its four default rules are read [R26]. **§ 156 VVG still not opened** ([R22]).
 13. **The EuGH reference for the 2013 § 5a VVG ruling** ([R36]) — commonly cited as *Endress*, C-209/12 of 19 December 2013, but
     **no search returned the case number**; carry it as `[unverified]` or omit it.
 14. **Art. 2 Abs. 1 Nr. 17 IDD's definition of *Versicherungsanlageprodukt*** ([R31], [R32]) — it decides whether KLV, RV and
     IDX are PRIIPs products at all.
-15. **The PRIIPs SRI 1–7 scale, the RIY presentation, the cost tables and the biometric-premium treatment** ([R32]); **VVG-InfoV
-    § 1 and the full item list of § 2 Abs. 1** ([R31]); **§ 6a and § 7d VVG** ([R31]).
+15. **PARTLY CLOSED 2026-08-30.** The **SRI 1–7 scale** is read from Art. 3(2)(a) of Delegated Regulation (EU) 2017/653 and the
+    **four performance scenarios** — *optimistisches, mittleres, pessimistisches, Stressszenario*, plus an additional scenario for
+    insurance-based products — from Annex IV as replaced by (EU) 2021/2268 [R32]; **the full item list of § 2 Abs. 1 VVG-InfoV** is
+    read, as are § 2 Abs. 3, Abs. 4 and Abs. 6 and § 4 [R31]. **Still open:** the RIY presentation, the cost tables and the
+    biometric-premium treatment inside Annex VI; **VVG-InfoV § 1**; and **§§ 6a and 7d VVG**.
 16. **The Anlageverordnung's own content** ([R7]) — the *Anlageformen* and the *Mischungs-* and *Streuungsquoten*. **Nothing in
     delib may state an AnlV quota.**
 17. **The supervisory *Sparte* classification of a stand-alone SBU and of a Pflegerente** ([R5]) — whether they are *Sparte* 19
     business or fall to the health regime.
-18. **The contents of BerVersV Nachweisungen 213–219** and **the line structure of RechVersV Formblatt 1** ([R54]); **the
-    *versicherungsmathematische Bestätigung*** of § 141 VAG ([R11]).
-19. **None of the eight BaFin *Auslegungsentscheidungen* was read** ([R21]); each is represented by one or two sentences of
-    summary.
+18. **PARTLY CLOSED 2026-08-30.** The **BerVersV *Nachweisungen* are still not read** — only the regulation's table of contents
+    was retrieved — but **MindZV § 4 Abs. 1 names the *Nachweisung 213* lines and columns for each of the three result sources**
+    [R18], so the substance is established from the other side. **§ 28 Abs. 8 RechVersV is read item by item** [R54].
+    **Still open:** the line structure of RechVersV *Formblatt 1*, and the wording of the *versicherungsmathematische Bestätigung*
+    ([R11]).
+19. **PARTLY CLOSED 2026-08-30.** **Two of the eight BaFin *Auslegungsentscheidungen* were read** — *Zusammenwirken von
+    Mindestzuführung zur RfB und Teilkollektivierung* and *Projektion des Referenzzinses gemäß § 5 Abs. 3 DeckRV* — as was the
+    index page and the *Merkblatt 01/2023* in full [R21] [R35]. **The other six were not opened**, and neither was the MaGo
+    circular itself.
 20. **The DAV's licence terms** ([R47]) — so delib cannot even tell a user how to obtain the real table lawfully. The
     highest-value single question for the next sweep.
 21. **The AltvPIBV's own citation, the CRK class boundaries and the definitions of r\* and r_k** ([R43]); **the
     Altersvorsorgedepot product definition** ([R44]).
-22. **The Siebte and Achte Verordnungen** in the same series as the Sechste ([R15]) — located, not investigated; either could
-    have moved the *Höchstrechnungszins* again. And the **draft VSAAG** ([R12]), which would change the resolution framework.
+22. **PARTLY CLOSED 2026-08-30.** The Siebte (BGBl. 2024 I Nr. 414) and Achte (BGBl. 2025 I Nr. 31) Verordnung announcement
+    pages serve, and **neither moved the rate**: the DeckRV's own `Stand` is still *"zuletzt geändert durch Art. 1 V v. 19.7.2024
+    I Nr. 250"* and § 2 Abs. 1 Satz 1 still reads 1 Prozent [R14] [R15]. **The draft VSAAG was not investigated** ([R12]).
 
-### C. Where results disagreed, recorded and not resolved
+### C. Where results disagreed — **restated on 2026-08-30**, ten of eighteen resolved
 
-1. **The 2026 average *laufende Verzinsung* is reported three ways** — 2.6–2.7 %, 2.87 % and 2.54 % — by three outlets ([R53]).
-   Any delib figure must name its source and be `**[std]**` if used as a model assumption.
-2. **The *Verwaltungskostenquote* for 2024 is reported as 2.4 % and as 2.19 %** on different denominators (*gebuchte* versus
-   *verdiente Bruttobeiträge*) and probably different populations ([R53]).
-3. **The German industry SCR ratio with transitionals at end-2024 is reported as 340.3 % and, on another cut, 484 %** ([R53]).
-4. **GDV €94.6 bn versus BaFin €90.4 bn** for 2024 ([R53]) — different populations, different bases. Consistent, but **never to
-   be mixed in one table**.
-5. **The § 226 VAG financing figures may be conflated** ([R12]): 0.2 ‰ annual, a 1 ‰ target and a 1 ‰ *Sonderbeitrag* ceiling
-   all came from summaries of one query, and the repeated 1 ‰ may be an artefact.
-6. **§ 4 DeckRV's statutory base for the 25 ‰ cap is stated three different ways** ([R16]). Only "25 ‰ of the *Beitragssumme*"
-   is safe.
-7. **The historic *Höchstrechnungszins* ceiling** is given as 60 % of the ten-year government bond yield (EU lineage, preferred)
-   and, in one summary, as 85 % of the *Umlaufrendite* under an old § 3 DeckRV ([R56]). Unresolved.
-8. **RfBV §§ 2 and 3 are conflated in the summaries** ([R19]); the percentage base in § 3 is unknown.
-9. **The *Kleinbetragsrente* threshold — 1 % versus 1.5 %** of the monthly *Bezugsgröße*, i.e. 39.55 € versus 59.33 € per month
-   on the same 2026 figure, with effective dates of 1 January 2027 versus June 2026 ([R42]). **A hard model parameter for both
-   RIE and BAS.** Pick one, tag `**[std]**`, print both.
-10. **The Altersvorsorgereformgesetz's date** — Bundesrat consent 8 May 2026 versus an act "vom 26.05.2026" ([R42], [R44]).
-    Reconcilable, unconfirmed, no BGBl citation established.
-11. **§ 851c Abs. 2 ZPO annual savings allowances** — a 6,000/7,000 € two-band ladder versus a 2,000–9,000 € age-graded ladder
-    ([R40]). The 340,000 € aggregate is agreed.
-12. **The § 20 Abs. 2 Satz 1 AGG repeal** — "late February 2013" versus "SEPA-Begleitgesetz published 3 April 2013 with
-    retroactive effect from 21 December 2012" ([R34]).
-13. **The Absatz structure of § 8 VVG** ([R23]) and of § 169 VVG ([R28]) — the substantive rules are corroborated, the
-    Absatz-to-rule mapping is not.
-14. **Whether § 177 Abs. 1 VVG reaches a *Pflegerentenversicherung*** ([R29]) — a trade headline points against for
-    non-work-capacity triggers. **The main open legal question for PFL.**
-15. **Whether a Pflegerente is taxable at all** ([R46]) — not taxable versus *Ertragsanteil*. Both readings current, neither
-    established.
-16. **Whether the *verursachungsorientiert* charging rule sits in § 138 or § 140 VAG** ([R8]); delib attributes the causation
-    principle to § 153 Abs. 2 VVG and § 138 Abs. 2 VAG **jointly**, as the BGH did.
-17. **"DAV 2004 R-B20" has two incompatible readings** ([R49]); **"DAV 1998 E" could not be characterised at all** ([R50]) and
-    **no delib document may cite it**; and **the DAV 1997 family may be two tables or three** ([R50]) — recorded as a question,
-    not a correction.
-18. **The IFRS 17 endorsement regulation** appears as "(EG) 2021/2036" and "(EU) 2021/2036" ([R55]); EU is treated as correct,
-    which is inference.
+1. **RESOLVED by replacement, not by choosing.** Assekurata publishes the *laufende Verzinsung* **per insurer**, and the 2026
+   column runs from about **2,10 %** to **3,50 %** ([R53]). The three disputed averages were not retrieved and are dropped; a
+   `[std]` credited rate should be argued against the **observed range**.
+2. **RESOLVED against both figures.** map-report gives the industry *Verwaltungskostenquote* as **2,46 % for 2023** (2022:
+   2,34 %) with a per-insurer range from **0,79 %** to **11,29 %** ([R53]). Neither 2.4 % nor 2.19 % was retrieved, and the
+   spread is an order of magnitude, not the narrow band this register assumed.
+3. **PARTLY RESOLVED.** map-report 939 gives **340,3 %** including transitionals at end-2024 against **663,6 %** at end-2023 and
+   a **base ratio of 308,6 %** ([R53]). The "484 %" cut was not retrieved and is dropped.
+4. **RESOLVED by dropping the BaFin figure.** The BaFin download 404s ([R53]); only the GDV basis is cited, and the two must
+   still never be mixed.
+5. **RESOLVED.** § 226 VAG read in full ([R12]): the **0,2 Promille** annual contribution is Abs. 5 Satz 2, the **1 Promille**
+   target for the fund's assets is Abs. 4, and the **1 Promille** *Sonderbeitrag* ceiling is Abs. 5 Satz 5. The repetition is
+   real, not an artefact.
+6. **RESOLVED, and none of the three renderings was quite right.** § 4 Abs. 1 Satz 2 DeckRV: *"Der Zillmersatz darf 25 Promille
+   der **Summe aller Prämien** nicht überschreiten."* ([R16]) — *Beitragssumme* is the market term, not the statute's.
+7. **PARTLY RESOLVED, and the framing was wrong.** The **85 % cap is live law**: § 3 Abs. 1 and Abs. 2 DeckRV 2016 apply it to
+   short single-premium contracts and to annuities in payment without a surrender value ([R14]). **The 60 % ceiling is not in the
+   DeckRV at all** and its EU lineage was not retrieved ([R56]).
+8. **RESOLVED.** § 2 RfBV is *Begriffsbestimmungen*; **§ 3 Abs. 2** carries the *Teilbestand* ceiling on a base of next year's
+   declared shares plus expected *Direktgutschrift*, minimum 100 per cent, and **§ 3 Abs. 3** the collective ceiling as a
+   percentage of the KapAusstV amount, **maximum 60 per cent** ([R19]).
+9. **RESOLVED against the 1 per cent reading.** § 93 Abs. 3 Satz 2 Nr. 1 EStG defines a *Kleinbetragsrente* by **1,5 Prozent der
+   monatlichen Bezugsgröße nach § 18 SGB IV**, and Nr. 2 adds an *Auszahlungsplan* variant **from 1 January 2027 on the same
+   1,5 per cent** ([R42]) — **the 2027 date attaches to the payout-plan variant, not to the rate.**
+10. **RESOLVED.** The Bundesrat consented on **8 May 2026** and the act is the **Gesetz vom 26. Mai 2026, BGBl. 2026 I Nr. 156**,
+    which the VVG's and the AltZertG's own `Stand` lines name ([R44]).
+11. **RESOLVED.** § 851c Abs. 2 Satz 1 Nr. 1 ZPO: **6 000 Euro** from 18 to the completed 27th year and **7 000 Euro** from 28 to
+    the completed 67th, aggregate **340 000 Euro** ([R40]). The age-graded ladder is the superseded version.
+12. **OPEN.** The § 20 Abs. 2 Satz 1 AGG repeal — "late February 2013" versus the *SEPA-Begleitgesetz* of 3 April 2013 with
+    retroactive effect from 21 December 2012 ([R34]). The consolidated text shows only the result; both readings recorded.
+13. **RESOLVED.** The Absatz structures of §§ 8, 152 and 169 VVG are read ([R23], [R28]), and **two were wrong**: the § 152
+    due-date rule is **Abs. 5**, not Abs. 3, and the § 169 *Zeitwert* trigger in **Abs. 4** is the product class, not the absence
+    of a fixed guarantee.
+14. **NARROWED.** § 177 Abs. 1 VVG applies §§ 173–176 *"auf alle Versicherungsverträge, bei denen der Versicherer für eine
+    **dauerhafte Beeinträchtigung der Arbeitsfähigkeit** eine Leistung verspricht"* ([R29]). A *Pflegerente* pays on
+    *Pflegebedürftigkeit*, so **the wording points against**, but no authority was retrieved. **Still the main open legal question
+    for PFL.**
+15. **OPEN.** Whether a Pflegerente is taxable at all ([R46]) — not taxable versus *Ertragsanteil*. Neither reading was tested
+    against a retrieved source in this pass.
+16. **RESOLVED, and neither branch was right.** The *verursachungsorientiert* rule is **§ 140 Abs. 1 Satz 3 VAG** and it governs
+    **charging RfB draw-downs back to the sub-portfolios that caused them**, not surplus allocation ([R8], [R10]). The general
+    causation principle for surplus is **§ 153 Abs. 2 VVG** ([R24]), and the RfBV adds a *verursachungsorientierter
+    Verteilungsschlüssel* for returns out of the collective part ([R19]).
+17. **OPEN, and it will stay open.** "DAV 2004 R-B20" has two incompatible readings ([R49]); "DAV 1998 E" could not be
+    characterised at all ([R50]) and **no delib document may cite it**; and the DAV 1997 family may be two tables or three
+    ([R50]). **The DAV publishes nothing that would settle any of them.**
+18. **WITHDRAWN rather than resolved.** The IFRS 17 endorsement regulation number **and the 1 January 2023 application date are
+    now both `[unverified]`** ([R55]): the DRSC project page as served on 2026-08-30 is out of date, still giving the original
+    1 January 2021 date and a deferral *"um ein Jahr auf 2022"*, and the endorsement regulation was not opened.
 
 ### D. Which figures are vintage-sensitive
 
 Every figure in this file carries its year. These are the ones that will go stale first, and a delib document quoting them
 without the year is wrong within months:
 
-- **The *Höchstrechnungszins*** ([R15]): **1.00 % from 1 January 2025**, recommended unchanged for 2026 and 2027. The rate
-  history is a **cohort stack**, and a model point must carry its cohort's rate, not today's.
-- **The ZZR *Referenzzins*** ([R17]): **1.57 %**, reported unchanged since 2021 and pinned by the corridor. The ZZR stock (**€84
-  bn at end-2024**, from a **€96 bn peak at end-2021**) and the release flows are trade-press figures, not supervisory ones.
-- **The declared *laufende Verzinsung*** ([R53]): **2.53 % Klassik / 2.58 % Neue Klassik for 2025**; three incompatible figures
-  for 2026.
+- **The *Höchstzinssatz* / *Höchstrechnungszins*** ([R14], [R15]): **1 Prozent from 1 January 2025**, fixed by § 2 Abs. 1 Satz 1
+  DeckRV as amended by the Sechste Verordnung of 19 July 2024, and recommended unchanged by the DAV for 2026 and 2027. The rate
+  history is a **cohort stack** — the DAV's own table now sits at [R15] — and a model point must carry its cohort's rate, not
+  today's.
+- **The ZZR *Referenzzins*** ([R17]): the **construction** is statutory and read, including the 2017 anchor of **2,21 Prozent**;
+  the **current level of 1.57 %**, reported unchanged since 2021, and the ZZR stock (€84 bn at end-2024 from a €96 bn peak at
+  end-2021) are **trade-press figures that were not re-opened in this pass** and stay `[unverified]`.
+- **The declared *laufende Verzinsung*** ([R53]): Assekurata's **per-insurer** 2026 column runs from about **2,10 %** to
+  **3,50 %**; the averages this register previously carried were not retrieved and are dropped.
 - **The 2024 solvency reset** ([R13], [R53]): **340.3 % including transitionals at end-2024 against 663.6 % at end-2023.** Pre-
   and post-recalculation ratios are **not comparable** and a delib document must say which it quotes.
 - **The euro UFR** ([R4]): **3.30 % applicable from 1 January 2026**.
-- **The Solvency II cost-of-capital rate** ([R2], [R3]): **6 % now (indirectly corroborated only), 4.75 % from the 2025
-  review**, first applying **30 January 2027**. **No delib model implements a 2027 basis.**
+- **The Solvency II cost-of-capital rate** ([R2], [R3]): **6 %, now read from Art. 39 of Delegated Regulation (EU) 2015/35**,
+  falling to **4.75 %** under the 2025 review, first applying **30 January 2027** — that last figure and date being a consultancy's
+  report, not the instrument. **No delib model implements a 2027 basis.**
 - **The *Sozialversicherungsrechengrößen*** ([R39], [R42], [R46]): the Basisrente ceiling, the *Kleinbetragsrente* threshold and
   the *Versorgungsbezüge* Freibetrag all move annually off one regulation, so delib carries them as `**[std]**` parameters **in
   one place with the year stated** and every product document references that one place.
-- **Riester's closure** ([R44]): new business ends **1 January 2027**. A delib RIE model is a model of a **closed** product and
-  its specification says so.
-- **The Höchstzillmersatz** ([R16]): **25 ‰ from 1 January 2015**, 40 ‰ before — and the rate in force at conclusion stays with
-  the contract.
+- **Riester's closure** ([R44]): new business ends **1 January 2027** under the **Altersvorsorge-Reformgesetz vom 26. Mai 2026,
+  BGBl. 2026 I Nr. 156**, to which the Bundesrat consented on 8 May 2026. Existing contracts carry *Bestandsschutz*. A delib RIE
+  model is a model of a **closed** product and its specification says so.
+- **The Höchstzillmersatz** ([R16]): **25 Promille der Summe aller Prämien**, statutory in § 4 Abs. 1 Satz 2 DeckRV; the
+  40 ‰ predecessor and its 1 January 2015 replacement date are **`[unverified]`** — the consolidated text shows only the current
+  figure. § 4 Abs. 4 fixes the rate in force at conclusion for the whole term.
 - **The unisex boundary** ([R34]): **21 December 2012**. Contracts before it may still be sex-rated; delib models none of them.
 
 ### E. What is proprietary and therefore not shippable
@@ -2858,7 +3573,8 @@ without the year is wrong within months:
    sex split, smoker split, selection period, trend structure, first- versus second-order — and ships `**[std]**` proxies
    instead, anchored so that each product's worked example reproduces exactly. **No $q_x$, no incidence rate, no improvement
    rate and no annuity factor anywhere in this library is attributed to a DAV table.**
-2. **No value from any DAV table is known to this library**, so there is no route in this session to validating a proxy against
+2. **No value from any DAV table is known to this library**, and the 2026-08-30 pass did not change that: `aktuar.de` serves and
+   was browsed, and it publishes no table. So there is no route in this session to validating a proxy against
    the real basis. That is the defining limitation of delib's biometric layer and it is stated in `index.md`, in every
    `sources.md` header and in every `_research/<slug>.md` header.
 3. **An insurer's own *Rechnungsgrundlagen* are not public.** § 143 VAG makes them a documented, supervisor-visible object
@@ -2868,9 +3584,10 @@ without the year is wrong within months:
 5. **The BerVersV supervisory returns** ([R54]) are generally understood not to be public, which is why the *Zerlegung des
    Rohergebnisses* reaches delib only through the RechVersV § 28 *Anhang* disclosures and through rating-agency series built on
    them.
-6. **Destatis material is different and is the reason the proxies are buildable**: German official statistics are understood to
-   be reusable with attribution ([R52]). delib's position does not depend on resolving that licence question, because the
-   shipped CSVs are **constructed proxies with a `provenance` column**, not reproductions of any published series.
+6. **Destatis material is different and is the reason the proxies are buildable, and the licence question is now answered.**
+   Destatis's *Impressum*, read 2026-08-30, states for GENESIS-Online *"© Statistisches Bundesamt (Destatis), 2026 —
+   Datenlizenz Deutschland – Namensnennung – Version 2.0"* ([R52]) — reuse with attribution. delib's position never depended on it,
+   because the shipped CSVs are **constructed proxies with a `provenance` column**, not reproductions of any published series.
 
 ### F. Two structural observations to carry into the product documents
 
@@ -2882,8 +3599,9 @@ without the year is wrong within months:
    the *Beitragsgarantie* for a Riester fund [R43].
 2. **The German surplus system is a three-lever machine, and a model that pulls one lever has not modelled the product.** The
    insurer chooses the **declaration**, the **split between *Direktgutschrift* and RfB**, and the **release from the RfB and the
-   *Schlussüberschussanteilfonds*** — subject to the MindZV minimum [R18], the RfB ring fence [R10], the RfBV ceiling [R19] and
-   the § 139 VAG *Bewertungsreserven* test [R9]. A delib model that credits a rate without representing the RfB has modelled a
+   *Schlussüberschussanteilfonds*** — subject to the MindZV minimum and the MindZV § 13 ceiling on the *ungebundener Teil* [R18],
+   the RfB ring fence and its three escape hatches [R10], the RfBV ceilings on the *Teilbestände* and on the collective part [R19]
+   and the § 139 VAG *Bewertungsreserven* test [R9]. A delib model that credits a rate without representing the RfB has modelled a
    French *fonds en euros* with German vocabulary, not a German contract.
 
 ### G. What this file is not

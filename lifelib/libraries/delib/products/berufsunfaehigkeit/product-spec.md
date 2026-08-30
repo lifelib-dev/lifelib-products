@@ -43,22 +43,30 @@ Altersversorgung* or *Gruppenversicherung* are different products, outside this 
 A German SBU is **life-assurance business**, written by a *Lebensversicherungsunternehmen* and
 governed by §§ 172–177 VVG for its own mechanics and, through the cross-reference in § 176, by the
 general life provisions §§ 150–170 VVG for everything else [R1] [R5] [REG-R29]. It is neither health
-nor accident business, even though its trigger is a health event, and it carries no premium tax
-[R31] `[unverified]`. Structurally it is a **pure risk contract with a substantial reserve**: it
-returns nothing if the insured stays healthy, yet the level *Bruttobeitrag* charged against an
-*Invalidisierungswahrscheinlichkeit* that rises far more steeply with age than mortality does
-produces a real *Deckungsrückstellung* [R9] [REG-R28]. That combination — no savings intent, a large
-risk reserve — separates this product from every other in delib, and is why the contract has a
-*Rückkaufswert* and a *Beitragsfreistellung* right at all.
+nor accident business, even though its trigger is a health event, and it carries no premium tax —
+§ 4 Abs. 1 Nr. 5 Buchst. b VersStG exempts a premium for benefits payable "im Fall der Krankheit,
+der Pflegebedürftigkeit, der Berufs- oder der Erwerbsunfähigkeit" where they serve the insured's or
+her relatives' provision [R31]. Structurally it is a **pure risk contract with a levelling
+reserve**: it returns nothing if the insured stays healthy, and the level *Bruttobeitrag* charged
+against an *Invalidisierungswahrscheinlichkeit* that rises far more steeply with age than mortality
+does builds a *Deckungsrückstellung* whose **purpose is to keep the gross premium level, not to
+accumulate value** [R9]. A carrier's own AVB puts the size of it plainly: "Die Bildung eines
+Kapitals ist kein Vertragszweck Ihrer Versicherung … Die für die Bildung des Deckungskapitals zur
+Verfügung stehenden Beitragsteile sind gemessen an den gezahlten Beiträgen während der gesamten
+Vertragslaufzeit sehr gering. Mit Ablauf der Versicherung ist das Deckungskapital deswegen stets
+wieder völlig aufgebraucht" [S6]. **This corrects an earlier statement in this document that the
+contract carries a "substantial" or "large" risk reserve.** The reserve is real, it is why the
+contract has a *Rückkaufswert* and a *Beitragsfreistellung* right at all, and it is small.
 
 **Why the product exists at all is a matter of statute.** The 2001 pension reform closed the
-statutory *Berufsunfähigkeitsrente* to everyone born on or after 2 January 1961 `[unverified]`;
-§ 240 SGB VI preserves it only for the older cohorts [R25]. What remains for the post-1960
+statutory *Berufsunfähigkeitsrente* to everyone born on or after 2 January 1961; § 240 Abs. 1
+SGB VI preserves it only for insured persons "vor dem 2. Januar 1961 geboren" [R25]. What remains for the post-1960
 population is the *Erwerbsminderungsrente* of § 43 SGB VI [R24], tested against the **general
 labour market** in hours a day rather than against the insured's own occupation — *volle
-Erwerbsminderung* below three hours a day, *teilweise* between three and six, both needing a
-five-year *Wartezeit* plus three years of compulsory contributions in the last five `[unverified]`
-throughout. A surgeon who loses the use of a hand cannot operate but can answer a telephone for six
+Erwerbsminderung* below three hours a day, *teilweise* between three and six, both needing the
+*allgemeine Wartezeit* plus three years of compulsory contributions in the five years before onset
+(§ 43 Abs. 1 Nr. 2 and 3, Abs. 2 Nr. 2 and 3 SGB VI), and both assessed without regard to the state
+of the labour market (Abs. 3). A surgeon who loses the use of a hand cannot operate but can answer a telephone for six
 hours a day: fully *berufsunfähig*, not at all *erwerbsgemindert*. The private SBU is the
 replacement for the cover the state withdrew, and it is **paid in addition to** the statutory
 pension rather than offset against it — offsetting designs exist at the margin `[unverified]` and
@@ -90,8 +98,11 @@ the product sits in, broadest trigger first, is *Berufsunfähigkeit* (last occup
 ## Representative specification
 
 The composite is built from the market position each mechanic occupies, not from one carrier's
-paper, because **no carrier's paper was retrieved**. Sixteen named German life insurers write this
-product [S3]–[S12]; the file names them and attributes no parameter to any of them. The anchor model
+paper. Five carrier wordings were read for the provenance pass of 2026-08-30 — Alte Leipziger,
+NÜRNBERGER, VOLKSWOHL BUND, Debeka and CosmosDirekt [S4] [S6] [S9] [S12] — and where a clause or a
+cap is now attributed to one of them the tag says which. **No price was obtained from any of them**,
+so no *level* in the composite comes from a carrier. Eighteen named German life insurers write this
+product [S3]–[S12]; the file names them and attributes no premium, factor or rate to any of them. The anchor model
 cell is defined in the last row of the first table and argued in footnote (6).
 
 ### Product identity and issue rules
@@ -137,7 +148,7 @@ Footnotes to **[std]** rows:
    age for cohorts born from 1964 `[unverified]` and anything earlier leaves a gap between the end
    of the *BU-Rente* and the start of the old-age pension [S16].
 5. German practice uses an *Eintrittsalter* convention rather than an age-nearest one; the rounding
-   rule varies by carrier and none was retrieved, so the composite uses age last birthday advancing
+   rule varies by carrier and none of the retrieved wordings states one, so the composite uses age last birthday advancing
    at the policy anniversary **[std]** — worth at most one year of the inception curve.
 6. **The anchor is the German market's central sale.** Entry age 30 is inside the 25–35 mass
    market; a 37-year term to 67 exercises the entire inception curve including the expensive last
@@ -167,7 +178,10 @@ Footnotes to **[std]** rows:
 
 7. **This is the most consequential single gap in the whole corpus.** The
    *Produktinformationsblatt* [S13] is the one public German document that routinely prints both
-   figures on the same page for a named age, occupation and *BU-Rente*, and none was retrieved.
+   figures on the same page for a named age, occupation and *BU-Rente*, and none was retrieved — a
+   PIB is generated per quotation and no carrier publishes a specimen with figures. **The mechanism
+   is no longer a recollection**: two carrier AVB state it, one in the exact terms *Tarifbeitrag
+   (Bruttobeitrag)* against *ermäßigter Nettobeitrag* [S6] [S12]. What is missing is the ratio.
    0,70 is the midpoint of the recalled 0,60–0,75 common band: a construction, not a measurement.
    Its consequence is direct and large — **a model projecting only the *Bruttobeitrag* overstates
    collected premium by 1/0,70 − 1 = 42,9 %**, and one projecting only the *Zahlbeitrag* silently
@@ -186,15 +200,16 @@ Footnotes to **[std]** rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Principal benefit | The agreed monthly *BU-Rente*, paid **monthly in advance** for as long as the insured is *berufsunfähig*, to the *Leistungsendalter* | [S1] [R1] |
-| Benefit trigger | Inability, as a consequence of *Krankheit*, *Körperverletzung* or more than age-appropriate *Kräfteverfall*, to exercise the **last occupation actually exercised, as it was arranged before the impairment**, **to at least 50 %**, **prospectively for at least six months** | [R1] for the statutory limbs; **50 % and six months are AVB conventions, not statute** [S1] [REG-R37] |
-| Degree of benefit | **All-or-nothing at 50 %.** At 50 % or more the full *BU-Rente* is payable; at 49 %, nothing. A second route exists — the ***Sechs-Monats-Fiktion***, under which six months of actual continuous inability counts as BU with no further prognosis | [S1] [REG-R37]; *Staffelregelung* and "Teil-BU" variants `[unverified]`, not modelled |
-| Retroactivity | Benefit is paid back to the **onset** of BU (after any *Karenzzeit*), not from the decision date; weaker legacy wordings paid only from the end of the six months | [S1] `[unverified]` |
+| Benefit trigger | Inability, as a consequence of *Krankheit*, *Körperverletzung* or more than age-appropriate *Kräfteverfall*, to exercise the **last occupation actually exercised, as it was arranged before the impairment**, **to at least 50 %**, **prospectively on a lasting basis** | [R1] for the statutory limbs, which say only "ganz oder teilweise voraussichtlich auf Dauer"; **the 50 % and the prognosis period are AVB conventions, left blank in the GDV model conditions** [S1] and filled by each carrier [S12] |
+| *Prognosezeitraum* | The period over which the inability must be expected to last. **It is not six months as a matter of course**: the model conditions leave it blank subject only to the statutory *Dauerhaftigkeit*, one large carrier requires "voraussichtlich auf Dauer (mindestens 3 Jahre)", and a shortened *Prognosezeitraum* is sold as a tier upgrade rather than being standard | [S1] [S12] |
+| Degree of benefit | **All-or-nothing at 50 %.** At 50 % or more the full *BU-Rente* is payable; at 49 %, nothing — "Bei einem geringeren Grad der Berufsunfähigkeit besteht kein Anspruch auf eine Leistung" [S12]. A second and distinct route is the ***Sechs-Monats-Fiktion***: six months of actual continuous inability to that degree, after which "gilt die Fortdauer dieses Zustandes als Berufsunfähigkeit" with no prognosis at all | [S1] [S12] [REG-R37]; *Staffelregelung* and "Teil-BU" variants `[unverified]`, not modelled |
+| Retroactivity | The claim arises "mit Ablauf des Monats, in dem die Berufsunfähigkeit eingetreten ist" [S1], so benefit runs from **onset** (after any *Karenzzeit*), not from the decision date; premiums are paid in full until the decision and refunded on acknowledgement. Under the *Fiktion* limb the model conditions treat only the **continuation** of the state as BU, and record that paying retroactively from an earlier date requires the conditions to be varied — full retroactivity is a carrier choice, not the model default | [S1] |
 | ***Beitragsbefreiung*** | Full waiver of the premium while the *BU-Rente* is in payment. Not an option — part of the core cover in every German BU contract | [S1] [S2] |
-| ***Karenzzeit*** | **0 months** representative. Menus recalled as 0 / 3 / 6 / 12 / 18 / 24 | [S1] `[unverified]`; choice **[std]** (10) |
+| ***Karenzzeit*** | **0 months** representative. A *Karenzzeit* lowers the premium and defers **the pension only** — "Die Karenzzeit gilt nur für die Rente"; the *Beitragsbefreiung* starts from the month after BU begins regardless, the insured must be BU throughout it and still at its end, and a served *Karenzzeit* is credited on a recurrence from the same cause within 24 months [S4] [S9]. The **menu** of durations lives in the *Tarifbestimmungen*, which were not retrieved; 0 / 3 / 6 / 12 / 18 / 24 is recalled `[unverified]` | [S1] [S4] [S9]; choice **[std]** (10) |
 | ***Leistungsdynamik*** | **2 % a year**, applied on each anniversary of the start of benefit, to the *BU-Rente* in payment | recalled menu 1 % / 2 % / 3 %, some index-linked `[unverified]`; level **[std]** (10) |
 | ***Wiedereingliederungshilfe*** | A one-off lump of **6 monthly *BU-Renten*** on a return to work | recalled range 3 – 12 monthly *Renten* `[unverified]`; level **[std]** (11) |
 | End of benefit | At the *Leistungsendalter*; on death; or on a *Nachprüfung* termination, followed by the statutory **three-month run-off** | [S1] [R3] [REG-R29] |
-| Death, maturity and expiry benefits | **All none.** An SBU pays nothing on death, before or during a claim; survival to the *Endalter* returns nothing; and a claim in payment at the *Leistungsendalter* stops with no commutation, no residual value and no conversion | [S1] |
+| Death, maturity and expiry benefits | **None in the modelled product, and none in the GDV model conditions**: an SBU pays nothing on death, before or during a claim; survival to the *Endalter* returns nothing; and a claim in payment at the *Leistungsendalter* stops with no commutation, no residual value and no conversion [S1]. **This is not universal.** One retrieved carrier's AVB grants a *Schlusszahlung* at expiry of the *Versicherungsdauer*, set "in Prozent der bis dahin tatsächlich gezahlten Tarifbeiträge", where no BU arose, and *Zinsüberschussanteile* during a claim converted into a *Bonusrente* [S12]; another offers a *Bonusrente* as the alternative to the *Beitragsverrechnung* [S6]. Both are surplus applications, not guarantees, and neither is modelled | [S1]; carrier variants [S6] [S12] |
 | Other assistance benefits | *Umorganisationshilfe*, *Reha-Hilfe*, *Soforthilfe* set off against the eventual benefit, *Pflege* add-ons | [S1] [S5] [S8] `[unverified]`; not modelled (11) |
 
 10. **The *Karenzzeit* is an option, not a feature, and the standard sale does not carry one.**
@@ -213,17 +228,17 @@ Footnotes to **[std]** rows:
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Dominant rating factor | **Occupation**, ahead of age and far ahead of anything else — a direct consequence of the definition, since the insured event is inability to do *this* job | [S6] [R1] |
-| *Berufsgruppen* per carrier | **4 to 6** typical; 3 at some direct writers, 10 or more at specialists | [S6] [S12] `[unverified]` |
+| *Berufsgruppen* per carrier | **4 to 6** typical; 3 at some direct writers, 10 or more at specialists. **Nothing retrieved supports this.** The NÜRNBERGER AVB was read in full for the 2026-08-30 pass and never uses the word *Berufsgruppe*; the classification lives in a *Berufsgruppenverzeichnis* that is not published at a public address, and none of the five carrier wordings read states a class count | [S6] [S12] `[unverified]` — recalled, and the document that would settle it was sought and not found |
 | Classification list | Each insurer maintains its own *Berufsgruppenverzeichnis* mapping named occupations to classes. **The classes are not comparable between carriers** — an occupation in class 2 at one insurer may be class 3 at another, which is precisely why the comparison portals exist | [S6] [S15] |
-| Composite classification | Five classes: **BG1** academic and pure office; **BG2** qualified commercial and technical; **BG3** skilled trades with light physical content; **BG4** skilled manual trades; **BG5** heavy manual, hazardous and outdoor | shape [S6] `[unverified]`; five-class cut **[std]** (12) |
+| Composite classification | Five classes: **BG1** academic and pure office; **BG2** qualified commercial and technical; **BG3** skilled trades with light physical content; **BG4** skilled manual trades; **BG5** heavy manual, hazardous and outdoor | shape `[unverified]` and **not** attributable to a retrieved document; five-class cut **[std]** (12) |
 | Occupational factors | BG1 **1,00**; BG2 **1,40**; BG3 **2,10**; BG4 **3,00**; BG5 **4,50**, applied multiplicatively to the *Invalidisierungswahrscheinlichkeit* | recalled manual/office premium ratio 2× – 4×, centred near 3×, and 4× – 6× for the heaviest insurable trades `[unverified]`; **[std]** (12) |
 | Declined occupations, academic status | Roofers, scaffolders, some care roles, professional drivers and some artistic professions are declined outright by many carriers, or offered only with a *Karenzzeit*, a reduced *Endalter* or a limited *Leistungsdauer*. Academic status moves the classification independently of the job title | [S6] [S12] `[unverified]`; absorbed into the class |
 | Sex | **May not be a rating factor.** Unisex pricing has been compulsory for new contracts since **21 December 2012**, following *Test-Achats* (C-236/09, 1 March 2011) and the repeal of § 20 Abs. 2 Satz 1 AGG | [R15] [REG-R34] |
-| Smoker status | **Not systematically a rating factor in BU**, unlike *Risikolebensversicherung*; where it appears its effect is far smaller than the occupational factor | [S1] `[unverified]`; not modelled |
+| Smoker status | **Not systematically a rating factor in BU**, unlike *Risikolebensversicherung*; where it appears its effect is far smaller than the occupational factor | `[unverified]`; the GDV model conditions and the four carrier AVB read on 2026-08-30 are silent on smoking, which is consistent with the claim but does not establish it; not modelled |
 | *Gesundheitsprüfung* | Health questions over defined look-back windows — recalled as five years outpatient, ten inpatient and for psychotherapy — plus height and weight, current complaints, planned treatments, tobacco use and existing or refused disability cover; a medical report above an insured *BU-Rente* of the order of 18 000 – 30 000 € a year. **Psychiatric and musculoskeletal history are the two decisive ones**, which is exactly where the claims come from | [S1] [S16] [R22] `[unverified]` |
 | Underwriting outcomes | Acceptance at *Normaltarif*; acceptance with a ***Risikozuschlag***, commonly 25 % – 100 %; acceptance with an ***Ausschlussklausel*** excluding a named condition or body region (spine, knee, psyche are the classic three); *Zurückstellung*; *Ablehnung* | [S1] `[unverified]` |
 | Proportion not accepted on standard terms | A quarter to a third — which is why the ***Risikovoranfrage*** exists: an anonymised pre-enquiry through a broker, so a decline is never recorded against the applicant in the industry's *Hinweis- und Informationssystem* (HIS) | [S15] [S16] [R7] `[unverified]` |
-| ***Vorvertragliche Anzeigepflicht*** | § 19 VVG: disclosure of risk circumstances the insurer asked about in *Textform*; on breach, *Rücktritt*, contract amendment, *Kündigung* or *Anfechtung* graded by fault. The remedies are extinguished by **§ 21 Abs. 3 VVG** — not by § 19 — after **five years**, ten on intent or fraud | [R7] [REG-R30]; § 21 Abs. 3 `[unverified]` |
+| ***Vorvertragliche Anzeigepflicht*** | § 19 VVG: disclosure of risk circumstances the insurer asked about in *Textform*; on breach, *Rücktritt*, contract amendment, *Kündigung* or *Anfechtung* graded by fault. The remedies are extinguished by **§ 21 Abs. 3 VVG** — not by § 19 — after **five years**, "zehn Jahre" where the duty was breached intentionally or fraudulently, and **not** for claims that arose inside the period. § 21 Abs. 1 also gives the insurer one month from learning of the breach to act | [R7] [REG-R30] |
 | ***Anerkennungsquote*** | About **75 % – 80 %** of decided claims accepted, roughly half of the declines because the 50 % degree is not reached | [R21] [R20] `[unverified]`; enters the model as **[std]** (13) |
 
 12. **A five-class cut with a 1,00 / 3,00 anchor.** The corpus supports the *shape* of a German
@@ -258,9 +273,12 @@ is therefore **[std]** or a statutory ceiling.
 | ***Leistungsbearbeitungskosten***, maintenance | **12 € per month a claim is in payment** | **[std]** (16) |
 | Expense inflation, commission | **No inflation** — German loadings are fixed at inception for the term. Commission is not separately modelled; it sits inside the *Abschluss- und Vertriebskosten* line, which is the German charge taxonomy | **[std]** (14) (15) |
 
-14. **The only sourced ceiling in the entire charge structure** is the *Höchstzillmersatz*, itself
-    `[unverified]` as to its own figure — the reference library records three renderings of what the
-    25 ‰ applies to [REG-R16]. The composite sits **at** the cap: German level-premium risk business
+14. **The only sourced ceiling in the entire charge structure** is the *Höchstzillmersatz*, and it
+    is now sourced three times over: DeckRV § 4 Abs. 1 — "Der Zillmersatz darf 25 Promille der Summe
+    aller Prämien nicht überschreiten" [R13] — and two carrier AVB that state it customer-facing as
+    2,5 % of the premiums payable over the term [S1] [S6]. The base is **the sum of all premiums**,
+    which settles the three renderings the reference library records [REG-R16], and § 4 Abs. 4 fixes
+    the rate used at conclusion for the whole term. The composite sits **at** the cap: German level-premium risk business
     generally does, and a cap is at least a sourced ceiling. The *Beitragssumme* over 37 years is
     large even though the annual premium is modest, so this is the contract's biggest expense item.
 15. Levels are round-number constructions sized so first-year outgo is of the same order as
@@ -278,13 +296,13 @@ is therefore **[std]** or a statutory ceiling.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| ***Rückkaufswert*** | **Exists and is not nominal**, under § 169 VVG through § 176: the *Deckungsrückstellung* on recognised actuarial principles, acquisition and distribution costs spread over at least five years for the *Mindestrückkaufswert*, and a *Stornoabzug* only if agreed, appropriate and quantified. It is nonetheless modest relative to premiums paid — a risk reserve, not a savings account, with *Zillmerung* absorbing its early years, and some wordings give no or only a minimal value in the first years | [R9] [R5] [R13] [REG-R28] `[unverified]` on the detail |
-| ***Beitragsfreistellung*** | A right at any time, under § 165 VVG through § 176, producing a **beitragsfreie *BU-Rente*** net of conversion costs; below a stated minimum the contract is instead terminated against the *Rückkaufswert*. It is **small** — the *Deckungsrückstellung* is a fraction of the present value of the remaining risk — and is nonetheless the option consumer advice recommends over lapse | [R8] [R5] [S16] [REG-R28] `[unverified]` |
+| ***Rückkaufswert*** | **Exists, and is small.** § 169 VVG applies through § 176 and only *entsprechend*: § 169 Abs. 1 confers the right where "der Eintritt der Verpflichtung des Versicherers gewiss ist", which a pure SBU is not, so it arrives through the cross-reference and its reservation [R5] [R9]. The AVB pay it expressly — "den Rückkaufswert entsprechend § 169 des Versicherungsvertragsgesetzes (VVG)" [S1] — and VVG-InfoV § 2 requires the *Rückkaufswerte* to be disclosed for a BU contract [R12]. The mechanics are confirmed: *Deckungsrückstellung* on recognised actuarial principles, acquisition and distribution costs spread over at least five years for the *Mindestrückkaufswert*, and an *Abzug* only "wenn er vereinbart, beziffert und angemessen ist", never for unamortised acquisition costs. One retrieved carrier takes no deduction at all. **The magnitude is the point**: the parts of the premium available to build the capital are, in a carrier's own words, "sehr gering" against premiums paid, and the capital is exhausted by expiry [S6] | [R9] [R5] [R12] [R13] [S1] [S6] [REG-R28] |
+| ***Beitragsfreistellung*** | A right "jederzeit für den Schluss der laufenden Versicherungsperiode" under § 165 Abs. 1 VVG through § 176, producing a **beitragsfreie *BU-Rente*** computed on the premium basis and stated in the contract for each policy year; below the agreed *Mindestversicherungsleistung* the contract is instead terminated against the *Rückkaufswert*. One retrieved carrier sets that minimum at 100,00 EUR of monthly pension [S6]. It is **small**, and the conditions say why: "wegen der benötigten Risikobeiträge gemessen an den gezahlten Beiträgen keine oder nur geringe Mittel" are available even in later years [S1]. It is nonetheless the option consumer advice recommends over lapse | [R8] [R5] [S1] [S6] [S16] [REG-R28] |
 | **What the model does with both** | **Neither is modelled as a cash flow.** A lapse removes the policy from the in-force count and pays nothing | scope **[std]** (17) |
 | Effect of a lapse | Cover ends. Once health has changed the cover cannot be replaced, which makes BU lapse both low and **strongly selective** | [S16]; selection not modelled — see the technical notes' model risks |
 | Non-payment path | German lapse is not instantaneous: due date → *qualifizierte Mahnung* in *Textform* with an itemised statement and a **two-week** minimum period → expiry; and § 166 VVG overrides the general § 38 consequence for life business, so cover converts to *prämienfrei* rather than simply ceasing | [REG-R30] [REG-R28]; timing simplification **[std]** (17) |
 | *Widerruf*, termination of right | 30-day *Widerruf* for a life-assurance contract, absorbed into the first-year lapse rate **[std]**. Rights terminate at the *Endalter*, on death and on lapse | [REG-R23] [S1] `[unverified]` |
-| *Verlängerungsoption* | The right to extend the *Versicherungs-* and *Leistungsdauer* — 63 → 65, 65 → 67 — without renewed underwriting, exercisable in a window before the original *Endalter* | [S1] [S4] `[unverified]`; modelled as a model-point *Endalter*, not as a dynamic option |
+| *Verlängerungsoption* | The right to extend the *Versicherungs-* and *Leistungsdauer* — 63 → 65, 65 → 67 — without renewed underwriting, exercisable in a window before the original *Endalter*. The option exists at carrier level (a *Verlängerungsgarantie* has its own section in one retrieved AVB [S9]); **the ages and the window are in the *Tarifbestimmungen*, which were not retrieved**, so they stay `[unverified]` | [S1] [S4] [S9]; modelled as a model-point *Endalter*, not as a dynamic option |
 
 17. **A gross benefit-and-premium projection has no place to put a surrender value**, and inventing
     one would be worse than omitting it: the *Rückkaufswert* is the release of a reserve this model
@@ -338,13 +356,18 @@ modelled object is the **incidence of a ≥ 50 % incapacity**, not a severity di
 Measurement is on working time, on the share of the occupation's essential tasks still performable,
 or on both, and **the burden of proof on the initial claim is on the insured** [R21].
 
-There are **two routes to a claim**. The *prognosis route*: a doctor certifies that the 50 %
-inability is expected to last at least six months from now, and benefit is due from onset without
-waiting for them to elapse. The *Sechs-Monats-Fiktion*: where the insured has actually been unable,
-continuously, for six months, the continuation of that state counts as BU with no further
-prognosis — the fiction exists because a forward-looking prognosis is hard to obtain and easy to
-contest. A minority of tariffs shorten the *Prognosezeitraum* to three months `[unverified]`, which
-raises the effective inception rate without changing the definition.
+There are **two routes to a claim**, and they are two separate clauses of the AVB with two
+different periods. The *prognosis route* (§ 2 Abs. 1): a doctor certifies that the 50 % inability is
+expected to last for the contractual *Prognosezeitraum*, and benefit is due from onset without
+waiting for it to elapse. **The GDV model conditions leave that period blank**, footnoting only that
+its measure must respect "dem gesetzlichen Tatbestandsmerkmal der Dauerhaftigkeit (§ 172 Abs. 2
+VVG)", and one large carrier's AVB sets it at "voraussichtlich auf Dauer (mindestens 3 Jahre)"
+[S1] [S12]. The *Sechs-Monats-Fiktion* (§ 2 Abs. 2): where the insured has actually been unable,
+continuously, for six months, "gilt die Fortdauer dieses Zustandes als Berufsunfähigkeit" with no
+further prognosis — the fiction exists because a forward-looking prognosis is hard to obtain and
+easy to contest. **Six months is the *Fiktion*'s period, not the *Prognosezeitraum*'s**; an earlier
+version of this document ran the two together. A shortened *Prognosezeitraum* is sold as a tier
+upgrade [S12], which raises the effective inception rate without changing the definition.
 
 ### Abstrakte and konkrete Verweisung
 
@@ -362,9 +385,13 @@ standard, not a legal requirement, and legacy books still carry the clause. The 
 Verweisung* is **retained**, on both sides of the claim: at the initial claim, if the insured has
 already taken up such an occupation she is not *berufsunfähig*; and in the *Nachprüfung*, if she
 takes one up later, the insurer may end the benefit — subject to the three-month run-off [R3]. The
-limit is *Lebensstellung*: the new occupation must correspond in **income and social standing**,
-with a working market threshold of about a **20 %** income drop `[unverified]`, a rule of thumb from
-lower-court practice rather than a BGH figure [R29].
+limit is *Lebensstellung*: the new occupation must correspond in **income and social standing** —
+"nur eine Tätigkeit, die in ihrer Vergütung und sozialen Wertschätzung nicht spürbar unter das
+Niveau der bislang ausgeübten Tätigkeit absinkt" [S1] — with a working threshold of a **20 %** income
+drop. That figure is now sourced from the conditions rather than recalled: the GDV model conditions
+offer the sentence "Die höchstrichterliche Rechtsprechung geht zur Zeit davon aus, dass im Regelfall
+eine Minderung der Vergütung in Höhe von bis zu 20 % noch zumutbar ist", and one carrier's AVB fixes
+the reasonable reduction by reference to the case law "jedoch maximal 20 %" [S1] [S12] [R29].
 
 **Model consequence, a design decision rather than a simplification.** *Konkrete Verweisung* is
 **not a separate decrement**: in a cash-flow model it is indistinguishable from recovery — both end
@@ -383,7 +410,10 @@ facts; it can only stop paying prospectively, through a *Nachprüfung* in which 
 is on the insurer** [R3] [R29]. That reversal is the most valuable thing an insured obtains from a
 BU claim, and § 173's restriction exists precisely because insurers previously used repeated
 time-limited acknowledgements to keep the burden on the insured indefinitely. Market practice limits
-the time-limited form to 6 or 12 months, and a few tariffs waive it entirely `[unverified]`.
+the time-limited form to 6 or 12 months, and a few tariffs waive it entirely `[unverified]` — no
+retrieved wording states a maximum length. What the retrieved conditions do add is a further
+restriction beyond the statute: the time-limited acknowledgement is available only "wenn hierfür ein
+sachlicher Grund besteht, den wir Ihnen mitteilen werden" [S1].
 
 **Timing.** German claims studies report an average decision time measured in months — five to six
 is recalled — with a long tail `[unverified]` [R21]. Because benefit is retroactive to onset, a
@@ -399,7 +429,12 @@ of a notice in *Textform*** to that effect [R3] [REG-R29]. §§ 173 and 174 are 
 § 175 — no departure to the policyholder's disadvantage is effective — which is why these mechanics
 are uniform across the market and not a competitive variable; insurers may only improve on them,
 and some do, by contracting for a longer run-off or by waiving the *Nachprüfung* after a stated
-benefit duration [R4] `[unverified]`.
+benefit duration [R4] `[unverified]` — none of the four wordings retrieved for this pass improves on
+the statutory floor, all four reproducing the three-month period as it stands. Note also the reach
+of § 175: it protects §§ 173 and 174 only, and says nothing about the definition in § 172, which is
+exactly why the definition *is* a competitive variable and the run-off is not. The conditions add a
+consequence the statute does not state: at the same date the run-off ends, "müssen Sie auch die
+Beiträge wieder zahlen" [S1].
 
 **What the insurer must show** is a *change* relative to the state on which the *Anerkenntnis*
 rested: a medical improvement lifting the insured above the 50 % threshold in her old occupation,
@@ -444,9 +479,11 @@ rather than from the date of the decision.
 **What they do.** Combined with the *Sechs-Monats-Fiktion*, retroactivity means the first payment
 on a typical claim is a lump sum covering the elapsed months plus the current one. The premium
 keeps being paid in the meantime and is refunded for the period the retroactive benefit covers when
-the *Beitragsbefreiung* is applied retroactively `[unverified]` as to whether every AVB does this;
-the composite starts the *Beitragsbefreiung* at the benefit date and treats the interim premium and
-its refund as netting to zero. A *Karenzzeit* cuts the premium at a real cost in cover, and is one
+the *Beitragsbefreiung* is applied retroactively. That is now sourced rather than assumed: "Bis zur
+Entscheidung über die Leistungspflicht müssen Sie die Beiträge in voller Höhe weiter entrichten; wir
+werden diese jedoch bei Anerkennung der Leistungspflicht zurückzahlen" [S1]. The composite starts
+the *Beitragsbefreiung* at the benefit date and treats the interim premium and its refund as netting
+to zero, which is exactly what that clause produces. A *Karenzzeit* cuts the premium at a real cost in cover, and is one
 of the two levers consumer advice warns against using [S16] — the other being a reduced *Endalter*.
 
 ### Leistungsdauer, Versicherungsdauer and the Endalter
@@ -473,10 +510,16 @@ is sold.
 *Überschuss* and of the *Bewertungsreserven* unless participation is expressly excluded, allocated
 by a *verursachungsorientiertes Verfahren* [R10] [R5] [REG-R24]. The MindZV prescribes the minimum
 share of *Rohüberschuss* allocated to the *Rückstellung für Beitragsrückerstattung* by source; the
-**risk-result minimum** governs BU and is recalled at **90 %** `[unverified]` [R14] [REG-R18].
-§ 138 VAG requires premiums sufficient to meet the obligations permanently and equal treatment of
-equal risks — the principle that legitimises *Berufsgruppen* and forbids differentiation by sex
-[R15] [REG-R8].
+**risk-result minimum** is **90 %** of the risk result (MindZV § 7), and the *übriges Ergebnis* —
+for a BU book essentially the expense result — carries a minimum of **50 %** (MindZV § 8) [R14]
+[REG-R18]. Since a BU book's surplus is overwhelmingly risk plus expense surplus, it is that pair,
+not the 90 % alone, that ties claims experience to the *Zahlbeitrag*. § 138 Abs. 1 VAG requires
+premiums sufficient to meet the obligations permanently, and Abs. 2 equal treatment of equal risks —
+"Bei gleichen Voraussetzungen dürfen Prämien und Leistungen nur nach gleichen Grundsätzen bemessen
+werden", the principle that legitimises *Berufsgruppen* [R15] [REG-R8]. **Unisex is not in the VAG**:
+it follows from § 19 Abs. 1 Nr. 2 AGG with the transitional § 33 Abs. 5 AGG, which permits
+sex-differentiated premiums only for insurance relationships "die vor dem 21. Dezember 2012 begründet
+werden" [REG-R34].
 
 **What it does — the mechanic with no counterpart in the US, UK or French products in this
 repository.** A German BU tariff is quoted as **two numbers**: the *Bruttobeitrag*, computed on
@@ -496,7 +539,12 @@ is not established** and is a named gap.
 
 Alternative *Überschussverwendungen* appear in some tariffs — a *Bonusrente* in which surplus buys
 additional *BU-Rente*, *verzinsliche Ansammlung*, and an *Überschussrente im Leistungsfall* — with
-market shares `[unverified]`. *Beitragsverrechnung* is dominant and is what the composite models.
+market shares `[unverified]`. *Beitragsverrechnung* is dominant and is what the composite models,
+and two retrieved AVB describe it directly: surplus shares assigned as a percentage of the tariff
+premium and set off against it, so that "nicht der volle Tarifbeitrag (Bruttobeitrag), sondern nur
+der entsprechend ermäßigte Nettobeitrag gezahlt werden muss" [S6], and "Die laufenden
+Überschussanteile werden mit dem Tarifbeitrag verrechnet" [S12]. Both offer a *Bonusrente* as the
+alternative form.
 The reference implementation projects **both** streams: the *Bruttobeitrag* as premium income and
 the *Beitragsverrechnung* as an explicit surplus-credit outgo line, so that **the gap between them
 *is* the modelled *Überschussbeteiligung***. There is no surplus account, no RfB and no declaration
@@ -508,8 +556,12 @@ applied immediately rather than accumulated.
 **The rules.** The exclusion list is short by international standards and broadly uniform
 `[unverified]` as to any particular carrier: BU caused by war or internal unrest, with a carve-out
 where the insured is passively caught up in it; by the deliberate execution or attempted execution
-of a crime; by intentional self-harm, subject to the *Selbsttötung* rule of § 161 VVG through § 176
-and its three-year window [R11] [R5]; by nuclear energy; and in some wordings by aviation other than
+of a crime; by intentional self-harm — and here a correction: § 161 VVG is a **death-cover** rule
+("Bei einer Versicherung für den Todesfall …") whose three-year window has no application to a
+self-inflicted *impairment*, and the market's conditions do not run a window at all. They exclude,
+without any time limit, BU caused by "absichtliche Herbeiführung von Krankheit, absichtliche
+Herbeiführung mehr als altersentsprechenden Kräfteverfalls, absichtliche Selbstverletzung oder
+versuchte Selbsttötung" [S1] [R11] [R5]; by nuclear energy; and in some wordings by aviation other than
 as a passenger and defined hazardous activities [S1]. The ***Infektionsklausel*** runs the other
 way: it **deems** an official *Tätigkeitsverbot* imposed under the *Infektionsschutzgesetz* to be
 BU, so a doctor, dentist, nurse or laboratory worker forbidden to practise because she is infected
@@ -549,15 +601,21 @@ reason not to offer an accident-only variant.
   exercised in a window before the original *Endalter* changes the contract's parameters, not its
   recursion.
 - ***AU-Klausel***, present as machinery and **inert**: a switch and an inception uplift, with the
-  uplift shipped at **1,00 on every model point**. That is deliberate. The clause pays the full
-  *BU-Rente* on a certificate of six months' continuous *Arbeitsunfähigkeit* without the insurer
-  determining that BU exists, and so raises the effective inception rate and brings payment
-  forward; insurers bound it with a maximum benefit period (18, 24 or 36 months, or unlimited),
-  set-off against the eventual BU decision, and a duty to pursue the BU claim in parallel
-  `[unverified]` throughout. **No public source quantifies the uplift**, so the composite ships the
-  parameter unset rather than inventing one, and the model point that switches the clause on is an
-  **invariance test**: the option is present and demonstrably moves nothing until a user supplies
-  a number.
+  uplift shipped at **1,00 on every model point**. That is deliberate, and the reason has narrowed.
+  **The clause itself is now documented.** It pays the full *BU-Rente* on a certificate of continuous
+  *Arbeitsunfähigkeit* without the insurer determining that BU exists, and so raises the effective
+  inception rate and brings payment forward. Its three bounding parameters are established at carrier
+  level: the qualifying period is "6-monatige ununterbrochene Krankschreibung", or four months plus a
+  specialist's certificate that it will run two more; the cap is "max. 24 Monate pro Vertragslaufzeit
+  – auch bei mehrfacher Arbeitsunfähigkeit" at that carrier and up to 36 months at another; and
+  payments are set off — "Wird rückwirkend eine BU anerkannt, werden erbrachte AU-Leistungen mit den
+  BU-Leistungen verrechnet (keine Doppelzahlung)" [S4] [S6] [S8] [S12]. The GDV model conditions for
+  the AU variant leave all three blank as *unternehmensindividuell*, add that the AU claim requires
+  a BU claim to have been made, and forbid paying both at once. **What no retrieved document gives is
+  the price**: the clause is sold "gegen einen geringen Mehrbeitrag" and no source quantifies the
+  uplift, so the composite still ships the parameter unset rather than inventing one, and the model
+  point that switches the clause on remains an **invariance test**: the option is present and
+  demonstrably moves nothing until a user supplies a number.
 
 **Out of scope, specified here and not modelled.**
 
@@ -565,9 +623,17 @@ reason not to offer an accident-only variant.
   *Gesundheitsprüfung* on a defined event — marriage or registered partnership, birth or adoption,
   completion of studies or training, a first job or substantial pay rise, property purchase or a
   mortgage, starting self-employment, and in some tariffs the death of a partner or a divorce; with
-  event-independent windows in some tariffs, per-event and aggregate caps (often that the *BU-Rente*
-  may at most be doubled), an age limit, a 6- or 12-month exercise window, and the
-  *Angemessenheitsgrenze* on income `[unverified]` throughout [S1] [S4] [S5]. **It is the single
+  event-independent windows in some tariffs, per-event and aggregate caps, an age limit, an exercise
+  window and the *Angemessenheitsgrenze* on income. **The shape is no longer recalled.** One
+  retrieved AVB gives the whole apparatus: a per-event cap of 6 000 EUR of annual *BU-Rente*, 12 000
+  EUR for three income-based events, an aggregate of 18 000 EUR, 30 000 EUR including a separate
+  *Berufseinsteiger* guarantee, an age limit of 50 (35 for that guarantee) and a twelve-month window
+  from each event [S4]; another caps the total BU, EU and *Grundfähigkeit* entitlement — including
+  other private and occupational entitlements — at "nicht mehr als 60 % des regelmäßigen jährlichen
+  Bruttoeinkommens", 25 % for *Beamte*, with a 50 EUR minimum increase and the same age limit and
+  window [S9]. The **event lists** and the caps differ between the two, which is where the variation
+  actually lies; the "may at most be doubled" formulation was a recollection and is withdrawn [S1]
+  [S4] [S9]. **It is the single
   most valuable option in the German BU product**, because it lets a healthy 25-year-old lock in
   insurability cheaply and build the cover as income grows. Any on-run needs a take-up assumption
   **and** an anti-selection loading on the incremental cover, and neither is sourceable — so it is
@@ -582,25 +648,27 @@ reason not to offer an accident-only variant.
 
 ## Variations across insurers
 
-**An honest variations table for this product is largely a record of what could not be compared.**
-No insurer *Bedingungswerk* was retrieved and no search corroborated any carrier-level parameter,
-so the table records, per feature, **what the German market does and where the genuine variation
-lies** — not who sits where. Attributing a parameter to a named carrier would require a document
-this corpus does not have.
+**This table records where the variation lies, not who sits where.** Five insurer wordings were
+retrieved and read for the provenance pass of 2026-08-30 — Alte Leipziger, NÜRNBERGER, VOLKSWOHL
+BUND, Debeka and CosmosDirekt [S4] [S6] [S9] [S12] — together with the GDV model conditions for the
+SBU, the BUZ and the BU-with-AU variant [S1] [S2] [S8]. Where a row now names a reading, the reading
+comes from one of those documents and the tag says which. **What is still missing is price**: no
+tariff table, no occupational factor and no *Brutto* / *Zahlbeitrag* pair was obtained, so no row
+compares carriers on cost, and a row that would need one carries `[unverified]`.
 
 | Feature | Market position | Where carriers genuinely differ | Composite | Tag |
 |---|---|---|---|---|
-| BU definition — last occupation, 50 %, six months | Uniform, descended from the GDV model text | Almost nowhere | Market standard | [S1] [R1] [REG-R37] |
+| BU definition — last occupation, 50 % degree | Uniform in shape, descended from the GDV model text; the **numbers are not in the model text**, which leaves the degree and the prognosis period blank | The degree is 50 % across the retrieved wordings; the *Prognosezeitraum* is not — "auf Dauer (mindestens 3 Jahre)" at one carrier, shortened as a tier upgrade at another | Market standard, 50 % | [S1] [S12] [R1] [REG-R37] |
 | *Abstrakte Verweisung* | Waived by essentially all current tariffs | Legacy books only | Waived | [S1]–[S12] [REG-R37] |
-| *Konkrete Verweisung* | Retained | Whether it is waived on a material income drop; the *Lebensstellung* threshold | Retained, folded into the termination rate | [S1] `[unverified]` |
-| *Prognosezeitraum*, retroactivity | 6 months, paid retroactively from onset | A minority shorten the prognosis to 3; weaker wordings pay only from the end of the six months | 6 months, from onset | `[unverified]` |
-| *Anerkenntnis* and *Nachprüfung* | Time limitation permitted once, § 173; re-examination annual or biennial | Maximum length of a *befristetes Anerkenntnis*, 6 or 12 months, some waiving it; some waive the *Nachprüfung* after a stated benefit duration | Continuous termination rate; no acknowledged state | [R2] [R3] `[unverified]` |
+| *Konkrete Verweisung* | Retained; the *Lebensstellung* threshold is stated in the wordings and quantified at a 20 % income reduction | Whether it is waived on a material income drop; how the 20 % is applied — one carrier fixes it "je nach Lage des Einzelfalls … jedoch maximal 20 %" | Retained, folded into the termination rate | [S1] [S12] |
+| *Prognosezeitraum*, retroactivity | Prognosis period set per carrier, up to three years; **six months is the *Fiktion*, not the prognosis**. The claim arises with the end of the month in which BU began | The prognosis period is a headline differentiator and a tier upgrade; whether the *Fiktion* pays back to onset or only forward | 6 months, from onset | [S1] [S12] |
+| *Anerkenntnis* and *Nachprüfung* | Time limitation permitted once and only on a stated *sachlicher Grund*, § 173 and [S1]; re-examination by medical examination at most once a year under the retrieved wordings | Maximum length of a *befristetes Anerkenntnis*, some waiving it; some waive the *Nachprüfung* after a stated benefit duration — no retrieved wording states either `[unverified]` | Continuous termination rate; no acknowledged state | [R2] [R3] [S1] |
 | Three-month run-off | Statutory floor, § 174 | Some contract for longer | Three months exactly | [R3] [REG-R29] |
-| *Karenzzeit* menu | 0 as standard | 0 / 3 / 6 / 12 / 18 / 24 offered | 0, with 3, 6, 12 exercised | `[unverified]` |
-| *Endalter* menu | 65 or 67 | 60 / 62 / 63 as budget options | 67, with 60 and a split 63/67 exercised | `[unverified]` |
-| *Leistungsdauer* vs *Versicherungsdauer* | Equal in the standard | A shorter *Leistungsdauer* as a cheaper design | Equal, with one split model point | [S1] `[unverified]` |
-| *AU-Klausel* | The principal differentiator | Present or absent; 18/24/36-month cap or unlimited; set-off rules | Present, inert | `[unverified]` |
-| *Nachversicherungsgarantie* | Present everywhere | Event-list breadth, per-event and aggregate caps, event-independent windows | Specified, not modelled | `[unverified]` |
+| *Karenzzeit* menu | 0 as standard; where agreed it defers the pension only and lowers the premium | The menu of durations, which sits in the *Tarifbestimmungen* and was not retrieved `[unverified]`; whether a served *Karenzzeit* is credited on a recurrence — one carrier credits it within 24 months from the same cause | 0, with 3, 6, 12 exercised | [S4] [S9] |
+| *Endalter* menu | 65 or 67 | 60 / 62 / 63 as budget options — the menu sits in the *Tarifbestimmungen*, none of which was retrieved | 67, with 60 and a split 63/67 exercised | `[unverified]` |
+| *Leistungsdauer* vs *Versicherungsdauer* | Two distinct periods, defined separately in every retrieved wording; equal in the standard sale | A shorter *Leistungsdauer* as a cheaper design | Equal, with one split model point | [S1] [S9] |
+| *AU-Klausel* | The principal differentiator, and now documented: full *BU-Rente*, paid on a certificate rather than on a BU determination | Present or absent; the qualifying period (6 months, or 4 plus a specialist prognosis); the cap — 24 months per contract at one carrier, up to 36 at another; whether a parallel BU claim is required; set-off against a later BU award, which one carrier applies expressly | Present, inert | [S4] [S6] [S8] [S12] |
+| *Nachversicherungsgarantie* | Present everywhere; event-triggered, without renewed health questions, with an age limit of 50 and a twelve-month window in both retrieved wordings | Event-list breadth, and the caps: 6 000 EUR per event with an 18 000 / 30 000 EUR aggregate at one carrier, a 60 %-of-gross-income ceiling on total entitlement at another | Specified, not modelled | [S4] [S9] |
 | *Leistungsdynamik* | Offered everywhere | 1 – 3 % fixed, or index-linked | 2 % fixed **[std]** | `[unverified]` |
 | *Beitragsdynamik* | Offered everywhere | 1 – 10 %, commonly 3 % or 5 %; two or three declines extinguish it | 3 % **[std]**, off in the base run | `[unverified]` |
 | *Wiedereingliederungshilfe* | Common | 3 to 12 monthly *Renten* | 6 **[std]** | `[unverified]` |
@@ -629,15 +697,22 @@ no surrender or paid-up cash flow modelled.
 **Contract law — the VVG.** The product's own chapter is §§ 172–177: § 172 the definition and the
 permission to agree an *abstrakte Verweisung*; § 173 the *Anerkenntnis* and its once-only time
 limitation; § 174 the *Leistungsfreiheit* and its three-month notice; § 175 making §§ 173–174
-*halbzwingend*; § 176 applying §§ 150–170 *entsprechend*; § 177 extending the same procedural frame
-to cover of reduced earning capacity, of *Arbeitsunfähigkeit* and to accident cover paying for a
-lasting impairment of working capacity [R1]–[R6] [REG-R29]. **§ 176 is load-bearing and its exact
-reach is a named gap**: it is the authority for an *Überschussbeteiligung* (§ 153) [R10] [REG-R24],
-a *prämienfreie Versicherung* (§ 165) [R8], a *Kündigung* right and a *Rückkaufswert* (§§ 168–169)
-[R9] [REG-R28] and the *Selbsttötung* rule (§ 161) [R11] — five consequences resting on a range of
-sections that was not read. Outside it, § 19 governs the *vorvertragliche Anzeigepflicht* and the
-insurer's remedies for a breach of it while **§ 21 Abs. 3** — not § 19 — extinguishes those remedies
-after five years, ten on intent or fraud [unverified], § 157 the misstatement of age, and § 158 the rule that **an increase in
+*halbzwingend*; § 176 applying §§ 150–170 *entsprechend*; and § 177 extending §§ 173–176 to every
+contract promising a benefit for a ***dauerhafte*** impairment of working capacity [R1]–[R6]
+[REG-R29]. **Two readings of § 177 have been corrected against the text.** It reaches only cover of
+a *lasting* impairment — *Grundfähigkeits-* and *Erwerbsunfähigkeitsversicherung* — so a benefit for
+temporary *Arbeitsunfähigkeit* does not come within it; an *AU-Klausel* is protected because it sits
+inside a BU contract to which §§ 172 ff. apply directly. And Abs. 2 **excludes** accident insurance
+and health-insurance contracts covering impaired working capacity, so it does not extend the frame
+to accident cover. **§ 176's reach is no longer a gap**: it applies "die §§ 150 bis 170 … entsprechend
+…, soweit die Besonderheiten dieser Versicherung nicht entgegenstehen", which is the authority for an
+*Überschussbeteiligung* (§ 153) [R10] [REG-R24], a *prämienfreie Versicherung* (§ 165) [R8], a
+*Kündigung* right and a *Rückkaufswert* (§§ 168–169) [R9] [REG-R28] and, subject to that reservation,
+the *Selbsttötung* rule (§ 161) [R11]. The reservation matters twice over: § 169 Abs. 1 is drafted
+for risks whose occurrence is certain, and § 161 for death cover. Outside it, § 19 governs the
+*vorvertragliche Anzeigepflicht* and the insurer's remedies for a breach of it while **§ 21 Abs. 3**
+— not § 19 — extinguishes those remedies after five years, ten on intent or fraud, and not at all
+for claims that arose inside the period, § 157 the misstatement of age, and § 158 the rule that **an increase in
 risk counts as such only where expressly agreed to** — which is why a German BU contract carries no
 general occupation-change clause and why this model needs no reunderwriting state [R7] [REG-R30].
 
