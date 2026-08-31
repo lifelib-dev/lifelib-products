@@ -5,17 +5,19 @@ country**, together with the documentation needed to build **reference implement
 of liability cash flow projection models** (lifelib/modelx style), organized by product
 type and country.
 
-**Status:** Draft, 2026-08-26. Current coverage: United States (6 individual life and
+**Status:** Draft, 2026-08-30. Current coverage: United States (6 individual life and
 6 individual annuity product types), United Kingdom (7 product types, including pension
-annuities), Japan (9 product types, three of them 第三分野 health products) and France
-(9 product types, five of them built on *assurance vie*).
-**All thirty-seven products ship an executable reference model** in
+annuities), Japan (9 product types, three of them 第三分野 health products), France
+(9 product types, five of them built on *assurance vie*) and Germany (10 product types,
+organised on the *Drei-Schichten-Modell*).
+**All forty-seven products ship an executable reference model** in
 `<library>/products/<product>/`, beside the documents that specify it — twelve in
 `lifelib/libraries/uslib/`, seven in `lifelib/libraries/uklib/`, nine in
-`lifelib/libraries/jplib/` and nine in `lifelib/libraries/frlib/`, each one reproducing
-its own technical notes' worked example, asserted cell by cell. All four are lifelib
-libraries in shape: they sit at the path lifelib puts its libraries on, they render as
-Sphinx page trees, and every regulatory citation in them is a working link.
+`lifelib/libraries/jplib/`, nine in `lifelib/libraries/frlib/` and ten in
+`lifelib/libraries/delib/`, each one reproducing its own technical notes' worked example,
+asserted cell by cell. All five are lifelib libraries in shape: they sit at the path
+lifelib puts its libraries on, they render as Sphinx page trees, and every regulatory
+citation in them is a working link.
 
 ---
 
@@ -23,7 +25,7 @@ Sphinx page trees, and every regulatory citation in them is a working link.
 
 ```
 lifelib/libraries/                   the path lifelib keeps its libraries on, and so does this
-  <library>/                         uslib/, uklib/, jplib/, frlib/ — named for the lifelib library each becomes
+  <library>/                         uslib/, uklib/, jplib/, frlib/, delib/ — named for the lifelib library each becomes
     index.md                         library overview, the models, citation conventions
     products/
       <product>/                     each product's documents and its executable model, together
@@ -44,7 +46,7 @@ The Sphinx pages are **not** in the library: `doc/source/libraries/<lib>/` holds
 from the models' own docstrings. They are plumbing, and a `lifelib.create()` copy is better
 without them.
 
-All four libraries are in this shape and ready to merge into lifelib — see
+All five libraries are in this shape and ready to merge into lifelib — see
 [USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md) for the design and [MERGE.md](MERGE.md) for the
 lifelib-side checklist.
 
@@ -67,10 +69,12 @@ than reported:
 python tools/doccheck.py
 ```
 
-It should report zero across the four libraries. Run the model suites with:
+It should report zero across the five libraries. Run the model suites with:
 
 ```bash
-python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests lifelib/libraries/jplib/tests lifelib/libraries/frlib/tests -q
+python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests \
+    lifelib/libraries/jplib/tests lifelib/libraries/frlib/tests \
+    lifelib/libraries/delib/tests -q
 ```
 
 - **`product-spec.md`** defines a *representative* product: a standardized composite
@@ -118,8 +122,11 @@ Each country section is built in three passes:
    its 施行規則, the FSA 告示 and 監督指針, 日本アクチュアリー会's standard tables, and the
    公的 statistical series (患者調査, 全国がん登録, 介護保険事業状況報告) for Japan; and the Code
    des assurances on Légifrance, the ACPR, the *arrêtés* homologating TH 00-02 / TF 00-02
-   and TGH05 / TGF05, INSEE, DREES / CNSA and France Assureurs for France. Everything
-   lands in `_research/` with per-source fact extraction and explicit fetch-failure notes.
+   and TGH05 / TGF05, INSEE, DREES / CNSA and France Assureurs for France; and the VAG,
+   VVG, DeckRV and MindZV, the BaFin *Merkblätter*, the DAV table families, the *Drei-Schichten*
+   provisions of the EStG and the AltZertG, and GDV and Destatis statistics for Germany.
+   Everything lands in `_research/` with per-source fact extraction and explicit
+   fetch-failure notes.
 2. **Drafting** — write the product spec and technical notes from the research files
    under the citation discipline above, choosing and justifying a representative
    design where insurers differ.
@@ -127,6 +134,31 @@ Each country section is built in three passes:
    research files, recomputation of all formulas and worked examples, internal
    consistency), then a cross-product consistency pass (shared terminology, shared
    base-chassis mechanics, link and tag integrity).
+
+**The Germany library was drafted blind, then re-verified, and says so on every page it
+touches.** `delib` was first built in an environment whose network policy blocked direct HTTP
+egress to every host outside a package-registry allowlist — `gesetze-im-internet.de`,
+`bafin.de`, `aktuar.de`, `gdv.de`, `destatis.de` and `eur-lex.europa.eu` were each tried and
+each refused at the gateway — and the session's web-search budget was exhausted partway
+through the regulatory research, so the later product files had no research channel at all.
+That first draft rested on the authoring model's own knowledge of German insurance law and
+practice, disciplined by **[std]** and **[unverified]** tags.
+
+The policy was later lifted and **every citation re-checked against the document it names**.
+All fifteen German instruments the library cites were read as canonical XML from
+gesetze-im-internet with each law's *Stand* recorded, and **950 statutory section references
+were checked, of which 950 were correct**; insurer *AVB*, *Verbraucherinformationen* and
+*Produktinformationsblätter* were retrieved as PDFs and read. Of 969 source entries, **613 now
+read `Retrieved: yes`**, 37 were reached in part, and 319 could not be opened — a 404, a
+consent or JavaScript wall, a paywall, a subscription login, or an address never established.
+An entry that still reads `Retrieved: no` remains a **pointer, not a certificate**.
+
+The re-verification corrected the drafted text in every product, which is the strongest reason
+to read a claim against its own entry rather than trusting the library as a whole. Coverage is
+uneven, and unevenly by source type rather than by effort: the statutory core is near-complete,
+while products whose primary sources are carrier wordings behind a document portal are
+thinnest. Findings that reach a **modelled** rate or rule were recorded and deliberately not
+acted on, since a model change moves the worked example and its golden tests with it.
 
 ## Coverage
 
@@ -136,8 +168,9 @@ Each country section is built in three passes:
 | [United Kingdom](lifelib/libraries/uklib/index.md) | term assurance, critical illness, income protection, whole of life, with-profits, unit-linked bond, pension annuity | specs, technical notes and all 7 [models](lifelib/libraries/uklib/index.md#the-models); builds as a library |
 | [Japan](lifelib/libraries/jplib/index.md) | **Protection:** 定期保険 term life, 収入保障保険 survivor income term<br>**Savings:** 終身保険 whole life, 養老保険 endowment (with 学資保険), 外貨建終身保険 FX whole life<br>**第三分野:** 医療保険 medical, がん保険 cancer, 介護保険 nursing care<br>**Annuity:** 個人年金保険 individual annuity | specs, technical notes and all 9 [models](lifelib/libraries/jplib/index.md#the-models); builds as a library |
 | [France](lifelib/libraries/frlib/index.md) | **Épargne:** assurance vie fonds en euros, assurance vie unités de compte, eurocroissance<br>**Retraite:** PER assurantiel, rente viagère immédiate<br>**Prévoyance:** temporaire décès, assurance emprunteur, contrat obsèques, dépendance | specs, technical notes and all 9 [models](lifelib/libraries/frlib/index.md#the-models); builds as a library |
+| [Germany](lifelib/libraries/delib/index.md) | **Schicht 3:** kapitalbildende Lebensversicherung, klassische Rentenversicherung, fondsgebundene Rentenversicherung, Indexpolice<br>**Geförderte Vorsorge:** Basisrente (Rürup), Riester-Rente<br>**Rentenbezug und Biometrie:** Sofortrente, Risikolebensversicherung, Berufsunfähigkeitsversicherung, Pflegerentenversicherung | specs, technical notes and all 10 [models](lifelib/libraries/delib/index.md#the-models); builds as a library |
 
-Scope note: all four libraries cover individual business, but what "individual life
+Scope note: all five libraries cover individual business, but what "individual life
 insurance" means differs by market and the coverage follows the market rather than a
 template. The U.S. library covers the deferred and payout annuity families sold at retail;
 the UK library covers pension annuities, the dominant UK annuity form and the centrepiece
@@ -149,13 +182,23 @@ its nine to *assurance vie* and what is built on it, because *assurance vie* is 
 savings vehicle rather than one product among several, and a sixth to *assurance
 emprunteur*, the cover a French borrower buys with a mortgage, which is the largest
 individual protection market in the country and has no counterpart in the other three.
-Group insurance, 共済 (cooperative insurance), *contrats collectifs* and institutional
-business (bulk purchase annuities, pension risk transfer) are out of scope in all four.
+The Germany library is organized on the **Drei-Schichten-Modell** the *Alterseinkünftegesetz*
+imposed on German retirement saving in 2005, because in Germany the tax layer a contract sits
+in decides its mechanics rather than merely its treatment: a *Basisrente* may not be
+surrendered at all, and a *Riester-Rente* carries a statutory 100 % *Beitragsgarantie*, and
+both of those are model structure rather than parameters. A slot goes to the
+**Berufsunfähigkeitsversicherung**, the country's flagship protection product, which has no
+counterpart in the other four.
+Group insurance, 共済 (cooperative insurance), *contrats collectifs*, German **betriebliche
+Altersversorgung** and substitutive **private Krankenversicherung**, and institutional
+business (bulk purchase annuities, pension risk transfer) are out of scope in all five.
 
 ## Roadmap
 
-- **The merge itself**: all three libraries are prepared, and what remains is the
-  lifelib-side half — [MERGE.md](MERGE.md) is the checklist.
+- **The merge itself**: all five libraries are prepared, and what remains is the
+  lifelib-side half — [MERGE.md](MERGE.md) is the checklist. It was written for the first
+  three and has not been revised for frlib or delib; the library-side work those two needed
+  was the same, and the lifelib-side steps are unchanged apart from the directory names.
 - **Additional countries**, and additional product families (group insurance,
   institutional/pension risk transfer business) as coverage grows.
 

@@ -1,0 +1,6 @@
+`conf.py` sets `html_static_path = ["_static"]`, and Sphinx warns when that path does
+not exist.  git cannot track an empty directory, so the warning appeared in every clean
+checkout even though nothing was wrong -- `python tools/doccheck.py` reported one
+warning where the README says it should report zero.  This file exists to carry the
+directory into the repository.  Anything genuinely static -- a logo, a stylesheet --
+goes here beside it.
