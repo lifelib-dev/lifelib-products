@@ -1,9 +1,15 @@
 # lifelib-products
 
-A library of **product specifications for major life insurance products, organized by
-country**, together with the documentation needed to build **reference implementations
-of liability cash flow projection models** (lifelib/modelx style), organized by product
-type and country.
+**This repository is where reference models are drafted for merging into
+[lifelib](https://github.com/lifelib-dev/lifelib).** It is a staging ground, not a package
+to install or depend on: each library under `lifelib/libraries/` is written in the shape
+lifelib expects, and is drafted, reviewed and held to standard here until it lands
+upstream as a lifelib library of its own.
+
+What it holds is a library of **product specifications for major life insurance products,
+organized by country**, together with the documentation needed to build **reference
+implementations of liability cash flow projection models** (lifelib/modelx style),
+organized by product type and country.
 
 **Status:** Draft, 2026-08-30. Current coverage: United States (6 individual life and
 6 individual annuity product types), United Kingdom (7 product types, including pension
