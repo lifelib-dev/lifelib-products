@@ -1344,7 +1344,7 @@ because the decrements are, not because the benefit is.
       R(2)    = 1.0  (reld_start_year = 4, so the loop is not yet live)
       nc(2)   = 0    (y < 3)
       G(2)    = ( 5,034.3571 + 8,082.3862 x 1.0 ) x (1 - 0)     =    13,116.7433
-      step    = 13,116.7433 / 11,982.0000                       = +9.4712%
+      step    = 13,116.7433 / 11,982.0000                       = +9.4704%
                 of which the geubyeo unit +5.040% and the
                 bigeubyeo unit +12.424%
     Month 12, at l(12) = 0.8898237107:
@@ -1362,7 +1362,7 @@ because the decrements are, not because the benefit is.
 
 **The premium *falls* month by month inside a policy year and *rises* at the boundary**, and
 both movements are the same fact seen twice: `premiums(t) = G(y) × l(t)`, so inside a year
-only `l` moves and it only falls, while at the boundary the +9.4712% re-rate outweighs twelve
+only `l` moves and it only falls, while at the boundary the +9.4704% re-rate outweighs twelve
 months of decrement. The `net_cf` triples because the claim, spread evenly through the year,
 rises only with the 8.1% and 1.0% cost trends while the premium rises with those trends
 **and** the 4% age loading.

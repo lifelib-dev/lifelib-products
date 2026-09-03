@@ -11,16 +11,15 @@ source tag on this page resolves in [`sources.md`](sources.md).
 > every diagnosis benefit, 고액암 paying *in addition* rather than instead, the waiver's
 > exclusion of 특정소액암 and 유사암 by name, the absence of any death benefit beside the
 > statutory payment of the 계약자적립액, the nil surrender value of the 미지급형 form during
-> the 납입기간, and the 표준해약공제액. **The incidence basis is sourced too**, and that
-> makes this the one morbidity model in `krlib` that does not open with an apology:
-> 보험개발원 publishes a dated 「기타피부암 및 갑상선암 이외의 암 발생률」 grid by age and
-> sex on the *insured* definition of cancer [R5] [REG-R61]. Everything else is **[std]** —
-> the tier decomposition of that grid, the whole post-diagnosis survival model, every care
-> intensity, the lapse level, the expense and commission scales, the notional 보험가입금액
-> and the premium. The 제10회 경험생명표 is released only as 평균수명 and 기대여명
-> [REG-R33] [REG-R34], so `mort_table.csv` is a construction and not a copy. Replace the
-> assumption tables with company data and a real 산출방법서 before drawing any conclusion
-> from the numbers.
+> the 납입기간, and the 표준해약공제액. **The incidence basis is sourced too**, which makes
+> this the one morbidity model in `krlib` that does not open with an apology: 보험개발원
+> publishes a dated 「기타피부암 및 갑상선암 이외의 암 발생률」 grid by age and sex on the
+> *insured* definition of cancer [R5] [REG-R61]. Everything else is **[std]** — the tier
+> decomposition of that grid, the whole post-diagnosis survival model, every care intensity,
+> the lapse level, the expense and commission scales, the notional 보험가입금액 and the
+> premium — and the 제10회 경험생명표 is released only as 평균수명 and 기대여명 [REG-R33]
+> [REG-R34], so `mort_table.csv` is a construction and not a copy. Replace the assumption
+> tables with company data and a real 산출방법서 before drawing any conclusion.
 
 ## Run it
 
@@ -89,10 +88,9 @@ into ten `claims_*` columns; `expenses` there is acquisition plus maintenance, w
 handling cost in its own `claim_expenses` column. `result_pols()` publishes the four
 diagnosis flows, the three decrement rates, the 유사암 ledger and the 계약자적립액 with both
 surrender values beside it — the last because the whole of the 미지급형 form is the gap
-between `cv_pp` and `cv_std_pp`, and printing that only inside a cash flow is not enough.
-`model.Projection.doc` carries the notes' symbols mapped to cells names and states the age
-basis; `model.Data.doc` says what each input file is and, for the two decrement files, which
-of them is published data and which is a construction.
+between `cv_pp` and `cv_std_pp`. `model.Projection.doc` carries the notes' symbols mapped to
+cells names and states the age basis; `model.Data.doc` says what each input file is and,
+for the two decrement files, which is published data and which is a construction.
 
 ## Three in-force states, and why the reduced tier is not one of them
 
@@ -211,10 +209,10 @@ the floor **binds on the anchor cell** — because the anchor's ₩45,000 is the
 specification states rather than the shipped basis's own equivalence level of ₩55,586, 19.0%
 below it. Every other model point carries its own equivalence premium, and only points 1, 2,
 4, 5, 6 and 9 exhaust the account at all. A recursion allowed to go negative would carry a
-fictitious asset and pay `claims_death` out of it; `check_net_cf()` would not catch that,
-because the ledger identity still balances either way. `risk_prem_pp` deliberately excludes
-the DEATH and LAPSE lines: they are payments *out of* the account, and including them makes
-the recursion self-referential — modelx raises rather than silently mis-answering, but a hand
+fictitious asset and pay `claims_death` out of it, which `check_net_cf()` would not catch
+because the ledger identity balances either way. `risk_prem_pp` deliberately excludes the
+DEATH and LAPSE lines: they are payments *out of* the account, so including them makes the
+recursion self-referential — modelx raises rather than silently mis-answering, but a hand
 implementation will not.
 
 ## Two surrender values, and a face amount this product does not have
@@ -261,19 +259,18 @@ change the answer if they are swapped.
 4. **Care benefits** on the six duration cohorts of both diagnosed states — on the *stock*,
    never on the flow.
 5. **Decrements**, in the order **transition → mortality → lapse**, each state on its own
-   basis. A life diagnosed in month `t` takes its new state's mortality for the rest of that
-   month.
+   basis. A life diagnosed in month `t` takes its new state's mortality for the rest of it.
 6. **The 계약자적립액 recursion**, then `claims(t, "DEATH")` releasing `av_pp(t)` and
    `claims(t, "LAPSE")` releasing `cv_pp(t)`.
 
 Two consequences fall straight out of the ordering and both are pinned by tests.
 **Diagnosis lines ride on flows and care lines ride on stocks**: `claims_diag_*(t)` uses the
 month's new diagnoses and `claims_hosp/surgery/treat(t)` uses `pols_diag_dur(t, k)`, the
-stock at the start of the month. Multiplying a care intensity by a diagnosis flow understates
-the care limbs by the mean diagnosed duration, which on this basis is a factor of well over a
-hundred. And **the care limbs start one month after the diagnosis limbs**:
-`claims_hosp(3) = 0` while `claims_hosp(4) = 13.6639954092`, because a life diagnosed in
-month 3 is in the diagnosed stock from month 4.
+stock at the start of the month; multiplying a care intensity by a diagnosis flow understates
+the care limbs by the mean diagnosed duration, a factor of well over a hundred on this basis.
+And **the care limbs start one month after the diagnosis limbs**: `claims_hosp(3) = 0` while
+`claims_hosp(4) = 13.6639954092`, because a life diagnosed in month 3 is in the diagnosed
+stock from month 4.
 
 ## The tier algebra: a partition, a subset and an addition
 
@@ -287,14 +284,12 @@ Four monthly incidences come off one published rate, and their algebra differs l
 **고액암 pays in addition, not instead** [S3], so `claims_diag_gen(3) = 1,360.1145372945` and
 `claims_diag_high(3) = 49.7602879498` are both paid on overlapping flows: a leukaemia collects
 200% of `S` and a stomach cancer 100%. Treating 고액암 as a fifth slice of a partition halves
-it.
-
-**유사암 is additive because the published grid excludes it.** The bureau's rate is stated on
-invasive cancer excluding 기타피부암 (C44) and 갑상선암 (C73) [R5] [REG-R61], which is exactly
-the 유사암 boundary the 약관 draw — so the grid and the reduced tier fit together rather than
-needing reconciliation, and `similar_share` can and does **exceed 1.0**: 1.60 at female
-만나이 20. A model that constrains the four shares to sum to one prices the reduced tier out
-of existence at precisely the ages where it dominates.
+it. And **유사암 is additive because the published grid excludes it**: the bureau's rate is
+stated on invasive cancer excluding 기타피부암 (C44) and 갑상선암 (C73) [R5] [REG-R61], which
+is exactly the 유사암 boundary the 약관 draw, so the grid and the reduced tier fit together
+rather than needing reconciliation and `similar_share` can and does **exceed 1.0** — 1.60 at
+female 만나이 20. A model that constrains the four shares to sum to one prices the reduced
+tier out of existence at precisely the ages where it dominates.
 
 ## Two ledgers that are per policy and per diagnosed life
 
@@ -478,19 +473,19 @@ prudential margin, so there is no margin to unwind and scaling it would be inven
 100,000 — 대장 63.8, 유방 58.4, 전립선 44.3 (the 특정소액암 sites), 갑상선 69.3 and
 상피내암 74.7 (the 유사암 sites) against an excluding-thyroid base of 495.0 — and then
 **graded in age and split by sex**, because those all-ages figures mix age distributions that
-differ violently. Interpolation between the four anchors is **linear**, not log-linear, and
-the two conventions must not be swapped: a bounded share that may exceed 1.0 has no
-meaningful log-linear interpolation. **The 유사암 share is a floor**: [R1] does not cover
-경계성종양 at all, does not identify 대장점막내암 inside 대장 D010–D012, and does not carry
-기타피부암 in its top-ten table. The **고액암** share is the weakest of the three — none of
-골, 뇌 or 백혈병 is in the retrieved top-ten table, so it has no published anchor at all.
+differ violently. Interpolation between the four anchors is **linear**, not log-linear: a
+bounded share that may exceed 1.0 has no meaningful log-linear interpolation. **The 유사암
+share is a floor**: [R1] does not cover 경계성종양 at all, does not identify 대장점막내암
+inside 대장 D010–D012, and does not carry 기타피부암 in its top-ten table. The **고액암**
+share is the weakest of the three — none of 골, 뇌 or 백혈병 is in the retrieved top-ten
+table, so it has no published anchor at all.
 
 `survival_table.csv` is the post-diagnosis basis, and it exists because a cancer contract
 goes on paying after the diagnosis benefit. The public quantity is **relative survival** —
 「관찰생존율을 일반인구의 기대생존율로 나누어 구한 값」 [R1] — a *ratio to an expected
-general-population survival*, not a cohort curve and not a transition rate. It therefore
-converts into an **excess hazard added to** the base table, never into a replacement for it,
-and multiplying survivorship by a relative-survival figure double-counts the background. The
+general-population survival*, not a cohort curve and not a transition rate, so it converts
+into an **excess hazard added to** the base table and never into a replacement for it;
+multiplying survivorship by a relative-survival figure double-counts the background. The
 calibration is exact where the target is public: the five male general-tier hazards sum to
 **0.41725950 = −ln(0.659)**, the published male excluding-thyroid 5년 상대생존율 of 65.9%
 [R1], and the five 특정소액암 hazards to **0.13856564 = −ln(0.8706)**, built from 대장 75.6,
@@ -588,23 +583,22 @@ is not repeated here; `test_projection_doc_maps_notes_symbols` asserts it carrie
 ### What this product argued in the cross-model naming review
 
 Three settlements in `RETIRED_NAMES` came out of the review and this model observes all
-three. **`yejeong_rate` → `prem_int_rate`**: 예정이율 is the *pricing* interest rate and must
-not share a name with the declared crediting rate, which is `decl_rate` on the savings
-chassis — this model has a 예정이율 and no 공시이율 at all, being 금리확정형, and the
-distinction is only visible if the two names differ. **`surr_charge_pp` → `surr_chg_pp`**,
-with the Korean cap on it spelled `surr_chg_cap_pp`; this product is one of the four that
-computes the cap from [별표 14] rather than reading a schedule. **`cv_ratio` →
-`cv_floor_ratio`**, because a bare ratio name said nothing about which of the two ratios on
-the 무·저해지 chassis it was; here `cv_floor_ratio = 0.0` is the 미지급형 fraction during the
-납입기간 and `cv_post_pay_ratio = 0.5` the fraction afterwards, and one name could not have
-carried both.
+three. **`yejeong_rate` → `prem_int_rate`**: 예정이율 is the *pricing* rate and must not share
+a name with the declared crediting rate `decl_rate` — this model has a 예정이율 and, being
+금리확정형, no 공시이율 at all, and the distinction is only visible if the names differ.
+**`surr_charge_pp` → `surr_chg_pp`**, with the Korean cap spelled `surr_chg_cap_pp`; this
+product is one of the four that computes the cap from [별표 14] rather than reading a
+schedule. **`cv_ratio` → `cv_floor_ratio`**, because a bare ratio name said nothing about
+which of the two ratios on the 무·저해지 chassis it was; here `cv_floor_ratio = 0.0` is the
+미지급형 fraction during the 납입기간 and `cv_post_pay_ratio = 0.5` the fraction afterwards,
+and one name could not have carried both.
 
-Two names this product **argued for and kept**. `pols_maturity` rather than `pols_expiry`,
-even though nothing is paid: the count whose cover ends at the scheduled end of the contract
-is a maturity in the library's vocabulary whether or not a benefit attaches, and any payment
-is `claims(t, "MATURITY")`. And `mort_be_factor` rather than `mort_ae_factor` — the library
-adjusts a table to a best estimate, which is not an actual-to-expected ratio, and a name
-meaning A/E could not have said why this model holds the factor at 1.0.
+Two names this product **argued for and kept**: `pols_maturity` rather than `pols_expiry`,
+because the count whose cover ends at the scheduled end of the contract is a maturity in the
+library's vocabulary whether or not a benefit attaches; and `mort_be_factor` rather than
+`mort_ae_factor`, since the library adjusts a table to a best estimate rather than computing
+an actual-to-expected ratio, and a name meaning A/E could not have said why this model holds
+the factor at 1.0.
 
 ## Standardizations used
 
@@ -663,41 +657,39 @@ places the notes print, in-force counts and rates to ten, and the ledgers to ten
   and the five 특정소액암 hazards to −ln(0.8706), the six `treat_avail` values, and the three
   per-diagnosed-life-month care amounts — ₩12,500.00, ₩275,000.00 and ₩548,811.64 in select
   year 1, and ₩8,125.00 / ₩10,833.33 / ₩0.00 in the ultimate.
-- **The first sixteen months** of `result_cf()` and `result_pols()` row by row, and the four
-  hand traces the notes carry.
-- **Policy year 1 in aggregate** — ₩528,108.33 of premium against ₩19,994.28 of benefit, and
-  a year closing at −₩145,503.30 — and the **undiscounted totals over all 721 months**:
-  ₩8,586,707.2756349239 of premium, ₩8,009,869.07 of diagnosis benefit, ₩4,192,693.32 of
-  care benefit, ₩1,474,174.97 of account payments and **−₩7,466,785.4889610466** of net cash
-  flow, together with the expected-payment counts each line implies (0.1971 일반암, 0.0062
-  고액암, 0.0929 특정소액암, 0.0395 유사암, 0.1960 treatment).
+- **The first sixteen months** of `result_cf()` and `result_pols()` row by row, the four hand
+  traces the notes carry, **policy year 1 in aggregate** — ₩528,108.33 of premium against
+  ₩19,994.28 of benefit, closing at −₩145,503.30 — and the **undiscounted totals over all
+  721 months**: ₩8,586,707.2756349239 of premium, ₩8,009,869.07 of diagnosis benefit,
+  ₩4,192,693.32 of care benefit, ₩1,474,174.97 of account payments and
+  **−₩7,466,785.4889610466** of net cash flow, with the expected-payment counts each line
+  implies (0.1971 일반암, 0.0062 고액암, 0.0929 특정소액암, 0.0395 유사암, 0.1960 treatment).
 - **The equivalence premium on the shipped basis**, ₩55,586 against the shipped ₩45,000, with
   the 152.7418594890-month premium annuity and the 1.2352479168 ratio behind it.
-- **The account and surrender path**: `av_pp(447) = 0` and zero thereafter,
+- **The account, surrender and ledger paths**: `av_pp(447) = 0` and zero thereafter,
   `surr_chg_pp(84) = 0`, `cv_pp(t) = 0` for every `t < 240`, the step to ₩4,078,536.79 at
-  `t = 240`, and `claims_lapse` moving from ₩0.00 to ₩1,891.71 in that same row.
-- **The ledgers**: `similar_avail(720) = 0.9172290909` and `treat_cum_pp` converging to
-  0.7516253263.
+  `t = 240` with `claims_lapse` moving from ₩0.00 to ₩1,891.71 in that same row,
+  `similar_avail(720) = 0.9172290909`, and `treat_cum_pp` converging to 0.7516253263.
 
 Every entry in the notes' **Known modeling pitfalls** list has a test of its own, named after
 the pitfall, because each is a way an implementation can look right and be wrong: the two
-waiting periods; the 면책기간 stopping the transition as well as the benefit; the premium
-still being charged inside it; voidness as a de-recognition rather than a decrement;
+waiting periods and the 면책기간 stopping the transition as well as the benefit, with the
+premium still charged inside it and voidness a de-recognition rather than a decrement;
 `premiums` on `pols_healthy + pols_minor` while `expenses` is on `pols_if`; 특정소액암 not
-waiving; a 특정소액암 life lapsing where a waived one cannot; 고액암 as a subset paid in
-addition; 유사암 as additive with a share exceeding 1.0; the 감액기간 as a first-year
-phenomenon; diagnosis lines on flows and care lines on stocks; the care limbs starting a
-month later; the thirteen-month cohort delay; the per-life treatment ledger and its zero
-ultimate hazard; the 유사암 ledger on `pols_if`; relative survival as an excess hazard rather
-than a survivorship multiplier; 유사암 carrying no excess mortality and no care benefit; the
-notional 보험가입금액; the 7-year 해약공제기간 against the 납입완료 cliff; the two prescribed
-steps landing in the same row; `claims_lapse` identically zero; the payment on death with no
-death benefit; the account floor binding; `risk_prem_pp` excluding the DEATH and LAPSE lines;
-nothing paid at expiry; the ten `claims_*` splits with no `claims` column; rounded lines not
-re-adding; `commissions(0) = 323,999.9999999999` and not 324,000.00; `proj_len()` as the last
-index rather than a row count; log-linear against linear interpolation; the [std] incidence
-rows above 80 carrying 22.6% of the diagnosis benefit; 부활 re-running the 90 days; and not
-reusing `Medical_KR_S`'s machinery.
+waiving and still able to lapse where a waived life cannot; 고액암 as a subset paid in
+addition and 유사암 as additive with a share exceeding 1.0; the 감액기간 as a first-year
+phenomenon; diagnosis lines on flows against care lines on stocks, starting a month later;
+the thirteen-month cohort delay; the per-life treatment ledger with its zero ultimate hazard
+and the 유사암 ledger on `pols_if`; relative survival as an excess hazard rather than a
+survivorship multiplier, and 유사암 carrying neither excess mortality nor a care benefit; the
+notional 보험가입금액; the 7-year 해약공제기간 against the 납입완료 cliff and the two
+prescribed steps landing in one row; `claims_lapse` identically zero; the payment on death
+with no death benefit and the account floor binding; `risk_prem_pp` excluding the DEATH and
+LAPSE lines; nothing paid at expiry; the ten `claims_*` splits with no `claims` column;
+rounded lines not re-adding and `commissions(0) = 323,999.9999999999`; `proj_len()` as the
+last index; log-linear against linear interpolation; the [std] incidence rows above 80
+carrying 22.6% of the diagnosis benefit; 부활 re-running the 90 days; and not reusing
+`Medical_KR_S`'s machinery.
 
 Beyond those: all **ten** `check_*` identities on all **ten** model points, each optional
 module in both positions of its switch, the `result_cf()` column vocabulary, the CSVs'
