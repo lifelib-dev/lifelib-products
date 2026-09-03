@@ -36,8 +36,8 @@ table itself is available to member insurers, not to the public. There is theref
 Korean analogue of Japan's 標準生命表 numeric table or Germany's DAV 2008 T. Every
 `mort_table.csv` in `krlib` is consequently a **[std]** construction anchored on
 published 국가데이터처 (formerly 통계청) 생명표 statistics and on the KIDI summary figures,
-carrying a `provenance` column on every row. Section 26 records exactly what is and is
-not public, and section 35 records what that forces on the models.
+carrying a `provenance` column on every row. Section 25 records exactly what is and is
+not public, and section 33 records what that forces on the models.
 
 Citation discipline, as in the sister libraries: every fact below carries `[S#]` where
 it was read from a retrieved primary legal or standard-form document, `[R#]` where it
@@ -678,7 +678,7 @@ rendered as an image rather than as text, it is recorded here as not retrieved.
   검증 및 제공", the collection of insurance information and statistics, and research
   [S1 제176조제3항]. A rate it files with the FSC is a **참조순보험요율**, and an insurer
   applying it "순보험료에 대하여 제127조제2항 및 제3항에 따른 신고 또는 제출을 한 것으로
-  본다" — deemed to have filed [S1 제176조제6항]. See §28.
+  본다" — deemed to have filed [S1 제176조제6항]. See §27.
 - The consumer-conduct layer is the **금융소비자 보호에 관한 법률** (Financial Consumer
   Protection Act), which supplies the statutory cooling-off right and the
   suitability/explanation duties that the 표준약관 then implements [S13].
@@ -1904,7 +1904,7 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
 - **Consequence for `krlib`, stated once here and cross-referenced everywhere.** Because the
   industry table is not public, **every `mort_table.csv` in `krlib` is a `[std]`
   construction.** The construction anchors on:
-  1. the public **국가데이터처 생명표** (§27), which gives qx-equivalent survivorship for the
+  1. the public **국가데이터처 생명표** (§26), which gives qx-equivalent survivorship for the
      whole population by single year of age and sex;
   2. the two published 경험생명표 summary statistics — 평균수명 and 65세 기대여명 — which
      bracket the level of *insured* mortality against the population;
@@ -1964,7 +1964,7 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   "순보험요율 산출에 관한 자료" where policyholder protection requires it [S1].
 - **No 참조순보험요율 value was retrieved.** They are not published; the KIDI 보도자료 listing
   carried none [R22]. Every morbidity and incidence rate in `krlib` is therefore `[std]`,
-  constructed from public epidemiology (§29, §31, §32) and marked as such.
+  constructed from public epidemiology (§30, §31, §32) and marked as such.
 
 ### 28. Tax
 
@@ -2354,3 +2354,308 @@ side while 퇴직연금 grows. A representative Korean product set is therefore 
 protection and to third-sector health, which is what the `krlib` ten are.
 
 ---
+### 33. What this forces on the `krlib` models
+
+Collected here so that each product document can cite one place rather than re-deriving
+the argument.
+
+1. **Every `mort_table.csv` is `[std]`.** The industry table is not published (§25). The
+   construction anchors on 국가데이터처 생명표 (§26) with an insured-lives adjustment
+   bracketed by the two published 경험생명표 summary statistics, and every row carries a
+   `provenance` column.
+2. **Every morbidity, incidence and disability rate is `[std]`.** 참조순보험요율 are not
+   published (§27); only a ratio derived from them (보험가격지수) reaches the public.
+   Cancer incidence is built from the registry (§32), long-term-care inception from the
+   grade statistics (§31), and medical utilisation from the NHIS coverage survey (§30).
+3. **Every 예정이율 is `[std]`,** anchored on the 평균공시이율 series (§14), because the
+   산출방법서 is not public (§4) and the term does not appear in the regulation (§15).
+4. **Every 사업비 assumption is `[std]`,** bounded above by the 표준해약공제액 (§16) and by
+   the 1.4× 계약체결비용 tolerance of 감독규정 제7-45조제11항.
+5. **Surrender values are computed, not assumed.** The 별표 14 formula is public and
+   binding, so `cv_pp` in every model is `max(0, 계약자적립액 − 표준해약공제액)` during the
+   해약공제기간 (payment period capped at seven years), with the 무해지/저해지 variant
+   suppressing it during the payment period and stepping up at 납입완료 subject to the two
+   tests of 제7-66조제4항제2호 (§18).
+6. **The lapse assumption on a 무해지 form is not free.** A log-linear decay to 0.1% at
+   납입완료, with 0.8% thereafter, is the supervisory principle model (§18); a `krlib`
+   model should implement it and carry the 표준형 alternative as a switch.
+7. **Ages are 보험나이 for pricing and 만나이 for statistics,** and the difference is real
+   for half of all issue dates (§24). Every model's registry metadata must say which.
+8. **The reference cell is 기준연령 요건** — male, exact age 40, monthly premium, whole-term
+   pay (§17) — so model point 1 should be that cell wherever the product admits it.
+9. **A 제3보험 model must pay something on non-covered death** — the 계약자적립액 plus
+   미경과보험료 — because 감독규정 제7-63조제1항제1호 requires the design (§19), and the
+   표준약관 제22조 implements it (§24).
+10. **Nothing in `krlib` computes 책임준비금, 해약환급금준비금, 보증준비금 or K-ICS
+    요구자본.** They are cited (§6, §7, §9) so that a reader knows what the projection is
+    *not*, and so that the products' technical notes can say where a real filing would
+    diverge from the reference implementation.
+
+---
+
+## Variation across carriers
+
+This is a cross-product file, so the variation recorded here is variation in the
+*parameters the regulation leaves open*, not in benefit menus — those belong in the ten
+product research files. Where a range could be bracketed from a retrieved source it is
+given; where it could not, that is said.
+
+| Parameter | What the regulation fixes | Observed range or level | Source |
+|---|---|---|---|
+| 지급여력비율 (K-ICS) | floor 100% | industry 210.8%, 생보 201.4%, 손보 224.1% at 2025-09-30; industry 217.3% at 2024-06-30 | [S2] [R3] [R1] |
+| 평균공시이율 | FSS-set, one value for all insurers | 3.50% (2016) → 2.25% (2021–23) → 2.75% (2024–25) → **2.50% (2026)** | [R17] |
+| 공시기준이율 | formula fixed by 별표 27; α ≤ 60%, weights to 0.5%p | one carrier's grid at **3.19%** across five classes, as-of month unknown | [S7] [R18] |
+| 공시이율 | = 공시기준이율 × 조정률; uniform within a product class | 보장성 2.2%, 연금 2.29%, 저축 2.22% shortly before the 2026 cut — **[unverified]** | [S3] [R25] |
+| 최저보증이율 | mandatory for 금리연동형; level free | **no level retrieved from any carrier** | [S3] |
+| 예정이율 | not a regulatory term; in the non-public 산출방법서 | **not published by any carrier** | [S3] |
+| 표준해약공제액 | fully specified by 별표 14 | identical for all carriers by construction | [S4] |
+| 계약체결비용 vs 표준해약공제액 | index disclosure required above 1×, waived to 1.4× for whole-life death cover | actual loadings not public | [S3] |
+| 무·저해지 환급률 | must not exceed 표준형 over the whole term | FSC's illustrative pair: 표준형 97.3% vs 무해지 134.1% at 20 years, pre-reform | [S3] [R5] |
+| 무·저해지 share of new business | none | 11.4% (2018) → 30.4% (2021) → 47.0% (2023) → **63.8% (2024 H1)** | [R1] |
+| 무·저해지 lapse assumption | log-linear principle model, 0.1% at 완납 | two alternative models permitted, with mandatory disclosure of the CSM / BEL / K-ICS / net-income difference | [R1] |
+| 단기납 종신 bonus-date extra lapse | ≥30% | industry 11th-year bancassurance benchmark 29.4%–30.2% | [R1] |
+| Loss ratio by age | must be split where significant | 상해수술 industry: 30s 89%, 40s 103%, 50s 140%, 60s 186% | [R1] |
+| 실손 annual rate change | ±25% per risk cell | 4세대 premium flat at ₩15,000/month 2021–2024 while 3세대 rose ₩16,000 → ₩24,000 | [S3] [R2] |
+| 실손 비급여 요율 상대도 | five bands, 100/200/300/400% plus a balancing discount | fixed by the 표준약관; the discount is solved each year to be revenue-neutral | [S8] |
+| 실손 손해율 | none | 생보사 86.5%, 손보사 102.0% (2024); by generation 97.7 / 92.5 / 128.5 / 111.9% | [R2] |
+| 부활 interest | ≤ 평균공시이율 + 1% | company-set within the cap; 금리연동형 set in the 사업방법서 | [S8] |
+| 보험계약대출 | permitted within the surrender value | "순수보장성보험 등" may be excluded entirely — so a 무해지 protection product may offer none | [S8] |
+| 청약철회 | 15 days from 보험증권 / 30 from application | a longer period may be agreed (금소법 제46조제1항) but none was observed | [S13] [S8] |
+| 유배당 vs 무배당 | shareholder share of 유배당 profit ≤ 10% | retail protection is overwhelmingly 무배당 across the carriers examined | [S3] |
+| K-ICS 경과조치 | four optional 10-year phase-ins | uptake not established this session; the FSC's 적기시정조치 deferral runs to the 2027-12-31 closing | [R14] [S3] |
+
+**What does not vary.** The surrender-charge cap, the 해약공제기간 of at most seven years,
+the 보험나이 six-month rule, the 15/30-day cooling-off, the three-month 품질보증해지, the
+2-year/3-year/1-month non-disclosure time bars, the three-year 부활 window, the three-year
+소멸시효, the mandatory 최저보증이율 on interest-sensitive business, the mandatory
+최저사망보험금 on 변액보험, the ±25% 실손 corridor and the five-band 실손 experience-rating
+table are all fixed by regulation or by the 표준약관 and are therefore **identical across
+every Korean carrier**. That is a much larger fixed core than in any other market in this
+repository, and it is the reason a Korean reference implementation can be more faithful to
+"the market" than, say, a US or UK one: most of what a Korean product does is prescribed.
+
+**Representative choices for the reference implementation**, justified against the above:
+
+- **예정이율**: anchor on the 평균공시이율 of the modelled issue year, i.e. **2.50%** for a
+  2026 issue, tagged `[std]` with the §14 series as its rationale. This is deliberately
+  not an insurer's real 예정이율, which is not knowable.
+- **공시이율**: use the same 2.50% with a **최저보증이율** floor set `[std]` below it, and
+  say that the level is a company choice the regulation does not fix.
+- **표준해약공제액**: compute it exactly from 별표 14 for each product's class and
+  coefficient. This is a *computed*, not an assumed, quantity and should be asserted in the
+  test suite.
+- **사업비**: set 계약체결비용 equal to the 표준해약공제액 (i.e. a ratio of 1.0 against the
+  1.4× disclosure tolerance), which is conservative and avoids the 상품요약서 index
+  disclosure trigger.
+- **해지율**: on 표준형 forms a conventional decaying vector `[std]`; on 무해지/저해지 forms
+  the **log-linear principle model to 0.1% at 납입완료 and 0.8% thereafter**, per R1.
+- **모델포인트 1**: 기준연령 요건 — male, 보험나이 40, monthly premium, whole-term pay —
+  wherever the product admits it.
+
+---
+
+## Fetch failures and gaps
+
+Recorded in full, because what could not be opened determines what this file may assert.
+
+**Hosts and pages that did not serve content**
+
+- **`https://www.fss.or.kr` (금융감독원)** — a plain HTTPS GET returned
+  `curl: (52) Empty reply from server`. The site did not respond to the fetcher at any
+  path. **Consequence:** every FSS document in this file was obtained through a mirror —
+  the KDI 경제교육·정보센터 for the 실손 실적 [R2] and the 지급여력비율 현황 [R3], the
+  보험연구원 weekly-trend reprint for the NHIS coverage release [R12] — or through a trade
+  newspaper [R16]. The 2025 경영실적 figures in the Market overview are therefore
+  **news-sourced**, and no FSS release was read in its original hosting.
+- **`https://www.law.go.kr/법령/<name>` and `https://www.law.go.kr/행정규칙/<name>` via a
+  summarising fetcher** — returned the page title and navigation chrome only; the
+  statutory text is loaded by JavaScript. Every statute and 고시 in this file was retrieved
+  instead through the inner endpoints `LSW/lsInfoR.do` and `LSW/admRulLsInfoR.do`. **Cite
+  the friendly URL; note the inner endpoint as the retrieval route.** The friendly URL is
+  also the route that returns the current `lsiSeq` / `admRulSeq` in a redirect stub, which
+  is how the current version of each instrument was identified.
+- **`https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=…`** — the outer 행정규칙 page. Same
+  failure mode; body served from `admRulLsInfoR.do`.
+- **`https://www.law.go.kr/LSW/lsSideInfoP.do?lsiSeq=266041&joNo=0063&…`** — the
+  article-level side panel for 보험업법 시행령 제63조. Returned header and navigation only.
+  The article was obtained from the full-statute body instead.
+- **`https://casenote.kr/법령/보험업법/제120조` and `…/제127조`** — HTTP **503 Service
+  Unavailable** on two attempts each, apparently rate limiting. 제4조, 제5조 and 제2조
+  succeeded from the same host. Both failing articles were obtained from S1 instead, so
+  nothing is lost.
+- **`https://bigin.kidi.or.kr:9443/boarddetail/nd00017_6041`** (보험개발원 보험정보
+  빅데이터 플랫폼, the page that indexes 경험생명표) — **`connect ECONNREFUSED
+  61.107.27.12:9443`**. The host refused the connection outright. This is the single most
+  damaging failure in the session: it was the most likely public route to any 경험생명표
+  documentation.
+- **`https://www.kidi.or.kr/user/nd11592.do`** (보험개발원 보도자료) — retrieved, but the
+  visible listing runs only from 2026-06-02 to 2026-08-18 (items 742–746) and contains **no**
+  경험생명표, 참조순보험요율 or 보험통계 release. Pagination to the January 2024 range was
+  not attempted.
+- **`https://www.samsunglife.com/individual/products/disclosure/pension/PDO-PRPRP010100M`**
+  (삼성생명 연금저축보험 상품공시) — returned the string "삼성생명" and nothing else; the
+  disclosure grid is JavaScript-rendered. No carrier 연금저축 parameters were obtained.
+- **`https://www.hanwhalife.com/main/disclosure/goods/disclosurenotice/DF_GDDN000_P10000.do`**
+  (한화생명 적용이율) — returned the disclosure-navigation hub, not the rate table. No
+  한화생명 공시이율 or 최저보증이율 was obtained.
+- **`https://www.kyobo.com/dgt/web/disclosure/interest-rate-disclosure/status`** (교보생명
+  공시기준이율 적용현황) — the rate grid returned (3.19% across five classes) but **the
+  month selector's value did not**, so the as-of date is unknown. The figure is recorded as
+  illustrative and is not used as a dated fact [R18].
+- **`https://www.klia.or.kr/consumer/stats/statHomSta/financeStats.do`** (금융통계월보) —
+  the query form returned; the monthly tables themselves are behind it and were not
+  retrieved [R21].
+- **`https://pub.insure.or.kr/`** (생명보험협회 공시실) — the landing page and category
+  structure returned; no product-level 공시 was drilled into, and no 약관 or 상품요약서 PDF
+  was downloaded. That is deliberate — product documents belong in the ten product research
+  files — but it means this file asserts **no carrier product parameter** from a primary
+  product document.
+
+**Documents that returned but could not be read**
+
+- **`…/comm/getFile?srvcId=RULENOTICE&upperNo=3446&fileTy=ATTACH&fileNo=6`** on `fsc.go.kr`
+  — downloaded as a 15-page PDF, but it is a **규제영향분석서** for a 2020s amendment about
+  보험설계사 모집경력 disclosure, not the 보험업감독규정 itself. Not used.
+- **HWP and HWPX attachments** to FSC releases — attachments 2, 3 and 5 to the November
+  2024 IFRS 17 package [R1] are Hancom formats and were not converted. The two PDF
+  attachments (the 보도자료 and 「보험부채 할인율 현실화 연착륙 방안」) were read in full;
+  the 별첨 「IFRS17 주요 계리가정 가이드라인」 itself is among the unconverted files, so the
+  guideline's **full text was not read** — everything about it in §18 comes from the
+  보도자료's description of it. The same applies to the 한국회계기준원 release's 별첨 on
+  K-IFRS 1117 [R23].
+- **`https://www.law.go.kr/LSW/flDownload.do?flSeq=3240711`** — a first guess at the 별표 14
+  download returned an unrelated HWP (자동차관리사업등록대장). `flSeq` is a global file id,
+  not the `bylSeq`; the correct route is `admRulBylContentsInfoR.do?bylSeq=…` → read
+  `pdfFlSeq` → `flDownload.do?flSeq=<pdfFlSeq>`. Recorded so the next drafter does not
+  repeat it.
+
+**Formulas and tables that are images inside retrieved documents**
+
+Each of these was in a document that was successfully retrieved, but the operative
+expression is a picture and did not extract. Every one is a live gap.
+
+- **감독규정 제7-66조제1항제1호** — the display of `해약환급금 = 계약자적립액 − 해약공제액`.
+  The operative words extracted; the display did not. Nothing rests on the display.
+- **감독규정 제7-66조제1항제4호가목·나목** — the **계약자적립액 accrual formulas**, monthly
+  before 납입완료 and daily after. **This is a real gap**: `krlib` must therefore construct
+  the accrual `[std]` and say so. The *rule* (monthly then daily) is verified; the formula
+  is not.
+- **감독규정 제7-2조제1항제1호나목** — the **correlation aggregation formula** for
+  기본요구자본. The five risk categories and the seven life sub-risks extracted; the
+  aggregation did not. Nothing in `krlib` needs it.
+- **시행세칙 별표 27, 제2호다목 and 제3호가목** — the **β weight formulas** (asset-balance
+  shares) and the **α formula** (the function of 계약자적립액, duration and premium income).
+  The inputs, the rounding and the 60% cap on α extracted; the expressions did not. A
+  `krlib` model that needed to *derive* a 공시기준이율 could not; none does, because the
+  crediting rate is taken as an input.
+- **소득세법 제129조제1항제5의2호가목** — the **연금소득 withholding-rate table by age**. The
+  종신계약 rate of 3% (다목) extracted; the age bands did not. The commonly quoted
+  5%/4%/3% is **[unverified]**.
+- **소득세법 시행령 제25조제4항제5호** — the **annual-annuity ceiling formula** for a
+  tax-exempt 종신형 연금보험. The other four conditions extracted in full. `Immediate_KR_A`
+  cannot verify a design against the ceiling.
+- **소득세법 시행령 제40조의2제3항제3호** — the **연금수령한도 formula**. The 55-and-five
+  test and the "no limit from year 11" rule extracted; the formula did not.
+- **표준약관 부표 3 장해분류표** — extracted as running text; the percentage grid per
+  impairment is present but the tabular structure is lost. Any product using a specific
+  장해지급률 must re-read the schedule.
+
+**Documents identified but not retrieved**
+
+- **시행세칙 [별표 22] 지급여력금액 및 지급여력기준금액 산출기준** (bylSeq 3295667) and
+  **[별표 22의 1] 내부모형 적용기준** (3295669) — the operative K-ICS standard formula,
+  including every shock scenario and every risk factor. Not downloaded. Everything §9 says
+  about K-ICS comes from the 감독규정's framing articles, not from the calibration. Any
+  statement about a *shock magnitude* would be unverified, and none is made.
+- **시행세칙 [별표 14] 표준사업방법서** (3295611) and **[별표 16] 손익분석기준** (3295655)
+  — not downloaded.
+- **감독규정 [별표 6] 보험상품군별 보험료 산정기준**, **[별표 17] 금융기관보험대리점등을
+  통하여 모집하는 보험상품의 기초서류 작성ㆍ변경 원칙** and **[별지 26] 해약환급금준비금
+  산출명세서** — identified in the 별표 index, not downloaded. 별지 26 in particular would
+  show the exact line items of the 해약환급금준비금 calculation.
+- **시행령 별표 6** (보험업법 시행령) — the list of 기초서류 changes requiring pre-filing,
+  referenced by 제71조제1항. Not retrieved; §4's account of the filing trigger rests on
+  감독규정 제7-51조, which was.
+- **국민건강보험법 시행령 별표 2** — the **본인일부부담금 rates** (the familiar 입원 20% and
+  외래 30–60% by institution class) and the income-graded **본인부담상한액**. Not retrieved.
+  No co-payment rate under the *public* scheme is asserted in this file; the 실손 약관's own
+  deductible table, which is retrieved, is used instead.
+- **노인장기요양보험법 시행령 별표 1** (노인성 질병 list) and the 보건복지부 고시 defining
+  the **장기요양인정 점수** measurement. Not retrieved. The grade thresholds are verified;
+  the scoring instrument is not.
+- **보건복지부 장기요양급여비용 고시** — the annual 급여비용 by benefit type and grade under
+  법 제39조. Not retrieved. `LTC_KR_S` therefore has no verified public benefit-cost scale
+  to calibrate a cash benefit against.
+- **국민건강보험공단, 「2024 노인장기요양보험 통계연보」** — the primary yearbook. Only a
+  search summary was obtained [R24], and the article page carrying it was not opened. The
+  annual figures in §31 marked **[unverified]** are the consequence; the grade distribution
+  is separately verified from R13.
+- **KOSIS 완전생명표 tables** (kosis.kr) — the single-year-of-age qx tables underlying R9 and
+  R10. **Not downloaded.** Only the summary statistics in the press releases were read. A
+  `krlib` mortality-table build must fetch them and record the KOSIS table id in each
+  product's `sources.md`; until it does, the base table is unverified at the qx level.
+- **보험연구원, 「2025년 보험산업 주요 이슈: ② IFRS17 및 K-ICS」** [R27] and **「K-ICS
+  영향분석과 보험회사 대응방안」** (docId 614689) — identified, not downloaded.
+- **금융감독원 지급여력비율 현황 for 2025-03 and 2025-06** [R26] — identified, not opened.
+  Only the September 2025 quarter is used.
+- **생명보험협회 FACT BOOK 2025 PDF** and **통계연보** — the edition list and contents were
+  read [R20]; the documents were not downloaded and nothing is cited from them.
+- **금융위원회 계약재매입 실행방안** — promised for the second half of 2025 [R7]. Not
+  located. Whether the buy-out is now open, and on what terms, is unknown.
+
+**Facts left unverified, in priority order**
+
+1. **The 경험생명표 qx table** — not public, and no route to it was found (§25). This is not
+   a fetch failure that better searching would fix; it is a structural feature of the Korean
+   market, and it is why every `krlib` mortality table is `[std]`.
+2. **The 제10회 경험생명표 summary figures themselves** (평균수명 86.3 / 90.7, 65세 기대여명
+   23.7 / 27.1, application from 2024-04) rest on a **single trade-newspaper article** [R8],
+   corroborated only by other news summaries. No KIDI document was opened. Everything in
+   §25 built on those four numbers inherits that weakness.
+3. **참조순보험요율 values** — not published. No morbidity or incidence rate in `krlib` can be
+   traced to the rate bureau.
+4. **예정이율 and 최저보증이율 levels at any carrier** — not published (예정이율) or not
+   retrieved (최저보증이율). Both are `[std]` in every model.
+5. **공시이율 levels by carrier and month** — the one grid retrieved has no as-of date [R18];
+   the trade figures (보장성 2.2%, 연금 2.29%, 저축 2.22%) are from an unopened article
+   [R25]. Only the FSS-set **평균공시이율** series is verified [R17].
+6. **The 13.2% / 16.5% 연금저축 credit rates and the 13.2% 보장성 credit rate** — the
+   statutory 12% and 15% are verified [S10]; the gross-up by the 10% 지방소득세 surtax is
+   arithmetic on an unretrieved statute (지방세법).
+7. **The 연금소득 withholding age bands (5% / 4% / 3%)** — the table is an image (§28). Only
+   the 3% for a 종신계약 is verified.
+8. **K-ICS shock magnitudes and risk factors** — 별표 22 not retrieved. §9 describes the
+   architecture, never a calibration.
+9. **Whether 4세대 실손 remains on sale after 2026-05-06** — the 감독규정 amendment and the
+   표준약관 revision are verified [S3] [S8], and the FSC's plan for a ten-year 약관 conversion
+   window from 2026-07 is verified [R7], but no document was retrieved stating that new
+   4세대 sales have ceased. `Medical_KR_S` should model the **5세대** design, which is the
+   one now in the 표준약관, and should say that the in-force market is still 43% 2세대 [R2].
+10. **K-ICS 경과조치 uptake** — the number of insurers applying, and which of the four items
+    each applied, was not established. A search summary referred to 19 insurers seeking a
+    deferral; the article was not opened, so that figure is **[unverified]** and is not
+    stated in §11.
+11. **The IFRS 17 계리가정 guideline text itself** — only the FSC's description of it was
+    read (§18). The precise functional form of the log-linear model, and the definition of
+    the "실무상 수렴점", come from the 보도자료, not from the guideline.
+12. **CSM levels** — the 생보 ₩64.7조 → ₩64.3조 and 손보 ₩70.3조 → ₩71.8조 forecasts in §12
+    were read from a search summary of the same seminar whose premium tables were retrieved;
+    the CSM slide did not extract. Marked `[unverified]` at the point of use.
+13. **상속세 rates and thresholds** — 상증세법 제8조 and 제34조 are verified [S12]; no rate,
+    band or deduction is asserted, because the rate schedule was not extracted.
+14. **본인부담상한제 amounts** — the mechanism is verified [S15] and the 약관's treatment of
+    it is verified [S8]; the income-graded caps are not.
+15. **The 3대비급여 sub-limits in 실손 특별약관2** — the existence of a separate 3대비급여
+    annual limit and per-item caps is verified [S8], but the specific 도수치료 /
+    체외충격파 / 비급여주사 session and amount limits were not extracted cleanly from the
+    492-page schedule and are not stated here. They belong in the `indemnity_medical`
+    research file, read from the same schedule.
+
+**One methodological caveat, stated because it affects every date in this file.** The
+current version of 보험업감독업무시행세칙 served by 국가법령정보센터 takes effect
+**2026-09-10**, a week after the 2026-09-03 access date [S6]. Facts drawn from it — 별표 27,
+별표 15 표준약관 and 제5-16조 — are facts about the text that will be in force, not
+necessarily about the text in force on the access date. Where a 표준약관 clause carries its
+own 개정 date (and most do), that date is given, and none of the clauses cited in §24 or §20
+was amended by the 2026-08-28 revision so far as the retrieved 부칙 discloses. A drafter
+revisiting this file after 2026-09-10 can treat the citations as current without change.
