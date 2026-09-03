@@ -425,9 +425,9 @@ used **only** by the equivalence diagnostics; the projection itself does not dis
 first.** Nothing on Korean child incidence — cancer, cerebrovascular disease, congenital
 anomaly, low birth weight, NICU admission, paediatric length of stay — was retrieved from
 보험개발원, 국가암정보센터 or 통계청 in this research pass. **Every incidence rate in
-`incidence_table.csv` is therefore a [std] construction**, and each row's `provenance` cell
-names the authority its *shape* rests on rather than a source for its level. There is exactly
-one exception in the whole file, and it is the row the basic contract is calibrated on.
+`incidence_table.csv` is therefore a [std] construction**, each row's `provenance` cell naming
+the authority its *shape* rests on rather than a source for its level, with exactly one
+exception: the row the basic contract is calibrated on.
 
 **Mortality [std], and it serves two lives.** 경험생명표 — the industry table, 제10회 applied
 from 2024-04 — is **not published in full**: 보험개발원 releases the 평균수명 and the 기대여명
@@ -449,25 +449,22 @@ one Korean mortality construction, two lives, and the 계약자's rate at issue,
 `mort_rate_mth(t) = 1 − (1 − q)^(1/12)` **[std]**.
 
 **`mort_be_factor = 1.0`, and that identity is a decision.** The shipped table is a
-population all-cause construction on public 완전생명표 shape, not a valuation table with a
-prudential margin, so there is nothing to unwind and scaling it would be inventing a margin.
-The hook is carried because a user replacing the file with a company valuation table needs
-it, and model point 10 runs at 1.10. The direction on this product is worth stating: mortality
-on a child policy **releases** the liability, so an understatement of it **overstates** the
-liability — and at the ages that matter it is very small indeed.
+population all-cause construction, not a valuation table with a prudential margin, so there is
+nothing to unwind and scaling it would be inventing one; the hook is carried for a user
+substituting a company table, and model point 10 runs at 1.10. On a child policy mortality
+**releases** the liability, so an understatement of it **overstates** the liability.
 
 **Morbidity — eleven causes, fourteen pivot ages, one published rate.** `incidence_table.csv`
 carries eleven causes by sex at pivot 만나이 0, 1, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90
-and 100, graduated **log-linearly in the logarithm** between adjacent pivots and returned
-**exactly at a pivot**, so the one published rate reproduces to its printed digits:
+and 100, graduated **log-linearly** between adjacent pivots and returned **exactly at a
+pivot**, so the one published rate reproduces to its printed digits:
 
     i_j(x) = exp( ln r(a) + (x − a)/(b − a) × ( ln r(b) − ln r(a) ) )               [std]
 
-A logarithmic graduation is the right one because every one of these rates spans two or more
-orders of magnitude across the age range — general-tier cancer incidence rises about
-two-hundredfold from 만나이 10 to 80 — and a linear interpolation between decade pivots would
-be wrong by a factor of two in the middle of every span. Male rates at the three ages the
-anchor cell's first eighteen months use:
+A logarithmic graduation is right because every one of these rates spans two or more orders of
+magnitude across the age range — general-tier cancer incidence rises about two-hundredfold
+from 만나이 10 to 80 — and a linear interpolation between decade pivots is wrong by a factor
+of two mid-span. Male rates at the three ages the anchor cell's first eighteen months use:
 
 | Cause | 만나이 0 | 만나이 1 | 만나이 5 | Unit |
 |---|---|---|---|---|
