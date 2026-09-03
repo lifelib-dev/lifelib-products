@@ -129,7 +129,7 @@ chosen: the 2024 IFRS17 계리가정 가이드라인 makes a 로그-선형 model
 the 원칙모형 for 무·저해지 business and sets a post-완납 ultimate of 0.8% [REG-R27]. The
 chain from supervisory guideline to disclosed pricing parameter is complete and
 verifiable, which is unique in this repository, so the file ships the endpoints and
-:func:`Projection.lapse_rate` interpolates the prescribed shape between them.
+``Projection.lapse_rate`` interpolates the prescribed shape between them.
 
 To swap in a company basis, replace a CSV with a same-schema file, or point its ``*_file``
 Reference at a different name, and clear the cache. No formula changes.
@@ -214,7 +214,7 @@ def prem_rate_table():
 
     Indexed by ``(form, sex, issue_age, term_y)``.  ``prem_mth_per_100m`` is the monthly
     office premium per 100,000,000 won of cover on a 표준체 basis; ``is_anchor`` marks the
-    one row per form and sex from which :func:`Projection.prem_rate_mth` extends the scale
+    one row per form and sex from which ``Projection.prem_rate_mth`` extends the scale
     to unpublished cells.  Twelve rows are the anchor carrier's 20-year grid [S12] and
     eight are the 갱신형 ladder of the carrier that publishes an 예상 갱신보험료 예시
     [S6] [S7].
@@ -241,7 +241,7 @@ def lapse_table():
     Indexed by ``segment``: ``in_payment_start`` (4.6% in the first policy year),
     ``in_payment_end`` (0.1% at 납입완료) and ``post_payment`` (0.8% thereafter).  The
     endpoints are disclosed [S12] [S1] and the log-linear shape between them is
-    prescribed [REG-R27]; :func:`Projection.lapse_rate` builds the curve.
+    prescribed [REG-R27]; ``Projection.lapse_rate`` builds the curve.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="segment")         # noqa: F821

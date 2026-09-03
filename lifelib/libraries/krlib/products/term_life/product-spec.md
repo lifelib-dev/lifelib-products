@@ -1430,4 +1430,6 @@ policyholder's tax position.
 [REG-R59]: #krlib-reg-r59
 [REG-R60]: #krlib-reg-r60
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

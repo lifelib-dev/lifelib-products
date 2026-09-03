@@ -802,4 +802,6 @@ rather than a citation.
 [REG-R56]: #krlib-reg-r56
 [REG-R62]: #krlib-reg-r62
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

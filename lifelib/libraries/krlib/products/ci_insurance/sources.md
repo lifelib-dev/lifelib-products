@@ -764,4 +764,6 @@ of its rows.
 [REG-R42]: #krlib-reg-r42
 [REG-R52]: #krlib-reg-r52
 [REG-R60]: #krlib-reg-r60
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

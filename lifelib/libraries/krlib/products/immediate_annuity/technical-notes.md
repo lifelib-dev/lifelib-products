@@ -1609,4 +1609,6 @@ of the eleven `check_*()` cells.
 [REG-R58]: #krlib-reg-r58
 [REG-R59]: #krlib-reg-r59
 [REG-R60]: #krlib-reg-r60
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

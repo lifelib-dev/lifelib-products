@@ -802,4 +802,6 @@ parameter in `Child_KR_S` is tagged **[std]** at the point of use.
 [REG-R36]: #krlib-reg-r36
 [REG-R50]: #krlib-reg-r50
 [REG-R61]: #krlib-reg-r61
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

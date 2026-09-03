@@ -802,4 +802,6 @@ of the same content exists in the cross-product library.
 [REG-R60]: #krlib-reg-r60
 [REG-R61]: #krlib-reg-r61
 [REG-R62]: #krlib-reg-r62
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

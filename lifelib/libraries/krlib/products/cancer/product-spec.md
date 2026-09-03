@@ -1685,4 +1685,6 @@ right.
 [REG-R60]: #krlib-reg-r60
 [REG-R7]: #krlib-reg-r7
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

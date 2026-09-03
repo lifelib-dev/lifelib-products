@@ -31,8 +31,8 @@ the foetus the insured **at birth**. The projection opens on a life that does no
 exist: months ``t = 0`` to ``t = birth_month() - 1`` carry premium income on three
 streams, a **void** decrement rather than a mortality one — 유산 or 사산 makes the
 contract 무효 and every premium is returned — and the pre-birth limbs of the 태아 module,
-and **no mortality and no morbidity on the insured at all**. :func:`Projection.born`
-gates every cover on the child's own life and :func:`Projection.check_cover_at_birth`
+and **no mortality and no morbidity on the insured at all**. ``Projection.born``
+gates every cover on the child's own life and ``Projection.check_cover_at_birth``
 asserts the gate.
 
 **보험료 납입면제 on the 계약자 — a premium-waiver decrement on a life who is not the

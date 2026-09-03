@@ -646,4 +646,6 @@ python -m pytest lifelib/libraries/krlib/tests/test_model_conventions_kr.py -q
 [REG-R38]: #krlib-reg-r38
 [REG-R48]: #krlib-reg-r48
 [REG-R60]: #krlib-reg-r60
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

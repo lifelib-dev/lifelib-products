@@ -796,4 +796,6 @@ on so many of its rows, and why `care_table.csv` says so on every one of its own
 [REG-R50]: #krlib-reg-r50
 [REG-R53]: #krlib-reg-r53
 [REG-R61]: #krlib-reg-r61
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

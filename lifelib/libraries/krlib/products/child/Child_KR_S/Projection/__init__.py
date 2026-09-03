@@ -280,7 +280,7 @@ def premium_foetal_mth():
     from ``t = 17``.  The second stream is not an artefact of the composite: a 태아 contract
     really does carry a second, short term with its own premium — 「계약체결일부터
     출생시점 … 까지의 기간을 보험기간으로 하여 아래의 보험기간 및 보험료 납입기간을
-    **추가로 부가**합니다」 [S2], written elsewhere as a fixed 「1~10월만기 전기납 태아
+    추가로 부가합니다」 [S2], written elsewhere as a fixed 「1~10월만기 전기납 태아
     월납」 sub-term [S1].
     """
     return float(model_point()["premium_foetal_mth"]) if foetal() else 0.0

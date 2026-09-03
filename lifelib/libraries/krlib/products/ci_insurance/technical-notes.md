@@ -1720,4 +1720,6 @@ each is checkable.
 [REG-R55]: #krlib-reg-r55
 [REG-R60]: #krlib-reg-r60
 [REG-R61]: #krlib-reg-r61
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

@@ -733,4 +733,6 @@ endpoints is [std]; and **the 제10회 경험생명표 was not sourced at all** 
 [REG-R48]: #krlib-reg-r48
 [REG-R62]: #krlib-reg-r62
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

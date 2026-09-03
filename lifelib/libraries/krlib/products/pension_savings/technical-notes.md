@@ -1472,4 +1472,6 @@ each is checkable against the shipped model.
 [REG-R52]: #krlib-reg-r52
 [REG-R56]: #krlib-reg-r56
 [REG-R60]: #krlib-reg-r60
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

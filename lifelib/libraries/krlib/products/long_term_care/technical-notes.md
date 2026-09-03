@@ -1856,4 +1856,6 @@ stated so that it can be checked.
 [REG-R61]: #krlib-reg-r61
 [REG-R7]: #krlib-reg-r7
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

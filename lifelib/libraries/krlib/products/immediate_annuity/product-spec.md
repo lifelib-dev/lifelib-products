@@ -1519,4 +1519,6 @@ at [R3 §2](#krlib-immediate_annuity-r3) no longer resolves, and nothing here re
 [REG-R59]: #krlib-reg-r59
 [REG-R60]: #krlib-reg-r60
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

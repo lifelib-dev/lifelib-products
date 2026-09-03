@@ -678,4 +678,6 @@ python -m pytest tests -q
 [REG-R39]: #krlib-reg-r39
 [REG-R58]: #krlib-reg-r58
 [REG-R60]: #krlib-reg-r60
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

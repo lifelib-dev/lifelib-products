@@ -1594,4 +1594,6 @@ and each is either asserted by a `check_*()` cells or by a test in
 [REG-R51]: #krlib-reg-r51
 [REG-R60]: #krlib-reg-r60
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

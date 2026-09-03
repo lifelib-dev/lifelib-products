@@ -1707,4 +1707,6 @@ reference model of it worth building.
 [REG-R57]: #krlib-reg-r57
 [REG-R60]: #krlib-reg-r60
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

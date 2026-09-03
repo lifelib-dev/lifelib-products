@@ -613,4 +613,5 @@ python -m pytest tests -q
 [REG-R5]: #krlib-reg-r5
 [REG-R60]: #krlib-reg-r60
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
 <!-- END generated citation links -->

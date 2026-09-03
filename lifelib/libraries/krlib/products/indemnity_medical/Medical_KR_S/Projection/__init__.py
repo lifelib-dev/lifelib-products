@@ -261,7 +261,7 @@ The policy term is one year and renews automatically. The premium re-rates on ev
 the attained age, the basis, and — on the rider only — the experience relativity. The
 recursion is
 
-    base(y) = base(y-1) x (1 + a) x (1 + b(y)),   a = 0.04,  |b(y)| <= 0.25
+    base(y) = base(y-1) x (1 + a) x (1 + b(y)),   a = 0.04,  abs(b(y)) <= 0.25
 
 and the order of operations is the thing a careless reading gets wrong. The 표준약관's
 own illustration labels its basis increment 「전년도 기준보험료 x 25%」, but 3,640 is 25%
@@ -390,7 +390,7 @@ def premium_mth_pp():
 
     No age x sex rate scale exists in public for any generation of this product, so the
     other model points' premiums are **[std]**, scaled off the anchor by the 4.0% age
-    slope of :data:`age_load` and floored at the child rate — a pure extrapolation of
+    slope of ``age_load`` and floored at the child rate — a pure extrapolation of
     4% a year down to age 0 gives a premium the market does not write.
 
     Only the *first* year is an input.  Every later year is the renewal recursion of
@@ -534,7 +534,7 @@ def util_mult():
 def reld_on():
     """Whether the 요율 상대도 (비급여 할인·할증) is in operation [S1 특별약관 제6조].
 
-    On in the base run, but only from :data:`reld_start_year`: the clause was in the
+    On in the base run, but only from ``reld_start_year``: the clause was in the
     wording from launch and its application was deferred three years 「충분한 통계 확보
     등을 위하여」, commencing 2024-07-01 [R3].  A 4세대 policy written in 2021 therefore
     had three renewals at flat relativity before the loop switched on.  Off on model
@@ -575,7 +575,7 @@ def proj_len():
     rows.
 
     Two five-year 보장내용 변경주기 — ten policy years — or the run to
-    :data:`max_cover_age` if that comes first, which on the shipped model points it does
+    ``max_cover_age`` if that comes first, which on the shipped model points it does
     not.  The horizon is **stated** rather than
     contractual, and the distinction is the whole point.  감독규정 제7-63조제2항제6호나목
     requires the 보험기간 및 보장내용 변경주기 to be five years or less [REG-R17], and at
@@ -1104,7 +1104,7 @@ def ge_limit_factor(y):
     """The proportion of the raw 급여 claim that survives the annual limit in year y.
 
     상해급여형 and 질병급여형 carry **separate** ₩50,000,000 limits [S1 제5조], so the
-    raw claim is split by :data:`share_injury` and each part capped at
+    raw claim is split by ``share_injury`` and each part capped at
     :func:`annual_limit`.  The split is **[std]**: nothing published gives it, and it
     matters only where the limit binds, which on a deterministic expectation is nowhere.
     """
@@ -1182,7 +1182,7 @@ def np_limit_factor(y):
     """The proportion of the raw main 비급여 claim that survives the annual limit.
 
     상해비급여형 and 질병비급여형 carry separate ₩50,000,000 limits
-    [S1 특별약관 제5조], split by :data:`share_injury` exactly as on the 급여 side.  The
+    [S1 특별약관 제5조], split by ``share_injury`` exactly as on the 급여 side.  The
     3대비급여 classes are **outside** this limit and carry their own.
     """
     raw = claims_np_in_pp(y) + claims_np_out_pp(y)
@@ -1233,7 +1233,7 @@ def acts_physio_eff(y):
     bearing the whole cost of the assessment [S1] [R2].  **This is the only place in
     ``krlib`` where a benefit is gated on a clinical review rather than on a
     definition**, and a projection can only represent it as a continuation probability
-    at each ten-act boundary: :data:`physio_cont_prob`, **[std]**, with no observed
+    at each ten-act boundary: ``physio_cont_prob``, **[std]**, with no observed
     range because none is published.
     """
     a = min(act_rate_physio(y), act_limit_three)                     # noqa: F821
@@ -1375,7 +1375,7 @@ def claims_np_rated_pp(y):
     희귀난치성질환 등 — and **all** claims of an insured graded 장기요양 1등급 or 2등급
     under 노인장기요양보험법.  **The severely ill are exempt from the experience
     rating**, and that is a direct statutory cross-reference between this model and
-    ``LTC_KR_S``, the only such link in the library.  :data:`reld_exempt_share` is the
+    ``LTC_KR_S``, the only such link in the library.  ``reld_exempt_share`` is the
     **[std]** share struck out, anchored on the 15.0% of 2025 claims the supervisor
     attributes to 암 and 뇌·심혈관질환 [R7].
 
@@ -1528,7 +1528,7 @@ def reld_solved(y):
 def reld_one(y):
     """r_1: the band-1 relativity actually applied at renewal y, after the discount cap.
 
-    :data:`reld_disc_cap` is a **[std]** floor under the discount at 5%, from the two
+    ``reld_disc_cap`` is a **[std]** floor under the discount at 5%, from the two
     published values [R1] [R3].  It does not bind at commencement, where the solved
     figure is 4.25%; it binds once the claim level has trended far enough that contracts
     have migrated into the surcharge bands and the pool would fund more than 5%.  From
@@ -1543,7 +1543,7 @@ def reld_active(y):
     """Whether the 요율 상대도 is applied at the renewal opening policy year y.
 
     Off unless the rider is held and the model point elects it, and off for the first
-    :data:`reld_start_year` − 1 policy years: the clause was in the 4세대 wording from
+    ``reld_start_year`` − 1 policy years: the clause was in the 4세대 wording from
     launch but its application was deferred three years 「충분한 통계 확보 등을 위하여」
     and commenced 2024-07-01 [R3] [R1], so a policy written in 2021 had three renewals at
     flat relativity before the loop switched on.  The same two-year deferral is being

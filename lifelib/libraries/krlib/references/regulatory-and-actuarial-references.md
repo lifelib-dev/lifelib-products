@@ -2773,4 +2773,6 @@ carrier page is the only located route to a **regulatory** figure and is cited a
 [R7]: #krlib-reg-r7
 [R8]: #krlib-reg-r8
 [R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

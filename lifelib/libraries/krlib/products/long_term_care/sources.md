@@ -650,4 +650,6 @@ the documents bound nothing at all.
 [REG-R54]: #krlib-reg-r54
 [REG-R55]: #krlib-reg-r55
 [REG-R61]: #krlib-reg-r61
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

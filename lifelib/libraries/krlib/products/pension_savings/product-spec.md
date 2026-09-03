@@ -1561,4 +1561,6 @@ published illustrations imply [S2] `[derived]`. **It is never presented as the ê
 [REG-R58]: #krlib-reg-r58
 [REG-R60]: #krlib-reg-r60
 [REG-R9]: #krlib-reg-r9
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

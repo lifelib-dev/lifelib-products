@@ -1349,7 +1349,7 @@ def ann_count(t):
     Instalments are **monthly**; the cohort certified in month ``s`` is paid in months
     ``s ... s + n_A - 1``, of which the first ``annuity_guar_mths()`` are guaranteed against
     death and each later block of twelve is released only by the annual survival test on the
-    anniversary of the 진단확정일:
+    anniversary of the 진단확정일::
 
         ann_count(t) = sum over u = 0 ... n_A-1 of  n_C(t - u) x weight(u)
         weight(u)    = 1                        for u < annuity_guar_mths()

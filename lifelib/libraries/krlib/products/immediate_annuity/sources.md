@@ -805,4 +805,6 @@ The cross-product regulatory bibliography lives in
 [REG-R52]: #krlib-reg-r52
 [REG-R58]: #krlib-reg-r58
 [REG-R59]: #krlib-reg-r59
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->

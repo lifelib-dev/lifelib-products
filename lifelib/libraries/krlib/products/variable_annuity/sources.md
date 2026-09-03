@@ -756,4 +756,6 @@ which the 사업비 disclosure does not contain, the disclosure being of charges
 [REG-R51]: #krlib-reg-r51
 [REG-R52]: #krlib-reg-r52
 [REG-R6]: #krlib-reg-r6
+[std]: #krlib-std
+[unverified]: #krlib-unverified
 <!-- END generated citation links -->
