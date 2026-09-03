@@ -160,24 +160,17 @@ is a statutory one rather than a modelling choice.
 - **Two ages, and which one does what.** The contract's clock is **보험나이** (*boheom nai*,
   insurance age): 「계약일 현재 피보험자의 실제 만 나이를 기준으로 6개월 미만의 끝수는
   버리고 6개월 이상의 끝수는 1년으로 하여 계산하며, 이후 매년 계약해당일에 나이가 증가」,
-  identical in both 표준약관 and reproduced verbatim by every carrier, with the worked
-  example 생년월일 1988-10-02 / 계약일 2014-04-13 ⇒ 25년 6월 11일 ⇒ **26세**
+  identical in both 표준약관, reproduced verbatim by every carrier, with the worked example
+  생년월일 1988-10-02 / 계약일 2014-04-13 ⇒ 25년 6월 11일 ⇒ **26세**
   [R8] [S7 제27조] [S8 제30조] [S12 제30조] [REG-R25 제21조]. `age(t) = issue_age + t // 12`
-  is that clock, and it governs the premium, the 갱신형 anniversary and the 보험나이 15
-  thresholds. **Every decrement table is read at 만나이** through
-  `age_man(t) = issue_age_man + (t − b) // 12`, because every public series they are built
-  from is published on 만나이 — the 완전생명표 [REG-R38] [REG-R39], the 국가암등록통계 age
-  bands [REG-R40] and the 국민건강보험 statistics [REG-R41] — and converting them onto a
-  보험나이 basis needs a distribution of issue dates within the policy year that no source
-  supplies. On an **ordinary** contract the offset is taken as zero, a **[std]**
-  simplification standing over a six-month rounding rule that puts the true 만나이 at
-  `issue_age` or `issue_age − 1` with roughly equal probability. On a **태아** contract no
-  simplification is needed: the offset is exactly `b` months, five on the anchor cell,
-  capped at six by [S8 제61조], and `age_man(t) = −1` before birth because the insured does
-  not exist.
-- **The registered age basis for this model is 보험나이.** That is what the registry
-  metadata says and what the `Projection` docstring says, and it is deliberate: on a foetal
-  contract the contractual age is the *only* one defined at `t = 0`.
+  is that clock and it governs the premium, the 갱신형 anniversary and the 보험나이 15
+  thresholds; **the registered age basis for this model is 보험나이**, deliberately, because
+  on a foetal contract it is the *only* age defined at `t = 0`. Every decrement table is
+  nonetheless read at **만나이**, `age_man(t) = issue_age_man + (t − b) // 12`, because every
+  public series they are built from is published on it [REG-R38] [REG-R39] [REG-R40]
+  [REG-R41] and no source supplies the distribution of issue dates a conversion would need.
+  On an ordinary contract the offset is taken as zero **[std]**; on a 태아 contract it is
+  exactly `b` months, and `age_man(t) = −1` before birth because the insured does not exist.
 - **Timing conventions [std].** Office premium and maintenance expense at the **start** of
   month `t`; every morbidity benefit, the 계약자적립액 on death, the 해약환급금 on lapse, the
   premium refund on a pre-birth void and the claim-handling expense at the **end** of month
@@ -377,22 +370,17 @@ which is a regulatory fact and not a design choice [R9] [R10].
 | Benefit-scale age of a foetus | Runs **from the date of birth** | [S8 제58조] |
 | Late birth | Where birth falls **more than six months** after the 계약일 the 계약일 is moved back to six months before it and premiums and reserves re-set | [S8 제61조] |
 | Pre-birth insured event | Paid, but **from the date of birth** | [S8 제59조] |
-| Multiple birth | Every foetus of a multiple pregnancy may be insured, from 2012-10-01 | [S8 제57조]; [R4] |
 | 태아보장기간 | 계약체결일 ~ 출생시점, an **additional** 보험기간 with its own 전기납 premium | [S2]; [S1] (1~10월만기) |
 | 신생아 block | **1년만기 전기납** from birth | [S2] [S5]; [R5] |
-| 태아 rider enrolment window | **임신 22주 이내** for the neonatal block, 15주 for one dental rider | [S5] |
 | 기본계약 | 일반상해후유장해, paid as **보험가입금액 × 장해지급률** on a continuous 3~100% band, payable more than once with the percentages accumulating | [R12]; [S1] [S2] [S11] |
-| 장해 definition | A **settled** impairment, 「치유된 후 신체에 남아 있는 영구적인」 | [REG-R25] |
 | 면책기간, 보험나이 < 15 | **None** — 암보장개시일 = 제1회 보험료를 받은 때 | [S3]; [S11]; [R5] |
 | 면책기간, 태아가입용 cover | 「면책기간 없음」 at all, including the 10-day waits | [S3] |
-| 면책기간, 보험나이 >= 15 | The **91st day** counting the 계약일 as day 1 | [S3]; [S11] |
 | 감액기간 | **None**; where one survives it is a first-year 50% | [S1] [S3] [S11] vs [S6] [S11] |
 | 감액 on a foetal contract | **Never** — 「피보험자가 보험가입 당시 태아인 경우에는 보험금의 100%를 지급합니다」, inserted across 17 carriers and 56 products | [R2]; [S8] |
 | 납입면제, the child | 50% 이상 후유장해 (상해 or 질병), one of the **7대질병**, or a 중대한특정상해수술 | [S2] |
 | 납입면제, the P코드 carve-out | 「**출생전후기에 기원한 특정 병태(P코드) 진단시 납입면제를 적용하지 않음**」 | [S2] |
 | 납입면제, the 계약자 | The **계약자's death or 50% 이상 장해**, in the main clause | [S10 제22조제1항]; [S10 제3조] |
 | Waiver carries the riders | 「주계약의 보험료 납입이 면제되었을 때에는 이 특약의 차회 이후의 보험료 납입을 면제」 | [S8] |
-| Waiver stops the 적립보험료 too | Stated in terms | [S2] |
 | 입원일당 | **₩40,000 per day**, 1~180일 per stay | [R12]; [S2] |
 | 배상책임 | **₩100,000,000** per occurrence, 대인 / 대물(누수) / 대물(비누수) each; 자기부담금 ₩500,000 누수 / ₩200,000 otherwise; **3년만기 갱신형** | [S5]; [S2] |
 | 배상책임 누수 보장개시일 | **90 days** from the 계약일, **resetting to the renewal date at each renewal** | [S5]; [S3] |
@@ -400,12 +388,8 @@ which is a regulatory fact and not a design choice [R9] [R10].
 | 주산기질환 입원일당 | Continuous stay of **4 days or more**, **3일 초과 1일당**, **1회 입원당 120일 한도** | [S8]; [S1] |
 | Death of the insured | No 사망보험금 below 만 15세; the **계약자적립액 + 미경과보험료** is paid and the contract ends | [R7]; [REG-R50 제732조·제736조]; [REG-R17 제7-63조제1항제1호]; [REG-R25 제22조]; [REG-R19 제7-66조제5항] |
 | 해약환급금 formula | 「**순보험료식 계약자적립액에서 해약공제액을 공제한 금액**」, floored at zero | [S2]; [S1]; [REG-R19 제7-66조제1항제1호] |
-| 해약공제기간 | 납입기간 or 신계약비 부가기간, **capped at 7 years** | [REG-R19 제7-66조제1항제2호] |
-| 해약공제액 cap | The **표준해약공제액** of 감독규정 [별표 14] | [REG-R20] |
 | 미지급형 floor | **0%** during the 납입기간, **50% of the 표준형 value** afterwards | [S2] [S11]; [REG-R19 제7-66조제4항제2호] |
-| 미지급형Ⅲ ladder | **5%** from M to M+2 years, rising 5 points every two years to **50%** from M+18 | [S1] |
 | The 표준형 comparator is synthetic | 「해지율을 적용하지 않은 상품이며, 비교안내를 위한 종목으로 **실제로 판매하지 않음**」 | [S3]; [S1] |
-| 계약자적립액 accrual | **Monthly** before 납입완료, daily afterwards, at the 공시이율 floored at the 최저보증이율 | [REG-R19 제7-66조제1항제4호]; [REG-R18 제7-65조제2항] |
 | 납입최고 (grace) | **At least 14 days**; operated as a calendar-month window | [REG-R25 제26조]; [S8] |
 | 부활 | Within **3 years** where no surrender value has been taken, subject to fresh underwriting; waiting periods re-run from the 부활일 | [S8]; [S3]; [REG-R25 제27조] |
 | Expiry | At the **100세 계약해당일**; there is no 만기환급금 on the protection part | [S1] [S2] [S11] |
@@ -1187,9 +1171,6 @@ returns `q = 0` and `i_j = 0` from that fact rather than from a special case.
 
 | `t` | `pols_if` | `premiums` | `claims_diagnosis` | `claims_hospital` | `claims_death` | `claims_lapse` | `expenses` | `commissions` | `net_cf` |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 1.0000000000 | 31,000.0000 | 0.0000 | 0.0000 | 0.0000 | 66.0413 | 123,006.5187 | 224,819.2490 | -316,921.9753 |
-| 5 | 0.9746262555 | 30,202.6242 | 185.1917 | 7,472.1346 | 24.4953 | 59.2432 | 1,903.2117 | 0.0000 | -31,358.7996 |
-| 16 | 0.9344364051 | 28,933.2234 | 177.5307 | 7,164.0124 | 68.5065 | 151.0962 | 1,830.4361 | 867.9967 | 12,815.8828 |
 | 17 | 0.9311920157 | 26,040.4216 | 130.3535 | 3,512.4563 | 7.0963 | 177.0176 | 1,685.0952 | 781.2126 | 18,782.9400 |
 | 120 | 0.7926463831 | 21,873.0675 | 79.3435 | 1,353.1380 | 15.6820 | 1,149.8680 | 1,480.1460 | 656.1920 | 15,651.7364 |
 | 239 | 0.7675760087 | 20,562.2638 | 183.5349 | 1,515.4096 | 106.0073 | 344.4363 | 1,483.5920 | 616.8679 | 14,908.0252 |

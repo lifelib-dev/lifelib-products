@@ -389,10 +389,16 @@ Footnotes to **[std]** rows:
 
 17. **재해사망.** Two of nine carriers sell the uplift, and both sell it as a **product
     variant rather than a rider**: 신한SOL's 재해보장형 and 흥국생명's 2형(보장추가형), each
-    paying twice the sum assured on 재해사망 and once otherwise [S6] [S10]. It is cheap —
-    on the published 예정 재해사망률 accidental death is 3–4% of all-cause mortality at male
-    60 and 15–25% at male 20 [S6] [S10] — which is precisely why it is bundled into the base
-    price rather than priced separately. The composite excludes it so that the chassis
+    paying twice the sum assured on 재해사망 and once otherwise [S6] [S10]. It is cheap
+    relative to the base cover, though not as cheap as one might assume: on 흥국생명's own
+    published pair of 예정 경험사망률 and 예정 재해사망률, accidental death is about **31% of
+    all-cause mortality at male 20 and about 9% at male 60** [S6]. Against the table this
+    library actually ships — all-cause from [S12] and accidental from [S6], a cross-carrier
+    pairing and so a [std] combination rather than either carrier's own ratio — the shares
+    are 34.6% and 10.5% at the same two ages. Either way the share falls steeply with age,
+    because accidental mortality is close to flat while all-cause is not, which is why the
+    uplift is bundled into the base price rather than priced separately: at the ages that
+    dominate the in-force it costs little. The composite excludes it so that the chassis
     carries **one decrement to the benefit**, and parameterizes it as a second mortality
     vector for the model points that switch it on. One structural asymmetry is worth
     recording: 흥국생명 **does not sell its 기본형 to women at all**, so a female life at that

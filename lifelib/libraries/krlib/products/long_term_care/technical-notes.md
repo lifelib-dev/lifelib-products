@@ -112,9 +112,9 @@ absence of a 보험계약대출 and therefore of any automatic premium loan [REG
 
 **One product this document is not about.** Korean commentary in 2024–2025 uses 간병
 overwhelmingly to mean **간병인사용일당**, a hospital-days indemnity whose loss ratios
-reached about 100% in the life sector at August 2024 against 18.7% two years earlier [R15,
-news]. It sits inside the same 약관 [S1] [S2] [S4] and shares nothing else; `LTC_KR_S` does
-not model it.
+reached about 100% in the life sector at August 2024 against 18.7% two years earlier
+[R15, news]. It sits inside the same 약관 [S1] [S2] [S4] and shares nothing else;
+`LTC_KR_S` does not model it.
 
 ---
 
@@ -256,8 +256,8 @@ that card**, both at 90세만기, 20년납, 월납, 일반심사형, 보험가�
 **₩3,300** for the 주계약 장기요양(1~2등급)급여금 at male 40, plus **₩580** for the
 장기요양(1-2등급)재가급여종신지원특약 which pays ₩100,000 a month on the same trigger,
 scaled to the composite's grade-weighted ₩400,000 a month — ₩2,320 — giving ₩5,620,
-rounded to **₩5,600** **[std]**. The female cell is ₩5,000 + 4 × ₩850 = **₩8,400** [S2,
-derived]. Two offsetting differences are recorded rather than adjusted for: the [S2] rider
+rounded to **₩5,600** **[std]**. The female cell is ₩5,000 + 4 × ₩850 = **₩8,400**
+[S2, derived]. Two offsetting differences are recorded rather than adjusted for: the [S2] rider
 runs **최대 종신** where the composite caps at 120 months (dearer), and it requires the
 insured to be *using* 재가급여 in the month where the composite tests only survival
 (cheaper).
@@ -608,8 +608,8 @@ through the **closed list of 25 노인성 질병** — four dementia codes, one 
 fourteen cerebrovascular codes, four Parkinson-family codes and four others, with **no
 cancer, no musculoskeletal condition and no frailty category** on the list [REG-R55 별표 1]
 [R2]. So the under-65 exposure is both small and violently concentrated: of the 58,271
-applicants under 65 in 2024, 뇌혈관질환군 were 49.1% and 치매질환군 26.8% [R4 표2-3,
-derived]. The two entry rates are therefore carried down from their age-65 values on the
+applicants under 65 in 2024, 뇌혈관질환군 were 49.1% and 치매질환군 26.8%
+[R4 표2-3, derived]. The two entry rates are carried down from their age-65 values on the
 log-gradient of the one disclosed Korean long-term-care incidence rate:
 
     sub65_factor_at(x) = exp( −sub65_gradient × (65 − x) )   for x < 65, else 1   [std]
