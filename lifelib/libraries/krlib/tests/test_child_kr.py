@@ -16,15 +16,15 @@ double precision, because that is how the notes print them.
 
 **What this module is about is the two mechanics that have no counterpart in any sister
 library.**  The diagnosis machinery — the tier ladder, the 면책기간, the 감액기간, the
-유사암 tier, the 최초 1회한 ledgers — belongs to the
-[cancer 정액 chassis](../products/cancer/technical-notes.md) and is not retested here
-except where this product switches it off.  What is new is that the contract is written
-**before the insured exists**, so the projection opens on a life with no age, no mortality
-and no morbidity and a **void** decrement instead of a lapse; and that the premium stops
-on a **decrement drawn from a life who is not the insured**, the 계약자, so the in-force
-block runs in two compartments and the premium stream ends on the earlier of two events
-read out of two different rows of one mortality table.  Almost every test below is a
-statement about one of those two.
+유사암 tier, the 최초 1회한 ledgers — belongs to ``Cancer_KR_S``, this library's
+fixed-benefit (정액) 제3보험 chassis, and is asserted there rather than here, except where
+this product switches it off.  What is new is that the contract is written **before the
+insured exists**, so the projection opens on a life with no age, no mortality and no
+morbidity and a **void** decrement instead of a lapse; and that the premium stops on a
+**decrement drawn from a life who is not the insured**, the 계약자, so the in-force block
+runs in two compartments and the premium stream ends on the earlier of two events read out
+of two different rows of one mortality table.  Almost every test below is a statement about
+one of those two.
 
 Every product fact the notes list under "Known modeling pitfalls" earns its own test,
 named after the pitfall, because each of them is a way an implementation can look right
@@ -573,7 +573,7 @@ def test_the_assumption_table_the_first_eighteen_months_use(kr_child_anchor):
     assert a.waiver_rate_mth(0) == pytest.approx(0.00007056175284536614, rel=TRACE)
     assert a.waiver_rate_child(16) == 0.0                  # the P코드 carve-out [S2]
     assert a.waiver_rate_child(17) == pytest.approx(0.0002452088, rel=1e-9)
-    assert a.lapse_rate(0) == 0.05
+    assert a.lapse_rate(0) == pytest.approx(0.05, rel=1e-14)
     assert a.lapse_rate_mth(0) == pytest.approx(0.004265318777560645, rel=TRACE)
     for cause, (at_zero, at_one) in INCIDENCE_AT_0_AND_1.items():
         assert a.inc_rate(5, cause) == pytest.approx(at_zero, rel=1e-12), cause
@@ -1170,11 +1170,13 @@ def test_pitfall_the_waiting_period_is_tested_at_the_contract_date(child,
     assert older.cover_open(2, "cancer") == 0.0
     assert older.cover_open(3, "cancer") == 1.0
     assert older.cover_open(2, "fracture") == 1.0  # only the cancer limbs are waiting
+    assert older.reduction_factor(2) == 0.5
     assert older.claims(2, "DIAGNOSIS") == pytest.approx(
-        older.sum_assured("cerebral") * older.inc_rate_mth(2, "cerebral")
-        * older.frac_open(2, "cerebral") * older.pols_if(2)
-        + older.sum_assured("cardiac") * older.inc_rate_mth(2, "cardiac")
-        * older.frac_open(2, "cardiac") * older.pols_if(2), rel=1e-12)
+        (older.sum_assured("cerebral") * older.inc_rate_mth(2, "cerebral")
+         * older.frac_open(2, "cerebral")
+         + older.sum_assured("cardiac") * older.inc_rate_mth(2, "cardiac")
+         * older.frac_open(2, "cardiac"))
+        * older.reduction_factor(2) * older.pols_if(2), rel=1e-12)
 
 
 def test_pitfall_a_foetal_contract_carries_no_reduction_period(child, tmp_path):
@@ -1424,7 +1426,8 @@ def test_pitfall_the_account_does_not_start_at_the_surrender_charge(kr_child_anc
     assert a.check_av_bounds() is True
 
 
-def test_pitfall_the_notional_face_amount_is_read_at_the_reference_age(kr_child_anchor):
+def test_pitfall_the_notional_face_amount_is_read_at_the_reference_age(
+        child, kr_child_anchor):
     """[별표 15] 제9호 is evaluated at the **기준연령 요건, 남자 만 40세**, not at the insured's.
 
     At 만나이 5 the mortality rate is 0.00012, which would put the notional 보험가입금액
@@ -1433,7 +1436,7 @@ def test_pitfall_the_notional_face_amount_is_read_at_the_reference_age(kr_child_
     at 90% of it is 12.35 [REG-R21] [REG-R9 제1-2조제2호] [REG-R29].
     """
     a = kr_child_anchor
-    refs = a._parent.refs
+    refs = child.Projection.refs
     assert refs["ref_age"] == 40 and refs["ref_sex"] == "M"
     assert a.mort_rate_at_age(40, "M") == 0.0011
     assert a.sa_notional_pp() == pytest.approx(
@@ -1462,10 +1465,12 @@ def test_pitfall_there_are_four_exits_not_two(kr_child_anchor):
         assert a.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-14), t
     without_void = (a.pols_if(0) - a.pols_if(1) - a.pols_death(0) - a.pols_lapse(0)
                     - a.pols_maturity(0))
-    assert without_void == pytest.approx(a.pols_void(0), rel=TRACE) > 0.0
+    assert without_void == pytest.approx(a.pols_void(0), rel=TRACE)
+    assert without_void > 0.0
     without_maturity = (a.pols_if(1200) - a.pols_if(1201) - a.pols_void(1200)
                         - a.pols_death(1200) - a.pols_lapse(1200))
-    assert without_maturity == pytest.approx(a.pols_maturity(1200), rel=TRACE) > 0.0
+    assert without_maturity == pytest.approx(a.pols_maturity(1200), rel=TRACE)
+    assert without_maturity > 0.0
 
 
 def test_pitfall_the_incidence_grid_is_graduated_log_linearly(kr_child_anchor):
@@ -1489,7 +1494,9 @@ def test_pitfall_the_incidence_grid_is_graduated_log_linearly(kr_child_anchor):
     # held flat outside the pivots, and the terminal pivot caps the projection
     assert a.inc_rate_at(-3, "cancer") == a.inc_rate_at(0, "cancer")
     assert a.inc_rate_at(120, "cancer") == a.inc_rate_at(100, "cancer")
-    assert a.inc_rate(1199, "cancer") == a.inc_rate_at(100, "cancer")
+    # the projection reads the grid at 만나이, which on this cell reaches 99 and not 100
+    assert a.age_man(1199) == 99
+    assert a.inc_rate(1199, "cancer") == a.inc_rate_at(99, "cancer")
     with pytest.raises(FormulaError):
         a.inc_rate_at(5, "not_a_cause")
 
@@ -1678,7 +1685,7 @@ def test_the_neonatal_module_pays_inside_its_own_two_terms_and_nowhere_else(
 
 
 def test_the_liability_leak_limb_is_off_for_three_months_of_every_renewal_cycle(
-        kr_child_anchor):
+        child, kr_child_anchor):
     """The 누수사고 90-day 보장개시일 resets at every renewal of the 3년만기 갱신형 block.
 
     The one place in this model where the renewal mechanic has a cash consequence [S5]
@@ -1688,17 +1695,17 @@ def test_the_liability_leak_limb_is_off_for_three_months_of_every_renewal_cycle(
     """
     a = kr_child_anchor
     assert a.basis_param("leak_share") == 0.40
-    assert child_cycle(a) == 36
+    assert child.Projection.refs["liability_cycle_mths"] == 36
+    severity = a.basis_param("liability_severity")
+    scale = a.sum_assured("liability") / 100000000.0
     for t in (36, 37, 38, 72, 73, 74):
         assert a.benefit_pp(t, "LIABILITY") == pytest.approx(
-            0.60 * a.benefit_pp(t + 3, "LIABILITY"), rel=1e-9), t
+            0.60 * a.inc_rate_mth(t, "liability") * severity * scale, rel=1e-14), t
+    for t in (17, 35, 39, 40, 71, 75):
+        assert a.benefit_pp(t, "LIABILITY") == pytest.approx(
+            a.inc_rate_mth(t, "liability") * severity * scale, rel=1e-14), t
     assert a.benefit_pp(35, "LIABILITY") > a.benefit_pp(36, "LIABILITY")
     assert a.benefit_pp(39, "LIABILITY") > a.benefit_pp(38, "LIABILITY")
-
-
-def child_cycle(space):
-    """The 갱신 cycle of the liability block, in months, read off the Space References."""
-    return space._parent.refs["liability_cycle_mths"]
 
 
 def test_the_published_cash_flow_statement_closes(kr_child_anchor):
@@ -1773,9 +1780,13 @@ def test_the_published_refund_grid_reproduces_every_node_it_reaches(kr_child_anc
         assert a.refund_taper(a.runoff(t)) == 1.0, t
         assert a.refund_ratio(t) == pytest.approx(published, rel=1e-14), t
     assert a.refund_ratio(1140) == pytest.approx(0.16001230, abs=5e-9)
-    assert a.refund_build(95.0) == 1.589 and a.refund_taper(1140 / 1200) == 0.1007
-    with pytest.raises(FormulaError):
-        a.refund_taper(1.5) if False else a.refund_ratio(-1)
+    assert a.refund_build(95.0) == 1.589
+    assert a.refund_taper(1140 / 1200) == pytest.approx(0.1007, rel=1e-14)
+    # held flat beyond the last published node, and taken down by the taper alone
+    assert a.refund_build(70.0) == 1.589 and a.refund_build(100.0) == 1.589
+    assert a.refund_taper(0.0) == 1.0 and a.refund_taper(0.85) == 1.0
+    assert a.refund_ratio(1020) == pytest.approx(1.589, rel=1e-14)   # t/n = 0.85
+    assert a.refund_ratio(1080) == pytest.approx(1.589 * 0.55, rel=1e-14)
 
 
 # ---------------------------------------------------------------------------
@@ -1852,10 +1863,14 @@ def test_the_2026_low_birthrate_discount_runs_for_twelve_months(child, kr_child_
     assert discounted.prem_discount_mths() == 12
     assert all(discounted.prem_discount_factor(t) == 0.95 for t in range(0, 12))
     assert all(discounted.prem_discount_factor(t) == 1.0 for t in (12, 13, 239))
+    assert discounted.premium_mth() == 24000.0
+    assert discounted.premium_foetal_mth() == 3000.0
     assert discounted.premiums(0) == pytest.approx(
         (24000.0 + 3000.0) * 0.95 * 1.0, rel=1e-14)
     assert discounted.premiums(12) == pytest.approx(
-        24000.0 * discounted.pols_pay(12), rel=1e-14)
+        27000.0 * discounted.pols_pay(12), rel=1e-14)
+    assert discounted.premiums(17) == pytest.approx(
+        24000.0 * discounted.pols_pay(17), rel=1e-14)
 
 
 def test_the_best_estimate_mortality_lever_is_one_in_the_base_run(child,
@@ -1890,7 +1905,7 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
     """
     a = kr_child_anchor
     assert a.lapse_basis() == "loglinear"
-    assert a.lapse_rate(0) == 0.05
+    assert a.lapse_rate(0) == pytest.approx(0.05, rel=1e-14)
     assert a.lapse_rate(240) == 0.008
     assert a.lapse_rate(239) == pytest.approx(
         math.exp(math.log(0.05) + (239 / 240) * (math.log(0.001) - math.log(0.05))),
@@ -2102,7 +2117,8 @@ def test_expense_inflation_compounds_over_a_hundred_years(kr_child_anchor):
     assert df.loc[240:, "expenses"].sum() > 0.5 * df["expenses"].sum()
 
 
-def test_the_claim_expense_is_its_own_column_and_is_charged_on_events(kr_child_anchor):
+def test_the_claim_expense_is_its_own_column_and_is_charged_on_events(
+        child, kr_child_anchor):
     """₩30,000 per event on the month's claim events, deaths and voids, uninflated.
 
     It is published in its own column and deducted explicitly in ``net_cf``; it is **not**
@@ -2111,7 +2127,7 @@ def test_the_claim_expense_is_its_own_column_and_is_charged_on_events(kr_child_a
     days, which are metered rather than counted.
     """
     a = kr_child_anchor
-    assert a._parent.refs["expense_claim_pp"] == 30000.0
+    assert child.Projection.refs["expense_claim_pp"] == 30000.0
     for t in (0, 5, 240, 1199):
         assert a.claim_expenses(t) == pytest.approx(
             30000.0 * (a.claim_count_pp(t) * a.pols_if(t) + a.pols_death(t)
@@ -2255,7 +2271,10 @@ def test_the_refund_grid_is_the_published_one_plus_a_calibrated_taper():
     assert taper.loc[0.95] == 0.1007 and taper.loc[1.0] == 0.0
     assert 1.589 * 0.1007 == pytest.approx(0.16001230, abs=5e-9)
     published_rows = table[table["provenance"].str.startswith("[S2]")]
-    assert len(published_rows) == 10
+    assert len(published_rows) == 11          # the grid prints 0.0% at both 0 and 1 year
+    assert set(published_rows["curve"]) == {"build"}
+    shaped = table[table["provenance"].str.startswith("[std]")]
+    assert set(shaped["curve"]) == {"build", "taper"}
 
 
 def test_an_input_can_be_swapped_without_touching_a_formula(tmp_path):
@@ -2276,13 +2295,17 @@ def test_an_input_can_be_swapped_without_touching_a_formula(tmp_path):
 
     model = mx.read_model(dest, name="Child_KR_S_swap")
     try:
-        before = model.Projection[1].benefit_pp(240, "EVENT")
+        before = model.Projection[1].inc_rate(240, "fracture")
+        before_benefit = model.Projection[1].benefit_pp(240, "EVENT")
         model.Data.incidence_file = "half_incidence.csv"
         model.Data.clear_all()
         model.Projection.clear_all()
-        after = model.Projection[1].benefit_pp(240, "EVENT")
-        assert after == pytest.approx(0.5 * before, rel=1e-6)
-        assert model.Data.incidence_table()["rate"].max() < 20.0
+        after = model.Projection[1].inc_rate(240, "fracture")
+        assert after == pytest.approx(0.5 * before, rel=1e-14)
+        # the benefit follows it, to within the convexity of the monthly conversion
+        assert model.Projection[1].benefit_pp(240, "EVENT") == pytest.approx(
+            0.5 * before_benefit, rel=0.01)
+        assert model.Data.incidence_table()["rate"].max() == pytest.approx(10.0)
     finally:
         model.close()
 

@@ -118,7 +118,41 @@ MODELS = {
 #
 # Regenerate with ``python tools/gen_input_files.py lifelib/libraries/krlib`` rather than
 # editing by hand — a load-bearing map that is hand-transcribed is how it goes stale.
-INPUT_FILES = {}
+INPUT_FILES = {
+    "CI_KR_A": {
+        "ci_incidence_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv"},
+    "Cancer_KR_S": {
+        "care_table.csv", "incidence_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "survival_table.csv",
+        "tier_share_table.csv", "tier_table.csv"},
+    "Child_KR_S": {
+        "av_table.csv", "basis_table.csv", "incidence_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "neonatal_table.csv"},
+    "Immediate_KR_A": {
+        "charge_table.csv", "crediting_table.csv", "model_point_table.csv",
+        "mort_table.csv"},
+    "LTC_KR_S": {
+        "av_table.csv", "dementia_table.csv", "grade_share_table.csv",
+        "incidence_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv", "prevalence_table.csv"},
+    "Medical_KR_S": {
+        "claim_shape_table.csv", "lapse_table.csv", "model_point_table.csv",
+        "mort_table.csv", "oop_ceiling_table.csv", "severity_table.csv",
+        "utilisation_table.csv"},
+    "Pension_KR_A": {
+        "decl_rate_table.csv", "expense_table.csv", "guar_rate_table.csv",
+        "lapse_table.csv", "model_point_table.csv", "mort_anchor_table.csv",
+        "mort_table.csv", "pricing_table.csv", "tax_table.csv"},
+    "Term_KR_A": {
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "prem_rate_table.csv", "rate_class_table.csv"},
+    "VA_KR_S": {
+        "charge_table.csv", "crediting_table.csv", "fund_table.csv", "lapse_table.csv",
+        "model_point_table.csv", "mort_table.csv", "return_scenario.csv",
+        "risk_prem_table.csv"},
+    "WholeLife_KR_A": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+}
 
 
 def model_path(name):

@@ -880,9 +880,9 @@ latter would put the notional 보험가입금액 at ₩1,212,808,745 and the 표
 ₩1,464,808.74 — **52.3 months of premium**, which is absurd on its face. At 남자 만 40세 the
 cap lands at ₩384,306.41, or **13.73 months of core premium**, and the 계약체결비용 the model
 deducts at 90% of it at **12.35 months**, against the FSC's own statement of the same cap as
-roughly thirteen months' premium for a 보장성보험 [REG-R29]. `acq_cost_months()` publishes the ratio
-so the two readings can be compared rather than asserted equal, and `check_acq_cost_cap()`
-asserts the acquisition cost stays inside the [별표 14] cap.
+roughly thirteen months' premium for a 보장성보험 [REG-R29]. `acq_cost_months()` publishes
+the ratio so the two readings can be compared rather than asserted equal, and
+`check_acq_cost_cap()` asserts the acquisition cost stays inside the [별표 14] cap.
 
 ### Processing order
 
