@@ -491,15 +491,15 @@ downward across five select years with a non-zero ultimate. Male:
 | `general` | 0.14596111 | 0.10425794 | 0.07089540 | 0.05421413 | 0.04170317 | 0.020 |
 | `minor` | 0.04850043 | 0.03464316 | 0.02355735 | 0.01801444 | 0.01385726 | 0.008 |
 
-**The first five general-tier hazards sum to 0.41725950 = −ln(0.659)**, so the model's
+**The first five general-tier hazards sum to 0.41703175 = −ln(0.659)**, so the model's
 five-year relative survival is the published male excluding-thyroid **65.9%** exactly [R1].
-The 특정소액암 row's five sum to **0.13856564 = −ln(0.8706)**, the [R1]-derived male
+The 특정소액암 row's five sum to **0.13857264 = −ln(0.8706)**, the [R1]-derived male
 특정소액암 figure built from the three named sites' own published five-year survivals — 대장
 75.6, 유방 94.7, 전립선 96.9 per cent [R1]. **The 유사암 tier appears in no row of the file
 at all**: its excess hazard is zero, by design.
 
 The grading is **[std]** and its shape is defensible rather than fitted: a flat hazard
-reproducing 65.9% would be `−ln(0.659)/5 = 0.0834519` a year, and holding it flat kills long
+reproducing 65.9% would be `−ln(0.659)/5 = 0.0834063` a year, and holding it flat kills long
 survivors far too fast when 62.1% of the prevalent population is beyond year five [R1]. The
 **non-zero ultimate** of 0.020 (general) and 0.008 (minor) is there for the same reason: a
 step to nil after year five would be visibly wrong. Then
@@ -1133,11 +1133,11 @@ Derived scalars, read off the model: `proj_len() = 720` (so `result_cf()` has **
   `mort_rate_mth = 1 − (1 − 0.0011068200)^(1/12) = 0.000092281823`. `mort_be_factor = 1.0`.
 - **Excess hazard, general tier, male [std]:** 0.14596111, 0.10425794, 0.07089540,
   0.05421413, 0.04170317 across select years 1–5 and **0.020** ultimate; the five sum to
-  **0.41725950 = −ln(0.659)**, the published male excluding-thyroid 5년 상대생존율 of
+  **0.41703175 = −ln(0.659)**, the published male excluding-thyroid 5년 상대생존율 of
   **65.9%** [R1]. Hence `mort_rate_waived_mth(t, 1) = 0.01218091654617` at 만나이 40.
 - **Excess hazard, 특정소액암 tier, male [std]:** 0.04850043, 0.03464316, 0.02355735,
   0.01801444, 0.01385726, **0.008** ultimate; the five sum to
-  **0.13856564 = −ln(0.8706)** [R1]. Hence `mort_rate_minor_mth(t, 1) = 0.00412545541339`.
+  **0.13857264 = −ln(0.8706)** [R1]. Hence `mort_rate_minor_mth(t, 1) = 0.00412545541339`.
 - **유사암 excess hazard: zero**, in no row of the table [R1].
 - **Lapse [std] [REG-R27].** `lapse_rate(0) = 0.046` in policy year 1,
   `lapse_rate_mth = 0.003916610623`; log-linear to 0.001 at policy year 20; **0.008** from
@@ -1147,7 +1147,7 @@ Derived scalars, read off the model: `proj_len() = 720` (so `result_cf()` has **
   `treat_hazard_yr = 1.20`; `treat_avail(1) = 0.5488116361`. The six `treat_avail` values are
   0.5488116361, 0.2725317930, 0.2369277587, 0.2220172938, 0.2122479738, 0.2080451824.
 - **Per diagnosed life-month in select year 1**, the numbers worth memorising as an
-  implementation check: inpatient `50,000 × (2.00/12) × 15.0` = **₩12,500.00**; surgery
+  implementation check: inpatient `50,000 × (2.00/12) × 15.0` = **₩125,000.00**; surgery
   `5,000,000 × 0.60/12 + 1,000,000 × 0.30/12` = **₩275,000.00**; treatment
   `10,000,000 × (1.20/12) × 0.5488116361` = **₩548,811.64**. In the ultimate cohort they are
   **₩8,125.00**, **₩10,833.33** and **₩0.00** — the treatment limb is 최초 1회한 and its
@@ -1657,11 +1657,11 @@ which is exactly what a once-only fixed-benefit product allows:
 
 | | 일반암 | 고액암 top-up | 특정소액암 | 유사암 | treatment |
 |---|---|---|---|---|---|
-| expected payments | **0.1971** | **0.0062** | **0.0929** | **0.0395** | **0.1960** |
+| expected payments | **0.1971** | **0.0062** | **0.0930** | **0.0395** | **0.1960** |
 
 Against a lifetime cancer risk of **44.6%** for Korean men [R1], and a projection starting at
 만나이 40 with lapse and mortality removing two-thirds of the block before expiry, an
-expected 0.1971 일반암 payments plus 0.0929 특정소액암 payments is the order the epidemiology
+expected 0.1971 일반암 payments plus 0.0930 특정소액암 payments is the order the epidemiology
 implies. The 유사암 count of 0.0395 is the model's own ledger figure: `similar_avail(720) =
 0.9172290909`, so **8.28%** of policies consume the 유사암 tier, and 0.0395 of them do so
 while still in force to be paid.
@@ -1921,9 +1921,10 @@ and each is either asserted by a `check_*()` cells or is a test target in
   makes the cover **무효** and its premiums returnable [S1 제28조제2항] [R7] — a
   **de-recognition, not a decrement**, which releases the premium already collected as well
   as the future benefit and belongs in a validity adjustment at outset. Putting it in the
-  lapse column keeps premium income the insurer never earned. `void_prob() = 0.0003357124` at
-  the anchor cell and the base run leaves the adjustment off: **state it, do not silently
-  absorb it.**
+  lapse column keeps premium income the insurer never earned. With `void_adjust` switched on
+  `void_prob()` is **0.0003357124** at the anchor cell; the base run leaves the adjustment
+  off, so the cells returns **0.0** and `pols_if_init()` is exactly 1.0: **state it, do not
+  silently absorb it.**
 - **`premiums` rides on `pols_healthy + pols_minor`, never on `pols_if`.** At `t = 4` the two
   weights are 0.9839716377 and 0.9840612075 and the difference is ₩4.03; by 납입완료 it is
   3.69% of the block. **It is invisible for the first four rows, where the two are equal**,
@@ -1958,7 +1959,7 @@ and each is either asserted by a `check_*()` cells or is a test target in
   `n_g`, `n_h`, `n_m`, `n_z` — the month's new diagnoses — and `claims_hosp/surgery/treat(t)`
   uses `pols_diag_dur(t, k)`, the stock at the start of the month. Multiplying a care
   intensity by a diagnosis flow understates the care limbs by the mean diagnosed duration,
-  which on this basis is a factor of well over a hundred.
+  which on this basis runs from 57 at 만나이 50 to 80 at 60 and 148 at 80.
 - **The care limbs start one month after the diagnosis limbs.** `claims_hosp(3) = 0` and
   `claims_hosp(4) = 13.6639954092`, because a life diagnosed in month 3 is in the diagnosed
   *stock* from month 4. A model that recognises a treatment episode in the diagnosis month

@@ -105,8 +105,9 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    정기보험의 보험가입금액, and a term policy's risk premium per unit of face is its mortality
    rate, so the notional amount is **the first policy year's risk premium divided by the
    mortality rate at the 기준연령 요건, 남자 만 40세** [REG-R9 제1-2조제2호]. At a child age
-   `q` is so small that the 표준해약공제액 exceeds five years of premium; at 40 it lands at
-   **12.35 months of core premium**, the [REG-R29] reading of the same cap.
+   `q` is so small that the 표준해약공제액 exceeds four years of premium; at 40 the cap is
+   **13.73 months of core premium** and the 90% of it the model deducts is **12.35**, which is
+   the [REG-R29] reading of the same cap.
 9. **The horizon.** At 계약나이 0 to a 100세 만기 the projection runs **1,200 monthly
    periods**, the longest in `krlib`, with premium over the first 240. **Eighty of the
    hundred years are paid-up** and they decide the contract: **89.3% of all outgo falls after
@@ -875,10 +876,11 @@ mortality rate, so
 
 **Evaluating 제9호 at the 기준연령 rather than at a child age is a substantive finding, not a
 convenience.** At 만나이 0 the mortality rate is 0.0025 and at 5 it is 0.00012; using the
-latter would put the notional 보험가입금액 above ₩1.2 billion and the 표준해약공제액 above
-five years of premium, which is absurd on its face. At 남자 만 40세 the cap lands at
-**12.35 months of core premium**, against the FSC's own statement of the same cap as roughly
-thirteen months' premium for a 보장성보험 [REG-R29]. `acq_cost_months()` publishes the ratio
+latter would put the notional 보험가입금액 at ₩1,212,808,745 and the 표준해약공제액 at
+₩1,464,808.74 — **52.3 months of premium**, which is absurd on its face. At 남자 만 40세 the
+cap lands at ₩384,306.41, or **13.73 months of core premium**, and the 계약체결비용 the model
+deducts at 90% of it at **12.35 months**, against the FSC's own statement of the same cap as
+roughly thirteen months' premium for a 보장성보험 [REG-R29]. `acq_cost_months()` publishes the ratio
 so the two readings can be compared rather than asserted equal, and `check_acq_cost_cap()`
 asserts the acquisition cost stays inside the [별표 14] cap.
 
@@ -1302,9 +1304,9 @@ bound is dropped.
                 − 47.4875094915 − 1,903.2117115553 − 0.0000
               = 30,202.6241744982 − 61,561.4237541510            = −31,358.7995796528
 
-**₩50,960.77 of that is the 태아 module in a single month**, and it is 88.4% of the month's
-benefit outgo. The neonatal cost is not spread: the 태아보장기간 limbs are paid on events of
-the pregnancy and the delivery and they are paid **at birth**.
+**₩50,960.77 of that is the 태아 module in a single month**, and it is 85.6% of the month's
+₩59,526.99 of morbidity outgo. The neonatal cost is not spread: the 태아보장기간 limbs are
+paid on events of the pregnancy and the delivery and they are paid **at birth**.
 
 **Month 17 — the 태아 module ends, and 만나이 turns 1.** Two structural things happen in the
 same month and they pull in opposite directions. `l(17) = 0.9311920157360853`,
@@ -1578,9 +1580,11 @@ In rough order of leverage on a book of this product.
 9. **Longevity is the tail risk, not mortality.** Only 1.57% of policies reach the 100세
    계약해당일 on the shipped basis, yet `claims_hospital` peaks at **₩10,877.56 at `t = 965`**
    and `claims_death` at **₩15,452.17 at `t = 1013`** — and **`claims_death` is the largest
-   single column in every month from `t = 929` onward**. The liability is concentrated in the
-   ages where the survival assumption is least certain and where a [std] mortality
-   construction is least defensible.
+   single column in every one of the 166 months from `t = 929` to `t = 1094`** (and again at
+   `t = 1097` and `t = 1098`), after which the in-force block has thinned so far that
+   `claims_hospital` takes the lead back for the last eight years. The liability is
+   concentrated in the ages where the survival assumption is least certain and where a [std]
+   mortality construction is least defensible.
 10. **The 실손 boundary could move.** The reason this product has no indemnity limb is
     regulatory, not economic [R9] [R10], and a 5세대 실손 reform is under way [REG-R31]. A
     change to 감독규정 제7-63조제2항제1호 would change what an 어린이보험 *is*.
@@ -1660,8 +1664,9 @@ is checkable against the shipped model.
 - **Computing the notional 보험가입금액 at the insured's own age.** [별표 15] 제9호 is
   evaluated at the **기준연령 요건, 남자 만 40세** [REG-R21] [REG-R9 제1-2조제2호]. At 만나이
   5 the mortality rate is 0.00012 and the 표준해약공제액 comes out above five years of
-  premium; at 40 it is ₩384,306.41, or **12.35 months of premium**, against the FSC's
-  thirteen-month reading of the same cap [REG-R29].
+  premium; at 40 it is ₩384,306.41, or **13.73 months of premium** — and the 계약체결비용 at
+  90% of it, **12.35 months** — against the FSC's thirteen-month reading of the same cap
+  [REG-R29].
 - **Dropping the void or the maturity from the roll-forward.** There are **four** exits, not
   two. `check_exit_total()` requires them to sum to `pols_if_init()` over the projection —
   0.0049757330 + 0.4688979472 + 0.5103916457 + 0.0157346742 = 1 exactly.

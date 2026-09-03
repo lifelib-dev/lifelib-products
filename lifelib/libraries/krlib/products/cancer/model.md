@@ -267,7 +267,7 @@ Two consequences fall straight out of the ordering and both are pinned by tests.
 **Diagnosis lines ride on flows and care lines ride on stocks**: `claims_diag_*(t)` uses the
 month's new diagnoses and `claims_hosp/surgery/treat(t)` uses `pols_diag_dur(t, k)`, the
 stock at the start of the month; multiplying a care intensity by a diagnosis flow understates
-the care limbs by the mean diagnosed duration, a factor of well over a hundred on this basis.
+the care limbs by the mean diagnosed duration — 57 at 만나이 50, 80 at 60 and 148 at 80.
 And **the care limbs start one month after the diagnosis limbs**: `claims_hosp(3) = 0` while
 `claims_hosp(4) = 13.6639954092`, because a life diagnosed in month 3 is in the diagnosed
 stock from month 4.
@@ -487,10 +487,10 @@ general-population survival*, not a cohort curve and not a transition rate, so i
 into an **excess hazard added to** the base table and never into a replacement for it;
 multiplying survivorship by a relative-survival figure double-counts the background. The
 calibration is exact where the target is public: the five male general-tier hazards sum to
-**0.41725950 = −ln(0.659)**, the published male excluding-thyroid 5년 상대생존율 of 65.9%
-[R1], and the five 특정소액암 hazards to **0.13856564 = −ln(0.8706)**, built from 대장 75.6,
+**0.41703175 = −ln(0.659)**, the published male excluding-thyroid 5년 상대생존율 of 65.9%
+[R1], and the five 특정소액암 hazards to **0.13857264 = −ln(0.8706)**, built from 대장 75.6,
 유방 94.7 and 전립선 96.9 per cent [R1]. The **grading across the five select years and the
-non-zero ultimate** are [std]: a flat hazard reproducing 65.9% would be 0.0834519 a year, and
+non-zero ultimate** are [std]: a flat hazard reproducing 65.9% would be 0.0834063 a year, and
 holding it flat kills long survivors far too fast when 62.1% of the prevalent population is
 beyond year five [R1].
 
@@ -622,7 +622,7 @@ several of them bound nothing at all, which is said rather than papered over.
 | no care benefits on 유사암 | zero | attaching invasive care intensities to a tier at 100.2% relative survival credits it with an exposure no statistic measures [R1] | real contracts pay the inpatient and treatment limbs at **20–25%** on 유사암 [S1] |
 | `mort_table.csv` | Makeham fitted to two 기대여명 anchors per sex [REG-R38] | the 제10회 경험생명표 is not published in full [REG-R33] [REG-R34], so there is no rate to anchor on | the fit returns 기대수명 80.80 / 86.88 against the published 80.8 / 86.6 — a check, not a target |
 | `mort_be_factor` | 1.0 | a population all-cause basis has no prudential margin to unwind | jplib carries 1.25 against a *valuation* table; the two are not comparable |
-| `survival_table.csv` grading | five select years plus a non-zero ultimate of 0.020 / 0.008 | a flat hazard at 0.0834519 kills long survivors far too fast when 62.1% of the prevalent population is beyond year five [R1] | the five-year *totals* are sourced exactly; the shape between them is not |
+| `survival_table.csv` grading | five select years plus a non-zero ultimate of 0.020 / 0.008 | a flat hazard at 0.0834063 kills long survivors far too fast when 62.1% of the prevalent population is beyond year five [R1] | the five-year *totals* are sourced exactly; the shape between them is not |
 | `care_table.csv` | [std] on every row | **no Korean source publishes cancer utilisation per diagnosed patient**; the only published series is a 질병입원율 for all disease [R5] | none; the level is anchored on the 180-day cap [S1] [S4] and the year-1 operation count of 0.90 |
 | `treat_avail(k)` | mid-cohort, `exp(−Σ hazard × span)` at month `12(k−1)+6` | reading at the start of the year pays every entrant at full availability; at the end, understates | none; the ultimate hazard is set to **exactly zero** so the 최초 1회한 bound holds at any horizon |
 | lapse starting level | 4.6% p.a. in policy year 1 | set so the log-linear path averages about 1.5% over the 20-year 납입기간 | **no public Korean lapse figure for 암보험 exists** [R3]; carried from a disclosed 적용해지율 envelope (4.6% at one carrier, 8.4% at another) |
@@ -655,7 +655,7 @@ places the notes print, in-force counts and rates to ten, and the ledgers to ten
   the four monthly tier incidences, `mort_rate(0) = 0.0011068200` and its monthly form, both
   excess-hazard vectors **including that the five general-tier hazards sum to −ln(0.659)**
   and the five 특정소액암 hazards to −ln(0.8706), the six `treat_avail` values, and the three
-  per-diagnosed-life-month care amounts — ₩12,500.00, ₩275,000.00 and ₩548,811.64 in select
+  per-diagnosed-life-month care amounts — ₩125,000.00, ₩275,000.00 and ₩548,811.64 in select
   year 1, and ₩8,125.00 / ₩10,833.33 / ₩0.00 in the ultimate.
 - **The first sixteen months** of `result_cf()` and `result_pols()` row by row, the four hand
   traces the notes carry, **policy year 1 in aggregate** — ₩528,108.33 of premium against
@@ -663,7 +663,7 @@ places the notes print, in-force counts and rates to ten, and the ledgers to ten
   721 months**: ₩8,586,707.2756349239 of premium, ₩8,009,869.07 of diagnosis benefit,
   ₩4,192,693.32 of care benefit, ₩1,474,174.97 of account payments and
   **−₩7,466,785.4889610466** of net cash flow, with the expected-payment counts each line
-  implies (0.1971 일반암, 0.0062 고액암, 0.0929 특정소액암, 0.0395 유사암, 0.1960 treatment).
+  implies (0.1971 일반암, 0.0062 고액암, 0.0930 특정소액암, 0.0395 유사암, 0.1960 treatment).
 - **The equivalence premium on the shipped basis**, ₩55,586 against the shipped ₩45,000, with
   the 152.7418594890-month premium annuity and the 1.2352479168 ratio behind it.
 - **The account, surrender and ledger paths**: `av_pp(447) = 0` and zero thereafter,

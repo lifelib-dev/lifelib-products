@@ -969,10 +969,10 @@ Three properties of this ledger deserve to be in front of a reader.
   certification**, not a year later [S1]. Deferring it removes roughly a tenth of the
   annuity liability and misdates all of it.
 - **`S_C` is computed as a partial product, never as a ratio of cumulative products.**
-  `q_C` reaches 1 at the terminal age of the shipped mortality table — `3 × q(110) > 1`, so
-  the cap binds from 만나이 110 — and a cumulative product underflows to zero there, so the
-  ratio form divides by zero exactly where the tail of a 종신 variant of this liability
-  would live.
+  `q_C` is `min(1, 3 q(x))` and the cap binds from 만나이 **108** on the shipped male table
+  — `3 × q(108) = 1.0714` — and from **112** on the female one, so a cumulative product
+  underflows to zero from there on and the ratio form divides by zero exactly where the tail
+  of a 종신 variant of this liability would live.
 - **The cap and the maturity truncation bind jointly.** Nothing is paid at or after
   `t = n`, so a life certified at 만나이 85 on a 90세만기 contract gets five years of
   annuity and not ten. That is the **conservative reading** of a question no retrieved
@@ -1725,10 +1725,10 @@ stated so that it can be checked.
   Charging ₩30,000 per monthly instalment would multiply the annuity's claim expense by
   about fifteen.
 - **Compute `care_surv` as a partial product, never as a ratio of cumulative products.**
-  `mort_rate_care` is capped at 1 and the cap binds from 만나이 **110** on the shipped
-  table, so a cumulative product underflows to zero there and the ratio form divides by zero
-  exactly where the tail of a 종신 variant lives. It does not bite on any shipped model
-  point, which is precisely why it would be found late.
+  `mort_rate_care` is capped at 1 and the cap binds from 만나이 **108** on the shipped male
+  table and **112** on the female one, so a cumulative product underflows to zero from there
+  on and the ratio form divides by zero exactly where the tail of a 종신 variant lives. It
+  does not bite on any shipped model point, which is precisely why it would be found late.
 - **Premium rides on `pols_act`, never on `pols_if`.** Charging the whole in-force block
   overstates lifetime premium income by **₩414.65** on the anchor cell, 0.043% — small
   because the certification rate at issue age 40 is small, and much larger at the top of the
