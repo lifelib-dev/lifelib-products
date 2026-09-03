@@ -25,7 +25,7 @@ Romanization in italics. Amounts are in Korean won; because Korean documents quo
 expect it — ₩100,000,000 (1억원). Ages are 보험나이 (*boheom nai*, insurance age) unless
 a population statistic is quoted, in which case they are 만나이 (age last birthday); the
 distinction is stated at every point of use because the six-month rule makes the two
-differ for half of all issue dates [S7 제23조] [REG-R25 제21조].
+differ for half of all issue dates [S7 제23조] [REG-R25 제21조](#krlib-reg-r25).
 
 The mechanics anchor is 하나생명's 「무배당 행복knowhow즉시연금보험」 상품요약서 [S1] —
 the only complete statutory product summary for an 즉시연금 retrieved, and the only
@@ -53,7 +53,7 @@ old; no aggregate for any later year was obtained.
 
 즉시연금 is the payout phase of a life-insurance annuity standing alone. The
 supervisor's own definition: 「즉시연금은 보험을 가입할 때 보험료 전액을 일시에 납입하고,
-그 다음달부터 매월 연금이 지급되는 보험상품」 [R2 §1]. A single premium is paid, the
+그 다음달부터 매월 연금이 지급되는 보험상품」 [R2 §1](#krlib-immediate_annuity-r2). A single premium is paid, the
 insurer deducts an acquisition and administration load and, where a death benefit is
 attached, a risk premium — all once, at inception — and the residue is credited at a
 declared rate and drawn down as an annuity from one month after the 보장개시일 (cover
@@ -66,10 +66,10 @@ Contractually the product is **two contracts sold as one**: 「계약자는 다�
 보장계약과 연금계약을 동시에 체결하여야 합니다」 — a 보장계약 (protection contract)
 funding the death benefit and a 연금계약 (annuity contract) funding the 생존연금
 (*saengjon yeongeum*, survival annuity) and, where the shape has one, the 만기보험금
-(*mangi boheomgeum*, maturity benefit) [R1, quoting the 약관 제3조]. The single premium
+(*mangi boheomgeum*, maturity benefit) [R1, quoting the 약관 제3조](#krlib-immediate_annuity-r1). The single premium
 A splits three ways — 보장계약 보험료 B, 사업비 C, and the residue D = A − B − C which
 becomes the 연금계약 적립액, elsewhere and hereafter the **계약자적립액**
-(*gyeyakja jeongnimaek*, the policyholder's account balance) [R1 §1-가].
+(*gyeyakja jeongnimaek*, the policyholder's account balance) [R1 §1-가](#krlib-immediate_annuity-r1).
 
 **Korea writes the product in three shapes, and they are not variants of one design but
 three genuinely different liabilities.** The vocabulary is stable across every retrieved
@@ -84,17 +84,17 @@ carrier and the model treats the shape as a model-point column, not as a rider:
 - **상속연금형** (*sangsok yeongeum-hyeong*, inheritance annuity) pays **interest only**
   and returns the capital — on death in every case, and at maturity in the 만기형 (term)
   sub-shape. It uses no mortality in the annuity calculation at all and remains
-  surrenderable throughout [S1] [S3] [R12 §III-1].
+  surrenderable throughout [S1] [S3] [R12 §III-1](#krlib-immediate_annuity-r12).
 - **확정기간연금형** (*hwakjeong-gigan yeongeum-hyeong*, annuity-certain) divides the
   fund over a fixed term irrespective of survival, again without mortality, and also
-  remains surrenderable [S3] [S9 별표1] [R12 §III-1].
+  remains surrenderable [S3] [S9 별표1] [R12 §III-1](#krlib-immediate_annuity-r12).
 
 **In the Korean market the middle shape dominates, and that single fact reorients the
 product.** On the only public micro-dataset — 1,414 contracts written by one insurer over
 FY2008–FY2009, said to be about 30% of the market's premium — 73.6% of contracts by count
 and 75.1% by premium were 상속형, against 18.2% and 18.6% 종신형 and 8.2% and 6.3%
-확정형 [R12 표5]. The paper draws the comparison itself: 「종신형(72%) 즉시연금이 주류를
-이루는 미국과 달리 우리나라는 상속형 중심으로 즉시연금에 가입하고 있다」 [R12 §III-2].
+확정형 [R12 표5](#krlib-immediate_annuity-r12). The paper draws the comparison itself: 「종신형(72%) 즉시연금이 주류를
+이루는 미국과 달리 우리나라는 상속형 중심으로 즉시연금에 가입하고 있다」 [R12 §III-2](#krlib-immediate_annuity-r12).
 The Korean buyer is, in the main, **not hedging longevity**. The buyer is parking a large
 sum in a tax-privileged wrapper, drawing the interest, and preserving the principal for
 an heir. A model calibrated on a US or UK immediate-annuity book — where the life shape
@@ -103,9 +103,9 @@ is the product — will mis-weight this one by a factor of four.
 The buyer profile is equally particular: 70% female, mean issue age 66.6 and median 68 on
 a 45–85 range, mean premium ₩185,000,000 (1억 8,500만원) and **median ₩100,000,000
 (1억원)**, with 38.5% of contracts at or above ₩100,000,000 and a maximum of
-₩4,000,000,000 (40억원) [R12 표2, 그림3]. Ages 65 and over are 63% of contracts and 70
-and over are 44% [R12 표4]. Of 종신형 buyers, **97.3% chose the ten-year guarantee** and
-2.7% chose twenty [R12 표7]; of 확정형 buyers, 77.6% chose ten years, 13.8% fifteen and
+₩4,000,000,000 (40억원) [R12 표2, 그림3](#krlib-immediate_annuity-r12). Ages 65 and over are 63% of contracts and 70
+and over are 44% [R12 표4](#krlib-immediate_annuity-r12). Of 종신형 buyers, **97.3% chose the ten-year guarantee** and
+2.7% chose twenty [R12 표7](#krlib-immediate_annuity-r12); of 확정형 buyers, 77.6% chose ten years, 13.8% fifteen and
 8.6% twenty. Those two distributions are why this composite's representative terms are
 ten years on every shape and not a longer round number.
 
@@ -127,7 +127,7 @@ basis) and **not** in the 약관 handed to the policyholder. On 14 November 2017
 금융감독원's 금융분쟁조정위원회 (*geumnyung bunjaeng jojeong wiwonhoe*, Financial Dispute
 Resolution Committee) held in 조정결정 제2017-17호 that the retention could not be
 asserted against the policyholder [R1]; the supervisor extended the ruling to the whole
-industry on 15 March 2018 [R2 §4]; insurers litigated, lost at first instance across four
+industry on 15 March 2018 [R2 §4](#krlib-immediate_annuity-r2); insurers litigated, lost at first instance across four
 carriers, won on appeal, and were finally upheld by the Supreme Court on 16 October 2025
 [R6] [R21] [R22]. News reporting put the disputed sum at up to ₩1,000,000,000,000 (1조원)
 across about 160,000 contracts, with no supervisory document stating any aggregate
@@ -147,14 +147,14 @@ representative specification below carries it as a switch with two settings.
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Design type | Single-premium immediate annuity; **무배당** (non-participating); **금리연동형보험** (*geumni yeondonghyeong boheom*, interest-sensitive), the 계약자적립액 credited at a monthly-reset 공시이율 with a duration-stepped guaranteed floor | [S1] [S3] [S6] [S7]; chassis **[std]** (1) |
-| Regulatory class | 생명보험 / 저축성보험 (*jeochukseong boheom*, savings insurance) in the sense of 감독규정 제1-2조제4호; **연금보험** for the purposes of the 공시이율 product-class uniformity rule | [REG-R9 제1-2조] [REG-R23 제5-16조제4항] |
+| Regulatory class | 생명보험 / 저축성보험 (*jeochukseong boheom*, savings insurance) in the sense of 감독규정 제1-2조제4호; **연금보험** for the purposes of the 공시이율 product-class uniformity rule | [REG-R9 제1-2조](#krlib-reg-r9) [REG-R23 제5-16조제4항](#krlib-reg-r23) |
 | Payout shapes | Three, elected at inception and irrevocable: **종신연금형**, **상속연금형 만기형**, **확정기간연금형**. Each is a model-point column of one projection | [S1] [S3] [S6]; scope **[std]** (2) |
 | Selling mode | **1종 / 즉시형** only — the annuity commences one month after the 보장개시일. The 2종 / 거치형 (1–5 year deferral) is out of scope | [S3] [S4] [S5] [S6]; scope **[std]** (3) |
 | Issue age (가입나이) | **45–80**, 보험나이 | [S1] [S2] [S3] [S4] [R27]; adoption **[std]** (4) |
-| Age basis | **보험나이**: 만나이 at the 계약일 with a remainder under six months discarded and six months or more rounded up to a year, incrementing on each 계약해당일 | [S7 제23조] [REG-R25 제21조] |
+| Age basis | **보험나이**: 만나이 at the 계약일 with a remainder under six months discarded and six months or more rounded up to a year, incrementing on each 계약해당일 | [S7 제23조] [REG-R25 제21조](#krlib-reg-r25) |
 | Annuity commencement age (연금개시나이) | Equal to the issue age; there is no deferral | [S1] [S3] [S4] |
-| Sex | Male and female rated separately on the life shape only; the other two shapes use no mortality in the annuity calculation | [S1 §IV-2] [R12 §III-1] |
-| Lives basis | Single life; 계약자 = 피보험자 = 수익자 on the life shape, which is a tax condition and not a preference | [REG-R58 영 제25조제4항제4호]; scope **[std]** (5) |
+| Sex | Male and female rated separately on the life shape only; the other two shapes use no mortality in the annuity calculation | [S1 §IV-2] [R12 §III-1](#krlib-immediate_annuity-r12) |
+| Lives basis | Single life; 계약자 = 피보험자 = 수익자 on the life shape, which is a tax condition and not a preference | [REG-R58 영 제25조제4항제4호](#krlib-reg-r58); scope **[std]** (5) |
 | Currency | KRW | [S1]–[S9] |
 | Participation | 무배당 (non-participating) throughout | [S1] [S5] [S6]; adoption **[std]** (6) |
 | Underwriting | Light but not absent: a health examination may be required on the basis of age, other cover held and the 계약 전 알릴 의무 answers, and a substandard-acceptance rider is offered | [S1 §II-6] [S1 §III-1] |
@@ -174,7 +174,7 @@ Footnotes to [std] rows:
    products and is absent only from the state provider's deferred contract [S9]. Where
    확정기간연금형 is absent the 상속연금형 만기형 does the same commercial job in a
    different shape. All three are carried because two of them — the ones with no
-   mortality in the annuity — are the market's centre of gravity [R12 표5] and because
+   mortality in the annuity — are the market's centre of gravity [R12 표5](#krlib-immediate_annuity-r12) and because
    the reference implementation needs a shape whose liability is pure interest
    arithmetic to isolate the crediting mechanic.
 3. Almost every retrieved product is sold in both modes [S3] [S4] [S5] [S6]. The 거치형
@@ -185,8 +185,8 @@ Footnotes to [std] rows:
    demonstrate.
 4. Observed bands: **45–80** at 하나생명 [S1], 교보생명 [S2] [S3], 동양생명 [S4] and
    우체국 [R27]; **40–85** at 삼성생명 [S5]; **45–75** at ABL [S6]. The realised range in
-   the one dataset is 45–85 [R12 표2], and the paper reports the market-wide position for
-   2008–2010 as 「가입연령도 45세~85세로 한정」 [R12 §III-2-가]. 45–80 is adopted as the
+   the one dataset is 45–85 [R12 표2](#krlib-immediate_annuity-r12), and the paper reports the market-wide position for
+   2008–2010 as 「가입연령도 45세~85세로 한정」 [R12 §III-2-가](#krlib-immediate_annuity-r12). 45–80 is adopted as the
    modal published band; it also bounds the projection sensibly, because a life annuity
    issued at 85 has a guarantee period longer than its expected payment period.
 5. No retrieved document requires 계약자 = 피보험자 = 수익자 as a matter of product
@@ -211,21 +211,21 @@ Footnotes to [std] rows:
    on which the same carrier publishes its 모집수수료율 (남자 60세, 일시납 1억원)
    [S1 §VII], and the age at which the published 개인연금사망률 anchors are densest
    [S1 §IV-2]; and because it sits inside the modal 60–74 age band, which is 54% of
-   contracts [R12 표4]. The premium is the dataset's **median** [R12 그림3] and is exactly
+   contracts [R12 표4](#krlib-immediate_annuity-r12). The premium is the dataset's **median** [R12 그림3](#krlib-immediate_annuity-r12) and is exactly
    the 소득세법 ten-year exemption cap for contracts made from 2017-04-01 [REG-R58], so
    the anchor cell sits on the tax boundary the product is designed around. The
-   ten-year guarantee is the choice 97.3% of life-shape buyers actually made [R12 표7].
+   ten-year guarantee is the choice 97.3% of life-shape buyers actually made [R12 표7](#krlib-immediate_annuity-r12).
 
 ### Premiums
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium mode | **Single premium (일시납)**, paid once at inception. There is no premium-paying period, no renewal premium and no 추가납입 on the 즉시형 | [S1] [S2] [S3] [S5] [S6] |
-| Representative premium | **₩100,000,000 (1억원)** | [R12 그림3]; adoption **[std]** (8) |
-| Minimum premium | **₩10,000,000 (1,000만원)** | [S2] [S3] [S4] [S5] [R12 §III-2-가]; adoption **[std]** (9) |
+| Representative premium | **₩100,000,000 (1억원)** | [R12 그림3](#krlib-immediate_annuity-r12); adoption **[std]** (8) |
+| Minimum premium | **₩10,000,000 (1,000만원)** | [S2] [S3] [S4] [S5] [R12 §III-2-가](#krlib-immediate_annuity-r12); adoption **[std]** (9) |
 | Maximum premium | **₩5,000,000,000 (50억원)**, stepping down by age band on the inheritance shape | [S1 §II-5] [S5]; adoption **[std]** (10) |
 | Premium unit | ₩1,000,000 (100만원) | [S1] [S2] [S3] [S4] |
-| Premium split at inception | 단일 보험료 A = 보장계약 보험료 B + 사업비 C + 연금계약 순보험료 D; D becomes the opening 계약자적립액 | [R1 §1-가] [S1 주2] |
+| Premium split at inception | 단일 보험료 A = 보장계약 보험료 B + 사업비 C + 연금계약 순보험료 D; D becomes the opening 계약자적립액 | [R1 §1-가](#krlib-immediate_annuity-r1) [S1 주2] |
 | 계약체결비용 (*gyeyak chegyeol biyong*, acquisition cost) | **2.20%** of the single premium, deducted once at inception | [S1 §VIII]; adoption **[std]** (11) |
 | 계약관리비용 (*gyeyak gwalli biyong*, administration cost) | **1.30%** of the single premium, deducted once at inception | [S1 §VIII] |
 | Total one-off expense load | **3.50%** of the single premium | [S1] [S3]; adoption **[std]** (11) |
@@ -237,15 +237,15 @@ Footnotes to [std] rows:
 | Large-contract discount | Not applied | [S6 §10-나] [R27]; scope **[std]** (16) |
 | 중도인출 / 추가납입 | Not available on the 즉시형 | [S2] [S3] [S5] [S6]; single exception at [S6 §8-나] (17) |
 
-8. ₩100,000,000 is the median premium of the only public dataset [R12 그림3] and one of
+8. ₩100,000,000 is the median premium of the only public dataset [R12 그림3](#krlib-immediate_annuity-r12) and one of
    the two round figures every retrieved illustration is built on (the other being
    ₩50,000,000 at [S1 §VI-2]). It is also the 소득세법 cap, which makes it the modal
    contract size for a reason rather than by accident [REG-R58].
 9. Observed minima: **₩10,000,000** at 교보 [S2] [S3], 동양 [S4] and 삼성 [S5];
    **₩40,000,000** at 하나 [S1]; **₩50,000,000** at ABL [S6]; **₩5,000,000** at the state
    provider in 2011 [R27]. A consumer explainer reports the spread directly —
-   「M사는 1천만원, S사는 3천만원 등」 [R16, secondary]. ₩10,000,000 is modal among the
-   commercial carriers and matches the dataset's observed minimum [R12 표2].
+   「M사는 1천만원, S사는 3천만원 등」 [R16, secondary](#krlib-immediate_annuity-r16). ₩10,000,000 is modal among the
+   commercial carriers and matches the dataset's observed minimum [R12 표2](#krlib-immediate_annuity-r12).
 10. 하나생명 steps its 상속형 cap **down** with age — ₩5,000,000,000 for ages 45–60,
     ₩3,000,000,000 for 61–70 and ₩1,500,000,000 for 71–80 — while capping the 종신형 at
     ₩10,000,000,000 (100억원) [S1 §II-5]; 삼성 caps at ₩5,000,000,000 [S5]; the state
@@ -263,9 +263,9 @@ Footnotes to [std] rows:
     within 1.4% on a total first-day deduction of 4.97% (3.50% expense plus 1.47% risk
     premium) — see the cross-check under Contractual mechanics. Two carriers, two
     documents, one number. The disputed 2012 contract's load was higher —
-    사업비 5.325% [R1 §1-가] plus a 보장계약 보험료 the determination does not state, with
+    사업비 5.325% [R1 §1-가](#krlib-immediate_annuity-r1) plus a 보장계약 보험료 the determination does not state, with
     the supervisor's worked example assuming 6.0% of a ₩100,000,000 premium in total
-    [R2 참고] — and that vintage is recorded under Variations, not defaulted.
+    [R2 참고](#krlib-immediate_annuity-r2) — and that vintage is recorded under Variations, not defaulted.
 12. [S1 §VIII] publishes three risk-premium levels on the same basis: **0.00%** for
     종신연금형 1형, which pays no death benefit once the annuity has begun; **4.9466%**
     for 종신연금형 2형, which keeps one for life; and **1.4669%** for 상속연금형
@@ -278,7 +278,7 @@ Footnotes to [std] rows:
 13. 100% − 3.50% = 96.50% and 100% − 3.50% − 1.47% = 95.03%. The identity is the one the
     약관 states in words: 「연금계약적립액이란 … 연금계약순보험료(사망보장이 있는 경우
     납입하신 보험료중 보장을 위한 보험료 및 예정사업비를 차감한 금액)를 공시이율로
-    납입일부터 일자계산에 의하여 적립한 금액」 [R1, quoting the 약관 서두], and which the
+    납입일부터 일자계산에 의하여 적립한 금액」 [R1, quoting the 약관 서두](#krlib-immediate_annuity-r1), and which the
     상품요약서 repeats [S1 주2].
 14. [S1 §VIII] states the charge as 「연금수령기간 중 비용 — 연금연액의 0.80%」 on all
     three shapes and discloses it in the cost table rather than in the benefit table. The
@@ -320,23 +320,23 @@ representative set; the arithmetic that produces each annuity is in Contractual 
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Benefit taxonomy | **생존연금** (the periodic annuity), **사망보험금** (death benefit) and, on the inheritance shape only, **만기보험금** (maturity benefit) | [S1] [S3] [S7 별표1] [R1 별표1] |
-| Payment grid | **Annual, in arrears.** On the annual mode the first 연금연액 falls due on the first 계약해당일; the market default is monthly, the first 연금월액 (*yeongeum wolaek*) falling due one month after the 보장개시일 | [S1 주1] [S3] [R2 §1]; grid **[std]** (18) |
+| Benefit taxonomy | **생존연금** (the periodic annuity), **사망보험금** (death benefit) and, on the inheritance shape only, **만기보험금** (maturity benefit) | [S1] [S3] [S7 별표1] [R1 별표1](#krlib-immediate_annuity-r1) |
+| Payment grid | **Annual, in arrears.** On the annual mode the first 연금연액 falls due on the first 계약해당일; the market default is monthly, the first 연금월액 (*yeongeum wolaek*) falling due one month after the 보장개시일 | [S1 주1] [S3] [R2 §1](#krlib-immediate_annuity-r2); grid **[std]** (18) |
 | 종신연금형 — 생존연금 | 연금개시시의 계약자적립액 ÷ an annuity factor computed from the annuitant mortality table and the 공시이율, payable while the annuitant lives and **guaranteed for the 보증지급기간 whether or not the annuitant lives** | [S7 별표1] [S1] |
-| 종신연금형 — 보증지급기간 | **10 years** | [R12 표7]; adoption **[std]** (19) |
+| 종신연금형 — 보증지급기간 | **10 years** | [R12 표7](#krlib-immediate_annuity-r12); adoption **[std]** (19) |
 | 종신연금형 — 사망보험금 | **None after annuitisation.** The unpaid guaranteed instalments continue on their original dates, or may be commuted | [S5] [S1 주5] [S3] |
-| 상속연금형 만기형 — 생존연금 | Interest on the 계약자적립액 at Max[공시이율, 최저보증이율], **less the 만기보험금 지급재원** — the retention that rebuilds the fund to the maturity benefit | [R2 §1] [S7 별표1] [R1] |
+| 상속연금형 만기형 — 생존연금 | Interest on the 계약자적립액 at Max[공시이율, 최저보증이율], **less the 만기보험금 지급재원** — the retention that rebuilds the fund to the maturity benefit | [R2 §1](#krlib-immediate_annuity-r2) [S7 별표1] [R1] |
 | 상속연금형 만기형 — 보험기간 | **10 years** | [R12]; adoption **[std]** (20) |
 | 상속연금형 만기형 — 만기보험금 | **The single premium**, ₩100,000,000, paid on survival to maturity | [S1] [S3] [S4] |
-| 상속연금형 만기형 — 사망보험금 | **10% of the single premium plus the 계약자적립액 at death**, on death at any time | [S1] [S3] [R1 별표1(2)] |
-| 확정기간연금형 — 생존연금 | 계약자적립액 ÷ an annuity-certain factor at the 공시이율 over the elected term, **payable irrespective of survival** | [S3] [S9 별표1] [R12 §III-1] |
-| 확정기간연금형 — 연금지급기간 | **10 years** | [R12 표7]; adoption **[std]** (20) |
+| 상속연금형 만기형 — 사망보험금 | **10% of the single premium plus the 계약자적립액 at death**, on death at any time | [S1] [S3] [R1 별표1(2)](#krlib-immediate_annuity-r1) |
+| 확정기간연금형 — 생존연금 | 계약자적립액 ÷ an annuity-certain factor at the 공시이율 over the elected term, **payable irrespective of survival** | [S3] [S9 별표1] [R12 §III-1](#krlib-immediate_annuity-r12) |
+| 확정기간연금형 — 연금지급기간 | **10 years** | [R12 표7](#krlib-immediate_annuity-r12); adoption **[std]** (20) |
 | 확정기간연금형 — 사망보험금 | **10% of the single premium**, plus the remaining instalments on their dates or commuted | [S3] |
-| Annuity level | **Not level.** The annuity is recomputed when the declared rate moves: 「생존연금의 계산은 공시이율을 적용하여 계산되므로 공시이율이 변경되면 생존연금도 변경됩니다」 | [S1 주3] [S4] [R1 별표1 주1] [S9 주13] |
+| Annuity level | **Not level.** The annuity is recomputed when the declared rate moves: 「생존연금의 계산은 공시이율을 적용하여 계산되므로 공시이율이 변경되면 생존연금도 변경됩니다」 | [S1 주3] [S4] [R1 별표1 주1](#krlib-immediate_annuity-r1) [S9 주13] |
 | 공시이율 (*gongsi iyul*, declared crediting rate) | **2.50% a year**, reset on the first of each month and fixed for that month | [S1 §IV-4] [S12] [S14] [REG-R48]; adoption **[std]** (21) |
 | 최저보증이율 (*choejeo bojeung iyul*, guaranteed floor) | **1.25%** to five years, **1.00%** over five to ten, **0.75%** thereafter | [S3]; adoption **[std]** (22) |
-| Crediting rule | The 계약자적립액 is credited at **Max[공시이율, 최저보증이율]** | [R2 §1] [S7 제7조] |
-| Annuitant mortality | 개인연금사망률 (*gaein yeongeum samangnyul*), used by **종신연금형 alone** | [S1 §IV-2] [R12 §III-1]; table **[std]** (23) |
+| Crediting rule | The 계약자적립액 is credited at **Max[공시이율, 최저보증이율]** | [R2 §1](#krlib-immediate_annuity-r2) [S7 제7조] |
+| Annuitant mortality | 개인연금사망률 (*gaein yeongeum samangnyul*), used by **종신연금형 alone** | [S1 §IV-2] [R12 §III-1](#krlib-immediate_annuity-r12); table **[std]** (23) |
 | Mortality ratchet | **Not applicable** on an immediate annuity | [S6 §10-라]; reasoning **[std]** (24) |
 | Fund floor at annuitisation | **Not applied** | [S7 별표1 주8] [S9]; non-adoption **[std]** (25) |
 
@@ -351,28 +351,28 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     the annual-in-arrears convention is the contract's own annual mode and not an
     approximation of the monthly one. The technical notes carry the reconciliation.
 19. 97.3% of 종신형 buyers chose ten years and 2.7% chose twenty, a mean of 10.3 years
-    [R12 표7]. The US comparator in the same paper is a mean guarantee of 13 years. Ten
+    [R12 표7](#krlib-immediate_annuity-r12). The US comparator in the same paper is a mean guarantee of 13 years. Ten
     years is also the tax-minimum shape: 소득세법 시행령 제25조제4항제3호 requires any
     guarantee period on a tax-exempt 종신형 to sit **within** the annuitant's statutory
     기대여명 [REG-R58], and a ten-year guarantee at age 60 clears that test on any
     published table [REG-R38].
 20. 확정형 buyers chose ten years in 77.6% of cases, fifteen in 13.8% and twenty in 8.6%
-    [R12 표7]; no comparable distribution was published for the 상속형 term. Ten years is
+    [R12 표7](#krlib-immediate_annuity-r12); no comparable distribution was published for the 상속형 term. Ten years is
     adopted on both term shapes because it is the modal 확정형 choice, because it is the
-    term of the contract at the centre of 조정결정 제2017-17호 [R1 §1] and therefore the
+    term of the contract at the centre of 조정결정 제2017-17호 [R1 §1](#krlib-immediate_annuity-r1) and therefore the
     cell on which the dispute arithmetic is documented, and because it is the **shortest
     term that can meet the ten-year interest-income exemption** on the inheritance shape
     [REG-R58]. It is worth stating plainly that the modal 확정기간연금형 choice does
     **not** qualify: 시행령 제25조제3항제1호's carve-out excludes a contract whose premium
     is drawn down 「확정된 기간 동안 연금형태로 분할하여 지급받는 경우」 before the tenth
     anniversary, which is exactly what a ten-year annuity-certain does [REG-R58]
-    [R12 §III-1 각주4]. The inheritance shape escapes it because it pays only the
+    [R12 §III-1 각주4](#krlib-immediate_annuity-r12). The inheritance shape escapes it because it pays only the
     interest and returns the principal at maturity.
 21. Observed declared rates on annuity money, with their dates: 4.8% at 2011-09 [R27];
-    4.5% at 2012-09 on the disputed contract [R1 §1-라]; 3.40% falling to 2.80% over
+    4.5% at 2012-09 on the disputed contract [R1 §1-라](#krlib-immediate_annuity-r1); 3.40% falling to 2.80% over
     2015-03 to 2016-03 [S5]; 2.95% at 2016-03 [S4]; 2.83% at 2016-03 [S2]; 2.50% at
     2017-04 [S1 §IV-4]; 2.52% at 2017-12 [S3]; 2.80% at 2023-01 [S13]; 2.55% at 2025-01
-    [S12]; 2.67% at 2026-04 [R28, a commercial content site]; 2.56% at 2026-09 [S14]. The
+    [S12]; 2.67% at 2026-04 [R28, a commercial content site](#krlib-immediate_annuity-r28); 2.56% at 2026-09 [S14]. The
     arc is a fall from about 4.8% in 2011 to about 2.6% in 2026. **2.50%** is adopted
     because it is the level the anchor carrier declared on this exact product [S1], it
     sits inside the 2.55%–2.67% band of the three most recent observations, and it equals
@@ -384,7 +384,7 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     publish their weighting publish different ones [S6] [S12]. The rate is a slow-moving
     **[std]** scalar and is exposed as such.
 22. Observed schedules, by vintage: 2.5% / 2.0% at ten years for the 2007–2014 cohorts
-    [S10] and industry-wide in the 2008–2010 sample [R12 표2 주1]; 2.5% / 2.0% / 1.0% at
+    [S10] and industry-wide in the 2008–2010 sample [R12 표2 주1](#krlib-immediate_annuity-r12); 2.5% / 2.0% / 1.0% at
     ABL in 2012 [S6 §9-마]; 2.5% / 1.5% on the disputed 2012 contract [R1]; 2.0% / 1.5% /
     1.0% at 동양 in 2016 [S4]; 1.5% / 1.0% at 삼성 [S5], 교보 [S2] and 하나 [S1 §V] in
     2016–2017; **1.25% / 1.00% / 0.75%** at 교보 in 2017-12 [S3]; 1.25% / 1.15% / 0.75%
@@ -425,8 +425,8 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     sibling does. The one-way character of the clause — it operates only where the
     annuity would **increase** — is why the sister model needs it. A 2024 table revision
     is reported to have cut the annuity on a fixed fund by about 15% [R13, a news
-    article], and in-force contracts are unaffected because the factor was fixed the
-    month the premium was paid [R14, a news article].
+    article](#krlib-immediate_annuity-r13), and in-force contracts are unaffected because the factor was fixed the
+    month the premium was paid [R14, a news article](#krlib-immediate_annuity-r14).
 25. Two independent carriers guarantee that the 계약자적립액 at annuitisation is at least
     **100.1%** of premiums paid: 「연금개시시의 계약자적립액은 이미 납입한 보험료 … 의
     100.1%를 최저보증 합니다」 [S7 별표1 주8], and identically [S9]. Both statements are
@@ -452,7 +452,7 @@ shapes and a small number of administrative facilities.
 | 보증지급기간 menu (종신연금형) | **10년**, 20년, 100세, 기대여명 | [S7 별표1] [S3]; representative **10년** (19) |
 | Meaning of the 100세 option | 「보증지급기간이 100세인 경우에는 [보증지급기간−연금개시나이+1]년을 보증지급」 — a 41-year guarantee at the anchor age of 60, not a hundred years | [S7 별표1 주6] [S9] |
 | Meaning of the 기대여명 option | The 성별·연령별 기대여명 연수 of the 통계청 table **in force at inception**, decimals discarded, floored at five years | [S7 제2조제6호가목] [S5 주5] |
-| Minimum guarantee period | **Five years.** A pure life annuity with no guarantee period may not be sold in Korea | [R12 §III-2-라] citing 보험업감독규정 제7-60조 4; **[unverified]** as to text [R31] (27) |
+| Minimum guarantee period | **Five years.** A pure life annuity with no guarantee period may not be sold in Korea | [R12 §III-2-라](#krlib-immediate_annuity-r12) citing 보험업감독규정 제7-60조 4; **[unverified]** as to text [R31] (27) |
 | 연금지급기간 menu (확정기간연금형) | 5년, **10년**, 15년, 20년, 30년 | [S6] [S9]; 10/15/20/30년 at [S3], out to 50년 at [S8] and to 60년/100세 at [S14] |
 | 보험기간 menu (상속연금형) | 종신형, or 만기형 of **10년**, 15년, 20년, 30년 | [S1] [S3] [S5] |
 | Front-loaded life annuity | **Not in the representative set** | [S2] [S3] [S5] [S8] [S9] [S13]; scope **[std]** (28) |
@@ -472,7 +472,7 @@ shapes and a small number of administrative facilities.
     등을 지급하지 아니할 것」 [REG-R58].
 27. The rule is quoted in the academic source — 「우리나라는 종신형이라 하더라도
     순수종신형은 허용되지 않으며 적어도 5년 이상 보증기간을 설정해야 한다(보험업감독규정
-    제7-60조 4)」 [R12 §III-2-라] — and the regulation text itself could not be retrieved
+    제7-60조 4)」 [R12 §III-2-라](#krlib-immediate_annuity-r12) — and the regulation text itself could not be retrieved
     in the product research pass [R31]. The cross-product reference library did retrieve
     제7-60조 and records its ten operative items without a five-year annuity guarantee
     among them [REG-R16], so the citation is carried on the paper's authority and the
@@ -487,7 +487,7 @@ shapes and a small number of administrative facilities.
     fixed at 2× for ten years [S8]; 조기집중연금형 at 우체국, 200% or 300% over five or
     ten years [S9]; and 활동기집중형 at 하나, the most aggressive retrieved at **3× or
     5×** over five or ten years [S13]. The demand it serves is a bridge to the state
-    pension — 「은퇴 후 국민연금 수령 전까지 가교연금이 필요할 경우」 [R12 §III-1]. It is
+    pension — 「은퇴 후 국민연금 수령 전까지 가교연금이 필요할 경우」 [R12 §III-1](#krlib-immediate_annuity-r12). It is
     excluded from the representative set because it is a deterministic step function
     applied to an annuity the model already computes, and because no source publishes the
     factor adjustment that pays for the step. It is a documented variant, not a defaulted
@@ -506,23 +506,23 @@ shapes and a small number of administrative facilities.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Surrender — 종신연금형 | **Not permitted at any time after the annuity has begun.** On an immediate annuity that means from month one: the contract is irreversible | [S3] [S5 주2] [S7 제31조] [S8 제33조] [REG-R58 영 제25조제4항제4호] |
+| Surrender — 종신연금형 | **Not permitted at any time after the annuity has begun.** On an immediate annuity that means from month one: the contract is irreversible | [S3] [S5 주2] [S7 제31조] [S8 제33조] [REG-R58 영 제25조제4항제4호](#krlib-reg-r58) |
 | Surrender — 상속연금형, 확정기간연금형 | **Permitted at any time** before the contract is extinguished | [S1] [S3] [S6] |
-| 해약환급금 (*haeyak hwanreupgeum*, surrender value) | 계약자적립액 less the 해약공제액, floored at zero | [REG-R19 제7-66조제1항제1호] [S1 §VI-1] |
+| 해약환급금 (*haeyak hwanreupgeum*, surrender value) | 계약자적립액 less the 해약공제액, floored at zero | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) [S1 §VI-1] |
 | 해약공제액 (*haeyak gongjeaek*, surrender charge) | **Nil at every duration** | [S1 §VIII] [S10]; observed, not standardized (31) |
-| Statutory cap on the surrender charge | 표준해약공제액 = 6% of the 연납순보험료 for a whole-life 생존연금보험, with a 해약공제계수 of **1** for a single premium, subject to the 5% × 12 ceiling | [REG-R20 별표 14 주2, 주4] [REG-R19 제7-66조제1항제3호] (32) |
+| Statutory cap on the surrender charge | 표준해약공제액 = 6% of the 연납순보험료 for a whole-life 생존연금보험, with a 해약공제계수 of **1** for a single premium, subject to the 5% × 12 ceiling | [REG-R20 별표 14 주2, 주4](#krlib-reg-r20) [REG-R19 제7-66조제1항제3호](#krlib-reg-r19) (32) |
 | Effect of a surrender on the annuity | The contract is extinguished; there is no paid-up or reduced-annuity form | [S1] [S3] |
-| 미경과보험료 | Not applicable — there is no unearned premium on a single-premium contract already fully credited | [REG-R19 제7-66조제5항]; reasoning **[std]** (33) |
-| 위법계약의 해지 (*wibeop gyeyagui haeji*) | Returns the **계약자적립액**, not the surrender value | [S7 제34조제5항] [REG-R25 제32조] |
-| 청약철회 (*cheongyak cheolhoe*, cooling-off) | 15 days from receipt of the 보험증권 and never more than 30 days from the application date; premium returned within 3 business days | [REG-R51 제46조제1항제1호] [REG-R25 제17조] |
-| 품질보증해지 (*pumjil bojeung haeji*) | Cancellation within **three months** of formation where the 약관 was not delivered, the important content not explained, or the application not signed | [REG-R25 제18조제3항] [REG-R49 제638조의3] |
-| 실효 (*silhyo*, lapse) and 부활 (*buhwal*, reinstatement) | **Cannot arise.** There is no renewal premium to miss | [REG-R25 제26조, 제27조]; reasoning **[std]** (34) |
+| 미경과보험료 | Not applicable — there is no unearned premium on a single-premium contract already fully credited | [REG-R19 제7-66조제5항](#krlib-reg-r19); reasoning **[std]** (33) |
+| 위법계약의 해지 (*wibeop gyeyagui haeji*) | Returns the **계약자적립액**, not the surrender value | [S7 제34조제5항] [REG-R25 제32조](#krlib-reg-r25) |
+| 청약철회 (*cheongyak cheolhoe*, cooling-off) | 15 days from receipt of the 보험증권 and never more than 30 days from the application date; premium returned within 3 business days | [REG-R51 제46조제1항제1호](#krlib-reg-r51) [REG-R25 제17조](#krlib-reg-r25) |
+| 품질보증해지 (*pumjil bojeung haeji*) | Cancellation within **three months** of formation where the 약관 was not delivered, the important content not explained, or the application not signed | [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49 제638조의3](#krlib-reg-r49) |
+| 실효 (*silhyo*, lapse) and 부활 (*buhwal*, reinstatement) | **Cannot arise.** There is no renewal premium to miss | [REG-R25 제26조, 제27조](#krlib-reg-r25); reasoning **[std]** (34) |
 | Lapse decrement in the model | **Zero on 종신연금형** (surrender is contractually impossible); a **[std]** scalar on the other two shapes | [S3] [S7 제31조]; level **[std]** (35) |
 | Expiry — 종신연금형 | On the later of the annuitant's death and the end of the 보증지급기간 | [S7 별표1] [S1 주5] |
 | Expiry — 상속연금형 만기형 | On payment of the 만기보험금 at the end of the 보험기간, or earlier on death | [S1] [S3] |
 | Expiry — 확정기간연금형 | At the end of the 연금지급기간, death not accelerating it | [S3] [S9 주7] |
-| 소멸시효 (prescription) | Three years on a claim, three on a refund of premium or account balance, two on a premium | [REG-R49 제662조] [S7] |
-| 예금자보호 (*yegeumja boho*) | ₩100,000,000 (1억원) per person per insurer, from 2025-09-01 | [REG-R52 제18조제7항] [REG-R32]; see (36) |
+| 소멸시효 (prescription) | Three years on a claim, three on a refund of premium or account balance, two on a premium | [REG-R49 제662조](#krlib-reg-r49) [S7] |
+| 예금자보호 (*yegeumja boho*) | ₩100,000,000 (1억원) per person per insurer, from 2025-09-01 | [REG-R52 제18조제7항](#krlib-reg-r52) [REG-R32]; see (36) |
 
 31. This is one of the few parameters in the library that needs no standardization,
     because it is published as a complete run and it is a run of zeros: 「경과시점 1년 …
@@ -570,7 +570,7 @@ shapes and a small number of administrative facilities.
     [S1 §VI-2], so surrendering early is a realised loss on a contract bought to be held.
 36. Every retrieved leaflet from 2016–2017 recites the then-current ₩50,000,000 limit
     [S1 §I] [S2] [S3] [S4] [S5]. The limit is now **₩100,000,000**, in force from
-    2025-09-01 [REG-R52 제18조제7항] [REG-R32]. The point bites harder on this product
+    2025-09-01 [REG-R52 제18조제7항](#krlib-reg-r52) [REG-R32]. The point bites harder on this product
     than anywhere else in `krlib`: the **median** premium is ₩100,000,000 and 38.5% of
     contracts exceed it [R12], so the great majority of the money in this line sits
     **outside** the protection limit on either the old figure or the new one. Note also
@@ -585,7 +585,7 @@ shapes and a small number of administrative facilities.
 ### The premium split, the opening fund, and the accumulation identity
 
 The single premium A is divided at inception and never again. The determination's own
-table sets the division out in the clearest form anywhere in the corpus [R1 §1-가 각주2]:
+table sets the division out in the clearest form anywhere in the corpus [R1 §1-가 각주2](#krlib-immediate_annuity-r1):
 
 | 구분 | Premium component | Benefit it funds |
 |---|---|---|
@@ -604,7 +604,7 @@ representative basis:
 
 Thereafter the fund runs a single recursion, stated in the 약관 for both phases —
 「연금개시 전에는 연금계약순보험료를 … 공시이율로 납입일부터 일자계산에 의하여 적립한
-금액이며, 연금개시후에는 생존연금 발생분을 차감한 금액」 [R1, quoting the 약관 서두]. On
+금액이며, 연금개시후에는 생존연금 발생분을 차감한 금액」 [R1, quoting the 약관 서두](#krlib-immediate_annuity-r1). On
 the annual grid, with the annuity payable in arrears:
 
 ```
@@ -622,7 +622,7 @@ payout-phase chassis: the accumulation half of the machinery is `Pension_KR_A`'s
 
 The rate applied to the fund is the higher of the declared rate and the guaranteed floor:
 「보험료*에 일정한 이율**을 곱하여 산출한 금액 … \*\* Max [공시이율, 최저보증이율]」
-[R2 §1]. Three properties matter to a model.
+[R2 §1](#krlib-immediate_annuity-r2). Three properties matter to a model.
 
 **It is reset monthly and fixed within the month.** 「이 계약의 공시이율은 매월 1일 회사가
 정한 이율로 하며, 당월 말일까지 1개월간 확정 적용한다」 [S6 §9-나], identically at
@@ -657,14 +657,14 @@ by the share of government bonds in the insurer's own book, rounded to five poin
 60%」 with 「적용이율 = 공시기준이율 × 조정율」, and at 2025-01 a 공시기준이율 of 2.86%
 with a 조정율 of 89.16% giving an annuity 적용이율 of **2.55%** [S12]. The disputed 2012
 약관 used 「공시기준이율 = 운용자산이익률 × 0.65 + 외부지표금리 × 0.35」 with the same
-80%–120% corridor [R1, quoting 약관 제16조]. The internal/external split therefore ranges
+80%–120% corridor [R1, quoting 약관 제16조](#krlib-immediate_annuity-r1). The internal/external split therefore ranges
 over 50/50, 60/40 and 65/35 on the retrieved evidence. **Any model that treats the
 공시이율 as an exogenous scalar is defensible; any model that claims to derive it is
 not**, and `Immediate_KR_A` exposes it as a scalar.
 
 **The floor is a rate on the fund, never a floor on the annuity.** That single sentence
 is the substance of the whole dispute. A policyholder reading 「10년 이내 연복리 2.5% 최저
-보증」 in the 약관 [R1 별표1 주7] naturally reads it as a floor under the income; it is
+보증」 in the 약관 [R1 별표1 주7](#krlib-immediate_annuity-r1) naturally reads it as a floor under the income; it is
 not, and on a 만기형 the income can fall far below it while the floor is honoured on the
 fund. The representative schedule steps 1.25% / 1.00% / 0.75% at five and ten years [S3];
 the 약관 illustrates the mechanic with its own worked example [S7 제7조]. That a floor
@@ -673,7 +673,7 @@ must exist is regulatory: 감독규정 제7-60조제10호 requires a 금리연�
 
 Alongside the declared rate sits the **평균공시이율** (*pyeonggyun gongsi iyul*), the
 average of all insurers' declared rates computed as the FSS Governor prescribes
-[REG-R9 제1-2조제13호], published to the market through carriers' regulatory disclosure
+[REG-R9 제1-2조제13호](#krlib-reg-r9), published to the market through carriers' regulatory disclosure
 [REG-R48] and defined in the 상품요약서 as 「감독원장이 정하는 바에 따라 산정한 전체
 보험회사 공시이율의 평균으로 … 보험계약의 체결시점의 평균공시이율을 보험기간 동안
 적용합니다」 [S11]. It is 2.50% for 2026, having been 2.75% in 2024–2025 and 2.25% in
@@ -737,8 +737,8 @@ Three further properties of the shape follow from the tax statute rather than fr
 underwriting, and are dealt with under Regulatory context: the guarantee period may not
 exceed the annuitant's statutory 기대여명 if the exemption is to be kept; the contract may
 not be surrendered once in payment; and no benefit may be paid in a form other than an
-annuity [REG-R58 영 제25조제4항]. A pure life annuity with no guarantee at all may not be
-sold [R12 §III-2-라], **[unverified]** as to the article text [R31].
+annuity [REG-R58 영 제25조제4항](#krlib-reg-r58). A pure life annuity with no guarantee at all may not be
+sold [R12 §III-2-라](#krlib-immediate_annuity-r12), **[unverified]** as to the article text [R31].
 
 ### 상속연금형 — interest only, and the 만기보험금 지급재원
 
@@ -748,12 +748,12 @@ The inheritance shape pays the interest and keeps the capital. In the 종신형 
 일시금으로 지급하며, 만기형의 경우 만기생존시에 만기환급금을 지급하는 형태」 [S3]. It
 uses no mortality in the annuity calculation at all — 「옵션 중 사망(생존) 위험률이
 적용되는 것은 종신형에 한정된다 … 확정형과 상속형은 사망률을 사용하지 않는다」
-[R12 §III-1] — which is the single most important modelling consequence in the product:
+[R12 §III-1](#krlib-immediate_annuity-r12) — which is the single most important modelling consequence in the product:
 two of the three shapes are pure interest arithmetic and only 종신연금형 reads
 `mort_table.csv` for its annuity.
 
 For the **만기형** the maturity benefit is the gross single premium — 「만기보험금 :
-납입 보험료 총액」 [R1 §1-가 각주2], and 「연금계약 적립액(기본보험료 해당액)」 [S1] —
+납입 보험료 총액」 [R1 §1-가 각주2](#krlib-immediate_annuity-r1), and 「연금계약 적립액(기본보험료 해당액)」 [S1] —
 while the fund starts at the premium *net* of the load. That mismatch is the whole of the
 mechanic. Writing M for the maturity benefit, n for the term and s(n) = ((1+i)^n − 1)/i
 for the accumulation factor of ₩1 a year in arrears, the level annuity that takes the
@@ -778,7 +778,7 @@ this shape can fall by more than half while the guaranteed floor never moves, an
 the arithmetic the next section is about.
 
 The supervisor's own restatement is the cleanest specification of the liability anywhere
-[R2 §1]:
+[R2 §1](#krlib-immediate_annuity-r2):
 
 > 만기환급형 즉시연금은 보험계약자가 낸 보험료\*에 일정한 이율\*\*을 곱하여 산출한 금액
 > 중에서 … 만기보험금 지급을 위한 재원(이하 '만기보험금지급재원')을 공제한 금액을 매월
@@ -800,7 +800,7 @@ by the two treatments, which is the most that can honestly be said.
 ### The 즉시연금 과소지급 분쟁 — the retention, the determination, and the switch
 
 **What went wrong.** The retention above was set out in the 산출방법서 and not in the
-약관. The 약관 said only this [R1 §1-나, 별표1]:
+약관. The 약관 said only this [R1 §1-나, 별표1](#krlib-immediate_annuity-r1):
 
 > 상속연금형 — 피보험자가 보험기간(10년, 15년, 20년, 30년)중 매년 계약 해당 일에
 > 살아있을 때 — 보장개시일로부터 만1개월 이후 계약해당일부터 연금지급개시시의 연금계약의
@@ -811,14 +811,14 @@ with note 1 that the annuity moves with the declared rate, note 6 that
 note 7 stating the floor. **Nowhere does that 약관 mention the retention.** The
 supervisor's later reconstruction records that the same sentence had been reused from a
 product with no maturity benefit — 「만기보험금을 지급하지 않는 즉시연금 약관(순수종신
-연금형의 기본형, 부부형)과 동일하게 사용」 [R2 §4]. The defect was drafting reuse, not
+연금형의 기본형, 부부형)과 동일하게 사용」 [R2 §4](#krlib-immediate_annuity-r2). The defect was drafting reuse, not
 design.
 
 **The case.** On 2012-09-12 a policyholder wrote a ₩1,000,000,000 (10억원) 즉시상속형 for
 a ten-year term, monthly, with himself as policyholder, insured and beneficiary
-[R1 §1]. The declared rate at inception was 4.5%, the floor 2.5% within ten years and
+[R1 §1](#krlib-immediate_annuity-r1). The declared rate at inception was 4.5%, the floor 2.5% within ten years and
 1.5% beyond, the death benefit 10% of premiums and the 사업비 **5.325%** of the premium
-[R1]. The annuity actually paid ran [R1 §1-가]:
+[R1]. The annuity actually paid ran [R1 §1-가](#krlib-immediate_annuity-r1):
 
 | Period | Monthly 생존연금 |
 |---|---|
@@ -831,7 +831,7 @@ a ten-year term, monthly, with himself as policyholder, insured and beneficiary
 
 a fall of **55.4% in five years** while the guaranteed floor never moved. The insurer's
 own description of why is the clearest statement of the mechanism in the corpus
-[R1 §2]:
+[R1 §2](#krlib-immediate_annuity-r1):
 
 > 동 상품은 계약체결 당시 일시납 보험료에서 공제(보장계약보험료와 예정사업비)한 연금계약
 > 순보험료 … 를 공시이율 … 로 적용하여 산출한 운용수익으로 만기보험금(일시납보험료
@@ -844,7 +844,7 @@ in this specification is the model that was litigated. All of the following is *
 reconstruction from the figures at [R1] and [R2]. Solving the identity above at a
 declared rate of 4.5% over ten years on a ₩1,000,000,000 premium gives a first-year
 monthly annuity of ₩3,125,000 on a load of 5.325% (the 사업비 alone), ₩3,056,000 on the
-supervisor's round 6.0% assumption [R2 참고], and **₩3,050,000 — the published figure —
+supervisor's round 6.0% assumption [R2 참고](#krlib-immediate_annuity-r2), and **₩3,050,000 — the published figure —
 on a total load of 6.054%**. The reconstruction therefore recovers a 보장계약 보험료 of
 about **0.73%** of premium for a death benefit of 10% of premiums over ten years, a
 figure the determination does not state, and vindicates the supervisor's 6% assumption to
@@ -854,7 +854,7 @@ order — interest on the net fund with no retention, a **31.4% uplift** — and
 ₩2,083,333 on the applicant's claim, which was interest on the *gross* premium.
 
 **The determination.** 조정결정 제2017-17호, 2017-11-14, reasoned in three moves
-[R1 §3]. First, objective construction: 「약관의 내용은 개개 계약체결자의 의사나 구체적
+[R1 §3](#krlib-immediate_annuity-r1). First, objective construction: 「약관의 내용은 개개 계약체결자의 의사나 구체적
 사정을 고려함이 없이 평균적 고객의 이해가능성을 기준으로 하여 객관적·획일적으로 해석하여야
 한다」, on which basis the 약관 makes clear that the annuity may fall but not that it may
 fall below what the stated floor implies. Second, the status of the 산출방법서:
@@ -877,10 +877,10 @@ states any of them:
 | 2012-08-08 | Government announces removal of the ten-year exemption for 즉시연금 from the following year [R5] |
 | 2012-09-26 | FSS issues a 소비자경보 against 절판마케팅 of 즉시연금 [R5] |
 | 2017-11-14 | 금융분쟁조정위원회 조정결정 제2017-17호 [R1] |
-| 2018-01 | The insurer amends the 약관 so that 약관 and 산출방법서 agree [R2 §4] |
-| 2018-02 | The insurer accepts the determination; acceptance has the force of a 재판상의 화해 [R2 §3] |
-| 2018-03-15 | FSS notifies **every life insurer** to handle its own cases the same way [R2 §4] |
-| 2018-06 | A second 분조위 determination to the same effect [R3 §1] |
+| 2018-01 | The insurer amends the 약관 so that 약관 and 산출방법서 agree [R2 §4](#krlib-immediate_annuity-r2) |
+| 2018-02 | The insurer accepts the determination; acceptance has the force of a 재판상의 화해 [R2 §3](#krlib-immediate_annuity-r2) |
+| 2018-03-15 | FSS notifies **every life insurer** to handle its own cases the same way [R2 §4](#krlib-immediate_annuity-r2) |
+| 2018-06 | A second 분조위 determination to the same effect [R3 §1](#krlib-immediate_annuity-r3) |
 | 2018-08 | One carrier's board declines blanket payment; another refuses the determination [R17] |
 | 2018-09-04 | FSS advises policyholders to file a dispute application to interrupt the three-year limitation [R3] |
 | 2021–2022 | Four class actions won by consumers at first instance; all appealed [R18] [R19] |
@@ -896,7 +896,7 @@ change the annuity payable [R6] [R21] [R23]. The number of plaintiffs is reporte
 in one trade title and 51 in two others of the same judgment day; the discrepancy is
 unresolved and both are recorded [R21] [R22] [R25].
 
-**The 약관 amendment**, printed side by side by the supervisor [R2 §4]:
+**The 약관 amendment**, printed side by side by the supervisor [R2 §4](#krlib-immediate_annuity-r2):
 
 | 개정 전 | 개정 후 |
 |---|---|
@@ -920,7 +920,7 @@ inside an annuity factor cannot express the question.
 The certain shape divides the fund over an elected term: 「연금지급개시시점의 적립금액을
 기준으로 계약자가 선택한 연금지급기간동안 나누어 계산한 금액을 연금지급기간동안 매년
 지급」 [S9 별표1]. Payment does not depend on survival — 「확정형에서는 가입자가 선택한
-지급기간 동안 가입자의 생존여부에 관계없이 연금급여를 지급한다」 [R12 §III-1] — and death
+지급기간 동안 가입자의 생존여부에 관계없이 연금급여를 지급한다」 [R12 §III-1](#krlib-immediate_annuity-r12) — and death
 inside the term leaves the remaining instalments payable on their dates or commutable
 [S9 주7]. With a(n) = (1 − (1 + i)^−n) / i,
 
@@ -953,7 +953,7 @@ specification anyway: the **modal 확정기간연금형 term does not qualify fo
 income exemption**. 소득세법 시행령 제25조제3항제1호 excludes a contract whose premiums are
 drawn down 「확정된 기간 동안 연금형태로 분할하여 지급받는 경우」 before the tenth
 anniversary [REG-R58], which a ten-year annuity-certain does by construction
-[R12 §III-1 각주4]; and the shape is not a 종신형, so the 제25조제4항 route is closed too.
+[R12 §III-1 각주4](#krlib-immediate_annuity-r12); and the shape is not a 종신형, so the 제25조제4항 route is closed too.
 The buyer of the most popular certain term is buying a taxable product.
 
 ### 사망보험금, and the exclusions that qualify it
@@ -961,7 +961,7 @@ The buyer of the most popular certain term is buying a taxable product.
 The death benefit is small by design and shape-dependent. The near-universal Korean
 design on an 즉시연금 is **10% of the single premium plus the fund at death**: it appears
 at 교보 [S2] [S3], 하나 [S1] and in the disputed contract 「이미 납입한 보험료의 10% +
-사망 당시 연금계약적립액」 [R1 별표1(2)]. It is small enough not to disturb the annuity —
+사망 당시 연금계약적립액」 [R1 별표1(2)](#krlib-immediate_annuity-r1). It is small enough not to disturb the annuity —
 the risk premium that buys it is 1.47% of the single premium on a twenty-year inheritance
 shape [S1 §VIII] — and large enough to make the contract a contract of insurance.
 
@@ -1005,13 +1005,13 @@ death benefit conditional on cause beyond those.
 
 **계약 전 알릴 의무** (*gyeyak jeon allil uimu*, the pre-contract duty of disclosure) is
 the 약관's name for the 상법 고지의무 (*gojiuimu*) and the 표준약관 says so in terms
-[REG-R25 제13조]. The insurer may not terminate for breach where it knew or was negligent
+[REG-R25 제13조](#krlib-reg-r25). The insurer may not terminate for breach where it knew or was negligent
 in not knowing at formation; where **one month** has passed since it learned of the
 breach; where **two years** have passed from the 보장개시일 without a claim event, or one
 year for disease under a 진단계약; where **three years** have passed since the contract
 date; where it accepted on a health-examination document and the claim arises from a
 matter stated in it; or where the 보험설계사 prevented truthful disclosure
-[REG-R25 제13조, 제14조] [S1] [S7 제16조]. 상법 제651조 sets the outer statutory bounds at
+[REG-R25 제13조, 제14조](#krlib-reg-r25) [S1] [S7 제16조]. 상법 제651조 sets the outer statutory bounds at
 one month from discovery and three years from formation, and 제655조 carries the causation
 defence — the insurer must still pay where the non-disclosure is proved not to have
 affected the event [REG-R49]. 제14조제5항 bars termination for non-disclosure of **other
@@ -1019,7 +1019,7 @@ insurance held** [REG-R25], which on this product would otherwise be a live issu
 the per-person tax and protection caps.
 
 **사기에 의한 계약** is cancellable within **five years** of the 보장개시일 and one month
-of learning of the fraud [S1 §III-3-다] [S7 제17조] [REG-R25 제15조].
+of learning of the fraud [S1 §III-3-다] [S7 제17조] [REG-R25 제15조](#krlib-reg-r25).
 
 **Misstatement of age adjusts rather than voids**: 「청약서류상 피보험자의 나이 또는
 성별에 관한 기재사항이 신분증에 기재된 사실과 다른 경우에는 신분증에 기재된 나이 또는
@@ -1038,9 +1038,9 @@ surrender value.
 **청약철회** (cooling-off): 15 days from receipt of the 보험증권 and never more than 30
 days from the application date, whichever comes first; effective on despatch; premium
 returned within three business days, with interest at the 보험계약대출이율 if late
-[REG-R51 제46조제1항제1호] [REG-R25 제17조]. The statutory right bars any damages or
-penalty [REG-R51 제46조제4항] and is ineffective if a claim event has occurred, unless the
-policyholder withdrew knowing it had [REG-R51 제46조제5항]. On a single-premium contract
+[REG-R51 제46조제1항제1호](#krlib-reg-r51) [REG-R25 제17조](#krlib-reg-r25). The statutory right bars any damages or
+penalty [REG-R51 제46조제4항](#krlib-reg-r51) and is ineffective if a claim event has occurred, unless the
+policyholder withdrew knowing it had [REG-R51 제46조제5항](#krlib-reg-r51). On a single-premium contract
 with a first annuity due a month after cover starts, the cooling-off window and the first
 payment date very nearly coincide, and a model that treats t = 0 as a clean boundary is
 approximating a fortnight of real ambiguity.
@@ -1048,14 +1048,14 @@ approximating a fortnight of real ambiguity.
 **품질보증해지**: cancellation within **three months** of formation where the 약관 and the
 policyholder's copy of the application were not delivered, the important content was not
 explained, or the policyholder did not sign, with premiums returned plus interest
-[REG-R25 제18조제3항], on the authority of 상법 제638조의3제2항 [REG-R49]. This is the
+[REG-R25 제18조제3항](#krlib-reg-r25), on the authority of 상법 제638조의3제2항 [REG-R49]. This is the
 route the 즉시연금 litigation did **not** take — the plaintiffs sued for the unpaid
 annuity rather than to unwind — and the Supreme Court's observation that voiding the
 contracts outright would leave policyholders worse off is the reason [R22].
 
 **위법계약의 해지** under 금융소비자 보호에 관한 법률 제47조 returns the **계약자적립액**
 rather than the surrender value: 「위법계약이 해지되는 경우 회사가 적립한 해지 당시의
-계약자적립액을 반환하여 드립니다」 [S7 제34조제5항] [REG-R25 제32조]. On a product whose
+계약자적립액을 반환하여 드립니다」 [S7 제34조제5항] [REG-R25 제32조](#krlib-reg-r25). On a product whose
 surrender deduction is nil the two coincide, so the distinction is inert here and real
 elsewhere in `krlib`.
 
@@ -1073,11 +1073,11 @@ condition: 소득세법 시행령 제25조제4항제4호 requires that a tax-exe
 surrendered after the first annuity payment [REG-R58] — a contractual term written to
 satisfy a statute. And anti-selection: 「종신형에서는 연금지급이 개시된 후 해지를 허용하지
 않는다. 이는 사망률이 높은 계약자가 해지함으로써 발생할 수 있는 역선택 위험을 방지하기
-위한 장치이다」 [R12 §III-1].
+위한 장치이다」 [R12 §III-1](#krlib-immediate_annuity-r12).
 
 **상속연금형 and 확정기간연금형 remain surrenderable throughout** [S1] [S3] [S6]. The
 surrender value is the 계약자적립액 less the 해약공제액 with a floor of zero
-[REG-R19 제7-66조제1항제1호], and the deduction is nil at every duration on every
+[REG-R19 제7-66조제1항제1호](#krlib-reg-r19), and the deduction is nil at every duration on every
 retrieved product [S1 §VIII] [S10] — see the published run reproduced at footnote 31.
 Where a surrender is taken after annuitisation on a shape that permits it, one carrier
 requires the beneficiary's consent: 「제1항에 따라 연금지급개시 이후에 계약을 해지하는
@@ -1174,7 +1174,7 @@ contract whose annuitant may lose capacity while the contract still has to pay.
   소득보장형 [S6], 핵심기간집중형 [S8], 조기집중연금형 [S9], 활동기집중형 [S13]. Same
   mechanic under six names: a multiple of the later annuity paid over a concentration
   period, observed at 2×, 3×, 5× (or 200% / 300%) over five years, ten years, or the whole
-  guarantee period. It bridges the gap to the state pension [R12 §III-1]. Implementable as
+  guarantee period. It bridges the gap to the state pension [R12 §III-1](#krlib-immediate_annuity-r12). Implementable as
   a deterministic step on an annuity the model already computes; excluded because no
   source publishes the factor adjustment that pays for the step.
 - **The 거치형 (deferred) selling mode** — a 1–5 year deferral at 교보, 삼성 and 동양
@@ -1230,13 +1230,13 @@ six-month rule. Those nine are the product, and none of them is standardized her
    retrieved 즉시연금 document is a two- or four-page leaflet. Choosing it as the anchor
    is a research conclusion; the adoption is **[std]**.
 2. **All three shapes, not the life shape alone.** The market's own weights are 73.6%
-   상속형, 18.2% 종신형 and 8.2% 확정형 by contract count [R12 표5]. A library that
+   상속형, 18.2% 종신형 and 8.2% 확정형 by contract count [R12 표5](#krlib-immediate_annuity-r12). A library that
    modelled only the longevity shape would model 18% of the Korean market and none of its
    litigation. Two of the three shapes use no mortality, which also gives the reference
    implementation a clean interest-only branch against which the crediting mechanic can
    be tested in isolation.
 3. **Ten years everywhere.** 97.3% of 종신형 buyers and 77.6% of 확정형 buyers chose ten
-   years [R12 표7]; the disputed contract was a ten-year 상속만기형 [R1]; and ten years is
+   years [R12 표7](#krlib-immediate_annuity-r12); the disputed contract was a ten-year 상속만기형 [R1]; and ten years is
    the shortest term that meets the interest-income exemption on the inheritance shape
    [REG-R58]. One number, four independent reasons.
 4. **A 3.50% expense load with a 1.47% risk premium on the death-benefit shapes.** Taken
@@ -1289,7 +1289,7 @@ comparison against the 표준해약공제액, the calculation where benefits or 
 and the calculation of any 보증비용 [REG-R18]. **The dispute at the centre of this product
 is about what that filing does to a policyholder**, and the 분조위 answered: 「산출방법서는
 보험회사 내부의 계리적 서류에 지나지 않는 것으로 보험회사가 보험감독당국으로부터 감독이나
-명령 등을 받는 공법관계의 근거가 될 뿐이다」 [R1 §3]. A filing that binds the insurer to
+명령 등을 받는 공법관계의 근거가 될 뿐이다」 [R1 §3](#krlib-immediate_annuity-r1). A filing that binds the insurer to
 the supervisor does not, without more, bind the policyholder. The Supreme Court's
 refinement in 2025 is that a bare pointer clause to an undelivered document of formulae
 does not discharge the duty of explanation, but that the contract survives with the
@@ -1330,7 +1330,7 @@ class list is at 시행세칙 제5-16조제4항 and **연금보험 is a class of
 insurers [REG-R23], so an insurer may not declare a different rate on this product than on
 its other annuity business. The construction itself is 시행세칙 별표 27, with α capped at
 60% [REG-R24]; the four external yields are 국고채(5년), 회사채(무보증 3년, AA−),
-통화안정증권(1년) and 양도성예금증서(91일) [REG-R23 제5-16조제3항]. The **평균공시이율** is
+통화안정증권(1년) and 양도성예금증서(91일) [REG-R23 제5-16조제3항](#krlib-reg-r23). The **평균공시이율** is
 defined at 감독규정 제1-2조제13호 and published through carriers' regulatory disclosure
 [REG-R9] [REG-R48].
 
@@ -1388,7 +1388,7 @@ rates in the corpus [S1 §IV-2]. **`Immediate_KR_A`'s `mort_table.csv` is theref
 [std] construction with a `provenance` column on every row, it is used by the 종신연금형
 alone, and it must never be presented as the 경험생명표.** A revision of the industry table
 does not touch a contract in payment: 「기가입자는 보험료 변동 영향을 받지 않는다」
-[R14, a news article], and on this product the point is unambiguous because the factor was
+[R14, a news article](#krlib-immediate_annuity-r14), and on this product the point is unambiguous because the factor was
 fixed the month the premium was paid.
 
 **Tax — and it is the reason the product is shaped the way it is.** 소득세법
@@ -1433,7 +1433,7 @@ property, and extends that where the deceased in substance paid the premiums; �
 a benefit attributable to another's premiums a gift where beneficiary and payer differ
 [REG-R59]. Where an 즉시연금 in payment falls into an estate, a 국세청 예규 of 2021-01-19
 values it at 「상속개시 당시 해지환급금 상당액」 [R26, a tax trade report; the ruling
-itself was not retrieved]. A competing account puts the valuation at the higher of the
+itself was not retrieved](#krlib-immediate_annuity-r26). A competing account puts the valuation at the higher of the
 유기정기금 figure and the surrender value, with the 시행령 제62조 discount rate cut to 3%
 in 2016 [R29] — **[unverified]**, neither the article nor the amendment having been
 retrieved. This is why the 상속연금형 exists at all: 「상속연금형(만기형)을 선택하시면
@@ -1464,4 +1464,59 @@ application to interrupt the three-year limitation under 금융위원회의 설�
 response to press reports about a revived comprehensive examination [R4]. After the
 Supreme Court judgment the FSS announced a consumer-protection inspection into the selling
 of 즉시연금 [R24] [R25], both news-sourced. The supervisor's own consumer page announced
-at [R3 §2] no longer resolves, and nothing here rests on it.
+at [R3 §2](#krlib-immediate_annuity-r3) no longer resolves, and nothing here rests on it.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-immediate_annuity-r1
+[R11]: #krlib-immediate_annuity-r11
+[R12]: #krlib-immediate_annuity-r12
+[R17]: #krlib-immediate_annuity-r17
+[R18]: #krlib-immediate_annuity-r18
+[R19]: #krlib-immediate_annuity-r19
+[R2]: #krlib-immediate_annuity-r2
+[R21]: #krlib-immediate_annuity-r21
+[R22]: #krlib-immediate_annuity-r22
+[R23]: #krlib-immediate_annuity-r23
+[R24]: #krlib-immediate_annuity-r24
+[R25]: #krlib-immediate_annuity-r25
+[R27]: #krlib-immediate_annuity-r27
+[R28]: #krlib-immediate_annuity-r28
+[R29]: #krlib-immediate_annuity-r29
+[R3]: #krlib-immediate_annuity-r3
+[R31]: #krlib-immediate_annuity-r31
+[R4]: #krlib-immediate_annuity-r4
+[R5]: #krlib-immediate_annuity-r5
+[R6]: #krlib-immediate_annuity-r6
+[REG-R1]: #krlib-reg-r1
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R24]: #krlib-reg-r24
+[REG-R25]: #krlib-reg-r25
+[REG-R3]: #krlib-reg-r3
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R48]: #krlib-reg-r48
+[REG-R49]: #krlib-reg-r49
+[REG-R5]: #krlib-reg-r5
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R56]: #krlib-reg-r56
+[REG-R57]: #krlib-reg-r57
+[REG-R58]: #krlib-reg-r58
+[REG-R59]: #krlib-reg-r59
+[REG-R60]: #krlib-reg-r60
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

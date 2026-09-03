@@ -198,7 +198,7 @@ column of zeros states a product fact where a missing column hides it.
 - **`claims_death` is not a death benefit.** The composite carries none. What that column
   holds is the **계약자적립액**, which 감독규정 제7-63조제1항제1호 requires a 제3보험 product
   to pay when the insured dies of a cause the policy does not cover [REG-R17], which the
-  표준약관 implements — 「회사가 적립한 사망 당시의 계약자적립액」 [REG-R25 제22조] — and
+  표준약관 implements — 「회사가 적립한 사망 당시의 계약자적립액」 [REG-R25 제22조](#krlib-reg-r25) — and
   beneath which 상법 제736조 is the floor [REG-R50]. It is `av_pp(t) × pols_death(t)`: zero
   at `t = 0` because the account is nil, and **zero from `t = 447`** because the account is
   exhausted. `LTC_KR_S`, `Child_KR_S` and `Medical_KR_S` inherit the same requirement.
@@ -323,7 +323,7 @@ reproduces the worked example while the machinery stays visible and testable.
 
 | Switch | Base | What it does |
 |---|---|---|
-| `void_adjust` | `False` | Scales `pols_if_init()` by `1 − void_prob()`, de-recognising the **0.0003357124** of policies diagnosed inside the 90-day window. An in-window diagnosis makes the affected cover **무효**, not merely unpayable [S1 제28조제2항] [R7 제644조] — a **de-recognition, not a decrement** — so it releases the premium already collected as well as the future benefit and belongs in a validity adjustment at outset. Putting it in the lapse column keeps premium income the insurer never earned |
+| `void_adjust` | `False` | Scales `pols_if_init()` by `1 − void_prob()`, de-recognising the **0.0003357124** of policies diagnosed inside the 90-day window. An in-window diagnosis makes the affected cover **무효**, not merely unpayable [S1 제28조제2항] [R7 제644조](#krlib-cancer-r7) — a **de-recognition, not a decrement** — so it releases the premium already collected as well as the future benefit and belongs in a validity adjustment at outset. Putting it in the lapse column keeps premium income the insurer never earned |
 | `inc_be_factor` | `1.0` | The best-estimate adjustment to the sourced incidence basis. The shipped rate is a **참조순보험요율**, a net premium rate with a safety loading inside it, not a best estimate [REG-R4]. The claim that the loading is about 10% was seen only in a search summary and is **[unverified]**, so the factor is left at the identity rather than resting the model on an unconfirmed number. What *is* sourced is that the rate carries **no trend allowance at all** — 「현재도 예정위험률 산출 시 미래의 추세를 반영하지 않고 있음」 [R4] — while Korea's crude incidence has risen 161% since 1999 [R1]. Two errors, opposite signs, neither quantified |
 | `renew_reprice_rate` | `0.0` | Steps the premium at each ten-year renewal on the 갱신형 chassis flag. Setting `chassis = "gaengsin"` already removes the 면책기간 and the 감액기간 [S2] [S4]; the base run holds the issue rate flat and records the contract-boundary tension rather than resolving it, which is a K-IFRS 1117 question [REG-R60] this model does not answer. Live on model point 3 |
 | `lapse_canc_factor` | `1.0` | Inert rather than off: wherever the waiver fires a diagnosed life has no premium to miss and no surrender value to take, so `lapse_rate_canc_mth` returns zero whatever the factor is. It reaches a cash flow only on the `waiver_trigger = "none"` design, model point 9 |
@@ -346,7 +346,7 @@ because its **rate** cannot be sourced even where its **mechanic** can:
   intensities to a tier whose survival is 100.2% would credit it with an exposure no
   retrieved statistic measures [R1]. Understates.
 - **부활.** Lapse is absorbing. A reinstated Korean cancer policy re-runs the 90 days from
-  the 부활일 [S1] [S3] [S7] [REG-R25 제27조], so it is not the policy that lapsed; modelling
+  the 부활일 [S1] [S3] [S7] [REG-R25 제27조](#krlib-reg-r25), so it is not the policy that lapsed; modelling
   reinstatement as a negative lapse restores cover the contract does not restore and deletes
   a real anti-selection control. Conservative.
 - **The stage drift.** Survival is a stage story far more than a site story and the mix is
@@ -725,3 +725,27 @@ that every `check_*()` returns `True` on **every** shipped model point.
 python -m pytest tests/test_cancer_kr.py -q
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-cancer-r1
+[R3]: #krlib-cancer-r3
+[R4]: #krlib-cancer-r4
+[R5]: #krlib-cancer-r5
+[R6]: #krlib-cancer-r6
+[REG-R17]: #krlib-reg-r17
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R48]: #krlib-reg-r48
+[REG-R50]: #krlib-reg-r50
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

@@ -50,9 +50,9 @@ in it.
    52-item instrument and **awards a 장기요양등급**, and the 지급사유 is written by
    reference to that award and to nothing else [S1] [S2] [S3] [S4]. The statutory
    definition carries its own six-month duration test — 「6개월 이상 동안 혼자서 일상생활을
-   수행하기 어렵다고 인정되는 자」 [REG-R54 제2조제2호] — so the contract needs no
+   수행하기 어렵다고 인정되는 자」 [REG-R54 제2조제2호](#krlib-reg-r54) — so the contract needs no
    persistence clause of its own, and the point thresholds live in a 대통령령 that can be
-   moved without reference to any insurer [REG-R55 제7조제1항].
+   moved without reference to any insurer [REG-R55 제7조제1항](#krlib-reg-r55).
 2. **Four compartments, not three, and the middle one is where the claims come from.**
    The chassis carries a never-diagnosed state, a 특정소액암 state that still pays premium
    and a waived state that does not. This model carries a **never-certified** state, a
@@ -64,7 +64,7 @@ in it.
    compartment is the **dominant route into the benefit**: only 13.3% of current 1등급
    certifications arose from a first application, against 69.5% from a renewal, whereas at
    인지지원등급 — a grade nobody progresses *down* into — the first-application share is
-   69.8% [R4 표2-5]. Severe-grade lives are, in the main, people who entered the scheme
+   69.8% [R4 표2-5](#krlib-long_term_care-r4). Severe-grade lives are, in the main, people who entered the scheme
    years earlier at a light grade and deteriorated.
 3. **The chassis's incidence basis is sourced; this one's is a prevalence and has to be
    converted.** 보험개발원 publishes a dated 「기타피부암 및 갑상선암 이외의 암 발생률」
@@ -107,13 +107,13 @@ Everything else is the chassis's and is not restated: 무배당 with no policyho
 [REG-R12]; a fixed sum (정액) paid on an event rather than an indemnity against a cost; a
 benefit payable **최초 1회한** that extinguishes the benefit line paying it without
 terminating the contract; the 해약환급금 미지급형 form with its cliff at 납입완료; the
-계약자적립액 on non-covered death [REG-R17] [REG-R25 제22조] [REG-R50 제736조]; and the
+계약자적립액 on non-covered death [REG-R17] [REG-R25 제22조](#krlib-reg-r25) [REG-R50 제736조](#krlib-reg-r50); and the
 absence of a 보험계약대출 and therefore of any automatic premium loan [REG-R28].
 
 **One product this document is not about.** Korean commentary in 2024–2025 uses 간병
 overwhelmingly to mean **간병인사용일당**, a hospital-days indemnity whose loss ratios
 reached about 100% in the life sector at August 2024 against 18.7% two years earlier
-[R15, news]. It sits inside the same 약관 [S1] [S2] [S4] and shares nothing else;
+[R15, news](#krlib-long_term_care-r15). It sits inside the same 약관 [S1] [S2] [S4] and shares nothing else;
 `LTC_KR_S` does not model it.
 
 ---
@@ -164,7 +164,7 @@ reached about 100% in the life sector at August 2024 against 18.7% two years ear
   then mortality, then lapse**. Acquisition expense and initial commission at `t = 0`.
 - **Claim-date convention [std].** Every claim is dated at the month the **판정일** falls
   in. The determination is due within 30 days of the application, extendable by a further 30
-  [R3, citing 법 제16조제1항]. The 보장개시일 test is measured to the 판정일, so a model
+  [R3, citing 법 제16조제1항](#krlib-long_term_care-r3). The 보장개시일 test is measured to the 판정일, so a model
   dating the claim at the application would let a certification through the window the
   contract voids.
 - **The annuity's first instalment falls in the month of certification** — 「진단 확정된
@@ -174,13 +174,13 @@ reached about 100% in the life sector at August 2024 against 18.7% two years ear
 - **Age basis.** **만나이** (*man nai*, age last birthday), incremented on the policy month
   grid: `age(t) = x + floor(t / 12)`. The contract ages on **보험나이** (*boheom nai*):
   「계약일 현재 피보험자의 실제 만 나이를 기준으로 6개월 미만의 끝수는 버리고 6개월 이상의
-  끝수는 1년으로 하여 계산」 [REG-R25 제21조], and the two differ for roughly half of all
+  끝수는 1년으로 하여 계산」 [REG-R25 제21조](#krlib-reg-r25), and the two differ for roughly half of all
   issue dates. **The 만나이 basis is not a concession here, as it is on the chassis; it is
   the right basis twice over.** Every public series this model's decrements are built from
   is published on 만나이 — the 통계연보 연령별 인정률 [R4], the 치매역학조사 prevalence
   [R7], and the 생명표 behind the mortality [REG-R38] [REG-R39] — and the benefit
   definition itself **contains a 만나이 test**: 「만 65세 이상 노인」 또는 「노인성 질병을
-  가진 만 65세 미만의 자」 [S2] [REG-R54 제2조제1호]. The 보험나이 offset therefore
+  가진 만 65세 미만의 자」 [S2] [REG-R54 제2조제1호](#krlib-reg-r54). The 보험나이 offset therefore
   survives only in the premium, which enters this model as an input, so no conversion is
   applied anywhere. The direction is nonetheless stated: the disclosed 예정위험률 the
   conversion is calibrated against is quoted on 보험나이, about half a year older than this
@@ -312,7 +312,7 @@ anything at a grade below the stated threshold. So a light-grade life **keeps pa
 premium and stays exposed to lapse**, exactly like the chassis's 특정소액암 life, and it is
 the pool progression draws from. On the composite's 1~2등급 gate the light compartment is
 about **six sevenths of all certified lives**: 1·2등급 are 13.28% of the 1,165,030 certified
-at end-2024 [R4 표2-5, derived]. Collapsing the two either stops a premium the contract
+at end-2024 [R4 표2-5, derived](#krlib-long_term_care-r4). Collapsing the two either stops a premium the contract
 goes on charging or invents a benefit at a grade the contract does not cover, and — the
 larger error — it makes the severe-grade entry rate a **healthy-life incidence**, which
 puts the cash flow years too early.
@@ -325,7 +325,7 @@ certification [S1]; the premium is waived [S3]; and surrender is barred — 「�
 발생한 후에는 이 특약을 해지할 수 없습니다」 [S1]. So **no recovery, no downgrade and no
 lapse in the care state are a property of the contract before they are an assumption of the
 model.** That is worth saying plainly, because grades genuinely move both ways — 107,365 of
-the 1,165,030 current certifications arose from a 등급변경신청 [R4 표2-5] and one carrier
+the 1,165,030 current certifications arose from a 등급변경신청 [R4 표2-5](#krlib-long_term_care-r4) and one carrier
 drafts a rider around exactly that [S3] — and a model of a *utilisation-conditioned* benefit
 could not make this simplification at all. See *Key sensitivities*.
 
@@ -334,14 +334,14 @@ and is held at or below `pols_if(t)` so that `pols_entry_dem` always draws from 
 non-negative pool. It is a first-event ledger on the same lives, not a fifth compartment.
 Driving it off a *sourced* dementia prevalence [R7] rather than off a share of the
 certification rate is deliberate: the two triggers are **correlated but not proportional**
-— dementia is the sole qualifying condition for 5등급 and 인지지원등급 [REG-R55 제7조제1항]
+— dementia is the sole qualifying condition for 5등급 and 인지지원등급 [REG-R55 제7조제1항](#krlib-reg-r55)
 and is present in 42.3% of certified decedents [R11], yet most CDR 1 lives are nowhere near
 a 1·2등급 certification.
 
 **Three absences are product facts, not gaps.** There is **no death benefit** [S1] [S3], so
 `claims_death` is a return of the 계약자적립액 and not a sum assured. There is **no
 보험계약대출 and no automatic premium loan** during the 납입기간 on the 미지급형 form,
-because there is no surrender value to lend against [REG-R25 제33조] [REG-R28] — a missed
+because there is no surrender value to lend against [REG-R25 제33조](#krlib-reg-r25) [REG-R28] — a missed
 premium really does lapse the contract at the end of the 14-day 납입최고. And there is **no
 만기환급금**: `claims(proj_len, "MATURITY")` is zero and the column exists only so that the
 statement's shape matches the rest of the library.
@@ -354,9 +354,9 @@ statement's shape matches the rest of the library.
 
 | Input | Value | Basis |
 |---|---|---|
-| Trigger | Award of a **장기요양등급** at or above `benefit_grade()` by the 등급판정위원회 under 노인장기요양보험법; no company-basis limb, no ADL schedule, no persistence clause | [S1] [S2] [S3] [S4]; [REG-R54 제15조] |
-| Eligibility gate | 「만 65세 이상 노인」 or a person under 65 with one of the **25 노인성 질병** the 시행령 [별표 1] lists | [S2]; [REG-R54 제2조제1호] [REG-R55] |
-| Grade point bands | 1등급 95점 이상 · 2등급 75~95 · 3등급 60~75 · 4등급 51~60 · 5등급 45~51 (치매 한정) · 인지지원등급 45점 미만 (치매 한정) | [REG-R55 제7조제1항]; [R3]; reproduced in a carrier's own document [S2] |
+| Trigger | Award of a **장기요양등급** at or above `benefit_grade()` by the 등급판정위원회 under 노인장기요양보험법; no company-basis limb, no ADL schedule, no persistence clause | [S1] [S2] [S3] [S4]; [REG-R54 제15조](#krlib-reg-r54) |
+| Eligibility gate | 「만 65세 이상 노인」 or a person under 65 with one of the **25 노인성 질병** the 시행령 [별표 1] lists | [S2]; [REG-R54 제2조제1호](#krlib-reg-r54) [REG-R55] |
+| Grade point bands | 1등급 95점 이상 · 2등급 75~95 · 3등급 60~75 · 4등급 51~60 · 5등급 45~51 (치매 한정) · 인지지원등급 45점 미만 (치매 한정) | [REG-R55 제7조제1항](#krlib-reg-r55); [R3]; reproduced in a carrier's own document [S2] |
 | 장기요양진단급여금 | **`A_B` = ₩10,000,000**, **최초 1회한** on the first award at or above the threshold on or after the 보장개시일; extinguishes that benefit line, **not** the contract | [S1] [S2] [S3] [S4]; threshold **[std]** |
 | 장기요양상태 보장개시일 | 「계약일…부터 그 날을 포함하여 **90일**이 지난날의 다음 날」, `t = 3` on the grid, with a carve-back to the 계약일 where the cause is **재해** | [S2]; **[std]**, observed range none / 90 / 180 days |
 | Pre-inception certification | The affected cover is **무효** and the premiums paid for it are **returned**; no cancellation option and no revival | [S1] [S2] |
@@ -369,15 +369,15 @@ statement's shape matches the rest of the library.
 | Proof of life | 「매년 진단 확정일에 피보험자의 **주민등록등본**을 제출하여야 합니다」 — an **annual** administrative event | [S1] |
 | 보험료 납입면제 | On the award of **1등급 or 2등급**, waiving the 기본계약 and every attached rider; waived premiums treated as paid | [S3]; threshold **[std]** |
 | 치매진단급여금 | Optional: ₩10,000,000 on the first 최종진단확정 of **CDR 1 이상**, once only across the tier set, behind a **one-year 보장개시일** and the definition's own **90-day persistence** test | [S2] [S4]; tier **[std]** |
-| Payment on non-covered death | The **계약자적립액** at the date of death plus unearned premium, whereupon the contract ends | [REG-R17] [REG-R25 제22조]; [REG-R50 제736조] |
+| Payment on non-covered death | The **계약자적립액** at the date of death plus unearned premium, whereupon the contract ends | [REG-R17] [REG-R25 제22조](#krlib-reg-r25); [REG-R50 제736조](#krlib-reg-r50) |
 | General death benefit | **None** | [S1] [S3]; **[std]** |
 | 만기환급금 | **None** — 「이 상품은 순수보장성보험으로 …」 | [S3] |
-| Surrender value form | **미지급형**: **0%** during the 납입기간, **50% of the notional 기본형 value** afterwards | [S2]; [REG-R19 제7-66조제4항] |
-| 해약환급금 floor | `max(계약자적립액 − 해약공제액, 0)`; the 해약공제액 may not exceed the **표준해약공제액** of [별표 14]; 해약공제기간 = 납입기간 capped at **7 years** | [REG-R19 제7-66조제1항]; [REG-R20] |
-| 계약자적립액 accrual | **Monthly** before 납입완료, daily afterwards; permitted to be computed on an annualised premium basis | [REG-R19 제7-66조제1항제4호]; [REG-R18 제7-65조제2항] |
+| Surrender value form | **미지급형**: **0%** during the 납입기간, **50% of the notional 기본형 value** afterwards | [S2]; [REG-R19 제7-66조제4항](#krlib-reg-r19) |
+| 해약환급금 floor | `max(계약자적립액 − 해약공제액, 0)`; the 해약공제액 may not exceed the **표준해약공제액** of [별표 14]; 해약공제기간 = 납입기간 capped at **7 years** | [REG-R19 제7-66조제1항](#krlib-reg-r19); [REG-R20] |
+| 계약자적립액 accrual | **Monthly** before 납입완료, daily afterwards; permitted to be computed on an annualised premium basis | [REG-R19 제7-66조제1항제4호](#krlib-reg-r19); [REG-R18 제7-65조제2항](#krlib-reg-r18) |
 | Refusal on a defective certification | Where the grade was obtained by **허위 또는 부당 판정**, nothing is paid; and where the public benefit is restricted under 노인장기요양보험법 제29조 | [S1] [S2] [S4] |
-| 납입최고 (grace) | **At least 14 days**; the contract terminates the day after the 납입유예기간 ends | [S1]; [REG-R25 제26조] |
-| 부활 | Within **three years**; **the 보장개시일 clock restarts from the 부활일** | [S1]; [REG-R25 제27조] |
+| 납입최고 (grace) | **At least 14 days**; the contract terminates the day after the 납입유예기간 ends | [S1]; [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 | Within **three years**; **the 보장개시일 clock restarts from the 부활일** | [S1]; [REG-R25 제27조](#krlib-reg-r25) |
 | Expiry | At the **90세 계약해당일**; **nothing is paid** | [S3] |
 
 **The statutory-change clause, which has no chassis counterpart and is not modelled.** No
@@ -487,7 +487,7 @@ model and it is varied in a sensitivity rather than described.
 
 **The published quantity is a prevalence.** The 2024 노인장기요양보험 통계연보's 연령별
 인정률 counts people *holding* a valid certification at a point in time, not people
-entering one [R4 표2-9, 표1-2, derived]:
+entering one [R4 표2-9, 표1-2, derived](#krlib-long_term_care-r4):
 
 | 연령 | 인정자 | 인구 | **인정률 (T)** | 인정률 (남) | 인정률 (여) |
 |---|---|---|---|---|---|
@@ -532,7 +532,7 @@ reason.
 **Step 2 — the grade share, by age and not by all ages [std].** `share_ge_at(G, x)` is the
 share of certified lives at grade `G` **or above**, linear in age between six sourced band
 representative ages — 60 standing for the whole under-65 band **[std]**, then 67, 72, 77,
-82 and 88.5 — and flat outside them [R4 표2-9, derived]. It is a **proportion of a
+82 and 88.5 — and flat outside them [R4 표2-9, derived](#krlib-long_term_care-r4). It is a **proportion of a
 population, never a rate**. Then `P_C(x) = share_ge_at(G_B, x) × P(x)` and
 `P_L(x) = P(x) − P_C(x)`.
 
@@ -591,7 +591,7 @@ care state arriving straight from health rather than by progression:
     rho(x)  = ( 1 − direct_entry_share ) × inflow_C(x) / P_L(x)     [0 where P_L = 0]
     i_L(x)  = inflow_L(x) / ( 1 − P(x) )
 
-Its anchor is the yearbook's own application-route table [R4 표2-5]: **13.3%** of current
+Its anchor is the yearbook's own application-route table [R4 표2-5](#krlib-long_term_care-r4): **13.3%** of current
 1등급 certifications arose from a first application (7,371 of 55,340) against 69.5% from a
 renewal, whereas at 인지지원등급 — a grade nobody progresses down into — the
 first-application share is **69.8%** (19,436 of 27,835). The ratio of the two is where 0.20
@@ -606,10 +606,10 @@ the answer. Where the gate is `g6` — 1~인지지원등급 — there is no ligh
 for the 65-and-over population only, and the statute admits an under-65 applicant only
 through the **closed list of 25 노인성 질병** — four dementia codes, one Alzheimer code,
 fourteen cerebrovascular codes, four Parkinson-family codes and four others, with **no
-cancer, no musculoskeletal condition and no frailty category** on the list [REG-R55 별표 1]
+cancer, no musculoskeletal condition and no frailty category** on the list [REG-R55 별표 1](#krlib-reg-r55)
 [R2]. So the under-65 exposure is both small and violently concentrated: of the 58,271
 applicants under 65 in 2024, 뇌혈관질환군 were 49.1% and 치매질환군 26.8%
-[R4 표2-3, derived]. The two entry rates are carried down from their age-65 values on the
+[R4 표2-3, derived](#krlib-long_term_care-r4). The two entry rates are carried down from their age-65 values on the
 log-gradient of the one disclosed Korean long-term-care incidence rate:
 
     sub65_factor_at(x) = exp( −sub65_gradient × (65 − x) )   for x < 65, else 1   [std]
@@ -644,7 +644,7 @@ about **4.2 times** the model's best estimate, almost flat in age, rising to 0.5
 population, not a best estimate. The conversion reads a **cross-section as a cohort path**
 in a scheme whose certified stock grew **71.8%** in six years [R4] [R16], which understates
 entry. The care compartment is treated as leaving **only by death**, when 9.2% of
-certifications arose from a 등급변경신청 [R4 표2-5], which understates entry again. And the
+certifications arose from a 등급변경신청 [R4 표2-5](#krlib-long_term_care-r4), which understates entry again. And the
 card is quoted on **보험나이**, about half a year older than this model's 만나이. **This is
 the largest single uncertainty in the model** and it is carried as a stated sensitivity
 rather than closed with an invented factor.
@@ -667,7 +667,7 @@ same month's decrements have not yet touched.
 **The dementia rider's own basis [std].** A logistic `(0.8298, 0.08706045, 100.12641335)`
 fitted to the five sourced band prevalences of the 2023 치매역학조사 — 4.99% at 65–69,
 5.03% at 70–74, 10.70% at 75–79, 15.57% at 80–84 and 21.18% at 85+ [R7] — times the sourced
-65+ sex factors, **0.9568** (M) and **1.0346** (F) [R7, derived], and run through the same
+65+ sex factors, **0.9568** (M) and **1.0346** (F) [R7, derived](#krlib-long_term_care-r7), and run through the same
 prevalence-to-incidence identity with the dementia state's own excess mortality
 (`dem_mort_mult = 2.5` **[std]**, between the light and care multiples). Every dementia case
 is CDR 1 or above by definition, CDR 0.5 being 경도인지장애 and not dementia, so this is the
@@ -717,11 +717,11 @@ It has **no observed range**, because no Korean durational persistency series fo
 보장성보험 was retrieved. The **instrument-level caveat is real**: the 「IFRS17 주요
 계리가정 가이드라인」 attachment was never converted from HWP, so the values are verified
 from the 보도자료 and the functional form is **[unverified]** at instrument level [REG-R27]
-[R14, secondary].
+[R14, secondary](#krlib-long_term_care-r14).
 
 Note what the vector says about a contract with **no soft landing**: with no surrender value
 there is no policy loan and therefore no 보험료 자동대출납입, so a missed premium lapses the
-contract outright [REG-R25 제33조] [REG-R28] — and the assumption nonetheless has lapse
+contract outright [REG-R25 제33조](#krlib-reg-r25) [REG-R28] — and the assumption nonetheless has lapse
 *falling* toward 납입완료. That is the regulator's judgement, not the model's, and it is
 applied here as given.
 
@@ -744,7 +744,7 @@ calibrated to a sourced identity.
 | Maintenance expense | **₩200** per policy per month, inflating 2.0% p.a. at each 계약해당일 | **[std]**, calibrated — see below |
 | Claim expense | **₩30,000** per claim **event** | **[std]** |
 | Expense inflation | **2.0% p.a.** flat | **[std]**, the Bank of Korea target |
-| 표준해약공제액 | **`surr_chg_ratio` = 13.0 × P**, running off straight-line over `surr_chg_years = 7` | [REG-R29]; [REG-R19 제7-66조제1항] |
+| 표준해약공제액 | **`surr_chg_ratio` = 13.0 × P**, running off straight-line over `surr_chg_years = 7` | [REG-R29]; [REG-R19 제7-66조제1항](#krlib-reg-r19) |
 
 The acquisition expense and the initial commission together are **13 times the monthly
 premium**, exactly the 표준해약공제액 of a 보장성보험 in the supervisor's own rule of thumb
@@ -1049,7 +1049,7 @@ smoothed.** The Japanese counterpart has no such payment at all.
 **Not modelled, and each is a deliberate scope decision.** The **utilisation-conditioned
 지원금 riders** [S2] — which pay ₩100,000 a month only where the insured is actually using
 재가급여, 시설급여, 주·야간보호 or 복지용구 — need a utilisation rate by grade, by service
-type and by duration since certification, which no retrieved source gives; [R4 표3-3] gives
+type and by duration since certification, which no retrieved source gives; [R4 표3-3](#krlib-long_term_care-r4) gives
 급여이용 수급자 by service type as a national aggregate with substantial overlap, not the
 cross-tabulation the module would need, and a module whose central assumption would be
 **entirely [std]** adds nothing. The **종신 income form** [S2] [S5] carries the whole
@@ -1140,7 +1140,7 @@ All at 만나이 40 and in policy year 1, so one set of rates drives rows `t = 0
 | `lapse_rate(0)` | `0.08` | **[std]** first-year level; shape [REG-R27] |
 | `lapse_rate_mth(0)` = `w` | `0.006924382628299419` | **[std]** |
 | `P(40)` | `0.00038039917723430234` | fitted logistic **[std]** through [R4] |
-| `P_C(40)` | `0.00008444861734601512` | `s_g2(40) × P(40)`, `s_g2(40) = 0.222` [R4, derived] |
+| `P_C(40)` | `0.00008444861734601512` | `s_g2(40) × P(40)`, `s_g2(40) = 0.222` [R4, derived](#krlib-long_term_care-r4) |
 | `P_L(40)` | `0.0002959505598882872` | `P − P_C` |
 | `sub65_factor_at(40)` | `0.04710884458012182` | `exp(−0.12221178 × 25)`, the [S1] gradient |
 | `i_D(40)` | `0.0000022292964462128687` | direct entry, per year |
@@ -1542,7 +1542,7 @@ running **three** of them over one stream at the same time, live rather than pro
   shipped because the guidance requires an insurer using anything other than the 원칙모형 to
   disclose the difference in CSM, best-estimate liability, K-ICS ratio and net income
   quarterly. **The instrument itself was not retrieved and the functional form is
-  [unverified] at instrument level** [R14, secondary].
+  [unverified] at instrument level** [R14, secondary](#krlib-long_term_care-r14).
 - **K-ICS**, in force from the same quarter [REG-R13], with the 경과조치 regime and the
   적기시정조치 thresholds of 제7-17조~제7-19조 [REG-R14]. `LTC_KR_S` computes no required
   capital. What it owes the regime is a projection **re-runnable on a re-set assumption
@@ -1794,7 +1794,7 @@ stated so that it can be checked.
   reading an artefact of that simplification.
 - **The care state is absorbing because the *contract* makes it so, not because the state
   is.** Grades move both ways — 107,365 of 1,165,030 current certifications came from a
-  등급변경신청 [R4 표2-5] and one carrier drafts a rider around exactly that [S3] — but the
+  등급변경신청 [R4 표2-5](#krlib-long_term_care-r4) and one carrier drafts a rider around exactly that [S3] — but the
   amount is frozen at first certification, the instalments are metered on **survival**
   rather than on continued certification, and surrender is barred [S1]. So the simplification
   is smaller here than it looks. **It would not be available at all** for the
@@ -1809,3 +1809,51 @@ stated so that it can be checked.
   the last is the 90세 계약해당일: an in-force count of 0.2102 and **every cash flow zero**.
   A loop to `range(proj_len())` silently drops the maturity row and breaks
   `check_pols_roll_fwd()` at the last step.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #krlib-long_term_care-r10
+[R11]: #krlib-long_term_care-r11
+[R12]: #krlib-long_term_care-r12
+[R16]: #krlib-long_term_care-r16
+[R18]: #krlib-long_term_care-r18
+[R2]: #krlib-long_term_care-r2
+[R3]: #krlib-long_term_care-r3
+[R4]: #krlib-long_term_care-r4
+[R6]: #krlib-long_term_care-r6
+[R7]: #krlib-long_term_care-r7
+[R8]: #krlib-long_term_care-r8
+[REG-R1]: #krlib-reg-r1
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R14]: #krlib-reg-r14
+[REG-R17]: #krlib-reg-r17
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R48]: #krlib-reg-r48
+[REG-R5]: #krlib-reg-r5
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R55]: #krlib-reg-r55
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R7]: #krlib-reg-r7
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

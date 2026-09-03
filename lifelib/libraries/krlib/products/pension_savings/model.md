@@ -405,7 +405,7 @@ because none of it passes through the insurer's account.
 
 - `tax_credit_pp(t)` is the **세액공제**: 15% of contributions where 종합소득금액 is
   ₩45,000,000 or less and 12% otherwise, on up to ₩6,000,000 a year, grossed up for the 10%
-  지방소득세 to the 16.5% / 13.2% every consumer document quotes [R1 제59조의3제1항] [R8]
+  지방소득세 to the 16.5% / 13.2% every consumer document quotes [R1 제59조의3제1항](#krlib-pension_savings-r1) [R8]
   [R10] [REG-R56]. The grossing-up is **[unverified] arithmetic on a verified base**: the
   지방세법 was not retrieved. It is a **credit and not a deduction**, so the after-tax value
   of a contribution *falls* with income — the opposite of every other market in this
@@ -422,7 +422,7 @@ because none of it passes through the insurer's account.
   be retrieved** [R7], so whether a guarantee period of any length preserves the status is
   **[unverified]**.
 - `annuity_limit_pp(t)` is the **연금수령한도**, `평가액 / (11 − 연금수령연차) × 120/100`,
-  disapplied from 연금수령연차 11 [R6 제40조의2제4항] [S3]. `check_annuity_limit` asserts that
+  disapplied from 연금수령연차 11 [R6 제40조의2제4항](#krlib-pension_savings-r6) [S3]. `check_annuity_limit` asserts that
   no instalment breaches it. At the anchor cell it does not bind at all — a contract taken out
   at 40 could first have drawn at 55, so by 65 the counter has reached 11 — which is exactly
   why the composite annuitises at 65 and states the constraint for the ages at which it does
@@ -461,7 +461,7 @@ surrender value from the first month and no cliff at 납입완료.
 
 Lapse is **absorbing**. 부활 and 간편부활 are real, common and specific to this product family
 — within three years, and the simplified form takes the lapsed months' charges out of the fund
-[REG-R25 제27조] [S1] [S5] [S7] [S8] — but on an annual grid a premium unpaid at `t`
+[REG-R25 제27조](#krlib-reg-r25) [S1] [S5] [S7] [S8] — but on an annual grid a premium unpaid at `t`
 terminates the contract at `t`, and there is no partial-year 납입최고 state to re-enter from.
 So `lapse_rate` here is a **net-of-부활** rate by construction, and a user substituting a
 gross experience rate will over-decrement. The vector runs through `t = n − 1` and is zero
@@ -491,7 +491,7 @@ The **policy loan rate is the one module parameter that had to be invented**, an
 as such: no retrieved document gives a numeric 보험계약대출이율 for a 연금저축보험 [S1] [S2]
 [S4] [S5]. The **[std]** 4.00% is set above the only published rate constraint of that kind in
 the standard conditions, the 평균공시이율 + 1% ceiling on reinstatement interest [REG-R25
-제27조]. That is why the module is off in the base run: switching it on switches on a number
+제27조](#krlib-reg-r25). That is why the module is off in the base run: switching it on switches on a number
 nobody published.
 
 Out of scope entirely, each for a stated reason: 계약이전 / 계좌이체 (a wrapper-level movement
@@ -608,12 +608,12 @@ nothing public brackets it at all.
 | `mort_be_factor` | **1.15** | A loaded pricing basis on the survival side, so a best-estimate death decrement is **heavier**, not lighter | The two carriers publishing annuitant rates differ by about 9% at age 60 [S1] [S7] |
 | `lapse_rate`, `pension` | 4.0 → 1.0% by duration, 0% from `t = n` | Argued from the 16.5% friction [S5] [S8] and from 계좌이체 counting as termination [S1] [R13] [R22] | None public: 「적용안함」 on every row of the one carrier disclosure that has the column [S13] |
 | `lapse_rate`, `savings` | 8.0 → 2.0% | The non-qualified comparison vector, carried so the two can be run side by side | — |
-| Lapse absorbing | No 부활 state | An annual grid has no partial-year 납입최고 to re-enter from; the rate is net-of-부활 by construction | 부활 within three years is real and common [REG-R25 제27조] [S1] [S5] [S7] [S8] |
+| Lapse absorbing | No 부활 state | An annual grid has no partial-year 납입최고 to re-enter from; the rate is net-of-부활 by construction | 부활 within three years is real and common [REG-R25 제27조](#krlib-reg-r25) [S1] [S5] [S7] [S8] |
 | Cash expenses | ₩200,000 acquisition; ₩30,000 p.a. deferral, ₩20,000 p.a. payout; ₩30,000 per death claim; 2% inflation | Entirely separate from the contractual 계약체결비용 / 계약관리비용, which are loadings **inside** the fund; mixing the two double-counts in one direction and destroys the fund calibration in the other | No carrier publishes a cash expense basis; what is published is the loadings [S1] [S7] |
 | 공시이율 adoption | **2.15%**, level, a step function of policy year | The only rate under which the published fund, the published annuities and the reconstructed factors form one consistent set [S2]; a Korean declared rate is majority-weighted to realised return [REG-R18] [REG-R24] | 2.1%–3.0%: 3.01% / 2.82% at 2026-09 [S12], 2.40% at 2026-01 [S1], 2.15% at 2025-12 [S2], 2.3% at 2024-10 [S11] |
 | 조정률 | **Not modelled** | A discretionary carrier margin living in an unpublished 사업방법서 | — |
 | Annuity-phase charge θ | **0.5%** of the 연금연액 | Adoption **[std]**: it is what makes the payout formula reconstruct eight published figures on two bases | 0.5% at two carriers [S1] [S7]; a third discloses none and runs about 0.6% the other way [S5] |
-| 보험계약대출이율 | **4.00%**, module off | **[std] [unverified]**: set above the 평균공시이율 + 1% reinstatement ceiling, the only published constraint of that kind [REG-R25 제27조] | No retrieved document gives one for this product [S1] [S2] [S4] [S5] |
+| 보험계약대출이율 | **4.00%**, module off | **[std] [unverified]**: set above the 평균공시이율 + 1% reinstatement ceiling, the only published constraint of that kind [REG-R25 제27조](#krlib-reg-r25) | No retrieved document gives one for this product [S1] [S2] [S4] [S5] |
 | Loan draw | 50% of `cv_pp` at policy year 15 | A single visible drawdown rather than a behavioural rule nothing supports | — |
 | 납입유예 start | Policy year 8 | Available after three years on two carriers [S5] [S7] | Up to three spells of one year [S8] |
 | Annual-grid timing | `u(t)` = 0.990316187680581 at 2.15%; `(f − 1)/(2f)` = 11/24 on the life factor | The contract is 월납 and pays 매월; the annualised-premium basis is expressly permitted [REG-R18] | The correction is worth **1.91%** of `B` at the anchor cell |
@@ -668,10 +668,45 @@ All nine return `True` on all nine shipped model points.
 | `check_surr_chg_cap()` | `SC(t) ≤ SC_max` at every duration — 별표 14 [REG-R20] |
 | `check_min_fund()` | `F ≥ 100.1% × cumulative premiums` at `t = n`, where the guarantee is on |
 | `check_annuity_total()` | the guaranteed instalments are level and total `kB`, or `gB` on the life form |
-| `check_annuity_limit()` | no instalment exceeds the 연금수령한도 [R6 제40조의2제4항] |
+| `check_annuity_limit()` | no instalment exceeds the 연금수령한도 [R6 제40조의2제4항](#krlib-pension_savings-r6) |
 | `check_mort_law()` | the shipped rates are still the [std] construction `mort_anchor_table.csv` states |
 | `check_net_cf()` | the published `result_cf()` columns add up to `net_cf(t)` |
 
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-pension_savings-r1
+[R10]: #krlib-pension_savings-r10
+[R11]: #krlib-pension_savings-r11
+[R13]: #krlib-pension_savings-r13
+[R14]: #krlib-pension_savings-r14
+[R16]: #krlib-pension_savings-r16
+[R17]: #krlib-pension_savings-r17
+[R18]: #krlib-pension_savings-r18
+[R19]: #krlib-pension_savings-r19
+[R20]: #krlib-pension_savings-r20
+[R21]: #krlib-pension_savings-r21
+[R22]: #krlib-pension_savings-r22
+[R24]: #krlib-pension_savings-r24
+[R3]: #krlib-pension_savings-r3
+[R5]: #krlib-pension_savings-r5
+[R6]: #krlib-pension_savings-r6
+[R7]: #krlib-pension_savings-r7
+[R8]: #krlib-pension_savings-r8
+[R9]: #krlib-pension_savings-r9
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R20]: #krlib-reg-r20
+[REG-R24]: #krlib-reg-r24
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R48]: #krlib-reg-r48
+[REG-R56]: #krlib-reg-r56
+<!-- END generated citation links -->

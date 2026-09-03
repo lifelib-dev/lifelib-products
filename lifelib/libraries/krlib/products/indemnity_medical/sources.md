@@ -69,6 +69,8 @@ each adjacent generation [S3] [S4] [S5]. Two are 손해보험협회 statutory di
 recorded at [S6], [S7] and in the provenance note. The one published premium the model
 calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도자료 [R1].
 
+(krlib-indemnity_medical-s1)=
+
 ### S1 — 보험업감독업무시행세칙 [별표 15] 표준약관 (2021.7.1. 시행), 실손의료보험 부분 (standard policy conditions)
 
 - Exact titles of the two wordings used: 「기본형 실손의료보험(급여 실손의료비)」 and
@@ -106,6 +108,8 @@ calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도�
   the 산정특례 and 장기요양 1·2등급 exemptions, and the neutrality requirement
   「상대도 적용 전·후의 총 보험료 수준이 일치하도록」 from which `reld_solved(y)` is solved.
 
+(krlib-indemnity_medical-s2)=
+
 ### S2 — 보험업감독업무시행세칙 [별표 15] 표준약관 (2026.5.6. 시행), 실손의료보험 부분 (standard policy conditions, 5세대)
 
 - Exact titles of the three wordings used: 「기본형 실손의료보험(급여 실손의료비)」,
@@ -133,6 +137,8 @@ calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도�
   why the experience-rating loop survives the generation change though the benefit does
   not.
 
+(krlib-indemnity_medical-s3)=
+
 ### S3 — 무배당 삼성화재 다이렉트 실손의료비보험(2605.1) 보험약관 [계약전환용] (carrier policy conditions, 5세대)
 
 - Publisher: 삼성화재해상보험주식회사 (Samsung Fire & Marine Insurance)
@@ -157,6 +163,8 @@ calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도�
   `reentry_period = 5` and `max_cover_age = 100`; the 계약중지·재개 machinery; and the
   **2028-05-06** commencement of the 차등제 on 5세대 business.
 
+(krlib-indemnity_medical-s4)=
+
 ### S4 — 무배당 삼성화재 다이렉트 실손의료비보험(1307.1) 1종(표준형) 상품요약서 (statutory product summary, 2세대)
 
 - Publisher: 삼성화재해상보험주식회사
@@ -172,6 +180,8 @@ calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도�
   supervisory decision rather than a drafting detail. It carries the 입원 80% rule and the
   **연간 200만원** inpatient cap in a 2세대 wording, corroborating [S1 제5조제4항], and the
   하나의 상해당 최초입원일부터 365일 rule.
+
+(krlib-indemnity_medical-s5)=
 
 ### S5 — 무배당 프로미라이프 실손의료비보험2101 (DB손해보험) 보험약관 (carrier policy conditions, 3세대)
 
@@ -191,6 +201,8 @@ calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도�
   may decline a renewal and the insurer may not**, which is why `renewal_decline_rate` is a
   decrement of its own.
 
+(krlib-indemnity_medical-s6)=
+
 ### S6 — 손해보험협회 공시실, 「실손의료보험 보험료 인상률 및 손해율 공시」 (statutory disclosure)
 
 - Publisher: 손해보험협회 (General Insurance Association of Korea), 공시실
@@ -208,6 +220,8 @@ calibrates on — ₩11,982 a month for a 40세 남자 — comes from a 보도�
   「발생손해액/경과보험료」. One row read in full: 메리츠화재 상해담보, 인상률 2026 **21.8%**
   and 2025 **23.9%**, 경과손해율 2025 **117.2%** and 2024 **130.1%**. **It is also the record
   of a gap:** the grid could not be paged, so no age × sex scale was obtained from it.
+
+(krlib-indemnity_medical-s7)=
 
 ### S7 — 손해보험협회 공시실 — 「실손의료보험 안내」, 「실손의료보험(5세대)」, 「보험료 비교공시」 (consumer disclosure)
 
@@ -241,6 +255,8 @@ for several distributional facts the model's shape tables are calibrated on. One
 supervisory regulation itself [R19], retrieved only in a superseded vintage. And one is the
 negative result that fixes the whole model's basis boundary [R20].
 
+(krlib-indemnity_medical-r1)=
+
 ### R1 — 금융위원회 외, 「7.1일부터 제4세대 실손의료보험이 출시됩니다」 (2021-06-30) (press release)
 
 - Publisher: 금융위원회, joint with 금융감독원 and both trade associations
@@ -259,6 +275,8 @@ negative result that fixes the whole model's basis boundary [R20].
   every frequency in `utilisation_table.csv` is solved. It also carries the tail statistic —
   0.005% of insureds above ₩50,000,000 of claims in 2019 — that `model.md` cites for why the
   annual limits read slack on an expected-value grid.
+
+(krlib-indemnity_medical-r2)=
 
 ### R2 — 금융위원회 외, 「「4세대 실손의료보험 출시」 관련 주요 FAQ」 (2021-06) (FAQ annexed to R1)
 
@@ -279,6 +297,8 @@ negative result that fixes the whole model's basis boundary [R20].
   — that `model.md` names as the behavioural response the model does **not** capture, and the
   도수치료 price range **₩5,000–₩600,000** that justifies `severity_table.csv` existing.
 
+(krlib-indemnity_medical-r3)=
+
 ### R3 — 금융위원회, 「'24.7.1일부터 4세대 실손의료보험은 비급여 이용량에 따라 비급여 보험료가 할인 또는 할증됩니다」 (2024-06-07) (press release)
 
 - Publisher: 금융위원회
@@ -294,6 +314,8 @@ negative result that fixes the whole model's basis boundary [R20].
   0.3**, which is the target `claim_shape_table.csv` is calibrated to reproduce and therefore
   what makes `reld_solved(2) = 0.957477` a solved result rather than an input.
 
+(krlib-indemnity_medical-r4)=
+
 ### R4 — 금융위원회, 「실손의료보험, 낮은 보험료로 정말 필요할 때 도움되는 보험상품으로 재탄생합니다」 (2025-04-01) (press release)
 
 - Publisher: 금융위원회 (보험과)
@@ -308,6 +330,8 @@ negative result that fixes the whole model's basis boundary [R20].
   concentration statistics — **9% of policyholders take 80% of claims, 65% take none** — which
   are why `utilisation_table.csv` holds frequencies averaged over a population that mostly
   claims nothing, and why a single average cell cannot show what the experience rating does.
+
+(krlib-indemnity_medical-r5)=
 
 ### R5 — 금융위원회·금융감독원, 「5월 6일부터 … 5세대 실손의료보험이 새롭게 출시·판매됩니다」 (2026-05-06) (press release)
 
@@ -326,6 +350,8 @@ negative result that fixes the whole model's basis boundary [R20].
   the 계약재매입 and 선택형 할인 schemes commencing 2026-11 for the ~47.5% of in-force
   policies written before 2013-03 with no re-entry clause.
 
+(krlib-indemnity_medical-r6)=
+
 ### R6 — 금융위원회·금융감독원, 「5세대 실손보험 Q&A」 (2026-05) (annex to R5)
 
 - Publisher: 금융위원회·금융감독원, 별첨1 to [R5]
@@ -338,6 +364,8 @@ negative result that fixes the whole model's basis boundary [R20].
   ranges, where the 급여/비급여 boundary is pinned; the 2025 claim mix — **비급여 근골격계
   물리치료 + 주사제 27.3%**, 암 관련 12.8% — which bounds the 3대비급여 share; and that the
   renewal increase is **capped at 25% a year per risk cell**, corroborating [S1 제30조].
+
+(krlib-indemnity_medical-r7)=
 
 ### R7 — 금융감독원, 「2025년 실손의료보험 사업실적(잠정)」 (2026-06-04) (annual experience statement)
 
@@ -360,6 +388,8 @@ negative result that fixes the whole model's basis boundary [R20].
   `renewal_decline_rate`; and the supervisory programme for 2026 including the 4세대 재가입
   conversion wave from 2026-07.
 
+(krlib-indemnity_medical-r8)=
+
 ### R8 — 금융감독원, 「2024년 실손의료보험 사업실적(잠정)」 (2025-05-13) (annual experience statement)
 
 - Publisher: 금융감독원 보험계리상품감독국 보험상품제도팀
@@ -381,6 +411,8 @@ negative result that fixes the whole model's basis boundary [R20].
   ₩2.81조 — **18.5% of all 2024 claims** — attributable to non-covered injections, which makes
   `inject_carve_share = 0.25` a first-order calibration question rather than a detail.
 
+(krlib-indemnity_medical-r9)=
+
 ### R9 — 국민건강보험공단, 「2024년 건강보험 보장률 64.9%」 (2025-12-30) (official statistics)
 
 - Publisher: 국민건강보험공단 비급여관리실 보장성평가센터
@@ -399,6 +431,8 @@ negative result that fixes the whole model's basis boundary [R20].
   carries a 비필수항목-adjusted coverage ratio that removes 도수치료, 영양주사, 상급병실료 and
   제증명수수료 — the same items the 실손 reforms target and this model sub-limits.
 
+(krlib-indemnity_medical-r10)=
+
 ### R10 — 국민건강보험공단, 「본인부담상한제」 (statutory scheme description)
 
 - Publisher: 국민건강보험공단
@@ -415,6 +449,8 @@ negative result that fixes the whole model's basis boundary [R20].
   here that is a transcription rather than a construction**, and it is what `oop_trunc(y)`
   and `check_oop_ceiling()` are computed against.
 
+(krlib-indemnity_medical-r11)=
+
 ### R11 — 건강보험심사평가원, 「외래진료시 본인부담률 및 부담액」 (statutory cost-sharing schedule)
 
 - Publisher: 건강보험심사평가원 (Health Insurance Review and Assessment Service, HIRA)
@@ -426,6 +462,8 @@ negative result that fixes the whole model's basis boundary [R20].
   의원, plus the pharmacy rate — that determine the **급여 본인부담금 the 실손 reimburses in
   every generation**, and that the 5세대 wording [S2] now reads directly into its own
   deductible formula. Cited once, beside [REG-R53].
+
+(krlib-indemnity_medical-r12)=
 
 ### R12 — 보험연구원 김경선, 「실손의료보험 현황 및 개선과제」 (2024-12-05) (research presentation)
 
@@ -447,6 +485,8 @@ negative result that fixes the whole model's basis boundary [R20].
   why the five-year grace that left 4세대 unable to re-rate until 2025 is cited to [R12]
   rather than to the regulation, [R19] having failed to return the current article.
 
+(krlib-indemnity_medical-r13)=
+
 ### R13 — 금융위원회, 「'24.10.25일부터 … 실손보험 청구 전산화가 순차적으로 시행됩니다」 (2024-10-25) (press release)
 
 - Publisher: 금융위원회 (보험과)
@@ -459,6 +499,8 @@ negative result that fixes the whole model's basis boundary [R20].
   recorded as **not modelled**: lower claim friction is a plausible driver of future
   frequency, no published elasticity exists, and nothing in the basis is adjusted for it.
 
+(krlib-indemnity_medical-r14)=
+
 ### R14 — 금융위원회, 「실손보험 청구 전산화가 의원·약국을 포함하여 확대 시행됩니다」 (2025-10-23) (press release)
 
 - Publisher: 금융위원회
@@ -468,6 +510,8 @@ negative result that fixes the whole model's basis boundary [R20].
   connected at launch), the documents transmitted (계산서·영수증, 진료비 세부산정내역서,
   처방전) and the confidentiality constraint on the 전송대행기관. Cited with [R13] and, like
   it, recorded as a driver the model does **not** assume.
+
+(krlib-indemnity_medical-r15)=
 
 ### R15 — 금융위원회, 「보험업법 시행령·감독규정 입법예고」 (2026-01-15) (legislative pre-announcement)
 
@@ -483,6 +527,8 @@ negative result that fixes the whole model's basis boundary [R20].
   건강보험 본인부담률 with a 20% floor; 중증 비급여 30% with a ₩30,000 minimum; 비중증 비급여
   50% with a ₩50,000 minimum.
 
+(krlib-indemnity_medical-r16)=
+
 ### R16 — 금융감독원, 「최근 민원사례로 알아보는 실손의료보험 관련 소비자 유의사항」 (2026-05-19) (press release)
 
 - Publisher: 금융감독원 소비자소통국 손해보험민원팀
@@ -496,6 +542,8 @@ negative result that fixes the whole model's basis boundary [R20].
   conversion withdrawal** right. The resumption half is named in `model.md` as not modelled:
   the contract that resumes is a different projection.
 
+(krlib-indemnity_medical-r17)=
+
 ### R17 — 금융위원회, 「(노후·유병력자) 실손보험의 가입연령과 보장연령을 확대하여 …」 (2025-02-11) (press release)
 
 - Publisher: 금융위원회
@@ -506,6 +554,8 @@ negative result that fixes the whole model's basis boundary [R20].
   block outside the five generations, and they carry their own co-payments, issue ages and
   **three-year** change cycles, so `product-spec.md` scopes them out explicitly. The 90-year
   issue age is the observed upper bound against which the **[std]** 0–65 envelope is set.
+
+(krlib-indemnity_medical-r19)=
 
 ### R19 — 보험업감독규정 (금융위원회고시) 제7-63조 (제3보험의 보험상품설계 등) (financial-regulatory notification)
 
@@ -529,6 +579,8 @@ negative result that fixes the whole model's basis boundary [R20].
   재가입주기, the ±25% corridor, the 중지·재개 facility, the annual rate adequacy test — is
   cited to [REG-R17], which retrieved the article in full, and 제2항제6호가목 specifically to
   [R12], which quotes it verbatim.
+
+(krlib-indemnity_medical-r20)=
 
 ### R20 — 보험개발원, 「장기손해보험 참조순보험요율 예시」 (reference net premium rate disclosure)
 
@@ -718,3 +770,36 @@ which reached the same release through a different mirror — and [R9], likewise
 보험연구원, with its underlying survey retrieved directly as [REG-R41]. Both routes are
 recorded at the entries rather than hidden, and in both cases a second independent retrieval
 of the same content exists in the cross-product library.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-indemnity_medical-r1
+[R10]: #krlib-indemnity_medical-r10
+[R11]: #krlib-indemnity_medical-r11
+[R12]: #krlib-indemnity_medical-r12
+[R13]: #krlib-indemnity_medical-r13
+[R14]: #krlib-indemnity_medical-r14
+[R16]: #krlib-indemnity_medical-r16
+[R17]: #krlib-indemnity_medical-r17
+[R19]: #krlib-indemnity_medical-r19
+[R20]: #krlib-indemnity_medical-r20
+[R4]: #krlib-indemnity_medical-r4
+[R5]: #krlib-indemnity_medical-r5
+[R7]: #krlib-indemnity_medical-r7
+[R8]: #krlib-indemnity_medical-r8
+[R9]: #krlib-indemnity_medical-r9
+[REG-R17]: #krlib-reg-r17
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R33]: #krlib-reg-r33
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R41]: #krlib-reg-r41
+[REG-R44]: #krlib-reg-r44
+[REG-R53]: #krlib-reg-r53
+[REG-R6]: #krlib-reg-r6
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R62]: #krlib-reg-r62
+<!-- END generated citation links -->

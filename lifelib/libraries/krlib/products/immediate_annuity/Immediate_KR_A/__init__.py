@@ -39,7 +39,7 @@ variants of one.** The shape is a model point column of one projection:
     annuity at all. The retention is the term at the centre of the **즉시연금 과소지급
     분쟁**, and it is carried here as an explicit switch — ``retention_basis`` is
     ``as_designed`` for the 산출방법서's liability and ``as_ordered`` for the one the
-    금융분쟁조정위원회 ordered in 조정결정 제2017-17호, with :func:`.retention_shortfall_pp`
+    금융분쟁조정위원회 ordered in 조정결정 제2017-17호, with :func:`~.Immediate_KR_A.Projection.retention_shortfall_pp`
     reporting what the second costs the insurer.
 
 ``shape = "certain"`` — 확정기간연금형

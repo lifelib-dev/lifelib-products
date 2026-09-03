@@ -62,6 +62,8 @@ at each. **One caveat governs the whole set**: every 즉시연금-*specific* doc
 carrier in this research pass, so the specification is written to the mechanism rather than to
 a named live product and says so once at its head.
 
+(krlib-immediate_annuity-s1)=
+
 ### S1 — 하나생명, 「무배당 행복knowhow즉시연금보험 상품요약서」 (statutory product summary)
 
 - Publisher / type: 하나생명보험주식회사; 상품요약서, the statutory product summary handed over
@@ -90,6 +92,8 @@ a named live product and says so once at its head.
     상속형 cap of ₩1,500,000,000, the benefit table defining 생존연금 / 사망보험금 /
     만기보험금, and 주1–주7 on payment modes, the commutation rate and the guarantee period.
 
+(krlib-immediate_annuity-s2)=
+
 ### S2 — 교보생명, 「바로받는 연금보험 무배당 Ⅱ」 방카슈랑스 상품안내장 (sales leaflet)
 
 - Publisher / type: 교보생명보험주식회사 방카슈랑스본부, distributed by 하나은행; 상품안내장,
@@ -102,6 +106,8 @@ a named live product and says so once at its head.
   splitting at ten years. It supplies two points of the declared-rate and floor observation
   ranges in `model.md`'s standardization table, the ₩10,000,000 minimum premium, and its own
   상속연금형 annuity table.
+
+(krlib-immediate_annuity-s3)=
 
 ### S3 — 교보생명, 「바로받는 연금보험」 방카슈랑스 상품안내장, SC제일은행 배포본 (sales leaflet)
 
@@ -120,6 +126,8 @@ a named live product and says so once at its head.
   adopts. It also gives the product envelope, the death-benefit definition, the guarantee
   wording that makes the obligation survive the annuitant, and the 선지급 right.
 
+(krlib-immediate_annuity-s4)=
+
 ### S4 — 동양생명, 「무배당 Angel즉시연금보험」 방카슈랑스 상품안내장 (sales leaflet)
 
 - Publisher / type: 동양생명보험주식회사, distributed by 하나은행; 상품안내장, 「2016. 4
@@ -133,6 +141,8 @@ a named live product and says so once at its head.
   만기형 selling proposition — 「만기에 수령하는 만기보험금을 상속 및 상속세 재원으로 활용할 수
   있습니다」, the sentence that explains why three quarters of the market buys the shape the
   dispute was about.
+
+(krlib-immediate_annuity-s5)=
 
 ### S5 — 삼성생명, 「에이스즉시연금보험 B2.2(무배당)」 방카슈랑스 상품안내장 (sales leaflet)
 
@@ -150,6 +160,8 @@ a named live product and says so once at its head.
   a 상속연금형 10년만기 surrender-value illustration; and the 연금선수익자 / 연금후수익자
   mechanism.
 
+(krlib-immediate_annuity-s6)=
+
 ### S6 — ABL생명(구 알리안츠생명), 「무배당 알리안츠프리미어즉시연금보험 사업방법서 (별지)」 (filed 기초서류)
 
 - Publisher / type: 에이비엘생명보험주식회사; **사업방법서 별지** — one of the three 기초서류
@@ -166,6 +178,8 @@ a named live product and says so once at its head.
   the policy-loan rate (공시이율 + 1.5%), a large-contract discount (§10-나, recorded and not
   applied), 부부계약, the partial withdrawal surviving annuitisation (§8-나), and **§10-라, the
   annuitant-mortality ratchet confined expressly to the 거치형**.
+
+(krlib-immediate_annuity-s7)=
 
 ### S7 — 한화생명, 「한화생명 e연금보험 무배당 약관」 (policy conditions)
 
@@ -185,6 +199,8 @@ a named live product and says so once at its head.
   nil lapse rate rests; and 별표1, the annuity struck on 「연금개시시의 계약자적립액」, with
   주8's 100.1% floor recorded and not applied.
 
+(krlib-immediate_annuity-s8)=
+
 ### S8 — 푸본현대생명, 「MAX 연금보험 하이파이브 무배당(B2001) 적립형/거치형 약관」 (policy conditions)
 
 - Publisher / type: 푸본현대생명보험주식회사, distributed by 하나은행; 약관 booklet with
@@ -202,6 +218,8 @@ a named live product and says so once at its head.
   modes equal in value, the basis of every annual-to-monthly conversion here; 제33조 gives the
   surrender article.
 
+(krlib-immediate_annuity-s9)=
+
 ### S9 — 우체국보험(체신관서), 「우체국연금보험 2312 약관」 (policy conditions)
 
 - Publisher / type: 우정사업본부 우체국보험; 약관 booklet, product code P200068, vintage 2312,
@@ -218,6 +236,8 @@ a named live product and says so once at its head.
   and 주11's 「신공시이율로 계산한 이자를 가산합니다」 — the other half of the
   annual-to-monthly reconciliation.
 
+(krlib-immediate_annuity-s10)=
+
 ### S10 — 하나생명 공시실, 「적용이율 공시 — 최저보증이율 및 경과기간별 중도해지율」 (carrier disclosure)
 
 - Publisher / type: 하나생명보험주식회사; 공시 web page, product-by-product table
@@ -232,6 +252,8 @@ a named live product and says so once at its head.
   is a published run of zeros, and hence that `cv_pp(t) = av_pp(t)` where surrender is
   permitted.
 
+(krlib-immediate_annuity-s11)=
+
 ### S11 — 하나생명 공시실, 「적용이율 공시 — 표준이율 및 평균공시이율」 (carrier disclosure)
 
 - Publisher / type: 하나생명보험주식회사; 공시 web page
@@ -242,6 +264,8 @@ a named live product and says so once at its head.
   적용합니다」. Cited for the definition, for the series (2.50% for 2026, 2.75% in 2024–2025,
   2.25% in 2021–2023), and for the rule that a carrier must show this rate beside its own —
   which gives the 2.50% of `decl_rate` two justifications.
+
+(krlib-immediate_annuity-s12)=
 
 ### S12 — NH농협생명, 「공시기준이율」 (carrier disclosure)
 
@@ -255,6 +279,8 @@ a named live product and says so once at its head.
   that **no model in this library derives a Korean declared rate and none should**, which is
   why `decl_rate` is a scalar.
 
+(krlib-immediate_annuity-s13)=
+
 ### S13 — 하나생명, 「(무)The하나연금보험」 상품 페이지 (carrier product page)
 
 - Publisher / type: 하나생명보험주식회사; product page, 공시이율 stated as at 2023년 1월
@@ -265,6 +291,8 @@ a named live product and says so once at its head.
   most aggressive front-loading in the corpus, and one of the six carrier names
   `product-spec.md` records for that shape — plus a 100세 option in the 확정연금형 menu, a
   공시이율 of 2.80% at 2023-01, and a 최저보증이율 of 1.25% / 1.00% / 0.50%.
+
+(krlib-immediate_annuity-s14)=
 
 ### S14 — KB국민은행 방카슈랑스, 「(무)IBK e-연금보험(2601)」 상품 페이지 (bancassurance product page)
 
@@ -286,6 +314,8 @@ groups: the dispute record [R1]–[R6]; the market and product literature [R11] 
 [R27]–[R29]; the 경험생명표 reporting [R13] [R14]; and the news and trade coverage of the
 litigation [R17]–[R25], cited only for the dispute's course and its aggregates. **No aggregate
 about the dispute is stated by any supervisory document**, and `product-spec.md` says so.
+
+(krlib-immediate_annuity-r1)=
 
 ### R1 — 금융감독원 금융분쟁조정위원회, 조정결정서 제2017-17호 (dispute-resolution determination)
 
@@ -312,6 +342,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
     with no retention — which is `retention_basis = "as_ordered"`. It also carries the
     공시기준이율 formula verbatim on a 35/65 weighting, the third carrier weighting.
 
+(krlib-immediate_annuity-r2)=
+
 ### R2 — 금융감독원, 보도자료 「금융분쟁조정위원회, 즉시연금 관련 분쟁에서 보험약관에 따라 산출한 연금을 지급하도록 결정」 (regulator press release)
 
 - Publisher / type: 금융감독원 분쟁조정1국; 보도자료, 배포 2018. 4. 9., 3 pp. PDF
@@ -329,6 +361,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   sentence had been reused from a product with no maturity benefit; and the FSS's notification
   of **every life insurer** on 2018-03-15.
 
+(krlib-immediate_annuity-r3)=
+
 ### R3 — 금융감독원, 보도참고자료 「즉시연금에 가입한 소비자가 「시효 중단」을 원하실 경우 …」 (regulator press release)
 
 - Publisher / type: 금융감독원 분쟁조정1국; 보도참고자료, 배포 2018. 9. 4., 3 pp. PDF
@@ -340,6 +374,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   notwithstanding; quotes 금융위원회의 설치 등에 관한 법률 제53조의2 on the interruption of
   limitation, which is the 2018-09-04 row; and announces the 즉시연금 corner on 파인.
 
+(krlib-immediate_annuity-r4)=
+
 ### R4 — 금융감독원, 보도자료 목록 (검색어 「즉시연금」) (regulator index page)
 
 - Publisher / type: 금융감독원; 보도자료 search listing
@@ -349,6 +385,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   2018-04-09, 2018-09-04, 2019-01-07 — which is what makes the supervisory chronology
   exhaustive rather than merely long, and the source of the nttIds behind [R2] and [R3]. Cited
   once, for the 2019-01-07 response about a revived comprehensive examination.
+
+(krlib-immediate_annuity-r5)=
 
 ### R5 — 금융감독원, 「"즉시연금보험 절판마케팅 주의하세요" 소비자경보 발령」 (regulator press release)
 
@@ -360,6 +398,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   removing the interest-income exemption for 즉시연금 held ten years or more from the following
   year, and the end-of-line selling push the FSS warned against. Two rows of the chronology and
   one paragraph of the tax section rest on it, and nothing else.
+
+(krlib-immediate_annuity-r6)=
 
 ### R6 — 대법원 2025. 10. 16. 선고 2022다225897 판결 [보험금] (Supreme Court judgment)
 
@@ -378,6 +418,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   statement that neither reading of the retention is "the" right one is this judgment set
   against [R1].
 
+(krlib-immediate_annuity-r11)=
+
 ### R11 — 법제처 찾기쉬운 생활법령정보, 「노후준비와 연금제도 › 사적연금제도 › 개인연금제도 › 연금보험」 (government plain-language restatement)
 
 - Publisher / type: 법제처; 생활법령 page, content stated as current at 2026-08-15
@@ -388,6 +430,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   annuitisation from 55, no lump-sum option and a guarantee period within life expectancy), and
   the definition of 연금보험 by reference to 보험업감독규정 제1-2조제5호. Cited once, in the
   regulatory-class sentence, beside [REG-R1].
+
+(krlib-immediate_annuity-r12)=
 
 ### R12 — 이경희, 「즉시연금보험의 특성과 가입자 선택행동 분석」, 보험금융연구 제23권 제1호 (2012. 2), pp. 101–132 (peer-reviewed article)
 
@@ -408,6 +452,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   pure life annuity with no guarantee period may not be sold in Korea — **[unverified]** as to
   the article text. It is fifteen to eighteen years old and the specification says so.
 
+(krlib-immediate_annuity-r13)=
+
 ### R13 — 보험저널, 「4월부터 연금보험 수령액 줄어든다…10차 경험생명표 적용시 15% 하락」 (news article)
 
 - Publisher / type: 보험저널, 강성용 기자; 입력 2024. 2. 15, 수정 2024. 2. 20
@@ -418,6 +464,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   60, and the ~15% fall from the 9th to the 10th. Cited once, in the longevity-sensitivity
   discussion. **Secondary; the underlying KIDI release was not retrieved**, and the dependent
   sentence says so.
+
+(krlib-immediate_annuity-r14)=
 
 ### R14 — 보험매일, 「제10회 경험생명표 개정…소비자에 미치는 영향은」 (news article)
 
@@ -431,6 +479,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   the ratchet a pricing question and not a projection one. **Secondary**, and the two dependent
   sentences say so.
 
+(krlib-immediate_annuity-r16)=
+
 ### R16 — 미래에셋투자와연금센터, 「가입 다음 달부터 바로 연금 받는 보험, 어떤 종류가 있나?」 (consumer-education page)
 
 - Publisher / type: 미래에셋투자와연금센터
@@ -439,6 +489,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   minimum-premium sentence returned, nothing else)
 - Cited once, for one fact: minimum premiums run from ₩10,000,000 upward and differ by carrier,
   「M사는 1천만원, S사는 3천만원 등」. **Secondary**, tagged as such where used.
+
+(krlib-immediate_annuity-r17)=
 
 ### R17 — 뉴스타파, 「즉시연금사태 : 또다시 가동된 보험사의 '탈출 마술'」 (investigative journalism)
 
@@ -452,6 +504,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   2018-08-10. **Investigative journalism, and every figure taken from it is flagged as
   news-sourced** in `product-spec.md`.
 
+(krlib-immediate_annuity-r18)=
+
 ### R18 — 서울신문, 「'16만명의 1조원' 즉시연금 소송, 소비자 다시 승소…삼성생명 패소」 (news article)
 
 - Publisher / type: 서울신문, 2022-01-19
@@ -461,6 +515,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   aggregate scope of about 160,000 policyholders and ₩800bn–₩1tn, and one carrier's share of
   50,000 policyholders and ₩400,000,000,000. Two rows of the chronology and the head-note
   figure rest on it. **News article.**
+
+(krlib-immediate_annuity-r19)=
 
 ### R19 — 아시아경제, 「그때 그때 다른 소송 결과…즉시연금 소송 향방은」 (news article)
 
@@ -472,6 +528,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   / ₩85bn / ₩70bn). The source for the statement that the outcome differed by action, which is
   what makes the two-setting switch a faithful model rather than an evasion. **News article.**
 
+(krlib-immediate_annuity-r21)=
+
 ### R21 — 리걸타임즈, 「[보험] '삼성생명' 즉시연금보험 가입자들 최종 패소」 (legal trade press)
 
 - Publisher / type: 리걸타임즈
@@ -481,6 +539,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   appeals dismissed, and the reasoning that the deduction method could be severed while the
   remainder of the contract stood. The second document behind the 2025-10-16 row, and the only
   one carrying the companion dockets. **Legal trade press.**
+
+(krlib-immediate_annuity-r22)=
 
 ### R22 — 머니투데이, 「대법원 "'즉시연금' 설명 부족하나 계약 유효…미지급금 안 줘도 된다"」 (news article)
 
@@ -493,6 +553,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   count of 51 here against 57 at [R21] is left unresolved and both are recorded. **News
   article.**
 
+(krlib-immediate_annuity-r23)=
+
 ### R23 — 보험저널, 「즉시연금보험 분쟁이 남긴 숙제…'설명 부족'은 잘못, '계약 무효'는 아냐」 (news article carrying law-firm commentary)
 
 - Publisher / type: 보험저널, 강성용 기자, 2025-11-05
@@ -502,6 +564,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   outline in the 약관**, and a bare pointer to the 산출방법서 is not enough. That is the
   drafting rule the 2024 약관 at [S7] already complies with, and what connects the judgment to
   the current market's wording. **News article carrying law-firm commentary.**
+
+(krlib-immediate_annuity-r24)=
 
 ### R24 — EBN, 「대법 "설명 부족" 판결에…금감원, 즉시연금 불완전판매 점검」 (news article)
 
@@ -513,6 +577,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   industry estimate restated. **News article**; no supervisory document states the aggregate,
   and the specification says so.
 
+(krlib-immediate_annuity-r25)=
+
 ### R25 — 한국금융신문, 「[주간 보험 이슈] 생보사 즉시연금 소송 승소…」 (trade press)
 
 - Publisher / type: 한국금융신문, 2025-10-19
@@ -521,6 +587,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
 - The same outcome from a second trade title, giving the bench and the 51 plaintiffs. **Used
   only to cross-check [R22]**, and cited beside it wherever the plaintiff count or the FSS
   follow-up is stated.
+
+(krlib-immediate_annuity-r26)=
 
 ### R26 — 日刊NTN, 「[쟁점 예규] 즉시연금보험 상속 평가액은 '상속 개시 당시 해지환급금'」 (tax trade press)
 
@@ -531,6 +599,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   falling into an estate is valued at the **해약환급금 at the date of death**; the underlying
   상속세 및 증여세법 제8조 [REG-R59]; and the facts of the ruling. Cited once, in the
   estate-tax paragraph, expressly as a trade report of a ruling **not itself retrieved**.
+
+(krlib-immediate_annuity-r27)=
 
 ### R27 — KDI 경제교육·정보센터, 「우체국에서 가입즉시 연금 받으세요!」 (government release, reproduced)
 
@@ -543,6 +613,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   the high-rate-era datum that makes the 2.50% adoption a choice rather than an inevitability —
   최저보증이율 2%, and the 0.5% large-contract discount recorded and not applied.
 
+(krlib-immediate_annuity-r28)=
+
 ### R28 — 뱅크샐러드, 「즉시연금 총정리 | 1억 넣으면 얼마 받을까?」 (commercial content site)
 
 - Publisher / type: 뱅크샐러드
@@ -553,6 +625,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   in the band inside which the adopted 2.50% sits. **Commercial content site**, tagged as such
   at both points of use.
 
+(krlib-immediate_annuity-r29)=
+
 ### R29 — KB의 생각, 「즉시 연금보험이란? — 뜻 & 정의」 (bank glossary entry)
 
 - Publisher / type: KB국민은행
@@ -562,6 +636,8 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   exempt threshold to ₩100,000,000 per person**, and the estate-valuation point. Corroborates
   [R5] and [REG-R58]. Its further claim of a 2016 amendment is **[unverified]** and recorded as
   such, neither the article nor the amendment having been retrieved.
+
+(krlib-immediate_annuity-r31)=
 
 ### R31 — 보험업감독규정 (금융위원회 고시) — **not retrieved**
 
@@ -579,7 +655,7 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
   제7-60조 governs 생명보험 상품설계; that 제7-60조제3호 requires a savings contract's
   net-premium reserve at the 평균공시이율 to exceed cumulative premiums, **15 months for a
   single premium**; and that 제7-60조 4 forbids a life annuity without a guarantee period of at
-  least five years [R12 §III-2-라]. **Note the split**: the *provisions themselves* were
+  least five years [R12 §III-2-라](#krlib-immediate_annuity-r12). **Note the split**: the *provisions themselves* were
   retrieved by a different route as [REG-R16] and [REG-R18], which the documents cite wherever
   the article text matters; this entry survives only because three claims rest on paragraphs
   that retrieval does not reach.
@@ -698,3 +774,35 @@ carrier, which is why the specification is written to the mechanism.
 The cross-product regulatory bibliography lives in
 `references/regulatory-and-actuarial-references.md`, with its own research provenance in
 `_research/regulatory-actuarial.md`. Neither is renumbered by anything on this page.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-immediate_annuity-r1
+[R11]: #krlib-immediate_annuity-r11
+[R12]: #krlib-immediate_annuity-r12
+[R13]: #krlib-immediate_annuity-r13
+[R14]: #krlib-immediate_annuity-r14
+[R16]: #krlib-immediate_annuity-r16
+[R17]: #krlib-immediate_annuity-r17
+[R2]: #krlib-immediate_annuity-r2
+[R21]: #krlib-immediate_annuity-r21
+[R22]: #krlib-immediate_annuity-r22
+[R25]: #krlib-immediate_annuity-r25
+[R26]: #krlib-immediate_annuity-r26
+[R27]: #krlib-immediate_annuity-r27
+[R28]: #krlib-immediate_annuity-r28
+[R29]: #krlib-immediate_annuity-r29
+[R3]: #krlib-immediate_annuity-r3
+[R31]: #krlib-immediate_annuity-r31
+[R5]: #krlib-immediate_annuity-r5
+[R6]: #krlib-immediate_annuity-r6
+[REG-R1]: #krlib-reg-r1
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R2]: #krlib-reg-r2
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R52]: #krlib-reg-r52
+[REG-R58]: #krlib-reg-r58
+[REG-R59]: #krlib-reg-r59
+<!-- END generated citation links -->

@@ -34,30 +34,30 @@ model point input, so no conversion is applied anywhere.
 
 The technical notes use compact actuarial symbols; the cells use lifelib names.
 
-====================  ==========================  ==================================
-Notes symbol          Cells                       Meaning
-====================  ==========================  ==================================
-—                     ``model_point``             the selected model point as a Series
-n                     ``proj_len``                last projected policy month
-x                     ``issue_age``               만나이 at the 계약일
-x + floor(t/12)       ``age``                     attained 만나이 in month t
-P                     ``premium_mth_pp``          level monthly office premium
-A_B                   ``lump_amount``             장기요양진단급여금 sum insured
-A_1 / A_2             ``annuity_high`` / ``annuity_low``  간병연금 monthly amount by entry grade
-G_B                   ``benefit_grade``           the contractual 등급 threshold
-q(x)                  ``mort_rate``               healthy annual mortality
-q_C(x)                ``mort_rate_care``          care-state annual mortality
-P(x)                  ``prev_rate_at``            all-grade certification prevalence
-P_C(x)                ``prev_care_at``            prevalence at or above G_B
-P_L(x)                ``prev_light_at``           prevalence below G_B
-i_D(x)                ``inc_rate_direct_at``      healthy -> care, direct entry
-i_L(x)                ``inc_rate_light_at``       healthy -> light grade
-rho(x)                ``prog_rate_at``            light grade -> care, progression
-l(t)                  ``pols_if``                 in force at the start of month t
-AV(t)                 ``av_pp``                   계약자적립액 per policy
-CV(t)                 ``cv_pp``                   해약환급금 per policy
-CF(t)                 ``net_cf``                  net cash flow, income positive
-====================  ==========================  ==================================
+===============  ==================================  ======================================
+Notes symbol     Cells                               Meaning
+===============  ==================================  ======================================
+—                ``model_point``                     the selected model point as a Series
+n                ``proj_len``                        last projected policy month
+x                ``issue_age``                       만나이 at the 계약일
+x + floor(t/12)  ``age``                             attained 만나이 in month t
+P                ``premium_mth_pp``                  level monthly office premium
+A_B              ``lump_amount``                     장기요양진단급여금 sum insured
+A_1 / A_2        ``annuity_high`` / ``annuity_low``  간병연금 monthly amount by entry grade
+G_B              ``benefit_grade``                   the contractual 등급 threshold
+q(x)             ``mort_rate``                       healthy annual mortality
+q_C(x)           ``mort_rate_care``                  care-state annual mortality
+P(x)             ``prev_rate_at``                    all-grade certification prevalence
+P_C(x)           ``prev_care_at``                    prevalence at or above G_B
+P_L(x)           ``prev_light_at``                   prevalence below G_B
+i_D(x)           ``inc_rate_direct_at``              healthy -> care, direct entry
+i_L(x)           ``inc_rate_light_at``               healthy -> light grade
+rho(x)           ``prog_rate_at``                    light grade -> care, progression
+l(t)             ``pols_if``                         in force at the start of month t
+AV(t)            ``av_pp``                           계약자적립액 per policy
+CV(t)            ``cv_pp``                           해약환급금 per policy
+CF(t)            ``net_cf``                          net cash flow, income positive
+===============  ==================================  ======================================
 
 .. rubric:: The four compartments, and why there are four
 

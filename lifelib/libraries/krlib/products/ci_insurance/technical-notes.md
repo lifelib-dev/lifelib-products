@@ -80,7 +80,7 @@ construction that this model's `ltc` incidence limb is a placeholder for.
   is paid at the **end** of year `t` and joins the post-CI state at the **start** of year
   `t + 1`, so the two payments are at least one annual step apart. That lag is deliberate
   and defensible on the contract's own terms: the 장해분류표 defers assessment of a 중대한
-  뇌졸중 for **twelve months** after onset [REG-R25 부표 3] [S1 별표3], so a CI claim and the
+  뇌졸중 for **twelve months** after onset [REG-R25 부표 3](#krlib-reg-r25) [S1 별표3], so a CI claim and the
   death that follows are not simultaneous even on a finer grid. (iii) The suppression is
   released at the **anniversary** at which the CI event is recognised, not at the day of
   diagnosis.
@@ -92,7 +92,7 @@ construction that this model's `ltc` incidence limb is a placeholder for.
   the CI transition and **after** deaths.
 - **Age basis: 보험나이**, the chassis's. 보험나이 is the 만 나이 at the 계약일 with a
   fraction under six months discarded and six months or more rounded up, incrementing on
-  each 계약해당일 [S1 제26조] [REG-R25 제21조]. Attained age in year `t` is `x + t − 1`
+  each 계약해당일 [S1 제26조] [REG-R25 제21조](#krlib-reg-r25). Attained age in year `t` is `x + t − 1`
   exactly. **The disclosed rate grid this model is built on is itself stated on 보험나이**
   [S3], which is the one respect in which this product's basis is cleaner than the chassis's:
   the chassis calibrates against 만나이 population statistics and carries a known half-year
@@ -264,7 +264,7 @@ visible somewhere.
 
 Three classes, kept apart on the chassis's terms and for the chassis's reason: the
 보험가격지수 exists precisely because a Korean consumer cannot see the pricing basis
-[REG-R22 제7-45조제7항], the 산출방법서 is a filed but **unpublished** 기초서류 [REG-R2],
+[REG-R22 제7-45조제7항](#krlib-reg-r22), the 산출방법서 is a filed but **unpublished** 기초서류 [REG-R2],
 and the November 2024 계리가정 decision draws a hard line between an assumption an insurer
 may choose and one the supervisor now sets [REG-R27].
 
@@ -274,12 +274,12 @@ may choose and one the supervisor now sets [REG-R27].
 |---|---|---|
 | CI/LTC보험금 | **`a` = 80%** of the 기본보험금, payable **once only** across 중대한 질병 (eight), 중대한 수술 (four), 중대한 화상 및 부식 and 장기요양상태 | [S1 별표1] [S2] [S3] [S4] [S5] [S6]; the 80% choice **[std]** |
 | The complement | Residual death benefit `r = 1 − a` = **20%**, exactly. 「사망보험금은 CI/LTC보험금을 수령한 경우에는 기본보험금의 50%(50%선지급형) 또는 20%(80%선지급형) 만 지급합니다」 | [S1]; 50 + 50, 80 + 20, 25 + 75 and 40 + 60 all hold exactly [S1] [S2] |
-| The contract survives its own acceleration | 감독규정 제7-60조제8호 — a contract must not be extinguished while the risk it covers remains effective | [REG-R16 제7-60조제8호] |
+| The contract survives its own acceleration | 감독규정 제7-60조제8호 — a contract must not be extinguished while the risk it covers remains effective | [REG-R16 제7-60조제8호](#krlib-reg-r16) |
 | Residual floor | The later death benefit is 「… 기본보험금의 20%와 … 계약자적립금의 **105%** 중 큰 금액」, so `max(r B(t_CI), c V(s))` with `c = 1.05` | [S1 별표1 주8]; `c = 1.10` on the older universal version [S3] |
 | 기본보험금 `B(t)` | `max(기본사망보험금, 이미 납입한 보험료, c × V(t))`, with 기본사망보험금 = 보험가입금액 − 중도인출금액 + 추가납입보험료 | [S1 별표1 주7] |
 | 사망보험금, no prior CI | **100%** of `B(t)` | [S1] |
 | Premium waiver on a CI event | Any CI/LTC 지급사유 waives all future 기본보험료 | [S1 별표1 주4] [S1 제7조] |
-| Premium waiver, residual limb | A **50%** 장해지급률 aggregated across body parts from one accident or one non-accidental cause | [S1 별표1 주4]; scale at [REG-R25 부표 3] |
+| Premium waiver, residual limb | A **50%** 장해지급률 aggregated across body parts from one accident or one non-accidental cause | [S1 별표1 주4]; scale at [REG-R25 부표 3](#krlib-reg-r25) |
 | Suppression carve-out | `k` applies only 「CI/LTC보험금 지급사유가 발생하지 않은 경우」 / 「「선지급 진단보험금」 지급사유 발생 전 납입기간 동안」 — **so the suppression has two exits** | [S2] [S4] |
 | 중대한 암 보장개시일 | **90 days** from the 계약일 (or 부활일), counting that day; cover attaches the day after the ninetieth | [S1 제7조] [S1 별표1 주1] [S2] [S3] [S4] |
 | Everything else | Covered from the **계약일** — no waiting period on the other seven diseases, the four surgeries or the burn | [S1] [S2 별표1 주1] |
@@ -287,15 +287,15 @@ may choose and one the supervisor now sets [REG-R27].
 | First-year 감액 | Breast cancer within the first policy year pays **`a f` = 40%**, residual 60%; `f = 0.5` | [S1 별표1] [S2 별표1] [S4] [S5] |
 | Survival period | **None**, anywhere. The benefit is payable even where the insured dies of the CI cause | [R1] |
 | CI cover period | To the **100세 계약해당일**, while death cover runs 종신 | [R1] [R13]; adoption **[std]** |
-| 해약환급금 identity | 계약자적립액 less 미상각신계약비(해지공제액), floored at zero; 「순보험료식 책임준비금에서 미상각신계약비(해지공제액)를 공제한 금액」 in a CI product's own words | [S3]; [REG-R19 제7-66조제1항제1호] |
-| 표준해약공제액 | 연납순보험료 × 5% × 해약공제계수 + 보험가입금액 × 10/1000, the 계수 being the 보험기간 capped at **20** for a 보장성보험 | [REG-R20 별표 14 주2·주3] |
-| The 보험가입금액 entering the cap | The **일반사망보험금 before any 증감** — i.e. the **pre-acceleration** ₩100,000,000, not the ₩20,000,000 residual | [REG-R21 별표 15 제3호·제8호] |
-| 해약공제기간 | 납입기간 or 신계약비 부가기간, **capped at 7년** | [REG-R19 제7-66조제1항제2호] |
+| 해약환급금 identity | 계약자적립액 less 미상각신계약비(해지공제액), floored at zero; 「순보험료식 책임준비금에서 미상각신계약비(해지공제액)를 공제한 금액」 in a CI product's own words | [S3]; [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
+| 표준해약공제액 | 연납순보험료 × 5% × 해약공제계수 + 보험가입금액 × 10/1000, the 계수 being the 보험기간 capped at **20** for a 보장성보험 | [REG-R20 별표 14 주2·주3](#krlib-reg-r20) |
+| The 보험가입금액 entering the cap | The **일반사망보험금 before any 증감** — i.e. the **pre-acceleration** ₩100,000,000, not the ₩20,000,000 residual | [REG-R21 별표 15 제3호·제8호](#krlib-reg-r21) |
+| 해약공제기간 | 납입기간 or 신계약비 부가기간, **capped at 7년** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | Post-acceleration surrender | The **full** 표준형 value at every duration | [S2] [S4] |
-| 보험계약대출 | Within the **payable** 해약환급금 net of principal and interest; settled first on every exit | [S1]; [REG-R25 제33조·제26조] |
+| 보험계약대출 | Within the **payable** 해약환급금 net of principal and interest; settled first on every exit | [S1]; [REG-R25 제33조·제26조](#krlib-reg-r25) |
 | 예정위험률 revision right | From **5 years**, with 금융위원회 approval; an increase is applied by **reducing the benefit** unless the policyholder funds it | [S3] |
 | 자살면책 | **2년** from the 보장개시일, reset on 부활 | [S1 제10조] |
-| 부활 restarts the 90-day wait | 「계약일(부활(효력 회복)일)부터」 — so a reinstated contract is uncovered for 중대한 암 for ninety days | [S1 별표1 주1] [REG-R25 제27조] |
+| 부활 restarts the 90-day wait | 「계약일(부활(효력 회복)일)부터」 — so a reinstated contract is uncovered for 중대한 암 for ninety days | [S1 별표1 주1] [REG-R25 제27조](#krlib-reg-r25) |
 | 예금자보호 | **₩100,000,000** per person per insurer since 2025-09-01 | [REG-R52] [REG-R32] |
 
 **Two of these rows are the reason this product is a life-insurer instrument.** The
@@ -317,12 +317,12 @@ this product a simpler regulatory position than the standalone form would have.
 | Input | Model value (cells / Reference) | Basis |
 |---|---|---|
 | 예정이율 `i` (`prem_int_rate`) | **2.50% p.a., 연복리, flat** | Chassis, inherited unchanged **[std]**; equal to the 2026 평균공시이율 [REG-R48]. CI evidence brackets it too far away to be useful: 연복리 4.0% on a 2011 product [S3], 「약 2.75%」 for 종신보험 in 2019 [S4] |
-| 최저보증이율 (금리연동형 variant) | 연복리 **1.5%** to ten years, **0.5%** beyond — not modelled | [S1 제36조]; required by [REG-R16 제7-60조제10호] |
+| 최저보증이율 (금리연동형 variant) | 연복리 **1.5%** to ten years, **0.5%** beyond — not modelled | [S1 제36조]; required by [REG-R16 제7-60조제10호](#krlib-reg-r16) |
 | 보험계약대출이율 `i_L` (`i_loan`) | **4.00% p.a.** = 예정이율 + 1.5%, compound, a **vintage** rate | Chassis, formula at three carriers; level **[std]** |
-| 보험계약대출 limit (`loan_cap_rate`) | **80%** of the **payable** 해약환급금 | Chassis range 50%–85%; pick **[std]**; [REG-R25 제33조] |
+| 보험계약대출 limit (`loan_cap_rate`) | **80%** of the **payable** 해약환급금 | Chassis range 50%–85%; pick **[std]**; [REG-R25 제33조](#krlib-reg-r25) |
 | Net-premium ratio for the cap (`net_prem_ratio`) | **0.80** — the 연납순보험료 entering 별표 14 is taken as 0.80 × `G` | Chassis ratio **[std]**, so the cap rests on published figures alone |
-| 표준해약공제액 coefficients | `surr_chg_rate` 0.05, `surr_chg_coef_cap` 20, `surr_chg_sa_rate` 0.01 | [REG-R20 별표 14] |
-| 해약공제기간 (`surr_chg_years_cap`) | **7** years, then a straight-line run-off **[std]** | [REG-R19 제7-66조제1항제2호]; the shape **[std]** |
+| 표준해약공제액 coefficients | `surr_chg_rate` 0.05, `surr_chg_coef_cap` 20, `surr_chg_sa_rate` 0.01 | [REG-R20 별표 14](#krlib-reg-r20) |
+| 해약공제기간 (`surr_chg_years_cap`) | **7** years, then a straight-line run-off **[std]** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19); the shape **[std]** |
 | Acquisition expense `E0` (`expense_acq`) | **₩500,000** per policy at issue | **[std]** |
 | Maintenance expense `e` (`expense_maint`) | **₩60,000** p.a. for life, inflating at 1.0% | **[std]** |
 | Claim handling expense `ec` (`expense_claim`) | **₩300,000** per **claim event** — CI, pre-CI death and post-CI death alike | **[std]** |
@@ -741,7 +741,7 @@ handling costs.
 **Nothing is netted against the loan except the payments.** The acceleration itself is paid
 **gross**, not net of `L(t)`: no retrieved document says the 선지급 is reduced by the loan
 balance, and the 표준약관's netting rule speaks to 보험금 payment and to 해지 [REG-R25
-제33조]. That is a **[std]** reading and it is the conservative one for the policyholder; on
+제33조](#krlib-reg-r25). That is a **[std]** reading and it is the conservative one for the policyholder; on
 `point_id = 7`, the only point with a loan, it is also the reading that keeps the loan
 balance intact into the residual, which is where it does bite.
 
@@ -928,7 +928,7 @@ base is thinner than on the chassis: **no CI lapse experience of any kind was re
   claim.
 - **면책 incidence is zero in the base run [std], and refusal is not forfeiture.** The
   chassis's finding carries over: where a claim is refused for an 면책사유 the insurer must
-  still pay 「보험수익자를 위하여 적립한 금액」 [REG-R50 제736조] [REG-R25 제22조]. **On this
+  still pay 「보험수익자를 위하여 적립한 금액」 [REG-R50 제736조](#krlib-reg-r50) [REG-R25 제22조](#krlib-reg-r25). **On this
   product the refusal rate is the whole consumer story** — the 중대한 definitions are the
   most litigated wording in the Korean market [R5] [R6] [R7] [R10] [R16] — and **no Korean CI
   부지급률 statistic exists in any retrieved source** [R1]. A model that treated a refused CI
@@ -1680,3 +1680,44 @@ each is checkable.
 - **The two decrement tables are not the chassis's.** `ω = 110` here against 115 there, and
   the two files are fitted to different anchors on different bases. Swapping them changes the
   horizon by five years and the whole mortality level.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-ci_insurance-r1
+[R10]: #krlib-ci_insurance-r10
+[R11]: #krlib-ci_insurance-r11
+[R13]: #krlib-ci_insurance-r13
+[R16]: #krlib-ci_insurance-r16
+[R3]: #krlib-ci_insurance-r3
+[R5]: #krlib-ci_insurance-r5
+[R6]: #krlib-ci_insurance-r6
+[R7]: #krlib-ci_insurance-r7
+[REG-R1]: #krlib-reg-r1
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R40]: #krlib-reg-r40
+[REG-R42]: #krlib-reg-r42
+[REG-R48]: #krlib-reg-r48
+[REG-R5]: #krlib-reg-r5
+[REG-R52]: #krlib-reg-r52
+[REG-R55]: #krlib-reg-r55
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+<!-- END generated citation links -->

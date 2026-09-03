@@ -66,6 +66,8 @@ so everything was fetched with a summarising fetcher, which renders HTML but ret
 PDFs as undecodable binary; in every such case the saved binary was extracted locally with
 `pypdf` and read directly. That is how the four PDFs below were obtained.
 
+(krlib-long_term_care-s1)=
+
 ### S1 — 우정사업본부(우체국보험), 「무배당 우체국간병비보험 2309 상품요약서」 (statutory product summary)
 
 - Publisher: 과학기술정보통신부 우정사업본부 (Korea Post Insurance), sold through 체신관서;
@@ -90,6 +92,8 @@ PDFs as undecodable binary; in every such case the saved binary was extracted lo
   납입기간 grids; the 표준형 surrender-value form; the 12% 세액공제 statement; and the
   간병인사용일당 rate that `model.md` names as a **frequency, not a probability**.
 
+(krlib-long_term_care-s2)=
+
 ### S2 — ABL생명, 「(무)ABL우리가족THE케어간병보험(해약환급금 미지급형)2504」 상품안내장
 
 - Publisher: ABL생명보험주식회사; 16 pp., 제작 2025-09-01, 준법감시인 심의필 제2025-PA276호
@@ -112,6 +116,8 @@ PDFs as undecodable binary; in every such case the saved binary was extracted lo
   utilisation-conditioned 재가/시설/주야간보호/복지용구 지원금 riders that the absorbing-state
   simplification would **not** survive; and the 간편심사 question set behind `uw_loading`.
 
+(krlib-long_term_care-s3)=
+
 ### S3 — 삼성화재해상보험, 「무배당 삼성화재 간병보험 1808.2 (새시대 간병파트너)」 보험약관
 
 - Publisher: 삼성화재해상보험주식회사, 장기상품개발2파트, printed 2018-08; 234 pp.
@@ -130,6 +136,8 @@ PDFs as undecodable binary; in every such case the saved binary was extracted lo
   insurer does not control; and the 두 번째 장기요양지원금 rider with its five-year 면책, the
   market's own acknowledgement that grades move.
 
+(krlib-long_term_care-s4)=
+
 ### S4 — 한화손해보험, 「무배당 한화 골드클래스 간병보험」 약관 (policy conditions)
 
 - Publisher: 한화손해보험주식회사; document revision date 2023-07-11 (PDF metadata); 173 pp.,
@@ -146,6 +154,8 @@ PDFs as undecodable binary; in every such case the saved binary was extracted lo
   persistence test, and the **one-year full 면책** on the dementia riders against **no 면책**
   on the 장기요양 riders; the 「납입중50%해약환급금지급형」 mechanics, which are `cv_form =
   half_during`; and the exclusion referring to 노인장기요양보험법 제29조.
+
+(krlib-long_term_care-s5)=
 
 ### S5 — 교보생명, 「교보더안심치매·간병보험」 출시 보도자료 (carrier press release)
 
@@ -171,6 +181,8 @@ documents [R8] [R9] [R10], two further legal entries [R12] [R13], one supervisor
 that was **not** retrieved in original [R14], and four news or trade-press items [R15] – [R18]
 whose figures inherit that weakness and are labelled at every point of use.
 
+(krlib-long_term_care-r1)=
+
 ### R1 — 노인장기요양보험법 (Act on Long-Term Care Insurance for the Aged)
 
 - Publisher: 국가법령정보센터 (법제처). Doc type: statute
@@ -186,6 +198,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   basis-change risk the insurer does not control — and 제23조's exhaustive 급여 list. The
   시행령 detail is cited from [REG-R55], which was retrieved at current consolidation.
 
+(krlib-long_term_care-r2)=
+
 ### R2 — 노인장기요양보험법 시행령 [별표 1] 「노인성 질병의 종류」 (제2조 관련)
 
 - Publisher: 국가법령정보센터; 개정 2022-12-20. Doc type: annexe to a presidential decree
@@ -198,6 +212,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   `sub65_factor_at` instead, and why no cancer, musculoskeletal or frailty route exists below
   that age.
 
+(krlib-long_term_care-r3)=
+
 ### R3 — 찾기쉬운 생활법령정보, 「노인장기요양보험 > 등급판정 절차 및 기준」
 
 - Publisher: 법제처 (easylaw.go.kr). Doc type: official plain-language restatement
@@ -207,6 +223,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   기능상태, cited to 법 제15조 and 시행령 제7조제1항, and the **30-day determination deadline**
   with a 30-day extension (법 제16조제1항). The deadline is what fixes the model's claim-date
   convention at the **판정일**; the bands corroborate [REG-R55], read at first hand.
+
+(krlib-long_term_care-r4)=
 
 ### R4 — 국민건강보험공단, 「2024 노인장기요양보험 통계연보」
 
@@ -228,6 +246,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   simplification; 표2-1 and the 인정자 series give the stock growth and the duration bracket
   behind `care_mort_mult`. Everything in the morbidity basis traces here.
 
+(krlib-long_term_care-r6)=
+
 ### R6 — 국회예산정책처, 「2018~2027년 노인장기요양보험 재정전망」 (2018-12)
 
 - Publisher: 국회예산정책처 추계세제분석실 사회비용추계과. Doc type: legislature budget-office
@@ -239,6 +259,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   간호처치 and 재활 — and of the **creation of the 인지지원등급 on 2018-01-01**, which is the
   library's standing example of a trigger enlarged by decree at no additional premium, and the
   level shift that contaminates any Korean experience series crossing that date.
+
+(krlib-long_term_care-r7)=
 
 ### R7 — 보건복지부, 「2023년 치매역학조사 및 실태조사 결과 발표」 보도자료
 
@@ -255,6 +277,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   `dem_factor_f` — including the 65-79 / 80+ crossover the model's flat-in-age factors do not
   reproduce, which `model.md` names as a weakness.
 
+(krlib-long_term_care-r8)=
+
 ### R8 — 보험연구원, 「최근 치매보험시장의 이슈와 과제」 (KIRI 이슈분석, 2019-05-13)
 
 - Publisher: 보험연구원 (정성희, 문혜정). Doc type: research-institute analysis, 4 pp.
@@ -265,6 +289,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   supervisory intervention, the industry's self-imposed ₩30,000,000 aggregate limit, and the
   epidemiology behind the tier ladder: **경증치매 is 67% of all dementia cases**, which is what
   the product-spec checks the market's own ≈ 3 : 1 tier pricing against.
+
+(krlib-long_term_care-r9)=
 
 ### R9 — 보험연구원, 연구보고서 2019-11, Ⅱ장 「우리나라 장기요양서비스/보험의 현황 및 평가」
 
@@ -280,6 +306,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   long-term-care incidence table — the negative result the whole basis construction follows
   from.
 
+(krlib-long_term_care-r10)=
+
 ### R10 — 금융감독원, 「치매보험금 분쟁을 선제적으로 예방할 수 있도록 보험약관을 개선하겠습니다」
 
 - Publisher: 금융감독원, 2019-07-02. Doc type: supervisory press release announcing a 약관
@@ -293,6 +321,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   2019**, which is why `dementia_wait_mths` is a market answer and not a carrier choice — and
   why a Korean dementia experience series spanning 2019 is contaminated at the level of the
   benefit **definition**.
+
+(krlib-long_term_care-r11)=
 
 ### R11 — 한은정·황라일·이정석, 「장기요양 인정자의 사망 전 의료 및 요양서비스 이용 양상 분석」
 
@@ -310,6 +340,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   *level* from the yearbook duration bracket, and why `light_mort_mult` is bounded below the
   care multiple by the 82.1 mean score.
 
+(krlib-long_term_care-r12)=
+
 ### R12 — 보험업법 제4조 (보험업의 허가)
 
 - Publisher: 국가법령정보센터. Doc type: statute
@@ -321,6 +353,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   statutory 보험종목 in its own right and not a sub-species of 질병보험, writable by both
   licences — which is why the two life-side and two non-life documents in this file describe
   the same benefit.
+
+(krlib-long_term_care-r13)=
 
 ### R13 — 노인장기요양보험법 시행령 제8조 (장기요양인정 유효기간), 2025-07-01 개정
 
@@ -334,6 +368,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   years, 2~4등급 3 → 4, 5등급 and 인지지원 unchanged. Used in `technical-notes.md` **only
   inside the duration estimator's sensitivity**, never as a load-bearing input, precisely
   because it is a restatement.
+
+(krlib-long_term_care-r14)=
 
 ### R14 — 금융위원회·금융감독원, 「IFRS17 주요 계리가정 가이드라인」 (2024-11-07)
 
@@ -349,6 +385,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   [REG-R27]; **the functional form is [unverified] at instrument level**, and `lapse_rate(t)`
   says so.
 
+(krlib-long_term_care-r15)=
+
 ### R15 — 헤럴드경제, 「금융당국, 간병인보험 구조 진단 착수」
 
 - Publisher: 헤럴드경제 (biz.heraldcorp.com). Doc type: **news article**
@@ -359,6 +397,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   twenty-fold in four years. Cited **only to scope that product out**: it is a hospital-days
   frequency-severity cover that shares nothing with this one but the word 간병, and a reader
   comparing Korean market commentary against this library would otherwise conflate the two.
+
+(krlib-long_term_care-r16)=
 
 ### R16 — 보험신보, 「이슈 — 장기요양등급 인증자 증가하는데」
 
@@ -371,6 +411,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   간병보험 as the cover they would buy next; and a survey of 2024–2025 product launches. Every
   figure inherits the source's weakness and is labelled a news figure at each use.
 
+(krlib-long_term_care-r17)=
+
 ### R17 — 생생비즈, 「치매 환자 100만명 시대 커지는 치매·간병보험 시장…작년 70% 급성장」
 
 - Publisher: 생생비즈 (livebiz.today). Doc type: **news article**
@@ -380,6 +422,8 @@ whose figures inherit that weakness and are labelled at every point of use.
   계속보험료 series, and a product survey naming the CDR 검사지원비 and lecanemab covers that
   `product-spec.md` records as out-of-scope market features. Market context only; no modelled
   parameter rests on it.
+
+(krlib-long_term_care-r18)=
 
 ### R18 — 헬스코리아뉴스 and 백세시대, 2024 통계연보 launch coverage
 
@@ -576,3 +620,34 @@ expense or commission scale, and no 질병 / 상해 split of certifications. Eve
 a **[std]** parameter in `model.md`, each with its rationale and whatever observed range the
 retrieved documents bound — and for several of them, the honest answer recorded there is that
 the documents bound nothing at all.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-long_term_care-r1
+[R10]: #krlib-long_term_care-r10
+[R11]: #krlib-long_term_care-r11
+[R12]: #krlib-long_term_care-r12
+[R13]: #krlib-long_term_care-r13
+[R14]: #krlib-long_term_care-r14
+[R15]: #krlib-long_term_care-r15
+[R18]: #krlib-long_term_care-r18
+[R2]: #krlib-long_term_care-r2
+[R3]: #krlib-long_term_care-r3
+[R4]: #krlib-long_term_care-r4
+[R6]: #krlib-long_term_care-r6
+[R7]: #krlib-long_term_care-r7
+[R8]: #krlib-long_term_care-r8
+[R9]: #krlib-long_term_care-r9
+[REG-R1]: #krlib-reg-r1
+[REG-R12]: #krlib-reg-r12
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R42]: #krlib-reg-r42
+[REG-R54]: #krlib-reg-r54
+[REG-R55]: #krlib-reg-r55
+[REG-R61]: #krlib-reg-r61
+<!-- END generated citation links -->

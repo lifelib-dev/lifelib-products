@@ -183,7 +183,7 @@ product's own decrement. It is contractual — [S2] conditions the suppression o
 
 The step at 납입완료 is a **step, not a ramp**: `cv_pp(m) / (k × cv_std_pp(m))` is exactly
 `1 / k = 2.000000` on the anchor cell. It is not a surrender-charge effect and cannot be
-explained as one — the 해약공제기간 is capped at seven years [REG-R19 제7-66조제1항제2호],
+explained as one — the 해약공제기간 is capped at seven years [REG-R19 제7-66조제1항제2호](#krlib-reg-r19),
 so on a 20년납 contract `surr_chg_pp(t)` is zero from `t = 7`, thirteen years earlier.
 
 `check_cv_carve_out()` asserts what the carve-out exists to produce: **a CI claimant is
@@ -198,7 +198,7 @@ anyway; **at an individual duration inside the 납입기간 it is a factor of tw
 The same carve-out **doubles the policy loan** at the acceleration date, because the loan
 is computed off the payable value: at duration 10 on the anchor cell `loan_avail_pp` is
 ₩11,907,590 and `loan_avail_ci_pp` is ₩23,815,179, at the same duration, with nothing else
-about the contract changed [REG-R25 제33조].
+about the contract changed [REG-R25 제33조](#krlib-reg-r25).
 
 ## The residual is not a constant
 
@@ -341,7 +341,7 @@ example while the machinery stays visible and testable.
 
 | Module | Switch | Off value | Exercised on | What it does |
 |---|---|---|---|---|
-| 보험계약대출 | `pol_loan_util` | `0.0` | point 7 | A single capped drawdown at `pol_loan_year`, `loan_cap_rate` = 0.80 of the **payable** value [REG-R25 제33조], accumulating at `i_loan` = 4.00%. Point 7 draws at duration **12**, inside the 납입기간, so the suppressed base binds and the doubling at a CI event is visible: ₩23,581,915.16 of room pre-CI against ₩47,163,830.33 post-CI at the same anniversary. No policy leaves because of a loan — a balance that outgrows a benefit floors the payment at zero |
+| 보험계약대출 | `pol_loan_util` | `0.0` | point 7 | A single capped drawdown at `pol_loan_year`, `loan_cap_rate` = 0.80 of the **payable** value [REG-R25 제33조](#krlib-reg-r25), accumulating at `i_loan` = 4.00%. Point 7 draws at duration **12**, inside the 납입기간, so the suppressed base binds and the doubling at a CI event is visible: ₩23,581,915.16 of room pre-CI against ₩47,163,830.33 post-CI at the same anniversary. No policy leaves because of a loan — a balance that outgrows a benefit floors the payment at zero |
 | The 표준형 lapse basis | `lapse_basis` | `log_linear` | points 3, 6, 8 | Reads `lapse_table.csv` by policy year instead of running the 원칙모형 formula |
 | The all-trigger first-year 감액 | `first_year_scope` | `breast` | point 4 | Routes **every** year-1 acceleration into cohort 0 rather than only the breast-cancer share — the GI-generation simplification [S4] [S5]. `ci_reduced_share(1)` goes from 0.0015224768 on the anchor to 1.0 |
 | The best-estimate levers | `mort_be_factor`, `ci_be_factor` | `1.00` | point 9 | Scale the two decrements off the valuation basis. At 1.00 the base run is a **valuation-basis run and not a best estimate**: [S3]'s rates are 예정위험률 carrying a 안전할증 whose regulatory cap was 30% in the early 2000s, 50% from the 2015 로드맵 and removed from 2017, and no retrieved source sizes the margin against current Korean insured experience [R1] |
@@ -610,9 +610,9 @@ them bound nothing at all, which is said rather than papered over.
 |---|---|---|---|
 | `prem_int_rate` | 2.50% p.a., 연복리, flat | the chassis's 예정이율, inherited unchanged; equal to the 2026 평균공시이율 [REG-R48] | CI evidence brackets it too far away to be useful: 연복리 4.0% on a 2011 product [S3], 「약 2.75%」 for 종신보험 in 2019 [S4] |
 | `i_loan` | 4.00% p.a. | 예정이율 + 1.5%, the chassis's formula at three carriers; the *formula* is sourced, the level is a vintage | none published for a CI product |
-| `loan_cap_rate` | 0.80 | inside the contractual limit the 표준약관 sets on the **payable** value [REG-R25 제33조] | the chassis's published 「해약환급금의 50% ~ 85%」 band |
+| `loan_cap_rate` | 0.80 | inside the contractual limit the 표준약관 sets on the **payable** value [REG-R25 제33조](#krlib-reg-r25) | the chassis's published 「해약환급금의 50% ~ 85%」 band |
 | `net_prem_ratio` | 0.80 | the 연납순보험료 entering 별표 14 is taken as 0.80 × gross, so the statutory cap rests on published figures alone [REG-R20] | cross-check: ₩3,944,704 against the FSC's 13× monthly rule of thumb, ₩3,987,620 — 1.1% [REG-R29] |
-| surrender-charge run-off | straight line over `surr_chg_years_cap` = 7 | the 7-year cap is statutory [REG-R19 제7-66조제1항제2호]; the schedule inside it is in the unpublished 산출방법서 [REG-R2] | none published; seven equal steps of ₩563,529.1428571429 at the anchor |
+| surrender-charge run-off | straight line over `surr_chg_years_cap` = 7 | the 7-year cap is statutory [REG-R19 제7-66조제1항제2호](#krlib-reg-r19); the schedule inside it is in the unpublished 산출방법서 [REG-R2] | none published; seven equal steps of ₩563,529.1428571429 at the anchor |
 | ω (`omega_age`) | 110 | the 제10회 경험생명표's terminal age is not published [REG-R33] [REG-R34] | the chassis ships 115 on a differently anchored table |
 | mortality construction | Makeham fitted exactly to three anchors to 60, log-linear in `q` from 60 to `q(110) = 1` | the fit reproduces [S3]'s three disclosed male rates exactly; the fitted slope passes 1 before age 100, so the ramp is a separate rule | female = 0.5294 × male on [S3]'s age-20 ratio; the check **fails** — a 15-to-80 ratio of 0.60 against the 0.50 implied by [REG-R38] |
 | CI incidence above 60 | 40-to-60 log-slope damped at 0.90 a year | undamped, male 중대한 암 reaches 1.29 by age 100 | none published above 60; [S3] stops there |
@@ -721,3 +721,31 @@ the `Projection` docstring, the `result_cf()` contract — indexed by `t`, first
 python -m pytest tests/test_ci_insurance_kr.py -q
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-ci_insurance-r1
+[R11]: #krlib-ci_insurance-r11
+[R3]: #krlib-ci_insurance-r3
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R16]: #krlib-reg-r16
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R40]: #krlib-reg-r40
+[REG-R42]: #krlib-reg-r42
+[REG-R48]: #krlib-reg-r48
+[REG-R55]: #krlib-reg-r55
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+<!-- END generated citation links -->

@@ -53,7 +53,7 @@ arithmetic:
 - **The contract is one year long.** It renews annually at the attained age and the
   then-current basis inside a supervisory corridor of ±25% per 위험구분단위, and it
   **re-enters** the then-current generation every five years [S1 제30조] [S1 제23조]
-  [REG-R17 제7-63조제2항제3호·제6호나목]. The projection horizon is a *stated* one,
+  [REG-R17 제7-63조제2항제3호·제6호나목](#krlib-reg-r17). The projection horizon is a *stated* one,
   not a contractual one.
 - **The insured loss is exogenous.** Both halves of it — the statutory co-payment on
   treatment inside the public list and the whole of the treatment outside it — are set by
@@ -270,12 +270,12 @@ That is what makes the loop tractable in a projection model at all.
   발생하지 않습니다」 [S3], so there is no `cv_pp`, no `claims_lapse`, no
   보험계약대출 and no 보험료 자동대출납입. A missed premium really does lapse the policy:
   a 납입최고 of at least 14 days runs and the contract terminates the day after it ends
-  [REG-R25 제26조], and 표준약관 제33조 excludes 「순수보장성보험 등」 from policy lending
+  [REG-R25 제26조](#krlib-reg-r25), and 표준약관 제33조 excludes 「순수보장성보험 등」 from policy lending
   anyway. A policyholder who cancels mid-term recovers the 미경과보험료 under
   상법 제649조 [REG-R49], which is a return of premium and not a surrender value.
 - **No death benefit.** 감독규정 제7-63조제1항제1호 requires *every* 제3보험 product to
   pay the 계약자적립액 and the 미경과보험료 of 제7-66조제5항 on death from a non-covered
-  cause [REG-R17] [REG-R25 제22조]; on a one-year pure protection contract the
+  cause [REG-R17] [REG-R25 제22조](#krlib-reg-r25); on a one-year pure protection contract the
   계약자적립액 is nil to the precision this model works at, so the payment reduces to the
   return of unearned premium and there is no `claims_death`. **This is the only place in
   `krlib` where that provision has no financial content** — in
@@ -304,7 +304,7 @@ legislation rather than a carrier document [S1] [REG-R23] [REG-R25].
 | Input | Value | Cells / Reference | Basis |
 |---|---|---|---|
 | 급여 입원 자기부담률 | **20%** of 본인부담금; benefit is 「본인부담금의 80%」 | `retain_rate_ge_base = 0.20` | [S1 기본형 제3조] |
-| 급여 입원 annual co-payment cap | Retained inpatient co-payment above **₩2,000,000** a policy year is reimbursed | `cap_inpatient_retain = 2000000` | [S1 제5조제4항] [REG-R17 제7-63조제2항제2호]; also in a 2세대 document [S4] |
+| 급여 입원 annual co-payment cap | Retained inpatient co-payment above **₩2,000,000** a policy year is reimbursed | `cap_inpatient_retain = 2000000` | [S1 제5조제4항] [REG-R17 제7-63조제2항제2호](#krlib-reg-r17); also in a 2세대 document [S4] |
 | 급여 통원 deductible | `max(d_tier, 20% × cost)`, `d_tier` = **₩10,000** clinic tier / **₩20,000** hospital tier | `ded_clinic`, `ded_hospital` | [S1 기본형 제3조 <표1>] |
 | Per-visit outpatient cap | **₩200,000**, both limbs | `visit_cap()` | [S1 제5조제5항] |
 | 비급여 입원 자기부담률 | **30%** of the non-covered cost excluding the room differential | `retain_rate_np_base = 0.30` | [S1 특별약관 제3조] |
@@ -323,13 +323,13 @@ legislation rather than a carrier document [S1] [REG-R23] [REG-R25].
 | Relativity exemptions | 산정특례 conditions, and **all** claims of an insured graded 장기요양 1·2등급 | `reld_exempt_share` | [S1 특별약관 제6조제3항] [REG-R54] |
 | Relativity is revenue-neutral | 「상대도 적용 전·후의 총 보험료 수준이 일치하도록」 — the discount is **solved**, not set | `reld_solved(y)` | [S1] |
 | Relativity base | The **rider 순보험료 only**; 「비급여 특약 보험료만 할증되며」 | `prem_gross_mth(y)` | [S1] [R2] |
-| Renewal corridor | **±25%** a year excluding the age effect, **per 위험구분단위**, applied to the **pre-relativity** premium | `renewal_corridor = 0.25` | [S1 제30조제2항] [S1 특별약관 제6조제2항] [REG-R17 제7-63조제2항제3호·제3의2호] |
+| Renewal corridor | **±25%** a year excluding the age effect, **per 위험구분단위**, applied to the **pre-relativity** premium | `renewal_corridor = 0.25` | [S1 제30조제2항] [S1 특별약관 제6조제2항] [REG-R17 제7-63조제2항제3호·제3의2호](#krlib-reg-r17) |
 | 무사고 할인 | **10%** of the whole office premium after **two** consecutive claim-free years | `noclaim_disc = 0.10` | [R1] [S3] |
-| 보장내용 변경주기 | **5 years**; re-entry into the generation then on sale, **no health underwriting** | `reentry_period = 5` | [S1 제23조] [REG-R17 제7-63조제2항제6호나목] |
+| 보장내용 변경주기 | **5 years**; re-entry into the generation then on sale, **no health underwriting** | `reentry_period = 5` | [S1 제23조] [REG-R17 제7-63조제2항제6호나목](#krlib-reg-r17) |
 | Maximum cover age | 보험나이 **100** | `max_cover_age = 100` | [S3] [S4] |
 | Policy year | 「계약일로부터 매1년 단위로 도래하는 계약해당일 전일까지의 기간」 | `policy_year(t)` | [S1 제5조제2항] |
 | Surrender value | **Nil** | — | [S3] |
-| Death benefit | **Nil** beyond the 미경과보험료 | — | [REG-R17 제7-63조제1항제1호] [REG-R25 제22조] |
+| Death benefit | **Nil** beyond the 미경과보험료 | — | [REG-R17 제7-63조제1항제1호](#krlib-reg-r17) [REG-R25 제22조](#krlib-reg-r25) |
 | Indemnity ceiling | 「실제 발생한 손해(비용)를 초과하여 보험금을 지급하지 않습니다」 | `check_indemnity()` | [S1 제37조·제38조] [S3] |
 
 Two contractual mechanics are **specified and implemented but deliberately not exercised**
@@ -746,10 +746,10 @@ gives 1.121, which puts the year-10 rider base premium **2.564% low** — ₩20,
 against ₩20,625.8505.
 
 Three further points, each sourced. The corridor binds **per 위험구분단위**, not on the
-portfolio average [S1 제30조제2항] [REG-R17 제7-63조제2항제3호], which is why the two units
+portfolio average [S1 제30조제2항] [REG-R17 제7-63조제2항제3호](#krlib-reg-r17), which is why the two units
 are clipped separately and `check_renewal_corridor()` tests each. It applies to the
 **pre-relativity** premium — 「요율 상대도 적용 전 보험료」 [S1 특별약관 제6조제2항]
-[REG-R17 제7-63조제2항제3의2호] — so a band-5 policyholder can face
+[REG-R17 제7-63조제2항제3의2호](#krlib-reg-r17) — so a band-5 policyholder can face
 **1.25 × 4.00 = 5.00×** the previous year's base rider rate in a single step, which is the
 sharpest number in the product. And the relativity applies to the **순보험료**
 (「특별약관의 순보험료 총액을 대상으로 합니다」 [S1]); this model applies it to the rider's
@@ -859,7 +859,7 @@ For `t = 0, 1, …, proj_len()`:
 
 **Five decrements, and the middle three are what make this roll-forward different from a
 term assurance's.** 개인실손 중지 is a supervisory requirement rather than a product feature
-[REG-R17 제7-63조제2항제7호]; the renewal decline is an option the policyholder holds and the
+[REG-R17 제7-63조제2항제7호](#krlib-reg-r17); the renewal decline is an option the policyholder holds and the
 insurer does not; and the maturity count is the *stated horizon* rather than the end of
 cover. Without all three the roll-forward would appear to lose lives with no cause, and
 `check_pols_roll_fwd()` would fail.
@@ -895,7 +895,7 @@ handling is charged on claims here rather than on premium.
 
 | Module | Base-run setting | What switching it on does |
 |---|---|---|
-| **개인실손 중지** | `suspend_rate = 0` | A fourth decrement at `1 − (1 − r)^(1/12)` a month. Mandatory as a *facility* [REG-R17 제7-63조제2항제7호] [R16] [S3]; carried as a decrement and **not** as a state, because the contract that resumes is a different projection. Model point 9 carries 3% a year. |
+| **개인실손 중지** | `suspend_rate = 0` | A fourth decrement at `1 − (1 − r)^(1/12)` a month. Mandatory as a *facility* [REG-R17 제7-63조제2항제7호](#krlib-reg-r17) [R16] [S3]; carried as a decrement and **not** as a state, because the contract that resumes is a different projection. Model point 9 carries 3% a year. |
 | **The 40% branch** | `nhi_covered = 1` | Raises `r_ge` and `r_np` to 0.60 and switches the 본인부담상한제 off. Model point 10. |
 | **Cost-trend stress** | `trend_mult = 1.0` | Multiplies both `med_trend_*`. At 4.5 the 비급여 re-rate would be 36.45% and the corridor clips it to 25%; model point 10. |
 | **Utilisation stress** | `util_mult = 1.0` | Multiplies every frequency. Model point 8 carries 10.0 — a cell inside the top claim decile — and is the only shipped point where the public truncation binds. |
@@ -924,7 +924,7 @@ premium's response to claims but not the claims' response to premium.
   보험료 자동대출납입 to advance a missed premium and no 보험계약대출 to lend against —
   표준약관 제33조 excludes 「순수보장성보험 등」 from policy lending in terms [REG-R25]. A
   missed premium produces a 납입최고 of at least 14 days and the contract terminates the day
-  after it ends [REG-R25 제26조]. So no lapse-suppression term belongs in the recursion, and
+  after it ends [REG-R25 제26조](#krlib-reg-r25). So no lapse-suppression term belongs in the recursion, and
   `claims_lapse` is identically zero. This is the structural fork between the 실손 chassis
   and the [whole life savings chassis (종신보험)](../whole_life/technical-notes.md), whose
   자동대출납입 and 보험계약대출 machinery must **not** be imported here.
@@ -947,7 +947,7 @@ premium's response to claims but not the claims' response to premium.
   sensitivity rather than a modelled effect.
 - **Suspension is not lapse either.** A policyholder covered by a 단체실손 may suspend the
   individual policy for the duration and resume it within one month of the group cover ending
-  [R16] [S3], and the facility is mandatory [REG-R17 제7-63조제2항제7호]. The resumed contract
+  [R16] [S3], and the facility is mandatory [REG-R17 제7-63조제2항제7호](#krlib-reg-r17). The resumed contract
   must match on four attributes to count as the same — 보장종목, 보험가입금액, 자기부담금,
   최대 보장가능 보험나이 [S3] — which is precisely why resumption is **not** modelled: the
   contract that resumes is a different projection, entering the product in force at
@@ -1824,3 +1824,48 @@ each is checkable against the shipped model.
   machinery, and on this cell would collect **₩1,066,375.5027** of premium over the 120
   months instead of the projected **₩1,558,165.4328** — 31.6% less — while leaving the claim
   untouched, which turns a +₩118,476 result into a loss of about ₩309,381.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-indemnity_medical-r1
+[R10]: #krlib-indemnity_medical-r10
+[R12]: #krlib-indemnity_medical-r12
+[R16]: #krlib-indemnity_medical-r16
+[R19]: #krlib-indemnity_medical-r19
+[R2]: #krlib-indemnity_medical-r2
+[R20]: #krlib-indemnity_medical-r20
+[R3]: #krlib-indemnity_medical-r3
+[R4]: #krlib-indemnity_medical-r4
+[R5]: #krlib-indemnity_medical-r5
+[R6]: #krlib-indemnity_medical-r6
+[R7]: #krlib-indemnity_medical-r7
+[R8]: #krlib-indemnity_medical-r8
+[R9]: #krlib-indemnity_medical-r9
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R15]: #krlib-reg-r15
+[REG-R17]: #krlib-reg-r17
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R25]: #krlib-reg-r25
+[REG-R3]: #krlib-reg-r3
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R41]: #krlib-reg-r41
+[REG-R44]: #krlib-reg-r44
+[REG-R49]: #krlib-reg-r49
+[REG-R51]: #krlib-reg-r51
+[REG-R53]: #krlib-reg-r53
+[REG-R54]: #krlib-reg-r54
+[REG-R57]: #krlib-reg-r57
+[REG-R6]: #krlib-reg-r6
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R62]: #krlib-reg-r62
+[REG-R8]: #krlib-reg-r8
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

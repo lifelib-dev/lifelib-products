@@ -161,7 +161,7 @@ point built on it can be checked against the market rather than asserted.
 | Regulatory class | 생명보험상품 (보험업법 제2조제1호 가목, 제4조제1항제1호); **보장성보험** at the 기준연령 요건 (감독규정 제1-2조제3호) | [REG-R1] [REG-R9] [R1] [R2] |
 | Lives basis | Single life. No joint-life or first-death form appears in any retrieved Korean document | [S1] [S6] [S8] [S10] [S11] [S12] |
 | Benefit shape | Level 보험가입금액 (*boheom gaip geumaek*, sum assured). 체증형 (escalating) is corporate-only; 체감형 (decreasing) is a disclosure category with no retail product in it | [S4] [S18]; scope **[std]** (3) |
-| Age basis | **보험나이** (*boheom nai*, insurance age): 만나이 with fractions of six months or more rounded up, incrementing on the **policy anniversary** and not on the birthday | [S2 제22조] [REG-R25 제21조] |
+| Age basis | **보험나이** (*boheom nai*, insurance age): 만나이 with fractions of six months or more rounded up, incrementing on the **policy anniversary** and not on the birthday | [S2 제22조] [REG-R25 제21조](#krlib-reg-r25) |
 | 가입나이 (issue age) | 만19세 to 보험나이 65세 | [S1] [S6] [S9] [S11] [S12]; envelope **[std]** (4) |
 | 보험기간 (policy term) | Base **20년만기**; menu 10/20/30년만기 and 60/65/70/80/90세만기 | [S1] [S8] [S10] [S12]; menu **[std]** (5) |
 | 납입기간 (premium-paying period) | Base **전기납** (equal to the term); 10년납 and 20년납 shortened-pay variants | [S1] [S8] [S11] [S12]; base **[std]** (5) |
@@ -170,8 +170,8 @@ point built on it can be checked against the market rather than asserted.
 | Rate class permanence | **Not fixed at issue.** A class rider tracks smoking status for the life of the contract and moves in both directions | [S2 건강체서비스특약Ⅱ 제4조] [S11] [S12] |
 | 건강진단 (non-medical limits) | 일반진단 required above ₩120,000,000 at 20–39, ₩70,000,000 at 40–49, ₩30,000,000 at 50–54, ₩10,000,000 at 55+ | [S6]; adoption **[std]** (8) |
 | 위험등급 (occupational class) | 위험1급 capped at ₩100,000,000; all other classes at ₩200,000,000. Carried, not modelled | [S6]; adoption **[std]** (8) |
-| 계약자 / 피보험자 / 수익자 | Three roles, routinely three people. Written consent of the 피보험자 is required where they are not the 계약자 | [REG-R50 제731조] [S2 제20조] |
-| Minimum age of the life assured | A contract on the death of a person **under 만 15**, or of a 심신상실자 or 심신박약자, is **void**; this one test uses 만나이 and not 보험나이 | [REG-R50 제732조] [S2 제20조·제22조] |
+| 계약자 / 피보험자 / 수익자 | Three roles, routinely three people. Written consent of the 피보험자 is required where they are not the 계약자 | [REG-R50 제731조](#krlib-reg-r50) [S2 제20조] |
+| Minimum age of the life assured | A contract on the death of a person **under 만 15**, or of a 심신상실자 or 심신박약자, is **void**; this one test uses 만나이 and not 보험나이 | [REG-R50 제732조](#krlib-reg-r50) [S2 제20조·제22조] |
 | **Anchor model cell (model point 1)** | Male, 보험나이 40, 20년만기 전기납, ₩100,000,000 (1억원), 표준체, 순수보장형 해약환급금 미지급형, 월납 **₩15,080** | premium [S12] [S4]; cell = 기준연령 요건 [REG-R9] and 대표계약 [S5]; **[std]** (9) |
 | Anchor, female twin (model point 2) | Same cell, female: 월납 **₩8,010** | [S12] [S4] |
 | Anchor, 갱신형 (model point 3) | Male, 보험나이 40, **10년만기 갱신형 전기납**, ₩100,000,000, 표준체, 월납 **₩9,000** at issue, ceiling 보험나이 80 | [S6] [S7] [S4]; **[std]** (2) |
@@ -408,7 +408,7 @@ Footnotes to **[std]** rows:
     the mix of claims falling into the three bands, so any split would be invented. The
     composite pays at the projection step in which the claim arises and says so; a claim-lag
     module belongs in the technical notes' sensitivities and not in the base run. The
-    surrender value is likewise payable within 3영업일 of claim [S2 제33조] [REG-R25 제32조].
+    surrender value is likewise payable within 3영업일 of claim [S2 제33조] [REG-R25 제32조](#krlib-reg-r25).
 
 ### Options
 
@@ -465,28 +465,28 @@ Footnotes to **[std]** rows:
 | — where premiums have been waived | **Nil**, even after the nominal 납입기간 would have ended: the step-up is forfeited | [S2 제33조제2항 단서] [S12] |
 | — 표준형 comparator | A **phantom**: it cannot be bought, is disclosed only for comparison, and is computed 「해지율을 적용하지 않고」 as 순보험료식 계약자적립액 less the 해약공제액 | [S1] [S2 제33조] [S12] [S18] |
 | 해약공제액 (surrender charge) | Capped by the **표준해약공제액** = 연납순보험료의 5% × 해약공제계수 + 보험가입금액의 10/1000, with 해약공제계수 = 보험기간 capped at 20 years and the 연납순보험료 recomputed on a whole-term-pay (20-year-pay if longer) basis | [REG-R20] [R9] |
-| 해약공제기간 (amortisation period) | The 납입기간 or the 신계약비 부가기간, **capped at seven years** | [REG-R19 제7-66조제1항제2호] |
-| Floor | 계약자적립액 less 해약공제액, **floored at zero** — never negative | [REG-R19 제7-66조제1항제1호] |
-| 미경과보험료 | Added to the surrender value on termination | [REG-R19 제7-66조제5항] |
-| 보험계약대출 (policy loan) | Contractually permitted within the surrender value, 「그러나 순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 — and **nil in fact** on the representative form | [S2 제34조] [REG-R25 제33조] [REG-R28] |
+| 해약공제기간 (amortisation period) | The 납입기간 or the 신계약비 부가기간, **capped at seven years** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
+| Floor | 계약자적립액 less 해약공제액, **floored at zero** — never negative | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
+| 미경과보험료 | Added to the surrender value on termination | [REG-R19 제7-66조제5항](#krlib-reg-r19) |
+| 보험계약대출 (policy loan) | Contractually permitted within the surrender value, 「그러나 순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 — and **nil in fact** on the representative form | [S2 제34조] [REG-R25 제33조](#krlib-reg-r25) [REG-R28] |
 | 자동대출납입 (automatic premium loan) | Contractually available — requested before the 납입최고기간 ends, running **1년 at a time**, unwindable within **1개월**, notified within **15일** of ending — and **inoperative** for the same reason | [S2 제26조] |
-| 납입최고(독촉)기간 (grace) | **14일** from the written, recorded-telephone or electronic demand (**7일** where the term is under a year), extended to the next business day | [S2 제27조] [REG-R25 제26조] |
+| 납입최고(독촉)기간 (grace) | **14일** from the written, recorded-telephone or electronic demand (**7일** where the term is under a year), extended to the next business day | [S2 제27조] [REG-R25 제26조](#krlib-reg-r25) |
 | Claim within grace | Paid: 「해지 전에 발생한 보험금 지급사유에 대하여 회사는 보상하여 드립니다」 | [S2 제27조] |
-| 실효 / 해지 (lapse) | The day after the 납입최고기간 ends; the surrender value is paid, net of any policy loan | [S2 제27조] [REG-R25 제26조] |
-| 부활 (reinstatement) | Available for **3년** from the termination date provided the surrender value was not drawn — 「해약환급금이 없는 경우를 포함합니다」, so a 무해지 policy is **always** eligible. Arrears bear interest 「평균공시이율+1% 범위 내에서 회사가 정하는 이율로」 | [S2 제28조] [REG-R25 제27조] |
+| 실효 / 해지 (lapse) | The day after the 납입최고기간 ends; the surrender value is paid, net of any policy loan | [S2 제27조] [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 (reinstatement) | Available for **3년** from the termination date provided the surrender value was not drawn — 「해약환급금이 없는 경우를 포함합니다」, so a 무해지 policy is **always** eligible. Arrears bear interest 「평균공시이율+1% 범위 내에서 회사가 정하는 이율로」 | [S2 제28조] [REG-R25 제27조](#krlib-reg-r25) |
 | — effect on the clocks | Re-runs the 계약 전 알릴 의무, the 사기 rule, acceptance and the start of cover, and **restarts the two-year suicide window**. A disclosure breach at the original application still bites | [S2 제6조·제28조] |
 | 특별부활 | Where the contract was terminated by 강제집행, 담보권실행 or a tax seizure: the insurer notifies the 보험수익자 within **7일**, who may repay the creditor, become the policyholder and revive the contract within **15일** | [S2 제29조] |
-| 청약철회 (cooling-off) | **15일 from receipt of the 보험증권 and never more than 30일 from the application date** (45일 where a policyholder aged 65 or over contracted by telephone). Effective on despatch; refund in full within **3영업일** | [S2 제18조] [REG-R25 제17조] [REG-R51]; scope **[std]** (22) |
+| 청약철회 (cooling-off) | **15일 from receipt of the 보험증권 and never more than 30일 from the application date** (45일 where a policyholder aged 65 or over contracted by telephone). Effective on despatch; refund in full within **3영업일** | [S2 제18조] [REG-R25 제17조](#krlib-reg-r25) [REG-R51]; scope **[std]** (22) |
 | — exclusions | Where the insurer paid for a health examination, where the term is 90일 or less, or for a 전문금융소비자 | [S2 제18조] [REG-R25] |
-| 품질보증해지 | Cancellation within **3개월 of formation** where the 약관 was not delivered, its important content not explained, or the application not signed; premiums returned with 보험계약대출이율 interest | [REG-R25 제18조제3항] [REG-R49 제638조의3] |
-| 위법계약의 해지 | Within **1년 of learning of a selling-rule breach and 5년 of the contract date**; the insurer answers within **10일** and returns the **계약자적립액** — the full reserve, **with no surrender charge** | [S2 제30조의2] [REG-R25 제29조의2] |
-| 계약 전 알릴 의무 (contestability) | Termination barred once **2년** have run from the 보장개시일 without a claim event (**1년** for disease on a 진단계약), or **1개월** after the insurer learns the ground, or **3년** from the contract date | [S2 제14–15조] [REG-R25 제13–14조] [REG-R49 제651조] |
-| 사기에 의한 계약 | **취소 within 5년 of the 보장개시일** (and 1개월 of learning), on proof of 뚜렷한 사기의사; premiums paid are returned | [S1] [S2 제16조] [REG-R25 제15조] |
-| 계약의 무효 | No written consent of the life assured; a life under 만 15 or of unsound mind; or an issue age outside the product's range. Premiums returned | [S2 제20조] [REG-R50 제731조·제732조] |
+| 품질보증해지 | Cancellation within **3개월 of formation** where the 약관 was not delivered, its important content not explained, or the application not signed; premiums returned with 보험계약대출이율 interest | [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49 제638조의3](#krlib-reg-r49) |
+| 위법계약의 해지 | Within **1년 of learning of a selling-rule breach and 5년 of the contract date**; the insurer answers within **10일** and returns the **계약자적립액** — the full reserve, **with no surrender charge** | [S2 제30조의2] [REG-R25 제29조의2](#krlib-reg-r25) |
+| 계약 전 알릴 의무 (contestability) | Termination barred once **2년** have run from the 보장개시일 without a claim event (**1년** for disease on a 진단계약), or **1개월** after the insurer learns the ground, or **3년** from the contract date | [S2 제14–15조] [REG-R25 제13–14조](#krlib-reg-r25) [REG-R49 제651조](#krlib-reg-r49) |
+| 사기에 의한 계약 | **취소 within 5년 of the 보장개시일** (and 1개월 of learning), on proof of 뚜렷한 사기의사; premiums paid are returned | [S1] [S2 제16조] [REG-R25 제15조](#krlib-reg-r25) |
+| 계약의 무효 | No written consent of the life assured; a life under 만 15 or of unsound mind; or an issue age outside the product's range. Premiums returned | [S2 제20조] [REG-R50 제731조·제732조](#krlib-reg-r50) |
 | 중대사유로 인한 해지 | Claim provocation, or forging or altering claim documents: 해지 within **1개월** of learning, surrender value paid | [S2 제31조] |
-| 소멸시효 (prescription) | **3년** on the 보험금청구권, the 보험료 반환청구권, the 해약환급금청구권 and the 계약자적립액 반환청구권 | [S2 제38조] [REG-R49 제662조] |
+| 소멸시효 (prescription) | **3년** on the 보험금청구권, the 보험료 반환청구권, the 해약환급금청구권 and the 계약자적립액 반환청구권 | [S2 제38조] [REG-R49 제662조](#krlib-reg-r49) |
 | 감액완납 / 연장정기 | **Neither exists** in any retrieved 약관 or 상품요약서 | [S1] [S2] [S6] [S8] [S10] [S11] [S12] |
-| 예금자보호 | 해약환급금 plus 기타지급금 protected to **₩100,000,000 per person**, and 사고보험금 protected to a **separate and additional ₩100,000,000**. **Corporate policyholders are not protected at all** | [S3] [S11] [S13] [REG-R52 제18조제7항] [REG-R32] |
+| 예금자보호 | 해약환급금 plus 기타지급금 protected to **₩100,000,000 per person**, and 사고보험금 protected to a **separate and additional ₩100,000,000**. **Corporate policyholders are not protected at all** | [S3] [S11] [S13] [REG-R52 제18조제7항](#krlib-reg-r52) [REG-R32] |
 | Interpretation | Good faith; **contra proferentem** — 「회사는 약관의 뜻이 명백하지 않은 경우에는 계약자에게 유리하게 해석합니다」; no expansive reading of exclusions; a sales document contradicting the 약관 is read in the policyholder's favour | [S2 제39조·제40조] |
 
 22. **Cooling-off.** 금융소비자보호법 제46조제1항제1호 gives the statutory right — the
@@ -756,7 +756,7 @@ Six consequences, each of which a model has to respect.
    period is less than 50% of an equivalent 표준형's, the post-payment value must exceed 50%
    of the 표준형's **and** the post-payment 환급률 must exceed the greater of 100% and the
    표준형's [REG-R19] [REG-R28]. Variable products are excluded outright [REG-R19
-   제4항제1호].
+   제4항제1호](#krlib-reg-r19).
 
 **What the suppression is worth, and why it is worth so little here.** Three independent
 measurements differ by an order of magnitude:
@@ -866,10 +866,10 @@ The same sentence, to the word, appears at seven more carriers [S1] [S6] [S8] [S
   [S18]. This is the opposite of `jplib`'s composite, where the waiver keys off an 不慮の事故
   within 180 days.
 - **Percentage-based and additive.** The 장해분류표 is a **percentage scale**, not a binary
-  trigger [REG-R25 부표 3], and separate impairments from one cause are added, subject to the
+  trigger [REG-R25 부표 3](#krlib-reg-r25), and separate impairments from one cause are added, subject to the
   rule that two impairments in the same body part take the higher rate rather than the sum
   [S2 제5조제9항]. 장해 is defined as a **permanent** state remaining after treatment, which
-  excludes temporary states during treatment [REG-R25 부표 3]; a temporary disability lasting
+  excludes temporary states during treatment [REG-R25 부표 3](#krlib-reg-r25); a temporary disability lasting
   five years or more nonetheless counts at 20% of its rate [S2 제5조제8항].
 - **Determined at 180 days**, with a look-back if the state worsens later — 2년 where the
   term is ten years or more, 1년 where it is shorter [S2 제5조제4항·제5항]. There is a
@@ -959,10 +959,10 @@ within two years of the contract date pays 「보험가입금액의 50%」 [S17]
 
 ### 계약 전 알릴 의무, 사기 and 계약의 무효 — three unwinding routes on three clocks
 
-**계약 전 알릴 의무** is the Korean 고지의무 and the 약관 says so in terms [REG-R25 제13조].
+**계약 전 알릴 의무** is the Korean 고지의무 and the 약관 says so in terms [REG-R25 제13조](#krlib-reg-r25).
 The insurer may terminate, or restrict cover, where the 계약자 or 피보험자 intentionally or
 by gross negligence misstated or concealed a material matter — but **not** where [S2
-제14–15조] [REG-R25 제13–14조]:
+제14–15조] [REG-R25 제13–14조](#krlib-reg-r25):
 
 1. it knew the fact, or negligently did not know it, at the time of contracting;
 2. **1개월** has passed since it learned of the ground, **or 2년 has passed from the
@@ -982,7 +982,7 @@ pays the surrender value — nil, here; where it restricts cover instead, 「보
 a proxy medical, drugs taken to pass a test, a forged certificate, or concealment of a
 pre-application cancer or HIV diagnosis — it may **취소** the contract 「보장개시일부터 5년
 이내(사기사실을 안 날부터는 1개월 이내)」 and returns the premiums paid [S1] [S2 제16조] [S6]
-[S8] [S10] [S11] [S17] [REG-R25 제15조]. **The effective outer limit on unwinding a Korean
+[S8] [S10] [S11] [S17] [REG-R25 제15조](#krlib-reg-r25). **The effective outer limit on unwinding a Korean
 life policy is therefore five years, not two or three.**
 
 **계약의 무효** is the third route and is statutory rather than contractual: absence of the
@@ -1000,18 +1000,18 @@ because each returns a different amount.
 - **청약철회**, under 금융소비자보호법 제46조 [REG-R51]: the earlier of **15일 from receiving
   the 보험증권** and **30일 from the application** (45일 for a telephone contract by a
   policyholder aged 65 or over), effective **on despatch**, with the premium returned in full
-  **within 3영업일** and interest at the 보험계약대출이율 if late [S2 제18조] [REG-R25 제17조].
+  **within 3영업일** and interest at the 보험계약대출이율 if late [S2 제18조] [REG-R25 제17조](#krlib-reg-r25).
   Not available where the insurer paid for a health examination, where the term is 90일 or
   less, or for a 전문금융소비자. One carrier markets it as a 30-day free return [S13].
 - **품질보증해지**, under 상법 제638조의3제2항 [REG-R49]: where the 약관 and the
   policyholder's copy of the application were not delivered, the important content was not
   explained, or the policyholder did not sign, cancellation **within three months of
-  formation** with premiums returned plus 보험계약대출이율 interest [REG-R25 제18조제3항].
+  formation** with premiums returned plus 보험계약대출이율 interest [REG-R25 제18조제3항](#krlib-reg-r25).
 - **위법계약의 해지**, under 금융소비자보호법 제47조: where the insurer breached the selling
   rules, termination may be demanded **within 1년 of learning of the breach and 5년 of the
   contract date**; the insurer must answer within **10일**; and on termination it returns
   「회사가 적립한 해지 당시의 **계약자적립액**」 — **the full reserve, with no surrender
-  charge deducted** [S2 제30조의2] [REG-R25 제29조의2].
+  charge deducted** [S2 제30조의2] [REG-R25 제29조의2](#krlib-reg-r25).
 
 The third is materially better than an ordinary 해지 and it has **no analogue in any other
 library in this repository**. On the representative 무해지 form the difference is the whole
@@ -1022,7 +1022,7 @@ would be wrong about a real, if small, cash flow.
 
 ### 납입최고, 실효, 부활, and the two loans
 
-The persistency machinery is short and is the whole of it [S2 제26–29조] [REG-R25 제26–27조].
+The persistency machinery is short and is the whole of it [S2 제26–29조] [REG-R25 제26–27조](#krlib-reg-r25).
 Non-payment starts a **납입최고(독촉)기간 of 14일** — 7일 where the policy term is under a
 year — extended to the next business day if it ends on a non-business day. The demand must be
 in writing, by recorded telephone or by electronic document, and must state both the arrears
@@ -1032,7 +1032,7 @@ immediately deducts any policy-loan principal and interest.
 
 **부활 is available for three years** from the termination date, provided the surrender value
 was not drawn — and expressly 「해약환급금이 없는 경우를 포함합니다」, so a 무해지 policy is
-**always** eligible, which is the case that matters here [S2 제28조] [REG-R25 제27조]. Arrears
+**always** eligible, which is the case that matters here [S2 제28조] [REG-R25 제27조](#krlib-reg-r25). Arrears
 carry interest at a rate the insurer sets 「평균공시이율+1% 범위 내에서」. Reinstatement
 re-runs the 계약 전 알릴 의무, its violation effects, the 사기 rule, acceptance and the start
 of cover, and **restarts the two-year suicide window** — but 「회사는 해지 전 발생한 보험금
@@ -1046,7 +1046,7 @@ repay what the insurer paid the creditor and revive the contract within 15일 [S
 **Both loans exist in the 약관 and neither operates on the representative product.** The
 보험계약대출 is available within the surrender value, with the express warning 「그러나
 순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 [S2 제34조]
-[REG-R25 제33조]; the FSS made the point directly in its 2019 consumer alert — a 무해지환급금
+[REG-R25 제33조](#krlib-reg-r25); the FSS made the point directly in its 2019 consumer alert — a 무해지환급금
 contract **cannot support a policy loan during the payment period** [REG-R28]. The
 자동대출납입 is genuinely available on this chassis, unlike `jplib`'s composite where one
 carrier states its absence in terms: it must be requested before the 납입최고기간 ends, stops
@@ -1355,7 +1355,7 @@ full and treated as representative. The contract itself is governed by 상법 �
 제732조의2 (gross negligence preserved), 제651조 (1개월 / 3년 rescission), 제655조 (the
 causation defence) and 제662조 (three-year prescription) [REG-R49] [REG-R50]. 금융소비자보호법
 제46조 supplies the cooling-off right [REG-R51] and 제47조 the 위법계약의 해지 [S2 제30조의2]
-[REG-R25 제29조의2]. On insurer failure, 예금자보호법 시행령 제18조제7항 protects claims to
+[REG-R25 제29조의2](#krlib-reg-r25). On insurer failure, 예금자보호법 시행령 제18조제7항 protects claims to
 **₩100,000,000 per person per
 bucket** — with 사고보험금 in a separate bucket from 해약환급금 and 기타지급금, so a
 ₩100,000,000 term policy is protected in full on the claim side — and **corporate
@@ -1382,3 +1382,52 @@ in this set addresses that triangle**, unlike the Japanese carrier booklet `jpli
 no 국세청 page was retrieved; the treatment above rests on the statute alone and no numeric
 rate or threshold is asserted. `krlib` models contractual cash flows and not the
 policyholder's tax position.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-term_life-r1
+[R12]: #krlib-term_life-r12
+[R16]: #krlib-term_life-r16
+[R18]: #krlib-term_life-r18
+[R19]: #krlib-term_life-r19
+[R2]: #krlib-term_life-r2
+[R20]: #krlib-term_life-r20
+[R3]: #krlib-term_life-r3
+[R4]: #krlib-term_life-r4
+[R6]: #krlib-term_life-r6
+[R8]: #krlib-term_life-r8
+[R9]: #krlib-term_life-r9
+[REG-R1]: #krlib-reg-r1
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R14]: #krlib-reg-r14
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R30]: #krlib-reg-r30
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R46]: #krlib-reg-r46
+[REG-R49]: #krlib-reg-r49
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R57]: #krlib-reg-r57
+[REG-R59]: #krlib-reg-r59
+[REG-R60]: #krlib-reg-r60
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

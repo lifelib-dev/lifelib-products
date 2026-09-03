@@ -79,7 +79,7 @@ it is **not**.
 
 Every age in the model is **보험나이** (*boheom nai*, insurance age): 만나이 with fractions
 of six months or more rounded up, incrementing on the **policy anniversary** and not on the
-birthday [S2 제22조] [REG-R25 제21조]. The model point ages, the premium table and the
+birthday [S2 제22조] [REG-R25 제21조](#krlib-reg-r25). The model point ages, the premium table and the
 mortality table are all on that one basis, so `age(t) = x + t - 1` is exact rather than
 approximate and **no age-basis shift is applied anywhere** — which is the opposite of
 `Term_JP_A`, whose 満年齢 model points read a 保険年齢 table and carry an optional
@@ -586,3 +586,31 @@ that every `check_*()` returns `True` on **every** shipped model point.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R18]: #krlib-term_life-r18
+[R19]: #krlib-term_life-r19
+[R20]: #krlib-term_life-r20
+[R4]: #krlib-term_life-r4
+[R9]: #krlib-term_life-r9
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R23]: #krlib-reg-r23
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R30]: #krlib-reg-r30
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R5]: #krlib-reg-r5
+[REG-R60]: #krlib-reg-r60
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

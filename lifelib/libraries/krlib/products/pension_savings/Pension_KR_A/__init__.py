@@ -55,7 +55,7 @@ period index, so ``result_cf()`` ends at ``proj_len()``.
 **The tax layer is carried but is not a cash flow.** 연금저축 relief is a **세액공제** —
 a tax credit of 16.5% or 13.2% of contributions up to ₩6,000,000 a year — and a
 withdrawal that misses the statutory 연금수령 conditions bears **16.5% 기타소득세**.
-Neither is an insurer cash flow, so neither enters :func:`net_cf`; both are published as
+Neither is an insurer cash flow, so neither enters :func:`~.Pension_KR_A.Projection.net_cf`; both are published as
 their own cells and in ``result_tax()``, because between them they are what drives the
 lapse assumption and the annuitisation election on this product.
 

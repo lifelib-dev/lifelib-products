@@ -79,6 +79,8 @@ with a space between every syllable. Quotations in these documents are given in 
 form — doubling collapsed, inter-syllable spaces removed — and nothing else has been altered;
 article numbers are as printed.
 
+(krlib-cancer-s1)=
+
 ### S1 — 삼성화재, 「무배당 삼성화재 건강보험 태평삼대(1811.6) 15년만기형 보험약관」 (policy conditions, complete)
 
 - Publisher: 삼성화재해상보험주식회사 (Samsung Fire & Marine Insurance) — a **non-life**
@@ -107,6 +109,8 @@ article numbers are as printed.
   15-year term with 재가입; and 최저보증이율 0.5% on the 적립부분, the lower observed anchor
   for `prem_int_rate`.
 
+(krlib-cancer-s2)=
+
 ### S2 — 삼성화재 다이렉트, 「무배당 삼성화재 다이렉트 건강보험 2601.16 보험약관」 (policy conditions, complete)
 
 - Publisher: 삼성화재해상보험주식회사 (direct channel)
@@ -126,6 +130,8 @@ article numbers are as printed.
   retrieved contract and specified but not modelled. It is also the source, with [S8], for
   the 요양병원 limb being carried as a **separate 90-day rider** rather than inside the
   inpatient benefit.
+
+(krlib-cancer-s3)=
 
 ### S3 — 한화생명, 「한화생명 e암보험(비갱신형) 무배당 약관」 (policy conditions, complete)
 
@@ -155,6 +161,8 @@ article numbers are as printed.
   also carries a formal **비흡연체형** chapter with its own 보험요율 whose differential is
   not published, which is why the model has no smoker split.
 
+(krlib-cancer-s4)=
+
 ### S4 — 한화생명, 「한화생명 e시그니처암보험 무배당 약관」 (policy conditions, complete)
 
 - Publisher: 한화생명보험주식회사
@@ -178,6 +186,8 @@ article numbers are as printed.
   which is `surg_open_base` against `surg_closed_base`; 수술 is defined by a 수술분류표 with
   the standard exclusions.
 
+(krlib-cancer-s5)=
+
 ### S5 — 한화생명, 「한화생명 e암치료비보험 무배당 약관」 (policy conditions, complete)
 
 - Publisher: 한화생명보험주식회사
@@ -196,6 +206,8 @@ article numbers are as printed.
   the model applies the reduction on the diagnosis clock throughout and understates wherever
   the two dates fall in different periods.
 
+(krlib-cancer-s6)=
+
 ### S6 — 라이나생명, 「무배당 첫날부터라이나암보험(갱신형) 약관」 (policy conditions, complete)
 
 - Publisher: 라이나생명보험주식회사 (Chubb Life / LINA Life Insurance Korea)
@@ -212,6 +224,8 @@ article numbers are as printed.
   갑상선암·기타피부암·제자리암·경계성종양 at **10%** of 보험가입금액 — **the lower bound of
   the observed 유사암 range** that `model.md`'s standardization table records.
 
+(krlib-cancer-s7)=
+
 ### S7 — 라이나생명, 「무배당 라이나 퍼펙트케어암보험(갱신형) 약관」 (policy conditions, complete)
 
 - Publisher: 라이나생명보험주식회사
@@ -225,6 +239,8 @@ article numbers are as printed.
   **2-year** 50% 감액 on everything; identical 20% / 10% tier ratios; renewal to a 100세 만기
   once the insured passes 가입나이 85; and 「갱신계약은 면책기간이 없습니다」 and 「갱신계약은
   감액지급이 없습니다」 stated as headline summary lines.
+
+(krlib-cancer-s8)=
 
 ### S8 — AIG손해보험, 「(무)AIG 소문난NEW암보험2106」 상품 페이지 (product page with illustrations)
 
@@ -246,6 +262,8 @@ article numbers are as printed.
   figures carry no stated 보험가입금액** — they are price points without a benefit
   denominator, which is why every premium in `model_point_table.csv` is [std].
 
+(krlib-cancer-s9)=
+
 ### S9 — 교보생명, 「암의 종류와 보장 범위 (유사암 vs 소액암 vs 고액암)」 (consumer-education Q&A)
 
 - Publisher: 교보생명보험주식회사 (Kyobo Life Insurance)
@@ -259,6 +277,8 @@ article numbers are as printed.
   payout band on the two low tiers and a stated 고액암 treatment cost averaging over
   ₩50,000,000. **This is consumer education, not a contractual document**, and it is used in
   `product-spec.md` for the taxonomy paragraph alone; no model parameter rests on it.
+
+(krlib-cancer-s10)=
 
 ### S10 — KB손해보험 인사이트, 「암보험 가입할 때 알아야 할 몇 가지」 (carrier content article)
 
@@ -274,6 +294,8 @@ article numbers are as printed.
   **조직검사 결과 보고일** and not the date the certificate is issued — which is what decides
   whether a claim falls inside the 면책기간 or the 감액기간. Again a content article, not a
   contractual document, and used for market context.
+
+(krlib-cancer-s11)=
 
 ### S11 — 삼성생명 다이렉트, 암보험 상품 페이지 (product page) — **not retrieved**
 
@@ -296,6 +318,8 @@ Twelve entries, of which **nine were fully retrieved, two in part and one not at
 of the twelve carry the whole of this product's quantitative basis — [R1] and [R5] — and the
 rest are the legal and historical frame. One is a **news article standing in for an
 instrument that could not be found** [R12], and it is labelled as such at every use.
+
+(krlib-cancer-r1)=
 
 ### R1 — 중앙암등록본부 / 보건복지부, 「2023년 국가암등록통계 참고자료」 (national registry annex)
 
@@ -324,6 +348,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   itself — 「관찰생존율을 일반인구의 기대생존율로 나누어 구한 값」 — which is why the model
   adds a hazard rather than multiplying a survivorship.
 
+(krlib-cancer-r2)=
+
 ### R2 — 국가암정보센터, 「통계로 보는 암 — 암 발생률」 및 「암종별 발생 현황」 (public statistics pages)
 
 - Publisher: 국립암센터 국가암정보센터 (National Cancer Information Center)
@@ -336,6 +362,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   연령표준화발생률 522.9 — and carries the year-on-year commentary. **Used only as a
   cross-check: no figure in any of the three documents rests on it alone**, which is why it is
   cited once, in `product-spec.md`, beside [R1].
+
+(krlib-cancer-r3)=
 
 ### R3 — 보험연구원, 「암보험 관련 주요 분쟁사례 연구」 (연구보고서 2019-4) (research monograph)
 
@@ -360,6 +388,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   limb; and the finding, cited wherever a persistency figure would otherwise be asserted,
   that **no public Korean lapse or persistency figure for 암보험 exists**.
 
+(krlib-cancer-r4)=
+
 ### R4 — 보험연구원, 「암보험 상품의 현황과 발전방향」 (김석영) (research note)
 
 - Publisher: 보험연구원; 저자 김석영 연구위원
@@ -377,6 +407,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   half of why `inc_be_factor` is left at 1.0; and that the **61–75 age band carries
   수준리스크 from an absence of experience**, which is why the composite's issue-age ceiling
   is 65 rather than the 75 that 간편심사 products reach.
+
+(krlib-cancer-r5)=
 
 ### R5 — 보험개발원, 「장기손해보험 참조순보험요율 예시」 (statutory rate bureau, public display)
 
@@ -402,6 +434,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   Cited jointly with [REG-R61], which is the same display entered in the cross-product
   library.
 
+(krlib-cancer-r6)=
+
 ### R6 — 금융감독원, 「금융꿀팁 200선 — 암보험 가입자가 꼭 알아야 할 필수정보: 암진단비, 암입원비」
 
 - Publisher: 금융감독원 (Financial Supervisory Service), 보도자료 **2017-11-03**
@@ -417,6 +451,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   50%」 reduction, and a 유방암 90-day 10% variant. [R3] quotes the same release for its
   의학적 암의 진단 과정 diagram. Because the original was not retrieved, the wording above is
   quoted from a reproduction and is flagged where a verbatim quotation matters.
+
+(krlib-cancer-r7)=
 
 ### R7 — 상법 제4편 「보험」 (Commercial Act, Part IV Insurance) (statute, transcription)
 
@@ -436,6 +472,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   **제739조의2 / 제739조의3 (질병보험자의 책임 / 준용규정, both 신설 2014-03-11)**, which are
   the whole of the private-law recognition of the disease-insurance contract that 암보험 is.
 
+(krlib-cancer-r8)=
+
 ### R8 — 보험업법 제4조 (보험업의 허가) (statute, CaseNote mirror)
 
 - Publisher: 대한민국 국회 / 법제처; text retrieved from CaseNote
@@ -451,6 +489,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   licence. That deeming provision is why a life insurer [S3] and a non-life insurer [S1] can
   write the identical cancer contract, which is the composite's structural premise.
 
+(krlib-cancer-r10)=
+
 ### R10 — 국가데이터처(통계청), 「제8차 한국표준질병·사인분류(KCD-8) 개정·고시」 (press release)
 
 - Publisher: 통계청 (now 국가데이터처), 보도자료 **2020-07-01**
@@ -462,6 +502,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   stated inside the retrieved 약관 themselves [S3] [S4], which is where the documents take it
   from — an instance of a contractual document being the better evidence of a public
   instrument than the instrument's own press release.
+
+(krlib-cancer-r11)=
 
 ### R11 — 찾기쉬운 생활법령정보, 「암 예방 및 치료 지원 → 국민건강보험공단 의료비 지원」 (statutory guidance)
 
@@ -477,6 +519,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   written 정액 rather than as a reimbursement — the single most important fact separating this
   product from `Medical_KR_S`. Cited beside [REG-R53], which carries the Act itself.
 
+(krlib-cancer-r12)=
+
 ### R12 — 뉴시스, 「'착한 암' 유사암 진단비, 일반암의 20% 수준으로 축소」 (**secondary**, news report)
 
 - Publisher: 뉴시스 (Newsis), **2022-08-01**
@@ -490,6 +534,8 @@ instrument that could not be found** [R12], and it is labelled as such at every 
   which the 약관 themselves corroborate, [S8]'s 70% against [S3] [S4]'s 20% — and not the
   instrument. Model point 10 prices the pre-intervention design precisely so that the change
   is visible rather than asserted. Facts resting on this entry alone are marked [unverified].
+
+(krlib-cancer-r13)=
 
 ### R13 — 금융감독원, 「질병·상해보험 표준약관」 (보험업감독업무시행세칙 [별표 15]) — **not retrieved**
 
@@ -722,3 +768,32 @@ market**: no carrier and no regulator publishes any of them, and [R1] publishes 
 survival and prevalence and nothing whatever about treatment volume. Those absences are why
 `model.md`'s standardization table has an "Observed range" column that reads *none published*
 on so many of its rows, and why `care_table.csv` says so on every one of its own.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-cancer-r1
+[R10]: #krlib-cancer-r10
+[R11]: #krlib-cancer-r11
+[R12]: #krlib-cancer-r12
+[R13]: #krlib-cancer-r13
+[R14]: #krlib-reg-r14
+[R3]: #krlib-cancer-r3
+[R5]: #krlib-cancer-r5
+[R6]: #krlib-cancer-r6
+[R7]: #krlib-cancer-r7
+[R8]: #krlib-cancer-r8
+[R9]: #krlib-reg-r9
+[REG-R1]: #krlib-reg-r1
+[REG-R13]: #krlib-reg-r13
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R49]: #krlib-reg-r49
+[REG-R5]: #krlib-reg-r5
+[REG-R50]: #krlib-reg-r50
+[REG-R53]: #krlib-reg-r53
+[REG-R61]: #krlib-reg-r61
+<!-- END generated citation links -->

@@ -172,7 +172,7 @@ Footnotes to [std] rows:
    elective form has no retrieved take-up data, and the CPPI form replaces the charge with
    an asset rule a single deterministic path cannot distinguish from a fixed allocation.
 2. Four level rules are documented — **premium refund**, **step-up**, **ratchet** and
-   **roll-up** [R1 <표 Ⅲ-2>], all four set out under "Contractual mechanics" — and 22 of
+   **roll-up** [R1 <표 Ⅲ-2>](#krlib-variable_annuity-r1), all four set out under "Contractual mechanics" — and 22 of
    the 36 census products set the guarantee **above** premiums paid [R1]. The composite
    takes premium refund at 100% because it is the textbook identity 「연금개시시
    계약자적립금(최저보증 포함) = Max(기납입보험료, 연금개시시 계약자적립금)」 [R2], because
@@ -217,7 +217,7 @@ Footnotes to [std] rows:
 | 보험료 납입중지 (permanent cessation) | After 10 years, and only where 계약자적립액 ≥ 100% of 이미 납입한 보험료 | [S1] |
 | 보험료 납입종료 (early release from the premium obligation) | On 퇴직, 폐업 or an accident or illness needing three months or more of hospital or convalescent care, applied for within six months and after half the premium term; separately after 5 years where the surrender value is ≥ ₩5,000,000 per 구좌 | [S1] |
 | 보험료 납입면제 (premium waiver) | **Not** in the base contract — 「변액연금에는 … 납입면제기능은 없는 것이 일반적」; available as a rider | [R2]; riders [S2] [S5] [S6] [S10] |
-| 보험계약대출 (policy loan) | Within the surrender value on the insurer's terms; units are cancelled from the separate account unless the general-account loan rider is taken | [REG-R25 제33조] [S5] |
+| 보험계약대출 (policy loan) | Within the surrender value on the insurer's terms; units are cancelled from the separate account unless the general-account loan rider is taken | [REG-R25 제33조](#krlib-reg-r25) [S5] |
 
 ### Charges — the fee stack a 상품요약서 discloses
 
@@ -275,7 +275,7 @@ are deducted from different bases at different times and land in different accou
     `C × (7 − t) ÷ 7`: **C = ₩830,000** [S2] (19.5% of premiums paid at year 1), **C =
     ₩1,077,000** [S5] (25.6%, reproducing the 2017 industry **mean** row exactly) and
     **C = ₩1,180,000** [S4] (28.1%, above the 2017 maximum), against a 2017 census range of
-    19.1%–27.6% with a mean of 25.6% [R1 <표 Ⅴ-2>]. The composite takes **[S2]'s
+    19.1%–27.6% with a mean of 25.6% [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1). The composite takes **[S2]'s
     C = ₩830,000** — not the market mean — because the 해약공제 is the unamortised
     계약체결비용 [R2] and the two must come from one carrier: pairing [S2]'s 5.17%
     acquisition cost with [S5]'s surrender charge would recover more on surrender than was
@@ -317,7 +317,7 @@ the 91.3%–91.5% observed at three carriers on this cell [S1] [S2] [S6].
 |---|---|---|
 | Funds modelled | **2** — 채권형 (bond) and 주식형 (equity) | **[std]** (12) |
 | Allocation at issue | 채권형 50% / 주식형 50%, no rebalancing in the base run | **[std]** (12) |
-| Mandatory 채권형 minimum | By 연금개시 전 보험기간: **<12년 → ≥80%; =12년 → ≥70%; >12년 → ≥50%**; binds both the premium allocation and the account mix, and survives every later switch | [S1] [R1 푸르덴셜 VIP] |
+| Mandatory 채권형 minimum | By 연금개시 전 보험기간: **<12년 → ≥80%; =12년 → ≥70%; >12년 → ≥50%**; binds both the premium allocation and the account mix, and survives every later switch | [S1] [R1 푸르덴셜 VIP](#krlib-variable_annuity-r1) |
 | Selection at issue | Up to 3 funds including a 채권형, in 5% steps; each fund's share of the basic premium at least ₩50,000 | [S1] [S5] |
 | Menu size in the market | 5 [S4] · 8 [S1] · 9 [S2] [S9] · 49 [S5] · 51 [S10] | [S1] [S2] [S4] [S5] [S9] [S10] |
 | 좌 (unit) | 1원 = 1좌 at establishment; thereafter transfers in and out are in units at the daily 기준가격 | [S7 제43조제1호] [R2] |
@@ -431,7 +431,7 @@ the 91.3%–91.5% observed at three carriers on this cell [S1] [S2] [S6].
 | 감액 (reduction of the basic premium) | In scope as a mechanic; releases the surrender value of the reduced part and **re-bases both guarantees** | [S4] [S7 제2조] |
 | 조기연금개시 (early annuitisation) | Described, not modelled. Requires ≥7 years elapsed (10 where 납입종료 was used), premiums complete, and 계약자적립액 **≥110% of premiums paid**; from age 45; the account moves wholly to the bond fund on application; **the GMAB is forfeited** | [S1]; **[std]** (20) |
 | 일반계정 전환 (voluntary transfer before annuitisation) | Described, not modelled — offered at 130% of premiums paid, or above premiums paid after two years, irreversibly | [R1] [S6] |
-| 보험계약대출 | Described, not modelled | [REG-R25 제33조] [S5] |
+| 보험계약대출 | Described, not modelled | [REG-R25 제33조](#krlib-reg-r25) [S5] |
 | 성과보너스 / 장기유지 보너스 | Out of scope | [S9] [S7 제6조] |
 | 연금전환 / 상속·확정 payout forms | Out of scope; the base run takes the 종신연금형 | [S1] [S2] [S5] |
 
@@ -452,21 +452,21 @@ the 91.3%–91.5% observed at three carriers on this cell [S1] [S2] [S6].
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 해약환급금 | **max(0, 계약자적립액 − 해약공제액)**; the zero floor is statutory — 「계약자적립액에서 해약공제액을 공제한 금액이 음(陰)의 값인 경우에는 이를 영(零)으로 처리한다」 | [REG-R19 제7-66조제1항제1호] [S2] |
+| 해약환급금 | **max(0, 계약자적립액 − 해약공제액)**; the zero floor is statutory — 「계약자적립액에서 해약공제액을 공제한 금액이 음(陰)의 값인 경우에는 이를 영(零)으로 처리한다」 | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) [S2] |
 | Guarantee on the surrender value | **None**, at any duration | [S1] [S6] [S7 제50조제3항] [S8] [S10] |
 | 해약공제액 | `₩830,000 × (7 − t) ÷ 7`, `t` = elapsed whole years, nil from year 7 | [S2]; **[std]** (10) |
-| 해약공제기간 | 7 years — the statutory ceiling where the premium term is 7 years or more | [REG-R19 제7-66조제1항제2호] [R2] |
+| 해약공제기간 | 7 years — the statutory ceiling where the premium term is 7 years or more | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) [R2] |
 | 무해지 / 저해지환급형 | **Not permitted.** 변액보험 is excluded from the dispensation by 제7-66조제4항제1호 | [REG-R19] |
 | Pricing of a surrender | 해지신청일 + 제2영업일 기준가격 | [S7 제50조제2항] [S9] |
-| Payment | Within 3 business days of the claim | [S7 제50조] [REG-R25 제32조] |
-| Surrender-value table | The insurer must give the policyholder a table of surrender values by elapsed duration | [S7 제50조제6항] [REG-R25 제32조제3항] |
+| Payment | Within 3 business days of the claim | [S7 제50조] [REG-R25 제32조](#krlib-reg-r25) |
+| Surrender-value table | The insurer must give the policyholder a table of surrender values by elapsed duration | [S7 제50조제6항] [REG-R25 제32조제3항](#krlib-reg-r25) |
 | Single-premium contracts | Carry **no** 해약공제 at all, the whole 계약체결비용 having been taken at issue | [S5] [R1] |
-| 청약철회 (*cheongyak cheolhoe*, cooling off) | Within **15 days** of receiving the 보험증권 and never after **30 days** from the application date; effective on despatch; premiums returned within 3 business days | [REG-R51] [REG-R25 제17조] |
-| 품질보증해지 (*pumjil bojeung haeji*) | Within **3 months** of formation where the 약관 was not delivered, its important content not explained, or the application not signed | [REG-R25 제18조제3항] [REG-R49 제638조의3] |
-| 위법계약해지 | Where the seller breached 적합성원칙, 적정성원칙, 설명의무, 불공정영업행위 금지 or 부당권유행위 금지; the **계약자적립액** is returned, not the 해약환급금 | [R3] [R14] [REG-R25 제29조의2] |
-| 납입최고 and 해지 | Demand period of **at least 14 days**; termination the day after it ends; policy-loan principal and interest deducted from the surrender value | [REG-R25 제26조] |
-| 부활 (*buhwal*, reinstatement) | Within **3 years** of termination, provided the surrender value has not been drawn; arrears with interest at a rate the insurer sets within **평균공시이율 + 1%** | [REG-R25 제27조] |
-| 소멸시효 | 3 years on a claim, 3 years on a refund of premium or account value, 2 years on a premium | [REG-R49 제662조] |
+| 청약철회 (*cheongyak cheolhoe*, cooling off) | Within **15 days** of receiving the 보험증권 and never after **30 days** from the application date; effective on despatch; premiums returned within 3 business days | [REG-R51] [REG-R25 제17조](#krlib-reg-r25) |
+| 품질보증해지 (*pumjil bojeung haeji*) | Within **3 months** of formation where the 약관 was not delivered, its important content not explained, or the application not signed | [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49 제638조의3](#krlib-reg-r49) |
+| 위법계약해지 | Where the seller breached 적합성원칙, 적정성원칙, 설명의무, 불공정영업행위 금지 or 부당권유행위 금지; the **계약자적립액** is returned, not the 해약환급금 | [R3] [R14] [REG-R25 제29조의2](#krlib-reg-r25) |
+| 납입최고 and 해지 | Demand period of **at least 14 days**; termination the day after it ends; policy-loan principal and interest deducted from the surrender value | [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 (*buhwal*, reinstatement) | Within **3 years** of termination, provided the surrender value has not been drawn; arrears with interest at a rate the insurer sets within **평균공시이율 + 1%** | [REG-R25 제27조](#krlib-reg-r25) |
+| 소멸시효 | 3 years on a claim, 3 years on a refund of premium or account value, 2 years on a premium | [REG-R49 제662조](#krlib-reg-r49) |
 | Expiry | The contract runs to death on the 종신연금형; there is no maturity benefit | [S4] [S5] [S7] |
 
 ---
@@ -508,7 +508,7 @@ account [REG-R15]. Every row below is one of them.
 | 연금재원 at 연금개시 | 특별계정 | 일반계정 — 「연금개시시점부터 계약자적립액 모두에 대하여 특별계정에서 일반계정으로 자동전환하여 공시이율로 운용합니다」 | 연금개시나이 계약해당일 [S6] |
 | GMAB top-up at 연금개시 | 일반계정 보증준비금 | 일반계정 연금재원 | 연금개시나이 계약해당일 |
 | 연금 payments and 연금수령기간 중 계약관리비용 | 일반계정 | Policyholder / insurer | In the payout phase |
-| Separate-account deficit | 일반계정 shareholder equity | 특별계정 | As needed [REG-R15 제5-7조] |
+| Separate-account deficit | 일반계정 shareholder equity | 특별계정 | As needed [REG-R15 제5-7조](#krlib-reg-r15) |
 
 The insurer may **pool** the assets of similar separate accounts across products on notice,
 keeping each fund's accounts at head office for six months after the merger
@@ -618,9 +618,9 @@ Contractually, 「계약자적립금에서 월계약해당일에 월공제액을
 특별계정 계약자적립금에서 매일 특별계정 운용보수를 차감합니다」 [S7 제36조]. The
 regulation says the same thing from the other side: what goes into the separate account is
 the **적립 보험료**, 「영업보험료에서 위험보장에 필요한 부분과 사업비 등 기초서류에서 정한
-사항을 차감한 금액」, together with its investment return [REG-R15 제5-6조제5항]; and the
+사항을 차감한 금액」, together with its investment return [REG-R15 제5-6조제5항](#krlib-reg-r15); and the
 separate-account 계약자적립금 for 변액보험 is **the whole profit or loss arising in that
-account in the year, appropriated to the contract** [REG-R15 제6-26조].
+account in the year, appropriated to the contract** [REG-R15 제6-26조](#krlib-reg-r15).
 
 On the model's monthly grid, with `AV(t)` the account value at the start of month `t`:
 
@@ -631,7 +631,7 @@ separate-account asset return and `f_mgmt` the blended 특별계정 운용보수
 is written separately from the return because it is deducted **inside the 기준가격**
 [S7 제43조제2호] while the 월공제액 is deducted by **cancelling units**, leaving the price
 undisturbed. The exact form of the recursion sits in the **산출방법서** (*sanchul
-bangbeopseo*), which is a filed 기초서류 and is not public [REG-R18 제7-64조] [REG-R2] — so
+bangbeopseo*), which is a filed 기초서류 and is not public [REG-R18 제7-64조](#krlib-reg-r18) [REG-R2] — so
 the recursion above is a **[std]** construction consistent with, and not derived from, the
 retrieved documents. That limit applies equally to the surrender value, the annuity amount
 and the roll-up base, and it is the hard boundary on how far a public-source reconstruction
@@ -722,7 +722,7 @@ guarantee as a floor on the account value at every duration will overstate its c
 whole of the pre-annuitisation exit probability, and on a product whose seven-year
 persistency is reported below 30% [R1] that is most of it.
 
-**Guarantee base `K(T)` — four rules, one modelled.** [R1 <표 Ⅲ-2>] sets out the four ways
+**Guarantee base `K(T)` — four rules, one modelled.** [R1 <표 Ⅲ-2>](#krlib-variable_annuity-r1) sets out the four ways
 a Korean carrier fixes the level:
 
 | Rule | Definition | Where observed |
@@ -959,7 +959,7 @@ whole product turns on — 「해지환급금은 특별계정의 운용실적에
 보험료납입기간(납입기간이 7년 이상인 경우 7년) 이내에 계약을 해지할 경우 계약자적립액에서
 차감하는 금액으로, 중도해지에 따른 보험회사의 손해에 대한 패널티 성격이 있다」 and
 「해약환급금의 경우 해지시점의 적립금에서 해지공제액(미상각신계약비, 최대 7년까지 적용)을
-차감한 후 지급」 [R2]. The seven-year ceiling is statutory [REG-R19 제7-66조제1항제2호].
+차감한 후 지급」 [R2]. The seven-year ceiling is statutory [REG-R19 제7-66조제1항제2호](#krlib-reg-r19).
 
 **The run-off is linear in the amount, not in the ratio.** All three retrieved scales fit
 `C × (7 − t) ÷ 7` exactly: [S5]'s published amounts decline by exactly ₩153,857 a year,
@@ -1012,7 +1012,7 @@ scale does the same for roughly the first four months.
 ### 고지의무 and 계약 전 알릴 의무
 
 The 표준약관 states in terms that the 계약 전 알릴 의무 (*gyeyak jeon allil uimu*)
-「상법상 '고지의무'와 같습니다」 [REG-R25 제13조·제14조]. The insurer may **not** terminate
+「상법상 '고지의무'와 같습니다」 [REG-R25 제13조·제14조](#krlib-reg-r25). The insurer may **not** terminate
 for breach where it knew or was negligent in not knowing at formation; where **one month**
 has passed since it learned of the breach, or **two years** from the 보장개시일 without a
 claim event (one year for disease in a 진단계약); where **three years** have passed since
@@ -1026,7 +1026,7 @@ about **in writing presumed material** — and 제655조's causation defence [RE
 **사기에 의한 계약** — proxy examination, drugs taken to pass underwriting, forged
 certificates, or concealment of a pre-application cancer or HIV diagnosis — may be cancelled
 within **five years of the 보장개시일 and one month of learning of the fraud**
-[REG-R25 제15조].
+[REG-R25 제15조](#krlib-reg-r25).
 
 On this product the practically operative pre-sale duty is not medical but **suitability**:
 a producer recommending a variable contract to an 일반금융소비자 must observe
@@ -1051,15 +1051,15 @@ Three distinct exits sit in front of the surrender value and none of them charge
   보험계약대출이율 compounded annually. Excluded for contracts of 90 days or less, for an
   insurer-funded health examination, and for a 전문금융소비자. Ineffective where a claim
   event has already occurred unless the policyholder withdrew knowing it had
-  [REG-R51 제46조] [REG-R25 제17조].
+  [REG-R51 제46조](#krlib-reg-r51) [REG-R25 제17조](#krlib-reg-r25).
 - **품질보증해지** — within **3 months of formation** where the 약관 and the policyholder's
   copy of the application were not delivered, the important content was not explained, or
   the policyholder did not sign; premiums returned with 보험계약대출이율 interest
-  [REG-R25 제18조제3항] [REG-R49 제638조의3].
+  [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49 제638조의3](#krlib-reg-r49).
 - **위법계약해지** — where the seller breached 적합성원칙, 적정성원칙, 설명의무,
   불공정영업행위 금지 or 부당권유행위 금지 [R3] [R14]. Where the contract is terminated on
   that ground the **계약자적립액** is returned rather than the 해약환급금
-  [REG-R25 제29조의2] — i.e. the 해약공제 is not taken. The FSS's 2025 mystery shopping found
+  [REG-R25 제29조의2](#krlib-reg-r25) — i.e. the 해약공제 is not taken. The FSS's 2025 mystery shopping found
   the explanation of this right one of the two weakest items in the whole exercise [R3],
   which makes its take-up rate a live and unquantified behavioural risk.
 
@@ -1067,11 +1067,11 @@ Three distinct exits sit in front of the surrender value and none of them charge
 
 The 표준약관 machinery applies: a demand period (납입최고) of **at least 14 days**, the
 contract terminating the day after it expires, with policy-loan principal and interest
-immediately deducted from the surrender value [REG-R25 제26조]; and **부활** within **three
+immediately deducted from the surrender value [REG-R25 제26조](#krlib-reg-r25); and **부활** within **three
 years** of termination provided the surrender value has not been drawn, on payment of
 arrears with interest at a rate the insurer sets within **평균공시이율 + 1%**, the insurer
 being unable to refuse because a claim event occurred before termination
-[REG-R25 제27조] [REG-R49 제650조의2].
+[REG-R25 제27조](#krlib-reg-r25) [REG-R49 제650조의2](#krlib-reg-r49).
 
 Two things make lapse behave differently here from a protection product. First, **the
 account funds the monthly deduction**, so a contract does not fail merely because a premium
@@ -1160,7 +1160,7 @@ being a **[std]** construction [R1].
 
 **Described but not modelled.** 보험료 납입 일시중지, 납입중지 and 납입종료 [S1]; 감액
 [S4] [S7 제2조]; 조기연금개시 [S1] [S9] [S10]; voluntary 일반계정 전환 [R1] [S6];
-보험계약대출 and its general-account variant [REG-R25 제33조] [S5]; 정기중도인출서비스 and
+보험계약대출 and its general-account variant [REG-R25 제33조](#krlib-reg-r25) [S5]; 정기중도인출서비스 and
 자동인출서비스 [S1] [S5]; 평균분할투자 [S7 제41조]; the 성과보너스 at 120/140/160/180/200%
 of premiums paid, each paying 기본보험료의 100% once [S9]; the 장기유지 보너스, funded from
 a general-account reserve and **forfeited on surrender** [S7 제6조] [S7 제50조제5항]; and the
@@ -1332,7 +1332,7 @@ images in the retrieved 고시 and did not extract [REG-R19].
 해약공제액, a comparison against the 표준해약공제액 where the 계약체결비용 exceeds it, and —
 listed separately — **the calculation of any 보증비용** [REG-R18]. The document is filed with
 the supervisor and is not published [REG-R2]; the 보험상품신고서 must be filed **30 days
-before the sale-start date** with the 기초서류 verified by the 선임계리사 [REG-R8 제71조].
+before the sale-start date** with the 기초서류 verified by the 선임계리사 [REG-R8 제71조](#krlib-reg-r8).
 Every recursion in `technical-notes.md` is therefore a **[std]** construction consistent
 with, and not derived from, the retrieved contracts.
 
@@ -1395,7 +1395,7 @@ insurers since 2023-01-01 [REG-R60] [REG-R14], and K-ICS commenced the same day;
 own-credit adjustment, the required capital aggregating five risk modules of which the
 life-and-long-term-health module alone carries seven shock-based sub-risks including
 **해지위험액** and **사업비위험액** [REG-R13]. The 지급여력비율 floor is **100%**
-[REG-R8 제65조제2항제1호], below which the 적기시정조치 ladder starts [REG-R14]. The
+[REG-R8 제65조제2항제1호](#krlib-reg-r8), below which the 적기시정조치 ladder starts [REG-R14]. The
 transition 부칙 accumulates the transition-date **변액보험 guarantee reserve at 「매 사업연도별
 해당시점의 평균공시이율」** [REG-R14] [REG-R48]. **No `krlib` model computes a CSM, a risk
 adjustment, a 요구자본 or a 보증준비금**; the model projects gross contractual cash flows and
@@ -1498,3 +1498,55 @@ contractual cash flows of one policy on one return path, publishes the guarantee
 cost on that path and the 별표 24 standard factor beside it, and states — here and in
 `technical-notes.md` — that the difference between the guarantee charge collected and the
 intrinsic cost computed is a single-path residual, not a measure of the guarantee's value.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-variable_annuity-r1
+[R10]: #krlib-variable_annuity-r10
+[R11]: #krlib-variable_annuity-r11
+[R12]: #krlib-variable_annuity-r12
+[R13]: #krlib-variable_annuity-r13
+[R14]: #krlib-variable_annuity-r14
+[R2]: #krlib-variable_annuity-r2
+[R3]: #krlib-variable_annuity-r3
+[R4]: #krlib-variable_annuity-r4
+[R5]: #krlib-variable_annuity-r5
+[R6]: #krlib-variable_annuity-r6
+[R7]: #krlib-variable_annuity-r7
+[R8]: #krlib-variable_annuity-r8
+[R9]: #krlib-variable_annuity-r9
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R14]: #krlib-reg-r14
+[REG-R15]: #krlib-reg-r15
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R24]: #krlib-reg-r24
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R45]: #krlib-reg-r45
+[REG-R46]: #krlib-reg-r46
+[REG-R48]: #krlib-reg-r48
+[REG-R49]: #krlib-reg-r49
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R57]: #krlib-reg-r57
+[REG-R58]: #krlib-reg-r58
+[REG-R6]: #krlib-reg-r6
+[REG-R60]: #krlib-reg-r60
+[REG-R7]: #krlib-reg-r7
+[REG-R8]: #krlib-reg-r8
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

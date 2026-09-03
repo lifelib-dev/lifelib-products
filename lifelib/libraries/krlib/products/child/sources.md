@@ -66,6 +66,8 @@ comparison board this file leans on is the 손해보험협회's, reached through
 not the 생명보험협회's portal, to which this product's documents must never be attributed. Five
 of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ` links [S11].
 
+(krlib-child-s1)=
+
 ### S1 — 「무배당 내Mom같은 어린이보험1910 상품요약서」, 메리츠화재해상보험(주) (statutory product summary)
 
 - Document: 상품요약서, 80 pp., product code `1910` (2019-10 edition)
@@ -92,6 +94,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   `disability` cause, the origin of the shipped table's male-heavier direction (a ratio of
   1.57) and the only observation of a Korean child morbidity rate in the whole research pass.
 
+(krlib-child-s2)=
+
 ### S2 — 「무배당 현대해상굿앤굿어린이종합보험Q(Hi2607) 상품요약서」, 현대해상화재보험(주) (statutory product summary)
 
 - Document: 상품요약서, 98 pp., product code `Hi2607` (2026-07 edition)
@@ -115,6 +119,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   임신·출산질환 rider stacks with the parent's and mother's issue-age ranges — the 20~47세 band
   from which the 계약자's [std] age of 만 33 is taken.
 
+(krlib-child-s3)=
+
 ### S3 — 「(무) 내Mom같은 어린이보험2607(1종)(1형) 상품요약서」, 메리츠화재해상보험(주) (statutory product summary)
 
 - Document: 상품요약서, 149 pp., product code `2607` (2026-07 edition)
@@ -132,6 +138,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   product than on the chassis. Being the same product line as [S1] seven years later, the two
   together give a clean before-and-after on the 2023 supervisory action [R1].
 
+(krlib-child-s4)=
+
 ### S4 — 「KB 금쪽같은 자녀보험Plus(무배당)(26.07) 1종 1형 상품요약서」, KB손해보험(주) (statutory product summary)
 
 - Document: 상품요약서, 207 pp., product code `26.07`
@@ -144,6 +152,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   the 일반상해사망 basic cover is written **only from 만 15세**, which is 상법 제732조 [R7]
   showing through into the product structure and part of the evidence that the market writes no
   death benefit on a child; and a 태아 obligatory-rider block on a 1년만기 전기납 term.
+
+(krlib-child-s5)=
 
 ### S5 — 「무배당 let:play 자녀보험(도담도담)(2604) 6종 상품요약서」, 롯데손해보험(주) (statutory product summary)
 
@@ -159,6 +169,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   `liability_severity`; and the 손해보험 design constraint on 질병사망 riders (80세만기 이내,
   개인당 2억원 이내).
 
+(krlib-child-s6)=
+
 ### S6 — 「(무)NH아이맘헤아림어린이보험[2종:표준형]2604 상품요약서」, NH농협손해보험(주) (statutory product summary)
 
 - Document: 상품요약서, 81 pp., product code `2604`
@@ -169,6 +181,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   It is what makes `reduction_mths = 12` a real option rather than a legacy switch (model point
   7), and it is used in the carrier-variation table of `product-spec.md`. It also contributes
   to the 가입나이 태아~15세 evidence set.
+
+(krlib-child-s7)=
 
 ### S7 — 「무배당 현대해상다이렉트굿앤굿어린이보험(Hi2204) 약관」, 현대해상화재보험(주) (policy conditions)
 
@@ -185,6 +199,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   6월 11일 ⇒ 26세), 제28조 계약의 소멸 and 제29조 계약의 자동갱신, and the pre-2023
   direct-channel 가입나이 **0~30세** that pairs with [S1] as the second age-creep exhibit. It
   is a direct (internet-only) product and does **not** offer 태아가입.
+
+(krlib-child-s8)=
 
 ### S8 — 「무배당 하나1Q어린이보험 약관」, 하나생명보험(주) (policy conditions)
 
@@ -211,6 +227,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   a published 민원 case explaining that a 태아 contract is priced on **male** rates and trued
   up at birth.
 
+(krlib-child-s9)=
+
 ### S9 — 「무배당 하나어린이보험 약관」, 하나생명보험(주) (policy conditions, older wording)
 
 - Document: 보험약관, 119 pp.; an older wording — it still refers to 호적등본 rather than
@@ -226,6 +244,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   `claims(t, "VOID")`. It also carries a 보험금 지급기준표 on a ₩10,000,000 (1,000만원)
   보험가입금액 basis and the school-accident disability annuity grid the older generation
   carried.
+
+(krlib-child-s10)=
 
 ### S10 — 「무배당 어린이 종합보장보험 약관」, 메트라이프생명보험(주) (policy conditions)
 
@@ -243,6 +263,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   only where the child dies **at or after 만 15세**, which is the 상법 제732조 boundary [R7]
   visible in a wording. The composite adopts this waiver in place of the 손해보험 부양자 rider,
   and that substitution is the one deliberate cross-chassis borrowing in the specification.
+
+(krlib-child-s11)=
 
 ### S11 — 손해보험협회 공시실, 「어린이보험」 상품비교공시 (`tptyCode=PB24`) (industry comparison disclosure)
 
@@ -270,6 +292,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   뇌혈관질환/허혈성심장질환 definitions behind `broad_def_factor`; and a `SUMMARY_SEQ` per
   product from which [S2] [S3] [S4] [S5] and [S6] were downloaded.
 
+(krlib-child-s12)=
+
 ### S12 — 「무배당 삼성화재 다이렉트 비갱신 어린이보험(납입면제·해약환급금 미지급형) 2404.17 보험약관」, 삼성화재해상보험(주) (policy conditions)
 
 - Document: 보험약관, product code `2404.17`; 628,118 characters of extracted text
@@ -283,6 +307,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   age basis the whole model is indexed on, and the 제왕절개·다태아 definitions used in the
   mother-side riders the composite does not model. It carries **no 태아가입특칙**, which is
   itself the evidence that a 비갱신 무해지 form and 태아가입 are separable elections.
+
+(krlib-child-s14)=
 
 ### S14 — 「무배당 흥국생명 드림어린이보험1701(보장성) 보험약관」, 흥국생명보험(주) (policy conditions — extraction failed)
 
@@ -299,6 +325,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   [S8] [S9] and [S10] alone, so the 생명보험 waiver wording has **one** carrier behind it and
   not two.
 
+(krlib-child-s15)=
+
 ### S15 — 삼성화재 다이렉트, 「어린이보험(태아가입)」 상품 페이지 (consumer product page — not fetched)
 
 - URL: `https://direct.samsungfire.com/m/mall/baby.html`
@@ -310,6 +338,8 @@ of the six 상품요약서 were downloaded through the board's own `SUMMARY_SEQ`
   evidenced instead by [S2] and [S4], which are retrieved PDFs. It is listed as the clearest
   case in this product of why a summariser's rendering is not a source: two fetches of one URL
   disagreed about which company sells the product.
+
+(krlib-child-s16)=
 
 ### S16 — 「우리아이지킴이NH통합어린이보험(무배당)」 상품 페이지, NH농협생명보험(주) (consumer product page — summariser only)
 
@@ -331,6 +361,8 @@ regulator-issued 표준약관 annex [R8], two are FSC releases on the 실손 bou
 assumption [R9] [R11], one is a research chapter [R5], two are statutory or regulatory text
 [R7] [R10], and one is the disclosure board's own standardised comparison basis [R12].
 
+(krlib-child-r1)=
+
 ### R1 — 금융감독원, 「보험회사의 건전성 악화 및 소비자 피해 우려가 없도록 불합리한 보험상품 구조를 개선하였습니다」 (2023-07-19) (supervisory press release)
 
 - Publisher: 금융감독원 보험감독국 특수보험2팀; 보도자료, 3 pp.; 배포 2023-07-19, 보도
@@ -346,6 +378,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   composite's envelope is 태아~15세 and why the broad adult-disease definitions are a switch
   rather than a base setting. Its remedy bites on the **product name** and not on the issue
   age, which is what `product-spec.md` warns a reader about when reading current product names.
+
+(krlib-child-r2)=
 
 ### R2 — 금융감독원, 「어린이보험 관련 불합리한 보험약관 개선」 (2016-07-13) (supervisory press release)
 
@@ -366,6 +400,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   `product-spec.md` uses for the pre-2026 period, and are the second-hand route to 보험개발원's
   series.
 
+(krlib-child-r3)=
+
 ### R3 — 금융감독원, 「태아보험 가입시 알아두면 유익한 사항」 (2008-06-24) (consumer-guidance briefing)
 
 - Publisher: 금융감독원 보험계리실 손해보험팀/생명보험팀; 정례브리핑 자료, 9 매, the eighth in
@@ -385,6 +421,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   amount-capped** — and, in 참고자료2, 어린이보험 신계약건수 and 수입보험료 split between
   생명보험 and 손해보험 for FY05–FY07 with the 태아 share.
 
+(krlib-child-r4)=
+
 ### R4 — 금융감독원, 「쌍둥이도 태아보험에 모두 가입할 수 있습니다」 (2012-09-11) (supervisory reference release)
 
 - Publisher: 금융감독원 보험감독국 보험업무팀; 보도참고자료, 2 pp.
@@ -398,6 +436,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   consequences of a 다태아 plan (roughly 2× for twins, 3× for triplets, which the researcher
   notes probably understates the risk) are taken from [R5] instead, and nothing further from
   this release is used.
+
+(krlib-child-r5)=
 
 ### R5 — 보험연구원, 「Ⅷ. 어린이보험의 성장」, 연구보고서 2018-5 『보험상품 변천과 개발 방향: 생명보험 상품 중심』 (research report chapter)
 
@@ -423,6 +463,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   source for the liability limb being the one a non-life licence is needed to write, and for
   the rider count that makes the diagnosis benefits three riders among more than a hundred.
 
+(krlib-child-r6)=
+
 ### R6 — 금융위원회, 「보험업권이 출산‧육아에 따른 보험료 부담을 덜어드립니다 — 4.1일 「저출산 극복 지원 3종 세트」 시행」 (2026-03-31) (press release)
 
 - Publisher: 금융위원회 보험과; 보도자료, 6 pp.; 배포 2026-03-31 09:00, 보도 2026-04-01 조간
@@ -437,6 +479,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   보험료 납입유예 scheme, so there is no deferral state for the model to carry. Whether the
   discount bites on the 영업보험료 or the 보장보험료 is not stated and is **[unverified]**; the
   model applies it to the whole office premium.
+
+(krlib-child-r7)=
 
 ### R7 — 상법 제732조 (15세미만자등에 대한 계약의 금지) and 제739조 (준용규정) (statute, mirror)
 
@@ -456,7 +500,9 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   accidental-death cover on a child lawful even though a disease-death cover is not, which is
   the gap [S1] [S4] and [S11] show the market declining to fill below 만 15세. Every claim
   resting on it is corroborated by [REG-R50] and by the 표준약관 restatement at [REG-R25
-  제19조].
+  제19조](#krlib-reg-r25).
+
+(krlib-child-r8)=
 
 ### R8 — 보험업감독업무시행세칙 [별표 15] 표준약관 (2026.5.6. 시행), 질병·상해보험 표준약관 (supervisor-issued standard conditions)
 
@@ -478,6 +524,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   [R8] where the extraction was done for this product and [REG-R25] where the cross-product
   reading governs.
 
+(krlib-child-r9)=
+
 ### R9 — 금융위원회, 「4월부터 "유병력자 실손의료보험"이 출시되고, 실손의료보험 끼워팔기가 금지됩니다」 (2018-03-30) (press release)
 
 - Publisher: 금융위원회; 보도자료, 2018-03-30
@@ -493,6 +541,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   choice, and it is why `product-spec.md` lists 실손의료비 riders as unavailable rather than as
   out of scope. It corroborates [R10], which quotes the same article from a copy whose
   retrieval could not be repeated.
+
+(krlib-child-r10)=
 
 ### R10 — 보험업감독규정 제7-63조 (제3보험의 보험상품설계 등) (supervisory regulation — retrieval not repeatable)
 
@@ -514,6 +564,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   [REG-R17], which carries the full article text from a successful retrieval of the current
   고시.** Where the documents cite [R10] alone the claim is marked accordingly.
 
+(krlib-child-r11)=
+
 ### R11 — 금융위원회·금융감독원, 「합리적인 계리가정과 단계적 할인율 조정을 통해 보험회계의 신뢰도와 안정성을 높이겠습니다」 (2024-11-07) (press release, 제4차 보험개혁회의)
 
 - Publisher: 금융위원회 and 금융감독원; 보도자료, 2024-11-07
@@ -534,6 +586,8 @@ assumption [R9] [R11], one is a research chapter [R5], two are statutory or regu
   `technical-notes.md` ships the disclosed step function of [S1] beside the 원칙모형 rather
   than relying on the shape alone. [REG-R27] is the cross-product entry for the same release,
   with the 별첨 on the discount-rate transition.
+
+(krlib-child-r12)=
 
 ### R12 — 손해보험협회 공시실, 「어린이보험」 비교공시 기준 (the standardised comparison basis)
 
@@ -724,3 +778,28 @@ disability-incidence and foetal-loss figure are all outside what any retrieved d
 That is why exactly one quantitative rate in this product's whole source set — the 일반상해
 후유장해 발생률 at 5세 in [S1] — is a published Korean rate, and why every other quantitative
 parameter in `Child_KR_S` is tagged **[std]** at the point of use.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-child-r1
+[R10]: #krlib-child-r10
+[R11]: #krlib-child-r11
+[R12]: #krlib-child-r12
+[R2]: #krlib-child-r2
+[R3]: #krlib-child-r3
+[R4]: #krlib-child-r4
+[R5]: #krlib-child-r5
+[R6]: #krlib-child-r6
+[R7]: #krlib-child-r7
+[R8]: #krlib-child-r8
+[R9]: #krlib-child-r9
+[REG-R10]: #krlib-reg-r10
+[REG-R13]: #krlib-reg-r13
+[REG-R17]: #krlib-reg-r17
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R50]: #krlib-reg-r50
+[REG-R61]: #krlib-reg-r61
+<!-- END generated citation links -->

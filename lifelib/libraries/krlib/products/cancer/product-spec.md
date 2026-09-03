@@ -218,14 +218,14 @@ benefit is the only limb whose decrement is sourceable from public data, and it 
 | Policy term (보험기간) | To the **100세 계약해당일**; no 만기환급금 | [S4] [S7]; [R3]; **[std]** (3) |
 | Premium-paying period (보험료 납입기간) | **20년납** default; 10년납, 30년납 and 전기납 as variants | [S1] [S3] [S8]; **[std]** (4) |
 | Issue age (가입나이) | **보험나이 15–65** | [S1]; observed 20–60 [S8], to 85 on renewal [S7], to 75 on 간편심사 [R4]; **[std]** (5) |
-| Contractual age basis | **보험나이** (*boheom nai*, insurance age): 계약일 현재 만 나이 with a fraction under six months discarded and six months or more rounded up, incrementing at each 계약해당일 | [S3]; [REG-R25 제21조] |
+| Contractual age basis | **보험나이** (*boheom nai*, insurance age): 계약일 현재 만 나이 with a fraction under six months discarded and six months or more rounded up, incrementing at each 계약해당일 | [S3]; [REG-R25 제21조](#krlib-reg-r25) |
 | Model age basis | **만나이** (age last birthday) | **[std]** (6) |
 | Sum insured (보험가입금액) | **₩30,000,000 (3천만원)** — the 일반암 진단급여금, which is the unit every other diagnosis tier is a ratio of | [S3] [S10]; [R3]; level **[std]** (7) |
 | Lives basis | Single life. No retrieved contract writes a joint life and none states the restriction | [S1]–[S8]; observed absence, **[std]** (1) |
 | Underwriting | 표준체 with a 계약 전 알릴 의무 questionnaire; **비흡연체형** is a formal 약관 chapter with its own rate basis; **간편심사** (simplified, no hypertension or diabetes question) is what lets the issue age reach 75 | [S3]; [R4]; **[std]** (8) |
 | Substandard terms | 보험가입금액 한도 제한, 일부 보장 제외, 보험금 삭감 or 보험료 할증, and a 특정 신체부위·질병 보장제한부 인수 특약 | [S3] |
 | 배당 | None — 무배당 | [S1] [S3] [S8]; [REG-R12] |
-| Death benefit | **None.** Death from a cause the policy does not cover pays the **계약자적립액** and terminates the contract | [S3]; [REG-R17 제7-63조제1항제1호]; [REG-R25 제22조]; [REG-R50 제736조] |
+| Death benefit | **None.** Death from a cause the policy does not cover pays the **계약자적립액** and terminates the contract | [S3]; [REG-R17 제7-63조제1항제1호](#krlib-reg-r17); [REG-R25 제22조](#krlib-reg-r25); [REG-R50 제736조](#krlib-reg-r50) |
 | 암보장개시일 | The **91st day** counting the 보험계약일 as day 1 | [S1] [S2] [S3] [S4] [S7]; [R3] [R6]; **[std]** (16) |
 | **Anchor model cell (point_id 1)** | Male, **보험나이 40**, 보험기간 to 100세, **20년납**, 보험가입금액 **₩30,000,000**, 표준체, 해약환급금 미지급형, all four benefit modules on — giving 일반암 진단급여금 ₩30,000,000, 고액암 top-up ₩30,000,000, 특정소액암 ₩18,000,000, 유사암 ₩6,000,000, 암 입원급여금 ₩50,000 per day to 180 days per stay, 암 수술급여금 ₩5,000,000 관혈 / ₩1,000,000 비관혈, 항암약물·방사선 치료급여금 ₩10,000,000 최초 1회한, premium waiver on invasive diagnosis, level premium **₩45,000 per month** | **[std]** (9) |
 
@@ -286,7 +286,7 @@ Footnotes to the [std] rows:
    「계약일 현재 피보험자의 실제 만 나이를 기준으로 6개월 미만의 끝수는 버리고 6개월 이상의
    끝수는 1년으로 하여 계산하며, 이후 매년 계약 해당일에 나이가 증가」, with the 약관's own
    example 생년월일 1988-10-02, 계약일 2018-04-13 ⇒ 29년 6월 11일 ⇒ **보험나이 30세** [S3]; the
-   표준약관 carries the identical rule [REG-R25 제21조]. Because of the six-month rule 보험나이
+   표준약관 carries the identical rule [REG-R25 제21조](#krlib-reg-r25). Because of the six-month rule 보험나이
    differs from 만나이 for **roughly half of all issue dates**, and it increments on the policy
    anniversary rather than on the birthday. **`Cancer_KR_S` projects on 만나이**, because every
    decrement it uses is published on 만나이 — the 국가암등록통계 age bands [R1], the
@@ -333,17 +333,17 @@ Footnotes to the [std] rows:
 | Anchor premium | **₩45,000 per month** at the anchor cell | **[std]** (11) |
 | Rating factors | 보험나이, sex, 보험가입금액, benefit modules elected, 납입기간, 흡연 여부, 계약 전 알릴 의무 outcome | [S3] [S4]; composite **[std]** (8) |
 | Rate structure | **Not published by any carrier.** The 산출방법서 is a 기초서류 filed with the FSC, not a public document, and the 참조순보험요율 reaches the public only as the 보험가격지수 ratio | [REG-R2]; [REG-R22]; [REG-R4] [REG-R34] |
-| Pricing method | **현금흐름방식** (cash-flow pricing) — mandatory for a contract longer than three years, with an adequacy analysis on 최적기초율 and projected cash flows | [REG-R18 제7-64조제1호]; [R4] |
+| Pricing method | **현금흐름방식** (cash-flow pricing) — mandatory for a contract longer than three years, with an adequacy analysis on 최적기초율 and projected cash flows | [REG-R18 제7-64조제1호](#krlib-reg-r18); [R4] |
 | 예정이율 (pricing interest rate) | **2.50% p.a., 금리확정형** | **[std]** (12) |
 | 계약자적립액 적용이율 | **2.50% p.a.**, equal to the 예정이율 on a 금리확정형 design | [S8] at 1.5%; [S1] floor 0.5%; **[std]** (12) |
 | Premium during the waiting period | **Payable from the 보험계약일.** The 유사암 tier and every non-cancer cover are already in force, and the invalidity rule of footnote (18) returns the premium for the affected cover if it bites | [S1] [S2] [S3]; **[std]** (16) |
 | Acquisition cost (계약체결비용) | Named in the 약관, **never quantified**; the composite sets it at or below the **표준해약공제액** of 감독규정 [별표 14] | [S1]; [REG-R20]; [REG-R22]; **[std]** (13) |
 | Maintenance cost (계약관리비용) | Named, never quantified; a per-policy monthly amount plus a percentage of premium | [S1]; **[std]** (13) |
-| Commission | First-year remuneration may not exceed the first year's expected premium; instalment structures pay no more than **60% of the 표준해약공제액** a year | [REG-R22 제4-32조제5항·제8항]; [REG-R29] |
+| Commission | First-year remuneration may not exceed the first year's expected premium; instalment structures pay no more than **60% of the 표준해약공제액** a year | [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22); [REG-R29] |
 | Premium waiver (보험료 납입면제) | On the **first diagnosis of an invasive cancer** — 일반암 or 고액암 — on or after the 암보장개시일, or on a 장해지급률 of **50% 이상**. **유사암 and 특정소액암 do not trigger it** | [S3 제14조제1항] [S1 제9조제1항] [S6] [S7]; **[std]** (14) |
 | Waiver and renewal | On a 갱신계약 the waiver does **not** carry over; a cancer already waived re-arms only after **5 years** from the renewal's 보장개시일 with no further diagnosis or treatment | [S4]; scope **[std]** (2) |
-| Lapse assumption in pricing | A **최적해지율** must have been used to price the 미지급형 form at all; the 표준형 comparator is computed **without** a lapse assumption | [S3]; [REG-R19 제7-66조제4항]; [REG-R27]; **[std]** (15) |
-| 보험료 지수 disclosure | 보험가격지수 and 보장범위지수 published in the 상품요약서 | [REG-R22 제7-45조제7항] |
+| Lapse assumption in pricing | A **최적해지율** must have been used to price the 미지급형 form at all; the 표준형 comparator is computed **without** a lapse assumption | [S3]; [REG-R19 제7-66조제4항](#krlib-reg-r19); [REG-R27]; **[std]** (15) |
+| 보험료 지수 disclosure | 보험가격지수 and 보장범위지수 published in the 상품요약서 | [REG-R22 제7-45조제7항](#krlib-reg-r22) |
 
 10. **월납** is the dominant retail mode, the only mode at one direct writer [S8], and the mode
     named in the 기준연령 요건 itself [REG-R9]. It is also why `Cancer_KR_S` runs on a
@@ -422,7 +422,7 @@ has its own 보험가입금액, at that module's own level.
 |---|---|---|
 | 면책기간 (waiting period) | **90 days.** Cover for 암 attaches on the **암보장개시일**, being the day after 90 days have passed counting the 보험계약일 as day 1 | [S1] [S2] [S3] [S4] [S7]; [R3] [R6]; **[std]** (16) |
 | Carve-outs from the waiting period | **유사암**: none. **갱신계약**: none — 암보장개시일 = 갱신일. **보험나이 15 미만**: none — 암보장개시일 = 보험계약일. **부활계약**: restarts from the 부활일 | [S1] [S2] [S4] [S7]; [R3] [R6]; **[std]** (17) |
-| Diagnosis inside the waiting period | The **affected cover is 무효** and its premiums are returned; the rest of the contract survives unless the policyholder cancels it, which he may do **within 90 days** of the 진단확정일 | [S1 제28조제2항·제3항] [S2] [S3]; [R7 제644조]; **[std]** (18) |
+| Diagnosis inside the waiting period | The **affected cover is 무효** and its premiums are returned; the rest of the contract survives unless the policyholder cancels it, which he may do **within 90 days** of the 진단확정일 | [S1 제28조제2항·제3항] [S2] [S3]; [R7 제644조](#krlib-cancer-r7); **[std]** (18) |
 | 감액기간 (reduced-benefit period) | **1 year at 50%**, measured from the 보험계약일 to the 진단확정일, on **every** diagnosis tier; disapplied on a 갱신계약 | [S1] [S6] vs [S3] [S4] [S5] [S7] vs [S2]; [R6]; **[std]** (19) |
 | Definition of 암 | By reference to the **제8차 한국표준질병·사인분류** (통계청 고시 제2020-175호, 시행 2021-01-01), with the 악성신생물 분류표 listed in a 별표; **기타피부암 (C44), 갑상선암 (C73), 대장점막내암 and 전암(前癌)상태 are carved out of it** | [S1] [S2] [S3] [S4]; [R3] [R10] |
 | KCD vintage rule | The classification **in force at the 진단확정일** decides the tier, both ways; a later revision does not reopen a decided claim | [S3 제12조] [S4]; [R3]; **[std]** (20) |
@@ -445,7 +445,7 @@ has its own 보험가입금액, at that module's own level.
 | Excluded from 항암약물치료 | Immune-support agents given with **no cancer cells present** (압노바, 헬릭소, 셀레나제 are named) | [S4] |
 | Repeating diagnosis benefit | **Out of the base contract**; 재진단암 on a 2-year cycle is a rider, off in the base run | [S1] [S8]; [R4]; scope **[std]** (26) |
 | Termination on payment | **None.** Payment of any diagnosis benefit neither terminates nor exhausts the contract; cover runs to the 100세 계약해당일 | [S1] [S3] [S4] |
-| Death of the insured | No death benefit. The **계약자적립액 at the date of death** is paid and the contract ends | [S3 제31조제1항] [S4] [S5] [S6] [S7]; [REG-R17]; [REG-R25 제22조] |
+| Death of the insured | No death benefit. The **계약자적립액 at the date of death** is paid and the contract ends | [S3 제31조제1항] [S4] [S5] [S6] [S7]; [REG-R17]; [REG-R25 제22조](#krlib-reg-r25) |
 | Post-mortem crystallisation | Where the insured dies in the policy term and cancer is only then established as the direct cause, the **date of death is treated as the 진단확정일** and the benefit is paid, less any 계약자적립액 already paid out | [S1] [S3] [S4] |
 | Exclusions (보험금을 지급하지 않는 사유) | The general 약관 exclusion articles were **not read in full** for this product line | [unverified]; **[std]** (28) |
 | Suicide | The composite has **no death benefit**, so the suicide clause has nothing to attach to | [S3]; **[std]** (28) |
@@ -654,28 +654,28 @@ the shipped anchor cell does.
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| Surrender value form | **해약환급금 미지급형**: **0%** during the 납입기간, **50% of the 표준형 value** afterwards. A **전기납** contract on this form has no surrender value at any duration | [S3 제41조제2항]; [REG-R19 제7-66조제4항]; **[std]** (29) |
+| Surrender value form | **해약환급금 미지급형**: **0%** during the 납입기간, **50% of the 표준형 value** afterwards. A **전기납** contract on this form has no surrender value at any duration | [S3 제41조제2항]; [REG-R19 제7-66조제4항](#krlib-reg-r19); **[std]** (29) |
 | Legal basis of the form | 감독규정 제7-66조제4항 — a 순수보장성보험 priced with a **최적해지율** may pay less than the 별표-14-floored value. Not a contractual gimmick: a regulatory dispensation conditional on having used a best-estimate lapse rate in pricing | [REG-R19]; [REG-R28] |
-| 환급률 constraint | Where the payment-period value is under 50% of the 표준형's, both the post-payment value must exceed 50% of the 표준형's **and** the post-payment 환급률 must exceed the greater of 100% and the 표준형's 환급률 | [REG-R19 제7-66조제4항제2호]; [REG-R28] |
-| Underlying calculation | 해약환급금 = max(계약자적립액 − 해약공제액, **0**); the negative case is floored at zero, not carried | [REG-R19 제7-66조제1항제1호] |
+| 환급률 constraint | Where the payment-period value is under 50% of the 표준형's, both the post-payment value must exceed 50% of the 표준형's **and** the post-payment 환급률 must exceed the greater of 100% and the 표준형's 환급률 | [REG-R19 제7-66조제4항제2호](#krlib-reg-r19); [REG-R28] |
+| Underlying calculation | 해약환급금 = max(계약자적립액 − 해약공제액, **0**); the negative case is floored at zero, not carried | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
 | 해약공제액 | The **표준해약공제액** of 감독규정 [별표 14] | [REG-R20]; **[std]** (30) |
-| 해약공제기간 | The 납입기간 or the 신계약비 부가기간, **capped at 7 years** | [REG-R19 제7-66조제1항제2호] |
-| 계약자적립액 accrual | **Monthly** before 납입완료, **daily** afterwards | [REG-R19 제7-66조제1항제4호] |
-| Unearned premium | On termination, the **미경과보험료** is added to whatever surrender value is paid | [REG-R19 제7-66조제5항] |
+| 해약공제기간 | The 납입기간 or the 신계약비 부가기간, **capped at 7 years** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
+| 계약자적립액 accrual | **Monthly** before 납입완료, **daily** afterwards | [REG-R19 제7-66조제1항제4호](#krlib-reg-r19) |
+| Unearned premium | On termination, the **미경과보험료** is added to whatever surrender value is paid | [REG-R19 제7-66조제5항](#krlib-reg-r19) |
 | 만기환급금 | **None** — 순수보장형; the surrender value peaks around years 5–7 and falls to nil at maturity | [S8]; **[std]** (3) |
-| 보험계약대출 (policy loan) | **Not available during the 납입기간** on the 미지급형 form, because there is no surrender value to lend against; 「순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 | [S3]; [REG-R25 제33조]; [REG-R28] |
+| 보험계약대출 (policy loan) | **Not available during the 납입기간** on the 미지급형 form, because there is no surrender value to lend against; 「순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 | [S3]; [REG-R25 제33조](#krlib-reg-r25); [REG-R28] |
 | Automatic premium loan | **None.** There is no cash value to advance the premium from, so a missed premium lapses the contract at the end of 납입최고 | [S3]; [REG-R28]; **[std]** (29) |
-| 납입최고 (grace) | **At least 14 days** from the demand, the contract terminating the day after it expires | [S1]; [REG-R25 제26조] |
-| Lapse (해지) | From the day after the 납입최고기간 expires | [S1]; [REG-R25 제26조] |
-| Reinstatement (부활) | Within **3 years** of termination where the surrender value has not been drawn — **including where there is none**, which is the 무해지 case; arrears with interest at a rate within 평균공시이율 + 1%; underwriting may refuse or restrict; **the 90-day 암보장개시일 restarts from the 부활일** | [S1]; [REG-R25 제27조]; [S3] [S7]; **[std]** (31) |
+| 납입최고 (grace) | **At least 14 days** from the demand, the contract terminating the day after it expires | [S1]; [REG-R25 제26조](#krlib-reg-r25) |
+| Lapse (해지) | From the day after the 납입최고기간 expires | [S1]; [REG-R25 제26조](#krlib-reg-r25) |
+| Reinstatement (부활) | Within **3 years** of termination where the surrender value has not been drawn — **including where there is none**, which is the 무해지 case; arrears with interest at a rate within 평균공시이율 + 1%; underwriting may refuse or restrict; **the 90-day 암보장개시일 restarts from the 부활일** | [S1]; [REG-R25 제27조](#krlib-reg-r25); [S3] [S7]; **[std]** (31) |
 | First-premium failure | The insurer's liability never attaches: 상법 제656조 starts cover on receipt of the first premium absent other agreement, and 제650조제1항 voids the contract two months after formation | [REG-R49]; [R7] |
-| Non-disclosure (계약 전 알릴 의무) | Termination within **1 month** of the insurer learning of the breach and **3 years** of formation (상법 제651조), narrowed by the 약관 to **2 years from the 보장개시일 with no claim event** — one year for disease in a 진단계약 — with a causation defence | [REG-R49]; [REG-R25 제13조·제14조]; [S6] [S7] |
-| Fraud (사기에 의한 계약) | Voidable within **5 years of the 보장개시일** and one month of discovery; concealment of a pre-application cancer diagnosis is named in the 표준약관 as an instance | [REG-R25 제15조]; [S6] [S7] |
-| 청약철회 (cooling-off) | **15 days** from receipt of the 보험증권 or **30 days** from the application, whichever comes first; effective on despatch; premiums returned within 3 business days | [REG-R51]; [REG-R25 제17조]; out of scope for the model |
-| 품질보증해지 | Cancellation within **3 months** of formation where the 약관 was not delivered, its important content not explained, or the application not signed | [REG-R49 제638조의3]; [REG-R25 제18조제3항]; [S3] |
-| Benefit claim prescription (소멸시효) | **3 years** on a benefit claim and on a premium or 적립금 refund claim; 2 years on a premium claim | [REG-R49 제662조]; [REG-R25 제37조] |
+| Non-disclosure (계약 전 알릴 의무) | Termination within **1 month** of the insurer learning of the breach and **3 years** of formation (상법 제651조), narrowed by the 약관 to **2 years from the 보장개시일 with no claim event** — one year for disease in a 진단계약 — with a causation defence | [REG-R49]; [REG-R25 제13조·제14조](#krlib-reg-r25); [S6] [S7] |
+| Fraud (사기에 의한 계약) | Voidable within **5 years of the 보장개시일** and one month of discovery; concealment of a pre-application cancer diagnosis is named in the 표준약관 as an instance | [REG-R25 제15조](#krlib-reg-r25); [S6] [S7] |
+| 청약철회 (cooling-off) | **15 days** from receipt of the 보험증권 or **30 days** from the application, whichever comes first; effective on despatch; premiums returned within 3 business days | [REG-R51]; [REG-R25 제17조](#krlib-reg-r25); out of scope for the model |
+| 품질보증해지 | Cancellation within **3 months** of formation where the 약관 was not delivered, its important content not explained, or the application not signed | [REG-R49 제638조의3](#krlib-reg-r49); [REG-R25 제18조제3항](#krlib-reg-r25); [S3] |
+| Benefit claim prescription (소멸시효) | **3 years** on a benefit claim and on a premium or 적립금 refund claim; 2 years on a premium claim | [REG-R49 제662조](#krlib-reg-r49); [REG-R25 제37조](#krlib-reg-r25) |
 | Late-payment interest on benefits | 보험계약대출이율 for the first 30 days after the due date, **+4.0%** to day 60, **+6.0%** to day 90 and **+8.0%** thereafter | [S6] [S7] |
-| Policyholder protection | 예금자보호법 cover of **₩100,000,000** per person per insurer, applied to 보험금 claims in a bucket that expressly **excludes** benefits payable because the term has ended | [REG-R52]; [REG-R25 제43조] |
+| Policyholder protection | 예금자보호법 cover of **₩100,000,000** per person per insurer, applied to 보험금 claims in a bucket that expressly **excludes** benefits payable because the term has ended | [REG-R52]; [REG-R25 제43조](#krlib-reg-r25) |
 | Expiry | At the **100세 계약해당일**; nothing is paid | [S4] [S7]; **[std]** (3) |
 
 29. **The 무해지 form is the base, and on this product it is worth less than it looks.** The
@@ -761,9 +761,9 @@ premium for the affected cover if it bites. Premium ceases on the earliest of �
 `t = 240`, death, lapse, and the operation of the premium waiver.
 
 Non-payment of the second or a later premium opens a 납입최고 of **at least 14 days**, at the
-end of which the contract terminates the following day [S1] [REG-R25 제26조]. Nothing breaks
+end of which the contract terminates the following day [S1] [REG-R25 제26조](#krlib-reg-r25). Nothing breaks
 the fall: the 미지급형 form has no surrender value during the 납입기간, so there is no
-보험계약대출 to draw on and no automatic premium loan [S3] [REG-R25 제33조] [REG-R28].
+보험계약대출 to draw on and no automatic premium loan [S3] [REG-R25 제33조](#krlib-reg-r25) [REG-R28].
 Non-payment of the **first** premium is different in kind — liability never attaches, because
 상법 제656조 starts cover on receipt of the first premium absent other agreement and
 제650조제1항 voids the contract two months after formation [REG-R49] [R7] — so it produces no
@@ -1214,7 +1214,7 @@ from: 소액화 of the fast-growing sites, which [R4] claims slows the effective
 
 **Step 8 — what the bureau's rate is and is not.** It is a **참조순보험요율**, a net premium
 rate with a safety loading already inside it, not a best estimate [REG-R4] [REG-R9
-제1-2조제1호]. The claim that the loading is about 10% was seen only in a search summary and is
+제1-2조제1호](#krlib-reg-r9). The claim that the loading is about 10% was seen only in a search summary and is
 [unverified]; what *is* sourced is that it contains **no trend allowance** [R4]. An insurer
 need not use it — applying it merely deems the 순보험료 to have been filed under 보험업법
 제176조제6항 [REG-R4]. The composite's shipped incidence table is consequently a **[std]
@@ -1249,9 +1249,9 @@ cycle.
 
 Three quantities have to be distinguished and Korean regulation keeps them apart deliberately.
 
-**The 계약자적립액** is the account the 산출방법서 defines [REG-R18 제7-65조제1항], accruing
-**monthly before 납입완료 and daily afterwards** [REG-R19 제7-66조제1항제4호] and permitted to
-be computed on an **annualised premium** basis [REG-R18 제7-65조제2항] — the provision that
+**The 계약자적립액** is the account the 산출방법서 defines [REG-R18 제7-65조제1항](#krlib-reg-r18), accruing
+**monthly before 납입완료 and daily afterwards** [REG-R19 제7-66조제1항제4호](#krlib-reg-r19) and permitted to
+be computed on an **annualised premium** basis [REG-R18 제7-65조제2항](#krlib-reg-r18) — the provision that
 lets a monthly-grid model carry an annual account recursion. On the composite it is credited at
 the 예정이율 of 2.50% (footnote 12).
 
@@ -1259,7 +1259,7 @@ the 예정이율 of 2.50% (footnote 12).
 제7-63조제1항제1호 requires a 제3보험 product to be designed so that on **death from a cause
 the policy does not cover** the 계약자적립액 and the 미경과보험료 of 제7-66조제5항 are paid and
 the contract terminates [REG-R17]; the 표준약관 implements it — 「…회사가 적립한 **사망 당시의
-계약자적립액**」 [REG-R25 제22조] — and 상법 제736조 is the statutory floor beneath it
+계약자적립액**」 [REG-R25 제22조](#krlib-reg-r25) — and 상법 제736조 is the statutory floor beneath it
 [REG-R50]. The life 약관 say it in one line: 「피보험자가 보험기간 중 사망한 경우에는
 계약자에게 사망 당시의 **계약자적립액**을 지급하여 드리고 이 계약은 그 때부터 효력이 없습니다」
 [S3 제31조제1항] [S4] [S5] [S6] [S7]. **`Cancer_KR_S` therefore has a payment on death even
@@ -1277,9 +1277,9 @@ afterwards [S3]. The 표준해약공제액 is computed at footnote (30), and the
 forward is that its 보험가입금액 input is **not the ₩30,000,000 headline**: a 제3보험 product
 with no death benefit takes a *notional* 보험가입금액 from [별표 15] 제9호, by scaling a term
 assurance's face amount by the ratio of risk premiums at the 기준연령 요건 [REG-R21] [REG-R9].
-On termination the **미경과보험료** is added to whatever is paid [REG-R19 제7-66조제5항], and
+On termination the **미경과보험료** is added to whatever is paid [REG-R19 제7-66조제5항](#krlib-reg-r19), and
 the insurer must give the policyholder a **table of surrender values by elapsed period** at
-issue [REG-R25 제32조제3항] — which is why [S8]'s illustration exists at all. None of this is a
+issue [REG-R25 제32조제3항](#krlib-reg-r25) — which is why [S8]'s illustration exists at all. None of this is a
 solvency quantity: the **해약환급금준비금** of 감독규정 제6-11조의6 is computed
 **company-wide** and not contract by contract [REG-R11], `Cancer_KR_S` does not compute it, and
 on a 순수보장성 product whose surrender value peaks near 20% of premiums paid [S8] the gap it
@@ -1292,7 +1292,7 @@ fourth being missing: the **waiting-period invalidity rule**, under which the af
 void from inception and its premiums returned [S1] [S3] [R7]; **non-disclosure**, below; and
 **사기에 의한 계약**, voidable within five years of the 보장개시일 and one month of discovery,
 with concealment of a **pre-application cancer diagnosis** named in the 표준약관 as an instance
-[REG-R25 제15조] [S6] [S7].
+[REG-R25 제15조](#krlib-reg-r25) [S6] [S7].
 
 The general 보험금을 지급하지 않는 사유 articles were **not read in full** for this product
 line and no retrieved document reproduces them [R3]; the statutory floor is 상법 제659조 (the
@@ -1306,7 +1306,7 @@ exclusion decrement.
 ### 고지의무 and 계약 전 알릴 의무
 
 The two names are the same duty: the 표준약관 says so, that the 계약 전 알릴 의무 is 「상법상
-'고지의무'와 같습니다」 [REG-R25 제13조]. The statutory rule is 상법 제651조 — rescission for
+'고지의무'와 같습니다」 [REG-R25 제13조](#krlib-reg-r25). The statutory rule is 상법 제651조 — rescission for
 intentional or grossly negligent misstatement or omission of a material fact, **within one
 month of the insurer learning of it and three years of formation**, and not at all where the
 insurer knew or was grossly negligent in not knowing; a matter asked about **in writing is
@@ -1318,7 +1318,7 @@ insurer may not terminate where **two years** have passed from the 보장개시�
 event — **one year** for disease in a 진단계약 — nor where it accepted on a health-examination
 document and the claim arises from a matter stated in it, nor where the 보험설계사 prevented
 truthful disclosure; and 제14조제5항 bars termination for non-disclosure of **other insurance
-held** [REG-R25 제13조·제14조]. The retrieved contracts carry the two-year form [S6] [S7].
+held** [REG-R25 제13조·제14조](#krlib-reg-r25). The retrieved contracts carry the two-year form [S6] [S7].
 Underwriting may also respond short of rescission, by 보험가입금액 한도 제한, 일부 보장 제외,
 보험금 삭감 or 보험료 할증 [S3]. Age and sex misstatement is **corrected, not punished** —
 「…신분증에 기재된 나이 또는 성별로 **정정**하고, 정정된 나이 또는 성별에 해당하는 보험금 및
@@ -1339,7 +1339,7 @@ health examination, a contract of **90 days or less**, and a 전문금융소비�
 is the 상법 제638조의3제2항 right: where the insurer failed to deliver the 약관 and the
 policyholder's copy of the application, or failed to explain the important content, or the
 policyholder did not sign, the contract may be cancelled **within three months of formation**
-with premiums returned plus 보험계약대출이율 interest [REG-R49] [REG-R25 제18조제3항] [S3].
+with premiums returned plus 보험계약대출이율 interest [REG-R49] [REG-R25 제18조제3항](#krlib-reg-r25) [S3].
 Both are **out of scope for the model**: `Cancer_KR_S` projects from the point cover is in
 force.
 
@@ -1350,7 +1350,7 @@ happens on the way back. The 표준약관 permits **부활 within three years** 
 the surrender value has not been drawn — including where a policy loan consumed it, and
 including where there is none, which is the 무해지 case — on payment of arrears with interest
 at a rate within **평균공시이율 + 1%**, and the insurer may **not** refuse because a claim
-event occurred before termination [REG-R25 제27조]. It may refuse or restrict on health
+event occurred before termination [REG-R25 제27조](#krlib-reg-r25). It may refuse or restrict on health
 grounds: 「회사는 피보험자의 건강상태, 직업, 직무 등에 따라 승낙여부를 결정하며, 합리적인
 사유가 있는 경우 부활을 거절하거나 보장의 일부를 제한할 수 있습니다」 [S1]. Cover for events
 between lapse and reinstatement is never restored [S1].
@@ -1514,7 +1514,7 @@ products** [REG-R19].
 [REG-R2]. Its mandatory contents include, for any contract longer than three years, a premium
 calculation on **현금흐름방식** with an adequacy analysis on 최적기초율, and a 해약환급금
 calculation comparing the 계약체결비용 against the **표준해약공제액** where the former exceeds
-the latter at the 기준연령 요건 [REG-R18 제7-64조]. Insurers may use the rate bureau's
+the latter at the 기준연령 요건 [REG-R18 제7-64조](#krlib-reg-r18). Insurers may use the rate bureau's
 **참조순보험요율**, filed by 보험개발원 with the FSC under 보험업법 제176조, and doing so is
 **deemed** to be a filing of the 순보험료 [REG-R4]. There is no obligation to publish it and
 the visible KIDI channels carry no 참조순보험요율 item [REG-R34]; what the public sees is the
@@ -1634,3 +1634,55 @@ fail in Korea because 「암의 진행 단계에 대한 정확한 구분이 어�
 가능성이 높음」 [R4], and no retrieved Korean contract grades by 병기 — the graded tiers that
 emerged grade by **site and histology** instead [S3], which is that prediction proved half
 right.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-cancer-r1
+[R10]: #krlib-cancer-r10
+[R11]: #krlib-cancer-r11
+[R12]: #krlib-cancer-r12
+[R13]: #krlib-cancer-r13
+[R2]: #krlib-cancer-r2
+[R3]: #krlib-cancer-r3
+[R4]: #krlib-cancer-r4
+[R5]: #krlib-cancer-r5
+[R6]: #krlib-cancer-r6
+[R7]: #krlib-cancer-r7
+[R8]: #krlib-cancer-r8
+[REG-R1]: #krlib-reg-r1
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R17]: #krlib-reg-r17
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R40]: #krlib-reg-r40
+[REG-R45]: #krlib-reg-r45
+[REG-R46]: #krlib-reg-r46
+[REG-R47]: #krlib-reg-r47
+[REG-R48]: #krlib-reg-r48
+[REG-R49]: #krlib-reg-r49
+[REG-R5]: #krlib-reg-r5
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R53]: #krlib-reg-r53
+[REG-R54]: #krlib-reg-r54
+[REG-R55]: #krlib-reg-r55
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R7]: #krlib-reg-r7
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

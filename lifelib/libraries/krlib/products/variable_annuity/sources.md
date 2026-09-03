@@ -70,6 +70,8 @@ charge is a separate instrument priced separately. The other nine documents boun
 ranges, supply the mechanics the two do not print, and provide the counter-examples that
 keep the composite from being read as "the" Korean variable annuity.
 
+(krlib-variable_annuity-s1)=
+
 ### S1 — 「무배당 VIP 변액연금보험」 상품안내장, 주식회사 KB라이프생명보험 (product brochure)
 
 - Document: 상품안내장, 16 pp.; 준법감시인확인필-SM-2212005-1; 생명보험협회 심의필
@@ -90,6 +92,8 @@ keep the composite from being read as "the" Korean variable annuity.
   가입나이 and 연금개시나이 envelopes, the statement that the 해약환급금 is not guaranteed,
   the voidness of the GMAB on early exit, the 추가납입 carrying no loading, and the surrender
   and annuity illustrations at three investment returns.
+
+(krlib-variable_annuity-s2)=
 
 ### S2 — 「무배당 더! 행복드림 변액연금보험」 상품요약서, KDB생명보험주식회사 (statutory product summary)
 
@@ -112,6 +116,8 @@ keep the composite from being read as "the" Korean variable annuity.
   apparatus (7%/6% simple roll-up 최저연금기준금액, sex- and age-banded 기본지급률, 장기유지
   and 투자실적 가산율) which the model documents and does not implement.
 
+(krlib-variable_annuity-s4)=
+
 ### S4 — 「무배당 AIA 여유+ 변액연금보험」 상품요약서, AIA생명보험주식회사 (statutory product summary)
 
 - Document: 상품요약서, 18 pp.; 「이 상품요약서는 2026년 1월 1일부터 적용됩니다」
@@ -126,6 +132,8 @@ keep the composite from being read as "the" Korean variable annuity.
   first-year 해약공제 (28.1%, ₩1,180,000 on the anchor cell), so it brackets the top of both.
   Its **proportional 연금수령기간 중 계약관리비용 of 0.5% of the 연금 연액** is the form
   `annuity_charge_pp` takes, chosen over [S2]'s per-구좌 monthly form because it is scale-free.
+
+(krlib-variable_annuity-s5)=
 
 ### S5 — 「(무)투자에강한변액연금보험(최저연금적립액 미보증형)2404」 상품안내장, ABL생명보험주식회사 (product brochure)
 
@@ -142,6 +150,8 @@ keep the composite from being read as "the" Korean variable annuity.
   two-business-day pricing lag, the 연금개시 전/후 보험기간 definitions, the 보증기간
   instalments payable on death, and the raised **예금자보호 limit of ₩100,000,000 (1억원)**.
   Its ₩1,077,000 해약공제 is the middle of the three retrieved scales.
+
+(krlib-variable_annuity-s6)=
 
 ### S6 — 「(무)하모니변액연금보험2404」 상품안내장, ABL생명보험주식회사 (product brochure)
 
@@ -161,6 +171,8 @@ keep the composite from being read as "the" Korean variable annuity.
   an account of ₩821,751**, which is the published shape `cv_pp(0) = cv_pp(1) = cv_pp(2) = 0`
   reproduces. It also states the transfer of the whole 계약자적립액 to the 일반계정 at
   연금개시 that `av_transfer` implements.
+
+(krlib-variable_annuity-s7)=
 
 ### S7 — 「미리 보는 내 연금 무배당 교보First변액연금보험Ⅱ」 보험약관, 교보생명보험주식회사 (full policy conditions)
 
@@ -184,6 +196,8 @@ keep the composite from being read as "the" Korean variable annuity.
   that the GMAB is void on 해지; **제51조 (계약자적립금의 인출)**, whose 제8항 is the
   proportional guarantee re-basing on a 중도인출; and 제63조 (예금보험에 의한 지급보장).
 
+(krlib-variable_annuity-s8)=
+
 ### S8 — 「교보변액연금보험(무배당)[B] 고객님을 위한 변액연금보험 설명서」, 교보생명보험주식회사 (point-of-sale explanatory document)
 
 - Document: 변액연금보험 설명서, 4 pp.; 준법감시인확인필 1-2312-10; the copy retrieved is
@@ -198,6 +212,8 @@ keep the composite from being read as "the" Korean variable annuity.
   ratcheting definition of the 연금기준금액 and, in the carrier's own words, the five
   deductions that stand between the premium and the fund. It is one of the four documents
   behind the statement that the GMAB is void on death before annuitisation.
+
+(krlib-variable_annuity-s9)=
 
 ### S9 — 「투자의 힘 무배당 KB 변액연금보험Ⅱ」 상품안내장, 주식회사 KB라이프생명보험 (product brochure)
 
@@ -216,6 +232,8 @@ keep the composite from being read as "the" Korean variable annuity.
   documents establishing that 조기연금개시 is available only where the guarantee is out of the
   money.
 
+(krlib-variable_annuity-s10)=
+
 ### S10 — 「미래를 보는 변액연금보험(무)202004」 상품안내장, 미래에셋생명보험주식회사 (product brochure)
 
 - Document: 상품안내장, 20 pp., 제작일자 2020.04
@@ -233,6 +251,8 @@ keep the composite from being read as "the" Korean variable annuity.
   mandatory 채권형 ladder the model does implement. It is also one of the two documents
   bounding the fund-menu size at 5 to 51 funds.
 
+(krlib-variable_annuity-s11)=
+
 ### S11 — 변액보험 공시 (변액펀드MAP), 미래에셋생명보험주식회사 (carrier fund disclosure)
 
 - URL: `https://life.miraeasset.com/micro/disclosure/variable/PC-HO-080501-000000.do`
@@ -246,6 +266,8 @@ keep the composite from being read as "the" Korean variable annuity.
   and it is cited in `return_scenario.csv` and in the key-sensitivity list to establish
   precisely that **no return assumption in this model can be sourced** — no as-of date came
   back with the panel, so even the figures returned are dated only by the access date.
+
+(krlib-variable_annuity-s12)=
 
 ### S12 — 변액보험 상품비교공시 / 시장현황, 생명보험협회 공시실 (industry comparative disclosure portal)
 
@@ -273,6 +295,8 @@ says so at its own entry. That distribution is itself a finding about this produ
 instruments that govern the **guarantee** — 제7-60조제7호 and 별표 24 — are the two that could
 not be opened.
 
+(krlib-variable_annuity-r1)=
+
 ### R1 — 「변액연금 최저보증 및 사업비 부과 현황 조사」, 조사자료집 2018-1, 보험연구원 (research monograph)
 
 - Author 김세환; 2018년 2월; 117 pp., with an English abstract "GMxB and Charges in Korean
@@ -290,8 +314,8 @@ not be opened.
   actually use, including the **동적해지율** convention the model deliberately does not
   implement; the 별표 24 보증준비금 tables and the 보증위험액 최저한도 table at second hand;
   the industry premium-allocation band 「납입보험료의 5~15%를 … 차감한 후 85~95%만 투자」 that
-  `check_prem_alloc()` is bounded by; the market-mean 해지공제율 by duration [R1 <표 Ⅴ-2>];
-  the **모집수수료율 by policy year [R1 <표 Ⅴ-3>]** that is `comm_yr1`–`comm_yr5`; the
+  `check_prem_alloc()` is bounded by; the market-mean 해지공제율 by duration [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1);
+  the **모집수수료율 by policy year [R1 <표 Ⅴ-3>](#krlib-variable_annuity-r1)** that is `comm_yr1`–`comm_yr5`; the
   seven-year-persistency-below-30% sentence that `lapse_table.csv` is calibrated to; and the
   130%-of-premiums 일반계정 전환 offer. It is dated — the census is 2017 — and every figure
   taken from it is labelled with that date.
@@ -301,6 +325,8 @@ not be opened.
   are **exactly the reserve standard's floors, not observed carrier charges**. They must not
   be quoted as market guarantee charges, and are not: the observed charges in this model come
   from [S1] [S2] [S4] [S9] [S10].
+
+(krlib-variable_annuity-r2)=
 
 ### R2 — 「변액보험의 이해와 판매」 2024 (변액보험판매자격시험 교재), 생명보험협회 (industry textbook)
 
@@ -322,6 +348,8 @@ not be opened.
   the extinguishment of death cover at 연금개시; the disclosure regime; the licence and
   적합성 진단 requirements; and the deposit-protection carve-out.
 
+(krlib-variable_annuity-r3)=
+
 ### R3 — 「변액보험 판매 미스터리쇼핑 결과 및 관련 소비자 유의사항을 안내합니다」, 금융감독원 (supervisory press release)
 
 - 소비자피해예방국; 보도 2026.3.24.; 5 pp.
@@ -339,6 +367,8 @@ not be opened.
   precede any recommendation, and the customer manages the funds — which is the framing
   `product-spec.md` adopts for the whole product.
 
+(krlib-variable_annuity-r4)=
+
 ### R4 — 보험업법 제108조 (특별계정의 설정·운용) (statute)
 
 - URL: `https://casenote.kr/법령/보험업법/제108조` — CaseNote's mirror of the 국가법령정보센터
@@ -353,6 +383,8 @@ not be opened.
   separate-account profits; 제4항 delegates asset management, valuation and comparative
   disclosure to Presidential Decree. Corroborated by [REG-R6], retrieved by a different route.
 
+(krlib-variable_annuity-r5)=
+
 ### R5 — 보험업법 제106조 (자산운용의 방법 및 비율) (statute)
 
 - URL: `https://www.law.go.kr/LSW//lsLawLinkInfo.do?lsJoLnkSeq=1000734924&chrClsCd=010202&lsId=001532&print=print`
@@ -365,6 +397,8 @@ not be opened.
   `product-spec.md` about the separate-account limits themselves is tagged **[unverified]**
   against this entry. Nothing in the model depends on them.
 
+(krlib-variable_annuity-r6)=
+
 ### R6 — 변액보험(PBT) 시험규정, 생명보험협회 자격시험센터 (examination regulations)
 
 - URL: `https://exam.insure.or.kr/vrb/pbt/schd/legal`
@@ -375,6 +409,8 @@ not be opened.
   It supports the specification's statement that this product may be sold only by a
   변액보험판매관리사, which [S1] prints on its own cover. It does **not** state the
   continuing-education requirement; that comes from [R2].
+
+(krlib-variable_annuity-r7)=
 
 ### R7 — 「불합리한 보험 사업비와 모집수수료를 개편하여 소비자의 환급률을 높이고 보험료 인하를 유도하겠습니다」, 금융위원회 (policy press release)
 
@@ -391,6 +427,8 @@ not be opened.
   or it was reversed. The model uses `addl_prem_cap_ratio = 2.0` and the documents record the
   conflict rather than resolving it. Corroborated by [REG-R29].
 
+(krlib-variable_annuity-r8)=
+
 ### R8 — 「보험자본건전성 선진화 추진단」 제10차 회의 보도자료, 금융위원회 (policy press release)
 
 - 2022년 8월 25일
@@ -405,6 +443,8 @@ not be opened.
   inside retained earnings from **2023**, restricting distributable profit. The release does
   not name the amended article numbers; [REG-R10] and [REG-R11] do.
 
+(krlib-variable_annuity-r9)=
+
 ### R9 — 「2025년 보험산업 전망」, 보험연구원 (research institute forecast)
 
 - 발표 황인창; 2024.10.10; seminar deck, 78 pp.
@@ -418,6 +458,8 @@ not be opened.
   standing warning against any Korean variable-annuity volume projection: the forecast of a
   45.9% fall was followed by a 46.2% rise.
 
+(krlib-variable_annuity-r10)=
+
 ### R10 — 「변액보험 펀드 연환산 수익률, 국내형 71.32%·해외형 44.61% 최고」, 보험저널 (news article)
 
 - 2026-05-13, reporting 생명보험협회 disclosure data as at 2026-04-30
@@ -429,6 +471,8 @@ not be opened.
   overseas equity 44.61% / 44.16% / 43.08%, annualised. It is cited in `return_scenario.csv`
   and in the key-sensitivity list for exactly one purpose — to establish that **any return
   assumption in this model must be [std] and cannot be sourced to it**.
+
+(krlib-variable_annuity-r11)=
 
 ### R11 — 보험업감독규정 제7-60조 (생명보험의 보험상품설계 등) 제7호 (supervisory regulation)
 
@@ -444,6 +488,8 @@ not be opened.
   GMDB and why `gmdb_charge` has no switch beside `gmab_flag`. **The article number is sound
   and any wider reading of 제7-60조 is [unverified] against this entry** — [REG-R16] retrieved
   the article text and is the citation that closes the gap.
+
+(krlib-variable_annuity-r12)=
 
 ### R12 — 보험업감독업무시행세칙 <별표 24> 보증준비금 산출기준 (supervisory rules, annex)
 
@@ -461,6 +507,8 @@ not be opened.
   invoked by 감독규정 제6-11조 제10호 and computed under 시행세칙 제4-15조; neither article was
   retrieved. **[REG-R26] also failed to retrieve it**, from the other research pass.
 
+(krlib-variable_annuity-r13)=
+
 ### R13 — 보험업법 시행령, 특별계정 관련 조문 (제52조·제53조) (Presidential Decree)
 
 - URL: `https://www.law.go.kr/LSW//lsSideInfoP.do?lsiSeq=266041&joNo=0053&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR`
@@ -476,6 +524,8 @@ not be opened.
   [unverified] rather than dropping it, because the prohibition on advance return guarantees is
   the doctrinal reason a Korean minimum guarantee is a **benefit floor** and not a
   credited-rate floor.
+
+(krlib-variable_annuity-r14)=
 
 ### R14 — 금융소비자 보호에 관한 법률 제17조 (적합성원칙) and 제18조 (적정성원칙) (statute)
 
@@ -682,3 +732,28 @@ account recursion is consistent with rather than derived from the retrieved docu
 **시행세칙 별표 24**, which neither research pass could open, so the 보증준비금 this product is
 actually reserved under is known only at second hand; and **any Korean unit expense cost**,
 which the 사업비 disclosure does not contain, the disclosure being of charges and not of costs.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-variable_annuity-r1
+[R10]: #krlib-variable_annuity-r10
+[R11]: #krlib-variable_annuity-r11
+[R12]: #krlib-variable_annuity-r12
+[R14]: #krlib-variable_annuity-r14
+[R2]: #krlib-variable_annuity-r2
+[R3]: #krlib-variable_annuity-r3
+[R4]: #krlib-variable_annuity-r4
+[R5]: #krlib-variable_annuity-r5
+[R7]: #krlib-variable_annuity-r7
+[R9]: #krlib-variable_annuity-r9
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R16]: #krlib-reg-r16
+[REG-R26]: #krlib-reg-r26
+[REG-R29]: #krlib-reg-r29
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R6]: #krlib-reg-r6
+<!-- END generated citation links -->

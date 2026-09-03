@@ -178,6 +178,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 고시 carries every operative reserving, design and surrender rule; the FSS's 세칙 carries the
 표준약관 and the crediting-rate formula; and the 별표 to both carry the numbers.
 
+(krlib-reg-r1)=
+
 ### R1 — 국가법령정보센터 (법제처), 보험업법 제2조 (정의) and 제4조 (보험업의 허가)
 
 - Version: [시행 2025. 1. 31.] [법률 제20436호, 2024. 9. 20., 타법개정]
@@ -216,6 +218,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   makes possible. The market-overview paragraph in `index.md` cites 제4조제3항 for why Korean
   personal protection is written on both sides of the market.
 
+(krlib-reg-r2)=
+
 ### R2 — 국가법령정보센터, 보험업법 제5조·제127조·제128조·제128조의2·제128조의3 (기초서류)
 
 - Version: [시행 2025. 1. 31.] [법률 제20436호]
@@ -247,6 +251,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product, in the provenance paragraph of `sources.md` and in the assumption
   tables of `technical-notes.md`.
 
+(krlib-reg-r3)=
+
 ### R3 — 국가법령정보센터, 보험업법 제120조 (책임준비금 등의 적립)
 
 - Version: [시행 2025. 1. 31.] [법률 제20436호]
@@ -263,6 +269,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   stating a formula of its own.
 - **Used by:** every product, in the "what this model does not compute" paragraph of
   `technical-notes.md`.
+
+(krlib-reg-r4)=
 
 ### R4 — 국가법령정보센터, 보험업법 제176조 (보험요율 산출기관)
 
@@ -290,6 +298,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product, in the morbidity/mortality provenance note. cancer, ci_insurance,
   long_term_care and child lean on it hardest, because for them there is no public rate of any
   kind.
+
+(krlib-reg-r5)=
 
 ### R5 — 국가법령정보센터, 보험업법 제181조 (보험계리) and 제184조 (선임계리사의 의무 등)
 
@@ -319,6 +329,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product, as background in `sources.md`; no model implements anything from
   it. Cited in the library index for the sentence about who signs a Korean product off.
 
+(krlib-reg-r6)=
+
 ### R6 — 국가법령정보센터, 보험업법 제108조 (특별계정의 설정ㆍ운용)
 
 - Version: [시행 2025. 1. 31.] [법률 제20436호]
@@ -334,6 +346,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   pension_savings, because a 연금저축계좌 established under 소득세법 제20조의3제1항제2호 is a
   **mandatory** 특별계정 class under 감독규정 제5-6조제1항제1호 [R15] — the single most
   important structural fact about `Pension_KR_A`.
+
+(krlib-reg-r7)=
 
 ### R7 — 국가법령정보센터, 보험업법 시행령 제1조의2 (보험상품)
 
@@ -357,6 +371,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   the same instrument.
 - **Used by:** every product for the taxonomy; indemnity_medical and long_term_care for the
   public-scheme boundary paragraph.
+
+(krlib-reg-r8)=
 
 ### R8 — 국가법령정보센터, 보험업법 시행령 제63조·제65조·제71조
 
@@ -387,6 +403,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product. The 100% floor is quoted in each `product-spec.md` solvency note;
   the 30-day pre-filing is quoted in `sources.md` to explain why a Korean product's parameters
   become public at launch and not before.
+
+(krlib-reg-r9)=
 
 ### R9 — 금융위원회, 보험업감독규정 (금융위원회고시 제2026-16호)
 
@@ -425,6 +443,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product. 기준연령 요건 is quoted in every `technical-notes.md` to justify
   model point 1; 보장성/저축성 in every `product-spec.md`.
 
+(krlib-reg-r10)=
+
 ### R10 — 금융위원회, 보험업감독규정 제6-11조·제6-11조의4·제6-11조의5 (책임준비금, 보증준비금)
 
 - Version: [시행 2026. 5. 6.] [금융위원회고시 제2026-16호]
@@ -453,6 +473,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   because the ordering in 제6-11조의5제2항 means the surrender-value reserve is taken **first**
   and the guarantee reserve second — which is the opposite of the intuition a drafter brings
   from a market where guarantee reserves are liabilities.
+
+(krlib-reg-r11)=
 
 ### R11 — 금융위원회, 보험업감독규정 제6-11조의6 (해약환급금준비금)
 
@@ -505,6 +527,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   positive after 납입완료, which is exactly the shape the reserve was built to catch. Every
   other product cites it once, in the scope note. **No `krlib` model computes it.**
 
+(krlib-reg-r12)=
+
 ### R12 — 금융위원회, 보험업감독규정 제6-11조의7 and 제6-13조 (계약자배당)
 
 - Version: [시행 2026. 5. 6.] [금융위원회고시 제2026-16호]
@@ -536,6 +560,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   blocks. **`krlib` models no dividend, and each `product-spec.md` says so and cites this
   entry.**
 - **Used by:** every product, one line each.
+
+(krlib-reg-r13)=
 
 ### R13 — 금융위원회, 보험업감독규정 제7-1조, 제7-2조, 제7-2조의2 (K-ICS 지급여력)
 
@@ -576,6 +602,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product, in the sensitivity paragraph of `technical-notes.md`. **No
   `krlib` model computes 요구자본.**
 
+(krlib-reg-r14)=
+
 ### R14 — 금융위원회, 보험업감독규정 제7-17조~제7-19조 (적기시정조치) and 고시 제2022-53호 부칙
 
 - Version: [시행 2026. 5. 6.] [금융위원회고시 제2026-16호]; 부칙 of 고시 제2022-53호 dated
@@ -602,6 +630,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
     interest rate and, for 변액보험, at "매 사업연도별 해당시점의 평균공시이율" [R48].
 - **Used by:** every product, in the "both regimes commenced 2023-01-01" sentence;
   variable_annuity additionally for the guarantee-reserve roll-forward rate.
+
+(krlib-reg-r15)=
 
 ### R15 — 금융위원회, 보험업감독규정 제5-6조, 제5-7조, 제6-26조 (특별계정)
 
@@ -636,6 +666,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
     is the amount computed under the general account's 산출방법서.
 - **Used by:** variable_annuity (the account recursion and the fund menu) and pension_savings
   (the mandatory separate account and the 공시이율 credit).
+
+(krlib-reg-r16)=
 
 ### R16 — 금융위원회, 보험업감독규정 제7-60조 (생명보험의 보험상품설계 등)
 
@@ -672,6 +704,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   immediate_annuity load-bearing; child in part. 제8호 is cited by ci_insurance and cancer for
   the continue-after-diagnosis design; 제10호 by whole_life and pension_savings for the
   최저보증이율.
+
+(krlib-reg-r17)=
 
 ### R17 — 금융위원회, 보험업감독규정 제7-63조 (제3보험의 보험상품설계 등)
 
@@ -733,6 +767,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** indemnity_medical load-bearing throughout; cancer, long_term_care and child for
   제1항제1호 (the payment on non-covered death); ci_insurance for the 제3보험 design frame.
 
+(krlib-reg-r18)=
+
 ### R18 — 금융위원회, 보험업감독규정 제7-64조·제7-65조 (산출방법서, 계약자적립액)
 
 - Version: [시행 2026. 5. 6.] [금융위원회고시 제2026-16호]
@@ -770,6 +806,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product. The 연납보험료 permission of 제7-65조제2항 is quoted in the
   monthly-grid models' `technical-notes.md`; the 공시이율 chain is load-bearing for whole_life,
   pension_savings, immediate_annuity and ci_insurance.
+
+(krlib-reg-r19)=
 
 ### R19 — 금융위원회, 보험업감독규정 제7-66조·제7-67조·제7-69조·제7-70조 (해약환급금)
 
@@ -817,6 +855,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product. whole_life, term_life, ci_insurance, child, cancer and
   long_term_care cite 제4항 for the 무해지/저해지 forms; variable_annuity cites 제4항제1호 for
   why it may **not** use them and must carry a full 별표-14-floored surrender value.
+
+(krlib-reg-r20)=
 
 ### R20 — 금융위원회, 보험업감독규정 [별표 14] 표준해약환급금계산시 적용되는 해약공제액
 
@@ -874,6 +914,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
     by 제7-66조제4항제1호 [R19].
 - **Used by:** every product, load-bearing, in `technical-notes.md`.
 
+(krlib-reg-r21)=
+
 ### R21 — 금융위원회, 보험업감독규정 [별표 15] 보험가입금액의 산정 (제7-67조 관련)
 
 - Version marker: <개정 2011.1.24., 2020.1.15.>
@@ -906,6 +948,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** cancer, long_term_care, child and ci_insurance load-bearing (it is the only
   route to a 보험가입금액 for a benefit that is not a death benefit); whole_life and term_life
   for 제3호 and 제8호; indemnity_medical for the interaction with 별표 14 note 7.
+
+(krlib-reg-r22)=
 
 ### R22 — 금융위원회, 보험업감독규정 제4-32조·제7-45조·제7-51조 (수수료, 공시, 신고)
 
@@ -949,6 +993,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   and the 70% renewal-cost test, which bites directly on a one-year renewable product) load-
   bearing; every other product cites 제4-32조 in the expense-assumption rationale.
 
+(krlib-reg-r23)=
+
 ### R23 — 금융감독원, 보험업감독업무시행세칙 (금융감독원세칙)
 
 - Version: [시행 2026. 9. 10.] [금융감독원세칙, 2026. 8. 28., 일부개정]
@@ -976,6 +1022,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   - **제5-17조의2** and the 부칙 dating the 계리적 가정 amendments were read for chronology.
 - **Used by:** every product. The 공시이율 product-class list is load-bearing for whole_life
   (종신보험 is its own class), pension_savings and immediate_annuity (연금보험).
+
+(krlib-reg-r24)=
 
 ### R24 — 금융감독원, 보험업감독업무시행세칙 [별표 27] 공시기준이율 산출 기준 (제5-16조 관련)
 
@@ -1014,6 +1062,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   scalar rather than as a function of a yield curve.
 - **Used by:** whole_life, pension_savings, immediate_annuity and ci_insurance load-bearing;
   every other product cites it once for the crediting-rate frame.
+
+(krlib-reg-r25)=
 
 ### R25 — 금융감독원, 보험업감독업무시행세칙 [별표 15] 표준약관 (제5-13조제1항 관련)
 
@@ -1115,6 +1165,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product, load-bearing — the source of every contractual mechanic in
   `krlib` that is not carrier-specific.
 
+(krlib-reg-r26)=
+
 ### R26 — 금융감독원, 시행세칙 [별표 22] (K-ICS) and [별표 24] (보증준비금 산출기준)
 
 - URLs tried: https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2200000080687 and
@@ -1146,6 +1198,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** variable_annuity load-bearing (the 보증준비금 basis, which is why the product's
   보증비용 exists at all) with every dependent figure tagged [unverified]; whole_life,
   term_life and the other protection products cite 별표 22 only through [R36], and must say so.
+
+(krlib-reg-r27)=
 
 ### R27 — 금융위원회·금융감독원, 제4차 보험개혁회의 보도자료 (계리가정·할인율)
 
@@ -1218,6 +1272,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** every product, load-bearing — the six protection products for the lapse vector,
   all ten for the discount-curve paragraph.
 
+(krlib-reg-r28)=
+
 ### R28 — 금융위원회, 무(저)해지환급금 보험 상품구조 개선 (2020) and FSS 소비자경보 (2019)
 
 - URLs: https://www.fsc.go.kr/no010101/74468 (입법예고, 2020-07-27);
@@ -1249,6 +1305,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   publishes, and the no-policy-loan point is a stated product limitation. variable_annuity
   cites it to explain why it is *excluded* from the form.
 
+(krlib-reg-r29)=
+
 ### R29 — 금융위원회, 「불합리한 보험 사업비와 모집수수료를 개편하여 …」 (2019-08-01)
 
 - Publisher: 금융위원회
@@ -1271,6 +1329,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
 - **Used by:** whole_life, term_life, ci_insurance, child, cancer, long_term_care and
   variable_annuity, in the expense-assumption rationale.
 
+(krlib-reg-r30)=
+
 ### R30 — 금융위원회, 보험업권 자본규제 고도화 (2025-03-12) and 금융감독원, 지급여력비율 현황
 
 - URLs: https://www.fsc.go.kr/no010101/84128 (FSC, 2025-03-12);
@@ -1292,6 +1352,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   from it. The quarterly series for 2025-03 and 2025-06 exists at
   `https://eiec.kdi.re.kr/policy/materialView.do?num=267710` and `…num=271247` and was **not**
   opened — recorded so a later drafter has it to hand.
+
+(krlib-reg-r31)=
 
 ### R31 — 금융위원회, 실손의료보험 개혁방안 (2025-04-01) and the 5세대 launch (2026-05-06)
 
@@ -1321,6 +1383,8 @@ consists of; the Decree closes the product lists and sets the 100% solvency floo
   operative rules themselves are cited to 감독규정 제7-63조 [R17] and the 표준약관 [R25], not
   to the release.
 
+(krlib-reg-r32)=
+
 ### R32 — 금융위원회, 「오늘부터 새로운 예금보호한도 1억원 시대가 열립니다」 (2025-09-01)
 
 - Publisher: 금융위원회; release dated 2025-08-29, published on the commencement date
@@ -1346,10 +1410,12 @@ the 경험생명표 nor any life-side reference rate [R33] [R34]. Several entrie
 therefore about what is *not* available, and the mortality figures that are available are
 available at second hand. **No 한국보험계리사회 (Institute of Actuaries of
 Korea) practice standard was retrieved in this research pass**, and none is listed here: there
-is no `krlib` analogue of `jplib`'s 保険計理人の実務基準 [R22 of `jplib`] or `frlib`'s NPA 1
+is no `krlib` analogue of `jplib`'s 保険計理人の実務基準 [R22 of `jplib`](#krlib-reg-r22) or `frlib`'s NPA 1
 and NPA 2. That absence is recorded as a gap in §7, not papered over with a URL. Where a Korean
 actuarial convention is used in this library and cannot be traced to a retrieved standard, the
 product document says "market practice" and tags the claim `[unverified]`.
+
+(krlib-reg-r33)=
 
 ### R33 — 보험개발원, 제10회 경험생명표 — as reported by 보험매일, 「제10회 경험생명표 개정…」
 
@@ -1393,6 +1459,8 @@ product document says "market practice" and tags the claim `[unverified]`.
 - **Used by:** every product, load-bearing, in the mortality-basis section of
   `technical-notes.md`.
 
+(krlib-reg-r34)=
+
 ### R34 — 보험개발원, public channels — 보도자료 listing and 보험정보 빅데이터 플랫폼
 
 - URLs: https://www.kidi.or.kr/user/nd11592.do (보도자료 listing); the 보험정보 빅데이터 플랫폼
@@ -1421,6 +1489,8 @@ product document says "market practice" and tags the claim `[unverified]`.
      Fachgrundsätze.
 - **Used by:** every product, in the one-paragraph provenance statement that opens each
   `technical-notes.md` assumption section.
+
+(krlib-reg-r35)=
 
 ### R35 — 보험연구원, 「K-ICS 경과조치 주요 내용과 시사점」 (KIRI 리포트 이슈 분석), 노건엽
 
@@ -1467,6 +1537,8 @@ product document says "market practice" and tags the claim `[unverified]`.
 - **Used by:** every product, background only. It is why a Korean K-ICS ratio quoted "after
   경과조치" [R30] is not comparable with one quoted before, and `krlib` says which is which.
 
+(krlib-reg-r36)=
+
 ### R36 — 보험연구원 노건엽·이승주, CEO Report 03호 「보험개혁회의 내용과 과제: 건전성 제도」
 
 - Publisher: 보험연구원, CEO Report 2025년 03호 (2025-04), 24 pp.
@@ -1496,6 +1568,8 @@ product document says "market practice" and tags the claim `[unverified]`.
   other product for the 해약환급금준비금 context sentence. **Where a `krlib` document quotes a
   별표 22 shock it must name this report as the route and tag the figure [unverified].**
 
+(krlib-reg-r37)=
+
 ### R37 — 보험연구원 정원석, 「보험상품 사업비 및 모집수수료 개선」 (2019-04-16)
 
 - Publisher: 보험연구원; 사업비 및 모집수수료 부가체계 공청회, 2019-04-16; 27-slide
@@ -1511,6 +1585,8 @@ product document says "market practice" and tags the claim `[unverified]`.
   release [R29] that carried the reform through.
 - **Used by:** whole_life, term_life and pension_savings load-bearing, in the derivation of the
   surrender-value curve; every other product for the framing sentence.
+
+(krlib-reg-r61)=
 
 ### R61 — 보험개발원, 「장기손해보험 참조순보험요율」 공시 (알림광장 → 참조 순보험요율)
 
@@ -1564,6 +1640,8 @@ it is on **만나이** (age last birthday) rather than 보험나이 [R25]. That 
 the six-month rule means the two differ for half of all issue dates — and a `krlib` model that
 anchors a `[std]` table on a public statistic must convert or must say it has not.
 
+(krlib-reg-r38)=
+
 ### R38 — 국가데이터처, 「2024년 생명표 작성 결과」 and 통계청, 「2023년 생명표」
 
 - Publisher: 국가데이터처 인구동향과 (the renamed 통계청)
@@ -1596,6 +1674,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
   기대여명 연수** the statutory cap on a guarantee period in a tax-exempt 종신형 연금보험
   [R58].
 
+(krlib-reg-r39)=
+
 ### R39 — 국가데이터처, KOSIS 국가통계포털 — 완전생명표 (single-year qx tables)
 
 - Publisher: 국가데이터처 / 통계청
@@ -1610,6 +1690,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
   this page.
 - **Used by:** every product with a mortality decrement, as the named to-do in the table-build
   note of `model.md`.
+
+(krlib-reg-r40)=
 
 ### R40 — 보건복지부·중앙암등록본부(국립암센터), 「2023년 국가암등록통계 참고자료」
 
@@ -1648,6 +1730,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 - **Used by:** cancer and ci_insurance load-bearing; child for the 소아암 framing;
   indemnity_medical for the 암 치료 share of claims [R44].
 
+(krlib-reg-r41)=
+
 ### R41 — 국민건강보험공단, 「2024년도 건강보험환자 진료비 실태조사」
 
 - Publisher: 국민건강보험공단; date 2025-12-30. Retrieved through the 보험연구원 weekly-trend
@@ -1678,6 +1762,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 - **Used by:** indemnity_medical load-bearing (the claim-severity anchor and the 보장률 by
   institution class that the co-payment table keys off); cancer, child and long_term_care for
   context.
+
+(krlib-reg-r42)=
 
 ### R42 — 국민건강보험공단, 「장기요양 등급 판정 현황」 (자율공시 / 경영공시)
 
@@ -1712,6 +1798,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 - **Used by:** long_term_care load-bearing; indemnity_medical for the 할인·할증 exclusion of
   1등급 and 2등급 [R25].
 
+(krlib-reg-r43)=
+
 ### R43 — 국민건강보험공단, 「2024 노인장기요양보험 통계연보」, as reported by 메디칼월드뉴스
 
 - Publisher of the underlying yearbook: 국민건강보험공단. Publisher of the item: 메디칼월드뉴스
@@ -1729,6 +1817,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
   corroboration is the only reason these figures are recorded; none of them may be used as a
   load-bearing input.
 - **Used by:** long_term_care, in a sensitivity only, every figure tagged [unverified].
+
+(krlib-reg-r44)=
 
 ### R44 — 금융감독원, 「2024년 실손의료보험 사업실적(잠정)」
 
@@ -1772,6 +1862,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 - **Used by:** indemnity_medical load-bearing throughout; cancer, child and long_term_care for
   the claims-mix context.
 
+(krlib-reg-r45)=
+
 ### R45 — 생명보험협회, 공시실 (pub.insure.or.kr), FACT BOOK and 금융통계월보(생명보험편)
 
 - Publisher: 생명보험협회 (Korea Life Insurance Association, KLIA), with 보험개발원 preparing
@@ -1800,6 +1892,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
     and 부문별 손익, the last prepared by KIDI.
 - **Used by:** every product, as the stated route to its `[S#]` sources; the library index for
   the disclosure-architecture paragraph.
+
+(krlib-reg-r46)=
 
 ### R46 — 보험연구원, 「2026년 보험산업 전망」 (2026년 보험산업 전망과 과제 세미나), 황인창
 
@@ -1840,6 +1934,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 - **Used by:** every product, for the one-paragraph market context in `product-spec.md`, and
   the library index.
 
+(krlib-reg-r47)=
+
 ### R47 — 한국보험신문, 「2025년 보험사 당기순이익 12.2조원… 생·손보 보험손익 동반 하락」
 
 - Publisher: 한국보험신문 (insnews.co.kr); the figures are attributed in the article to
@@ -1865,6 +1961,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
   protection market. **`krlib` models the life-insurer form throughout, and each product
   document says where a non-life carrier's version differs.**
 - **Used by:** every product, in the market paragraph; the library index, load-bearing.
+
+(krlib-reg-r48)=
 
 ### R48 — 평균공시이율 and 공시기준이율 — carrier regulatory disclosure (하나생명, 교보생명)
 
@@ -1899,7 +1997,7 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
   the first fall since the 2.50% → 2.25% cut that took effect for 2021.**
 - **Where the 평균공시이율 bites** — the first five verified from the regulation or the
   표준약관, the sixth **only at second hand**: the **저축성보험 design test** and its +0.25%p
-  variant, and the alternative comparison test [R16 제7-60조제3호·제3의2호·제4호]; the **부활
+  variant, and the alternative comparison test [R16 제7-60조제3호·제3의2호·제4호](#krlib-reg-r16); the **부활
   interest ceiling** of 평균공시이율 + 1% [R25]; the **계약자배당 interest floor** [R12]; the
   **변액보험 보증준비금 roll-forward** [R14]; the 별표 14 note 6 discount [R20]; and — through
   a research report quoting a schedule that was not retrieved, so **[unverified]** as
@@ -1921,6 +2019,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
   occurrences of 예정이율 [R9]: the regulation speaks only of the **계약자적립액 적용이율** and
   of the 금리연동형 / 금리확정형 distinction.
 
+(krlib-reg-r62)=
+
 ### R62 — 손해보험협회, 공시실 / e-보험시장 (kpub.knia.or.kr)
 
 - Publisher: 손해보험협회 (General Insurance Association of Korea, KNIA/GIAK)
@@ -1936,7 +2036,7 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 - **Why a second association appears on this page.** [R45] covers the **life** side. Korea's
   personal protection market is written on both sides and **the non-life side is the larger of
   the two** — 손해보험 장기보험 ₩73.3조 against 생명보험 보장성보험 ₩62.0조 in 2025 [R47] —
-  because 제3보험 is a shared licence field [R1 제4조제3항]. Four of the ten `krlib` products
+  because 제3보험 is a shared licence field [R1 제4조제3항](#krlib-reg-r1). Four of the ten `krlib` products
   (child, indemnity_medical, cancer, long_term_care) are written predominantly by non-life
   carriers, and their public disclosure sits here at least as often as at [R45]. A page that
   listed only the life association would misdescribe where half of `krlib`'s product evidence
@@ -1959,6 +2059,8 @@ anchors a `[std]` table on a public statistic must convert or must say it has no
 **one-way mandatory** — 제663조 forbids any special agreement varying the Part to the
 disadvantage of the policyholder, insured or beneficiary (reinsurance and marine excepted).
 Every clause of the 표준약관 [R25] is drafted against it.
+
+(krlib-reg-r49)=
 
 ### R49 — 국가법령정보센터, 상법 제4편 보험, 제1장 통칙 (제638조~제664조)
 
@@ -2005,6 +2107,8 @@ Every clause of the 표준약관 [R25] is drafted against it.
   3-year claim prescription and the 30-day acceptance window are quoted verbatim; nothing is
   modelled.
 
+(krlib-reg-r50)=
+
 ### R50 — 국가법령정보센터, 상법 제4편 제3장 인보험 (제727조~제739조의3)
 
 - Version: [시행 2026. 7. 23.] [법률 제20991호]
@@ -2046,6 +2150,8 @@ Every clause of the 표준약관 [R25] is drafted against it.
 - **Used by:** every product; child load-bearing (제732조), long_term_care load-bearing (the
   absence), cancer and indemnity_medical for 제739조의2 and 제736조.
 
+(krlib-reg-r51)=
+
 ### R51 — 국가법령정보센터, 금융소비자 보호에 관한 법률 제46조 (청약의 철회)
 
 - Version: [시행 2026. 1. 2.] (lsiSeq 277247, efYd 20260102)
@@ -2061,6 +2167,8 @@ Every clause of the 표준약관 [R25] is drafted against it.
 - **Used by:** every product, one line in `product-spec.md`. The 15/30-day pair is the only
   statutory number in the library that a policyholder can act on directly, and it is quoted
   rather than modelled.
+
+(krlib-reg-r52)=
 
 ### R52 — 국가법령정보센터, 예금자보호법 시행령 제18조 (보험금의 계산방법의 예외 등)
 
@@ -2096,6 +2204,8 @@ so the private product and the public scheme are different instruments in law. W
 product does is sit *on top of* the public one: `Medical_KR_S` reimburses what 국민건강보험
 leaves the patient to bear, and `LTC_KR_S` pays on a determination that 노인장기요양보험 makes.
 
+(krlib-reg-r53)=
+
 ### R53 — 국가법령정보센터, 국민건강보험법 제41조, 제42조, 제44조
 
 - Version: [시행 2026. 1. 2.] (lsiSeq 276651, efYd 20260102)
@@ -2123,6 +2233,8 @@ leaves the patient to bear, and `LTC_KR_S` pays on a determination that 노인�
     per-band 본인부담상한액 amounts sit in a 시행령 별표 that was not retrieved** — see §7.
 - **Used by:** indemnity_medical load-bearing; cancer, child, ci_insurance and long_term_care
   for the 급여/비급여 boundary sentence.
+
+(krlib-reg-r54)=
 
 ### R54 — 국가법령정보센터, 노인장기요양보험법 제2조, 제15조, 제23조, 제39조, 제40조
 
@@ -2154,6 +2266,8 @@ leaves the patient to bear, and `LTC_KR_S` pays on a determination that 노인�
 - **Used by:** long_term_care load-bearing; indemnity_medical for the 1·2등급 exclusion from
   the 비급여 할인·할증 claims count [R25]; whole_life and ci_insurance for the 간병 rider
   framing.
+
+(krlib-reg-r55)=
 
 ### R55 — 국가법령정보센터, 노인장기요양보험법 시행령 제7조 (등급판정기준 등) and [별표 1]
 
@@ -2197,6 +2311,8 @@ repository: a Japanese 生命保険料控除 or a German Sonderausgabenabzug is 
 high-rate taxpayer than to a low-rate one, whereas a Korean credit is worth the same to both,
 and is worth *more* to the low-rate taxpayer as a fraction of the premium.
 
+(krlib-reg-r56)=
+
 ### R56 — 국가법령정보센터, 소득세법 제59조의3·제20조의3·제129조 and 시행령 제40조의2
 
 - Version: 소득세법 [시행 2026. 7. 1.] (lsiSeq 280405); 시행령 [시행 2026. 7. 1.] (lsiSeq
@@ -2239,6 +2355,8 @@ and is worth *more* to the low-rate taxpayer as a fraction of the premium.
   rate and the 연금수령 conditions; variable_annuity where written as a 연금저축 form;
   whole_life for the 연금전환 interaction [R58].
 
+(krlib-reg-r57)=
+
 ### R57 — 국가법령정보센터, 소득세법 제59조의4 (특별세액공제 — 보장성보험료)
 
 - Version: [시행 2026. 7. 1.] (lsiSeq 280405)
@@ -2258,6 +2376,8 @@ and is worth *more* to the low-rate taxpayer as a fraction of the premium.
   split is a real product-design boundary rather than a labelling convention.
 - **Used by:** term_life, whole_life, ci_insurance, child, cancer, long_term_care and
   indemnity_medical, in the tax paragraph of `product-spec.md`.
+
+(krlib-reg-r58)=
 
 ### R58 — 국가법령정보센터, 소득세법 제16조제1항제9호 and 시행령 제25조 (저축성보험의 보험차익)
 
@@ -2310,6 +2430,8 @@ and is worth *more* to the low-rate taxpayer as a fraction of the premium.
   immediate_annuity for the 종신형 연금보험 route; pension_savings for the boundary against the
   연금계좌 regime [R56]; ci_insurance for the 저축성 element of a 종신 chassis.
 
+(krlib-reg-r59)=
+
 ### R59 — 국가법령정보센터, 상속세 및 증여세법 제8조·제34조 (보험금의 상속·증여)
 
 - Version: [시행 2026. 1. 2.] (lsiSeq 276123, efYd 20260102)
@@ -2331,6 +2453,8 @@ and is worth *more* to the low-rate taxpayer as a fraction of the premium.
   extracted.
 - **Used by:** whole_life load-bearing (the inheritance-planning framing that drives Korean
   종신보험 sales); term_life; ci_insurance and child in passing.
+
+(krlib-reg-r60)=
 
 ### R60 — 한국회계기준원 회계기준위원회, 「"보험계약" 국제회계기준(K-IFRS 제1117호) 제정 의결」
 
@@ -2472,7 +2596,7 @@ value and tag the derivation **[std]**.
     were not obtained either.
 12. **The 2024 노인장기요양보험 통계연보** — [R43]. Search summary only.
 13. **No 한국보험계리사회 (Institute of Actuaries of Korea) document of any kind.** There is no
-    `krlib` counterpart to `jplib`'s 保険計理人の実務基準 [R22 of `jplib`] or `frlib`'s NPA 1 /
+    `krlib` counterpart to `jplib`'s 保険計理人の実務基準 [R22 of `jplib`](#krlib-reg-r22) or `frlib`'s NPA 1 /
     NPA 2, and none is claimed. Where a `krlib` document describes a Korean actuarial
     convention that is not in a retrieved regulation — the three-source 위험률차 / 이자율차 /
     사업비차 framing is the clearest case, now **deleted from 감독규정** [R12] — it says
@@ -2590,3 +2714,63 @@ documentation (약관, 상품요약서, 보험안내자료, 사업방법서 extr
 here; it is `[S#]` in the product folder, and the product folder is the only place an
 individual carrier is identified at all — with the deliberate exception of [R48], where a
 carrier page is the only located route to a **regulatory** figure and is cited as such.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-reg-r1
+[R10]: #krlib-reg-r10
+[R11]: #krlib-reg-r11
+[R12]: #krlib-reg-r12
+[R13]: #krlib-reg-r13
+[R14]: #krlib-reg-r14
+[R15]: #krlib-reg-r15
+[R17]: #krlib-reg-r17
+[R18]: #krlib-reg-r18
+[R19]: #krlib-reg-r19
+[R2]: #krlib-reg-r2
+[R20]: #krlib-reg-r20
+[R21]: #krlib-reg-r21
+[R22]: #krlib-reg-r22
+[R23]: #krlib-reg-r23
+[R24]: #krlib-reg-r24
+[R25]: #krlib-reg-r25
+[R26]: #krlib-reg-r26
+[R27]: #krlib-reg-r27
+[R28]: #krlib-reg-r28
+[R29]: #krlib-reg-r29
+[R3]: #krlib-reg-r3
+[R30]: #krlib-reg-r30
+[R31]: #krlib-reg-r31
+[R32]: #krlib-reg-r32
+[R33]: #krlib-reg-r33
+[R34]: #krlib-reg-r34
+[R35]: #krlib-reg-r35
+[R36]: #krlib-reg-r36
+[R38]: #krlib-reg-r38
+[R39]: #krlib-reg-r39
+[R4]: #krlib-reg-r4
+[R40]: #krlib-reg-r40
+[R41]: #krlib-reg-r41
+[R42]: #krlib-reg-r42
+[R43]: #krlib-reg-r43
+[R44]: #krlib-reg-r44
+[R45]: #krlib-reg-r45
+[R46]: #krlib-reg-r46
+[R47]: #krlib-reg-r47
+[R48]: #krlib-reg-r48
+[R49]: #krlib-reg-r49
+[R50]: #krlib-reg-r50
+[R51]: #krlib-reg-r51
+[R52]: #krlib-reg-r52
+[R53]: #krlib-reg-r53
+[R54]: #krlib-reg-r54
+[R55]: #krlib-reg-r55
+[R56]: #krlib-reg-r56
+[R57]: #krlib-reg-r57
+[R58]: #krlib-reg-r58
+[R60]: #krlib-reg-r60
+[R61]: #krlib-reg-r61
+[R62]: #krlib-reg-r62
+[R7]: #krlib-reg-r7
+[R8]: #krlib-reg-r8
+[R9]: #krlib-reg-r9
+<!-- END generated citation links -->

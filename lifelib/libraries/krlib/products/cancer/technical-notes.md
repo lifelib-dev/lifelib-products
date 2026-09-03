@@ -80,7 +80,7 @@ in it:
 4. **A payment on death with no death benefit.** The composite has no death cover at all,
    and 감독규정 제7-63조제1항제1호 nevertheless requires a 제3보험 product to pay the
    **계약자적립액** on a death from a cause the policy does not cover [REG-R17] [REG-R25
-   제22조] [REG-R50 제736조]. So `claims_death` exists, is small, and is a *return of
+   제22조](#krlib-reg-r25) [REG-R50 제736조](#krlib-reg-r50). So `claims_death` exists, is small, and is a *return of
    account* rather than a benefit.
 5. **Paying a benefit neither terminates nor exhausts the contract** [S1] [S3] [S4]. There
    is no benefit-driven termination anywhere in this product, and nothing is paid at the
@@ -135,7 +135,7 @@ in it:
   grid: `age(t) = x + floor(t / 12)`, `x` the model point's `issue_age`. The contract itself
   ages on **보험나이** (*boheom nai*, insurance age): 「계약일 현재 피보험자의 실제 만
   나이를 기준으로 6개월 미만의 끝수는 버리고 6개월 이상의 끝수는 1년으로 하여 계산」,
-  incrementing at each 계약해당일 [S3] [REG-R25 제21조]. The model uses 만나이 because
+  incrementing at each 계약해당일 [S3] [REG-R25 제21조](#krlib-reg-r25). The model uses 만나이 because
   **every decrement it reads is published on 만나이** — the 국가암등록통계 age bands [R1],
   the 보험개발원 참조순보험요율 grid [R5] [REG-R61] and the 국가데이터처 생명표 [REG-R38] —
   and converting a public 만나이 rate onto a 보험나이 basis needs a distribution of issue
@@ -308,8 +308,8 @@ the statement's shape matches the rest of the library.
 | 유사암 carve-out from it | **None** — 「유사암의 보장개시일은 계약일임」, so `t = 0` | [S1] [S2] [S7] |
 | 갱신계약 carve-out | **None** — 암보장개시일 = 갱신일 | [S2] [S4] [S6] [S7] |
 | 보험나이 15 미만 carve-out | **None** — 암보장개시일 = 보험계약일 | [S2]; [R3] [R6] |
-| 부활 | The 90 days **re-runs from the 부활일** | [S1] [S3] [S7]; [REG-R25 제27조] |
-| Diagnosis inside the window | The **affected cover is 무효**, not merely unpayable; premiums for it returned | [S1 제28조제2항] [S2] [S3]; [R7 제644조] |
+| 부활 | The 90 days **re-runs from the 부활일** | [S1] [S3] [S7]; [REG-R25 제27조](#krlib-reg-r25) |
+| Diagnosis inside the window | The **affected cover is 무효**, not merely unpayable; premiums for it returned | [S1 제28조제2항] [S2] [S3]; [R7 제644조](#krlib-cancer-r7) |
 | Policyholder's option on voidness | May cancel the **rest** of the contract within **90 days** of the 진단확정일 | [S1 제28조제3항] |
 | 감액기간 | **1 year at 50%**, 보험계약일 to 진단확정일, on **every** diagnosis tier; disapplied on a 갱신계약 | [S1] [S6]; [R6]; level **[std]** |
 | Definition of 암 | By reference to the **제8차 한국표준질병·사인분류**, with 기타피부암 (C44), 갑상선암 (C73), 대장점막내암 and 전암상태 carved out | [S1] [S2] [S3] [S4]; [R3] [R10] |
@@ -324,13 +324,13 @@ the statement's shape matches the rest of the library.
 | 항암약물·방사선 치료급여금 | **₩10,000,000**, **최초 1회한** | [S1] [S4] [S5] |
 | 보험료 납입면제 | On the **first 일반암 or 고액암** on or after the 암보장개시일, or 장해 **50% 이상**; **특정소액암 and 유사암 do not trigger it** | [S3 제14조제1항] [S1 제9조제1항] [S6] [S7] |
 | Termination on payment | **None** — no diagnosis benefit terminates or exhausts the contract | [S1] [S3] [S4] |
-| Death of the insured | No death benefit; the **계약자적립액 at the date of death** is paid and the contract ends | [S3 제31조제1항] [S4]–[S7]; [REG-R17]; [REG-R25 제22조]; [REG-R50 제736조] |
-| Surrender value form | **미지급형**: **0%** during the 납입기간, **50% of the 표준형 value** afterwards; a **전기납** contract on this form has none at any duration | [S3 제41조제2항]; [REG-R19 제7-66조제4항] |
-| 해약환급금 formula | `max(계약자적립액 − 해약공제액, 0)`, floored at zero | [REG-R19 제7-66조제1항제1호] |
-| 해약공제기간 | 납입기간 or 신계약비 부가기간, **capped at 7 years** | [REG-R19 제7-66조제1항제2호] |
+| Death of the insured | No death benefit; the **계약자적립액 at the date of death** is paid and the contract ends | [S3 제31조제1항] [S4]–[S7]; [REG-R17]; [REG-R25 제22조](#krlib-reg-r25); [REG-R50 제736조](#krlib-reg-r50) |
+| Surrender value form | **미지급형**: **0%** during the 납입기간, **50% of the 표준형 value** afterwards; a **전기납** contract on this form has none at any duration | [S3 제41조제2항]; [REG-R19 제7-66조제4항](#krlib-reg-r19) |
+| 해약환급금 formula | `max(계약자적립액 − 해약공제액, 0)`, floored at zero | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
+| 해약공제기간 | 납입기간 or 신계약비 부가기간, **capped at 7 years** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | 해약공제액 cap | The **표준해약공제액** of 감독규정 [별표 14] | [REG-R20] |
-| 계약자적립액 accrual | **Monthly** before 납입완료, daily afterwards; permitted to be computed on an **annualised premium** basis | [REG-R19 제7-66조제1항제4호]; [REG-R18 제7-65조제2항] |
-| 납입최고 (grace) | **At least 14 days** from the demand; the contract terminates the day after it expires | [S1]; [REG-R25 제26조] |
+| 계약자적립액 accrual | **Monthly** before 납입완료, daily afterwards; permitted to be computed on an **annualised premium** basis | [REG-R19 제7-66조제1항제4호](#krlib-reg-r19); [REG-R18 제7-65조제2항](#krlib-reg-r18) |
+| 납입최고 (grace) | **At least 14 days** from the demand; the contract terminates the day after it expires | [S1]; [REG-R25 제26조](#krlib-reg-r25) |
 | Expiry | At the **100세 계약해당일**; **nothing is paid** | [S4] [S7]; [S8] |
 
 ### (b) Insurer-discretionary current elements
@@ -403,7 +403,7 @@ bands contradict.
 
 **`inc_be_factor = 1.0`, and that identity is a decision, not an omission.** The shipped rate
 is a **참조순보험요율**, a net premium rate with a safety loading already inside it, not a
-best estimate [REG-R4] [REG-R9 제1-2조제1호]. The claim that the loading is about 10% was
+best estimate [REG-R4] [REG-R9 제1-2조제1호](#krlib-reg-r9). The claim that the loading is about 10% was
 seen only in a search summary and is **[unverified]**, so the adjustment is left at the
 identity rather than resting the model on an unconfirmed number. The direction is stated: it
 **overstates** best-estimate incidence by whatever the loading is. What *is* sourced is that
@@ -898,7 +898,7 @@ life would credit it with an exposure no retrieved statistic measures.
 
 **`claims_death` is a return of the account, not a benefit.** `V(t)` is the 계약자적립액 at
 the start of the month, and `V(t) d(t)` is what 감독규정 제7-63조제1항제1호 requires be paid
-on a death from a cause the policy does not cover [REG-R17] [REG-R25 제22조]. It is **zero at
+on a death from a cause the policy does not cover [REG-R17] [REG-R25 제22조](#krlib-reg-r25). It is **zero at
 `t = 0`**, because the account is nil there, and it is **zero from `t = 447`** on the anchor
 cell, because the account has been exhausted — the floor in the account recursion is not
 decorative.
@@ -918,7 +918,7 @@ month. Two steps in one row, and both of them are prescribed rather than chosen.
 
 **This is a retrospective recursion floored at zero, not the prospective reserve of a
 산출방법서 [std].** The regulation defines the 계약자적립액 by reference to the 산출방법서
-[REG-R18 제7-65조제1항], which is not a public document [REG-R2], so no prospective basis can
+[REG-R18 제7-65조제1항](#krlib-reg-r18), which is not a public document [REG-R2], so no prospective basis can
 be reproduced. What is reproduced is its *behaviour*: an account that accrues the allocated
 premium, discharges the month's risk premium and accumulates at the 예정이율. The seven lines
 inside `risk_prem_pp` are the four diagnosis lines and the three care lines — **the DEATH and
@@ -942,7 +942,7 @@ On the anchor cell the [별표 14] formula gives **459,000 + 180,000 = 639,000**
 **13-months-of-premium cap of [REG-R29] binds at 585,000** — the same figure
 `product-spec.md` footnote 30 reaches by hand. The **run-off is straight-line over the
 해약공제기간 [std]**: [별표 14] states the cap and **not its run-off shape** [REG-R20], and
-the 해약공제기간 is `min(납입기간, 신계약비 부가기간, 7년)` [REG-R19 제7-66조제1항제2호], so
+the 해약공제기간 is `min(납입기간, 신계약비 부가기간, 7년)` [REG-R19 제7-66조제1항제2호](#krlib-reg-r19), so
 `α(t) = 0` from **`t = 84`** — thirteen years before 납입완료. `check_cv_floor()` asserts
 `0 ≤ CV(t) ≤ CV*(t)` at every `t`, and additionally that `CV(t) = 0` for every `t < m` on the
 미지급형 form.
@@ -1011,7 +1011,7 @@ cash flow at once and its effect on `net_cf` is roughly doubled. Weighting the p
 
 | Module | Switch | What it does | Why it is off |
 |---|---|---|---|
-| **Validity adjustment** | `void_adjust = False` | A diagnosis inside the 90-day window makes the affected cover **무효** [S1 제28조제2항] [R7 제644조] — a **de-recognition, not a decrement**, releasing the premium already collected as well as the future benefit. Switching it on scales `pols_if_init()` down by `void_prob() = 1 − (1 − i(0)/12)^W` | It belongs in a validity adjustment at outset, not in the lapse column. At the anchor cell it is **0.0003357124**, 0.034% of policies against at most three months of premium — stated, not silently absorbed |
+| **Validity adjustment** | `void_adjust = False` | A diagnosis inside the 90-day window makes the affected cover **무효** [S1 제28조제2항] [R7 제644조](#krlib-cancer-r7) — a **de-recognition, not a decrement**, releasing the premium already collected as well as the future benefit. Switching it on scales `pols_if_init()` down by `void_prob() = 1 − (1 − i(0)/12)^W` | It belongs in a validity adjustment at outset, not in the lapse column. At the anchor cell it is **0.0003357124**, 0.034% of policies against at most three months of premium — stated, not silently absorbed |
 | **Best-estimate incidence** | `inc_be_factor = 1.0` | Scales the sourced 참조순보험요율 to a best estimate | The loading inside the reference rate is [unverified] [REG-R4]. Leaving the factor at the identity **overstates** best-estimate incidence by the loading |
 | **Renewal repricing** | `renew_reprice_rate = 0.0`, `renewal_months = 120` | On the 갱신형 flag, multiplies the premium by `(1 + ρ)` at each ten-year renewal | Setting the chassis flag already removes the 면책기간, the 감액기간 and the waiver's persistence [S2] [S4] [S6] [S7]. Holding the rate flat **records the contract-boundary tension rather than resolving it** [REG-R60] |
 | **Diagnosed lapse** | `lapse_canc_factor = 1.0` | Scales `lapse_rate_canc_mth` | **Inert rather than off**: under the waiver a diagnosed life cannot lapse whatever the factor is. It reaches a cash flow on model point 9 alone |
@@ -1020,7 +1020,7 @@ cash flow at once and its effect on `net_cf` is roughly doubled. Weighting the p
 | **재진단암** | not implemented | 100% of `S` on a **2-year** cycle from the previous qualifying diagnosis [S1] [S8] | The **cycle is sourced and the rate is not**: no public source gives a cancer re-diagnosis incidence, and the institute calls the quantity 「매우 불확실」 while warning that improving survival makes 「3차, 4차 암 진단보험금 지급이 가능함」 [R4] |
 | **암 요양병원 입원급여금** | not implemented | ₩20,000 a day to 90 days [S2] [S8] | 요양병원 days are excluded from the composite's inpatient limb — the market's own structural answer to the most disputed benefit in Korea, where 금융감독원 took **2,125 complaints about 암입원비 in 2018** [R3] |
 | **암 다빈치로봇 수술급여금**, **암 사망 및 고도후유장해**, **비흡연체형**, **간편심사** | not implemented | as specified | Each because its rate or its differential cannot be sourced [S2] [S3] [S5] [R4] |
-| **부활** | not implemented | Reinstatement within 3 years [REG-R25 제27조] | Lapse is **absorbing**, which is the conservative direction: a reinstated Korean cancer policy re-runs the 90 days from the 부활일 [S1] [S3] [S7], so it is not the policy that lapsed |
+| **부활** | not implemented | Reinstatement within 3 years [REG-R25 제27조](#krlib-reg-r25) | Lapse is **absorbing**, which is the conservative direction: a reinstated Korean cancer policy re-runs the 90 days from the 부활일 [S1] [S3] [S7], so it is not the policy that lapsed |
 
 ---
 
@@ -1032,7 +1032,7 @@ cash flow at once and its effect on `net_cf` is roughly doubled. Weighting the p
   보험계약대출 either, because there is no value to lend against — 「순수보장성보험 등
   보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 [S3] [REG-R28]. So a missed
   premium really does lapse the policy at the end of the **14-day 납입최고** [S1] [REG-R25
-  제26조], and the model applies lapse at the end of the month in which the premium is missed
+  제26조](#krlib-reg-r25), and the model applies lapse at the end of the month in which the premium is missed
   without modelling the notice period.
 - **A waived life cannot lapse.** No premium to miss, no surrender value to take
   [S3 제41조]. `lapse_rate_canc_mth(t) = 0` in the base run, and applying the healthy lapse
@@ -1055,7 +1055,7 @@ cash flow at once and its effect on `net_cf` is roughly doubled. Weighting the p
 - **Reinstatement (부활) is not a persistency detail on this product.** Available within
   **3 years** of termination where the surrender value has not been drawn — **including where
   there is none**, which is the 무해지 case — on arrears with interest within 평균공시이율 +
-  1%, a ceiling of 3.50% at the 2026 rate [REG-R25 제27조] [REG-R48]. What makes it
+  1%, a ceiling of 3.50% at the 2026 rate [REG-R25 제27조](#krlib-reg-r25) [REG-R48]. What makes it
   structural is that **the 90-day 암보장개시일 re-runs from the 부활일** [S1] [S3] [S7]: a
   reinstated cancer policy is a policy with 90 days of no invasive cover in front of it,
   which is a genuine anti-selection control. It therefore enters the model as a **new model
@@ -1078,7 +1078,7 @@ cash flow at once and its effect on `net_cf` is roughly doubled. Weighting the p
   underwriting for any increase and is not projected. A model that lets them move over `t` is
   modelling a contract term that does not exist.
 - **청약철회 is out of scope.** A pre-inception decrement, **15 days** from receipt of the
-  보험증권 or 30 days from the application, whichever comes first [REG-R51] [REG-R25 제17조].
+  보험증권 or 30 days from the application, whichever comes first [REG-R51] [REG-R25 제17조](#krlib-reg-r25).
   Modelling it would need a new-business funnel this library does not have.
 
 ---
@@ -1771,7 +1771,7 @@ only what differs for a fixed-benefit 제3보험 contract is repeated here.
   method [REG-R3]; 감독규정 제6-11조 and the 시행세칙 carry the taxonomy [REG-R10]; and
   제7-64조 makes **현금흐름방식** — cash-flow pricing on 최적기초율 with an adequacy analysis
   — mandatory for a contract longer than three years, which every model point here is
-  [REG-R18 제7-64조제1호] [R4]. The morbidity assumption inside that filing is the insurer's
+  [REG-R18 제7-64조제1호](#krlib-reg-r18) [R4]. The morbidity assumption inside that filing is the insurer's
   own and is **not published** [REG-R2]; what *is* public is the 참조순보험요율 display this
   model reads [R5] [REG-R61] and the **보험가격지수** the 상품요약서 must carry [REG-R22].
   `Cancer_KR_S` computes neither reserve.
@@ -1808,7 +1808,7 @@ only what differs for a fixed-benefit 제3보험 contract is repeated here.
   `VA_KR_S`'s territory.
 - **Policyholder protection, not modelled.** 예금자보호법 cover of **₩100,000,000** per
   person per insurer, applied to 보험금 claims in a bucket that expressly **excludes**
-  benefits payable because the term has ended [REG-R52] [REG-R25 제43조]. On this product the
+  benefits payable because the term has ended [REG-R52] [REG-R25 제43조](#krlib-reg-r25). On this product the
   exclusion is close to costless, because nothing is payable at expiry.
 - **Policyholder tax, not modelled.** The premium is a **보장성보험료** and attracts a
   **12% tax credit** on up to ₩1,000,000 a year under 소득세법 제59조의4 [REG-R57] — a
@@ -1874,7 +1874,7 @@ In rough order of leverage on a Korean cancer block.
    verified from the 보도자료 [REG-R27]; the guideline's **functional form** and its
    「실무상 수렴점」 come from an HWP attachment that was never converted, so the log-linear
    shape this model implements is [unverified] at that level. Lapse is also the assumption
-   the whole 미지급형 dispensation rests on [REG-R19 제7-66조제4항].
+   the whole 미지급형 dispensation rests on [REG-R19 제7-66조제4항](#krlib-reg-r19).
 8. **The premium is an input with no market anchor.** No carrier publishes a rate table, the
    산출방법서 is not public [REG-R2], the only retrieved price points carry **no
    보험가입금액** [S8], and the consumer-comparison snippets are [unverified]. Every
@@ -2013,7 +2013,7 @@ and each is either asserted by a `check_*()` cells or is a test target in
   duration, because the payment period never ends [S3 제41조].
 - **There is a payment on death and there is no death benefit.** `claims_death(t) = av_pp(t)
   × pols_death(t)` — the 계약자적립액, required by 감독규정 제7-63조제1항제1호 [REG-R17] and
-  the 표준약관 [REG-R25 제22조]. It is **zero at `t = 0`** because the account is nil, and
+  the 표준약관 [REG-R25 제22조](#krlib-reg-r25). It is **zero at `t = 0`** because the account is nil, and
   **zero from `t = 447`** because the account is exhausted. Modelling it as a sum assured
   invents a benefit; omitting it drops a regulatory requirement that `LTC_KR_S`,
   `Child_KR_S` and `Medical_KR_S` all inherit.
@@ -2062,3 +2062,47 @@ and each is either asserted by a `check_*()` cells or is a test target in
   cost. The one shared mechanic is the 제3보험 requirement to pay the 계약자적립액 on death
   [REG-R17]. Conversely, do not reuse *this* chassis's 면책기간 for `Child_KR_S` without
   inverting it: below 보험나이 15 the 암보장개시일 **is** the 보험계약일 [S2] [R3] [R6].
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-cancer-r1
+[R10]: #krlib-cancer-r10
+[R11]: #krlib-cancer-r11
+[R12]: #krlib-cancer-r12
+[R3]: #krlib-cancer-r3
+[R4]: #krlib-cancer-r4
+[R5]: #krlib-cancer-r5
+[R6]: #krlib-cancer-r6
+[R7]: #krlib-cancer-r7
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R15]: #krlib-reg-r15
+[REG-R17]: #krlib-reg-r17
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R30]: #krlib-reg-r30
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R35]: #krlib-reg-r35
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R48]: #krlib-reg-r48
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R53]: #krlib-reg-r53
+[REG-R54]: #krlib-reg-r54
+[REG-R55]: #krlib-reg-r55
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

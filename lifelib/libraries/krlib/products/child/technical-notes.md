@@ -104,7 +104,7 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    Here it is evaluated: 제9호 reads 보험가입금액 = (위험보험료 ÷ 정기보험의 위험보험료) ×
    정기보험의 보험가입금액, and a term policy's risk premium per unit of face is its mortality
    rate, so the notional amount is **the first policy year's risk premium divided by the
-   mortality rate at the 기준연령 요건, 남자 만 40세** [REG-R9 제1-2조제2호]. At a child age
+   mortality rate at the 기준연령 요건, 남자 만 40세** [REG-R9 제1-2조제2호](#krlib-reg-r9). At a child age
    `q` is so small that the 표준해약공제액 exceeds four years of premium; at 40 the cap is
    **13.73 months of core premium** and the 90% of it the model deducts is **12.35**, which is
    the [REG-R29] reading of the same cap.
@@ -158,7 +158,7 @@ family buys the indemnity layer as `Medical_KR_S` and the fixed-benefit layer as
   버리고 6개월 이상의 끝수는 1년으로 하여 계산하며, 이후 매년 계약해당일에 나이가 증가」,
   identical in both 표준약관, reproduced verbatim by every carrier, with the worked example
   생년월일 1988-10-02 / 계약일 2014-04-13 ⇒ 25년 6월 11일 ⇒ **26세**
-  [R8] [S7 제27조] [S8 제30조] [S12 제30조] [REG-R25 제21조]. `age(t) = issue_age + t // 12`
+  [R8] [S7 제27조] [S8 제30조] [S12 제30조] [REG-R25 제21조](#krlib-reg-r25). `age(t) = issue_age + t // 12`
   is that clock and it governs the premium, the 갱신형 anniversary and the 보험나이 15
   thresholds; **the registered age basis for this model is 보험나이**, deliberately, because
   on a foetal contract it is the *only* age defined at `t = 0`. Every decrement table is
@@ -382,12 +382,12 @@ which is a regulatory fact and not a design choice [R9] [R10].
 | 배상책임 누수 보장개시일 | **90 days** from the 계약일, **resetting to the renewal date at each renewal** | [S5]; [S3] |
 | 저체중아 인큐베이터 일당 | 「최고 **60일**을 한도로 실제 사용일수에서 **2일을 공제**하고 1일당 가입금액」 | [S1] |
 | 주산기질환 입원일당 | Continuous stay of **4 days or more**, **3일 초과 1일당**, **1회 입원당 120일 한도** | [S8]; [S1] |
-| Death of the insured | No 사망보험금 below 만 15세; the **계약자적립액 + 미경과보험료** is paid and the contract ends | [R7]; [REG-R50 제732조·제736조]; [REG-R17 제7-63조제1항제1호]; [REG-R25 제22조]; [REG-R19 제7-66조제5항] |
-| 해약환급금 formula | 「**순보험료식 계약자적립액에서 해약공제액을 공제한 금액**」, floored at zero | [S2]; [S1]; [REG-R19 제7-66조제1항제1호] |
-| 미지급형 floor | **0%** during the 납입기간, **50% of the 표준형 value** afterwards | [S2] [S11]; [REG-R19 제7-66조제4항제2호] |
+| Death of the insured | No 사망보험금 below 만 15세; the **계약자적립액 + 미경과보험료** is paid and the contract ends | [R7]; [REG-R50 제732조·제736조](#krlib-reg-r50); [REG-R17 제7-63조제1항제1호](#krlib-reg-r17); [REG-R25 제22조](#krlib-reg-r25); [REG-R19 제7-66조제5항](#krlib-reg-r19) |
+| 해약환급금 formula | 「**순보험료식 계약자적립액에서 해약공제액을 공제한 금액**」, floored at zero | [S2]; [S1]; [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
+| 미지급형 floor | **0%** during the 납입기간, **50% of the 표준형 value** afterwards | [S2] [S11]; [REG-R19 제7-66조제4항제2호](#krlib-reg-r19) |
 | The 표준형 comparator is synthetic | 「해지율을 적용하지 않은 상품이며, 비교안내를 위한 종목으로 **실제로 판매하지 않음**」 | [S3]; [S1] |
-| 납입최고 (grace) | **At least 14 days**; operated as a calendar-month window | [REG-R25 제26조]; [S8] |
-| 부활 | Within **3 years** where no surrender value has been taken, subject to fresh underwriting; waiting periods re-run from the 부활일 | [S8]; [S3]; [REG-R25 제27조] |
+| 납입최고 (grace) | **At least 14 days**; operated as a calendar-month window | [REG-R25 제26조](#krlib-reg-r25); [S8] |
+| 부활 | Within **3 years** where no surrender value has been taken, subject to fresh underwriting; waiting periods re-run from the 부활일 | [S8]; [S3]; [REG-R25 제27조](#krlib-reg-r25) |
 | Expiry | At the **100세 계약해당일**; there is no 만기환급금 on the protection part | [S1] [S2] [S11] |
 
 ### (b) Insurer-discretionary current elements
@@ -402,7 +402,7 @@ surplus-distribution machinery of 감독규정 제6-11조의7 and 제6-13조 doe
 | 보장부분 적용이율 | **2.75%** | **[std]**, the modal value of the comparison board's column; observed range **2.50%–3.00%** across ten carriers [S11] |
 | 공시이율 (적립부분) | **1.70%**, named 「보장성 공시이율Ⅴ」, at 2026-07 | [S2]; observed 1.60%–2.20% [S11] |
 | 최저보증이율 | **0.30%** | [S2]; observed 0.20%–0.50% [S11] |
-| 평균공시이율 | **2.50%** for 2026, capped at the selling-date 공시이율 | [S2]; [REG-R9 제1-2조제18호]; [REG-R48] |
+| 평균공시이율 | **2.50%** for 2026, capped at the selling-date 공시이율 | [S2]; [REG-R9 제1-2조제18호](#krlib-reg-r9); [REG-R48] |
 | 공시기준이율 formula | 외부지표금리수익률 × α + 운용자산이익률 × (1 − α) | [S1]; [REG-R24]; the α bracketing is **[unverified]** and nothing here depends on it |
 | The 적용해지율 of a suppressed form | 5.0% / 3.0% / 1.0% during the 납입기간 by duration band, 0.5%–0.65% afterwards | [S1] — the **only** Korean child-policy lapse basis in public |
 | 갱신형 renewal rates | Recomputed at attained age at each renewal | [S7 제29조]; base run holds the issue rate flat **[std]** |
@@ -595,7 +595,7 @@ contracts: model point 5 runs on `disclosed` and its undiscounted `net_cf` is �
 against the anchor's −₩13,103,720.
 
 **Lapse is absorbing [std].** 부활 is available within three years even where no surrender
-value has been taken [S8] [REG-R25 제27조], and below 보험나이 15 there is **no cancer waiting
+value has been taken [S8] [REG-R25 제27조](#krlib-reg-r25), and below 보험나이 15 there is **no cancer waiting
 period to re-run** [S3] — so a reinstated child policy is very nearly the policy that lapsed,
 which is a stronger statement than the chassis can make. The simplification is nonetheless
 conservative on a protection product and is recorded as one.
@@ -608,7 +608,7 @@ deductible acquisition cost at the 표준해약공제액 [REG-R20], and the FSC'
 states the same cap as roughly **thirteen months' premium** for a 보장성보험 [REG-R29] — and
 a commission cap: first-year remuneration within the first year's expected premium, with an
 obligation to offer an instalment structure paying no more than 60% of the 표준해약공제액 a
-year [REG-R22 제4-32조제5항·제8항] [REG-R29].
+year [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22) [REG-R29].
 
 | Input | Value | Anchor-cell amount |
 |---|---|---|
@@ -865,7 +865,7 @@ be recomputed on a 20년납 footing where the term is 20 years or more. The seco
 보험가입금액 this contract does not have — [별표 15] 제3호 covers only 일반사망을 보장하는
 보장성보험, so it falls into **제9호**: 보험가입금액 = (위험보험료 ÷ 정기보험의 위험보험료) ×
 정기보험의 보험가입금액, computed at the **기준연령 요건, 남자 만 40세, 전기납, 월납**
-[REG-R21] [REG-R9 제1-2조제2호]. A term policy's risk premium per unit of face is its
+[REG-R21] [REG-R9 제1-2조제2호](#krlib-reg-r9). A term policy's risk premium per unit of face is its
 mortality rate, so
 
     sa_notional_pp = risk_prem_ann_pp / q(40, M)
@@ -969,7 +969,7 @@ articles were never read in full, so no lapse or claim leakage for them is carri
 ## Policyholder behavior modeling
 
 - **Lapse is real, immediate and absorbing.** A missed premium opens a 납입최고 of at least 14
-  days [REG-R25 제26조], operated in practice as a calendar-month window running 「납입기일
+  days [REG-R25 제26조](#krlib-reg-r25), operated in practice as a calendar-month window running 「납입기일
   다음날부터 납입기일이 속하는 달의 다음달 마지막 날까지」, so a premium due on 15 September
   is in grace to 31 October and the contract lapses on 1 November [S8]. That is why the
   monthly grid is the right one for it. The base run applies lapse at the end of the month in
@@ -977,7 +977,7 @@ articles were never read in full, so no lapse or claim leakage for them is carri
   an undiscounted projection.
 - **부활 is not modelled, and on this product the simplification is a real one.** Reinstatement
   is available within **three years** of lapse where no surrender value has been taken
-  [S8] [REG-R25 제27조], subject to fresh underwriting, and waiting periods re-run from the
+  [S8] [REG-R25 제27조](#krlib-reg-r25), subject to fresh underwriting, and waiting periods re-run from the
   부활일 [S3] — but below 보험나이 15 **there is no cancer waiting period to re-run** [S3], so
   a reinstated child policy is very nearly the policy that lapsed. On the chassis the same
   simplification is conservative because the 90 days re-runs; here it is conservative only
@@ -1662,7 +1662,7 @@ is checkable against the shipped model.
   a contract that has collected nothing. The cap at `net_prem_ratio × cum_prem_pp(t)` is what
   makes `av_pp(0) = 0`; `check_av_bounds()` asserts the three inequalities.
 - **Computing the notional 보험가입금액 at the insured's own age.** [별표 15] 제9호 is
-  evaluated at the **기준연령 요건, 남자 만 40세** [REG-R21] [REG-R9 제1-2조제2호]. At 만나이
+  evaluated at the **기준연령 요건, 남자 만 40세** [REG-R21] [REG-R9 제1-2조제2호](#krlib-reg-r9). At 만나이
   5 the mortality rate is 0.00012 and the 표준해약공제액 comes out above five years of
   premium; at 40 it is ₩384,306.41, or **13.73 months of premium** — and the 계약체결비용 at
   90% of it, **12.35 months** — against the FSC's thirteen-month reading of the same cap
@@ -1684,3 +1684,52 @@ is checkable against the shipped model.
 - **Monthly rounding does not re-add.** The displayed rows are rounded to four decimals; the
   year-1 and whole-projection totals are sums of unrounded values, and the two differ in the
   last displayed digit. Assert against the unrounded aggregation.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #krlib-child-r10
+[R11]: #krlib-child-r11
+[R12]: #krlib-child-r12
+[R2]: #krlib-child-r2
+[R3]: #krlib-child-r3
+[R4]: #krlib-child-r4
+[R5]: #krlib-child-r5
+[R6]: #krlib-child-r6
+[R7]: #krlib-child-r7
+[R8]: #krlib-child-r8
+[R9]: #krlib-child-r9
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R15]: #krlib-reg-r15
+[REG-R17]: #krlib-reg-r17
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R24]: #krlib-reg-r24
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R30]: #krlib-reg-r30
+[REG-R31]: #krlib-reg-r31
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R40]: #krlib-reg-r40
+[REG-R41]: #krlib-reg-r41
+[REG-R48]: #krlib-reg-r48
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

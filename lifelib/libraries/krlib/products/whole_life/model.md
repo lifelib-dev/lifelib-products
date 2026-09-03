@@ -108,7 +108,7 @@ projection truncated at 납입완료 would miss most of the liability and all of
 
 Ages are **보험나이** (*boheom nai*, insurance age) throughout: the 만 나이 at the 계약일 with
 a fraction under six months discarded and six months or more rounded up, incrementing on each
-계약해당일 rather than on the birthday [REG-R25 제21조]. An annual grid stepped on
+계약해당일 rather than on the birthday [REG-R25 제21조](#krlib-reg-r25). An annual grid stepped on
 anniversaries therefore ages the contract correctly by construction. The public statistics the
 shipped table is calibrated against are on **만나이** [REG-R38], no public mapping between the
 two bases exists, and no conversion is applied **[std]** — so the table is read for a life
@@ -213,8 +213,8 @@ The model then sets `acq_cost_pp()`, the 계약체결비용 actually incurred, *
 loop between the expense the insurer incurs and the deduction the policyholder bears. Two
 further published bounds are asserted by `check_acq_cost_cap()`: 계약체결비용 within **1.4 ×**
 the 표준해약공제액, the tolerance under which a whole-life death-benefit 보장성보험 need not
-publish a 계약체결비용지수 [REG-R22 제7-45조제11항]; and first-year remuneration within the
-**first year's expected premium** [REG-R22 제4-32조제5항], which binds on the long-payment-term
+publish a 계약체결비용지수 [REG-R22 제7-45조제11항](#krlib-reg-r22); and first-year remuneration within the
+**first year's expected premium** [REG-R22 제4-32조제5항](#krlib-reg-r22), which binds on the long-payment-term
 points where the premium is small against a cap computed on a 20년납 footing.
 
 Only the **shape between the two ends** is standardized — a straight line to `n_sc` — the real
@@ -232,7 +232,7 @@ life chassis turns on the 自動振替貸付, which advances the premium against
 at the end of grace so that lapse there is a *funded* event. In Korea, on the evidence
 retrieved, there is no such test: a policyholder who misses a 14-day 납입최고기간 loses the
 contract whatever its cash value, and on a 무해지 form receives nothing at all [S5 제25조]
-[REG-R25 제26조]. That absence is **[unverified]** rather than established — the 생명보험
+[REG-R25 제26조](#krlib-reg-r25). That absence is **[unverified]** rather than established — the 생명보험
 표준약관 is understood to contain such an article and the retrieved 별표 15 extract does not
 carry it — and it is the single highest-value item for a later research pass, because finding
 one would change this chassis in kind rather than in degree.
@@ -293,7 +293,7 @@ draws the contractual maximum at the tenth anniversary of a 저해지 contract a
 **₩8,167,325.83**, half what the same election on the 표준형 twin would produce; model point 3
 makes the identical election on a **무해지** contract and draws **exactly nothing**, because
 during 납입기간 there is no value to lend against — the point the FSS made in terms in its 2019
-소비자경보 and the 표준약관 repeats [REG-R28] [R4] [REG-R25 제33조].
+소비자경보 and the 표준약관 repeats [REG-R28] [R4] [REG-R25 제33조](#krlib-reg-r25).
 
 Korea has no equivalent of the Japanese loan-excess lapse notice: the deduction is automatic
 and termination is driven by the demand period, not by the balance [S5 제34조]. So a balance
@@ -375,7 +375,7 @@ separately by the ledger.
 substantive effect is that a reinstated lapse is **not paid a surrender value**: 부활 requires
 that the 해약환급금 has not been drawn, and the 약관's parenthesis expressly includes the case
 where there was none — 「해지환급금이 없는 경우를 포함」 — so a 무해지 contract is always
-reinstatable within three years [S5 제26조] [REG-R25 제27조]. No arrears cash flow arises on
+reinstatable within three years [S5 제26조] [REG-R25 제27조](#krlib-reg-r25). No arrears cash flow arises on
 the annual grid because no premium instalment falls inside a one-year gap **[std]**.
 
 `mort_be_factor` is the last lever, 1.00 on every point but 10. At 1.00 the base run is a
@@ -546,7 +546,7 @@ it. Where the research pass established an observed range across insurers, it is
 | Bonus-date lapse spike | +30 pp | 「30% 이상」 required at a bonus date [REG-R27] | one instrument |
 | Premium loading `prem_loading` | 1.4642 | calibrated once so the 표준형 anchor reproduces 12 × ₩257,050 [S4] | fits to 0.0010% |
 | 계약체결비용 `acq_cost_ratio` | 1.00 × 표준해약공제액 | at the cap, inside the 1.4 × tolerance [REG-R22] | no carrier publishes one |
-| Commission share `comm_init_share` | 0.65 of 계약체결비용 | capped at the first year's premium [REG-R22 제4-32조제5항] | no scale is public |
+| Commission share `comm_init_share` | 0.65 of 계약체결비용 | capped at the first year's premium [REG-R22 제4-32조제5항](#krlib-reg-r22) | no scale is public |
 | Renewal commission | 3.0% of premium | as above; paid only to 납입완료 | no scale is public |
 | 계약관리비용 | ₩60,000 p.a. + 2.0% of premium | no Korean expense rate is public [S2] [S5] [S8] [REG-R2] | none |
 | Claim expense | ₩300,000 per claim | as above, uninflated | none |
@@ -624,3 +624,26 @@ published 표준형 grid [S4].
 python -m pytest lifelib/libraries/krlib/tests/test_whole_life_kr.py -q
 python -m pytest lifelib/libraries/krlib/tests/test_model_conventions_kr.py -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R3]: #krlib-whole_life-r3
+[R4]: #krlib-whole_life-r4
+[R7]: #krlib-whole_life-r7
+[REG-R10]: #krlib-reg-r10
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R48]: #krlib-reg-r48
+[REG-R60]: #krlib-reg-r60
+<!-- END generated citation links -->

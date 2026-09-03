@@ -259,7 +259,7 @@ honest thing a single-path model can do with a written option, so it is publishe
 ## The 해약환급금 has no guarantee, and cannot have one
 
 `cv_pp(t) = max(0, av_pp(t) - surr_chg_pp(t))`, the zero floor being statutory
-[REG-R19 제7-66조제1항제1호]. On the representative scale it is **zero for the first three
+[REG-R19 제7-66조제1항제1호](#krlib-reg-r19). On the representative scale it is **zero for the first three
 months** and the `claims_lapse` column of `result_cf()` shows it: nil at `t = 0, 1, 2`, and
 ₩5,833.06 at `t = 3` on a `cv_pp(3)` of ₩234,582.77. That is not a modelling artefact —
 [S6]'s own illustration shows a surrender value of zero at three months on an account of
@@ -449,7 +449,7 @@ basis for a return assumption and neither is used as one.
   계약관리비용 3.50% in payment and 1.33% after, 위험보험료, the 해약공제 anchor of ₩830,000
   and the fund charges are [S2]; both guarantee charges — 0.07% GMDB, 0.25% + 0.30% GMAB —
   are [S1]; the 연금수령기간 중 계약관리비용 of 0.5% is [S4]; the five-year commission scale
-  1.34 / 0.41 / 0.28 / 0.25 / 0.11% of 보험료총액 is [R1 <표 Ⅴ-3>]. Three rows are **[std]**:
+  1.34 / 0.41 / 0.28 / 0.25 / 0.11% of 보험료총액 is [R1 <표 Ⅴ-3>](#krlib-variable_annuity-r1). Three rows are **[std]**:
   `other_charge` and `fund_expense` at zero, and the insurer's own `expense_acq` and
   `expense_maint`. The 표준해약공제액 cap row is [REG-R20].
 - **`fund_table.csv`** — the per-fund 운용보수 0.40% and 0.60% are [S2], inside the
@@ -568,7 +568,7 @@ of them bound nothing at all — which is said rather than papered over.
 | 위험보험료 age scale | 0.0040% at 15 rising to 0.0110% at 60+ | the **level** is [S2]'s published 0.004%–0.011% band; the grading across it is the standardization | the band is published; the scale is not |
 | 고도재해장해급여금 | charged for, never paid | no Korean 장해 incidence rate is published and the 참조순보험요율 does not reach the life side [REG-R34] [REG-R61] | none; the bias favours the insurer, is small, and is stated |
 | `acq_charge_years` | `min(10, 납입기간)` | [S2] prints ten years on its own 10년납 contract, where the two coincide; a charge on a premium cannot outlive the premium | ten years across the retrieved set; [S4] prints 6.12% for ten years then zero |
-| 해약공제 composite | ₩830,000 anchor, run off linearly **in the amount** | the surrender charge **is** the unamortised 계약체결비용 [R2], so it must come from the same carrier as the 5.17% | ₩830,000 [S2], ₩1,077,000 [S5], ₩1,180,000 [S4] on the same cell — a 42% spread; the market-mean scale [R1 <표 Ⅴ-2>] would raise `surr_charges` about 30% |
+| 해약공제 composite | ₩830,000 anchor, run off linearly **in the amount** | the surrender charge **is** the unamortised 계약체결비용 [R2], so it must come from the same carrier as the 5.17% | ₩830,000 [S2], ₩1,077,000 [S5], ₩1,180,000 [S4] on the same cell — a 42% spread; the market-mean scale [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1) would raise `surr_charges` about 30% |
 | 월공제액 cap | capped at the available account value | a deduction cannot make the account negative; no retrieved document states the rule | none published |
 | guarantee-charge timing | struck on `av_pp_at(t, "BEF_DEDUCT")` | after the premium, before the growth, so a rising month raises next month's charge and not this month's | fixed by the 월계약해당일 ordering [S7 제2조]; the within-month position is the standardization |
 | annuity frequency | annual, in advance | the granularity the 연금 연액 and the 0.5% payout charge are published on [S4] | monthly and annual both offered across the set |
@@ -576,8 +576,8 @@ of them bound nothing at all — which is said rather than papered over.
 | 연금생명표 at annuitisation | not re-struck | the contract permits a re-strike in the policyholder's favour [S1] [S2] [S5]; not modelling it favours neither side systematically | none published |
 | 연금수령기간 중 계약관리비용 | 0.5% of the 연금 연액, netted off | [S4]'s proportional form taken over [S2]'s per-구좌 monthly form because it is scale-free | [S2]: min(영업보험료 3.5%, ₩4,000) per 구좌 per month |
 | `expense_acq`, `expense_maint` | ₩300,000 at issue, ₩3,000 a month, no inflation | **no Korean carrier publishes a unit cost**: the 사업비 disclosure is of *charges*, not of costs [R2] [S12] | none published at all; they total ₩598,836.73, 3.9% of premiums received |
-| commission channel | 전속설계사 scale of [R1 <표 Ⅴ-3>] | the census's own average; bancassurance and online acquisition costs were capped at 50% of it from 2016 and the one online 변액연금 [R1] found paid none | 0.63–2.38% in year 1 and 1.10–3.13% in total across the 2017 census |
-| the account recursion | consistent with, not derived from, the retrieved documents | its exact form sits in the **산출방법서**, a filed 기초서류 that is not public [REG-R18 제7-64조] [REG-R2] | none; the same limit applies to the surrender value and the annuity conversion |
+| commission channel | 전속설계사 scale of [R1 <표 Ⅴ-3>](#krlib-variable_annuity-r1) | the census's own average; bancassurance and online acquisition costs were capped at 50% of it from 2016 and the one online 변액연금 [R1] found paid none | 0.63–2.38% in year 1 and 1.10–3.13% in total across the 2017 census |
+| the account recursion | consistent with, not derived from, the retrieved documents | its exact form sits in the **산출방법서**, a filed 기초서류 that is not public [REG-R18 제7-64조](#krlib-reg-r18) [REG-R2] | none; the same limit applies to the surrender value and the annuity conversion |
 | `roll_fwd_tol`, `val_tol` | 1e-10, 1e-8 | one closes identities between counts of order 1; the other closes money identities relative to gross flows of order 1e7 at annuitisation | both far below one won |
 
 Two of these are worth reading twice, because they are the ones a reviewer should attack
@@ -634,7 +634,7 @@ Each of the notes' twelve pitfalls earns a test named after it:
 8. `check_gmdb_floor()` and `claims_death(0) == 27.860533600121418` — the death benefit
    splits exactly into the account value released and the 보증준비금 top-up.
 9. `cv_pp(2) == 0.0` and `cv_pp(3) == 234582.76753756206` — the statutory zero floor
-   [REG-R19 제7-66조제1항제1호].
+   [REG-R19 제7-66조제1항제1호](#krlib-reg-r19).
 10. The surrender-charge scale above, asserting run-off in the amount and not the ratio.
 11. `check_surr_chg_cap()` on all ten points, with `surr_chg_pp(0) == surr_chg_cap_pp()` on
     points 6, 7 and 10 — the 별표 14 cap binds exactly there and is invisible on the anchor.
@@ -663,3 +663,28 @@ that every `check_*()` returns `True` on **every** shipped model point.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-variable_annuity-r1
+[R10]: #krlib-variable_annuity-r10
+[R12]: #krlib-variable_annuity-r12
+[R2]: #krlib-variable_annuity-r2
+[R4]: #krlib-variable_annuity-r4
+[REG-R10]: #krlib-reg-r10
+[REG-R15]: #krlib-reg-r15
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R24]: #krlib-reg-r24
+[REG-R26]: #krlib-reg-r26
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R48]: #krlib-reg-r48
+[REG-R6]: #krlib-reg-r6
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

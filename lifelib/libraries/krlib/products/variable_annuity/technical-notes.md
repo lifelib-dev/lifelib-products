@@ -63,7 +63,7 @@ prose. Amounts are in Korean won; because Korean documents quote in 만원 (10,0
   the 계약자적립액 instead [REG-R18]; the model does not use that permission and states the
   discretization it does use.
 - **The account recursion itself is [std].** Its exact form sits in the **산출방법서**
-  (*sanchul bangbeopseo*), a filed 기초서류 that is not public [REG-R18 제7-64조]. The
+  (*sanchul bangbeopseo*), a filed 기초서류 that is not public [REG-R18 제7-64조](#krlib-reg-r18). The
   recursion in `av_pp` is **consistent with, and not derived from,** the retrieved
   documents, and the same limit applies to the surrender value and to the annuity
   conversion. It is the hard boundary on how far a public-source reconstruction of a
@@ -71,7 +71,7 @@ prose. Amounts are in Korean won; because Korean documents quote in 만원 (10,0
 - **Age basis: 보험나이 throughout.** 만나이 (age last birthday) at the 계약일 with a
   remainder of six months or more rounded up and less than six months discarded,
   incrementing on the **policy anniversary** and not on the birthday
-  [REG-R25 제21조] [S7 제23조]. It is the contractual age, the index of every Korean rate
+  [REG-R25 제21조](#krlib-reg-r25) [S7 제23조]. It is the contractual age, the index of every Korean rate
   card, and the basis both shipped mortality tables are graduated on, so no shift is
   applied anywhere. The one place Korean practice uses 만나이 instead is the 가입나이
   envelope, 만15세–70세 [S1] [S2], which is an issue rule and not a projection quantity.
@@ -214,9 +214,9 @@ the insurer declares and may re-declare; (c) is the modeller's own view. On this
 | 최저연금적립금 보증비용, premium | **연 0.30%** of 보험료총액, monthly, **for at most 7 years** | `gmab_charge_prem_pp` | [S1] |
 | 특별계정 운용보수 | 채권형 **연 0.40%**, 주식형 **연 0.60%**, daily at rate/365 | `fund_table.csv` | [S2] |
 | 해약공제액 | **₩830,000 × (7 − k) ÷ 7** in completed years k, nil from k = 7 | `surr_chg_pp` | [S2] |
-| 해약공제기간 cap | **7 years** where the 납입기간 is 7 years or more | `surr_chg_years` = 7 | [REG-R19 제7-66조제1항제2호] |
+| 해약공제기간 cap | **7 years** where the 납입기간 is 7 years or more | `surr_chg_years` = 7 | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | 표준해약공제액 | 5% × 연납순보험료 × min(납입기간, 12) = **₩1,643,940** on the anchor | `surr_chg_cap_pp` | [REG-R19] [REG-R20] |
-| 해약환급금 zero floor | 「… 음(陰)의 값인 경우에는 이를 영(零)으로 처리한다」 | `cv_pp` | [REG-R19 제7-66조제1항제1호] |
+| 해약환급금 zero floor | 「… 음(陰)의 값인 경우에는 이를 영(零)으로 처리한다」 | `cv_pp` | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
 | 사망보험금 | **Max[계약자적립액, 이미 납입한 보험료]**, no 기본사망보험금 | `db_pp` | [S1] [S4] [S10] [R2] |
 | GMDB is compulsory | 감독규정 제7-60조제7호 requires a 최저사망보험금 on 변액보험 | — | [REG-R16] |
 | 최저연금적립금 strike | **이미 납입한 보험료 at 100%**, at the single date T | `gmab_base_pp` | [S1] [R2] |
@@ -247,7 +247,7 @@ Both are re-set by the insurer and neither is guaranteed at the level shown.
 | 특별계정 fund menu and allocation | 채권형 50% / 주식형 50%, no rebalancing | `fund_table.csv` | allocation **[std]**; fees [S2] |
 | 기타비용 | **0.00%** | `other_charge_pp` | **[std]**: named by [R2], quantified nowhere |
 | 증권거래비용, 기초펀드 보수 | **0.00%**; observed 0.00–0.79% and 0.01–0.45% | `fund_expense_pp` | **[std]**; both ex-post estimates [S2] [S4] |
-| 모집수수료 scale, years 1–5 | **1.34% / 0.41% / 0.28% / 0.25% / 0.11%** of 보험료총액 | `comm_rate` | [R1 <표 Ⅴ-3>], 2017 census mean |
+| 모집수수료 scale, years 1–5 | **1.34% / 0.41% / 0.28% / 0.25% / 0.11%** of 보험료총액 | `comm_rate` | [R1 <표 Ⅴ-3>](#krlib-variable_annuity-r1), 2017 census mean |
 
 The 공시이율 is re-declared **monthly** off a published 공시기준이율, majority-weighted to
 the insurer's own 운용자산이익률 under a formula each carrier parameterizes for itself
@@ -860,7 +860,7 @@ Every assumption value the cell uses, in full, with tags:
 | 해약공제 level rate | `charge_rate("surr_charge")` | 0.2305555556 | [S2], expressed as a ratio **[std]** |
 | 표준해약공제액 rate | `charge_rate("surr_charge_cap")` | 0.0500 | [REG-R20] |
 | 연금수령기간 중 계약관리비용 | `charge_rate("annuity_charge")` | 0.0050 | [S4]; adoption **[std]** |
-| 모집수수료, years 1–5 | `comm_rate(1..5)` | 0.0134 / 0.0041 / 0.0028 / 0.0025 / 0.0011 | [R1 <표 Ⅴ-3>] |
+| 모집수수료, years 1–5 | `comm_rate(1..5)` | 0.0134 / 0.0041 / 0.0028 / 0.0025 / 0.0011 | [R1 <표 Ⅴ-3>](#krlib-variable_annuity-r1) |
 | Insurer acquisition expense | `charge_rate("expense_acq")` | 300,000.0 per contract | **[std]** |
 | Insurer maintenance expense | `charge_rate("expense_maint")` | 3,000.0 per contract per month | **[std]** |
 | Fund allocation | `fund_alloc(1)`, `fund_alloc(2)` | 0.5, 0.5 | **[std]** |
@@ -972,13 +972,13 @@ below.
 
 **`claims_lapse` is nil at t = 0, 1, 2 and ₩5,833.06 at t = 3.** The 해약공제액 of
 ₩830,000 exceeds the 계약자적립액 for the first three months, and the statutory zero floor
-[REG-R19 제7-66조제1항제1호] turns the difference into **nothing rather than a debt**.
+[REG-R19 제7-66조제1항제1호](#krlib-reg-r19) turns the difference into **nothing rather than a debt**.
 [S6]'s own illustration shows exactly this: a surrender value of zero at three months on an
 account of ₩821,751. It is not a modelling artefact; it is the product, and it is the
 single most consumer-visible fact about a Korean front-loaded variable annuity.
 
 **`commissions` falls by a factor of 3.36 at t = 12**, from ₩29,716.92 to ₩8,846.14: the
-first-year 1.34% of 보험료총액 giving way to the second-year 0.41% [R1 <표 Ⅴ-3>]. The
+first-year 1.34% of 보험료총액 giving way to the second-year 0.41% [R1 <표 Ⅴ-3>](#krlib-variable_annuity-r1). The
 in-force count falls only 2.7% across the same month, so essentially the whole of the step
 is the commission scale.
 
@@ -1517,7 +1517,7 @@ Dominant assumptions, in order of how far they move the answer.
    cell and all the same function. The composite takes the lowest, because the surrender
    charge **is** the unamortised 계약체결비용 [R2] and must come from the same carrier as the
    5.17%. The composite is therefore a **cheap tied-channel contract at both ends** and its
-   surrender recoveries are correspondingly low; on a 25.6% market-mean scale [R1 <표 Ⅴ-2>]
+   surrender recoveries are correspondingly low; on a 25.6% market-mean scale [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1)
    the `surr_charges` total of ₩430,510.48 would be roughly 30% higher.
 6. **The insurer's own expense, which is unsourced in its entirety.** ₩300,000 at issue and
    ₩3,000 a month are **[std]** with no inflation, and **no Korean carrier publishes a unit
@@ -1598,7 +1598,7 @@ eight `check_*()` cells.
    *Test:* `check_gmdb_floor()`, and `claims_death(0) == 27.860533600121418` against
    `gmdb_claims(0) = gmdb_claim_pp(0) x pols_death(0)`.
 9. **Forgetting the statutory zero floor on the surrender value.** `cv_pp` is
-   **max(0, AV − C)** [REG-R19 제7-66조제1항제1호]. Without the floor the first three months
+   **max(0, AV − C)** [REG-R19 제7-66조제1항제1호](#krlib-reg-r19). Without the floor the first three months
    produce a *negative* surrender value — −₩564,564.41 at t = 0 — which a naive model would
    book as income. `claims_lapse` is 0.00 at t = 0, 1 and 2 and ₩5,833.06 at t = 3, and
    [S6] publishes exactly this shape.
@@ -1686,7 +1686,7 @@ eight `check_*()` cells.
     is a memo cells and the docstring says so; the external cash flow is `net_cf`.
     *Test:* `check_net_cf()`, which would fail if any transfer reached `net_cf`.
 24. **Running the model on 만나이.** Every table, every model point age and the whole rate
-    card are **보험나이** [REG-R25 제21조] [S7 제23조]; the 완전생명표 and every Korean
+    card are **보험나이** [REG-R25 제21조](#krlib-reg-r25) [S7 제23조]; the 완전생명표 and every Korean
     population statistic are 만나이 [REG-R38] [REG-R39]. The six-month rule makes the two
     differ for half of all issue dates, so the error is worth about half a year of ageing on
     every row and **raises nothing**.
@@ -1698,3 +1698,35 @@ eight `check_*()` cells.
     says so.
     *Test:* the `provenance` column is non-empty on every row of every CSV, and the
     conventions suite asserts it.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-variable_annuity-r1
+[R10]: #krlib-variable_annuity-r10
+[R2]: #krlib-variable_annuity-r2
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R15]: #krlib-reg-r15
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R24]: #krlib-reg-r24
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R3]: #krlib-reg-r3
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R48]: #krlib-reg-r48
+[REG-R5]: #krlib-reg-r5
+[REG-R58]: #krlib-reg-r58
+[REG-R6]: #krlib-reg-r6
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

@@ -370,7 +370,7 @@ this product's lack of a death benefit changes the arithmetic: **[별표 15] 제
 apply and 제9호 does**, 「보험가입금액 = (위험보험료 / 정기보험의 위험보험료) × 정기보험의
 보험가입금액」 [REG-R21]. A term policy's risk premium per unit of face is its mortality
 rate, so the notional amount is the first policy year's risk premium divided by that rate at
-the 기준연령 요건, 남자 만 40세 [REG-R9 제1-2조제2호]. On the anchor cell:
+the 기준연령 요건, 남자 만 40세 [REG-R9 제1-2조제2호](#krlib-reg-r9). On the anchor cell:
 
 | Quantity | Value |
 |---|---|
@@ -387,7 +387,7 @@ computation lands at 12.35 without being asked to. It is published as a diagnost
 asserted, the two readings not agreeing exactly on a low-premium short-term point.
 `check_acq_cost_cap()` tests the [별표 14] bound only; `check_surr_chg_cap()` tests that the
 deducted charge never exceeds it, over a 해약공제기간 capped at seven years
-[REG-R19 제7-66조제1항제2호]. Evaluating [별표 15] 제9호 at the *insured's* own age instead of
+[REG-R19 제7-66조제1항제2호](#krlib-reg-r19). Evaluating [별표 15] 제9호 at the *insured's* own age instead of
 at 남자 만 40세 is the trap: at 만나이 5 the mortality rate is 0.00012 and the 표준해약공제액
 comes out at ₩1,464,808.74 — **52.3 months** of premium.
 
@@ -606,7 +606,7 @@ convention.
   the 환급률 comparison is made against, priced with no lapse assumption at all [S1] [S3].
 
 **Lapse is absorbing.** 부활 is available within three years even where there is no surrender
-value [S8] [REG-R25 제27조], every waiting period re-runs from the 부활일 [S3], and below
+value [S8] [REG-R25 제27조](#krlib-reg-r25), every waiting period re-runs from the 부활일 [S3], and below
 보험나이 15 there is no cancer waiting period to re-run — so a reinstated child policy is,
 uniquely in this library, very nearly the policy that lapsed. The model does not carry it; the
 simplification is conservative on a protection product and is recorded as one.
@@ -728,13 +728,13 @@ product most of them bound nothing at all — which is said rather than papered 
 | `void_rate_ann` | 0.012 | **the most exposed number in the file.** No Korean source retrieved gives a foetal-loss rate; what is sourced is the mechanic — 무효, whole premium returned [S8 제56조] [S9] | none at all; worth ₩306.90 on the anchor cell, so small in cash and large in principle |
 | `broad_def_factor` | 4.0 | broad 뇌혈관질환 / 허혈성심장질환 ranges against the narrow 뇌출혈 / 급성심근경색증 the comparison basis prices | both definitions are sourced [S2] [S11] [R12]; the ratio is not |
 | `net_prem_ratio` | 0.75 | 순보험료 as a share of 영업보험료, used **only** in the 표준해약공제액 formula of [별표 14] [REG-R20] | no Korean 예정사업비율 is published: the 산출방법서 is an undisclosed 기초서류 [REG-R2] |
-| `acq_cost_ratio`, `comm_init_share`, `comm_renewal_rate` | 0.9 of the cap, 0.65, 0.03 | no Korean carrier publishes any expense or commission figure for this product; the statutory ceiling is all there is | the [별표 14] cap is ₩384,306.41 = **13.73 months** of premium on the anchor and the 90% of it deducted is **12.35 months**, against the FSC's ~13-month reading of the same cap [REG-R29]; commission is capped at the first year's expected premium, instalments at 60% of the 표준해약공제액 a year [REG-R22 제4-32조제5항·제8항] |
-| `expense_maint_pp`, `expense_maint_prem_rate`, `expense_claim_pp` | ₩400/month, 5% of premium, ₩30,000/claim | both 상품요약서 define 계약체결비용 and 계약관리비용 and then give no number | none published; 보험가격지수 dispersion on the board is the only indirect handle [S11] [REG-R22 제7-45조제7항] |
+| `acq_cost_ratio`, `comm_init_share`, `comm_renewal_rate` | 0.9 of the cap, 0.65, 0.03 | no Korean carrier publishes any expense or commission figure for this product; the statutory ceiling is all there is | the [별표 14] cap is ₩384,306.41 = **13.73 months** of premium on the anchor and the 90% of it deducted is **12.35 months**, against the FSC's ~13-month reading of the same cap [REG-R29]; commission is capped at the first year's expected premium, instalments at 60% of the 표준해약공제액 a year [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22) |
+| `expense_maint_pp`, `expense_maint_prem_rate`, `expense_claim_pp` | ₩400/month, 5% of premium, ₩30,000/claim | both 상품요약서 define 계약체결비용 and 계약관리비용 and then give no number | none published; 보험가격지수 dispersion on the board is the only indirect handle [S11] [REG-R22 제7-45조제7항](#krlib-reg-r22) |
 | `inflation_rate` | 2.0% p.a. | the Bank of Korea's own target; **not a detail on this product** — it compounds to x7.24 over a hundred years and the ₩400 charge is ₩2,898 a month at `t = 1200` | none published |
 | lapse shape | log-linear between the two prescribed endpoints | the guideline's functional form was never converted from HWP and is **[unverified]** at instrument level | the endpoints are prescribed, 0.1% at 납입완료 and 0.8% after [R11] [REG-R27]; the 5.0% start is the top band of the only published 적용해지율 [S1], whose full disclosed vector ships beside it as `disclosed` |
-| lapse absorbing | no 부활 inflow | reinstatement within three years is sourced [S8] [REG-R25 제27조] and no take-up rate is published; below 보험나이 15 there is no waiting period to re-run [S3], so the simplification is larger here than on the chassis | none published; direction stated — it **understates** persistency |
+| lapse absorbing | no 부활 inflow | reinstatement within three years is sourced [S8] [REG-R25 제27조](#krlib-reg-r25) and no take-up rate is published; below 보험나이 15 there is no waiting period to re-run [S3], so the simplification is larger here than on the chassis | none published; direction stated — it **understates** persistency |
 | decrement order | void, waiver, mortality, lapse | fixed by the contract's own sequence: a void de-recognises the contract, a waiver changes who pays, and only a paying policy can lapse | not a disclosure question |
-| 해약공제액 release | linear over the 해약공제기간 | the regulation caps the **amount** and not the shape [REG-R19] [REG-R20] | the seven-year cap is sourced [REG-R19 제7-66조제1항제2호] |
+| 해약공제액 release | linear over the 해약공제기간 | the regulation caps the **amount** and not the shape [REG-R19] [REG-R20] | the seven-year cap is sourced [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | `av_pp` before the grid opens | capped at `max(cv_std_pp, net_prem_ratio x cum_prem_pp)` | the published grid is 「순보험료식 계약자적립액에서 해약공제액을 공제한 금액」, already net and floored at zero [S2], so the identity gives only `0 <= AV <= 해약공제액` there | none; the constraint is that `av_pp(0)` must be 0 |
 | `taper` calibration | node 0.95 set so 1.589 x 0.1007 = 16.0% | one shipped grid must serve a 30세, a 100세 and a 110세 만기 | the published nodes it reproduces [S2] |
 | `prem_int_rate`, `decl_rate`, `min_guar_rate`, `avg_decl_rate` | 2.75%, 1.70%, 0.30%, 2.50% | the modal value of each published column is the standardization; the columns themselves are sourced | 2.50–3.00%, 1.60–2.20%, 0.20–0.50% [S2] [S11] |
@@ -805,3 +805,35 @@ returns a real `bool` over all `t`, with the signed per-`t` residual at `check_*
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R10]: #krlib-child-r10
+[R11]: #krlib-child-r11
+[R12]: #krlib-child-r12
+[R2]: #krlib-child-r2
+[R3]: #krlib-child-r3
+[R4]: #krlib-child-r4
+[R5]: #krlib-child-r5
+[R6]: #krlib-child-r6
+[R7]: #krlib-child-r7
+[R9]: #krlib-child-r9
+[REG-R17]: #krlib-reg-r17
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R40]: #krlib-reg-r40
+[REG-R41]: #krlib-reg-r41
+[REG-R48]: #krlib-reg-r48
+[REG-R50]: #krlib-reg-r50
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

@@ -7,10 +7,10 @@ source tag on this page resolves in [`sources.md`](sources.md).
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced: the split of the single premium into 보장계약 보험료,
 > 사업비 and the 연금계약 순보험료 that becomes the opening 계약자적립액
-> [R1 §1-가] [S1 주2]; the accumulation recursion at Max[공시이율, 최저보증이율]
-> [R2 §1] [S7 제7조]; the 만기보험금 지급재원 and its decomposition into interest less a
-> retention [R1] [R2 §1]; the 사망보험금 of 10% of the single premium plus the
-> 계약자적립액 [S1] [S3] [R1 별표1]; the 해약공제액 of nil at every duration
+> [R1 §1-가](#krlib-immediate_annuity-r1) [S1 주2]; the accumulation recursion at Max[공시이율, 최저보증이율]
+> [R2 §1](#krlib-immediate_annuity-r2) [S7 제7조]; the 만기보험금 지급재원 and its decomposition into interest less a
+> retention [R1] [R2 §1](#krlib-immediate_annuity-r2); the 사망보험금 of 10% of the single premium plus the
+> 계약자적립액 [S1] [S3] [R1 별표1](#krlib-immediate_annuity-r1); the 해약공제액 of nil at every duration
 > [S1 §VIII] [S10]; the prohibition on surrendering a 종신연금형 in payment
 > [S3] [S5 주2] [S7 제31조]; and the 보증지급기간's effect, which is that the payment
 > obligation survives the annuitant [S1 주5] [S3]. Every **rate** is a **[std]**
@@ -113,7 +113,7 @@ every formula in the model:
   inception exactly meets the outgo at inception. `check_premium_split()` asserts it:
   `P = commission + expense + 위험보험료 + V(0)`, with nothing left over in either
   direction. There is no deferred acquisition cost to amortise anywhere in this model, and
-  no unearned premium to add back on surrender [REG-R19 제7-66조제5항].
+  no unearned premium to add back on surrender [REG-R19 제7-66조제5항](#krlib-reg-r19).
 - **The only decrements are mortality and, on two of the three shapes, surrender.** On the
   종신연금형 surrender is contractually impossible from month one [S7 제31조], and
   `check_surr_value()` asserts that the shipped life-shape model points carry a nil rate
@@ -131,7 +131,7 @@ of one design. `shape` takes `life`, `inheritance` or `certain`:
 | `certain` | 확정기간연금형 | `V(t) / a(n − t, i(t))`, recomputed each year | No |
 
 「옵션 중 사망(생존) 위험률이 적용되는 것은 종신형에 한정된다 … 확정형과 상속형은
-사망률을 사용하지 않는다」 [R12 §III-1]. `annuity_factor()` is therefore defined on the
+사망률을 사용하지 않는다」 [R12 §III-1](#krlib-immediate_annuity-r12). `annuity_factor()` is therefore defined on the
 life shape alone and **raises** on the other two, so the distinction cannot be lost by
 accident. Mortality still enters the *projection* of the other two shapes, because both
 pay a death benefit; a decrement and a pricing basis are two different uses of one table
@@ -165,7 +165,7 @@ added to a list.
   `1 + l(t)` for the whole guaranteed term; on the anchor it gives a factor of 28.061177
   against the correct 19.502675, an annuity 30.5% too low, for life.
 - **certain** — the persistency measure alone; death does not accelerate the term
-  [S9 주7] [R12 §III-1].
+  [S9 주7] [R12 §III-1](#krlib-immediate_annuity-r12).
 - **inheritance** — survival and persistency together, because death itself triggers a
   payment and ends the contract.
 
@@ -226,7 +226,7 @@ because `s` shrinks — which is why an annuity on this shape can more than halv
 guaranteed floor never moves. That retention was in the 산출방법서 and not in the 약관;
 금융분쟁조정위원회 조정결정 제2017-17호 held on 2017-11-14 that it could not be asserted
 against the policyholder [R1], the 금융감독원 extended the ruling to the industry on
-2018-03-15 [R2 §4], and the 대법원 restored it for the contracts before it on 2025-10-16
+2018-03-15 [R2 §4](#krlib-immediate_annuity-r2), and the 대법원 restored it for the contracts before it on 2025-10-16
 [R6] [R21]. The current market states the deduction on the face of the 약관 [S7 별표1].
 
 Neither reading is "the" right one, so `retention_basis` carries both:
@@ -461,9 +461,9 @@ the same terms gives ₩1,932,133.95 a year, **₩161,011.16** a month, against
 
 | File | Contents | Provenance |
 |---|---|---|
-| `charge_table.csv` | one row per `shape`: `acq_charge_rate`, `admin_charge_rate`, `risk_prem_rate`, `comm_rate`, `acq_expense_rate`, `annuity_charge_rate`, `db_rate` | 계약체결비용 and 계약관리비용 published by shape at 남자 60 [S1 §VIII]; the 3.50% composite **[std]**, corroborated to 1.4% against [S3]'s four 확정기간 terms; 위험보험료 1.4669% published for 상속형 20년만기 [S1 §VIII], rounded and applied unscaled **[std]**; 모집수수료 the round mid-point of 2.08% / 1.75% [S1 §VII] **[std]**; `acq_expense_rate` derived **[std]**; `annuity_charge_rate` 0.80% [S1 §VIII] with its treatment as an insurer expense **[std]**; `db_rate` 10% of the single premium [S1] [S3] [R1 별표1] |
+| `charge_table.csv` | one row per `shape`: `acq_charge_rate`, `admin_charge_rate`, `risk_prem_rate`, `comm_rate`, `acq_expense_rate`, `annuity_charge_rate`, `db_rate` | 계약체결비용 and 계약관리비용 published by shape at 남자 60 [S1 §VIII]; the 3.50% composite **[std]**, corroborated to 1.4% against [S3]'s four 확정기간 terms; 위험보험료 1.4669% published for 상속형 20년만기 [S1 §VIII], rounded and applied unscaled **[std]**; 모집수수료 the round mid-point of 2.08% / 1.75% [S1 §VII] **[std]**; `acq_expense_rate` derived **[std]**; `annuity_charge_rate` 0.80% [S1 §VIII] with its treatment as an insurer expense **[std]**; `db_rate` 10% of the single premium [S1] [S3] [R1 별표1](#krlib-immediate_annuity-r1) |
 | `crediting_table.csv` | two bases × three duration bands: `decl_rate` and the stepped `min_guar_rate` on half-open `[dur_from, dur_to)` bands | 공시이율 2.50% is the rate the anchor carrier declared on this exact product at 2017-04 [S1 §IV-4]; its adoption **[std]**, the rate being underivable [REG-R18] [REG-R24]. 최저보증이율 1.25 / 1.00 / 0.75% is the only three-step schedule published on a contemporaneous 즉시연금 illustration [S3]; adoption **[std]**. That a floor exists at all is compulsory [REG-R16]. The `min_guar` basis is **[std]**, a modelling device |
-| `model_point_table.csv` | ten contracts: both sexes, issue ages 45 / 55 / 60 / 70 / 80, both guarantee lengths, both retention bases, both crediting bases, all three shapes, premiums ₩10,000,000 to ₩5,000,000,000 | a configuration, not an assumption set, so no `provenance` column. Point 1 is the notes' anchor: the premium is the median of the only public dataset [R12 그림3] and exactly the 소득세법 ten-year exemption cap [REG-R58]; the age is the one the expense, commission and mortality disclosures are all published at [S1]; the ten-year guarantee is the choice 97.3% of life-shape buyers made [R12 표7]. `lapse_rate` is the exception and is **[std]** |
+| `model_point_table.csv` | ten contracts: both sexes, issue ages 45 / 55 / 60 / 70 / 80, both guarantee lengths, both retention bases, both crediting bases, all three shapes, premiums ₩10,000,000 to ₩5,000,000,000 | a configuration, not an assumption set, so no `provenance` column. Point 1 is the notes' anchor: the premium is the median of the only public dataset [R12 그림3](#krlib-immediate_annuity-r12) and exactly the 소득세법 ten-year exemption cap [REG-R58]; the age is the one the expense, commission and mortality disclosures are all published at [S1]; the ten-year guarantee is the choice 97.3% of life-shape buyers made [R12 표7](#krlib-immediate_annuity-r12). `lapse_rate` is the exception and is **[std]** |
 
 **Substituting a filed basis** means replacing `mort_table.csv` with a same-schema file
 keyed on exactly the same `(sex, age)` in 보험나이, and `charge_table.csv` and
@@ -575,7 +575,7 @@ them bound nothing at all, and that is said rather than papered over.
 
 | Parameter | Value | Rationale | Observed range |
 |---|---|---|---|
-| `expense_load_rate` = `acq_charge_rate` + `admin_charge_rate` | 2.20% + 1.30% = **3.50%** of P, one rate across all three shapes | the carrier publishes the load by component *and* by shape; the composite carries one number rather than the 0.42-point allocation difference, because a second independent document supports the same total | 종신 2.61 + 1.30 = 3.91%, 상속 20년만기 2.19 + 1.30 = 3.49% at one carrier [S1 §VIII]; solving the annuity-certain identity against 교보's four published 확정기간 terms reproduces all four within **1.4%** on a 4.97% first-day deduction [S3]; the disputed 2012 contract's 사업비 was 5.325% [R1 §1-가] and the supervisor assumed 6.0% [R2 참고] |
+| `expense_load_rate` = `acq_charge_rate` + `admin_charge_rate` | 2.20% + 1.30% = **3.50%** of P, one rate across all three shapes | the carrier publishes the load by component *and* by shape; the composite carries one number rather than the 0.42-point allocation difference, because a second independent document supports the same total | 종신 2.61 + 1.30 = 3.91%, 상속 20년만기 2.19 + 1.30 = 3.49% at one carrier [S1 §VIII]; solving the annuity-certain identity against 교보's four published 확정기간 terms reproduces all four within **1.4%** on a 4.97% first-day deduction [S3]; the disputed 2012 contract's 사업비 was 5.325% [R1 §1-가](#krlib-immediate_annuity-r1) and the supervisor assumed 6.0% [R2 참고](#krlib-immediate_annuity-r2) |
 | `risk_prem_rate` | **0.00%** (life), **1.47%** (inheritance, certain), once at inception | the published 1.4669% is disclosed on a *twenty*-year basis at exactly the anchor age and is applied **unscaled** to a ten-year contract — conservative, and the direction is stated rather than corrected, no source supporting a term scaling | three published levels on one basis: 0.0000% for 종신연금형 1형, 1.4669% for 상속연금형 20년만기, 4.9466% for 종신연금형 2형 [S1 §VIII]; nothing published for the certain shape at all |
 | `comm_rate` | **2.00%** of P at `t = 0`, nil thereafter | the round mid-point; what matters structurally is not the level but that it sits **below** the 2.20% 계약체결비용, so the charge covers the commission at the same moment | 2.08% (종신연금형) and 1.75% (상속연금형) at 남자 60 [S1 §VII]; every retrieved figure is first-year-only on a bancassurance sale [S2] [S3] [S4] [S5] |
 | `acq_expense_rate` | **1.50%** = load − commission | a *treatment*, not a disclosure: it sets the insurer's own expense equal to the charge it took, which is what makes `check_premium_split()` close and "no acquisition strain" a property of the statement | nothing published; **no Korean carrier discloses an expense rate** for this product |
@@ -592,7 +592,7 @@ them bound nothing at all, and that is said rather than papered over.
 | decrement timing | deaths at the end of the policy year, then surrenders, then the maturity benefit | annual-grid conventions; a real contract settles a death mid-year and pays the 연금월액 to the date of death | fixed by the grid, not by a disclosure |
 | the annual grid itself | one crediting rate per policy year | the 공시이율 is reset on the first of each month and fixed for that month; an annual grid carries one rate a year, exact only where the rate is level, which on the representative basis it is | worth **1.14%** of the annuity's timing value at 2.50% (`i / i^(12)` = 1.0114072482), which is why every comparison with a published 연금월액 on this page is made on the adjusted figure |
 | 선지급 (commutation) | right recorded, exercise **not** modelled | value-neutral **only** because the 약관's discount rate is the same 공시이율 that sets the annuity [S1 주4] [S3] [S7 제11조제3항]; the option has value on a falling-rate path and none on a rising one | no take-up figure published anywhere |
-| issue-age band, anchor premium | 45–80; ₩100,000,000 | the band is the composite of the retrieved carriers' own bands; the premium is the median of the only public dataset and exactly the 소득세법 ten-year exemption cap [R12 그림3] [REG-R58] | issue ages from 45 [S1] to 80 [S3] [S4]; minimum premiums ₩10,000,000 upward, differing by carrier [R16, secondary] |
+| issue-age band, anchor premium | 45–80; ₩100,000,000 | the band is the composite of the retrieved carriers' own bands; the premium is the median of the only public dataset and exactly the 소득세법 ten-year exemption cap [R12 그림3](#krlib-immediate_annuity-r12) [REG-R58] | issue ages from 45 [S1] to 80 [S3] [S4]; minimum premiums ₩10,000,000 upward, differing by carrier [R16, secondary](#krlib-immediate_annuity-r16) |
 | `roll_fwd_tol`, `val_tol` | 1e-10, 1e-12 (relative, scaled by `prem_pp()`) | one closes dimensionless probability identities in a single expression; the other closes won amounts of order 1e8 to 1e9 read back out of a `DataFrame` | both far below one won at every shipped premium |
 
 **One row above is a placeholder and is labelled as such rather than dressed up as an
@@ -657,3 +657,25 @@ returns `True` on **every** shipped model point.
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-immediate_annuity-r1
+[R21]: #krlib-immediate_annuity-r21
+[R27]: #krlib-immediate_annuity-r27
+[R31]: #krlib-immediate_annuity-r31
+[R6]: #krlib-immediate_annuity-r6
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R20]: #krlib-reg-r20
+[REG-R24]: #krlib-reg-r24
+[REG-R25]: #krlib-reg-r25
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R58]: #krlib-reg-r58
+[REG-R60]: #krlib-reg-r60
+<!-- END generated citation links -->

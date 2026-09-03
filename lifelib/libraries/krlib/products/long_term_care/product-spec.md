@@ -161,7 +161,7 @@ alone **for six months or more** [REG-R54] — a duration test that lives in the
 is the Korean equivalent of the 180-day persistence tests that Japanese and French private
 contracts have to write into their own conditions. Korea does not need to, because the state
 has already applied one. 제15조제2항 then sends the grade boundaries themselves to the
-시행령, where they can be moved by decree [R1 제15조] [REG-R54].
+시행령, where they can be moved by decree [R1 제15조](#krlib-long_term_care-r1) [REG-R54].
 
 The score is built from a home visit covering **12개 영역 90개 항목**, of which **52개 항목**
 enter the 장기요양인정점수 across 기본적 일상생활활동 (ADL), 수단적 일상생활활동 (IADL),
@@ -204,7 +204,7 @@ diseases with KCD codes** — four dementia codes, one Alzheimer code, fourteen 
 codes, four Parkinson-family codes, plus 척수성 근위축, 다발경화증, 중풍후유증 and 진전
 [REG-R55] [R2]. Of the **58,271** applicants under 65 in 2024 the causes split
 뇌혈관질환군 **28,628 (49.1%)**, 치매질환군 **15,640 (26.8%)**, 파킨슨질환군 **4,086
-(7.0%)**, 그 밖의 질병 1,122 (1.9%) and 기타 8,795 (15.1%) [R4 표2-3, shares derived]. There
+(7.0%)**, 그 밖의 질병 1,122 (1.9%) and 기타 8,795 (15.1%) [R4 표2-3, shares derived](#krlib-long_term_care-r4). There
 is **no cancer on the list**, no musculoskeletal condition and no frailty category, so a
 person under 65 disabled by cancer or by a hip fracture cannot be certified at all. That is
 the single largest difference from the Japanese scheme, whose 16 特定疾病 include terminal
@@ -229,7 +229,7 @@ same 1·2등급 concentration. And the yearbook's launch coverage reproduces its
 [R18], as does a trade summary whose own figures are [unverified] and are used nowhere here
 [REG-R43].
 
-**Headline stocks and flows, 2024** [R4 표1-1, 표2-1, 표2-5]:
+**Headline stocks and flows, 2024** [R4 표1-1, 표2-1, 표2-5](#krlib-long_term_care-r4):
 
 | Quantity | 2024 |
 |---|---|
@@ -241,7 +241,7 @@ same 1·2등급 concentration. And the yearbook's launch coverage reproduces its
 | 판정 대비 인정률 (derived) | **89.5%** |
 | 급여이용 수급자 | 1,140,725 |
 
-**인정자 by grade** [R4 표2-5]:
+**인정자 by grade** [R4 표2-5](#krlib-long_term_care-r4):
 
 | 등급 | 인원 | 구성비 (derived) |
 |---|---|---|
@@ -253,7 +253,7 @@ same 1·2등급 concentration. And the yearbook's launch coverage reproduces its
 | 인지지원등급 | 27,835 | 2.39% |
 | **계** | **1,165,030** | 100.00% |
 
-Women are **70.9%** of the certified population (826,316 of 1,165,030) [R4 표2-5, derived].
+Women are **70.9%** of the certified population (826,316 of 1,165,030) [R4 표2-5, derived](#krlib-long_term_care-r4).
 **1·2등급 together are only 13.28%** of all certified lives. That single figure is the most
 important calibration fact in this product: the comparable Japanese quantity, 要介護2以上, is
 50.8% of certified persons, so a Korean 「1~2등급」 promise is a far narrower one than a
@@ -261,7 +261,7 @@ Japanese 「要介護2以上」 promise. The two scales are constructed differen
 comparison is not exact, but the direction is unambiguous.
 
 **The certification rate by age band, 2024**, computed as (계 − 등급외) over population [R4
-표2-9 and 표1-2, derived]:
+표2-9 and 표1-2, derived](#krlib-long_term_care-r4):
 
 | 연령 | 인정자 | 인구 | **인정률 (계)** | 인정률 (남) | 인정률 (여) |
 |---|---|---|---|---|---|
@@ -273,7 +273,7 @@ comparison is not exact, but the direction is unambiguous.
 | **65+** | **1,128,054** | **10,399,813** | **10.85%** | **6.87%** | **14.02%** |
 
 and the same quantity restricted to the grades the composite pays on [R4 표2-9 and 표1-2,
-derived]:
+derived](#krlib-long_term_care-r4):
 
 | 연령 | 1·2등급 인정자 | 인구 | **1·2등급 인정률** |
 |---|---|---|---|
@@ -295,14 +295,14 @@ Four readings, all load-bearing.
    reverse of a death-benefit table, and it reappears in every published premium card
    ("Variations across insurers", item 10).
 3. **The severe share is U-shaped in age** — 1·2등급 is 22.3% of certified lives under 65,
-   falls to 11.1% at 80–84, and rises again to 14.8% at 85+ [R4 표2-9, derived]. The under-65
+   falls to 11.1% at 80–84, and rises again to 14.8% at 85+ [R4 표2-9, derived](#krlib-long_term_care-r4). The under-65
    population is severe because only the 노인성 질병 list gets in at all [REG-R55]; the 80–84
    trough is where the marginal entrant is a lightly-impaired person newly crossing the
    51-point line. **A model applying one grade-mix vector at all ages will mis-price a 1·2등급
    benefit by up to a factor of two.**
 4. **The published 인정률 series is on a different denominator from the table above.** The
    figure Korean commentary quotes — 11.20% for 2024 — divides *all* 인정자, including
-   under-65s, by the *65-and-over* population [R4 표1-1; R16; R18]. The demographically honest
+   under-65s, by the *65-and-over* population [R4 표1-1; R16; R18](#krlib-long_term_care-r4). The demographically honest
    65+ rate is **10.85%**. They differ by 0.35 points and a document that quotes one and
    compares it against the other is wrong.
 
@@ -335,11 +335,11 @@ which 45.6% of entrants die within a year cannot support a stock 8.6 times its a
 count. The arithmetic is recorded here so that nobody repeats it.
 
 **Two independent estimators that do work.** First, from the yearbook's own application-route
-table. [R4 표2-5] classifies the 1,165,030 current certifications by the application type that
+table. [R4 표2-5](#krlib-long_term_care-r4) classifies the 1,165,030 current certifications by the application type that
 produced them — 인정신청 (first application) **318,992**, 갱신신청 639,659, 등급변경신청
 107,365, 재신청 98,983, 직권재조사 31. The 인정신청 bucket approximately holds the
 first-time entrants of the trailing two years who are still alive, still certified and have
-not yet renewed or changed grade, the base 유효기간 being two years [R13, unverified]. Writing
+not yet renewed or changed grade, the base 유효기간 being two years [R13, unverified](#krlib-long_term_care-r13). Writing
 `E` for annual first entries and using [R11]'s survival shape for the in-bucket persistence
 gives `∫₀² s(t) dt` of order 1.3–1.5, hence `E ≈ 318,992 / 1.4 ≈ 228,000` per annum and
 therefore `D ≈ 1,165,030 / 228,000 ≈ **5.1 years**` [derived, assumption-dependent]. Second,
@@ -364,7 +364,7 @@ three-state.** Applying `I = P/D` to the 1·2등급 prevalence curve at 65–69 
 about **0.0685%** (male) and **0.0635%** (female) per annum [derived]. But the 1·2등급 *stock*
 is not built from direct entries. Only **13.3%** of current 1등급 certifications arose from a
 first application (7,371 of 55,340) against **69.5%** from a renewal, whereas at 인지지원등급
-the first-application share is **69.8%** (19,436 of 27,835) [R4 표2-5, derived]. **Severe-grade
+the first-application share is **69.8%** (19,436 of 27,835) [R4 표2-5, derived](#krlib-long_term_care-r4). **Severe-grade
 lives are, in the main, people who entered the scheme years earlier at a lighter grade and
 deteriorated into it.** A single-decrement model that treats `I₁₂` as a healthy-life incidence
 overstates the direct entry rate, understates the delay, and puts the cash flow years too
@@ -421,7 +421,7 @@ service type, or a lapse table for a Korean 간병보험. 보험개발원 publis
 장기요양 incidence table nor a post-onset mortality table publicly, and no reference to one
 appears in any retrieved document [R9]; the 참조순보험요율 it does file are not published
 [REG-R4] [REG-R34]. All of these are [std] in `LTC_KR_S`, constrained where possible by [R11]
-(post-onset mortality shape), [R4 표2-5] (progression versus direct entry), [S1] (the level of
+(post-onset mortality shape), [R4 표2-5](#krlib-long_term_care-r4) (progression versus direct entry), [S1] (the level of
 the 1·2등급 rate at 40/50/60) and [REG-R27] (the log-linear lapse shape on the 무해지 form).
 
 ### Market position
@@ -433,7 +433,7 @@ survey puts 간병보험 가입률 at **2.5%** overall — 0.5% in the twenties,
 가입 의향 of **10.0%** overall and 16.0% at 60 and over, and **67.5%** among people the same
 study identified as actually needing care [R9]. Set that against 실손의료보험, held by about
 two thirds of the population, and 암보험, held by a large majority. A 생명보험협회 survey in
-2022 found **40.8%** naming 간병보험 as the cover they would buy next [R16, news].
+2022 found **40.8%** naming 간병보험 as the cover they would buy next [R16, news](#krlib-long_term_care-r16).
 
 The line's history is a contraction followed by a rediscovery, and the turn is dated by the
 public scheme. Life-sector in-force count fell **12.6%** between 2008 and 2013 — from 143
@@ -441,7 +441,7 @@ thousand contracts and ₩2,443bn to 125 thousand and ₩1,588bn, the private pr
 displaced by the arrival of 노인장기요양보험 — and then grew **111.2%** to **264 thousand
 contracts and ₩4,539bn** by 2018 as the market rediscovered it as a supplement, new business
 rising from 9 to 42 thousand contracts over the same decade [R9, from 생명보험협회 통계 via
-KOSIS]. At 2019-05 there were **99 products** on sale, 46 life and 53 non-life, the largest
+KOSIS](#krlib-long_term_care-r9). At 2019-05 there were **99 products** on sale, 46 life and 53 non-life, the largest
 shelves being 현대해상 (14) and 신한생명 (12) [R9]. Trade press puts 2023 penetration at
 **3.85% of non-life new business** and **2.8% of life new business**, up 2.5 and 1.7
 percentage points since 2020, and reports 치매·간병보험 초회보험료 of **₩88.4bn (883억
@@ -450,7 +450,7 @@ figures and inherit that weakness.
 
 **Benefit adequacy, for scale.** The 2019 재가급여 월 한도액 by grade was 1등급 ₩1,456,400 /
 2등급 ₩1,294,600 / 3등급 ₩1,240,700 / 4등급 ₩1,142,400 / 5등급 ₩980,800 / 인지지원등급
-₩551,800 [R6, 2019 values, now stale — the current 보건복지부 고시 was not retrieved]. The
+₩551,800 [R6, 2019 values, now stale — the current 보건복지부 고시 was not retrieved](#krlib-long_term_care-r6). The
 composite's 간병연금 of ₩500,000 a month at 1등급 is therefore about a third of the public
 재가 ceiling as at 2019, and roughly twice the recipient's own 본인부담 on that ceiling at a
 15% co-payment rate [derived; the co-payment rate is [unverified], from a 2012-vintage mirror
@@ -470,10 +470,10 @@ sold as cash against the costs the public benefit does not reach.
 |---|---|---|
 | Design type | 간병보험, **공적기준 (type ②)** grade-triggered, 무배당, sold in the **해약환급금 미지급형** form; stand-alone 주계약 (*ju-gyeyak*, main contract) paying a 장기요양진단급여금, with a 간병연금 and a 치매진단급여금 attached as 특약 (*teugyak*, riders) | [S2] [S3]; form **[std]** (1) |
 | Regulatory class | **제3보험 — 간병보험**, 보험업법 제4조제1항제3호; writable by life and non-life carriers alike | [R12] [REG-R1] [REG-R7] |
-| Chassis | Fixed-benefit (정액) third-sector protection. No maturity value (만기환급금 없음), no general death benefit; on death from a cause the contract does not cover it pays the **계약자적립액** and terminates, as 감독규정 제7-63조제1항제1호 requires of every 제3보험 product | [S3]; [REG-R17] [REG-R25 제22조] |
+| Chassis | Fixed-benefit (정액) third-sector protection. No maturity value (만기환급금 없음), no general death benefit; on death from a cause the contract does not cover it pays the **계약자적립액** and terminates, as 감독규정 제7-63조제1항제1호 requires of every 제3보험 product | [S3]; [REG-R17] [REG-R25 제22조](#krlib-reg-r25) |
 | Renewal architecture | **비갱신형** (non-renewable), level premium, coterminous riders | [S1] [S2]; universal on the LTC benefit — see footnote (2) |
 | Issue age (가입나이), 만나이 | **30–70** | observed 만15–75; **[std]** (3) |
-| Age basis | **만나이** at 계약일, incremented on each 계약해당일. The market prices on 보험나이 — 계약일 현재 실제 만 나이 with 6개월 미만의 끝수는 버리고 6개월 이상의 끝수는 1년으로 — and the reference implementation states the offset rather than hiding it | [REG-R25 제21조]; basis **[std]** (4) |
+| Age basis | **만나이** at 계약일, incremented on each 계약해당일. The market prices on 보험나이 — 계약일 현재 실제 만 나이 with 6개월 미만의 끝수는 버리고 6개월 이상의 끝수는 1년으로 — and the reference implementation states the offset rather than hiding it | [REG-R25 제21조](#krlib-reg-r25); basis **[std]** (4) |
 | Policy term (보험기간) | **90세만기** (to attained 만나이 90) | observed 85 / 90 / 95 / 100세만기 and 종신; **[std]** (5) |
 | Premium-paying period (납입기간) | **20년납** | observed 10 / 15 / 20 / 30년납, 전기납, 80세납; **[std]** (5) |
 | Lives basis | Single life only | [S1] [S2] [S3] [S4] |
@@ -519,7 +519,7 @@ Footnotes to [std] rows:
 4. **The two age bases, and why this product's use of the second is narrower than the
    chassis's.** The contract ages on 보험나이 — 계약일 현재 실제 만 나이 with a fraction
    under six months discarded and six months or more rounded up, incrementing at each
-   계약해당일 [REG-R25 제21조] — and the two differ for roughly half of all issue dates.
+   계약해당일 [REG-R25 제21조](#krlib-reg-r25) — and the two differ for roughly half of all issue dates.
    `Cancer_KR_S` projects on 만나이 and records the half-year offset as a [std]
    simplification, because its decrements are published on 만나이 and no source gives the
    distribution of issue dates within a policy year that a conversion would need. `LTC_KR_S`
@@ -608,8 +608,8 @@ Footnotes to [std] rows:
 | Threshold price ladder | 1~5등급 against 1~2등급 at the same 가입금액 is about **4.5 : 1** (남 40: ₩15,010 against ₩3,300) | [S2, derived]; footnote (10) |
 | Dementia severity ladder | 경도이상 : 중등도이상 : 중증 = **3.05 : 2.06 : 1.00** (남 40: ₩17,400 / ₩11,750 / ₩5,710) | [S2, derived] |
 | Premium waiver (납입면제) | On award of **장기요양 1등급 or 2등급**, waiving the premiums of the main contract **and of every attached rider** from the next due date; it fires simultaneously with the 진단급여금 trigger | [S3]; threshold **[std]** (11) |
-| Grace (납입유예기간), 월납 | 「납입기일부터 납입기일이 속하는 달의 **다음 다음달의 마지막 날**까지」; the contract terminates 「유예기간이 끝나는 날의 다음 날」, the insurer having given a 납입최고 of **at least 14 days** inside that window | [S1]; [REG-R25 제26조] |
-| Lapse assumption shape | Log-linear decay converging to **0.1% at 납입완료** and **0.8%** thereafter, as the FSC/FSS 원칙모형 for 무·저해지 business requires | [REG-R27]; [R14, secondary]; **[std]** (12) |
+| Grace (납입유예기간), 월납 | 「납입기일부터 납입기일이 속하는 달의 **다음 다음달의 마지막 날**까지」; the contract terminates 「유예기간이 끝나는 날의 다음 날」, the insurer having given a 납입최고 of **at least 14 days** inside that window | [S1]; [REG-R25 제26조](#krlib-reg-r25) |
+| Lapse assumption shape | Log-linear decay converging to **0.1% at 납입완료** and **0.8%** thereafter, as the FSC/FSS 원칙모형 for 무·저해지 business requires | [REG-R27]; [R14, secondary](#krlib-long_term_care-r14); **[std]** (12) |
 
 9. Monthly is the dominant retail mode and the mode of every published rate card in the file
    [S1] [S2], which is also why the model runs on a monthly grid. 감독규정 제7-65조제2항
@@ -686,7 +686,7 @@ Footnotes to [std] rows:
 | 간병연금 on death | The stream terminates; where death follows a paid instalment **no 책임준비금 is returned** | [S1] |
 | Surrender after the annuity starts | **Barred** — 「최초 지급사유가 발생한 후에는 이 특약을 해지할 수 없습니다」 | [S1] |
 | **치매진단급여금** (dementia benefit) | Optional rider, **off in the base run**: ₩10,000,000 on the first 최종진단확정 of **경도치매상태 (CDR 1) or worse**, once only across the tier set, subject to a **one-year 보장개시일** and the definition's own **90-day persistence** requirement | [S2] [S4]; tier **[std]** (16) |
-| Payment on non-covered death | The **계약자적립액 at the date of death** plus unearned premium, whereupon the contract terminates — the mandatory 제3보험 design rule of 감독규정 제7-63조제1항제1호, implemented by 표준약관 제22조 | [REG-R17] [REG-R25 제22조]; statutory floor [REG-R50 제736조] |
+| Payment on non-covered death | The **계약자적립액 at the date of death** plus unearned premium, whereupon the contract terminates — the mandatory 제3보험 design rule of 감독규정 제7-63조제1항제1호, implemented by 표준약관 제22조 | [REG-R17] [REG-R25 제22조](#krlib-reg-r25); statutory floor [REG-R50 제736조](#krlib-reg-r50) |
 | General death benefit | **None.** No retrieved life-side long-term-care contract pays a general death benefit; 우체국's main contract pays a **재해사망보험금** only, returning the 책임준비금 on non-accidental death | [S1] [S3]; **[std]** (17) |
 | 만기환급금 | **None** — 「이 상품은 순수보장성보험으로 보험계약 만기시 지급받는 금액(만기환급금)이 없습니다」 | [S3] |
 | Exclusions (면책) | 피보험자의 고의, 보험수익자의 고의, 계약자의 고의 [S1]; on the non-life side additionally 알코올중독·습관성 약품 또는 환각제, 전쟁·외국의 무력행사·혁명·내란·사변·폭동, and 임신·출산·산후기 [S4] | [S1] [S4] |
@@ -757,7 +757,7 @@ Footnotes to [std] rows:
     inferring it. The ABL form is described in "Variations across insurers" and is **not
     modelled**, because a utilisation module's central assumption — a utilisation rate by
     grade, by service type and by duration since certification — is given by no retrieved
-    source. [R4 표3-3] gives 급여이용 수급자 by service type (방문요양 675,070; 복지용구
+    source. [R4 표3-3](#krlib-long_term_care-r4) gives 급여이용 수급자 by service type (방문요양 675,070; 복지용구
     600,141; 노인요양시설 261,051; 주야간보호 213,428; 방문목욕 130,904; 방문간호 22,128;
     단기보호 2,372; 노인요양공동생활가정 18,965; 통합재가 2,347, out of 1,140,725 recipients
     with substantial overlap), which is a national aggregate and not the cross-tabulation the
@@ -808,7 +808,7 @@ Footnotes to [std] rows:
 | Surrender-value form | **해약환급금 미지급형** in the base run; **납입중50%지급형** and **표준형** as switches | [S1] [S2] [S4]; footnote (1) |
 | 지정대리청구인 (designated proxy claimant) | Always designated. 「계약자가 본인을 위한 계약을 체결하는 경우 체신관서는 **원칙적으로 지정대리청구인을 지정하도록 하여야 합니다**」; eligible persons are 「피보험자의 가족관계등록부상의 배우자 또는 3촌 이내의 친족」, up to two, one as 대표대리인 | [S1]; 삼성화재 requires a handwritten or voice-recorded acknowledgement at proposal [S3]. No cash-flow effect; a mandatory operational feature of a product whose claimant usually cannot claim |
 | 장애인전용보험전환특약 | Converts the contract into the 장애인전용 보장성보험 basket where the insured or beneficiary is a 소득세법 장애인, raising the tax credit from 12% to 15% | [S1] [S2]; [REG-R57] |
-| 보험료 자동대출납입 / 보험계약대출 | **Neither is available during the premium-paying period** on the 미지급형 form: there is no surrender value to lend against, so a missed premium lapses the contract outright | [REG-R25 제33조] [REG-R28]; **[std]** (19) |
+| 보험료 자동대출납입 / 보험계약대출 | **Neither is available during the premium-paying period** on the 미지급형 form: there is no surrender value to lend against, so a missed premium lapses the contract outright | [REG-R25 제33조](#krlib-reg-r25) [REG-R28]; **[std]** (19) |
 
 19. 표준약관 제33조 permits a policy loan 「이 계약의 해약환급금 범위 내에서」 but adds
     「그러나 **순수보장성보험 등** 보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」
@@ -829,19 +829,19 @@ Footnotes to [std] rows:
 | The 기본형 comparator | A notional product that **cannot be bought**: 「'기본형'은 보험료 및 해약환급금(환급률 포함)의 비교, 안내만을 위한 상품으로 가입이 불가능하며, '기본형'의 해약환급금은 … **해지율을 적용하지 않고** 계산합니다」 | [S2] |
 | Published progression (ABL, 40세, 주계약 1,000만원, 90세만기, 20년납, 월납, 일반심사형) | 남 환급률 0.0% at 1 / 5 / 10 / 15년, **48.7%** at 20년, 54.4% at 30년, 50.5% at 40년, 0.0% at 50년; 여 0.0% / **51.7%** / 61.1% / 59.6% / 0.0% on the same durations | [S2] |
 | Shape | A **cliff, not a curve** — nil for the whole premium-paying period, a step at 납입완료, a slow rise to a peak around duration 30, and a decline to nil at the 90세 maturity of a pure protection contract | [S2]; and see [REG-R28] |
-| Statutory floor | 해약환급금 = **계약자적립액 − 해약공제액**, floored at zero; the 해약공제액 may not exceed the **표준해약공제액** of 별표 14; the 해약공제기간 is the premium-paying period **capped at 7 years** | [REG-R19 제7-66조제1항] [REG-R20] |
+| Statutory floor | 해약환급금 = **계약자적립액 − 해약공제액**, floored at zero; the 해약공제액 may not exceed the **표준해약공제액** of 별표 14; the 해약공제기간 is the premium-paying period **capped at 7 years** | [REG-R19 제7-66조제1항](#krlib-reg-r19) [REG-R20] |
 | Legal basis of the suppressed form | 감독규정 제7-66조제4항 permits a 순수보장성보험 whose premiums were calculated using a **최적해지율** to pay less than that floor, subject to the 환급률 conditions of 제4항제2호 | [REG-R19]; [REG-R28] |
-| 계약자적립액 | Accrues **monthly before 납입완료 and daily afterwards**, per the 산출방법서, at the 예정이율 of 2.0% | [REG-R19 제7-66조제1항제4호] [REG-R18]; rate [S1] |
-| Unearned premium on termination | 「보험회사는 보험계약이 해지되는 경우 해약환급금에 **미경과 보험료 등을 가산한 금액**을 … 지급하여야 한다」 | [REG-R19 제7-66조제5항] |
+| 계약자적립액 | Accrues **monthly before 납입완료 and daily afterwards**, per the 산출방법서, at the 예정이율 of 2.0% | [REG-R19 제7-66조제1항제4호](#krlib-reg-r19) [REG-R18]; rate [S1] |
+| Unearned premium on termination | 「보험회사는 보험계약이 해지되는 경우 해약환급금에 **미경과 보험료 등을 가산한 금액**을 … 지급하여야 한다」 | [REG-R19 제7-66조제5항](#krlib-reg-r19) |
 | Policyholder dividend | **None** — 무배당 | [S1] [S2] [S3] [S4]; [REG-R12] |
-| 청약철회 (cooling off) | **15 days** from receipt of the 보험증권 and never after **30 days** from the application date; effective on despatch; premiums returned within 3 business days. Out of scope — the model starts from the point cover is in force | [REG-R25 제17조] [REG-R51]; scope **[std]** (20) |
-| 품질보증해지 | Cancellation **within three months of formation** where the 약관 or the policyholder's copy of the application was not delivered, the important content was not explained, or the policyholder did not sign; premiums returned with 보험계약대출이율 interest | [REG-R25 제18조제3항]; [REG-R49 제638조의3제2항] |
-| 실효 (lapse) | The day after the 납입유예기간 ends, the insurer having given a 납입최고 of at least 14 days | [S1]; [REG-R25 제26조] |
-| 부활 (reinstatement) | **Within three years** of termination, where the 해약환급금 has not been drawn — which on the 미지급형 form includes the case where there is none — on payment of arrears with interest within **평균공시이율 + 1%**; the insurer may not refuse because a claim event occurred before termination. **Reinstatement restarts the 보장개시일 clock** | [S1] [REG-R25 제27조]; footnote (21) |
-| 계약 전 알릴 의무 | Rescission barred once **two years** have passed from the 보장개시일 without a claim event, or three years from the contract date, or one month from the insurer's discovery | [REG-R25 제13조·제14조]; [REG-R49 제651조] |
-| 사기에 의한 계약 | Cancellable **within five years of the 보장개시일 and one month of learning of the fraud** | [REG-R25 제15조] |
-| 소멸시효 | Three years on a claim | [REG-R49 제662조] |
-| Death of the insured | Contract terminates; the **계약자적립액** at death is paid | [REG-R17] [REG-R25 제22조] |
+| 청약철회 (cooling off) | **15 days** from receipt of the 보험증권 and never after **30 days** from the application date; effective on despatch; premiums returned within 3 business days. Out of scope — the model starts from the point cover is in force | [REG-R25 제17조](#krlib-reg-r25) [REG-R51]; scope **[std]** (20) |
+| 품질보증해지 | Cancellation **within three months of formation** where the 약관 or the policyholder's copy of the application was not delivered, the important content was not explained, or the policyholder did not sign; premiums returned with 보험계약대출이율 interest | [REG-R25 제18조제3항](#krlib-reg-r25); [REG-R49 제638조의3제2항](#krlib-reg-r49) |
+| 실효 (lapse) | The day after the 납입유예기간 ends, the insurer having given a 납입최고 of at least 14 days | [S1]; [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 (reinstatement) | **Within three years** of termination, where the 해약환급금 has not been drawn — which on the 미지급형 form includes the case where there is none — on payment of arrears with interest within **평균공시이율 + 1%**; the insurer may not refuse because a claim event occurred before termination. **Reinstatement restarts the 보장개시일 clock** | [S1] [REG-R25 제27조](#krlib-reg-r25); footnote (21) |
+| 계약 전 알릴 의무 | Rescission barred once **two years** have passed from the 보장개시일 without a claim event, or three years from the contract date, or one month from the insurer's discovery | [REG-R25 제13조·제14조](#krlib-reg-r25); [REG-R49 제651조](#krlib-reg-r49) |
+| 사기에 의한 계약 | Cancellable **within five years of the 보장개시일 and one month of learning of the fraud** | [REG-R25 제15조](#krlib-reg-r25) |
+| 소멸시효 | Three years on a claim | [REG-R49 제662조](#krlib-reg-r49) |
+| Death of the insured | Contract terminates; the **계약자적립액** at death is paid | [REG-R17] [REG-R25 제22조](#krlib-reg-r25) |
 | Maturity | 90세 계약해당일; **nothing payable** | [S3] |
 
 20. 청약철회 is the 15-day withdrawal right of 금융소비자보호법 제46조 as implemented in
@@ -907,7 +907,7 @@ Four properties of the public limb belong in a model rather than in a footnote.
 
 - **The claim date is the 판정일, and the determination is due within 30 days of the
   application**, extendable by up to a further 30 where a detailed investigation is needed
-  [R3, citing 법 제16조제1항]. On a monthly grid that lag is immaterial, but it interacts with
+  [R3, citing 법 제16조제1항](#krlib-long_term_care-r3). On a monthly grid that lag is immaterial, but it interacts with
   the 보장개시일 arithmetic: the 90-day wait is measured from 계약일 to the **판정일**, and the
   insured's condition may have existed for months before that date. **Whether the award takes
   effect retroactively to the application date is not established by any retrieved
@@ -919,7 +919,7 @@ Four properties of the public limb belong in a model rather than in a footnote.
   2~4등급 **4년** with the lightest two unchanged [R13, a vendor restatement; the decree text
   was not retrieved, so these values are [unverified] and are used only inside a sensitivity]
   [REG-R55]. **107,365** current certifications — 9.2% of the stock — arose from a
-  등급변경신청 [R4 표2-5], so re-grading in both directions plainly happens; no retrieved
+  등급변경신청 [R4 표2-5](#krlib-long_term_care-r4), so re-grading in both directions plainly happens; no retrieved
   source gives a transition matrix.
 - **The composite's benefit is insensitive to all of that, and its annuity is deliberately
   insensitive too.** The 진단급여금 pays once on **first** award and cannot be re-triggered,
@@ -1042,7 +1042,7 @@ premium term is worth a sensitivity: at issue age 65 with a 10-year pay, it bite
 
 **One observed design would need different machinery and is out of scope.** ABL waives on a
 장해지급률 **50% 이상** state arising from one accident [S2] — that is, on the 표준약관's
-장해분류표 percentage scale [REG-R25 부표 3], a **continuous** disability measure with no
+장해분류표 percentage scale [REG-R25 부표 3](#krlib-reg-r25), a **continuous** disability measure with no
 relation to the long-term-care grade. A contract carrying both waiver limbs has two decrements
 into premium cessation, one of which is a scale and not a state.
 
@@ -1183,8 +1183,8 @@ both the award and the pending application.
 The remedies are the chassis's unchanged — rescission barred one month after the insurer
 learns of the breach, or **two years** from the 보장개시일 with no claim event, or **three
 years** from the contract date, with the causation defence of 제14조제4항 and fraud separately
-voidable within **five years** of the 보장개시일 [REG-R25 제13조·제14조·제15조] [REG-R49
-제651조]. One of them earns a mention here that it does not earn on the chassis: **제14조제5항
+voidable within **five years** of the 보장개시일 [REG-R25 제13조·제14조·제15조](#krlib-reg-r25) [REG-R49
+제651조](#krlib-reg-r49). One of them earns a mention here that it does not earn on the chassis: **제14조제5항
 bars termination for non-disclosure of other insurance held**, and the dementia line's 2019
 episode was in part a duplicate-purchase problem that carriers had to answer with a voluntary
 ₩30,000,000 market-wide aggregate limit rather than with a disclosure remedy [R8].
@@ -1200,17 +1200,17 @@ The chassis specifies all five [REG-R25] [REG-R51] [REG-R49]; four points are th
 - **납입유예 and 실효.** The 요약서 states the grace period in its own words — 「납입기일부터
   납입기일이 속하는 달의 **다음 다음달의 마지막 날**까지」, the contract terminating
   「유예기간이 끝나는 날의 다음 날」 [S1] — within which the insurer must give a 납입최고 of
-  **at least 14 days** [REG-R25 제26조]. With no surrender value, no policy loan and therefore
+  **at least 14 days** [REG-R25 제26조](#krlib-reg-r25). With no surrender value, no policy loan and therefore
   no automatic premium loan, there is nothing to break the fall.
 - **부활 restarts the cover, not the calendar.** Reinstatement is available for **three years**
   where the 해약환급금 has not been drawn — including the 무해지 case where there is none — on
   arrears with interest within 평균공시이율 + 1%, and the insurer may not refuse merely because
-  a claim event occurred before termination [REG-R25 제27조] [S1]. But **every 보장개시일 clock
+  a claim event occurred before termination [REG-R25 제27조](#krlib-reg-r25) [S1]. But **every 보장개시일 clock
   restarts from the 부활일** [S1] [S2], and because a pre-보장개시일 certification *voids the
   benefit* rather than merely going unpaid, an insured certified during a lapse and reinstated
   afterwards holds a benefit that can never pay for that certification.
 - **품질보증해지** — three months from formation where the 약관 was not delivered or its
-  important content not explained [REG-R25 제18조제3항] [REG-R49 제638조의3제2항]. Out of
+  important content not explained [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49 제638조의3제2항](#krlib-reg-r49). Out of
   scope, but worth noting that a product whose entire benefit definition is a cross-reference
   to a decree is exactly the kind on which the explanation duty bites hardest.
 - **Expiry, and the annuity that can outlive the contract.** The contract ends on the 90세
@@ -1297,7 +1297,7 @@ refusal where the public benefit is restricted under **법 제29조 (장기요�
   중증무릎관절연골손상, 대상포진, 통풍), which are 10년 만기 자동갱신부 [S2].
 - **급여가정간호치료보장특약**, **CDR 검사지원비 특약** [R17] and the 레켐비 (lecanemab)
   covers appearing in 2024–2025 launches [R17].
-- **청약철회** and the new-business funnel [REG-R25 제17조] [REG-R51].
+- **청약철회** and the new-business funnel [REG-R25 제17조](#krlib-reg-r25) [REG-R51].
 - **The long-term-care acceleration inside `CI_KR_A`** — a critical-illness contract whose
   장기요양상태 trigger is 1·2등급 with its own 90-day 보장개시일. The two products share a
   statutory trigger and nothing else: `CI_KR_A` pays **one** accelerated benefit on the first
@@ -1407,7 +1407,7 @@ The itemised divergences, in descending order of how much they change the model.
 제3보험 licence and its 제4조제3항 deeming provision [REG-R1] [R12], the closed 보험상품 scope
 of 시행령 제1조의2 [REG-R7], the 기초서류 filing regime [REG-R2], the 산출방법서's five
 필수기재사항 and the 현금흐름방식 requirement for a contract longer than three years
-[REG-R18 제7-64조], the surrender-value regime of 제7-66조 through 제7-70조 [REG-R19] with its
+[REG-R18 제7-64조](#krlib-reg-r18), the surrender-value regime of 제7-66조 through 제7-70조 [REG-R19] with its
 별표 14 cap [REG-R20], the expense and commission bounds [REG-R29] [REG-R22], the 표준약관's
 contractual furniture [REG-R25], the 상법 제4편 floor beneath it [REG-R49] [REG-R50], the
 K-ICS and IFRS 17 measurement regimes and the 해약환급금준비금 that sits on top of them
@@ -1491,7 +1491,7 @@ than researchable.
 **Lapse.** The 계리가정 guidance of 2024-11 is the binding constraint and is described in
 footnote (12): a **log-linear** decay to **0.1%** at 납입완료 as the 원칙모형, **0.8%**
 thereafter, with a closed list of permitted alternatives and heavy disclosure attached
-[REG-R27] [R14, secondary]. Applied from the 2024 year-end close.
+[REG-R27] [R14, secondary](#krlib-long_term_care-r14). Applied from the 2024 year-end close.
 
 **Expenses.** No 사업방법서 and no 보험료 및 해약환급금 산출방법서 was retrieved for any
 Korean long-term-care product — [S2] refers to both by name but neither is published — so
@@ -1545,3 +1545,57 @@ not established here** [REG-R55]. The insurer's contractual response to a change
 standard is a rewriting clause and a successor-body fallback [S3] [S4], neither of which is a
 repricing right. A Korean 간병보험 book is short a call on the state's own definition of
 dependency, at a fixed premium, for up to sixty years.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-long_term_care-r1
+[R10]: #krlib-long_term_care-r10
+[R11]: #krlib-long_term_care-r11
+[R12]: #krlib-long_term_care-r12
+[R15]: #krlib-long_term_care-r15
+[R16]: #krlib-long_term_care-r16
+[R17]: #krlib-long_term_care-r17
+[R18]: #krlib-long_term_care-r18
+[R2]: #krlib-long_term_care-r2
+[R3]: #krlib-long_term_care-r3
+[R4]: #krlib-long_term_care-r4
+[R6]: #krlib-long_term_care-r6
+[R7]: #krlib-long_term_care-r7
+[R8]: #krlib-long_term_care-r8
+[R9]: #krlib-long_term_care-r9
+[REG-R1]: #krlib-reg-r1
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R17]: #krlib-reg-r17
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R35]: #krlib-reg-r35
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R42]: #krlib-reg-r42
+[REG-R43]: #krlib-reg-r43
+[REG-R49]: #krlib-reg-r49
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R54]: #krlib-reg-r54
+[REG-R55]: #krlib-reg-r55
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R7]: #krlib-reg-r7
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

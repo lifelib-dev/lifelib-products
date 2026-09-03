@@ -58,7 +58,7 @@ savings chassis.
 - **Projection frequency.** Annual — the model is `Term_KR_A`. Nothing in the composite
   has intra-year contractual structure: the sum assured is level, the premium is level
   within each 보험기간, and there is no account value to credit. The one intra-year
-  mechanic that matters, the 납입최고(독촉)기간 of **14 days** [S2 제27조] [REG-R25 제26조],
+  mechanic that matters, the 납입최고(독촉)기간 of **14 days** [S2 제27조] [REG-R25 제26조](#krlib-reg-r25),
   sits inside a decrement that the annual grid represents as a rate. The monthly-grid
   products in this library — `Cancer_KR_S`, `Medical_KR_S`, `LTC_KR_S`, `Child_KR_S`,
   `VA_KR_S` — run monthly because their benefits or their charges have monthly structure;
@@ -83,7 +83,7 @@ savings chassis.
 - **Age basis [std in nothing — it is contractual].** Every age in this model is
   **보험나이** (*boheom nai*, insurance age): 만나이 with fractions of six months or more
   rounded up, incrementing on the **policy anniversary** and not on the birthday
-  [S2 제22조] [REG-R25 제21조]. Attained age in policy year `t` is `x + t − 1`. The
+  [S2 제22조] [REG-R25 제21조](#krlib-reg-r25). Attained age in policy year `t` is `x + t − 1`. The
   premium table, the mortality table and the model point ages are all on that one basis,
   so **no age shift is applied anywhere** — the opposite of `jplib`, where a 満年齢 issue
   age must be read against a 保険年齢 table and the mismatch has to be corrected. The one
@@ -199,7 +199,7 @@ mid-cycle. And `u(t)`, because Korea's disability state does not pay a benefit �
 Two clocks are contract state the base run tracks in prose and does not monetize: the
 two-year suicide window and the contestability window (2년 generally, 1년 for disease on a
 진단계약, and a 3년 outer limit from the contract date), both running from the 보장개시일
-and **neither restarting on 갱신** [S2 제6조] [S2 제14–15조] [REG-R25 제13–14조]. Only 부활
+and **neither restarting on 갱신** [S2 제6조] [S2 제14–15조] [REG-R25 제13–14조](#krlib-reg-r25). Only 부활
 restarts the suicide window [S2 제28조]. The 사기 취소 window of **5년** [S2 제16조] is the
 real outer limit on unwinding a Korean life policy and is longer than either.
 
@@ -246,15 +246,15 @@ one lever that dominates a 갱신형; the third is the modeler's view.
 | — computation | The accelerated amount discounted over the remaining life expectancy at the **평균공시이율**, less the similarly discounted premiums on it and less any outstanding 보험계약대출 | [S2 제4조제6항] |
 | Suicide exclusion | No death benefit where the 피보험자 intentionally takes their own life within **2년** of the 보장개시일 (or of the 부활 application date); **does not restart on 갱신**; no time bar where the act occurred in a state of 심신상실 | [S1] [S2 제6조] [S3] [S6] [S8] [S10] [S11] [S13] [S17] |
 | Other 면책사유 | Intentional killing by the 보험수익자 (other beneficiaries' shares still paid) or by the 계약자 — **three limbs in total, in every 약관 retrieved** | [S1] [S2 제6조] [S6] [S8] [S10] [S11] [S17] |
-| Gross negligence | **Not an exclusion**, by statute | [REG-R50 제732조의2] [R4] |
+| Gross negligence | **Not an exclusion**, by statute | [REG-R50 제732조의2](#krlib-reg-r50) [R4] |
 | War, aviation, hazardous pursuits | **Absent from every 약관 and 상품요약서 retrieved**; occupational risk is handled at underwriting through the 위험등급 | [S2 제24조제4항] [S3] [S6] |
-| 납입최고(독촉)기간 | **14일** from the demand (7일 where the term is under a year), extended to the next business day; a claim arising within it is paid | [S2 제27조] [REG-R25 제26조] |
-| 부활 | **3년** from termination, expressly including where 「해약환급금이 없는 경우를 포함합니다」, so a 무해지 policy is always eligible; arrears at 「평균공시이율+1% 범위 내」 | [S2 제28조] [REG-R25 제27조] |
+| 납입최고(독촉)기간 | **14일** from the demand (7일 where the term is under a year), extended to the next business day; a claim arising within it is paid | [S2 제27조] [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 | **3년** from termination, expressly including where 「해약환급금이 없는 경우를 포함합니다」, so a 무해지 policy is always eligible; arrears at 「평균공시이율+1% 범위 내」 | [S2 제28조] [REG-R25 제27조](#krlib-reg-r25) |
 | 보험계약대출 / 자동대출납입 | Granted by the 약관 and **inoperative in fact**, there being no surrender value | [S2 제26조·제34조] [REG-R28] |
 | 감액완납 / 연장정기 | **Neither exists** in any retrieved 약관 or 상품요약서 | [S1] [S2] [S6] [S8] [S10] [S11] [S12] |
 | 계약자배당 | **Nil** — 「이 계약은 무배당보험이므로 계약자 배당금이 없습니다」; all 45 disclosed products are 무배당 | [S2 제35조] [S4] |
 | Claim timetable | **3영업일** from complete documents; **10영업일** where investigation is needed; a payment date within **30영업일** except in six named cases; a 가지급보험금 of up to 50% on request | [S2 제9조] |
-| 예금자보호 | 해약환급금 plus 기타지급금 to **₩100,000,000 per person**, and 사고보험금 to a **separate and additional ₩100,000,000**; corporate policyholders not protected | [S3] [S11] [S13] [REG-R52 제18조제7항] [REG-R32] |
+| 예금자보호 | 해약환급금 plus 기타지급금 to **₩100,000,000 per person**, and 사고보험금 to a **separate and additional ₩100,000,000**; corporate policyholders not protected | [S3] [S11] [S13] [REG-R52 제18조제7항](#krlib-reg-r52) [REG-R32] |
 
 ### (b) Insurer-discretionary current elements
 
@@ -773,7 +773,7 @@ all for term business, and renewal take-up is not published for any product.
 - **Base lapse [std].** The prescribed log-linear curve between disclosed endpoints, above.
   `lapse_be_factor = 1.0` sets the best estimate equal to the pricing basis, which is a
   choice and a questionable one — a 무해지 pricing rate is deliberately low by regulatory
-  design [REG-R19 제7-66조제4항] — and the only Korean experience datum in the set points at
+  design [REG-R19 제7-66조제4항](#krlib-reg-r19) — and the only Korean experience datum in the set points at
   a **materially higher** true rate [R18]. Channel is not represented, and the disclosure
   shows it should be: nine of the nineteen retail rows are CM (online) products [S4], and
   direct-sold and agent-sold persistency are not the same. No split is published.
@@ -817,10 +817,10 @@ all for term business, and renewal take-up is not published for any product.
 - **청약철회.** Out of scope: the projection begins with cover in force and the statutory
   population — 15일 from receipt of the 보험증권 and never more than 30일 from application,
   45일 for a policyholder aged 65 or over contracting by telephone — already out
-  [S2 제18조] [REG-R25 제17조] [REG-R51].
+  [S2 제18조] [REG-R25 제17조](#krlib-reg-r25) [REG-R51].
 - **위법계약의 해지.** Not modelled and **not nil**. It returns the whole **계약자적립액**
   with no surrender charge, within 1년 of learning of a selling-rule breach and 5년 of the
-  contract date [S2 제30조의2] [REG-R25 제29조의2]. On a form whose ordinary surrender pays
+  contract date [S2 제30조의2] [REG-R25 제29조의2](#krlib-reg-r25). On a form whose ordinary surrender pays
   nothing this is worth the entire value of the contract to the policyholder who invokes
   it. No incidence of mis-selling findings is published, so it cannot be sized; it is stated
   because a Korean model treating the surrender value as uniformly nil would be wrong about
@@ -1308,7 +1308,7 @@ because two regimes commenced together and a third, purely Korean, layer sits on
   cash flow of the insurer and the model does not carry it; it is the reason a Korean buyer's
   effective price is not the price on the rate card.
 - **On insurer failure**, 해약환급금 plus 기타지급금 are protected to **₩100,000,000 per
-  person** and 사고보험금 to a **separate and additional ₩100,000,000** [REG-R52 제18조제7항]
+  person** and 사고보험금 to a **separate and additional ₩100,000,000** [REG-R52 제18조제7항](#krlib-reg-r52)
   [REG-R32] [S3] [S11] [S13]. On this product the first limb is worth nothing, the surrender
   value being nil, and the second is worth the whole benefit up to the cap. **Corporate
   policyholders are not protected at all** — which matters to the 경영인정기보험 form this
@@ -1480,7 +1480,7 @@ each is checkable against the shipped model.
   expiry, not a 실효, and there is nothing to reinstate.
 - **Read the tables at 보험나이 and at nothing else.** 보험나이 is 만나이 with fractions of
   six months or more rounded up, incrementing on the **policy anniversary** [S2 제22조]
-  [REG-R25 제21조], and the premium grid, the mortality table and the model point ages are
+  [REG-R25 제21조](#krlib-reg-r25), and the premium grid, the mortality table and the model point ages are
   all on that basis. Reading the anchor cell at 만나이 — one year of ageing early — cuts
   total death claims from ₩2,071,060.31 to **₩1,903,445.06**, an **8.1% understatement**,
   and flatters `net_cf` by more than the entire answer. Unlike `jplib`, **no shift is
@@ -1495,3 +1495,39 @@ each is checkable against the shipped model.
   that they sum with the expense and commission columns to `net_cf`, and `check_net_cf()`
   re-derives that identity **from the published frame**. An aggregate column beside the
   splits double-counts the whole benefit outgo.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R18]: #krlib-term_life-r18
+[R19]: #krlib-term_life-r19
+[R20]: #krlib-term_life-r20
+[R4]: #krlib-term_life-r4
+[R9]: #krlib-term_life-r9
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R14]: #krlib-reg-r14
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R23]: #krlib-reg-r23
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R3]: #krlib-reg-r3
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R48]: #krlib-reg-r48
+[REG-R5]: #krlib-reg-r5
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R8]: #krlib-reg-r8
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

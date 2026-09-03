@@ -69,7 +69,7 @@ governs all ten `krlib` products** [REG-R19].
   고시 and did not extract, so the annual step is a stated approximation rather than a
   reproduction [REG-R19]. Two consequences travel with it: the 14-day
   **납입최고(독촉)기간** collapses into the anniversary, so a lapse is dated to the policy
-  year [S5 제25조] [REG-R25 제26조]; and **미경과보험료**, required on termination by
+  year [S5 제25조] [REG-R25 제26조](#krlib-reg-r25); and **미경과보험료**, required on termination by
   제7-66조제5항 [REG-R19], is not added, because on an annual grid with premiums in advance
   and surrenders at the anniversary there is none **[std]**.
 - **Timing conventions [std].** Premium at the **start** of each policy year, in advance,
@@ -81,7 +81,7 @@ governs all ten `krlib` products** [REG-R19].
 - **Age basis: 보험나이.** 보험나이 (*boheom nai*, insurance age) is the 만 나이 at the
   계약일 with a fraction under six months discarded and six months or more rounded up, and
   it increments on each **계약해당일** rather than on the birthday [S5 제21조] [REG-R25
-  제21조]. An annual grid stepped on anniversaries therefore ages the policy correctly by
+  제21조](#krlib-reg-r25). An annual grid stepped on anniversaries therefore ages the policy correctly by
   construction, and the attained age in year `t` is `x + t − 1` exactly. **The table does
   not share that basis and no conversion is applied [std]:** the statistics
   `mort_table.csv` is calibrated against [REG-R38] are on **만나이**, and no public mapping
@@ -142,7 +142,7 @@ governs all ten `krlib` products** [REG-R19].
 
 **There is no issue-date attribute**, and that is a product fact rather than an omission:
 the projection runs on policy years, 보험나이 is fixed at the 계약일 and increments on the
-계약해당일 rather than on the birthday [S5 제21조] [REG-R25 제21조], and the one intra-year
+계약해당일 rather than on the birthday [S5 제21조] [REG-R25 제21조](#krlib-reg-r25), and the one intra-year
 date that matters is the 납입완료일, an anniversary by construction.
 
 `prem_term = 0` denotes **전기납 (종신납)**: `m` becomes the whole projection, no 납입완료
@@ -211,7 +211,7 @@ accrues everything, so it cannot be represented by scaling the premium; and on a
 form it is **the only route to the cliff the policyholder does not have to fund**.
 
 **`pols_reinstate` makes lapse non-terminal**, because the 약관 counts the surrender value
-as undrawn 「… 또는 **해지환급금이 없는 경우를 포함**합니다」 [S5 제26조] [REG-R25 제27조] —
+as undrawn 「… 또는 **해지환급금이 없는 경우를 포함**합니다」 [S5 제26조] [REG-R25 제27조](#krlib-reg-r25) —
 so **a 무해지 contract is always reinstatable within three years.** Treating every exit as
 terminal understates later-duration in force; the parameter exists and is zero in the base
 run.
@@ -226,7 +226,7 @@ benefit is gross. Each module is exercised on at least one shipped model point.
 
 Three classes, kept apart on purpose. The split is not a modelling nicety in Korea: the
 **보험가격지수** exists precisely because a Korean consumer cannot see the pricing basis
-[REG-R22 제7-45조제7항], the 산출방법서 that holds the guaranteed elements is a filed but
+[REG-R22 제7-45조제7항](#krlib-reg-r22), the 산출방법서 that holds the guaranteed elements is a filed but
 **unpublished** 기초서류 [REG-R2], and the November 2024 계리가정 decision draws a hard line
 between an assumption an insurer may choose and one the supervisor now sets [REG-R27].
 
@@ -234,29 +234,29 @@ between an assumption an insurer may choose and one the supervisor now sets [REG
 
 | Input | Value | Basis |
 |---|---|---|
-| 사망보험금 | `SA`, **평준형**, level for life, payable on death at any time, net of `L(t)` | [S5 제34조] [S6] [REG-R25 제33조] |
+| 사망보험금 | `SA`, **평준형**, level for life, payable on death at any time, net of `L(t)` | [S5 제34조] [S6] [REG-R25 제33조](#krlib-reg-r25) |
 | 보험기간 | **종신** — no expiry, no 만기보험금, no survival benefit at any age | [S1] [S2] [S3] [S4] [S6] [S8] |
 | Premium `G` | Level and guaranteed for years 1 … m; **none thereafter** | [S2] [S8] |
 | Severe-disability benefit | **None.** Korea puts no 고도장해보험금 at the sum assured on this chassis | [S2] [S3] [S6] [S8] |
-| 보험료 납입면제 | On a **50% 장해지급률** aggregated across body parts from one cause, accident or disease; premiums cease and are **deemed paid** to the end of 납입기간 for benefit *and* surrender-value purposes | [S2] [S3] [S6] [S8] [REG-R25 부표 3] |
-| 해약환급금 identity | **계약자적립액 − 해약공제액**, floored at zero — a negative difference 「이를 영(零)으로 처리한다」 | [S2] [S8] [REG-R19 제7-66조제1항제1호] |
+| 보험료 납입면제 | On a **50% 장해지급률** aggregated across body parts from one cause, accident or disease; premiums cease and are **deemed paid** to the end of 납입기간 for benefit *and* surrender-value purposes | [S2] [S3] [S6] [S8] [REG-R25 부표 3](#krlib-reg-r25) |
+| 해약환급금 identity | **계약자적립액 − 해약공제액**, floored at zero — a negative difference 「이를 영(零)으로 처리한다」 | [S2] [S8] [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
 | 해약공제액 | 미상각신계약비, 「이미 지출한 계약체결비용 해당액으로서 산출방법서에서 정한 방법에 따라 계산한 금액」, **capped at the 표준해약공제액** | [S5 제2조] [S8] [R6] [REG-R19] [REG-R20] |
-| 표준해약공제액 | **연납순보험료 × 5% × 해약공제계수 + 보험가입금액 × 10/1000**; for a 보장성보험 the 계수 is the 보험기간 capped at **20**, and the 연납순보험료 is recomputed on a **20년납** footing for a term of 20 years or more | [REG-R20 별표 14 주2·주3] |
-| 보험가입금액 entering the cap | The 일반사망보험금, taken **before any 체증 or 체감** | [REG-R21 별표 15 제3호·제8호] |
-| 해약공제기간 | **납입기간 or 신계약비 부가기간, capped at 7년** | [REG-R19 제7-66조제1항제2호] |
+| 표준해약공제액 | **연납순보험료 × 5% × 해약공제계수 + 보험가입금액 × 10/1000**; for a 보장성보험 the 계수 is the 보험기간 capped at **20**, and the 연납순보험료 is recomputed on a **20년납** footing for a term of 20 years or more | [REG-R20 별표 14 주2·주3](#krlib-reg-r20) |
+| 보험가입금액 entering the cap | The 일반사망보험금, taken **before any 체증 or 체감** | [REG-R21 별표 15 제3호·제8호](#krlib-reg-r21) |
+| 해약공제기간 | **납입기간 or 신계약비 부가기간, capped at 7년** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | Suppression factor `k` | Applies for elapsed duration **< 납입기간**; `k = 1` from 납입완료 | [S1] [S4] [S6] [S7] [S8] |
 | What `k` multiplies | The **표준형 twin's** 해약환급금 — a non-marketed comparison product with identical benefits priced **with the lapse assumption switched off** | [S1] [S2] [S3] [S4] |
 | Post-cliff equality | From 납입완료 the suppressed and 표준형 values are **identical** in every published grid | [S1] [S4] [S6] |
 | Clawback | Where premiums falling in the suppressed period were unpaid, they must be made good before the post-cliff basis applies | [S2] [S3] [S8] |
 | Waived premiums | Count as **paid** for the surrender-value computation | [S2] [S3] [S6] [S8] |
-| 보험계약대출 limit | Within the 해약환급금 net of existing principal and interest, 「그러나, 순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수 있습니다」 | [S5 제34조] [REG-R25 제33조] |
-| Loan settlement | Deducted from any benefit, from the 해약환급금, and **즉시** on 해지 | [S5 제34조] [REG-R25 제26조·제33조] |
+| 보험계약대출 limit | Within the 해약환급금 net of existing principal and interest, 「그러나, 순수보장성보험 등 보험상품의 종류에 따라 보험계약대출이 제한될 수 있습니다」 | [S5 제34조] [REG-R25 제33조](#krlib-reg-r25) |
+| Loan settlement | Deducted from any benefit, from the 해약환급금, and **즉시** on 해지 | [S5 제34조] [REG-R25 제26조·제33조](#krlib-reg-r25) |
 | 감액 | The reduced portion is **treated as surrendered** and pays the corresponding 해약환급금 | [S5 제20조] [REG-R25] |
-| 납입최고(독촉)기간 | **14일 이상** from the day after the 계약해당일; the contract is 해지 the day after it ends | [S5 제25조] [REG-R25 제26조] |
-| 부활 | Within **3년** of 해지, on fresh 고지 and arrears with interest; available **even where the 해약환급금 was nil** | [S5 제26조] [REG-R25 제27조] |
-| 면책 — suicide | No death benefit where the insured takes their own life within **2년** of the 계약일; zero incidence modelled | [S1] [S3] [S6] [S7]; [REG-R49 제659조] [REG-R50 제732조의2] |
-| Refused claim | The insurer must still pay 「보험수익자를 위하여 적립한 금액」 — in practice the 계약자적립액 | [REG-R50 제736조] [REG-R25 제22조] |
-| Minimum death benefit | At least cumulative premiums paid, except where the 납입기간 ends at age 80 or below — which the anchor (완납 at 보험나이 60) satisfies | [REG-R16 제7-60조제9호] |
+| 납입최고(독촉)기간 | **14일 이상** from the day after the 계약해당일; the contract is 해지 the day after it ends | [S5 제25조] [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 | Within **3년** of 해지, on fresh 고지 and arrears with interest; available **even where the 해약환급금 was nil** | [S5 제26조] [REG-R25 제27조](#krlib-reg-r25) |
+| 면책 — suicide | No death benefit where the insured takes their own life within **2년** of the 계약일; zero incidence modelled | [S1] [S3] [S6] [S7]; [REG-R49 제659조](#krlib-reg-r49) [REG-R50 제732조의2](#krlib-reg-r50) |
+| Refused claim | The insurer must still pay 「보험수익자를 위하여 적립한 금액」 — in practice the 계약자적립액 | [REG-R50 제736조](#krlib-reg-r50) [REG-R25 제22조](#krlib-reg-r25) |
+| Minimum death benefit | At least cumulative premiums paid, except where the 납입기간 ends at age 80 or below — which the anchor (완납 at 보험나이 60) satisfies | [REG-R16 제7-60조제9호](#krlib-reg-r16) |
 
 **The suppression is a regulatory dispensation, not a contractual gimmick**, and the
 condition attached to it is what makes the lapse vector a first-class model input.
@@ -281,13 +281,13 @@ filing [REG-R2].
 |---|---|---|
 | 예정이율 `i` (`prem_int_rate`) | **2.50% p.a., 연복리, flat** | Disclosed range 2.25%–2.75% at six carrier documents [S1] [S2] [S5] [S6] [S7] [S8]; centre **[std]**, and equal to the 2026 평균공시이율 [REG-R48] |
 | 최저보증이율 (`min_guar_rate`) | **0.75% p.a.**, floor on a `linked` point | Stated verbatim in the one full 약관: 「최저보증이율은 연복리 0.75%를 적용」 [S5 제32조] |
-| 공시이율 (`decl_rate`) | **2.75%** on the one `linked` model point, held flat | Mechanism sourced [S5 제32조] [REG-R18 제7-65조제3항] [REG-R24 별표 27]; the level **[std]** |
-| Accrual rate `i_acc` (`acc_int_rate`) | `i` on a 금리확정형 point; `max(공시이율, 최저보증이율)` on a 금리연동형 one | [REG-R16 제7-60조제10호] [REG-R18] |
+| 공시이율 (`decl_rate`) | **2.75%** on the one `linked` model point, held flat | Mechanism sourced [S5 제32조] [REG-R18 제7-65조제3항](#krlib-reg-r18) [REG-R24 별표 27](#krlib-reg-r24); the level **[std]** |
+| Accrual rate `i_acc` (`acc_int_rate`) | `i` on a 금리확정형 point; `max(공시이율, 최저보증이율)` on a 금리연동형 one | [REG-R16 제7-60조제10호](#krlib-reg-r16) [REG-R18] |
 | 보험계약대출이율 `i_L` | **예정이율 + 1.5% = 4.00% p.a.**, compound, flat, and a **vintage** rate | Formula at three carriers independently [S9] [S11] [S13]; level **[std]** |
 | 보험계약대출 limit | **80%** of the *payable* 해약환급금 | Observed 50%–85% [S11] and 50%–80% [S13]; pick **[std]** |
 | Gross-to-net loading `θ` (`prem_loading`) | **1.4642** | **[std]**, calibrated once so the 표준형 anchor reproduces 12 × ₩257,050 [S4] |
 | Acquisition-cost ratio `a` (`acq_cost_ratio`) | **1.00** — 계약체결비용 set **at** the 표준해약공제액 | **[std]**, bounded by the 1.4 × tolerance of 제7-45조제11항 [REG-R22] |
-| First-year commission share `c₀` (`comm_init_share`) | **0.65** of 계약체결비용, capped at one year's premium | Cap sourced [REG-R22 제4-32조제5항]; share **[std]** |
+| First-year commission share `c₀` (`comm_init_share`) | **0.65** of 계약체결비용, capped at one year's premium | Cap sourced [REG-R22 제4-32조제5항](#krlib-reg-r22); share **[std]** |
 | Renewal commission `c_r` | **3.0%** of premium, years 2 … m | **[std]** |
 | 계약관리비용 per policy `e` | **₩60,000** p.a. for life, inflating at 2.0% | **[std]** |
 | 유지관련비용 on premium | **2.0%** of premium collected | **[std]** |
@@ -529,7 +529,7 @@ mechanically higher. Nothing is credited that the 표준형 does not get; the **
 smaller**.
 
 **It is bounded below by nothing.** The account may be smaller than the surrender charge, in
-which case the 해약환급금 is zero and never negative [REG-R19 제7-66조제1항제1호].
+which case the 해약환급금 is zero and never negative [REG-R19 제7-66조제1항제1호](#krlib-reg-r19).
 
 Two identities are asserted rather than assumed. `check_pol_val_roll_fwd()` re-derives the
 recursion residual at every `t`. `check_pol_val_prosp()` compares the forward account
@@ -550,7 +550,7 @@ wrong rate.
 공시기준이율 ± 조정률, the 공시기준이율 being
 `외부지표금리 × α + 운용자산이익률 × (1 − α)` on a three-month weighted moving average with
 **α capped at 60%**, uniform across a product class of which 보장성보험(종신보험) is one, and
-floored by a mandatory 최저보증이율 [REG-R18] [REG-R24 별표 27] [REG-R23] [REG-R16]. The α
+floored by a mandatory 최저보증이율 [REG-R18] [REG-R24 별표 27](#krlib-reg-r24) [REG-R23] [REG-R16]. The α
 cap is the modelling point: a Korean declared rate is majority-weighted to the insurer's
 **own realised** 운용자산이익률, not to market yields, which is why `decl_rate` is a
 slow-moving [std] scalar and not a function of a yield curve.
@@ -561,7 +561,7 @@ slow-moving [std] scalar and not a function of a yield curve.
 
     표준해약공제액 = 연납순보험료 × 5% × 해약공제계수 + 보장성보험의 보험가입금액 × 10/1000
 
-For a 보장성보험 the 해약공제계수 is the **보험기간 capped at 20 years** [REG-R20 주2], and
+For a 보장성보험 the 해약공제계수 is the **보험기간 capped at 20 years** [REG-R20 주2](#krlib-reg-r20), and
 a 종신 contract's 보험기간 always exceeds 20, so the coefficient is 20 and 5% × 20 = 1.0.
 For this product the formula therefore collapses to **one year's net premium plus one per
 cent of the sum assured**:
@@ -569,7 +569,7 @@ cent of the sum assured**:
     SC*  =  0.05 * 20 * P20  +  0.01 * SA  =  P20 + 0.01 * SA
 
 with `SA` taken as the 일반사망보험금 **before any 체증 or 체감** [REG-R21 별표 15 제3호,
-제8호]. The *level* of the charge is set at the cap **[std]**, and only its *shape between
+제8호](#krlib-reg-r21). The *level* of the charge is set at the cap **[std]**, and only its *shape between
 the ends* is standardized — a straight line to `n_sc`:
 
     SC(t) = SC* * max(0, 1 - t / n_sc) * sa_factor(t),      n_sc = min(m, 7)
@@ -620,7 +620,7 @@ were retrieved from different documents and no third document reconciles them.
 limit and the 감액 proceeds are computed off `CV(t)`, so during 납입기간 both are `k` times
 their 표준형 size — and on a **무해지** contract the policy loan **does not exist at all**,
 which the FSS said in terms in its 2019 alert and the 표준약관 repeats as 「순수보장성보험 등
-보험상품의 종류에 따라 보험계약대출이 제한될 수 있습니다」 [R4] [REG-R28] [REG-R25 제33조].
+보험상품의 종류에 따라 보험계약대출이 제한될 수 있습니다」 [R4] [REG-R28] [REG-R25 제33조](#krlib-reg-r25).
 `point_id = 3` is that case and draws **exactly nothing**.
 
 ### 유지보너스, and the lapse spike that is not optional
@@ -659,7 +659,7 @@ one, at three carriers independently [S9] [S11] [S13] — so one carrier's live 
 **연 3.5% ~ 10.5%** across its in-force book [S11]. **The limit is a fraction of the
 *payable* value**, so on a suppressed form it is suppressed too. **There is no
 early-repayment fee** [S11] [S13]. And **the loan is settled first on every exit**, 즉시 on
-해지 [S5 제34조] [REG-R25 제26조]: Korea has **no equivalent of the Japanese
+해지 [S5 제34조] [REG-R25 제26조](#krlib-reg-r25): Korea has **no equivalent of the Japanese
 loan-excess-lapse notice**, so the balance never terminates the contract — it absorbs the
 payout instead.
 
@@ -719,7 +719,7 @@ of a ₩1,000,000,000 cover at duration 15.
 The substantive effect is not the count but the **payment**: a reinstated policyholder is
 not paid a surrender value, because 부활 requires that the 해약환급금 has not been drawn and
 the 약관 expressly includes the case where there was none to draw [S5 제26조] [REG-R25
-제27조]. A one-year lag is a **[std]** simplification of a three-year window, and no arrears
+제27조](#krlib-reg-r25). A one-year lag is a **[std]** simplification of a three-year window, and no arrears
 cash flow is modelled: on an annual grid with premiums in advance there is no premium
 instalment falling inside a one-year gap. `point_id = 10` runs it at 20%.
 
@@ -849,7 +849,7 @@ absence became a systemic problem.
 - **Lapse is behavioural and terminal only by choice.** With no APL in evidence [S5]
   [REG-R25], a Korean policyholder who misses the 14-day 납입최고기간 loses the contract
   whatever its cash value. But 부활 within three years is available **even where the
-  해약환급금 was nil** [S5 제26조] [REG-R25 제27조], so the exit is not terminal in the
+  해약환급금 was nil** [S5 제26조] [REG-R25 제27조](#krlib-reg-r25), so the exit is not terminal in the
   contract. `reinstate_rate` is zero in the base run, which **understates** later-duration
   in force and therefore both premium income and claims. The bias is stated rather than
   corrected because no retrieved source gives a Korean reinstatement rate.
@@ -870,7 +870,7 @@ absence became a systemic problem.
   [S1] [S2] [S3] [S5] [S6].
 - **면책 incidence is zero in the base run [std], and refusal is not forfeiture.** On an
   면책사유 the insurer must still pay 「보험수익자를 위하여 적립한 금액」, in practice the
-  계약자적립액 [REG-R50 제736조] [REG-R25 제22조]. The composite carries no exclusion
+  계약자적립액 [REG-R50 제736조](#krlib-reg-r50) [REG-R25 제22조](#krlib-reg-r25). The composite carries no exclusion
   incidence, so nothing is deducted; **treating an exclusion as a zero-payment event
   overstates the insurer's position** by the account, not by the claim.
 
@@ -1451,7 +1451,7 @@ In rough order of leverage on this product:
    a UK or US habit of 3% would compound to 9.18. No published Korean expense basis anchors
    either. **부활 is likewise not modelled**, so later-duration in force is understated —
    Korean lapse is genuinely non-terminal, including on a 무해지 contract where there was no
-   value to draw [S5 제26조] [REG-R25 제27조].
+   value to draw [S5 제26조] [REG-R25 제27조](#krlib-reg-r25).
 9. **The absence of an APL is [unverified].** If a 자동대출납입 article is found in the
    생명보험 표준약관 in a later research pass, the lapse mechanics of this chassis change
    **in kind**: lapse becomes a funded event with a continuation test, as in `jplib`, and
@@ -1489,7 +1489,7 @@ and each is either asserted by a `check_*()` cells or by a test in
   catch the confusion. Test it on the 7년납 and 10년납 points, where reusing `P` in the cap
   formula overstates the statutory surrender charge.
 - **The 보험가입금액 entering the cap is taken before any 체증 or 체감** [REG-R21 별표 15
-  제8호], and is the 일반사망보험금 for a 보장성보험 covering 일반사망 [REG-R21 제3호]. On a
+  제8호](#krlib-reg-r21), and is the 일반사망보험금 for a 보장성보험 covering 일반사망 [REG-R21 제3호](#krlib-reg-r21). On a
   design with a 전환나이 step this is not the benefit in force at duration `t`.
 - **Premiums stop at `m`; nothing else does.** At `t = 21` premium and renewal commission go
   to zero in the same row while maintenance expense, death claims and surrender benefits all
@@ -1499,7 +1499,7 @@ and each is either asserted by a `check_*()` cells or by a test in
   keeps the premium-related expense running on zero premium.
 - **The policy loan does not exist on a 무해지 contract during 납입기간.** There is no value
   to lend against, so `loan_draw` must be **exactly zero** even at `loan_util = 1.0` — which
-  is `point_id = 3` [R4] [REG-R28] [REG-R25 제33조]. A model that computes the limit off
+  is `point_id = 3` [R4] [REG-R28] [REG-R25 제33조](#krlib-reg-r25). A model that computes the limit off
   `cv_std_pp` instead of `cv_pp` lends against a value the policyholder cannot claim, and on
   a 저해지 contract lends exactly twice too much.
 - **Everything is floored at zero, and on this product the floor bites.** `W(t) =
@@ -1542,7 +1542,7 @@ and each is either asserted by a `check_*()` cells or by a test in
   partial surrender paying `k W(t)` during 납입기간 and nothing at all on a 무해지 contract
   [S5 제20조].
 - **A refused claim is not a zero payment.** 상법 제736조 obliges the insurer to pay 「보험
-  수익자를 위하여 적립한 금액」, in practice the 계약자적립액 [REG-R50] [REG-R25 제22조].
+  수익자를 위하여 적립한 금액」, in practice the 계약자적립액 [REG-R50] [REG-R25 제22조](#krlib-reg-r25).
   Modelling an exclusion as forfeiture overstates the insurer's position by the account, not
   by the claim. The composite carries no exclusion incidence, so nothing is deducted.
 - **There is no 고도장해 benefit to add.** Korea puts no severe-disability acceleration at
@@ -1557,3 +1557,41 @@ and each is either asserted by a `check_*()` cells or by a test in
   제7-66조제4항제2호 나목 as recorded in the 고시 [REG-R19] and contradicts the press-release
   reading. Both statements are recorded as they stand and **neither is resolved here**; a
   model that asserts the press-release form will fail on a legal design.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R3]: #krlib-whole_life-r3
+[R4]: #krlib-whole_life-r4
+[R6]: #krlib-whole_life-r6
+[R7]: #krlib-whole_life-r7
+[R8]: #krlib-whole_life-r8
+[REG-R10]: #krlib-reg-r10
+[REG-R11]: #krlib-reg-r11
+[REG-R12]: #krlib-reg-r12
+[REG-R13]: #krlib-reg-r13
+[REG-R14]: #krlib-reg-r14
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R3]: #krlib-reg-r3
+[REG-R30]: #krlib-reg-r30
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R48]: #krlib-reg-r48
+[REG-R5]: #krlib-reg-r5
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R60]: #krlib-reg-r60
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

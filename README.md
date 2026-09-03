@@ -14,16 +14,17 @@ organized by product type and country.
 **Status:** Draft, 2026-08-30. Current coverage: United States (6 individual life and
 6 individual annuity product types), United Kingdom (7 product types, including pension
 annuities), Japan (9 product types, three of them 第三分野 health products), France
-(9 product types, five of them built on *assurance vie*) and Germany (10 product types,
-organised on the *Drei-Schichten-Modell*).
-**All forty-seven products ship an executable reference model** in
+(9 product types, five of them built on *assurance vie*), Germany (10 product types,
+organised on the *Drei-Schichten-Modell*) and Korea (10 product types, four of them
+제3보험 third-sector products).
+**All fifty-seven products ship an executable reference model** in
 `<library>/products/<product>/`, beside the documents that specify it — twelve in
 `lifelib/libraries/uslib/`, seven in `lifelib/libraries/uklib/`, nine in
-`lifelib/libraries/jplib/`, nine in `lifelib/libraries/frlib/` and ten in
-`lifelib/libraries/delib/`, each one reproducing its own technical notes' worked example,
-asserted cell by cell. All five are lifelib libraries in shape: they sit at the path
-lifelib puts its libraries on, they render as Sphinx page trees, and every regulatory
-citation in them is a working link.
+`lifelib/libraries/jplib/`, nine in `lifelib/libraries/frlib/`, ten in
+`lifelib/libraries/delib/` and ten in `lifelib/libraries/krlib/`, each one reproducing its
+own technical notes' worked example, asserted cell by cell. All six are lifelib libraries
+in shape: they sit at the path lifelib puts its libraries on, they render as Sphinx page
+trees, and every regulatory citation in them is a working link.
 
 ---
 
@@ -31,7 +32,7 @@ citation in them is a working link.
 
 ```
 lifelib/libraries/                   the path lifelib keeps its libraries on, and so does this
-  <library>/                         uslib/, uklib/, jplib/, frlib/, delib/ — named for the lifelib library each becomes
+  <library>/                         uslib/, uklib/, jplib/, frlib/, delib/, krlib/ — named for the lifelib library each becomes
     index.md                         library overview, the models, citation conventions
     products/
       <product>/                     each product's documents and its executable model, together
@@ -52,7 +53,7 @@ The Sphinx pages are **not** in the library: `doc/source/libraries/<lib>/` holds
 from the models' own docstrings. They are plumbing, and a `lifelib.create()` copy is better
 without them.
 
-All five libraries are in this shape and ready to merge into lifelib — see
+All six libraries are in this shape and ready to merge into lifelib — see
 [USLIB-MERGE-PLAN.md](USLIB-MERGE-PLAN.md) for the design and [MERGE.md](MERGE.md) for the
 lifelib-side checklist.
 
@@ -75,12 +76,12 @@ than reported:
 python tools/doccheck.py
 ```
 
-It should report zero across the five libraries. Run the model suites with:
+It should report zero across the six libraries. Run the model suites with:
 
 ```bash
 python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests \
     lifelib/libraries/jplib/tests lifelib/libraries/frlib/tests \
-    lifelib/libraries/delib/tests -q
+    lifelib/libraries/delib/tests lifelib/libraries/krlib/tests -q
 ```
 
 - **`product-spec.md`** defines a *representative* product: a standardized composite
@@ -130,9 +131,12 @@ Each country section is built in three passes:
    des assurances on Légifrance, the ACPR, the *arrêtés* homologating TH 00-02 / TF 00-02
    and TGH05 / TGF05, INSEE, DREES / CNSA and France Assureurs for France; and the VAG,
    VVG, DeckRV and MindZV, the BaFin *Merkblätter*, the DAV table families, the *Drei-Schichten*
-   provisions of the EStG and the AltZertG, and GDV and Destatis statistics for Germany.
-   Everything lands in `_research/` with per-source fact extraction and explicit
-   fetch-failure notes.
+   provisions of the EStG and the AltZertG, and GDV and Destatis statistics for Germany;
+   and 보험업법, 상법 제4편 and the 보험업감독규정 별표 on 국가법령정보센터, the 금융위원회
+   and 금융감독원, 보험개발원's 경험생명표 and 참조순보험요율, the 생명보험협회 and
+   손해보험협회 공시실, 국가암등록통계, and 국민건강보험공단's 건강보험 and 노인장기요양보험
+   통계연보 for Korea. Everything lands in `_research/` with per-source fact extraction
+   and explicit fetch-failure notes.
 2. **Drafting** — write the product spec and technical notes from the research files
    under the citation discipline above, choosing and justifying a representative
    design where insurers differ.
@@ -175,8 +179,9 @@ acted on, since a model change moves the worked example and its golden tests wit
 | [Japan](lifelib/libraries/jplib/index.md) | **Protection:** 定期保険 term life, 収入保障保険 survivor income term<br>**Savings:** 終身保険 whole life, 養老保険 endowment (with 学資保険), 外貨建終身保険 FX whole life<br>**第三分野:** 医療保険 medical, がん保険 cancer, 介護保険 nursing care<br>**Annuity:** 個人年金保険 individual annuity | specs, technical notes and all 9 [models](lifelib/libraries/jplib/index.md#the-models); builds as a library |
 | [France](lifelib/libraries/frlib/index.md) | **Épargne:** assurance vie fonds en euros, assurance vie unités de compte, eurocroissance<br>**Retraite:** PER assurantiel, rente viagère immédiate<br>**Prévoyance:** temporaire décès, assurance emprunteur, contrat obsèques, dépendance | specs, technical notes and all 9 [models](lifelib/libraries/frlib/index.md#the-models); builds as a library |
 | [Germany](lifelib/libraries/delib/index.md) | **Schicht 3:** kapitalbildende Lebensversicherung, klassische Rentenversicherung, fondsgebundene Rentenversicherung, Indexpolice<br>**Geförderte Vorsorge:** Basisrente (Rürup), Riester-Rente<br>**Rentenbezug und Biometrie:** Sofortrente, Risikolebensversicherung, Berufsunfähigkeitsversicherung, Pflegerentenversicherung | specs, technical notes and all 10 [models](lifelib/libraries/delib/index.md#the-models); builds as a library |
+| [Korea](lifelib/libraries/krlib/index.md) | **보장성:** 종신보험 whole life, 정기보험 term life, CI보험 critical illness<br>**제3보험:** 실손의료보험 indemnity medical, 암보험 cancer, 간병보험 long-term care, 어린이보험 children's<br>**저축·연금:** 연금저축보험 tax-qualified pension savings, 변액연금보험 variable annuity, 즉시연금 immediate annuity | specs, technical notes and all 10 [models](lifelib/libraries/krlib/index.md#the-models); builds as a library |
 
-Scope note: all five libraries cover individual business, but what "individual life
+Scope note: all six libraries cover individual business, but what "individual life
 insurance" means differs by market and the coverage follows the market rather than a
 template. The U.S. library covers the deferred and payout annuity families sold at retail;
 the UK library covers pension annuities, the dominant UK annuity form and the centrepiece
@@ -194,17 +199,25 @@ in decides its mechanics rather than merely its treatment: a *Basisrente* may no
 surrendered at all, and a *Riester-Rente* carries a statutory 100 % *Beitragsgarantie*, and
 both of those are model structure rather than parameters. A slot goes to the
 **Berufsunfähigkeitsversicherung**, the country's flagship protection product, which has no
-counterpart in the other four.
+counterpart in the other four. The Korea library gives four of its ten slots to
+**제3보험**, the statutory 상해·질병·간병 (accident, sickness, long-term care) category of
+보험업법 제4조제1항제3호 that both life and non-life insurers may write, because that is
+what Korean households buy; and one of those four, **실손의료보험**, is the only
+**indemnity** contract anywhere in this repository — held by around two thirds of the
+population and sold as a reimbursement layer on top of the public 국민건강보험, so its
+급여/비급여 split, co-payment and annual limits are the model itself rather than a
+description wrapped around a sum assured.
 Group insurance, 共済 (cooperative insurance), *contrats collectifs*, German **betriebliche
 Altersversorgung** and substitutive **private Krankenversicherung**, and institutional
-business (bulk purchase annuities, pension risk transfer) are out of scope in all five.
+business (bulk purchase annuities, pension risk transfer) are out of scope in all six.
 
 ## Roadmap
 
-- **The merge itself**: all five libraries are prepared, and what remains is the
+- **The merge itself**: all six libraries are prepared, and what remains is the
   lifelib-side half — [MERGE.md](MERGE.md) is the checklist. It was written for the first
-  three and has not been revised for frlib or delib; the library-side work those two needed
-  was the same, and the lifelib-side steps are unchanged apart from the directory names.
+  three and has not been revised for frlib, delib or krlib; the library-side work those
+  three needed was the same, and the lifelib-side steps are unchanged apart from the
+  directory names.
 - **Additional countries**, and additional product families (group insurance,
   institutional/pension risk transfer business) as coverage grows.
 

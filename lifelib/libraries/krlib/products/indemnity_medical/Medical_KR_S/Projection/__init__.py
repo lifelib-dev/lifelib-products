@@ -229,7 +229,7 @@ alone: a single bad year cannot compound into a permanently higher premium and a
 clean year returns the policyholder to the discount band. There is therefore no
 no-claims ladder and no Markov chain to carry — the band distribution at renewal ``y`` is
 simply the distribution of the annual rated claim in year ``y - 1``, which is what
-:func:`band_share` computes from :func:`claim_shape_table` rescaled to that year's mean.
+:func:`band_share` computes from :func:`~.Medical_KR_S.Data.claim_shape_table` rescaled to that year's mean.
 The loop is nonetheless live, and visibly so: the thresholds are **fixed money amounts**
 while the claim level trends, so contracts migrate into the surcharge bands year by year
 without anything in the model changing.
@@ -301,7 +301,7 @@ out-of-pocket cost in one year. The contract is *designed* to change the insured
 behaviour, and this model projects the loop on a fixed frequency basis: it models the
 premium's response to claims and not the claims' response to premium.
 
-**The frequency half of the claim distribution.** :func:`claim_shape_table` trends its
+**The frequency half of the claim distribution.** :func:`~.Medical_KR_S.Data.claim_shape_table` trends its
 amounts and holds its zero-claim mass fixed, so the proportion of contracts with no rated
 claim is constant at 72.9% while the size of a claim grows with age and cost. In reality
 the frequency of claiming rises with age too, and the 1단계 share would fall.

@@ -63,6 +63,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 
 ## Primary product sources
 
+(krlib-whole_life-s1)=
+
 ### S1 — 「Chubb 더하고 채우는 종신보험 무배당 (해지환급금 일부지급형)」, 처브라이프생명보험 주식회사 (상품안내장 — product brochure with premium and surrender-value tables)
 
 - Document: 4-page 상품안내장, `product_brochure_S1_AW21.pdf`; footer 「2022 MKT-105 /
@@ -83,6 +85,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   premium ratio standardized onto model point 1, the lower end of the 2.25%–2.75% 예정이율
   band, and the equality of the suppressed and 표준형 values from 납입완료 that
   `check_cv_cliff()` asserts.
+
+(krlib-whole_life-s2)=
 
 ### S2 — 「무배당 하나로 연결된 든든한 종신보험(해지환급금 일부지급형)」 상품요약서, 하나생명보험 주식회사 (상품요약서 — the statutory summary of the 기초서류)
 
@@ -105,6 +109,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   rule the waiver state implements; and the record, in the standardizations table, that **where
   the cliff falls is not universal**.
 
+(krlib-whole_life-s3)=
+
 ### S3 — 「KB,시니어[약:속]종신보험 무배당 (해약환급금 과소지급형)」 상품안내장, KB라이프생명보험 주식회사 (상품안내장 — product brochure)
 
 - Document: 16-page 상품안내장; 「준법감시인확인필-SM-2212368-1(2022.12.29~2023.12.28)」
@@ -120,6 +126,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   `model.md`'s standardizations table, which is why a model reproducing another carrier must
   expose the cliff date as a parameter; the deemed-paid waiver rule, corroborated with [S2] and
   [S8]; and the 표준형-comparison sentence, corroborating [S1].
+
+(krlib-whole_life-s4)=
 
 ### S4 — 「무배당 알차고 행복한 종신보험(저해지환급형)(1607)」 상품안내장, DB생명보험 주식회사 (상품안내장 — product brochure with premium and surrender-value grids)
 
@@ -141,6 +149,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   to 20 — the one external check on the model's whole value construction. The grid's widening
   past duration 20 has a stated cause in this document (the 전환나이 step-up) and is recorded
   rather than tuned away.
+
+(krlib-whole_life-s5)=
 
 ### S5 — 「희망드림 무배당 KDB유니버셜종신보험(보증비용부과형) 해지환급금 보증형」 보험약관, KDB생명보험 주식회사 (약관 — policy conditions; the only full 약관 retrieved)
 
@@ -169,6 +179,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   chassis-independent articles (보험나이, 부활, 감액, 보험계약대출) are used; the rest are
   labelled where they appear.
 
+(krlib-whole_life-s6)=
+
 ### S6 — 「(무)ABL건강하면THE소중한종신보험(해약환급금 일부지급형)2504」 상품안내장, ABL생명보험 주식회사 (상품안내장 — product brochure)
 
 - Document: 20-page 상품안내장; 「준법감시인 심의필 제2025-PA349호 (2025.09.29~2026.09.28)」
@@ -185,6 +197,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   장해지급률 waiver trigger, corroborating [S2] and [S8]; the issue-age and payment-term
   envelopes of the shipped model points; and the equality of the suppressed and 표준형 values
   from 납입완료.
+
+(krlib-whole_life-s7)=
 
 ### S7 — 「삼성 더행복종신보험(2309)(무배당) [5년이후사망보험금100%형]」 상품안내장, 삼성생명보험 주식회사 (상품안내장 — product brochure, distributor-hosted copy)
 
@@ -207,6 +221,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   rather than a 삼성생명 URL. It carries a 준법감시필 number and a 발행일자 and is on its face
   a compliance-approved 보험안내자료, but no carrier-hosted original was found.
 
+(krlib-whole_life-s8)=
+
 ### S8 — 「무배당 우리가바라던 종신보험」 상품요약서, KDB생명보험 주식회사 (상품요약서)
 
 - Document: 7-page 상품요약서; 판매일자 2024.01.01; file
@@ -228,6 +244,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   `loglinear` first-year rate sits; the 2.75% top of the 예정이율 band; and the post-IFRS 17
   surrender identity read against the pre-2023 wording.
 
+(krlib-whole_life-s9)=
+
 ### S9 — 「적용이율 공시 — 보험계약대출이율」, 하나생명보험 주식회사 (published rate disclosure, company web page)
 
 - URL: https://www.hanalife.co.kr/anm/interestRate/interestRate_tab3_6.do
@@ -241,6 +259,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   on a 금리연동형 one. The date banding is the first of three independent statements that the
   Korean policy loan rate is a **vintage** rate.
 
+(krlib-whole_life-s10)=
+
 ### S10 — 「적용이율 공시 — 표준이율 및 평균공시이율」, 하나생명보험 주식회사 (published rate disclosure, company web page)
 
 - URL: https://www.hanalife.co.kr/anm/interestRate/interestRate_tab6.do
@@ -252,6 +272,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 - **What rests on it.** The cross-check that the [std] 예정이율 of 2.50% equals the 2026
   평균공시이율, which is the regulatory reference rate a product design is tested against
   [REG-R16] [REG-R48]. The same series is reprinted in the cross-product library.
+
+(krlib-whole_life-s11)=
 
 ### S11 — 「보험계약대출」 상품안내, 교보생명보험 주식회사 (product page, company web site)
 
@@ -267,6 +289,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   numbers; and **the no-fee repayment right**, which is why modelling no repayment at all is a
   named [std] simplification rather than an oversight.
 
+(krlib-whole_life-s12)=
+
 ### S12 — 「보험계약대출이율」 공시, AIA생명보험 주식회사 (published rate disclosure, company web page)
 
 - URL: https://www.aia.co.kr/ko/disclosure/our-products/interest-rate/policy-loan.html
@@ -276,6 +300,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 - **What rests on it.** The clearest evidence in the set that the Korean policy loan rate is a
   *vintage* rate and not a market rate, and the **9.90%** ceiling quoted in `model.md`. Nothing
   numeric in the projection depends on it; it bounds the rate the module uses.
+
+(krlib-whole_life-s13)=
 
 ### S13 — 「보험계약대출」, 신한라이프생명보험 주식회사 (product page, company web site)
 
@@ -287,6 +313,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 - **What rests on it.** `loan_limit = 0.80`, taken as the **top of the narrower** of the two
   published ranges and inside the wider one [S11]; and the third independent statement of the
   +1.5% spread, which is what makes `loan_spread` a sourced parameter rather than a [std] one.
+
+(krlib-whole_life-s15)=
 
 ### S15 — 「공시기준이율 적용현황」, 교보생명보험 주식회사 (published rate disclosure, company web page)
 
@@ -302,6 +330,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   **Nothing in the model.** The 금리연동형 model point's declared rate is a model point column
   set to 2.75% **[std]**, not this figure.
 
+(krlib-whole_life-s16)=
+
 ### S16 — 생명보험협회 공시실, 생명보험협회 (industry disclosure portal)
 
 - URL: https://pub.insure.or.kr/
@@ -316,6 +346,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   would otherwise use were not obtained, so that everything numeric comes from individual
   carriers' own PDFs instead.
 
+(krlib-whole_life-s17)=
+
 ### S17 — 「종신보험」 비교공시, 손해보험협회 e-보험시장 (industry comparison disclosure)
 
 - URL: https://www.e-insmarket.or.kr/wholeIns/wholeInsList.knia
@@ -328,6 +360,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   document came through the **손해보험협회** portal and is attributed there, not to
   생명보험협회; the cross-product library records the same portal at [REG-R62], which this
   product does not otherwise cite.
+
+(krlib-whole_life-s18)=
 
 ### S18 — 「종신/정기보험」 상품안내, 한화생명보험 주식회사 (product page, company web site)
 
@@ -344,6 +378,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 
 ## Regulatory and actuarial references
 
+(krlib-whole_life-r1)=
+
 ### R1 — 「무(저)해지환급금 보험의 상품 구조를 개선하고, 보험약관 …」 (2020-11-18), 금융위원회 (보도자료 announcing the 보험업감독규정 amendment)
 
 - URL: https://fsc.go.kr/no010101/74613
@@ -358,6 +394,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   [REG-R19] because the two readings differ and neither is resolved here. `check_cv_cliff()`
   asserts the **value** test that both readings share and asserts neither ratio form.
 
+(krlib-whole_life-r2)=
+
 ### R2 — 「높은 환급률만을 강조하며 판매되는 무(저)해지환급금 보험 …」 (2020-07-27), 금융위원회 (보도자료 — 보험업감독규정 개정안 입법예고)
 
 - URL: https://www.fsc.go.kr/no010101/74468
@@ -369,6 +407,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 - **What rests on it.** The market-context paragraphs of `product-spec.md` establishing that
   the suppressed form is the mainstream and not a niche, which is the justification for making
   it a **model point column** on the chassis rather than a separate model.
+
+(krlib-whole_life-r3)=
 
 ### R3 — 「합리적인 계리가정과 단계적 할인율 조정을 …」 (2024-11-07), 금융위원회·금융감독원, 제4차 보험개혁회의 (보도자료)
 
@@ -388,6 +428,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   attachment was never converted from HWP, so the **values** are verified from the 보도자료 and
   the guideline's **functional form** is [unverified].
 
+(krlib-whole_life-r4)=
+
 ### R4 — 「저해지환급금 보험상품에 대해 소비자 경보 발령」 (2019-10-23), 금융감독원 보험과 (소비자경보, published on the FSC site)
 
 - URL: https://www.fsc.go.kr/no010101/73932
@@ -400,6 +442,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   **exactly ₩0.00** because there is no payable value to lend against. That is this alert
   reproduced as arithmetic, and it is the single clearest demonstration in the model that the
   loan limit must be computed off `cv_pp` and never off `cv_std_pp`.
+
+(krlib-whole_life-r6)=
 
 ### R6 — 「소비자보호를 위한 보험상품 사업비 및 모집수수료 개선」 (2019-04), 보험연구원 정원석 (research presentation, 사업비 및 모집수수료 부가체계 공청회)
 
@@ -414,6 +458,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   reading of the 별표 14 formula that `surr_chg_cap_pp()` implements. The instrument itself is
   [REG-R20]; this entry is the actuarial reading of it. The same presentation is [REG-R37] in
   the cross-product library.
+
+(krlib-whole_life-r7)=
 
 ### R7 — 「보험개혁회의 내용과 과제: 건전성 제도」 (2025-04), 보험연구원 노건엽·이승주, CEO Report 03호 (research report)
 
@@ -433,6 +479,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   고환급형 test, is second-hand through this report and carries [unverified]. That matters most
   to exactly this product. The same report is [REG-R36] in the cross-product library.
 
+(krlib-whole_life-r8)=
+
 ### R8 — 「Ⅲ. 종신보험의 성장」, 보험연구원, 연구보고서 2018-5 (research report chapter — product history)
 
 - Document: 28-page chapter, `nre2018-05_03.pdf`
@@ -446,6 +494,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 - **What rests on it.** The scope decisions of the composite: which of the six shapes the
   reference product is (무배당, 금리확정형, 평준형) and which four are named and excluded, and
   the statement that this product is the chassis `CI_KR_A` and `Pension_KR_A` inherit.
+
+(krlib-whole_life-r9)=
 
 ### R9 — 「2025년 보험산업 전망」 (2024-10-10), 보험연구원 황인창, 보험산업 전망과 과제 세미나 (research presentation)
 
@@ -462,6 +512,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   the 단기납 종신 episode is sourced here; the specific carrier and 환급률 percentages
   circulating in the trade press are **[unverified]** and are marked so.
 
+(krlib-whole_life-r12)=
+
 ### R12 — 보도자료 목록, 보험개발원 (press-release index page)
 
 - URL: https://www.kidi.or.kr/user/nd11592.do
@@ -475,6 +527,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   in full and that the shipped file is therefore a **[std] construction** anchored on two
   carriers' disclosed grids [S2] [S8] and calibrated to public 완전생명표 statistics [REG-R38].
   The cross-product library records the same finding at [REG-R34].
+
+(krlib-whole_life-r13)=
 
 ### R13 — 「금융통계월보(생명보험편)」, 생명보험협회 (industry statistics series)
 
@@ -652,3 +706,31 @@ source**, so every 사업비 parameter in the model is [std] bounded above by th
 **no Korean lapse curve by duration is public**, so the shape between the two regulatory
 endpoints is [std]; and **the 제10회 경험생명표 was not sourced at all** [R12] [REG-R34], so
 `mort_table.csv` is a [std] construction and must never be presented as that table.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-whole_life-r1
+[R12]: #krlib-whole_life-r12
+[R3]: #krlib-whole_life-r3
+[R4]: #krlib-whole_life-r4
+[R6]: #krlib-whole_life-r6
+[R7]: #krlib-whole_life-r7
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R20]: #krlib-reg-r20
+[REG-R21]: #krlib-reg-r21
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R25]: #krlib-reg-r25
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R37]: #krlib-reg-r37
+[REG-R38]: #krlib-reg-r38
+[REG-R48]: #krlib-reg-r48
+[REG-R62]: #krlib-reg-r62
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

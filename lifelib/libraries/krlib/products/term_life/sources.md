@@ -60,6 +60,8 @@ prints a grid, and the 생명보험협회 publishes a like-for-like comparison o
 one prescribed basis. That is why the anchor cell's ₩15,080 a month is a **sourced** number
 appearing twice independently and not a [std] one.
 
+(krlib-term_life-s1)=
+
 ### S1 — 「한화생명 e정기보험 무배당 상품요약서」, 한화생명보험(주) (statutory product summary)
 
 - Document: 상품요약서, file `한화생명 e정기보험 무배당_상품요약서_20260417.pdf`, 14 PDF pages
@@ -81,6 +83,8 @@ appearing twice independently and not a [std] one.
   benefit is computed as if waived premiums had been paid; and the 보험가격지수 with its
   stated basis.
 
+(krlib-term_life-s2)=
+
 ### S2 — 「한화생명 e정기보험 무배당 보험약관」, 한화생명보험(주) (full policy conditions)
 
 - Document: 보험약관 — 약관 가이드북, 주계약 약관 for both product forms, 특별약관, 분류표
@@ -99,6 +103,8 @@ appearing twice independently and not a [std] one.
   **제33조 (해약환급금, including the 미지급형 sub-article)**, 제34조 (보험계약대출), 제38조
   (소멸시효), 【별표3】 재해분류표, and the 선지급서비스특약 wording.
 
+(krlib-term_life-s3)=
+
 ### S3 — 한화생명 다이렉트 「한화생명 e정기보험 무배당」 상품상세 페이지 (consumer product page)
 
 - URL: `https://direct.hanwhalife.com/products/CM090101`
@@ -109,6 +115,8 @@ appearing twice independently and not a [std] one.
   cheaper** than the 표준형 on a stated basis, the 건강고객 0~20% discount and its three
   criteria, 가입가능연령 만19세~65세, the two-year suicide bar, the 예금자보호 ₩100,000,000
   notice, and the note that the premium changed with the April 2026 산출이율 revision.
+
+(krlib-term_life-s4)=
 
 ### S4 — 생명보험협회 공시실, 상품비교공시 — 보장성보험 / **정기보험** (statutory cross-carrier disclosure)
 
@@ -131,6 +139,8 @@ appearing twice independently and not a [std] one.
   expense assumption. It also links each product's 상품요약서 PDF, which is how [S6] and
   [S8]–[S12] and [S15]–[S18] were obtained.
 
+(krlib-term_life-s5)=
+
 ### S5 — 생명보험협회 공시실, 「상품비교공시 세부작성기준 (대표계약 기준) - 보장성」 (the disclosure's own basis table)
 
 - URL: `https://pub.insure.or.kr/compareDis/prodCompare/assurance/informationPopup.do`
@@ -140,6 +150,8 @@ appearing twice independently and not a [std] one.
   가입금액 1억원**, applied identically to 만기환급형, 순수보장형 and 무해지/저해지환급.
   This is the model's anchor model point, and it is the same cell as the 감독규정's
   기준연령 요건 [REG-R9] — which is what makes model point 1 doubly prescribed.
+
+(krlib-term_life-s6)=
 
 ### S6 — 「무배당 흥국생명 온라인정기보험 상품요약서」, 흥국생명보험(주) (statutory product summary)
 
@@ -158,6 +170,8 @@ appearing twice independently and not a [std] one.
   which is the whole `acc_mort_rate` column of `mort_table.csv`; four 해약환급금 예시 tables;
   and two 보험가격지수 tables.
 
+(krlib-term_life-s7)=
+
 ### S7 — 「(무)흥국생명 온라인정기보험 예상 갱신보험료 예시」, 흥국생명보험(주) (mandatory renewal-premium projection)
 
 - Document: 예상 갱신보험료 예시, 1 PDF page
@@ -172,6 +186,8 @@ appearing twice independently and not a [std] one.
   disclosure requires the **price** path and never the **persistency** path, which is why
   `renewal_decline_base` is [std].
 
+(krlib-term_life-s8)=
+
 ### S8 — 「삼성 인터넷정기보험(2601)(무배당) 상품요약서」, 삼성생명보험(주) (statutory product summary)
 
 - Document: 상품요약서, 9 PDF pages
@@ -184,6 +200,8 @@ appearing twice independently and not a [std] one.
   5,000만원~3억원; the **적용이율 split — 순수보장형 2.5%, 만기환급형 2.25%** — which is the
   fact model point 6's negative undiscounted total turns on; 표준체 사망률 at 20/40/60,
   contributing to the observed 1.77x dispersion at male 40; and two 해약환급금 예시 tables.
+
+(krlib-term_life-s9)=
 
 ### S9 — 「삼성 내리사랑정기보험(2501)(무배당) 상품요약서」, 삼성생명보험(주) (statutory product summary)
 
@@ -198,6 +216,8 @@ appearing twice independently and not a [std] one.
   the **whole 기초율 including 위험률** on a **new product code**, which is the argument for
   the short boundary reading. Also: the 고액할인 for 가입금액 ≥ 1억원, the 우량체 criteria,
   the 재가입형 특약 variant, 가입나이 20~65세, and 적용이율 2.5% / 2.0%.
+
+(krlib-term_life-s10)=
 
 ### S10 — 「신한SOL정기보험(무배당) 상품요약서」, 신한라이프생명보험(주) (statutory product summary)
 
@@ -215,6 +235,8 @@ appearing twice independently and not a [std] one.
   this set it also prints **the 보험개발원 reference-rate document numbers** behind its
   예정 경험사망률 and 예정 재해사망률, which is [R19].
 
+(krlib-term_life-s11)=
+
 ### S11 — 「KB 착한정기보험Ⅱ 무배당 상품요약서」, KB라이프생명보험(주) (statutory product summary)
 
 - Document: 상품요약서, 11 PDF pages
@@ -226,6 +248,8 @@ appearing twice independently and not a [std] one.
   190mg/dL 미만** test seen at no other carrier; a premium grid at 30/40/50 for both sexes
   across all four classes; 가입한도 that **rises with the rate class**; 적용이율 연복리
   2.50%; and a 해약환급금 예시.
+
+(krlib-term_life-s12)=
 
 ### S12 — 「무배당 교보라플 정기보험 상품요약서」, 교보라이프플래닛생명보험(주) (statutory product summary)
 
@@ -245,6 +269,8 @@ appearing twice independently and not a [std] one.
   보험기간 × 납입기간 × 가입나이 matrix in the set; 가입한도 1억원~10억원; and the five-way
   보험료납입면제보장특약 menu.
 
+(krlib-term_life-s13)=
+
 ### S13 — 교보라이프플래닛, 「(무)교보라플 정기보험」 상품 페이지 (consumer product page)
 
 - URL: `https://www.lifeplanet.co.kr/lpds2/insurance/term-life-insurance.dev`
@@ -255,6 +281,8 @@ appearing twice independently and not a [std] one.
   the two-year suicide bar, and the 예금자보호 ₩100,000,000 notice. **A block of 가입 시
   유의사항 boilerplate on this page mixes several products' warnings**, and nothing in the
   product documents rests on that block.
+
+(krlib-term_life-s14)=
 
 ### S14 — 교보라이프플래닛, 「(무)라이프플래닛e정기보험Ⅱ」 보험료 설계 페이지 (consumer quotation page)
 
@@ -268,6 +296,8 @@ appearing twice independently and not a [std] one.
   documents use to establish that **every Korean rate card retrieved fixes the sum assured**,
   so no flat policy element can be decomposed the way `jplib` decomposes one.
 
+(krlib-term_life-s15)=
+
 ### S15 — 「푸본현대 원패스 정기보험 무배당/갱신형(2404) 상품요약서」, 푸본현대생명보험(주) (statutory product summary)
 
 - Document: 상품요약서, 12 PDF pages
@@ -279,6 +309,8 @@ appearing twice independently and not a [std] one.
   갱신계약 separately**, which is the direct evidence that a Korean renewal is a new contract
   on a new product code — the strongest single argument in the set for the short contract
   boundary, and the reason `comm_new_term_rate` exists as a switch at all.
+
+(krlib-term_life-s16)=
 
 ### S16 — 「푸본현대 원패스 정기보험 예상 갱신보험료 예시」, 푸본현대생명보험(주) (mandatory renewal-premium projection)
 
@@ -292,6 +324,8 @@ appearing twice independently and not a [std] one.
   document's own basis line is internally inconsistent and no figure in the product documents
   depends on the inconsistent part.
 
+(krlib-term_life-s17)=
+
 ### S17 — 「미래에셋생명 헤리티지 정기보험 무배당 상품요약서」, 미래에셋생명보험(주) (statutory product summary)
 
 - Document: 상품요약서, 20+ PDF pages
@@ -303,6 +337,8 @@ appearing twice independently and not a [std] one.
   term products of `uklib` or `jplib`, and which the product specification scopes out of the
   composite. Also a 종신전환특약 and a 연금전환특약, 적용이율 연복리 2.00% (the low end of the
   observed 2.00–2.75% range), and mortality at 20/40/60 contributing to the 1.77x dispersion.
+
+(krlib-term_life-s18)=
 
 ### S18 — 미래에셋생명, 「경영인을 위한 정기보험 무배당 [해약환급금이 적은 유형]」 상품요약서 (statutory product summary)
 
@@ -316,6 +352,8 @@ appearing twice independently and not a [std] one.
   variant the specification names and excludes, and for the statement that a Korean term sum
   assured is not always level.
 
+(krlib-term_life-s19)=
+
 ### S19 — 「한화생명 H종신보험 무배당 상품요약서」, 한화생명보험(주) (statutory product summary, whole life)
 
 - Document: 상품요약서, 20 PDF pages, `2209-A01_A17`, dated 20251003
@@ -326,12 +364,16 @@ appearing twice independently and not a [std] one.
   제도성특약, and **no 정기특약 at all**. That is what supports the finding that the Japanese
   and US pattern of a term rider on a whole life chassis has largely disappeared in Korea.
 
+(krlib-term_life-s20)=
+
 ### S20 — 「무배당 AIA 더해주는 종신보험 상품요약서」, AIA생명보험(주) (statutory product summary, whole life)
 
 - URL: `https://www.aia.co.kr/content/dam/kr-wise/ko/docs/products/life-protection/summary/AIA_kr_Form120_20260101.pdf`
 - Accessed: 2026-09-03, Retrieved: **yes** (731 KB PDF; a summarising fetch reported it as
   binary, so the file was saved and extracted locally with `pymupdf`)
 - Same negative test as [S19], same answer: the string 정기특약 does not occur.
+
+(krlib-term_life-s21)=
 
 ### S21 — 「한화생명 하나로H종신보험 무배당」 and 「한화생명 e종신보험 무배당」 상품요약서, 한화생명보험(주) (two statutory product summaries, whole life)
 
@@ -341,6 +383,8 @@ appearing twice independently and not a [std] one.
 - Accessed: 2026-09-03, Retrieved: **yes** (753 KB and 553 KB PDFs, extracted cleanly)
 - Same negative test, same answer, at two further products of the anchor 약관's own carrier.
 
+(krlib-term_life-s22)=
+
 ### S22 — 생명보험협회 공시실, 상품비교공시 — 보장성보험 / **종신보험** (statutory cross-carrier disclosure)
 
 - URL: `https://pub.insure.or.kr/compareDis/prodCompare/assurance/listNew.do` (POST with
@@ -349,6 +393,8 @@ appearing twice independently and not a [std] one.
 - The population-level version of the [S19]–[S21] test: across the two pages read, the
   substring 정기 occurs only in the page's own category label. Used for that one finding and
   nowhere else.
+
+(krlib-term_life-s23)=
 
 ### S23 — 「삼성생명 자유설계보장보험(무배당) 약관」 (2014), republished by 인스클레임 (superseded policy conditions)
 
@@ -369,6 +415,8 @@ a plain fetcher where `law.go.kr`'s friendly URLs return only site chrome; those
 also carried, from an independent full-Act retrieval, in the cross-product library, and the
 product documents cite both.
 
+(krlib-term_life-r1)=
+
 ### R1 — 보험업법 제2조 (정의) (statute)
 
 - Publisher: 국가법령정보센터 / 법제처 — 보험업법, 법률 제19211호, 시행 2023-01-01
@@ -380,6 +428,8 @@ product documents cite both.
   제3보험 products. Cited beside [REG-R1], which carries the same article from the full-Act
   retrieval.
 
+(krlib-term_life-r2)=
+
 ### R2 — 보험업법 제4조 (보험업의 허가) (statute)
 
 - Publisher: 국가법령정보센터 / 법제처 — 보험업법, 법률 제17636호, 시행 2021-06-09
@@ -389,6 +439,8 @@ product documents cite both.
   written under 제1항제1호; 제1항제3호 is the statutory footing of the 제3보험 category four
   other krlib products sit in. Cited beside [REG-R1].
 
+(krlib-term_life-r3)=
+
 ### R3 — 상법 제731조 (타인의 생명의 보험) (statute)
 
 - Publisher: 국가법령정보센터 / 법제처 — 상법, 시행 2020-12-10, 법률 제17354호
@@ -396,7 +448,9 @@ product documents cite both.
 - Verbatim: 「타인의 사망을 보험사고로 하는 보험계약에는 보험계약 체결시에 그 타인의 서면에
   의한 동의를 얻어야 한다.」 This is the rule every 약관 in the set reproduces as a ground of
   계약의 무효, and it is why the specification's three-role table (계약자 / 피보험자 /
-  수익자) states written consent as a formation requirement. Cited beside [REG-R50 제731조].
+  수익자) states written consent as a formation requirement. Cited beside [REG-R50 제731조](#krlib-reg-r50).
+
+(krlib-term_life-r4)=
 
 ### R4 — 상법 제732조 (15세미만자등에 대한 계약의 금지) and 제732조의2 (중과실로 인한 보험사고) (statute)
 
@@ -413,6 +467,8 @@ product documents cite both.
   event arose from **gross negligence**, which is why a Korean life 약관's exclusion list
   contains only intent. Cited beside [REG-R50].
 
+(krlib-term_life-r6)=
+
 ### R6 — 상법 제659조 (보험자의 면책사유) (statute)
 
 - Publisher: 국가법령정보센터 / 법제처 — 상법
@@ -423,6 +479,8 @@ product documents cite both.
   and the treatment of the benefit where one of several beneficiaries is the killer. Cited
   beside [REG-R49].
 
+(krlib-term_life-r8)=
+
 ### R8 — 소득세법 제59조의4 (특별세액공제) (statute)
 
 - Publisher: 국가법령정보센터 / 법제처 — 소득세법, 법률 제19196호, 시행 2024-01-01
@@ -432,6 +490,8 @@ product documents cite both.
   the structural difference from Japan's 生命保険料控除 and from every other market in this
   repository, and it is why the specification records that the anchor cell's ₩180,960 annual
   premium exceeds the cap and the credit is a flat ₩120,000. Cited beside [REG-R57].
+
+(krlib-term_life-r9)=
 
 ### R9 — 보험업감독규정 【별표14】 표준해약환급금 계산시 적용되는 해약공제액 (제7-66조 관련) (annex to the supervisory regulation)
 
@@ -449,6 +509,8 @@ product documents cite both.
   document as [REG-R20]**, retrieved independently in both research passes; and it is not the
   same document as [REG-R9], which is the 감독규정 본문.
 
+(krlib-term_life-r12)=
+
 ### R12 — 금융위원회 보도자료 (2021-11-08), 「무·저해지보험의 지속가능성 제고를 위해 … 상품설계를 합리적으로 개선하겠습니다.」 (regulator press release)
 
 - Publisher: 금융위원회 보험과
@@ -463,6 +525,8 @@ product documents cite both.
   −25.2% premium discount for the 무해지 form. Distinct from [REG-R28], which is the 2020
   상품구조 개선 and the 2019 FSS 소비자경보, and from [REG-R27], which is the 2024 guideline.
 
+(krlib-term_life-r16)=
+
 ### R16 — 보험연구원, 「2026년 보험산업 전망」, 노건엽 (2025-10-21 세미나 자료) (industry outlook deck)
 
 - URL: `http://www.kiri.or.kr/pdf/세미나자료/smn_20251021_1.pdf`
@@ -473,6 +537,8 @@ product documents cite both.
   of ₩30.3조 (+13.0%), with the growth concentrated in **무·저해지환급형 질병보험과
   상해보험** rather than in death cover. A **different document** from [REG-R46], which is
   황인창's 91-page deck from the same seminar series; the two are cited together and agree.
+
+(krlib-term_life-r18)=
 
 ### R18 — 보험저널, 「금융당국 해지율 예측 한참 빗나가… 저해지 종신보험 3년차 해지율 '50%' 돌파」 (2025-05-14) (news article)
 
@@ -485,6 +551,8 @@ product documents cite both.
   71.5%**. It is a whole-life datum and not a term one, and the documents use only its
   **direction** — that the industry's 무·저해지 lapse assumption has been too low — which is
   why `lapse_be_factor = 1.0` is presented with a sensitivity rather than as a best estimate.
+
+(krlib-term_life-r19)=
 
 ### R19 — 보험개발원 참조순보험요율, cited by document number inside [S10] (reference-rate notifications)
 
@@ -499,6 +567,8 @@ product documents cite both.
   incidence could be sourced for `wop_inc_rate`. It is a **life** reference rate and is
   therefore not the 장기손해보험 참조순보험요율 of [REG-R61], which **is** published and which
   `Cancer_KR_S` and `Medical_KR_S` use.
+
+(krlib-term_life-r20)=
 
 ### R20 — 보험개발원 (KIDI) website — 참조순보험요율 / 보험통계 pages (institutional pages)
 
@@ -664,3 +734,29 @@ failures and [unverified] claims — the 경험생명표 rates, any life 참조�
 K-ICS 대량해지 별표 22, the 정기특약 claim resting on [S23], and every expense, commission,
 disability-incidence, acceleration-take-up and reinstatement figure in the Korean market,
 none of which any carrier publishes.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R16]: #krlib-term_life-r16
+[R19]: #krlib-term_life-r19
+[R4]: #krlib-term_life-r4
+[R8]: #krlib-term_life-r8
+[R9]: #krlib-term_life-r9
+[REG-R1]: #krlib-reg-r1
+[REG-R20]: #krlib-reg-r20
+[REG-R23]: #krlib-reg-r23
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R28]: #krlib-reg-r28
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R46]: #krlib-reg-r46
+[REG-R49]: #krlib-reg-r49
+[REG-R50]: #krlib-reg-r50
+[REG-R52]: #krlib-reg-r52
+[REG-R57]: #krlib-reg-r57
+[REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

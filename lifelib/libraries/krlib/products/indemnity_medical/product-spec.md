@@ -177,19 +177,19 @@ repository reaches.
 | Source of the benefit definition | 보험업감독업무시행세칙 [별표 15] 표준약관, 제5-13조제1항 관련, effective 2021-07-01 — not a carrier document | [S1] [REG-R23] [REG-R25] |
 | 보장종목 (cover items) held | All five: 상해급여형, 질병급여형 (주계약); 상해비급여형, 질병비급여형, 3대비급여형 (특약) | [S1 제1조]; election **[std]** (1) |
 | Annual limit (연간 보험가입금액) | **₩50,000,000 (5천만원)** per 보장종목 per policy year, inpatient and outpatient combined; 상해 and 질병 carry separate limits | ceiling [S1 제5조] [REG-R17]; election **[std]** (2) |
-| Whole-contract annual limit | **₩100,000,000 (1억원)** — 급여 5천만원 + 비급여 5천만원 | [R1] [R5 참고1] |
+| Whole-contract annual limit | **₩100,000,000 (1억원)** — 급여 5천만원 + 비급여 5천만원 | [R1] [R5 참고1](#krlib-indemnity_medical-r5) |
 | Per-visit outpatient cap | **₩200,000 (20만원)** | ceiling [S1 제5조제5항]; election **[std]** (2) |
 | Issue age (가입나이) | **0–65** (만나이) | not retrieved for 4세대; **[std]** (3) |
 | Age basis — contract | **보험나이** (*boheom nai*, insurance age): 만나이 at 계약일 with a fraction under six months discarded and six months or more rounded up, incremented at each 계약해당일 | [S1 제21조] [REG-R25] |
 | Age basis — model | **만나이** (age last birthday) | **[std]** (4) |
 | Policy term (보험기간) | **1 year**, automatically renewed on the day after expiry unless the policyholder declines | [S3] [S5] |
-| Renewal (갱신) | Annual, at the 보험요율 in force on the renewal date and at the attained 보험나이; increase capped at **±25% a year excluding the age effect**, per 위험구분단위 | [S1 제30조] [REG-R17 제7-63조제2항제3호] [R6] |
-| Benefit-change cycle (보장내용 변경주기 / 재가입주기) | **5 years** — the contract re-enters the generation then on sale | [R1] [R2] [REG-R17 제7-63조제2항제6호나목] |
+| Renewal (갱신) | Annual, at the 보험요율 in force on the renewal date and at the attained 보험나이; increase capped at **±25% a year excluding the age effect**, per 위험구분단위 | [S1 제30조] [REG-R17 제7-63조제2항제3호](#krlib-reg-r17) [R6] |
+| Benefit-change cycle (보장내용 변경주기 / 재가입주기) | **5 years** — the contract re-enters the generation then on sale | [R1] [R2] [REG-R17 제7-63조제2항제6호나목](#krlib-reg-r17) |
 | 재가입 나이 (re-entry age ceiling) | To 보험나이 **99** | [S3]; **[std]** (5) |
 | Maximum cover age | To the 계약해당일 at 보험나이 **100** | [S3] [S4] |
 | Underwriting | 계약 전 알릴 의무 (*gyeyak jeon allil uimu*, pre-contract duty of disclosure) on a written or on-screen questionnaire; no medical examination in the retail and direct channels; **no health underwriting at 재가입** | [S1 제23조제1항] [REG-R25]; channel **[std]** (6) |
 | Lives basis | Single life | [S1] [S3] |
-| Death benefit | **None.** On death from a cause the policy does not cover, the insurer pays the 계약자적립액 and the 미경과보험료 of 감독규정 제7-66조제5항 and the contract terminates — on a one-year pure protection contract the 계약자적립액 is nil and only unearned premium is returned | [REG-R17 제7-63조제1항제1호] [REG-R25 제22조]; nil level **[std]** (7) |
+| Death benefit | **None.** On death from a cause the policy does not cover, the insurer pays the 계약자적립액 and the 미경과보험료 of 감독규정 제7-66조제5항 and the contract terminates — on a one-year pure protection contract the 계약자적립액 is nil and only unearned premium is returned | [REG-R17 제7-63조제1항제1호](#krlib-reg-r17) [REG-R25 제22조](#krlib-reg-r25); nil level **[std]** (7) |
 | Surrender value (해약환급금, *haeyak hwanreupgeum*) | **None** — 「이 상품은 1년만기 순수보장성 상품으로 해약환급금이 발생하지 않습니다」 | [S3] |
 | Waiting period (면책기간) | **None** on the general cover; cover attaches at 보장개시. The only deferred item is a **two-year** wait on the 불임관련 질환 급여 cover introduced at 4세대 | [S1 제24조] [R1] |
 | **Anchor model cell** | Male, 만나이 **40** at issue, both parts held with all five 보장종목, ₩50,000,000 annual limit per 보장종목, ₩200,000 per-visit cap, 월납 office premium **₩11,982** split 급여 ₩4,793 / 비급여 ₩7,189, band 2 (유지) at inception, 무사고 할인 not yet earned | premium [R1]; split and cell **[std]** (8) |
@@ -275,7 +275,7 @@ Footnotes to [std] rows:
 | Published rate scale | **None exists.** No age × sex scale for 4세대 or 5세대 was obtainable; the association's comparison grid is form-gated | gap [S6] [S7]; **[std]** (11) |
 | Anchor office premium (영업보험료) | **₩11,982** per month total — 급여 ₩4,793, 비급여 ₩7,189 | [R1]; split **[std]** (10) |
 | Age loading at renewal | **4.0%** of the age-adjusted prior base premium per year of attained age | [S1 제30조 illustration]; **[std]** (12) |
-| Renewal corridor | Base premium may move by at most **±25%** a year excluding the age effect, per 위험구분단위; exception only where the insurer is under 경영개선권고/요구/명령 | [S1 제30조제2항] [S1 특별약관 제6조제2항] [REG-R17 제7-63조제2항제3호] [R6] |
+| Renewal corridor | Base premium may move by at most **±25%** a year excluding the age effect, per 위험구분단위; exception only where the insurer is under 경영개선권고/요구/명령 | [S1 제30조제2항] [S1 특별약관 제6조제2항] [REG-R17 제7-63조제2항제3호](#krlib-reg-r17) [R6] |
 | Experience relativity (요율 상대도) | Five bands on the **rider net premium only**: 1단계 (할인), 2단계 100%, 3단계 200%, 4단계 300%, 5단계 400%, keyed to the prior 12 months' 비급여 claims | [S1 특별약관 제6조제3항] [REG-R25]; band-1 factor **[std]** (13) |
 | Band-1 discount factor | **−4.25%**, *solved* from revenue neutrality on the [std] band distribution rather than fixed | [S1]; **[std]** (13) |
 | Band distribution at commencement | 1단계 72.9%, 2단계 25.3%, 3단계 0.8%, 4단계 0.7%, 5단계 0.3% | [R12]; **[std]** (13) |
@@ -285,8 +285,8 @@ Footnotes to [std] rows:
 | 의료급여 수급권자 할인 | 5% of the office premium at one carrier; **not** in the composite | [S3]; scope **[std]** (14) |
 | Premium waiver (납입면제) | **None.** No 납입면제 provision appears in either retrieved 실손 wording | [S1] [S3]; absence **[unverified]** (15) |
 | Expense loading | **16.0%** of office premium (손해조사비 plus 사업비), split acquisition 6% / maintenance 7% / claim handling 3% | aggregate [R7]; split **[std]** (16) |
-| Rate-adequacy duty | The net rate's adequacy must be verified **annually** against experience, with up to **five years' grace** for genuinely new cover | [R12] [REG-R17 제7-63조제2항제6호가목] |
-| Price-index disclosure | The **보험가격지수** must be explained to the policyholder **at every renewal** of a 실손 contract, not only at sale | [REG-R22 제7-45조제7항] |
+| Rate-adequacy duty | The net rate's adequacy must be verified **annually** against experience, with up to **five years' grace** for genuinely new cover | [R12] [REG-R17 제7-63조제2항제6호가목](#krlib-reg-r17) |
+| Price-index disclosure | The **보험가격지수** must be explained to the policyholder **at every renewal** of a 실손 contract, not only at sale | [REG-R22 제7-45조제7항](#krlib-reg-r22) |
 
 9. Both retrieved carrier products quote monthly premiums and the whole published FSS
    premium series is monthly [R7] [R8] [S3] [S4]. Monthly is why `Medical_KR_S` runs on a
@@ -383,19 +383,19 @@ the retained co-payment percentage, which the wording always expresses as its co
 「본인부담금의 80%」 rather than "20% co-payment".
 
 **기본형 실손의료보험 (급여 실손의료비) — the 주계약.** All rows from S1, 기본형 제3조 and
-제5조, cross-checked against the supervisor's 4세대-versus-5세대 comparison table [R5 참고1].
+제5조, cross-checked against the supervisor's 4세대-versus-5세대 comparison table [R5 참고1](#krlib-indemnity_medical-r5).
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Covered loss | The insured's own 본인부담금 under 국민건강보험법 요양급여 or 의료급여법 의료급여 — both 일부본인부담금 and 전액본인부담금 | [S1 기본형 제3조] [REG-R53] |
-| Inpatient (입원) reimbursement | **80%** of the 본인부담금 — a **20% 자기부담률** | [S1] [R5 참고1] |
-| Inpatient annual co-payment cap | Where the 20% retained on **inpatient** treatment exceeds **₩2,000,000 (200만원)** in a policy year, the excess is reimbursed within the annual limit | [S1 제5조제4항] [R5 참고1] [REG-R17] |
+| Inpatient (입원) reimbursement | **80%** of the 본인부담금 — a **20% 자기부담률** | [S1] [R5 참고1](#krlib-indemnity_medical-r5) |
+| Inpatient annual co-payment cap | Where the 20% retained on **inpatient** treatment exceeds **₩2,000,000 (200만원)** in a policy year, the excess is reimbursed within the annual limit | [S1 제5조제4항] [R5 참고1](#krlib-indemnity_medical-r5) [REG-R17] |
 | Outpatient (통원) deductible — clinic tier | `max(₩10,000, 20% × 보장대상 의료비)` per visit, at 의료법 제3조제2항 institutions other than 종합병원, at 보건소·보건의료원·보건지소, at 보건진료소 and at their pharmacies | [S1 제3조 <표1>] |
 | Outpatient deductible — hospital tier | `max(₩20,000, 20% × 보장대상 의료비)` per visit, at 전문요양기관, 상급종합병원, 종합병원 and their pharmacies | [S1 제3조 <표1>] |
 | 통원 definition | 외래 (consultation) **and** 처방조제 (dispensing) merged into a single visit with a single deductible — the 3세대 separate ₩8,000 처방조제 deductible is gone | [S1] vs [S5] |
 | Annual limit | **₩50,000,000** per 보장종목 (상해급여 and 질병급여 separately), inpatient and outpatient combined | [S1 제5조] |
 | Per-visit cap | **₩200,000** | [S1 제5조제5항] |
-| Visit-count cap | **None on the 급여 side** | [S1 제5조]; confirmed absent [R5 참고1] |
+| Visit-count cap | **None on the 급여 side** | [S1 제5조]; confirmed absent [R5 참고1](#krlib-indemnity_medical-r5) |
 | Where NHI does not apply | Where the insured is outside 국민건강보험법 제5조·제53조·제54조 or the 의료급여법 equivalents (e.g. entitlement suspended), reimbursement falls to **40%** of the amount actually borne, still within the annual limit | [S1 제3조제3항제1호] |
 | 본인부담상한제 interaction | Any amount refundable by 국민건강보험공단 ex ante or ex post under the 본인부담금 상한제 is **excluded from cover outright** | [S1 제4조제3항제1호] [S1 제5조제3항] [R10] [REG-R53] |
 | 의료급여 mirror | The 의료급여 본인부담금 보상제 and 상한제 reduce the loss in the same way — 50% of the excess over ₩20,000 (1종) or ₩200,000 (2종) per 30 days; the whole excess over ₩50,000 per 30 days (1종) or ₩800,000 a year (2종), rising to ₩1,200,000 above 240 요양병원 days | [S1 제5조의2] |
@@ -403,7 +403,7 @@ the retained co-payment percentage, which the wording always expresses as its co
 | Organ transplant | 장기등의 적출 및 이식 for the insured's own functional recovery, under 장기등 이식에 관한 법률 제42조, reimbursed on the ordinary basis | [S1 제3조제9항] |
 
 **실손의료보험 특별약관 (비급여 실손의료비) — the 특약.** All rows from S1, 특별약관 제3조
-and 제5조, cross-checked against [R5 참고1].
+and 제5조, cross-checked against [R5 참고1](#krlib-indemnity_medical-r5).
 
 | Parameter | Representative value | Basis |
 |---|---|---|
@@ -488,7 +488,7 @@ jplib sense at all: the 비급여 특약 *is* the rider, and it carries the prod
 | 무사고 할인 | Modelled: a two-year claim-free lookback on 비급여 claims, excluding 4대 중증질환, giving 10% off the **whole** office premium in the following year, stacking with the band-1 relativity | [R1] [S3] |
 | 개인실손 중지·재개 (suspension and resumption) | Parameterized, off in the base run. A policyholder covered by a 단체실손 may suspend the individual policy and resume it within one month of the group cover ending; the facility is **mandatory** under 감독규정 제7-63조제2항제7호 | [R16] [S3] [REG-R17] |
 | 계약전환 (conversion between generations) | Out of scope as a decrement; recorded because it is the mechanism by which the in-force book moves generation | [R1] [R2] [R5] |
-| 노후실손 / 유병력자실손 | Out of scope — separate product families with their own co-payments, issue ages and three-year change cycles | [R17] [REG-R17 제7-63조제2항제5호] |
+| 노후실손 / 유병력자실손 | Out of scope — separate product families with their own co-payments, issue ages and three-year change cycles | [R17] [REG-R17 제7-63조제2항제5호](#krlib-reg-r17) |
 | 단체실손 (group cover) | Out of scope; excluded from the FSS statistics this model calibrates to | [R7] |
 | 해외여행 실손의료보험 | Out of scope — a separate 표준약관 in the same annex | [S1] |
 | 의료급여 수급권자 할인 | Out of scope, carrier-specific | [S3]; **[std]** (14) |
@@ -498,24 +498,24 @@ jplib sense at all: the 비급여 특약 *is* the rider, and it carries the prod
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Surrender value (해약환급금) | **None.** 「이 상품은 1년만기 순수보장성 상품으로 해약환급금이 발생하지 않습니다」 | [S3] |
-| Mid-term cancellation | The policyholder may terminate at any time before a claim event and recover the **미경과보험료** (unearned premium) | [REG-R49 제649조] |
+| Mid-term cancellation | The policyholder may terminate at any time before a claim event and recover the **미경과보험료** (unearned premium) | [REG-R49 제649조](#krlib-reg-r49) |
 | Policyholder dividend | None; no maturity benefit exists | [S3] |
 | 보험계약대출 / 보험료 자동대출납입 | Neither available in substance. The 표준약관 carries the clauses because the standard text is shared across products, but 제33조 states that 「순수보장성보험 등」 may be excluded from policy lending — and with no surrender value there is nothing to lend against | [S1 제33조–제35조] [REG-R25] |
 | Reserve held | The 잔여보장요소 is the unearned premium and the 발생사고요소 the outstanding-claims provision; there is **no 보험료적립금** and no 해약환급금준비금 | [REG-R8] [REG-R11]; **[std]** (17) |
-| Grace period (납입최고) | **14 days** from the demand, the contract terminating the day after it ends | [REG-R25 제26조]; **[std]** (18) |
-| Lapse (실효) | From the day after the demand period expires; there is no automatic premium loan to break the fall | [REG-R25 제26조] [S1 제27조] |
-| Reinstatement (부활) | Within **3 years** of termination, on payment of arrears with interest at a rate within 평균공시이율 + 1%; the insurer **may not refuse** because a claim event occurred before termination | [REG-R25 제27조] [S1 제28조]; **[std]** (18) |
+| Grace period (납입최고) | **14 days** from the demand, the contract terminating the day after it ends | [REG-R25 제26조](#krlib-reg-r25); **[std]** (18) |
+| Lapse (실효) | From the day after the demand period expires; there is no automatic premium loan to break the fall | [REG-R25 제26조](#krlib-reg-r25) [S1 제27조] |
+| Reinstatement (부활) | Within **3 years** of termination, on payment of arrears with interest at a rate within 평균공시이율 + 1%; the insurer **may not refuse** because a claim event occurred before termination | [REG-R25 제27조](#krlib-reg-r25) [S1 제28조]; **[std]** (18) |
 | Renewal refusal | The policyholder may decline renewal; the insurer may not, within the 보장내용 변경주기 and the age range, provided the prior premium was paid | [S5] [S3] |
 | Re-entry refusal | The insurer 「기존계약의 가입 이후 발생한 상해 또는 질병을 사유로 가입을 거절할 수 없습니다」, and on expiry of automatic renewal must accept the policyholder into whichever 실손 product it is then selling | [S1 제23조제1항·제2항] |
-| Cooling-off (청약철회) | **15 days** from receipt of the 보험증권 and never later than **30 days** from the application, effective on despatch, premiums returned within 3 business days | [REG-R25 제17조] [REG-R51] |
-| 품질보증해지 | Cancellation within **3 months** of formation where the 약관 was not delivered, its important content not explained, or the policyholder did not sign | [REG-R25 제18조제3항] [REG-R49 제638조의3] |
-| Non-disclosure (계약 전 알릴 의무 위반) | Termination barred after **one month** from the insurer learning of it, **two years** from 보장개시일 without a claim event (one year for disease in a 진단계약), or **three years** from the contract date; a causation defence applies; non-disclosure of other insurance held is not a ground | [REG-R25 제13조·제14조] [REG-R49 제651조] |
-| Fraud (사기에 의한 계약) | Cancellation within **five years** of 보장개시일 and one month of discovery | [REG-R25 제15조] |
+| Cooling-off (청약철회) | **15 days** from receipt of the 보험증권 and never later than **30 days** from the application, effective on despatch, premiums returned within 3 business days | [REG-R25 제17조](#krlib-reg-r25) [REG-R51] |
+| 품질보증해지 | Cancellation within **3 months** of formation where the 약관 was not delivered, its important content not explained, or the policyholder did not sign | [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49 제638조의3](#krlib-reg-r49) |
+| Non-disclosure (계약 전 알릴 의무 위반) | Termination barred after **one month** from the insurer learning of it, **two years** from 보장개시일 without a claim event (one year for disease in a 진단계약), or **three years** from the contract date; a causation defence applies; non-disclosure of other insurance held is not a ground | [REG-R25 제13조·제14조](#krlib-reg-r25) [REG-R49 제651조](#krlib-reg-r49) |
+| Fraud (사기에 의한 계약) | Cancellation within **five years** of 보장개시일 and one month of discovery | [REG-R25 제15조](#krlib-reg-r25) |
 | Duplicate cover | Never more than the actual loss: 「동일한 위험을 보장하는 2개 이상의 계약에 중복 가입 하더라도 실제 발생한 손해(비용)를 초과하여 보험금을 지급하지 않습니다. (중복 가입 시 비례보상)」 | [S1 제37조·제38조] [S3] |
-| Prescription (소멸시효) | **3 years** on a claim | [REG-R25 제37조] [REG-R49 제662조] |
+| Prescription (소멸시효) | **3 years** on a claim | [REG-R25 제37조](#krlib-reg-r25) [REG-R49 제662조](#krlib-reg-r49) |
 | Deposit protection | ₩100,000,000 per person per insurer on 보험금, in a bucket separate from retirement-pension and 연금저축 claims; the 해약환급금 bucket is empty here because there is no surrender value | [REG-R52] [S3] |
 | Expiry | Cover ends at the 계약해당일 at 보험나이 **100** | [S3] [S4] |
-| Death of the insured | Contract terminates; the 계약자적립액 (nil in practice) and the 미경과보험료 are paid | [REG-R17] [REG-R25 제22조] |
+| Death of the insured | Contract terminates; the 계약자적립액 (nil in practice) and the 미경과보험료 are paid | [REG-R17] [REG-R25 제22조](#krlib-reg-r25) |
 | Run-off after termination | An admission in progress continues to be covered for **180 days** from the day after termination; an outpatient course for visits within 180 days to a maximum of **90 visits** — but **not** on renewal or re-entry, which are treated as extensions of the term | [S1 제3조제4항~제6항] |
 | Run-off limit | The unused remainder of the annual limit at the previous policy-year end | [S1 제5조제6항] |
 
@@ -581,7 +581,7 @@ and 전액본인부담금 alike [S1 기본형 제3조]:
 
 with an annual floor under the retention. Where the cumulative 20% retained on **inpatient**
 treatment exceeds **₩2,000,000** in a policy year, the excess is reimbursed within the
-annual limit [S1 제5조제4항] [R5 참고1]:
+annual limit [S1 제5조제4항] [R5 참고1](#krlib-indemnity_medical-r5):
 
     retained_cum(y) = Σ over admissions k in policy year y of retained_in(k)
     top_up(y)       = max(0, retained_cum(y) - 2,000,000)
@@ -927,7 +927,7 @@ bounded: 「갱신계약의 보험료는 매년 최대 25% 범위(나이의 증�
 내에서 인상 또는 인하될 수 있습니다」, with an exception only where the insurer is under
 경영개선권고, 요구 or 명령 [S1 제30조제2항]. The corridor is now in the regulation itself —
 「실손의료보험에서 위험구분단위별로 보험료의 변경이 매년 ±25%를 초과하지 않을 것」
-[REG-R17 제7-63조제2항제3호] — and the supervisor restates it as a live constraint
+[REG-R17 제7-63조제2항제3호](#krlib-reg-r17) — and the supervisor restates it as a live constraint
 [R6]. **It binds per 위험구분단위, not on the portfolio average**, which is why a published
 industry average of 7.8% [unverified] and a single carrier's single-cover 21.8% [S6] are not
 in conflict.
@@ -963,7 +963,7 @@ discount, and writing `x` for attained 보험나이:
 
 with `s = 0.60`, `r` from the five-band table and `noclaim(y) = 1` after two consecutive
 claim-free years. **The corridor applies to the pre-relativity premium** — 「요율 상대도 적용
-전 보험료」 [S1 특별약관 제6조제2항] [REG-R17 제7-63조제2항제3의2호] — so a band-5
+전 보험료」 [S1 특별약관 제6조제2항] [REG-R17 제7-63조제2항제3의2호](#krlib-reg-r17) — so a band-5
 policyholder can face 1.25 × 4.00 = **5.00×** the previous year's base rider rate in a single
 step. That is the sharpest number in the product.
 
@@ -1127,7 +1127,7 @@ modelling choice with real dispersion behind it.
 ### 고지의무, 청약철회 and the pre-inception window
 
 **계약 전 알릴 의무** is the Korean duty of disclosure and the 표준약관 states in terms that
-it 「상법상 '고지의무'와 같습니다」 [REG-R25 제13조·제14조]. It is an answer-the-question
+it 「상법상 '고지의무'와 같습니다」 [REG-R25 제13조·제14조](#krlib-reg-r25). It is an answer-the-question
 duty on a written or on-screen questionnaire, and 상법 제651조의2 presumes material any
 matter the insurer asked about in writing [REG-R49]. Termination for breach is barred where
 the insurer knew or was negligent in not knowing at formation; after **one month** from the
@@ -1136,20 +1136,20 @@ insurer learning of the breach; after **two years** from the 보장개시일 wit
 the insurer accepted on a health-examination document and the claim arises from a matter
 stated in it; or where the 보험설계사 prevented truthful disclosure [REG-R25]. A causation
 defence applies, and non-disclosure of **other insurance held** is expressly not a ground —
-which matters on an indemnity product where duplicate cover is real [REG-R25 제14조제5항].
+which matters on an indemnity product where duplicate cover is real [REG-R25 제14조제5항](#krlib-reg-r25).
 Fraud — proxy examination, drugs taken to pass underwriting, forged certificates, concealment
 of a pre-application cancer or HIV diagnosis — allows cancellation within **five years** of
-the 보장개시일 and one month of discovery [REG-R25 제15조].
+the 보장개시일 and one month of discovery [REG-R25 제15조](#krlib-reg-r25).
 
 **청약철회** is the statutory cooling-off right of 금융소비자보호법 제46조제1항제1호:
 「「상법」 제640조에 따른 보험증권을 받은 날부터 **15일**과 청약을 한 날부터 **30일** 중
 먼저 도래하는 기간」, effective on despatch, with no damages or penalty, and ineffective if
 a claim event has already occurred unless the policyholder withdrew knowing it had [REG-R51]
-[REG-R25 제17조]. The 표준약관's exclusion for contracts of 90 days or less does not reach a
+[REG-R25 제17조](#krlib-reg-r25). The 표준약관's exclusion for contracts of 90 days or less does not reach a
 one-year 실손 contract. **품질보증해지** allows cancellation within **three months** of
 formation where the 약관 was not delivered, its important content not explained, or the
 policyholder did not sign, with premiums returned plus 보험계약대출이율 interest — 상법
-제638조의3제2항 is the statutory source [REG-R25 제18조제3항] [REG-R49]. `krlib` models from
+제638조의3제2항 is the statutory source [REG-R25 제18조제3항](#krlib-reg-r25) [REG-R49]. `krlib` models from
 the point cover is in force and treats both windows as out of scope: they are pre-inception
 decrements and modelling them would need a new-business funnel this library does not have.
 
@@ -1162,7 +1162,7 @@ one deferred item is the two-year wait on 불임관련 질환 급여 cover intro
 ### Grace, lapse, reinstatement and the persistency basis
 
 A missed premium produces a 납입최고 (demand) of at least **14 days**, after which the
-contract terminates the day after the period ends [REG-R25 제26조]. **There is nothing to
+contract terminates the day after the period ends [REG-R25 제26조](#krlib-reg-r25). **There is nothing to
 break the fall**: with no surrender value there is no 보험료 자동대출납입 to advance the
 premium, and 표준약관 제33조 excludes 「순수보장성보험 등」 from policy lending anyway
 [REG-R25]. The lapse is real and immediate — the same structural position as the
@@ -1170,7 +1170,7 @@ premium, and 표준약관 제33조 excludes 「순수보장성보험 등」 from
 same route. **부활** is available within **three years** where the surrender value has not
 been drawn, which on this contract is always, on payment of arrears with interest at a rate
 within 평균공시이율 + 1%; the insurer may not refuse because a claim event occurred before
-termination [REG-R25 제27조].
+termination [REG-R25 제27조](#krlib-reg-r25).
 
 **No 실손-specific persistency table exists in public.** The best retrieved proxy is the
 run-off of the closed generations: the 1–3세대 in-force block fell by **99만건 (3.3%)** in
@@ -1225,7 +1225,7 @@ rather than on the 실손 covers. What follows lists what `Medical_KR_S` carries
 
 - **노후실손의료보험** and **유병력자실손의료보험** — separate families with their own
   co-payments, issue ages (raised to 90 on both from 2025-04-01), cover ages (110 on 노후실손)
-  and **three-year** change cycles [R17] [REG-R17 제7-63조제2항제5호]; the FSS reports them as
+  and **three-year** change cycles [R17] [REG-R17 제7-63조제2항제5호](#krlib-reg-r17); the FSS reports them as
   a separate 2.4% block outside the five generations [R7], and their parameter detail is
   [unverified].
 - **단체실손의료보험** (group cover) — excluded from the FSS statistics this model calibrates
@@ -1428,7 +1428,7 @@ the 산출방법서 published: it is a 기초서류 under 보험업법 제5조�
 verified but not disclosed [REG-R2]. The 선임계리사 verifies it under 제184조제1항 and is
 barred from product development, the CEO role and the CFO role by 제184조제7항 [REG-R5]. The
 public sees the result only as a **보험가격지수**, and for 실손 that index must be explained at
-**every renewal** [REG-R22 제7-45조제7항]. **This is the exact boundary at which
+**every renewal** [REG-R22 제7-45조제7항](#krlib-reg-r22). **This is the exact boundary at which
 `Medical_KR_S` marks its morbidity and severity basis [std]**, and the reason is a positive
 finding rather than a failed retrieval.
 
@@ -1505,3 +1505,53 @@ fulfilment cash flow, no K-ICS requirement, no 해약환급금준비금, no 비�
 policyholder tax. `Medical_KR_S` produces a liability cash-flow projection — premiums net of
 expenses, less claims, on a monthly grid, through the renewal and re-entry machinery — and
 leaves every measurement basis to be applied to it downstream.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-indemnity_medical-r1
+[R10]: #krlib-indemnity_medical-r10
+[R11]: #krlib-indemnity_medical-r11
+[R12]: #krlib-indemnity_medical-r12
+[R13]: #krlib-indemnity_medical-r13
+[R14]: #krlib-indemnity_medical-r14
+[R15]: #krlib-indemnity_medical-r15
+[R16]: #krlib-indemnity_medical-r16
+[R17]: #krlib-indemnity_medical-r17
+[R19]: #krlib-indemnity_medical-r19
+[R2]: #krlib-indemnity_medical-r2
+[R20]: #krlib-indemnity_medical-r20
+[R3]: #krlib-indemnity_medical-r3
+[R4]: #krlib-indemnity_medical-r4
+[R5]: #krlib-indemnity_medical-r5
+[R6]: #krlib-indemnity_medical-r6
+[R7]: #krlib-indemnity_medical-r7
+[R8]: #krlib-indemnity_medical-r8
+[R9]: #krlib-indemnity_medical-r9
+[REG-R1]: #krlib-reg-r1
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R17]: #krlib-reg-r17
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R25]: #krlib-reg-r25
+[REG-R3]: #krlib-reg-r3
+[REG-R33]: #krlib-reg-r33
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R41]: #krlib-reg-r41
+[REG-R44]: #krlib-reg-r44
+[REG-R49]: #krlib-reg-r49
+[REG-R5]: #krlib-reg-r5
+[REG-R50]: #krlib-reg-r50
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R53]: #krlib-reg-r53
+[REG-R54]: #krlib-reg-r54
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R7]: #krlib-reg-r7
+[REG-R8]: #krlib-reg-r8
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

@@ -48,6 +48,8 @@ those are not cited by any of this product's documents and so have no entry here
 
 ## Primary product sources
 
+(krlib-pension_savings-s1)=
+
 ### S1 — 「무배당 우리WON인터넷연금저축보험 상품요약서」, ABL생명 (상품요약서)
 
 - URL:
@@ -70,6 +72,8 @@ those are not cited by any of this product's documents and so have no entry here
   guarantee ladder; and the finding that the composite's early-duration 환급률 is the
   direct-channel product's rather than the tied-channel product's.
 
+(krlib-pension_savings-s2)=
+
 ### S2 — 「연금저축나이스플랜연금보험2601」 상품안내장, ABL생명 (보험안내자료)
 
 - URL:
@@ -90,6 +94,8 @@ those are not cited by any of this product's documents and so have no entry here
   is available up to the day before the 연금개시일. It is the one document in the set that
   fixes accumulation and annuitisation on a single consistent basis.
 
+(krlib-pension_savings-s3)=
+
 ### S3 — 「무배당 ABL인터넷연금저축보험 보험약관」, ABL생명 (약관 — policy conditions)
 
 - URL:
@@ -105,6 +111,8 @@ those are not cited by any of this product's documents and so have no entry here
   최소 연금지급기간 tables that translate the 연금수령한도 into a minimum payout term.
 - Rests on it: `tax_table.csv`'s 연금수령 rows — `min_annuity_age`, `min_account_years`,
   `limit_denominator_base` and `limit_uplift` — and `annuity_limit_pp`, jointly with [R6].
+
+(krlib-pension_savings-s4)=
 
 ### S4 — 「한화생명 e연금저축보험 무배당 약관」, 한화생명 (약관 + 가이드북)
 
@@ -126,6 +134,8 @@ those are not cited by any of this product's documents and so have no entry here
   which is model point 9's `min_fund_on = 0`; one of the six independent statements of the
   ratchet clause; and the rule that `charge_from_av_pp` does not consult the guarantee.
 
+(krlib-pension_savings-s5)=
+
 ### S5 — 「삼성생명 연금저축골드연금보험 B1.4(무배당)」 상품안내장, 삼성생명 (보험안내자료)
 
 - URL: <https://image.kebhana.com/cont/download/insdocument/leaflet/08L03014230_r.pdf>
@@ -145,6 +155,8 @@ those are not cited by any of this product's documents and so have no entry here
   the empirical confirmation of the 16.5% 기타소득세 bite; the absence of a premium waiver;
   and the top of the observed guarantee range.
 
+(krlib-pension_savings-s6)=
+
 ### S6 — 「e-NH연금저축보험(무배당)_2404 약관」, NH농협생명 (약관 — policy conditions)
 
 - URL: <https://image.kebhana.com/cont/download/insdocument/provide/L42014209M_agree.pdf>
@@ -160,6 +172,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the age-basis convention of the whole model and the **[std]** simplification
   that reads both statutory tests off `age(t)`; the payout-form menu; and one more independent
   statement of the ratchet and of the death benefit.
+
+(krlib-pension_savings-s7)=
 
 ### S7 — 「우체국연금저축보험 2504 상품요약서」, 우체국보험 (상품요약서 — statutory summary)
 
@@ -184,6 +198,8 @@ those are not cited by any of this product's documents and so have no entry here
   statutory carve-out from 보험업법 — so its schedule is quoted as a bracket on market
   practice, never as evidence of what 감독규정 requires.
 
+(krlib-pension_savings-s8)=
+
 ### S8 — 「연금저축손해보험 현대해상다이렉트연금보험(Hi2504)」, 현대해상 (약관 + 상품안내)
 
 - URL: <https://direct.hi.co.kr/dhNAS/terms/CM106N_20250901.pdf>
@@ -202,6 +218,8 @@ those are not cited by any of this product's documents and so have no entry here
   return; the bottom of the observed guarantee range; the 납입유예 shape; and the
   life/non-life scope boundary the specification draws.
 
+(krlib-pension_savings-s9)=
+
 ### S9 — 「연금저축 교보First연금보험 약관」, 교보생명 (약관 — policy conditions)
 
 - URL: <https://lawinsider.com/ko/contracts/aXubiP59oQE>
@@ -219,6 +237,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the observed range of the guarantee ladder, and one more independent
   attestation of the ratchet. No composite parameter is taken from it.
 
+(krlib-pension_savings-s10)=
+
 ### S10 — 「(무)AIA 여유+ 변액연금보험 상품요약서」, AIA생명 (상품요약서 — statutory summary)
 
 - URL:
@@ -235,6 +255,8 @@ those are not cited by any of this product's documents and so have no entry here
   **No accumulation, expense, tax or rate parameter in this product rests on it.** It belongs
   primarily to `_research/variable-annuity.md`.
 
+(krlib-pension_savings-s11)=
+
 ### S11 — 「e원금보장 KDB하이브리드연금저축보험(무)」 상품 페이지, KDB생명 (product page)
 
 - URL: <http://direct.kdblife.co.kr/edirect/product/hybrsavingDetail.do>
@@ -249,6 +271,8 @@ those are not cited by any of this product's documents and so have no entry here
   2024-10 point in the observed declared-rate range; and the consumer-side corroboration of
   the grossed-up credit rates.
 
+(krlib-pension_savings-s12)=
+
 ### S12 — 「금리연동이율공시」, DB생명보험주식회사 (공시이율 disclosure)
 
 - URL: <https://www.idblife.com/notice/product/tmo_int>
@@ -259,6 +283,8 @@ those are not cited by any of this product's documents and so have no entry here
   one date. It is the only retrieved source that dates a declared rate to the current month.
 - Rests on it: the top of the 2.1%–3.0% observed range against which the composite's 2.15% is
   described as the conservative arm, and the 19-basis-point intra-carrier spread `[derived]`.
+
+(krlib-pension_savings-s13)=
 
 ### S13 — 「적용이율 공시 — 최저보증이율 및 경과기간별 중도해지율」, 하나생명 (공시자료)
 
@@ -272,6 +298,8 @@ those are not cited by any of this product's documents and so have no entry here
   argument that `lapse_table.csv` must be **[std]** — this is the one regulatory disclosure in
   Korea that has a lapse-by-duration column, and the carrier declines to populate it.
 
+(krlib-pension_savings-s14)=
+
 ### S14 — 「적용이율 공시 — 표준이율 및 평균공시이율」, 하나생명 (공시자료 — rate disclosure)
 
 - URL: <https://www.hanalife.co.kr/anm/interestRate/interestRate_tab6.do>
@@ -284,6 +312,8 @@ those are not cited by any of this product's documents and so have no entry here
   model only inside `surr_chg_cap_pp` (별표 14 주6's discounting) and as the ceiling reference
   for the **[std]** policy-loan rate.
 
+(krlib-pension_savings-s15)=
+
 ### S15 — 「적용이율공시 최저보증이율(연금저축상품)」, 교보라이프플래닛 (공시자료)
 
 - URL: <https://www.lifeplanet.co.kr/disclosure/good/HPDA45S2.dev>
@@ -292,6 +322,8 @@ those are not cited by any of this product's documents and so have no entry here
   did not return.
 - A third guarantee-ladder shape, 1.25% / 1.00% / **0.75%**, with the effective dates of the
   products it applies to. Cited only in the variation table of `product-spec.md`.
+
+(krlib-pension_savings-s16)=
 
 ### S16 — 「연금저축 비교공시 — 가입시 유의사항」, 하나생명 (비교공시 boilerplate)
 
@@ -304,6 +336,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the wrapper comparison in `product-spec.md`'s overview, and the 16.5%
   기타소득세 statement counted among the nine carrier documents that state it identically.
 
+(krlib-pension_savings-s19)=
+
 ### S19 — 연금저축 비교공시 › 판매회사별 적립금, 금융감독원 (통합연금포털 display)
 
 - URL: <https://www.fss.or.kr/fss/lifeplan/goodsCmpr/list.do?menuNo=200961>
@@ -315,6 +349,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: nothing quantitative. It is cited as **negative evidence** in the lapse
   argument — the supervisor's own comparison display exists, and it did not yield a current
   behavioural series.
+
+(krlib-pension_savings-s20)=
 
 ### S20 — 공시실 (pub.insure.or.kr), 생명보험협회 (industry disclosure portal)
 
@@ -331,6 +367,8 @@ those are not cited by any of this product's documents and so have no entry here
 
 ## Regulatory and actuarial references
 
+(krlib-pension_savings-r1)=
+
 ### R1 — 소득세법 제59조의3 (연금계좌세액공제), 법제처 (primary legislation)
 
 - URL: <https://casenote.kr/법령/소득세법/제59조의3> (consulted through CaseNote).
@@ -344,6 +382,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: `tax_table.csv`'s `credit_*` rows and `tax_credit_pp`, and the statement that
   Korean relief is a **credit and not a deduction**.
 
+(krlib-pension_savings-r2)=
+
 ### R2 — 소득세법 제20조의3 (연금소득), 법제처 (primary legislation)
 
 - URL: <https://casenote.kr/법령/소득세법/제20조의3>. Accessed: 2026-09-03. Retrieved:
@@ -355,6 +395,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the wrapper definition in `product-spec.md` and the reason the 기타소득세 base
   is the payout less uncredited contributions rather than the whole payout.
 
+(krlib-pension_savings-r3)=
+
 ### R3 — 소득세법 제14조 제3항 (분리과세 소득), 법제처 (primary legislation)
 
 - URL: <https://casenote.kr/법령/소득세법/제14조>. Accessed: 2026-09-03. Retrieved: **yes**.
@@ -365,6 +407,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: `tax_table.csv`'s `aggregation_threshold` and the routing of the 16.5%
   기타소득세 as a final separate charge rather than an aggregated one.
 
+(krlib-pension_savings-r4)=
+
 ### R4 — 소득세법 제64조의4 (분리과세연금소득 세액계산 특례), 법제처 (primary legislation)
 
 - URL: <https://casenote.kr/법령/소득세법/제64조의4>. Accessed: 2026-09-03. Retrieved:
@@ -374,6 +418,8 @@ those are not cited by any of this product's documents and so have no entry here
   tax" election every carrier document describes for an above-threshold annuity.
 - Rests on it: the above-threshold branch of the tax discussion in `product-spec.md`. Nothing
   in `net_cf` depends on it.
+
+(krlib-pension_savings-r5)=
 
 ### R5 — 소득세법 제129조 (원천징수세율) 제1항제5호·제5호의2, 법제처 (primary legislation)
 
@@ -389,6 +435,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: `tax_table.csv`'s four `pension_tax_rate_*` rows and `pension_tax_rate(t)`, and
   the finding that the tax code pays a **2.2-percentage-point** standing premium for
   annuitising for life.
+
+(krlib-pension_savings-r6)=
 
 ### R6 — 소득세법 시행령 제40조의2 (연금계좌 등), 법제처 (enforcement decree)
 
@@ -407,6 +455,8 @@ those are not cited by any of this product's documents and so have no entry here
   `annuity_year_no` and `check_annuity_limit`; and the statutory constraints the projection is
   required to respect.
 
+(krlib-pension_savings-r7)=
+
 ### R7 — 소득세법 시행령 제187조의2 (종신계약의 범위), 법제처 (enforcement decree)
 
 - URLs tried: <https://www.taxcanvas.kr/core/law/0039562026052236343/history/2026-05-22/articles/0187021>;
@@ -423,6 +473,8 @@ those are not cited by any of this product's documents and so have no entry here
   종신계약 status** is [unverified], and with it the flat 3.3% withholding at the anchor cell
   and the 100%-life-form annuitisation election.
 
+(krlib-pension_savings-r8)=
+
 ### R8 — 「연금계좌 세액공제」, 국세청 (National Tax Service) (tax authority guidance)
 
 - URL: <https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7875>. Accessed:
@@ -432,6 +484,8 @@ those are not cited by any of this product's documents and so have no entry here
   of 10% of the transferred amount capped at ₩3,000,000**.
 - Rests on it: corroboration of the credit rates and caps, and the ISA add-on noted as out of
   scope in `product-spec.md`.
+
+(krlib-pension_savings-r9)=
 
 ### R9 — 「연금소득 원천징수 방법」, 국세청 (tax authority guidance)
 
@@ -443,6 +497,8 @@ those are not cited by any of this product's documents and so have no entry here
   2026 variants, and states the above-threshold 분리과세 15% election.
 - Rests on it: the same `pension_tax_rate_*` rows as [R5], read twice from independent sources
   because the 2026 change is recent enough to be mis-stated in secondary material.
+
+(krlib-pension_savings-r10)=
 
 ### R10 — 「연금세제 안내 › 연금저축 세제 › 세액공제」, 금융감독원 (supervisory guidance)
 
@@ -456,6 +512,8 @@ those are not cited by any of this product's documents and so have no entry here
   **[unverified]** at instrument level because the 지방세법 imposing the surtax was not
   retrieved — see [REG-R56].
 
+(krlib-pension_savings-r11)=
+
 ### R11 — 사적연금제도 › 개인연금제도 › 연금저축, 법제처 (plain-language consolidation)
 
 - URL:
@@ -467,6 +525,8 @@ those are not cited by any of this product's documents and so have no entry here
   change**: 70세 미만 확정형 5.5% / 종신형 3.3%, 70–80세 4.4% / 3.3%, 80세 이상 3.3%.
 - Rests on it: the third independent statement of the withholding bands, and the wrapper
   taxonomy in `product-spec.md`.
+
+(krlib-pension_savings-r12)=
 
 ### R12 — 「연금저축 길라잡이」, 금융감독원 (consumer guide, 12 pp. PDF)
 
@@ -483,6 +543,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the fee-shape contrast that separates this product from its two sibling
   wrappers, and an independent worked example of the 연금수령한도 formula.
 
+(krlib-pension_savings-r13)=
+
 ### R13 — 「2025년 우리나라 연금저축(PSA) 투자 백서」 보도자료, 금융감독원 (press release)
 
 - URL: <https://www.fss.or.kr/fss/bbs/B0000188/view.do?nttId=218674&menuNo=200218>, 등록일
@@ -495,6 +557,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the market context in `product-spec.md`, and — as the third strand of the lapse
   argument — the money moving from insurance to funds, which is 계좌이체 rather than surrender.
   The failure of its attachments is one of the two reasons `lapse_table.csv` is **[std]**.
+
+(krlib-pension_savings-r14)=
 
 ### R14 — 보험업감독규정 [별표 14] 표준해약공제액 (제7-66조 관련), 금융위원회 (고시 별표)
 
@@ -511,6 +575,8 @@ those are not cited by any of this product's documents and so have no entry here
   reason the composite is written 무배당. Cited jointly with the cross-product copy of the
   same schedule at [REG-R20], which was retrieved separately.
 
+(krlib-pension_savings-r16)=
+
 ### R16 — 보험업법 제176조 (보험요율 산출기관), 법제처 (primary legislation)
 
 - URL: <https://casenote.kr/법령/보험업법/제176조>. Accessed: 2026-09-03. Retrieved: **yes**.
@@ -522,6 +588,8 @@ those are not cited by any of this product's documents and so have no entry here
   publication obligation.**
 - Rests on it: the legal frame for 경험생명표 and 개인연금사망률, and hence the central
   statement that `mort_table.csv` must be a **[std]** construction rather than a copy.
+
+(krlib-pension_savings-r17)=
 
 ### R17 — 보도자료 목록, 보험개발원 (KIDI) (press-release index)
 
@@ -535,6 +603,8 @@ those are not cited by any of this product's documents and so have no entry here
   cross-product entry [REG-R33], and why every quantitative mortality row in this product is
   **[std]**.
 
+(krlib-pension_savings-r18)=
+
 ### R18 — 「제10회 경험생명표 개정…소비자에 미치는 영향은」, 보험매일 (news report)
 
 - URL: <https://www.fins.co.kr/news/articleView.html?idxno=99460>, 김명재 기자, 2024-01-10.
@@ -547,6 +617,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the size of the vintage step that `annuitant_revised` represents, and — jointly
   with [R20] — the corroboration that the base factor is struck on the **가입시점** table.
 
+(krlib-pension_savings-r19)=
+
 ### R19 — 「4월부터 연금보험 수령액 줄어든다…」, 보험저널 (news report)
 
 - URL: <https://www.insjournal.co.kr/news/articleView.html?idxno=21975>, 강성용 기자,
@@ -558,6 +630,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the magnitude used to argue that a revision normally **decreases** the annuity,
   so the ratchet is out of the money in the base run.
 
+(krlib-pension_savings-r20)=
+
 ### R20 — 「2024년 개정 경험생명표 보험료 영향은」, 웰스매니지먼트 (opinion column)
 
 - URL: <http://www.wealthm.co.kr/news/articleView.html?idxno=11407>, 김희정, 2024-07-03.
@@ -567,6 +641,8 @@ those are not cited by any of this product's documents and so have no entry here
   당시 경험생명표를 바탕으로 이미 보험료가 결정돼 있어 영향을 받지 않는다」.
 - Rests on it: the second corroboration that a table revision reaches new business only, which
   is the inference the `issue` vintage default is built on.
+
+(krlib-pension_savings-r21)=
 
 ### R21 — 「근로·퇴직·이연퇴직소득 등 과세제도 개선」 (2025년 조세개정안), 조세일보 (news)
 
@@ -579,6 +655,8 @@ those are not cited by any of this product's documents and so have no entry here
 - Rests on it: the dating of `pension_tax_rate_life` = 3.3% and the description of the change
   as recent rather than settled.
 
+(krlib-pension_savings-r22)=
+
 ### R22 — 「연금저축 적립금 198조 돌파…」, 뉴스핌 (news report)
 
 - URL: <https://www.newspim.com/news/view/20260618000323>, 2026-06-18. Accessed: 2026-09-03.
@@ -589,6 +667,8 @@ those are not cited by any of this product's documents and so have no entry here
   금융투자회사 55.4조원 (27.9%), 은행 19.5조원 (9.8%), 공제기관 9.0조원 (4.6%).
 - Rests on it: the market-size and mix figures in `product-spec.md`, and the second strand of
   the lapse argument — the direction and speed of the move to funds.
+
+(krlib-pension_savings-r24)=
 
 ### R24 — 「경험생명표」, 보험개발원 빅데이터 플랫폼 (data portal)
 
@@ -698,3 +778,28 @@ guaranteed life annuity is [unverified]; **no published 보험계약대출이율
 the published 사업비 figures being contractual loadings rather than the insurer's own costs
 [S1] [S7]. Each is stated at the point of use, and each is why a parameter carries **[std]**
 rather than a citation.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-pension_savings-r1
+[R13]: #krlib-pension_savings-r13
+[R14]: #krlib-pension_savings-r14
+[R16]: #krlib-pension_savings-r16
+[R17]: #krlib-pension_savings-r17
+[R18]: #krlib-pension_savings-r18
+[R19]: #krlib-pension_savings-r19
+[R2]: #krlib-pension_savings-r2
+[R20]: #krlib-pension_savings-r20
+[R24]: #krlib-pension_savings-r24
+[R5]: #krlib-pension_savings-r5
+[R6]: #krlib-pension_savings-r6
+[R7]: #krlib-pension_savings-r7
+[R8]: #krlib-pension_savings-r8
+[REG-R20]: #krlib-reg-r20
+[REG-R26]: #krlib-reg-r26
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R48]: #krlib-reg-r48
+[REG-R56]: #krlib-reg-r56
+[REG-R62]: #krlib-reg-r62
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

@@ -118,7 +118,7 @@ library-wide meaning of `proj_len`, and not a row count.
 ## The horizon is two 재가입 cycles, and it is stated rather than contractual
 
 Ten policy years — two five-year 보장내용 변경주기 [S1 제23조]
-[REG-R17 제7-63조제2항제6호나목] — or the run to `max_cover_age = 100` on 보험나이 if that
+[REG-R17 제7-63조제2항제6호나목](#krlib-reg-r17) — or the run to `max_cover_age = 100` on 보험나이 if that
 comes first, which on the shipped model points it does not.
 
 The distinction is the point, and it is why `reentry_cycles = 2` is a Reference rather than
@@ -170,7 +170,7 @@ covered cost and 20% above it, so a ₩10,000 visit pays nothing, a ₩50,000 vi
 급여 통원 blend at `clinic_share = 0.63` is 1.05% wrong while its tiers are +6.36% / −17.01%.
 
 **3. The ₩2,000,000 annual inpatient co-payment cap, on what remains** — the `top_up` term
-of `claims_ge_in_pp` [S1 제5조제4항] [REG-R17 제7-63조제2항제2호]. Applied second, and to
+of `claims_ge_in_pp` [S1 제5조제4항] [REG-R17 제7-63조제2항제2호](#krlib-reg-r17). Applied second, and to
 the retention that *survives* the truncation, because both reliefs run in the same direction
 and applying them in parallel double-counts.
 
@@ -292,7 +292,7 @@ to the corridor — `basis_incr_ge(y)` at `med_trend_ge = 0.010` and `basis_incr
 spend [R9] [REG-R41]. That **[std]** re-rating rule is what keeps each unit's loss ratio
 stable unless the corridor clips it, and it is why the two units are re-rated separately:
 the corridor binds **per 위험구분단위** and not on the portfolio average
-[S1 제30조제2항] [REG-R17 제7-63조제2항제3호], which is what `check_renewal_corridor()` tests
+[S1 제30조제2항] [REG-R17 제7-63조제2항제3호](#krlib-reg-r17), which is what `check_renewal_corridor()` tests
 — each unit, against the age-adjusted prior premium.
 
 The relativity is applied **only to the rider**, in `prem_gross_mth(y)` and never to
@@ -332,7 +332,7 @@ asserts the name list instead.
 
 - **No death benefit.** On death from a non-covered cause the contract pays the 계약자적립액
   and the 미경과보험료, and on a one-year pure protection contract the 계약자적립액 is nil
-  [REG-R17 제7-63조제1항제1호] [REG-R25 제22조]. Mortality is therefore a pure
+  [REG-R17 제7-63조제1항제1호](#krlib-reg-r17) [REG-R25 제22조](#krlib-reg-r25). Mortality is therefore a pure
   **liability-releasing** decrement, there is no `claims_death`, and the direction of
   prudence is inverted with it: an *over*-statement of mortality is *anti*-conservative.
 - **No surrender value.** 「이 상품은 1년만기 순수보장성 상품으로 해약환급금이 발생하지
@@ -702,3 +702,43 @@ check it against [`technical-notes.md`](technical-notes.md) by eye:
 ```bash
 python -m pytest tests -q
 ```
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-indemnity_medical-r1
+[R10]: #krlib-indemnity_medical-r10
+[R12]: #krlib-indemnity_medical-r12
+[R16]: #krlib-indemnity_medical-r16
+[R17]: #krlib-indemnity_medical-r17
+[R19]: #krlib-indemnity_medical-r19
+[R2]: #krlib-indemnity_medical-r2
+[R20]: #krlib-indemnity_medical-r20
+[R3]: #krlib-indemnity_medical-r3
+[R5]: #krlib-indemnity_medical-r5
+[R6]: #krlib-indemnity_medical-r6
+[R7]: #krlib-indemnity_medical-r7
+[R8]: #krlib-indemnity_medical-r8
+[R9]: #krlib-indemnity_medical-r9
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R17]: #krlib-reg-r17
+[REG-R19]: #krlib-reg-r19
+[REG-R2]: #krlib-reg-r2
+[REG-R20]: #krlib-reg-r20
+[REG-R22]: #krlib-reg-r22
+[REG-R23]: #krlib-reg-r23
+[REG-R25]: #krlib-reg-r25
+[REG-R3]: #krlib-reg-r3
+[REG-R33]: #krlib-reg-r33
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R41]: #krlib-reg-r41
+[REG-R44]: #krlib-reg-r44
+[REG-R53]: #krlib-reg-r53
+[REG-R54]: #krlib-reg-r54
+[REG-R57]: #krlib-reg-r57
+[REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
+[REG-R8]: #krlib-reg-r8
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

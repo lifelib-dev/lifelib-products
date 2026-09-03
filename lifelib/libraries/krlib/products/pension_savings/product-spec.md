@@ -150,7 +150,7 @@ contracts [S1] [S7] [S8] and at 만19세 on one [S11].
 | Participation | 무배당 — no 계약자배당 | [S1] [S4] [S5] [S6] [S11]; pick **[std]** (1) |
 | Lives basis | Single life; 계약자 = 피보험자 = 연금수익자 | envelope **[std]** (2) |
 | Underwriting | None — 무진단, no material selection at issue | [S7]; adoption **[std]** (3) |
-| Age basis | **보험나이** throughout the contract; **만나이** for the statutory 만 55세 test | [S6 제20조] [REG-R25 제21조] |
+| Age basis | **보험나이** throughout the contract; **만나이** for the statutory 만 55세 test | [S6 제20조] [REG-R25 제21조](#krlib-reg-r25) |
 | 가입나이 (issue age) | 0 ~ (연금개시나이 − 납입기간); **0–45** on the representative term | [S1] [S7] [S8]; envelope **[std]** (4) |
 | 연금개시나이 | 만 55 ~ 80세, elected at issue; representative **65** | [S1] [S7] [S8] [S9] [S11]; pick **[std]** (5) |
 | 납입기간 | 5 / 10 / 15 / 20년 / 전기납; representative **20년** | [S1]; pick **[std]** (5) |
@@ -160,9 +160,9 @@ contracts [S1] [S7] [S8] and at 만19세 on one [S11].
 | 기본보험료 | **₩500,000 a month (₩6,000,000 a year)** | band [S2]; anchor **[std]** (6) |
 | 납입주기 | 월납 in the contract; annual on the projection grid | [S1] [S2] [S6] [S7]; grid **[std]** (7) |
 | 추가납입 | 연금저축추가납입특약, ≤ 200% of the year's basic premiums; **off in the base run** | [S2] [S5] [S7] [S8]; scope **[std]** (8) |
-| Annual contribution ceiling | **₩18,000,000 (1,800만원)** across all 연금계좌 at every institution | [R6 제40조의2제2항제1호] [R11] [REG-R56] [S1] [S2] [S8] |
+| Annual contribution ceiling | **₩18,000,000 (1,800만원)** across all 연금계좌 at every institution | [R6 제40조의2제2항제1호](#krlib-pension_savings-r6) [R11] [REG-R56] [S1] [S2] [S8] |
 | Currency | KRW | all sources |
-| 예금자보호 | **₩100,000,000 (1억원)**, in the 연금저축계좌 bucket, separate from the carrier's other 보험금 claims | [REG-R52 제18조제7항] [REG-R32]; [S2] [S6] [S11] state ₩100,000,000 |
+| 예금자보호 | **₩100,000,000 (1억원)**, in the 연금저축계좌 bucket, separate from the carrier's other 보험금 claims | [REG-R52 제18조제7항](#krlib-reg-r52) [REG-R32]; [S2] [S6] [S11] state ₩100,000,000 |
 | **Anchor model cell** | Male, 보험나이 40 at issue; 기본보험료 ₩500,000 a month for 20 years to 보험나이 60 (₩120,000,000 cumulative); annuity from 보험나이 65; 종신연금형 with a 10-year guarantee; 공시이율 2.15%; no 추가납입, no policy loan | **[std]** (6) |
 
 Footnotes to [std] rows:
@@ -211,12 +211,12 @@ Footnotes to [std] rows:
    전기납 with a minimum of five years [S8]; 5 / 7 / 10 / 20 [S11]. The composite takes
    **20-year pay to 60 and annuity at 65**, which is the model point one carrier publishes its
    whole illustration set on [S2]. Three properties follow and are the reason for the choice.
-   The premium term clears the statutory five-year account-age test [R6 제40조의2제3항제2호]
+   The premium term clears the statutory five-year account-age test [R6 제40조의2제3항제2호](#krlib-pension_savings-r6)
    with fifteen years to spare. The five-year gap between 납입완료 and 연금개시 is a real
    contractual state — premiums have stopped, the maintenance charge has not, and the fund is
    still accumulating — which a model that annuitises at 납입완료 cannot represent. And by 65
    the 연금수령연차 has reached 11, at which point the **연금수령한도 does not apply at all**
-   [R6 제40조의2제4항] [S3]; the composite therefore projects an unconstrained annuity and
+   [R6 제40조의2제4항](#krlib-pension_savings-r6) [S3]; the composite therefore projects an unconstrained annuity and
    states the constraint separately for the ages at which it binds.
 6. **Anchor cell.** Premium rates for a Korean product are not public: the 예정이율, 위험률 and
    사업비율 live in the 산출방법서 (*sanchul bangbeopseo*, the calculation basis filed with the
@@ -270,9 +270,9 @@ Footnotes to [std] rows:
 | 최저보증이율 (floor) | **1.25%** to 5 years; **1.00%** over 5 to 10 years; **0.50%** over 10 years — compound annual | [S1] [S2] [S13]; adoption **[std]** (12) |
 | 보장부분 적용이율 / 예정이율 | **2.50% 연복리**, used to price the expense and benefit structure; **not** a guarantee | [S1] [S5] [S7] |
 | 평균공시이율 (2026) | **2.50%** — a supervisory illustration and discounting constraint, not a crediting rate | [REG-R48] [S2] [S14] |
-| 세액공제 rate | 15% where 종합소득금액 ≤ ₩45,000,000 (총급여 ≤ ₩55,000,000), else 12%; **16.5% / 13.2%** including the local surtax | [R1 제59조의3제1항] [R8] [R10] [REG-R56] (13) |
+| 세액공제 rate | 15% where 종합소득금액 ≤ ₩45,000,000 (총급여 ≤ ₩55,000,000), else 12%; **16.5% / 13.2%** including the local surtax | [R1 제59조의3제1항](#krlib-pension_savings-r1) [R8] [R10] [REG-R56] (13) |
 | 세액공제 한도 | **₩6,000,000** a year to 연금저축; **₩9,000,000** including 퇴직연금계좌 | [R1] [R8] [R10] [REG-R56] |
-| 보험계약대출 (policy loan) | Available within the surrender value; rate not published by any retrieved carrier. **Off in the base run** | [S1] [S2] [S4] [S5] [REG-R25 제33조]; scope **[std]** (14) |
+| 보험계약대출 (policy loan) | Available within the surrender value; rate not published by any retrieved carrier. **Off in the base run** | [S1] [S2] [S4] [S5] [REG-R25 제33조](#krlib-reg-r25); scope **[std]** (14) |
 | 납입유예 (payment holiday) | Up to 3 spells of 1 year at one carrier; charges still taken from the fund; premium dates and the annuity date deferred. **Off in the base run** | [S5] [S7] [S8]; scope **[std]** (14) |
 | Refund on a void contract | Premiums returned with interest at the 보험계약대출이율 | [S1] |
 
@@ -340,7 +340,7 @@ Footnotes to [std] rows:
     beneath it: 「공시이율을 적용하여 적립하는 금액은 공시이율이 0.25%인 경우,
     공시이율(0.25%)이 아닌 최저보증이율 … 로 적립됩니다」 [S4] [S8]. A 최저보증이율 is not
     optional: 감독규정 제7-60조제10호 requires every 금리연동형보험 to set one [REG-R16].
-13. **Credit rates.** The statutory rates are **12%** and **15%** [R1 제59조의3제1항] [R8]
+13. **Credit rates.** The statutory rates are **12%** and **15%** [R1 제59조의3제1항](#krlib-pension_savings-r1) [R8]
     [REG-R56]. The 13.2% and 16.5% every Korean consumer document quotes are those figures
     grossed up by the 10% 지방소득세 surtax; the supervisor states the grossed-up pair directly
     [R10], and five carrier documents repeat it [S5] [S11] [S16] [S1] [S2]. The surtax is
@@ -364,17 +364,17 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 계약자적립액 | 순보험료 accumulated at the 공시이율, floored at the 최저보증이율, computed per the 산출방법서 | [S1] [S2] [REG-R18 제7-65조] |
+| 계약자적립액 | 순보험료 accumulated at the 공시이율, floored at the 최저보증이율, computed per the 산출방법서 | [S1] [S2] [REG-R18 제7-65조](#krlib-reg-r18) |
 | Death benefit before annuitisation | **The 계약자적립액 at the date of death**; the contract then ends | [S1] [S2] [S4] [S6] |
 | Death cover above the fund | **None** | [S1] [S2] [S4] [S6]; adoption **[std]** (15) |
-| Why none is required | 감독규정 제7-60조제9호 requires a death benefit of at least cumulative premiums **except where the premium term ends at 80 or below** — here it ends at 60 | [REG-R16 제9호] |
+| Why none is required | 감독규정 제7-60조제9호 requires a death benefit of at least cumulative premiums **except where the premium term ends at 80 or below** — here it ends at 60 | [REG-R16 제9호](#krlib-reg-r16) |
 | Return-of-premium floor on death | Present at one carrier; **not adopted** | [S7]; scope **[std]** (15) |
-| 해약환급금 | **계약자적립액 − 해약공제액**, floored at zero | [S1] [S8] [REG-R19 제7-66조제1항제1호] |
+| 해약환급금 | **계약자적립액 − 해약공제액**, floored at zero | [S1] [S8] [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
 | 해약공제액 (surrender charge) | **Zero at every duration** | [S1]; adoption **[std]** (9) |
-| 표준해약공제액 cap | 연납순보험료 × **3%** × min(납입기간, 12) for a 무배당 연금저축보험, less 별표 14 주6's discounted loading | [REG-R20 주2·주5·주6] [R14] |
+| 표준해약공제액 cap | 연납순보험료 × **3%** × min(납입기간, 12) for a 무배당 연금저축보험, less 별표 14 주6's discounted loading | [REG-R20 주2·주5·주6](#krlib-reg-r20) [R14] |
 | — computed on the composite | ≈ **₩1,420,000**, about 2.8 months of 기본보험료 — headroom the composite does not use | **[std]** (16) |
-| 해약공제기간 | The premium term or the acquisition-cost loading period, **capped at 7 years** | [REG-R19 제7-66조제1항제2호] |
-| 미경과보험료 | Added to the surrender value on termination | [REG-R19 제7-66조제5항] |
+| 해약공제기간 | The premium term or the acquisition-cost loading period, **capped at 7 years** | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
+| 미경과보험료 | Added to the surrender value on termination | [REG-R19 제7-66조제5항](#krlib-reg-r19) |
 | Fund floor at 연금개시 | **100.1% of premiums paid** | [S2] [S4] [S7]; adoption **[std]** (17) |
 | — disapplication | Withdrawn, and the annuity date deferred instead, where a payment holiday or a one-instalment reinstatement caused the shortfall | [S4] [S6] [S7] |
 | Surrender after the first annuity payment | **Not available** on a 종신연금형 | [S2] [S4] [S5] [S9] [S10] |
@@ -477,7 +477,7 @@ Footnotes to [std] rows:
 | Death after the guarantee period | Nothing further; the contract ends | [S1] [S2] [S6] |
 | Death during a 확정기간 term | The remaining instalments are paid to the count (10 / 15 / 20회) | [S1] [S2] [S4] [S6] |
 | Guaranteed total vs the fund | The guaranteed instalments may total **less** than the fund at annuitisation | [S1] [S2] [S6] |
-| Contributions after annuitisation | Barred | [R6 제40조의2제2항제2호] |
+| Contributions after annuitisation | Barred | [R6 제40조의2제2항제2호](#krlib-pension_savings-r6) |
 | 상속연금형 | **Not offered** on any retrieved 연금저축보험 | [S1]–[S9] [S11]; treat as absent (19) |
 
 19. **Annuity menus, and why the composite takes a ten-year-guaranteed life annuity.** Observed
@@ -584,24 +584,24 @@ Footnotes to [std] rows:
 
 | Parameter | Representative value | Basis |
 |---|---|---|
-| 청약철회 (cooling-off) | **15 days** from receipt of the 보험증권 and never after **30 days** from the application; effective on dispatch; premiums returned within 3 business days | [REG-R51 제46조제1항제1호] [REG-R25 제17조]; [S2] [S5] state 15/30 |
-| 품질보증해지 | **3 months** from formation where the 약관 was not delivered or explained or the application was not signed; premiums returned with 보험계약대출이율 interest | [REG-R25 제18조제3항] [S2] [S5] [S7] |
-| 계약 전 알릴 의무 (disclosure) | Termination barred after **2 years** from the cover start (**1 year** for disease in a 진단계약), or **3 years** from the contract date, or **1 month** from the insurer learning of the breach | [REG-R25 제13조·제14조]; [S1] states 2 years / 1 year |
-| 사기에 의한 계약 | Cancellable within **5 years** of the cover start and 1 month of discovery | [REG-R25 제15조] [S1] [S7] |
-| 납입최고 (demand) | At least **14 days**; the contract terminates the day after the period ends | [REG-R25 제26조] [S2]; the postal insurer uses a longer window (23) |
-| 실효 (lapse) | Effect lost the day after the demand period ends | [S2] [REG-R25 제26조] |
-| 부활 (reinstatement) | Within **3 years** of termination, where the surrender value has not been drawn; arrears with interest, capped at 평균공시이율 + 1% | [REG-R25 제27조] [S7] [S8] |
+| 청약철회 (cooling-off) | **15 days** from receipt of the 보험증권 and never after **30 days** from the application; effective on dispatch; premiums returned within 3 business days | [REG-R51 제46조제1항제1호](#krlib-reg-r51) [REG-R25 제17조](#krlib-reg-r25); [S2] [S5] state 15/30 |
+| 품질보증해지 | **3 months** from formation where the 약관 was not delivered or explained or the application was not signed; premiums returned with 보험계약대출이율 interest | [REG-R25 제18조제3항](#krlib-reg-r25) [S2] [S5] [S7] |
+| 계약 전 알릴 의무 (disclosure) | Termination barred after **2 years** from the cover start (**1 year** for disease in a 진단계약), or **3 years** from the contract date, or **1 month** from the insurer learning of the breach | [REG-R25 제13조·제14조](#krlib-reg-r25); [S1] states 2 years / 1 year |
+| 사기에 의한 계약 | Cancellable within **5 years** of the cover start and 1 month of discovery | [REG-R25 제15조](#krlib-reg-r25) [S1] [S7] |
+| 납입최고 (demand) | At least **14 days**; the contract terminates the day after the period ends | [REG-R25 제26조](#krlib-reg-r25) [S2]; the postal insurer uses a longer window (23) |
+| 실효 (lapse) | Effect lost the day after the demand period ends | [S2] [REG-R25 제26조](#krlib-reg-r25) |
+| 부활 (reinstatement) | Within **3 years** of termination, where the surrender value has not been drawn; arrears with interest, capped at 평균공시이율 + 1% | [REG-R25 제27조](#krlib-reg-r25) [S7] [S8] |
 | 간편부활 (one-instalment reinstatement) | Pay one month's basic premium; the lapsed months' charges are taken from the fund, with any shortfall paid in; the annuity date shifts and the 100.1% floor is withdrawn | [S1] [S5] [S7] [S8]; scope **[std]** (23) |
 | Surrender before annuitisation | Available at any time; proceeds taxed as 기타소득 at **16.5%** | [S4] [S5] [S8]; and see *Contractual mechanics* |
 | Surrender after annuitisation | Barred on a 종신연금형 | [S2] [S4] [S5] [S9] [S10] |
 | Expiry | On the last guaranteed instalment where the annuitant has died; on the annuitant's death after the guarantee; on the last certain instalment on a 확정기간연금형 | [S1] [S2] [S6] |
 | Late-payment interest on benefits | 보험계약대출이율 for 30 days, then **+4.0%**, **+6.0%**, **+8.0%** in successive 30-day bands | [S4 별표2] |
-| 소멸시효 | 3 years | [REG-R25 제37조] [REG-R49 제662조] |
+| 소멸시효 | 3 years | [REG-R25 제37조](#krlib-reg-r25) [REG-R49 제662조](#krlib-reg-r49) |
 
 23. **Grace, lapse and reinstatement, and what the annual grid keeps.** The standard demand
     period is **at least 14 days** (7 where the policy term is under a year), stated in the
     표준약관 and reproduced in the retrieved contracts — 「그 때까지 보험료를 납입하지 않을
-    경우 납입최고(독촉)기간이 끝나는 날의 다음날 계약이 해지됩니다」 [S2] [REG-R25 제26조]. The
+    경우 납입최고(독촉)기간이 끝나는 날의 다음날 계약이 해지됩니다」 [S2] [REG-R25 제26조](#krlib-reg-r25). The
     postal insurer uses a longer window keyed to calendar months — 「기본보험료 납입유예 기간은
     납입기일부터 납입기일이 속하는 달의 다음 다음달의 마지막 날까지」 [S7]. On an annual grid
     the composite maps this to a **[std]** rule: a premium unpaid at `t` terminates the
@@ -611,7 +611,7 @@ Footnotes to [std] rows:
     this expressly to the case where a policy loan consumed it and to the case where there is
     none — on payment of arrears with interest at a rate the insurer sets **within 평균공시이율
     + 1%**, and the insurer may not refuse because a claim event occurred before termination
-    [REG-R25 제27조] [S7] [S8]. The **간편부활** variant is specific to this product family and
+    [REG-R25 제27조](#krlib-reg-r25) [S7] [S8]. The **간편부활** variant is specific to this product family and
     is the one that touches the model: pay one month's basic premium, and the charges for the
     lapsed months are taken from the fund, with any shortfall paid in [S1] [S5] [S7] [S8]. Its
     consequence is not the cash flow but the date — the premium due dates and the annuity date
@@ -632,7 +632,7 @@ premium term but not the maintenance charge. The **연금개시일** is the 계�
 insured's 보험나이 reaches the 연금개시나이 elected at issue [S1] [S2] [S6], and almost no
 mechanic survives it: surrender, transfer, policy loans, contributions and the annuity-form
 election all stop there, leaving commutation of unpaid guaranteed instalments as the
-annuitant's only remaining lever [S2] [S4] [R6 제40조의2제2항제2호].
+annuitant's only remaining lever [S2] [S4] [R6 제40조의2제2항제2호](#krlib-pension_savings-r6).
 
 On the annual grid write `t` for years since issue, `m` for the premium term (20 at the anchor
 cell), `d` for the gap between 납입완료 and 연금개시 (5) and `n = m + d` (25). Premiums fall at
@@ -642,7 +642,7 @@ for life, with the first ten instalments guaranteed.
 **Two age bases run through the contract and they differ for half of all issue dates.** The
 약관 age is 보험나이 — computed from the insured's exact age at the 계약일 by discarding a
 remainder under six months and rounding a remainder of six months or more up to a year, then
-increasing on each policy anniversary [REG-R25 제21조]. The statutory tests are on 만나이 (age
+increasing on each policy anniversary [REG-R25 제21조](#krlib-reg-r25). The statutory tests are on 만나이 (age
 last birthday). One retrieved contract states the split in terms, and it is the cleanest
 citation in this library for it:
 
@@ -669,14 +669,14 @@ Two ceilings sit above the premium and they are different in kind.
 
 **The contribution ceiling is ₩18,000,000 a year**, across every 연금계좌 the saver holds at
 every institution, excluding rider premiums other than the 연금저축추가납입특약 [R6
-제40조의2제2항제1호] [R11] [REG-R56]. One carrier states it as 「납입보험료의 연간 합계액
+제40조의2제2항제1호](#krlib-pension_savings-r6) [R11] [REG-R56]. One carrier states it as 「납입보험료의 연간 합계액
 (연금계좌를 취급하는 금융회사에 가입한 연금계좌의 합계액을 말하며, 특약보험료는 제외)은
 1,800만원 이내로 하며」 [S1]. It is a **statutory limit on the saver, not on the contract**, so
 an insurer cannot police it alone and a model of one contract cannot bind on it. No
-contribution may be made at all once annuitisation has been requested [R6 제40조의2제2항제2호].
+contribution may be made at all once annuitisation has been requested [R6 제40조의2제2항제2호](#krlib-pension_savings-r6).
 
 **The credit ceiling is ₩6,000,000 a year** to 연금저축, or ₩9,000,000 counting 연금저축
-(within its own ₩6,000,000) plus 퇴직연금계좌 contributions [R1 제59조의3제1항] [R8] [R10]
+(within its own ₩6,000,000) plus 퇴직연금계좌 contributions [R1 제59조의3제1항](#krlib-pension_savings-r1) [R8] [R10]
 [REG-R56]. The anchor premium of ₩6,000,000 sits exactly on it. Contributions above the credit
 cap are **not wasted but are not relieved**, and the contract carries machinery to recycle
 them: before requesting annuitisation the saver may ask that previously uncredited
@@ -786,7 +786,7 @@ computes it [REG-R9], published to the market through carriers' regulatory discl
 this product in four places and each is a constraint rather than a cash flow: the illustration
 rule, which requires the fund to be shown on the lesser of the 평균공시이율 and the carrier's
 own rate alongside two other bases [S2] [S5]; the 별표 14 주6 discount in the surrender-charge
-cap [REG-R20]; the reinstatement interest ceiling of 평균공시이율 + 1% [REG-R25 제27조]; and
+cap [REG-R20]; the reinstatement interest ceiling of 평균공시이율 + 1% [REG-R25 제27조](#krlib-reg-r25); and
 the 저축성보험 design test of 감독규정 제7-60조제3호, which a whole-life 생존연금 or a
 연금저축보험 may run at **평균공시이율 + 0.25%p** [REG-R16]. In 2026 the carrier's own rate
 (2.15%) is below the average (2.50%), so the middle illustration basis collapses onto the third
@@ -827,7 +827,7 @@ added on termination under 제7-66조제5항 [REG-R19].
 The **statutory cap** and its computation on the composite are in footnote 16. Two regulatory
 points travel with it. The **해약공제기간** — the period over which any deduction may be taken
 — is the premium term or the acquisition-cost loading period, **capped at seven years**
-[REG-R19 제7-66조제1항제2호], which is exactly the composite's 계약체결비용 period. And 별표 14
+[REG-R19 제7-66조제1항제2호](#krlib-reg-r19), which is exactly the composite's 계약체결비용 period. And 별표 14
 주5's coefficient is **3% for a 무배당 연금저축보험 against 4% for a participating one and 5%
 for a general 저축성보험**, with 주4's 6% concession for a whole-of-life survival annuity
 expressly **denied** to a 연금저축보험 [REG-R20] [R14]: the regulator has singled this product
@@ -914,7 +914,7 @@ stating as model properties, because each is a testable assertion about `Pension
    reaches the 연금개시일 in force.
 
 Where a claim is refused for an exclusion the standard Korean life 약관 pays the 계약자적립액
-at the date of death to the policyholder [REG-R25 제22조] — on this product, the same amount
+at the date of death to the policyholder [REG-R25 제22조](#krlib-reg-r25) — on this product, the same amount
 the benefit itself would have been. The exclusion set therefore has **no cash-flow consequence
 here** and is not modelled, and this document does not recite a list lifted from a protection
 product.
@@ -1046,18 +1046,18 @@ modelled without: whether the saver persists, and whether the saver annuitises f
 
 **On the way in: a credit, not a deduction.** 12% of contributions to a 연금계좌, or 15% where
 종합소득금액 is ₩45,000,000 or less (총급여액 ₩55,000,000 for employment income only), on up to
-₩6,000,000 a year to 연금저축 and ₩9,000,000 counting 퇴직연금 [R1 제59조의3제1항] [R8]
+₩6,000,000 a year to 연금저축 and ₩9,000,000 counting 퇴직연금 [R1 제59조의3제1항](#krlib-pension_savings-r1) [R8]
 [REG-R56]. Grossed up for the 10% local surtax the market quotes **16.5% and 13.2%** [R10],
 figures this document treats as [unverified] arithmetic on a verified base (footnote 13). At
 the ₩6,000,000 anchor contribution the credit is **₩990,000 or ₩792,000 a year** [S11]
 `[derived]`; at the ₩9,000,000 combined cap it is ₩1,485,000 or ₩1,188,000 `[derived]`. Where
 an 개인종합자산관리계좌 matures into a 연금계좌 the limit is enlarged by **10% of the converted
-amount, capped at ₩3,000,000** [R8] [R1 제59조의3제3항] [REG-R56]. **The higher-income band
+amount, capped at ₩3,000,000** [R8] [R1 제59조의3제3항](#krlib-pension_savings-r1) [REG-R56]. **The higher-income band
 gets the lower credit rate**, so the after-tax value of a contribution *falls* with income —
 the opposite of a deduction, and a fact that shapes who buys the product.
 
 **On the way out: three limbs, all of which must hold.** A withdrawal is 연금수령, and taxed as
-pension income, only if [R6 제40조의2제3항], reproduced verbatim in a filed 약관 부록 [S3]:
+pension income, only if [R6 제40조의2제3항](#krlib-pension_savings-r6), reproduced verbatim in a filed 약관 부록 [S3]:
 
 1. the saver has applied to begin drawing **after 55** — 「가입자가 55세 이후
    연금계좌취급자에게 연금수령 개시를 신청한 후 인출할 것」;
@@ -1072,10 +1072,10 @@ pension income, only if [R6 제40조의2제3항], reproduced verbatim in a filed
 ```
 
 The 연금수령연차 runs from the tax year in which drawing first became possible, and **where it
-is 11 or more the formula does not apply at all** [R6 제40조의2제4항] [S1] [S3]. Two exceptions
+is 11 or more the formula does not apply at all** [R6 제40조의2제4항](#krlib-pension_savings-r6) [S1] [S3]. Two exceptions
 to the starting count: an account opened before 2013-03-01 starts at year 6, and an account
 inherited by a spouse starts at the deceased's own 연금수령연차 [R6]. Anything above the limit
-is **deemed 연금외수령** [R6 제40조의2제5항].
+is **deemed 연금외수령** [R6 제40조의2제5항](#krlib-pension_savings-r6).
 
 Because the counter climbs by one each tax year, the limit is a **rising fraction of the
 balance** — 12% in year 1, 13.3% in year 2, 60% in year 9, 120% in year 10, unlimited from year
@@ -1127,7 +1127,7 @@ switch.
 
 **Aggregation.** Private pension income of **₩15,000,000 (1,500만원) or less** in a year is
 분리과세연금소득: the withholding settles the liability, though the taxpayer may elect to
-aggregate [R3 제14조제3항제9호다목]. Above it, the income enters 종합소득 at the graduated
+aggregate [R3 제14조제3항제9호다목](#krlib-pension_savings-r3). Above it, the income enters 종합소득 at the graduated
 rates, **or** the taxpayer may elect the special computation of 소득세법 제64조의4, which
 applies 100분의 15 — the "16.5% 분리과세" of the trade press [R4] [R9] [R11]. The threshold was
 **₩12,000,000** for the 2013–2022 tax years, which is what the older carrier documents still
@@ -1221,7 +1221,7 @@ explicitly rather than silently omitted.
 
 **청약철회.** 15 days from receipt of the 보험증권 and never after 30 days from the
 application, effective **on dispatch**, with premiums returned within three business days and
-late return carrying interest at the 보험계약대출이율 compounded annually [REG-R25 제17조]. The
+late return carrying interest at the 보험계약대출이율 compounded annually [REG-R25 제17조](#krlib-reg-r25). The
 statutory source is 금융소비자보호법 제46조제1항제1호 — 「「상법」 제640조에 따른 보험증권을
 받은 날부터 15일과 청약을 한 날부터 30일 중 먼저 도래하는 기간」 — with no damages or penalty
 on withdrawal and the right lost where a claim event has already occurred unless the
@@ -1231,7 +1231,7 @@ policyholder withdrew knowing it had [REG-R51]. Two carrier documents state the 
 **품질보증해지.** Three months from formation where the insurer failed to deliver the 약관 and
 the policyholder's copy of the application, failed to explain the important content, or the
 policyholder did not sign, with premiums returned plus 보험계약대출이율 interest [REG-R25
-제18조제3항] [S2] [S5] [S7]. The statutory source is 상법 제638조의3제2항 [REG-R49].
+제18조제3항](#krlib-reg-r25) [S2] [S5] [S7]. The statutory source is 상법 제638조의3제2항 [REG-R49].
 
 **계약 전 알릴 의무.** The 표준약관 states in terms that this is the 상법 고지의무. Termination
 for a breach is barred where the insurer knew or was negligent in not knowing at formation;
@@ -1239,14 +1239,14 @@ where **one month** has passed since it learned of the breach; where **two years
 from the 보장개시일 without a claim event (**one year** for disease in a 진단계약); where
 **three years** have passed since the contract date; where the insurer accepted on a health
 examination and the claim arises from a matter stated in it; or where the 보험설계사 prevented
-truthful disclosure [REG-R25 제13조·제14조]. One carrier states the two-year and one-year pair
+truthful disclosure [REG-R25 제13조·제14조](#krlib-reg-r25). One carrier states the two-year and one-year pair
 directly [S1]. **On this product the duty is close to inert**, because there is no underwriting
 and no death cover above the fund (footnotes 3 and 15): the insurer has almost nothing whose
 misstatement would change its risk. It is recorded because it is a term of the contract, not
 because it has a cash-flow consequence.
 
 **사기에 의한 계약.** Cancellable within five years of the 보장개시일 and one month of
-discovery [REG-R25 제15조] [S1] [S7]; premiums are returned with interest at the
+discovery [REG-R25 제15조](#krlib-reg-r25) [S1] [S7]; premiums are returned with interest at the
 보험계약대출이율 on this product [S1].
 
 ### Expiry and termination
@@ -1254,11 +1254,11 @@ discovery [REG-R25 제15조] [S1] [S7]; premiums are returned with interest at t
 The contract can end in five ways, and `Pension_KR_A` must be able to reach each of them:
 
 1. **Surrender before annuitisation** — the fund is paid, less any surrender charge (nil on the
-   composite) and any policy loan, plus 미경과보험료 [REG-R19 제7-66조제5항] [S1] [S8].
+   composite) and any policy loan, plus 미경과보험료 [REG-R19 제7-66조제5항](#krlib-reg-r19) [S1] [S8].
 2. **Death before annuitisation** — the fund is paid and the contract ends [S1] [S2] [S4] [S6],
    unless a spouse succeeds to it [S1] [S3] [S6] [S7] [S8].
 3. **Lapse** at the end of the demand period, with a three-year reinstatement window [REG-R25
-   제26조·제27조] [S2] [S7] [S8].
+   제26조·제27조](#krlib-reg-r25) [S2] [S7] [S8].
 4. **Transfer out** to another 연금저축 or an IRP — not a termination of the tax-recognised
    balance, but a termination of this contract [S1].
 5. **Death in payment after the guarantee period** on a 종신연금형 — nothing further is paid,
@@ -1295,12 +1295,12 @@ cover — from 보장성특약. On a 연금저축보험 almost every rider is of
 - **연금저축추가납입특약** — an optional module, off in the base run, carrying its own lighter
   charge basis (footnote 8) [S2] [S5] [S7] [S8].
 - **보험계약대출** — an optional module, off in the base run, because no retrieved document
-  gives a rate (footnote 14) [S1] [S2] [S4] [S5] [REG-R25 제33조].
+  gives a rate (footnote 14) [S1] [S2] [S4] [S5] [REG-R25 제33조](#krlib-reg-r25).
 - **납입유예 / 납입일시중지** — an optional module, off in the base run; when on, it defers the
   premium dates and the annuity date, keeps the charges running against the fund, and
   **withdraws the 100.1% guarantee** (footnote 14) [S5] [S7] [S8] [S4] [S6].
 - **부활 and 간편부활** — an optional module, off in the base run; when on, lapse is not
-  absorbing (footnote 23) [REG-R25 제27조] [S1] [S5] [S7] [S8].
+  absorbing (footnote 23) [REG-R25 제27조](#krlib-reg-r25) [S1] [S5] [S7] [S8].
 
 **Out of scope, each for a stated reason:**
 
@@ -1369,7 +1369,7 @@ cover — from 보장성특약. On a 연금저축보험 almost every rider is of
    the deferral mechanic carried as the disapplication rule (footnote 17).
 7. **Participation.** Five 무배당 [S1] [S4] [S5] [S6] [S11] against three 배당 [S2] [S7] [S8],
    with one carrier selling both. The difference is not cosmetic: it changes the 표준해약공제액
-   coefficient from 3% to 4% [REG-R20 주5], and where a dividend arises it is applied as an
+   coefficient from 3% to 4% [REG-R20 주5](#krlib-reg-r20), and where a dividend arises it is applied as an
    **increase to the annuity or an addition to the instalment** — 「보험기간 중 발생한 배당금은
    계약소멸할 때 계약자에게 지급하거나 연금 지급개시 이후에 증액연금으로 수익자에게
    지급합니다」 [S2] — not as cash. The only published dividend history is the postal
@@ -1510,3 +1510,55 @@ table of any Korean industry basis was retrieved in either research pass.** `Pen
 carrier-published annuitant rates above [S1] [S7]; and it is calibrated so that the implied
 factor for a 65-year-old male at 2.15% with a ten-year guarantee reproduces the **23.70** the
 published illustrations imply [S2] `[derived]`. **It is never presented as the 경험생명표.**
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-pension_savings-r1
+[R10]: #krlib-pension_savings-r10
+[R11]: #krlib-pension_savings-r11
+[R12]: #krlib-pension_savings-r12
+[R13]: #krlib-pension_savings-r13
+[R14]: #krlib-pension_savings-r14
+[R16]: #krlib-pension_savings-r16
+[R17]: #krlib-pension_savings-r17
+[R18]: #krlib-pension_savings-r18
+[R19]: #krlib-pension_savings-r19
+[R2]: #krlib-pension_savings-r2
+[R20]: #krlib-pension_savings-r20
+[R21]: #krlib-pension_savings-r21
+[R22]: #krlib-pension_savings-r22
+[R24]: #krlib-pension_savings-r24
+[R3]: #krlib-pension_savings-r3
+[R4]: #krlib-pension_savings-r4
+[R5]: #krlib-pension_savings-r5
+[R6]: #krlib-pension_savings-r6
+[R7]: #krlib-pension_savings-r7
+[R8]: #krlib-pension_savings-r8
+[R9]: #krlib-pension_savings-r9
+[REG-R11]: #krlib-reg-r11
+[REG-R13]: #krlib-reg-r13
+[REG-R14]: #krlib-reg-r14
+[REG-R16]: #krlib-reg-r16
+[REG-R18]: #krlib-reg-r18
+[REG-R19]: #krlib-reg-r19
+[REG-R20]: #krlib-reg-r20
+[REG-R22]: #krlib-reg-r22
+[REG-R24]: #krlib-reg-r24
+[REG-R25]: #krlib-reg-r25
+[REG-R27]: #krlib-reg-r27
+[REG-R29]: #krlib-reg-r29
+[REG-R32]: #krlib-reg-r32
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R39]: #krlib-reg-r39
+[REG-R4]: #krlib-reg-r4
+[REG-R48]: #krlib-reg-r48
+[REG-R49]: #krlib-reg-r49
+[REG-R51]: #krlib-reg-r51
+[REG-R52]: #krlib-reg-r52
+[REG-R56]: #krlib-reg-r56
+[REG-R58]: #krlib-reg-r58
+[REG-R60]: #krlib-reg-r60
+[REG-R9]: #krlib-reg-r9
+<!-- END generated citation links -->

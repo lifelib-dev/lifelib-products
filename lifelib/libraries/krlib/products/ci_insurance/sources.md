@@ -61,6 +61,8 @@ a summarising fetcher. That fetcher renders HTML but returns Korean PDFs as unde
 binary; in every such case the binary it saved to disk was extracted locally with `pypdf`
 and read directly. That is how the long 약관 were obtained.
 
+(krlib-ci_insurance-s1)=
+
 ### S1 — ABL생명, 「(무)우리가족안심CI통합종신보험(보증비용부과형) 1904 약관」 (policy conditions, complete)
 
 - Publisher: ABL생명보험주식회사 (ABL Life; formerly 알리안츠생명)
@@ -89,6 +91,8 @@ and read directly. That is how the long 약관 were obtained.
   interest-sensitive variant's 최저보증이율 ladder [S1 제36조]; and the whole standard
   contract apparatus — 계약 전 알릴 의무, 납입최고, 부활, 해지환급금, 보험계약대출.
 
+(krlib-ci_insurance-s2)=
+
 ### S2 — ABL생명, 「무배당 걱정말아요CI통합종신보험(저해지환급형) 1705 약관」 (policy conditions, complete)
 
 - Publisher: ABL생명보험주식회사 (the text still names 알리안츠생명's 공시실, so this is the
@@ -112,6 +116,8 @@ and read directly. That is how the long 약관 were obtained.
   illustration at ₩100,000,000 (1억원) on the 80% acceleration. It is the direct evidence
   that the Korean suppressed-surrender-value design reached CI business before it became
   universal.
+
+(krlib-ci_insurance-s3)=
 
 ### S3 — KDB생명, 「무배당 베스트유니버셜CI보험 상품요약서」 (statutory product summary)
 
@@ -142,6 +148,8 @@ and read directly. That is how the long 약관 were obtained.
   why the shipped female mortality is a flat ratio off the age-20 anchor and why the
   resulting female advantage is understated.
 
+(krlib-ci_insurance-s4)=
+
 ### S4 — 미래에셋생명, 「건강담은 GI종신보험(무)1904 [해지환급금이 적은 유형]」 상품안내장 (product brochure with rate card)
 
 - Publisher: 미래에셋생명보험주식회사
@@ -166,6 +174,8 @@ and read directly. That is how the long 약관 were obtained.
   high-sum-assured discount; and a 종신 vs 연금 comparison built on the 생명보험협회
   상품공시시행세칙 basis with its 예정이율 stated at 「약 2.75%」.
 
+(krlib-ci_insurance-s5)=
+
 ### S5 — 생명보험협회, 「생보사 주요 CI·GI보험상품 현황」 (별첨) (industry-association product table)
 
 - Publisher: 생명보험협회 (Korea Life Insurance Association, KLIA)
@@ -188,6 +198,8 @@ and read directly. That is how the long 약관 were obtained.
   and 동양생명 수호천사 알뜰한통합GI보험 — places it in or after 2020. It is treated as an
   **undated** source and no fact rests on its date.
 
+(krlib-ci_insurance-s6)=
+
 ### S6 — 알리안츠생명, 「무배당 알리안츠유니버셜CI종신보험 약관」 (policy conditions, third-party mirror)
 
 - Publisher: 알리안츠생명보험 (the predecessor of ABL생명); mirrored as HTML by Law Insider
@@ -204,6 +216,8 @@ and read directly. That is how the long 약관 were obtained.
   `product-spec.md`, and `model.md` records why it is deliberately **not** modelled — a
   second discontinuity at 80 would collide with the 저해지 step.
 
+(krlib-ci_insurance-s7)=
+
 ### S7 — 알리안츠생명, 「무배당 알리안츠어린이CI보험 약관」 (policy conditions, third-party mirror, redacted)
 
 - Publisher: 알리안츠생명보험; mirrored as HTML by Law Insider
@@ -217,6 +231,8 @@ and read directly. That is how the long 약관 were obtained.
   definition is taken from it, and nothing in the model depends on it. It is listed rather
   than dropped because a reader counting the primary set should be able to see that one of
   its members carries no facts.
+
+(krlib-ci_insurance-s8)=
 
 ### S8 — 삼성생명, 「통합올인원CI보험(무배당, 보증비용부과형)」 상품 페이지 (carrier product page)
 
@@ -240,6 +256,8 @@ column and a loss adjuster's case note. That balance is itself a finding about t
 product. The 중대한 problem is the defining fact of Korean CI and it has generated no
 retrievable statistic at all: no 부지급률, no CI-specific complaint series, no claim-denial
 rate. What exists is anecdote, and the documents say so wherever they lean on it.
+
+(krlib-ci_insurance-r1)=
 
 ### R1 — 보험연구원, 「보험상품 변천과 개발 방향: 생명보험 상품 중심」 Ⅳ. CI보험의 성장 (research monograph, chapter extract)
 
@@ -273,6 +291,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   lapse experience of any kind was retrieved**, from this or any other document, which is
   why `lapse_table.csv` is [std] throughout.
 
+(krlib-ci_insurance-r2)=
+
 ### R2 — 보험연구원, 「보험상품 변천과 개발 방향: 생명보험 상품 중심」 (research monograph, complete)
 
 - Publisher: 보험연구원, 연구보고서 2018-5; 김석영·김세영·이선주; 2018년 2월; 308 PDF pages
@@ -286,6 +306,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   sidebar on **당뇨CI보험** — a CI product sold only to diabetics without complications
   (HbA1c ≤ 8%) that failed for want of a distribution route. The composite is written on
   일반심사 and that choice is **[std]**; this entry is what bounds the alternative.
+
+(krlib-ci_insurance-r3)=
 
 ### R3 — 금융위원회, IFRS17 주요 계리가정 가이드라인 보도자료 (2024-11-07) (regulator press release)
 
@@ -309,6 +331,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   log-linear model is [unverified] at instrument level** and the interpolation between the
   two endpoints is this library's reading.
 
+(krlib-ci_insurance-r4)=
+
 ### R4 — 보험업법 제4조 (보험업의 허가) — 제3보험업의 법정 정의 (statute, mirror)
 
 - Publisher: 대한민국 법률; retrieved through CaseNote's statute mirror. Version shown on
@@ -324,6 +348,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   mirror and the article text is paraphrased from it rather than quoted. Cited beside
   [REG-R1], which carries the same article from an independent full-Act retrieval. **Not**
   to be confused with [REG-R4], which is 보험업법 제176조.
+
+(krlib-ci_insurance-r5)=
 
 ### R5 — 서울중앙지방법원 2016. 1. 14. 선고 2014가단242567 판결 [보험금] (judgment, first instance)
 
@@ -342,6 +368,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   it is the concrete demonstration of the point the incidence basis rests on: [S3]'s rates
   are 중대한 암 rates, not cancer rates.
 
+(krlib-ci_insurance-r6)=
+
 ### R6 — 조세금융신문, 「[전문가 칼럼] 중대한 뇌졸중은 왜 받기 어렵나요?」 (practitioner column, **secondary**)
 
 - Publisher: 조세금융신문; 한규홍 (한결손해사정 손해사정사), 2023-12-25
@@ -354,6 +382,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   rate. It is one of the sources behind the specification's statement that the severity gate
   is where the narrowness of 중대한 actually lives.
 
+(krlib-ci_insurance-r7)=
+
 ### R7 — 한국보험신문, 「'중대한' 문턱 높은 CI보험… 소비자 혼선 여전」 (trade press, **secondary**)
 
 - Publisher: 한국보험신문; 주옥진 기자, 2026-04-06
@@ -364,6 +394,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   ground that 일상생활 remained possible at some level. Carries **no statistics**. Cited for
   currency — it is what lets `product-spec.md` say the dispute is a 2026 fact and not only a
   2015 one.
+
+(krlib-ci_insurance-r8)=
 
 ### R8 — 투데이신문, 「'중대한' 조건에 막힌 CI보험, '불완전 판매' 온상되나」 (trade press, **secondary**)
 
@@ -376,6 +408,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   conduct recovered anywhere in the research pass, and `product-spec.md` cites it against
   the anecdote rather than with it, because a specification that reported only the
   complaints would be reporting one side of a record whose other side exists.
+
+(krlib-ci_insurance-r9)=
 
 ### R9 — 보험저널, 「CIㆍGI 보험…나에게 유리한 상품은?」 (trade press comparison, **secondary**)
 
@@ -390,6 +424,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   GI products — is a **secondary assertion with no published basis** and is tagged as such
   at the point of use; nothing in the model rests on it.
 
+(krlib-ci_insurance-r10)=
+
 ### R10 — 소비자가만드는신문, 「CI보험 진단금 받기 '하늘의 별따기', 왜?」 (consumer press, **secondary**)
 
 - Publisher: 소비자가만드는신문; 김문수 기자, 2015-09-14
@@ -399,6 +435,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   was diagnosed, and a clear statement of the **three-part CI test** — disease, severity,
   disability rating — which is the structure `product-spec.md` uses to organise the trigger
   set. **No denial-rate statistics.**
+
+(krlib-ci_insurance-r11)=
 
 ### R11 — 전자신문, 「[보험 2020] 삼성생명, 보장요건 완화한 'GI플러스종신보험' 출시」 (trade press, product launch, **secondary**)
 
@@ -416,6 +454,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   therefore cannot be a pure acceleration**; it is recorded as reported and tagged
   **[unverified]** for its construction.
 
+(krlib-ci_insurance-r12)=
+
 ### R12 — 스페셜경제, 「CI에서 GI로, SI에서 WI로…진화의 도마 위로 오른 '종신보험'」 (trade press, **secondary**)
 
 - Publisher: 스페셜경제; 이정화 인턴기자, 2020-07-09
@@ -428,6 +468,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   the caveat stated there: **the dates are the article's, not a regulator's, and the SI and
   WI labels are trade usage rather than defined terms.** The specification is explicit that
   no market-share series stands behind the account.
+
+(krlib-ci_insurance-r13)=
 
 ### R13 — 뉴스1, 「삼성생명, 질병단계별로 보험금..통합 스테이지CI보험」 (trade press, product launch, **secondary**)
 
@@ -443,6 +485,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   계약해당일 — which is `ci_cover_end()`. The staged design itself is named and **not**
   modelled.
 
+(krlib-ci_insurance-r14)=
+
 ### R14 — 서울파이낸스, 「[신상품] 미래에셋생명 '건강담은 GI변액종신보험'」 (trade press, product launch, **secondary**)
 
 - Publisher: 서울파이낸스, 2020-01-17
@@ -455,6 +499,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   evidence that a "100% acceleration" in this market is not an acceleration of the whole
   benefit and is therefore out of this product's scope.
 
+(krlib-ci_insurance-r15)=
+
 ### R15 — 보험저널, 「CI 보험 보장분석, 무조건 해지는 금물…"꼼꼼한 점검이 우선"」 (trade press, consumer advice, **secondary**)
 
 - Publisher: 보험저널; 최은빈 기자, 2024-05-29
@@ -464,6 +510,8 @@ rate. What exists is anecdote, and the documents say so wherever they lean on it
   by its policyholders in 2024, and that **갱신형 riders attached to it terminate at 80** —
   which `product-spec.md` uses when it sets the rider perimeter of the composite. **No
   statistics.**
+
+(krlib-ci_insurance-r16)=
 
 ### R16 — 로이즈손해사정, 「중대한 질병 CI보험 진단금 사정 사례」 (loss adjuster's case note, **secondary**)
 
@@ -697,3 +745,23 @@ policy-loan take-up, post-CI mortality and CI claim-denial figure in the Korean 
 none of which any carrier or regulator publishes. Those absences are why `model.md`'s
 standardization table has an "Observed range" column that reads *none published* on so many
 of its rows.
+
+<!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
+[R1]: #krlib-ci_insurance-r1
+[R11]: #krlib-ci_insurance-r11
+[R2]: #krlib-ci_insurance-r2
+[R3]: #krlib-ci_insurance-r3
+[R4]: #krlib-ci_insurance-r4
+[R5]: #krlib-ci_insurance-r5
+[REG-R1]: #krlib-reg-r1
+[REG-R26]: #krlib-reg-r26
+[REG-R27]: #krlib-reg-r27
+[REG-R33]: #krlib-reg-r33
+[REG-R34]: #krlib-reg-r34
+[REG-R36]: #krlib-reg-r36
+[REG-R38]: #krlib-reg-r38
+[REG-R4]: #krlib-reg-r4
+[REG-R42]: #krlib-reg-r42
+[REG-R52]: #krlib-reg-r52
+[REG-R60]: #krlib-reg-r60
+<!-- END generated citation links -->
