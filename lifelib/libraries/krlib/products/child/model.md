@@ -296,11 +296,11 @@ perinatal cash    = 10,000 x max(0, min(stay_days, 120) - 3),        [S1] [S8]
 
 The module's cost is therefore a length-of-stay question rather than an amount question,
 which is why the supervisor's own worked claim — ₩16,836,420 on a birth at 32 weeks and
-1.84 kg, of which the neonatal day benefits were ₩4,200,000 [R3] — is the useful datum. On
-the anchor cell the module costs **₩106,330.72** undiscounted against a module premium of
+1.84 kg, of which ₩4,200,000 was neonatal day benefits [R3] — is the useful datum. On the
+anchor cell the module costs **₩106,330.72** undiscounted against a module premium of
 ₩3,000 × 17 = ₩51,000, and every won of it falls inside the first thirteen months of a
-hundred-year contract. The shipped module does not pay for itself on the shipped basis, and
-that is reported rather than tuned away.
+hundred-year contract. It does not pay for itself on the shipped basis, and that is
+reported rather than tuned away.
 
 ## The 면책기간 is tested at the 계약일, once, and never again
 
@@ -596,11 +596,10 @@ one published pair, 0.0001823 against 0.0001163 at 만나이 5, a ratio of 1.57 
 
 ### `basis_table.csv` — thirteen scalars that turn an incidence into a cost
 
-Every one is a standardization with no published anchor, and every one is tagged in its own
-`provenance` cell. They are listed with their rationales in *Standardizations used* below.
-The file exists as a file, rather than as References in `Projection`, for one reason: these
-are the parameters a user replacing the model's basis will change first, and a CSV is the
-thing to hand them.
+Every one is a standardization with no published anchor, tagged in its own `provenance` cell
+and listed with its rationale in *Standardizations used* below. It is a file rather than a
+set of References in `Projection` for one reason: these are the parameters a user replacing
+the model's basis changes first, and a CSV is the thing to hand them.
 
 ### `neonatal_table.csv` — nine limbs, two timings, two of them day-capped
 
@@ -609,11 +608,10 @@ Each limb carries a frequency per birth, an amount (fixed, or a ratio to the mod
 태아보장기간 limbs paid at `t = birth_month()`, `block` for the five limbs of the 1년만기
 신생아 block, spread evenly over its twelve months. The two day-capped limbs are implemented
 **as written**, so their `units` are expected paid days *after* the contractual deduction and
-*inside* the cap; the formulas are sourced and reproduced above. The `neonatal_haem` frequency
-carries a caveat of its own in the provenance cell: it is **regime-dependent rather than
-stationary**, because the 2013-09 supervisory decision requiring neonatal claims to be paid on
-the diagnosis name rather than the KCD code ended refusals of 뇌출혈 coded P52 and raised
-frequency sharply [R5].
+*inside* the cap. The `neonatal_haem` frequency carries a caveat in its provenance cell: it
+is **regime-dependent rather than stationary**, because the 2013-09 supervisory decision
+requiring neonatal claims to be paid on the diagnosis name rather than the KCD code ended
+refusals of 뇌출혈 coded P52 and raised frequency sharply [R5].
 
 ### `lapse_table.csv` — three bases, and the vector is the argument
 
