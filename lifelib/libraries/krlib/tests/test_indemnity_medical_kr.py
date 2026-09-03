@@ -1780,7 +1780,7 @@ def test_pitfall_no_claims_subtotal_column_beside_the_splits(indemnity_medical):
 
 def test_pitfall_expenses_is_maintenance_only_and_claim_expenses_is_claim_driven(
         indemnity_medical, kr_medical_anchor):
-    """Pitfall: folding the claim-handling expense into ``expenses``, or charging it on premium.
+    """Pitfall: folding claim handling into ``expenses``, or charging it on premium.
 
     7% of premium and 3% of **claims** respectively, on a [std] split of one published 16.1%
     aggregate.  Folding them together makes a premium-driven cost and a claim-driven cost
@@ -1973,7 +1973,7 @@ def test_the_std_input_tables_mark_their_own_provenance():
 
 def test_the_shipped_mortality_runs_the_wrong_way_and_the_table_says_so(
         indemnity_medical, kr_medical_anchor):
-    """Death **releases** this liability, so an overstatement of mortality is anti-conservative.
+    """Death **releases** this liability, so overstating mortality is anti-conservative.
 
     The reverse of every protection product in this library, and it is worth an assertion
     rather than a sentence: raise the mortality basis and the projected result **improves**,

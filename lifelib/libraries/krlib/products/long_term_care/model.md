@@ -15,13 +15,13 @@ something the documents do not settle, it is named here rather than absorbed.
 > 해약환급금 during the premium-paying period, and the 계약자적립액 payable on death from a
 > cause the contract does not cover [S1] [S2] [S3] [S4] [REG-R17]. Almost everything
 > quantitative is **[std]**. 보험개발원 publishes **neither a 장기요양 incidence table nor a
-> post-onset mortality table**, the 경험생명표 is not released in full [REG-R33] [REG-R34],
-> and no 사업방법서 or 산출방법서 was retrieved for any Korean long-term-care product — so
-> the office premium is a model-point **input**, the mortality table is a construction
-> anchored on published summary 기대여명, and the whole morbidity basis is built in public
-> from the 노인장기요양보험 통계연보 [R4] and calibrated against the one disclosed 예정위험률
-> [S1]. Replace the assumption tables with company data before drawing any conclusion from
-> the output.
+> post-onset mortality table**, the 경험생명표 is not released in full [REG-R33] [REG-R34], and
+> no 산출방법서 was retrieved for any Korean long-term-care product — so the office premium is
+> a model-point **input**, the mortality table is a construction anchored on published summary
+> 기대여명, and the morbidity basis is built in public from the 노인장기요양보험 통계연보 [R4]
+> and calibrated against the one disclosed 예정위험률
+> [S1]. Replace the assumption tables with company data before reading anything off the
+> output.
 
 `LTC_KR_S` is the modelx implementation: a monthly, single-model-point projection of gross
 best-estimate liability cash flows for 간병보험 (*ganbyeong boheom*, long-term-care
@@ -49,13 +49,12 @@ python products/long_term_care/run.py       # the anchor cell, point_id = 1
 python products/long_term_care/run.py 5     # the 100세만기 cell, 치매 rider on
 ```
 
-`run.py` prints the model point, the first thirteen policy months of the cash flow
-statement, the policy-year-1 and whole-projection totals, the calibration ratio against the
-one disclosed 예정위험률, and the six `check_*` identities. Everything it prints is ASCII, so
-the output lands on a Windows console under any code page: amounts are labelled `KRW`, the
-Korean terms are romanized and the grade thresholds print as the `g1` … `g6` codes the input
-tables use. Real output, with the thirteen-row statement elided — it is reproduced in full in
-[`technical-notes.md`](technical-notes.md):
+`run.py` prints the model point, the first thirteen policy months of the statement, the
+policy-year-1 and whole-projection totals, the calibration ratio against the one disclosed
+예정위험률 and the six `check_*` identities. Everything it prints is ASCII, so the output lands
+on a Windows console under any code page: amounts are labelled `KRW`, the Korean is romanized
+and the thresholds print as the `g1` … `g6` codes the input tables use. Real output, with the
+thirteen-row statement elided — [`technical-notes.md`](technical-notes.md) has it in full:
 
 ```text
 model point 1: LTC-000001 - ganbyeong boheom, M40 man-nai, to age 90, 20-year pay, 600 months
@@ -68,16 +67,8 @@ first 13 policy months (columns claims_dementia, claims_void and claims_maturity
     [ the t = 0..12 rows of result_cf(), eleven columns ]
 
 policy year 1 totals (unrounded sums):
-  premiums                  64,670.30
-  claims_lump                   15.97
-  claims_annuity                 2.90
-  claims_death                  22.77
-  claims_lapse                   0.00
-  claims_void                    0.00
-  expenses                  31,429.66
-  claim_expenses                 0.09
-  commissions               43,680.00
-  net_cf                   -10,481.09
+
+    [ the eleven policy-year-1 lines, net_cf -10,481.09 ]
 
 whole projection, undiscounted:
   premiums                  973,533.06
@@ -116,13 +107,12 @@ table, what it is **not**. A cold sweep of all nine model points takes about **4
 
 ## Four compartments, three of which add to `pols_if`
 
-The contract is a **three-state model** — healthy, in long-term care, dead — but the care
-state is not entered in one step. Only **13.3%** of current 1등급 certifications arose from a
-first application, against 69.5% from a renewal, whereas at 인지지원등급 — a grade nobody can
-progress *down* into — the first-application share is **69.8%** [R4 표2-5, derived].
-Severe-grade lives are in the main people who entered the scheme years earlier at a light
-grade and deteriorated. So the in-force block is carried in three compartments and one
-counter:
+The contract is a **three-state model** — healthy, in long-term care, dead — but the care state
+is not entered in one step. Only **13.3%** of current 1등급 certifications arose from a first
+application, against 69.5% from a renewal, whereas at 인지지원등급 — a grade nobody can progress
+*down* into — the first-application share is **69.8%** [R4 표2-5, derived]: severe-grade lives
+are in the main people who entered years earlier at a light grade and deteriorated. So the
+block is carried in three compartments and one counter:
 
 | Cells | What it holds | Premium | Lapse | Mortality |
 |---|---|---|---|---|
@@ -157,14 +147,12 @@ identities in a stationary population are
 
 **The excess-mortality term is not a refinement.** A rising prevalence understates entry,
 because the compartment it measures is being drained by an excess mortality the population
-around it does not carry — and that drain is exactly what the 간병연금 is exposed to. Using
-`mu_C` alone in place of `mu_C - mu_bar` overstates entry, materially so at the ages where the
-certified share is large; that is why `mort_force_avg_at` exists.
+around it does not carry — and that drain is what the 간병연금 is exposed to. Using `mu_C`
+alone in place of `mu_C - mu_bar` overstates entry, which is why `mort_force_avg_at` exists.
 
-Two equations carry three unknowns. The closing assumption is the one the sources leave open:
-`direct_entry_share` = **0.20** [std], the share of gross inflow into the care state arriving
-straight from health rather than by progression, anchored on the 13.3% / 69.8% split above.
-Then
+Two equations carry three unknowns, and the closing assumption is the one the sources leave
+open: `direct_entry_share` = **0.20** [std], the share of gross inflow into the care state
+arriving straight from health rather than by progression, anchored on the split above. Then
 
     i_D(x) = direct_entry_share * inflow_C(x) / ( 1 - P(x) )
     rho(x) = ( 1 - direct_entry_share ) * inflow_C(x) / P_L(x)
@@ -194,19 +182,12 @@ Three properties belong in front of a reader rather than in a footnote.
 ## The disclosed 예정위험률, and the ratio the model publishes
 
 Exactly one retrieved document publishes a Korean long-term-care incidence rate: one carrier's
-예정위험률 at 만나이 40, 50 and 60 by sex, for 요양(1등급) and 요양(2등급) separately [S1]. It
-is used for its **gradient and its sex ratio** below 65, and as a level cross-check — never as
-the level. `disclosed_inc_ratio_at(x)` publishes the comparison rather than hiding it:
+예정위험률 at 만나이 40, 50 and 60 by sex, for 요양(1등급) and 요양(2등급) separately [S1]. It is used for its **gradient and its sex ratio** below 65, and as a level cross-check — never
+as the level. `disclosed_inc_ratio_at(x)` publishes the comparison rather than hiding it:
 
-| 만나이 | model first-entry rate over disclosed 예정위험률, male anchor cell |
-|---|---|
-| 40 | 0.240 |
-| 50 | 0.246 |
-| 60 | 0.240 |
-
-So the disclosed pricing rate is about **4.2 times** this model's best estimate at the same
-age, and the ratio is almost flat, which is what a level difference rather than a shape
-difference looks like. Four things all push the same way and none of them is quantified by any
+on the male anchor cell it is **0.240** at 만나이 40, **0.246** at 50 and **0.240** at 60. So
+the disclosed pricing rate is about **4.2 times** this model's best estimate at the same age,
+and the ratio is almost flat — a level difference rather than a shape difference. Four things all push the same way and none of them is quantified by any
 retrieved source: a 예정위험률 is a **loaded** rate and not a best estimate; the conversion
 reads a cross-section as a cohort path in a growing scheme; the care compartment is treated as
 leaving only by death; and the disclosed card is quoted on **보험나이**, about half a year
@@ -222,23 +203,21 @@ published rate card [S2]. Three documents, one percentage point.
 
 ## The grade share is indexed by age, and that is load-bearing
 
-`share_ge_at(grade, x)` interpolates linearly between six sourced band representative ages — 60
-for the under-65 band, then 67, 72, 77, 82 and 88.5 — because the severe share is **U-shaped**
-in age: 1·2등급 is **22.2%** of certified lives under 65, falls to **11.1%** at 80-84 and rises
-again to **14.8%** at 85 and over [R4 표2-9, derived]. The under-65 population is severe
-because only the 노인성 질병 list gets in at all; the 80-84 trough is where the marginal
-entrant is a lightly impaired person newly crossing the 51-point line. **A model applying one
-grade-mix vector at all ages mis-prices a 1~2등급 benefit by up to a factor of two.**
+`share_ge_at(grade, x)` interpolates linearly between six sourced band representative ages — 60,
+67, 72, 77, 82 and 88.5 — because the severe share is **U-shaped** in age: 1·2등급 is **22.2%**
+of certified lives under 65, falls to **11.1%** at 80-84 and rises again to **14.8%** at 85 and
+over [R4 표2-9, derived]. The under-65 population is severe because only the 노인성 질병 list
+gets in at all; the 80-84 trough is where the marginal entrant is a lightly impaired person
+newly crossing the 51-point line. **One grade-mix vector at all ages mis-prices a 1~2등급
+benefit by up to a factor of two.**
 
 Because the share moves with age, `prev_care_slope_at` uses the **full product rule**,
 `s_G'(x) P(x) + s_G(x) P'(x)`. The first term is negative over most of the range for a severe
-threshold; dropping it inflates `P_C'` by 1.82× at 만나이 65. The visible symptom of that
-mistake is a `claims_lump` that rises monotonically with age, where the shipped model has it
-**falling** between `t = 239` and `t = 240` — 139.1227 to 101.8715.
-
-`share_slope_at` is exact for the piecewise-linear share rather than a difference quotient, and
-`prev_slope_at` is the **analytic** derivative of the logistic — a numerical derivative would
-put noise straight into the claim rate.
+threshold; dropping it inflates `P_C'` by 1.82× at 만나이 65, and the symptom is a `claims_lump`
+rising monotonically with age where the shipped model has it **falling** between `t = 239` and
+`t = 240` — 139.1227 to 101.8715. `share_slope_at` is exact for the piecewise-linear share and
+`prev_slope_at` is the **analytic** derivative of the logistic; a numerical derivative would put
+noise straight into the claim rate.
 
 ## The 간병연금 ledger: monthly instalments, an annual test, two freezes
 
@@ -253,26 +232,24 @@ of twelve is released only by the annual survival test on the anniversary of the
 
 The first instalment falls in the **month of certification**. `care_surv(s, t)` is a **partial
 product** of `(1 - q_C(u))` and never a ratio of cumulative products: `q_C` reaches 1 from
-만나이 110 on the shipped table, so a cumulative product underflows to zero and the ratio form
-divides by zero exactly where the tail of a 종신 variant would live.
+만나이 110, so a cumulative product underflows to zero there and the ratio form divides by zero
+exactly where the tail of a 종신 variant would live.
 
 `ann_pay(t)` is the same sum valued at each cohort's **own** amount, `ann_amount_at(s)`, which
 is what carries the two freezes [S1]:
 
 - the **amount** is the grade blend at the entry age — `annuity_high` at 1등급 and
-  `annuity_low` at every other grade inside the gate, weighted by the age-specific grade shares
-  — so a life entering at 2등급 and deteriorating to 1등급 keeps the lower rate for all ten
-  years;
+  `annuity_low` at every other grade in the gate, weighted by the age-specific shares — so a
+  life entering at 2등급 and deteriorating to 1등급 keeps the lower rate for all ten years;
 - the **감액 decision** is frozen too. A claim starting inside the reduction window stays
   halved for the whole term of the annuity. A model that re-tests the 감액 at each instalment
   date overstates every claim arising in the first policy year — by ₩64.78 on the anchor cell,
   by ₩1,065.24 at issue age 70 — and it is the single most easily mis-modelled rule in the
   product. Evaluate `red_factor` at `s`, never at `t`.
 
-`ann_tests(t)` counts the annual proof-of-life events — 「매년 진단 확정일에 피보험자의
-주민등록등본을 제출하여야 합니다」 [S1] — and the claim-handling expense is charged on those,
-not on every monthly instalment: 0.0990 events against 1.4539 instalments over the projection,
-a factor of fifteen in that expense line.
+`ann_tests(t)` counts the annual proof-of-life events [S1], and the claim-handling expense is
+charged on those, not on every monthly instalment: 0.0990 events against 1.4539 instalments
+over the projection, a factor of fifteen in that expense line.
 
 ## The horizon is the 만기, and the annuity is truncated with it
 
@@ -282,15 +259,14 @@ a factor of fifteen in that expense line.
 ending, and every cash flow on the row is zero. A loop over `range(proj_len())` silently drops
 that row and breaks `check_pols_roll_fwd()` at the last step.
 
-The cap and the truncation bind **jointly**: nothing is paid at or after `proj_len()`. An
-insured certified at 85 on a 90세만기 contract has five years of term and ten years of annuity,
-and **no retrieved document resolves whether the instalments continue past maturity**. The
-model truncates, which is the conservative reading, and it materially understates the benefit
-for late entrants [std]. The 만기 itself is the first sensitivity a user should run rather than
-a neutral choice: the same cell to 100세만기 raises undiscounted lump-sum claims **70.6%** and
-annuity claims **59.3%**, and takes PV(benefit)/PV(premium) from 0.4603 to 0.6762 on an
-unchanged premium, because 90세만기 truncates the exposure at the band with the highest
-certification rate of all.
+The annuity cap and the maturity bind **jointly**: nothing is paid at or after `proj_len()`. An
+insured certified at 85 on a 90세만기 contract has five years of term and ten of annuity, and
+**no retrieved document resolves whether the instalments continue past maturity**; the model
+truncates, the conservative reading, and understates the benefit for late entrants [std]. The
+만기 is the first sensitivity a user should run rather than a neutral choice: the same cell to
+100세만기 raises lump-sum claims **70.6%** and annuity claims **59.3%** and takes
+PV(benefit)/PV(premium) from 0.4603 to 0.6762 on an unchanged premium, because 90세만기
+truncates the exposure at the band with the highest certification rate of all.
 
 ## 보장개시일 and 감액기간 are two different mechanisms
 
@@ -300,12 +276,10 @@ Korean practice keeps them apart and so does the model.
   benefit 무효 and the premiums paid for it come back — 「특약을 무효로 하며, 이미 납입한
   보험료를 돌려드립니다」 [S1] [S2] — and unlike the cancer chassis there is no cancellation
   option and no revival. Those lives are `pols_void(t)`, **a decrement of its own** with
-  `claims(t, "VOID")` attached, and they never reach `pols_entry_care`. On the anchor cell the
-  window is three months at 만나이 40, so the decrement is of order 1e-7 of the cohort and the
-  refund totals ₩0.0038 over the projection; it is carried because it is a product fact, not
-  because it is material. `claims_void(0)` is zero for a different reason than
-  `claims_void(3)` is: at `t = 0` there are voided lives but `cum_prem_pp(0) = 0`, so there is
-  nothing yet to refund; at `t = 3` the window has closed.
+  `claims(t, "VOID")` attached, and they never reach `pols_entry_care`. It is carried because
+  it is a product fact and not because it is material: ₩0.0038 refunded over the projection.
+  `claims_void(0)` is zero for a different reason than `claims_void(3)` is — at `t = 0` there
+  are voided lives but `cum_prem_pp(0) = 0`, so there is nothing yet to refund.
 - **감액기간.** Cover has started and the benefit is merely halved. `red_factor(t)` returns
   `1 - (1 - red_fraction) * disease_share`. The 약관 test is on the **cause**, not the grade —
   a 질병-caused certification inside the window is paid at 50%, an 상해/재해-caused one in full
@@ -327,14 +301,11 @@ state pay nothing — 「지급사유가 발생한 후 사망한 경우에는 �
 않습니다」 [S1] — which is why `pols_death` is split into `pols_death_act` and
 `pols_death_care`; 0.0166 of the 0.3543 cumulative deaths pay nothing.
 
-`av_pp(t)` has two branches meeting at 납입완료:
-
-- up to it, the accumulation of the net premium at the **예정이율 of 2.0%** — the one place in
-  `krlib` where the pricing interest rate is a *retrieved* figure, stated in terms in a
-  기초서류 extract [S1];
-- after it, the sourced run-off of `av_table.csv`, indexed on the **fraction of the way from
-  납입완료 to maturity** so that one published progression serves every term and paying period
-  [std].
+`av_pp(t)` has two branches meeting at 납입완료: up to it, the accumulation of the net premium
+at the **예정이율 of 2.0%** — the one place in `krlib` where the pricing interest rate is a
+*retrieved* figure, stated in terms in a 기초서류 extract [S1]; after it, the sourced run-off of
+`av_table.csv`, indexed on the **fraction of the way from 납입완료 to maturity** so one
+published progression serves every term and paying period [std].
 
 `net_prem_ratio()` is **derived, not assumed**: the fraction that, accumulated at the 예정이율
 over the paying period, reproduces the sourced 계약자적립액 at 납입완료. On the anchor cell it
@@ -342,12 +313,11 @@ is **0.7931662309087683**, implying a 예정사업비 loading of 20.68%. `check_
 asserts the join at `t = 240` — ₩1,309,056.0000 read two ways — and it fails the moment someone
 replaces the derivation with a round number.
 
-Two reconstruction assumptions are named rather than buried. The published progression is the
-*미지급형's* 환급률 against its own premiums, and the model reads the doubled figure as that
-contract's own 계약자적립액 — but the 기본형 comparator is a product that **cannot be bought**,
-「'기본형'은 … 가입이 불가능하며 … 해지율을 적용하지 않고 계산합니다」 [S2], and its premium is
-higher, so the two accounts are not in fact the same quantity [std]. And the run-off between
-the sourced anchors is linear [std], where the real curve bends with the risk cost.
+Two reconstruction assumptions are named rather than buried: the 기본형 whose value the
+미지급형 progression is 50% of **cannot be bought** — 「'기본형'은 … 가입이 불가능하며」 [S2] —
+and its premium is higher, so the two accounts are not in fact the same quantity [std]; and the
+run-off between the sourced anchors is linear [std], where the real curve bends with the risk
+cost.
 
 ## The surrender-value cliff, and four forms under three names
 
@@ -369,58 +339,50 @@ priced on a **최적해지율** pay less than the ordinary 계약자적립액 �
 
 On the anchor cell the model reproduces the published 환급률 progression exactly — **0.0% at
 years 1, 5, 10 and 15, 48.7% at 20, 54.4% at 30, 50.5% at 40 and 0.0% at 50** [S2] — because
-those figures *are* the input. `check_cv_form()` asserts the shape rather than the values: the
-해약환급금 is never negative, never exceeds the account, and on the 미지급형 form is exactly
-nil for the whole premium-paying period. The cliff itself is two steps in one month at `t =
-240`: the lapse rate goes from the 0.1% convergence point to the 0.8% ultimate, an eightfold
-jump in `pols_lapse`, and the value paid on each of those lapses goes from nil to ₩654,528, so
-`net_cf` turns from +₩2,496.27 to −₩1,284.52.
+those figures *are* the input. `check_cv_form()` asserts the shape rather than the values. The
+cliff itself is two steps in one month at `t = 240`: the lapse rate goes from the 0.1%
+convergence point to the 0.8% ultimate, an eightfold jump in `pols_lapse`, and the value paid
+on each lapse goes from nil to ₩654,528, so `net_cf` turns from +₩2,496.27 to −₩1,284.52.
 
 `surr_chg_pp(t)` runs the 해약공제액 off straight-line over the premium-paying period **capped
-at seven years** [REG-R19 제7-66조제1항], at the supervisor's own rule of thumb of **13 times
-the monthly premium** for a 보장성보험 [REG-R29]. The rule of thumb is used rather than 별표
-14's formula because 별표 15 제9호 computes the notional 보험가입금액 of a contract with no
-death benefit as a ratio of risk premiums that **excludes** 「치매 또는 일상생활장해 등 타인의
-간병을 필요로 하는 상태」 — read literally, it excludes long-term-care risk premium from the
-very ratio that gives a care-only contract its 보험가입금액 [REG-R21].
+at seven years** [REG-R19 제7-66조제1항], at the supervisor's rule of thumb of **13 times the
+monthly premium** for a 보장성보험 [REG-R29]. The rule of thumb is used rather than 별표 14's
+formula because 별표 15 제9호 computes the notional 보험가입금액 as a ratio of risk premiums
+that **excludes** 「치매 또는 일상생활장해 등 타인의 간병을 필요로 하는 상태」 — read
+literally, it excludes long-term-care risk premium from the very ratio that gives a care-only
+contract its 보험가입금액 [REG-R21].
 
 ## The waiver is not an independent decrement here
 
 `G_W = G_B`. The 납입면제 fires on the **same event** as the benefit, waiving the main contract
 and every attached rider [S3], so unlike the Japanese counterpart there is **no band of lives
-paying nothing and claiming nothing** — the single most mis-modelled item in that product does
-not exist here. It is implemented by charging premium on `pols_act(t)` rather than on
-`pols_if(t)` and by nothing else; charging the whole in-force block overstates lifetime premium
-income by ₩414.65 on the anchor cell, 0.043%, and by far more at the top of the issue-age
-range.
+paying nothing and claiming nothing** — the most mis-modelled item in that product does not
+exist here. It is implemented by charging premium on `pols_act(t)` rather than `pols_if(t)` and
+by nothing else; charging the whole block overstates lifetime premium income by ₩414.65 on the
+anchor cell, 0.043%, and by far more at the top of the issue-age range.
 
 It is not free, though: it converts a level premium into a stream that stops at an uncertain
-date and stays stopped for the duration of the care state, and that duration is exactly the
-quantity the prevalence-to-incidence conversion cannot pin down. On the anchor cell — issue at
-40, 20년납, a claim expected in the eighties — the waiver almost never bites inside the paying
-period. At model point 6, issue 65 with a 10-year pay, it does.
+date and stays stopped for the duration of the care state — the quantity the
+prevalence-to-incidence conversion cannot pin down. On the anchor cell it almost never bites
+inside the paying period; at model point 6, issue 65 with a 10-year pay, it does.
 
 ## Four columns that are zero on purpose
 
-`result_cf()` publishes them rather than dropping them, because a column that is absent and a
-column that is zero say different things to a reader, and only one of them can be tested.
+`result_cf()` publishes them rather than dropping them: a column that is absent and a column
+that is zero say different things, and only one of them can be tested.
 
-- **`claims_maturity` is zero at every `t` on every model point.** 「이 상품은
-  순수보장성보험으로 보험계약 만기시 지급받는 금액(만기환급금)이 없습니다」 [S3]. It is a
-  product fact, not a modelling omission, and the maturity row is where a reader will look for
-  it.
+- **`claims_maturity` is zero at every `t` on every model point** — 「이 상품은
+  순수보장성보험으로 … 만기환급금이 없습니다」 [S3] — a product fact rather than a modelling
+  omission, and the maturity row is where a reader will look for it.
 - **`claims_lapse` is zero for the whole premium-paying period** on the 미지급형 form — 240
   rows of the anchor cell's 601 — and then steps to ₩281.90 in one month. Publishing the zeros
   is what makes the cliff visible as a cliff.
-- **`claims_dementia` is zero on seven of the nine model points**, the rider being off. It is
-  live on points 5 and 8.
-- **`claims_void` is not zero but is of order 1e-3 over the projection**, and is carried as its
-  own column because a voided cover is a different mechanism from a refused claim: the premiums
-  come back and the life leaves the block.
+- **`claims_dementia` is zero on seven of the nine model points**, the rider being off.
+- **`claims_void` is not zero but is of order 1e-3**, and is carried as its own column because
+  a voided cover is a different mechanism from a refused claim.
 
-There is **no `claims` column**, only the seven `claims_*` splits. An aggregate beside its own
-parts would stop the columns summing to `net_cf`, and the library retires the name for that
-reason.
+There is **no `claims` column**, only the seven `claims_*` splits: an aggregate beside its own
+parts would stop the columns summing to `net_cf`, and the library retires the name for it.
 
 ## Modules that are off in the base run
 
@@ -429,57 +391,53 @@ reason.
   치매역학조사 band rates, 4.99% at 65-69 rising to 21.18% at 85 and over [R7] — rather than as
   a share of the certification rate, because the two triggers are correlated but not
   proportional. `dementia_wait_mths = 15` is the one-year 보장개시일 plus the 90-day
-  persistence test written into the definition of the state itself [S2] [S4]; the one-year
-  period is not a carrier choice but the settled market answer to the 2019 supervisory
-  intervention [R10]. Two weaknesses are named: the 65-69 and 70-74 anchors are almost equal
-  and no logistic reproduces that (the fit is out by 31% at 70-74), and the sex factor is
-  **flat in age** where the sourced series has the male rate above the female at 65-79 and
-  below it at 80 and over [R7] — so the model does **not** reproduce the market fact that 치매
-  covers are priced cheaper for women while 장기요양 covers are priced dearer [S2].
-- **The 간병연금** (`annuity_on`, off at model point 4). Switching it off reduces the contract
-  to a lump-sum-only cover and removes most — not all — of the dependence on the post-onset
-  mortality basis: the waiver still stops premium for the duration of the care state. On the
-  anchor cell it is two thirds of the benefit, and a lump-sum-only run turns `net_cf` positive.
+  persistence test written into the definition of the state itself [S2] [S4], the one-year
+  period being the settled market answer to the 2019 supervisory intervention [R10] rather
+  than a carrier choice. Two weaknesses are named: the 65-69 and 70-74 anchors are almost
+  equal and no logistic reproduces that (the fit is out by 31% at 70-74), and the sex factor
+  is **flat in age** where the sourced series crosses over at 80 [R7] — so the model does
+  **not** reproduce the market fact that 치매 covers are priced cheaper for women while
+  장기요양 covers are priced dearer [S2].
+- **The 간병연금** (`annuity_on`, off at model point 4). Switching it off removes most — not
+  all — of the dependence on the post-onset mortality basis, the waiver still stopping premium
+  for the duration of the care state. It is two thirds of the anchor cell's benefit, and a
+  lump-sum-only run turns `net_cf` positive.
 - **The 간편심사 loading** (`uw_loading`, 1.40 at model point 8). A **premium** multiplier
   only. No retrieved source gives the simplified pool's incidence separately, so on a loaded
   model point the extra premium is pure margin in this model and the true claim cost of that
   pool is understated [S2]. Model point 8's positive `net_cf` of +₩1,152,142 is an artefact of
   exactly that.
 - **The 표준형 lapse vector** (`lapse_form`, `pyojun` at model point 7), carried so the two
-  assumptions can be compared — which is the comparison [REG-R27] requires an insurer to
-  disclose. It is not a small switch: on the anchor cell the level 4.0% vector cuts lifetime
-  benefit outgo by 61.1% and turns `net_cf` positive.
+  assumptions can be compared, which is what [REG-R27] requires an insurer to disclose. Not a
+  small switch: the level 4.0% vector cuts lifetime benefit outgo 61.1% and turns `net_cf`
+  positive.
 
 ## Absences that are product facts
 
 - **No general death benefit.** No retrieved life-side long-term-care contract pays one [S1]
   [S3]. What `claims_death` carries is the statutory **계약자적립액**, not a sum assured.
 - **No policy loan and no 보험료 자동대출납입** during the paying period on the 미지급형 form:
-  there is no surrender value to lend against, so a missed premium lapses the contract outright
-  [REG-R25 제33조] [REG-R28]. There is nothing to break the fall, and the lapse assumption
-  nonetheless has lapse *falling* toward 납입완료.
-- **No recovery decrement.** The contract makes the care state absorbing for cash-flow purposes
-  — the amount is frozen and the instalments are metered on **survival**, not on continued
-  certification [S1] — so a Korean 간병연금 needs a post-onset **mortality** basis and not a
-  recovery basis. This is a simplification the *contract* makes, not one the model imposes, and
-  it would **not** be available for the utilisation-conditioned 지원금 form [S2].
-- **No 갱신형 machinery.** Every retrieved document writes the long-term-care benefit 비갱신형
-  and attaches renewal to the hospital-carer and 노인성 질환 riders travelling with it [S1]
-  [S2]. The invariance is the finding.
+  with no surrender value to lend against, a missed premium lapses the contract outright
+  [REG-R25 제33조] [REG-R28] — nothing breaks the fall, and the lapse assumption nonetheless has
+  lapse *falling* toward 납입완료.
+- **No recovery decrement.** The amount is frozen and the instalments are metered on
+  **survival**, not on continued certification [S1], so a Korean 간병연금 needs a post-onset
+  **mortality** basis and not a recovery basis. The simplification is the *contract's*, not the
+  model's — and it would **not** be available for the utilisation-conditioned 지원금 form [S2].
+- **No 갱신형 machinery.** Every retrieved document writes the benefit 비갱신형 and attaches
+  renewal to the riders travelling with it [S1] [S2]. The invariance is the finding.
 - **No 간병인사용일당.** The daily indemnity for hiring a carer during a hospital stay shares
-  nothing with this product but the word 간병; it is a hospital-days frequency-severity cover
-  [R15] and is out of scope. Note that its one published rate is a **frequency, not a
-  probability** — 0.49 to 2.30 across ages and sexes, in days [S1].
+  nothing with this product but the word 간병: it is a hospital-days frequency-severity cover
+  [R15], out of scope, and its one published rate is a **frequency, not a probability** [S1].
 
 ## Inputs are external files
 
 Eight CSVs in `products/long_term_care/`, beside `run.py`, read at run time. The model folder
-holds `__init__.py` and `_system.json` and its two Space folders and nothing else — no
-`_data/`, no IOSpec, no embedded values — so a diff of the model shows logic changes only. This
-is the `annuallife.TradLife_A` layout; contrast `basiclife.BasicTerm_S`, which keeps its inputs
-inside the model. The consequence worth knowing: **the model is not portable on its own.**
-Copying `LTC_KR_S` without its parent's CSVs produces a model that reads and then fails on
-first evaluation.
+holds `__init__.py`, `_system.json` and its two Space folders and nothing else — no `_data/`,
+no IOSpec, no embedded values — so a diff of the model shows logic changes only. This is the
+`annuallife.TradLife_A` layout; contrast `basiclife.BasicTerm_S`, which keeps its inputs inside
+the model. The consequence: **the model is not portable on its own.** Copying `LTC_KR_S`
+without its parent's CSVs produces a model that reads and then fails on first evaluation.
 
 | File | Reference | Reader | Contents |
 |---|---|---|---|
@@ -502,49 +460,46 @@ registered in `kr_registry.INPUT_FILES`. `input_dir()` returns `_model.path.pare
 at run time and never hard-coded.
 
 **Every assumption CSV carries a `provenance` column and every cell in it begins with a
-citation tag.** `model_point_table.csv` is the only exemption, a model point being a
-configuration rather than an assumption. That escalation of the house rule is Korea's: when
-**every** row of every decrement file is a standardization, "the column is populated" stops
-being a meaningful check and "the row says which authority it stands on" starts being one.
+citation tag**, `model_point_table.csv` being the only exemption. That escalation of the house
+rule is Korea's: when **every** row of every decrement file is a standardization, "the column
+is populated" stops being a meaningful check and "the row names its authority" starts being
+one.
 
 ### `mort_table.csv` is a construction, and two multiples sit on top of it
 
 경험생명표 — the industry experience table, 제10회 applied from 2024-04 — is produced by
 보험개발원 and is **not published in full**: only the summary, the 평균수명 and the 기대여명,
-is released [REG-R33] [REG-R34]. There is no Korean analogue of a downloadable standard table,
-and the single-year 완전생명표 `qx` tables were not retrieved either [REG-R39].
-`mort_table.csv` is therefore a **[std] Makeham-Gompertz construction**,
+is released [REG-R33] [REG-R34], and the single-year 완전생명표 `qx` tables were not retrieved
+either [REG-R39]. `mort_table.csv` is therefore a **[std] Makeham-Gompertz construction**,
 
     q(x) = 1 - exp( -( A + B * c^x ) ),   A = 0.0003 [std],  c = 1.10 [std]
 
-in which `B` is solved, per sex, so that the complete expectation of life at 65 reproduces the
-published 경험생명표 65세 기대여명 — **23.7 years for men and 27.1 for women** [REG-R33]. That
-is the only thing fitted. The construction then reproduces the *second* published summary
+in which `B` is solved per sex so that the complete expectation of life at 65 reproduces the
+published 경험생명표 65세 기대여명 — **23.7 years for men and 27.1 for women** [REG-R33] — and
+that is the only thing fitted. The construction then reproduces the *second* published summary
 statistic without being asked to: the implied 평균수명 at issue age 40 is **86.4** for men
-against the published 86.3, and **90.3** for women against 90.7. The agreement is a cross-check
-on the shape, not evidence about any insurer's experience, and **no conclusion about Korean
-insured mortality should be drawn from the file**. There is no best-estimate adjustment factor:
-the anchor is an experience statistic, not a valuation margin, so there is nothing to unwind —
-which is the one place this model's mortality treatment differs from `Term_KR_A`'s, whose table
-is built from disclosed *pricing* rates and carries a `mort_be_factor` to remove their margin.
+against the published 86.3, and **90.3** for women against 90.7. That is a cross-check on the
+shape, not evidence about any insurer's experience, and **no conclusion about Korean insured
+mortality should be drawn from the file**. There is no best-estimate adjustment factor — the
+anchor is an experience statistic, not a valuation margin — which is where this model's
+mortality differs from `Term_KR_A`'s, built from disclosed *pricing* rates and carrying a
+`mort_be_factor` to remove their margin.
 
 Two impaired-life bases sit on top of it as multiples, because **no retrieved source gives a
 post-certification mortality table by grade**:
 
 - `care_mort_mult = 3.0` [std]. The yearbook roll-forward and the application-route estimator
   agree that the mean duration of a certification is near **4 to 5.5 years** [R4]
-  [R18, derived], and the mean 만나이 of a certified decedent is over 75 [R11]; at 만나이 82 on
-  the shipped table a mean duration of 4.5 years implies a force of 0.222 against a healthy
-  force of 0.075, a multiple of **2.96**. The one study measuring time from certification to
-  death — 516.2 days, 8.7% inside a month, 45.6% inside a year [R11] — is a **right-censored
-  decedent cohort** and a lower bound, so it fixes the early shape and not the level. Note the
-  coupling: `care_mort_mult` is also the excess-mortality term of the incidence identity, so it
-  moves the entry rate and the annuity's run-off in **opposite directions at once**, and it is
-  the model's largest quantified sensitivity — at 1.0 lifetime lump-sum claims fall 37.7%.
-- `light_mort_mult = 1.8` [std], between healthy and care. The mean 인정점수 of certified
-  decedents is 82.1, squarely inside 2등급 [R11], so the deaths are concentrated in the severe
-  grades and a light-grade life is materially healthier than that cohort. There is **no
-  observed range**.
+  [R18, derived]; at 만나이 82 on the shipped table a mean duration of 4.5 years implies a force
+  of 0.222 against a healthy 0.075, a multiple of **2.96**. The one study measuring time from
+  certification to death — 516.2 days, 8.7% inside a month, 45.6% inside a year [R11] — is a
+  **right-censored decedent cohort** and fixes the early shape, not the level. Note the
+  coupling: it is also the excess-mortality term of the incidence identity, so it moves entry
+  and run-off in **opposite directions at once**, and it is the model's largest quantified
+  sensitivity — at 1.0, lifetime lump-sum claims fall 37.7%.
+- `light_mort_mult = 1.8` [std], between healthy and care: the mean 인정점수 of certified
+  decedents is 82.1, inside 2등급 [R11], so deaths concentrate in the severe grades and a
+  light-grade life is healthier than that cohort. **No observed range.**
 - `dem_mort_mult = 2.5` [std], for the rider's own ledger. No source gives it.
 
 ### Three morbidity files, because it is three different things
@@ -552,20 +507,18 @@ post-certification mortality table by grade**:
 - **`prevalence_table.csv`** carries the 연령별 인정률 of the 2024 노인장기요양보험 통계연보 by
   sex, computed as (계 − 등급외) over population [R4 표2-9, 표1-2, derived], together with the
   three parameters of the logistic **[std]** fitted through them. The five anchors are carried
-  for provenance; the model reads the fitted parameters. The sourced curve has two features the
-  fit preserves and that matter: a gradient of about 17% per year of age, and a **sex crossover
-  at about 70** — male certification above female below it, female above male after — which is
-  the reverse of a death-benefit table and is independently confirmed by the disclosed
+  for provenance; the model reads the fitted parameters. Two features of the sourced curve
+  survive the fit and matter: a gradient of about 17% per year of age, and a **sex crossover at
+  about 70** — the reverse of a death-benefit table, independently confirmed by the disclosed
   예정위험률 [S1].
 - **`grade_share_table.csv`** carries `share_ge`, the share of certified lives at that grade
   **or above**, by grade and by age band [R4 표2-9, derived]. Six ASCII grade codes `g1` … `g6`
   for the six-point statutory scale, and the model point column `benefit_grade` holds one of
   them.
-- **`incidence_table.csv`** carries the disclosed 예정위험률 [S1] — the only sourced
-  *incidence* in the file, and the only one not used for its level.
-- **`dementia_table.csv`** carries the 2023 치매역학조사 band prevalences [R7], their fitted
-  logistic **[std]** and the two sourced 65+ sex factors. Read once per model whether or not
-  the rider is on, as every table here is.
+- **`incidence_table.csv`** carries the disclosed 예정위험률 [S1], the only sourced *incidence*
+  here and the only table not used for its level; **`dementia_table.csv`** carries the 2023
+  치매역학조사 band prevalences [R7], their fitted logistic **[std]** and two sourced 65+ sex
+  factors, read once per model whether or not the rider is on.
 
 ### `lapse_table.csv` and `av_table.csv`
 
@@ -585,19 +538,17 @@ on the fraction of the way from 납입완료 to maturity so one progression serv
 
 ## Sign convention
 
-`net_cf(t)` is **income positive**: premiums less every benefit, less expenses, less the
-claim-handling expense, less commission. The technical notes print the same sign, so there is
-no outgo-positive `liability_cf` companion to publish. The shape to expect is a deep month-0
-strain — 5.2 months of acquisition expense plus 7.8 months of initial commission against a
-single month's premium — then thin positive margins for twenty years, then a long negative tail
-that begins at 납입완료 and never turns back.
+`net_cf(t)` is **income positive**: premiums less every benefit, expense, claim expense and
+commission. The technical notes print the same sign, so there is no outgo-positive
+`liability_cf` companion. The shape to expect is a deep month-0 strain — 5.2 months of
+acquisition expense plus 7.8 months of initial commission against one month's premium — then
+thin positive margins for twenty years, then a long negative tail from 납입완료 on.
 
 The model projects **undiscounted gross best-estimate liability cash flows** and nothing else.
 The 책임준비금 [REG-R3] [REG-R10], the 해약환급금준비금 [REG-R11], the IFRS 17 CSM and risk
 adjustment [REG-R60] and the K-ICS 요구자본 [REG-R13] are cited and left to a layer that
-consumes the cash flows. `av_pp` and `cv_pp` are published per policy so that layer can be
-built on them; the present values in the technical notes are computed outside the model and are
-a calibration check, not an output.
+consumes them; `av_pp` and `cv_pp` are published per policy so that layer can be built on them.
+The present values in the technical notes are computed outside the model.
 
 ## Naming
 
@@ -618,23 +569,18 @@ per-`t` residual at `check_*_resid(t)`.
 | `x`, `x + floor(t/12)` | `issue_age()`, `age(t)` | 만나이 at the 계약일, attained 만나이 |
 | `P`, `n_P` | `premium_mth_pp()`, `prem_period_mths()` | level monthly office premium, paying months |
 | `A_B`, `G_B` | `lump_amount()`, `benefit_grade()` | 진단급여금 sum insured, the 등급 threshold |
-| `A_1`, `A_2`, `n_A` | `annuity_high()`, `annuity_low()`, `annuity_max_mths()` | 간병연금 amounts and cap |
-| `W`, `G` | `wait_mths()`, `red_mths()` | 보장개시일, 감액기간 |
 | `q(x)`, `q_C(x)`, `q_L(x)` | `mort_rate`, `mort_rate_care`, `mort_rate_light` | the three annual mortalities |
-| `w(t)` | `lapse_rate` / `lapse_rate_mth` | annual and monthly lapse |
 | `P(x)`, `P_C(x)`, `P_L(x)` | `prev_rate_at`, `prev_care_at`, `prev_light_at` | prevalence, all grades / at or above `G_B` / below |
 | `i_D(x)`, `i_L(x)`, `rho(x)` | `inc_rate_direct_at`, `inc_rate_light_at`, `prog_rate_at` | direct entry, light entry, progression |
 | `h`, `l_L`, `l_C`, `l` | `pols_healthy`, `pols_light`, `pols_care`, `pols_if` | the compartments and their sum |
 | `n_C(t)`, `S_C(s,t)` | `pols_entry_care`, `care_surv` | entrants at or above `G_B`, care-state survival |
-| `AV(t)`, `CV(t)` | `av_pp`, `cv_pp` | 계약자적립액, 해약환급금 |
 | `CF(t)` | `net_cf` | net cash flow, income positive |
 
 Cells whose names end `_at` and take an **age** — `mort_rate_at_age`, `prev_rate_at`,
-`inc_rate_direct_at`, `share_ge_at`, `av_ratio_at` — exist because the morbidity construction
-has to evaluate the whole basis at 만나이 65 while the life being projected is younger than
-that. The suffix therefore does two jobs in this library: `pols_if_at(t, timing)` is the
-house's *timing*-keyed accessor, used by nine models, while these are age-keyed. The argument
-tells a reader which, and no cells takes both.
+`share_ge_at`, `av_ratio_at` — exist because the morbidity construction has to evaluate the
+whole basis at 만나이 65 while the life projected is younger. The suffix does two jobs in this
+library: `pols_if_at(t, timing)` is the house's *timing*-keyed accessor, used by nine models,
+while these are age-keyed; the argument tells a reader which, and no cells takes both.
 
 ### Names this product settled, and one it did not
 
@@ -650,15 +596,14 @@ side of each.
   stays.
 - `pols_act` is this model's own name and appears in no other krlib model: it is neither
   `pols_payer` — the lives paying premium and the lives exposed to lapse are the *same* set
-  here and two names would have implied two — nor `pols_healthy`, which excludes the light
+  here, and two names would have implied two — nor `pols_healthy`, which excludes the light
   compartment.
 
-The one open item, recorded rather than resolved: this model spells the two waiting parameters
-`wait_mths` and `red_mths`, following the `_mths` suffix that six libraries use in
-`horizon_mths`, `prem_period_mths`, `guarantee_mths` and thirty others, while `Cancer_KR_S`
-spells the same two fields `wait_months` and `reduction_months`. The chassis and its delta
-disagree on a suffix, which a cross-model review should settle in one direction; nothing in
-either model depends on the answer.
+The one open item, recorded rather than resolved: this model spells the waiting parameters
+`wait_mths` and `red_mths`, following the `_mths` suffix six libraries use in `horizon_mths`,
+`prem_period_mths` and thirty others, while `Cancer_KR_S` spells the same two fields
+`wait_months` and `reduction_months`. A cross-model review should settle the suffix in one
+direction; nothing in either model depends on the answer.
 
 ## The identity `check_net_cf()` closes
 
@@ -667,12 +612,11 @@ either model depends on the answer.
 `claim_expenses` − `commissions`, read back out of the published `result_cf()` columns so that
 a reader adding up the printed statement gets the printed total.
 
-Reading it back out of the frame rather than recomputing it is the point: it is the check that
-catches a benefit kind that exists in `claims(t, kind)` but was never given a column, which
-would leave the statement silently short of outgo the model is charging. On this product that
-is a live hazard rather than a theoretical one — there are **seven** benefit kinds, two of them
-(`VOID`, `MATURITY`) mechanisms rather than claims, and one of them (`DEATH`) not a benefit of
-the contract at all.
+Reading it back out of the frame rather than recomputing it is the point: it catches a benefit
+kind that exists in `claims(t, kind)` but was never given a column, which would leave the
+statement silently short of outgo the model is charging. Here that is a live hazard — there are
+**seven** kinds, two of them (`VOID`, `MATURITY`) mechanisms rather than claims and one
+(`DEATH`) not a benefit of the contract at all.
 
 The other five checks:
 
@@ -686,18 +630,14 @@ The other five checks:
 
 All six take no argument, return a real `bool`, and are `True` on every one of the nine shipped
 model points. Three close to `roll_fwd_tol = 1e-12`, being identities between policy counts;
-`check_av_continuity`, `check_cv_form` and `check_net_cf` close to a separately named
-`val_tol = 1e-6`, because they compare won amounts of order 1e6 that have been through a
-`DataFrame` round trip. `val_tol` is far below one won, the smallest error a reader adding up
-the printed statement could see.
+`check_av_continuity`, `check_cv_form` and `check_net_cf` close to `val_tol = 1e-6`, because
+they compare won amounts of order 1e6 that have been through a `DataFrame` round trip — still
+far below the one won a reader adding up the printed statement could see.
 
-`check_cv_form()` is asserted **with its sign** for a reason: three of the four Korean
-surrender-value forms differ only in which side of 납입완료 the 50% attaches to, so a form
-implemented upside down inverts the whole cash-flow shape and is caught by no total.
-`check_pols_roll_fwd()`, by contrast, will *not* catch lapse wrongly applied to the care
-compartment — the roll-forward stays consistent, `claims_annuity` does not move at all, and the
-only visible symptom is ₩489.73 of surrender value paid to lives the contract forbids from
-surrendering. That is why `cv_pp` and `pols_lapse` are read together in the test module.
+One thing no check catches: lapse wrongly applied to the care compartment leaves the
+roll-forward consistent and `claims_annuity` unmoved, and shows only as ₩489.73 of surrender
+value paid to lives the 약관 forbids from surrendering — which is why `cv_pp` and `pols_lapse`
+are read together in the test module.
 
 ## Standardizations used
 
@@ -713,7 +653,6 @@ which is said rather than papered over.
 | `light_mort_mult` | 1.8 | between healthy and care; certified decedents' mean 인정점수 is 82.1, inside 2등급, so deaths concentrate in the severe grades [R11] | none |
 | `dem_mort_mult` | 2.5 | between the light and care multiples: a CDR 1 diagnosis is lighter than a 1·2등급 certification | none |
 | `direct_entry_share` | 0.20 | the closing assumption of the two-equation, three-unknown identity; the 13.3% / 69.8% first-application split at 1등급 and 인지지원등급 [R4 표2-5, derived] | nothing published. 0.05–0.50 moves lifetime benefit outgo +0.7% / −1.8% and the PV ratio 0.4653 → 0.4485: it carries the **timing**, not the level |
-| `prog_rate_cap` | 1.0 | numeric guard on the progression rate | does not bind on any shipped model point |
 | `sub65_age` | 65 | the statutory 노인 boundary, 노인장기요양보험법 제2조제1호 [REG-R54] | statutory, not a choice |
 | `disease_share` | 0.95 | the 감액 test is on the **cause**; a 질병 certification inside the window is halved, an 상해/재해 one is not [S4] | the 질병 / 상해 split of certifications is in **no** retrieved source; `red_mths` 0 / 24 bounds the whole mechanic at ±0.02% of lifetime outgo on the anchor cell |
 | `red_fraction` | 0.50 | **[S4]**, and invariant wherever a 감액 is stated | 50% in every retrieved document [S1] [S4] |
@@ -732,9 +671,7 @@ which is said rather than papered over.
 | `dem_factor_m`, `dem_factor_f` | 0.9568, 1.0346 | **[R7, derived]** 8.85% male and 9.57% female against 9.25% all-sex at 65+ | applied **flat in age**, where the sourced series crosses over at 80 — so the rider does not reproduce the market's own sex pricing [S2] |
 | `lapse_year1` | 0.08 | first-year level | **no Korean durational persistency series for a 보장성 contract was retrieved.** The 표준형 comparison at a level 4.0% changes lifetime benefit outgo by −61.1% |
 | `lapse_completion`, `lapse_ultimate` | 0.001, 0.008 | **[REG-R27]**, the guidance's own values for a 무·저해지 form | prescribed; the permitted alternatives (선형-로그, 로그-로그) carry quarterly disclosure of the difference |
-| `lapse_level_std` | 0.04 | the 표준형 comparison vector | none published; carried to make the comparison the guidance requires |
 | `wait_mths`, `red_mths` | 3, 12 | 90 days and one year on a monthly grid [S2] [S4] | 90 days at three carriers against **180 days** at 우체국, and a one-year 감액 against a **two-year** one — both combinations shipped, the second at model point 9 [S1] |
-| monthly conversion | `1 − (1 − q)^(1/12)` for decrements, `/12` for incidence | uniform within the policy year | none needed |
 | processing order | certification, then mortality, then lapse | a life certified in the month is certified before it can die of the state | fixed by the contract's own sequence, not by a disclosure |
 | annuity truncation at maturity | instalments stop at `proj_len()` | the conservative reading | **no retrieved document resolves it**; understates the benefit for entrants inside the last ten years of term |
 | `roll_fwd_tol`, `val_tol` | 1e-12, 1e-6 | count identities against won amounts read back out of a `DataFrame` | both far below one won |
@@ -751,57 +688,52 @@ actuarial one.
 reviewer can check it by eye rather than by re-running the model:
 
 - The anchor cell's derived scalars — `proj_len() = 600` and therefore **601** rows,
-  `prem_period_mths() = 240`, `premium_mth_pp() = 5,600.0`, `net_prem_ratio() =
-  0.7931662309087683`, `comm_init_pp() = 43,680.0`, `sub65_gradient() = 0.12221178050285361`.
-- The assumption values the first rows use, at the precision the notes print them:
-  `mort_rate(0) = 0.00097601273`, `mort_rate_care_mth(0) = 0.00024433125292278035`,
-  `lapse_rate_mth(0) = 0.006924382628299419`, `P(40) = 0.00038039917723430234`, `i_D(40) =
-  0.0000022292964462128687`, `rho(40) = 0.03396845379835368` and `sub65_factor_at(40) =
-  0.04710884458012182`.
+  `prem_period_mths() = 240`, `net_prem_ratio() = 0.7931662309087683`, `comm_init_pp() =
+  43,680.0`, `sub65_gradient() = 0.12221178050285361` — and the assumption values the first
+  rows use, at the precision the notes print them: `mort_rate(0) = 0.00097601273`,
+  `lapse_rate_mth(0) = 0.006924382628299419`, `P(40) = 0.00038039917723430234`,
+  `i_D(40) = 0.0000022292964462128687`, `rho(40) = 0.03396845379835368`.
 - The `t = 0 … 12` cash flow statement to six decimals and the compartment table to ten,
-  including the three rows the notes single out: `t = 1` and `t = 2` carrying a non-zero
+  including the rows the notes single out: `t = 1` and `t = 2` carrying a non-zero
   `claims_void` and nothing else, `t = 3` as the first payable certification, and `t = 12`
   where `claims_lump` steps from 2.198380 to 4.601130 as the 감액 expires while
-  `claims_annuity` does **not** step, because the earlier cohorts are frozen at ₩207,495.74.
-- The policy-year-1 aggregate — ₩64,670.302783 of premium, ₩15.974040 of lump-sum claims,
-  ₩2.900270 of annuity, ₩22.769436 of 계약자적립액 and **−₩10,481.091863** of net cash flow —
-  which is the strongest single target in the file, one set of rates driving a whole annual
-  cycle.
-- The milestone rows at `t = 120 / 239 / 240 / 241 / 300 / 360 / 480 / 540 / 599 / 600`, the
-  cliff at 240 in particular: `cv_pp(239) = 0` against `cv_pp(240) = 654,528.0`, a 환급률 of
-  48.700000% against cumulative premiums, and `net_cf` turning from +2,496.2682 to −1,284.5196.
+  `claims_annuity` does **not**, the earlier cohorts being frozen at ₩207,495.74.
+- The policy-year-1 aggregate — ₩64,670.302783 of premium against **−₩10,481.091863** of net
+  cash flow — which is the strongest single target in the file, one set of rates driving a
+  whole annual cycle.
+- The milestone rows, the cliff at `t = 240` in particular: `cv_pp(239) = 0` against
+  `cv_pp(240) = 654,528.0`, a 환급률 of 48.700000%, and `net_cf` turning from +2,496.2682 to
+  −1,284.5196.
 - The undiscounted totals — ₩973,533.0572 of premium, ₩268,065.6927 + ₩546,912.1402 of benefit,
-  ₩326,783.9323 of 계약자적립액 on death and **−₩448,855.2093** of net cash flow — together
-  with the cohort decomposition: 0.026808014544 ever certified, 0.354308072159 deaths,
-  0.435534876925 lapses and 0.210156424636 reaching the 90세 계약해당일.
+  ₩326,783.9323 of 계약자적립액 on death and **−₩448,855.2093** of net cash flow — with the
+  cohort decomposition: 0.026808014544 ever certified, 0.354308072159 deaths, 0.435534876925
+  lapses and 0.210156424636 reaching the 90세 계약해당일.
 - The zero columns asserted **as zeros** rather than left implied: `claims_maturity` at every
-  `t`, `claims_dementia` on the seven points where the rider is off, and `claims_lapse` for `t
-  < 240` on the anchor cell.
+  `t`, `claims_dementia` on the seven points where the rider is off, and `claims_lapse` for
+  `t < 240` on the anchor cell.
 
-Each of the notes' pitfalls earns a test named after it — that 인정률 is a prevalence and the
-prevalence-to-incidence ratio is 10.5× at 65 and 3.8× at 85 rather than a constant; that
-dropping `mu_bar` inflates the inflow at 65 by 8.2% while dropping the whole excess-mortality
-term cuts lump-sum claims 37.7%; that `P_C'` needs the full product rule, whose symptom is a
-`claims_lump` falling between `t = 239` and `t = 240`; that the 감액 is frozen at first
-certification (₩64.78 on the anchor, ₩1,065.24 at issue age 70); that the annuity's first
-instalment falls in the month of certification; that `ann_tests` totals 0.0990 against
-`ann_count`'s 1.4539; that `care_surv` is a partial product; that premium rides on `pols_act`
-(₩414.65); that lapse applied to `pols_care` leaves `claims_annuity` untouched and
-`check_pols_roll_fwd()` closing while paying ₩489.73 of surrender value the 약관 forbids; that
-a certification inside the 보장개시일 window is a decrement and not a deferred claim; that
-widening `benefit_grade` from `g2` to `g5` multiplies benefit outgo by 2.43 rather than scaling
-one rate; and that `proj_len()` is the last index and not a row count. The optional modules are
-asserted in **both** positions of their switch, and every one of the nine model points is
-projected end to end with all six `check_*()` cells `True`.
+Each of the notes' pitfalls earns a test named after it: that the prevalence-to-incidence ratio
+is 10.5× at 65 and 3.8× at 85 rather than a constant; that dropping `mu_bar` inflates the
+inflow at 65 by 8.2% while dropping the excess-mortality term cuts lump-sum claims 37.7%; that
+`P_C'` needs the full product rule, whose symptom is `claims_lump` falling between `t = 239`
+and `t = 240`; that the 감액 is frozen at first certification (₩64.78 on the anchor, ₩1,065.24
+at issue age 70); that the annuity's first instalment falls in the month of certification and
+`ann_tests` totals 0.0990 against `ann_count`'s 1.4539; that `care_surv` is a partial product;
+that premium rides on `pols_act` (₩414.65); that lapse applied to `pols_care` leaves
+`claims_annuity` untouched and `check_pols_roll_fwd()` closing while paying ₩489.73 the 약관
+forbids; that a certification inside the 보장개시일 window is a decrement; that widening
+`benefit_grade` from `g2` to `g5` multiplies benefit outgo by 2.43 rather than scaling one
+rate; and that `proj_len()` is the last index and not a row count. The optional modules are
+asserted in **both** positions of their switch, and all nine model points are projected end to
+end with the six `check_*()` cells `True`.
 
 `tests/test_model_conventions_kr.py` adds the house style, parametrized over
-`kr_registry.MODELS` rather than restated here: the two-Space layout, the external inputs with
-no orphan CSV, the `provenance` column and its citation tag on every assumption CSV, the
+`kr_registry.MODELS` rather than restated here: the two-Space layout, external inputs with no
+orphan CSV, the `provenance` column and its citation tag on every assumption CSV, the
 docstrings and their required phrases, the 만나이 basis registered for this model, the
 `result_cf()` contract — indexed by `t`, contiguous, ending at `proj_len()`, first column
-`pols_if`, a `net_cf` column, all names `lower_snake_case` and no NaN — the read-once
-property, the round trip through `mx.write_model`, and that every `check_*()` returns `True`
-on **every** shipped model point.
+`pols_if`, all names `lower_snake_case` and no NaN — the read-once property, the round trip
+through `mx.write_model`, and that every `check_*()` is `True` on **every** model point.
 
 ```bash
 python -m pytest tests -q
