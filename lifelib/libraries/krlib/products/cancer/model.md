@@ -447,8 +447,8 @@ female twin for exactly this reason.
 
 The independent check is worth carrying: interpolating [R1]'s male all-site crude rates to
 exact age 40 and deducting thyroid gives **0.001365** against the bureau's **0.001343**, a
-difference of **+1.6%** with the right sign, because C44 could not be deducted. A published
-net premium rate and an independently derived crude rate agree to within two per cent.
+difference of **+1.6%** with the right sign, because C44 could not be deducted — a published
+net premium rate and an independently derived crude rate agreeing to within two per cent.
 
 ### `mort_table.csv` — a construction, not a copy
 
