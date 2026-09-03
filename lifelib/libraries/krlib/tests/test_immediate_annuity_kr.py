@@ -348,29 +348,6 @@ def _true_monthly(annual, rate=0.025):
 # The worked example — the quantities struck at inception
 
 
-def test_worked_example_inception_quantities(kr_immediate_anchor):
-    """V(0), ä, A(0), B, M and N, at the precision the notes produce them.
-
-    Everything else on the anchor cell is a function of these six numbers and of the
-    mortality table, so an error in any of them moves every row of the statement.  ``N`` is
-    ω − x = 110 − 60 and is a **last row index**, which is the pitfall the notes list
-    fourth.
-    """
-    a = kr_immediate_anchor
-    assert a.av_pp_init() == pytest.approx(AV_PP_INIT, abs=SUB_WON)
-    assert a.av_pp_init() == pytest.approx(
-        a.prem_pp() * (1.0 - 0.0350 - 0.0000), rel=1e-15)
-    assert a.annuity_factor() == pytest.approx(ANNUITY_FACTOR, abs=FACTOR)
-    assert a.annuity_pp(0) == pytest.approx(ANNUITY_PP, abs=SUB_WON)
-    assert a.annuity_pp(0) == pytest.approx(
-        a.av_pp_init() / a.annuity_factor(), rel=1e-15)
-    assert a.risk_prem_pp() == 0.0
-    assert a.maturity_benefit() == 0.0
-    assert a.retention_shortfall_pp() == 0.0
-    assert a.proj_len() == PROJ_LEN == OMEGA_AGE - a.age_at_entry()
-    assert len(a.result_cf()) == PROJ_LEN + 1 == 51
-
-
 def test_worked_example_annuity_factor_decomposition(kr_immediate_anchor):
     """ä(60, 10, 2.5%) = 8.752063930971 + 10.750611156941, and only the second half reads.
 
@@ -559,6 +536,11 @@ def test_the_three_claims_columns_are_zero_at_every_t(kr_immediate_anchor):
 def test_worked_example_period_zero_trace(kr_immediate_anchor):
     """The notes' period-0 trace, line by line, at full precision.
 
+    The six quantities struck at inception open it — V(0), ä, A(0), B, M and N — and
+    everything else on the anchor cell is a function of them and of the mortality table, so
+    an error in any one of them moves every row of the statement; ``N`` is ω − x = 110 − 60
+    and is a **last row index**, which is the pitfall the notes list fourth.
+
     V(0) = P(1 − c − b); ä decomposed; A(0) = V(0)/ä; F(0) = max(l(1), 1{1 ≤ 10}) = 1;
     ANN(0) = A(0); COM(0) = 0.0200 P; EXP(0) = 0.0150 P + 0.0080 A(0); and net_cf(0) =
     +₩91,512,376.53, the only positive row in the statement.  **The premium split reads
@@ -568,9 +550,18 @@ def test_worked_example_period_zero_trace(kr_immediate_anchor):
     """
     a = kr_immediate_anchor
     assert a.av_pp_init() == pytest.approx(AV_PP_INIT, abs=SUB_WON)
+    assert a.av_pp_init() == pytest.approx(
+        a.prem_pp() * (1.0 - 0.0350 - 0.0000), rel=1e-15)
+    assert a.annuity_factor() == pytest.approx(ANNUITY_FACTOR, abs=FACTOR)
     assert a.annuity_factor() == pytest.approx(
         FACTOR_GUARANTEED + FACTOR_TAIL, abs=FACTOR)
     assert a.annuity_pp(0) == pytest.approx(ANNUITY_PP, abs=SUB_WON)
+    assert a.annuity_pp(0) == pytest.approx(
+        a.av_pp_init() / a.annuity_factor(), rel=1e-15)
+    assert a.risk_prem_pp() == 0.0 and a.maturity_benefit() == 0.0
+    assert a.retention_shortfall_pp() == 0.0
+    assert a.proj_len() == PROJ_LEN == OMEGA_AGE - a.age_at_entry()
+    assert len(a.result_cf()) == PROJ_LEN + 1 == 51
     assert a.payment_factor(0) == pytest.approx(1.0, abs=EXACT)
     assert a.payment_factor(0) == max(a.lives_if(1), 1.0)
     assert a.lives_if(1) == pytest.approx(0.996470000000, abs=EXACT)
@@ -774,32 +765,6 @@ def test_worked_example_reading_the_shape_of_the_result(kr_immediate_anchor):
 # The dispute panel — 즉시연금 과소지급 분쟁, model points 6 and 7
 
 
-def test_the_dispute_panel_is_one_contract_on_two_bases(immediate_annuity):
-    """Points 6 and 7 differ in one column, ``retention_basis``, and in nothing else.
-
-    That is what makes the difference between their cash flow statements the quantity that
-    was litigated from 2017 to 2025, rather than a comparison of two products.  Both open at
-    V(0) = P(1 − 0.0350 − 0.0147) and both carry a 만기보험금 of the **gross** premium, which
-    is the whole mechanic of the retention: the fund opens below the benefit it must reach.
-    """
-    designed, ordered = immediate_annuity.Projection[6], immediate_annuity.Projection[7]
-    table = immediate_annuity.Data.model_point_table()
-    differing = [c for c in table.columns
-                 if str(table.loc[6, c]) != str(table.loc[7, c]) and c != "policy_id"]
-    assert differing == ["retention_basis"]
-    assert designed.retention_basis() == "as_designed"
-    assert ordered.retention_basis() == "as_ordered"
-    for p in (designed, ordered):
-        assert p.shape() == "inheritance"
-        assert p.av_pp_init() == pytest.approx(AV_PP_INIT_LOADED, abs=SUB_WON)
-        assert p.av_pp_init() == pytest.approx(
-            p.prem_pp() * (1.0 - 0.0350 - 0.0147), rel=1e-15)
-        assert p.maturity_benefit() == MATURITY_BENEFIT == p.prem_pp()
-        assert p.maturity_benefit() > p.av_pp_init()
-        assert p.proj_len() == 9
-        assert p.accum_factor(10, 0.025) == pytest.approx(S_10_AT_250, abs=FACTOR)
-
-
 def test_the_dispute_panel_period_zero_trace_as_designed(immediate_annuity):
     """The notes' period-0 trace on point 6, line by line, at full precision.
 
@@ -870,15 +835,33 @@ def test_the_dispute_panel_totals(immediate_annuity, point_id):
 
 
 def test_the_dispute_costs_the_insurer_the_whole_first_day_deduction(immediate_annuity):
-    """+22.96% of income, ₩3.51m of undiscounted outgo, and ₩3,882,556.06 at inception.
+    """One contract, one differing column, +22.96% of income and ₩3.51m of outgo.
 
-    With R = 0 the fund never grows, so the 만기보험금 of the **gross** premium has to be
-    found from somewhere the contract does not fund.  ``retention_shortfall_pp()`` is what
-    that costs at inception — (M − V(0)) v(10) — and it appears on the right-hand side of
-    ``check_annuity_basis()`` rather than being tolerated away, because under ``as_ordered``
-    the pricing identity does **not** close on V(0) and should not.
+    Points 6 and 7 differ in ``retention_basis`` and in nothing else, which is what makes the
+    difference between their statements the quantity that was litigated from 2017 to 2025
+    rather than a comparison of two products.  Both open at V(0) = P(1 − 0.0350 − 0.0147) and
+    both carry a 만기보험금 of the **gross** premium — the fund opens below the benefit it
+    must reach, which is the whole mechanic of the retention.  With R = 0 the fund never
+    grows, so that benefit has to be found from somewhere the contract does not fund;
+    ``retention_shortfall_pp()`` is what that costs at inception, (M − V(0)) v(10), and it
+    appears on the right-hand side of ``check_annuity_basis()`` rather than being tolerated
+    away, because under ``as_ordered`` the pricing identity does **not** close on V(0) and
+    should not.
     """
     designed, ordered = immediate_annuity.Projection[6], immediate_annuity.Projection[7]
+    table = immediate_annuity.Data.model_point_table()
+    assert [c for c in table.columns
+            if str(table.loc[6, c]) != str(table.loc[7, c]) and c != "policy_id"] == [
+        "retention_basis"]
+    assert designed.retention_basis() == "as_designed"
+    assert ordered.retention_basis() == "as_ordered"
+    for p in (designed, ordered):
+        assert p.shape() == "inheritance" and p.proj_len() == 9
+        assert p.av_pp_init() == pytest.approx(AV_PP_INIT_LOADED, abs=SUB_WON)
+        assert p.av_pp_init() == pytest.approx(
+            p.prem_pp() * (1.0 - 0.0350 - 0.0147), rel=1e-15)
+        assert p.maturity_benefit() == MATURITY_BENEFIT == p.prem_pp() > p.av_pp_init()
+        assert p.accum_factor(10, 0.025) == pytest.approx(S_10_AT_250, abs=FACTOR)
     assert ordered.annuity_pp(0) / designed.annuity_pp(0) - 1.0 == pytest.approx(
         ANNUITY_UPLIFT_AS_ORDERED, abs=5e-5)
     difference = (ordered.result_cf()["net_cf"].sum()
@@ -984,30 +967,6 @@ def test_the_floor_stepping_hand_trace_across_the_first_step(immediate_annuity):
     assert p.crediting_rate(5) / p.crediting_rate(4) - 1.0 == pytest.approx(-0.20)
 
 
-def test_the_annuity_halves_while_the_floor_is_honoured_at_every_step(immediate_annuity):
-    """−50.73% from year 1 to year 11, and ``av_pp(20)`` is ₩100,000,000.00 exactly.
-
-    That is the substance of the dispute in one table: **the floor is a rate on the fund,
-    never a floor on the annuity**.  The second step costs a further 34.07%, the monthly
-    income falls from 80,633.56 to 39,724.30, and the fund still reaches its 만기보험금 to
-    the won because the retention is re-struck against the remaining term at the current
-    rate each year.
-    """
-    p = immediate_annuity.Projection[8]
-    assert p.annuity_pp(10) / p.annuity_pp(9) - 1.0 == pytest.approx(
-        SECOND_STEP_FALL, abs=5e-5)
-    assert p.annuity_pp(10) / p.annuity_pp(0) - 1.0 == pytest.approx(
-        TWO_STEP_FALL, abs=5e-5)
-    assert p.annuity_pp(0) / 12.0 == pytest.approx(FLOOR_MONTHLY[0], abs=WON)
-    assert p.annuity_pp(10) / 12.0 == pytest.approx(FLOOR_MONTHLY[1], abs=WON)
-    assert p.av_pp(20) == pytest.approx(AV_PP_20_POINT_8, abs=1e-6)
-    assert p.check_av_terminal() is True
-    assert p.check_av_roll_fwd() is True
-    # The floor was honoured at every single step while the annuity halved.
-    assert all(p.crediting_rate(t) >= 0.0075 for t in range(0, p.proj_len() + 1))
-    assert all(p.av_pp(t + 1) > p.av_pp(t) for t in range(0, p.proj_len() + 1))
-
-
 # ---------------------------------------------------------------------------
 # The load cross-check — model point 9, the shape with no mortality in its annuity
 
@@ -1020,7 +979,10 @@ def test_the_certain_shape_load_cross_check(immediate_annuity):
     annuitant's age and sex are irrelevant to a 확정기간연금형**, so a 남자 55 published
     figure is directly comparable with the model's 남자 60 one, and because this shape
     carries no mortality in its annuity it is the sharpest available test of the expense
-    load.
+    load.  The notes' undiscounted totals are asserted beside it, with ``av_pp(10)`` =
+    −0.0000000410 of float noise: the fund runs off to zero on its own, which is what
+    ``check_av_terminal()`` tolerates, and ``claims_lapse(9) = 0.00`` because the surrender
+    rate is suppressed in the final period on every shape.
     """
     p = immediate_annuity.Projection[9]
     assert p.shape() == "certain"
@@ -1041,17 +1003,7 @@ def test_the_certain_shape_load_cross_check(immediate_annuity):
     assert all(p.pricing_factor(t) == 1.0 for t in range(0, p.proj_len() + 1))
     with pytest.raises(FormulaError):
         p.annuity_factor()
-
-
-def test_the_certain_shape_totals_and_the_fund_that_exhausts(immediate_annuity):
-    """The notes' point-9 totals, and ``av_pp(10)`` = −0.0000000410 of float noise.
-
-    The fund runs off to zero on its own, the annuity-certain's run-off being what
-    ``check_av_terminal()`` tolerates, and ``claims_lapse(9) = 0.00`` because the surrender
-    rate is suppressed in the final period on every shape, so a contract in its last year
-    runs to its last instalment.
-    """
-    p = immediate_annuity.Projection[9]
+    # The notes' point-9 totals, and the fund that runs off to zero on its own.
     df = p.result_cf()
     for column, total in CERTAIN_TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=WON), column
@@ -1156,23 +1108,6 @@ def test_the_obligation_rolls_forward_on_its_own_decrements(immediate_annuity,
             built = (p.pols_lapse(t) if p.shape() == "certain"
                      else p.pols_death(t) + p.pols_lapse(t))
             assert p.pols_exit(t) == pytest.approx(built, rel=1e-14), (point_id, t)
-
-
-def test_the_survival_curve_closes_against_a_direct_product(kr_immediate_anchor):
-    """l(t) equals the explicit product of (1 − q) over the attained ages, with no recursion.
-
-    ``lives_if`` is a one-step recursion and ``check_lives_roll_fwd`` rebuilds the same
-    probability from the table directly, so an off-by-one in the age indexing shows up from
-    the first period rather than as a plausible-looking annuity.
-    """
-    a = kr_immediate_anchor
-    assert a.check_lives_roll_fwd() is True
-    built = 1.0
-    for t in range(0, a.proj_len() + 1):
-        assert a.lives_if(t) == pytest.approx(built, abs=1e-14)
-        built *= (1.0 - a.mort_rate(t))
-    assert built == 0.0                        # q(110) = 1 closes the table
-    assert a.lives_if(a.proj_len() + 1) == 0.0
 
 
 def test_the_fund_recursion_closes_against_a_closed_form_on_every_shape(
@@ -1515,12 +1450,21 @@ def test_pitfall_the_mortality_rate_is_read_at_the_start_of_the_period(
     Reading q(x + t) raises the factor's mortality by a year throughout and gives an annuity
     of ₩5,060,720.68, +2.28% — and on the anchor walks off the end of the table at age 111
     and raises rather than returning a wrong answer, which is the good case.
+    ``check_lives_roll_fwd`` rebuilds the curve as an explicit product of (1 − q) with no
+    reference to the recursion, so the off-by-one shows up from the first period rather than
+    as a plausible-looking annuity.
     """
     a = kr_immediate_anchor
     assert a.check_lives_roll_fwd() is True
     for t in range(1, a.proj_len() + 2):
         assert a.lives_if(t) == pytest.approx(
             a.lives_if(t - 1) * (1.0 - a.mort_rate(t - 1)), rel=1e-14)
+    built = 1.0                                # the same curve as an explicit product
+    for t in range(0, a.proj_len() + 1):
+        assert a.lives_if(t) == pytest.approx(built, abs=1e-14)
+        built *= (1.0 - a.mort_rate(t))
+    assert built == 0.0                        # q(110) = 1 closes the table
+    assert a.lives_if(a.proj_len() + 1) == 0.0
     with pytest.raises(FormulaError):
         a.mort_rate(a.proj_len() + 1)          # 보험나이 111 is off the shipped table
     v = 1.0 / (1.0 + a.crediting_rate(0))
@@ -1674,18 +1618,28 @@ def test_pitfall_the_floor_is_a_rate_on_the_fund_not_a_floor_on_the_annuity(
         immediate_annuity):
     """Pitfall 11: reading the 최저보증이율 as a floor on the annuity.
 
-    It is a rate on the fund.  Point 8 is the demonstration: the annuity falls **50.73%** from
-    year 1 to year 11 while the floor is honoured at every step and the fund reaches its
-    maturity benefit exactly.  The disputed 2012 contract's own published annuity fell 55.4%
-    in five years on the same mechanism.
+    It is a rate on the fund.  Point 8 is the demonstration and it is the substance of the
+    dispute in one table: the annuity falls **50.73%** from year 1 to year 11 — the second
+    step alone costing 34.07% and the monthly income falling from 80,633.56 to 39,724.30 —
+    while the floor is honoured at every step and the fund reaches its 만기보험금 to the won.
+    The disputed 2012 contract's own published annuity fell 55.4% in five years on the same
+    mechanism.
     """
     p = immediate_annuity.Projection[8]
     assert all(p.crediting_rate(t) == p.min_guar_rate(t)
                for t in range(0, p.proj_len() + 1))
+    assert p.annuity_pp(10) / p.annuity_pp(9) - 1.0 == pytest.approx(
+        SECOND_STEP_FALL, abs=5e-5)
     assert p.annuity_pp(10) / p.annuity_pp(0) - 1.0 == pytest.approx(
         TWO_STEP_FALL, abs=5e-5)
     assert p.annuity_pp(10) < 0.5 * p.annuity_pp(0)
-    assert p.av_pp(20) == pytest.approx(MATURITY_BENEFIT, abs=1e-6)
+    assert p.annuity_pp(0) / 12.0 == pytest.approx(FLOOR_MONTHLY[0], abs=WON)
+    assert p.annuity_pp(10) / 12.0 == pytest.approx(FLOOR_MONTHLY[1], abs=WON)
+    assert p.av_pp(20) == pytest.approx(AV_PP_20_POINT_8, abs=1e-6)
+    assert p.check_av_terminal() is True and p.check_av_roll_fwd() is True
+    # The floor was honoured at every single step while the annuity halved.
+    assert all(p.crediting_rate(t) >= 0.0075 for t in range(0, p.proj_len() + 1))
+    assert all(p.av_pp(t + 1) > p.av_pp(t) for t in range(0, p.proj_len() + 1))
     # The floor never touches the annuity: it is applied to the fund and to nothing else.
     for t in (0, 5, 10, 19):
         assert p.annuity_pp(t) == pytest.approx(

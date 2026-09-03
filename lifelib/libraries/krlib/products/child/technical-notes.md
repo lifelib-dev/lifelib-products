@@ -435,8 +435,8 @@ upwards would not have: the **infant peak**, the **childhood trough** at about a
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `q(x)` | **0.0025** | 0.00025 | 0.00012 | 0.00009 | 0.00016 | 0.00035 | **0.00067713** | 0.0011 | 0.0026 | 0.006 | 0.015 | 0.043 | 0.13 | 0.31 |
 
-`q(0) = 0.0025` is **about twenty times `q(5)`**, and it falls onto the anchor cell in exactly the
-twelve months when the 태아 module is also paying. The table is read for the **insured** at
+`q(0) = 0.0025` is **about twenty times `q(5)`**, and it falls onto the anchor cell in exactly
+the twelve months when the 태아 module is also paying. The table is read for the **insured** at
 `age_man(t)` and for the **계약자** at `payer_age + t // 12`, and the two are the same file:
 one Korean mortality construction, two lives, and the 계약자's rate at issue, `q(33) =
 0.00067713`, is what drives the whole waiver decrement for the first policy year.
@@ -983,9 +983,10 @@ articles were never read in full, so no lapse or claim leakage for them is carri
   direction is stated: it **understates** persistency.
 - **On the 표준형 there is a surrender value and therefore a real economic surrender
   decision.** `CV(t)` reaches ₩1,050,000 at `t = 60` and crosses premiums paid at
-  **`t = 353`**, so a policyholder in the second decade has something to take. On the **미지급형**
-  there is nothing at all through the whole 납입기간, no 보험계약대출 and no automatic premium
-  loan to break the fall [REG-R28] — which is exactly why the lapse assumption over that
+  **`t = 353`**, so a policyholder in the second decade has something to take. On the
+  **미지급형** there is nothing at all through the whole 납입기간, no 보험계약대출 and no
+  automatic premium loan to break the fall [REG-R28] — which is exactly why the lapse
+  assumption over that
   period is worth so much CSM and why it became a supervisory matter [R11] [REG-R27]. The two
   forms carry the same `lapse_rate` in the shipped model; **no dynamic lapse term is modelled**
   and that is a named gap, not an oversight.
