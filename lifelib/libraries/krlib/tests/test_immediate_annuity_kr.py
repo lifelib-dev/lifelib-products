@@ -29,32 +29,12 @@ liabilities, so the panels the notes print for each of them are asserted beside 
 * point **9** is the 확정기간연금형, which carries no mortality in its annuity at all and is
   therefore the sharpest available test of the expense load.
 
-Every product fact the notes list under **Known modeling pitfalls** earns its own test,
-named after the pitfall, because each of them is a way an implementation can look right and
-be wrong:
-
-* ``pols_if`` is the probability that a **payment obligation remains** and not a survival
-  probability;
-* the 보증지급기간 is a ``max`` on that obligation and never a second stream;
-* nothing exits inside the guarantee and the whole cohort that died in it exits at once;
-* ``proj_len()`` is a last row index and not a row count;
-* the mortality rate is read at the age attained at the **start** of the period;
-* the model runs on 보험나이 and on nothing else;
-* ``mort_table.csv`` is a **[std]** construction and never the 경험생명표;
-* the life-shape annuity is struck once at commencement and is not re-derived from the fund;
-* ``av_pp`` is not floored at zero, because a life annuity's fund is not its reserve;
-* the retention is re-struck every year, which is invisible on a level rate;
-* the 최저보증이율 is a rate on the fund and never a floor on the annuity;
-* the floor's duration bands are half-open in completed policy years;
-* the 0.80% 연금수령기간 중 비용 is an insurer expense and is not netted off the payment;
-* the 종신연금형 pays no death benefit at all;
-* the death benefit is measured on the fund **carried forward**;
-* no lapse decrement touches the life shape, and none fires in the final period on any
-  shape;
-* the 만기보험금 is weighted by ``pols_if(N + 1)``;
-* the 100.1%-of-premiums fund floor is a deferred-contract mechanic and is not applied here;
-* nothing discounted is published; and
-* no aggregate ``claims`` column stands beside the ``claims_*`` columns.
+Each of the twenty-one product facts the notes list under **Known modeling pitfalls** earns
+its own test, named after the pitfall and naming it again in its docstring, because each of
+them is a way an implementation can look right and be wrong — beginning with the two the
+whole shape turns on, that ``pols_if`` is the probability a **payment obligation remains**
+rather than a survival probability, and that the 보증지급기간 is a ``max`` on that
+obligation and never a second stream.
 
 The eleven ``check_*`` cells this model publishes are asserted **by name**, because a
 generic sweep cannot notice a check that has quietly disappeared, and the [std] parameters
@@ -415,14 +395,18 @@ def test_worked_example_annuity_factor_decomposition(kr_immediate_anchor):
     assert all(a.pricing_factor(t) < 1.0 for t in range(10, a.proj_len() + 1))
 
 
-def test_worked_example_the_two_readings_of_the_factor(kr_immediate_anchor):
-    """The gross factor of 20.2100, and the 3.63% the load costs seen from the income side.
+def test_worked_example_the_three_readings_of_the_factor(kr_immediate_anchor):
+    """The gross factor of 20.2100, the 3.63% load and the 1.00% the guarantee costs.
 
-    Two sanity checks the notes take on a number that cannot be compared with a published
-    one, no carrier publishing an annuity factor: the premium divided by the annual annuity
-    sits where a 남자 60 cell should against implied factors of 23.81 and 23.15 at 55, and
-    converting the **gross** premium rather than the fund would raise the annuity by 3.63%
-    — the 3.50% load grossed up by itself.
+    Three sanity checks the notes take on a number that cannot be compared with a published
+    one, no carrier publishing an annuity factor.  The premium divided by the annual annuity
+    sits where a 남자 60 cell should, against implied factors of 23.81 and 23.15 at 55;
+    converting the **gross** premium rather than the fund would raise the annuity by 3.63%,
+    the 3.50% load grossed up by itself; and the same fund with no 보증지급기간 at all buys
+    ₩4,997,640.34 instead of ₩4,948,039.16, so ten guaranteed years cost **1.00% of income**
+    — the quantitative reason 97.3% of life-shape buyers take them.  Ten years also sits far
+    inside the complete ``e(60)`` of 28.1914 on the shipped table, the 소득세법 시행령
+    제25조제4항제3호 test a tax-exempt 종신형 must clear.
     """
     a = kr_immediate_anchor
     assert a.prem_pp() / a.annuity_pp(0) == pytest.approx(GROSS_FACTOR, abs=5e-5)
@@ -432,18 +416,6 @@ def test_worked_example_the_two_readings_of_the_factor(kr_immediate_anchor):
         LOAD_FROM_THE_INCOME_SIDE, abs=5e-7)
     assert gross / a.annuity_pp(0) - 1.0 == pytest.approx(
         0.0350 / (1.0 - 0.0350), rel=1e-12)
-
-
-def test_worked_example_the_guarantee_costs_one_percent_of_income(kr_immediate_anchor):
-    """19.309113 with no guarantee against 19.502675 with ten years of it.
-
-    The same fund converted without a 보증지급기간 buys ₩4,997,640.34 instead of
-    ₩4,948,039.16, so the guarantee costs **1.00% of income** — the quantitative reason
-    97.3% of life-shape buyers take it.  Ten years also sits far inside the complete
-    ``e(60)`` of 28.1914 on the shipped table, which is the 소득세법 시행령 제25조제4항제3호
-    test a tax-exempt 종신형 must clear.
-    """
-    a = kr_immediate_anchor
     v = 1.0 / (1.0 + a.crediting_rate(0))
     no_guarantee = sum(v ** (t + 1) * a.lives_if(t + 1)
                        for t in range(0, a.proj_len() + 1))
@@ -748,14 +720,16 @@ def test_worked_example_the_obligation_years_decompose(kr_immediate_anchor):
     assert added * 12.0 == pytest.approx(2.2, abs=0.05)      # 2.2 months
 
 
-def test_worked_example_the_expense_total_splits_cleanly(kr_immediate_anchor):
-    """₩2,605,280.47 = ₩1,500,000 at inception + ₩1,105,280.47 of annuity charge.
+def test_worked_example_the_expense_total_and_the_break_even(kr_immediate_anchor):
+    """₩2,605,280.47 = ₩1,500,000 + ₩1,105,280.47, and break-even at the 21st instalment.
 
-    The second term is exactly 0.0080 × the annuity total, because the 연금수령기간 중 비용
-    is measured on the 연금연액 and carried at the payment's own weight rather than per
-    policy in force.  **No other expense exists in this projection**: there is no maintenance
-    expense and no inflation, the only recurring charge any retrieved 즉시연금 document
-    publishes being this one.
+    The second expense term is exactly 0.0080 × the annuity total, because the
+    연금수령기간 중 비용 is measured on the 연금연액 and carried at the payment's own weight
+    rather than per policy in force, and **no other expense exists in this projection** —
+    there is no maintenance expense and no inflation, the only recurring charge any retrieved
+    즉시연금 document publishes being this one.  The cumulative payments cross the premium
+    between rows 20 and 21, at attained age 81: the number a Korean buyer's own arithmetic
+    produces, and the reason the shape is understood as a longevity hedge.
     """
     a = kr_immediate_anchor
     df = a.result_cf()
@@ -765,27 +739,13 @@ def test_worked_example_the_expense_total_splits_cleanly(kr_immediate_anchor):
     assert total - ACQ_EXPENSE_0 == pytest.approx(
         0.0080 * df["annuity_payments"].sum(), rel=1e-12)
     assert total / df["annuity_payments"].sum() == pytest.approx(0.019, abs=5e-4)
-    names = set(a.cells)
-    for absent in ("expense_maint", "inflation_factor", "inflation_rate",
-                   "expenses_maint_pp"):
-        assert absent not in names, f"{absent}: this model has no maintenance expense"
-
-
-def test_worked_example_break_even_is_the_twenty_first_instalment(kr_immediate_anchor):
-    """₩98,007,125.57 by the end of row 20 and ₩101,922,278.93 by the end of row 21.
-
-    The undiscounted break-even is the 21st instalment, at attained age 81 — the number a
-    Korean buyer's own arithmetic produces, and the reason the shape is understood as a
-    longevity hedge.  It is a statement about the *cumulative* stream and would survive any
-    rearrangement of the individual rows, which is why it is asserted beside them.
-    """
-    a = kr_immediate_anchor
+    for absent in ("expense_maint", "inflation_factor", "inflation_rate"):
+        assert absent not in set(a.cells), f"{absent}: no maintenance expense here"
     cum20 = sum(a.annuity_payments(t) for t in range(0, 21))
     cum21 = sum(a.annuity_payments(t) for t in range(0, 22))
     assert cum20 == pytest.approx(CUM_ANNUITY_20, abs=WON)
     assert cum21 == pytest.approx(CUM_ANNUITY_21, abs=WON)
-    assert cum20 < a.prem_pp() < cum21
-    assert a.age(21) == 81
+    assert cum20 < a.prem_pp() < cum21 and a.age(21) == 81
 
 
 def test_worked_example_reading_the_shape_of_the_result(kr_immediate_anchor):
@@ -804,10 +764,8 @@ def test_worked_example_reading_the_shape_of_the_result(kr_immediate_anchor):
     assert a.net_cf(50) == 0.0
     assert len({round(a.net_cf(t), 6) for t in range(1, 10)}) == 1
     tail = [a.payment_factor(t) for t in range(10, a.proj_len() + 1)]
-    assert tail == sorted(tail, reverse=True)
+    assert tail == sorted(tail, reverse=True) and tail[-1] == 0.0
     assert tail[0] == pytest.approx(PAYMENT_FACTOR_10, abs=PROB)
-    assert tail[-1] == 0.0
-    # Front-loaded in certainty: the guaranteed decade is a fifth of the whole outgo.
     guaranteed = sum(a.annuity_payments(t) for t in range(0, 10))
     assert guaranteed / TOTALS["annuity_payments"] == pytest.approx(0.358, abs=5e-4)
 
@@ -1285,82 +1243,59 @@ def test_the_premium_split_closes_and_there_is_no_acquisition_strain(immediate_a
         assert all(p.net_cf(t) < 0.0 for t in range(1, p.proj_len()))
 
 
-def test_deaths_are_taken_at_the_end_of_the_period(immediate_annuity):
-    """The 사망보험금 is measured on V(t + 1), which is a different number from V(t).
+def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuity):
+    """Steps 2 to 6 of the notes' processing order, each by a quantity that would differ.
 
-    Step 4 of the notes' processing order.  Asserting the order means asserting a quantity
-    that would differ if it changed: on point 6 at t = 0 the benefit is
-    0.00353 × (0.10 P + V(1)) = ₩372,321.86, against ₩370,755.90 on the fund at the start of
-    the period — and the two differ in every period, so the error would not cancel.
-    """
-    p = immediate_annuity.Projection[6]
-    for t in range(0, p.proj_len() + 1):
-        after = p.pols_death(t) * (p.db_rate() * p.prem_pp() + p.av_pp(t + 1))
-        before = p.pols_death(t) * (p.db_rate() * p.prem_pp() + p.av_pp(t))
-        assert p.claims(t, "DEATH") == pytest.approx(after, rel=1e-14)
-        assert p.claims(t, "DEATH") != pytest.approx(before, rel=1e-9)
-    assert p.claims(0, "DEATH") == pytest.approx(DESIGNED["claims_death"], abs=SUB_WON)
-    assert p.pols_death(0) * (0.10 * p.prem_pp() + p.av_pp(0)) == pytest.approx(
-        370755.90, abs=WON)
+    The order is not presentational: four of the flows depend on it, so each is asserted by a
+    number an out-of-order model would produce differently.
 
-
-def test_surrenders_are_taken_after_the_deaths(immediate_annuity):
-    """The inheritance branch carries a (1 − q) that the certain branch does not.
-
-    Step 5 of the processing order, and it is visible in the weights: on point 6 the
-    surrender weight is 1 × (1 − 0.00353) × 1 × 0.02 = 0.0199294 rather than 0.02, because
-    only a contract that has not become a death claim can be surrendered; on point 9 the
-    contract survives the annuitant, so the decrement bites on the persistency measure alone
-    and the weight is exactly 0.02.
+    **Credit, then strike the annuity** — on the certain shape A(t) = V(t)/a(m, i) and not
+    V(t)(1 + i)/a(m, i), the two differing by the whole year's interest; the order is what
+    exhausts the fund to zero at the end of the term rather than to a residue.
+    **Deaths at the end of the period** — the 사망보험금 is measured on the fund carried
+    forward, so on point 6 at t = 0 it is 0.00353 × (0.10 P + V(1)) = ₩372,321.86 against
+    ₩370,755.90 on the fund at the start, and the two differ in every period.
+    **Surrenders after the deaths** — the inheritance branch carries a (1 − q) the certain
+    branch does not, so the weight is 0.0199294 rather than 0.02; on the certain shape the
+    contract survives the annuitant and the decrement bites on persistency alone.
+    **The 만기보험금 last, at IF(N + 1)** — one further period of decrement away from the row
+    that carries it, and nil at every earlier t and on both other shapes.
     """
     inheritance = immediate_annuity.Projection[6]
     certain = immediate_annuity.Projection[9]
-    assert inheritance.lapse_rate(0) == certain.lapse_rate(0) == 0.02
-    assert inheritance.pols_lapse(0) == pytest.approx(
-        (1.0 - inheritance.mort_rate(0)) * 0.02, rel=1e-14)
-    assert inheritance.pols_lapse(0) == pytest.approx(0.0199294, abs=EXACT)
-    assert inheritance.pols_lapse(0) < 0.02
-    assert certain.pols_lapse(0) == pytest.approx(0.02, rel=1e-14)
+
+    for t in range(0, certain.proj_len() + 1):
+        i, m = certain.crediting_rate(t), certain.annuity_term() - t
+        assert certain.annuity_pp(t) == pytest.approx(
+            certain.av_pp(t) / certain.annuity_factor_certain(m, i), rel=1e-14)
+        credited = certain.av_pp(t) * (1.0 + i) / certain.annuity_factor_certain(m, i)
+        assert credited / certain.annuity_pp(t) == pytest.approx(1.025, rel=1e-12)
+    assert certain.av_pp(certain.proj_len() + 1) == pytest.approx(0.0, abs=1e-6)
+
     for t in range(0, inheritance.proj_len() + 1):
+        rho_p = inheritance.db_rate() * inheritance.prem_pp()
+        assert inheritance.claims(t, "DEATH") == pytest.approx(
+            inheritance.pols_death(t) * (rho_p + inheritance.av_pp(t + 1)), rel=1e-14)
+        assert inheritance.claims(t, "DEATH") != pytest.approx(
+            inheritance.pols_death(t) * (rho_p + inheritance.av_pp(t)), rel=1e-9)
         assert inheritance.pols_lapse(t) == pytest.approx(
             inheritance.lives_if(t) * (1.0 - inheritance.mort_rate(t))
             * inheritance.surr_if(t) * inheritance.lapse_rate(t), rel=1e-14)
         assert certain.pols_lapse(t) == pytest.approx(
             certain.surr_if(t) * certain.lapse_rate(t), rel=1e-14)
+    assert inheritance.claims(0, "DEATH") == pytest.approx(
+        DESIGNED["claims_death"], abs=SUB_WON)
+    assert inheritance.pols_death(0) * (0.10 * inheritance.prem_pp()
+                                        + inheritance.av_pp(0)) == pytest.approx(
+        370755.90, abs=WON)
+    assert inheritance.pols_lapse(0) == pytest.approx(0.0199294, abs=EXACT)
+    assert certain.pols_lapse(0) == pytest.approx(0.02, rel=1e-14)
 
-
-def test_the_fund_is_credited_before_the_annuity_falls(immediate_annuity):
-    """Step 2 before step 3: A(t) is struck on the fund at the **start** of the period.
-
-    On the certain shape the annuity is V(t) / a(m, i) and not V(t)(1 + i) / a(m, i), and the
-    difference is 2.5% of income on the anchor's basis.  The order is what makes the fund
-    exhaust to zero at the end of the term rather than to a residue.
-    """
-    p = immediate_annuity.Projection[9]
-    for t in range(0, p.proj_len() + 1):
-        i = p.crediting_rate(t)
-        m = p.annuity_term() - t
-        assert p.annuity_pp(t) == pytest.approx(
-            p.av_pp(t) / p.annuity_factor_certain(m, i), rel=1e-14)
-        credited = p.av_pp(t) * (1.0 + i) / p.annuity_factor_certain(m, i)
-        assert credited / p.annuity_pp(t) == pytest.approx(1.025, rel=1e-12)
-    assert p.av_pp(p.proj_len() + 1) == pytest.approx(0.0, abs=1e-6)
-
-
-def test_the_maturity_benefit_falls_after_one_more_period_of_decrement(
-        immediate_annuity):
-    """Step 6: the 만기보험금 is weighted by IF(N + 1) and falls in the last period alone.
-
-    It is payable on survival **to** maturity, which is one further period of decrement away
-    from the row that carries it, and it is nil at every earlier t on the shape that has one
-    and at every t on the two shapes that do not.
-    """
-    p = immediate_annuity.Projection[6]
-    n = p.proj_len()
-    assert p.claims(n, "MATURITY") == pytest.approx(
-        p.pols_if(n + 1) * p.maturity_benefit(), rel=1e-14)
-    assert all(p.claims(t, "MATURITY") == 0.0 for t in range(0, n))
-    assert p.pols_if(n + 1) < p.pols_if(n)
+    n = inheritance.proj_len()
+    assert inheritance.claims(n, "MATURITY") == pytest.approx(
+        inheritance.pols_if(n + 1) * inheritance.maturity_benefit(), rel=1e-14)
+    assert all(inheritance.claims(t, "MATURITY") == 0.0 for t in range(0, n))
+    assert inheritance.pols_if(n + 1) < inheritance.pols_if(n)
     for point_id in (1, 9):
         q = immediate_annuity.Projection[point_id]
         assert q.maturity_benefit() == 0.0
@@ -1387,14 +1322,19 @@ def test_the_published_statement_adds_up(immediate_annuity, kr_immediate_anchor)
     assert "claims" not in a.result_cf().columns
 
 
-def test_result_cf_shape_and_column_vocabulary(kr_immediate_anchor):
-    """The frame's columns in order, indexed by t from 0 to ``proj_len()``.
+def test_the_two_result_frames_and_the_sign_they_publish(immediate_annuity,
+                                                         kr_immediate_anchor):
+    """Both frames' columns in order, and both signs of the net flow published as columns.
 
-    ``pols_if`` first because the library publishes the in-force measure first; both signs
-    of the net flow, so that a reader holding the notes beside the model reads the same sign
-    in both; and the three ``claims_*`` splits with no subtotal beside them.
+    ``result_cf()`` puts ``pols_if`` first because the library publishes the in-force measure
+    first, and carries the three ``claims_*`` splits with no subtotal beside them;
+    ``liability_cf`` is the notes' outgo-positive CF(t) and ``net_cf`` its exact negative, so
+    that neither a reader of the notes nor a reader of the library has to negate anything by
+    hand.  ``result_pols()`` is the companion frame — everything the statement is built out
+    of and nothing that is a cash flow itself, stated at the **start** of the period.
     """
-    df = kr_immediate_anchor.result_cf()
+    a = kr_immediate_anchor
+    df = a.result_cf()
     assert list(df.columns) == [
         "pols_if", "premiums", "annuity_payments", "claims_death", "claims_lapse",
         "claims_maturity", "commissions", "expenses", "liability_cf", "net_cf",
@@ -1402,65 +1342,19 @@ def test_result_cf_shape_and_column_vocabulary(kr_immediate_anchor):
     assert df.index.name == "t"
     assert list(df.index) == list(range(0, PROJ_LEN + 1))
     assert df.notna().all().all()
-    assert df.loc[0, "net_cf"] == pytest.approx(NET_CF_0, abs=WON)
-
-
-def test_net_cf_carries_the_notes_own_sign(immediate_annuity, kr_immediate_anchor):
-    """``liability_cf`` is the notes' outgo-positive CF(t); ``net_cf`` is its exact negative.
-
-    Both are published as columns rather than one being made to stand for the other.  The
-    library-wide orientation is income-positive, so ``net_cf`` is what can be summed across
-    every model here; the notes' own orientation is the other one, and it is published
-    verbatim so that neither reader has to negate anything by hand.
-    """
-    a = kr_immediate_anchor
-    for t in (0, 1, 10, 50):
-        assert a.liability_cf(t) == pytest.approx(-a.net_cf(t), rel=1e-15)
-    df = a.result_cf()
+    assert df.loc[0, "net_cf"] == pytest.approx(NET_CF_0, abs=WON) and df.loc[
+        0, "net_cf"] > 0.0                      # the single premium is income
     assert (df["liability_cf"] + df["net_cf"]).abs().max() == 0.0
-    assert df.loc[0, "net_cf"] > 0.0            # the single premium is income
     assert "liability_cf" in immediate_annuity.Projection.cells
-
-
-def test_result_pols_is_the_state_the_period_opens_in(kr_immediate_anchor):
-    """``av_pp``, ``cv_pp`` and ``pols_if`` are start-of-period, as the notes state.
-
-    The companion frame to the cash flow statement: everything the statement is built out of
-    and nothing that is a cash flow itself, so that a row reads as the state the period opens
-    in and the flows that period produces.
-    """
-    df = kr_immediate_anchor.result_pols()
-    assert list(df.columns) == [
+    pols = a.result_pols()
+    assert list(pols.columns) == [
         "pols_if", "lives_if", "surr_if", "pols_death", "pols_lapse", "payment_factor",
         "crediting_rate", "av_pp", "cv_pp", "annuity_pp", "retention_pp",
     ]
-    assert df.index.name == "t"
-    assert len(df) == PROJ_LEN + 1
-    assert df.loc[0, "av_pp"] == pytest.approx(AV_PP_INIT, abs=SUB_WON)
-    assert (df["retention_pp"] == 0.0).all()    # no maturity benefit on this shape
-    assert not any(c.startswith("premium") or c.endswith("_cf") for c in df.columns)
-
-
-def test_the_shipped_model_points_have_the_horizons_the_notes_tabulate(
-        immediate_annuity):
-    """N = max(g − 1, ω − x) on the life shape and n − 1 on the other two, for all ten.
-
-    The horizon is a structural property of the shape and not a rounded projection length:
-    the life shape runs to the limiting age, at which q = 1, so the obligation is exhausted
-    rather than truncated, while the two term shapes end where the contract does.
-    """
-    table = immediate_annuity.Data.model_point_table()
-    assert list(table.index) == list(range(1, 11))
-    for point_id, horizon in SHIPPED_HORIZONS.items():
-        p = immediate_annuity.Projection[point_id]
-        assert p.proj_len() == horizon, point_id
-        if p.shape() == "life":
-            assert p.proj_len() == max(p.annuity_term() - 1,
-                                       OMEGA_AGE - p.age_at_entry())
-            assert p.mort_rate(p.proj_len()) == 1.0
-            assert p.lives_if(p.proj_len() + 1) == 0.0
-        else:
-            assert p.proj_len() == p.annuity_term() - 1
+    assert pols.index.name == "t" and len(pols) == PROJ_LEN + 1
+    assert pols.loc[0, "av_pp"] == pytest.approx(AV_PP_INIT, abs=SUB_WON)
+    assert (pols["retention_pp"] == 0.0).all()  # no maturity benefit on this shape
+    assert not any(c.startswith("premium") or c.endswith("_cf") for c in pols.columns)
 
 
 def test_the_surrender_deduction_is_nil_and_the_statutory_cap_binds_nothing(
@@ -1588,7 +1482,10 @@ def test_pitfall_proj_len_is_a_last_index_not_a_row_count(immediate_annuity):
 
     It is the **last row index**.  The anchor has 51 rows, 0 … 50, and ω − x = 110 − 60 = 50.
     An off-by-one drops the last instalment on the term shapes — on point 9 that is
-    ₩9,052,841.76 of outgo, 9.1% of the annuity total.
+    ₩9,052,841.76 of outgo, 9.1% of the annuity total.  The notes' horizon column is asserted
+    beside it for all ten shipped points, N being max(g − 1, ω − x) on the life shape and
+    n − 1 on the other two: a structural property of the shape and not a rounded projection
+    length, so that the life shape's obligation is exhausted rather than truncated.
     """
     for point_id, horizon in SHIPPED_HORIZONS.items():
         p = immediate_annuity.Projection[point_id]
@@ -1596,6 +1493,13 @@ def test_pitfall_proj_len_is_a_last_index_not_a_row_count(immediate_annuity):
         assert len(df) == p.proj_len() + 1, point_id
         assert df.index[0] == 0 and df.index[-1] == p.proj_len(), point_id
         assert p.proj_len() == horizon
+        if p.shape() == "life":
+            assert p.proj_len() == max(p.annuity_term() - 1,
+                                       OMEGA_AGE - p.age_at_entry())
+            assert p.mort_rate(p.proj_len()) == 1.0
+            assert p.lives_if(p.proj_len() + 1) == 0.0
+        else:
+            assert p.proj_len() == p.annuity_term() - 1
     certain = immediate_annuity.Projection[9]
     dropped = certain.annuity_payments(certain.proj_len())
     assert dropped == pytest.approx(CERTAIN_LAST_INSTALMENT, abs=WON)
@@ -2033,13 +1937,18 @@ def test_the_std_charge_parameters_the_notes_state(immediate_annuity, shape):
         1.0 - 0.0350 - CHARGE_RATES[shape]["risk_prem_rate"], rel=1e-15)
 
 
-def test_the_std_crediting_parameters_the_notes_state(immediate_annuity):
-    """공시이율 2.50%, 최저보증이율 1.25 / 1.00 / 0.75%, and ω = 110.
+def test_the_std_rate_and_behaviour_assumptions_the_notes_state(immediate_annuity):
+    """공시이율 2.50%, 최저보증이율 1.25 / 1.00 / 0.75%, ω = 110, and w = 2.00%.
 
     The declared rate is a **scalar** and not a derived quantity — 감독규정 제7-65조제3항
     makes it the product of a 공시기준이율 majority-weighted to the insurer's own
     운용자산이익률, which no model can derive — and the limiting age is what makes the
-    life-shape obligation exhausted rather than truncated.
+    life-shape obligation exhausted rather than truncated.  The surrender rate is the one row
+    of the model's [std] table that is a **placeholder**: no retrieved source gives a rate for
+    즉시연금 by duration, by shape or at all, so it is carried as a model point column where
+    its effect can be isolated rather than in a table where it would look like a duration
+    curve — and it is not second-order, producing ₩15.9m of ``claims_lapse`` on point 6
+    against ₩17.3m of annuity payments.
     """
     a = immediate_annuity.Projection[1]
     assert a.decl_rate() == DECL_RATE
@@ -2049,34 +1958,20 @@ def test_the_std_crediting_parameters_the_notes_state(immediate_annuity):
     table = pd.read_csv(CSV_DIR / "crediting_table.csv")
     assert set(table["basis_id"]) == {"decl_2017", "min_guar"}
     decl = table[table["basis_id"] == "decl_2017"]
-    assert set(decl["decl_rate"]) == {DECL_RATE}
+    assert set(decl["decl_rate"]) == {DECL_RATE}     # one rate per basis, never a mean
     assert list(decl["min_guar_rate"]) == [0.0125, 0.0100, 0.0075]
     assert set(table[table["basis_id"] == "min_guar"]["decl_rate"]) == {0.0}
     assert table["provenance"].notna().all()
-    # The rate is exposed, not derived, and each basis carries one rate rather than a
-    # mean of several: a basis whose declared rate was not uniform raises.
     doc = immediate_annuity.Projection.cells["decl_rate"].doc.replace("*", "")
     assert "It is a scalar and not a derived quantity" in doc
-    assert len(set(decl["decl_rate"])) == 1
 
-
-def test_the_std_lapse_assumption_is_carried_per_model_point(immediate_annuity):
-    """2.00% a year, entirely unsourced, and nil on the life shape as a matter of contract.
-
-    **No retrieved source gives a surrender rate for 즉시연금 by duration, by shape or at
-    all**, so the assumption is carried as a model point column where its effect can be
-    isolated rather than in a table where it would look like a duration curve.  It is not
-    second-order: on point 6 it produces ₩15.9m of ``claims_lapse`` against ₩17.3m of annuity
-    payments.
-    """
-    table = immediate_annuity.Data.model_point_table()
-    assert set(table["lapse_rate"]) == {0.0, 0.02}
+    points = immediate_annuity.Data.model_point_table()
+    assert set(points["lapse_rate"]) == {0.0, 0.02}
     for point_id in (6, 7, 8, 9):
         p = immediate_annuity.Projection[point_id]
         assert p.lapse_rate(0) == 0.02
         assert p.shape() in ("inheritance", "certain")
-    designed = immediate_annuity.Projection[6]
-    df = designed.result_cf()
+    df = immediate_annuity.Projection[6].result_cf()
     assert df["claims_lapse"].sum() == pytest.approx(15858445.72, abs=WON)
     assert df["claims_lapse"].sum() / df["annuity_payments"].sum() == pytest.approx(
         0.918, abs=5e-4)
