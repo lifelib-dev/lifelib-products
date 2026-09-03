@@ -138,7 +138,7 @@ P_NET_ORDINARY = 2832875.97
 # "And the acceleration is expensive" — the same contract with no acceleration at all.
 A0_1_NO_ACCEL = 36085073.09
 P_NET_NO_ACCEL = 2386125.06
-ACCELERATION_COST = 0.2440          # P / P(a = 0) - 1
+ACCELERATION_COST = 0.24406         # P / P(a = 0) - 1, the notes' 24.4%
 
 # "The decrement basis at the anchor, t = 1 ... 25":
 # t -> (attained 보험나이, ci_rate, mort_rate, mort_rate_ci, lapse_rate).
@@ -396,7 +396,7 @@ PHASE_RUN_OFF = -82006180.28         # sum net_cf, t = 21 ... 71
 # "Reading the shape of the result" and "Key sensitivities".
 TOTAL_BENEFITS = 92614001.14
 CI_ORIGINATED = 71081400.43
-CI_ORIGINATED_SHARE = 0.767
+CI_ORIGINATED_SHARE = 0.7675
 DEATH_SHARE = 0.148
 RESID_ON_NOMINAL = 8223730.34        # the residual stream with the floor removed
 FLOOR_WORTH = 4.43                   # 36,441,532.16 / 8,223,730.34
@@ -549,20 +549,6 @@ def test_worked_example_row(kr_ci_anchor, t):
     assert a.net_cf(t) == pytest.approx(expected["net_cf"], abs=WON)
 
 
-@pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE))
-def test_the_result_table_carries_the_same_row(kr_ci_anchor, t):
-    """``result_cf()`` publishes exactly the cells the notes' table prints.
-
-    The cells and the frame are two routes to the same numbers and either could drift
-    from the other — a column built from the wrong cells, or a row index off by one —
-    without any single-cell assertion noticing.
-    """
-    row = kr_ci_anchor.result_cf().loc[t]
-    for column, value in zip(CF_COLUMNS, WORKED_EXAMPLE[t]):
-        tol = INFORCE if column == "pols_if" else WON
-        assert row[column] == pytest.approx(value, abs=tol), column
-
-
 @pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE_BASIS))
 def test_worked_example_decrement_basis_row(kr_ci_anchor, t):
     """The notes' basis table, t = 1 ... 25: the attained age and the four rates.
@@ -705,12 +691,21 @@ def test_worked_example_values_row(kr_ci_anchor, t):
     assert a.resid_db_avg_pp(t) == pytest.approx(expected["resid_db_avg_pp"], abs=WON)
 
 
-@pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE_VALUES))
-def test_the_values_result_table_carries_the_same_row(kr_ci_anchor, t):
-    """``result_val()`` publishes the values run the notes print, column for column."""
-    row = kr_ci_anchor.result_val().loc[t]
-    for column, value in zip(VALUE_COLUMNS, WORKED_EXAMPLE_VALUES[t]):
-        assert row[column] == pytest.approx(value, abs=WON), column
+def test_the_published_frames_carry_the_same_numbers_as_the_cells(kr_ci_anchor):
+    """``result_cf()`` and ``result_val()`` reproduce the two tables the notes print.
+
+    The cells and the frames are two routes to the same numbers and either could drift
+    from the other — a column built from the wrong cells, or a row index off by one —
+    without any single-cell assertion above noticing.
+    """
+    cf, val = kr_ci_anchor.result_cf(), kr_ci_anchor.result_val()
+    for t, expected in WORKED_EXAMPLE.items():
+        for column, value in zip(CF_COLUMNS, expected):
+            tol = INFORCE if column == "pols_if" else WON
+            assert cf.loc[t, column] == pytest.approx(value, abs=tol), (t, column)
+    for t, expected in WORKED_EXAMPLE_VALUES.items():
+        for column, value in zip(VALUE_COLUMNS, expected):
+            assert val.loc[t, column] == pytest.approx(value, abs=WON), (t, column)
 
 
 def test_the_average_residual_starts_above_the_nominal_and_then_leaves_it(kr_ci_anchor):
@@ -945,7 +940,8 @@ def test_worked_example_year_twenty_one_trace(kr_ci_anchor):
     assert a.claims(21, "DEATH_CI") == pytest.approx(
         TRACE_21["pols_death_ci"] * FLOOR_21, abs=WON)
 
-    assert a.lapse_rate(20) == 0.001 and a.lapse_rate(21) == 0.008
+    assert a.lapse_rate(20) == pytest.approx(0.001, abs=5e-16)
+    assert a.lapse_rate(21) == 0.008
     assert a.cv_mult(21) == 1.0
     assert a.claims(21, "LAPSE") == pytest.approx(
         a.cv_pp(21) * TRACE_21["pols_lapse"], abs=WON)
@@ -1469,9 +1465,15 @@ def test_pitfall_the_ci_decrement_stops_at_n_ci_and_nothing_else_does(kr_ci_anch
     assert a.premiums(20) > 0.0 and a.premiums(21) == 0.0
     for t in (61, 65, 70):
         assert a.claims(t, "DEATH") > 0.0
-        assert a.claims(t, "DEATH_CI") > 0.0
         assert a.claims(t, "LAPSE") > 0.0
         assert a.expenses(t) > 0.0
+    assert a.claims(61, "DEATH_CI") > 0.0
+    # A fourth date, and it is a consequence rather than a boundary: q' is three times
+    # q and caps at 1 from attained age 101, so the post-CI cohort is extinguished at
+    # t = 62 while the pre-CI one runs another nine years.
+    assert a.mort_rate_ci(62) == 1.0 and a.mort_rate(62) < 1.0
+    assert a.pols_if_ci(62) > 0.0 and a.pols_if_ci(63) == 0.0
+    assert a.claims(63, "DEATH_CI") == 0.0 and a.claims(63, "DEATH") > 0.0
     tail = sum(a.claims(t) for t in range(a.ci_cover_end() + 1, a.proj_len() + 1))
     assert tail == pytest.approx(CLAIMS_AFTER_CI_COVER, abs=WON)
     # The horizon is the table's: q = 1 in the final year and nobody survives it.
@@ -2169,7 +2171,8 @@ def test_the_shipped_mortality_table_marks_its_own_provenance():
     constructed = table[table["provenance"].str.startswith("[std]")]
     assert len(constructed) == len(table) - 4
     assert constructed["provenance"].str.contains(
-        "Makeham|log-linear|0.5294", regex=True).all()
+        "Makeham|log-linear|0.5294|terminal age", regex=True).all()
+    assert constructed["provenance"].str.contains("terminal age").sum() == 2
     assert table["age"].min() == 15 and table["age"].max() == OMEGA
     assert (table["sex"] == "M").sum() == (table["sex"] == "F").sum() == 96
     terminal = table[table["mort_rate"] >= 1.0]

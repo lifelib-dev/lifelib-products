@@ -74,57 +74,52 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    claim date**, so a contract issued at 계약나이 0 has no cancer waiting period at any
    point in its hundred-year life, including the eighty-five years in which the insured is
    an adult. `waiting_mths = 0` and `reduction_mths = 0` on the anchor cell.
-4. **Eleven benefit limbs, not four, and the largest of them is a day benefit.** The chassis
-   is a diagnosis product with care limbs bolted on. This one is a **bundled stack** on the
-   손해보험협회 comparison basis [R12] — a 상해후유장해 기본계약 paying 보험가입금액 ×
-   장해지급률, four diagnosis limbs, a 수술비, two hospital-cash limbs, 골절 and 화상, a
-   third-party liability rider and a 태아 module. Over the anchor cell's whole projection
-   `claims_hospital` is **47.0%** of all morbidity outgo and `claims_diagnosis` **26.6%**;
-   on the chassis those proportions are the other way round.
+4. **Eleven benefit limbs, not four, and the largest is a day benefit.** The chassis is a
+   diagnosis product with care limbs bolted on. This one is a **bundled stack** on the
+   손해보험협회 comparison basis [R12] — a 상해후유장해 기본계약, four diagnosis limbs, a
+   수술비, two hospital-cash limbs, 골절 and 화상, a liability rider and a 태아 module. Over
+   the whole projection `claims_hospital` is **47.0%** of morbidity outgo and
+   `claims_diagnosis` **26.6%**; on the chassis those proportions are reversed.
 5. **A third-party liability cover, which only a non-life licence may write.** 가족일상생활
    배상책임 is the one limb whose claim is a **third party's loss** rather than a state of
-   the insured [R5] [S5]. It is a **3년만기 갱신형** block inside a 비갱신형 core [S2], and
-   its 누수사고 limb carries a 90-day 보장개시일 that **resets at every renewal** [S5] [S3].
-   That is the only place in this model where the 갱신형 mechanic has a cash consequence.
-6. **Two ages, and on a foetal contract the offset between them is exact.** The chassis
-   projects on 만나이 and accepts a [std] half-year offset against 보험나이. Here the model
-   carries **both**: `age(t)` is 보험나이, which governs the premium and the 보험나이 15
-   thresholds, and `age_man(t)` is 만나이, at which every decrement table is read. On a 태아
-   contract 「보험금 지급기준표에서 적용하는 피보험자 나이는 **피보험자가 출생한 날부터**
-   계산합니다」 [S8 제58조] while 「계약일에 있어서의 피보험자의 계약나이는 0세로 합니다」
-   [S8 제60조], so the two differ by exactly `birth_month()` months for the life of the
-   contract. **The contract expires when the insured is 99 years and 7 months old, not 100.**
-7. **The 표준형 is the base run, not the 무해지 form.** `Cancer_KR_S` ships the 해약환급금
-   미지급형, which is where the market is. `Child_KR_S` deliberately ships the **표준형**,
-   because the 적립부분 credited at the 공시이율 exists only there — the suppressed forms are
-   순수보장성 and show 「-」 for it on the comparison board [S11] [S2] — and because the
-   표준형's surrender value **exceeds premiums paid from about year 30** on the published
-   grid [S2], a shape no other `krlib` protection product produces and only a hundred-year
-   term can. The suppressed forms are model points 4 and 5.
+   the insured [R5] [S5]. It is a **3년만기 갱신형** block inside a 비갱신형 core [S2] whose
+   누수사고 limb carries a 90-day 보장개시일 **resetting at every renewal** [S5] [S3] — the
+   only place in this model where the 갱신형 mechanic has a cash consequence.
+6. **Two ages, and on a foetal contract the offset is exact.** The chassis projects on 만나이
+   with a [std] half-year offset against 보험나이. Here the model carries **both**: `age(t)`
+   is 보험나이 and `age_man(t)` is 만나이, and on a 태아 contract 「보험금 지급기준표에서
+   적용하는 피보험자 나이는 **피보험자가 출생한 날부터** 계산합니다」 [S8 제58조] while
+   「계약일에 있어서의 피보험자의 계약나이는 0세로 합니다」 [S8 제60조], so the two differ by
+   exactly `birth_month()` months for the life of the contract. **The contract expires when
+   the insured is 99 years and 7 months old, not 100.**
+7. **The 표준형 is the base run, not the 무해지 form.** `Cancer_KR_S` ships the 미지급형,
+   which is where the market is. `Child_KR_S` deliberately ships the **표준형**: the 적립부분
+   credited at the 공시이율 exists only there — the suppressed forms are 순수보장성 and show
+   「-」 for it on the board [S11] [S2] — and the 표준형's surrender value **exceeds premiums
+   paid from about year 30** on the published grid [S2], a shape no other `krlib` protection
+   product produces and only a hundred-year term can. Model points 4 and 5 carry the
+   suppressed forms.
 8. **The notional 보험가입금액 is computed, not assumed.** The chassis stands in a
    `notional_sa_ratio` of 0.60 for the [별표 15] 제9호 ratio it cannot evaluate [REG-R21].
-   Here the ratio is evaluated: 제9호 reads 보험가입금액 = (위험보험료 ÷ 정기보험의
-   위험보험료) × 정기보험의 보험가입금액, a term policy's risk premium per unit of face is
-   its mortality rate, so the notional amount is **the first policy year's risk premium
-   divided by the mortality rate at the 기준연령 요건, 남자 만 40세** [REG-R9 제1-2조제2호].
-   Doing it at a child age instead makes `q` so small that the 표준해약공제액 exceeds five
-   years of premium; at 40 it lands at **12.35 months of core premium**, which is the
-   [REG-R29] reading of the same cap. That is a real finding and it is stated as one.
+   Here it is evaluated: 제9호 reads 보험가입금액 = (위험보험료 ÷ 정기보험의 위험보험료) ×
+   정기보험의 보험가입금액, and a term policy's risk premium per unit of face is its mortality
+   rate, so the notional amount is **the first policy year's risk premium divided by the
+   mortality rate at the 기준연령 요건, 남자 만 40세** [REG-R9 제1-2조제2호]. At a child age
+   `q` is so small that the 표준해약공제액 exceeds five years of premium; at 40 it lands at
+   **12.35 months of core premium**, the [REG-R29] reading of the same cap.
 9. **The horizon.** At 계약나이 0 to a 100세 만기 the projection runs **1,200 monthly
-   periods**, the longest in `krlib`, and the premium is paid over the first 240 of them.
-   **Eighty of the hundred years are paid-up**, four times the payment period, and what
-   happens in them decides the contract: on the anchor cell 74.4% of all outgo falls after
-   `t = 240`.
+   periods**, the longest in `krlib`, with premium over the first 240. **Eighty of the
+   hundred years are paid-up** and they decide the contract: **89.3% of all outgo falls after
+   `t = 240`**, against nil premium.
 
 The [long-term care technical notes (간병보험)](../long_term_care/technical-notes.md) state
 their own deltas against the same chassis. The [indemnity medical technical notes
 (실손의료보험)](../indemnity_medical/technical-notes.md) share nothing with it but the
 제3보험 statutory class — and are the reason this product has **no indemnity limb at all**:
-from April 2018 실손의료보험 must be sold as a standalone product consisting only of
-indemnity-medical cover, under 감독규정 제7-63조제2항제1호 as amended 2017-03-22 with a
-one-year transition [R9] [R10] [REG-R17]. A Korean family buys the indemnity layer as
-`Medical_KR_S` and the fixed-benefit layer as `Child_KR_S`, as two contracts, and the split
-is a statutory one rather than a modelling choice.
+from April 2018 실손의료보험 must be sold as a standalone product of indemnity-medical cover
+only, under 감독규정 제7-63조제2항제1호 as amended 2017-03-22 [R9] [R10] [REG-R17]. A Korean
+family buys the indemnity layer as `Medical_KR_S` and the fixed-benefit layer as
+`Child_KR_S`, as two contracts, and the split is statutory rather than a modelling choice.
 
 ---
 
@@ -413,11 +408,10 @@ surplus-distribution machinery of 감독규정 제6-11조의7 and 제6-13조 doe
 | The 2026 저출산 discount | **1%–5% for one year**, per insurer | [R6]; off in the base run |
 | 다자녀 / 출산 discounts | 1%–3% of 영업보험료 at five carriers | [S11]; not modelled **[std]** |
 
-**A full-text search of the 감독규정 returns zero occurrences of 예정이율** [REG-R9]: the
-regulation speaks only of the **계약자적립액 적용이율** and of the 금리확정형 / 금리연동형
-distinction [REG-R48]. What the comparison board publishes instead is the **보장부분
-적용이율** — the pricing rate under another name — and that is what `prem_int_rate` is. It is
-used **only** by the equivalence diagnostics; the projection itself does not discount.
+**A full-text search of the 감독규정 returns zero occurrences of 예정이율** [REG-R9]; what
+the comparison board publishes instead is the **보장부분 적용이율**, the pricing rate under
+another name, and that is what `prem_int_rate` is. It is used **only** by the equivalence
+diagnostics — the projection itself does not discount.
 
 ### (c) Behavioral / experience assumptions (modeler's view — all [std])
 
@@ -995,10 +989,6 @@ articles were never read in full, so no lapse or claim leakage for them is carri
   period is worth so much CSM and why it became a supervisory matter [R11] [REG-R27]. The two
   forms carry the same `lapse_rate` in the shipped model; **no dynamic lapse term is modelled**
   and that is a named gap, not an oversight.
-- **The 무·저해지 share of the market is the reason the assumption is regulated at all**:
-  무·저해지 products ran **11.4%** of 보장성 초회보험료 in 2018, 30.4% in 2021, 47.0% in 2023
-  and **63.8%** in the first half of 2024 [R11] [REG-R27]. 어린이보험 is not broken out, but
-  every carrier on the comparison board sells the form [S11].
 - **The waived cohort cannot lapse.** See *State variables*. On the anchor cell
   `pols_waived(240)` is **0.0334654434**, 4.36% of the in-force block at 납입완료, and it
   carries mortality for the remaining eighty years without ever being exposed to a lapse rate
@@ -1010,25 +1000,25 @@ articles were never read in full, so no lapse or claim leakage for them is carri
   second decrement life; no retrieved wording states how the waiver responds, so the composite
   holds the 계약자 fixed and marks the point **[unverified]**.
 - **청약철회 is out of scope**: 15 days from receipt of the policy and not more than 30 from
-  application [S8] [REG-R51], a pre-inception decrement that would need a new-business funnel
-  this library does not have.
+  application [S8] [REG-R51], a pre-inception decrement needing a new-business funnel this
+  library does not have.
 - **The 2026 저출산 discount is a behaviour the supervisor created.** From 2026-04-01 every
-  Korean insurer operates a **1%–5% discount for one year** where the policyholder or spouse
-  is within a year of a birth, on 육아휴직, or on 육아기 근로시간 단축 [R6]. On the birth limb
-  it applies to a **sibling's** policy and not the newborn's own. 어린이보험 is expressly
-  **excluded** from the companion 보험료 납입유예 scheme [R6], so there is no deferral state to
-  model — only a premium haircut, carried as `prem_discount_rate` and `prem_discount_mths` and
-  off in the base run. Whether it bites on the 영업보험료 or the 보장보험료 is not stated and
-  is **[unverified]**; the model applies it to the whole office premium.
+  insurer operates a **1%–5% discount for one year** where the policyholder or spouse is
+  within a year of a birth, on 육아휴직, or on 육아기 근로시간 단축 [R6]; on the birth limb it
+  applies to a **sibling's** policy, not the newborn's own. 어린이보험 is expressly
+  **excluded** from the companion 보험료 납입유예 scheme [R6], so there is no deferral state
+  to model — only a premium haircut, off in the base run. Whether it bites on the 영업보험료
+  or the 보장보험료 is not stated and is **[unverified]**; the model applies it to the whole
+  office premium.
 
 ---
 
 ## Worked example
 
-**Anchor cell (`point_id = 1`, `CH-KR-0001`).** A **태아가입** contract: 계약나이 **0** at the
-계약일, priced **male** because the sex is unknown at issue [R3] [S8], **birth at policy month
-5**, 보험기간 to the **100세 계약해당일** (`n = 1200`), **20년납** (`m = 240`), 월납, **표준형**,
-with **both** premium waivers on and the 계약자 male 만 33. 기본계약 상해후유장해
+**Anchor cell (`point_id = 1`, `CH-KR-0001`).** A **태아가입** contract: 계약나이 **0** at
+the 계약일, priced **male** because the sex is unknown at issue [R3] [S8], **birth at policy
+month 5**, 보험기간 to the **100세 계약해당일** (`n = 1200`), **20년납** (`m = 240`), 월납,
+**표준형**, with **both** premium waivers on and the 계약자 male 만 33. 기본계약 상해후유장해
 ₩100,000,000; the [R12] rider set at 질병후유장해 ₩10,000,000, 암진단비(유사암 제외)
 ₩10,000,000, 유사암진단비 ₩2,000,000, 뇌출혈진단비 ₩10,000,000, 급성심근경색증진단비
 ₩10,000,000, 수술비 ₩5,000,000 each on the three named diseases, 상해·질병 입원일당 ₩40,000
@@ -1487,12 +1477,11 @@ consumes them and is cited, never reproduced. Korea is unusual in running three 
 once and live.
 
 - **IFRS 17 (K-IFRS 제1117호)** has been mandatory since **2023-01-01** [REG-R60]. The
-  fulfilment cash flows, the risk adjustment and the CSM are all computed on a stream of this
-  shape and none of them is computed here. Two of this product's features bear directly on
-  the measurement and are the reason the notes above insist on them. The **contract boundary**
-  question raised by the 갱신형 blocks inside a 비갱신형 core is unresolved and is recorded as
-  unresolved. And the **eighty paid-up years** mean that the CSM of a child policy is dominated
-  by cash flows that begin two decades after issue — which is what makes the lapse assumption
+  fulfilment cash flows, the risk adjustment and the CSM all consume a stream of this shape and
+  none is computed here. Two features bear directly on the measurement: the **contract
+  boundary** question raised by the 갱신형 blocks inside a 비갱신형 core, recorded as
+  unresolved; and the **eighty paid-up years**, which mean the CSM of a child policy is
+  dominated by cash flows beginning two decades after issue — what makes the lapse assumption
   over the payment period worth so much, and what the supervisor moved against in 2024 [R11]
   [REG-R27].
 - **K-ICS** applies from the same quarter [REG-R13] [REG-R30]. The **대량해지 shock** and its
@@ -1508,18 +1497,18 @@ once and live.
   ₩32.2조 at end-2023 [REG-R11] [REG-R36]. On this product the gap it is built to catch is
   visible directly: `cv_pp(t)` exceeds `cum_prem_pp(t)` from about `t = 300`, which is a
   surrender obligation an IFRS 17 liability need not hold. **No `krlib` model computes it.**
-- **책임준비금 and 보증준비금** under 감독규정 제6-11조 [REG-R10], and the 계약자적립액 itself
-  under 제7-65조 and 제7-66조 [REG-R18] [REG-R19]. This model **reads a published surrender
-  value and recovers the account from it**; it does not run the 순보험료식 recursion, and it
-  does not implement the 공시이율 reset. Both are carried by reference to `WholeLife_KR_A`.
+- **책임준비금** under 감독규정 제6-11조 [REG-R10] and the 계약자적립액 under 제7-65조 and
+  제7-66조 [REG-R18] [REG-R19]. This model **reads a published surrender value and recovers
+  the account from it**: it runs neither the 순보험료식 recursion nor the 공시이율 reset, both
+  of which are carried by reference to `WholeLife_KR_A`.
 - **The 표준해약공제액 and the 해약공제기간** are computed here, at [별표 14] and 제7-66조
   제1항제2호 [REG-R20] [REG-R19], because they bound the surrender value and the deductible
   acquisition cost and therefore change the cash flows. They are the only regulatory
   computation this model performs, and `check_surr_chg_cap()` and `check_acq_cost_cap()`
   assert both bounds.
-- **Not applicable to this chassis.** 계약자배당 and the surplus-distribution machinery of
-  제6-11조의7 and 제6-13조 do not attach: the contract is 무배당 [REG-R12]. There is no
-  특별계정 [REG-R15] and no 보증준비금 for a guarantee this product does not write.
+- **Not applicable.** 계약자배당 and the surplus-distribution machinery of 제6-11조의7 and
+  제6-13조 do not attach — the contract is 무배당 [REG-R12] — and there is no 특별계정
+  [REG-R15] and no 보증준비금 for a guarantee this product does not write.
 - **Policyholder tax, not modelled.** The premium is a 보장성보험료 attracting a **12% tax
   credit** on up to ₩1,000,000 a year under 소득세법 제59조의4 [REG-R57] — a *credit*, not a
   deduction, which is what makes the Korean after-tax comparison differ from every other
@@ -1685,4 +1674,3 @@ is checkable against the shipped model.
 - **Monthly rounding does not re-add.** The displayed rows are rounded to four decimals; the
   year-1 and whole-projection totals are sums of unrounded values, and the two differ in the
   last displayed digit. Assert against the unrounded aggregation.
-

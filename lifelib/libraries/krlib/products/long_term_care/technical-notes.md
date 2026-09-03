@@ -1141,7 +1141,7 @@ All at 만나이 40 and in policy year 1, so one set of rates drives rows `t = 0
 | `lapse_rate_mth(0)` = `w` | `0.006924382628299419` | **[std]** |
 | `P(40)` | `0.00038039917723430234` | fitted logistic **[std]** through [R4] |
 | `P_C(40)` | `0.00008444861734601512` | `s_g2(40) × P(40)`, `s_g2(40) = 0.222` [R4, derived] |
-| `P_L(40)` | `0.00029595055988828720` | `P − P_C` |
+| `P_L(40)` | `0.0002959505598882872` | `P − P_C` |
 | `sub65_factor_at(40)` | `0.04710884458012182` | `exp(−0.12221178 × 25)`, the [S1] gradient |
 | `i_D(40)` | `0.0000022292964462128687` | direct entry, per year |
 | `i_L(40)` | `0.00010426974412244515` | light-grade entry, per year |

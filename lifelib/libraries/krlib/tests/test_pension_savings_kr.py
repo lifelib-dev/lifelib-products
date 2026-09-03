@@ -1235,12 +1235,15 @@ def test_the_inforce_rollforward_is_the_notes_identity(pension_savings):
 
 
 def test_the_decrements_are_taken_in_the_notes_processing_order(kr_pension_anchor):
-    """Deaths from the whole opening in-force, surrenders from the survivors of mortality.
+    """Pitfall 4 — getting the decrement order wrong.
 
-    Each ``pols_if_at`` timing reads the population the next decrement is taken from,
-    which is what makes the surrender a decrement on the survivors rather than one
-    competing with mortality.  The order is asserted by a quantity that would differ if it
-    changed: at t = 0 the surrender count is 0.0399677393 and not 0.04.
+    Deaths are taken from the whole opening in-force and surrenders from the survivors:
+    ``W(t) = (l(t) − D(t)) w(t)``, not ``l(t) w(t)``.  Each ``pols_if_at`` timing reads the
+    population the next decrement is taken from, which is what makes the surrender a
+    decrement on the survivors rather than one competing with mortality.  The order is
+    asserted by a quantity that would differ if it changed: at t = 0 the surrender count is
+    0.0399677393 and not 0.04 — small, and wrong in the same direction every year for
+    twenty-five years.
     """
     a = kr_pension_anchor
     for t in (0, 1, 5, 19, 20, 24):

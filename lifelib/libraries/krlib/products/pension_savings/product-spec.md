@@ -302,12 +302,20 @@ Footnotes to [std] rows:
     연금연액의 0.5%」 [S1] [S7]. Dividing one carrier's published fund at annuitisation by its
     published certain annuities recovers implied factors of 9.06, 12.92 and 16.39 at 10, 15 and
     20 years against textbook annuity-due factors of 9.104, 12.978 and 16.464 at the same 2.15%
-    — a ratio of **0.995 at all three terms** `[derived]` from [S2]. That is the 0.5% charge,
-    and it makes the payout formula an exact reconstruction of published figures to three
-    significant digits. A second carrier's five certain-annuity terms give a uniform ratio of
-    **1.006** in the *other* direction — a small uplift, consistent with the interest added on
-    monthly instalments and with that carrier disclosing no annuity-phase charge [S5]
-    `[derived]`. The composite takes 0.5%.
+    — a ratio of **0.995 at all three terms** `[derived]` from [S2]. That is the 0.5% charge.
+    A second carrier's five certain-annuity terms give a uniform ratio of **1.006** in the
+    *other* direction — a small uplift, consistent with that carrier disclosing no
+    annuity-phase charge [S5] `[derived]`. The composite takes 0.5%.
+
+    The residual ratio against the *annual* annuity-due is not a second charge, and the
+    technical notes resolve it rather than carrying it: **the instalments are monthly**, so
+    the factor is the annuity-due payable twelve times a year. Using `(1 − v^n)/d^(12)` on
+    the certain form, and the annual life factor less 11/24 on the life form, with this same
+    0.5% charge and nothing else, reconstructs **eight** published implied factors across
+    **two** interest bases — 확정 10/15/20년 at 9.061 / 12.918 / 16.386 against a published
+    9.06 / 12.92 / 16.39 at 2.15%, and 9.806 / 14.528 / 19.134 against 9.81 / 14.53 / 19.13
+    at the 0.5% floor, with 종신 10년보증 남 65 at 23.700 against 23.70 and 31.180 against
+    31.18. See [Technical Notes](technical-notes.md).
 11. **Annuity form.** See *Benefit provisions — payout phase* and footnote 15.
 12. **Rates.** The declared rate is set monthly and fixed for the calendar month — 「공시이율은
     매월 1일에 회사가 정한 이율로 하며, 매월 1일부터 당월 마지막 날일까지 1개월간 확정
@@ -924,14 +932,18 @@ exact:
 
     연금연액 = 계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)
 
-against published figures at 10, 15 and 20 years on a 2.15% basis, ratio 0.995 at all three
-`[derived]` from [S2] (footnote 10). A second carrier's five terms at 2.98% give a uniform
-ratio of **1.006** — an uplift rather than a charge, consistent with that carrier disclosing no
-annuity-phase charge and with the interest added on monthly instalments [S5] `[derived]`. At
-the guaranteed-rate basis the same check on the first carrier gives ratios of 1.003, 1.002 and
-1.003 — uniform, but running the other way, and unexplained by anything published [S2]
-`[derived]`. **Do not over-read the second and third of these.** The composite implements the
-0.995 form and exposes the constant as an input.
+reconstructs the published figures to three significant digits **once the annuity-due is
+taken payable monthly rather than annually**, which is what the contract actually pays. On the
+annual factor the same check leaves a residual — 0.995 at 2.15% and 1.003, 1.002, 1.003 at the
+guaranteed rate, uniform but running the other way — and an earlier draft of this document
+recorded the second of those as unexplained. It is not. Writing `ä_n` as the annuity-due
+payable twelve times a year, `(1 − v^n)/d^(12)`, and taking the life form as the annual factor
+less 11/24, this one 0.5% charge reconstructs **eight** published implied factors across **two**
+interest bases: 확정 10/15/20년 at 9.061 / 12.918 / 16.386 against a published 9.06 / 12.92 /
+16.39 at 2.15%, and 9.806 / 14.528 / 19.134 against 9.81 / 14.53 / 19.13 at the 0.5% floor;
+종신 10년보증 남 65 at 23.700 against 23.70, and 31.180 against 31.18. The remaining 1.006 at a
+third carrier is that carrier's own absence of an annuity-phase charge [S5] `[derived]`. The
+composite implements the monthly form, and exposes the 0.5% as an input.
 
 **종신연금형 uses the annuitant mortality and the declared rate**: 「연금개시시점의
 계약자적립액을 기준으로 연금사망률 및 공시이율을 적용하여 산출방법서에 따라 나누어 계산 후

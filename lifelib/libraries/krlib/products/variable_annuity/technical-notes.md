@@ -608,7 +608,7 @@ l(t+1) = l(t) − d(t) − s(t) − pols_maturity(t)
 **The two periods are priced on different mortality tables in Korea and the model does not
 pretend otherwise**: 보험사망률 through the deferral, 연금사망률 from `t_ann()`. The switch
 is visible in the worked example — `mort_rate(239)` = 0.0054591503 on the insurance basis
-and `mort_rate(240)` = 0.0047847455 on the annuitant basis, a **12.3% drop across one
+and `mort_rate(240)` = 0.0047847455 on the annuitant basis, a **12.35% drop across one
 month** that is a change of table and not a change of risk.
 
 `pols_maturity(t)` is nil except in the horizon month, where it carries out the survivors
@@ -905,10 +905,11 @@ example is arithmetic on.
 
 **Read the first-year totals off that table.** 계약체결비용 ₩186,120 + 계약관리비용
 ₩126,000 + 위험보험료 ₩288 + GMAB premium component ₩108,000, plus the two account-based
-guarantee charges of roughly ₩10,200 — about **₩430,600 on ₩3,600,000 of premium, near
-12%** — against [R1]'s industry band of 「선취상품은 납입보험료의 5~15%를 … 차감한 후
-85~95%만 투자」. **Over a quarter of the first year's charge is the premium-based guarantee
-component alone**, and it is not on the fund.
+guarantee charges of ₩5,576.29 — **₩425,984.29 on ₩3,600,000 of premium, 11.83%** —
+against [R1]'s industry band of 「선취상품은 납입보험료의 5~15%를 … 차감한 후 85~95%만
+투자」. **Over a quarter of the first year's charge is the premium-based guarantee component
+alone**, and it is not on the fund: the two charges struck on the account are ₩1,219.81 and
+₩4,356.47 in a year in which the account is still being built.
 
 ### The surrender-charge scale, to the won
 
@@ -1341,10 +1342,13 @@ annuity, is what this product mostly pays. The 사망보험금 total of ₩310,8
 premiums and the annuity total of ₩5,759,786.33 is 37.9%, but the annuity is paid to the
 9.26% who stay.
 
-**`commissions` totals ₩617,364.10 against 2.11% × ₩36,000,000 = ₩759,600 unweighted** —
-81.3%, the in-force weighting of the five-year scale. `expenses` totals ₩598,836.73, of
-which ₩300,000 is the day-one acquisition amount, so **more than half of the insurer's own
-lifetime expense on this contract falls in month 0**.
+**`commissions` totals ₩617,364.10 against 2.39% × ₩36,000,000 = ₩860,400 unweighted** —
+71.8%, the in-force weighting of the five-year scale. The 2.39% is the sum of [R1]'s five
+per-year means; the same table reports a mean *total* of **2.11%**, and the two differ
+because a mean of contract totals is not the sum of per-year means. The model runs the
+per-year scale, so the unweighted figure to compare against is 2.39%. `expenses` totals
+₩598,836.73, of which ₩300,000 is the day-one acquisition amount, so **more than half of
+the insurer's own lifetime expense on this contract falls in month 0**.
 
 **`net_cf` sums to −₩3,148,714.71** and must be negative: undiscounted, the insurer
 receives ₩15.2m and pays ₩17.8m of benefits plus ₩1.2m of its own costs over eighty years.
@@ -1625,7 +1629,7 @@ eight `check_*()` cells.
 14. **Using one mortality table across the join.** Korea prices the deferral on the
     보험사망률 and the payout on a separate, lighter 연금사망률, and neither is public
     [REG-R34]. `mort_rate(239) = 0.0054591503` and `mort_rate(240) = 0.0047847455` — a
-    **12.3% fall across one month** that is a change of table, not of risk. Using the
+    **12.35% fall across one month** that is a change of table, not of risk. Using the
     annuitant basis through the deferral understates the GMDB cost; using the insurance
     basis in the payout understates the annuity.
     *Test:* both values on point 1, and `mort_rate_at_age(60) != ann_mort_rate_at_age(60)`.

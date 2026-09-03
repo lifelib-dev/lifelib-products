@@ -1437,8 +1437,10 @@ def expenses(t):
 def comm_rate(y):
     """모집수수료율 in policy year ``y``, a fraction of 보험료총액; nil after year five.
 
-    1.34% / 0.41% / 0.28% / 0.25% / 0.11%, the 2017 census **mean** for a 월납 변액연금,
-    totalling 2.11% of the premiums the policyholder will pay [R1 <표 Ⅴ-3>]. The observed
+    1.34% / 0.41% / 0.28% / 0.25% / 0.11%, the 2017 census **mean** for a 월납 변액연금
+    [R1 <표 Ⅴ-3>]. The five sum to 2.39% of the premiums the policyholder will pay, against
+    the mean *total* of 2.11% the same table reports: a mean of contract totals is not the
+    sum of per-year means, and the model runs the per-year scale. The observed
     range is wide — 0.63%–2.38% in year one and 1.10%–3.13% in total — and **channel is a
     first-order parameter**: the one variable annuity [R1] found buyable directly online
     carried no acquisition commission at all, and bancassurance and online 계약체결비용
