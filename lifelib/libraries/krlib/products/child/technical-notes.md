@@ -435,7 +435,7 @@ upwards would not have: the **infant peak**, the **childhood trough** at about a
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `q(x)` | **0.0025** | 0.00025 | 0.00012 | 0.00009 | 0.00016 | 0.00035 | **0.00067713** | 0.0011 | 0.0026 | 0.006 | 0.015 | 0.043 | 0.13 | 0.31 |
 
-`q(0) = 0.0025` is **twenty times `q(5)`**, and it falls onto the anchor cell in exactly the
+`q(0) = 0.0025` is **about twenty times `q(5)`**, and it falls onto the anchor cell in exactly the
 twelve months when the 태아 module is also paying. The table is read for the **insured** at
 `age_man(t)` and for the **계약자** at `payer_age + t // 12`, and the two are the same file:
 one Korean mortality construction, two lives, and the 계약자's rate at issue, `q(33) =
@@ -982,8 +982,8 @@ articles were never read in full, so no lapse or claim leakage for them is carri
   because the projection loses the premium. Treating lapse as absorbing is **[std]** and the
   direction is stated: it **understates** persistency.
 - **On the 표준형 there is a surrender value and therefore a real economic surrender
-  decision.** `CV(t)` crosses ₩1,000,000 at about `t = 60` and premiums paid at about
-  `t = 300`, so a policyholder in the second decade has something to take. On the **미지급형**
+  decision.** `CV(t)` reaches ₩1,050,000 at `t = 60` and crosses premiums paid at
+  **`t = 353`**, so a policyholder in the second decade has something to take. On the **미지급형**
   there is nothing at all through the whole 납입기간, no 보험계약대출 and no automatic premium
   loan to break the fall [REG-R28] — which is exactly why the lapse assumption over that
   period is worth so much CSM and why it became a supervisory matter [R11] [REG-R27]. The two
@@ -1263,7 +1263,7 @@ Per policy in force, at 만나이 0:
     benefit_SURGERY    = 5,000,000 × ( 0.85 × 0.000015001237642309206
                                      + 0.50 × 0.0000033333944460256504
                                      + 0.70 × 0.00000016666681945665118 )
-                       = 5,000,000 × 0.000014534415992259530     = 72.6720799630
+                       = 5,000,000 × 0.000014534415992595306     = 72.6720799630
     benefit_HOSPITAL   = 40,000 × ( 0.10 + 2.40 ) / 12 × 0.92
                        = 40,000 × 0.2083333333333 × 0.92         = 7,666.6666666667
     benefit_EVENT      = 400,000 × 0.0003339460107422143
@@ -1287,13 +1287,12 @@ Then
                                                                 = 47.4875094915
     expenses(5)     = 400 × 1.0082852288053106 × 0.9746262555490346
                       + 0.05 × 30,202.6241744982
-                    = 393.0804028304 + 1,510.1312087249          = 1,903.2117115553
+                    = 393.0805028304 + 1,510.1312087249          = 1,903.2117115553
     commissions(5)  = 0.0000
 
 `commissions(5)` is the trap in this row. Renewal commission is `0.03 × premiums(t)` for
-`12 <= t <= prem_end()` only, so it is nil here and worth ₩906.08 if the lower bound is
-dropped — an error of 2.9% of net cash flow in each of the first eleven months, and one that
-never shows up in a total because it is offset later.
+`12 <= t <= prem_end()` only, so it is nil here and worth about ₩900 a month if the lower
+bound is dropped.
 
     net_cf(5) = 30,202.6241744982
                 − ( 414.8570184264 + 185.1917150575 + 70.8281171773 + 7,472.1346258759
@@ -1357,10 +1356,12 @@ switching on as the 신생아 block — and with it the P코드 carve-out — en
                 = −6,391.6508213043
 
 **The sign change is not gradual.** `net_cf(239)` is **+₩14,908.0252** and `net_cf(240)` is
-**−₩6,391.6508**, a swing of ₩21,299.68 in one month, of which ₩20,562.26 is the premium
-stopping and ₩2,381.77 the lapse payment jumping — because the ultimate lapse rate is eight
-times the rate an instant before 납입완료, and because the surrender value it is paid on is now
-₩5,550,720. **From `t = 240` there is not one positive month in the remaining eighty years.**
+**−₩6,391.6508**, a swing of ₩21,299.68 in one month. Four things move at once: the premium
+stops (−₩20,562.26), renewal commission stops (+₩616.87), premium-related maintenance stops
+(+₩1,027.41) and `claims_lapse` jumps (−₩2,381.77) — because the ultimate lapse rate is
+**eight times** the rate an instant before 납입완료 and the surrender value it is paid on is
+now ₩5,550,720. **From `t = 240` there is not one positive month in the remaining eighty
+years.**
 
 ### Policy year 1 in aggregate
 
@@ -1459,7 +1460,7 @@ there is no 만기환급금 on the protection part and the shipped 환급률 tap
 만기, so the 1.57% of policies that survive to the 100세 계약해당일 receive nothing.
 
 Two more read against the product's own history. The **태아 module costs ₩106,330.72 in
-total** — 0.964 of its ₩110,450 per-birth cost, the shortfall being the 3.6% of contracts
+total** — **0.9627** of its ₩110,450 per-birth cost, the shortfall being the 3.7% of contracts
 already voided or lapsed by the time the block runs — and **every won of it falls inside the
 first thirteen months of a hundred-year contract**. And the **general-tier `frac_open` ledger
 runs from 1.0000 to 0.4023 over the term**: paediatric cancer incidence is two orders of
@@ -1495,7 +1496,7 @@ once and live.
   difference inside 이익잉여금 at **company level**, not contract level, under 감독규정
   제6-11조의6 (and 제6-18조의6 on the non-life side). It stood at ₩23.7조 at end-2022 and
   ₩32.2조 at end-2023 [REG-R11] [REG-R36]. On this product the gap it is built to catch is
-  visible directly: `cv_pp(t)` exceeds `cum_prem_pp(t)` from about `t = 300`, which is a
+  visible directly: `cv_pp(t)` exceeds `cum_prem_pp(t)` from **`t = 353`**, which is a
   surrender obligation an IFRS 17 liability need not hold. **No `krlib` model computes it.**
 - **책임준비금** under 감독규정 제6-11조 [REG-R10] and the 계약자적립액 under 제7-65조 and
   제7-66조 [REG-R18] [REG-R19]. This model **reads a published surrender value and recovers
@@ -1538,8 +1539,8 @@ In rough order of leverage on a book of this product.
 3. **Expense inflation over a hundred years.** 2% a year compounds to **7.24**. Per-policy
    maintenance is ₩400 a month at issue and ₩2,898 at the 100세 계약해당일, it runs for the
    whole term rather than to 납입완료, and it is the largest single expense item in the
-   projection. At 1% it is ₩1,073 at the end; at 3%, ₩7,795. **The assumption is not a
-   detail on this product.**
+   projection. At 1% it would be ₩1,081.93 at the end and at 3% **₩7,687.45**, a spread of
+   seven times on the same charge. **The assumption is not a detail on this product.**
 4. **The lapse assumption over the payment period, and the supervisor agrees.** The shipped
    `loglinear` basis converges to 0.1% at 납입완료; `disclosed` sits at 5.0/3.0/1.0% and then
    0.5%. On model point 5 the two produce undiscounted `net_cf` of −₩8,046,832 against the
@@ -1564,18 +1565,21 @@ In rough order of leverage on a book of this product.
    assumption dressed as a severity one.
 7. **The `disab_severity` of 0.12 carries a ₩100,000,000 sum insured.** The 기본계약 is the
    largest single 보험가입금액 in the contract and the most heavily standardized parameter
-   attached to it. At 0.12 the limb costs ₩957,653 over the term; at a lump sum it would cost
-   ₩7,980,438, which is more than the whole premium.
+   attached to it. The accident limb alone costs **₩555,177.98** over the term at 0.12; read
+   as a lump sum at the full 가입금액 it would cost **₩4,626,483.18**, 85% of the whole
+   premium collected.
 8. **The term, not the age.** [R5]'s own index puts a 0세 issue at 100 against a 30세 issue's
    264 for the same cover over 20년납 to 100세 만기, and model point 9 — the 30세만기 female
-   cell — is the one shipped point whose premium is right: ₩3,026 shipped against ₩3,025.49
-   computed, while every 100세만기 point is 8% to 15% short. **The term extension of 2011 is
-   what makes this product hard to price and easy to under-price** [R5].
+   cell — is the one shipped point whose premium is right: **₩3,026 shipped against ₩3,025.49
+   computed**, a gap of 0.02%. On the other nine points the computed premium runs from 12.2%
+   below the shipped figure to 46.2% above it. **The term extension of 2011 is what makes this
+   product hard to price and easy to under-price** [R5].
 9. **Longevity is the tail risk, not mortality.** Only 1.57% of policies reach the 100세
-   계약해당일 on the shipped basis, but the last thirty years carry `claims_hospital` at
-   ₩59,629 and `claims_death` at ₩8,686 per policy-month at their peaks. The liability is
-   concentrated in the ages where the survival assumption is least certain and where a [std]
-   mortality construction is least defensible.
+   계약해당일 on the shipped basis, yet `claims_hospital` peaks at **₩10,877.56 at `t = 965`**
+   and `claims_death` at **₩15,452.17 at `t = 1013`** — and **`claims_death` is the largest
+   single column in every month from `t = 929` onward**. The liability is concentrated in the
+   ages where the survival assumption is least certain and where a [std] mortality
+   construction is least defensible.
 10. **The 실손 boundary could move.** The reason this product has no indemnity limb is
     regulatory, not economic [R9] [R10], and a 5세대 실손 reform is under way [REG-R31]. A
     change to 감독규정 제7-63조제2항제1호 would change what an 어린이보험 *is*.
@@ -1629,21 +1633,21 @@ is checkable against the shipped model.
 - **Running the waiver after 납입완료.** `ω(240) = 0`. A waiver of premium on a contract with
   no premium transfers policies into a compartment whose only remaining difference is that it
   is **not exposed to lapse** — silently suppressing eighty years of lapses, and with them the
-  ₩2,695,714 of `claims_lapse` that is 15.8% of all outgo.
+  ₩2,695,714 of `claims_lapse` that is **15.8% of all benefit outgo**.
 - **Exposing the waived compartment to lapse.** The mirror error. `pols_lapse(t)` is drawn
   from `pols_pay` alone; `check_waiver_split()` and `check_pols_roll_fwd()` both fail if it is
   not.
 - **Treating the 기본계약 as a lump sum.** It is 보험가입금액 × 장해지급률 on a continuous
-  3~100% band [R12] [S1] [S2] [S11]. At `disab_severity = 0.12` the limb costs ₩957,653 over
-  the term; at severity 1.0 it costs ₩7,980,438. **The error is a factor of eight and it lands
-  on the largest sum insured in the contract.**
+  3~100% band [R12] [S1] [S2] [S11]. The accident limb costs **₩555,177.98** over the term at
+  `disab_severity = 0.12` and **₩4,626,483.18** at severity 1.0. **The error is a factor of
+  8.3 and it lands on the largest sum insured in the contract.**
 - **Weighting the `frac_open` ledgers by `pols_if`.** They are **per policy**, not per block.
   Weighting them by the in-force probability measures the block's consumption and defers the
   exhaustion forever, which on a hundred-year term is worth a great deal:
   `frac_open(1200, cancer)` is **0.4023261296**, not something near 1.
 - **Charging renewal commission from `t = 1`, or after 납입완료.** It runs `12 <= t <= 239`
-  only. The first error is worth ₩906.08 a month in months 1–11; the second is worth eighty
-  years of commission on a premium nobody pays.
+  only. The first error is worth about ₩900 a month in months 1–11; the second is worth
+  eighty years of commission on a premium nobody pays.
 - **Paying a 만기환급금.** There is none on the protection part [S1] [S2]. `claims_maturity`
   is a column of zeros and `refund_ratio(1200)` is 0.0. A model that pays `av_pp` at maturity
   without the taper pays ₩10,678,080 to the 1.57% of policies that get there.

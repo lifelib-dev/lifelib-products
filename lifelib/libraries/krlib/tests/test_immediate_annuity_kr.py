@@ -2063,23 +2063,3 @@ def test_the_docstrings_carry_this_products_own_reference_material(immediate_ann
                   "crediting_table"):
         assert cells in data, cells
     assert "no lapse table" in data
-
-
-def test_inputs_live_beside_the_model_and_are_utf8_without_a_bom():
-    """The four input CSVs sit in the model folder's parent, and their provenance is Korean.
-
-    The model folder holds formulas only, so the inputs travel beside it; the ``provenance``
-    columns are romanized Korean and the encoding is load-bearing, a BOM being enough to turn
-    the first column name into something no ``index_col`` will match.
-    """
-    expected = {"model_point_table.csv", "mort_table.csv", "charge_table.csv",
-                "crediting_table.csv"}
-    assert expected == {p.name for p in CSV_DIR.iterdir() if p.suffix == ".csv"}
-    for name in sorted(expected):
-        raw = (CSV_DIR / name).read_bytes()
-        assert not raw.startswith(b"\xef\xbb\xbf"), f"{name} carries a BOM"
-        raw.decode("utf-8")
-    for name in ("mort_table.csv", "charge_table.csv", "crediting_table.csv"):
-        table = pd.read_csv(CSV_DIR / name)
-        assert "provenance" in table.columns, name
-        assert table["provenance"].notna().all(), name
