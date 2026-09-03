@@ -2101,20 +2101,21 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
 
 - 국민건강보험법 제41조제1항 lists the seven 요양급여: 진찰·검사, 약제·치료재료의 지급,
   처치·수술 및 그 밖의 치료, 예방·재활, 입원, 간호, 이송 [S15].
-- 제41조제2항, added 2016, defines the scope: for everything but drugs, 요양급여 covers "제4항에
-  따라 보건복지부장관이 **비급여대상**으로 정한 것을 제외한 일체의 것" — a negative list; drugs
-  are on a positive list [S15]. 제41조제4항 lets the Minister designate as 비급여 "업무나
-  일상생활에 지장이 없는 질환에 대한 치료 등" [S15]. **비급여 is therefore a residual defined
-  by ministerial designation, and it is the residual that 실손 pays.**
+- 제41조제2항, added 2016, defines the scope: for everything but drugs, 요양급여 covers
+  "제4항에 따라 보건복지부장관이 **비급여대상**으로 정한 것을 제외한 일체의 것" — a negative
+  list; drugs are on a positive list [S15]. 제41조제4항 lets the Minister designate as 비급여
+  "업무나 일상생활에 지장이 없는 질환에 대한 치료 등" [S15]. **비급여 is therefore a residual
+  defined by ministerial designation, and it is the residual that 실손 pays.**
 - 제42조제1항 lists the 요양기관 classes — 의료법 institutions, pharmacies, the 한국희귀·필수
-  의약품센터, 보건소·보건의료원·보건지소, and 보건진료소 — which are exactly the classes the 실손
-  표준약관 keys its outpatient deductible table to [S15] [S8].
+  의약품센터, 보건소·보건의료원·보건지소, and 보건진료소 — which are exactly the classes the
+  실손 표준약관 keys its outpatient deductible table to [S15] [S8].
 - 제44조제1항 imposes the 본인일부부담금 and lets it be raised for **선별급여**; 제44조제2항
-  creates the **본인부담상한제**, under which the NHIS refunds the excess of a member's annual
-  본인일부부담금 over an income-graded 본인부담상한액 [S15]. The 실손 표준약관 expressly makes the
-  본인부담상한제 refund reduce the insured loss: cover is limited to "실제 본인이 부담한 금액
-  (관련 법령에서 사전 또는 사후 환급이 가능한 금액은 제외한 금액)" [S8 제5조제3항]. The
-  per-band 본인부담상한액 amounts sit in 시행령 별표, which was **not retrieved**.
+  creates the **본인부담상한제**, under which the NHIS refunds the excess of a member's
+  annual 본인일부부담금 over an income-graded 본인부담상한액 [S15]. The 실손 표준약관
+  expressly makes the 본인부담상한제 refund reduce the insured loss: cover is limited to
+  "실제 본인이 부담한 금액 (관련 법령에서 사전 또는 사후 환급이 가능한 금액은 제외한 금액)"
+  [S8 제5조제3항]. The per-band 본인부담상한액 amounts sit in 시행령 별표, which was **not
+  retrieved**.
 - **The 2024 coverage picture** [R12]:
 
   | | 2023 | 2024 |
@@ -2138,26 +2139,26 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   | 2024 | **90.0** | **26.8** | **21.8** | **138.6** |
 
 - 보장률 by institution class 2024: 상급종합 **72.2%** (+1.4%p), 종합병원 **66.7%** (+0.6%p),
-  병원 **51.1%** (+0.9%p), 요양병원 **67.3%** (−1.5%p), 의원 **57.5%**, 약국 **69.1%**; by age,
-  5세 이하 **70.4%**, 65세 이상 **69.8%**; 4대 중증질환 **81.0%** [R12].
-- Cross-check worth making: private 실손 claims of **₩15.2조** in 2024 [R2] against NHIS-measured
-  비급여 of **₩21.8조** and 법정본인부담금 of **₩26.8조** [R12] — i.e. private indemnity
-  insurance reimburses roughly **31%** of the combined ₩48.6조 the patient nominally bears. That
-  ratio is the cleanest one-line justification for calling 실손 the second health insurance, and
-  it is computed here from two retrieved primary sources.
+  병원 **51.1%** (+0.9%p), 요양병원 **67.3%** (−1.5%p), 의원 **57.5%**, 약국 **69.1%**; by
+  age, 5세 이하 **70.4%**, 65세 이상 **69.8%**; 4대 중증질환 **81.0%** [R12].
+- Cross-check worth making: private 실손 claims of **₩15.2조** in 2024 [R2] against
+  NHIS-measured 비급여 of **₩21.8조** and 법정본인부담금 of **₩26.8조** [R12] — i.e. private
+  indemnity insurance reimburses roughly **31%** of the combined ₩48.6조 the patient
+  nominally bears. That ratio is the cleanest one-line justification for calling 실손 the
+  second health insurance, and it is computed here from two retrieved primary sources.
 
 ### 31. 노인장기요양보험 — the statutory trigger for LTC
 
-- **노인장기요양보험법 제2조제1호** defines "노인등" as a person **65 or over**, or under 65 with
-  a **노인성 질병** the Decree lists (dementia, cerebrovascular disease and others, at 시행령
-  별표 1) [S16] [S17 제2조].
-- **제2조제2호** defines 장기요양급여 as services or cash "제15조제2항에 따라 **6개월 이상 동안
-  혼자서 일상생활을 수행하기 어렵다고 인정되는 자**에게 신체활동·가사활동의 지원 또는 간병 등"
-  [S16]. The **six-month** duration test is statutory, and it is the natural definition of the
-  disability inception a three-state LTC model needs.
-- **제15조제2항**: the 등급판정위원회 recognises a claimant meeting the 제12조 eligibility and the
-  six-month test "심신상태 및 장기요양이 필요한 정도 등 대통령령으로 정하는 등급판정기준에 따라"
-  [S16].
+- **노인장기요양보험법 제2조제1호** defines "노인등" as a person **65 or over**, or under 65
+  with a **노인성 질병** the Decree lists (dementia, cerebrovascular disease and others, at
+  시행령 별표 1) [S16] [S17 제2조].
+- **제2조제2호** defines 장기요양급여 as services or cash "제15조제2항에 따라 **6개월 이상
+  동안 혼자서 일상생활을 수행하기 어렵다고 인정되는 자**에게 신체활동·가사활동의 지원 또는
+  간병 등" [S16]. The **six-month** duration test is statutory, and it is the natural
+  definition of the disability inception a three-state LTC model needs.
+- **제15조제2항**: the 등급판정위원회 recognises a claimant meeting the 제12조 eligibility
+  and the six-month test "심신상태 및 장기요양이 필요한 정도 등 대통령령으로 정하는
+  등급판정기준에 따라" [S16].
 - **시행령 제7조제1항 — the grades, verbatim** [S17]:
   > 1. 장기요양 **1등급**: 심신의 기능상태 장애로 일상생활에서 **전적으로** 다른 사람의 도움이
   >    필요한 자로서 **장기요양인정 점수가 95점 이상**인 자
@@ -2173,10 +2174,10 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   decline [S17]. That 고시 was **not retrieved**.
 - **제23조** lists the benefit types: 재가급여 (방문요양, 방문목욕, 방문간호, 주·야간보호,
   단기보호, 기타재가급여), **시설급여**, and **특별현금급여** (가족요양비, 특례요양비,
-  요양병원간병비) [S16]. **제39조** has the Minister set the 급여비용 annually by benefit type and
-  grade after 장기요양위원회 review [S16]. **제40조** imposes a 본인부담금, waived for 의료급여
-  제3조제1항제1호 recipients, with reductions of up to **60%** for listed low-income groups
-  [S16].
+  요양병원간병비) [S16]. **제39조** has the Minister set the 급여비용 annually by benefit
+  type and grade after 장기요양위원회 review [S16]. **제40조** imposes a 본인부담금, waived
+  for 의료급여 제3조제1항제1호 recipients, with reductions of up to **60%** for listed
+  low-income groups [S16].
 - **The population the grades describe**, from the NHIS's own disclosure at **2026-06-30**
   [R13]:
 
@@ -2192,20 +2193,20 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   | 5등급 | 151,681 | 10.7% |
   | 인지지원등급 | 31,551 | 2.2% |
 
-  Note the shares are of *all assessed*, not of recognised claimants; on the recognised base the
-  4등급 share is about 47%.
+  Note the shares are of *all assessed*, not of recognised claimants; on the recognised base
+  the 4등급 share is about 47%.
 - Corroborating annual figures, **[unverified]** because only a search summary of the 2024
-  통계연보 was obtained and the article page was not opened [R24]: 인정자 **1,165천명** (+6.1% on
-  2023), 신청자 **1,478천명** (+3.4%), 인정률 **89.5%**, 급여비용 **₩16조1,762억** (+11.6%),
-  공단부담률 **91.3%**. The grade distribution quoted there (4등급 46.0%, 3등급 26.7%, 5등급
-  11.6%, 2등급 8.5%, 1등급 4.8%, 인지지원 2.4%) is consistent with the retrieved R13 table, which
-  is the reason the unverified figures are recorded at all.
+  통계연보 was obtained and the article page was not opened [R24]: 인정자 **1,165천명**
+  (+6.1% on 2023), 신청자 **1,478천명** (+3.4%), 인정률 **89.5%**, 급여비용 **₩16조1,762억**
+  (+11.6%), 공단부담률 **91.3%**. The grade distribution quoted there (4등급 46.0%, 3등급
+  26.7%, 5등급 11.6%, 2등급 8.5%, 1등급 4.8%, 인지지원 2.4%) is consistent with the retrieved
+  R13 table, which is the reason the unverified figures are recorded at all.
 - **Modelling consequence for `LTC_KR_S`.** The benefit trigger is a *public* administrative
   determination, not a policy definition: the model's inception rate is the rate of being
-  recognised at or above a stated 등급, and the natural policy design is "1–2등급" (severe) or
-  "1–5등급" (broad). Because the 등급별 인정자 stock is public but the **incidence** is not, an
-  incidence basis must be constructed `[std]` from the stock and the population, and the
-  construction must be shown. The private product cannot define its own trigger without
+  recognised at or above a stated 등급, and the natural policy design is "1–2등급" (severe)
+  or "1–5등급" (broad). Because the 등급별 인정자 stock is public but the **incidence** is
+  not, an incidence basis must be constructed `[std]` from the stock and the population, and
+  the construction must be shown. The private product cannot define its own trigger without
   abandoning the statutory language, which no Korean carrier does.
 
 ### 32. 국가암등록통계 — the incidence basis for cancer and CI
@@ -2213,39 +2214,39 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
 All from the 2023 registry release, dated **2026-01-20** [R11].
 
 - **Incidence 2023**: **288,613** new cancers — 남 151,126, 여 137,487. 조발생률 564.3 per
-  100,000 (남 593.4, 여 535.5); **연령표준화발생률 522.9** (남 587.0, 여 488.9), standardised on
-  the 2020 주민등록연앙인구. Excluding thyroid cancer: 253,173 cases, 표준화발생률 454.0.
-- Series (발생자수 / 연령표준화발생률): 1999 101,854 / 402.7; 2010 222,664 / 565.1; 2019 258,629
-  / 518.0; 2020 251,329 / 489.5; 2021 280,042 / 531.4; 2022 281,317 / 521.3; **2023 288,613 /
-  522.9**.
+  100,000 (남 593.4, 여 535.5); **연령표준화발생률 522.9** (남 587.0, 여 488.9), standardised
+  on the 2020 주민등록연앙인구. Excluding thyroid cancer: 253,173 cases, 표준화발생률 454.0.
+- Series (발생자수 / 연령표준화발생률): 1999 101,854 / 402.7; 2010 222,664 / 565.1; 2019
+  258,629 / 518.0; 2020 251,329 / 489.5; 2021 280,042 / 531.4; 2022 281,317 / 521.3; **2023
+  288,613 / 522.9**.
 - **Top ten, both sexes, 2023** (cases, share, 표준화발생률): 갑상선 35,440 / 12.3% / 68.9;
-  폐 32,953 / 11.4% / 57.5; 대장 32,610 / 11.3% / 58.7; 유방 29,871 / 10.3% / 56.8; 위 28,943 /
-  10.0% / 51.4; 전립선 22,640 / 7.8% / 39.2; 간 14,707 / 5.1% / 26.1; 췌장 9,748 / 3.4% / 17.1;
-  담낭 및 기타담도 7,997 / 2.8% / 13.8; 신장 7,367 / 2.6% / 13.5.
+  폐 32,953 / 11.4% / 57.5; 대장 32,610 / 11.3% / 58.7; 유방 29,871 / 10.3% / 56.8; 위 28,943
+  / 10.0% / 51.4; 전립선 22,640 / 7.8% / 39.2; 간 14,707 / 5.1% / 26.1; 췌장 9,748 / 3.4% /
+  17.1; 담낭 및 기타담도 7,997 / 2.8% / 13.8; 신장 7,367 / 2.6% / 13.5.
 - **Male top five**: 전립선 22,640 (15.0%), 폐 21,846 (14.5%), 위 19,295 (12.8%), 대장 19,156
   (12.7%), 간 10,875 (7.2%). **Female top five**: 유방 29,715 (21.6%), 갑상선 26,114 (19.0%),
   대장 13,454 (9.8%), 폐 11,107 (8.1%), 위 9,648 (7.0%).
 - **Lifetime risk of developing cancer (평생 암발생 위험도), 2023**: **all cancers 41.2%
-  overall — 남 44.6%, 여 38.2%**; lifetime risk of dying of cancer 19.6% (남 24.2%, 여 15.6%).
-  By site (전체 / 남 / 여): 폐 6.4 / 8.8 / 4.2; 대장 5.7 / 6.4 / 5.1; 위 5.0 / 6.5 / 3.6;
-  **갑상선 4.7 / 2.4 / 6.9**; 전립선 4.3 / 8.6 / –; 유방 4.0 / 0.1 / 7.9; 간 2.7 / 3.8 / 1.6;
-  췌장 2.0 / 1.9 / 2.0.
-- **Five-year relative survival, 2019–2023 diagnoses**: all cancers **73.7%** (남 68.2, 여 79.4);
-  excluding thyroid **69.6%** (남 65.9, 여 74.0). By site: 갑상선 **100.2%**, 전립선 96.9%, 유방
-  94.7%, 위 78.6%, 대장 75.6%, 폐 42.5%, 간 40.4%, 담낭 및 기타담도 29.0%, 췌장 17.0%, 신장 87.9%.
-  The 1993–95 comparison for all cancers was 42.9%.
+  overall — 남 44.6%, 여 38.2%**; lifetime risk of dying of cancer 19.6% (남 24.2%, 여
+  15.6%). By site (전체 / 남 / 여): 폐 6.4 / 8.8 / 4.2; 대장 5.7 / 6.4 / 5.1; 위 5.0 / 6.5 /
+  3.6; **갑상선 4.7 / 2.4 / 6.9**; 전립선 4.3 / 8.6 / –; 유방 4.0 / 0.1 / 7.9; 간 2.7 / 3.8 /
+  1.6; 췌장 2.0 / 1.9 / 2.0.
+- **Five-year relative survival, 2019–2023 diagnoses**: all cancers **73.7%** (남 68.2, 여
+  79.4); excluding thyroid **69.6%** (남 65.9, 여 74.0). By site: 갑상선 **100.2%**, 전립선
+  96.9%, 유방 94.7%, 위 78.6%, 대장 75.6%, 폐 42.5%, 간 40.4%, 담낭 및 기타담도 29.0%, 췌장
+  17.0%, 신장 87.9%. The 1993–95 comparison for all cancers was 42.9%.
 - **Prevalence at 2024-01-01** (persons diagnosed 1999–2023 and alive): **2,732,906**, being
   **5.3% of the population** — 남 1,193,944 (4.7%), 여 1,538,962 (6.0%); 조유병률 5,343.4 per
   100,000. Excluding thyroid: 2,145,614 (4.2%). Leading sites: 갑상선 587,292 (21.5%), 위
   366,717 (13.4%), 유방 354,699 (13.0%), 대장 340,064 (12.4%), 전립선 161,768 (5.9%).
-- **Why thyroid cancer matters to `krlib`.** 갑상선암 is the single most common cancer in Korea
-  (12.3% of all cases; 19.0% of female cases) and has a five-year relative survival of **100.2%**
-  — statistically indistinguishable from the general population. Korean cancer policies therefore
-  place it, with carcinoma in situ and certain skin and borderline tumours, in a reduced
-  **유사암** tier paying a small fraction of the 진단급여금. Any `Cancer_KR_S` incidence table
-  that does not separate 갑상선 from the rest will misprice the product by a wide margin. The
-  registry gives the split; the tier definition comes from each carrier's 약관 and belongs in the
-  `cancer` research file.
+- **Why thyroid cancer matters to `krlib`.** 갑상선암 is the single most common cancer in
+  Korea (12.3% of all cases; 19.0% of female cases) and has a five-year relative survival of
+  **100.2%** — statistically indistinguishable from the general population. Korean cancer
+  policies therefore place it, with carcinoma in situ and certain skin and borderline
+  tumours, in a reduced **유사암** tier paying a small fraction of the 진단급여금. Any
+  `Cancer_KR_S` incidence table that does not separate 갑상선 from the rest will misprice the
+  product by a wide margin. The registry gives the split; the tier definition comes from each
+  carrier's 약관 and belongs in the `cancer` research file.
 
 ---
 
@@ -2255,13 +2256,13 @@ This section is written to be the source of the library index's market paragraph
 figure carries its as-of date and its source.
 
 **Size, 2025 actual.** Total 수입보험료 for all Korean insurers in 2025 was **₩266.6595조**,
-up 11.1% (₩26.6776조) on 2024 — 생명보험사 **₩127.5061조** (+12.4%) and 손해보험사 **₩139.1533조**
-(+10.0%) [R16]. Net income was **₩12.2172조**, down 14.5%: 생보 ₩4.9680조 (−11.8%), 손보 ₩7.2492조
-(−16.2%). ROA 0.94% (−0.21%p), ROE 7.86% (−1.35%p). Total assets **₩1,344.2조** (+5.9%), total
-liabilities ₩1,175.6조 (+4.3%), equity ₩168.5조 (+18.5%). The FSS attributed the profit fall to
-"손실계약 증가, 예실차 손실 등 보험손익 악화". These figures come from a **trade newspaper
-reporting an FSS release**; the FSS site itself did not respond [R28], so they are
-news-sourced.
+up 11.1% (₩26.6776조) on 2024 — 생명보험사 **₩127.5061조** (+12.4%) and 손해보험사
+**₩139.1533조** (+10.0%) [R16]. Net income was **₩12.2172조**, down 14.5%: 생보 ₩4.9680조
+(−11.8%), 손보 ₩7.2492조 (−16.2%). ROA 0.94% (−0.21%p), ROE 7.86% (−1.35%p). Total assets
+**₩1,344.2조** (+5.9%), total liabilities ₩1,175.6조 (+4.3%), equity ₩168.5조 (+18.5%). The
+FSS attributed the profit fall to "손실계약 증가, 예실차 손실 등 보험손익 악화". These
+figures come from a **trade newspaper reporting an FSS release**; the FSS site itself did not
+respond [R28], so they are news-sourced.
 
 **Life mix, 2025 actual** (수입보험료, 조원) [R16]:
 
@@ -2281,14 +2282,15 @@ news-sourced.
 | 자동차보험 | 20.3681 | −1.7% |
 | 일반보험 | 15.7264 | +5.0% |
 
-**The single most important structural fact in those two tables.** Korean *personal protection*
-insurance is written on **both** sides of the market: 생명보험 보장성보험 at ₩62.0조 and
-손해보험 장기보험 at ₩73.3조 — and the non-life figure is the **larger** of the two. 장기손해보험
-is overwhelmingly 장기인보험 (long-term personal cover: health, cancer, care, accident), written
-under the 제3보험 deeming provision of 보험업법 제4조제3항 [S1] and reserved under the same rules
-by 감독규정 제7-69조 [S3]. A Korea library that looked only at life insurers would miss more than
-half of the protection market. `krlib` models the life-insurer form throughout, and each product
-document says where a non-life carrier's version differs.
+**The single most important structural fact in those two tables.** Korean *personal
+protection* insurance is written on **both** sides of the market: 생명보험 보장성보험 at
+₩62.0조 and 손해보험 장기보험 at ₩73.3조 — and the non-life figure is the **larger** of the
+two. 장기손해보험 is overwhelmingly 장기인보험 (long-term personal cover: health, cancer,
+care, accident), written under the 제3보험 deeming provision of 보험업법 제4조제3항 [S1] and
+reserved under the same rules by 감독규정 제7-69조 [S3]. A Korea library that looked only at
+life insurers would miss more than half of the protection market. `krlib` models the
+life-insurer form throughout, and each product document says where a non-life carrier's
+version differs.
 
 **Forecast, 2026** (보험연구원, 2025-10-21) [R15]:
 
@@ -2310,43 +2312,45 @@ document says where a non-life carrier's version differs.
 | 일반손해보험 | 13.9 (+8.6) | 14.9 (+7.4) | 15.6 (+4.9) | **16.5 (+5.9)** |
 | 퇴직연금 | 24.0 (+6.6) | 22.3 (−7.2) | 25.3 (+13.5) | **25.7 (+1.7)** |
 
-보험연구원's summary is that industry premium growth falls to about **2.3% in 2026** from 7.4% in
-2025, with 생명보험 at **1.0%** and 손해보험 원수보험료 at **3.5%**, on a base of roughly ₩265조,
-and that "성장성 둔화, 수익성 약화, 건전성 악화" is the sequence from 2024 through 2026 [R15].
+보험연구원's summary is that industry premium growth falls to about **2.3% in 2026** from
+7.4% in 2025, with 생명보험 at **1.0%** and 손해보험 원수보험료 at **3.5%**, on a base of
+roughly ₩265조, and that "성장성 둔화, 수익성 약화, 건전성 악화" is the sequence from 2024
+through 2026 [R15].
 
-**보장성 versus 저축성.** On the 2026 forecast, 보장성 is **52.8%** of life premium (₩66.2조 of
-₩125.3조) against 저축성 at **20.8%** — and the two are moving apart at roughly 12 percentage
-points a year of relative growth. 개인연금 written by non-life insurers is in outright run-off,
-forecast to fall 15% a year to ₩1.2조 [R15]. The Korean life market is a protection market with a
-shrinking savings tail, which is the opposite of the French and German mixes in `frlib` and
-`delib`.
+**보장성 versus 저축성.** On the 2026 forecast, 보장성 is **52.8%** of life premium (₩66.2조
+of ₩125.3조) against 저축성 at **20.8%** — and the two are moving apart at roughly 12
+percentage points a year of relative growth. 개인연금 written by non-life insurers is in
+outright run-off, forecast to fall 15% a year to ₩1.2조 [R15]. The Korean life market is a
+protection market with a shrinking savings tail, which is the opposite of the French and
+German mixes in `frlib` and `delib`.
 
-**실손 penetration.** **35.96 million** individual policies in force at 2024 year-end against a
-population near 51 million, with ₩16.3조 of premium and ₩15.2조 of claims [R2]. Two-thirds of the
-population is a reasonable statement of coverage and is consistent with the FSS's own "제2의
-건강보험" framing.
+**실손 penetration.** **35.96 million** individual policies in force at 2024 year-end against
+a population near 51 million, with ₩16.3조 of premium and ₩15.2조 of claims [R2]. Two-thirds
+of the population is a reasonable statement of coverage and is consistent with the FSS's own
+"제2의 건강보험" framing.
 
 **Solvency.** K-ICS ratio after transitional measures at **2025-09-30: all insurers 210.8%,
-생보 201.4%, 손보 224.1%** [R3]; at 2024-06-30 the industry figure was 217.3% [R1]. The regulatory
-minimum is **100%** [S2 제65조제2항제1호]; 경영개선권고 begins below it [S3 제7-17조].
+생보 201.4%, 손보 224.1%** [R3]; at 2024-06-30 the industry figure was 217.3% [R1]. The
+regulatory minimum is **100%** [S2 제65조제2항제1호]; 경영개선권고 begins below it [S3
+제7-17조].
 
-**Rate levels.** 평균공시이율 for 2026 is **2.50%**, down from 2.75% for 2024 and 2025 [R17] — the
-first fall since 2020 and the level to which every 저축성 design test, the 부활 interest ceiling
-and the 변액 보증준비금 roll-forward are pegged. Carrier 공시이율 levels sit close to it: one
-retrieved carrier grid shows a 공시기준이율 of 3.19% across five product classes but with an unknown
-as-of month [R18], and trade reporting places 보장성 공시이율 at 2.2%, 연금 at 2.29% and 저축 at
-2.22% shortly before the 2026 cut [R25] — **[unverified]**. **예정이율 is not published for any
-product** (§15).
+**Rate levels.** 평균공시이율 for 2026 is **2.50%**, down from 2.75% for 2024 and 2025 [R17]
+— the first fall since 2020 and the level to which every 저축성 design test, the 부활
+interest ceiling and the 변액 보증준비금 roll-forward are pegged. Carrier 공시이율 levels sit
+close to it: one retrieved carrier grid shows a 공시기준이율 of 3.19% across five product
+classes but with an unknown as-of month [R18], and trade reporting places 보장성 공시이율 at
+2.2%, 연금 at 2.29% and 저축 at 2.22% shortly before the 2026 cut [R25] — **[unverified]**.
+**예정이율 is not published for any product** (§15).
 
 **Interest-rate backdrop.** Ten-year government bond yields quoted by the FSS: 3.74% at 2022
-year-end, 3.18% at 2023 year-end, 3.40% (2024-03), 3.26% (2024-06), **2.99% (2024-09)** [R1]. The
-IFRS 17 long-term forward rate is **4.55%** and the liquidity premium **91bp** [R1].
+year-end, 3.18% at 2023 year-end, 3.40% (2024-03), 3.26% (2024-06), **2.99% (2024-09)** [R1].
+The IFRS 17 long-term forward rate is **4.55%** and the liquidity premium **91bp** [R1].
 
-**Product-mix signal for `krlib`.** Two-thirds of new protection business by first-year premium is
-무·저해지 [R1]; the market's protection growth is in 보장성 (+7.6% forecast for 2026) while
-저축성 shrinks [R15]; 실손 is nearly saturated and is being restructured by regulation rather than
-by competition [R2] [R7]; and 개인연금 is in run-off on the non-life side while 퇴직연금 grows. A
-representative Korean product set is therefore weighted to protection and to third-sector health,
-which is what the `krlib` ten are.
+**Product-mix signal for `krlib`.** Two-thirds of new protection business by first-year
+premium is 무·저해지 [R1]; the market's protection growth is in 보장성 (+7.6% forecast for
+2026) while 저축성 shrinks [R15]; 실손 is nearly saturated and is being restructured by
+regulation rather than by competition [R2] [R7]; and 개인연금 is in run-off on the non-life
+side while 퇴직연금 grows. A representative Korean product set is therefore weighted to
+protection and to third-sector health, which is what the `krlib` ten are.
 
 ---
