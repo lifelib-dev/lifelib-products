@@ -51,7 +51,7 @@ can always resolve who said what — here — and never has to.
 Eight documents from six carriers plus the 생명보험협회. Two are complete 약관 booklets of
 over 1,200 pages each [S1] [S2]; one is a 상품요약서, the statutory summary that is the only
 routinely public Korean document disclosing **pricing parameters** [S3]; one is a
-상품안내장 carrying a 96-cell published premium grid [S4]; one is an industry-association
+상품안내장 carrying a 144-cell published premium grid [S4]; one is an industry-association
 cross-carrier table [S5]; two are third-party mirrors of a second carrier's wordings
 [S6] [S7]; and one could not be fetched at all [S8].
 
@@ -159,7 +159,9 @@ and read directly. That is how the long 약관 were obtained.
 - **The single richest premium source found, and the origin of the anchor cell's price.**
   It carries a full age × sex × acceleration-form × cover-menu grid of monthly premiums at
   ₩100,000,000 (1억원), 20-year premium term, for both the 기본환급형 and the 해지환급금이
-  적은 유형 — 48 published cells for the main contract plus a rider card of comparable size.
+  적은 유형 — **144 published cells** for the main contract (three acceleration forms x four
+  benefit menus x six age/sex columns on each of the two return forms), plus a rider card
+  of comparable size.
   The anchor's **₩306,740 a month** is one of those cells, at 남 40세 / 1억원 / 20년납 /
   월납 / 80% 선지급형 / 저해지환급형, and the model's ₩3,680,880 is twelve times it
   **[std]**. What else rests on it: the published **1.085 ratio** of the 80% form to the 50%

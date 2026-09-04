@@ -14,8 +14,10 @@ every source tag on this page resolves in [`sources.md`](sources.md).
 > 표준해약공제액. **Every quantitative assumption is a [std] standardization**, and in
 > Korea that is structural rather than lazy: the 산출방법서 is a 기초서류, filed and never
 > published [REG-R2]; the 경험생명표 is released only as 평균수명 and 기대여명 [REG-R33]
-> [REG-R34]; and the 참조순보험요율 is defined as the rate the bureau *files*, not one it
-> publishes, and carries no CI item [REG-R4]. There is exactly one disclosed Korean CI
+> [REG-R34]; and the **life** 참조순보험요율 is defined as the rate the bureau *files*, not
+> one it publishes [REG-R4] — the 장기손해보험 display 보험개발원 does publish carries an
+> insured-cancer 발생률 grid and a 질병입원율 grid [REG-R61] and no 중대한 질병 item at all,
+> so nothing on it reaches here. There is exactly one disclosed Korean CI
 > morbidity table in public — six rates at three ages, in a 2011 상품요약서 [S3] — and
 > both decrement files in this directory are built on it. Replace them with company data
 > and a real 산출방법서 before drawing any conclusion from the numbers.
@@ -416,12 +418,13 @@ by eye.
 
 ### `mort_table.csv` — a Makeham fit to three anchors, and a female defect
 
-The male rates are a Makeham `mu(y) = A + B c^y` fitted **exactly** to [S3]'s three
-disclosed male 예정 경험 사망률 anchors — q(20) = 0.00051, q(40) = 0.00068,
-q(60) = 0.00290 — giving `A = 4.960424e−04`, `B = 1.077496e−06`, `c = 1.1371590`, used to
-age 60. Extrapolated, that fit reaches `q = 1` at about attained age **107** — inside this
-projection's own horizon — and stands a third above the shipped ramp by age 100 (0.414
-against 0.311), so **the old-age shape is a separate [std] rule and not a continuation**:
+The male rates are a Makeham form fitted **exactly** to [S3]'s three disclosed male
+예정 경험 사망률 anchors — q(20) = 0.00051, q(40) = 0.00068, q(60) = 0.00290 — **in the rate
+itself and not in the force**, `q(y) = A + B c^y` with `A = 4.960424e−04`,
+`B = 1.077496e−06`, `c = 1.1371590`, used to age 60. Extrapolated, that fit reaches
+`q = 1` at about attained age **107** — inside this projection's own horizon — and stands a
+third above the shipped ramp by age 100 (0.412 against 0.311), so **the old-age shape is a
+separate [std] rule and not a continuation**:
 log-linear in `q` from the age-60 anchor to `q(110) = 1`, i.e.
 `q(y) ≈ 0.00290 × 1.1240^(y − 60)`.
 
@@ -618,7 +621,7 @@ them bound nothing at all, which is said rather than papered over.
 | `net_prem_ratio` | 0.80 | the 연납순보험료 entering 별표 14 is taken as 0.80 × gross, so the statutory cap rests on published figures alone [REG-R20] | cross-check: ₩3,944,704 against the FSC's 13× monthly rule of thumb, ₩3,987,620 — 1.1% [REG-R29] |
 | surrender-charge run-off | straight line over `surr_chg_years_cap` = 7 | the 7-year cap is statutory [REG-R19 제7-66조제1항제2호](#krlib-reg-r19); the schedule inside it is in the unpublished 산출방법서 [REG-R2] | none published; seven equal steps of ₩563,529.1428571429 at the anchor |
 | ω (`omega_age`) | 110 | the 제10회 경험생명표's terminal age is not published [REG-R33] [REG-R34] | the chassis ships 115 on a differently anchored table |
-| mortality construction | Makeham fitted exactly to three anchors to 60, log-linear in `q` from 60 to `q(110) = 1` | the fit reproduces [S3]'s three disclosed male rates exactly; extrapolated it passes `q = 1` at about attained age 107 and stands a third above the ramp at 100, so the ramp is a separate rule | female = 0.5294 × male on [S3]'s age-20 ratio; the check **fails** — a 15-to-80 ratio of 0.560 against the 0.500 implied by [REG-R38] |
+| mortality construction | Makeham form in `q` (not in the force) fitted exactly to three anchors to 60, log-linear in `q` from 60 to `q(110) = 1` | the fit reproduces [S3]'s three disclosed male rates exactly; extrapolated it passes `q = 1` at about attained age 107 and stands a third above the ramp at 100, so the ramp is a separate rule | female = 0.5294 × male on [S3]'s age-20 ratio; the check **fails** — a 15-to-80 ratio of 0.560 against the 0.500 implied by [REG-R38] |
 | CI incidence above 60 | 40-to-60 log-slope damped at 0.90 a year | undamped, male 중대한 암 reaches 1.29 by age 100 | none published above 60; [S3] stops there |
 | `other` limb | 10.5% of the three headline rates | 5.30% office-premium step from 3대 to 17대 [S4] divided by the CI benefit's 50.6% share of the risk premium at male 40 [S3] | a derivation from two published figures with different denominators, and flat across age where seventeen conditions are not |
 | `ltc` limb | nil below 65, `0.0012 × 1.14^(y−65)` above | scaled to the order implied by [REG-R42]'s 154,688 1·2등급 인정자 at an assumed three-year mean duration | **this product's own source set retrieved none**, but the library's does: `LTC_KR_S` sources a disclosed 요양 1·2등급 발생률 grid at ages 40 / 50 / 60 by sex, on which the male 1·2등급 rate at 60 is 0.000530 — about 2.5% of this model's CI rate there. Holding this limb at nil below 65, and not modelling the 노인성 질병 route below 65 [REG-R55], understates the decrement at insured ages by that order |

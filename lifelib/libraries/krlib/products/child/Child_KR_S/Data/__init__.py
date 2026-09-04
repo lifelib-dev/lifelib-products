@@ -51,15 +51,21 @@ peak, the childhood trough at about age 10 and the adolescent turn that a child 
 exposed to for its first two decades. It is used for the insured child **and** for the
 계약자, whose death is the second of the two waiver triggers.
 
-**The morbidity position is worse.** 보험개발원 files the 참조순보험요율 with the FSC
-under 보험업법 제176조제4항 and there is no obligation to publish it [REG-R4]; the
-산출방법서 is an undisclosed 기초서류 [REG-R2]; and **nothing on child incidence —
-cancer, cerebrovascular disease, congenital anomaly, low birth weight, NICU admission —
-was retrieved** from 보험개발원, 국가암정보센터 or 통계청 in this pass. Every rate in
-``incidence_table.csv`` is therefore a **[std] construction** whose provenance cell names
-the authority its shape rests on: the 국가암등록통계 연령별 발생률 [REG-R40], the
-「기타피부암 및 갑상선암 이외의 암 발생률」 and 질병입원율 grids of the 참조순보험요율
-display [REG-R61], and the 국민건강보험 진료비 실태조사 [REG-R41]. The one exception is
+**The morbidity position is worse, though not for the reason a first reading suggests.**
+Each carrier's own 적용위험률 lives in the 산출방법서, an undisclosed 기초서류 [REG-R2],
+and the bureau's 참조순보험요율 is filed under 보험업법 제176조제4항 with no general
+obligation to publish [REG-R4]. But 제176조제9항 lets the bureau publish 순보험요율 산출
+자료 where policyholder protection requires it, and for **장기손해보험** it does: a dated
+display carrying 「기타피부암 및 갑상선암 이외의 암 발생률」, 질병입원율 and 후유장해 by
+age and sex, whose age grid reaches **연령 0 and 10** [REG-R61]. **This product's research
+pass never opened it** — the ``cancer`` and ``indemnity_medical`` passes did — and
+**nothing on child incidence was retrieved** from 보험개발원, 국가암정보센터 or 통계청 in
+this pass. Every rate in ``incidence_table.csv`` is therefore a **[std] construction**
+whose provenance cell names the authority its shape rests on: the 국가암등록통계 연령별
+발생률 [REG-R40], the two grids of the 참조순보험요율 display [REG-R61], and the
+국민건강보험 진료비 실태조사 [REG-R41]. It is [std] because it was never reconciled to that
+display, not because no display exists, and a later pass should re-base the rows off it —
+noting that a 참조순보험요율 is a **net premium rate, not a best estimate** [REG-R61]. The one exception is
 the row that anchors the whole file: **일반상해 후유장해 발생률(3~100%), 기본계약, 5세,
 상해 1급 — 남자 0.0001823, 여자 0.0001163** [S1], the only observation of a Korean child
 morbidity rate anywhere in the research, and the point the basic contract's decrement is

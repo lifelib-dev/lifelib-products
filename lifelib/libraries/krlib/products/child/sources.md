@@ -625,7 +625,9 @@ all accessed 2026-09-03:
   never published**, which is why the 적용위험률, the 예정사업비율 and the 예정이율 are all
   [std] here. Retrieved: yes.
 - **REG-R4** — 보험업법 제176조 (보험요율 산출기관): the statutory footing of 보험개발원 and of
-  the 참조순보험요율 regime, filed under 제4항 with no obligation to publish. Retrieved: yes.
+  the 참조순보험요율 regime, filed under **제4항** with no *general* obligation to publish —
+  **제9항** nonetheless permits publication where policyholder protection requires it, which is
+  the footing of the 장기손해보험 display at [REG-R61]. Retrieved: yes.
 - **REG-R9** — 보험업감독규정 (고시 제2026-16호), 본문: the 보장성보험 definition of
   제1-2조제3호, the **기준연령 요건 남자 만 40세** of 제1-2조제2호 at which [별표 15] 제9호 is
   evaluated, the 평균공시이율, and the fact that the word 예정이율 does not occur in the 고시
@@ -739,11 +741,19 @@ all accessed 2026-09-03:
   **2023-01-01**, which with [REG-R13] is why a hundred-year child contract's lapse assumption
   is a CSM question. Retrieved: **in part** (the release body; the 별첨 HWP carrying the
   standard's own text was not converted).
-- **REG-R61** — 보험개발원, 「장기손해보험 참조순보험요율」 공시: the published 「기타피부암 및
-  갑상선암 이외의 암 발생률」 and 질병입원율 grids by age and sex. Retrieved: yes. **They are
-  net premium rates, not best estimates**, and they cover adult ages far better than child
-  ones, so `incidence_table.csv` names them as the authority its *shape* rests on and remains
-  [std] on every row.
+- **REG-R61** — 보험개발원, 「장기손해보험 참조순보험요율」 공시, published under 보험업법
+  제176조제9항: the 「기타피부암 및 갑상선암 이외의 암 발생률」 grid on the insured definition
+  excluding C44 and C73, a 질병입원율 grid in expected days per life-year, and 후유장해 rates,
+  all by age and sex. Retrieved: yes. **They are net premium rates, not best estimates.** Two
+  things must be said plainly here rather than implied. Its **age grid reaches 연령 0 and 10**,
+  so it is not the case that no Korean child incidence rate is public. And **this product's
+  research pass never opened it** — the `cancer` and `indemnity_medical` passes did, on the
+  same day, and [REG-R61]'s own entry records the omission — so `incidence_table.csv` names it
+  as the authority its *shape* rests on and remains [std] on every row **because those rows
+  were never reconciled to it**, not because no grid exists. The shipped paediatric cancer
+  anchors sit at about 0.6 (male) and 0.5 (female) of the published rate at 연령 0 and 10 while
+  the adult anchors sit near or slightly above it, so the divergence has no single sign and a
+  later pass should re-base rather than rescale.
 
 The cross-product library also carries **REG-R62**, the 손해보험협회 공시실 / e-보험시장 portal
 `kpub.knia.or.kr` through which [S1]–[S6] and [S11] were reached. It is **not** listed above
@@ -773,8 +783,11 @@ their 지급사유; the retrieval method for each host, including the POST param
 That register is unusually long for this product and the documents do not hide it. **Nothing on
 Korean child incidence — cancer, cerebrovascular disease, congenital anomaly, low birth weight,
 NICU admission, paediatric length of stay — was retrieved** from 보험개발원, 국가암정보센터 or
-통계청 in this pass; the 경험생명표 rates, any 참조순보험요율 for mortality, the 산출방법서
-behind any carrier's 적용위험률 and 예정사업비율, the K-ICS 대량해지 별표 22, the IFRS 17
+통계청 in this pass, which is a gap in the pass and not in the public record: the
+장기손해보험 참조순보험요율 display carries an 암 발생률 and a 질병입원율 grid reaching 연령 0
+and 10 [REG-R61] and this pass did not open it; the 경험생명표 rates, any 참조순보험요율 for
+mortality, the 산출방법서 behind any carrier's 적용위험률 and 예정사업비율, the K-ICS
+대량해지 별표 22, the IFRS 17
 계리가정 guideline's functional form, and every Korean expense, commission,
 disability-incidence and foetal-loss figure are all outside what any retrieved document says.
 That is why exactly one quantitative rate in this product's whole source set — the 일반상해

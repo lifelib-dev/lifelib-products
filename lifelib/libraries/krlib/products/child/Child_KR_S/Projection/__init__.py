@@ -192,9 +192,10 @@ def birth_month():
 
     **5 on the anchor cell [std].**  Three sources bound it: [S8 제61조] caps the pre-birth
     period at six months by moving the 계약일 back where the birth falls later than that;
-    the neonatal riders close at 임신 22주 [S5], leaving at most 4.1 months of gestation at
-    issue; and the 태아 sub-term is written 「1~10월만기」 at one carrier [S1].  Five is
-    between them and is a whole number of grid steps.
+    the neonatal riders close at 임신 22주 [S5], so a contract written inside that window
+    still has **at least** 4.1 months of gestation to run; and the 태아 sub-term is written
+    「1~10월만기」 at one carrier [S1].  Five is between those two bounds and is a whole
+    number of grid steps.
     """
     return int(model_point()["birth_month"]) if foetal() else 0
 
@@ -257,9 +258,12 @@ def premium_mth():
 
     **₩28,000 on the anchor cell [std]**, being ₩27,000 of core 보장보험료 and ₩1,000 for
     the 계약자 waiver module; **₩27,000 on the calibration cell**.  No Korean carrier
-    publishes a rate table by age and duration — the 참조순보험요율 is filed with the FSC
-    and never disclosed [REG-R4] and the 산출방법서 is an undisclosed 기초서류 [REG-R2] — so
-    the office premium enters as an input rather than being computed.  What *is* published
+    publishes a rate table by age and duration — the 산출방법서 that holds each carrier's own
+    적용위험률 and 예정사업비율 is an undisclosed 기초서류 [REG-R2], and the bureau's
+    참조순보험요율 is filed with the FSC under 보험업법 제176조제4항 with no general
+    publication obligation [REG-R4], the 장기손해보험 display published under 제176조제9항
+    carrying risk rates rather than office premiums [REG-R61] — so the office premium enters
+    as an input rather than being computed.  What *is* published
     is a specimen premium per product on a standardised basis (보험나이 5세, 상해 1급,
     100세만기 20년납, 월납, the 보장보험료 of the compulsory covers only [R12]), and the
     observed levels vary by a factor of seven, ₩21,502 to ₩148,250 for a male 5-year-old,
@@ -765,7 +769,8 @@ def inc_rate_at(x, cause):
 
     Interpolated in the logarithm between the fourteen pivot ages of
     *incidence_table.csv*, held flat outside them and returned **exactly** at a pivot, so
-    that the one published rate in the file reproduces to its printed nine decimals.  A logarithmic interpolation is the
+    that the one published rate in the file reproduces to every digit it is printed with.
+    A logarithmic interpolation is the
     right one here because every one of these rates spans two or more orders of magnitude
     across the age range — cancer incidence rises about two hundredfold from age 10 to age
     80 — and a linear interpolation between decade pivots would be wrong by a factor of
@@ -830,9 +835,10 @@ def frac_open(t, cause):
 
     The quantity is worth watching on this product rather than on the chassis.  Paediatric
     cancer incidence is two orders of magnitude below the adult rate, so the ledger is
-    almost untouched for thirty years and then drains fast; by the end of a hundred-year
-    term a quarter of the general-tier line has been used, which is what a level premium on
-    a 100세만기 child policy has to fund.
+    almost untouched for thirty years and then drains fast: the general tier runs from
+    1.0000 to **0.4023261296** over the term, so nearly 60% of that line has been used by
+    the 100세 계약해당일, which is what a level premium on a 100세만기 child policy has to
+    fund.
     """
     if t <= 0:
         return 1.0

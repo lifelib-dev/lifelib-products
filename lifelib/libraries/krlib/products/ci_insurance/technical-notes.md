@@ -383,7 +383,7 @@ a `provenance` column on every row.
 | Row kind | Construction | Basis |
 |---|---|---|
 | **ANCHOR** (male 20, 40, 60) | [S3]'s three disclosed male 예정 경험 사망률 taken as given | [S3] |
-| **FIT** (male, to 60) | Makeham `μ(y) = A + B c^y` fitted **exactly** to those three: `A = 4.960424e−04`, `B = 1.077496e−06`, `c = 1.1371590` | **[std]** |
+| **FIT** (male, to 60) | A Makeham form fitted **exactly** to those three, **in the rate itself and not in the force**: `q(y) = A + B c^y` with `A = 4.960424e−04`, `B = 1.077496e−06`, `c = 1.1371590` | **[std]** |
 | **RAMP** (male, above 60) | Log-linear in `q` from the age-60 anchor to `q(110) = 1`: `q(y) = 0.00290 × 1.1240^(y−60)` | **[std]** |
 | **FEMALE** (every age) | `q_F(y) = 0.5294 × q_M(y)`, the ratio being [S3]'s own female/male ratio at age 20 (0.00027 / 0.00051) | **[std]** on [S3] |
 | **TERMINAL** | `q = 1` at `ω = 110` | **[std]** |
@@ -391,7 +391,7 @@ a `provenance` column on every row.
 Two properties of this file must be stated rather than discovered. **The old-age shape is a
 separate rule, not a continuation**: extrapolated, the fitted Makeham reaches `q = 1` at about
 attained age **107** — inside this projection's own horizon, and a third above the shipped
-ramp by age 100 (0.414 against 0.311) — so continuing the fit would move ω and the whole
+ramp by age 100 (0.412 against 0.311) — so continuing the fit would move ω and the whole
 old-age level, and it is not an option. And the female construction is a **known defect**: a
 flat ratio gives a 15-to-80 death probability ratio of **0.560** (0.128367 / 0.229205 on the
 shipped table) against the **0.500** implied by 국가데이터처's survival to age 80 of 남 64.4% /
@@ -789,8 +789,9 @@ Explicit, because three steps in it are worth money and two are conventions.
 
 **"CI before death before lapse" is a [std] ordering and it is not neutral.** Reversing the
 first two would apply the death rate to the full pre-CI count and route lives that would
-have accelerated into the death decrement, which on the anchor cell is a decrement 3.7 times
-smaller at issue and 6.7 times smaller at 60 [S3]. It is stated here, asserted by
+have accelerated into the death decrement, which on [S3]'s three disclosed rates is a
+decrement 3.7 times smaller at male 40 and 6.7 times smaller at male 60 [S3] — 3.72 and 7.40
+times on this model's own five-cause rate. It is stated here, asserted by
 `check_ci_state_roll_fwd()`, and should be the first thing a reader checks against their own
 convention.
 
@@ -1031,7 +1032,7 @@ closes to `1e−08 × SA` = ₩1 — and it is written **₩20,000,000** through
 The first is the more interesting of the two, because nothing in the construction was fitted
 to it. Re-running the pricing recursion with `a = 0.50` on the same table gives
 `A0(1) = ₩41,589,404.25` and `P = ₩2,750,098.90`, so the 80% form costs **1.0794** times the
-50% form; [S4]'s published 96-cell grid gives 338,100 / 311,640 = **1.085** at 남40 / 17대 /
+50% form; [S4]'s published 144-cell grid gives 338,100 / 311,640 = **1.085** at 남40 / 17대 /
 기본환급형. Two independent routes to the price of thirty percentage points of acceleration
 agree to five parts in a thousand.
 
@@ -1278,7 +1279,7 @@ Claim expense, on **two** kinds of event:
 
 Update. `l0(2) = 1 − 0.0025312484 − 0.0006782788 − 0.0996790473 = 0.8971114255418441`;
 `l1(2) = C(1) = 0.0025312484246575`; `l(2) = 0.8996426739665017`. And the waiver:
-`lw(2) = [0 + 1 × 0.0003] × 0.9974687516 × 0.99932 × 0.9003209527 = 0.0002691334277`, so
+`lw(2) = [0 + 1 × 0.0003] × 0.9974687516 × 0.99932 × 0.9000000000 = 0.0002691334277`, so
 `lp(2) = 0.8971114255 − 0.0002691334 = 0.8968422921141815`.
 
 ### Hand trace, year 2 — the first year with a residual death claim
@@ -1498,11 +1499,13 @@ identical table and decrements — the same three-state contract, paying the ful
 on death whenever it falls — gives `A0(1) = ₩36,085,073.09` and `P = ₩2,386,125.06` against
 the anchor's ₩2,968,483.20. **The acceleration costs 24.4% of the net premium**, purely for
 moving four fifths of one sum assured forward in time and flooring the remainder at 105% of
-the account. Against the market, [S4]'s published grid puts the 80% CI form at 1.19 times the
-표준형 종신 office premium at the same cell, and the chassis's anchor puts the CI product at
-1.33 times a 저해지 종신 contract on the same life; the model's 24.4% is a **net-premium**
-figure on a **fixed decrement basis** and the two published ratios are office premiums across
-different products, so they agree in order and are not comparable line by line.
+the account. Against the market, [S4]'s published ₩306,740 is **1.19 times** the ₩257,050
+표준형 종신 monthly premium the **chassis** publishes at the same cell, and **1.33 times** the
+chassis's own 저해지 anchor — which is that same ₩257,050 at the chassis's **[std]** 90.0%
+suppression discount, so the second ratio has a published numerator and a constructed
+denominator. The model's 24.4% is a **net-premium** figure on a **fixed decrement basis**
+while both market ratios are office premiums across different products and different
+carriers, so they agree in order and are not comparable line by line.
 
 ---
 
@@ -1521,7 +1524,7 @@ CI-specific and are stated here.
   recursion this model asserts, `check_pol_val_roll_fwd()`, carries the **CI decrement in the
   premium annuity and the residual EPV in the outgo term**. A reserve computed on an ordinary
   two-state whole-life recursion is a different number, and on this product it is a wrong
-  one: it over-values the premium stream by 4.6% of the annuity.
+  one: it over-values the premium annuity by 4.8%, and under-states `P` by 4.6%.
 - **The 해약환급금준비금 test creates an asymmetry the carve-out makes visible.** The
   appropriation compares the IFRS 17 잔여보장요소 against the surrender value computed
   **under 제7-66조제1항 — on that basis even for the 제7-66조제4항 products that may

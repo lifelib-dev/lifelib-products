@@ -254,8 +254,8 @@ proportional in the sum assured and the approximation is recorded rather than hi
 consequence is visible in the output: model point 2, the female anchor twin, runs a negative
 undiscounted net cash flow where the male anchor runs a positive one, because the same flat
 per-policy expense is charged against a premium 47% smaller. That is the same effect the
-market shows — female premiums run at 52–56% of male at the direct writers and 70–90% at the
-face-to-face carriers on the same cell [S4].
+market shows — female premiums run at 52–56% of male across the six direct writers on the
+same cell and from 47% to 90% across the face-to-face and simplified-issue rows [S4].
 
 `g(k)`, the shortened-pay uplift, is **[std]**: `ä(m_k) / ä(m_k^p)` at the 적용이율 of
 2.50% [S1] [S12], 1.781198 on model point 5 (20년만기 10년납) and 1.484695 on model point 9.
@@ -334,7 +334,9 @@ configuration rather than an assumption.
 The industry table is the **경험생명표** (*gyeongheom saengmyeongpyo*), prepared by
 보험개발원; the current edition is the 제10회, applied to new business from April 2024. **It
 is not published.** What is released is the summary — 평균수명 남 86.3 / 여 90.7 and 65세
-기대여명 남 23.7 / 여 27.1 — and not the rates [REG-R33] [REG-R34]. The 참조순보험요율
+기대여명 남 23.7 / 여 27.1 — and not the rates [REG-R33] [REG-R34], and even those four
+numbers reach this library through a **trade newspaper** rather than through 보험개발원,
+whose own announcement was not retrievable. The 참조순보험요율
 behind each carrier's own basis is not public either for mortality [REG-R4] [R19] [R20].
 This is the sharpest contrast in this repository with `jplib`, whose 標準生命表2018 is a
 free public PDF with `qx` by single year of age; and it is why the carriers' own 예정
@@ -377,8 +379,11 @@ the all-cause rates differ by a factor of 1.77 at male 40.
 - **`rate_class_table.csv` is sourced, which no other library here can say.** Two carriers
   publish a full 예정 경험사망률 table per rate class [S11] [S12]; the shipped file carries
   the anchor carrier's `mort_ratio` and `prem_ratio` at male and female 40 [S12]. The
-  premium ratio exceeds the mortality ratio in every cell, because the expense loading does
-  not scale with the risk. Holding the ratios flat across ages is the **[std]** step.
+  premium ratio exceeds the mortality ratio in the three male classes and in the female
+  비흡연자, as a loading that does not scale with the risk implies, and falls marginally
+  below it at 건강체 여 (0.890 against 0.907) and 슈퍼건강체 여 (0.846 against 0.856),
+  which nothing retrieved explains. Holding the ratios flat across ages is the **[std]**
+  step.
 - **`prem_rate_table.csv` is twenty published cells and one flag.** `is_anchor` marks the
   `(pure, M/F, 40, 20)` rows the [std] extension runs off — the cell that is doubly
   prescribed in Korea, being both the 감독규정 기준연령 요건 [REG-R9] and the disclosure's
@@ -513,7 +518,7 @@ of them bound nothing at all — which is said rather than papered over.
 | 적용해지율 stretch | disclosed 10년납 endpoints applied over each point's own 납입기간 | the composite is 전기납 over twenty years and the disclosure is on ten | upper endpoint varies 4.6% [S12] to 8.4% [S1]; the 0.1% convergence and 0.8% ultimate do not vary and are prescribed [REG-R27] |
 | `renewal_decline_base` | 0.20 | argued, not chosen: bounded above by the FSS's floor of at least 30% additional lapse at a discrete contractual event that hands the policyholder cash [REG-R27], below by the negative option and the 15일 notice [S9] [S15] | nothing published for any Korean product; arguable 5%–40%, over which the 갱신형 anchor's total runs +₩4,880,486.34 to +₩1,285,094.11 |
 | `renewal_decline_beta`, `_max` | 0.0, 0.40 | elasticity module off in the base run; the cap sits at the top of the arguable range | as above |
-| `expense_acq`, `expense_maint`, `inflation_rate` | ₩120,000, ₩24,000 p.a., 2.0% | no Korean carrier publishes any expense rate at all [S1] [S6] [S8] [S10] [S11] [S12] | 보험가격지수 dispersion 51.6%–239.1% across the 45 disclosed products [S4]; the 별표 14 cap is ₩1,000,000 at the anchor and nowhere near binding [REG-R20] [R9] |
+| `expense_acq`, `expense_maint`, `inflation_rate` | ₩120,000, ₩24,000 p.a., 2.0% | no Korean carrier publishes any expense rate at all [S1] [S6] [S8] [S10] [S11] [S12] | 보험가격지수 dispersion 51.6%–239.1% across the 45 disclosed products [S4]; the sum-assured limb of the 별표 14 cap alone is ₩1,000,000 at the anchor, 5.5 years' gross premium, so the cap is nowhere near binding [REG-R20] [R9] |
 | `expense_claim` | ₩300,000 per death claim | round, and immaterial at these claim levels | none published |
 | `comm_init_rate`, `comm_renewal_rate` | 0.60, 0.03 | no commission scale is disclosed anywhere in the set, and the nearest public handle — the 2019 rule of thumb sizing the 표준해약공제액 at 13 months' premium for a 보장성보험 [REG-R29] — is calibrated on a premium-to-cover ratio nothing like a term policy's and does not transfer | none published |
 | `comm_new_term_rate` | 0.0 | a 갱신 is issued on a new product code [S9] [S15], which argues for paying again; it takes no 고지, which argues against; the base run pays nothing and exposes the switch | none published; at 0.60 the forty-year total falls to +₩2,295,610.86 |

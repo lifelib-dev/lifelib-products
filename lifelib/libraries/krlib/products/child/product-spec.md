@@ -162,15 +162,7 @@ remarkable share for a product sold to a cohort that is shrinking every year.
 
 **Historic size, and the reversal of the licence split** [R3], 수입보험료 in 억원: 생명보험
 23,947 (FY05) → 24,888 → 23,995 against 손해보험 3,936 → 5,888 → **8,406**, on FY07 신계약
-583,888 (생명, of which 138,965 태아) and 1,038,751 (손해, 196,170 태아). In FY07 the market
-was ₩3.24조원 and **74% of it was 생명보험**; the 손해보험 side then doubled in two years while
-the 생명보험 side was flat, which is the child-CI effect [R5]. Today the position is reversed.
-**In-force, 2013–2015**, sourced by the FSS to 보험개발원: 보유계약 1,141만건 → 1,182만건 →
-1,162만건, 수입보험료 ₩33,385억 → ₩45,611억 → ₩44,906억, and 신계약 88만건 (2013.4–12) →
-127만건 → 123만건 against 출생자수 of 43.7만 / 43.5만 / 43.9만 [R2]. New child contracts ran at
-roughly **three times the birth count** — which is what a multi-rider, multi-contract product
-looks like in a count statistic, and a warning that "contracts" in Korean insurance statistics
-are not "insured children".
+583,888 (생명, of which 138,965 태아) and 1,038,751 (손해, 196,170 태아).
 
 | | FY05 | FY06 | FY07 | 신계약건수 FY07 (태아가입) |
 |---|---|---|---|---|
@@ -268,15 +260,31 @@ basis is printed on the board and is the only specification of a Korean child po
 itself publishes [R12]. Every 상품요약서 publishes a complete surrender-value grid on a named
 specimen contract [S1] [S2] [S3] [S4].
 
-**Not public, and the consequence.** 보험개발원 files the **참조순보험요율** with the FSC under
-보험업법 제176조제4항 and there is no obligation to publish it [REG-R4]; the **산출방법서** is
-a 기초서류 and is not disclosed [REG-R2]; the **경험생명표** is released only as summary
-statistics [REG-R33] [REG-R34]. Nothing on child incidence — cancer, cerebrovascular disease,
-congenital anomaly, low birth weight, NICU admission — was retrieved from 보험개발원,
-국가암정보센터 or 통계청 in this pass. **Every incidence assumption in `Child_KR_S` is
-therefore a [std] construction and says so at the point of use.**
+**Partly public, and the consequence.** 보험개발원 files the **참조순보험요율** with the FSC
+under 보험업법 제176조제4항 and there is no general obligation to publish it [REG-R4], and on
+the **life** side nothing of it reaches the public. On the **장기손해보험** side — which is the
+chassis this product is written on — 제176조제9항 permits publication where policyholder
+protection requires it, and 보험개발원 **does** publish a dated display carrying, by age and
+sex, a 「기타피부암 및 갑상선암 이외의 암 발생률」 grid on the insured definition that excludes
+C44 and C73, a 질병입원율 grid stated in expected days per life-year, and 후유장해 rates
+[REG-R61]. Its published age grid reaches **연령 0 and 10**, so it is not true that no Korean
+child incidence rate exists in public, and this document does not say so. Two things are
+nonetheless true and both bind here. **This product's own research pass never opened that
+display** — it was reached in the `cancer` and `indemnity_medical` passes on the same day, and
+[REG-R61] records the omission — so nothing in `incidence_table.csv` was built off its values.
+And a 참조순보험요율 is a **net premium rate carrying a safety loading, not a best estimate**
+[REG-R9] [REG-R61], so adjusting one to a best-estimate basis would itself be a [std] step. The
+**산출방법서** that holds each carrier's own 적용위험률 and 예정사업비율 remains an undisclosed
+기초서류 [REG-R2], and the **경험생명표** is released only as summary statistics
+[REG-R33] [REG-R34]. **Every incidence assumption in `Child_KR_S` is therefore still a [std]
+construction and says so at the point of use** — but as a construction that has *not* been
+reconciled to a published reference grid rather than as one for which no grid exists. The
+direction of the gap is stated where it bites: on the general cancer tier the shipped
+paediatric anchors sit at roughly **0.6 (male) and 0.5 (female) of the published rate at 연령 0
+and 10**, while the adult anchors sit near or slightly above it, so the divergence has no
+single sign and a later pass should re-base the rows rather than rescale them.
 
-Three public anchors bound the construction and are all this document has: the **published
+Three public anchors bound the construction, and only one of them is a rate: the **published
 premium levels** on the [R12] basis (§*Premiums*), which bound the total; the **보험가격지수**,
 which bounds the ratio of total premium to the sum of the 참조순보험료 and average expense
 [S11] [REG-R22]; and exactly **one 적용위험률 published anywhere in this file** — 일반상해
@@ -458,9 +466,10 @@ Footnotes to the [std] rows:
     is the **태아 contract at 계약나이 0**, because 태아가입 and the 계약자 waiver are the two
     mechanics this product exists to demonstrate and a worked example exercising neither would
     be a worked example of `Cancer_KR_S`. **Birth at policy month 5** is [std]: the neonatal
-    riders close at 임신 22주 [S5], leaving at most 4.1 months of gestation at issue, and [S8
-    제61조] caps the pre-birth period at six months; five is between them and is a whole number
-    of grid steps. The **premium is a model-point input** (footnote 16). A calibration cell is
+    riders close at 임신 22주 [S5], so a contract written inside that window still has **at
+    least** 4.1 months of gestation to run, and [S8 제61조] caps the pre-birth period at six
+    months; five is between those two bounds and is a whole number of grid steps. The
+    **premium is a model-point input** (footnote 16). A calibration cell is
     shipped alongside: **male, 보험나이 5, 표준형, no 태아 module, no 계약자 waiver**, at
     ₩27,000 a month, the cell every published premium in this file is quoted on [R12] [S11].
 
@@ -473,9 +482,9 @@ Footnotes to the [std] rows:
 | Anchor premium | **₩31,000 per month to `t = 16`; ₩28,000 from `t = 17` to `t = 239`** — being ₩27,000 of core 보장보험료, ₩1,000 for the 계약자 waiver module and ₩3,000 for the 태아 module over `t = 0..16` | **[std]** (16) |
 | Calibration-cell premium | **₩27,000 per month**, male, 보험나이 5, 상해 1급, 100세만기 20년납, on the [R12] specification | published cluster [S11]; **[std]** (16) |
 | Rating factors | 보험나이, sex, 보험가입금액 per cover, riders elected, 형 (표준형 / 미지급형), 납입기간, **상해급수** (the comparison basis is 상해 1급), 계약 전 알릴 의무 outcome | [R12]; [S1] [S2] [S11] |
-| Rate structure | **Not published by any carrier.** The 참조순보험요율 is filed with the FSC and never disclosed; the 산출방법서 is a 기초서류 | [REG-R4]; [REG-R2]; [REG-R34] |
+| Rate structure | **Not published by any carrier.** A carrier's own 적용위험률 and 예정사업비율 live in the 산출방법서, an undisclosed 기초서류; the bureau's 참조순보험요율 is filed under 보험업법 제176조제4항 with no general publication obligation, though the **장기손해보험** display is published under 제176조제9항 and was not opened in this product's pass | [REG-R2]; [REG-R4]; [REG-R61]; [REG-R34] |
 | The one published rate | 일반상해 후유장해 발생률(3~100%), 기본계약, **5세, 상해 1급: 남 0.0001823, 여 0.0001163** | [S1] |
-| 보험가격지수 | Published per product, sex and 형; observed **79.6–116.0** (male) and **72.4–123.3** (female). The **미지급형's index is 3–16 points above the 표준형's at every carrier** | [S11]; [REG-R22 제7-45조제7항](#krlib-reg-r22) |
+| 보험가격지수 | Published per product, sex and 형; observed **79.6–116.0** (male) and **72.4–123.3** (female). The suppressed form's index is **8 to 18 points above the 표준형's at eight of the nine carriers publishing both, and about 7 points below it at the ninth** | [S11]; [REG-R22 제7-45조제7항](#krlib-reg-r22) |
 | Pricing method | **현금흐름방식** — mandatory for a contract longer than three years, with an adequacy analysis on 최적기초율 and projected cash flows | [REG-R18 제7-64조제1호](#krlib-reg-r18) |
 | 보장부분 적용이율 (예정이율) | **2.75% p.a.** | observed 2.50–3.00 [S11]; **[std]** (18) |
 | 적립부분 공시이율 | **1.70% p.a.**, reset off a published 공시기준이율 | observed 1.60–2.20 [S11] [S2]; **[std]** (18) |
@@ -587,8 +596,11 @@ Footnotes to the [std] rows:
     「공시기준이율(%) = 외부지표금리수익률 × α + 운용자산이익률 × (1−α)」, with α a function of
     the prior-year opening 보험료적립금, the asset duration and the prior-year premium income,
     but the extracted bracketing of α is uncertain and is [unverified] [S1]. `Child_KR_S`
-    **does not implement the reset**; it credits the fixed 1.70% with a 0.30% floor and carries
-    the machinery by reference to `WholeLife_KR_A`. The 평균공시이율 of 2.50% enters only
+    **implements no crediting at all**: it reads the published 환급률 grid, whose own interest
+    basis is that 1.70% with the 2.50% 평균공시이율 and the 0.30% floor [S2], and recovers the
+    계약자적립액 from it, so the three rates are recorded as the basis of the shipped grid and
+    are not read by any formula. Both the recursion and the 공시이율 reset are carried by
+    reference to `WholeLife_KR_A`. The 평균공시이율 of 2.50% enters only
     through the surrender-charge and disclosure computations [S2] [REG-R9] [REG-R48].
 19. **The lapse basis, and the one carrier that published its own.** [S1] discloses the
     **적용해지율** actually used to price each suppressed form — a step function at 5.0% / 3.0%
@@ -782,7 +794,7 @@ the shipped anchor cell does.
 | **해약환급금 미지급형** | **0%** during the 납입기간; **50% of the 표준형 value** after 납입완료; premium at **78%** of the 표준형 | off | [S2] [S11]; [REG-R19 제7-66조제4항](#krlib-reg-r19); **[std]** (17) (29) |
 | **해약환급금 미지급형Ⅲ (graded)** | A ten-step ladder from **5%** of the 표준형 value in the two years after 납입완료 to **50%** eighteen years after it, in 5-point steps every two years | off | [S1]; **[std]** (29) |
 | **갱신형 chassis** | The whole product written of 20년만기 / 30년만기 renewable blocks, 최초 가입나이 0~30세, renewal ages `(보험기간)세 ~ (100−보험기간)세`, with cover-group ceilings of 80, 70, 98 and 30 in place of 100 for 중증화상, 장기이식, 재진단암 and 다발성소아암, and a 1년만기 renewal at 97/98/99세 for 재진단암. The company must notify the renewal premium and ask whether the contract is to continue **15 days** before the term ends | off | [S7 제29조]; **[std]** (2) |
-| **보험기간 연장형 (3종)** | A third 종 whose 적립부분 is consumed to extend the cover term; its 환급률 **falls** after 납입완료 (76.0% at 20년 → 61.8% at 25년 on the 최저보증이율) | off | [S2] |
+| **보험기간 연장형 (3종)** | A third 종 whose 적립부분 is consumed to extend the cover term; its 환급률 is 76.0% at 20년 and then **falls on the 최저보증이율** to 61.8% at 25년, against 76.5% on the 공시이율 | off | [S2] |
 | **110세만기** | The longest term found; same 가입나이 태아, 0~15세 and the same 납입기간 ladder | off | [S4] |
 | **뇌혈관질환 / 허혈성심장질환 (broad definitions)** | The two adult-disease diagnosis limbs written on the broad KCD ranges rather than 뇌출혈 and 급성심근경색증, at ₩10,000,000–₩50,000,000 | off | [S11] [S2]; **[std]** (23) |
 | **다발성소아암 진단비** | A named-cancer rider stacking on the general tier, whose exposure is genuinely paediatric; renewal ceiling **30세** where the rest of the contract renews to 100 | off | [S1] [S7] [S11] |
@@ -927,7 +939,7 @@ runs in three streams:
 
     core 보장보험료          KRW 27,000    t = 0 .. 239
     계약자 waiver module      KRW 1,000     t = 0 .. 239
-    태아 module (전기납)      KRW 3,000     t = 0 .. 17
+    태아 module (전기납)      KRW 3,000     t = 0 .. 16
 
 The third is not an artefact of the composite. A 태아 contract really does carry a second,
 short term with its own premium: 「아래의 계약은 계약을 체결할 때 피보험자가 될 자가
@@ -1002,8 +1014,9 @@ Six modelling consequences, each carried explicitly.
    whose provenance `technical-notes.md` states; what the sources fix is the mechanic.
 3. **The pre-birth period is bounded, and the bound is actuarial.** [S8 제61조] caps it at six
    months by moving the 계약일 back, with premiums and reserves adjusted under the 산출방법서;
-   the neonatal riders close at 임신 22주 [S5], leaving at most 4.1 months; and the 태아
-   sub-term is written 「1~10월만기」 [S1]. The composite takes `b = 5`.
+   the neonatal riders close at 임신 22주 [S5], so a contract written inside that window still
+   has **at least** 4.1 months of gestation to run; and the 태아 sub-term is written
+   「1~10월만기」 [S1]. The composite takes `b = 5`, which is inside both bounds.
 4. **The non-life chassis re-rates instead of resetting the 계약일**: 「태아보장기간에
    태아위험보장을 위한 보장보험료를 적용하며, 출생일 이후의 보장보험료는 **보험나이 0세
    기준**으로 변경하여 적용함. 다만, 출생통지가 이루어지지 않은 경우에는 **계약전환일**
@@ -1125,7 +1138,7 @@ itself.
 ### The neonatal module and its two terms
 
     태아보장기간   : t = 0 .. b            (계약일 ~ 출생일, including labour and delivery)
-    neonatal block : t = b .. b + 12       (1년만기 from birth)
+    neonatal block : t = b .. b + 11       (1년만기 from birth; the cover ends at t = b + 12)
 
 with the module's premium 전기납 over the whole of it. The first term is stated as a term in
 its own right at one carrier [S2] and as a fixed 「1~10월만기 전기납」 at another [S1]; the
@@ -1322,9 +1335,9 @@ of premiums paid ten years after completion. The 표준형's value **crosses pre
 about year 30** and keeps rising to 158.9% at year 60. And **both collapse at maturity**, the
 표준형 to 16.0% at 95 years and the 미지급형 to 0.0%, because there is no 만기환급금 on the
 protection part and what remains is only the residual 적립부분. A third 종 shows a fourth
-shape: on a 보험기간 연장형 the 환급률 rises to 76.0% at 20 years and then **falls** to 61.8%
-at 25 years on the 최저보증이율, because the 적립부분 is being consumed to extend the cover
-[S2].
+shape: on a 보험기간 연장형 the 환급률 is 76.0% at 20 years and then, on the **최저보증이율**,
+**falls** to 61.8% at 25 years — 76.5% on the 공시이율 — because the 적립부분 is being consumed
+to extend the cover [S2].
 
 ### Exclusions and 면책
 
@@ -1516,9 +1529,11 @@ wording specifies.
     composite's does. The absolute level varies by a **factor of seven** on a nominally
     standardised basis — ₩21,502 against ₩148,250 for a male 5-year-old — because carriers
     include different compulsory rider sets in the quoted 보장보험료 [S11]; the normalising
-    statistic is the **보험가격지수**, and even that shows the 무해지 form's index consistently
-    **3–16 points above** the 표준형's at every carrier, because the index divides by a
-    reference net premium computed without the suppressed-lapse credit [S11].
+    statistic is the **보험가격지수**, and even that mostly shows the 무해지 form's index
+    **8 to 18 points above** the 표준형's — at eight of the nine carriers publishing both,
+    because the index divides by a reference net premium computed without the
+    suppressed-lapse credit — while the ninth prints its 미지급형Ⅱ at 89.5 (male) against a
+    표준형 96.4, **about 7 points below**, so the pattern is strong but not universal [S11].
 15. **What does not vary.** The insured comes into existence at birth and cover attaches then;
     유산 or 사산 voids the contract and returns the premium; a 태아 contract is priced at
     계약나이 0 and re-rated at birth; the death benefit is unavailable below 만 15세; the
@@ -1616,13 +1631,18 @@ rider stops at 80 while the child's own cover runs to 100 or 110, and it is a co
 **Pricing and rate filing.** Pricing is by **현금흐름방식** for any contract longer than three
 years, with an adequacy analysis on 최적기초율 and projected cash flows [REG-R18
 제7-64조제1호](#krlib-reg-r18). The **참조순보험요율** is filed by 보험개발원 with the FSC under 보험업법
-제176조제4항, an insurer applying it is deemed to have filed [REG-R4], and there is **no
-publication obligation** — so no child incidence rate exists in public and every one in this
-model is `[std]` [REG-R4] [REG-R34]. The **산출방법서** is a 기초서류 and is not disclosed
-[REG-R2]. What reaches the public is the **보험가격지수**, published in the 상품요약서 and on
-the comparison board under 감독규정 제7-45조제7항 [REG-R22] [S11], and the specimen premium on
-the board's standardised basis [R12] [S11]. Commission is capped: first-year remuneration may
-not exceed the first year's expected premium and instalment structures pay no more than 60% of
+제176조제4항 and an insurer applying it is deemed to have filed [REG-R4]; there is **no general
+publication obligation**, but 제176조제9항 lets the bureau publish 순보험요율 산출 자료 where
+policyholder protection requires it, and for **장기손해보험** it does — a dated display of
+암 발생률, 질병입원율 and 후유장해 by age and sex, reaching 연령 0 and 10 [REG-R61]. This
+product's research pass did not open it, so every incidence rate in this model is `[std]` as
+an **unreconciled** construction rather than for want of a public grid [REG-R61] [REG-R34]. The
+**산출방법서**, which holds each carrier's own 적용위험률 and 예정사업비율, is a 기초서류 and
+is not disclosed [REG-R2]. What reaches the public is the **보험가격지수**, published in the
+상품요약서 and on the comparison board under 감독규정 제7-45조제7항 [REG-R22] [S11], and the
+specimen premium on the board's standardised basis [R12] [S11]. Commission is capped:
+first-year remuneration may not exceed the first year's expected premium and instalment
+structures pay no more than 60% of
 the 표준해약공제액 a year [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22) [REG-R29].
 
 **Mortality basis.** The industry table — the **제10회 경험생명표**, applied to new business
@@ -1710,6 +1730,7 @@ reference model of it worth building.
 [REG-R52]: #krlib-reg-r52
 [REG-R57]: #krlib-reg-r57
 [REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
 [REG-R9]: #krlib-reg-r9
 [std]: #krlib-std
 [unverified]: #krlib-unverified

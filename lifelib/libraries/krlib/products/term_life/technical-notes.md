@@ -311,8 +311,11 @@ The industry table is the **경험생명표** (*gyeongheom saengmyeongpyo*, expe
 table), prepared by 보험개발원 every five years; the current edition is the **제10회**,
 applied to new business from April 2024. **It is not published.** What is released is the
 summary — 평균수명 남 86.3 / 여 90.7 and 65세 기대여명 남 23.7 / 여 27.1 — and not the
-rates [REG-R33] [REG-R34]. Nor is the 참조순보험요율 behind each carrier's own basis public
-for mortality [REG-R4] [R19] [R20]. This is the sharpest documentary contrast in this
+rates [REG-R33] [REG-R34]. **Even those four numbers reach this library through a trade
+newspaper**: 보험개발원's own announcement was not retrievable and [REG-R33] is a 보험매일
+report of it, so the tilt target below is second-hand and is tagged as such wherever it is
+used. The 참조순보험요율 behind each carrier's own basis is not public for mortality
+either [REG-R4] [R19] [R20]. This is the sharpest documentary contrast in this
 repository with `jplib`, whose 標準生命表2018 is a free public PDF of `qx` by single year of
 age; and it is why the carriers' own 예정 경험사망률 disagree by a factor of **1.77 at male
 40** (0.000480 to 0.000850 across seven carriers) [S1] [S6] [S8] [S10] [S11] [S12] [S17],
@@ -335,7 +338,12 @@ where every Japanese carrier prices off one table.
    male `A = 0.0002222362869`, `B = 7.800209431e-06`, `c = 1.105293057`, `k = 1.0098862619`;
    female `A = 0.0001275342466`, `B = 1.736158676e-05`, `c = 1.074056604`,
    `k = 1.0592847691`. Sample shipped rates: male `q(65) = 0.00572256`,
-   `q(80) = 0.02883008`; female `q(65) = 0.00257678`, `q(80) = 0.01707668`. The tilts are
+   `q(80) = 0.02883008`; female `q(65) = 0.00257678`, `q(80) = 0.01707668`; `q(120) = 1`
+   caps both sexes. The expectation the tilt targets is the **complete** one on the usual
+   uniform-deaths convention, `e65 = sum_{j>=1} j_p_65 + 0.5`, which on the shipped file is
+   23.200000 + 0.5 = **23.7** male and 26.600000 + 0.5 = **27.1** female; the curtate figure
+   alone does not reproduce the published number and a reader checking it must add the
+   half-year. The tilts are
    small and **upward** — an unconstrained Makeham extrapolation of three disclosed rates
    leaves slightly too much life at 65. The resulting table sits **4.2 years (male) and 3.4
    years (female) above** the public 완전생명표's own 65세 기대여명 of 19.5 and 23.7
@@ -366,11 +374,15 @@ say.** Two carriers publish a full 예정 경험사망률 table per class [S11] 
 `rate_class_table.csv` carries both a `mort_ratio` and a `prem_ratio` at male and female 40
 from the anchor carrier [S12]: 표준체 1.000 / 1.000; 비흡연자 0.828 / 0.956; 건강체 0.723 /
 0.907; 슈퍼건강체 0.583 / 0.856 (mortality), against premium ratios 0.865 / 0.964, 0.763 /
-0.890, 0.586 / 0.846. **The premium ratio exceeds the mortality ratio in every cell**,
-because the expense loading does not scale with the risk — which is the same fact that
-makes a female premium 53% of a male one where female mortality is 66% of male. Holding the
-ratios flat across ages is the **[std]** step; the disclosures are at three ages and the
-ratios move little between them.
+0.890, 0.586 / 0.846. **The premium ratio exceeds the mortality ratio in the three male
+classes and in the female 비흡연자** — which is what a loading that does not scale with the
+risk does — **and falls marginally below it in the other two female cells**: 0.890 against
+0.907 at 건강체 and 0.846 against 0.856 at 슈퍼건강체. Nothing retrieved explains the
+reversal, and the cross-sex comparison runs the same way rather than the other, so it is
+not evidence of a flat loading either: the female 표준체 premium is **53%** of the male one
+where female mortality is **66%** of male [S12] [S4]. Holding the ratios flat across ages
+is the **[std]** step; the disclosures are at three ages and the ratios move little between
+them.
 
 **Accidental mortality.** `acc_mort_rate` is the 예정 재해사망률 of a *different* carrier
 [S6], log-linear in `ln q` between its disclosed anchors at 20/40/60 with the 40–60 slope
@@ -396,10 +408,14 @@ of its own.
 > rider.
 
 **Lapse — the one assumption in this repository whose chain from supervisory guideline to
-disclosed pricing parameter is complete.** The **shape** is supervisory, not chosen: the
+disclosed pricing parameter runs end to end, though not at instrument level throughout.**
+The **shape** is supervisory, not chosen: the
 2024 IFRS17 계리가정 가이드라인 makes a **로그-선형 model converging to 0.1%** the 원칙모형
 for 무·저해지 business, permits 선형-로그 (to 0%) and 로그-로그 (to 0.1%) only as exceptions
 on onerous disclosure conditions, and sets a post-완납 ultimate of **0.8%** [REG-R27]. The
+guideline's **values** are verified from the 보도자료; its 별첨 was never converted from HWP,
+so the functional form itself is **[unverified]** at instrument level and the log-linear
+interpolation below rests on the 보도자료's description of it. The
 **endpoints** are disclosed in the 상품요약서 wherever a 무해지 form is sold: 「납입기간
 이내에 대하여 경과기간별로 연 0.1%~4.6%, 납입기간 이후에 대하여 경과기간별로 연
 0.7%~1.6%」 at the anchor carrier [S12] and 「연 0.1%~8.4%, 납입기간 이후 연 0.8%」 at
@@ -577,10 +593,12 @@ assured, **every Korean grid retrieved fixes the sum assured and varies age, sex
 or product form instead** [S1] [S8] [S11] [S12] [S14]. The office premium is therefore
 treated as strictly proportional in `SA` and the approximation is recorded rather than
 hidden. One consequence is visible in the data and is worth keeping in view when reading
-the worked example's female twin: female premiums run at **52–56% of male at the direct
-writers** and **70–90% at the face-to-face carriers** on the same cell [S4], which is what a
-flat per-policy loading does to a small risk premium, and is indirect evidence that the fee
-exists even though no rate card lets it be measured.
+the worked example's female twin: female premiums run at **52–56% of male across the six
+direct writers** on the same cell, and anywhere from **47% to 90%** across the eleven
+face-to-face and simplified-issue rows [S4]. A per-policy loading that does not scale with
+the risk pushes that ratio up as the loading grows, and the face-to-face band does reach
+higher — but it also reaches *lower* than the direct writers' band, so the channel spread is
+consistent with a flat fee without establishing one, and no rate card lets it be measured.
 
 **The shortened-pay uplift `g(k)` [std].** No Korean document retrieved publishes a
 shortened-pay premium for a **term** contract at all, so an equivalence had to be chosen.
@@ -597,7 +615,10 @@ stated rather than buried.
 **The scale extension beyond the published cells [std].** Twenty premium cells are shipped:
 twelve 20-year cells (순수보장형 and 만기환급형, male and female, ages 30/40/50) from the
 anchor carrier [S12], and eight 10-year cells that are the published 갱신형 ladder of the
-one carrier printing a mandatory 예상 갱신보험료 예시 [S6] [S7]. Where a model point needs a
+one carrier printing a mandatory 예상 갱신보험료 예시 [S6] [S7] — whose **four female rows
+are on 2형(보장추가형)**, that carrier not selling its 1형(기본형) to women at all [S4] [S6],
+so they are not the same cover as the male rows and no shipped model point reads one.
+Where a model point needs a
 cell that is not shipped, the rate is extended off the `is_anchor` row of the matching form
 and sex — the age-40 20-year cell — in the ratio of mean **table** mortality over the term:
 
@@ -1221,21 +1242,24 @@ Three of these need a sentence rather than a row.
 **Model point 6's loss is correct and expected.** A 만기환급형 hands back 100% of premiums
 paid at maturity — **₩8,016,046.20** of `claims_maturity` on this point, beside ₩727,007.36
 of `claims_death`, against ₩8,750,021.45 of premium — and is financed out of investment
-income at a 적용이율 of 2.25%, lower than the 순수보장형's 2.50% precisely because the
-savings element carries a longer duration [S8]
-[S12]. This model projects **undiscounted** gross liability cash flows and never credits
-interest, so an undiscounted loss is what a savings-shaped contract **must** show here. It
-is not evidence that the product loses money; it is evidence that an undiscounted stream is
-the wrong lens for it, which is the whole reason the 종신보험 chassis exists separately.
+income at a 적용이율 of 2.25% against the 순수보장형's 2.50% at the same carrier and at one
+other [S8] [S12]; no retrieved document gives the reason for the gap, and the natural
+reading — a longer-duration, tighter-guaranteed savings element — is an inference **[std]**
+and not a sourced one. This model projects **undiscounted** gross liability cash flows and
+never credits interest, so an undiscounted loss is what a savings-shaped contract **must**
+show here. It is not evidence that the product loses money; it is evidence that an
+undiscounted stream is the wrong lens for it, which is the whole reason the 종신보험 chassis
+exists separately.
 
 **Model points 2 and 5 are negative for a different and more interesting reason** — a flat
 ₩24,000 per-policy maintenance charge against a small premium. Point 2's premium is 47%
 below point 1's on identical expenses, and point 5 collects ₩720,742.73 of premium over the
 whole term against the anchor's ₩2,984,561.04 — 76% less, being 10년납 on half the sum
 assured — while paying twenty years of the same flat ₩24,000 charge. That is the same
-effect the market shows: female premiums run at 52–56% of male at the direct writers and
-70–90% at the face-to-face carriers on the same cell [S4], which is
-indirect evidence of the per-policy fee that no Korean rate card lets you decompose.
+effect the market shows: female premiums run at 52–56% of male across the six direct
+writers on the same cell and from 47% to 90% across the face-to-face and simplified-issue
+rows [S4] — a spread far wider than the 66% mortality ratio at the same cell, and one no
+Korean rate card lets you decompose into a rate and a per-policy fee.
 
 **Model point 10 prints the accidental split.** On the shipped pairing the accidental share
 of all-cause mortality is `acc_mort_share = 0.1236207830` at 보험나이 55, 0.0871551347 at
@@ -1438,8 +1462,10 @@ each is checkable against the shipped model.
   best-estimate factor into a disability assumption.
 - **재해사망 is a split of the death decrement, never a second decrement.** The uplift pays
   **2×** the sum assured on 재해사망 and 1× otherwise [S6] [S10], so
-  `claims_acc_death(t) = SA × acc_mort_share(t) × D(t)` sits **beside** the full
-  `claims_death(t)` and the total on an accidental death is exactly `2 × SA`. Adding an
+  `claims_acc_death(t) = SA × a_q(t) × (1 − a(t)) × D(t)` sits **beside**
+  `claims_death(t)`, which carries the matching `(1 − a(t))`, and the total on an accidental
+  death is exactly `2 × SA` when the acceleration module is off, as it is on every model
+  point that switches the uplift on. Adding an
   accidental incidence as a decrement of its own double-counts the deaths and breaks the
   roll-forward. Guard: `acc_mort_share` is capped at 1.0.
 - **Lapse pays nothing, and the zero must be published rather than inferred.**

@@ -47,7 +47,9 @@ table), prepared by 보험개발원 every five years from life-insurance policyh
 statistics; the current edition is the **제10회**, applied to new business from April
 2024. **It is not published.** What 보험개발원 releases is the summary — 평균수명 남
 86.3 / 여 90.7 and 65세 기대여명 남 23.7 / 여 27.1 — and not the rates [REG-R33]
-[REG-R34]. The 참조순보험요율 behind each carrier's own basis is not public either
+[REG-R34]; and even those four numbers reach this library through a **trade newspaper**,
+the 보험개발원 announcement itself not being retrievable, so the tilt target of step 2
+below is second-hand. The 참조순보험요율 behind each carrier's own basis is not public either
 [REG-R4] [R19] [R20]. This is the sharpest contrast in this repository with ``jplib``,
 whose 標準生命表2018 is a free public PDF with ``qx`` by single year of age.
 
@@ -101,7 +103,10 @@ each product's 상품요약서 prints its own premium grid. Twenty cells are shi
 순수보장형 20-year cells and six 만기환급형 20-year cells from the anchor carrier [S12],
 and eight 10-year cells that are the 갱신형 ladder of the one carrier that publishes a
 mandatory 예상 갱신보험료 예시 [S6] [S7]. All are monthly premiums per 100,000,000 won of
-cover on a 표준체 basis.
+cover on a 표준체 basis. One asymmetry inside those eight: 흥국생명 does not sell its
+1형(기본형) to women, so the four female rows are on 2형(보장추가형) and carry a 재해사망
+보험금 the male rows do not [S4] [S6]. They are shipped for completeness, the row
+provenance says so, and no shipped model point reads one.
 
 The ``is_anchor`` rows — male and female age 40, 20-year term, one per maturity form —
 are where :mod:`~.Term_KR_A.Projection` extends the scale to unpublished cells, by the
@@ -127,9 +132,11 @@ pricing lapse rate) is published in the 상품요약서 wherever a 무해지 for
 another [S1] — and the **shape** between those endpoints is supervisory rather than
 chosen: the 2024 IFRS17 계리가정 가이드라인 makes a 로그-선형 model converging to 0.1%
 the 원칙모형 for 무·저해지 business and sets a post-완납 ultimate of 0.8% [REG-R27]. The
-chain from supervisory guideline to disclosed pricing parameter is complete and
-verifiable, which is unique in this repository, so the file ships the endpoints and
-``Projection.lapse_rate`` interpolates the prescribed shape between them.
+chain from supervisory guideline to disclosed pricing parameter runs end to end, which is
+unique in this repository, so the file ships the endpoints and ``Projection.lapse_rate``
+interpolates the prescribed shape between them.  One qualification travels with it: the
+guideline's values are verified from the 보도자료 and its 별첨 was never converted from
+HWP, so the functional form is **[unverified]** at instrument level [REG-R27].
 
 To swap in a company basis, replace a CSV with a same-schema file, or point its ``*_file``
 Reference at a different name, and clear the cache. No formula changes.
@@ -194,10 +201,12 @@ def rate_class_table():
 
     Both columns are computed from one carrier's disclosures at age 40 [S12].
     ``mort_ratio`` is the ratio of the class's 예정 경험사망률 to the 표준체 rate;
-    ``prem_ratio`` the same ratio taken on the published premium grid.  They differ —
-    0.583 against 0.586 at male 40, 0.856 against 0.846 at female 40 — because the
-    expense loading does not scale with the risk, which is also why the female premium
-    discount looks small beside the female mortality saving.
+    ``prem_ratio`` the same ratio taken on the published premium grid.  They differ, and
+    not always in the same direction: 0.583 against 0.586 at male 40, where the premium
+    ratio sits above the mortality one as a loading that does not scale with the risk
+    implies, but 0.856 against 0.846 at female 40, where it sits **below**.  Nothing
+    retrieved explains the reversal, so both columns are shipped and neither is derived
+    from the other.
 
     Korea is the only market in this repository that publishes the mortality behind its
     preferred classes, so these are sourced ratios rather than a standardization.  Held

@@ -289,9 +289,10 @@ carrier quotes [S12]. **No flat policy element can be separated out**: unlike ``
 オリックス生命 grid, every Korean grid retrieved fixes the sum assured and varies age, sex,
 rate class or product form instead [S1] [S8] [S11] [S12] [S14], so the office premium is
 treated as proportional in the sum assured and the approximation is recorded rather than
-hidden. One consequence is visible in the data: female premiums run at 52-56% of male at
-the direct writers and 70-90% at the face-to-face carriers on the same cell [S4], which
-is what a flat per-policy loading does to a small risk premium.
+hidden. One consequence is visible in the data: female premiums run at 52-56% of male
+across the six direct writers on the same cell and from 47% to 90% across the eleven
+face-to-face and simplified-issue rows [S4] -- consistent with a flat per-policy loading
+on a small risk premium, but not proof of one, the two bands overlapping at the bottom.
 
 ``g(k)`` is the **[std]** shortened-pay uplift, ``a-due(m_k) / a-due(m_k^p)`` at the
 적용이율 of 2.50% [S1] [S12]. No Korean document retrieved publishes a shortened-pay
@@ -512,9 +513,9 @@ def premium_mode():
     """The 납입주기 — **월납** (monthly) in the base run [S1] [S6] [S8] [S9] [S12].
 
     Monthly is available at every carrier retrieved, is the only frequency on seven of the
-    retrieved products, is the disclosure's basis [S5] and is half of the 감독규정 기준연령 요건
-    [REG-R9].  Inert on the annual grid, which annualizes either way: ``P_a = 12 P_m``,
-    with no discount for the timing difference **[std]**.
+    retrieved products, is the disclosure's basis [S5] and is half of the 감독규정
+    기준연령 요건 [REG-R9].  Inert on the annual grid, which annualizes either way:
+    ``P_a = 12 P_m``, with no discount for the timing difference **[std]**.
     """
     return model_point()["premium_mode"]
 
@@ -697,11 +698,12 @@ def class_prem_ratio():
     """The rate class's premium relativity to 표준체, from *rate_class_table.csv*.
 
     1.000 / 0.865 / 0.763 / 0.586 at male 40 and 1.000 / 0.964 / 0.890 / 0.846 at female
-    40, from the published premium grid [S12].  It sits **above** the mortality ratio
-    because the expense loading does not scale with the risk, and the gap is much wider
-    for a female life — which is the same effect that makes the female-to-male premium
-    ratio vary by channel [S4] and the reason the observed female preferred discount
-    looks small beside the female mortality saving.
+    40, from the published premium grid [S12].  It sits **above** the mortality ratio in
+    the three male classes and in the female 비흡연자, which is what a loading that does
+    not scale with the risk does, and marginally **below** it at female 건강체 (0.890
+    against 0.907) and female 슈퍼건강체 (0.846 against 0.856).  Nothing retrieved
+    explains the reversal, so the two ratios are carried as separate columns and neither
+    is derived from the other.
     """
     return float(data.rate_class_table().loc[                        # noqa: F821
         (rate_class(), sex()), "prem_ratio"])

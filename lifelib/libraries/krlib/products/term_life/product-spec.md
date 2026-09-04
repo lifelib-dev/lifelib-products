@@ -300,15 +300,18 @@ Footnotes to **[std]** rows:
     class or product form instead**. The per-mille rate and any per-policy fee therefore
     cannot be separated, and the composite prices proportionally to the sum assured and says
     so. One consequence is visible in the data and is worth recording: female premiums run
-    at 52–56% of male at the direct writers on the same cell, and at 70–90% at the
-    face-to-face and simplified-issue carriers [S4] — which is what a flat per-policy expense
-    loading does to a small risk premium, and is indirect evidence that the fee exists.
+    at 52–56% of male across the six direct writers on the same cell, and anywhere from 47%
+    to 90% across the eleven face-to-face and simplified-issue rows [S4]. A flat per-policy
+    loading pushes that ratio up as the loading grows, and the face-to-face band does reach
+    higher — but it also reaches lower than the direct writers' band, so the spread is
+    consistent with a per-policy fee without establishing one.
 12. **적용이율.** Observed 1.75% [S4] to **4.00%** [S4], with a retail mode of **2.50%** at
     five carriers [S1] [S8] [S9] [S11] [S12]. Two patterns hold across carriers and are
     carried into the variants rather than averaged away: the **만기환급형 is priced at a
     lower rate than the 순수보장형 of the same product** (2.25% against 2.50% at two
-    carriers [S8] [S12]), because the savings element carries a longer duration and a
-    tighter guarantee; and a **갱신형 is priced at a different rate again** (3.00% renewable
+    carriers [S8] [S12]) — the rates are sourced, the usual explanation that the savings
+    element carries a longer duration and a tighter guarantee is an inference and nothing
+    retrieved states it; and a **갱신형 is priced at a different rate again** (3.00% renewable
     against 2.75% non-renewable at one carrier [S4] [S6]; 2.00% for a 갱신형특약 against
     2.50% for the 주보험 at another [S9]). The composite's 2.50% also happens to equal the
     **2026 평균공시이율** [S12], which is the rate the 약관 uses for instalment settlement
@@ -325,7 +328,9 @@ Footnotes to **[std]** rows:
     every carrier prices off one publicly downloadable 標準生命表. The industry table, the
     제10회 경험생명표 applied from April 2024, is **not published**: only 평균수명 (male
     86.3, female 90.7) and 65세 기대여명 (male 23.7, female 27.1) are released [REG-R33]
-    [REG-R34]. **Therefore `mort_table.csv` in this product is a [std] construction**,
+    [REG-R34] — and even those four numbers reach this library through a **trade
+    newspaper**, 보험개발원's own announcement not being retrievable. **Therefore
+    `mort_table.csv` in this product is a [std] construction**,
     anchored on [S12]'s three published points, graduated against the public 국가데이터처
     완전생명표 [REG-R38] [REG-R39], with a `provenance` column on every row. A usable sanity
     check falls out of the two public sources: the 경험생명표's 65세 기대여명 of 23.7 years
@@ -339,8 +344,11 @@ Footnotes to **[std]** rows:
     [REG-R27]. The **endpoints** are disclosed: 「납입기간 이내에 대하여 경과기간별로 연
     0.1%~4.6%, 납입기간 이후에 대하여 경과기간별로 연 0.7%~1.6%」 at the anchor carrier
     [S12], and 「연 0.1%~8.4%, 납입기간 이후 연 0.8%」 at another [S1]. **The chain from
-    supervisory guideline to disclosed pricing parameter is complete and verifiable**, which
-    is unique in this repository. Two **[std]** steps remain. Both disclosed ranges are on a
+    supervisory guideline to disclosed pricing parameter runs end to end**, which is unique
+    in this repository — with one qualification that must travel with it: the guideline's
+    *values* are verified from the 보도자료 while its 별첨 was never converted from HWP, so
+    the functional **form** is **[unverified]** at instrument level [REG-R27]. Two **[std]**
+    steps remain. Both disclosed ranges are on a
     **10년납** basis and the composite is 전기납 over twenty years, so the same endpoints are
     stretched over the representative's own payment period. And the 적용해지율 is a
     **pricing** rate for the 무해지 form — deliberately low, by regulatory design — and is
@@ -641,9 +649,11 @@ statement of what a 갱신형 is: the same risk, financed differently, with the 
 moved onto the policyholder.
 
 **The premium is a function of the renewal index, not of the policy year.** On a 갱신형 the
-premium at policy year `t` is `P(k)` where `k = floor((t − 1) / cycle)` is the renewal
-index, and `P(k)` is struck at attained age `x + k × cycle` on the scale in force at that
-date. A model that indexes the premium by policy year cannot represent the product, and a
+premium at policy year `t` is `P(k)` where `k = 1 + floor((t − 1) / cycle)` is the renewal
+index — 1 in the original 보험기간, as `technical-notes.md` and `Term_KR_A.term_index` both
+number it — and `P(k)` is struck at attained age `x + (k − 1) × cycle` on the scale in force
+at that date. A model that indexes the premium by policy year cannot represent the product,
+and a
 model that carries a single level premium across a renewal boundary silently converts a
 갱신형 into a 비갱신형 at the wrong price.
 
@@ -1096,7 +1106,8 @@ lapse of the renewed contract and marks the point **[unverified]**.
   and the renewal decline as a separate decrement [S6] [S7] [S9] [S15].
 - **선지급서비스특약** — parameterized as a discounted acceleration with the 50% / ₩50,000,000
   cap and the ₩10,000,000 full-payment window; switched off in the base run. At the anchor
-  sum assured the aggregate cap binds exactly [S2] [S10] [S12] [S17] [S18].
+  sum assured the aggregate cap is **exactly reached and reduces nothing** — 0.5 ×
+  ₩100,000,000 = ₩50,000,000 — so it binds only above it [S2] [S10] [S12] [S17] [S18].
 - **감액** — a sum-assured reduction with **no payment**, no surrender value arising from it
   on this form [S2] [S12].
 - **부활** — a reinstatement transition out of the lapsed state at a **[std]** behavioural
@@ -1138,8 +1149,10 @@ lapse of the renewed contract and marks the point **[unverified]**.
 or an increasing-cover option on a retail contract (the 체증 designs are corporate-only), a
 guaranteed-insurability option on life events, joint-life or first-death cover, **감액완납
 (reduced paid-up)** or **연장정기 (extended term)**. A Korean term policyholder in difficulty
-has 자동대출납입, the 납입유예 rider, a 감액, or lapse, and nothing else — which is a shorter
-list of alternatives to lapse than any other library in this repository carries.
+has the 납입유예 rider, a 감액, or lapse, and nothing else — 자동대출납입 is granted by the
+약관 but inoperative on the representative form, there being no surrender value to lend
+against [S2 제26조·제34조] [REG-R28]. That is a shorter list of alternatives to lapse than
+any other library in this repository carries.
 
 **The 정기특약 — a term rider on a 종신보험 — is a live question this document leaves open.**
 The structure is a standard part of the Korean traditional-agency proposition in secondary
@@ -1195,15 +1208,16 @@ packaging, tagged [unverified].
    glucose test and one adds a **총콜레스테롤 <190 mg/dL** test found nowhere else [S8] [S11]
    [S12]. One defines 당뇨 진단이력 exhaustively, including the only HbA1c threshold in the
    set at 6.5% [S12]. No carrier mentions a cotinine assay, unlike Japan.
-6. **Why the female preferred discount is smaller than the mortality saving.** The published
-   class mortality shows a best-to-standard ratio at male 40 of **0.583** and **0.597** at
-   the two carriers that print full tables — a 41% saving, which lines up with the observed
-   male premium discounts of 41.4% and 40.4%. At female 40 the ratios are **0.856** and
-   **0.861**, a 14% saving, against premium discounts of 15.4% and 14.1% [S11] [S12]. The two
-   sexes' discounts track their mortality savings closely, and the reason the female
-   *discount* looks small is that female mortality is already low and the fixed expense
-   loading is a larger share of a small premium — the same effect that shows up in the
-   female-to-male premium ratio by channel (Premiums, footnote 11).
+6. **Why the female preferred discount looks small — and it is not smaller than the
+   mortality saving.** The published class mortality shows a best-to-standard ratio at male
+   40 of **0.583** and **0.597** at the two carriers that print full tables — a 41.7% and
+   40.3% saving, which lines up with the observed male premium discounts of 41.4% and 40.4%.
+   At female 40 the ratios are **0.856** and **0.861**, savings of 14.4% and 13.9%, against
+   premium discounts of **15.4%** and **14.1%** [S11] [S12] — so the female discount is
+   marginally *deeper* than the disclosed mortality saving, not shallower, which is the one
+   place a flat expense loading does not explain the data and nothing retrieved does. The
+   female discount looks small in absolute terms only because female mortality is already
+   low.
 7. **적용이율.** 1.75% [S4] to **4.00%** [S4], retail mode 2.50%. Two internal patterns hold
    at every carrier that prices more than one form: 만기환급형 ≤ 순수보장형, and 갱신형 priced
    differently again from both (footnote 12).
@@ -1342,7 +1356,8 @@ K-ICS 요구자본 [REG-R13] are cited and left to a layer that consumes the cas
 is the **경험생명표**, prepared by 보험개발원 every five years from life-insurance
 policyholder statistics; the current edition is the **제10회**, applied from **April 2024**,
 and its headline outputs are public — 평균수명 male 86.3, female 90.7; 65세 기대여명 male
-23.7, female 27.1 [REG-R33]. **The table itself is not published**, and no numeric
+23.7, female 27.1, retrieved through a trade newspaper rather than through 보험개발원
+itself [REG-R33]. **The table itself is not published**, and no numeric
 경험생명표 or 참조순보험요율 was retrievable from any public source [REG-R34] [R19] [R20].
 That is the sharpest contrast in this library with `jplib`, whose 標準生命表2018 is a free
 public PDF with `qx` by single year of age. What *is* public is the 국가데이터처 완전생명표 —

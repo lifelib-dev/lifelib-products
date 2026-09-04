@@ -32,9 +32,11 @@ below as **[std]**, with the direction of the error it carries.
 
 The [cancer 정액 chassis (암보험)](../cancer/technical-notes.md) specifies, once, the
 machinery this product inherits: a diagnosis-triggered lump sum on a tier ladder, the 90일
-면책기간 before invasive cover attaches, the 감액기간 sitting on top of it as a second and
-softer anti-selection device, the 유사암 reduced tier at a stated fraction of the general
-amount, the premium waiver correlated with the diagnosis, and the **계약자적립액 paid on a
+면책기간 (*myeonchaek gigan*, waiting period) before invasive cover attaches, the 감액기간
+(*gamaek gigan*, reduced-benefit period) sitting on top of it as a second and softer
+anti-selection device, the 유사암 (*yusaam*, borderline and in-situ cancer) reduced tier at a
+stated fraction of the general amount, the premium waiver correlated with the diagnosis, and
+the **계약자적립액 (*gyeyakja jeongnipaek*, the policyholder's account balance) paid on a
 death the contract does not cover**. It also settles, for the whole library, the
 surrender-value regime of 감독규정 제7-65조 to 제7-70조, which 제7-69조 and 제7-70조 apply to
 장기손해보험 and to 제3보험 *mutatis mutandis* [REG-R19]. None of that is restated here.
@@ -42,7 +44,8 @@ surrender-value regime of 감독규정 제7-65조 to 제7-70조, which 제7-69�
 Nine things change, and the first two have **no counterpart in `uslib`, `uklib`, `jplib`,
 `frlib` or `delib`**.
 
-1. **태아가입 — the contract is written before the insured exists.** A 태아 has no legal
+1. **태아가입 (*taea gaip*, foetal enrolment) — the contract is written before the insured
+   exists.** A 태아 (*taea*, foetus) has no legal
    personality and cannot be the 피보험자 of an 인보험 contract, so the 태아가입특칙 makes
    the foetus the insured **at birth**: 「제53조의 태아는 출생시에 피보험자가 됩니다」
    [S8 제54조] [R3]. The projection therefore opens on a life that does not yet exist.
@@ -52,8 +55,9 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    every premium paid is returned [S8 제56조] [S9]. `born(t)` gates every cover on the
    child's own life and `check_cover_at_birth()` asserts the gate. The chassis has no such
    state and no such decrement.
-2. **보험료 납입면제 on the 계약자 — a premium-waiver decrement on a life who is not the
-   insured.** The chassis waives on the insured's own first invasive diagnosis. Here the
+2. **보험료 납입면제 (*boheomnyo naip myeonje*, premium waiver) on the 계약자 (*gyeyakja*,
+   the policyholder) — a premium-waiver decrement on a life who is not the insured.** The
+   chassis waives on the insured's own first invasive diagnosis. Here the
    waiver fires on the child's trigger set **or on the policyholder's death or 50% 이상
    장해**: 「보험료 납입기간 중 가입자녀가 암으로 진단확정되거나 … 또는 **계약자가 사망**
    또는 … 장해지급률이 50% 이상인 장해상태가 되었을 때에는 차회 이후의 보험료 납입을
@@ -74,10 +78,11 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    claim date**, so a contract issued at 계약나이 0 has no cancer waiting period at any
    point in its hundred-year life, including the eighty-five years in which the insured is
    an adult. `waiting_mths = 0` and `reduction_mths = 0` on the anchor cell.
-4. **Eleven benefit limbs, not four, and the largest is a day benefit.** The chassis is a
+4. **Thirteen benefit limbs, not four, and the largest is a day benefit.** The chassis is a
    diagnosis product with care limbs bolted on. This one is a **bundled stack** on the
-   손해보험협회 comparison basis [R12] — a 상해후유장해 기본계약, four diagnosis limbs, a
-   수술비, two hospital-cash limbs, 골절 and 화상, a liability rider and a 태아 module. Over
+   손해보험협회 comparison basis [R12] — a 상해후유장해 기본계약 and its 질병 twin, four
+   diagnosis limbs, a 수술비, two hospital-cash limbs, 골절 and 화상, a liability rider and a
+   태아 module. Over
    the whole projection `claims_hospital` is **47.0%** of morbidity outgo and
    `claims_diagnosis` **26.6%**; on the chassis those proportions are reversed.
 5. **A third-party liability cover, which only a non-life licence may write.** 가족일상생활
@@ -92,7 +97,8 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    「계약일에 있어서의 피보험자의 계약나이는 0세로 합니다」 [S8 제60조], so the two differ by
    exactly `birth_month()` months for the life of the contract. **The contract expires when
    the insured is 99 years and 7 months old, not 100.**
-7. **The 표준형 is the base run, not the 무해지 form.** `Cancer_KR_S` ships the 미지급형,
+7. **The 표준형 (*pyojunhyeong*, the standard surrender-value form) is the base run, not the
+   무해지 (*muhaeji*, no-surrender-value) form.** `Cancer_KR_S` ships the 미지급형,
    which is where the market is. `Child_KR_S` deliberately ships the **표준형**: the 적립부분
    credited at the 공시이율 exists only there — the suppressed forms are 순수보장성 and show
    「-」 for it on the board [S11] [S2] — and the 표준형's surrender value **exceeds premiums
@@ -263,9 +269,11 @@ Derived scalars on the anchor cell, all read off the shipped model:
 | `neonatal_cost_pp("birth")` / `("block")` | 47,000.0 / 63,450.0 |
 
 **`premium_mth` is an input, not a computed quantity.** No Korean carrier publishes a rate
-table by age and duration: the 참조순보험요율 is filed with the FSC under 보험업법 제176조
-제4항 with no obligation to publish [REG-R4], and the 산출방법서 that holds the 예정사업비율
-and the 적용위험률 is an undisclosed 기초서류 [REG-R2]. What *is* published is a specimen
+table by age and duration: a carrier's own 적용위험률 and 예정사업비율 live in the 산출방법서,
+an undisclosed 기초서류 [REG-R2], and the bureau's 참조순보험요율 is filed with the FSC under
+보험업법 제176조제4항 with no general obligation to publish [REG-R4] — and the 장기손해보험
+display that **is** published under 제176조제9항 carries risk rates, not office premiums
+[REG-R61]. What *is* published is a specimen
 premium per product on a standardised basis — 보험나이 5세, 상해 1급, 100세만기 20년납, 월납,
 the 보장보험료 of the compulsory covers only [R12] — and on that nominally standardised
 basis the observed levels vary **by a factor of seven**, ₩21,502 to ₩148,250 for a male
@@ -404,7 +412,7 @@ surplus-distribution machinery of 감독규정 제6-11조의7 and 제6-13조 doe
 | 보장부분 적용이율 | **2.75%** | **[std]**, the modal value of the comparison board's column; observed range **2.50%–3.00%** across ten carriers [S11] |
 | 공시이율 (적립부분) | **1.70%**, named 「보장성 공시이율Ⅴ」, at 2026-07 | [S2]; observed 1.60%–2.20% [S11] |
 | 최저보증이율 | **0.30%** | [S2]; observed 0.20%–0.50% [S11] |
-| 평균공시이율 | **2.50%** for 2026, capped at the selling-date 공시이율 | [S2]; [REG-R9 제1-2조제18호](#krlib-reg-r9); [REG-R48] |
+| 평균공시이율 | **2.50%** for 2026, capped at the selling-date 공시이율 | [S2]; [REG-R9 제1-2조제13호](#krlib-reg-r9); [REG-R48] |
 | 공시기준이율 formula | 외부지표금리수익률 × α + 운용자산이익률 × (1 − α) | [S1]; [REG-R24]; the α bracketing is **[unverified]** and nothing here depends on it |
 | The 적용해지율 of a suppressed form | 5.0% / 3.0% / 1.0% during the 납입기간 by duration band, 0.5%–0.65% afterwards | [S1] — the **only** Korean child-policy lapse basis in public |
 | 갱신형 renewal rates | Recomputed at attained age at each renewal | [S7 제29조]; base run holds the issue rate flat **[std]** |
@@ -421,10 +429,24 @@ diagnostics — the projection itself does not discount.
 **The data position for this product is the worst in the library, and it must be said
 first.** Nothing on Korean child incidence — cancer, cerebrovascular disease, congenital
 anomaly, low birth weight, NICU admission, paediatric length of stay — was retrieved from
-보험개발원, 국가암정보센터 or 통계청 in this research pass. **Every incidence rate in
-`incidence_table.csv` is therefore a [std] construction**, each row's `provenance` cell naming
-the authority its *shape* rests on rather than a source for its level, with exactly one
+보험개발원, 국가암정보센터 or 통계청 **in this product's own research pass**. **Every incidence
+rate in `incidence_table.csv` is therefore a [std] construction**, each row's `provenance` cell
+naming the authority its *shape* rests on rather than a source for its level, with exactly one
 exception: the row the basic contract is calibrated on.
+
+**That is a gap in the pass and not a gap in the public record, and the difference matters.**
+보험개발원 publishes a dated **장기손해보험 참조순보험요율** display carrying, by age and sex,
+a 「기타피부암 및 갑상선암 이외의 암 발생률」 grid on the insured definition that excludes C44
+and C73, a 질병입원율 grid stated in expected days per life-year, and 후유장해 rates — and its
+age grid reaches **연령 0 and 10** [REG-R61]. The `cancer` and `indemnity_medical` passes
+opened it; this one did not, and [REG-R61] records the omission. So the shipped rows are
+`[std]` because they were **never reconciled to that grid**, not because no grid exists. Two
+consequences are carried rather than hidden. A 참조순보험요율 is a **net premium rate with a
+safety loading in it, not a best estimate** [REG-R9] [REG-R61], so any use of it would still
+need a [std] step down. And the divergence has no single sign: on the general cancer tier the
+shipped paediatric anchors sit at about **0.6 (male) and 0.5 (female)** of the published rate
+at 연령 0 and 10, while the adult anchors sit near or slightly above it. A later pass should
+**re-base** these rows off [REG-R61] rather than rescale them.
 
 **Mortality [std], and it serves two lives.** 경험생명표 — the industry table, 제10회 applied
 from 2024-04 — is **not published in full**: 보험개발원 releases the 평균수명 and the 기대여명
@@ -504,7 +526,8 @@ whether the compulsory set is dominated by accident (male-heavy) or by cancer an
 comparison basis it prices is dominated by a ₩100,000,000 accident-disability 기본계약 [R12]
 and because the one published pair of rates runs that way — 0.0001823 male against 0.0001163
 female at 만나이 5, a **ratio of 1.57** [S1]. Model point 3 is the female calibration cell
-and prices out at ₩28,903.53 against the male ₩30,716.74, a ratio of 0.941.
+and prices out at **₩29,281.80** against model point 2's male **₩31,112.91**, a ratio of
+**0.9411**.
 
 **Severity — turning an incidence into a cost [std].** `basis_table.csv` carries thirteen
 scalars, every one of them a standardization with no published anchor:
@@ -656,7 +679,7 @@ of it.
 | `x + ⌊t/12⌋` | `age` | attained **보험나이** in month `t` |
 | `y(t)` | `age_man` | attained **만나이**; `−1` for `t < b` |
 | `S_j` | `sum_assured(j)` | 보험가입금액 of cover `j` |
-| `D`, `κ` | `hosp_daily`, `hosp_cap_factor` | 입원일당 per day; the per-stay cap factor |
+| `D`, `κ` | `hosp_daily`, `basis_param("hosp_cap_factor")` | 입원일당 per day; the per-stay cap factor, which is a `basis_table.csv` parameter and not a cells of its own |
 | `P_core`, `P_foet` | `premium_mth`, `premium_foetal_mth` | the two premium streams |
 | `P(t)` | `premium_mth_pp` | office premium due in month `t`, all streams |
 | `d(t)` | `prem_discount_factor` | the 2026 저출산 discount factor; 1 in the base run |
@@ -860,7 +883,8 @@ therefore starts at nil, as it must, rather than at the surrender charge.**
 month. The **공시이율 reset is not implemented**; it is carried by reference to
 `WholeLife_KR_A`.
 
-**The 표준해약공제액, and how a product with no death benefit acquires a face amount.**
+**The 표준해약공제액 (*pyojun haeyak gongjeaek*, the statutory cap on the surrender charge),
+and how a product with no death benefit acquires a face amount.**
 감독규정 [별표 14] states
 
     표준해약공제액 = 연납순보험료 × 5% × 해약공제계수 + 보험가입금액 × 10/1000     [REG-R20]
@@ -1380,8 +1404,9 @@ switching on as the 신생아 block — and with it the P코드 carve-out — en
 
 **The sign change is not gradual.** `net_cf(239)` is **+₩14,908.0252** and `net_cf(240)` is
 **−₩6,391.6508**, a swing of ₩21,299.68 in one month. Four things move at once: the premium
-stops (−₩20,562.26), renewal commission stops (+₩616.87), premium-related maintenance stops
-(+₩1,027.41) and `claims_lapse` jumps (−₩2,381.77) — because the ultimate lapse rate is
+stops (−₩20,562.26), renewal commission stops (+₩616.87), expense falls (+₩1,027.41 — the
+premium-related maintenance of ₩1,028.11 going, against ₩0.70 more of inflating per-policy
+maintenance) and `claims_lapse` jumps (−₩2,381.77) — because the ultimate lapse rate is
 **eight times** the rate an instant before 납입완료 and the surrender value it is paid on is
 now ₩5,550,720. **From `t = 240` there is not one positive month in the remaining eighty
 years.**
@@ -1538,8 +1563,10 @@ once and live.
   deduction, which is what makes the Korean after-tax comparison differ from every other
   market in this repository. The anchor cell's ₩372,000 of first-year premium sits inside the
   cap. Benefits are not projected net of policyholder tax.
-- **예금자보호** to ₩50,000,000 per person per insurer, counting surrender values and other
-  payables [S8] [REG-R52]. A structural fact about the liability, not a cash flow.
+- **예금자보호** to **₩100,000,000** per person per insurer since 2025-09-01, in a bucket that
+  expressly excludes benefits payable because the term has ended [REG-R52]; the ₩50,000,000 of
+  the 약관 wording retrieved here is the pre-2025 figure [S8]. A structural fact about the
+  liability, not a cash flow.
 
 ---
 
@@ -1550,10 +1577,12 @@ In rough order of leverage on a book of this product.
 1. **The morbidity basis is the whole model and it is [std] with one exception.** Eleven
    causes at fourteen pivot ages, and the only published Korean child morbidity rate anywhere
    in the research is 일반상해 후유장해 발생률(3~100%) at 5세, 상해 1급 — 남자 0.0001823,
-   여자 0.0001163 [S1]. Everything else is a shape drawn around it. There is **no observed
-   range for any of them**, because there is nothing published to bound them with: the
-   참조순보험요율 is filed and never disclosed [REG-R4] and the 산출방법서 is an undisclosed
-   기초서류 [REG-R2].
+   여자 0.0001163 [S1]. Everything else is a shape drawn around it, and **no shipped row was
+   reconciled to the one public reference grid there is** — the 장기손해보험 참조순보험요율
+   display, published under 보험업법 제176조제9항 and reaching 연령 0 and 10 [REG-R61], which
+   this product's pass did not open. A carrier's own 적용위험률 stays out of reach either way:
+   the 산출방법서 is an undisclosed 기초서류 [REG-R2] and the life-side 참조순보험요율 is filed
+   and not published [REG-R4].
 2. **The two hospital-cash limbs carry 47.0% of all morbidity outgo**, and they are driven by
    a **day count**, not a frequency. `hosp_dis` runs 2.40 days a year at 만나이 0, 0.55 at 5,
    0.35 at 10 and 20.0 at 100 — a **fifty-seven-fold** range with a U-shape whose left arm is
@@ -1594,10 +1623,11 @@ In rough order of leverage on a book of this product.
 8. **The term, not the age.** [R5]'s own index puts a 0세 issue at 100 against a 30세 issue's
    264 for the same cover over 20년납 to 100세 만기, and the two short-horizon cells are the
    two whose premiums come closest: model point 8 at **+0.57%** and model point 9 — the
-   30세만기 female cell — at **₩3,026 shipped against ₩2,968.47 computed**, 1.90% *over*.
-   Across the ten the computed premium runs from 11.75% below the shipped figure to 43.78%
-   above it. **The term extension of 2011 is what makes this product hard to price and easy to
-   under-price** [R5].
+   30세만기 female cell — at **−1.90%**, ₩3,026 shipped against ₩2,968.47 computed, so that
+   it and model point 5 are the only two cells whose shipped premium is *above* its own
+   equivalence premium. Across the ten the computed premium runs from 11.75% below the
+   shipped figure to 43.78% above it. **The term extension of 2011 is what makes this
+   product hard to price and easy to under-price** [R5].
 9. **Longevity is the tail risk, not mortality.** Only 1.57% of policies reach the 100세
    계약해당일 on the shipped basis, yet `claims_hospital` peaks at **₩10,877.56 at `t = 965`**
    and `claims_death` at **₩15,452.17 at `t = 1013`** — and **`claims_death` is the largest

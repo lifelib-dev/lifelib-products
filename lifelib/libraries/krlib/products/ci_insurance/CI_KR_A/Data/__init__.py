@@ -42,19 +42,22 @@ Korea publishes neither of the two tables this product needs.
 **경험생명표** (*gyeongheom saengmyeongpyo*, the industry experience life table, currently
 the 제10회 applied from 2024-04) is produced by 보험개발원 and is **not published in
 full**: only summary statistics — 평균수명 and 기대여명 — are released [REG-R33]
-[REG-R34]. The **참조순보험요율** is defined by 감독규정 제1-2조제1호 as the 위험률 the
-bureau *files* with the supervisor, not as a published table, and no CI item appears on
-the bureau's public channels at all [REG-R4] [REG-R34]. The 산출방법서 that would carry a
-carrier's own 적용위험률 is a 기초서류, filed and never published [REG-R2].
+[REG-R34]. The **life 참조순보험요율** is defined by 감독규정 제1-2조제1호 as the 위험률
+the bureau *files* with the supervisor, not as a published table [REG-R4] [REG-R34]. The
+장기손해보험 참조순보험요율 display 보험개발원 *does* publish carries an insured-cancer
+발생률 grid and a 질병입원율 grid [REG-R61] — the bases ``Cancer_KR_S`` and ``Medical_KR_S``
+use — and no 중대한 질병 item at all, so nothing on it reaches this model. The 산출방법서
+that would carry a carrier's own 적용위험률 is a 기초서류, filed and never published
+[REG-R2].
 
 What does exist, and it is the whole public evidence base for this product, is a single
 2011 상품요약서 that prints its 예정위험률 by sex at ages 20, 40 and 60 [S3]. Both
 decrement files are built on it.
 
 ``mort_table.csv`` — sex, attained age 15 to ω = 110, ``mort_rate``, ``provenance``.
-The male rates are a Makeham ``mu(y) = A + B c^y`` fitted **exactly** to [S3]'s three
-disclosed male anchors, used to age 60, and log-linear in ``q`` from there to ``q(110) =
-1``; extrapolated, that fit reaches a rate of 1 at about attained age 107 and stands a
+The male rates are a Makeham form fitted **exactly** to [S3]'s three disclosed male
+anchors **in the rate itself, not in the force** — ``q(y) = A + B c^y`` — used to age 60,
+and log-linear in ``q`` from there to ``q(110) = 1``; extrapolated, that fit reaches a rate of 1 at about attained age 107 and stands a
 third above the shipped ramp by age 100, which is why the old-age shape is a separate
 **[std]** rule rather than a continuation. The female rates are **0.5294 times the male
 rates at every age below** ω, that ratio being [S3]'s own disclosed female-to-male ratio

@@ -12,7 +12,7 @@ for every entry: **2026-09-03**.
 Three tag families do three different jobs in `product-spec.md`, `technical-notes.md` and
 `model.md`:
 
-- **[S#]** — a primary product document: a 약관 (*yakkan*, policy conditions), a 상품요약서
+- **[S#]** — a primary product document: a 약관 (*yakgwan*, policy conditions), a 상품요약서
   (statutory product summary), a 예상 갱신보험료 예시, a carrier product page, or the
   생명보험협회's statutory cross-carrier disclosure. These are what makes a contractual
   mechanic *sourced* rather than assumed, and — unusually for this repository — what makes
@@ -135,8 +135,9 @@ appearing twice independently and not a [std] one.
   the following on it: the anchor premium's **second independent appearance** (₩15,080 male,
   ₩8,010 female, agreeing to the won with [S12]); the observed spread at the same cell
   (₩14,400 / ₩15,000 / ₩16,000 / ₩16,000 / ₩16,100 / ₩18,400); the female-to-male premium
-  ratios of 52–56% at direct writers and 70–90% at face-to-face carriers, which is the
-  indirect evidence for the per-policy fee no Korean rate card lets you decompose; and the
+  ratios of 52–56% across the six direct writers and 47% to 90% across the face-to-face and
+  simplified-issue rows, which is the only handle on the per-policy fee no Korean rate card
+  lets you decompose; and the
   **보험가격지수 dispersion of 51.6% to 239.1%**, which is the only public handle on an
   expense assumption. It also links each product's 상품요약서 PDF, which is how [S6] and
   [S8]–[S12] and [S15]–[S18] were obtained.

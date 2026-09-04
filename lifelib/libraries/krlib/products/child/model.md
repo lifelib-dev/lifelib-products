@@ -16,10 +16,15 @@
 > P코드 carve-out [S2] [S10 제22조], the 3년만기 갱신형 liability block [S2] [S5], the
 > published 해약환급금 grid and the 무해지 cliff [S1] [S2]. **Almost everything
 > quantitative is a [std] standardization.** Nothing on Korean child incidence was
-> retrieved from 보험개발원, 국가암정보센터 or 통계청; the 참조순보험요율 is filed and
-> never published [REG-R4]; the 산출방법서 that holds the 적용위험률 and the 예정사업비율
-> is an undisclosed 기초서류 [REG-R2]; the 제10회 경험생명표 is released only as summary
-> statistics [REG-R33] [REG-R34]. **Exactly one 적용위험률 is published anywhere in this
+> retrieved from 보험개발원, 국가암정보센터 or 통계청 **in this product's own research
+> pass** — the 장기손해보험 참조순보험요율 display that 보험개발원 does publish under
+> 보험업법 제176조제9항, and whose age grid reaches 연령 0 and 10, was opened in the
+> `cancer` and `indemnity_medical` passes and not in this one [REG-R61], so the shipped
+> incidence rows are [std] as **unreconciled** constructions rather than for want of a
+> public grid. The life-side 참조순보험요율 is filed and not published [REG-R4]; the
+> 산출방법서 that holds each carrier's own 적용위험률 and 예정사업비율 is an undisclosed
+> 기초서류 [REG-R2]; the 제10회 경험생명표 is released only as summary statistics
+> [REG-R33] [REG-R34]. **Exactly one 적용위험률 is published anywhere in this
 > product's source set** — 일반상해 후유장해 발생률(3~100%), 기본계약, 5세, 상해 1급:
 > 남자 0.0001823, 여자 0.0001163 [S1] — and it is the calibration point of the basic
 > contract's decrement. Replace the tables with company data and a real 산출방법서 before
@@ -439,9 +444,11 @@ absence from the roll-forward would lose 1.57% of the block with no cause. A mod
 `av_pp` at maturity without the taper pays ₩10,678,080 to those policies.
 
 `claims_void` is zero on the six non-태아 points and non-zero only before birth on the other
-four: a column and not a netting, because a void is not a surrender. Unlike the
-[cancer chassis](../cancer/model.md), `claims_lapse` here is **not** a column of zeros — the
-base form is the 표준형 and it has a surrender value at every duration.
+four: a column and not a netting, because a void is not a surrender. And unlike the
+[cancer chassis](../cancer/model.md), whose 미지급형 base makes `claims_lapse` identically zero
+for the whole 납입기간 before it steps up at 납입완료, this product's 표준형 base pays a
+surrender value on a lapse from about year 3 — the 환급률 grid is 0.0% through the first policy
+year, so `claims_lapse` is the 미경과보험료 alone there and a real amount thereafter.
 
 ## Discounting, and the one place the model does discount
 
@@ -625,11 +632,14 @@ simplification is conservative on a protection product and is recorded as one.
 
 ### `av_table.csv` and `model_point_table.csv`
 
-`av_table.csv` holds eleven `build` nodes and five `taper` nodes, all from one published 환급률
-progression on a named specimen contract — 표준형, 남자 5세, 상해 1급, 100세만기 20년납 월납
-at 월납 50,000원, 공시이율 1.7% at 2026-07 [S2]. `check_refund_grid()` asserts the eleven
-published nodes come back and the taper is calibrated so that 1.589 × 0.1007 reproduces the
-published 16.0% at 95 years.
+`av_table.csv` holds **thirteen** `build` rows and five `taper` rows. Eleven of the build rows
+are the published 환급률 progression on a named specimen contract — 표준형, 남자 5세, 상해 1급,
+100세만기 20년납 월납 at 월납 50,000원, 공시이율 1.7% at 2026-07 [S2] — and the remaining two,
+at 70 and 100 years, are `[std]` shaping between the published 60-year and 95-year figures; the
+whole `taper` curve is `[std]` calibration. `check_refund_grid()` asserts the **ten** published
+durations the grid reaches while the taper is still 1 (1, 3, 5, 10, 15, 20, 30, 40, 50 and 60
+years), and the taper is calibrated so that 1.589 × 0.1007 reproduces the published 16.0% at
+95 years.
 
 `model_point_table.csv` covers both sexes; 태아가입 on four points and issue 보험나이 0, 5,
 15 and 30 on the rest; 30세, 100세 and 110세 만기; 20년납 and 30년납; all three
@@ -724,7 +734,7 @@ product most of them bound nothing at all — which is said rather than papered 
 
 | Parameter | Value | Rationale | Observed range |
 |---|---|---|---|
-| every rate in `incidence_table.csv` | eleven causes x two sexes x fourteen pivots | nothing on Korean child incidence was retrieved from 보험개발원, 국가암정보센터 or 통계청; each row's provenance names the authority its *shape* rests on [REG-R40] [REG-R41] [REG-R61] | one observation only: 일반상해 후유장해 발생률(3~100%) at 5세, 상해 1급 — 남 0.0001823 / 여 0.0001163 [S1], which the file reproduces exactly |
+| every rate in `incidence_table.csv` **but the two [S1] rows** | eleven causes x two sexes x fourteen pivots | nothing on Korean child incidence was retrieved from 보험개발원, 국가암정보센터 or 통계청; each row's provenance names the authority its *shape* rests on [REG-R40] [REG-R41] [REG-R61] | one observation only: 일반상해 후유장해 발생률(3~100%) at 5세, 상해 1급 — 남 0.0001823 / 여 0.0001163 [S1], which the file reproduces exactly |
 | incidence graduation | log-linear between pivots | the rates span two or more orders of magnitude; a linear interpolation is wrong by a factor of two mid-span, and only a log-linear one returns the published pivot exactly | none published |
 | `mort_table.csv` construction | log-linear between fourteen anchors on the 완전생명표 age pattern | the 제10회 경험생명표 is published only as 평균수명 and 기대여명 [REG-R33] [REG-R34]; the 참조순보험요율 for mortality is filed and never published [REG-R4] | none; the shape check is the infant peak, male `q(0)` = 0.0025 against `q(5)` = 0.00012 |
 | `mort_be_factor` | 1.0 | the shipped table is a population all-cause construction with no prudential margin to unwind; scaling it would invent one | none published; model point 10 runs 1.10 |
@@ -750,7 +760,7 @@ product most of them bound nothing at all — which is said rather than papered 
 | 해약공제액 release | linear over the 해약공제기간 | the regulation caps the **amount** and not the shape [REG-R19] [REG-R20] | the seven-year cap is sourced [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | `av_pp` before the grid opens | capped at `max(cv_std_pp, net_prem_ratio x cum_prem_pp)` | the published grid is 「순보험료식 계약자적립액에서 해약공제액을 공제한 금액」, already net and floored at zero [S2], so the identity gives only `0 <= AV <= 해약공제액` there | none; the constraint is that `av_pp(0)` must be 0 |
 | `taper` calibration | node 0.95 set so 1.589 x 0.1007 = 16.0% | one shipped grid must serve a 30세, a 100세 and a 110세 만기 | the published nodes it reproduces [S2] |
-| `prem_int_rate`, `decl_rate`, `min_guar_rate`, `avg_decl_rate` | 2.75%, 1.70%, 0.30%, 2.50% | the modal value of each published column is the standardization; the columns themselves are sourced | 2.50–3.00%, 1.60–2.20%, 0.20–0.50% [S2] [S11] |
+| `prem_int_rate`, `decl_rate`, `min_guar_rate`, `avg_decl_rate` | 2.75%, 1.70%, 0.30%, 2.50% | the modal value of each published column is the standardization; the columns themselves are sourced. Only `prem_int_rate` is read by a formula — `pv_factor()`. The other three are **declared and not used**: they are the interest basis on which [S2] computed the 환급률 grid the model reads, recorded so a reader can see what the shipped account is priced on, and the 공시이율 reset itself is carried by reference to `WholeLife_KR_A` | 2.50–3.00%, 1.60–2.20%, 0.20–0.50% [S2] [S11] |
 | the ten office premiums | ₩3,026 to ₩71,000 | model point inputs, not computed quantities; no carrier publishes a rate table by age and duration [REG-R2] [REG-R4] | the board's specimen premiums for a male 5-year-old run ₩21,502 to ₩148,250, a factor of seven, because carriers quote different compulsory sets [S11] |
 | `roll_fwd_tol`, `val_tol` | 1e-10, 1e-7 | one closes an identity between cells evaluated in one expression; the other re-reads won amounts of order 1e8 back out of a `DataFrame` | both far below one won |
 
@@ -771,7 +781,7 @@ the notes by eye:
   to one: 0.0049757330 + 0.4688979472 + 0.5103916457 + 0.0157346742.
 - **The pricing diagnostics** `epv_outgo_pp()` = 4,694,583.10870084, `epv_prem_unit_pp()` =
   151.0503621937853 and `equiv_premium_mth_pp()` = 31,079.588559199034; the **published 환급률
-  grid** at all eleven nodes and the 16.0% at 95 years; and the **[별표 14] chain**
+  grid** at all ten checkable nodes and the 16.0% at 95 years; and the **[별표 14] chain**
   ₩145,537.05 → ₩132,306,409 → a formula limb of ₩1,575,064.09 that does not bind → the
   13-month cap ₩364,000.00 → ₩327,600.00 → 11.70 months.
 

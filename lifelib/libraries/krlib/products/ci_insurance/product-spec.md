@@ -21,7 +21,7 @@ insurers. Facts the research pass could not confirm against a retrieved document
 
 The composite rests on two complete 약관 from one carrier's product family — the 1,207-page
 1904 edition [S1] and the 1,339-page 1705 저해지환급형 edition [S2] — one 상품요약서 that
-publishes a **disclosed CI morbidity basis** [S3], one brochure carrying a 96-cell published
+publishes a **disclosed CI morbidity basis** [S3], one brochure carrying a 144-cell published
 premium grid [S4], an industry-association cross-section of the CI and GI products then on
 sale [S5], and two third-party mirrors of a second carrier's wordings [S6] [S7]. The market
 leader's current product could not be retrieved and is present only at second hand [S8].
@@ -185,7 +185,7 @@ document and tagged, or marked **[std]** with a numbered footnote.
 | Lives basis | Single life; the insured is normally the policyholder. Third-party contracts require the insured's written consent | [S1 제24조] |
 | Underwriting | 일반심사 (full underwriting). 간편심사 and 무심사 forms exist on other Korean products and are a different axis from GI | [R2]; scope **[std]** (7) |
 | **Anchor model cell** | 남자, 보험나이 **40**, 80% 선지급형, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 종신 (CI 보장 100세), 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 월보험료 **₩306,740** (annualized **₩3,680,880**) | [S4]; construction and annualization **[std]** (8) |
-| Anchor cell against the chassis's | The chassis anchors the identical cell — 남 40, 1억원, 종신, 20년납, 월납, `k = 0.50` — at a 표준형 월보험료 of ₩257,050 and a suppressed one of ₩231,345 (90.0% of it). **The acceleration and the CI cover therefore cost about a third more than the same whole-life contract**: 306,740 / 231,345 = **1.33**, or 1.19 against the 표준형 | computed across [S4] and the chassis's anchor; comparability caveat in footnote (8) |
+| Anchor cell against the chassis's | The chassis anchors the identical cell — 남 40, 1억원, 종신, 20년납, 월납, `k = 0.50` — at a **published** 표준형 월보험료 of ₩257,050, and its own 저해지 model point at ₩231,345, that figure at the chassis's **[std]** 90.0% suppression discount. **The acceleration and the CI cover therefore cost about a third more than the same whole-life contract**: 306,740 / 231,345 = **1.33** (published over constructed), or **1.19** against the published 표준형 | computed across [S4] and the chassis's anchor; comparability caveat in footnote (8) |
 
 Footnotes to [std] rows:
 
@@ -281,13 +281,16 @@ Footnotes to [std] rows:
    coincidence and is recorded only as a sanity check on the level. **The cell is
    deliberately the chassis's own anchor**, which is in turn the regulator's 기준연령 요건 —
    만 40세 male on monthly premiums [REG-R9 제1-2조제2호](#krlib-reg-r9) — and the industry comparison basis
-   for 종신보험 disclosure, 1억원 / 종신 / 20년납 / 월납. The ×1.33 premium relativity in the
-   row above is therefore between two *published* cells on the same specification, but at
-   **different carriers and eight years apart** (a 2019 GI product against a whole-life scale
-   of a different vintage), so it is an order-of-magnitude statement about what the CI cover
-   costs and not a like-for-like price comparison; `technical-notes.md` reproduces the split
-   from the model instead. `CI_KR_A` runs an **annual** grid, so the annual premium is
-   standardized as 12 × the monthly figure = **₩3,680,880**; no carrier publishes an
+   for 종신보험 disclosure, 1억원 / 종신 / 20년납 / 월납. Only the **×1.19** relativity in
+   the row above is between two *published* cells: the ×1.33 divides that same published CI
+   premium by the chassis's 저해지 **model point**, which is the published ₩257,050 at the
+   chassis's own **[std]** 90.0% suppression discount, so its denominator is constructed.
+   Both are also across **different carriers and eight years apart** (a 2019 GI product
+   against a whole-life scale of a different vintage), so each is an order-of-magnitude
+   statement about what the CI cover costs and not a like-for-like price comparison;
+   `technical-notes.md` reproduces the split from the model instead. `CI_KR_A` runs an
+   **annual** grid, so the annual premium is standardized as 12 × the monthly figure =
+   **₩3,680,880**; no carrier publishes an
    annual-mode premium for this cell, so the modal discount a real 연납 scale would carry is
    not applied and the direction of the error — annual premium slightly overstated — is
    stated in `technical-notes.md` rather than hidden. The published figure is already net of
@@ -300,7 +303,7 @@ Footnotes to [std] rows:
 | Premium basis | Level and guaranteed for 납입기간, subject to the statutory 위험률 revision right below. No renewal mechanic on the main contract | [S1] [S3] [S4] |
 | Mode (납입주기) | 월납 in the market; the composite pays **연납** at 12 × the monthly rate | [S3] [S4]; annualization **[std]** (8) |
 | Rating factors | 보험나이, sex, 보험가입금액 (via 고액계약할인), 납입기간, 선지급 비율, benefit menu, and whether the 저해지환급형 form is taken | [S3] [S4] |
-| Price of the acceleration fraction | 80% form costs **2.8–9.4%** more than the 50% form on the same age, sex and menu; the 100% form **29.6–38.2%** more | computed on [S4]'s 96 cells (9) |
+| Price of the acceleration fraction | 80% form costs **2.8–9.4%** more than the 50% form on the same age, sex and menu; the 100% form **29.6–38.2%** more | computed on [S4]'s 144 cells (9) |
 | Price of the benefit menu | Across 2대 → 암 → 3대 → 17대 the spread is only **12.8%**; the fourteen conditions beyond the three headline diseases add about **5.3%** | computed on [S4] (9) |
 | 저해지환급형 premium discount | **9–12%** below the 기본환급형 on the published grid (i.e. 88%–91% of it); up to 30% claimed elsewhere. The band brackets the chassis's chosen 90.0% at the same `k = 0.50` | [S4] computed; range [S5] |
 | Sex differential | Female premium **0.808–0.872** of male at the same cell (0.830 at 남40/여40, 17대, 50%); **0.774** on the 2011 CI card at age 40 | [S4] [S3] (10) |
@@ -314,7 +317,9 @@ Footnotes to [std] rows:
 | Risk-rate revision right | From **5 years** after the contract, with 금융위원회 approval, the insurer may change the 예정위험률; where the change raises the premium or the reserve it is applied by **reducing the benefit or the sum assured** unless the policyholder funds the increase over the remaining premium term, or in a lump sum if paid up | [S3] |
 | 보험료지수 | **130.1%** on the 80% form, 130.9% on the 50% form, at 남 40세 월납 | [S3] |
 
-9. Computed here from the 96 published cells of [S4], stated as arithmetic on that source. At
+9. Computed here from the 144 published cells of [S4] — three acceleration forms x four
+   benefit menus x six age/sex columns, on each of the two return forms — stated as
+   arithmetic on that source. At
    남40 / 17대보장형 / 기본환급형 the three acceleration forms run 311,640 → 338,100 (×1.085)
    → 428,260 (×1.374); at 남30 / 17대, 241,080 → 263,620 (×1.093) → 333,200 (×1.382). Those
    are the *steepest* cells: **the 80 : 50 step ranges over the whole grid from ×1.0278 (여35
@@ -1183,10 +1188,14 @@ carriers, and 「납입보험료와 직접적인 관계가 없습니다」 [S3].
 ### The morbidity basis — a disclosed Korean CI incidence table
 
 [S3] publishes the product's **예정위험률**, per annum, by sex at ages 20, 40 and 60. **This
-is the only disclosed Korean CI morbidity basis found**, and there is no public
-참조순보험요율 in Korea against which to check it — the bureau rate is filed with the FSC and
-never published, and becomes visible only as the 보험가격지수 ratio [REG-R4] [REG-R34]. It is
-reproduced exactly [S3]:
+is the only disclosed Korean CI morbidity basis found**, and no published 참조순보험요율
+reaches it. 보험개발원 *does* publish a dated **장기손해보험 참조순보험요율** display, carrying
+a 「기타피부암 및 갑상선암 이외의 암 발생률」 grid and a 질병입원율 grid [REG-R61] — the
+first is what `Cancer_KR_S` sources its incidence from — but it is stated on the
+insured-cancer definition, which is not the 중대한 암 definition and carries no 중대한 질병
+item, so it is not a check on these rates. The **life** 참조순보험요율 is filed with the FSC
+and never published, and becomes visible only as the 보험가격지수 ratio [REG-R4] [REG-R34].
+It is reproduced exactly [S3]:
 
 | 예정위험률 (연) | 남20 | 남40 | 남60 | 여20 | 여40 | 여60 |
 |---|---|---|---|---|---|---|
@@ -1462,12 +1471,15 @@ corresponds to, because that is the vocabulary a Korean actuary uses.
 **The valuation and pricing bases are not public, and that is structural.** The 보험료 및
 해약환급금 산출방법서 is one of the 기초서류 filed with the FSC and not published [REG-R2];
 the **경험생명표** is released only as summary statistics, as the chassis sets out [REG-R33]
-[REG-R34]; and — the point that bites hardest here — the **참조순보험요율** is defined by
-감독규정 제1-2조제1호 as the 위험률 the bureau **files** with the FSC, not as a published
-table, and the bureau's public channels carry no 참조순보험요율 item at all [REG-R4]
-[REG-R34]. **For mortality the chassis can at least bracket the level from two carriers'
-published 적용위험률 grids; for CI morbidity there is exactly one disclosed table in the
-whole of Korea, and it is [S3]'s, fifteen years old.** Consequently every mortality,
+[REG-R34]; and — the point that bites hardest here — the **life 참조순보험요율** is defined
+by 감독규정 제1-2조제1호 as the 위험률 the bureau **files** with the FSC, not as a published
+table [REG-R4] [REG-R34]. The exception is the **장기손해보험 참조순보험요율** display
+보험개발원 does publish, whose 「기타피부암 및 갑상선암 이외의 암 발생률」 and 질병입원율
+grids [REG-R61] are what `Cancer_KR_S` and `Medical_KR_S` source from; it carries no
+중대한 질병 item and its insured-cancer definition is not this product's, so nothing on it
+reaches `CI_KR_A`. **For mortality the chassis can at least bracket the level from two
+carriers' published 적용위험률 grids; for CI morbidity there is exactly one disclosed table
+in the whole of Korea, and it is [S3]'s, fifteen years old.** Consequently every mortality,
 morbidity and incidence rate in `CI_KR_A` is a **[std]** construction with a `provenance`
 column on every row, anchored on the public 국가데이터처 생명표 [REG-R38] [REG-R39], on the
 national cancer registry [REG-R40], on `LTC_KR_S`'s 등급 inception construction [REG-R42]
@@ -1577,6 +1589,7 @@ in the 보험금 bucket. 표준약관 제43조 requires the cross-reference to a
 [REG-R57]: #krlib-reg-r57
 [REG-R59]: #krlib-reg-r59
 [REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
 [REG-R9]: #krlib-reg-r9
 [std]: #krlib-std
 [unverified]: #krlib-unverified
