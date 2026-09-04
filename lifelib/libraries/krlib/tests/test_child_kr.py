@@ -133,8 +133,8 @@ def edited_model(tmp_path, name, edits):
 WORKED_EXAMPLE_CF = {
      0: (1.0000000000,
          31000.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
-         0.0000, 66.0413, 0.0000, 0.0000, 30.1663, 123006.5187, 224819.2490,
-         -316921.9753),
+         0.0000, 66.0413, 0.0000, 0.0000, 30.1663, 116610.0000, 212940.0000,
+         -298646.2076),
      1: (0.9947337283,
          30834.5604, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
          0.0000, 64.6018, 0.0000, 31.0077, 30.0074, 1940.2787, 0.0000,
@@ -209,13 +209,13 @@ WORKED_EXAMPLE_CF = {
     16: (0.9344364051,
          28933.2234, 397.7499, 177.5307, 67.8973, 7164.0124, 218.5221, 187.2308,
          4940.8325,
-         68.5065, 151.0962, 0.0000, 0.0000, 45.5292, 1830.4361, 867.9967,
-         12815.8828),
+         67.0866, 151.0962, 0.0000, 0.0000, 45.5292, 1830.4361, 867.9967,
+         12817.3027),
     17: (0.9311920157,
          26040.4216, 223.6387, 130.3535, 52.0636, 3512.4563, 358.2944, 280.1288,
          0.0000,
-         7.0963, 177.0176, 0.0000, 0.0000, 50.1247, 1685.0952, 781.2126,
-         18782.9400),
+         6.7821, 177.0176, 0.0000, 0.0000, 50.1247, 1685.0952, 781.2126,
+         18783.2542),
 }
 
 CF_COLUMNS = (
@@ -272,8 +272,8 @@ WORKED_EXAMPLE_POLS = {
 # t: (pols_if, premiums, claims_diagnosis, claims_hospital, claims_death, claims_lapse,
 #     expenses, commissions, net_cf)
 LATER_MONTHS = {
-      17: (0.9311920157, 26040.4216, 130.3535, 3512.4563, 7.0963,
-           177.0176, 1685.0952, 781.2126, 18782.9400),
+      17: (0.9311920157, 26040.4216, 130.3535, 3512.4563, 6.7821,
+           177.0176, 1685.0952, 781.2126, 18783.2542),
      120: (0.7926463831, 21873.0675, 79.3435, 1353.1380, 15.6820,
            1149.8680, 1480.1460, 656.1920, 15651.7364),
      239: (0.7675760087, 20562.2638, 183.5349, 1515.4096, 106.0073,
@@ -304,10 +304,10 @@ LATER_COLUMNS = ("premiums", "claims_diagnosis", "claims_hospital", "claims_deat
 # The account and the surrender value at the nodes the 상품요약서 publishes.
 # t: (years, cum_prem_pp, refund_ratio, cv_std_pp, surr_chg_pp, av_pp)
 VALUE_GRID = {
-       0: (0, 0.0000, 0.00000000, 0.0000, 384306.4085, 0.0000),
-      12: (1, 336000.0000, 0.00000000, 0.0000, 329405.4930, 252000.0000),
-      36: (3, 1008000.0000, 0.45600000, 459648.0000, 219603.6620, 679251.6620),
-      60: (5, 1680000.0000, 0.62500000, 1050000.0000, 109801.8310, 1159801.8310),
+       0: (0, 0.0000, 0.00000000, 0.0000, 364000.0000, 0.0000),
+      12: (1, 336000.0000, 0.00000000, 0.0000, 312000.0000, 252000.0000),
+      36: (3, 1008000.0000, 0.45600000, 459648.0000, 208000.0000, 667648.0000),
+      60: (5, 1680000.0000, 0.62500000, 1050000.0000, 104000.0000, 1154000.0000),
       84: (7, 2352000.0000, 0.66980000, 1575369.6000, 0.0000, 1575369.6000),
      120: (10, 3360000.0000, 0.73700000, 2476320.0000, 0.0000, 2476320.0000),
      180: (15, 5040000.0000, 0.78300000, 3946320.0000, 0.0000, 3946320.0000),
@@ -340,9 +340,9 @@ YEAR_ONE = {
     "claims_maturity": 0.0000,
     "claims_void": 306.8991,
     "claim_expenses": 477.6984,
-    "expenses": 143885.0484,
-    "commissions": 224819.2490,
-    "net_cf": -148931.4790,
+    "expenses": 137488.5297,
+    "commissions": 212940.0000,
+    "net_cf": -130655.7114,
 }
 
 # "Undiscounted totals over the whole 1,201-month projection".
@@ -356,14 +356,14 @@ TOTALS = {
     "claims_event": 466414.7324,
     "claims_liability": 195939.3565,
     "claims_neonatal": 106330.7157,
-    "claims_death": 3693355.2484,
+    "claims_death": 3693345.7287,
     "claims_lapse": 2695713.6444,
     "claims_maturity": 0.0000,
     "claims_void": 306.8991,
     "claim_expenses": 79991.4163,
-    "expenses": 1016064.7558,
-    "commissions": 377693.9745,
-    "net_cf": -13103720.2872,
+    "expenses": 1009668.2371,
+    "commissions": 365814.7255,
+    "net_cf": -13085434.9998,
 }
 
 # The four exits, over the whole projection, at the ten decimals the notes print.
@@ -371,18 +371,19 @@ EXIT_SPLIT = {"pols_void": 0.0049757330, "pols_death": 0.4688979472,
               "pols_lapse": 0.5103916457, "pols_maturity": 0.0157346742}
 
 # "The equivalence premium".
-EPV_OUTGO = 4712867.731474926
+EPV_OUTGO = 4694583.10870084
 EPV_PREM_UNIT = 151.0503621937853
-EQUIV_PREMIUM = 31200.638403161858
+EQUIV_PREMIUM = 31079.588559199034
 
 # The [별표 14] chain, at full precision.
 RISK_PREM_ANN = 145537.04939942522
 SA_NOTIONAL = 132306408.54493201
 PREM_NET_ANN = 252000.0
-SURR_CHG_CAP = 384306.408544932
-ACQ_COST = 345875.76769043884
-COMM_INIT = 224819.24899878525
-ACQ_COST_MONTHS = 12.352705988944244
+SURR_CHG_CAP = 364000.0
+SURR_CHG_FORMULA = 1575064.08544932
+ACQ_COST = 327600.0
+COMM_INIT = 212940.0
+ACQ_COST_MONTHS = 11.7
 
 # The 태아 module, per birth.
 NEONATAL_BIRTH = 47000.0
@@ -639,9 +640,9 @@ def test_worked_example_month_zero_trace(kr_child_anchor):
         30000.0 * (0.0 + 0.0 + 0.0010055425391276573), rel=TRACE)
     assert a.expenses(0) == pytest.approx(
         (ACQ_COST - COMM_INIT) * 1.0 + 400.0 * 1.0 + 0.05 * 31000.0, rel=TRACE)
-    assert a.expenses(0) == pytest.approx(123006.5186916536, abs=CASH)
+    assert a.expenses(0) == pytest.approx(116610.0, abs=CASH)
     assert a.commissions(0) == pytest.approx(COMM_INIT, rel=TRACE)
-    assert a.net_cf(0) == pytest.approx(-316921.9752684741, abs=CASH)
+    assert a.net_cf(0) == pytest.approx(-298646.2075780353, abs=CASH)
 
 
 def test_worked_example_month_zero_decrements(kr_child_anchor):
@@ -773,17 +774,17 @@ def test_worked_example_month_seventeen_trace(kr_child_anchor):
     assert a.benefit_pp(17, "LIABILITY") > a.benefit_pp(16, "LIABILITY")
     assert a.benefit_pp(17, "NEONATAL") == 0.0
     assert a.unearned_prem_pp(17) == 14000.0
-    assert a.av_pp(17) == pytest.approx(351750.1115775053, rel=TRACE)
+    assert a.av_pp(17) == pytest.approx(335553.3333333334, rel=TRACE)
     assert a.claims(17, "DEATH") == pytest.approx(
-        365750.1115775053 * 0.000019402056913845515, rel=TRACE)
-    assert a.claims(17, "DEATH") == pytest.approx(7.0963044811, abs=CASH)
+        349553.3333333334 * 0.000019402056913845515, rel=TRACE)
+    assert a.claims(17, "DEATH") == pytest.approx(6.7820536678, abs=CASH)
     assert a.cv_pp(17) == pytest.approx(45220.0, abs=CASH)
     assert a.claims(17, "LAPSE") == pytest.approx(
         59220.0 * 0.002989151566722004, rel=TRACE)
     assert a.expenses(17) == pytest.approx(
         400.0 * 1.028450933381417 * a.pols_if(17) + 0.05 * a.premiums(17), rel=TRACE)
     assert a.commissions(17) == pytest.approx(0.03 * a.premiums(17), rel=TRACE)
-    assert a.net_cf(17) == pytest.approx(18782.9399616679, abs=CASH)
+    assert a.net_cf(17) == pytest.approx(18783.2542124813, abs=CASH)
     # The waiver step in the same month, the signature of the P코드 carve-out.
     assert a.waiver_rate(16) == pytest.approx(0.0009071625, rel=1e-9)
     assert a.waiver_rate(17) == pytest.approx(
@@ -834,7 +835,7 @@ def test_the_sign_of_the_cash_flow_changes_once_and_never_changes_back(kr_child_
     running there, would break the second half of that statement without breaking a total.
     """
     a = kr_child_anchor
-    assert a.net_cf(0) < -300000.0
+    assert a.net_cf(0) < -290000.0
     assert a.net_cf(5) < 0.0
     assert all(a.net_cf(t) > 0.0 for t in range(1, 5))
     assert all(a.net_cf(t) > 0.0 for t in range(6, 240))
@@ -860,13 +861,13 @@ def test_worked_example_policy_year_one_aggregate(kr_child_anchor):
     assert benefits == pytest.approx(141963.2351, abs=CASH)
     assert benefits / df["premiums"].sum() == pytest.approx(0.392, abs=0.0005)
     assert df["claims_neonatal"].sum() / benefits == pytest.approx(0.574, abs=0.0005)
-    assert ACQ_COST / 31000.0 == pytest.approx(11.16, abs=0.005)
+    assert ACQ_COST / 31000.0 == pytest.approx(10.57, abs=0.005)
 
 
 def test_worked_example_undiscounted_totals(kr_child_anchor):
     """The notes' whole-projection totals, every line, over all 1,201 months.
 
-    ₩5,458,038 of premium against ₩17,088,008 of benefit and ₩1,473,750 of expense and
+    ₩5,458,038 of premium against ₩17,087,999 of benefit and ₩1,455,474 of expense and
     commission.  The number is heavily negative and that is the product rather than a
     defect: it is what a hundred-year contract with a twenty-year premium term looks like
     before discounting, which is why the equivalence diagnostics exist.
@@ -877,9 +878,9 @@ def test_worked_example_undiscounted_totals(kr_child_anchor):
     for name in CF_COLUMNS:
         assert df[name].sum() == pytest.approx(TOTALS[name], abs=CASH), name
     benefits = sum(df[c].sum() for c in df.columns if c.startswith("claims_"))
-    assert benefits == pytest.approx(17088008.0751, abs=CASH)
+    assert benefits == pytest.approx(17087998.5554, abs=CASH)
     outgo = df["claim_expenses"].sum() + df["expenses"].sum() + df["commissions"].sum()
-    assert outgo == pytest.approx(1473750.1466, abs=CASH)
+    assert outgo == pytest.approx(1455474.3789, abs=CASH)
     assert df["premiums"].sum() - benefits - outgo == pytest.approx(
         TOTALS["net_cf"], abs=CASH)
 
@@ -898,7 +899,7 @@ def test_the_three_totals_the_notes_read_directly(kr_child_anchor):
     assert morbidity == pytest.approx(10698632.2832, abs=CASH)
     account = sum(df["claims_" + k].sum()
                   for k in ("death", "lapse", "maturity", "void"))
-    assert account == pytest.approx(6389375.7919, abs=CASH)
+    assert account == pytest.approx(6389366.2722, abs=CASH)
     assert df["claims_hospital"].sum() / morbidity == pytest.approx(0.470, abs=0.0005)
     assert df["claims_hospital"].sum() / df["premiums"].sum() == pytest.approx(
         0.922, abs=0.0005)
@@ -956,8 +957,8 @@ def test_worked_example_exit_split(kr_child_anchor):
 def test_worked_example_equivalence_premium(kr_child_anchor):
     """The three pricing diagnostics, at the precision the notes print them.
 
-    ₩4,712,867.73 of discounted outgo over 151.0504 discounted premium units gives
-    ₩31,200.64 against a shipped ₩28,000, so **the shipped basis is 11.43% short** and, by
+    ₩4,694,583.11 of discounted outgo over 151.0504 discounted premium units gives
+    ₩31,079.59 against a shipped ₩28,000, so **the shipped basis is 11.00% short** and, by
     the product's own statement, the computed figure governs.  The second number is the
     model's whole behaviour in one place: out of 240 scheduled instalments the projection
     expects to collect the discounted equivalent of 62.9%.
@@ -967,7 +968,7 @@ def test_worked_example_equivalence_premium(kr_child_anchor):
     assert a.epv_prem_unit_pp() == pytest.approx(EPV_PREM_UNIT, rel=TRACE)
     assert a.equiv_premium_mth_pp() == pytest.approx(EQUIV_PREMIUM, rel=TRACE)
     assert a.equiv_premium_mth_pp() / a.premium_mth() - 1.0 == pytest.approx(
-        0.1143, abs=5e-5)
+        0.1100, abs=5e-5)
     assert a.epv_prem_unit_pp() / a.prem_period_mths() == pytest.approx(
         0.629, abs=0.0005)
     assert a.check_equiv_premium() is True
@@ -978,9 +979,10 @@ def test_the_byeolpyo_14_chain(kr_child_anchor):
     """The five links of the 표준해약공제액 computation, each to the notes' precision.
 
     ₩145,537.05 of first-year risk premium → a notional 보험가입금액 of ₩132,306,409 under
-    [별표 15] 제9호 → a 표준해약공제액 of ₩384,306.41 under [별표 14] → a 계약체결비용 of
-    90% of it → **12.35 months of core premium**, against the FSC's ~13-month reading of
-    the same cap.  Every input to it is [std]; the arithmetic between them is the
+    [별표 15] 제9호 → a [별표 14] formula limb of ₩1,575,064.09, which is 56.25 months of
+    core premium and **does not bind**: the 표준해약공제액 is the FSC's 13-month reading of
+    the same cap, ₩364,000.00, and the 계약체결비용 at 90% of it is **11.70 months of core
+    premium**.  Every input to it is [std]; the arithmetic between them is the
     regulation's.
     """
     a = kr_child_anchor
@@ -990,9 +992,12 @@ def test_the_byeolpyo_14_chain(kr_child_anchor):
     assert a.sa_notional_pp() == pytest.approx(SA_NOTIONAL, rel=TRACE)
     assert a.prem_net_ann_pp() == PREM_NET_ANN == 12.0 * 28000.0 * 0.75
     assert a.surr_chg_coef() == 20
+    assert 0.05 * PREM_NET_ANN * 20 + 0.01 * SA_NOTIONAL == pytest.approx(
+        SURR_CHG_FORMULA, rel=TRACE)
     assert a.surr_chg_cap_pp() == pytest.approx(SURR_CHG_CAP, rel=TRACE)
     assert a.surr_chg_cap_pp() == pytest.approx(
-        0.05 * PREM_NET_ANN * 20 + 0.001 * SA_NOTIONAL, rel=TRACE)
+        min(SURR_CHG_FORMULA, 13.0 * 28000.0), rel=TRACE)
+    assert SURR_CHG_FORMULA / 28000.0 == pytest.approx(56.25, abs=0.005)
     assert a.acq_cost_pp() == pytest.approx(0.9 * SURR_CHG_CAP, rel=TRACE)
     assert a.acq_cost_months() == pytest.approx(ACQ_COST_MONTHS, rel=TRACE)
     assert a.surr_chg_period() == 84
@@ -1409,7 +1414,7 @@ def test_pitfall_the_account_does_not_start_at_the_surrender_charge(kr_child_anc
 
     The published grid is 「순보험료식 계약자적립액에서 해약공제액을 공제한 금액」 [S2] —
     already net of the charge and floored at zero — so adding the unamortised charge back
-    where the floor binds would give an account of ₩384,306 at issue.  The cap at
+    where the floor binds would give an account of ₩364,000 at issue.  The cap at
     ``net_prem_ratio × cum_prem_pp(t)`` is what prevents it.
     """
     a = kr_child_anchor
@@ -1431,9 +1436,11 @@ def test_pitfall_the_notional_face_amount_is_read_at_the_reference_age(
     """[별표 15] 제9호 is evaluated at the **기준연령 요건, 남자 만 40세**, not at the insured's.
 
     At 만나이 5 the mortality rate is 0.00012, which would put the notional 보험가입금액
-    above ₩1.2 billion and the 표준해약공제액 at ₩1,464,808.74 — 52.3 months of premium,
-    absurd on its face.  At 40 the cap is ₩384,306.41, or 13.73 months, and the 계약체결비용
-    at 90% of it is 12.35 [REG-R21] [REG-R9 제1-2조제2호] [REG-R29].
+    above ₩1.2 billion and the [별표 14] formula limb at ₩12,380,087.45 — 442.1 months of
+    premium, absurd on its face.  At 40 that limb is ₩1,575,064.09, or 56.25 months, still
+    far enough above the FSC's 13-month reading of the same cap that the cap binds at
+    ₩364,000.00 and the 계약체결비용 at 90% of it at 11.70 months
+    [REG-R21] [REG-R9 제1-2조제2호] [REG-R29].
     """
     a = kr_child_anchor
     refs = child.Projection.refs
@@ -1441,15 +1448,15 @@ def test_pitfall_the_notional_face_amount_is_read_at_the_reference_age(
     assert a.mort_rate_at_age(40, "M") == 0.0011
     assert a.sa_notional_pp() == pytest.approx(
         a.risk_prem_ann_pp() / 0.0011, rel=TRACE)
-    assert a.surr_chg_cap_pp() / a.premium_mth() == pytest.approx(13.73, abs=0.005)
-    assert a.acq_cost_months() == pytest.approx(12.35, abs=0.005)
-    # the counterfactual the notes quantify
+    assert a.surr_chg_cap_pp() / a.premium_mth() == pytest.approx(13.00, abs=0.005)
+    assert a.acq_cost_months() == pytest.approx(11.70, abs=0.005)
+    # the counterfactual the notes quantify, on the [별표 14] formula limb
     at_five = a.risk_prem_ann_pp() / a.mort_rate_at_age(5, "M")
-    cap_at_five = 0.05 * a.prem_net_ann_pp() * a.surr_chg_coef() + 0.001 * at_five
+    cap_at_five = 0.05 * a.prem_net_ann_pp() * a.surr_chg_coef() + 0.01 * at_five
     assert a.mort_rate_at_age(5, "M") == 0.00012
-    assert cap_at_five == pytest.approx(1464808.74, abs=WON)
-    assert cap_at_five / a.premium_mth() == pytest.approx(52.31, abs=0.005)
-    assert cap_at_five > 3.0 * a.surr_chg_cap_pp()
+    assert cap_at_five == pytest.approx(12380087.45, abs=WON)
+    assert cap_at_five / a.premium_mth() == pytest.approx(442.15, abs=0.005)
+    assert cap_at_five > 3.0 * SURR_CHG_FORMULA
 
 
 def test_pitfall_there_are_four_exits_not_two(kr_child_anchor):
@@ -1900,8 +1907,8 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
 
     Shipping the first two beside each other is exactly the comparison the 2024 계리가정
     guideline obliges an insurer departing from the 원칙모형 to disclose [REG-R27] [R11].
-    The undiscounted difference they make is the notes' own sensitivity: −₩8,046,832 on
-    model point 5 against −₩13,103,720 on the anchor.
+    The undiscounted difference they make is the notes' own sensitivity: −₩8,061,541 on
+    model point 5 against −₩13,085,435 on the anchor.
     """
     a = kr_child_anchor
     assert a.lapse_basis() == "loglinear"
@@ -1918,7 +1925,7 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
     assert disclosed.lapse_rate(120) == 0.03 and disclosed.lapse_rate(179) == 0.03
     assert disclosed.lapse_rate(180) == 0.01 and disclosed.lapse_rate(239) == 0.01
     assert disclosed.lapse_rate(240) == 0.005
-    assert disclosed.result_cf()["net_cf"].sum() == pytest.approx(-8046832.26, abs=WON)
+    assert disclosed.result_cf()["net_cf"].sum() == pytest.approx(-8061541.17, abs=WON)
 
     level = child.Projection[8]
     assert level.lapse_basis() == "flat"
@@ -1945,7 +1952,7 @@ def test_the_term_and_the_payment_term_envelopes(child, kr_child_anchor):
     assert short.refund_ratio(360) == 0.0
     assert short.refund_ratio(120) == pytest.approx(0.737, rel=1e-14)
     assert short.runoff(180) == 0.5
-    assert short.equiv_premium_mth_pp() == pytest.approx(3025.49, abs=WON)
+    assert short.equiv_premium_mth_pp() == pytest.approx(2968.47, abs=WON)
     assert short.premium_mth() == 3026.0
 
     long_pay = child.Projection[10]
@@ -1958,17 +1965,18 @@ def test_the_model_point_premiums_are_inputs_and_the_computed_one_governs(child)
     """No Korean carrier publishes a rate table by age and duration, so the premium is an input.
 
     ``equiv_premium_mth_pp()`` computes what the shipped basis actually implies, and where
-    the two differ the computed figure governs.  Model point 9 is the one shipped point
-    whose premium is right — ₩3,026 against ₩3,025.49 — and the anchor is 11.43% short:
-    reading the two against each other is the only calibration this file can make.
+    the two differ the computed figure governs.  Model point 9 is the closest of the ten —
+    ₩3,026 shipped against ₩2,968.47 computed, 1.90% **over**, the only shipped point on
+    the far side of its own equivalence premium — and the anchor is 11.00% short: reading
+    the two against each other is the only calibration this file can make.
     """
     short = child.Projection[9]
     assert short.equiv_premium_mth_pp() / short.premium_mth() - 1.0 == pytest.approx(
-        0.0, abs=0.0005)
+        -0.0190, abs=0.0005)
     anchor = child.Projection[1]
     assert anchor.equiv_premium_mth_pp() > anchor.premium_mth()
     assert anchor.equiv_premium_mth_pp() / anchor.premium_mth() - 1.0 == pytest.approx(
-        0.1143, abs=5e-5)
+        0.1100, abs=5e-5)
 
 
 def test_invalid_enumerations_raise_rather_than_defaulting(tmp_path):
@@ -1995,7 +2003,7 @@ def test_invalid_enumerations_raise_rather_than_defaulting(tmp_path):
             edited.Projection[7].lapse_basis()
         # and the untouched anchor still projects
         assert edited.Projection[1].net_cf(0) == pytest.approx(
-            -316921.9752684741, abs=CASH)
+            -298646.2075780353, abs=CASH)
     finally:
         edited.close()
 
@@ -2021,7 +2029,8 @@ def test_the_std_scalar_references_are_the_ones_the_notes_state(child):
     assert refs["ref_age"] == 40                  # 기준연령 요건, 남자 만 40세 [REG-R9]
     assert refs["ref_sex"] == "M"
     assert refs["surr_chg_prem_rate"] == 0.05     # [별표 14]'s 5%
-    assert refs["surr_chg_sa_rate"] == 0.001      # 10/1000 of the 보험가입금액
+    assert refs["surr_chg_sa_rate"] == 0.01       # 10/1000 of the 보험가입금액
+    assert refs["surr_chg_cap_months"] == 13.0    # the FSC's 보장성보험 13배 [REG-R29]
     assert refs["surr_chg_max_coef"] == 20        # 보험기간(최대 20년) [REG-R20]
     assert refs["surr_chg_max_years"] == 7        # 해약공제기간 [REG-R19]
     assert refs["acq_cost_ratio"] == 0.9          # of the 표준해약공제액
@@ -2435,11 +2444,11 @@ def test_the_notes_and_the_model_agree_on_the_worked_example_cell():
     cell above; this asserts that the *document* carries it.
     """
     notes = io.open(CSV_DIR / "technical-notes.md", encoding="utf-8").read()
-    assert "-316,921.9753" in notes or "−316,921.9753" in notes
+    assert "-298,646.2076" in notes or "−298,646.2076" in notes
     assert "50,960.7703370201" in notes
-    assert "13,103,720.2872" in notes
-    assert "31,200.638403161858" in notes
-    assert "384,306.4085" in notes
+    assert "13,085,434.9998" in notes
+    assert "31,079.588559199034" in notes
+    assert "364,000.0000" in notes
     assert "0.4023261296" in notes
     assert "99 years and 7 months" in notes
 

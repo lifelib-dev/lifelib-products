@@ -857,7 +857,7 @@ against **₩1,935,000** on the determination's own order — interest on the ne
 no retention, a **29.9% uplift**. The applicant himself claimed ₩2,083,333, which is
 2.5% ÷ 12 of the **gross** premium — simple monthly interest on the whole ₩1,000,000,000
 — and is the one figure of the three the determination records rather than this document
-computing it [R1 §2]; on the compounding convention used above the same claim would be
+computing it [R1 §2](#krlib-immediate_annuity-r1); on the compounding convention used above the same claim would be
 ₩2,060,000.
 
 **The determination.** 조정결정 제2017-17호, 2017-11-14, reasoned in three moves

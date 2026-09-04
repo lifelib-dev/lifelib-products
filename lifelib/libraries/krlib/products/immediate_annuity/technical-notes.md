@@ -1602,6 +1602,7 @@ of the eleven `check_*()` cells.
 [R23]: #krlib-immediate_annuity-r23
 [R25]: #krlib-immediate_annuity-r25
 [R27]: #krlib-immediate_annuity-r27
+[R28]: #krlib-immediate_annuity-r28
 [R31]: #krlib-immediate_annuity-r31
 [R6]: #krlib-immediate_annuity-r6
 [REG-R10]: #krlib-reg-r10

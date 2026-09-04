@@ -1419,14 +1419,25 @@ def surr_chg_cap_pp():
     """The **표준해약공제액** of 감독규정 [별표 14], per policy [REG-R20].
 
     ``5% x 연납순보험료 x 해약공제계수 + 보장성보험의 보험가입금액 x 10/1000``, the second
-    term taken on the notional amount of :func:`sa_notional_pp`.  It is the statutory cap on
-    the surrender charge and, through :func:`acq_cost_pp`, on the deductible acquisition
-    cost; the FSC's 2019 expense reform states the same cap as roughly thirteen months'
-    premium for a 보장성보험 [REG-R29], which :func:`acq_cost_months` publishes so that the
-    two readings can be compared.  Both of its inputs are themselves **[std]**.
+    term taken on the notional amount of :func:`sa_notional_pp` and at the schedule's own
+    rate of **10/1000**, which is one per cent and not one per mille.
+
+    **On this product the formula limb does not bind and that is the finding.**  The
+    notional 보험가입금액 of [별표 15] 제9호 is ₩132,306,409 on the anchor cell, so the
+    10/1000 term alone is ₩1,323,064 and the whole formula ₩1,575,064 — **56.3 months** of
+    core office premium, against the FSC's 2019 statement of the *same* ceiling as
+    **보장성보험 13배** of the monthly premium [REG-R29].  The two readings of one cap are
+    that far apart because 제9호 divides this contract's whole first-year risk premium by a
+    40-year-old's mortality rate, and a bundled child stack has a large risk premium and a
+    small death rate.  The composite therefore takes the **lesser** of the two, which is the
+    treatment ``Cancer_KR_S`` states for the same mechanic: ``surr_chg_cap_months`` is the
+    13 of [REG-R29] and it binds on every shipped model point.  Both limbs rest on inputs
+    that are themselves **[std]**, and :func:`acq_cost_months` publishes the ratio actually
+    reached so the two readings can be compared rather than asserted equal.
     """
-    return (surr_chg_prem_rate * prem_net_ann_pp() * surr_chg_coef()  # noqa: F821
-            + surr_chg_sa_rate * sa_notional_pp())                   # noqa: F821
+    formula = (surr_chg_prem_rate * prem_net_ann_pp() * surr_chg_coef()  # noqa: F821
+               + surr_chg_sa_rate * sa_notional_pp())                 # noqa: F821
+    return min(formula, surr_chg_cap_months * premium_mth())         # noqa: F821
 
 
 def surr_chg_period():
@@ -1505,11 +1516,13 @@ def acq_cost_pp():
 def acq_cost_months():
     """The acquisition cost expressed in months of core office premium, as a diagnostic.
 
-    The FSC's 2019 expense reform states the 표준해약공제액 cap as roughly **thirteen
-    months' premium** for a 보장성보험 [REG-R29].  The two readings of the same cap do not
-    agree exactly on every model point — the [별표 14] computation is driven by the notional
-    보험가입금액 of [별표 15] 제9호 [REG-R21], which on a low-premium short-term point is
-    large relative to the premium — so the ratio is published rather than asserted.
+    The FSC's 2019 expense reform states the 표준해약공제액 cap as **thirteen months'
+    premium** for a 보장성보험 [REG-R29], while the [별표 14] computation is driven by the
+    notional 보험가입금액 of [별표 15] 제9호 [REG-R21] instead.  The two readings of one cap
+    are far apart on this product — the formula limb reaches **56.25 months** of core premium
+    on the anchor cell — so :func:`surr_chg_cap_pp` takes the lesser of them and the ratio
+    actually reached is published rather than asserted.  The 13-month limb binds on every
+    shipped model point, so this returns 0.9 x 13 = **11.7** on all ten of them.
     """
     return acq_cost_pp() / premium_mth()
 
@@ -1978,10 +1991,11 @@ def check_surr_chg_cap():
 def check_acq_cost_cap_resid():
     """The excess of the acquisition cost over the 표준해약공제액; zero.
 
-    감독규정 [별표 14] caps the deductible 계약체결비용 at the 표준해약공제액 [REG-R20]; the
-    thirteen-months-of-premium reading of the same cap [REG-R29] is published as
-    :func:`acq_cost_months` rather than asserted, the two not agreeing exactly on a
-    low-premium short-term model point.
+    감독규정 [별표 14] caps the deductible 계약체결비용 at the 표준해약공제액 [REG-R20], and
+    the thirteen-months-of-premium reading of the same cap [REG-R29] is the limb that binds
+    on this product, :func:`surr_chg_cap_pp` taking the lesser of the two.  The ratio the
+    acquisition cost actually reaches is published as :func:`acq_cost_months` rather than
+    asserted.
     """
     return max(0.0, acq_cost_pp() - surr_chg_cap_pp())
 
@@ -2168,7 +2182,9 @@ ref_sex = "M"
 
 surr_chg_prem_rate = 0.05
 
-surr_chg_sa_rate = 0.001
+surr_chg_sa_rate = 0.01
+
+surr_chg_cap_months = 13.0
 
 surr_chg_max_coef = 20
 

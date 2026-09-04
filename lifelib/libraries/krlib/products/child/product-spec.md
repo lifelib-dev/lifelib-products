@@ -874,10 +874,14 @@ the shipped anchor cell does.
     요건 on a term policy of the same 보험기간 [REG-R21]. A 제3보험 contract with no death
     benefit therefore gets a **notional** 보험가입금액 by scaling a term policy's face amount
     by the ratio of risk premiums, and that notional amount — not the ₩100,000,000 of
-    accidental disability cover — is what enters the 10/1000 term. `technical-notes.md`
-    performs the arithmetic; what belongs here is that the surrender charge is **capped by a
-    computation whose inputs are themselves [std]**, deducted as a level amount over a
-    해약공제기간 capped at **7 years** [REG-R19].
+    accidental disability cover — is what enters the 10/1000 term, at the schedule's own rate
+    of 10/1000, which is **one per cent**. `technical-notes.md` performs the arithmetic and
+    finds that on this product **the [별표 14] limb does not bind**: it gives 56.25 months of
+    core premium against the FSC's statement of the *same* ceiling as thirteen months'
+    premium for a 보장성보험 [REG-R29] (item 21 above), so the cap is the lesser of the two,
+    the thirteen-month reading, on every shipped model point. What belongs here is that the
+    surrender charge is **capped by a computation whose inputs are themselves [std]**,
+    deducted as a level amount over a 해약공제기간 capped at **7 years** [REG-R19].
 31. **The 실손 rider is gone, and that is a regulatory fact rather than a design choice.**
     보험연구원's 2018 description of the structure still reads 「主보험 + 태아가입특약 +
     유자녀생활자금특약 + 산모보장특약 + 각종 선택특약 + **실손특약**」, and the 2004

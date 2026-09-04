@@ -105,12 +105,13 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    정기보험의 보험가입금액, and a term policy's risk premium per unit of face is its mortality
    rate, so the notional amount is **the first policy year's risk premium divided by the
    mortality rate at the 기준연령 요건, 남자 만 40세** [REG-R9 제1-2조제2호](#krlib-reg-r9). At a child age
-   `q` is so small that the 표준해약공제액 exceeds four years of premium; at 40 the cap is
-   **13.73 months of core premium** and the 90% of it the model deducts is **12.35**, which is
-   the [REG-R29] reading of the same cap.
+   `q` is so small that the [별표 14] formula limb exceeds **thirty-six years** of premium; at
+   40 it is still **56.25 months of core premium**, so on this product it never binds and the
+   표준해약공제액 is the [REG-R29] reading of the same cap — **13 months**, ₩364,000.00 — of
+   which the 90% the model deducts is **11.70 months**.
 9. **The horizon.** At 계약나이 0 to a 100세 만기 the projection runs **1,200 monthly
    periods**, the longest in `krlib`, with premium over the first 240. **Eighty of the
-   hundred years are paid-up** and they decide the contract: **89.3% of all outgo falls after
+   hundred years are paid-up** and they decide the contract: **89.4% of all outgo falls after
    `t = 240`**, against nil premium.
 
 The [long-term care technical notes (간병보험)](../long_term_care/technical-notes.md) state
@@ -253,11 +254,12 @@ Derived scalars on the anchor cell, all read off the shipped model:
 | `sa_notional_pp()` | 132,306,408.54493201 |
 | `prem_net_ann_pp()` | 252,000.0 |
 | `surr_chg_coef()` | 20 |
-| `surr_chg_cap_pp()` (표준해약공제액) | **384,306.408544932** |
+| [별표 14] formula limb (does **not** bind) | 1,575,064.08544932 |
+| `surr_chg_cap_pp()` (표준해약공제액) | **364,000.0** |
 | `surr_chg_period()` | 84 months |
-| `acq_cost_pp()` | 345,875.76769043884 |
-| `acq_cost_months()` | **12.352705988944244** |
-| `comm_init_pp()` | 224,819.24899878525 |
+| `acq_cost_pp()` | 327,600.0 |
+| `acq_cost_months()` | **11.7** |
+| `comm_init_pp()` | 212,940.0 |
 | `neonatal_cost_pp("birth")` / `("block")` | 47,000.0 / 63,450.0 |
 
 **`premium_mth` is an input, not a computed quantity.** No Korean carrier publishes a rate
@@ -274,7 +276,7 @@ for the 계약자 waiver module, one carrier publishing that waiver as a benefit
 right at a 가입금액 of ₩100,000 [S11]. **Nothing in this model depends on ₩28,000 being a
 market rate.** `equiv_premium_mth_pp()` computes the premium the shipped basis implies and,
 per `product-spec.md`, **where the two differ these notes' figure governs**: on the anchor
-cell it is **₩31,200.64**, which is 11.43% above the shipped premium.
+cell it is **₩31,079.59**, which is 11.00% above the shipped premium.
 
 **The 태아 module's premium is a second stream, and it is a real feature of the contract.**
 「계약체결일부터 출생시점(출산 또는 분만 과정에서 보험금 지급사유가 발생하는 경우 포함)
@@ -591,8 +593,8 @@ the functional form: the 「IFRS17 주요 계리가정 가이드라인」 attach
 from HWP, so the values are verified from the 보도자료 and the log-linear shape is not.
 Shipping `disclosed` beside `loglinear` is exactly the comparison the guideline obliges an
 insurer departing from the 원칙모형 to disclose, and the two produce visibly different
-contracts: model point 5 runs on `disclosed` and its undiscounted `net_cf` is −₩8,046,832
-against the anchor's −₩13,103,720.
+contracts: model point 5 runs on `disclosed` and its undiscounted `net_cf` is −₩8,061,541
+against the anchor's −₩13,085,435.
 
 **Lapse is absorbing [std].** 부활 is available within three years even where no surrender
 value has been taken [S8] [REG-R25 제27조](#krlib-reg-r25), and below 보험나이 15 there is **no cancer waiting
@@ -608,13 +610,16 @@ deductible acquisition cost at the 표준해약공제액 [REG-R20], and the FSC'
 states the same cap as roughly **thirteen months' premium** for a 보장성보험 [REG-R29] — and
 a commission cap: first-year remuneration within the first year's expected premium, with an
 obligation to offer an instalment structure paying no more than 60% of the 표준해약공제액 a
-year [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22) [REG-R29].
+year [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22) [REG-R29]. **It is the thirteen-month reading that
+binds here**: the [별표 14] formula gives ₩1,575,064.09 on the anchor cell, 56.25 months of
+core premium, so `surr_chg_cap_pp()` takes the lesser of the two — see *The 표준해약공제액*
+below.
 
 | Input | Value | Anchor-cell amount |
 |---|---|---|
-| Acquisition cost `acq_cost_ratio` | **0.9 × 표준해약공제액** | ₩345,875.7677 = **12.35 months** of core premium |
-| Initial commission `comm_init_share` | **0.65 × acquisition cost** | ₩224,819.2490 |
-| Non-commission acquisition expense | the remainder, at `t = 0` | ₩121,056.5187 |
+| Acquisition cost `acq_cost_ratio` | **0.9 × 표준해약공제액** | ₩327,600.0000 = **11.70 months** of core premium |
+| Initial commission `comm_init_share` | **0.65 × acquisition cost** | ₩212,940.0000 |
+| Non-commission acquisition expense | the remainder, at `t = 0` | ₩114,660.0000 |
 | Renewal commission `comm_renewal_rate` | **3.0%** of premium, `t = 12` to `prem_end()` | ₩880.93 at `t = 12` |
 | Maintenance `expense_maint_pp` | **₩400** per policy per month, inflating | ₩400.00 at `t = 0` |
 | Maintenance, premium-related | **5.0%** of premium income while premiums are paid | ₩1,550.00 at `t = 0` |
@@ -622,8 +627,8 @@ year [REG-R22 제4-32조제5항·제8항](#krlib-reg-r22) [REG-R29].
 | Expense inflation `inflation_rate` | **2.0% p.a.**, the Bank of Korea's own target | ×**7.24** by `t = 1200` |
 
 **Two of those deserve a sentence each.** Acquisition cost and initial commission together are
-₩345,876 at `t = 0` against a ₩31,000 first-year office premium — **11.16 months of it** — and
-that is why `net_cf(0)` is −₩316,921.9753 on a contract whose first-year benefit outgo is
+₩327,600 at `t = 0` against a ₩31,000 first-year office premium — **10.57 months of it** — and
+that is why `net_cf(0)` is −₩298,646.2076 on a contract whose first-year benefit outgo is
 ₩141,963. And **expense inflation is not a detail on this product**: 2% a year compounds to
 **7.24 over a hundred years**, per-policy maintenance runs for the whole term rather than to
 납입완료, and the ₩400-a-month charge is ₩2,898 a month by the 100세 계약해당일. Maintenance
@@ -871,18 +876,33 @@ mortality rate, so
     sa_notional_pp = risk_prem_ann_pp / q(40, M)
                    = 145,537.04939942522 / 0.0011 = 132,306,408.54493201
 
-    surr_chg_cap_pp = 0.05 × 252,000 × 20 + 0.001 × 132,306,408.54493201
-                    = 252,000 + 132,306.408544932 = 384,306.408544932
+    formula limb    = 0.05 × 252,000 × 20 + 0.01 × 132,306,408.54493201
+                    = 252,000 + 1,323,064.08544932  = 1,575,064.08544932
 
-**Evaluating 제9호 at the 기준연령 rather than at a child age is a substantive finding, not a
-convenience.** At 만나이 0 the mortality rate is 0.0025 and at 5 it is 0.00012; using the
-latter would put the notional 보험가입금액 at ₩1,212,808,745 and the 표준해약공제액 at
-₩1,464,808.74 — **52.3 months of premium**, which is absurd on its face. At 남자 만 40세 the
-cap lands at ₩384,306.41, or **13.73 months of core premium**, and the 계약체결비용 the model
-deducts at 90% of it at **12.35 months**, against the FSC's own statement of the same cap as
-roughly thirteen months' premium for a 보장성보험 [REG-R29]. `acq_cost_months()` publishes
-the ratio so the two readings can be compared rather than asserted equal, and
-`check_acq_cost_cap()` asserts the acquisition cost stays inside the [별표 14] cap.
+    surr_chg_cap_pp = min( 1,575,064.08544932, 13 × 28,000 ) = 364,000.0
+
+**The 10/1000 of the schedule is one per cent, not one per mille, and at that rate the formula
+limb does not bind on this product — which is itself a finding.** [별표 14] and the FSC's 2019
+expense reform are two readings of **one** ceiling, the reform stating it as **보장성보험
+13배** of the monthly premium [REG-R29], and here they are 4.33 times apart: ₩1,575,064.09
+against ₩364,000.00, **56.25 months** of core premium against thirteen. The gap is structural.
+제9호 divides this contract's whole first-year risk premium by a 40-year-old's mortality rate,
+and a bundled child stack has a large risk premium and a very small death rate, so the notional
+보험가입금액 it produces is ₩132.3 million against the ₩100 million of accidental-disability
+cover actually written. `surr_chg_cap_pp()` therefore takes the **lesser** of the two, which is
+the treatment `Cancer_KR_S` states for the same mechanic, and **the thirteen-month limb binds
+on all ten shipped model points**: the formula limb runs from ₩245,582 on point 9 to
+₩1,654,269 on point 6 and clears thirteen months' premium on every one of them.
+`acq_cost_months()` publishes the ratio actually reached — **11.70**, or 0.9 × 13 — so the two
+readings can be compared rather than asserted equal, and `check_acq_cost_cap()` asserts the
+acquisition cost stays inside the cap.
+
+**Evaluating 제9호 at the 기준연령 rather than at a child age is a substantive finding too, not
+a convenience.** At 만나이 0 the mortality rate is 0.0025 and at 5 it is 0.00012; using the
+latter would put the notional 보험가입금액 at ₩1,212,808,745 and the formula limb at
+₩12,380,087.45 — **442.1 months of premium**, which is absurd on its face. At 남자 만 40세 it
+lands at ₩1,575,064.09, or 56.25 months. The reference age therefore decides the notional
+amount by a factor of nine even though, on this product, the binding limb is the other one.
 
 ### Processing order
 
@@ -1066,7 +1086,7 @@ and ₩28,000 from `t = 17` to `t = 239`**. `waiting_mths = 0`, `reduction_mths 
 | `neonatal_cost_pp("birth")` / `("block")` | ₩47,000 / ₩63,450 | **[std]** [S1] [S2] [S8] |
 | `expense_maint_pp` / `_prem_rate` / `inflation_rate` | ₩400 / 5% / 2% | **[std]** |
 | `expense_claim_pp` | ₩30,000 | **[std]** |
-| `acq_cost_pp` / `comm_init_pp` / `comm_renewal_rate` | ₩345,875.7677 / ₩224,819.2490 / 3% | **[std]**, capped by [REG-R20] [REG-R29] |
+| `acq_cost_pp` / `comm_init_pp` / `comm_renewal_rate` | ₩327,600.0000 / ₩212,940.0000 / 3% | **[std]**, capped by [REG-R20] [REG-R29] |
 | `prem_int_rate` (diagnostics only) | 2.75% | **[std]**, observed 2.50%–3.00% [S11] |
 
 ### The first eighteen policy months
@@ -1097,7 +1117,7 @@ and ₩28,000 from `t = 17` to `t = 239`**. `waiting_mths = 0`, `reduction_mths 
 
 | `t` | `claims_death` | `claims_lapse` | `claims_void` | `claim_expenses` | `expenses` | `commissions` | `net_cf` |
 |---|---|---|---|---|---|---|---|
-| 0 | 0.0000 | 66.0413 | 0.0000 | 30.1663 | 123,006.5187 | 224,819.2490 | -316,921.9753 |
+| 0 | 0.0000 | 66.0413 | 0.0000 | 30.1663 | 116,610.0000 | 212,940.0000 | -298,646.2076 |
 | 1 | 0.0000 | 64.6018 | 31.0077 | 30.0074 | 1,940.2787 | 0.0000 | 28,768.6648 |
 | 2 | 0.0000 | 63.1986 | 61.6931 | 29.8515 | 1,930.7437 | 0.0000 | 28,586.6907 |
 | 3 | 0.0000 | 61.8306 | 92.0653 | 29.6985 | 1,921.3905 | 0.0000 | 28,407.7911 |
@@ -1113,8 +1133,8 @@ and ₩28,000 from `t = 17` to `t = 239`**. `waiting_mths = 0`, `reduction_mths 
 | 13 | 56.8367 | 72.6440 | 0.0000 | 46.0222 | 1,848.6861 | 877.6031 | 13,055.4490 |
 | 14 | 60.7520 | 96.5221 | 0.0000 | 45.8547 | 1,842.4776 | 874.3399 | 12,976.9142 |
 | 15 | 64.6417 | 122.7277 | 0.0000 | 45.6904 | 1,836.3953 | 871.1382 | 12,897.0114 |
-| 16 | 68.5065 | 151.0962 | 0.0000 | 45.5292 | 1,830.4361 | 867.9967 | 12,815.8828 |
-| 17 | 7.0963 | 177.0176 | 0.0000 | 50.1247 | 1,685.0952 | 781.2126 | 18,782.9400 |
+| 16 | 67.0866 | 151.0962 | 0.0000 | 45.5292 | 1,830.4361 | 867.9967 | 12,817.3027 |
+| 17 | 6.7821 | 177.0176 | 0.0000 | 50.1247 | 1,685.0952 | 781.2126 | 18,783.2542 |
 
 `claims_maturity` is 0.0000 in every row above and in every row of the projection.
 
@@ -1150,7 +1170,7 @@ returns `q = 0` and `i_j = 0` from that fact rather than from a special case.
 
 | `t` | What happens |
 |---|---|
-| **0** | Issue. Acquisition expense and initial commission fall; `net_cf` is −₩316,921.9753 |
+| **0** | Issue. Acquisition expense and initial commission fall; `net_cf` is −₩298,646.2076 |
 | **1–4** | Pre-birth. Premium on three streams, the void decrement, `claims_void` rising with `cum_prem_pp`, and **every child-life column identically zero** |
 | **5** | **Birth.** The 태아보장기간 limbs pay ₩47,000 per birth all at once, plus one twelfth of the ₩63,450 신생아 block; every child-life cover switches on; `net_cf` is negative for **exactly one month** |
 | **12** | 보험나이 turns 1; **renewal commission starts** |
@@ -1161,7 +1181,7 @@ returns `q = 0` and `i_j = 0` from that fact rather than from a special case.
 
 | `t` | `pols_if` | `premiums` | `claims_diagnosis` | `claims_hospital` | `claims_death` | `claims_lapse` | `expenses` | `commissions` | `net_cf` |
 |---|---|---|---|---|---|---|---|---|---|
-| 17 | 0.9311920157 | 26,040.4216 | 130.3535 | 3,512.4563 | 7.0963 | 177.0176 | 1,685.0952 | 781.2126 | 18,782.9400 |
+| 17 | 0.9311920157 | 26,040.4216 | 130.3535 | 3,512.4563 | 6.7821 | 177.0176 | 1,685.0952 | 781.2126 | 18,783.2542 |
 | 120 | 0.7926463831 | 21,873.0675 | 79.3435 | 1,353.1380 | 15.6820 | 1,149.8680 | 1,480.1460 | 656.1920 | 15,651.7364 |
 | 239 | 0.7675760087 | 20,562.2638 | 183.5349 | 1,515.4096 | 106.0073 | 344.4363 | 1,483.5920 | 616.8679 | 14,908.0252 |
 | 240 | 0.7674946541 | 0.0000 | 183.5125 | 1,515.2490 | 106.2627 | 2,726.2032 | 456.1827 | 0.0000 | -6,391.6508 |
@@ -1179,10 +1199,10 @@ And the account, at the nodes the 상품요약서 publishes and the model must r
 
 | `t` | years | `cum_prem_pp` | `refund_ratio` | `cv_std_pp` = `cv_pp` | `surr_chg_pp` | `av_pp` | [S2] published |
 |---|---|---|---|---|---|---|---|
-| 0 | 0 | 0 | 0.00000000 | 0.0000 | 384,306.4085 | 0.0000 | — |
-| 12 | 1 | 336,000 | 0.00000000 | 0.0000 | 329,405.4930 | 252,000.0000 | **0.0%** |
-| 36 | 3 | 1,008,000 | 0.45600000 | 459,648.0000 | 219,603.6620 | 679,251.6620 | **45.6%** |
-| 60 | 5 | 1,680,000 | 0.62500000 | 1,050,000.0000 | 109,801.8310 | 1,159,801.8310 | **62.5%** |
+| 0 | 0 | 0 | 0.00000000 | 0.0000 | 364,000.0000 | 0.0000 | — |
+| 12 | 1 | 336,000 | 0.00000000 | 0.0000 | 312,000.0000 | 252,000.0000 | **0.0%** |
+| 36 | 3 | 1,008,000 | 0.45600000 | 459,648.0000 | 208,000.0000 | 667,648.0000 | **45.6%** |
+| 60 | 5 | 1,680,000 | 0.62500000 | 1,050,000.0000 | 104,000.0000 | 1,154,000.0000 | **62.5%** |
 | 84 | 7 | 2,352,000 | 0.66980000 | 1,575,369.6000 | **0.0000** | 1,575,369.6000 | — |
 | 120 | 10 | 3,360,000 | 0.73700000 | 2,476,320.0000 | 0.0000 | 2,476,320.0000 | **73.7%** |
 | 180 | 15 | 5,040,000 | 0.78300000 | 3,946,320.0000 | 0.0000 | 3,946,320.0000 | **78.3%** |
@@ -1213,13 +1233,13 @@ to nil at 만기, there being no 만기환급금 on the protection part.
                     = 15,500 × 0.004260729152353977             = 66.0413018615
     claim_expenses(0) = 30,000 × ( 0 × 1 + 0 + 0.0010055425391276573 )
                                                                 = 30.1662761738
-    expenses(0)  = ( 345,875.7676904388 − 224,819.2489987852 ) × 1
+    expenses(0)  = ( 327,600.0000000000 − 212,940.0000000000 ) × 1
                    + 400 × 1.0 × 1 + 0.05 × 31,000
-                 = 121,056.5186916536 + 400.0000 + 1,550.0000    = 123,006.5186916536
-    commissions(0) = 224,819.2489987852 × 1                      = 224,819.2489987852
+                 = 114,660.0000000000 + 400.0000 + 1,550.0000    = 116,610.0000000000
+    commissions(0) = 212,940.0000000000 × 1                      = 212,940.0000000000
 
     net_cf(0) = 31,000.0000 − 66.0413018615 − 30.1662761738
-                − 123,006.5186916536 − 224,819.2489987852        = −316,921.9752684741
+                − 116,610.0000000000 − 212,940.0000000000        = −298,646.2075780353
 
 Note that `claims_void(0)` is **zero and not nil by accident**: no premium has yet been
 collected at the start of month 0, so there is nothing to refund. The decrement is there —
@@ -1326,8 +1346,8 @@ same month and they pull in opposite directions. `l(17) = 0.9311920157360853`,
     benefit_NEONATAL  = 0.0000                       [t = f = 17, the module has ended]
 
     claims_death(17) = ( A(17) + U(17) ) × pols_death(17)
-                     = ( 351,750.1115775053 + 14,000.0000 ) × 0.000019402056913845515
-                     = 365,750.1115775053 × 0.000019402056913845515 = 7.0963044811
+                     = ( 335,553.3333333334 + 14,000.0000 ) × 0.000019402056913845515
+                     = 349,553.3333333334 × 0.000019402056913845515 = 6.7820536678
     claims_lapse(17) = ( 45,220.0000 + 14,000.0000 ) × 0.002989151566722004
                      = 59,220 × 0.002989151566722004  = 177.0175557813
     expenses(17)     = 400 × 1.028450933381417 × 0.9311920157360853
@@ -1335,7 +1355,7 @@ same month and they pull in opposite directions. `l(17) = 0.9311920157360853`,
                      = 383.0741190965 + 1,302.0210792298 = 1,685.0951983263
     commissions(17)  = 0.03 × 26,040.4215845963        = 781.2126475379
 
-    net_cf(17) = 26,040.4215845963 − 7,257.4816229284  = 18,782.9399616679
+    net_cf(17) = 26,040.4215845963 − 7,257.1673721150  = 18,783.2542124813
 
 **`U(17)` is ₩14,000 and not ₩15,500**, because the 미경과보험료 is half of *that month's*
 office premium and the 태아 stream has stopped. And the waiver rate steps up in the same
@@ -1386,13 +1406,13 @@ years.**
 | `claims_maturity` | 0.0000 |
 | `claims_void` | 306.8991 |
 | `claim_expenses` | 477.6984 |
-| `expenses` | 143,885.0484 |
-| `commissions` | 224,819.2490 |
-| **`net_cf`** | **−148,931.4790** |
+| `expenses` | 137,488.5297 |
+| `commissions` | 212,940.0000 |
+| **`net_cf`** | **−130,655.7114** |
 
 Benefit outgo of ₩141,963.2351 is **39.2%** of year-1 premium, and **57.4% of it is the 태아
-module**. Against that, ₩345,875.7677 of acquisition expense and initial commission at
-`t = 0` — **11.16 months of the ₩31,000 first-year office premium** — produce the
+module**. Against that, ₩327,600.0000 of acquisition expense and initial commission at
+`t = 0` — **10.57 months of the ₩31,000 first-year office premium** — produce the
 characteristic new-business strain.
 
 ### Undiscounted totals over the whole 1,201-month projection
@@ -1408,30 +1428,30 @@ characteristic new-business strain.
 | `claims_event` | 466,414.7324 |
 | `claims_liability` | 195,939.3565 |
 | `claims_neonatal` | 106,330.7157 |
-| `claims_death` | **3,693,355.2484** |
+| `claims_death` | **3,693,345.7287** |
 | `claims_lapse` | **2,695,713.6444** |
 | `claims_maturity` | **0.0000** |
 | `claims_void` | 306.8991 |
 | `claim_expenses` | 79,991.4163 |
-| `expenses` | 1,016,064.7558 |
-| `commissions` | 377,693.9745 |
-| **`net_cf`** | **−13,103,720.2872** |
+| `expenses` | 1,009,668.2371 |
+| `commissions` | 365,814.7255 |
+| **`net_cf`** | **−13,085,434.9998** |
 
 Morbidity outgo is ₩10,698,632.2832 and account-driven outgo — death, lapse, maturity, void —
-is ₩6,389,375.7919; the four exits account for **0.0049757330** voids, **0.4688979472**
+is ₩6,389,366.2722; the four exits account for **0.0049757330** voids, **0.4688979472**
 deaths, **0.5103916457** lapses and **0.0157346742** maturities, summing exactly to one.
 
 ### The equivalence premium
 
 | Cells | Value |
 |---|---|
-| `epv_outgo_pp()` | 4,712,867.731474926 |
+| `epv_outgo_pp()` | 4,694,583.10870084 |
 | `epv_prem_unit_pp()` | **151.0503621937853** |
-| `equiv_premium_mth_pp()` | **31,200.638403161858** |
+| `equiv_premium_mth_pp()` | **31,079.588559199034** |
 
-At the 보장부분 적용이율 of 2.75%, the discounted outgo of ₩4,712,867.73 divided by the
+At the 보장부분 적용이율 of 2.75%, the discounted outgo of ₩4,694,583.11 divided by the
 discounted, in-force-weighted count of premium instalments actually collected gives a level
-core premium of **₩31,200.64**, against a shipped ₩28,000. **The shipped basis is 11.43%
+core premium of **₩31,079.59**, against a shipped ₩28,000. **The shipped basis is 11.00%
 short** and, per `product-spec.md`, this figure governs. `check_equiv_premium()` asserts the
 identity closes over 1,201 terms spanning eight orders of magnitude.
 
@@ -1444,18 +1464,18 @@ lapse assumption converges to 0.1% at 납입완료.
 ### What the numbers say
 
 The shape is a hundred-year contract with a twenty-year premium in one line: a new-business
-strain of ₩316,922 at issue, one negative month at birth, a positive stretch of nearly twenty
+strain of ₩298,646 at issue, one negative month at birth, a positive stretch of nearly twenty
 years averaging about ₩14,000 a month, and then **eighty years of pure outgo** with not a
-single positive month in it. Undiscounted, ₩5,458,038 of premium meets ₩17,088,008 of benefit
-and ₩1,473,750 of expense and commission, for a total of −₩13,103,720 — and that is not a
+single positive month in it. Undiscounted, ₩5,458,038 of premium meets ₩17,087,999 of benefit
+and ₩1,455,474 of expense and commission, for a total of −₩13,085,435 — and that is not a
 defect in the projection but what such a contract looks like before discounting. Discounted at
-2.75% the two sides balance at ₩31,200.64 a month.
+2.75% the two sides balance at ₩31,079.59 a month.
 
 Three of the totals are worth reading directly. **`claims_hospital` is the largest benefit
 line at ₩5,033,285 — 47.0% of all morbidity outgo and 92.2% of the whole premium collected.**
 That is what a ₩40,000-a-day 입원일당 written to 100세 costs on the shipped basis, and it is
 the opposite of the chassis, where the diagnosis limbs dominate. **`claims_death` at
-₩3,693,355 is the second largest line and is not a death benefit at all**: it is the
+₩3,693,346 is the second largest line and is not a death benefit at all**: it is the
 계약자적립액 plus the 미경과보험료 paid on a death 상법 제732조 forbids covering, and it
 becomes the biggest single monthly outgo after about `t = 700` because the account is then
 ₩10.7 million and mortality is finally material. **`claims_maturity` is identically zero**:
@@ -1546,8 +1566,8 @@ In rough order of leverage on a book of this product.
    seven times on the same charge. **The assumption is not a detail on this product.**
 4. **The lapse assumption over the payment period, and the supervisor agrees.** The shipped
    `loglinear` basis converges to 0.1% at 납입완료; `disclosed` sits at 5.0/3.0/1.0% and then
-   0.5%. On model point 5 the two produce undiscounted `net_cf` of −₩8,046,832 against the
-   anchor's −₩13,103,720, and on a 무해지 form the difference is worth still more because
+   0.5%. On model point 5 the two produce undiscounted `net_cf` of −₩8,061,541 against the
+   anchor's −₩13,085,435, and on a 무해지 form the difference is worth still more because
    `claims_lapse` is identically zero over the period. This is the sensitivity the 2024
    계리가정 guideline exists to constrain [R11] [REG-R27] and the reason it is a supervisory
    matter at all.
@@ -1572,11 +1592,12 @@ In rough order of leverage on a book of this product.
    as a lump sum at the full 가입금액 it would cost **₩4,626,483.18**, 85% of the whole
    premium collected.
 8. **The term, not the age.** [R5]'s own index puts a 0세 issue at 100 against a 30세 issue's
-   264 for the same cover over 20년납 to 100세 만기, and model point 9 — the 30세만기 female
-   cell — is the one shipped point whose premium is right: **₩3,026 shipped against ₩3,025.49
-   computed**, a gap of 0.02%. On the other nine points the computed premium runs from 12.2%
-   below the shipped figure to 46.2% above it. **The term extension of 2011 is what makes this
-   product hard to price and easy to under-price** [R5].
+   264 for the same cover over 20년납 to 100세 만기, and the two short-horizon cells are the
+   two whose premiums come closest: model point 8 at **+0.57%** and model point 9 — the
+   30세만기 female cell — at **₩3,026 shipped against ₩2,968.47 computed**, 1.90% *over*.
+   Across the ten the computed premium runs from 11.75% below the shipped figure to 43.78%
+   above it. **The term extension of 2011 is what makes this product hard to price and easy to
+   under-price** [R5].
 9. **Longevity is the tail risk, not mortality.** Only 1.57% of policies reach the 100세
    계약해당일 on the shipped basis, yet `claims_hospital` peaks at **₩10,877.56 at `t = 965`**
    and `claims_death` at **₩15,452.17 at `t = 1013`** — and **`claims_death` is the largest
@@ -1658,15 +1679,15 @@ is checkable against the shipped model.
   without the taper pays ₩10,678,080 to the 1.57% of policies that get there.
 - **Starting the 계약자적립액 at the surrender charge.** The published grid is 「순보험료식
   계약자적립액에서 해약공제액을 공제한 금액」 [S2], already net and floored at zero, so adding
-  the unamortised charge back where the floor binds gives an account of ₩384,306 at `t = 0` on
+  the unamortised charge back where the floor binds gives an account of ₩364,000 at `t = 0` on
   a contract that has collected nothing. The cap at `net_prem_ratio × cum_prem_pp(t)` is what
   makes `av_pp(0) = 0`; `check_av_bounds()` asserts the three inequalities.
 - **Computing the notional 보험가입금액 at the insured's own age.** [별표 15] 제9호 is
   evaluated at the **기준연령 요건, 남자 만 40세** [REG-R21] [REG-R9 제1-2조제2호](#krlib-reg-r9). At 만나이
-  5 the mortality rate is 0.00012 and the 표준해약공제액 comes out above five years of
-  premium; at 40 it is ₩384,306.41, or **13.73 months of premium** — and the 계약체결비용 at
-  90% of it, **12.35 months** — against the FSC's thirteen-month reading of the same cap
-  [REG-R29].
+  5 the mortality rate is 0.00012 and the [별표 14] formula limb comes out at ₩12,380,087.45,
+  **442.1 months of premium**; at 40 it is ₩1,575,064.09, or **56.25 months**. Neither binds:
+  the FSC's thirteen-month reading of the same cap does [REG-R29], at ₩364,000.00, and the
+  계약체결비용 at 90% of it at **11.70 months**.
 - **Dropping the void or the maturity from the roll-forward.** There are **four** exits, not
   two. `check_exit_total()` requires them to sum to `pols_if_init()` over the projection —
   0.0049757330 + 0.4688979472 + 0.5103916457 + 0.0157346742 = 1 exactly.

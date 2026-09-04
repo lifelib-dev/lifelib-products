@@ -667,6 +667,7 @@ python -m pytest tests -q
 [R1]: #krlib-immediate_annuity-r1
 [R21]: #krlib-immediate_annuity-r21
 [R27]: #krlib-immediate_annuity-r27
+[R28]: #krlib-immediate_annuity-r28
 [R31]: #krlib-immediate_annuity-r31
 [R6]: #krlib-immediate_annuity-r6
 [REG-R10]: #krlib-reg-r10

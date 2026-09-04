@@ -688,8 +688,10 @@ all accessed 2026-09-03:
   suppressed form has **no 보험계약대출 and no automatic premium loan** to break a lapse, and
   the regulatory dispensation conditional on having priced with a 최적해지율. Retrieved: yes.
 - **REG-R29** — 「불합리한 보험 사업비와 모집수수료를 개편하여 …」 (2019-08-01): the reading of
-  the 표준해약공제액 cap as roughly **thirteen months' premium** for a 보장성보험, against
-  which `acq_cost_months()` = 12.35 is cross-checked. Retrieved: yes.
+  the 표준해약공제액 cap as **thirteen months' premium** for a 보장성보험. On this product it
+  is the reading that **binds** — the [별표 14] formula limb reaches 56.25 months — so it is
+  carried as `surr_chg_cap_months` = 13.0 and `acq_cost_months()` = 11.70 is the 90% of it the
+  model deducts. Retrieved: yes.
 - **REG-R30** — 보험업권 자본규제 고도화 (2025-03-12) and 지급여력비율 현황: cited beside
   [REG-R13] for the K-ICS layer. Retrieved: **in part** (the FSC page in full; the FSS
   quarterly only partly).
