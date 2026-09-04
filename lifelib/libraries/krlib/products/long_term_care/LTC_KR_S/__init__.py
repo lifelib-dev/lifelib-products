@@ -26,8 +26,10 @@ rate well above that of a healthy life of the same age. ``LTC_KR_S`` is therefor
 **three-state model** — healthy, in long-term care, dead — with the care state absorbing
 and carrying its own mortality basis, and with a fourth compartment inside it: the light
 grades (3~5등급 and 인지지원등급) that sit *below* the contractual threshold, from which
-most severe-grade lives arrive. ``Cancer_KR_S`` needs no such basis, because 국가암등록통계
-publishes an incidence directly.
+most severe-grade lives arrive. ``Cancer_KR_S`` needs no such basis, and it reads an
+**incidence** straight off 보험개발원's published 장기손해보험 참조순보험요율 display, whose
+「기타피부암 및 갑상선암 이외의 암 발생률」 grid is stated on the insured definition. Nothing
+on that display reaches this trigger.
 
 **The basis is a prevalence, and converting it is the modelling work.** The one large
 public dataset — the 국민건강보험공단 노인장기요양보험 통계연보 연령별 인정률 — counts
@@ -38,7 +40,7 @@ care state's own mortality in it; it is not an assumed incidence rate.
 **Spaces.** The model contains two:
 
 :mod:`~.LTC_KR_S.Data`
-    Reads the seven input CSVs and holds their filename References. It takes no
+    Reads the eight input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
 :mod:`~.LTC_KR_S.Projection`

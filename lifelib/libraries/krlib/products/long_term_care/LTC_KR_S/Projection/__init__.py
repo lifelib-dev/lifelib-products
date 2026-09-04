@@ -411,8 +411,10 @@ def premium_mth_pp():
     month — and the female cell's ₩8,400 the same way **[std]**.  On this model's own basis the
     anchor premium buys a benefit outgo whose present value at the 예정이율 is **46.0%** of the
     present value of premium income, and the female cell's 51.5%; the seven other model points
-    carry premiums set at approximately that ratio, landing between 31% and 43% once the annuity
-    cap and the 간편심사 loading are applied.  :func:`uw_loading` multiplies it.
+    carry premiums set at approximately that ratio, landing between **22% and 44%** once the
+    threshold, the annuity cap, the term and the 간편심사 loading are applied — the 22% being
+    model point 8, whose 1.40 loading is pure margin here because no retrieved source gives the
+    simplified pool's own incidence.  :func:`uw_loading` multiplies it.
     """
     return uw_loading() * float(model_point()["premium"])
 
@@ -839,7 +841,7 @@ def sub65_gradient():
     ``ln(i(60) / i(40)) / 20`` on the combined 1·2등급 rate: **0.1222 for men (13.0% a year)**
     and **0.1648 for women (17.9%)**.  It is the only Korean evidence anywhere on how
     long-term-care incidence behaves below 65, and it carries the sex ratio with it — female
-    over male on the disclosed rate runs 0.36 at 40, 0.58 at 50 and 0.87 at 60, so a curve
+    over male on the combined rate runs 0.37 at 40, 0.58 at 50 and 0.87 at 60, so a curve
     built on this gradient crosses one in the late sixties, exactly where the population data
     finds the crossover.
     """
@@ -873,9 +875,16 @@ def disclosed_inc_ratio_at(x):
     """The model's own first-entry rate at ``x`` over the disclosed 예정위험률 at ``x``.
 
     Published rather than hidden, because it is the largest single uncertainty in this model.
-    The model's first-entry rate is ``i_D(x) + P_L(x) rho(x) / (1 - P_C(x))`` — direct entry
-    plus progression by lives already certified at a light grade — and on the shipped basis
-    it runs at roughly **one fifth** of the disclosed rate at ages 40 to 60.  Four things all
+    The model's first-entry rate is direct entry plus progression by lives already certified
+    at a light grade, both read on the same sub-65 convention the projection uses — the whole
+    basis is evaluated at ``xe = max(x, 65)`` and carried down on :func:`sub65_factor_at`::
+
+        i_D(x) + P_L(xe) rho(xe) sub65_factor_at(x) / (1 - P_C(xe))
+
+    Reading ``P_L`` and ``rho`` at ``x`` itself below 65 instead — the shorter form the
+    identity suggests — mixes an unscaled light-grade prevalence with a scaled direct rate and
+    returns 0.267 at 만나이 40 rather than the 0.240 published here.  On the shipped basis the
+    ratio runs at roughly **one fifth** of the disclosed rate at ages 40 to 60.  Four things all
     point the same way and none of them is quantified by any retrieved source: a 예정위험률
     is a loaded pricing rate and not a best estimate; the conversion reads a **cross-section**
     as a cohort path in a scheme whose certified stock grew 71.8% in six years; the care
@@ -1417,8 +1426,15 @@ def ann_tests(t):
 def cum_prem_pp(t):
     """The cumulative office premium paid per policy by the start of month t.
 
-    ``P x min(t, n_P)``.  It is the denominator of the published 환급률 progression and the
-    amount returned where a certification inside the 보장개시일 window voids the cover.
+    ``P x min(t, n_P)`` — the premiums received at ``0 ... t-1``, that is, everything paid
+    **before** month t's own premium.  It is the denominator of the published 환급률
+    progression, which is quoted at policy anniversaries where no further premium has yet
+    fallen due.
+
+    The refund on a voided cover is **not** this quantity but ``cum_prem_pp(t + 1)``: the
+    premium of month t is received at the *start* of the month and the void is recognised at
+    the *end* of it, so a life voided in month t has paid ``t + 1`` premiums and 「이미 납입한
+    보험료를 돌려드립니다」 returns all of them.  See :func:`claims`.
     """
     return premium_mth_pp() * min(t, prem_period_mths())
 
@@ -1598,15 +1614,20 @@ def claims(t, kind=None):
         period on the composite's 미지급형 form.
 
     ``"VOID"``
-        the premiums returned where a certification inside the 보장개시일 window makes the
-        cover 무효.  Tiny, and published because it is a different mechanism from a refused
-        claim.
+        ``cum_prem_pp(t + 1) x pols_void(t)``: the premiums returned where a certification
+        inside the 보장개시일 window makes the cover 무효.  The cover is void **ab initio**
+        and 「이미 납입한 보험료를 돌려드립니다」, so every premium the life has paid comes
+        back — and a life voided in month t has paid ``t + 1`` of them, month t's included,
+        because premium falls at the start of the month and the void is recognised at the
+        end of it.  ``cum_prem_pp(t)`` would leave the insurer holding one month's premium on
+        a contract it has just declared never to have existed.  Tiny, and published because
+        it is a different mechanism from a refused claim.
 
     ``"MATURITY"``
         identically **zero**, and published rather than dropped: 「이 상품은
         순수보장성보험으로 보험계약 만기시 지급받는 금액(만기환급금)이 없습니다」.
 
-    With no ``kind``, the total of all six.
+    With no ``kind``, the total of all seven.
     """
     if kind is None:
         return (claims(t, "LUMP") + claims(t, "ANNUITY") + claims(t, "DEMENTIA")
@@ -1623,7 +1644,7 @@ def claims(t, kind=None):
     if kind == "LAPSE":
         return cv_pp(t) * pols_lapse(t)
     if kind == "VOID":
-        return cum_prem_pp(t) * pols_void(t)
+        return cum_prem_pp(t + 1) * pols_void(t)
     if kind == "MATURITY":
         return 0.0
     raise ValueError("invalid kind")

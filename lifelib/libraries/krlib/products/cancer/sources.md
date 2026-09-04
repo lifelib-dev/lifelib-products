@@ -30,12 +30,15 @@ Three tag families do three different jobs in `product-spec.md`, `technical-note
 
 **Every tag used in the three documents has an entry here, and every entry here is used.**
 No source was added at drafting. Two research-file entries were **dropped** because neither
-document cites them, so the numbering has a gap and the gap is deliberate: **[R9]**
-(통계청 「2024년 사망원인통계 결과」) and **[R14]** (보험개발원 제10회 경험생명표). [R9]'s
+document cites them, so the numbering has a gap and the gap is deliberate: **R9**
+(통계청 「2024년 사망원인통계 결과」) and **R14** (보험개발원 제10회 경험생명표). They are
+named here **without their brackets deliberately**: a bare `[R9]` in this file has no local
+anchor to resolve against, so the citation tooling would silently point it at the
+cross-product [REG-R9], which is a different document altogether. R9's
 headline figures — 악성신생물 24.8% of all Korean deaths at 174.3 per 100,000 — were
 retrieved only in part and nothing in the model rests on them, because this product's
 mortality basis is an all-cause table and its cancer decrement is an incidence rate rather
-than a mortality one. [R14] was **not retrieved at all** and the table it names is not
+than a mortality one. R14 was **not retrieved at all** and the table it names is not
 published in full in any case, so every statement about the 경험생명표 in these documents
 cites the cross-product [REG-R33] and [REG-R34], and the shipped `mort_table.csv` is
 calibrated to [REG-R38] instead. Their numbers are left vacant rather than reused: the
@@ -44,8 +47,8 @@ research file is never renumbered.
 **What is sourced quantitatively, and it is more than in any other morbidity product in this
 library.** The 「기타피부암 및 갑상선암 이외의 암 발생률」 grid of [R5] is a **published,
 dated, insured-definition cancer incidence basis**, and `incidence_table.csv` reproduces it
-verbatim for ages 0–80 with only the two rows above 80 marked [std]. The five-year relative
-survivals that calibrate `survival_table.csv` and the crude site rates that anchor
+verbatim for ages 0–80 with only the two rows per sex above 80 marked [std]. The five-year
+relative survivals that calibrate `survival_table.csv` and the crude site rates that anchor
 `tier_share_table.csv` come from [R1]. The tier ratios in `tier_table.csv` are read off
 [S3 별표 1]. Everything else — the tier decomposition itself, the grading of the excess
 hazard across select years, every row of `care_table.csv`, the lapse level, the expense and
@@ -61,12 +64,13 @@ resolve who said what — here — and never has to.
 
 ## Primary product sources
 
-Eleven documents from seven carriers. Eight are **보험약관** — the contractual instrument
-itself, four of them over 150 pages and two over 500 — drawn deliberately from **both sides
-of the 제3보험 licence** so that the composite can show that a 손해보험 writer and a
-생명보험 writer sell the identical cover [S1] [S2] [S8] against [S3]–[S7]. Two are
-consumer-education pages rather than contractual documents [S9] [S10], and one could not be
-fetched at all [S11].
+Eleven documents from seven carriers. **Seven** are **보험약관** — the contractual
+instrument itself, five of them over 150 pages and two over 500 — drawn deliberately from
+**both sides of the 제3보험 licence** so that the composite can show that a 손해보험 writer
+and a 생명보험 writer sell the identical cover [S1] [S2] against [S3]–[S7]. An eighth
+non-life document is a **상품 페이지** rather than a 약관, and carries the session's only
+published premium and surrender-value illustration [S8]. Two are consumer-education pages
+rather than contractual documents [S9] [S10], and one could not be fetched at all [S11].
 
 **Retrieval method, common to the set.** Plain `curl` is blocked for most Korean hosts in
 this session, so everything below was fetched with a summarising fetcher; where that fetcher
@@ -203,8 +207,11 @@ article numbers are as printed.
   on the robot-surgery module, and — the point that matters most to the model — it **confirms
   that on treatment benefits the 감액 clock runs from the 보험계약일 to the treatment date,
   not to the 진단확정일**. That is the divergence `model.md` records and does not implement:
-  the model applies the reduction on the diagnosis clock throughout and understates wherever
-  the two dates fall in different periods.
+  the model applies the reduction to the four diagnosis lines **only**, and never to the
+  inpatient, surgery or treatment limbs. It therefore gives the contract's own answer
+  whenever the treatment date falls outside the 감액기간 — which includes every case in
+  which the diagnosis itself does — and **overstates** the care limbs of a treatment that
+  falls inside it.
 
 (krlib-cancer-s6)=
 
@@ -736,8 +743,8 @@ Every entry above traces to `_research/cancer.md`, which is the citation ground 
 this product: the S# and R# numbering used here is that file's numbering, unchanged, and it
 is **never renumbered** because these documents cite against it. **The research file's own
 numbering is not this one's** in the sense that matters — it runs S1–S11 and **R1–R14**,
-where this file carries R1–R8 and R10–R13, the two vacant numbers being the uncited [R9] and
-the unretrieved [R14] described in the orientation above. In other products of this library
+where this file carries R1–R8 and R10–R13, the two vacant numbers being the uncited R9 and
+the unretrieved R14 described in the orientation above. In other products of this library
 the two lists diverge further, and a reader moving between them must resolve tags against the
 product's own `sources.md` and never against a neighbour's.
 
@@ -775,13 +782,11 @@ on so many of its rows, and why `care_table.csv` says so on every one of its own
 [R11]: #krlib-cancer-r11
 [R12]: #krlib-cancer-r12
 [R13]: #krlib-cancer-r13
-[R14]: #krlib-reg-r14
 [R3]: #krlib-cancer-r3
 [R5]: #krlib-cancer-r5
 [R6]: #krlib-cancer-r6
 [R7]: #krlib-cancer-r7
 [R8]: #krlib-cancer-r8
-[R9]: #krlib-reg-r9
 [REG-R1]: #krlib-reg-r1
 [REG-R13]: #krlib-reg-r13
 [REG-R25]: #krlib-reg-r25
@@ -796,6 +801,7 @@ on so many of its rows, and why `care_table.csv` says so on every one of its own
 [REG-R50]: #krlib-reg-r50
 [REG-R53]: #krlib-reg-r53
 [REG-R61]: #krlib-reg-r61
+[REG-R9]: #krlib-reg-r9
 [std]: #krlib-std
 [unverified]: #krlib-unverified
 <!-- END generated citation links -->

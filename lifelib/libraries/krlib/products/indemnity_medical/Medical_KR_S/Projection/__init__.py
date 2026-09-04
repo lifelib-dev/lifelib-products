@@ -1732,9 +1732,11 @@ def claim_expenses(t):
     ``expense_claim_rate x claims(t)``.  It stands beside :func:`expenses` rather than
     inside it because 손해조사비 is the component the FSS itself separates out [R7], and
     because the experience-rating machinery makes claim **frequency** a driver of expense
-    as well as of benefit.  The published 3% is 3% of premium; at the break-even loss
-    ratio the two coincide, and making it proportional to claims is the **[std]** choice
-    because that is what drives it.
+    as well as of benefit.  Nothing published splits the aggregate: the 3% is a **[std]**
+    decomposition of a figure the FSS quotes as a percentage of *premium*, and the two
+    bases coincide at a loss ratio of 100% — about where this line has actually run, 101.0%
+    in 2025 [R7].  Making it proportional to claims is the **[std]** choice because that is
+    what drives it.
     """
     return expense_claim_rate * claims(t)                            # noqa: F821
 

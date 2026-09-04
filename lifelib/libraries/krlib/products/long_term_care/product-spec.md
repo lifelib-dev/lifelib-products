@@ -11,7 +11,7 @@ carrying a source tag — [S#] (primary product documents: policy conditions (*y
 numbered per `_research/long-term-care.md` and resolved in `sources.md` (same directory;
 numbering frozen, never renumbered), and [REG-R#] (the cross-product reference library
 `references/regulatory-and-actuarial-references.md`, whose own R-numbering is distinct and
-frozen at R1–R60) — were extracted from the cited document. Values marked **[std]** are
+frozen at R1–R62) — were extracted from the cited document. Values marked **[std]** are
 standardizations introduced for the reference implementation; each [std] table row carries a
 numbered footnote giving the rationale and, where the research file brackets it, the observed
 range across insurers. Facts the research file could not confirm against a retrieved document
@@ -86,10 +86,14 @@ consequences run through everything below.
    a certification, not people entering one. Converting it is the actuarial work that matters
    in this product, it cannot be done from the yearbook alone, and it is set out in
    "Product overview and market role" below rather than assumed away. The cancer chassis has
-   no such step: 국가암등록통계 publishes an incidence directly.
+   no such step: 보험개발원 publishes an 「기타피부암 및 갑상선암 이외의 암 발생률」 grid
+   by age and sex on its 장기손해보험 참조순보험요율 display, on the insured definition, so
+   `Cancer_KR_S` reads an **incidence** [REG-R61]. Nothing on that display reaches this
+   trigger.
 4. **The 만나이 projection basis, which the chassis introduces as an approximation, is here
-   exact where it matters.** Both models project on **만나이** (age last birthday) while the
-   contract ages on **보험나이** (*boheom nai*, nearest birthday under the six-month rule of
+   exact where it matters.** Both models project on **만나이** (*man nai*, age last birthday)
+   while the contract ages on **보험나이** (*boheom nai*, nearest birthday under the six-month
+   rule of
    표준약관 제21조) [REG-R25], and in `Cancer_KR_S` that half-year offset is a named [std]
    simplification adopted because the public decrements are published on 만나이. Here the
    same convention is additionally **the contract's own**: the benefit definition contains a
@@ -280,7 +284,7 @@ derived](#krlib-long_term_care-r4):
 | 65–69 | 9,801 | 3,715,757 | **0.264%** |
 | 70–74 | 13,121 | 2,437,413 | **0.538%** |
 | 75–79 | 20,124 | 1,796,342 | **1.120%** |
-| 80–84 | 35,377 | 1,344,376 | **2.632%** |
+| 80–84 | 35,377 | 1,344,376 | **2.631%** |
 | 85+ | 68,112 | 1,105,925 | **6.159%** |
 
 Four readings, all load-bearing.
@@ -330,9 +334,10 @@ measures it: [R11] followed **271,474** people certified between 2008-07-01 and 
 within one year. That figure is a **lower bound and not an estimate of `D`**, because the
 design excludes by construction everybody certified early in the window who was still alive at
 the end of it — that is, everybody with a long duration. Substituting it into the identity at
-65+ gives `I ≈ 10.85% / 1.414 = 7.67%` per annum, which is its own refutation: a population in
-which 45.6% of entrants die within a year cannot support a stock 8.6 times its annual entry
-count. The arithmetic is recorded here so that nobody repeats it.
+65+ gives `I ≈ 10.85% / 1.414 = 7.67%` per annum, which is its own refutation: the same
+identity has the certified stock turning over entirely every **1.414 years**, about seventeen
+months, whereas only **27.4%** of it (318,992 of 1,165,030) arose from a first application at
+all [R4 표2-5, derived](#krlib-long_term_care-r4). The arithmetic is recorded here so that nobody repeats it.
 
 **Two independent estimators that do work.** First, from the yearbook's own application-route
 table. [R4 표2-5](#krlib-long_term_care-r4) classifies the 1,165,030 current certifications by the application type that
@@ -419,8 +424,11 @@ mortality table by grade, a recovery or grade-improvement rate, a progression ra
 grades, a select period or underwriting-selection factor, a utilisation rate by grade and
 service type, or a lapse table for a Korean 간병보험. 보험개발원 publishes neither a
 장기요양 incidence table nor a post-onset mortality table publicly, and no reference to one
-appears in any retrieved document [R9]; the 참조순보험요율 it does file are not published
-[REG-R4] [REG-R34]. All of these are [std] in `LTC_KR_S`, constrained where possible by [R11]
+appears in any retrieved document [R9]. 보험개발원 does publish a numeric **장기손해보험
+참조순보험요율** display, and it carries an 암 발생률 grid and a 질병입원율 grid [REG-R61] —
+which is why `Cancer_KR_S`'s incidence basis is source-tagged and this one's is not — but **it
+carries nothing for 장기요양** [REG-R4] [REG-R61].
+All of these are [std] in `LTC_KR_S`, constrained where possible by [R11]
 (post-onset mortality shape), [R4 표2-5](#krlib-long_term_care-r4) (progression versus direct entry), [S1] (the level of
 the 1·2등급 rate at 40/50/60) and [REG-R27] (the log-linear lapse shape on the 무해지 form).
 
@@ -916,9 +924,10 @@ Four properties of the public limb belong in a model rather than in a footnote.
 - **The certification has a finite 유효기간 and must be renewed, and the grade moves both
   ways.** The base period is two years; on renewal at the same grade it lengthens — before
   2025-07-01, 1등급 4년 / 2~4등급 3년 / 5등급·인지지원 2년, and from that date 1등급 **5년** /
-  2~4등급 **4년** with the lightest two unchanged [R13, a vendor restatement; the decree text
-  was not retrieved, so these values are [unverified] and are used only inside a sensitivity]
-  [REG-R55]. **107,365** current certifications — 9.2% of the stock — arose from a
+  2~4등급 **4년** with the lightest two unchanged
+  [R13, a vendor restatement](#krlib-long_term_care-r13) [REG-R55] — the decree text was not
+  retrieved, so these values are [unverified] and are used only inside a sensitivity.
+  **107,365** current certifications — 9.2% of the stock — arose from a
   등급변경신청 [R4 표2-5](#krlib-long_term_care-r4), so re-grading in both directions plainly happens; no retrieved
   source gives a transition matrix.
 - **The composite's benefit is insensitive to all of that, and its annuity is deliberately
@@ -1477,10 +1486,15 @@ than researchable.
   a `provenance` column on every row. This product needs **two** such tables — a healthy-life
   decrement and a post-onset impaired-life decrement — and only the first has even a public
   anchor.
-- **Morbidity.** 참조순보험요율 are filed with the FSC under 보험업법 제176조 and never
-  published, becoming visible only as the ratio called the 보험가격지수 [REG-R4] [REG-R22]; and
-  **보험개발원 publishes no 장기요양 incidence table and no post-onset mortality table at all**
-  [R9]. The morbidity hole is filled here by public administrative data — the 인정률 and grade
+- **Morbidity.** 참조순보험요율 are filed with the FSC under 보험업법 제176조 [REG-R4], and on
+  the **life** side they stay unpublished, becoming visible only as the ratio called the
+  보험가격지수 [REG-R22]. For **장기손해보험** the 제176조제9항 publication permission is
+  exercised: 보험개발원 puts a dated numeric display on its own site carrying, among others, an
+  「기타피부암 및 갑상선암 이외의 암 발생률」 grid and a 질병입원율 grid by age and sex,
+  which is why `Cancer_KR_S`'s incidence basis is source-tagged rather than [std] [REG-R61].
+  **That display carries nothing for 장기요양**, and **보험개발원 publishes no 장기요양
+  incidence table and no post-onset mortality table at all** [R9] [REG-R61].
+  The morbidity hole is filled here by public administrative data — the 인정률 and grade
   composition of the 통계연보 [R4] [REG-R42] — which is a **prevalence** and requires the
   conversion set out above. The only disclosed pricing basis in the file is one carrier's own
   예정위험률 [S1], and it is a rate card for a select underwritten population, not an estimate
@@ -1596,6 +1610,7 @@ dependency, at a fixed premium, for up to sixty years.
 [REG-R55]: #krlib-reg-r55
 [REG-R57]: #krlib-reg-r57
 [REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
 [REG-R7]: #krlib-reg-r7
 [REG-R9]: #krlib-reg-r9
 [std]: #krlib-std

@@ -46,19 +46,23 @@ ten policy-year totals, the renewal and experience-rating ledger, the undiscount
 and the ten `check_*` identities. Everything it prints is ASCII, so the output lands on a
 Windows console under any code page: amounts are labelled `KRW`, and both priced units are
 romanized — `geubyeo` for 급여 (covered by 국민건강보험) and `bigeubyeo` for 비급여. Real
-output, with the three wide frames elided; they are in
-[`technical-notes.md`](technical-notes.md) in full:
+output, with the three wide frames elided — they are in
+[`technical-notes.md`](technical-notes.md) in full — and with four header lines continued
+onto an indented second line so that this page stays inside its column width; the text is
+otherwise what `run.py` prints, character for character:
 
 ```text
 Medical_KR_S - silson uiryo boheom (4th-generation indemnity medical), monthly grid
-model point 1: anchor 40M all covers full limit - M40 (man nai), inside NHI
+model point 1: anchor 40M all covers full limit - M40 (man nai, age last birthday),
+    inside National Health Insurance
 annual limit = KRW 50,000,000 per bojang jongmok   per-visit cap = KRW 200,000
-  boninbudam sanghanaek = KRW 3,260,000 (decile 6)
+    boninbudam sanghanaek = KRW 3,260,000 (decile 6)
 first-year premium = KRW 11,982.00/month, split geubyeo 4,792.80 / bigeubyeo 7,189.20
 retention: geubyeo 20% inpatient, bigeubyeo 30% inpatient;
-  projection = 120 months, 10 policy years to age 49
+    projection = 120 months, 10 policy years to age 49
 modules: bigeubyeo rider = True   3-dae bigeubyeo = True   yoyul sangdaedo = True
-         musago halin = True   suspension rate = 0.00%   trend x1.00   utilisation x1.00
+         musago halin = True
+         suspension rate = 0.00%   cost-trend multiplier = 1.00   utilisation multiplier = 1.00
 
     [ result_cf() t = 0..12; the ten policy-year totals; result_prem() by policy year ]
 
@@ -633,7 +637,7 @@ bound nothing at all — which is said rather than papered over.
 | `oop_trunc(y)` as a proportional scaling | one factor a year | a proportional truncation of an expectation is not the same as truncating each realisation, and the NHIS ceiling runs on the **calendar** year while every contractual limit runs on the **policy** year | the ceiling table itself is transcribed [R10]; the deterministic representation is the standardization |
 | within-year claim spread | uniform over twelve months | no published seasonality; the contract's own machinery is annual, so the month is a presentation grid | none published |
 | decrement order | mortality, lapse, suspension, renewal decline | nothing published fixes it; worth less than a basis point a year at these rates | none |
-| 보험가입금액 election | ₩50,000,000 with ₩200,000 per visit on eight points, the ₩10,000,000 / ₩100,000 rung on point 7 | the **ceiling** is sourced [S1 제5조]; which rung a carrier sells is a 사업방법서 matter | a 5세대 menu offers ₩50m / ₩30m / ₩10m against ₩200k / ₩150k / ₩100k [S3] |
+| 보험가입금액 election | ₩50,000,000 with ₩200,000 per visit on nine points, the ₩10,000,000 / ₩100,000 rung on point 7 | the **ceiling** is sourced [S1 제5조]; which rung a carrier sells is a 사업방법서 matter | a 5세대 menu offers ₩50m / ₩30m / ₩10m against ₩200k / ₩150k / ₩100k [S3] |
 | 가입나이 envelope | 0–65 | not published; a 사업방법서 matter [REG-R2] | 0–49 on one 2세대 direct product [S4]; 노후·유병력자 families run to 90 [R17] |
 | `roll_fwd_tol`, `cash_tol`, `shape_tol` | 1e-10, 1e-6, 1e-9 | one closes an identity between cells in a single expression, one re-reads won amounts through annual-to-monthly division, one closes a probability distribution | all far below one won, or one part in 1e9 of a probability |
 
@@ -689,7 +693,7 @@ check it against [`technical-notes.md`](technical-notes.md) by eye:
   *solved* value, `reld_one(y) = 0.95` from year 5 where the cap binds, `reld_avg` reaching
   1.0095494, `noclaim_share = 0.5314584961`, and `prem_np_base(10) = 20,625.8505`.
 - **Every entry in the notes' Known modeling pitfalls list**, one test each, named after the
-  pitfall it protects — twenty of them, from multiplying a rate by the 보험가입금액 through
+  pitfall it protects — twenty-two of them, from multiplying a rate by the 보험가입금액 through
   the deductible on the mean, the ordering of the two 급여 reliefs, the corridor on the
   age-adjusted base, the relativity applied to the whole premium, the hard-coded 0.95, the
   one-year versus two-year lookback, the injection carve-out counted twice, the utilisation

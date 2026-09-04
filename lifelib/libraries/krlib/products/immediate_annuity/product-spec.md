@@ -1437,7 +1437,7 @@ different parts of the product:
   second-hand and the two accounts do not agree.** The retrieved 시행령 puts the cut at
   2017-04-01, ₩200,000,000 applying to 2017-03-31 [REG-R58]; a bank glossary dates a cut
   to ₩100,000,000 per person to the February 2013 amendment that followed the announcement
-  of 2012-08-08 [R29, a secondary source] [R5]. The amendment itself was not retrieved, the
+  of 2012-08-08 [R29, a secondary source](#krlib-immediate_annuity-r29) [R5]. The amendment itself was not retrieved, the
   discrepancy is unresolved, and the pre-2017 figure is therefore **[unverified]**; nothing
   in this document rests on it. What the two accounts agree on is the announcement of
   2012-08-08, and that announcement is what produced the surge of new business in September

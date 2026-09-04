@@ -21,7 +21,8 @@ Three tag families do three different jobs in `product-spec.md`, `technical-note
 - **[R#]** — a regulatory, statutory, statistical or market reference that only this product
   needs. The load-bearing one is [R4], the 2024 노인장기요양보험 통계연보, from which the
   entire morbidity basis is built; [R7] and [R11] carry the dementia rider and the post-onset
-  survival evidence. Five of the seventeen are **news or trade press** and every entry says so.
+  survival evidence. Four of the seventeen — [R15] to [R18] — are **news or trade press**, one
+  more ([R13]) is a vendor's restatement of a decree, and every entry says so.
 - **[REG-R#]** — the cross-product reference library, reprinted in short form at the end so
   that a reader of this page alone can resolve every tag on it.
 

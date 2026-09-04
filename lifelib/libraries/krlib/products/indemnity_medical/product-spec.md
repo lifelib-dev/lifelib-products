@@ -284,7 +284,7 @@ Footnotes to [std] rows:
 | 무사고 할인 (no-claim discount) | **10%** of the whole office premium — 급여 and 비급여 together — after **two** consecutive years with no 비급여 claim, excluding 4대 중증질환 claims from the test | [R1] [S3] |
 | 의료급여 수급권자 할인 | 5% of the office premium at one carrier; **not** in the composite | [S3]; scope **[std]** (14) |
 | Premium waiver (납입면제) | **None.** No 납입면제 provision appears in either retrieved 실손 wording | [S1] [S3]; absence **[unverified]** (15) |
-| Expense loading | **16.0%** of office premium (손해조사비 plus 사업비), split acquisition 6% / maintenance 7% / claim handling 3%. `Medical_KR_S` charges the first two on office premium and the third on **claims**, the two bases coinciding at the break-even loss ratio | aggregate [R7]; split and bases **[std]** (16) |
+| Expense loading | **16.0%** of office premium (손해조사비 plus 사업비), split acquisition 6% / maintenance 7% / claim handling 3%. `Medical_KR_S` charges the first two on office premium and the third on **claims**, the two bases coinciding at a loss ratio of 100% — about where this line has actually run | aggregate **16.1%** [R7]; the 16.0% rounding, the split and the bases **[std]** (16) |
 | Rate-adequacy duty | The net rate's adequacy must be verified **annually** against experience, with up to **five years' grace** for genuinely new cover | [R12] [REG-R17 제7-63조제2항제6호가목](#krlib-reg-r17) |
 | Price-index disclosure | The **보험가격지수** must be explained to the policyholder **at every renewal** of a 실손 contract, not only at sale | [REG-R22 제7-45조제7항](#krlib-reg-r22) |
 
@@ -500,7 +500,7 @@ jplib sense at all: the 비급여 특약 *is* the rider, and it carries the prod
 | Surrender value (해약환급금) | **None.** 「이 상품은 1년만기 순수보장성 상품으로 해약환급금이 발생하지 않습니다」 | [S3] |
 | Mid-term cancellation | The policyholder may terminate at any time before a claim event and recover the **미경과보험료** (unearned premium) | [REG-R49 제649조](#krlib-reg-r49) |
 | Policyholder dividend | None; no maturity benefit exists | [S3] |
-| 보험계약대출 / 보험료 자동대출납입 | Neither available in substance. The 표준약관 carries the clauses because the standard text is shared across products, but 제33조 states that 「순수보장성보험 등」 may be excluded from policy lending — and with no surrender value there is nothing to lend against | [S1 제33조–제35조] [REG-R25] |
+| 보험계약대출 / 보험료 자동대출납입 | Neither available in substance. The 표준약관 carries the clauses because the standard text is shared across products, but 제33조 states that 「순수보장성보험 등」 may be excluded from policy lending — and with no surrender value there is nothing to lend against | [REG-R25 제33조](#krlib-reg-r25) [S1]; the pinpoint is the 표준약관's shared general provision, not a clause read out of the 실손 extract |
 | Reserve held | The 잔여보장요소 is the unearned premium and the 발생사고요소 the outstanding-claims provision; there is **no 보험료적립금** and no 해약환급금준비금 | [REG-R8] [REG-R11]; **[std]** (17) |
 | Grace period (납입최고) | **14 days** from the demand, the contract terminating the day after it ends | [REG-R25 제26조](#krlib-reg-r25); **[std]** (18) |
 | Lapse (실효) | From the day after the demand period expires; there is no automatic premium loan to break the fall | [REG-R25 제26조](#krlib-reg-r25) [S1 제27조] |
@@ -1105,10 +1105,11 @@ provider — 「「의료법」 제3조(의료기관)에서 규정한 국내의 
 **실손24 changes frequency, not cost, and that matters here more than elsewhere.** The
 청구 전산화 (electronic claim submission) scheme was introduced by amendment of the 보험업법,
 with 보험개발원 designated the statutory 전송대행기관 [R13] [R14]. Phase 1 (2024-10-25)
-covered 병원급 institutions with 30 or more beds plus 보건소 — 7,822 institutions, of which
-4,223 had joined at launch, a weighted participation of 54.7% and an estimated 56.9% of
-claims by volume [R13]. Phase 2 (2025-10-25) added 의원 and 약국, bringing the total in scope
-to **104,541**, of which 10,920 (10.4%) were connected at launch [R14]. The documents
+covered 병원급 institutions with 30 or more beds plus 보건소 — 7,822 institutions in scope
+[R14], of which 4,223 had joined at launch, a weighted participation of 54.7% and an
+estimated 56.9% of claims by volume [R13]. Phase 2 (2025-10-25) added 의원 and 약국,
+bringing the total in scope to **104,541**, of which 10,920 (10.4%) were connected at
+launch [R14]. The documents
 transmitted are 계산서·영수증, 진료비 세부산정내역서 and 처방전 [R14]. **A lower friction
 cost of claiming raises the reported frequency of small claims, and small claims are exactly
 where the deductible bites** — a ₩30,000 outpatient visit at a clinic pays ₩20,000 gross of

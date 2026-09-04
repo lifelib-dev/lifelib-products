@@ -179,9 +179,11 @@ One refinement is deliberately **not** implemented and the direction is stated. 
 second endpoint differs by benefit: it runs to the 진단확정일 for a diagnosis benefit
 [S3 별표 1 주2] but to the **수술일** for a surgery or treatment benefit [S4] [S5]. So a
 cancer diagnosed in month 10 and operated on in month 14 really does draw a reduced diagnosis
-benefit and a full surgery benefit. The model applies the reduction on the diagnosis clock
-throughout, which is the same answer wherever the two dates fall inside the same period and
-**understates** elsewhere.
+benefit and a full surgery benefit — and so does the model. `reduction_factor` multiplies the
+four diagnosis lines **only** and never the care limbs, so the model gives the contract's own
+answer whenever the treatment date falls outside the 감액기간, which includes every case in
+which the diagnosis itself does, and **overstates** the care limbs of a treatment falling
+inside it.
 
 ## Two columns that are deliberately zero, and one that is not a death benefit
 
@@ -206,7 +208,7 @@ column of zeros states a product fact where a missing column hides it.
 The account itself is a retrospective recursion floored at zero,
 `av_pp(t+1) = max(0, (av_pp(t) + prem_alloc_pp(t) − risk_prem_pp(t)) · (1 + i)^(1/12))`, and
 the floor **binds on the anchor cell** — because the anchor's ₩45,000 is the figure the
-specification states rather than the shipped basis's own equivalence level of ₩55,586, 19.0%
+specification states rather than the shipped basis's own equivalence level of ₩66,289, 32.1%
 below it. Every other model point carries its own equivalence premium, and only points 1, 2,
 4, 5, 6 and 9 exhaust the account at all. A recursion allowed to go negative would carry a
 fictitious asset and pay `claims_death` out of it, which `check_net_cf()` would not catch
@@ -239,10 +241,14 @@ needs a term assurance's risk-premium scale the model does not carry, so `notion
 0.60` **[std]** stands in for it. Feeding the ₩30,000,000 headline in instead gives
 `459,000 + 300,000 = 759,000` against `459,000 + 180,000 = 639,000` — and because the
 13-month cap of **₩585,000** binds either way [REG-R29], **the error is invisible on the
-anchor cell and visible on a low-premium, high-sum-insured one.** Model point 10 is where it
-shows. This is the route by which a Korean 제3보험 product with no face amount acquires one,
-and `LTC_KR_S` and `Child_KR_S` inherit it — with the difference that 제9호's third bullet
-excludes long-term-care risk premium from the ratio [REG-R21].
+anchor cell and visible wherever the sum insured is low relative to the premium** — only then
+does the [별표 14] formula fall below the 13-month cap. Model point 10, the sum-insured floor
+of ₩10,000,000 against ₩23,000 a month, is where it shows: the formula gives ₩294,600 against
+a cap of ₩299,000, so the notional ratio decides the answer where the headline face amount
+would have put it back on the cap. This is the route by which a Korean 제3보험 product with
+no face amount acquires one, and `LTC_KR_S` and `Child_KR_S` inherit it — with the
+difference that 제9호's third bullet excludes long-term-care risk premium from the ratio
+[REG-R21].
 
 ## Processing order within month `t`
 
@@ -564,8 +570,9 @@ Cells names follow lifelib's `basiclife/BasicTerm_S` wherever it has an analogue
 for policy counts, plural nouns for cash flows, `*_rate` for annual rates and `*_rate_mth`
 for their monthly counterparts, `claims(t, kind)` with an uppercase `kind` string. The full
 notes-symbol-to-cells mapping lives in the `Projection` docstring, headed `Notes symbol`, and
-is not repeated here; `test_projection_doc_maps_notes_symbols` asserts it carries at least
-`proj_len` and `model_point`.
+is not repeated here; `test_the_projection_docstring_carries_the_symbol_map` in
+`tests/test_model_conventions_kr.py` asserts it carries at least `proj_len` and
+`model_point`.
 
 ### Names that needed care
 
@@ -613,7 +620,7 @@ several of them bound nothing at all, which is said rather than papered over.
 |---|---|---|---|
 | age basis | **만나이** throughout | every decrement the model uses is published on 만나이 — [R1]'s bands, [R5]'s age grid, [REG-R38]'s life table — and converting to the contract's 보험나이 needs a distribution of issue dates within the policy year that no source supplies | the two differ for roughly half of all issue dates; on the steep part of the curve half a year is worth about **3.5%** of the rate [R5] |
 | `inc_rate` interpolation | log-linear in age between published grid ages | reproduces every published value exactly and is locally the exponential family the curve follows | linear interpolation of a grid that rises by a factor of 20.8 across the projection understates the mid-decade rate materially |
-| incidence above age 80 | age-80 rate × 1.15, flat | the published grid stops at 80 and the anchor projects to 100; the deceleration is [R1]'s own crude bands | log-linear extrapolation of the 70→80 slope reaches 0.0664 at 90, which the crude bands contradict |
+| incidence above age 80 | age-80 rate × 1.15, flat | the published grid stops at 80 and the anchor projects to 100; the deceleration is [R1]'s own crude bands | log-linear extrapolation of the 70→80 slope reaches 0.0405 at male 90, a decadal step of 1.45 where [R1]'s male 80+ band is only 1.24x its 70-79 band |
 | `inc_be_factor` | 1.0 | the shipped rate is a net premium rate, not a best estimate [REG-R4]; the identity is a decision, not an omission | the "about 10%" loading was seen only in a search summary and is [unverified] |
 | `tier_share_table.csv` | age-graded, sex-split shares at anchors 20 / 40 / 60 / 80, linearly interpolated | the crude all-ages site rates the registry publishes mix age distributions that differ violently; ungraded shares misprice the reduced tier in both directions | at female 만나이 30 the 유사암 rate is 0.001136 against a general-tier 0.000593; by 60 the ratio is 0.20 |
 | 유사암 share | a **floor**, not an estimate | [R1] does not cover 경계성종양, does not identify 대장점막내암 inside D010–D012, and does not carry 기타피부암 in its top-ten table | 10% [S6] [S7], 20% [S3] [S4] and 70% [S8] on the *benefit ratio*; nothing published on the *incidence* share |
@@ -625,15 +632,15 @@ several of them bound nothing at all, which is said rather than papered over.
 | `survival_table.csv` grading | five select years plus a non-zero ultimate of 0.020 / 0.008 | a flat hazard at 0.0834063 kills long survivors far too fast when 62.1% of the prevalent population is beyond year five [R1] | the five-year *totals* are sourced exactly; the shape between them is not |
 | `care_table.csv` | [std] on every row | **no Korean source publishes cancer utilisation per diagnosed patient**; the only published series is a 질병입원율 for all disease [R5] | none; the level is anchored on the 180-day cap [S1] [S4] and the year-1 operation count of 0.90 |
 | `treat_avail(k)` | mid-cohort, `exp(−Σ hazard × span)` at month `12(k−1)+6` | reading at the start of the year pays every entrant at full availability; at the end, understates | none; the ultimate hazard is set to **exactly zero** so the 최초 1회한 bound holds at any horizon |
-| lapse starting level | 4.6% p.a. in policy year 1 | set so the log-linear path averages about 1.5% over the 20-year 납입기간 | **no public Korean lapse figure for 암보험 exists** [R3]; carried from a disclosed 적용해지율 envelope (4.6% at one carrier, 8.4% at another) |
+| lapse starting level | 4.6% p.a. in policy year 1 | set so the log-linear path from 4.6% to the prescribed 0.1% averages about 1.2% a year over the 20-year 납입기간 | **no public Korean lapse figure for 암보험 exists** [R3]; carried from a disclosed 적용해지율 envelope (4.6% at one carrier, 8.4% at another) |
 | lapse is absorbing | 부활 not modelled | a reinstated policy re-runs the 90 days [S1] [S3] [S7] | conservative; nothing published on Korean reinstatement rates |
 | `prem_int_rate` | 2.50% p.a., 금리확정형 | anchored on the 2026 **평균공시이율**, which the FSS Governor computes under 감독규정 제1-2조제13호 [REG-R9] [REG-R48] | 연복리 1.5% on one retrieved product [S8]; a 0.5% 최저보증이율 floor on another [S1] |
-| `notional_sa_ratio` | 0.60 of the headline sum insured | [별표 15] 제9호's ratio needs a term assurance's risk-premium scale the model does not carry [REG-R21] | reached independently by working back from the 13-month cap; the cap binds either way at the anchor, so the error is invisible there and visible on point 10 |
+| `notional_sa_ratio` | 0.60 of the headline sum insured | [별표 15] 제9호's ratio needs a term assurance's risk-premium scale the model does not carry [REG-R21] | working back from the 13-month cap on the specification's illustrative 25% loading gives about 0.60 (footnote 30); on the model's own 15% gross-to-net it gives 0.42, and the cap binds either way at the anchor, so the choice is invisible there and visible on point 10, where the sum insured is low relative to the premium |
 | `expense_acq` / `comm_init_rate` | ₩300,000 at issue / 0.6 × annualised premium | together ₩624,000, **13.9 months of premium**, sitting against the FSC's 13-month statement of the [별표 14] cap for a 보장성보험 [REG-R29] [REG-R20] | no Korean carrier publishes an expense basis: [S1] names 계약체결비용 and 계약관리비용 and quantifies neither; [S8] states the deduction without quantifying it |
 | `expense_maint` / `inflation_rate` | ₩2,500 a month / 2.0% p.a. | on `pols_if`, because a waived policy is still administered | none published |
 | `expense_claim_diag` / `_hosp` | ₩150,000 per diagnosis / ₩30,000 per admission | on the event counts, not on `pols_if` — different weights, so publishing one column would hide a real movement | none published |
 | `prem_load_acq` + `prem_load_maint` | 10% + 5% = 15% gross-to-net | drives `prem_alloc_pp` = ₩38,250 a month while `t < 240` | the 산출방법서 is a 기초서류, filed and never published [REG-R2] |
-| anchor premium | ₩45,000 a month | the figure `product-spec.md` states; **a modelling input, not a quoted rate** | the shipped basis's own equivalence premium is **₩55,586**, 19.0% above it, and that gap is why the anchor's account is exhausted at `t = 447` |
+| anchor premium | ₩45,000 a month | the figure `product-spec.md` states; **a modelling input, not a quoted rate** | the shipped basis's own equivalence premium is **₩66,289** — ₩45,000 is 32.1% below it — and that gap is why the anchor's account is exhausted at `t = 447`. Scaling by the 1.2352 PV ratio gives ₩55,586 and is only a lower bound: `claims_death` and `claims_lapse` ride on the 계약자적립액 and so rise with the premium |
 | processing order | premium → diagnosis → benefits → transition → mortality → lapse | the transition must precede mortality, or a life diagnosed in month `t` carries the healthy hazard through the month it was diagnosed in | nothing in any retrieved document states a processing order |
 | `roll_fwd_tol` | 1e-10, scaled by `sum_assured()` in the money checks | one tolerance closes identities between policy counts; the money identities compare won amounts of order 1e8 | `roll_fwd_tol × S` is ₩0.003 at the anchor, far below the smallest error a reader adding up the statement could see |
 
@@ -664,8 +671,9 @@ places the notes print, in-force counts and rates to ten, and the ledgers to ten
   ₩4,192,693.32 of care benefit, ₩1,474,174.97 of account payments and
   **−₩7,466,785.4889610466** of net cash flow, with the expected-payment counts each line
   implies (0.1971 일반암, 0.0062 고액암, 0.0930 특정소액암, 0.0395 유사암, 0.1960 treatment).
-- **The equivalence premium on the shipped basis**, ₩55,586 against the shipped ₩45,000, with
-  the 152.7418594890-month premium annuity and the 1.2352479168 ratio behind it.
+- **The equivalence premium on the shipped basis**: the 152.7418594890-month premium annuity,
+  the 1.2352479168 PV ratio and the ₩55,586 lower bound it scales to, against the solved
+  equivalence level of ₩66,289 and the shipped ₩45,000.
 - **The account, surrender and ledger paths**: `av_pp(447) = 0` and zero thereafter,
   `surr_chg_pp(84) = 0`, `cv_pp(t) = 0` for every `t < 240`, the step to ₩4,078,536.79 at
   `t = 240` with `claims_lapse` moving from ₩0.00 to ₩1,891.71 in that same row,

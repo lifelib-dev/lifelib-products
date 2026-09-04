@@ -224,7 +224,7 @@ reached about 100% in the life sector at August 2024 against 18.7% two years ear
 | `issue_age` (`x`) | int, **만나이**, 30–70 | 40 |
 | `sex` | enum {M, F} | M |
 | `term_age` | int, 만기나이 | 90 |
-| `prem_period_years` (`n`) | int years, 납입기간 | 20 |
+| `prem_period_years` (`n_Y`) | int years, 납입기간 | 20 |
 | `prem_mode` | enum {monthly} | monthly (월납) |
 | `benefit_grade` (`G_B`) | enum {g1, g2, g3, g4, g5, g6} | g2 — 장기요양 1~2등급 |
 | `lump_amount` (`A_B`) | 보험가입금액, KRW | 10,000,000 (1,000만원) |
@@ -266,9 +266,14 @@ insured to be *using* 재가급여 in the month where the composite tests only s
 the 예정이율 of 2.0% of the anchor cell's long-term-care benefit outgo is **46.03%** of the
 present value of premium income, and the present value of expenses, claim expenses and
 commission is **20.26%**, against the **20.68%** loading that `net_prem_ratio()` implies
-from the published 환급률 progression. The incidence basis, the expense basis and the
-[S2]-derived premium are therefore mutually consistent to within a percentage point — which
-is a coincidence worth naming, because all three were built from different documents.
+from the published 환급률 progression. Read that pair carefully. The 20.26% is
+**calibrated** to the 20.68% — `expense_maint` is set to land near it (see (c) below) — so
+their agreement is a construction and the 0.42-point gap is the rounding of `expense_maint` to
+a whole ₩200. **What is not calibrated is the 46.03%.** Nothing ties the incidence basis,
+built from the 통계연보 [R4], to the premium, built from a rate card [S2]; that a benefit
+ratio of 46% and a loading of 21% together leave the contract close to self-supporting at the
+disclosed 예정이율 is the finding here, and it is the one figure two unrelated documents had
+to agree on without being made to.
 
 The eight other model points exercise both sexes, issue ages 30 to 70, all six thresholds
 from 1등급 to 1~인지지원등급, 90 / 95 / 100세만기, 10 / 20 / 30년납, the three
@@ -549,7 +554,10 @@ Carrying the share **by age** is load-bearing, because the severe share is **U-s
 
 The under-65 population is severe because only the 노인성 질병 list gets in at all
 [REG-R55]; the 80–84 trough is where the scheme's marginal entrant is a lightly impaired
-person newly crossing the 51-point line; the 85+ rise is genuine deterioration. **A model
+person newly crossing the 51-point line; the 85+ rise is genuine deterioration. **The shipped
+`share_ge` for `g2` below 65 is 0.222**, the sum of the two rounded grade shares in that row;
+[R4]'s own derived 1·2등급 계 is 22.3%, and the tenth of a point between them is rounding
+inside the source table rather than a second basis. **A model
 applying a single all-ages vector at every age is wrong by up to a factor of two** —
 22.2% against 11.1% between the ends — and it is wrong at exactly the two ages that matter,
 the issue age and the claim age.
@@ -600,7 +608,9 @@ comes from. **Getting it wrong does not change the lifetime claim count much; it
 the answer. Where the gate is `g6` — 1~인지지원등급 — there is no light state at all, so
 `rho = 0` and the whole inflow is direct, by construction rather than by assumption.
 
-`prog_rate_cap = 1.0` is a guard that does not bind on any shipped model point.
+`prog_rate_cap = 1.0` **[std]** is a guard rather than an assumption: it caps `rho` at a
+certainty, no source bounds it because no source gives a progression rate at all, and it does
+not bind on any shipped model point.
 
 **Step 5 — below 65 there is no prevalence data at all.** The 인정률 series is published
 for the 65-and-over population only, and the statute admits an under-65 applicant only
@@ -634,8 +644,16 @@ Exactly one retrieved document gives a Korean long-term-care incidence rate — 
 Summing the two rows for a combined 1·2등급 rate is an **upper bound**, the two events
 being mutually exclusive at first certification, and the log-linear graduation between the
 three quoted ages is **[std]**. `disclosed_inc_ratio_at(x)` publishes the model's own
-first-entry rate — `i_D(x) + P_L(x) rho(x) / (1 − P_C(x))`, direct entry plus progression
-by lives already certified at a light grade — over that disclosed rate. On the male anchor
+first-entry rate — direct entry plus progression by lives already certified at a light
+grade — over that disclosed rate. **Both terms are read on the sub-65 convention the
+projection itself uses**, the whole basis being evaluated at `x_e = max(x, 65)` and carried
+down on `sub65_factor_at`:
+
+    model_rate(x) = i_D(x) + P_L(x_e) rho(x_e) sub65_factor_at(x) / ( 1 − P_C(x_e) )
+
+Reading `P_L` and `rho` at `x` itself below 65 — the shorter form the identity suggests —
+mixes an unscaled light-grade prevalence with a scaled direct rate and returns 0.2670 at
+만나이 40 instead of the 0.2399 below. On the male anchor
 cell it runs **0.2399 at 40, 0.2465 at 50 and 0.2399 at 60**: the disclosed pricing rate is
 about **4.2 times** the model's best estimate, almost flat in age, rising to 0.58 at 85.
 
@@ -706,13 +724,14 @@ policy-year grid:
 |---|---|---|---|---|
 | annual rate | **8.0%** | **0.1%** | **0.8%** | **4.0%** |
 
-    lapse_rate(t) = r0 × (r1 / r0)^((y − 1)/(n − 1))   for policy year y ≤ n         [REG-R27]
-                  = r2                                  for y > n
+    lapse_rate(t) = r0 × (r1 / r0)^((y − 1)/(n_Y − 1))  for policy year y ≤ n_Y     [REG-R27]
+                  = r2                                   for y > n_Y
     lapse_rate_mth(t) = 1 − (1 − lapse_rate(t))^(1/12)                                  [std]
 
 on the `mujihae` form, and `lapse_level_std` at every duration on the `pyojun` comparison
-vector — which is the comparison the guidance requires an insurer to disclose. **Only the
-8.0% first-year level is standardized**; the 0.1% and the 0.8% are the ruling's own numbers.
+vector — which is the comparison the guidance requires an insurer to disclose. **Two of the
+four are standardizations** — the 8.0% first-year level and the 4.0% 표준형 comparison level,
+both **[std]** — while the 0.1% and the 0.8% are the ruling's own numbers.
 It has **no observed range**, because no Korean durational persistency series for a
 보장성보험 was retrieved. The **instrument-level caveat is real**: the 「IFRS17 주요
 계리가정 가이드라인」 attachment was never converted from HWP, so the values are verified
@@ -812,7 +831,7 @@ with the risk cost.
 | `t` | — | policy month, `t = 0, 1, …, n` where `n = proj_len()` |
 | `x`, `age(t)` | `issue_age`, `age` | 만나이 at the 계약일; attained 만나이 `x + floor(t/12)` |
 | `y(t)` | `policy_year` | policy year, `floor(t/12) + 1` |
-| `n_P` | `prem_period_mths` | 납입기간 in months, `12 × prem_period_years` |
+| `n_Y`, `n_P` | `prem_period_years`, `prem_period_mths` | 납입기간 in years and in months, `n_P = 12 n_Y`. **`n` is the projection horizon and never the paying period** |
 | `P` | `premium_mth_pp` | level monthly office premium, `uw_loading × premium` |
 | `A_B` | `lump_amount` | 장기요양진단급여금 sum insured |
 | `A_1`, `A_2` | `annuity_high`, `annuity_low` | 간병연금 monthly amount at 1등급 / other grades in the gate |
@@ -886,7 +905,7 @@ apart.
     claims_dementia(t) = dementia_amount × pols_entry_dem(t)
     claims_death(t)    = AV(t) × pols_death_act(t)
     claims_lapse(t)    = CV(t) × pols_lapse(t)
-    claims_void(t)     = cum_prem_pp(t) × void(t)
+    claims_void(t)     = cum_prem_pp(t + 1) × void(t)
     claims_maturity(t) = 0
     claim_expenses(t)  = expense_claim × ( n_C(t) + ann_tests(t) + pols_entry_dem(t) )
 
@@ -987,7 +1006,7 @@ that ran past the cap, that lost the twelve-month guarantee, or that used a rati
 
 ### The 계약자적립액 and the 해약환급금
 
-    cum_prem_pp(t)      = P × min(t, n_P)
+    cum_prem_pp(t)      = P × min(t, n_P)          — paid before month t's own premium
     prem_accum_factor(t)= (1 + j) ( (1 + j)^t − 1 ) / j,   j = (1 + 0.02)^(1/12) − 1
     net_prem_ratio()    = av_ratio_at(0) × n_P / prem_accum_factor(n_P)
 
@@ -1176,9 +1195,9 @@ they are in the totals below.
 
 | t | `pols_if` | `premiums` | `claims_lump` | `claims_annuity` | `claims_death` | `claims_void` | `expenses` | `claim_expenses` | `commissions` | `net_cf` |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | 1.000000 | 5600.000000 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 29320.000000 | 0.000000 | 43680.000000 | -67400.000000 |
-| 1 | 0.992995 | 5560.769900 | 0.000000 | 0.000000 | 0.359493 | 0.001170 | 198.598925 | 0.000000 | 0.000000 | 5361.810312 |
-| 2 | 0.986038 | 5521.814482 | 0.000000 | 0.000000 | 0.714544 | 0.002594 | 197.207660 | 0.000000 | 0.000000 | 5323.889685 |
+| 0 | 1.000000 | 5600.000000 | 0.000000 | 0.000000 | 0.000000 | 0.001040 | 29320.000000 | 0.000000 | 43680.000000 | -67400.001040 |
+| 1 | 0.992995 | 5560.769900 | 0.000000 | 0.000000 | 0.359493 | 0.002340 | 198.598925 | 0.000000 | 0.000000 | 5361.809142 |
+| 2 | 0.986038 | 5521.814482 | 0.000000 | 0.000000 | 0.714544 | 0.003891 | 197.207660 | 0.000000 | 0.000000 | 5323.888388 |
 | 3 | 0.979131 | 5483.131826 | 1.333122 | 0.052689 | 1.065193 | 0.000000 | 195.826137 | 0.007618 | 0.000000 | 5284.847067 |
 | 4 | 0.972272 | 5444.720021 | 1.448226 | 0.109927 | 1.411483 | 0.000000 | 194.454337 | 0.008276 | 0.000000 | 5247.287772 |
 | 5 | 0.965461 | 5406.577174 | 1.561294 | 0.171634 | 1.753454 | 0.000000 | 193.092148 | 0.008922 | 0.000000 | 5209.989723 |
@@ -1194,11 +1213,15 @@ they are in the totals below.
 
 - **`t = 0`** is the new-business strain: one month's premium against 5.2 months of
   acquisition expense, one month of maintenance and the whole 7.8 months of initial
-  commission.
-- **`t = 1` and `t = 2`** carry a non-zero `claims_void` and nothing else. These are the
-  certifications inside the 보장개시일 window: the cover is 무효 and the premiums paid for
-  it come back. `claims_void(0)` is zero not because nobody is certified in month 0 but
-  because `cum_prem_pp(0) = 0` — there is nothing yet to return.
+  commission — and, because of the row below, ₩0.001040 of refund on top.
+- **`t = 0`, `t = 1` and `t = 2`** carry a non-zero `claims_void` and no other benefit.
+  These are the certifications inside the 보장개시일 window: the cover is 무효 and the
+  premiums paid for it come back. **The refund is `cum_prem_pp(t + 1)`, not
+  `cum_prem_pp(t)`** — premium falls at the *start* of month `t` and the void is recognised
+  at the *end* of it, so a life voided in month 0 has paid one month's premium and gets it
+  back, which is why `claims_void(0)` is ₩0.001040 rather than nil. Valuing the refund at
+  `cum_prem_pp(t)` would leave the insurer holding a month's premium on a cover it had just
+  declared never to have existed.
 - **`t = 3`** is the **first payable certification**: the 보장개시일 is three whole months,
   so `claims_lump` and `claims_annuity` both start here, and `claim_expenses` with them.
 - **`t = 12`** is the **감액기간 expiring and the renewal commission starting**, in the same
@@ -1244,8 +1267,9 @@ Certifications: `n_L(0) = 1 × 0.000008689145343537096 = 0.0000086891`;
 `n_D(0) = 1 × 0.00000018577470385107238 = 0.0000001858`; `n_P*(0) = 0 × 0.0028307 = 0` —
 there is no light compartment to progress out of yet. Because `0 = t < W = 3`,
 **`n_C(0) = 0`** and `void(0) = 0.0000001858 + 0 = 0.00000018577470385107238`.
-`claims_void(0) = cum_prem_pp(0) × void(0) = 0 × 0.0000001858 = 0.000000` — nil because no
-premium has yet been paid to return.
+`claims_void(0) = cum_prem_pp(1) × void(0) = 5,600 × 0.00000018577470385107238
+= 0.001040` — the refund is valued on the premiums paid by the **end** of the month, and
+one has been: the month-0 premium fell at the start of it.
 
 Mid-month counts: `h_mid(0) = 1 − 0.0000086891 − 0.0000001858 = 0.9999911250799526`;
 `l_L_mid(0) = 0 + 0.0000086891 − 0 = 0.000008689145343537096`; `l_C_mid(0) = 0`.
@@ -1263,8 +1287,8 @@ Expenses: `5.2 × 5,600 = 29,120` acquisition plus `200 × 1.02^0 × 1 = 200` ma
 = **29,320.000000**. Commission `= 7.8 × 5,600 = 43,680.000000`. Claim expense
 `= 30,000 × (0 + 0 + 0) = 0`.
 
-`net_cf(0) = 5,600.000000 − 0 − 0 − 0 − 0 − 0 − 29,320.000000 − 0 − 43,680.000000
-= −67,400.000000`.
+`net_cf(0) = 5,600.000000 − 0 − 0 − 0 − 0 − 0.001040 − 29,320.000000 − 0 − 43,680.000000
+= −67,400.001040`.
 
 Roll forward: `h(1) = 0.9999911250799526 × (1 − 0.0000813708009308467)
 × (1 − 0.006924382628299419) = 0.9929859973`;
@@ -1283,8 +1307,8 @@ Certifications: `n_L(1) = 0.9929859973 × 0.000008689145343537096 = 0.0000086282
 first progression in the model. `1 = t < W = 3`, so `n_C(1) = 0` and
 `void(1) = 0.0000001845 + 0.0000000244 = 0.00000020889418843702306`.
 
-`claims_void(1) = cum_prem_pp(1) × void(1) = 5,600 × 0.00000020889418843702306
-= 0.001170`.
+`claims_void(1) = cum_prem_pp(2) × void(1) = 11,200 × 0.00000020889418843702306
+= 0.002340`.
 
 The account: `AV(1) = net_prem_ratio() × P × prem_accum_factor(1)
 = 0.7931662309087683 × 5,600 × 1.0016515813 = 4,449.066773`, so
@@ -1293,7 +1317,7 @@ The account: `AV(1) = net_prem_ratio() × P × prem_accum_factor(1)
 Expenses `= 200 × 1.02^0 × 0.992994624977843 = 198.598925`; no acquisition after `t = 0`, no
 renewal commission before `t = 12`, no claim expense because nothing payable happened.
 
-`net_cf(1) = 5,560.769900 − 0.359493 − 0.001170 − 198.598925 = 5,361.810312`.
+`net_cf(1) = 5,560.769900 − 0.359493 − 0.002340 − 198.598925 = 5,361.809142`.
 
 **Trace, month 3 — the first payable certification.** `h(3) = 0.9791052354319798`,
 `l_L(3) = 0.0000254477`, `l_C(3) = 0`.
@@ -1363,8 +1387,10 @@ by construction:
 
 and `check_av_continuity()` asserts exactly that. The surrender value steps with it:
 `cv_pp(239) = 0` and **`cv_pp(240) = 0.5 × 1,309,056 = 654,528.0000`**, which against
-`cum_prem_pp(240) = 1,344,000` is a 환급률 of **48.700000%** — the published figure [S2] to
-three decimal places.
+`cum_prem_pp(240) = 1,344,000` is a 환급률 of **48.700000%**, the published figure [S2]. That
+is an **identity, not a check**: `av_table.csv`'s first anchor *is* that published 48.7%,
+doubled, so what reproduces here is the arithmetic joining the two branches and nothing about
+the basis.
 
 Two things step at once and their product is the cliff. The lapse rate goes from
 `lapse_rate(239) = 0.001` — the 납입완료 convergence point — to
@@ -1423,12 +1449,12 @@ age even though the all-grade certification rate does.**
 | `claims_dementia` | 0.0000 |
 | `claims_death` | **326783.9323** |
 | `claims_lapse` | 70149.7799 |
-| `claims_void` | 0.0038 |
+| `claims_void` | 0.0073 |
 | `claims_maturity` | 0.0000 |
 | `expenses` | 135756.2503 |
 | `claim_expenses` | 3774.5847 |
 | `commissions` | 70945.8826 |
-| `net_cf` | **-448855.2093** |
+| `net_cf` | **-448855.2128** |
 
 **Policy year 1 in aggregate** (`t = 0 … 11`, all at 만나이 40, all in policy year 1 — the
 strongest single test target in this file, because it exercises the whole annual cycle on
@@ -1444,11 +1470,11 @@ one set of rates):
 | `claims_lump` | 15.974040 |
 | `claims_annuity` | 2.900270 |
 | `claims_death` | 22.769436 |
-| `claims_void` | 0.003764 |
+| `claims_void` | 0.007271 |
 | `expenses` | 31429.655856 |
 | `claim_expenses` | 0.091280 |
 | `commissions` | 43680.000000 |
-| `net_cf` | **-10481.091863** |
+| `net_cf` | **-10481.095370** |
 
 (The totals are sums of unrounded monthly values; the thirteen displayed rows do not re-add
 to them.)
@@ -1470,7 +1496,8 @@ to them.)
 ### Present values at the 예정이율 of 2.0%
 
 The model does not publish these; they are the calibration check that the premium, the
-incidence basis and the expense basis are mutually consistent.
+incidence basis and the expense basis are mutually consistent. `claims_dementia` and
+`claims_maturity` are zero, so the nine lines re-add to `net_cf`.
 
 | line | PV |
 |---|---|
@@ -1479,10 +1506,11 @@ incidence basis and the expense basis are mutually consistent.
 | `claims_annuity` | 253930.5911 |
 | `claims_death` | 166819.3187 |
 | `claims_lapse` | 38211.9050 |
+| `claims_void` | 0.0073 |
 | `expenses` | 97088.7515 |
 | `claim_expenses` | 1746.6060 |
 | `commissions` | 66187.8032 |
-| `net_cf` | 69486.2789 |
+| `net_cf` | 69486.2754 |
 | **PV(lump + annuity) / PV(premiums)** | **0.4602598067** |
 | **PV(expenses + claim exp + commission) / PV(premiums)** | **0.2026425297** |
 
@@ -1748,9 +1776,10 @@ stated so that it can be checked.
   model with a refund; it does not sit in the block waiting for the window to close. And
   there is **no cancellation option and no revival** here, unlike the cancer chassis, so a
   model that imports the chassis's 90-day cancellation right invents a term this product
-  does not have. `claims_void(0)` is zero for a different reason than `claims_void(3)` is:
-  at `t = 0` there are voided lives but nothing yet to refund; at `t = 3` the window has
-  closed.
+  does not have. And **the refund is `cum_prem_pp(t + 1)`, not `cum_prem_pp(t)`**: premium
+  falls at the start of month `t` and the void at the end of it, so a life voided in month 0
+  has paid one month and gets it back. `claims_void(0)` is ₩0.001040 and `claims_void(3)` is
+  nil — for opposite reasons, the second because the window has closed.
 - **The surrender-value cliff has a direction, and three of the four Korean forms differ
   only in which side of 납입완료 the 50% attaches to.** 미지급형 is nil **during** and 50%
   of a notional 기본형 **after** [S2]; 납입중50%해약환급금지급형 is 50% during and 100%

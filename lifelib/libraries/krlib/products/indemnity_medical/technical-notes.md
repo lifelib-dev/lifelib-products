@@ -469,14 +469,14 @@ dispersion from the **six lowest bands** of the published 4세대 claim-size dis
 0–10만 / 10–20만 / 20–50만 / 50–100만 / 100–200만 / 200–500만 rows at 3.7 / 6.0 / 16.3 /
 17.7 / 18.9 / 22.2% of claimants, normalised over themselves and with each band's midpoint
 scaled by one common factor onto the sub-₩1,000,000 range 2단계 occupies [R12]; and the
-three upper buckets carry the published commencement shares 0.8 / 0.7 / 0.3 [R12]. The amounts are
-scaled so that the tabulated mean equals the anchor's year-1 rated claim, which is what makes
-the solved band-1 relativity come out at the specification's 0.9575. The model reads the
-amounts as **multiples of the table's own mean** and rescales them to whatever claim level it
-is projecting, so the same shape serves every model point and every year. **The zero-claim
-mass is held constant at 0.729012 [std]** — the shape trends its amounts and not its
-frequency — which is a stated limitation: in reality the frequency of claiming rises with
-age too and the 1단계 share would fall.
+three upper buckets carry the published commencement shares 0.8 / 0.7 / 0.3 [R12]. The
+amounts are scaled so that the tabulated mean equals the anchor's year-1 rated claim, which
+is what makes the solved band-1 relativity come out at the specification's 0.9575. The model
+reads the amounts as **multiples of the table's own mean** and rescales them to whatever
+claim level it is projecting, so the same shape serves every model point and every year.
+**The zero-claim mass is held constant at 0.729012 [std]** — the shape trends its amounts
+and not its frequency — which is a stated limitation: in reality the frequency of claiming
+rises with age too and the 1단계 share would fall.
 
 **Relativity exemptions.** `reld_exempt_share = 0.15` **[std]**: the share of the rider
 claim struck out of the rating count for 산정특례 conditions and 장기요양 1·2등급 insureds
@@ -516,16 +516,20 @@ aggregate: 손해조사비 plus 사업비 of about **₩2.9조 on ₩18.0조** o
 | Commission | **6%** | office premium | `comm_rate` |
 | Maintenance expense | **7%** | office premium | `expense_maint_rate` |
 | Claim handling | **3%** | **claims**, not premium | `expense_claim_rate` |
-| Published aggregate | **16%** | office premium | `expense_total_rate` |
+| Total, the published aggregate rounded | **16%** | office premium | `expense_total_rate` |
 
-Two choices inside that table are deliberate. **Claim handling is 3% of claims and not of
-premium**, because 손해조사비 is claim-driven and because the experience-rating machinery
-makes claim frequency a driver of expense as well as of benefit; at the break-even loss
-ratio the two bases coincide, which is why the published 3% can be read either way. And
-there is **no month-0 acquisition strain at all** — a product fact rather than an omission.
-On a one-year renewable contract renewed on a rolling basis the acquisition/renewal
-distinction has no content after the first year, so what a sister library books as
-acquisition expense is carried here as a level commission rate on every premium.
+The published figure is **16.1%**, and the 16% the model carries is that figure rounded
+**[std]**; the three components are a [std] decomposition of it and none of them is
+separately published. Two choices inside that table are deliberate. **Claim handling is 3%
+of claims and not of premium**, because 손해조사비 is claim-driven and because the
+experience-rating machinery makes claim frequency a driver of expense as well as of
+benefit; the two bases coincide at a loss ratio of **100%**, which is about where this line
+has actually run — 101.0% in 2025 [R7] — and which is why the aggregate can be read either
+way. And there is **no month-0 acquisition strain at all** — a product fact rather than an
+omission. On a one-year renewable contract renewed on a rolling basis the
+acquisition/renewal distinction has no content after the first year, so what a sister
+library books as acquisition expense is carried here as a level commission rate on every
+premium.
 감독규정 제4-32조제5항 caps first-year commission on a 보장성보험 at the first year's
 premium and is nowhere near binding at 6% [REG-R22].
 
@@ -901,8 +905,12 @@ so the sign of `net_cf` in any period is decided by a single number, the loss ra
     LR* = 0.87 / 1.03 = 0.8446601942
 
 **The model's own break-even loss ratio is 84.47%**, which sits just below the FSS's stated
-break-even of 「약 85% 수준」 [R7] — and the small gap is entirely because the 3% claim
-handling is charged on claims here rather than on premium.
+break-even of 「약 85% 수준」 [R7]. The gap is the expense loading, not the basis the claim
+handling is charged on: at that loss ratio the 3% of claims is 2.53% of premium, so the
+model is carrying 6 + 7 + 2.53 = **15.53%** of premium against the 15% residual an 85%
+break-even implies. Charging the claim handling on premium instead would take the model's
+break-even **down** to 84.00%, not up — the claims basis narrows the gap rather than
+causing it.
 
 ### Optional modules (all off, or neutral, in the base run)
 
@@ -1164,12 +1172,13 @@ create one.
   applies: `noclaim_share(3) = 0.729012² = 0.5314584961`, so 5.3146% comes off the whole
   office premium. `premiums(24)` is therefore **₩11,255.2428** against the **₩11,886.9868**
   it would have been without the discount, and the year-3 gross premium of ₩13,610.6786 is
-  **below** the un-discounted ₩14,374.6306 — the discount is worth more than the whole
-  year's re-rate is at this duration. The two-year lookback is what the launch release's
-  three-year timeline requires [R1], and the model reproduces **that** leg of it: the
-  discount first appears in year 3. It does **not** reproduce the release's other leg —
-  R1 shows years 1 and 2 giving the rider discount, and here they give nothing, because
-  the 요율 상대도 was deferred to 2024-07-01 [R3] and `reld_start_year = 4`.
+  **below** the un-discounted ₩14,374.6306 — the discount gives back more than half of the
+  year's 9.590% re-rate, which becomes +3.766% once it is applied. The two-year lookback is
+  what the launch release's three-year timeline requires [R1], and the model reproduces
+  **that** leg of it: the discount first appears in year 3. It does **not** reproduce the
+  release's other leg — R1 shows years 1 and 2 giving the rider discount, and here they give
+  nothing, because the 요율 상대도 was deferred to 2024-07-01 [R3] and
+  `reld_start_year = 4`.
 - **`t = 36`** — policy year 4, where the **요율 상대도 switches on** (`reld_start_year = 4`,
   the three-year deferral to 2024-07-01 [R3]). Nothing at all happens in the cash flows:
   `reld_avg(4) = 1.0000000000` exactly, because the discount cap is slack and the scheme is
@@ -1518,8 +1527,8 @@ loading do not compose smoothly, and a ten-year run from an issue age of 40 land
 asymmetrically on the boundary.
 
 The **composition** of the claim is not what the market narrative suggests. 급여 통원 is the
-single largest limb at **29.73%** of the ten-year claim, and the whole 급여 half is **39.34%**
-against 60.66% 비급여 — close to, and 3.6 points above, the 57.1% 비급여 share the supervisor
+single largest limb at **29.73%** of the ten-year claim, and the whole 급여 half is **39.33%**
+against 60.67% 비급여 — close to, and 3.6 points above, the 57.1% 비급여 share the supervisor
 reports for 2025 [R7], and far above 비급여's 15.8% share of *national* medical spend [R9]. The
 3대비급여 classes alone are **23.49%** of the claim on a cell that is not a heavy user of
 them. And the 급여 unit runs at a loss ratio of **0.975** in year 1 against the 비급여 unit's

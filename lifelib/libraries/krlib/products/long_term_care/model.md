@@ -68,7 +68,7 @@ first 13 policy months (columns claims_dementia, claims_void and claims_maturity
 
 policy year 1 totals (unrounded sums):
 
-    [ the ten policy-year-1 lines, net_cf -10,481.09 ]
+    [ the ten policy-year-1 lines, net_cf -10,481.10 ]
 
 whole projection, undiscounted:
   premiums                  973,533.06
@@ -98,10 +98,12 @@ model.Projection[1].result_cf()      # the worked example's anchor cell
 `result_cf()` returns a `DataFrame` indexed by policy month `t` with seventeen columns;
 `result_pols()` prints the compartments, the entry and exit counts, the annuity ledger's count,
 the decrement rates and `av_pp` / `cv_pp` beside them, which is where the compartment chain
-becomes legible — `pols_entry_care_prog` overtakes `pols_entry_care_direct` at `t = 8` on the
-anchor cell. `model.Projection.doc` maps the notes' symbols to the cells names and states the
-age basis; `model.Data.doc` says what each input file is and, for the mortality table, what it
-is **not**. A cold sweep of all nine model points takes about **40 seconds**.
+becomes legible. It carries `pols_entry_care` whole; the two routes into it are cells and not
+columns of it, so read `pols_entry_care_direct(t)` and `pols_entry_care_prog(t)` directly — the
+second overtakes the first at `t = 8` on the anchor cell. `model.Projection.doc` maps the
+notes' symbols to the cells names and states the age basis; `model.Data.doc` says what each
+input file is and, for the mortality table, what it is **not**. A cold sweep of all nine model
+points takes about **40 seconds**.
 
 ## Four compartments, three of which add to `pols_if`
 
@@ -193,21 +195,26 @@ disclosed card is quoted on **보험나이**, about half a year older than this 
 is the largest single uncertainty in the model and `technical-notes.md` carries it as a stated
 sensitivity rather than closing it with an invented factor.
 
-The construction is nonetheless coherent with the *other* sourced anchor: the PV at the
+The construction is nonetheless coherent with the *other* sourced anchor. The PV at the
 예정이율 of the anchor cell's benefit outgo is **46.03%** of the PV of premium income, and the
 PV of its expense and commission basis **20.26%** against the **20.68%** loading
-`net_prem_ratio()` implies — with the ₩5,600 premium itself built from a published rate card
-[S2]. Three documents, one percentage point.
+`net_prem_ratio()` implies. Only the first of those two is evidence: `expense_maint` is
+*calibrated* to that loading, so 20.26 against 20.68 is a construction and the 0.42-point gap
+is the rounding of `expense_maint` to a whole ₩200. The 46.03% is calibrated to nothing — the
+incidence basis comes from the 통계연보 [R4] and the ₩5,600 premium from a published rate card
+[S2] — and that is the agreement worth having.
 
 ## The grade share is indexed by age, and that is load-bearing
 
 `share_ge_at(grade, x)` interpolates linearly between six sourced band representative ages —
 60, 67, 72, 77, 82 and 88.5 — because the severe share is **U-shaped** in age: 1·2등급 is
-**22.2%** of certified lives under 65, falls to **11.1%** at 80-84 and rises again to **14.8%**
-at 85 and over [R4 표2-9, derived](#krlib-long_term_care-r4). The under-65 population is severe because only the 노인성
-질병 list gets in at all; the 80-84 trough is where the marginal entrant is a lightly impaired
-person newly crossing the 51-point line. **One grade-mix vector at all ages mis-prices a
-1~2등급 benefit by up to a factor of two.**
+**22.2%** of certified lives under 65 on the shipped table, falls to **11.1%** at 80-84 and
+rises again to **14.8%** at 85 and over [R4 표2-9, derived](#krlib-long_term_care-r4). (That 22.2% is the sum of the
+two rounded grade shares; [R4]'s own derived 1·2등급 계 for the band is 22.3%, and the tenth of
+a point between them is rounding inside the source table.) The under-65 population is severe
+because only the 노인성 질병 list gets in at all; the 80-84 trough is where the marginal
+entrant is a lightly impaired person newly crossing the 51-point line. **One grade-mix vector
+at all ages mis-prices a 1~2등급 benefit by up to a factor of two.**
 
 Because the share moves with age, `prev_care_slope_at` uses the **full product rule**, `s_G'(x)
 P(x) + s_G(x) P'(x)`. The first term is negative over most of the range for a severe threshold;
@@ -275,8 +282,10 @@ Korean practice keeps them apart and so does the model.
   보험료를 돌려드립니다」 [S1] [S2] — and unlike the cancer chassis there is no cancellation
   option and no revival. Those lives are `pols_void(t)`, **a decrement of its own** with
   `claims(t, "VOID")` attached, and never reach `pols_entry_care`. It is carried as a product
-  fact, not for materiality: ₩0.0038 refunded over the projection, and `claims_void(0)` is zero
-  only because `cum_prem_pp(0) = 0` leaves nothing yet to refund.
+  fact, not for materiality: ₩0.0073 refunded over the projection. The refund is valued at
+  `cum_prem_pp(t + 1)` and not `cum_prem_pp(t)` — premium falls at the start of month `t` and
+  the void is recognised at the end of it, so a life voided in month 0 has paid one month's
+  premium and 「이미 납입한 보험료를 돌려드립니다」 returns it.
 - **감액기간.** Cover has started and the benefit is merely halved: `red_factor(t)` returns
   `1 - (1 - red_fraction) * disease_share`. The 약관 test is on the **cause**, not the grade —
   a 질병-caused certification inside the window is paid at 50%, an 상해/재해-caused one in full
@@ -635,6 +644,7 @@ rather than papered over.
 | `light_mort_mult` | 1.8 | between healthy and care; certified decedents' mean 인정점수 is 82.1, inside 2등급, so deaths concentrate in the severe grades [R11] | none |
 | `dem_mort_mult` | 2.5 | between the light and care multiples: a CDR 1 diagnosis is lighter than a 1·2등급 certification | none |
 | `direct_entry_share` | 0.20 | the closing assumption of the two-equation, three-unknown identity; the 13.3% / 69.8% first-application split at 1등급 and 인지지원등급 [R4 표2-5, derived](#krlib-long_term_care-r4) | nothing published. 0.05–0.50 moves lifetime benefit outgo +0.7% / −1.8% and the PV ratio 0.4653 → 0.4485: it carries the **timing**, not the level |
+| `prog_rate_cap` | 1.0 | a guard rather than an assumption: `rho` cannot exceed a certainty. It does **not** bind on any shipped model point | nothing bounds it, because no source gives a progression rate at all |
 | `sub65_age` | 65 | the statutory 노인 boundary, 노인장기요양보험법 제2조제1호 [REG-R54] | statutory, not a choice |
 | `disease_share` | 0.95 | the 감액 test is on the **cause**; a 질병 certification inside the window is halved, an 상해/재해 one is not [S4] | the 질병 / 상해 split of certifications is in **no** retrieved source; `red_mths` 0 / 24 bounds the whole mechanic at ±0.02% of lifetime outgo on the anchor cell |
 | `red_fraction` | 0.50 | **[S4]**, and invariant wherever a 감액 is stated | 50% in every retrieved document [S1] [S4] |
@@ -649,7 +659,7 @@ rather than papered over.
 | `inflation_rate` | 0.02 | the Bank of Korea inflation target, stepping at each 계약해당일 | no Korean expense-inflation assumption was retrieved |
 | `prev_ceil`, `prev_beta`, `prev_x_mid` | fitted per sex | three-parameter logistic, least squares through five sourced 인정률 [R4] | refitting the male ceiling at 0.35 / 0.50 / 0.95 moves lifetime outgo −0.3% / +0.5% / −0.3%; **nothing above 만나이 88.5 is sourced** |
 | `dem_ceil`, `dem_beta`, `dem_x_mid`, `dem_factor_m`, `dem_factor_f` | fitted; 0.9568, 1.0346 | logistic through five sourced band prevalences, with the **[R7, derived](#krlib-long_term_care-r7)** 65+ sex factors applied flat in age | the fit is out by 31% at the 70-74 anchor, and the sourced sex series crosses over at 80 where the model's factors do not |
-| `lapse_year1` | 0.08 | first-year level | **no Korean durational persistency series for a 보장성 contract was retrieved.** The 표준형 comparison at a level 4.0% changes lifetime benefit outgo by −61.1% |
+| `lapse_year1`, `lapse_level_std` | 0.08, 0.04 | the first-year level and the level of the 표준형 comparison vector, both standardizations | **no Korean durational persistency series for a 보장성 contract was retrieved.** The 표준형 comparison at a level 4.0% changes lifetime benefit outgo by −61.1% |
 | `lapse_completion`, `lapse_ultimate` | 0.001, 0.008 | **[REG-R27]**, the guidance's own values for a 무·저해지 form | prescribed; the permitted alternatives (선형-로그, 로그-로그) carry quarterly disclosure of the difference |
 | `wait_mths`, `red_mths` | 3, 12 | 90 days and one year on a monthly grid [S2] [S4] | 90 days at three carriers against **180 days** at 우체국, and a one-year 감액 against a **two-year** one — both combinations shipped, the second at model point 9 [S1] |
 | processing order | certification, then mortality, then lapse | a life certified in the month is certified before it can die of the state | fixed by the contract's own sequence, not by a disclosure |
@@ -673,17 +683,17 @@ reviewer checks it by eye rather than by re-running the model:
   `lapse_rate_mth(0) = 0.006924382628299419`, `P(40) = 0.00038039917723430234`,
   `i_D(40) = 0.0000022292964462128687`, `rho(40) = 0.03396845379835368`.
 - The `t = 0 … 12` cash flow statement to six decimals and the compartment table to ten,
-  including the rows the notes single out: `t = 1` and `t = 2` carrying a non-zero
-  `claims_void` and nothing else, `t = 3` as the first payable certification, and `t = 12`
+  including the rows the notes single out: `t = 0`, `t = 1` and `t = 2` carrying a non-zero
+  `claims_void` and no other benefit, `t = 3` as the first payable certification, and `t = 12`
   where `claims_lump` steps from 2.198380 to 4.601130 as the 감액 expires while
   `claims_annuity` does **not**, the earlier cohorts being frozen at ₩207,495.74.
-- The policy-year-1 aggregate — ₩64,670.302783 of premium against **−₩10,481.091863** of net
+- The policy-year-1 aggregate — ₩64,670.302783 of premium against **−₩10,481.095370** of net
   cash flow — the strongest single target in the file, one set of rates driving a whole cycle.
 - The milestone rows, the cliff at `t = 240` in particular: `cv_pp(239) = 0` against
   `cv_pp(240) = 654,528.0`, a 환급률 of 48.700000%, and `net_cf` turning from +2,496.2682 to
   −1,284.5196.
 - The undiscounted totals — ₩973,533.0572 of premium, ₩268,065.6927 + ₩546,912.1402 of benefit,
-  ₩326,783.9323 of 계약자적립액 on death and **−₩448,855.2093** of net cash flow — with the
+  ₩326,783.9323 of 계약자적립액 on death and **−₩448,855.2128** of net cash flow — with the
   cohort decomposition: 0.026808014544 ever certified, 0.354308072159 deaths, 0.435534876925
   lapses and 0.210156424636 reaching the 90세 계약해당일.
 - The zero columns asserted **as zeros** rather than left implied: `claims_maturity` at every

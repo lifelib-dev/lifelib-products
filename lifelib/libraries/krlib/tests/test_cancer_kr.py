@@ -1149,12 +1149,17 @@ def test_the_expected_payment_counts_each_benefit_line_implies(kr_cancer_anchor,
 
 
 def test_the_equivalence_premium_on_the_shipped_basis(kr_cancer_anchor):
-    """₩55,586 a month against the shipped ₩45,000 — 19.0% below it.
+    """The PV ratio at ₩45,000, and the ₩55,586 lower bound it scales to.
 
-    ``product-spec.md`` states that ₩45,000 is a modelling input and that these notes'
-    figure governs, so the equivalence calculation is part of the worked example rather than
-    a commentary on it.  The gap is not hidden anywhere: it is why ``av_pp`` is exhausted at
-    ``t = 447`` and why the undiscounted ``net_cf`` total is −₩7,466,785.49.
+    ``product-spec.md`` states that ₩45,000 is a modelling input and that the notes' figure
+    governs, so the equivalence calculation is part of the worked example rather than a
+    commentary on it.  **The ratio-scaled ₩55,586 is a lower bound and not the equivalence
+    premium**: ``claims_death`` and ``claims_lapse`` are the 계약자적립액 and the
+    해약환급금 multiplied by decrements, so they rise with the premium, and ``commissions``
+    is proportional to it.  The notes solve the equivalence level at **₩66,289**, which is
+    what ₩45,000 is 32.1% below; the numbers asserted here are the PV pair the solve starts
+    from.  The gap is not hidden anywhere: it is why ``av_pp`` is exhausted at ``t = 447``
+    and why the undiscounted ``net_cf`` total is −₩7,466,785.49.
     """
     a = kr_cancer_anchor
     df = a.result_cf()
@@ -1166,7 +1171,11 @@ def test_the_equivalence_premium_on_the_shipped_basis(kr_cancer_anchor):
     assert pv_prem - pv_outgo == pytest.approx(-1616949.191455, abs=1e-4)
     assert pv_prem / a.premium_mth_pp() == pytest.approx(152.7418594890, abs=5e-9)
     assert 45000.0 * ratio == pytest.approx(55586.16, abs=WON)
-    assert 45000.0 / (45000.0 * ratio) - 1.0 == pytest.approx(-0.190, abs=5e-4)
+    # The lower bound understates because two outgo lines ride on the account: they are
+    # ₩1,474,174.97 of the ₩16,053,492.76 of undiscounted outgo, and they scale with P.
+    account_lines = df["claims_death"].sum() + df["claims_lapse"].sum()
+    assert account_lines == pytest.approx(1474174.9683638205, abs=WON)
+    assert 45000.0 / 66289.05 - 1.0 == pytest.approx(-0.321, abs=5e-4)
 
 
 @pytest.mark.parametrize("point_id", sorted(MODEL_POINT_SUMMARY))

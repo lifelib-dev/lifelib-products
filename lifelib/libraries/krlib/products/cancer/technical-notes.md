@@ -208,8 +208,8 @@ retrieved premium figures — ₩119,280, ₩187,332 and ₩347,292 a year at �
 10년납 10년만기 / 순수보장형 [S8] — come with **no stated 보험가입금액**, so they are price
 points without a benefit denominator. `product-spec.md` footnote 11 reaches ₩45,000 by
 arithmetic and states that these notes' figure governs where the two differ. **On the shipped
-basis the equivalence premium is ₩55,586 a month**, computed in the worked example; ₩45,000
-is 19% below it, and the visible consequence is that the anchor cell is the one model point
+basis the equivalence premium is ₩66,289 a month**, solved in the worked example; ₩45,000
+is 32% below it, and the visible consequence is that the anchor cell is the one model point
 whose retrospective 계약자적립액 is exhausted before expiry.
 
 The **modules are independently switchable** and that is a specification requirement, not a
@@ -278,8 +278,10 @@ kills long survivors far too fast, and long survivors are exactly who the inpati
 and treatment limbs are paid for. Each diagnosed state is therefore resolved into **six
 cohorts** — select years 1 to 5 and an ultimate — and the excess hazard is read per cohort.
 The cohorts are tracked **exactly, as a delay on the entry flow** rather than as a transfer
-rate: `waived_grad(t, k)` and `minor_grad(t, k)` carry the entrants of month `t − 12`
-forward on that cohort's own decrements and telescope out of the state totals.
+rate: `waived_grad(t, 1)` and `minor_grad(t, 1)` carry the entrants of month `t − 13`
+forward on cohort 1's own decrements — thirteen, not twelve, because the entry month is
+itself a full month of cohort-1 exposure — and each later cohort hands on to the next twelve
+months after that. The graduation flows telescope out of the state totals.
 
 **Two ledgers, and they are per policy, not per block.** `similar_avail(t)` is the
 probability that an individual policy's 유사암 tier is still unused; `treat_avail(k)` is the
@@ -396,8 +398,9 @@ Two things are standardized on top of the sourced grid and both say so at the po
 every published value exactly and is locally the exponential family the curve follows; and
 the **two rows above 80**, at 90 and 100, which are a **[std]** extrapolation at the age-80
 rate × 1.15, flat thereafter, on the deceleration [R1]'s crude bands show. Log-linear
-extrapolation of the 70-to-80 slope was rejected: it reaches 0.0664 at 90, which the crude
-bands contradict.
+extrapolation of the 70-to-80 slope was rejected: it reaches 0.0405 at male 90 — a
+decadal step of 1.45 where the registry's own male 80+ band is only **1.24×** its 70–79
+band, against a 70–79 / 60–69 step of 1.88 [R1].
 
     inc_rate_mth = inc_rate(age(t)) / 12        [std, uniform within the policy year]
 
@@ -732,9 +735,12 @@ One refinement is **not** implemented and the omission is stated with its direct
 clock's second endpoint differs by benefit, running to the **진단확정일** for a diagnosis
 benefit [S3 별표 1 주2] but to the **수술일** for a surgery or treatment benefit [S4] [S5],
 so a cancer diagnosed at month 10 and operated on at month 14 really does draw a reduced
-diagnosis benefit and a **full** surgery benefit. The model applies the reduction to the
-diagnosis tiers only, which is the same answer wherever both dates fall on the same side of
-`G` and **overstates the benefit slightly** elsewhere.
+diagnosis benefit and a **full** surgery benefit — which is the model's answer too. The
+model applies the reduction to the diagnosis tiers **only**, and never to the care limbs, so
+it gives the contract's own answer whenever the **treatment** date falls outside `G`, which
+includes every case in which the diagnosis itself does; where the treatment date falls
+*inside* `G` it **overstates the care limbs slightly**, because the contract would halve
+them and the model does not.
 
 ### Incidence and the four diagnosis flows
 
@@ -926,7 +932,7 @@ LAPSE lines are excluded**, because they are payments *out of* the account and i
 would make the recursion self-referential.
 
 The **floor at zero** binds on the anchor cell from **`t = 447`** — 만나이 77, 62% of the way
-through the term — because the anchor's premium is 19% below the shipped basis's equivalence
+through the term — because the anchor's premium is 32% below the shipped basis's equivalence
 level. It is the visible consequence of the premium being a modelling input, and the
 worked example states it rather than smoothing it.
 
@@ -1321,7 +1327,7 @@ Four boundaries, in the order the product reaches them.
 - **`t = 446 → 447`, the 계약자적립액 is exhausted.** `av_pp(447) = 0` and stays zero to
   expiry, so `claims_death` and `claims_lapse` both fall to **exactly zero** and stay there.
   That is the retrospective account's floor binding, at 만나이 **77**, and it is the visible
-  consequence of the anchor's premium being 19% below the shipped basis's equivalence level.
+  consequence of the anchor's premium being 32% below the shipped basis's equivalence level.
 - **`t = 719 → 720`, expiry.** Every cash flow is zero at `t = 720`, `pols_maturity(720) =
   pols_if(720) = 0.0103446076`, and `claims_maturity(720) = 0.00` — **nothing is paid at the
   100세 계약해당일** [S8].
@@ -1678,16 +1684,25 @@ with factor `1.025^(−t/12)` applied at the start of month `t`:
     ratio                                                         =  1.2352479168
     PV net_cf                                                     = -1,616,949.191455
 
-The premium annuity is **152.7418594890** months of premium at the anchor cell. Because every
-outgo line except commission is independent of `P`, and commission is small and proportional,
-the **equivalence premium is ₩55,586 a month** — 45,000 × 1.2352479168 = 55,586.16. The
-anchor cell's ₩45,000 is **19.0% below it**, and that gap is not hidden anywhere: it is why
-`av_pp` is exhausted at `t = 447` and why the undiscounted `net_cf` total is −₩7,466,785.49.
+The premium annuity is **152.7418594890** months of premium at the anchor cell. Scaling the
+premium by that ratio — 45,000 × 1.2352479168 = **55,586.16** — is the obvious first move and
+it is **not** the equivalence premium: it is a lower bound, because **three outgo lines are
+themselves functions of `P`**. `commissions` is proportional to it; and
+`claims_death` and `claims_lapse` are `av_pp` and `cv_pp` multiplied by decrements, so they
+ride on the **계약자적립액**, which accrues `prem_alloc_pp = 0.85 P` every month of the
+납입기간. Between them those two lines are ₩1,474,175 of the anchor cell's ₩16,053,493 of
+undiscounted outgo, and raising `P` raises them. At ₩55,586 the model still leaves PV outgo
+₩709,217 above PV premiums.
+
+Solved on the shipped basis — `P` such that PV `net_cf` = 0, every other assumption held —
+the **equivalence premium is ₩66,289 a month**. The anchor cell's ₩45,000 is **32.1% below
+it**, and that gap is not hidden anywhere: it is why `av_pp` is exhausted at `t = 447` and
+why the undiscounted `net_cf` total is −₩7,466,785.49.
 
 **The undiscounted `net_cf` being negative is structural, not an error, even at the
 equivalence premium.** Premium is collected for 240 months and cover runs for 720, so an
 undiscounted comparison necessarily favours the outgo; only the discounted comparison is
-meaningful, and at ₩55,586 it balances by construction.
+meaningful, and at ₩66,289 it balances by construction.
 
 ### Reading the shape of the result
 
@@ -1752,11 +1767,12 @@ point 1 is the only cell whose account is exhausted anywhere near the middle of 
 | 10 | M 35 | 30년 | 10,000,000 | 23,000 | 780 | 1.1010 | −4,471,108.86 | the pre-2022 **70%** 유사암 ratio [S8], 24-month 감액, the sum-insured floor |
 
 Points **3, 7, 8 and 10** never exhaust their account. Points 2, 4, 5, 6 and 9 exhaust it
-only in their last decade — 96.9%, 80.6%, 86.5%, 89.5% and 97.3% of the way through their
-respective terms — against the anchor's **62.1%**. Point 3's ratio of 0.8769 is the clearest
-statement of what the 갱신형 flag does on the shipped basis: removing the 면책기간 and the
-감액기간 raises the benefit, and paying premium for the whole term instead of twenty years
-raises the premium PV far more.
+only in the last fifth of their term — 96.9%, 80.6%, 86.5%, 89.5% and 97.3% of the way
+through, which on the two long-dated cells (points 4 and 5) still leaves 13.6 and 11.5 years
+of cover running on a nil account — against the anchor's **62.1%**. Point 3's ratio of
+0.8769 is the clearest statement of what the 갱신형 flag does on the shipped basis:
+removing the 면책기간 and the 감액기간 raises the benefit, and paying premium for the whole
+term instead of twenty years raises the premium PV far more.
 
 ---
 
@@ -1879,7 +1895,7 @@ In rough order of leverage on a Korean cancer block.
    산출방법서 is not public [REG-R2], the only retrieved price points carry **no
    보험가입금액** [S8], and the consumer-comparison snippets are [unverified]. Every
    profitability statement about the anchor cell is a statement about ₩45,000 **[std]**, and
-   about the ₩55,586 equivalence level these notes compute, not about the market.
+   about the ₩66,289 equivalence level these notes solve for, not about the market.
 9. **The 만나이 / 보험나이 offset is half a year of age, one way.** The tables are read for
    a life on average half a year younger than the contract calls him, and between 만나이 60
    and 70 the published male rate roughly doubles [R5], so half a year is worth about 3.5% of

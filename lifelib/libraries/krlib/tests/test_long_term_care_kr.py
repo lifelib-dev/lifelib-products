@@ -338,12 +338,12 @@ def test_the_prevalence_logistic_is_fitted_through_the_five_sourced_injeongryul(
 # t -> (pols_if, premiums, claims_lump, claims_annuity, claims_death, claims_void,
 #       expenses, claim_expenses, commissions, net_cf)
 WORKED_EXAMPLE_CF = {
-    0:  (1.000000, 5600.000000, 0.000000, 0.000000, 0.000000, 0.000000,
-         29320.000000, 0.000000, 43680.000000, -67400.000000),
-    1:  (0.992995, 5560.769900, 0.000000, 0.000000, 0.359493, 0.001170,
-         198.598925, 0.000000, 0.000000, 5361.810312),
-    2:  (0.986038, 5521.814482, 0.000000, 0.000000, 0.714544, 0.002594,
-         197.207660, 0.000000, 0.000000, 5323.889685),
+    0:  (1.000000, 5600.000000, 0.000000, 0.000000, 0.000000, 0.001040,
+         29320.000000, 0.000000, 43680.000000, -67400.001040),
+    1:  (0.992995, 5560.769900, 0.000000, 0.000000, 0.359493, 0.002340,
+         198.598925, 0.000000, 0.000000, 5361.809142),
+    2:  (0.986038, 5521.814482, 0.000000, 0.000000, 0.714544, 0.003891,
+         197.207660, 0.000000, 0.000000, 5323.888388),
     3:  (0.979131, 5483.131826, 1.333122, 0.052689, 1.065193, 0.000000,
          195.826137, 0.007618, 0.000000, 5284.847067),
     4:  (0.972272, 5444.720021, 1.448226, 0.109927, 1.411483, 0.000000,
@@ -452,8 +452,9 @@ def test_the_worked_examples_month_0_trace(kr_ltc_anchor):
     months of acquisition expense and the whole 7.8 months of initial commission against a
     single month's premium.  It is also where the two 보장개시일 facts are visible at once —
     a certification happens, ``pols_entry_care(0)`` is nevertheless nil because ``0 < W``,
-    and ``claims_void(0)`` is nil for a **different** reason again, there being no premium
-    yet to return.
+    and ``claims_void(0)`` is nevertheless **not** nil, because the month-0 premium fell at
+    the start of the month and a cover voided at the end of it is void ab initio: the refund
+    is ``cum_prem_pp(t + 1)``, not ``cum_prem_pp(t)``.
     """
     p = kr_ltc_anchor
     assert p.pols_healthy(0) == 1.0
@@ -466,8 +467,10 @@ def test_the_worked_examples_month_0_trace(kr_ltc_anchor):
     assert p.pols_entry_care_prog(0) == 0.0          # no light compartment to progress out of
     assert p.pols_entry_care(0) == 0.0               # 0 = t < W = 3
     assert p.pols_void(0) == pytest.approx(0.00000018577470385107238, rel=FULL)
-    assert p.cum_prem_pp(0) == 0.0
-    assert p.claims(0, "VOID") == 0.0                # nothing yet to refund
+    assert p.cum_prem_pp(0) == 0.0                   # paid before month 0's own premium
+    assert p.cum_prem_pp(1) == 5_600.0               # ...which is what the void returns
+    assert p.claims(0, "VOID") == pytest.approx(
+        5_600.0 * 0.00000018577470385107238, abs=WON6)
     assert p.pols_healthy_mid(0) == pytest.approx(0.9999911250799526, rel=FULL)
     assert p.pols_light_mid(0) == pytest.approx(0.000008689145343537096, rel=FULL)
     assert p.pols_care_mid(0) == 0.0
@@ -480,7 +483,8 @@ def test_the_worked_examples_month_0_trace(kr_ltc_anchor):
     assert p.expenses(0) == pytest.approx(5.2 * 5_600 + 200.0, abs=WON6)
     assert p.commissions(0) == pytest.approx(7.8 * 5_600, abs=WON6)
     assert p.claim_expenses(0) == 0.0
-    assert p.net_cf(0) == pytest.approx(5_600.0 - 29_320.0 - 43_680.0, abs=WON6)
+    assert p.net_cf(0) == pytest.approx(
+        5_600.0 - 0.001040 - 29_320.0 - 43_680.0, abs=WON6)
     # The roll forward out of month 0, term by term.
     assert p.pols_healthy(1) == pytest.approx(
         0.9999911250799526 * (1.0 - 0.0000813708009308467)
@@ -496,8 +500,9 @@ def test_the_worked_examples_month_1_trace(kr_ltc_anchor):
 
     Every per-policy rate is unchanged from month 0 — ``age(1) = 40``, policy year still 1 —
     so what moves is the population.  Three firsts land in this row: the first progression
-    out of the light compartment, the first non-zero ``claims_void`` now that a premium has
-    been paid, and the first non-zero ``claims_death``, the account having one month in it.
+    out of the light compartment, the second and larger ``claims_void`` now that two
+    premiums have been paid, and the first non-zero ``claims_death``, the account having one
+    month in it.
     """
     p = kr_ltc_anchor
     assert p.age(1) == 40 and p.policy_year(1) == 1
@@ -514,7 +519,7 @@ def test_the_worked_examples_month_1_trace(kr_ltc_anchor):
     assert p.pols_void(1) == pytest.approx(0.00000020889418843702306, rel=FULL)
     assert p.cum_prem_pp(1) == 5_600.0
     assert p.claims(1, "VOID") == pytest.approx(
-        5_600.0 * 0.00000020889418843702306, abs=WON6)
+        11_200.0 * 0.00000020889418843702306, abs=WON6)
     assert p.prem_accum_factor(1) == pytest.approx(1.0016515813, abs=5e-11)
     assert p.av_pp(1) == pytest.approx(4449.066773, abs=WON6)
     assert p.claims(1, "DEATH") == pytest.approx(
@@ -523,7 +528,7 @@ def test_the_worked_examples_month_1_trace(kr_ltc_anchor):
     assert p.commissions(1) == 0.0                   # no renewal commission before t = 12
     assert p.claim_expenses(1) == 0.0                # nothing payable happened
     assert p.net_cf(1) == pytest.approx(
-        5560.769900 - 0.359493 - 0.001170 - 198.598925, abs=WON6)
+        5560.769900 - 0.359493 - 0.002340 - 198.598925, abs=WON6)
 
 
 def test_the_worked_examples_month_3_trace_is_the_first_payable_certification(
@@ -739,11 +744,11 @@ YEAR_1 = {
     "claims_lump": 15.974040,
     "claims_annuity": 2.900270,
     "claims_death": 22.769436,
-    "claims_void": 0.003764,
+    "claims_void": 0.007271,
     "expenses": 31429.655856,
     "claim_expenses": 0.091280,
     "commissions": 43680.000000,
-    "net_cf": -10481.091863,
+    "net_cf": -10481.095370,
 }
 
 
@@ -798,12 +803,12 @@ TOTALS = {
     "claims_dementia": 0.0000,
     "claims_death": 326783.9323,
     "claims_lapse": 70149.7799,
-    "claims_void": 0.0038,
+    "claims_void": 0.0073,
     "claims_maturity": 0.0000,
     "expenses": 135756.2503,
     "claim_expenses": 3774.5847,
     "commissions": 70945.8826,
-    "net_cf": -448855.2093,
+    "net_cf": -448855.2128,
 }
 
 
@@ -875,10 +880,11 @@ PRESENT_VALUES = {
     "claims_annuity": 253930.5911,
     "claims_death": 166819.3187,
     "claims_lapse": 38211.9050,
+    "claims_void": 0.0073,
     "expenses": 97088.7515,
     "claim_expenses": 1746.6060,
     "commissions": 66187.8032,
-    "net_cf": 69486.2789,
+    "net_cf": 69486.2754,
 }
 
 
@@ -905,6 +911,12 @@ def test_the_present_values_at_the_yejeong_iyul(kr_ltc_anchor):
     assert pv_ben / pv_prem == pytest.approx(0.4602598067, abs=5e-9)
     assert pv_exp / pv_prem == pytest.approx(0.2026425297, abs=5e-9)
     assert pv_benefit_over_premium(p) == pytest.approx(0.4602598067, abs=5e-9)
+    # The nine printed lines re-add to net_cf: claims_dementia and claims_maturity are nil.
+    outgo = sum(PRESENT_VALUES[c] for c in (
+        "claims_lump", "claims_annuity", "claims_death", "claims_lapse", "claims_void",
+        "expenses", "claim_expenses", "commissions"))
+    assert PRESENT_VALUES["premiums"] - outgo == pytest.approx(
+        PRESENT_VALUES["net_cf"], abs=1e-3)
 
 
 def test_what_the_numbers_say(kr_ltc_anchor):
@@ -961,7 +973,7 @@ def test_the_ganbyeong_yeongeum_is_two_thirds_of_the_benefit(tmp_path):
         totals = lifetime(q)
         assert totals["claims_annuity"] == 0.0
         assert totals["claims_lump"] == pytest.approx(268065.6927, abs=WON4)
-        assert totals["net_cf"] == pytest.approx(101027.2752, abs=WON4)
+        assert totals["net_cf"] == pytest.approx(101027.2717, abs=WON4)
         assert totals["net_cf"] > 0.0
     finally:
         model.close()
@@ -1097,12 +1109,12 @@ def test_the_bojang_gaesiil_boundary_is_the_month_and_not_the_day_after(kr_ltc_a
             assert p.pols_entry_care(t) == 0.0 and p.pols_void(t) > 0.0
         else:
             assert p.pols_void(t) == 0.0 and p.pols_entry_care(t) > 0.0
-    assert p.claims(0, "VOID") == 0.0                # nothing paid in yet to return
+    assert p.claims(0, "VOID") > 0.0                 # one month's premium already paid
     assert p.claims(1, "VOID") > 0.0 and p.claims(2, "VOID") > 0.0
     assert p.claims(3, "VOID") == 0.0
-    for t in (1, 2):
+    for t in (0, 1, 2):
         assert p.claims(t, "VOID") == pytest.approx(
-            p.cum_prem_pp(t) * p.pols_void(t), rel=FULL)
+            p.cum_prem_pp(t + 1) * p.pols_void(t), rel=FULL)
 
 
 def test_the_gamaek_gigan_is_a_step_and_it_is_frozen_at_certification(kr_ltc_anchor):
@@ -1272,7 +1284,7 @@ def test_four_columns_are_zero_on_purpose(kr_ltc_anchor, long_term_care):
     assert (df["claims_lapse"].iloc[:240] == 0.0).all()
     assert df["claims_lapse"].iloc[240] > 0.0
     assert df["claims_void"].sum() > 0.0
-    assert df["claims_void"].sum() == pytest.approx(0.0038, abs=WON4)
+    assert df["claims_void"].sum() == pytest.approx(0.0073, abs=WON4)
     assert p.pols_maturity(600) > 0.0 and p.claims(600, "MATURITY") == 0.0
     riderless = [pid for pid in long_term_care.Data.model_point_table().index
                  if not long_term_care.Projection[pid].dementia_rider()]
@@ -1608,13 +1620,16 @@ def test_pitfall_a_certification_inside_the_window_is_a_decrement_not_a_deferred
 
     「특약을 무효로 하며, 이미 납입한 보험료를 돌려드립니다」.  There is **no cancellation
     option and no revival** here, unlike the cancer chassis, so a model that imports the
-    chassis's 90-day cancellation right invents a term this product does not have.  And
-    ``claims_void(0)`` is zero for a different reason than ``claims_void(3)`` is: at ``t = 0``
-    there are voided lives but nothing yet to refund, and at ``t = 3`` the window has closed.
+    chassis's 90-day cancellation right invents a term this product does not have.  The
+    refund is ``cum_prem_pp(t + 1)`` and not ``cum_prem_pp(t)``: premium falls at the start
+    of month ``t`` and the void is recognised at the end of it, so a life voided in month 0
+    has paid one month and gets it back.  ``claims_void(3)`` is nil for the opposite reason,
+    the window having closed.
     """
     p = kr_ltc_anchor
-    assert p.pols_void(0) > 0.0 and p.claims(0, "VOID") == 0.0
-    assert p.cum_prem_pp(0) == 0.0
+    assert p.pols_void(0) > 0.0 and p.claims(0, "VOID") > 0.0
+    assert p.claims(0, "VOID") == pytest.approx(
+        p.premium_mth_pp() * p.pols_void(0), rel=FULL)
     assert p.pols_void(3) == 0.0 and p.claims(3, "VOID") == 0.0
     assert p.pols_entry_care(3) > 0.0
     # The voided lives are a decrement: they are in the roll-forward and not in pols_care.
@@ -1627,7 +1642,7 @@ def test_pitfall_a_certification_inside_the_window_is_a_decrement_not_a_deferred
     assert sum(p.pols_void(t) for t in range(p.proj_len())) == pytest.approx(
         0.000000626279, abs=COUNT)
     assert sum(p.claims(t, "VOID") for t in range(p.proj_len())) == pytest.approx(
-        0.0038, abs=WON4)
+        0.0073, abs=WON4)
 
 
 def test_pitfall_the_surrender_value_cliff_has_a_direction(kr_ltc_anchor):
@@ -2186,7 +2201,7 @@ def test_sensitivity_lapse_is_the_dominant_lever_and_its_sign_is_the_opposite_on
         totals = lifetime(q)
         assert totals["benefit"] == pytest.approx(317015.5544, abs=WON4)
         assert 1.0 - totals["benefit"] / 814977.8329 == pytest.approx(0.611, abs=0.001)
-        assert totals["net_cf"] == pytest.approx(120119.8015, abs=WON4)
+        assert totals["net_cf"] == pytest.approx(120119.7979, abs=WON4)
         assert totals["net_cf"] > 0.0
     finally:
         model.close()
@@ -2387,7 +2402,7 @@ def test_the_ganpyeon_simsa_loading_is_a_premium_multiplier_only(long_term_care,
     assert p8.premium_mth_pp() == pytest.approx(
         1.4 * float(table.loc[8, "premium"]), rel=FULL)
     assert sum(p8.net_cf(t) for t in range(p8.proj_len())) == pytest.approx(
-        1152142.4397, abs=WON4)
+        1152142.1277, abs=WON4)
     assert all(long_term_care.Projection[pid].uw_loading() == 1.0
                for pid in table.index if pid != 8)
 

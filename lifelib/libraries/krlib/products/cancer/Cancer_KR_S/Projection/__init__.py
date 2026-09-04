@@ -188,9 +188,11 @@ treatment limbs are paid for.
 Each diagnosed state is therefore resolved into **six cohorts by elapsed duration** -- select
 years 1 to 5 and an ultimate -- and the excess hazard is read per cohort. The cohorts are
 tracked exactly, as a **delay on the entry flow** rather than as a transfer rate:
-:func:`waived_grad` and :func:`minor_grad` carry the entrants of month ``t - 12`` forward on
-that cohort's own decrements, and the graduation flows telescope out of the sum, which is what
-:func:`check_cancer_roll_fwd` asserts. :func:`check_canc_dur_ledger` rebuilds the first cohort
+:func:`waived_grad` and :func:`minor_grad` carry the entrants of month ``t - 13`` forward on
+cohort 1's own decrements -- thirteen, not twelve, because the entry month is itself a full
+month of cohort-1 exposure -- and each later cohort hands on twelve months after that. The
+graduation flows telescope out of the sum, which is what :func:`check_cancer_roll_fwd`
+asserts. :func:`check_canc_dur_ledger` rebuilds the first cohort
 independently from the entry history, so an off-by-one in the delay shows up there and nowhere
 else.
 
@@ -218,8 +220,10 @@ three. One refinement is **not** implemented and the omission is stated: the clo
 endpoint differs by benefit, running to the 진단확정일 for a diagnosis benefit [S3 별표 1 주2]
 but to the 수술일 for a surgery or treatment benefit [S4] [S5], so a cancer diagnosed at month
 10 and operated on at month 14 really does draw a reduced diagnosis benefit and a full surgery
-benefit. The model applies the reduction to the diagnosis tiers only, which is the same answer
-wherever the two dates fall in the same period and understates elsewhere.
+benefit -- and so does the model. The reduction multiplies the four diagnosis lines **only**
+and never the care limbs, so the model gives the contract's own answer whenever the treatment
+date falls outside the 감액기간 -- which includes every case in which the diagnosis itself
+does -- and overstates the care limbs of a treatment falling inside it.
 
 .. rubric:: Premiums ride on pols_healthy + pols_minor, claims on the diagnosed
 
@@ -1709,7 +1713,8 @@ def prem_int_rate_used():
     [REG-R9] [REG-R48]. The 예정이율 of a specific Korean product is therefore not a published
     number for any product in this library. The anchor is the **평균공시이율**, which *is* a
     regulatory figure computed by the FSS Governor and which stands at 2.50% for 2026, down
-    from 2.75% and the first fall since 2020 [REG-R48]. The observed bracket is wide and both
+    from 2.75% and its first fall since the 2.50% -> 2.25% cut that took effect for 2021
+    [REG-R48]. The observed bracket is wide and both
     ends are recorded: one non-life product credits its 계약자적립액 at 「연복리 1.5%」 [S8],
     another the 공시이율 with a 최저보증이율 of 「연단위 복리 0.5%」 [S1].
     """

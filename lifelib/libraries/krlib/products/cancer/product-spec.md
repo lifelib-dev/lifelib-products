@@ -21,8 +21,8 @@ Values marked **[std]** are standardizations introduced for the reference implem
 brackets it, the range observed across insurers. Claims no retrieved document could confirm are
 flagged [unverified].
 
-The composite is drawn from **seven carriers**: two 손해보험 (non-life) writers of the same
-cover as 제3보험, eight years apart, so that what changed is visible [S1] [S2]; three contracts
+The composite is drawn from **seven carriers**: one 손해보험 (non-life) writer's contract in
+two editions eight years apart, so that what changed is visible [S1] [S2]; three contracts
 from one 생명보험 (life) writer — a non-renewable stand-alone main contract [S3], a 23-module
 renewable product [S4] and a treatment-cost-only product [S5]; two from a second life writer,
 one of which has **no waiting period at all** [S6] [S7]; and one non-life product page carrying
@@ -55,10 +55,13 @@ restate them:
    treatment benefits are incurred over months and years after it, and a 재진단암 clock only
    opens two years later. An incidence rate alone cannot say for how long any of that runs.
 
-The incidence basis is **derivable from public data** — 국가암등록통계 age-specific incidence
-and five-year relative survival [R1] [REG-R40] — and the derivation is shown below rather than
-a rate being asserted. Where a rate is nevertheless standardized, it is marked [std] and the
-public quantity it is anchored on is named.
+The incidence basis is **published**, which no other morbidity product in this library can
+say: 보험개발원 displays a dated 「기타피부암 및 갑상선암 이외의 암 발생률」 grid by age and
+sex on the *insured* definition of cancer [R5] [REG-R61], and the shipped table reproduces it.
+It is reconciled below against 국가암등록통계 age-specific incidence and five-year relative
+survival [R1] [REG-R40], which is also what the tiers the bureau does not publish are derived
+from. Where a rate is nevertheless standardized, it is marked [std] and the public quantity it
+is anchored on is named.
 
 **Deltas the two inheriting products will state.** `LTC_KR_S` replaces the KCD-keyed diagnosis
 trigger with a **statutory** one, the 노인장기요양보험 등급 [REG-R54] [REG-R55], and replaces
@@ -378,9 +381,10 @@ Footnotes to the [std] rows:
     Korean product is therefore not a published number for any product in this library, and
     every one of them is [std]. The anchor is the **평균공시이율**, which *is* a regulatory
     figure computed by the FSS Governor under 제1-2조제13호 [REG-R9] and which stands at
-    **2.50% for 2026**, down from 2.75% in 2024 and 2025 and the first fall since 2020
-    [REG-R48]. The composite takes 2.50% and a **금리확정형** design, the natural one for a
-    비갱신형 protection contract whose 계약자적립액 is small. The observed bracket is wide and
+    **2.50% for 2026**, down from 2.75% in 2024 and 2025 — its first fall since the 2.50% →
+    2.25% cut that took effect for 2021 [REG-R48]. The composite takes 2.50% and a
+    **금리확정형** design, the natural one for a 비갱신형 protection contract whose
+    계약자적립액 is small. The observed bracket is wide and
     both ends are recorded: one non-life product credits its 계약자적립액 at 「연복리
     **1.5%**」 [S8], another the 공시이율 with a 최저보증이율 of 「연단위 복리 **0.5%**」 [S1].
     On a 금리연동형 design the 공시이율 is reset off a published 공시기준이율 under
@@ -1138,10 +1142,11 @@ publishes, for public display, its 참조순보험요율 in force **적용시점
 It is dated, it has a stated effective date, and **its definition is the insured one** —
 invasive cancer excluding C44 and C73, by primary site — so it already embodies the tier
 carve-out and the 원발부위 rule. Its sex crossover falls at about age 55–60, matching the
-registry's own 「50대 후반부터」 statement [R1] [R5]. Note the standing tension with the
-cross-product finding that **no 참조순보험요율 value is public** [REG-R34]: what is public is
-this illustrative extract on a ten-year age grid, not the filed table, and the two statements
-are consistent.
+registry's own 「50대 후반부터」 statement [R1] [R5]. Read it beside the cross-product
+finding it qualifies: what [REG-R34] establishes is that **no life-side 참조순보험요율 value
+reaches the public**, and it records expressly that the **장기손해보험** rates are published
+as a numeric display on a different page of the same site [REG-R61]. What is public is this
+display on a ten-year age grid, not the filed table.
 
 **Step 3 — reconcile it against the registry, for men.** [R1] gives all-site crude incidence by
 ten-year band and, separately, the male thyroid rate in the two bands either side of 40:
@@ -1217,10 +1222,13 @@ rate with a safety loading already inside it, not a best estimate [REG-R4] [REG-
 제1-2조제1호](#krlib-reg-r9). The claim that the loading is about 10% was seen only in a search summary and is
 [unverified]; what *is* sourced is that it contains **no trend allowance** [R4]. An insurer
 need not use it — applying it merely deems the 순보험료 to have been filed under 보험업법
-제176조제6항 [REG-R4]. The composite's shipped incidence table is consequently a **[std]
-construction with a `provenance` column on every row**, anchored on [R1] and cross-checked
-against [R5], and it is never presented as either the 참조순보험요율 or the 경험생명표
-[REG-R33] [REG-R34].
+제176조제6항 [REG-R4]. What the composite ships is nevertheless **that published grid
+itself**: `incidence_table.csv` reproduces [R5] [REG-R61] verbatim for ages 0–80, with a
+`provenance` column on every row naming it, and only the two rows per sex above the
+published age-80 endpoint are a **[std]** extrapolation. It is presented for exactly what
+it is — a dated 참조순보험요율 display, not a best estimate and not the 경험생명표
+[REG-R33] [REG-R34] — and the [std] work on top of it is Step 5's tier decomposition and
+the best-estimate adjustment `inc_be_factor`, both of which are marked at the point of use.
 
 ### The renewal machinery — what the 갱신형 flag does
 
@@ -1683,6 +1691,7 @@ right.
 [REG-R55]: #krlib-reg-r55
 [REG-R57]: #krlib-reg-r57
 [REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
 [REG-R7]: #krlib-reg-r7
 [REG-R9]: #krlib-reg-r9
 [std]: #krlib-std
