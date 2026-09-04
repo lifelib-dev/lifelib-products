@@ -278,9 +278,11 @@ to print.
 (v) Observed declared rates on annuity money: 4.8% at 2011-09 [R27]; 4.5% at 2012-09 on
 the disputed contract [R1 §1-라](#krlib-immediate_annuity-r1); 3.40% falling to 2.80% over 2015-03 to 2016-03 [S5];
 2.95% at 2016-03 [S4]; 2.83% at 2016-03 [S2]; **2.50% at 2017-04** [S1 §IV-4]; 2.52% at
-2017-12 [S3]; 2.80% at 2023-01 [S13]; 2.55% at 2025-01 [S12]; 2.56% at 2026-09 [S14].
-2.50% is the level the anchor carrier declared on this exact product, sits inside the band
-of the three most recent observations, and equals the **평균공시이율 for 2026** [REG-R48].
+2017-12 [S3]; 2.80% at 2023-01 [S13]; 2.55% at 2025-01 [S12]; 2.67% at 2026-04 [R28];
+2.56% at 2026-09 [S14]. 2.50% is the level the anchor carrier declared on this exact
+product and equals the **평균공시이율 for 2026** [REG-R48]; it sits 5 to 17 basis points
+**below** the 2.55%–2.67% band of the three most recent observations, and that direction
+is recorded rather than smoothed.
 **No model in this library derives a Korean declared rate and none should.** 감독규정
 제7-65조제3항 makes it the product of a 공시기준이율 and a 조정률, with 시행세칙 별표 27
 building the 공시기준이율 as
@@ -469,9 +471,10 @@ shape, where the model relies on it. On the `min_guar` basis `i_d` is set to zer
 Max resolves to the floor at every duration and the stepping is exercised.
 
 `min_guar` is a **modelling device and not a product** — no carrier sells a contract with
-a nil declared rate. It is carried because it is the basis on which the anchor carrier
-publishes its 해약환급금 run [S1 §VI-2], and because without it no shipped model point
-would exercise the duration bands at all.
+a nil declared rate. It is carried because a guaranteed-rate-only projection is the kind of
+basis on which the anchor carrier publishes its 해약환급금 run [S1 §VI-2] — though at [S3]'s
+floor levels and not at that carrier's own 1.5% / 1.0% — and because without it no shipped
+model point would exercise the duration bands at all.
 
 ### The mortality construction
 
@@ -918,11 +921,20 @@ life annuity**, and only the second half reads `mort_table.csv`.
 Two readings of the number itself. **The gross factor** — the premium divided by the
 annual annuity — is `100,000,000 / 4,948,039.1569 = 20.2100`, against implied gross
 factors of 23.81 (교보, 남자 55, 10년보증, 2.52%) and 23.15 (동양, 남자 55, 10년보증,
-2.95%) computed from published illustrations in `product-spec.md`; the anchor is five
-years older, and five years of age at 60 on this table is worth about three units of
-factor, so the model sits where a 남자 60 cell should. **The guarantee is cheap at this
-age**: the same fund converted with no guarantee at all gives a factor of 19.309113 and an
-annuity of ₩4,997,640.34, so the ten-year guarantee costs **1.00% of income**. That is the
+2.95%) computed from published illustrations in `product-spec.md`. **Those are not
+comparable as they stand and the difference must not be waved at.** Five years of age at
+60 is worth **2.12** units of gross factor on this table, not the 3.6 the 교보 comparison
+would need; and running the model straight onto 교보's own published cell — 남자 55,
+10년보증, 2.52%, the same 3.50% load — gives a factor of **22.2688** and a
+monthly-in-arrears annuity of **₩369,962**, i.e. **37.0만원 against a published 35만원**.
+**The model's annuity comes out about 5.7% high on the one life-shape cell a carrier's own
+figure can be reached on**, and the residual is basis: the carrier's own load, its own
+annuitant table, and whether its 산출방법서 builds the 0.80% 연금수령기간 중 비용 into the
+factor, none of which [S3] discloses. That is the size of the error a three-parameter law
+fitted to two rates and one life expectancy leaves behind, and it is the first reason a
+production use of this model must replace `mort_table.csv`. **The guarantee is cheap at
+this age**: the same fund converted with no guarantee at all gives a factor of 19.309113
+and an annuity of ₩4,997,640.34, so the ten-year guarantee costs **0.99% of income**. That is the
 quantitative reason 97.3% of buyers take it [R12 표7](#krlib-immediate_annuity-r12), and it is also why a pure life
 annuity with no guarantee may not be sold in Korea without the point being commercially
 interesting: the minimum guarantee period is five years
@@ -1140,10 +1152,15 @@ and administration expense, and the remaining **₩1,105,280.47** is exactly
 expense exists in this projection.
 
 **Total annuity outgo is 1.3816 times the premium**, and the cumulative payments cross the
-premium between t = 20 and t = 21: ₩98,007,125.57 by the end of row 20 and ₩101,922,278.93
-by the end of row 21. **The undiscounted break-even is the 21st instalment, at attained age
-81** — the number a Korean buyer's own arithmetic produces, and why the shape is a
-longevity hedge and is understood as one. **`Σ net_cf` = −₩42,765,339.80** is a loss
+premium between row 20 and row 21: ₩98,007,125.57 by the end of row 20 and ₩101,922,278.93
+by the end of row 21. Row `t` pays at time `t + 1`, so row 20 closes on the **21st**
+instalment and row 21 carries the **22nd**: **the undiscounted break-even is the 22nd
+instalment, falling at time 22, at attained age 82.** On the nominal annuity, ignoring the
+survival weight, the same arithmetic is the gross factor itself — 20.2100 instalments, so
+the 21st crosses — which is the number a Korean buyer's own arithmetic produces, and why
+the shape is a longevity hedge and is understood as one. The one-instalment difference
+between the two readings is the mortality the expected stream carries and the buyer's
+does not. **`Σ net_cf` = −₩42,765,339.80** is a loss
 undiscounted and must be: the insurer receives ₩100m at time 0 and pays out over half a
 century, and the sign becomes meaningful only when the stream is discounted, which this
 library does not do.
@@ -1336,11 +1353,13 @@ A(0) = 95,029,999.9999999851 / a(10, 2.5%)      = 10,858,010.2647236791
 
 Divided by twelve that is ₩904,834.19 a month; on the `i^(12)/i` adjustment the true
 monthly-in-arrears equivalent is **₩894,628.93**, i.e. **89.5만원/월**, against 교보's
-published **90만원** on a 2.52% basis [S3] — the −0.5% of `product-spec.md`'s own
-cross-check table, reproduced by the model rather than by a spreadsheet. **The annuitant's
-age and sex are irrelevant to a 확정기간연금형**, so 교보's 남자 55 figure is directly
-comparable with the model's 남자 60 one, and the residual basis difference is the 0.02
-points of declared rate.
+published **90만원** on a 2.52% basis [S3] — **−0.60%**. `product-spec.md`'s own
+cross-check table puts the same cell at −0.5% because it solves the identity on 교보's own
+2.52% while this model runs the representative 2.50%; the 0.10-point difference between
+the two figures is exactly those 0.02 points of declared rate, and the model reproduces the
+*mechanism* rather than the spreadsheet's number. **The annuitant's age and sex are
+irrelevant to a 확정기간연금형**, so 교보's 남자 55 figure is directly comparable with the
+model's 남자 60 one.
 
 Because this shape carries no mortality in its annuity, it is the sharpest available test
 of the expense load, and it is the reason the composite adopts the load it does: solving

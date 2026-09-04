@@ -356,9 +356,11 @@ policy issued against 0.548006 deaths.
 [REG-R33] [REG-R34]. The 참조순보험요율 is defined by 감독규정 제1-2조제1호 as the 위험률
 the bureau **files** with the supervisor, not as a published table [REG-R4]; the 장기손해보험
 참조순보험요율 display that *is* public carries a 「기타피부암 및 갑상선암 이외의 암
-발생률」 grid and a 질병입원율 grid [REG-R61], which is what `Cancer_KR_S` and `Medical_KR_S`
-source their bases from — and **neither reaches this product**, because the 중대한 암
-definition is not the insured-cancer definition that grid is stated on. What exists is a
+발생률」 grid and a 질병입원율 grid [REG-R61] — the first is what `Cancer_KR_S` sources its
+incidence from, and the second is what `Medical_KR_S` uses as an external anchor for the *age
+slope* of its admission rate and expressly **not** for the level. **Neither reaches this
+product**, because the 중대한 암 definition is not the insured-cancer definition that grid is
+stated on. What exists is a
 single 2011 상품요약서 that prints its 예정위험률 by sex at ages 20, 40 and 60 [S3]. **Both
 decrement files in this product are built on it and nothing else.**
 
@@ -387,12 +389,14 @@ a `provenance` column on every row.
 | **TERMINAL** | `q = 1` at `ω = 110` | **[std]** |
 
 Two properties of this file must be stated rather than discovered. **The old-age shape is a
-separate rule, not a continuation**: the fitted Makeham slope of 13.7% a year passes `q = 1`
-well before age 100, so extrapolating the fit is not an option. And the female construction
-is a **known defect**: a flat ratio gives a 15-to-80 death probability ratio of **0.60**
-against the **0.50** implied by 국가데이터처's survival to age 80 of 남 64.4% / 여 82.2%
-[REG-R38], so it **understates the female advantage**. Age 20 is the only usable female
-anchor because [S3]'s female rates at 40 and 60 are the corrupted ones.
+separate rule, not a continuation**: extrapolated, the fitted Makeham reaches `q = 1` at about
+attained age **107** — inside this projection's own horizon, and a third above the shipped
+ramp by age 100 (0.414 against 0.311) — so continuing the fit would move ω and the whole
+old-age level, and it is not an option. And the female construction is a **known defect**: a
+flat ratio gives a 15-to-80 death probability ratio of **0.560** (0.128367 / 0.229205 on the
+shipped table) against the **0.500** implied by 국가데이터처's survival to age 80 of 남 64.4% /
+여 82.2% [REG-R38], so it **understates the female advantage**. Age 20 is the only usable
+female anchor because [S3]'s female rates at 40 and 60 are the corrupted ones.
 
 **CI incidence — `ci_incidence_table.csv`, long form sex × attained age 15 … 100 × cause.**
 Five causes, each with its own `provenance` tag, because they do not rest on the same thing.
@@ -414,15 +418,22 @@ is a comparison metric — the two are not the same denominator — but it is a 
 two published figures rather than a guess, and it reproduces [S4]'s own headline finding
 that **the three headline diseases carry almost all the cost**.
 
-**`ltc` is the weakest number in the model and is named as such.** No Korean 장기요양 1·2등급
-inception rate at insured ages is published; the level is scaled to the order implied by
-[REG-R42]'s 154,688 1·2등급 인정자 at an assumed three-year mean duration, and the shape is
-proportional where a real inception curve is not. It is a **placeholder for the construction
-[`LTC_KR_S`](../long_term_care/technical-notes.md) owns**, and the 노인성 질병 route below
-65 [REG-R55] is not modelled at all. On the anchor cell it contributes nothing before policy
-year 26 and then becomes the largest single limb at the oldest ages — 0.1033 of a total
-0.1586 at age 99 — so a reader taking any conclusion from the tail of this projection is
-taking it from this construction.
+**`ltc` is the weakest limb in the model and is named as such.** The CI research pass
+retrieved no 장기요양 1·2등급 inception rate, so the level here is scaled only to the order
+implied by [REG-R42]'s 154,688 1·2등급 인정자 (53,844 + 100,844) at an assumed three-year mean
+duration, and the shape is proportional where a real inception curve is not. **That is a
+finding about this product's own source set and not about Korea**, and the distinction has to
+be drawn because it is not true of the library: `LTC_KR_S` sources a **disclosed** 요양 1등급 /
+2등급 발생률 grid at ages 40, 50 and 60 by sex from a retrieved 상품요약서, on which the male
+1·2등급 rate at 60 is 0.000530 — about 2.5% of this model's total CI rate at that age. This
+limb is therefore a **placeholder for the construction
+[`LTC_KR_S`](../long_term_care/technical-notes.md) owns**, and holding it at nil below 65 —
+together with the 노인성 질병 route below 65 [REG-R55], which is not modelled at all —
+**understates the CI decrement at every insured age below 65 by a second-order but non-zero
+amount [std]**. On the anchor cell it contributes nothing before policy year 26 and then
+becomes the largest single limb at the oldest ages — 0.1033 of a total 0.1586 at age 99 — so a
+reader taking any conclusion from the tail of this projection is taking it from this
+construction.
 
 **Three properties of the incidence basis are contractual and a modeller must not lose
 them.**
@@ -468,7 +479,7 @@ rest are taken out [REG-R40].
 | Pre-CI lapse, `log_linear` basis | `lapse_ll_first` **0.10** → `lapse_ll_target` **0.001** at 납입완료, then `lapse_post_paidup` **0.008** | Endpoints [REG-R27] [R3]; the first-year level **[std]** at the top of a disclosed 적용해지율 envelope; the interpolation **[std]** |
 | Pre-CI lapse, `table` basis | `lapse_table.csv`: 0.09 / 0.07 / 0.055 / 0.045 / 0.038 / 0.032, then 0.028 for life | **[std]** 표준형 comparison curve, bounded only by disclosed 적용해지율 envelopes; **no CI lapse experience of any kind was retrieved** [R1] |
 | Post-CI lapse factor (`lapse_ci_factor`) | **0.50** of the ultimate rate, i.e. 0.004 flat | **[std]**, and the **direction is genuinely ambiguous** — see *Policyholder behavior modeling* |
-| 장해 50%+ waiver incidence | **0.03% p.a.** during 납입기간 | **[std]**. No Korean inception rate at the 50% 장해지급률 threshold is published |
+| 장해 50%+ waiver incidence | **0.03% p.a.** during 납입기간; **0.05%** on `point_id = 9` | **[std]**. No Korean inception rate at the 50% 장해지급률 threshold is published |
 | 보험계약대출 take-up | **0**; a single draw of 50% of the contractual room at `t = 12` on `point_id = 7` | **[std]**. No Korean take-up data is public; no repayment is modelled |
 | Tolerances | `roll_fwd_tol` = 1e−10 on counts; `val_tol` = 1e−08, scaled by `SA`, on values | conventions |
 
@@ -847,8 +858,10 @@ the value identities.
 | Best-estimate levers | `mort_adj`, `ci_adj`, `mort_ci_factor` | 1.00 / 1.00 / 3.00 | `point_id = 9`, at 0.85 / 0.75 / 2.00 |
 
 **Nothing in this list is a placeholder**, and the 장해 50%+ waiver is deliberately not in
-it: it runs at 0.03% p.a. on **every** shipped point, because on this product the waiver is
-part of the main contract rather than an option [S1 별표1 주4].
+it: it runs on **every** shipped point — at 0.03% p.a. on eight of the nine and at 0.05% on
+`point_id = 9`, which carries the alternative level so that it too is exercised somewhere —
+because on this product the waiver is part of the main contract rather than an option
+[S1 별표1 주4].
 
 **Not modelled, and named so that it is not mistaken for absent.** 중도인출 and 추가납입,
 held at zero although they are arguments of the 기본보험금 definition [S1 별표1 주7]; 부활
@@ -916,10 +929,10 @@ base is thinner than on the chassis: **no CI lapse experience of any kind was re
 - **부활 is not modelled and the omission is larger here than on the chassis.** 부활 within
   three years restarts the **90-day 중대한 암 보장개시일** [S1 별표1 주1], so a reinstated CI
   contract is uncovered for cancer for ninety days — a decrement the chassis has no
-  counterpart for. Setting `reinstate` to zero understates later-duration in force and
-  therefore both premium income and claims, and it also removes a real ninety-day gap in
-  cover. Both biases are stated rather than corrected because no Korean reinstatement rate
-  was retrieved.
+  counterpart for. There is no reinstatement switch in `CI_KR_A`: omitting 부활 altogether
+  understates later-duration in force and therefore both premium income and claims, and it
+  also removes a real ninety-day gap in cover. Both biases are stated rather than corrected
+  because no Korean reinstatement rate was retrieved.
 - **The pre-inception cancer carve-out is a state this model does not have.** A cancer
   diagnosed before the 보장개시일 puts the policyholder in a position where the premium is
   **not** waived and the cancer is **not** covered, with cover reviving only after five
@@ -997,9 +1010,11 @@ the won, which is the equivalence principle asserted rather than assumed.
 
 against the FSC's 「보장성보험 월 보험료의 13배 수준」 rule of thumb of
 13 × ₩306,740 = **₩3,987,620** — the two independent statements of the same cap agree to
-**1.1%** [REG-R20] [REG-R29]. That is tighter than the chassis's own 7.0% agreement at its
-anchor, and it is the one place in this document where a [std] input (the 0.80 net-premium
-ratio) is corroborated from outside.
+**1.1%** [REG-R20] [REG-R29]. That is tighter than the **3.8%** the chassis gets on the
+identical arithmetic (₩3,467,680 against ₩3,341,650, the figure its `product-spec.md` rounds
+to "within 4%"), and tighter still than the **7.0%** its *model* gets, which derives the
+연납순보험료 from equivalence instead of from the 0.80 ratio. It is the one place in this
+document where a [std] input (that 0.80 net-premium ratio) is corroborated from outside.
 
 **Floating-point note.** `resid_rate()` is computed as `1.0 − 0.8` and is therefore
 `0.19999999999999996` in binary; `resid_nominal_pp(s)` prints as ₩19,999,999.9999999963.
@@ -1476,13 +1491,13 @@ as a description of where the money goes has the product backwards.
 benefits are ₩92,614,001.14, of which the two CI-originated streams — the acceleration and
 the residual death benefit it creates — are ₩71,081,400.43, or **76.7%**. The pre-CI death
 benefit, which is the whole of the chassis's liability, is 14.8% of it. This is a health
-product wearing a whole-life chassis, and the 예정위률 grid is where its risk lives.
+product wearing a whole-life chassis, and the 예정위험률 grid is where its risk lives.
 
 **And the acceleration is expensive.** Re-running the pricing recursion with `a = 0` on the
 identical table and decrements — the same three-state contract, paying the full sum assured
 on death whenever it falls — gives `A0(1) = ₩36,085,073.09` and `P = ₩2,386,125.06` against
 the anchor's ₩2,968,483.20. **The acceleration costs 24.4% of the net premium**, purely for
-moving four fifths of one sum assured forward in time and floorng the remainder at 105% of
+moving four fifths of one sum assured forward in time and flooring the remainder at 105% of
 the account. Against the market, [S4]'s published grid puts the 80% CI form at 1.19 times the
 표준형 종신 office premium at the same cell, and the chassis's anchor puts the CI product at
 1.33 times a 저해지 종신 contract on the same life; the model's 24.4% is a **net-premium**
@@ -1625,7 +1640,9 @@ each is checkable.
   CI/LTC 지급사유 waives all future
   기본보험료 [S1 별표1 주4]. Weighting premium by `pols_if(t)` reproduces the base run's
   first year exactly and diverges from year 2 onward — a slow, quiet error worth
-  **0.695569** person-years of spurious premium inside the 납입기간, about ₩2.56m.
+  **0.7291348** person-years of spurious premium inside the 납입기간, ₩2,683,857.72, of which
+  the post-CI cohort is **0.6955694** (₩2,560,307.45) and the 장해 50%+ waived subset the
+  remaining 0.0335654 (₩123,550.27).
 - **The suppression has two exits, and one of them is random.** `cv_pp_ci(t) = cv_std_pp(t)`
   at **every** duration, not from `t = m`. Applying `k` to the post-CI cohort halves the
   surrender benefit of exactly the policyholders the carve-out exists to protect, and

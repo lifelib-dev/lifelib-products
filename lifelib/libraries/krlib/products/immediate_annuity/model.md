@@ -31,7 +31,7 @@ python products/immediate_annuity/run.py 8     # the floor stepping, on a 20-yea
 python products/immediate_annuity/run.py 9     # 확정기간연금형, ten years
 ```
 
-`run.py` prints the model point, the derived quantities at inception, seventeen sampled
+`run.py` prints the model point, the derived quantities at inception, fifteen sampled
 rows of the cash flow statement, the undiscounted totals and the eleven `check_*()`
 identities. Everything it prints is ASCII, so the output lands on a Windows console under
 any code page: amounts are labelled `KRW`, and the product, the three payout shapes and
@@ -50,17 +50,17 @@ annuity factor 19.5027 -> yeongeum yeonaek KRW 4,948,039 a year (KRW 412,337 a m
 projection runs t = 0 .. 50 (annual, in arrears; row t pays at t + 1)
 
 Cash flow statement (KRW, income positive in net_cf)
-    [ seventeen sampled rows of result_cf(), ten columns, t = 0 .. 50 ]
+    [ fifteen sampled rows of result_cf(), ten columns, t = 0 .. 50 ]
 
 undiscounted totals over t = 0 .. 50:
-    premiums                 100,000,000.00
-    annuity_payments         138,160,059.32
-    claims_death                       0.00
-    claims_lapse                       0.00
-    claims_maturity                    0.00
-    commissions                2,000,000.00
-    expenses                   2,605,280.47
-    net_cf                   -42,765,339.80
+    premiums                   100,000,000.00
+    annuity_payments           138,160,059.32
+    claims_death                         0.00
+    claims_lapse                         0.00
+    claims_maturity                      0.00
+    commissions                  2,000,000.00
+    expenses                     2,605,280.47
+    net_cf                     -42,765,339.80
 
 checks
     check_annuity_basis        True
@@ -313,8 +313,10 @@ anchor's numbers are independent of all four.
 `min_guar` is a **[std]** modelling device and not a product a carrier sells: `decl_rate`
 is set to zero on that basis so that Max[공시이율, 최저보증이율] resolves to the floor at
 every duration, which is the only way the floor's duration stepping gets exercised by a
-shipped model point. It is also the basis on which the anchor carrier publishes its
-해약환급금 run [S1 §VI-2], so the device has a documentary counterpart.
+shipped model point. A guaranteed-rate-only projection is
+also the kind of basis on which the anchor carrier publishes its 해약환급금 run
+[S1 §VI-2] — at that carrier's own 1.5% / 1.0% floor rather than at [S3]'s — so the device
+has a documentary counterpart.
 
 Everything else a Korean 즉시연금 can carry is **recorded in `product-spec.md` and not
 modelled**: the front-loaded life annuity in its six carrier names; the 거치형 selling
@@ -452,8 +454,10 @@ factor, because **no carrier publishes one** and no filed 산출방법서 for an
 retrieved [R31]. What can be checked is the two shapes that carry no mortality, and they
 agree closely: the model's 확정기간연금형 at 남자 60, 10년, 2.50% is ₩10,858,010.26 a year,
 which is ₩904,834.19 a month before the annual-to-monthly adjustment and **₩894,628.93**
-after it, against 교보's published **90만원** at 남자 55 on a 2.52% basis [S3] — −0.5%, on a
-shape for which the annuitant's age and sex are irrelevant; and the 상속연금형 만기형 on
+after it, against 교보's published **90만원** at 남자 55 on a 2.52% basis [S3] — **−0.60%**
+at this model's 2.50%, against the −0.5% `product-spec.md` gets solving the same identity
+on 교보's own 2.52%, on a shape for which the annuitant's age and sex are irrelevant; and
+the 상속연금형 만기형 on
 the same terms gives ₩1,932,133.95 a year, **₩161,011.16** a month, against
 `product-spec.md`'s own independent **[std]** reconstruction of ₩161,000.
 
@@ -580,9 +584,9 @@ them bound nothing at all, and that is said rather than papered over.
 | `comm_rate` | **2.00%** of P at `t = 0`, nil thereafter | the round mid-point; what matters structurally is not the level but that it sits **below** the 2.20% 계약체결비용, so the charge covers the commission at the same moment | 2.08% (종신연금형) and 1.75% (상속연금형) at 남자 60 [S1 §VII]; every retrieved figure is first-year-only on a bancassurance sale [S2] [S3] [S4] [S5] |
 | `acq_expense_rate` | **1.50%** = load − commission | a *treatment*, not a disclosure: it sets the insurer's own expense equal to the charge it took, which is what makes `check_premium_split()` close and "no acquisition strain" a property of the statement | nothing published; **no Korean carrier discloses an expense rate** for this product |
 | `annuity_charge_rate` | **0.80%** of the 연금연액, modelled as an insurer expense and **not** netted off the payment | the charge is disclosed in the **cost** table and not the benefit table, so the annuitant receives the gross annuity; netting it would also break the pricing identity, the fund having bought the gross annuity | the level 0.80% is published on all three shapes [S1 §VIII]; whether a carrier's own 산출방법서 builds it into the factor instead is **[unverified]**, no filed basis document having been retrieved [R31] |
-| `decl_rate` (공시이율) | **2.50%** a year, level, exposed as a scalar | the level the anchor carrier declared on this exact product at 2017-04; it equals the 2026 평균공시이율 and sits inside the band of the three most recent observations. **No model in this library derives a Korean declared rate and none should** — it is the product of a 공시기준이율 majority-weighted to the insurer's own 운용자산이익률 [REG-R18] [REG-R24] | 4.8% at 2011-09 [R27]; 4.5% at 2012-09 [R1]; 3.40% → 2.80% over 2015–2016 [S5]; 2.95% [S4]; 2.83% [S2]; **2.50% at 2017-04** [S1 §IV-4]; 2.52% at 2017-12 [S3]; 2.80% at 2023-01 [S13]; 2.55% at 2025-01 [S12]; 2.56% at 2026-09 [S14]; the weighting differs by carrier — 50/50 [S6], 40/60 [S12], 35/65 [R1] |
+| `decl_rate` (공시이율) | **2.50%** a year, level, exposed as a scalar | the level the anchor carrier declared on this exact product at 2017-04; it equals the 2026 평균공시이율 and sits 5 to 17 basis points **below** the 2.55%–2.67% band of the three most recent observations. **No model in this library derives a Korean declared rate and none should** — it is the product of a 공시기준이율 majority-weighted to the insurer's own 운용자산이익률 [REG-R18] [REG-R24] | 4.8% at 2011-09 [R27]; 4.5% at 2012-09 [R1]; 3.40% → 2.80% over 2015–2016 [S5]; 2.95% [S4]; 2.83% [S2]; **2.50% at 2017-04** [S1 §IV-4]; 2.52% at 2017-12 [S3]; 2.80% at 2023-01 [S13]; 2.55% at 2025-01 [S12]; 2.67% at 2026-04 [R28]; 2.56% at 2026-09 [S14]; the weighting differs by carrier — 50/50 [S6], 40/60 [S12], 35/65 [R1] |
 | `min_guar_rate` (최저보증이율) | **1.25% / 1.00% / 0.75%**, stepping at five and ten completed policy years | the only three-step schedule published on a contemporaneous 즉시연금 illustration whose annuity figures this product also uses, and at the mid-point of the 2017–2026 range. **It is a rate on the fund, never a floor on the annuity** — the substance of the whole dispute | 2.5% / 2.0% for the 2007–2014 cohorts [S10]; 2.0 / 1.5 / 1.0% [S4]; 1.5 / 1.0% [S2]; **1.25 / 1.00 / 0.75%** [S3]; 1.25 / 1.00 / 0.50% [S13] [S14]; 1.0 / 0.75 / 0.50% at 2024 [S7 제7조] |
-| the `min_guar` crediting basis | `decl_rate = 0`, so Max[·] resolves to the floor at every duration | a modelling device and not a product: the only way the floor's duration stepping is exercised by a shipped model point. It is also the basis the anchor carrier's own 해약환급금 run is published on [S1 §VI-2] | not a marketed basis anywhere in the corpus |
+| the `min_guar` crediting basis | `decl_rate = 0`, so Max[·] resolves to the floor at every duration | a modelling device and not a product: the only way the floor's duration stepping is exercised by a shipped model point. A guaranteed-rate-only projection is also the kind of basis the anchor carrier's own 해약환급금 run is published on [S1 §VI-2], at that carrier's floor rather than at [S3]'s | not a marketed basis anywhere in the corpus |
 | mortality construction | Makeham `A + B c^(x − 60)`, three parameters fitted exactly to three published anchors | the 제10회 경험생명표 is not published at all, so there is no table to transcribe and a fitted law is the only honest alternative to inventing one | the fit misses the third published anchor at 보험나이 50 by **+22.01%** (M) and +1.98% (F) [S1 §IV-2]; check: the shipped table sits 4.2 / 3.4 years above the public 완전생명표 at 65 [REG-R38] [REG-R39] |
 | limiting age `omega_age` | **110**, with `q(110) = 1` | it is what makes the life-shape obligation *exhausted* rather than truncated: `lives_if(51) = 0` on the anchor | no retrieved Korean source states a limiting age for an annuitant table |
 | mortality improvement | **none applied**, and none should be | the table is a period construction on undated anchors; adding a scale is a change to the CSV's schema, not to a formula | none published |
@@ -592,8 +596,8 @@ them bound nothing at all, and that is said rather than papered over.
 | decrement timing | deaths at the end of the policy year, then surrenders, then the maturity benefit | annual-grid conventions; a real contract settles a death mid-year and pays the 연금월액 to the date of death | fixed by the grid, not by a disclosure |
 | the annual grid itself | one crediting rate per policy year | the 공시이율 is reset on the first of each month and fixed for that month; an annual grid carries one rate a year, exact only where the rate is level, which on the representative basis it is | worth **1.14%** of the annuity's timing value at 2.50% (`i / i^(12)` = 1.0114072482), which is why every comparison with a published 연금월액 on this page is made on the adjusted figure |
 | 선지급 (commutation) | right recorded, exercise **not** modelled | value-neutral **only** because the 약관's discount rate is the same 공시이율 that sets the annuity [S1 주4] [S3] [S7 제11조제3항]; the option has value on a falling-rate path and none on a rising one | no take-up figure published anywhere |
-| issue-age band, anchor premium | 45–80; ₩100,000,000 | the band is the composite of the retrieved carriers' own bands; the premium is the median of the only public dataset and exactly the 소득세법 ten-year exemption cap [R12 그림3](#krlib-immediate_annuity-r12) [REG-R58] | issue ages from 45 [S1] to 80 [S3] [S4]; minimum premiums ₩10,000,000 upward, differing by carrier [R16, secondary](#krlib-immediate_annuity-r16) |
-| `roll_fwd_tol`, `val_tol` | 1e-10, 1e-12 (relative, scaled by `prem_pp()`) | one closes dimensionless probability identities in a single expression; the other closes won amounts of order 1e8 to 1e9 read back out of a `DataFrame` | both far below one won at every shipped premium |
+| issue-age band, anchor premium | 45–80; ₩100,000,000 | the band is the composite of the retrieved carriers' own bands; the premium is the median of the only public dataset and exactly the 소득세법 ten-year exemption cap [R12 그림3](#krlib-immediate_annuity-r12) [REG-R58] | **40–85** at 삼성 [S5], **45–75** at ABL [S6] and **45–80** at 하나 [S1], 교보 [S2] [S3], 동양 [S4] and 우체국 [R27], with a realised 45–85 in the one dataset [R12 표2](#krlib-immediate_annuity-r12); minimum premiums ₩5,000,000 [R27] to ₩50,000,000 [S6], modal ₩10,000,000 |
+| `roll_fwd_tol`, `val_tol` | 1e-10 **absolute**; 1e-12 **relative**, multiplied by `prem_pp()` at the point of use | the first closes dimensionless probability identities evaluated in a single expression, so an absolute bound is the right one; the second closes won amounts of order 1e8 to 1e9 read back out of a `DataFrame`, which an absolute bound could not meet | the monetary bound is ₩1e−4 on a ₩100,000,000 contract and ₩5e−3 on a ₩5,000,000,000 one, far below one won either way; the probability bound is not a won amount at all |
 
 **One row above is a placeholder and is labelled as such rather than dressed up as an
 estimate**: `lapse_rate`. It is the most serious data gap in the model after the mortality
@@ -627,7 +631,8 @@ reviewer can check it by eye rather than by re-running the model:
   `crediting_rate(5) = 0.0100`, the annuity falling 50.73% from ₩967,602.66 to ₩476,691.58
   while `av_pp(20) = 100,000,000.00` exactly, and the retention *rising* across each step.
 - The load cross-check, point 9: `annuity_pp(0) = 10,858,010.2647236791`, its monthly
-  equivalent of ₩894,628.93 against 교보's published 90만원 [S3], and `claims_lapse(9) = 0`.
+  equivalent of ₩894,628.93 against 교보's published 90만원 [S3] — −0.60% at 2.50% — and
+  `claims_lapse(9) = 0`.
 
 Each of the notes' twenty-one pitfalls earns a test named after it — that `pols_if` is not
 a survival probability, that the guarantee is a `max` and not a sum, that the two guarantee

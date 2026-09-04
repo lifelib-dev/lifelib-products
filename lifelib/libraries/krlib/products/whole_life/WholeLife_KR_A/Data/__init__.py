@@ -53,8 +53,9 @@ says so row by row. Three kinds of row:
 **ANCHOR** rows at 보험나이 20, 40 and 60 take the mean of the only two Korean insured
 mortality rates in the public domain at those ages — the sample 적용위험률 grids that
 하나생명 [S2] and KDB생명 [S8] print in their 상품요약서. The two rates are sourced; taking
-their mean is the standardization. They differ by 10%–23% at every age and sex, so they
-**bracket** rather than fix a Korean insured mortality level.
+their mean is the standardization. They differ by up to 24% — 18%–24% at five of the six
+published cells and not at all at 여 20세, where both print 0.00018 — so they **bracket**
+rather than fix a Korean insured mortality level.
 
 **CONSTRUCTED** rows below age 60 are log-linear in ``ln q`` between those anchors, and
 above age 60 follow a Gompertz in ``ln q`` with a quadratic deceleration term whose two

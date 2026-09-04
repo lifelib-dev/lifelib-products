@@ -289,7 +289,7 @@ carrier quotes [S12]. **No flat policy element can be separated out**: unlike ``
 オリックス生命 grid, every Korean grid retrieved fixes the sum assured and varies age, sex,
 rate class or product form instead [S1] [S8] [S11] [S12] [S14], so the office premium is
 treated as proportional in the sum assured and the approximation is recorded rather than
-hidden. One consequence is visible in the data: female premiums run at 52-58% of male at
+hidden. One consequence is visible in the data: female premiums run at 52-56% of male at
 the direct writers and 70-90% at the face-to-face carriers on the same cell [S4], which
 is what a flat per-policy loading does to a small risk premium.
 
@@ -300,8 +300,8 @@ rather than a life annuity is a simplification that overstates the uplift slight
 the mortality that would have been shed between the two periods.
 
 ``P_a = 12 P_m`` is the annual grid's **[std]** annualization: no mode discount is
-published [S12], and the simplification is conservative in the insurer's favour by
-roughly half a year's interest on half a premium.
+published [S12], and the simplification is conservative in the insurer's favour by half a
+year's interest on the whole premium -- 1.136% of a year's premium at the 적용이율.
 
 .. rubric:: Modules that are off in the base run
 
@@ -511,8 +511,8 @@ def sum_assured():
 def premium_mode():
     """The 납입주기 — **월납** (monthly) in the base run [S1] [S6] [S8] [S9] [S12].
 
-    Monthly is available at every carrier retrieved, is the only frequency at seven of
-    them, is the disclosure's basis [S5] and is half of the 감독규정 기준연령 요건
+    Monthly is available at every carrier retrieved, is the only frequency on seven of the
+    retrieved products, is the disclosure's basis [S5] and is half of the 감독규정 기준연령 요건
     [REG-R9].  Inert on the annual grid, which annualizes either way: ``P_a = 12 P_m``,
     with no discount for the timing difference **[std]**.
     """
@@ -952,11 +952,14 @@ def premium_mth_pp(t):
 def prem_pp(t):
     """P_a: the annualized 영업보험료 per policy in policy year t, ``12 P_m``.
 
-    The annualization is **[std]**: 월납 is the base frequency and the only one at seven
-    of the nine carriers retrieved [S1] [S6] [S8] [S9] [S12] [S17] [S18], and no carrier
+    The annualization is **[std]**: 월납 is the base frequency and the only one on seven of
+    the retrieved products, from five carriers [S1] [S6] [S8] [S9] [S12] [S17] [S18], and no
+    carrier
     publishes a mode discount, so no allowance is made for the timing difference.  The
-    simplification is conservative in the insurer's favour by roughly half a year's
-    interest on half a premium.  On the anchor cell ``P_a = 12 x 15,080 = 180,960``.
+    simplification is conservative in the insurer's favour by half a year's interest on the
+    whole premium -- 1.136% of a year's premium at the 적용이율, the mean deferral of the
+    twelve payments being 5.5/12 of a year.  On the anchor cell
+    ``P_a = 12 x 15,080 = 180,960``.
     """
     return 12.0 * premium_mth_pp(t)
 

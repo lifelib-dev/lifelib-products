@@ -45,7 +45,7 @@ model point 1: KR-TL-0001 - M40, bi-gaengsin (non-renewable)
     [ the t = 1..12 rows of result_cf(), eleven columns ]
 ... 8 further years to t = 20
 
-undiscounted totals: premiums 2,984,561.04   claims 2,071,060.31   expenses+commissions 795,881.03   net_cf +117,619.70
+undiscounted totals: premiums 2,984,561.04   claims 2,071,060.31   claim exp+expenses+commissions 795,881.03   net_cf +117,619.70
 
 checks:
   check_decline_timing     True
@@ -90,8 +90,9 @@ not a projection quantity.
 `kr_registry.MODELS` records the basis and `test_model_conventions_kr.py` asserts that the
 `Projection` docstring names it. A 만나이 model point read against this table would
 understate the rate by about half a year of ageing on every row, silently: reading the
-anchor cell one year of ageing early cuts total death claims from ₩2,071,060.31 to
-₩1,903,445.06, an 8.1% understatement that flatters `net_cf` by more than the whole answer.
+anchor cell a full year of ageing early — decrements and survivorship together — cuts total
+death claims from ₩2,071,060.31 to ₩1,905,170.00, an 8.0% understatement that flatters
+`net_cf` by more than the whole answer.
 
 ## The horizon is the renewal ceiling, not the term
 
@@ -253,7 +254,7 @@ proportional in the sum assured and the approximation is recorded rather than hi
 consequence is visible in the output: model point 2, the female anchor twin, runs a negative
 undiscounted net cash flow where the male anchor runs a positive one, because the same flat
 per-policy expense is charged against a premium 47% smaller. That is the same effect the
-market shows — female premiums run at 52–58% of male at the direct writers and 70–90% at the
+market shows — female premiums run at 52–56% of male at the direct writers and 70–90% at the
 face-to-face carriers on the same cell [S4].
 
 `g(k)`, the shortened-pay uplift, is **[std]**: `ä(m_k) / ä(m_k^p)` at the 적용이율 of
@@ -391,8 +392,9 @@ the all-cause rates differ by a factor of 1.77 at male 40.
   supervisory guideline to disclosed pricing parameter is complete. The **[std]** step
   inside `lapse_be_factor = 1.0` is that the endpoints are disclosed on a 10년납 basis and
   are stretched over each point's own 납입기간; model point 5 is the only shipped point
-  that reproduces the disclosed shape at its disclosed length, and the only one that
-  reaches the `post_payment` row at all.
+  that reproduces the disclosed shape at its disclosed length, and it and model point 9 —
+  a 35-year term bought 20년납 — are the only two whose 납입기간 ends before their cover
+  does and therefore the only two that reach the `post_payment` row at all.
 
 ## Sign convention
 
@@ -485,12 +487,13 @@ The other six checks are `check_pols_roll_fwd` (the roll-forward, with the 부�
 its own term), `check_lapse_pool` (the pool's one inflow and two outflows),
 `check_pols_payer` (payers and waived lives partition the in-force), `check_prem_level`,
 `check_decline_timing` and `check_waiver_reset`. All seven take no argument, return a real
-`bool`, and are `True` on every one of the ten shipped model points. Six close to
-`roll_fwd_tol = 1e-12`, an identity between cells evaluated in one expression; `check_net_cf`
-closes to a separately named `cash_tol = 1e-6`, because it re-reads won amounts of order
-1e7 back out of a `DataFrame` and the round trip through column construction leaves float64
-rounding in absolute won. `cash_tol` is far below one won, the smallest error a reader
-adding up the printed statement could see.
+`bool`, and are `True` on every one of the ten shipped model points. Five close to
+`roll_fwd_tol = 1e-12`, an identity between cells evaluated in one expression;
+`check_decline_timing` compares a boolean against a boundary test and takes no tolerance at
+all; and `check_net_cf` closes to a separately named `cash_tol = 1e-6`, because it re-reads
+won amounts of order 1e7 back out of a `DataFrame` and the round trip through column
+construction leaves float64 rounding in absolute won. `cash_tol` is far below one won, the
+smallest error a reader adding up the printed statement could see.
 
 ## Standardizations used
 
@@ -573,7 +576,7 @@ horizon, that a 비갱신형 point has `renewal_decline_rate(t) = 0` at every `t
 waiver resets at a 갱신 while the suicide and contestability clocks do not, that `qbar` is a
 mean of table rates, that the premium rounds to ₩10 *before* annualization, that the 선지급
 cap is exactly reached at the anchor and does **not** bind, and that reading the anchor at
-만나이 instead of 보험나이 cuts death claims by 8.1%. The optional modules are asserted in
+만나이 instead of 보험나이 cuts death claims by 8.0%. The optional modules are asserted in
 **both** positions of their switch.
 
 `tests/test_model_conventions_kr.py` adds the house style, parametrized over

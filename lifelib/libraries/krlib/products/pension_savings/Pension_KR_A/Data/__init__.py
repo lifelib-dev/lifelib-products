@@ -57,21 +57,28 @@ death, and using either for both is wrong in a known direction.
 The construction has three parts, all recorded in :func:`mort_anchor_table` and asserted by
 ``Projection.check_mort_law``:
 
-* a Makeham law ``mu(x) = A + B c**x``, ``q(x) = 1 - exp(-mu(x))``, fitted jointly to the
-  six annuitant rates two carriers publish in their 상품요약서 — 「연금사망률」 and
-  「개인연금사망률」 at ages 40 to 80 — and to the annuity factors the one published
-  annuitisation illustration implies, at **two** interest bases;
-* the female table is the male law **set back four years**, the setback that reproduces the
-  published 65세 기대여명 gap of 3.4 years between the sexes;
+* a Makeham law ``mu(x) = A + B c**y`` with ``y = max(0, x - setback)``,
+  ``q(x) = 1 - exp(-mu(x))``, fitted jointly to the six annuitant rates two carriers publish
+  in their 상품요약서 — 「연금사망률」 and 「개인연금사망률」 at ages 40 to 80 — and to the
+  annuity factors the one published annuitisation illustration implies, at **two** interest
+  bases;
+* the female table is the male law **set back four years**, the whole-year setback closest to
+  the published 65세 기대여명 gap of 3.4 years between the sexes; it does not reproduce that
+  gap — the fitted tables differ by 3.66 years at 65;
 * a second vintage, ``annuitant_revised``, is the issue vintage times 0.85 — a one-step
   lightening of the order the 제9회 → 제10회 revision produced — which is what the
   연금사망률 ratchet clause in every retrieved 약관 switches to when it is in the money.
 
-The fitted law reproduces the published life-annuity factors at the calibration ages
-exactly and the published rates at ages 40 to 80 to within about 30%; a three-parameter law
-cannot honour both, and the deviation is recorded on every row rather than smoothed away.
-Every row of both files carries a ``provenance`` column saying which part of the
-construction it came from, and that the file is not a copy of a 보험개발원 table.
+**The fit honours the annuity factors and misses the rates, and the file says so rather than
+smoothing it away.** The two published life-annuity implied factors are recovered to four
+significant figures (23.7004 against 23.7000 and 31.1799 against 31.1768, inside the rounding
+of the published 만원 amounts). The published *rates* are not: the fitted male rates run
+about 1.30 times the published anchor at 70 and 0.72 times it at 80, and the female rates,
+being a setback rather than an independent fit, run 1.9 to 2.8 times the published female
+rates over ages 50 to 70. A three-parameter law cannot honour both, and the annuity factor is
+what the payout phase depends on. Every row of both files carries a ``provenance`` column
+saying which part of the construction it came from, and that the file is not a copy of a
+보험개발원 table.
 
 To swap in a company or filed basis, replace ``mort_table.csv`` with a same-schema file, or
 point ``mort_table_file`` at a different name, then clear the cache. No formula changes:

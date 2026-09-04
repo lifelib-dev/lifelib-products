@@ -17,7 +17,7 @@ and [R#] to product-specific regulatory and actuarial references; both resolve i
 `sources.md` in this directory, whose numbering is carried verbatim from
 `_research/variable-annuity.md` and is never renumbered. [REG-R#] resolves against the
 cross-product reference library `references/regulatory-and-actuarial-references.md`, whose
-own R1–R60 numbering is distinct from this product's. **[std]** marks a standardization
+own R1–R62 numbering is distinct from this product's. **[std]** marks a standardization
 introduced for the reference implementation; every one of them is also tagged in
 `product-spec.md` and carries a rationale in the `provenance` column of the CSV it lives
 in. [unverified] marks a claim the research pass could not confirm against a retrieved
@@ -71,10 +71,12 @@ prose. Amounts are in Korean won; because Korean documents quote in 만원 (10,0
 - **Age basis: 보험나이 throughout.** 만나이 (age last birthday) at the 계약일 with a
   remainder of six months or more rounded up and less than six months discarded,
   incrementing on the **policy anniversary** and not on the birthday
-  [REG-R25 제21조](#krlib-reg-r25) [S7 제23조]. It is the contractual age, the index of every Korean rate
-  card, and the basis both shipped mortality tables are graduated on, so no shift is
-  applied anywhere. The one place Korean practice uses 만나이 instead is the 가입나이
-  envelope, 만15세–70세 [S1] [S2], which is an issue rule and not a projection quantity.
+  [REG-R25 제21조](#krlib-reg-r25). The research file records no 보험나이 article read from
+  the retrieved 약관, so no [S#] pinpoint is claimed for it. It is the contractual age, the
+  index of every Korean rate card, and the basis both shipped mortality tables are
+  graduated on, so no shift is applied anywhere. The one place Korean practice uses 만나이
+  instead is the 가입나이 envelope, 만15세–70세 [S1] [S2], which is an issue rule and not a
+  projection quantity.
 - **Model points and rounding.** Single-contract model points on an expected
   (probability-weighted) basis with `pols_if_init = 1.0`, so every `*_pp` cells is per
   contract and every `result_cf()` column is that quantity weighted by the in-force count
@@ -213,7 +215,7 @@ the insurer declares and may re-declare; (c) is the modeller's own view. On this
 | 최저연금적립금 보증비용, asset | **연 0.25%** of 계약자적립액, monthly at rate/12 | `gmab_charge_asset_pp` | [S1] |
 | 최저연금적립금 보증비용, premium | **연 0.30%** of 보험료총액, monthly, **for at most 7 years** | `gmab_charge_prem_pp` | [S1] |
 | 특별계정 운용보수 | 채권형 **연 0.40%**, 주식형 **연 0.60%**, daily at rate/365 | `fund_table.csv` | [S2] |
-| 해약공제액 | **₩830,000 × (7 − k) ÷ 7** in completed years k, nil from k = 7 | `surr_chg_pp` | [S2] |
+| 해약공제액 | **₩830,000 × (n − k) ÷ n** in completed years k, nil from k = n, with n = min(납입기간, 7) = **7** on the anchor | `surr_chg_pp` | [S2], fitted to its published scale; the fit **[std]** |
 | 해약공제기간 cap | **7 years** where the 납입기간 is 7 years or more | `surr_chg_years` = 7 | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | 표준해약공제액 | 5% × 연납순보험료 × min(납입기간, 12) = **₩1,643,940** on the anchor | `surr_chg_cap_pp` | [REG-R19] [REG-R20] |
 | 해약환급금 zero floor | 「… 음(陰)의 값인 경우에는 이를 영(零)으로 처리한다」 | `cv_pp` | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) |
@@ -276,8 +278,8 @@ dynamic-lapse parameter [R1].
 | 연금사망률 q_a(x) | Makeham `mu(x) = A + B c^(x−65)` | `mort_table.csv` | **[std]** form; anchored on [REG-R33] |
 | — A | **0.0002** | — | **[std]** |
 | — c | **1.10** | — | **[std]** |
-| — B, male | **0.007033168557** | — | solved so complete e(65) = **23.7** [REG-R33] |
-| — B, female | **0.004769171946** | — | solved so complete e(65) = **27.1** [REG-R33] |
+| — B, male | **0.007040013548** | — | solved so complete e(65) rounds to **23.7** [REG-R33] |
+| — B, female | **0.004803209921** | — | solved so complete e(65) rounds to **27.1** [REG-R33] |
 | Annual q from mu | `q(x) = 1 − exp(−mu(x)(c−1)/ln c)` | `mort_table.csv` | **[std]** closed form |
 | Monthly split | `1 − (1 − q)^(1/12)` | `mort_rate_mth` | **[std]** uniform force |
 | 해지율, annual by policy year | **0.28 / 0.22 / 0.17 / 0.14 / 0.12 / 0.10 / 0.09 / 0.08 ultimate** | `lapse_table.csv` | level calibrated to [R1]; shape **[std]** |
@@ -296,10 +298,11 @@ dynamic-lapse parameter [R1].
 **The mortality construction, and how thin its anchor is.** Both columns of
 `mort_table.csv` come from one Makeham law fitted to **two published numbers**: the 제10회
 경험생명표 65세 기대여명 of 23.7 years for men and 27.1 for women [REG-R33]. The implied
-complete expectation at 보험나이 40 on the annuitant basis is **46.479** (M) and **50.356**
-(F), against the population 완전생명표 figures of 41.9 and 47.4 [REG-R38] — gaps of 4.6 and
-3.0 years beside the 4.2 and 3.4 the two published 65세 figures themselves imply, so the
-extrapolation is at least internally consistent. It is not the 경험생명표, it is not
+complete expectation at 보험나이 40 on the annuitant basis is **46.425** (M) and **50.292**
+(F) — curtate plus a half-year, computed off the shipped table — against the population
+완전생명표 figures of 41.9 and 47.4 [REG-R38], gaps of 4.5 and 2.9 years beside the 4.2 and
+3.4 the two published 65세 figures themselves imply, so the extrapolation is at least
+internally consistent. It is not the 경험생명표, it is not
 published, and **the whole of it is [std]**; substituting a filed basis is a CSV
 replacement and no formula changes.
 
@@ -533,7 +536,8 @@ on a product with no guarantee charge — far too small to contain a management 
 ```
 DB(t) = Max[ AV(t), K_d(t) ]                                             [S1] [S4] [S10]
 gmdb_claim_pp(t) = max(0, K_d(t) − AV(t))          the 일반계정 보증준비금 part  [R2]
-C(t)  = min(0.2305555556 x 12 P, surr_chg_cap_pp()) x (7 − k) / 7,  nil from k = 7
+n     = min(n_p, 7)                    the 해약공제기간; 7 on the anchor, 5 on points 6, 7, 10
+C(t)  = min(0.2305555556 x 12 P, surr_chg_cap_pp()) x (n − k) / n,  nil from k = n
 CV(t) = max(0, AV(t) − C(t))                                             [REG-R19]
 ```
 
@@ -1186,8 +1190,10 @@ no premium coming in).
 ### Month 204 — the mandatory de-risking bites
 
 At `t = T − 36 = 204`, the first of the three annual 계약해당일 inside the 「연금개시일 −
-3년」 window, the 채권형 weight is **0.5060742578243943** — above the 50% ladder floor for
-a 20-year deferral but below the 80% the de-risking rule targets [S1].
+3년」 window, the 채권형 weight at the `AFT_DEDUCT` timing is **0.5060742578243943** — the
+value `bond_weight(203)` also carries, above the 50% ladder floor for a 20-year deferral but
+below the 80% the de-risking rule targets [S1]. `bond_weight(204)` is the **post**-transfer
+0.8000266764480309.
 
 ```
   AV(204, AFT_DEDUCT)                                       =  41,211,386.0778102300
@@ -1205,8 +1211,9 @@ a 20-year deferral but below the 80% the de-risking rule targets [S1].
 
 Two consequences are visible in the output and neither is decoration. The **운용보수 falls
 from ₩17,143.34 to ₩15,148.11** in one month — an 11.6% drop with no change in the account
-— because two thirds of the money has moved from a 0.60% fund to a 0.40% fund. And
-`bond_weight(t)` stays above 0.80 from here to annuitisation without any further transfer
+— because 29.4% of the account, three fifths of the 주식형 balance, has moved from a 0.60%
+fund to a 0.40% one. And `bond_weight(t)` stays above 0.80 from here to annuitisation
+without any further transfer
 (`derisk_amount_pp(216)` and `derisk_amount_pp(228)` are both **0.00**), because the
 채권형 carries the lower 운용보수 on the same gross asset return and so **drifts upwards**
 on its own. On a path with different returns by fund it would not, and the two later
@@ -1351,7 +1358,7 @@ per-year scale, so the unweighted figure to compare against is 2.39%. `expenses`
 the insurer's own lifetime expense on this contract falls in month 0**.
 
 **`net_cf` sums to −₩3,148,714.71** and must be negative: undiscounted, the insurer
-receives ₩15.2m and pays ₩17.8m of benefits plus ₩1.2m of its own costs over eighty years.
+receives ₩15.2m and pays ₩17.1m of benefits plus ₩1.2m of its own costs over eighty years.
 The sign becomes meaningful only when the stream is discounted, which this library does not
 do. **`Σ pols_if` = 99.61** is the expected number of contract-months of exposure — 8.3
 contract-years — against a 960-month projection: another statement of the same persistency
@@ -1686,7 +1693,7 @@ eight `check_*()` cells.
     is a memo cells and the docstring says so; the external cash flow is `net_cf`.
     *Test:* `check_net_cf()`, which would fail if any transfer reached `net_cf`.
 24. **Running the model on 만나이.** Every table, every model point age and the whole rate
-    card are **보험나이** [REG-R25 제21조](#krlib-reg-r25) [S7 제23조]; the 완전생명표 and every Korean
+    card are **보험나이** [REG-R25 제21조](#krlib-reg-r25); the 완전생명표 and every Korean
     population statistic are 만나이 [REG-R38] [REG-R39]. The six-month rule makes the two
     differ for half of all issue dates, so the error is worth about half a year of ageing on
     every row and **raises nothing**.

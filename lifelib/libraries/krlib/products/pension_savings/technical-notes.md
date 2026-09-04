@@ -39,17 +39,18 @@ first time in the library, is five things:
    연금개시 — which the retrieved contracts settle only by inference and on which two
    carriers could legitimately differ.
 
-**One correction to `product-spec.md` is carried here and it changes a number.** The
-specification writes the payout formula on an **annual** annuity-due,
-`연금연액 = 계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)`, and calls the reconstruction of
-the published illustration exact. It is not: on an annual factor the reconstruction misses
-all eight published implied factors by about half a per cent, and it misses them *in the
-wrong direction*. **The annuity is paid 매월 on every retrieved contract** [S1] [S2] [S5]
-[S6] [S7], and the factor is therefore the annuity-due payable twelve times a year. With
-that one change the same formula and the same 0.5% charge reproduce all eight published
-figures on both interest bases. The correction, and the evidence for it, are in *The
-annuitisation transition* below; `Pension_KR_A` implements the corrected form and the
-worked example is struck on it.
+**One correction was made in the course of writing these notes and it changed a number.**
+An earlier draft of `product-spec.md` wrote the payout formula on an **annual**
+annuity-due, `연금연액 = 계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)`, and called the
+reconstruction of the published illustration exact. It is not: on an annual factor the
+reconstruction misses all eight published implied factors by about half a per cent, and it
+misses them *in the wrong direction*. **The annuity is paid 매월 on every retrieved
+contract** [S1] [S2] [S5] [S6] [S7], and the factor is therefore the annuity-due payable
+twelve times a year. With that one change the same formula and the same 0.5% charge
+recover all eight published figures on both interest bases. The evidence is in *The
+annuitisation transition* below; `product-spec.md` now states the monthly form and
+resolves the residual in its footnote 10, `Pension_KR_A` implements it, and the worked
+example is struck on it.
 
 Parameters introduced **here** that the specification does not carry — each because the
 specification defers it, or because it is a modelling construct with no contractual
@@ -434,16 +435,18 @@ to 0.1% at 납입완료 of the 제4차 보험개혁회의 [REG-R27] — which is
 value from the first month and no cliff at 납입완료. That guidance is the shape a Korean
 supervisor expects a lapse curve to have; it is not this product's numbers.
 
-**Expenses and commission (all levels [std, new here]; structure conventional).**
+**Expenses and commission.** The four cash-expense levels are **[std, new here]** and the
+structure is conventional; the two commission rows are **not** standardizations — they are
+the published 모집수수료율 of the source product, which is 0.00% in every year [S1].
 
-| Input | Value |
-|---|---|
-| Acquisition cash expense `E0` | ₩200,000 per policy at `t = 0` |
-| Maintenance cash expense `e(t)` | ₩30,000 p.a. in deferral, ₩20,000 p.a. in payment |
-| Expense inflation `π` | 2.0% p.a. flat, applied as `(1 + π)^t` |
-| Claim expense `ec` | ₩30,000 per death claim, deferral only |
-| Initial commission `c0` | **0.00%** of premium |
-| Renewal commission `c_r` | **0.00%** of premium |
+| Input | Value | Basis |
+|---|---|---|
+| Acquisition cash expense `E0` | ₩200,000 per policy at `t = 0` | **[std, new here]** |
+| Maintenance cash expense `e(t)` | ₩30,000 p.a. in deferral, ₩20,000 p.a. in payment | **[std, new here]** |
+| Expense inflation `π` | 2.0% p.a. flat, applied as `(1 + π)^t` | **[std, new here]** |
+| Claim expense `ec` | ₩30,000 per death claim, deferral only | **[std, new here]** |
+| Initial commission `c0` | **0.00%** of premium | [S1] |
+| Renewal commission `c_r` | **0.00%** of premium | [S1] |
 
 These are best-estimate **cash** expenses and are entirely separate from the 계약체결비용
 and 계약관리비용 of class (a), which are contractual loadings living **inside** `av_pp`.
@@ -675,11 +678,11 @@ not the best-estimate one — and `(f − 1)/(2f) = 11/24` the standard correcti
 instalments payable `f` times a year **[std, new here]**. `F_net` is `F` plus any
 accumulated 계약자배당 and less any outstanding 보험계약대출; both are zero in the base run.
 
-**`product-spec.md` writes this on an *annual* annuity-due and that is wrong.** The
-evidence is that the monthly form reconstructs every published figure and the annual form
-reconstructs none of them. [S2] publishes one fund at annuitisation and five annuities on
-each of two interest bases; dividing the fund by the annuity gives the implied factor the
-carrier actually used:
+**Written on an *annual* annuity-due this is wrong**, and an earlier draft of
+`product-spec.md` wrote it that way. The evidence is that the monthly form recovers every
+published figure and the annual form recovers none of them. [S2] publishes one fund at
+annuitisation and five annuities on each of two interest bases; dividing the fund by the
+annuity gives the implied factor the carrier actually used:
 
 | Form | Published implied factor | Model | Interest basis |
 |---|---|---|---|
@@ -696,10 +699,10 @@ carrier actually used:
 annuity forms.** On the annual reading the certain factors come out at 9.104 / 12.978 /
 16.464 at 2.15% — larger than the published ones, so the reconstructed annuity is *smaller*
 than the published annuity, and the 0.5% charge makes the gap worse rather than better.
-The specification's footnote records the discrepancy as a uniform 0.995 at 2.15% and an
-unexplained 1.003 at the guaranteed rate "running the other way" and tells the reader not
-to over-read it. There is nothing to over-read: **it is the monthly instalment**, and once
-the factor is `ä^(12)` the 0.5% charge falls out with the same sign on both bases.
+An earlier draft recorded the discrepancy as a uniform 0.995 at 2.15% and an unexplained
+1.003 at the guaranteed rate "running the other way", and told the reader not to over-read
+it. There is nothing to over-read: **it is the monthly instalment**, and once the factor
+is `ä^(12)` the 0.5% charge falls out with the same sign on both bases.
 
 **Which vintage the life factor is struck on** is `mort_vintage`. `issue` is the composite
 and the base run; `commencement` strikes it on the 연금개시시점 table; `ratchet` implements
@@ -953,11 +956,13 @@ are zero in every row and are omitted from the printed tables.
 | 9 | 0.7815535795 | 4,689,321.48 | 53,366.48 | 1,002,232.72 | 28,020.87 | 24.94 | 3,605,676.47 |
 | 10 | 0.7651077050 | 4,590,646.23 | 60,688.75 | 819,137.74 | 27,979.86 | 25.48 | 3,682,814.39 |
 
-Two features of that table are the product rather than the arithmetic. `claims_lapse` is
-**two orders of magnitude larger** than `claims_death` at every duration, because the two
-decrements pay the same amount per policy and the surrender rate is fifty times the
-mortality rate; and `net_cf` **rises** at `t` = 10, from ₩3,605,676.47 to ₩3,682,814.39,
-which is not a fund effect but the lapse rate stepping down from 2.0% to 1.5%.
+Two features of that table are the product rather than the arithmetic. `claims_lapse` runs
+far ahead of `claims_death` throughout the deferral phase — **49.6 times** at `t` = 0,
+13.5 at `t` = 10 and **3.8** at `t` = 24 — because the two decrements pay the same amount
+per policy, so the ratio is exactly `w(t) ÷ q(t)` and it narrows as mortality rises against
+a lapse rate that steps down; and `net_cf` **rises** at `t` = 10, from ₩3,605,676.47 to
+₩3,682,814.39, which is not a fund effect but the lapse rate stepping down from 2.0% to
+1.5%.
 
 **The rows where the product does something.**
 
@@ -1294,12 +1299,12 @@ In rough order of leverage on this block.
    production model must re-derive all four; this one exposes each as an input.
 3. **Longevity, which is the only insurance risk in the contract.** The fitted table's
    curtate `e(65)` of 33.31 years is the *illustration's* implied longevity, not a Korean
-   population estimate — 국가데이터처's 2024 완전생명표 gives 65세 기대여명 남 19.5 and the
-   제10회 경험생명표 gives 23.7 [REG-R38] [REG-R33]. Re-striking the factor on a table
-   anywhere near either of those would raise `B` by tens of per cent, and the model would
-   then no longer reproduce the published annuity. **That tension is the product's, not the
-   library's**, and it is the single most important thing to understand before using this
-   model for anything but mechanics.
+   population estimate — 국가데이터처's 「2024년 생명표 작성 결과」 gives 65세 기대여명
+   남 19.5 and the 제10회 경험생명표 gives 23.7 [REG-R38] [REG-R33]. Re-striking the factor
+   on a table anywhere near either of those would raise `B` by tens of per cent, and the
+   model would then no longer reproduce the published annuity. **That tension is the
+   product's, not the library's**, and it is the single most important thing to understand
+   before using this model for anything but mechanics.
 4. **The expense schedule, which is a choice between two published products.** The composite
    takes the direct-channel schedule, so its first-year 환급률 is 96.61% rather than the
    82.7% of the tied-channel product from which the anchor model point comes [S1] [S2].
@@ -1369,7 +1374,8 @@ each is checkable against the shipped model.
 6. **Using an annual annuity-due factor.** The annuity is paid 매월 and the factor is
    `ä^(12)`. On the annual factor the anchor cell's `B` would be ₩6,634,429.17 instead of
    ₩6,763,374.59, **1.91% low**, and the model would reproduce none of the eight published
-   implied factors. This is the error `product-spec.md` contains and this document corrects.
+   implied factors. It is the error an earlier draft of `product-spec.md` contained and the
+   one this document corrected; both documents now carry the monthly form.
 7. **Putting mortality into the 확정기간연금형 factor, or leaving it out of the
    종신연금형 one.** The certain form is priced on the declared rate alone and its
    instalments are paid to the count whether or not the annuitant lives [S1] [S2] [S6]; the

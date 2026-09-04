@@ -57,8 +57,9 @@ arithmetic:
   not a contractual one.
 - **The insured loss is exogenous.** Both halves of it — the statutory co-payment on
   treatment inside the public list and the whole of the treatment outside it — are set by
-  the health ministry and by providers, not by the insurer [R7] [REG-R53]. The 급여/비급여
-  boundary moves within any realistic projection horizon.
+  the health ministry and by providers, not by the insurer [R7] [REG-R53]. The boundary
+  between 급여 (*geubyeo*, treatment covered by 국민건강보험) and the 비급여 outside it moves
+  within any realistic projection horizon.
 - **Half the claim is truncated by a public scheme.** The 본인부담상한제 refunds a
   member's annual statutory co-payment above an income-graded ceiling, and the 표준약관
   excludes the refundable amount from cover outright [S1 제4조제3항제1호] [S1 제5조제3항]
@@ -170,7 +171,7 @@ arithmetic:
 | `three_np` | bool — 3대비급여형 held (inside the rider) | 1 | `three_np()` |
 | `annual_limit` (`L`) | KRW a year per 보장종목 | 50,000,000 | `annual_limit()` |
 | `visit_cap` (`Lv`) | KRW per outpatient visit | 200,000 | `visit_cap()` |
-| `oop_decile` | int 1–10, NHI-contribution decile | 6 | `oop_decile()` |
+| `oop_decile` | int 1–10, NHI-contribution decile; the anchor's rung **[std]**, the scale itself [R10] | 6 | `oop_decile()` |
 | `clinic_share` | share of 급여 통원 at the ₩10,000 tier | 0.63 **[std]** | `clinic_share()` |
 | `nhi_covered` | bool — inside 국민건강보험 / 의료급여 | 1 | `nhi_covered()` |
 | `trend_mult` (`k_trend`) | multiplier on both cost trends **[std]** | 1.0 | `trend_mult()` |
@@ -193,9 +194,13 @@ exists in public for any generation: the 손해보험협회 comparison grid is f
 성별 and 보험나이 and by nothing else, which is the disclosure's own confirmation that the
 scale is an age × sex table, but the grid is POST-driven and returned
 「조회된 내용이 없습니다」 to a plain fetcher [S7] [REG-R62]. The other nine model points'
-premiums are therefore **[std]**, scaled off the anchor by the 4.0% age slope and floored at
-the child rate. **Only the first policy year is an input**; every later year is the renewal
-recursion of `prem_ge_base` and `prem_np_base`.
+premiums are therefore **[std]** and are round-number levels, set in the neighbourhood of
+the anchor carried to the issue age at the 4.0% age slope but not computed from it — they
+sit within about ±5% of `11,982 × 1.04^(x − 40)` at ages 35 to 65, further away at age 30,
+and the age-0 rung is a floor rather than a slope value. Model point 5 is the exception
+and is arithmetic: at `np_share = 0`, ₩4,793 is the anchor's 급여 half to the won. **Only
+the first policy year is an input**; every later year is the renewal recursion of
+`prem_ge_base` and `prem_np_base`.
 
 **`oop_decile` is a model point attribute and not an assumption**, because the
 본인부담상한액 is set by the insured's own income and the spread is nine-fold: on the 2026
@@ -460,8 +465,11 @@ across ten buckets as a share and a representative amount. The 요율 상대도 
 by where a policy's annual claim falls against **fixed money thresholds**, so the band mix is
 a property of the distribution and not of its average. Bucket 0 carries the **72.9%** of
 contracts assessed with no rated claim [R12]; the six 2단계 buckets take their within-band
-dispersion from the published 4세대 claim-size distribution below ₩1,000,000 [R12]; and the
-three upper buckets carry the published commencement shares 0.8 / 0.7 / 0.3. The amounts are
+dispersion from the **six lowest bands** of the published 4세대 claim-size distribution — the
+0–10만 / 10–20만 / 20–50만 / 50–100만 / 100–200만 / 200–500만 rows at 3.7 / 6.0 / 16.3 /
+17.7 / 18.9 / 22.2% of claimants, normalised over themselves and with each band's midpoint
+scaled by one common factor onto the sub-₩1,000,000 range 2단계 occupies [R12]; and the
+three upper buckets carry the published commencement shares 0.8 / 0.7 / 0.3 [R12]. The amounts are
 scaled so that the tabulated mean equals the anchor's year-1 rated claim, which is what makes
 the solved band-1 relativity come out at the specification's 0.9575. The model reads the
 amounts as **multiples of the table's own mean** and rescales them to whatever claim level it
@@ -760,7 +768,9 @@ amount, which no retrieved document states either way.
 **The composition reproduces the wording's own five-band table.** At `s = 0.4875` — the
 share implied by solving the illustration's own band-2 and band-5 rows — the formula gives
 `18,200 × (0.5125 + 0.4875 × 2) = 27,073` at renewal +1 and
-`23,660 × (0.5125 + 0.4875 × 4) = 58,263` at +2, matching [S1] exactly. That reproduction is
+`23,660 × (0.5125 + 0.4875 × 4) = 58,263` at +2, reproducing [S1]'s printed 27,073 and
+58,263 to the won — the raw products are 27,072.5 and 58,262.75, and the wording's table is
+printed rounded. That reproduction is
 the check that the composition is the right one. The model itself runs at `s = 0.60`, from
 [R2].
 
@@ -826,7 +836,10 @@ Six things in those seven lines are load-bearing and each is sourced or flagged.
    has one; it applies to the **whole** office premium where the relativity touches only the
    rider; and it **stacks** with the band-1 discount. The launch release prints a three-year
    timeline in which years 1 and 2 give only the rider discount and year 3 adds the 10%
-   [R1], and the model reproduces exactly that timeline.
+   [R1]. The model reproduces the **10% leg** of that timeline exactly — `nc(y)` is zero in
+   years 1 and 2 and 0.5314584961 from year 3 — and deliberately not the other leg: the
+   rider discount was deferred to 2024-07-01 [R3], so on the modelled generation years 1
+   to 3 carry no relativity at all (`reld_start_year = 4`).
 
 ### Decrement recursion and processing order
 
@@ -961,8 +974,9 @@ premium's response to claims but not the claims' response to premium.
   claims by policy count rather than by insured count would double-count.
 - **No dynamic lapse from a cash value or an interest rate.** There is no 해약환급금, no
   공시이율, no 예정이율 disclosure on a one-year contract and no MVA, so there is no economic
-  surrender trigger to model. The 무해지환급형 cliff that drives the
-  [whole life](../whole_life/technical-notes.md) lapse spike has no analogue here.
+  surrender trigger to model. Neither the 무해지환급형 surrender-value cliff at 납입완료 nor
+  the 유지보너스-date lapse spike that [whole life](../whole_life/technical-notes.md) wires
+  to its persistency bonus has any analogue here.
 - **Anti-selective lapse is not modelled, and the direction is the *reverse* of a term
   product's.** Healthy lives decline renewal first, so the persisting block is progressively
   impaired on the *morbidity* basis. The natural form,
@@ -1148,10 +1162,14 @@ create one.
   moves in five-year steps.**
 - **`t = 24`** — the first month of policy year 3, and the first month the **무사고 할인**
   applies: `noclaim_share(3) = 0.729012² = 0.5314584961`, so 5.3146% comes off the whole
-  office premium. `premiums` therefore *falls* from ₩11,657 (had the discount not applied)
-  and the year-3 gross premium of ₩13,610.6786 is **below** the un-discounted
-  ₩14,374.6306. This reproduces the launch release's three-year timeline exactly: years 1
-  and 2 give only the rider discount, year 3 adds the 10% whole-premium discount [R1].
+  office premium. `premiums(24)` is therefore **₩11,255.2428** against the **₩11,886.9868**
+  it would have been without the discount, and the year-3 gross premium of ₩13,610.6786 is
+  **below** the un-discounted ₩14,374.6306 — the discount is worth more than the whole
+  year's re-rate is at this duration. The two-year lookback is what the launch release's
+  three-year timeline requires [R1], and the model reproduces **that** leg of it: the
+  discount first appears in year 3. It does **not** reproduce the release's other leg —
+  R1 shows years 1 and 2 giving the rider discount, and here they give nothing, because
+  the 요율 상대도 was deferred to 2024-07-01 [R3] and `reld_start_year = 4`.
 - **`t = 36`** — policy year 4, where the **요율 상대도 switches on** (`reld_start_year = 4`,
   the three-year deferral to 2024-07-01 [R3]). Nothing at all happens in the cash flows:
   `reld_avg(4) = 1.0000000000` exactly, because the discount cap is slack and the scheme is
@@ -1267,9 +1285,11 @@ above.
       mri          = min( 0.015780 x 467,250, 3,000,000 )       =     7,373.2050
       NP_OUT       = 18,218.3372 + 2,390.6094                   =    20,608.9466
       NP_THREE     = 8,930.3999 + 7,171.8282 + 7,373.2050       =    23,475.4331
-    Step 5: the annual aggregates.  raw_ge = 56,076.2173, raw_np = 39,502.8146,
-      both far below 0.15 x 50,000,000 and 0.85 x 50,000,000, so
-      g_ge(1) = g_np(1) = 1.0000000000
+    Step 5: the annual aggregates.  raw_ge = 56,076.2173, raw_np = 39,502.8146.
+      The test is sigma x raw <= 50,000,000 on each bojang jongmok, i.e.
+      raw <= 50,000,000 / 0.15 = 333,333,333 and 50,000,000 / 0.85
+      = 58,823,529; both raws are three orders below the tighter of
+      the two, so g_ge(1) = g_np(1) = 1.0000000000
     claims_ann_pp(1) = 13,393.4080 + 42,682.8093 + 18,893.8680
                      + 20,608.9466 + 23,475.4331                =   119,054.4651
     loss_incurred_pp(1)                                         =   186,006.8254
@@ -1499,8 +1519,8 @@ asymmetrically on the boundary.
 
 The **composition** of the claim is not what the market narrative suggests. 급여 통원 is the
 single largest limb at **29.73%** of the ten-year claim, and the whole 급여 half is **39.34%**
-against 60.66% 비급여 — close to but below the 57.1% 비급여 share the supervisor reports for
-2025 [R7], and well above 비급여's 15.8% share of *national* medical spend [R9]. The
+against 60.66% 비급여 — close to, and 3.6 points above, the 57.1% 비급여 share the supervisor
+reports for 2025 [R7], and far above 비급여's 15.8% share of *national* medical spend [R9]. The
 3대비급여 classes alone are **23.49%** of the claim on a cell that is not a heavy user of
 them. And the 급여 unit runs at a loss ratio of **0.975** in year 1 against the 비급여 unit's
 **0.730** — **the main contract is the worse half, throughout**, which is exactly what the

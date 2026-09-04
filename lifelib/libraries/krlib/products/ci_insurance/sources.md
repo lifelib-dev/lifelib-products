@@ -12,7 +12,7 @@ from the CaseNote mirror, against [REG-R4], which is 보험업법 **제176조** 
 Three tag families do three different jobs in `product-spec.md`, `technical-notes.md` and
 `model.md`:
 
-- **[S#]** — a primary product document: a 약관 (*yakkan*, policy conditions), a 상품요약서
+- **[S#]** — a primary product document: a 약관 (*yakgwan*, policy conditions), a 상품요약서
   (the statutory product summary), a 상품안내장, an industry-association product table, or
   a carrier product page. These are what make a contractual mechanic *sourced* rather than
   assumed. On this product they carry an unusually heavy load: **[S1] alone establishes the
@@ -648,7 +648,8 @@ The forty-two entries the CI documents cite, all accessed 2026-09-03:
 - **REG-R38** — 국가데이터처 「2024년 생명표 작성 결과」 and 통계청 「2023년 생명표」: the
   **public** national table, whose survival to age 80 of 남 64.4% / 여 82.2% is the
   cross-check that shows the shipped female mortality construction **understates the female
-  advantage** — a 15-to-80 ratio of 0.60 against an implied 0.50. Retrieved: yes.
+  advantage** — a 15-to-80 death-probability ratio of 0.560 against an implied 0.500.
+  Retrieved: yes.
 - **REG-R39** — KOSIS 완전생명표 (single-year qx tables): **Retrieved: no** — distributed
   through the KOSIS interface rather than as a fetchable file, so the graduation check uses
   the briefing figures of [REG-R38] and not single-year rates.
@@ -675,8 +676,8 @@ The forty-two entries the CI documents cite, all accessed 2026-09-03:
   평균공시이율 of 2.50%**, down from 2.75% and its first fall since 2020, which is the level
   `prem_int_rate` takes. Retrieved: in part.
 - **REG-R49** — 상법 제4편 제1장 통칙 (제638조~제664조): 제638조의3 (품질보증해지) and 제662조
-  (the **3년 소멸시효** on a 보험금청구권), both of which the specification's contract-mechanics
-  table states. Retrieved: yes (제4편 read in full).
+  (the **3년 소멸시효** on a 보험금청구권), both of which the specification's
+  contract-mechanics table states. Retrieved: yes (제4편 read in full).
 - **REG-R50** — 상법 제4편 제3장 인보험 (제727조~제739조의3): **제736조**, under which an
   insurer refusing a claim must still pay 「보험수익자를 위하여 적립한 금액」 — the reason a
   refused CI claim on this chassis is not a nil event. Retrieved: yes.

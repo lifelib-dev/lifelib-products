@@ -7,7 +7,7 @@ annuitant_issue,M,omega_age,120,[std] terminal age; no Korean industry table pub
 annuitant_issue,F,law_a,5.55830000e-04,"[std] the female table is the male law set back, so it shares the law parameters"
 annuitant_issue,F,law_b,2.32810000e-06,"[std] the female table is the male law set back, so it shares the law parameters"
 annuitant_issue,F,law_c,1.10895600,"[std] the female table is the male law set back, so it shares the law parameters"
-annuitant_issue,F,age_setback,4,"[std] four-year setback, reproducing the published 65세 기대여명 gap of 3.4 years [REG-R33]"
+annuitant_issue,F,age_setback,4,"[std] four-year setback, the whole-year setback closest to the published 65세 기대여명 gap of 3.4 years [REG-R33]; it does not reproduce it - the fitted gap is 3.66 years"
 annuitant_issue,F,omega_age,120,[std] terminal age; no Korean industry table publishes one [REG-R33]
 annuitant_revised,M,law_a,5.55830000e-04,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
 annuitant_revised,M,law_b,2.32810000e-06,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
@@ -17,7 +17,7 @@ annuitant_revised,M,omega_age,120,[std] terminal age; no Korean industry table p
 annuitant_revised,F,law_a,5.55830000e-04,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
 annuitant_revised,F,law_b,2.32810000e-06,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
 annuitant_revised,F,law_c,1.10895600,"[std] the revised vintage is the issue vintage scaled, so it shares the law parameters"
-annuitant_revised,F,age_setback,4,"[std] four-year setback, reproducing the published 65세 기대여명 gap of 3.4 years [REG-R33]"
+annuitant_revised,F,age_setback,4,"[std] four-year setback, the whole-year setback closest to the published 65세 기대여명 gap of 3.4 years [REG-R33]; it does not reproduce it - the fitted gap is 3.66 years"
 annuitant_revised,F,omega_age,120,[std] terminal age; no Korean industry table publishes one [REG-R33]
 annuitant_issue,M,improve_factor,1.0,[std] the 가입시점 vintage is unscaled by definition
 annuitant_issue,F,improve_factor,1.0,[std] the 가입시점 vintage is unscaled by definition

@@ -266,7 +266,7 @@ def sex():
 
     The sex effect on this product runs in **opposite directions** on price and on
     incidence, and a reader must not infer one from the other.  Female premium is
-    0.79-0.86 of male on the published grid [S4], while at age 40 the three headline CI
+    0.808-0.872 of male across the published grid [S4], while at age 40 the three headline CI
     rates sum to 1.10 times the male ones [S3] — the excess being breast and thyroid
     cancer, which is exactly the exposure that broke the 2002 pricing [R1].  The
     reconciliation is that the premium is dominated by the death benefit, by old-age CI
@@ -518,7 +518,7 @@ def ci_be_factor():
     Held apart from :func:`mort_be_factor` because the two margins are not the same size
     and there is no reason to move them together: the mortality basis is a life table and
     the CI basis is a morbidity table built on six disclosed numbers, and the second is by
-    far the weaker of the two.  0.75 on model point 9, removing a third of the rate as a
+    far the weaker of the two.  0.75 on model point 9, removing a quarter of the rate as a
     stated **[std]** unwinding of the 안전할증 [R1].
     """
     return float(model_point()["ci_adj"])
@@ -556,8 +556,9 @@ def waiver_rate(t):
     real if second-order decrement on the same 장해분류표 percentage scale the chassis uses
     [REG-R25].
 
-    0.03% a year during the 납입기간 **[std]**; no Korean disability inception rate at the
-    50% threshold is published.  A waived policy stays pre-CI, keeps its full death cover
+    0.03% a year during the 납입기간 on every shipped point but 9, which runs 0.05%
+    **[std]**; no Korean disability inception rate at the 50% 장해지급률 threshold is
+    published.  A waived policy stays pre-CI, keeps its full death cover
     and — the chassis's **"waived premiums count as paid"** rule — continues to accrue
     surrender value on the full premium scale, so the waiver is the only route to the
     저해지 step without funding it.  Zero once no premium is due.
@@ -927,7 +928,7 @@ def prem_net_level_pp():
     """P: the annual net level premium on the pricing basis, ``A0(1) / a(1)``.
 
     A **pricing** quantity that never becomes a cash flow: what is collected is
-    :func:`premium_pp`.  On the anchor cell it is ₩2,968,514 against a gross of
+    :func:`premium_pp`.  On the anchor cell it is ₩2,968,483.20 against a gross of
     ₩3,680,880, a loading of 24.0% — which sits close to, and is a different quantity
     from, the 보험료지수 of 130.1% [S3] publishes for the same form, that ratio being
     against the 표준순보험료 computed on the supervisor's prescribed rates rather than on

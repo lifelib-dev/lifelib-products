@@ -47,11 +47,13 @@ has to.
 
 ## Primary product sources
 
-Fourteen carriers, twenty-three documents. Two are the 생명보험협회's own statutory
-disclosure and its basis table [S4] [S5]; one is a full 190-page 약관 [S2]; twelve are
-상품요약서 [S1] [S6] [S8] [S9] [S10] [S11] [S12] [S15] [S17] [S18] [S19] [S20] (with [S21]
-carrying two more); two are the mandatory 예상 갱신보험료 예시 [S7] [S16]; four are carrier
-consumer or quotation pages [S3] [S13] [S14]; and one could not be fetched at all [S23].
+Nine carriers and the 생명보험협회 — twenty-four documents in twenty-three entries. Three
+are the 생명보험협회's own statutory disclosures and the basis table under them: the
+정기보험 comparison [S4], its 대표계약 basis [S5], and the 종신보험 comparison read as
+negative evidence [S22]. One is a full 190-page 약관 [S2]; twelve are 상품요약서 [S1] [S6]
+[S8] [S9] [S10] [S11] [S12] [S15] [S17] [S18] [S19] [S20], with [S21] carrying two more;
+two are the mandatory 예상 갱신보험료 예시 [S7] [S16]; three are carrier consumer or
+quotation pages [S3] [S13] [S14]; and one could not be fetched at all [S23].
 
 **Nine documents carry a published premium scale**, which is the single largest documentary
 difference from every other library in this repository: [S1] [S4] [S6] [S7] [S8] [S11] [S12]
@@ -133,7 +135,7 @@ appearing twice independently and not a [std] one.
   the following on it: the anchor premium's **second independent appearance** (₩15,080 male,
   ₩8,010 female, agreeing to the won with [S12]); the observed spread at the same cell
   (₩14,400 / ₩15,000 / ₩16,000 / ₩16,000 / ₩16,100 / ₩18,400); the female-to-male premium
-  ratios of 52–58% at direct writers and 70–90% at face-to-face carriers, which is the
+  ratios of 52–56% at direct writers and 70–90% at face-to-face carriers, which is the
   indirect evidence for the per-policy fee no Korean rate card lets you decompose; and the
   **보험가격지수 dispersion of 51.6% to 239.1%**, which is the only public handle on an
   expense assumption. It also links each product's 상품요약서 PDF, which is how [S6] and
@@ -179,10 +181,11 @@ appearing twice independently and not a [std] one.
 - Accessed: 2026-09-03, Retrieved: **yes** (31 KB PDF, extracted cleanly)
 - **The single most useful quantitative document for the 갱신형 mechanic.** It is the whole
   published premium ladder the model reproduces to the won on model point 3 — **₩9,000 →
-  ₩21,000 → ₩56,000 → ₩201,000** a month at attained 보험나이 40 / 50 / 60 / 70, for both
-  sexes — together with the caveat that the projection **holds the rate scale at its
-  issue-date level and reflects 연령증가 alone**, which is why the fourth key model risk is a
-  discretionary risk rather than a modelling one. It also establishes, negatively, that the
+  ₩21,000 → ₩56,000 → ₩201,000** a month at attained 보험나이 40 / 50 / 60 / 70 for a male
+  life, against ₩6,000 → ₩10,000 → ₩24,000 → ₩103,000 for a female one — together with the
+  caveat that the projection **holds the rate scale at its issue-date level and reflects
+  연령증가 alone**, which is why the fourth key model risk is a discretionary risk rather
+  than a modelling one. It also establishes, negatively, that the
   disclosure requires the **price** path and never the **persistency** path, which is why
   `renewal_decline_base` is [std].
 
@@ -488,8 +491,9 @@ product documents cite both.
 - 제1항: **「그 금액의 100분의 12(제1호의 경우에는 100분의 15)」** of 보장성보험료, capped at
   **연 100만원** of premium per basket. This is a **tax credit, not a deduction**, which is
   the structural difference from Japan's 生命保険料控除 and from every other market in this
-  repository, and it is why the specification records that the anchor cell's ₩180,960 annual
-  premium exceeds the cap and the credit is a flat ₩120,000. Cited beside [REG-R57].
+  repository. The cap is on the **premium**, not on the credit, so the anchor cell's
+  ₩180,960 annual premium sits well inside the basket and the credit is 12% of the whole of
+  it — ₩21,715, against the ₩120,000 a full basket would give. Cited beside [REG-R57].
 
 (krlib-term_life-r9)=
 

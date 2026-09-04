@@ -154,8 +154,9 @@ is the one in which the product's signature mechanic is absent by construction
 **The anchor premium is derived from a sourced one, not invented.** DB생명 publishes
 ₩257,050 a month for the 표준형 at exactly this cell — 남 40세, 1억원, 20년납, 월납 [S4] —
 and the annual figure is 12 × that = ₩3,084,600 **[std]**, which is `point_id = 2`. The
-anchor's ₩2,776,140 is **0.900 × ₩3,084,600** [std], the 처브라이프 observation at that
-exact factor [S1], inside the observed 81.5%–95.4% envelope [S1] [S2] [S4] [S6]. No carrier
+anchor's ₩2,776,140 is **0.900 × ₩3,084,600** [std] — a rounding of the **89.9%** ratio
+처브라이프 publish at that suppression factor, on their own 5,000만원 / 10년납 cell rather
+than this one [S1] — inside the observed 81.5%–95.4% envelope [S1] [S2] [S4] [S6]. No carrier
 publishes an annual-mode scale, so the modal discount a real 연납 rate would carry is **not
 applied**: the annual premium is slightly overstated and the first year's interest credit
 correspondingly understated. Stated, not corrected.
@@ -360,9 +361,10 @@ be presented as one.**
 | 만나이 → 보험나이 conversion | **None applied** | **[std]**; no public mapping exists |
 
 `mort_be_factor = 1.00` is a choice, not a default: **the base run is a pricing-table run,
-not a best estimate.** The two disclosed grids differ by **10%–23% at every age and sex** —
-남 40세 0.000780 [S2] against 0.00092 [S8], 여 60세 0.001730 against 0.00214 — so they
-**bracket** rather than fix a level, and one is labelled 「무배당 **예정 경험**사망률」, the
+not a best estimate.** The two disclosed grids differ by **up to 24%** — 18%–24% at five of
+the six published cells (남 40세 0.000780 [S2] against 0.00092 [S8], 여 60세 0.001730
+against 0.00214) and not at all at 여 20세, where both print 0.00018 — so they **bracket**
+rather than fix a level, and one is labelled 「무배당 **예정 경험**사망률」, the
 giveaway that it is a 경험생명표 derivative carrying a 무배당 loading rather than the table
 [S2] [S8]. A production basis would sit below 1.00 and move claims proportionately;
 `point_id = 10` runs at 0.90 so the lever is exercised.
@@ -620,7 +622,8 @@ were retrieved from different documents and no third document reconciles them.
 limit and the 감액 proceeds are computed off `CV(t)`, so during 납입기간 both are `k` times
 their 표준형 size — and on a **무해지** contract the policy loan **does not exist at all**,
 which the FSS said in terms in its 2019 alert and the 표준약관 repeats as 「순수보장성보험 등
-보험상품의 종류에 따라 보험계약대출이 제한될 수 있습니다」 [R4] [REG-R28] [REG-R25 제33조](#krlib-reg-r25).
+보험상품의 종류에 따라 보험계약대출이 제한될 수도 있습니다」 [R4] [REG-R28] [REG-R25 제33조](#krlib-reg-r25)
+— the one full 약관 in the set carries the same sentence without 도 [S5 제34조].
 `point_id = 3` is that case and draws **exactly nothing**.
 
 ### 유지보너스, and the lapse spike that is not optional
@@ -886,7 +889,8 @@ premium **₩2,776,140**. `T = 115 − 40 + 1 = 76` policy years, attained 보�
 Every optional module is off: `waiver_rate = loan_util = bonus_rate = reduce_frac =
 reinstate_rate = 0`, `int_basis = fixed`, `lapse_basis = loglinear`, `mort_be_factor = 1.00`.
 
-The premium is **0.900 × ₩3,084,600 [std]** [S1], and ₩3,084,600 is 12 × the published
+The premium is **0.900 × ₩3,084,600 [std]**, a rounding of the 89.9% ratio published at a
+50% suppression [S1], and ₩3,084,600 is 12 × the published
 ₩257,050 monthly rate for exactly this cell [S4], which is `point_id = 2` — **the 표준형
 comparison twin, same cell, `k = 1.00`.** The two run side by side throughout.
 
@@ -1425,11 +1429,13 @@ In rough order of leverage on this product:
 3. **The expense and acquisition-cost block.** `AC = SC*`, `c₀ = 0.65`, `c_r = 3.0%`,
    ₩60,000 + 2.0% of premium a year, ₩300,000 a claim, 2.0% inflation — **every one [std],
    because no Korean expense rate as a percentage of premium was obtained from any source.**
-   They total ₩7,750,137.31 of the ₩38.20m premium stream, 20.3%, and the first year alone
-   is ₩3,222,223.34 of it. The four public bounds in class (b) constrain the block; nothing
+   `expenses` and `commissions` together total ₩7,750,137.31 of the ₩38.20m premium stream,
+   20.3%, and the first year alone is ₩3,222,223.34 of it; the ₩300,000-a-claim handling
+   expense is a further ₩152,441.68, published in its own column, which takes the block to
+   ₩7,902,578.98 and 20.7%. The four public bounds in class (b) constrain it; nothing
    fixes it.
 4. **The mortality table is a construction and `mort_be_factor` is the lever.** Every row of
-   `mort_table.csv` is [std]; the two disclosed carrier grids differ by **10%–23%** and
+   `mort_table.csv` is [std]; the two disclosed carrier grids differ by **up to 24%** and
    bracket rather than fix a level [S2] [S8]; and the 제10회 경험생명표 is not published
    [REG-R33] [REG-R34]. Claims move proportionately with `mort_be_factor`, and on a 76-year
    run they are the largest single outgo at ₩50.81m.
@@ -1446,7 +1452,8 @@ In rough order of leverage on this product:
    direction from both ends, and the 환급률 crossing date with it. A market-wide 예정이율 cut
    in 2025 and again for 2026 was reported in search results and **could not be confirmed
    against any retrieved carrier document** [unverified]; the 평균공시이율 series that *is*
-   sourced fell from 2.75% to **2.50%** for 2026, its first fall since 2020 [S10] [REG-R48].
+   sourced fell from 2.75% to **2.50%** for 2026, its first fall since the 2.50% → 2.25%
+   step in 2021 [S10] [REG-R48].
 8. **Expense inflation over 76 years.** 2.0% **[std]** compounds to a factor of **4.42**;
    a UK or US habit of 3% would compound to 9.18. No published Korean expense basis anchors
    either. **부활 is likewise not modelled**, so later-duration in force is understated —

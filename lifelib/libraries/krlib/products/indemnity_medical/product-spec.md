@@ -181,7 +181,7 @@ repository reaches.
 | Per-visit outpatient cap | **₩200,000 (20만원)** | ceiling [S1 제5조제5항]; election **[std]** (2) |
 | Issue age (가입나이) | **0–65** (만나이) | not retrieved for 4세대; **[std]** (3) |
 | Age basis — contract | **보험나이** (*boheom nai*, insurance age): 만나이 at 계약일 with a fraction under six months discarded and six months or more rounded up, incremented at each 계약해당일 | [S1 제21조] [REG-R25] |
-| Age basis — model | **만나이** (age last birthday) | **[std]** (4) |
+| Age basis — model | **만나이** (*man nai*, age last birthday) | **[std]** (4) |
 | Policy term (보험기간) | **1 year**, automatically renewed on the day after expiry unless the policyholder declines | [S3] [S5] |
 | Renewal (갱신) | Annual, at the 보험요율 in force on the renewal date and at the attained 보험나이; increase capped at **±25% a year excluding the age effect**, per 위험구분단위 | [S1 제30조] [REG-R17 제7-63조제2항제3호](#krlib-reg-r17) [R6] |
 | Benefit-change cycle (보장내용 변경주기 / 재가입주기) | **5 years** — the contract re-enters the generation then on sale | [R1] [R2] [REG-R17 제7-63조제2항제6호나목](#krlib-reg-r17) |
@@ -284,7 +284,7 @@ Footnotes to [std] rows:
 | 무사고 할인 (no-claim discount) | **10%** of the whole office premium — 급여 and 비급여 together — after **two** consecutive years with no 비급여 claim, excluding 4대 중증질환 claims from the test | [R1] [S3] |
 | 의료급여 수급권자 할인 | 5% of the office premium at one carrier; **not** in the composite | [S3]; scope **[std]** (14) |
 | Premium waiver (납입면제) | **None.** No 납입면제 provision appears in either retrieved 실손 wording | [S1] [S3]; absence **[unverified]** (15) |
-| Expense loading | **16.0%** of office premium (손해조사비 plus 사업비), split acquisition 6% / maintenance 7% / claim handling 3% | aggregate [R7]; split **[std]** (16) |
+| Expense loading | **16.0%** of office premium (손해조사비 plus 사업비), split acquisition 6% / maintenance 7% / claim handling 3%. `Medical_KR_S` charges the first two on office premium and the third on **claims**, the two bases coinciding at the break-even loss ratio | aggregate [R7]; split and bases **[std]** (16) |
 | Rate-adequacy duty | The net rate's adequacy must be verified **annually** against experience, with up to **five years' grace** for genuinely new cover | [R12] [REG-R17 제7-63조제2항제6호가목](#krlib-reg-r17) |
 | Price-index disclosure | The **보험가격지수** must be explained to the policyholder **at every renewal** of a 실손 contract, not only at sale | [REG-R22 제7-45조제7항](#krlib-reg-r22) |
 

@@ -140,7 +140,7 @@ did not extract, so the annual step is a **[std]** approximation of it [REG-R19]
 `check_pol_val_prosp()` asserts the substantive cross-check: the forward recursion and the
 closed-form prospective value `SA·A(x+t) − P·ä(x+t, m−t)` agree at every duration, which they
 do only if the net premium, the payment period and the discount basis are all consistent. On
-the anchor the largest disagreement over 76 years is under ₩0.1.
+the anchor the largest disagreement over 76 years is ₩0.21, on a ₩100,000,000 sum assured.
 
 Everything else in the model is that one value times one factor:
 
@@ -423,15 +423,19 @@ which is a property of this library rather than a habit, and the conventions sui
 Twenty columns, indexed by `point_id`. Point 1 is 남자, 보험나이 40세, 보험가입금액 1억원,
 종신, 20년납, 저해지환급형 `k = 0.50` — the technical notes' worked-example anchor cell, and
 the cell Korean industry comparison disclosure itself uses (1억원 / 종신 / 20년납 / 월납)
-[S17]. Its annual premium of **₩2,776,140** is `0.900 ×` the 표준형 twin's ₩3,084,600
-**[std]** [S1], and ₩3,084,600 is 12 × the published ₩257,050 monthly rate for exactly that
-cell [S4]. That twin is `point_id = 2`, and the two run side by side throughout the notes.
+[S17]. Its annual premium of **₩2,776,140** is `0.900 ×` the 표준형 twin's ₩3,084,600 — a
+**[std]** rounding of the 89.9% premium ratio one carrier publishes at a 50% suppression
+[S1] — and ₩3,084,600 is 12 × the published ₩257,050 monthly rate for exactly that cell
+[S4]. That twin is `point_id = 2`, and the two run side by side throughout the notes.
+Points 3 and 6 are built the same way — `prem_susp_ratio ×` the sourced ₩3,084,600, point 6
+being the anchor with the loan module switched on — and the remaining six take their premiums
+from `prem_gross_calc_pp()` rounded to the won.
 
-The other nine take their premiums from the same rule and cover both sexes, issue ages 30 to
-65, sum assureds ₩10,000,000 to ₩1,000,000,000 (1,000만원 ~ 10억원), the four suppression
-factors 1.00 / 0.50 / 0.30 / 0.00, payment terms of 7, 10, 20 and 30 years and 전기납, and each
-optional module. No modal discount is applied to the annualisation **[std]**: no carrier
-publishes an annual scale, so 12 × the monthly premium slightly overstates the annual one.
+The other nine cover both sexes, issue ages 30 to 65, sum assureds ₩10,000,000 to
+₩1,000,000,000 (1,000만원 ~ 10억원), the four suppression factors 1.00 / 0.50 / 0.30 / 0.00,
+payment terms of 7, 10, 20 and 30 years and 전기납, and each optional module. No modal
+discount is applied to the annualisation **[std]**: no carrier publishes an annual scale, so
+12 × the monthly premium slightly overstates the annual one.
 
 ### `mort_table.csv` — a [std] construction, and it must never be called the 경험생명표
 
@@ -446,8 +450,9 @@ parts and every row says which it is:
   mortality rates in the public domain at those ages, the sample 적용위험률 grids that 하나생명
   [S2] and KDB생명 [S8] print in their 상품요약서 — `q(40) = 0.00085` is the mean of 0.000780
   and 0.00092, `q(60) = 0.005075` the mean of 0.004550 and 0.00560. The two rates are sourced;
-  taking their mean is the standardization. They differ by **10%–23%** at every age and sex, so
-  they bracket rather than fix a level.
+  taking their mean is the standardization. They differ by **up to 24%** — 18%–24% at five of
+  the six published cells and not at all at 여 20세, where both print 0.00018 — so they
+  bracket rather than fix a level.
 - **CONSTRUCTED** rows below 60 are log-linear in `ln q` between those anchors and extrapolated
   below age 20 on the same slope; above 60 they follow a Gompertz in `ln q` with a quadratic
   deceleration term whose two parameters are solved so that the table's 65세 기대여명 is 23.7
@@ -540,7 +545,7 @@ it. Where the research pass established an observed range across insurers, it is
 |---|---|---|---|
 | 예정이율 `prem_int_rate` | 2.50% | centre of the band read from six carrier documents; equals the 2026 평균공시이율 [REG-R48] | 2.25%–2.75% [S1] [S2] [S5] [S6] [S7] [S8] |
 | 최저보증이율 `min_guar_rate` | 0.75% | stated verbatim in the one full 약관 retrieved [S5] | one observation |
-| Mortality table | ω = 115, e(65) = 23.7 / 27.1 | anchors [S2] [S8]; calibration [REG-R38] [REG-R33] | the two anchors differ by 10%–23% |
+| Mortality table | ω = 115, e(65) = 23.7 / 27.1 | anchors [S2] [S8]; calibration [REG-R38] [REG-R33] | the two anchors differ by up to 24% |
 | Lapse `loglinear` | 10% → 0.1% at 납입완료, 0.8% after | endpoints [REG-R27]; first year from a disclosed pricing envelope [S2] | 연 1%~10% [S2]; 연 0%~13.4% [S8] |
 | Lapse `flat` | 4.0% | inside both disclosed envelopes | as above |
 | Bonus-date lapse spike | +30 pp | 「30% 이상」 required at a bonus date [REG-R27] | one instrument |

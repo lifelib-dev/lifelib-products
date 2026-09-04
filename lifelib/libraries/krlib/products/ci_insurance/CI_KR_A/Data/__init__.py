@@ -54,15 +54,16 @@ decrement files are built on it.
 ``mort_table.csv`` — sex, attained age 15 to ω = 110, ``mort_rate``, ``provenance``.
 The male rates are a Makeham ``mu(y) = A + B c^y`` fitted **exactly** to [S3]'s three
 disclosed male anchors, used to age 60, and log-linear in ``q`` from there to ``q(110) =
-1``; the fitted Makeham slope of 13.7% a year extrapolates to a rate above 1 well before
-100, which is why the old-age shape is a separate **[std]** rule rather than a
-continuation. The female rates are **0.5294 times the male rates at every age**, that
-ratio being [S3]'s own disclosed female-to-male ratio at age 20 — the only usable female
-anchor, because [S3]'s female rates at 40 and 60 extract identical to the male ones and
-are a PDF column-merge artefact expressly marked [unverified]. The construction is known
+1``; extrapolated, that fit reaches a rate of 1 at about attained age 107 and stands a
+third above the shipped ramp by age 100, which is why the old-age shape is a separate
+**[std]** rule rather than a continuation. The female rates are **0.5294 times the male
+rates at every age below** ω, that ratio being [S3]'s own disclosed female-to-male ratio
+at age 20 — the only usable female anchor, because [S3]'s female rates at 40 and 60
+extract identical to the male ones and are a PDF column-merge artefact expressly marked
+[unverified]; at ω both sexes carry the terminal rate of 1. The construction is known
 to **understate** the female advantage: it gives a 15-to-80 death probability ratio of
-0.60 against the 0.50 implied by 국가데이터처's survival to age 80 of 남 64.4% / 여 82.2%
-[REG-R38]. The row-by-row tags say which rows are anchors and which are fill.
+0.560 against the 0.500 implied by 국가데이터처's survival to age 80 of 남 64.4% /
+여 82.2% [REG-R38]. The row-by-row tags say which rows are anchors and which are fill.
 
 ``ci_incidence_table.csv`` — sex, attained age 15 to 100, ``cause``, ``ci_rate``,
 ``provenance``, in long form so that each cause carries its own tag. Five causes:
@@ -81,7 +82,12 @@ to **understate** the female advantage: it gives a 15-to-80 death probability ra
     장기요양상태 on 노인장기요양 1·2등급, nil below 65 and 0.12% at 65 growing 14% a year
     **[std]** — a placeholder for the construction ``LTC_KR_S`` owns, scaled so the 65+
     mean is of the order implied by [REG-R42]'s 154,688 1·2등급 인정자 at an assumed
-    three-year mean duration. The 노인성 질병 route below 65 [REG-R55] is not modelled.
+    three-year mean duration. **This product's own source set retrieved no inception
+    rate; the library's did** — ``LTC_KR_S`` sources a disclosed 요양 1·2등급 발생률 grid
+    at ages 40, 50 and 60 by sex, whose male 1·2등급 rate at 60 is 0.000530, about 2.5%
+    of this model's CI rate there. Holding this limb at nil below 65, and not modelling
+    the 노인성 질병 route below 65 [REG-R55] at all, understates the CI decrement at
+    insured ages by that order.
 
 **These are 예정위험률, not best estimate.** [R1] records the margin regime around them —
 안전할증 on the 기초발생률 capped at 30% in the early 2000s, raised to 50% in 2015 and

@@ -238,7 +238,8 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   full 해약환급금 예시 grids to duration 60 for two variants and both sexes.
 - **What rests on it.** The other half of every **ANCHOR** row of `mort_table.csv` — the male
   age-40 rate of 0.00092 and its age-20/60 and female counterparts, meaned with [S2], the two
-  differing by **10%–23%** at every cell so that they bracket rather than fix a Korean insured
+  differing by **up to 24%** — at five of the six published cells, and not at all at 여 20세,
+  where both print 0.00018 — so that they bracket rather than fix a Korean insured
   mortality level. Also `k = 0.00` on `point_id = 3`, the 무해지 point at which the policy loan
   draws exactly nothing; the wider of the two disclosed lapse envelopes, inside which the
   `loglinear` first-year rate sits; the 2.75% top of the 예정이율 band; and the post-IFRS 17

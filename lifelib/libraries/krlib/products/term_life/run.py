@@ -47,7 +47,7 @@ if len(df) > 12:
     print("... {} further years to t = {}".format(len(df) - 12, proj.proj_len()))
 print()
 print("undiscounted totals: premiums {:,.2f}   claims {:,.2f}   "
-      "expenses+commissions {:,.2f}   net_cf {:+,.2f}".format(
+      "claim exp+expenses+commissions {:,.2f}   net_cf {:+,.2f}".format(
           df["premiums"].sum(),
           (df["claims_death"].sum() + df["claims_acc_death"].sum()
            + df["claims_accel"].sum() + df["claims_maturity"].sum()

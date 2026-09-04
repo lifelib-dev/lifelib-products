@@ -17,7 +17,7 @@ the reference implementation; each [std] table row carries a numbered footnote g
 rationale and, where one exists, the observed range across insurers. Facts the research pass
 could not confirm against a retrieved document are flagged [unverified].
 
-Documents from **eleven** carriers were pursued. **Eight 연금저축보험 contracts** yielded
+Documents from **twelve** carriers were pursued. **Eight 연금저축보험 contracts** yielded
 extractable text and are the basis of this composite: two products of one carrier — a
 direct-channel 무배당 (*mubaedang*, non-participating) contract whose 상품요약서 publishes a
 complete expense, surrender-charge and annuitant-mortality schedule [S1], a tied-channel
@@ -31,9 +31,12 @@ annuity illustration [S5]; a fourth carrier's 약관, the only retrieved contrac
 연금저축보험 with a **non-zero** surrender charge [S7]; and a **non-life** insurer's 약관, the
 cleanest demonstration of what a 손해보험사 may not write [S8]. Three further documents [S9]
 [S10] [S11] serve only as bracketing evidence, and a variable annuity [S10] is cited **only**
-for annuitisation machinery. Nine regulatory-disclosure and comparison pages [S12]–[S20] supply
-declared rates, guarantee ladders and market statistics; two association and supervisory
-portals returned navigation only [S19] [S20] and no parameter rests on them.
+for annuitisation machinery. Seven regulatory-disclosure and comparison pages — [S12] to
+[S16], [S19] and [S20] — supply declared rates, guarantee ladders and market statistics; the
+supervisor's own comparison display returned a four-year-stale quarter [S19] and the life
+association's portal returned its category tree and nothing else [S20], so no parameter rests
+on either. The two 손해보험협회 공시실 displays the research file carries as S17 and S18 are
+cited by no document here and so have no entry in `sources.md`, which records the omission.
 
 The composite is a **무배당, level monthly basic premium, 금리연동형 (interest-sensitive)
 연금저축보험**: 보험나이 (*boheom nai*, insurance age) 40 at issue, 20 years of premiums to 60,
@@ -42,7 +45,7 @@ with a ten-year guarantee. Its two phases — accumulation of a 계약자적립�
 jeongnibaek*, policyholder account value) at the declared rate, then payout — run on one annual
 grid in `Pension_KR_A`. The contract inherits the accumulation half of the [whole life chassis
 (종신보험)](../whole_life/technical-notes.md) — 보험료적립금, 표준해약공제액 (*pyojun haeyak
-gongjeaek*, the statutory cap on the surrender charge) and 해약환급금 (*haeyak hwanreupgeum*,
+gongjeaek*, the statutory cap on the surrender charge) and 해약환급금 (*haeyak hwangeupgeum*,
 surrender value) — and adds four things that chassis does not have: monthly crediting at the
 공시이율 (*gongsi iyul*, declared rate) over a 최저보증이율 (*choejeo bojeung iyul*, guaranteed
 floor); the 세액공제 (*seaek gongje*, tax credit) as a behavioural driver rather than an
@@ -290,7 +293,8 @@ Footnotes to [std] rows:
    composite adopts the **first** schedule in full — the only complete, currently sold,
    2026-vintage schedule retrieved — for three reasons: it is internally consistent with a zero
    surrender charge, which removes an unpublished amortisation pattern from the model; its 0.5%
-   annuity-phase charge reconciles the published certain-annuity factors exactly (footnote 10);
+   annuity-phase charge reconciles the published certain-annuity factors to three or four
+   significant figures (footnote 10);
    and a zero commission rate means the expense schedule is the whole acquisition cost, with no
    unpublished remainder. The cost of the choice is stated openly under *Variations*: the
    composite's early-duration surrender values will look like the direct-channel product's
@@ -617,8 +621,12 @@ Footnotes to [std] rows:
     consequence is not the cash flow but the date — the premium due dates and the annuity date
     shift by the lapsed period, and the 100.1% floor at annuitisation is **withdrawn** where
     the shortfall was caused by a one-instalment reinstatement or a payment holiday [S4] [S6]
-    [S7]. Reinstatement is a switchable module and is off in the base run, so the base
-    projection treats lapse as absorbing and says so.
+    [S7]. Neither 부활 nor 간편부활 is implemented in `Pension_KR_A`: the annual grid has no
+    partial-year state to re-enter from, so **lapse is absorbing** and `lapse_rate` is a
+    net-of-부활 rate by construction, which `technical-notes.md` states as the reason a user
+    substituting a gross experience rate will over-decrement. What the model does keep is the
+    consequence — the deferred annuity date and the withdrawn floor — as model point 9's
+    payment holiday.
 
 ---
 
@@ -782,15 +790,16 @@ the ladder tracks the sale date rather than the carrier [S13] are recorded under
 The **평균공시이율** is a third rate and is not a crediting rate at all. It is defined by
 감독규정 제1-2조제13호 as the average of all insurers' declared rates as the supervisor
 computes it [REG-R9], published to the market through carriers' regulatory disclosure, and
-**2.50% for 2026**, down from 2.75% — the first fall since 2020 [REG-R48] [S14] [S2]. It enters
-this product in four places and each is a constraint rather than a cash flow: the illustration
-rule, which requires the fund to be shown on the lesser of the 평균공시이율 and the carrier's
-own rate alongside two other bases [S2] [S5]; the 별표 14 주6 discount in the surrender-charge
-cap [REG-R20]; the reinstatement interest ceiling of 평균공시이율 + 1% [REG-R25 제27조](#krlib-reg-r25); and
-the 저축성보험 design test of 감독규정 제7-60조제3호, which a whole-life 생존연금 or a
-연금저축보험 may run at **평균공시이율 + 0.25%p** [REG-R16]. In 2026 the carrier's own rate
-(2.15%) is below the average (2.50%), so the middle illustration basis collapses onto the third
-and two of the three published illustrations are numerically identical [S2].
+**2.50% for 2026**, down from 2.75% — the first fall in the series since 2021 [REG-R48] [S14]
+[S2]. It enters this product in four places and each is a constraint rather than a cash flow:
+the illustration rule, which shows the fund on the lesser of the 평균공시이율 and the carrier's
+own rate alongside two other bases [S2] [S5]; the 별표 14 주6 discount in the
+surrender-charge cap [REG-R20]; the reinstatement interest ceiling of 평균공시이율 + 1%
+[REG-R25 제27조](#krlib-reg-r25); and the 저축성보험 design test of 감독규정 제7-60조제3호,
+which a whole-life 생존연금 or a 연금저축보험 may run at **평균공시이율 + 0.25%p** [REG-R16].
+In 2026 the carrier's own rate (2.15%) is below the average (2.50%), so the middle
+illustration basis collapses onto the third and two of the three published illustrations are
+numerically identical [S2].
 
 ### Expenses, 해약공제액 and the statutory cap
 
@@ -927,18 +936,17 @@ At the 연금개시일 the 계약자적립액 is fixed, floored at **100.1% of p
 **확정기간연금형 uses the declared rate alone**: 「연금개시시점의 계약자적립액을 기준으로
 공시이율을 적용하여 산출방법서에 따라 계약자가 선택한 확정된 연금지급기간 동안 나누어 계산」
 [S1] [S2] [S6]. Mortality does not enter it, and neither does survival: the instalments are
-paid to the count whether or not the annuitant lives [S1] [S2] [S4] [S6]. The reconstruction is
-exact:
+paid to the count whether or not the annuitant lives [S1] [S2] [S4] [S6]. The reconstruction:
 
     연금연액 = 계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)
 
-reconstructs the published figures to three significant digits **once the annuity-due is
+recovers the published figures to three or four significant digits **once the annuity-due is
 taken payable monthly rather than annually**, which is what the contract actually pays. On the
 annual factor the same check leaves a residual — 0.995 at 2.15% and 1.003, 1.002, 1.003 at the
 guaranteed rate, uniform but running the other way — and an earlier draft of this document
 recorded the second of those as unexplained. It is not. Writing `ä_n` as the annuity-due
 payable twelve times a year, `(1 − v^n)/d^(12)`, and taking the life form as the annual factor
-less 11/24, this one 0.5% charge reconstructs **eight** published implied factors across **two**
+less 11/24, this one 0.5% charge recovers **eight** published implied factors across **two**
 interest bases: 확정 10/15/20년 at 9.061 / 12.918 / 16.386 against a published 9.06 / 12.92 /
 16.39 at 2.15%, and 9.806 / 14.528 / 19.134 against 9.81 / 14.53 / 19.13 at the 0.5% floor;
 종신 10년보증 남 65 at 23.700 against 23.70, and 31.180 against 31.18. The remaining 1.006 at a
@@ -955,9 +963,13 @@ the life form only. The published illustrations imply the factors directly, on a
 |---|---|---|---|
 | 종신연금형 10년보증 | 월 55만원 | 660만원 | **23.70** |
 | 종신연금형 20년보증 | 월 54만원 | 648만원 | 24.14 |
-| 확정연금형 10년 | 월 143만원 | 1,726.3만원 | 9.06 |
-| 확정연금형 15년 | 월 100만원 | 1,210.9만원 | 12.92 |
-| 확정연금형 20년 | 월 79만원 | 954.7만원 | 16.39 |
+| 확정연금형 10년 | 월 143만원, 총 17,263만원 | 1,726.3만원 | 9.06 |
+| 확정연금형 15년 | 월 100만원, 총 18,164만원 | 1,210.9만원 | 12.92 |
+| 확정연금형 20년 | 월 79만원, 총 19,093만원 | 954.7만원 | 16.39 |
+
+The certain forms are annualised from the published **총 지급액** over the term, not from the
+rounded monthly figure, which is how [S2] presents them; annualising 월 143만원 directly would
+give 1,716만원 and an implied factor of 9.12 rather than 9.06.
 
 and on a fund of ₩123,460,000 at the 0.50% floor, 31.18 and 32.15 for the two life forms and
 9.81 / 14.53 / 19.13 for the three certain forms [S2] `[derived]`.
@@ -1018,10 +1030,10 @@ are extremely light**: a male rate of 0.00164 at exactly 60 and 0.01346 at 80 is
 plausible Korean population level, which is what a table loaded on the *survival* side for a
 longevity product looks like. The implied ageing gradient over 60–80 is about **11.1% a year
 for men and 12.8% for women** on a constant-force fit `[derived]` from [S7]. The public
-population anchor sits well below: 국가데이터처's 2024 완전생명표 gives 기대수명 at birth 남
-80.8 / 여 86.6 and 65세 기대여명 남 19.5 / 여 23.7 [REG-R38], against insured 평균수명 남 86.3
-/ 여 90.7 and 65세 기대여명 남 23.7 / 여 27.1 [REG-R33] — a gap of about **4.2 years for men
-and 3.4 for women at 65**.
+population anchor sits well below: 국가데이터처's 「2024년 생명표 작성 결과」 gives 기대수명 at
+birth 남 80.8 / 여 86.6 and 65세 기대여명 남 19.5 / 여 23.7 [REG-R38], against insured 평균수명
+남 86.3 / 여 90.7 and 65세 기대여명 남 23.7 / 여 27.1 [REG-R33] — a gap of about **4.2 years
+for men and 3.4 for women at 65**.
 
 Three modelling instructions follow, and they are stated here rather than left to the notes
 because they are product facts. **The annuitant table cannot be shared with `WholeLife_KR_A`**:
@@ -1299,8 +1311,8 @@ cover — from 보장성특약. On a 연금저축보험 almost every rider is of
 - **납입유예 / 납입일시중지** — an optional module, off in the base run; when on, it defers the
   premium dates and the annuity date, keeps the charges running against the fund, and
   **withdraws the 100.1% guarantee** (footnote 14) [S5] [S7] [S8] [S4] [S6].
-- **부활 and 간편부활** — an optional module, off in the base run; when on, lapse is not
-  absorbing (footnote 23) [REG-R25 제27조](#krlib-reg-r25) [S1] [S5] [S7] [S8].
+- **The 계약자배당 machinery** — retained and set to zero on the 무배당 composite, and moved
+  from 3% to 4% in 별표 14 by the `par` flag (footnotes 1 and 16) [S2] [S7] [REG-R20].
 
 **Out of scope, each for a stated reason:**
 
@@ -1316,8 +1328,12 @@ cover — from 보장성특약. On a 연금저축보험 almost every rider is of
 - **계약이전 / 계좌이체** [S1] — a wrapper-level movement, not an insurer cash flow beyond the
   transfer fee; its existence is carried into the lapse rationale instead.
 - **납입면제 (premium waiver)**, absent from every retrieved product's terms (footnote 22)
-  [S5]; and **계약자배당**, since the composite is 무배당 and the participating variant's
-  machinery is zero in every run (footnote 1) [S2] [S7].
+  [S5].
+- **부활 and 간편부활** — real, common and specific to this product family, but **not
+  implemented**: on an annual grid a premium unpaid at `t` terminates the contract at `t` and
+  there is no partial-year 납입최고 state to re-enter from, so lapse is absorbing and the lapse
+  vector is net-of-부활 by construction (footnote 23) [REG-R25 제27조](#krlib-reg-r25) [S1] [S5]
+  [S7] [S8].
 - **청약철회, 품질보증해지 and 고지의무** — pre-inception and rescission machinery, scoped out
   explicitly; the model begins where cover is in force [REG-R25] [REG-R51].
 - **이연퇴직소득** — retirement money rolled into a pension account changes the five-year test
@@ -1349,7 +1365,7 @@ cover — from 보장성특약. On a 연금저축보험 almost every rider is of
    year [S1] [S2].
 3. **Annuity-phase charge.** 0.5% of the 연금연액 at two carriers [S1] [S7]; none disclosed
    at a third, whose implied factors run 0.6% the *other* way [S5] `[derived]`. Composite:
-   0.5%, the only version that reconstructs published figures exactly (footnote 10).
+   0.5%, the only version that recovers the published figures at all (footnote 10).
 4. **Annuity-form menu.** Life-annuity guarantee periods run from **20 years only** at the
    postal insurer [S7] through 10/20 [S1] [S2], 10/20/30 [S6], 10/20/100세 [S4] and
    10/20/30/100세 [S9] [S11] to **none at all** on the non-life form [S8]. Certain terms run
@@ -1461,8 +1477,8 @@ weight **α capped at 60%** and held constant through the business year [REG-R18
 That cap is why Korean declared rates move sluggishly against government-bond yields and why
 `krlib` models the crediting rate as a slow-moving `[std]` scalar rather than as a function of
 a curve. The **평균공시이율** is defined at 감독규정 제1-2조제13호 and computed by the
-supervisor; it is **2.50% for 2026**, down from 2.75%, the first fall since 2020 [REG-R9]
-[REG-R48].
+supervisor; it is **2.50% for 2026**, down from 2.75%, the first fall in the series since 2021
+[REG-R9] [REG-R48].
 
 **Contract law and conduct.** 보험업법 supervises the undertaking; **상법 제4편 보험** governs
 the contract and is **one-way mandatory** — 제663조 forbids any agreement varying the Part to
@@ -1500,16 +1516,21 @@ state [S2] [S6] [S11] and what the 2024 and 2016 documents, still quoting ₩50,
 
 **Actuarial provenance, stated once.** 보험개발원 holds the statutory office of
 보험요율산출기관 under 보험업법 제176조 and files 참조순보험요율 with the supervisor; there is
-no publication obligation and the retrieved 보도자료 listing carries no 경험생명표,
-참조순보험요율 or 보험통계 item [REG-R4] [REG-R34] [R16] [R17]. The 제10회 경험생명표, applied
-to new business from 2024-04, is public only as summary statistics [REG-R33] [R18]. **No qx
+no publication obligation and the retrieved 보도자료 listing carries no 경험생명표 or life-side
+참조순보험요율 item [REG-R4] [REG-R34] [R16] [R17]. That is a finding about that channel and
+about the life side, not about the bureau, which publishes a dated 장기손해보험 참조순보험요율
+display on another page of the same site — which is why morbidity elsewhere in `krlib` can be
+sourced where this product's mortality cannot [REG-R34]. The 제10회 경험생명표, applied to new
+business from 2024-04, is public only as summary statistics [REG-R33] [R18]. **No qx
 table of any Korean industry basis was retrieved in either research pass.** `Pension_KR_A`'s
 `mort_table.csv` is therefore a **[std]** construction on the annuitant basis, carrying a
-`provenance` column on every row, anchored on the public 국가데이터처 완전생명표 [REG-R38]
-[REG-R39], the two published 경험생명표 summary statistics [REG-R33], and the six
-carrier-published annuitant rates above [S1] [S7]; and it is calibrated so that the implied
-factor for a 65-year-old male at 2.15% with a ten-year guarantee reproduces the **23.70** the
-published illustrations imply [S2] `[derived]`. **It is never presented as the 경험생명표.**
+`provenance` column on every row. It is fitted to the six carrier-published annuitant rates
+above [S1] [S7] and calibrated so that the implied factor for a 65-year-old male at 2.15% with
+a ten-year guarantee reproduces the **23.70** the published illustrations imply [S2]
+`[derived]`. The two published 경험생명표 summary statistics [REG-R33] and the 국가데이터처
+population figures [REG-R38] are the public series it is **compared against** and not inputs to
+it — the single-year 완전생명표 qx tables [REG-R39] were not downloaded in either research pass
+and nothing here rests on them. **It is never presented as the 경험생명표.**
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #krlib-pension_savings-r1

@@ -243,7 +243,7 @@ commencement to 0.040 by policy year 7.
 revenue-neutrality constraint — 「상대도 적용 전·후의 총 보험료 수준이 일치하도록」 [S1] —
 so `reld_solved(y) = (1 − Σ_{b≥2} w_b r_b) / w_1`. The shape table is calibrated so that at
 the anchor cell's first-year claim level the band mix reproduces the published commencement
-distribution 72.9 / 25.3 / 0.8 / 0.7 / 0.3 [R3] [R12] exactly, which makes the solved
+distribution 72.9 / 25.3 / 0.8 / 0.7 / 0.3 [R12] exactly, which makes the solved
 discount come out at **0.957477 — the specification's 0.9575, a 4.25% discount** — as a
 *result* rather than as an input. Hard-coding the illustration's 0.95 instead gives
 `reld_avg = 0.9945494`, a 0.55% leak out of a scheme the wording requires be self-financing,
@@ -488,9 +488,11 @@ the 건강보험심사평가원 price survey found 도수치료 quoted anywhere 
 *shape*: `shape_rel(k)` divides each bucket by `shape_mean() = 53,530.7924`, so the same
 distribution serves every model point and year and only the **level** comes from the model.
 Bucket 0 carries the 72.9% no-claim mass, the six small buckets take their dispersion from
-the published claim-size distribution of 4세대 claimants below ₩1,000,000 [R12], and the
-three tail buckets sit inside the surcharge bands at the published 0.8 / 0.7 / 0.3 shares
-[R3]. `check_claim_shape()` asserts both normalisations — `Σ share = 1` and
+the **six lowest bands** of the published 4세대 claim-size distribution [R12] — those bands'
+shares normalised, and their midpoints scaled by a single factor onto the sub-₩1,000,000
+range 2단계 occupies — and the three tail buckets sit inside the surcharge bands at the
+published 0.8 / 0.7 / 0.3 shares [R12]. `check_claim_shape()` asserts both
+normalisations — `Σ share = 1` and
 `Σ share × rel = 1` — because a shape that does not integrate to its own mean makes
 `reld_solved()` divide by the wrong denominator.
 
@@ -547,7 +549,7 @@ there is an analogue: `pols_*` for counts, plural nouns for cash flows, `*_rate`
 
 ### The notes' symbols, and where they live
 
-`model.Projection.doc` carries the full 70-row table; the load-bearing rows are these.
+`model.Projection.doc` carries the full 80-row table; the load-bearing rows are these.
 
 | Notes symbol | Cells | Meaning |
 |---|---|---|
@@ -577,7 +579,10 @@ claim of `y − 1`, so no caller has to remember the offset.
 
 ### Names this product argued for in krlib's cross-model review
 
-Three, all now in the shared `RETIRED_NAMES` register so no krlib model reintroduces them.
+Three. Two of them retired a rival name into the shared `RETIRED_NAMES` register, so no
+krlib model reintroduces it; the third is a structural argument about which limb a claim
+belongs to and has no retired counterpart, though the `claims` subtotal column it depends
+on being absent is in `RETIRED_COLUMNS`.
 
 - **`renewal_decline_rate`, not `renew_rate`.** The proportion who *decline* a 갱신 is a
   decrement, and the shorter name read as its complement to half the models that tried it.
@@ -613,7 +618,7 @@ bound nothing at all — which is said rather than papered over.
 | inpatient share of the 비급여 claim | 0.30 | needed to close the 비급여 solve, one admission driving both halves of the claim | none published |
 | utilisation **shape** | NHIS coverage ratios by age band | age curves and sex factors follow the public coverage-ratio profile [R9] [REG-R41]; no maternity bump, pregnancy being excluded from cover [S1] | the 질병입원율 grid of [REG-R61] is an external anchor for the **slope** and is deliberately not used for the level |
 | severity distributions | eight discrete grids | a kinked deductible makes `E[f(X)] ≠ f(E[X])`; a mean overstates the 비급여 통원 claim by 35.83% | the dispersion is real and published — 도수치료 ₩5,000 to ₩600,000 across Seoul hospitals [R2] |
-| claim-shape zero mass | 0.729012, held constant | the shape trends its amounts and not its frequency; a stated limitation, since claiming frequency rises with age too | the 72.9% commencement share is sourced [R12] [R3]; nothing published gives its trend |
+| claim-shape zero mass | 0.729012, held constant | the shape trends its amounts and not its frequency; a stated limitation, since claiming frequency rises with age too | the 72.9% commencement share is sourced [R12]; the FSC's own commencement mix [R3] resolves only three bands and puts 1등급 at 62.1%; nothing published gives the trend of either |
 | `physio_cont_prob` | 0.60 | the ten-act clinical re-assessment gate is the only benefit in `krlib` conditioned on a clinical review [S1] [R2] | **none published**; nothing bounds it |
 | `inject_carve_share` | 0.25 | the 항암제·항생제·희귀의약품 share leaving the ₩2,500,000 sub-limit [S1 특별약관 제3조(3)제2항] | none published; non-covered injections were 18.5% of all 2024 claims [R8], so the boundary is first-order |
 | `share_injury` | 0.15 | splits the claim between 상해 and 질병 so each can be capped at its own ₩50,000,000 limit [S1 제5조] | none published; binds nowhere on the shipped points |

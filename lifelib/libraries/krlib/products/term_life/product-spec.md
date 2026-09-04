@@ -94,7 +94,7 @@ and only two carriers sell a renewable term at all; nine of the nineteen retail 
 sold through the CM (online) channel — a far higher direct share than the Korean life market
 as a whole [S4]. The retail twenty-year market clears in a narrow band. On the disclosure's
 prescribed basis — male, 보험나이 40, 20-year term, 전기납 (*jeongi-nap*, whole-term pay),
-월납 (monthly), ₩100,000,000 (1억원) of cover [S5] — eight carriers price a male life
+월납 (monthly), ₩100,000,000 (1억원) of cover [S5] — seven carriers price a male life
 between **₩14,400 and ₩18,400 a month**, a spread of 28% [S4]. Face-to-face products sit
 40–90% above that band and simplified-issue products above again, so **the channel, not the
 carrier, is the first-order price driver**, a reading the published 보험가격지수 (*boheom
@@ -149,8 +149,12 @@ The representative product is a composite: a 무배당 (*mubaedang*, non-partici
 written 비갱신형 on a 전기납 basis, with 갱신형 as a first-class variant the model must be
 able to represent. The anchor cell is the one cell that is doubly prescribed in Korea — it
 is both the 감독규정's **기준연령 요건** [REG-R9] and the disclosure's **대표계약** basis
-[S5] — so its premium is published by fifteen carriers on identical terms and the model
-point built on it can be checked against the market rather than asserted.
+[S5] — so its premium is quoted on one prescribed basis right across the disclosure and
+the model point built on it can be checked against the market rather than asserted. The
+comparison is genuinely like-for-like only for the carriers that actually write a 20-year
+term: the 경영인 rows are 90세만기 전기납 contracts and two retail rows are 80세만기 ones,
+so those rows cannot be on the prescribed basis however the disclosure presents them [S4]
+[S18].
 
 ### Product identity and issue rules
 
@@ -281,20 +285,22 @@ Footnotes to **[std]** rows:
 | 갱신형 premium path (male 40, ₩100m, 10-year cycles) | ₩9,000 → ₩21,000 (50) → ₩56,000 (60) → ₩201,000 (70); index 1.00 / 2.33 / 6.22 / 22.33 | [S7] |
 
 10. **Frequency.** Monthly is available at every carrier retrieved and is the only frequency
-    at seven of them [S1] [S6] [S8] [S9] [S12] [S17] [S18]; one adds 연납 [S15], one adds
-    3개월납·6개월납·연납 [S11], one adds 연납 and 일시납 [S14] [S10]. It is also the
-    disclosure basis [S5] and half of the 기준연령 요건 [REG-R9]. `Term_KR_A` runs on an
+    on seven of the retrieved products, from five carriers [S1] [S6] [S8] [S9] [S12] [S17]
+    [S18]; one adds 연납 [S15], one adds 3개월납·6개월납·연납 [S11], one adds 연납 and
+    일시납 [S14] [S10]. It is also the disclosure basis [S5] and half of the 기준연령 요건
+    [REG-R9]. `Term_KR_A` runs on an
     **annual grid**, so the monthly office premium is annualized by a factor of twelve with
     no discount for the timing difference. That is a **[std]** simplification and it is
-    conservative in the insurer's favour by roughly half a year's interest on half a
-    premium; the technical notes quantify it.
+    conservative in the insurer's favour by **half a year's interest on the whole
+    premium** — 1.136% of a year's premium at the 적용이율, the mean deferral of the twelve
+    payments being 5.5/12 of a year; the technical notes derive it.
 11. **The policy fee gap.** Unlike `jplib`'s オリックス生命 grid, from which a flat ¥248
     monthly policy element could be extracted exactly because the card varies the sum
     assured, **every Korean grid retrieved fixes the sum assured and varies age, sex, rate
     class or product form instead**. The per-mille rate and any per-policy fee therefore
     cannot be separated, and the composite prices proportionally to the sum assured and says
     so. One consequence is visible in the data and is worth recording: female premiums run
-    at 52–58% of male at the direct writers on the same cell, and at 70–90% at the
+    at 52–56% of male at the direct writers on the same cell, and at 70–90% at the
     face-to-face and simplified-issue carriers [S4] — which is what a flat per-policy expense
     loading does to a small risk premium, and is indirect evidence that the fee exists.
 12. **적용이율.** Observed 1.75% [S4] to **4.00%** [S4], with a retail mode of **2.50%** at
@@ -1138,8 +1144,8 @@ list of alternatives to lapse than any other library in this repository carries.
 **The 정기특약 — a term rider on a 종신보험 — is a live question this document leaves open.**
 The structure is a standard part of the Korean traditional-agency proposition in secondary
 material, including a rule that 「무배당 정기특약의 경우 보장내용이 동일한 특약에 대하여
-갱신형과 비갱신형을 함께 부가할 수 없습니다」 [unverified — a search snippet whose source
-page could not be retrieved, and whose intended primary source returned HTTP 404 [S23]].
+갱신형과 비갱신형을 함께 부가할 수 없습니다」 — [unverified], a search snippet whose source
+page could not be retrieved and whose intended primary source returned HTTP 404 [S23].
 **Four current whole-life documents were checked as negative evidence and none carries a term
 rider**: two 한화생명 products, one AIA product and the 종신보험 view of the comparative
 disclosure across two pages, in which the substring 정기 appears only in the page's own
@@ -1366,22 +1372,25 @@ policyholders are not protected at all**, which bears directly on the 경영인�
 deduction**: 소득세법 제59조의4제1항 gives 12% of the premium — 15% for a
 장애인전용보장성보험 — with each basket capped at **₩1,000,000 a year**, so the maximum
 annual benefit on an ordinary 정기보험 is **₩120,000** and on a 장애인전용 policy
-**₩150,000** [REG-R57] [R8]. At the anchor cell the annual premium of ₩180,960 exceeds the
-cap, so **the credit is capped at the anchor and the marginal premium carries no relief** —
-the opposite of the Japanese position, where the anchor premium is deductible in full and the
-relief is immaterial. The 장애인전용보험전환특약 present at every carrier exists precisely to
-move a policy into the 15% basket [S1] [S10] [S11] [S12] [S17]. The qualifying test —
-maturity value not exceeding premiums paid — is the **same economic test** 감독규정
-제1-2조제3호 uses to define a 보장성보험, so tax law and supervisory law draw the line in the
-same place [REG-R9] [REG-R57]. Death-benefit taxation turns on the 계약자 / 피보험자 / 수익자
-triangle: 상속세 및 증여세법 제8조제1항 treats a benefit received on the deceased's death
-under a policy **of which the deceased was the 계약자** as estate property, 제8조제2항 extends
-that to a policy the deceased in substance paid for, and 제34조 makes a benefit attributable
-to another's premiums a **gift** to the beneficiary [REG-R59]. **No Korean carrier document
-in this set addresses that triangle**, unlike the Japanese carrier booklet `jplib` cites, and
-no 국세청 page was retrieved; the treatment above rests on the statute alone and no numeric
-rate or threshold is asserted. `krlib` models contractual cash flows and not the
-policyholder's tax position.
+**₩150,000** [REG-R57] [R8]. The cap is on the **premium**, not on the credit, and the anchor
+cell's annual premium of ₩180,960 is **18% of it**, so the whole premium attracts relief and
+the credit is 12% of it — **₩21,715 a year**. The basket binds only where a policyholder's
+보장성 premiums across every such policy together exceed ₩1,000,000. The structural
+difference from Japan is therefore the *form* of the relief rather than its reach: a Korean
+세액공제 is a flat 12% credit on the premium, where the Japanese 生命保険料控除 is a deduction
+whose value depends on the marginal rate. The 장애인전용보험전환특약 present at every carrier
+exists precisely to move a policy into the 15% basket [S1] [S10] [S11] [S12] [S17]. The
+qualifying test — maturity value not exceeding premiums paid — is the **same economic test**
+감독규정 제1-2조제3호 uses to define a 보장성보험, so tax law and supervisory law draw the line
+in the same place [REG-R9] [REG-R57]. Death-benefit taxation turns on the 계약자 / 피보험자
+/ 수익자 triangle: 상속세 및 증여세법 제8조제1항 treats a benefit received on the deceased's
+death under a policy **of which the deceased was the 계약자** as estate property, 제8조제2항
+extends that to a policy the deceased in substance paid for, and 제34조 makes a benefit
+attributable to another's premiums a **gift** to the beneficiary [REG-R59]. **No Korean
+carrier document in this set addresses that triangle**, unlike the Japanese carrier booklet
+`jplib` cites, and no 국세청 page was retrieved; the treatment above rests on the statute
+alone and no numeric rate or threshold is asserted. `krlib` models contractual cash flows
+and not the policyholder's tax position.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R1]: #krlib-term_life-r1

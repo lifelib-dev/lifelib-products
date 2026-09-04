@@ -260,9 +260,10 @@ def model_point():
 def sex():
     """The sex of the insured, M or F; the two are rated and tabulated separately.
 
-    The female premium runs 87%-91% of the male at 보험나이 40 on the three published
-    grids, and the female issue-age ceiling is 3 to 8 years higher at the same payment
-    term everywhere it is stated.
+    The female premium runs 84%-91% of the male at 보험나이 40 across the three published
+    grids — 87%-91% on their 평준형 rows, down to 84% on the 체감형 and 2종 ones — and the
+    female issue-age ceiling is 3 to 8 years higher at the same payment term everywhere it
+    is stated.
     """
     v = model_point()["sex"]
     if v not in ("M", "F"):
@@ -340,10 +341,12 @@ def premium_pp():
     [S4] — and the annual figure is 12 times it **[std]**, no carrier in the set publishing
     an annual-mode scale, so the modal discount a real 연납 rate would carry is not applied
     and the annual premium is slightly overstated.  The anchor's own premium is that figure
-    times the **90.0%** ratio a carrier publishes for a 50% suppression at one identical
-    cell [S1].  On the other points it is a **[std]** loading of
-    :func:`prem_net_level_pp`; :func:`prem_gross_calc_pp` reproduces the rule and the fit
-    against the sourced cell is reported in the technical notes.
+    times **0.900 [std]**, a rounding of the 89.9% one carrier publishes for a 50%
+    suppression at its own cell — 남 40세, 5,000만원, 10년납, not this one [S1].  Points 3
+    and 6 are built the same way, 6 being the anchor with the loan module on; the other
+    six are a **[std]** loading of :func:`prem_net_level_pp` rounded to the won.
+    :func:`prem_gross_calc_pp` reproduces the rule and the fit against the sourced cell is
+    reported in the technical notes.
 
     Note that the published figure is already **net of the 1.5% 고액계약할인**, which bites
     at the anchor because 1억원 is well above the 3,000만원 threshold [S1]; a model applying
@@ -355,13 +358,14 @@ def premium_pp():
 def prem_susp_ratio():
     """The ratio of this form's premium to the 표준형's — the price of the suppression.
 
-    1.000 표준형; **0.900** at ``k = 0.50``, the 처브라이프 observation at that exact factor
-    [S1]; **0.815** at ``k = 0.30``, the DB생명 1종 observation [S4]; and **0.780** at
-    ``k = 0.00`` **[std]**, extrapolating the observed relation below the deepest sold
-    design in the set.  The observed range across real products is 81.5%-95.4%, deepest
-    discount at deepest suppression.  The FSC's own illustration of a post-2020 design shows
-    62.2% [REG-R28], much larger than any sold product, and is best read as an illustration
-    of returning the whole give-up as premium rather than as a market observation.
+    1.000 표준형; **0.900** at ``k = 0.50`` **[std]**, a rounding of the 89.9% 처브라이프
+    observation at that suppression factor [S1]; **0.815** at ``k = 0.30``, the DB생명 1종
+    observation [S4]; and **0.780** at ``k = 0.00`` **[std]**, extrapolating the observed
+    relation below the deepest sold design in the set.  The observed range across real
+    products is 81.5%-95.4%, deepest discount at deepest suppression.  The FSC's own
+    illustration of a post-2020 design shows 62.2% [REG-R28], much larger than any sold
+    product, and is best read as an illustration of returning the whole give-up as premium
+    rather than as a market observation.
     """
     return float(model_point()["prem_susp_ratio"])
 
@@ -440,7 +444,8 @@ def mort_be_factor():
     best estimate**.  The shipped table is calibrated toward the insured level implied by
     the 제10회 경험생명표 summary statistics, and no retrieved source sizes the margin a
     Korean carrier's 적용위험률 carries against its own experience — the two disclosed grids
-    differ from each other by 10%-23% at every age and sex [S2] [S8], which brackets the
+    differ from each other by up to 24% [S2] [S8] - 18%-24% at five of the six published
+    cells and not at all at female 20 - which brackets the
     level rather than fixing it.  A production basis would move claims proportionately.
     """
     return float(model_point()["mort_be_factor"])
@@ -791,7 +796,10 @@ def comm_init_pp():
     one-year surrender value added to the commission side where the contract deducts 80% or
     more of the 표준해약공제액, which is exactly what a 무해지 or 저해지 design does
     [REG-R22] [REG-R29].  The cap binds on the long-payment-term points, where the premium
-    is small against a cap computed on a 20년납 footing.
+    is small against a cap computed on a 20년납 footing — on ``point_id = 4`` it is the
+    binding constraint.  The **surrender-value addition is not applied here [std]**:
+    ``cv_pp(1)`` is zero on eight of the ten shipped points, and on the two where it is not
+    the sum still comes to about half the cap, so carrying it would change no shipped number.
     """
     return min(comm_init_share * acq_cost_pp(),                      # noqa: F821
                comm_cap_rate * premium_pp())                         # noqa: F821

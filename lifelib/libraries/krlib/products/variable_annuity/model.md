@@ -504,7 +504,7 @@ are all present and mean what they mean everywhere else in the repository.
 
 ### The notes' symbols, and where they live
 
-`Projection.doc` carries the full 60-row mapping from the technical notes' symbols to the
+`Projection.doc` carries the full 95-row mapping from the technical notes' symbols to the
 cells names, which is the most useful thing in the file for a reader holding the notes
 beside the model. The rows that matter most:
 
@@ -553,7 +553,7 @@ of them bound nothing at all — which is said rather than papered over.
 | pricing lag | none | the two-business-day lag on every 펀드변경, 중도인출 and 해지 [S5] [S7 제39조] [S7 제50조제2항] falls inside a month and is dropped with it | two business days, universal across the retrieved set |
 | 운용보수 timing | rate / 12 monthly | contractually rate / 365 daily inside the 기준가격 [S7 제43조제2호]; taken monthly with the rest of the stack | none; the discretization gain is small and one-directional on a rising path |
 | `omega_age` | 120 | a 종신연금형 has no maturity, so the horizon is the mortality table's terminal age | none published; the 제10회 경험생명표 terminal age is not disclosed [REG-R34] |
-| mortality construction | Makeham `A + B c^(x-65)`, `A = 0.0002`, `c = 1.10`, `B` solved to the published 기대여명 | the 제10회 경험생명표 is not published [REG-R33] [REG-R34] and the 참조순보험요율 display does not reach the life side [REG-R61] | check: implied `e(40)` 46.5 M / 50.4 F against the population 41.9 / 47.4 [REG-R38]; single-year qx not fetchable [REG-R39] |
+| mortality construction | Makeham `A + B c^(x-65)`, `A = 0.0002`, `c = 1.10`, `B` = 0.007040013548 (M) / 0.004803209921 (F), solved to the published 기대여명 | the 제10회 경험생명표 is not published [REG-R33] [REG-R34] and the 참조순보험요율 display does not reach the life side [REG-R61] | check: implied `e(40)` 46.4 M / 50.3 F against the population 41.9 / 47.4 [REG-R38]; single-year qx not fetchable [REG-R39] |
 | 보험사망률 loading | `mu / 0.80` | Korea prices annuities on a separate and lighter table; the 25% loading on the force is the standardization, not the two-table structure | none published for either basis |
 | lapse shape | 28/22/17/14/12/10/9/8% | monotone run-down to an ultimate starting where the 해약공제 runs off; the **level** is calibrated to a 7-year persistency below 30% [R1] | nothing published: no Korean carrier discloses a 변액연금 적용해지율 [S12] |
 | lapse dynamics | none | [R1] states the 동적해지율 convention and publishes no functional form and no parameter | none; the bias is one-way — guarantee cost understated |

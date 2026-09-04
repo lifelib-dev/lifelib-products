@@ -310,9 +310,12 @@ negative result that fixes the whole model's basis boundary [R20].
   is `reld_start_year = 4`. It gives the five bands with the **−5% (잠정)** discount factor —
   the lower half of the range behind `reld_disc_cap` — and the +100% / +200% / +300%
   surcharges; the exemptions (산정특례대상질환; 장기요양 1·2등급 판정자) behind
-  `reld_exempt_share`; and the **band distribution at commencement, 72.9 / 25.3 / 0.8 / 0.7 /
-  0.3**, which is the target `claim_shape_table.csv` is calibrated to reproduce and therefore
-  what makes `reld_solved(2) = 0.957477` a solved result rather than an input.
+  `reld_exempt_share`; and a **band distribution at commencement, 1등급 62.1 / 2등급 36.6 /
+  3등급 1.3**. That is *not* the distribution `claim_shape_table.csv` is calibrated to: the
+  five-band set 72.9 / 25.3 / 0.8 / 0.7 / 0.3 is [R12]'s, attributed there to a 금융감독원
+  release of 2024-01-19, and the two published sets disagree. This entry is cited beside
+  [R12] wherever the sensitivity matters, because on this release's own three-band mix the
+  same neutrality identity gives `r₁ = 0.9791` — a 2.1% discount against [R12]'s 4.25%.
 
 (krlib-indemnity_medical-r4)=
 

@@ -164,12 +164,12 @@ CUM_ANNUITY_20 = 98007125.57           # below the premium at the end of row 20
 CUM_ANNUITY_21 = 101922278.93          # above it at the end of row 21
 
 # The readings of the factor the notes take, and the reconciliation to a 연금월액.
-GROSS_FACTOR = 20.2100                 # P / A, against published 23.81 and 23.15 at 55
+GROSS_FACTOR = 20.2100                 # P / A; the published 23.81 and 23.15 are at 55
 GROSS_PREMIUM_ANNUITY = 5127501.72     # P / ä, had the gross premium been converted
 LOAD_FROM_THE_INCOME_SIDE = 0.0362694  # 3.63%: the 3.50% load grossed up by itself
 FACTOR_NO_GUARANTEE = 19.309113
 ANNUITY_NO_GUARANTEE = 4997640.34
-GUARANTEE_COST = 0.009925              # 1.00% of income, for ten guaranteed years
+GUARANTEE_COST = 0.009925              # 0.99% of income, for ten guaranteed years
 E60_COMPLETE = 28.1914                 # complete e(60) on the shipped table
 I_TWELVE = 0.024718035238              # i^(12) at 2.50%
 I_OVER_I_TWELVE = 1.0114072482
@@ -268,7 +268,7 @@ FLOOR_MONTHLY = (80633.56, 39724.30)
 A_10_AT_250 = 8.752063930971
 CERTAIN_ANNUITY = 10858010.2647236791
 CERTAIN_MONTHLY_NAIVE = 904834.19
-CERTAIN_MONTHLY_TRUE = 894628.93        # against 교보's published 90만원 on 2.52%
+CERTAIN_MONTHLY_TRUE = 894628.93        # -0.60% against 교보's published 90만원 (2.52%)
 CERTAIN_LAST_INSTALMENT = 9052841.76    # 9.1% of the annuity total: pitfall 4's cost
 CERTAIN_TOTALS = {
     "annuity_payments": 99311267.03,
@@ -373,15 +373,17 @@ def test_worked_example_annuity_factor_decomposition(kr_immediate_anchor):
 
 
 def test_worked_example_the_three_readings_of_the_factor(kr_immediate_anchor):
-    """The gross factor of 20.2100, the 3.63% load and the 1.00% the guarantee costs.
+    """The gross factor of 20.2100, the 3.63% load and the 0.99% the guarantee costs.
 
     Three sanity checks the notes take on a number that cannot be compared with a published
     one, no carrier publishing an annuity factor.  The premium divided by the annual annuity
-    sits where a 남자 60 cell should, against implied factors of 23.81 and 23.15 at 55;
-    converting the **gross** premium rather than the fund would raise the annuity by 3.63%,
-    the 3.50% load grossed up by itself; and the same fund with no 보증지급기간 at all buys
-    ₩4,997,640.34 instead of ₩4,948,039.16, so ten guaranteed years cost **1.00% of income**
-    — the quantitative reason 97.3% of life-shape buyers take them.  Ten years also sits far
+    is 20.2100 against implied factors of 23.81 and 23.15 at 55 — not comparable as they
+    stand, and the notes run the model onto 교보's own cell rather than waving at the age
+    difference; converting the **gross** premium rather than the fund would raise the
+    annuity by 3.63%, the 3.50% load grossed up by itself; and the same fund with no
+    보증지급기간 at all buys ₩4,997,640.34 instead of ₩4,948,039.16, so ten guaranteed years
+    cost **0.99% of income** — the quantitative reason 97.3% of life-shape buyers take
+    them.  Ten years also sits far
     inside the complete ``e(60)`` of 28.1914 on the shipped table, the 소득세법 시행령
     제25조제4항제3호 test a tax-exempt 종신형 must clear.
     """
@@ -712,15 +714,18 @@ def test_worked_example_the_obligation_years_decompose(kr_immediate_anchor):
 
 
 def test_worked_example_the_expense_total_and_the_break_even(kr_immediate_anchor):
-    """₩2,605,280.47 = ₩1,500,000 + ₩1,105,280.47, and break-even at the 21st instalment.
+    """₩2,605,280.47 = ₩1,500,000 + ₩1,105,280.47, and break-even at the 22nd instalment.
 
     The second expense term is exactly 0.0080 × the annuity total, because the
     연금수령기간 중 비용 is measured on the 연금연액 and carried at the payment's own weight
     rather than per policy in force, and **no other expense exists in this projection** —
     there is no maintenance expense and no inflation, the only recurring charge any retrieved
-    즉시연금 document publishes being this one.  The cumulative payments cross the premium
-    between rows 20 and 21, at attained age 81: the number a Korean buyer's own arithmetic
-    produces, and the reason the shape is understood as a longevity hedge.
+    즉시연금 document publishes being this one.  The expected cumulative payments cross the
+    premium between rows 20 and 21, and row 21 pays at time 22, so the break-even is the
+    **22nd** instalment at attained age 82.  On the nominal annuity, ignoring the survival
+    weight, the gross factor of 20.2100 puts it one instalment earlier, at the 21st and
+    attained age 81 — the number a Korean buyer's own arithmetic produces, and the reason
+    the shape is understood as a longevity hedge.
     """
     a = kr_immediate_anchor
     df = a.result_cf()
@@ -736,7 +741,11 @@ def test_worked_example_the_expense_total_and_the_break_even(kr_immediate_anchor
     cum21 = sum(a.annuity_payments(t) for t in range(0, 22))
     assert cum20 == pytest.approx(CUM_ANNUITY_20, abs=WON)
     assert cum21 == pytest.approx(CUM_ANNUITY_21, abs=WON)
-    assert cum20 < a.prem_pp() < cum21 and a.age(21) == 81
+    assert cum20 < a.prem_pp() < cum21
+    # Row 21 pays at time 22: the crossing instalment is the 22nd, at attained age 82.
+    assert a.age(22) == 82
+    # The buyer's own nominal arithmetic puts it one instalment earlier, at age 81.
+    assert 20.0 < a.prem_pp() / a.annuity_pp(0) < 21.0 and a.age(21) == 81
 
 
 def test_worked_example_reading_the_shape_of_the_result(kr_immediate_anchor):
@@ -974,8 +983,10 @@ def test_the_floor_stepping_hand_trace_across_the_first_step(immediate_annuity):
 def test_the_certain_shape_load_cross_check(immediate_annuity):
     """A(0) = V(0)/a(10, 2.5%) = ₩10,858,010.26, i.e. ₩894,628.93 a month adjusted.
 
-    Against 교보's published 90만원 on a 2.52% basis — the −0.5% of ``product-spec.md``'s own
-    cross-check table, reproduced by the model rather than by a spreadsheet.  **The
+    Against 교보's published 90만원 on a 2.52% basis that is **−0.60%** at this model's
+    2.50%; ``product-spec.md``'s own cross-check table puts the same cell at −0.5% because
+    it solves the identity on 교보's 2.52%, and the 0.10-point gap between the two is those
+    0.02 points of declared rate.  **The
     annuitant's age and sex are irrelevant to a 확정기간연금형**, so a 남자 55 published
     figure is directly comparable with the model's 남자 60 one, and because this shape
     carries no mortality in its annuity it is the sharpest available test of the expense
@@ -994,10 +1005,9 @@ def test_the_certain_shape_load_cross_check(immediate_annuity):
     assert p.annuity_pp(0) / 12.0 == pytest.approx(CERTAIN_MONTHLY_NAIVE, abs=WON)
     assert _true_monthly(p.annuity_pp(0)) == pytest.approx(CERTAIN_MONTHLY_TRUE, abs=WON)
     assert round(_true_monthly(p.annuity_pp(0)) / 10000.0, 1) == 89.5
-    assert abs(_true_monthly(p.annuity_pp(0)) / 900000.0 - 1.0) < 0.01
-    # The residual against the spec's own -0.5% is the 0.02 points of declared rate:
-    # the spec solves the same identity on 교보's 2.52%, this model runs the
-    # representative 2.50%.
+    # -0.60% at this model's 2.50%, against the spec's -0.5% solved on 교보's 2.52%.
+    assert _true_monthly(p.annuity_pp(0)) / 900000.0 - 1.0 == pytest.approx(
+        -0.0060, abs=5e-5)
     assert p.decl_rate() == DECL_RATE < 0.0252
     # No mortality in the annuity: the factor is pure interest on this shape.
     assert all(p.pricing_factor(t) == 1.0 for t in range(0, p.proj_len() + 1))

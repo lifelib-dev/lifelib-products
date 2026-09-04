@@ -374,10 +374,12 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     2017-04 [S1 §IV-4]; 2.52% at 2017-12 [S3]; 2.80% at 2023-01 [S13]; 2.55% at 2025-01
     [S12]; 2.67% at 2026-04 [R28, a commercial content site](#krlib-immediate_annuity-r28); 2.56% at 2026-09 [S14]. The
     arc is a fall from about 4.8% in 2011 to about 2.6% in 2026. **2.50%** is adopted
-    because it is the level the anchor carrier declared on this exact product [S1], it
-    sits inside the 2.55%–2.67% band of the three most recent observations, and it equals
-    the **평균공시이율 for 2026** [REG-R48], which is the rate the illustration rules make
-    a carrier show beside its own [S11] [S5]. No model in this library derives a Korean
+    because it is the level the anchor carrier declared on this exact product [S1] and
+    because it equals the **평균공시이율 for 2026** [REG-R48], which is the rate the
+    illustration rules make a carrier show beside its own [S11] [S5]. It sits **5 to 17
+    basis points below** the 2.55%–2.67% band of the three most recent observations, and
+    that direction is recorded rather than smoothed: the adopted rate is at the
+    supervisory average and a little under the market's latest declarations. No model in this library derives a Korean
     declared rate: 감독규정 제7-65조제3항 and 시행세칙 별표 27 make it the product of a
     공시기준이율 whose own weighting α is capped at 60% and is majority-weighted to the
     insurer's realised 운용자산이익률 [REG-R18] [REG-R24], and the two carriers who
@@ -839,19 +841,24 @@ own description of why is the clearest statement of the mechanism in the corpus
 > 하락할 경우에는 만기보험금 지급을 위해 유보하여야 할 금액이 커지게 되므로 생존연금이
 > 줄어들 수 있다.
 
-**The arithmetic reproduces exactly**, which is worth stating because it shows the model
-in this specification is the model that was litigated. All of the following is **[std]**
-reconstruction from the figures at [R1] and [R2]. Solving the identity above at a
-declared rate of 4.5% over ten years on a ₩1,000,000,000 premium gives a first-year
+**The arithmetic reproduces the published annuity**, which is worth stating because it
+shows the model in this specification is the model that was litigated. All of the
+following is **[std]** reconstruction from the figures at [R1] and [R2], monthly in
+arrears at the monthly rate (1 + i)^(1/12) − 1 throughout. Solving the identity above at
+a declared rate of 4.5% over ten years on a ₩1,000,000,000 premium gives a first-year
 monthly annuity of ₩3,125,000 on a load of 5.325% (the 사업비 alone), ₩3,056,000 on the
 supervisor's round 6.0% assumption [R2 참고](#krlib-immediate_annuity-r2), and **₩3,050,000 — the published figure —
-on a total load of 6.054%**. The reconstruction therefore recovers a 보장계약 보험료 of
-about **0.73%** of premium for a death benefit of 10% of premiums over ten years, a
-figure the determination does not state, and vindicates the supervisor's 6% assumption to
-two significant figures. At the guaranteed floor of 2.5% the same identity gives
-**₩1,489,000** a month as designed, against **₩1,957,000** on the determination's own
-order — interest on the net fund with no retention, a **31.4% uplift** — and
-₩2,083,333 on the applicant's claim, which was interest on the *gross* premium.
+on a total load of 6.054%**, which is solved for rather than observed. The reconstruction
+therefore recovers a 보장계약 보험료 of about **0.73%** of premium for a death benefit of
+10% of premiums over ten years, a figure the determination does not state, and vindicates
+the supervisor's 6% assumption to two significant figures. At the guaranteed floor of
+2.5% the same identity on that 6.054% load gives **₩1,490,000** a month as designed,
+against **₩1,935,000** on the determination's own order — interest on the net fund with
+no retention, a **29.9% uplift**. The applicant himself claimed ₩2,083,333, which is
+2.5% ÷ 12 of the **gross** premium — simple monthly interest on the whole ₩1,000,000,000
+— and is the one figure of the three the determination records rather than this document
+computing it [R1 §2]; on the compounding convention used above the same claim would be
+₩2,060,000.
 
 **The determination.** 조정결정 제2017-17호, 2017-11-14, reasoned in three moves
 [R1 §3](#krlib-immediate_annuity-r1). First, objective construction: 「약관의 내용은 개개 계약체결자의 의사나 구체적
@@ -1245,8 +1252,9 @@ six-month rule. Those nine are the product, and none of them is standardized her
    2012-vintage 6.054% load recovered from the determination [R1] [R2] is a different
    cohort, priced when the declared rate was 4.5%, and is documented rather than adopted.
 5. **A 2.50% declared rate with a 1.25% / 1.00% / 0.75% floor.** The declared rate is the
-   anchor carrier's own on this product [S1], equals the 2026 평균공시이율 [REG-R48], and
-   sits inside the band of the three most recent observations [S12] [S14] [R28]. The floor
+   anchor carrier's own on this product [S1] and equals the 2026 평균공시이율 [REG-R48];
+   it sits 5 to 17 basis points **below** the 2.55%–2.67% band of the three most recent
+   observations [S12] [S14] [R28], which is stated rather than smoothed. The floor
    is the only three-step schedule published on a contemporaneous 즉시연금 illustration
    whose annuity figures this document also uses [S3], and sits mid-way between the
    2007–2014 cohorts' 2.5%/2.0% [S10] and the 2024 한화 schedule's 1.0%/0.75%/0.5%
@@ -1355,8 +1363,11 @@ months for a single premium** [REG-R22]. A bancassurance 즉시연금 that takes
 so the reading that its filing falls inside 제7-51조 is a natural one; whether it is the
 reading the FSC takes is **[unverified]**, no filed 즉시연금 산출방법서 having been
 retrieved. The companion rule, 제4-32조제5항's cap on first-year commission at the premium
-expected in the first year, is trivially satisfied by a 2% commission on a single premium
-[REG-R22] [S1 §VII].
+expected in the first year, **does not reach this product at all**: it is confined to
+보장성보험 other than general non-life and motor, and an 즉시연금 is a 저축성보험 at
+제1-2조제4호 [REG-R9] [REG-R22]. Were it to apply, a 2% commission on a single premium
+would satisfy it many times over [S1 §VII], and the observation is worth making only
+because it is one of the two places a Korean commission is capped at all.
 
 **The 표준약관 supplies every contractual mechanic that is not carrier-specific**
 [REG-R25]: the 보험나이 six-month rule and its worked example (제21조), 청약철회 at 15/30

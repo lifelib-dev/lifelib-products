@@ -1542,7 +1542,7 @@ def test_pitfall_declines_never_enter_the_reinstatement_pool(term_life):
 
 
 def test_pitfall_read_the_tables_at_boheom_nai_and_at_nothing_else(term_life):
-    """Reading the anchor cell a year early cuts death claims to 1,903,445.06 — 8.1% out.
+    """Reading the anchor cell a year early cuts death claims to 1,905,170.00 — 8.0% out.
 
     보험나이 is 만나이 with fractions of six months or more rounded up, incrementing on the
     **policy anniversary** and not on the birthday, and the premium grid, the mortality table
@@ -1558,11 +1558,15 @@ def test_pitfall_read_the_tables_at_boheom_nai_and_at_nothing_else(term_life):
     names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
     for absent in ("mort_age_shift", "age_shift", "age_basis_shift", "man_nai_shift"):
         assert absent not in names, f"{absent} would apply a shift this model must not"
-    understated = sum(
-        a.sum_assured() * a.pols_if(t) * a.mort_be_factor
-        * a.mort_rate_at_age(a.age(t) - 1) for t in range(1, 21))
-    assert understated == pytest.approx(1903445.06, abs=WON)
-    assert 1.0 - understated / TOTAL_CLAIMS_DEATH == pytest.approx(0.081, abs=5e-4)
+    # The counterfactual is the whole projection read a year early — the shifted rate
+    # drives the survivorship too, which is what a mis-specified model would actually do.
+    understated, pols = 0.0, 1.0
+    for t in range(1, 21):
+        q = a.mort_be_factor * a.mort_rate_at_age(a.age(t) - 1)
+        understated += a.sum_assured() * pols * q
+        pols *= (1.0 - q) * (1.0 - a.lapse_rate(t))
+    assert understated == pytest.approx(1905170.00, abs=WON)
+    assert 1.0 - understated / TOTAL_CLAIMS_DEATH == pytest.approx(0.080, abs=5e-4)
     assert TOTAL_CLAIMS_DEATH - understated > TOTAL_NET_CF   # more than the whole answer
     assert "보험나이" in term_life.Projection.doc
 

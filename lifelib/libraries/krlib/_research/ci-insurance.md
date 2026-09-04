@@ -1034,8 +1034,11 @@ and the `[해지환급금이 적은 유형]` grid on the same basis [S4]:
 **What falls out of these 96 cells**, computed here and stated as arithmetic on [S4]:
 
 - **Price of the acceleration fraction.** Holding age, sex and menu fixed, the 80% form costs
-  about **5–9%** more than the 50% form and the 100% form about **33–38%** more. At 남40 /
-  17대보장형 / 기본환급형: 311,640 → 338,100 (×1.085) → 428,260 (×1.374). At 남30 /
+  **2.8–9.4%** more than the 50% form and the 100% form **29.6–38.2%** more, over all 96
+  cells. The step widens with the menu: the narrowest 80 : 50 step is ×1.0278 (여35 / 2대보장형
+  / 기본환급형) and the widest ×1.0935 (남30 / 17대 / 기본환급형); the 100 : 50 step runs from
+  ×1.2959 (여30 / 2대 / 저해지) to ×1.3821 (남30 / 17대 / 기본환급형). At 남40 / 17대보장형 /
+  기본환급형: 311,640 → 338,100 (×1.085) → 428,260 (×1.374). At 남30 /
   17대보장형: 241,080 → 263,620 (×1.093) → 333,200 (×1.382). The 100% jump is much larger than
   the 50 → 80 step because on that form the death benefit is extinguished and replaced by the
   30% 유족위로금 — it is a different benefit, not a re-weighting.
@@ -1043,8 +1046,9 @@ and the `[해지환급금이 적은 유형]` grid on the same basis [S4]:
   276,360 → 284,200 → 295,960 → 311,640, a spread of only **12.8%** across the whole menu. The
   three headline diseases carry almost all the cost; the fourteen additional conditions in the
   17대 menu add about **5.3%** over the 3대 menu.
-- **Sex.** Female premiums run **0.79–0.86** of male on the same cell; at 남40 / 여40 /
-  17대보장형 / 50%, 258,720 / 311,640 = **0.830**.
+- **Sex.** Female premiums run **0.808–0.872** of male on the same cell — the extremes being
+  0.808 at 남40/여40 / 100% / 17대 / 저해지 and 0.872 at 남30/여30 / 50% / 2대 / 기본환급형;
+  at 남40 / 여40 / 17대보장형 / 50%, 258,720 / 311,640 = **0.830**.
 - **Age slope.** 남 30 → 40 on 17대 / 50% is 241,080 → 311,640 = **×1.293** over ten years, a
   compound 2.6% a year — flat, because a 20-year-pay whole-life premium is dominated by the
   savings element.
@@ -1299,8 +1303,9 @@ What the morbidity rows say, computed here from [S3]:
   halving in [S1].
 - **중대한 급성심근경색증 is the most male-skewed**: 4.0× at 40 (0.000589 / 0.000148) and 2.4×
   at 60. **중대한 뇌졸중** is close to unisex at 20 and runs 2.3× male at 40, 1.45× at 60.
-- **Age slope.** Male 중대한 암 rises **×10.8** from 20 to 40 and **×10.8** again from 40
-  to 60. Male AMI rises ×21.8 then ×7.4; male stroke ×23.9 then ×4.4. These are slopes a
+- **Age slope.** Male 중대한 암 rises **×7.1** from 20 to 40 (0.001023 / 0.000144) and
+  **×10.8** from 40 to 60 (0.011063 / 0.001023) — the cancer log-slope *steepens*. Male AMI
+  rises ×21.8 then ×7.4; male stroke ×23.9 then ×4.4, both flattening. These are slopes a
   `[std]` CI incidence construction for `CI_KR_A` should reproduce.
 - **What the rates are not.** They are 예정위험률 — pricing rates carrying a safety margin, not
   best-estimate experience. [R1] records the margin regime around them: 안전할증 on the

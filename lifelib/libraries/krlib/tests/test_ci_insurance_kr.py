@@ -408,6 +408,8 @@ CARVE_OUT_WORTH = 52813.69           # paid less the suppressed counterfactual
 SUPPRESSED_LAPSE_CI = 1574435.76
 SPURIOUS_PREMIUM_YEARS = 0.695569    # post-CI person-years inside the 납입기간
 SPURIOUS_PREMIUM_WON = 2560307.45
+SPURIOUS_PREMIUM_YEARS_ALL = 0.7291348   # post-CI plus the 장해 50%+ waived subset
+SPURIOUS_PREMIUM_WON_ALL = 2683857.72
 CLAIM_EXPENSE_UNDERSTATEMENT = 0.44  # charging on deaths alone
 POST_CI_SHARE_OF_INFORCE_36 = 0.488
 POST_CI_SHARE_OF_PERSON_YEARS = 0.218
@@ -1282,9 +1284,10 @@ def test_pitfall_the_post_ci_cohort_never_pays_a_premium(kr_ci_anchor):
     """lp(t) = l0(t) - lw(t): the post-CI count is nowhere in the premium weight.
 
     Weighting premium by ``pols_if(t)`` reproduces year 1 exactly and diverges from year
-    2 onward — a slow, quiet error worth 0.695569 person-years of spurious premium inside
-    the 납입기간, about KRW 2.56m on this cell.  It is the kind of mistake that never
-    fails a roll-forward.
+    2 onward — a slow, quiet error worth 0.7291348 person-years of spurious premium inside
+    the 납입기간, KRW 2,683,857.72 on this cell, of which the post-CI cohort is 0.6955694
+    (KRW 2,560,307.45) and the 장해 50%+ waived subset the remaining 0.0335654.  It is the
+    kind of mistake that never fails a roll-forward.
     """
     a = kr_ci_anchor
     assert a.pols_if_pay(1) == a.pols_if(1) == 1.0     # identical in year one only
@@ -1298,6 +1301,12 @@ def test_pitfall_the_post_ci_cohort_never_pays_a_premium(kr_ci_anchor):
     spurious = sum(a.pols_if_ci(t) for t in range(1, a.prem_end() + 1))
     assert spurious == pytest.approx(SPURIOUS_PREMIUM_YEARS, abs=5e-7)
     assert spurious * a.premium_pp() == pytest.approx(SPURIOUS_PREMIUM_WON, abs=0.02)
+    # The full substitution error is the post-CI cohort *plus* the waived subset.
+    spurious_all = sum(a.pols_if(t) - a.pols_if_pay(t)
+                       for t in range(1, a.prem_end() + 1))
+    assert spurious_all == pytest.approx(SPURIOUS_PREMIUM_YEARS_ALL, abs=5e-8)
+    assert spurious_all * a.premium_pp() == pytest.approx(
+        SPURIOUS_PREMIUM_WON_ALL, abs=0.02)
     # Renewal commission follows the cash, so it inherits the same weight.
     assert a.commissions(10) == pytest.approx(0.03 * a.premiums(10), rel=1e-14)
 

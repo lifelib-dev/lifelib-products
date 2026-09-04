@@ -198,14 +198,13 @@ implied factors are recovered as follows `[derived]`:
 | 종신 10년보증, 남 65 | 23.70 | 23.700 | 2.15% |
 | 종신 10년보증, 남 65 | 31.18 | 31.180 | 0.50% |
 
-**All eight, on both interest bases, from one formula.** `product-spec.md` writes the payout
-formula as `계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)` on an *annual* annuity-due, and that
-reading misses every one of these by about half a per cent **in the wrong direction** — it
-makes the annuity smaller than published where the published figure is larger than the
-textbook annual factor. `technical-notes.md` carries the correction, states it in its scope
-note as a change to a number, and the worked example is struck on the corrected form; the
-eight-row table above is the evidence for it. On the anchor cell the annual reading would
-give `B` = ₩6,634,429.17 against ₩6,763,374.59, **1.91% low**.
+**All eight, on both interest bases, from one formula.** Read on an *annual* annuity-due the
+same `계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)` misses every one of these by about half a per
+cent **in the wrong direction** — it makes the annuity smaller than published where the
+published figure is larger than the textbook annual factor. That was the reading of an early
+draft of `product-spec.md`; `technical-notes.md` corrected it, its scope note records the
+change as a change to a number, and both documents now carry the monthly form. On the anchor
+cell the annual reading would give `B` = ₩6,634,429.17 against ₩6,763,374.59, **1.91% low**.
 
 ## The crediting machinery is four rates, not one
 
@@ -325,9 +324,10 @@ not be opened [R17] [REG-R34]; the big-data portal refused connections [R24].
 
 What *is* public, and what the table is anchored on, are the six annuitant rates two carriers
 publish in their statutory product summaries [S1] [S7]. `mort_table.csv` is a Makeham law
-`mu(x) = A + B c^x` fitted jointly to those six and to the annuity factors [S2] implies at
-**two** interest bases, with the parameters, the female setback, the vintage improvement
-factor and the six published anchors all recorded in `mort_anchor_table.csv`.
+`mu(x) = A + B c^y` with `y = max(0, x − setback)`, fitted jointly to those six and to the
+annuity factors [S2] implies at **two** interest bases, with the parameters, the female
+setback, the vintage improvement factor and the six published anchors all recorded in
+`mort_anchor_table.csv`.
 `check_mort_law` re-derives every rate the projection reads from those parameters, so the day
 someone drops in a real basis the check reports it rather than the model silently claiming a
 construction it no longer has.
@@ -335,8 +335,10 @@ construction it no longer has.
 Three things about the fit are worth stating plainly, because they are the cost of taking the
 published illustration as the calibration target:
 
-- **The two ä targets are met to five decimal places and the anchors are not.** The fitted
-  male rates run about 30% above the published anchors at 70 and about 28% below at 80. A
+- **The two ä targets are met to four significant figures and the anchors are not.** The
+  model's implied life factors are 23.7004 and 31.1799 against published quotients of 23.7000
+  and 31.1768 — inside the rounding of the 만원 figures [S2] publishes. The fitted male rates,
+  by contrast, run about 30% above the published anchors at 70 and about 28% below at 80. A
   three-parameter law cannot honour a steep 60–80 gradient and a very light 65+ tail at the
   same time, and the annuity factor is dominated by the tail.
 - **The implied longevity is extreme, and it is the illustration's, not the model's.** The
@@ -347,15 +349,16 @@ published illustration as the calibration target:
   `[derived]` from [S2]. A 연금사망률 is a **pricing** table loaded on the survival side for a
   longevity product, and this is what that loading looks like when it is read off a published
   annuity rather than assumed.
-- **The female table is the male law set back four years**, the setback that reproduces the
-  published 65세 기대여명 gap of 3.4 years between the sexes [REG-R33] — the model's own gap
-  is 3.66. The female published anchors are *not* reproduced: the fitted female rates run
-  about twice the published ones at ages 50 to 70. The alternative — fitting the female law
-  independently to the female anchors and to the one published female annuity illustration
-  [S5] — was tried and rejected, because it comes from a different carrier on a different
-  convention and produces a **female annuity larger than the male's at the same age**, which
-  no carrier's rate card does. The sourced sex differential was preferred to the sourced
-  female rates, and the reason is written on every female row of the file.
+- **The female table is the male law set back four years**, the whole-year setback closest to
+  the published 65세 기대여명 gap of 3.4 years between the sexes [REG-R33]; it does not
+  reproduce it — the model's own gap is **3.66** years. The female published anchors are
+  *not* reproduced either: the fitted female rates run 1.9 to 2.8 times the published ones at
+  ages 50 to 70. The alternative — fitting the female law independently to the female anchors
+  and to the one published female annuity illustration [S5] — was tried and rejected, because
+  it comes from a different carrier on a different convention and produces a **female annuity
+  larger than the male's at the same age**, which no carrier's rate card does. The sourced sex
+  differential was preferred to the sourced female rates, and the reason is written on every
+  female row of the file.
 
 `mort_be_factor` is **1.15** and is greater than one deliberately. The table is a loaded
 pricing basis, so a best-estimate *death* decrement runs heavier than it, not lighter. The
@@ -373,10 +376,10 @@ rather than carry a number.
 
 **`claims_death` and `claims_lapse` are the same benefit under two decrements.** Both pay
 `db_pp_net(t+1)` and `cv_pp_net(t+1)`, which are the same number at every deferral duration
-on this composite, so the columns differ only in the rate applied. At the anchor cell
-`claims_lapse` is two orders of magnitude the larger at every duration and nine times the
-larger in total, on decrements whose rates differ by a factor of about fifty — the ratio is
-what twenty-five years of survivorship does to the weighting. Splitting them is still right:
+on this composite, so the columns differ only in the rate applied and their ratio is exactly
+`w(t) ÷ q(t)`. At the anchor cell that runs from **49.6** at `t` = 0 to **3.8** at `t` = 24 as
+mortality rises against a lapse rate that steps down, and comes to **9.05** over the whole
+deferral phase. Splitting them is still right:
 the two are separable the moment a model point carries a 해지공제액, as point 8 does.
 
 **`commissions` is zero in every row and is published anyway.** The composite follows a
@@ -602,9 +605,9 @@ nothing public brackets it at all.
 | Parameter | Value | Rationale | Observed range |
 |---|---|---|---|
 | Makeham `A` / `B` / `c` | 5.5583e−04 / 2.3281e−06 / 1.108956 | No Korean industry table is published [REG-R4] [REG-R33] [REG-R34], so the model ships a construction plus its recipe, fitted jointly to six published rates [S1] [S7] and to two published annuity bases [S2] | Six rates only: 연금사망률 at 50/60/70 [S1], 개인연금사망률 at 40/60/80 [S7] |
-| Female table | Male law **set back 4 years** | Reproduces the published 65세 기대여명 gap of 3.4 years [REG-R33]; the model's gap is 3.66 | An independent female fit gives a female annuity **larger** than the male's, which no rate card does |
+| Female table | Male law **set back 4 years** | The whole-year setback closest to the published 65세 기대여명 gap of 3.4 years [REG-R33]; it does not reproduce it — the model's gap is 3.66 | An independent female fit gives a female annuity **larger** than the male's, which no rate card does |
 | `annuitant_revised` vintage | Issue vintage × **0.85** | One-step lightening of the order the 제9회 → 제10회 revision produced | That revision cut the monthly annuity on a fixed fund by about 15% [R19] |
-| Terminal age ω | **120** | No Korean industry table publishes one [REG-R33]; generosity costs about ₩50,000 of tail outgo | — |
+| Terminal age ω | **120** | No Korean industry table publishes one [REG-R33]; the generosity costs ₩170,814 of tail outgo over `t` = 76–80, 0.12% of the annuity total | — |
 | `mort_be_factor` | **1.15** | A loaded pricing basis on the survival side, so a best-estimate death decrement is **heavier**, not lighter | The two carriers publishing annuitant rates differ by about 9% at age 60 [S1] [S7] |
 | `lapse_rate`, `pension` | 4.0 → 1.0% by duration, 0% from `t = n` | Argued from the 16.5% friction [S5] [S8] and from 계좌이체 counting as termination [S1] [R13] [R22] | None public: 「적용안함」 on every row of the one carrier disclosure that has the column [S13] |
 | `lapse_rate`, `savings` | 8.0 → 2.0% | The non-qualified comparison vector, carried so the two can be run side by side | — |

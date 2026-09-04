@@ -56,7 +56,9 @@ to.
 
 ## Primary product sources
 
-Eight carriers, eleven documents. Two are 상품요약서, the statutory product summary that
+**Six carriers and one industry portal**, eleven documents — KB라이프 [S1] [S9], KDB [S2],
+AIA [S4], ABL [S5] [S6], 교보 [S7] [S8], 미래에셋 [S10] [S11] and the 생명보험협회 공시실
+[S12]. Two are 상품요약서, the statutory product summary that
 must carry the 수수료 안내표 [S2] [S4]; four are 상품안내장 [S1] [S5] [S6] [S9] [S10] (five,
 counting [S10]); one is a full 231-page 약관 [S7]; one is the point-of-sale 변액연금보험
 설명서 [S8]; and two are disclosure surfaces rather than contracts [S11] [S12]. Nine were
@@ -108,11 +110,14 @@ keep the composite from being read as "the" Korean variable annuity.
   **5.17%** of the 기본보험료 for ten years, 계약관리비용 **3.50%** in payment and **1.33%**
   after 납입완료, 위험보험료 **0.004%–0.011%**, 특별계정 운용보수 by fund (0.40% / 0.60%),
   증권거래비용 및 기타비용, 기초펀드 보수·비용, both guarantee charges, the 연금수령기간 중
-  계약관리비용, and the seven-year **해약공제 scale whose ₩830,000 first-year amount is the
-  `surr_charge` anchor**. Everything in `charge_table.csv` that is not [S1], [S4] or [R1] is
-  this document. It also prints the cumulative separate-account contribution falling from
-  ₩32,877,360 at ten years to ₩32,393,520 at twenty — the observable that the 계약관리비용 for
-  the post-premium period is collected *during* the premium period — and the full **GLWB**
+  계약관리비용, and the seven-year **해약공제 scale** — 71 / 59 / 47 / 36 / 24 / 12 / 0 만원,
+  whose linear-in-the-amount fit `C × (7 − k) ÷ 7` gives the **C = ₩830,000** that is the
+  `surr_charge` anchor. ₩830,000 is that fitted intercept and **not** a figure the document
+  prints; the published first-year amount is ₩710,000. Everything in `charge_table.csv` that
+  is not [S1], [S4] or [R1] is this document. It also prints the cumulative separate-account
+  contribution falling from ₩32,877,360 at ten years to ₩32,393,520 at twenty — the
+  observable that the 계약관리비용 for the post-premium period is collected *during* the
+  premium period — and the full **GLWB**
   apparatus (7%/6% simple roll-up 최저연금기준금액, sex- and age-banded 기본지급률, 장기유지
   and 투자실적 가산율) which the model documents and does not implement.
 
@@ -129,7 +134,8 @@ keep the composite from being read as "the" Korean variable annuity.
   GMDB survives at 연 0.05%, which is what model point 3 (미보증형) represents and what makes
   the elective GMAB a live design question rather than a historical one. It carries the
   highest retrieved 계약체결비용 (6.12% for ten years, then zero) and the highest retrieved
-  first-year 해약공제 (28.1%, ₩1,180,000 on the anchor cell), so it brackets the top of both.
+  first-year 해약공제 (28.1%, ₩1,010,000 on the anchor cell, fitting `C = ₩1,180,000`), so it
+  brackets the top of both.
   Its **proportional 연금수령기간 중 계약관리비용 of 0.5% of the 연금 연액** is the form
   `annuity_charge_pp` takes, chosen over [S2]'s per-구좌 monthly form because it is scale-free.
 
@@ -166,11 +172,13 @@ keep the composite from being read as "the" Korean variable annuity.
   일반계정** at a 1.75% floor when the growth weight hits zero. The model documents this design
   and implements none of it, for the stated reason that a deterministic path cannot exercise
   a CPPI rule meaningfully. Two facts the model does use come from here: the 91.3% premium
-  allocation on the anchor cell, one of the three independent readings `check_prem_alloc()`
-  is asserted against, and the **surrender-value illustration showing zero at three months on
-  an account of ₩821,751**, which is the published shape `cv_pp(0) = cv_pp(1) = cv_pp(2) = 0`
-  reproduces. It also states the transfer of the whole 계약자적립액 to the 일반계정 at
-  연금개시 that `av_transfer` implements.
+  allocation on the anchor cell, one of the three independent readings the modelled 91.33%
+  is corroborated by — `check_prem_alloc()` itself asserts the ratio against the model's own
+  `1 − loading_rate()` and not against the published figures — and the **surrender-value
+  illustration showing zero at three months on an account of ₩821,751**, which is the
+  published shape `cv_pp(0) = cv_pp(1) = cv_pp(2) = 0` reproduces. It also states the
+  transfer of the whole 계약자적립액 to the 일반계정 at 연금개시 that `av_transfer`
+  implements.
 
 (krlib-variable_annuity-s7)=
 
@@ -182,12 +190,13 @@ keep the composite from being read as "the" Korean variable annuity.
   retrieved is 하나은행's contract-document mirror of the bancassurance edition
 - URL: `https://image.kebhana.com/cont/download/insdocument/provide/L05184361_agree.pdf`
 - Accessed: 2026-09-03, Retrieved: **yes** (1.9 MB PDF, 231 pp., re-extracted with PyMuPDF;
-  제2조, 제23조, 제36조–제46조, 제50조, 제51조 and 제63조 read verbatim)
+  제2조, 제36조–제46조, 제50조, 제51조 and 제63조 read verbatim — the list the research file
+  records, and the only articles this document may be pinned to)
 - **The only policy-conditions-grade document read in full in this session**, and the source
   of every verbatim clause the documents quote. Articles the documents pin to it: **제2조
   (용어의 정의)**, which defines the 월공제액 and separates it from the charges deducted at
-  premium payment — the two-deduction-point structure the whole model turns on; 제23조
-  (보험나이); 제36조 (계약자적립금의 계산); 제37조 (펀드의 운용 및 평가); 제38조 (펀드의 유형);
+  premium payment — the two-deduction-point structure the whole model turns on; 제36조
+  (계약자적립금의 계산); 제37조 (펀드의 운용 및 평가); 제38조 (펀드의 유형);
   제39조–제41조 (펀드 선택·변경, 자동이전·자동재배분, 평균분할투자), which is where the
   **two-business-day pricing lag** is stated; 제42조–제46조 (특별계정 자산평가, **좌수 및
   기준가격**, 제비용, 폐지, 공지), where 제43조제2호 puts the 운용보수 **inside the 기준가격**
@@ -715,7 +724,7 @@ five fee tables as three 상품요약서 actually print them, the guarantee cens
 step-up worked examples, the 지급률 tables, the 해지공제 scales and the 별표 24 factor tables
 as [R1] reproduces them; the **variation-across-carriers tables**, including the issue and term
 envelopes, the premium-size limits, the guarantee designs, the fee-stack spreads and the option
-menus across eight carriers, which is what makes the composite's every parameter choice
+menus across those six carriers, which is what makes the composite's every parameter choice
 traceable to a range rather than to a document; and the **register of fetch failures and
 [unverified] claims** — every URL tried and not opened, the 제7-60조 and 별표 24 failures, the
 special-account asset-management ratios of [R5], the 시행령 제52조·제53조 text, the

@@ -11,15 +11,16 @@ carrying **[S#]** (primary product documents: 약관 (*yakgwan*, policy conditio
 cited document; both series are numbered in `sources.md` in this directory, which carries
 forward the frozen numbering of `_research/variable-annuity.md`. **[REG-R#]** resolves
 against the cross-product reference library
-`references/regulatory-and-actuarial-references.md`, whose own R1–R60 numbering is
+`references/regulatory-and-actuarial-references.md`, whose own R1–R62 numbering is
 distinct. Values marked **[std]** are standardizations introduced for the reference
 implementation; every [std] table row carries a numbered footnote giving the rationale
 and, where the research file brackets it, the observed range across insurers. Claims the
 research file could not confirm against a retrieved document are flagged **[unverified]**
 and stay flagged.
 
-**Implementation anchor.** Nine current carriers' documents were read. The composite is
-built on two of them and takes nothing structural from the rest:
+**Implementation anchor.** Eleven documents were read — ten from **six** current carriers,
+plus the industry disclosure portal [S12]. The composite is built on two of them and takes
+nothing structural from the rest:
 
 - **The expense stack, the surrender-charge scale and the fund charges come from one
   carrier's 상품요약서** [S2]. It is the only retrieved document whose fee table,
@@ -122,9 +123,11 @@ release that was not retrieved; and 「계약체결 후 적립금이 납입한 �
 있다」 [R1]. The retrieved illustrations bear the second out exactly [S1] [S2].
 
 **Where it sits in `krlib`.** This is the library's only product on which the policyholder
-bears the investment risk, the only one carrying a written option, and — with
-`Pension_KR_A`, whose 연금저축계좌 is a *mandatory* separate account for a different reason —
-one of only two that cross the 특별계정 / 일반계정 boundary [REG-R15]. It is also the only
+bears the investment risk, the only one carrying a written option, and the only one that
+**models** the 특별계정 / 일반계정 boundary. 감독규정 제5-6조제1항 also makes a separate
+account mandatory for the 연금저축계좌 of `Pension_KR_A` (제1호, against 변액보험계약 at
+제3호) [REG-R15], but that product neither cites the article nor represents the boundary, so
+the two account ledgers below have no counterpart elsewhere in the library. It is also the only
 product in the library **barred by regulation from the 무해지 / 저해지환급형 forms**:
 감독규정 제7-66조제4항제1호 excludes 변액보험 from the dispensation permitting a surrender
 value below the 별표 14 floor [REG-R19], so the cliff-shaped surrender curve that dominates
@@ -242,7 +245,7 @@ are deducted from different bases at different times and land in different accou
 | 특별계정 운용보수 (*teukbyeol gyejeong unyong bosu*) | 채권형 **연 0.40%**; 주식형 **연 0.60%**; blended **연 0.50%** at the anchor allocation | 특별계정 순자산 | **Daily**, at rate/365, taken out of net assets before the 기준가격 is struck | 특별계정 → 일반계정 | [S2]; blend **[std]** (8) |
 | 증권거래비용 및 기타비용 | Nil in the base run; observed 연 0.00%–0.79% | 특별계정 자산 | On occurrence; borne directly by separate-account assets under 자본시장법 제188조 and 시행령 제265조 | 특별계정 → third parties | [S2] [S4] [S7 제44조]; **[std]** (9) |
 | 기초펀드 보수·비용 | Nil in the base run; observed 연 0.01%–0.45% | Underlying fund net assets | Daily, inside the underlying fund | 특별계정 → third parties | [S2] [S4]; **[std]** (9) |
-| 해약공제 (surrender charge) | `₩830,000 × (7 − t) ÷ 7` for elapsed whole years `t = 0…7`; nil from year 7 | A level amount, run off linearly | On surrender, deducted from the 계약자적립액 | 특별계정 → 일반계정 | [S2]; form [R1] [R2]; **[std]** (10) |
+| 해약공제 (surrender charge) | `₩830,000 × (n − k) ÷ n` in completed whole years `k`, nil from `k = n`, with `n` = min(납입기간, 7) = 7 on the anchor cell | A level amount, run off linearly | On surrender, deducted from the 계약자적립액 | 특별계정 → 일반계정 | [S2]; form [R1] [R2]; **[std]** (10) |
 | 중도인출 수수료 | **None** | — | — | — | [S1] [S2] [S9] |
 | 펀드변경 수수료 | ≤ 0.1% of the amount transferred, capped at ₩5,000, four free a year | Amount switched | On switch | 특별계정 → 일반계정 | [S1] [S2] |
 | 추가납입보험료 수수료 | **None** | — | — | — | [S1] |
@@ -257,8 +260,9 @@ are deducted from different bases at different times and land in different accou
    the basic premium, ₩12 to ₩32 a month, and why the textbook can say the natural premium
    is immaterial and the premium allocation therefore flat by age [R2]. The **scale by
    attained age is [std]**: no retrieved document publishes a rate, and the 제10회
-   경험생명표 is not public [REG-R33] [REG-R34]. The composite takes the mid-point of the
-   published band, ₩24 a month, held level; the technical notes specify the age scale.
+   경험생명표 is not public [REG-R33] [REG-R34]. The composite takes **0.0080%**, ₩24 a
+   month — inside the published band and a little above its arithmetic mid-point of 0.0075%
+   (₩22.50) — held level at the anchor age; the technical notes specify the age scale.
    An online product covering more carries 0.0217%–0.0397% [R1], which brackets the top.
 8. Observed 특별계정 운용보수 across five documents: 0.20–0.78% [S4]; 0.25–0.64% [S9];
    0.32–0.89% [S5]; 0.345–0.815% [S1]; 0.40–0.70% [S2]. The composite takes the anchor
@@ -305,11 +309,13 @@ from the cap**; no retrieved document works that netting, and the exact residual
 recorded beside them.
 
 **First-year charge total on the anchor cell**, as a check on the stack: 계약체결비용
-₩186,120 + 계약관리비용 ₩126,000 + 위험보험료 about ₩288 + guarantee charges about ₩118,200
-(₩108,000 of it the premium-based GMAB component) ≈ **₩430,600 on ₩3,600,000 of premium,
-about 12%**. [R1] puts the industry band at 「선취상품은 납입보험료의 5~15%를 …
-차감한 후 85~95%만 투자」, and the composite's premium allocation of **91.33%** sits inside
-the 91.3%–91.5% observed at three carriers on this cell [S1] [S2] [S6].
+₩186,120 + 계약관리비용 ₩126,000 + 위험보험료 ₩288 + guarantee charges ₩113,576.29
+(₩108,000 of it the premium-based GMAB component, the other two being struck on an account
+still being built) = **₩425,984.29 on ₩3,600,000 of premium, 11.83%**, which is the figure
+`technical-notes.md` traces line by line. [R1] puts the industry band at 「선취상품은
+납입보험료의 5~15%를 … 차감한 후 85~95%만 투자」, and the composite's premium allocation of
+**91.33%** sits inside the 91.3%–91.5% observed at three carriers on this cell
+[S1] [S2] [S6].
 
 ### The separate account and the fund menu
 
@@ -454,7 +460,7 @@ the 91.3%–91.5% observed at three carriers on this cell [S1] [S2] [S6].
 |---|---|---|
 | 해약환급금 | **max(0, 계약자적립액 − 해약공제액)**; the zero floor is statutory — 「계약자적립액에서 해약공제액을 공제한 금액이 음(陰)의 값인 경우에는 이를 영(零)으로 처리한다」 | [REG-R19 제7-66조제1항제1호](#krlib-reg-r19) [S2] |
 | Guarantee on the surrender value | **None**, at any duration | [S1] [S6] [S7 제50조제3항] [S8] [S10] |
-| 해약공제액 | `₩830,000 × (7 − t) ÷ 7`, `t` = elapsed whole years, nil from year 7 | [S2]; **[std]** (10) |
+| 해약공제액 | `₩830,000 × (n − k) ÷ n`, `k` = completed whole years, `n` = min(납입기간, 7); nil from `k = n` | [S2]; **[std]** (10) |
 | 해약공제기간 | 7 years — the statutory ceiling where the premium term is 7 years or more | [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) [R2] |
 | 무해지 / 저해지환급형 | **Not permitted.** 변액보험 is excluded from the dispensation by 제7-66조제4항제1호 | [REG-R19] |
 | Pricing of a surrender | 해지신청일 + 제2영업일 기준가격 | [S7 제50조제2항] [S9] |
@@ -838,7 +844,7 @@ computed exactly:
    현가로 환산한 상위 30% 평균 금액」 — a **CTE(70) over a thousand scenarios** — or a
    standard factor table, whichever is greater [R1] [R12] [REG-R26]. The **standard factor
    exists precisely because a deterministic number is meaningless**, and the model publishes
-   the factor as a diagnostic and does not publish a CTE(70). The factor tables are
+   **neither** — no CTE(70) and no factor result. The factor tables are
    reproduced under "Regulatory context" below; every figure in them is at second hand from
    [R1] and is **[unverified]** against the rule itself [R12] [REG-R26].
 4. **Guarantee risk does not diversify.** [R1] is explicit: 「시장리스크 … 리스크 노출량을
@@ -861,10 +867,10 @@ computed exactly:
 **What the model publishes instead.** The base run at 투자수익률 2.50% and the two other
 mandated illustration returns, **−1.00% and 3.75%** [R2] [REG-R48], with the GMAB out of the
 money on the two upper paths and in the money on the lower one, so that the reader sees the
-guarantee's intrinsic value on both sides of the strike; the guarantee charges collected in
-each case; and the 별표 24 standard factor applied to the projected account value as a
-reserve floor. The gap between the charge collected and the intrinsic cost is reported as
-what it is — **a single-path residual, not a profit**.
+guarantee's intrinsic value on both sides of the strike; and the guarantee charges collected
+in each case. The gap between the charge collected and the intrinsic cost is reported as
+what it is — **a single-path residual, not a profit**. The 별표 24 standard factor is
+reproduced under "Regulatory context" as a citation and is **not** computed by the model.
 
 ### Investment constraints and automatic de-risking
 
@@ -969,10 +975,13 @@ on the same rounding [R1] [S2] [S4] [S5]. The published **ratio** falls far fast
 amount because its denominator — premiums paid — is growing. The representative scale, in
 full:
 
-| 경과 `t` (완성 연수) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7+ |
+| 경과 `k` (완성 연수) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7+ |
 |---|---|---|---|---|---|---|---|---|
 | 해약공제액 | ₩830,000 | ₩711,429 | ₩592,857 | ₩474,286 | ₩355,714 | ₩237,143 | ₩118,571 | ₩0 |
-| as % of premiums paid | — | 19.5% | 8.2% | 4.4% | 2.5% | 1.3% | 0.6% | 0.0% |
+| as % of premiums paid | — | 19.8% | 8.2% | 4.4% | 2.5% | 1.3% | 0.5% | 0.0% |
+
+The ratios are the composite's own. [S2] publishes 19.5 / 8.2 / 4.4 / 2.5 / 1.3 / 0.6% off
+amounts rounded to the 만원, which is where the first and last figures differ.
 
 The reform history behind the shape: the 개인연금 활성화 방안 of 2013-08 required a carrier
 to file its 산출방법서 unless it spread **at least 50% of the 계약체결비용 over seven
@@ -1420,9 +1429,10 @@ always [R2] — it is the table reproduced under "Charges" above.
 returns shown, or the surrender-value illustration omitted altogether: 「최저연금적립금을
 미보증하는 상품의 경우에는 … 해약환급금 예시를 제외하거나 (-)평균공시이율 가정을 포함하여
 3개 이상의 수익률을 가정하여 기재하도록 하고 있다」 [R2] — which is exactly [S9]'s
-−2.25% / 2.25% / 3.375% set. The 평균공시이율 is **2.50% for 2026**, down from 2.75%, the
-first fall since 2020 [REG-R48]; the article number [S9] cites for its definition, 감독규정
-제1-2조제13호, was not verified against the retrieved 고시 and is **[unverified]** [R2].
+−2.25% / 2.25% / 3.375% set. The 평균공시이율 is **2.50% for 2026**, down from 2.75% — the
+first fall since the 2.50% → 2.25% cut that took effect for 2021 [REG-R48]; the article
+number [S9] cites for its definition, 감독규정 제1-2조제13호, was not verified against the
+retrieved 고시 and is **[unverified]** [R2].
 
 **Deposit protection.** A variable contract is **outside** 예금자보호법 — 「이 상품의
 해약환급금 등 지급금은 '예금자보호법'에 의해 보호받지 않습니다」 [S8] — **except** that

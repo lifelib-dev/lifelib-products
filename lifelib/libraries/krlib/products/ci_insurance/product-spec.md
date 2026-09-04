@@ -181,7 +181,7 @@ document and tagged, or marked **[std]** with a numbered footnote.
 | Sum assured (보험가입금액) | ₩100,000,000 (1억원). Envelope ₩10,000,000 – ₩200,000,000, with the **accelerated** exposure capped rather than the face amount. The ceiling is a fifth of the chassis's ₩1,000,000,000 | [S3] [S4] [R1]; envelope **[std]** (4) |
 | 선지급 비율 (acceleration fraction) | **80%** of the 기본보험금, paid once only across all triggers. Residual death benefit 20% | [S1] [S2] [S3] [S4] [S5] [S6]; choice **[std]** (5) |
 | Surrender-value form | **저해지환급형**, `k = 0.50` applied to the 표준형 twin's 해약환급금 through 납입기간; `k = 1.00` from 납입완료 — **and from the date of any CI/LTC 지급사유** | Grades and rule: [S2]; carve-out: [S2] [S4]; factor **[std]** (6) |
-| Sex | Male and female rated separately. Female premium runs **0.79–0.86** of male on the published grid; the CI incidence relation is the opposite at young ages — see *Premiums* footnote (10) | [S4] [S3] |
+| Sex | Male and female rated separately. Female premium runs **0.808–0.872** of male across the published grid; the CI incidence relation is the opposite at young ages — see *Premiums* footnote (10) | [S4] [S3] |
 | Lives basis | Single life; the insured is normally the policyholder. Third-party contracts require the insured's written consent | [S1 제24조] |
 | Underwriting | 일반심사 (full underwriting). 간편심사 and 무심사 forms exist on other Korean products and are a different axis from GI | [R2]; scope **[std]** (7) |
 | **Anchor model cell** | 남자, 보험나이 **40**, 80% 선지급형, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 종신 (CI 보장 100세), 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 월보험료 **₩306,740** (annualized **₩3,680,880**) | [S4]; construction and annualization **[std]** (8) |
@@ -300,10 +300,10 @@ Footnotes to [std] rows:
 | Premium basis | Level and guaranteed for 납입기간, subject to the statutory 위험률 revision right below. No renewal mechanic on the main contract | [S1] [S3] [S4] |
 | Mode (납입주기) | 월납 in the market; the composite pays **연납** at 12 × the monthly rate | [S3] [S4]; annualization **[std]** (8) |
 | Rating factors | 보험나이, sex, 보험가입금액 (via 고액계약할인), 납입기간, 선지급 비율, benefit menu, and whether the 저해지환급형 form is taken | [S3] [S4] |
-| Price of the acceleration fraction | 80% form costs **5–9%** more than the 50% form on the same age, sex and menu; the 100% form **33–38%** more | computed on [S4]'s 96 cells (9) |
+| Price of the acceleration fraction | 80% form costs **2.8–9.4%** more than the 50% form on the same age, sex and menu; the 100% form **29.6–38.2%** more | computed on [S4]'s 96 cells (9) |
 | Price of the benefit menu | Across 2대 → 암 → 3대 → 17대 the spread is only **12.8%**; the fourteen conditions beyond the three headline diseases add about **5.3%** | computed on [S4] (9) |
 | 저해지환급형 premium discount | **9–12%** below the 기본환급형 on the published grid (i.e. 88%–91% of it); up to 30% claimed elsewhere. The band brackets the chassis's chosen 90.0% at the same `k = 0.50` | [S4] computed; range [S5] |
-| Sex differential | Female premium **0.79–0.86** of male at the same cell (0.830 at 남40/여40, 17대, 50%); **0.774** on the 2011 CI card at age 40 | [S4] [S3] (10) |
+| Sex differential | Female premium **0.808–0.872** of male at the same cell (0.830 at 남40/여40, 17대, 50%); **0.774** on the 2011 CI card at age 40 | [S4] [S3] (10) |
 | Age slope | 남 30 → 40 on 17대 / 50% is ×1.293 over ten years, a compound 2.6% a year — flat, because a 20-year-pay whole-life premium is dominated by the savings element | computed on [S4] |
 | Assumed interest rate (예정이율) | **연복리 2.50%, flat** — the chassis's value, inherited unchanged | chassis; CI evidence [S3] [S4]; [REG-R48]; **[std]** (11) |
 | 최저보증이율 (금리연동형 variant only) | 연복리 **1.5%** for elapsed periods to ten years, **0.5%** beyond | [S1 제36조] |
@@ -316,7 +316,11 @@ Footnotes to [std] rows:
 
 9. Computed here from the 96 published cells of [S4], stated as arithmetic on that source. At
    남40 / 17대보장형 / 기본환급형 the three acceleration forms run 311,640 → 338,100 (×1.085)
-   → 428,260 (×1.374); at 남30 / 17대, 241,080 → 263,620 (×1.093) → 333,200 (×1.382). **The
+   → 428,260 (×1.374); at 남30 / 17대, 241,080 → 263,620 (×1.093) → 333,200 (×1.382). Those
+   are the *steepest* cells: **the 80 : 50 step ranges over the whole grid from ×1.0278 (여35
+   / 2대보장형 / 기본환급형) to ×1.0935 (남30 / 17대 / 기본환급형), and the 100 : 50 step from
+   ×1.2959 (여30 / 2대 / 저해지) to ×1.3821 (남30 / 17대 / 기본환급형)** — the step widens
+   with the menu, because the acceleration fraction multiplies a larger disease list. **The
    100% jump is much larger than the 50 → 80 step because it is not a re-weighting**: on that
    form the death benefit is extinguished and replaced by a separately funded 유족위로금 —
    see footnote (13). On the menu, at 남40 / 50% / 기본환급형, 2대 → 암 → 3대 → 17대 runs
@@ -430,7 +434,8 @@ this table, and is reproduced because it is the cleanest published statement of 
     breast-cancer-only design requires the female 중대한 암 incidence to be split into a
     breast component and the rest, which the composite supplies as a **[std]** share
     calibrated on the national cancer registry — 유방 29,871 cases in 2023, 10.3% of all
-    cancers and 19.0%-equivalent of the female burden alongside thyroid [REG-R40].
+    cancers, taken against a female burden of 137,487 less the **19.0%** of that burden
+    which is 갑상선 and which 중대한 암 excludes as C73 [REG-R40].
 
 ### Options
 
@@ -944,8 +949,13 @@ the 재해 carve-out [S1 별표1 주2]. The same 1·2등급 trigger is carried i
 [R11], so this is one of the few parameters the CI → GI transition left alone.
 
 For the incidence basis, `LTC_KR_S` is the library's home for the 등급별 인정자 statistics
-[REG-R42] [REG-R43]; `CI_KR_A` takes a **[std]** 1·2등급 inception rate from that product's
-construction and states the cross-reference rather than rebuilding it. The earlier *private*
+[REG-R42] [REG-R43] and, on its own primary sources, for a **disclosed** 요양 1·2등급
+발생률 grid at ages 40, 50 and 60 by sex — so a Korean 1·2등급 inception rate at insured ages
+*is* published, in a 상품요약서, and this product does not use it. `CI_KR_A` runs a **[std]**
+ramp of its own instead, nil below 65 and calibrated only to the order of magnitude implied by
+[REG-R42]; the consequence, stated in `technical-notes.md` rather than hidden, is that the
+장기요양 limb of this model's CI decrement is **nil at every insured age below 65** where the
+sister product's disclosed rates are not. The earlier *private*
 definitions are recorded for context in the research file — a 1992 product borrowed from
 Japan paying on bed-boundedness plus restriction in 3 of 4 ADLs, relaxed to 1 of 4 in 2003,
 which raised the incidence and the price and did not sell [R1]; and a 중증치매 rider
@@ -1214,9 +1224,11 @@ female rate is **2.17×** the male (0.002220 against 0.001023); at 60 it is **0.
 the exposure that broke the 2002 pricing [R1] — and it is why breast cancer alone carries the
 first-year halving in [S1].
 
-**The age slopes are steep and near-geometric.** Male 중대한 암 rises ×10.8 from 20 to 40 and
-×10.8 again from 40 to 60; male AMI ×21.8 then ×7.4; male stroke ×23.9 then ×4.4. 중대한
-급성심근경색증 is the most male-skewed cause (4.0× at 40, 2.4× at 60); 중대한 뇌졸중 is close
+**The age slopes are steep, and they are not constant.** Male 중대한 암 rises ×7.1 from 20 to
+40 (0.001023 / 0.000144) and ×10.8 from 40 to 60 (0.011063 / 0.001023) — cancer is the one
+cause whose log-slope *steepens* with age, where male AMI runs ×21.8 then ×7.4 and male
+stroke ×23.9 then ×4.4, both flattening. 중대한 급성심근경색증 is the most male-skewed cause
+(4.0× at 40, 2.4× at 60); 중대한 뇌졸중 is close
 to unisex at 20 and runs 2.3× male at 40 and 1.45× at 60. A **[std]** CI incidence
 construction for `CI_KR_A` must reproduce those slopes, and `technical-notes.md` states the
 interpolation and the extrapolation beyond 60 explicitly.
@@ -1353,7 +1365,8 @@ composite's choices are justified against this table.
     carry that stratification by vintage.
 17. **예정이율.** 4.0% for the protection element in 2011 [S3]; about 2.75% on a 2019 종신
     illustration basis [S4]. Observed **2.75%–4.0%** on CI documents, against the chassis's
-    2.25%–2.75% on 2021–2025 documents. Composite: 2.25% — footnote (11).
+    2.25%–2.75% on 2021–2025 documents. Composite: **2.50%**, the chassis's mid-point,
+    inherited unchanged — footnote (11).
 18. **기본보험금 floor multiple on the 계약자적립금.** 105% [S1]; 110% [S3]. Composite: 105%,
     parameterized.
 19. **고액계약할인.** 1/2/3/5/6% by band from 3,000만원 in 2011 [S3]; 1/2/3% from 7,000만원

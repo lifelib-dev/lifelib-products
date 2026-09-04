@@ -197,8 +197,8 @@ That second adjustment is what makes the payout formula reconstruct the publishe
 illustration. On the anchor cell's model point the composite's factor reproduces all six
 published 확정기간연금형 implied factors — 9.06 / 12.92 / 16.39 at 2.15% and
 9.81 / 14.53 / 19.13 at the guaranteed rate — to three or four significant figures, and the
-종신연금형 factor of 23.70 exactly. An annual-payment reading of the same formula misses
-every one of them by about half a per cent in the wrong direction.
+종신연금형 factor of 23.70 to four, at 23.7004. An annual-payment reading of the same formula
+misses every one of them by about half a per cent in the wrong direction.
 
 .. rubric:: Modules that are off in the base run
 

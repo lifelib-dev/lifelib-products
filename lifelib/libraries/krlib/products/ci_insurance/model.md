@@ -275,8 +275,9 @@ accrue surrender value on the full premium scale. It is therefore the only route
 
 `pols_if_pay(t)` is `pols_if_pre(t) − pols_waived(t)`, and the post-CI count is nowhere in
 it. Weighting premium by `pols_if(t)` instead reproduces year 1 exactly and diverges from
-year 2 onward — 0.695569 person-years of spurious premium inside the 납입기간, about
-₩2.56m — which is the quietest available error in this model.
+year 2 onward — 0.7291348 person-years of spurious premium inside the 납입기간,
+₩2,683,857.72, of which the post-CI cohort is 0.6955694 (₩2,560,307.45) and the waived
+subset the rest — which is the quietest available error in this model.
 
 A modern Korean accelerated product has **two trigger sets of different widths**: a narrow
 one for the money and a wide one for the waiver, which by the GI generation runs to 25
@@ -418,17 +419,20 @@ by eye.
 The male rates are a Makeham `mu(y) = A + B c^y` fitted **exactly** to [S3]'s three
 disclosed male 예정 경험 사망률 anchors — q(20) = 0.00051, q(40) = 0.00068,
 q(60) = 0.00290 — giving `A = 4.960424e−04`, `B = 1.077496e−06`, `c = 1.1371590`, used to
-age 60. Above 60 the fitted slope of 13.7% a year reaches a rate above 1 well before age
-100, so **the old-age shape is a separate [std] rule and not a continuation**: log-linear
-in `q` from the age-60 anchor to `q(110) = 1`, i.e. `q(y) = 0.00290 × 1.1240^(y − 60)`.
+age 60. Extrapolated, that fit reaches `q = 1` at about attained age **107** — inside this
+projection's own horizon — and stands a third above the shipped ramp by age 100 (0.414
+against 0.311), so **the old-age shape is a separate [std] rule and not a continuation**:
+log-linear in `q` from the age-60 anchor to `q(110) = 1`, i.e.
+`q(y) ≈ 0.00290 × 1.1240^(y − 60)`.
 
-The female rates are **0.5294 × the male rates at every age**, that being [S3]'s own
+The female rates are **0.5294 × the male rates at every age below ω**, that being [S3]'s own
 disclosed female-to-male ratio at age 20 (0.00027 / 0.00051) — the only usable female
 anchor, because [S3]'s female rates at 40 and 60 extract identical to the male ones and are
-a PDF column-merge artefact expressly [unverified]. **The construction understates the
-female advantage**: it gives a 15-to-80 death probability ratio of 0.60 against the 0.50
-implied by 국가데이터처's survival to age 80 of 남 64.4% / 여 82.2% [REG-R38]. That is a
-stated defect of this file and not a finding about Korean insured mortality.
+a PDF column-merge artefact expressly [unverified]; at ω = 110 both sexes carry the terminal
+`q = 1`. **The construction understates the female advantage**: it gives a 15-to-80 death
+probability ratio of **0.560** (0.128367 / 0.229205) against the 0.500 implied by
+국가데이터처's survival to age 80 of 남 64.4% / 여 82.2% [REG-R38]. That is a stated defect
+of this file and not a finding about Korean insured mortality.
 
 This table is **not the chassis's.** ω is 110 here against 115 there, and the two files are
 fitted to different anchors on different bases. Swapping them changes the horizon by five
@@ -614,10 +618,10 @@ them bound nothing at all, which is said rather than papered over.
 | `net_prem_ratio` | 0.80 | the 연납순보험료 entering 별표 14 is taken as 0.80 × gross, so the statutory cap rests on published figures alone [REG-R20] | cross-check: ₩3,944,704 against the FSC's 13× monthly rule of thumb, ₩3,987,620 — 1.1% [REG-R29] |
 | surrender-charge run-off | straight line over `surr_chg_years_cap` = 7 | the 7-year cap is statutory [REG-R19 제7-66조제1항제2호](#krlib-reg-r19); the schedule inside it is in the unpublished 산출방법서 [REG-R2] | none published; seven equal steps of ₩563,529.1428571429 at the anchor |
 | ω (`omega_age`) | 110 | the 제10회 경험생명표's terminal age is not published [REG-R33] [REG-R34] | the chassis ships 115 on a differently anchored table |
-| mortality construction | Makeham fitted exactly to three anchors to 60, log-linear in `q` from 60 to `q(110) = 1` | the fit reproduces [S3]'s three disclosed male rates exactly; the fitted slope passes 1 before age 100, so the ramp is a separate rule | female = 0.5294 × male on [S3]'s age-20 ratio; the check **fails** — a 15-to-80 ratio of 0.60 against the 0.50 implied by [REG-R38] |
+| mortality construction | Makeham fitted exactly to three anchors to 60, log-linear in `q` from 60 to `q(110) = 1` | the fit reproduces [S3]'s three disclosed male rates exactly; extrapolated it passes `q = 1` at about attained age 107 and stands a third above the ramp at 100, so the ramp is a separate rule | female = 0.5294 × male on [S3]'s age-20 ratio; the check **fails** — a 15-to-80 ratio of 0.560 against the 0.500 implied by [REG-R38] |
 | CI incidence above 60 | 40-to-60 log-slope damped at 0.90 a year | undamped, male 중대한 암 reaches 1.29 by age 100 | none published above 60; [S3] stops there |
 | `other` limb | 10.5% of the three headline rates | 5.30% office-premium step from 3대 to 17대 [S4] divided by the CI benefit's 50.6% share of the risk premium at male 40 [S3] | a derivation from two published figures with different denominators, and flat across age where seventeen conditions are not |
-| `ltc` limb | nil below 65, `0.0012 × 1.14^(y−65)` above | scaled to the order implied by [REG-R42]'s 154,688 1·2등급 인정자 at an assumed three-year mean duration | no Korean 장기요양 inception rate at insured ages is published; the 노인성 질병 route below 65 [REG-R55] is not modelled at all |
+| `ltc` limb | nil below 65, `0.0012 × 1.14^(y−65)` above | scaled to the order implied by [REG-R42]'s 154,688 1·2등급 인정자 at an assumed three-year mean duration | **this product's own source set retrieved none**, but the library's does: `LTC_KR_S` sources a disclosed 요양 1·2등급 발생률 grid at ages 40 / 50 / 60 by sex, on which the male 1·2등급 rate at 60 is 0.000530 — about 2.5% of this model's CI rate there. Holding this limb at nil below 65, and not modelling the 노인성 질병 route below 65 [REG-R55], understates the decrement at insured ages by that order |
 | `ci_wait_days` | 90, giving 0.7534246575 on the first year's `cancer` and `ltc` limbs | uniform first-year incidence on an annual grid; the 90 days themselves are sourced four times over [S1] [S2] [S3] [S4] | setting the wait to zero moves the anchor's `Σ net_cf` by ₩25,542.20, or 0.05% |
 | `breast_share_m` / `_f` | 0.005 / 0.268 | 유방 29,871 cases over the female burden less the 19.0% that is 갑상선 [REG-R40]; a registry share is on 만나이 but a *share* is insensitive to the half-year | male breast cancer is under 1% of breast cases; the male figure is a rounding error and the female one is 17.86% of year-1 accelerations |
 | `mort_ci_factor` | 3.00 | **the single largest unsourced number in the model.** No Korean post-CI mortality is published; anchored qualitatively on 69.6% five-year cancer survival excluding thyroid [REG-R40] | none; point 9 runs 2.00, and the effect is **not monotone** — it moves `claims_death_ci` and the cohort's size in opposite directions |

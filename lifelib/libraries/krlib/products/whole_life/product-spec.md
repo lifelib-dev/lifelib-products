@@ -19,7 +19,7 @@ table row carries a numbered footnote giving the rationale and, where the resear
 established one, the observed range across insurers. Claims that could not be confirmed against
 a retrieved document are flagged [unverified].
 
-**Composite base.** Nine carriers' documents were retrieved and read: 처브라이프생명 [S1],
+**Composite base.** Ten carriers' documents were retrieved and read: 처브라이프생명 [S1],
 하나생명 [S2] [S9] [S10], KB라이프생명 [S3], DB생명 [S4], KDB생명 [S5] [S8], ABL생명 [S6],
 삼성생명 [S7], 교보생명 [S11] [S15], AIA생명 [S12] and 신한라이프 [S13]. **Five of them publish
 complete numeric surrender-value grids** for both the suppressed form and its non-marketed
@@ -148,7 +148,7 @@ useful is the **industry comparison basis** Korean disclosure uses for 종신보
 | Issue age (가입나이) | **보험나이 15–65**, women admitted 3–8 years higher at the same payment term | [S4]; envelope **[std]** (4) |
 | Age basis | **보험나이** (*boheom nai*, insurance age): 만 나이 at 계약일 with a fraction under six months discarded and six months or more rounded up, incrementing on each 계약해당일 (policy anniversary), **not** on the birthday | [S5 제21조] [REG-R25 제21조](#krlib-reg-r25) |
 | Sum assured (보험가입금액) | **₩10,000,000 – ₩1,000,000,000** (1,000만원 ~ 10억원) in ₩1,000,000 units | [S1] [S8]; adoption **[std]** (5) |
-| Sex | Rated separately. The female premium is **87%–91%** of the male at 보험나이 40 on the three published grids | [S1] [S4] [S6] |
+| Sex | Rated separately. The female premium is **84%–91%** of the male at 보험나이 40 across the three published grids — 87%–91% on their 평준형 rows, down to 84% on the 체감형 and 2종 ones | [S1] [S4] [S6] |
 | Lives basis | Single life; 계약자 (policyholder) and 피보험자 (insured) the same person. A policy on another's life needs that person's written consent (상법 제731조) and is void below age 15 (제732조) | [REG-R50]; scope **[std]** (6) |
 | **Anchor model cell** | 남자, 보험나이 **40세**, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 **종신**, 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 표준형 월보험료 **₩257,050** (annualized ₩3,084,600) | [S4] [S17] [REG-R9] [REG-R20]; annualization and `k` **[std]** (7) |
 
@@ -325,7 +325,7 @@ Footnotes to the [std] rows above, continuing the numbering:
    not the filing. And search results reporting a market-wide 예정이율 cut in April 2025 and
    again for 2026 could not be confirmed against any retrieved carrier document and are
    **[unverified]** — what is sourced is the 평균공시이율 series, which fell from 2.75% to
-   **2.50%** for 2026, its first fall since 2020 [S10] [REG-R48].
+   **2.50%** for 2026, its first fall since the 2.50% → 2.25% step in 2021 [S10] [REG-R48].
 10. The suppression is paid for in premium, and the discount is much smaller than the
     surrender-value haircut. Measured directly wherever a carrier publishes both scales for one
     cell: **89.9%** at a 50% factor [S1]; **94.3% 남 / 92.9% 여** on the formula design [S2];
@@ -335,10 +335,12 @@ Footnotes to the [std] rows above, continuing the numbering:
     post-amendment design shows **62.2%** [R1] [REG-R28], which is a much larger discount than
     any sold product in the set and is best read as an illustration of returning the whole
     give-up as premium rather than as a market observation. The composite takes **90.0%** at a
-    50% factor: it is the 처브라이프 observation at that exact factor [S1], and it sits between
-    the 30%-factor and the shallower 50%-factor observations. The model derives the suppressed
-    premium from its own equivalence principle rather than by applying this ratio; the ratio is
-    the target the calibration is checked against, and `technical-notes.md` reports the fit.
+    50% factor, which is a rounding of the 89.9% 처브라이프 observation at that suppression
+    factor [S1] and sits between the 30%-factor and the shallower 50%-factor observations.
+    The ratio is a **price** input and never touches the surrender value: the anchor's premium
+    is 90.0% of the sourced 표준형 figure, and the model's own loading rule multiplies its
+    equivalence net premium by the same ratio, so the two agree by construction and
+    `technical-notes.md` reports the fit.
 11. Only one carrier states a threshold: 「주계약의 보험가입금액이 3,000만원 이상인 계약에
     대하여 주계약 영업보험료를 1.5% 할인하여 이를 영수합니다. (단, 부가특약은 제외)」, with a
     re-test on any later change of 가입금액 [S1]. A second states that its published scale
@@ -830,8 +832,8 @@ extinguished against any exit:
 
     L(0)   = 0
     L(t+1) = ( L(t) + D(t) - R(t) ) * (1 + i_L)
-    subject to  L(t) <= 0.80 * CV(t)                       the draw-down limit
-    with  claims, surrenders and lapses paid net of L(t)
+    D(t)  <= 0.80 * CV(t-1) - L(t)      the limit, tested at the draw and not after it
+    with  claims, surrenders and lapses paid net of L(t), floored at zero
 
 where `D(t)` is the amount drawn and `R(t)` the amount repaid at `t`. Take-up and repayment
 behaviour are **[std]** behavioural assumptions with no public Korean data behind them; the
@@ -1150,8 +1152,9 @@ lapse spike at the bonus date rather than a different benefit [S7] [REG-R27].
 8. **What is disclosed at all.** Two carriers publish the 적용이율, sample 적용위험률 at ages
    20 / 40 / 60 by sex, the 적용해지율 envelope and the 보험가격지수 in the 상품요약서 [S2]
    [S8]; the other six publish none of it. The two disclosed mortality grids differ by
-   **10%–23%** at every age and sex — 남 40세 0.000780 against 0.00092, 여 60세 0.001730
-   against 0.00214 — so they **bracket** rather than fix a Korean insured mortality level, and
+   **up to 24%** — 18%–24% at five of the six published cells (남 40세 0.000780 against
+   0.00092, 여 60세 0.001730 against 0.00214) and not at all at 여 20세, where both print
+   0.00018 — so they **bracket** rather than fix a Korean insured mortality level, and
    one of them is labelled 「무배당 **예정 경험**사망률」, which is the giveaway that it is a
    경험생명표 derivative with a 무배당 loading rather than the table itself [S2] [S8].
 9. **The issue-age envelope, and who the product is for.** 만15세~65세 [S4] and 만15세~70세
