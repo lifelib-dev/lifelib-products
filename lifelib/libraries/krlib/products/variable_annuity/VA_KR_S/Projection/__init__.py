@@ -188,7 +188,7 @@ asserts it.
 보험료(특약보험료 제외) 및 추후 납입할 기본보험료 합계」, the whole premium the
 policyholder has undertaken to pay, past *and* future — levied 「납입기간(최대 7년)
 동안」 [S1]. On the anchor cell that is ₩9,000 a month against a first-year account
-value of about ₩3.3 million: **over 3% a year of the fund at outset**, falling below
+value of ₩3,216,621: **over 3% a year of the fund at outset**, falling below
 0.5% by year seven. A model that treats guarantee charges as basis points on the account
 value misstates the early-duration cash flow of this contract by an order of magnitude,
 which is why the asset and premium components are separate cells with separate bases.
@@ -666,8 +666,9 @@ def risk_prem_pp(t):
 
     ₩24 a month on the anchor cell at issue. It buys the 고도재해장해급여금 of
     ₩10,000,000 per 구좌 [S1] [S2], which this model **charges for and never pays**: no
-    Korean 장해 incidence rate is published and the 참조순보험요율 does not reach the life
-    side [REG-R34]. The omission is named in the model docstring rather than hidden.
+    장해 incidence rate on this contract's basis was retrieved, the 참조순보험요율 display
+    being a 장기손해보험 one that does not reach the life side [REG-R34] [REG-R61]. The
+    omission is named in the model docstring rather than hidden.
     """
     if t >= t_ann():
         return 0.0
@@ -764,7 +765,8 @@ def wd_pp(t):
     Off unless the model point sets :func:`wd_ratio`. Taken once a policy year on the
     계약해당일 **[std]** against a contract permitting twelve a year [S1], and bounded by
     every published limit: at most 50% of the 해약환급금, a residual 계약자적립액 of at
-    least ₩5,000,000 per 구좌, and cumulative withdrawals inside the first ten years no
+    least ₩5,000,000 per 구좌 — the anchor carrier's figure [S1], matched by [S5]; [S2]
+    publishes ₩3,000,000 — and cumulative withdrawals inside the first ten years no
     greater than the premiums actually paid — the last of these a **tax** rule showing
     through into the policy conditions, since it is what keeps the 소득세법 시행령 제25조
     ten-year exemption open [S1] [S2] [S5] [REG-R58]. No fee is charged [S1] [S2] [S9].
@@ -1149,8 +1151,9 @@ def annuity_int_rate():
 def ann_mort_rate_at_age(x):
     """연금사망률 at 보험나이 ``x`` — the annuitant basis, from ``data.mort_table()``.
 
-    A **[std]** Makeham curve fitted so its complete expectation of life at 65 is exactly
-    the 제10회 경험생명표 65세 기대여명, 23.7 years male and 27.1 female [REG-R33]. The
+    A **[std]** Makeham curve fitted so its complete expectation of life at 65 **rounds
+    to** the 제10회 경험생명표 65세 기대여명, 23.7 years male and 27.1 female [REG-R33];
+    the fitted values are 23.663 and 27.060. The
     실제 table is not published [REG-R34]. The contract lets the insurer re-strike this
     basis at annuitisation but **only in the policyholder's favour** [S1] [S2] [S5];
     that one-way ratchet is not modelled.

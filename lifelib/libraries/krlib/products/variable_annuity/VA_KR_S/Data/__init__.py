@@ -104,10 +104,10 @@ def mort_table():
     of the 연금개시 전 보험기간, against which the GMDB is written; ``ann_mort_rate`` is
     the 연금사망률 (연금생명표) proxy used for the annuity factor and for the payout
     phase.  Both are **[std]** Makeham constructions: the annuity basis is fitted so its
-    complete expectation of life at 65 is exactly the 제10회 경험생명표 65세 기대여명 of
-    23.7 years male and 27.1 female [REG-R33], and the insurance basis is that curve at
-    ``mu / 0.80``.  The 경험생명표 qx table is **not published** [REG-R34]; this file
-    must never be presented as it.
+    complete expectation of life at 65 **rounds to** the 제10회 경험생명표 65세 기대여명
+    of 23.7 years male and 27.1 female [REG-R33] — the fitted values are 23.663 and
+    27.060 — and the insurance basis is that curve at ``mu / 0.80``.  The 경험생명표 qx
+    table is **not published** [REG-R34]; this file must never be presented as it.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / mort_table_file, index_col=["sex", "age"])     # noqa: F821

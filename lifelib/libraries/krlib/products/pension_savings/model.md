@@ -20,13 +20,14 @@ product as a liability cash flow projection on paper) and [`product-spec.md`](pr
 > 산출방법서 basis, before drawing any conclusion from the numbers.
 
 `Pension_KR_A` is the annual-grid model of the tax-qualified pension savings composite
-(*yeongeum jeochuk boheom*, 연금저축보험). It inherits the **accumulation half** of the
-[whole life chassis (종신보험)](../whole_life/model.md) — the 계약자적립액 recursion, the
-해약공제액 and its statutory cap, the 해약환급금 floor — and adds the five things the notes
-specify for the first time in the library: crediting at a declared rate over a guaranteed
-floor, the tax layer as a behavioural driver rather than a cash flow, the statutory 연금수령
-conditions as constraints, the annuitisation step, and the question of **which vintage** of
-the annuitant table the factor is struck on.
+(*yeongeum jeochuk boheom*, 연금저축보험). It inherits the **surrender-value machinery** of
+the [whole life chassis (종신보험)](../whole_life/model.md) — the 해약공제액, its statutory
+cap and the 해약환급금 floor — but **not** that chassis's 계약자적립액 recursion, which is a
+net-level accumulation with a survivorship release where this one is a plain account (next
+section). It adds the five things the notes specify for the first time in the library:
+crediting at a declared rate over a guaranteed floor, the tax layer as a behavioural driver
+rather than a cash flow, the statutory 연금수령 conditions as constraints, the annuitisation
+step, and the question of **which vintage** of the annuitant table the factor is struck on.
 
 ## Run it
 
@@ -38,9 +39,11 @@ python products/pension_savings/run.py 9          # another model point
 `run.py` prints the model point and its module switches, the annuitisation quantities, the
 head and tail of `result_cf()`, the undiscounted totals and every `check_*()` cells. Its
 output is ASCII only, so it prints on a Windows console under any code page: amounts are
-written `KRW` and Korean terms are romanized. Real output below, abridged to fit the page —
-the middle rows and the all-but-constant `claim_expenses`, `commissions` and `policy_loans`
-columns are dropped, and two header lines are re-wrapped; nothing else is changed:
+written `KRW` and Korean terms are romanized. Real output below, **abridged to fit the
+page**: middle rows and the all-but-constant `claim_expenses`, `commissions` and
+`policy_loans` columns are dropped, the header lines are re-wrapped, and a few parenthetical
+glosses and the two all-zero module and dividend fields are trimmed. No figure is changed;
+run `run.py` for the unabridged text.
 
 ```text
 model point 1: KR-PEN-0001 - yeongeum jeochuk boheom (tax-qualified pension savings), M40
@@ -108,11 +111,14 @@ notes' symbols mapped to the cells names.
 
 ## The fund is an account, and there is no mortality in it
 
-This is the structural difference from `Annuity_JP_A`, the closest model in this repository,
-and it is not a parameter difference. A Japanese deferred annuity's 保険料積立金 is a
+This is the structural difference from the two nearest accumulation models in this
+repository, and it is not a parameter difference. `Annuity_JP_A`'s 保険料積立金 is a
 net-level-premium reserve with a **survivorship release**: the premiums of those who die go
-to the survivors net of the death benefit paid, so the recursion divides by `(1 - q')`. The
-Korean 계약자적립액 does none of that. It is a contractual balance:
+to the survivors net of the death benefit paid, so the recursion divides by `(1 - q')`. So —
+and this is the trap, because it is the nearer neighbour and shares the Korean name — does
+`WholeLife_KR_A`'s own 계약자적립액, which runs
+`V(t) = ((V(t-1) + P)(1 + i) - q·SA)/(1 - q)`. **This** 계약자적립액 does none of that. It is
+a contractual balance:
 
 ```
 AV(0)   = 0
@@ -344,9 +350,11 @@ published illustration as the calibration target:
 - **The implied longevity is extreme, and it is the illustration's, not the model's.** The
   fitted table gives a male 65 a curtate expectation of life of **33.31 years** against the
   제10회's own published 23.7 [REG-R33] and 국가데이터처's 완전생명표 19.5 [REG-R38]. That gap
-  is what the calibration target requires: solving ä_n = 23.70 at 2.15% gives n ≈ 32.5, so
-  the published life annuity is priced like a certain annuity running to about age 97
-  `[derived]` from [S2]. A 연금사망률 is a **pricing** table loaded on the survival side for a
+  is what the calibration target requires: solving ä_n = 23.70 at 2.15% on the **monthly**
+  annuity-due this model uses gives n ≈ 32.9, so the published life annuity is priced like a
+  certain annuity running to about age 98 `[derived]` from [S2] — 32.5 and about 97 on the
+  annual annuity-due, which is not the form this contract pays.
+  A 연금사망률 is a **pricing** table loaded on the survival side for a
   longevity product, and this is what that loading looks like when it is read off a published
   annuity rather than assumed.
 - **The female table is the male law set back four years**, the whole-year setback closest to
@@ -377,9 +385,11 @@ rather than carry a number.
 **`claims_death` and `claims_lapse` are the same benefit under two decrements.** Both pay
 `db_pp_net(t+1)` and `cv_pp_net(t+1)`, which are the same number at every deferral duration
 on this composite, so the columns differ only in the rate applied and their ratio is exactly
-`w(t) ÷ q(t)`. At the anchor cell that runs from **49.6** at `t` = 0 to **3.8** at `t` = 24 as
-mortality rises against a lapse rate that steps down, and comes to **9.05** over the whole
-deferral phase. Splitting them is still right:
+`(1 − q(t)) w(t) ÷ q(t)` — surrenders are taken from the survivors of mortality, so the
+`(1 − q)` belongs in the identity even though it does not move the displayed figures. At the
+anchor cell that runs from **49.6** at `t` = 0 to **3.8** at `t` = 24 as mortality rises
+against a lapse rate that steps down, and the two totals come to a ratio of **9.05** over
+the whole deferral phase. Splitting them is still right:
 the two are separable the moment a model point carries a 해지공제액, as point 8 does.
 
 **`commissions` is zero in every row and is published anyway.** The composite follows a

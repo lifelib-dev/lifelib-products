@@ -13,7 +13,7 @@ and statistical references), both numbered per `_research/immediate-annuity.md` 
 resolved in `sources.md` in this directory (that numbering is frozen and is never
 renumbered) — were extracted from the cited document. [REG-R#] tags resolve against the
 cross-product reference library `references/regulatory-and-actuarial-references.md`,
-whose own R-numbering runs R1–R60 and is distinct from this product's. Values marked
+whose own R-numbering runs R1–R62 and is distinct from this product's. Values marked
 **[std]** are standardizations introduced for the reference implementation; each [std]
 table row carries a numbered footnote giving the rationale and, where the research
 bracketed one, the observed range across insurers. Claims the research pass could not
@@ -196,8 +196,12 @@ Footnotes to [std] rows:
    arrangements exist — 삼성 publishes a 연금선수익자 / 연금후수익자 mechanism [S5] and
    ABL a 부부계약 (joint-life) form [S6] — and both are out of scope (see Riders and
    options). Single-life, single-party is the reference basis.
-6. 무배당 appears in the product name of five of the seven retrieved 즉시연금 products
-   [S1] [S5] [S6] [S7] [S8]. ABL's 사업방법서 contemplates a participating sibling and
+6. 무배당 appears in the product name of five of the seven retrieved 즉시연금 products —
+   하나 [S1], 교보 [S2], 동양 [S4], 삼성 [S5] and ABL [S6]; the two that do not are the 2017
+   교보 vintage [S3] and the state provider's 2011 contract [R27]. (The 무배당 in the names
+   of [S7] and [S8] is not evidence about this product line: both are deferred contracts
+   and are cited for payout-phase machinery only.) ABL's 사업방법서 contemplates a
+   participating sibling and
    requires that 「'다'의 공시이율은 동종상품의 배당보험 공시이율보다 높게 적용한다」
    [S6 §9-라], i.e. the non-participating declared rate must be the higher of the two.
    No participating 즉시연금 rate scale was retrieved, and 계약자배당 [REG-R12] is
@@ -251,8 +255,10 @@ Footnotes to [std] rows:
     ₩10,000,000,000 (100억원) [S1 §II-5]; 삼성 caps at ₩5,000,000,000 [S5]; the state
     provider capped at ₩250,000,000 [R27]. The age-stepped inheritance cap is an
     anti-selection and estate-planning control rather than a mortality one, and it is
-    adopted in outline (a flat ₩5,000,000,000, with the age-banding recorded under
-    Variations) because the model's premium domain needs a bound and not a schedule.
+    adopted in outline — a flat ₩5,000,000,000, the age-banding recorded in this footnote
+    and nowhere else — because the model's premium domain needs a bound and not a
+    schedule. The Variations table below carries the minimum premium by carrier and not
+    the maximum.
 11. [S1 §VIII] publishes the load by component **and by shape** on a 남자 60세, 일시납
     ₩50,000,000 basis: 종신연금형 계약체결비용 2.61% + 계약관리비용 1.30% = 3.91%;
     상속연금형(20년만기) 2.19% + 1.30% = 3.49%. The composite adopts a single
@@ -289,7 +295,10 @@ Footnotes to [std] rows:
     retrieved, does not reach it.
 15. Observed: **2.08%** of the single premium in year one on 종신연금형 and **1.75%** on
     상속연금형, nil in every later year, on a 남자 60세 일시납 1억원 basis [S1 §VII].
-    2.00% is the round mid-point. The internal consistency that matters is that it sits
+    2.00% is a **round figure inside that pair** and not their mid-point, which is 1.915%;
+    it is carried in preference to 1.915% because the sub-basis-point precision would be
+    spurious across two shapes and one carrier. The internal consistency that matters is
+    that it sits
     **below** the 2.20% 계약체결비용, so the acquisition cost taken from the fund at
     inception covers the commission paid out of it at the same moment; the reference
     implementation has no acquisition strain and no deferred acquisition cost to
@@ -379,9 +388,10 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     illustration rules make a carrier show beside its own [S11] [S5]. It sits **5 to 17
     basis points below** the 2.55%–2.67% band of the three most recent observations, and
     that direction is recorded rather than smoothed: the adopted rate is at the
-    supervisory average and a little under the market's latest declarations. No model in this library derives a Korean
-    declared rate: 감독규정 제7-65조제3항 and 시행세칙 별표 27 make it the product of a
-    공시기준이율 whose own weighting α is capped at 60% and is majority-weighted to the
+    supervisory average and a little under the market's latest declarations. No model
+    in this library derives a Korean declared rate: 감독규정 제7-65조제3항 and 시행세칙
+    별표 27 make it the product of a 공시기준이율 whose own weighting α is capped at 60%
+    and is majority-weighted to the
     insurer's realised 운용자산이익률 [REG-R18] [REG-R24], and the two carriers who
     publish their weighting publish different ones [S6] [S12]. The rate is a slow-moving
     **[std]** scalar and is exposed as such.
@@ -392,10 +402,17 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     2016–2017; **1.25% / 1.00% / 0.75%** at 교보 in 2017-12 [S3]; 1.25% / 1.15% / 0.75%
     at 푸본현대 around 2020 [S8]; 1.25% / 1.00% / 0.50% at 하나 in 2023 [S13] and at IBK
     in 2026 [S14]; and 1.0% / 0.75% / 0.50% — reaching its terminal step after only
-    **five** years — at 한화 in 2024 [S7 제7조]. The 교보 2017 schedule is adopted because
-    it is the only three-step schedule published on a contemporaneous 즉시연금
-    illustration whose annuity figures this document also uses [S3], and because it sits
-    at the mid-point of the 2017–2026 range. That a floor exists at all is not optional:
+    **five** years — at 한화 in 2024 [S7 제7조]. The 교보 2017 schedule is adopted for one
+    reason only: it is the only three-step schedule published on a contemporaneous
+    즉시연금 illustration whose annuity figures this document also uses [S3]. **It is not
+    a middle of the observed range and is not presented as one.** Against the five
+    schedules retrieved for 2017–2026 it is the joint-highest opening step and the
+    highest terminal step — 0.75% where 하나 (2023), 한화 (2024) and IBK (2026) all step
+    down to 0.50% — so the adopted floor is at the generous end of the current market and
+    well under the 2.5% / 2.0% the 2007–2014 cohorts carried [S10]. The direction is
+    recorded rather than smoothed, and it bites on model point 8 alone: on the
+    representative basis the declared rate is above every step and the floor is inert.
+    That a floor exists at all is not optional:
     감독규정 제7-60조제10호 requires a 금리연동형보험 to set a 최저보증이율 or a
     최저보증금액 [REG-R16]. The 약관 explains it with a worked example — 「공시이율이
     0.25%인 경우, 공시이율(0.25%)이 아닌 최저보증이율 … 로 적립됩니다」 [S7 제7조]. Note
@@ -610,11 +627,13 @@ Thereafter the fund runs a single recursion, stated in the 약관 for both phase
 the annual grid, with the annuity payable in arrears:
 
 ```
-V(t+1) = V(t) × (1 + i(t)) − A(t+1),     i(t) = Max[공시이율, 최저보증이율(t)]
+V(t+1) = V(t) × (1 + i(t)) − A(t),       i(t) = Max[공시이율, 최저보증이율(t)]
 ```
 
-Everything that distinguishes the three shapes is the definition of A(t+1) out of V(t),
-and everything the model does after t = 0 is that recursion plus a decrement. There is no
+A(t) is `technical-notes.md`'s own index convention: the 연금연액 struck in period t and
+falling **at time t + 1**, in arrears on the 계약해당일. Everything that distinguishes the
+three shapes is the definition of A(t) out of V(t), and everything the model does after
+t = 0 is that recursion plus a decrement. There is no
 premium income after t = 0, no acquisition strain to amortise, and — because the whole
 load was taken at inception and the surrender deduction is nil — no unamortised
 acquisition cost bounded by 별표 14 [REG-R20]. That is what makes this the library's
@@ -1414,10 +1433,16 @@ different parts of the product:
   premium is drawn down as a fixed-term annuity beginning before the tenth anniversary
   [REG-R58]. A 확정기간연금형 of ten years fails; a 상속연금형 만기형 of ten years does
   not, because it pays the interest and returns the principal. The cap explains why the
-  anchor premium is exactly ₩100,000,000. The threshold was cut from ₩200,000,000 in the
-  February 2013 amendment following the announcement of 2012-08-08 [R5] [R29], and that
-  announcement is what produced the surge of new business in September 2012 that the FSS
-  warned against, and with it the cohort at the centre of the dispute [R5] [R17].
+  anchor premium is exactly ₩100,000,000. **The history of that cap before 2017-04-01 is
+  second-hand and the two accounts do not agree.** The retrieved 시행령 puts the cut at
+  2017-04-01, ₩200,000,000 applying to 2017-03-31 [REG-R58]; a bank glossary dates a cut
+  to ₩100,000,000 per person to the February 2013 amendment that followed the announcement
+  of 2012-08-08 [R29, a secondary source] [R5]. The amendment itself was not retrieved, the
+  discrepancy is unresolved, and the pre-2017 figure is therefore **[unverified]**; nothing
+  in this document rests on it. What the two accounts agree on is the announcement of
+  2012-08-08, and that announcement is what produced the surge of new business in September
+  2012 that the FSS warned against, and with it the cohort at the centre of the dispute
+  [R5] [R17].
 - **The 종신형 route** (시행령 제25조제4항) sets five conditions, and four of them are
   visible in the contract: annuity payable **from age 55 until death**; **no payment in
   any form other than an annuity**; the contract and the annuity fund must extinguish on

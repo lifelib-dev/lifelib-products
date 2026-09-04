@@ -43,11 +43,15 @@ The composite is a **무배당, level monthly basic premium, 금리연동형 (in
 a five-year gap, and annuity from 65 as a 종신연금형 (*jongsin yeongeumhyeong*, life annuity)
 with a ten-year guarantee. Its two phases — accumulation of a 계약자적립액 (*gyeyakja
 jeongnibaek*, policyholder account value) at the declared rate, then payout — run on one annual
-grid in `Pension_KR_A`. The contract inherits the accumulation half of the [whole life chassis
-(종신보험)](../whole_life/technical-notes.md) — 보험료적립금, 표준해약공제액 (*pyojun haeyak
-gongjeaek*, the statutory cap on the surrender charge) and 해약환급금 (*haeyak hwangeupgeum*,
-surrender value) — and adds four things that chassis does not have: monthly crediting at the
-공시이율 (*gongsi iyul*, declared rate) over a 최저보증이율 (*choejeo bojeung iyul*, guaranteed
+grid in `Pension_KR_A`. The contract inherits the **surrender-value machinery** of the [whole
+life chassis (종신보험)](../whole_life/technical-notes.md) — the 해약공제액, its
+표준해약공제액 (*pyojun haeyak gongjeaek*, the statutory cap on the surrender charge) and the
+해약환급금 (*haeyak hwangeupgeum*, surrender value) floor. It does **not** inherit that
+chassis's 계약자적립액 recursion: there the account is a net-level accumulation with a
+survivorship release, here it is a plain balance with no mortality in it, and only the name is
+shared (*Contractual mechanics* below). To it the product adds four things that chassis does
+not have: monthly crediting at the 공시이율 (*gongsi iyul*, declared rate) over a
+최저보증이율 (*choejeo bojeung iyul*, guaranteed
 floor); the 세액공제 (*seaek gongje*, tax credit) as a behavioural driver rather than an
 insurer cash flow; the statutory 연금수령 conditions as constraints on the projection; and a
 punitive 기타소득세 (*gita sodeukse*, other income tax) of 16.5% on any withdrawal that misses
@@ -470,8 +474,8 @@ Footnotes to [std] rows:
 | Alternative elected at annuitisation | **확정기간연금형** at 10 / 15 / 20 years | [S1] [S2]; menu **[std]** (19) |
 | 종신연금형 basis | 연금사망률 **and** 공시이율, per the 산출방법서 | [S1] [S2] [S6] |
 | 확정기간연금형 basis | **공시이율 only** — no mortality | [S1] [S2] [S6] |
-| 확정기간연금형 formula | 연금연액 = 계약자적립액 ÷ ä<sub>n</sub>(공시이율) × (1 − 0.005) | `[derived]` from [S2]; adoption **[std]** (10) |
-| 종신연금형 formula | 연금연액 = 계약자적립액 ÷ ä<sub>x</sub><sup>(g)</sup>(연금사망률, 공시이율) × (1 − 0.005) | [S1] [S2] [S6]; **[std]** (10) |
+| 확정기간연금형 formula | 연금연액 = 계약자적립액 ÷ ä<sub>n</sub><sup>(12)</sup>(공시이율) × (1 − 0.005) — the annuity-due payable **monthly**, footnote 10 | `[derived]` from [S2]; adoption **[std]** (10) |
+| 종신연금형 formula | 연금연액 = 계약자적립액 ÷ [ä<sub>x</sub><sup>(g)</sup>(연금사망률, 공시이율) − 11/24] × (1 − 0.005) | [S1] [S2] [S6]; **[std]** (10) |
 | Implied factor, male 65, 2.15%, 10-year guarantee | **23.70** | `[derived]` from [S2] |
 | Implied factor, male 65, 2.15%, 20-year guarantee | 24.14 | `[derived]` from [S2] |
 | Implied certain factors, 2.15% | 9.06 / 12.92 / 16.39 at 10 / 15 / 20 years | `[derived]` from [S2] |
@@ -720,12 +724,13 @@ anniversary [S1] [S2], so a monthly-premium contract earns a partial year's inte
 instalment. The annual grid replaces this with a single timing adjustment; the cross-check that
 the adjustment is right is in the published illustrations, and it closes. Rolling the
 twenty-year surrender value forward the five years from 60 to 65 at the stated rate reproduces
-the published fund at annuitisation: ₩140,811,363 × 1.0215⁵ = ₩156,600,000 against a published
-₩156,420,000, and ₩120,595,257 × 1.005⁵ = ₩123,640,000 against a published ₩123,460,000
-`[derived]` from [S2]. Both residuals are ₩180,000, of the order of five years of the
-post-payment maintenance charge at the 0.67%-of-기본보험료-a-month rate the composite adopts
-(0.67% × ₩500,000 × 60 = ₩201,000) [S1]. **The accumulation is a plain roll-forward at the
-declared rate net of a small level maintenance charge, with no other moving parts.**
+the published fund at annuitisation: ₩140,811,363 × 1.0215⁵ = ₩156,613,630 against a published
+₩156,420,000, and ₩120,595,257 × 1.005⁵ = ₩123,640,438 against a published ₩123,460,000
+`[derived]` from [S2]. The residuals are **₩193,630 and ₩180,438** — close but not equal, and
+both of the order of five years of the post-payment maintenance charge at the
+0.67%-of-기본보험료-a-month rate the composite adopts (0.67% × ₩500,000 × 60 = ₩201,000) [S1].
+**The accumulation is a plain roll-forward at the declared rate net of a small level
+maintenance charge, with no other moving parts.**
 
 **Accrual is monthly before 납입완료 and daily afterwards**, by regulation: 감독규정
 제7-66조제1항제4호 states 「보험료 납입이 완료되기 이전에는 … 월별 기간경과에 따라 산출한다」
@@ -843,16 +848,20 @@ expressly **denied** to a 연금저축보험 [REG-R20] [R14]: the regulator has 
 out for the tightest surrender-charge cap in the schedule, and the reference implementation
 sits far inside it.
 
-The wider expense ring is worth one sentence because it bounds the design space. 감독규정
-제4-32조 caps first-year commission at the first year's premium, adds the projected one-year
-surrender value to the commission side where the contract deducts 80% or more of the
-표준해약공제액, and requires an instalment structure paying no more than **60% of the
-표준해약공제액 a year** where the cap exceeds one year's premiums [REG-R22] [REG-R29]. 제7-51조
-requires pre-notification of a 저축성보험 산출방법서 that does **not** spread at least 50% of
-the acquisition cost evenly over the premium term — 70% for bancassurance, **100% for online**
-— over at least seven years [REG-R22]. The composite is an online, direct-channel design that
-spreads 100% of its acquisition cost evenly over seven years and pays no commission at all
-[S1]; it is inside every one of those constraints by construction.
+The wider expense ring is worth one sentence because it bounds the design space, and its two
+halves reach this contract differently. The commission caps of 감독규정 제4-32조제5항·제6항 —
+first-year remuneration held to the first year's premium, with the projected one-year
+surrender value added to the commission side where the contract deducts 80% or more of the
+표준해약공제액 — are written for a **보장성보험** and therefore do not bind a 저축성보험 at
+all; 제8항's instalment structure, paying no more than **60% of the 표준해약공제액 a year**
+where the cap exceeds one year's premiums, is the part of that article a savings design meets
+[REG-R22] [REG-R29]. What does bind here is 제7-51조, which requires pre-notification of a
+저축성보험 산출방법서 that does **not** spread at least 50% of the acquisition cost evenly over
+the premium term — 70% for bancassurance, **100% for online** — over at least seven years where
+the payment term is seven years or more [REG-R22]. The composite is an online, direct-channel
+design that spreads 100% of its acquisition cost evenly over seven years and pays no commission
+at all [S1]; it is inside that requirement by construction, and the commission caps have
+nothing to bite on.
 
 ### 해약환급금 — the surrender-value shape, and what the composite reproduces
 
@@ -938,7 +947,7 @@ At the 연금개시일 the 계약자적립액 is fixed, floored at **100.1% of p
 [S1] [S2] [S6]. Mortality does not enter it, and neither does survival: the instalments are
 paid to the count whether or not the annuitant lives [S1] [S2] [S4] [S6]. The reconstruction:
 
-    연금연액 = 계약자적립액 ÷ ä_n(공시이율) × (1 − 0.005)
+    연금연액 = 계약자적립액 ÷ ä_n^(12)(공시이율) × (1 − 0.005)
 
 recovers the published figures to three or four significant digits **once the annuity-due is
 taken payable monthly rather than annually**, which is what the contract actually pays. On the
@@ -975,9 +984,12 @@ and on a fund of ₩123,460,000 at the 0.50% floor, 31.18 and 32.15 for the two 
 9.81 / 14.53 / 19.13 for the three certain forms [S2] `[derived]`.
 
 **The implied longevity is the sanity check any annuitant table must pass.** Solving ä_n =
-23.70 at 2.15% gives n ≈ **32.5 years**, so a 65-year-old male's life annuity is priced like a
-certain annuity running to about **age 97**; at the guaranteed-rate basis, ä_n = 31.18 at 0.50%
-gives n ≈ 33.8, to about **age 99** [S2] `[derived]`. That is consistent with the extremely
+23.70 at 2.15% on the **monthly** annuity-due the contract actually pays gives n ≈ **32.9
+years**, so a 65-year-old male's life annuity is priced like a certain annuity running to
+about **age 98**; at the guaranteed-rate basis, ä_n = 31.18 at 0.50% gives n ≈ 33.9, to about
+**age 99** [S2] `[derived]`. (On the annual annuity-due the two solves give 32.5 and 33.8, to
+about 97 and 99; the monthly reading is the consistent one — see footnote 10.) That is
+consistent with the extremely
 light published annuitant rates (below) and it is the constraint `mort_table.csv` must
 reproduce. It is also the number a policyholder is actually choosing between: a 65-year-old
 male's 종신연금형 10년보증 pays **38.2%** of what a 10-year certain annuity pays on the same
@@ -1159,9 +1171,10 @@ money and its return, not the whole fund, and the non-life contract states it mo
 
 One carrier's surrender illustration carries a 세후지급 예상액 column computed on exactly that
 basis, and the column is **uniformly 83.5% of the surrender value at every duration and on both
-interest bases** — 86,869,520 / 104,003,740 = 0.8352 and 3,091,800 / 3,701,180 = 0.8353
-`[derived]` from [S5], which is exactly 1 − 16.5%. **On a contract whose contributions were all
-within the credit cap the charge falls on essentially the whole surrender value.**
+interest bases** — 86,869,520 / 104,003,740 = 0.83525 and 3,091,800 / 3,701,180 = 0.83536
+`[derived]` from [S5], which is 1 − 16.5% to three figures. **On a contract whose
+contributions were all within the credit cap the charge falls on essentially the whole
+surrender value.**
 
 **The escape hatches.** Where the contract is surrendered for one of six 부득이한 사유 the
 amount is taxed at the pension rates instead: the policyholder's death; a natural disaster;
@@ -1356,11 +1369,12 @@ cover — from 보장성특약. On a 연금저축보험 almost every rider is of
    0.3–1.5% recorded as the envelope.
 2. **Expense shape — a level monthly loading versus a front-end charge recovered on
    surrender.** The direct-channel product charges 4.50% of premium a month for seven years and
-   has **no surrender charge at all** [S1]; the postal product charges 6.02% in year 1 falling
-   to 3.0% from year 8 and adds a 해지공제액 of ₩104,000 running off to zero over four years
-   [S7]. No other retrieved carrier publishes either. The choice between the two is a **live
-   design variable in this market** and the composite must state which it takes: it takes the
-   first (footnote 9), with the second as a model input. The consequence is visible at three
+   has **no surrender charge at all** [S1]; the postal product charges 6.02% in year 1, then
+   4.22% from year 8 when the seven-year 유지보수 stops and 3.0% from year 11 when the ten-year
+   판매보수 stops, and adds a 해지공제액 of ₩104,000 running off to zero over four years [S7]
+   `[derived]`. No other retrieved carrier publishes either. The choice between the two is a
+   **live design variable in this market** and the composite must state which it takes: it
+   takes the first (footnote 9), with the second as a model input. It is visible at three
    months — 95.9% of premiums against 43.4% on a tied-channel product of the same carrier and
    year [S1] [S2].
 3. **Annuity-phase charge.** 0.5% of the 연금연액 at two carriers [S1] [S7]; none disclosed
@@ -1519,8 +1533,9 @@ state [S2] [S6] [S11] and what the 2024 and 2016 documents, still quoting ₩50,
 no publication obligation and the retrieved 보도자료 listing carries no 경험생명표 or life-side
 참조순보험요율 item [REG-R4] [REG-R34] [R16] [R17]. That is a finding about that channel and
 about the life side, not about the bureau, which publishes a dated 장기손해보험 참조순보험요율
-display on another page of the same site — which is why morbidity elsewhere in `krlib` can be
-sourced where this product's mortality cannot [REG-R34]. The 제10회 경험생명표, applied to new
+display — 암 발생률 and 질병입원율 by age and sex — on another page of the same site
+[REG-R61], which is why morbidity elsewhere in `krlib` can be sourced where this product's
+mortality cannot. The 제10회 경험생명표, applied to new
 business from 2024-04, is public only as summary statistics [REG-R33] [R18]. **No qx
 table of any Korean industry basis was retrieved in either research pass.** `Pension_KR_A`'s
 `mort_table.csv` is therefore a **[std]** construction on the annuitant basis, carrying a
@@ -1581,6 +1596,7 @@ and nothing here rests on them. **It is never presented as the 경험생명표.*
 [REG-R56]: #krlib-reg-r56
 [REG-R58]: #krlib-reg-r58
 [REG-R60]: #krlib-reg-r60
+[REG-R61]: #krlib-reg-r61
 [REG-R9]: #krlib-reg-r9
 [std]: #krlib-std
 [unverified]: #krlib-unverified

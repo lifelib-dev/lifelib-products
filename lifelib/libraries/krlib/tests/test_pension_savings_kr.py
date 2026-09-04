@@ -15,9 +15,11 @@ counts and rates to the ten decimals the notes print them at, and the annuitisat
 quantities — which the notes print to ten decimals on numbers of order 1e8, past what a
 float64 can carry — to a relative tolerance of one part in 1e15, which is the same double.
 
-This is the library's **deferred tax-qualified accumulation contract**, and it inherits
-the accumulation half of the whole life chassis rather than restating it, so this module
-asserts what this product adds: crediting at the 공시이율 over a stepped 최저보증이율, the
+This is the library's **deferred tax-qualified accumulation contract**. It inherits the
+whole life chassis's surrender-value machinery rather than restating it, but **not** that
+chassis's 계약자적립액 recursion, which carries a survivorship release where this one does
+not; so this module asserts what this product adds: crediting at the 공시이율 over a
+stepped 최저보증이율, the
 annuitisation step and its 100.1%-of-premiums floor, the monthly annuity factor that
 reconstructs eight published implied factors on two interest bases, and the tax layer that
 is a policyholder-behaviour driver and never an insurer cash flow.
@@ -27,7 +29,8 @@ pitfalls" earns its own test, named after the pitfall, because each is a way an
 implementation can look right and be wrong:
 
 * a survivorship release in the fund — the 계약자적립액 is an **account**, and the
-  Japanese deferred annuity's ``/(1 - q')`` overstates the 연금개시 fund silently;
+  ``/(1 - q)`` of ``WholeLife_KR_A``'s same-named account, or of the Japanese deferred
+  annuity, overstates the 연금개시 fund silently;
 * a deferral-phase mortality strain, which on this contract is exactly zero;
 * a death product's best-estimate adjustment, whose **sign** is wrong here;
 * the decrement order — deaths from the whole opening in-force, surrenders from the
@@ -2128,8 +2131,10 @@ def test_the_construction_reproduces_the_longevity_the_illustration_implies(
         pension_savings, kr_pension_anchor):
     """Curtate e(65) is 33.31 years for men and 36.97 for women, and that is the finding.
 
-    Not the 제10회's published 23.7: solving the published life annuity at 2.15% gives a
-    factor consistent with a 65-year-old male living to about 97, so the illustration is
+    Not the 제10회's published 23.7: solving the published life annuity at 2.15% on the
+    monthly annuity-due gives a factor consistent with a 65-year-old male living to about
+    98 (32.5 years and about 97 on the annual form, which is not what this contract pays,
+    and the notes now quote the monthly reading), so the illustration is
     priced on a 연금사망률 loaded on the survival side, and the table reproduces the annuity
     because the annuity is what it was fitted to.  The sex gap of 3.66 years is the
     published 3.4 within the setback's resolution.  Stating both numbers here keeps the

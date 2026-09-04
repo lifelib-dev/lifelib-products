@@ -59,8 +59,8 @@ to.
 **Six carriers and one industry portal**, eleven documents — KB라이프 [S1] [S9], KDB [S2],
 AIA [S4], ABL [S5] [S6], 교보 [S7] [S8], 미래에셋 [S10] [S11] and the 생명보험협회 공시실
 [S12]. Two are 상품요약서, the statutory product summary that
-must carry the 수수료 안내표 [S2] [S4]; four are 상품안내장 [S1] [S5] [S6] [S9] [S10] (five,
-counting [S10]); one is a full 231-page 약관 [S7]; one is the point-of-sale 변액연금보험
+must carry the 수수료 안내표 [S2] [S4]; five are 상품안내장 [S1] [S5] [S6] [S9] [S10];
+one is a full 231-page 약관 [S7]; one is the point-of-sale 변액연금보험
 설명서 [S8]; and two are disclosure surfaces rather than contracts [S11] [S12]. Nine were
 retrieved in full and two in part.
 
@@ -190,8 +190,10 @@ keep the composite from being read as "the" Korean variable annuity.
   retrieved is 하나은행's contract-document mirror of the bancassurance edition
 - URL: `https://image.kebhana.com/cont/download/insdocument/provide/L05184361_agree.pdf`
 - Accessed: 2026-09-03, Retrieved: **yes** (1.9 MB PDF, 231 pp., re-extracted with PyMuPDF;
-  제2조, 제36조–제46조, 제50조, 제51조 and 제63조 read verbatim — the list the research file
-  records, and the only articles this document may be pinned to)
+  제2조, 제36조–제46조, 제50조, 제51조 and 제63조 read verbatim, the list the research file's
+  own entry records). The research file additionally pins **제3조** (보험금의 종류),
+  **제6조** (성과보너스) and **제7조** (장기유지 운용보수 환급) in its body, and those three
+  are cited here on that footing; **no other article of this document may be pinned to**.
 - **The only policy-conditions-grade document read in full in this session**, and the source
   of every verbatim clause the documents quote. Articles the documents pin to it: **제2조
   (용어의 정의)**, which defines the 월공제액 and separates it from the charges deducted at
@@ -657,7 +659,9 @@ are in that file, whose numbering is frozen and is **not** this file's.
   transcription" and for the absence of any Korean 장해 incidence rate. Retrieved: in part.
 - **REG-R38** — 국가데이터처 「2024년 생명표 작성 결과」 and 통계청 「2023년 생명표」: the
   **public** national table, whose 완전생명표 `e(40)` of 41.9 (M) and 47.4 (F) is what the
-  shipped insured-lives table's 46.5 and 50.4 must sit above by a selection margin. Also the
+  shipped table's implied complete `e(40)` on the **연금사망률** basis — **46.425 (M) and
+  50.292 (F)**, the figures `mort_table.csv`'s provenance column rounds to 46.4 and 50.3 —
+  must sit above by a selection margin. Also the
   reminder that population statistics are **만나이** while the model is 보험나이. Retrieved:
   yes.
 - **REG-R39** — KOSIS 완전생명표 (single-year qx tables): **Retrieved: no** — distributed
@@ -702,10 +706,12 @@ are in that file, whose numbering is frozen and is **not** this file's.
   **2023-01-01**, alongside K-ICS. Retrieved: **in part** — the 별첨 HWP carrying the
   standard's own text did not return, so instrument-level readings of it are [unverified].
 - **REG-R61** — 보험개발원 「장기손해보험 참조순보험요율」 공시: the **published** morbidity
-  reference rates. Cited here for one contrast only, and it is a negative: the display covers
-  cancer incidence and 질병입원율 on the non-life side and **does not reach the life side**, so
-  neither this product's mortality nor the 고도재해장해 incidence it charges for can be sourced
-  from it. Retrieved: yes.
+  reference rates. Cited here for one contrast only, and it is a negative: the display is a
+  **장기손해보험** display, covering 일반상해·교통상해 (사망 / 후유장해 / 입원), 질병 사망률,
+  후유장해, 입원율 and 암 발생률 on the non-life side and **not reaching the life side**, and
+  the entry reproduces only its 암 발생률 and 질병입원율 grids. So neither this product's
+  mortality nor a 고도재해장해 incidence on this contract's own basis was retrieved from it.
+  Retrieved: yes.
 
 ---
 

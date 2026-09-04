@@ -15,13 +15,17 @@ confirmed against a retrieved document. **Every parameter that appears in both d
 carries the same value here as in `product-spec.md`**, and every number in the worked
 example is read off the shipped model rather than recomputed by hand.
 
-**This document inherits the accumulation half of the [whole life chassis
-(종신보험)](../whole_life/technical-notes.md)** — the 계약자적립액 (*gyeyakja
-jeongnibaek*, policyholder account value) recursion, the 해약공제액 and its
+**This document inherits the surrender-value machinery of the [whole life chassis
+(종신보험)](../whole_life/technical-notes.md)** — the 해약공제액 and its
 표준해약공제액 (*pyojun haeyak gongjeaek*) cap under 보험업감독규정 별표 14 [REG-R20],
 and the 해약환급금 (*haeyak hwangeupgeum*, surrender value) floor of 제7-66조제1항제1호
-[REG-R19] — and does not restate that machinery. What it adds, and specifies here for the
-first time in the library, is five things:
+[REG-R19] — and does not restate that machinery. **What it does not inherit is that
+chassis's 계약자적립액 (*gyeyakja jeongnibaek*, policyholder account value) recursion.**
+The two products share the name and not the recursion: the chassis's account is the
+classical net-level one, dividing by `(1 − q)` and subtracting a death benefit, and this
+one is a plain balance with no mortality in it at all. That is the first thing to
+understand about this product and it is set out under *The 계약자적립액 recursion* below.
+What it adds, and specifies here for the first time in the library, is five things:
 
 1. crediting at the **공시이율** (*gongsi iyul*, the declared rate) over a stepped
    **최저보증이율** (*choejeo bojeung iyul*, guaranteed floor), rather than at a fixed
@@ -386,10 +390,13 @@ rows.
 male table the curtate expectation at 65 is **33.31 years**, against the 제10회's published
 23.7 [REG-R33]; the female table gives 36.97, a gap of **3.66 years** against a published
 3.4. The first number is not a mistake and it is not this library's invention: solving
-`ä_n = 23.70` at 2.15% gives `n ≈ 32.5`, so the published life annuity **is** priced as if
-a 65-year-old male lived to about 97 [S2] `[derived]`. That is what a 연금사망률 loaded on
-the *survival* side looks like when it is read back off a published annuity, and the table
-reproduces the annuity because the annuity is what it was fitted to.
+`ä_n = 23.70` at 2.15% **on the same monthly annuity-due this document adopts** gives
+`n ≈ 32.9`, so the published life annuity **is** priced as if a 65-year-old male lived to
+about 98 [S2] `[derived]`. (On the annual annuity-due the same solve gives 32.5 and about
+97; the monthly reading is the consistent one, for the reason set out under *The
+annuitisation transition*.) That is what a 연금사망률 loaded on the *survival* side looks
+like when it is read back off a published annuity, and the table reproduces the annuity
+because the annuity is what it was fitted to.
 
 **The best-estimate factor, and why its sign is the opposite of a death product.**
 `mort_rate(t) = min(1, 1.15 × table rate)` **[std, new here]**. Greater than one, and the
@@ -574,20 +581,27 @@ the 0.5% already inside the annuity factor.
 **There is no mortality in this recursion and there is no lapse in it.** The fund is a
 contractual balance and the death benefit *is* the balance, so there is no survivorship
 release to credit and no death strain to subtract; and the surrender release that a
-deduction would produce is nil, because the 해약공제액 is nil. This is the single largest
-structural difference from the deferred annuity on the Japanese page of this repository,
-whose fund divides by `(1 − q')` each year and pays a **larger** annuity out of the same
-premium as a result. A model that ports that shape here does not fail loudly: it silently
-overstates the 연금개시 fund. `check_av_roll_fwd()` asserts the recursion above over the
-whole deferral phase, and it is the check that would catch it.
+deduction would produce is nil, because the 해약공제액 is nil. That is the single largest
+structural difference from **both** of the neighbouring accumulation models, and the nearer
+of the two is the dangerous one. `WholeLife_KR_A`, the chassis whose surrender-value
+machinery this product does inherit, runs the classical net-level recursion
+`V(t) = ((V(t−1) + P)(1 + i) − q·SA)/(1 − q)` under the same Korean name, 계약자적립액; the
+deferred annuity on the Japanese page divides by `(1 − q')` in the same way and pays a
+**larger** annuity out of the same premium as a result. A model that ports either shape
+here does not fail loudly: it silently overstates the 연금개시 fund.
+`check_av_roll_fwd()` asserts the recursion above over the whole deferral phase, and it is
+the check that would catch it.
 
 The accumulation cross-check against the published illustration closes. Rolling that
 carrier's published year-20 surrender value forward the five years of the gap at the stated
-rate gives ₩140,811,363 × 1.0215⁵ ≈ ₩156,600,000 against a published ₩156,420,000, and
-₩120,595,257 × 1.005⁵ ≈ ₩123,640,000 against a published ₩123,460,000 [S2] `[derived]` —
-both residuals ₩180,000, of the order of five years of the post-payment maintenance charge
-(0.67% × ₩500,000 × 60 = ₩201,000) [S1]. **The accumulation is a plain roll-forward at the
-declared rate net of a small level charge, with no other moving parts.**
+rate gives ₩140,811,363 × 1.0215⁵ = ₩156,613,630 against a published ₩156,420,000, and
+₩120,595,257 × 1.005⁵ = ₩123,640,438 against a published ₩123,460,000 [S2] `[derived]` —
+residuals of **₩193,630 and ₩180,438**, both of the order of five years of the post-payment
+maintenance charge (0.67% × ₩500,000 × 60 = ₩201,000) [S1]. The two residuals are close but
+they are **not equal**: an earlier draft rounded each roll-forward to the nearest ₩100,000
+and reported a common ₩180,000, which is a rounding artefact and not a finding. **The
+accumulation is a plain roll-forward at the declared rate net of a small level charge, with
+no other moving parts.**
 
 ### Deferral-phase benefit amounts, and the statutory cap
 
@@ -959,8 +973,11 @@ are zero in every row and are omitted from the printed tables.
 Two features of that table are the product rather than the arithmetic. `claims_lapse` runs
 far ahead of `claims_death` throughout the deferral phase — **49.6 times** at `t` = 0,
 13.5 at `t` = 10 and **3.8** at `t` = 24 — because the two decrements pay the same amount
-per policy, so the ratio is exactly `w(t) ÷ q(t)` and it narrows as mortality rises against
-a lapse rate that steps down; and `net_cf` **rises** at `t` = 10, from ₩3,605,676.47 to
+per policy, so the ratio is exactly `(1 − q(t)) w(t) ÷ q(t)`, surrenders being taken from
+the survivors of mortality, and it narrows as mortality rises against a lapse rate that
+steps down. (The bare `w(t) ÷ q(t)` is 49.6 at `t` = 0 as well, but the two diverge in the
+fourth figure and the `(1 − q)` belongs in the identity.) And `net_cf` **rises** at
+`t` = 10, from ₩3,605,676.47 to
 ₩3,682,814.39, which is not a fund effect but the lapse rate stepping down from 2.0% to
 1.5%.
 
@@ -1166,9 +1183,11 @@ charge, pays out on death and surrender, and receives nothing. A model that annu
 
 `premiums` is 79.24% of the ₩120,000,000 nominal, the difference being the decrements;
 `claims_annuity` is `B` × 20.2145, the sum of `pols_if` over the payout phase; and
-`claims_lapse` is nine times `claims_death`, on decrements whose rates differ by a factor
-of about fifty and whose payments are identical — the ratio is what survivorship does to
-the weighting over twenty-five years.
+`claims_lapse` is **9.05 times** `claims_death` on payments that are identical at every
+deferral duration, so that ratio is a weighted average of `(1 − q(t)) w(t) ÷ q(t)`.
+It is far below the 49.6 of the first year because the rate ratio itself collapses — `w`
+steps down from 4.0% to 1.0% while `q` more than triples over the twenty-five years — and
+not because of anything survivorship does to the weighting.
 
 ### Reading the shape
 
@@ -1347,11 +1366,12 @@ Each of these is a mistake a competent modeller would actually make on this prod
 each is checkable against the shipped model.
 
 1. **Putting a survivorship release into the fund.** The 계약자적립액 is an account:
-   `AV(t+1) = (AV(t) + NP(t) − C(t))(1 + i_c(t))`, full stop. The deferred annuity on the
-   Japanese page of this repository divides by `(1 − q')` each year and subtracts a death
-   benefit, and porting that shape here **overstates the 연금개시 fund silently**. There is
-   nothing to release: the death benefit *is* the fund. `check_av_roll_fwd()` is the check
-   that catches it.
+   `AV(t+1) = (AV(t) + NP(t) − C(t))(1 + i_c(t))`, full stop. **`WholeLife_KR_A`'s
+   계약자적립액 is not** — it divides by `(1 − q)` and subtracts a death benefit — and
+   neither is the deferred annuity on the Japanese page. Two neighbours carry the same name
+   and a different recursion, and porting either shape here **overstates the 연금개시 fund
+   silently**. There is nothing to release: the death benefit *is* the fund.
+   `check_av_roll_fwd()` is the check that catches it.
 2. **Projecting a deferral-phase mortality strain.** `db_pp_net(t+1)` and `cv_pp_net(t+1)`
    are the **same number at every duration** on this composite, so the strain is exactly
    zero and no deferral-phase death cover basis is needed. Mortality still matters — it

@@ -123,12 +123,15 @@ release that was not retrieved; and 「계약체결 후 적립금이 납입한 �
 있다」 [R1]. The retrieved illustrations bear the second out exactly [S1] [S2].
 
 **Where it sits in `krlib`.** This is the library's only product on which the policyholder
-bears the investment risk, the only one carrying a written option, and the only one that
-**models** the 특별계정 / 일반계정 boundary. 감독규정 제5-6조제1항 also makes a separate
-account mandatory for the 연금저축계좌 of `Pension_KR_A` (제1호, against 변액보험계약 at
-제3호) [REG-R15], but that product neither cites the article nor represents the boundary, so
-the two account ledgers below have no counterpart elsewhere in the library. It is also the only
-product in the library **barred by regulation from the 무해지 / 저해지환급형 forms**:
+bears the investment risk, the only one carrying an option written on **investment
+performance** — `Pension_KR_A`, `WholeLife_KR_A` and `Immediate_KR_A` each write a
+최저보증이율 floor on a *declared* rate, and this product writes one of those too in its
+payout phase — and the only one that **models** the 특별계정 / 일반계정 boundary. 감독규정
+제5-6조제1항 also makes a separate account mandatory for the 연금저축계좌 of `Pension_KR_A`
+(제1호, against 변액보험계약 at 제3호) [REG-R15], but that product neither cites the article
+nor represents the boundary, so the two account ledgers below have no counterpart elsewhere
+in the library. It is also the only product in the library **barred by regulation from the
+무해지 / 저해지환급형 forms**:
 감독규정 제7-66조제4항제1호 excludes 변액보험 from the dispensation permitting a surrender
 value below the 별표 14 floor [REG-R19], so the cliff-shaped surrender curve that dominates
 the library's protection products cannot appear here.
@@ -331,7 +334,7 @@ still being built) = **₩425,984.29 on ₩3,600,000 of premium, 11.83%**, which
 | Valuation frequency | **Daily** | [S7 제37조] [S7 제42조] [R2] |
 | Valuation basis | Market value under 자본시장과 금융투자업에 관한 법률, fund by fund; amortised cost plus accrued interest where no price is observable | [S7 제42조] [R2] |
 | Base-run gross asset return | **3.00% p.a.**, constant | **[std]** (13) |
-| Implied 투자수익률 (기준가격 return) | **2.50% p.a.** = gross less the blended 0.50% 운용보수 | derived; **[std]** (13) |
+| Implied 투자수익률 (기준가격 return) | **2.50% p.a.** = gross less the blended 0.50% 운용보수, as a subtraction; on the model's own monthly compounding the realised figure is 2.49% | **[std]** (13) |
 | Implied 순수익률 | **2.18% p.a.** = 투자수익률 less the two account-based guarantee charges (0.07% + 0.25%) | [S1]'s definition; **[std]** (13) |
 | Mandated illustration returns | **−1.00% / 2.50% / 3.75%** — 「−1%, 평균공시이율, 평균공시이율의 1.5배」 at a 2026 평균공시이율 of 2.50% | rule [R2]; 평균공시이율 [REG-R48] |
 | 펀드변경 (switch) | Priced at 변경요구일 + 제2영업일 기준가격; ≤0.1% capped ₩5,000, four free a year | [S1] [S5] [S7 제39조] |
@@ -574,8 +577,8 @@ illustration, where the cumulative separate-account contribution stops growing a
 보험료(특약보험료 제외) 및 추후 납입할 기본보험료 합계(특약보험료 제외)」 — the whole
 premium the policyholder has undertaken to pay, past *and* future — and the 0.30% is
 levied on it 「납입기간(최대 7년) 동안」 [S1]. On the anchor cell that is ₩36,000,000 ×
-0.30% = **₩108,000 a year for seven years**, against a first-year account value of about
-₩3.3 million. Expressed as a rate on the fund it is over 3% a year at outset, falling below
+0.30% = **₩108,000 a year for seven years**, against a first-year account value of
+₩3,216,621. Expressed as a rate on the fund it is over 3% a year at outset, falling below
 0.5% by year seven. A model that treats guarantee charges as basis points on the account
 value will misstate the early-duration cash flow of this contract by an order of magnitude.
 
@@ -1214,7 +1217,8 @@ by a single source that is said, because a range of one is not a range.
    charged and fixed — the only shape exercising charge, base and payout in one run.
 2. **The guarantee base.** Premium refund ↔ step-up ↔ ratchet ↔ roll-up, with 22 of 36
    census products setting the guarantee above premiums paid [R1]. Roll-up rates observed:
-   7%/6% simple, converting to **연복리 4.32%** on the representative contract [S2]; 5%/4%
+   7%/6% simple, converting to **연복리 4.32%** on that document's own 대표계약 — 40세 남성,
+   10년납, **연금개시나이 65세**, and so not this composite's anchor cell [S2]; 5%/4%
    simple [S7]; 1.0% or 2.0% compound on a net base [S10]; and an illustrative 6% per three
    years [R2]. **Chosen:** premium refund at 100% — footnote 2 above.
 3. **Ratchet frequency spans three orders of granularity**: monthly [S6] [S9], annual

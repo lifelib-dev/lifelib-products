@@ -754,6 +754,14 @@ page alone can resolve every tag, with a note on what this product uses each for
   **non-qualified** 종신형 연금보험 route — a different product, cited at the scope boundary.
 - **REG-R60** — 한국회계기준원, K-IFRS 제1117호 「보험계약」. The Korean adoption of IFRS 17,
   **mandatory** for Korean insurers rather than voluntary.
+- **REG-R61** — 보험개발원, 「장기손해보험 참조순보험요율」 공시. Retrieved: yes. Cited on this
+  page and in `product-spec.md` for one purpose only, and it is a **boundary**: the bureau
+  does publish reference **morbidity** rates — the 「기타피부암 및 갑상선암 이외의 암 발생률」
+  and 질병입원율 grids by age and sex — on a numeric display of its own site, which is why
+  [REG-R34]'s negative finding is about the 보도자료 channel and the **life** side and must
+  not be read as "보험개발원 publishes nothing". No life-side 참조순보험요율 and no mortality
+  table appears there, so nothing in this product's mortality basis is sourced from it and
+  `mort_table.csv` stays **[std]**.
 - **REG-R62** — 손해보험협회 공시실 (kpub.knia.or.kr). Cited on this page only, at the two
   omitted research sources in the orientation; no fact in the three documents rests on it.
 
@@ -769,9 +777,12 @@ which S1–S16, S19, S20 and R1–R14, R16–R22, R24 are cited by this product'
 reprinted here, the six unused numbers being accounted for in the orientation above.
 
 The gaps these documents inherit, in order of how much they matter: **no Korean industry
-mortality table** at any level of detail [R17] [R24] [REG-R34], so the annuitant basis is a
-**[std]** construction shipped with its recipe; **no lapse statistic by policy year** from
-any public source [S13] [S19] [R13], so the lapse vector is argued rather than fitted; **no
+mortality table** at any level of detail [R17] [R24] [REG-R34] — and the boundary matters,
+because the bureau *does* publish a 장기손해보험 참조순보험요율 display [REG-R61], but it
+carries **morbidity** and no life-side rate, so nothing on this page is reachable through
+it — so the annuitant basis is a **[std]** construction shipped with its recipe; **no lapse
+statistic by policy year** from any public source [S13] [S19] [R13], so the lapse vector is
+argued rather than fitted; **no
 operative text for 소득세법 시행령 제187조의2** [R7], so the 종신계약 withholding status of a
 guaranteed life annuity is [unverified]; **no published 보험계약대출이율** [S1] [S2] [S4]
 [S5], so that module is off in the base run; and **no cash expense basis** from any carrier,
@@ -800,6 +811,7 @@ rather than a citation.
 [REG-R34]: #krlib-reg-r34
 [REG-R48]: #krlib-reg-r48
 [REG-R56]: #krlib-reg-r56
+[REG-R61]: #krlib-reg-r61
 [REG-R62]: #krlib-reg-r62
 [REG-R9]: #krlib-reg-r9
 [std]: #krlib-std

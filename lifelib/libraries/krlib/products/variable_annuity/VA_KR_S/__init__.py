@@ -105,8 +105,9 @@ form having been published.
 
 **Not implemented.** Named so the gaps cannot be mistaken for oversights. The
 **고도재해장해급여금** of ₩10,000,000 [S1] [S2] is charged for — the 위험보험료 is a
-modelled deduction — and never paid, because no Korean 장해 incidence rate is published
-and the 참조순보험요율 does not reach the life side [REG-R34]. The **roll-up, step-up and
+modelled deduction — and never paid, because no 장해 incidence rate on this contract's
+basis was retrieved: the 참조순보험요율 display is a 장기손해보험 one and does not reach
+the life side [REG-R34] [REG-R61]. The **roll-up, step-up and
 ratchet** GMAB bases are specified in ``product-spec.md`` and not run; only premium
 refund at 100% is. The **GLWB / 실적배당 종신연금**, in which the money stays in the
 separate account through the payout phase at a charge of 3.30% of the guarantee base

@@ -226,12 +226,13 @@ the insurer declares and may re-declare; (c) is the modeller's own view. On this
 | Mandatory 채권형 ladder | 거치기간 <12년 ≥80%, =12년 ≥70%, >12년 ≥50% | `bond_floor` | [S1] [R1] |
 | Pre-annuitisation de-risking | 채권형 topped to **80%** at the three 계약해당일 inside 「개시일 − 3년」 | `derisk_amount_pp` | [S1] |
 | 추가납입 cap | **200%** of basic premium paid and payable, cumulative, **no loading** | `addl_prem_cap_ratio` | [S1] |
-| 중도인출 limits | ≤50% of 해약환급금; residual 계약자적립액 ≥ ₩5,000,000 per 구좌; cumulative ≤ premiums paid inside 10 years | `wd_pp` | [S1] [S2] [S5] [REG-R58] |
+| 중도인출 limits | ≤50% of 해약환급금 [S1] [S2] [S5]; residual 계약자적립액 ≥ ₩5,000,000 per 구좌 [S1] [S5] (**[S2] publishes ₩3,000,000**); cumulative ≤ premiums paid inside 10 years [S1] [S2] [S5] | `wd_pp` | [S1] [S2] [S5] [REG-R58] |
 | 중도인출 re-basing | 이미 납입한 보험료 × (AV − W) ÷ AV, proportional | `prem_paid_pp` | [S2] [S7 제51조제8항] |
 | 최저보증이율, payout | 경과 5년 미만 **1.00%** / 5–10년 **0.75%** / 10년 이상 **0.50%** | `crediting_table.csv` | [S1] |
 | 보증지급기간 | **10 years**, 종신연금형 정액형, annual instalments in advance | `guar_period_years` = 10 | [S1] [S2] [S5] |
 | 연금수령기간 중 계약관리비용 | **연금 연액의 0.5%**, netted off each payment | `annuity_charge_pp` | [S4] |
-| 중도인출·추가납입 수수료 | **None** | — | [S1] [S2] [S9] |
+| 중도인출 수수료 | **None** | — | [S1] [S2] [S9] |
+| 추가납입 수수료 | **None** — but the fee-stack carrier [S2] charges **1.5%**, so this line is not its | — | [S1]; conflict recorded in `product-spec.md` |
 | GMDB extinguishes at 연금개시 | 「일반적으로 연금개시 후 보장은 소멸됨」 | `db_pp` = 0 for t ≥ T | [R2] |
 | Account boundary | the movements 감독규정 제5-7조 permits between the two accounts | `net_cf_gen` / `net_cf_sep` | [REG-R15] |
 | 예정이율 | **none exists** — a variable contract's accumulation is the fund | — | [REG-R9] [REG-R48] |
@@ -308,8 +309,11 @@ replacement and no formula changes.
 
 **The 고도재해장해급여금 of ₩10,000,000 per 구좌 is charged for and never paid.** The
 위험보험료 buys it [S1] [S2], the model collects the 위험보험료 in the 월공제액, and the
-benefit is absent because **no Korean 장해 incidence rate is published** and the
-참조순보험요율 display does not reach the life side [REG-R34] [REG-R61]. The bias is small
+benefit is absent because **no 장해 incidence rate on this contract's basis was
+retrieved**: the 참조순보험요율 display is a **장기손해보험** display and does not reach
+the life side, and although it does carry 상해 후유장해 grids, their values were not
+extracted and a non-life 상해 rate is not a life 고도재해장해 rate [REG-R34] [REG-R61].
+The bias is small
 — ₩24 a month at issue — and it runs one way, in the insurer's favour. It is stated rather
 than hidden.
 
@@ -441,8 +445,8 @@ premium has gone in**, at the `BEF_DEDUCT` timing — that is a modelling choice
 tagged where it is made. The **premium-based** component `c_p` is not on the fund at all:
 its base is 「이미 납입한 보험료(특약보험료 제외) 및 추후 납입할 기본보험료 합계」, the
 whole premium the policyholder has undertaken to pay, past *and* future [S1]. On the anchor
-cell that is a flat **₩9,000 a month against a first-year account value of about ₩3.3
-million — over 3% a year of the fund at outset**, falling below 0.5% a year by the seventh
+cell that is a flat **₩9,000 a month against a first-year account value of ₩3,216,621
+— over 3% a year of the fund at outset**, falling below 0.5% a year by the seventh
 year, after which it stops entirely. A model that treats guarantee charges as basis points
 on the account value misstates this contract's early-duration cash flow by an order of
 magnitude, which is why the asset and premium components are separate cells with separate
@@ -1056,11 +1060,36 @@ Cash flow row
 
 **Read the account boundary off that row.** `net_cf_gen(0)` = **−300,818.3366588763** and
 `net_cf_sep(0)` = **+257,590.4761252762**; they sum to −43,227.86053360 to within
-8.7e−11, which is `check_net_cf_resid(0)`. The 일반계정 received ₩300,000, kept ₩26,010 of
-front-end charges, sent ₩273,990 to the 특별계정, took back the ₩9,097.06 월공제액 and the
-₩110.64 운용보수, and paid ₩303,000 of its own expenses, ₩40,200 of commission and
-₩27.86 of death claim. The 특별계정 received ₩273,990 and sent back ₩9,207.71, keeping the
-₩264,892.94 that then grew.
+8.7e−11, which is `check_net_cf_resid(0)`. Both ledgers reconcile line by line, and the
+two lines a reader is most likely to put on the wrong side are the 해약공제액 and the
+death claim:
+
+```
+net_cf_gen(0)  = + premiums(0)                                    300,000.0000000000
+                 + av_charges(0)   = D(0) + M(0)                    9,207.7082639337
+                 + surr_charges(0) = min(C(0), AV(0)) x s(0)        7,167.1650202870
+                 − prem_to_av(0)                                  273,990.0000000000
+                 − gmdb_claims(0)  = gmdb_claim_pp(0) x d(0)            3.2099430970
+                 − expenses(0)                                    303,000.0000000000
+                 − commissions(0)                                  40,200.0000000000
+                                                                = −300,818.3366588763
+
+net_cf_sep(0)  = + prem_to_av(0)                                  273,990.0000000000
+                 − av_charges(0)                                    9,207.7082639337
+                 − surr_charges(0)                                  7,167.1650202870
+                 − claims_from_av(0, DEATH) = AV(0) x d(0)             24.6505905031
+                                                                = +257,590.4761252762
+```
+
+So the 일반계정 received ₩300,000, kept ₩26,010 of front-end charges and sent ₩273,990
+across; took back the ₩9,097.06 월공제액 and the ₩110.64 운용보수, and took the
+₩7,167.17 of 해약공제액 retained on the month's surrenders — the whole account value of
+the surrendering contracts, the charge exceeding it — and paid ₩303,000 of its own
+expenses, ₩40,200 of commission and **only the ₩3.21 GMDB top-up** of the ₩27.86 death
+claim, the other ₩24.65 being the 계약자적립액 released by the 특별계정. The 특별계정
+received ₩273,990 and gave up ₩16,399.52 in the same month, of which ₩9,097.06 was the
+월공제액 cancelled before the growth: the ₩264,892.94 that then grew is the account after
+that cancellation and before the ₩110.64 운용보수, which is taken **inside** the 기준가격.
 
 ### Hand trace, month 3 — where the surrender value clears the floor
 
@@ -1260,7 +1289,7 @@ death cover extinguishes at 연금개시 [R2] and no retrieved document permits 
 
 **t = 241 and every non-anniversary month afterwards** carry nothing but the insurer's own
 ₩3,000-per-contract maintenance expense, weighted by a slowly falling annuitant count. The
-statement is eleven-twelfths empty for seventy years.
+statement is eleven-twelfths empty for sixty years — t = 240 to t = 959.
 
 **t = 360, the 보증기간 ends.** The instalment falls from **₩200,728.58** to
 **₩186,188.58**, a **7.24% step**, not because the annuity changed — `annuity_net_pp()` is
@@ -1369,10 +1398,12 @@ fact.
 The statement has **four regions** and each says something about the product.
 
 **Months 0–119, the premium-paying deferral.** Strongly positive after month 0 and falling
-monotonically, from +₩249,787.95 at t = 1 to +₩9,418.79 at t = 119, because the premium is
+on trend, from +₩249,787.95 at t = 1 to +₩9,418.79 at t = 119, because the premium is
 weighted by an in-force count that falls from 0.9729 to 0.2229 while the surrender stream
-per surviving contract grows with the account. **The insurer's positive cash flow is a
-melting block of ice**, and the melting is lapse.
+per surviving contract grows with the account. The fall is **not** monotone: the row steps
+*up* at t = 12, 24, 36, 48, 60, 72 and 84, the seven policy-year boundaries at which the
+annual 해지율 drops a rung and the month's `claims_lapse` falls with it. **The insurer's
+positive cash flow is a melting block of ice**, and the melting is lapse.
 
 **Months 120–239, the paid-up deferral.** Uniformly negative, between −₩57,279.86 and
 −₩30,476.22, because nothing comes in and the surrender stream is at its largest per
@@ -1385,8 +1416,9 @@ t < 120 and comes back out as `mth_deduct_pp` at t ≥ 120.
 starts. **The 특별계정 is empty from here** and the remaining 719 months are a general-
 account liability.
 
-**Months 240–959, the payout.** Twelve annual instalments of ₩200,728.58 guaranteed
-regardless of survival, then a life-contingent stream falling from ₩186,188.58 with the
+**Months 240–959, the payout.** Ten annual instalments of ₩200,728.58 — t = 240, 252, …,
+348, the whole 10-year 보증기간 — guaranteed regardless of survival, then a
+life-contingent stream falling from ₩186,188.58 with the
 annuitant count, and ₩277-and-falling of maintenance expense in every intervening month for
 sixty years. The tail is thin and long: `pols_if(959)` is 9.17e−08.
 
@@ -1507,7 +1539,7 @@ Dominant assumptions, in order of how far they move the answer.
    parameter — so on precisely the paths where the guarantee matters, the model lets
    contracts leave that would stay. The bias runs one way: **guarantee cost understated**.
 3. **The premium-based guarantee charge, because nothing else in the stack behaves like
-   it.** ₩9,000 a month on a first-year fund of ₩3.3m is over 3% a year; the same ₩9,000 in
+   it.** ₩9,000 a month on a first-year fund of ₩3.22m is over 3% a year; the same ₩9,000 in
    year seven is under 0.5%; in year eight it is zero. Its base is the 보험료총액 and not
    the fund, its term is the shorter of the 납입기간 and seven years, and it grows with
    추가납입 while the strike it pays for grows further and for longer. Getting any of those
@@ -1524,8 +1556,11 @@ Dominant assumptions, in order of how far they move the answer.
    cell and all the same function. The composite takes the lowest, because the surrender
    charge **is** the unamortised 계약체결비용 [R2] and must come from the same carrier as the
    5.17%. The composite is therefore a **cheap tied-channel contract at both ends** and its
-   surrender recoveries are correspondingly low; on a 25.6% market-mean scale [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1)
-   the `surr_charges` total of ₩430,510.48 would be roughly 30% higher.
+   surrender recoveries are correspondingly low; the 2017 market-mean first-year
+   해지공제율 of 25.6% of premiums paid [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1) is
+   `C = ₩1,075,200` on the same function, and on it the `surr_charges` total of
+   ₩430,510.48 becomes **₩545,164.49 — 26.6% higher**, less than the 29.5% rise in `C`
+   because the charge is capped at the account value at short durations.
 6. **The insurer's own expense, which is unsourced in its entirety.** ₩300,000 at issue and
    ₩3,000 a month are **[std]** with no inflation, and **no Korean carrier publishes a unit
    cost** — the 사업비 disclosure is of *charges*, not of costs [R2] [S12]. They total

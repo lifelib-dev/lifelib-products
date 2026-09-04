@@ -38,11 +38,14 @@ consumer-education page corroborating [R14] and adding nothing); **R20** (경향
 the site root, not retrieved at all); and **R30** (the 예금보호한도 increase, which reaches the
 documents through [REG-R32] beside the statutory [REG-R52]).
 
-**Nothing in the drafting documents relies on a source recorded as not retrieved.** One entry
-below is `Retrieved: no` — **[R31]**, 보험업감독규정, whose article text no route would return
-— and every claim resting on it is tagged **[unverified]** at the point of use. Three more are
-`Retrieved: in part` ([R5], [R16], [R28]) and each is cited only for what came back. No new
-source was fetched at drafting and no tag was added.
+**No number in the drafting documents rests on a source recorded as not retrieved.** One entry
+in this file's own [S#]/[R#] lists is `Retrieved: no` — **[R31]**, 보험업감독규정, whose
+article text no route would return — and every claim resting on it is tagged
+**[unverified]** at the point of use. Three more are `Retrieved: in part` ([R5], [R16],
+[R28]) and each is cited only for what came back. The cited **[REG-R#]** entries are
+**not** uniformly `Retrieved: yes` either, and their statuses are set out at the head of
+the cross-product section below rather than left to be assumed. No new source was fetched
+at drafting and no tag was added.
 
 Company and branded product names appear in this file and in `_research/immediate-annuity.md`
 and nowhere else in the library. In the three drafting documents a carrier is its tag alone,
@@ -84,10 +87,10 @@ a named live product and says so once at its head.
     연금연액, and the **해지공제액 schedule, nil at every duration**. Every row of
     `charge_table.csv` is this section.
   - **§VII, the 모집수수료율** — 2.08% on 종신연금형 and 1.75% on 상속연금형, first year
-    only: what `comm_rate` is the mid-point of, and what puts the commission below the
-    계약체결비용. **§IV-4, the 공시이율 of 2.50% at 2017-04**, which is `decl_rate`. **§VI**,
-    the 15-row 해약환급금 illustration on three interest bases, from which the `min_guar`
-    crediting basis comes.
+    only: the pair `comm_rate`'s round 2.00% sits inside, and what puts the commission
+    below the 계약체결비용. **§IV-4, the 공시이율 of 2.50% at 2017-04**, which is
+    `decl_rate`. **§VI**, the 15-row 해약환급금 illustration on three interest bases, from
+    which the `min_guar` crediting basis comes.
   - The product taxonomy, the issue-age and premium-limit table including the age-banded
     상속형 cap of ₩1,500,000,000, the benefit table defining 생존연금 / 사망보험금 /
     만기보험금, and 주1–주7 on payment modes, the commutation rate and the guarantee period.
@@ -632,10 +635,14 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
 - Publisher / type: KB국민은행
 - URL: https://kbthink.com/dictionary/view.html?dictId=KED-00009822
 - Accessed: 2026-09-03, Retrieved: **yes** (HTML fetch)
-- The three-way taxonomy, the pre-2013 exemption and the **February 2013 amendment cutting the
-  exempt threshold to ₩100,000,000 per person**, and the estate-valuation point. Corroborates
-  [R5] and [REG-R58]. Its further claim of a 2016 amendment is **[unverified]** and recorded as
-  such, neither the article nor the amendment having been retrieved.
+- The three-way taxonomy, the pre-2013 exemption and the **February 2013 amendment cutting
+  the exempt threshold to ₩100,000,000 per person**, and the estate-valuation point. It
+  corroborates [R5] on the 2012-08-08 announcement, but on the cap it **conflicts** with the
+  retrieved 시행령, which puts ₩200,000,000 in force to 2017-03-31 and ₩100,000,000 only from
+  2017-04-01 [REG-R58]. The amendment text was not retrieved, the conflict is unresolved, and
+  `product-spec.md` records the pre-2017 figure as **[unverified]** rather than choosing
+  between them. Its further claim of a 2016 amendment is **[unverified]** on the same
+  footing, neither the article nor the amendment having been retrieved.
 
 (krlib-immediate_annuity-r31)=
 
@@ -668,7 +675,17 @@ about the dispute is stated by any supervisory document**, and `product-spec.md`
 R1–R62 numbering is **distinct from this file's** and is likewise frozen. Within that page
 plain [R#] refers to its own entries, so the two schemes must never be read across. Research
 provenance: `_research/regulatory-actuarial.md`. The entries the immediate annuity documents
-cite, all accessed 2026-09-03 and all `Retrieved: yes` except **REG-R26**:
+cite were all accessed 2026-09-03. **Their retrieval status is not uniform and is stated
+here rather than assumed**: two are `Retrieved: no` — **REG-R26** (시행세칙 별표 22 and
+별표 24) and **REG-R39** (the KOSIS single-year 완전생명표 qx tables) — and four are
+`Retrieved: in part` — **REG-R32**, **REG-R34**, **REG-R48** and **REG-R60**. The rest are
+`Retrieved: yes`. Nothing in the drafting documents rests on either `no` entry for a number:
+REG-R26 is reached only by two sentences of `technical-notes.md` that carry [unverified],
+and REG-R39 is cited only as the named to-do behind the mortality build and beside
+**REG-R38**, which is the entry the 완전생명표 figures actually come from. Of the four
+partials, REG-R48 is load-bearing — the 2026 평균공시이율 of 2.50% — and what came back from
+it was the 하나생명 평균공시이율 series in full; the part that did not was the 교보생명 rate
+grid's as-of month, on which nothing here rests.
 
 - **REG-R1** — 보험업법 제2조·제4조: the 생명보험 / 손해보험 / 제3보험 licence split. 즉시연금
   is a **생명보험상품**, 제4조제1항제1호나목 naming 연금보험 as a 종목 of its own.

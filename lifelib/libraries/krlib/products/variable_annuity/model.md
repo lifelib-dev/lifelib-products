@@ -31,16 +31,18 @@ the guarantee cost incurred, the first thirteen months of the cash flow statemen
 undiscounted totals, the account-boundary reconciliation and the eight `check_*`
 identities. Everything it prints is ASCII, so the output lands on a Windows console under
 any code page: amounts are labelled `KRW`, and the product, both accounts and every Korean
-term are romanized. Real output, with the thirteen-row statement and the totals elided —
-both are reproduced in full in [`technical-notes.md`](technical-notes.md):
+term are romanized. The block below is that output with the horizontal rule lines
+dropped, five over-long lines cut at the right margin with a trailing `...`, and three
+sections elided at `[ ... ]`; the thirteen-row statement and the totals are reproduced
+in full in [`technical-notes.md`](technical-notes.md):
 
 ```text
 VA_KR_S - byeonaek yeongeum boheom (Variable Annuity), monthly grid, boheom nai
 model point 1: VA-000001 - M boheom nai 40 at issue, gibon boheomnyo KRW 300,000 per month
-  10-nyeonnap (120 premiums, KRW 36,000,000 boheomnyo chongaek); yeongeum gaesi nai 60; 240 months
-  guarantee form: bojeunghyeong (GMAB on); fund set bond50_eq50 (chaegwonhyeong floor 50%)
-  return path 'base': gross asset return 3.00% bond / 3.00% equity, less unyong bosu 0.40% / 0.60%
-  payout: jongsin yeongeum-hyeong, 10-year bojeung gigan, jeongaekhyeong, at 2.50%
+  10-nyeonnap (120 premiums, KRW 36,000,000 boheomnyo chongaek); yeongeum gaesi nai 60; 240 ...
+  guarantee form: bojeunghyeong (GMAB on); fund set bond50_eq50 (chaegwonhyeong floor 50% o ...
+  return path 'base': gross asset return 3.00% bond / 3.00% equity, less unyong bosu 0.40% ...
+  payout: jongsin yeongeum-hyeong, 10-year bojeung gigan, jeongaekhyeong, at 2.50% (decl_20 ...
 
 charge stack, per contract, first month (KRW) - five bases, three deduction points
   from the premium, in the ilban gyejeong (never enters the teukbyeol gyejeong):
@@ -53,15 +55,22 @@ charge stack, per contract, first month (KRW) - five bases, three deduction poin
     gyeyak gwalli biyong (hu)               0.00   (steps in at nabip wallyo: 3,990.00)
     GMDB bojeung biyong                    15.98
     GMAB bojeung biyong, asset             57.08
-    GMAB bojeung biyong, premium        9,000.00   (on boheomnyo chongaek 36,000,000, max 7 years)
+    GMAB bojeung biyong, premium        9,000.00   (on boheomnyo chongaek 36,000,000, max 7 ...
   inside the gijun gagyeok, daily (modelled monthly):
     teukbyeol gyejeong unyong bosu        110.64
+    jeungkwon georae / gicho fund           0.00   (nil in the base run [std])
+  on surrender, out of the gyeyakja jeongnibaek:
+    haeyak gongjeaek at t = 0         830,000.00   (pyojun haeyak gongjeaek cap 1,643,940.00)
 
 the two guarantees at the yeongeum gaesi nai gyeyak haedangil (month 240)
   gyeyakja jeongnibaek AV(T)         43,883,943.57
   choejeo yeongeum jeongnipgeum K    36,000,000.00   (imi nabiphan boheomnyo, 100%)
   GMAB payoff max(0, K - AV(T))               0.00   <- INTRINSIC VALUE ON ONE PATH ONLY
+  yeongeum jaewon transferred        43,883,943.57   (teukbyeol gyejeong -> ilban gyejeong)
+  annuity factor / yeongeum yeonaek      20.139842     2,178,961.61 gross, 2,168,066.80 net
   reaching yeongeum gaesi                 0.092584   of 1.0000 contracts at issue
+
+    [ the five-line Jensen's-inequality warning on what one path can value ]
 
 guarantee charges collected against guarantee cost incurred, undiscounted (KRW)
   GMDB  charged        79,244.38   incurred         4,945.39   residual        74,298.99
@@ -102,8 +111,11 @@ flow line. Three companion frames carry what a cash flow statement leaves out:
 `result_pols()` the in-force movements and the annuity obligation count, `result_av()` the
 계약자적립액 recursion beside the two guarantee bases and the surrender value, and
 `result_charges()` the fee stack line by line — the frame this product exists to make
-legible, because its ten columns are deducted from **five different bases at three
-different times into two different accounts**. `model.Projection.doc` carries the notes'
+legible, because its ten columns are deducted from **four different bases at three
+different times into two different accounts** — 기본보험료, the 계약자적립액 at
+`BEF_DEDUCT`, the 보험료총액 and the 특별계정 순자산 at `AFT_DERISK`. (`run.py`'s
+month-0 stack counts **five**, because it prints the 해약공제 as well, whose base is the
+annualized 기본보험료.) `model.Projection.doc` carries the notes'
 symbols mapped to the cells names and states the age basis; `model.Data.doc` says what each
 input file is and, for the mortality table, what it is **not**.
 
@@ -566,7 +578,7 @@ of them bound nothing at all — which is said rather than papered over.
 | `other_charge` | 0.00% | 기타비용 is named by [R2]'s identity and confirmed deducted at premium payment [S7 제2조], but **no retrieved 상품요약서 quantifies it**; zero makes the allocation reproduce the observed 91.33% exactly | none published; the line is kept because the identity needs it |
 | `fund_expense` | 0.00% | 증권거래비용 and 기초펀드 보수 are ex-post estimates of actual spend, not contractual rates [S2], so the modelled charges stay contractual | 0.00–0.79% and 0.01–0.45% [S2] [S4]; the omission understates the drag by up to about 0.5 points a year |
 | 위험보험료 age scale | 0.0040% at 15 rising to 0.0110% at 60+ | the **level** is [S2]'s published 0.004%–0.011% band; the grading across it is the standardization | the band is published; the scale is not |
-| 고도재해장해급여금 | charged for, never paid | no Korean 장해 incidence rate is published and the 참조순보험요율 does not reach the life side [REG-R34] [REG-R61] | none; the bias favours the insurer, is small, and is stated |
+| 고도재해장해급여금 | charged for, never paid | no 장해 incidence rate on this contract's basis was retrieved: the 참조순보험요율 display is a 장기손해보험 one and does not reach the life side, and its 상해 후유장해 grids were not extracted [REG-R34] [REG-R61] | none; the bias favours the insurer, is small, and is stated |
 | `acq_charge_years` | `min(10, 납입기간)` | [S2] prints ten years on its own 10년납 contract, where the two coincide; a charge on a premium cannot outlive the premium | ten years across the retrieved set; [S4] prints 6.12% for ten years then zero |
 | 해약공제 composite | ₩830,000 anchor, run off linearly **in the amount** | the surrender charge **is** the unamortised 계약체결비용 [R2], so it must come from the same carrier as the 5.17% | ₩830,000 [S2], ₩1,077,000 [S5], ₩1,180,000 [S4] on the same cell — a 42% spread; the market-mean scale [R1 <표 Ⅴ-2>](#krlib-variable_annuity-r1) would raise `surr_charges` about 30% |
 | 월공제액 cap | capped at the available account value | a deduction cannot make the account negative; no retrieved document states the rule | none published |

@@ -16,7 +16,7 @@ product bearing the name was located in the research pass — the caveat is stat
 product-specific regulatory, judicial and statistical references; both are resolved in
 `sources.md` here, with numbering carried verbatim from `_research/immediate-annuity.md`
 and never renumbered. [REG-R#] tags resolve against the cross-product reference library
-`references/regulatory-and-actuarial-references.md`, whose own R1–R60 numbering is
+`references/regulatory-and-actuarial-references.md`, whose own R1–R62 numbering is
 distinct from this product's. **[std]** marks a standardization introduced for the
 reference implementation; each is also tagged in `product-spec.md` and carries a rationale
 in the `provenance` column of the CSV it lives in. [unverified] marks a claim the research
@@ -69,11 +69,12 @@ expect one — ₩100,000,000 (1억원).
   연금연액 (*yeongeum yeonaek*, annual annuity amount) split into twelve carries interest
   at the declared rate on the deferred portions [S9 주11] [S8 주14], which is what makes the
   two modes equal in value. The reconciliation is in the *Worked example*.
-- **The declared rate steps twelve times a policy year in reality and once here.** 「이
-  계약의 공시이율은 매월 1일 회사가 정한 이율로 하며, 당월 말일까지 1개월간 확정
-  적용한다」 [S6 §9-나] [S1 주6] [S3] [S5] [S7 제7조]. An annual-grid model carries one rate
-  per policy year — a **[std]** approximation, exact only where the rate is level, which on
-  the representative basis it is.
+- **The declared rate steps twelve times a policy year in reality and once here.** The
+  declared rate is the 공시이율 (*gongsi iyul*) and the floor under it the 최저보증이율
+  (*choejeo bojeung iyul*): 「이 계약의 공시이율은 매월 1일 회사가 정한 이율로 하며,
+  당월 말일까지 1개월간 확정 적용한다」 [S6 §9-나] [S1 주6] [S3] [S5] [S7 제7조]. An
+  annual-grid model carries one rate per policy year — a **[std]** approximation, exact
+  only where the rate is level, which on the representative basis it is.
 - **Age basis.** **보험나이** throughout: 만나이 at the 계약일 with a remainder under six
   months discarded and six months or more rounded up, incrementing on each 계약해당일
   [S7 제23조] [REG-R25 제21조](#krlib-reg-r25). The model's period boundary *is* the 계약해당일, so the
@@ -300,16 +301,22 @@ a basis.
 
 (vi) Observed schedules by vintage run from 2.5% / 2.0% for the 2007–2014 cohorts [S10] to
 1.0% / 0.75% / 0.50% — reaching its terminal step after only five years — at 한화 in 2024
-[S7 제7조]. The 교보 2017 schedule **1.25% / 1.00% / 0.75%** is adopted because it is the
-only three-step schedule published on a contemporaneous 즉시연금 illustration whose
-annuity figures this document also uses [S3], and because it sits at the mid-point of the
-2017–2026 range. **Note what the floor is not: it is a rate on the fund, never a floor on
+[S7 제7조]. The 교보 2017 schedule **1.25% / 1.00% / 0.75%** is adopted for one reason only:
+it is the only three-step schedule published on a contemporaneous 즉시연금 illustration
+whose annuity figures this document also uses [S3]. **It is not a middle of the observed
+range.** Against the five schedules retrieved for 2017–2026 it is the joint-highest opening
+step and the highest terminal step — 0.75% against the 0.50% 하나 (2023), 한화 (2024) and
+IBK (2026) all step down to — so the adopted floor sits at the generous end of the current
+market, and far under the 2.5% / 2.0% of the 2007–2014 cohorts [S10]. It is inert on the
+representative basis and bites on model point 8 alone. **Note what the floor is not: it is
+a rate on the fund, never a floor on
 the annuity.** That single sentence is the substance of the whole dispute, and model point
 8 is the model point that demonstrates it.
 
 (vii) Observed: **2.08%** of P in year one on 종신연금형 and **1.75%** on 상속연금형, nil
-in every later year, on a 남자 60세 일시납 1억원 basis [S1 §VII]. 2.00% is the round
-mid-point **[std]**. What matters structurally is not the level but that it sits **below**
+in every later year, on a 남자 60세 일시납 1억원 basis [S1 §VII]. 2.00% is a **round figure
+inside that pair** and not their mid-point, which is 1.915% **[std]**. What matters
+structurally is not the level but that it sits **below**
 the 2.20% 계약체결비용, so the acquisition charge taken from the fund at inception covers
 the commission paid out of it at the same moment. Every retrieved figure is a
 first-year-only rate on a bancassurance sale [S2] [S3] [S4] [S5].
@@ -866,7 +873,7 @@ Assumption values used, in full, with tags:
 | 계약관리비용 | `admin_charge_rate()` | 0.0130 | [S1 §VIII] |
 | Total load c | `expense_load_rate()` | **0.0350** | derived from the two above |
 | 위험보험료 b | `risk_prem_rate()` | **0.0000** | [S1 §VIII], 종신연금형 1형 |
-| 모집수수료 κ | `comm_rate()` | 0.0200 | **[std]**, mid-point of 2.08% / 1.75% [S1 §VII] |
+| 모집수수료 κ | `comm_rate()` | 0.0200 | **[std]**, a round figure inside the published 2.08% / 1.75% pair [S1 §VII] |
 | Insurer expense ε | `acq_expense_rate()` | 0.0150 | **[std]**, derived: 3.50% − 2.00% |
 | Annuity charge φ | `annuity_charge_rate()` | 0.0080 | [S1 §VIII]; treatment **[std]** |
 | 사망보험금 ρ | `db_rate()` | 0.00 | [S1] [S5] |
@@ -891,7 +898,7 @@ proj_len()                                     50    rows 0 … 50; ω − x = 1
 
 The 연금연액 of **₩4,948,039** is about **495만원** a year. Divided by twelve it is
 **₩412,336.60** a month; on the standard annual-to-monthly adjustment, with
-`i^(12) = 12[(1.025)^(1/12) − 1) = 0.024718035238` and therefore
+`i^(12) = 12[(1.025)^(1/12) − 1] = 0.024718035238` and therefore
 `i/i^(12) = 1.0114072482`, the equivalent **monthly-in-arrears** annuity of the same
 present value is `4,948,039.1569 / 12 x 0.9887214095 = ₩407,686.02` a month, i.e. about
 **40.8만원/월**. Those two figures are the whole of the annual-grid reconciliation: the
@@ -934,9 +941,10 @@ factor, none of which [S3] discloses. That is the size of the error a three-para
 fitted to two rates and one life expectancy leaves behind, and it is the first reason a
 production use of this model must replace `mort_table.csv`. **The guarantee is cheap at
 this age**: the same fund converted with no guarantee at all gives a factor of 19.309113
-and an annuity of ₩4,997,640.34, so the ten-year guarantee costs **0.99% of income**. That is the
-quantitative reason 97.3% of buyers take it [R12 표7](#krlib-immediate_annuity-r12), and it is also why a pure life
-annuity with no guarantee may not be sold in Korea without the point being commercially
+and an annuity of ₩4,997,640.34, so the ten-year guarantee costs **0.99% of income**.
+That is the quantitative reason 97.3% of buyers take it [R12 표7](#krlib-immediate_annuity-r12),
+and it is also why a pure life annuity with no guarantee may not be sold in Korea without
+the point being commercially
 interesting: the minimum guarantee period is five years
 [R12 §III-2-라](#krlib-immediate_annuity-r12), **[unverified]** as to the article text [R31].
 
