@@ -48,33 +48,41 @@ file, or point ``mort_table_file`` at a different name. No formula changes.
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` wherever that model has an
 analogue — ``pols_*`` for policy counts, plural nouns for cash flows, ``*_rate`` for
 rates, ``*_pp`` for per-policy amounts. The technical notes use compact actuarial
-symbols instead. The mapping is:
+symbols instead.
+
+The time index ``t`` is 0-based, as in lifelib: ``t = 0`` is the issue year, period
+``t`` runs from time ``t`` to time ``t + 1``, ``pols_if(t)`` is the count at time ``t``
+(so ``pols_if(0) == pols_if_init()``), and the frame is ``t = 0 .. proj_len() - 1``.
+The contractual policy year is the 1-based label ``policy_year(t) = t + 1``; it is
+used only to look up the guaranteed premium schedule, which is keyed by policy year.
+The mapping is:
 
 ============  ========================================================  ===============================
 Notes symbol  Cells                                                     Meaning
 ============  ========================================================  ===============================
 x             age_at_entry                                              Issue age (ANB)
-x + t - 1     age(t)                                                    Attained age in policy year t
+x + t         age(t)                                                    Attained age at the start of period t
 n             policy_term                                               Level period in years
 F             sum_assured                                               Face amount
-t = 1..95-x   proj_len                                                  Last policy year
-l(t)          pols_if(t)                                                In-force at start of year t
-(l(1))        pols_if_init                                              In-force at issue
-d(t)          pols_death(t)                                             Deaths in year t
-s(t)          pols_surv(t)                                              Survivors to end of year t
-x(t)          pols_lapse(t)                                             Lapses at end of year t
-c(t)          pols_conv(t)                                              Conversions at end of year t
+t = 0..94-x   proj_len                                                  Number of periods; frame ends at proj_len - 1
+dur(t)        policy_year(t)                                            Policy year, t + 1 (1-based label)
+l(t)          pols_if(t)                                                In-force at start of period t (time t)
+(l(0))        pols_if_init                                              In-force at issue
+d(t)          pols_death(t)                                             Deaths in period t
+s(t)          pols_surv(t)                                              Survivors to end of period t
+x(t)          pols_lapse(t)                                             Lapses at end of period t
+c(t)          pols_conv(t)                                              Conversions at end of period t
 (none)        pols_maturity(t)                                          Expiries at attained age 95
 q(t)          mort_rate(t)                                              Mortality, all factors applied
 (q_base)      mort_rate_base(t)                                         Base table rate before factors
 w(t)          lapse_rate(t)                                             Lapse rate, incl. the shock
-w(n)          shock_lapse_rate                                          Shock lapse at level-period end
+w(n-1)        shock_lapse_rate                                          Shock lapse at level-period end (t = n-1)
 cv(t)         conv_rate(t)                                              Conversion rate
-M(d)          plt_mort_factor(d)                                        PLT mortality deterioration
+M(d)          plt_mort_factor(d)                                        PLT mortality deterioration, d = t + 1 - n
 M(1)          plt_mort_factor_init                                      M(1) actually used
 (M(1) rule)   plt_mort_factor_init_formula The notes' formula for M(1)
-J             jump_ratio                                                AP(n+1)/AP(n), fee included
-AP(t)         premium_pp(t)                                             Guaranteed annual premium
+J             jump_ratio                                                AP(n)/AP(n-1), fee included
+AP(t)         premium_pp(t)                                             Guaranteed annual premium in period t
 G(t)          premiums(t)                                               Premium income
 K(t)          commissions(t)                                            Commission
 k(t)          comm_rate(t)                                              Commission rate
@@ -96,15 +104,16 @@ differ only by case, which ``pols_lapse`` and ``premium_taxes`` separate. And
 .. rubric:: pols_maturity
 
 The notes give the roll-forward as ``l(t+1) = l(t)(1-q)(1-cv)(1-w)`` and, separately,
-the rule ``l(t) = 0 for x+t-1 >= 95``. Those do not reconcile in the final policy year:
-its survivors neither die, lapse nor convert — their coverage simply runs out. Without
-a term for that, the roll-forward appears to lose lives with no cause.
-``pols_maturity(t)`` names it, zero in every year but the last, so that
+the rule ``l(t) = 0 for x+t >= 95``. Those do not reconcile in the final period of the
+frame, ``t = proj_len() - 1``: its survivors neither die, lapse nor convert — their
+coverage simply runs out. Without a term for that, the roll-forward appears to lose
+lives with no cause. ``pols_maturity(t)`` names it, zero in every period but the last,
+so that
 
     pols_if(t) - pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_conv(t) + pols_maturity(t)
 
-holds for every ``t``. It is bookkeeping determined by the notes' own rules, not an
-added assumption. The name follows ``BasicTerm_S.pols_maturity``.
+holds for every ``t`` in the frame. It is bookkeeping determined by the notes' own
+rules, not an added assumption. The name follows ``BasicTerm_S.pols_maturity``.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -167,24 +176,41 @@ def policy_term():
 
 
 def proj_len():
-    """Projection length in policy years: coverage ends at attained age 95."""
+    """The number of policy years projected: coverage ends at attained age 95.
+
+    The frame is ``t = 0, 1, ..., proj_len() - 1``; ``proj_len()`` is its exclusive
+    end and the row count of :func:`result_cf`, ``95 - age_at_entry()``.
+    """
     return expiry_age - age_at_entry()                              # noqa: F821
 
 
 def age(t):
-    """The attained age at the start of policy year t."""
-    return age_at_entry() + t - 1
+    """The attained age at the start of period t: ``age_at_entry() + t``."""
+    return age_at_entry() + t
+
+
+def policy_year(t):
+    """The contractual policy year of period t, ``t + 1``: a 1-based label.
+
+    ``t`` is 0-based (``t = 0`` is the issue year); the guaranteed premium schedule
+    in ``premium_rates.csv`` is keyed by this 1-based ``policy_year``.
+    """
+    return t + 1
 
 
 def premium_pp(t):
-    """Guaranteed annual gross premium per policy in year t, policy fee included."""
-    key = (plan(), sex(), rate_class(), band(), t)
+    """Guaranteed annual gross premium per policy in period t, policy fee included.
+
+    Looked up in ``premium_rates.csv`` at ``policy_year(t) = t + 1``.
+    """
+    key = (plan(), sex(), rate_class(), band(), policy_year(t))
     return float(data.premium_rates().loc[key, "premium_pp"])               # noqa: F821
 
 
 def jump_ratio():
-    """Initial premium jump ratio premium_pp(n+1)/premium_pp(n), fee included."""
-    return premium_pp(policy_term() + 1) / premium_pp(policy_term())
+    """Initial premium jump ratio, fee included: the first ART premium over the last
+    level premium, ``premium_pp(n) / premium_pp(n - 1)`` (policy years n+1 and n)."""
+    return premium_pp(policy_term()) / premium_pp(policy_term() - 1)
 
 
 def plt_mort_factor_init_formula():
@@ -203,7 +229,11 @@ def plt_mort_factor_init():
 
 
 def plt_mort_factor(d):
-    """Post-level-term mortality deterioration at PLT duration d; grades to 2.00 **[std]**."""
+    """Post-level-term mortality deterioration at PLT duration d; grades to 2.00 **[std]**.
+
+    ``d`` is the notes' PLT duration, ``d = policy_year(t) - n = t + 1 - n``: ``d = 1``
+    in the first post-level-term year (``t = n``). It is not the frame index ``t``.
+    """
     return max(2.0, plt_mort_factor_init() - 0.15 * (d - 1)) if d >= 1 else 1.0
 
 
@@ -213,13 +243,17 @@ def class_factor():
 
 
 def mort_rate_base(t):
-    """Base-table mortality rate at the attained age in policy year t."""
+    """Base-table mortality rate at the attained age in period t, ``age(t)``."""
     return float(data.mort_table().loc[age(t), "mort_rate"])                 # noqa: F821
 
 
 def mort_rate(t):
-    """Mortality rate applied in year t: base x class factor x PLT deterioration."""
-    d = t - policy_term()
+    """Mortality rate applied in period t: base x class factor x PLT deterioration.
+
+    The PLT duration is ``d = policy_year(t) - n``, so the multiplier applies from
+    ``t = n`` (``d = 1``) on.
+    """
+    d = policy_year(t) - policy_term()
     return mort_rate_base(t) * class_factor() * (plt_mort_factor(d) if d >= 1 else 1.0)
 
 
@@ -233,137 +267,146 @@ def shock_lapse_rate():
 
 
 def lapse_rate(t):
-    """Lapse rate in policy year t **[std]**, including the shock at the level-period end.
+    """Lapse rate in period t **[std]**, including the shock at the level-period end.
 
-    Level period: 6%, 5%, 4% for years 3..n-2, 6% anticipatory at n-1, shock at n.
-    Post-level term: 30%, 15%, then 10%.
+    Level period (``t = 0 .. n-1``): 6% at ``t = 0``, 5% at ``t = 1``, 4% for
+    ``t = 2 .. n-3`` (policy years 3..n-2), 6% anticipatory at ``t = n-2`` (policy year
+    n-1), the shock at ``t = n-1`` (policy year n). Post-level term: 30%, 15%, then 10%
+    by PLT duration ``d = t + 1 - n``.
     """
     n = policy_term()
-    if t < n:
-        if t == 1:
+    if t < n - 1:
+        if t == 0:
             return 0.06
-        if t == 2:
+        if t == 1:
             return 0.05
-        if t == n - 1:
+        if t == n - 2:
             return 0.06
         return 0.04
-    if t == n:
+    if t == n - 1:
         return shock_lapse_rate()
-    d = t - n
+    d = policy_year(t) - n
     return 0.30 if d == 1 else 0.15 if d == 2 else 0.10
 
 
 def conv_elig(t):
-    """True while convertible: within the level period and attained age below 70."""
-    return t <= policy_term() and age(t) < 70
+    """True while convertible: within the level period (``t < n``) and attained age below 70."""
+    return t < policy_term() and age(t) < 70
 
 
 def conv_rate(t):
-    """Conversion rate in policy year t **[std]**; zero outside the eligibility window."""
+    """Conversion rate in period t **[std]**; zero outside the eligibility window."""
     if not conv_elig(t):
         return 0.0
     return conv_rate_final if not conv_elig(t + 1) else conv_rate_base  # noqa: F821
 
 
 def phase(t):
-    """LEVEL, PLT or EXPIRED in policy year t."""
-    if t > proj_len():
+    """LEVEL (``t < n``), PLT (``n <= t < proj_len()``) or EXPIRED (``t >= proj_len()``)."""
+    if t >= proj_len():
         return "EXPIRED"
-    return "LEVEL" if t <= policy_term() else "PLT"
+    return "LEVEL" if t < policy_term() else "PLT"
 
 
 def pols_if(t):
-    """Number of policies in-force at the start of policy year t."""
-    if t == 1:
+    """Number of policies in-force at the start of period t, i.e. at time t.
+
+    ``pols_if(0) == pols_if_init()``; zero from ``t = proj_len()`` on, when coverage has
+    expired at attained age 95.
+    """
+    if t == 0:
         return pols_if_init()
-    if t > proj_len():
+    if t >= proj_len():
         return 0.0
     return (pols_if(t - 1) * (1 - mort_rate(t - 1))
             * (1 - conv_rate(t - 1)) * (1 - lapse_rate(t - 1)))
 
 
 def pols_death(t):
-    """Number of deaths occurring in policy year t."""
+    """Number of deaths occurring in period t."""
     return pols_if(t) * mort_rate(t)
 
 
 def pols_surv(t):
-    """Number of policies surviving to the end of year t, before voluntary decrements."""
+    """Number of policies surviving to the end of period t, before voluntary decrements."""
     return pols_if(t) * (1 - mort_rate(t))
 
 
 def pols_conv(t):
-    """Number of conversions at the end of policy year t."""
+    """Number of conversions at the end of period t."""
     return pols_surv(t) * conv_rate(t)
 
 
 def pols_lapse(t):
-    """Number of lapses at the end of policy year t, including the shock lapse."""
+    """Number of lapses at the end of period t, including the shock lapse."""
     return pols_surv(t) * (1 - conv_rate(t)) * lapse_rate(t)
 
 
 def pols_maturity(t):
     """Number of policies whose coverage ends at attained age 95.
 
-    Non-zero only in the final policy year. Not a decrement - the contract runs out -
-    but needed for the in-force roll-forward to close; see the Space docstring.
+    Non-zero only in the final period of the frame, ``t = proj_len() - 1``. Not a
+    decrement - the contract runs out - but needed for the in-force roll-forward to
+    close; see the Space docstring.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return (pols_if(t) * (1 - mort_rate(t))
             * (1 - conv_rate(t)) * (1 - lapse_rate(t)))
 
 
 def comm_rate(t):
-    """Commission rate **[std]**: 80% in year 1, 5% to the end of the level period, 2% after."""
-    return 0.80 if t == 1 else (0.05 if t <= policy_term() else 0.02)
+    """Commission rate **[std]**: 80% at ``t = 0`` (policy year 1), 5% to the end of
+    the level period (``t < n``), 2% after."""
+    return 0.80 if t == 0 else (0.05 if t < policy_term() else 0.02)
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t."""
-    return (1 + inflation_rate) ** (t - 1)                           # noqa: F821
+    """The expense inflation factor in period t, ``(1 + inflation_rate) ** t``."""
+    return (1 + inflation_rate) ** t                                 # noqa: F821
 
 
 def premiums(t):
-    """Premium income in policy year t, at the beginning of the year."""
+    """Premium income in period t, at the beginning of the period."""
     return premium_pp(t) * pols_if(t)
 
 
 def commissions(t):
-    """Commission in policy year t **[std]**."""
+    """Commission in period t **[std]**."""
     return comm_rate(t) * premiums(t)
 
 
 def premium_taxes(t):
-    """Premium tax in policy year t **[std]**."""
+    """Premium tax in period t **[std]**."""
     return premium_tax_rate * premiums(t)                            # noqa: F821
 
 
 def expenses(t):
-    """Acquisition (year 1) and inflating maintenance expenses in policy year t **[std]**."""
-    acq = expense_acq if t == 1 else 0.0                             # noqa: F821
+    """Acquisition (``t = 0`` only) and inflating maintenance expenses in period t **[std]**."""
+    acq = expense_acq if t == 0 else 0.0                             # noqa: F821
     return acq + expense_maint * inflation_factor(t) * pols_if(t)    # noqa: F821
 
 
 def claims(t):
-    """Death claims incurred in policy year t, paid at the end of the year."""
+    """Death claims incurred in period t, paid at the end of the period."""
     return sum_assured() * pols_death(t)
 
 
 def conv_credits(t):
-    """Conversion credit outflow: one annual premium per conversion, after year 1."""
-    return premium_pp(t) * pols_conv(t) if t > 1 else 0.0
+    """Conversion credit outflow: one annual premium per conversion, after the first
+    policy year (``t > 0``)."""
+    return premium_pp(t) * pols_conv(t) if t > 0 else 0.0
 
 
 def net_cf(t):
-    """Net cash flow in policy year t."""
+    """Net cash flow in period t."""
     return (premiums(t) - commissions(t) - premium_taxes(t)
             - expenses(t) - claims(t) - conv_credits(t))
 
 
 def result_cf():
-    """Result table of cashflows."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of cashflows, one row per period ``t = 0 .. proj_len() - 1``."""
+    ts = list(range(proj_len()))
     return pd.DataFrame(
         {
             "pols_if": [pols_if(t) for t in ts],

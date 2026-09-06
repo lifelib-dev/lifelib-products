@@ -47,11 +47,12 @@ the model and its inputs must travel together.
 from. The contract has no accumulation account and nothing in it needs monthiversary
 processing; the notes choose monthly for parity with the rest of the library, and it is
 what makes the 14-day survival period and the 5-yearly premium reviews expressible.
-Policy month ``t`` runs 1, 2, ..., ``proj_len()``, where ``proj_len() = 12 x term``.
-Premiums and maintenance expense fall at the beginning of the month; claims and
-decrements at the end; lapses act on non-claiming survivors, claim before lapse. The
-initial expense falls at ``t = 1``. Cover expires at the end of the term with no
-maturity or surrender value.
+Policy month ``t`` is 0-based and runs 0, 1, ..., ``proj_len() - 1``, where
+``proj_len() = 12 x term`` is the number of projected months; ``t = 0`` is the issue
+month and policy year ``t // 12 + 1`` contains it. Premiums and maintenance expense
+fall at the beginning of the month; claims and decrements at the end; lapses act on
+non-claiming survivors, claim before lapse. The initial expense falls at ``t = 0``.
+Cover expires at the end of the last month with no maturity or surrender value.
 
 **What is sourced and what is not.** The benefit structure is sourced: the accelerated
 design, the additional-payment benefit at ``min(25% of SA, £25,000)``, children's cover

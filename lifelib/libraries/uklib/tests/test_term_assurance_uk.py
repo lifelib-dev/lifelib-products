@@ -9,6 +9,11 @@ can compare them against the notes by eye.
 Tolerances follow the precision the notes display: money to the penny, in-force to six
 decimals.
 
+The time index ``t`` is 0-based and counts policy years from issue: the worked example's
+three rows are ``t = 0, 1, 2`` (policy years 1-3), the frame is ``range(proj_len())``
+with ``proj_len() = policy_term()`` rows, and an in-force point opens at
+``t = duration_inforce()``.
+
 Beyond the worked example this module asserts the product facts the notes call out as
 modelling pitfalls, because each of them is a way an implementation can look right and
 be wrong:
@@ -46,14 +51,14 @@ INFORCE = 5e-7        # in-force displayed to 6 d.p.
 MODEL_DIR = LIB / MODELS["Term_UK_A"][0]
 
 # t: (l(t), premiums, claims, claim expense, maint + initial expense, commission,
-#     net CF, l(t+1))
+#     net CF, l(t+1)) -- t = 0 is the first policy year.
 WORKED_EXAMPLE = {
-    1: (1.000000, 144.00, 82.50, 0.14, 180.00, 216.00, -334.64, 0.899505),
-    2: (0.899505, 129.53, 80.96, 0.13,  27.79,   3.24,   17.41, 0.827048),
-    3: (0.827048, 119.09, 80.64, 0.13,  26.32,   2.98,    9.02, 0.768655),
+    0: (1.000000, 144.00, 82.50, 0.14, 180.00, 216.00, -334.64, 0.899505),
+    1: (0.899505, 129.53, 80.96, 0.13,  27.79,   3.24,   17.41, 0.827048),
+    2: (0.827048, 119.09, 80.64, 0.13,  26.32,   2.98,    9.02, 0.768655),
 }
 
-# The notes' illustrative mortality vector, q(1) .. q(3).  Not a CMI table: the current
+# The notes' illustrative mortality vector, q(0) .. q(2).  Not a CMI table: the current
 # UK assured lives tables are subscriber-only [R11].
 WORKED_EXAMPLE_Q = (0.00055, 0.00060, 0.00065)
 
@@ -78,35 +83,35 @@ def test_worked_example_row(uk_term_anchor, t):
 
 
 def test_worked_example_mortality_vector(uk_term_anchor):
-    """q(1..3) = 0.00055 / 0.00060 / 0.00065, the notes' illustrative values."""
-    for t, q in enumerate(WORKED_EXAMPLE_Q, start=1):
+    """q(0..2) = 0.00055 / 0.00060 / 0.00065, the notes' illustrative values."""
+    for t, q in enumerate(WORKED_EXAMPLE_Q):
         assert uk_term_anchor.mort_rate(t) == pytest.approx(q, rel=1e-12)
 
 
 def test_worked_example_year_one_trace(uk_term_anchor):
-    """The notes' year-one trace, line by line.
+    """The notes' first-year trace (t = 0, policy year 1), line by line.
 
-    D(1) = 1.0 x 0.00055; claims = 150,000 x D(1) = 82.50; claim expense = 250 x D(1);
-    expenses = E0 + e(1) = 150 + 30; commission = c0 = 1.5 x 144.
+    D(0) = 1.0 x 0.00055; claims = 150,000 x D(0) = 82.50; claim expense = 250 x D(0);
+    expenses = E0 + e(0) = 150 + 30; commission = c0 = 1.5 x 144.
     """
     a = uk_term_anchor
-    assert a.pols_death(1) == pytest.approx(0.00055, rel=1e-12)
-    assert a.benefit_pp(1) == 150000.0
-    assert a.premium_pp(1) == 144.00               # P_a = 12 x P_m
+    assert a.pols_death(0) == pytest.approx(0.00055, rel=1e-12)
+    assert a.benefit_pp(0) == 150000.0
+    assert a.premium_pp(0) == 144.00               # P_a = 12 x P_m
     assert a.comm_init_pp() == pytest.approx(216.00, abs=PENNY)
-    assert a.expenses(1) == pytest.approx(150.00 + 30.00, abs=PENNY)
-    assert a.net_cf(1) == pytest.approx(
+    assert a.expenses(0) == pytest.approx(150.00 + 30.00, abs=PENNY)
+    assert a.net_cf(0) == pytest.approx(
         144.00 - 82.50 - 0.1375 - 180.00 - 216.00, abs=1e-9)
 
 
 def test_worked_example_inforce_update(uk_term_anchor):
-    """l(2) = 1.0 x (1 - 0.00055) x (1 - 0.10), the notes' update step."""
+    """l(1) = 1.0 x (1 - 0.00055) x (1 - 0.10), the notes' update step."""
     a = uk_term_anchor
-    assert a.lapse_rate(1) == 0.10
-    assert a.pols_if(2) == pytest.approx(1.0 * (1 - 0.00055) * (1 - 0.10), rel=1e-14)
-    assert a.lapse_rate(2) == 0.08
-    assert a.pols_if(3) == pytest.approx(
-        a.pols_if(2) * (1 - 0.00060) * (1 - 0.08), rel=1e-14)
+    assert a.lapse_rate(0) == 0.10
+    assert a.pols_if(1) == pytest.approx(1.0 * (1 - 0.00055) * (1 - 0.10), rel=1e-14)
+    assert a.lapse_rate(1) == 0.08
+    assert a.pols_if(2) == pytest.approx(
+        a.pols_if(1) * (1 - 0.00060) * (1 - 0.08), rel=1e-14)
 
 
 def test_new_business_strain_then_thin_margins(uk_term_anchor):
@@ -117,9 +122,9 @@ def test_new_business_strain_then_thin_margins(uk_term_anchor):
     rising mortality cost.
     """
     a = uk_term_anchor
-    assert a.net_cf(1) < -300.0
-    assert all(a.net_cf(t) > 0.0 for t in (2, 3, 4))
-    assert a.net_cf(a.proj_len()) < 0.0        # mortality cost has overtaken by the end
+    assert a.net_cf(0) < -300.0
+    assert all(a.net_cf(t) > 0.0 for t in (1, 2, 3))
+    assert a.net_cf(a.proj_len() - 1) < 0.0    # mortality cost has overtaken by the end
 
 
 # ---------------------------------------------------------------------------
@@ -127,19 +132,20 @@ def test_new_business_strain_then_thin_margins(uk_term_anchor):
 
 
 def test_projection_ends_with_the_term(uk_term_anchor):
-    """proj_len() is the term exactly; nothing survives past it.
+    """proj_len() is the term exactly, the number of years; nothing survives past it.
 
     Cover ceases at the end of the term with no maturity value, no renewal and no
     conversion.  A US-style post-level-term tail would show up here as a projection
-    running past year 25.
+    running past t = 24, the 25th and final year.
     """
     a = uk_term_anchor
     assert a.proj_len() == 25 == a.policy_term()
-    assert a.age(25) == 59                       # attained age in the final year
-    assert a.pols_if(25) > 0.0
-    assert a.pols_if(26) == 0.0
-    assert a.pols_if_at(25, "AFT_DECR") == 0.0
-    assert len(a.result_cf()) == 25
+    assert a.proj_start() == 0                   # projected from issue
+    assert a.age(0) == 35 and a.age(24) == 59    # attained age, first and final year
+    assert a.pols_if(24) > 0.0
+    assert a.pols_if(25) == 0.0                  # t = proj_len() is off the frame
+    assert a.pols_if_at(24, "AFT_DECR") == 0.0
+    assert len(a.result_cf()) == 25 == a.proj_len()
 
 
 def test_no_post_level_term_machinery(term_assurance):
@@ -156,22 +162,22 @@ def test_no_post_level_term_machinery(term_assurance):
 
 
 def test_maturity_is_confined_to_the_final_year_and_pays_nothing(uk_term_anchor):
-    """pols_maturity closes the roll-forward; it is not a benefit."""
+    """pols_maturity closes the roll-forward in the final year t = proj_len() - 1."""
     a = uk_term_anchor
-    for t in range(1, a.proj_len()):
+    last = a.proj_len() - 1
+    for t in range(last):
         assert a.pols_maturity(t) == 0.0
-    assert a.pols_maturity(a.proj_len()) > 0.0
+    assert a.pols_maturity(last) > 0.0
     # No maturity value: the only benefit kinds are DEATH and FIB, and neither fires
     # on the expiring survivors.
-    assert a.claims(a.proj_len()) == pytest.approx(
-        a.claims(a.proj_len(), "DEATH"), rel=1e-12)
+    assert a.claims(last) == pytest.approx(a.claims(last, "DEATH"), rel=1e-12)
 
 
 def test_inforce_rollforward_closes(uk_term_anchor):
     """pols_if(t) - pols_if(t+1) = deaths + lapses + expiries, in every year."""
     a = uk_term_anchor
     assert a.check_pols_roll_fwd() is True
-    for t in range(1, a.proj_len() + 1):
+    for t in range(a.proj_len()):
         out = a.pols_death(t) + a.pols_lapse(t) + a.pols_maturity(t)
         assert a.pols_if(t) - a.pols_if(t + 1) == pytest.approx(out, abs=1e-12)
 
@@ -179,7 +185,7 @@ def test_inforce_rollforward_closes(uk_term_anchor):
 def test_death_is_decremented_before_lapse(uk_term_anchor):
     """The notes' processing order: lapses are taken from the survivors of mortality."""
     a = uk_term_anchor
-    for t in (1, 5, 12):
+    for t in (0, 4, 11):
         assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
         assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate(t)), rel=1e-14)
@@ -189,7 +195,7 @@ def test_death_is_decremented_before_lapse(uk_term_anchor):
 
 def test_inforce_is_a_decreasing_probability(uk_term_anchor):
     a = uk_term_anchor
-    for t in range(1, a.proj_len() + 2):
+    for t in range(a.proj_len() + 1):            # through the zero at t = proj_len()
         assert 0.0 <= a.pols_if(t) <= 1.0
         assert a.pols_if(t + 1) <= a.pols_if(t) + 1e-15
 
@@ -210,7 +216,7 @@ def test_lapse_pays_nothing(term_assurance):
         df = proj.result_cf()
         assert (df["claims_lapse"] == 0.0).all()
         assert all(proj.claims(t, "LAPSE") == 0.0
-                   for t in range(proj.proj_start(), proj.proj_len() + 1))
+                   for t in range(proj.proj_start(), proj.proj_len()))
 
 
 # ---------------------------------------------------------------------------
@@ -263,22 +269,22 @@ def test_decreasing_monthly_convention_is_effective_not_nominal(term_assurance):
 
 
 def test_decreasing_whole_year_identity(term_assurance):
-    """(1+j_m)^12 = 1+j, so B(12t) closes in annual terms."""
+    """(1+j_m)^12 = 1+j, so B(12y), the balance after y whole years, closes annually."""
     p = term_assurance.Projection[2]
     j = p.sched_rate()
     n = p.policy_term()
-    for t in (1, 5, 10):
-        annual = p.sum_assured() * ((1 + j) ** n - (1 + j) ** t) / ((1 + j) ** n - 1)
-        assert p.benefit_sched(12 * t) == pytest.approx(annual, rel=1e-12)
+    for y in (1, 5, 10):
+        annual = p.sum_assured() * ((1 + j) ** n - (1 + j) ** y) / ((1 + j) ** n - 1)
+        assert p.benefit_sched(12 * y) == pytest.approx(annual, rel=1e-12)
 
 
 def test_decreasing_death_benefit_is_the_mid_year_balance(term_assurance):
-    """DB(t) = B(12(t-1) + 6), the annual grid's reading of a monthly step-down."""
+    """DB(t) = B(12t + 6), the annual grid's reading of a monthly step-down."""
     p = term_assurance.Projection[2]
-    for t in (1, 6, 20):
-        assert p.benefit_pp(t) == pytest.approx(p.benefit_sched(12 * (t - 1) + 6),
+    for t in (0, 5, 19):
+        assert p.benefit_pp(t) == pytest.approx(p.benefit_sched(12 * t + 6),
                                                 rel=1e-14)
-    assert p.benefit_pp(1) < p.sum_assured()      # already stepped down by six months
+    assert p.benefit_pp(0) < p.sum_assured()      # already stepped down by six months
 
 
 # ---------------------------------------------------------------------------
@@ -290,24 +296,24 @@ def test_fib_ledger_closes_against_an_independent_rebuild(term_assurance):
     p = term_assurance.Projection[3]
     assert p.shape() == "fib"
     assert p.check_fib_ledger() is True
-    for t in range(1, p.proj_len() + 1):
+    for t in range(p.proj_len()):
         assert p.check_fib_ledger_resid(t) == pytest.approx(0.0, abs=1e-12)
 
 
 def test_fib_total_is_the_annuity_certain_total(term_assurance):
-    """A death in year s pays 6 + 12(n-s) instalments — exactly N - k at k = 12(s-1)+6.
+    """A death in year s pays 6 + 12(n-1-s) instalments — exactly N - k at k = 12s + 6.
 
     Summed over the projection this is the whole liability, and it is the identity an
     implementation that pays only the year-of-death instalments fails.
     """
     p = term_assurance.Projection[3]
     n, income = p.policy_term(), p.fib_income()
-    total = sum(p.claims(t, "FIB") for t in range(1, n + 1))
-    built = sum(p.pols_death(s) * income * (6 + 12 * (n - s)) for s in range(1, n + 1))
+    total = sum(p.claims(t, "FIB") for t in range(n))
+    built = sum(p.pols_death(s) * income * (6 + 12 * (n - 1 - s)) for s in range(n))
     assert total == pytest.approx(built, rel=1e-12)
-    for s in (1, 10, 25):
-        k = 12 * (s - 1) + 6
-        assert 6 + 12 * (n - s) == p.term_mths() - k
+    for s in (0, 9, 24):
+        k = 12 * s + 6
+        assert 6 + 12 * (n - 1 - s) == p.term_mths() - k
 
 
 def test_fib_stream_is_not_decremented_by_mortality_or_lapse(term_assurance):
@@ -317,32 +323,33 @@ def test_fib_stream_is_not_decremented_by_mortality_or_lapse(term_assurance):
     admitted, so only *new* claims carry l(t).
     """
     p = term_assurance.Projection[3]
-    for t in range(2, p.proj_len() + 1):
+    for t in range(1, p.proj_len()):
         assert p.fib_cum(t) == pytest.approx(
             p.fib_cum(t - 1) + p.pols_death(t - 1), abs=1e-15)
         assert p.fib_cum(t) >= p.fib_cum(t - 1)   # never falls
-    assert p.fib_cum(1) == 0.0
+    assert p.fib_cum(0) == 0.0
 
 
 def test_fib_pays_no_lump_sum_when_uncommuted(term_assurance):
     """With take-up at zero the whole liability runs through claims(t, "FIB")."""
     p = term_assurance.Projection[3]
     assert p.fib_commute_rate() == 0.0
-    assert all(p.claims(t, "DEATH") == 0.0 for t in range(1, p.proj_len() + 1))
-    assert any(p.claims(t, "FIB") > 0.0 for t in range(1, p.proj_len() + 1))
+    assert all(p.claims(t, "DEATH") == 0.0 for t in range(p.proj_len()))
+    assert any(p.claims(t, "FIB") > 0.0 for t in range(p.proj_len()))
 
 
 def test_fib_commutation_replaces_the_stream_with_a_lump_sum(term_assurance):
     """Model point 4 is point 3 with take-up at 100%: all lump sum, no instalments."""
     p3, p4 = term_assurance.Projection[3], term_assurance.Projection[4]
     assert p4.fib_commute_rate() == 1.0
-    assert all(p4.claims(t, "FIB") == 0.0 for t in range(1, p4.proj_len() + 1))
-    assert any(p4.claims(t, "DEATH") > 0.0 for t in range(1, p4.proj_len() + 1))
-    # a(294) at r_c = 3%: the value of the instalments a year-one death would generate.
-    assert p4.fib_commute_pp(1) == pytest.approx(1000.0 * 208.932248, abs=0.01)
+    assert all(p4.claims(t, "FIB") == 0.0 for t in range(p4.proj_len()))
+    assert any(p4.claims(t, "DEATH") > 0.0 for t in range(p4.proj_len()))
+    # a(294) at r_c = 3%: the value of the instalments a death in the first year
+    # (t = 0, month k = 6) would generate.
+    assert p4.fib_commute_pp(0) == pytest.approx(1000.0 * 208.932248, abs=0.01)
     # Commuting at 3% is worth less than paying the instalments out undiscounted.
-    tot3 = sum(p3.claims(t) for t in range(1, p3.proj_len() + 1))
-    tot4 = sum(p4.claims(t) for t in range(1, p4.proj_len() + 1))
+    tot3 = sum(p3.claims(t) for t in range(p3.proj_len()))
+    tot4 = sum(p4.claims(t) for t in range(p4.proj_len()))
     assert tot4 < tot3
 
 
@@ -360,7 +367,7 @@ def test_annuity_certain_factor(term_assurance):
 def test_fib_premiums_stop_at_death_though_instalments_do_not(term_assurance):
     """Premium income always carries l(t); the FIB ledger never touches it."""
     p = term_assurance.Projection[3]
-    for t in (1, 10, 25):
+    for t in (0, 9, 24):
         assert p.premiums(t) == pytest.approx(p.premium_pp(t) * p.pols_if(t), rel=1e-14)
 
 
@@ -373,11 +380,11 @@ def test_indexation_compounds_cover_and_premium_at_the_notes_rates(term_assuranc
     p = term_assurance.Projection[5]
     assert p.indexation() is True
     assert p.idx_increase() == pytest.approx(0.03, rel=1e-12)
-    for t in (1, 2, 3):
-        assert p.idx_factor(t) == pytest.approx(1.03 ** (t - 1), rel=1e-12)
-        assert p.idx_prem_factor(t) == pytest.approx(1.045 ** (t - 1), rel=1e-12)
-    assert p.benefit_pp(3) == pytest.approx(150000.0 * 1.03 ** 2, rel=1e-12)
-    assert p.premium_pp(3) == pytest.approx(144.0 * 1.045 ** 2, rel=1e-12)
+    for t in (0, 1, 2):
+        assert p.idx_factor(t) == pytest.approx(1.03 ** t, rel=1e-12)
+        assert p.idx_prem_factor(t) == pytest.approx(1.045 ** t, rel=1e-12)
+    assert p.benefit_pp(2) == pytest.approx(150000.0 * 1.03 ** 2, rel=1e-12)
+    assert p.premium_pp(2) == pytest.approx(144.0 * 1.045 ** 2, rel=1e-12)
 
 
 def test_indexation_caps(term_assurance):
@@ -392,13 +399,13 @@ def test_indexation_caps(term_assurance):
         model.Projection.clear_all()
         proj = model.Projection[5]
         assert proj.idx_increase() == pytest.approx(0.10, rel=1e-12)
-        # 1.5 x 10% = 15%, exactly at the premium cap.
-        assert proj.idx_prem_factor(2) == pytest.approx(1.15, rel=1e-12)
+        # 1.5 x 10% = 15%, exactly at the premium cap, after the first anniversary.
+        assert proj.idx_prem_factor(1) == pytest.approx(1.15, rel=1e-12)
         model.Projection.rpi_rate = -0.02         # deflation floors the increase at 0
         model.Projection.clear_all()
         proj = model.Projection[5]
         assert proj.idx_increase() == 0.0
-        assert proj.idx_factor(5) == 1.0
+        assert proj.idx_factor(4) == 1.0
     finally:
         model.close()
 
@@ -408,7 +415,7 @@ def test_indexation_is_off_on_the_other_model_points(term_assurance):
     p = term_assurance.Projection[1]
     assert p.indexation() is False
     assert all(p.idx_factor(t) == 1.0 and p.idx_prem_factor(t) == 1.0
-               for t in range(1, p.proj_len() + 1))
+               for t in range(p.proj_len()))
 
 
 def test_indexation_is_restricted_to_the_level_shape(term_assurance):
@@ -430,7 +437,7 @@ def test_joint_first_death_is_one_policy_with_one_decrement(term_assurance):
     p = term_assurance.Projection[6]
     assert p.is_joint() is True
     assert p.age_at_entry(2) == 33 and p.sex(2) == "F"
-    for t in (1, 8, 20):
+    for t in (0, 7, 19):
         q1, q2 = p.mort_rate_life(t, 1), p.mort_rate_life(t, 2)
         assert p.mort_rate(t) == pytest.approx(1 - (1 - q1) * (1 - q2), rel=1e-14)
         assert p.mort_rate(t) < q1 + q2           # not the sum of the two rates
@@ -440,7 +447,7 @@ def test_joint_first_death_is_one_policy_with_one_decrement(term_assurance):
 def test_single_life_collapses_to_the_first_life(term_assurance):
     p = term_assurance.Projection[1]
     assert p.is_joint() is False
-    for t in (1, 10):
+    for t in (0, 9):
         assert p.mort_rate(t) == p.mort_rate_life(t, 1)
     with pytest.raises(FormulaError):
         p.age_at_entry(2)          # modelx wraps the formula's ValueError
@@ -454,7 +461,7 @@ def test_applied_basis_takes_the_table_as_it_stands(uk_term_anchor):
     """No select factor and no proxy scaling on the applied basis."""
     a = uk_term_anchor
     assert a.mort_basis() == "applied"
-    for t in (1, 4, 20):
+    for t in (0, 3, 19):
         assert a.mort_rate(t) == pytest.approx(a.mort_rate_base(t), rel=1e-14)
 
 
@@ -462,15 +469,16 @@ def test_select_basis_applies_the_select_factor_and_the_proxy_scaling(term_assur
     """table x select_factor(duration) x 0.75, with a 5-year select period."""
     p = term_assurance.Projection[7]
     assert p.mort_basis() == "select"
-    for t in range(1, 8):
+    for t in range(7):
         assert p.mort_rate(t) == pytest.approx(
             p.mort_rate_base(t) * p.select_factor(t) * 0.75, rel=1e-14)
-    # The select discount wears off over five years and is gone from duration 5.
-    assert p.select_factor(1) == 0.55             # duration 0
-    assert p.select_factor(5) == 0.93             # duration 4
-    assert p.select_factor(6) == 1.00             # duration 5, ultimate
-    assert p.select_factor(20) == 1.00
-    assert p.mort_rate(1) < p.mort_rate_base(1)
+    # The select discount wears off over five years and is gone from duration 5;
+    # duration(t) = t, so the table key is t itself.
+    assert p.select_factor(0) == 0.55             # duration 0
+    assert p.select_factor(4) == 0.93             # duration 4
+    assert p.select_factor(5) == 1.00             # duration 5, ultimate
+    assert p.select_factor(19) == 1.00
+    assert p.mort_rate(0) < p.mort_rate_base(0)
 
 
 def test_the_two_bases_disagree_and_that_is_shipped_not_resolved(term_assurance):
@@ -482,7 +490,7 @@ def test_the_two_bases_disagree_and_that_is_shipped_not_resolved(term_assurance)
     model = mx.read_model(MODEL_DIR, name="Term_UK_A_bases")
     try:
         proj = model.Projection[1]
-        applied = proj.mort_rate(1)
+        applied = proj.mort_rate(0)
         table = model.Data.mort_table()
         select = table.loc[("M", "N", 35), "mort_rate"] * 0.55 * 0.75
         assert applied == pytest.approx(0.00055, rel=1e-12)
@@ -496,9 +504,9 @@ def test_invalid_enum_values_raise(term_assurance):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     p = term_assurance.Projection[1]
     with pytest.raises(FormulaError):
-        p.pols_if_at(1, "BEF_NOTHING")
+        p.pols_if_at(0, "BEF_NOTHING")
     with pytest.raises(FormulaError):
-        p.claims(1, "SURRENDER")
+        p.claims(0, "SURRENDER")
 
 
 # ---------------------------------------------------------------------------
@@ -508,19 +516,19 @@ def test_invalid_enum_values_raise(term_assurance):
 def test_selective_lapsation_is_off_and_works_when_switched_on(term_assurance):
     """q_eff = q (1 + lambda max(0, w_cum - w_ref)); lambda = 0 in the base run."""
     p = term_assurance.Projection[1]
-    assert all(p.sel_lapse_factor(t) == 1.0 for t in range(1, p.proj_len() + 1))
-    assert p.lapse_cum(1) == 0.0
-    assert p.lapse_cum(5) > 0.0
+    assert all(p.sel_lapse_factor(t) == 1.0 for t in range(p.proj_len()))
+    assert p.lapse_cum(0) == 0.0
+    assert p.lapse_cum(4) > 0.0
 
     model = mx.read_model(MODEL_DIR, name="Term_UK_A_sel")
     try:
-        base_late = model.Projection[1].mort_rate(20)
+        base_late = model.Projection[1].mort_rate(19)
         model.Projection.sel_lapse_lambda = 0.25
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert proj.sel_lapse_factor(1) == 1.0            # nothing has lapsed yet
-        assert proj.sel_lapse_factor(20) > 1.0            # w_cum has passed w_ref
-        assert proj.mort_rate(20) > base_late
+        assert proj.sel_lapse_factor(0) == 1.0            # nothing has lapsed yet
+        assert proj.sel_lapse_factor(19) > 1.0            # w_cum has passed w_ref
+        assert proj.mort_rate(19) > base_late
     finally:
         model.close()
 
@@ -528,22 +536,22 @@ def test_selective_lapsation_is_off_and_works_when_switched_on(term_assurance):
 def test_rebroking_is_off_and_works_when_switched_on(term_assurance):
     """M_reb = min(2, max(1, P_inforce / P_market)); the ratio is 1 in the base run."""
     p = term_assurance.Projection[1]
-    assert all(p.rebroke_factor(t) == 1.0 for t in range(1, p.proj_len() + 1))
-    assert p.lapse_rate(1) == p.lapse_rate_base(1)
+    assert all(p.rebroke_factor(t) == 1.0 for t in range(p.proj_len()))
+    assert p.lapse_rate(0) == p.lapse_rate_base(0)
 
     model = mx.read_model(MODEL_DIR, name="Term_UK_A_reb")
     try:
         model.Projection.premium_market_ratio = 1.5
         model.Projection.clear_all()
         proj = model.Projection[1]
-        assert proj.rebroke_factor(1) == pytest.approx(1.5)
-        assert proj.lapse_rate(3) == pytest.approx(0.07 * 1.5)
+        assert proj.rebroke_factor(0) == pytest.approx(1.5)
+        assert proj.lapse_rate(2) == pytest.approx(0.07 * 1.5)   # policy year 3
         model.Projection.premium_market_ratio = 5.0       # above the cap
         model.Projection.clear_all()
-        assert model.Projection[1].rebroke_factor(1) == 2.0
+        assert model.Projection[1].rebroke_factor(0) == 2.0
         model.Projection.premium_market_ratio = 0.4       # cheaper in force, no rebroking
         model.Projection.clear_all()
-        assert model.Projection[1].rebroke_factor(1) == 1.0
+        assert model.Projection[1].rebroke_factor(0) == 1.0
     finally:
         model.close()
 
@@ -551,19 +559,20 @@ def test_rebroking_is_off_and_works_when_switched_on(term_assurance):
 def test_commission_clawback_is_off_and_works_when_switched_on(term_assurance):
     """Linear over four years; off by default, so commission is never negative."""
     p = term_assurance.Projection[1]
-    assert all(p.comm_clawback(t) == 0.0 for t in range(1, p.proj_len() + 1))
+    assert all(p.comm_clawback(t) == 0.0 for t in range(p.proj_len()))
 
     model = mx.read_model(MODEL_DIR, name="Term_UK_A_claw")
     try:
         model.Projection.clawback_mths = 48
         model.Projection.clear_all()
         proj = model.Projection[1]
-        # Year 1: 36 of 48 months remaining, so 75% of c0 per lapsed policy.
-        assert proj.comm_clawback(1) == pytest.approx(
-            216.0 * 0.75 * proj.pols_lapse(1), rel=1e-12)
-        assert proj.comm_clawback(4) == 0.0               # window closed at 48 months
-        assert proj.comm_clawback(5) == 0.0
-        assert proj.commissions(2) < 0.025 * proj.premiums(2)
+        # A lapse at the end of the first year (t = 0) has 12 months in force: 36 of
+        # 48 months remaining, so 75% of c0 per lapsed policy.
+        assert proj.comm_clawback(0) == pytest.approx(
+            216.0 * 0.75 * proj.pols_lapse(0), rel=1e-12)
+        assert proj.comm_clawback(3) == 0.0               # window closed at 48 months
+        assert proj.comm_clawback(4) == 0.0
+        assert proj.commissions(1) < 0.025 * proj.premiums(1)
     finally:
         model.close()
 
@@ -572,24 +581,24 @@ def test_waiver_of_premium_is_off_and_works_when_switched_on(term_assurance):
     """The waived fraction is a two-state chain; zero unless the rider is in force."""
     p1 = term_assurance.Projection[1]
     assert p1.wop() is False
-    assert all(p1.wop_waived_frac(t) == 0.0 for t in range(1, p1.proj_len() + 1))
-    assert all(p1.pols_payer(t) == p1.pols_if(t) for t in range(1, p1.proj_len() + 1))
+    assert all(p1.wop_waived_frac(t) == 0.0 for t in range(p1.proj_len()))
+    assert all(p1.pols_payer(t) == p1.pols_if(t) for t in range(p1.proj_len()))
 
     p7 = term_assurance.Projection[7]
     assert p7.wop() is True
-    assert p7.wop_waived_frac(1) == 0.0                   # 26-week deferred period
-    assert p7.wop_waived_frac(2) == pytest.approx(0.004, rel=1e-12)
-    assert p7.wop_waived_frac(3) > p7.wop_waived_frac(2)  # not yet at equilibrium
-    assert p7.pols_payer(5) < p7.pols_if(5)
+    assert p7.wop_waived_frac(0) == 0.0                   # 26-week deferred period
+    assert p7.wop_waived_frac(1) == pytest.approx(0.004, rel=1e-12)
+    assert p7.wop_waived_frac(2) > p7.wop_waived_frac(1)  # not yet at equilibrium
+    assert p7.pols_payer(4) < p7.pols_if(4)
     # The rider carries a premium loading, also [std].
-    assert p7.premium_pp(1) == pytest.approx(12 * 45.00 * 1.05, rel=1e-12)
+    assert p7.premium_pp(0) == pytest.approx(12 * 45.00 * 1.05, rel=1e-12)
 
 
 def test_waived_fraction_converges_below_one(term_assurance):
     """inc / (inc + rec) is the equilibrium of the two-state chain."""
     p = term_assurance.Projection[7]
     equilibrium = 0.004 / (0.004 + 0.35)
-    assert p.wop_waived_frac(p.proj_len()) == pytest.approx(equilibrium, abs=1e-5)
+    assert p.wop_waived_frac(p.proj_len() - 1) == pytest.approx(equilibrium, abs=1e-5)
 
 
 # ---------------------------------------------------------------------------
@@ -597,29 +606,34 @@ def test_waived_fraction_converges_below_one(term_assurance):
 
 
 def test_an_inforce_model_point_starts_at_its_duration(term_assurance):
-    """duration_inforce = 5 means the projection starts in policy year 6.
+    """duration_inforce = 5 means the projection opens at t = 5, policy year 6.
 
-    An in-force policy never sees the acquisition expense or the initial commission,
-    but does pay renewal commission, and its expense inflation is measured from issue.
+    The elapsed count is already 0-based, so proj_start() is duration_inforce() itself
+    and proj_len() keeps the term: the frame is range(5, 25), 20 rows.  An in-force
+    policy never sees the acquisition expense or the initial commission, but does pay
+    renewal commission, and its expense inflation is measured from issue.
     """
     p = term_assurance.Projection[8]
-    assert p.duration_inforce() == 5 and p.proj_start() == 6
+    assert p.duration_inforce() == 5 and p.proj_start() == 5
+    assert p.proj_len() == 25 == p.policy_term()
     df = p.result_cf()
-    assert list(df.index) == list(range(6, 26))
-    assert p.pols_if(5) == 0.0 and p.pols_if(6) == 1.0
-    assert p.expenses(6) == pytest.approx(30.0 * 1.03 ** 5, rel=1e-12)   # no E0
-    assert p.commissions(6) == pytest.approx(0.025 * p.premiums(6), rel=1e-12)
-    assert p.lapse_cum(6) == 0.0
+    assert list(df.index) == list(range(5, 25))
+    assert len(df) == p.proj_len() - p.proj_start() == 20
+    assert p.pols_if(4) == 0.0 and p.pols_if(5) == 1.0
+    assert p.expenses(5) == pytest.approx(30.0 * 1.03 ** 5, rel=1e-12)   # no E0
+    assert p.commissions(5) == pytest.approx(0.025 * p.premiums(5), rel=1e-12)
+    assert p.lapse_cum(5) == 0.0
     assert p.check_pols_roll_fwd() is True
 
 
 def test_an_inforce_point_uses_the_same_rates_as_the_issued_one(term_assurance):
     """Duration is measured from entry, not from the start of the projection."""
     p1, p8 = term_assurance.Projection[1], term_assurance.Projection[8]
-    for t in range(6, 26):
+    for t in range(5, 25):
         assert p8.mort_rate(t) == p1.mort_rate(t)
         assert p8.lapse_rate(t) == p1.lapse_rate(t)
-        assert p8.duration(t) == t - 1
+        assert p8.duration(t) == t == p1.duration(t)
+        assert p8.age(t) == p1.age(t)
 
 
 # ---------------------------------------------------------------------------
@@ -627,13 +641,19 @@ def test_an_inforce_point_uses_the_same_rates_as_the_issued_one(term_assurance):
 
 
 def test_result_cf_shape(uk_term_anchor):
-    df = uk_term_anchor.result_cf()
-    assert list(df.index) == list(range(1, 26))
+    """One row per year t = 0 .. proj_len() - 1, lifelib's range(proj_len())."""
+    a = uk_term_anchor
+    df = a.result_cf()
+    assert df.index.name == "t"
+    assert list(df.index) == list(range(a.proj_len())) == list(range(25))
+    assert df.index[0] == 0 and df.index[-1] == a.proj_len() - 1
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_death", "claims_fib", "claims_lapse",
         "claim_expenses", "expenses", "commissions", "net_cf",
     ]
-    assert df.loc[1, "net_cf"] == pytest.approx(-334.64, abs=PENNY)
+    assert df.loc[0, "pols_if"] == a.pols_if_init()
+    assert df.loc[0, "net_cf"] == pytest.approx(-334.64, abs=PENNY)
+    assert list(a.result_pols().index) == list(df.index)
 
 
 def test_result_cf_rows_sum_to_net_cf(uk_term_anchor):
@@ -652,7 +672,7 @@ def test_net_cf_carries_the_notes_own_sign(term_assurance):
     payout annuity models whose notes print the other sign.
     """
     assert "liability_cf" not in term_assurance.Projection.cells
-    assert term_assurance.Projection[1].net_cf(2) > 0.0    # a positive-margin year
+    assert term_assurance.Projection[1].net_cf(1) > 0.0    # a positive-margin year
 
 
 def test_model_docstring_describes_the_current_structure(term_assurance):
@@ -740,11 +760,11 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
         alt_name = "mort_table_doubled.csv"
         doubled.to_csv(model.Data.input_dir() / alt_name)
         try:
-            base = model.Projection[1].claims(1, "DEATH")
+            base = model.Projection[1].claims(0, "DEATH")
             model.Data.mort_table_file = alt_name      # repoint the Reference
             model.Data.clear_all()
             model.Projection.clear_all()
-            assert model.Projection[1].claims(1, "DEATH") == pytest.approx(
+            assert model.Projection[1].claims(0, "DEATH") == pytest.approx(
                 2 * base, rel=1e-12)
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)

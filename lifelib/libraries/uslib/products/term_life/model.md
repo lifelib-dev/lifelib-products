@@ -27,21 +27,31 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by policy year `t` with one column per
-cash flow line.
+`result_cf()` returns a tidy `DataFrame` indexed by the 0-based period `t` — one row per
+policy year, `t = 0 … proj_len() − 1` — with one column per cash flow line.
 
 The model and its `Projection` Space both carry docstrings — `model.doc` describes the
 product and the projection basis, and `model.Projection.doc` holds the full mapping
 between the technical notes' symbols and the cells names.
 
-## Annual, not monthly
+## Annual, not monthly; 0-based, as in lifelib
 
-Policy year `t` runs 1 … `proj_len()` = `95 − age_at_entry()`. **Note the contrast with
-lifelib's `BasicTerm_S`, where `t` counts months** — here it counts years, because every
-decrement in this product is on an annual cycle and there is no account value requiring
-monthiversary processing. The technical notes describe an optional monthly mode; it is
-not implemented, and the `premium_mode` column in the model point table is currently
-inert.
+The time index `t` is 0-based: `t = 0` is the issue year, period `t` runs from time `t`
+to time `t + 1`, and the frame is `t = 0 … proj_len() − 1` with
+`proj_len() = 95 − age_at_entry()` the number of policy years projected (60 rows for the
+anchor cell, issue age 35). So `age(t) = age_at_entry() + t`, `pols_if(0) == pols_if_init()`,
+the acquisition expense and the 80% first-year commission fall at `t = 0`, the shock lapse
+at `t = policy_term() − 1`, and the first ART premium at `t = policy_term()`. The
+contractual policy year is the 1-based label `policy_year(t) = t + 1`; the model uses it
+for one thing only, reading the guaranteed premium schedule (see the CSV decisions below).
+Every model point in the table is new business (`duration_inforce = 0`), so `t` counts
+from inception and from the projection start alike.
+
+**Note the contrast with lifelib's `BasicTerm_S`, where `t` counts months** — here it
+counts years, because every decrement in this product is on an annual cycle and there is
+no account value requiring monthiversary processing. The technical notes describe an
+optional monthly mode; it is not implemented, and the `premium_mode` column in the model
+point table is currently inert.
 
 ## Inputs are external files
 
@@ -104,6 +114,18 @@ with no formula change. Tests cover both halves of that bargain.
 | `class_factor_table.csv` | Rate-class factors 0.80 / 0.90 / 1.00 / 1.75 | **[std]**, technical notes footnote A |
 | `shock_lapse_table.csv` | Shock lapse by jump-ratio bucket | **[std]**, technical notes |
 
+### Time-like columns in the CSVs
+
+None of the input files is keyed by the model's `t`, so none was re-keyed for the 0-based
+frame:
+
+| File | Column | Decision |
+|---|---|---|
+| `premium_rates.csv` | `policy_year` (1 … 60) | A contractual, 1-based label — the specimen schedule is printed by policy year — left as is. `premium_pp(t)` looks it up at `policy_year(t) = t + 1`; `jump_ratio()` reads rows `policy_term()` and `policy_term() + 1` through `premium_pp(n − 1)` and `premium_pp(n)`. |
+| `mort_table.csv` | `age` (35 … 94) | Attained age, read at `age(t) = age_at_entry() + t`; unchanged. Age 94 is the last row and `age(proj_len() − 1) = 94` for issue age 35, so the frame must end at `proj_len() − 1`. |
+| `model_point_table.csv` | `duration_inforce` (0, 0) | An elapsed count, 0-based by nature (0 = new business); unchanged. No formula reads it today. |
+| `class_factor_table.csv`, `shock_lapse_table.csv` | — | No time-like column. |
+
 ## Naming
 
 Cells follow lifelib's `basiclife/BasicTerm_S` wherever that model has an analogue:
@@ -124,11 +146,12 @@ The technical notes use compact actuarial symbols instead; the full mapping live
 ## `pols_maturity` — the one cells the notes do not define
 
 The notes give the roll-forward as `l(t+1) = l(t)(1−q)(1−cv)(1−w)` and, separately, the
-rule "l(t) = 0 for x+t−1 ≥ 95". Those two do not reconcile in the final policy year: the
-survivors of year 60 do not lapse, die or convert — their coverage simply runs out — so
-the roll-forward appears to lose lives with no cause.
+rule "l(t) = 0 for x+t ≥ 95". Those two do not reconcile in the final period of the frame,
+`t = proj_len() − 1` (t = 59, policy year 60, for the anchor cell): its survivors do not
+lapse, die or convert — their coverage simply runs out — so the roll-forward appears to
+lose lives with no cause.
 
-`pols_maturity(t)` names that quantity (zero in every year but the last), which makes the
+`pols_maturity(t)` names that quantity (zero in every period but the last), which makes the
 identity close exactly:
 
 ```
@@ -136,8 +159,8 @@ pols_if(t) − pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_conv(t) + pol
 ```
 
 This is bookkeeping, not a new assumption — the value is fully determined by the notes'
-own rules. It surfaced because the test asserting the identity failed at t = 60. The name
-follows `BasicTerm_S.pols_maturity`.
+own rules. It surfaced because the test asserting the identity failed in the last period
+(then labelled t = 60, now t = 59). The name follows `BasicTerm_S.pols_maturity`.
 
 ## The M(1) divergence is shipped, not resolved
 
@@ -164,12 +187,14 @@ which sets it aside to keep one decrement narrative.
 
 ## Tests
 
-`tests/test_term_life_us.py` asserts the full 12-row worked example to the cent, the
-in-force column to six decimals, the roll-forward identity, expiry behaviour, the M(1)
-divergence, the BasicTerm_S name set, that both docstrings survive serialization, that
-the model folder contains no data of any kind, that an input can be swapped by
-repointing a Reference, and a read → write → re-read round trip carrying the inputs
-along.
+`tests/test_term_life_us.py` asserts the full 12-row worked example (rows `t = 0 … 11`)
+to the cent, the in-force column to six decimals, the roll-forward identity over
+`range(proj_len())`, expiry behaviour (`age(59) == 94`, `pols_if(60) == 0`, the frame is
+`range(proj_len())` with `proj_len()` rows), that `policy_year(t) = t + 1` is the premium
+schedule's key, the M(1) divergence, the BasicTerm_S name set, that both docstrings
+survive serialization, that the model folder contains no data of any kind, that an input
+can be swapped by repointing a Reference, and a read → write → re-read round trip carrying
+the inputs along.
 
 ```bash
 python -m pytest tests -q

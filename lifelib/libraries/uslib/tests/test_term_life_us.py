@@ -7,6 +7,10 @@ reviewer can compare them against the notes by eye.
 
 Tolerances follow the precision the notes display: money to the cent, in-force to six
 decimals.
+
+The time index is 0-based: ``t = 0`` is the issue year (policy year 1), the frame is
+``t = 0 .. proj_len() - 1``, and the notes' 12-row worked example is rows ``t = 0 .. 11``.
+The contractual policy year is ``policy_year(t) = t + 1``.
 """
 import modelx as mx
 import pytest
@@ -28,26 +32,27 @@ def model_files(folder):
 CENT = 0.005          # money displayed to 2 d.p.
 INFORCE = 5e-7        # in-force displayed to 6 d.p.
 
-# t: (pols_if, premiums, claims, commissions, expenses, premium_taxes, net_cf, pols_if next)
+# t (0-based; policy year t + 1):
+#   (pols_if, premiums, claims, commissions, expenses, premium_taxes, net_cf, pols_if next)
 WORKED_EXAMPLE = {
-    1:  (1.000000, 140.00,  80.00, 112.00, 330.00, 2.80, -384.80, 0.939248),
-    2:  (0.939248, 131.49,  79.84,   6.57,  28.74, 2.63,   13.71, 0.891527),
-    3:  (0.891527, 124.81,  80.24,   6.24,  27.83, 2.50,    8.01, 0.855096),
-    4:  (0.855096, 119.71,  81.23,   5.99,  27.22, 2.39,    2.88, 0.820112),
-    5:  (0.820112, 114.82,  82.01,   5.74,  26.63, 2.30,   -1.86, 0.786520),
-    6:  (0.786520, 110.11,  86.52,   5.51,  26.05, 2.20,  -10.16, 0.754229),
-    7:  (0.754229, 105.59,  90.51,   5.28,  25.48, 2.11,  -17.79, 0.723191),
-    8:  (0.723191, 101.25,  94.01,   5.06,  24.92, 2.02,  -24.78, 0.693361),
-    9:  (0.693361,  97.07, 100.54,   4.85,  24.37, 1.94,  -34.63, 0.650814),
-    10: (0.650814,  91.11, 104.13,   4.56,  23.33, 1.82,  -42.73, 0.129955),
-    11: (0.129955,  99.29,  81.87,   1.99,   4.75, 1.99,    8.69, 0.090395),
-    12: (0.090395,  75.03,  60.56,   1.50,   3.37, 1.50,    8.09, 0.076321),
+    0:  (1.000000, 140.00,  80.00, 112.00, 330.00, 2.80, -384.80, 0.939248),
+    1:  (0.939248, 131.49,  79.84,   6.57,  28.74, 2.63,   13.71, 0.891527),
+    2:  (0.891527, 124.81,  80.24,   6.24,  27.83, 2.50,    8.01, 0.855096),
+    3:  (0.855096, 119.71,  81.23,   5.99,  27.22, 2.39,    2.88, 0.820112),
+    4:  (0.820112, 114.82,  82.01,   5.74,  26.63, 2.30,   -1.86, 0.786520),
+    5:  (0.786520, 110.11,  86.52,   5.51,  26.05, 2.20,  -10.16, 0.754229),
+    6:  (0.754229, 105.59,  90.51,   5.28,  25.48, 2.11,  -17.79, 0.723191),
+    7:  (0.723191, 101.25,  94.01,   5.06,  24.92, 2.02,  -24.78, 0.693361),
+    8:  (0.693361,  97.07, 100.54,   4.85,  24.37, 1.94,  -34.63, 0.650814),
+    9:  (0.650814,  91.11, 104.13,   4.56,  23.33, 1.82,  -42.73, 0.129955),
+    10: (0.129955,  99.29,  81.87,   1.99,   4.75, 1.99,    8.69, 0.090395),
+    11: (0.090395,  75.03,  60.56,   1.50,   3.37, 1.50,    8.09, 0.076321),
 }
 
 
 @pytest.mark.parametrize("t", sorted(WORKED_EXAMPLE))
 def test_worked_example_row(anchor, t):
-    """Every cell of the notes' 12-row table, to the displayed precision."""
+    """Every cell of the notes' 12-row table (rows t = 0..11), to the displayed precision."""
     pols, prem, clm, comm, exp, tax, net, pols_next = WORKED_EXAMPLE[t]
     assert anchor.pols_if(t) == pytest.approx(pols, abs=INFORCE)
     assert anchor.premiums(t) == pytest.approx(prem, abs=CENT)
@@ -60,19 +65,33 @@ def test_worked_example_row(anchor, t):
 
 
 def test_shock_lapse_collapse(anchor):
-    """The notes' headline check: l(11) = l(10)(1-0.0016)(1-0.80) = 0.129955."""
-    assert anchor.pols_if(10) * (1 - 0.0016) * (1 - 0.80) == pytest.approx(
+    """The notes' headline check: l(10) = l(9)(1-0.0016)(1-0.80) = 0.129955.
+
+    The shock lapse sits at t = n - 1 = 9, the last level-period year (policy year 10).
+    """
+    assert anchor.pols_if(9) * (1 - 0.0016) * (1 - 0.80) == pytest.approx(
         0.129955, abs=INFORCE)
-    assert anchor.pols_if(11) == pytest.approx(0.129955, abs=INFORCE)
+    assert anchor.pols_if(10) == pytest.approx(0.129955, abs=INFORCE)
     assert anchor.shock_lapse_rate() == 0.80
-    assert anchor.lapse_rate(10) == 0.80
+    assert anchor.lapse_rate(9) == 0.80
 
 
 def test_jump_ratio(anchor):
-    """J = premium_pp(11)/premium_pp(10) = 764/140, fee included in both."""
-    assert anchor.premium_pp(10) == 140.0
-    assert anchor.premium_pp(11) == 764.0
+    """J = premium_pp(10)/premium_pp(9) = 764/140, fee included in both.
+
+    t = 9 is policy year 10, the last level premium; t = 10 the first ART premium.
+    """
+    assert anchor.premium_pp(9) == 140.0
+    assert anchor.premium_pp(10) == 764.0
     assert anchor.jump_ratio() == pytest.approx(764.0 / 140.0, rel=1e-12)
+
+
+def test_policy_year_is_the_contractual_label(anchor):
+    """policy_year(t) = t + 1 is the 1-based key of premium_rates.csv, not the frame index."""
+    assert anchor.policy_year(0) == 1
+    assert anchor.policy_year(9) == 10
+    assert anchor.premium_pp(0) == 140.0        # policy_year 1 in the CSV
+    assert anchor.premium_pp(59) == 74780.0     # policy_year 60, the last row (age 94)
 
 
 def test_plt_factor_formula_diverges_from_the_pinned_fixture(term_life):
@@ -92,7 +111,10 @@ def test_plt_factor_formula_diverges_from_the_pinned_fixture(term_life):
 
 
 def test_plt_factor_grades_to_two(anchor):
-    """M(d) = max(2.0, M(1) - 0.15(d-1)); reaches the 2.00 floor at d = 11."""
+    """M(d) = max(2.0, M(1) - 0.15(d-1)); reaches the 2.00 floor at d = 11.
+
+    d is the notes' PLT duration, d = t + 1 - n (d = 1 at t = n), not the frame index.
+    """
     assert anchor.plt_mort_factor(1) == 3.50
     assert anchor.plt_mort_factor(2) == pytest.approx(3.35)
     assert anchor.plt_mort_factor(11) == pytest.approx(2.00)
@@ -103,58 +125,70 @@ def test_plt_factor_grades_to_two(anchor):
 def test_inforce_rollforward_closes(anchor):
     """pols_if(t) - pols_if(t+1) = deaths + lapses + conversions + maturities.
 
-    `pols_maturity` is non-zero only in the final policy year, where coverage ends at
-    attained age 95.  That is not a decrement - the contract runs out - but without it
-    in the identity the last year appears to lose lives with no cause.
+    `pols_maturity` is non-zero only in the final period of the frame, t = proj_len() - 1,
+    where coverage ends at attained age 95.  That is not a decrement - the contract runs
+    out - but without it in the identity the last year appears to lose lives with no cause.
     """
-    for t in range(1, anchor.proj_len() + 1):
+    for t in range(anchor.proj_len()):
         out = (anchor.pols_death(t) + anchor.pols_lapse(t)
                + anchor.pols_conv(t) + anchor.pols_maturity(t))
         assert anchor.pols_if(t) - anchor.pols_if(t + 1) == pytest.approx(out, abs=1e-12)
 
 
 def test_maturity_is_confined_to_the_final_year(anchor):
-    for t in range(1, anchor.proj_len()):
+    for t in range(anchor.proj_len() - 1):
         assert anchor.pols_maturity(t) == 0.0
-    assert anchor.pols_maturity(anchor.proj_len()) > 0.0
+    assert anchor.pols_maturity(anchor.proj_len() - 1) > 0.0
 
 
 def test_inforce_is_a_decreasing_probability(anchor):
-    for t in range(1, anchor.proj_len() + 2):
+    for t in range(anchor.proj_len() + 1):
         assert 0.0 <= anchor.pols_if(t) <= 1.0
         assert anchor.pols_if(t + 1) <= anchor.pols_if(t) + 1e-15
 
 
 def test_expiry_at_attained_age_95(anchor):
-    """Policy year 60 is the last for issue age 35; nothing survives past it."""
+    """t = 59 (policy year 60) is the last period for issue age 35; nothing survives past it.
+
+    proj_len() counts the periods projected, so the frame ends at proj_len() - 1.
+    """
     assert anchor.proj_len() == 60
-    assert anchor.age(60) == 94                 # age at the start of the final year
-    assert anchor.pols_if(60) > 0.0
-    assert anchor.pols_if(61) == 0.0
-    assert anchor.phase(61) == "EXPIRED"
+    assert anchor.age(0) == 35                  # age(t) = age_at_entry() + t
+    assert anchor.age(59) == 94                 # age at the start of the final year
+    assert anchor.pols_if(0) == anchor.pols_if_init()
+    assert anchor.pols_if(59) > 0.0
+    assert anchor.pols_if(60) == 0.0
+    assert anchor.phase(59) == "PLT"
+    assert anchor.phase(60) == "EXPIRED"
 
 
 def test_phase_switches_at_the_level_period_end(anchor):
-    assert anchor.phase(10) == "LEVEL"
-    assert anchor.phase(11) == "PLT"
+    """The level period is t = 0..n-1 (policy years 1..n); PLT starts at t = n."""
+    assert anchor.phase(0) == "LEVEL"
+    assert anchor.phase(9) == "LEVEL"
+    assert anchor.phase(10) == "PLT"
 
 
 def test_conversion_is_off_in_the_base_run(anchor):
     """The worked example sets cv = 0; the eligibility window is still modelled."""
-    assert anchor.conv_rate(5) == 0.0
-    assert all(anchor.conv_credits(t) == 0.0 for t in range(1, 13))
-    assert anchor.conv_elig(10) is True          # within level period, age 44 < 70
-    assert anchor.conv_elig(11) is False         # level period over
+    assert anchor.conv_rate(4) == 0.0
+    assert all(anchor.conv_credits(t) == 0.0 for t in range(12))
+    assert anchor.conv_elig(9) is True           # within level period, age 44 < 70
+    assert anchor.conv_elig(10) is False         # level period over
 
 
 def test_result_cf_shape(anchor):
+    """One row per period t = 0 .. proj_len() - 1; proj_len() is the row count."""
     df = anchor.result_cf()
-    assert list(df.index) == list(range(1, anchor.proj_len() + 1))
+    assert list(df.index) == list(range(anchor.proj_len()))
+    assert df.index[0] == 0
+    assert df.index[-1] == anchor.proj_len() - 1
+    assert len(df) == anchor.proj_len()
     assert set(df.columns) == {
         "pols_if", "premiums", "claims", "commissions", "expenses",
         "premium_taxes", "conv_credits", "net_cf",
     }
-    assert df.loc[1, "net_cf"] == pytest.approx(-384.80, abs=CENT)
+    assert df.loc[0, "net_cf"] == pytest.approx(-384.80, abs=CENT)
 
 
 def test_every_space_is_documented(term_life):
@@ -272,11 +306,11 @@ def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
         alt_name = "mort_table_doubled.csv"
         doubled.to_csv(model.Data.input_dir() / alt_name)
         try:
-            base = model.Projection[1].claims(1)
+            base = model.Projection[1].claims(0)
             model.Data.mort_table_file = alt_name      # repoint the Reference
             model.Data.clear_all()
             model.Projection.clear_all()
-            assert model.Projection[1].claims(1) == pytest.approx(2 * base, rel=1e-12)
+            assert model.Projection[1].claims(0) == pytest.approx(2 * base, rel=1e-12)
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
     finally:

@@ -407,8 +407,8 @@ def test_lapse_rate_is_the_annual_rate(name, model):
         pytest.skip(f"{name} has no monthly lapse rate")
     assert "lapse_rate" in cells, "lapse_rate_mth exists without an annual lapse_rate"
     proj = model.Projection[list(model.Data.model_point_table().index)[0]]
-    for t in (1, 13, 25):
-        if t <= proj.proj_len():
+    for t in (0, 12, 24):
+        if t < proj.proj_len():
             ann, mth = proj.lapse_rate(t), proj.lapse_rate_mth(t)
             if ann > 0:
                 assert mth < ann, f"t={t}: monthly {mth} not below annual {ann}"
@@ -463,9 +463,18 @@ def test_net_cf_is_income_positive(model):
 # residue. They are keyed by model name and called with the ItemSpace and the frame the
 # sweep has already computed.
 #
-# This table stays inside jplib. ``proj_len()`` does not mean the same thing in uslib, where
-# the 0-based models publish ``proj_len() + 1`` rows, so a helper shared across libraries
-# would be wrong for one of them whichever form it took.
+# This table stays inside jplib because its entries are product facts of Japanese models; the
+# frame rule the sweep asserts is the same in every library. The time index ``t`` is 0-based:
+# ``t = 0`` is the first period of a policy projected from issue (the issue year on an annual
+# grid, the issue month on a monthly one), period ``t`` runs from time ``t`` to time ``t + 1``,
+# and the attained age is ``age_at_entry + t`` on an annual grid (``age_at_entry +
+# duration(t)``, ``duration(t) = t // 12``, on a monthly one). ``proj_len()`` is the number of
+# periods from ``t = 0``, i.e. the exclusive end of the frame: ``result_cf()`` covers
+# ``t = t_first, ..., proj_len() - 1``, where ``t_first`` is 0 for a point projected from issue
+# and the elapsed periods for an in-force point. This is lifelib's own convention
+# (basiclife/BasicTerm_S, savings/CashValue_SE, annuallife/TradLife_A: ``for t in
+# range(proj_len())``). A contractual policy year is the 1-based label ``t + 1``
+# (``duration(t) + 1`` on a monthly grid) and is derived, never indexed by.
 
 
 def _income_term_ledgers_stay_non_negative(proj, df):
@@ -502,11 +511,19 @@ def test_every_model_point_projects(name, model):
     admits an infinity, so ``net_cf`` is checked for one separately; and every point must
     publish the same columns, or two rows of one model's output cannot be read together.
 
-    ``len(result_cf()) == proj_len()`` holds for all nine models here and is asserted for
-    every point. What must *not* be asserted is where the frame starts: five of the nine are
-    0-based (がん保険, 外貨建終身保険, 介護保険, 医療保険, 個人年金保険) and four are 1-based, and the split
-    does not follow the annual/monthly grid — ``Annuity_JP_A`` is annual and 0-based while
-    ``IncomeTerm_JP_S`` is monthly and 1-based.
+    The frame rule is asserted for every point, and it is one rule for all nine models. The
+    time index ``t`` is 0-based: ``t = 0`` is the first period of a policy projected from
+    issue (the issue year on an annual grid, the issue month on a monthly one), period ``t``
+    runs from time ``t`` to time ``t + 1``, and the attained age is ``age_at_entry + t`` on
+    an annual grid (``age_at_entry + duration(t)``, ``duration(t) = t // 12``, on a monthly
+    one). ``proj_len()`` is the number of periods from ``t = 0``, i.e. the exclusive end of
+    the frame: ``result_cf()`` covers ``t = t_first, ..., proj_len() - 1``, where ``t_first``
+    is 0 for a point projected from issue and the elapsed periods for an in-force point. This
+    is lifelib's own convention (``basiclife/BasicTerm_S``, ``savings/CashValue_SE``,
+    ``annuallife/TradLife_A``: ``for t in range(proj_len())``). A contractual policy year is
+    the 1-based label ``t + 1`` (``duration(t) + 1`` on a monthly grid) and is derived, never
+    indexed by. So the index is contiguous from a non-negative ``t_first`` to
+    ``proj_len() - 1`` inclusive, and ``len(result_cf()) == proj_len() - t_first``.
     """
     checks = [c for c in model.Projection.cells
               if c.startswith("check_") and not c.endswith("_resid")]
@@ -516,10 +533,15 @@ def test_every_model_point_projects(name, model):
         proj = model.Projection[point_id]
         df = proj.result_cf()
         assert len(df) > 0, f"{model.name}: model point {point_id} projects nothing"
-        assert len(df) == proj.proj_len(), (
-            f"{model.name}: point {point_id} publishes {len(df)} rows for a projection "
-            f"of {proj.proj_len()}")
         assert df.index.name == "t", f"{model.name}: result_cf is not indexed by t"
+        assert df.index[0] >= 0, (
+            f"{model.name}: point {point_id} opens the frame at t = {df.index[0]} < 0")
+        assert list(df.index) == list(range(df.index[0], proj.proj_len())), (
+            f"{model.name}: point {point_id} does not cover t = {df.index[0]}, ..., "
+            f"proj_len() - 1 = {proj.proj_len() - 1} contiguously ({len(df)} rows)")
+        assert df.index[-1] == proj.proj_len() - 1, (
+            f"{model.name}: point {point_id} ends at t = {df.index[-1]}, not "
+            f"proj_len() - 1 = {proj.proj_len() - 1}")
         assert df.notna().all().all(), f"{model.name}: NaN in point {point_id} cash flows"
         assert math.isfinite(df["net_cf"].sum()), (
             f"{model.name}: point {point_id} has an infinite net_cf")

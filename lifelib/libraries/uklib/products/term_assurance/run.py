@@ -24,6 +24,9 @@ print("premium = {:,.2f}/month ({:,.2f} p.a.)   mortality basis = {}   "
           proj.premium_mth_pp(), proj.premium_pp(proj.proj_start()),
           proj.mort_basis(), proj.indexation(), proj.wop()))
 print()
+print("cash flows by year t, 0-based from issue (policy year = t + 1); "
+      "frame t = {} .. {}, first 12 rows:".format(
+          proj.proj_start(), proj.proj_len() - 1))
 print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

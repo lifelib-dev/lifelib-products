@@ -29,14 +29,19 @@ therefore also where the ``check_*`` cells are called, on every model point rath
 the first alone, and where the few product assertions that did not generalise live, in
 :data:`EXTRA_POINT_ASSERTIONS`.
 
-**On ``proj_len()``.** This library fixes one reading of it and asserts it here:
-``proj_len()`` is the **last projected period index**, so ``result_cf()`` ends at
-``proj_len()`` whether the frame is 0-based or 1-based. That is stronger than what the
-sister libraries settled on — jplib's models make ``proj_len()`` the row *count* and
-uslib's 0-based models publish ``proj_len() + 1`` rows, so neither can assert the frame's
-last index at all — and it is asserted rather than described because two of the nine here
-are 0-based and seven are 1-based, and the split does not follow the annual/monthly grid:
-``EC_FR_A`` is annual and 0-based while ``Euro_FR_A`` is annual and 1-based.
+**On the time index and ``proj_len()``.** The time index ``t`` is 0-based: ``t = 0`` is
+the first period of a policy projected from issue (the issue year on an annual grid, the
+issue month on a monthly one), period ``t`` runs from time ``t`` to time ``t + 1``, and the
+attained age is ``age_at_entry + t`` on an annual grid (``age_at_entry + duration(t)``,
+``duration(t) = t // 12``, on a monthly one). ``proj_len()`` is the number of periods from
+``t = 0``, i.e. the exclusive end of the frame: ``result_cf()`` covers
+``t = t_first, ..., proj_len() - 1``, where ``t_first`` is 0 for a point projected from
+issue and the elapsed periods for an in-force point. This is lifelib's own convention
+(``basiclife/BasicTerm_S``, ``savings/CashValue_SE``, ``annuallife/TradLife_A``:
+``for t in range(proj_len())``). A contractual policy year is the 1-based label ``t + 1``
+(``duration(t) + 1`` on a monthly grid) and is derived, never indexed by. The same
+convention holds in every sister library, and the sweep below asserts it for every model
+point of every model in the registry.
 """
 import math
 import re
@@ -425,8 +430,8 @@ def test_lapse_rate_is_the_annual_rate(name, model):
         pytest.skip(f"{name} has no monthly lapse rate")
     assert "lapse_rate" in cells, "lapse_rate_mth exists without an annual lapse_rate"
     proj = model.Projection[list(model.Data.model_point_table().index)[0]]
-    for t in (1, 13, 25):
-        if t <= proj.proj_len():
+    for t in (0, 12, 24):
+        if t < proj.proj_len():
             ann, mth = proj.lapse_rate(t), proj.lapse_rate_mth(t)
             if ann > 0:
                 assert mth < ann, f"t={t}: monthly {mth} not below annual {ann}"
@@ -483,20 +488,23 @@ def test_pols_if_is_the_start_of_period_count(name, model):
     that the column exists, comes first and stays non-negative.
 
     The checkable consequence is the first row. No decrement has been applied when a period
-    opens, so the opening exposure is ``pols_if_init()`` exactly — on a 0-based frame at
-    ``t = 0``, on a 1-based one at ``t = 1``, and on an in-force model point that opens
-    partway through the term at whatever ``t`` the frame starts.
+    opens, so the opening exposure is ``pols_if_init()`` exactly: at ``t = 0`` for a model
+    point projected from issue, and on an in-force model point that opens partway through
+    the term at ``t_first``, the elapsed periods, wherever the frame starts. The time index
+    is 0-based in every model of the library, so there is no per-model reading of "the
+    first row" to consult; ``t = 0`` is the first projected period, never an issue-instant
+    state (the issue instant is not a row — its flows are the beginning-of-period flows of
+    period 0, and the state after them is period 0's opening timing).
 
-    **What this cannot catch, stated rather than glossed.** On a 0-based frame whose first
-    row is a base-case state rather than a projected period, the opening row is
-    ``pols_if_init()`` under *either* reading, so the check passes on a model that has the
-    defect. ``EC_FR_A`` was exactly that case and had to be found by reading the docstrings
-    instead. Nor can the check be strengthened by comparing the first two rows: the two
-    0-based models here do not agree on what ``t = 0`` is — it is the outset state in
-    ``EC_FR_A``, where ``pols_if(0) == pols_if(1)``, and the first projected month in
-    ``Dep_FR_S``, where it is not. A test that identified the exposure weighting itself
-    would need to know which cells carries the weight, which is a product fact. So this
-    asserts the part that generalises, and the docstrings carry the rest.
+    **What this cannot catch, stated rather than glossed.** A model that published an
+    outset state as its first row rather than a projected period would open at
+    ``pols_if_init()`` under *either* reading, so the check would pass on a model that has
+    the defect; ``EC_FR_A`` was once exactly that case and had to be found by reading the
+    docstrings instead, and it is the sweep's frame assertions — ``t = 0`` is period 0 and
+    ``pols_if(0)`` is its opening count — together with each model's docstrings that rule
+    it out now. A test that identified the exposure weighting itself would need to know
+    which cells carries the weight, which is a product fact. So this asserts the part that
+    generalises, and the docstrings carry the rest.
 
     ``Rente_FR_S`` is exempt and says so in its own docstring: there ``pols_if`` is the
     notes' ``IF(t)``, the probability that *any* payment obligation remains, which is a
@@ -527,15 +535,16 @@ def test_pols_if_is_the_start_of_period_count(name, model):
 #
 # Most of what a product module would assert over its own model point table is said
 # generically below — the frame spans the projection, is indexed by ``t``, ends at
-# ``proj_len()``, is free of NaN, publishes one column vocabulary, keeps ``pols_if``
+# ``proj_len() - 1``, is free of NaN, publishes one column vocabulary, keeps ``pols_if``
 # non-negative, and every ``check_*`` closes — and a second sweep to re-assert it costs a
 # full cold projection of every model point, which is the most expensive thing in this
 # suite. These are the residue: assertions that are true of one model and meaningless for
 # the rest. They are keyed by model name and called with the ItemSpace and the frame the
 # sweep has already computed.
 #
-# This table stays inside frlib. The sister libraries read ``proj_len()`` differently, so a
-# helper shared across libraries would be wrong for one of them whichever form it took.
+# This table stays inside frlib because its entries are product facts of French models,
+# not because the frame is read differently elsewhere: the 0-based time index and the
+# exclusive ``proj_len()`` are the same in every library.
 
 
 def _ade_cover_may_end_before_the_loan(proj, df):
@@ -545,10 +554,11 @@ def _ade_cover_may_end_before_the_loan(proj, df):
     the reason the age limits are per guarantee rather than per contract. It is asserted
     here rather than in the product module because it is a statement about the *frame* —
     the projection must still run to the end of the loan after the last guarantee has
-    lapsed, publishing zeros, rather than stopping short.
+    lapsed, publishing zeros, rather than stopping short. With months ``0, 1, ...``, the
+    last month of a loan of ``n`` months is ``t = n - 1``.
     """
     assert (df["pols_if"] >= 0.0).all()
-    assert df.index[-1] == proj.loan_term_months(), (
+    assert df.index[-1] == proj.loan_term_months() - 1, (
         "the projection must run to the end of the loan, not to the last cover")
 
 
@@ -576,15 +586,16 @@ def test_every_model_point_projects(name, model):
     admits an infinity, so ``net_cf`` is checked for one separately; and every point must
     publish the same columns, or two rows of one model's output cannot be read together.
 
-    ``result_cf().index[-1] == proj_len()`` is the library's reading of ``proj_len()`` and
-    is asserted for every point: it is the last projected period index, not a row count.
-    What must *not* be asserted is where the frame *starts*. ``EC_FR_A`` and ``Dep_FR_S``
-    are 0-based and the other seven are 1-based, and the split does not follow the
-    annual/monthly grid — ``EC_FR_A`` is annual and 0-based while ``Euro_FR_A`` is annual
-    and 1-based. Nor is the start even fixed per model: ``EC_FR_A``'s in-force model points
-    open partway through the term, at the duration the policy has already run. The frame is
-    checked for **contiguity** instead, which is the property that actually matters — a gap
-    in ``t`` means a period was dropped, and no reading of ``proj_len()`` would catch it.
+    The frame rule asserted for every point is the library-wide one: the time index ``t``
+    is 0-based, ``proj_len()`` is the number of periods from ``t = 0`` — the exclusive end
+    of the frame, lifelib's ``for t in range(proj_len())`` — so ``result_cf()`` covers
+    ``t = t_first, ..., proj_len() - 1`` and its last index is ``proj_len() - 1``. Where the
+    frame *starts* is not pinned to 0, because it is not fixed per model: ``t_first`` is 0
+    for a point projected from issue and the elapsed periods for an in-force point —
+    ``EC_FR_A``'s in-force model points open partway through the term, at the duration the
+    policy has already run. The frame is checked for **contiguity** from ``t_first`` to the
+    exclusive end, which is the property that actually matters — a gap in ``t`` means a
+    period was dropped, and neither end of the frame would reveal it.
     """
     checks = [c for c in model.Projection.cells
               if c.startswith("check_") and not c.endswith("_resid")]
@@ -594,14 +605,15 @@ def test_every_model_point_projects(name, model):
         proj = model.Projection[point_id]
         df = proj.result_cf()
         assert len(df) > 0, f"{model.name}: model point {point_id} projects nothing"
-        assert df.index[-1] == proj.proj_len(), (
-            f"{model.name}: point {point_id} ends at t = {df.index[-1]} for a projection "
-            f"of {proj.proj_len()}")
+        assert df.index.name == "t", f"{model.name}: result_cf is not indexed by t"
         assert df.index[0] >= 0, (
             f"{model.name}: point {point_id} starts at t = {df.index[0]}")
-        assert list(df.index) == list(range(df.index[0], proj.proj_len() + 1)), (
-            f"{model.name}: point {point_id} has a gap in t")
-        assert df.index.name == "t", f"{model.name}: result_cf is not indexed by t"
+        assert list(df.index) == list(range(df.index[0], proj.proj_len())), (
+            f"{model.name}: point {point_id} is not the contiguous frame "
+            f"t = {df.index[0]}, ..., proj_len() - 1 = {proj.proj_len() - 1}")
+        assert df.index[-1] == proj.proj_len() - 1, (
+            f"{model.name}: point {point_id} ends at t = {df.index[-1]} for a projection "
+            f"of {proj.proj_len()} periods (the last index is proj_len() - 1)")
         assert df.notna().all().all(), f"{model.name}: NaN in point {point_id} cash flows"
         assert math.isfinite(df["net_cf"].sum()), (
             f"{model.name}: point {point_id} has an infinite net_cf")

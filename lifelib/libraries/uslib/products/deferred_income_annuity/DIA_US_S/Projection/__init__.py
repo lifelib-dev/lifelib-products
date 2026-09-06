@@ -13,25 +13,29 @@ projecting model point 1::
 
 .. rubric:: t counts months from issue, and it is 0-based
 
-``t = 0, 1, 2, …, proj_len()`` are **policy months from issue**, indexed exactly as the
-technical notes index them. ``t = 0`` is the issue month and a real projected month, not
-a recursion base case: the first premium is received at its start, deaths occur during
-it, and the maintenance expense accrues in it. This is a deliberate departure from the
-1-based ``t`` of :mod:`.Term_US_A` and :mod:`.SPIA_US_S`, and the reason is that
-the notes' ``T`` is a **month index** in the 0-based scheme — the anchor cell's income
-start month is ``T = 240`` and its premiums fall at months 0 and 60. Renumbering to a
-1-based grid would make ``T = 240`` mean the 241st month and quietly move every option
-window, premium date and payment date by one.
+``t = 0, 1, 2, …, proj_len() - 1`` are **policy months from issue**, the library-wide
+0-based convention of lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
+and exactly how the technical notes index them. Month ``t`` runs from elapsed time ``t``
+to ``t + 1``. ``t = 0`` is the issue month and a real projected month, not a recursion
+base case: the first premium is received at its start, deaths occur during it, and the
+maintenance expense accrues in it. ``proj_len()`` is the **number** of projected months
+- the exclusive end of the frame, ``range(proj_len())`` - so the last row is
+``t = proj_len() - 1``: 720 months, ``t = 0 .. 719``, on the anchor cell. The notes'
+``T`` is a month index on this grid — the anchor cell's income start month is
+``T = 240``, the start of month 240 and exactly twenty years from issue, and its
+premiums fall at months 0 and 60 — as are the option months named on the model point.
+The policy year is a derived, 1-based contractual label, ``policy_year(t) = t // 12 + 1``,
+used only where the notes speak in policy years (the expense escalation and the annual
+display grid).
 
 Two consequences to hold on to:
 
 - ``lives_if(t, life)`` is the probability of being alive at the **start** of month
   ``t`` — equivalently, of having survived ``t`` elapsed months, ``lives_if(0) = 1``.
-  That is the *same* function of elapsed time as ``SPIA_US_S.lives_if``, so the
-  name carries its meaning across unchanged.
+  It is the same function of elapsed time under the chassis name ``lives_if`` in
+  :mod:`.SPIA_US_S`.
 - ``lives_death(t, life) = lives_if(t) - lives_if(t + 1)`` — deaths **during** month
-  ``t``. In the 1-based chassis the same quantity is ``l(t-1) - l(t)``, because month
-  ``t`` spans elapsed ``[t-1, t)`` there and ``[t, t+1)`` here.
+  ``t``, a forward difference, because month ``t`` spans elapsed ``[t, t+1)``.
 
 .. rubric:: Input data
 
@@ -597,14 +601,18 @@ def horizon_mths():
 
 
 def proj_len():
-    """The last projected month index: ``t`` runs 0, 1, ..., ``proj_len()``.
+    """The number of projected months: ``t`` runs ``0, 1, ..., proj_len() - 1``.
 
-    The mortality horizon, or the end of the guarantee period if that is later.  Both
-    are age- or contract-driven rather than derived from the projection they bound, so
-    ``proj_len()`` never depends on the survival path.
+    The exclusive end of the frame, lifelib's ``range(proj_len())``: the frame has
+    ``proj_len()`` rows, the last month index is ``proj_len() - 1`` and the projection
+    stops when it reaches the mortality horizon - the month the youngest covered life
+    attains the limiting age, ``horizon_mths()`` - or the end of the guarantee period
+    if that is later.  Both are age- or contract-driven rather than derived from the
+    projection they bound, so ``proj_len()`` never depends on the survival path.
+    720 on the anchor cell: months ``0 .. 719``, ages 60 to 119.
     """
-    return max(horizon_mths() - 1,
-               income_start_mth() + certain_mths_eff() - 1)
+    return max(horizon_mths(),
+               income_start_mth() + certain_mths_eff())
 
 
 def income_start_mth_init():
@@ -772,9 +780,9 @@ def lives_if(t, life):
 def lives_death(t, life):
     """d(t) = l(t) - l(t+1): the deaths of ``life`` **during** month t.
 
-    Note the index.  Month ``t`` spans elapsed months ``[t, t+1)`` on this 0-based grid,
-    so the density is a forward difference; the 1-based chassis writes the same quantity
-    as ``l(t-1) - l(t)``.
+    Note the index.  Month ``t`` spans elapsed months ``[t, t+1)`` on the 0-based grid,
+    so the density is a forward difference: the deaths of month ``t`` are taken at its
+    end, between the survival at its start and the survival at the start of ``t + 1``.
     """
     return lives_if(t, life) - lives_if(t + 1, life)
 
@@ -1126,8 +1134,11 @@ def is_payout(t):
 
 
 def phase(t):
-    """DEFERRAL, PAYOUT or TERMINATED in month t."""
-    if t > proj_len():
+    """DEFERRAL, PAYOUT or TERMINATED in month t.
+
+    TERMINATED from ``t = proj_len()``, the first month past the frame.
+    """
+    if t >= proj_len():
         return "TERMINATED"
     return "PAYOUT" if is_payout(t) else "DEFERRAL"
 
@@ -1153,7 +1164,7 @@ def is_payment_mth(t):
 def payment_surv_mth(t):
     """The elapsed month at which survival is measured for the instalment falling in t.
 
-    Arrears: the end of month t, which on this 0-based grid is elapsed month ``t + 1``.
+    Arrears: the end of month t, which on the 0-based grid is elapsed month ``t + 1``.
     Advance: the start of month t, elapsed month ``t``.  Using end-of-period survival
     for advance payments understates the liability by about one period's mortality per
     payment.
@@ -1667,7 +1678,7 @@ def qlac_flags():
     if not is_qlac():
         return []
     out = []
-    if qlac_room(proj_len()) < 0.0:
+    if qlac_room(proj_len() - 1) < 0.0:
         out.append("premium limit exceeded")
     if age(income_start_mth(), 1) > qlac_max_start_age:              # noqa: F821
         out.append("income start after the age limit")
@@ -1704,14 +1715,14 @@ def check_lives_roll_fwd():
     """``True`` when the in-force roll-forward closes in every projected month.
 
     No argument and a bool, the library-wide ``check_*`` shape taken from
-    ``CashValue_SE.check_av_roll_fwd()``: one call covers ``t = 0 .. proj_len()``, so the
-    same name can be asserted across every model in the library.
+    ``CashValue_SE.check_av_roll_fwd()``: one call covers ``t = 0 .. proj_len() - 1``, so
+    the same name can be asserted across every model in the library.
     :func:`check_lives_roll_fwd_resid` carries the signed residual at a single ``t``.
     Mortality is the only decrement here, so a failure means the last-survivor
     construction and the per-life recursion have come apart.
     """
     return all(abs(check_lives_roll_fwd_resid(t)) < 1e-12
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_income_roll_fwd_resid(t):
@@ -1738,7 +1749,7 @@ def check_income_roll_fwd():
     only ever steps, never accrues.
     """
     return all(abs(check_income_roll_fwd_resid(t)) < 1e-9
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_payment_factor_resid(t):
@@ -1760,7 +1771,7 @@ def check_payment_factor():
     defect and not a rounding artefact.
     """
     return all(check_payment_factor_resid(t) == 0.0
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_commutation_value_resid(t):
@@ -1807,7 +1818,7 @@ def check_commutation_value():
     residual is identically zero away from the exercise month.
     """
     return all(abs(check_commutation_value_resid(t)) < 1e-6
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def lives_if_ann(y):
@@ -1848,8 +1859,8 @@ def annuity_payments_ann(y):
 
 
 def result_cf():
-    """Result table of monthly cashflows, indexed by policy month t from 0."""
-    ts = list(range(0, proj_len() + 1))
+    """Result table of monthly cashflows, indexed by policy month ``t = 0 .. proj_len() - 1``."""
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1866,8 +1877,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of survival probabilities and payment factors, indexed by month t."""
-    ts = list(range(0, proj_len() + 1))
+    """Result table of survival probabilities and payment factors, indexed by month t.
+
+    The same frame as :func:`result_cf`: ``t = 0 .. proj_len() - 1``.
+    """
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "lives_if_1": [lives_if(t, 1) for t in ts],
@@ -1890,9 +1904,11 @@ def result_annual():
     at the start of the year, the premium received at its start, ``CP``, ``B``, the
     survival probability at the end of the year, the expected deferral death benefit
     paid during it, and the expected income at its end on the annual-payment display
-    approximation.  The projection itself is monthly; this is the display grid.
+    approximation.  The projection itself is monthly; this is the display grid, and
+    ``policy_year = t // 12 + 1`` maps the monthly frame onto it - one row per complete
+    policy year inside the ``proj_len()`` projected months, 60 on the anchor cell.
     """
-    ys = list(range(1, (proj_len() + 1) // 12 + 1))
+    ys = list(range(1, proj_len() // 12 + 1))
     return pd.DataFrame(                                             # noqa: F821
         {
             "age": [age(12 * (y - 1), 1) for y in ys],

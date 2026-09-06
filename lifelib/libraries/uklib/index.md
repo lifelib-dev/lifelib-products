@@ -195,6 +195,17 @@ or read it and take the cash flow statement:
 `Projection` takes a `point_id`; `Projection[1]` is each model's worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by `t` with one column per cash flow line.
 
+The time index `t` is 0-based: `t = 0` is the first period of a policy projected from issue
+(the issue year on an annual grid, the issue month on a monthly one), period `t` runs from
+time `t` to time `t + 1`, and the attained age is `age_at_entry + t` on an annual grid
+(`age_at_entry + duration(t)`, `duration(t) = t // 12`, on a monthly one). `proj_len()` is
+the number of periods from `t = 0`, i.e. the exclusive end of the frame: `result_cf()` covers
+`t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from issue and
+the elapsed periods for an in-force point. This is lifelib's own convention
+(`basiclife/BasicTerm_S`, `savings/CashValue_SE`, `annuallife/TradLife_A`:
+`for t in range(proj_len())`). A contractual policy year is the 1-based label `t + 1`
+(`duration(t) + 1` on a monthly grid) and is derived, never indexed by.
+
 The tests ship inside the library and run against *your* copy:
 
 ```bash

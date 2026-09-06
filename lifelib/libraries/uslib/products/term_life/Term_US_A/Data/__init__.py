@@ -71,7 +71,12 @@ def model_point_table():
 
 
 def premium_rates():
-    """The guaranteed premium schedule, read from *premium_rates.csv*."""
+    """The guaranteed premium schedule, read from *premium_rates.csv*.
+
+    Keyed by the contractual, 1-based ``policy_year`` (1 = the issue year), not by the
+    0-based projection index; ``Projection.premium_pp(t)`` looks it up at
+    ``policy_year(t) = t + 1``.
+    """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / premium_rates_file,                            # noqa: F821
         index_col=["plan", "sex", "rate_class", "band", "policy_year"])
